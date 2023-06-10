@@ -30,11 +30,10 @@ import {
 import { StillTherePrompt } from './StillTherePrompt';
 import { DefaultTimestampStore, TimestampStore } from './timestampStore';
 
+/** @public */
 export type AutoLogoutTrackableEvent = EventsType;
 
-/**
- * @public
- */
+/** @public */
 export type AutoLogoutProviderProps = {
   /**
    * Enable/disable the AutoLogoutMechanism.
@@ -79,6 +78,7 @@ export type AutoLogoutProviderProps = {
  * The Autologout feature enables platform engineers to add a mechanism to log out users after a configurable amount of time of inactivity.
  * When enabled, the mechanism will track user actions (mouse movement, mouse click, key pressing, taps, etc.) in order to determine if they are active or not.
  * After a certain amount of inactivity/idle time, the user session is invalidated and they are required to sign in again.
+ *
  * @public
  */
 export const AutoLogoutProvider = ({

@@ -18,5 +18,6 @@ import { LAST_SEEN_ONLINE_STORAGE_KEY } from './disconnectedUsers';
 export * from './AutoLogoutProvider';
 export * from './ConfigBasedAutoLogoutProvider';
 
+/** @public */
 export const AUTOLOGOUT_LAST_SEEN_ONLINE_STORAGE_KEY =
   LAST_SEEN_ONLINE_STORAGE_KEY;
