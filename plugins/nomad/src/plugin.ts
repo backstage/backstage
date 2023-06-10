@@ -38,7 +38,7 @@ export const nomadPlugin = createPlugin({
       api: nomadApiRef,
       deps: { discoveryApi: discoveryApiRef, fetchApi: fetchApiRef },
       factory: ({ discoveryApi, fetchApi }) =>
-        NomadHttpApi.new(discoveryApi, fetchApi),
+        NomadHttpApi.create(discoveryApi, fetchApi),
     }),
   ],
   routes: {

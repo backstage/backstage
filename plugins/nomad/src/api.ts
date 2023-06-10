@@ -114,7 +114,7 @@ export class FetchError extends Error {
 
 /** @public */
 export class NomadHttpApi implements NomadApi {
-  static new(discoveryApi: DiscoveryApi, fetchApi: FetchApi) {
+  static create(discoveryApi: DiscoveryApi, fetchApi: FetchApi) {
     return new NomadHttpApi(discoveryApi, fetchApi);
   }
 
