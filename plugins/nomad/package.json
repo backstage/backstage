@@ -54,7 +54,7 @@
   ],
   "configSchema": {
     "$schema": "https://backstage.io/schema/config-v1",
-    "title": "@backstage/nomad",
+    "title": "@backstage/plugin-nomad",
     "type": "object",
     "properties": {
       "nomad": {
