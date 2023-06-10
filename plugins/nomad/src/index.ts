@@ -18,8 +18,4 @@ export {
   EntityNomadJobVersionListCard,
   EntityNomadAllocationListTable,
 } from './plugin';
-export {
-  isNomadAllocationsAvailable,
-  isNomadJobIDAvailable,
-  EmbeddedRouter,
-} from './Router';
+export { isNomadAllocationsAvailable, isNomadJobIDAvailable } from './Router';

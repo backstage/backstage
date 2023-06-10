@@ -39,7 +39,6 @@ export const isNomadAllocationsAvailable = (entity: Entity) =>
   Boolean(entity.metadata.annotations?.[NOMAD_JOB_ID_ANNOTATION]) ||
   Boolean(entity.metadata.annotations?.[NOMAD_GROUP_ANNOTATION]);
 
-/** @public */
 export const EmbeddedRouter = () => {
   const { entity } = useEntity();
 
