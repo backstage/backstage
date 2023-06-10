@@ -31,6 +31,7 @@ import { commonProvider } from './commonProvider';
 import { guestProvider } from './guestProvider';
 import { customProvider } from './customProvider';
 import { IdentityApiSignOutProxy } from './IdentityApiSignOutProxy';
+import { AUTOLOGOUT_LAST_SEEN_ONLINE_STORAGE_KEY } from '../../components';
 
 const PROVIDER_STORAGE_KEY = '@backstage/core:SignInPage:provider';
 
@@ -95,6 +96,7 @@ export const useSignInProviders = (
         IdentityApiSignOutProxy.from({
           identityApi,
           signOut: async () => {
+            localStorage.removeItem(AUTOLOGOUT_LAST_SEEN_ONLINE_STORAGE_KEY);
             localStorage.removeItem(PROVIDER_STORAGE_KEY);
             await identityApi.signOut?.();
           },
