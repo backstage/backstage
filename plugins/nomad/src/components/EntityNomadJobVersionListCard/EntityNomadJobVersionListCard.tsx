@@ -114,7 +114,7 @@ export const EntityNomadJobVersionListCard = () => {
     return <ResponseErrorPanel error={err} />;
   }
 
-  if (!entity) return <></>;
+  if (!entity) return null;
 
   // Check that job ID is set
   if (!isNomadJobIDAvailable(entity)) {
