@@ -20,6 +20,7 @@ import { default as CSS_2 } from 'csstype';
 import { CSSProperties } from 'react';
 import { ElementType } from 'react';
 import { ErrorInfo } from 'react';
+import { EventsType } from 'react-idle-timer';
 import { IconComponent } from '@backstage/core-plugin-api';
 import { Icons } from '@material-table/core';
 import { IdentityApi } from '@backstage/core-plugin-api';
@@ -66,6 +67,42 @@ export type AlertDisplayProps = {
   };
   transientTimeoutMs?: number;
 };
+
+// Warning: (ae-missing-release-tag) "AUTOLOGOUT_LAST_SEEN_ONLINE_STORAGE_KEY" is part of the package's API, but it is missing a release tag (@alpha, @beta, @public, or @internal)
+//
+// @public (undocumented)
+export const AUTOLOGOUT_LAST_SEEN_ONLINE_STORAGE_KEY =
+  '@backstage/autologout:lastSeenOnline';
+
+// Warning: (ae-missing-release-tag) "AutoLogoutProvider" is part of the package's API, but it is missing a release tag (@alpha, @beta, @public, or @internal)
+//
+// @public
+export const AutoLogoutProvider: ({
+  children,
+  enabled,
+  idleTimeoutMinutes,
+  promptBeforeIdleSeconds,
+  useWorkerTimers,
+  events,
+  logoutIfDisconnected,
+}: PropsWithChildren<AutoLogoutProviderProps>) => JSX.Element;
+
+// Warning: (ae-missing-release-tag) "AutoLogoutProviderProps" is part of the package's API, but it is missing a release tag (@alpha, @beta, @public, or @internal)
+//
+// @public (undocumented)
+export type AutoLogoutProviderProps = {
+  enabled?: boolean;
+  idleTimeoutMinutes?: number;
+  promptBeforeIdleSeconds?: number;
+  useWorkerTimers?: boolean;
+  events?: AutoLogoutTrackableEvent[];
+  logoutIfDisconnected?: boolean;
+};
+
+// Warning: (ae-missing-release-tag) "AutoLogoutTrackableEvent" is part of the package's API, but it is missing a release tag (@alpha, @beta, @public, or @internal)
+//
+// @public (undocumented)
+export type AutoLogoutTrackableEvent = EventsType;
 
 // @public
 export function Avatar(props: AvatarProps): React_2.JSX.Element;
@@ -164,6 +201,18 @@ export interface CodeSnippetProps {
   showLineNumbers?: boolean;
   text: string;
 }
+
+// Warning: (ae-missing-release-tag) "ConfigBasedAutoLogoutProvider" is part of the package's API, but it is missing a release tag (@alpha, @beta, @public, or @internal)
+//
+// @public
+export const ConfigBasedAutoLogoutProvider: ({
+  children,
+}: PropsWithChildren<ConfigBasedAutoLogoutProviderProps>) => JSX.Element;
+
+// Warning: (ae-missing-release-tag) "ConfigBasedAutoLogoutProviderProps" is part of the package's API, but it is missing a release tag (@alpha, @beta, @public, or @internal)
+//
+// @public (undocumented)
+export type ConfigBasedAutoLogoutProviderProps = {};
 
 // Warning: (ae-forgotten-export) The symbol "Props_13" needs to be exported by the entry point index.d.ts
 //
@@ -1501,6 +1550,12 @@ export type WarningPanelClassKey =
 
 // Warnings were encountered during analysis:
 //
+// src/components/AutoLogoutProvider/AutoLogoutProvider.d.ts:7:8 - (tsdoc-undefined-tag) The TSDoc tag "@default" is not defined in this configuration
+// src/components/AutoLogoutProvider/AutoLogoutProvider.d.ts:13:8 - (tsdoc-undefined-tag) The TSDoc tag "@default" is not defined in this configuration
+// src/components/AutoLogoutProvider/AutoLogoutProvider.d.ts:20:8 - (tsdoc-undefined-tag) The TSDoc tag "@default" is not defined in this configuration
+// src/components/AutoLogoutProvider/AutoLogoutProvider.d.ts:27:8 - (tsdoc-undefined-tag) The TSDoc tag "@default" is not defined in this configuration
+// src/components/AutoLogoutProvider/AutoLogoutProvider.d.ts:32:8 - (tsdoc-undefined-tag) The TSDoc tag "@default" is not defined in this configuration
+// src/components/AutoLogoutProvider/AutoLogoutProvider.d.ts:39:8 - (tsdoc-undefined-tag) The TSDoc tag "@default" is not defined in this configuration
 // src/components/DependencyGraph/types.d.ts:22:9 - (ae-unresolved-link) The @link reference could not be resolved: The package "@backstage/core-components" does not have an export "DependencyNode"
 // src/components/DependencyGraph/types.d.ts:26:9 - (ae-unresolved-link) The @link reference could not be resolved: The package "@backstage/core-components" does not have an export "DependencyNode"
 // src/components/TabbedLayout/RoutedTabs.d.ts:9:5 - (ae-forgotten-export) The symbol "SubRoute_2" needs to be exported by the entry point index.d.ts
