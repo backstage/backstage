@@ -23,11 +23,13 @@ import {
 } from './AutoLogoutProvider';
 import React from 'react';
 
+/** @public */
 export type ConfigBasedAutoLogoutProviderProps = {};
 
 /**
  * A config based flavour of the AutoLogoutProvider.
  * It allows to configure Autologout settings through `app-config`
+ * @public
  */
 export const ConfigBasedAutoLogoutProvider = ({
   children,

@@ -18,6 +18,7 @@ import { useEffect } from 'react';
 
 import { TimestampStore } from './timestampStore';
 
+/** @public */
 export const LAST_SEEN_ONLINE_STORAGE_KEY =
   '@backstage/autologout:lastSeenOnline';
 

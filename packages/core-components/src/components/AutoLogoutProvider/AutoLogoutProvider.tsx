@@ -32,42 +32,45 @@ import { DefaultTimestampStore, TimestampStore } from './timestampStore';
 
 export type AutoLogoutTrackableEvent = EventsType;
 
+/**
+ * @public
+ */
 export type AutoLogoutProviderProps = {
   /**
    * Enable/disable the AutoLogoutMechanism.
-   * @default true
+   * defaults to true
    */
   enabled?: boolean;
   /**
    * The amount of time (in minutes) of inactivity
    * after which the user is automatically logged out.
-   * @default 60 minutes.
+   * defaults to 60 minutes.
    */
   idleTimeoutMinutes?: number;
   /**
    * The number of seconds before the idleTimeout expires,
    * at which the user will be alerted by a Dialog that
    * they are about to be logged out.
-   * @default 10 seconds
+   * defaults to 10 seconds
    */
   promptBeforeIdleSeconds?: number;
   /**
    * Enable/disable the usage of Node's worker thread timers instead of main thread timers.
    * This is helpful if you notice that the your browser is killing inactive tab's timers, like the one used by AutoLogoutProvider.
    * If you experience some browser incompatibility, you may try to set this to false.
-   * @default true.
+   * defaults to true.
    */
   useWorkerTimers?: boolean;
   /**
    * List of DOM events that the AutoLogoutProvider will track to determine if the user is active or not.
-   * @default the default list includes all the needed events for keyboard/pointers/mouse devices.
+   * default list includes all the needed events for keyboard/pointers/mouse devices.
    */
   events?: AutoLogoutTrackableEvent[];
   /**
    * Enable/disable the autologout for disconnected users.
    * disconnected users are the ones that are logged in but have no Backstage tab open in their browsers.
    * If enabled, disconnected users will be automatically logged out after `idleTimeoutMinutes`
-   * @default true
+   * defaults to true
    */
   logoutIfDisconnected?: boolean;
 };
@@ -76,6 +79,7 @@ export type AutoLogoutProviderProps = {
  * The Autologout feature enables platform engineers to add a mechanism to log out users after a configurable amount of time of inactivity.
  * When enabled, the mechanism will track user actions (mouse movement, mouse click, key pressing, taps, etc.) in order to determine if they are active or not.
  * After a certain amount of inactivity/idle time, the user session is invalidated and they are required to sign in again.
+ * @public
  */
 export const AutoLogoutProvider = ({
   children,
