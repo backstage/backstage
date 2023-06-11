@@ -20,13 +20,17 @@ import { useState } from 'react';
 import { Entity, parseEntityRef } from '@backstage/catalog-model';
 
 type FacetsCursor = {
-  start?: number;
+  start: number;
   text: string;
 };
 
 type FacetsEntitiesResponse = {
   items: Entity[];
   cursor?: string;
+};
+
+type FacetsInitialRequest = {
+  text: string;
 };
 
 export function useFacetsEntities({ enabled }: { enabled: boolean }) {
@@ -62,7 +66,7 @@ export function useFacetsEntities({ enabled }: { enabled: boolean }) {
 
   return useAsyncFn<
     (
-      request: { text: string } | FacetsEntitiesResponse,
+      request: FacetsInitialRequest | FacetsEntitiesResponse,
       options?: { limit?: number },
     ) => Promise<FacetsEntitiesResponse>
   >(
@@ -74,53 +78,45 @@ export function useFacetsEntities({ enabled }: { enabled: boolean }) {
           items: [],
         };
       }
-      const initialRequest = request as { text: string };
-      const cursorRequest = request as FacetsEntitiesResponse;
 
       const limit = options?.limit ?? 20;
 
-      if (cursorRequest.cursor) {
-        const { start, text } = decodeCursor(cursorRequest.cursor);
-        const filteredRefs = facets.filter(e => filterEntity(text, e));
-        if (start === undefined) {
-          return request as FacetsEntitiesResponse;
-        }
-        const end = start + limit;
-
-        return {
-          items: filteredRefs.slice(0, end),
-          ...encodeCursor({
-            entities: filteredRefs,
-            limit: end,
-            payload: {
-              text,
-              start: end,
-            },
-          }),
-        };
-      }
-
-      const filteredRefs = facets.filter(e =>
-        filterEntity(initialRequest.text, e),
-      );
-
+      const { text, start } = decodeCursor(request);
+      const filteredRefs = facets.filter(e => filterEntity(text, e));
+      const end = start + limit;
       return {
-        items: filteredRefs.slice(0, limit),
-
+        items: filteredRefs.slice(0, end),
         ...encodeCursor({
           entities: filteredRefs,
-          limit,
-          payload: { text: initialRequest.text, start: limit },
+          limit: end,
+          payload: {
+            text,
+            start: end,
+          },
         }),
       };
     },
-    [],
+    [facetsPromise],
     { loading: true, value: { items: [] } },
   );
 }
 
-function decodeCursor(cursor: string): FacetsCursor {
-  return JSON.parse(atob(cursor));
+function decodeCursor(
+  request: FacetsInitialRequest | FacetsEntitiesResponse,
+): FacetsCursor {
+  if (isFacetsResponse(request) && request.cursor) {
+    return JSON.parse(atob(request.cursor));
+  }
+  return {
+    text: (request as FacetsInitialRequest).text || '',
+    start: 0,
+  };
+}
+
+function isFacetsResponse(
+  request: FacetsInitialRequest | FacetsEntitiesResponse,
+): request is FacetsEntitiesResponse {
+  return !!(request as FacetsEntitiesResponse).cursor;
 }
 
 function encodeCursor({
@@ -139,9 +135,10 @@ function encodeCursor({
 }
 
 function filterEntity(text: string, entity: Entity) {
+  const normalizedText = text.trim();
   return (
-    entity.kind.includes(text) ||
-    entity.metadata.namespace?.includes(text) ||
-    entity.metadata.name.includes(text)
+    entity.kind.includes(normalizedText) ||
+    entity.metadata.namespace?.includes(normalizedText) ||
+    entity.metadata.name.includes(normalizedText)
   );
 }
