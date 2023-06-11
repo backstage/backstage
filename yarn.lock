@@ -32054,8 +32054,8 @@ __metadata:
   linkType: hard
 
 "msw@npm:^1.0.0, msw@npm:^1.0.1, msw@npm:^1.2.1":
-  version: 1.2.1
-  resolution: "msw@npm:1.2.1"
+  version: 1.2.2
+  resolution: "msw@npm:1.2.2"
   dependencies:
     "@mswjs/cookies": ^0.2.2
     "@mswjs/interceptors": ^0.17.5
@@ -32077,13 +32077,13 @@ __metadata:
     type-fest: ^2.19.0
     yargs: ^17.3.1
   peerDependencies:
-    typescript: ">= 4.4.x <= 5.0.x"
+    typescript: ">= 4.4.x <= 5.1.x"
   peerDependenciesMeta:
     typescript:
       optional: true
   bin:
     msw: cli/index.js
-  checksum: 97b9c5ffc81b4380dd24ff40ac52ca02f406c88f86d8209ba991da19aad0bcfc37e807794aa1b9bf29f89cd86fd31e492bf4418c5ff02559b4f80d6ce4fb417b
+  checksum: e42cec8f5523663020bdecf6a7977a10aa86a4718d1920def3fbde0ff3734391873668cc6e3996d6790add3c74dac95a952f8560ce2543697280125eb55138e8
   languageName: node
   linkType: hard
 
