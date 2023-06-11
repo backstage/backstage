@@ -36,7 +36,7 @@ Add the event router to the `EventsBackend` instance in `packages/backend/src/pl
 ```diff
 +const githubEventRouter = new GithubEventRouter();
 
- EventsBackend
+new EventsBackend(env.logger)
 +  .addPublishers(githubEventRouter)
 +  .addSubscribers(githubEventRouter);
 // [...]
