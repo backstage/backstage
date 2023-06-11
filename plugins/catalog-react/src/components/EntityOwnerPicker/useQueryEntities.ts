@@ -28,10 +28,11 @@ export function useQueryEntities() {
   return useAsyncFn(
     async (
       request: { text: string } | QueryEntitiesResponse,
+      options?: { limit: number },
     ): Promise<QueryEntitiesResponse> => {
       const initialRequest = request as { text: string };
       const cursorRequest = request as QueryEntitiesResponse;
-      const limit = 20;
+      const limit = options?.limit ?? 20;
 
       if (cursorRequest.cursor) {
         const response = await catalogApi.queryEntities({
