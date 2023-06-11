@@ -495,6 +495,7 @@ template. These follow the same standard format:
 - id: fetch-base # A unique id for the step
   name: Fetch Base # A title displayed in the frontend
   if: ${{ parameters.name }} # Optional condition, skip the step if not truthy
+  each: ${{ parameters.iterable }} # Optional iterable, run the same step multiple times
   action: fetch:template # An action to call
   input: # Input that is passed as arguments to the action handler
     url: ./template
@@ -505,6 +506,27 @@ template. These follow the same standard format:
 By default we ship some [built in actions](./builtin-actions.md) that you can
 take a look at, or you can
 [create your own custom actions](./writing-custom-actions.md).
+
+When `each` is provided, the current iteration value is available in the `${{ each }}` input.
+
+Examples:
+
+```yaml
+each: ['apples', 'oranges']
+input:
+  values:
+    fruit: ${{ each}}
+```
+
+```yaml
+each: [{ name: 'apple', count: 3 }, { name: 'orange', count: 1 }]
+input:
+  values:
+    fruit: ${{ each.name }}
+    count: ${{ each.count }}
+```
+
+When `each` is used, the outputs of a repeated step are returned as an array of outputs from each iteration.
 
 ## Outputs
 

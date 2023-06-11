@@ -25,7 +25,7 @@ import * as winston from 'winston';
 import fs from 'fs-extra';
 import path from 'path';
 import nunjucks from 'nunjucks';
-import { JsonObject, JsonValue } from '@backstage/types';
+import { JsonArray, JsonObject, JsonValue } from '@backstage/types';
 import { InputError, NotAllowedError } from '@backstage/errors';
 import { PassThrough } from 'stream';
 import { generateExampleOutput, isTruthy } from './helper';
@@ -351,7 +351,7 @@ export class NunjucksWorkflowRunner implements WorkflowRunner {
           output(name: string, value: JsonValue) {
             if (step.each) {
               stepOutput[name] = stepOutput[name] || [];
-              stepOutput[name].push(value);
+              (stepOutput[name] as JsonArray).push(value);
             } else {
               stepOutput[name] = value;
             }
