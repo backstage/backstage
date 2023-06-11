@@ -83,11 +83,10 @@ export const EntityOwnerPicker = (props?: EntityOwnerPickerProps) => {
     queryParamOwners.length ? queryParamOwners : filters.owners?.values ?? [],
   );
 
-  const [{ value, loading }, handleFetch, { getEntity, setEntity }] =
-    useFetchEntities({
-      mode,
-      initialSelectedOwnersRefs: selectedOwners,
-    });
+  const [{ value, loading }, handleFetch, cache] = useFetchEntities({
+    mode,
+    initialSelectedOwnersRefs: selectedOwners,
+  });
   useDebouncedEffect(() => handleFetch({ text }), [text, handleFetch], 250);
 
   const availableOwners = value?.items || [];
@@ -136,7 +135,7 @@ export const EntityOwnerPicker = (props?: EntityOwnerPickerProps) => {
           getOptionLabel={o => {
             const entity =
               typeof o === 'string'
-                ? getEntity(o) ||
+                ? cache.getEntity(o) ||
                   parseEntityRef(o, {
                     defaultKind: 'group',
                     defaultNamespace: 'default',
@@ -152,7 +151,7 @@ export const EntityOwnerPicker = (props?: EntityOwnerPickerProps) => {
                   typeof e === 'string' ? e : stringifyEntityRef(e);
 
                 if (typeof e !== 'string') {
-                  setEntity(e);
+                  cache.setEntity(e);
                 }
 
                 return entityRef;
