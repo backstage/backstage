@@ -55,6 +55,9 @@ const useStyles = makeStyles(
 const icon = <CheckBoxOutlineBlankIcon fontSize="small" />;
 const checkedIcon = <CheckBoxIcon fontSize="small" />;
 
+/**
+ * @public
+ */
 export type EntityOwnerPickerProps = {
   mode?: 'owners-only' | 'all';
 };
