@@ -241,4 +241,59 @@ describe('useFacetsEntities', () => {
       });
     });
   });
+
+  it('should filter the data accordingly', async () => {
+    const entityRefs = [
+      'group:namespace/spiderman',
+      'group:spiders/go',
+      'group:default/go',
+      'component:spiders/a-component',
+      'component:default/a-component',
+      'component:default/spider',
+      'spid:default/lemon',
+      'component:default/lemon',
+      'component:default/nade',
+    ];
+
+    mockedGetEntityFacets.mockResolvedValue({
+      facets: {
+        'relations.ownedBy': entityRefs.map(value => ({ count: 1, value })),
+      },
+    });
+
+    const { result, waitFor } = renderHook(() =>
+      useFacetsEntities({ enabled: true }),
+    );
+
+    result.current[1]({ text: 'der  ' });
+    await waitFor(() => {
+      expect(result.current[0]).toEqual({
+        value: {
+          items: [
+            {
+              apiVersion: 'backstage.io/v1beta1',
+              kind: 'component',
+              metadata: { name: 'spider', namespace: 'default' },
+            },
+            {
+              apiVersion: 'backstage.io/v1beta1',
+              kind: 'group',
+              metadata: { name: 'spiderman', namespace: 'namespace' },
+            },
+            {
+              apiVersion: 'backstage.io/v1beta1',
+              kind: 'component',
+              metadata: { name: 'a-component', namespace: 'spiders' },
+            },
+            {
+              apiVersion: 'backstage.io/v1beta1',
+              kind: 'group',
+              metadata: { name: 'go', namespace: 'spiders' },
+            },
+          ],
+        },
+        loading: false,
+      });
+    });
+  });
 });
