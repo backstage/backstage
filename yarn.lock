@@ -16163,11 +16163,11 @@ __metadata:
   linkType: hard
 
 "@types/codemirror@npm:^5.0.0":
-  version: 5.60.7
-  resolution: "@types/codemirror@npm:5.60.7"
+  version: 5.60.8
+  resolution: "@types/codemirror@npm:5.60.8"
   dependencies:
     "@types/tern": "*"
-  checksum: 0312ce032eb139b408588a7e7cf3b392a510a2cfa6f477f2dd20d8bca1990e5e6e5540e708f9a69d1a58e68ea7fd234b789c801aa7ef4f3b3dc32a1478b04a91
+  checksum: bc3a63eab0308b3ef5ed2ca22afb7f1c0b8acde6477e1d569df7e93f3fe4f78754d28a3e081c72931259fe1bf906a319b54bcdeba74600b989e5558d32478496
   languageName: node
   linkType: hard
 
