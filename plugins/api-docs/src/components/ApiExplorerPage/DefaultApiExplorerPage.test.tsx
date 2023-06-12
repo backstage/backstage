@@ -168,7 +168,7 @@ describe('DefaultApiExplorerPage', () => {
     const { findByTitle, findByText } = await renderWrapped(
       <DefaultApiExplorerPage />,
     );
-    expect(await findByText(/All \(1\)/)).toBeInTheDocument();
+    expect(await findByText(/All apis \(1\)/)).toBeInTheDocument();
     expect(await findByTitle(/View/)).toBeInTheDocument();
     expect(await findByTitle(/View/)).toBeInTheDocument();
     expect(await findByTitle(/Edit/)).toBeInTheDocument();
@@ -198,7 +198,7 @@ describe('DefaultApiExplorerPage', () => {
     const { findByTitle, findByText } = await renderWrapped(
       <DefaultApiExplorerPage actions={actions} />,
     );
-    expect(await findByText(/All \(1\)/)).toBeInTheDocument();
+    expect(await findByText(/All apis \(1\)/)).toBeInTheDocument();
     expect(await findByTitle(/Foo Action/)).toBeInTheDocument();
     expect(await findByTitle(/Bar Action/)).toBeInTheDocument();
     expect((await findByTitle(/Bar Action/)).firstChild).toBeDisabled();
