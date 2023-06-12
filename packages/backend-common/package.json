@@ -46,10 +46,10 @@
     "test:kubernetes": "backstage-cli package test -t KubernetesContainerRunner --no-watch"
   },
   "dependencies": {
-    "@aws-sdk/abort-controller": "^3.310.0",
-    "@aws-sdk/client-s3": "^3.310.0",
-    "@aws-sdk/credential-providers": "^3.310.0",
-    "@aws-sdk/types": "^3.310.0",
+    "@aws-sdk/abort-controller": "^3.347.0",
+    "@aws-sdk/client-s3": "^3.350.0",
+    "@aws-sdk/credential-providers": "^3.350.0",
+    "@aws-sdk/types": "^3.347.0",
     "@backstage/backend-app-api": "workspace:^",
     "@backstage/backend-dev-utils": "workspace:^",
     "@backstage/backend-plugin-api": "workspace:^",
@@ -114,7 +114,7 @@
     }
   },
   "devDependencies": {
-    "@aws-sdk/util-stream-node": "^3.310.0",
+    "@aws-sdk/util-stream-node": "^3.350.0",
     "@backstage/backend-test-utils": "workspace:^",
     "@backstage/cli": "workspace:^",
     "@types/archiver": "^5.1.0",
