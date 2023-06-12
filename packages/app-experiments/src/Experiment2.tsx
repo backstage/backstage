@@ -14,21 +14,16 @@
  * limitations under the License.
  */
 
-import React, { CSSProperties, ComponentType, createContext } from 'react';
-import { z } from 'zod';
+import React, { ComponentType } from 'react';
 import mapValues from 'lodash/mapValues';
-import { Typography } from '@material-ui/core';
 
 /**
  * App structure
  * - Root
- *   - GroceryLayout (fruit + vegetable columns}
- *     - Apple [grocery, fruit, title, component]
- *     - Orange [grocery, fruit, title, component]
- *     - Carrot [grocery, vegetable, component]
- *     - Tomato [grocery, vegetable, title, component]
- *     - Banana [grocery, title, component]
- *     - Metallica [band, title]
+ *   - GroceryLayout (fruit}
+ *     - Apple [grocery, fruit, component]
+ *     - Orange [grocery, fruit, component]
+ *     - Metallica [band]
  */
 
 interface ExtensionDataRef<T> {
@@ -42,94 +37,150 @@ function createExtensionDataRef<T>(id: string) {
 }
 
 const coreExtensionData = {
-  reactComponent: createExtensionDataRef<{ Component: ComponentType }>(
-    'core.reactComponent',
-  ),
-  routable: createExtensionDataRef<{ path: string }>('core.routable'),
-  title: createExtensionDataRef<{ title: string }>('core.title'),
+  reactComponent: createExtensionDataRef<ComponentType>('core.reactComponent'),
+
+  isGrocery: createExtensionDataRef<boolean>('isGrocery'),
+  isFruit: createExtensionDataRef<boolean>('isFruit'),
+
+  isBand: createExtensionDataRef<boolean>('isBand'),
+  title: createExtensionDataRef<string>('core.title'),
 };
 
-createPlugin({
-  id: 'catalog',
-  extension: [],
-});
+type AnyExtensionDataMap = Record<string, ExtensionDataRef<any>>;
 
-function createExtension(options: { id: string }) {
+type ExtensionDataBind<TData extends AnyExtensionDataMap> = {
+  [K in keyof TData]: (value: TData[K]['T']) => void;
+};
+
+type ExtensionDataValue<TData extends AnyExtensionDataMap> = {
+  [K in keyof TData]: TData[K]['T'];
+};
+
+interface CreateExtensionOptions<
+  TData extends AnyExtensionDataMap,
+  TPoint extends Record<string, { extensionData: AnyExtensionDataMap }>,
+> {
+  extensionData: TData;
+  points?: TPoint;
+  factory(options: {
+    bind: ExtensionDataBind<TData>;
+    config?: unknown;
+    points: {
+      [pointName in keyof TPoint]: ExtensionDataValue<
+        TPoint[pointName]['extensionData']
+      >[];
+    };
+  }): void;
+}
+
+function createExtension<
+  TData extends AnyExtensionDataMap,
+  TPoint extends Record<string, { extensionData: AnyExtensionDataMap }>,
+>(options: CreateExtensionOptions<TData, TPoint>) {
   return options;
 }
 
-createExtension1({
-  // id: 'catalog',
-  // features: [
-  //   {
-  //     typeRef: coreExtensionData.routable,
-  //     data: {
-  //       path: 'catalog'
-  //     }
-  //   }
-  // ],
-  // init({ bind }) {
-  //   bind(coreExtensionData.routable, {
-  //     path: 'catalog'
-  //   })
-  // },
-  // factory(bind, config, mountConfig) {
-  //   bind(coreExtensionData.routable, {
-  //     path: 'catalog'
-  //   })
-  // },
+const GroceryLayout = createExtension({
+  points: {
+    groceries: {
+      // requiredData: [
+      //   coreExtensionData.reactComponent,
+      //   coreExtensionData.isGrocery,
+      // ],
+      extensionData: {
+        Component: coreExtensionData.reactComponent,
+        isGrocery: coreExtensionData.isGrocery,
+      },
+    },
+  },
   extensionData: {
-    // Record<typeRef, Partial<typeRef.T>> ?
-    routable: { ref: coreExtensionData.routable, optional: true },
-    title: coreExtensionData.title,
     component: coreExtensionData.reactComponent,
   },
-  configSchema: z.object({
-    path: z.string(),
-    title: z.string().default('Ma title'),
-  }),
-  factory(bind, config) {
-    bind.title({ title: config.title });
-    const Component = () => <div>hello</div>;
-    bind.component({ Component });
-    bind.routable({ path: config.path });
+  factory({ bind, points }) {
+    const elements = points.groceries.map(point => <point.Component />);
+    /**
+     * Probably easier to evolve over time
+     * const elements = points.groceries.map((point) => getExtensionData(point, coreExtensionData.reactComponent))
+     **/
+    const Component = () => <div>yo yo yo, here's my elements: {elements}</div>;
+    bind.component(Component);
   },
 });
 
-function createEntityContentExtension() {}
-
-const AboutCard = createEntityContentExtension({
-  component: () => <div>hello</div>,
+const Apple = createExtension({
   extensionData: {
-    // Record<typeRef, Partial<typeRef.T>> ?
-    channels: coreExtensionData.notificationChannels,
+    component: coreExtensionData.reactComponent,
+    isGrocery: coreExtensionData.isGrocery,
+    isFruit: coreExtensionData.isFruit,
   },
-  configSchema: z.object({
-    channelName: z.string(),
-  }),
-  factory(bind, config) {},
+  factory({ bind }) {
+    const Component = () => <div>apple</div>;
+    bind.component(Component);
+    bind.isGrocery(true);
+    bind.isFruit(true);
+  },
 });
 
-function createEntityCardExtension(options: { configSchema }) {
-  return createExtension({
-    configSchema: options.configSchema(
-      z.object({
-        path: z.string(),
-        title: z.string(),
-      }),
-    ),
-    factory() {},
+const Metallica = createExtension({
+  extensionData: {
+    component: coreExtensionData.reactComponent,
+  },
+  factory({ bind }) {
+    const Component = () => <div>HEAVY METAL YEAH</div>;
+    bind.component(Component);
+  },
+});
+
+const Orange = createExtension({
+  extensionData: {
+    component: coreExtensionData.reactComponent,
+    isGrocery: coreExtensionData.isGrocery,
+    isFruit: coreExtensionData.isFruit,
+  },
+  factory({ bind }) {
+    const Component = () => <div>orange</div>;
+    bind.component(Component);
+    bind.isGrocery(true);
+    bind.isFruit(true);
+  },
+});
+
+function createExtensionInstance(
+  options: CreateExtensionOptions<
+    AnyExtensionDataMap,
+    Record<string, { extensionData: AnyExtensionDataMap }>
+  >,
+  children: { data: Map<ExtensionDataRef<unknown>, unknown> }[],
+) {
+  const extensionData = new Map<ExtensionDataRef<unknown>, unknown>();
+  options.factory({
+    bind: mapValues(options.extensionData, ref => {
+      return (value: unknown) => extensionData.set(ref, value);
+    }),
+    points: mapValues(options.points, ({ extensionData: pointData }) => {
+      const requiredRef = Object.values(pointData);
+      const matchingChildren = children.filter(child =>
+        requiredRef.every(ref => child.data.has(ref)),
+      );
+      return matchingChildren.map(child =>
+        mapValues(pointData, ref => child.data.get(ref)),
+      );
+    }),
   });
+  return { data: extensionData };
 }
 
-const createEntityCardExtension = createExtensionFactory({
-  baseConfigSchema: z.object({
-    path: z.string(),
-    title: z.string(),
-  }),
-});
-
-const AboutCard = createEntityCardExtension({
-  // features: [catalogCard],
-  configSchema: parent => parent.union(),
-});
+export function Experiment2() {
+  const apple = createExtensionInstance(Apple, []);
+  const orange = createExtensionInstance(Orange, []);
+  const metallica = createExtensionInstance(Metallica, []);
+  const layout = createExtensionInstance(GroceryLayout, [
+    apple,
+    orange,
+    metallica,
+  ]);
+  const Component = layout.data.get(
+    coreExtensionData.reactComponent,
+  ) as ComponentType;
+  return <Component />;
+}

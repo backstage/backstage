@@ -17,6 +17,6 @@
 import '@backstage/cli/asset-types';
 import React from 'react';
 import ReactDOM from 'react-dom';
-import { Experiment1 } from './Experiment1';
+import { Experiment2 } from './Experiment2';
 
-ReactDOM.render(<Experiment1 />, document.getElementById('root'));
+ReactDOM.render(<Experiment2 />, document.getElementById('root'));
