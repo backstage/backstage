@@ -46,3 +46,5 @@ koyeb app init example-backstage \
 Your application will be built and deployed to Koyeb. Once the build has finished, you will be able to access your application running on Koyeb by clicking the URL ending with `.koyeb.app`.  
 
 Congratulations! Now you should have Backstage up and running! 🎉
+
+
