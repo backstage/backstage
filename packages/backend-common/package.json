@@ -135,7 +135,6 @@
     "@types/webpack-env": "^1.15.2",
     "@types/yauzl": "^2.10.0",
     "aws-sdk-client-mock": "^2.0.0",
-    "aws-sdk-mock": "^5.2.1",
     "better-sqlite3": "^8.0.0",
     "http-errors": "^2.0.0",
     "mock-fs": "^5.1.0",
