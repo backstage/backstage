@@ -370,7 +370,7 @@ export class DefaultProcessingDatabase implements ProcessingDatabase {
           const eventParams: EventParams<CatalogConflictEventPayload> = {
             topic: CATALOG_CONFLICTS_TOPIC,
             eventPayload: {
-              entity,
+              unprocessedEntity: entity,
               entityRef,
               newLocationKey: locationKey,
               existingLocationKey: conflictingKey,
