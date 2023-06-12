@@ -732,7 +732,12 @@ export class DatabaseTaskStore implements TaskStore {
   // (undocumented)
   heartbeatTask(taskId: string): Promise<void>;
   // (undocumented)
-  list(options: { createdBy?: string }): Promise<{
+  list(options: {
+    createdBy?: string;
+    lastHeartbeatAt?: number;
+    createdAt?: number;
+    status?: string;
+  }): Promise<{
     tasks: SerializedTask[];
   }>;
   // (undocumented)
@@ -870,7 +875,12 @@ export interface TaskBroker {
   // (undocumented)
   get(taskId: string): Promise<SerializedTask>;
   // (undocumented)
-  list?(options?: { createdBy?: string }): Promise<{
+  list?(options?: {
+    createdBy?: string;
+    lastHeartbeatAt?: number;
+    createdAt?: number;
+    status?: string;
+  }): Promise<{
     tasks: SerializedTask[];
   }>;
   // (undocumented)
@@ -978,7 +988,12 @@ export interface TaskStore {
   // (undocumented)
   heartbeatTask(taskId: string): Promise<void>;
   // (undocumented)
-  list?(options: { createdBy?: string }): Promise<{
+  list?(options: {
+    createdBy?: string;
+    lastHeartbeatAt?: number;
+    createdAt?: number;
+    status?: string;
+  }): Promise<{
     tasks: SerializedTask[];
   }>;
   // (undocumented)
