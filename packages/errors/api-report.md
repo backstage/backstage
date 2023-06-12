@@ -9,10 +9,16 @@ import { JsonObject } from '@backstage/types';
 export function assertError(value: unknown): asserts value is ErrorLike;
 
 // @public
-export class AuthenticationError extends CustomErrorBase {}
+export class AuthenticationError extends CustomErrorBase {
+  // (undocumented)
+  name: string;
+}
 
 // @public
-export class ConflictError extends CustomErrorBase {}
+export class ConflictError extends CustomErrorBase {
+  // (undocumented)
+  name: string;
+}
 
 // @public
 export type ConsumedResponse = {
@@ -73,22 +79,37 @@ export class ForwardedError extends CustomErrorBase {
 }
 
 // @public
-export class InputError extends CustomErrorBase {}
+export class InputError extends CustomErrorBase {
+  // (undocumented)
+  name: string;
+}
 
 // @public
 export function isError(value: unknown): value is ErrorLike;
 
 // @public
-export class NotAllowedError extends CustomErrorBase {}
+export class NotAllowedError extends CustomErrorBase {
+  // (undocumented)
+  name: string;
+}
 
 // @public
-export class NotFoundError extends CustomErrorBase {}
+export class NotFoundError extends CustomErrorBase {
+  // (undocumented)
+  name: string;
+}
 
 // @public
-export class NotImplementedError extends CustomErrorBase {}
+export class NotImplementedError extends CustomErrorBase {
+  // (undocumented)
+  name: string;
+}
 
 // @public
-export class NotModifiedError extends CustomErrorBase {}
+export class NotModifiedError extends CustomErrorBase {
+  // (undocumented)
+  name: string;
+}
 
 // @public
 export function parseErrorResponseBody(

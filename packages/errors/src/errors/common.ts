@@ -34,10 +34,7 @@ import { CustomErrorBase } from './CustomErrorBase';
  * @public
  */
 export class InputError extends CustomErrorBase {
-  constructor(message?: string, cause?: Error | unknown) {
-    super(message, cause);
-    this.name = 'InputError';
-  }
+  name = 'InputError';
 }
 
 /**
@@ -46,10 +43,7 @@ export class InputError extends CustomErrorBase {
  * @public
  */
 export class AuthenticationError extends CustomErrorBase {
-  constructor(message?: string, cause?: Error | unknown) {
-    super(message, cause);
-    this.name = 'AuthenticationError';
-  }
+  name = 'AuthenticationError';
 }
 
 /**
@@ -58,10 +52,7 @@ export class AuthenticationError extends CustomErrorBase {
  * @public
  */
 export class NotAllowedError extends CustomErrorBase {
-  constructor(message?: string, cause?: Error | unknown) {
-    super(message, cause);
-    this.name = 'NotAllowedError';
-  }
+  name = 'NotAllowedError';
 }
 
 /**
@@ -73,10 +64,7 @@ export class NotAllowedError extends CustomErrorBase {
  * @public
  */
 export class NotFoundError extends CustomErrorBase {
-  constructor(message?: string, cause?: Error | unknown) {
-    super(message, cause);
-    this.name = 'NotFoundError';
-  }
+  name = 'NotFoundError';
 }
 
 /**
@@ -86,10 +74,7 @@ export class NotFoundError extends CustomErrorBase {
  * @public
  */
 export class ConflictError extends CustomErrorBase {
-  constructor(message?: string, cause?: Error | unknown) {
-    super(message, cause);
-    this.name = 'ConflictError';
-  }
+  name = 'ConflictError';
 }
 
 /**
@@ -98,10 +83,7 @@ export class ConflictError extends CustomErrorBase {
  * @public
  */
 export class NotModifiedError extends CustomErrorBase {
-  constructor(message?: string, cause?: Error | unknown) {
-    super(message, cause);
-    this.name = 'NotModifiedError';
-  }
+  name = 'NotModifiedError';
 }
 
 /**
@@ -110,10 +92,7 @@ export class NotModifiedError extends CustomErrorBase {
  * @public
  */
 export class NotImplementedError extends CustomErrorBase {
-  constructor(message?: string, cause?: Error | unknown) {
-    super(message, cause);
-    this.name = 'NotImplementedError';
-  }
+  name = 'NotImplementedError';
 }
 
 /**
