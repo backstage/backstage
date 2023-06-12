@@ -49,17 +49,23 @@ export class IncrementalCatalogBuilder {
 }
 
 // @public
+export type IncrementalEntityEventResult =
+  | {
+      type: 'ignored';
+    }
+  | {
+      type: 'delta';
+      added: DeferredEntity[];
+      removed: {
+        entityRef: string;
+      }[];
+    };
+
+// @public
 export interface IncrementalEntityProvider<TCursor, TContext> {
   around(burst: (context: TContext) => Promise<void>): Promise<void>;
   eventHandler?: {
-    onEvent: (params: EventParams) =>
-      | undefined
-      | {
-          added: DeferredEntity[];
-          removed: {
-            entityRef: string;
-          }[];
-        };
+    onEvent: (params: EventParams) => Promise<IncrementalEntityEventResult>;
     supportsEventTopics: () => string[];
   };
   getProviderName(): string;
