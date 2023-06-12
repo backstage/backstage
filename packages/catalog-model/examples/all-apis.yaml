@@ -8,6 +8,7 @@ spec:
     - ./apis/hello-world-api.yaml
     - ./apis/hello-world-trpc-api.yaml
     - ./apis/petstore-api.yaml
+    - ./apis/petstore-webhook-api.yaml
     - ./apis/spotify-api.yaml
     - ./apis/streetlights-api.yaml
     - ./apis/swapi-graphql.yaml
