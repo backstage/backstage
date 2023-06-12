@@ -319,7 +319,7 @@ export type CatalogConflictEventPayload = {
   /**
    * The new conflicting entity in raw, unvalidated form
    */
-  entity: Entity;
+  unprocessedEntity: Entity;
   /**
    * The new conflicting entity's ref
    */
