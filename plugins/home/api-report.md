@@ -44,7 +44,7 @@ export type ClockConfig = {
 export const ComponentAccordion: (props: {
   title: string;
   expanded?: boolean | undefined;
-  Content: () => JSX.Element;
+  Content: () => JSX.Element /** @public */;
   Actions?: (() => JSX.Element) | undefined;
   Settings?: (() => JSX.Element) | undefined;
   ContextProvider?: ((props: any) => JSX.Element) | undefined;
