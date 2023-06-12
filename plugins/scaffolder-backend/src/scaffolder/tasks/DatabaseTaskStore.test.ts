@@ -81,6 +81,71 @@ describe('DatabaseTaskStore', () => {
     expect(tasks[0].id).toBeDefined();
   });
 
+  it('should list filtered created tasks by createdAt', async () => {
+    const { store } = await createStore();
+
+    await store.createTask({
+      spec: {} as TaskSpec,
+      createdBy: 'me',
+    });
+
+    const now = new Date();
+    now.setMinutes(now.getMinutes() - 2);
+    const { tasks } = await store.list({ createdAt: now.getTime() });
+    expect(tasks.length).toBe(1);
+    expect(tasks[0].createdBy).toBe('me');
+    expect(tasks[0].status).toBe('open');
+    expect(tasks[0].id).toBeDefined();
+    expect(tasks[0].createdAt).toBeDefined();
+  });
+
+  it('should list filtered created tasks by lastHeartbeatAt', async () => {
+    const { store } = await createStore();
+
+    const { taskId } = await store.createTask({
+      spec: {} as TaskSpec,
+      createdBy: 'me',
+    });
+
+    await store.claimTask();
+    await store.heartbeatTask(taskId);
+
+    const now = new Date();
+    now.setMinutes(now.getMinutes() - 2);
+    const { tasks } = await store.list({ lastHeartbeatAt: now.getTime() });
+    expect(tasks.length).toBe(1);
+    expect(tasks[0].createdBy).toBe('me');
+    expect(tasks[0].status).toBe('processing');
+    expect(tasks[0].id).toBeDefined();
+    expect(tasks[0].lastHeartbeatAt).toBeDefined();
+  });
+
+  it('should list filtered created tasks by status', async () => {
+    const { store } = await createStore();
+
+    const { taskId } = await store.createTask({
+      spec: {} as TaskSpec,
+      createdBy: 'me',
+    });
+
+    await store.claimTask();
+    await store.heartbeatTask(taskId);
+
+    await store.createTask({
+      spec: {} as TaskSpec,
+      createdBy: 'me',
+    });
+
+    const now = new Date();
+    now.setMinutes(now.getMinutes() - 2);
+    const { tasks } = await store.list({ status: 'processing' });
+    expect(tasks.length).toBe(1);
+    expect(tasks[0].createdBy).toBe('me');
+    expect(tasks[0].status).toBe('processing');
+    expect(tasks[0].id).toBeDefined();
+    expect(tasks[0].createdAt).toBeDefined();
+  });
+
   it('should sent an event to start cancelling the task', async () => {
     const { store } = await createStore();
 

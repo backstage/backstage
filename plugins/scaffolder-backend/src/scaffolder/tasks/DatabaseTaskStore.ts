@@ -153,14 +153,14 @@ export class DatabaseTaskStore implements TaskStore {
       });
     }
     if (options.lastHeartbeatAt) {
-      queryBuilder.whereRaw('last_heartbeat_at > ?', [
-        new Date(options.lastHeartbeatAt).toISOString(),
-      ]);
+      queryBuilder.where(
+        'last_heartbeat_at',
+        '>',
+        new Date(options.lastHeartbeatAt),
+      );
     }
     if (options.createdAt) {
-      queryBuilder.whereRaw('created_at > ?', [
-        new Date(options.createdAt).toISOString(),
-      ]);
+      queryBuilder.where('created_at', '>', new Date(options.createdAt));
     }
     if (options.status) {
       queryBuilder.where({
