@@ -29,8 +29,22 @@ const createPullRequest = async (opts: {
   repo: string;
   title: string;
   description?: string;
-  toRef: object;
-  fromRef: object;
+  toRef: {
+    id: string;
+    displayId: string;
+    type: string;
+    latestCommit: string;
+    latestChangeset: string;
+    isDefault: boolean;
+  };
+  fromRef: {
+    id: string;
+    displayId: string;
+    type: string;
+    latestCommit: string;
+    latestChangeset: string;
+    isDefault: boolean;
+  };
   authorization: string;
   apiBaseUrl: string;
 }) => {
@@ -66,7 +80,9 @@ const createPullRequest = async (opts: {
 
   try {
     response = await fetch(
-      `${apiBaseUrl}/projects/${project}/repos/${repo}/pull-requests`,
+      `${apiBaseUrl}/projects/${encodeURIComponent(
+        project,
+      )}/repos/${encodeURIComponent(repo)}/pull-requests`,
       data,
     );
   } catch (e) {
@@ -104,7 +120,13 @@ const findBranches = async (opts: {
 
   try {
     response = await fetch(
-      `${apiBaseUrl}/projects/${project}/repos/${repo}/branches?boostMatches=true&filterText=${branchName}`,
+      `${apiBaseUrl}/projects/${encodeURIComponent(
+        project,
+      )}/repos/${encodeURIComponent(
+        repo,
+      )}/branches?boostMatches=true&filterText=${encodeURIComponent(
+        branchName,
+      )}`,
       options,
     );
   } catch (e) {
