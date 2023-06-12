@@ -37,7 +37,7 @@ import {
   wrapInTestApp,
 } from '@backstage/test-utils';
 import DashboardIcon from '@material-ui/icons/Dashboard';
-import { render } from '@testing-library/react';
+import { render, waitFor } from '@testing-library/react';
 import React from 'react';
 import { apiDocsConfigRef } from '../../config';
 import { DefaultApiExplorerPage } from './DefaultApiExplorerPage';
@@ -60,7 +60,9 @@ describe('DefaultApiExplorerPage', () => {
     getLocationByRef: () =>
       Promise.resolve({ id: 'id', type: 'url', target: 'url' }),
     getEntitiesByRefs: () => Promise.resolve({ items: [] }),
-    getEntityFacets: async () => ({ facets: { 'relations.ownedBy': [] } }),
+    getEntityFacets: async () => ({
+      facets: { 'relations.ownedBy': [] },
+    }),
   };
 
   const configApi: ConfigApi = new ConfigReader({
@@ -116,16 +118,18 @@ describe('DefaultApiExplorerPage', () => {
     );
     const columnHeaderLabels = columnHeader.map(c => c.textContent);
 
-    expect(columnHeaderLabels).toEqual([
-      'Name',
-      'System',
-      'Owner',
-      'Type',
-      'Lifecycle',
-      'Description',
-      'Tags',
-      'Actions',
-    ]);
+    await waitFor(() =>
+      expect(columnHeaderLabels).toEqual([
+        'Name',
+        'System',
+        'Owner',
+        'Type',
+        'Lifecycle',
+        'Description',
+        'Tags',
+        'Actions',
+      ]),
+    );
   });
 
   it('should render the custom column passed as prop', async () => {
@@ -143,7 +147,9 @@ describe('DefaultApiExplorerPage', () => {
     );
     const columnHeaderLabels = columnHeader.map(c => c.textContent);
 
-    expect(columnHeaderLabels).toEqual(['Foo', 'Bar', 'Baz', 'Actions']);
+    await waitFor(() =>
+      expect(columnHeaderLabels).toEqual(['Foo', 'Bar', 'Baz', 'Actions']),
+    );
   });
 
   it('should render the default actions of an item in the grid', async () => {
