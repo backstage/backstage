@@ -40,6 +40,8 @@ export interface Config {
             'X-Api-Key': string;
             /** @visibility secret */
             'x-api-key': string;
+            /** @visibility secret */
+            'PRIVATE-TOKEN': string;
             [key: string]: string;
           }>;
           /**
