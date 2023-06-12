@@ -14,11 +14,6 @@
  * limitations under the License.
  */
 
-import {
-  Entity,
-  parseEntityRef,
-  RELATION_MEMBER_OF,
-} from '@backstage/catalog-model';
 import { ConfigReader } from '@backstage/core-app-api';
 import { TableColumn, TableProps } from '@backstage/core-components';
 import {
@@ -60,25 +55,12 @@ describe('DefaultApiExplorerPage', () => {
             },
             spec: { type: 'openapi' },
           },
-        ] as Entity[],
+        ],
       }),
     getLocationByRef: () =>
       Promise.resolve({ id: 'id', type: 'url', target: 'url' }),
     getEntitiesByRefs: () => Promise.resolve({ items: [] }),
-    getEntityByRef: async entityRef => {
-      return {
-        apiVersion: 'backstage.io/v1alpha1',
-        kind: 'User',
-        metadata: { name: parseEntityRef(entityRef).name },
-        relations: [
-          {
-            type: RELATION_MEMBER_OF,
-            targetRef: 'group:default/tools',
-            target: { namespace: 'default', kind: 'group', name: 'tools' },
-          },
-        ],
-      };
-    },
+    getEntityFacets: async () => ({ facets: { 'relations.ownedBy': [] } }),
   };
 
   const configApi: ConfigApi = new ConfigReader({
