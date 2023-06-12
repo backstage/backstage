@@ -36,8 +36,8 @@ import React from 'react';
 import { rootDocsRouteRef } from '../../routes';
 import { DefaultTechDocsHome } from './DefaultTechDocsHome';
 
-const mockCatalogApi = {
-  getEntityByRef: () => Promise.resolve(),
+const mockCatalogApi: Partial<CatalogApi> = {
+  getEntityFacets: async () => ({ facets: { 'relations.ownedBy': [] } }),
   getEntitiesByRefs: () => Promise.resolve({ items: [] }),
   getEntities: async () => ({
     items: [
@@ -51,7 +51,7 @@ const mockCatalogApi = {
       },
     ],
   }),
-} as Partial<CatalogApi>;
+};
 
 describe('TechDocs Home', () => {
   const configApi: ConfigApi = new ConfigReader({
