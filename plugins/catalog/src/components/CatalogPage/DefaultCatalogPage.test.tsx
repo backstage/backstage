@@ -105,6 +105,7 @@ describe('DefaultCatalogPage', () => {
       }),
     getLocationByRef: () =>
       Promise.resolve({ id: 'id', type: 'url', target: 'url' }),
+    getEntityFacets: async () => ({ facets: { 'relations.ownedBy': [] } }),
     getEntityByRef: async entityRef => {
       return {
         apiVersion: 'backstage.io/v1alpha1',
