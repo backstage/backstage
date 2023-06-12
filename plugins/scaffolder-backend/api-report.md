@@ -503,6 +503,22 @@ export function createPublishBitbucketServerAction(options: {
 >;
 
 // @public
+export function createPublishBitbucketServerPullRequestAction(options: {
+  integrations: ScmIntegrationRegistry;
+  config: Config;
+}): TemplateAction_2<
+  {
+    repoUrl: string;
+    title: string;
+    description?: string | undefined;
+    targetBranch?: string | undefined;
+    sourceBranch: string;
+    token?: string | undefined;
+  },
+  JsonObject
+>;
+
+// @public
 export function createPublishGerritAction(options: {
   integrations: ScmIntegrationRegistry;
   config: Config;
