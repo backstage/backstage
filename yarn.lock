@@ -28380,11 +28380,11 @@ __metadata:
   linkType: hard
 
 "jenkins@npm:^1.0.0":
-  version: 1.0.1
-  resolution: "jenkins@npm:1.0.1"
+  version: 1.0.2
+  resolution: "jenkins@npm:1.0.2"
   dependencies:
     papi: ^1.1.0
-  checksum: b57eab2e9bed834849bc5acf32cc3b1d5c1ed78c568a17db94f3081a72bb279a6ed889a2837688b380de0d8e6a78a537c0c3f90cdc132a721adc5892a8090d12
+  checksum: b400698ccbfee44ce5d69fdd264d8c0f24c8b9fbfa89e882b77e224ef22816d21af7c1abf7297a8922044e852c8cdfdf9850e138d938383d2c3b734d4dc76ef9
   languageName: node
   linkType: hard
 
