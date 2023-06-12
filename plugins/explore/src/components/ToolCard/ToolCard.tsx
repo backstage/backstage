@@ -74,7 +74,7 @@ export const ToolCard = ({ card, objectFit }: Props) => {
         })}
       />
       <CardContent>
-        <Typography paragraph variant="h5">
+        <Typography variant="h5">
           {title}{' '}
           {lifecycle && lifecycle.toLocaleLowerCase('en-US') !== 'ga' && (
             <Chip
