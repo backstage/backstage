@@ -9,6 +9,7 @@
 import { AppConfig } from '@backstage/config';
 import { AwsCredentialsManager } from '@backstage/integration-aws-node';
 import { AwsS3Integration } from '@backstage/integration';
+import { AzureDevOpsCredentialsProvider } from '@backstage/integration';
 import { AzureIntegration } from '@backstage/integration';
 import { BackendFeature } from '@backstage/backend-plugin-api';
 import { BitbucketCloudIntegration } from '@backstage/integration';
@@ -94,6 +95,7 @@ export class AzureUrlReader implements UrlReader {
     integration: AzureIntegration,
     deps: {
       treeResponseFactory: ReadTreeResponseFactory;
+      credentialsProvider: AzureDevOpsCredentialsProvider;
     },
   );
   // (undocumented)
