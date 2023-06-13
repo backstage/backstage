@@ -1,8 +1,8 @@
 apiVersion: backstage.io/v1alpha1
 kind: API
 metadata:
-  name: petstore
-  description: The petstore API
+  name: petstore-webhook
+  description: The petstore webhook API
   tags:
     - store
     - rest
@@ -10,7 +10,7 @@ metadata:
     - url: https://github.com/swagger-api/swagger-petstore
       title: GitHub Repo
       icon: github
-    - url: https://github.com/swagger-api/swagger-petstore/blob/master/src/main/resources/openapi.yaml
+    - url: https://github.com/OAI/OpenAPI-Specification/blob/main/examples/v3.1/webhook-example.yaml
       title: API Spec
       icon: code
 spec:
@@ -18,4 +18,4 @@ spec:
   lifecycle: experimental
   owner: team-c
   definition:
-    $text: ./petstore.oas.yaml
+    $text: ./petstore-webhook.oas.yaml
