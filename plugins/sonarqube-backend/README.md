@@ -80,7 +80,7 @@ Allows configuration of either a single or multiple global Sonarqube instances a
 ##### Config
 
 ```yaml
-sonarqube:
+sonarQube:
   baseUrl: https://sonarqube.example.com
   apiKey: 123456789abcdef0123456789abcedf012
 ```
@@ -103,7 +103,7 @@ The following will look for findings at `https://special-project-sonarqube.examp
 ##### Config
 
 ```yaml
-sonarqube:
+sonarQube:
   instances:
     - name: default
       baseUrl: https://default-sonarqube.example.com
@@ -124,12 +124,12 @@ metadata:
     sonarqube.org/project-key: specialProject/YOUR_PROJECT_KEY
 ```
 
-If the `specialProject/` part is omitted (or replaced with `default/`), the Sonarqube instance of name `default` will be used.
+If the `specialProject/` part is omitted (or replaced with `default/`), the SonarQube instance of name `default` will be used.
 
 The following config is an equivalent (but less clear) version of the above:
 
 ```yaml
-sonarqube:
+sonarQube:
   baseUrl: https://default-sonarqube.example.com
   apiKey: 123456789abcdef0123456789abcedf012
   instances:
