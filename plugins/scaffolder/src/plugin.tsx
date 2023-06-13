@@ -64,6 +64,10 @@ import {
   actionsRouteRef,
   editRouteRef,
 } from './routes';
+import {
+  MyGroupsPicker,
+  MyGroupsPickerSchema,
+} from './components/fields/MyGroupsPicker/MyGroupsPicker';
 
 /**
  * The main plugin export for the scaffolder.
@@ -155,6 +159,19 @@ export const OwnerPickerFieldExtension = scaffolderPlugin.provide(
     component: OwnerPicker,
     name: 'OwnerPicker',
     schema: OwnerPickerSchema,
+  }),
+);
+
+/**
+ * A field extension for picking groups a user belongs to out of the catalog.
+ *
+ * @public
+ */
+export const MyGroupsPickerFieldExtension = scaffolderPlugin.provide(
+  createScaffolderFieldExtension({
+    component: MyGroupsPicker,
+    name: 'MyGroupsPicker',
+    schema: MyGroupsPickerSchema,
   }),
 );
 
