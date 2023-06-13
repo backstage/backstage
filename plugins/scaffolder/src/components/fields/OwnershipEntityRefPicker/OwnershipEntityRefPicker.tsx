@@ -14,8 +14,12 @@
  * limitations under the License.
  */
 
-import React, { useEffect, useState } from 'react';
-import { identityApiRef, useApi } from '@backstage/core-plugin-api';
+import React, { useState } from 'react';
+import {
+  errorApiRef,
+  identityApiRef,
+  useApi,
+} from '@backstage/core-plugin-api';
 import { TextField, FormControl } from '@material-ui/core';
 import {
   OwnershipEntityRefPickerProps,
@@ -24,6 +28,8 @@ import {
 import { Autocomplete } from '@material-ui/lab';
 import { catalogApiRef } from '@backstage/plugin-catalog-react';
 import { NotFoundError } from '@backstage/errors';
+import useAsync from 'react-use/lib/useAsync';
+import { Entity, stringifyEntityRef } from '@backstage/catalog-model';
 
 export { OwnershipEntityRefPickerSchema };
 
@@ -34,34 +40,52 @@ export const OwnershipEntityRefPicker = (
     schema: { title, description },
     required,
     rawErrors,
+    onChange,
   } = props;
 
   const identityApi = useApi(identityApiRef);
   const catalogApi = useApi(catalogApiRef);
-  const [groups, setGroups] = useState<string[]>([]);
-  const [selectedGroup, setSelectedGroup] = useState<string | null>(null);
+  const errorApi = useApi(errorApiRef);
+  const [groups, setGroups] = useState<
+    {
+      label: string;
+      ref: string;
+    }[]
+  >([]);
+  const [selectedGroup, setSelectedGroup] = useState<null | {
+    label: string;
+    ref: string;
+  }>(null);
 
-  useEffect(() => {
-    const fetchUserGroups = async () => {
-      const identity = await identityApi.getBackstageIdentity();
-      const userIdentity = identity.ownershipEntityRefs;
+  useAsync(async () => {
+    const { ownershipEntityRefs } = await identityApi.getBackstageIdentity();
 
-      if (!userIdentity) {
-        throw new NotFoundError('No ownership entity refs found');
-      }
+    if (!ownershipEntityRefs || !ownershipEntityRefs.length) {
+      errorApi.post(new NotFoundError('No ownership entity refs found'));
+      return;
+    }
 
-      const userOwnedGroups = await catalogApi.getEntities({
-        filter: {
-          kind: ['Group'],
-          'relations.hasMember': userIdentity,
-        },
-      });
-      const groupValues = userOwnedGroups.items.map(item => item.metadata.name);
-      setGroups(groupValues);
-    };
+    const { items } = await catalogApi.getEntitiesByRefs({
+      entityRefs: ownershipEntityRefs,
+    });
 
-    fetchUserGroups();
-  }, [identityApi, catalogApi]);
+    const groupValues = items
+      .filter((e): e is Entity => Boolean(e))
+      .map(item => ({
+        label: item.metadata.title ?? item.metadata.name,
+        ref: stringifyEntityRef(item),
+      }));
+
+    setGroups(groupValues);
+  });
+
+  const updateChange = (
+    _: React.ChangeEvent<{}>,
+    value: { label: string; ref: string } | null,
+  ) => {
+    setSelectedGroup(value);
+    onChange(value?.ref ?? '');
+  };
 
   return (
     <FormControl
@@ -73,8 +97,8 @@ export const OwnershipEntityRefPicker = (
         id="OwnershipEntityRefPicker-dropdown"
         options={groups || []}
         value={selectedGroup}
-        onChange={(_, value) => setSelectedGroup(value || '')}
-        getOptionLabel={group => group}
+        onChange={updateChange}
+        getOptionLabel={group => group.label}
         renderInput={params => (
           <TextField
             {...params}
