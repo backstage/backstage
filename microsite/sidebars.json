@@ -185,7 +185,9 @@
       {
         "type": "category",
         "label": "Datadog",
-        "items": ["integrations/datadog-rum/installation"]
+        "items": [
+          "integrations/datadog-rum/installation"
+        ]
       },
       {
         "type": "category",
@@ -217,17 +219,23 @@
       {
         "type": "category",
         "label": "Gitea",
-        "items": ["integrations/gitea/locations"]
+        "items": [
+          "integrations/gitea/locations"
+        ]
       },
       {
         "type": "category",
         "label": "Google GCS",
-        "items": ["integrations/google-cloud-storage/locations"]
+        "items": [
+          "integrations/google-cloud-storage/locations"
+        ]
       },
       {
         "type": "category",
         "label": "LDAP",
-        "items": ["integrations/ldap/org"]
+        "items": [
+          "integrations/ldap/org"
+        ]
       }
     ],
     "Plugins": [
@@ -255,7 +263,9 @@
       {
         "type": "category",
         "label": "Testing",
-        "items": ["plugins/testing"]
+        "items": [
+          "plugins/testing"
+        ]
       },
       {
         "type": "category",
@@ -328,6 +338,7 @@
       "deployment/docker",
       "deployment/k8s",
       "deployment/heroku",
+      "deployment/koyeb",
       {
         "type": "category",
         "label": "Using Backstage Deploy (alpha)",
@@ -344,12 +355,16 @@
       {
         "type": "category",
         "label": "Guides",
-        "items": ["api/utility-apis"]
+        "items": [
+          "api/utility-apis"
+        ]
       },
       {
         "type": "category",
         "label": "API Reference",
-        "items": ["reference/index"]
+        "items": [
+          "reference/index"
+        ]
       },
       "api/deprecations"
     ],
@@ -380,7 +395,9 @@
       "architecture-decisions/adrs-adr012",
       "architecture-decisions/adrs-adr013"
     ],
-    "FAQ": ["FAQ"],
+    "FAQ": [
+      "FAQ"
+    ],
     "Experimental Backend System": [
       "backend-system/index",
       {
@@ -415,9 +432,13 @@
       {
         "type": "category",
         "label": "Core Services",
-        "items": ["backend-system/core-services/index"]
+        "items": [
+          "backend-system/core-services/index"
+        ]
       }
     ],
-    "Accessibility": ["accessibility/index"]
+    "Accessibility": [
+      "accessibility/index"
+    ]
   }
 }

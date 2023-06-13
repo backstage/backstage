@@ -175,6 +175,7 @@ nav:
       - Docker: 'deployment/docker.md'
       - Kubernetes: 'deployment/k8s.md'
       - Heroku: 'deployment/heroku.md'
+      - Koyeb: 'deployment/koyeb.md'
   - Designing for Backstage:
       - Design: 'dls/design.md'
       - Component Design Guidelines: 'dls/component-design-guidelines.md'

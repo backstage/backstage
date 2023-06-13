@@ -14,7 +14,7 @@ Before you begin, make sure you have a [Koyeb account](https://app.koyeb.com/) t
 First, install the
 [Koyeb CLI](https://www.koyeb.com/docs/quickstart/koyeb-cli) and follow the instructions in the [quickstart guide](https://www.koyeb.com/docs/quickstart/koyeb-cli) to login.
 
-Then, configure your `app-config.yaml` with your `baseURL`:
+Then, configure your `app-config.yaml` with your `baseUrl`:
 
 ```yaml
 app:
@@ -24,8 +24,7 @@ app:
 backend:
   baseUrl: https://<your-app>.koyeb.app
   listen:
-    port:
-      $env: PORT
+    port: ${PORT]
       # The $PORT environment variable is a feature of Koyeb
       # https://www.koyeb.com/docs/apps/services
 ```
