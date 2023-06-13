@@ -1,5 +1,18 @@
 # @backstage/core-components
 
+## 0.13.2-next.3
+
+### Patch Changes
+
+- 78cbb8ef8aea: Enhance the sidebar item accessibility by using appropriate header semantics.
+- e33beb1f2a8e: Make the documentation pages printable (also handy for exporting to PDF)
+- Updated dependencies
+  - @backstage/config@1.0.7
+  - @backstage/core-plugin-api@1.5.2-next.0
+  - @backstage/errors@1.2.0-next.0
+  - @backstage/theme@0.4.0-next.1
+  - @backstage/version-bridge@1.0.4
+
 ## 0.13.2-next.2
 
 ### Patch Changes

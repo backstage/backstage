@@ -1,5 +1,15 @@
 # @backstage/catalog-model
 
+## 1.4.0-next.1
+
+### Patch Changes
+
+- af748a148d52: Add OpenAPI Specification (OAS) v3.1.0 examples.
+- Updated dependencies
+  - @backstage/config@1.0.7
+  - @backstage/errors@1.2.0-next.0
+  - @backstage/types@1.0.2
+
 ## 1.4.0-next.0
 
 ### Minor Changes
