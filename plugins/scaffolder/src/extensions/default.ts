@@ -43,7 +43,6 @@ import {
   MyGroupsPicker,
   MyGroupsPickerSchema,
 } from '../components/fields/MyGroupsPicker/MyGroupsPicker';
-import { MyGroupsPickerFieldSchema } from '../components';
 
 export const DEFAULT_SCAFFOLDER_FIELD_EXTENSIONS = [
   {
@@ -81,6 +80,6 @@ export const DEFAULT_SCAFFOLDER_FIELD_EXTENSIONS = [
   {
     component: MyGroupsPicker,
     name: 'MyGroupsPicker',
-    schema: MyGroupsPickerFieldSchema,
+    schema: MyGroupsPickerSchema,
   },
 ];

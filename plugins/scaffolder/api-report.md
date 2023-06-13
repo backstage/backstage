@@ -208,6 +208,31 @@ export function makeFieldSchemaFromZod<
 >;
 
 // @public
+export const MyGroupsPickerFieldExtension: FieldExtensionComponent_2<
+  string,
+  {
+    title?: string | undefined;
+    description?: string | undefined;
+  }
+>;
+
+// @public
+export const MyGroupsPickerFieldSchema: FieldSchema<
+  string,
+  {
+    title?: string | undefined;
+    description?: string | undefined;
+  }
+>;
+
+// @public
+export const MyGroupsPickerSchema: CustomFieldExtensionSchema_2;
+
+// @public
+export type MyGroupsPickerUiOptions =
+  typeof MyGroupsPickerFieldSchema.uiOptionsType;
+
+// @public
 export const OwnedEntityPickerFieldExtension: FieldExtensionComponent_2<
   string,
   {
@@ -291,31 +316,6 @@ export const OwnerPickerFieldSchema: FieldSchema<
 
 // @public
 export type OwnerPickerUiOptions = typeof OwnerPickerFieldSchema.uiOptionsType;
-
-// @public
-export const OwnershipEntityRefPickerFieldExtension: FieldExtensionComponent_2<
-  string,
-  {
-    title?: string | undefined;
-    description?: string | undefined;
-  }
->;
-
-// @public
-export const OwnershipEntityRefPickerFieldSchema: FieldSchema<
-  string,
-  {
-    title?: string | undefined;
-    description?: string | undefined;
-  }
->;
-
-// @public
-export const OwnershipEntityRefPickerSchema: CustomFieldExtensionSchema_2;
-
-// @public
-export type OwnershipEntityRefPickerUiOptions =
-  typeof OwnershipEntityRefPickerFieldSchema.uiOptionsType;
 
 // @public
 export const repoPickerValidation: (
