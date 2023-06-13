@@ -106,6 +106,7 @@
     "@types/react-dom": "*",
     "@types/zen-observable": "^0.8.0",
     "cross-env": "^7.0.0",
+    "cross-fetch": "^3.1.6",
     "cypress": "^10.0.0",
     "eslint-plugin-cypress": "^2.10.3",
     "start-server-and-test": "^1.10.11"
