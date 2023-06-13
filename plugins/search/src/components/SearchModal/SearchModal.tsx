@@ -13,14 +13,13 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import { Link, useContent } from '@backstage/core-components';
+import { useContent } from '@backstage/core-components';
 import { useRouteRef } from '@backstage/core-plugin-api';
 import {
   SearchBar,
   SearchContextProvider,
   SearchResult,
   SearchResultPager,
-  useSearch,
 } from '@backstage/plugin-search-react';
 import {
   Dialog,
@@ -37,7 +36,7 @@ import IconButton from '@material-ui/core/IconButton';
 import { makeStyles } from '@material-ui/core/styles';
 import ArrowForwardIcon from '@material-ui/icons/ArrowForward';
 import CloseIcon from '@material-ui/icons/Close';
-import React, { KeyboardEvent, useCallback, useEffect, useRef } from 'react';
+import React, { useCallback, useEffect, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
 
 import { rootRouteRef } from '../../plugin';
@@ -92,6 +91,11 @@ const useStyles = makeStyles(theme => ({
   input: {
     flex: 1,
   },
+  button: {
+    '&:hover': {
+      background: 'none',
+    },
+  },
   // Reduces default height of the modal, keeping a gap of 128px between the top and bottom of the page.
   paperFullWidth: { height: 'calc(100% - 128px)' },
   dialogActionsContainer: { padding: theme.spacing(1, 3) },
@@ -104,9 +108,8 @@ export const Modal = ({ toggleModal }: SearchModalChildrenProps) => {
   const { transitions } = useTheme();
   const { focusContent } = useContent();
 
-  const { term } = useSearch();
+  const searchRootRoute = useRouteRef(rootRouteRef)();
   const searchBarRef = useRef<HTMLInputElement | null>(null);
-  const searchPagePath = `${useRouteRef(rootRouteRef)()}?query=${term}`;
 
   useEffect(() => {
     searchBarRef?.current?.focus();
@@ -116,15 +119,13 @@ export const Modal = ({ toggleModal }: SearchModalChildrenProps) => {
     setTimeout(focusContent, transitions.duration.leavingScreen);
   }, [focusContent, transitions]);
 
-  const handleSearchBarKeyDown = useCallback(
-    (e: KeyboardEvent<HTMLDivElement | HTMLTextAreaElement>) => {
-      if (e.key === 'Enter') {
-        navigate(searchPagePath);
-        handleSearchResultClick();
-      }
-    },
-    [navigate, handleSearchResultClick, searchPagePath],
-  );
+  // This handler is called when "enter" is pressed
+  const handleSearchBarSubmit = useCallback(() => {
+    // Using ref to get the current field value without waiting for a query debounce
+    const query = searchBarRef.current?.value ?? '';
+    navigate(`${searchRootRoute}?query=${query}`);
+    handleSearchResultClick();
+  }, [navigate, handleSearchResultClick, searchRootRoute]);
 
   return (
     <>
@@ -133,7 +134,7 @@ export const Modal = ({ toggleModal }: SearchModalChildrenProps) => {
           <SearchBar
             className={classes.input}
             inputProps={{ ref: searchBarRef }}
-            onKeyDown={handleSearchBarKeyDown}
+            onSubmit={handleSearchBarSubmit}
           />
 
           <IconButton aria-label="close" onClick={toggleModal}>
@@ -150,11 +151,11 @@ export const Modal = ({ toggleModal }: SearchModalChildrenProps) => {
         >
           <Grid item>
             <Button
-              to={searchPagePath}
-              onClick={handleSearchResultClick}
-              endIcon={<ArrowForwardIcon />}
-              component={Link}
+              className={classes.button}
               color="primary"
+              endIcon={<ArrowForwardIcon />}
+              onClick={handleSearchResultClick}
+              disableRipple
             >
               View Full Results
             </Button>
