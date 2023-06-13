@@ -48,27 +48,30 @@ export function useFacetsEntities({ enabled }: { enabled: boolean }) {
       return [];
     }
     const facet = 'relations.ownedBy';
-    return catalogApi.getEntityFacets({ facets: [facet] }).then(response =>
-      response.facets[facet]
-        .map(e => e.value)
-        .map<Entity>(ref => {
-          const { kind, name, namespace } = parseEntityRef(ref);
-          return {
-            apiVersion: 'backstage.io/v1beta1',
-            kind,
-            metadata: { name, namespace },
-          };
-        })
-        .sort(
-          (a, b) =>
-            (a.metadata.namespace || '').localeCompare(
-              b.metadata.namespace || '',
-              'en-US',
-            ) ||
-            a.metadata.name.localeCompare(b.metadata.name, 'en-US') ||
-            a.kind.localeCompare(b.kind, 'en-US'),
-        ),
-    );
+    return catalogApi
+      .getEntityFacets({ facets: [facet] })
+      .then(response =>
+        response.facets[facet]
+          .map(e => e.value)
+          .map<Entity>(ref => {
+            const { kind, name, namespace } = parseEntityRef(ref);
+            return {
+              apiVersion: 'backstage.io/v1beta1',
+              kind,
+              metadata: { name, namespace },
+            };
+          })
+          .sort(
+            (a, b) =>
+              (a.metadata.namespace || '').localeCompare(
+                b.metadata.namespace || '',
+                'en-US',
+              ) ||
+              a.metadata.name.localeCompare(b.metadata.name, 'en-US') ||
+              a.kind.localeCompare(b.kind, 'en-US'),
+          ),
+      )
+      .catch(() => []);
   });
 
   return useAsyncFn<
