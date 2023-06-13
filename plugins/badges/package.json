@@ -51,8 +51,7 @@
     "@backstage/dev-utils": "workspace:^",
     "@backstage/test-utils": "workspace:^",
     "@testing-library/jest-dom": "^5.16.5",
-    "@types/node": "^16.11.26",
-    "cross-fetch": "^3.1.5"
+    "@types/node": "^16.11.26"
   },
   "files": [
     "dist"

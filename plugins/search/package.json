@@ -66,7 +66,6 @@
     "@testing-library/react-hooks": "^8.0.0",
     "@testing-library/user-event": "^14.0.0",
     "@types/node": "^16.11.26",
-    "cross-fetch": "^3.1.5",
     "history": "^5.0.0",
     "msw": "^1.0.0"
   },

@@ -41,8 +41,7 @@
     "@backstage/cli": "workspace:^",
     "@backstage/dev-utils": "workspace:^",
     "@testing-library/jest-dom": "^5.10.1",
-    "@types/react": "^16.13.1 || ^17.0.0",
-    "cross-fetch": "^3.1.5"
+    "@types/react": "^16.13.1 || ^17.0.0"
   },
   "files": [
     "dist"

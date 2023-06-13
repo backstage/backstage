@@ -108,7 +108,6 @@
     "@types/humanize-duration": "^3.18.1",
     "@types/json-schema": "^7.0.9",
     "@types/node": "^16.11.26",
-    "cross-fetch": "^3.1.5",
     "msw": "^1.0.0"
   },
   "files": [
