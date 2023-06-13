@@ -15,12 +15,7 @@
  */
 
 import { CatalogApi } from '@backstage/catalog-client';
-import {
-  Entity,
-  parseEntityRef,
-  RELATION_MEMBER_OF,
-  RELATION_OWNED_BY,
-} from '@backstage/catalog-model';
+import { RELATION_OWNED_BY } from '@backstage/catalog-model';
 import { TableColumn, TableProps } from '@backstage/core-components';
 import {
   IdentityApi,
@@ -67,6 +62,7 @@ describe('DefaultCatalogPage', () => {
             kind: 'Component',
             metadata: {
               name: 'Entity1',
+              namespace: 'default',
             },
             spec: {
               owner: 'tools',
@@ -101,31 +97,18 @@ describe('DefaultCatalogPage', () => {
               },
             ],
           },
-        ] as Entity[],
+        ],
       }),
     getLocationByRef: () =>
       Promise.resolve({ id: 'id', type: 'url', target: 'url' }),
-    getEntityByRef: async entityRef => {
-      return {
-        apiVersion: 'backstage.io/v1alpha1',
-        kind: 'User',
-        metadata: { name: parseEntityRef(entityRef).name },
-        relations: [
-          {
-            type: RELATION_MEMBER_OF,
-            targetRef: 'group:default/tools',
-            target: { namespace: 'default', kind: 'Group', name: 'tools' },
-          },
+    getEntityFacets: async () => ({
+      facets: {
+        'relations.ownedBy': [
+          { count: 1, value: 'group:default/not-tools' },
+          { count: 1, value: 'group:default/tools' },
         ],
-      };
-    },
-    /**
-     * For the purposes of this test case, use existing functionality. The picker
-     *  isn't being tested, just needs this method to render correctly.
-     */
-    getEntitiesByRefs: async refs => {
-      return { items: refs.entityRefs.map(() => undefined) };
-    },
+      },
+    }),
   };
   const testProfile: Partial<ProfileInfo> = {
     displayName: 'Display Name',

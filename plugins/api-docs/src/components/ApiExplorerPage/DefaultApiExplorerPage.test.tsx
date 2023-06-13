@@ -14,11 +14,6 @@
  * limitations under the License.
  */
 
-import {
-  Entity,
-  parseEntityRef,
-  RELATION_MEMBER_OF,
-} from '@backstage/catalog-model';
 import { ConfigReader } from '@backstage/core-app-api';
 import { TableColumn, TableProps } from '@backstage/core-components';
 import {
@@ -42,7 +37,7 @@ import {
   wrapInTestApp,
 } from '@backstage/test-utils';
 import DashboardIcon from '@material-ui/icons/Dashboard';
-import { render } from '@testing-library/react';
+import { render, waitFor } from '@testing-library/react';
 import React from 'react';
 import { apiDocsConfigRef } from '../../config';
 import { DefaultApiExplorerPage } from './DefaultApiExplorerPage';
@@ -60,25 +55,14 @@ describe('DefaultApiExplorerPage', () => {
             },
             spec: { type: 'openapi' },
           },
-        ] as Entity[],
+        ],
       }),
     getLocationByRef: () =>
       Promise.resolve({ id: 'id', type: 'url', target: 'url' }),
     getEntitiesByRefs: () => Promise.resolve({ items: [] }),
-    getEntityByRef: async entityRef => {
-      return {
-        apiVersion: 'backstage.io/v1alpha1',
-        kind: 'User',
-        metadata: { name: parseEntityRef(entityRef).name },
-        relations: [
-          {
-            type: RELATION_MEMBER_OF,
-            targetRef: 'group:default/tools',
-            target: { namespace: 'default', kind: 'group', name: 'tools' },
-          },
-        ],
-      };
-    },
+    getEntityFacets: async () => ({
+      facets: { 'relations.ownedBy': [] },
+    }),
   };
 
   const configApi: ConfigApi = new ConfigReader({
@@ -134,16 +118,18 @@ describe('DefaultApiExplorerPage', () => {
     );
     const columnHeaderLabels = columnHeader.map(c => c.textContent);
 
-    expect(columnHeaderLabels).toEqual([
-      'Name',
-      'System',
-      'Owner',
-      'Type',
-      'Lifecycle',
-      'Description',
-      'Tags',
-      'Actions',
-    ]);
+    await waitFor(() =>
+      expect(columnHeaderLabels).toEqual([
+        'Name',
+        'System',
+        'Owner',
+        'Type',
+        'Lifecycle',
+        'Description',
+        'Tags',
+        'Actions',
+      ]),
+    );
   });
 
   it('should render the custom column passed as prop', async () => {
@@ -161,7 +147,9 @@ describe('DefaultApiExplorerPage', () => {
     );
     const columnHeaderLabels = columnHeader.map(c => c.textContent);
 
-    expect(columnHeaderLabels).toEqual(['Foo', 'Bar', 'Baz', 'Actions']);
+    await waitFor(() =>
+      expect(columnHeaderLabels).toEqual(['Foo', 'Bar', 'Baz', 'Actions']),
+    );
   });
 
   it('should render the default actions of an item in the grid', async () => {
