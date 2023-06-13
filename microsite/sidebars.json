@@ -284,6 +284,8 @@
           "auth/microsoft/provider",
           "auth/microsoft/easy-auth",
           "auth/bitbucket/provider",
+          "auth/bitbucketServer/provider",
+          "auth/cloudflare/provider",
           "auth/github/provider",
           "auth/gitlab/provider",
           "auth/google/provider",
