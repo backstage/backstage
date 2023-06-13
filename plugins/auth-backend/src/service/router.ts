@@ -37,6 +37,7 @@ import passport from 'passport';
 import { Minimatch } from 'minimatch';
 import { CatalogAuthResolverContext } from '../lib/resolvers';
 import { AuthDatabase } from '../database/AuthDatabase';
+import { BACKSTAGE_SESSION_EXPIRATION } from '../lib/session';
 
 /** @public */
 export type ProviderFactories = { [s: string]: AuthProviderFactory };
@@ -77,7 +78,7 @@ export async function createRouter(
     logger,
     database: authDb,
   });
-  const keyDurationSeconds = 3600;
+  const keyDurationSeconds = BACKSTAGE_SESSION_EXPIRATION;
 
   const tokenIssuer = new TokenFactory({
     issuer: authUrl,

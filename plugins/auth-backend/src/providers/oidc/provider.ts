@@ -48,6 +48,7 @@ import {
   commonByEmailLocalPartResolver,
   commonByEmailResolver,
 } from '../resolvers';
+import { BACKSTAGE_SESSION_EXPIRATION } from '../../lib/session';
 
 type PrivateInfo = {
   refreshToken?: string;
@@ -179,17 +180,15 @@ export class OidcAuthProvider implements OAuthHandlers {
   // Then populate the profile with it
   private async handleResult(result: OidcAuthResult): Promise<OAuthResponse> {
     const { profile } = await this.authHandler(result, this.resolverContext);
-    const response: OAuthResponse = {
-      providerInfo: {
-        idToken: result.tokenset.id_token,
-        accessToken: result.tokenset.access_token!,
-        scope: result.tokenset.scope!,
-        expiresInSeconds: result.tokenset.expires_in,
-      },
-      profile,
-    };
+
+    const expiresInSeconds =
+      result.tokenset.expires_in === undefined
+        ? BACKSTAGE_SESSION_EXPIRATION
+        : Math.min(result.tokenset.expires_in, BACKSTAGE_SESSION_EXPIRATION);
+
+    let backstageIdentity = undefined;
     if (this.signInResolver) {
-      response.backstageIdentity = await this.signInResolver(
+      backstageIdentity = await this.signInResolver(
         {
           result,
           profile,
@@ -198,7 +197,16 @@ export class OidcAuthProvider implements OAuthHandlers {
       );
     }
 
-    return response;
+    return {
+      backstageIdentity,
+      providerInfo: {
+        idToken: result.tokenset.id_token,
+        accessToken: result.tokenset.access_token!,
+        scope: result.tokenset.scope!,
+        expiresInSeconds,
+      },
+      profile,
+    };
   }
 }
 

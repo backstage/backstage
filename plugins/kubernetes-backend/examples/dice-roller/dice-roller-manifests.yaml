@@ -36,6 +36,42 @@ spec:
 apiVersion: apps/v1
 kind: Deployment
 metadata:
+  name: dice-roller-incorrect-probe
+  labels:
+    'backstage.io/kubernetes-id': dice-roller
+spec:
+  selector:
+    matchLabels:
+      app: dice-roller-incorrect-probe
+  replicas: 2
+  template:
+    metadata:
+      labels:
+        app: dice-roller-incorrect-probe
+        'backstage.io/kubernetes-id': dice-roller
+    spec:
+      containers:
+        - name: nginx
+          image: nginx:1.14.2
+          resources:
+            requests:
+              memory: '64Mi'
+              cpu: '50m'
+            limits:
+              memory: '128Mi'
+              cpu: '50m'
+          readinessProbe:
+            tcpSocket:
+              port: 8080
+            initialDelaySeconds: 5
+            periodSeconds: 10
+          ports:
+            - containerPort: 80
+
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
   name: dice-roller-canary
   labels:
     'backstage.io/kubernetes-id': dice-roller

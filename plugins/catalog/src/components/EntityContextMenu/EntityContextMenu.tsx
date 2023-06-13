@@ -142,7 +142,7 @@ export function EntityContextMenu(props: EntityContextMenuProps) {
         transformOrigin={{ vertical: 'top', horizontal: 'right' }}
         aria-labelledby="long-menu"
       >
-        <MenuList>
+        <MenuList autoFocusItem={Boolean(anchorEl)}>
           {extraItems}
           <UnregisterEntity
             unregisterEntityOptions={UNSTABLE_contextMenuOptions}

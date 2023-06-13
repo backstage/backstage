@@ -6,6 +6,7 @@
 /// <reference types="react" />
 
 import { ApiRef } from '@backstage/core-plugin-api';
+import { AsyncState } from 'react-use/lib/useAsyncFn';
 import { BackstagePlugin } from '@backstage/core-plugin-api';
 import { ClientPodStatus } from '@backstage/plugin-kubernetes-common';
 import { ClusterAttributes } from '@backstage/plugin-kubernetes-common';
@@ -14,6 +15,9 @@ import { CustomObjectsByEntityRequest } from '@backstage/plugin-kubernetes-commo
 import { CustomResourceMatcher } from '@backstage/plugin-kubernetes-common';
 import { DiscoveryApi } from '@backstage/core-plugin-api';
 import { Entity } from '@backstage/catalog-model';
+import { Event as Event_2 } from 'kubernetes-models/v1';
+import { IContainer } from 'kubernetes-models/v1';
+import { IContainerStatus } from 'kubernetes-models/v1';
 import { IdentityApi } from '@backstage/core-plugin-api';
 import { IObjectMeta } from '@kubernetes-models/apimachinery/apis/meta/v1/ObjectMeta';
 import type { JsonObject } from '@backstage/types';
@@ -21,8 +25,8 @@ import { KubernetesRequestBody } from '@backstage/plugin-kubernetes-common';
 import { OAuthApi } from '@backstage/core-plugin-api';
 import { ObjectsByEntityResponse } from '@backstage/plugin-kubernetes-common';
 import { OpenIdConnectApi } from '@backstage/core-plugin-api';
-import { Pod } from 'kubernetes-models/v1';
-import { Pod as Pod_2 } from 'kubernetes-models/v1/Pod';
+import { Pod } from 'kubernetes-models/v1/Pod';
+import { Pod as Pod_2 } from 'kubernetes-models/v1';
 import { default as React_2 } from 'react';
 import { RouteRef } from '@backstage/core-plugin-api';
 import { V1ConfigMap } from '@kubernetes/client-node';
@@ -78,6 +82,25 @@ export interface ClusterLinksFormatterOptions {
 // @public (undocumented)
 export const clusterLinksFormatters: Record<string, ClusterLinksFormatter>;
 
+// @public
+export const ContainerCard: React_2.FC<ContainerCardProps>;
+
+// @public
+export interface ContainerCardProps {
+  // (undocumented)
+  containerSpec?: IContainer;
+  // (undocumented)
+  containerStatus: IContainerStatus;
+  // (undocumented)
+  podScope: PodScope;
+}
+
+// @public
+export interface ContainerScope extends PodScope {
+  // (undocumented)
+  containerName: string;
+}
+
 // Warning: (ae-forgotten-export) The symbol "CronJobsAccordionsProps" needs to be exported by the entry point index.d.ts
 // Warning: (ae-missing-release-tag) "CronJobsAccordions" is part of the package's API, but it is missing a release tag (@alpha, @beta, @public, or @internal)
 //
@@ -113,7 +136,7 @@ export interface DetectedError {
   // Warning: (ae-forgotten-export) The symbol "ProposedFix" needs to be exported by the entry point index.d.ts
   //
   // (undocumented)
-  proposedFix: ProposedFix[];
+  proposedFix?: ProposedFix;
   // (undocumented)
   severity: ErrorSeverity;
   // Warning: (ae-forgotten-export) The symbol "ResourceRef" needs to be exported by the entry point index.d.ts
@@ -144,6 +167,15 @@ export type EntityKubernetesContentProps = {
   refreshIntervalMs?: number;
 };
 
+// @public
+export const ErrorList: ({ podAndErrors }: ErrorListProps) => JSX.Element;
+
+// @public
+export interface ErrorListProps {
+  // (undocumented)
+  podAndErrors: PodAndErrors[];
+}
+
 // Warning: (ae-forgotten-export) The symbol "ErrorPanelProps" needs to be exported by the entry point index.d.ts
 // Warning: (ae-missing-release-tag) "ErrorPanel" is part of the package's API, but it is missing a release tag (@alpha, @beta, @public, or @internal)
 //
@@ -164,6 +196,65 @@ export const ErrorReporting: ({
 
 // @public
 export type ErrorSeverity = 0 | 1 | 2 | 3 | 4 | 5 | 6 | 7 | 8 | 9 | 10;
+
+// @public
+export const Events: ({
+  involvedObjectName,
+  namespace,
+  clusterName,
+  warningEventsOnly,
+}: EventsProps) => JSX.Element;
+
+// @public
+export const EventsContent: ({
+  events,
+  warningEventsOnly,
+}: EventsContentProps) => JSX.Element;
+
+// @public
+export interface EventsContentProps {
+  // (undocumented)
+  events: Event_2[];
+  // (undocumented)
+  warningEventsOnly?: boolean;
+}
+
+// @public
+export interface EventsOptions {
+  // (undocumented)
+  clusterName: string;
+  // (undocumented)
+  involvedObjectName: string;
+  // (undocumented)
+  namespace: string;
+}
+
+// @public
+export interface EventsProps {
+  // (undocumented)
+  clusterName: string;
+  // (undocumented)
+  involvedObjectName: string;
+  // (undocumented)
+  namespace: string;
+  // (undocumented)
+  warningEventsOnly?: boolean;
+}
+
+// @public
+export const FixDialog: React_2.FC<FixDialogProps>;
+
+// @public
+export interface FixDialogProps {
+  // (undocumented)
+  clusterName: string;
+  // (undocumented)
+  error: DetectedError;
+  // (undocumented)
+  open?: boolean;
+  // (undocumented)
+  pod: Pod;
+}
 
 // Warning: (ae-forgotten-export) The symbol "FormatClusterLinkOptions" needs to be exported by the entry point index.d.ts
 // Warning: (ae-missing-release-tag) "formatClusterLink" is part of the package's API, but it is missing a release tag (@alpha, @beta, @public, or @internal)
@@ -417,11 +508,18 @@ export { kubernetesPlugin as plugin };
 // @public (undocumented)
 export interface KubernetesProxyApi {
   // (undocumented)
+  getEventsByInvolvedObjectName(request: {
+    clusterName: string;
+    involvedObjectName: string;
+    namespace: string;
+  }): Promise<Event_2[]>;
+  // (undocumented)
   getPodLogs(request: {
     podName: string;
     namespace: string;
     clusterName: string;
     containerName: string;
+    previous?: boolean;
   }): Promise<{
     text: string;
   }>;
@@ -436,16 +534,28 @@ export const kubernetesProxyApiRef: ApiRef<KubernetesProxyApi>;
 export class KubernetesProxyClient {
   constructor(options: { kubernetesApi: KubernetesApi });
   // (undocumented)
+  getEventsByInvolvedObjectName({
+    clusterName,
+    involvedObjectName,
+    namespace,
+  }: {
+    clusterName: string;
+    involvedObjectName: string;
+    namespace: string;
+  }): Promise<Event_2[]>;
+  // (undocumented)
   getPodLogs({
     podName,
     namespace,
     clusterName,
     containerName,
+    previous,
   }: {
     podName: string;
     namespace: string;
     clusterName: string;
     containerName: string;
+    previous?: boolean;
   }): Promise<{
     text: string;
   }>;
@@ -476,11 +586,61 @@ export const LinkErrorPanel: ({
   errorMessage,
 }: ErrorPanelProps_2) => JSX.Element;
 
+// @public
+export const PendingPodContent: ({
+  pod,
+}: PendingPodContentProps) => JSX.Element;
+
+// @public
+export interface PendingPodContentProps {
+  // (undocumented)
+  pod: Pod_2;
+}
+
+// @public
+export interface PodAndErrors {
+  // (undocumented)
+  clusterName: string;
+  // (undocumented)
+  errors: DetectedError[];
+  // (undocumented)
+  pod: Pod_2;
+}
+
 // Warning: (ae-forgotten-export) The symbol "PodDrawerProps" needs to be exported by the entry point index.d.ts
-// Warning: (ae-missing-release-tag) "PodDrawer" is part of the package's API, but it is missing a release tag (@alpha, @beta, @public, or @internal)
 //
-// @public (undocumented)
+// @public
 export const PodDrawer: ({ podAndErrors, open }: PodDrawerProps) => JSX.Element;
+
+// @public
+export const PodLogs: React_2.FC<PodLogsProps>;
+
+// @public
+export const PodLogsDialog: ({
+  containerScope,
+}: PodLogsDialogProps) => JSX.Element;
+
+// @public
+export interface PodLogsDialogProps {
+  // (undocumented)
+  containerScope: ContainerScope;
+}
+
+// @public
+export interface PodLogsOptions {
+  // (undocumented)
+  containerScope: ContainerScope;
+  // (undocumented)
+  previous?: boolean;
+}
+
+// @public
+export interface PodLogsProps {
+  // (undocumented)
+  containerScope: ContainerScope;
+  // (undocumented)
+  previous?: boolean;
+}
 
 // Warning: (ae-missing-release-tag) "PodNamesWithErrorsContext" is part of the package's API, but it is missing a release tag (@alpha, @beta, @public, or @internal)
 //
@@ -493,6 +653,16 @@ export const PodNamesWithErrorsContext: React_2.Context<Set<string>>;
 export const PodNamesWithMetricsContext: React_2.Context<
   Map<string, ClientPodStatus>
 >;
+
+// @public
+export interface PodScope {
+  // (undocumented)
+  clusterName: string;
+  // (undocumented)
+  podName: string;
+  // (undocumented)
+  podNamespace: string;
+}
 
 // Warning: (ae-forgotten-export) The symbol "PodsTablesProps" needs to be exported by the entry point index.d.ts
 // Warning: (ae-missing-release-tag) "PodsTable" is part of the package's API, but it is missing a release tag (@alpha, @beta, @public, or @internal)
@@ -533,6 +703,13 @@ export const useCustomResources: (
   intervalMs?: number,
 ) => KubernetesObjects;
 
+// @public
+export const useEvents: ({
+  involvedObjectName,
+  namespace,
+  clusterName,
+}: EventsOptions) => AsyncState<Event_2[]>;
+
 // Warning: (ae-missing-release-tag) "useKubernetesObjects" is part of the package's API, but it is missing a release tag (@alpha, @beta, @public, or @internal)
 //
 // @public (undocumented)
@@ -540,4 +717,12 @@ export const useKubernetesObjects: (
   entity: Entity,
   intervalMs?: number,
 ) => KubernetesObjects;
+
+// @public
+export const usePodLogs: ({
+  containerScope,
+  previous,
+}: PodLogsOptions) => AsyncState<{
+  text: string;
+}>;
 ```

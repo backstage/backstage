@@ -27,7 +27,7 @@ interface PodConditionProps {
   condition: IPodCondition;
 }
 
-export const PodCondition = ({ condition }: PodConditionProps) => {
+const PodCondition = ({ condition }: PodConditionProps) => {
   return (
     <>
       {condition.status === 'False' && (
@@ -64,10 +64,20 @@ export const PodCondition = ({ condition }: PodConditionProps) => {
   );
 };
 
-interface PendingPodContentProps {
+/**
+ * Props for PendingPodContent
+ *
+ * @public
+ */
+export interface PendingPodContentProps {
   pod: Pod;
 }
 
+/**
+ * Shows details about pod's conditions as it starts
+ *
+ * @public
+ */
 export const PendingPodContent = ({ pod }: PendingPodContentProps) => {
   // TODO add PodHasNetwork when it's out of alpha
   // https://kubernetes.io/docs/concepts/workloads/pods/pod-lifecycle/#pod-conditions

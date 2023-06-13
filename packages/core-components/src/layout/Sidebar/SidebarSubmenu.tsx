@@ -127,7 +127,7 @@ export const SidebarSubmenu = (props: SidebarSubmenuProps) => {
         [classes.drawerOpen]: isSubmenuOpen,
       })}
     >
-      <Typography variant="h5" className={classes.title}>
+      <Typography variant="h5" component="span" className={classes.title}>
         {props.title}
       </Typography>
       {props.children}

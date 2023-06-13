@@ -14,12 +14,22 @@
  * limitations under the License.
  */
 
+/**
+ * Contains the details needed to make a log request to Kubernetes, except the container name
+ *
+ * @public
+ */
 export interface PodScope {
   podName: string;
   podNamespace: string;
   clusterName: string;
 }
 
+/**
+ * Contains the details needed to make a log request to Kubernetes
+ *
+ * @public
+ */
 export interface ContainerScope extends PodScope {
   containerName: string;
 }

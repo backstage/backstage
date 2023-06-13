@@ -227,4 +227,18 @@ export default ({ theme, sidebar }: RuleOptions) => `
     width: 12.1rem;
   }
 }
+
+
+@media print {
+  .md-sidebar,
+  #toggle-sidebar {
+    display: none;
+  }
+  
+  .md-content {
+    margin: 0;
+    width: 100%;
+    max-width: 100%;
+  }
+}
 `;

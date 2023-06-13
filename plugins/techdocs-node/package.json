@@ -39,11 +39,11 @@
     "url": "https://github.com/backstage/backstage/issues"
   },
   "dependencies": {
-    "@aws-sdk/client-s3": "^3.310.0",
-    "@aws-sdk/credential-providers": "^3.310.0",
-    "@aws-sdk/lib-storage": "^3.310.0",
-    "@aws-sdk/node-http-handler": "^3.310.0",
-    "@aws-sdk/types": "^3.310.0",
+    "@aws-sdk/client-s3": "^3.350.0",
+    "@aws-sdk/credential-providers": "^3.350.0",
+    "@aws-sdk/lib-storage": "^3.350.0",
+    "@aws-sdk/node-http-handler": "^3.350.0",
+    "@aws-sdk/types": "^3.347.0",
     "@azure/identity": "^2.1.0",
     "@azure/storage-blob": "^12.5.0",
     "@backstage/backend-common": "workspace:^",

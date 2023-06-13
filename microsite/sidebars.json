@@ -325,7 +325,12 @@
       "deployment/scaling",
       "deployment/docker",
       "deployment/k8s",
-      "deployment/heroku"
+      "deployment/heroku",
+      {
+        "type": "category",
+        "label": "Using Backstage Deploy (alpha)",
+        "items": ["deployment/backstage-deploy/aws-lightsail"]
+      }
     ],
     "Designing for Backstage": [
       "dls/design",

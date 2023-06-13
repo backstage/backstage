@@ -31,7 +31,6 @@ const hpaErrorMappers: ErrorMapper<HorizontalPodAutoscaler>[] = [
               hpa.spec?.maxReplicas ?? -1
             })`,
             severity: 8,
-            proposedFix: [], // TODO next PR
             sourceRef: {
               name: hpa.metadata?.name ?? 'unknown hpa',
               namespace: hpa.metadata?.namespace ?? 'unknown namespace',
