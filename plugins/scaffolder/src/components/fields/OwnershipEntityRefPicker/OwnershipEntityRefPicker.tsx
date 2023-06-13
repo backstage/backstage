@@ -58,15 +58,18 @@ export const OwnershipEntityRefPicker = (
   }>(null);
 
   useAsync(async () => {
-    const { ownershipEntityRefs } = await identityApi.getBackstageIdentity();
+    const { userEntityRef } = await identityApi.getBackstageIdentity();
 
-    if (!ownershipEntityRefs || !ownershipEntityRefs.length) {
-      errorApi.post(new NotFoundError('No ownership entity refs found'));
+    if (!userEntityRef) {
+      errorApi.post(new NotFoundError('No user entity ref found'));
       return;
     }
 
-    const { items } = await catalogApi.getEntitiesByRefs({
-      entityRefs: ownershipEntityRefs,
+    const { items } = await catalogApi.getEntities({
+      filter: {
+        type: 'Group',
+        ['relations.hasMember']: [userEntityRef],
+      },
     });
 
     const groupValues = items

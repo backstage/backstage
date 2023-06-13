@@ -43,7 +43,7 @@ const mockIdentityApi: IdentityApi = {
       id: 'Bob',
       idToken: 'token',
       type: 'user',
-      userEntityRef: 'user:default/Bob',
+      userEntityRef: 'user:default/bob',
       ownershipEntityRefs: ['group:default/group1', 'group:default/group2'],
     }),
   getCredentials: () => Promise.resolve({ token: 'token' }),
@@ -57,7 +57,7 @@ describe('<OwnershipEntityRefPicker />', () => {
   const required = false;
 
   const catalogApi: jest.Mocked<CatalogApi> = {
-    getEntitiesByRefs: jest.fn(async () => ({ items: entities })),
+    getEntities: jest.fn(async () => ({ items: entities })),
   } as any;
 
   const mockErrorApi: jest.Mocked<ErrorApi> = {
@@ -88,7 +88,7 @@ describe('<OwnershipEntityRefPicker />', () => {
     ];
 
     onChange.mockClear();
-    catalogApi.getEntitiesByRefs.mockClear();
+    catalogApi.getEntities.mockClear();
   });
 
   afterEach(() => {
@@ -103,7 +103,7 @@ describe('<OwnershipEntityRefPicker />', () => {
         entity.spec.members.includes('Bob'),
     );
 
-    catalogApi.getEntitiesByRefs.mockResolvedValue({ items: userGroups });
+    catalogApi.getEntities.mockResolvedValue({ items: userGroups });
 
     const props = {
       onChange,
@@ -124,35 +124,38 @@ describe('<OwnershipEntityRefPicker />', () => {
     );
 
     await waitFor(() =>
-      expect(catalogApi.getEntitiesByRefs).toHaveBeenCalledTimes(1),
+      expect(catalogApi.getEntities).toHaveBeenCalledTimes(1),
     );
 
-    expect(catalogApi.getEntitiesByRefs).toHaveBeenCalledWith({
-      entityRefs: ['group:default/group1', 'group:default/group2'],
+    expect(catalogApi.getEntities).toHaveBeenCalledWith({
+      filter: {
+        type: 'Group',
+        'relations.hasMember': ['user:default/bob'],
+      },
     });
 
     // Check that getEntities was set up to return the correct data
-    await expect(
-      catalogApi.getEntitiesByRefs.mock.results[0].value,
-    ).resolves.toEqual({
-      items: [
-        {
-          apiVersion: 'backstage.io/v1alpha1',
-          kind: 'Group',
-          metadata: { name: 'group1' },
-          spec: { members: ['Bob'] },
-        },
-        {
-          apiVersion: 'backstage.io/v1alpha1',
-          kind: 'Group',
-          metadata: { name: 'group2' },
-          spec: { members: ['Bob'] },
-        },
-      ],
-    });
+    await expect(catalogApi.getEntities.mock.results[0].value).resolves.toEqual(
+      {
+        items: [
+          {
+            apiVersion: 'backstage.io/v1alpha1',
+            kind: 'Group',
+            metadata: { name: 'group1' },
+            spec: { members: ['Bob'] },
+          },
+          {
+            apiVersion: 'backstage.io/v1alpha1',
+            kind: 'Group',
+            metadata: { name: 'group2' },
+            spec: { members: ['Bob'] },
+          },
+        ],
+      },
+    );
 
     await expect(
-      catalogApi.getEntitiesByRefs.mock.results[0].value,
+      catalogApi.getEntities.mock.results[0].value,
     ).resolves.not.toEqual(
       expect.objectContaining({
         items: expect.arrayContaining([
@@ -171,7 +174,8 @@ describe('<OwnershipEntityRefPicker />', () => {
         Array.isArray(entity.spec.members) &&
         entity.spec.members.includes('Bob'),
     );
-    catalogApi.getEntitiesByRefs.mockResolvedValue({ items: userGroups });
+
+    catalogApi.getEntities.mockResolvedValue({ items: userGroups });
 
     const props = {
       onChange,
@@ -192,7 +196,7 @@ describe('<OwnershipEntityRefPicker />', () => {
     );
 
     await waitFor(() =>
-      expect(catalogApi.getEntitiesByRefs).toHaveBeenCalledTimes(1),
+      expect(catalogApi.getEntities).toHaveBeenCalledTimes(1),
     );
 
     // Simulate user input
@@ -228,7 +232,7 @@ describe('<OwnershipEntityRefPicker />', () => {
       },
     ];
 
-    catalogApi.getEntitiesByRefs.mockResolvedValue({ items: userGroups });
+    catalogApi.getEntities.mockResolvedValue({ items: userGroups });
 
     const props = {
       onChange,
@@ -249,7 +253,7 @@ describe('<OwnershipEntityRefPicker />', () => {
     );
 
     await waitFor(() =>
-      expect(catalogApi.getEntitiesByRefs).toHaveBeenCalledTimes(1),
+      expect(catalogApi.getEntities).toHaveBeenCalledTimes(1),
     );
 
     const inputField = getByRole('combobox');
@@ -257,8 +261,9 @@ describe('<OwnershipEntityRefPicker />', () => {
     userEvent.type(inputField, 'group');
 
     await waitFor(() => {
-      const option = getByRole('option', { name: 'My First Group' });
-      expect(option).toBeInTheDocument();
+      expect(
+        getByRole('option', { name: 'My First Group' }),
+      ).toBeInTheDocument();
     });
 
     const option = getByRole('option', { name: 'My First Group' });
