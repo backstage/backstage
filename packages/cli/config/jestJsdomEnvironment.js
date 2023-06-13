@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 import JSDOMEnvironment from 'jest-environment-jsdom';
-import { Headers, Request, Response, fetch } from 'node-fetch';
+import { Headers, Request, Response, default as fetch } from 'node-fetch';
 
 // https://github.com/facebook/jest/blob/v29.4.3/website/versioned_docs/version-29.4/Configuration.md#testenvironment-string
 export default class FixJSDOMEnvironment extends JSDOMEnvironment {
