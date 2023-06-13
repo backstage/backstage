@@ -65,8 +65,8 @@ import {
   editRouteRef,
 } from './routes';
 import {
-  OwnershipEntityRefPicker,
-  OwnershipEntityRefPickerSchema,
+  MyGroupsPicker,
+  MyGroupsPickerSchema,
 } from './components/fields/MyGroupsPicker/MyGroupsPicker';
 
 /**
@@ -167,11 +167,11 @@ export const OwnerPickerFieldExtension = scaffolderPlugin.provide(
  *
  * @public
  */
-export const OwnershipEntityRefPickerFieldExtension = scaffolderPlugin.provide(
+export const MyGroupsPickerFieldExtension = scaffolderPlugin.provide(
   createScaffolderFieldExtension({
-    component: OwnershipEntityRefPicker,
-    name: 'OwnershipEntityRefPicker',
-    schema: OwnershipEntityRefPickerSchema,
+    component: MyGroupsPicker,
+    name: 'MyGroupsPicker',
+    schema: MyGroupsPickerSchema,
   }),
 );
 
