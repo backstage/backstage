@@ -18,7 +18,7 @@ import React from 'react';
 import { render, waitFor } from '@testing-library/react';
 import { CatalogApi } from '@backstage/catalog-client';
 import { FieldProps } from '@rjsf/core';
-import { OwnershipEntityRefPicker } from './OwnershipEntityRefPicker';
+import { MyGroupsPicker } from './MyGroupsPicker';
 import { TestApiProvider } from '@backstage/test-utils';
 import { catalogApiRef } from '@backstage/plugin-catalog-react';
 import { Entity } from '@backstage/catalog-model';
@@ -50,7 +50,7 @@ const mockIdentityApi: IdentityApi = {
   signOut: () => Promise.resolve(),
 };
 
-describe('<OwnershipEntityRefPicker />', () => {
+describe('<MyGroupsPicker />', () => {
   let entities: Entity[];
   const onChange = jest.fn();
   const schema = {};
@@ -119,7 +119,7 @@ describe('<OwnershipEntityRefPicker />', () => {
           [errorApiRef, mockErrorApi],
         ]}
       >
-        <OwnershipEntityRefPicker {...props} />
+        <MyGroupsPicker {...props} />
       </TestApiProvider>,
     );
 
@@ -191,7 +191,7 @@ describe('<OwnershipEntityRefPicker />', () => {
           [errorApiRef, mockErrorApi],
         ]}
       >
-        <OwnershipEntityRefPicker {...props} />
+        <MyGroupsPicker {...props} />
       </TestApiProvider>,
     );
 
@@ -248,7 +248,7 @@ describe('<OwnershipEntityRefPicker />', () => {
           [errorApiRef, mockErrorApi],
         ]}
       >
-        <OwnershipEntityRefPicker {...props} />
+        <MyGroupsPicker {...props} />
       </TestApiProvider>,
     );
 

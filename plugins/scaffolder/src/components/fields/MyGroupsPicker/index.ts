@@ -15,7 +15,7 @@
  */
 
 export {
-  OwnershipEntityRefPickerSchema,
-  type OwnershipEntityRefPickerUiOptions,
-  OwnershipEntityRefPickerFieldSchema,
+  MyGroupsPickerSchema,
+  type MyGroupsPickerUiOptions,
+  MyGroupsPickerFieldSchema,
 } from './schema';

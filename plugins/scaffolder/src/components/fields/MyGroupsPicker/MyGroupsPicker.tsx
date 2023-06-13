@@ -21,21 +21,16 @@ import {
   useApi,
 } from '@backstage/core-plugin-api';
 import { TextField, FormControl } from '@material-ui/core';
-import {
-  OwnershipEntityRefPickerProps,
-  OwnershipEntityRefPickerSchema,
-} from './schema';
+import { MyGroupsPickerProps, MyGroupsPickerSchema } from './schema';
 import { Autocomplete } from '@material-ui/lab';
 import { catalogApiRef } from '@backstage/plugin-catalog-react';
 import { NotFoundError } from '@backstage/errors';
 import useAsync from 'react-use/lib/useAsync';
 import { Entity, stringifyEntityRef } from '@backstage/catalog-model';
 
-export { OwnershipEntityRefPickerSchema };
+export { MyGroupsPickerSchema };
 
-export const OwnershipEntityRefPicker = (
-  props: OwnershipEntityRefPickerProps,
-) => {
+export const MyGroupsPicker = (props: MyGroupsPickerProps) => {
   const {
     schema: { title, description },
     required,

@@ -18,11 +18,11 @@ import { z } from 'zod';
 import { makeFieldSchemaFromZod } from '../utils';
 
 /**
- * Field schema for the OwnershipEntityRefPicker.
+ * Field schema for the MyGroupsPicker.
  * @public
  */
 
-export const OwnershipEntityRefPickerFieldSchema = makeFieldSchemaFromZod(
+export const MyGroupsPickerFieldSchema = makeFieldSchemaFromZod(
   z.string(),
   z.object({
     title: z.string().default('Group').describe('Group'),
@@ -34,24 +34,22 @@ export const OwnershipEntityRefPickerFieldSchema = makeFieldSchemaFromZod(
 );
 
 /**
- * UI options for the OwnershipEntityRefPicker.
+ * UI options for the MyGroupsPicker.
  * @public
  */
 
-export type OwnershipEntityRefPickerUiOptions =
-  typeof OwnershipEntityRefPickerFieldSchema.uiOptionsType;
+export type MyGroupsPickerUiOptions =
+  typeof MyGroupsPickerFieldSchema.uiOptionsType;
 /**
- * Props for the OwnershipEntityRefPicker.
+ * Props for the MyGroupsPicker.
  * @public
  */
 
-export type OwnershipEntityRefPickerProps =
-  typeof OwnershipEntityRefPickerFieldSchema.type;
+export type MyGroupsPickerProps = typeof MyGroupsPickerFieldSchema.type;
 
 /**
- * Schema for the OwnershipEntityRefPicker.
+ * Schema for the MyGroupsPicker.
  * @public
  */
 
-export const OwnershipEntityRefPickerSchema =
-  OwnershipEntityRefPickerFieldSchema.schema;
+export const MyGroupsPickerSchema = MyGroupsPickerFieldSchema.schema;

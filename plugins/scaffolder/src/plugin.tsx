@@ -67,7 +67,7 @@ import {
 import {
   OwnershipEntityRefPicker,
   OwnershipEntityRefPickerSchema,
-} from './components/fields/OwnershipEntityRefPicker/OwnershipEntityRefPicker';
+} from './components/fields/MyGroupsPicker/MyGroupsPicker';
 
 /**
  * The main plugin export for the scaffolder.
