@@ -1,5 +1,19 @@
 # @backstage/plugin-techdocs-node
 
+## 1.7.2-next.2
+
+### Patch Changes
+
+- 5f2c38c70f5b: Fix SNYK-JS-FASTXMLPARSER-5668858 (`fast-xml-parser`) by upgrading aws-sdk to at least the current latest version.
+- Updated dependencies
+  - @backstage/integration-aws-node@0.1.4-next.1
+  - @backstage/backend-common@0.19.0-next.2
+  - @backstage/catalog-model@1.4.0-next.1
+  - @backstage/config@1.0.7
+  - @backstage/errors@1.2.0-next.0
+  - @backstage/integration@1.5.0-next.0
+  - @backstage/plugin-search-common@1.2.4-next.0
+
 ## 1.7.2-next.1
 
 ### Patch Changes
