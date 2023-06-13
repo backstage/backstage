@@ -33,6 +33,13 @@ type FacetsInitialRequest = {
   text: string;
 };
 
+/**
+ * This hook asynchronously loads the entity owners using the facets endpoint.
+ * EntityOwnerPicker uses this hook when mode="owners-only" is passed as prop.
+ * All the owners are kept internally in memory and rendered in batches once requested
+ * by the frontend. The values returned by this hook are compatible with `useQueryEntities`
+ * hook, which is also used by EntityOwnerPicker.
+ */
 export function useFacetsEntities({ enabled }: { enabled: boolean }) {
   const catalogApi = useApi(catalogApiRef);
 
