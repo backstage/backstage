@@ -201,10 +201,7 @@ export class DefaultCatalogProcessingOrchestrator
   ): Promise<Entity> {
     return await withActiveSpan(tracer, 'ProcessingStage', async stageSpan => {
       addEntityAttributes(stageSpan, context.entityRef);
-      stageSpan.setAttribute(
-        'backstage.catalog.processor.stage',
-        'preProcessEntity',
-      );
+      stageSpan.setAttribute('backstage.catalog.processor.stage', 'preProcess');
       let res = entity;
 
       for (const processor of this.options.processors) {
@@ -244,7 +241,7 @@ export class DefaultCatalogProcessingOrchestrator
       addEntityAttributes(stageSpan, stringifyEntityRef(entity));
       stageSpan.setAttribute(
         'backstage.catalog.processor.stage',
-        'enforcePolicyEntity',
+        'enforcePolicy',
       );
       let policyEnforcedEntity: Entity | undefined;
 
@@ -278,10 +275,7 @@ export class DefaultCatalogProcessingOrchestrator
   ): Promise<void> {
     return await withActiveSpan(tracer, 'ProcessingStage', async stageSpan => {
       addEntityAttributes(stageSpan, context.entityRef);
-      stageSpan.setAttribute(
-        'backstage.catalog.processor.stage',
-        'validateEntity',
-      );
+      stageSpan.setAttribute('backstage.catalog.processor.stage', 'validate');
       // Double check that none of the previous steps tried to change something
       // related to the entity ref, which would break downstream
       if (stringifyEntityRef(entity) !== context.entityRef) {
@@ -310,7 +304,7 @@ export class DefaultCatalogProcessingOrchestrator
               'ProcessingStep',
               async span => {
                 addEntityAttributes(span, context.entityRef);
-                addProcessorAttributes(span, 'postProcessEntity', processor);
+                addProcessorAttributes(span, 'validateEntityKind', processor);
                 return await processor.validateEntityKind!(entity);
               },
             );
@@ -348,7 +342,7 @@ export class DefaultCatalogProcessingOrchestrator
       addEntityAttributes(stageSpan, context.entityRef);
       stageSpan.setAttribute(
         'backstage.catalog.processor.stage',
-        'readLocationEntity',
+        'readLocation',
       );
       const { type = context.location.type, presence = 'required' } =
         entity.spec;
@@ -386,7 +380,7 @@ export class DefaultCatalogProcessingOrchestrator
                 'ProcessingStep',
                 async span => {
                   addEntityAttributes(span, context.entityRef);
-                  addProcessorAttributes(span, 'readLocationEntity', processor);
+                  addProcessorAttributes(span, 'readLocation', processor);
                   return await processor.readLocation!(
                     {
                       type,
