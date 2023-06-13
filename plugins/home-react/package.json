@@ -37,7 +37,7 @@
     "@backstage/core-plugin-api": "workspace:^",
     "@material-ui/core": "^4.12.2",
     "@material-ui/icons": "^4.9.1",
-    "@rjsf/utils": "5.7.3"
+    "@rjsf/utils": "^5.8.1"
   },
   "peerDependencies": {
     "react": "^16.13.1 || ^17.0.0",

@@ -27,10 +27,11 @@ import SettingsIcon from '@material-ui/icons/Settings';
 import DeleteIcon from '@material-ui/icons/Delete';
 import React from 'react';
 import { Widget } from './types';
-import { withTheme } from '@rjsf/core-v5';
+import { withTheme } from '@rjsf/core';
+import { Theme as MuiTheme } from '@rjsf/material-ui';
 import validator from '@rjsf/validator-ajv8';
 
-const Form = withTheme(require('@rjsf/material-ui').Theme);
+const Form = withTheme(MuiTheme);
 
 const useStyles = makeStyles((theme: Theme) =>
   createStyles({

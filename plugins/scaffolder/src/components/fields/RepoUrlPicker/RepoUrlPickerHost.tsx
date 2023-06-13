@@ -68,7 +68,7 @@ export const RepoUrlPickerHost = (props: {
       <FormControl
         margin="normal"
         required
-        error={rawErrors?.length > 0 && !host}
+        error={rawErrors.length > 0 && !host}
       >
         <Select
           native

@@ -47,7 +47,7 @@ export const RepoUrlPickerRepoName = (props: {
       <FormControl
         margin="normal"
         required
-        error={rawErrors?.length > 0 && !repoName}
+        error={rawErrors.length > 0 && !repoName}
       >
         {allowedRepos?.length ? (
           <Select

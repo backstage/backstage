@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import type { FormProps as SchemaFormProps } from '@rjsf/core-v5';
+import type { FormProps as SchemaFormProps } from '@rjsf/core';
 
 // TODO(Rugvip): The FormProps type is actually supposed to be alpha, but since we want to
 //               refer to it from @backstage/plugin-scaffolder, it needs to be public for now.

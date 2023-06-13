@@ -64,7 +64,7 @@ export const BitbucketRepoPicker = (props: {
         <FormControl
           margin="normal"
           required
-          error={rawErrors?.length > 0 && !workspace}
+          error={rawErrors.length > 0 && !workspace}
         >
           {allowedOwners?.length ? (
             <Select
@@ -95,7 +95,7 @@ export const BitbucketRepoPicker = (props: {
       <FormControl
         margin="normal"
         required
-        error={rawErrors?.length > 0 && !project}
+        error={rawErrors.length > 0 && !project}
       >
         {allowedProjects?.length ? (
           <Select

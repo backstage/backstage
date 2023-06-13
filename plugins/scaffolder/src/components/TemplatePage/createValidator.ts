@@ -15,7 +15,7 @@
  */
 
 import { CustomFieldValidator } from '@backstage/plugin-scaffolder-react';
-import { FormValidation } from '@rjsf/core';
+import { FormValidation } from '@rjsf/utils';
 import { JsonObject, JsonValue } from '@backstage/types';
 import { ApiHolder } from '@backstage/core-plugin-api';
 
@@ -48,28 +48,20 @@ export const createValidator = (
 
     if (schemaProps) {
       for (const [key, propData] of Object.entries(formData)) {
-        const propValidation = errors[key];
+        const propValidation = errors[key]!;
 
         const doValidate = (item: JsonValue | undefined) => {
           if (item && isObject(item)) {
             const fieldName = item['ui:field'] as string;
             if (fieldName && typeof validators[fieldName] === 'function') {
-              validators[fieldName]!(
-                propData as JsonObject[],
-                propValidation,
-                context,
-              );
+              validators[fieldName]!(propData, propValidation, context);
             }
           }
         };
 
         const propSchemaProps = schemaProps[key];
         if (isObject(propData) && isObject(propSchemaProps)) {
-          validate(
-            propSchemaProps,
-            propData as JsonObject,
-            propValidation as FormValidation,
-          );
+          validate(propSchemaProps, propData, propValidation);
         } else if (isArray(propData)) {
           if (isObject(propSchemaProps)) {
             const { items } = propSchemaProps;

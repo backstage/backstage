@@ -28,7 +28,7 @@ export { OwnerPickerSchema } from './schema';
 export const OwnerPicker = (props: OwnerPickerProps) => {
   const {
     schema: { title = 'Owner', description = 'The owner of the component' },
-    uiSchema,
+    uiSchema = {},
     ...restProps
   } = props;
 

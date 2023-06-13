@@ -16,7 +16,7 @@
 
 import React from 'react';
 import { MarkdownContent } from '@backstage/core-components';
-import { FieldProps } from '@rjsf/core';
+import { FieldProps } from '@rjsf/utils';
 
 export const DescriptionField = ({ description }: FieldProps) =>
   description && <MarkdownContent content={description} linkTarget="_blank" />;

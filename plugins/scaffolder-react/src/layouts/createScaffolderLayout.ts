@@ -16,7 +16,7 @@
 
 import { LAYOUTS_KEY, LAYOUTS_WRAPPER_KEY } from './keys';
 import { attachComponentData, Extension } from '@backstage/core-plugin-api';
-import type { FormProps as SchemaFormProps } from '@rjsf/core-v5';
+import type { FormProps as SchemaFormProps } from '@rjsf/core';
 import React from 'react';
 
 /**

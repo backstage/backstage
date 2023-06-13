@@ -33,7 +33,7 @@ export { EntityTagsPickerSchema } from './schema';
  * @public
  */
 export const EntityTagsPicker = (props: EntityTagsPickerProps) => {
-  const { formData, onChange, uiSchema } = props;
+  const { formData, onChange, uiSchema = {} } = props;
   const catalogApi = useApi(catalogApiRef);
   const [tagOptions, setTagOptions] = useState<string[]>([]);
   const [inputValue, setInputValue] = useState('');

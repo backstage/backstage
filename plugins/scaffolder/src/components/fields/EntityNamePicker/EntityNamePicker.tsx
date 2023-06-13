@@ -27,9 +27,9 @@ export const EntityNamePicker = (props: EntityNamePickerProps) => {
     onChange,
     required,
     schema: { title = 'Name', description = 'Unique name of the component' },
-    rawErrors,
+    rawErrors = [],
     formData,
-    uiSchema: { 'ui:autofocus': autoFocus },
+    uiSchema: { 'ui:autofocus': autoFocus } = {},
     idSchema,
     placeholder,
   } = props;
@@ -44,7 +44,7 @@ export const EntityNamePicker = (props: EntityNamePickerProps) => {
       value={formData ?? ''}
       onChange={({ target: { value } }) => onChange(value)}
       margin="normal"
-      error={rawErrors?.length > 0 && !formData}
+      error={rawErrors.length > 0 && !formData}
       inputProps={{ autoFocus }}
     />
   );

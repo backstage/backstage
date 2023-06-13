@@ -23,7 +23,7 @@ import {
   makeStyles,
   LinearProgress,
 } from '@material-ui/core';
-import { type IChangeEvent } from '@rjsf/core-v5';
+import { type IChangeEvent } from '@rjsf/core';
 import { ErrorSchema } from '@rjsf/utils';
 import React, { useCallback, useMemo, useState, type ReactNode } from 'react';
 import { NextFieldExtensionOptions } from '../../extensions';

@@ -31,6 +31,7 @@ import {
 } from '@backstage/core-plugin-api';
 import { FormProps, IChangeEvent, withTheme } from '@rjsf/core';
 import { Theme as MuiTheme } from '@rjsf/material-ui';
+import validator from '@rjsf/validator-ajv8';
 import React, { ComponentType, useState } from 'react';
 import { transformSchemaToProps } from './schema';
 import cloneDeep from 'lodash/cloneDeep';
@@ -178,6 +179,7 @@ export const MultistepJsonForm = (props: MultistepJsonFormProps) => {
               </StepLabel>
               <StepContent key={title}>
                 <Form
+                  validator={validator}
                   showErrorList={false}
                   fields={{ ...fieldOverrides, ...fields }}
                   widgets={widgets}

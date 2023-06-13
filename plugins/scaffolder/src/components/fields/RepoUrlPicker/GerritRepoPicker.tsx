@@ -29,7 +29,7 @@ export const GerritRepoPicker = (props: {
   const { workspace, owner } = state;
   return (
     <>
-      <FormControl margin="normal" error={rawErrors?.length > 0 && !workspace}>
+      <FormControl margin="normal" error={rawErrors.length > 0 && !workspace}>
         <InputLabel htmlFor="ownerInput">Owner</InputLabel>
         <Input
           id="ownerInput"
@@ -41,7 +41,7 @@ export const GerritRepoPicker = (props: {
       <FormControl
         margin="normal"
         required
-        error={rawErrors?.length > 0 && !workspace}
+        error={rawErrors.length > 0 && !workspace}
       >
         <InputLabel htmlFor="parentInput">Parent</InputLabel>
         <Input

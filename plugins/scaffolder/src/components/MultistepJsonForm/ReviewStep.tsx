@@ -16,7 +16,7 @@
 import { Box, Button, Paper, Typography } from '@material-ui/core';
 import React from 'react';
 import { Content, StructuredMetadataTable } from '@backstage/core-components';
-import { UiSchema } from '@rjsf/core';
+import { UiSchema } from '@rjsf/utils';
 import { JsonObject } from '@backstage/types';
 import { ReviewStepProps } from '../types';
 

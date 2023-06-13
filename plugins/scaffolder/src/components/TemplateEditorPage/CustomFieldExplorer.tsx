@@ -30,6 +30,7 @@ import {
 import CloseIcon from '@material-ui/icons/Close';
 import { withTheme } from '@rjsf/core';
 import { Theme as MuiTheme } from '@rjsf/material-ui';
+import validator from '@rjsf/validator-ajv8';
 import CodeMirror from '@uiw/react-codemirror';
 import React, { useCallback, useMemo, useState } from 'react';
 import yaml from 'yaml';
@@ -153,6 +154,7 @@ export const CustomFieldExplorer = ({
           <CardHeader title="Field Options" />
           <CardContent>
             <Form
+              validator={validator}
               showErrorList={false}
               fields={{ ...fieldOverrides, ...fieldComponents }}
               noHtml5Validate

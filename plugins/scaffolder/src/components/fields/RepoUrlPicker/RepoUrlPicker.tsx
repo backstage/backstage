@@ -41,7 +41,7 @@ export { RepoUrlPickerSchema } from './schema';
  * @public
  */
 export const RepoUrlPicker = (props: RepoUrlPickerProps) => {
-  const { uiSchema, onChange, rawErrors, formData } = props;
+  const { uiSchema = {}, onChange, rawErrors = [], formData } = props;
   const [state, setState] = useState<RepoUrlPickerState>(
     parseRepoPickerUrl(formData),
   );
@@ -49,23 +49,23 @@ export const RepoUrlPicker = (props: RepoUrlPickerProps) => {
   const scmAuthApi = useApi(scmAuthApiRef);
   const { setSecrets } = useTemplateSecrets();
   const allowedHosts = useMemo(
-    () => uiSchema?.['ui:options']?.allowedHosts ?? [],
+    () => uiSchema['ui:options']?.allowedHosts ?? [],
     [uiSchema],
   );
   const allowedOrganizations = useMemo(
-    () => uiSchema?.['ui:options']?.allowedOrganizations ?? [],
+    () => uiSchema['ui:options']?.allowedOrganizations ?? [],
     [uiSchema],
   );
   const allowedOwners = useMemo(
-    () => uiSchema?.['ui:options']?.allowedOwners ?? [],
+    () => uiSchema['ui:options']?.allowedOwners ?? [],
     [uiSchema],
   );
   const allowedProjects = useMemo(
-    () => uiSchema?.['ui:options']?.allowedProjects ?? [],
+    () => uiSchema['ui:options']?.allowedProjects ?? [],
     [uiSchema],
   );
   const allowedRepos = useMemo(
-    () => uiSchema?.['ui:options']?.allowedRepos ?? [],
+    () => uiSchema['ui:options']?.allowedRepos ?? [],
     [uiSchema],
   );
 
@@ -118,7 +118,7 @@ export const RepoUrlPicker = (props: RepoUrlPickerProps) => {
 
   useDebounce(
     async () => {
-      const { requestUserCredentials } = uiSchema?.['ui:options'] ?? {};
+      const { requestUserCredentials } = uiSchema['ui:options'] ?? {};
 
       const workspace = state.owner ? state.owner : state.project;
       if (

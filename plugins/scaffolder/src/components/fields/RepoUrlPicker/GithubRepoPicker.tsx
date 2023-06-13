@@ -39,7 +39,7 @@ export const GithubRepoPicker = (props: {
       <FormControl
         margin="normal"
         required
-        error={rawErrors?.length > 0 && !owner}
+        error={rawErrors.length > 0 && !owner}
       >
         {allowedOwners?.length ? (
           <Select

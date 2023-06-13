@@ -52,7 +52,7 @@ export const AzureRepoPicker = (props: {
       <FormControl
         margin="normal"
         required
-        error={rawErrors?.length > 0 && !organization}
+        error={rawErrors.length > 0 && !organization}
       >
         {allowedOrganizations?.length ? (
           <Select
@@ -82,7 +82,7 @@ export const AzureRepoPicker = (props: {
       <FormControl
         margin="normal"
         required
-        error={rawErrors?.length > 0 && !owner}
+        error={rawErrors.length > 0 && !owner}
       >
         {allowedOwners?.length ? (
           <Select

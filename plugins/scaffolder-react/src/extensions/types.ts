@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 import { ApiHolder } from '@backstage/core-plugin-api';
-import { FieldValidation, FieldProps } from '@rjsf/core';
+import { FieldValidation, FieldProps } from '@rjsf/utils';
 import { JSONSchema7 } from 'json-schema';
 
 /**
@@ -66,7 +66,7 @@ export interface FieldExtensionComponentProps<
   TFieldReturnValue,
   TUiOptions = unknown,
 > extends FieldProps<TFieldReturnValue> {
-  uiSchema: FieldProps['uiSchema'] & {
+  uiSchema?: FieldProps<TFieldReturnValue>['uiSchema'] & {
     'ui:options'?: TUiOptions;
   };
 }

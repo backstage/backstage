@@ -17,7 +17,7 @@
 import { createValidator } from './createValidator';
 import { CustomFieldValidator } from '@backstage/plugin-scaffolder-react';
 import { ApiHolder } from '@backstage/core-plugin-api';
-import { FieldValidation, FormValidation } from '@rjsf/core';
+import { FieldValidation, FormValidation } from '@rjsf/utils';
 
 type CustomLinkType = {
   url: string;
@@ -109,7 +109,7 @@ describe('createValidator', () => {
 
     /* THEN */
     expect(result).not.toBeNull();
-    expect(result.p1.addError).toHaveBeenCalledTimes(1);
+    expect(result.p1!.addError).toHaveBeenCalledTimes(1);
   });
 
   it('should call validator for array property from a custom field extension', () => {
@@ -144,7 +144,7 @@ describe('createValidator', () => {
 
     /* THEN */
     expect(result).not.toBeNull();
-    expect(result.tags.addError).toHaveBeenCalledTimes(1);
+    expect(result.tags!.addError).toHaveBeenCalledTimes(1);
   });
 
   it('should call validator for array object property from a custom field extension', () => {
@@ -193,6 +193,6 @@ describe('createValidator', () => {
 
     /* THEN */
     expect(result).not.toBeNull();
-    expect(result.links.addError).toHaveBeenCalledTimes(1);
+    expect(result.links!.addError).toHaveBeenCalledTimes(1);
   });
 });

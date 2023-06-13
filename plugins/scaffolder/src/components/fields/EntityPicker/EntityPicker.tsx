@@ -54,8 +54,8 @@ export const EntityPicker = (props: EntityPickerProps) => {
     onChange,
     schema: { title = 'Entity', description = 'An entity from the catalog' },
     required,
-    uiSchema,
-    rawErrors,
+    uiSchema = {},
+    rawErrors = [],
     formData,
     idSchema,
   } = props;
@@ -133,7 +133,7 @@ export const EntityPicker = (props: EntityPickerProps) => {
     <FormControl
       margin="normal"
       required={required}
-      error={rawErrors?.length > 0 && !formData}
+      error={rawErrors.length > 0 && !formData}
     >
       <Autocomplete
         disabled={entities?.length === 1}
@@ -221,7 +221,7 @@ function convertSchemaFiltersToQuery(
  * @returns An `EntityFilterQuery` based on the `uiSchema`, or `undefined` if `catalogFilter` is not specified in the `uiSchema`.
  */
 function buildCatalogFilter(
-  uiSchema: EntityPickerProps['uiSchema'],
+  uiSchema: EntityPickerProps['uiSchema'] = {},
 ): EntityFilterQuery | undefined {
   const allowedKinds = uiSchema['ui:options']?.allowedKinds;
 
