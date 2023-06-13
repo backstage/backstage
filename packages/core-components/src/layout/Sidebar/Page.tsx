@@ -51,6 +51,9 @@ const useStyles = makeStyles<
       [theme.breakpoints.down('xs')]: {
         paddingBottom: props => props.sidebarConfig.mobileSidebarHeight,
       },
+      '@media print': {
+        padding: '0px !important',
+      },
     },
     content: {
       zIndex: 0,

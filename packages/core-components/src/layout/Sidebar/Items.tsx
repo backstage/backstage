@@ -411,7 +411,11 @@ const SidebarItemBase = forwardRef<any, SidebarItemProps>((props, ref) => {
         {itemIcon}
       </Box>
       {text && (
-        <Typography variant="subtitle2" className={classes.label}>
+        <Typography
+          variant="subtitle2"
+          component="span"
+          className={classes.label}
+        >
           {text}
         </Typography>
       )}

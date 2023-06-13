@@ -39,6 +39,9 @@ const useStyles = makeStyles(theme => ({
     flexDirection: 'column',
     minHeight: 'auto',
     padding: theme.spacing(3, 3, 0),
+    '@media print': {
+      display: 'none',
+    },
   },
 }));
 
