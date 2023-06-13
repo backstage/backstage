@@ -68,10 +68,6 @@ export type AlertDisplayProps = {
   transientTimeoutMs?: number;
 };
 
-// @public (undocumented)
-export const AUTOLOGOUT_LAST_SEEN_ONLINE_STORAGE_KEY =
-  '@backstage/autologout:lastSeenOnline';
-
 // @public
 export const AutoLogoutProvider: ({
   children,

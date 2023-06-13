@@ -1,5 +1,3 @@
-import { LAST_SEEN_ONLINE_STORAGE_KEY } from './disconnectedUsers';
-
 /*
  * Copyright 2023 The Backstage Authors
  *
@@ -18,6 +16,5 @@ import { LAST_SEEN_ONLINE_STORAGE_KEY } from './disconnectedUsers';
 export * from './AutoLogoutProvider';
 export * from './ConfigBasedAutoLogoutProvider';
 
-/** @public */
-export const AUTOLOGOUT_LAST_SEEN_ONLINE_STORAGE_KEY =
-  LAST_SEEN_ONLINE_STORAGE_KEY;
+/** @internal */
+export { LAST_SEEN_ONLINE_STORAGE_KEY } from './disconnectedUsers';
