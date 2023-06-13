@@ -11,13 +11,13 @@ export function assertError(value: unknown): asserts value is ErrorLike;
 // @public
 export class AuthenticationError extends CustomErrorBase {
   // (undocumented)
-  name: string;
+  name: 'AuthenticationError';
 }
 
 // @public
 export class ConflictError extends CustomErrorBase {
   // (undocumented)
-  name: string;
+  name: 'ConflictError';
 }
 
 // @public
@@ -81,7 +81,7 @@ export class ForwardedError extends CustomErrorBase {
 // @public
 export class InputError extends CustomErrorBase {
   // (undocumented)
-  name: string;
+  name: 'InputError';
 }
 
 // @public
@@ -90,25 +90,25 @@ export function isError(value: unknown): value is ErrorLike;
 // @public
 export class NotAllowedError extends CustomErrorBase {
   // (undocumented)
-  name: string;
+  name: 'NotAllowedError';
 }
 
 // @public
 export class NotFoundError extends CustomErrorBase {
   // (undocumented)
-  name: string;
+  name: 'NotFoundError';
 }
 
 // @public
 export class NotImplementedError extends CustomErrorBase {
   // (undocumented)
-  name: string;
+  name: 'NotImplementedError';
 }
 
 // @public
 export class NotModifiedError extends CustomErrorBase {
   // (undocumented)
-  name: string;
+  name: 'NotModifiedError';
 }
 
 // @public

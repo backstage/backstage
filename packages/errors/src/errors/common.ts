@@ -34,7 +34,7 @@ import { CustomErrorBase } from './CustomErrorBase';
  * @public
  */
 export class InputError extends CustomErrorBase {
-  name = 'InputError';
+  name = 'InputError' as const;
 }
 
 /**
@@ -43,7 +43,7 @@ export class InputError extends CustomErrorBase {
  * @public
  */
 export class AuthenticationError extends CustomErrorBase {
-  name = 'AuthenticationError';
+  name = 'AuthenticationError' as const;
 }
 
 /**
@@ -52,7 +52,7 @@ export class AuthenticationError extends CustomErrorBase {
  * @public
  */
 export class NotAllowedError extends CustomErrorBase {
-  name = 'NotAllowedError';
+  name = 'NotAllowedError' as const;
 }
 
 /**
@@ -64,7 +64,7 @@ export class NotAllowedError extends CustomErrorBase {
  * @public
  */
 export class NotFoundError extends CustomErrorBase {
-  name = 'NotFoundError';
+  name = 'NotFoundError' as const;
 }
 
 /**
@@ -74,7 +74,7 @@ export class NotFoundError extends CustomErrorBase {
  * @public
  */
 export class ConflictError extends CustomErrorBase {
-  name = 'ConflictError';
+  name = 'ConflictError' as const;
 }
 
 /**
@@ -83,7 +83,7 @@ export class ConflictError extends CustomErrorBase {
  * @public
  */
 export class NotModifiedError extends CustomErrorBase {
-  name = 'NotModifiedError';
+  name = 'NotModifiedError' as const;
 }
 
 /**
@@ -92,7 +92,7 @@ export class NotModifiedError extends CustomErrorBase {
  * @public
  */
 export class NotImplementedError extends CustomErrorBase {
-  name = 'NotImplementedError';
+  name = 'NotImplementedError' as const;
 }
 
 /**

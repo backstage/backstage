@@ -53,7 +53,10 @@ export class CustomErrorBase extends Error {
 
     Error.captureStackTrace?.(this, this.constructor);
 
-    this.name = 'CustomErrorBase';
+    if (!this.name) {
+      this.name = this.constructor.name;
+    }
+
     this.cause = isError(cause) ? cause : undefined;
   }
 }
