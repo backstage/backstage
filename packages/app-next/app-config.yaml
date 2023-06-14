@@ -1,7 +1,10 @@
 
 app:
   packages: 'all' # ✨
-  extensions: []
+  extensions:
+    - graphiql.page:
+        config:
+          path: /
     # - core.signInPage:
     #     props:
     #       provider:

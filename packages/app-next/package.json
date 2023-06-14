@@ -112,7 +112,7 @@
     "start-server-and-test": "^1.10.11"
   },
   "scripts": {
-    "start": "backstage-cli package start --config app-config.yaml --config packages/app-next/app-config.yaml",
+    "start": "backstage-cli package start --config ../../app-config.yaml --config app-config.yaml",
     "build": "backstage-cli package build",
     "clean": "backstage-cli package clean",
     "test": "backstage-cli package test",

@@ -13,28 +13,48 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import { AppRouter, FlatRoutes } from '@backstage/core-app-api';
 
-import { catalogPlugin } from '@internal/plugin-catalog-customized';
-
-import { catalogImportPlugin } from '@backstage/plugin-catalog-import';
-import { GraphiQLPage } from '@backstage/plugin-graphiql';
-import { scaffolderPlugin } from '@backstage/plugin-scaffolder';
-import { TechRadarPage } from '@backstage/plugin-tech-radar';
+import {
+  Router as GraphiQLPage,
+  graphiqlPlugin as legacyGraphiqlPlugin,
+} from '@backstage/plugin-graphiql';
+import { createApp as createLegacyApp } from '@backstage/app-defaults';
 import React, { ComponentType } from 'react';
-import { Route } from 'react-router-dom';
+import { BrowserRouter, useRoutes } from 'react-router-dom';
 import mapValues from 'lodash/mapValues';
 
 /* core */
 
-const discoverPackages = async () => {
-  // stub for now, deferring package discovery til later
-  return ['@backstage/plugin-graphiql'];
-};
+// const discoverPackages = async () => {
+//   // stub for now, deferring package discovery til later
+//   return ['@backstage/plugin-graphiql'];
+// };
 
-function createApp() {}
+interface ExtensionInstanceConfig {
+  id: string;
+  at: string;
+  extension: Extension;
+  config: unknown;
+}
 
-function createPlugin() {}
+interface BackstagePluginOptions {
+  id: string;
+  defaultExtensionInstances?: ExtensionInstanceConfig[];
+}
+
+interface BackstagePlugin {
+  $$type: 'backstage-plugin';
+  id: string;
+  defaultExtensionInstances: ExtensionInstanceConfig[];
+}
+
+function createPlugin(options: BackstagePluginOptions): BackstagePlugin {
+  return {
+    ...options,
+    $$type: 'backstage-plugin',
+    defaultExtensionInstances: options.defaultExtensionInstances ?? [],
+  };
+}
 
 type AnyExtensionDataMap = Record<string, ExtensionDataRef<any>>;
 
@@ -130,22 +150,157 @@ function createExtensionInstance(options: {
   return { id: options.id, data: extensionData, $$type: 'extension-instance' };
 }
 
-/* graphiql package */
+/* core extensions */
 
-const GraphiqlRoute = createExtension({
+const RouteExtension = createExtension({
   inputs: {
-    extensionData: {
-      component: coreExtensionData.reactComponent,
+    routes: {
+      extensionData: {
+        path: coreExtensionData.routePath,
+        component: coreExtensionData.reactComponent,
+      },
     },
   },
-  factory({ bind, points }) {
-    // ...
+  output: {
+    component: coreExtensionData.reactComponent,
   },
+  factory({ bind, inputs }) {
+    const Routes = () => {
+      const element = useRoutes(
+        inputs.routes.map(route => ({
+          path: route.path,
+          element: <route.component />,
+        })),
+      );
+
+      return element;
+    };
+    bind.component(() => (
+      <BrowserRouter>
+        <Routes />
+      </BrowserRouter>
+    ));
+  },
+});
+
+function createApp(options: { plugins: BackstagePlugin[] }): {
+  createRoot(): JSX.Element;
+} {
+  // pull in default extension instance from discovered packages
+  // apply config to adjust default extension instances and add more
+  const extensionInstanceConfigs = [
+    ...options.plugins.flatMap(plugin => plugin.defaultExtensionInstances),
+    {
+      id: 'core.router',
+      at: 'root/default',
+      extension: RouteExtension,
+      config: undefined,
+    },
+  ];
+
+  const attachmentMap = new Map<
+    string,
+    Map<string, ExtensionInstanceConfig[]>
+  >();
+  for (const config of extensionInstanceConfigs) {
+    const [extensionId, pointId = 'default'] = config.at.split('/');
+
+    let pointMap = attachmentMap.get(extensionId);
+    if (!pointMap) {
+      pointMap = new Map();
+      attachmentMap.set(extensionId, pointMap);
+    }
+
+    let instances = pointMap.get(pointId);
+    if (!instances) {
+      instances = [];
+      pointMap.set(pointId, instances);
+    }
+
+    instances.push(config);
+  }
+
+  const instances = new Map<string, ExtensionInstance>();
+
+  function createInstance(config: ExtensionInstanceConfig): ExtensionInstance {
+    const existingInstance = instances.get(config.id);
+    if (existingInstance) {
+      return existingInstance;
+    }
+
+    const attachments = Object.fromEntries(
+      Array.from(attachmentMap.get(config.id)?.entries() ?? []).map(
+        ([inputName, attachmentConfigs]) => [
+          inputName,
+          attachmentConfigs.map(createInstance),
+        ],
+      ),
+    );
+
+    return createExtensionInstance({
+      id: config.id,
+      config: config.config,
+      extension: config.extension,
+      attachments,
+    });
+  }
+
+  const rootConfigs = attachmentMap.get('root')?.get('default') ?? [];
+  const rootInstances = rootConfigs.map(instanceConfig =>
+    createInstance(instanceConfig),
+  );
+
+  return {
+    createRoot() {
+      const rootComponents = rootInstances.map(
+        e =>
+          e.data.get(
+            coreExtensionData.reactComponent.id,
+          ) as typeof coreExtensionData.reactComponent.T,
+      );
+      return (
+        <>
+          {rootComponents.map(Component => (
+            <Component />
+          ))}
+        </>
+      );
+    },
+  };
+}
+
+/* graphiql package */
+
+const GraphiqlPageExtension = createExtension({
+  output: {
+    component: coreExtensionData.reactComponent,
+    path: coreExtensionData.routePath,
+  },
+  factory({ bind, config }) {
+    bind.component(() => {
+      return <GraphiQLPage />;
+    });
+    // TODO stop it. I'm serious
+    bind.path((config as { path: string }).path);
+  },
+});
+
+const graphiqlPlugin = createPlugin({
+  id: 'graphiql',
+  defaultExtensionInstances: [
+    {
+      id: 'graphiql.page',
+      at: 'core.router/routes',
+      extension: GraphiqlPageExtension,
+      config: { path: '/graphiql' },
+    },
+  ],
 });
 
 /* app.tsx */
 
 const app = createApp({
+  plugins: [graphiqlPlugin],
   // bindRoutes({ bind }) {
   //   bind(catalogPlugin.externalRoutes, {
   //     createComponent: scaffolderPlugin.routes.root,
@@ -156,50 +311,54 @@ const app = createApp({
   // },
 });
 
-const routes = (
-  <FlatRoutes>
-    {/* <Route path="/" element={<Navigate to="catalog" />} />
-    <Route path="/catalog" element={<CatalogIndexPage />} />
-    <Route
-      path="/catalog/:namespace/:kind/:name"
-      element={<CatalogEntityPage />}
-    >
-      <EntityLayout>
-        <EntityLayout.Route path="/" title="Overview">
-          <Grid container spacing={3} alignItems="stretch">
-            <Grid item md={6} xs={12}>
-              <EntityAboutCard variant="gridItem" />
-            </Grid>
+const legacyApp = createLegacyApp({ plugins: [legacyGraphiqlPlugin] });
 
-            <Grid item md={4} xs={12}>
-              <EntityLinksCard />
-            </Grid>
-          </Grid>
-        </EntityLayout.Route>
+export default legacyApp.createRoot(app.createRoot());
 
-        <EntityLayout.Route path="/todos" title="TODOs">
-          <EntityTodoContent />
-        </EntityLayout.Route>
-      </EntityLayout>
-    </Route>
-    <Route
-      path="/catalog-import"
-      element={
-          <CatalogImportPage />
-      }
-    /> */}
-    {/* <Route
-      path="/tech-radar"
-      element={<TechRadarPage width={1500} height={800} />}
-    /> */}
-    <Route path="/graphiql" element={<GraphiQLPage />} />
-  </FlatRoutes>
-);
+// const routes = (
+//   <FlatRoutes>
+//     {/* <Route path="/" element={<Navigate to="catalog" />} />
+//     <Route path="/catalog" element={<CatalogIndexPage />} />
+//     <Route
+//       path="/catalog/:namespace/:kind/:name"
+//       element={<CatalogEntityPage />}
+//     >
+//       <EntityLayout>
+//         <EntityLayout.Route path="/" title="Overview">
+//           <Grid container spacing={3} alignItems="stretch">
+//             <Grid item md={6} xs={12}>
+//               <EntityAboutCard variant="gridItem" />
+//             </Grid>
 
-export default app.createRoot(
-  <>
-    {/* <AlertDisplay transientTimeoutMs={2500} />
-    <OAuthRequestDialog /> */}
-    <AppRouter>{routes}</AppRouter>
-  </>,
-);
+//             <Grid item md={4} xs={12}>
+//               <EntityLinksCard />
+//             </Grid>
+//           </Grid>
+//         </EntityLayout.Route>
+
+//         <EntityLayout.Route path="/todos" title="TODOs">
+//           <EntityTodoContent />
+//         </EntityLayout.Route>
+//       </EntityLayout>
+//     </Route>
+//     <Route
+//       path="/catalog-import"
+//       element={
+//           <CatalogImportPage />
+//       }
+//     /> */}
+//     {/* <Route
+//       path="/tech-radar"
+//       element={<TechRadarPage width={1500} height={800} />}
+//     /> */}
+//     <Route path="/graphiql" element={<GraphiQLPage />} />
+//   </FlatRoutes>
+// );
+
+// export default app.createRoot(
+//   <>
+//     {/* <AlertDisplay transientTimeoutMs={2500} />
+//     <OAuthRequestDialog /> */}
+//     <AppRouter>{routes}</AppRouter>
+//   </>,
+// );
