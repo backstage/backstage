@@ -181,7 +181,7 @@ _Note: When annotating with `pagerduty.com/service-id`, the feature to Create In
 If you want to override the default URL used for events, you can add it to `app-config.yaml`:
 
 ```yaml
-pagerduty:
+pagerDuty:
   eventsBaseUrl: 'https://events.pagerduty.com/v2'
 ```
 
