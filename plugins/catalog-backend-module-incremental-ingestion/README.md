@@ -121,7 +121,7 @@ To create an Incremental Entity Provider, you need to know how to retrieve a sin
 Here is the type definition for an Incremental Entity Provider.
 
 ```ts
-interface IncrementalEntityProvider<TCursor, TContext> {
+interface IncrementalEntityProvider<Cursor, Context> {
   /**
    * This name must be unique between all of the entity providers
    * operating in the catalog.
@@ -137,9 +137,9 @@ interface IncrementalEntityProvider<TCursor, TContext> {
    * the next page after this one.
    */
   next(
-    context: TContext,
-    cursor?: TCursor,
-  ): Promise<EntityIteratorResult<TCursor>>;
+    context: Context,
+    cursor?: Cursor,
+  ): Promise<EntityIteratorResult<Cursor>>;
   /**
    * Do any setup and teardown necessary in order to provide the
    * context for fetching pages. This should always invoke `burst` in
@@ -147,7 +147,7 @@ interface IncrementalEntityProvider<TCursor, TContext> {
    *
    * @param burst - a function which performs a series of iterations
    */
-  around(burst: (context: TContext) => Promise<void>): Promise<void>;
+  around(burst: (context: Context) => Promise<void>): Promise<void>;
 }
 ```
 
@@ -175,17 +175,17 @@ import { IncrementalEntityProvider } from '@backstage/plugin-catalog-backend-mod
 
 // This will include your pagination information, let's say our API accepts a `page` parameter.
 // In this case, the cursor will include `page`
-interface MyApiCursor {
+interface Cursor {
   page: number;
 }
 
 // This interface describes the type of data that will be passed to your burst function.
-interface MyContext {
+interface Context {
   apiClient: MyApiClient;
 }
 
 export class MyIncrementalEntityProvider
-  implements IncrementalEntityProvider<MyApiCursor, MyContext>
+  implements IncrementalEntityProvider<Cursor, Context>
 {
   getProviderName() {
     return `MyIncrementalEntityProvider`;
@@ -203,7 +203,7 @@ export class MyIncrementalEntityProvider
     return `MyIncrementalEntityProvider`;
   }
 
-  async around(burst: (context: MyContext) => Promise<void>): Promise<void> {
+  async around(burst: (context: Context) => Promise<void>): Promise<void> {
     const apiClient = new MyApiClient();
 
     await burst({ apiClient });
@@ -229,7 +229,7 @@ export class MyIncrementalEntityProvider
     return `MyIncrementalEntityProvider`;
   }
 
-  async around(burst: (context: MyContext) => Promise<void>): Promise<void> {
+  async around(burst: (context: Context) => Promise<void>): Promise<void> {
     const apiClient = new MyApiClient(this.token);
 
     await burst({ apiClient });
@@ -240,7 +240,7 @@ export class MyIncrementalEntityProvider
 The last step is to implement the actual `next` method that will accept the cursor, call the API, process the result and return the result.
 
 ```ts
-export class MyIncrementalEntityProvider implements IncrementalEntityProvider<MyApiCursor, MyContext> {
+export class MyIncrementalEntityProvider implements IncrementalEntityProvider<Cursor, Context> {
 
   token: string;
 
@@ -253,14 +253,14 @@ export class MyIncrementalEntityProvider implements IncrementalEntityProvider<My
   }
 
 
-  async around(burst: (context: MyContext) => Promise<void>): Promise<void> {
+  async around(burst: (context: Context) => Promise<void>): Promise<void> {
 
     const apiClient = new MyApiClient(this.token)
 
     await burst({ apiClient })
   }
 
-  async next(context: MyContext, cursor?: MyApiCursor = { page: 1 }): Promise<EntityIteratorResult<MyApiCursor>> {
+  async next(context: Context, cursor?: Cursor = { page: 1 }): Promise<EntityIteratorResult<Cursor>> {
     const { apiClient } = context;
 
     // call your API with the current cursor
