@@ -22,6 +22,7 @@ import { createApp as createLegacyApp } from '@backstage/app-defaults';
 import React, { ComponentType } from 'react';
 import { BrowserRouter, useRoutes } from 'react-router-dom';
 import mapValues from 'lodash/mapValues';
+import { Config, ConfigReader } from '@backstage/config';
 
 /* core */
 
@@ -183,9 +184,70 @@ const RouteExtension = createExtension({
   },
 });
 
+// Since we'll never merge arrays in config the config reader context
+// isn't too much of a help. Fall back to manual config reading logic
+// as the Config interface makes it quite hard for us otherwise.
+function readAppExtensionConfigs(
+  rootConfig: Config,
+): Partial<ExtensionInstanceConfig>[] {
+  const arr = rootConfig.getOptional('app.extensions');
+  if (!Array.isArray(arr)) {
+    if (arr === undefined) {
+      return [];
+    }
+    // This will throw, and show which part of config had the wrong type
+    rootConfig.getConfigArray('app.extensions');
+    return [];
+  }
+
+  return arr.map((value, index) => {
+    function errorMsg(msg: string, key?: string, prop?: string) {
+      return `Invalid extension configuration at app.extensions[${index}]${
+        key ? `[${key}]` : ''
+      }${prop ? `.${prop}` : ''}, ${msg}`;
+    }
+
+    if (typeof value === 'string') {
+      return { id: value };
+    } else if (
+      typeof value !== 'object' ||
+      value === null ||
+      Array.isArray(value)
+    ) {
+      throw new Error(errorMsg('must be a string or an object'));
+    }
+
+    const keys = Object.keys(value);
+    if (keys.length !== 1) {
+      const joinedKeys = `"${keys.join('", "')}"`;
+      throw new Error(errorMsg(`must have exactly one key, got ${joinedKeys}`));
+    }
+
+    const key = keys[0];
+    const obj = value[key];
+    if (typeof obj !== 'object' || obj === null || Array.isArray(obj)) {
+      throw new Error(errorMsg('must be an object', key));
+    }
+    const at = obj.at;
+    if (at !== undefined && typeof at !== 'string') {
+      throw new Error(errorMsg('must be a string', key, 'at'));
+    }
+    const extension = obj.extension;
+    if (extension !== undefined && typeof extension !== 'string') {
+      throw new Error(errorMsg('must be a string', key, 'extension'));
+    }
+    if (extension) {
+      throw new Error('TODO: implement extension resolution');
+    }
+    return { id: key, at, config: obj.config /* validate later */ };
+  });
+}
+
 function createApp(options: { plugins: BackstagePlugin[] }): {
   createRoot(): JSX.Element;
 } {
+  const appConfig = ConfigReader.fromConfigs(process.env.APP_CONFIG as any);
+
   // pull in default extension instance from discovered packages
   // apply config to adjust default extension instances and add more
   const extensionInstanceConfigs = [
@@ -198,12 +260,40 @@ function createApp(options: { plugins: BackstagePlugin[] }): {
     },
   ];
 
+  const appExtensionConfigs = readAppExtensionConfigs(appConfig);
+  for (const appExtensionConfig of appExtensionConfigs) {
+    const existingConfig = extensionInstanceConfigs.find(
+      e => e.id === appExtensionConfig.id,
+    );
+    if (existingConfig) {
+      if (appExtensionConfig.at) {
+        existingConfig.at = appExtensionConfig.at;
+      }
+      if (appExtensionConfig.extension) {
+        // TODO: do we want to reset config here? it might be completely
+        // unrelated to the previous one
+        existingConfig.extension = appExtensionConfig.extension;
+      }
+      if (appExtensionConfig.config) {
+        // TODO: merge config?
+        existingConfig.config = appExtensionConfig.config;
+      }
+    } else if (appExtensionConfig.id) {
+      const { id, at, extension, config } = appExtensionConfig;
+      if (!at || !extension) {
+        throw new Error(`Extension ${appExtensionConfig.id} is incomplete`);
+      }
+      extensionInstanceConfigs.push({ id, at, extension, config });
+    }
+  }
+
+  // Create attachment map so that we can look attachments up during instance creation
   const attachmentMap = new Map<
     string,
     Map<string, ExtensionInstanceConfig[]>
   >();
-  for (const config of extensionInstanceConfigs) {
-    const [extensionId, pointId = 'default'] = config.at.split('/');
+  for (const instanceConfig of extensionInstanceConfigs) {
+    const [extensionId, pointId = 'default'] = instanceConfig.at.split('/');
 
     let pointMap = attachmentMap.get(extensionId);
     if (!pointMap) {
@@ -217,19 +307,21 @@ function createApp(options: { plugins: BackstagePlugin[] }): {
       pointMap.set(pointId, instances);
     }
 
-    instances.push(config);
+    instances.push(instanceConfig);
   }
 
   const instances = new Map<string, ExtensionInstance>();
 
-  function createInstance(config: ExtensionInstanceConfig): ExtensionInstance {
-    const existingInstance = instances.get(config.id);
+  function createInstance(
+    instanceConfig: ExtensionInstanceConfig,
+  ): ExtensionInstance {
+    const existingInstance = instances.get(instanceConfig.id);
     if (existingInstance) {
       return existingInstance;
     }
 
     const attachments = Object.fromEntries(
-      Array.from(attachmentMap.get(config.id)?.entries() ?? []).map(
+      Array.from(attachmentMap.get(instanceConfig.id)?.entries() ?? []).map(
         ([inputName, attachmentConfigs]) => [
           inputName,
           attachmentConfigs.map(createInstance),
@@ -238,9 +330,9 @@ function createApp(options: { plugins: BackstagePlugin[] }): {
     );
 
     return createExtensionInstance({
-      id: config.id,
-      config: config.config,
-      extension: config.extension,
+      id: instanceConfig.id,
+      config: instanceConfig.config,
+      extension: instanceConfig.extension,
       attachments,
     });
   }

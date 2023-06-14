@@ -2,6 +2,7 @@
 app:
   packages: 'all' # ✨
   extensions:
+    - core.router
     - graphiql.page:
         config:
           path: /
