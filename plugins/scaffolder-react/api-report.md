@@ -8,9 +8,9 @@
 import { ApiHolder } from '@backstage/core-plugin-api';
 import { ApiRef } from '@backstage/core-plugin-api';
 import { Extension } from '@backstage/core-plugin-api';
-import { FieldProps } from '@rjsf/core';
-import { FieldValidation } from '@rjsf/core';
-import type { FormProps } from '@rjsf/core-v5';
+import { FieldProps } from '@rjsf/utils';
+import { FieldValidation } from '@rjsf/utils';
+import type { FormProps } from '@rjsf/core';
 import { JsonObject } from '@backstage/types';
 import { JSONSchema7 } from 'json-schema';
 import { JsonValue } from '@backstage/types';
@@ -74,7 +74,7 @@ export interface FieldExtensionComponentProps<
   TUiOptions = unknown,
 > extends FieldProps<TFieldReturnValue> {
   // (undocumented)
-  uiSchema: FieldProps['uiSchema'] & {
+  uiSchema?: FieldProps<TFieldReturnValue>['uiSchema'] & {
     'ui:options'?: TUiOptions;
   };
 }

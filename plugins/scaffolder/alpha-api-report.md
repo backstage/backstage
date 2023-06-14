@@ -6,7 +6,7 @@
 /// <reference types="react" />
 
 import { FormProps as FormProps_2 } from '@backstage/plugin-scaffolder-react/alpha';
-import type { FormProps as FormProps_3 } from '@rjsf/core-v5';
+import type { FormProps as FormProps_3 } from '@rjsf/core';
 import { LayoutOptions } from '@backstage/plugin-scaffolder-react';
 import { NextFieldExtensionOptions } from '@backstage/plugin-scaffolder-react/alpha';
 import { PropsWithChildren } from 'react';

@@ -34,7 +34,7 @@ export const MyGroupsPicker = (props: MyGroupsPickerProps) => {
   const {
     schema: { title, description },
     required,
-    rawErrors,
+    rawErrors = [],
     onChange,
   } = props;
 
@@ -89,7 +89,7 @@ export const MyGroupsPicker = (props: MyGroupsPickerProps) => {
     <FormControl
       margin="normal"
       required={required}
-      error={rawErrors?.length > 0}
+      error={rawErrors.length > 0}
     >
       <Autocomplete
         id="OwnershipEntityRefPicker-dropdown"

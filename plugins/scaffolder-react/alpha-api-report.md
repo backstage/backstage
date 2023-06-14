@@ -12,7 +12,7 @@ import { Extension } from '@backstage/core-plugin-api';
 import { FieldExtensionComponent } from '@backstage/plugin-scaffolder-react';
 import { FieldProps } from '@rjsf/utils';
 import { FieldValidation } from '@rjsf/utils';
-import { FormProps as FormProps_2 } from '@rjsf/core-v5';
+import { FormProps as FormProps_2 } from '@rjsf/core';
 import { IconComponent } from '@backstage/core-plugin-api';
 import { JsonObject } from '@backstage/types';
 import { JsonValue } from '@backstage/types';
