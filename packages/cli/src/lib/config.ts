@@ -106,7 +106,7 @@ export async function loadCliConfig(options: Options) {
     const frontendAppConfigs = schema.process(appConfigs, {
       visibility: options.fullVisibility
         ? ['frontend', 'backend', 'secret']
-        : ['frontend'],
+        : ['frontend', 'backend'],
       withFilteredKeys: options.withFilteredKeys,
       withDeprecatedKeys: options.withDeprecatedKeys,
       ignoreSchemaErrors: !options.strict,
