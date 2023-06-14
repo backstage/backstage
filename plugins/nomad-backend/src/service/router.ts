@@ -72,9 +72,7 @@ export async function createRouter(
     if (allocationsResp.status !== 200) {
       const body = await allocationsResp.text();
       logger.error(`failed to call /v1/allocations endpoint: ${body}`);
-      res.status(allocationsResp.status).json({
-        message: body,
-      });
+      res.status(allocationsResp.status).json({ message: body });
       return;
     }
 
@@ -114,9 +112,7 @@ export async function createRouter(
     if (apiResp.status !== 200) {
       const body = await apiResp.text();
       logger.error(`failed to call /v1/job/:job_id/versions endpoint: ${body}`);
-      resp.status(apiResp.status).send({
-        message: body,
-      });
+      resp.status(apiResp.status).json({ message: body });
       return;
     }
 
