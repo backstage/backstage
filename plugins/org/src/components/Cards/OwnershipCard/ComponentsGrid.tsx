@@ -42,7 +42,6 @@ const useStyles = makeStyles((theme: BackstageTheme) =>
       boxShadow: theme.shadows[2],
       borderRadius: '4px',
       padding: theme.spacing(2),
-      color: theme.palette.common.white,
       transition: `${theme.transitions.duration.standard}ms`,
       '&:hover': {
         boxShadow: theme.shadows[4],
@@ -58,6 +57,8 @@ const useStyles = makeStyles((theme: BackstageTheme) =>
     entityTypeBox: {
       background: (props: { type: string }) =>
         theme.getPageTheme({ themeId: props.type }).backgroundImage,
+      color: (props: { type: string }) =>
+        theme.getPageTheme({ themeId: props.type }).fontColor,
     },
   }),
 );
