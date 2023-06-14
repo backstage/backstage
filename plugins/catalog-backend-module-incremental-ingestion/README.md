@@ -121,7 +121,7 @@ To create an Incremental Entity Provider, you need to know how to retrieve a sin
 Here is the type definition for an Incremental Entity Provider.
 
 ```ts
-interface IncrementalEntityProvider<Cursor, Context> {
+interface IncrementalEntityProvider<TCursor, TContext> {
   /**
    * This name must be unique between all of the entity providers
    * operating in the catalog.
@@ -137,9 +137,9 @@ interface IncrementalEntityProvider<Cursor, Context> {
    * the next page after this one.
    */
   next(
-    context: Context,
-    cursor?: Cursor,
-  ): Promise<EntityIteratorResult<Cursor>>;
+    context: TContext,
+    cursor?: TCursor,
+  ): Promise<EntityIteratorResult<TCursor>>;
   /**
    * Do any setup and teardown necessary in order to provide the
    * context for fetching pages. This should always invoke `burst` in
@@ -147,7 +147,7 @@ interface IncrementalEntityProvider<Cursor, Context> {
    *
    * @param burst - a function which performs a series of iterations
    */
-  around(burst: (context: Context) => Promise<void>): Promise<void>;
+  around(burst: (context: TContext) => Promise<void>): Promise<void>;
 }
 ```
 
@@ -175,17 +175,17 @@ import { IncrementalEntityProvider } from '@backstage/plugin-catalog-backend-mod
 
 // This will include your pagination information, let's say our API accepts a `page` parameter.
 // In this case, the cursor will include `page`
-interface Cursor {
+interface TCursor {
   page: number;
 }
 
 // This interface describes the type of data that will be passed to your burst function.
-interface Context {
+interface TContext {
   apiClient: MyApiClient;
 }
 
 export class MyIncrementalEntityProvider
-  implements IncrementalEntityProvider<Cursor, Context>
+  implements IncrementalEntityProvider<TCursor, TContext>
 {
   getProviderName() {
     return `MyIncrementalEntityProvider`;
@@ -197,13 +197,13 @@ export class MyIncrementalEntityProvider
 
 ```ts
 export class MyIncrementalEntityProvider
-  implements IncrementalEntityProvider<Cursor, Context>
+  implements IncrementalEntityProvider<TCursor, TContext>
 {
   getProviderName() {
     return `MyIncrementalEntityProvider`;
   }
 
-  async around(burst: (context: Context) => Promise<void>): Promise<void> {
+  async around(burst: (context: TContext) => Promise<void>): Promise<void> {
     const apiClient = new MyApiClient();
 
     await burst({ apiClient });
@@ -217,7 +217,7 @@ If you need to pass a token to your API, then you can create a constructor that 
 
 ```ts
 export class MyIncrementalEntityProvider
-  implements IncrementalEntityProvider<Cursor, Context>
+  implements IncrementalEntityProvider<TCursor, TContext>
 {
   token: string;
 
@@ -229,7 +229,7 @@ export class MyIncrementalEntityProvider
     return `MyIncrementalEntityProvider`;
   }
 
-  async around(burst: (context: Context) => Promise<void>): Promise<void> {
+  async around(burst: (context: TContext) => Promise<void>): Promise<void> {
     const apiClient = new MyApiClient(this.token);
 
     await burst({ apiClient });
@@ -240,7 +240,7 @@ export class MyIncrementalEntityProvider
 The last step is to implement the actual `next` method that will accept the cursor, call the API, process the result and return the result.
 
 ```ts
-export class MyIncrementalEntityProvider implements IncrementalEntityProvider<Cursor, Context> {
+export class MyIncrementalEntityProvider implements IncrementalEntityProvider<TCursor, TContext> {
 
   token: string;
 
@@ -253,14 +253,14 @@ export class MyIncrementalEntityProvider implements IncrementalEntityProvider<Cu
   }
 
 
-  async around(burst: (context: Context) => Promise<void>): Promise<void> {
+  async around(burst: (context: TContext) => Promise<void>): Promise<void> {
 
     const apiClient = new MyApiClient(this.token)
 
     await burst({ apiClient })
   }
 
-  async next(context: Context, cursor?: Cursor = { page: 1 }): Promise<EntityIteratorResult<Cursor>> {
+  async next(context: TContext, cursor?: TCursor = { page: 1 }): Promise<EntityIteratorResult<TCursor>> {
     const { apiClient } = context;
 
     // call your API with the current cursor
