@@ -37,8 +37,7 @@ describe('The production Airbrake API', () => {
     );
 
     const groups = await productionApi.fetchGroups('123456');
-
-    expect(groups).toEqual(mockGroupsData);
+    expect(groups).toStrictEqual(mockGroupsData);
   });
 
   it('throws if fetching groups was unsuccessful', async () => {
