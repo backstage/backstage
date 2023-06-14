@@ -18,7 +18,7 @@ export interface Config {
    * Configuration for the PagerDuty plugin
    * @visibility frontend
    */
-  pagerduty?: {
+  pagerDuty?: {
     /**
      * Optional Events Base URL to override the default.
      * @visibility frontend
