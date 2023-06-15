@@ -116,16 +116,137 @@ describe('<OwnedEntityPicker />', () => {
       identityApi.getBackstageIdentity.mockResolvedValue(identity);
     });
 
-    it('searches for users and groups', async () => {
+    it('searches for all owned entities', async () => {
       await renderInTestApp(
         <Wrapper>
           <OwnedEntityPicker {...props} />
         </Wrapper>,
       );
 
+      expect(identityApi.getBackstageIdentity).toHaveBeenCalled();
+
       expect(catalogApi.getEntities).toHaveBeenCalledWith({
         filter: {
           [`relations.${RELATION_OWNED_BY}`]: identity.ownershipEntityRefs,
+        },
+      });
+    });
+  });
+
+  describe('with allowedKinds', () => {
+    beforeEach(() => {
+      uiSchema = { 'ui:options': { allowedKinds: ['User'] } };
+      props = {
+        onChange,
+        schema,
+        required,
+        uiSchema,
+        rawErrors,
+        formData,
+      } as unknown as FieldProps<any>;
+
+      catalogApi.getEntities.mockResolvedValue({ items: entities });
+      identityApi.getBackstageIdentity.mockResolvedValue(identity);
+    });
+
+    it('searches for users', async () => {
+      await renderInTestApp(
+        <Wrapper>
+          <OwnedEntityPicker {...props} />
+        </Wrapper>,
+      );
+
+      expect(identityApi.getBackstageIdentity).toHaveBeenCalled();
+
+      expect(catalogApi.getEntities).toHaveBeenCalledWith({
+        filter: {
+          kind: ['User'],
+          [`relations.${RELATION_OWNED_BY}`]: identity.ownershipEntityRefs,
+        },
+      });
+    });
+  });
+
+  describe('with catalogFilter', () => {
+    beforeEach(() => {
+      uiSchema = {
+        'ui:options': {
+          catalogFilter: {
+            kind: ['Group'],
+            'spec.type': 'team',
+          },
+        },
+      };
+      props = {
+        onChange,
+        schema,
+        required,
+        uiSchema,
+        rawErrors,
+        formData,
+      } as unknown as FieldProps<any>;
+
+      catalogApi.getEntities.mockResolvedValue({ items: entities });
+      identityApi.getBackstageIdentity.mockResolvedValue(identity);
+    });
+
+    it('searches for group entities of type team', async () => {
+      await renderInTestApp(
+        <Wrapper>
+          <OwnedEntityPicker {...props} />
+        </Wrapper>,
+      );
+
+      expect(identityApi.getBackstageIdentity).toHaveBeenCalled();
+
+      expect(catalogApi.getEntities).toHaveBeenCalledWith({
+        filter: {
+          kind: ['Group'],
+          'spec.type': 'team',
+          [`relations.${RELATION_OWNED_BY}`]: identity.ownershipEntityRefs,
+        },
+      });
+    });
+  });
+
+  describe('catalogFilter should take precedence over allowedKinds', () => {
+    beforeEach(() => {
+      uiSchema = {
+        'ui:options': {
+          allowedKinds: ['system'],
+          catalogFilter: {
+            kind: ['Group', 'User'],
+            'spec.type': ['team', 'business-unit'],
+          },
+        },
+      };
+      props = {
+        onChange,
+        schema,
+        required,
+        uiSchema,
+        rawErrors,
+        formData,
+      } as unknown as FieldProps<any>;
+
+      catalogApi.getEntities.mockResolvedValue({ items: entities });
+      identityApi.getBackstageIdentity.mockResolvedValue(identity);
+    });
+
+    it('searches for users and groups or teams and business units', async () => {
+      await renderInTestApp(
+        <Wrapper>
+          <OwnedEntityPicker {...props} />
+        </Wrapper>,
+      );
+
+      expect(identityApi.getBackstageIdentity).toHaveBeenCalled();
+
+      expect(catalogApi.getEntities).toHaveBeenCalledWith({
+        filter: {
+          kind: ['Group', 'User'],
+          [`relations.${RELATION_OWNED_BY}`]: identity.ownershipEntityRefs,
+          'spec.type': ['team', 'business-unit'],
         },
       });
     });

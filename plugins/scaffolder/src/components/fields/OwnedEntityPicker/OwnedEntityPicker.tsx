@@ -50,10 +50,10 @@ export const OwnedEntityPicker = (props: OwnedEntityPickerProps) => {
   const defaultKind = uiSchema['ui:options']?.defaultKind;
 
   const catalogFilter = {
+    ...(allowedKinds !== undefined ? { kind: allowedKinds } : {}),
     ...(uiSchema['ui:options']?.catalogFilter !== undefined
       ? uiSchema['ui:options']?.catalogFilter
       : {}),
-    ...(allowedKinds !== undefined ? { kind: allowedKinds } : {}),
     [`relations.${RELATION_OWNED_BY}`]: identityRefs || [],
   };
 
