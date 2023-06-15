@@ -189,7 +189,7 @@ export class EntityNamespaceFilter implements EntityFilter {
   constructor(readonly values: string[]) {}
 
   getCatalogFilters(): Record<string, string | string[]> {
-    return { 'spec.lifecycle': this.values };
+    return { 'metadata.namespace': this.values };
   }
   filterEntity(entity: Entity): boolean {
     return this.values.some(v => entity.metadata.namespace === v);
