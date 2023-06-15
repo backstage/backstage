@@ -13,7 +13,11 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import { DiscoveryApi, createApiRef } from '@backstage/core-plugin-api';
+import {
+  DiscoveryApi,
+  createApiRef,
+  FetchApi,
+} from '@backstage/core-plugin-api';
 import { ResponseError } from '@backstage/errors';
 import { UnprocessedEntity } from '../types';
 
@@ -35,13 +39,13 @@ export const catalogUnprocessedEntitiesApiRef =
 export class CatalogUnprocessedEntitiesApi {
   url: string = '';
 
-  constructor(public discovery: DiscoveryApi) {}
+  constructor(public discovery: DiscoveryApi, public fetchApi: FetchApi) {}
 
   private async fetch<T>(path: string, init?: RequestInit): Promise<T> {
     if (!this.url) {
       this.url = await this.discovery.getBaseUrl('catalog');
     }
-    const resp = await fetch(`${this.url}/${path}`, init);
+    const resp = await this.fetchApi.fetch(`${this.url}/${path}`, init);
     if (!resp.ok) {
       throw await ResponseError.fromResponse(resp);
     }

@@ -1,7 +1,6 @@
 {
-  "name": "@backstage/plugin-pagerduty",
-  "description": "A Backstage plugin that integrates towards PagerDuty",
-  "version": "0.5.12-next.3",
+  "name": "@backstage/plugin-nomad",
+  "version": "0.0.0",
   "main": "src/index.ts",
   "types": "src/index.ts",
   "license": "Apache-2.0",
@@ -13,62 +12,70 @@
   "backstage": {
     "role": "frontend-plugin"
   },
-  "homepage": "https://backstage.io",
-  "repository": {
-    "type": "git",
-    "url": "https://github.com/backstage/backstage",
-    "directory": "plugins/pagerduty"
-  },
-  "keywords": [
-    "backstage",
-    "pagerduty"
-  ],
   "scripts": {
-    "build": "backstage-cli package build",
     "start": "backstage-cli package start",
+    "build": "backstage-cli package build",
     "lint": "backstage-cli package lint",
     "test": "backstage-cli package test",
+    "clean": "backstage-cli package clean",
     "prepack": "backstage-cli package prepack",
-    "postpack": "backstage-cli package postpack",
-    "clean": "backstage-cli package clean"
+    "postpack": "backstage-cli package postpack"
   },
   "dependencies": {
     "@backstage/catalog-model": "workspace:^",
+    "@backstage/config": "workspace:^",
     "@backstage/core-components": "workspace:^",
     "@backstage/core-plugin-api": "workspace:^",
-    "@backstage/errors": "workspace:^",
     "@backstage/plugin-catalog-react": "workspace:^",
-    "@backstage/plugin-home-react": "workspace:^",
     "@backstage/theme": "workspace:^",
-    "@material-ui/core": "^4.12.2",
+    "@material-ui/core": "^4.9.13",
     "@material-ui/icons": "^4.9.1",
-    "@material-ui/lab": "4.0.0-alpha.61",
-    "@types/react": "^16.13.1 || ^17.0.0",
-    "classnames": "^2.2.6",
-    "luxon": "^3.0.0",
+    "@material-ui/lab": "^4.0.0-alpha.60",
+    "luxon": "^3.3.0",
     "react-use": "^17.2.4"
   },
   "peerDependencies": {
     "react": "^16.13.1 || ^17.0.0",
-    "react-dom": "^16.13.1 || ^17.0.0",
-    "react-router-dom": "6.0.0-beta.0 || ^6.3.0"
+    "react-router-dom": "*"
   },
   "devDependencies": {
     "@backstage/cli": "workspace:^",
     "@backstage/core-app-api": "workspace:^",
     "@backstage/dev-utils": "workspace:^",
     "@backstage/test-utils": "workspace:^",
-    "@testing-library/dom": "^8.0.0",
     "@testing-library/jest-dom": "^5.10.1",
     "@testing-library/react": "^12.1.3",
     "@testing-library/user-event": "^14.0.0",
-    "@types/node": "^16.11.26",
+    "@types/node": "*",
     "cross-fetch": "^3.1.5",
     "msw": "^1.0.0"
   },
   "files": [
-    "dist",
-    "config.d.ts"
+    "dist"
   ],
-  "configSchema": "config.d.ts"
+  "configSchema": {
+    "$schema": "https://backstage.io/schema/config-v1",
+    "title": "@backstage/plugin-nomad",
+    "type": "object",
+    "properties": {
+      "nomad": {
+        "type": "object",
+        "properties": {
+          "addr": {
+            "type": "string",
+            "description": "The address of the Nomad API. See: https://developer.hashicorp.com/nomad/api-docs#addressing-and-ports",
+            "visibility": "frontend"
+          },
+          "token": {
+            "type": "string",
+            "description": "The token to call the Nomad API with. See: https://developer.hashicorp.com/nomad/api-docs#authentication",
+            "visibility": "secret"
+          }
+        },
+        "required": [
+          "addr"
+        ]
+      }
+    }
+  }
 }
