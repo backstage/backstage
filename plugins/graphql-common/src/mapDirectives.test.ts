@@ -754,9 +754,7 @@ describe('mapDirectives', () => {
     });
   });
 
-  // NOTE: Test skipped because of this issue: https://github.com/ardatan/graphql-tools/issues/4767
-  // eslint-disable-next-line jest/no-disabled-tests
-  it.skip('should resolve node using different loader', async () => {
+  it('should resolve node using different loader', async () => {
     const TestModule = createModule({
       id: 'test',
       typeDefs: gql`
