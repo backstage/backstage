@@ -15,6 +15,7 @@
  */
 import { z } from 'zod';
 import { makeFieldSchemaFromZod } from '../utils';
+import { entityQueryFilterExpressionSchema } from '../EntityPicker/schema';
 
 /**
  * @public
@@ -22,10 +23,15 @@ import { makeFieldSchemaFromZod } from '../utils';
 export const OwnedEntityPickerFieldSchema = makeFieldSchemaFromZod(
   z.string(),
   z.object({
+    /**
+     * @deprecated Use `catalogFilter` instead.
+     */
     allowedKinds: z
       .array(z.string())
       .optional()
-      .describe('List of kinds of entities to derive options from'),
+      .describe(
+        'DEPRECATED: Use `catalogFilter` instead. List of kinds of entities to derive options from',
+      ),
     defaultKind: z
       .string()
       .optional()
@@ -42,6 +48,11 @@ export const OwnedEntityPickerFieldSchema = makeFieldSchemaFromZod(
       .describe(
         'The default namespace. Options with this namespace will not be prefixed.',
       ),
+    catalogFilter: z
+      .array(entityQueryFilterExpressionSchema)
+      .or(entityQueryFilterExpressionSchema)
+      .optional()
+      .describe('List of key-value filter expression for entities'),
   }),
 );
 
