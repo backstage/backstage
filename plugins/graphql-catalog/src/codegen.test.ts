@@ -19,10 +19,11 @@ import { Types } from '@graphql-codegen/plugin-helpers';
 
 describe('graphql-catalog codegen', () => {
   it('should generate the correct code', async () => {
-    const files = (await generate(config, false)).map(
+    const [tsFile, graphqlFile] = (await generate(config, false)).map(
       (file: Types.FileOutput) => file.content,
     );
 
-    expect(files).toMatchSnapshot();
+    expect(tsFile).toMatchSnapshot('typescript');
+    expect(graphqlFile).toMatchSnapshot('graphql');
   });
 });
