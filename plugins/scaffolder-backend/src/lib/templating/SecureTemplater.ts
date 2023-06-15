@@ -115,6 +115,7 @@ export class SecureTemplater {
       templateFilters = {},
       templateGlobals = {},
     } = options;
+
     const isolate = new Isolate({ memoryLimit: 128 });
     const context = await isolate.createContext();
     const contextGlobal = context.global;
