@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { VM } from 'vm2';
+import { Isolate } from 'isolated-vm';
 import { resolvePackagePath } from '@backstage/backend-common';
 import fs from 'fs-extra';
 import { JsonValue } from '@backstage/types';
@@ -45,20 +45,14 @@ const { render, renderCompat } = (() => {
   });
   compatEnv.addFilter('jsonify', compatEnv.getFilter('dump'));
 
-  if (typeof templateFilters !== 'undefined') {
-    for (const [filterName, filterFn] of Object.entries(templateFilters)) {
-      env.addFilter(filterName, (...args) => JSON.parse(filterFn(...args)));
-    }
+  for (const name of JSON.parse(availableTemplateFilters)) {
+    env.addFilter(name, (...args) => JSON.parse(callFilter(name, args)));
   }
-
-  if (typeof templateGlobals !== 'undefined') {
-    for (const [globalName, global] of Object.entries(templateGlobals)) {
-      if (typeof global === 'function') {
-        env.addGlobal(globalName, (...args) => JSON.parse(global(...args)));
-      } else {
-        env.addGlobal(globalName, JSON.parse(global));
-      }
-    }
+  for (const [name, value] of Object.entries(JSON.parse(availableTemplateGlobals))) {
+    env.addGlobal(name, value);
+  }
+  for (const name of JSON.parse(availableTemplateCallbacks)) {
+    env.addGlobal(name, (...args) => JSON.parse(callGlobal(name, args)));
   }
 
   let uninstallCompat = undefined;
@@ -116,35 +110,14 @@ export type SecureTemplateRenderer = (
 
 export class SecureTemplater {
   static async loadRenderer(options: SecureTemplaterOptions = {}) {
-    const { cookiecutterCompat, templateFilters, templateGlobals } = options;
-    const sandbox: Record<string, any> = {};
-
-    if (templateFilters) {
-      sandbox.templateFilters = Object.fromEntries(
-        Object.entries(templateFilters)
-          .filter(([_, filterFunction]) => !!filterFunction)
-          .map(([filterName, filterFunction]) => [
-            filterName,
-            (...args: JsonValue[]) => JSON.stringify(filterFunction(...args)),
-          ]),
-      );
-    }
-    if (templateGlobals) {
-      sandbox.templateGlobals = Object.fromEntries(
-        Object.entries(templateGlobals)
-          .filter(([_, global]) => !!global)
-          .map(([globalName, global]) => {
-            if (typeof global === 'function') {
-              return [
-                globalName,
-                (...args: JsonValue[]) => JSON.stringify(global(...args)),
-              ];
-            }
-            return [globalName, JSON.stringify(global)];
-          }),
-      );
-    }
-    const vm = new VM({ sandbox });
+    const {
+      cookiecutterCompat,
+      templateFilters = {},
+      templateGlobals = {},
+    } = options;
+    const isolate = new Isolate({ memoryLimit: 128 });
+    const context = await isolate.createContext();
+    const contextGlobal = context.global;
 
     const nunjucksSource = await fs.readFile(
       resolvePackagePath(
@@ -154,20 +127,75 @@ export class SecureTemplater {
       'utf-8',
     );
 
-    vm.run(mkScript(nunjucksSource));
+    const nunjucksScript = await isolate.compileScript(
+      mkScript(nunjucksSource),
+    );
+
+    const availableFilters = Object.keys(templateFilters);
+
+    await contextGlobal.set(
+      'availableTemplateFilters',
+      JSON.stringify(availableFilters),
+    );
+
+    const globalCallbacks = [];
+    const globalValues: Record<string, unknown> = {};
+    for (const [name, value] of Object.entries(templateGlobals)) {
+      if (typeof value === 'function') {
+        globalCallbacks.push(name);
+      } else {
+        globalValues[name] = value;
+      }
+    }
+
+    await contextGlobal.set(
+      'availableTemplateGlobals',
+      JSON.stringify(globalValues),
+    );
+    await contextGlobal.set(
+      'availableTemplateCallbacks',
+      JSON.stringify(globalCallbacks),
+    );
+
+    await contextGlobal.set(
+      'callFilter',
+      (filterName: string, args: JsonValue[]) => {
+        if (!Object.hasOwn(templateFilters, filterName)) {
+          return '';
+        }
+        return JSON.stringify(templateFilters[filterName](...args));
+      },
+    );
+
+    await contextGlobal.set(
+      'callGlobal',
+      (globalName: string, args: JsonValue[]) => {
+        if (!Object.hasOwn(templateGlobals, globalName)) {
+          return '';
+        }
+        const global = templateGlobals[globalName];
+        if (typeof global !== 'function') {
+          return '';
+        }
+        return JSON.stringify(global(...args));
+      },
+    );
+
+    await nunjucksScript.run(context);
 
     const render: SecureTemplateRenderer = (template, values) => {
-      if (!vm) {
+      if (!context) {
         throw new Error('SecureTemplater has not been initialized');
       }
-      vm.setGlobal('templateStr', template);
-      vm.setGlobal('templateValues', JSON.stringify(values));
+
+      contextGlobal.setSync('templateStr', String(template));
+      contextGlobal.setSync('templateValues', JSON.stringify(values));
 
       if (cookiecutterCompat) {
-        return vm.run(`renderCompat(templateStr, templateValues)`);
+        return context.evalSync(`renderCompat(templateStr, templateValues)`);
       }
 
-      return vm.run(`render(templateStr, templateValues)`);
+      return context.evalSync(`render(templateStr, templateValues)`);
     };
     return render;
   }
