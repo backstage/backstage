@@ -24,9 +24,9 @@ app:
 backend:
   baseUrl: https://<your-app>.koyeb.app
   listen:
+    # The $PORT environment variable is a feature of Koyeb
+    # https://www.koyeb.com/docs/apps/services
     port: ${PORT]
-      # The $PORT environment variable is a feature of Koyeb
-      # https://www.koyeb.com/docs/apps/services
 ```
 
 ## Push and deploy Backstage to Koyeb
@@ -42,8 +42,6 @@ koyeb app init example-backstage \
   --env PORT=8000
 ```
 
-Your application will be built and deployed to Koyeb. Once the build has finished, you will be able to access your application running on Koyeb by clicking the URL ending with `.koyeb.app`.  
+Your application will be built and deployed to Koyeb. Once the build has finished, you will be able to access your application running on Koyeb by clicking the URL ending with `.koyeb.app`.
 
 Congratulations! Now you should have Backstage up and running! 🎉
-
-
