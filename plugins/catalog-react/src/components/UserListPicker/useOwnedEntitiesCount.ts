@@ -29,9 +29,10 @@ export function useOwnedEntitiesCount() {
   const catalogApi = useApi(catalogApiRef);
 
   const { filters } = useEntityList();
-  // Trigger load only on mount
+
   const { value: ownershipEntityRefs, loading: loadingEntityRefs } = useAsync(
     async () => (await identityApi.getBackstageIdentity()).ownershipEntityRefs,
+    // load only on mount
     [],
   );
 
