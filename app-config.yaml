@@ -145,6 +145,9 @@ techdocs:
 dynatrace:
   baseUrl: https://your.dynatrace.instance.com
 
+nomad:
+  addr: 0.0.0.0
+
 # Score-cards sample configuration.
 scorecards:
   jsonDataUrl: https://raw.githubusercontent.com/Oriflame/backstage-plugins/main/plugins/score-card/sample-data/
