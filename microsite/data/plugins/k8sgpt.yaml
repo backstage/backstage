@@ -1,0 +1,10 @@
+---
+title: k8sgpt
+author: suxess-it
+authorUrl: github.com/suxess-it
+category: monitoring
+description: show all k8sgpt results of the k8sgpt operator related to your entity
+documentation: https://github.com/suxess-it/backstage-plugin-k8sgpt/blob/main/README.md
+iconUrl: https://raw.githubusercontent.com/k8sgpt-ai/k8sgpt/1a81227d6148be59b7b9ae4e9ae5e2d9a5b7a9ae/images/banner-white.png
+npmPackageName: '@suxess-it/backstage-plugin-k8sgpt'
+addedDate: '2023-06-05'
