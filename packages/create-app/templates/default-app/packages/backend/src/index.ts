@@ -15,7 +15,7 @@ import {
   notFoundHandler,
   CacheManager,
   DatabaseManager,
-  SingleHostDiscovery,
+  HostDiscovery,
   UrlReaders,
   ServerTokenManager,
 } from '@backstage/backend-common';
@@ -35,7 +35,7 @@ import { DefaultIdentityClient } from '@backstage/plugin-auth-node';
 function makeCreateEnv(config: Config) {
   const root = getRootLogger();
   const reader = UrlReaders.default({ logger: root, config });
-  const discovery = SingleHostDiscovery.fromConfig(config);
+  const discovery = HostDiscovery.fromConfig(config);
   const cacheManager = CacheManager.fromConfig(config);
   const databaseManager = DatabaseManager.fromConfig(config, { logger: root });
   const tokenManager = ServerTokenManager.noop();
