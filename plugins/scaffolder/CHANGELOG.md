@@ -1,11 +1,5 @@
 # @backstage/plugin-scaffolder
 
-## v1.15.0-next.3
-
-### Minor Changes
-
-- Fixed bug in OwnedEntityPicker where catalog filter was not correctly populated for EntityPicker to use in filtering the content, it was passed as a property on UI element and not as property of 'ui:options'
-
 ## 1.14.0-next.3
 
 ### Minor Changes
