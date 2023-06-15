@@ -22,8 +22,8 @@ export {
 export type {
   AzureIntegrationConfig,
   AzureCredential,
-  ManagedIdentity,
-  ClientSecret,
+  AzureManagedIdentityCredential,
+  AzureClientSecretCredential,
 } from './config';
 export {
   getAzureCommitsUrl,
