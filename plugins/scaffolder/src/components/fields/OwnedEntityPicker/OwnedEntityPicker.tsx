@@ -36,6 +36,7 @@ export const OwnedEntityPicker = (props: OwnedEntityPickerProps) => {
     schema: { title = 'Entity', description = 'An entity from the catalog' },
     uiSchema,
     required,
+    ...restProps
   } = props;
 
   const identityApi = useApi(identityApiRef);
@@ -44,7 +45,29 @@ export const OwnedEntityPicker = (props: OwnedEntityPickerProps) => {
     return identity.ownershipEntityRefs;
   });
 
+  const defaultNamespace = uiSchema['ui:options']?.defaultNamespace;
   const allowedKinds = uiSchema['ui:options']?.allowedKinds;
+  const defaultKind = uiSchema['ui:options']?.defaultKind;
+
+  const catalogFilter = {
+    ...(uiSchema['ui:options']?.catalogFilter !== undefined
+      ? uiSchema['ui:options']?.catalogFilter
+      : {}),
+    ...(allowedKinds !== undefined ? { kind: allowedKinds } : {}),
+    [`relations.${RELATION_OWNED_BY}`]: identityRefs || [],
+  };
+
+  const ownedUiSchema = {
+    ...uiSchema,
+    'ui:options': {
+      catalogFilter,
+      allowArbitraryValues:
+        uiSchema['ui:options']?.allowArbitraryValues ?? true,
+      ...(defaultNamespace !== undefined ? { defaultNamespace } : {}),
+      ...(defaultKind !== undefined ? { defaultKind } : {}),
+    },
+  };
+
   if (loading)
     return (
       <Autocomplete
@@ -67,23 +90,10 @@ export const OwnedEntityPicker = (props: OwnedEntityPickerProps) => {
 
   return (
     <EntityPicker
-      {...props}
+      {...restProps}
       schema={{ title, description }}
-      allowedKinds={allowedKinds}
-      catalogFilter={
-        allowedKinds
-          ? {
-              filter: {
-                kind: allowedKinds,
-                [`relations.${RELATION_OWNED_BY}`]: identityRefs || [],
-              },
-            }
-          : {
-              filter: {
-                [`relations.${RELATION_OWNED_BY}`]: identityRefs || [],
-              },
-            }
-      }
+      required={required}
+      uiSchema={ownedUiSchema}
     />
   );
 };
