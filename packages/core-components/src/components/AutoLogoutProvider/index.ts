@@ -15,6 +15,3 @@
  */
 export * from './AutoLogoutProvider';
 export * from './ConfigBasedAutoLogoutProvider';
-
-/** @internal */
-export { LAST_SEEN_ONLINE_STORAGE_KEY } from './disconnectedUsers';
