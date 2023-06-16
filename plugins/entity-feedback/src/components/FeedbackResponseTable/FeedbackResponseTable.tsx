@@ -14,7 +14,6 @@
  * limitations under the License.
  */
 
-import { parseEntityRef } from '@backstage/catalog-model';
 import { ErrorPanel, Table } from '@backstage/core-components';
 import { useApi } from '@backstage/core-plugin-api';
 import { EntityRefLink } from '@backstage/plugin-catalog-react';
@@ -66,10 +65,7 @@ export const FeedbackResponseTable = (props: FeedbackResponseTableProps) => {
       field: 'userRef',
       width: '15%',
       render: (response: ResponseRow) => (
-        <EntityRefLink
-          entityRef={parseEntityRef(response.userRef, { defaultKind: 'user' })}
-          defaultKind="user"
-        />
+        <EntityRefLink entityRef={response.userRef} defaultKind="user" />
       ),
     },
     {
