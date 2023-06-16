@@ -14,45 +14,46 @@
  * limitations under the License.
  */
 
-import { Knex } from 'knex';
-import { Logger } from 'winston';
-import { ConfigReader } from '@backstage/config';
-import { JsonObject } from '@backstage/types';
-import { CatalogProcessingEngine, EntityProvider } from './index';
 import { DatabaseManager, getVoidLogger } from '@backstage/backend-common';
-import { PermissionEvaluator } from '@backstage/plugin-permission-common';
 import {
   Entity,
   EntityPolicies,
   stringifyEntityRef,
 } from '@backstage/catalog-model';
-import { defaultEntityDataParser } from './modules/util/parse';
-import { DefaultCatalogProcessingOrchestrator } from './processing/DefaultCatalogProcessingOrchestrator';
-import { applyDatabaseMigrations } from './database/migrations';
-import { DefaultCatalogDatabase } from './database/DefaultCatalogDatabase';
-import { DefaultProcessingDatabase } from './database/DefaultProcessingDatabase';
+import { ConfigReader } from '@backstage/config';
+import { InputError } from '@backstage/errors';
 import { ScmIntegrations } from '@backstage/integration';
-import { DefaultCatalogRulesEnforcer } from './ingestion/CatalogRules';
-import { Stitcher } from './stitching/Stitcher';
-import { DefaultEntitiesCatalog } from './service/DefaultEntitiesCatalog';
+import { LocationSpec } from '@backstage/plugin-catalog-common';
+import {
+  CatalogProcessorEmit,
+  EntityProvider,
+  EntityProviderConnection,
+  processingResult,
+} from '@backstage/plugin-catalog-node';
+import { PermissionEvaluator } from '@backstage/plugin-permission-common';
+import { JsonObject } from '@backstage/types';
+import { createHash } from 'crypto';
+import { Knex } from 'knex';
+import { Logger } from 'winston';
+import { EntitiesCatalog } from '../catalog/types';
+import { DefaultCatalogDatabase } from '../database/DefaultCatalogDatabase';
+import { DefaultProcessingDatabase } from '../database/DefaultProcessingDatabase';
+import { DefaultProviderDatabase } from '../database/DefaultProviderDatabase';
+import { applyDatabaseMigrations } from '../database/migrations';
+import { RefreshStateItem } from '../database/types';
+import { DefaultCatalogRulesEnforcer } from '../ingestion/CatalogRules';
+import { defaultEntityDataParser } from '../modules/util/parse';
 import {
   DefaultCatalogProcessingEngine,
   ProgressTracker,
-} from './processing/DefaultCatalogProcessingEngine';
-import { createHash } from 'crypto';
-import { DefaultRefreshService } from './service/DefaultRefreshService';
-import { connectEntityProviders } from './processing/connectEntityProviders';
-import { EntitiesCatalog } from './catalog/types';
-import { RefreshOptions, RefreshService } from './service/types';
-import {
-  CatalogProcessorEmit,
-  EntityProviderConnection,
-  LocationSpec,
-  processingResult,
-} from '@backstage/plugin-catalog-node';
-import { RefreshStateItem } from './database/types';
-import { DefaultProviderDatabase } from './database/DefaultProviderDatabase';
-import { InputError } from '@backstage/errors';
+} from '../processing/DefaultCatalogProcessingEngine';
+import { DefaultCatalogProcessingOrchestrator } from '../processing/DefaultCatalogProcessingOrchestrator';
+import { connectEntityProviders } from '../processing/connectEntityProviders';
+import { CatalogProcessingEngine } from '../processing/types';
+import { DefaultEntitiesCatalog } from '../service/DefaultEntitiesCatalog';
+import { DefaultRefreshService } from '../service/DefaultRefreshService';
+import { RefreshOptions, RefreshService } from '../service/types';
+import { Stitcher } from '../stitching/Stitcher';
 
 const voidLogger = getVoidLogger();
 

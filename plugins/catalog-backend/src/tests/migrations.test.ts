@@ -18,7 +18,7 @@ import { Knex } from 'knex';
 import { TestDatabases } from '@backstage/backend-test-utils';
 import fs from 'fs';
 
-const migrationsDir = `${__dirname}/../migrations`;
+const migrationsDir = `${__dirname}/../../migrations`;
 const migrationsFiles = fs.readdirSync(migrationsDir).sort();
 
 async function migrateUpOnce(knex: Knex): Promise<void> {
