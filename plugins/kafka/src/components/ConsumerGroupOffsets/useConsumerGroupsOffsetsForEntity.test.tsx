@@ -15,7 +15,7 @@
  */
 import { Entity } from '@backstage/catalog-model';
 import { EntityProvider } from '@backstage/plugin-catalog-react';
-import { renderHook } from '@testing-library/react';
+import { renderHook, waitFor } from '@testing-library/react';
 import { when } from 'jest-when';
 import React, { PropsWithChildren } from 'react';
 import {
@@ -52,6 +52,7 @@ const mockConfigApi: jest.Mocked<typeof configApiRef.T> = {
   getConfigArray: jest.fn(_ => []),
 };
 
+// FIXME(RobotSail): wrap state updates in act() properly to remove console warnings
 describe('useConsumerGroupOffsets', () => {
   const entity: Entity = {
     apiVersion: 'v1',
@@ -96,26 +97,27 @@ describe('useConsumerGroupOffsets', () => {
       .mockResolvedValue(consumerGroupOffsets);
     when(mockKafkaDashboardApi.getDashboardUrl).mockReturnValue({});
 
-    const { result, waitForNextUpdate } = subject();
-    await waitForNextUpdate();
-    const [tableProps] = result.current;
-
-    expect(tableProps.consumerGroupsTopics).toStrictEqual([
-      {
-        clusterId: 'prod',
-        consumerGroup: consumerGroupOffsets.consumerId,
-        dashboardUrl: undefined,
-        topics: consumerGroupOffsets.offsets,
-      },
-    ]);
+    const { result } = subject();
+    await waitFor(() => {
+      const [tableProps] = result.current;
+      expect(tableProps.consumerGroupsTopics).toStrictEqual([
+        {
+          clusterId: 'prod',
+          consumerGroup: consumerGroupOffsets.consumerId,
+          dashboardUrl: undefined,
+          topics: consumerGroupOffsets.offsets,
+        },
+      ]);
+    });
   });
 
   it('posts an error to the error api', async () => {
     const error = new Error('error!');
     mockKafkaApi.getConsumerGroupOffsets.mockRejectedValueOnce(error);
 
-    const { waitForNextUpdate } = subject();
-    await waitForNextUpdate();
+    await waitFor(async () => {
+      subject();
+    });
 
     expect(mockErrorApi.post).toHaveBeenCalledWith(error);
   });

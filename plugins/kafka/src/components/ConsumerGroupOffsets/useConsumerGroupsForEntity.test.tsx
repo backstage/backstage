@@ -25,6 +25,7 @@ const mockConfigApi: jest.Mocked<Partial<typeof configApiRef.T>> = {
   getConfigArray: jest.fn(_ => []),
 };
 
+// FIXME(RobotSail): wrap state updates in act() properly to remove console warnings
 describe('useConsumerGroupOffsets', () => {
   let entity: Entity;
 
@@ -165,12 +166,10 @@ describe('useConsumerGroupOffsets', () => {
         lifecycle: 'development',
       },
     };
-    const { result } = subject();
-    expect(() => result.current).toThrow();
-    expect(result.error).toStrictEqual(
-      new Error(
-        `Failed to parse kafka consumer group annotation: got "dev/another,consumer"`,
-      ),
+    expect(() => {
+      subject();
+    }).toThrow(
+      `Failed to parse kafka consumer group annotation: got "dev/another,consumer"`,
     );
   });
 });
