@@ -1,5 +1,6 @@
 ---
 '@backstage/backend-common': patch
+'@backstage/create-app': patch
 ---
 
 Changed the default backend CacheClient to an in-memory cache when not explicitly configured.
