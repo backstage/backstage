@@ -65,8 +65,7 @@ jobs:
       - name: Install latest gyp and set node-gyp path
         shell: powershell
         run: |
-          npm prefix -g | % {npm config set npm_config_devdir "c:\temp\.gyp2"}
-          npm install --global node-gyp@9.2.0
+          npm prefix -g | % {npm config set dev_dir "c:\temp\.gyp2"}
           npm prefix -g | % {npm config set node_gyp "$_\node_modules\node-gyp\bin\node-gyp.js"}
 
       - name: setup chrome
