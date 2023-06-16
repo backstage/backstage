@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { UrlReader } from '@backstage/backend-common';
+import { resolveSafeChildPath, UrlReader } from '@backstage/backend-common';
 import { Entity } from '@backstage/catalog-model';
 import { JsonValue } from '@backstage/types';
 import { ScmIntegrationRegistry } from '@backstage/integration';
@@ -25,6 +25,8 @@ import {
   CatalogProcessorEmit,
   processingResult,
 } from '@backstage/plugin-catalog-node';
+import * as path from 'path';
+import { isHttpUrl } from '../util/urls';
 
 /** @public */
 export type PlaceholderResolverRead = (url: string) => Promise<Buffer>;
@@ -244,12 +246,11 @@ function relativeUrl({
   }
 
   try {
+    if (!isHttpUrl(baseUrl) && !isHttpUrl(value)) {
+      return resolveSafeChildPath(path.parse(baseUrl).dir, value);
+    }
     return resolveUrl(value, baseUrl);
   } catch (e) {
-    // The only remaining case that isn't support is a relative file path that should be
-    // resolved using a relative file location. Accessing local file paths can lead to
-    // path traversal attacks and access to any file on the host system. Implementing this
-    // would require additional security measures.
     throw new Error(
       `Placeholder \$${key} could not form a URL out of ${baseUrl} and ${value}, ${e}`,
     );

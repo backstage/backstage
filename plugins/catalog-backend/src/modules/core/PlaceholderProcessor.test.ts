@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import { UrlReader } from '@backstage/backend-common';
+import { resolveSafeChildPath, UrlReader } from '@backstage/backend-common';
 import { Entity } from '@backstage/catalog-model';
 import { ConfigReader } from '@backstage/config';
 import { ScmIntegrations } from '@backstage/integration';
@@ -340,10 +340,55 @@ describe('PlaceholderProcessor', () => {
     );
   });
 
-  it('not resolves relative file path for relative file location', async () => {
-    // We explicitly don't support this case, as it would allow for file system
-    // traversal attacks. If we want to implement this, we need to have additional
-    // security measures in place!
+  it.each([
+    ['/tmp/catalog-info.yaml'],
+    ['/etc/passwd'],
+    ['/etc/security/limits'],
+    ['../etc/passwd'],
+    ['../../etc/passwd'],
+    ['../../../etc/passwd'],
+    ['../../../../etc/passwd'],
+    ['../../../../../etc/passwd'],
+    ['/..\\..\\..\\..\\..\\..\\winnt\\win.ini'],
+  ])(
+    'not resolves relative file path with not allowed path',
+    async (path: string) => {
+      reader.readUrl.mockResolvedValue({
+        buffer: jest.fn().mockResolvedValue(Buffer.from('TEXT', 'utf-8')),
+      });
+      const processor = new PlaceholderProcessor({
+        resolvers: { text: textPlaceholderResolver },
+        reader,
+        integrations,
+      });
+
+      await expect(
+        processor.preProcessEntity(
+          {
+            apiVersion: 'a',
+            kind: 'k',
+            metadata: { name: 'n' },
+            spec: {
+              data: {
+                $text: path,
+              },
+            },
+          },
+          {
+            type: 'url',
+            target: './a/b/catalog-info.yaml',
+          },
+          () => {},
+        ),
+      ).rejects.toThrow(
+        `Placeholder $text could not form a URL out of ./a/b/catalog-info.yaml and ${path}, NotAllowedError: Relative path is not allowed to refer to a directory outside its parent`,
+      );
+
+      expect(reader.readUrl).not.toHaveBeenCalled();
+    },
+  );
+
+  it('resolved relative file path with same directory path', async () => {
     reader.readUrl.mockResolvedValue({
       buffer: jest.fn().mockResolvedValue(Buffer.from('TEXT', 'utf-8')),
     });
@@ -361,7 +406,7 @@ describe('PlaceholderProcessor', () => {
           metadata: { name: 'n' },
           spec: {
             data: {
-              $text: '../c/catalog-info.yaml',
+              $text: './c/catalog-info.yaml',
             },
           },
         },
@@ -371,12 +416,18 @@ describe('PlaceholderProcessor', () => {
         },
         () => {},
       ),
-    ).rejects.toThrow(
-      /^Placeholder \$text could not form a URL out of \.\/a\/b\/catalog-info\.yaml and \.\.\/c\/catalog-info\.yaml, TypeError \[ERR_INVALID_URL\]/,
-    );
+    ).resolves.toEqual({
+      apiVersion: 'a',
+      kind: 'k',
+      metadata: { name: 'n' },
+      spec: { data: 'TEXT' },
+    });
 
-    expect(reader.readUrl).not.toHaveBeenCalled();
+    expect(reader.readUrl).toHaveBeenCalledWith(
+      `${resolveSafeChildPath('./a/b', './c')}/catalog-info.yaml`,
+    );
   });
+
   it('should emit the resolverValue as a refreshKey', async () => {
     reader.readUrl.mockResolvedValue({
       buffer: jest
