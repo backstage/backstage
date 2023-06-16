@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import { CatalogIcon, DocsIcon, Link } from '@backstage/core-components';
+import { CatalogIcon, DocsIcon } from '@backstage/core-components';
 import { useApi, useRouteRef } from '@backstage/core-plugin-api';
 import {
   CATALOG_FILTER_EXISTS,
@@ -43,7 +43,7 @@ import IconButton from '@material-ui/core/IconButton';
 import ArrowForwardIcon from '@material-ui/icons/ArrowForward';
 import BuildIcon from '@material-ui/icons/Build';
 import CloseIcon from '@material-ui/icons/Close';
-import React, { KeyboardEvent, useCallback, useEffect, useRef } from 'react';
+import React, { useCallback, useEffect, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
 
 const useStyles = makeStyles(theme => ({
@@ -74,6 +74,11 @@ const useStyles = makeStyles(theme => ({
   input: {
     flex: 1,
   },
+  button: {
+    '&:hover': {
+      background: 'none',
+    },
+  },
   dialogActionsContainer: { padding: theme.spacing(1, 3) },
   viewResultsLink: { verticalAlign: '0.5em' },
 }));
@@ -85,23 +90,21 @@ export const SearchModal = ({ toggleModal }: { toggleModal: () => void }) => {
   const navigate = useNavigate();
   const catalogApi = useApi(catalogApiRef);
 
-  const { term, types } = useSearch();
+  const { types } = useSearch();
+  const searchRootRoute = useRouteRef(rootRouteRef)();
   const searchBarRef = useRef<HTMLInputElement | null>(null);
-  const searchPagePath = `${useRouteRef(rootRouteRef)()}?query=${term}`;
 
   useEffect(() => {
     searchBarRef?.current?.focus();
   });
 
-  const handleSearchBarKeyDown = useCallback(
-    (e: KeyboardEvent<HTMLDivElement | HTMLTextAreaElement>) => {
-      if (e.key === 'Enter') {
-        toggleModal();
-        navigate(searchPagePath);
-      }
-    },
-    [navigate, searchPagePath, toggleModal],
-  );
+  // This handler is called when "enter" is pressed
+  const handleSearchBarSubmit = useCallback(() => {
+    toggleModal();
+    // Using ref to get the current field value without waiting for a query debounce
+    const query = searchBarRef.current?.value ?? '';
+    navigate(`${searchRootRoute}?query=${query}`);
+  }, [navigate, toggleModal, searchRootRoute]);
 
   return (
     <>
@@ -110,7 +113,7 @@ export const SearchModal = ({ toggleModal }: { toggleModal: () => void }) => {
           <SearchBar
             className={classes.input}
             inputProps={{ ref: searchBarRef }}
-            onKeyDown={handleSearchBarKeyDown}
+            onSubmit={handleSearchBarSubmit}
           />
 
           <IconButton aria-label="close" onClick={toggleModal}>
@@ -189,11 +192,11 @@ export const SearchModal = ({ toggleModal }: { toggleModal: () => void }) => {
             >
               <Grid item>
                 <Button
-                  to={searchPagePath}
-                  onClick={toggleModal}
-                  endIcon={<ArrowForwardIcon />}
-                  component={Link}
+                  className={classes.button}
                   color="primary"
+                  endIcon={<ArrowForwardIcon />}
+                  onClick={handleSearchBarSubmit}
+                  disableRipple
                 >
                   View Full Results
                 </Button>
