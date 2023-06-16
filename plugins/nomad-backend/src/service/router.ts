@@ -92,8 +92,6 @@ export async function createRouter(
     // Get job ID
     const jobID = (req.params.job_id as string) ?? '';
 
-    logger.info(`token: ${token}`);
-
     // Issue the request
     const apiResp = await fetch(
       `${addr}/v1/job/${jobID}/versions?namespace=${encodeURIComponent(
