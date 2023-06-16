@@ -328,6 +328,7 @@
       "deployment/docker",
       "deployment/k8s",
       "deployment/heroku",
+      "deployment/koyeb",
       {
         "type": "category",
         "label": "Using Backstage Deploy (alpha)",
