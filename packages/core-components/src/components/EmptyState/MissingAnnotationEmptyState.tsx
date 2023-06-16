@@ -48,13 +48,13 @@ const useStyles = makeStyles<BackstageTheme>(
 );
 
 function generateYamlExample(
-  entity: Entity,
   annotations: string[],
+  entity?: Entity,
 ): { yamlText: string; lineNumbers: number[] } {
-  const kind = entity.kind || 'Component';
-  const name = entity.metadata.name || 'example';
-  const type = entity.spec?.type || 'website';
-  const owner = entity.spec?.owner || 'user:default/guest';
+  const kind = entity?.kind || 'Component';
+  const name = entity?.metadata.name || 'example';
+  const type = entity?.spec?.type || 'website';
+  const owner = entity?.spec?.owner || 'user:default/guest';
 
   const yamlText = `apiVersion: backstage.io/v1alpha1
 kind: ${kind}
@@ -98,7 +98,14 @@ function generateDescription(annotations: string[], entityKind = 'Component') {
 }
 
 export function MissingAnnotationEmptyState(props: Props) {
-  const { entity } = useEntity();
+  let entity: Entity | undefined;
+  try {
+    const entityContext = useEntity();
+    entity = entityContext.entity;
+  } catch (err) {
+    // ignore when entity context doesnt exist
+  }
+
   const { annotation, readMoreUrl } = props;
   const annotations = Array.isArray(annotation) ? annotation : [annotation];
   const url =
@@ -106,8 +113,8 @@ export function MissingAnnotationEmptyState(props: Props) {
     'https://backstage.io/docs/features/software-catalog/well-known-annotations';
   const classes = useStyles();
 
-  const entityKind = entity.kind || 'Component';
-  const { yamlText, lineNumbers } = generateYamlExample(entity, annotations);
+  const entityKind = entity?.kind || 'Component';
+  const { yamlText, lineNumbers } = generateYamlExample(annotations, entity);
   return (
     <EmptyState
       missing="field"
