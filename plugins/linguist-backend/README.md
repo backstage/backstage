@@ -56,6 +56,47 @@ Here's how to get the backend up and running:
 4. Now run `yarn start-backend` from the repo root
 5. Finally open `http://localhost:7007/api/linguist/health` in a browser and it should return `{"status":"ok"}`
 
+#### New Backend System
+
+The Linguist backend plugin has alpha support for the [new backend system](https://backstage.io/docs/backend-system/), here's how you can set that up:
+
+In your `packages/backend/src/index.ts` make the following changes:
+
+```diff
+  import { createBackend } from '@backstage/backend-defaults';
+  import { appPlugin } from '@backstage/plugin-app-backend';
+  import { catalogPlugin } from '@backstage/plugin-catalog-backend';
+  import {
+    scaffolderPlugin,
+    catalogModuleTemplateKind,
+  } from '@backstage/plugin-scaffolder-backend';
++ import { linguistPlugin } from '@backstage/plugin-linguist-backend/alpha';
+
+  const backend = createBackend();
+
+  backend.add(appPlugin());
+  backend.add(catalogPlugin());
+  backend.add(catalogModuleTemplateKind());
+  backend.add(scaffolderPlugin());
+
++ const linguistSchedule: TaskScheduleDefinition = {
++   frequency: { minutes: 2 },
++   timeout: { minutes: 15 },
++   initialDelay: { seconds: 15 },
++ };
+
++ backend.add(
++   linguistPlugin({
++     schedule: linguistSchedule,
++     age: { days: 30 },
++     batchSize: 2,
++     useSourceLocation: false,
++   }),
++ );
+
+  backend.start();
+```
+
 ## Plugin Option
 
 The Linguist backend has various plugin options that you can provide to the `createRouter` function in your `packages/backend/src/plugins/linguist.ts` file that will allow you to configure various aspects of how it works. The following sections go into the details of these options

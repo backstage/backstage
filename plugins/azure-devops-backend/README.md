@@ -70,6 +70,34 @@ Here's how to get the backend up and running:
 4. Now run `yarn start-backend` from the repo root
 5. Finally open `http://localhost:7007/api/azure-devops/health` in a browser and it should return `{"status":"ok"}`
 
+#### New Backend System
+
+The Azure DevOps backend plugin has alpha support for the [new backend system](https://backstage.io/docs/backend-system/), here's how you can set that up:
+
+In your `packages/backend/src/index.ts` make the following changes:
+
+```diff
+  import { createBackend } from '@backstage/backend-defaults';
+  import { appPlugin } from '@backstage/plugin-app-backend';
+  import { catalogPlugin } from '@backstage/plugin-catalog-backend';
+  import {
+    scaffolderPlugin,
+    catalogModuleTemplateKind,
+  } from '@backstage/plugin-scaffolder-backend';
++ import { azureDevOpsPlugin } from '@backstage/plugin-azure-devops-backend/alpha';
+
+  const backend = createBackend();
+
+  backend.add(appPlugin());
+  backend.add(catalogPlugin());
+  backend.add(catalogModuleTemplateKind());
+  backend.add(scaffolderPlugin());
+
++ backend.add(azureDevOpsPlugin());
+
+  backend.start();
+```
+
 ## Links
 
 - [Frontend part of the plugin](https://github.com/backstage/backstage/tree/master/plugins/azure-devops)
