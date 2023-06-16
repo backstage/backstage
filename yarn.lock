@@ -4219,7 +4219,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@backstage/core-components@npm:^0.13.0, @backstage/core-components@npm:^0.13.1":
+"@backstage/core-components@npm:^0.13.1":
   version: 0.13.1
   resolution: "@backstage/core-components@npm:0.13.1"
   dependencies:
@@ -5903,7 +5903,7 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@backstage/plugin-catalog-react@npm:^1.2.4, @backstage/plugin-catalog-react@npm:^1.5.0, @backstage/plugin-catalog-react@npm:^1.6.0":
+"@backstage/plugin-catalog-react@npm:^1.2.4, @backstage/plugin-catalog-react@npm:^1.6.0":
   version: 1.6.0
   resolution: "@backstage/plugin-catalog-react@npm:1.6.0"
   dependencies:
