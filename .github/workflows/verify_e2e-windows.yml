@@ -57,7 +57,12 @@ jobs:
       - name: Add msbuild to PATH
         uses: microsoft/setup-msbuild@v1.3.1
 
-      - name: Patch node-gyp to support Visual Studio 2022
+      - name: Setup gyp env
+        run: |
+          echo 'GYP_MSVS_VERSION=2022' >> $Env:GITHUB_ENV
+          echo 'GYP_MSVS_OVERRIDE_PATH=C:\\Dummy' >> $Env:GITHUB_ENV
+
+      - name: Install latest gyp and set node-gyp path
         shell: powershell
         run: |
           npm install --global node-gyp@latest
