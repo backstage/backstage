@@ -140,19 +140,15 @@ export class KubernetesProxy {
         changeOrigin: true,
         pathRewrite: { [`^${originalReq.baseUrl}`]: '' },
         router: async req => {
-          const isWS = req.headers.upgrade === 'websocket';
-          const cluster = isWS
-            ? originalCluster
-            : await this.getClusterForRequest(req);
-          const url = new URL(cluster.url);
-          const ca = bufferFromFileOrString('', cluster.caData)?.toString();
-
           // Re-evaluate the cluster on each request, in case it has changed
+          const cluster = await this.getClusterForRequest(req);
+          const url = new URL(cluster.url);
+
           return {
             protocol: url.protocol,
             host: url.hostname,
             port: url.port,
-            ca,
+            ca: bufferFromFileOrString('', cluster.caData)?.toString(),
           };
         },
         onError: (error, req, res) => {
@@ -179,7 +175,7 @@ export class KubernetesProxy {
   }
 
   private async getClusterForRequest(req: Request): Promise<ClusterDetails> {
-    const clusterName = req.header(HEADER_KUBERNETES_CLUSTER);
+    const clusterName = req.headers[HEADER_KUBERNETES_CLUSTER.toLowerCase()];
     const clusters = await this.clusterSupplier.getClusters();
 
     if (!clusters || clusters.length <= 0) {
