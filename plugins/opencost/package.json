@@ -25,13 +25,20 @@
     "@backstage/core-components": "workspace:^",
     "@backstage/core-plugin-api": "workspace:^",
     "@backstage/theme": "workspace:^",
+    "@date-io/date-fns": "^2.16.0",
     "@material-ui/core": "^4.9.13",
     "@material-ui/icons": "^4.9.1",
     "@material-ui/lab": "^4.0.0-alpha.60",
-    "react-use": "^17.2.4"
+    "@material-ui/pickers": "^3.3.10",
+    "@material-ui/styles": "^4.11.5",
+    "date-fns": "^2.30.0",
+    "lodash": "^4.17.21",
+    "react-use": "^17.2.4",
+    "recharts": "^2.7.0"
   },
   "peerDependencies": {
-    "react": "^16.13.1 || ^17.0.0"
+    "react": "^16.13.1 || ^17.0.0",
+    "react-router-dom": "*"
   },
   "devDependencies": {
     "@backstage/cli": "workspace:^",
