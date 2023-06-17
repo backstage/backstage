@@ -30,6 +30,7 @@
     "@backstage/config": "workspace:^",
     "@backstage/errors": "workspace:^",
     "@backstage/plugin-auth-node": "workspace:^",
+    "@backstage/plugin-catalog-node": "workspace:^",
     "@backstage/plugin-linguist-common": "workspace:^",
     "@backstage/types": "workspace:^",
     "@types/express": "*",
@@ -48,11 +49,14 @@
     "@backstage/backend-test-utils": "workspace:^",
     "@backstage/cli": "workspace:^",
     "@types/supertest": "^2.0.8",
+    "js-yaml": "^4.1.0",
     "msw": "^1.0.0",
     "supertest": "^6.2.4"
   },
   "files": [
     "dist",
+    "config.d.ts",
     "migrations/**/*.{js,d.ts}"
-  ]
+  ],
+  "configSchema": "config.d.ts"
 }
