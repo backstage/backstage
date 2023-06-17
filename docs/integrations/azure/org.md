@@ -240,6 +240,8 @@ export async function myOrganizationTransformer(
 First check your logs for the message `Reading msgraph users and groups`.
 If you don't see this, check you've registered the provider, and that the schedule is valid
 
+For other issues, turn on debug logging (`LOG_LEVEL=DEBUG` environment variable) for more details.
+
 If you see a log entry `Read 0 msgraph users and 0 msgraph groups`, check your search and filter arguments.
 
 If you see the start message (`Reading msgraph users and groups`) but no end message (`Read X msgraph users and Y msgraph groups`), then it is likely the job is taking a long time due to a large volume of data.
