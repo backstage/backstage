@@ -71,6 +71,7 @@ export const AddShortcut = ({
       alertApi.post({
         message: `Added shortcut '${title}' to your sidebar`,
         severity: 'success',
+        display: 'transient',
       });
     } catch (error) {
       alertApi.post({

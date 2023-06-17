@@ -172,7 +172,11 @@ export function AboutCard(props: AboutCardProps) {
   const refreshEntity = useCallback(async () => {
     try {
       await catalogApi.refreshEntity(stringifyEntityRef(entity));
-      alertApi.post({ message: 'Refresh scheduled', severity: 'info' });
+      alertApi.post({
+        message: 'Refresh scheduled',
+        severity: 'info',
+        display: 'transient',
+      });
     } catch (e) {
       errorApi.post(e);
     }
