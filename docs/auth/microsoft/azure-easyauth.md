@@ -81,7 +81,7 @@ const app = createApp({
   components: {
     SignInPage: props => {
       const configApi = useApi(configApiRef);
-      if (configApi.getString('auth.environment') === 'development')
+      if (configApi.getString('auth.environment') !== 'development')
         return <ProxiedSignInPage {...props} provider="azure-easyauth" />;
       }
       return (
