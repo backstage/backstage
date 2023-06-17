@@ -145,7 +145,7 @@ const AllocationReport = ({ allocationData, cumulativeData, totalData, currency 
                 >
                   {cell.numeric
                     ? (cell.label === 'Efficiency'
-                      ? (totalData.totalEfficiency == 1.0 && totalData.cpuReqCoreHrs == 0 && totalData.ramReqByteHrs == 0)
+                      ? (totalData.totalEfficiency === 1.0 && totalData.cpuReqCoreHrs === 0 && totalData.ramReqByteHrs === 0)
                         ? "Inf%"
                         : `${round(totalData.totalEfficiency*100, 1)}%`
                       : toCurrency(totalData[cell.id], currency))
@@ -158,13 +158,13 @@ const AllocationReport = ({ allocationData, cumulativeData, totalData, currency 
                 row.name = "Unmounted PVs"
               }
 
-              let isIdle = row.name.indexOf("__idle__") >= 0
-              let isUnallocated = row.name.indexOf("__unallocated__") >= 0
-              let isUnmounted = row.name.indexOf("Unmounted PVs") >= 0
+              const isIdle = row.name.indexOf("__idle__") >= 0
+              const isUnallocated = row.name.indexOf("__unallocated__") >= 0
+              const isUnmounted = row.name.indexOf("Unmounted PVs") >= 0
 
               // Replace "efficiency" with Inf if there is usage w/o request
               let efficiency = round(row.totalEfficiency*100, 1)
-              if (row.totalEfficiency == 1.0 && row.cpuReqCoreHrs == 0 && row.ramReqByteHrs == 0) {
+              if (row.totalEfficiency === 1.0 && row.cpuReqCoreHrs === 0 && row.ramReqByteHrs === 0) {
                 efficiency = "Inf"
               }
 

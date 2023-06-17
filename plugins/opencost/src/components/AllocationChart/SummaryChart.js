@@ -20,7 +20,7 @@ import { primary, greyscale, browns } from '../../constants/colors';
 import { toCurrency } from '../../util';
 
 function toPieData(top, other, idle) {
-  let slices = []
+  const slices = []
 
   for (const i in top) {
     const allocation = top[i]
@@ -70,7 +70,7 @@ const SummaryChart = ({ top, other, idle, currency, height }) => {
     const radius = outerRadius * 1.1
     let x = cx + radius * Math.cos(-midAngle * RADIAN)
     x += x > cx ? 2 : -2
-    let y = cy + radius * Math.sin(-midAngle * RADIAN)
+    const y = cy + radius * Math.sin(-midAngle * RADIAN)
     // y -= Math.min(Math.abs(2 / Math.cos(-midAngle * RADIAN)), 8)
 
     if (percent < 0.02) {

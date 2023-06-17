@@ -36,7 +36,7 @@ const useStyles = makeStyles({
 })
 
 function toBarLabels(allocationRange) {
-  let keyToFill = {}
+  const keyToFill = {}
   let p = 0
   let g = 0
   let b = 0
@@ -79,7 +79,7 @@ function toBarLabels(allocationRange) {
     }
   }
 
-  let labels = []
+  const labels = []
   for (const key in keyToFill) {
     labels.push({
       dataKey: key,
@@ -127,7 +127,7 @@ const RangeChart = ({ data, currency, height }) => {
   const CustomTooltip = (params) => {
     const { active, payload } = params
 
-    if (!payload || payload.length == 0) {
+    if (!payload || payload.length === 0) {
       return null
     }
 

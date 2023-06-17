@@ -92,12 +92,12 @@ const SelectWindow = ({ windowOptions, window, setWindow }) => {
     useEffect(() => {
       if (startDate !== null && endDate !== null) {
         // Note: getTimezoneOffset() is calculated based on current system locale, NOT date object
-        let adjustedStartDate = new Date(startDate - startDate.getTimezoneOffset() * 60000)
-        let adjustedEndDate = new Date(endDate - endDate.getTimezoneOffset() * 60000)
+        const adjustedStartDate = new Date(startDate - startDate.getTimezoneOffset() * 60000)
+        const adjustedEndDate = new Date(endDate - endDate.getTimezoneOffset() * 60000)
         setIntervalString(
-          adjustedStartDate.toISOString().split('.')[0] + "Z"
-          + ","
-          + adjustedEndDate.toISOString().split('.')[0] + "Z"
+          `${adjustedStartDate.toISOString().split('.')[0]  }Z`
+          + `,${
+           adjustedEndDate.toISOString().split('.')[0]  }Z`
         )
       }
     }, [startDate, endDate])
@@ -138,7 +138,7 @@ const SelectWindow = ({ windowOptions, window, setWindow }) => {
             <MuiPickersUtilsProvider utils={DateFnsUtils}>
               <KeyboardDatePicker
                 style={{ width: '144px' }}
-                autoOk={true}
+                autoOk
                 disableToolbar
                 variant="inline"
                 format="MM/dd/yyyy"
@@ -155,7 +155,7 @@ const SelectWindow = ({ windowOptions, window, setWindow }) => {
               />
               <KeyboardDatePicker
                 style={{ width: '144px' }}
-                autoOk={true}
+                autoOk
                 disableToolbar
                 variant="inline"
                 format="MM/dd/yyyy"
@@ -184,7 +184,7 @@ const SelectWindow = ({ windowOptions, window, setWindow }) => {
             </div>
             <div className={classes.dateContainerColumn} style={{ paddingTop: 12, marginLeft: 18 }}>
               {windowOptions.map(opt =>
-              <Typography key={opt.value}
+              (<Typography key={opt.value}
               >
                 <Link
                   style={{ cursor: "pointer" }}
@@ -194,7 +194,7 @@ const SelectWindow = ({ windowOptions, window, setWindow }) => {
                 >
                   {opt.name}
                 </Link>
-              </Typography>
+              </Typography>)
               )}
             </div>
           </div>

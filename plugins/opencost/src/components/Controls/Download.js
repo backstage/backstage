@@ -57,7 +57,7 @@ const columns = [
 ]
 
 const toCSVLine = (datum) => {
-  let cols = []
+  const cols = []
 
   forEach(columns, c => {
     if (c.currency) {
@@ -84,7 +84,7 @@ const DownloadControl = ({
     // Create download link
     const a = document.createElement("a")
     a.href = URL.createObjectURL(new Blob([csv], { type: "text/csv" }))
-    const filename = title.toLowerCase().replace(/\s/gi, '-')
+    const filename = title.toLocaleLowerCase('en-US').replace(/\s/gi, '-')
     a.setAttribute("download", `${filename}-${Date.now()}.csv`)
 
     // Click the link

@@ -81,12 +81,14 @@ function generateTitle({ window, aggregateBy, accumulate }) {
     if (checkCustomWindow(window)) {
       windowName = toVerboseTimeRange(window)
     } else {
+      /* eslint no-console: ["error", { allow: ["warn"] }] */
       console.warn(`unknown window: ${window}`)
     }
   }
 
-  let aggregationName = get(find(aggregationOptions, { value: aggregateBy }), 'name', '').toLowerCase()
+  const aggregationName = get(find(aggregationOptions, { value: aggregateBy }), 'name', '').toLocaleLowerCase('en-US')
   if (aggregationName === '') {
+    /* eslint no-console: ["error", { allow: ["warn"] }] */
     console.warn(`unknown aggregation: ${aggregateBy}`)
   }
 
@@ -100,9 +102,6 @@ function generateTitle({ window, aggregateBy, accumulate }) {
 }
 
 export const OpenCostReport = () => {
-  console.log("get the URL from the config")
-  const baseUrl = "http://localhost:9003";
-
   const classes = useStyles()
   // Allocation data state
   const [allocationData, setAllocationData] = useState([])
@@ -169,12 +168,11 @@ export const OpenCostReport = () => {
     setErrors([])
 
     try {
-      // get the baseUrl from the Basecamp config
-      console.log("get the baseUrl from the Basecamp config")
+      // TODO get the baseUrl from the Basecamp config
+      const baseUrl = "http://localhost:9003";
       const resp = await AllocationService.fetchAllocation(baseUrl, window, aggregateBy, { accumulate })
       if (resp.data && resp.data.length > 0) {
         const allocationRange = resp.data
-        console.log(allocationRange);
         for (const i in allocationRange) {
           // update cluster aggregations to use clusterName/clusterId names
           allocationRange[i] = sortBy(allocationRange[i], a => a.totalCost)
