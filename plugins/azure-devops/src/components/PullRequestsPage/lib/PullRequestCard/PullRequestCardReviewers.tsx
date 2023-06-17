@@ -18,7 +18,7 @@ import { PullRequestCardReviewer } from './PullRequestCardReviewer';
 import React from 'react';
 import { Reviewer } from '@backstage/plugin-azure-devops-common';
 import { reviewerFilter } from '../utils';
-import { styled } from '@material-ui/core/styles';
+import { styled } from '@mui/material/styles';
 
 const PullRequestCardReviewersContainer = styled('div')({
   '& > *': {

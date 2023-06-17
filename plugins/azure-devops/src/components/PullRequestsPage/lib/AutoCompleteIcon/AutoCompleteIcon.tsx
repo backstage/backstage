@@ -14,11 +14,12 @@
  * limitations under the License.
  */
 
-import DoneAllIcon from '@material-ui/icons/DoneAll';
+import DoneAllIcon from '@mui/icons-material/DoneAll';
 import React from 'react';
-import { makeStyles } from '@material-ui/core/styles';
+import makeStyles from '@mui/styles/makeStyles';
+import { Theme } from '@mui/material/styles';
 
-const useStyles = makeStyles(theme => ({
+const useStyles = makeStyles(({ theme }: { theme: Theme }) => ({
   root: (props: { hasAutoComplete: boolean }) => ({
     color: props.hasAutoComplete
       ? theme.palette.success.main

@@ -14,7 +14,6 @@
  * limitations under the License.
  */
 
-import { Box, Button, makeStyles } from '@material-ui/core';
 import {
   InfoCard,
   Progress,
@@ -28,8 +27,12 @@ import { useApi } from '@backstage/core-plugin-api';
 import React from 'react';
 import { azureDevOpsApiRef } from '../../api';
 import useAsync from 'react-use/lib/useAsync';
+import makeStyles from '@mui/styles/makeStyles';
+import Button from '@mui/material/Button';
+import Box from '@mui/material/Box';
+import { Theme } from '@mui/material/styles';
 
-const useStyles = makeStyles(theme => ({
+const useStyles = makeStyles<Theme>(theme => ({
   readMe: {
     overflowY: 'auto',
     paddingRight: theme.spacing(1),

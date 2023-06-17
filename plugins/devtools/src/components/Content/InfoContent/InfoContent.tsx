@@ -15,28 +15,27 @@
  */
 
 import { Progress } from '@backstage/core-components';
-import {
-  Avatar,
-  Box,
-  createStyles,
-  Divider,
-  List,
-  ListItem,
-  ListItemAvatar,
-  ListItemText,
-  makeStyles,
-  Paper,
-  Theme,
-} from '@material-ui/core';
-import { Alert } from '@material-ui/lab';
+
+import createStyles from '@mui/styles/createStyles';
+import makeStyles from '@mui/styles/makeStyles';
+import Alert from '@mui/material/Alert';
 import React from 'react';
 import { useInfo } from '../../../hooks';
 import { InfoDependenciesTable } from './InfoDependenciesTable';
-import DescriptionIcon from '@material-ui/icons/Description';
-import DeveloperBoardIcon from '@material-ui/icons/DeveloperBoard';
+import DescriptionIcon from '@mui/icons-material/Description';
+import DeveloperBoardIcon from '@mui/icons-material/DeveloperBoard';
 import { BackstageLogoIcon } from './BackstageLogoIcon';
-import FileCopyIcon from '@material-ui/icons/FileCopy';
+import FileCopyIcon from '@mui/icons-material/FileCopy';
 import { DevToolsInfo } from '@backstage/plugin-devtools-common';
+import { Theme } from '@mui/material/styles';
+import Box from '@mui/material/Box';
+import Paper from '@mui/material/Paper';
+import ListItemAvatar from '@mui/material/ListItemAvatar';
+import Avatar from '@mui/material/Avatar';
+import ListItem from '@mui/material/ListItem';
+import List from '@mui/material/List';
+import ListItemText from '@mui/material/ListItemText';
+import Divider from '@mui/material/Divider';
 
 const useStyles = makeStyles((theme: Theme) =>
   createStyles({

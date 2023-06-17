@@ -23,18 +23,16 @@ import {
   TableColumn,
 } from '@backstage/core-components';
 import { ExternalDependency } from '@backstage/plugin-devtools-common';
-import {
-  Box,
-  createStyles,
-  Grid,
-  makeStyles,
-  Paper,
-  Theme,
-  Typography,
-} from '@material-ui/core';
-import { Alert } from '@material-ui/lab';
+import Alert from '@mui/material/Alert';
 import React from 'react';
 import { useExternalDependencies } from '../../../hooks';
+import { Theme } from '@mui/material/styles';
+import createStyles from '@mui/styles/createStyles';
+import makeStyles from '@mui/styles/makeStyles';
+import Typography from '@mui/material/Typography';
+import Grid from '@mui/material/Grid';
+import Paper from '@mui/material/Paper';
+import Box from '@mui/material/Box';
 
 const useStyles = makeStyles((theme: Theme) =>
   createStyles({

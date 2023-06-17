@@ -14,24 +14,22 @@
  * limitations under the License.
  */
 
-import {
-  Box,
-  Chip,
-  Tooltip,
-  Typography,
-  makeStyles,
-  Grid,
-  useTheme,
-} from '@material-ui/core';
 import { InfoCard, Progress } from '@backstage/core-components';
-import Alert from '@material-ui/lab/Alert';
+import Alert from '@mui/material/Alert';
 import { DateTime } from 'luxon';
 import React from 'react';
 import slugify from 'slugify';
 import { useEntity } from '@backstage/plugin-catalog-react';
 import { useLanguages } from '../../hooks';
+import { useTheme, Theme } from '@mui/material/styles';
+import makeStyles from '@mui/styles/makeStyles';
+import Grid from '@mui/material/Grid';
+import Box from '@mui/material/Box';
+import Typography from '@mui/material/Typography';
+import Tooltip from '@mui/material/Tooltip';
+import Chip from '@mui/material/Chip';
 
-const useStyles = makeStyles(theme => ({
+const useStyles = makeStyles<Theme>(theme => ({
   infoCard: {
     marginBottom: theme.spacing(3),
   },

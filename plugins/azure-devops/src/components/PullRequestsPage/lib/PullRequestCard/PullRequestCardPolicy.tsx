@@ -19,13 +19,14 @@ import {
   PolicyEvaluationStatus,
   PolicyType,
 } from '@backstage/plugin-azure-devops-common';
-import { styled, withStyles } from '@material-ui/core/styles';
-import Typography from '@material-ui/core/Typography';
+import { styled } from '@mui/material/styles';
+import withStyles from '@mui/styles/withStyles';
+import Typography from '@mui/material/Typography';
 
-import CancelIcon from '@material-ui/icons/Cancel';
-import GroupWorkIcon from '@material-ui/icons/GroupWork';
+import CancelIcon from '@mui/icons-material/Cancel';
+import GroupWorkIcon from '@mui/icons-material/GroupWork';
 import React from 'react';
-import WatchLaterIcon from '@material-ui/icons/WatchLater';
+import WatchLaterIcon from '@mui/icons-material/WatchLater';
 
 const PolicyRequiredIcon = withStyles(
   theme => ({

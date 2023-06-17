@@ -14,7 +14,6 @@
  * limitations under the License.
  */
 
-import { Box, Typography } from '@material-ui/core';
 import {
   BuildResult,
   BuildRun,
@@ -37,6 +36,8 @@ import { AzurePipelinesIcon } from '../AzurePipelinesIcon';
 import { DateTime } from 'luxon';
 import React from 'react';
 import { getDurationFromDates } from '../../utils/getDurationFromDates';
+import Typography from '@mui/material/Typography';
+import Box from '@mui/material/Box';
 
 export const getBuildResultComponent = (result: number | undefined) => {
   switch (result) {

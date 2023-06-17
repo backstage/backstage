@@ -15,20 +15,17 @@
  */
 
 import { Progress, WarningPanel } from '@backstage/core-components';
-import {
-  Box,
-  createStyles,
-  makeStyles,
-  Paper,
-  Theme,
-  Typography,
-  useTheme,
-} from '@material-ui/core';
-import { Alert } from '@material-ui/lab';
+import Alert from '@mui/material/Alert';
 import React from 'react';
 import ReactJson from 'react-json-view';
 import { useConfig } from '../../../hooks';
 import { ConfigError } from '@backstage/plugin-devtools-common';
+import { Theme, useTheme } from '@mui/material/styles';
+import createStyles from '@mui/styles/createStyles';
+import makeStyles from '@mui/styles/makeStyles';
+import Typography from '@mui/material/Typography';
+import Paper from '@mui/material/Paper';
+import Box from '@mui/material/Box';
 
 const useStyles = makeStyles((theme: Theme) =>
   createStyles({
@@ -87,7 +84,7 @@ export const ConfigContent = () => {
           src={configInfo.config as object}
           name="config"
           enableClipboard={false}
-          theme={theme.palette.type === 'dark' ? 'monokai' : 'rjv-default'}
+          theme={theme.palette.mode === 'dark' ? 'monokai' : 'rjv-default'}
         />
       </Paper>
     </Box>

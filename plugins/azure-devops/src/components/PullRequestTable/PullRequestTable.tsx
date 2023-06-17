@@ -14,7 +14,6 @@
  * limitations under the License.
  */
 
-import { Box, Chip } from '@material-ui/core';
 import {
   Link,
   ResponseErrorPanel,
@@ -32,6 +31,8 @@ import { DateTime } from 'luxon';
 import { PullRequestStatusButtonGroup } from '../PullRequestStatusButtonGroup';
 import { useEntity } from '@backstage/plugin-catalog-react';
 import { usePullRequests } from '../../hooks/usePullRequests';
+import Box from '@mui/material/Box';
+import Chip from '@mui/material/Chip';
 
 const columns: TableColumn[] = [
   {

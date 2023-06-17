@@ -14,7 +14,6 @@
  * limitations under the License.
  */
 
-import { Box } from '@material-ui/core';
 import {
   Link,
   ResponseErrorPanel,
@@ -27,6 +26,7 @@ import React from 'react';
 import { AzureGitTagsIcon } from '../AzureGitTagsIcon';
 import { useEntity } from '@backstage/plugin-catalog-react';
 import { useGitTags } from '../../hooks/useGitTags';
+import Box from '@mui/material/Box';
 
 const columns: TableColumn[] = [
   {

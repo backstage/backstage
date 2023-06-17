@@ -15,8 +15,8 @@
  */
 
 import { Avatar, Link } from '@backstage/core-components';
-import { Card, CardContent, CardHeader } from '@material-ui/core';
-import Typography from '@material-ui/core/Typography';
+
+import Typography from '@mui/material/Typography';
 
 import { AutoCompleteIcon } from '../AutoCompleteIcon';
 import { DashboardPullRequest } from '@backstage/plugin-azure-devops-common';
@@ -24,13 +24,17 @@ import { DateTime } from 'luxon';
 import { PullRequestCardPolicies } from './PullRequestCardPolicies';
 import { PullRequestCardReviewers } from './PullRequestCardReviewers';
 import React from 'react';
-import { makeStyles } from '@material-ui/core/styles';
+import makeStyles from '@mui/styles/makeStyles';
+import Card from '@mui/material/Card';
+import CardHeader from '@mui/material/CardHeader';
+import CardContent from '@mui/material/CardContent';
+import { Theme } from '@mui/material/styles';
 
-const useStyles = makeStyles(
+const useStyles = makeStyles<Theme>(
   theme => ({
     card: {
       backgroundColor:
-        theme.palette.type === 'dark'
+        theme.palette.mode === 'dark'
           ? theme.palette.grey[700]
           : theme.palette.common.white,
     },
