@@ -20,5 +20,8 @@ export const catalogUnprocessedEntitiesPlugin: BackstagePlugin<
   {}
 >;
 
+// @public (undocumented)
+export const UnprocessedEntitiesContent: () => JSX.Element;
+
 // (No @packageDocumentation comment for this package)
 ```
