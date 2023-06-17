@@ -44,7 +44,7 @@
     "@aws-sdk/lib-storage": "^3.350.0",
     "@aws-sdk/node-http-handler": "^3.350.0",
     "@aws-sdk/types": "^3.347.0",
-    "@azure/identity": "^2.1.0",
+    "@azure/identity": "^3.2.1",
     "@azure/storage-blob": "^12.5.0",
     "@backstage/backend-common": "workspace:^",
     "@backstage/catalog-model": "workspace:^",

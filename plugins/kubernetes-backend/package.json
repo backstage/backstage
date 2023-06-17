@@ -52,7 +52,7 @@
     "@aws-crypto/sha256-js": "^3.0.0",
     "@aws-sdk/credential-providers": "^3.350.0",
     "@aws-sdk/signature-v4": "^3.347.0",
-    "@azure/identity": "^2.0.4",
+    "@azure/identity": "^3.2.1",
     "@backstage/backend-common": "workspace:^",
     "@backstage/backend-plugin-api": "workspace:^",
     "@backstage/catalog-client": "workspace:^",
