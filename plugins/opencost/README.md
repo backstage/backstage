@@ -4,6 +4,8 @@ Welcome to the [OpenCost](https://opencost.io) plugin!
 
 Currently this is a port of the [OpenCost UI](https://github.com/opencost/opencost/tree/develop/ui), but we will continue to expand it to expose any relevant data or pre-configured views that may be preferred.
 
+All of the code was originally ported from https://github.com/opencost/opencost/blob/develop/ui/ which is under by the Apache v2 License and also managed by the CNCF.
+
 ## Installation
 
 1.  Add the OpenCost dependency to the `packages/app/package.json`:

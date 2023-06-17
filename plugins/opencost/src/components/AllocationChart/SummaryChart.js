@@ -1,3 +1,19 @@
+/*
+ * Copyright 2023 The Backstage Authors
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
 import React from 'react'
 import { ResponsiveContainer, PieChart, Pie, Cell } from 'recharts'
 import { primary, greyscale, browns } from '../../constants/colors';
@@ -9,8 +25,8 @@ function toPieData(top, other, idle) {
   for (const i in top) {
     const allocation = top[i]
     const fill = allocation.name === "__unallocated__"
-      ? "#212121"
-      : primary[i % primary.length]
+          ? "#212121"
+          : primary[i % primary.length]
 
     slices.push({
       name: allocation.name,
@@ -78,19 +94,19 @@ const SummaryChart = ({ top, other, idle, currency, height }) => {
           label={renderLabel}
           labelLine
           // niko: if tooltips error, try disabling animation
-          // isAnimationActive={false}
-          animationDuration={400}
-          cy="90%"
-          outerRadius="140%"
-          innerRadius="60%"
-          startAngle={180}
-          endAngle={0}
+        // isAnimationActive={false}
+        animationDuration={400}
+        cy="90%"
+        outerRadius="140%"
+        innerRadius="60%"
+        startAngle={180}
+        endAngle={0}
         >
-          {pieData.map((datum, i) => <Cell key={i} fill={datum.fill} />)}
+        {pieData.map((datum, i) => <Cell key={i} fill={datum.fill} />)}
         </Pie>
       </PieChart>
     </ResponsiveContainer>
-  )
-}
+        )
+  }
 
-export default SummaryChart
+  export default SummaryChart
