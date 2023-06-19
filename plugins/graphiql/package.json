@@ -55,15 +55,15 @@
     "@mui/lab": "5.0.0-alpha.114",
     "@mui/material": "^5.11.2",
     "@mui/styles": "^5.11.2",
-    "@types/react": "^16.13.1 || ^17.0.0",
+    "@types/react": "^17.0.0 || ^18.0.0",
     "graphiql": "^3.0.6",
     "graphql": "^16.0.0",
     "graphql-ws": "^5.4.1",
     "react-use": "^17.2.4"
   },
   "peerDependencies": {
-    "react": "^16.13.1 || ^17.0.0 || ^18.0.0",
-    "react-dom": "^16.13.1 || ^17.0.0 || ^18.0.0",
+    "react": "^17.0.0 || ^18.0.0",
+    "react-dom": "^17.0.0 || ^18.0.0",
     "react-router-dom": "6.0.0-beta.0 || ^6.3.0"
   },
   "devDependencies": {
