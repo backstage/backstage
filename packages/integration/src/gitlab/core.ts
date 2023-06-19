@@ -78,11 +78,11 @@ export function buildProjectUrl(
       .slice(1)
       .join('/blob/');
     const [branch, ...filePath] = branchAndFilePath.split('/');
-    const relativePath = getGitLabIntegrationRelativePath(config);
+    const apiRelativePath = new URL(config.apiBaseUrl).pathname;
 
     url.pathname = [
-      ...(relativePath ? [relativePath] : []),
-      'api/v4/projects',
+      apiRelativePath,
+      'projects',
       projectID,
       'repository/files',
       encodeURIComponent(decodeURIComponent(filePath.join('/'))),
@@ -90,6 +90,10 @@ export function buildProjectUrl(
     ].join('/');
 
     url.search = `?ref=${branch}`;
+
+    const apiBaseUrl = new URL(config.apiBaseUrl);
+    url.host = apiBaseUrl.host;
+    url.protocol = apiBaseUrl.protocol;
 
     return url;
   } catch (e) {
@@ -124,7 +128,7 @@ export async function getProjectId(
     // Convert
     // to: https://gitlab.com/api/v4/projects/groupA%2Fteams%2FsubgroupA%2FteamA%2Frepo
     const repoIDLookup = new URL(
-      `${url.origin}${relativePath}/api/v4/projects/${encodeURIComponent(
+      `${config.apiBaseUrl}/projects/${encodeURIComponent(
         repo.replace(/^\//, ''),
       )}`,
     );

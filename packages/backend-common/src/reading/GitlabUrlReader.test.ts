@@ -99,10 +99,18 @@ describe('GitlabUrlReader', () => {
       );
     });
 
-    const createConfig = (token?: string) =>
+    const createGitlabComConfig = (token?: string) =>
       new ConfigReader(
         {
           integrations: { gitlab: [{ host: 'gitlab.com', token }] },
+        },
+        'test-config',
+      );
+
+    const createPrivateGitlabConfig = (token?: string) =>
+      new ConfigReader(
+        {
+          integrations: { gitlab: [{ host: 'gitlab.example.com', token }] },
         },
         'test-config',
       );
@@ -111,7 +119,7 @@ describe('GitlabUrlReader', () => {
       // Scoped routes
       {
         url: 'https://gitlab.com/groupA/teams/teamA/subgroupA/repoA/-/blob/branch/my/path/to/file.yaml',
-        config: createConfig(),
+        config: createGitlabComConfig(),
         response: expect.objectContaining({
           url: 'https://gitlab.com/api/v4/projects/12345/repository/files/my%2Fpath%2Fto%2Ffile.yaml/raw?ref=branch',
           headers: expect.objectContaining({
@@ -121,7 +129,7 @@ describe('GitlabUrlReader', () => {
       },
       {
         url: 'https://gitlab.example.com/groupA/teams/teamA/subgroupA/repoA/-/blob/branch/my/path/to/file.yaml',
-        config: createConfig('0123456789'),
+        config: createPrivateGitlabConfig('0123456789'),
         response: expect.objectContaining({
           url: 'https://gitlab.example.com/api/v4/projects/12345/repository/files/my%2Fpath%2Fto%2Ffile.yaml/raw?ref=branch',
           headers: expect.objectContaining({
@@ -131,7 +139,7 @@ describe('GitlabUrlReader', () => {
       },
       {
         url: 'https://gitlab.com/groupA/teams/teamA/repoA/-/blob/branch/my/path/to/file.yaml', // Repo not in subgroup
-        config: createConfig(),
+        config: createGitlabComConfig(),
         response: expect.objectContaining({
           url: 'https://gitlab.com/api/v4/projects/12345/repository/files/my%2Fpath%2Fto%2Ffile.yaml/raw?ref=branch',
         }),
@@ -140,7 +148,7 @@ describe('GitlabUrlReader', () => {
       // Unscoped route
       {
         url: 'https://gitlab.example.com/a/b/blob/master/c.yaml',
-        config: createConfig(),
+        config: createPrivateGitlabConfig(),
         response: expect.objectContaining({
           url: 'https://gitlab.example.com/api/v4/projects/12345/repository/files/c.yaml/raw?ref=master',
         }),
@@ -161,7 +169,7 @@ describe('GitlabUrlReader', () => {
     it.each([
       {
         url: '',
-        config: createConfig(''),
+        config: createGitlabComConfig(''),
         error:
           "Invalid type in config for key 'integrations.gitlab[0].token' in 'test-config', got empty-string, wanted string",
       },

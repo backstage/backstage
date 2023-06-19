@@ -66,12 +66,17 @@ export function readGitLabIntegrationConfig(
   config: Config,
 ): GitLabIntegrationConfig {
   const host = config.getString('host');
-  let apiBaseUrl = config.getOptionalString('apiBaseUrl');
+
+  let baseUrl = config.getOptionalString('baseUrl') || `https://${host}`;
+  let apiBaseUrl =
+    config.getOptionalString('apiBaseUrl') || `${baseUrl}/api/v4`;
   const token = config.getOptionalString('token');
-  let baseUrl = config.getOptionalString('baseUrl');
+
   if (apiBaseUrl) {
     apiBaseUrl = trimEnd(apiBaseUrl, '/');
-  } else if (host === GITLAB_HOST) {
+  }
+
+  if (host === GITLAB_HOST) {
     apiBaseUrl = GITLAB_API_BASE_URL;
   }
 
@@ -134,9 +139,6 @@ export function readGitLabIntegrationConfigs(
 export function getGitLabIntegrationRelativePath(
   config: GitLabIntegrationConfig,
 ): string {
-  let relativePath = '';
-  if (config.host !== GITLAB_HOST) {
-    relativePath = new URL(config.baseUrl).pathname;
-  }
+  const relativePath = new URL(config.baseUrl).pathname;
   return trimEnd(relativePath, '/');
 }

@@ -157,4 +157,61 @@ describe('readGitLabIntegrationConfigs', () => {
       },
     ]);
   });
+
+  it('adds a default apiBaseUrl when missing', () => {
+    const output = readGitLabIntegrationConfigs(
+      buildConfig([
+        {
+          host: 'a.com',
+          token: 't',
+        },
+      ]),
+    );
+
+    expect(output).toContainEqual({
+      host: 'a.com',
+      token: 't',
+      apiBaseUrl: 'https://a.com/api/v4',
+      baseUrl: 'https://a.com',
+    });
+  });
+
+  it('adds a default apiBaseUrl based on baseUrl', () => {
+    const output = readGitLabIntegrationConfigs(
+      buildConfig([
+        {
+          host: 'a.com',
+          baseUrl: 'https://a.com/gitlab',
+          token: 't',
+        },
+      ]),
+    );
+
+    expect(output).toContainEqual({
+      host: 'a.com',
+      token: 't',
+      apiBaseUrl: 'https://a.com/gitlab/api/v4',
+      baseUrl: 'https://a.com/gitlab',
+    });
+  });
+
+  it('respects given apiBaseUrl', () => {
+    const output = readGitLabIntegrationConfigs(
+      buildConfig([
+        {
+          host: 'a.com',
+          baseUrl: 'https://a.com/gitlab',
+          apiBaseUrl: 'http://internal.gitlab/api/v4',
+          token: 't',
+        },
+      ]),
+    );
+
+    expect(output).toContainEqual({
+      host: 'a.com',
+      token: 't',
+      apiBaseUrl: 'http://internal.gitlab/api/v4',
+      baseUrl: 'https://a.com/gitlab',
+    });
+  });
 });

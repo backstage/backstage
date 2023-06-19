@@ -17,7 +17,7 @@
 import { rest } from 'msw';
 import { setupServer } from 'msw/node';
 import { GitLabIntegrationConfig } from './config';
-import { getGitLabFileFetchUrl } from './core';
+import { getGitLabFileFetchUrl, getProjectId } from './core';
 
 const worker = setupServer();
 
@@ -39,23 +39,52 @@ describe('gitlab core', () => {
 
   const configWithNoToken: GitLabIntegrationConfig = {
     host: 'gitlab.com',
-    apiBaseUrl: '<ignored>',
-    baseUrl: '<ignored>',
+    apiBaseUrl: 'https://gitlab.com/api/v4',
+    baseUrl: 'http://gitlab.com/',
   };
 
   const configSelfHosteWithRelativePath: GitLabIntegrationConfig = {
     host: 'gitlab.mycompany.com',
     token: '0123456789',
-    apiBaseUrl: '<ignored>',
+    apiBaseUrl: 'https://gitlab.mycompany.com/gitlab/api/v4',
     baseUrl: 'https://gitlab.mycompany.com/gitlab',
   };
 
   const configSelfHostedWithoutRelativePath: GitLabIntegrationConfig = {
     host: 'gitlab.mycompany.com',
     token: '0123456789',
-    apiBaseUrl: '<ignored>',
+    apiBaseUrl: 'https://gitlab.mycompany.com/api/v4',
     baseUrl: 'https://gitlab.mycompany.com',
   };
+
+  const configWithApiBaseUrl: GitLabIntegrationConfig = {
+    host: 'gitlab.mycompany.com',
+    token: '0123456789',
+    apiBaseUrl: 'http://internal.gitlab/api/v4',
+    baseUrl: 'https://gitlab.mycompany.com',
+  };
+
+  describe('getProjectId', () => {
+    describe('when apiBaseUrl is specified', () => {
+      it('takes precedence over whatever is specified in the URL during the lookup', async () => {
+        const expectedProjectIdLookup =
+          'http://internal.gitlab/api/v4/projects/group%2Fproject';
+        worker.resetHandlers();
+        worker.use(
+          rest.get(expectedProjectIdLookup, (_, res, ctx) =>
+            res(ctx.status(200), ctx.json({ id: 54321 })),
+          ),
+        );
+
+        const target =
+          'https://gitlab.mycompany.com/group/project/-/blob/branch/folder/file.yaml';
+
+        await expect(getProjectId(target, configWithApiBaseUrl)).resolves.toBe(
+          54321,
+        );
+      });
+    });
+  });
 
   describe('getGitLabFileFetchUrl', () => {
     describe('when target has a scoped route', () => {
@@ -182,6 +211,19 @@ describe('gitlab core', () => {
           'https://gitlab.com/api/v4/projects/12345/repository/files/folder%2Ffile.yaml/raw?ref=blob';
         await expect(
           getGitLabFileFetchUrl(target, configWithNoToken),
+        ).resolves.toBe(fetchUrl);
+      });
+    });
+
+    describe('when apiBaseUrl is specified', () => {
+      it('takes precedence over the base URL for API calls', async () => {
+        const target =
+          'https://gitlab.com/group/subgroup/project/blob/branch/folder/file.yaml';
+        const fetchUrl =
+          'http://internal.gitlab/api/v4/projects/12345/repository/files/folder%2Ffile.yaml/raw?ref=branch';
+
+        await expect(
+          getGitLabFileFetchUrl(target, configWithApiBaseUrl),
         ).resolves.toBe(fetchUrl);
       });
     });
