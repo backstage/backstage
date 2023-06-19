@@ -46,9 +46,9 @@
     "@material-ui/lab": "4.0.0-alpha.61",
     "@material-ui/styles": "^4.10.0",
     "cross-fetch": "^3.1.5",
+    "luxon": "^3.0.0",
     "rc-progress": "3.4.1",
-    "react-use": "^17.2.4",
-    "luxon": "^3.3.0"
+    "react-use": "^17.2.4"
   },
   "peerDependencies": {
     "react": "^16.13.1 || ^17.0.0",

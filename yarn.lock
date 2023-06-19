@@ -9199,6 +9199,7 @@ __metadata:
     "@types/node": ^16.11.26
     "@types/react": ^16.13.1 || ^17.0.0
     cross-fetch: ^3.1.5
+    luxon: ^3.0.0
     msw: ^1.0.0
     rc-progress: 3.4.1
     react-use: ^17.2.4
