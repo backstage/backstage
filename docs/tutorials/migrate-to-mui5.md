@@ -21,7 +21,7 @@ It is worth noting that we are still using `@mui/styles` & `jss`. You may stumbl
 
 To comply with MUI recommendations, we are enforcing a new linting rules that favours standard imports over named imports and also restricting 3rd level imports as they are considered private ([Guide: Minimizing Bundle Size](https://mui.com/material-ui/guides/minimizing-bundle-size)).
 
-For current knonw issues with the MUI v5 migration follow our [Milestone on GitHub](https://github.com/backstage/backstage/milestone/40). Please open a new issue if you run into different problems.
+For current known issues with the MUI v5 migration, follow our [Milestone on GitHub](https://github.com/backstage/backstage/milestone/40). Please open a new issue if you run into different problems.
 
 ### Plugins
 
