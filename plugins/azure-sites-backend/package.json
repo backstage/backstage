@@ -34,7 +34,7 @@
   "dependencies": {
     "@azure/arm-appservice": "^13.0.1",
     "@azure/arm-resourcegraph": "^4.2.1",
-    "@azure/identity": "^2.1.0",
+    "@azure/identity": "^3.2.1",
     "@backstage/backend-common": "workspace:^",
     "@backstage/config": "workspace:^",
     "@backstage/plugin-azure-sites-common": "workspace:^",

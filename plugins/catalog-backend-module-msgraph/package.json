@@ -45,7 +45,7 @@
     "clean": "backstage-cli package clean"
   },
   "dependencies": {
-    "@azure/identity": "^2.1.0",
+    "@azure/identity": "^3.2.1",
     "@backstage/backend-common": "workspace:^",
     "@backstage/backend-plugin-api": "workspace:^",
     "@backstage/backend-tasks": "workspace:^",
