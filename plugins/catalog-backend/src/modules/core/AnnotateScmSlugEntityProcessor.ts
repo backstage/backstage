@@ -31,16 +31,23 @@ const GITLAB_ACTIONS_ANNOTATION = 'gitlab.com/project-slug';
 /** @public */
 export class AnnotateScmSlugEntityProcessor implements CatalogProcessor {
   constructor(
-    private readonly opts: { scmIntegrationRegistry: ScmIntegrationRegistry },
+    private readonly opts: {
+      scmIntegrationRegistry: ScmIntegrationRegistry;
+      kinds: string[];
+    },
   ) {}
 
   getProcessorName(): string {
     return 'AnnotateScmSlugEntityProcessor';
   }
 
-  static fromConfig(config: Config): AnnotateScmSlugEntityProcessor {
+  static fromConfig(
+    config: Config,
+    kinds?: string[],
+  ): AnnotateScmSlugEntityProcessor {
     return new AnnotateScmSlugEntityProcessor({
       scmIntegrationRegistry: ScmIntegrations.fromConfig(config),
+      kinds: kinds || ['Component'],
     });
   }
 
@@ -48,7 +55,7 @@ export class AnnotateScmSlugEntityProcessor implements CatalogProcessor {
     entity: Entity,
     location: LocationSpec,
   ): Promise<Entity> {
-    if (entity.kind !== 'Component' || location.type !== 'url') {
+    if (!this.opts.kinds.includes(entity.kind) || location.type !== 'url') {
       return entity;
     }
 
