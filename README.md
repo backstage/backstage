@@ -11,6 +11,8 @@
 [![](https://img.shields.io/github/v/release/backstage/backstage)](https://github.com/backstage/backstage/releases)
 [![Uffizzi](https://img.shields.io/endpoint?url=https%3A%2F%2Fapp.uffizzi.com%2Fapi%2Fv1%2Fpublic%2Fshields%2Fgithub.com%2Fbackstage%2Fbackstage)](https://app.uffizzi.com/ephemeral-environments/backstage/backstage)
 
+> 🏖️ The week beginning the 26th of June, some of the maintainers will be taken a well earned Summer Holiday break. We will be slower to respond to issues and PRs during this time. Releases will continue to be shipped weekly. Normal service will resume on the 24th of July. 🏝️
+
 ## What is Backstage?
 
 [Backstage](https://backstage.io/) is an open platform for building developer portals. Powered by a centralized software catalog, Backstage restores order to your microservices and infrastructure and enables your product teams to ship high-quality code quickly without compromising autonomy.
