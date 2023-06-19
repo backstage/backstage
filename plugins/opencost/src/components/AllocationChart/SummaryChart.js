@@ -23,36 +23,42 @@ function toPieData(top, other, idle) {
   const slices = []
 
   for (const i in top) {
-    const allocation = top[i]
-    const fill = allocation.name === "__unallocated__"
-          ? "#212121"
-          : primary[i % primary.length]
+    if (Object.hasOwn(top, i)) {
+      const allocation = top[i]
+      const fill = allocation.name === "__unallocated__"
+            ? "#212121"
+            : primary[i % primary.length]
 
-    slices.push({
-      name: allocation.name,
-      value: allocation.totalCost,
-      fill: fill,
-    })
+      slices.push({
+        name: allocation.name,
+        value: allocation.totalCost,
+        fill: fill,
+      })
+    }
   }
 
   for (const i in other) {
-    const allocation = other[i]
-    const fill = browns[i % browns.length]
-    slices.push({
-      name: allocation.name,
-      value: allocation.totalCost,
-      fill: fill,
-    })
+    if (Object.hasOwn(other, i)) {
+      const allocation = other[i]
+      const fill = browns[i % browns.length]
+      slices.push({
+        name: allocation.name,
+        value: allocation.totalCost,
+        fill: fill,
+      })
+    }
   }
 
   for (const i in idle) {
-    const allocation = idle[i]
-    const fill = greyscale[i % greyscale.length]
-    slices.push({
-      name: allocation.name,
-      value: allocation.totalCost,
-      fill: fill,
-    })
+    if (Object.hasOwn(idle, i)) {
+      const allocation = idle[i]
+      const fill = greyscale[i % greyscale.length]
+      slices.push({
+        name: allocation.name,
+        value: allocation.totalCost,
+        fill: fill,
+      })
+    }
   }
 
   return slices

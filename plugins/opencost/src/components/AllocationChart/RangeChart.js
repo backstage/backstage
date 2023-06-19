@@ -81,10 +81,12 @@ function toBarLabels(allocationRange) {
 
   const labels = []
   for (const key in keyToFill) {
-    labels.push({
-      dataKey: key,
-      fill: keyToFill[key],
-    })
+    if (Object.hasOwn(keyToFill, key)) {
+      labels.push({
+        dataKey: key,
+        fill: keyToFill[key],
+      })
+    }
   }
 
   return reverse(labels)
@@ -95,24 +97,30 @@ function toBar(datum) {
   const bar = {}
 
   for (const key in top) {
-    const allocation = top[key]
-    const start = new Date(allocation.start)
-    bar.start = `${start.getUTCFullYear()}-${start.getUTCMonth()+1}-${start.getUTCDate()}`
-    bar[allocation.name] = allocation.totalCost
+    if (Object.hasOwn(top, key)) {
+      const allocation = top[key]
+      const start = new Date(allocation.start)
+      bar.start = `${start.getUTCFullYear()}-${start.getUTCMonth()+1}-${start.getUTCDate()}`
+      bar[allocation.name] = allocation.totalCost
+    }
   }
 
   for (const key in other) {
-    const allocation = other[key]
-    const start = new Date(allocation.start)
-    bar.start = `${start.getUTCFullYear()}-${start.getUTCMonth()+1}-${start.getUTCDate()}`
-    bar[allocation.name] = allocation.totalCost
+    if (Object.hasOwn(other, key)) {
+      const allocation = other[key]
+      const start = new Date(allocation.start)
+      bar.start = `${start.getUTCFullYear()}-${start.getUTCMonth()+1}-${start.getUTCDate()}`
+      bar[allocation.name] = allocation.totalCost
+    }
   }
 
   for (const key in idle) {
-    const allocation = idle[key]
-    const start = new Date(allocation.start)
-    bar.start = `${start.getUTCFullYear()}-${start.getUTCMonth()+1}-${start.getUTCDate()}`
-    bar[allocation.name] = allocation.totalCost
+    if (Object.hasOwn(idle, key)) {
+      const allocation = idle[key]
+      const start = new Date(allocation.start)
+      bar.start = `${start.getUTCFullYear()}-${start.getUTCMonth()+1}-${start.getUTCDate()}`
+      bar[allocation.name] = allocation.totalCost
+    }
   }
 
   return bar

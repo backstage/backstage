@@ -174,8 +174,10 @@ export const OpenCostReport = () => {
       if (resp.data && resp.data.length > 0) {
         const allocationRange = resp.data
         for (const i in allocationRange) {
-          // update cluster aggregations to use clusterName/clusterId names
-          allocationRange[i] = sortBy(allocationRange[i], a => a.totalCost)
+          if (Object.hasOwn(allocationRange, i)) {
+            // update cluster aggregations to use clusterName/clusterId names
+            allocationRange[i] = sortBy(allocationRange[i], a => a.totalCost)
+          }
         }
         setAllocationData(allocationRange)
       } else {

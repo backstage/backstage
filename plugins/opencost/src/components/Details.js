@@ -156,6 +156,7 @@ const Details = ({
 
       setRows(data)
     } catch (e) {
+      /* eslint no-console: ["error", { allow: ["warn"] }] */
       console.warn(`Error fetching details for (${controllerKind}, ${controller}):`, e)
       setErrors([{
         primary: "Error fetching details",
