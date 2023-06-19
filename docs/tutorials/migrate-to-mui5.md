@@ -27,8 +27,9 @@ For current knonw issues with the MUI v5 migration follow our [Milestone on GitH
 
 To migrate your plugin to MUI v5, you can build on the resources available.
 
-1. Run the migration `codemod` for the path of the specific plugin: `npx @mui/codemod v5.0.0/preset-safe <path>`.
-2. Manually fix the imports to match the new [linting rules](https://mui.com/material-ui/guides/minimizing-bundle-size). Take a look at possible `TODO:` items the `codemod` could not fix.
-3. Removal of types & methods from `@backstage/theme` which are marked as `@deprecated`.
+1. Manually fix the imports from named to default imports to match the new [linting rules for minimizing bundle size](https://mui.com/material-ui/guides/minimizing-bundle-size).
+2. Run the migration `codemod` for the path of the specific plugin: `npx @mui/codemod v5.0.0/preset-safe plugins/<path>`.
+3. Take a look at possible `TODO:` items the `codemod` could not fix.
+4. Remove types & methods from `@backstage/theme` which are marked as `@deprecated`.
 
 You can follow the [migration of the GraphiQL plugin](https://github.com/backstage/backstage/pull/17696) as an example plugin migration.
