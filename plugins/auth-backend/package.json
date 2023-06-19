@@ -54,7 +54,7 @@
     "google-auth-library": "^8.0.0",
     "jose": "^4.6.0",
     "jwt-decode": "^3.1.0",
-    "knex": "^2.0.0",
+    "knex": "^2.4.2",
     "lodash": "^4.17.21",
     "luxon": "^3.0.0",
     "minimatch": "^5.0.0",

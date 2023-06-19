@@ -3677,7 +3677,7 @@ __metadata:
     isomorphic-git: ^1.23.0
     jose: ^4.6.0
     keyv: ^4.5.2
-    knex: ^2.0.0
+    knex: ^2.4.2
     lodash: ^4.17.21
     logform: ^2.3.2
     luxon: ^3.0.0
@@ -3755,7 +3755,7 @@ __metadata:
     "@backstage/types": "workspace:^"
     "@types/express": ^4.17.6
     express: ^4.17.1
-    knex: ^2.0.0
+    knex: ^2.4.2
   languageName: unknown
   linkType: soft
 
@@ -3772,7 +3772,7 @@ __metadata:
     "@types/cron": ^2.0.0
     "@types/luxon": ^3.0.0
     cron: ^2.0.0
-    knex: ^2.0.0
+    knex: ^2.4.2
     lodash: ^4.17.21
     luxon: ^3.0.0
     uuid: ^8.0.0
@@ -3796,7 +3796,7 @@ __metadata:
     "@types/supertest": ^2.0.8
     better-sqlite3: ^8.0.0
     express: ^4.17.1
-    knex: ^2.0.0
+    knex: ^2.4.2
     msw: ^1.0.0
     mysql2: ^2.2.5
     pg: ^8.3.0
@@ -4925,7 +4925,7 @@ __metadata:
     fs-extra: 10.1.0
     globby: ^11.0.0
     helmet: ^6.0.0
-    knex: ^2.0.0
+    knex: ^2.4.2
     lodash: ^4.17.21
     luxon: ^3.0.0
     mock-fs: ^5.1.0
@@ -4976,7 +4976,7 @@ __metadata:
     google-auth-library: ^8.0.0
     jose: ^4.6.0
     jwt-decode: ^3.1.0
-    knex: ^2.0.0
+    knex: ^2.4.2
     lodash: ^4.17.21
     luxon: ^3.0.0
     minimatch: ^5.0.0
@@ -5222,7 +5222,7 @@ __metadata:
     "@types/express": ^4.17.6
     express: ^4.17.1
     express-promise-router: ^4.1.0
-    knex: ^2.0.0
+    knex: ^2.4.2
     winston: ^3.2.1
     yn: ^4.0.0
   languageName: unknown
@@ -5548,7 +5548,7 @@ __metadata:
     "@types/luxon": ^3.0.0
     express: ^4.17.1
     express-promise-router: ^4.1.0
-    knex: ^2.0.0
+    knex: ^2.4.2
     lodash: ^4.17.21
     luxon: ^3.0.0
     uuid: ^8.3.2
@@ -5705,7 +5705,7 @@ __metadata:
     fs-extra: 10.1.0
     git-url-parse: ^13.0.0
     glob: ^7.1.6
-    knex: ^2.0.0
+    knex: ^2.4.2
     lodash: ^4.17.21
     luxon: ^3.0.0
     minimatch: ^5.0.0
@@ -6201,7 +6201,7 @@ __metadata:
     express: ^4.17.1
     express-promise-router: ^4.1.0
     express-xml-bodyparser: ^0.3.0
-    knex: ^2.0.0
+    knex: ^2.4.2
     msw: ^1.0.0
     supertest: ^6.1.6
     uuid: ^8.3.2
@@ -6503,7 +6503,7 @@ __metadata:
     "@types/supertest": ^2.0.12
     express: ^4.18.1
     express-promise-router: ^4.1.0
-    knex: ^2.0.0
+    knex: ^2.4.2
     msw: ^1.0.0
     node-fetch: ^2.6.7
     supertest: ^6.2.4
@@ -7759,7 +7759,7 @@ __metadata:
     express: ^4.18.1
     express-promise-router: ^4.1.0
     fs-extra: ^10.0.0
-    knex: ^2.0.0
+    knex: ^2.4.2
     linguist-js: ^2.5.3
     luxon: ^2.0.2
     msw: ^1.0.0
@@ -8293,7 +8293,7 @@ __metadata:
     "@types/supertest": ^2.0.8
     express: ^4.17.1
     express-promise-router: ^4.1.0
-    knex: ^2.0.0
+    knex: ^2.4.2
     msw: ^1.0.0
     node-fetch: ^2.6.7
     supertest: ^6.1.3
@@ -8637,7 +8637,7 @@ __metadata:
     isomorphic-git: ^1.23.0
     jest-when: ^3.1.0
     jsonschema: ^1.2.6
-    knex: ^2.0.0
+    knex: ^2.4.2
     libsodium-wrappers: ^0.7.11
     lodash: ^4.17.21
     luxon: ^3.0.0
@@ -8888,7 +8888,7 @@ __metadata:
     "@backstage/config": "workspace:^"
     "@backstage/plugin-search-backend-node": "workspace:^"
     "@backstage/plugin-search-common": "workspace:^"
-    knex: ^2.0.0
+    knex: ^2.4.2
     lodash: ^4.17.21
     uuid: ^8.3.2
     winston: ^3.2.1
@@ -9366,7 +9366,7 @@ __metadata:
     "@types/supertest": ^2.0.8
     express: ^4.17.1
     express-promise-router: ^4.1.0
-    knex: ^2.0.0
+    knex: ^2.4.2
     lodash: ^4.17.21
     luxon: ^3.0.0
     semver: ^7.3.5
@@ -9537,7 +9537,7 @@ __metadata:
     express: ^4.17.1
     express-promise-router: ^4.1.0
     fs-extra: 10.1.0
-    knex: ^2.0.0
+    knex: ^2.4.2
     lodash: ^4.17.21
     msw: ^1.0.0
     node-fetch: ^2.6.7
@@ -9784,7 +9784,7 @@ __metadata:
     "@types/supertest": ^2.0.8
     express: ^4.17.1
     express-promise-router: ^4.1.0
-    knex: ^2.0.0
+    knex: ^2.4.2
     supertest: ^6.1.3
     winston: ^3.2.1
     yn: ^4.0.0
@@ -30033,7 +30033,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"knex@npm:^2.0.0, knex@npm:^2.3.0, knex@npm:^2.4.2":
+"knex@npm:^2.3.0, knex@npm:^2.4.2":
   version: 2.4.2
   resolution: "knex@npm:2.4.2"
   dependencies:

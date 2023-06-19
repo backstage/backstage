@@ -50,7 +50,7 @@
     "@backstage/types": "workspace:^",
     "better-sqlite3": "^8.0.0",
     "express": "^4.17.1",
-    "knex": "^2.0.0",
+    "knex": "^2.4.2",
     "msw": "^1.0.0",
     "mysql2": "^2.2.5",
     "pg": "^8.3.0",

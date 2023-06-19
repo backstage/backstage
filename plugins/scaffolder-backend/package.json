@@ -81,7 +81,7 @@
     "isolated-vm": "^4.5.0",
     "isomorphic-git": "^1.23.0",
     "jsonschema": "^1.2.6",
-    "knex": "^2.0.0",
+    "knex": "^2.4.2",
     "libsodium-wrappers": "^0.7.11",
     "lodash": "^4.17.21",
     "luxon": "^3.0.0",

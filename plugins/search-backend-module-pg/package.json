@@ -41,7 +41,7 @@
     "@backstage/config": "workspace:^",
     "@backstage/plugin-search-backend-node": "workspace:^",
     "@backstage/plugin-search-common": "workspace:^",
-    "knex": "^2.0.0",
+    "knex": "^2.4.2",
     "lodash": "^4.17.21",
     "uuid": "^8.3.2",
     "winston": "^3.2.1"

@@ -65,7 +65,7 @@
     "express": "^4.17.1",
     "express-promise-router": "^4.1.0",
     "fs-extra": "10.1.0",
-    "knex": "^2.0.0",
+    "knex": "^2.4.2",
     "lodash": "^4.17.21",
     "node-fetch": "^2.6.7",
     "p-limit": "^3.1.0",

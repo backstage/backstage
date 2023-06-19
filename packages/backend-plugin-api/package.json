@@ -39,7 +39,7 @@
     "@backstage/types": "workspace:^",
     "@types/express": "^4.17.6",
     "express": "^4.17.1",
-    "knex": "^2.0.0"
+    "knex": "^2.4.2"
   },
   "devDependencies": {
     "@backstage/cli": "workspace:^"
