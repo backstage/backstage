@@ -26,11 +26,6 @@ import {
   encodeState,
   OAuthAdapter,
   OAuthEnvironmentHandler,
-  OAuthHandlers,
-  OAuthProviderOptions,
-  OAuthRefreshRequest,
-  OAuthResponse,
-  OAuthStartRequest,
 } from '../../lib/oauth';
 import {
   executeFrameHandlerStrategy,
@@ -42,7 +37,12 @@ import {
   AuthResolverContext,
   OAuthStartResponse,
   SignInResolver,
-} from '../types';
+  OAuthHandlers,
+  OAuthProviderOptions,
+  OAuthRefreshRequest,
+  OAuthResponse,
+  OAuthStartRequest,
+} from '@backstage/plugin-auth-node';
 import { createAuthProviderIntegration } from '../createAuthProviderIntegration';
 import {
   commonByEmailLocalPartResolver,

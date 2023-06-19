@@ -18,11 +18,6 @@ import {
   encodeState,
   OAuthAdapter,
   OAuthEnvironmentHandler,
-  OAuthHandlers,
-  OAuthProviderOptions,
-  OAuthRefreshRequest,
-  OAuthResponse,
-  OAuthStartRequest,
 } from '../../lib/oauth';
 import { Strategy as OAuth2Strategy, VerifyCallback } from 'passport-oauth2';
 import {
@@ -37,7 +32,12 @@ import {
   AuthResolverContext,
   OAuthStartResponse,
   SignInResolver,
-} from '../types';
+  OAuthHandlers,
+  OAuthProviderOptions,
+  OAuthRefreshRequest,
+  OAuthResponse,
+  OAuthStartRequest,
+} from '@backstage/plugin-auth-node';
 import express from 'express';
 import { createAuthProviderIntegration } from '../createAuthProviderIntegration';
 import { Profile as PassportProfile } from 'passport';

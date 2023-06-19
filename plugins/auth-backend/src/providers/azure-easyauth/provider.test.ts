@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { AuthHandler, AuthResolverContext } from '../types';
+import { AuthHandler, AuthResolverContext } from '@backstage/plugin-auth-node';
 import { makeProfileInfo } from '../../lib/passport';
 import {
   easyAuth,

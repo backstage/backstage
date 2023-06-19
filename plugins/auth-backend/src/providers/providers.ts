@@ -30,7 +30,7 @@ import { oidc } from './oidc';
 import { okta } from './okta';
 import { onelogin } from './onelogin';
 import { saml } from './saml';
-import { AuthProviderFactory } from './types';
+import { AuthProviderFactory } from '@backstage/plugin-auth-node';
 import { bitbucketServer } from './bitbucketServer';
 import { easyAuth } from './azure-easyauth';
 

@@ -20,7 +20,10 @@ import { setupRequestMockHandlers } from '@backstage/backend-test-utils';
 import { ConfigReader } from '@backstage/config';
 import { rest } from 'msw';
 import { setupServer } from 'msw/node';
-import { AuthProviderRouteHandlers, AuthResolverContext } from '../types';
+import {
+  AuthProviderRouteHandlers,
+  AuthResolverContext,
+} from '@backstage/plugin-auth-node';
 import express from 'express';
 import crypto from 'crypto';
 import { FakeMicrosoftAPI } from './__testUtils__/fake';

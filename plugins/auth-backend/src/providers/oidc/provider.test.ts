@@ -24,7 +24,7 @@ import { setupServer } from 'msw/node';
 import { ClientMetadata, IssuerMetadata } from 'openid-client';
 import { OAuthAdapter } from '../../lib/oauth';
 import { oidc, OidcAuthProvider, Options } from './provider';
-import { AuthResolverContext } from '../types';
+import { AuthResolverContext } from '@backstage/plugin-auth-node';
 
 const issuerMetadata = {
   issuer: 'https://oidc.test',

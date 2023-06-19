@@ -16,7 +16,7 @@
 
 import { AuthenticationError } from '@backstage/errors';
 import { OAuth2Client, TokenPayload } from 'google-auth-library';
-import { AuthHandler } from '../types';
+import { AuthHandler } from '@backstage/plugin-auth-node';
 import { GcpIapResult } from './types';
 
 export function createTokenValidator(

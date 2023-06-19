@@ -21,12 +21,6 @@ import {
   encodeState,
   OAuthAdapter,
   OAuthEnvironmentHandler,
-  OAuthHandlers,
-  OAuthProviderOptions,
-  OAuthRefreshRequest,
-  OAuthResponse,
-  OAuthResult,
-  OAuthStartRequest,
 } from '../../lib/oauth';
 import {
   executeFetchUserProfileStrategy,
@@ -42,7 +36,13 @@ import {
   OAuthStartResponse,
   SignInResolver,
   AuthResolverContext,
-} from '../types';
+  OAuthHandlers,
+  OAuthProviderOptions,
+  OAuthRefreshRequest,
+  OAuthResponse,
+  OAuthResult,
+  OAuthStartRequest,
+} from '@backstage/plugin-auth-node';
 
 type PrivateInfo = {
   refreshToken: string;

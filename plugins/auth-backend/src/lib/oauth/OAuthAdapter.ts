@@ -25,7 +25,7 @@ import {
   AuthProviderRouteHandlers,
   AuthProviderConfig,
   CookieConfigurer,
-} from '../../providers/types';
+} from '@backstage/plugin-auth-node';
 import {
   AuthenticationError,
   InputError,
@@ -44,7 +44,7 @@ import {
   OAuthRefreshRequest,
   OAuthState,
   OAuthLogoutRequest,
-} from './types';
+} from '@backstage/plugin-auth-node';
 import { prepareBackstageIdentityResponse } from '../../providers/prepareBackstageIdentityResponse';
 
 export const THOUSAND_DAYS_MS = 1000 * 24 * 60 * 60 * 1000;

@@ -15,7 +15,7 @@
  */
 
 import { JsonValue } from '@backstage/types';
-import { AuthResponse } from '../types';
+import { AuthResponse } from '@backstage/plugin-auth-node';
 
 /**
  * The header name used by the IAP.

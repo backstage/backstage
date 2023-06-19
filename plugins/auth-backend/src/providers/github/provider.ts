@@ -26,20 +26,21 @@ import {
   PassportDoneCallback,
 } from '../../lib/passport';
 import {
+  OAuthProviderOptions,
+  OAuthHandlers,
+  OAuthStartRequest,
+  OAuthRefreshRequest,
   OAuthStartResponse,
   AuthHandler,
   SignInResolver,
   StateEncoder,
   AuthResolverContext,
-} from '../types';
+} from '@backstage/plugin-auth-node';
+
 import {
   OAuthAdapter,
-  OAuthProviderOptions,
-  OAuthHandlers,
   OAuthEnvironmentHandler,
-  OAuthStartRequest,
   encodeState,
-  OAuthRefreshRequest,
 } from '../../lib/oauth';
 import { createAuthProviderIntegration } from '../createAuthProviderIntegration';
 

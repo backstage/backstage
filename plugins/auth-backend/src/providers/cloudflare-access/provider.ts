@@ -19,7 +19,7 @@ import {
   AuthResolverContext,
   AuthResponse,
   SignInResolver,
-} from '../types';
+} from '@backstage/plugin-auth-node';
 import fetch, { Headers } from 'node-fetch';
 import express from 'express';
 import * as _ from 'lodash';

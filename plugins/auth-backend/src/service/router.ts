@@ -18,10 +18,9 @@ import express from 'express';
 import Router from 'express-promise-router';
 import cookieParser from 'cookie-parser';
 import { Logger } from 'winston';
-import {
-  defaultAuthProviderFactories,
-  AuthProviderFactory,
-} from '../providers';
+import { defaultAuthProviderFactories } from '../providers';
+import { AuthProviderFactory } from '@backstage/plugin-auth-node';
+
 import {
   PluginDatabaseManager,
   PluginEndpointDiscovery,

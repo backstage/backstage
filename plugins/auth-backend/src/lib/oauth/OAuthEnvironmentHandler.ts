@@ -18,7 +18,7 @@ import express from 'express';
 import { Config } from '@backstage/config';
 import { InputError, NotFoundError } from '@backstage/errors';
 import { readState } from './helpers';
-import { AuthProviderRouteHandlers } from '../../providers/types';
+import { AuthProviderRouteHandlers } from '@backstage/plugin-auth-node';
 
 /** @public */
 export class OAuthEnvironmentHandler implements AuthProviderRouteHandlers {

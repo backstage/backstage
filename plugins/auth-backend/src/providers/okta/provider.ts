@@ -17,14 +17,8 @@
 import express from 'express';
 import {
   OAuthAdapter,
-  OAuthProviderOptions,
-  OAuthHandlers,
-  OAuthResponse,
   OAuthEnvironmentHandler,
-  OAuthStartRequest,
   encodeState,
-  OAuthRefreshRequest,
-  OAuthResult,
 } from '../../lib/oauth';
 import { Strategy as OktaStrategy } from '@davidzemon/passport-okta-oauth';
 import passport from 'passport';
@@ -41,7 +35,13 @@ import {
   OAuthStartResponse,
   SignInResolver,
   AuthResolverContext,
-} from '../types';
+  OAuthProviderOptions,
+  OAuthHandlers,
+  OAuthResponse,
+  OAuthStartRequest,
+  OAuthRefreshRequest,
+  OAuthResult,
+} from '@backstage/plugin-auth-node';
 import { createAuthProviderIntegration } from '../createAuthProviderIntegration';
 import {
   commonByEmailLocalPartResolver,

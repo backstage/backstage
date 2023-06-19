@@ -23,7 +23,7 @@ import {
   AuthProviderRouteHandlers,
   AuthResolverContext,
   SignInResolver,
-} from '../types';
+} from '@backstage/plugin-auth-node';
 import {
   createTokenValidator,
   defaultAuthHandler,

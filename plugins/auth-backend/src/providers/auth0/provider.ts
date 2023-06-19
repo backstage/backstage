@@ -19,14 +19,8 @@ import passport from 'passport';
 import Auth0Strategy from './strategy';
 import {
   OAuthAdapter,
-  OAuthProviderOptions,
-  OAuthHandlers,
-  OAuthResponse,
   OAuthEnvironmentHandler,
-  OAuthStartRequest,
   encodeState,
-  OAuthRefreshRequest,
-  OAuthResult,
 } from '../../lib/oauth';
 import {
   executeFetchUserProfileStrategy,
@@ -41,7 +35,13 @@ import {
   AuthHandler,
   SignInResolver,
   AuthResolverContext,
-} from '../types';
+  OAuthProviderOptions,
+  OAuthHandlers,
+  OAuthResponse,
+  OAuthStartRequest,
+  OAuthRefreshRequest,
+  OAuthResult,
+} from '@backstage/plugin-auth-node';
 import { createAuthProviderIntegration } from '../createAuthProviderIntegration';
 import { StateStore } from 'passport-oauth2';
 

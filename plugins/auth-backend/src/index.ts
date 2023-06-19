@@ -21,7 +21,6 @@
  */
 
 export * from './service/router';
-export type { TokenParams } from './identity';
 export * from './providers';
 
 // flow package provides 2 functions

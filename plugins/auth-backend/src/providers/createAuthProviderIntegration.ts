@@ -14,7 +14,10 @@
  * limitations under the License.
  */
 
-import { AuthProviderFactory, SignInResolver } from './types';
+import {
+  AuthProviderFactory,
+  SignInResolver,
+} from '@backstage/plugin-auth-node';
 
 /**
  * Creates a standardized representation of an integration with a third-party

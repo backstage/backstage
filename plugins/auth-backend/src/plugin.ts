@@ -25,16 +25,13 @@ import {
   DEFAULT_NAMESPACE,
   stringifyEntityRef,
 } from '@backstage/catalog-model';
-import {
-  createRouter,
-  providers,
-  defaultAuthProviderFactories,
-  AuthProviderFactory,
-} from '@backstage/plugin-auth-backend';
+import { AuthProviderFactory } from '@backstage/plugin-auth-node';
 import {
   AuthProviderExtensionPoint,
   authProviderExtensionPoint,
 } from '@backstage/plugin-auth-node/alpha';
+import { defaultAuthProviderFactories, providers } from './providers';
+import { createRouter } from './service/router';
 
 class AuthProviderExtensionPointImpl implements AuthProviderExtensionPoint {
   #factories: Record<string, AuthProviderFactory> = {};

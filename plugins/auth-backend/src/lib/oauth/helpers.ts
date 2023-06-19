@@ -15,9 +15,8 @@
  */
 
 import express from 'express';
-import { OAuthState } from './types';
+import { CookieConfigurer, OAuthState } from '@backstage/plugin-auth-node';
 import pickBy from 'lodash/pickBy';
-import { CookieConfigurer } from '../../providers/types';
 
 /** @public */
 export const readState = (stateString: string): OAuthState => {

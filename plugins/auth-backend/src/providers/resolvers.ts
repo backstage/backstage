@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { SignInResolver } from './types';
+import { SignInResolver } from '@backstage/plugin-auth-node';
 
 /**
  * A common sign-in resolver that looks up the user using the local part of

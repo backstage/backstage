@@ -16,15 +16,15 @@
 
 import express from 'express';
 import { AuthenticationError } from '@backstage/errors';
-import { getBearerTokenFromAuthorizationHeader } from '@backstage/plugin-auth-node';
 import {
+  getBearerTokenFromAuthorizationHeader,
   AuthHandler,
   SignInResolver,
   AuthProviderRouteHandlers,
   AuthResponse,
   AuthResolverContext,
   AuthHandlerResult,
-} from '../types';
+} from '@backstage/plugin-auth-node';
 import { decodeJwt } from 'jose';
 import { prepareBackstageIdentityResponse } from '../prepareBackstageIdentityResponse';
 import { createAuthProviderIntegration } from '../createAuthProviderIntegration';

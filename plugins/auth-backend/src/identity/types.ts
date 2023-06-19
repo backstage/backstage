@@ -24,8 +24,6 @@ export interface AnyJWK extends Record<string, string> {
   kty: string;
 }
 
-export { TokenParams };
-
 /**
  * A TokenIssuer is able to issue verifiable ID Tokens on demand.
  */

@@ -25,9 +25,12 @@ import {
 } from '@backstage/catalog-model';
 import { ConflictError, InputError, NotFoundError } from '@backstage/errors';
 import { Logger } from 'winston';
-import { TokenIssuer, TokenParams } from '../../identity/types';
-import { AuthResolverContext } from '../../providers';
-import { AuthResolverCatalogUserQuery } from '../../providers/types';
+import {
+  AuthResolverContext,
+  AuthResolverCatalogUserQuery,
+  TokenParams,
+} from '@backstage/plugin-auth-node';
+import { TokenIssuer } from '../../identity/types';
 import { CatalogIdentityClient } from '../catalog';
 
 /**

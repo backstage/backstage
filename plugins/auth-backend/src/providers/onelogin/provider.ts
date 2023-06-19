@@ -18,14 +18,8 @@ import { Strategy as OneLoginStrategy } from 'passport-onelogin-oauth';
 import express from 'express';
 import {
   OAuthAdapter,
-  OAuthProviderOptions,
-  OAuthHandlers,
-  OAuthResponse,
   OAuthEnvironmentHandler,
-  OAuthStartRequest,
   encodeState,
-  OAuthRefreshRequest,
-  OAuthResult,
 } from '../../lib/oauth';
 import passport from 'passport';
 import {
@@ -41,7 +35,13 @@ import {
   AuthHandler,
   SignInResolver,
   AuthResolverContext,
-} from '../types';
+  OAuthProviderOptions,
+  OAuthHandlers,
+  OAuthResponse,
+  OAuthStartRequest,
+  OAuthRefreshRequest,
+  OAuthResult,
+} from '@backstage/plugin-auth-node';
 import { createAuthProviderIntegration } from '../createAuthProviderIntegration';
 
 type PrivateInfo = {

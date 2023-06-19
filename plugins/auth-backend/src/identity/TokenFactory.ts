@@ -20,7 +20,9 @@ import { DateTime } from 'luxon';
 import { v4 as uuid } from 'uuid';
 import { Logger } from 'winston';
 
-import { AnyJWK, KeyStore, TokenIssuer, TokenParams } from './types';
+import { AnyJWK, KeyStore, TokenIssuer } from './types';
+
+import { TokenParams } from '@backstage/plugin-auth-node';
 
 const MS_IN_S = 1000;
 

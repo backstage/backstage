@@ -22,7 +22,7 @@ import {
   AwsAlbAuthProvider,
 } from './provider';
 import { makeProfileInfo } from '../../lib/passport';
-import { AuthResolverContext } from '../types';
+import { AuthResolverContext } from '@backstage/plugin-auth-node';
 import { AuthenticationError } from '@backstage/errors';
 
 const jwtMock = jwtVerify as jest.Mocked<any>;

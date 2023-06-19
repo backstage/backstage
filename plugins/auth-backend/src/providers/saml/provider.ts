@@ -32,7 +32,7 @@ import {
   SignInResolver,
   AuthResponse,
   AuthResolverContext,
-} from '../types';
+} from '@backstage/plugin-auth-node';
 import { postMessageResponse } from '../../lib/flow';
 import { createAuthProviderIntegration } from '../createAuthProviderIntegration';
 import { AuthenticationError, isError } from '@backstage/errors';

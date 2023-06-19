@@ -23,7 +23,11 @@ import { AuthenticationError } from '@backstage/errors';
 import express from 'express';
 import * as jose from 'jose';
 import { Logger } from 'winston';
-import { AuthHandler, AuthResolverContext, SignInResolver } from '../types';
+import {
+  AuthHandler,
+  AuthResolverContext,
+  SignInResolver,
+} from '@backstage/plugin-auth-node';
 import {
   oauth2Proxy,
   Oauth2ProxyAuthProvider,

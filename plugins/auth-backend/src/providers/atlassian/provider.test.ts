@@ -16,9 +16,8 @@
 
 import { AtlassianAuthProvider } from './provider';
 import * as helpers from '../../lib/passport/PassportStrategyHelper';
-import { OAuthResult } from '../../lib/oauth';
 import { PassportProfile } from '../../lib/passport/types';
-import { AuthResolverContext } from '../types';
+import { AuthResolverContext, OAuthResult } from '@backstage/plugin-auth-node';
 
 jest.mock('../../lib/passport/PassportStrategyHelper', () => {
   return {

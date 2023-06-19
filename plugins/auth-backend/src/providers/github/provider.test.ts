@@ -18,8 +18,11 @@ import { Profile as PassportProfile } from 'passport';
 import { GithubAuthProvider, GithubOAuthResult, github } from './provider';
 import * as helpers from '../../lib/passport/PassportStrategyHelper';
 import { makeProfileInfo } from '../../lib/passport/PassportStrategyHelper';
-import { OAuthStartRequest, encodeState } from '../../lib/oauth';
-import { AuthResolverContext } from '../types';
+import { encodeState } from '../../lib/oauth';
+import {
+  AuthResolverContext,
+  OAuthStartRequest,
+} from '@backstage/plugin-auth-node';
 
 jest.mock('../../lib/passport/PassportStrategyHelper', () => {
   return {

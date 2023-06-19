@@ -16,7 +16,7 @@
 
 import express from 'express';
 import request from 'supertest';
-import { AuthResolverContext } from '../types';
+import { AuthResolverContext } from '@backstage/plugin-auth-node';
 import { GcpIapProvider } from './provider';
 import { DEFAULT_IAP_JWT_HEADER } from './types';
 

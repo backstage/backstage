@@ -20,7 +20,7 @@ import {
   AuthResolverContext,
   AuthResponse,
   SignInResolver,
-} from '../types';
+} from '@backstage/plugin-auth-node';
 import express from 'express';
 import fetch from 'node-fetch';
 import * as crypto from 'crypto';

@@ -21,12 +21,6 @@ import {
   encodeState,
   OAuthAdapter,
   OAuthEnvironmentHandler,
-  OAuthHandlers,
-  OAuthProviderOptions,
-  OAuthRefreshRequest,
-  OAuthResponse,
-  OAuthResult,
-  OAuthStartRequest,
 } from '../../lib/oauth';
 import {
   executeFetchUserProfileStrategy,
@@ -41,7 +35,13 @@ import {
   AuthResolverContext,
   OAuthStartResponse,
   SignInResolver,
-} from '../types';
+  OAuthHandlers,
+  OAuthProviderOptions,
+  OAuthRefreshRequest,
+  OAuthResponse,
+  OAuthResult,
+  OAuthStartRequest,
+} from '@backstage/plugin-auth-node';
 import { createAuthProviderIntegration } from '../createAuthProviderIntegration';
 import { InputError } from '@backstage/errors';
 

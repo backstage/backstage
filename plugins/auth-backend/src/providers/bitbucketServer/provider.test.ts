@@ -16,7 +16,7 @@
 
 import * as helpers from '../../lib/passport/PassportStrategyHelper';
 import { makeProfileInfo } from '../../lib/passport';
-import { AuthResolverContext } from '../types';
+import { AuthResolverContext } from '@backstage/plugin-auth-node';
 import {
   bitbucketServer,
   BitbucketServerAuthProvider,

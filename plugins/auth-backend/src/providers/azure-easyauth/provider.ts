@@ -20,7 +20,7 @@ import {
   AuthResolverContext,
   AuthResponse,
   SignInResolver,
-} from '../types';
+} from '@backstage/plugin-auth-node';
 import { Request, Response } from 'express';
 import { makeProfileInfo } from '../../lib/passport';
 import { AuthenticationError } from '@backstage/errors';

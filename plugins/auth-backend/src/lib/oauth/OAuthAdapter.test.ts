@@ -17,8 +17,12 @@
 import express from 'express';
 import { THOUSAND_DAYS_MS, TEN_MINUTES_MS, OAuthAdapter } from './OAuthAdapter';
 import { encodeState } from './helpers';
-import { OAuthHandlers, OAuthLogoutRequest, OAuthState } from './types';
-import { CookieConfigurer } from '../../providers/types';
+import {
+  CookieConfigurer,
+  OAuthHandlers,
+  OAuthLogoutRequest,
+  OAuthState,
+} from '@backstage/plugin-auth-node';
 
 const mockResponseData = {
   providerInfo: {

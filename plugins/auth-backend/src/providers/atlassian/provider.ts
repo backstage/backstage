@@ -19,12 +19,6 @@ import {
   encodeState,
   OAuthAdapter,
   OAuthEnvironmentHandler,
-  OAuthHandlers,
-  OAuthProviderOptions,
-  OAuthRefreshRequest,
-  OAuthResponse,
-  OAuthResult,
-  OAuthStartRequest,
 } from '../../lib/oauth';
 import passport from 'passport';
 import {
@@ -40,7 +34,13 @@ import {
   AuthResolverContext,
   OAuthStartResponse,
   SignInResolver,
-} from '../types';
+  OAuthHandlers,
+  OAuthProviderOptions,
+  OAuthRefreshRequest,
+  OAuthResponse,
+  OAuthResult,
+  OAuthStartRequest,
+} from '@backstage/plugin-auth-node';
 import express from 'express';
 import { createAuthProviderIntegration } from '../createAuthProviderIntegration';
 

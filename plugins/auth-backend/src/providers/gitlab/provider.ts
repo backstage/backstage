@@ -29,17 +29,17 @@ import {
   SignInResolver,
   AuthHandler,
   AuthResolverContext,
-} from '../types';
+  OAuthHandlers,
+  OAuthRefreshRequest,
+  OAuthProviderOptions,
+  OAuthResponse,
+  OAuthResult,
+  OAuthStartRequest,
+} from '@backstage/plugin-auth-node';
 import {
   OAuthAdapter,
-  OAuthProviderOptions,
-  OAuthHandlers,
-  OAuthResponse,
   OAuthEnvironmentHandler,
-  OAuthStartRequest,
-  OAuthRefreshRequest,
   encodeState,
-  OAuthResult,
 } from '../../lib/oauth';
 import { createAuthProviderIntegration } from '../createAuthProviderIntegration';
 
