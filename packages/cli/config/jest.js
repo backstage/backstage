@@ -194,11 +194,11 @@ async function getProjectConfig(targetPath, extraConfig) {
     ...getRoleConfig(closestPkgJson?.backstage?.role),
   };
 
-  options.setupFilesAfterEnv = [];
+  options.setupFilesAfterEnv = options.setupFilesAfterEnv || [];
 
   if (options.testEnvironment === require.resolve('jest-environment-jsdom')) {
     // FIXME https://github.com/jsdom/jsdom/issues/1724
-    options.setupFilesAfterEnv.push(require.resolve('cross-fetch/polyfill'));
+    options.setupFilesAfterEnv.unshift(require.resolve('cross-fetch/polyfill'));
   }
 
   // Use src/setupTests.ts as the default location for configuring test env
