@@ -1,5 +1,5 @@
 /*
- * Copyright 2023 The Backstage Authors
+ * Copyright 2022 The Backstage Authors
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -13,7 +13,20 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+import { createExtensionPoint } from '@backstage/backend-plugin-api';
+import { AuthProviderFactory } from '@backstage/plugin-auth-node';
 
-export type { AuthProviderExtensionPoint } from '@backstage/plugin-auth-node/alpha';
-export { authProviderExtensionPoint } from '@backstage/plugin-auth-node/alpha';
-export * from './plugin';
+/**
+ * @alpha
+ */
+export interface AuthProviderExtensionPoint {
+  addProviders(factories: Record<string, AuthProviderFactory>): void;
+}
+
+/**
+ * @alpha
+ */
+export const authProviderExtensionPoint =
+  createExtensionPoint<AuthProviderExtensionPoint>({
+    id: 'auth.provider',
+  });

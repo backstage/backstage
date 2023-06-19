@@ -5,98 +5,34 @@
 ```ts
 /// <reference types="node" />
 
+import { AuthHandler } from '@backstage/plugin-auth-node';
+import { AuthProviderConfig } from '@backstage/plugin-auth-node';
+import { AuthProviderFactory } from '@backstage/plugin-auth-node';
+import { AuthProviderRouteHandlers } from '@backstage/plugin-auth-node';
+import { AuthResponse } from '@backstage/plugin-auth-node';
 import { BackstageIdentityResponse } from '@backstage/plugin-auth-node';
 import { BackstageSignInResult } from '@backstage/plugin-auth-node';
-import { CacheService } from '@backstage/backend-plugin-api';
+import { CacheClient } from '@backstage/backend-common';
 import { CatalogApi } from '@backstage/catalog-client';
 import { Config } from '@backstage/config';
+import { CookieConfigurer } from '@backstage/plugin-auth-node';
 import { Entity } from '@backstage/catalog-model';
 import express from 'express';
-import { GetEntitiesRequest } from '@backstage/catalog-client';
 import { IncomingHttpHeaders } from 'http';
 import { JsonValue } from '@backstage/types';
 import { Logger } from 'winston';
+import { OAuthHandlers } from '@backstage/plugin-auth-node';
+import { OAuthResult } from '@backstage/plugin-auth-node';
+import { OAuthState } from '@backstage/plugin-auth-node';
 import { PluginDatabaseManager } from '@backstage/backend-common';
 import { PluginEndpointDiscovery } from '@backstage/backend-common';
 import { Profile } from 'passport';
+import { SignInResolver } from '@backstage/plugin-auth-node';
+import { StateEncoder } from '@backstage/plugin-auth-node';
 import { TokenManager } from '@backstage/backend-common';
 import { TokenSet } from 'openid-client';
 import { UserEntity } from '@backstage/catalog-model';
 import { UserinfoResponse } from 'openid-client';
-
-// @public
-export type AuthHandler<TAuthResult> = (
-  input: TAuthResult,
-  context: AuthResolverContext,
-) => Promise<AuthHandlerResult>;
-
-// @public
-export type AuthHandlerResult = {
-  profile: ProfileInfo;
-};
-
-// @public (undocumented)
-export type AuthProviderConfig = {
-  baseUrl: string;
-  appUrl: string;
-  isOriginAllowed: (origin: string) => boolean;
-  cookieConfigurer?: CookieConfigurer;
-};
-
-// @public (undocumented)
-export type AuthProviderFactory = (options: {
-  providerId: string;
-  globalConfig: AuthProviderConfig;
-  config: Config;
-  logger: Logger;
-  resolverContext: AuthResolverContext;
-}) => AuthProviderRouteHandlers;
-
-// @public
-export interface AuthProviderRouteHandlers {
-  frameHandler(req: express.Request, res: express.Response): Promise<void>;
-  logout?(req: express.Request, res: express.Response): Promise<void>;
-  refresh?(req: express.Request, res: express.Response): Promise<void>;
-  start(req: express.Request, res: express.Response): Promise<void>;
-}
-
-// @public
-export type AuthResolverCatalogUserQuery =
-  | {
-      entityRef:
-        | string
-        | {
-            kind?: string;
-            namespace?: string;
-            name: string;
-          };
-    }
-  | {
-      annotations: Record<string, string>;
-    }
-  | {
-      filter: Exclude<GetEntitiesRequest['filter'], undefined>;
-    };
-
-// @public
-export type AuthResolverContext = {
-  issueToken(params: TokenParams): Promise<{
-    token: string;
-  }>;
-  findCatalogUser(query: AuthResolverCatalogUserQuery): Promise<{
-    entity: Entity;
-  }>;
-  signInWithCatalogUser(
-    query: AuthResolverCatalogUserQuery,
-  ): Promise<BackstageSignInResult>;
-};
-
-// @public (undocumented)
-export type AuthResponse<ProviderInfo> = {
-  providerInfo: ProviderInfo;
-  profile: ProfileInfo;
-  backstageIdentity?: BackstageIdentityResponse;
-};
 
 // @public (undocumented)
 export type AwsAlbResult = {
@@ -189,19 +125,6 @@ export type CloudflareAccessResult = {
   cfIdentity: CloudflareAccessIdentityProfile;
   expiresInSeconds?: number;
   token: string;
-};
-
-// @public
-export type CookieConfigurer = (ctx: {
-  providerId: string;
-  baseUrl: string;
-  callbackUrl: string;
-  appOrigin: string;
-}) => {
-  domain: string;
-  path: string;
-  secure: boolean;
-  sameSite?: 'none' | 'lax' | 'strict';
 };
 
 // @public
@@ -328,87 +251,6 @@ export class OAuthEnvironmentHandler implements AuthProviderRouteHandlers {
 }
 
 // @public
-export interface OAuthHandlers {
-  handler(req: express.Request): Promise<{
-    response: OAuthResponse;
-    refreshToken?: string;
-  }>;
-  logout?(req: OAuthLogoutRequest): Promise<void>;
-  refresh?(req: OAuthRefreshRequest): Promise<{
-    response: OAuthResponse;
-    refreshToken?: string;
-  }>;
-  start(req: OAuthStartRequest): Promise<OAuthStartResponse>;
-}
-
-// @public (undocumented)
-export type OAuthLogoutRequest = express.Request<{}> & {
-  refreshToken: string;
-};
-
-// @public (undocumented)
-export type OAuthProviderInfo = {
-  accessToken: string;
-  idToken?: string;
-  expiresInSeconds?: number;
-  scope: string;
-};
-
-// @public
-export type OAuthProviderOptions = {
-  clientId: string;
-  clientSecret: string;
-  callbackUrl: string;
-};
-
-// @public (undocumented)
-export type OAuthRefreshRequest = express.Request<{}> & {
-  scope: string;
-  refreshToken: string;
-};
-
-// @public
-export type OAuthResponse = {
-  profile: ProfileInfo;
-  providerInfo: OAuthProviderInfo;
-  backstageIdentity?: BackstageSignInResult;
-};
-
-// @public (undocumented)
-export type OAuthResult = {
-  fullProfile: Profile;
-  params: {
-    id_token?: string;
-    scope: string;
-    expires_in: number;
-  };
-  accessToken: string;
-  refreshToken?: string;
-};
-
-// @public (undocumented)
-export type OAuthStartRequest = express.Request<{}> & {
-  scope: string;
-  state: OAuthState;
-};
-
-// @public (undocumented)
-export type OAuthStartResponse = {
-  url: string;
-  status?: number;
-};
-
-// @public (undocumented)
-export type OAuthState = {
-  nonce: string;
-  env: string;
-  origin?: string;
-  scope?: string;
-  redirectUrl?: string;
-  flow?: string;
-};
-
-// @public
 export type OidcAuthResult = {
   tokenset: TokenSet;
   userinfo: UserinfoResponse;
@@ -425,13 +267,6 @@ export const postMessageResponse: (
 export function prepareBackstageIdentityResponse(
   result: BackstageSignInResult,
 ): BackstageIdentityResponse;
-
-// @public
-export type ProfileInfo = {
-  email?: string;
-  displayName?: string;
-  picture?: string;
-};
 
 // @public (undocumented)
 export type ProviderFactories = {
@@ -524,7 +359,7 @@ export const providers: Readonly<{
       signIn: {
         resolver: SignInResolver<CloudflareAccessResult>;
       };
-      cache?: CacheService | undefined;
+      cache?: CacheClient | undefined;
     }) => AuthProviderFactory;
     resolvers: Readonly<{
       emailMatchingUserEntityProfileEmail: () => SignInResolver<unknown>;
@@ -744,31 +579,6 @@ export interface RouterOptions {
 // @public (undocumented)
 export type SamlAuthResult = {
   fullProfile: any;
-};
-
-// @public
-export type SignInInfo<TAuthResult> = {
-  profile: ProfileInfo;
-  result: TAuthResult;
-};
-
-// @public
-export type SignInResolver<TAuthResult> = (
-  info: SignInInfo<TAuthResult>,
-  context: AuthResolverContext,
-) => Promise<BackstageSignInResult>;
-
-// @public (undocumented)
-export type StateEncoder = (req: OAuthStartRequest) => Promise<{
-  encodedState: string;
-}>;
-
-// @public
-export type TokenParams = {
-  claims: {
-    sub: string;
-    ent?: string[];
-  } & Record<string, JsonValue>;
 };
 
 // @public (undocumented)

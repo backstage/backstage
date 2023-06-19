@@ -31,3 +31,6 @@ export type {
   BackstageUserIdentity,
   IdentityApiGetIdentityRequest,
 } from './types';
+export * from './identity/types';
+export * from './providers/types';
+export * from './lib/oauth/types';

@@ -5028,16 +5028,21 @@ __metadata:
   resolution: "@backstage/plugin-auth-node@workspace:plugins/auth-node"
   dependencies:
     "@backstage/backend-common": "workspace:^"
+    "@backstage/backend-plugin-api": "workspace:^"
     "@backstage/backend-test-utils": "workspace:^"
+    "@backstage/catalog-client": "workspace:^"
+    "@backstage/catalog-model": "workspace:^"
     "@backstage/cli": "workspace:^"
     "@backstage/config": "workspace:^"
     "@backstage/errors": "workspace:^"
+    "@backstage/types": "workspace:^"
     "@types/express": "*"
     express: ^4.17.1
     jose: ^4.6.0
     lodash: ^4.17.21
     msw: ^1.0.0
     node-fetch: ^2.6.7
+    passport: ^0.6.0
     uuid: ^8.0.0
     winston: ^3.2.1
   languageName: unknown

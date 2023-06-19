@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { JsonValue } from '@backstage/types';
+import type { TokenParams } from '@backstage/plugin-auth-node';
 
 /** Represents any form of serializable JWK */
 export interface AnyJWK extends Record<string, string> {
@@ -24,27 +24,7 @@ export interface AnyJWK extends Record<string, string> {
   kty: string;
 }
 
-/**
- * Parameters used to issue new ID Tokens
- *
- * @public
- */
-export type TokenParams = {
-  /**
-   * The claims that will be embedded within the token. At a minimum, this should include
-   * the subject claim, `sub`. It is common to also list entity ownership relations in the
-   * `ent` list. Additional claims may also be added at the developer's discretion except
-   * for the following list, which will be overwritten by the TokenIssuer: `iss`, `aud`,
-   * `iat`, and `exp`. The Backstage team also maintains the right add new claims in the future
-   * without listing the change as a "breaking change".
-   */
-  claims: {
-    /** The token subject, i.e. User ID */
-    sub: string;
-    /** A list of entity references that the user claims ownership through */
-    ent?: string[];
-  } & Record<string, JsonValue>;
-};
+export { TokenParams };
 
 /**
  * A TokenIssuer is able to issue verifiable ID Tokens on demand.

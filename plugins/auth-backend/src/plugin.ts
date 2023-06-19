@@ -29,17 +29,17 @@ import {
   createRouter,
   providers,
   defaultAuthProviderFactories,
-  ProviderFactories,
+  AuthProviderFactory,
 } from '@backstage/plugin-auth-backend';
 import {
   AuthProviderExtensionPoint,
   authProviderExtensionPoint,
-} from './extensions';
+} from '@backstage/plugin-auth-node/alpha';
 
 class AuthProviderExtensionPointImpl implements AuthProviderExtensionPoint {
-  #factories: ProviderFactories = {};
+  #factories: Record<string, AuthProviderFactory> = {};
 
-  addProviderFactories(factories: ProviderFactories): void {
+  addProviders(factories: Record<string, AuthProviderFactory>): void {
     this.#factories = {
       ...this.#factories,
       ...factories,
@@ -52,20 +52,20 @@ class AuthProviderExtensionPointImpl implements AuthProviderExtensionPoint {
 }
 
 /**
- * Module that registers default Auth Providers.
+ * Module that registers Demo Auth Providers.
  *
  * @alpha
  */
-export const defaultAuthProviders = createBackendModule({
+export const authModuleDemoAuthProviders = createBackendModule({
   pluginId: 'auth',
-  moduleId: 'defaultAuthProviders',
+  moduleId: 'demoAuthProviders',
   register(env) {
     env.registerInit({
       deps: {
         auth: authProviderExtensionPoint,
       },
       async init({ auth }) {
-        auth.addProviderFactories({
+        auth.addProviders({
           ...defaultAuthProviderFactories,
 
           // NOTE: DO NOT add this many resolvers in your own instance!
@@ -148,27 +148,6 @@ export const defaultAuthProviders = createBackendModule({
             signIn: {
               resolver:
                 providers.bitbucketServer.resolvers.emailMatchingUserEntityProfileEmail(),
-            },
-          }),
-
-          // This is an example of how to configure the OAuth2Proxy provider as well
-          // as how to sign a user in without a matching user entity in the catalog.
-          // You can try it out using `<ProxiedSignInPage {...props} provider="myproxy" />`
-          myproxy: providers.oauth2Proxy.create({
-            signIn: {
-              async resolver({ result }, ctx) {
-                const entityRef = stringifyEntityRef({
-                  kind: 'user',
-                  namespace: DEFAULT_NAMESPACE,
-                  name: result.getHeader('x-forwarded-user')!,
-                });
-                return ctx.issueToken({
-                  claims: {
-                    sub: entityRef,
-                    ent: [entityRef],
-                  },
-                });
-              },
             },
           }),
         });

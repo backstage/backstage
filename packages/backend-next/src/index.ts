@@ -33,7 +33,7 @@ import { todoPlugin } from '@backstage/plugin-todo-backend';
 import { catalogModuleUnprocessedEntities } from '@backstage/plugin-catalog-backend-module-unprocessed';
 import {
   authPlugin,
-  defaultAuthProviders,
+  authModuleDemoAuthProviders,
 } from '@backstage/plugin-auth-backend/alpha';
 
 const backend = createBackend();
@@ -42,7 +42,7 @@ backend.add(appPlugin({ appPackageName: 'example-app' }));
 
 // Auth
 backend.add(authPlugin());
-backend.add(defaultAuthProviders());
+backend.add(authModuleDemoAuthProviders());
 
 // Todo
 backend.add(todoPlugin());
