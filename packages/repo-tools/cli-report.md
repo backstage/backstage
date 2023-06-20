@@ -14,6 +14,7 @@ Options:
 Commands:
   api-reports [options] [paths...]
   type-deps
+  generate-catalog-info [options]
   schema [command]
   help [command]
 ```
@@ -33,6 +34,16 @@ Options:
   --allow-all-warnings
   -o, --omit-messages <messageCodes>
   --validate-release-tags
+  -h, --help
+```
+
+### `backstage-repo-tools generate-catalog-info`
+
+```
+Usage: backstage-repo-tools generate-catalog-info [options]
+
+Options:
+  --dry-run
   -h, --help
 ```
 

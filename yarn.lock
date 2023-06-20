@@ -9537,6 +9537,7 @@ __metadata:
   dependencies:
     "@apidevtools/swagger-parser": ^10.1.0
     "@apisyouwonthate/style-guide": ^1.4.0
+    "@backstage/catalog-model": "workspace:^"
     "@backstage/cli": "workspace:^"
     "@backstage/cli-common": "workspace:^"
     "@backstage/cli-node": "workspace:^"
@@ -9556,6 +9557,7 @@ __metadata:
     "@types/mock-fs": ^4.13.0
     "@types/node": ^16.11.26
     chalk: ^4.0.0
+    codeowners-utils: ^1.0.2
     commander: ^9.1.0
     fs-extra: 10.1.0
     glob: ^8.0.3
@@ -9566,6 +9568,7 @@ __metadata:
     mock-fs: ^5.1.0
     p-limit: ^3.0.2
     ts-node: ^10.0.0
+    yaml-diff-patch: ^2.0.0
   peerDependencies:
     "@microsoft/api-extractor-model": "*"
     "@microsoft/tsdoc": "*"
@@ -25603,7 +25606,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"fast-json-patch@npm:^3.0.0-1":
+"fast-json-patch@npm:^3.0.0-1, fast-json-patch@npm:^3.1.0":
   version: 3.1.1
   resolution: "fast-json-patch@npm:3.1.1"
   checksum: c4525b61b2471df60d4b025b4118b036d99778a93431aa44d1084218182841d82ce93056f0f3bbd731a24e6a8e69820128adf1873eb2199a26c62ef58d137833
@@ -33970,6 +33973,15 @@ __metadata:
     object-hash: ^2.2.0
     oidc-token-hash: ^5.0.3
   checksum: 0e5a126b77dad0320e8f7023ac7ad7f5f1f82ad5f985f7ab0b42a7cf36700dfb78f0bef9b59c1fae915dce0148ef191b49921cd0a01443b64c04f862d9dc03e0
+  languageName: node
+  linkType: hard
+
+"oppa@npm:^0.4.0":
+  version: 0.4.0
+  resolution: "oppa@npm:0.4.0"
+  dependencies:
+    chalk: ^4.1.1
+  checksum: ecc43e63ede05c3ccb10e0f2c3f3020a6d72e1a3b318f3e37b8cc8a1a279e300991c043e5385d560c1eebb54a56c7f9b69bf0db0d1933acf350bcd2980c96055
   languageName: node
   linkType: hard
 
@@ -42833,6 +42845,21 @@ __metadata:
   languageName: node
   linkType: hard
 
+"yaml-diff-patch@npm:^2.0.0":
+  version: 2.0.0
+  resolution: "yaml-diff-patch@npm:2.0.0"
+  dependencies:
+    fast-json-patch: ^3.1.0
+    oppa: ^0.4.0
+    yaml: ^2.0.0-10
+  bin:
+    yaml-diff-patch: dist/bin/yaml-patch.js
+    yaml-overwrite: dist/bin/yaml-patch.js
+    yaml-patch: dist/bin/yaml-patch.js
+  checksum: 5207d8523584eb6088fe32a0c6010599260ecfa5f959d120a1bad02f19143d1ddeafe10c37ccf125ac04d079072a5ead92b55c6787fd64d12f5acbb0d172e7ec
+  languageName: node
+  linkType: hard
+
 "yaml@npm:^1.10.0, yaml@npm:^1.10.2, yaml@npm:^1.7.2":
   version: 1.10.2
   resolution: "yaml@npm:1.10.2"
@@ -42840,10 +42867,10 @@ __metadata:
   languageName: node
   linkType: hard
 
-"yaml@npm:^2.0.0, yaml@npm:^2.1.1, yaml@npm:^2.2.1, yaml@npm:^2.2.2":
-  version: 2.2.2
-  resolution: "yaml@npm:2.2.2"
-  checksum: d90c235e099e30094dcff61ba3350437aef53325db4a6bcd04ca96e1bfe7e348b191f6a7a52b5211e2dbc4eeedb22a00b291527da030de7c189728ef3f2b4eb3
+"yaml@npm:^2.0.0, yaml@npm:^2.0.0-10, yaml@npm:^2.1.1, yaml@npm:^2.2.1, yaml@npm:^2.2.2":
+  version: 2.3.1
+  resolution: "yaml@npm:2.3.1"
+  checksum: 2c7bc9a7cd4c9f40d3b0b0a98e370781b68b8b7c4515720869aced2b00d92f5da1762b4ffa947f9e795d6cd6b19f410bd4d15fdd38aca7bd96df59bd9486fb54
   languageName: node
   linkType: hard
 
