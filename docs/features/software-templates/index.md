@@ -74,3 +74,27 @@ you to the registered component in the catalog:
 And then you'll also be able to see it in the Catalog View table:
 
 ![Catalog](../../assets/software-templates/added-to-the-catalog-list.png)
+
+## Disable Register Existing Component button
+
+There could be situations where you would like to disable the
+`Register Existing Component` button for your users. For example:
+
+![Disable Button](../../assets/software-templates/disable-register-existing-component-button.png)
+
+To do so, you will un-register / remove the `catalogImportPlugin.routes.importPage`
+from `backstage/packages/app/src/App.tsx`:
+
+```diff
+ const app = createApp({
+   apis,
+   bindRoutes({ bind }) {
+-    bind(scaffolderPlugin.externalRoutes, {
+-      registerComponent: catalogImportPlugin.routes.importPage,
+-    });
+     bind(orgPlugin.externalRoutes, {
+       catalogIndex: catalogPlugin.routes.catalogIndex,
+     });
+```
+
+After the change, you should no longer see the button.
