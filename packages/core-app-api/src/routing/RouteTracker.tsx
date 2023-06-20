@@ -21,6 +21,7 @@ import {
   AnalyticsContext,
   RouteRef,
   AnalyticsEventAttributes,
+  BackstagePlugin,
 } from '@backstage/core-plugin-api';
 import { BackstageRouteObject } from './types';
 
@@ -50,11 +51,16 @@ const getExtensionContext = (
       return undefined;
     }
 
-    // If there is a single route ref, return it.
-    // todo: get routeRef of rendered gathered mount point(?)
+    // If there is a single route ref, use it.
     let routeRef: RouteRef | undefined;
     if (routeObject.routeRefs.size === 1) {
       routeRef = routeObject.routeRefs.values().next().value;
+    }
+
+    // If there is a single plugin, use it.
+    let plugin: BackstagePlugin | undefined;
+    if (routeObject.plugins.size === 1) {
+      plugin = routeObject.plugins.values().next().value;
     }
 
     const params = Object.entries(
@@ -68,8 +74,9 @@ const getExtensionContext = (
 
     return {
       extension: 'App',
-      pluginId: routeObject.plugin?.getId() || 'root',
+      pluginId: plugin?.getId() || 'root',
       ...(routeRef ? { routeRef: (routeRef as { id?: string }).id } : {}),
+      _routeNodeType: routeObject.element as string,
       params,
     };
   } catch {
