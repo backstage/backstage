@@ -80,9 +80,7 @@ const RadarTimeline = (props: Props): JSX.Element => {
                   {timeEntry.ring.name ? timeEntry.ring.name : ''}
                 </TableCell>
                 <TableCell align="left">
-                  {timeEntry.date.toLocaleDateString()
-                    ? timeEntry.date.toLocaleDateString()
-                    : ''}
+                  {timeEntry.date ? timeEntry.date : ''}
                 </TableCell>
                 <TableCell align="left">
                   {timeEntry.description ? timeEntry.description : ''}
