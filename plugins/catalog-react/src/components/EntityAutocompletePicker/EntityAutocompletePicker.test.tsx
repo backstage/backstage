@@ -14,7 +14,13 @@
  * limitations under the License.
  */
 
-import { fireEvent, render, waitFor, screen } from '@testing-library/react';
+import {
+  fireEvent,
+  render,
+  waitFor,
+  screen,
+  act,
+} from '@testing-library/react';
 import React from 'react';
 import { MockEntityListContextProvider } from '../../testUtils/providers';
 import { EntityAutocompletePicker } from './EntityAutocompletePicker';
@@ -184,8 +190,12 @@ describe('<EntityAutocompletePicker/>', () => {
       }),
     );
 
-    fireEvent.click(screen.getByTestId('options-picker-expand'));
-    fireEvent.click(screen.getByText('option1'));
+    act(() => {
+      const el = screen.getByTestId('options-picker-expand');
+      fireEvent.click(el);
+      const op1 = screen.getByText('option1');
+      fireEvent.click(op1);
+    });
     expect(updateFilters).toHaveBeenLastCalledWith({
       options: new EntityOptionFilter(['option1']),
     });
@@ -215,12 +225,16 @@ describe('<EntityAutocompletePicker/>', () => {
         options: new EntityOptionFilter(['option1']),
       }),
     );
-    fireEvent.click(screen.getByTestId('options-picker-expand'));
-    expect(screen.getByLabelText('option1')).toBeChecked();
+    act(() => {
+      fireEvent.click(screen.getByTestId('options-picker-expand'));
+      expect(screen.getByLabelText('option1')).toBeChecked();
+    });
 
-    fireEvent.click(screen.getByLabelText('option1'));
-    expect(updateFilters).toHaveBeenLastCalledWith({
-      options: undefined,
+    act(() => {
+      fireEvent.click(screen.getByLabelText('option1'));
+      expect(updateFilters).toHaveBeenLastCalledWith({
+        options: undefined,
+      });
     });
   });
 

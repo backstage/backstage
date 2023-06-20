@@ -14,7 +14,13 @@
  * limitations under the License.
  */
 
-import { fireEvent, render, waitFor, screen } from '@testing-library/react';
+import {
+  fireEvent,
+  render,
+  waitFor,
+  screen,
+  act,
+} from '@testing-library/react';
 import React from 'react';
 import { MockEntityListContextProvider } from '../../testUtils/providers';
 import { EntityTagFilter } from '../../filters';
@@ -132,8 +138,10 @@ describe('<EntityTagPicker/>', () => {
       }),
     );
 
-    fireEvent.click(screen.getByTestId('tags-picker-expand'));
-    fireEvent.click(screen.getByText('tag1'));
+    act(() => {
+      fireEvent.click(screen.getByTestId('tags-picker-expand'));
+      fireEvent.click(screen.getByText('tag1'));
+    });
     expect(updateFilters).toHaveBeenLastCalledWith({
       tags: new EntityTagFilter(['tag1']),
     });
@@ -158,10 +166,14 @@ describe('<EntityTagPicker/>', () => {
         tags: new EntityTagFilter(['tag1']),
       }),
     );
-    fireEvent.click(screen.getByTestId('tags-picker-expand'));
+    act(() => {
+      fireEvent.click(screen.getByTestId('tags-picker-expand'));
+    });
     expect(screen.getByLabelText('tag1')).toBeChecked();
 
-    fireEvent.click(screen.getByLabelText('tag1'));
+    act(() => {
+      fireEvent.click(screen.getByLabelText('tag1'));
+    });
     expect(updateFilters).toHaveBeenLastCalledWith({
       tags: undefined,
     });
