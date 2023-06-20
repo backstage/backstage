@@ -402,6 +402,10 @@ export function registerCommands(program: Command) {
 
   program
     .command('build-workspace <workspace-dir> [packages...]')
+    .option(
+      '--alwaysYarnPack',
+      'Force workspace output to be a result of running `yarn pack` on each package (warning: very slow)',
+    )
     .description('Builds a temporary dist workspace from the provided packages')
     .action(lazy(() => import('./buildWorkspace').then(m => m.default)));
 
