@@ -1,5 +1,16 @@
 # @backstage/core-plugin-api
 
+## 1.5.2
+
+### Patch Changes
+
+- 12adfbc8fe2d: Fixed a bug that prevented accurate plugin and route data from being applied to `navigate` analytics events when users visited pages constructed with `<EntityLayout>`, `<TabbedLayout>`, and similar components that are used to gather one or more routable extensions under a given path.
+- 74b216ee4e50: Add `PropsWithChildren` to usages of `ComponentType`, in preparation for React 18 where the children are no longer implicit.
+- Updated dependencies
+  - @backstage/types@1.1.0
+  - @backstage/config@1.0.8
+  - @backstage/version-bridge@1.0.4
+
 ## 1.5.2-next.0
 
 ### Patch Changes

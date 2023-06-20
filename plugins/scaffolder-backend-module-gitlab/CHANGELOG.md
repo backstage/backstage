@@ -1,5 +1,18 @@
 # @backstage/plugin-scaffolder-backend-module-gitlab
 
+## 0.2.1
+
+### Patch Changes
+
+- 50c4457119ec: Fixed publish configuration.
+- 30e6edd7f6a5: Add support for dry run for `gitlab:group:ensureExists` action.
+- f5a66052f04f: Tweak README
+- Updated dependencies
+  - @backstage/integration@1.5.0
+  - @backstage/errors@1.2.0
+  - @backstage/config@1.0.8
+  - @backstage/plugin-scaffolder-node@0.1.4
+
 ## 0.2.1-next.3
 
 ### Patch Changes

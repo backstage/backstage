@@ -1,5 +1,22 @@
 # @backstage/plugin-jenkins-backend
 
+## 0.2.1
+
+### Patch Changes
+
+- 0f93b6707e04: Don't expose username and authentication header if configured.
+- 6c244b42cb06: Expose permissions through the metadata endpoint.
+- Updated dependencies
+  - @backstage/backend-common@0.19.0
+  - @backstage/catalog-client@1.4.2
+  - @backstage/plugin-jenkins-common@0.1.16
+  - @backstage/catalog-model@1.4.0
+  - @backstage/errors@1.2.0
+  - @backstage/plugin-auth-node@0.2.15
+  - @backstage/plugin-permission-node@0.7.9
+  - @backstage/config@1.0.8
+  - @backstage/plugin-permission-common@0.7.6
+
 ## 0.2.1-next.2
 
 ### Patch Changes

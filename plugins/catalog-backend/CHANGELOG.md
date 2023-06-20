@@ -1,5 +1,36 @@
 # @backstage/plugin-catalog-backend
 
+## 1.10.0
+
+### Minor Changes
+
+- 44c7ad6b8e11: Adds an optional `EventBroker` that is used for sending an event when there are conflicts, with details of the conflict so that it can be handled elsewhere.
+
+### Patch Changes
+
+- 77e04a2d55be: Replace getBearerToken with library function of same
+- ee411e7c2623: Update OpenAPI specs to be in line with linting standards.
+- b8374d5d93b6: Add a base plate for performance testing of the catalog
+- Updated dependencies
+  - @backstage/backend-common@0.19.0
+  - @backstage/catalog-client@1.4.2
+  - @backstage/types@1.1.0
+  - @backstage/integration@1.5.0
+  - @backstage/catalog-model@1.4.0
+  - @backstage/errors@1.2.0
+  - @backstage/backend-plugin-api@0.5.3
+  - @backstage/backend-tasks@0.5.3
+  - @backstage/plugin-auth-node@0.2.15
+  - @backstage/plugin-catalog-node@1.3.7
+  - @backstage/plugin-permission-node@0.7.9
+  - @backstage/plugin-search-backend-module-catalog@0.1.2
+  - @backstage/config@1.0.8
+  - @backstage/plugin-catalog-common@1.0.14
+  - @backstage/plugin-events-node@0.2.7
+  - @backstage/plugin-permission-common@0.7.6
+  - @backstage/plugin-scaffolder-common@1.3.1
+  - @backstage/plugin-search-common@1.2.4
+
 ## 1.10.0-next.2
 
 ### Minor Changes

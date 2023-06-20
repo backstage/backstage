@@ -1,5 +1,21 @@
 # @backstage/plugin-techdocs-node
 
+## 1.7.2
+
+### Patch Changes
+
+- b43e030911f2: Upgrade `@azure/identity` to support using Workload Identity to authenticate against Azure.
+- 7d4a09304f67: Use latest techdocs docker image by default. The latest image contains security updates.
+- 5f2c38c70f5b: Fix SNYK-JS-FASTXMLPARSER-5668858 (`fast-xml-parser`) by upgrading aws-sdk to at least the current latest version.
+- Updated dependencies
+  - @backstage/backend-common@0.19.0
+  - @backstage/integration-aws-node@0.1.4
+  - @backstage/integration@1.5.0
+  - @backstage/catalog-model@1.4.0
+  - @backstage/errors@1.2.0
+  - @backstage/config@1.0.8
+  - @backstage/plugin-search-common@1.2.4
+
 ## 1.7.2-next.2
 
 ### Patch Changes
