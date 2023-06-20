@@ -33,8 +33,6 @@ backend:
   database:
     client: better-sqlite3
     connection: ':memory:'
-  cache:
-    store: memory
   cors:
     origin: http://localhost:3000
     methods: [GET, HEAD, PATCH, POST, PUT, DELETE]

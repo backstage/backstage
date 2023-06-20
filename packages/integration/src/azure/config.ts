@@ -51,7 +51,7 @@ export type AzureIntegrationConfig = {
  * Authenticate using a client secret that was generated for an App Registration.
  * @public
  */
-export type ClientSecret = {
+export type AzureClientSecretCredential = {
   /**
    * The Azure Active Directory tenant
    */
@@ -71,7 +71,7 @@ export type ClientSecret = {
  * Authenticate using a managed identity available at the deployment environment.
  * @public
  */
-export type ManagedIdentity = {
+export type AzureManagedIdentityCredential = {
   /**
    * The clientId
    */
@@ -82,11 +82,13 @@ export type ManagedIdentity = {
  * Credential used to authenticate to Azure Active Directory.
  * @public
  */
-export type AzureCredential = ClientSecret | ManagedIdentity;
-export const isServicePrincipal = (
+export type AzureCredential =
+  | AzureClientSecretCredential
+  | AzureManagedIdentityCredential;
+export const isAzureClientSecretCredential = (
   credential: Partial<AzureCredential>,
-): credential is ClientSecret => {
-  const clientSecretCredential = credential as ClientSecret;
+): credential is AzureClientSecretCredential => {
+  const clientSecretCredential = credential as AzureClientSecretCredential;
 
   return (
     Object.keys(credential).length === 3 &&
@@ -96,12 +98,12 @@ export const isServicePrincipal = (
   );
 };
 
-export const isManagedIdentity = (
+export const isAzureManagedIdentityCredential = (
   credential: Partial<AzureCredential>,
-): credential is ManagedIdentity => {
+): credential is AzureManagedIdentityCredential => {
   return (
     Object.keys(credential).length === 1 &&
-    (credential as ManagedIdentity).clientId !== undefined
+    (credential as AzureManagedIdentityCredential).clientId !== undefined
   );
 };
 
@@ -133,8 +135,8 @@ export function readAzureIntegrationConfig(
 
   if (
     credential &&
-    !isServicePrincipal(credential) &&
-    !isManagedIdentity(credential)
+    !isAzureClientSecretCredential(credential) &&
+    !isAzureManagedIdentityCredential(credential)
   ) {
     throw new Error(
       `Invalid Azure integration config, credential is not valid`,

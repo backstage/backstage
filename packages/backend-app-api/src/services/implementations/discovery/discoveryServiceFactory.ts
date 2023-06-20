@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { SingleHostDiscovery } from '@backstage/backend-common';
+import { HostDiscovery } from '@backstage/backend-common';
 import {
   coreServices,
   createServiceFactory,
@@ -27,6 +27,6 @@ export const discoveryServiceFactory = createServiceFactory({
     config: coreServices.config,
   },
   async factory({ config }) {
-    return SingleHostDiscovery.fromConfig(config);
+    return HostDiscovery.fromConfig(config);
   },
 });

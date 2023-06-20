@@ -22,7 +22,7 @@ import {
   ExtendedHttpServer,
   DefaultRootHttpRouter,
 } from '@backstage/backend-app-api';
-import { SingleHostDiscovery } from '@backstage/backend-common';
+import { HostDiscovery } from '@backstage/backend-common';
 import {
   ServiceFactory,
   ServiceRef,
@@ -148,7 +148,7 @@ export async function startTestBackend<
         throw new Error('Test server not started yet');
       }
       const port = server.port();
-      const discovery = SingleHostDiscovery.fromConfig(
+      const discovery = HostDiscovery.fromConfig(
         new ConfigReader({
           backend: { baseUrl: `http://localhost:${port}`, listen: { port } },
         }),

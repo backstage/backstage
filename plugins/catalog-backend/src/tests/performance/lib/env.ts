@@ -1,5 +1,5 @@
 /*
- * Copyright 2021 The Backstage Authors
+ * Copyright 2023 The Backstage Authors
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,30 +14,9 @@
  * limitations under the License.
  */
 
-import { Store } from 'keyv';
+export const performanceTraceEnabled = !!process.env.PERFORMANCE_TRACE;
 
-/**
- * Storage class compatible with Keyv which always results in a no-op. This is
- * used when no cache store is configured in a Backstage backend instance.
- */
-export class NoStore implements Store<string | undefined> {
-  clear(): void {
-    return;
-  }
-
-  delete(_key: string): boolean {
-    return false;
-  }
-
-  get(_key: string) {
-    return undefined;
-  }
-
-  has(_key: string): boolean {
-    return false;
-  }
-
-  set(_key: string, _value: any): this {
-    return this;
-  }
-}
+export const describePerformanceTest: jest.Describe = process.env
+  .PERFORMANCE_TEST
+  ? describe
+  : describe.skip;

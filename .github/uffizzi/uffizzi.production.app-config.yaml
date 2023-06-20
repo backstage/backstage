@@ -20,8 +20,6 @@ backend:
       port: ${POSTGRES_PORT}
       user: ${POSTGRES_USER}
       password: ${POSTGRES_PASSWORD}
-  cache:
-    store: memory
   cors:
     origin: ${UFFIZZI_URL}
     methods: [GET, HEAD, PATCH, POST, PUT, DELETE]
