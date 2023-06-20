@@ -89,7 +89,30 @@ export class DatabaseManager {
     private readonly prefix: string = 'backstage_plugin_',
     private readonly options?: DatabaseManagerOptions,
     private readonly databaseCache: Map<string, Promise<Knex>> = new Map(),
-  ) {}
+  ) {
+    if (this.config.subscribe) {
+      console.log('-----==== Subscribe() IS supported on config in DatabaseManager ===----');
+      this.config.subscribe(() => {
+        console.log('-----==== Config change detected in DatabaseManager ===----');
+        console.log(JSON.stringify(this.config));
+        const databaseConfig = this.config.getOptionalConfig('backend.database');
+        if (databaseConfig) {
+          console.log(`DatabaseConfig: ${databaseConfig}`);
+        } else {
+          console.log('Couldn\'t find backend.database');
+          console.log(`Has backend: ${this.config.has('backend')}`);
+          console.log(`Keys: ${config.keys()}`);
+          console.log(`parent: ${JSON.stringify(config.getOptionalConfig('parent'))}`);
+          console.log(`backend: ${JSON.stringify(config.getOptionalConfig('backend'))}`);
+        }
+        console.log('Invalidating the database cache...');
+        this.databaseCache.clear();
+        console.log('Clearing the cache done!');
+      });
+    } else {
+      console.log('-----==== Subscribe() not support on config in DatabaseManager ===----');
+    }
+  }
 
   /**
    * Generates a PluginDatabaseManager for consumption by plugins.
@@ -379,10 +402,25 @@ export class DatabaseManager {
         schemaOverrides,
       );
 
+      const configChangeTracker = {
+        changed: false
+      };
+
+      if (this.config.subscribe) {
+        console.log('Adding config change tracker...');
+        this.config.subscribe(() => {
+          console.log('Config changed, but currently nothing happens!');
+        });
+      }
+
+      const currentTimestamp = Date.now();
+      const changeDetector: () => boolean = () => this.hasChangedConfig(pluginId, currentTimestamp)
+
       const client = createDatabaseClient(
         pluginConfig,
         databaseClientOverrides,
         deps,
+        changeDetector
       );
       this.startKeepaliveLoop(pluginId, client);
       return client;
@@ -392,6 +430,14 @@ export class DatabaseManager {
 
     return clientPromise;
   }
+
+  public hasChangedConfig(pluginId: string, timestamp: number) {
+    console.log(`PG: hasChangedConfig: pluginId=${pluginId}, timestamp=${timestamp}, now=${Date.now()}, diff=${Date.now() - timestamp}`);
+    //TODO change to actual logic
+    return Date.now() - timestamp > 60 * 1000;
+  }
+
+  private lastChangeTimestamp = Date.now();
 
   private startKeepaliveLoop(pluginId: string, client: Knex): void {
     let lastKeepaliveFailed = false;

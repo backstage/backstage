@@ -63,11 +63,18 @@ export function createDatabaseClient(
     lifecycle: LifecycleService;
     pluginMetadata: PluginMetadataService;
   },
+  configChangedCallback?: () => boolean
 ) {
   const client: DatabaseClient = dbConfig.getString('client');
+  if (configChangedCallback) {
+    console.log('configChangedCallback provided');
+  } else {
+    console.log('configChangedCallback not provided');
+  }
+  console.log(`connection: configChangedCallback=${configChangedCallback}`);
 
   return (
-    ConnectorMapping[client]?.createClient(dbConfig, overrides, deps) ??
+    ConnectorMapping[client]?.createClient(dbConfig, overrides, deps, configChangedCallback) ??
     knexFactory(mergeDatabaseConfig(dbConfig.get(), overrides))
   );
 }

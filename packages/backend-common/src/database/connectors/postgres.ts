@@ -18,11 +18,12 @@ import knexFactory, { Knex } from 'knex';
 
 import { Config } from '@backstage/config';
 import { ForwardedError } from '@backstage/errors';
+import { Client } from 'pg';
 import { mergeDatabaseConfig } from '../config';
 import { DatabaseConnector } from '../types';
 import defaultNameOverride from './defaultNameOverride';
 import defaultSchemaOverride from './defaultSchemaOverride';
-import { Client } from 'pg';
+import { LifecycleServiceShutdownHook, PluginMetadataService } from '../../../../backend-plugin-api/src';
 
 /**
  * Creates a knex postgres database connection
@@ -33,9 +34,17 @@ import { Client } from 'pg';
 export function createPgDatabaseClient(
   dbConfig: Config,
   overrides?: Knex.Config,
-) {
-  const knexConfig = buildPgDatabaseConfig(dbConfig, overrides);
+  deps?:  {
+    lifecycle: LifecycleServiceShutdownHook;
+    pluginMetadata: PluginMetadataService;
+  },
+  configChangedCallback?: () => boolean
+) {  
+  console.log(`PG: configChangedCallback=${JSON.stringify(configChangedCallback)}`);
+  const knexConfig = buildPgDatabaseConfig(dbConfig, overrides, configChangedCallback);
+  console.log(`PG-knexConfig: ${JSON.stringify(knexConfig)}`);
   const database = knexFactory(knexConfig);
+  console.log(`PG: database=${database}`);
 
   const role = dbConfig.getOptionalString('role');
 
@@ -50,6 +59,7 @@ export function createPgDatabaseClient(
   return database;
 }
 
+
 /**
  * Builds a knex postgres database connection
  *
@@ -59,7 +69,42 @@ export function createPgDatabaseClient(
 export function buildPgDatabaseConfig(
   dbConfig: Config,
   overrides?: Knex.Config,
+  configChangedCallback?: () => boolean
 ) {
+  console.log(`PG: dbConfig=${JSON.stringify(dbConfig)}`);
+  console.log(`PG: enhancing the mergedDatabaseConfig with dynamic Knex features....`);
+
+  const mergedDatabaseConfig = mergeDatabaseConfig(
+    dbConfig.get(),
+    {
+      connection: getPgConnectionConfig(dbConfig, !!overrides),
+      useNullAsDefault: true,
+    },
+    overrides,
+  );
+  console.log(`PG: mergedDatabaseConfig=${JSON.stringify(mergedDatabaseConfig)}`);
+
+  const finalDatabaseConfig = {
+    ...mergedDatabaseConfig,
+    connection: () => {
+      console.log(`KNEX-Connection: Creating new connection object`);
+      return {
+        ...mergedDatabaseConfig.connection,
+        expirationChecker: () => {
+          console.log('-=! best expirationChecker has been called !=-');
+          let changed = false;
+          if (configChangedCallback) {
+            changed = configChangedCallback();
+          }
+          console.log(`-=! changed=${changed} !=-`);
+          return changed;
+        }
+      }
+    }
+  };
+  console.log(`PG: finalDatabaseConfig=${JSON.stringify(finalDatabaseConfig)}`);
+  return finalDatabaseConfig;
+
   return mergeDatabaseConfig(
     dbConfig.get(),
     {

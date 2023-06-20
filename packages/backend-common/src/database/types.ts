@@ -37,6 +37,7 @@ export interface DatabaseConnector {
       lifecycle: LifecycleService;
       pluginMetadata: PluginMetadataService;
     },
+    configChangedCallback?: () => boolean
   ): Knex;
   /**
    * createNameOverride provides a partial knex config sufficient to override a
