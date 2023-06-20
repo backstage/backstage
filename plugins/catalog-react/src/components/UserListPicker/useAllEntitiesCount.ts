@@ -36,6 +36,11 @@ export function useAllEntitiesCount() {
       limit: 0,
     };
 
+    if (Object.keys(filter).length === 0) {
+      prevRequest.current = undefined;
+      return prevRequest.current;
+    }
+
     if (isEqual(newRequest, prevRequest.current)) {
       return prevRequest.current;
     }
@@ -44,6 +49,9 @@ export function useAllEntitiesCount() {
   }, [filters]);
 
   const { value: count, loading } = useAsync(async () => {
+    if (request === undefined) {
+      return 0;
+    }
     const { totalItems } = await catalogApi.queryEntities(request);
 
     return totalItems;
