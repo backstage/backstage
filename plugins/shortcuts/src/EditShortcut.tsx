@@ -74,6 +74,7 @@ export const EditShortcut = ({
       alertApi.post({
         message: `Updated shortcut '${title}'`,
         severity: 'success',
+        display: 'transient',
       });
     } catch (error) {
       alertApi.post({
@@ -91,6 +92,7 @@ export const EditShortcut = ({
       alertApi.post({
         message: `Removed shortcut '${shortcut.title}' from your sidebar`,
         severity: 'success',
+        display: 'transient',
       });
     } catch (error) {
       alertApi.post({
