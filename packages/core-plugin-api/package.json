@@ -70,7 +70,6 @@
     "@types/node": "^16.11.26",
     "@types/prop-types": "^15.7.3",
     "@types/zen-observable": "^0.8.0",
-    "cross-fetch": "^3.1.5",
     "msw": "^1.0.0"
   },
   "files": [
