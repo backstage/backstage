@@ -34,26 +34,6 @@ describe('deleteWithEagerPruningOfChildren', () => {
     return knex;
   }
 
-  async function run(
-    knex: Knex,
-    options: { entityRefs: string[]; sourceKey: string },
-  ): Promise<number> {
-    let result: number;
-    await knex.transaction(
-      async tx => {
-        // We can't return here, as knex swallows the return type in case the
-        // transaction is rolled back:
-        // https://github.com/knex/knex/blob/e37aeaa31c8ef9c1b07d2e4d3ec6607e557d800d/lib/transaction.js#L136
-        result = await deleteWithEagerPruningOfChildren({ tx, ...options });
-      },
-      {
-        // If we explicitly trigger a rollback, don't fail.
-        doNotRejectOnRollback: true,
-      },
-    );
-    return result!;
-  }
-
   async function insertReference(
     knex: Knex,
     ...refs: DbRefreshStateReferencesRow[]
@@ -110,7 +90,11 @@ describe('deleteWithEagerPruningOfChildren', () => {
         { source_key: 'P1', target_entity_ref: 'E4' },
         { source_key: 'P2', target_entity_ref: 'E5' },
       );
-      await run(knex, { sourceKey: 'P1', entityRefs: ['E1', 'E3'] });
+      await deleteWithEagerPruningOfChildren({
+        knex,
+        sourceKey: 'P1',
+        entityRefs: ['E1', 'E3'],
+      });
       await expect(remainingEntities(knex)).resolves.toEqual(['E4', 'E5']);
     },
   );
@@ -139,7 +123,11 @@ describe('deleteWithEagerPruningOfChildren', () => {
         { source_key: 'P1', target_entity_ref: 'E1' },
         { source_key: 'P1', target_entity_ref: 'E2' },
       );
-      await run(knex, { sourceKey: 'P1', entityRefs: ['E1'] });
+      await deleteWithEagerPruningOfChildren({
+        knex,
+        sourceKey: 'P1',
+        entityRefs: ['E1'],
+      });
       await expect(remainingEntities(knex)).resolves.toEqual(['E2']);
     },
   );
@@ -167,7 +155,11 @@ describe('deleteWithEagerPruningOfChildren', () => {
         { source_key: 'P2', target_entity_ref: 'E3' },
         { source_entity_ref: 'E3', target_entity_ref: 'E2' },
       );
-      await run(knex, { sourceKey: 'P1', entityRefs: ['E1'] });
+      await deleteWithEagerPruningOfChildren({
+        knex,
+        sourceKey: 'P1',
+        entityRefs: ['E1'],
+      });
       await expect(remainingEntities(knex)).resolves.toEqual(['E2', 'E3']);
     },
   );
@@ -195,7 +187,11 @@ describe('deleteWithEagerPruningOfChildren', () => {
         { source_key: 'P1', target_entity_ref: 'E3' },
         { source_entity_ref: 'E3', target_entity_ref: 'E2' },
       );
-      await run(knex, { sourceKey: 'P1', entityRefs: ['E1'] });
+      await deleteWithEagerPruningOfChildren({
+        knex,
+        sourceKey: 'P1',
+        entityRefs: ['E1'],
+      });
       await expect(remainingEntities(knex)).resolves.toEqual(['E2', 'E3']);
     },
   );
@@ -228,14 +224,22 @@ describe('deleteWithEagerPruningOfChildren', () => {
         { source_entity_ref: 'E3', target_entity_ref: 'E5' },
         { source_entity_ref: 'E5', target_entity_ref: 'E6' },
       );
-      await run(knex, { sourceKey: 'P1', entityRefs: ['E1'] });
+      await deleteWithEagerPruningOfChildren({
+        knex,
+        sourceKey: 'P1',
+        entityRefs: ['E1'],
+      });
       await expect(remainingEntities(knex)).resolves.toEqual([
         'E3',
         'E4',
         'E5',
         'E6',
       ]);
-      await run(knex, { sourceKey: 'P1', entityRefs: ['E3'] });
+      await deleteWithEagerPruningOfChildren({
+        knex,
+        sourceKey: 'P1',
+        entityRefs: ['E3'],
+      });
       await expect(remainingEntities(knex)).resolves.toEqual([]);
     },
   );
@@ -263,7 +267,11 @@ describe('deleteWithEagerPruningOfChildren', () => {
         { source_key: 'P1', target_entity_ref: 'E3' },
         { source_key: 'P2', target_entity_ref: 'E4' },
       );
-      await run(knex, { sourceKey: 'P1', entityRefs: ['E2', 'E3', 'E4'] });
+      await deleteWithEagerPruningOfChildren({
+        knex,
+        sourceKey: 'P1',
+        entityRefs: ['E2', 'E3', 'E4'],
+      });
       await expect(remainingEntities(knex)).resolves.toEqual([
         'E1',
         'E2',

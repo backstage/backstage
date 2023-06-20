@@ -26,17 +26,17 @@ import { DbRefreshStateReferencesRow } from '../../tables';
  * the removal of their parents.
  */
 export async function deleteWithEagerPruningOfChildren(options: {
-  tx: Knex.Transaction;
+  knex: Knex | Knex.Transaction;
   entityRefs: string[];
   sourceKey: string;
 }): Promise<number> {
-  const { tx, entityRefs, sourceKey } = options;
+  const { knex, entityRefs, sourceKey } = options;
 
   // Split up the operation by (large) chunks, so that we do not hit database
   // limits for the number of permitted bindings on a precompiled statement
   let removedCount = 0;
   for (const refs of lodash.chunk(entityRefs, 1000)) {
-    removedCount += await tx
+    removedCount += await knex
       .delete()
       .from('refresh_state')
       .whereIn('entity_ref', orphans =>
@@ -186,7 +186,7 @@ export async function deleteWithEagerPruningOfChildren(options: {
     // Delete the references that originate only from this entity provider. Note
     // that there may be more than one entity provider making a "claim" for a
     // given root entity, if they emit with the same location key.
-    await tx<DbRefreshStateReferencesRow>('refresh_state_references')
+    await knex<DbRefreshStateReferencesRow>('refresh_state_references')
       .where('source_key', '=', sourceKey)
       .whereIn('target_entity_ref', refs)
       .delete();
