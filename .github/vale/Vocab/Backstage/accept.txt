@@ -312,6 +312,8 @@ rsync
 ruleset
 runbook
 sam
+sandbox
+sandboxing
 sanitization
 scaffolded
 scaffolder
