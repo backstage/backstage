@@ -1,5 +1,24 @@
 # @backstage/plugin-search
 
+## 1.3.2
+
+### Patch Changes
+
+- e8c55c063b88: Fixes `SearchModal` and `HomePageSearchBar` components to use search bar reference value when "enter" is pressed, avoiding waiting for query state debounce.
+- 2f660eb573cc: Fix SearchBar styles & update StoryBook stories for custom styles for `notchedOutline` class.
+- Updated dependencies
+  - @backstage/core-plugin-api@1.5.2
+  - @backstage/plugin-search-react@1.6.2
+  - @backstage/core-components@0.13.2
+  - @backstage/types@1.1.0
+  - @backstage/theme@0.4.0
+  - @backstage/plugin-catalog-react@1.7.0
+  - @backstage/catalog-model@1.4.0
+  - @backstage/errors@1.2.0
+  - @backstage/config@1.0.8
+  - @backstage/version-bridge@1.0.4
+  - @backstage/plugin-search-common@1.2.4
+
 ## 1.3.2-next.3
 
 ### Patch Changes

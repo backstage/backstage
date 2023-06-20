@@ -1,5 +1,22 @@
 # @backstage/plugin-home
 
+## 0.5.3
+
+### Patch Changes
+
+- d1cfb4e4c4cd: Update set up documentation to export homepage as element instead of React component.
+- 2e4940e1a8f8: Allow more customization for the CustomHomepageGrid
+- 2ff94da135a4: bump `rjsf` dependencies to 5.7.3
+- 41e8037a8a6d: Extract new plugin-home-react package and deprecate createCardExtension in plugin-home
+- Updated dependencies
+  - @backstage/core-plugin-api@1.5.2
+  - @backstage/core-components@0.13.2
+  - @backstage/theme@0.4.0
+  - @backstage/plugin-catalog-react@1.7.0
+  - @backstage/catalog-model@1.4.0
+  - @backstage/plugin-home-react@0.1.0
+  - @backstage/config@1.0.8
+
 ## 0.5.3-next.3
 
 ### Patch Changes

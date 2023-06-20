@@ -1,5 +1,17 @@
 # @backstage/plugin-search-backend-module-pg
 
+## 0.5.7
+
+### Patch Changes
+
+- 3c09e8d3cb0c: Updated Postgres search query filter in DatabaseDocumentStore to support field value search in array.
+- Updated dependencies
+  - @backstage/backend-common@0.19.0
+  - @backstage/backend-plugin-api@0.5.3
+  - @backstage/plugin-search-backend-node@1.2.2
+  - @backstage/config@1.0.8
+  - @backstage/plugin-search-common@1.2.4
+
 ## 0.5.7-next.2
 
 ### Patch Changes

@@ -1,5 +1,19 @@
 # @backstage/plugin-scaffolder-backend-module-confluence-to-markdown
 
+## 0.1.3
+
+### Patch Changes
+
+- c59a4b2b9e0a: Added support for Confluence Cloud to the `confluence:transform:markdown` action in addition to the existing Confluence Server support, view the [README](https://github.com/backstage/backstage/tree/master/plugins/scaffolder-backend-module-confluence-to-markdown) for more details
+- Updated dependencies
+  - @backstage/backend-common@0.19.0
+  - @backstage/plugin-scaffolder-backend@1.15.0
+  - @backstage/types@1.1.0
+  - @backstage/integration@1.5.0
+  - @backstage/errors@1.2.0
+  - @backstage/config@1.0.8
+  - @backstage/plugin-scaffolder-node@0.1.4
+
 ## 0.1.3-next.3
 
 ### Patch Changes

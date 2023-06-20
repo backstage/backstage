@@ -1,5 +1,42 @@
 # @backstage/backend-common
 
+## 0.19.0
+
+### Minor Changes
+
+- c7f848bcea3c: Support authentication with a service principal or managed identity for Azure DevOps
+
+  Azure DevOps recently released support, in public preview, for authenticating with a service principal or managed identity instead of a personal access token (PAT): https://devblogs.microsoft.com/devops/introducing-service-principal-and-managed-identity-support-on-azure-devops/. With this change the Azure integration now supports service principals and managed identities for Azure AD backed Azure DevOps organizations. Service principal and managed identity authentication is not supported on Azure DevOps Server (on-premises) organizations.
+
+### Patch Changes
+
+- 4ef91ab46732: Updated the backend database connection configuration schema to set the password visibility to secret
+- 52d599817680: Changed the default backend CacheClient to an in-memory cache when not explicitly configured.
+
+  Explicit configuration of an **in-memory cache** can be removed from `app-config.yaml`, as this is now the default:
+
+  ```diff
+  backend:
+  -  cache:
+  -    store: memory
+  ```
+
+- 5f2c38c70f5b: Fix SNYK-JS-FASTXMLPARSER-5668858 (`fast-xml-parser`) by upgrading aws-sdk to at least the current latest version.
+- eeb3f801fddf: `HostDiscovery` now strips trailing slashes in the `backend.baseUrl` config.
+- 9f47a743632c: Fixed typo in HostDiscovery's JSDoc
+- 810c6de51604: Remove unused dev dependency `aws-sdk-mock`.
+- Updated dependencies
+  - @backstage/types@1.1.0
+  - @backstage/integration-aws-node@0.1.4
+  - @backstage/config-loader@1.3.1
+  - @backstage/integration@1.5.0
+  - @backstage/errors@1.2.0
+  - @backstage/backend-app-api@0.4.4
+  - @backstage/backend-plugin-api@0.5.3
+  - @backstage/backend-dev-utils@0.1.1
+  - @backstage/cli-common@0.1.12
+  - @backstage/config@1.0.8
+
 ## 0.19.0-next.2
 
 ### Patch Changes

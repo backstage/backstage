@@ -1,5 +1,18 @@
 # @backstage/plugin-dynatrace
 
+## 6.0.0
+
+### Patch Changes
+
+- 892debb87041: Updated the dynatrace plugin documentation with new minimum API token permission requirements.
+- 3d11596a72b5: Update plugin installation docs to be more consistent across documentations
+- Updated dependencies
+  - @backstage/core-plugin-api@1.5.2
+  - @backstage/core-components@0.13.2
+  - @backstage/theme@0.4.0
+  - @backstage/plugin-catalog-react@1.7.0
+  - @backstage/catalog-model@1.4.0
+
 ## 6.0.0-next.3
 
 ### Patch Changes

@@ -1,5 +1,20 @@
 # @backstage/catalog-model
 
+## 1.4.0
+
+### Minor Changes
+
+- 33eae4b39a95: Deprecate target field and make targetRef required in common.schema.json
+
+### Patch Changes
+
+- af748a148d52: Add OpenAPI Specification (OAS) v3.1.0 examples.
+- 1df5fc954798: Remove requirement for 'target' property of EntityRelation
+- Updated dependencies
+  - @backstage/types@1.1.0
+  - @backstage/errors@1.2.0
+  - @backstage/config@1.0.8
+
 ## 1.4.0-next.1
 
 ### Patch Changes

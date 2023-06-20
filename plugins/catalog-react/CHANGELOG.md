@@ -1,5 +1,37 @@
 # @backstage/plugin-catalog-react
 
+## 1.7.0
+
+### Minor Changes
+
+- cb4c15989b6b: The `EntityOwnerPicker` component has undergone improvements to enhance its performance.
+  The previous implementation inferred users and groups displayed by the `EntityOwnerPicker` component based on the entities available in the `EntityListContext`. The updated version no longer relies on the `EntityListContext` for inference, allowing for better decoupling and improved performance.
+
+  The component now loads entities asynchronously, resulting in improved performance and responsiveness. A new `mode` prop has been introduced which provides two different behaviours:
+
+  - `<EntityOwnerPicker mode="owners-only" />`: loads the owners data asynchronously using the facets endpoint. The data is kept in memory and rendered asynchronously as the user scrolls. This is the default mode and is supposed to be retro-compatible with the previous implementation.
+
+  - `<EntityOwnerPicker mode="all" />` loads all users and groups present in the catalog asynchronously. The data is loaded in batches as the user scrolls. This is more efficient than `owners-only`, but has the drawback of displaying users and groups who aren't owner of any entity.
+
+### Patch Changes
+
+- d68692aee97e: Make `useRelatedEntities` use `getEntitiesByRefs` under the hood
+- 429319d080cd: `EntityAutocompletePicker` add `initialSelectedOptions` prop
+- 429319d080cd: `EntityLifecycleFilter` loads data using the facets endpoint
+- Updated dependencies
+  - @backstage/core-plugin-api@1.5.2
+  - @backstage/catalog-client@1.4.2
+  - @backstage/core-components@0.13.2
+  - @backstage/types@1.1.0
+  - @backstage/theme@0.4.0
+  - @backstage/integration@1.5.0
+  - @backstage/catalog-model@1.4.0
+  - @backstage/errors@1.2.0
+  - @backstage/plugin-permission-react@0.4.13
+  - @backstage/version-bridge@1.0.4
+  - @backstage/plugin-catalog-common@1.0.14
+  - @backstage/plugin-permission-common@0.7.6
+
 ## 1.7.0-next.3
 
 ### Patch Changes

@@ -1,5 +1,25 @@
 # @backstage/integration
 
+## 1.5.0
+
+### Minor Changes
+
+- a316d226c780: Add credential provider for GitLab.
+- c7f848bcea3c: Support authentication with a service principal or managed identity for Azure DevOps
+
+  Azure DevOps recently released support, in public preview, for authenticating with a service principal or managed identity instead of a personal access token (PAT): https://devblogs.microsoft.com/devops/introducing-service-principal-and-managed-identity-support-on-azure-devops/. With this change the Azure integration now supports service principals and managed identities for Azure AD backed Azure DevOps organizations. Service principal and managed identity authentication is not supported on Azure DevOps Server (on-premises) organizations.
+
+### Patch Changes
+
+- 3c83550fdb62: Renamed ClientSecret to AzureClientSecretCredential and ManagedIdentity to AzureManagedIdentityCredential
+- df8411779da1: Add support for Repository Variables and Secrets to the `publish:github` and `github:repo:create` scaffolder actions. You will need to add `read/write` permissions to your GITHUB_TOKEN and/or Github Backstage App for Repository `Secrets` and `Variables`
+
+  Upgrade octokit introduces some breaking changes.
+
+- Updated dependencies
+  - @backstage/errors@1.2.0
+  - @backstage/config@1.0.8
+
 ## 1.5.0-next.0
 
 ### Minor Changes

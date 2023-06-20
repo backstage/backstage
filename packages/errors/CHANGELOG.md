@@ -1,5 +1,16 @@
 # @backstage/errors
 
+## 1.2.0
+
+### Minor Changes
+
+- c4e8fefd9f13: Added `ServiceUnavailableError`
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/types@1.1.0
+
 ## 1.2.0-next.0
 
 ### Minor Changes

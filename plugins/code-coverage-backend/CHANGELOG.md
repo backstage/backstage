@@ -1,5 +1,18 @@
 # @backstage/plugin-code-coverage-backend
 
+## 0.2.12
+
+### Patch Changes
+
+- a83cb4e5624e: Updated dependency `xml2js` to `^0.6.0`.
+- Updated dependencies
+  - @backstage/backend-common@0.19.0
+  - @backstage/catalog-client@1.4.2
+  - @backstage/integration@1.5.0
+  - @backstage/catalog-model@1.4.0
+  - @backstage/errors@1.2.0
+  - @backstage/config@1.0.8
+
 ## 0.2.12-next.3
 
 ### Patch Changes
