@@ -13,7 +13,6 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import { EntityNomadJobVersionListCard } from './EntityNomadJobVersionListCard/EntityNomadJobVersionListCard';
-import { EntityNomadAllocationListTable } from './EntityNomadAllocationListTable/EntityNomadAllocationListTable';
 
-export { EntityNomadJobVersionListCard, EntityNomadAllocationListTable };
+export { EntityNomadJobVersionListCard } from './EntityNomadJobVersionListCard/EntityNomadJobVersionListCard';
+export { EntityNomadAllocationListTable } from './EntityNomadAllocationListTable/EntityNomadAllocationListTable';

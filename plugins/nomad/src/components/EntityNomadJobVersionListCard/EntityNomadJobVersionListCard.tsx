@@ -30,7 +30,7 @@ import {
   NOMAD_JOB_ID_ANNOTATION,
   NOMAD_NAMESPACE_ANNOTATION,
   isNomadJobIDAvailable,
-} from '../../Router';
+} from '../../annotations';
 import OpenInNewIcon from '@material-ui/icons/OpenInNew';
 import { Chip } from '@material-ui/core';
 
