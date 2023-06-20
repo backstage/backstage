@@ -20,7 +20,7 @@ import { compact, intersection, isEqual } from 'lodash';
 import { useMemo, useRef } from 'react';
 import useAsync from 'react-use/lib/useAsync';
 import { catalogApiRef } from '../../api';
-import { EntityUserListFilter } from '../../filters';
+import { EntityOwnerFilter, EntityUserListFilter } from '../../filters';
 import { useEntityList } from '../../hooks';
 import { reduceCatalogFilters } from '../../utils';
 
@@ -39,30 +39,25 @@ export function useOwnedEntitiesCount() {
   const prevRequest = useRef<QueryEntitiesInitialRequest>();
 
   const request = useMemo(() => {
-    const compacted = compact(Object.values(filters));
+    const { user, owners, ...allFilters } = filters;
+    const compacted = compact(Object.values(allFilters));
     const allFilter = reduceCatalogFilters(compacted);
     const { ['metadata.name']: metadata, ...filter } = allFilter;
 
-    const facet = 'relations.ownedBy';
+    const countFilter = getOwnedCountClaims(owners, ownershipEntityRefs);
 
-    const ownedByFilter = Array.isArray(filter[facet])
-      ? (filter[facet] as string[])
-      : [];
-
-    const commonOwnedBy = intersection(ownedByFilter, ownershipEntityRefs);
-
-    const ownedBy =
-      ownedByFilter.length > 0 ? ownedByFilter : ownershipEntityRefs;
-    if (ownedByFilter.length > 0 && commonOwnedBy.length === 0) {
-      // detect whether another filter sets values that will produce
-      // empty results in order to avoid sending an additional request.
+    if (
+      ownershipEntityRefs?.length === 0 ||
+      countFilter === undefined ||
+      Object.keys(filter).length === 0
+    ) {
       prevRequest.current = undefined;
       return undefined;
     }
     const newRequest: QueryEntitiesInitialRequest = {
       filter: {
         ...filter,
-        'relations.ownedBy': ownedBy ?? [],
+        'relations.ownedBy': countFilter,
       },
       limit: 0,
     };
@@ -78,14 +73,10 @@ export function useOwnedEntitiesCount() {
 
   const { value: count, loading: loadingEntityOwnership } =
     useAsync(async () => {
-      if (!ownershipEntityRefs?.length) {
-        return 0;
-      }
       if (!request) {
         return 0;
       }
       const { totalItems } = await catalogApi.queryEntities(request);
-
       return totalItems;
     }, [request]);
 
@@ -101,4 +92,22 @@ export function useOwnedEntitiesCount() {
     filter,
     ownershipEntityRefs,
   };
+}
+
+function getOwnedCountClaims(
+  owners: EntityOwnerFilter | undefined,
+  ownershipEntityRefs: string[] | undefined,
+) {
+  if (ownershipEntityRefs === undefined) {
+    return undefined;
+  }
+  const ownersRefs = owners?.values ?? [];
+  if (ownersRefs.length) {
+    const commonOwnedBy = intersection(ownersRefs, ownershipEntityRefs);
+    if (commonOwnedBy.length === 0) {
+      return undefined;
+    }
+    return commonOwnedBy;
+  }
+  return ownershipEntityRefs;
 }
