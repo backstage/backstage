@@ -30,12 +30,12 @@ Install this module:
 yarn add --cwd packages/backend @backstage/plugin-events-backend-module-gitlab
 ```
 
-Add the event router to the `EventsBackend`:
+Add the event router to the `EventsBackend` instance in `packages/backend/src/plugins/events.ts`:
 
 ```diff
 +const gitlabEventRouter = new GitlabEventRouter();
 
- EventsBackend
+new EventsBackend(env.logger)
 +  .addPublishers(gitlabEventRouter)
 +  .addSubscribers(gitlabEventRouter);
 // [...]

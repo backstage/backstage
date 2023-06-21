@@ -17,8 +17,8 @@
 import { AzureUrl } from './AzureUrl';
 import {
   AzureIntegrationConfig,
-  isManagedIdentity,
-  isServicePrincipal,
+  isAzureManagedIdentityCredential,
+  isAzureClientSecretCredential,
 } from './config';
 import {
   ClientSecretCredential,
@@ -81,7 +81,7 @@ export async function getAzureRequestOptions(
 
   const { token, credential } = config;
   if (credential) {
-    if (isServicePrincipal(credential)) {
+    if (isAzureClientSecretCredential(credential)) {
       const servicePrincipal = new ClientSecretCredential(
         credential.tenantId,
         credential.clientId,
@@ -90,7 +90,7 @@ export async function getAzureRequestOptions(
 
       const accessToken = await servicePrincipal.getToken(azureDevOpsScope);
       headers.Authorization = `Bearer ${accessToken.token}`;
-    } else if (isManagedIdentity(credential)) {
+    } else if (isAzureManagedIdentityCredential(credential)) {
       const managedIdentity = new ManagedIdentityCredential(
         credential.clientId,
       );

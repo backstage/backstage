@@ -93,12 +93,8 @@ export type SimpleThemeOptions = {
 
 declare module '@material-ui/core/styles/createPalette' {
   interface Palette extends BackstagePaletteAdditions {}
-
-  interface PaletteOptions extends BackstagePaletteAdditions {}
 }
 
 declare module '@material-ui/core/styles/createTheme' {
   interface Theme extends BackstageThemeAdditions {}
-
-  interface ThemeOptions extends BackstageThemeAdditions {}
 }

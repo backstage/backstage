@@ -1,5 +1,24 @@
 # @backstage/plugin-events-backend-module-github
 
+## 0.1.8
+
+### Patch Changes
+
+- 807416a9ed39: fix Installation documentation
+- Updated dependencies
+  - @backstage/backend-plugin-api@0.5.3
+  - @backstage/config@1.0.8
+  - @backstage/plugin-events-node@0.2.7
+
+## 0.1.8-next.2
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-plugin-api@0.5.3-next.2
+  - @backstage/config@1.0.7
+  - @backstage/plugin-events-node@0.2.7-next.2
+
 ## 0.1.8-next.1
 
 ### Patch Changes

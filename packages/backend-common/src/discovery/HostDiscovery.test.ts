@@ -36,6 +36,24 @@ describe('HostDiscovery', () => {
     );
   });
 
+  it('strips trailing slashes in config', async () => {
+    const discovery = HostDiscovery.fromConfig(
+      new ConfigReader({
+        backend: {
+          baseUrl: 'http://localhost:40//',
+          listen: { port: 80, host: 'localhost' },
+        },
+      }),
+    );
+
+    await expect(discovery.getBaseUrl('catalog')).resolves.toBe(
+      'http://localhost:80/api/catalog',
+    );
+    await expect(discovery.getExternalBaseUrl('catalog')).resolves.toBe(
+      'http://localhost:40/api/catalog',
+    );
+  });
+
   it('can configure the base path', async () => {
     const discovery = HostDiscovery.fromConfig(
       new ConfigReader({

@@ -178,6 +178,7 @@ Kaewkasi
 Kaswell
 Keyv
 Knex
+Koyeb
 KPIs
 Kuang
 kubectl
@@ -311,6 +312,8 @@ rsync
 ruleset
 runbook
 sam
+sandbox
+sandboxing
 sanitization
 scaffolded
 scaffolder

@@ -1,5 +1,34 @@
 # @backstage/plugin-tech-insights
 
+## 0.3.11
+
+### Patch Changes
+
+- c03307ded3e6: The check description is now rendered with markdown.
+- Updated dependencies
+  - @backstage/core-plugin-api@1.5.2
+  - @backstage/core-components@0.13.2
+  - @backstage/types@1.1.0
+  - @backstage/theme@0.4.0
+  - @backstage/plugin-catalog-react@1.7.0
+  - @backstage/catalog-model@1.4.0
+  - @backstage/errors@1.2.0
+  - @backstage/plugin-tech-insights-common@0.2.11
+
+## 0.3.11-next.3
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/core-components@0.13.2-next.3
+  - @backstage/catalog-model@1.4.0-next.1
+  - @backstage/core-plugin-api@1.5.2-next.0
+  - @backstage/errors@1.2.0-next.0
+  - @backstage/theme@0.4.0-next.1
+  - @backstage/types@1.0.2
+  - @backstage/plugin-catalog-react@1.7.0-next.3
+  - @backstage/plugin-tech-insights-common@0.2.10
+
 ## 0.3.11-next.2
 
 ### Patch Changes

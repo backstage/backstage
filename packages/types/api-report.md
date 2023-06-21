@@ -4,6 +4,9 @@
 
 ```ts
 // @public
+export function durationToMilliseconds(duration: HumanDuration): number;
+
+// @public
 export type HumanDuration = {
   years?: number;
   months?: number;

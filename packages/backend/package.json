@@ -1,6 +1,6 @@
 {
   "name": "example-backend",
-  "version": "0.2.84-next.2",
+  "version": "0.2.84",
   "main": "dist/index.cjs.js",
   "types": "src/index.ts",
   "license": "Apache-2.0",
@@ -54,6 +54,7 @@
     "@backstage/plugin-kubernetes-backend": "workspace:^",
     "@backstage/plugin-lighthouse-backend": "workspace:^",
     "@backstage/plugin-linguist-backend": "workspace:^",
+    "@backstage/plugin-nomad-backend": "workspace:^",
     "@backstage/plugin-permission-backend": "workspace:^",
     "@backstage/plugin-permission-common": "workspace:^",
     "@backstage/plugin-permission-node": "workspace:^",

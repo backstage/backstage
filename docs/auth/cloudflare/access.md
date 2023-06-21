@@ -1,8 +1,7 @@
 ---
-id: cfaccess
+id: provider
 title: Cloudflare Access Provider
-sidebar_label: cfaccess
-# prettier-ignore
+sidebar_label: Cloudflare Access
 description: Adding Cloudflare Access as an authentication provider in Backstage
 ---
 

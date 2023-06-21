@@ -39,7 +39,16 @@ export type AwsS3IntegrationConfig = {
 };
 
 // @public
-export type AzureCredential = ClientSecret | ManagedIdentity;
+export type AzureClientSecretCredential = {
+  tenantId: string;
+  clientId: string;
+  clientSecret: string;
+};
+
+// @public
+export type AzureCredential =
+  | AzureClientSecretCredential
+  | AzureManagedIdentityCredential;
 
 // @public
 export class AzureIntegration implements ScmIntegration {
@@ -67,6 +76,11 @@ export type AzureIntegrationConfig = {
   host: string;
   token?: string;
   credential?: AzureCredential;
+};
+
+// @public
+export type AzureManagedIdentityCredential = {
+  clientId: string;
 };
 
 // @public
@@ -156,13 +170,6 @@ export type BitbucketServerIntegrationConfig = {
   token?: string;
   username?: string;
   password?: string;
-};
-
-// @public
-export type ClientSecret = {
-  tenantId: string;
-  clientId: string;
-  clientSecret: string;
 };
 
 // @public
@@ -571,11 +578,6 @@ export interface IntegrationsByType {
   // (undocumented)
   gitlab: ScmIntegrationsGroup<GitLabIntegration>;
 }
-
-// @public
-export type ManagedIdentity = {
-  clientId: string;
-};
 
 // @public
 export function parseGerritGitilesUrl(

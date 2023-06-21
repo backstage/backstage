@@ -14,6 +14,7 @@
  * limitations under the License.
  */
 
+import { Config } from '@backstage/config';
 import {
   ExploreTool,
   GetExploreToolsRequest,
@@ -35,7 +36,22 @@ const anyOf = <T>(prop: T | T[], matches: T[]) =>
 export class StaticExploreToolProvider implements ExploreToolProvider {
   private readonly tools: ExploreTool[];
 
-  static fromData(tools: ExploreTool[]) {
+  static fromConfig(config: Config): StaticExploreToolProvider {
+    const tools: ExploreTool[] =
+      config.getOptionalConfigArray('explore.tools')?.map(toolConfig => {
+        return {
+          description: toolConfig.getOptionalString('description'),
+          image: toolConfig.getString('image'),
+          lifecycle: toolConfig.getOptionalString('lifecycle'),
+          tags: toolConfig.getOptionalStringArray('tags'),
+          title: toolConfig.getString('title'),
+          url: toolConfig.getString('url'),
+        } as ExploreTool;
+      }) ?? [];
+    return this.fromData(tools);
+  }
+
+  static fromData(tools: ExploreTool[]): StaticExploreToolProvider {
     return new StaticExploreToolProvider(tools);
   }
 

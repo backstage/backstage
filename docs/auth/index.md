@@ -14,9 +14,10 @@ access external resources.
 
 Backstage comes with many common authentication providers in the core library:
 
-- [Atlassian](atlassian/provider.md)
 - [Auth0](auth0/provider.md)
+- [Atlassian](atlassian/provider.md)
 - [Azure](microsoft/provider.md)
+- [Azure Easy Auth](microsoft/azure-easyauth.md)
 - [Bitbucket](bitbucket/provider.md)
 - [Bitbucket Server](bitbucketServer/provider.md)
 - [Cloudflare Access](cloudflare/access.md)
@@ -25,8 +26,8 @@ Backstage comes with many common authentication providers in the core library:
 - [Google](google/provider.md)
 - [Google IAP](google/gcp-iap-auth.md)
 - [Okta](okta/provider.md)
+- [OAuth 2 Custom Proxy](oauth2-proxy/provider.md)
 - [OneLogin](onelogin/provider.md)
-- [OAuth2Proxy](oauth2-proxy/provider.md)
 
 These built-in providers handle the authentication flow for a particular service
 including required scopes, callbacks, etc. These providers are each added to a
@@ -142,8 +143,11 @@ const app = createApp({
 
 Some auth providers are so-called "proxy" providers, meaning they're meant to be used
 behind an authentication proxy. Examples of these are
-[AWS ALB](https://github.com/backstage/backstage/blob/master/contrib/docs/tutorials/aws-alb-aad-oidc-auth.md), [Cloudflare Access](./cloudflare/access.md),
-[GCP IAP](./google/gcp-iap-auth.md), and [OAuth2 Proxy](./oauth2-proxy/provider.md).
+[Amazon Application Load Balancer](https://github.com/backstage/backstage/blob/master/contrib/docs/tutorials/aws-alb-aad-oidc-auth.md),
+[Azure EasyAuth](./microsoft/azure-easyauth.md),
+[Cloudflare Access](./cloudflare/access.md),
+[Google Identity-Aware Proxy](./google/gcp-iap-auth.md)
+and [OAuth2 Proxy](./oauth2-proxy/provider.md).
 
 When using a proxy provider, you'll end up wanting to use a different sign-in page, as
 there is no need for further user interaction once you've signed in towards the proxy.

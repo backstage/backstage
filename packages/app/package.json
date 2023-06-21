@@ -1,6 +1,6 @@
 {
   "name": "example-app",
-  "version": "0.2.84-next.2",
+  "version": "0.2.84",
   "private": true,
   "backstage": {
     "role": "frontend"
@@ -50,6 +50,7 @@
     "@backstage/plugin-microsoft-calendar": "workspace:^",
     "@backstage/plugin-newrelic": "workspace:^",
     "@backstage/plugin-newrelic-dashboard": "workspace:^",
+    "@backstage/plugin-nomad": "workspace:^",
     "@backstage/plugin-octopus-deploy": "workspace:^",
     "@backstage/plugin-org": "workspace:^",
     "@backstage/plugin-pagerduty": "workspace:^",

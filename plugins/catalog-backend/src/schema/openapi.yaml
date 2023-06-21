@@ -604,6 +604,7 @@ paths:
   /refresh:
     post:
       operationId: RefreshEntity
+      description: Refresh the entity related to entityRef.
       responses:
         '200':
           description: Refreshed
@@ -630,6 +631,7 @@ paths:
   /entities:
     get:
       operationId: GetEntities
+      description: Get all entities matching a given filter.
       responses:
         '200':
           description: ''
@@ -651,6 +653,7 @@ paths:
   /entities/by-uid/{uid}:
     get:
       operationId: GetEntityByUid
+      description: Get a single entity by the UID.
       responses:
         '200':
           description: Ok
@@ -665,6 +668,7 @@ paths:
         - $ref: '#/components/parameters/uid'
     delete:
       operationId: DeleteEntityByUid
+      description: Delete a single entity by UID.
       responses:
         '204':
           description: Deleted successfully.
@@ -676,6 +680,7 @@ paths:
   /entities/by-name/{kind}/{namespace}/{name}:
     get:
       operationId: GetEntityByName
+      description: Get an entity by an entity ref.
       responses:
         '200':
           description: Ok
@@ -693,6 +698,7 @@ paths:
   /entities/by-name/{kind}/{namespace}/{name}/ancestry:
     get:
       operationId: GetEntityAncestryByName
+      description: Get an entity's ancestry by entity ref.
       responses:
         '200':
           description: Ok
@@ -710,6 +716,7 @@ paths:
   /entities/by-refs:
     post:
       operationId: GetEntitiesByRefs
+      description: Get a batch set of entities given an array of entityRefs.
       responses:
         '200':
           description: Ok
@@ -742,6 +749,7 @@ paths:
   /entities/by-query:
     get:
       operationId: GetEntitiesByQuery
+      description: Search for entities by a given query.
       responses:
         '200':
           description: Ok
@@ -776,6 +784,7 @@ paths:
   /entity-facets:
     get:
       operationId: GetEntityFacets
+      description: Get all entity facets that match the given filters.
       responses:
         '200':
           description: Ok
@@ -796,6 +805,7 @@ paths:
   /locations:
     post:
       operationId: CreateLocation
+      description: Create a location for a given target.
       responses:
         '200':
           description: Ok
@@ -846,6 +856,7 @@ paths:
                 - type
     get:
       operationId: GetLocations
+      description: Get all locations
       responses:
         '200':
           description: Ok
@@ -867,6 +878,7 @@ paths:
   /locations/{id}:
     get:
       operationId: GetLocation
+      description: Get a location by id.
       responses:
         '200':
           description: Ok
@@ -885,6 +897,7 @@ paths:
             type: string
     delete:
       operationId: DeleteLocation
+      description: Delete a location by id.
       responses:
         '204':
           description: No content
@@ -900,6 +913,7 @@ paths:
   /analyze-location:
     post:
       operationId: AnalyzeLocation
+      description: Validate a given location.
       responses:
         '200':
           description: Ok
@@ -928,6 +942,7 @@ paths:
   /validate-entity:
     post:
       operationId: ValidateEntity
+      description: Validate that a passed in entity has no errors in schema.
       responses:
         '200':
           description: Ok

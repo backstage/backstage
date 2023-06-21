@@ -1,5 +1,34 @@
 # @backstage/plugin-adr-backend
 
+## 0.3.4
+
+### Patch Changes
+
+- 58524588448c: Use front matter parser for MADR v3 formatted ADRs when indexing status/date
+- Updated dependencies
+  - @backstage/backend-common@0.19.0
+  - @backstage/catalog-client@1.4.2
+  - @backstage/integration@1.5.0
+  - @backstage/catalog-model@1.4.0
+  - @backstage/errors@1.2.0
+  - @backstage/plugin-adr-common@0.2.10
+  - @backstage/config@1.0.8
+  - @backstage/plugin-search-common@1.2.4
+
+## 0.3.4-next.2
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-common@0.19.0-next.2
+  - @backstage/catalog-model@1.4.0-next.1
+  - @backstage/catalog-client@1.4.2-next.2
+  - @backstage/config@1.0.7
+  - @backstage/errors@1.2.0-next.0
+  - @backstage/integration@1.5.0-next.0
+  - @backstage/plugin-adr-common@0.2.10-next.1
+  - @backstage/plugin-search-common@1.2.4-next.0
+
 ## 0.3.4-next.1
 
 ### Patch Changes

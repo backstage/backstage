@@ -22,14 +22,10 @@ import {
 
 declare module '@mui/material/styles' {
   interface Palette extends BackstagePaletteAdditions {}
-
-  interface PaletteOptions extends BackstagePaletteAdditions {}
 }
 
 declare module '@mui/material/styles' {
   interface Theme extends BackstageThemeAdditions {}
-
-  interface ThemeOptions extends BackstageThemeAdditions {}
 }
 
 declare module '@mui/private-theming/defaultTheme' {

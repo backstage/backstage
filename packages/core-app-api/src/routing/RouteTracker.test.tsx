@@ -22,6 +22,7 @@ import { Link, MemoryRouter, Route, Routes } from 'react-router-dom';
 import {
   AnalyticsApi,
   analyticsApiRef,
+  createPlugin,
   createRouteRef,
 } from '@backstage/core-plugin-api';
 
@@ -32,18 +33,21 @@ describe('RouteTracker', () => {
   const routeRef2 = createRouteRef({
     id: 'route2',
   });
+  const plugin1 = createPlugin({ id: 'plugin1' });
 
   const routeObjects: BackstageRouteObject[] = [
     {
       path: '/path/:p1/:p2',
       element: <Link to="/path2/hello">go</Link>,
       routeRefs: new Set([routeRef1]),
+      plugins: new Set([plugin1]),
       caseSensitive: false,
     },
     {
       path: '/path2/:param',
       element: <div>hi there</div>,
       routeRefs: new Set([routeRef2]),
+      plugins: new Set(),
       caseSensitive: false,
     },
   ];
@@ -73,7 +77,7 @@ describe('RouteTracker', () => {
       },
       context: {
         extension: 'App',
-        pluginId: 'root',
+        pluginId: 'plugin1',
         routeRef: 'route1',
       },
       subject: '/path/foo/bar',

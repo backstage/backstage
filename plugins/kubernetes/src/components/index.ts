@@ -26,3 +26,4 @@ export * from './KubernetesDrawer';
 export * from './Pods';
 export * from './ServicesAccordions';
 export * from './KubernetesContent';
+export * from './ResourceUtilization';
