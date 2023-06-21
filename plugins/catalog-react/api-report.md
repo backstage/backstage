@@ -266,7 +266,14 @@ export class EntityOwnerFilter implements EntityFilter {
 }
 
 // @public (undocumented)
-export const EntityOwnerPicker: () => JSX.Element | null;
+export const EntityOwnerPicker: (
+  props?: EntityOwnerPickerProps,
+) => JSX.Element | null;
+
+// @public (undocumented)
+export type EntityOwnerPickerProps = {
+  mode?: 'owners-only' | 'all';
+};
 
 // @public
 export const EntityPeekAheadPopover: (

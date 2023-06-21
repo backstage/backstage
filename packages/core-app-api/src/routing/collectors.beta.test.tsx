@@ -112,16 +112,17 @@ function routeObj(
     caseSensitive: false,
     element: type,
     routeRefs: new Set(refs),
+    plugins: backstagePlugin ? new Set([backstagePlugin]) : new Set(),
     children: [
       {
         path: '*',
         caseSensitive: false,
         element: 'match-all',
         routeRefs: new Set(),
+        plugins: new Set(),
       },
       ...children,
     ],
-    plugin: backstagePlugin,
   };
 }
 

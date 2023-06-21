@@ -95,6 +95,13 @@ type Options = {
    * with the same structure as the workspace dir.
    */
   skeleton?: 'skeleton.tar' | 'skeleton.tar.gz';
+
+  /**
+   * If set to true, `yarn pack` is always preferred when creating the dist
+   * workspace. This ensures correct workspace output at significant cost to
+   * command performance.
+   */
+  alwaysYarnPack?: boolean;
 };
 
 function prefixLogFunc(prefix: string, out: 'stdout' | 'stderr') {
@@ -220,7 +227,11 @@ export async function createDistWorkspace(
     }
   }
 
-  await moveToDistWorkspace(targetDir, targets);
+  await moveToDistWorkspace(
+    targetDir,
+    targets,
+    Boolean(options.alwaysYarnPack),
+  );
 
   const files: FileEntry[] = options.files ?? ['yarn.lock', 'package.json'];
 
@@ -262,9 +273,13 @@ const FAST_PACK_SCRIPTS = [
 async function moveToDistWorkspace(
   workspaceDir: string,
   localPackages: PackageGraphNode[],
+  alwaysYarnPack: boolean,
 ): Promise<void> {
-  const [fastPackPackages, slowPackPackages] = partition(localPackages, pkg =>
-    FAST_PACK_SCRIPTS.includes(pkg.packageJson.scripts?.prepack),
+  const [fastPackPackages, slowPackPackages] = partition(
+    localPackages,
+    pkg =>
+      !alwaysYarnPack &&
+      FAST_PACK_SCRIPTS.includes(pkg.packageJson.scripts?.prepack),
   );
 
   // New an improved flow where we avoid calling `yarn pack`

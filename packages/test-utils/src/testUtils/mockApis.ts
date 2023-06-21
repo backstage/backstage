@@ -15,13 +15,15 @@
  */
 
 import {
-  storageApiRef,
-  errorApiRef,
   createApiFactory,
+  errorApiRef,
+  fetchApiRef,
+  storageApiRef,
 } from '@backstage/core-plugin-api';
-import { MockErrorApi, MockStorageApi } from './apis';
+import { MockErrorApi, MockFetchApi, MockStorageApi } from './apis';
 
 export const mockApis = [
   createApiFactory(errorApiRef, new MockErrorApi()),
+  createApiFactory(fetchApiRef, new MockFetchApi()),
   createApiFactory(storageApiRef, MockStorageApi.create()),
 ];

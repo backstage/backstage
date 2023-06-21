@@ -1,5 +1,35 @@
 # @backstage/core-components
 
+## 0.13.2
+
+### Patch Changes
+
+- 4e697e88f0e2: Add resource utilization to Pod Drawer
+- 78cbb8ef8aea: Enhance the sidebar item accessibility by using appropriate header semantics.
+- 66ae4d8ca380: Added `exact` prop to `SidebarSubmenuItem` which causes it to only highlight if the current location is an exact match.
+- 83bdc3a555c1: Replaced usages of `theme.palette.theme.hint` with `theme.palette.text.secondary` as it has been removed in MUI v5
+- b4cc4b1415e9: SupportButton auto focus first item when opened.
+- e33beb1f2a8e: Make the documentation pages printable (also handy for exporting to PDF)
+- Updated dependencies
+  - @backstage/core-plugin-api@1.5.2
+  - @backstage/theme@0.4.0
+  - @backstage/errors@1.2.0
+  - @backstage/config@1.0.8
+  - @backstage/version-bridge@1.0.4
+
+## 0.13.2-next.3
+
+### Patch Changes
+
+- 78cbb8ef8aea: Enhance the sidebar item accessibility by using appropriate header semantics.
+- e33beb1f2a8e: Make the documentation pages printable (also handy for exporting to PDF)
+- Updated dependencies
+  - @backstage/config@1.0.7
+  - @backstage/core-plugin-api@1.5.2-next.0
+  - @backstage/errors@1.2.0-next.0
+  - @backstage/theme@0.4.0-next.1
+  - @backstage/version-bridge@1.0.4
+
 ## 0.13.2-next.2
 
 ### Patch Changes

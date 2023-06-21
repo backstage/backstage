@@ -61,6 +61,7 @@ export default {
     '/query': {
       get: {
         operationId: 'Query',
+        description: 'Query documents with a given filter.',
         responses: {
           '200': {
             description: 'Ok',

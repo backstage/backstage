@@ -1,0 +1,10 @@
+---
+title: Azure DevOps Wiki Search
+author: Drew Hill
+authorUrl: https://github.com/arhill05
+category: Search
+description: Index wiki articles from an Azure DevOps wiki into Backstage to allow you to search them with the Backstage Search feature. 
+documentation: https://github.com/arhill05/backstage-plugin-search-backend-module-azure-devops-wiki#readme
+iconUrl: img/ado-wiki-search-icon.png
+npmPackageName: '@mdude2314/backstage-plugin-search-backend-module-azure-devops-wiki'
+addedDate: '2023-06-13'

@@ -1,5 +1,30 @@
 # @backstage/backend-test-utils
 
+## 0.1.38
+
+### Patch Changes
+
+- 68a21956ef52: Remove reference to deprecated import
+- Updated dependencies
+  - @backstage/backend-common@0.19.0
+  - @backstage/types@1.1.0
+  - @backstage/backend-app-api@0.4.4
+  - @backstage/backend-plugin-api@0.5.3
+  - @backstage/plugin-auth-node@0.2.15
+  - @backstage/config@1.0.8
+
+## 0.1.38-next.2
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-common@0.19.0-next.2
+  - @backstage/backend-app-api@0.4.4-next.2
+  - @backstage/backend-plugin-api@0.5.3-next.2
+  - @backstage/config@1.0.7
+  - @backstage/types@1.0.2
+  - @backstage/plugin-auth-node@0.2.15-next.2
+
 ## 0.1.38-next.1
 
 ### Patch Changes

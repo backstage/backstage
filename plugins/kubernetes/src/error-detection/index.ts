@@ -18,5 +18,6 @@ export type {
   DetectedError,
   DetectedErrorsByCluster,
   ErrorSeverity,
+  ResourceRef,
 } from './types';
 export { detectErrors } from './error-detection';

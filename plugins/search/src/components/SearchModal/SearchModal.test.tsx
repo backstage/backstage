@@ -28,6 +28,13 @@ import {
 
 import { SearchModal } from './SearchModal';
 
+const navigate = jest.fn();
+
+jest.mock('react-router-dom', () => ({
+  ...jest.requireActual('react-router-dom'),
+  useNavigate: () => navigate,
+}));
+
 describe('SearchModal', () => {
   const query = jest.fn().mockResolvedValue({ results: [] });
 
@@ -167,5 +174,37 @@ describe('SearchModal', () => {
     );
 
     expect(screen.getByLabelText('Search')).toHaveFocus();
+  });
+
+  it("Don't wait query debounce time when enter is pressed", async () => {
+    const initialState = {
+      term: 'term',
+      filters: {},
+      types: [],
+      pageCursor: '',
+    };
+
+    await renderInTestApp(
+      <ApiProvider apis={apiRegistry}>
+        <SearchContextProvider initialState={initialState}>
+          <SearchModal open hidden={false} toggleModal={toggleModal} />
+        </SearchContextProvider>
+      </ApiProvider>,
+      {
+        mountedRoutes: {
+          '/search': rootRouteRef,
+        },
+      },
+    );
+
+    expect(query).toHaveBeenCalledWith(
+      expect.objectContaining({ term: 'term' }),
+    );
+
+    const input = screen.getByLabelText('Search');
+    await userEvent.clear(input);
+    await userEvent.type(input, 'new term{enter}');
+
+    expect(navigate).toHaveBeenCalledWith('/search?query=new term');
   });
 });

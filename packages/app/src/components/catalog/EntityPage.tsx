@@ -113,6 +113,12 @@ import {
   EntityUserProfileCard,
 } from '@backstage/plugin-org';
 import {
+  EntityNomadAllocationListTable,
+  EntityNomadJobVersionListCard,
+  isNomadAllocationsAvailable,
+  isNomadJobIDAvailable,
+} from '@backstage/plugin-nomad';
+import {
   EntityPagerDutyCard,
   isPagerDutyAvailable,
 } from '@backstage/plugin-pagerduty';
@@ -442,6 +448,14 @@ const overviewContent = (
     <Grid item md={8} xs={12}>
       <EntityHasSubcomponentsCard variant="gridItem" />
     </Grid>
+
+    <EntitySwitch>
+      <EntitySwitch.Case if={isNomadJobIDAvailable}>
+        <Grid item md={6} xs={12}>
+          <EntityNomadJobVersionListCard />
+        </Grid>
+      </EntitySwitch.Case>
+    </EntitySwitch>
   </Grid>
 );
 
@@ -499,6 +513,14 @@ const serviceEntityPage = (
 
     <EntityLayout.Route path="/kubernetes" title="Kubernetes">
       <EntityKubernetesContent />
+    </EntityLayout.Route>
+
+    <EntityLayout.Route
+      if={isNomadAllocationsAvailable}
+      path="/nomad"
+      title="Nomad"
+    >
+      <EntityNomadAllocationListTable />
     </EntityLayout.Route>
 
     <EntityLayout.Route path="/pull-requests" title="Pull Requests">

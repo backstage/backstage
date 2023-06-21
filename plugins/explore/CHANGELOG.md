@@ -1,5 +1,39 @@
 # @backstage/plugin-explore
 
+## 0.4.5
+
+### Patch Changes
+
+- 78cbb8ef8aea: Enhance the tools card accessibility by using appropriate header semantics.
+- Updated dependencies
+  - @backstage/core-plugin-api@1.5.2
+  - @backstage/plugin-search-react@1.6.2
+  - @backstage/core-components@0.13.2
+  - @backstage/theme@0.4.0
+  - @backstage/plugin-catalog-react@1.7.0
+  - @backstage/catalog-model@1.4.0
+  - @backstage/errors@1.2.0
+  - @backstage/plugin-explore-react@0.0.29
+  - @backstage/plugin-explore-common@0.0.1
+  - @backstage/plugin-search-common@1.2.4
+
+## 0.4.5-next.3
+
+### Patch Changes
+
+- 78cbb8ef8aea: Enhance the tools card accessibility by using appropriate header semantics.
+- Updated dependencies
+  - @backstage/plugin-search-react@1.6.2-next.3
+  - @backstage/core-components@0.13.2-next.3
+  - @backstage/catalog-model@1.4.0-next.1
+  - @backstage/core-plugin-api@1.5.2-next.0
+  - @backstage/errors@1.2.0-next.0
+  - @backstage/theme@0.4.0-next.1
+  - @backstage/plugin-catalog-react@1.7.0-next.3
+  - @backstage/plugin-explore-common@0.0.1
+  - @backstage/plugin-explore-react@0.0.29-next.0
+  - @backstage/plugin-search-common@1.2.4-next.0
+
 ## 0.4.4-next.2
 
 ### Patch Changes

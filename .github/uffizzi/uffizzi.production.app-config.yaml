@@ -20,8 +20,6 @@ backend:
       port: ${POSTGRES_PORT}
       user: ${POSTGRES_USER}
       password: ${POSTGRES_PASSWORD}
-  cache:
-    store: memory
   cors:
     origin: ${UFFIZZI_URL}
     methods: [GET, HEAD, PATCH, POST, PUT, DELETE]
@@ -136,6 +134,9 @@ techdocs:
 
 dynatrace:
   baseUrl: https://your.dynatrace.instance.com
+
+nomad:
+  addr: 0.0.0.0
 
 # Score-cards sample configuration.
 scorecards:

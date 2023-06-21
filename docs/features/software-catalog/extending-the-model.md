@@ -472,8 +472,9 @@ We also provide a high-level example of what a catalog process for a custom
 entity might look like:
 
 ```ts
-import { CatalogProcessor, processingResult } from '@backstage/catalog-backend';
-import { entityKindSchemaValidator } from '@backstage/catalog-model';
+import { CatalogProcessor, CatalogProcessorEmit, processingResult } from '@backstage/plugin-catalog-node';
+import { LocationSpec } from '@backstage/plugin-catalog-common'
+import { Entity, entityKindSchemaValidator } from '@backstage/catalog-model';
 
 // For an example of the JSONSchema format and how to use $ref markers to the
 // base definitions, see:
@@ -489,6 +490,11 @@ export class FoobarEntitiesProcessor implements CatalogProcessor {
     // package
     entityKindSchemaValidator(foobarEntityV1alpha1Schema),
   ];
+
+  // Return processor name
+  getProcessorName(): string {
+    return 'FoobarEntitiesProcessor'
+  }
 
   // validateEntityKind is responsible for signaling to the catalog processing
   // engine that this entity is valid and should therefore be submitted for

@@ -159,6 +159,7 @@ export const EntityPlaylistDialog = (props: EntityPlaylistDialogProps) => {
         alertApi.post({
           message: `Entity added to ${playlist.name}`,
           severity: 'success',
+          display: 'transient',
         });
       } catch (e) {
         alertApi.post({

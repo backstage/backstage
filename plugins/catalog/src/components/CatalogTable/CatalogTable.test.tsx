@@ -95,6 +95,11 @@ describe('CatalogTable component', () => {
                 () => false,
                 () => false,
               ),
+              kind: {
+                value: 'component',
+                getCatalogFilters: () => ({ kind: 'component' }),
+                toQueryValue: () => 'component',
+              },
             },
           }}
         >
@@ -107,7 +112,7 @@ describe('CatalogTable component', () => {
         },
       },
     );
-    expect(screen.getByText(/Owned \(3\)/)).toBeInTheDocument();
+    expect(screen.getByText(/Owned components \(3\)/)).toBeInTheDocument();
     expect(screen.getByText(/component1/)).toBeInTheDocument();
     expect(screen.getByText(/component2/)).toBeInTheDocument();
     expect(screen.getByText(/component3/)).toBeInTheDocument();
