@@ -1,4 +1,4 @@
-Welcome to the DX Prortal Gerrit plugin!
+Welcome to the DX Prortal Gerrit plugin
 
 _This plugin was created through the Backstage CLI_
 
