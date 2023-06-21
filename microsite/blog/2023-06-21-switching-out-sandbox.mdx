@@ -1,0 +1,74 @@
+---
+title: Switching out the Software Templates Sandbox
+author: Ben Lambert
+authorURL: https://github.com/benjdlambert
+authorImageURL: https://avatars.githubusercontent.com/u/3645856?v=4
+---
+
+**TL;DR**: For the Backstage maintainers, ensuring that the project is highly secure for every adopter and end-user is one of our top priorities. With the recent vulnerabilities in the `vm2` sandbox, and have decided to move away from `vm2` and use `isolated-vm` instead to prioritize security for the Backstage end-users.
+
+![Backstage Security Audit & Updates](assets/22-08-23/backstage-security-audit.png)
+
+{/* truncate */}
+
+## A quick download on templating strings
+
+When using [Software Templates](https://backstage.io/docs/features/software-templates), we allow template authors to [write advanced templating strings](https://backstage.io/docs/features/software-templates/writing-templates/#the-templating-syntax) when composing actions together like the following:
+
+```yaml
+- id: template
+  name: Fetch Skeleton + Template
+  action: fetch:template
+  input:
+    url: ./skeleton
+    copyWithoutRender:
+      - .github/workflows/*
+    values:
+      // highlight-start
+      component_id: ${{ parameters.component_id }}
+      description: ${{ parameters.description }}
+      destination: ${{ parameters.repoUrl | parseRepoUrl }}
+      owner: ${{ parameters.owner }}
+      // highlight-end
+```
+
+These parts that are wrapped with `${{ … }}` are evaluated by the Software Templates backend plugin.
+The template strings provide a rich API that enables template authors to manipulate the parameters provided by users of the templates and to pass the parameters into both the built in filters and custom filters that template authors provided when configuring the plugin.
+
+This templating language is called [Nunjucks](https://github.com/mozilla/nunjucks), which is based on [Jinja2](https://pypi.org/project/Jinja2), both of which are popular templating engines.
+Under the hood these templating strings compile into JavaScript. The [Backstage Threat Model](https://backstage.io/docs/overview/threat-model/) treats the code provided by the template language as untrusted, so adopters need a safe environment – a sandbox – to execute the JavaScript in.
+Up until the latest Backstage release, that sandbox was `vm2.` Now, the project is using `isolated-vm` as the sandbox to execute this JavaScript in.
+
+## Why the change?
+
+You might have seen over the last few months [some advisories and CVEs](https://github.com/patriksimek/vm2/security/advisories) that were found in the original [`vm2`](https://github.com/patriksimek/vm2) sandbox that we were using.
+Both the `vm2` maintainers and the Backstage maintainers have been quick at releasing new versions of the sandbox and the SoftwareTemplates backend plugin, respectively, to protect their users.
+
+We were recently made aware of another sandbox escape through our HackerOne BugBounty program, with a Proof of Concept using a Software Template.
+The maintainers of the `vm2` project have also been notified. We currently cannot find a simple solution to stop the latest escape. So, In the interest of moving quickly to protect the security of our end-users, we're moving away from that `vm2` and moving towards [`isolated-vm`](https://github.com/laverdet/isolated-vm) instead.
+
+`vm2` has been one of the most popular sandboxes to-date, and we want to thank the `vm2` maintainers for the recent sandbox escape fixes and getting those shipped as fast as possible.
+
+## What does this mean for Backstage?
+
+`isolated-vm` uses a quite different implementation and security model compared to `vm2`.
+
+It is a native dependency and executes code in a `v8` engine so-called `isolate` instead. This means that by design, it does not have any access to neither the node runtime nor any frameworks on top of `v8`, which is precisely what we want to ensure in our sandbox.
+
+This method of sandboxing is much more secure than how the `vm2` sandbox functions, and less prone to escapes.
+
+While we can rest assured that this is a highly secure sandbox, the native dependency might mean there's a little more burden on adopters to install this dependency properly and have the right libraries set up.
+This native dependency must be built upon installation, on the exact architecture that it executes on.
+
+For those who compile and run Backstage on stripped-down environments, you will want to ensure that you have the build basics present, e.g. `build-essential` or similar corresponding to your operating system of choice.
+The `isolated-vm` repo has [some further information](https://github.com/laverdet/isolated-vm#requirements) about the build environment requirements.
+
+With all that said, we think this tradeoff is worth the effort to ensure better security.
+
+## What do you need to do?
+
+This change comes with the v1.15.0 release of Backstage that was released yesterday, so please make sure you are upgraded to the latest version of Backstage to keep your sandbox environments secure.
+
+For more guidance on how to upgrade, check out the documentation for [keeping Backstage updated](https://backstage.io/docs/getting-started/keeping-backstage-updated).
+
+If you have any further questions you can either reach out to us in the [Community Discord](https://discord.gg/backstage-687207715902193673), or in the [office hours](https://info.backstage.spotify.com/office-hours).
