@@ -1,5 +1,20 @@
 # @backstage/plugin-api-docs
 
+## 0.9.5
+
+### Patch Changes
+
+- 865267a6b934: Updated dependency `@asyncapi/react-component` to `1.0.0-next.48`.
+- 83bdc3a555c1: Replaced usages of `theme.palette.theme.hint` with `theme.palette.text.secondary` as it has been removed in MUI v5
+- af748a148d52: Add support for OpenAPI Specification (OAS) v3.1.0 using swagger-ui v5.0.0.
+- Updated dependencies
+  - @backstage/core-plugin-api@1.5.2
+  - @backstage/plugin-catalog@1.11.2
+  - @backstage/core-components@0.13.2
+  - @backstage/theme@0.4.0
+  - @backstage/plugin-catalog-react@1.7.0
+  - @backstage/catalog-model@1.4.0
+
 ## 0.9.5-next.3
 
 ### Patch Changes

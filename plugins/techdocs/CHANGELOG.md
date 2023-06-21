@@ -1,5 +1,26 @@
 # @backstage/plugin-techdocs
 
+## 1.6.4
+
+### Patch Changes
+
+- 2f660eb573cc: Fix SearchBar styles & update StoryBook stories for custom styles for `notchedOutline` class.
+- 956d09e8ea68: Change deprecated local references to import from shared `plugin-techdocs-react` plugin
+- e33beb1f2a8e: Make the documentation pages printable (also handy for exporting to PDF)
+- Updated dependencies
+  - @backstage/core-plugin-api@1.5.2
+  - @backstage/plugin-search-react@1.6.2
+  - @backstage/core-components@0.13.2
+  - @backstage/theme@0.4.0
+  - @backstage/integration@1.5.0
+  - @backstage/plugin-catalog-react@1.7.0
+  - @backstage/catalog-model@1.4.0
+  - @backstage/errors@1.2.0
+  - @backstage/plugin-techdocs-react@1.1.7
+  - @backstage/integration-react@1.1.14
+  - @backstage/config@1.0.8
+  - @backstage/plugin-search-common@1.2.4
+
 ## 1.6.4-next.3
 
 ### Patch Changes

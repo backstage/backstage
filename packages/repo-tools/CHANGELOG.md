@@ -1,5 +1,15 @@
 # @backstage/repo-tools
 
+## 0.3.1
+
+### Patch Changes
+
+- ee411e7c2623: Adding a new command `schema openapi lint` to lint your OpenAPI specs and ensure consistent style across Backstage plugins.
+- Updated dependencies
+  - @backstage/errors@1.2.0
+  - @backstage/cli-common@0.1.12
+  - @backstage/cli-node@0.1.1
+
 ## 0.3.1-next.0
 
 ### Patch Changes

@@ -708,6 +708,7 @@ export default {
     '/refresh': {
       post: {
         operationId: 'RefreshEntity',
+        description: 'Refresh the entity related to entityRef.',
         responses: {
           '200': {
             description: 'Refreshed',
@@ -749,6 +750,7 @@ export default {
     '/entities': {
       get: {
         operationId: 'GetEntities',
+        description: 'Get all entities matching a given filter.',
         responses: {
           '200': {
             description: '',
@@ -792,6 +794,7 @@ export default {
     '/entities/by-uid/{uid}': {
       get: {
         operationId: 'GetEntityByUid',
+        description: 'Get a single entity by the UID.',
         responses: {
           '200': {
             description: 'Ok',
@@ -818,6 +821,7 @@ export default {
       },
       delete: {
         operationId: 'DeleteEntityByUid',
+        description: 'Delete a single entity by UID.',
         responses: {
           '204': {
             description: 'Deleted successfully.',
@@ -839,6 +843,7 @@ export default {
     '/entities/by-name/{kind}/{namespace}/{name}': {
       get: {
         operationId: 'GetEntityByName',
+        description: 'Get an entity by an entity ref.',
         responses: {
           '200': {
             description: 'Ok',
@@ -873,6 +878,7 @@ export default {
     '/entities/by-name/{kind}/{namespace}/{name}/ancestry': {
       get: {
         operationId: 'GetEntityAncestryByName',
+        description: "Get an entity's ancestry by entity ref.",
         responses: {
           '200': {
             description: 'Ok',
@@ -907,6 +913,8 @@ export default {
     '/entities/by-refs': {
       post: {
         operationId: 'GetEntitiesByRefs',
+        description:
+          'Get a batch set of entities given an array of entityRefs.',
         responses: {
           '200': {
             description: 'Ok',
@@ -960,6 +968,7 @@ export default {
     '/entities/by-query': {
       get: {
         operationId: 'GetEntitiesByQuery',
+        description: 'Search for entities by a given query.',
         responses: {
           '200': {
             description: 'Ok',
@@ -1021,6 +1030,7 @@ export default {
     '/entity-facets': {
       get: {
         operationId: 'GetEntityFacets',
+        description: 'Get all entity facets that match the given filters.',
         responses: {
           '200': {
             description: 'Ok',
@@ -1057,6 +1067,7 @@ export default {
     '/locations': {
       post: {
         operationId: 'CreateLocation',
+        description: 'Create a location for a given target.',
         responses: {
           '200': {
             description: 'Ok',
@@ -1126,6 +1137,7 @@ export default {
       },
       get: {
         operationId: 'GetLocations',
+        description: 'Get all locations',
         responses: {
           '200': {
             description: 'Ok',
@@ -1159,6 +1171,7 @@ export default {
     '/locations/{id}': {
       get: {
         operationId: 'GetLocation',
+        description: 'Get a location by id.',
         responses: {
           '200': {
             description: 'Ok',
@@ -1190,6 +1203,7 @@ export default {
       },
       delete: {
         operationId: 'DeleteLocation',
+        description: 'Delete a location by id.',
         responses: {
           '204': {
             description: 'No content',
@@ -1216,6 +1230,7 @@ export default {
     '/analyze-location': {
       post: {
         operationId: 'AnalyzeLocation',
+        description: 'Validate a given location.',
         responses: {
           '200': {
             description: 'Ok',
@@ -1259,6 +1274,8 @@ export default {
     '/validate-entity': {
       post: {
         operationId: 'ValidateEntity',
+        description:
+          'Validate that a passed in entity has no errors in schema.',
         responses: {
           '200': {
             description: 'Ok',

@@ -1,5 +1,28 @@
 # example-backend-next
 
+## 0.0.12
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/plugin-scaffolder-backend@1.15.0
+  - @backstage/plugin-kubernetes-backend@0.11.1
+  - @backstage/plugin-catalog-backend-module-unprocessed@0.1.0
+  - @backstage/plugin-catalog-backend@1.10.0
+  - @backstage/plugin-search-backend@1.3.2
+  - @backstage/plugin-search-backend-module-explore@0.1.2
+  - @backstage/backend-defaults@0.1.11
+  - @backstage/plugin-app-backend@0.3.46
+  - @backstage/plugin-auth-node@0.2.15
+  - @backstage/plugin-permission-backend@0.5.21
+  - @backstage/plugin-permission-node@0.7.9
+  - @backstage/plugin-search-backend-module-catalog@0.1.2
+  - @backstage/plugin-search-backend-module-techdocs@0.1.2
+  - @backstage/plugin-search-backend-node@1.2.2
+  - @backstage/plugin-techdocs-backend@1.6.3
+  - @backstage/plugin-todo-backend@0.1.43
+  - @backstage/plugin-permission-common@0.7.6
+
 ## 0.0.12-next.3
 
 ### Patch Changes

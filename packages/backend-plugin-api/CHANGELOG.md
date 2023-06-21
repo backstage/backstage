@@ -1,5 +1,17 @@
 # @backstage/backend-plugin-api
 
+## 0.5.3
+
+### Patch Changes
+
+- 3bb4158a8aa4: Added startup hooks to the lifecycle services.
+- Updated dependencies
+  - @backstage/types@1.1.0
+  - @backstage/backend-tasks@0.5.3
+  - @backstage/plugin-auth-node@0.2.15
+  - @backstage/config@1.0.8
+  - @backstage/plugin-permission-common@0.7.6
+
 ## 0.5.3-next.2
 
 ### Patch Changes

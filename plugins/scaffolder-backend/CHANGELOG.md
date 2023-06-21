@@ -1,5 +1,48 @@
 # @backstage/plugin-scaffolder-backend
 
+## 1.15.0
+
+### Minor Changes
+
+- 84b0e47373db: Add `TargetBranchName` variable and output for the `publish:gitlab:merge-request` and `publish:github:pull-request` s'cascaffolder actions.
+- 6a694ce98e32: Add a scaffolder action that pull-requests for bitbucket server
+- 1948845861b0: Added `github:deployKey:create` and `github:environment:create` scaffolder actions. You will need to add `read/write` permissions to your GITHUB_TOKEN and/or Github Backstage App for Repository `Administration` (for deploy key functionality) and `Environments` (for Environment functionality)
+- df8411779da1: Add support for Repository Variables and Secrets to the `publish:github` and `github:repo:create` scaffolder actions. You will need to add `read/write` permissions to your GITHUB_TOKEN and/or Github Backstage App for Repository `Secrets` and `Variables`
+
+  Upgrade octokit introduces some breaking changes.
+
+### Patch Changes
+
+- cc936b529676: Fix handling of `optional` property in `catalog:register` scaffolder action
+- b269da39ac2d: Clearer error messages for action `publish:gitlab:merge-request`
+- 11e0f625583f: Fix wrong gitlabUrl format in repoUrl input description
+- a2c70cdda202: Switch out the sandbox, from `vm2` to `isolated-vm`.
+
+  This is a native dependency, which means that it will need to be compiled with the same version of node on the same OS. This could cause some issues when running in Docker for instance, as you will need to make sure that the dependency is installed and compiled inside the docker container that it will run on.
+
+  This could mean adding in some dependencies to the container like `build-essential` to make sure that this compiles correctly.
+
+  If you're having issues installing this dependency, there's some [install instructions](https://github.com/laverdet/isolated-vm#requirements) over on `isolated-vm`'s repo.
+
+- Updated dependencies
+  - @backstage/backend-common@0.19.0
+  - @backstage/catalog-client@1.4.2
+  - @backstage/types@1.1.0
+  - @backstage/plugin-catalog-backend@1.10.0
+  - @backstage/integration@1.5.0
+  - @backstage/catalog-model@1.4.0
+  - @backstage/errors@1.2.0
+  - @backstage/backend-plugin-api@0.5.3
+  - @backstage/backend-tasks@0.5.3
+  - @backstage/plugin-auth-node@0.2.15
+  - @backstage/plugin-catalog-node@1.3.7
+  - @backstage/plugin-permission-node@0.7.9
+  - @backstage/config@1.0.8
+  - @backstage/plugin-catalog-common@1.0.14
+  - @backstage/plugin-permission-common@0.7.6
+  - @backstage/plugin-scaffolder-common@1.3.1
+  - @backstage/plugin-scaffolder-node@0.1.4
+
 ## 1.15.0-next.3
 
 ### Minor Changes

@@ -1,7 +1,7 @@
 {
   "name": "@backstage/cli",
   "description": "CLI for developing Backstage plugins and apps",
-  "version": "0.22.8-next.2",
+  "version": "0.22.8",
   "publishConfig": {
     "access": "public"
   },
@@ -74,6 +74,7 @@
     "chalk": "^4.0.0",
     "chokidar": "^3.3.1",
     "commander": "^9.1.0",
+    "cross-fetch": "^3.1.5",
     "cross-spawn": "^7.0.3",
     "css-loader": "^6.5.1",
     "diff": "^5.0.0",
