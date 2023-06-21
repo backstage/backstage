@@ -5,7 +5,7 @@ authorURL: https://github.com/benjdlambert
 authorImageURL: https://avatars.githubusercontent.com/u/3645856?v=4
 ---
 
-**TL;DR**: For the Backstage maintainers, ensuring that the project is highly secure for every adopter and end-user is one of our top priorities. With the recent vulnerabilities in the `vm2` sandbox, and have decided to move away from `vm2` and use `isolated-vm` instead to prioritize security for the Backstage end-users.
+**TL;DR**: For the Backstage maintainers, ensuring that the project is highly secure for every adopter and end-user is one of our top priorities. With the recent vulnerabilities in the `vm2` sandbox we have decided to move away from `vm2` and use `isolated-vm` instead, in order to ensure the security of the Backstage end-users.
 
 ![Backstage Security Audit & Updates](assets/22-08-23/backstage-security-audit.png)
 
@@ -37,12 +37,12 @@ The template strings provide a rich API that enables template authors to manipul
 
 This templating language is called [Nunjucks](https://github.com/mozilla/nunjucks), which is based on [Jinja2](https://pypi.org/project/Jinja2), both of which are popular templating engines.
 Under the hood these templating strings compile into JavaScript. The [Backstage Threat Model](https://backstage.io/docs/overview/threat-model/) treats the code provided by the template language as untrusted, so adopters need a safe environment – a sandbox – to execute the JavaScript in.
-Up until the latest Backstage release, that sandbox was `vm2.` Now, the project is using `isolated-vm` as the sandbox to execute this JavaScript in.
+Up until the latest Backstage release, that sandbox was `vm2`. Now, the project is instead using `isolated-vm` as the sandbox to execute this JavaScript in.
 
 ## Why the change?
 
 You might have seen over the last few months [some advisories and CVEs](https://github.com/patriksimek/vm2/security/advisories) that were found in the original [`vm2`](https://github.com/patriksimek/vm2) sandbox that we were using.
-Both the `vm2` maintainers and the Backstage maintainers have been quick at releasing new versions of the sandbox and the SoftwareTemplates backend plugin, respectively, to protect their users.
+Both the `vm2` maintainers and the Backstage maintainers have been quick at releasing new versions of the sandbox and the Software Templates backend plugin, respectively, to protect their users.
 
 We were recently made aware of another sandbox escape through our HackerOne BugBounty program, with a Proof of Concept using a Software Template.
 The maintainers of the `vm2` project have also been notified. We currently cannot find a simple solution to stop the latest escape. So, In the interest of moving quickly to protect the security of our end-users, we're moving away from that `vm2` and moving towards [`isolated-vm`](https://github.com/laverdet/isolated-vm) instead.
