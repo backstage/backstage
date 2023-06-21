@@ -19,7 +19,12 @@ import { fireEvent, render, waitFor, screen } from '@testing-library/react';
 import { UserEntity } from '@backstage/catalog-model';
 import { UserListPicker, UserListPickerProps } from './UserListPicker';
 import { MockEntityListContextProvider } from '../../testUtils/providers';
-import { EntityTagFilter, EntityUserListFilter } from '../../filters';
+import {
+  EntityKindFilter,
+  EntityNamespaceFilter,
+  EntityTagFilter,
+  EntityUserListFilter,
+} from '../../filters';
 import {
   CatalogApi,
   QueryEntitiesInitialRequest,
@@ -159,12 +164,19 @@ describe('<UserListPicker />', () => {
   it('renders filters', async () => {
     render(
       <ApiProvider apis={apis}>
-        <MockEntityListContextProvider value={{}}>
+        <MockEntityListContextProvider
+          value={{
+            filters: { namespace: new EntityNamespaceFilter(['default']) },
+          }}
+        >
           <UserListPicker />
         </MockEntityListContextProvider>
       </ApiProvider>,
     );
 
+    await waitFor(() =>
+      expect(mockIdentityApi.getBackstageIdentity).toHaveBeenCalled(),
+    );
     await waitFor(() =>
       expect(
         screen.getAllByRole('menuitem').map(({ textContent }) => textContent),
@@ -172,16 +184,24 @@ describe('<UserListPicker />', () => {
     );
 
     expect(mockCatalogApi.queryEntities).toHaveBeenCalledWith({
-      filter: {},
+      filter: {
+        'metadata.namespace': ['default'],
+      },
       limit: 0,
     });
     expect(mockCatalogApi.queryEntities).toHaveBeenCalledWith({
-      filter: { 'metadata.name': ['e-1', 'e-2'] },
+      filter: {
+        'metadata.namespace': ['default'],
+        'relations.ownedBy': ['user:default/testuser'],
+      },
+      limit: 0,
+    });
+    expect(mockCatalogApi.queryEntities).toHaveBeenCalledWith({
+      filter: {
+        'metadata.namespace': ['default'],
+        'metadata.name': ['e-1', 'e-2'],
+      },
       limit: 1000,
-    });
-    expect(mockCatalogApi.queryEntities).toHaveBeenCalledWith({
-      filter: { 'relations.ownedBy': ['user:default/testuser'] },
-      limit: 0,
     });
   });
 
@@ -223,15 +243,22 @@ describe('<UserListPicker />', () => {
 
   it('respects the query parameter filter value', async () => {
     const updateFilters = jest.fn();
-    const queryParameters = { user: 'owned' };
+    const queryParameters = { user: 'owned', kind: 'component' };
     render(
       <ApiProvider apis={apis}>
         <MockEntityListContextProvider
-          value={{ updateFilters, queryParameters }}
+          value={{
+            updateFilters,
+            queryParameters,
+            filters: { kind: new EntityKindFilter('component') },
+          }}
         >
           <UserListPicker />
         </MockEntityListContextProvider>
       </ApiProvider>,
+    );
+    await waitFor(() =>
+      expect(mockIdentityApi.getBackstageIdentity).toHaveBeenCalled(),
     );
 
     await waitFor(() =>
@@ -241,15 +268,16 @@ describe('<UserListPicker />', () => {
     );
 
     expect(mockCatalogApi.queryEntities).toHaveBeenCalledWith({
-      filter: {},
+      filter: { kind: 'component' },
       limit: 0,
     });
     expect(mockCatalogApi.queryEntities).toHaveBeenCalledWith({
-      filter: { 'metadata.name': ['e-1', 'e-2'] },
+      filter: { kind: 'component', 'metadata.name': ['e-1', 'e-2'] },
       limit: 1000,
     });
     expect(mockCatalogApi.queryEntities).toHaveBeenCalledWith({
       filter: {
+        kind: 'component',
         'relations.ownedBy': ['user:default/testuser'],
       },
       limit: 0,
@@ -285,12 +313,20 @@ describe('<UserListPicker />', () => {
         <MockEntityListContextProvider
           value={{
             updateFilters,
-            queryParameters: { user: ['all'] },
+            queryParameters: { user: ['all'], kind: 'component' },
+            filters: {
+              kind: new EntityKindFilter('component'),
+              user: undefined,
+            },
           }}
         >
           <UserListPicker />
         </MockEntityListContextProvider>
       </ApiProvider>,
+    );
+
+    await waitFor(() =>
+      expect(mockIdentityApi.getBackstageIdentity).toHaveBeenCalled(),
     );
 
     await waitFor(() =>
@@ -304,7 +340,11 @@ describe('<UserListPicker />', () => {
         <MockEntityListContextProvider
           value={{
             updateFilters,
-            queryParameters: { user: ['owned'] },
+            queryParameters: { user: ['owned'], kind: 'component' },
+            filters: {
+              kind: new EntityKindFilter('component'),
+              user: undefined,
+            },
           }}
         >
           <UserListPicker />
@@ -319,9 +359,14 @@ describe('<UserListPicker />', () => {
   describe('filter resetting', () => {
     let updateFilters: jest.Mock;
 
-    const Picker = (props: UserListPickerProps) => (
+    const Picker = ({ ...props }: UserListPickerProps) => (
       <ApiProvider apis={apis}>
-        <MockEntityListContextProvider value={{ updateFilters }}>
+        <MockEntityListContextProvider
+          value={{
+            updateFilters,
+            filters: { kind: new EntityKindFilter('component') },
+          }}
+        >
           <UserListPicker {...props} />
         </MockEntityListContextProvider>
       </ApiProvider>
@@ -331,7 +376,7 @@ describe('<UserListPicker />', () => {
       updateFilters = jest.fn();
     });
 
-    describe(`when there are no owned entities match the filter`, () => {
+    describe(`when there are no owned entities matching the filter`, () => {
       it('does not reset the filter while entities are loading', async () => {
         mockCatalogApi.queryEntities?.mockImplementation(
           () => new Promise(() => {}),
@@ -342,7 +387,10 @@ describe('<UserListPicker />', () => {
         await waitFor(() =>
           expect(mockCatalogApi.queryEntities).toHaveBeenCalled(),
         );
-        expect(updateFilters).not.toHaveBeenCalled();
+
+        await expect(
+          waitFor(() => expect(updateFilters).toHaveBeenCalled()),
+        ).rejects.toThrow();
       });
 
       it('does not reset the filter while owned entities are loading', async () => {
