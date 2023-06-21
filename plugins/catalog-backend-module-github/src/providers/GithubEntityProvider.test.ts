@@ -1212,4 +1212,73 @@ describe('GithubEntityProvider', () => {
     expect(entityProviderConnection.refresh).toHaveBeenCalledTimes(0);
     expect(entityProviderConnection.applyMutation).toHaveBeenCalledTimes(0);
   });
+
+  it("should skip process when didn't match org from push event", async () => {
+    const schedule = new PersistingTaskRunner();
+    const config = new ConfigReader({
+      catalog: {
+        providers: {
+          github: {
+            organization: 'test-org',
+            filters: {
+              branch: 'my-special-branch',
+              repository: 'test-repo',
+            },
+          },
+        },
+      },
+    });
+
+    const provider = GithubEntityProvider.fromConfig(config, {
+      logger,
+      schedule,
+    })[0];
+
+    const entityProviderConnection: EntityProviderConnection = {
+      applyMutation: jest.fn(),
+      refresh: jest.fn(),
+    };
+    await provider.connect(entityProviderConnection);
+
+    const event: EventParams = {
+      topic: 'github.push',
+      metadata: {
+        'x-github-event': 'push',
+      },
+      eventPayload: {
+        ref: 'refs/heads/my-special-branch',
+        repository: {
+          name: 'test-repo',
+          url: 'https://github.com/test-org/test-repo',
+          default_branch: 'main',
+          stargazers: 0,
+          master_branch: 'main',
+          organization: 'other-org',
+          topics: [],
+        },
+        created: true,
+        deleted: false,
+        forced: false,
+        commits: [
+          {
+            added: ['new-file.yaml'],
+            removed: [],
+            modified: [],
+          },
+          {
+            added: [],
+            removed: [],
+            modified: ['catalog-info.yaml'],
+          },
+        ],
+      },
+    };
+
+    await provider.onEvent(event);
+
+    await provider.onEvent(event);
+
+    expect(entityProviderConnection.refresh).toHaveBeenCalledTimes(0);
+    expect(entityProviderConnection.applyMutation).toHaveBeenCalledTimes(0);
+  });
 });
