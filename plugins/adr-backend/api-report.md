@@ -7,6 +7,7 @@
 
 import { AdrDocument } from '@backstage/plugin-adr-common';
 import { AdrFilePathFilterFn } from '@backstage/plugin-adr-common';
+import { BackendFeature } from '@backstage/backend-plugin-api';
 import { CacheClient } from '@backstage/backend-common';
 import { CatalogApi } from '@backstage/catalog-client';
 import { Config } from '@backstage/config';
@@ -42,6 +43,9 @@ export type AdrParserContext = {
   content: string;
   path: string;
 };
+
+// @public
+export const adrPlugin: () => BackendFeature;
 
 // @public (undocumented)
 export type AdrRouterOptions = {

@@ -4576,6 +4576,7 @@ __metadata:
   resolution: "@backstage/plugin-adr-backend@workspace:plugins/adr-backend"
   dependencies:
     "@backstage/backend-common": "workspace:^"
+    "@backstage/backend-plugin-api": "workspace:^"
     "@backstage/catalog-client": "workspace:^"
     "@backstage/catalog-model": "workspace:^"
     "@backstage/cli": "workspace:^"
@@ -24964,6 +24965,7 @@ __metadata:
     "@backstage/backend-defaults": "workspace:^"
     "@backstage/backend-tasks": "workspace:^"
     "@backstage/cli": "workspace:^"
+    "@backstage/plugin-adr-backend": "workspace:^"
     "@backstage/plugin-app-backend": "workspace:^"
     "@backstage/plugin-auth-node": "workspace:^"
     "@backstage/plugin-azure-devops-backend": "workspace:^"
