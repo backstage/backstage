@@ -10,7 +10,7 @@ Run `yarn dev` in the root directory, and then navigate to [/search](http://loca
 
 ### Optional Settings
 
-Configure the initialState of the search component in your `app-config.yaml` to defines how it behaves when it is first loaded or reset.
+Configure the SearchPage component initial state via `app-config.yaml` to define how it behaves when it is first loaded or reset.
 
 ```yaml
 # app-config.yaml
