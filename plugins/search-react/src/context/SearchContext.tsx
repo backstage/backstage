@@ -95,16 +95,27 @@ export const useSearchContextCheck = () => {
 };
 
 /**
- * The initial state of `SearchContextProvider`.
+ * @public
  *
+ * Constructs an object representing the initial state default
+ * configuration for the SearchPage component
+ *
+ * @returns {SearchContextState}
  */
-const searchInitialState: SearchContextState = {
+export const getSearchContextInitialStateDefaults = (): SearchContextState => ({
   term: '',
   types: [],
   filters: {},
   pageLimit: undefined,
   pageCursor: undefined,
-};
+});
+
+/**
+ * The initial state of `SearchContextProvider`.
+ *
+ */
+const searchInitialState: SearchContextState =
+  getSearchContextInitialStateDefaults();
 
 const useSearchContextValue = (
   initialValue: SearchContextState = searchInitialState,
