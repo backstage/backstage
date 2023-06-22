@@ -13,19 +13,70 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import React from 'react';
+import React, { ReactNode } from 'react';
 import { AuditListTable } from './AuditListTable';
 import { useWebsiteForEntity } from '../../hooks/useWebsiteForEntity';
-import { Progress } from '@backstage/core-components';
+import { LIGHTHOUSE_WEBSITE_URL_ANNOTATION } from '../../../constants';
+import {
+  Content,
+  ContentHeader,
+  InfoCard,
+  Progress,
+  WarningPanel,
+} from '@backstage/core-components';
+import { Button } from '@material-ui/core';
+import { resolvePath, useNavigate } from 'react-router-dom';
+import { useEntity } from '@backstage/plugin-catalog-react';
+import { useRouteRef } from '@backstage/core-plugin-api';
+import { rootRouteRef } from '../../plugin';
+import LighthouseSupportButton from '../SupportButton';
 
 export const AuditListForEntity = () => {
   const { value, loading, error } = useWebsiteForEntity();
-  if (loading) {
-    return <Progress />;
-  }
-  if (error || !value) {
-    return null;
+  const { entity } = useEntity();
+  const navigate = useNavigate();
+  const fromPath = useRouteRef(rootRouteRef)?.() ?? '../';
+
+  let createAuditButtonUrl = 'create-audit';
+  const websiteUrl =
+    entity.metadata.annotations?.[LIGHTHOUSE_WEBSITE_URL_ANNOTATION] ?? '';
+  if (websiteUrl) {
+    createAuditButtonUrl += `?url=${encodeURIComponent(websiteUrl)}`;
   }
 
-  return <AuditListTable data-test-id="AuditListTable" items={[value]} />;
+  let content: ReactNode = null;
+  content = (
+    <Content>
+      <ContentHeader title="Latest Audit">
+        <Button
+          variant="contained"
+          color="primary"
+          onClick={() => navigate(resolvePath(createAuditButtonUrl, fromPath))}
+        >
+          Create New Audit
+        </Button>
+        <LighthouseSupportButton />
+      </ContentHeader>
+      <AuditListTable
+        data-test-id="AuditListTable"
+        items={value ? [value] : []}
+      />
+    </Content>
+  );
+
+  if (loading) {
+    content = <Progress />;
+  } else if (
+    error &&
+    !error.message.includes('no audited website found for url')
+  ) {
+    // We only want to display this warning panel when its caused by an error other than no audits for the website
+    content = (
+      <WarningPanel severity="error" title="Could not load audit list.">
+        {error.message}
+      </WarningPanel>
+    );
+  }
+
+  return <InfoCard noPadding>{content}</InfoCard>;
 };
