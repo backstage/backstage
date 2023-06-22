@@ -158,7 +158,7 @@ export class AzureUrlReader implements UrlReader {
     }
 
     return await this.deps.treeResponseFactory.fromZipArchive({
-      stream: archiveAzureResponse.body as unknown as Readable,
+      stream: Readable.from(archiveAzureResponse.body),
       etag: commitSha,
       filter,
       subpath,
