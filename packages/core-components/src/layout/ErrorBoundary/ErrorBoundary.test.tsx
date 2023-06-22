@@ -39,9 +39,14 @@ const Bomb = ({ shouldThrow }: BombProps) => {
 };
 
 describe('<ErrorBoundary/>', () => {
+  let errorApi: MockErrorApi;
+
+  beforeEach(() => {
+    errorApi = new MockErrorApi();
+  });
+
   it('should render error boundary with and without error', async () => {
     const { error } = await withLogCollector(['error'], async () => {
-      const errorApi = new MockErrorApi();
       const { rerender, queryByRole, getByRole, getByText } =
         await renderInTestApp(
           <TestApiProvider apis={[[errorApiRef, errorApi]]}>
@@ -76,5 +81,20 @@ describe('<ErrorBoundary/>', () => {
       expect.stringMatching(/^ErrorBoundary/),
     ]);
     expect(error.length).toEqual(3);
+  });
+
+  it('should render custom fallback element', async () => {
+    const errorElement = <div>cat + pants = catpants</div>;
+
+    const { getByText, queryByText } = await renderInTestApp(
+      <TestApiProvider apis={[[errorApiRef, errorApi]]}>
+        <ErrorBoundary fallback={errorElement}>
+          <Bomb shouldThrow />
+        </ErrorBoundary>
+      </TestApiProvider>,
+    );
+
+    expect(getByText(/catpants/i)).toBeInTheDocument();
+    expect(queryByText(/something went wrong/i)).not.toBeInTheDocument();
   });
 });

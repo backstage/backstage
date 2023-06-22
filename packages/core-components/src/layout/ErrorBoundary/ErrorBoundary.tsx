@@ -26,6 +26,7 @@ type SlackChannel = {
 
 /** @public */
 export type ErrorBoundaryProps = {
+  fallback?: React.ReactElement;
   slackChannel?: string | SlackChannel;
   onError?: (error: Error, errorInfo: string) => null;
 };
@@ -75,17 +76,19 @@ export const ErrorBoundary: ComponentClass<
   }
 
   render() {
-    const { slackChannel, children } = this.props;
+    const { children, fallback, slackChannel } = this.props;
     const { error } = this.state;
 
-    if (!error) {
-      return children;
+    if (error) {
+      return (
+        fallback || (
+          <ErrorPanel title="Something Went Wrong" error={error}>
+            <SlackLink slackChannel={slackChannel} />
+          </ErrorPanel>
+        )
+      );
     }
 
-    return (
-      <ErrorPanel title="Something Went Wrong" error={error}>
-        <SlackLink slackChannel={slackChannel} />
-      </ErrorPanel>
-    );
+    return children;
   }
 };
