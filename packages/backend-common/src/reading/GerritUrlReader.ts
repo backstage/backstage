@@ -204,7 +204,7 @@ export class GerritUrlReader implements UrlReader {
       });
       const tarArchive = Readable.from(data);
       return await this.deps.treeResponseFactory.fromTarArchive({
-        stream: Readable.from(tarArchive),
+        stream: tarArchive,
         subpath: filePath === '/' ? undefined : filePath,
         etag: branchInfo.revision,
         filter: options?.filter,
