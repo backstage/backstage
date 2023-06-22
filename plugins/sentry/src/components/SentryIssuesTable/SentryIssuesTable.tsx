@@ -74,12 +74,15 @@ const SentryIssuesTable = (props: SentryIssuesTableProps) => {
   const { sentryIssues, statsFor, tableOptions } = props;
   const [selected, setSelected] = useState(ONE_DAY_IN_MILLIS);
 
-  const filterByDate = useCallback((issue, selectedFilter) => {
-    return (
-      DateTime.fromISO(issue.lastSeen) >
-      DateTime.now().minus(Duration.fromMillis(selectedFilter))
-    );
-  }, []);
+  const filterByDate = useCallback(
+    (issue: SentryIssue, selectedFilter: number) => {
+      return (
+        DateTime.fromISO(issue.lastSeen) >
+        DateTime.now().minus(Duration.fromMillis(selectedFilter))
+      );
+    },
+    [],
+  );
   const [filteredIssues, setFilteredIssues] = useState(
     sentryIssues.filter(i => filterByDate(i, selected)),
   );
