@@ -32,6 +32,14 @@ import { ComponentType } from 'react';
  *
  * @public
  */
-export type IconComponent = ComponentType<{
-  fontSize?: 'inherit' | 'medium' | 'large' | 'small';
-}>;
+
+export type IconComponent = ComponentType<
+  /* MUI v4 */
+  | {
+      fontSize?: 'large' | 'small' | 'default';
+    }
+  /* MUI v5: https://mui.com/material-ui/migration/v5-component-changes/#icon */
+  | {
+      fontSize?: 'medium' | 'large' | 'small';
+    }
+>;
