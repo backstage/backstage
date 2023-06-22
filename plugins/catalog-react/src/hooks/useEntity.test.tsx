@@ -35,7 +35,9 @@ describe('useEntity', () => {
       wrapper: ({ children }) => <EntityProvider children={children} />,
     });
 
-    expect(result.error?.message).toMatch(/entity has not been loaded/);
+    act(() => {
+      expect(run()).toThrow(/entity has not been loaded/);
+    });
   });
 
   it('should provide an entity', async () => {

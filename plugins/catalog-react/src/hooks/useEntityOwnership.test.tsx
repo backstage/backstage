@@ -83,19 +83,17 @@ describe('useEntityOwnership', () => {
       });
       mockCatalogApi.getEntityByRef.mockResolvedValue(undefined);
 
-      const { result, waitForValueToChange } = renderHook(
-        () => useEntityOwnership(),
-        {
-          wrapper: Wrapper,
-        },
-      );
+      const { result } = renderHook(() => useEntityOwnership(), {
+        wrapper: Wrapper,
+      });
 
       expect(result.current.loading).toBe(true);
       expect(result.current.isOwnedEntity(ownedEntity)).toBe(false);
 
-      await waitForValueToChange(() => result.current.loading);
+      await waitFor(() => {
+        expect(result.current.loading).toBe(false);
+      });
 
-      expect(result.current.loading).toBe(false);
       expect(result.current.isOwnedEntity(ownedEntity)).toBe(true);
     });
   });

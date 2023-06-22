@@ -65,7 +65,7 @@ describe('useEntityStore', () => {
 
     catalogApi.getEntityByRef.mockResolvedValue(entity);
 
-    const { result, waitFor } = renderHook(() => useEntityStore());
+    const { result } = renderHook(() => useEntityStore());
 
     act(() => {
       result.current.requestEntities(['kind:namespace/name']);
@@ -85,7 +85,7 @@ describe('useEntityStore', () => {
     const err = new Error('Hello World');
     catalogApi.getEntityByRef.mockRejectedValue(err);
 
-    const { result, waitFor } = renderHook(() => useEntityStore());
+    const { result } = renderHook(() => useEntityStore());
 
     act(() => {
       result.current.requestEntities(['kind:namespace/name']);
@@ -134,7 +134,7 @@ describe('useEntityStore', () => {
 
     catalogApi.getEntityByRef.mockResolvedValue(entity1);
 
-    const { result, waitFor } = renderHook(() => useEntityStore());
+    const { result } = renderHook(() => useEntityStore());
 
     act(() => {
       result.current.requestEntities(['kind:namespace/name1']);
@@ -189,7 +189,7 @@ describe('useEntityStore', () => {
 
     catalogApi.getEntityByRef.mockResolvedValue(entity1);
 
-    const { result, waitFor } = renderHook(() => useEntityStore());
+    const { result } = renderHook(() => useEntityStore());
 
     act(() => {
       result.current.requestEntities(['kind:namespace/name1']);

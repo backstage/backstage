@@ -311,23 +311,24 @@ describe('useElementFilter', () => {
       </MockComponent>
     );
 
-    const { result } = renderHook(
-      props =>
-        useElementFilter(props.tree, elements =>
-          elements
-            .selectByComponentData({
-              key: WRAPPING_COMPONENT_KEY,
-              withStrictError: 'Could not find component',
-            })
-            .findComponentData({ key: INNER_COMPONENT_KEY }),
-        ),
-      {
-        initialProps: { tree },
-        wrapper: Wrapper,
-      },
-    );
+    const run = () =>
+      renderHook(
+        props =>
+          useElementFilter(props.tree, elements =>
+            elements
+              .selectByComponentData({
+                key: WRAPPING_COMPONENT_KEY,
+                withStrictError: 'Could not find component',
+              })
+              .findComponentData({ key: INNER_COMPONENT_KEY }),
+          ),
+        {
+          initialProps: { tree },
+          wrapper: Wrapper,
+        },
+      );
 
-    expect(result.error?.message).toEqual('Could not find component');
+    expect(run()).toThrow(new Error('Could not find component'));
   });
 
   it('should support fragments and text node iteration', () => {

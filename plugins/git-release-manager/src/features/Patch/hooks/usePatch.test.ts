@@ -50,11 +50,12 @@ describe('patch', () => {
     );
 
     await act(async () => {
-      await waitFor(() => result.current.run(mockSelectedPatchCommit));
+      result.current.run(mockSelectedPatchCommit);
     });
 
-    expect(result.error).toEqual(undefined);
-    expect(result.current.responseSteps).toHaveLength(18);
+    await waitFor(() => {
+      expect(result.current.responseSteps).toHaveLength(18);
+    });
   });
 
   it('should return the expected responseSteps (including patch dry run) and progress (with onSuccess)', async () => {
@@ -69,12 +70,12 @@ describe('patch', () => {
     );
 
     await act(async () => {
-      await waitFor(() => result.current.run(mockSelectedPatchCommit));
+      result.current.run(mockSelectedPatchCommit);
     });
 
-    expect(result.error).toEqual(undefined);
-    expect(result.current.responseSteps).toHaveLength(19);
-    expect(result.current).toMatchInlineSnapshot(`
+    await waitFor(() => {
+      expect(result.current.responseSteps).toHaveLength(19);
+      expect(result.current).toMatchInlineSnapshot(`
       {
         "progress": 100,
         "responseSteps": [
@@ -168,5 +169,6 @@ describe('patch', () => {
         "runInvoked": true,
       }
     `);
+    });
   });
 });

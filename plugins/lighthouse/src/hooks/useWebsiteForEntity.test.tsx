@@ -77,9 +77,8 @@ describe('useWebsiteForEntity', () => {
   });
 
   it('returns the lighthouse information for the website url in annotations', async () => {
-    const { result, waitForNextUpdate } = subject();
-    await waitForNextUpdate();
-    expect(result.current?.value).toBe(website);
+    const { result } = subject();
+    await waitFor(() => expect(result.current?.value).toBe(website));
   });
 
   describe('where there is an error', () => {
@@ -92,10 +91,11 @@ describe('useWebsiteForEntity', () => {
     });
 
     it('posts the error to the error api and returns the error to the caller', async () => {
-      const { result, waitForNextUpdate } = subject();
-      await waitForNextUpdate();
-      expect(result.current?.error).toBe(error);
-      expect(mockErrorApi.post).toHaveBeenCalledWith(error);
+      const { result } = subject();
+      await waitFor(() => {
+        expect(result.current?.error).toBe(error);
+        expect(mockErrorApi.post).toHaveBeenCalledWith(error);
+      });
     });
   });
 

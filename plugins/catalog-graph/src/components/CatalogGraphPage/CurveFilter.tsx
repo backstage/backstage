@@ -31,7 +31,10 @@ export type Props = {
 const curves: Array<Curve> = ['curveMonotoneX', 'curveStepBefore'];
 
 export const CurveFilter = ({ value, onChange }: Props) => {
-  const handleChange = useCallback(v => onChange(v as Curve), [onChange]);
+  const handleChange = useCallback(
+    (v: any) => onChange(v as Curve),
+    [onChange],
+  );
 
   return (
     <Box pb={1} pt={1}>

@@ -22,6 +22,7 @@ import {
 import { useApi, useRouteRef } from '@backstage/core-plugin-api';
 import { CatalogEntityDocument } from '@backstage/plugin-catalog-common';
 import { catalogApiRef, entityRouteRef } from '@backstage/plugin-catalog-react';
+import type { SearchDocument } from '@backstage/plugin-search-common';
 import {
   SearchBar,
   SearchContextProvider,
@@ -130,7 +131,7 @@ export const AddEntitiesDrawer = ({
   };
 
   const addEntity = useCallback(
-    entityResult => {
+    (entityResult: SearchDocument) => {
       // TODO(kuangp): this parsing of the location is not great. Ideally `CatalogEntityDocument`
       // contains the `metadata.name` field so we can derive the full ref and we only fall back to
       // parsing location if it's missing (ie. for older versions)
