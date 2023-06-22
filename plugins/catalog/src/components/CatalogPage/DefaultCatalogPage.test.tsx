@@ -85,6 +85,7 @@ describe('DefaultCatalogPage', () => {
             kind: 'Component',
             metadata: {
               name: 'Entity2',
+              namespace: 'default',
             },
             spec: {
               owner: 'not-tools',
