@@ -99,8 +99,6 @@ export const useSearchContextCheck = () => {
  *
  * Constructs an object representing the initial state default
  * configuration for the SearchPage component
- *
- * @returns {SearchContextState}
  */
 export const getSearchContextInitialStateDefaults = (): SearchContextState => ({
   term: '',
