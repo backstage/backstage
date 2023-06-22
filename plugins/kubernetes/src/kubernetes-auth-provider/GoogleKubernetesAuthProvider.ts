@@ -39,7 +39,7 @@ export class GoogleKubernetesAuthProvider implements KubernetesAuthProvider {
   async getCredentials(): Promise<{ token: string }> {
     return {
       token: await this.authProvider.getAccessToken(
-        'https://www.googleapis.com/auth/cloud-platform',
+        'https://www.googleapis.com/auth/cloud-platform.read-only',
       ),
     };
   }
