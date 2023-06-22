@@ -48,18 +48,32 @@ and
 
     ```
 
-## Configuration
+## Plugin Configuration
 
-## TODO
+Since OpenCost doesn't have any authentication at this point, you just need to give API access to the plugin to access your data.
+
+If you haven't set up an ingress rule, you can port-forward the API with
+
+```
+kubectl -n opencost port-forward deployment/opencost 9003
+```
+
+Add the following to your `app-config.yaml`:
+
+```yaml
+opencost:
+  baseUrl: http://localhost:9003
+```
+
+## Ideas/Next Steps
 
 - More testing
 - Use the OpenCost mascot for the sidebar logo
-- Use the Backstage proxy to communicate with the OpenCost API
+- Use the Backstage proxy to communicate with the OpenCost API if necessary for authentication
 - Convert AllocationReport.js to use the [Backstage Table](https://backstage.io/storybook/?path=/story/data-display-table--default-table)
 - Allow for user-provided default reports and/or disabling controls
 - Support multiple hard-coded reports
-- Fork(?) to support Kubecost, which could provide Alerts and Recommendations, similar to the Cost Explorer plugin
 - clean up deprecation warnings and upgrade to all the latest React components
-- upgrade sidebar icon to https://mui.com/material-ui/material-icons/?query=money&selected=Savings
+- Fork(?) to support Kubecost, which could provide Alerts and Recommendations, similar to the Cost Explorer plugin
 
 ![Screenshot](screenshot.png)

@@ -38,6 +38,7 @@ import {
   toVerboseTimeRange,
 } from '../../util';
 import { currencyCodes } from '../../constants/currencyCodes';
+import { useApi, configApiRef } from '@backstage/core-plugin-api';
 
 const windowOptions = [
   { name: 'Today', value: 'today' },
@@ -177,13 +178,16 @@ export const OpenCostReport = () => {
     setInit(true);
   }
 
+  const configApi = useApi(configApiRef);
+  const baseUrl = configApi.getConfig('opencost').getString('baseUrl');
+  /* eslint no-console: 0 */
+  console.log(`baseUrl:${baseUrl}`);
+
   async function fetchData() {
     setLoading(true);
     setErrors([]);
 
     try {
-      // TODO get the baseUrl from the Basecamp config
-      const baseUrl = 'http://localhost:9003';
       const resp = await AllocationService.fetchAllocation(
         baseUrl,
         window,
@@ -237,7 +241,6 @@ export const OpenCostReport = () => {
           <Warnings warnings={errors} />
         </div>
       )}
-
       {init && (
         <Paper id="report">
           <div className={classes.reportHeader}>

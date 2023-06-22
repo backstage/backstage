@@ -15,10 +15,13 @@
  */
 
 export interface Config {
-  /** Configurations for the OpenCost plugin */
-  openCost: {
+  /** Configurations for the OpenCost plugin
+   * opencost config
+   * @visibility frontend
+   */
+  opencost?: {
     /**
-     * The base URL for the OpenCost  installation.
+     * The ppbase URL for the OpenCost API
      * @visibility frontend
      */
     baseUrl: string;
