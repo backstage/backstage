@@ -66,6 +66,7 @@ export function CustomNode({
     color = 'default',
     focused,
     title,
+    tooltipTitle,
     onClick,
   },
 }: DependencyGraphTypes.RenderNodeProps<EntityNodeData>) {
@@ -143,6 +144,7 @@ export function CustomNode({
       >
         {displayTitle}
       </text>
+      {tooltipTitle && <title>{tooltipTitle}</title>}
     </g>
   );
 }

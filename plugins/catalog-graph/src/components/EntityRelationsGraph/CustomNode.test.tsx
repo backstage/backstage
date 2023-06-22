@@ -98,4 +98,23 @@ describe('<CustomNode />', () => {
 
     expect(screen.getByText('Custom Title')).toBeInTheDocument();
   });
+
+  test('renders tooltip', async () => {
+    await renderInTestApp(
+      <svg xmlns="http://www.w3.org/2000/svg">
+        <CustomNode
+          node={{
+            focused: false,
+            kind: 'kind',
+            name: 'name',
+            namespace: 'namespace',
+            id: 'kind:namespace/name',
+            tooltipTitle: 'Custom tooltip',
+          }}
+        />
+      </svg>,
+    );
+
+    expect(screen.getByText('Custom tooltip')).toBeInTheDocument();
+  });
 });

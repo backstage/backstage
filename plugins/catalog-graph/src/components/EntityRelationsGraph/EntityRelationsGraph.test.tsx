@@ -430,4 +430,29 @@ describe('<EntityRelationsGraph/>', () => {
     const labels = await screen.findAllByText('Test-Labelvisible');
     expect(labels[0]).toBeInTheDocument();
   });
+
+  test('renders tooltip', async () => {
+    catalog.getEntityByRef.mockResolvedValue({
+      apiVersion: 'a',
+      kind: 'b',
+      metadata: {
+        name: 'c',
+        namespace: 'd',
+      },
+      relations: [],
+    });
+
+    const onTooltip = jest.fn().mockReturnValue('Custom tooltip');
+    await renderInTestApp(
+      <Wrapper>
+        <EntityRelationsGraph
+          rootEntityNames={{ kind: 'b', namespace: 'd', name: 'c' }}
+          onTooltip={onTooltip}
+        />
+      </Wrapper>,
+    );
+
+    expect(await screen.findByText('Custom tooltip')).toBeInTheDocument();
+    expect(onTooltip).toHaveBeenCalledTimes(1);
+  });
 });

@@ -8,6 +8,7 @@
 import { BackstagePlugin } from '@backstage/core-plugin-api';
 import { CompoundEntityRef } from '@backstage/catalog-model';
 import { DependencyGraphTypes } from '@backstage/core-components';
+import { Entity } from '@backstage/catalog-model';
 import { ExternalRouteRef } from '@backstage/core-plugin-api';
 import { InfoCardVariants } from '@backstage/core-components';
 import { MouseEvent as MouseEvent_2 } from 'react';
@@ -95,6 +96,7 @@ export type EntityNodeData = {
   focused?: boolean;
   color?: 'primary' | 'secondary' | 'default';
   onClick?: MouseEventHandler<unknown>;
+  tooltipTitle?: string;
 };
 
 // @public
@@ -112,6 +114,7 @@ export type EntityRelationsGraphProps = {
   relations?: string[];
   direction?: Direction;
   onNodeClick?: (value: EntityNode, event: MouseEvent_2<unknown>) => void;
+  onTooltip?: (value: Entity) => string | undefined;
   relationPairs?: RelationPairs;
   className?: string;
   zoom?: 'enabled' | 'disabled' | 'enable-on-click';

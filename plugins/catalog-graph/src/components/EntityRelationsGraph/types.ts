@@ -76,6 +76,10 @@ export type EntityNodeData = {
    * Optional click handler.
    */
   onClick?: MouseEventHandler<unknown>;
+  /**
+   * Optional node tooltip.
+   */
+  tooltipTitle?: string;
 };
 
 /**

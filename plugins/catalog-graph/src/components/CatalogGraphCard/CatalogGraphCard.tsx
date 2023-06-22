@@ -18,6 +18,7 @@ import {
   getCompoundEntityRef,
   parseEntityRef,
   stringifyEntityRef,
+  Entity,
 } from '@backstage/catalog-model';
 import { InfoCard, InfoCardVariants } from '@backstage/core-components';
 import { useAnalytics, useRouteRef } from '@backstage/core-plugin-api';
@@ -75,6 +76,7 @@ export const CatalogGraphCard = (
     className,
     rootEntityNames,
     onNodeClick,
+    onTooltip,
     title = 'Relations',
     zoom = 'enable-on-click',
   } = props;
@@ -105,6 +107,9 @@ export const CatalogGraphCard = (
     [catalogEntityRoute, navigate, analytics],
   );
 
+  const defaultOnTooltip = (nodeEntity: Entity) =>
+    (nodeEntity.spec?.type as string) || undefined;
+
   const catalogGraphParams = qs.stringify(
     {
       rootEntityRefs: [stringifyEntityRef(entity)],
@@ -133,6 +138,7 @@ export const CatalogGraphCard = (
         {...props}
         rootEntityNames={rootEntityNames || entityName}
         onNodeClick={onNodeClick || defaultOnNodeClick}
+        onTooltip={onTooltip || defaultOnTooltip}
         className={className || classes.graph}
         maxDepth={maxDepth}
         unidirectional={unidirectional}

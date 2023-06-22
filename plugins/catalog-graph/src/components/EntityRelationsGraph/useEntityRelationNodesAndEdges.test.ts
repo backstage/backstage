@@ -702,4 +702,62 @@ describe('useEntityRelationNodesAndEdges', () => {
       },
     ]);
   });
+
+  test('should generate tooltip', async () => {
+    const { result, waitForValueToChange } = renderHook(() =>
+      useEntityRelationNodesAndEdges({
+        rootEntityRefs: ['b:d/c'],
+        unidirectional: true,
+        mergeRelations: true,
+        onTooltip: () => 'Custom tooltip',
+      }),
+    );
+
+    await waitForValueToChange(
+      () => result.current.nodes && result.current.edges,
+    );
+
+    const { nodes, loading, error } = result.current;
+
+    expect(loading).toBe(false);
+    expect(error).toBeUndefined();
+    expect(nodes).toEqual([
+      {
+        color: 'secondary',
+        focused: true,
+        id: 'b:d/c',
+        kind: 'b',
+        name: 'c',
+        namespace: 'd',
+        tooltipTitle: 'Custom tooltip',
+      },
+      {
+        color: 'primary',
+        focused: false,
+        id: 'k:d/a1',
+        kind: 'k',
+        name: 'a1',
+        namespace: 'd',
+        tooltipTitle: 'Custom tooltip',
+      },
+      {
+        color: 'primary',
+        focused: false,
+        id: 'b:d/c1',
+        kind: 'b',
+        name: 'c1',
+        namespace: 'd',
+        tooltipTitle: 'Custom tooltip',
+      },
+      {
+        color: 'primary',
+        focused: false,
+        id: 'b:d/c2',
+        kind: 'b',
+        name: 'c2',
+        namespace: 'd',
+        tooltipTitle: 'Custom tooltip',
+      },
+    ]);
+  });
 });

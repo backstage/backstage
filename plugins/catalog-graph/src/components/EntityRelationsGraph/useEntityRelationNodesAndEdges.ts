@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import { DEFAULT_NAMESPACE } from '@backstage/catalog-model';
+import { DEFAULT_NAMESPACE, Entity } from '@backstage/catalog-model';
 import { MouseEvent, useState } from 'react';
 import useDebounce from 'react-use/lib/useDebounce';
 import { RelationPairs, ALL_RELATION_PAIRS } from './relations';
@@ -31,6 +31,7 @@ export function useEntityRelationNodesAndEdges({
   kinds,
   relations,
   onNodeClick,
+  onTooltip,
   relationPairs = ALL_RELATION_PAIRS,
 }: {
   rootEntityRefs: string[];
@@ -40,6 +41,7 @@ export function useEntityRelationNodesAndEdges({
   kinds?: string[];
   relations?: string[];
   onNodeClick?: (value: EntityNode, event: MouseEvent<unknown>) => void;
+  onTooltip?: (value: Entity) => string | undefined;
   relationPairs?: RelationPairs;
 }): {
   loading: boolean;
@@ -81,6 +83,10 @@ export function useEntityRelationNodesAndEdges({
 
         if (onNodeClick) {
           node.onClick = event => onNodeClick(node, event);
+        }
+
+        if (onTooltip) {
+          node.tooltipTitle = onTooltip(entity);
         }
 
         return node;

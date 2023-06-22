@@ -17,6 +17,7 @@
 import {
   CompoundEntityRef,
   stringifyEntityRef,
+  Entity,
 } from '@backstage/catalog-model';
 import {
   DependencyGraph,
@@ -78,6 +79,7 @@ export type EntityRelationsGraphProps = {
   relations?: string[];
   direction?: Direction;
   onNodeClick?: (value: EntityNode, event: MouseEvent<unknown>) => void;
+  onTooltip?: (value: Entity) => string | undefined;
   relationPairs?: RelationPairs;
   className?: string;
   zoom?: 'enabled' | 'disabled' | 'enable-on-click';
@@ -101,6 +103,7 @@ export const EntityRelationsGraph = (props: EntityRelationsGraphProps) => {
     relations,
     direction = Direction.LEFT_RIGHT,
     onNodeClick,
+    onTooltip,
     relationPairs = ALL_RELATION_PAIRS,
     className,
     zoom = 'enabled',
@@ -128,6 +131,7 @@ export const EntityRelationsGraph = (props: EntityRelationsGraphProps) => {
     kinds,
     relations,
     onNodeClick,
+    onTooltip,
     relationPairs,
   });
 
