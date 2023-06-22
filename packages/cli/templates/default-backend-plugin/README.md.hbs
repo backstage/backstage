@@ -11,4 +11,19 @@ start` in the root directory, and then navigating to [/{{id}}](http://localhost:
 
 You can also serve the plugin in isolation by running `yarn start` in the plugin directory.
 This method of serving the plugin provides quicker iteration speed and a faster startup and hot reloads.
-It is only meant for local development, and the setup for it can be found inside the [/dev](/dev) directory.
+It is only meant for local development, and the setup for it can be found inside the [/run.ts](/run.ts) file.
+
+### New Backend System
+The {{id}} backend plugin has support for the [new backend system](https://backstage.io/docs/backend-system/), here's how you can set that up:
+In your `packages/backend/src/index.ts` make the following changes:
+```diff
+
++ import { {{pluginVar}} } from '@backstage/plugin-{{id}}-backend';
+  const backend = createBackend();
+
++ backend.add({{pluginVar}}());
+
+// ... other feature additions
+
+  backend.start();
+```

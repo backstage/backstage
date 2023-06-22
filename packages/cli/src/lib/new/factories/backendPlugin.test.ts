@@ -82,7 +82,8 @@ describe('backendPlugin factory', () => {
       'copying       .eslintrc.js',
       'templating    README.md.hbs',
       'templating    package.json.hbs',
-      'copying       index.ts',
+      'templating    index.ts.hbs',
+      'templating    plugin.ts.hbs',
       'templating    run.ts.hbs',
       'copying       setupTests.ts',
       'copying       router.test.ts',
@@ -109,6 +110,13 @@ describe('backendPlugin factory', () => {
       `const logger = options.logger.child({ service: 'test-backend' });`,
     );
     expect(standaloneServerFile).toContain(`.addRouter('/test', router);`);
+
+    const indexFile = await fs.readFile(
+      '/root/plugins/test-backend/src/index.ts',
+      'utf-8',
+    );
+
+    expect(indexFile).toContain(`export { testPlugin } from "./plugin"`);
 
     expect(Task.forCommand).toHaveBeenCalledTimes(2);
     expect(Task.forCommand).toHaveBeenCalledWith('yarn install', {

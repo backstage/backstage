@@ -35,6 +35,7 @@ leaving any imports in place.
 */
 
 import { version as backendCommon } from '../../../../packages/backend-common/package.json';
+import { version as backendPluginApi } from '../../../../packages/backend-plugin-api/package.json';
 import { version as cli } from '../../../../packages/cli/package.json';
 import { version as config } from '../../../../packages/config/package.json';
 import { version as coreAppApi } from '../../../../packages/core-app-api/package.json';
@@ -47,6 +48,7 @@ import { version as scaffolderBackend } from '../../../../plugins/scaffolder-bac
 
 export const packageVersions: Record<string, string> = {
   '@backstage/backend-common': backendCommon,
+  '@backstage/backend-plugin-api': backendPluginApi,
   '@backstage/cli': cli,
   '@backstage/config': config,
   '@backstage/core-app-api': coreAppApi,
