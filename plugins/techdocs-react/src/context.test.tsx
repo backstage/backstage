@@ -31,13 +31,6 @@ import { techdocsApiRef } from './api';
 import { useTechDocsReaderPage, TechDocsReaderPageProvider } from './context';
 import { TechDocsMetadata } from './types';
 
-const mockShadowRoot = () => {
-  const div = document.createElement('div');
-  const shadowRoot = div.attachShadow({ mode: 'open' });
-  shadowRoot.innerHTML = '<h1>Shadow DOM Mock</h1>';
-  return shadowRoot;
-};
-
 const mockEntityMetadata: Entity = {
   apiVersion: 'v1',
   kind: 'Component',

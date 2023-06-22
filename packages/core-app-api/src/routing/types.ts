@@ -55,6 +55,7 @@ export interface BackstageRouteObject {
   path: string;
   routeRefs: Set<RouteRef>;
   plugins: Set<BackstagePlugin>;
+  index: true;
 }
 
 export function isRouteRef<Params extends AnyParams>(

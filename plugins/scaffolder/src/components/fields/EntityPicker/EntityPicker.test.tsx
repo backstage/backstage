@@ -20,7 +20,7 @@ import { CatalogApi, catalogApiRef } from '@backstage/plugin-catalog-react';
 import { renderInTestApp, TestApiProvider } from '@backstage/test-utils';
 import { FieldProps } from '@rjsf/core';
 import { fireEvent, screen } from '@testing-library/react';
-import React, { PropsWithChildren } from 'react';
+import React from 'react';
 import { EntityPicker } from './EntityPicker';
 import { EntityPickerProps } from './schema';
 

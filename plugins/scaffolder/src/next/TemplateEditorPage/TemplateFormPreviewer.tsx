@@ -161,9 +161,11 @@ export const TemplateFormPreviewer = ({
   );
 
   const handleSelectChange = useCallback(
-    selected => {
+    // TS	error because selected has implicitly any type, but we implicitly treat it as an entity
+    (selected: string) => {
+      const selectedEntity = JSON.parse(selected) as Entity;
       setSelectedTemplate(selected);
-      setTemplateYaml(yaml.stringify(selected.spec));
+      setTemplateYaml(yaml.stringify(selectedEntity.spec));
     },
     [setTemplateYaml],
   );
@@ -181,10 +183,11 @@ export const TemplateFormPreviewer = ({
               value={selectedTemplate}
               label="Load Existing Template"
               labelId="select-template-label"
-              onChange={e => handleSelectChange(e.target.value)}
+              onChange={e => handleSelectChange(e.target.value as string)}
             >
               {templateOptions.map((option, idx) => (
-                <MenuItem key={idx} value={option.value as any}>
+                // we have to cast this Entity as any to get MenuItem to accept it
+                <MenuItem key={idx} value={JSON.stringify(option.value)}>
                   {option.label}
                 </MenuItem>
               ))}

@@ -17,7 +17,7 @@
 import { Entity } from '@backstage/catalog-model';
 import { TestApiProvider } from '@backstage/test-utils';
 import { WrapperComponent, renderHook } from '@testing-library/react-hooks';
-import React from 'react';
+import React, { PropsWithChildren } from 'react';
 import { catalogApiRef } from '../api';
 import { useRelatedEntities } from './useRelatedEntities';
 
@@ -50,7 +50,7 @@ describe('useRelatedEntities', () => {
     getEntitiesByRefs: jest.fn(),
   };
 
-  const wrapper: WrapperComponent<{}> = ({ children }) => {
+  const wrapper: WrapperComponent<PropsWithChildren<{}>> = ({ children }) => {
     return (
       <TestApiProvider apis={[[catalogApiRef, catalogApi]]}>
         {children}

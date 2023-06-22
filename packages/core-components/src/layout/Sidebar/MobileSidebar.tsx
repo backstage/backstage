@@ -226,7 +226,7 @@ export const MobileSidebar = (props: MobileSidebarProps) => {
         >
           {sidebarGroups[selectedMenuItemIndex] &&
             (sidebarGroups[selectedMenuItemIndex].props
-              .children as React.ReactChildren)}
+              .children as React.ReactNode)}
         </OverlayMenu>
         <BottomNavigation
           className={classes.root}

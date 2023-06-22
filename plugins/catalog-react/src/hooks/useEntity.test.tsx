@@ -15,7 +15,7 @@
  */
 
 import React, { PropsWithChildren } from 'react';
-import { renderHook } from '@testing-library/react';
+import { act, renderHook } from '@testing-library/react';
 import {
   useEntity,
   useAsyncEntity,
@@ -31,13 +31,16 @@ const entity = { metadata: { name: 'my-entity' }, kind: 'MyKind' } as Entity;
 
 describe('useEntity', () => {
   it('should throw if no entity is provided', async () => {
-    const { result } = renderHook(() => useEntity(), {
-      wrapper: ({ children }: React.PropsWithChildren<{}>) => (
-        <EntityProvider children={children} />
-      ),
-    });
+    const run = () =>
+      renderHook(() => useEntity(), {
+        wrapper: ({ children }: React.PropsWithChildren<{}>) => (
+          <EntityProvider children={children} />
+        ),
+      });
 
-    expect(result.error?.message).toMatch(/entity has not been loaded/);
+    act(() => {
+      expect(run()).toThrow(/entity has not been loaded/);
+    });
   });
 
   it('should provide an entity', async () => {

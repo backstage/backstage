@@ -74,7 +74,7 @@ export const GroupListPicker = (props: GroupListPickerProps) => {
   }, [catalogApi, groupTypes]);
 
   const handleChange = useCallback(
-    (_, v: GroupEntity | null) => {
+    (_: any, v: GroupEntity | null) => {
       onChange(v ?? undefined);
       setAnchorEl(null);
     },

@@ -48,11 +48,12 @@ describe('useCreateReleaseCandidate', () => {
     );
 
     await act(async () => {
-      await waitFor(() => result.current.run());
+      result.current.run();
     });
 
-    expect(result.error).toEqual(undefined);
-    expect(result.current.responseSteps).toHaveLength(6);
+    await waitFor(() => {
+      expect(result.current.responseSteps).toHaveLength(6);
+    });
   });
 
   it('should return the expected responseSteps and progress (with onSuccess)', async () => {

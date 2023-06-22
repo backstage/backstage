@@ -31,7 +31,10 @@ export type Props = {
 };
 
 export const DirectionFilter = ({ value, onChange }: Props) => {
-  const handleChange = useCallback(v => onChange(v as Direction), [onChange]);
+  const handleChange = useCallback(
+    (v: any) => onChange(v as Direction),
+    [onChange],
+  );
 
   return (
     <Box pb={1} pt={1}>
