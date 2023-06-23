@@ -57,19 +57,14 @@ export const AuditListForEntity = () => {
         </Button>
         <LighthouseSupportButton />
       </ContentHeader>
-      <AuditListTable
-        data-test-id="AuditListTable"
-        items={value ? [value] : []}
-      />
+      <AuditListTable items={value ? [value] : []} />
     </Content>
   );
 
   if (loading) {
     content = <Progress />;
-  } else if (
-    error &&
-    !error.message.includes('no audited website found for url')
-  ) {
+  }
+  if (error && !error.message.includes('no audited website found for url')) {
     // We only want to display this warning panel when its caused by an error other than no audits for the website
     content = (
       <WarningPanel severity="error" title="Could not load audit list.">
