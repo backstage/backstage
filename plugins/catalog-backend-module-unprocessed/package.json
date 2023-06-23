@@ -32,6 +32,6 @@
     "@backstage/catalog-model": "workspace:^",
     "@backstage/plugin-auth-node": "workspace:^",
     "express-promise-router": "^4.1.1",
-    "knex": "^2.4.2"
+    "knex": "^2.0.0"
   }
 }
