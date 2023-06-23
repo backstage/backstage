@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import React from 'react';
+import React, { Fragment } from 'react';
 import { IconButton } from '@material-ui/core';
 import {
   Header,
@@ -27,12 +27,26 @@ import { ExecutionsTable } from '../ExecutionsTable';
 import { PacksTable } from '../PacksTable/PacksTable';
 import { ActionsList } from '../ActionsList';
 
-export const StackstormHome = () => (
+export type StackstormHomeProps = {
+  title?: string;
+  subtitle?: string;
+  headerButtons?: React.ReactNode[];
+};
+export const StackstormHome = (props: StackstormHomeProps) => (
   <Page themeId="tool">
-    <Header title="Welcome to StackStorm!" subtitle="Event-driven automation">
-      <IconButton aria-label="Docs" href="https://docs.stackstorm.com/">
-        <LibraryBooks htmlColor="white" />
-      </IconButton>
+    <Header
+      title={props.title || 'Welcome to StackStorm!'}
+      subtitle={props.subtitle || 'Event-driven automation'}
+    >
+      {props.headerButtons ? (
+        props.headerButtons.map((headerButton, idx) => (
+          <Fragment key={idx}>{headerButton}</Fragment>
+        ))
+      ) : (
+        <IconButton aria-label="Docs" href="https://docs.stackstorm.com/">
+          <LibraryBooks htmlColor="white" />
+        </IconButton>
+      )}
       <HeaderLabel label="Lifecycle" value="Alpha" />
     </Header>
     <TabbedLayout>
