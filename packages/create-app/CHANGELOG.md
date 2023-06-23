@@ -1,5 +1,66 @@
 # @backstage/create-app
 
+## 0.5.2
+
+### Patch Changes
+
+- 08f177b91084: Add link from Template entity to the scaffolder launch page for the template in the AboutCard.
+- 75a1c93784fe: Bumped create-app version.
+- e37573d60e79: Bumped create-app version.
+- 320ed502747a: Bumped create-app version.
+- 52d599817680: Changed the default backend CacheClient to an in-memory cache when not explicitly configured.
+
+  Explicit configuration of an **in-memory cache** can be removed from `app-config.yaml`, as this is now the default:
+
+  ```diff
+  backend:
+  -  cache:
+  -    store: memory
+  ```
+
+- 68a21956ef52: Remove reference to deprecated import
+- Updated dependencies
+  - @backstage/cli-common@0.1.12
+
+## 0.5.2-next.3
+
+### Patch Changes
+
+- Bumped create-app version.
+- Updated dependencies
+  - @backstage/cli-common@0.1.12
+
+## 0.5.2-next.2
+
+### Patch Changes
+
+- Bumped create-app version.
+
+## 0.5.2-next.1
+
+### Patch Changes
+
+- 08f177b91084: Add link from Template entity to the scaffolder launch page for the template in the AboutCard.
+- Updated dependencies
+  - @backstage/cli-common@0.1.12
+
+## 0.5.2-next.0
+
+### Patch Changes
+
+- Bumped create-app version.
+- Updated dependencies
+  - @backstage/cli-common@0.1.12
+
+## 0.5.1
+
+### Patch Changes
+
+- 1d5e42655cd: Correct command to create new plugins
+- e04bb20bdc4: Bumped create-app version.
+- Updated dependencies
+  - @backstage/cli-common@0.1.12
+
 ## 0.5.1-next.2
 
 ### Patch Changes

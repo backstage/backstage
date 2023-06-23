@@ -19,7 +19,7 @@ import { wrapInTestApp, TestApiProvider } from '@backstage/test-utils';
 import { configApiRef } from '@backstage/core-plugin-api';
 import { ConfigReader } from '@backstage/config';
 import { Grid } from '@material-ui/core';
-import React, { ComponentType } from 'react';
+import React, { ComponentType, PropsWithChildren } from 'react';
 import { StackOverflowIcon } from '../../icons';
 import { stackOverflowApiRef } from '../../api';
 
@@ -46,7 +46,7 @@ export default {
   title: 'Plugins/Home/Components/StackOverflow',
   component: HomePageStackOverflowQuestions,
   decorators: [
-    (Story: ComponentType<{}>) =>
+    (Story: ComponentType<PropsWithChildren<{}>>) =>
       wrapInTestApp(
         <>
           <TestApiProvider

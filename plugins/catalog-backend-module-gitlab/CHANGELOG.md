@@ -1,5 +1,93 @@
 # @backstage/plugin-catalog-backend-module-gitlab
 
+## 0.2.2
+
+### Patch Changes
+
+- f31fd1f8fd98: Fixed bug that caused ingestion errors when a user's name or profile picture is undefined.
+- 66261b4ab441: Added option to skip forked repos
+- 571f78ed0ea7: Fix getGroupMembers with token that don't have sufficient permissions
+- Updated dependencies
+  - @backstage/backend-common@0.19.0
+  - @backstage/types@1.1.0
+  - @backstage/integration@1.5.0
+  - @backstage/catalog-model@1.4.0
+  - @backstage/errors@1.2.0
+  - @backstage/backend-plugin-api@0.5.3
+  - @backstage/backend-tasks@0.5.3
+  - @backstage/plugin-catalog-node@1.3.7
+  - @backstage/config@1.0.8
+
+## 0.2.2-next.3
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-common@0.19.0-next.2
+  - @backstage/catalog-model@1.4.0-next.1
+  - @backstage/backend-plugin-api@0.5.3-next.2
+  - @backstage/backend-tasks@0.5.3-next.2
+  - @backstage/config@1.0.7
+  - @backstage/errors@1.2.0-next.0
+  - @backstage/integration@1.5.0-next.0
+  - @backstage/types@1.0.2
+  - @backstage/plugin-catalog-node@1.3.7-next.2
+
+## 0.2.2-next.2
+
+### Patch Changes
+
+- f31fd1f8fd98: Fixed bug that caused ingestion errors when a user's name or profile picture is undefined.
+- 66261b4ab441: Added option to skip forked repos
+- Updated dependencies
+  - @backstage/config@1.0.7
+
+## 0.2.2-next.1
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-common@0.19.0-next.1
+  - @backstage/integration@1.5.0-next.0
+  - @backstage/errors@1.2.0-next.0
+  - @backstage/backend-plugin-api@0.5.3-next.1
+  - @backstage/catalog-model@1.4.0-next.0
+  - @backstage/backend-tasks@0.5.3-next.1
+  - @backstage/plugin-catalog-node@1.3.7-next.1
+  - @backstage/config@1.0.7
+  - @backstage/types@1.0.2
+
+## 0.2.2-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/plugin-catalog-node@1.3.7-next.0
+  - @backstage/backend-common@0.18.6-next.0
+  - @backstage/integration@1.4.5
+  - @backstage/config@1.0.7
+  - @backstage/backend-plugin-api@0.5.3-next.0
+  - @backstage/backend-tasks@0.5.3-next.0
+  - @backstage/catalog-model@1.3.0
+  - @backstage/errors@1.1.5
+  - @backstage/types@1.0.2
+
+## 0.2.1
+
+### Patch Changes
+
+- b12c41fafc4: Fix a corner case where returned users are null for bots
+- Updated dependencies
+  - @backstage/backend-common@0.18.5
+  - @backstage/integration@1.4.5
+  - @backstage/backend-tasks@0.5.2
+  - @backstage/plugin-catalog-node@1.3.6
+  - @backstage/backend-plugin-api@0.5.2
+  - @backstage/catalog-model@1.3.0
+  - @backstage/config@1.0.7
+  - @backstage/errors@1.1.5
+  - @backstage/types@1.0.2
+
 ## 0.2.1-next.1
 
 ### Patch Changes

@@ -411,4 +411,84 @@ describe('extractSchemaFromStep', () => {
       uiSchema: expectedUiSchema,
     });
   });
+
+  it('transforms conditional schema', () => {
+    const inputSchema: JsonObject = {
+      type: 'object',
+      properties: {
+        flag: {
+          type: 'boolean',
+        },
+      },
+      if: {
+        properties: {
+          flag: {
+            const: true,
+          },
+        },
+      },
+      then: {
+        properties: {
+          user: {
+            type: 'string',
+            'ui:field': 'EntityPicker',
+            'ui:options': {
+              catalogFilter: [{ kind: 'User' }],
+            },
+          },
+        },
+      },
+      else: {
+        properties: {
+          email: {
+            type: 'string',
+          },
+        },
+      },
+    };
+    const expectedSchema = {
+      type: 'object',
+      properties: {
+        flag: {
+          type: 'boolean',
+        },
+      },
+      if: {
+        properties: {
+          flag: {
+            const: true,
+          },
+        },
+      },
+      then: {
+        properties: {
+          user: {
+            type: 'string',
+          },
+        },
+      },
+      else: {
+        properties: {
+          email: {
+            type: 'string',
+          },
+        },
+      },
+    };
+    const expectedUiSchema = {
+      flag: {},
+      user: {
+        'ui:field': 'EntityPicker',
+        'ui:options': {
+          catalogFilter: [{ kind: 'User' }],
+        },
+      },
+      email: {},
+    };
+
+    expect(extractSchemaFromStep(inputSchema)).toEqual({
+      schema: expectedSchema,
+      uiSchema: expectedUiSchema,
+    });
+  });
 });

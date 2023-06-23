@@ -429,6 +429,28 @@ describe('GitLabClient', () => {
       expect(members).toEqual([1]);
     });
 
+    it('gets member IDs with token without full permissions', async () => {
+      server.use(
+        graphql
+          .link(`${MOCK_CONFIG.baseUrl}/api/graphql`)
+          .operation((_, res, ctx) =>
+            res(
+              ctx.data({
+                group: {},
+              }),
+            ),
+          ),
+      );
+      const client = new GitLabClient({
+        config: MOCK_CONFIG,
+        logger: getVoidLogger(),
+      });
+
+      const members = await client.getGroupMembers('group1');
+
+      expect(members).toEqual([]);
+    });
+
     it('rejects when GraphQL returns errors', async () => {
       server.use(
         graphql

@@ -127,11 +127,20 @@ export class GitLabClient {
       if (response.errors) {
         throw new Error(`GraphQL errors: ${JSON.stringify(response.errors)}`);
       }
+
+      if (!response.data.group?.groupMembers?.nodes) {
+        this.logger.warn(
+          `Couldn't get members for group ${groupPath}. The provided token might not have sufficient permissions`,
+        );
+        continue;
+      }
+
       memberIds.push(
-        ...response.data.group.groupMembers.nodes.map(
-          (node: { user: { id: string } }) =>
+        ...response.data.group.groupMembers.nodes
+          .filter(n => n.user)
+          .map(node =>
             Number(node.user.id.replace(/^gid:\/\/gitlab\/User\//, '')),
-        ),
+          ),
       );
       ({ hasNextPage, endCursor } = response.data.group.groupMembers.pageInfo);
     } while (hasNextPage);

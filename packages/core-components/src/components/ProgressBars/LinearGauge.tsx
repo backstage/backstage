@@ -27,11 +27,12 @@ type Props = {
    * Progress value between 0.0 - 1.0.
    */
   value: number;
+  width?: 'thick' | 'thin';
   getColor?: GaugePropsGetColor;
 };
 
 export function LinearGauge(props: Props) {
-  const { value, getColor = getProgressColor } = props;
+  const { value, getColor = getProgressColor, width = 'thick' } = props;
   const { palette } = useTheme<BackstageTheme>();
   if (isNaN(value)) {
     return null;
@@ -40,6 +41,7 @@ export function LinearGauge(props: Props) {
   if (percent > 100) {
     percent = 100;
   }
+  const lineWidth = width === 'thick' ? 4 : 1;
   const strokeColor = getColor({
     palette,
     value: percent,
@@ -51,8 +53,8 @@ export function LinearGauge(props: Props) {
       <Typography component="span">
         <Line
           percent={percent}
-          strokeWidth={4}
-          trailWidth={4}
+          strokeWidth={lineWidth}
+          trailWidth={lineWidth}
           strokeColor={strokeColor}
         />
       </Typography>

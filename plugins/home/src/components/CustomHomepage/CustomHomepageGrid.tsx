@@ -25,7 +25,13 @@ import {
 } from '@backstage/core-plugin-api';
 import 'react-grid-layout/css/styles.css';
 import 'react-resizable/css/styles.css';
-import { createStyles, Dialog, makeStyles, Theme } from '@material-ui/core';
+import {
+  createStyles,
+  Dialog,
+  makeStyles,
+  useTheme,
+  Theme,
+} from '@material-ui/core';
 import { compact } from 'lodash';
 import useObservable from 'react-use/lib/useObservable';
 import { ContentHeader, ErrorBoundary } from '@backstage/core-components';
@@ -42,7 +48,7 @@ import {
   LayoutConfigurationSchema,
   WidgetSchema,
 } from './types';
-import { CardConfig } from '../../extensions';
+import { CardConfig } from '@backstage/plugin-home-react';
 
 // eslint-disable-next-line new-cap
 const ResponsiveGrid = WidthProvider(Responsive);
@@ -62,9 +68,13 @@ const useStyles = makeStyles((theme: Theme) =>
       marginLeft: theme.spacing(2),
     },
     widgetWrapper: {
-      '& > *:first-child': {
+      overflow: 'hidden',
+      '& > div[class*="MuiCard-root"]': {
         width: '100%',
         height: '100%',
+      },
+      '& div[class*="MuiCardContent-root"]': {
+        overflow: 'auto',
       },
       '& + .react-grid-placeholder': {
         backgroundColor: theme.palette.primary.light,
@@ -180,12 +190,79 @@ const availableWidgetsFilter = (elements: ElementCollection) => {
 };
 
 /**
+ * Breakpoint options for <CustomHomepageGridProps/>
+ *
+ * @public
+ */
+export type Breakpoint = 'xs' | 'sm' | 'md' | 'lg' | 'xl';
+
+/**
+ * Props customizing the <CustomHomepageGrid/> component.
+ *
  * @public
  */
 export type CustomHomepageGridProps = {
+  /**
+   * Children contain all widgets user can configure on their own homepage.
+   */
   children?: ReactNode;
+  /**
+   * Default layout for the homepage before users have modified it.
+   */
   config?: LayoutConfiguration[];
+  /**
+   * Height of grid row in pixels.
+   * @defaultValue 60
+   */
   rowHeight?: number;
+  /**
+   * Screen width in pixels for different breakpoints.
+   * @defaultValue theme breakpoints
+   */
+  breakpoints?: Record<Breakpoint, number>;
+  /**
+   * Number of grid columns for different breakpoints.
+   * @defaultValue \{ lg: 12, md: 10, sm: 6, xs: 4, xxs: 2 \}
+   */
+  cols?: Record<Breakpoint, number>;
+  /**
+   * Grid container padding (x, y) in pixels for all or specific breakpoints.
+   * @defaultValue [0, 0]
+   * @example [10, 10]
+   * @example \{ lg: [10, 10] \}
+   */
+  containerPadding?: [number, number] | Record<Breakpoint, [number, number]>;
+  /**
+   * Grid container margin (x, y) in pixels for all or specific breakpoints.
+   * @defaultValue [0, 0]
+   * @example [10, 10]
+   * @example \{ lg: [10, 10] \}
+   */
+  containerMargin?: [number, number] | Record<Breakpoint, [number, number]>;
+  /**
+   * Maximum number of rows user can have in the grid.
+   * @defaultValue unlimited
+   */
+  maxRows?: number;
+  /**
+   * Custom style for grid.
+   */
+  style?: React.CSSProperties;
+  /**
+   * Compaction type of widgets in the grid. This controls where widgets are moved in case
+   * they are overlapping in the grid.
+   */
+  compactType?: 'vertical' | 'horizontal' | null;
+  /**
+   * Controls if widgets can overlap in the grid. If true, grid can be placed one over the other.
+   * @defaultValue false
+   */
+  allowOverlap?: boolean;
+  /**
+   * Controls if widgets can collide with each other. If true, grid items won't change position when being dragged over.
+   * @defaultValue false
+   */
+  preventCollision?: boolean;
 };
 
 /**
@@ -195,6 +272,7 @@ export type CustomHomepageGridProps = {
  */
 export const CustomHomepageGrid = (props: CustomHomepageGridProps) => {
   const styles = useStyles();
+  const theme = useTheme();
   const availableWidgets = useElementFilter(
     props.children,
     availableWidgetsFilter,
@@ -290,6 +368,10 @@ export const CustomHomepageGrid = (props: CustomHomepageGridProps) => {
     }
   };
 
+  const handleRestoreDefaultConfig = () => {
+    setWidgets(defaultLayout);
+  };
+
   return (
     <>
       <ContentHeader title="">
@@ -299,6 +381,8 @@ export const CustomHomepageGrid = (props: CustomHomepageGridProps) => {
           clearLayout={clearLayout}
           setAddWidgetDialogOpen={setAddWidgetDialogOpen}
           changeEditMode={changeEditMode}
+          defaultConfigAvailable={props.config !== undefined}
+          restoreDefault={handleRestoreDefaultConfig}
         />
       </ContentHeader>
       <Dialog
@@ -315,10 +399,19 @@ export const CustomHomepageGrid = (props: CustomHomepageGridProps) => {
       <ResponsiveGrid
         className={styles.responsiveGrid}
         measureBeforeMount
-        compactType="horizontal"
+        compactType={props.compactType}
+        style={props.style}
+        allowOverlap={props.allowOverlap}
+        preventCollision={props.preventCollision}
         draggableCancel=".overlayGridItem,.widgetSettingsDialog"
-        breakpoints={{ lg: 1200, md: 996, sm: 768, xs: 480, xxs: 0 }}
-        cols={{ lg: 12, md: 10, sm: 6, xs: 4, xxs: 2 }}
+        containerPadding={props.containerPadding}
+        margin={props.containerMargin}
+        breakpoints={
+          props.breakpoints ? props.breakpoints : theme.breakpoints.values
+        }
+        cols={
+          props.cols ? props.cols : { lg: 12, md: 10, sm: 6, xs: 4, xxs: 2 }
+        }
         rowHeight={props.rowHeight ?? 60}
         onLayoutChange={handleLayoutChange}
         layouts={{ lg: widgets.map(w => w.layout) }}

@@ -15,7 +15,6 @@
  */
 
 import React, { useContext } from 'react';
-import { V1Pod } from '@kubernetes/client-node';
 import { PodDrawer } from './PodDrawer';
 import {
   containersReady,
@@ -25,20 +24,24 @@ import {
   totalRestarts,
 } from '../../utils/pod';
 import { Table, TableColumn } from '@backstage/core-components';
-import { PodNamesWithMetricsContext } from '../../hooks/PodNamesWithMetrics';
 import { ClusterContext } from '../../hooks/Cluster';
+import { useMatchingErrors } from '../../hooks/useMatchingErrors';
+import { Pod } from 'kubernetes-models/v1/Pod';
+import { V1Pod } from '@kubernetes/client-node';
+import { usePodMetrics } from '../../hooks/usePodMetrics';
+import { Typography } from '@material-ui/core';
 
 export const READY_COLUMNS: PodColumns = 'READY';
 export const RESOURCE_COLUMNS: PodColumns = 'RESOURCE';
 export type PodColumns = 'READY' | 'RESOURCE';
 
 type PodsTablesProps = {
-  pods: V1Pod[];
+  pods: Pod | V1Pod[];
   extraColumns?: PodColumns[];
   children?: React.ReactNode;
 };
 
-const READY: TableColumn<V1Pod>[] = [
+const READY: TableColumn<Pod>[] = [
   {
     title: 'containers ready',
     align: 'center',
@@ -54,26 +57,57 @@ const READY: TableColumn<V1Pod>[] = [
   },
 ];
 
-export const PodsTable = ({ pods, extraColumns = [] }: PodsTablesProps) => {
-  const podNamesWithMetrics = useContext(PodNamesWithMetricsContext);
+const PodDrawerTrigger = ({ pod }: { pod: Pod }) => {
   const cluster = useContext(ClusterContext);
-  const defaultColumns: TableColumn<V1Pod>[] = [
+  const errors = useMatchingErrors({
+    kind: 'Pod',
+    apiVersion: 'v1',
+    metadata: pod.metadata,
+  });
+  return (
+    <PodDrawer
+      podAndErrors={{
+        pod: pod as any,
+        clusterName: cluster.name,
+        errors: errors,
+      }}
+    />
+  );
+};
+
+const Cpu = ({ clusterName, pod }: { clusterName: string; pod: Pod }) => {
+  const metrics = usePodMetrics(clusterName, pod);
+
+  if (!metrics) {
+    return <Typography>unknown</Typography>;
+  }
+
+  return <>{podStatusToCpuUtil(metrics)}</>;
+};
+
+const Memory = ({ clusterName, pod }: { clusterName: string; pod: Pod }) => {
+  const metrics = usePodMetrics(clusterName, pod);
+
+  if (!metrics) {
+    return <Typography>unknown</Typography>;
+  }
+
+  return <>{podStatusToMemoryUtil(metrics)}</>;
+};
+
+export const PodsTable = ({ pods, extraColumns = [] }: PodsTablesProps) => {
+  const cluster = useContext(ClusterContext);
+  const defaultColumns: TableColumn<Pod>[] = [
     {
       title: 'name',
       highlight: true,
-      render: (pod: V1Pod) => (
-        <PodDrawer
-          podAndErrors={{
-            pod: pod as any,
-            clusterName: cluster.name,
-            errors: [],
-          }}
-        />
-      ),
+      render: (pod: Pod) => {
+        return <PodDrawerTrigger pod={pod} />;
+      },
     },
     {
       title: 'phase',
-      render: (pod: V1Pod) => pod.status?.phase ?? 'unknown',
+      render: (pod: Pod) => pod.status?.phase ?? 'unknown',
       width: 'auto',
     },
     {
@@ -81,36 +115,24 @@ export const PodsTable = ({ pods, extraColumns = [] }: PodsTablesProps) => {
       render: containerStatuses,
     },
   ];
-  const columns: TableColumn<V1Pod>[] = [...defaultColumns];
+  const columns: TableColumn<Pod>[] = [...defaultColumns];
 
   if (extraColumns.includes(READY_COLUMNS)) {
     columns.push(...READY);
   }
   if (extraColumns.includes(RESOURCE_COLUMNS)) {
-    const resourceColumns: TableColumn<V1Pod>[] = [
+    const resourceColumns: TableColumn<Pod>[] = [
       {
         title: 'CPU usage %',
-        render: (pod: V1Pod) => {
-          const metrics = podNamesWithMetrics.get(pod.metadata?.name ?? '');
-
-          if (!metrics) {
-            return 'unknown';
-          }
-
-          return podStatusToCpuUtil(metrics);
+        render: (pod: Pod) => {
+          return <Cpu clusterName={cluster.name} pod={pod} />;
         },
         width: 'auto',
       },
       {
         title: 'Memory usage %',
-        render: (pod: V1Pod) => {
-          const metrics = podNamesWithMetrics.get(pod.metadata?.name ?? '');
-
-          if (!metrics) {
-            return 'unknown';
-          }
-
-          return podStatusToMemoryUtil(metrics);
+        render: (pod: Pod) => {
+          return <Memory clusterName={cluster.name} pod={pod} />;
         },
         width: 'auto',
       },
@@ -123,13 +145,11 @@ export const PodsTable = ({ pods, extraColumns = [] }: PodsTablesProps) => {
     width: '100%',
   };
 
-  const usePods = pods.map(p => ({ ...p, id: p.metadata?.uid }));
-
   return (
     <div style={tableStyle}>
       <Table
         options={{ paging: true, search: false, emptyRowsWhenPaging: false }}
-        data={usePods}
+        data={pods as Pod[]}
         columns={columns}
       />
     </div>

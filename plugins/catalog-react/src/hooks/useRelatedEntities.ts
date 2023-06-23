@@ -13,15 +13,18 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
 import { Entity, parseEntityRef } from '@backstage/catalog-model';
 import { useApi } from '@backstage/core-plugin-api';
-import { chunk, groupBy } from 'lodash';
 import useAsync from 'react-use/lib/useAsync';
 import { catalogApiRef } from '../api';
 
-const BATCH_SIZE = 20;
-
-/** @public */
+/**
+ * Fetches all entities that appear in the entity's relations, optionally
+ * filtered by relation type and kind.
+ *
+ * @public
+ */
 export function useRelatedEntities(
   entity: Entity,
   relationFilter: { type?: string; kind?: string },
@@ -32,70 +35,30 @@ export function useRelatedEntities(
 } {
   const filterByTypeLower = relationFilter?.type?.toLocaleLowerCase('en-US');
   const filterByKindLower = relationFilter?.kind?.toLocaleLowerCase('en-US');
-
   const catalogApi = useApi(catalogApiRef);
+
   const {
     loading,
     value: entities,
     error,
   } = useAsync(async () => {
-    const relations = entity.relations
-      ?.map(r => ({ type: r.type, target: parseEntityRef(r.targetRef) }))
-      .filter(
-        r =>
-          (!filterByTypeLower ||
-            r.type.toLocaleLowerCase('en-US') === filterByTypeLower) &&
-          (!filterByKindLower || r.target.kind === filterByKindLower),
-      );
+    const relations = entity.relations?.filter(
+      r =>
+        (!filterByTypeLower ||
+          r.type.toLocaleLowerCase('en-US') === filterByTypeLower) &&
+        (!filterByKindLower ||
+          parseEntityRef(r.targetRef).kind === filterByKindLower),
+    );
 
-    if (!relations) {
+    if (!relations?.length) {
       return [];
     }
 
-    // Group the relations by kind and namespace to reduce the size of the request query string.
-    // Without this grouping, the kind and namespace would need to be specified for each relation, e.g.
-    // `filter=kind=component,namespace=default,name=example1&filter=kind=component,namespace=default,name=example2`
-    // with grouping, we can generate a query a string like
-    // `filter=kind=component,namespace=default,name=example1,example2`
-    const relationsByKindAndNamespace = Object.values(
-      groupBy(relations, ({ target }) => {
-        return `${target.kind}:${target.namespace}`.toLocaleLowerCase('en-US');
-      }),
-    );
+    const { items } = await catalogApi.getEntitiesByRefs({
+      entityRefs: relations.map(r => r.targetRef),
+    });
 
-    // Split the names within each group into batches to further reduce the query string length.
-    const batchedRelationsByKindAndNamespace: {
-      kind: string;
-      namespace: string;
-      nameBatches: string[][];
-    }[] = [];
-    for (const rs of relationsByKindAndNamespace) {
-      batchedRelationsByKindAndNamespace.push({
-        // All relations in a group have the same kind and namespace, so its arbitrary which we pick
-        kind: rs[0].target.kind,
-        namespace: rs[0].target.namespace,
-        nameBatches: chunk(
-          rs.map(r => r.target.name),
-          BATCH_SIZE,
-        ),
-      });
-    }
-
-    const results = await Promise.all(
-      batchedRelationsByKindAndNamespace.flatMap(rs => {
-        return rs.nameBatches.map(names => {
-          return catalogApi.getEntities({
-            filter: {
-              kind: rs.kind,
-              'metadata.namespace': rs.namespace,
-              'metadata.name': names,
-            },
-          });
-        });
-      }),
-    );
-
-    return results.flatMap(r => r.items);
+    return items.filter((x): x is Entity => Boolean(x));
   }, [entity, filterByTypeLower, filterByKindLower]);
 
   return {

@@ -14,8 +14,7 @@ Options:
 Commands:
   api-reports [options] [paths...]
   type-deps
-  schema:openapi:verify [paths...]
-  schema:openapi:generate [paths...]
+  schema [command]
   help [command]
 ```
 
@@ -37,19 +36,57 @@ Options:
   -h, --help
 ```
 
-### `backstage-repo-tools schema:openapi:generate`
+### `backstage-repo-tools schema`
 
 ```
-Usage: backstage-repo-tools schema:openapi:generate [options] [paths...]
+Usage: backstage-repo-tools schema [options] [command] [command]
+
+Options:
+  -h, --help
+
+Commands:
+  openapi [command]
+  help [command]
+```
+
+### `backstage-repo-tools schema openapi`
+
+```
+Usage: backstage-repo-tools schema openapi [options] [command] [command]
+
+Options:
+  -h, --help
+
+Commands:
+  verify [paths...]
+  generate [paths...]
+  lint [options] [paths...]
+  help [command]
+```
+
+### `backstage-repo-tools schema openapi generate`
+
+```
+Usage: backstage-repo-tools schema openapi generate [options] [paths...]
 
 Options:
   -h, --help
 ```
 
-### `backstage-repo-tools schema:openapi:verify`
+### `backstage-repo-tools schema openapi lint`
 
 ```
-Usage: backstage-repo-tools schema:openapi:verify [options] [paths...]
+Usage: backstage-repo-tools schema openapi lint [options] [paths...]
+
+Options:
+  --strict
+  -h, --help
+```
+
+### `backstage-repo-tools schema openapi verify`
+
+```
+Usage: backstage-repo-tools schema openapi verify [options] [paths...]
 
 Options:
   -h, --help

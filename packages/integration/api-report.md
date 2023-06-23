@@ -39,6 +39,18 @@ export type AwsS3IntegrationConfig = {
 };
 
 // @public
+export type AzureClientSecretCredential = {
+  tenantId: string;
+  clientId: string;
+  clientSecret: string;
+};
+
+// @public
+export type AzureCredential =
+  | AzureClientSecretCredential
+  | AzureManagedIdentityCredential;
+
+// @public
 export class AzureIntegration implements ScmIntegration {
   constructor(integrationConfig: AzureIntegrationConfig);
   // (undocumented)
@@ -63,6 +75,12 @@ export class AzureIntegration implements ScmIntegration {
 export type AzureIntegrationConfig = {
   host: string;
   token?: string;
+  credential?: AzureCredential;
+};
+
+// @public
+export type AzureManagedIdentityCredential = {
+  clientId: string;
 };
 
 // @public
@@ -166,6 +184,18 @@ export class DefaultGithubCredentialsProvider
 }
 
 // @public
+export class DefaultGitlabCredentialsProvider
+  implements GitlabCredentialsProvider
+{
+  // (undocumented)
+  static fromIntegrations(
+    integrations: ScmIntegrationRegistry,
+  ): DefaultGitlabCredentialsProvider;
+  // (undocumented)
+  getCredentials(opts: { url: string }): Promise<GitlabCredentials>;
+}
+
+// @public
 export function defaultScmResolveUrl(options: {
   url: string;
   base: string;
@@ -216,9 +246,9 @@ export function getAzureFileFetchUrl(url: string): string;
 export function getAzureRequestOptions(
   config: AzureIntegrationConfig,
   additionalHeaders?: Record<string, string>,
-): {
+): Promise<{
   headers: Record<string, string>;
-};
+}>;
 
 // @public
 export function getBitbucketCloudDefaultBranch(
@@ -477,6 +507,20 @@ export type GithubIntegrationConfig = {
   token?: string;
   apps?: GithubAppConfig[];
 };
+
+// @public (undocumented)
+export type GitlabCredentials = {
+  headers?: {
+    [name: string]: string;
+  };
+  token?: string;
+};
+
+// @public (undocumented)
+export interface GitlabCredentialsProvider {
+  // (undocumented)
+  getCredentials(opts: { url: string }): Promise<GitlabCredentials>;
+}
 
 // @public
 export class GitLabIntegration implements ScmIntegration {

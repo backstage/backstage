@@ -1,5 +1,55 @@
 # @backstage/plugin-vault-backend
 
+## 0.3.2
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-common@0.19.0
+  - @backstage/errors@1.2.0
+  - @backstage/backend-tasks@0.5.3
+  - @backstage/config@1.0.8
+
+## 0.3.2-next.2
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-common@0.19.0-next.2
+  - @backstage/backend-tasks@0.5.3-next.2
+  - @backstage/config@1.0.7
+  - @backstage/errors@1.2.0-next.0
+
+## 0.3.2-next.1
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-common@0.19.0-next.1
+  - @backstage/errors@1.2.0-next.0
+  - @backstage/backend-tasks@0.5.3-next.1
+  - @backstage/config@1.0.7
+
+## 0.3.2-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-common@0.18.6-next.0
+  - @backstage/config@1.0.7
+  - @backstage/backend-tasks@0.5.3-next.0
+  - @backstage/errors@1.1.5
+
+## 0.3.1
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-common@0.18.5
+  - @backstage/backend-tasks@0.5.2
+  - @backstage/config@1.0.7
+  - @backstage/errors@1.1.5
+
 ## 0.3.1-next.1
 
 ### Patch Changes

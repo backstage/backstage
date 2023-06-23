@@ -14,7 +14,13 @@
  * limitations under the License.
  */
 
+import { mockClient } from 'aws-sdk-client-mock';
+import 'aws-sdk-client-mock-jest';
 import { AwsOrganizationCloudAccountProcessor } from './AwsOrganizationCloudAccountProcessor';
+import {
+  ListAccountsCommand,
+  OrganizationsClient,
+} from '@aws-sdk/client-organizations';
 
 describe('AwsOrganizationCloudAccountProcessor', () => {
   describe('readLocation', () => {
@@ -23,26 +29,21 @@ describe('AwsOrganizationCloudAccountProcessor', () => {
     });
     const location = { type: 'aws-cloud-accounts', target: '' };
     const emit = jest.fn();
-    const listAccounts = jest.fn();
+    const mock = mockClient(OrganizationsClient);
 
-    processor.organizations.listAccounts = listAccounts;
-    afterEach(() => jest.resetAllMocks());
+    afterEach(() => {
+      jest.resetAllMocks();
+    });
 
     it('generates component entities for accounts', async () => {
-      listAccounts.mockImplementation(() => {
-        return {
-          async promise() {
-            return {
-              Accounts: [
-                {
-                  Arn: 'arn:aws:organizations::192594491037:account/o-1vl18kc5a3/957140518395',
-                  Name: 'testaccount',
-                },
-              ],
-              NextToken: undefined,
-            };
+      mock.on(ListAccountsCommand).resolves({
+        Accounts: [
+          {
+            Arn: 'arn:aws:organizations::192594491037:account/o-1vl18kc5a3/957140518395',
+            Name: 'testaccount',
           },
-        };
+        ],
+        NextToken: undefined,
       });
       await processor.readLocation(location, false, emit);
       expect(emit).toHaveBeenCalledWith({
@@ -74,24 +75,18 @@ describe('AwsOrganizationCloudAccountProcessor', () => {
         type: 'aws-cloud-accounts',
         target: 'o-1vl18kc5a3',
       };
-      listAccounts.mockImplementation(() => {
-        return {
-          async promise() {
-            return {
-              Accounts: [
-                {
-                  Arn: 'arn:aws:organizations::192594491037:account/o-1vl18kc5a3/957140518395',
-                  Name: 'testaccount',
-                },
-                {
-                  Arn: 'arn:aws:organizations::192594491037:account/o-zzzzzzzzz/957140518395',
-                  Name: 'testaccount2',
-                },
-              ],
-              NextToken: undefined,
-            };
+      mock.on(ListAccountsCommand).resolves({
+        Accounts: [
+          {
+            Arn: 'arn:aws:organizations::192594491037:account/o-1vl18kc5a3/957140518395',
+            Name: 'testaccount',
           },
-        };
+          {
+            Arn: 'arn:aws:organizations::192594491037:account/o-zzzzzzzzz/957140518395',
+            Name: 'testaccount2',
+          },
+        ],
+        NextToken: undefined,
       });
       await processor.readLocation(locationTest, false, emit);
       expect(emit).toHaveBeenCalledTimes(1);

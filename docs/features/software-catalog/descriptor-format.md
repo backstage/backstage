@@ -239,17 +239,18 @@ Example: `visits-tracking-service`, `CircleciBuildsDumpV2_avro_gcs`
 
 ### `namespace` [optional]
 
-The ID of a namespace that the entity belongs to. This is a string that follows
-the same format restrictions as `name` above.
+The ID of a namespace that the entity belongs to. This field is optional, and
+currently has no special semantics apart from bounding the name uniqueness
+constraint if specified. It is reserved for future use and may get broader
+semantic implication later.
 
-This field is optional, and currently has no special semantics apart from
-bounding the name uniqueness constraint if specified. It is reserved for future
-use and may get broader semantic implication later. For now, it is recommended
-to not specify a namespace unless you have specific need to do so. This means
-the entity belongs to the `"default"` namespace.
+For now, it is recommended to not specify a namespace unless you have specific
+need to do so. This means the entity belongs to the `"default"` namespace.
 
-Namespaces may also be part of the catalog, and are `v1` / `Namespace` entities,
-i.e. not Backstage specific but the same as in Kubernetes.
+Namespaces must be sequences of `[a-zA-Z0-9]`, possibly separated by `-`, at
+most 63 characters in total. Namespace names are case insensitive and will be rendered as lower case in most places.
+
+Example: `tracking-services`, `payment`
 
 ### `uid` [output]
 
@@ -350,7 +351,7 @@ component, like `java` or `go`.
 
 This field is optional, and currently has no special semantics.
 
-Each tag must be sequences of `[a-z0-9]` separated by `-`, at most 63 characters
+Each tag must be sequences of `[a-z0-9:+#]` separated by `-`, at most 63 characters
 in total.
 
 ### `links` [optional]

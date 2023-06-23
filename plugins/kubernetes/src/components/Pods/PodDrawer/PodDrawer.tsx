@@ -32,6 +32,10 @@ import { ContainerCard } from './ContainerCard';
 import { PodAndErrors } from '../types';
 import { KubernetesDrawer } from '../../KubernetesDrawer';
 import { PendingPodContent } from './PendingPodContent';
+import { ErrorList } from '../ErrorList';
+import { usePodMetrics } from '../../../hooks/usePodMetrics';
+import { ResourceUtilization } from '../../ResourceUtilization';
+import { bytesToMiB, formatMilicores } from '../../../utils/resources';
 
 const useDrawerContentStyles = makeStyles((_theme: Theme) =>
   createStyles({
@@ -57,13 +61,25 @@ const useDrawerContentStyles = makeStyles((_theme: Theme) =>
 function getContainerSpecByName(pod: Pod, containerName: string) {
   return pod.spec?.containers.find(c => c.name === containerName);
 }
+
+/**
+ * Props for PodDrawer
+ *
+ * @public
+ */
 interface PodDrawerProps {
   open?: boolean;
   podAndErrors: PodAndErrors;
 }
 
+/**
+ * A Drawer for Kubernetes Pods
+ *
+ * @public
+ */
 export const PodDrawer = ({ podAndErrors, open }: PodDrawerProps) => {
   const classes = useDrawerContentStyles();
+  const podMetrics = usePodMetrics(podAndErrors.clusterName, podAndErrors.pod);
 
   return (
     <KubernetesDrawer
@@ -83,6 +99,41 @@ export const PodDrawer = ({ podAndErrors, open }: PodDrawerProps) => {
       }
     >
       <div className={classes.content}>
+        {podMetrics && (
+          <Grid container item xs={12}>
+            <Grid item xs={12}>
+              <Typography variant="h5">Resource utilization</Typography>
+            </Grid>
+            <Grid item xs={6}>
+              <ResourceUtilization
+                title="CPU requests"
+                usage={podMetrics.cpu.currentUsage}
+                total={podMetrics.cpu.requestTotal}
+                totalFormated={formatMilicores(podMetrics.cpu.requestTotal)}
+              />
+              <ResourceUtilization
+                title="CPU limits"
+                usage={podMetrics.cpu.currentUsage}
+                total={podMetrics.cpu.limitTotal}
+                totalFormated={formatMilicores(podMetrics.cpu.limitTotal)}
+              />
+            </Grid>
+            <Grid item xs={6}>
+              <ResourceUtilization
+                title="Memory requests"
+                usage={podMetrics.memory.currentUsage}
+                total={podMetrics.memory.requestTotal}
+                totalFormated={bytesToMiB(podMetrics.memory.requestTotal)}
+              />
+              <ResourceUtilization
+                title="Memory limits"
+                usage={podMetrics.memory.currentUsage}
+                total={podMetrics.memory.limitTotal}
+                totalFormated={bytesToMiB(podMetrics.memory.requestTotal)}
+              />
+            </Grid>
+          </Grid>
+        )}
         {podAndErrors.pod.status?.phase === 'Pending' && (
           <PendingPodContent pod={podAndErrors.pod} />
         )}
@@ -99,9 +150,13 @@ export const PodDrawer = ({ podAndErrors, open }: PodDrawerProps) => {
                       podAndErrors.pod,
                       containerStatus.name,
                     );
+                    const containerMetrics = (
+                      podMetrics?.containers ?? []
+                    ).find(c => c.container === containerStatus.name);
                     return (
                       <ContainerCard
                         key={`container-card-${podAndErrors.pod.metadata?.name}-${i}`}
+                        containerMetrics={containerMetrics}
                         podScope={{
                           podName: podAndErrors.pod.metadata?.name ?? 'unknown',
                           podNamespace:
@@ -116,6 +171,16 @@ export const PodDrawer = ({ podAndErrors, open }: PodDrawerProps) => {
                 )}
               </ItemCardGrid>
             </Grid>
+            {podAndErrors.errors.length > 0 && (
+              <Grid item xs={12}>
+                <Typography variant="h5">Errors:</Typography>
+              </Grid>
+            )}
+            {podAndErrors.errors.length > 0 && (
+              <Grid item xs={12}>
+                <ErrorList podAndErrors={[podAndErrors]} />
+              </Grid>
+            )}
           </Grid>
         )}
       </div>

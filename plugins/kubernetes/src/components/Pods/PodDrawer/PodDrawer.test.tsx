@@ -33,7 +33,7 @@ describe('PodDrawer', () => {
               clusterName: 'some-cluster-1',
               pod: {
                 metadata: {
-                  name: 'ok-pod',
+                  name: 'some-pod',
                 },
                 spec: {
                   containers: [
@@ -51,17 +51,40 @@ describe('PodDrawer', () => {
                   ],
                 },
               },
-              errors: [],
+              errors: [
+                {
+                  type: 'some-error',
+                  severity: 10,
+                  message: 'some error message',
+                  occuranceCount: 1,
+                  sourceRef: {
+                    name: 'some-pod',
+                    namespace: 'some-namespace',
+                    kind: 'Pod',
+                    apiGroup: 'v1',
+                  },
+                  proposedFix: [
+                    {
+                      type: 'logs',
+                      container: 'some-container',
+                      errorType: 'some error type',
+                      rootCauseExplanation: 'some root cause',
+                      actions: ['fix1', 'fix2'],
+                    },
+                  ],
+                },
+              ],
             },
           } as any)}
         />,
       ),
     );
 
-    expect(getAllByText('ok-pod')).toHaveLength(2);
+    expect(getAllByText('some-pod')).toHaveLength(3);
     expect(getByText('Pod (127.0.0.1)')).toBeInTheDocument();
     expect(getByText('YAML')).toBeInTheDocument();
     expect(getByText('Containers')).toBeInTheDocument();
     expect(getByText('some-container')).toBeInTheDocument();
+    expect(getByText('some error message')).toBeInTheDocument();
   });
 });

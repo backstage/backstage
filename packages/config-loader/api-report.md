@@ -180,14 +180,17 @@ export function loadConfigSchema(
 ): Promise<ConfigSchema>;
 
 // @public
-export type LoadConfigSchemaOptions =
+export type LoadConfigSchemaOptions = (
   | {
       dependencies: string[];
       packagePaths?: string[];
     }
   | {
       serialized: JsonObject;
-    };
+    }
+) & {
+  noUndeclaredProperties?: boolean;
+};
 
 // @public
 export function mergeConfigSchemas(schemas: JSONSchema7[]): JSONSchema7;

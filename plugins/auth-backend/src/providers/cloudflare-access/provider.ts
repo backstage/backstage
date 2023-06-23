@@ -227,7 +227,7 @@ export class CloudflareAccessAuthProvider implements AuthProviderRouteHandlers {
         { headers },
       );
       if (!res.ok) {
-        throw ResponseError.fromResponse(res);
+        throw await ResponseError.fromResponse(res);
       }
       const cfIdentity = await res.json();
       return cfIdentity as unknown as CloudflareAccessIdentityProfile;

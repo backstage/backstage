@@ -175,17 +175,17 @@ import { IncrementalEntityProvider } from '@backstage/plugin-catalog-backend-mod
 
 // This will include your pagination information, let's say our API accepts a `page` parameter.
 // In this case, the cursor will include `page`
-interface MyApiCursor {
+interface Cursor {
   page: number;
 }
 
 // This interface describes the type of data that will be passed to your burst function.
-interface MyContext {
+interface Context {
   apiClient: MyApiClient;
 }
 
 export class MyIncrementalEntityProvider
-  implements IncrementalEntityProvider<MyApiCursor, MyContext>
+  implements IncrementalEntityProvider<Cursor, Context>
 {
   getProviderName() {
     return `MyIncrementalEntityProvider`;
@@ -203,7 +203,7 @@ export class MyIncrementalEntityProvider
     return `MyIncrementalEntityProvider`;
   }
 
-  async around(burst: (context: MyContext) => Promise<void>): Promise<void> {
+  async around(burst: (context: Context) => Promise<void>): Promise<void> {
     const apiClient = new MyApiClient();
 
     await burst({ apiClient });
@@ -229,7 +229,7 @@ export class MyIncrementalEntityProvider
     return `MyIncrementalEntityProvider`;
   }
 
-  async around(burst: (context: MyContext) => Promise<void>): Promise<void> {
+  async around(burst: (context: Context) => Promise<void>): Promise<void> {
     const apiClient = new MyApiClient(this.token);
 
     await burst({ apiClient });
@@ -240,7 +240,7 @@ export class MyIncrementalEntityProvider
 The last step is to implement the actual `next` method that will accept the cursor, call the API, process the result and return the result.
 
 ```ts
-export class MyIncrementalEntityProvider implements IncrementalEntityProvider<MyApiCursor, MyContext> {
+export class MyIncrementalEntityProvider implements IncrementalEntityProvider<Cursor, Context> {
 
   token: string;
 
@@ -253,14 +253,14 @@ export class MyIncrementalEntityProvider implements IncrementalEntityProvider<My
   }
 
 
-  async around(burst: (context: MyContext) => Promise<void>): Promise<void> {
+  async around(burst: (context: Context) => Promise<void>): Promise<void> {
 
     const apiClient = new MyApiClient(this.token)
 
     await burst({ apiClient })
   }
 
-  async next(context: MyContext, cursor?: MyApiCursor = { page: 1 }): Promise<EntityIteratorResult<MyApiCursor>> {
+  async next(context: Context, cursor?: Cursor = { page: 1 }): Promise<EntityIteratorResult<Cursor>> {
     const { apiClient } = context;
 
     // call your API with the current cursor

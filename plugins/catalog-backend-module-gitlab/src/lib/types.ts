@@ -22,6 +22,10 @@ export type GitlabGroupDescription = {
   projects: GitLabProject[];
 };
 
+export type GitlabProjectForkedFrom = {
+  id: number;
+};
+
 export type GitLabProject = {
   id: number;
   default_branch?: string;
@@ -29,6 +33,7 @@ export type GitLabProject = {
   last_activity_at: string;
   web_url: string;
   path_with_namespace?: string;
+  forked_from_project?: GitlabProjectForkedFrom;
 };
 
 export type GitLabUser = {

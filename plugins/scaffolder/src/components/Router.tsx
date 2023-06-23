@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import React, { ComponentType, useEffect } from 'react';
+import React, { ComponentType, useEffect, PropsWithChildren } from 'react';
 import { Navigate, Route, Routes, useOutlet } from 'react-router-dom';
 import { Entity } from '@backstage/catalog-model';
 import { TemplateEntityV1beta3 } from '@backstage/plugin-scaffolder-common';
@@ -52,7 +52,7 @@ export type RouterProps = {
     TemplateCardComponent?:
       | ComponentType<{ template: TemplateEntityV1beta3 }>
       | undefined;
-    TaskPageComponent?: ComponentType<{}>;
+    TaskPageComponent?: ComponentType<PropsWithChildren<{}>>;
   };
   groups?: Array<{
     title?: React.ReactNode;

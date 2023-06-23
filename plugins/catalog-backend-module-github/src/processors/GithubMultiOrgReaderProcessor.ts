@@ -233,6 +233,7 @@ export class GithubMultiOrgReaderProcessor implements CatalogProcessor {
       .map(install =>
         install.target_type === 'Organization' &&
         install.account &&
+        'login' in install.account &&
         install.account.login
           ? {
               name: install.account.login,

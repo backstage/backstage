@@ -29,6 +29,7 @@ import { PermissionRule } from '@backstage/plugin-permission-node';
 import { PermissionRuleParams } from '@backstage/plugin-permission-common';
 import { PluginDatabaseManager } from '@backstage/backend-common';
 import { PluginTaskScheduler } from '@backstage/backend-tasks';
+import { RESOURCE_TYPE_SCAFFOLDER_ACTION } from '@backstage/plugin-scaffolder-common/alpha';
 import { RESOURCE_TYPE_SCAFFOLDER_TEMPLATE } from '@backstage/plugin-scaffolder-common/alpha';
 import { Schema } from 'jsonschema';
 import { ScmIntegrationRegistry } from '@backstage/integration';
@@ -48,6 +49,16 @@ import { ZodTypeDef } from 'zod';
 
 // @public @deprecated (undocumented)
 export type ActionContext<TInput extends JsonObject> = ActionContext_2<TInput>;
+
+// @public (undocumented)
+export type ActionPermissionRuleInput<
+  TParams extends PermissionRuleParams = PermissionRuleParams,
+> = PermissionRule<
+  TemplateEntityStepV1beta3 | TemplateParametersV1beta3,
+  {},
+  typeof RESOURCE_TYPE_SCAFFOLDER_ACTION,
+  TParams
+>;
 
 // @public
 export const createBuiltinActions: (
@@ -108,6 +119,8 @@ export function createFetchCatalogEntityAction(options: {
     entityRef?: string | undefined;
     entityRefs?: string[] | undefined;
     optional?: boolean | undefined;
+    defaultKind?: string | undefined;
+    defaultNamespace?: string | undefined;
   },
   {
     entity?: any;
@@ -189,6 +202,50 @@ export function createGithubActionsDispatchAction(options: {
     workflowId: string;
     branchOrTagName: string;
     workflowInputs?:
+      | {
+          [key: string]: string;
+        }
+      | undefined;
+    token?: string | undefined;
+  },
+  JsonObject
+>;
+
+// @public
+export function createGithubDeployKeyAction(options: {
+  integrations: ScmIntegrationRegistry;
+}): TemplateAction_2<
+  {
+    repoUrl: string;
+    publicKey: string;
+    privateKey: string;
+    deployKeyName: string;
+    privateKeySecretName?: string | undefined;
+    token?: string | undefined;
+  },
+  JsonObject
+>;
+
+// @public
+export function createGithubEnvironmentAction(options: {
+  integrations: ScmIntegrationRegistry;
+}): TemplateAction_2<
+  {
+    repoUrl: string;
+    name: string;
+    deploymentBranchPolicy?:
+      | {
+          protected_branches: boolean;
+          custom_branch_policies: boolean;
+        }
+      | undefined;
+    customBranchPolicyNames?: string[] | undefined;
+    environmentVariables?:
+      | {
+          [key: string]: string;
+        }
+      | undefined;
+    secrets?:
       | {
           [key: string]: string;
         }
@@ -295,6 +352,16 @@ export function createGithubRepoCreateAction(options: {
     hasIssues?: boolean | undefined;
     token?: string | undefined;
     topics?: string[] | undefined;
+    repoVariables?:
+      | {
+          [key: string]: string;
+        }
+      | undefined;
+    secrets?:
+      | {
+          [key: string]: string;
+        }
+      | undefined;
     requireCommitSigning?: boolean | undefined;
   },
   JsonObject
@@ -436,6 +503,22 @@ export function createPublishBitbucketServerAction(options: {
 >;
 
 // @public
+export function createPublishBitbucketServerPullRequestAction(options: {
+  integrations: ScmIntegrationRegistry;
+  config: Config;
+}): TemplateAction_2<
+  {
+    repoUrl: string;
+    title: string;
+    description?: string | undefined;
+    targetBranch?: string | undefined;
+    sourceBranch: string;
+    token?: string | undefined;
+  },
+  JsonObject
+>;
+
+// @public
 export function createPublishGerritAction(options: {
   integrations: ScmIntegrationRegistry;
   config: Config;
@@ -539,6 +622,16 @@ export function createPublishGithubAction(options: {
     hasIssues?: boolean | undefined;
     token?: string | undefined;
     topics?: string[] | undefined;
+    repoVariables?:
+      | {
+          [key: string]: string;
+        }
+      | undefined;
+    secrets?:
+      | {
+          [key: string]: string;
+        }
+      | undefined;
     requiredCommitSigning?: boolean | undefined;
   },
   JsonObject
@@ -551,6 +644,7 @@ export const createPublishGithubPullRequestAction: (
   {
     title: string;
     branchName: string;
+    targetBranchName?: string | undefined;
     description: string;
     repoUrl: string;
     draft?: boolean | undefined;
@@ -593,6 +687,7 @@ export const createPublishGitlabMergeRequestAction: (options: {
     title: string;
     description: string;
     branchName: string;
+    targetBranchName?: string | undefined;
     sourcePath?: string | undefined;
     targetPath?: string | undefined;
     token?: string | undefined;
@@ -739,6 +834,9 @@ export type OctokitWithPullRequestPluginClient = Octokit & {
     data: {
       html_url: string;
       number: number;
+      base: {
+        ref: string;
+      };
     };
   } | null>;
 };
@@ -763,7 +861,9 @@ export interface RouterOptions {
   // (undocumented)
   logger: Logger;
   // (undocumented)
-  permissionRules?: TemplatePermissionRuleInput[];
+  permissionRules?: Array<
+    TemplatePermissionRuleInput | ActionPermissionRuleInput
+  >;
   // (undocumented)
   permissions?: PermissionEvaluator;
   // (undocumented)

@@ -1,5 +1,39 @@
 # @backstage/plugin-jenkins-common
 
+## 0.1.16
+
+### Patch Changes
+
+- 35e11314d7e9: Export list of permissions
+- Updated dependencies
+  - @backstage/plugin-catalog-common@1.0.14
+  - @backstage/plugin-permission-common@0.7.6
+
+## 0.1.16-next.2
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/plugin-catalog-common@1.0.14-next.1
+  - @backstage/plugin-permission-common@0.7.6-next.0
+
+## 0.1.16-next.1
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/plugin-permission-common@0.7.6-next.0
+  - @backstage/plugin-catalog-common@1.0.14-next.0
+
+## 0.1.16-next.0
+
+### Patch Changes
+
+- 35e11314d7e9: Export list of permissions
+- Updated dependencies
+  - @backstage/plugin-catalog-common@1.0.13
+  - @backstage/plugin-permission-common@0.7.5
+
 ## 0.1.15
 
 ### Patch Changes

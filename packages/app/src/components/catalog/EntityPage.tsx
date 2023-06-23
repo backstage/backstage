@@ -26,6 +26,7 @@ import {
   RELATION_PROVIDES_API,
 } from '@backstage/catalog-model';
 import { EmptyState, InfoCard } from '@backstage/core-components';
+import { EntityAdrContent, isAdrAvailable } from '@backstage/plugin-adr';
 import {
   EntityApiDefinitionCard,
   EntityConsumedApisCard,
@@ -111,6 +112,12 @@ import {
   EntityOwnershipCard,
   EntityUserProfileCard,
 } from '@backstage/plugin-org';
+import {
+  EntityNomadAllocationListTable,
+  EntityNomadJobVersionListCard,
+  isNomadAllocationsAvailable,
+  isNomadJobIDAvailable,
+} from '@backstage/plugin-nomad';
 import {
   EntityPagerDutyCard,
   isPagerDutyAvailable,
@@ -441,6 +448,14 @@ const overviewContent = (
     <Grid item md={8} xs={12}>
       <EntityHasSubcomponentsCard variant="gridItem" />
     </Grid>
+
+    <EntitySwitch>
+      <EntitySwitch.Case if={isNomadJobIDAvailable}>
+        <Grid item md={6} xs={12}>
+          <EntityNomadJobVersionListCard />
+        </Grid>
+      </EntitySwitch.Case>
+    </EntitySwitch>
   </Grid>
 );
 
@@ -484,6 +499,10 @@ const serviceEntityPage = (
       {techdocsContent}
     </EntityLayout.Route>
 
+    <EntityLayout.Route if={isAdrAvailable} path="/adrs" title="ADRS">
+      <EntityAdrContent />
+    </EntityLayout.Route>
+
     <EntityLayout.Route
       if={isNewRelicDashboardAvailable}
       path="/newrelic-dashboard"
@@ -494,6 +513,14 @@ const serviceEntityPage = (
 
     <EntityLayout.Route path="/kubernetes" title="Kubernetes">
       <EntityKubernetesContent />
+    </EntityLayout.Route>
+
+    <EntityLayout.Route
+      if={isNomadAllocationsAvailable}
+      path="/nomad"
+      title="Nomad"
+    >
+      <EntityNomadAllocationListTable />
     </EntityLayout.Route>
 
     <EntityLayout.Route path="/pull-requests" title="Pull Requests">

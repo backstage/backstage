@@ -18,6 +18,7 @@ import { Handler } from 'express';
 import { HelmetOptions } from 'helmet';
 import * as http from 'http';
 import { HttpRouterService } from '@backstage/backend-plugin-api';
+import { HumanDuration } from '@backstage/types';
 import { IdentityService } from '@backstage/backend-plugin-api';
 import { JsonObject } from '@backstage/types';
 import { LifecycleService } from '@backstage/backend-plugin-api';
@@ -77,6 +78,11 @@ export function createHttpServer(
     logger: LoggerService;
   },
 ): Promise<ExtendedHttpServer>;
+
+// @public
+export function createLifecycleMiddleware(
+  options: LifecycleMiddlewareOptions,
+): RequestHandler;
 
 // @public (undocumented)
 export function createSpecializedBackend(
@@ -169,6 +175,13 @@ export type IdentityFactoryOptions = {
 export const identityServiceFactory: (
   options?: IdentityFactoryOptions | undefined,
 ) => ServiceFactory<IdentityService, 'plugin'>;
+
+// @public
+export interface LifecycleMiddlewareOptions {
+  // (undocumented)
+  lifecycle: LifecycleService;
+  startupRequestPauseTimeout?: HumanDuration;
+}
 
 // @public
 export const lifecycleServiceFactory: () => ServiceFactory<

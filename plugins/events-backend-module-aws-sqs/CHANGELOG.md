@@ -1,5 +1,72 @@
 # @backstage/plugin-events-backend-module-aws-sqs
 
+## 0.2.1
+
+### Patch Changes
+
+- 5f2c38c70f5b: Fix SNYK-JS-FASTXMLPARSER-5668858 (`fast-xml-parser`) by upgrading aws-sdk to at least the current latest version.
+- Updated dependencies
+  - @backstage/backend-common@0.19.0
+  - @backstage/types@1.1.0
+  - @backstage/backend-plugin-api@0.5.3
+  - @backstage/backend-tasks@0.5.3
+  - @backstage/config@1.0.8
+  - @backstage/plugin-events-node@0.2.7
+
+## 0.2.1-next.2
+
+### Patch Changes
+
+- 5f2c38c70f5b: Fix SNYK-JS-FASTXMLPARSER-5668858 (`fast-xml-parser`) by upgrading aws-sdk to at least the current latest version.
+- Updated dependencies
+  - @backstage/backend-common@0.19.0-next.2
+  - @backstage/backend-plugin-api@0.5.3-next.2
+  - @backstage/backend-tasks@0.5.3-next.2
+  - @backstage/config@1.0.7
+  - @backstage/types@1.0.2
+  - @backstage/plugin-events-node@0.2.7-next.2
+
+## 0.2.1-next.1
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-common@0.19.0-next.1
+  - @backstage/backend-plugin-api@0.5.3-next.1
+  - @backstage/backend-tasks@0.5.3-next.1
+  - @backstage/plugin-events-node@0.2.7-next.1
+  - @backstage/config@1.0.7
+  - @backstage/types@1.0.2
+
+## 0.2.1-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-common@0.18.6-next.0
+  - @backstage/config@1.0.7
+  - @backstage/backend-plugin-api@0.5.3-next.0
+  - @backstage/backend-tasks@0.5.3-next.0
+  - @backstage/types@1.0.2
+  - @backstage/plugin-events-node@0.2.7-next.0
+
+## 0.2.0
+
+### Minor Changes
+
+- 2c5661f3899: Allow endpoint configuration for sqs, enabling use of localstack for testing.
+
+### Patch Changes
+
+- 3659c71c5d9: Standardize `@aws-sdk` v3 versions
+- Updated dependencies
+  - @backstage/backend-common@0.18.5
+  - @backstage/backend-tasks@0.5.2
+  - @backstage/backend-plugin-api@0.5.2
+  - @backstage/config@1.0.7
+  - @backstage/types@1.0.2
+  - @backstage/plugin-events-node@0.2.6
+
 ## 0.2.0-next.2
 
 ### Minor Changes

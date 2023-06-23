@@ -40,6 +40,9 @@ export type DevToolsInfo = {
 // @public (undocumented)
 export const devToolsInfoReadPermission: BasicPermission;
 
+// @public
+export const devToolsPermissions: BasicPermission[];
+
 // @public (undocumented)
 export type Endpoint = {
   name: string;

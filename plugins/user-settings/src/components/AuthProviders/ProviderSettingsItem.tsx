@@ -37,6 +37,8 @@ import {
 } from '@backstage/core-plugin-api';
 import { ProviderSettingsAvatar } from './ProviderSettingsAvatar';
 
+const emptyProfile: ProfileInfo = {};
+
 /** @public */
 export const ProviderSettingsItem = (props: {
   title: string;
@@ -49,8 +51,7 @@ export const ProviderSettingsItem = (props: {
   const api = useApi(apiRef);
   const errorApi = useApi(errorApiRef);
   const [signedIn, setSignedIn] = useState(false);
-  const emptyProfile: ProfileInfo = {};
-  const [profile, setProfile] = useState(emptyProfile);
+  const [profile, setProfile] = useState<ProfileInfo>(emptyProfile);
 
   useEffect(() => {
     let didCancel = false;
@@ -58,6 +59,10 @@ export const ProviderSettingsItem = (props: {
     const subscription = api
       .sessionState$()
       .subscribe((sessionState: SessionState) => {
+        if (sessionState !== SessionState.SignedIn) {
+          setProfile(emptyProfile);
+          setSignedIn(false);
+        }
         if (!didCancel) {
           api
             .getProfile({ optional: true })

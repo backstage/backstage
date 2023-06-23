@@ -17,9 +17,13 @@
 import {
   createServiceRef,
   createServiceFactory,
+  coreServices,
+  createBackendPlugin,
+  createBackendModule,
 } from '@backstage/backend-plugin-api';
 import { BackendInitializer } from './BackendInitializer';
 import { ServiceRegistry } from './ServiceRegistry';
+import { rootLifecycleServiceFactory } from '../services/implementations';
 
 const rootRef = createServiceRef<{ x: number }>({
   id: '1',
@@ -29,6 +33,16 @@ const rootRef = createServiceRef<{ x: number }>({
 const pluginRef = createServiceRef<{ x: number }>({
   id: '2',
 });
+
+class MockLogger {
+  debug() {}
+  info() {}
+  warn() {}
+  error() {}
+  child() {
+    return this;
+  }
+}
 
 describe('BackendInitializer', () => {
   it('should initialize root scoped services', async () => {
@@ -46,6 +60,12 @@ describe('BackendInitializer', () => {
         deps: {},
         factory: pluginFactory,
       })(),
+      rootLifecycleServiceFactory(),
+      createServiceFactory({
+        service: coreServices.rootLogger,
+        deps: {},
+        factory: () => new MockLogger(),
+      })(),
     ]);
 
     const init = new BackendInitializer(registry);
@@ -53,5 +73,106 @@ describe('BackendInitializer', () => {
 
     expect(rootFactory).toHaveBeenCalled();
     expect(pluginFactory).not.toHaveBeenCalled();
+  });
+
+  it('should forward errors when plugins fail to start', async () => {
+    const init = new BackendInitializer(new ServiceRegistry([]));
+    init.add(
+      createBackendPlugin({
+        pluginId: 'test',
+        register(reg) {
+          reg.registerInit({
+            deps: {},
+            async init() {
+              throw new Error('NOPE');
+            },
+          });
+        },
+      })(),
+    );
+    await expect(init.start()).rejects.toThrow(
+      "Plugin 'test' startup failed; caused by Error: NOPE",
+    );
+  });
+
+  it('should forward errors when modules fail to start', async () => {
+    const init = new BackendInitializer(new ServiceRegistry([]));
+    init.add(
+      createBackendModule({
+        pluginId: 'test',
+        moduleId: 'mod',
+        register(reg) {
+          reg.registerInit({
+            deps: {},
+            async init() {
+              throw new Error('NOPE');
+            },
+          });
+        },
+      })(),
+    );
+    await expect(init.start()).rejects.toThrow(
+      "Module 'mod' for plugin 'test' startup failed; caused by Error: NOPE",
+    );
+  });
+
+  it('should reject duplicate plugins', async () => {
+    const init = new BackendInitializer(new ServiceRegistry([]));
+    init.add(
+      createBackendPlugin({
+        pluginId: 'test',
+        register(reg) {
+          reg.registerInit({
+            deps: {},
+            async init() {},
+          });
+        },
+      })(),
+    );
+    init.add(
+      createBackendPlugin({
+        pluginId: 'test',
+        register(reg) {
+          reg.registerInit({
+            deps: {},
+            async init() {},
+          });
+        },
+      })(),
+    );
+    await expect(init.start()).rejects.toThrow(
+      "Plugin 'test' is already registered",
+    );
+  });
+
+  it('should reject duplicate modules', async () => {
+    const init = new BackendInitializer(new ServiceRegistry([]));
+    init.add(
+      createBackendModule({
+        pluginId: 'test',
+        moduleId: 'mod',
+        register(reg) {
+          reg.registerInit({
+            deps: {},
+            async init() {},
+          });
+        },
+      })(),
+    );
+    init.add(
+      createBackendModule({
+        pluginId: 'test',
+        moduleId: 'mod',
+        register(reg) {
+          reg.registerInit({
+            deps: {},
+            async init() {},
+          });
+        },
+      })(),
+    );
+    await expect(init.start()).rejects.toThrow(
+      "Module 'mod' for plugin 'test' is already registered",
+    );
   });
 });

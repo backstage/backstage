@@ -1,5 +1,45 @@
 # @backstage/core-app-api
 
+## 1.8.1
+
+### Patch Changes
+
+- 12adfbc8fe2d: Fixed a bug that prevented accurate plugin and route data from being applied to `navigate` analytics events when users visited pages constructed with `<EntityLayout>`, `<TabbedLayout>`, and similar components that are used to gather one or more routable extensions under a given path.
+- ac677bc30ae0: Expose discovery.endpoints configuration to use FrontendHostDiscovery
+- 74b216ee4e50: Add `PropsWithChildren` to usages of `ComponentType`, in preparation for React 18 where the children are no longer implicit.
+- Updated dependencies
+  - @backstage/core-plugin-api@1.5.2
+  - @backstage/types@1.1.0
+  - @backstage/config@1.0.8
+  - @backstage/version-bridge@1.0.4
+
+## 1.8.1-next.0
+
+### Patch Changes
+
+- 74b216ee4e50: Add `PropsWithChildren` to usages of `ComponentType`, in preparation for React 18 where the children are no longer implicit.
+- Updated dependencies
+  - @backstage/core-plugin-api@1.5.2-next.0
+  - @backstage/config@1.0.7
+  - @backstage/types@1.0.2
+  - @backstage/version-bridge@1.0.4
+
+## 1.8.0
+
+### Minor Changes
+
+- c89437db899: The analytics' `navigate` event will now include the route parameters as attributes of the navigate event
+
+### Patch Changes
+
+- b645d70034a: Fixed a bug in the Azure auth provider which prevented getting access tokens with multiple scopes for one resource
+- 42d817e76ab: Added `FrontendHostDiscovery` for config driven discovery implementation
+- Updated dependencies
+  - @backstage/config@1.0.7
+  - @backstage/core-plugin-api@1.5.1
+  - @backstage/types@1.0.2
+  - @backstage/version-bridge@1.0.4
+
 ## 1.8.0-next.1
 
 ### Minor Changes

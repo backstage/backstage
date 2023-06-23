@@ -10,6 +10,7 @@ import { BackstagePlugin } from '@backstage/core-plugin-api';
 import { ComponentEntity } from '@backstage/catalog-model';
 import { CompoundEntityRef } from '@backstage/catalog-model';
 import { Entity } from '@backstage/catalog-model';
+import { EntityOwnerPickerProps } from '@backstage/plugin-catalog-react';
 import { ExternalRouteRef } from '@backstage/core-plugin-api';
 import { IconComponent } from '@backstage/core-plugin-api';
 import { IndexableDocument } from '@backstage/plugin-search-common';
@@ -102,6 +103,13 @@ export const catalogPlugin: BackstagePlugin<
         name: string;
         kind: string;
         namespace: string;
+      },
+      true
+    >;
+    createFromTemplate: ExternalRouteRef<
+      {
+        namespace: string;
+        templateName: string;
       },
       true
     >;
@@ -207,6 +215,8 @@ export interface DefaultCatalogPageProps {
   initialKind?: string;
   // (undocumented)
   initiallySelectedFilter?: UserListFilterKind;
+  // (undocumented)
+  ownerPickerMode?: EntityOwnerPickerProps['mode'];
   // (undocumented)
   tableOptions?: TableProps<CatalogTableRow>['options'];
 }

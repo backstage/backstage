@@ -20,12 +20,14 @@ The Dynatrace plugin will require the following information, to be used in the c
 - Dynatrace API access token (see [documentation](https://www.dynatrace.com/support/help/dynatrace-api/basics/dynatrace-api-authentication)), with the following permissions:
   - `entities.read`
   - `problems.read`
+  - `DataExport` and/or `ExternalSyntheticIntegration` and/or `ReadSyntheticData`
 
 #### Install
 
 1. Install the plugin on your frontend:
 
 ```
+# From your Backstage root directory
 yarn add --cwd packages/app @backstage/plugin-dynatrace
 ```
 

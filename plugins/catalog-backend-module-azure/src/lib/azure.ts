@@ -58,9 +58,9 @@ export async function codeSearch(
 
   do {
     const response = await fetch(searchUrl, {
-      ...getAzureRequestOptions(azureConfig, {
+      ...(await getAzureRequestOptions(azureConfig, {
         'Content-Type': 'application/json',
-      }),
+      })),
       method: 'POST',
       body: JSON.stringify({
         searchText: `path:${path} repo:${repo || '*'} proj:${project || '*'}`,

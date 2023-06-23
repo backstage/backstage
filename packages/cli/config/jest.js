@@ -194,9 +194,16 @@ async function getProjectConfig(targetPath, extraConfig) {
     ...getRoleConfig(closestPkgJson?.backstage?.role),
   };
 
+  options.setupFilesAfterEnv = options.setupFilesAfterEnv || [];
+
+  if (options.testEnvironment === require.resolve('jest-environment-jsdom')) {
+    // FIXME https://github.com/jsdom/jsdom/issues/1724
+    options.setupFilesAfterEnv.unshift(require.resolve('cross-fetch/polyfill'));
+  }
+
   // Use src/setupTests.ts as the default location for configuring test env
   if (fs.existsSync(path.resolve(targetPath, 'src/setupTests.ts'))) {
-    options.setupFilesAfterEnv = ['<rootDir>/setupTests.ts'];
+    options.setupFilesAfterEnv.push('<rootDir>/setupTests.ts');
   }
 
   const config = Object.assign(options, ...pkgJsonConfigs);

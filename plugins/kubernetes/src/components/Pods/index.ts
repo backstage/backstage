@@ -13,5 +13,10 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-export { PodDrawer } from './PodDrawer';
+export * from './PodDrawer';
+export * from './PodLogs';
+export * from './FixDialog';
+export * from './Events';
+export * from './ErrorList';
 export { PodsTable } from './PodsTable';
+export * from './types';

@@ -105,7 +105,7 @@ const useStyles = makeStyles(theme => ({
         fontWeight: theme.typography.fontWeightRegular,
       },
       [`& .model-hint`]: {
-        color: theme.palette.text.hint,
+        color: theme.palette.text.secondary,
         backgroundColor: theme.palette.background.paper,
       },
       [`& .opblock-summary-method,

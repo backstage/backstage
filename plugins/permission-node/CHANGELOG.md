@@ -1,5 +1,84 @@
 # @backstage/plugin-permission-node
 
+## 0.7.9
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-common@0.19.0
+  - @backstage/errors@1.2.0
+  - @backstage/backend-plugin-api@0.5.3
+  - @backstage/plugin-auth-node@0.2.15
+  - @backstage/config@1.0.8
+  - @backstage/plugin-permission-common@0.7.6
+
+## 0.7.9-next.2
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-common@0.19.0-next.2
+  - @backstage/backend-plugin-api@0.5.3-next.2
+  - @backstage/config@1.0.7
+  - @backstage/errors@1.2.0-next.0
+  - @backstage/plugin-auth-node@0.2.15-next.2
+  - @backstage/plugin-permission-common@0.7.6-next.0
+
+## 0.7.9-next.1
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-common@0.19.0-next.1
+  - @backstage/errors@1.2.0-next.0
+  - @backstage/backend-plugin-api@0.5.3-next.1
+  - @backstage/plugin-auth-node@0.2.15-next.1
+  - @backstage/plugin-permission-common@0.7.6-next.0
+  - @backstage/config@1.0.7
+
+## 0.7.9-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-common@0.18.6-next.0
+  - @backstage/config@1.0.7
+  - @backstage/backend-plugin-api@0.5.3-next.0
+  - @backstage/errors@1.1.5
+  - @backstage/plugin-auth-node@0.2.15-next.0
+  - @backstage/plugin-permission-common@0.7.5
+
+## 0.7.8
+
+### Patch Changes
+
+- a788e715cfc: `createPermissionIntegrationRouter` now accepts rules and permissions for multiple resource types. Example:
+
+  ```typescript
+  createPermissionIntegrationRouter({
+    resources: [
+      {
+        resourceType: 'resourceType-1',
+        permissions: permissionsResourceType1,
+        rules: rulesResourceType1,
+      },
+      {
+        resourceType: 'resourceType-2',
+        permissions: permissionsResourceType2,
+        rules: rulesResourceType2,
+      },
+    ],
+  });
+  ```
+
+- Updated dependencies
+  - @backstage/backend-common@0.18.5
+  - @backstage/plugin-auth-node@0.2.14
+  - @backstage/backend-plugin-api@0.5.2
+  - @backstage/config@1.0.7
+  - @backstage/errors@1.1.5
+  - @backstage/plugin-permission-common@0.7.5
+
 ## 0.7.8-next.1
 
 ### Patch Changes

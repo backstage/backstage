@@ -72,10 +72,22 @@ export interface Config {
       /** Default database client to use */
       client: 'better-sqlite3' | 'sqlite3' | 'pg';
       /**
-       * Base database connection string or Knex object
+       * Base database connection string, or object with individual connection properties
        * @visibility secret
        */
-      connection: string | object;
+      connection:
+        | string
+        | Partial<{
+            /**
+             * Password that belongs to the client User
+             * @visibility secret
+             */
+            password: string;
+            /**
+             * Other connection settings
+             */
+            [key: string]: unknown;
+          }>;
       /** Database name prefix override */
       prefix?: string;
       /**

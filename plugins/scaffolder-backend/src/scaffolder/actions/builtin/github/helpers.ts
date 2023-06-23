@@ -30,6 +30,7 @@ import {
 } from '../helpers';
 import { getRepoSourceDirectory, parseRepoUrl } from '../publish/util';
 import { entityRefToName } from '../../builtin/helpers';
+import Sodium from 'libsodium-wrappers';
 
 const DEFAULT_TIMEOUT_MS = 60_000;
 
@@ -97,7 +98,7 @@ export async function createGithubRepoWithCollaboratorsAndTopics(
   client: Octokit,
   repo: string,
   owner: string,
-  repoVisibility: 'private' | 'internal' | 'public',
+  repoVisibility: 'private' | 'internal' | 'public' | undefined,
   description: string | undefined,
   homepage: string | undefined,
   deleteBranchOnMerge: boolean,
@@ -129,6 +130,8 @@ export async function createGithubRepoWithCollaboratorsAndTopics(
   hasWiki: boolean | undefined,
   hasIssues: boolean | undefined,
   topics: string[] | undefined,
+  repoVariables: { [key: string]: string } | undefined,
+  secrets: { [key: string]: string } | undefined,
   logger: Logger,
 ) {
   // eslint-disable-next-line testing-library/no-await-sync-query
@@ -146,6 +149,7 @@ export async function createGithubRepoWithCollaboratorsAndTopics(
           name: repo,
           org: owner,
           private: repoVisibility === 'private',
+          // @ts-ignore https://github.com/octokit/types.ts/issues/522
           visibility: repoVisibility,
           description: description,
           delete_branch_on_merge: deleteBranchOnMerge,
@@ -251,6 +255,47 @@ export async function createGithubRepoWithCollaboratorsAndTopics(
     } catch (e) {
       assertError(e);
       logger.warn(`Skipping topics ${topics.join(' ')}, ${e.message}`);
+    }
+  }
+
+  for (const [key, value] of Object.entries(repoVariables ?? {})) {
+    await client.rest.actions.createRepoVariable({
+      owner,
+      repo,
+      name: key,
+      value: value,
+    });
+  }
+
+  if (secrets) {
+    const publicKeyResponse = await client.rest.actions.getRepoPublicKey({
+      owner,
+      repo,
+    });
+
+    await Sodium.ready;
+    const binaryKey = Sodium.from_base64(
+      publicKeyResponse.data.key,
+      Sodium.base64_variants.ORIGINAL,
+    );
+    for (const [key, value] of Object.entries(secrets)) {
+      const binarySecret = Sodium.from_string(value);
+      const encryptedBinarySecret = Sodium.crypto_box_seal(
+        binarySecret,
+        binaryKey,
+      );
+      const encryptedBase64Secret = Sodium.to_base64(
+        encryptedBinarySecret,
+        Sodium.base64_variants.ORIGINAL,
+      );
+
+      await client.rest.actions.createOrUpdateRepoSecret({
+        owner,
+        repo,
+        secret_name: key,
+        encrypted_value: encryptedBase64Secret,
+        key_id: publicKeyResponse.data.key_id,
+      });
     }
   }
 

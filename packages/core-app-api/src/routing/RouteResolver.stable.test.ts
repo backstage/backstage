@@ -21,6 +21,7 @@ import {
   ExternalRouteRef,
   RouteRef,
   SubRouteRef,
+  BackstagePlugin,
 } from '@backstage/core-plugin-api';
 import { RouteResolver } from './RouteResolver';
 import { MATCH_ALL_ROUTE } from './collectors';
@@ -31,7 +32,12 @@ jest.mock('react-router-dom', () =>
 );
 
 const element = () => null;
-const rest = { element, caseSensitive: false, children: [MATCH_ALL_ROUTE] };
+const rest = {
+  element,
+  caseSensitive: false,
+  children: [MATCH_ALL_ROUTE],
+  plugins: new Set<BackstagePlugin>(),
+};
 
 const ref1 = createRouteRef({ id: 'rr1' });
 const ref2 = createRouteRef({ id: 'rr2', params: ['x'] });

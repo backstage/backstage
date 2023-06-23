@@ -14,7 +14,12 @@
  * limitations under the License.
  */
 
-import React, { ComponentType, useCallback, useState } from 'react';
+import React, {
+  ComponentType,
+  useCallback,
+  useState,
+  PropsWithChildren,
+} from 'react';
 
 import {
   Grid,
@@ -72,7 +77,7 @@ export default {
   title: 'Plugins/Search/SearchResultGroup',
   component: SearchResultGroup,
   decorators: [
-    (Story: ComponentType<{}>) =>
+    (Story: ComponentType<PropsWithChildren<{}>>) =>
       wrapInTestApp(
         <TestApiProvider apis={[[searchApiRef, searchApiMock]]}>
           <Grid container direction="row">

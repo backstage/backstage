@@ -1,5 +1,131 @@
 # @backstage/plugin-kubernetes-backend
 
+## 0.11.1
+
+### Patch Changes
+
+- b43e030911f2: Upgrade `@azure/identity` to support using Workload Identity to authenticate against Azure.
+- 91f39df52d60: K8s proxy HEADER_KUBERNETES_CLUSTER is now optional in single-cluster setups.
+- 4249f4214f9f: Fixed bug in KubernetesProxy where Host header was not propagated, leading to certificate issues
+- 5f2c38c70f5b: Fix SNYK-JS-FASTXMLPARSER-5668858 (`fast-xml-parser`) by upgrading aws-sdk to at least the current latest version.
+- eac59a3d0b11: Add ability for `configClusterLocator` to load cluster specific custom resources defined in your `app.config`.
+- 5e4879d80f4d: Fixed wrong `pluginID` in the `kubernetes` alpha backend support, that made the `kubernetes` plugin fail with the new experimental backend.
+- 73cc0deee48a: Add proposed fix dialog for pod errors
+- Updated dependencies
+  - @backstage/backend-common@0.19.0
+  - @backstage/catalog-client@1.4.2
+  - @backstage/integration-aws-node@0.1.4
+  - @backstage/catalog-model@1.4.0
+  - @backstage/errors@1.2.0
+  - @backstage/backend-plugin-api@0.5.3
+  - @backstage/plugin-auth-node@0.2.15
+  - @backstage/plugin-catalog-node@1.3.7
+  - @backstage/plugin-permission-node@0.7.9
+  - @backstage/config@1.0.8
+  - @backstage/plugin-kubernetes-common@0.6.4
+  - @backstage/plugin-permission-common@0.7.6
+
+## 0.11.1-next.3
+
+### Patch Changes
+
+- 91f39df52d60: K8s proxy HEADER_KUBERNETES_CLUSTER is now optional in single-cluster setups.
+- 5f2c38c70f5b: Fix SNYK-JS-FASTXMLPARSER-5668858 (`fast-xml-parser`) by upgrading aws-sdk to at least the current latest version.
+- eac59a3d0b11: Add ability for `configClusterLocator` to load cluster specific custom resources defined in your `app.config`.
+- Updated dependencies
+  - @backstage/integration-aws-node@0.1.4-next.1
+  - @backstage/backend-common@0.19.0-next.2
+  - @backstage/catalog-model@1.4.0-next.1
+  - @backstage/backend-plugin-api@0.5.3-next.2
+  - @backstage/catalog-client@1.4.2-next.2
+  - @backstage/config@1.0.7
+  - @backstage/errors@1.2.0-next.0
+  - @backstage/plugin-auth-node@0.2.15-next.2
+  - @backstage/plugin-catalog-node@1.3.7-next.2
+  - @backstage/plugin-kubernetes-common@0.6.4-next.1
+  - @backstage/plugin-permission-common@0.7.6-next.0
+  - @backstage/plugin-permission-node@0.7.9-next.2
+
+## 0.11.1-next.2
+
+### Patch Changes
+
+- 4249f4214f9f: Fixed bug in KubernetesProxy where Host header was not propagated, leading to certificate issues
+- 5e4879d80f4d: Fixed wrong `pluginID` in the `kubernetes` alpha backend support, that made the `kubernetes` plugin fail with the new experimental backend.
+- 73cc0deee48a: Add proposed fix dialog for pod errors
+- Updated dependencies
+  - @backstage/config@1.0.7
+  - @backstage/integration-aws-node@0.1.4-next.0
+
+## 0.11.1-next.1
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-common@0.19.0-next.1
+  - @backstage/errors@1.2.0-next.0
+  - @backstage/backend-plugin-api@0.5.3-next.1
+  - @backstage/catalog-model@1.4.0-next.0
+  - @backstage/plugin-auth-node@0.2.15-next.1
+  - @backstage/plugin-catalog-node@1.3.7-next.1
+  - @backstage/plugin-permission-node@0.7.9-next.1
+  - @backstage/catalog-client@1.4.2-next.1
+  - @backstage/integration-aws-node@0.1.4-next.0
+  - @backstage/plugin-permission-common@0.7.6-next.0
+  - @backstage/plugin-kubernetes-common@0.6.4-next.0
+  - @backstage/config@1.0.7
+
+## 0.11.1-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/catalog-client@1.4.2-next.0
+  - @backstage/plugin-catalog-node@1.3.7-next.0
+  - @backstage/backend-common@0.18.6-next.0
+  - @backstage/integration-aws-node@0.1.3
+  - @backstage/config@1.0.7
+  - @backstage/backend-plugin-api@0.5.3-next.0
+  - @backstage/catalog-model@1.3.0
+  - @backstage/errors@1.1.5
+  - @backstage/plugin-auth-node@0.2.15-next.0
+  - @backstage/plugin-kubernetes-common@0.6.3
+  - @backstage/plugin-permission-common@0.7.5
+  - @backstage/plugin-permission-node@0.7.9-next.0
+
+## 0.11.0
+
+### Minor Changes
+
+- f4114f02d49: Allow fetching pod metrics limited by a `labelSelector`.
+
+  This is used by the Kubernetes tab on a components' page and leads to much smaller responses being received from Kubernetes, especially with larger Kubernetes clusters.
+
+- 890988341e9: Update `aws-sdk` client from v2 to v3.
+
+  **BREAKING**: The `AwsIamKubernetesAuthTranslator` class no longer exposes the following methods `awsGetCredentials`, `getBearerToken`, `getCredentials` and `validCredentials`. There is no replacement for these methods.
+
+### Patch Changes
+
+- 05f1d74539d: Kubernetes clusters now support `authProvider: aks`. When configured this way,
+  the `retrieveObjectsByServiceId` action will use the `auth.aks` value in the
+  request body as a bearer token to authenticate with Kubernetes.
+- 3659c71c5d9: Standardize `@aws-sdk` v3 versions
+- a341129b754: Fixed a bug in the Kubernetes proxy endpoint where requests to clusters configured with client-side auth providers would always fail with a 500 status.
+- Updated dependencies
+  - @backstage/backend-common@0.18.5
+  - @backstage/integration-aws-node@0.1.3
+  - @backstage/plugin-permission-node@0.7.8
+  - @backstage/plugin-kubernetes-common@0.6.3
+  - @backstage/plugin-auth-node@0.2.14
+  - @backstage/plugin-catalog-node@1.3.6
+  - @backstage/backend-plugin-api@0.5.2
+  - @backstage/catalog-client@1.4.1
+  - @backstage/catalog-model@1.3.0
+  - @backstage/config@1.0.7
+  - @backstage/errors@1.1.5
+  - @backstage/plugin-permission-common@0.7.5
+
 ## 0.11.0-next.2
 
 ### Patch Changes

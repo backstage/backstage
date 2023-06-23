@@ -33,8 +33,6 @@ backend:
   database:
     client: better-sqlite3
     connection: ':memory:'
-  cache:
-    store: memory
   cors:
     origin: http://localhost:3000
     methods: [GET, HEAD, PATCH, POST, PUT, DELETE]
@@ -144,6 +142,9 @@ techdocs:
 
 dynatrace:
   baseUrl: https://your.dynatrace.instance.com
+
+nomad:
+  addr: 0.0.0.0
 
 # Score-cards sample configuration.
 scorecards:
@@ -274,6 +275,9 @@ catalog:
     # Example component for TechDocs
     - type: file
       target: ../../plugins/techdocs-backend/examples/documented-component/catalog-info.yaml
+    # Example component for ADRs
+    - type: file
+      target: ../../plugins/adr/examples/component/catalog-info.yaml
     # Backstage example templates
     - type: file
       target: ../../plugins/scaffolder-backend/sample-templates/all-templates.yaml

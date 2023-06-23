@@ -1,5 +1,90 @@
 # @backstage/plugin-jenkins-backend
 
+## 0.2.1
+
+### Patch Changes
+
+- 0f93b6707e04: Don't expose username and authentication header if configured.
+- 6c244b42cb06: Expose permissions through the metadata endpoint.
+- Updated dependencies
+  - @backstage/backend-common@0.19.0
+  - @backstage/catalog-client@1.4.2
+  - @backstage/plugin-jenkins-common@0.1.16
+  - @backstage/catalog-model@1.4.0
+  - @backstage/errors@1.2.0
+  - @backstage/plugin-auth-node@0.2.15
+  - @backstage/plugin-permission-node@0.7.9
+  - @backstage/config@1.0.8
+  - @backstage/plugin-permission-common@0.7.6
+
+## 0.2.1-next.2
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-common@0.19.0-next.2
+  - @backstage/catalog-model@1.4.0-next.1
+  - @backstage/catalog-client@1.4.2-next.2
+  - @backstage/config@1.0.7
+  - @backstage/errors@1.2.0-next.0
+  - @backstage/plugin-auth-node@0.2.15-next.2
+  - @backstage/plugin-jenkins-common@0.1.16-next.2
+  - @backstage/plugin-permission-common@0.7.6-next.0
+  - @backstage/plugin-permission-node@0.7.9-next.2
+
+## 0.2.1-next.1
+
+### Patch Changes
+
+- 0f93b6707e04: Don't expose username and authentication header if configured.
+- Updated dependencies
+  - @backstage/backend-common@0.19.0-next.1
+  - @backstage/errors@1.2.0-next.0
+  - @backstage/catalog-model@1.4.0-next.0
+  - @backstage/plugin-auth-node@0.2.15-next.1
+  - @backstage/plugin-permission-node@0.7.9-next.1
+  - @backstage/catalog-client@1.4.2-next.1
+  - @backstage/plugin-permission-common@0.7.6-next.0
+  - @backstage/config@1.0.7
+  - @backstage/plugin-jenkins-common@0.1.16-next.1
+
+## 0.2.1-next.0
+
+### Patch Changes
+
+- 6c244b42cb06: Expose permissions through the metadata endpoint.
+- Updated dependencies
+  - @backstage/catalog-client@1.4.2-next.0
+  - @backstage/plugin-jenkins-common@0.1.16-next.0
+  - @backstage/backend-common@0.18.6-next.0
+  - @backstage/config@1.0.7
+  - @backstage/catalog-model@1.3.0
+  - @backstage/errors@1.1.5
+  - @backstage/plugin-auth-node@0.2.15-next.0
+  - @backstage/plugin-permission-common@0.7.5
+  - @backstage/plugin-permission-node@0.7.9-next.0
+
+## 0.2.0
+
+### Minor Changes
+
+- cf95c5137c9: Updated rebuild to use Jenkins API replay build, which works for Jenkins jobs that have required parameters. Jenkins SDK could not be used for this request because it does not have support for replay.
+
+  Added link to view build in Jenkins CI/CD table action column.
+
+### Patch Changes
+
+- 670a2dd6f4e: Fix handling of slashes in branch names
+- Updated dependencies
+  - @backstage/backend-common@0.18.5
+  - @backstage/plugin-auth-node@0.2.14
+  - @backstage/catalog-client@1.4.1
+  - @backstage/catalog-model@1.3.0
+  - @backstage/config@1.0.7
+  - @backstage/errors@1.1.5
+  - @backstage/plugin-jenkins-common@0.1.15
+  - @backstage/plugin-permission-common@0.7.5
+
 ## 0.1.35-next.1
 
 ### Patch Changes

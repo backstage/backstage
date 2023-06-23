@@ -38,6 +38,73 @@ export type AzureIntegrationConfig = {
    * If no token is specified, anonymous access is used.
    */
   token?: string;
+
+  /**
+   * The credential to use for requests.
+   *
+   * If no credential is specified anonymous access is used.
+   */
+  credential?: AzureCredential;
+};
+
+/**
+ * Authenticate using a client secret that was generated for an App Registration.
+ * @public
+ */
+export type AzureClientSecretCredential = {
+  /**
+   * The Azure Active Directory tenant
+   */
+  tenantId: string;
+  /**
+   * The client id
+   */
+  clientId: string;
+
+  /**
+   * The client secret
+   */
+  clientSecret: string;
+};
+
+/**
+ * Authenticate using a managed identity available at the deployment environment.
+ * @public
+ */
+export type AzureManagedIdentityCredential = {
+  /**
+   * The clientId
+   */
+  clientId: string;
+};
+
+/**
+ * Credential used to authenticate to Azure Active Directory.
+ * @public
+ */
+export type AzureCredential =
+  | AzureClientSecretCredential
+  | AzureManagedIdentityCredential;
+export const isAzureClientSecretCredential = (
+  credential: Partial<AzureCredential>,
+): credential is AzureClientSecretCredential => {
+  const clientSecretCredential = credential as AzureClientSecretCredential;
+
+  return (
+    Object.keys(credential).length === 3 &&
+    clientSecretCredential.clientId !== undefined &&
+    clientSecretCredential.clientSecret !== undefined &&
+    clientSecretCredential.tenantId !== undefined
+  );
+};
+
+export const isAzureManagedIdentityCredential = (
+  credential: Partial<AzureCredential>,
+): credential is AzureManagedIdentityCredential => {
+  return (
+    Object.keys(credential).length === 1 &&
+    (credential as AzureManagedIdentityCredential).clientId !== undefined
+  );
 };
 
 /**
@@ -52,13 +119,43 @@ export function readAzureIntegrationConfig(
   const host = config.getOptionalString('host') ?? AZURE_HOST;
   const token = config.getOptionalString('token');
 
+  const credential = config.getOptional<AzureCredential>('credential')
+    ? {
+        tenantId: config.getOptionalString('credential.tenantId'),
+        clientId: config.getOptionalString('credential.clientId'),
+        clientSecret: config.getOptionalString('credential.clientSecret'),
+      }
+    : undefined;
+
   if (!isValidHost(host)) {
     throw new Error(
       `Invalid Azure integration config, '${host}' is not a valid host`,
     );
   }
 
-  return { host, token };
+  if (
+    credential &&
+    !isAzureClientSecretCredential(credential) &&
+    !isAzureManagedIdentityCredential(credential)
+  ) {
+    throw new Error(
+      `Invalid Azure integration config, credential is not valid`,
+    );
+  }
+
+  if (credential && host !== AZURE_HOST) {
+    throw new Error(
+      `Invalid Azure integration config, credential can only be used with ${AZURE_HOST}`,
+    );
+  }
+
+  if (credential && token) {
+    throw new Error(
+      `Invalid Azure integration config, specify either a token or a credential but not both`,
+    );
+  }
+
+  return { host, token, credential };
 }
 
 /**

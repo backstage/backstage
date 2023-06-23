@@ -1,5 +1,40 @@
 # @backstage/integration-aws-node
 
+## 0.1.4
+
+### Patch Changes
+
+- 5f2c38c70f5b: Fix SNYK-JS-FASTXMLPARSER-5668858 (`fast-xml-parser`) by upgrading aws-sdk to at least the current latest version.
+- Updated dependencies
+  - @backstage/errors@1.2.0
+  - @backstage/config@1.0.8
+
+## 0.1.4-next.1
+
+### Patch Changes
+
+- 5f2c38c70f5b: Fix SNYK-JS-FASTXMLPARSER-5668858 (`fast-xml-parser`) by upgrading aws-sdk to at least the current latest version.
+- Updated dependencies
+  - @backstage/config@1.0.7
+  - @backstage/errors@1.2.0-next.0
+
+## 0.1.4-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/errors@1.2.0-next.0
+  - @backstage/config@1.0.7
+
+## 0.1.3
+
+### Patch Changes
+
+- 3659c71c5d9: Standardize `@aws-sdk` v3 versions
+- Updated dependencies
+  - @backstage/config@1.0.7
+  - @backstage/errors@1.1.5
+
 ## 0.1.2
 
 ### Patch Changes

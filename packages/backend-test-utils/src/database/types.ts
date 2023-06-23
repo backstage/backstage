@@ -16,6 +16,7 @@
 
 import { DatabaseManager } from '@backstage/backend-common';
 import { Knex } from 'knex';
+import { getDockerImageForName } from '../util/getDockerImageForName';
 
 /**
  * The possible databases to test against.
@@ -48,35 +49,35 @@ export const allDatabases: Record<TestDatabaseId, TestDatabaseProperties> =
     POSTGRES_13: {
       name: 'Postgres 13.x',
       driver: 'pg',
-      dockerImageName: 'postgres:13',
+      dockerImageName: getDockerImageForName('postgres:13'),
       connectionStringEnvironmentVariableName:
         'BACKSTAGE_TEST_DATABASE_POSTGRES13_CONNECTION_STRING',
     },
     POSTGRES_12: {
       name: 'Postgres 12.x',
       driver: 'pg',
-      dockerImageName: 'postgres:12',
+      dockerImageName: getDockerImageForName('postgres:12'),
       connectionStringEnvironmentVariableName:
         'BACKSTAGE_TEST_DATABASE_POSTGRES12_CONNECTION_STRING',
     },
     POSTGRES_11: {
       name: 'Postgres 11.x',
       driver: 'pg',
-      dockerImageName: 'postgres:11',
+      dockerImageName: getDockerImageForName('postgres:11'),
       connectionStringEnvironmentVariableName:
         'BACKSTAGE_TEST_DATABASE_POSTGRES11_CONNECTION_STRING',
     },
     POSTGRES_9: {
       name: 'Postgres 9.x',
       driver: 'pg',
-      dockerImageName: 'postgres:9',
+      dockerImageName: getDockerImageForName('postgres:9'),
       connectionStringEnvironmentVariableName:
         'BACKSTAGE_TEST_DATABASE_POSTGRES9_CONNECTION_STRING',
     },
     MYSQL_8: {
       name: 'MySQL 8.x',
       driver: 'mysql2',
-      dockerImageName: 'mysql:8',
+      dockerImageName: getDockerImageForName('mysql:8'),
       connectionStringEnvironmentVariableName:
         'BACKSTAGE_TEST_DATABASE_MYSQL8_CONNECTION_STRING',
     },

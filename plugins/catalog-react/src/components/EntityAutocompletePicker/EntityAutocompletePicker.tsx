@@ -54,6 +54,7 @@ export type EntityAutocompletePickerProps<
   showCounts?: boolean;
   Filter: ConstructableFilter<NonNullable<T[Name]>>;
   InputProps?: TextFieldProps;
+  initialSelectedOptions?: string[];
 };
 
 /** @public */
@@ -61,7 +62,15 @@ export function EntityAutocompletePicker<
   T extends DefaultEntityFilters = DefaultEntityFilters,
   Name extends AllowedEntityFilters<T> = AllowedEntityFilters<T>,
 >(props: EntityAutocompletePickerProps<T, Name>) {
-  const { label, name, path, showCounts, Filter, InputProps } = props;
+  const {
+    label,
+    name,
+    path,
+    showCounts,
+    Filter,
+    InputProps,
+    initialSelectedOptions = [],
+  } = props;
 
   const {
     updateFilters,
@@ -90,7 +99,8 @@ export function EntityAutocompletePicker<
   const [selectedOptions, setSelectedOptions] = useState(
     queryParameters.length
       ? queryParameters
-      : (filters[name] as unknown as { values: string[] })?.values ?? [],
+      : (filters[name] as unknown as { values: string[] })?.values ??
+          initialSelectedOptions,
   );
 
   // Set selected options on query parameter updates; this happens at initial page load and from

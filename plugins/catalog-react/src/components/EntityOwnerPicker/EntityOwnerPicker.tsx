@@ -17,16 +17,15 @@
 import {
   Entity,
   parseEntityRef,
-  RELATION_OWNED_BY,
   stringifyEntityRef,
 } from '@backstage/catalog-model';
 import {
   Box,
   Checkbox,
   FormControlLabel,
-  makeStyles,
   TextField,
   Typography,
+  makeStyles,
 } from '@material-ui/core';
 import CheckBoxIcon from '@material-ui/icons/CheckBox';
 import CheckBoxOutlineBlankIcon from '@material-ui/icons/CheckBoxOutlineBlank';
@@ -35,11 +34,11 @@ import { Autocomplete } from '@material-ui/lab';
 import React, { useEffect, useMemo, useState } from 'react';
 import { useEntityList } from '../../hooks/useEntityListProvider';
 import { EntityOwnerFilter } from '../../filters';
-import { getEntityRelations } from '../../utils';
-import useAsync from 'react-use/lib/useAsync';
-import { errorApiRef, useApi } from '@backstage/core-plugin-api';
-import { catalogApiRef } from '../../api';
+import { useDebouncedEffect } from '@react-hookz/web';
+import PersonIcon from '@material-ui/icons/Person';
+import GroupIcon from '@material-ui/icons/Group';
 import { humanizeEntity, humanizeEntityRef } from '../EntityRefLink/humanize';
+import { useFetchEntities } from './useFetchEntities';
 
 /** @public */
 export type CatalogReactEntityOwnerPickerClassKey = 'input';
@@ -56,17 +55,24 @@ const useStyles = makeStyles(
 const icon = <CheckBoxOutlineBlankIcon fontSize="small" />;
 const checkedIcon = <CheckBoxIcon fontSize="small" />;
 
+/**
+ * @public
+ */
+export type EntityOwnerPickerProps = {
+  mode?: 'owners-only' | 'all';
+};
+
 /** @public */
-export const EntityOwnerPicker = () => {
+export const EntityOwnerPicker = (props?: EntityOwnerPickerProps) => {
   const classes = useStyles();
+  const { mode = 'owners-only' } = props || {};
   const {
     updateFilters,
-    backendEntities,
     filters,
     queryParameters: { owners: ownersParameter },
   } = useEntityList();
-  const catalogApi = useApi(catalogApiRef);
-  const errorApi = useApi(errorApiRef);
+
+  const [text, setText] = useState('');
 
   const queryParamOwners = useMemo(
     () => [ownersParameter].flat().filter(Boolean) as string[],
@@ -74,71 +80,16 @@ export const EntityOwnerPicker = () => {
   );
 
   const [selectedOwners, setSelectedOwners] = useState(
-    queryParamOwners.length
-      ? new EntityOwnerFilter(queryParamOwners).values
-      : filters.owners?.values ?? [],
+    queryParamOwners.length ? queryParamOwners : filters.owners?.values ?? [],
   );
 
-  const {
-    loading,
-    error,
-    value: ownerEntities,
-  } = useAsync(async () => {
-    const ownerEntityRefs = [
-      ...new Set(
-        backendEntities
-          .flatMap((e: Entity) =>
-            getEntityRelations(e, RELATION_OWNED_BY).map(o =>
-              stringifyEntityRef(o),
-            ),
-          )
-          .filter(Boolean) as string[],
-      ),
-    ];
-    const { items: ownerEntitiesOrNull } = await catalogApi.getEntitiesByRefs({
-      entityRefs: ownerEntityRefs,
-      fields: [
-        'kind',
-        'metadata.name',
-        'metadata.title',
-        'metadata.namespace',
-        'spec.profile.displayName',
-      ],
-    });
-    const owners = ownerEntitiesOrNull.map((entity, index) => {
-      if (entity) {
-        return {
-          label: humanizeEntity(entity, { defaultKind: 'Group' }),
-          entityRef: stringifyEntityRef(entity),
-        };
-      }
-      return {
-        label: humanizeEntityRef(parseEntityRef(ownerEntityRefs[index]), {
-          defaultKind: 'group',
-        }),
-        entityRef: ownerEntityRefs[index],
-      };
-    });
+  const [{ value, loading }, handleFetch, cache] = useFetchEntities({
+    mode,
+    initialSelectedOwnersRefs: selectedOwners,
+  });
+  useDebouncedEffect(() => handleFetch({ text }), [text, handleFetch], 250);
 
-    return owners.sort((a, b) =>
-      a.label.localeCompare(b.label, 'en-US', {
-        ignorePunctuation: true,
-        caseFirst: 'upper',
-      }),
-    );
-  }, [backendEntities]);
-
-  useEffect(() => {
-    if (error) {
-      errorApi.post(
-        {
-          ...error,
-          message: `EntityOwnerPicker failed to initialize: ${error.message}`,
-        },
-        {},
-      );
-    }
-  }, [error, errorApi]);
+  const availableOwners = value?.items || [];
 
   // Set selected owners on query parameter updates; this happens at initial page load and from
   // external updates to the page location.
@@ -150,17 +101,20 @@ export const EntityOwnerPicker = () => {
   }, [queryParamOwners]);
 
   useEffect(() => {
-    if (!loading && ownerEntities) {
-      updateFilters({
-        owners:
-          selectedOwners.length && ownerEntities.length
-            ? new EntityOwnerFilter(selectedOwners)
-            : undefined,
-      });
-    }
-  }, [selectedOwners, updateFilters, ownerEntities, loading]);
+    updateFilters({
+      owners: selectedOwners.length
+        ? new EntityOwnerFilter(selectedOwners)
+        : undefined,
+    });
+  }, [selectedOwners, updateFilters]);
 
-  if (!loading && !ownerEntities?.length) return null;
+  if (
+    ['user', 'group'].includes(
+      filters.kind?.value.toLocaleLowerCase('en-US') || '',
+    )
+  ) {
+    return null;
+  }
 
   return (
     <Box pb={1} pt={1}>
@@ -170,38 +124,99 @@ export const EntityOwnerPicker = () => {
           multiple
           disableCloseOnSelect
           loading={loading}
-          options={ownerEntities || []}
-          value={
-            ownerEntities?.filter(e =>
-              selectedOwners.some((f: string) => f === e.entityRef),
-            ) ?? []
-          }
-          onChange={(_: object, value: { entityRef: string }[]) =>
-            setSelectedOwners(value.map(e => e.entityRef))
-          }
-          getOptionLabel={option => option.label}
-          renderOption={(option, { selected }) => (
-            <FormControlLabel
-              control={
-                <Checkbox
-                  icon={icon}
-                  checkedIcon={checkedIcon}
-                  checked={selected}
-                />
-              }
-              onClick={event => event.preventDefault()}
-              label={option.label}
-            />
-          )}
+          options={availableOwners}
+          value={selectedOwners as unknown as Entity[]}
+          getOptionSelected={(o, v) => {
+            if (typeof v === 'string') {
+              return stringifyEntityRef(o) === v;
+            }
+            return o === v;
+          }}
+          getOptionLabel={o => {
+            const entity =
+              typeof o === 'string'
+                ? cache.getEntity(o) ||
+                  parseEntityRef(o, {
+                    defaultKind: 'group',
+                    defaultNamespace: 'default',
+                  })
+                : o;
+            return humanizeEntity(entity, humanizeEntityRef(entity));
+          }}
+          onChange={(_: object, owners) => {
+            setText('');
+            setSelectedOwners(
+              owners.map(e => {
+                const entityRef =
+                  typeof e === 'string' ? e : stringifyEntityRef(e);
+
+                if (typeof e !== 'string') {
+                  cache.setEntity(e);
+                }
+
+                return entityRef;
+              }),
+            );
+          }}
+          filterOptions={x => x}
+          renderOption={(entity, { selected }) => {
+            const isGroup = entity.kind.toLocaleLowerCase('en-US') === 'group';
+
+            return (
+              <FormControlLabel
+                control={
+                  <Checkbox
+                    icon={icon}
+                    checkedIcon={checkedIcon}
+                    checked={selected}
+                  />
+                }
+                onClick={event => event.preventDefault()}
+                label={
+                  <Box display="flex" flexWrap="wrap" alignItems="center">
+                    {isGroup ? (
+                      <GroupIcon fontSize="small" />
+                    ) : (
+                      <PersonIcon fontSize="small" />
+                    )}
+                    &nbsp;
+                    {humanizeEntity(
+                      entity,
+                      humanizeEntityRef(entity, { defaultKind: entity.kind }),
+                    )}
+                  </Box>
+                }
+              />
+            );
+          }}
           size="small"
           popupIcon={<ExpandMoreIcon data-testid="owner-picker-expand" />}
           renderInput={params => (
             <TextField
               {...params}
               className={classes.input}
+              onChange={e => {
+                setText(e.currentTarget.value);
+              }}
               variant="outlined"
             />
           )}
+          ListboxProps={{
+            onScroll: (e: React.MouseEvent) => {
+              const element = e.currentTarget;
+              const hasReachedEnd =
+                Math.abs(
+                  element.scrollHeight -
+                    element.clientHeight -
+                    element.scrollTop,
+                ) < 1;
+
+              if (hasReachedEnd && value?.cursor) {
+                handleFetch({ items: value.items, cursor: value.cursor });
+              }
+            },
+            'data-testid': 'owner-picker-listbox',
+          }}
         />
       </Typography>
     </Box>

@@ -30,16 +30,6 @@ export interface Backend {
   stop(): Promise<void>;
 }
 
-export interface BackendRegisterInit {
-  id: string;
-  consumes: Set<ServiceOrExtensionPoint>;
-  provides: Set<ServiceOrExtensionPoint>;
-  init: {
-    deps: { [name: string]: ServiceOrExtensionPoint };
-    func: (deps: { [name: string]: unknown }) => Promise<void>;
-  };
-}
-
 /**
  * @public
  */

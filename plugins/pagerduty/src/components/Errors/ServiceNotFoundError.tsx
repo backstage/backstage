@@ -21,7 +21,7 @@ export const ServiceNotFoundError = () => (
   <EmptyState
     missing="data"
     title="PagerDuty Service Not Found"
-    description="A service could not be found within PagerDuty based on the provided annotations. Please verify your annotation details."
+    description="A service could not be found within PagerDuty based on the provided service id. Please verify your configuration."
     action={
       <Button
         color="primary"

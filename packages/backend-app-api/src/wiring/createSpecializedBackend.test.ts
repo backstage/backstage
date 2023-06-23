@@ -32,12 +32,18 @@ describe('createSpecializedBackend', () => {
           createServiceFactory({
             service: coreServices.rootLifecycle,
             deps: {},
-            factory: async () => ({ addShutdownHook: () => {} }),
+            factory: async () => ({
+              addStartupHook: () => {},
+              addShutdownHook: () => {},
+            }),
           }),
           createServiceFactory({
             service: coreServices.rootLifecycle,
             deps: {},
-            factory: async () => ({ addShutdownHook: () => {} }),
+            factory: async () => ({
+              addStartupHook: () => {},
+              addShutdownHook: () => {},
+            }),
           }),
         ],
       }),

@@ -6,7 +6,6 @@
 /// <reference types="react" />
 
 import { ApiHolder } from '@backstage/core-plugin-api';
-import { ComponentType } from 'react';
 import { CustomFieldExtensionSchema } from '@backstage/plugin-scaffolder-react';
 import { Dispatch } from 'react';
 import { Extension } from '@backstage/core-plugin-api';
@@ -20,8 +19,8 @@ import { JsonValue } from '@backstage/types';
 import { LayoutOptions } from '@backstage/plugin-scaffolder-react';
 import { PropsWithChildren } from 'react';
 import { default as React_2 } from 'react';
+import { ReactElement } from 'react';
 import { ReactNode } from 'react';
-import { RJSFSchema } from '@rjsf/utils';
 import { ScaffolderStep } from '@backstage/plugin-scaffolder-react';
 import { ScaffolderTaskOutput } from '@backstage/plugin-scaffolder-react';
 import { SetStateAction } from 'react';
@@ -56,8 +55,8 @@ export const extractSchemaFromStep: (inputStep: JsonObject) => {
   schema: JsonObject;
 };
 
-// @alpha (undocumented)
-export const Form: ComponentType<FormProps_2<any, RJSFSchema, any>>;
+// @alpha
+export const Form: (props: PropsWithChildren<FormProps_2>) => JSX.Element;
 
 // @alpha
 export type FormProps = Pick<
@@ -131,6 +130,31 @@ export type ReviewStateProps = {
   schemas: ParsedTemplateSchema[];
   formState: JsonObject;
 };
+
+// @alpha
+export const ScaffolderField: (
+  props: PropsWithChildren<ScaffolderFieldProps>,
+) => JSX.Element;
+
+// @alpha
+export interface ScaffolderFieldProps {
+  // (undocumented)
+  disabled?: boolean;
+  // (undocumented)
+  displayLabel?: boolean;
+  // (undocumented)
+  errors?: ReactElement;
+  // (undocumented)
+  help?: ReactElement;
+  // (undocumented)
+  rawDescription?: string;
+  // (undocumented)
+  rawErrors?: string[];
+  // (undocumented)
+  rawHelp?: string;
+  // (undocumented)
+  required?: boolean;
+}
 
 // @alpha (undocumented)
 export function ScaffolderPageContextMenu(
@@ -206,7 +230,7 @@ export interface TemplateCardProps {
 export const TemplateCategoryPicker: () => JSX.Element | null;
 
 // @alpha
-export const TemplateGroup: (props: TemplateGroupProps) => JSX.Element;
+export const TemplateGroup: (props: TemplateGroupProps) => JSX.Element | null;
 
 // @alpha (undocumented)
 export type TemplateGroupFilter = {
@@ -265,7 +289,7 @@ export const useFormDataFromQuery: (
 
 // @alpha (undocumented)
 export const useTemplateParameterSchema: (templateRef: string) => {
-  manifest: TemplateParameterSchema;
+  manifest: TemplateParameterSchema | undefined;
   loading: boolean;
   error: Error | undefined;
 };

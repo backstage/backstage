@@ -19,3 +19,5 @@ export { createGithubIssuesLabelAction } from './githubIssuesLabel';
 export { createGithubRepoCreateAction } from './githubRepoCreate';
 export { createGithubRepoPushAction } from './githubRepoPush';
 export { createGithubWebhookAction } from './githubWebhook';
+export { createGithubDeployKeyAction } from './githubDeployKey';
+export { createGithubEnvironmentAction } from './githubEnvironment';

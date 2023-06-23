@@ -17,7 +17,6 @@
 import {
   ErrorResponseBody,
   ForwardedError,
-  InputError,
   NotAllowedError,
   NotFoundError,
   serializeError,
@@ -98,26 +97,29 @@ export class KubernetesProxy {
         req.header('authorization'),
       );
 
-      const authorizeResponse = (
-        await permissionApi.authorize(
-          [{ permission: kubernetesProxyPermission }],
-          {
-            token,
-          },
-        )
-      )[0];
+      const authorizeResponse = await permissionApi.authorize(
+        [{ permission: kubernetesProxyPermission }],
+        {
+          token,
+        },
+      );
+      const auth = authorizeResponse[0];
 
-      if (authorizeResponse.result === AuthorizeResult.DENY) {
+      if (auth.result === AuthorizeResult.DENY) {
         res.status(403).json({ error: new NotAllowedError('Unauthorized') });
         return;
       }
 
-      const cluster = await this.getClusterForRequest(req).then(cd =>
-        this.authTranslator.decorateClusterDetailsWithAuth(cd, {}),
-      );
-      if (!req.headers.authorization) {
-        req.headers.authorization = `Bearer ${cluster.serviceAccountToken}`;
-      }
+      req.headers.authorization =
+        req.header(HEADER_KUBERNETES_AUTH) ??
+        `Bearer ${
+          (
+            await this.getClusterForRequest(req).then(cd =>
+              this.authTranslator.decorateClusterDetailsWithAuth(cd, {}),
+            )
+          ).serviceAccountToken
+        }`;
+
       const middleware = await this.getMiddleware(req);
       middleware(req, res, next);
     };
@@ -134,6 +136,7 @@ export class KubernetesProxy {
       middleware = createProxyMiddleware({
         logProvider: () => logger,
         secure: !originalCluster.skipTLSVerify,
+        changeOrigin: true,
         router: async req => {
           // Re-evaluate the cluster on each request, in case it has changed
           const cluster = await this.getClusterForRequest(req);
@@ -163,13 +166,6 @@ export class KubernetesProxy {
           };
           res.status(500).json(body);
         },
-        onProxyReq: (proxyReq, req) => {
-          // the kubernetes proxy endpoint expects a header field labeled `Backstage-Kubernetes-Authorization` that will be used to authenticate with the Kubernetes Api. The token provided as a value should be an bearer token for the target cluster.
-          if (req.header(HEADER_KUBERNETES_AUTH)) {
-            const token = req.header(HEADER_KUBERNETES_AUTH) ?? '';
-            proxyReq.setHeader('Authorization', token);
-          }
-        },
       });
       this.middlewareForClusterName.set(originalCluster.name, middleware);
     }
@@ -178,13 +174,23 @@ export class KubernetesProxy {
 
   private async getClusterForRequest(req: Request): Promise<ClusterDetails> {
     const clusterName = req.header(HEADER_KUBERNETES_CLUSTER);
-    if (!clusterName) {
-      throw new InputError(`Missing '${HEADER_KUBERNETES_CLUSTER}' header.`);
+    const clusters = await this.clusterSupplier.getClusters();
+
+    if (!clusters || clusters.length <= 0) {
+      throw new NotFoundError(`No Clusters configured`);
     }
 
-    const cluster = await this.clusterSupplier
-      .getClusters()
-      .then(clusters => clusters.find(c => c.name === clusterName));
+    const hasClusterNameHeader =
+      typeof clusterName === 'string' && clusterName.length > 0;
+
+    let cluster: ClusterDetails | undefined;
+
+    if (hasClusterNameHeader) {
+      cluster = clusters.find(c => c.name === clusterName);
+    } else if (clusters.length === 1) {
+      cluster = clusters.at(0);
+    }
+
     if (!cluster) {
       throw new NotFoundError(`Cluster '${clusterName}' not found`);
     }

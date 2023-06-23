@@ -1,6 +1,6 @@
 {
   "name": "example-backend-next",
-  "version": "0.0.11-next.2",
+  "version": "0.0.12",
   "main": "dist/index.cjs.js",
   "types": "src/index.ts",
   "license": "Apache-2.0",
@@ -29,6 +29,8 @@
     "@backstage/plugin-app-backend": "workspace:^",
     "@backstage/plugin-auth-node": "workspace:^",
     "@backstage/plugin-catalog-backend": "workspace:^",
+    "@backstage/plugin-catalog-backend-module-unprocessed": "workspace:^",
+    "@backstage/plugin-entity-feedback-backend": "workspace:^",
     "@backstage/plugin-kubernetes-backend": "workspace:^",
     "@backstage/plugin-permission-backend": "workspace:^",
     "@backstage/plugin-permission-common": "workspace:^",

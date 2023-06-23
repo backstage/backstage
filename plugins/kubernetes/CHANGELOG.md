@@ -1,5 +1,129 @@
 # @backstage/plugin-kubernetes
 
+## 0.9.2
+
+### Patch Changes
+
+- dc3cddf51ab5: Fix cyclical dependency in built output
+- 4e697e88f0e2: Add resource utilization to Pod Drawer
+- 4b230b97660d: Add errors to PodDrawer
+- 73cc0deee48a: Add proposed fix dialog for pod errors
+- Updated dependencies
+  - @backstage/core-plugin-api@1.5.2
+  - @backstage/core-components@0.13.2
+  - @backstage/theme@0.4.0
+  - @backstage/plugin-catalog-react@1.7.0
+  - @backstage/catalog-model@1.4.0
+  - @backstage/errors@1.2.0
+  - @backstage/config@1.0.8
+  - @backstage/plugin-kubernetes-common@0.6.4
+
+## 0.9.2-next.3
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/core-components@0.13.2-next.3
+  - @backstage/catalog-model@1.4.0-next.1
+  - @backstage/config@1.0.7
+  - @backstage/core-plugin-api@1.5.2-next.0
+  - @backstage/errors@1.2.0-next.0
+  - @backstage/theme@0.4.0-next.1
+  - @backstage/plugin-catalog-react@1.7.0-next.3
+  - @backstage/plugin-kubernetes-common@0.6.4-next.1
+
+## 0.9.2-next.2
+
+### Patch Changes
+
+- 73cc0deee48a: Add proposed fix dialog for pod errors
+- Updated dependencies
+  - @backstage/theme@0.4.0-next.1
+  - @backstage/plugin-catalog-react@1.7.0-next.2
+  - @backstage/core-components@0.13.2-next.2
+  - @backstage/config@1.0.7
+  - @backstage/core-plugin-api@1.5.2-next.0
+
+## 0.9.2-next.1
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/errors@1.2.0-next.0
+  - @backstage/core-components@0.13.2-next.1
+  - @backstage/plugin-catalog-react@1.7.0-next.1
+  - @backstage/catalog-model@1.4.0-next.0
+  - @backstage/core-plugin-api@1.5.2-next.0
+  - @backstage/plugin-kubernetes-common@0.6.4-next.0
+  - @backstage/config@1.0.7
+  - @backstage/theme@0.4.0-next.0
+
+## 0.9.2-next.0
+
+### Patch Changes
+
+- dc3cddf51ab5: Fix cyclical dependency in built output
+- 4b230b97660d: Add errors to PodDrawer
+- Updated dependencies
+  - @backstage/plugin-catalog-react@1.7.0-next.0
+  - @backstage/theme@0.4.0-next.0
+  - @backstage/config@1.0.7
+  - @backstage/core-components@0.13.2-next.0
+  - @backstage/core-plugin-api@1.5.1
+  - @backstage/catalog-model@1.3.0
+  - @backstage/errors@1.1.5
+  - @backstage/plugin-kubernetes-common@0.6.3
+
+## 0.9.0
+
+### Minor Changes
+
+- 280ec10c18e: Added Pod logs components for Kubernetes plugin
+
+  **BREAKING**: `kubernetesProxyApi` for custom plugins built with components from the Kubernetes plugin apis, `kubernetesProxyApi` should be added to the plugin's API list.
+
+  ```
+  ...
+  export const kubernetesPlugin = createPlugin({
+    id: 'kubernetes',
+    apis: [
+  ...
+      createApiFactory({
+          api: kubernetesProxyApiRef,
+          deps: {
+          kubernetesApi: kubernetesApiRef,
+          },
+          factory: ({ kubernetesApi }) =>
+          new KubernetesProxyClient({
+              kubernetesApi,
+          }),
+      }),
+  ```
+
+  **BREAKING**: `KubernetesDrawer` is now called `KubernetesStructuredMetadataTableDrawer` so that we can do more than just show `StructuredMetadataTable`
+
+  `import { KubernetesDrawer } from "@backstage/plugin-kubernetes"`
+
+  should now be:
+
+  `import { KubernetesStructuredMetadataTableDrawer } from "@backstage/plugin-kubernetes"`
+
+### Patch Changes
+
+- c7bad1005ba: The Kubernetes plugin now requests AKS access tokens from Azure when retrieving
+  objects from clusters configured with `authProvider: aks` and sets `auth.aks` in
+  its request bodies appropriately.
+- a160e02c3d7: Omit managed fields in the Kubernetes resource YAML display.
+- Updated dependencies
+  - @backstage/theme@0.3.0
+  - @backstage/plugin-catalog-react@1.6.0
+  - @backstage/core-components@0.13.1
+  - @backstage/plugin-kubernetes-common@0.6.3
+  - @backstage/catalog-model@1.3.0
+  - @backstage/config@1.0.7
+  - @backstage/core-plugin-api@1.5.1
+  - @backstage/errors@1.1.5
+
 ## 0.9.0-next.2
 
 ### Patch Changes

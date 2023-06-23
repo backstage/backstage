@@ -129,12 +129,14 @@ describe.each(['beta', 'stable'])('react-router %s', rrVersion => {
       caseSensitive: false,
       element: type,
       routeRefs: new Set(refs),
+      plugins: new Set(),
       children: [
         {
           path: '*',
           caseSensitive: false,
           element: 'match-all',
           routeRefs: new Set(),
+          plugins: new Set(),
         },
         ...children,
       ],

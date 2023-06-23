@@ -30,10 +30,15 @@ import { searchModuleTechDocsCollator } from '@backstage/plugin-search-backend-m
 import { searchPlugin } from '@backstage/plugin-search-backend/alpha';
 import { techdocsPlugin } from '@backstage/plugin-techdocs-backend/alpha';
 import { todoPlugin } from '@backstage/plugin-todo-backend';
+import { entityFeedbackPlugin } from '@backstage/plugin-entity-feedback-backend';
+import { catalogModuleUnprocessedEntities } from '@backstage/plugin-catalog-backend-module-unprocessed';
 
 const backend = createBackend();
 
 backend.add(appPlugin({ appPackageName: 'example-app' }));
+
+// Entity Feedback
+backend.add(entityFeedbackPlugin());
 
 // Todo
 backend.add(todoPlugin());
@@ -59,5 +64,7 @@ backend.add(kubernetesPlugin());
 // Permissions
 backend.add(permissionPlugin());
 backend.add(permissionModuleAllowAllPolicy());
+
+backend.add(catalogModuleUnprocessedEntities());
 
 backend.start();

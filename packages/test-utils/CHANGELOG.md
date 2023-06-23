@@ -1,5 +1,77 @@
 # @backstage/test-utils
 
+## 1.4.0
+
+### Minor Changes
+
+- 1fd38bc4141a: Test App Wrapper is now using `UnifiedThemeProvider` for supporting MUI v5 next to MUI v4 in tests.
+
+### Patch Changes
+
+- 55853a367174: Add a `fetchApiRef` implementation by default
+- Updated dependencies
+  - @backstage/core-app-api@1.8.1
+  - @backstage/core-plugin-api@1.5.2
+  - @backstage/types@1.1.0
+  - @backstage/theme@0.4.0
+  - @backstage/plugin-permission-react@0.4.13
+  - @backstage/config@1.0.8
+  - @backstage/plugin-permission-common@0.7.6
+
+## 1.4.0-next.2
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/theme@0.4.0-next.1
+  - @backstage/config@1.0.7
+  - @backstage/core-app-api@1.8.1-next.0
+  - @backstage/core-plugin-api@1.5.2-next.0
+  - @backstage/plugin-permission-react@0.4.13-next.0
+
+## 1.4.0-next.1
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/core-app-api@1.8.1-next.0
+  - @backstage/core-plugin-api@1.5.2-next.0
+  - @backstage/plugin-permission-common@0.7.6-next.0
+  - @backstage/config@1.0.7
+  - @backstage/theme@0.4.0-next.0
+  - @backstage/types@1.0.2
+  - @backstage/plugin-permission-react@0.4.13-next.0
+
+## 1.4.0-next.0
+
+### Minor Changes
+
+- 1fd38bc4141a: Test App Wrapper is now using `UnifiedThemeProvider` for supporting MUI v5 next to MUI v4 in tests.
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/theme@0.4.0-next.0
+  - @backstage/config@1.0.7
+  - @backstage/core-app-api@1.8.0
+  - @backstage/core-plugin-api@1.5.1
+  - @backstage/plugin-permission-react@0.4.12
+  - @backstage/types@1.0.2
+  - @backstage/plugin-permission-common@0.7.5
+
+## 1.3.1
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/theme@0.3.0
+  - @backstage/core-app-api@1.8.0
+  - @backstage/config@1.0.7
+  - @backstage/core-plugin-api@1.5.1
+  - @backstage/types@1.0.2
+  - @backstage/plugin-permission-common@0.7.5
+  - @backstage/plugin-permission-react@0.4.12
+
 ## 1.3.1-next.2
 
 ### Patch Changes

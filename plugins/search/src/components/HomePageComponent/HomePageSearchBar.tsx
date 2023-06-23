@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import React, { useCallback, useState } from 'react';
+import React, { useCallback, useRef, useState } from 'react';
 import { makeStyles } from '@material-ui/core/styles';
 import {
   SearchBarBase,
@@ -23,10 +23,12 @@ import {
 import { useNavigateToQuery } from '../util';
 
 const useStyles = makeStyles({
-  root: {
+  searchBarRoot: {
+    fontSize: '1.5em',
+  },
+  searchBarOutline: {
     border: '1px solid #555',
     borderRadius: '6px',
-    fontSize: '1.5em',
   },
 });
 
@@ -45,11 +47,15 @@ export type HomePageSearchBarProps = Partial<
 export const HomePageSearchBar = (props: HomePageSearchBarProps) => {
   const classes = useStyles(props);
   const [query, setQuery] = useState('');
+  const ref = useRef<HTMLInputElement | null>(null);
+
   const handleSearch = useNavigateToQuery();
 
-  const handleSubmit = () => {
-    handleSearch({ query });
-  };
+  // This handler is called when "enter" is pressed
+  const handleSubmit = useCallback(() => {
+    // Using ref to get the current field value without waiting for a query debounce
+    handleSearch({ query: ref.current?.value ?? '' });
+  }, [handleSearch]);
 
   const handleChange = useCallback(
     value => {
@@ -60,10 +66,18 @@ export const HomePageSearchBar = (props: HomePageSearchBarProps) => {
 
   return (
     <SearchBarBase
-      classes={{ root: classes.root }}
       value={query}
       onSubmit={handleSubmit}
       onChange={handleChange}
+      inputProps={{ ref }}
+      InputProps={{
+        ...props.InputProps,
+        classes: {
+          root: classes.searchBarRoot,
+          notchedOutline: classes.searchBarOutline,
+          ...props.InputProps?.classes,
+        },
+      }}
       {...props}
     />
   );

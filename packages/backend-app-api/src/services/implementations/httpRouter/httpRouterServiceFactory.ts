@@ -15,10 +15,12 @@
  */
 
 import {
-  createServiceFactory,
   coreServices,
+  createServiceFactory,
 } from '@backstage/backend-plugin-api';
 import { Handler } from 'express';
+import PromiseRouter from 'express-promise-router';
+import { createLifecycleMiddleware } from './createLifecycleMiddleware';
 
 /**
  * @public
@@ -36,14 +38,21 @@ export const httpRouterServiceFactory = createServiceFactory(
     service: coreServices.httpRouter,
     deps: {
       plugin: coreServices.pluginMetadata,
+      lifecycle: coreServices.lifecycle,
       rootHttpRouter: coreServices.rootHttpRouter,
     },
-    async factory({ plugin, rootHttpRouter }) {
+    async factory({ plugin, rootHttpRouter, lifecycle }) {
       const getPath = options?.getPath ?? (id => `/api/${id}`);
       const path = getPath(plugin.getId());
+
+      const router = PromiseRouter();
+      rootHttpRouter.use(path, router);
+
+      router.use(createLifecycleMiddleware({ lifecycle }));
+
       return {
         use(handler: Handler) {
-          rootHttpRouter.use(path, handler);
+          router.use(handler);
         },
       };
     },

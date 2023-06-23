@@ -14,7 +14,6 @@
  * limitations under the License.
  */
 import React, { ReactNode, useState, useCallback } from 'react';
-import { Entity } from '@backstage/catalog-model';
 import { Card, CardHeader, Divider, CardContent } from '@material-ui/core';
 import { Incidents } from '../Incident';
 import { EscalationPolicy } from '../Escalation';
@@ -25,7 +24,6 @@ import AlarmAddIcon from '@material-ui/icons/AlarmAdd';
 import { MissingTokenError, ServiceNotFoundError } from '../Errors';
 import WebIcon from '@material-ui/icons/Web';
 import DateRangeIcon from '@material-ui/icons/DateRange';
-import { PAGERDUTY_INTEGRATION_KEY, PAGERDUTY_SERVICE_ID } from '../constants';
 import { TriggerDialog } from '../TriggerDialog';
 import { ChangeEvents } from '../ChangeEvents';
 
@@ -39,30 +37,20 @@ import {
   CardTab,
   InfoCard,
 } from '@backstage/core-components';
-import { useEntity } from '@backstage/plugin-catalog-react';
-import { getPagerDutyEntity } from '../pagerDutyEntity';
+import { PagerDutyEntity } from '../../types';
 
 const BasicCard = ({ children }: { children: ReactNode }) => (
   <InfoCard title="PagerDuty">{children}</InfoCard>
 );
 
 /** @public */
-export const isPluginApplicableToEntity = (entity: Entity) =>
-  Boolean(
-    entity.metadata.annotations?.[PAGERDUTY_INTEGRATION_KEY] ||
-      entity.metadata.annotations?.[PAGERDUTY_SERVICE_ID],
-  );
-
-/** @public */
-export type PagerDutyCardProps = {
+export type PagerDutyCardProps = PagerDutyEntity & {
   readOnly?: boolean;
 };
 
 /** @public */
 export const PagerDutyCard = (props: PagerDutyCardProps) => {
-  const { readOnly } = props;
-  const { entity } = useEntity();
-  const pagerDutyEntity = getPagerDutyEntity(entity);
+  const { readOnly, integrationKey, name } = props;
   const api = useApi(pagerDutyApiRef);
   const [refreshIncidents, setRefreshIncidents] = useState<boolean>(false);
   const [refreshChangeEvents, setRefreshChangeEvents] =
@@ -86,7 +74,9 @@ export const PagerDutyCard = (props: PagerDutyCardProps) => {
     loading,
     error,
   } = useAsync(async () => {
-    const { service: foundService } = await api.getServiceByEntity(entity);
+    const { service: foundService } = await api.getServiceByPagerDutyEntity(
+      props,
+    );
 
     return {
       id: foundService.id,
@@ -137,7 +127,7 @@ export const PagerDutyCard = (props: PagerDutyCardProps) => {
    * There is no guarantee the current user entity has a valid email association, so instead just
    * only allow triggering incidents when an integration key is present.
    */
-  const createIncidentDisabled = !pagerDutyEntity.integrationKey;
+  const createIncidentDisabled = !integrationKey;
   const triggerLink: IconLinkVerticalProps = {
     label: 'Create Incident',
     onClick: showDialog,
@@ -195,6 +185,8 @@ export const PagerDutyCard = (props: PagerDutyCardProps) => {
           showDialog={dialogShown}
           handleDialog={hideDialog}
           onIncidentCreated={handleRefresh}
+          name={name}
+          integrationKey={integrationKey}
         />
       )}
     </>

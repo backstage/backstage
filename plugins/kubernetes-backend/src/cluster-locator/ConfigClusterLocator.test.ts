@@ -271,4 +271,47 @@ describe('ConfigClusterLocator', () => {
 
     expect(result).toMatchObject([cluster]);
   });
+
+  it('has cluster level defined customResources returns clusterDetails with those CRDs', async () => {
+    const config: Config = new ConfigReader({
+      clusters: [
+        {
+          name: 'cluster1',
+          url: 'http://localhost:8080',
+          authProvider: 'serviceAccount',
+          customResources: [
+            {
+              group: 'argoproj.io',
+              apiVersion: 'v1alpha1',
+              plural: 'rollouts',
+            },
+          ],
+        },
+      ],
+    });
+
+    const sut = ConfigClusterLocator.fromConfig(config);
+
+    const result = await sut.getClusters();
+
+    expect(result).toStrictEqual([
+      {
+        name: 'cluster1',
+        serviceAccountToken: undefined,
+        url: 'http://localhost:8080',
+        authProvider: 'serviceAccount',
+        skipMetricsLookup: false,
+        skipTLSVerify: false,
+        caData: undefined,
+        caFile: undefined,
+        customResources: [
+          {
+            group: 'argoproj.io',
+            apiVersion: 'v1alpha1',
+            plural: 'rollouts',
+          },
+        ],
+      },
+    ]);
+  });
 });

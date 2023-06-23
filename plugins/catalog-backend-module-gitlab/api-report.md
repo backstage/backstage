@@ -40,6 +40,7 @@ export class GitLabDiscoveryProcessor implements CatalogProcessor {
     options: {
       logger: Logger;
       skipReposWithoutExactFileMatch?: boolean;
+      skipForkedRepos?: boolean;
     },
   ): GitLabDiscoveryProcessor;
   // (undocumented)

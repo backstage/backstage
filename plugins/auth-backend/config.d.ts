@@ -59,6 +59,7 @@ export interface Config {
 
     /**
      * The available auth-provider options and attributes
+     * @additionalProperties true
      */
     providers?: {
       google?: {

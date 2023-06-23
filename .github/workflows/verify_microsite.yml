@@ -4,7 +4,9 @@ on:
   pull_request:
     paths:
       - '.github/workflows/verify_microsite-next.yml'
+      - '.github/workflows/verify_microsite.yml'
       - 'microsite/**'
+      - 'mkdocs.yml'
       - 'docs/**'
 
 jobs:
@@ -36,6 +38,12 @@ jobs:
 
       - name: build API reference
         run: yarn build:api-docs
+
+      - name: Install MkDocs dependencies
+        run: pip3 install mkdocs mkdocs-techdocs-core
+
+      - name: Build MkDocs for TechDocs
+        run: mkdocs build --strict
 
       - name: verify yarn dependency duplicates
         run: node scripts/verify-lockfile-duplicates.js

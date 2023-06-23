@@ -491,7 +491,7 @@ plugins:
 
 The `docs/index.md` can for example have the following content:
 
-```
+```markdown
 # ${{ values.component_id }}
 
 ${{ values.description }}
@@ -507,16 +507,16 @@ folder (/docs) or replace the content in this file.
 
 Done! You now have support for TechDocs in your own software template!
 
-## how to enable iframes in TechDocs
+## How to enable iframes in TechDocs
 
-Techdocs uses the [DOMPurify](https://github.com/cure53/DOMPurify) to sanitizes
-HTML and prevents XSS attacks
+TechDocs uses the [DOMPurify](https://github.com/cure53/DOMPurify) library to
+sanitize HTML and prevent XSS attacks.
 
 It's possible to allow some iframes based on a list of allowed hosts. To do
 this, add the allowed hosts in the `techdocs.sanitizer.allowedIframeHosts`
-configuration of your `app-config.yaml`
+configuration of your `app-config.yaml`.
 
-E.g.
+For example:
 
 ```yaml
 techdocs:
@@ -525,25 +525,25 @@ techdocs:
       - drive.google.com
 ```
 
-This way, all iframes where the host of src attribute is in the
+This way, all iframes where the host in the src attribute is in the
 `sanitizer.allowedIframeHosts` list will be displayed.
 
 ## How to add Mermaid support in TechDocs
 
-To add `Mermaid` support in Techdocs, you can use [`kroki`](https://kroki.io)
+To add `Mermaid` support in TechDocs, you can use [`kroki`](https://kroki.io)
 that creates diagrams from Textual descriptions. It is a single rendering
 gateway for all popular diagrams-as-a-code tools. It supports an enormous number
 of diagram types.
 
-1. **Create and Publish docker image:** Create the docker image from the
-   following Dockerfile and publish it to DockerHub.
+1. **Create and Publish Docker image:** Create the Docker image from the
+   following `Dockerfile` and publish it to DockerHub.
 
 ```docker
-FROM python:3.8-alpine
+FROM python:3.10-alpine
 
 RUN apk update && apk --no-cache add gcc musl-dev openjdk11-jdk curl graphviz ttf-dejavu fontconfig
 
-RUN pip install --upgrade pip && pip install mkdocs-techdocs-core==1.1.7
+RUN pip install --upgrade pip && pip install mkdocs-techdocs-core==1.2.0
 
 RUN pip install mkdocs-kroki-plugin
 
@@ -551,7 +551,7 @@ ENTRYPOINT [ "mkdocs" ]
 ```
 
 Create a repository in your DockerHub and run the below command in the same
-folder where your Dockerfile is present:
+folder where your `Dockerfile` is present:
 
 ```shell
 docker build . -t dockerHub_Username/repositoryName:tagName
@@ -559,7 +559,7 @@ docker build . -t dockerHub_Username/repositoryName:tagName
 
 Once the docker image is ready, push it to DockerHub.
 
-2. **Update app-config.yaml:** So that when your app generates techdocs, it will
+2. **Update app-config.yaml:** So that when your app generates TechDocs, it will
    pull your docker image from DockerHub.
 
 ```python
@@ -573,7 +573,7 @@ techdocs:
     type: 'local' # Alternatives - 'googleGcs' or 'awsS3'. Read documentation for using alternatives.
 ```
 
-3. **Add the `kroki` plugin in mkdocs.yml:**
+3. **Add the `kroki` plugin in `mkdocs.yml`:**
 
 ```yml
 plugins:
@@ -588,7 +588,7 @@ plugins:
 > instead. Check out [mkdocs-kroki-plugin config](https://github.com/AVATEAM-IT-SYSTEMHAUS/mkdocs-kroki-plugin#config)
 > for more plugin configuration details.
 
-4. **Add mermaid code into techdocs:**
+4. **Add mermaid code into TechDocs:**
 
 ````md
 ```kroki-mermaid

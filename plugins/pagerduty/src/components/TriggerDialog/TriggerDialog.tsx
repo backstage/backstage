@@ -28,7 +28,6 @@ import {
 import useAsyncFn from 'react-use/lib/useAsyncFn';
 import { pagerDutyApiRef } from '../../api';
 import { Alert } from '@material-ui/lab';
-import { usePagerdutyEntity } from '../../hooks';
 import {
   useApi,
   alertApiRef,
@@ -40,14 +39,17 @@ type Props = {
   showDialog: boolean;
   handleDialog: () => void;
   onIncidentCreated?: () => void;
+  name: string;
+  integrationKey: string;
 };
 
 export const TriggerDialog = ({
   showDialog,
   handleDialog,
   onIncidentCreated: onIncidentCreated,
+  name,
+  integrationKey,
 }: Props) => {
-  const { name, integrationKey } = usePagerdutyEntity();
   const alertApi = useApi(alertApiRef);
   const identityApi = useApi(identityApiRef);
   const api = useApi(pagerDutyApiRef);

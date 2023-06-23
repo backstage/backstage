@@ -35,7 +35,7 @@ jobs:
           registry-url: https://registry.npmjs.org/ # Needed for auth
 
       - name: yarn install
-        uses: backstage/actions/yarn-install@v0.6.3
+        uses: backstage/actions/yarn-install@v0.6.4
         with:
           cache-prefix: ${{ runner.os }}-v${{ matrix.node-version }}
 
@@ -66,7 +66,7 @@ jobs:
           registry-url: https://registry.npmjs.org/ # Needed for auth
 
       - name: yarn install
-        uses: backstage/actions/yarn-install@v0.6.3
+        uses: backstage/actions/yarn-install@v0.6.4
         with:
           cache-prefix: ${{ runner.os }}-v${{ matrix.node-version }}
 
@@ -95,8 +95,11 @@ jobs:
       - name: verify api reference
         run: node scripts/verify-api-reference.js
 
+      - name: lint openapi yaml files
+        run: yarn backstage-repo-tools schema openapi lint
+
       - name: verify openapi yaml file matches generated ts file
-        run: yarn backstage-repo-tools schema:openapi:verify
+        run: yarn backstage-repo-tools schema openapi verify
 
       - name: verify doc links
         run: node scripts/verify-links.js
@@ -188,7 +191,7 @@ jobs:
           registry-url: https://registry.npmjs.org/ # Needed for auth
 
       - name: yarn install
-        uses: backstage/actions/yarn-install@v0.6.3
+        uses: backstage/actions/yarn-install@v0.6.4
         with:
           cache-prefix: ${{ runner.os }}-v${{ matrix.node-version }}
 

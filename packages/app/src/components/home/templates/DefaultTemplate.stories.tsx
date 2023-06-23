@@ -38,7 +38,7 @@ import {
 } from '@backstage/plugin-search-react';
 import { stackOverflowApiRef, HomePageStackOverflowQuestions } from '@backstage/plugin-stack-overflow';
 import { Grid, makeStyles } from '@material-ui/core';
-import React, { ComponentType } from 'react';
+import React, { ComponentType, PropsWithChildren } from 'react';
 
 const entities = [
   {
@@ -107,7 +107,7 @@ starredEntitiesApi.toggleStarred('component:default/example-starred-entity-4');
 export default {
   title: 'Plugins/Home/Templates',
   decorators: [
-    (Story: ComponentType<{}>) =>
+    (Story: ComponentType<PropsWithChildren<{}>>) =>
       wrapInTestApp(
         <>
           <TestApiProvider
@@ -140,15 +140,16 @@ export default {
 };
 
 const useStyles = makeStyles(theme => ({
-  searchBar: {
-    display: 'flex',
+  searchBarInput: {
     maxWidth: '60vw',
-    backgroundColor: theme.palette.background.paper,
-    boxShadow: theme.shadows[1],
-    padding: '8px 0',
-    borderRadius: '50px',
     margin: 'auto',
+    backgroundColor: theme.palette.background.paper,
+    borderRadius: '50px',
+    boxShadow: theme.shadows[1],
   },
+  searchBarOutline: {
+    borderStyle: 'none'
+  }
 }));
 
 const useLogoStyles = makeStyles(theme => ({
@@ -177,9 +178,9 @@ export const DefaultTemplate = () => {
               className={container}
               logo={<TemplateBackstageLogo classes={{ svg, path }} />}
             />
-            <Grid container item xs={12} alignItems="center" direction="row">
+            <Grid container item xs={12} justifyContent='center'>
               <HomePageSearchBar
-                classes={{ root: classes.searchBar }}
+                InputProps={{ classes: { root: classes.searchBarInput, notchedOutline: classes.searchBarOutline }}}
                 placeholder="Search"
               />
             </Grid>

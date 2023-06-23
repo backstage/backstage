@@ -12,6 +12,7 @@ import { ComponentType } from 'react';
 import { Entity } from '@backstage/catalog-model';
 import { GridProps } from '@material-ui/core';
 import { IconComponent } from '@backstage/core-plugin-api';
+import { PropsWithChildren } from 'react';
 import { ReactNode } from 'react';
 
 // @public
@@ -22,7 +23,7 @@ export class DevAppBuilder {
   addPage(opts: DevAppPageOptions): DevAppBuilder;
   addRootChild(node: ReactNode): DevAppBuilder;
   addThemes(themes: AppTheme[]): this;
-  build(): ComponentType<{}>;
+  build(): ComponentType<PropsWithChildren<{}>>;
   registerApi<
     Api,
     Impl extends Api,

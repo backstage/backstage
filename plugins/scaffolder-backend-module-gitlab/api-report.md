@@ -12,10 +12,9 @@ export const createGitlabGroupEnsureExistsAction: (options: {
   integrations: ScmIntegrationRegistry;
 }) => TemplateAction<
   {
+    path: string[];
     repoUrl: string;
     token?: string | undefined;
-  } & {
-    path: string[];
   },
   {
     groupId?: number | undefined;
@@ -28,9 +27,8 @@ export const createGitlabProjectAccessTokenAction: (options: {
 }) => TemplateAction<
   {
     repoUrl: string;
-    token?: string | undefined;
-  } & {
     projectId: string | number;
+    token?: string | undefined;
     name?: string | undefined;
     accessLevel?: number | undefined;
     scopes?: string[] | undefined;
@@ -45,11 +43,10 @@ export const createGitlabProjectDeployTokenAction: (options: {
   integrations: ScmIntegrationRegistry;
 }) => TemplateAction<
   {
-    repoUrl: string;
-    token?: string | undefined;
-  } & {
     name: string;
+    repoUrl: string;
     projectId: string | number;
+    token?: string | undefined;
     username?: string | undefined;
     scopes?: string[] | undefined;
   },
@@ -64,13 +61,12 @@ export const createGitlabProjectVariableAction: (options: {
   integrations: ScmIntegrationRegistry;
 }) => TemplateAction<
   {
-    repoUrl: string;
-    token?: string | undefined;
-  } & {
     key: string;
     value: string;
+    repoUrl: string;
     projectId: string | number;
     variableType: string;
+    token?: string | undefined;
     variableProtected?: boolean | undefined;
     masked?: boolean | undefined;
     raw?: boolean | undefined;

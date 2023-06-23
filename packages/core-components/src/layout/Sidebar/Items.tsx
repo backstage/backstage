@@ -411,7 +411,11 @@ const SidebarItemBase = forwardRef<any, SidebarItemProps>((props, ref) => {
         {itemIcon}
       </Box>
       {text && (
-        <Typography variant="subtitle2" className={classes.label}>
+        <Typography
+          variant="subtitle2"
+          component="span"
+          className={classes.label}
+        >
           {text}
         </Typography>
       )}
@@ -677,7 +681,7 @@ const styledScrollbar = (theme: Theme): CreateCSSProperties => ({
     borderRadius: '5px',
   },
   '&::-webkit-scrollbar-thumb': {
-    backgroundColor: theme.palette.text.hint,
+    backgroundColor: theme.palette.text.secondary,
     borderRadius: '5px',
   },
 });

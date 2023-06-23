@@ -1,5 +1,56 @@
 # @backstage/plugin-sonarqube-backend
 
+## 0.2.0
+
+### Minor Changes
+
+- ce9bc94c15e1: fix sonarqube case in config schema definition
+
+### Patch Changes
+
+- 0bb0b19b0da2: Provide full schema definition for sonarqube plugin, especially to protect api keys.
+- Updated dependencies
+  - @backstage/backend-common@0.19.0
+  - @backstage/errors@1.2.0
+  - @backstage/config@1.0.8
+
+## 0.1.11-next.2
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-common@0.19.0-next.2
+  - @backstage/config@1.0.7
+  - @backstage/errors@1.2.0-next.0
+
+## 0.1.11-next.1
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-common@0.19.0-next.1
+  - @backstage/errors@1.2.0-next.0
+  - @backstage/config@1.0.7
+
+## 0.1.11-next.0
+
+### Patch Changes
+
+- 0bb0b19b0da2: Provide full schema definition for sonarqube plugin, especially to protect api keys.
+- Updated dependencies
+  - @backstage/backend-common@0.18.6-next.0
+  - @backstage/config@1.0.7
+  - @backstage/errors@1.1.5
+
+## 0.1.10
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-common@0.18.5
+  - @backstage/config@1.0.7
+  - @backstage/errors@1.1.5
+
 ## 0.1.10-next.1
 
 ### Patch Changes

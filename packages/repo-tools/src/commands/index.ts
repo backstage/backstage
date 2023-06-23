@@ -18,6 +18,39 @@ import { assertError } from '@backstage/errors';
 import { Command } from 'commander';
 import { exitWithError } from '../lib/errors';
 
+function registerSchemaCommand(program: Command) {
+  const command = program
+    .command('schema [command]')
+    .description('Various tools for working with API schema');
+
+  const openApiCommand = command
+    .command('openapi [command]')
+    .description('Tooling for OpenApi schema');
+
+  openApiCommand
+    .command('verify [paths...]')
+    .description(
+      'Verify that all OpenAPI schemas are valid and have a matching `schemas/openapi.generated.ts` file.',
+    )
+    .action(lazy(() => import('./openapi/verify').then(m => m.bulkCommand)));
+
+  openApiCommand
+    .command('generate [paths...]')
+    .description(
+      'Generates a Typescript file from an OpenAPI yaml spec. For use with the `@backstage/backend-openapi-utils` ApiRouter type.',
+    )
+    .action(lazy(() => import('./openapi/generate').then(m => m.bulkCommand)));
+
+  openApiCommand
+    .command('lint [paths...]')
+    .description('Lint OpenAPI schemas.')
+    .option(
+      '--strict',
+      'Fail on any linting severity messages, not just errors.',
+    )
+    .action(lazy(() => import('./openapi/lint').then(m => m.bulkCommand)));
+}
+
 export function registerCommands(program: Command) {
   program
     .command('api-reports [paths...]')
@@ -63,19 +96,7 @@ export function registerCommands(program: Command) {
     .description('Find inconsistencies in types of all packages and plugins')
     .action(lazy(() => import('./type-deps/type-deps').then(m => m.default)));
 
-  program
-    .command('schema:openapi:verify [paths...]')
-    .description(
-      'Verify that all OpenAPI schemas are valid and have a matching `schemas/openapi.generated.ts` file.',
-    )
-    .action(lazy(() => import('./openapi/verify').then(m => m.bulkCommand)));
-
-  program
-    .command('schema:openapi:generate [paths...]')
-    .description(
-      'Generates a Typescript file from an OpenAPI yaml spec. For use with the `@backstage/backend-openapi-utils` ApiRouter type.',
-    )
-    .action(lazy(() => import('./openapi/generate').then(m => m.bulkCommand)));
+  registerSchemaCommand(program);
 }
 
 // Wraps an action function so that it always exits and handles errors

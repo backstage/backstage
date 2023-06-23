@@ -20,11 +20,14 @@ import { ReactNode } from 'react';
 import { ResultHighlight } from '@backstage/plugin-search-common';
 import { RouteRef } from '@backstage/core-plugin-api';
 import { SearchResultListItemExtensionProps } from '@backstage/plugin-search-react';
+import { SyncResult as SyncResult_2 } from '@backstage/plugin-techdocs-react';
 import { TableColumn } from '@backstage/core-components';
 import { TableOptions } from '@backstage/core-components';
 import { TableProps } from '@backstage/core-components';
+import { TechDocsApi as TechDocsApi_2 } from '@backstage/plugin-techdocs-react';
 import { TechDocsEntityMetadata as TechDocsEntityMetadata_2 } from '@backstage/plugin-techdocs-react';
 import { TechDocsMetadata as TechDocsMetadata_2 } from '@backstage/plugin-techdocs-react';
+import { TechDocsStorageApi as TechDocsStorageApi_2 } from '@backstage/plugin-techdocs-react';
 import { ToolbarProps } from '@material-ui/core';
 import { UserListFilterKind } from '@backstage/plugin-catalog-react';
 
@@ -237,7 +240,7 @@ export interface TechDocsApi {
 export const techdocsApiRef: ApiRef<TechDocsApi>;
 
 // @public
-export class TechDocsClient implements TechDocsApi {
+export class TechDocsClient implements TechDocsApi_2 {
   constructor(options: {
     configApi: Config;
     discoveryApi: DiscoveryApi;
@@ -442,7 +445,7 @@ export interface TechDocsStorageApi {
 export const techdocsStorageApiRef: ApiRef<TechDocsStorageApi>;
 
 // @public
-export class TechDocsStorageClient implements TechDocsStorageApi {
+export class TechDocsStorageClient implements TechDocsStorageApi_2 {
   constructor(options: {
     configApi: Config;
     discoveryApi: DiscoveryApi;
@@ -471,6 +474,6 @@ export class TechDocsStorageClient implements TechDocsStorageApi {
   syncEntityDocs(
     entityId: CompoundEntityRef,
     logHandler?: (line: string) => void,
-  ): Promise<SyncResult>;
+  ): Promise<SyncResult_2>;
 }
 ```

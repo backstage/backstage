@@ -9,8 +9,8 @@ import {
   DeferredEntity,
   EntityProvider,
   EntityProviderConnection,
-  parseEntityYaml,
-} from '@backstage/plugin-catalog-backend';
+} from '@backstage/plugin-catalog-node';
+import { parseEntityYaml } from '@backstage/plugin-catalog-backend';
 import bodyParser from 'body-parser';
 import express from 'express';
 import Router from 'express-promise-router';

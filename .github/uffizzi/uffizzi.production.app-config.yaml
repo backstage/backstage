@@ -20,14 +20,13 @@ backend:
       port: ${POSTGRES_PORT}
       user: ${POSTGRES_USER}
       password: ${POSTGRES_PASSWORD}
-  cache:
-    store: memory
   cors:
     origin: ${UFFIZZI_URL}
     methods: [GET, HEAD, PATCH, POST, PUT, DELETE]
     credentials: true
   csp:
     connect-src: ["'self'", 'http:', 'https:']
+    img-src: ["'self'", 'data:', 'https://cdnjs.cloudflare.com']
     # Content-Security-Policy directives follow the Helmet format: https://helmetjs.github.io/#reference
     # Default Helmet Content-Security-Policy values can be removed by setting the key to false
 
@@ -41,15 +40,18 @@ auth:
 catalog:
   locations:
     - type: url
-      target: https://github.com/backstage/backstage/blob/master/packages/catalog-model/examples/all.yaml
+      target: https://github.com/backstage/backstage/blob/${REF_NAME}/packages/catalog-model/examples/all.yaml
 
     - type: url
-      target: https://github.com/backstage/backstage/blob/master/packages/catalog-model/examples/acme-corp.yaml
+      target: https://github.com/backstage/backstage/blob/${REF_NAME}/plugins/techdocs-backend/examples/documented-component-uffizzi/catalog-info.yaml
+
+    - type: url
+      target: https://github.com/backstage/backstage/blob/${REF_NAME}/packages/catalog-model/examples/acme-corp.yaml
       rules:
         - allow: [User, Group]
 
     - type: url
-      target: https://github.com/backstage/backstage/blob/master/plugins/scaffolder-backend/sample-templates/all-templates.yaml
+      target: https://github.com/backstage/backstage/blob/${REF_NAME}/plugins/scaffolder-backend/sample-templates/all-templates.yaml
       rules:
         - allow: [Template]
 
@@ -124,7 +126,7 @@ proxy:
 techdocs:
   builder: 'local' # Alternatives - 'external'
   generator:
-    runIn: 'docker'
+    runIn: 'local'
     # dockerImage: my-org/techdocs # use a custom docker image
     # pullImage: true # or false to disable automatic pulling of image (e.g. if custom docker login is required)
   publisher:
@@ -132,6 +134,9 @@ techdocs:
 
 dynatrace:
   baseUrl: https://your.dynatrace.instance.com
+
+nomad:
+  addr: 0.0.0.0
 
 # Score-cards sample configuration.
 scorecards:

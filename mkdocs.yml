@@ -66,12 +66,10 @@ nav:
           - Builtin Actions: 'features/software-templates/builtin-actions.md'
           - Writing Custom Actions: 'features/software-templates/writing-custom-actions.md'
           - Writing Custom Step Layouts: 'features/software-templates/writing-custom-step-layouts.md'
-          - Writing Templates (Legacy): 'features/software-templates/legacy.md'
-          - Migrating from v1alpha1 to v1beta2 templates: 'features/software-templates/migrating-from-v1alpha1-to-v1beta2.md'
+          - Migrating from v1beta2 to v1beta3 templates: 'features/software-templates/migrating-from-v1beta2-to-v1beta3.md'
       - Backstage Search:
           - Overview: 'features/search/README.md'
           - Getting Started: 'features/search/getting-started.md'
-          - Getting Started, configuring Backstage: 'features/search/configuration.md'
           - Concepts: 'features/search/concepts.md'
           - Search Architecture: 'features/search/architecture.md'
           - Search Engines: 'features/search/search-engines.md'
@@ -98,8 +96,6 @@ nav:
           - Locations: 'integrations/azure/locations.md'
           - Discovery: 'integrations/azure/discovery.md'
           - Org Data: 'integrations/azure/org.md'
-      - Bitbucket:
-          - Discovery: 'integrations/bitbucket/discovery.md'
       - Bitbucket Cloud:
           - Locations: 'integrations/bitbucketCloud/locations.md'
           - Discovery: 'integrations/bitbucketCloud/discovery.md'
@@ -152,17 +148,20 @@ nav:
   - Authentication and identity:
       - Adding Authentication: 'auth/index.md'
       - Included providers:
+          - Atlassian: 'auth/atlassian/provider.md'
           - Auth0: 'auth/auth0/provider.md'
           - Azure: 'auth/microsoft/provider.md'
           - Azure EasyAuth: 'auth/microsoft/azure-easyauth.md'
+          - Bitbucket: 'auth/bitbucket/provider.md'
+          - Bitbucket Server: 'auth/bitbucketServer/provider.md'
+          - Cloudflare Access: 'auth/cloudflare/access.md'
           - GitHub: 'auth/github/provider.md'
           - GitLab: 'auth/gitlab/provider.md'
           - Google: 'auth/google/provider.md'
           - Google IAP: 'auth/google/gcp-iap-auth.md'
+          - OAuth2Proxy: 'auth/oauth2-proxy/provider.md'
           - Okta: 'auth/okta/provider.md'
           - OneLogin: 'auth/onelogin/provider.md'
-          - OAuth2Proxy: 'auth/oauth2-proxy/provider.md'
-          - Bitbucket: 'auth/bitbucket/provider.md'
       - Sign in resolvers: 'auth/identity-resolver.md'
       - OAuth and OpenID Connect: 'auth/oauth.md'
       - OIDC provider from scratch: 'auth/oidc.md'
@@ -176,6 +175,7 @@ nav:
       - Docker: 'deployment/docker.md'
       - Kubernetes: 'deployment/k8s.md'
       - Heroku: 'deployment/heroku.md'
+      - Koyeb: 'deployment/koyeb.md'
   - Designing for Backstage:
       - Design: 'dls/design.md'
       - Component Design Guidelines: 'dls/component-design-guidelines.md'
@@ -209,7 +209,4 @@ nav:
       - ADR011 - Plugin Package Structure: 'architecture-decisions/adr011-plugin-package-structure.md'
       - ADR012 - Plugin Package Structure: 'architecture-decisions/adr012-use-luxon-locale-and-date-presets.md'
       - ADR013 - Plugin Package Structure: 'architecture-decisions/adr013-use-node-fetch.md'
-  - Support:
-      - Backstage Project Structure: 'support/project-structure.md'
-  - Glossary: glossary.md
   - FAQ: FAQ.md

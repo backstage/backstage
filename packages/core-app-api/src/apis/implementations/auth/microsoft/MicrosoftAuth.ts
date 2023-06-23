@@ -91,10 +91,15 @@ export default class MicrosoftAuth {
   }
 
   private static resourceForScopes(scope: string): Promise<string> {
-    const audiences = scope
-      .split(' ')
-      .map(MicrosoftAuth.resourceForScope)
-      .filter(aud => aud !== 'openid');
+    const audiences = [
+      ...new Set(
+        scope
+          .split(' ')
+          .map(MicrosoftAuth.resourceForScope)
+          .filter(aud => aud !== 'openid'),
+      ),
+    ];
+
     if (audiences.length > 1) {
       return Promise.reject(
         new Error(

@@ -1,5 +1,86 @@
 # @backstage/plugin-catalog-backend-module-incremental-ingestion
 
+## 0.3.3
+
+### Patch Changes
+
+- 53309661cb5c: Update installation guide to fix inconsistency in type names
+- Updated dependencies
+  - @backstage/backend-common@0.19.0
+  - @backstage/plugin-catalog-backend@1.10.0
+  - @backstage/catalog-model@1.4.0
+  - @backstage/errors@1.2.0
+  - @backstage/backend-plugin-api@0.5.3
+  - @backstage/backend-tasks@0.5.3
+  - @backstage/plugin-catalog-node@1.3.7
+  - @backstage/config@1.0.8
+  - @backstage/plugin-events-node@0.2.7
+  - @backstage/plugin-permission-common@0.7.6
+
+## 0.3.3-next.2
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-common@0.19.0-next.2
+  - @backstage/catalog-model@1.4.0-next.1
+  - @backstage/plugin-catalog-backend@1.10.0-next.2
+  - @backstage/backend-plugin-api@0.5.3-next.2
+  - @backstage/backend-tasks@0.5.3-next.2
+  - @backstage/config@1.0.7
+  - @backstage/errors@1.2.0-next.0
+  - @backstage/plugin-catalog-node@1.3.7-next.2
+  - @backstage/plugin-events-node@0.2.7-next.2
+  - @backstage/plugin-permission-common@0.7.6-next.0
+
+## 0.3.3-next.1
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-common@0.19.0-next.1
+  - @backstage/plugin-catalog-backend@1.9.2-next.1
+  - @backstage/errors@1.2.0-next.0
+  - @backstage/backend-plugin-api@0.5.3-next.1
+  - @backstage/catalog-model@1.4.0-next.0
+  - @backstage/backend-tasks@0.5.3-next.1
+  - @backstage/plugin-catalog-node@1.3.7-next.1
+  - @backstage/plugin-permission-common@0.7.6-next.0
+  - @backstage/plugin-events-node@0.2.7-next.1
+  - @backstage/config@1.0.7
+
+## 0.3.3-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/plugin-catalog-backend@1.9.2-next.0
+  - @backstage/plugin-catalog-node@1.3.7-next.0
+  - @backstage/backend-common@0.18.6-next.0
+  - @backstage/config@1.0.7
+  - @backstage/backend-plugin-api@0.5.3-next.0
+  - @backstage/backend-tasks@0.5.3-next.0
+  - @backstage/catalog-model@1.3.0
+  - @backstage/errors@1.1.5
+  - @backstage/plugin-events-node@0.2.7-next.0
+  - @backstage/plugin-permission-common@0.7.5
+
+## 0.3.2
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/plugin-catalog-backend@1.9.1
+  - @backstage/backend-common@0.18.5
+  - @backstage/backend-tasks@0.5.2
+  - @backstage/plugin-catalog-node@1.3.6
+  - @backstage/backend-plugin-api@0.5.2
+  - @backstage/catalog-model@1.3.0
+  - @backstage/config@1.0.7
+  - @backstage/errors@1.1.5
+  - @backstage/plugin-events-node@0.2.6
+  - @backstage/plugin-permission-common@0.7.5
+
 ## 0.3.2-next.2
 
 ### Patch Changes

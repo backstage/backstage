@@ -1,4 +1,4 @@
-catalog:
+area:catalog:
   - plugins/catalog/**/*
   - plugins/catalog-*/**/*
   - packages/catalog-*/**/*
@@ -9,19 +9,25 @@ search:
   - plugins/search/**/*
   - plugins/search-*/**/*
   - packages/search-*/**/*
-techdocs:
+homepage:
+  - plugins/home/**/*
+area:discoverability: # search + home
+  - plugins/search/**/*
+  - plugins/search-*/**/*
+  - packages/search-*/**/*
+  - plugins/home/**/*
+area:techdocs:
   - plugins/techdocs/**/*
   - plugins/techdocs-*/**/*
   - packages/techdocs-*/**/*
-homepage:
-  - plugins/home/**/*
 documentation:
   - docs/**/*
 microsite:
   - microsite/**/*
 auth:
   - plugins/auth-backend/**/*
-  - plugins/permission-*/**/*
   - packages/core-app-api/src/apis/implementations/auth/**/*
   - packages/core-app-api/src/lib/Auth*/**/*
   - packages/core-plugin-api/src/apis/definitions/auth.ts
+area:permission:
+  - plugins/permission-*/**/*

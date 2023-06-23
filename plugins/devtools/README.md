@@ -12,9 +12,25 @@ Lists helpful information about your current running Backstage instance such as:
 
 ![Example of Info tab](./docs/devtools-info-tab.png)
 
+#### Backstage Version Reporting
+
+The Backstage Version that is reported requires `backstage.json` to be present at the root of the running backstage instance.  
+You may need to modify your Dockerfile to ensure `backstage.json` is copied into the `WORKDIR` of your image.
+
+```sh
+WORKDIR /app
+# This switches many Node.js dependencies to production mode.
+ENV NODE_ENV production
+
+# Then copy the rest of the backend bundle, along with any other files we might want (including backstage.json).
+COPY --chown=node:node ... backstage.json ./
+```
+
 ### Config
 
 Lists the configuration being used by your current running Backstage instance.
+
+**Note:** The Config tab uses the configuration schema [defined by each plugin](https://backstage.io/docs/conf/defining) to be able to mask secrets. It does this by checking that the [visibility](https://backstage.io/docs/conf/defining#visibility) has been marked as `secret`. If this is not set then the secret will appear in clear text. To mitigate this it is highly recommended that you enable the [permission framework](https://backstage.io/docs/permissions/overview) and [apply the proper permissions](#permissions)). If you do see secrets in clear text please contact the plugin's author to get the visibility set to secret for the applicable property.
 
 ![Example of Config tab](./docs/devtools-config-tab.png)
 
@@ -147,7 +163,7 @@ To use the permission framework to secure the DevTools sidebar option you'll wan
 
    ```sh
    # From your Backstage root directory
-   yarn add --cwd packages/app @backstage/plugin-devtools
+   yarn add --cwd packages/app @backstage/plugin-devtools-common
    ```
 
 2. Then open the `packages/app/src/components/Root/Root.tsx` file
@@ -373,3 +389,15 @@ Configuration details:
 - `name` is the friendly name for your endpoint
 - `type` can be either `ping` or `fetch` and will perform the respective action on the `target`
 - `target` is either a URL or server that you want to trigger a `type` action on
+
+### External Dependencies Requirements
+
+If you are using the `ping` type you must ensure that `ping` is available in the Host OS that is running Backstage.
+For example you may need to add `ping` into the Dockerfile that builds your Backstage image:
+
+```sh
+RUN --mount=type=cache,target=/var/cache/apt,sharing=locked \
+    --mount=type=cache,target=/var/lib/apt,sharing=locked \
+    apt-get update && \
+    apt-get install -y  ... iputils-ping
+```

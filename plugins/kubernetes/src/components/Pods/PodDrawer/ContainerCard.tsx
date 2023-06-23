@@ -29,6 +29,9 @@ import { DateTime } from 'luxon';
 
 import { PodScope, PodLogsDialog } from '../PodLogs';
 import { StructuredMetadataTable } from '@backstage/core-components';
+import { ClientContainerStatus } from '@backstage/plugin-kubernetes-common';
+import { ResourceUtilization } from '../../ResourceUtilization';
+import { bytesToMiB, formatMilicores } from '../../../utils/resources';
 
 const getContainerHealthChecks = (
   containerSpec: IContainer,
@@ -83,16 +86,28 @@ const ContainerDatetime = ({ prefix, dateTime }: ContainerDatetimeProps) => {
   );
 };
 
+/**
+ * Props for ContainerCard
+ *
+ * @public
+ */
 export interface ContainerCardProps {
   podScope: PodScope;
   containerSpec?: IContainer;
   containerStatus: IContainerStatus;
+  containerMetrics?: ClientContainerStatus;
 }
 
+/**
+ * Shows details about a container within a pod
+ *
+ * @public
+ */
 export const ContainerCard: React.FC<ContainerCardProps> = ({
   podScope,
   containerSpec,
   containerStatus,
+  containerMetrics,
 }: ContainerCardProps) => {
   // This should never be undefined
   if (containerSpec === undefined) {
@@ -158,11 +173,58 @@ export const ContainerCard: React.FC<ContainerCardProps> = ({
               )}
             />
           </Grid>
+          {containerMetrics && (
+            <Grid container item xs={12} spacing={0}>
+              <Grid item xs={12}>
+                <Typography variant="subtitle1">
+                  Resource utilization
+                </Typography>
+              </Grid>
+              <Grid item xs={12} style={{ minHeight: '5rem' }}>
+                <ResourceUtilization
+                  compressed
+                  title="CPU requests"
+                  usage={containerMetrics.cpuUsage.currentUsage}
+                  total={containerMetrics.cpuUsage.requestTotal}
+                  totalFormated={formatMilicores(
+                    containerMetrics.cpuUsage.requestTotal,
+                  )}
+                />
+                <ResourceUtilization
+                  compressed
+                  title="CPU limits"
+                  usage={containerMetrics.cpuUsage.currentUsage}
+                  total={containerMetrics.cpuUsage.limitTotal}
+                  totalFormated={formatMilicores(
+                    containerMetrics.cpuUsage.limitTotal,
+                  )}
+                />
+                <ResourceUtilization
+                  compressed
+                  title="Memory requests"
+                  usage={containerMetrics.memoryUsage.currentUsage}
+                  total={containerMetrics.memoryUsage.requestTotal}
+                  totalFormated={bytesToMiB(
+                    containerMetrics.memoryUsage.requestTotal,
+                  )}
+                />
+                <ResourceUtilization
+                  compressed
+                  title="Memory limits"
+                  usage={containerMetrics.memoryUsage.currentUsage}
+                  total={containerMetrics.memoryUsage.limitTotal}
+                  totalFormated={bytesToMiB(
+                    containerMetrics.memoryUsage.requestTotal,
+                  )}
+                />
+              </Grid>
+            </Grid>
+          )}
         </Grid>
       </CardContent>
       <CardActions disableSpacing>
         <PodLogsDialog
-          podScope={{
+          containerScope={{
             containerName: containerStatus.name,
             ...podScope,
           }}

@@ -45,7 +45,7 @@ export class HostDiscovery implements PluginEndpointDiscovery {
    *    - target: https://internal.example.com/internal-catalog
    *      plugins: [catalog]
    *    - target: https://internal.example.com/secure/api/{{pluginId}}
-   *      plugins: [auth, permissions]
+   *      plugins: [auth, permission]
    *    - target:
    *        internal: https://internal.example.com/search
    *        external: https://example.com/search
@@ -57,7 +57,9 @@ export class HostDiscovery implements PluginEndpointDiscovery {
    */
   static fromConfig(config: Config, options?: { basePath?: string }) {
     const basePath = options?.basePath ?? '/api';
-    const externalBaseUrl = config.getString('backend.baseUrl');
+    const externalBaseUrl = config
+      .getString('backend.baseUrl')
+      .replace(/\/+$/, '');
 
     const {
       listen: { host: listenHost = '::', port: listenPort },

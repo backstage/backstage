@@ -17,16 +17,55 @@
 import {
   createServiceFactory,
   coreServices,
+  LifecycleServiceStartupHook,
+  LifecycleServiceStartupOptions,
   LifecycleServiceShutdownHook,
   LifecycleServiceShutdownOptions,
   RootLifecycleService,
   LoggerService,
 } from '@backstage/backend-plugin-api';
 
+/** @internal */
 export class BackendLifecycleImpl implements RootLifecycleService {
   constructor(private readonly logger: LoggerService) {}
 
-  #isCalled = false;
+  #hasStarted = false;
+  #startupTasks: Array<{
+    hook: LifecycleServiceStartupHook;
+    options?: LifecycleServiceStartupOptions;
+  }> = [];
+
+  addStartupHook(
+    hook: LifecycleServiceStartupHook,
+    options?: LifecycleServiceStartupOptions,
+  ): void {
+    if (this.#hasStarted) {
+      throw new Error('Attempted to add startup hook after startup');
+    }
+    this.#startupTasks.push({ hook, options });
+  }
+
+  async startup(): Promise<void> {
+    if (this.#hasStarted) {
+      return;
+    }
+    this.#hasStarted = true;
+
+    this.logger.debug(`Running ${this.#startupTasks.length} startup tasks...`);
+    await Promise.all(
+      this.#startupTasks.map(async ({ hook, options }) => {
+        const logger = options?.logger ?? this.logger;
+        try {
+          await hook();
+          logger.debug(`Startup hook succeeded`);
+        } catch (error) {
+          logger.error(`Startup hook failed, ${error}`);
+        }
+      }),
+    );
+  }
+
+  #hasShutdown = false;
   #shutdownTasks: Array<{
     hook: LifecycleServiceShutdownHook;
     options?: LifecycleServiceShutdownOptions;
@@ -36,22 +75,27 @@ export class BackendLifecycleImpl implements RootLifecycleService {
     hook: LifecycleServiceShutdownHook,
     options?: LifecycleServiceShutdownOptions,
   ): void {
+    if (this.#hasShutdown) {
+      throw new Error('Attempted to add shutdown hook after shutdown');
+    }
     this.#shutdownTasks.push({ hook, options });
   }
 
   async shutdown(): Promise<void> {
-    if (this.#isCalled) {
+    if (this.#hasShutdown) {
       return;
     }
-    this.#isCalled = true;
+    this.#hasShutdown = true;
 
-    this.logger.info(`Running ${this.#shutdownTasks.length} shutdown tasks...`);
+    this.logger.debug(
+      `Running ${this.#shutdownTasks.length} shutdown tasks...`,
+    );
     await Promise.all(
       this.#shutdownTasks.map(async ({ hook, options }) => {
         const logger = options?.logger ?? this.logger;
         try {
           await hook();
-          logger.info(`Shutdown hook succeeded`);
+          logger.debug(`Shutdown hook succeeded`);
         } catch (error) {
           logger.error(`Shutdown hook failed, ${error}`);
         }

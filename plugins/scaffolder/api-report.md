@@ -29,6 +29,7 @@ import { ListActionsResponse as ListActionsResponse_2 } from '@backstage/plugin-
 import { LogEvent as LogEvent_2 } from '@backstage/plugin-scaffolder-react';
 import { Observable } from '@backstage/types';
 import { PathParams } from '@backstage/core-plugin-api';
+import { PropsWithChildren } from 'react';
 import { default as React_2 } from 'react';
 import { ReactNode } from 'react';
 import { RouteRef } from '@backstage/core-plugin-api';
@@ -207,6 +208,31 @@ export function makeFieldSchemaFromZod<
 >;
 
 // @public
+export const MyGroupsPickerFieldExtension: FieldExtensionComponent_2<
+  string,
+  {
+    title?: string | undefined;
+    description?: string | undefined;
+  }
+>;
+
+// @public
+export const MyGroupsPickerFieldSchema: FieldSchema<
+  string,
+  {
+    title?: string | undefined;
+    description?: string | undefined;
+  }
+>;
+
+// @public
+export const MyGroupsPickerSchema: CustomFieldExtensionSchema_2;
+
+// @public
+export type MyGroupsPickerUiOptions =
+  typeof MyGroupsPickerFieldSchema.uiOptionsType;
+
+// @public
 export const OwnedEntityPickerFieldExtension: FieldExtensionComponent_2<
   string,
   {
@@ -382,7 +408,7 @@ export type RouterProps = {
           template: TemplateEntityV1beta3;
         }>
       | undefined;
-    TaskPageComponent?: ComponentType<{}>;
+    TaskPageComponent?: ComponentType<PropsWithChildren<{}>>;
   };
   groups?: Array<{
     title?: React_2.ReactNode;
@@ -466,7 +492,9 @@ export type ScaffolderGetIntegrationsListResponse =
   ScaffolderGetIntegrationsListResponse_2;
 
 // @public @deprecated (undocumented)
-export const ScaffolderLayouts: ComponentType<{}>;
+export const ScaffolderLayouts: ComponentType<{
+  children?: ReactNode;
+}>;
 
 // @public @deprecated (undocumented)
 export type ScaffolderOutputlink = ScaffolderOutputLink;

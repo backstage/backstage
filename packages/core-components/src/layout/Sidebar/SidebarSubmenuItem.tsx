@@ -130,6 +130,7 @@ export type SidebarSubmenuItemProps = {
   to?: string;
   icon?: IconComponent;
   dropdownItems?: SidebarSubmenuItemDropdownItem[];
+  exact?: boolean;
 };
 
 /**
@@ -138,7 +139,7 @@ export type SidebarSubmenuItemProps = {
  * @public
  */
 export const SidebarSubmenuItem = (props: SidebarSubmenuItemProps) => {
-  const { title, subtitle, to, icon: Icon, dropdownItems } = props;
+  const { title, subtitle, to, icon: Icon, dropdownItems, exact } = props;
   const classes = useStyles();
   const { setIsHoveredOn } = useContext(SidebarItemWithSubmenuContext);
   const closeSubmenu = () => {
@@ -146,7 +147,7 @@ export const SidebarSubmenuItem = (props: SidebarSubmenuItemProps) => {
   };
   const toLocation = useResolvedPath(to ?? '');
   const currentLocation = useLocation();
-  let isActive = isLocationMatch(currentLocation, toLocation);
+  let isActive = isLocationMatch(currentLocation, toLocation, exact);
 
   const [showDropDown, setShowDropDown] = useState(false);
   const handleClickDropdown = () => {
@@ -155,7 +156,7 @@ export const SidebarSubmenuItem = (props: SidebarSubmenuItemProps) => {
   if (dropdownItems !== undefined) {
     dropdownItems.some(item => {
       const resolvedPath = resolvePath(item.to);
-      isActive = isLocationMatch(currentLocation, resolvedPath);
+      isActive = isLocationMatch(currentLocation, resolvedPath, exact);
       return isActive;
     });
     return (
@@ -171,11 +172,19 @@ export const SidebarSubmenuItem = (props: SidebarSubmenuItemProps) => {
             )}
           >
             {Icon && <Icon fontSize="small" />}
-            <Typography variant="subtitle1" className={classes.label}>
+            <Typography
+              variant="subtitle1"
+              component="span"
+              className={classes.label}
+            >
               {title}
               <br />
               {subtitle && (
-                <Typography variant="caption" className={classes.subtitle}>
+                <Typography
+                  variant="caption"
+                  component="span"
+                  className={classes.subtitle}
+                >
                   {subtitle}
                 </Typography>
               )}
@@ -203,7 +212,7 @@ export const SidebarSubmenuItem = (props: SidebarSubmenuItemProps) => {
                   onClick={closeSubmenu}
                   onTouchStart={e => e.stopPropagation()}
                 >
-                  <Typography className={classes.textContent}>
+                  <Typography component="span" className={classes.textContent}>
                     {object.title}
                   </Typography>
                 </Link>
@@ -229,11 +238,19 @@ export const SidebarSubmenuItem = (props: SidebarSubmenuItemProps) => {
           onTouchStart={e => e.stopPropagation()}
         >
           {Icon && <Icon fontSize="small" />}
-          <Typography variant="subtitle1" className={classes.label}>
+          <Typography
+            variant="subtitle1"
+            component="span"
+            className={classes.label}
+          >
             {title}
             <br />
             {subtitle && (
-              <Typography variant="caption" className={classes.subtitle}>
+              <Typography
+                variant="caption"
+                component="span"
+                className={classes.subtitle}
+              >
                 {subtitle}
               </Typography>
             )}

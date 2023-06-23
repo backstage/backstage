@@ -28,6 +28,11 @@ export type ErrorSeverity = 0 | 1 | 2 | 3 | 4 | 5 | 6 | 7 | 8 | 9 | 10;
  */
 export type DetectedErrorsByCluster = Map<string, DetectedError[]>;
 
+/**
+ * A reference to a Kubernetes object
+ *
+ * @public
+ */
 export interface ResourceRef {
   name: string;
   namespace: string;
@@ -44,17 +49,17 @@ export interface DetectedError {
   type: string;
   severity: ErrorSeverity;
   message: string;
-  proposedFix: ProposedFix[];
+  proposedFix?: ProposedFix;
   sourceRef: ResourceRef;
   occuranceCount: number;
 }
 
-type ProposedFix = LogSolution | DocsSolution | EventsSolution;
+export type ProposedFix = LogSolution | DocsSolution | EventsSolution;
 
 interface ProposedFixBase {
   errorType: string;
   rootCauseExplanation: string;
-  possibleFixes: string[];
+  actions: string[];
 }
 
 export interface LogSolution extends ProposedFixBase {
@@ -69,7 +74,6 @@ export interface DocsSolution extends ProposedFixBase {
 
 export interface EventsSolution extends ProposedFixBase {
   type: 'events';
-  docsLink: string;
   podName: string;
 }
 

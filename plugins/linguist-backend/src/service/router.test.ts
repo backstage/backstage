@@ -73,7 +73,7 @@ describe('createRouter', () => {
     const router = await createRouter(
       { schedule: schedule, age: { days: 30 }, useSourceLocation: false },
       {
-        linguistBackendApi,
+        linguistBackendApi: linguistBackendApi,
         discovery: testDiscovery,
         database: createDatabase(),
         reader: mockUrlReader,

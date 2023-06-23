@@ -10,9 +10,9 @@ import { BackstagePlugin } from '@backstage/core-plugin-api';
 import { ConfigApi } from '@backstage/core-plugin-api';
 import { Entity } from '@backstage/catalog-model';
 import { InfoCardVariants } from '@backstage/core-components';
-import { OAuthApi } from '@backstage/core-plugin-api';
 import { RestEndpointMethodTypes } from '@octokit/rest';
 import { RouteRef } from '@backstage/core-plugin-api';
+import { ScmAuthApi } from '@backstage/integration-react';
 
 // @public (undocumented)
 export enum BuildStatus {
@@ -111,7 +111,7 @@ export const githubActionsApiRef: ApiRef<GithubActionsApi>;
 
 // @public
 export class GithubActionsClient implements GithubActionsApi {
-  constructor(options: { configApi: ConfigApi; githubAuthApi: OAuthApi });
+  constructor(options: { configApi: ConfigApi; scmAuthApi: ScmAuthApi });
   // (undocumented)
   downloadJobLogsForWorkflowRun(options: {
     hostname?: string;

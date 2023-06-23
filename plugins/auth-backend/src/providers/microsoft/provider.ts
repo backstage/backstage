@@ -51,8 +51,7 @@ import { Logger } from 'winston';
 import fetch from 'node-fetch';
 import { decodeJwt } from 'jose';
 import { Profile as PassportProfile } from 'passport';
-
-const BACKSTAGE_SESSION_EXPIRATION = 3600;
+import { BACKSTAGE_SESSION_EXPIRATION } from '../../lib/session';
 
 type PrivateInfo = {
   refreshToken: string;

@@ -27,7 +27,7 @@ jobs:
           registry-url: https://registry.npmjs.org/
 
       - name: yarn install
-        uses: backstage/actions/yarn-install@v0.6.3
+        uses: backstage/actions/yarn-install@v0.6.4
         with:
           cache-prefix: linux-v16
 
@@ -81,7 +81,7 @@ jobs:
           BACKSTAGE_IMAGE=$(echo ${{ needs.build-backstage.outputs.tags }})
           export BACKSTAGE_IMAGE
           # Render simple template from environment variables.
-          envsubst '$BACKSTAGE_IMAGE' < .github/uffizzi/docker-compose.uffizzi.yml > docker-compose.rendered.yml
+          envsubst '$BACKSTAGE_IMAGE $GITHUB_SHA' < .github/uffizzi/docker-compose.uffizzi.yml > docker-compose.rendered.yml
           cat docker-compose.rendered.yml
       - name: Upload Rendered Compose File as Artifact
         uses: actions/upload-artifact@v3

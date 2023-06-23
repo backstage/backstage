@@ -11,12 +11,36 @@
   :global(.card .card__header) {
     display: grid;
     row-gap: 0.25rem;
+    position: relative;
     column-gap: 1rem;
     align-items: center;
     grid-template-columns: auto 1fr;
 
     > * {
       margin: 0;
+    }
+
+    :global(.newRibbon) {
+      --paddingX: 1.2lh;
+      --rotation: 45deg;
+      --translateX: 30%;
+      --translateY: -100%;
+
+      top: 0;
+      right: 0;
+      padding: 0 var(--paddingX);
+      position: absolute;
+      text-align: center;
+      font-weight: bold;
+
+      transform: translateY(var(--translateY)) translateX(var(--translateX))
+        rotate(var(--rotation));
+      transform-origin: bottom left;
+      background-color: var(--ifm-color-primary);
+    }
+
+    :global(.newRibbonPadding) {
+      padding-right: 1.2lh;
     }
 
     :global(img) {
@@ -28,10 +52,60 @@
   :global(.pluginsContainer) {
     gap: 1rem;
     display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+    grid-template-columns: repeat(auto-fit, minmax(250px, 300px));
+  }
+
+  @media (max-width: 768px) {
+    :global(.pluginsContainer) {
+      grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+    }
+  }
+
+  :global(.hidePluginsHeader) {
+    display: none;
   }
 
   :global(.fit-content) {
     width: fit-content;
+  }
+
+  :global(.pluginsFilterBox) {
+    width: 100%;
+    margin-bottom: 1rem;
+    height: 1rem;
+  }
+
+  :global(.dropdown) {
+    float: right;
+    margin-bottom: 1rem;
+  }
+
+  :global(.button--info) {
+    background-color: transparent;
+    border-color: var(--ifm-color-primary);
+    color: var(--ifm-color-primary);
+    min-width: 250px;
+  }
+
+  :global(label.dropdown__item) {
+    display: flex;
+    align-items: center;
+    cursor: pointer;
+    margin-top: 5px;
+
+    &:hover {
+      background-color: var(--ifm-color-primary);
+      color: black;
+    }
+  }
+
+  :global(.dropdown__label) {
+    font-size: 15px;
+    cursor: pointer;
+  }
+
+  :global(.dropdown__checkbox) {
+    margin-right: 10px;
+    cursor: pointer;
   }
 }

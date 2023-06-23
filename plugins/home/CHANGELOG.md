@@ -1,5 +1,93 @@
 # @backstage/plugin-home
 
+## 0.5.3
+
+### Patch Changes
+
+- d1cfb4e4c4cd: Update set up documentation to export homepage as element instead of React component.
+- 2e4940e1a8f8: Allow more customization for the CustomHomepageGrid
+- 2ff94da135a4: bump `rjsf` dependencies to 5.7.3
+- 41e8037a8a6d: Extract new plugin-home-react package and deprecate createCardExtension in plugin-home
+- Updated dependencies
+  - @backstage/core-plugin-api@1.5.2
+  - @backstage/core-components@0.13.2
+  - @backstage/theme@0.4.0
+  - @backstage/plugin-catalog-react@1.7.0
+  - @backstage/catalog-model@1.4.0
+  - @backstage/plugin-home-react@0.1.0
+  - @backstage/config@1.0.8
+
+## 0.5.3-next.3
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/core-components@0.13.2-next.3
+  - @backstage/catalog-model@1.4.0-next.1
+  - @backstage/config@1.0.7
+  - @backstage/core-plugin-api@1.5.2-next.0
+  - @backstage/theme@0.4.0-next.1
+  - @backstage/plugin-catalog-react@1.7.0-next.3
+  - @backstage/plugin-home-react@0.1.0-next.3
+
+## 0.5.3-next.2
+
+### Patch Changes
+
+- 2ff94da135a4: bump `rjsf` dependencies to 5.7.3
+- Updated dependencies
+  - @backstage/theme@0.4.0-next.1
+  - @backstage/plugin-catalog-react@1.7.0-next.2
+  - @backstage/core-components@0.13.2-next.2
+  - @backstage/plugin-home-react@0.1.0-next.2
+  - @backstage/config@1.0.7
+  - @backstage/core-plugin-api@1.5.2-next.0
+
+## 0.5.3-next.1
+
+### Patch Changes
+
+- d1cfb4e4c4cd: Update set up documentation to export homepage as element instead of React component.
+- 2e4940e1a8f8: Allow more customization for the CustomHomepageGrid
+- Updated dependencies
+  - @backstage/core-components@0.13.2-next.1
+  - @backstage/plugin-catalog-react@1.7.0-next.1
+  - @backstage/catalog-model@1.4.0-next.0
+  - @backstage/core-plugin-api@1.5.2-next.0
+  - @backstage/plugin-home-react@0.1.0-next.1
+  - @backstage/config@1.0.7
+  - @backstage/theme@0.4.0-next.0
+
+## 0.5.3-next.0
+
+### Patch Changes
+
+- 41e8037a8a6d: Extract new plugin-home-react package and deprecate createCardExtension in plugin-home
+- Updated dependencies
+  - @backstage/plugin-catalog-react@1.7.0-next.0
+  - @backstage/plugin-home-react@0.1.0-next.0
+  - @backstage/theme@0.4.0-next.0
+  - @backstage/config@1.0.7
+  - @backstage/core-components@0.13.2-next.0
+  - @backstage/core-plugin-api@1.5.1
+  - @backstage/catalog-model@1.3.0
+
+## 0.5.2
+
+### Patch Changes
+
+- acca8966465: Remove object-hash dependency
+- 957cd9b8958: Use the semantic time tag for rendering world clocks on homepage headers.
+- 0e19e7b0f3a: Bump to using the later v5 versions of `@rjsf/*`
+- 5272cfabc3b: Add missing @rjsf/core dependency
+- Updated dependencies
+  - @backstage/theme@0.3.0
+  - @backstage/plugin-catalog-react@1.6.0
+  - @backstage/core-components@0.13.1
+  - @backstage/catalog-model@1.3.0
+  - @backstage/config@1.0.7
+  - @backstage/core-plugin-api@1.5.1
+
 ## 0.5.2-next.2
 
 ### Patch Changes

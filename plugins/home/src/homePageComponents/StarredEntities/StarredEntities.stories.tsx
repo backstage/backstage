@@ -23,7 +23,7 @@ import {
   entityRouteRef,
 } from '@backstage/plugin-catalog-react';
 import { Grid } from '@material-ui/core';
-import React, { ComponentType } from 'react';
+import React, { ComponentType, PropsWithChildren } from 'react';
 
 const starredEntitiesApi = new MockStarredEntitiesApi();
 starredEntitiesApi.toggleStarred('component:default/example-starred-entity');
@@ -73,7 +73,7 @@ const mockCatalogApi = {
 export default {
   title: 'Plugins/Home/Components/StarredEntities',
   decorators: [
-    (Story: ComponentType<{}>) =>
+    (Story: ComponentType<PropsWithChildren<{}>>) =>
       wrapInTestApp(
         <TestApiProvider
           apis={[

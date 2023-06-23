@@ -9,7 +9,12 @@ This plugin contains no other functionality.
 ## Installation
 
 1. Install the plugin package in your Backstage app:
-   `cd packages/app && yarn add @backstage/plugin-analytics-module-ga4`
+
+```sh
+# From your Backstage root directory
+yarn add --cwd packages/app @backstage/plugin-analytics-module-ga4
+```
+
 2. Wire up the API implementation to your App:
 
 ```tsx
@@ -56,7 +61,13 @@ backend:
   csp:
     connect-src: ["'self'", 'http:', 'https:']
     # Add these two lines below
-    script-src: ["'self'", "'unsafe-eval'", 'https://www.google-analytics.com']
+    script-src:
+      [
+        "'self'",
+        "'unsafe-eval'",
+        'https://www.google-analytics.com',
+        'https://www.googletagmanager.com',
+      ]
     img-src: ["'self'", 'data:', 'https://www.google-analytics.com']
 ```
 
