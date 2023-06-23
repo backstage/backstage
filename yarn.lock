@@ -3494,7 +3494,7 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@backstage/backend-common@npm:^0.25.0":
+"@backstage/backend-common@npm:0.25.0, @backstage/backend-common@npm:^0.25.0":
   version: 0.25.0
   resolution: "@backstage/backend-common@npm:0.25.0"
   dependencies:
@@ -8401,6 +8401,24 @@ __metadata:
   peerDependenciesMeta:
     "@types/react":
       optional: true
+  languageName: unknown
+  linkType: soft
+
+"@backstage/plugin-techdocs-backend-module-events@workspace:^, @backstage/plugin-techdocs-backend-module-events@workspace:plugins/techdocs-backend-module-events":
+  version: 0.0.0-use.local
+  resolution: "@backstage/plugin-techdocs-backend-module-events@workspace:plugins/techdocs-backend-module-events"
+  dependencies:
+    "@backstage/backend-common": 0.25.0
+    "@backstage/catalog-client": "workspace:^"
+    "@backstage/catalog-model": "workspace:^"
+    "@backstage/cli": "workspace:^"
+    "@backstage/config": "workspace:^"
+    "@backstage/errors": "workspace:^"
+    "@backstage/plugin-events-node": "workspace:^"
+    "@octokit/webhooks-types": ^7.0.0
+    git-url-parse: ^13.0.0
+    node-fetch: ^2.6.7
+    winston: ^3.2.1
   languageName: unknown
   linkType: soft
 
@@ -13518,6 +13536,13 @@ __metadata:
   version: 7.1.0
   resolution: "@octokit/webhooks-types@npm:7.1.0"
   checksum: 5aea38c38e97cb1b8d54c805c17c4015ee937d0b1ad550adc64eaf2e90bfbaf1e00c878490c10b43e31a11563e8d02183b86268ed588b04e39b22d5fd27807cf
+  languageName: node
+  linkType: hard
+
+"@octokit/webhooks-types@npm:^7.0.0":
+  version: 7.6.1
+  resolution: "@octokit/webhooks-types@npm:7.6.1"
+  checksum: 5b3aa8e63c4eaf511e571dbd55868688cb2ec68c41f02238b4894336e2220fa19a723be83b6383621fbaa90695056a64533959a9cc6ffdbd27faa58b22e6ef51
   languageName: node
   linkType: hard
 
@@ -28832,6 +28857,7 @@ __metadata:
     "@backstage/plugin-search-backend-node": "workspace:^"
     "@backstage/plugin-signals-backend": "workspace:^"
     "@backstage/plugin-techdocs-backend": "workspace:^"
+    "@backstage/plugin-techdocs-backend-module-events": "workspace:^"
     "@opentelemetry/auto-instrumentations-node": ^0.52.0
     "@opentelemetry/exporter-prometheus": ^0.54.0
     "@opentelemetry/sdk-node": ^0.54.0
@@ -30325,7 +30351,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"git-url-parse@npm:^13.1.0":
+"git-url-parse@npm:^13.0.0, git-url-parse@npm:^13.1.0":
   version: 13.1.1
   resolution: "git-url-parse@npm:13.1.1"
   dependencies:

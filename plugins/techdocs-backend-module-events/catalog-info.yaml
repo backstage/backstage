@@ -1,0 +1,9 @@
+apiVersion: backstage.io/v1alpha1
+kind: Component
+metadata:
+  name: backstage-plugin-techdocs-backend-module-events
+  title: '@backstage/plugin-techdocs-backend-module-events'
+spec:
+  lifecycle: experimental
+  type: backstage-backend-plugin-module
+  owner: techdocs-maintainers
