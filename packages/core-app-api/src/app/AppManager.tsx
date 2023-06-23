@@ -15,12 +15,7 @@
  */
 
 import { AppConfig, Config } from '@backstage/config';
-import React, {
-  ComponentType,
-  PropsWithChildren,
-  useMemo,
-  useRef,
-} from 'react';
+import React, { PropsWithChildren, useMemo, useRef } from 'react';
 import useAsync from 'react-use/lib/useAsync';
 import {
   ApiProvider,
@@ -242,16 +237,23 @@ export class AppManager implements BackstageApp {
     return this.components;
   }
 
-  createRoot(element: JSX.Element): ComponentType<PropsWithChildren<{}>> {
+  createRoot(): {
+    render(elements: JSX.Element): () => JSX.Element;
+  } {
     const AppProvider = this.getProvider();
-    const AppRoot = () => {
-      return <AppProvider>{element}</AppProvider>;
+
+    // We need to make sure that the AppProvider is only rendered once, so we
+    // return an object with a render function that can be called multiple
+    // times to render the app.
+    return {
+      render(elements: JSX.Element) {
+        return () => <AppProvider>{elements}</AppProvider>;
+      },
     };
-    return AppRoot;
   }
 
   #getProviderCalled = false;
-  getProvider(): ComponentType<PropsWithChildren<{}>> {
+  getProvider(): (props: PropsWithChildren<{}>) => JSX.Element {
     if (this.#getProviderCalled) {
       throw new Error(
         'app.getProvider() or app.createRoot() has already been called, and can only be called once',
@@ -404,7 +406,7 @@ export class AppManager implements BackstageApp {
     return Provider;
   }
 
-  getRouter(): ComponentType<PropsWithChildren<{}>> {
+  getRouter(): (props: PropsWithChildren<{}>) => JSX.Element {
     return AppRouter;
   }
 

@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { ComponentType, PropsWithChildren } from 'react';
+import { PropsWithChildren } from 'react';
 import {
   AnyApiFactory,
   AppTheme,
@@ -67,12 +67,14 @@ export type ErrorBoundaryFallbackProps = PropsWithChildren<{
  * @public
  */
 export type AppComponents = {
-  NotFoundErrorPage: ComponentType<PropsWithChildren<{}>>;
-  BootErrorPage: ComponentType<BootErrorPageProps>;
-  Progress: ComponentType<PropsWithChildren<{}>>;
-  Router: ComponentType<PropsWithChildren<{ basename?: string }>>;
-  ErrorBoundaryFallback: ComponentType<ErrorBoundaryFallbackProps>;
-  ThemeProvider?: ComponentType<PropsWithChildren<{}>>;
+  NotFoundErrorPage: (props: PropsWithChildren<{}>) => JSX.Element | null;
+  BootErrorPage: (props: BootErrorPageProps) => JSX.Element | null;
+  Progress: (props: PropsWithChildren<{}>) => JSX.Element | null;
+  Router: (props: PropsWithChildren<{ basename?: string }>) => JSX.Element;
+  ErrorBoundaryFallback: (
+    props: ErrorBoundaryFallbackProps,
+  ) => JSX.Element | null;
+  ThemeProvider?: (props: PropsWithChildren<{}>) => JSX.Element;
 
   /**
    * An optional sign-in page that will be rendered instead of the AppRouter at startup.
@@ -83,7 +85,7 @@ export type AppComponents = {
    * The sign-in page will be displayed until it has passed up a result to the parent,
    * and which point the AppRouter and all of its children will be rendered instead.
    */
-  SignInPage?: ComponentType<SignInPageProps>;
+  SignInPage?: (props: SignInPageProps) => JSX.Element;
 };
 
 /**
@@ -297,18 +299,20 @@ export type BackstageApp = {
   getSystemIcon(key: string): IconComponent | undefined;
 
   /**
-   * Creates the root component that renders the entire app.
+   * Creates the root object with a render function that renders the entire app.
    *
    * @remarks
    *
-   * This method must only be called once, and you have to provide it the entire
-   * app element tree. The element tree will be analyzed to discover plugins,
-   * routes, and other app features. The returned component will render all
-   * of the app elements wrapped within the app context provider.
+   * This method must only be called once. In the returned root object you need
+   * to provide the entire app element tree. The element tree will be analyzed
+   * to discover plugins, routes, and other app features. The returned component
+   * will render all the app elements wrapped within the app context provider.
    *
    * @example
    * ```tsx
-   * export default app.createRoot(
+   * const root = app.createRoot();
+   *
+   * export default root.render(
    *   <>
    *     <AlertDisplay />
    *     <OAuthRequestDialog />
@@ -319,7 +323,9 @@ export type BackstageApp = {
    * );
    * ```
    */
-  createRoot(element: JSX.Element): ComponentType<PropsWithChildren<{}>>;
+  createRoot(): {
+    render(elements: JSX.Element): () => JSX.Element;
+  };
 
   /**
    * Provider component that should wrap the Router created with getRouter()
@@ -327,7 +333,7 @@ export type BackstageApp = {
    *
    * @deprecated Use {@link BackstageApp.createRoot} instead.
    */
-  getProvider(): ComponentType<PropsWithChildren<{}>>;
+  getProvider(): (props: PropsWithChildren<{}>) => JSX.Element;
 
   /**
    * Router component that should wrap the App Routes create with getRoutes()
@@ -335,7 +341,7 @@ export type BackstageApp = {
    *
    * @deprecated Import and use the {@link AppRouter} component from `@backstage/core-app-api` instead
    */
-  getRouter(): ComponentType<PropsWithChildren<{}>>;
+  getRouter(): (props: PropsWithChildren<{}>) => JSX.Element;
 };
 
 /**

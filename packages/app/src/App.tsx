@@ -305,7 +305,7 @@ const routes = (
   </FlatRoutes>
 );
 
-export default app.createRoot(
+export default app.createRoot().render(
   <>
     <AlertDisplay transientTimeoutMs={2500} />
     <OAuthRequestDialog />

@@ -14,12 +14,17 @@
  * limitations under the License.
  */
 
-import React, { ComponentType, ReactNode, ReactElement } from 'react';
+import React, {
+  ComponentType,
+  ReactNode,
+  ReactElement,
+  PropsWithChildren,
+} from 'react';
 import { MemoryRouter } from 'react-router-dom';
 import { Route } from 'react-router-dom';
 import { UnifiedThemeProvider, themes } from '@backstage/theme';
 import MockIcon from '@material-ui/icons/AcUnit';
-import { createSpecializedApp } from '@backstage/core-app-api';
+import { createSpecializedApp, AppRouter } from '@backstage/core-app-api';
 import {
   BootErrorPageProps,
   RouteRef,
@@ -113,7 +118,7 @@ function isExternalRouteRef(
  */
 export function createTestAppWrapper(
   options: TestAppOptions = {},
-): (props: { children: ReactNode }) => JSX.Element {
+): (props: PropsWithChildren<{}>) => JSX.Element {
   const { routeEntries = ['/'] } = options;
   const boundRoutes = new Map<ExternalRouteRef, RouteRef>();
 
@@ -175,17 +180,22 @@ export function createTestAppWrapper(
     },
   );
 
-  const AppProvider = app.getProvider();
-  const AppRouter = app.getRouter();
+  const root = app.createRoot();
 
-  const TestAppWrapper = ({ children }: { children: ReactNode }) => (
-    <AppProvider>
+  const TestAppWrapper = (props: PropsWithChildren<{}>) => {
+    const { children } = props;
+
+    // root.render() needs to be called in the component to create a new render
+    // tree for each test, otherwise the tests will interfere with each other.
+    const Node = root.render(
       <AppRouter>
         <NoRender>{routeElements}</NoRender>
         {children}
-      </AppRouter>
-    </AppProvider>
-  );
+      </AppRouter>,
+    );
+
+    return <Node />;
+  };
 
   return TestAppWrapper;
 }

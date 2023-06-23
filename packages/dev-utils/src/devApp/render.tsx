@@ -48,6 +48,7 @@ import React, { ComponentType, ReactNode, PropsWithChildren } from 'react';
 import ReactDOM from 'react-dom';
 import { createRoutesFromChildren, Route } from 'react-router-dom';
 import { SidebarThemeSwitcher } from './SidebarThemeSwitcher';
+import { AppRouter } from '@backstage/core-app-api';
 
 export function isReactRouterBeta(): boolean {
   const [obj] = createRoutesFromChildren(<Route index element={<div />} />);
@@ -195,33 +196,30 @@ export class DevAppBuilder {
       },
     });
 
-    const AppProvider = app.getProvider();
-    const AppRouter = app.getRouter();
+    const root = app.createRoot();
 
-    const DevApp = () => {
-      return (
-        <AppProvider>
-          <AlertDisplay />
-          <OAuthRequestDialog />
-          {this.rootChildren}
-          <AppRouter>
-            <SidebarPage>
-              <Sidebar>
-                <SidebarSpacer />
-                {this.sidebarItems}
-                <SidebarSpace />
-                <SidebarDivider />
-                <SidebarThemeSwitcher />
-              </Sidebar>
-              <FlatRoutes>
-                {this.routes}
-                <Route path="/_external_route" element={<FakePage />} />
-              </FlatRoutes>
-            </SidebarPage>
-          </AppRouter>
-        </AppProvider>
-      );
-    };
+    const DevApp = root.render(
+      <>
+        <AlertDisplay />
+        <OAuthRequestDialog />
+        {this.rootChildren}
+        <AppRouter>
+          <SidebarPage>
+            <Sidebar>
+              <SidebarSpacer />
+              {this.sidebarItems}
+              <SidebarSpace />
+              <SidebarDivider />
+              <SidebarThemeSwitcher />
+            </Sidebar>
+            <FlatRoutes>
+              {this.routes}
+              <Route path="/_external_route" element={<FakePage />} />
+            </FlatRoutes>
+          </SidebarPage>
+        </AppRouter>
+      </>,
+    );
 
     return DevApp;
   }
