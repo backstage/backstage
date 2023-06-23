@@ -24,7 +24,7 @@ import { createRouter } from './service/router';
 /**
  * Azure DevOps backend plugin
  *
- * @alpha
+ * @public
  */
 export const azureDevOpsPlugin = createBackendPlugin({
   pluginId: 'azure-devops',

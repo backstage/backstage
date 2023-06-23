@@ -33,9 +33,9 @@ import { todoPlugin } from '@backstage/plugin-todo-backend';
 import { entityFeedbackPlugin } from '@backstage/plugin-entity-feedback-backend';
 import { catalogModuleUnprocessedEntities } from '@backstage/plugin-catalog-backend-module-unprocessed';
 import { badgesPlugin } from '@backstage/plugin-badges-backend';
-import { azureDevOpsPlugin } from '@backstage/plugin-azure-devops-backend/alpha';
-import { linguistPlugin } from '@backstage/plugin-linguist-backend/alpha';
-import { devtoolsPlugin } from '@backstage/plugin-devtools-backend/alpha';
+import { azureDevOpsPlugin } from '@backstage/plugin-azure-devops-backend';
+import { linguistPlugin } from '@backstage/plugin-linguist-backend';
+import { devtoolsPlugin } from '@backstage/plugin-devtools-backend';
 import { TaskScheduleDefinition } from '@backstage/backend-tasks';
 
 const backend = createBackend();

@@ -22,9 +22,9 @@ import {
 import { createRouter } from './service/router';
 
 /**
- * Azure DevOps backend plugin
+ * DevTools backend plugin
  *
- * @alpha
+ * @public
  */
 export const devtoolsPlugin = createBackendPlugin({
   pluginId: 'devtools',

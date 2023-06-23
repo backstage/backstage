@@ -26,7 +26,7 @@ import { HumanDuration } from '@backstage/types';
 /**
  * Options for Linguist backend plugin
  *
- * @alpha
+ * @public
  */
 export interface LinguistPluginOptions {
   schedule?: TaskScheduleDefinition;
@@ -40,7 +40,7 @@ export interface LinguistPluginOptions {
 /**
  * Linguist backend plugin
  *
- * @alpha
+ * @public
  */
 export const linguistPlugin = createBackendPlugin(
   (options: LinguistPluginOptions) => ({
