@@ -51,26 +51,17 @@ Here's how to get the DevTools Backend up and running:
 
 ### New Backend System
 
-The DevTools backend plugin has alpha support for the [new backend system](https://backstage.io/docs/backend-system/), here's how you can set that up:
+The DevTools backend plugin has support for the [new backend system](https://backstage.io/docs/backend-system/), here's how you can set that up:
 
 In your `packages/backend/src/index.ts` make the following changes:
 
 ```diff
   import { createBackend } from '@backstage/backend-defaults';
-  import { appPlugin } from '@backstage/plugin-app-backend';
-  import { catalogPlugin } from '@backstage/plugin-catalog-backend';
-  import {
-    scaffolderPlugin,
-    catalogModuleTemplateKind,
-  } from '@backstage/plugin-scaffolder-backend';
 + import { devtoolsPlugin } from '@backstage/plugin-devtools-backend/alpha';
 
   const backend = createBackend();
 
-  backend.add(appPlugin());
-  backend.add(catalogPlugin());
-  backend.add(catalogModuleTemplateKind());
-  backend.add(scaffolderPlugin());
+  // ... other feature additions
 
 + backend.add(devtoolsPlugin());
 
@@ -79,5 +70,5 @@ In your `packages/backend/src/index.ts` make the following changes:
 
 ## Links
 
-- [Frontend part of the plugin](../devtools/README.md)
+- [Frontend part of the plugin](https://github.com/backstage/backstage/tree/master/plugins/devtools)
 - [The Backstage homepage](https://backstage.io)

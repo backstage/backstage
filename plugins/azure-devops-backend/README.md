@@ -72,26 +72,17 @@ Here's how to get the backend up and running:
 
 #### New Backend System
 
-The Azure DevOps backend plugin has alpha support for the [new backend system](https://backstage.io/docs/backend-system/), here's how you can set that up:
+The Azure DevOps backend plugin has support for the [new backend system](https://backstage.io/docs/backend-system/), here's how you can set that up:
 
 In your `packages/backend/src/index.ts` make the following changes:
 
 ```diff
   import { createBackend } from '@backstage/backend-defaults';
-  import { appPlugin } from '@backstage/plugin-app-backend';
-  import { catalogPlugin } from '@backstage/plugin-catalog-backend';
-  import {
-    scaffolderPlugin,
-    catalogModuleTemplateKind,
-  } from '@backstage/plugin-scaffolder-backend';
 + import { azureDevOpsPlugin } from '@backstage/plugin-azure-devops-backend/alpha';
 
   const backend = createBackend();
 
-  backend.add(appPlugin());
-  backend.add(catalogPlugin());
-  backend.add(catalogModuleTemplateKind());
-  backend.add(scaffolderPlugin());
+  // ... other feature additions
 
 + backend.add(azureDevOpsPlugin());
 
