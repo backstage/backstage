@@ -21,7 +21,7 @@ import React from 'react';
 import slugify from 'slugify';
 import { useEntity } from '@backstage/plugin-catalog-react';
 import { useLanguages } from '../../hooks';
-import { useTheme, Theme } from '@mui/material/styles';
+import { useTheme } from '@mui/material/styles';
 import makeStyles from '@mui/styles/makeStyles';
 import Grid from '@mui/material/Grid';
 import Box from '@mui/material/Box';
@@ -29,7 +29,7 @@ import Typography from '@mui/material/Typography';
 import Tooltip from '@mui/material/Tooltip';
 import Chip from '@mui/material/Chip';
 
-const useStyles = makeStyles<Theme>(theme => ({
+const useStyles = makeStyles(theme => ({
   infoCard: {
     marginBottom: theme.spacing(3),
   },

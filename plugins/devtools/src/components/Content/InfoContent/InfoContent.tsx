@@ -27,7 +27,6 @@ import DeveloperBoardIcon from '@mui/icons-material/DeveloperBoard';
 import { BackstageLogoIcon } from './BackstageLogoIcon';
 import FileCopyIcon from '@mui/icons-material/FileCopy';
 import { DevToolsInfo } from '@backstage/plugin-devtools-common';
-import { Theme } from '@mui/material/styles';
 import Box from '@mui/material/Box';
 import Paper from '@mui/material/Paper';
 import ListItemAvatar from '@mui/material/ListItemAvatar';
@@ -37,7 +36,7 @@ import List from '@mui/material/List';
 import ListItemText from '@mui/material/ListItemText';
 import Divider from '@mui/material/Divider';
 
-const useStyles = makeStyles((theme: Theme) =>
+const useStyles = makeStyles(theme =>
   createStyles({
     paperStyle: {
       marginBottom: theme.spacing(2),

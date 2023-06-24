@@ -30,9 +30,8 @@ import useAsync from 'react-use/lib/useAsync';
 import makeStyles from '@mui/styles/makeStyles';
 import Button from '@mui/material/Button';
 import Box from '@mui/material/Box';
-import { Theme } from '@mui/material/styles';
 
-const useStyles = makeStyles<Theme>(theme => ({
+const useStyles = makeStyles(theme => ({
   readMe: {
     overflowY: 'auto',
     paddingRight: theme.spacing(1),

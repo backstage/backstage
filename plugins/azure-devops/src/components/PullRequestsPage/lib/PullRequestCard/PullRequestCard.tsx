@@ -28,9 +28,8 @@ import makeStyles from '@mui/styles/makeStyles';
 import Card from '@mui/material/Card';
 import CardHeader from '@mui/material/CardHeader';
 import CardContent from '@mui/material/CardContent';
-import { Theme } from '@mui/material/styles';
 
-const useStyles = makeStyles<Theme>(
+const useStyles = makeStyles(
   theme => ({
     card: {
       backgroundColor:

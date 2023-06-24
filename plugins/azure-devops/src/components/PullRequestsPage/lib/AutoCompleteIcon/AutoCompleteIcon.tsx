@@ -17,9 +17,8 @@
 import DoneAllIcon from '@mui/icons-material/DoneAll';
 import React from 'react';
 import makeStyles from '@mui/styles/makeStyles';
-import { Theme } from '@mui/material/styles';
 
-const useStyles = makeStyles(({ theme }: { theme: Theme }) => ({
+const useStyles = makeStyles(theme => ({
   root: (props: { hasAutoComplete: boolean }) => ({
     color: props.hasAutoComplete
       ? theme.palette.success.main

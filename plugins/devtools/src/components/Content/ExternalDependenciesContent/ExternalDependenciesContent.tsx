@@ -26,7 +26,6 @@ import { ExternalDependency } from '@backstage/plugin-devtools-common';
 import Alert from '@mui/material/Alert';
 import React from 'react';
 import { useExternalDependencies } from '../../../hooks';
-import { Theme } from '@mui/material/styles';
 import createStyles from '@mui/styles/createStyles';
 import makeStyles from '@mui/styles/makeStyles';
 import Typography from '@mui/material/Typography';
@@ -34,7 +33,7 @@ import Grid from '@mui/material/Grid';
 import Paper from '@mui/material/Paper';
 import Box from '@mui/material/Box';
 
-const useStyles = makeStyles((theme: Theme) =>
+const useStyles = makeStyles(theme =>
   createStyles({
     paperStyle: {
       padding: theme.spacing(2),
