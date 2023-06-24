@@ -25,6 +25,7 @@ import React, { CSSProperties, PropsWithChildren, ReactNode } from 'react';
 import { Helmet } from 'react-helmet';
 import { Link } from '../../components/Link';
 import { Breadcrumbs } from '../Breadcrumbs';
+import { useContent } from '../Sidebar';
 
 /** @public */
 export type HeaderClassKey =
@@ -157,8 +158,15 @@ const TypeFragment = ({
 };
 
 const TitleFragment = ({ pageTitle, classes, tooltip }: TitleFragmentProps) => {
+  const { contentRef } = useContent();
+
   const FinalTitle = (
-    <Typography className={classes.title} variant="h1">
+    <Typography
+      ref={contentRef}
+      tabIndex={-1}
+      className={classes.title}
+      variant="h1"
+    >
       {pageTitle}
     </Typography>
   );
