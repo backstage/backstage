@@ -151,7 +151,7 @@ export class BitbucketServerUrlReader implements UrlReader {
     }
 
     return await this.deps.treeResponseFactory.fromTarArchive({
-      stream: archiveResponse.body as unknown as Readable,
+      stream: Readable.from(archiveResponse.body),
       subpath: filepath,
       etag: lastCommitShortHash,
       filter: options?.filter,
