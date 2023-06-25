@@ -2,4 +2,4 @@
 '@backstage/plugin-kubernetes': patch
 ---
 
-Changed Gcloud auth scope to read-only
+Changed Google cloud auth scope to read-only.
