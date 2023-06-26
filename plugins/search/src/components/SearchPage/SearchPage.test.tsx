@@ -14,18 +14,41 @@
  * limitations under the License.
  */
 
-import { renderInTestApp } from '@backstage/test-utils';
+import {
+  MockConfigApi,
+  TestApiProvider,
+  renderInTestApp,
+} from '@backstage/test-utils';
 import React from 'react';
 import { useLocation } from 'react-router-dom';
-import { useSearch } from '@backstage/plugin-search-react';
+import {
+  type SearchContextState,
+  useSearch,
+  getSearchContextInitialStateDefaults,
+} from '@backstage/plugin-search-react';
 import { SearchPage } from './SearchPage';
+import { configApiRef } from '@backstage/core-plugin-api';
+import type { JsonObject } from '@backstage/types';
+
+const TestingContext = React.createContext<SearchContextState>(
+  getSearchContextInitialStateDefaults(),
+);
 
 jest.mock('react-router-dom', () => ({
   ...jest.requireActual('react-router-dom'),
   useLocation: jest.fn().mockReturnValue({
     search: '',
   }),
-  useOutlet: jest.fn().mockReturnValue('Route Children'),
+  useOutlet: jest.fn().mockImplementation(() => (
+    <TestingContext.Consumer>
+      {value => (
+        <>
+          <h1>Route Children</h1>
+          <div>Page Limit: {value.pageLimit} </div>
+        </>
+      )}
+    </TestingContext.Consumer>
+  )),
 }));
 
 const setTermMock = jest.fn();
@@ -37,7 +60,11 @@ jest.mock('@backstage/plugin-search-react', () => ({
   ...jest.requireActual('@backstage/plugin-search-react'),
   SearchContextProvider: jest
     .fn()
-    .mockImplementation(({ children }) => children),
+    .mockImplementation(({ initialState, children }) => (
+      <TestingContext.Provider value={initialState}>
+        {children}
+      </TestingContext.Provider>
+    )),
   useSearch: jest.fn().mockReturnValue({
     term: '',
     setTerm: (term: any) => setTermMock(term),
@@ -49,6 +76,13 @@ jest.mock('@backstage/plugin-search-react', () => ({
     setPageCursor: (pageCursor: any) => setPageCursorMock(pageCursor),
   }),
 }));
+
+const renderSearchPageWithConfig = (config: JsonObject = {}) =>
+  renderInTestApp(
+    <TestApiProvider apis={[[configApiRef, new MockConfigApi(config)]]}>
+      <SearchPage />
+    </TestApiProvider>,
+  );
 
 describe('SearchPage', () => {
   const origReplaceState = window.history.replaceState;
@@ -76,7 +110,7 @@ describe('SearchPage', () => {
     });
 
     // When we render the page...
-    await renderInTestApp(<SearchPage />);
+    await renderSearchPageWithConfig();
 
     // Then search context should be set with these values...
     expect(setTermMock).toHaveBeenCalledWith(expectedTerm);
@@ -86,7 +120,7 @@ describe('SearchPage', () => {
   });
 
   it('renders provided router element', async () => {
-    const { getByText } = await renderInTestApp(<SearchPage />);
+    const { getByText } = await renderSearchPageWithConfig();
 
     expect(getByText('Route Children')).toBeInTheDocument();
   });
@@ -106,9 +140,27 @@ describe('SearchPage', () => {
       '?query=bieber&types[]=software-catalog&pageCursor=SOMEPAGE&filters[anyKey]=anyValue',
     );
 
-    await renderInTestApp(<SearchPage />);
+    await renderSearchPageWithConfig();
 
     const calls = (window.history.replaceState as jest.Mock).mock.calls[0];
     expect(calls[2]).toContain(expectedLocation);
+  });
+
+  it('initializes the SearchPage with a custom page limit', async () => {
+    const { getByText } = await renderSearchPageWithConfig({
+      app: {
+        search: {
+          initialState: {
+            pageLimit: 50,
+          },
+        },
+      },
+    });
+
+    const calls = (window.history.replaceState as jest.Mock).mock.calls[0];
+    const expectedLocation = encodeURI('?query=&pageCursor=');
+    expect(calls[2]).toContain(expectedLocation);
+
+    expect(getByText('Page Limit: 50')).toBeInTheDocument();
   });
 });
