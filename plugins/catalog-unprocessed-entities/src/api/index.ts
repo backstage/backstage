@@ -32,20 +32,43 @@ export const catalogUnprocessedEntitiesApiRef =
   });
 
 /**
- * API client for the Catalog Unprocessed Entities plugin
+ * Response expected by the {@link CatalogUnprocessedEntitiesApi}
  *
  * @public
  */
-export class CatalogUnprocessedEntitiesApi {
-  url: string = '';
+export type CatalogUnprocessedEntitiesApiResponse = {
+  entities: UnprocessedEntity[];
+};
 
+/**
+ * Interface for the CatalogUnprocessedEntitiesApi.
+ *
+ * @public
+ */
+export interface CatalogUnprocessedEntitiesApi {
+  /**
+   * Returns a list of entities with state 'pending'
+   */
+  pending(): Promise<CatalogUnprocessedEntitiesApiResponse>;
+  /**
+   * Returns a list of entities with state 'failed'
+   */
+  failed(): Promise<CatalogUnprocessedEntitiesApiResponse>;
+}
+
+/**
+ * Default API implementation for the Catalog Unprocessed Entities plugin
+ *
+ * @public
+ */
+export class CatalogUnprocessedEntitiesClient
+  implements CatalogUnprocessedEntitiesApi
+{
   constructor(public discovery: DiscoveryApi, public fetchApi: FetchApi) {}
 
   private async fetch<T>(path: string, init?: RequestInit): Promise<T> {
-    if (!this.url) {
-      this.url = await this.discovery.getBaseUrl('catalog');
-    }
-    const resp = await this.fetchApi.fetch(`${this.url}/${path}`, init);
+    const url = await this.discovery.getBaseUrl('catalog');
+    const resp = await this.fetchApi.fetch(`${url}/${path}`, init);
     if (!resp.ok) {
       throw await ResponseError.fromResponse(resp);
     }
@@ -53,11 +76,11 @@ export class CatalogUnprocessedEntitiesApi {
     return await resp.json();
   }
 
-  async pending(): Promise<{ entities: UnprocessedEntity[] }> {
+  async pending(): Promise<CatalogUnprocessedEntitiesApiResponse> {
     return await this.fetch('entities/unprocessed/pending');
   }
 
-  async failed(): Promise<{ entities: UnprocessedEntity[] }> {
+  async failed(): Promise<CatalogUnprocessedEntitiesApiResponse> {
     return await this.fetch('entities/unprocessed/failed');
   }
 }

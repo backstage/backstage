@@ -40,6 +40,30 @@ import { CatalogUnprocessedEntitiesPage } from '@backstage/plugin-catalog-unproc
 />;
 ```
 
+## Customization
+
+If you want to use the provided endpoints in a different way, you can use the ApiRef doing the following:
+
+```typescript
+import { catalogUnprocessedEntitiesApiRef } from '@backstage/plugin-catalog-unprocessed-entities';
+import { useApi } from '@backstage/core-plugin-api';
+
+const catalogUnprocessedEntitiesApi = useApi(catalogUnprocessedEntitiesApiRef);
+```
+
+Note that you will need to add the API implementation to avoid your instance to crash due to "missing implementation for apiRef". To do so, add the following lines:
+
+```typescript
+// In packages/app/src/apis.ts
+import { catalogUnprocessedEntitiesPlugin } from '@backstage/plugin-catalog-unprocessed-entities';
+
+export const apis: AnyApiFactory[] = [
+  // ...other API implementations
+
+  ...catalogUnprocessedEntitiesPlugin.getApis(),
+];
+```
+
 ## Getting started
 
 Your plugin has been added to the example app in this repository, meaning you'll be able to access it by running `yarn start` in the root directory, and then navigating to [/catalog-unprocessed-entities](http://localhost:3000/catalog-unprocessed-entities).

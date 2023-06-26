@@ -15,6 +15,10 @@
  */
 import { Entity } from '@backstage/catalog-model';
 
+/**
+ * Unprocessed entity data stored in the database.
+ * @public
+ */
 export type UnprocessedEntity = {
   entity_id: string;
   entity_ref: string;
@@ -29,11 +33,19 @@ export type UnprocessedEntity = {
   location_key?: string;
 };
 
+/**
+ * Unprocessed entity cache stored in the database.
+ * @public
+ */
 export type UnprocessedEntityCache = {
   ttl: number;
   cache: object;
 };
 
+/**
+ * Unprocessed entity error information stored in the database.
+ * @public
+ */
 export type UnprocessedEntityError = {
   name: string;
   message: string;
