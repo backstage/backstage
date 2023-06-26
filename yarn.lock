@@ -7139,7 +7139,7 @@ __metadata:
     "@material-ui/icons": ^4.9.1
     "@material-ui/lab": 4.0.0-alpha.61
     "@rjsf/core-v5": "npm:@rjsf/core@5.7.3"
-    "@rjsf/material-ui": 5.7.3
+    "@rjsf/material-ui-v5": "npm:@rjsf/material-ui@5.7.3"
     "@rjsf/utils": 5.7.3
     "@rjsf/validator-ajv8": 5.7.3
     "@testing-library/dom": ^8.0.0
@@ -14296,7 +14296,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@rjsf/material-ui-v5@npm:@rjsf/material-ui@5.7.3, @rjsf/material-ui@npm:5.7.3":
+"@rjsf/material-ui-v5@npm:@rjsf/material-ui@5.7.3":
   version: 5.7.3
   resolution: "@rjsf/material-ui@npm:5.7.3"
   peerDependencies:
