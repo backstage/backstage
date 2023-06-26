@@ -10882,27 +10882,27 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@frsource/base64@npm:1.0.14":
-  version: 1.0.14
-  resolution: "@frsource/base64@npm:1.0.14"
-  checksum: 9a5b718e4ac12fd1b5bfdefcdf669fb0a125599fb6cd55564da3beeccd7a5707f58bc41f572268a8120af15ccca32355e8384341561f738397521020e0c2564c
+"@frsource/base64@npm:1.0.17":
+  version: 1.0.17
+  resolution: "@frsource/base64@npm:1.0.17"
+  checksum: a01689ef785516ff0b7460f55792685fc782f8507518768396acb9283270d50a8149774f3acd5fa690ccd5a48b5ec4ace90a491458ffdd9e9f591c6b23eb5da5
   languageName: node
   linkType: hard
 
 "@frsource/cypress-plugin-visual-regression-diff@npm:^3.2.8":
-  version: 3.3.9
-  resolution: "@frsource/cypress-plugin-visual-regression-diff@npm:3.3.9"
+  version: 3.3.10
+  resolution: "@frsource/cypress-plugin-visual-regression-diff@npm:3.3.10"
   dependencies:
-    "@frsource/base64": 1.0.14
-    glob: 8.0.3
+    "@frsource/base64": 1.0.17
+    glob: 8.1.0
     meta-png: 1.0.6
     move-file: 2.1.0
     pixelmatch: 5.3.0
     pngjs: 7.0.0
-    sharp: 0.31.2
+    sharp: 0.32.1
   peerDependencies:
     cypress: ">=4.5.0"
-  checksum: da3bfaec2d54a314e8bcda915f85e9bc9f7cf53224e588a24ab594d7f0047ad9b5bbda3be8d6f63602f8612d2c7e35c8ca4de307b4f9eb098e04c3af593f090c
+  checksum: 879954ecba8829fd870379a1f4150a511fceab4c5a5c3df8abbab54e655e6560d52d925109364ea7f2d3484467ed5e9c3e4cfaf0058c12bbfbfc21d76ed79b40
   languageName: node
   linkType: hard
 
@@ -26143,16 +26143,16 @@ __metadata:
   languageName: node
   linkType: hard
 
-"glob@npm:8.0.3":
-  version: 8.0.3
-  resolution: "glob@npm:8.0.3"
+"glob@npm:8.1.0, glob@npm:^8.0.0, glob@npm:^8.0.1, glob@npm:^8.0.3":
+  version: 8.1.0
+  resolution: "glob@npm:8.1.0"
   dependencies:
     fs.realpath: ^1.0.0
     inflight: ^1.0.4
     inherits: 2
     minimatch: ^5.0.1
     once: ^1.3.0
-  checksum: 50bcdea19d8e79d8de5f460b1939ffc2b3299eac28deb502093fdca22a78efebc03e66bf54f0abc3d3d07d8134d19a32850288b7440d77e072aa55f9d33b18c5
+  checksum: 92fbea3221a7d12075f26f0227abac435de868dd0736a17170663783296d0dd8d3d532a5672b4488a439bf5d7fb85cdd07c11185d6cd39184f0385cbdfb86a47
   languageName: node
   linkType: hard
 
@@ -26182,19 +26182,6 @@ __metadata:
     once: ^1.3.0
     path-is-absolute: ^1.0.0
   checksum: 29452e97b38fa704dabb1d1045350fb2467cf0277e155aa9ff7077e90ad81d1ea9d53d3ee63bd37c05b09a065e90f16aec4a65f5b8de401d1dac40bc5605d133
-  languageName: node
-  linkType: hard
-
-"glob@npm:^8.0.0, glob@npm:^8.0.1, glob@npm:^8.0.3":
-  version: 8.1.0
-  resolution: "glob@npm:8.1.0"
-  dependencies:
-    fs.realpath: ^1.0.0
-    inflight: ^1.0.4
-    inherits: 2
-    minimatch: ^5.0.1
-    once: ^1.3.0
-  checksum: 92fbea3221a7d12075f26f0227abac435de868dd0736a17170663783296d0dd8d3d532a5672b4488a439bf5d7fb85cdd07c11185d6cd39184f0385cbdfb86a47
   languageName: node
   linkType: hard
 
@@ -32564,12 +32551,12 @@ __metadata:
   languageName: node
   linkType: hard
 
-"node-addon-api@npm:^5.0.0":
-  version: 5.1.0
-  resolution: "node-addon-api@npm:5.1.0"
+"node-addon-api@npm:^6.1.0":
+  version: 6.1.0
+  resolution: "node-addon-api@npm:6.1.0"
   dependencies:
     node-gyp: latest
-  checksum: 2508bd2d2981945406243a7bd31362fc7af8b70b8b4d65f869c61731800058fb818cc2fd36c8eac714ddd0e568cc85becf5e165cebbdf7b5024d5151bbc75ea1
+  checksum: 3a539510e677cfa3a833aca5397300e36141aca064cdc487554f2017110709a03a95da937e98c2a14ec3c626af7b2d1b6dabe629a481f9883143d0d5bff07bf2
   languageName: node
   linkType: hard
 
@@ -37761,7 +37748,18 @@ __metadata:
   languageName: node
   linkType: hard
 
-"semver@npm:^7.1.1, semver@npm:^7.1.2, semver@npm:^7.1.3, semver@npm:^7.3.2, semver@npm:^7.3.4, semver@npm:^7.3.5, semver@npm:^7.3.7, semver@npm:^7.3.8, semver@npm:~7.3.0":
+"semver@npm:^7.1.1, semver@npm:^7.1.2, semver@npm:^7.1.3, semver@npm:^7.3.2, semver@npm:^7.3.4, semver@npm:^7.3.5, semver@npm:^7.3.7, semver@npm:^7.3.8, semver@npm:^7.5.0":
+  version: 7.5.3
+  resolution: "semver@npm:7.5.3"
+  dependencies:
+    lru-cache: ^6.0.0
+  bin:
+    semver: bin/semver.js
+  checksum: 9d58db16525e9f749ad0a696a1f27deabaa51f66e91d2fa2b0db3de3e9644e8677de3b7d7a03f4c15bc81521e0c3916d7369e0572dbde250d9bedf5194e2a8a7
+  languageName: node
+  linkType: hard
+
+"semver@npm:~7.3.0":
   version: 7.3.8
   resolution: "semver@npm:7.3.8"
   dependencies:
@@ -37961,20 +37959,20 @@ __metadata:
   languageName: node
   linkType: hard
 
-"sharp@npm:0.31.2":
-  version: 0.31.2
-  resolution: "sharp@npm:0.31.2"
+"sharp@npm:0.32.1":
+  version: 0.32.1
+  resolution: "sharp@npm:0.32.1"
   dependencies:
     color: ^4.2.3
     detect-libc: ^2.0.1
-    node-addon-api: ^5.0.0
+    node-addon-api: ^6.1.0
     node-gyp: latest
     prebuild-install: ^7.1.1
-    semver: ^7.3.8
+    semver: ^7.5.0
     simple-get: ^4.0.1
     tar-fs: ^2.1.1
     tunnel-agent: ^0.6.0
-  checksum: 076717b7a073ea47bb522ff2931b74b6608daeb6f7ae334e4848d47fdf4d23bcb18cd49044fd5fb27ef27a1a4aa87d141894d67d1c4bb15a6e2e63cf4dbe329e
+  checksum: 99f50df380442aa8f3f952dd6f2e27634f9cab249cce47aa7f1a97c468334979ea94d71555f782aae5f5016e44b7832799f1c5ea1cb3ca975c089acd00e62e2e
   languageName: node
   linkType: hard
 
