@@ -4,8 +4,8 @@ title: Writing Custom Actions
 description: How to write your own actions
 ---
 
-If you're wanting to extend the functionality of the Scaffolder, you can do so
-by writing custom actions which can be used along side our
+If you want to extend the functionality of the Scaffolder, you can do so
+by writing custom actions which can be used alongside our
 [built-in actions](./builtin-actions.md).
 
 > Note: When adding custom actions, the actions array will **replace the
@@ -65,7 +65,7 @@ The `createTemplateAction` takes an object which specifies the following:
 - `schema.input` - A `zod` or JSON schema object for input values to your function
 - `schema.output` - A `zod` or JSON schema object for values which are output from the
   function using `ctx.output`
-- `handler` - the actual code which is run part of the action, with a context
+- `handler` - the actual code which is run as part of the action, with a context
 
 You can also choose to define your custom action using JSON schema instead of `zod`:
 
