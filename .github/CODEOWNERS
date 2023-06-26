@@ -39,6 +39,9 @@ yarn.lock                                           @backstage/maintainers @back
 /plugins/code-coverage-backend                      @backstage/maintainers @alde @nissayeva
 /plugins/cost-insights                              @backstage/maintainers @backstage/silver-lining
 /plugins/cost-insights-*                            @backstage/maintainers @backstage/silver-lining
+/plugins/devtools                                   @backstage/maintainers @awanlin
+/plugins/devtools-backend                           @backstage/maintainers @awanlin
+/plugins/devtools-common                            @backstage/maintainers @awanlin
 /plugins/entity-feedback                            @backstage/maintainers @kuangp
 /plugins/entity-feedback-*                          @backstage/maintainers @kuangp
 /plugins/events-backend                             @backstage/maintainers @pjungermann
@@ -64,6 +67,9 @@ yarn.lock                                           @backstage/maintainers @back
 /plugins/kafka-backend                              @backstage/maintainers @nirga @andrewthauer
 /plugins/kubernetes                                 @backstage/maintainers @backstage/kubernetes-maintainers
 /plugins/kubernetes-*                               @backstage/maintainers @backstage/kubernetes-maintainers
+/plugins/linguist                                   @backstage/maintainers @awanlin
+/plugins/linguist-backend                           @backstage/maintainers @awanlin
+/plugins/linguist-common                            @backstage/maintainers @awanlin
 /plugins/microsoft-calendar                         @backstage/maintainers @abhay-soni-developer @NishkarshRaj
 /plugins/newrelic-dashboard                         @backstage/maintainers @mufaddal7
 /plugins/permission-*                               @backstage/permission-maintainers
