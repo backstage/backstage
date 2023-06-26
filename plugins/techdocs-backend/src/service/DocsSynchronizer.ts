@@ -130,7 +130,7 @@ export class DocsSynchronizer {
 
       const interval = setInterval(() => {
         taskLogger.info(
-          'The docs building process is taking a little bit longer to process this entity. Please bear with us.',
+          'The docs building process is taking a little bit longer to process this entity. Please bare with us.',
         );
       }, 10000);
       const updated = await this.buildLimiter(() => docsBuilder.build());

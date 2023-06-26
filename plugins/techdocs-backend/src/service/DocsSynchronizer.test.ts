@@ -156,7 +156,7 @@ describe('DocsSynchronizer', () => {
 
       expect(mockResponseHandler.log).toHaveBeenCalledWith(
         expect.stringMatching(
-          /info.*The docs building process is taking a little bit longer to process this entity. Please bear with us/,
+          /info.*The docs building process is taking a little bit longer to process this entity. Please bare with us/,
         ),
       );
 
