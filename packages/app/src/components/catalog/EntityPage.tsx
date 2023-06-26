@@ -66,6 +66,8 @@ import {
   isKind,
   isOrphan,
   hasLabels,
+  hasRelationWarnings,
+  EntityRelationWarning,
 } from '@internal/plugin-catalog-customized';
 import {
   Direction,
@@ -324,6 +326,14 @@ const entityWarningContent = (
       <EntitySwitch.Case if={isOrphan}>
         <Grid item xs={12}>
           <EntityOrphanWarning />
+        </Grid>
+      </EntitySwitch.Case>
+    </EntitySwitch>
+
+    <EntitySwitch>
+      <EntitySwitch.Case if={hasRelationWarnings}>
+        <Grid item xs={12}>
+          <EntityRelationWarning />
         </Grid>
       </EntitySwitch.Case>
     </EntitySwitch>
