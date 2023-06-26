@@ -128,6 +128,10 @@ module.exports = {
             to: '/docs/features/techdocs/',
           },
           {
+            from: '/docs/features/kubernetes/overview',
+            to: '/docs/features/kubernetes/',
+          },          
+          {
             from: '/docs/features/search/search-overview',
             to: '/docs/features/search/',
           },
