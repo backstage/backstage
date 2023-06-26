@@ -11,3 +11,5 @@ app:
     initialState:
       pageLimit: 50
 ```
+
+Acceptable values for `pageLimit` are `10`, `25`, `50` or `100`.
