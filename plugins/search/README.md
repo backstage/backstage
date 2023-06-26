@@ -20,6 +20,8 @@ app:
       pageLimit: 50
 ```
 
+Acceptable values for `pageLimit` are `10`, `25`, `50` or `100`.
+
 ### Areas of Responsibility
 
 This search plugin is primarily responsible for the following:

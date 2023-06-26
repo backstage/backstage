@@ -33,7 +33,7 @@ export interface Config {
          *
          * @visibility frontend
          */
-        pageLimit?: number;
+        pageLimit?: 10 | 25 | 50 | 100;
       };
     };
   };
