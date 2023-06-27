@@ -1,5 +1,18 @@
 # @backstage/core-components
 
+## 0.13.3-next.0
+
+### Patch Changes
+
+- 68531cc70e1f: Break some internal circular import chains
+- a011d2316a58: Fix keyboard navigation & focus highlight on Select component.
+- Updated dependencies
+  - @backstage/errors@1.2.1-next.0
+  - @backstage/config@1.0.8
+  - @backstage/core-plugin-api@1.5.2
+  - @backstage/theme@0.4.0
+  - @backstage/version-bridge@1.0.4
+
 ## 0.13.2
 
 ### Patch Changes

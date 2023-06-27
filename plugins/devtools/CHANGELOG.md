@@ -1,5 +1,20 @@
 # @backstage/plugin-devtools
 
+## 0.1.2-next.0
+
+### Patch Changes
+
+- 5969639fd075: Allow specifying custom title for `DevToolsLayout`
+- 2c4869473155: Updated the `README` with instructions on how to integrate the Catalog Unprocessed Entities plugin as a tab within DevTools
+- Updated dependencies
+  - @backstage/errors@1.2.1-next.0
+  - @backstage/core-components@0.13.3-next.0
+  - @backstage/core-plugin-api@1.5.2
+  - @backstage/theme@0.4.0
+  - @backstage/types@1.1.0
+  - @backstage/plugin-devtools-common@0.1.2-next.0
+  - @backstage/plugin-permission-react@0.4.14-next.0
+
 ## 0.1.1
 
 ### Patch Changes
