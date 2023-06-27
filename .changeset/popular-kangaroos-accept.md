@@ -1,5 +1,5 @@
 ---
-'@backstage/plugin-home': minor
+'@backstage/plugin-home': patch
 ---
 
-fix: update plugin home dependence @rjsf/material-ui to @rjsf/material-ui-v5
+fix: update plugin home dependency for `@rjsf/material-ui` to `@rjsf/material-ui-v5`
