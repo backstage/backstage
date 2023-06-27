@@ -5,8 +5,24 @@
 ```ts
 /// <reference types="react" />
 
+import { ApiRef } from '@backstage/core-plugin-api';
 import { BackstagePlugin } from '@backstage/core-plugin-api';
+import { Entity } from '@backstage/catalog-model';
 import { RouteRef } from '@backstage/core-plugin-api';
+
+// @public
+export interface CatalogUnprocessedEntitiesApi {
+  failed(): Promise<CatalogUnprocessedEntitiesApiResponse>;
+  pending(): Promise<CatalogUnprocessedEntitiesApiResponse>;
+}
+
+// @public
+export const catalogUnprocessedEntitiesApiRef: ApiRef<CatalogUnprocessedEntitiesApi>;
+
+// @public
+export type CatalogUnprocessedEntitiesApiResponse = {
+  entities: UnprocessedEntity[];
+};
 
 // @public
 export const CatalogUnprocessedEntitiesPage: () => JSX.Element;
@@ -22,6 +38,38 @@ export const catalogUnprocessedEntitiesPlugin: BackstagePlugin<
 
 // @public (undocumented)
 export const UnprocessedEntitiesContent: () => JSX.Element;
+
+// @public
+export type UnprocessedEntity = {
+  entity_id: string;
+  entity_ref: string;
+  unprocessed_entity: Entity;
+  unprocessed_hash?: string;
+  processed_entity?: Entity;
+  result_hash?: string;
+  cache?: UnprocessedEntityCache;
+  next_update_at: string | Date;
+  last_discovery_at: string | Date;
+  errors?: UnprocessedEntityError[];
+  location_key?: string;
+};
+
+// @public
+export type UnprocessedEntityCache = {
+  ttl: number;
+  cache: object;
+};
+
+// @public
+export type UnprocessedEntityError = {
+  name: string;
+  message: string;
+  cause: {
+    name: string;
+    message: string;
+    stack: string;
+  };
+};
 
 // (No @packageDocumentation comment for this package)
 ```
