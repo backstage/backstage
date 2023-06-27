@@ -126,7 +126,7 @@ export const FailedEntities = () => {
   return (
     <>
       <Table
-        options={{ pageSize: 40, search: true }}
+        options={{ pageSize: 20, search: true }}
         columns={columns}
         data={data?.entities || []}
         emptyContent={

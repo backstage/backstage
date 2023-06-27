@@ -43,6 +43,9 @@ const BootstrapInput = withStyles(
         'label + &': {
           marginTop: theme.spacing(3),
         },
+        '&.Mui-focused > div[role=button]': {
+          borderColor: theme.palette.primary.main,
+        },
       },
       input: {
         borderRadius: theme.shape.borderRadius,
@@ -75,7 +78,7 @@ const useStyles = makeStyles(
   (theme: Theme) =>
     createStyles({
       formControl: {
-        margin: `${theme.spacing(1)} 0px`,
+        margin: theme.spacing(1, 0),
         maxWidth: 300,
       },
       label: {
@@ -212,7 +215,6 @@ export function SelectComponent(props: SelectProps) {
           onClose={handleClose}
           input={<BootstrapInput />}
           label={label}
-          tabIndex={0}
           renderValue={s =>
             multiple && (value as any[]).length !== 0 ? (
               <Box className={classes.chips}>

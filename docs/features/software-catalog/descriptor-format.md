@@ -351,7 +351,7 @@ component, like `java` or `go`.
 
 This field is optional, and currently has no special semantics.
 
-Each tag must be sequences of `[a-z0-9]` separated by `-`, at most 63 characters
+Each tag must be sequences of `[a-z0-9:+#]` separated by `-`, at most 63 characters
 in total.
 
 ### `links` [optional]

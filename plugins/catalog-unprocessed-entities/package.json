@@ -12,6 +12,12 @@
   "backstage": {
     "role": "frontend-plugin"
   },
+  "homepage": "https://backstage.io",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/backstage/backstage",
+    "directory": "plugins/catalog-unprocessed-entities"
+  },
   "scripts": {
     "start": "backstage-cli package start",
     "build": "backstage-cli package build",

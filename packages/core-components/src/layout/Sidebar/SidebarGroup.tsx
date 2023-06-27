@@ -22,7 +22,7 @@ import BottomNavigationAction, {
 import { makeStyles } from '@material-ui/core/styles';
 import React, { useContext } from 'react';
 import { useLocation } from 'react-router-dom';
-import { Link } from '../../components';
+import { Link } from '../../components/Link/Link';
 import { SidebarConfig, SidebarConfigContext } from './config';
 import { MobileSidebarContext } from './MobileSidebar';
 import { useSidebarPinState } from './SidebarPinStateContext';
