@@ -21,3 +21,4 @@
  */
 
 export { stackstormPlugin, StackstormPage } from './plugin';
+export { type StackstormHomeProps } from './components/StackstormHome';
