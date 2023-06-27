@@ -146,5 +146,5 @@ return createRouter(
 
 ## Links
 
-- [Frontend part of the plugin](https://github.com/backstage/backstage/tree/master/linguist)
+- [Frontend part of the plugin](https://github.com/backstage/backstage/tree/master/plugins/linguist)
 - [The Backstage homepage](https://backstage.io)
