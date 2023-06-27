@@ -19,6 +19,8 @@ import { type ScmIntegrationRegistry } from '@backstage/integration';
 import { getToken } from '../util';
 import { Gitlab } from '@gitbeaker/node';
 import YAML from 'js-yaml';
+import commonGitlabConfig from '../commonGitlabConfig';
+import { z } from 'zod';
 
 /**
  * Creates a `gitlab:parseGitlabYamlFiles` Scaffolder action.
@@ -30,68 +32,42 @@ export const parseGitlabYamlFilesAction = (options: {
   integrations: ScmIntegrationRegistry;
 }) => {
   const { integrations } = options;
-  return createTemplateAction<{
-    repoUrl: string;
-    projectId: string | number;
-    filePath: string;
-    propPath: string;
-    split: string;
-    token?: string;
-  }>({
+  return createTemplateAction({
     id: 'gitlab:yamlFiles:parse',
     description: 'Retrieve a value from a .yaml file in a Gitlab repository',
     schema: {
-      input: {
-        required: ['repoUrl', 'projectId', 'filePath'],
-        type: 'object',
-        properties: {
-          repoUrl: {
-            title: 'Repository Location',
-            type: 'string',
-            description:
-              'The Repository Location to the .yaml file containing the variable',
-          },
-          projectId: {
-            title: 'Project ID',
-            type: ['string', 'number'],
+      input: commonGitlabConfig.merge(
+        z.object({
+          projectId: z.union([z.number(), z.string()], {
             description:
               'The Project ID to the .yaml file containing the variable',
-          },
-          filePath: {
-            title: 'File path',
-            type: 'string',
-            description: 'File path to the .yaml file containing the variable',
-          },
-          propPath: {
-            title: 'Property Path',
-            type: 'string',
+          }),
+          filePath: z
+            .string({
+              description:
+                'File path to the .yaml file containing the variable',
+            })
+            .regex(/(?:split|slice)\(['"](.+?)['"]\)(?:\[(\d+)\])?/),
+          propPath: z.string({
             description: 'The property path of the variable to retrieve',
-          },
-          split: {
-            title: 'Split Manipulation of the retrieved variable',
-            type: 'string',
-            description:
-              'The kind of split manipulation you want to use on your retrieved variable',
-          },
-          token: {
-            title: 'Authentication Token',
-            type: 'string',
-            description: 'The token to use for authorization to GitLab',
-          },
-        },
-      },
-      output: {
-        type: 'object',
-        properties: {
-          value: {
-            title: 'Value',
-            type: 'string',
-          },
-        },
-      },
+          }),
+          split: z
+            .string({
+              description:
+                'The kind of split manipulation you want to use on your retrieved variable',
+            })
+            .regex(
+              /split\('.+'\)(?:\[\d+\])?(?:\.(?:split\('.+'\)(?:\[\d+\])?)*)?/,
+            )
+            .optional(),
+        }),
+      ),
+      output: z.object({
+        value: z.string({ description: 'retrieved output' }),
+      }),
     },
     async handler(ctx) {
-      const { repoUrl, projectId, filePath, propPath, split } = ctx.input;
+      const { projectId, filePath, propPath, split } = ctx.input;
       const { token, integrationConfig } = getToken(ctx.input, integrations);
 
       const api = new Gitlab({
@@ -135,6 +111,7 @@ export const parseGitlabYamlFilesAction = (options: {
           throw new Error('Invalid path: path must be a string');
         }
         let value: any = obj;
+        /* is designed to match Base64-encoded strings. */
         if (
           /^([A-Za-z0-9+/]{4})*([A-Za-z0-9+/]{3}=|[A-Za-z0-9+/]{2}==)?$/.test(
             value,
