@@ -33,21 +33,27 @@ import { CustomErrorBase } from './CustomErrorBase';
  *
  * @public
  */
-export class InputError extends CustomErrorBase {}
+export class InputError extends CustomErrorBase {
+  name = 'InputError' as const;
+}
 
 /**
  * The request requires authentication, which was not properly supplied.
  *
  * @public
  */
-export class AuthenticationError extends CustomErrorBase {}
+export class AuthenticationError extends CustomErrorBase {
+  name = 'AuthenticationError' as const;
+}
 
 /**
  * The authenticated caller is not allowed to perform this request.
  *
  * @public
  */
-export class NotAllowedError extends CustomErrorBase {}
+export class NotAllowedError extends CustomErrorBase {
+  name = 'NotAllowedError' as const;
+}
 
 /**
  * The requested resource could not be found.
@@ -57,7 +63,9 @@ export class NotAllowedError extends CustomErrorBase {}
  *
  * @public
  */
-export class NotFoundError extends CustomErrorBase {}
+export class NotFoundError extends CustomErrorBase {
+  name = 'NotFoundError' as const;
+}
 
 /**
  * The request could not complete due to a conflict in the current state of the
@@ -65,21 +73,27 @@ export class NotFoundError extends CustomErrorBase {}
  *
  * @public
  */
-export class ConflictError extends CustomErrorBase {}
+export class ConflictError extends CustomErrorBase {
+  name = 'ConflictError' as const;
+}
 
 /**
  * The requested resource has not changed since last request.
  *
  * @public
  */
-export class NotModifiedError extends CustomErrorBase {}
+export class NotModifiedError extends CustomErrorBase {
+  name = 'NotModifiedError' as const;
+}
 
 /**
  * The server does not support the functionality required to fulfill the request.
  *
  * @public
  */
-export class NotImplementedError extends CustomErrorBase {}
+export class NotImplementedError extends CustomErrorBase {
+  name = 'NotImplementedError' as const;
+}
 
 /**
  * The server is not ready to handle the request.

@@ -26,7 +26,7 @@ import SwapVertIcon from '@material-ui/icons/SwapVert';
 import React from 'react';
 import useEffectOnce from 'react-use/lib/useEffectOnce';
 
-import { usePlaylistList } from '../../hooks';
+import { usePlaylistList } from '../../hooks/usePlaylistList';
 import { PlaylistSortCompareFunction } from '../../types';
 
 export const enum DefaultPlaylistSortTypes {

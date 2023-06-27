@@ -15,12 +15,14 @@ export const ConfigContent: () => JSX.Element;
 
 // @public
 export const DevToolsLayout: {
-  ({ children }: DevToolsLayoutProps): JSX.Element;
+  ({ children, title, subtitle }: DevToolsLayoutProps): JSX.Element;
   Route: (props: SubRoute) => null;
 };
 
 // @public (undocumented)
 export type DevToolsLayoutProps = {
+  title?: string;
+  subtitle?: string;
   children?: default_2.ReactNode;
 };
 

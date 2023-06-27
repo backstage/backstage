@@ -40,7 +40,7 @@ Inside your `packages/app` directory, create a new file where our new homepage c
 ```tsx
 import React from 'react';
 
-export const homePage = (
+export const HomePage = () => (
   /* We will shortly compose a pretty homepage here. */
   <h1>Welcome to Backstage!</h1>
 );

@@ -238,7 +238,7 @@ export class GithubUrlReader implements UrlReader {
     return await this.deps.treeResponseFactory.fromTarArchive({
       // TODO(Rugvip): Underlying implementation of fetch will be node-fetch, we probably want
       //               to stick to using that in exclusively backend code.
-      stream: archive.body as unknown as Readable,
+      stream: Readable.from(archive.body),
       subpath,
       etag: sha,
       filter: options?.filter,
@@ -347,7 +347,6 @@ export class GithubUrlReader implements UrlReader {
     init: RequestInit,
   ): Promise<Response> {
     const urlAsString = url.toString();
-
     const response = await fetch(urlAsString, init);
 
     if (!response.ok) {

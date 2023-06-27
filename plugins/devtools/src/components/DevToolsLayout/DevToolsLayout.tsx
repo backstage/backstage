@@ -40,6 +40,8 @@ attachComponentData(Route, 'core.gatherMountPoints', true);
 
 /** @public */
 export type DevToolsLayoutProps = {
+  title?: string;
+  subtitle?: string;
   children?: React.ReactNode;
 };
 
@@ -56,7 +58,11 @@ export type DevToolsLayoutProps = {
  * ```
  * @public
  */
-export const DevToolsLayout = ({ children }: DevToolsLayoutProps) => {
+export const DevToolsLayout = ({
+  children,
+  title,
+  subtitle,
+}: DevToolsLayoutProps) => {
   const routes = useElementFilter(children, elements =>
     elements
       .selectByComponentData({
@@ -70,7 +76,7 @@ export const DevToolsLayout = ({ children }: DevToolsLayoutProps) => {
 
   return (
     <Page themeId="home">
-      <Header title="Backstage DevTools" />
+      <Header title={title ?? 'Backstage DevTools'} subtitle={subtitle} />
       <RoutedTabs routes={routes} />
     </Page>
   );
