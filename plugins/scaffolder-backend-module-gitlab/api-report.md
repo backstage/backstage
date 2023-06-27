@@ -80,13 +80,15 @@ export const parseGitlabYamlFilesAction: (options: {
   integrations: ScmIntegrationRegistry;
 }) => TemplateAction<
   {
-    repoUrl?: string;
-    projectId: string | number;
     filePath: string;
+    repoUrl: string;
+    projectId: string | number;
     propPath: string;
-    split?: string | undefined;
     token?: string | undefined;
+    split?: string | undefined;
   },
-  JsonObject
+  {
+    value: string;
+  }
 >;
 ```
