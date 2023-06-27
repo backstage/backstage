@@ -44,6 +44,39 @@ import { CatalogUnprocessedEntitiesPage } from '@backstage/plugin-catalog-unproc
 />;
 ```
 
+## Customization
+
+If you want to use the provided endpoints in a different way, you can use the ApiRef doing the following:
+
+```typescript
+import { catalogUnprocessedEntitiesApiRef } from '@backstage/plugin-catalog-unprocessed-entities';
+import { useApi } from '@backstage/core-plugin-api';
+
+const catalogUnprocessedEntitiesApi = useApi(catalogUnprocessedEntitiesApiRef);
+```
+
+Note that if you are not rendering the `CatalogUnprocessedEntitiesPage` in the `App.tsx` tree, you will need to export the `catalogUnproccessedEntitiesPlugin` from your `plugins.ts` file to setup the plugin otherwise you will receive an error like `No implementation available for apiRef{plugin.catalog-unprocessed-entities.service}`
+
+```typescript
+// In packages/app/src/plugins.ts
+...
+export { catalogUnprocessedEntitiesPlugin } from '@backstage/plugin-catalog-unprocessed-entities';
+```
+
+If you don't have a `plugins.ts` file, you can create it with the path `packages/app/src/plugins.ts` and then import it into your `App.tsx`:
+
+```diff
++ import * as plugins from './plugins';
+
+const app = createApp({
+  apis,
++   plugins: Object.values(plugins),
+  bindRoutes({ bind }) {
+    /* ... */
+  },
+});
+```
+
 ## Getting started
 
 Your plugin has been added to the example app in this repository,
