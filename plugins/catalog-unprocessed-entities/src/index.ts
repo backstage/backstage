@@ -17,3 +17,4 @@ export {
   catalogUnprocessedEntitiesPlugin,
   CatalogUnprocessedEntitiesPage,
 } from './plugin';
+export { UnprocessedEntitiesContent } from './components/UnprocessedEntities';
