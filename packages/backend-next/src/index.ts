@@ -32,10 +32,14 @@ import { techdocsPlugin } from '@backstage/plugin-techdocs-backend/alpha';
 import { todoPlugin } from '@backstage/plugin-todo-backend';
 import { entityFeedbackPlugin } from '@backstage/plugin-entity-feedback-backend';
 import { catalogModuleUnprocessedEntities } from '@backstage/plugin-catalog-backend-module-unprocessed';
+import { badgesPlugin } from '@backstage/plugin-badges-backend';
 
 const backend = createBackend();
 
 backend.add(appPlugin({ appPackageName: 'example-app' }));
+
+// Badges
+backend.add(badgesPlugin());
 
 // Entity Feedback
 backend.add(entityFeedbackPlugin());
