@@ -27,11 +27,15 @@ import { ExecutionsTable } from '../ExecutionsTable';
 import { PacksTable } from '../PacksTable/PacksTable';
 import { ActionsList } from '../ActionsList';
 
+/**
+ * @public
+ */
 export type StackstormHomeProps = {
   title?: string;
   subtitle?: string;
   headerButtons?: React.ReactNode[];
 };
+
 export const StackstormHome = (props: StackstormHomeProps) => (
   <Page themeId="tool">
     <Header
