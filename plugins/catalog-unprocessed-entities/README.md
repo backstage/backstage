@@ -59,6 +59,20 @@ Note that if you are not rendering the `CatalogUnprocessedEntitiesPage` in the `
 export { catalogUnprocessedEntitiesPlugin } from '@backstage/plugin-catalog-unprocessed-entities';
 ```
 
+If you don't have a `plugins.ts` file, you can create it with the path `packages/app/src/plugins.ts` and then import it into your `App.tsx`:
+
+```diff
++ import * as plugins from './plugins';
+
+const app = createApp({
+  apis,
++   plugins: Object.values(plugins),
+  bindRoutes({ bind }) {
+    /* ... */
+  },
+});
+```
+
 ## Getting started
 
 Your plugin has been added to the example app in this repository, meaning you'll be able to access it by running `yarn start` in the root directory, and then navigating to [/catalog-unprocessed-entities](http://localhost:3000/catalog-unprocessed-entities).
