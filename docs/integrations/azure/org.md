@@ -37,7 +37,7 @@ catalog:
 ```
 
 Finally, register the plugin in `catalog.ts`.
-For large organizations, this plugin can take a long time, so be careful setting low frequency / timeouts.
+For large organizations, this plugin can take a long time, so be careful setting low frequency / timeouts and importing a large amount of users / groups for the first try.
 
 ```ts title="packages/backend/src/plugins/catalog.ts"
 /* highlight-add-next-line */
@@ -106,7 +106,7 @@ To grant the managed identity the same permissions as mentioned in _App Registra
 ## Filtering imported Users and Groups
 
 By default, the plugin will import all users and groups from your directory.
-This can be customized through [filters](https://learn.microsoft.com/en-us/graph/filter-query-parameter) and [search](https://learn.microsoft.com/en-us/graph/search-query-parameter) queries.
+This can be customized through [filters](https://learn.microsoft.com/en-us/graph/filter-query-parameter) and [search](https://learn.microsoft.com/en-us/graph/search-query-parameter) queries. Keep in mind that if you omit filters and search queries for the user or group properties, the plugin will automatically import all available users or groups.
 
 ### Groups
 
