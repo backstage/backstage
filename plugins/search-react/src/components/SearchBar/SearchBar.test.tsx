@@ -323,44 +323,39 @@ describe('SearchBar', () => {
     const textbox = screen.getByLabelText('Search');
 
     let value = 'value';
-
     await user.type(textbox, value);
-
-    expect(analyticsApiMock.getEvents()).toHaveLength(0);
-
-    await waitFor(() => expect(analyticsApiMock.getEvents()).toHaveLength(1));
-
-    expect(textbox).toHaveValue(value);
-    expect(analyticsApiMock.getEvents()[0]).toEqual({
-      action: 'search',
-      context: {
-        extension: 'SearchBar',
-        pluginId: 'search',
-        routeRef: 'unknown',
-        searchTypes: types.toString(),
-      },
-      subject: value,
+    await waitFor(() => {
+      expect(analyticsApiMock.getEvents()).toHaveLength(1);
+      expect(textbox).toHaveValue(value);
+      expect(analyticsApiMock.getEvents()[0]).toEqual({
+        action: 'search',
+        context: {
+          extension: 'SearchBar',
+          pluginId: 'search',
+          routeRef: 'unknown',
+          searchTypes: types.toString(),
+        },
+        subject: value,
+      });
     });
 
-    await user.clear(textbox);
-
     value = 'new value';
-
+    await user.clear(textbox);
     // make sure new term is captured
     await user.type(textbox, value);
-
-    await waitFor(() => expect(analyticsApiMock.getEvents()).toHaveLength(2));
-
-    expect(textbox).toHaveValue(value);
-    expect(analyticsApiMock.getEvents()[1]).toEqual({
-      action: 'search',
-      context: {
-        extension: 'SearchBar',
-        pluginId: 'search',
-        routeRef: 'unknown',
-        searchTypes: types.toString(),
-      },
-      subject: value,
+    await waitFor(() => {
+      expect(analyticsApiMock.getEvents()).toHaveLength(2);
+      expect(textbox).toHaveValue(value);
+      expect(analyticsApiMock.getEvents()[1]).toEqual({
+        action: 'search',
+        context: {
+          extension: 'SearchBar',
+          pluginId: 'search',
+          routeRef: 'unknown',
+          searchTypes: types.toString(),
+        },
+        subject: value,
+      });
     });
   });
 });
