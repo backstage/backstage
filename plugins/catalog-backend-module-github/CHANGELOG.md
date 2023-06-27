@@ -1,5 +1,25 @@
 # @backstage/plugin-catalog-backend-module-github
 
+## 0.3.2-next.0
+
+### Patch Changes
+
+- 68531cc70e1f: Break some internal circular import chains
+- Updated dependencies
+  - @backstage/errors@1.2.1-next.0
+  - @backstage/backend-common@0.19.1-next.0
+  - @backstage/plugin-catalog-backend@1.11.0-next.0
+  - @backstage/plugin-catalog-node@1.4.0-next.0
+  - @backstage/backend-plugin-api@0.5.4-next.0
+  - @backstage/backend-tasks@0.5.4-next.0
+  - @backstage/catalog-client@1.4.3-next.0
+  - @backstage/catalog-model@1.4.1-next.0
+  - @backstage/config@1.0.8
+  - @backstage/integration@1.5.1-next.0
+  - @backstage/types@1.1.0
+  - @backstage/plugin-catalog-common@1.0.15-next.0
+  - @backstage/plugin-events-node@0.2.8-next.0
+
 ## 0.3.1
 
 ### Patch Changes
