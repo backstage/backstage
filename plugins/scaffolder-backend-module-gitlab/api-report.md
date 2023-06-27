@@ -74,4 +74,18 @@ export const createGitlabProjectVariableAction: (options: {
   },
   JsonObject
 >;
+
+// @public
+export const parseGitlabYamlFilesAction: (options: {
+  integrations: ScmIntegrationRegistry;
+}) => TemplateAction<
+  {
+    repoUrl: string;
+    projectId: string | number;
+    filePath: string;
+    propPath: string;
+    token?: string | undefined;
+  },
+  JsonObject
+>;
 ```

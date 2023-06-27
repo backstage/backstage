@@ -2,7 +2,7 @@
 
 Welcome to the Gitlab Module for Scaffolder.
 
-Here you can find all Gitlab related features to improve your scaffolder:
+Here you can find all Gitlab related features to improve your Scaffolder:
 
 ## Getting started
 
@@ -24,6 +24,7 @@ import {
   createGitlabProjectDeployTokenAction,
   createGitlabProjectVariableAction,
   createGitlabGroupEnsureExistsAction,
+  parseGitlabYamlFilesAction,
 } from '@backstage/plugin-scaffolder-backend-module-gitlab';
 
 // Create BuiltIn Actions
@@ -37,10 +38,18 @@ const builtInActions = createBuiltinActions({
 // Add Gitlab Actions
 const actions = [
   ...builtInActions,
-  createGitlabProjectAccessTokenAction({ integrations: integrations }),
-  createGitlabProjectDeployTokenAction({ integrations: integrations }),
-  createGitlabProjectVariableAction({ integrations: integrations }),
-  createGitlabGroupEnsureExistsAction({ integrations: integrations }),
+  createGitlabProjectAccessTokenAction({
+    integrations: integrations,
+  }),
+  createGitlabProjectVariableAction({
+    integrations: integrations,
+  }),
+  createGitlabProjectDeployTokenAction({
+    integrations: integrations,
+  }),
+  parseGitlabYamlFilesAction({
+    integrations: integrations,
+  }),
 ];
 
 // Create Scaffolder Router
@@ -128,6 +137,16 @@ spec:
         name: ${{ parameters.name }}-secret
         username: ${{ parameters.name }}-secret
         scopes: ['read_registry']
+
+    - id: get-cluster-issuer
+      name: Get Cluster Issuer
+      action: gitlab:yamlFiles:parse
+      input:
+        repoUrl: ${{ parameters.repoUrl }}
+        projectId: "${{ steps['publish'].output.projectId }}"
+        filePath: test-dev-abc1d.kubeconfig
+        propPath: 'clusters[0].cluster.server'
+        split: "split('/')[2].split('.')[0]"
 
     - id: gitlab-access-token
       name: Gitlab Project Access Token
