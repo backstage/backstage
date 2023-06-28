@@ -21490,7 +21490,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"commander@npm:^9.1.0, commander@npm:^9.5.0":
+"commander@npm:^9.1.0, commander@npm:^9.5.0 <10":
   version: 9.5.0
   resolution: "commander@npm:9.5.0"
   checksum: c7a3e27aa59e913b54a1bafd366b88650bc41d6651f0cbe258d4ff09d43d6a7394232a4dadd0bf518b3e696fdf595db1028a0d82c785b88bd61f8a440cecfade
@@ -22070,7 +22070,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"cross-fetch@npm:^3.1.3, cross-fetch@npm:^3.1.5":
+"cross-fetch@npm:^3.1.3, cross-fetch@npm:^3.1.5, cross-fetch@npm:^3.1.6":
   version: 3.1.6
   resolution: "cross-fetch@npm:3.1.6"
   dependencies:
@@ -28569,7 +28569,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"isbinaryfile@npm:^4.0.10, isbinaryfile@npm:^4.0.8, isbinaryfile@npm:^4.0.8 <5":
+"isbinaryfile@npm:^4.0.10, isbinaryfile@npm:^4.0.10 <5, isbinaryfile@npm:^4.0.8":
   version: 4.0.10
   resolution: "isbinaryfile@npm:4.0.10"
   checksum: a6b28db7e23ac7a77d3707567cac81356ea18bd602a4f21f424f862a31d0e7ab4f250759c98a559ece35ffe4d99f0d339f1ab884ffa9795172f632ab8f88e686
@@ -30545,21 +30545,21 @@ __metadata:
   linkType: hard
 
 "linguist-js@npm:^2.5.3":
-  version: 2.5.4
-  resolution: "linguist-js@npm:2.5.4"
+  version: 2.5.6
+  resolution: "linguist-js@npm:2.5.6"
   dependencies:
     binary-extensions: ^2.2.0
-    commander: ^9.5.0
+    commander: ^9.5.0 <10
     common-path-prefix: ^3.0.0
-    cross-fetch: ^3.1.5
+    cross-fetch: ^3.1.6
     ignore: ^5.2.4
-    isbinaryfile: ^4.0.8 <5
+    isbinaryfile: ^4.0.10 <5
     js-yaml: ^4.1.0
     node-cache: ^5.1.2
   bin:
     linguist: bin/index.js
     linguist-js: bin/index.js
-  checksum: 92ebfc45f0f17a056153068f7e939a3e6755307d3696673597e824011d83b698063241aa7d082a7f9059416efce85a49056f0a31b3158c25f79e273e2f51e309
+  checksum: bd1ae9514b4fa365611e571eb7c0cf5b087fc8ab77cdf7aeade2029a327ae3dd9005eb87e4b75770780e06e749c2d9b72f011d0a659705e1a2347b4fe7e28631
   languageName: node
   linkType: hard
 
