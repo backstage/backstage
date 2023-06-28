@@ -68,10 +68,6 @@ const useStyles = makeStyles((theme: Theme) => ({
     color: theme.palette.grey[700],
     marginBottom: theme.spacing(1),
   },
-  adrChip: {
-    position: 'absolute',
-    right: 0,
-  },
 }));
 
 const AdrListContainer = (props: {
@@ -139,7 +135,6 @@ const AdrListContainer = (props: {
                         label={adr.status}
                         size="small"
                         variant="outlined"
-                        className={classes.adrChip}
                       />
                     )}
                   </Box>
