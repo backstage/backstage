@@ -1,6 +1,6 @@
 ---
-'@backstage/plugin-sonarqube': minor
-'@backstage/plugin-sonarqube-backend': minor
+'@backstage/plugin-sonarqube': patch
+'@backstage/plugin-sonarqube-backend': patch
 ---
 
 Made default config optional
