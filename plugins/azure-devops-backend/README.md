@@ -78,7 +78,7 @@ In your `packages/backend/src/index.ts` make the following changes:
 
 ```diff
   import { createBackend } from '@backstage/backend-defaults';
-+ import { azureDevOpsPlugin } from '@backstage/plugin-azure-devops-backend/alpha';
++ import { azureDevOpsPlugin } from '@backstage/plugin-azure-devops-backend';
 
   const backend = createBackend();
 

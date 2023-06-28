@@ -57,7 +57,7 @@ In your `packages/backend/src/index.ts` make the following changes:
 
 ```diff
   import { createBackend } from '@backstage/backend-defaults';
-+ import { devtoolsPlugin } from '@backstage/plugin-devtools-backend/alpha';
++ import { devtoolsPlugin } from '@backstage/plugin-devtools-backend';
 
   const backend = createBackend();
 

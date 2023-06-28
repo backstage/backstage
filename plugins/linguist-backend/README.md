@@ -64,7 +64,7 @@ In your `packages/backend/src/index.ts` make the following changes:
 
 ```diff
   import { createBackend } from '@backstage/backend-defaults';
-+ import { linguistPlugin } from '@backstage/plugin-linguist-backend/alpha';
++ import { linguistPlugin } from '@backstage/plugin-linguist-backend';
 
   const backend = createBackend();
 
