@@ -120,7 +120,7 @@ Scope: Tooling for frontend and backend schema-first OpenAPI development.
 
 | Name                           | Organization              | GitHub                                                | Discord                        |
 | ------------------------------ | ------------------------- | ----------------------------------------------------- | ------------------------------ |
-| Adam Harvey                    | Cisco                     | [adamdmharvey](https://github.com/adamdmharvey)       | `adamharvey#3739`              |
+| Adam Harvey                    | Cisco                     | [adamdmharvey](https://github.com/adamdmharvey)       | `adamharvey_`                  |
 | Alex Crome                     |                           | [afscrome](https://github.com/afscrome)               | `afscrome`                     |
 | Andre Wanlin                   | Keyloop                   | [awanlin](https://github.com/awanlin)                 | `Ahhhndre#3095`                |
 | Andrew Thauer                  | Wealthsimple              | [andrewthauer](https://github.com/andrewthauer)       | `andrewthauer#3060`            |
