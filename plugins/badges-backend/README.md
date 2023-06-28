@@ -84,7 +84,7 @@ In your `packages/backend/src/index.ts` make the following changes:
 
 ```diff
   import { createBackend } from '@backstage/backend-defaults';
-+ import { badgesPlugin } from '@backstage/plugin-badges-backend/alpha';
++ import { badgesPlugin } from '@backstage/plugin-badges-backend';
   const backend = createBackend();
 
   // ... other feature additions
