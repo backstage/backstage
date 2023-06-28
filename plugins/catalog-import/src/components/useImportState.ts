@@ -32,6 +32,12 @@ export type ImportFlows =
 // the available states of the stepper
 type ImportStateTypes = 'analyze' | 'prepare' | 'review' | 'finish';
 
+export type NewLocations = Array<{
+  exists?: boolean;
+  target: string;
+  entities: CompoundEntityRef[];
+}>;
+
 /**
  * Result of the prepare state.
  *
@@ -40,11 +46,7 @@ type ImportStateTypes = 'analyze' | 'prepare' | 'review' | 'finish';
 export type PrepareResult =
   | {
       type: 'locations';
-      locations: Array<{
-        exists?: boolean;
-        target: string;
-        entities: CompoundEntityRef[];
-      }>;
+      locations: NewLocations;
     }
   | {
       type: 'repository';
