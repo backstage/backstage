@@ -7313,7 +7313,7 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@backstage/plugin-home@npm:^0.5.2":
+"@backstage/plugin-home@npm:^0.5.3":
   version: 0.5.3
   resolution: "@backstage/plugin-home@npm:0.5.3"
   dependencies:
@@ -14671,14 +14671,14 @@ __metadata:
   linkType: hard
 
 "@roadiehq/backstage-plugin-github-pull-requests@npm:^2.2.7":
-  version: 2.5.12
-  resolution: "@roadiehq/backstage-plugin-github-pull-requests@npm:2.5.12"
+  version: 2.5.13
+  resolution: "@roadiehq/backstage-plugin-github-pull-requests@npm:2.5.13"
   dependencies:
-    "@backstage/catalog-model": ^1.3.0
-    "@backstage/core-components": ^0.13.1
-    "@backstage/core-plugin-api": ^1.5.1
-    "@backstage/plugin-catalog-react": ^1.6.0
-    "@backstage/plugin-home": ^0.5.2
+    "@backstage/catalog-model": ^1.4.0
+    "@backstage/core-components": ^0.13.2
+    "@backstage/core-plugin-api": ^1.5.2
+    "@backstage/plugin-catalog-react": ^1.7.0
+    "@backstage/plugin-home": ^0.5.3
     "@material-ui/core": ^4.11.0
     "@material-ui/icons": ^4.9.1
     "@material-ui/lab": ^4.0.0-alpha.60
@@ -14695,7 +14695,7 @@ __metadata:
     react: ^16.13.1 || ^17.0.0
     react-dom: ^16.13.1 || ^17.0.0
     react-router: 6.0.0-beta.0 || ^6.3.0
-  checksum: 4113de2eb3f207e05581033c05879c98d858ef3534fb1256d5dc4f8e1f4cc33e0530952d4fd74c62df063c22af6c1e0f28af770bd55d8b41b4402df68450f98c
+  checksum: 1af9997d26ee9dba046d71aa5415bde7e207c4118ca77e6e3e9623920ce7f6e314d8365fe2d1ef3eb1c279ac113653df903f1286005aba681faf75381a387189
   languageName: node
   linkType: hard
 
