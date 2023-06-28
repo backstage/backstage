@@ -72,6 +72,7 @@ export type Options = OAuthProviderOptions & {
   metadataUrl: string;
   scope?: string;
   prompt?: string;
+  tokenEndpointAuthMethod?: string;
   tokenSignedResponseAlg?: string;
   signInResolver?: SignInResolver<OidcAuthResult>;
   authHandler: AuthHandler<OidcAuthResult>;
@@ -144,6 +145,7 @@ export class OidcAuthProvider implements OAuthHandlers {
       client_secret: options.clientSecret,
       redirect_uris: [options.callbackUrl],
       response_types: ['code'],
+      token_endpoint_auth_method: options.tokenEndpointAuthMethod || "client_secret_basic",
       id_token_signed_response_alg: options.tokenSignedResponseAlg || 'RS256',
       scope: options.scope || '',
     });
@@ -232,6 +234,9 @@ export const oidc = createAuthProviderIntegration({
           customCallbackUrl ||
           `${globalConfig.baseUrl}/${providerId}/handler/frame`;
         const metadataUrl = envConfig.getString('metadataUrl');
+        const tokenEndpointAuthMethod = envConfig.getOptionalString(
+          'tokenEndpointAuthMethod',
+        );
         const tokenSignedResponseAlg = envConfig.getOptionalString(
           'tokenSignedResponseAlg',
         );
@@ -252,6 +257,7 @@ export const oidc = createAuthProviderIntegration({
           clientId,
           clientSecret,
           callbackUrl,
+          tokenEndpointAuthMethod,
           tokenSignedResponseAlg,
           metadataUrl,
           scope,
