@@ -54,6 +54,7 @@ const clientMetadata: Options = {
   clientSecret: 'testclientsecret',
   metadataUrl: 'https://oidc.test/.well-known/openid-configuration',
   tokenSignedResponseAlg: 'none',
+  tokenEndpointAuthMethod: 'none',
 };
 
 describe('OidcAuthProvider', () => {
