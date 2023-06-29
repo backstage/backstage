@@ -5011,6 +5011,7 @@ __metadata:
   resolution: "@backstage/plugin-azure-devops-backend@workspace:plugins/azure-devops-backend"
   dependencies:
     "@backstage/backend-common": "workspace:^"
+    "@backstage/backend-plugin-api": "workspace:^"
     "@backstage/cli": "workspace:^"
     "@backstage/config": "workspace:^"
     "@backstage/plugin-azure-devops-common": "workspace:^"
@@ -6353,6 +6354,7 @@ __metadata:
   resolution: "@backstage/plugin-devtools-backend@workspace:plugins/devtools-backend"
   dependencies:
     "@backstage/backend-common": "workspace:^"
+    "@backstage/backend-plugin-api": "workspace:^"
     "@backstage/cli": "workspace:^"
     "@backstage/cli-common": "workspace:^"
     "@backstage/config": "workspace:^"
@@ -7723,6 +7725,7 @@ __metadata:
   resolution: "@backstage/plugin-linguist-backend@workspace:plugins/linguist-backend"
   dependencies:
     "@backstage/backend-common": "workspace:^"
+    "@backstage/backend-plugin-api": "workspace:^"
     "@backstage/backend-tasks": "workspace:^"
     "@backstage/backend-test-utils": "workspace:^"
     "@backstage/catalog-client": "workspace:^"
@@ -24925,14 +24928,18 @@ __metadata:
   resolution: "example-backend-next@workspace:packages/backend-next"
   dependencies:
     "@backstage/backend-defaults": "workspace:^"
+    "@backstage/backend-tasks": "workspace:^"
     "@backstage/cli": "workspace:^"
     "@backstage/plugin-app-backend": "workspace:^"
     "@backstage/plugin-auth-node": "workspace:^"
+    "@backstage/plugin-azure-devops-backend": "workspace:^"
     "@backstage/plugin-badges-backend": "workspace:^"
     "@backstage/plugin-catalog-backend": "workspace:^"
     "@backstage/plugin-catalog-backend-module-unprocessed": "workspace:^"
+    "@backstage/plugin-devtools-backend": "workspace:^"
     "@backstage/plugin-entity-feedback-backend": "workspace:^"
     "@backstage/plugin-kubernetes-backend": "workspace:^"
+    "@backstage/plugin-linguist-backend": "workspace:^"
     "@backstage/plugin-permission-backend": "workspace:^"
     "@backstage/plugin-permission-common": "workspace:^"
     "@backstage/plugin-permission-node": "workspace:^"
