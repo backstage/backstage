@@ -116,6 +116,7 @@ export function MissingAnnotationEmptyState(props: Props) {
               text={generateComponentYaml(annotations)}
               language="yaml"
               showLineNumbers
+              showCopyCodeButton
               highlightedNumbers={generateLineNumbers(annotations.length)}
               customStyle={{ background: 'inherit', fontSize: '115%' }}
             />
