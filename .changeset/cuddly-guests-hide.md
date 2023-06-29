@@ -1,5 +1,5 @@
 ---
-'@backstage/create-app': minor
+'@backstage/create-app': patch
 ---
 
 add cy.\*\*.should to cypress eslintrc
