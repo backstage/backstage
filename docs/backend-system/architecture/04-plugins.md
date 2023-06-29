@@ -84,7 +84,7 @@ Options are a simple way to allow for more lightweight customization of a plugin
 
 The following rules apply to the production setup of Backstage plugins in the broader Backstage plugin ecosystem. Any plugin that is maintained under the `@backstage` package namespace should follow these rules, and it is recommended that all widely distributed plugins follow these rules as well.
 
-An exception to these rules are made for development or test setups, where shortcuts can be take in order to streamline development and keep things simple.
+An exception to these rules are made for development or test setups, where shortcuts can be taken in order to streamline development and keep things simple.
 
 ### Scalable
 
@@ -92,4 +92,4 @@ Plugins must always be designed to be horizontally scalable. This means that you
 
 ### Isolated
 
-Plugins must never communicate with each other directly through code, they may only communicate over the network. Plugins that wish to expose an external interface for other plugins and modules to use are recommended to do so though a [node-library](../../local-dev/cli-build-system.md#package-roles) package. The library should export an API client service to make calls to your plugin, or similar construct.
+Plugins must never communicate with each other directly through code, they may only communicate over the network. Plugins that wish to expose an external interface for other plugins and modules to use are recommended to do so through a [node-library](../../local-dev/cli-build-system.md#package-roles) package. The library should export an API client service to make calls to your plugin, or similar construct.

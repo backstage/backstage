@@ -24,17 +24,17 @@ import {
   StrictRJSFSchema,
 } from '@rjsf/utils';
 
-const useStyles = makeStyles({
+const useStyles = makeStyles(theme => ({
   markdownDescription: {
-    fontSize: '0.75rem',
+    fontSize: theme.typography.caption.fontSize,
     margin: 0,
-    marginTop: '5px',
-    color: 'rgba(0, 0, 0, 0.54)',
-    '& p:first-child': {
+    color: theme.palette.text.secondary,
+    '& :first-child': {
       margin: 0,
+      marginTop: '3px', // to keep the standard browser padding
     },
   },
-});
+}));
 
 /** The `DescriptionField` is the template to use to render the description of a field
  * @alpha
