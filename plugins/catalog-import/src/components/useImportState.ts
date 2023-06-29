@@ -32,7 +32,7 @@ export type ImportFlows =
 // the available states of the stepper
 type ImportStateTypes = 'analyze' | 'prepare' | 'review' | 'finish';
 
-export type NewLocations = Array<{
+type NewLocations = Array<{
   exists?: boolean;
   target: string;
   entities: CompoundEntityRef[];
