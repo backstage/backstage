@@ -23,7 +23,7 @@ import {
 
 import { rootRouteRef } from './routes';
 import {
-  CatalogUnprocessedEntitiesApi,
+  CatalogUnprocessedEntitiesClient,
   catalogUnprocessedEntitiesApiRef,
 } from './api';
 
@@ -42,7 +42,7 @@ export const catalogUnprocessedEntitiesPlugin = createPlugin({
       api: catalogUnprocessedEntitiesApiRef,
       deps: { discoveryApi: discoveryApiRef, fetchApi: fetchApiRef },
       factory: ({ discoveryApi, fetchApi }) =>
-        new CatalogUnprocessedEntitiesApi(discoveryApi, fetchApi),
+        new CatalogUnprocessedEntitiesClient(discoveryApi, fetchApi),
     }),
   ],
 });

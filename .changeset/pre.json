@@ -230,5 +230,23 @@
     "@backstage/plugin-vault-backend": "0.3.2",
     "@backstage/plugin-xcmetrics": "0.2.39"
   },
-  "changesets": []
+  "changesets": [
+    "angry-phones-wash",
+    "cli-always-yarn-pack-freal",
+    "create-app-1687867724",
+    "cyan-shirts-deny",
+    "dirty-wasps-draw",
+    "dull-onions-remember",
+    "green-otters-wait",
+    "lazy-frogs-destroy",
+    "many-ants-poke",
+    "mighty-shoes-refuse",
+    "old-rules-give",
+    "popular-kangaroos-accept",
+    "purple-starfishes-design",
+    "short-rabbits-roll",
+    "sour-humans-begin",
+    "tough-flowers-suffer",
+    "twenty-seas-float"
+  ]
 }

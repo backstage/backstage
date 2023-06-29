@@ -26,16 +26,25 @@ import {
   processingResult,
 } from '@backstage/plugin-catalog-node';
 
-/** @public */
+/**
+ * @public
+ * @deprecated Use the exported value from `@backstage/plugin-catalog-node` instead.
+ */
 export type PlaceholderResolverRead = (url: string) => Promise<Buffer>;
 
-/** @public */
+/**
+ * @public
+ * @deprecated Use the exported value from `@backstage/plugin-catalog-node` instead.
+ */
 export type PlaceholderResolverResolveUrl = (
   url: string,
   base: string,
 ) => string;
 
-/** @public */
+/**
+ * @public
+ * @deprecated Use the exported value from `@backstage/plugin-catalog-node` instead.
+ */
 export type PlaceholderResolverParams = {
   key: string;
   value: JsonValue;
@@ -45,7 +54,10 @@ export type PlaceholderResolverParams = {
   emit: CatalogProcessorEmit;
 };
 
-/** @public */
+/**
+ * @public
+ * @deprecated Use the exported value from `@backstage/plugin-catalog-node` instead.
+ */
 export type PlaceholderResolver = (
   params: PlaceholderResolverParams,
 ) => Promise<JsonValue>;

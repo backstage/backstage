@@ -1,5 +1,27 @@
 # @backstage/plugin-catalog-unprocessed-entities
 
+## 0.1.1-next.0
+
+### Patch Changes
+
+- 2c4869473155: The Catalog Unprocessed Entities plugin can now be integrated as a tab within the DevTools plugin
+
+  - Added an export for `UnprocessedEntitiesContent`
+  - Updated the `README` with images of the features
+  - Adjusted the styles to fill in the available space
+  - Set the table page size to 20 as 40 was causing errors in the browser console
+
+- 57585d89f926: Export some types and API items. This allows people to call the API from different places with the ApiRef, as well
+  as completely customize the client if required. Check the [README.md](https://github.com/backstage/backstage/blob/master/plugins/catalog-unprocessed-entities/README.md) to
+  note what needs to be added in order to use the new `catalogUnprocessedEntitiesApiRef` exported function.
+- a8fa79ccc105: Fix and improve documentation for the unprocessed entities modules.
+- Updated dependencies
+  - @backstage/errors@1.2.1-next.0
+  - @backstage/core-components@0.13.3-next.0
+  - @backstage/catalog-model@1.4.1-next.0
+  - @backstage/core-plugin-api@1.5.2
+  - @backstage/theme@0.4.0
+
 ## 0.1.0
 
 ### Minor Changes

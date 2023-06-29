@@ -21,6 +21,7 @@ import {
 } from '@backstage/plugin-devtools';
 import { DevToolsLayout } from '@backstage/plugin-devtools';
 import React from 'react';
+import { UnprocessedEntitiesContent } from '@backstage/plugin-catalog-unprocessed-entities';
 
 const DevToolsPage = () => {
   return (
@@ -36,6 +37,12 @@ const DevToolsPage = () => {
         title="External Dependencies"
       >
         <ExternalDependenciesContent />
+      </DevToolsLayout.Route>
+      <DevToolsLayout.Route
+        path="unprocessed-entities"
+        title="Unprocessed Entities"
+      >
+        <UnprocessedEntitiesContent />
       </DevToolsLayout.Route>
     </DevToolsLayout>
   );

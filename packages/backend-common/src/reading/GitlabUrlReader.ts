@@ -229,7 +229,7 @@ export class GitlabUrlReader implements UrlReader {
     }
 
     return await this.deps.treeResponseFactory.fromTarArchive({
-      stream: archiveGitLabResponse.body as unknown as Readable,
+      stream: Readable.from(archiveGitLabResponse.body),
       subpath: filepath,
       etag: commitSha,
       filter: options?.filter,

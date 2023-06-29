@@ -21,13 +21,13 @@ export interface Config {
      * The base url of the sonarqube installation. Defaults to https://sonarcloud.io.
      * @visibility frontend
      */
-    baseUrl: string;
+    baseUrl?: string;
 
     /**
      * The api key to access the sonarqube instance under baseUrl.
      * @visibility secret
      */
-    apiKey: string;
+    apiKey?: string;
 
     /**
      * The optional sonarqube instances.
