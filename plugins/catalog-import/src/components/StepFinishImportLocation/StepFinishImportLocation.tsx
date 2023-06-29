@@ -19,7 +19,7 @@ import LocationOnIcon from '@material-ui/icons/LocationOn';
 import React from 'react';
 import { BackButton, ViewComponentButton } from '../Buttons';
 import { EntityListComponent } from '../EntityListComponent';
-import { PrepareResult, NewLocations } from '../useImportState';
+import { PrepareResult } from '../useImportState';
 import { Link } from '@backstage/core-components';
 import partition from 'lodash/partition';
 import { CompoundEntityRef } from '@backstage/catalog-model';
@@ -30,6 +30,12 @@ type Props = {
   prepareResult: PrepareResult;
   onReset: () => void;
 };
+
+type NewLocations = Array<{
+  exists?: boolean;
+  target: string;
+  entities: CompoundEntityRef[];
+}>;
 
 // Among the newly registered entities, return a software entity (e.g. Component, API, Resource)
 const filterComponentEntity = (
