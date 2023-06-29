@@ -1,5 +1,19 @@
 # @backstage/plugin-home
 
+## 0.5.4-next.0
+
+### Patch Changes
+
+- 88c62048fcbd: fix: update plugin home dependency for `@rjsf/material-ui` to `@rjsf/material-ui-v5`
+- Updated dependencies
+  - @backstage/core-components@0.13.3-next.0
+  - @backstage/catalog-model@1.4.1-next.0
+  - @backstage/config@1.0.8
+  - @backstage/core-plugin-api@1.5.2
+  - @backstage/theme@0.4.0
+  - @backstage/plugin-catalog-react@1.7.1-next.0
+  - @backstage/plugin-home-react@0.1.1-next.0
+
 ## 0.5.3
 
 ### Patch Changes

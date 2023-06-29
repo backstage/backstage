@@ -135,12 +135,15 @@ export class KubernetesProxy {
       const logger = this.logger.child({ cluster: originalCluster.name });
       middleware = createProxyMiddleware({
         logProvider: () => logger,
+        ws: true,
         secure: !originalCluster.skipTLSVerify,
         changeOrigin: true,
+        pathRewrite: { [`^${originalReq.baseUrl}`]: '' },
         router: async req => {
           // Re-evaluate the cluster on each request, in case it has changed
           const cluster = await this.getClusterForRequest(req);
           const url = new URL(cluster.url);
+
           return {
             protocol: url.protocol,
             host: url.hostname,
@@ -148,7 +151,6 @@ export class KubernetesProxy {
             ca: bufferFromFileOrString('', cluster.caData)?.toString(),
           };
         },
-        pathRewrite: { [`^${originalReq.baseUrl}`]: '' },
         onError: (error, req, res) => {
           const wrappedError = new ForwardedError(
             `Cluster '${originalCluster.name}' request error`,
@@ -173,7 +175,7 @@ export class KubernetesProxy {
   }
 
   private async getClusterForRequest(req: Request): Promise<ClusterDetails> {
-    const clusterName = req.header(HEADER_KUBERNETES_CLUSTER);
+    const clusterName = req.headers[HEADER_KUBERNETES_CLUSTER.toLowerCase()];
     const clusters = await this.clusterSupplier.getClusters();
 
     if (!clusters || clusters.length <= 0) {

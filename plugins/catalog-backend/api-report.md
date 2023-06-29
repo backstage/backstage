@@ -410,12 +410,12 @@ export type PlaceholderProcessorOptions = {
   integrations: ScmIntegrationRegistry;
 };
 
-// @public (undocumented)
+// @public @deprecated (undocumented)
 export type PlaceholderResolver = (
   params: PlaceholderResolverParams,
 ) => Promise<JsonValue>;
 
-// @public (undocumented)
+// @public @deprecated (undocumented)
 export type PlaceholderResolverParams = {
   key: string;
   value: JsonValue;
@@ -425,10 +425,10 @@ export type PlaceholderResolverParams = {
   emit: CatalogProcessorEmit_2;
 };
 
-// @public (undocumented)
+// @public @deprecated (undocumented)
 export type PlaceholderResolverRead = (url: string) => Promise<Buffer>;
 
-// @public (undocumented)
+// @public @deprecated (undocumented)
 export type PlaceholderResolverResolveUrl = (
   url: string,
   base: string,

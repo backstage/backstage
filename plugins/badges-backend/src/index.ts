@@ -25,3 +25,4 @@ export * from './lib';
 export * from './service/router';
 export * from './types';
 export * from './database/badgesStore';
+export { badgesPlugin } from './plugin';

@@ -16,41 +16,50 @@
 import React, { useState } from 'react';
 
 import { Page, Header, Content } from '@backstage/core-components';
-import { Tab } from '@material-ui/core';
+import { Tab, makeStyles } from '@material-ui/core';
 import { TabContext, TabList, TabPanel } from '@material-ui/lab';
 
 import { FailedEntities } from './FailedEntities';
 import { PendingEntities } from './PendingEntities';
 
+const useStyles = makeStyles(() => ({
+  tabPanel: {
+    paddingLeft: '0px',
+    paddingRight: '0px',
+  },
+}));
+
+/** @public */
 export const UnprocessedEntitiesContent = () => {
+  const classes = useStyles();
   const [tab, setTab] = useState('failed');
   const handleChange = (_event: React.ChangeEvent<{}>, tabValue: string) => {
     setTab(tabValue);
   };
 
   return (
-    <Content>
-      <TabContext value={tab}>
-        <TabList onChange={handleChange}>
-          <Tab label="Failed" value="failed" />
-          <Tab label="Pending" value="pending" />
-        </TabList>
-        <TabPanel value="failed">
-          <FailedEntities />
-        </TabPanel>
-        <TabPanel value="pending">
-          <PendingEntities />
-        </TabPanel>
-      </TabContext>
-    </Content>
+    <TabContext value={tab}>
+      <TabList onChange={handleChange}>
+        <Tab label="Failed" value="failed" />
+        <Tab label="Pending" value="pending" />
+      </TabList>
+      <TabPanel value="failed" className={classes.tabPanel}>
+        <FailedEntities />
+      </TabPanel>
+      <TabPanel value="pending" className={classes.tabPanel}>
+        <PendingEntities />
+      </TabPanel>
+    </TabContext>
   );
 };
 
 export const UnprocessedEntities = () => {
   return (
     <Page themeId="tool">
-      <Header title="Unprocessed Entitites" />
-      <UnprocessedEntitiesContent />
+      <Header title="Unprocessed Entities" />
+      <Content>
+        <UnprocessedEntitiesContent />
+      </Content>
     </Page>
   );
 };

@@ -54,6 +54,10 @@ describe('KubernetesProxy', () => {
       params: {
         path,
       },
+      headers: {
+        'content-type': 'application/json',
+        [HEADER_KUBERNETES_CLUSTER.toLowerCase()]: clusterName,
+      },
       header: jest.fn((key: string) => {
         switch (key) {
           case 'Content-Type': {

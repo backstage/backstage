@@ -43,6 +43,31 @@ const cardContents = (
   );
 };
 
+const dynatraceEntityPrefixes = (idPrefix: string): string => {
+  switch (idPrefix) {
+    case 'APPLICATION':
+      return '#uemapplications/uemappmetrics;uemapplicationId=';
+
+    case 'SERVICE':
+      return '#services/serviceOverview;id=';
+
+    case `MOBILE_APPLICATION`:
+      return '#mobileappoverview;appID=';
+
+    case 'SYNTHETIC_TEST':
+      return 'ui/browser-monitor/';
+
+    case 'KUBERNETES_CLUSTER':
+      return 'ui/kubernetes/';
+
+    case 'PROCESS_GROUP_INSTANCE':
+      return '#processdetails;id=';
+
+    default:
+      return 'ui/entity/';
+  }
+};
+
 export const ProblemsList = (props: ProblemsListProps) => {
   const { dynatraceEntityId } = props;
   const configApi = useApi(configApiRef);
@@ -53,6 +78,10 @@ export const ProblemsList = (props: ProblemsListProps) => {
     return dynatraceApi.getDynatraceProblems(dynatraceEntityId);
   }, [dynatraceApi, dynatraceEntityId]);
   const problems = value?.problems;
+
+  const deepLinkPrefix = dynatraceEntityPrefixes(
+    `${dynatraceEntityId.split('-')[0]}`,
+  );
 
   if (loading) {
     return <Progress />;
@@ -65,7 +94,7 @@ export const ProblemsList = (props: ProblemsListProps) => {
       subheader={`Last 2 hours - ${dynatraceEntityId}`}
       deepLink={{
         title: 'View Entity in Dynatrace',
-        link: `${dynatraceBaseUrl}/#serviceOverview;id=${dynatraceEntityId}`,
+        link: `${dynatraceBaseUrl}/${deepLinkPrefix}${dynatraceEntityId}`,
       }}
     >
       {cardContents(problems || [], dynatraceBaseUrl)}
