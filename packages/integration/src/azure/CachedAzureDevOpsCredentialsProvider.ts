@@ -24,7 +24,12 @@ import {
   AzureDevOpsCredentialsProvider,
 } from './types';
 
-type CachedAzureDevOpsCredentials = AzureDevOpsCredentials & {
+/**
+ * Cached credentials for Azure DevOps.
+ *
+ * @public
+ */
+export type CachedAzureDevOpsCredentials = AzureDevOpsCredentials & {
   expiresAt?: number;
 };
 

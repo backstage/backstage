@@ -15,7 +15,7 @@
  */
 
 import { Config, ConfigReader } from '@backstage/config';
-import { JsonObject } from '@backstage/types';
+import { JsonObject, JsonValue } from '@backstage/types';
 import { Knex } from 'knex';
 import { merge, omit } from 'lodash';
 import { mergeDatabaseConfig } from './config';
@@ -186,6 +186,13 @@ export class DatabaseManager {
     );
   }
 
+  private getAuthConfig(pluginId: string): JsonValue | undefined {
+    return (
+      this.config.getOptional(`${pluginPath(pluginId)}.auth`) ??
+      this.config.getOptional('auth')
+    );
+  }
+
   /**
    * Provides the knexConfig which should be used for a given plugin.
    *
@@ -283,13 +290,17 @@ export class DatabaseManager {
   private getConfigForPlugin(pluginId: string): Knex.Config {
     const { client } = this.getClientType(pluginId);
     const role = this.getRoleConfig(pluginId);
+    const auth = this.getAuthConfig(pluginId);
 
-    return {
+    const configForPlugin = {
       ...this.getAdditionalKnexConfig(pluginId),
       client,
       connection: this.getConnectionConfig(pluginId),
       ...(role && { role }),
+      ...(auth && { auth }),
     };
+
+    return configForPlugin;
   }
 
   /**

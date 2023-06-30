@@ -17,12 +17,17 @@
 import knexFactory, { Knex } from 'knex';
 
 import { Config } from '@backstage/config';
-import { ForwardedError } from '@backstage/errors';
+import { ForwardedError, InputError } from '@backstage/errors';
 import { mergeDatabaseConfig } from '../config';
 import { DatabaseConnector } from '../types';
 import defaultNameOverride from './defaultNameOverride';
 import defaultSchemaOverride from './defaultSchemaOverride';
 import { Client } from 'pg';
+import {
+  CachedAzureDevOpsCredentials,
+  CachedAzureDevOpsCredentialsProvider,
+  asAzureDevOpsCredential,
+} from '@backstage/integration';
 
 /**
  * Creates a knex postgres database connection
@@ -60,7 +65,7 @@ export function buildPgDatabaseConfig(
   dbConfig: Config,
   overrides?: Knex.Config,
 ) {
-  return mergeDatabaseConfig(
+  const mergedDbConfig = mergeDatabaseConfig(
     dbConfig.get(),
     {
       connection: getPgConnectionConfig(dbConfig, !!overrides),
@@ -68,6 +73,46 @@ export function buildPgDatabaseConfig(
     },
     overrides,
   );
+
+  const azureConfig = dbConfig.getOptionalConfig('auth.azure');
+  if (azureConfig) {
+    try {
+      const credential = asAzureDevOpsCredential(azureConfig.get());
+      const provider =
+        CachedAzureDevOpsCredentialsProvider.fromAzureDevOpsCredential(
+          credential,
+        );
+      provider.azureDevOpsScope =
+        'https://ossrdbms-aad.database.windows.net/.default';
+
+      // Initialize Azure AD Authentication.
+      return {
+        ...mergedDbConfig,
+        connection: async () => {
+          const credentials: CachedAzureDevOpsCredentials =
+            await provider.getCredentials();
+          const connection = {
+            ...mergedDbConfig.connection,
+            password: credentials.token,
+          };
+
+          // Add expiration function for time sensitive tokens.
+          if (credentials.type === 'bearer') {
+            connection.expirationChecker = () =>
+              credentials.expiresAt && Date.now() > credentials.expiresAt;
+          }
+
+          return connection;
+        },
+      };
+    } catch (e) {
+      throw new InputError(
+        `Unable to parse Azure credentials for establishing database connection`,
+        e,
+      );
+    }
+  }
+  return mergedDbConfig;
 }
 
 /**

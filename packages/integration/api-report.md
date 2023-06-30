@@ -5,6 +5,12 @@
 ```ts
 import { Config } from '@backstage/config';
 import { RestEndpointMethodTypes } from '@octokit/rest';
+import { TokenCredential } from '@azure/identity';
+
+// @public
+export function asAzureDevOpsCredential(
+  credential: AzureDevOpsCredentialLike,
+): AzureDevOpsCredential;
 
 // @public
 export class AwsS3Integration implements ScmIntegration {
@@ -223,6 +229,35 @@ export function buildGerritGitilesArchiveUrl(
   branch: string,
   filePath: string,
 ): string;
+
+// @public
+export type CachedAzureDevOpsCredentials = AzureDevOpsCredentials & {
+  expiresAt?: number;
+};
+
+// @public
+export class CachedAzureDevOpsCredentialsProvider
+  implements AzureDevOpsCredentialsProvider
+{
+  // (undocumented)
+  azureDevOpsScope: string;
+  // (undocumented)
+  cached: CachedAzureDevOpsCredentials | undefined;
+  // (undocumented)
+  static fromAzureDevOpsCredential(
+    credential: AzureDevOpsCredential,
+  ): CachedAzureDevOpsCredentialsProvider;
+  // (undocumented)
+  static fromPersonalAccessTokenCredential(
+    credential: PersonalAccessTokenCredential,
+  ): CachedAzureDevOpsCredentialsProvider;
+  // (undocumented)
+  static fromTokenCredential(
+    credential: TokenCredential,
+  ): CachedAzureDevOpsCredentialsProvider;
+  // (undocumented)
+  getCredentials(): Promise<AzureDevOpsCredentials>;
+}
 
 // @public
 export class DefaultAzureDevOpsCredentialsProvider

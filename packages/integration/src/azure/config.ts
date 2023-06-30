@@ -162,7 +162,11 @@ const AzureDevopsCredentialFieldMap = new Map<
   ['PersonalAccessToken', ['personalAccessToken']],
 ]);
 
-function asAzureDevOpsCredential(
+/**
+ * Checks Azure credentials.
+ * @public
+ */
+export function asAzureDevOpsCredential(
   credential: AzureDevOpsCredentialLike,
 ): AzureDevOpsCredential {
   for (const entry of AzureDevopsCredentialFieldMap.entries()) {

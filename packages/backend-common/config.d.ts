@@ -141,6 +141,32 @@ export interface Config {
           knexConfig?: object;
           /** Configures the ownership of newly created schemas in pg databases. */
           role?: string;
+          /** Authentication credentials list. */
+          auth?: {
+            /** Azure AD auth credentials. */
+            azure?: {
+              tenantId: string;
+              clientId: string;
+              /**
+               * Azure client secret.
+               * @visibility secret
+               */
+              clientSecret: string;
+            };
+          };
+        };
+      };
+      /** Authentication credentials list. */
+      auth?: {
+        /** Azure AD auth credentials. */
+        azure?: {
+          tenantId: string;
+          clientId: string;
+          /**
+           * Azure client secret.
+           * @visibility secret
+           */
+          clientSecret: string;
         };
       };
     };

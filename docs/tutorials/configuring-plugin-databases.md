@@ -152,6 +152,25 @@ backend:
         connection: ':memory:'
 ```
 
+### Azure AD Authentication
+
+In case you are going to use Azure to store your SQL database, you can configure
+Azure AD authentication via [service principal](https://learn.microsoft.com/en-us/azure/active-directory/develop/app-objects-and-service-principals?tabs=browser).
+Specify your `tenantId`, `clientId`, `clientSecret` in `app-config.yaml` file as
+on example below to get authentication token to Azure AD to establish connection
+with database.
+
+```yaml
+backend:
+  database:
+    .....
+    auth:
+      azure:
+        tenantId: 'your_tenantId'
+        clientId: 'your_clientId'
+        clientSecret: 'your_clientSecret'
+```
+
 ## Check Your Databases
 
 The `DatabaseManager` will attempt to create the databases if they do not exist.

@@ -18,6 +18,7 @@ export { AzureIntegration } from './AzureIntegration';
 export {
   readAzureIntegrationConfig,
   readAzureIntegrationConfigs,
+  asAzureDevOpsCredential,
 } from './config';
 export type {
   AzureIntegrationConfig,
@@ -37,5 +38,6 @@ export {
 
 export * from './types';
 export { DefaultAzureDevOpsCredentialsProvider } from './DefaultAzureDevOpsCredentialsProvider';
-
+export type { CachedAzureDevOpsCredentials } from './CachedAzureDevOpsCredentialsProvider';
+export { CachedAzureDevOpsCredentialsProvider } from './CachedAzureDevOpsCredentialsProvider';
 export * from './deprecated';
