@@ -27,6 +27,7 @@ import { StarredEntitiesApi } from '@backstage/plugin-catalog-react';
 import { StorageApi } from '@backstage/core-plugin-api';
 import { StyleRules } from '@material-ui/core/styles/withStyles';
 import { TableColumn } from '@backstage/core-components';
+import { TableOptions } from '@backstage/core-components';
 import { TableProps } from '@backstage/core-components';
 import { TabProps } from '@material-ui/core';
 import { UserListFilterKind } from '@backstage/plugin-catalog-react';
@@ -243,6 +244,8 @@ export interface DependsOnComponentsCardProps {
   // (undocumented)
   columns?: TableColumn<ComponentEntity>[];
   // (undocumented)
+  tableOptions?: TableOptions;
+  // (undocumented)
   title?: string;
   // (undocumented)
   variant?: InfoCardVariants;
@@ -252,6 +255,8 @@ export interface DependsOnComponentsCardProps {
 export interface DependsOnResourcesCardProps {
   // (undocumented)
   columns?: TableColumn<ResourceEntity>[];
+  // (undocumented)
+  tableOptions?: TableOptions;
   // (undocumented)
   title?: string;
   // (undocumented)
@@ -438,6 +443,8 @@ export interface HasResourcesCardProps {
 // @public (undocumented)
 export interface HasSubcomponentsCardProps {
   // (undocumented)
+  tableOptions?: TableOptions;
+  // (undocumented)
   variant?: InfoCardVariants;
 }
 
@@ -495,6 +502,7 @@ export type RelatedEntitiesCardProps<T extends Entity> = {
   emptyMessage: string;
   emptyHelpLink: string;
   asRenderableEntities: (entities: Entity[]) => T[];
+  tableOptions?: TableOptions;
 };
 
 // @public (undocumented)
