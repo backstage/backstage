@@ -91,7 +91,9 @@ backend:
       password: ${POSTGRES_PASSWORD}
       # https://node-postgres.com/features/ssl
       # ssl:
-      #   host: ${POSTGRES_HOST}
+      #   host is only needed if the connection name differs from the certificate name.
+      #   This is for example the case with CloudSQL.
+      #   host: servername in the certificate
       #   ca:
       #     $file: <file-path>/server.pem
       #   key:
