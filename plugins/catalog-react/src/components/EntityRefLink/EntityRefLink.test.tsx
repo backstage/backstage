@@ -14,15 +14,32 @@
  * limitations under the License.
  */
 
-import { renderInTestApp } from '@backstage/test-utils';
+import { TestApiProvider, renderInTestApp } from '@backstage/test-utils';
 import { screen } from '@testing-library/react';
 import React from 'react';
 import { entityRouteRef } from '../../routes';
 import { EntityRefLink } from './EntityRefLink';
+import { catalogApiRef } from '../../api';
+import { CatalogApi } from '@backstage/catalog-client';
+import { Entity } from '@backstage/catalog-model';
 
 describe('<EntityRefLink />', () => {
+  const catalogApi: jest.Mocked<CatalogApi> = {
+    getLocationById: jest.fn(),
+    getEntityByName: jest.fn(),
+    getEntityByRef: jest.fn(),
+    getEntities: jest.fn(),
+    addLocation: jest.fn(),
+    getLocationByRef: jest.fn(),
+    removeEntityByUid: jest.fn(),
+    refreshEntity: jest.fn(),
+  } as any;
+
+  beforeEach(() => {
+    jest.clearAllMocks();
+  });
   it('renders link for entity in default namespace', async () => {
-    const entity = {
+    const entity: Entity = {
       apiVersion: 'v1',
       kind: 'Component',
       metadata: {
@@ -34,16 +51,55 @@ describe('<EntityRefLink />', () => {
         lifecycle: 'production',
       },
     };
-    await renderInTestApp(<EntityRefLink entityRef={entity} />, {
-      mountedRoutes: {
-        '/catalog/:namespace/:kind/:name/*': entityRouteRef,
+
+    catalogApi.getEntityByRef.mockResolvedValueOnce(entity);
+
+    await renderInTestApp(
+      <TestApiProvider apis={[[catalogApiRef, catalogApi]]}>
+        <EntityRefLink entityRef={entity} />
+      </TestApiProvider>,
+      {
+        mountedRoutes: {
+          '/catalog/:namespace/:kind/:name/*': entityRouteRef,
+        },
       },
-    });
+    );
 
     expect(screen.getByText('component:software')).toHaveAttribute(
       'href',
       '/catalog/default/component/software',
     );
+  });
+
+  it('renders no link for entity in default namespace', async () => {
+    const entity: Entity = {
+      apiVersion: 'v1',
+      kind: 'Component',
+      metadata: {
+        name: 'software',
+      },
+      spec: {
+        owner: 'guest',
+        type: 'service',
+        lifecycle: 'production',
+      },
+    };
+
+    catalogApi.getEntityByRef.mockResolvedValueOnce(undefined);
+
+    await renderInTestApp(
+      <TestApiProvider apis={[[catalogApiRef, catalogApi]]}>
+        <EntityRefLink entityRef={entity} />
+      </TestApiProvider>,
+      {
+        mountedRoutes: {
+          '/catalog/:namespace/:kind/:name/*': entityRouteRef,
+        },
+      },
+    );
+
+    const link = screen.getByText('component:software').hasAttribute('href');
+    expect(link).toBe(false);
   });
 
   it('renders link for entity in other namespace', async () => {
@@ -60,11 +116,19 @@ describe('<EntityRefLink />', () => {
         lifecycle: 'production',
       },
     };
-    await renderInTestApp(<EntityRefLink entityRef={entity} />, {
-      mountedRoutes: {
-        '/catalog/:namespace/:kind/:name/*': entityRouteRef,
+
+    catalogApi.getEntityByRef.mockResolvedValueOnce(entity);
+
+    await renderInTestApp(
+      <TestApiProvider apis={[[catalogApiRef, catalogApi]]}>
+        <EntityRefLink entityRef={entity} />
+      </TestApiProvider>,
+      {
+        mountedRoutes: {
+          '/catalog/:namespace/:kind/:name/*': entityRouteRef,
+        },
       },
-    });
+    );
     expect(screen.getByText('component:test/software')).toHaveAttribute(
       'href',
       '/catalog/test/component/software',
@@ -85,8 +149,13 @@ describe('<EntityRefLink />', () => {
         lifecycle: 'production',
       },
     };
+
+    catalogApi.getEntityByRef.mockResolvedValueOnce(entity);
+
     await renderInTestApp(
-      <EntityRefLink entityRef={entity} defaultKind="Component" />,
+      <TestApiProvider apis={[[catalogApiRef, catalogApi]]}>
+        <EntityRefLink entityRef={entity} defaultKind="Component" />
+      </TestApiProvider>,
       {
         mountedRoutes: {
           '/catalog/:namespace/:kind/:name/*': entityRouteRef,
@@ -105,11 +174,33 @@ describe('<EntityRefLink />', () => {
       namespace: 'default',
       name: 'software',
     };
-    await renderInTestApp(<EntityRefLink entityRef={entityName} />, {
-      mountedRoutes: {
-        '/catalog/:namespace/:kind/:name/*': entityRouteRef,
+
+    const entity = {
+      apiVersion: 'v1',
+      kind: 'Component',
+      metadata: {
+        name: 'software',
+        namespace: 'default',
       },
-    });
+      spec: {
+        owner: 'guest',
+        type: 'service',
+        lifecycle: 'production',
+      },
+    };
+
+    catalogApi.getEntityByRef.mockResolvedValueOnce(entity);
+
+    await renderInTestApp(
+      <TestApiProvider apis={[[catalogApiRef, catalogApi]]}>
+        <EntityRefLink entityRef={entityName} />
+      </TestApiProvider>,
+      {
+        mountedRoutes: {
+          '/catalog/:namespace/:kind/:name/*': entityRouteRef,
+        },
+      },
+    );
     expect(screen.getByText('component:software')).toHaveAttribute(
       'href',
       '/catalog/default/component/software',
@@ -122,11 +213,33 @@ describe('<EntityRefLink />', () => {
       namespace: 'test',
       name: 'software',
     };
-    await renderInTestApp(<EntityRefLink entityRef={entityName} />, {
-      mountedRoutes: {
-        '/catalog/:namespace/:kind/:name/*': entityRouteRef,
+
+    const entity = {
+      apiVersion: 'v1',
+      kind: 'Component',
+      metadata: {
+        name: 'software',
+        namespace: 'default',
       },
-    });
+      spec: {
+        owner: 'guest',
+        type: 'service',
+        lifecycle: 'production',
+      },
+    };
+
+    catalogApi.getEntityByRef.mockResolvedValueOnce(entity);
+
+    await renderInTestApp(
+      <TestApiProvider apis={[[catalogApiRef, catalogApi]]}>
+        <EntityRefLink entityRef={entityName} />
+      </TestApiProvider>,
+      {
+        mountedRoutes: {
+          '/catalog/:namespace/:kind/:name/*': entityRouteRef,
+        },
+      },
+    );
     expect(screen.getByText('component:test/software')).toHaveAttribute(
       'href',
       '/catalog/test/component/software',
@@ -139,8 +252,27 @@ describe('<EntityRefLink />', () => {
       namespace: 'test',
       name: 'software',
     };
+
+    const entity = {
+      apiVersion: 'v1',
+      kind: 'Component',
+      metadata: {
+        name: 'software',
+        namespace: 'test',
+      },
+      spec: {
+        owner: 'guest',
+        type: 'service',
+        lifecycle: 'production',
+      },
+    };
+
+    catalogApi.getEntityByRef.mockResolvedValueOnce(entity);
+
     await renderInTestApp(
-      <EntityRefLink entityRef={entityName} defaultKind="component" />,
+      <TestApiProvider apis={[[catalogApiRef, catalogApi]]}>
+        <EntityRefLink entityRef={entityName} defaultKind="component" />
+      </TestApiProvider>,
       {
         mountedRoutes: {
           '/catalog/:namespace/:kind/:name/*': entityRouteRef,
@@ -159,10 +291,29 @@ describe('<EntityRefLink />', () => {
       namespace: 'test',
       name: 'software',
     };
+
+    const entity = {
+      apiVersion: 'v1',
+      kind: 'Component',
+      metadata: {
+        name: 'software',
+        namespace: 'test',
+      },
+      spec: {
+        owner: 'guest',
+        type: 'service',
+        lifecycle: 'production',
+      },
+    };
+
+    catalogApi.getEntityByRef.mockResolvedValueOnce(entity);
+
     await renderInTestApp(
-      <EntityRefLink entityRef={entityName} defaultKind="component">
-        Custom Children
-      </EntityRefLink>,
+      <TestApiProvider apis={[[catalogApiRef, catalogApi]]}>
+        <EntityRefLink entityRef={entityName} defaultKind="component">
+          Custom Children
+        </EntityRefLink>
+      </TestApiProvider>,
       {
         mountedRoutes: {
           '/catalog/:namespace/:kind/:name/*': entityRouteRef,

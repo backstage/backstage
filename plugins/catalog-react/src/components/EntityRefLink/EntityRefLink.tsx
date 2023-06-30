@@ -24,8 +24,11 @@ import React, { forwardRef } from 'react';
 import { entityRouteRef } from '../../routes';
 import { humanizeEntityRef } from './humanize';
 import { Link, LinkProps } from '@backstage/core-components';
+import { useApi } from '@backstage/core-plugin-api';
+import useAsync from 'react-use/lib/useAsync';
+import { catalogApiRef } from '../../api';
 import { useRouteRef } from '@backstage/core-plugin-api';
-import { Tooltip } from '@material-ui/core';
+import { Tooltip, Typography } from '@material-ui/core';
 
 /**
  * Props for {@link EntityRefLink}.
@@ -49,9 +52,11 @@ export const EntityRefLink = forwardRef<any, EntityRefLinkProps>(
     const { entityRef, defaultKind, title, children, ...linkProps } = props;
     const entityRoute = useRouteRef(entityRouteRef);
 
-    let kind;
-    let namespace;
-    let name;
+    const catalogApi = useApi(catalogApiRef);
+
+    let kind: string;
+    let namespace: string | undefined;
+    let name: string;
 
     if (typeof entityRef === 'string') {
       const parsed = parseEntityRef(entityRef);
@@ -77,6 +82,13 @@ export const EntityRefLink = forwardRef<any, EntityRefLinkProps>(
       { defaultKind },
     );
 
+    const { value, loading, error } = useAsync(async () => {
+      namespace = namespace?.toLocaleLowerCase('en-US') ?? DEFAULT_NAMESPACE;
+      return {
+        result: await catalogApi.getEntityByRef({ kind, namespace, name }),
+      };
+    });
+
     const link = (
       <Link {...linkProps} ref={ref} to={entityRoute(routeParams)}>
         {children}
@@ -84,10 +96,29 @@ export const EntityRefLink = forwardRef<any, EntityRefLinkProps>(
       </Link>
     );
 
-    return title ? (
-      <Tooltip title={formattedEntityRefTitle}>{link}</Tooltip>
-    ) : (
-      link
+    const noLinkName = `${kind}:${name}`;
+    const noLink = (
+      <Typography
+        style={{ font: 'inherit', fontSize: 'inherit' }}
+        data-testid={noLinkName}
+      >
+        {children}
+        {!children && (title ?? formattedEntityRefTitle)}
+      </Typography>
     );
+
+    if (loading || error) {
+      return noLink;
+    } else if (value) {
+      const entity = value.result;
+      if (title && !!entity) {
+        return <Tooltip title={formattedEntityRefTitle}>{link}</Tooltip>;
+      } else if (!!entity) {
+        return link;
+      }
+      return noLink;
+    }
+
+    return noLink;
   },
 ) as (props: EntityRefLinkProps) => JSX.Element;
