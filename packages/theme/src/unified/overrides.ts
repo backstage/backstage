@@ -17,6 +17,7 @@
 import type { Overrides } from '@material-ui/core/styles/overrides';
 import type { ComponentsProps } from '@material-ui/core/styles/props';
 import { ComponentsOverrides, Theme, ThemeOptions } from '@mui/material/styles';
+import { createSpacing } from '@mui/system';
 import { CSSProperties } from 'react';
 
 type V5Override = ComponentsOverrides[Exclude<
@@ -60,6 +61,9 @@ function adaptV5Override(
     return Object.fromEntries(
       Object.entries(overrides).map(([className, style]) => {
         if (typeof style === 'function') {
+          // Override potential v4 spacing method: https://mui.com/material-ui/migration/v5-style-changes/#%E2%9C%85-remove-px-suffix
+          // `adaptV4Theme as reference: https://github.com/mui/material-ui/blob/v5.x/packages/mui-material/src/styles/adaptV4Theme.js#L54C41-L54C41
+          theme.spacing = createSpacing(theme.spacing);
           return [className, style({ theme })];
         }
         return [className, style];
