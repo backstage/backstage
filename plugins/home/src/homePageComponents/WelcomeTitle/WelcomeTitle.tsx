@@ -30,7 +30,10 @@ export interface WelcomeTitleLanguageProps {
 export const WelcomeTitle = ({ language }: WelcomeTitleLanguageProps) => {
   const identityApi = useApi(identityApiRef);
   const alertApi = useApi(alertApiRef);
-  const greeting = useMemo(() => getTimeBasedGreeting(language || undefined), [language]);
+  const greeting = useMemo(
+    () => getTimeBasedGreeting(language || undefined),
+    [language],
+  );
 
   const { value: profile, error } = useAsync(() =>
     identityApi.getProfileInfo(),
@@ -47,8 +50,9 @@ export const WelcomeTitle = ({ language }: WelcomeTitleLanguageProps) => {
 
   return (
     <Tooltip title={greeting.language}>
-      <Typography component="span" variant="inherit">{`${greeting.greeting}${profile?.displayName ? `, ${profile?.displayName}` : ''
-        }!`}</Typography>
+      <Typography component="span" variant="inherit">{`${greeting.greeting}${
+        profile?.displayName ? `, ${profile?.displayName}` : ''
+      }!`}</Typography>
     </Tooltip>
   );
 };
