@@ -47,9 +47,8 @@ export const WelcomeTitle = ({ language }: WelcomeTitleProps) => {
 
   return (
     <Tooltip title={greeting.language}>
-      <Typography component="span" variant="inherit">{`${greeting.greeting}${
-        profile?.displayName ? `, ${profile?.displayName}` : ''
-      }!`}</Typography>
+      <Typography component="span" variant="inherit">{`${greeting.greeting}${profile?.displayName ? `, ${profile?.displayName}` : ''
+        }!`}</Typography>
     </Tooltip>
   );
 };
