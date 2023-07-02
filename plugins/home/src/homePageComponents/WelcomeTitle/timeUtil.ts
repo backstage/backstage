@@ -37,9 +37,9 @@ export function getTimeBasedGreeting(language?: string): { language: string; gre
     if (hour < 17) return goodAfternoon;
     return goodEvening;
   };
-  
+
   const greetings = timeOfDay(currentHour);
-  
+
   if (language && greetings[language]) {
     return {
       language,
