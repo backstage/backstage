@@ -44,7 +44,7 @@ export type ClockConfig = {
 export const ComponentAccordion: (props: {
   title: string;
   expanded?: boolean | undefined;
-  Content: () => JSX.Element;
+  Content: () => JSX.Element /** @public */;
   Actions?: (() => JSX.Element) | undefined;
   Settings?: (() => JSX.Element) | undefined;
   ContextProvider?: ((props: any) => JSX.Element) | undefined;
@@ -183,6 +183,10 @@ export type ToolkitContentProps = {
   tools: Tool[];
 };
 
+// Warning: (ae-forgotten-export) The symbol "WelcomeTitleLanguageProps" needs to be exported by the entry point index.d.ts
+//
 // @public
-export const WelcomeTitle: () => JSX.Element;
+export const WelcomeTitle: ({
+  language,
+}: WelcomeTitleLanguageProps) => JSX.Element;
 ```
