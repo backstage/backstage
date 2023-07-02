@@ -23,10 +23,14 @@ import React, { useEffect, useMemo } from 'react';
 import useAsync from 'react-use/lib/useAsync';
 import { getTimeBasedGreeting } from './timeUtil';
 
-export const WelcomeTitle = () => {
+interface WelcomeTitleProps {
+  language?: string;
+}
+
+export const WelcomeTitle = ({ language }: WelcomeTitleProps) => {
   const identityApi = useApi(identityApiRef);
   const alertApi = useApi(alertApiRef);
-  const greeting = useMemo(() => getTimeBasedGreeting(), []);
+  const greeting = useMemo(() => getTimeBasedGreeting(language || undefined), [language]);
 
   const { value: profile, error } = useAsync(() =>
     identityApi.getProfileInfo(),
