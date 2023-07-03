@@ -12,6 +12,12 @@
   "backstage": {
     "role": "frontend-plugin-module"
   },
+  "homepage": "https://backstage.io",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/backstage/backstage",
+    "directory": "plugins/analytics-module-ga"
+  },
   "scripts": {
     "build": "backstage-cli package build",
     "start": "backstage-cli package start",

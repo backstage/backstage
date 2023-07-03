@@ -14,6 +14,7 @@
     "types": "dist/index.d.ts",
     "alphaTypes": "dist/index.alpha.d.ts"
   },
+  "homepage": "https://backstage.io",
   "repository": {
     "type": "git",
     "url": "https://github.com/backstage/backstage",

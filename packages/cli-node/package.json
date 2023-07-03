@@ -13,6 +13,12 @@
   "backstage": {
     "role": "node-library"
   },
+  "homepage": "https://backstage.io",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/backstage/backstage",
+    "directory": "packages/cli-node"
+  },
   "scripts": {
     "build": "backstage-cli package build",
     "lint": "backstage-cli package lint",
