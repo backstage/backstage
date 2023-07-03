@@ -14,13 +14,29 @@
  * limitations under the License.
  */
 
-import { renderInTestApp } from '@backstage/test-utils';
+import { TestApiProvider, renderInTestApp } from '@backstage/test-utils';
 import { screen } from '@testing-library/react';
 import React from 'react';
 import { entityRouteRef } from '../../routes';
 import { EntityRefLinks } from './EntityRefLinks';
+import { CatalogApi, catalogApiRef } from '@backstage/plugin-catalog-react';
 
 describe('<EntityRefLinks />', () => {
+  const catalogApi: jest.Mocked<CatalogApi> = {
+    getLocationById: jest.fn(),
+    getEntityByName: jest.fn(),
+    getEntityByRef: jest.fn(),
+    getEntities: jest.fn(),
+    addLocation: jest.fn(),
+    getLocationByRef: jest.fn(),
+    removeEntityByUid: jest.fn(),
+    refreshEntity: jest.fn(),
+  } as any;
+
+  beforeEach(() => {
+    jest.clearAllMocks();
+  });
+
   it('renders a single link', async () => {
     const entityNames = [
       {
@@ -29,11 +45,26 @@ describe('<EntityRefLinks />', () => {
         name: 'software',
       },
     ];
-    await renderInTestApp(<EntityRefLinks entityRefs={entityNames} />, {
-      mountedRoutes: {
-        '/catalog/:namespace/:kind/:name/*': entityRouteRef,
+    const entity = {
+      apiVersion: 'v1',
+      kind: 'Component',
+      metadata: {
+        name: 'software',
       },
-    });
+      spec: {},
+    };
+
+    catalogApi.getEntityByRef.mockResolvedValueOnce(entity);
+    await renderInTestApp(
+      <TestApiProvider apis={[[catalogApiRef, catalogApi]]}>
+        <EntityRefLinks entityRefs={entityNames} />
+      </TestApiProvider>,
+      {
+        mountedRoutes: {
+          '/catalog/:namespace/:kind/:name/*': entityRouteRef,
+        },
+      },
+    );
     expect(screen.getByText('component:software')).toHaveAttribute(
       'href',
       '/catalog/default/component/software',
@@ -53,11 +84,36 @@ describe('<EntityRefLinks />', () => {
         name: 'interface',
       },
     ];
-    await renderInTestApp(<EntityRefLinks entityRefs={entityNames} />, {
-      mountedRoutes: {
-        '/catalog/:namespace/:kind/:name/*': entityRouteRef,
+    const entity = {
+      apiVersion: 'v1',
+      kind: 'Component',
+      metadata: {
+        name: 'software',
       },
-    });
+      spec: {},
+    };
+    const entity2 = {
+      apiVersion: 'v1',
+      kind: 'API',
+      metadata: {
+        name: 'interface',
+      },
+      spec: {},
+    };
+
+    catalogApi.getEntityByRef
+      .mockResolvedValueOnce(entity)
+      .mockResolvedValueOnce(entity2);
+    await renderInTestApp(
+      <TestApiProvider apis={[[catalogApiRef, catalogApi]]}>
+        <EntityRefLinks entityRefs={entityNames} />
+      </TestApiProvider>,
+      {
+        mountedRoutes: {
+          '/catalog/:namespace/:kind/:name/*': entityRouteRef,
+        },
+      },
+    );
     expect(screen.getByText(',')).toBeInTheDocument();
     expect(screen.getByText('component:software')).toHaveAttribute(
       'href',

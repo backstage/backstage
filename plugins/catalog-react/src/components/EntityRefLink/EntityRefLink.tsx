@@ -82,6 +82,7 @@ export const EntityRefLink = forwardRef<any, EntityRefLinkProps>(
       { defaultKind },
     );
 
+    /** async function that call getEntityByRef to determine existence */
     const { value, loading, error } = useAsync(async () => {
       namespace = namespace?.toLocaleLowerCase('en-US') ?? DEFAULT_NAMESPACE;
       return {

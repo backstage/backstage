@@ -20,12 +20,15 @@ import {
   RELATION_PART_OF,
   SystemEntity,
 } from '@backstage/catalog-model';
-import { renderInTestApp } from '@backstage/test-utils';
+import { TestApiProvider, renderInTestApp } from '@backstage/test-utils';
 import { waitFor, screen } from '@testing-library/react';
 import React from 'react';
 import { entityRouteRef } from '../../routes';
 import { EntityTable } from './EntityTable';
 import { componentEntityColumns, systemEntityColumns } from './presets';
+import { CatalogApi, catalogApiRef } from '@backstage/plugin-catalog-react';
+
+const catalogApi: jest.Mocked<CatalogApi> = {} as any;
 
 describe('systemEntityColumns', () => {
   it('shows systems', async () => {
@@ -55,12 +58,14 @@ describe('systemEntityColumns', () => {
     ];
 
     await renderInTestApp(
-      <EntityTable
-        title="My Systems"
-        entities={entities}
-        emptyContent={<div>EMPTY</div>}
-        columns={systemEntityColumns}
-      />,
+      <TestApiProvider apis={[[catalogApiRef, catalogApi]]}>
+        <EntityTable
+          title="My Systems"
+          entities={entities}
+          emptyContent={<div>EMPTY</div>}
+          columns={systemEntityColumns}
+        />
+      </TestApiProvider>,
       {
         mountedRoutes: {
           '/catalog/:namespace/:kind/:name/*': entityRouteRef,
@@ -107,12 +112,14 @@ describe('componentEntityColumns', () => {
     ];
 
     await renderInTestApp(
-      <EntityTable
-        title="My Components"
-        entities={entities}
-        emptyContent={<div>EMPTY</div>}
-        columns={componentEntityColumns}
-      />,
+      <TestApiProvider apis={[[catalogApiRef, catalogApi]]}>
+        <EntityTable
+          title="My Components"
+          entities={entities}
+          emptyContent={<div>EMPTY</div>}
+          columns={componentEntityColumns}
+        />
+      </TestApiProvider>,
       {
         mountedRoutes: {
           '/catalog/:namespace/:kind/:name/*': entityRouteRef,

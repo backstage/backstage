@@ -20,12 +20,14 @@ import {
   RELATION_PART_OF,
 } from '@backstage/catalog-model';
 import { entityRouteRef } from '@backstage/plugin-catalog-react';
-import { renderInTestApp } from '@backstage/test-utils';
+import { TestApiProvider, renderInTestApp } from '@backstage/test-utils';
 import { screen } from '@testing-library/react';
 import React from 'react';
 import { AboutContent } from './AboutContent';
+import { CatalogApi, catalogApiRef } from '@backstage/plugin-catalog-react';
 
 describe('<AboutContent />', () => {
+  const catalogApi: jest.Mocked<CatalogApi> = {} as any;
   describe('An unknown entity', () => {
     let entity: Entity;
 
@@ -63,11 +65,16 @@ describe('<AboutContent />', () => {
     });
 
     it('renders info', async () => {
-      await renderInTestApp(<AboutContent entity={entity} />, {
-        mountedRoutes: {
-          '/catalog/:namespace/:kind/:name': entityRouteRef,
+      await renderInTestApp(
+        <TestApiProvider apis={[[catalogApiRef, catalogApi]]}>
+          <AboutContent entity={entity} />
+        </TestApiProvider>,
+        {
+          mountedRoutes: {
+            '/catalog/:namespace/:kind/:name': entityRouteRef,
+          },
         },
-      });
+      );
 
       expect(screen.getByText('Description')).toBeInTheDocument();
       expect(screen.getByText('Description').nextSibling).toHaveTextContent(
@@ -93,11 +100,16 @@ describe('<AboutContent />', () => {
       entity.spec = {};
       entity.relations = [];
 
-      await renderInTestApp(<AboutContent entity={entity} />, {
-        mountedRoutes: {
-          '/catalog/:namespace/:kind/:name': entityRouteRef,
+      await renderInTestApp(
+        <TestApiProvider apis={[[catalogApiRef, catalogApi]]}>
+          <AboutContent entity={entity} />
+        </TestApiProvider>,
+        {
+          mountedRoutes: {
+            '/catalog/:namespace/:kind/:name': entityRouteRef,
+          },
         },
-      });
+      );
 
       expect(screen.getByText('Description')).toBeInTheDocument();
       expect(screen.getByText('Description').nextSibling).toHaveTextContent(
@@ -148,11 +160,16 @@ describe('<AboutContent />', () => {
     });
 
     it('renders info', async () => {
-      await renderInTestApp(<AboutContent entity={entity} />, {
-        mountedRoutes: {
-          '/catalog/:namespace/:kind/:name': entityRouteRef,
+      await renderInTestApp(
+        <TestApiProvider apis={[[catalogApiRef, catalogApi]]}>
+          <AboutContent entity={entity} />
+        </TestApiProvider>,
+        {
+          mountedRoutes: {
+            '/catalog/:namespace/:kind/:name': entityRouteRef,
+          },
         },
-      });
+      );
 
       expect(screen.getByText('Description')).toBeInTheDocument();
       expect(screen.getByText('Description').nextSibling).toHaveTextContent(
@@ -185,11 +202,16 @@ describe('<AboutContent />', () => {
       delete entity.spec!.system;
       entity.relations = [];
 
-      await renderInTestApp(<AboutContent entity={entity} />, {
-        mountedRoutes: {
-          '/catalog/:namespace/:kind/:name': entityRouteRef,
+      await renderInTestApp(
+        <TestApiProvider apis={[[catalogApiRef, catalogApi]]}>
+          <AboutContent entity={entity} />
+        </TestApiProvider>,
+        {
+          mountedRoutes: {
+            '/catalog/:namespace/:kind/:name': entityRouteRef,
+          },
         },
-      });
+      );
 
       expect(screen.getByText('Description')).toBeInTheDocument();
       expect(screen.getByText('Description').nextSibling).toHaveTextContent(
@@ -253,11 +275,16 @@ describe('<AboutContent />', () => {
     });
 
     it('renders info', async () => {
-      await renderInTestApp(<AboutContent entity={entity} />, {
-        mountedRoutes: {
-          '/catalog/:namespace/:kind/:name': entityRouteRef,
+      await renderInTestApp(
+        <TestApiProvider apis={[[catalogApiRef, catalogApi]]}>
+          <AboutContent entity={entity} />
+        </TestApiProvider>,
+        {
+          mountedRoutes: {
+            '/catalog/:namespace/:kind/:name': entityRouteRef,
+          },
         },
-      });
+      );
 
       expect(screen.getByText('Description')).toBeInTheDocument();
       expect(screen.getByText('Description').nextSibling).toHaveTextContent(
@@ -293,11 +320,16 @@ describe('<AboutContent />', () => {
       delete entity.spec!.system;
       entity.relations = [];
 
-      await renderInTestApp(<AboutContent entity={entity} />, {
-        mountedRoutes: {
-          '/catalog/:namespace/:kind/:name': entityRouteRef,
+      await renderInTestApp(
+        <TestApiProvider apis={[[catalogApiRef, catalogApi]]}>
+          <AboutContent entity={entity} />
+        </TestApiProvider>,
+        {
+          mountedRoutes: {
+            '/catalog/:namespace/:kind/:name': entityRouteRef,
+          },
         },
-      });
+      );
 
       expect(screen.getByText('Description')).toBeInTheDocument();
       expect(screen.getByText('Description').nextSibling).toHaveTextContent(
@@ -349,11 +381,16 @@ describe('<AboutContent />', () => {
     });
 
     it('renders info', async () => {
-      await renderInTestApp(<AboutContent entity={entity} />, {
-        mountedRoutes: {
-          '/catalog/:namespace/:kind/:name': entityRouteRef,
+      await renderInTestApp(
+        <TestApiProvider apis={[[catalogApiRef, catalogApi]]}>
+          <AboutContent entity={entity} />
+        </TestApiProvider>,
+        {
+          mountedRoutes: {
+            '/catalog/:namespace/:kind/:name': entityRouteRef,
+          },
         },
-      });
+      );
 
       expect(screen.getByText('Description')).toBeInTheDocument();
       expect(screen.getByText('Description').nextSibling).toHaveTextContent(
@@ -376,11 +413,16 @@ describe('<AboutContent />', () => {
       delete entity.metadata.tags;
       entity.relations = [];
 
-      await renderInTestApp(<AboutContent entity={entity} />, {
-        mountedRoutes: {
-          '/catalog/:namespace/:kind/:name': entityRouteRef,
+      await renderInTestApp(
+        <TestApiProvider apis={[[catalogApiRef, catalogApi]]}>
+          <AboutContent entity={entity} />
+        </TestApiProvider>,
+        {
+          mountedRoutes: {
+            '/catalog/:namespace/:kind/:name': entityRouteRef,
+          },
         },
-      });
+      );
 
       expect(screen.getByText('Description')).toBeInTheDocument();
       expect(screen.getByText('Description').nextSibling).toHaveTextContent(
@@ -421,11 +463,16 @@ describe('<AboutContent />', () => {
     });
 
     it('renders info', async () => {
-      await renderInTestApp(<AboutContent entity={entity} />, {
-        mountedRoutes: {
-          '/catalog/:namespace/:kind/:name': entityRouteRef,
+      await renderInTestApp(
+        <TestApiProvider apis={[[catalogApiRef, catalogApi]]}>
+          <AboutContent entity={entity} />
+        </TestApiProvider>,
+        {
+          mountedRoutes: {
+            '/catalog/:namespace/:kind/:name': entityRouteRef,
+          },
         },
-      });
+      );
 
       expect(screen.getByText('Description')).toBeInTheDocument();
       expect(screen.getByText('Description').nextSibling).toHaveTextContent(
@@ -453,11 +500,16 @@ describe('<AboutContent />', () => {
       delete entity.metadata.tags;
       delete entity.spec!.type;
 
-      await renderInTestApp(<AboutContent entity={entity} />, {
-        mountedRoutes: {
-          '/catalog/:namespace/:kind/:name': entityRouteRef,
+      await renderInTestApp(
+        <TestApiProvider apis={[[catalogApiRef, catalogApi]]}>
+          <AboutContent entity={entity} />
+        </TestApiProvider>,
+        {
+          mountedRoutes: {
+            '/catalog/:namespace/:kind/:name': entityRouteRef,
+          },
         },
-      });
+      );
 
       expect(screen.getByText('Description')).toBeInTheDocument();
       expect(screen.getByText('Description').nextSibling).toHaveTextContent(
@@ -509,11 +561,16 @@ describe('<AboutContent />', () => {
     });
 
     it('renders info', async () => {
-      await renderInTestApp(<AboutContent entity={entity} />, {
-        mountedRoutes: {
-          '/catalog/:namespace/:kind/:name': entityRouteRef,
+      await renderInTestApp(
+        <TestApiProvider apis={[[catalogApiRef, catalogApi]]}>
+          <AboutContent entity={entity} />
+        </TestApiProvider>,
+        {
+          mountedRoutes: {
+            '/catalog/:namespace/:kind/:name': entityRouteRef,
+          },
         },
-      });
+      );
 
       expect(screen.getByText('Description')).toBeInTheDocument();
       expect(screen.getByText('Description').nextSibling).toHaveTextContent(
@@ -542,11 +599,16 @@ describe('<AboutContent />', () => {
       delete entity.spec!.system;
       entity.relations = [];
 
-      await renderInTestApp(<AboutContent entity={entity} />, {
-        mountedRoutes: {
-          '/catalog/:namespace/:kind/:name': entityRouteRef,
+      await renderInTestApp(
+        <TestApiProvider apis={[[catalogApiRef, catalogApi]]}>
+          <AboutContent entity={entity} />
+        </TestApiProvider>,
+        {
+          mountedRoutes: {
+            '/catalog/:namespace/:kind/:name': entityRouteRef,
+          },
         },
-      });
+      );
 
       expect(screen.getByText('Description')).toBeInTheDocument();
       expect(screen.getByText('Description').nextSibling).toHaveTextContent(
@@ -600,11 +662,16 @@ describe('<AboutContent />', () => {
     });
 
     it('renders info', async () => {
-      await renderInTestApp(<AboutContent entity={entity} />, {
-        mountedRoutes: {
-          '/catalog/:namespace/:kind/:name': entityRouteRef,
+      await renderInTestApp(
+        <TestApiProvider apis={[[catalogApiRef, catalogApi]]}>
+          <AboutContent entity={entity} />
+        </TestApiProvider>,
+        {
+          mountedRoutes: {
+            '/catalog/:namespace/:kind/:name': entityRouteRef,
+          },
         },
-      });
+      );
 
       expect(screen.getByText('Description')).toBeInTheDocument();
       expect(screen.getByText('Description').nextSibling).toHaveTextContent(
@@ -631,11 +698,16 @@ describe('<AboutContent />', () => {
       delete entity.spec!.domain;
       entity.relations = [];
 
-      await renderInTestApp(<AboutContent entity={entity} />, {
-        mountedRoutes: {
-          '/catalog/:namespace/:kind/:name': entityRouteRef,
+      await renderInTestApp(
+        <TestApiProvider apis={[[catalogApiRef, catalogApi]]}>
+          <AboutContent entity={entity} />
+        </TestApiProvider>,
+        {
+          mountedRoutes: {
+            '/catalog/:namespace/:kind/:name': entityRouteRef,
+          },
         },
-      });
+      );
 
       expect(screen.getByText('Description')).toBeInTheDocument();
       expect(screen.getByText('Description').nextSibling).toHaveTextContent(

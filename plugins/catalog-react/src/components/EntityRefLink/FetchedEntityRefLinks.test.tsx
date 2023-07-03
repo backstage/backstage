@@ -20,12 +20,57 @@ import { screen } from '@testing-library/react';
 import { Entity } from '@backstage/catalog-model';
 import React from 'react';
 import { JsonObject } from '@backstage/types';
-import { catalogApiRef } from '../../api';
-import { CatalogApi } from '@backstage/catalog-client';
+import { CatalogApi, catalogApiRef } from '@backstage/plugin-catalog-react';
 
 describe('<FetchedEntityRefLinks />', () => {
   const getTitle = (e: Entity): string =>
     (e.spec?.profile!! as JsonObject).displayName!!.toString()!!;
+
+  const mockedGetEntityByRef: jest.MockedFn<CatalogApi['getEntityByRef']> =
+    jest.fn();
+
+  const entities = [
+    {
+      apiVersion: 'v1',
+      kind: 'Component',
+      metadata: {
+        name: 'tool',
+      },
+      spec: {},
+    },
+    {
+      apiVersion: 'v1',
+      kind: 'API',
+      metadata: {
+        name: 'implementation',
+      },
+      spec: {},
+    },
+    {
+      apiVersion: 'v1',
+      kind: 'Component',
+      metadata: {
+        name: 'interface',
+      },
+      spec: {},
+    },
+    {
+      apiVersion: 'v1',
+      kind: 'Component',
+      metadata: {
+        name: 'software',
+      },
+      spec: {},
+    },
+    {
+      apiVersion: 'v1',
+      kind: 'API',
+      metadata: {
+        name: 'interface',
+      },
+      spec: {},
+    },
+  ];
 
   it('should fetch entities and render the custom display text', async () => {
     const entityRefs = [
@@ -59,8 +104,12 @@ describe('<FetchedEntityRefLinks />', () => {
             },
           })),
         }),
+      getEntityByRef: mockedGetEntityByRef,
     };
 
+    mockedGetEntityByRef
+      .mockResolvedValueOnce(entities[3])
+      .mockResolvedValueOnce(entities[4]);
     await renderInTestApp(
       <TestApiProvider apis={[[catalogApiRef, catalogApi]]}>
         <FetchedEntityRefLinks entityRefs={entityRefs} getTitle={getTitle} />
@@ -110,8 +159,13 @@ describe('<FetchedEntityRefLinks />', () => {
       },
     }));
 
-    const catalogApi: Partial<CatalogApi> = {};
+    const catalogApi: Partial<CatalogApi> = {
+      getEntityByRef: mockedGetEntityByRef,
+    };
 
+    mockedGetEntityByRef
+      .mockResolvedValueOnce(entities[0])
+      .mockResolvedValueOnce(entities[1]);
     await renderInTestApp(
       <TestApiProvider apis={[[catalogApiRef, catalogApi]]}>
         <FetchedEntityRefLinks entityRefs={entityRefs} getTitle={getTitle} />
@@ -188,8 +242,13 @@ describe('<FetchedEntityRefLinks />', () => {
             },
           ],
         }),
+      getEntityByRef: mockedGetEntityByRef,
     };
 
+    mockedGetEntityByRef
+      .mockResolvedValueOnce(entities[0])
+      .mockResolvedValueOnce(entities[1])
+      .mockResolvedValueOnce(entities[2]);
     await renderInTestApp(
       <TestApiProvider apis={[[catalogApiRef, catalogApi]]}>
         <FetchedEntityRefLinks entityRefs={entityRefs} getTitle={getTitle} />

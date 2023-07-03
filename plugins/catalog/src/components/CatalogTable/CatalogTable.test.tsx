@@ -32,6 +32,7 @@ import { renderInTestApp, TestApiRegistry } from '@backstage/test-utils';
 import { act, fireEvent, screen } from '@testing-library/react';
 import * as React from 'react';
 import { CatalogTable } from './CatalogTable';
+import { CatalogApi, catalogApiRef } from '@backstage/plugin-catalog-react';
 
 const entities: Entity[] = [
   {
@@ -50,12 +51,13 @@ const entities: Entity[] = [
     metadata: { name: 'component3' },
   },
 ];
+const catalogApi: jest.Mocked<CatalogApi> = {} as any;
 
 describe('CatalogTable component', () => {
-  const mockApis = TestApiRegistry.from([
-    starredEntitiesApiRef,
-    new MockStarredEntitiesApi(),
-  ]);
+  const mockApis = TestApiRegistry.from(
+    [starredEntitiesApiRef, new MockStarredEntitiesApi()],
+    [catalogApiRef, catalogApi],
+  );
 
   beforeEach(() => {
     window.open = jest.fn();
