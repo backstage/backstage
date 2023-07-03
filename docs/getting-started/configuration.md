@@ -71,7 +71,7 @@ yarn add --cwd packages/backend pg
 ```
 
 Use your favorite editor to open `app-config.yaml` and add your PostgreSQL
-configuration. in the root directory of your Backstage app using the credentials
+configuration in the root directory of your Backstage app using the credentials
 from the previous steps.
 
 ```yaml title="app-config.yaml"
@@ -90,10 +90,17 @@ backend:
       user: ${POSTGRES_USER}
       password: ${POSTGRES_PASSWORD}
       # https://node-postgres.com/features/ssl
-      # ssl: require # see https://www.postgresql.org/docs/current/libpq-ssl.html Table 33.1. SSL Mode Descriptions (e.g. require)
-        #ca: # if you have a CA file and want to verify it you can uncomment this section
-        #$file: <file-path>/ca/server.crt
-        # highlight-add-end
+      # ssl:
+      #   host is only needed if the connection name differs from the certificate name.
+      #   This is for example the case with CloudSQL.
+      #   host: servername in the certificate
+      #   ca:
+      #     $file: <file-path>/server.pem
+      #   key:
+      #     $file: <file-path>/client.key
+      #   cert:
+      #     $file: <file-path>/client-cert.pem
+      # highlight-add-end
 ```
 
 You'll use the connection details from the previous step. You can either set the
