@@ -129,6 +129,13 @@ export default async (opts: OptionValues): Promise<void> => {
     );
     Task.log();
     Task.section('All set! Now you might want to');
+    if (!opts.skipInstall) {
+      Task.log(
+        `  Install the dependencies: ${chalk.cyan(
+          `cd ${answers.name} && yarn install`,
+        )}`,
+      );
+    }
     Task.log(`  Run the app: ${chalk.cyan(`cd ${answers.name} && yarn dev`)}`);
     Task.log(
       '  Set up the software catalog: https://backstage.io/docs/features/software-catalog/configuration',
