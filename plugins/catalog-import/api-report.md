@@ -244,7 +244,11 @@ export type PreparePullRequestFormProps<
 export type PrepareResult =
   | {
       type: 'locations';
-      locations: NewLocations;
+      locations: Array<{
+        exists?: boolean;
+        target: string;
+        entities: CompoundEntityRef[];
+      }>;
     }
   | {
       type: 'repository';
@@ -360,5 +364,4 @@ export interface StepPrepareCreatePullRequestProps {
 // Warnings were encountered during analysis:
 //
 // src/api/CatalogImportApi.d.ts:25:5 - (ae-forgotten-export) The symbol "PartialEntity" needs to be exported by the entry point index.d.ts
-// src/components/useImportState.d.ts:21:5 - (ae-forgotten-export) The symbol "NewLocations" needs to be exported by the entry point index.d.ts
 ```
