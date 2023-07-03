@@ -13,5 +13,13 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
+/**
+ * Azure DevOps backend plugin that contains the API for retrieving builds, pull requests, etc. which is used by the Azure DevOps frontend plugin.
+ *
+ * @packageDocumentation
+ */
+
 export { AzureDevOpsApi } from './api';
 export * from './service/router';
+export { azureDevOpsPlugin } from './plugin';

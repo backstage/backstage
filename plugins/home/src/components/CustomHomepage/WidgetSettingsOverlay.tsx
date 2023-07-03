@@ -30,7 +30,7 @@ import { Widget } from './types';
 import { withTheme } from '@rjsf/core-v5';
 import validator from '@rjsf/validator-ajv8';
 
-const Form = withTheme(require('@rjsf/material-ui').Theme);
+const Form = withTheme(require('@rjsf/material-ui-v5').Theme);
 
 const useStyles = makeStyles((theme: Theme) =>
   createStyles({

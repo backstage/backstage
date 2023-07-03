@@ -14,5 +14,13 @@
  * limitations under the License.
  */
 
+/**
+ * Linguist backend plugin that contains the API for generating and retrieving language breakdown which is used by the Linguist frontend plugin.
+ *
+ * @packageDocumentation
+ */
+
 export * from './service/router';
 export type { LinguistBackendApi } from './api';
+export { linguistPlugin } from './plugin';
+export type { LinguistPluginOptions } from './plugin';
