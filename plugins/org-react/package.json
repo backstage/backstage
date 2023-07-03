@@ -12,6 +12,7 @@
   "backstage": {
     "role": "web-library"
   },
+  "homepage": "https://backstage.io",
   "repository": {
     "type": "git",
     "url": "https://github.com/backstage/backstage",

@@ -13,6 +13,12 @@
   "backstage": {
     "role": "node-library"
   },
+  "homepage": "https://backstage.io",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/backstage/backstage",
+    "directory": "plugins/events-backend-test-utils"
+  },
   "scripts": {
     "start": "backstage-cli package start",
     "build": "backstage-cli package build",
