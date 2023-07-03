@@ -31,15 +31,13 @@ type Props = {
   onReset: () => void;
 };
 
-type NewLocations = Array<{
-  exists?: boolean;
-  target: string;
-  entities: CompoundEntityRef[];
-}>;
-
 // Among the newly registered entities, return a software entity (e.g. Component, API, Resource)
 const filterComponentEntity = (
-  newLocations: NewLocations,
+  newLocations: Array<{
+    exists?: boolean;
+    target: string;
+    entities: CompoundEntityRef[];
+  }>,
 ): CompoundEntityRef | null => {
   for (const location of newLocations) {
     for (const entity of location.entities) {
