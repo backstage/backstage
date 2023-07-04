@@ -123,7 +123,7 @@
     "rollup-plugin-postcss": "^4.0.0",
     "rollup-pluginutils": "^2.8.2",
     "run-script-webpack-plugin": "^0.1.0",
-    "semver": "^7.3.2",
+    "semver": "^7.5.3",
     "style-loader": "^3.3.1",
     "sucrase": "^3.20.2",
     "swc-loader": "^0.2.3",
