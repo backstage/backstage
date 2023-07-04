@@ -124,6 +124,7 @@ export class DefaultCatalogCollatorFactory implements DocumentCollatorFactory {
             namespace: entity.metadata.namespace || 'default',
             kind: entity.kind,
             name: entity.metadata.name,
+            data: entity.metadata.data || 'default',
           }),
         };
       }

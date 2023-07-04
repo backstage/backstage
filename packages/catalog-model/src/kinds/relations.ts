@@ -136,3 +136,11 @@ export const RELATION_PART_OF = 'partOf';
  * @public
  */
 export const RELATION_HAS_PART = 'hasPart';
+
+export const RELATION_PROVIDES_DATA = 'providesData';
+
+export const RELATION_CONSUMES_DATA = 'consumesData';
+
+export const RELATION_DATA_PROVIDED_BY = 'dataProvidedBy';
+
+export const RELATION_DATA_CONSUMED_BY = 'dataConsumedBy';

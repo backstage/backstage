@@ -19,6 +19,7 @@ import makeStyles from '@material-ui/core/styles/makeStyles';
 import React from 'react';
 import { EntityEdgeData } from './types';
 import classNames from 'classnames';
+import Tooltip from '@material-ui/core/Tooltip';
 
 const useStyles = makeStyles(
   (theme: BackstageTheme) => ({
@@ -33,11 +34,55 @@ const useStyles = makeStyles(
 );
 
 export function CustomLabel({
-  edge: { relations },
+  edge: { relations, metadata, from, to },
 }: DependencyGraphTypes.RenderLabelProps<EntityEdgeData>) {
   const classes = useStyles();
+  let found = false;
+  for (const key in relations) {
+    if (
+      typeof relations[key] === 'string' &&
+      (relations[key].includes('Data') || relations[key].includes('data'))
+    ) {
+      found = true;
+      break;
+    }
+  }
+
+  if (found) {
+    const fromAfterSlash = from.split('/').pop() || from;
+    const toAfterSlash = to.split('/').pop() || to;
+
+    const metadataMatchFrom = metadata.find(item =>
+      item.includes(fromAfterSlash),
+    );
+    const metadataMatchTo = metadata.find(item => item.includes(toAfterSlash));
+
+    let tooltipText = '';
+    if (metadataMatchFrom) {
+      const index = metadataMatchFrom.indexOf(fromAfterSlash);
+      tooltipText = metadataMatchFrom.substring(
+        index + fromAfterSlash.length + 1,
+      );
+    } else if (metadataMatchTo) {
+      const index = metadataMatchTo.indexOf(toAfterSlash);
+      tooltipText = metadataMatchTo.substring(index + toAfterSlash.length + 1);
+    }
+    return (
+      <Tooltip title={tooltipText || ''}>
+        <text className={classes.text} textAnchor="middle">
+          {relations.map((r, i) => (
+            <tspan key={r} className={classNames(i > 0 && classes.secondary)}>
+              {i > 0 && <tspan> / </tspan>}
+              {r}
+            </tspan>
+          ))}
+        </text>
+      </Tooltip>
+    );
+  }
+
   return (
-    <text className={classes.text} textAnchor="middle">
+    <text className={classes.secondary} textAnchor="middle">
       {relations.map((r, i) => (
         <tspan key={r} className={classNames(i > 0 && classes.secondary)}>
           {i > 0 && <tspan> / </tspan>}

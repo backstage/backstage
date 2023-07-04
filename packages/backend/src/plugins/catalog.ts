@@ -20,12 +20,15 @@ import { Router } from 'express';
 import { PluginEnvironment } from '../types';
 import { DemoEventBasedEntityProvider } from './DemoEventBasedEntityProvider';
 import { UnprocessedEntitesModule } from '@backstage/plugin-catalog-backend-module-unprocessed';
+import {DataRelationProcessor} from "../processors/dataRelationProcessor";
+
 
 export default async function createPlugin(
   env: PluginEnvironment,
 ): Promise<Router> {
   const builder = await CatalogBuilder.create(env);
   builder.addProcessor(new ScaffolderEntitiesProcessor());
+  builder.addProcessor(new DataRelationProcessor());
 
   const demoProvider = new DemoEventBasedEntityProvider({
     logger: env.logger,

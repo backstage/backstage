@@ -128,6 +128,7 @@ export function useEntityRelationNodesAndEdges({
                   to: left === rel.type ? rel.targetRef : entityRef,
                   relations: pair,
                   label: 'visible',
+                  metadata: entity.metadata.data,
                 });
               } else {
                 edges.push({
@@ -135,6 +136,7 @@ export function useEntityRelationNodesAndEdges({
                   to: rel.targetRef,
                   relations: [rel.type],
                   label: 'visible',
+                  metadata: entity.metadata.data,
                 });
               }
             }

@@ -32,6 +32,7 @@ export type EntityEdgeData = {
    */
   // Not used, but has to be non empty to draw a label at all!
   label: 'visible';
+  metadata: string;
 };
 
 /**
