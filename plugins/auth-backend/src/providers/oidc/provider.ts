@@ -1,4 +1,4 @@
-/*
+z/*
  * Copyright 2020 The Backstage Authors
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -236,9 +236,9 @@ export const oidc = createAuthProviderIntegration({
           customCallbackUrl ||
           `${globalConfig.baseUrl}/${providerId}/handler/frame`;
         const metadataUrl = envConfig.getString('metadataUrl');
-        const tokenEndpointAuthMethod = envConfig.getOptionalString<ClientAuthMethod>(
+        const tokenEndpointAuthMethod = envConfig.getOptionalString(
           'tokenEndpointAuthMethod',
-        );
+        ) as ClientAuthMethod;
         const tokenSignedResponseAlg = envConfig.getOptionalString(
           'tokenSignedResponseAlg',
         );
