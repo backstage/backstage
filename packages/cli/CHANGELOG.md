@@ -26,7 +26,7 @@
 - 75540599124a: Updated example component for a newly scaffolded app.
 - 5d692f72ebfb: Make sure to include a `fetch` environment for `jsdom` in `jest` tests
 - 6816352500a7: Add discovery feature to the onboard cli command.
-- 20b7da6f1311: Enforcing MUI v5 specific linting to minimize bundle size.
+- 20b7da6f1311: Enforcing Material UI v5 specific linting to minimize bundle size.
 - Updated dependencies
   - @backstage/types@1.1.0
   - @backstage/config-loader@1.3.1
@@ -77,7 +77,7 @@
 
 ### Patch Changes
 
-- 20b7da6f1311: Enforcing MUI v5 specific linting to minimize bundle size.
+- 20b7da6f1311: Enforcing Material UI v5 specific linting to minimize bundle size.
 - Updated dependencies
   - @backstage/config-loader@1.3.1-next.0
   - @backstage/config@1.0.7

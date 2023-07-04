@@ -15,7 +15,7 @@
  */
 
 /**
- * A container of one theme for multiple different MUI versions.
+ * A container of one theme for multiple different Material UI versions.
  *
  * Currently known keys are 'v4' and 'v5'.
  *

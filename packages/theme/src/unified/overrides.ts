@@ -105,7 +105,7 @@ function extractV5StateOverrides(
 }
 
 /**
- * Transform MUI v5 component themes into a v4 theme props and overrides.
+ * Transform Material UI v5 component themes into a v4 theme props and overrides.
  *
  * @public
  */

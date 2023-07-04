@@ -17,7 +17,7 @@
 import { unstable_ClassNameGenerator as ClassNameGenerator } from '@mui/material/className';
 
 /**
- * This API is introduced in @mui/material (v5.0.5) as a replacement of deprecated createGenerateClassName & only affects v5 MUI components from `@mui/*`
+ * This API is introduced in @mui/material (v5.0.5) as a replacement of deprecated createGenerateClassName & only affects v5 Material UI components from `@mui/*`
  */
 ClassNameGenerator.configure(componentName => {
   return `v5-${componentName}`;

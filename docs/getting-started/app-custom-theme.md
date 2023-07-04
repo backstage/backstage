@@ -42,7 +42,7 @@ the "Overriding Backstage and Material UI css rules" section below.
 You can also create a theme from scratch that matches the `BackstageTheme` type
 exported by [`@backstage/theme`](https://www.npmjs.com/package/@backstage/theme).
 See the
-[Material-UI docs on theming](https://material-ui.com/customization/theming/)
+[Material UI docs on theming](https://material-ui.com/customization/theming/)
 for more information about how that can be done.
 
 ## Using your Custom Theme
@@ -162,7 +162,7 @@ const myTheme = createTheme({
 ```
 
 For a more complete example of a custom theme including Backstage and
-Material-UI component overrides, see the [Aperture
+Material UI component overrides, see the [Aperture
 theme](https://github.com/backstage/demo/blob/master/packages/app/src/theme/aperture.ts)
 from the [Backstage demo site](https://demo.backstage.io).
 

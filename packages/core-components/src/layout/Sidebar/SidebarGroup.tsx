@@ -69,7 +69,7 @@ const useStyles = makeStyles<BackstageTheme, { sidebarConfig: SidebarConfig }>(
 );
 
 /**
- * Returns a MUI `BottomNavigationAction`, which is aware of the current location & the selected item in the `BottomNavigation`,
+ * Returns a Material UI `BottomNavigationAction`, which is aware of the current location & the selected item in the `BottomNavigation`,
  * such that it will highlight a `MobileSidebarGroup` either on location change or if the selected item changes.
  *
  * @param props `to`: pathname of link; `value`: index of the selected item

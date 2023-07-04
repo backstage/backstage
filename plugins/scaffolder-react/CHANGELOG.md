@@ -23,7 +23,7 @@
 - 6b571405f806: `scaffolder/next`: Provide some default template components to `rjsf` to allow for standardization and markdown descriptions
 - 4505dc3b4598: `scaffolder/next`: Don't render `TemplateGroups` when there's no results in with search query
 - a452bda74d7a: Fixed typescript casting bug for useTemplateParameterSchema hook
-- 6b571405f806: `scaffolder/next`: provide a `ScaffolderField` component which is meant to replace some of the `FormControl` components from MUI, making it easier to write `FieldExtensions`.
+- 6b571405f806: `scaffolder/next`: provide a `ScaffolderField` component which is meant to replace some of the `FormControl` components from Material UI, making it easier to write `FieldExtensions`.
 
 ### Patch Changes
 
@@ -81,7 +81,7 @@
 
 - 6b571405f806: `scaffolder/next`: Provide some default template components to `rjsf` to allow for standardization and markdown descriptions
 - 4505dc3b4598: `scaffolder/next`: Don't render `TemplateGroups` when there's no results in with search query
-- 6b571405f806: `scaffolder/next`: provide a `ScaffolderField` component which is meant to replace some of the `FormControl` components from MUI, making it easier to write `FieldExtensions`.
+- 6b571405f806: `scaffolder/next`: provide a `ScaffolderField` component which is meant to replace some of the `FormControl` components from Material UI, making it easier to write `FieldExtensions`.
 
 ### Patch Changes
 

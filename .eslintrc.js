@@ -246,11 +246,14 @@ module.exports = {
           1,
           {
             forbid: [
-              { element: 'button', message: 'use MUI <Button> instead' },
-              { element: 'p', message: 'use MUI <Typography> instead' },
+              {
+                element: 'button',
+                message: 'use Material UI <Button> instead',
+              },
+              { element: 'p', message: 'use Material UI <Typography> instead' },
               {
                 element: 'span',
-                message: 'use a MUI <Typography> variant instead',
+                message: 'use a Material UI <Typography> variant instead',
               },
             ],
           },

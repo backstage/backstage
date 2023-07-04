@@ -548,7 +548,7 @@
 
 ### Patch Changes
 
-- 784d8078ab: Removed direct and transitive MUI dependencies.
+- 784d8078ab: Removed direct and transitive Material UI dependencies.
 - Updated dependencies
   - @backstage/config@0.1.12
 
