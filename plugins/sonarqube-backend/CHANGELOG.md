@@ -1,5 +1,13 @@
 # @backstage/plugin-sonarqube-backend
 
+## 0.2.1-next.1
+
+### Patch Changes
+
+- fcaf4cfc70ee: Made default config optional
+- Updated dependencies
+  - @backstage/config@1.0.8
+
 ## 0.2.1-next.0
 
 ### Patch Changes

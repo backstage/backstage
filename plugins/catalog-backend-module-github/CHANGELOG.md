@@ -1,5 +1,13 @@
 # @backstage/plugin-catalog-backend-module-github
 
+## 0.3.2-next.1
+
+### Patch Changes
+
+- b01b869d7158: fixed event handler to respect configured organization
+- Updated dependencies
+  - @backstage/config@1.0.8
+
 ## 0.3.2-next.0
 
 ### Patch Changes

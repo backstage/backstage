@@ -1,5 +1,13 @@
 # @backstage/core-plugin-api
 
+## 1.5.3-next.0
+
+### Patch Changes
+
+- 13426ebd1235: Change `IconComponent` type to be compatible with Material UI v5 icons.
+- Updated dependencies
+  - @backstage/config@1.0.8
+
 ## 1.5.2
 
 ### Patch Changes

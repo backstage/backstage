@@ -1,5 +1,12 @@
 # @backstage/theme
 
+## 0.4.1-next.0
+
+### Patch Changes
+
+- 4f28914d9f0e: Overwrite `PaletteOptions` & `ThemeOptions` type to allow use of `createTheme` from `@backstage/theme` as well as `@material-ui/core/styles` with the same type. Also replaced the default `CSSBaseline` with v4 instead of v5 for better backwards compatibility for now.
+- 874c3e8bf909: Override the spacing to a v5 compliant method
+
 ## 0.4.0
 
 ### Minor Changes
