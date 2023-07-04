@@ -548,15 +548,17 @@ describe('KubernetesProxy', () => {
     });
 
     worker.use(
-      rest.get('http://localhost:8001/api/v1/namespaces', (_req, res, ctx) => {
-        return res(
-          ctx.status(200),
-          ctx.json({
-            kind: 'NamespaceList',
-            apiVersion: 'v1',
-            items: [],
-          }),
-        );
+      rest.get('http://localhost:8001/api/v1/namespaces', (req, res, ctx) => {
+        return req.headers.get('Authorization')
+          ? res(ctx.status(401))
+          : res(
+              ctx.status(200),
+              ctx.json({
+                kind: 'NamespaceList',
+                apiVersion: 'v1',
+                items: [],
+              }),
+            );
       }),
     );
 

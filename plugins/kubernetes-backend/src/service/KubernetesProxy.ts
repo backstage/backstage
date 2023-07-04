@@ -93,14 +93,12 @@ export class KubernetesProxy {
   ): RequestHandler {
     const { permissionApi } = options;
     return async (req, res, next) => {
-      const token = getBearerTokenFromAuthorizationHeader(
-        req.header('authorization'),
-      );
-
       const authorizeResponse = await permissionApi.authorize(
         [{ permission: kubernetesProxyPermission }],
         {
-          token,
+          token: getBearerTokenFromAuthorizationHeader(
+            req.header('authorization'),
+          ),
         },
       );
       const auth = authorizeResponse[0];
@@ -110,15 +108,19 @@ export class KubernetesProxy {
         return;
       }
 
-      req.headers.authorization =
-        req.header(HEADER_KUBERNETES_AUTH) ??
-        `Bearer ${
-          (
-            await this.getClusterForRequest(req).then(cd =>
-              this.authTranslator.decorateClusterDetailsWithAuth(cd, {}),
-            )
-          ).serviceAccountToken
-        }`;
+      const authHeader = req.header(HEADER_KUBERNETES_AUTH);
+      if (authHeader) {
+        req.headers.authorization = authHeader;
+      } else {
+        const { serviceAccountToken } = await this.getClusterForRequest(
+          req,
+        ).then(cd =>
+          this.authTranslator.decorateClusterDetailsWithAuth(cd, {}),
+        );
+        if (serviceAccountToken) {
+          req.headers.authorization = `Bearer ${serviceAccountToken}`;
+        }
+      }
 
       const middleware = await this.getMiddleware(req);
       middleware(req, res, next);
