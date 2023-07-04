@@ -18,7 +18,6 @@ import { createDevApp } from '@backstage/dev-utils';
 import {
   analyticsApiRef,
   configApiRef,
-  createPlugin,
   identityApiRef,
 } from '@backstage/core-plugin-api';
 import { Playground } from '../../analytics-module-nr/dev/Playground';
