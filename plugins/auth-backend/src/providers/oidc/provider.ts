@@ -236,7 +236,7 @@ export const oidc = createAuthProviderIntegration({
           customCallbackUrl ||
           `${globalConfig.baseUrl}/${providerId}/handler/frame`;
         const metadataUrl = envConfig.getString('metadataUrl');
-        const tokenEndpointAuthMethod = envConfig.getOptional<ClientAuthMethod>(
+        const tokenEndpointAuthMethod = envConfig.getOptionalString<ClientAuthMethod>(
           'tokenEndpointAuthMethod',
         );
         const tokenSignedResponseAlg = envConfig.getOptionalString(
