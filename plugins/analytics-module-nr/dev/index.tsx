@@ -24,17 +24,7 @@ import {
 import { Playground } from '../../analytics-module-nr/dev/Playground';
 import { NewRelicBrowser } from '../src';
 
-/**
- * @deprecated Importing and including this plugin in an app has no effect.
- * This will be removed in a future release.
- *
- * @public
- */
-export const analyticsModuleNR = createPlugin({
-  id: 'analytics-provider-nr',
-});
 createDevApp()
-  .registerPlugin(analyticsModuleNR)
   .registerApi({
     api: analyticsApiRef,
     deps: { configApi: configApiRef, identityApi: identityApiRef },
