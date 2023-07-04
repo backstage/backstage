@@ -14,6 +14,25 @@
  * limitations under the License.
  */
 
+import { Theme as Mui4Theme } from '@material-ui/core/styles';
+import { Theme as Mui5Theme } from '@mui/material/styles';
+
+/**
+ * Supported Material UI Versions
+ *
+ * Currently: 'v4' and 'v5'.
+ *
+ * @public
+ */
+export type SupportedVersions = 'v4' | 'v5';
+
+/**
+ * Supported Material UI Theme Types for `SupportedVersions`
+ *
+ * @public
+ */
+export type SupportedThemes = Mui4Theme | Mui5Theme;
+
 /**
  * A container of one theme for multiple different MUI versions.
  *
@@ -22,5 +41,5 @@
  * @public
  */
 export interface UnifiedTheme {
-  getTheme(version: string): unknown | undefined;
+  getTheme(version: SupportedVersions): SupportedThemes | undefined;
 }
