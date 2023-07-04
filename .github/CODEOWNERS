@@ -17,7 +17,7 @@
 /plugins/adr                                      @backstage/maintainers @kuangp
 /plugins/adr-*                                    @backstage/maintainers @kuangp
 /plugins/allure                                   @backstage/maintainers @deepak-bhardwaj-ps
-/plugins/analytics-module-nr                      @jmezach
+/plugins/analytics-module-nr                      @backstage/maintainers @jmezach
 /plugins/apache-airflow                           @backstage/maintainers @cmpadden
 /plugins/api-docs                                 @backstage/maintainers @backstage/sda-se-reviewers
 /plugins/azure-devops                             @backstage/maintainers @marleypowell @awanlin

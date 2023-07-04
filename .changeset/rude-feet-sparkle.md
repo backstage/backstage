@@ -1,5 +1,5 @@
 ---
-'backstage-plugin-analytics-module-nr': patch
+'@backstage/plugin-analytics-module-newrelic-browser': patch
 ---
 
-Initial release
+Introduced the New Relic Browser analytics module. Check out the plugins [README.md](https://github.com/backstage/backstage/tree/master/plugins/analytics-module-nr) for more details!

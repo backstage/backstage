@@ -4794,6 +4794,29 @@ __metadata:
   languageName: unknown
   linkType: soft
 
+"@backstage/plugin-analytics-module-newrelic-browser@workspace:plugins/analytics-module-nr":
+  version: 0.0.0-use.local
+  resolution: "@backstage/plugin-analytics-module-newrelic-browser@workspace:plugins/analytics-module-nr"
+  dependencies:
+    "@backstage/cli": "workspace:^"
+    "@backstage/config": "workspace:^"
+    "@backstage/core-app-api": "workspace:^"
+    "@backstage/core-components": "workspace:^"
+    "@backstage/core-plugin-api": "workspace:^"
+    "@backstage/dev-utils": "workspace:^"
+    "@backstage/test-utils": "workspace:^"
+    "@newrelic/browser-agent": ^1.236.0
+    "@testing-library/jest-dom": ^5.10.1
+    "@testing-library/react": ^12.1.3
+    "@testing-library/user-event": ^14.0.0
+    "@types/node": "*"
+    msw: ^1.0.0
+    react-use: ^17.2.4
+  peerDependencies:
+    react: ^16.13.1 || ^17.0.0
+  languageName: unknown
+  linkType: soft
+
 "@backstage/plugin-apache-airflow@workspace:^, @backstage/plugin-apache-airflow@workspace:plugins/apache-airflow":
   version: 0.0.0-use.local
   resolution: "@backstage/plugin-apache-airflow@workspace:plugins/apache-airflow"
@@ -19927,33 +19950,6 @@ __metadata:
   checksum: ccdcf2a26acd9379d0d4f09e3fb3b7ee34dee94f07ab74d1e38b38f89a3675d9f3cbebb142d9c61c655f4c9eb63f1d6ec28cebeb3dc9215efd8fe7cef92725b9
   languageName: node
   linkType: hard
-
-"backstage-plugin-analytics-module-nr@workspace:plugins/analytics-module-nr":
-  version: 0.0.0-use.local
-  resolution: "backstage-plugin-analytics-module-nr@workspace:plugins/analytics-module-nr"
-  dependencies:
-    "@backstage/cli": "workspace:^"
-    "@backstage/config": "workspace:^"
-    "@backstage/core-app-api": "workspace:^"
-    "@backstage/core-components": "workspace:^"
-    "@backstage/core-plugin-api": "workspace:^"
-    "@backstage/dev-utils": "workspace:^"
-    "@backstage/test-utils": "workspace:^"
-    "@backstage/theme": "workspace:^"
-    "@material-ui/core": ^4.9.13
-    "@material-ui/icons": ^4.9.1
-    "@material-ui/lab": ^4.0.0-alpha.60
-    "@newrelic/browser-agent": ^1.236.0
-    "@testing-library/jest-dom": ^5.10.1
-    "@testing-library/react": ^12.1.3
-    "@testing-library/user-event": ^14.0.0
-    "@types/node": "*"
-    msw: ^1.0.0
-    react-use: ^17.2.4
-  peerDependencies:
-    react: ^16.13.1 || ^17.0.0
-  languageName: unknown
-  linkType: soft
 
 "badge-maker@npm:^3.3.0":
   version: 3.3.1
