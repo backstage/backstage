@@ -32,6 +32,7 @@ export * from './components/CatalogKindHeader';
 export * from './components/CatalogTable';
 export * from './components/EntityLayout';
 export * from './components/EntityOrphanWarning';
+export * from './components/EntityRelationWarning';
 export * from './components/EntityProcessingErrorsPanel';
 export * from './components/EntitySwitch';
 export * from './components/FilteredEntityLayout';
