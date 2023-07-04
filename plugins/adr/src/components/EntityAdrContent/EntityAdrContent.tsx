@@ -68,6 +68,11 @@ const useStyles = makeStyles((theme: Theme) => ({
     color: theme.palette.grey[700],
     marginBottom: theme.spacing(1),
   },
+  adrBox: {
+    display: 'flex',
+    justifyContent: 'space-around',
+    marginTop: '10px',
+  },
 }));
 
 const AdrListContainer = (props: {
@@ -127,7 +132,7 @@ const AdrListContainer = (props: {
                   style: { whiteSpace: 'normal' },
                 }}
                 secondary={
-                  <Box>
+                  <Box className={classes.adrBox}>
                     {adr.date}
                     {adr.status && (
                       <Chip
