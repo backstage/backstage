@@ -99,8 +99,8 @@ export default async function createPlugin(
 
 If you want to manage your incremental entity providers via REST endpoints, the following endpoints are available:
 
-| Method | Path                                       | Description                                                                                                                 |
-| ------ | ------------------------------------------ | --------------------------------------------------------------------------------------------------------------------------- |
+| Method | Path                                                   | Description                                                                                                                 |
+| ------ | ------------------------------------------------------ | --------------------------------------------------------------------------------------------------------------------------- |
 | GET    | `/api/catalog/incremental/health`                      | Checks the health of all incremental providers. Returns array of any unhealthy ones.                                        |
 | GET    | `/api/catalog/incremental/providers`                   | Get a list of all known incremental entity providers                                                                        |
 | GET    | `/api/catalog/incremental/providers/:provider`         | Checks the status of an incremental provider (resting, interstitial, etc).                                                  |
@@ -333,12 +333,7 @@ incrementalBuilder.addIncrementalEntityProvider(myEntityProvider, {
 
   // Optional back-off configuration - how long should it wait to retry
   // in the event of an error?
-  backoff: [
-    { seconds: 5 },
-    { seconds: 30 },
-    { minutes: 10 },
-    { hours: 3 },
-  ],
+  backoff: [{ seconds: 5 }, { seconds: 30 }, { minutes: 10 }, { hours: 3 }],
 
   // Optional. Use this to prevent removal of entities above a given
   // percentage. This can be helpful if a data source is flaky and
