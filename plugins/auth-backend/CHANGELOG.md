@@ -1,5 +1,13 @@
 # @backstage/plugin-auth-backend
 
+## 0.18.5-next.1
+
+### Patch Changes
+
+- c27ae5004fc2: Support for Token Endpoint Auth Method for OIDC Provider
+- Updated dependencies
+  - @backstage/config@1.0.8
+
 ## 0.18.5-next.0
 
 ### Patch Changes

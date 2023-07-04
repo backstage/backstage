@@ -1,5 +1,19 @@
 # example-backend
 
+## 0.2.85-next.1
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/plugin-kubernetes-backend@0.11.2-next.1
+  - @backstage/plugin-badges-backend@0.2.2-next.1
+  - @backstage/plugin-azure-devops-backend@0.3.26-next.1
+  - @backstage/plugin-devtools-backend@0.1.2-next.1
+  - @backstage/plugin-linguist-backend@0.3.1-next.1
+  - @backstage/plugin-auth-backend@0.18.5-next.1
+  - example-app@0.2.85-next.1
+  - @backstage/config@1.0.8
+
 ## 0.2.85-next.0
 
 ### Patch Changes
