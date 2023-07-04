@@ -17,7 +17,6 @@
 import type { Overrides } from '@material-ui/core/styles/overrides';
 import type { ComponentsProps } from '@material-ui/core/styles/props';
 import { ComponentsOverrides, Theme, ThemeOptions } from '@mui/material/styles';
-import { createSpacing } from '@mui/system';
 import { CSSProperties } from 'react';
 
 type V5Override = ComponentsOverrides[Exclude<
@@ -29,6 +28,26 @@ type StaticStyleRules = Record<
   string,
   CSSProperties | Record<string, CSSProperties>
 >;
+
+// Utility function based on v5 `createSpacing`: https://github.com/mui/material-ui/blob/master/packages/mui-system/src/createTheme/createSpacing.ts#L42C3-L59C5
+const __v5Spacing =
+  (defaultSpacing: number) =>
+  (...argsInput: ReadonlyArray<number | string>) => {
+    const args = argsInput.length === 0 ? [1] : argsInput;
+    const transform = (argument: string | number, themeSpacing: number) => {
+      if (typeof argument === 'string') {
+        return argument;
+      }
+      return themeSpacing * argument;
+    };
+
+    return args
+      .map(argument => {
+        const output = transform(argument, defaultSpacing);
+        return typeof output === 'number' ? `${output}px` : output;
+      })
+      .join(' ');
+  };
 
 // Converts callback-based overrides to static styles, e.g.
 // { root: theme => ({ color: theme.color }) } -> { root: { color: 'red' } }
@@ -61,9 +80,12 @@ function adaptV5Override(
     return Object.fromEntries(
       Object.entries(overrides).map(([className, style]) => {
         if (typeof style === 'function') {
-          // Override potential v4 spacing method: https://mui.com/material-ui/migration/v5-style-changes/#%E2%9C%85-remove-px-suffix
-          // `adaptV4Theme as reference: https://github.com/mui/material-ui/blob/v5.x/packages/mui-material/src/styles/adaptV4Theme.js#L54C41-L54C41
-          theme.spacing = createSpacing(theme.spacing);
+          const defaultSpacing = theme.spacing(1);
+          if (typeof defaultSpacing === 'number') {
+            // Override potential v4 spacing method: https://mui.com/material-ui/migration/v5-style-changes/#%E2%9C%85-remove-px-suffix
+            // `adaptV4Theme as reference: https://github.com/mui/material-ui/blob/v5.x/packages/mui-material/src/styles/adaptV4Theme.js#L54C41-L54C41
+            theme.spacing = __v5Spacing(defaultSpacing);
+          }
           return [className, style({ theme })];
         }
         return [className, style];
