@@ -19928,7 +19928,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"backstage-plugin-analytics-module-nr@^0.0.0, backstage-plugin-analytics-module-nr@workspace:plugins/analytics-module-nr":
+"backstage-plugin-analytics-module-nr@workspace:plugins/analytics-module-nr":
   version: 0.0.0-use.local
   resolution: "backstage-plugin-analytics-module-nr@workspace:plugins/analytics-module-nr"
   dependencies:
@@ -24992,7 +24992,6 @@ __metadata:
     "@types/react": "*"
     "@types/react-dom": "*"
     "@types/zen-observable": ^0.8.0
-    backstage-plugin-analytics-module-nr: ^0.0.0
     cross-env: ^7.0.0
     cypress: ^10.0.0
     eslint-plugin-cypress: ^2.10.3
