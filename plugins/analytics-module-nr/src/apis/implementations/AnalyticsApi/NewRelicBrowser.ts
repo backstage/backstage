@@ -24,7 +24,7 @@ import type { setAPI } from '@newrelic/browser-agent/loaders/api/api';
 
 type NewRelicAPI = ReturnType<typeof setAPI>;
 
-export type NewRelicBrowserOptions = {
+type NewRelicBrowserOptions = {
   accountId: string;
   applicationId: string;
   licenseKey: string;
@@ -33,7 +33,10 @@ export type NewRelicBrowserOptions = {
   useEuEndpoint: boolean;
 };
 
-// Implementation that optionally initializes with a userId.
+/**
+ * New Relic Browser API provider for the Backstage Analytics API.
+ * @public
+ */
 export class NewRelicBrowser implements AnalyticsApi {
   private readonly agent: NewRelicAPI;
 
