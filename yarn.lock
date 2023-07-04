@@ -9973,7 +9973,6 @@ __metadata:
     "@emotion/react": ^11.10.5
     "@emotion/styled": ^11.10.5
     "@mui/material": ^5.12.2
-    "@mui/system": ^5.13.6
     "@types/react": ^16.13.1 || ^17.0.0
   peerDependencies:
     "@material-ui/core": ^4.12.2
@@ -13367,7 +13366,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@mui/system@npm:^5.12.1, @mui/system@npm:^5.13.6":
+"@mui/system@npm:^5.12.1":
   version: 5.13.6
   resolution: "@mui/system@npm:5.13.6"
   dependencies:
