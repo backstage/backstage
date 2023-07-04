@@ -27,6 +27,7 @@ import {
 } from '@material-ui/core';
 import React, { useState } from 'react';
 import { ComponentsGrid } from './ComponentsGrid';
+import { AnyRelationsType, DefaultRelationType } from './useGetEntities';
 
 const useStyles = makeStyles(theme => ({
   list: {
@@ -56,7 +57,7 @@ export const OwnershipCard = (props: {
   variant?: InfoCardVariants;
   entityFilterKind?: string[];
   hideRelationsToggle?: boolean;
-  relationsType?: string;
+  relationsType?: AnyRelationsType;
   entityLimit?: number;
 }) => {
   const {
@@ -70,9 +71,8 @@ export const OwnershipCard = (props: {
     hideRelationsToggle === undefined ? false : hideRelationsToggle;
   const classes = useStyles();
   const { entity } = useEntity();
-  const isGroup = entity.kind === 'Group';
   const [getRelationsType, setRelationsType] = useState(
-    relationsType || 'direct',
+    relationsType || DefaultRelationType.Direct,
   );
 
   return (
@@ -102,7 +102,6 @@ export const OwnershipCard = (props: {
                   }
                   name="pin"
                   inputProps={{ 'aria-label': 'Ownership Type Switch' }}
-                  disabled={!isGroup}
                 />
               </Tooltip>
               Aggregated Relations
@@ -114,7 +113,6 @@ export const OwnershipCard = (props: {
         entity={entity}
         entityLimit={entityLimit}
         relationsType={getRelationsType}
-        isGroup={isGroup}
         entityFilterKind={entityFilterKind}
       />
     </InfoCard>
