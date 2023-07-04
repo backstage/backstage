@@ -14887,20 +14887,20 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@sagold/json-pointer@npm:^5.0.0":
-  version: 5.0.0
-  resolution: "@sagold/json-pointer@npm:5.0.0"
-  checksum: 0a087ff25e28d0c49b56566a14d6186ae0ce9fe538569eb7756c1a70989f2794dbc6f0834b5d2f2a0a79b6f0e3096eb05558664d5ff038daba5a46cb5e752e1a
+"@sagold/json-pointer@npm:^5.1.1":
+  version: 5.1.1
+  resolution: "@sagold/json-pointer@npm:5.1.1"
+  checksum: d0aa16330997d479b8035f22cab3e2f63f3ae8d9e5ab1137746056581606baba47a7b15116a751c9ea430e1aba9ee7a5459a3ee352509a4afca109cce1dcd9e1
   languageName: node
   linkType: hard
 
-"@sagold/json-query@npm:^6.0.0":
-  version: 6.0.0
-  resolution: "@sagold/json-query@npm:6.0.0"
+"@sagold/json-query@npm:^6.1.0":
+  version: 6.1.1
+  resolution: "@sagold/json-query@npm:6.1.1"
   dependencies:
-    "@sagold/json-pointer": ^5.0.0
-    ebnf: ^1.9.0
-  checksum: 56bb6151e6e6b1ef26bb03133b440e90d47c013529899e26cedb4c96f8a51f0115717ebab1355a8c3e6ea0c70e5ddaefc54c44330686ae3b2f8cb7d162011d73
+    "@sagold/json-pointer": ^5.1.1
+    ebnf: ^1.9.1
+  checksum: bc9697ae45efce92600185491679379e44d494ed13fdb927984aaade40939e6ab2e6f982cf8b1b8b29ec80df560bab0052a86b349cc0071e0e5feb40c465ba54
   languageName: node
   linkType: hard
 
@@ -23524,12 +23524,12 @@ __metadata:
   languageName: node
   linkType: hard
 
-"ebnf@npm:^1.9.0":
-  version: 1.9.0
-  resolution: "ebnf@npm:1.9.0"
+"ebnf@npm:^1.9.1":
+  version: 1.9.1
+  resolution: "ebnf@npm:1.9.1"
   bin:
     ebnf: dist/bin.js
-  checksum: a18e616f5f52ad28dcc7ae2749bd4bf81ebe12ad6e98b51ad20077eb066286d4efb5562bd3cd9861965203dde59c392428061e89b4b4df59e96ff92db8f5ceeb
+  checksum: a361ac739a4981a75e15cd16e0dd0ee944977caa680e689240d5d8cda0cae75d869e5889b7457c0c201687206d6ee47bae3b247a20f851c3a2db457ed480cb87
   languageName: node
   linkType: hard
 
@@ -29750,15 +29750,15 @@ __metadata:
   linkType: hard
 
 "json-schema-library@npm:^7.3.9":
-  version: 7.4.8
-  resolution: "json-schema-library@npm:7.4.8"
+  version: 7.4.9
+  resolution: "json-schema-library@npm:7.4.9"
   dependencies:
-    "@sagold/json-pointer": ^5.0.0
-    "@sagold/json-query": ^6.0.0
+    "@sagold/json-pointer": ^5.1.1
+    "@sagold/json-query": ^6.1.0
     deepmerge: ^4.2.2
     fast-deep-equal: ^3.1.3
     valid-url: ^1.0.9
-  checksum: bb7b3d13567f72e3c003300e66cd48bf0b8c02e107aa83d11110bf017ae522f63b702faf2f4e854397655b3a12970431df46f8b9e48642ef0de51ce17532912f
+  checksum: 178a388bb7baf917a71ad369cfffa2952472e2bbffcdbc4711ed8b53b5d2b07aa882317c1479abc33c950667791047312fa1baa213502f128c38287cd726ff79
   languageName: node
   linkType: hard
 
