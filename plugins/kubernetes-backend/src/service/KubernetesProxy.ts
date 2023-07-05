@@ -138,7 +138,15 @@ export class KubernetesProxy {
         ws: true,
         secure: !originalCluster.skipTLSVerify,
         changeOrigin: true,
-        pathRewrite: { [`^${originalReq.baseUrl}`]: '' },
+        pathRewrite: async (path, req) => {
+          // Re-evaluate the cluster on each request, in case it has changed
+          const cluster = await this.getClusterForRequest(req);
+          const url = new URL(cluster.url);
+          return path.replace(
+            new RegExp(`^${originalReq.baseUrl}`),
+            url.pathname || '',
+          );
+        },
         router: async req => {
           // Re-evaluate the cluster on each request, in case it has changed
           const cluster = await this.getClusterForRequest(req);
