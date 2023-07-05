@@ -58,17 +58,24 @@ const getQueryParams = (
 };
 
 const getMemberOfEntityRefs = (owner: Entity): string[] => {
-  const ownerGroups = getEntityRelations(owner, RELATION_MEMBER_OF, {
+  const parentGroups = getEntityRelations(owner, RELATION_MEMBER_OF, {
     kind: 'Group',
   });
-  const ownerGroupsNames = ownerGroups.map(ownerGroup =>
+
+  const ownerGroupsNames = parentGroups.map(({ kind, namespace, name }) =>
     stringifyEntityRef({
-      kind: ownerGroup.kind,
-      namespace: ownerGroup.namespace,
-      name: ownerGroup.name,
+      kind,
+      namespace,
+      name,
     }),
   );
-  return ownerGroupsNames;
+
+  const {
+    kind,
+    metadata: { namespace, name },
+  } = owner;
+
+  return [...ownerGroupsNames, stringifyEntityRef({ kind, namespace, name })];
 };
 
 const isEntity = (entity: Entity | undefined): entity is Entity =>
@@ -122,19 +129,20 @@ const getOwners = async (
   const isAggregated = relationsType === 'aggregated';
   const isUserEntity = entity.kind === 'User';
 
-  const owners = [stringifyEntityRef(entity)];
+  const owners: string[] = [];
 
   if (isAggregated && isGroup) {
     const childEntityRefs = await getChildOwnershipEntityRefs(
       entity,
       catalogApi,
     );
+    owners.push(stringifyEntityRef(entity));
     owners.push.apply(owners, childEntityRefs);
-  }
-
-  if (isAggregated && isUserEntity) {
+  } else if (isAggregated && isUserEntity) {
     const parentEntityRefs = getMemberOfEntityRefs(entity);
     owners.push.apply(owners, parentEntityRefs);
+  } else {
+    owners.push(stringifyEntityRef(entity));
   }
 
   return owners;
@@ -148,6 +156,27 @@ export const DefaultRelationType = {
 export type AnyRelationsType =
   | (typeof DefaultRelationType)[keyof typeof DefaultRelationType]
   | string;
+
+const getOwnedEntitiesByOwners = (
+  owners: string[],
+  kinds: string[],
+  catalogApi: CatalogApi,
+) =>
+  catalogApi.getEntities({
+    filter: [
+      {
+        kind: kinds,
+        'relations.ownedBy': owners,
+      },
+    ],
+    fields: [
+      'kind',
+      'metadata.name',
+      'metadata.namespace',
+      'spec.type',
+      'relations',
+    ],
+  });
 
 export function useGetEntities(
   entity: Entity,
@@ -176,21 +205,11 @@ export function useGetEntities(
   } = useAsync(async () => {
     const owners = await getOwners(entity, relationsType, catalogApi);
 
-    const ownedEntitiesList = await catalogApi.getEntities({
-      filter: [
-        {
-          kind: kinds,
-          'relations.ownedBy': owners,
-        },
-      ],
-      fields: [
-        'kind',
-        'metadata.name',
-        'metadata.namespace',
-        'spec.type',
-        'relations',
-      ],
-    });
+    const ownedEntitiesList = await getOwnedEntitiesByOwners(
+      owners,
+      kinds,
+      catalogApi,
+    );
 
     const counts = ownedEntitiesList.items.reduce(
       (acc: EntityTypeProps[], ownedEntity) => {
