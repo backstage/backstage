@@ -200,7 +200,7 @@ export class DefaultCatalogProcessingOrchestrator
     context: Context,
   ): Promise<Entity> {
     return await withActiveSpan(tracer, 'ProcessingStage', async stageSpan => {
-      addEntityAttributes(stageSpan, context.entityRef);
+      addEntityAttributes(stageSpan, entity);
       stageSpan.setAttribute('backstage.catalog.processor.stage', 'preProcess');
       let res = entity;
 
@@ -208,7 +208,7 @@ export class DefaultCatalogProcessingOrchestrator
         if (processor.preProcessEntity) {
           let innerRes = res;
           res = await withActiveSpan(tracer, 'ProcessingStep', async span => {
-            addEntityAttributes(span, context.entityRef);
+            addEntityAttributes(span, entity);
             addProcessorAttributes(span, 'preProcessEntity', processor);
             try {
               innerRes = await processor.preProcessEntity!(
@@ -238,7 +238,7 @@ export class DefaultCatalogProcessingOrchestrator
    */
   private async runPolicyStep(entity: Entity): Promise<Entity> {
     return await withActiveSpan(tracer, 'ProcessingStage', async stageSpan => {
-      addEntityAttributes(stageSpan, stringifyEntityRef(entity));
+      addEntityAttributes(stageSpan, entity);
       stageSpan.setAttribute(
         'backstage.catalog.processor.stage',
         'enforcePolicy',
@@ -274,7 +274,7 @@ export class DefaultCatalogProcessingOrchestrator
     context: Context,
   ): Promise<void> {
     return await withActiveSpan(tracer, 'ProcessingStage', async stageSpan => {
-      addEntityAttributes(stageSpan, context.entityRef);
+      addEntityAttributes(stageSpan, entity);
       stageSpan.setAttribute('backstage.catalog.processor.stage', 'validate');
       // Double check that none of the previous steps tried to change something
       // related to the entity ref, which would break downstream
@@ -303,7 +303,7 @@ export class DefaultCatalogProcessingOrchestrator
               tracer,
               'ProcessingStep',
               async span => {
-                addEntityAttributes(span, context.entityRef);
+                addEntityAttributes(span, entity);
                 addProcessorAttributes(span, 'validateEntityKind', processor);
                 return await processor.validateEntityKind!(entity);
               },
@@ -339,7 +339,7 @@ export class DefaultCatalogProcessingOrchestrator
     context: Context,
   ): Promise<void> {
     return await withActiveSpan(tracer, 'ProcessingStage', async stageSpan => {
-      addEntityAttributes(stageSpan, context.entityRef);
+      addEntityAttributes(stageSpan, entity);
       stageSpan.setAttribute(
         'backstage.catalog.processor.stage',
         'readLocation',
@@ -379,7 +379,7 @@ export class DefaultCatalogProcessingOrchestrator
                 tracer,
                 'ProcessingStep',
                 async span => {
-                  addEntityAttributes(span, context.entityRef);
+                  addEntityAttributes(span, entity);
                   addProcessorAttributes(span, 'readLocation', processor);
                   return await processor.readLocation!(
                     {
@@ -423,7 +423,7 @@ export class DefaultCatalogProcessingOrchestrator
     context: Context,
   ): Promise<Entity> {
     return await withActiveSpan(tracer, 'ProcessingStage', async stageSpan => {
-      addEntityAttributes(stageSpan, context.entityRef);
+      addEntityAttributes(stageSpan, entity);
       stageSpan.setAttribute(
         'backstage.catalog.processor.stage',
         'postProcessEntity',
@@ -434,7 +434,7 @@ export class DefaultCatalogProcessingOrchestrator
         if (processor.postProcessEntity) {
           let innerRes = res;
           res = await withActiveSpan(tracer, 'ProcessingStep', async span => {
-            addEntityAttributes(span, context.entityRef);
+            addEntityAttributes(span, entity);
             addProcessorAttributes(span, 'postProcessEntity', processor);
             try {
               innerRes = await processor.postProcessEntity!(

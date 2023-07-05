@@ -140,7 +140,7 @@ export class DefaultCatalogProcessingEngine implements CatalogProcessingEngine {
       processTask: async item => {
         await withActiveSpan(tracer, 'ProcessingRun', async span => {
           const track = this.tracker.processStart(item, this.logger);
-          addEntityAttributes(span, item.entityRef);
+          addEntityAttributes(span, item.unprocessedEntity);
 
           try {
             const {
