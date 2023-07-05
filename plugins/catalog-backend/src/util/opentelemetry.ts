@@ -15,20 +15,29 @@
  */
 
 import { Span, SpanOptions, SpanStatusCode, Tracer } from '@opentelemetry/api';
-import { parseEntityRef } from '@backstage/catalog-model';
+import { Entity } from '@backstage/catalog-model';
 
 export const TRACER_ID = 'backstage-plugin-catalog-backend';
 
-export function addEntityAttributes(span: Span, entityRef: string) {
-  try {
-    const fields = parseEntityRef(entityRef);
-    span.setAttribute('backstage.entity.kind', fields.kind);
-    span.setAttribute('backstage.entity.namespace', fields.namespace);
-    span.setAttribute('backstage.entity.name', fields.name);
-  } catch (err) {
-    span.recordException(err);
-    span.setStatus({ code: SpanStatusCode.ERROR });
+function setAttributeIfDefined(span: Span, attribute: string, value?: string) {
+  if (value !== null && value !== undefined) {
+    span.setAttribute(attribute, value);
   }
+}
+
+export function addEntityAttributes(span: Span, entity: Entity) {
+  setAttributeIfDefined(span, 'backstage.entity.apiVersion', entity.apiVersion);
+  setAttributeIfDefined(span, 'backstage.entity.kind', entity.kind);
+  setAttributeIfDefined(
+    span,
+    'backstage.entity.metadata.namespace',
+    entity.metadata?.namespace,
+  );
+  setAttributeIfDefined(
+    span,
+    'backstage.entity.metadata.name',
+    entity.metadata?.name,
+  );
 }
 
 // Adapted from https://github.com/open-telemetry/opentelemetry-js/blob/359fbcc40a859057a02b14e84599eac399b8dba7/api/src/trace/SugaredTracer.ts
