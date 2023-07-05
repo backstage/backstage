@@ -3,4 +3,4 @@
 '@backstage/plugin-catalog': minor
 ---
 
-I have extended the EntityHasSubcomponentsCard, EntityDependsOnResourcesCard and EntityDependsOnResourcesCard and EntityTable to supports tableOptions.
+I have extended the EntityHasSubcomponentsCard, EntityDependsOnResourcesCard, EntityDependsOnResourcesCard and EntityTable to support table options.
