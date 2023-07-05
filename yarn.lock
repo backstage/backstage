@@ -29784,13 +29784,13 @@ __metadata:
   linkType: hard
 
 "json-schema-to-ts@npm:^2.6.2":
-  version: 2.7.2
-  resolution: "json-schema-to-ts@npm:2.7.2"
+  version: 2.9.1
+  resolution: "json-schema-to-ts@npm:2.9.1"
   dependencies:
     "@babel/runtime": ^7.18.3
     "@types/json-schema": ^7.0.9
     ts-algebra: ^1.2.0
-  checksum: cc359d3b2aed035b550582e85989a6fdd4d54bbfd5a2933c9a1e242709a04a7babdba53f5c22280e11b4bd9730b08a933d060fc69810814310908cce76f9e152
+  checksum: c2471993484f69452eb4f1c732a3b4d73842430f8c9a1486d72fda9fc9ca6ae4761164817edddd8463204caec2d3169a95d5e9e4d9d39f1e94f7377bdafb740b
   languageName: node
   linkType: hard
 
