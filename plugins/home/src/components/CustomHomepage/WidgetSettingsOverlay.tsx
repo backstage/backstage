@@ -78,6 +78,7 @@ export const WidgetSettingsOverlay = (props: WidgetSettingsOverlayProps) => {
               validator={validator}
               showErrorList={false}
               schema={widget.settingsSchema}
+              uiSchema={widget.uiSchema}
               noHtml5Validate
               formData={settings}
               formContext={{ settings }}

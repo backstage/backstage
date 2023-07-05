@@ -7,6 +7,7 @@
 
 import { Extension } from '@backstage/core-plugin-api';
 import { RJSFSchema } from '@rjsf/utils';
+import { UiSchema } from '@rjsf/utils';
 
 // @public (undocumented)
 export type CardConfig = {
@@ -36,6 +37,7 @@ export type CardLayout = {
 // @public (undocumented)
 export type CardSettings = {
   schema?: RJSFSchema;
+  uiSchema?: UiSchema;
 };
 
 // @public (undocumented)
