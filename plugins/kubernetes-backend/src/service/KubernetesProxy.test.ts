@@ -638,4 +638,46 @@ describe('KubernetesProxy', () => {
 
     expect(response.status).toEqual(500);
   });
+
+  it('should get res through proxy with cluster url has sub path', async () => {
+    worker.use(
+      rest.get(
+        'http://localhost:9999/subpath/api/v1/namespaces',
+        (_req, res, ctx) => {
+          return res(
+            ctx.status(200),
+            ctx.json({
+              kind: 'NamespaceList',
+              apiVersion: 'v1',
+              items: [],
+            }),
+          );
+        },
+      ),
+    );
+    permissionApi.authorize.mockResolvedValue([
+      { result: AuthorizeResult.ALLOW },
+    ]);
+    clusterSupplier.getClusters.mockResolvedValue([
+      {
+        name: 'cluster1',
+        url: 'http://localhost:9999/subpath',
+        authProvider: '',
+      },
+    ]);
+    authTranslator.decorateClusterDetailsWithAuth.mockImplementation(
+      async x => x,
+    );
+    const app = express().use(
+      Router().use('/mountpath', proxy.createRequestHandler({ permissionApi })),
+    );
+
+    const requestPromise = request(app)
+      .get('/mountpath/api/v1/namespaces')
+      .set(HEADER_KUBERNETES_CLUSTER, 'cluster1');
+    worker.use(rest.all(requestPromise.url, (req: any) => req.passthrough()));
+    const response = await requestPromise;
+
+    expect(response.status).toEqual(200);
+  });
 });
