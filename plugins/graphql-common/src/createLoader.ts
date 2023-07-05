@@ -16,7 +16,7 @@
 import { GraphQLContext } from '@backstage/plugin-graphql-common';
 import DataLoader, { Options } from 'dataloader';
 import { GraphQLError } from 'graphql';
-import { BatchLoadFn } from './types';
+import { BatchLoadFn, NodeQuery } from './types';
 import { decodeId } from './helpers';
 
 /** @public */
@@ -24,33 +24,37 @@ export const createLoader = (
   loaders: Record<string, BatchLoadFn<GraphQLContext>>,
   options?: Options<string, any>,
 ) => {
-  return (context: GraphQLContext) => {
+  return (context: GraphQLContext): DataLoader<string, any> => {
     async function fetch(ids: readonly string[]) {
       const idsBySources = ids.map(decodeId).reduce(
-        (s: Record<string, Map<number, string>>, { source, ref }, index) => ({
+        (
+          s: Record<string, Map<number, NodeQuery | undefined>>,
+          { source, query },
+          index,
+        ) => ({
           ...s,
-          [source]: (s[source] ?? new Map()).set(index, ref),
+          [source]: (s[source] ?? new Map()).set(index, query),
         }),
         {},
       );
       const result: any[] = [];
       await Promise.all(
-        Object.entries(idsBySources).map(async ([source, refs]) => {
+        Object.entries(idsBySources).map(async ([source, queries]) => {
           const loader = loaders[source];
           if (!loader) {
-            return refs.forEach(
+            return queries.forEach(
               (_, key) =>
                 (result[key] = new GraphQLError(
                   `There is no loader for the source: '${source}'`,
                 )),
             );
           }
-          const refEntries = [...refs.entries()];
+          const queryEntries = [...queries.entries()];
           const values = await loader(
-            refEntries.map(([, ref]) => ref),
+            queryEntries.map(([, query]) => query),
             context,
           );
-          return refEntries.forEach(
+          return queryEntries.forEach(
             ([key], index) =>
               (result[key] = { __source: source, ...values[index] }),
           );
@@ -58,6 +62,7 @@ export const createLoader = (
       );
       return result;
     }
+
     return new DataLoader(fetch, options);
   };
 };

@@ -45,7 +45,7 @@ export function mapCompositeFields<
 
     const [{ directiveName, directive, mapper }] = directives;
     try {
-      mapper(fieldConfig, directive, api);
+      mapper(fieldName, fieldConfig, directive, api);
     } catch (error) {
       const errorMessage = error instanceof Error ? error.message : error;
       throw new Error(

@@ -19,6 +19,7 @@ import { ResolverContext } from '../types';
 import { decodeId, encodeId, unboxNamedType } from '../helpers';
 
 export function resolveDirectiveMapper(
+  fieldName: string,
   field: GraphQLFieldConfig<{ id: string }, ResolverContext>,
   directive: Record<string, any>,
 ) {
@@ -32,7 +33,8 @@ export function resolveDirectiveMapper(
       `The "at" argument of @field directive must be a string or an array of strings`,
     );
   }
-  field.resolve = async ({ id }, _, { loader }) => {
+
+  field.resolve = async ({ id }, args, { loader }) => {
     if (directive.at === 'id') return { id };
 
     const node = await loader.load(id);
@@ -41,8 +43,16 @@ export function resolveDirectiveMapper(
     const typename = unboxNamedType(field.type).name;
     const ref = get(node, directive.at);
 
-    if (!ref) return null;
+    if (directive.at) {
+      if (!ref) {
+        return null;
+      } else if (typeof ref !== 'string') {
+        throw new Error(
+          `The "at" argument of @resolve directive for "${fieldName}" field must be resolved to a string, but got "${typeof ref}"`,
+        );
+      }
+    }
 
-    return { id: encodeId({ source, typename, ref }) };
+    return { id: encodeId({ source, typename, query: { ref, args } }) };
   };
 }

@@ -20,7 +20,7 @@ import { TypeProvider } from 'graphql-modules';
 
 // @public (undocumented)
 export type BatchLoadFn<Context extends GraphQLContext> = (
-  keys: ReadonlyArray<string>,
+  keys: ReadonlyArray<NodeQuery | undefined>,
   context: Context,
 ) => PromiseLike<ArrayLike<any | GraphQLError>>;
 
@@ -52,7 +52,7 @@ export type createGraphQLAppOptions = {
 export const createLoader: (
   loaders: Record<string, BatchLoadFn<GraphQLContext_2>>,
   options?: Options<string, any>,
-) => (context: GraphQLContext_2) => DataLoader<string, any, string>;
+) => (context: GraphQLContext_2) => DataLoader<string, any>;
 
 // @public (undocumented)
 export function decodeId(id: string): NodeId;
@@ -70,10 +70,11 @@ export interface DirectiveMapperAPI {
 }
 
 // @public (undocumented)
-export function encodeId({ source, typename, ref }: NodeId): string;
+export function encodeId({ source, typename, query }: NodeId): string;
 
 // @public (undocumented)
 export type FieldDirectiveMapper = (
+  fieldName: string,
   field: GraphQLFieldConfig<
     {
       id: string;
@@ -93,11 +94,19 @@ export interface GraphQLContext {
 // @public (undocumented)
 export interface NodeId {
   // (undocumented)
-  ref: string;
+  query?: NodeQuery;
   // (undocumented)
   source: string;
   // (undocumented)
   typename: string;
+}
+
+// @public (undocumented)
+export interface NodeQuery {
+  // (undocumented)
+  args?: Record<string, unknown>;
+  // (undocumented)
+  ref?: string;
 }
 
 // @public (undocumented)

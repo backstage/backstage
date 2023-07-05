@@ -11,7 +11,7 @@ directive @discriminationAlias(
   type: String!
 ) repeatable on INTERFACE
 directive @implements(interface: String!) on OBJECT | INTERFACE
-directive @resolve(at: _DirectiveArgument_!, from: String) on FIELD_DEFINITION
+directive @resolve(at: _DirectiveArgument_, from: String) on FIELD_DEFINITION
 
 scalar _DirectiveArgument_
 

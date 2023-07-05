@@ -9,7 +9,7 @@ directive @field(at: _DirectiveArgument_!, default: _DirectiveArgument_) on FIEL
 
 directive @implements(interface: String!) on INTERFACE | OBJECT
 
-directive @resolve(at: _DirectiveArgument_!, from: String) on FIELD_DEFINITION
+directive @resolve(at: _DirectiveArgument_, from: String) on FIELD_DEFINITION
 
 interface Connection {
   count: Int
@@ -43,6 +43,7 @@ scalar _DirectiveArgument_"
 
 exports[`graphql-common codegen should generate the correct code: typescript 1`] = `
 "/* eslint-disable */
+// @ts-nocheck
 import { GraphQLResolveInfo, GraphQLScalarType, GraphQLScalarTypeConfig } from 'graphql';
 export type Maybe<T> = T | null;
 export type InputMaybe<T> = Maybe<T>;
@@ -232,7 +233,7 @@ export type ImplementsDirectiveArgs = {
 export type ImplementsDirectiveResolver<Result, Parent, ContextType = any, Args = ImplementsDirectiveArgs> = DirectiveResolverFn<Result, Parent, ContextType, Args>;
 
 export type ResolveDirectiveArgs = {
-  at: Scalars['_DirectiveArgument_']['input'];
+  at?: Maybe<Scalars['_DirectiveArgument_']['input']>;
   from?: Maybe<Scalars['String']['input']>;
 };
 

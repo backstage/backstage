@@ -258,7 +258,7 @@ describe('mapRelationDirective', () => {
     const loader = () =>
       new DataLoader(async ids =>
         ids.map(id => {
-          const { ref } = decodeId(id as string);
+          const { query: { ref } = {} } = decodeId(id as string);
           if (ref === 'user:default/john') return user;
           if (ref === 'group:default/team-a') return group;
           return entity;
@@ -267,7 +267,11 @@ describe('mapRelationDirective', () => {
     const query = await createGraphQLAPI(TestModule, loader);
     const result = await query(/* GraphQL */ `
       node(id: ${JSON.stringify(
-        encodeId({ source: 'Mock', typename: 'Entity', ref: 'entity' }),
+        encodeId({
+          source: 'Mock',
+          typename: 'Entity',
+          query: { ref: 'entity' },
+        }),
       )}) {
         ...on Entity {
           ownedBy { name }
@@ -323,7 +327,7 @@ describe('mapRelationDirective', () => {
     const loader = () =>
       new DataLoader(async ids =>
         ids.map(id => {
-          const { ref } = decodeId(id as string);
+          const { query: { ref } = {} } = decodeId(id as string);
           if (ref === 'user:default/john') return john;
           if (ref === 'user:default/mark') return mark;
           if (ref === 'group:default/team-a') return teamA;
@@ -334,7 +338,11 @@ describe('mapRelationDirective', () => {
     const query = await createGraphQLAPI(TestModule, loader);
     const result = await query(/* GraphQL */ `
       node(id: ${JSON.stringify(
-        encodeId({ source: 'Mock', typename: 'Entity', ref: 'entity' }),
+        encodeId({
+          source: 'Mock',
+          typename: 'Entity',
+          query: { ref: 'entity' },
+        }),
       )}) {
         ...on Entity {
           ownedBy { ...on User { username }, ...on Group { groupname } }
@@ -409,7 +417,7 @@ describe('mapRelationDirective', () => {
     const loader = () =>
       new DataLoader(async ids =>
         ids.map(id => {
-          const { ref } = decodeId(id as string);
+          const { query: { ref } = {} } = decodeId(id as string);
           if (ref === 'user:default/john') return john;
           if (ref === 'user:default/mark') return mark;
           if (ref === 'group:default/team-a') return teamA;
@@ -420,7 +428,11 @@ describe('mapRelationDirective', () => {
     const query = await createGraphQLAPI(TestModule, loader);
     const result = await query(/* GraphQL */ `
       node(id: ${JSON.stringify(
-        encodeId({ source: 'Mock', typename: 'Entity', ref: 'entity' }),
+        encodeId({
+          source: 'Mock',
+          typename: 'Entity',
+          query: { ref: 'entity' },
+        }),
       )}) {
         ...on Entity {
           ownedBy(first: 2) { edges { node { ...on User { username }, ...on Group { groupname } } } }
@@ -449,13 +461,13 @@ describe('mapRelationDirective', () => {
           edges: [
             {
               node: {
-                id: 'Owner@Catalog@user:default/mark',
+                id: 'Owner@Catalog@{"ref":"user:default/mark"}',
                 username: 'Mark',
               },
             },
             {
               node: {
-                id: 'Owner@Catalog@group:default/team-a',
+                id: 'Owner@Catalog@{"ref":"group:default/team-a"}',
               },
             },
           ],
@@ -518,7 +530,7 @@ describe('mapRelationDirective', () => {
     const loader = () =>
       new DataLoader(async ids =>
         ids.map(id => {
-          const { ref } = decodeId(id as string);
+          const { query: { ref } = {} } = decodeId(id as string);
           if (ref === 'user:default/john') return john;
           if (ref === 'component:default/backend') return backend;
           if (ref === 'resource:default/website') return website;
@@ -529,7 +541,11 @@ describe('mapRelationDirective', () => {
     const query = await createGraphQLAPI(TestModule, loader);
     const result = await query(/* GraphQL */ `
       node(id: ${JSON.stringify(
-        encodeId({ source: 'Mock', typename: 'Entity', ref: 'entity' }),
+        encodeId({
+          source: 'Mock',
+          typename: 'Entity',
+          query: { ref: 'entity' },
+        }),
       )}) {
         ...on Entity {
           assets {
@@ -546,19 +562,19 @@ describe('mapRelationDirective', () => {
       node: {
         assets: [
           {
-            id: 'Node@Catalog@resource:default/website',
+            id: 'Node@Catalog@{"ref":"resource:default/website"}',
             domain: 'example.com',
           },
           {
-            id: 'Node@Catalog@component:default/backend',
+            id: 'Node@Catalog@{"ref":"component:default/backend"}',
             name: 'Backend',
           },
           {
-            id: 'Node@Catalog@user:default/john',
+            id: 'Node@Catalog@{"ref":"user:default/john"}',
             username: 'John',
           },
           {
-            id: 'Node@Catalog@group:default/team-b',
+            id: 'Node@Catalog@{"ref":"group:default/team-b"}',
             groupname: 'Team B',
           },
         ],
