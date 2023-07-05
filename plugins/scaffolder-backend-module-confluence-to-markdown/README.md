@@ -65,7 +65,8 @@ There is some configuration that needs to be setup to use this action, these are
 ```yaml
 confluence:
   baseUrl: 'https://confluence.example.com'
-  token: '${CONFLUENCE_TOKEN}'
+  auth:
+    token: '${CONFLUENCE_TOKEN}'
 ```
 
 The sections below will go into more details about the Base URL and Auth Methods.
@@ -85,8 +86,9 @@ For `bearer`:
 ```yaml
 confluence:
   baseUrl: 'https://confluence.example.com'
-  auth: 'bearer'
-  token: '${CONFLUENCE_TOKEN}'
+  auth:
+    type: 'bearer'
+    token: '${CONFLUENCE_TOKEN}'
 ```
 
 For `basic`:
@@ -94,9 +96,10 @@ For `basic`:
 ```yaml
 confluence:
   baseUrl: 'https://confluence.example.com'
-  auth: 'basic'
-  token: '${CONFLUENCE_TOKEN}'
-  email: 'example@company.org'
+  auth:
+    type: 'basic'
+    token: '${CONFLUENCE_TOKEN}'
+    email: 'example@company.org'
 ```
 
 For `userpass`
@@ -104,9 +107,10 @@ For `userpass`
 ```yaml
 confluence:
   baseUrl: 'https://confluence.example.com'
-  auth: 'userpass'
-  username: 'your-username'
-  password: 'your-password'
+  auth:
+    type: 'userpass'
+    username: 'your-username'
+    password: 'your-password'
 ```
 
 **Note:** For `basic` and `bearer` authorization methods you will need an access token for authorization with `Read` permissions. You can create a Personal Access Token (PAT) in Confluence. The value used should be the raw token as it will be encoded for you by the action.
