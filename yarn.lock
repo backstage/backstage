@@ -83,12 +83,12 @@ __metadata:
   linkType: hard
 
 "@apisyouwonthate/style-guide@npm:^1.4.0":
-  version: 1.4.0
-  resolution: "@apisyouwonthate/style-guide@npm:1.4.0"
+  version: 1.5.0
+  resolution: "@apisyouwonthate/style-guide@npm:1.5.0"
   dependencies:
     "@stoplight/spectral-formats": ^1.2.0
     "@stoplight/spectral-functions": ^1.6.1
-  checksum: c17d7bb12977be4cf495ce661077c611abc473c555186bb6c61e26a06bf43aa66aebdee6711b2ee2bdac3e933fd0a2276cf1bf706d48ad48f736111548e2283b
+  checksum: e19c7a758342e9e5abba27c3a589375cde997a6f2f6ec7fc599e0abe0de52481554e1676776ec93ba7141f4a2ad365ca99e7e007fbcf4bbe3c40fbc4f7ea53e2
   languageName: node
   linkType: hard
 
