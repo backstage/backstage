@@ -24,15 +24,21 @@ import {
 import { Application } from 'graphql-modules';
 
 /** @public */
+export interface NodeQuery {
+  ref?: string;
+  args?: Record<string, unknown>;
+}
+
+/** @public */
 export interface NodeId {
   source: string;
   typename: string;
-  ref: string;
+  query?: NodeQuery;
 }
 
 /** @public */
 export type BatchLoadFn<Context extends GraphQLContext> = (
-  keys: ReadonlyArray<string>,
+  keys: ReadonlyArray<NodeQuery | undefined>,
   context: Context,
 ) => PromiseLike<ArrayLike<any | GraphQLError>>;
 
@@ -65,6 +71,7 @@ export interface DirectiveMapperAPI {
 
 /** @public */
 export type FieldDirectiveMapper = (
+  fieldName: string,
   field: GraphQLFieldConfig<{ id: string }, ResolverContext>,
   directive: Record<string, any>,
   api: DirectiveMapperAPI,

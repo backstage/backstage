@@ -26,7 +26,7 @@ const config: CodegenConfig = {
         filename: '__generated__/types.ts',
       },
       plugins: [
-        { add: { content: '/* eslint-disable */' } },
+        { add: { content: '/* eslint-disable */\n// @ts-nocheck' } },
         'typescript',
         'typescript-resolvers',
       ],

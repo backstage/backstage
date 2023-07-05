@@ -18,6 +18,7 @@ import { GraphQLFieldConfig } from 'graphql';
 import { ResolverContext } from '../types';
 
 export function fieldDirectiveMapper(
+  _fieldName: string,
   field: GraphQLFieldConfig<{ id: string }, ResolverContext>,
   directive: Record<string, any>,
 ) {

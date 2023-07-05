@@ -27,5 +27,6 @@ export type {
   DirectiveMapperAPI,
   BatchLoadFn,
   OmitFirst,
+  NodeQuery,
   NodeId,
 } from './types';

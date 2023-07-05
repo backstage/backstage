@@ -622,7 +622,11 @@ describe('mapDirectives', () => {
     const query = await createGraphQLAPI(TestModule, loader);
     const result = await query(/* GraphQL */ `
       node(id: ${JSON.stringify(
-        encodeId({ source: 'Mock', typename: 'Entity', ref: 'test' }),
+        encodeId({
+          source: 'Mock',
+          typename: 'Entity',
+          query: { ref: 'test' },
+        }),
       )}) { ...on Entity { first, second, third } }
     `);
     expect(result).toEqual({
@@ -659,7 +663,11 @@ describe('mapDirectives', () => {
     const query = await createGraphQLAPI(TestModule, loader);
     const result = await query(/* GraphQL */ `
       component(id: ${JSON.stringify(
-        encodeId({ source: 'Mock', typename: 'Component', ref: 'test' }),
+        encodeId({
+          source: 'Mock',
+          typename: 'Component',
+          query: { ref: 'test' },
+        }),
       )}) { name }
     `);
     expect(result).toEqual({
@@ -684,10 +692,12 @@ describe('mapDirectives', () => {
       metadata: { name: 'hello', namespace: 'default' },
     };
     const ref = 'component:default/hello';
-    const id = encodeId({ source: 'Mock', typename: 'Entity', ref });
+    const id = encodeId({ source: 'Mock', typename: 'Entity', query: { ref } });
     const loader = () =>
       new DataLoader(async ids =>
-        ids.map(i => (decodeId(i as string).ref === ref ? entity : null)),
+        ids.map(i =>
+          decodeId(i as string).query?.ref === ref ? entity : null,
+        ),
       );
     const query = await createGraphQLAPI(TestModule, loader);
     const result = await query(/* GraphQL */ `
@@ -728,7 +738,7 @@ describe('mapDirectives', () => {
     const loader = () =>
       new DataLoader(async ids =>
         ids.map(id => {
-          const { ref } = decodeId(id as string);
+          const { query: { ref } = {} } = decodeId(id as string);
           if (ref === 'component:default/hello') return entity;
           if (ref === 'component:default/world') return parent;
           return null;
@@ -740,7 +750,7 @@ describe('mapDirectives', () => {
         encodeId({
           source: 'Mock',
           typename: 'Entity',
-          ref: 'component:default/hello',
+          query: { ref: 'component:default/hello' },
         }),
       )}) { ...on Entity { name, parent { name } } }
     `);
@@ -777,7 +787,7 @@ describe('mapDirectives', () => {
       kind: 'Component',
       metadata: { name: 'hello', namespace: 'default' },
       spec: {
-        parentId: 'Entity@Mock@component:default/world',
+        parentId: 'Entity@Mock@{"ref":"component:default/world"}',
       },
     };
     const parent = {
@@ -785,16 +795,16 @@ describe('mapDirectives', () => {
       metadata: { name: 'world', namespace: 'default' },
     };
     const loader = createLoader({
-      Mock: async refs =>
-        refs.map(ref => {
+      Mock: async queries =>
+        queries.map(({ ref } = {}) => {
           if (ref === 'component:default/hello') return entity;
           if (ref === 'component:default/world') return parent;
           return null;
         }),
-      GraphQL: async refs => {
+      GraphQL: async queries => {
         // eslint-disable-next-line @typescript-eslint/no-use-before-define
         const { nodes } = await query(/* GraphQL */ `
-          nodes(ids: ${JSON.stringify(refs)}) {
+          nodes(ids: ${JSON.stringify(queries.map(({ ref } = {}) => ref))}) {
             id, ...on Entity { name }
           }
         `);
@@ -807,7 +817,7 @@ describe('mapDirectives', () => {
         encodeId({
           source: 'Mock',
           typename: 'Entity',
-          ref: 'component:default/hello',
+          query: { ref: 'component:default/hello' },
         }),
       )}) { ...on Entity { name, parent { name } } }
     `);
@@ -819,6 +829,230 @@ describe('mapDirectives', () => {
         },
       },
     });
+  });
+
+  it('should resolve node with arguments', async () => {
+    const TestModule = createModule({
+      id: 'test',
+      typeDefs: gql`
+        interface Node
+          @discriminates(with: "__source")
+          @discriminationAlias(value: "Mock", type: "Entity")
+          @discriminationAlias(value: "Tasks", type: "TaskProperty")
+
+        type Entity @implements(interface: "Node") {
+          property(name: String!): TaskProperty
+            @resolve(at: "spec.taskId", from: "Tasks")
+          name: String! @field(at: "metadata.name")
+        }
+
+        type TaskProperty @implements(interface: "Node") {
+          name: String! @field(at: "name")
+          value: String! @field(at: "value")
+        }
+      `,
+    });
+    const entity = {
+      kind: 'Component',
+      metadata: { name: 'hello', namespace: 'default' },
+      spec: {
+        taskId: '0a1b2c3d4e5f6g7h8i9j0k1l2m3n4o5p',
+      },
+    };
+    const task = {
+      id: '0a1b2c3d4e5f6g7h8i9j0k1l2m3n4o5p',
+      status: 'running',
+      author: 'john',
+      name: 'world',
+    };
+    const loader = createLoader({
+      Mock: async queries =>
+        queries.map(query => {
+          if (query?.ref === 'component:default/hello') return entity;
+          return null;
+        }),
+      Tasks: async queries =>
+        queries.map(query => {
+          const { ref, args } = query ?? {};
+          if (ref !== '0a1b2c3d4e5f6g7h8i9j0k1l2m3n4o5p') return null;
+          if (args?.name === 'status')
+            return { name: 'status', value: task.status };
+          if (args?.name === 'author')
+            return { name: 'author', value: task.author };
+          if (args?.name === 'name') return { name: 'name', value: task.name };
+          return null;
+        }),
+    });
+    const query = await createGraphQLAPI(TestModule, loader);
+    const result = await query(/* GraphQL */ `
+      node(id: ${JSON.stringify(
+        encodeId({
+          source: 'Mock',
+          typename: 'Entity',
+          query: {
+            ref: 'component:default/hello',
+          },
+        }),
+      )}) {
+        ...on Entity {
+          name,
+          status: property(name: "status") { value }
+          author: property(name: "author") { value }
+          taskName: property(name: "name") { value }
+        }
+      }
+    `);
+    expect(result).toEqual({
+      node: {
+        name: 'hello',
+        status: { value: 'running' },
+        author: { value: 'john' },
+        taskName: { value: 'world' },
+      },
+    });
+  });
+
+  it('should resolve node without "at" argument of @resolve directive', async () => {
+    const TestModule = createModule({
+      id: 'test',
+      typeDefs: gql`
+        interface Node
+          @discriminates(with: "__source")
+          @discriminationAlias(value: "Mock", type: "Entity")
+          @discriminationAlias(value: "Tasks", type: "Task")
+
+        type Entity @implements(interface: "Node") {
+          task(taskId: ID!): Task @resolve(from: "Tasks")
+          name: String! @field(at: "metadata.name")
+        }
+
+        type Task @implements(interface: "Node") {
+          taskId: ID! @field(at: "id")
+          name: String! @field(at: "name")
+          author: String! @field(at: "author")
+          status: String! @field(at: "status")
+        }
+      `,
+    });
+    const entity = {
+      kind: 'Component',
+      metadata: { name: 'hello', namespace: 'default' },
+    };
+    const task = {
+      id: '0a1b2c3d4e5f6g7h8i9j0k1l2m3n4o5p',
+      status: 'running',
+      author: 'john',
+      name: 'world',
+    };
+    const loader = createLoader({
+      Mock: async queries =>
+        queries.map(query => {
+          if (query?.ref === 'component:default/hello') return entity;
+          return null;
+        }),
+      Tasks: async queries =>
+        queries.map(query => {
+          const { args } = query ?? {};
+          if (
+            args &&
+            'taskId' in args &&
+            args.taskId === '0a1b2c3d4e5f6g7h8i9j0k1l2m3n4o5p'
+          )
+            return task;
+          return null;
+        }),
+    });
+    const query = await createGraphQLAPI(TestModule, loader);
+    const result = await query(/* GraphQL */ `
+      node(id: ${JSON.stringify(
+        encodeId({
+          source: 'Mock',
+          typename: 'Entity',
+          query: {
+            ref: 'component:default/hello',
+          },
+        }),
+      )}) {
+        ...on Entity {
+          name,
+          task(taskId: "0a1b2c3d4e5f6g7h8i9j0k1l2m3n4o5p") {
+            id
+            taskId
+            name
+            author
+            status
+          }
+        }
+      }
+    `);
+    expect(result).toEqual({
+      node: {
+        name: 'hello',
+        task: {
+          id: 'Task@Tasks@{"args":{"taskId":"0a1b2c3d4e5f6g7h8i9j0k1l2m3n4o5p"}}',
+          taskId: '0a1b2c3d4e5f6g7h8i9j0k1l2m3n4o5p',
+          status: 'running',
+          author: 'john',
+          name: 'world',
+        },
+      },
+    });
+  });
+
+  it('should throw error if "at" argument of @resolve directive is not a string', async () => {
+    const TestModule = createModule({
+      id: 'test',
+      typeDefs: gql`
+        type Entity @implements(interface: "Node") {
+          parent: Entity @resolve(at: "spec.parent")
+          name: String! @field(at: "metadata.name")
+        }
+      `,
+    });
+    const entity = {
+      kind: 'Component',
+      metadata: { name: 'hello', namespace: 'default' },
+      spec: {
+        parent: {
+          name: 'world',
+          kind: 'component',
+          namespace: 'default',
+        },
+      },
+    };
+    const parent = {
+      kind: 'Component',
+      metadata: { name: 'world', namespace: 'default' },
+    };
+    const loader = () =>
+      new DataLoader(async ids =>
+        ids.map(id => {
+          const { query: { ref } = {} } = decodeId(id as string);
+          if (ref === 'component:default/hello') return entity;
+          if (ref === 'component:default/world') return parent;
+          return null;
+        }),
+      );
+    const query = await createGraphQLAPI(TestModule, loader);
+    let error: Error;
+    try {
+      await query(/* GraphQL */ `
+      node(id: ${JSON.stringify(
+        encodeId({
+          source: 'Mock',
+          typename: 'Entity',
+          query: { ref: 'component:default/hello' },
+        }),
+      )}) { ...on Entity { name, parent { name } } }
+    `);
+    } catch (e) {
+      error = e;
+    }
+    expect(() => {
+      if (error) throw error;
+    }).toThrow(
+      `The "at" argument of @resolve directive for "parent" field must be resolved to a string, but got "object"`,
+    );
   });
 
   it('should resolve types by @discriminates directive', async () => {
@@ -870,7 +1104,7 @@ describe('mapDirectives', () => {
     const loader = () =>
       new DataLoader(async ids =>
         ids.map(id => {
-          const { ref } = decodeId(id as string);
+          const { query: { ref } = {} } = decodeId(id as string);
           if (ref === 'component:default/backend') return component;
           if (ref === 'employee:default/john') return employee;
           if (ref === 'location:default/home') return location;
@@ -894,47 +1128,47 @@ describe('mapDirectives', () => {
     const componentResult = await queryNode({
       source: 'Mock',
       typename: 'Node',
-      ref: 'component:default/backend',
+      query: { ref: 'component:default/backend' },
     });
     const employeeResult = await queryNode({
       source: 'Mock',
       typename: 'Node',
-      ref: 'employee:default/john',
+      query: { ref: 'employee:default/john' },
     });
     const locationResult = await queryNode({
       source: 'Mock',
       typename: 'Node',
-      ref: 'location:default/home',
+      query: { ref: 'location:default/home' },
     });
     const systemResult = await queryNode({
       source: 'Mock',
       typename: 'Node',
-      ref: 'system:default/production',
+      query: { ref: 'system:default/production' },
     });
     expect(componentResult).toEqual({
       node: {
-        id: 'Node@Mock@component:default/backend',
+        id: 'Node@Mock@{"ref":"component:default/backend"}',
         name: 'github-component',
         type: 'github',
       },
     });
     expect(employeeResult).toEqual({
       node: {
-        id: 'Node@Mock@employee:default/john',
+        id: 'Node@Mock@{"ref":"employee:default/john"}',
         name: 'john-user',
         jobTitle: 'Developer',
       },
     });
     expect(locationResult).toEqual({
       node: {
-        id: 'Node@Mock@location:default/home',
+        id: 'Node@Mock@{"ref":"location:default/home"}',
         name: 'street-location',
         address: '123 Main St',
       },
     });
     expect(systemResult).toEqual({
       node: {
-        id: 'Node@Mock@system:default/production',
+        id: 'Node@Mock@{"ref":"system:default/production"}',
         name: 'backend-system',
       },
     });
@@ -960,7 +1194,7 @@ describe('mapDirectives', () => {
     const id = encodeId({
       source: 'Mock',
       typename: 'Entity',
-      ref: 'test',
+      query: { ref: 'test' },
     });
     let error: Error;
 
@@ -998,7 +1232,7 @@ describe('mapDirectives', () => {
     const id = encodeId({
       source: 'Mock',
       typename: 'Entity',
-      ref: 'test',
+      query: { ref: 'test' },
     });
     let error: Error;
 
@@ -1038,7 +1272,7 @@ describe('mapDirectives', () => {
     const id = encodeId({
       source: 'Mock',
       typename: 'Entity',
-      ref: 'test',
+      query: { ref: 'test' },
     });
     let error: Error;
 
@@ -1089,7 +1323,7 @@ describe('mapDirectives', () => {
     const id = encodeId({
       source: 'Mock',
       typename: 'Entity',
-      ref: 'test',
+      query: { ref: 'test' },
     });
     let error: Error;
 
@@ -1133,7 +1367,7 @@ describe('mapDirectives', () => {
     const id = encodeId({
       source: 'Mock',
       typename: 'Resource',
-      ref: 'test',
+      query: { ref: 'test' },
     });
     let error: Error;
 

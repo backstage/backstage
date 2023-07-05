@@ -101,6 +101,7 @@ function createConnectionType(
 }
 
 export function relationDirectiveMapper(
+  _fieldName: string,
   field: GraphQLFieldConfig<{ id: string }, ResolverContext>,
   directive: Record<string, any>,
   api: DirectiveMapperAPI,
@@ -209,7 +210,7 @@ export function relationDirectiveMapper(
         id: encodeId({
           source: CATALOG_SOURCE,
           typename: directive.nodeType ?? 'Node',
-          ref,
+          query: { ref },
         }),
       }));
       return {
@@ -227,7 +228,7 @@ export function relationDirectiveMapper(
         id: encodeId({
           source: CATALOG_SOURCE,
           typename: unboxNamedType(field.type).name,
-          ref,
+          query: { ref },
         }),
       }));
       return isList ? ids : ids[0] ?? null;

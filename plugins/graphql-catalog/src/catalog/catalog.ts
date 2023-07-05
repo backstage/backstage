@@ -65,7 +65,7 @@ export const CatalogSync = (
           id: encodeId({
             source: CATALOG_SOURCE,
             typename: 'Entity',
-            ref: stringifyEntityRef({ name, kind, namespace }),
+            query: { ref: stringifyEntityRef({ name, kind, namespace }) },
           }),
         }),
       },

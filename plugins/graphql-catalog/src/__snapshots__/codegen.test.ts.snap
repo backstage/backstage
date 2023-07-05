@@ -11,7 +11,7 @@ directive @implements(interface: String!) on INTERFACE | OBJECT
 
 directive @relation(kind: String, name: String, nodeType: String) on FIELD_DEFINITION
 
-directive @resolve(at: _DirectiveArgument_!, from: String) on FIELD_DEFINITION
+directive @resolve(at: _DirectiveArgument_, from: String) on FIELD_DEFINITION
 
 interface API implements Entity & Node & Ownable {
   annotations: [KeyValuePair!]
@@ -797,6 +797,7 @@ scalar _DirectiveArgument_"
 
 exports[`graphql-catalog codegen should generate the correct code: typescript 1`] = `
 "/* eslint-disable */
+// @ts-nocheck
 import { GraphQLResolveInfo, GraphQLScalarType, GraphQLScalarTypeConfig } from 'graphql';
 export type Maybe<T> = T | null;
 export type InputMaybe<T> = Maybe<T>;
@@ -2456,7 +2457,7 @@ export type RelationDirectiveArgs = {
 export type RelationDirectiveResolver<Result, Parent, ContextType = any, Args = RelationDirectiveArgs> = DirectiveResolverFn<Result, Parent, ContextType, Args>;
 
 export type ResolveDirectiveArgs = {
-  at: Scalars['_DirectiveArgument_']['input'];
+  at?: Maybe<Scalars['_DirectiveArgument_']['input']>;
   from?: Maybe<Scalars['String']['input']>;
 };
 

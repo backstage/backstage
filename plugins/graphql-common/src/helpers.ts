@@ -22,14 +22,14 @@ import {
 import { NodeId } from './types';
 
 /** @public */
-export function encodeId({ source, typename, ref }: NodeId): string {
-  return `${typename}@${source}@${ref}`;
+export function encodeId({ source, typename, query }: NodeId): string {
+  return `${typename}@${source}@${JSON.stringify(query ?? {})}`;
 }
 
 /** @public */
 export function decodeId(id: string): NodeId {
-  const [typename, source, ...ref] = id.split('@');
-  return { typename, source, ref: ref.join('@') };
+  const [typename, source, ...query] = id.split('@');
+  return { typename, source, query: JSON.parse(query.join('@')) };
 }
 
 /** @public */
