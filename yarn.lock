@@ -12744,7 +12744,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@kubernetes-models/apimachinery@npm:^1.1.0":
+"@kubernetes-models/apimachinery@npm:^1.1.0, @kubernetes-models/apimachinery@npm:^1.2.1":
   version: 1.2.1
   resolution: "@kubernetes-models/apimachinery@npm:1.2.1"
   dependencies:
@@ -12755,7 +12755,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@kubernetes-models/base@npm:^4.0.0, @kubernetes-models/base@npm:^4.0.1, @kubernetes-models/base@npm:^4.0.3":
+"@kubernetes-models/base@npm:^4.0.1, @kubernetes-models/base@npm:^4.0.3":
   version: 4.0.3
   resolution: "@kubernetes-models/base@npm:4.0.3"
   dependencies:
@@ -12766,7 +12766,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@kubernetes-models/validate@npm:^3.0.0, @kubernetes-models/validate@npm:^3.1.1":
+"@kubernetes-models/validate@npm:^3.1.1":
   version: 3.1.1
   resolution: "@kubernetes-models/validate@npm:3.1.1"
   dependencies:
@@ -30367,14 +30367,14 @@ __metadata:
   linkType: hard
 
 "kubernetes-models@npm:^4.1.0":
-  version: 4.1.0
-  resolution: "kubernetes-models@npm:4.1.0"
+  version: 4.3.1
+  resolution: "kubernetes-models@npm:4.3.1"
   dependencies:
-    "@kubernetes-models/apimachinery": ^1.1.0
-    "@kubernetes-models/base": ^4.0.0
-    "@kubernetes-models/validate": ^3.0.0
+    "@kubernetes-models/apimachinery": ^1.2.1
+    "@kubernetes-models/base": ^4.0.3
+    "@kubernetes-models/validate": ^3.1.1
     tslib: ^2.4.0
-  checksum: 1c3195a78ca422a6436f9c4143288a4d29f53b75ff597d72f44cc7f274714daab40a5bb99dd13e02edf3ce11a41f1df34d3d0bb1930b6401cc21c44666ad2b6b
+  checksum: cf0b8ac25b1583f237b08e5554893b38e9f67d25e5acb095cb1d9001dd3c1102e746fb69165b04627499af125ca2e2376e8ae14a69d1de0ab8ac32ab8f9f83e2
   languageName: node
   linkType: hard
 
