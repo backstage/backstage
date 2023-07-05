@@ -13,15 +13,39 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import { Entity } from '@backstage/catalog-model';
+import { CompoundEntityRef, Entity } from '@backstage/catalog-model';
 import { useGetEntities } from './useGetEntities';
 import { CatalogApi } from '@backstage/catalog-client';
 import { renderHook } from '@testing-library/react-hooks';
+import { getEntityRelations } from '@backstage/plugin-catalog-react';
 
-const catalogApiMock: Pick<CatalogApi, 'getEntities'> = {
-  getEntities: jest.fn(async () => {
-    return Promise.resolve({ items: [] });
-  }),
+const givenParentGroup = 'team.squad1';
+const givenLeafGroup = 'team.squad2';
+const givenUser = 'user.john';
+const givenParentGroupEntity = {
+  kind: 'Group',
+  metadata: {
+    name: givenParentGroup,
+  },
+} as Partial<Entity> as Entity;
+const givenLeafGroupEntity = {
+  kind: 'Group',
+  metadata: {
+    name: givenLeafGroup,
+  },
+} as Partial<Entity> as Entity;
+const givenUserEntity = {
+  kind: 'User',
+  metadata: {
+    name: givenUser,
+  },
+} as Partial<Entity> as Entity;
+
+const catalogApiMock: Pick<CatalogApi, 'getEntities' | 'getEntityByRef'> = {
+  getEntities: jest.fn(async () => Promise.resolve({ items: [] })),
+  getEntityByRef: jest.fn(async ({ name }: CompoundEntityRef) =>
+    name === givenParentGroup ? givenParentGroupEntity : givenLeafGroupEntity,
+  ),
 };
 
 jest.mock('@backstage/core-plugin-api', () => ({
@@ -29,37 +53,106 @@ jest.mock('@backstage/core-plugin-api', () => ({
 }));
 jest.mock('@backstage/plugin-catalog-react', () => ({
   catalogApiRef: {},
-  getEntityRelations: jest.fn(() => []),
+  getEntityRelations: jest.fn(entity => {
+    if (entity?.metadata.name === givenParentGroup) {
+      return [
+        {
+          kind: 'Group',
+          namespace: 'default',
+          name: givenLeafGroup,
+        } as CompoundEntityRef,
+      ];
+    } else if (entity?.kind === 'User') {
+      return [
+        {
+          kind: 'Group',
+          namespace: 'default',
+          name: givenLeafGroup,
+        } as CompoundEntityRef,
+      ];
+    }
+
+    return [];
+  }) as typeof getEntityRelations,
 }));
 
 describe('useGetEntities', () => {
-  describe('given aggregated relationsType', () => {
-    it('when entity is group should aggregate child ownership', async () => {
-      const givenSquad = 'team.squad1';
-      const whenEntity = {
-        kind: 'Group',
-        metadata: {
-          name: givenSquad,
-        },
-      } as Partial<Entity> as Entity;
+  expect.extend({
+    ownedBy: (actual, ...owners: string[]) => {
+      try {
+        expect(actual).toHaveBeenCalledWith(
+          expect.objectContaining({
+            filter: expect.arrayContaining([
+              expect.objectContaining({
+                'relations.ownedBy': owners,
+              }),
+            ]),
+          }),
+        );
+        return {
+          message: () => '',
+          pass: true,
+        };
+      } catch (e) {
+        return {
+          message: () => e.message,
+          pass: false,
+        };
+      }
+    },
+  });
 
+  describe('given aggregated relationsType', () => {
+    const whenHookIsCalledWith = async (_entity: Entity) => {
       const hook = renderHook(
         ({ entity }) => useGetEntities(entity, 'aggregated'),
         {
-          initialProps: { entity: whenEntity },
+          initialProps: { entity: _entity },
         },
       );
 
       await hook.waitForNextUpdate();
-      expect(catalogApiMock.getEntities).toHaveBeenCalledWith(
-        expect.objectContaining({
-          filter: expect.arrayContaining([
-            expect.objectContaining({
-              'relations.ownedBy': [`group:default/${givenSquad}`],
-            }),
-          ]),
-        }),
+    };
+
+    it('given group entity should aggregate child ownership', async () => {
+      await whenHookIsCalledWith(givenParentGroupEntity);
+      expect(catalogApiMock.getEntities).ownedBy(
+        `group:default/${givenParentGroup}`,
+        `group:default/${givenLeafGroup}`,
       );
+    });
+
+    it('given user entity should aggregate parent ownership and direct', async () => {
+      await whenHookIsCalledWith(givenUserEntity);
+      expect(catalogApiMock.getEntities).ownedBy(
+        `group:default/${givenLeafGroup}`,
+        `user:default/${givenUser}`,
+      );
+    });
+  });
+
+  describe('given direct relationsType', () => {
+    const whenHookIsCalledWith = async (_entity: Entity) => {
+      const hook = renderHook(
+        ({ entity }) => useGetEntities(entity, 'direct'),
+        {
+          initialProps: { entity: _entity },
+        },
+      );
+
+      await hook.waitForNextUpdate();
+    };
+
+    it('given group entity should return directly owned entities', async () => {
+      await whenHookIsCalledWith(givenLeafGroupEntity);
+      expect(catalogApiMock.getEntities).ownedBy(
+        `group:default/${givenLeafGroup}`,
+      );
+    });
+
+    it('given user entity should return directly owned entities', async () => {
+      await whenHookIsCalledWith(givenUserEntity);
+      expect(catalogApiMock.getEntities).ownedBy(`user:default/${givenUser}`);
     });
   });
 });
