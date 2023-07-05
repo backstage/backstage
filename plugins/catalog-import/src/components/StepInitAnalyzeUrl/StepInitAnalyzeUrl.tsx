@@ -147,7 +147,7 @@ export const StepInitAnalyzeUrl = (props: StepInitAnalyzeUrlProps) => {
         )}
         fullWidth
         id="url"
-        label="Repository URL"
+        label="URL"
         placeholder={exampleLocationUrl}
         helperText="Enter the full path to your entity file to start tracking your component"
         margin="normal"

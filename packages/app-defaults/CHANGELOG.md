@@ -1,5 +1,27 @@
 # @backstage/app-defaults
 
+## 1.4.1-next.1
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/theme@0.4.1-next.0
+  - @backstage/core-components@0.13.3-next.1
+  - @backstage/core-plugin-api@1.5.3-next.0
+  - @backstage/core-app-api@1.8.2-next.0
+  - @backstage/plugin-permission-react@0.4.14-next.1
+
+## 1.4.1-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/core-components@0.13.3-next.0
+  - @backstage/core-app-api@1.8.1
+  - @backstage/core-plugin-api@1.5.2
+  - @backstage/theme@0.4.0
+  - @backstage/plugin-permission-react@0.4.14-next.0
+
 ## 1.4.0
 
 ### Minor Changes

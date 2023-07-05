@@ -237,6 +237,7 @@ check the App Registration you created:
 - `metadataUrl`: In Overview > Endpoints tab, grab OpenID Connect metadata document URL.
 - `authorizationUrl` and `tokenUrl`: Open the `metadataUrl` in a browser, that json will
   hold these 2 urls somewhere in there.
+- `tokenEndpointAuthMethod`: Don't define it, use the default unless you know what it does.
 - `tokenSignedResponseAlg`: Don't define it, use the default unless you know what it does.
 - `scope`: Only used if we didn't specify `defaultScopes` in the provider's factory,
   basically the same thing.

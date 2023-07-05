@@ -16,16 +16,18 @@
 
 import React, { ReactNode } from 'react';
 import './MuiClassNameSetup';
+import { CssBaseline } from '@material-ui/core';
 import {
   ThemeProvider,
   StylesProvider,
   createGenerateClassName,
+  Theme as Mui4Theme,
 } from '@material-ui/core/styles';
 import {
   StyledEngineProvider,
   ThemeProvider as Mui5Provider,
+  Theme as Mui5Theme,
 } from '@mui/material/styles';
-import CSSBaseline from '@mui/material/CssBaseline';
 import { UnifiedTheme } from './types';
 
 /**
@@ -57,12 +59,12 @@ export function UnifiedThemeProvider(
 ): JSX.Element {
   const { children, theme, noCssBaseline = false } = props;
 
-  const v4Theme = theme.getTheme('v4');
-  const v5Theme = theme.getTheme('v5');
+  const v4Theme = theme.getTheme('v4') as Mui4Theme;
+  const v5Theme = theme.getTheme('v5') as Mui5Theme;
 
   let cssBaseline: JSX.Element | undefined = undefined;
   if (!noCssBaseline) {
-    cssBaseline = <CSSBaseline />;
+    cssBaseline = <CssBaseline />;
   }
 
   let result = (

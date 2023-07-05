@@ -44,6 +44,12 @@ Lists the status of configured External Dependencies based on your current runni
 
 ![Example of external dependencies tab](./docs/devtools-external-dependencies.png)
 
+### Catalog Unprocessed Entities
+
+The [Catalog Unprocessed Entities plugin](https://github.com/backstage/backstage/tree/master/plugins/catalog-unprocessed-entities) has an optional tab that you can also be added that will show unprocessed entities:
+
+![Example of unprocessed entities tab](./docs/catalog-unprocessed-entities-tab.png)
+
 ## Setup
 
 The following sections will help you get the DevTools plugin setup and running.
@@ -148,6 +154,43 @@ The DevTools plugin has been designed so that you can customize the tabs to suit
 6. Now run `yarn dev` from the root of your project. When you go to the DevTools you'll now see you have a third tab for [External Dependencies](#external-dependencies)
 
 With this setup you can add or remove the tabs as you'd like or add your own simply by editing your `CustomDevToolsPage.tsx` file
+
+### Adding Tabs From Other Plugins
+
+You can also add tabs to show content from other plugins that fit well with the other DevTools content.
+
+#### Catalog Unprocessed Entities Tab
+
+Here's how to add the Catalog Unprocessed Entities tab:
+
+1. Install and setup the [Catalog Unprocessed Entities plugin](https://github.com/backstage/backstage/tree/master/plugins/catalog-unprocessed-entities) as per its documentation
+2. Add the following import to your `CustomDevToolsPage.tsx`:
+
+   `import { UnprocessedEntitiesContent } from '@backstage/plugin-catalog-unprocessed-entities';`
+
+3. Then add a new `DevToolsLayout.Route` to the end of your `DevToolsLayout` like this:
+
+   ```diff
+     <DevToolsLayout>
+       <DevToolsLayout.Route path="info" title="Info">
+         <InfoContent />
+       </DevToolsLayout.Route>
+       <DevToolsLayout.Route path="config" title="Config">
+         <ConfigContent />
+       </DevToolsLayout.Route>
+       <DevToolsLayout.Route
+         path="external-dependencies"
+         title="External Dependencies"
+       >
+         <ExternalDependenciesContent />
+       </DevToolsLayout.Route>
+   +   <DevToolsLayout.Route path="unprocessed-entities" title="Unprocessed Entities">
+   +     <UnprocessedEntitiesContent />
+   +   </DevToolsLayout.Route>
+     </DevToolsLayout>
+   ```
+
+4. Now run `yarn dev` and navigate to the DevTools you'll see a new tab for Unprocessed Entities
 
 ## Permissions
 

@@ -18,7 +18,7 @@ import {
   errorHandler,
   notFoundHandler,
   requestLoggingHandler,
-  SingleHostDiscovery,
+  HostDiscovery,
 } from '@backstage/backend-common';
 import compression from 'compression';
 import cors from 'cors';
@@ -40,12 +40,12 @@ export async function createStandaloneApplication(
 ): Promise<express.Application> {
   const { enableCors, logger } = options;
   const config = new ConfigReader({});
-  const discovery = SingleHostDiscovery.fromConfig(config);
+  const discovery = HostDiscovery.fromConfig(config);
 
   const app = express();
 
   const catalogApi = new CatalogClient({
-    discoveryApi: SingleHostDiscovery.fromConfig(config),
+    discoveryApi: HostDiscovery.fromConfig(config),
   });
 
   const permissions = {} as PermissionEvaluator;

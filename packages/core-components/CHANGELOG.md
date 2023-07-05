@@ -1,5 +1,29 @@
 # @backstage/core-components
 
+## 0.13.3-next.1
+
+### Patch Changes
+
+- 7e0f558fbc37: The `Skip to content` button on click focuses on the main article tag and skips the `h1` tag. Users are not able to identify which page they are on currently. Now it's changed the behaviour of the button and focuses on the `h1` tag on the page.
+- 015439b5b6ca: Updated dependency `rc-progress` to `3.4.2`.
+- Updated dependencies
+  - @backstage/theme@0.4.1-next.0
+  - @backstage/core-plugin-api@1.5.3-next.0
+  - @backstage/config@1.0.8
+
+## 0.13.3-next.0
+
+### Patch Changes
+
+- 68531cc70e1f: Break some internal circular import chains
+- a011d2316a58: Fix keyboard navigation & focus highlight on Select component.
+- Updated dependencies
+  - @backstage/errors@1.2.1-next.0
+  - @backstage/config@1.0.8
+  - @backstage/core-plugin-api@1.5.2
+  - @backstage/theme@0.4.0
+  - @backstage/version-bridge@1.0.4
+
 ## 0.13.2
 
 ### Patch Changes
