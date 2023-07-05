@@ -27,7 +27,9 @@ import {
 } from '@material-ui/core';
 import React, { useState } from 'react';
 import { ComponentsGrid } from './ComponentsGrid';
-import { AnyRelationsType, DefaultRelationType } from './useGetEntities';
+import { type RelationType, DefaultRelationType } from './useGetEntities';
+
+export { type RelationType, DefaultRelationType } from './useGetEntities';
 
 const useStyles = makeStyles(theme => ({
   list: {
@@ -57,7 +59,7 @@ export const OwnershipCard = (props: {
   variant?: InfoCardVariants;
   entityFilterKind?: string[];
   hideRelationsToggle?: boolean;
-  relationsType?: AnyRelationsType;
+  relationsType?: RelationType;
   entityLimit?: number;
 }) => {
   const {

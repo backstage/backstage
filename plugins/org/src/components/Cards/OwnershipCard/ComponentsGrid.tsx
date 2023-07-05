@@ -33,7 +33,7 @@ import {
 import React from 'react';
 import pluralize from 'pluralize';
 import { catalogIndexRouteRef } from '../../../routes';
-import { AnyRelationsType, useGetEntities } from './useGetEntities';
+import { RelationType, useGetEntities } from './useGetEntities';
 
 const useStyles = makeStyles((theme: BackstageTheme) =>
   createStyles({
@@ -113,7 +113,7 @@ export const ComponentsGrid = ({
   entityLimit = 6,
 }: {
   entity: Entity;
-  relationsType: AnyRelationsType;
+  relationsType: RelationType;
   entityFilterKind?: string[];
   entityLimit?: number;
 }) => {

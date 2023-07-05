@@ -122,7 +122,7 @@ const getChildOwnershipEntityRefs = async (
 
 const getOwners = async (
   entity: Entity,
-  relationsType: AnyRelationsType,
+  relationsType: RelationType,
   catalogApi: CatalogApi,
 ): Promise<string[]> => {
   const isGroup = entity.kind === 'Group';
@@ -148,14 +148,15 @@ const getOwners = async (
   return owners;
 };
 
+/** @public */
 export const DefaultRelationType = {
   Direct: 'direct',
   Aggregated: 'aggregated',
 } as const;
 
-export type AnyRelationsType =
-  | (typeof DefaultRelationType)[keyof typeof DefaultRelationType]
-  | string;
+/** @public */
+export type RelationType =
+  (typeof DefaultRelationType)[keyof typeof DefaultRelationType];
 
 const getOwnedEntitiesByOwners = (
   owners: string[],
@@ -180,7 +181,7 @@ const getOwnedEntitiesByOwners = (
 
 export function useGetEntities(
   entity: Entity,
-  relationsType: AnyRelationsType,
+  relationsType: RelationType,
   entityFilterKind?: string[],
   entityLimit = 6,
 ): {
