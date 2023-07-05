@@ -20,7 +20,7 @@ import {
   configApiRef,
   identityApiRef,
 } from '@backstage/core-plugin-api';
-import { Playground } from '../../analytics-module-nr/dev/Playground';
+import { Playground } from './Playground';
 import { NewRelicBrowser } from '../src';
 
 createDevApp()
