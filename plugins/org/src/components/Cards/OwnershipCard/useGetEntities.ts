@@ -71,53 +71,46 @@ const getMemberOfEntityRefs = (owner: Entity): string[] => {
   return ownerGroupsNames;
 };
 
-const getAggregatedOwnersEntityRef = async (
-  parentGroup: Entity,
+const isEntity = (entity: Entity | undefined): entity is Entity =>
+  entity !== undefined;
+
+const getChildOwnershipEntityRefs = async (
+  entity: Entity,
   catalogApi: CatalogApi,
 ): Promise<string[]> => {
-  const requestedEntities: Entity[] = [];
-  const outstandingEntities = new Map<string, Promise<Entity | undefined>>();
-  const processedEntities = new Set<string>();
-  let currentEntity = parentGroup;
+  const childGroups = getEntityRelations(entity, RELATION_PARENT_OF, {
+    kind: 'Group',
+  });
 
-  while (requestedEntities.length > 0) {
-    const childRelations = getEntityRelations(
-      currentEntity,
-      RELATION_PARENT_OF,
-      {
-        kind: 'Group',
-      },
-    );
+  const hasChildGroups = childGroups.length > 0;
 
-    await Promise.all(
-      childRelations.map(childGroup =>
-        limiter(async () => {
-          const promise = catalogApi.getEntityByRef(childGroup);
-          outstandingEntities.set(childGroup.name, promise);
-          try {
-            const processedEntity = await promise;
-            if (processedEntity) {
-              requestedEntities.push(processedEntity);
-            }
-          } finally {
-            outstandingEntities.delete(childGroup.name);
-          }
-        }),
-      ),
-    );
-    requestedEntities.shift();
-    processedEntities.add(
-      stringifyEntityRef({
-        kind: currentEntity.kind,
-        namespace: currentEntity.metadata.namespace,
-        name: currentEntity.metadata.name,
-      }),
-    );
-    // always set currentEntity to the first element of array requestedEntities
-    currentEntity = requestedEntities[0];
+  if (hasChildGroups) {
+    const childGroupEntities = (
+      await Promise.all(
+        childGroups.map(childGroup =>
+          limiter(() => catalogApi.getEntityByRef(childGroup)),
+        ),
+      )
+    ).filter(isEntity);
+
+    return (
+      await Promise.all(
+        childGroupEntities.map(childGroupEntity =>
+          limiter(() =>
+            getChildOwnershipEntityRefs(childGroupEntity, catalogApi),
+          ),
+        ),
+      )
+    ).flatMap(aggregated => aggregated);
   }
 
-  return Array.from(processedEntities);
+  return [
+    stringifyEntityRef({
+      kind: entity.kind,
+      namespace: entity.metadata.namespace,
+      name: entity.metadata.name,
+    }),
+  ];
 };
 
 const getOwners = async (
@@ -132,7 +125,7 @@ const getOwners = async (
   const owners = [stringifyEntityRef(entity)];
 
   if (isAggregated && isGroup) {
-    const childEntityRefs = await getAggregatedOwnersEntityRef(
+    const childEntityRefs = await getChildOwnershipEntityRefs(
       entity,
       catalogApi,
     );
