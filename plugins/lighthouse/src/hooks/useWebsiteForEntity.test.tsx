@@ -98,4 +98,21 @@ describe('useWebsiteForEntity', () => {
       expect(mockErrorApi.post).toHaveBeenCalledWith(error);
     });
   });
+
+  describe('where there is an error regarding "no audited websites for url"', () => {
+    const error = new Error('no audited website found for url unit-test-url');
+
+    beforeEach(() => {
+      (mockLighthouseApi.getWebsiteByUrl as jest.Mock).mockRejectedValueOnce(
+        error,
+      );
+    });
+
+    it('does not post the error to the error api and returns the error to the caller', async () => {
+      const { result, waitForNextUpdate } = subject();
+      await waitForNextUpdate();
+      expect(result.current?.error).toBe(error);
+      expect(mockErrorApi.post).not.toHaveBeenCalledWith(error);
+    });
+  });
 });

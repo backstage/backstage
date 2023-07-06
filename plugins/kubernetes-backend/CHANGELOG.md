@@ -1,5 +1,15 @@
 # @backstage/plugin-kubernetes-backend
 
+## 0.11.2-next.1
+
+### Patch Changes
+
+- 4db037c20148: Replace reference to deprecated import
+- c2e530653539: Add WebSocket support to `kubernetes-backend` proxy.
+- Updated dependencies
+  - @backstage/config@1.0.8
+  - @backstage/integration-aws-node@0.1.5-next.0
+
 ## 0.11.2-next.0
 
 ### Patch Changes

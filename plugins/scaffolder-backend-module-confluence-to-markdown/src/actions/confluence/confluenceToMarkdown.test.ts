@@ -47,7 +47,9 @@ describe('confluence:transform:markdown', () => {
   const config = new ConfigReader({
     confluence: {
       baseUrl: baseUrl,
-      token: 'fake_token',
+      auth: {
+        token: 'fake_token',
+      },
     },
   });
 

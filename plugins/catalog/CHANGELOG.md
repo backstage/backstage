@@ -1,5 +1,18 @@
 # @backstage/plugin-catalog
 
+## 1.11.3-next.1
+
+### Patch Changes
+
+- 294b1629de28: Display a warning alert if relations are defined, which don't exist in the catalog.
+- Updated dependencies
+  - @backstage/theme@0.4.1-next.0
+  - @backstage/core-components@0.13.3-next.1
+  - @backstage/core-plugin-api@1.5.3-next.0
+  - @backstage/integration-react@1.1.15-next.1
+  - @backstage/plugin-catalog-react@1.7.1-next.1
+  - @backstage/plugin-search-react@1.6.3-next.1
+
 ## 1.11.3-next.0
 
 ### Patch Changes

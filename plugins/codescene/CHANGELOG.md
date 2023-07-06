@@ -1,5 +1,16 @@
 # @backstage/plugin-codescene
 
+## 0.1.15-next.1
+
+### Patch Changes
+
+- 015439b5b6ca: Updated dependency `rc-progress` to `3.4.2`.
+- Updated dependencies
+  - @backstage/theme@0.4.1-next.0
+  - @backstage/core-components@0.13.3-next.1
+  - @backstage/core-plugin-api@1.5.3-next.0
+  - @backstage/config@1.0.8
+
 ## 0.1.15-next.0
 
 ### Patch Changes

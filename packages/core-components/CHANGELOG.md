@@ -1,5 +1,16 @@
 # @backstage/core-components
 
+## 0.13.3-next.1
+
+### Patch Changes
+
+- 7e0f558fbc37: The `Skip to content` button on click focuses on the main article tag and skips the `h1` tag. Users are not able to identify which page they are on currently. Now it's changed the behaviour of the button and focuses on the `h1` tag on the page.
+- 015439b5b6ca: Updated dependency `rc-progress` to `3.4.2`.
+- Updated dependencies
+  - @backstage/theme@0.4.1-next.0
+  - @backstage/core-plugin-api@1.5.3-next.0
+  - @backstage/config@1.0.8
+
 ## 0.13.3-next.0
 
 ### Patch Changes
