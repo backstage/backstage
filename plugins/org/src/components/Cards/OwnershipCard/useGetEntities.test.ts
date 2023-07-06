@@ -77,30 +77,14 @@ jest.mock('@backstage/plugin-catalog-react', () => ({
 }));
 
 describe('useGetEntities', () => {
-  expect.extend({
-    ownedBy: (actual, ...owners: string[]) => {
-      try {
-        expect(actual).toHaveBeenCalledWith(
-          expect.objectContaining({
-            filter: expect.arrayContaining([
-              expect.objectContaining({
-                'relations.ownedBy': owners,
-              }),
-            ]),
-          }),
-        );
-        return {
-          message: () => '',
-          pass: true,
-        };
-      } catch (e) {
-        return {
-          message: () => e.message,
-          pass: false,
-        };
-      }
-    },
-  });
+  const ownersFilter = (...owners: string[]) =>
+    expect.objectContaining({
+      filter: expect.arrayContaining([
+        expect.objectContaining({
+          'relations.ownedBy': owners,
+        }),
+      ]),
+    });
 
   describe('given aggregated relationsType', () => {
     const whenHookIsCalledWith = async (_entity: Entity) => {
@@ -116,17 +100,21 @@ describe('useGetEntities', () => {
 
     it('given group entity should aggregate child ownership', async () => {
       await whenHookIsCalledWith(givenParentGroupEntity);
-      expect(catalogApiMock.getEntities).ownedBy(
-        `group:default/${givenParentGroup}`,
-        `group:default/${givenLeafGroup}`,
+      expect(catalogApiMock.getEntities).toHaveBeenCalledWith(
+        ownersFilter(
+          `group:default/${givenParentGroup}`,
+          `group:default/${givenLeafGroup}`,
+        ),
       );
     });
 
     it('given user entity should aggregate parent ownership and direct', async () => {
       await whenHookIsCalledWith(givenUserEntity);
-      expect(catalogApiMock.getEntities).ownedBy(
-        `group:default/${givenLeafGroup}`,
-        `user:default/${givenUser}`,
+      expect(catalogApiMock.getEntities).toHaveBeenCalledWith(
+        ownersFilter(
+          `group:default/${givenLeafGroup}`,
+          `user:default/${givenUser}`,
+        ),
       );
     });
   });
@@ -145,14 +133,16 @@ describe('useGetEntities', () => {
 
     it('given group entity should return directly owned entities', async () => {
       await whenHookIsCalledWith(givenLeafGroupEntity);
-      expect(catalogApiMock.getEntities).ownedBy(
-        `group:default/${givenLeafGroup}`,
+      expect(catalogApiMock.getEntities).toHaveBeenCalledWith(
+        ownersFilter(`group:default/${givenLeafGroup}`),
       );
     });
 
     it('given user entity should return directly owned entities', async () => {
       await whenHookIsCalledWith(givenUserEntity);
-      expect(catalogApiMock.getEntities).ownedBy(`user:default/${givenUser}`);
+      expect(catalogApiMock.getEntities).toHaveBeenCalledWith(
+        ownersFilter(`user:default/${givenUser}`),
+      );
     });
   });
 });
