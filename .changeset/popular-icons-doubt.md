@@ -3,4 +3,4 @@
 '@backstage/plugin-catalog': minor
 ---
 
-I have extended the EntityHasSubcomponentsCard, EntityDependsOnResourcesCard, EntityDependsOnResourcesCard and EntityTable to support table options.
+Tables which use `EntityTableProps` now have an additional `tableOptions` prop which can be used to provide additional table options to these components.
