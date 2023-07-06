@@ -81,7 +81,7 @@ export class DefaultProviderDatabase implements ProviderDatabase {
 
     if (toRemove.length) {
       const removedCount = await deleteWithEagerPruningOfChildren({
-        tx,
+        knex: tx,
         entityRefs: toRemove,
         sourceKey: options.sourceKey,
       });

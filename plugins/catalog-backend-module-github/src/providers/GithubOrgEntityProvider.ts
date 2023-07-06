@@ -28,48 +28,46 @@ import {
   ScmIntegrations,
   SingleInstanceGithubCredentialsProvider,
 } from '@backstage/integration';
-import { EventParams } from '@backstage/plugin-events-node';
-import { EventSubscriber } from '@backstage/plugin-events-node';
 import {
   EntityProvider,
   EntityProviderConnection,
 } from '@backstage/plugin-catalog-node';
+import { EventParams, EventSubscriber } from '@backstage/plugin-events-node';
 import { graphql } from '@octokit/graphql';
 import {
+  MembershipEvent,
   OrganizationEvent,
   OrganizationMemberAddedEvent,
   OrganizationMemberRemovedEvent,
-  TeamEvent,
   TeamEditedEvent,
-  MembershipEvent,
+  TeamEvent,
 } from '@octokit/webhooks-types';
 import { merge } from 'lodash';
 import * as uuid from 'uuid';
 import { Logger } from 'winston';
 import {
-  assignGroupsToUsers,
-  buildOrgHierarchy,
-  defaultOrganizationTeamTransformer,
-  defaultUserTransformer,
-  getOrganizationTeams,
-  getOrganizationUsers,
-  GithubTeam,
-  parseGithubOrgUrl,
-} from '../lib';
-import { TeamTransformer, UserTransformer } from '../lib';
-import {
-  createAddEntitiesOperation,
-  createRemoveEntitiesOperation,
-  createReplaceEntitiesOperation,
-  DeferredEntitiesBuilder,
-  getOrganizationTeam,
-  getOrganizationTeamsFromUsers,
-} from '../lib/github';
-import {
   ANNOTATION_GITHUB_TEAM_SLUG,
   ANNOTATION_GITHUB_USER_LOGIN,
 } from '../lib/annotation';
-import { splitTeamSlug } from '../lib/util';
+import {
+  TeamTransformer,
+  UserTransformer,
+  defaultOrganizationTeamTransformer,
+  defaultUserTransformer,
+} from '../lib/defaultTransformers';
+import {
+  DeferredEntitiesBuilder,
+  GithubTeam,
+  createAddEntitiesOperation,
+  createRemoveEntitiesOperation,
+  createReplaceEntitiesOperation,
+  getOrganizationTeam,
+  getOrganizationTeams,
+  getOrganizationTeamsFromUsers,
+  getOrganizationUsers,
+} from '../lib/github';
+import { assignGroupsToUsers, buildOrgHierarchy } from '../lib/org';
+import { parseGithubOrgUrl, splitTeamSlug } from '../lib/util';
 
 /**
  * Options for {@link GithubOrgEntityProvider}.

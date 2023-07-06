@@ -43,7 +43,7 @@ export interface Results {
   results: Result[];
 }
 
-export type ConfluenceConfig = {
+export type LocalConfluenceConfig = {
   baseUrl: string;
   auth: string;
   token?: string;
@@ -53,13 +53,13 @@ export type ConfluenceConfig = {
 };
 
 export const getConfluenceConfig = (config: Config) => {
-  const confluenceConfig: ConfluenceConfig = {
+  const confluenceConfig = {
     baseUrl: config.getString('confluence.baseUrl'),
-    auth: config.getOptionalString('confluence.auth') ?? 'bearer',
-    token: config.getOptionalString('confluence.token'),
-    email: config.getOptionalString('confluence.email'),
-    username: config.getOptionalString('confluence.username'),
-    password: config.getOptionalString('confluence.password'),
+    auth: config.getOptionalString('confluence.auth.type') ?? 'bearer',
+    token: config.getOptionalString('confluence.auth.token'),
+    email: config.getOptionalString('confluence.auth.email'),
+    username: config.getOptionalString('confluence.auth.username'),
+    password: config.getOptionalString('confluence.auth.password'),
   };
 
   if (
@@ -89,7 +89,7 @@ export const getConfluenceConfig = (config: Config) => {
   return confluenceConfig;
 };
 
-export const getAuthorizationHeaderValue = (config: ConfluenceConfig) => {
+export const getAuthorizationHeaderValue = (config: LocalConfluenceConfig) => {
   switch (config.auth) {
     case 'bearer':
       return `Bearer ${config.token}`;
@@ -116,7 +116,7 @@ export const readFileAsString = async (fileDir: string) => {
 
 export const fetchConfluence = async (
   relativeUrl: string,
-  config: ConfluenceConfig,
+  config: LocalConfluenceConfig,
 ) => {
   const baseUrl = config.baseUrl;
   const authHeaderValue = getAuthorizationHeaderValue(config);
@@ -137,7 +137,7 @@ export const fetchConfluence = async (
 export const getAndWriteAttachments = async (
   arr: Results,
   workspace: string,
-  config: ConfluenceConfig,
+  config: LocalConfluenceConfig,
   mkdocsDir: string,
 ) => {
   const productArr: string[][] = [];

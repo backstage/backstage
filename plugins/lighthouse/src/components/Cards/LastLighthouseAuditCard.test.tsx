@@ -26,6 +26,7 @@ import {
 import { useWebsiteForEntity } from '../../hooks/useWebsiteForEntity';
 import * as data from '../../__fixtures__/website-list-response.json';
 import { LastLighthouseAuditCard } from './LastLighthouseAuditCard';
+import { fireEvent, screen } from '@testing-library/react';
 
 jest.mock('../../hooks/useWebsiteForEntity', () => ({
   useWebsiteForEntity: jest.fn(),
@@ -147,17 +148,22 @@ describe('<LastLighthouseAuditCard />', () => {
       (useWebsiteForEntity as jest.Mock).mockReturnValue({
         value: null,
         loading: false,
-        error: 'error',
+        error: { name: 'error', message: 'error loading data' },
       });
     });
 
-    it('renders nothing', async () => {
-      const { queryByTestId } = await renderInTestApp(
+    it('renders a WarningPanel', async () => {
+      await renderInTestApp(
         <EntityProvider entity={entity}>
           <LastLighthouseAuditCard />
         </EntityProvider>,
       );
-      expect(queryByTestId('AuditListTable')).toBeNull();
+      const expandIcon = screen.getByText('Error: Could not load audit list.');
+      fireEvent.click(expandIcon);
+      expect(
+        screen.getByText('Error: Could not load audit list.'),
+      ).toBeInTheDocument();
+      expect(screen.getByText('error loading data')).toBeInTheDocument();
     });
   });
 
@@ -177,6 +183,28 @@ describe('<LastLighthouseAuditCard />', () => {
         </EntityProvider>,
       );
       expect(queryByTestId('AuditListTable')).toBeNull();
+    });
+  });
+
+  describe('where error was due to an empty database query result', () => {
+    beforeEach(() => {
+      (useWebsiteForEntity as jest.Mock).mockReturnValue({
+        value: null,
+        loading: false,
+        error: {
+          name: 'error',
+          message: 'no audited website found for url unit-test-url',
+        },
+      });
+    });
+
+    it('renders EmptyState card', async () => {
+      const rendered = await renderInTestApp(
+        <EntityProvider entity={entity}>
+          <LastLighthouseAuditCard />
+        </EntityProvider>,
+      );
+      expect(rendered.getByText('No Audits Found')).toBeInTheDocument();
     });
   });
 });

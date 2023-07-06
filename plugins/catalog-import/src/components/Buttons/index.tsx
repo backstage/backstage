@@ -14,6 +14,7 @@
  * limitations under the License.
  */
 
+import { LinkButton } from '@backstage/core-components';
 import { Button, CircularProgress } from '@material-ui/core';
 import { makeStyles } from '@material-ui/core/styles';
 import React, { ComponentProps } from 'react';
@@ -66,5 +67,22 @@ export const BackButton = (props: ComponentProps<typeof Button>) => {
     <Button variant="outlined" className={classes.button} {...props}>
       {props.children || 'Back'}
     </Button>
+  );
+};
+
+export const ViewComponentButton = (
+  props: ComponentProps<typeof LinkButton>,
+) => {
+  const classes = useStyles();
+
+  return (
+    <LinkButton
+      color="primary"
+      variant="contained"
+      className={classes.button}
+      {...props}
+    >
+      {props.children}
+    </LinkButton>
   );
 };

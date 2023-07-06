@@ -48,3 +48,18 @@ async function main() {
   apiRouter.use(notFoundHandler());
 
 ```
+
+### New Backend System
+
+The Entity Feedback backend plugin has support for the [new backend system](https://backstage.io/docs/backend-system/), here's how you can set that up:
+In your `packages/backend/src/index.ts` make the following changes:
+
+```diff
++ import { entityFeedbackPlugin } from '@backstage/plugin-entity-feedback-backend';
+
+const backend = createBackend();
++ backend.add(entityFeedbackPlugin());
+// ... other feature additions
+
+backend.start();
+```

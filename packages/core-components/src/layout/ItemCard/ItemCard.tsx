@@ -21,7 +21,7 @@ import CardContent from '@material-ui/core/CardContent';
 import CardMedia from '@material-ui/core/CardMedia';
 import Chip from '@material-ui/core/Chip';
 import React, { ReactNode } from 'react';
-import { LinkButton } from '../../components';
+import { LinkButton } from '../../components/LinkButton/LinkButton';
 import { ItemCardHeader } from './ItemCardHeader';
 
 type ItemCardProps = {

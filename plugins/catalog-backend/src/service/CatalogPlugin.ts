@@ -27,10 +27,12 @@ import {
   EntityProvider,
 } from '@backstage/plugin-catalog-node';
 import { loggerToWinstonLogger } from '@backstage/backend-common';
+import { PlaceholderResolver } from '../modules';
 
 class CatalogExtensionPointImpl implements CatalogProcessingExtensionPoint {
   #processors = new Array<CatalogProcessor>();
   #entityProviders = new Array<EntityProvider>();
+  #placeholderResolvers: Record<string, PlaceholderResolver> = {};
 
   addProcessor(
     ...processors: Array<CatalogProcessor | Array<CatalogProcessor>>
@@ -44,12 +46,24 @@ class CatalogExtensionPointImpl implements CatalogProcessingExtensionPoint {
     this.#entityProviders.push(...providers.flat());
   }
 
+  addPlaceholderResolver(key: string, resolver: PlaceholderResolver) {
+    if (key in this.#placeholderResolvers)
+      throw new Error(
+        `A placeholder resolver for '${key}' has already been set up, please check your config.`,
+      );
+    this.#placeholderResolvers[key] = resolver;
+  }
+
   get processors() {
     return this.#processors;
   }
 
   get entityProviders() {
     return this.#entityProviders;
+  }
+
+  get placeholderResolvers() {
+    return this.#placeholderResolvers;
   }
 }
 
@@ -99,6 +113,10 @@ export const catalogPlugin = createBackendPlugin({
         });
         builder.addProcessor(...processingExtensions.processors);
         builder.addEntityProvider(...processingExtensions.entityProviders);
+        Object.entries(processingExtensions.placeholderResolvers).forEach(
+          ([key, resolver]) => builder.setPlaceholderResolver(key, resolver),
+        );
+
         const { processingEngine, router } = await builder.build();
 
         await processingEngine.start();

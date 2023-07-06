@@ -17,23 +17,45 @@
 import { Grid, Typography } from '@material-ui/core';
 import LocationOnIcon from '@material-ui/icons/LocationOn';
 import React from 'react';
-import { BackButton } from '../Buttons';
+import { BackButton, ViewComponentButton } from '../Buttons';
 import { EntityListComponent } from '../EntityListComponent';
 import { PrepareResult } from '../useImportState';
 import { Link } from '@backstage/core-components';
 import partition from 'lodash/partition';
+import { CompoundEntityRef } from '@backstage/catalog-model';
+import { entityRouteRef } from '@backstage/plugin-catalog-react';
+import { useRouteRef } from '@backstage/core-plugin-api';
 
 type Props = {
   prepareResult: PrepareResult;
   onReset: () => void;
 };
 
+// Among the newly registered entities, return a software entity (e.g. Component, API, Resource)
+const filterComponentEntity = (
+  newLocations: Array<{
+    exists?: boolean;
+    target: string;
+    entities: CompoundEntityRef[];
+  }>,
+): CompoundEntityRef | null => {
+  for (const location of newLocations) {
+    for (const entity of location.entities) {
+      if (
+        ['component', 'api', 'resource'].includes(
+          entity.kind.toLocaleLowerCase('en-US'),
+        )
+      ) {
+        return entity;
+      }
+    }
+  }
+
+  return null;
+};
+
 export const StepFinishImportLocation = ({ prepareResult, onReset }: Props) => {
-  const continueButton = (
-    <Grid container spacing={0}>
-      <BackButton onClick={onReset}>Register another</BackButton>
-    </Grid>
-  );
+  const entityRoute = useRouteRef(entityRouteRef);
 
   if (prepareResult.type === 'repository') {
     return (
@@ -48,12 +70,13 @@ export const StepFinishImportLocation = ({ prepareResult, onReset }: Props) => {
             {prepareResult.pullRequest.url}
           </Link>
         </Typography>
-
         <Typography paragraph>
           Your entities will be imported as soon as the Pull Request is merged.
         </Typography>
-
-        {continueButton}
+        <Grid container spacing={0}>
+          <BackButton onClick={onReset}>Register another</BackButton>
+        </Grid>
+        ;
       </>
     );
   }
@@ -62,7 +85,7 @@ export const StepFinishImportLocation = ({ prepareResult, onReset }: Props) => {
     prepareResult.locations,
     l => l.exists,
   );
-
+  const newComponentEntity = filterComponentEntity(newLocations);
   return (
     <>
       {newLocations.length > 0 && (
@@ -91,7 +114,14 @@ export const StepFinishImportLocation = ({ prepareResult, onReset }: Props) => {
           />
         </>
       )}
-      {continueButton}
+      <Grid container spacing={0}>
+        {newComponentEntity && (
+          <ViewComponentButton to={entityRoute(newComponentEntity)}>
+            View Component
+          </ViewComponentButton>
+        )}
+        <BackButton onClick={onReset}>Register another</BackButton>
+      </Grid>
     </>
   );
 };

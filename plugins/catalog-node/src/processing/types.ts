@@ -15,6 +15,8 @@
  */
 
 import { Entity } from '@backstage/catalog-model';
+import { JsonValue } from '@backstage/types';
+import { CatalogProcessorEmit } from '../api';
 
 /**
  * Entities that are not yet processed.
@@ -24,3 +26,27 @@ export type DeferredEntity = {
   entity: Entity;
   locationKey?: string;
 };
+
+/** @public */
+export type PlaceholderResolverRead = (url: string) => Promise<Buffer>;
+
+/** @public */
+export type PlaceholderResolverResolveUrl = (
+  url: string,
+  base: string,
+) => string;
+
+/** @public */
+export type PlaceholderResolverParams = {
+  key: string;
+  value: JsonValue;
+  baseUrl: string;
+  read: PlaceholderResolverRead;
+  resolveUrl: PlaceholderResolverResolveUrl;
+  emit: CatalogProcessorEmit;
+};
+
+/** @public */
+export type PlaceholderResolver = (
+  params: PlaceholderResolverParams,
+) => Promise<JsonValue>;
