@@ -8,7 +8,7 @@ description: The input props that can be specified under ui:options for differen
 
 The input props that can be specified under `ui:options` for the `EntityPicker` field extension.
 
-### allowArbitraryValues
+### `allowArbitraryValues`
 
 Whether to allow arbitrary user input. Defaults to true.
 
@@ -38,11 +38,11 @@ entity:
     allowArbitraryValues: true
 ```
 
-### allowedKinds
+### `allowedKinds`
 
 DEPRECATED: Use `catalogFilter` instead.
 
-### catalogFilter
+### `catalogFilter`
 
 `catalogFilter` supports filtering options by any field(s) of an entity.
 
@@ -73,9 +73,9 @@ entity:
         spec.type: team
 ```
 
-For the full details on the spec.* values see [here](../software-catalog/descriptor-format.md#kind-group).
+For the full details on the spec.\* values see [here](../software-catalog/descriptor-format.md#kind-group).
 
-### defaultKind
+### `defaultKind`
 
 The default entity kind.
 
@@ -91,7 +91,7 @@ system:
     defaultKind: System
 ```
 
-### defaultNamespace
+### `defaultNamespace`
 
 The ID of a namespace that the entity belongs to. The default value is `default`.
 
@@ -119,11 +119,11 @@ entity:
     defaultNamespace: payment
 ```
 
-## OwnerPicker
+## `OwnerPicker`
 
 The input props that can be specified under `ui:options` for the `OwnerPicker` field extension.
 
-### allowArbitraryValues
+### `allowArbitraryValues`
 
 Whether to allow arbitrary user input. Defaults to true.
 
@@ -153,11 +153,11 @@ owner:
     allowArbitraryValues: true
 ```
 
-### allowedKinds
+### `allowedKinds`
 
 DEPRECATED: Use `catalogFilter` instead.
 
-### catalogFilter
+### `catalogFilter`
 
 `catalogFilter` supports filtering options by any field(s) of an entity.
 
@@ -188,9 +188,9 @@ owner:
         spec.type: team
 ```
 
-For the full details on the spec.* values see [here](../software-catalog/descriptor-format.md#kind-group).
+For the full details on the spec.\* values see [here](../software-catalog/descriptor-format.md#kind-group).
 
-### defaultNamespace
+### `defaultNamespace`
 
 The ID of a namespace that the owner belongs to. The default value is `default`.
 
@@ -226,7 +226,7 @@ owner:
 
 The input props that can be specified under `ui:options` for the `RepoUrlPicker` field extension.
 
-### allowedHosts
+### `allowedHosts`
 
 The `allowedHosts` part should be set to where you wish to enable this template
 to publish to. And it can be any host that is listed in your integrations'
@@ -244,7 +244,7 @@ repoUrl:
       - github.com
 ```
 
-### allowedOrganizations
+### `allowedOrganizations`
 
 List of allowed organizations in the given SCM platform. You can restrict the template to publish to a set of organizations.
 
@@ -260,7 +260,7 @@ repoUrl:
       - my_organization
 ```
 
-### allowedProjects
+### `allowedProjects`
 
 List of allowed projects in the given SCM platform. You can restrict the template to publish to a set of projects.
 
@@ -276,12 +276,12 @@ repoUrl:
       - project_1
 ```
 
-### allowedRepos
+### `allowedRepos`
 
 List of allowed repos in the given SCM platform. You can restrict the template to publish to a set of repository names.
 
 - Publish to only `repo_1` and `repo_2` repositories
-  
+
 ```yaml
 repoUrl:
   title: Repository Location
@@ -293,7 +293,7 @@ repoUrl:
       - repo_2
 ```
 
-### allowedOwners
+### `allowedOwners`
 
 List of allowed owners in the given SCM platform. You can restrict the template to publish to repositories owned by specific users/groups by setting the `allowedOwners` option.
 
@@ -310,10 +310,10 @@ repoUrl:
       - owner_2
 ```
 
-### requestUserCredentials
+### `requestUserCredentials`
 
 If defined will request user credentials to auth against the given SCM platform.
-  
+
 ```yaml
 repoUrl:
   title: Repository Location
