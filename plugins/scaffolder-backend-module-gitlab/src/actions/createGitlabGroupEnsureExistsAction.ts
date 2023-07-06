@@ -66,10 +66,12 @@ export const createGitlabGroupEnsureExistsAction = (options: {
         token: token,
       });
 
-      let currentPath: string = 'repos';
+      let currentPath: string | null = null;
       let parent: GroupSchema | null = null;
       for (const pathElement of path) {
-        const fullPath = `${currentPath}/${pathElement}`;
+        const fullPath: string = currentPath
+          ? `${currentPath}/${pathElement}`
+          : pathElement;
         const result = (await api.Groups.search(
           fullPath,
         )) as unknown as Array<GroupSchema>; // recast since the return type for search is wrong in the gitbeaker typings
