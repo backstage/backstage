@@ -98,6 +98,17 @@ The Airbrake plugin provides connectivity between Backstage and Airbrake (https:
    }
    ```
 
+   ```typescript
+   // Using the new backend system
+   import { airbrakePlugin } from '@backstage/plugin-airbrake-backend';
+
+   const backend = createBackend();
+   backend.add(airbrakePlugin());
+   // ... other feature additions
+
+   backend.start();
+   ```
+
 6. Add this config as a top level section in your `app-config.yaml`:
 
    ```yaml
