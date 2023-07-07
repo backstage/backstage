@@ -59,6 +59,7 @@ describe('config', () => {
         userPattern: /[\s\S]*/,
         orgEnabled: false,
         schedule: undefined,
+        skipForkedRepos: false,
       }),
     );
   });
@@ -95,6 +96,45 @@ describe('config', () => {
         userPattern: /[\s\S]*/,
         orgEnabled: false,
         schedule: undefined,
+        skipForkedRepos: false,
+      }),
+    );
+  });
+
+  it('valid config with skipForkedRepos', () => {
+    const config = new ConfigReader({
+      catalog: {
+        providers: {
+          gitlab: {
+            test: {
+              group: 'group',
+              host: 'host',
+              branch: 'not-master',
+              fallbackBranch: 'main',
+              entityFilename: 'custom-file.yaml',
+              skipForkedRepos: true,
+            },
+          },
+        },
+      },
+    });
+
+    const result = readGitlabConfigs(config);
+    expect(result).toHaveLength(1);
+    result.forEach(r =>
+      expect(r).toStrictEqual({
+        id: 'test',
+        group: 'group',
+        branch: 'not-master',
+        fallbackBranch: 'main',
+        host: 'host',
+        catalogFile: 'custom-file.yaml',
+        projectPattern: /[\s\S]*/,
+        groupPattern: /[\s\S]*/,
+        userPattern: /[\s\S]*/,
+        orgEnabled: false,
+        schedule: undefined,
+        skipForkedRepos: true,
       }),
     );
   });
@@ -133,6 +173,7 @@ describe('config', () => {
         groupPattern: /[\s\S]*/,
         userPattern: /[\s\S]*/,
         orgEnabled: false,
+        skipForkedRepos: false,
         schedule: {
           frequency: Duration.fromISO('PT30M'),
           timeout: {
