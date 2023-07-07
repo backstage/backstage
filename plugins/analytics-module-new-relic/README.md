@@ -68,6 +68,10 @@ app:
       cookiesEnabled: true
 ```
 
+### User IDs
+
+This plugin supports sending user context to New Relic Browser by providing a User ID. This requires instantiating the `NewRelicBrowser` instance with an `identityApi` instance passed to it, but this is optional. If omitted the plugin will not send user context to New Relic Browser.
+
 ## Development
 
 If you would like to contribute improvements to this plugin, the easiest way to
