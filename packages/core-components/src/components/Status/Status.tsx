@@ -19,11 +19,11 @@ import Typography from '@material-ui/core/Typography';
 import classNames from 'classnames';
 import React, { PropsWithChildren } from 'react';
 
-import CheckCircleIcon from '@material-ui/icons/CheckCircle';
+import CheckIcon from '@material-ui/icons/Check';
 import WarningIcon from '@material-ui/icons/Warning';
 import ErrorIcon from '@material-ui/icons/Error';
 import HighlightOffIcon from '@material-ui/icons/HighlightOff';
-import WatchLaterIcon from '@material-ui/icons/WatchLater';
+import ScheduleIcon from '@material-ui/icons/Schedule';
 import DirectionsRunIcon from '@material-ui/icons/DirectionsRun';
 
 export type StatusClassKey =
@@ -90,7 +90,7 @@ export function StatusOK(props: PropsWithChildren<{}>) {
       aria-label={!props.children ? 'Ok' : undefined}
       role={!props.children ? 'img' : undefined}
     >
-      <CheckCircleIcon style={{ fontSize: '1rem' }} />
+      <CheckIcon style={{ fontSize: '1rem' }} />
       <Typography component="span" {...props} />
     </div>
   );
@@ -132,7 +132,7 @@ export function StatusPending(props: PropsWithChildren<{}>) {
       aria-label={!props.children ? 'Pending' : undefined}
       role={!props.children ? 'img' : undefined}
     >
-      <WatchLaterIcon style={{ fontSize: '1rem' }} />
+      <ScheduleIcon style={{ fontSize: '1rem' }} />
       <Typography component="span" {...props} />
     </div>
   );
