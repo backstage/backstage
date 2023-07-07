@@ -23,15 +23,14 @@ import {
   TableColumn,
 } from '@backstage/core-components';
 import { useApi } from '@backstage/core-plugin-api';
-import { BackstageThemeOptions } from '@backstage/theme';
-import { Box, Typography, makeStyles } from '@material-ui/core';
+import { Box, Theme, Typography, makeStyles } from '@material-ui/core';
 
 import { UnprocessedEntity } from '../types';
 import { EntityDialog } from './EntityDialog';
 import { catalogUnprocessedEntitiesApiRef } from '../api';
 import useAsync from 'react-use/lib/useAsync';
 
-const useStyles = makeStyles((theme: BackstageThemeOptions) => ({
+const useStyles = makeStyles((theme: Theme) => ({
   errorBox: {
     color: theme.palette.status.error,
     backgroundColor: theme.palette.errorBackground,
@@ -46,6 +45,7 @@ const useStyles = makeStyles((theme: BackstageThemeOptions) => ({
   successMessage: {
     background: theme.palette.infoBackground,
     color: theme.palette.infoText,
+    padding: theme.spacing(2),
   },
 }));
 

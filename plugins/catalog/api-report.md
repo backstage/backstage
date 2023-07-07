@@ -382,6 +382,9 @@ export interface EntityPredicates {
 // @public
 export function EntityProcessingErrorsPanel(): JSX.Element | null;
 
+// @public
+export function EntityRelationWarning(): JSX.Element | null;
+
 // @public (undocumented)
 export const EntitySwitch: {
   (props: EntitySwitchProps): JSX.Element;
@@ -433,6 +436,14 @@ export interface HasComponentsCardProps {
 
 // @public
 export function hasLabels(entity: Entity): boolean;
+
+// @public
+export function hasRelationWarnings(
+  entity: Entity,
+  context: {
+    apis: ApiHolder;
+  },
+): Promise<boolean>;
 
 // @public (undocumented)
 export interface HasResourcesCardProps {

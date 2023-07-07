@@ -1,5 +1,13 @@
 # @backstage/plugin-devtools-backend
 
+## 0.1.2-next.1
+
+### Patch Changes
+
+- ae261e79d256: Added alpha support for the [new backend system](https://backstage.io/docs/backend-system/)
+- Updated dependencies
+  - @backstage/config@1.0.8
+
 ## 0.1.2-next.0
 
 ### Patch Changes

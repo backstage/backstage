@@ -99,18 +99,18 @@ export default async function createPlugin(
 
 If you want to manage your incremental entity providers via REST endpoints, the following endpoints are available:
 
-| Method | Path                                       | Description                                                                                                                 |
-| ------ | ------------------------------------------ | --------------------------------------------------------------------------------------------------------------------------- |
-| GET    | `/incremental/health`                      | Checks the health of all incremental providers. Returns array of any unhealthy ones.                                        |
-| GET    | `/incremental/providers`                   | Get a list of all known incremental entity providers                                                                        |
-| GET    | `/incremental/providers/:provider`         | Checks the status of an incremental provider (resting, interstitial, etc).                                                  |
-| POST   | `/incremental/providers/:provider/trigger` | Triggers a provider's next action immediately. E.g., if it's currently interstitial, it will trigger the next burst.        |
-| POST   | `/incremental/providers/:provider/start`   | Stop the current ingestion cycle and start a new one immediately.                                                           |
-| POST   | `/incremental/providers/:provider/cancel`  | Stop the current ingestion cycle and start a new one in 24 hours.                                                           |
-| DELETE | `/incremental/providers/:provider`         | Completely remove all records for the provider and schedule it to start again in 24 hours.                                  |
-| GET    | `/incremental/providers/:provider/marks`   | Retrieve a list of all ingestion marks for the current ingestion cycle.                                                     |
-| DELETE | `/incremental/providers/:provider/marks`   | Remove all ingestion marks for the current ingestion cycle.                                                                 |
-| POST   | `/incremental/cleanup`                     | Completely remove all records for ALL providers and schedule them to start again in 24 hours. (CAUTION! Can cause orphans!) |
+| Method | Path                                                   | Description                                                                                                                 |
+| ------ | ------------------------------------------------------ | --------------------------------------------------------------------------------------------------------------------------- |
+| GET    | `/api/catalog/incremental/health`                      | Checks the health of all incremental providers. Returns array of any unhealthy ones.                                        |
+| GET    | `/api/catalog/incremental/providers`                   | Get a list of all known incremental entity providers                                                                        |
+| GET    | `/api/catalog/incremental/providers/:provider`         | Checks the status of an incremental provider (resting, interstitial, etc).                                                  |
+| POST   | `/api/catalog/incremental/providers/:provider/trigger` | Triggers a provider's next action immediately. E.g., if it's currently interstitial, it will trigger the next burst.        |
+| POST   | `/api/catalog/incremental/providers/:provider/start`   | Stop the current ingestion cycle and start a new one immediately.                                                           |
+| POST   | `/api/catalog/incremental/providers/:provider/cancel`  | Stop the current ingestion cycle and start a new one in 24 hours.                                                           |
+| DELETE | `/api/catalog/incremental/providers/:provider`         | Completely remove all records for the provider and schedule it to start again in 24 hours.                                  |
+| GET    | `/api/catalog/incremental/providers/:provider/marks`   | Retrieve a list of all ingestion marks for the current ingestion cycle.                                                     |
+| DELETE | `/api/catalog/incremental/providers/:provider/marks`   | Remove all ingestion marks for the current ingestion cycle.                                                                 |
+| POST   | `/api/catalog/incremental/cleanup`                     | Completely remove all records for ALL providers and schedule them to start again in 24 hours. (CAUTION! Can cause orphans!) |
 
 In all cases, `:provider` is the name of the incremental entity provider.
 
@@ -323,22 +323,17 @@ incrementalBuilder.addIncrementalEntityProvider(myEntityProvider, {
   // How long should it attempt to read pages from the API in a
   // single burst? Keep this short. The Incremental Entity Provider
   // will attempt to read as many pages as it can in this time
-  burstLength: Duration.fromObject({ seconds: 3 }),
+  burstLength: { seconds: 3 },
 
   // How long should it wait between bursts?
-  burstInterval: Duration.fromObject({ seconds: 3 }),
+  burstInterval: { seconds: 3 },
 
   // How long should it rest before re-ingesting again?
-  restLength: Duration.fromObject({ day: 1 }),
+  restLength: { day: 1 },
 
   // Optional back-off configuration - how long should it wait to retry
   // in the event of an error?
-  backoff: [
-    Duration.fromObject({ seconds: 5 }),
-    Duration.fromObject({ seconds: 30 }),
-    Duration.fromObject({ minutes: 10 }),
-    Duration.fromObject({ hours: 3 }),
-  ],
+  backoff: [{ seconds: 5 }, { seconds: 30 }, { minutes: 10 }, { hours: 3 }],
 
   // Optional. Use this to prevent removal of entities above a given
   // percentage. This can be helpful if a data source is flaky and

@@ -1,5 +1,16 @@
 # @backstage/plugin-scaffolder-react
 
+## 1.5.1-next.1
+
+### Patch Changes
+
+- f74a27de4d2c: Made markdown description theme-able
+- Updated dependencies
+  - @backstage/theme@0.4.1-next.0
+  - @backstage/core-components@0.13.3-next.1
+  - @backstage/core-plugin-api@1.5.3-next.0
+  - @backstage/plugin-catalog-react@1.7.1-next.1
+
 ## 1.5.1-next.0
 
 ### Patch Changes

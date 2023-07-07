@@ -173,7 +173,7 @@ export const PodDrawer = ({ podAndErrors, open }: PodDrawerProps) => {
             </Grid>
             {podAndErrors.errors.length > 0 && (
               <Grid item xs={12}>
-                <Typography variant="h5">Errors:</Typography>
+                <Typography variant="h5">Errors</Typography>
               </Grid>
             )}
             {podAndErrors.errors.length > 0 && (
