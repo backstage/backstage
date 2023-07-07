@@ -19,6 +19,7 @@ import { renderInTestApp, TestApiProvider } from '@backstage/test-utils';
 import React from 'react';
 import { EntityFeedbackApi, entityFeedbackApiRef } from '../../api';
 import { FeedbackRatingsTable } from './FeedbackRatingsTable';
+import { CatalogApi, catalogApiRef } from '@backstage/plugin-catalog-react';
 
 describe('FeedbackRatingsTable', () => {
   const sampleRatings = [
@@ -43,12 +44,18 @@ describe('FeedbackRatingsTable', () => {
     getAllRatings: jest.fn().mockImplementation(async () => sampleRatings),
     getOwnedRatings: jest.fn().mockImplementation(async () => sampleRatings),
   };
+  const catalogApi: jest.Mocked<CatalogApi> = {} as any;
 
   const sampleRatingValues = ['Rating 1', 'Rating 2'];
 
   const render = async (props: any = {}) =>
     renderInTestApp(
-      <TestApiProvider apis={[[entityFeedbackApiRef, feedbackApi]]}>
+      <TestApiProvider
+        apis={[
+          [entityFeedbackApiRef, feedbackApi],
+          [catalogApiRef, catalogApi],
+        ]}
+      >
         <FeedbackRatingsTable {...props} ratingValues={sampleRatingValues} />
       </TestApiProvider>,
       {

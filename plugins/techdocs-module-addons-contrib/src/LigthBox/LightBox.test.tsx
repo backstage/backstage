@@ -20,12 +20,16 @@ import React from 'react';
 
 import { LightBox } from '../plugin';
 
+import { CatalogApi, catalogApiRef } from '@backstage/plugin-catalog-react';
+
 describe('LightBox', () => {
+  const catalogApi: jest.Mocked<CatalogApi> = {} as any;
   it('renders without exploding', async () => {
     const { getByText } = await TechDocsAddonTester.buildAddonsInTechDocs([
       <LightBox />,
     ])
       .withDom(<body>TEST_CONTENT</body>)
+      .withApis([[catalogApiRef, catalogApi]])
       .renderWithEffects();
 
     expect(getByText('TEST_CONTENT')).toBeInTheDocument();
@@ -42,6 +46,7 @@ describe('LightBox', () => {
           alt="dog"
         />,
       )
+      .withApis([[catalogApiRef, catalogApi]])
       .renderWithEffects();
 
     expect(getByTestId('fixture').onclick).not.toBeUndefined();

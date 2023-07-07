@@ -25,18 +25,23 @@ import { UserSettingsIdentityCard } from './UserSettingsIdentityCard';
 import { ApiProvider } from '@backstage/core-app-api';
 import { identityApiRef } from '@backstage/core-plugin-api';
 import { entityRouteRef } from '@backstage/plugin-catalog-react';
+import { CatalogApi, catalogApiRef } from '@backstage/plugin-catalog-react';
 
-const apiRegistry = TestApiRegistry.from([
-  identityApiRef,
-  {
-    getProfileInfo: jest.fn(async () => ({})),
-    getBackstageIdentity: jest.fn(async () => ({
-      type: 'user' as const,
-      userEntityRef: 'foo:bar/foobar',
-      ownershipEntityRefs: ['user:default/test-ownership'],
-    })),
-  },
-]);
+const catalogApi: jest.Mocked<CatalogApi> = {} as any;
+const apiRegistry = TestApiRegistry.from(
+  [
+    identityApiRef,
+    {
+      getProfileInfo: jest.fn(async () => ({})),
+      getBackstageIdentity: jest.fn(async () => ({
+        type: 'user' as const,
+        userEntityRef: 'foo:bar/foobar',
+        ownershipEntityRefs: ['user:default/test-ownership'],
+      })),
+    },
+  ],
+  [catalogApiRef, catalogApi],
+);
 
 describe('<UserSettingsIdentityCard />', () => {
   it('displays an identity card', async () => {

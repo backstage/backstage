@@ -20,6 +20,7 @@ import React from 'react';
 import { fireEvent, waitFor } from '@testing-library/react';
 
 import { ExpandableNavigation } from '../plugin';
+import { CatalogApi, catalogApiRef } from '@backstage/plugin-catalog-react';
 
 const mockNavWithSublevels = (
   <div data-md-component="navigation">
@@ -83,12 +84,15 @@ const mockNavWithoutSublevels = (
   </div>
 );
 
+const catalogApi: jest.Mocked<CatalogApi> = {} as any;
+
 describe('ExpandableNavigation', () => {
   it('renders without exploding', async () => {
     const { getByRole } = await TechDocsAddonTester.buildAddonsInTechDocs([
       <ExpandableNavigation />,
     ])
       .withDom(mockNavWithSublevels)
+      .withApis([[catalogApiRef, catalogApi]])
       .renderWithEffects();
 
     expect(getByRole('button', { name: 'expand-nav' })).toBeInTheDocument();
@@ -100,6 +104,7 @@ describe('ExpandableNavigation', () => {
         <ExpandableNavigation />,
       ])
         .withDom(mockNavWithSublevels)
+        .withApis([[catalogApiRef, catalogApi]])
         .renderWithEffects();
 
     const toggles =
@@ -137,6 +142,7 @@ describe('ExpandableNavigation', () => {
       <ExpandableNavigation />,
     ])
       .withDom(mockNavWithoutSublevels)
+      .withApis([[catalogApiRef, catalogApi]])
       .renderWithEffects();
 
     expect(

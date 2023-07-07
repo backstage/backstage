@@ -22,12 +22,16 @@ import { fireEvent, waitFor } from '@testing-library/react';
 
 import { TextSize } from '../plugin';
 
+import { CatalogApi, catalogApiRef } from '@backstage/plugin-catalog-react';
+
 describe('TextSize', () => {
+  const catalogApi: jest.Mocked<CatalogApi> = {} as any;
   it('renders without exploding', async () => {
     const { getByText } = await TechDocsAddonTester.buildAddonsInTechDocs([
       <TextSize />,
     ])
       .withDom(<body>TEST_CONTENT</body>)
+      .withApis([[catalogApiRef, catalogApi]])
       .renderWithEffects();
 
     expect(getByText('TEST_CONTENT')).toBeInTheDocument();
@@ -37,6 +41,7 @@ describe('TextSize', () => {
     const { getByTitle, getByText, getByRole, getByDisplayValue } =
       await TechDocsAddonTester.buildAddonsInTechDocs([<TextSize />])
         .withDom(<body>TEST_CONTENT</body>)
+        .withApis([[catalogApiRef, catalogApi]])
         .renderWithEffects();
 
     fireEvent.click(getByTitle('Settings'));
@@ -87,6 +92,7 @@ describe('TextSize', () => {
       getByDisplayValue,
     } = await TechDocsAddonTester.buildAddonsInTechDocs([<TextSize />])
       .withDom(<body>TEST_CONTENT</body>)
+      .withApis([[catalogApiRef, catalogApi]])
       .renderWithEffects();
 
     fireEvent.click(getByTitle('Settings'));

@@ -15,27 +15,31 @@
  */
 
 import { entityRouteRef } from '@backstage/plugin-catalog-react';
-import { renderInTestApp } from '@backstage/test-utils';
+import { renderInTestApp, TestApiProvider } from '@backstage/test-utils';
 import React from 'react';
 
 import { rootRouteRef } from '../../routes';
 import { PlaylistCard } from './PlaylistCard';
+import { CatalogApi, catalogApiRef } from '@backstage/plugin-catalog-react';
 
 describe('<PlaylistCard/>', () => {
+  const catalogApi: jest.Mocked<CatalogApi> = {} as any;
   it('renders playlist info', async () => {
     const rendered = await renderInTestApp(
-      <PlaylistCard
-        playlist={{
-          id: 'id1',
-          name: 'playlist-1',
-          description: 'test description',
-          owner: 'group:default/some-owner',
-          public: true,
-          entities: 3,
-          followers: 2,
-          isFollowing: false,
-        }}
-      />,
+      <TestApiProvider apis={[[catalogApiRef, catalogApi]]}>
+        <PlaylistCard
+          playlist={{
+            id: 'id1',
+            name: 'playlist-1',
+            description: 'test description',
+            owner: 'group:default/some-owner',
+            public: true,
+            entities: 3,
+            followers: 2,
+            isFollowing: false,
+          }}
+        />
+      </TestApiProvider>,
       {
         mountedRoutes: {
           '/playlists': rootRouteRef,

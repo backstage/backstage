@@ -19,6 +19,7 @@ import { renderInTestApp, TestApiProvider } from '@backstage/test-utils';
 import React from 'react';
 import { EntityFeedbackApi, entityFeedbackApiRef } from '../../api';
 import { FeedbackResponseTable } from './FeedbackResponseTable';
+import { CatalogApi, catalogApiRef } from '@backstage/plugin-catalog-react';
 
 describe('FeedbackResponseTable', () => {
   const sampleResponses = [
@@ -39,10 +40,16 @@ describe('FeedbackResponseTable', () => {
   const feedbackApi: Partial<EntityFeedbackApi> = {
     getResponses: jest.fn().mockImplementation(async () => sampleResponses),
   };
+  const catalogApi: jest.Mocked<CatalogApi> = {} as any;
 
   const render = async (props: any = {}) =>
     renderInTestApp(
-      <TestApiProvider apis={[[entityFeedbackApiRef, feedbackApi]]}>
+      <TestApiProvider
+        apis={[
+          [entityFeedbackApiRef, feedbackApi],
+          [catalogApiRef, catalogApi],
+        ]}
+      >
         <FeedbackResponseTable {...props} entityRef="component:default/test" />
       </TestApiProvider>,
       {
