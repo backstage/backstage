@@ -9542,6 +9542,7 @@ __metadata:
     "@backstage/dev-utils": "workspace:^"
     "@backstage/integration": "workspace:^"
     "@backstage/integration-react": "workspace:^"
+    "@backstage/plugin-catalog-react": "workspace:^"
     "@backstage/plugin-techdocs-addons-test-utils": "workspace:^"
     "@backstage/plugin-techdocs-react": "workspace:^"
     "@backstage/test-utils": "workspace:^"
