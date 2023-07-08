@@ -11,12 +11,13 @@
 
 FROM node:16-bullseye-slim
 
-# Install sqlite3 dependencies. You can skip this if you don't use sqlite3 in the image,
+# Install sqlite3 and isolated-vm dependencies. 
+# You can remove libsqlite3-dev if you don't use sqlite3 in the image,
 # in which case you should also move better-sqlite3 to "devDependencies" in package.json.
 RUN --mount=type=cache,target=/var/cache/apt,sharing=locked \
     --mount=type=cache,target=/var/lib/apt,sharing=locked \
     apt-get update && \
-    apt-get install -y --no-install-recommends libsqlite3-dev python3 build-essential && \
+    apt-get install -y --no-install-recommends libsqlite3-dev python3 g++ build-essential && \
     yarn config set python /usr/bin/python3
 
 # From here on we use the least-privileged `node` user to run the backend.
