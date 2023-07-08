@@ -29,3 +29,13 @@ export default {
 export const Default = () => {
   return <Header title={<WelcomeTitle />} pageTitleOverride="Home" />;
 };
+
+export const withLanguage = () => {
+  const languages = ['English', 'Spanish'];
+  return (
+    <Header
+      title={<WelcomeTitle language={languages} />}
+      pageTitleOverride="Home"
+    />
+  );
+};
