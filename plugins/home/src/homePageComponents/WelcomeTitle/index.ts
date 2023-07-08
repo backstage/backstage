@@ -13,4 +13,4 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-export { WelcomeTitle, type WelcomeTitleLanguageProps } from './WelcomeTitle';
+export { WelcomeTitle } from './WelcomeTitle';
