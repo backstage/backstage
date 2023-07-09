@@ -23,6 +23,7 @@ import React, { useEffect, useMemo } from 'react';
 import useAsync from 'react-use/lib/useAsync';
 import { getTimeBasedGreeting } from './timeUtil';
 
+/** @public */
 export type WelcomeTitleLanguageProps = {
   language?: string[];
 };
