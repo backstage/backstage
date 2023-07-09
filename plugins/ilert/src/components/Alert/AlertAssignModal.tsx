@@ -22,7 +22,7 @@ import DialogContent from '@material-ui/core/DialogContent';
 import DialogTitle from '@material-ui/core/DialogTitle';
 import { makeStyles } from '@material-ui/core/styles';
 import TextField from '@material-ui/core/TextField';
-import MdAlert from '@material-ui/lab/Alert';
+import MUIAlert from '@material-ui/lab/Alert';
 import Autocomplete from '@material-ui/lab/Autocomplete';
 import React from 'react';
 import { ilertApiRef } from '../../api';
@@ -111,11 +111,11 @@ export const AlertAssignModal = ({
         Select responder to assign
       </DialogTitle>
       <DialogContent>
-        <MdAlert severity="info">
+        <MUIAlert severity="info">
           <Typography variant="body1" gutterBottom align="justify">
             This action will assign the alert to the selected responder.
           </Typography>
-        </MdAlert>
+        </MUIAlert>
         <Autocomplete
           disabled={isLoading}
           options={alertRespondersList}
