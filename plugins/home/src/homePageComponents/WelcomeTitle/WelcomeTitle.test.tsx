@@ -30,18 +30,6 @@ describe('<WelcomeTitle>', () => {
     expect(getByText(/Get some rest, Guest/)).toBeInTheDocument();
   });
 
-  test('should greet user with provided language', async () => {
-    jest
-      .spyOn(global.Date, 'now')
-      .mockImplementation(() => new Date('2023-07-03T09:00:00').valueOf());
-
-    const { getByText } = await renderInTestApp(
-      <WelcomeTitle language="English" />,
-    );
-
-    expect(getByText(/Good morning, Guest/)).toBeInTheDocument();
-  });
-
   test('should greet user with multiple languages', async () => {
     jest
       .spyOn(global.Date, 'now')

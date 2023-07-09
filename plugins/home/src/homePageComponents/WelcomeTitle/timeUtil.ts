@@ -22,7 +22,7 @@ import goodEvening from './locales/goodEvening.locales.json';
 // every time the user navigates.
 const greetingRandomSeed = Math.floor(Math.random() * 1000000);
 
-export function getTimeBasedGreeting(language?: string | string[]): {
+export function getTimeBasedGreeting(language?: string[] | undefined): {
   language: string;
   greeting: string;
 } {
@@ -44,8 +44,7 @@ export function getTimeBasedGreeting(language?: string | string[]): {
 
   const greetings = timeOfDay(currentHour);
 
-  if (language && Array.isArray(language)) {
-    // Handle the case when language is an array
+  if (Array.isArray(language) && language.length > 0) {
     const validLanguages = language.filter(lang => lang && greetings[lang]);
     if (validLanguages.length > 0) {
       const greetingsKey = random(validLanguages);
@@ -54,12 +53,6 @@ export function getTimeBasedGreeting(language?: string | string[]): {
         greeting: greetings[greetingsKey],
       };
     }
-  } else if (language && greetings[language]) {
-    // Handle the case when language is a single string
-    return {
-      language,
-      greeting: greetings[language],
-    };
   }
 
   const greetingsKey = random(Object.keys(greetings));
@@ -68,3 +61,4 @@ export function getTimeBasedGreeting(language?: string | string[]): {
     greeting: greetings[greetingsKey],
   };
 }
+

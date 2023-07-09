@@ -24,7 +24,7 @@ import useAsync from 'react-use/lib/useAsync';
 import { getTimeBasedGreeting } from './timeUtil';
 
 interface WelcomeTitleLanguageProps {
-  language?: string | string[];
+  language?: string[];
 }
 
 export const WelcomeTitle = ({ language }: WelcomeTitleLanguageProps) => {
