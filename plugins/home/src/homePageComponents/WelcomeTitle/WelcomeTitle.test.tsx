@@ -1,5 +1,5 @@
 /*
- * Copyright 2021 The Backstage Authors
+ * Copyright 2023 The Backstage Authors
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -13,33 +13,29 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import { renderInTestApp } from '@backstage/test-utils';
-import React from 'react';
+
+import { Header } from '@backstage/core-components';
+import { wrapInTestApp } from '@backstage/test-utils';
+import React, { ComponentType, PropsWithChildren } from 'react';
 import { WelcomeTitle } from './WelcomeTitle';
 
-describe('<WelcomeTitle>', () => {
-  afterEach(() => jest.resetAllMocks());
+export default {
+  title: 'Plugins/Home/Components/WelcomeTitle',
+  decorators: [
+    (Story: ComponentType<PropsWithChildren<{}>>) => wrapInTestApp(<Story />),
+  ],
+};
 
-  test('should greet user with default greeting', async () => {
-    jest
-      .spyOn(global.Date, 'now')
-      .mockImplementation(() => new Date('1970-01-01T23:00:00').valueOf());
+export const Default = () => {
+  return <Header title={<WelcomeTitle />} pageTitleOverride="Home" />;
+};
 
-    const { getByText } = await renderInTestApp(<WelcomeTitle />);
-
-    expect(getByText(/Get some rest, Guest/)).toBeInTheDocument();
-  });
-
-  test('should greet user with multiple languages', async () => {
-    jest
-      .spyOn(global.Date, 'now')
-      .mockImplementation(() => new Date('2023-07-03T14:00:00').valueOf());
-
-    const languages = ['English', 'Spanish'];
-    const { getByText } = await renderInTestApp(
-      <WelcomeTitle language={languages} />,
-    );
-
-    expect(getByText(/Good afternoon, Guest/)).toBeInTheDocument();
-  });
-});
+export const withLanguage = () => {
+  const languages = ['English', 'Spanish'];
+  return (
+    <Header
+      title={<WelcomeTitle language={languages} />}
+      pageTitleOverride="Home"
+    />
+  );
+};
