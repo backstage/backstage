@@ -13,39 +13,33 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import {
-  alertApiRef,
-  identityApiRef,
-  useApi,
-} from '@backstage/core-plugin-api';
-import { Tooltip, Typography } from '@material-ui/core';
-import React, { useEffect, useMemo } from 'react';
-import useAsync from 'react-use/lib/useAsync';
-import { getTimeBasedGreeting } from './timeUtil';
+import { renderInTestApp } from '@backstage/test-utils';
+import React from 'react';
+import { WelcomeTitle } from './WelcomeTitle';
 
-export const WelcomeTitle = () => {
-  const identityApi = useApi(identityApiRef);
-  const alertApi = useApi(alertApiRef);
-  const greeting = useMemo(() => getTimeBasedGreeting(), []);
+describe('<WelcomeTitle>', () => {
+  afterEach(() => jest.resetAllMocks());
 
-  const { value: profile, error } = useAsync(() =>
-    identityApi.getProfileInfo(),
-  );
+  test('should greet user with default greeting', async () => {
+    jest
+      .spyOn(global.Date, 'now')
+      .mockImplementation(() => new Date('1970-01-01T23:00:00').valueOf());
 
-  useEffect(() => {
-    if (error) {
-      alertApi.post({
-        message: `Failed to load user identity: ${error}`,
-        severity: 'error',
-      });
-    }
-  }, [error, alertApi]);
+    const { getByText } = await renderInTestApp(<WelcomeTitle />);
 
-  return (
-    <Tooltip title={greeting.language}>
-      <Typography component="span" variant="inherit">{`${greeting.greeting}${
-        profile?.displayName ? `, ${profile?.displayName}` : ''
-      }!`}</Typography>
-    </Tooltip>
-  );
-};
+    expect(getByText(/Get some rest, Guest/)).toBeInTheDocument();
+  });
+
+  test('should greet user with multiple languages', async () => {
+    jest
+      .spyOn(global.Date, 'now')
+      .mockImplementation(() => new Date('2023-07-03T14:00:00').valueOf());
+
+    const languages = ['English', 'Spanish'];
+    const { getByText } = await renderInTestApp(
+      <WelcomeTitle language={languages} />,
+    );
+
+    expect(getByText(/Good afternoon, Guest/)).toBeInTheDocument();
+  });
+});
