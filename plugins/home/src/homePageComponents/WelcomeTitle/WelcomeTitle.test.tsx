@@ -14,28 +14,32 @@
  * limitations under the License.
  */
 
-import { Header } from '@backstage/core-components';
-import { wrapInTestApp } from '@backstage/test-utils';
-import React, { ComponentType, PropsWithChildren } from 'react';
+import { renderInTestApp } from '@backstage/test-utils';
+import React from 'react';
 import { WelcomeTitle } from './WelcomeTitle';
 
-export default {
-  title: 'Plugins/Home/Components/WelcomeTitle',
-  decorators: [
-    (Story: ComponentType<PropsWithChildren<{}>>) => wrapInTestApp(<Story />),
-  ],
-};
+describe('<WelcomeTitle>', () => {
+  afterEach(() => jest.resetAllMocks());
 
-export const Default = () => {
-  return <Header title={<WelcomeTitle />} pageTitleOverride="Home" />;
-};
+  test('should greet user', async () => {
+    jest
+      .spyOn(global.Date, 'now')
+      .mockImplementation(() => new Date('1970-01-01T23:00:00').valueOf());
 
-export const withLanguage = () => {
-  const languages = ['English', 'Spanish'];
-  return (
-    <Header
-      title={<WelcomeTitle language={languages} />}
-      pageTitleOverride="Home"
-    />
+    const { getByText } = await renderInTestApp(<WelcomeTitle />);
+
+    expect(getByText(/Get some rest, Guest/)).toBeInTheDocument();
+  });
+});
+
+test('should greet user with a single language', async () => {
+  jest
+    .spyOn(global.Date, 'now')
+    .mockImplementation(() => new Date('1970-01-01T10:00:00').valueOf());
+
+  const { getByText } = await renderInTestApp(
+    <WelcomeTitle language={['English']} />,
   );
-};
+
+  expect(getByText(/Good morning, Guest/)).toBeInTheDocument();
+});
