@@ -44,7 +44,7 @@ export type ClockConfig = {
 export const ComponentAccordion: (props: {
   title: string;
   expanded?: boolean | undefined;
-  Content: () => JSX.Element;
+  Content: () => JSX.Element /** @public */;
   Actions?: (() => JSX.Element) | undefined;
   Settings?: (() => JSX.Element) | undefined;
   ContextProvider?: ((props: any) => JSX.Element) | undefined;
@@ -184,5 +184,12 @@ export type ToolkitContentProps = {
 };
 
 // @public
-export const WelcomeTitle: () => JSX.Element;
+export const WelcomeTitle: ({
+  language,
+}: WelcomeTitleLanguageProps) => JSX.Element;
+
+// @public (undocumented)
+export type WelcomeTitleLanguageProps = {
+  language?: string[];
+};
 ```
