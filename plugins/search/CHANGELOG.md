@@ -118,7 +118,7 @@
 
 - 750e45539ad: Add close button & improve search input.
 
-  MUI's Paper wrapping the SearchBar in the SearchPage was removed, we recommend users update their apps accordingly.
+  Material UI's Paper wrapping the SearchBar in the SearchPage was removed, we recommend users update their apps accordingly.
 
   SearchBarBase's TextField's label support added & aria-label uses label string if present, tests relying on the default placeholder value should still work unless custom placeholder was given.
 
@@ -168,7 +168,7 @@
 
 - 750e45539ad: Add close button & improve search input.
 
-  MUI's Paper wrapping the SearchBar in the SearchPage was removed, we recommend users update their apps accordingly.
+  Material UI's Paper wrapping the SearchBar in the SearchPage was removed, we recommend users update their apps accordingly.
 
   SearchBarBase's TextField's label support added & aria-label uses label string if present, tests relying on the default placeholder value should still work unless custom placeholder was given.
 
@@ -1864,7 +1864,7 @@
 
 ### Patch Changes
 
-- 01707438b: Fix Material-UI warning for search filtering
+- 01707438b: Fix Material UI warning for search filtering
 - Updated dependencies [9c09a364f]
   - @backstage/plugin-catalog@0.2.10
 

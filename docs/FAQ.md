@@ -64,8 +64,8 @@ valuable as you grow.
 
 ### Our company has a strong design language system/brand that we want to incorporate. Does Backstage support this?
 
-Yes! The Backstage UI is built using Material-UI. With the theming capabilities
-of Material-UI, you are able to adapt the interface to your brand guidelines.
+Yes! The Backstage UI is built using Material UI. With the theming capabilities
+of Material UI, you are able to adapt the interface to your brand guidelines.
 
 ## Technical FAQ
 
@@ -73,11 +73,11 @@ of Material-UI, you are able to adapt the interface to your brand guidelines.
 
 Backstage is a large scale [TypeScript](https://www.typescriptlang.org/)
 application whose frontend parts use [React](https://react.dev/) and
-[Material-UI](https://mui.com/), while the backend parts use
+[Material UI](https://material-ui.com/), while the backend parts use
 [Node.js](https://nodejs.org/) and the [Express](https://expressjs.com/)
 framework.
 
-### Why Material-UI?
+### Why Material UI?
 
 The short answer is that's what we've been using in Backstage internally.
 
@@ -88,7 +88,7 @@ knew that we would like to use.
 
 It strikes a good balance between power, customizability, and ease of use. A
 core focus of Backstage is to make plugin developers productive with as few
-hurdles as possible. Material-UI lets plugin makers get going easily with both
+hurdles as possible. Material UI lets plugin makers get going easily with both
 well-known tech and a large flora of components.
 
 ### What is the end-to-end user flow? The happy path story.

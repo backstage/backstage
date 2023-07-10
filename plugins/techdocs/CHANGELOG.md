@@ -601,7 +601,7 @@
 - d3fea4ae0a: Internal fixes to avoid implicit usage of globals
 - 2e701b3796: Internal refactor to use `react-router-dom` rather than `react-router`.
 - a19cffbeed: Update search links to only have header as linkable text
-- 5d3058355d: Add `react/forbid-elements` linter rule for button, suggest MUI `Button`
+- 5d3058355d: Add `react/forbid-elements` linter rule for button, suggest Material UI `Button`
 - 3280711113: Updated dependency `msw` to `^0.49.0`.
 - 786f1b1419: Support older versions of react-router
 - Updated dependencies

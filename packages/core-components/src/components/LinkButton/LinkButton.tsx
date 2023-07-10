@@ -26,7 +26,7 @@ import { Link, LinkProps } from '../Link';
  * @public
  * @remarks
  *
- * See {@link https://v4.mui.com/api/button/#props | Material-UI Button Props} for all properties
+ * See {@link https://v4.mui.com/api/button/#props | Material UI Button Props} for all properties
  */
 export type LinkButtonProps = MaterialButtonProps &
   Omit<LinkProps, 'variant' | 'color'>;

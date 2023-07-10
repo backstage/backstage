@@ -3074,7 +3074,7 @@
 ### Patch Changes
 
 - 12d8f27a6: Move logic for constructing the template form to the backend, using a new `./parameter-schema` endpoint that returns the form schema for a given template.
-- bc327dc42: Tweak the template cards to be even more compliant with MUI examples, and a little bit more dense.
+- bc327dc42: Tweak the template cards to be even more compliant with Material UI examples, and a little bit more dense.
 - Updated dependencies [12d8f27a6]
 - Updated dependencies [40c0fdbaa]
 - Updated dependencies [2a271d89e]

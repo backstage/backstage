@@ -18,7 +18,7 @@ import { createTheme } from './baseTheme';
 import { palettes } from '../base';
 
 /**
- * The old MUI v4 Backstage light theme.
+ * The old Material UI v4 Backstage light theme.
  *
  * @public
  * @deprecated Use {@link themes.light} instead.
@@ -28,7 +28,7 @@ export const lightTheme = createTheme({
 });
 
 /**
- * The old MUI v4 Backstage dark theme.
+ * The old Material UI v4 Backstage dark theme.
  *
  * @public
  * @deprecated Use {@link themes.dark} instead.

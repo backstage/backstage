@@ -28,7 +28,7 @@
 
 ### Minor Changes
 
-- 1fd38bc4141a: Test App Wrapper is now using `UnifiedThemeProvider` for supporting MUI v5 next to MUI v4 in tests.
+- 1fd38bc4141a: Test App Wrapper is now using `UnifiedThemeProvider` for supporting Material UI v5 next to Material UI v4 in tests.
 
 ### Patch Changes
 
@@ -70,7 +70,7 @@
 
 ### Minor Changes
 
-- 1fd38bc4141a: Test App Wrapper is now using `UnifiedThemeProvider` for supporting MUI v5 next to MUI v4 in tests.
+- 1fd38bc4141a: Test App Wrapper is now using `UnifiedThemeProvider` for supporting Material UI v5 next to Material UI v4 in tests.
 
 ### Patch Changes
 
