@@ -46,7 +46,7 @@ Additionally, as we created more and more microservices, it became challenging t
 
 To consolidate application health data, simplify support and clarify ownership for those on development teams as well as for those in non-engineering roles, we implemented an instance of Backstage as an internal service catalog we call Elevate.
 
-Utilizing Backstage as a framework, Elevate aims to improve quality and domain expertise for all things code and process at Stash.. The key to accomplishing this goal is to leverage the processes and integrations we already use at Stash, but centralize and surface the data in a way that is digestible for engineers and non-engineers alike.
+Utilizing Backstage as a framework, Elevate aims to improve quality and domain expertise for all things code and process at Stash. The key to accomplishing this goal is to leverage the processes and integrations we already use at Stash, but centralize and surface the data in a way that is digestible for engineers and non-engineers alike.
 
 For the benefit of a self-managed internal service catalog to outweigh the change in processes and the cost of the catalog's infrastructure, it had to be easy to adopt and have an enlightening effect on teams.
 
@@ -100,7 +100,7 @@ Sentry's plugin easily surfaces uncaught errors within services. DataDog's plugi
 
 PagerDuty has been Stash's standard for on-call activities and paging while FireHydrant has more recently been adopted as a part of a more comprehensive incident management process. Together, we use these incident management platforms to establish incident response workflows and communication channels dedicated to each service.
 
-PagerDuty's plugin allows for quick reference to the individual who is actively on-call for a service while FireHydrant's plugin lets you track open incidents that may be impacting a service and even trigger new incidents directly from within the service overview page in Elevate. Integrating these plugins allows Elevate to serve as a centralized location for the incident management process, helping our engineers quickly gather the necessary context of an issue and drive faster resolution 
+PagerDuty's plugin allows for quick reference to the individual who is actively on-call for a service while FireHydrant's plugin lets you track open incidents that may be impacting a service and even trigger new incidents directly from within the service overview page in Elevate. Integrating these plugins allows Elevate to serve as a centralized location for the incident management process, helping our engineers quickly gather the necessary context of an issue and drive faster resolution.
 
 
 ![alt_text](assets/2023-07-08/image3.png)
@@ -146,7 +146,7 @@ For those that aren't regularly in AWS Cost Explorer, a benefit of implementing 
 
 As mentioned above, gathering DORA metrics provides important insight into the health of applications and teams, but until we built Elevate, we didn't have a hub at Stash to aggregate and present that data in an easily digestible manner.
 
-Elevate's initial DORA metrics implementation reaches out to the source(s) of truth for each metric and groups and surfaces that in a manager similar to the AWS Cost Insights implementation.
+Elevate's initial DORA metrics implementation reaches out to the source(s) of truth for each metric and groups and surfaces that in a manner similar to the AWS Cost Insights implementation.
 
  \
 **Deployment Frequency**  from DataDog “deployment” indicator for each service
