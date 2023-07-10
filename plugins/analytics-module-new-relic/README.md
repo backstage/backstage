@@ -22,7 +22,7 @@ import {
   configApiRef,
   identityApiRef,
 } from '@backstage/core-plugin-api';
-import { NewRelicBrowser } from '@backstage/plugin-analytics-module-nr';
+import { NewRelicBrowser } from '@backstage/plugin-analytics-module-newrelic-browser';
 
 export const apis: AnyApiFactory[] = [
   // Instantiate and register the New Relic Browser API Implementation.
