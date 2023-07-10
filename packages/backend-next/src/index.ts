@@ -38,6 +38,7 @@ import { linguistPlugin } from '@backstage/plugin-linguist-backend';
 import { devtoolsPlugin } from '@backstage/plugin-devtools-backend';
 import { TaskScheduleDefinition } from '@backstage/backend-tasks';
 import { adrPlugin } from '@backstage/plugin-adr-backend';
+import { lighthousePlugin } from '@backstage/plugin-lighthouse-backend';
 
 const backend = createBackend();
 
@@ -93,6 +94,9 @@ backend.add(searchModuleExploreCollator());
 
 // Kubernetes
 backend.add(kubernetesPlugin());
+
+// Lighthouse
+backend.add(lighthousePlugin());
 
 // Permissions
 backend.add(permissionPlugin());

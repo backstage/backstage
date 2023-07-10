@@ -14,4 +14,5 @@
  * limitations under the License.
  */
 
-export * from './service/plugin';
+export * from './service/createScheduler';
+export { lighthousePlugin } from './plugin';
