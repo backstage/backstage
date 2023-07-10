@@ -15,12 +15,7 @@
  */
 
 import Typography from '@material-ui/core/Typography';
-import React, {
-  ComponentClass,
-  Component,
-  ErrorInfo,
-  PropsWithChildren,
-} from 'react';
+import React, { Component, ErrorInfo, PropsWithChildren } from 'react';
 import { LinkButton } from '../../components/LinkButton';
 import { ErrorPanel } from '../../components/ErrorPanel';
 
