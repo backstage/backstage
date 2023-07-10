@@ -3893,7 +3893,7 @@ __metadata:
     "@yarnpkg/parsers": ^3.0.0-rc.4
     fs-extra: 10.1.0
     mock-fs: ^5.2.0
-    semver: ^7.3.2
+    semver: ^7.5.3
     zod: ^3.21.4
   languageName: unknown
   linkType: soft
@@ -4023,7 +4023,7 @@ __metadata:
     rollup-plugin-postcss: ^4.0.0
     rollup-pluginutils: ^2.8.2
     run-script-webpack-plugin: ^0.1.0
-    semver: ^7.3.2
+    semver: ^7.5.3
     style-loader: ^3.3.1
     sucrase: ^3.20.2
     swc-loader: ^0.2.3
@@ -6399,7 +6399,7 @@ __metadata:
     msw: ^1.0.0
     node-fetch: ^2.6.7
     ping: ^0.4.1
-    semver: ^7.3.2
+    semver: ^7.5.3
     supertest: ^6.2.4
     winston: ^3.2.1
     yn: ^4.0.0
@@ -9355,7 +9355,7 @@ __metadata:
     knex: ^2.0.0
     lodash: ^4.17.21
     luxon: ^3.0.0
-    semver: ^7.3.5
+    semver: ^7.5.3
     supertest: ^6.1.3
     uuid: ^8.3.2
     wait-for-expect: ^3.0.2
@@ -37859,7 +37859,7 @@ __metadata:
     minimist: ^1.2.5
     node-gyp: ^9.4.0
     prettier: ^2.2.1
-    semver: ^7.3.2
+    semver: ^7.5.3
     shx: ^0.3.2
     ts-node: ^10.4.0
     typescript: ~5.0.0
