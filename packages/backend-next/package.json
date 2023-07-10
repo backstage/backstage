@@ -27,6 +27,7 @@
   "dependencies": {
     "@backstage/backend-defaults": "workspace:^",
     "@backstage/backend-tasks": "workspace:^",
+    "@backstage/plugin-adr-backend": "workspace:^",
     "@backstage/plugin-app-backend": "workspace:^",
     "@backstage/plugin-auth-node": "workspace:^",
     "@backstage/plugin-azure-devops-backend": "workspace:^",
