@@ -247,6 +247,12 @@ export class BuiltinKindsEntityProcessor implements CatalogProcessor {
     if (entity.kind === 'Group') {
       const group = entity as GroupEntity;
       doEmit(
+        group.spec.owner,
+        { defaultKind: 'Group', defaultNamespace: selfRef.namespace },
+        RELATION_OWNED_BY,
+        RELATION_OWNER_OF,
+      );
+      doEmit(
         group.spec.parent,
         { defaultKind: 'Group', defaultNamespace: selfRef.namespace },
         RELATION_CHILD_OF,

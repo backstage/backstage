@@ -28,6 +28,7 @@ export interface GroupEntityV1alpha1 extends Entity {
   kind: 'Group';
   spec: {
     type: string;
+    owner: string;
     profile?: {
       displayName?: string;
       email?: string;

@@ -72,6 +72,12 @@
                 }
               }
             },
+            "owner": {
+              "type": "string",
+              "description": "An entity reference to the owner of the group.",
+              "examples": ["artist-relations-team", "user:john.johnson"],
+              "minLength": 1
+            },
             "parent": {
               "type": "string",
               "description": "The immediate parent group in the hierarchy, if any. Not all groups must have a parent; the catalog supports multi-root hierarchies. Groups may however not have more than one parent. This field is an entity reference.",
