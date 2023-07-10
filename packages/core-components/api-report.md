@@ -340,6 +340,7 @@ export const ErrorBoundary: ComponentClass<ErrorBoundaryProps, State>;
 
 // @public (undocumented)
 export type ErrorBoundaryProps = {
+  fallback?: React_2.ReactElement;
   slackChannel?: string | SlackChannel;
   onError?: (error: Error, errorInfo: string) => null;
 };
@@ -1471,5 +1472,5 @@ export type WarningPanelClassKey =
 // src/components/DependencyGraph/types.d.ts:26:9 - (ae-unresolved-link) The @link reference could not be resolved: The package "@backstage/core-components" does not have an export "DependencyNode"
 // src/components/TabbedLayout/RoutedTabs.d.ts:9:5 - (ae-forgotten-export) The symbol "SubRoute_2" needs to be exported by the entry point index.d.ts
 // src/components/Table/Table.d.ts:20:5 - (ae-forgotten-export) The symbol "SelectedFilters" needs to be exported by the entry point index.d.ts
-// src/layout/ErrorBoundary/ErrorBoundary.d.ts:8:5 - (ae-forgotten-export) The symbol "SlackChannel" needs to be exported by the entry point index.d.ts
+// src/layout/ErrorBoundary/ErrorBoundary.d.ts:9:5 - (ae-forgotten-export) The symbol "SlackChannel" needs to be exported by the entry point index.d.ts
 ```
