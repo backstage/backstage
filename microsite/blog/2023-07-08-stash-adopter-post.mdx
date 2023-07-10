@@ -65,6 +65,39 @@ The Backstage open source plugins provide the nuts and bolts for our internal se
 
 ###### Example catalog-info.yaml file to add service to Elevate
 
+```yaml
+apiVersion: backstage.io/v1alpha1
+kind: Component
+metadata:
+  name: your-service
+  description: Awesome service for awesome things
+  annotations:
+    backstage.io/kubernetes-namespace: your-service
+    datadoghq.com/site: datadoghq.com
+    datadoghq.com/dashboard-url: https://p.datadoghq.com/some-dashbaord
+    firehydrant.com/service-name: your-service
+    jira/project-key: your-jira-project
+    github.com/project-slug: 'your-org/your-service'
+    pagerduty.com/service-id: your-pagerduty-service-id
+  links:
+    - title: Team Slack Channel
+      url: https://your-company.slack.com/archives/your-slack-channel-id
+      type: Slack
+      icon: chat
+    - title: Getting started
+      url: https://github.com/your-org/your-service/blob/main/README.md
+      type: Readme
+      icon: github
+    - title: Confluence
+      url: https://your-company.atlassian.net/your-docs-page-url
+      type: Confluence
+      icon: docs
+spec:
+  type: service
+  lifecycle: production
+  owner: your-team
+  system: your-business-unit
+```
 
 ### Connecting to subject matter experts
 
@@ -73,10 +106,10 @@ Elevate leverages the CODEOWNERS integration to establish expertise of specific 
 This improved clarity into contributors and recent contributions can prevent developers and managers from playing telephone when effective communication is crucial to fixing a bug or resolving an incident.
 
 
-![alt_text](assets/2023-07-08/image1.png)
+![service code owners](assets/2023-07-08/image5.png)
 
 
-![alt_text](assets/2023-07-08/image2.png)
+![recent changes](assets/2023-07-08/image3.png)
 
 
 _CODEOWNER cards for service ownership and recent changes that appear on a service's overview page._
@@ -103,10 +136,10 @@ PagerDuty has been Stash's standard for on-call activities and paging while Fire
 PagerDuty's plugin allows for quick reference to the individual who is actively on-call for a service while FireHydrant's plugin lets you track open incidents that may be impacting a service and even trigger new incidents directly from within the service overview page in Elevate. Integrating these plugins allows Elevate to serve as a centralized location for the incident management process, helping our engineers quickly gather the necessary context of an issue and drive faster resolution.
 
 
-![alt_text](assets/2023-07-08/image3.png)
+![active incidents](assets/2023-07-08/image1.png)
 
 
-![alt_text](assets/2023-07-08/image4.png)
+![pager duty](assets/2023-07-08/image8.png)
 
 
 _FireHydrant and PagerDuty cards that appear on a service's overview page._
@@ -116,31 +149,31 @@ _FireHydrant and PagerDuty cards that appear on a service's overview page._
 
 It's difficult for teams to be more efficient with their infrastructure costs if they are unable to see the problem areas for the services they support, as well as references for effective resource management to model after. The AWS Cost Insights plugin allows Elevate to monitor cost-related metrics and ensure efficient resource allocation and budgeting.
 
-Due to the dynamic nature of how different companies may want to aggregate their cost data, the plugin is mostly frontend visualizations for displaying costs over time with drop-downs for filtering and grouping. In Elevate, we created a custom backend plugin to pull our costs data from AWS and group it properly for presentation to the visualizations. \
- \
+Due to the dynamic nature of how different companies may want to aggregate their cost data, the plugin is mostly frontend visualizations for displaying costs over time with drop-downs for filtering and grouping. In Elevate, we created a custom backend plugin to pull our costs data from AWS and group it properly for presentation to the visualizations.
+
 When we surface this data with the backend layer in Elevate, the frontend is able to surface our AWS cost data to people who previously didn't have access or who found it too difficult to use the more complex AWS Cost Explorer.
 
 In addition to these people now having access to AWS cost data, those with access now get to visualize our spend by AWS product and Stash service. These visualizations are available when looking at a single service, a team or business unit, and organization-wide.
 
 
-![alt_text](assets/2023-07-08/image5.png)
+![aws breakdown](assets/2023-07-08/image6.png)
 
 
 _Breakdown of costs per AWS product for a service._
 
 
-![alt_text](assets/2023-07-08/image6.png)
+![aws breakdown by project](assets/2023-07-08/image9.png)
 
 
 _Breakdown of total costs per service owned by a Team or Business Unit._
 
 
-![alt_text](assets/2023-07-08/image7.png)
+![aws breakdown for org](assets/2023-07-08/image4.png)
 
 _Breakdown of total costs per service across the organization._
 
-For those that aren't regularly in AWS Cost Explorer, a benefit of implementing these visualizations is being able to easily see where we have some room for improvement when it comes to tagging our AWS resources. The company-wide breakdown shows all resources, whereas the sub-views rely on resource tagging for service name and team name, so discrepancies may arise which will help you close any gaps in tagging you may have. If resources are not properly tagged, reducing and managing your infrastructure costs will be more time consuming than necessary and much less effective.
 
+For those that aren't regularly in AWS Cost Explorer, a benefit of implementing these visualizations is being able to easily see where we have some room for improvement when it comes to tagging our AWS resources. The company-wide breakdown shows all resources, whereas the sub-views rely on resource tagging for service name and team name, so discrepancies may arise which will help you close any gaps in tagging you may have. If resources are not properly tagged, reducing and managing your infrastructure costs will be more time consuming than necessary and much less effective.
 
 ## Service, team and organizational health
 
@@ -148,7 +181,7 @@ As mentioned above, gathering DORA metrics provides important insight into the h
 
 Elevate's initial DORA metrics implementation reaches out to the source(s) of truth for each metric and groups and surfaces that in a manner similar to the AWS Cost Insights implementation.
 
- \
+
 **Deployment Frequency**  from DataDog “deployment” indicator for each service
 
 **Lead Time for Changes** from GitHub for each repo using commit sha's and releases
@@ -160,7 +193,7 @@ Elevate's initial DORA metrics implementation reaches out to the source(s) of tr
 Elevate implemented the above data sources for our DORA metrics MVP as those have been determined as our best practices for where that information should be tracked, for now.
 
 
-![alt_text](assets/2023-07-08/image8.png)
+![dora metrics](assets/2023-07-08/image10.png)
 
 
 _DORA metrics that display on the overview page for each service._
@@ -168,13 +201,13 @@ _DORA metrics that display on the overview page for each service._
 Software development has an ever-changing SaaS landscape, so what serves as a best practice today, may not be in a week, a month or a year from now. The tools we use to facilitate a task or automate processes may change, but the metrics we want to track (DORA and others) are much more stable. Surfacing data in easily consumable views within Elevate has decoupled the tool we use to accomplish a task from where we monitor the health of our system and how that tool assists.
 
 
-![alt_text](assets/2023-07-08/image9.png)
+![dora metrics typescript interface](assets/2023-07-08/image7.png)
 
 
 _An abstracted service layer that is agnostic of data source(s) allows for a stable integration for our frontend dashboards._
 
 
-![alt_text](assets/2023-07-08/image10.png)
+![backend interface](assets/2023-07-08/image2.png)
 
 
 _Separate backend services by metric allow for easy updating for additional or new data sources in the future._
