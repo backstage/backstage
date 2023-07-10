@@ -36,6 +36,7 @@ import { FlatRoutes } from '@backstage/core-app-api';
 
 import { Page } from '@backstage/core-components';
 import { configApiRef } from '@backstage/core-plugin-api';
+import { CatalogApi, catalogApiRef } from '@backstage/plugin-catalog-react';
 
 const mockEntityMetadata = {
   locationMetadata: {
@@ -75,6 +76,8 @@ const techdocsStorageApiMock: jest.Mocked<typeof techdocsStorageApiRef.T> = {
   syncEntityDocs: jest.fn(),
 };
 
+const catalogApi: jest.Mocked<CatalogApi> = {} as any;
+
 const PageMock = () => {
   const { namespace, kind, name } = useParams();
   return <>{`PageMock: ${namespace}#${kind}#${name}`}</>;
@@ -99,6 +102,7 @@ const Wrapper = ({ children }: { children: React.ReactNode }) => {
         [configApiRef, configApi],
         [techdocsApiRef, techdocsApiMock],
         [techdocsStorageApiRef, techdocsStorageApiMock],
+        [catalogApiRef, catalogApi],
       ]}
     >
       {children}

@@ -34,6 +34,7 @@ import { SWRConfig } from 'swr';
 import { PlaylistApi, playlistApiRef } from '../../api';
 import { rootRouteRef } from '../../routes';
 import { PlaylistHeader } from './PlaylistHeader';
+import { CatalogApi, catalogApiRef } from '@backstage/plugin-catalog-react';
 
 const navigateMock = jest.fn();
 jest.mock('react-router-dom', () => ({
@@ -80,6 +81,7 @@ describe('PlaylistHeader', () => {
     .fn()
     .mockImplementation(async () => ({ result: AuthorizeResult.ALLOW }));
   const permissionApi: Partial<PermissionApi> = { authorize: mockAuthorize };
+  const catalogApi: jest.Mocked<CatalogApi> = {} as any;
 
   const mockOnUpdate = jest.fn();
 
@@ -91,6 +93,7 @@ describe('PlaylistHeader', () => {
           [errorApiRef, errorApi],
           [permissionApiRef, permissionApi],
           [playlistApiRef, playlistApi],
+          [catalogApiRef, catalogApi],
         ]}
       >
         <PlaylistHeader playlist={testPlaylist} onUpdate={mockOnUpdate} />

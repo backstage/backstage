@@ -23,6 +23,7 @@ import {
   TechDocsReaderPageProvider,
 } from '@backstage/plugin-techdocs-react';
 import { renderInTestApp, TestApiProvider } from '@backstage/test-utils';
+import { CatalogApi, catalogApiRef } from '@backstage/plugin-catalog-react';
 
 import { rootRouteRef } from '../../../routes';
 
@@ -57,6 +58,10 @@ const techdocsApiMock = {
   getTechDocsMetadata,
 };
 
+const catalogApi: jest.Mocked<CatalogApi> = {
+  getEntityByRef: jest.fn(),
+} as any;
+
 const Wrapper = ({
   entityRef = {
     kind: mockEntityMetadata.kind,
@@ -68,7 +73,12 @@ const Wrapper = ({
   entityRef?: CompoundEntityRef;
   children: React.ReactNode;
 }) => (
-  <TestApiProvider apis={[[techdocsApiRef, techdocsApiMock]]}>
+  <TestApiProvider
+    apis={[
+      [techdocsApiRef, techdocsApiMock],
+      [catalogApiRef, catalogApi],
+    ]}
+  >
     <TechDocsReaderPageProvider entityRef={entityRef}>
       {children}
     </TechDocsReaderPageProvider>
@@ -167,6 +177,7 @@ describe('<TechDocsReaderPageHeader />', () => {
 
   it('should render a link back to the component page', async () => {
     getTechDocsMetadata.mockResolvedValue(mockTechDocsMetadata);
+    catalogApi.getEntityByRef.mockResolvedValueOnce(mockEntityMetadata);
 
     await act(async () => {
       const rendered = await renderInTestApp(

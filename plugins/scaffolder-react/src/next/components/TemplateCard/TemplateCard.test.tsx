@@ -28,8 +28,12 @@ import React from 'react';
 import { TemplateEntityV1beta3 } from '@backstage/plugin-scaffolder-common';
 import { RELATION_OWNED_BY } from '@backstage/catalog-model';
 import { fireEvent } from '@testing-library/react';
+import { CatalogApi, catalogApiRef } from '@backstage/plugin-catalog-react';
 
 describe('TemplateCard', () => {
+  const catalogApi: jest.Mocked<CatalogApi> = {
+    getEntityByRef: jest.fn(),
+  } as any;
   it('should render the card title', async () => {
     const mockTemplate: TemplateEntityV1beta3 = {
       apiVersion: 'scaffolder.backstage.io/v1beta3',
@@ -50,6 +54,7 @@ describe('TemplateCard', () => {
               storageApi: MockStorageApi.create(),
             }),
           ],
+          [catalogApiRef, catalogApi],
         ]}
       >
         <TemplateCard template={mockTemplate} />
@@ -79,6 +84,7 @@ describe('TemplateCard', () => {
               storageApi: MockStorageApi.create(),
             }),
           ],
+          [catalogApiRef, catalogApi],
         ]}
       >
         <TemplateCard template={mockTemplate} />
@@ -109,6 +115,7 @@ describe('TemplateCard', () => {
               storageApi: MockStorageApi.create(),
             }),
           ],
+          [catalogApiRef, catalogApi],
         ]}
       >
         <TemplateCard template={mockTemplate} />
@@ -138,6 +145,7 @@ describe('TemplateCard', () => {
               storageApi: MockStorageApi.create(),
             }),
           ],
+          [catalogApiRef, catalogApi],
         ]}
       >
         <TemplateCard template={mockTemplate} />
@@ -165,6 +173,7 @@ describe('TemplateCard', () => {
         },
       ],
     };
+    catalogApi.getEntityByRef.mockResolvedValueOnce(mockTemplate);
 
     const { getByRole } = await renderInTestApp(
       <TestApiProvider
@@ -175,6 +184,7 @@ describe('TemplateCard', () => {
               storageApi: MockStorageApi.create(),
             }),
           ],
+          [catalogApiRef, catalogApi],
         ]}
       >
         <TemplateCard template={mockTemplate} />
@@ -214,6 +224,7 @@ describe('TemplateCard', () => {
               storageApi: MockStorageApi.create(),
             }),
           ],
+          [catalogApiRef, catalogApi],
         ]}
       >
         <TemplateCard template={mockTemplate} onSelected={mockOnSelected} />

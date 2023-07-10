@@ -21,8 +21,10 @@ import { fireEvent, waitFor } from '@testing-library/react';
 
 import { scmIntegrationsApiRef } from '@backstage/integration-react';
 import { ReportIssue } from '../plugin';
+import { CatalogApi, catalogApiRef } from '@backstage/plugin-catalog-react';
 
 const byUrl = jest.fn();
+const catalogApi: jest.Mocked<CatalogApi> = {} as any;
 
 const fireSelectionChangeEvent = (window: Window) => {
   const selectionChangeEvent = window.document.createEvent('Event');
@@ -93,7 +95,10 @@ describe('ReportIssue', () => {
             </body>
           </html>,
         )
-        .withApis([[scmIntegrationsApiRef, { byUrl }]])
+        .withApis([
+          [scmIntegrationsApiRef, { byUrl }],
+          [catalogApiRef, catalogApi],
+        ])
         .renderWithEffects();
 
     (shadowRoot as ShadowRoot & Pick<Document, 'getSelection'>).getSelection =
@@ -151,7 +156,10 @@ describe('ReportIssue', () => {
             </body>
           </html>,
         )
-        .withApis([[scmIntegrationsApiRef, { byUrl }]])
+        .withApis([
+          [scmIntegrationsApiRef, { byUrl }],
+          [catalogApiRef, catalogApi],
+        ])
         .renderWithEffects();
 
     (shadowRoot as ShadowRoot & Pick<Document, 'getSelection'>).getSelection =
@@ -215,7 +223,10 @@ describe('ReportIssue', () => {
             </body>
           </html>,
         )
-        .withApis([[scmIntegrationsApiRef, { byUrl }]])
+        .withApis([
+          [scmIntegrationsApiRef, { byUrl }],
+          [catalogApiRef, catalogApi],
+        ])
         .renderWithEffects();
 
     (shadowRoot as ShadowRoot & Pick<Document, 'getSelection'>).getSelection =

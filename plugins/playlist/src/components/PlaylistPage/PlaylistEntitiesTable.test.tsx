@@ -29,6 +29,7 @@ import React from 'react';
 import { SWRConfig } from 'swr';
 import { PlaylistApi, playlistApiRef } from '../../api';
 import { PlaylistEntitiesTable } from './PlaylistEntitiesTable';
+import { CatalogApi, catalogApiRef } from '@backstage/plugin-catalog-react';
 
 jest.mock('./AddEntitiesDrawer', () => ({
   AddEntitiesDrawer: ({ onAdd, open }: { onAdd: Function; open: boolean }) =>
@@ -42,6 +43,7 @@ jest.mock('./AddEntitiesDrawer', () => ({
 
 describe('PlaylistEntitiesTable', () => {
   const errorApi: Partial<ErrorApi> = { post: jest.fn() };
+  const catalogApi: jest.Mocked<CatalogApi> = {} as any;
   const sampleEntities = [
     {
       kind: 'system',
@@ -86,6 +88,7 @@ describe('PlaylistEntitiesTable', () => {
           [errorApiRef, errorApi],
           [permissionApiRef, permissionApi],
           [playlistApiRef, playlistApi],
+          [catalogApiRef, catalogApi],
         ]}
       >
         <PlaylistEntitiesTable playlistId="playlist-id" />
