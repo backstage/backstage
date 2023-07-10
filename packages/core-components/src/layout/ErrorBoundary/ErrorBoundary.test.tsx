@@ -32,12 +32,17 @@ type BombProps = {
 
 const Bomb = ({ shouldThrow }: BombProps) => {
   if (shouldThrow) {
-    throw new Error('Bomb');
+    throw new Error('The bomb blew up');
   } else {
     return <p>Working Component</p>;
   }
 };
 
+class Meh extends React.Component<{ error: Error }> {
+  render() {
+    return <div>catpants + {this.props.error.message}</div>;
+  }
+}
 describe('<ErrorBoundary/>', () => {
   let errorApi: MockErrorApi;
 
@@ -73,7 +78,7 @@ describe('<ErrorBoundary/>', () => {
 
     expect(error).toEqual([
       expect.objectContaining({
-        detail: new Error('Bomb'),
+        detail: new Error('The bomb blew up'),
       }),
       expect.stringMatching(
         /^The above error occurred in the <Bomb> component:/,
@@ -83,7 +88,23 @@ describe('<ErrorBoundary/>', () => {
     expect(error.length).toEqual(3);
   });
 
-  it('should render custom fallback element', async () => {
+  it('should call onError prop', async () => {
+    const onError = jest.fn();
+
+    await renderInTestApp(
+      <TestApiProvider apis={[[errorApiRef, errorApi]]}>
+        <ErrorBoundary onError={onError}>
+          <Bomb shouldThrow />
+        </ErrorBoundary>
+      </TestApiProvider>,
+    );
+
+    expect(onError).toHaveBeenCalledTimes(1);
+    expect(onError.mock.lastCall).toHaveLength(2);
+    expect(onError.mock.lastCall[0]).toBeInstanceOf(Error);
+  });
+
+  it('should render custom fallback', async () => {
     const errorElement = <div>cat + pants = catpants</div>;
 
     const { getByText, queryByText } = await renderInTestApp(
@@ -97,4 +118,28 @@ describe('<ErrorBoundary/>', () => {
     expect(getByText(/catpants/i)).toBeInTheDocument();
     expect(queryByText(/something went wrong/i)).not.toBeInTheDocument();
   });
+
+  it.each`
+    propName               | component
+    ${'FallbackComponent'} | ${Meh}
+    ${'fallbackRender'}    | ${({ error }: { error: Error }) => <div>catpants + {error.message}</div>}
+  `(
+    'should render fallback with prop: $propName',
+    async ({ component, propName }) => {
+      const props = { [propName]: component };
+
+      const { getByText, queryByText } = await renderInTestApp(
+        <TestApiProvider apis={[[errorApiRef, errorApi]]}>
+          <ErrorBoundary {...props}>
+            <Bomb shouldThrow />
+          </ErrorBoundary>
+        </TestApiProvider>,
+      );
+
+      expect(getByText(/catpants/i)).toBeInTheDocument();
+      expect(queryByText(/something went wrong/i)).not.toBeInTheDocument();
+
+      expect(queryByText(/the bomb blew up/i)).toBeInTheDocument();
+    },
+  );
 });

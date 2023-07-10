@@ -25,10 +25,19 @@ type SlackChannel = {
 };
 
 /** @public */
+export type FallbackProps = {
+  error?: Error;
+  componentStack?: string;
+  resetErrorBoundary: () => void;
+};
+
+/** @public */
 export type ErrorBoundaryProps = {
   fallback?: React.ReactElement;
+  FallbackComponent?: React.ComponentType<FallbackProps>;
+  fallbackRender?: (props: FallbackProps) => React.ReactElement;
+  onError?: (error: Error, errorInfo: ErrorInfo) => null;
   slackChannel?: string | SlackChannel;
-  onError?: (error: Error, errorInfo: string) => null;
 };
 
 type State = {
@@ -56,39 +65,57 @@ const SlackLink = (props: { slackChannel?: string | SlackChannel }) => {
   );
 };
 
+const initialState = {
+  error: undefined,
+  errorInfo: undefined,
+};
+
 /** @public */
 export const ErrorBoundary: ComponentClass<
   ErrorBoundaryProps,
   State
 > = class ErrorBoundary extends Component<ErrorBoundaryProps, State> {
-  constructor(props: ErrorBoundaryProps) {
-    super(props);
-    this.state = {
-      error: undefined,
-      errorInfo: undefined,
-    };
-  }
+  state = initialState;
 
   componentDidCatch(error: Error, errorInfo: ErrorInfo) {
     // eslint-disable-next-line no-console
     console.error(`ErrorBoundary, error: ${error}, info: ${errorInfo}`);
+    this.props.onError?.(error, errorInfo);
     this.setState({ error, errorInfo });
   }
 
+  resetErrorBoundary = () => this.setState(initialState);
+
   render() {
-    const { children, fallback, slackChannel } = this.props;
-    const { error } = this.state;
+    const { fallback, FallbackComponent, fallbackRender } = this.props;
+    const { error, errorInfo } = this.state;
 
     if (error) {
+      if (fallback) {
+        return fallback;
+      }
+
+      const errorProps: FallbackProps = {
+        componentStack: errorInfo?.componentStack,
+        error,
+        resetErrorBoundary: this.resetErrorBoundary,
+      };
+
+      if (fallbackRender) {
+        return fallbackRender(errorProps);
+      }
+
+      if (FallbackComponent) {
+        return <FallbackComponent {...errorProps} />;
+      }
+
       return (
-        fallback || (
-          <ErrorPanel title="Something Went Wrong" error={error}>
-            <SlackLink slackChannel={slackChannel} />
-          </ErrorPanel>
-        )
+        <ErrorPanel title="Something Went Wrong" error={error}>
+          <SlackLink slackChannel={this.props.slackChannel} />
+        </ErrorPanel>
       );
     }
 
-    return children;
+    return this.props.children;
   }
 };
