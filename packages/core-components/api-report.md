@@ -14,7 +14,7 @@ import { BottomNavigationActionProps } from '@material-ui/core/BottomNavigationA
 import { ButtonProps as ButtonProps_2 } from '@material-ui/core/Button';
 import { CardHeaderProps } from '@material-ui/core/CardHeader';
 import { Column } from '@material-table/core';
-import { ComponentClass } from 'react';
+import { Component } from 'react';
 import { ComponentProps } from 'react';
 import { default as CSS_2 } from 'csstype';
 import { CSSProperties } from 'react';
@@ -333,16 +333,32 @@ export type EmptyStateClassKey = 'root' | 'action' | 'imageContainer';
 // @public (undocumented)
 export type EmptyStateImageClassKey = 'generalImg';
 
-// Warning: (ae-forgotten-export) The symbol "State" needs to be exported by the entry point index.d.ts
+// Warning: (ae-forgotten-export) The symbol "ErrorBoundaryState" needs to be exported by the entry point index.d.ts
 //
 // @public (undocumented)
-export const ErrorBoundary: ComponentClass<ErrorBoundaryProps, State>;
+export class ErrorBoundary extends Component<
+  PropsWithChildren<ErrorBoundaryProps>,
+  ErrorBoundaryState
+> {
+  constructor(props: ErrorBoundaryProps);
+  // (undocumented)
+  componentDidCatch(error: Error, errorInfo: ErrorInfo): void;
+  // (undocumented)
+  static getDerivedStateFromError(error: Error): {
+    error: Error;
+  };
+  // (undocumented)
+  render(): React_2.ReactNode;
+  // (undocumented)
+  resetErrorBoundary(...args: any[]): void;
+}
 
 // @public (undocumented)
 export type ErrorBoundaryProps = {
-  fallback?: React_2.ReactElement;
+  FallbackComponent?: React_2.ComponentType<FallbackProps>;
+  onError?: (error: Error, errorInfo: ErrorInfo) => void;
+  onReset?: (details: { args: any[] }) => void;
   slackChannel?: string | SlackChannel;
-  onError?: (error: Error, errorInfo: string) => null;
 };
 
 // Warning: (ae-forgotten-export) The symbol "IErrorPageProps" needs to be exported by the entry point index.d.ts
@@ -1472,5 +1488,6 @@ export type WarningPanelClassKey =
 // src/components/DependencyGraph/types.d.ts:26:9 - (ae-unresolved-link) The @link reference could not be resolved: The package "@backstage/core-components" does not have an export "DependencyNode"
 // src/components/TabbedLayout/RoutedTabs.d.ts:9:5 - (ae-forgotten-export) The symbol "SubRoute_2" needs to be exported by the entry point index.d.ts
 // src/components/Table/Table.d.ts:20:5 - (ae-forgotten-export) The symbol "SelectedFilters" needs to be exported by the entry point index.d.ts
-// src/layout/ErrorBoundary/ErrorBoundary.d.ts:9:5 - (ae-forgotten-export) The symbol "SlackChannel" needs to be exported by the entry point index.d.ts
+// src/layout/ErrorBoundary/ErrorBoundary.d.ts:13:5 - (ae-forgotten-export) The symbol "FallbackProps" needs to be exported by the entry point index.d.ts
+// src/layout/ErrorBoundary/ErrorBoundary.d.ts:18:5 - (ae-forgotten-export) The symbol "SlackChannel" needs to be exported by the entry point index.d.ts
 ```
