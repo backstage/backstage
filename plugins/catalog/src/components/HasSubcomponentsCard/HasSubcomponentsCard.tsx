@@ -15,7 +15,7 @@
  */
 
 import { RELATION_HAS_PART } from '@backstage/catalog-model';
-import { InfoCardVariants } from '@backstage/core-components';
+import { InfoCardVariants, TableOptions } from '@backstage/core-components';
 import React from 'react';
 import {
   asComponentEntities,
@@ -26,10 +26,11 @@ import {
 /** @public */
 export interface HasSubcomponentsCardProps {
   variant?: InfoCardVariants;
+  tableOptions?: TableOptions;
 }
 
 export function HasSubcomponentsCard(props: HasSubcomponentsCardProps) {
-  const { variant = 'gridItem' } = props;
+  const { variant = 'gridItem', tableOptions = {} } = props;
   return (
     <RelatedEntitiesCard
       variant={variant}
@@ -40,6 +41,7 @@ export function HasSubcomponentsCard(props: HasSubcomponentsCardProps) {
       asRenderableEntities={asComponentEntities}
       emptyMessage="No subcomponent is part of this component"
       emptyHelpLink="https://backstage.io/docs/features/software-catalog/descriptor-format#specsubcomponentof-optional"
+      tableOptions={tableOptions}
     />
   );
 }
