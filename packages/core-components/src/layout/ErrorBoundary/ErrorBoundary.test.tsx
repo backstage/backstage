@@ -16,7 +16,7 @@
  */
 
 import React from 'react';
-import { ErrorBoundary } from './ErrorBoundary';
+import { ErrorBoundary, type FallbackProps } from './ErrorBoundary';
 import {
   MockErrorApi,
   renderInTestApp,
@@ -24,6 +24,7 @@ import {
   withLogCollector,
 } from '@backstage/test-utils';
 import { errorApiRef } from '@backstage/core-plugin-api';
+import { fireEvent } from '@testing-library/react';
 
 type BombProps = {
   shouldThrow?: boolean;
@@ -38,11 +39,17 @@ const Bomb = ({ shouldThrow }: BombProps) => {
   }
 };
 
-class Meh extends React.Component<{ error: Error }> {
+class Meh extends React.Component<FallbackProps> {
   render() {
-    return <div>catpants + {this.props.error.message}</div>;
+    return (
+      <>
+        <div>catpants + {this.props.error.message}</div>
+        <button onClick={this.props.resetErrorBoundary}>Click Me!</button>
+      </>
+    );
   }
 }
+
 describe('<ErrorBoundary/>', () => {
   let errorApi: MockErrorApi;
 
@@ -104,12 +111,10 @@ describe('<ErrorBoundary/>', () => {
     expect(onError.mock.lastCall[0]).toBeInstanceOf(Error);
   });
 
-  it('should render custom fallback', async () => {
-    const errorElement = <div>cat + pants = catpants</div>;
-
+  it('should render custom FallbackComponent', async () => {
     const { getByText, queryByText } = await renderInTestApp(
       <TestApiProvider apis={[[errorApiRef, errorApi]]}>
-        <ErrorBoundary fallback={errorElement}>
+        <ErrorBoundary FallbackComponent={Meh}>
           <Bomb shouldThrow />
         </ErrorBoundary>
       </TestApiProvider>,
@@ -117,29 +122,23 @@ describe('<ErrorBoundary/>', () => {
 
     expect(getByText(/catpants/i)).toBeInTheDocument();
     expect(queryByText(/something went wrong/i)).not.toBeInTheDocument();
+
+    expect(queryByText(/the bomb blew up/i)).toBeInTheDocument();
   });
 
-  it.each`
-    propName               | component
-    ${'FallbackComponent'} | ${Meh}
-    ${'fallbackRender'}    | ${({ error }: { error: Error }) => <div>catpants + {error.message}</div>}
-  `(
-    'should render fallback with prop: $propName',
-    async ({ component, propName }) => {
-      const props = { [propName]: component };
+  it('should call onReset prop when resetErrorBoundary is called', async () => {
+    const onReset = jest.fn();
 
-      const { getByText, queryByText } = await renderInTestApp(
-        <TestApiProvider apis={[[errorApiRef, errorApi]]}>
-          <ErrorBoundary {...props}>
-            <Bomb shouldThrow />
-          </ErrorBoundary>
-        </TestApiProvider>,
-      );
+    const { getByText } = await renderInTestApp(
+      <TestApiProvider apis={[[errorApiRef, errorApi]]}>
+        <ErrorBoundary FallbackComponent={Meh} onReset={onReset}>
+          <Bomb shouldThrow />
+        </ErrorBoundary>
+      </TestApiProvider>,
+    );
 
-      expect(getByText(/catpants/i)).toBeInTheDocument();
-      expect(queryByText(/something went wrong/i)).not.toBeInTheDocument();
+    fireEvent.click(getByText(/click me/i));
 
-      expect(queryByText(/the bomb blew up/i)).toBeInTheDocument();
-    },
-  );
+    expect(onReset).toHaveBeenCalledTimes(1);
+  });
 });

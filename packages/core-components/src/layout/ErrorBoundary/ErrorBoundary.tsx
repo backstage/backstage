@@ -15,7 +15,12 @@
  */
 
 import Typography from '@material-ui/core/Typography';
-import React, { ComponentClass, Component, ErrorInfo } from 'react';
+import React, {
+  ComponentClass,
+  Component,
+  ErrorInfo,
+  PropsWithChildren,
+} from 'react';
 import { LinkButton } from '../../components/LinkButton';
 import { ErrorPanel } from '../../components/ErrorPanel';
 
@@ -26,23 +31,20 @@ type SlackChannel = {
 
 /** @public */
 export type FallbackProps = {
-  error?: Error;
-  componentStack?: string;
-  resetErrorBoundary: () => void;
+  error: Error;
+  resetErrorBoundary: (...args: any[]) => void;
 };
 
 /** @public */
 export type ErrorBoundaryProps = {
-  fallback?: React.ReactElement;
   FallbackComponent?: React.ComponentType<FallbackProps>;
-  fallbackRender?: (props: FallbackProps) => React.ReactElement;
-  onError?: (error: Error, errorInfo: ErrorInfo) => null;
+  onError?: (error: Error, errorInfo: ErrorInfo) => void;
+  onReset?: (details: { args: any[] }) => void;
   slackChannel?: string | SlackChannel;
 };
 
-type State = {
-  error?: Error;
-  errorInfo?: ErrorInfo;
+type ErrorBoundaryState = {
+  error: null | Error;
 };
 
 const SlackLink = (props: { slackChannel?: string | SlackChannel }) => {
@@ -65,47 +67,53 @@ const SlackLink = (props: { slackChannel?: string | SlackChannel }) => {
   );
 };
 
-const initialState = {
-  error: undefined,
-  errorInfo: undefined,
+const initialState: ErrorBoundaryState = {
+  error: null,
 };
 
 /** @public */
-export const ErrorBoundary: ComponentClass<
-  ErrorBoundaryProps,
-  State
-> = class ErrorBoundary extends Component<ErrorBoundaryProps, State> {
-  state = initialState;
+export class ErrorBoundary extends Component<
+  PropsWithChildren<ErrorBoundaryProps>,
+  ErrorBoundaryState
+> {
+  static getDerivedStateFromError(error: Error) {
+    return { error };
+  }
+
+  constructor(props: ErrorBoundaryProps) {
+    super(props);
+
+    this.resetErrorBoundary = this.resetErrorBoundary.bind(this);
+    this.state = initialState;
+  }
 
   componentDidCatch(error: Error, errorInfo: ErrorInfo) {
     // eslint-disable-next-line no-console
     console.error(`ErrorBoundary, error: ${error}, info: ${errorInfo}`);
+
     this.props.onError?.(error, errorInfo);
-    this.setState({ error, errorInfo });
   }
 
-  resetErrorBoundary = () => this.setState(initialState);
-
-  render() {
-    const { fallback, FallbackComponent, fallbackRender } = this.props;
-    const { error, errorInfo } = this.state;
+  resetErrorBoundary(...args: any[]) {
+    const { error } = this.state;
 
     if (error) {
-      if (fallback) {
-        return fallback;
-      }
+      this.props.onReset?.({ args });
+      this.setState(initialState);
+    }
+  }
 
-      const errorProps: FallbackProps = {
-        componentStack: errorInfo?.componentStack,
-        error,
-        resetErrorBoundary: this.resetErrorBoundary,
-      };
+  render() {
+    const { FallbackComponent } = this.props;
+    const { error } = this.state;
 
-      if (fallbackRender) {
-        return fallbackRender(errorProps);
-      }
-
+    if (error) {
       if (FallbackComponent) {
+        const errorProps: FallbackProps = {
+          error,
+          resetErrorBoundary: this.resetErrorBoundary,
+        };
+
         return <FallbackComponent {...errorProps} />;
       }
 
@@ -118,4 +126,4 @@ export const ErrorBoundary: ComponentClass<
 
     return this.props.children;
   }
-};
+}
