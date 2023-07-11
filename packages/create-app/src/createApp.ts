@@ -67,7 +67,7 @@ export default async (opts: OptionValues): Promise<void> => {
 
   const templateDir = opts.templatePath
     ? paths.resolveTarget(opts.templatePath)
-    : paths.resolveOwn('templates/default-app');
+    : paths.resolveOwn(`templates/${opts.templateName ?? 'default-app'}`);
   const tempDir = resolvePath(os.tmpdir(), answers.name);
 
   // Use `--path` argument as application directory when specified, otherwise

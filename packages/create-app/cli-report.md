@@ -12,5 +12,6 @@ Options:
   --path [directory]
   --skip-install
   --template-path [directory]
+  --template-name [name]
   -h, --help
 ```

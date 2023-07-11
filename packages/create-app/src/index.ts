@@ -20,7 +20,7 @@
  * @packageDocumentation
  */
 
-import { program } from 'commander';
+import { program, Option } from 'commander';
 import { exitWithError } from './lib/errors';
 // eslint-disable-next-line @backstage/no-relative-monorepo-imports
 import { version } from '../../../package.json';
@@ -42,6 +42,12 @@ const main = (argv: string[]) => {
     .option(
       '--template-path [directory]',
       'Use an external application template instead of the default template',
+    )
+    .addOption(
+      new Option('--template-name [name]', 'Use the given template')
+        .conflicts('--template-path')
+        .choices(['default-app'])
+        .default('default-app'),
     )
     .action(cmd => createApp(cmd));
 

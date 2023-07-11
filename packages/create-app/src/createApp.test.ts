@@ -143,6 +143,28 @@ describe('command entrypoint', () => {
     expect(buildAppMock).toHaveBeenCalled();
   });
 
+  it('should call expected tasks with --template-name option', async () => {
+    const cmd = {
+      path: 'myDirectory',
+      templateName: 'non-default-app',
+    } as unknown as Command;
+    await createApp(cmd);
+    expect(checkPathExistsMock).toHaveBeenCalled();
+    expect(tryInitGitRepositoryMock).toHaveBeenCalled();
+    expect(templatingMock).toHaveBeenCalled();
+    expect(templatingMock.mock.lastCall?.[0]).toEqual(
+      findPaths(__dirname).resolveTarget(
+        'packages',
+        'create-app',
+        'src',
+        'templates',
+        'non-default-app',
+      ),
+    );
+    expect(templatingMock.mock.lastCall?.[1]).toEqual('myDirectory');
+    expect(buildAppMock).toHaveBeenCalled();
+  });
+
   it('should not call `buildAppTask` when `skipInstall` is supplied', async () => {
     const cmd = { skipInstall: true } as unknown as Command;
     await createApp(cmd);
