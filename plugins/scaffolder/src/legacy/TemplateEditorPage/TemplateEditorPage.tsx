@@ -20,11 +20,11 @@ import {
   WebFileSystemAccess,
 } from '../../lib/filesystem';
 import { CustomFieldExplorer } from './CustomFieldExplorer';
+import { TemplateEditorIntro } from './TemplateEditorIntro';
 import { TemplateEditor } from './TemplateEditor';
 import { TemplateFormPreviewer } from './TemplateFormPreviewer';
 import { type LayoutOptions } from '@backstage/plugin-scaffolder-react';
-import { FieldExtensionOptions } from '@backstage/plugin-scaffolder-react';
-import { TemplateEditorIntro } from '../../legacy/TemplateEditorPage/TemplateEditorIntro';
+import { LegacyFieldExtensionOptions } from '@backstage/plugin-scaffolder-react/alpha';
 
 type Selection =
   | {
@@ -40,7 +40,7 @@ type Selection =
 
 interface TemplateEditorPageProps {
   defaultPreviewTemplate?: string;
-  customFieldExtensions?: FieldExtensionOptions<any, any>[];
+  customFieldExtensions?: LegacyFieldExtensionOptions<any, any>[];
   layouts?: LayoutOptions[];
 }
 

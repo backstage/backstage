@@ -18,7 +18,6 @@ import { CATALOG_FILTER_EXISTS } from '@backstage/catalog-client';
 import { Entity } from '@backstage/catalog-model';
 import { CatalogApi, catalogApiRef } from '@backstage/plugin-catalog-react';
 import { renderInTestApp, TestApiProvider } from '@backstage/test-utils';
-import { FieldProps } from '@rjsf/core';
 import { fireEvent, screen } from '@testing-library/react';
 import React from 'react';
 import { EntityPicker } from './EntityPicker';
@@ -39,7 +38,7 @@ describe('<EntityPicker />', () => {
   const rawErrors: string[] = [];
   const formData = undefined;
 
-  let props: FieldProps;
+  let props: EntityPickerProps;
 
   const catalogApi: jest.Mocked<CatalogApi> = {
     getLocationById: jest.fn(),
@@ -76,7 +75,7 @@ describe('<EntityPicker />', () => {
         uiSchema,
         rawErrors,
         formData,
-      } as unknown as FieldProps<any>;
+      } as unknown as EntityPickerProps;
 
       catalogApi.getEntities.mockResolvedValue({ items: entities });
     });
@@ -117,7 +116,7 @@ describe('<EntityPicker />', () => {
         uiSchema,
         rawErrors,
         formData,
-      } as unknown as FieldProps<any>;
+      } as unknown as EntityPickerProps;
 
       catalogApi.getEntities.mockResolvedValue({ items: entities });
     });
@@ -160,7 +159,7 @@ describe('<EntityPicker />', () => {
         uiSchema,
         rawErrors,
         formData,
-      } as unknown as FieldProps<any>;
+      } as unknown as EntityPickerProps;
 
       catalogApi.getEntities.mockResolvedValue({ items: entities });
     });
@@ -260,7 +259,7 @@ describe('<EntityPicker />', () => {
         uiSchema,
         rawErrors,
         formData,
-      } as unknown as FieldProps<any>;
+      } as unknown as EntityPickerProps;
 
       catalogApi.getEntities.mockResolvedValue({ items: entities });
     });
@@ -297,7 +296,7 @@ describe('<EntityPicker />', () => {
         uiSchema,
         rawErrors,
         formData,
-      } as unknown as FieldProps<any>;
+      } as unknown as EntityPickerProps;
 
       catalogApi.getEntities.mockResolvedValue({ items: entities });
     });
@@ -356,7 +355,7 @@ describe('<EntityPicker />', () => {
         uiSchema,
         rawErrors,
         formData,
-      } as unknown as FieldProps<any>;
+      } as unknown as EntityPickerProps;
 
       catalogApi.getEntities.mockResolvedValue({ items: entities });
     });
@@ -453,7 +452,7 @@ describe('<EntityPicker />', () => {
         uiSchema,
         rawErrors,
         formData,
-      } as unknown as FieldProps<any>;
+      } as unknown as EntityPickerProps;
 
       catalogApi.getEntities.mockResolvedValue({ items: entities });
     });
@@ -551,7 +550,7 @@ describe('<EntityPicker />', () => {
         uiSchema,
         rawErrors,
         formData,
-      } as unknown as FieldProps<any>;
+      } as unknown as EntityPickerProps;
 
       catalogApi.getEntities.mockResolvedValue({ items: entities });
     });
@@ -649,7 +648,7 @@ describe('<EntityPicker />', () => {
         uiSchema,
         rawErrors,
         formData,
-      } as unknown as FieldProps<any>;
+      } as unknown as EntityPickerProps;
 
       catalogApi.getEntities.mockResolvedValue({ items: entities });
     });

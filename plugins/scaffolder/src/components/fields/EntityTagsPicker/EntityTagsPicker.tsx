@@ -39,9 +39,9 @@ export const EntityTagsPicker = (props: EntityTagsPickerProps) => {
   const [inputValue, setInputValue] = useState('');
   const [inputError, setInputError] = useState(false);
   const tagValidator = makeValidator().isValidTag;
-  const kinds = uiSchema['ui:options']?.kinds;
-  const showCounts = uiSchema['ui:options']?.showCounts;
-  const helperText = uiSchema['ui:options']?.helperText;
+  const kinds = uiSchema?.['ui:options']?.kinds;
+  const showCounts = uiSchema?.['ui:options']?.showCounts;
+  const helperText = uiSchema?.['ui:options']?.helperText;
 
   const { loading, value: existingTags } = useAsync(async () => {
     const facet = 'metadata.tags';

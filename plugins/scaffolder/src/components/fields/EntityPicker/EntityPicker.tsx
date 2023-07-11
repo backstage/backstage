@@ -60,9 +60,9 @@ export const EntityPicker = (props: EntityPickerProps) => {
     idSchema,
   } = props;
   const catalogFilter = buildCatalogFilter(uiSchema);
-  const defaultKind = uiSchema['ui:options']?.defaultKind;
+  const defaultKind = uiSchema?.['ui:options']?.defaultKind;
   const defaultNamespace =
-    uiSchema['ui:options']?.defaultNamespace || undefined;
+    uiSchema?.['ui:options']?.defaultNamespace || undefined;
 
   const catalogApi = useApi(catalogApiRef);
 
@@ -73,7 +73,7 @@ export const EntityPicker = (props: EntityPickerProps) => {
     return items;
   });
   const allowArbitraryValues =
-    uiSchema['ui:options']?.allowArbitraryValues ?? true;
+    uiSchema?.['ui:options']?.allowArbitraryValues ?? true;
 
   const getLabel = useCallback(
     (ref: string) => {
@@ -223,10 +223,10 @@ function convertSchemaFiltersToQuery(
 function buildCatalogFilter(
   uiSchema: EntityPickerProps['uiSchema'],
 ): EntityFilterQuery | undefined {
-  const allowedKinds = uiSchema['ui:options']?.allowedKinds;
+  const allowedKinds = uiSchema?.['ui:options']?.allowedKinds;
 
   const catalogFilter: EntityPickerUiOptions['catalogFilter'] | undefined =
-    uiSchema['ui:options']?.catalogFilter ||
+    uiSchema?.['ui:options']?.catalogFilter ||
     (allowedKinds && { kind: allowedKinds });
 
   if (!catalogFilter) {

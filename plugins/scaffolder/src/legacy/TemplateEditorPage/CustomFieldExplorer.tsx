@@ -28,15 +28,16 @@ import {
   Select,
 } from '@material-ui/core';
 import CloseIcon from '@material-ui/icons/Close';
+import { withTheme } from '@rjsf/core';
+import { Theme as MuiTheme } from '@rjsf/material-ui';
 import CodeMirror from '@uiw/react-codemirror';
 import React, { useCallback, useMemo, useState } from 'react';
 import yaml from 'yaml';
-import {
-  FieldExtensionOptions,
-  Form,
-} from '@backstage/plugin-scaffolder-react';
+import * as fieldOverrides from '../MultistepJsonForm/FieldOverrides';
 import { TemplateEditorForm } from './TemplateEditorForm';
-import validator from '@rjsf/validator-ajv8';
+import { LegacyFieldExtensionOptions } from '@backstage/plugin-scaffolder-react/alpha';
+
+const Form = withTheme(MuiTheme);
 
 const useStyles = makeStyles(theme => ({
   root: {
@@ -68,13 +69,14 @@ export const CustomFieldExplorer = ({
   customFieldExtensions = [],
   onClose,
 }: {
-  customFieldExtensions?: FieldExtensionOptions<any, any>[];
+  customFieldExtensions?: LegacyFieldExtensionOptions<any, any>[];
   onClose?: () => void;
 }) => {
   const classes = useStyles();
   const fieldOptions = customFieldExtensions.filter(field => !!field.schema);
   const [selectedField, setSelectedField] = useState(fieldOptions[0]);
   const [fieldFormState, setFieldFormState] = useState({});
+  const [formState, setFormState] = useState({});
   const [refreshKey, setRefreshKey] = useState(Date.now());
   const sampleFieldTemplate = useMemo(
     () =>
@@ -105,13 +107,15 @@ export const CustomFieldExplorer = ({
     selection => {
       setSelectedField(selection);
       setFieldFormState({});
+      setFormState({});
     },
-    [setFieldFormState, setSelectedField],
+    [setFieldFormState, setFormState, setSelectedField],
   );
 
   const handleFieldConfigChange = useCallback(
     state => {
       setFieldFormState(state);
+      setFormState({});
       // Force TemplateEditorForm to re-render since some fields
       // may not be responsive to ui:option changes
       setRefreshKey(Date.now());
@@ -150,12 +154,11 @@ export const CustomFieldExplorer = ({
           <CardContent>
             <Form
               showErrorList={false}
-              fields={{ ...fieldComponents }}
+              fields={{ ...fieldOverrides, ...fieldComponents }}
               noHtml5Validate
               formData={fieldFormState}
               formContext={{ fieldFormState }}
               onSubmit={e => handleFieldConfigChange(e.formData)}
-              validator={validator}
               schema={selectedField.schema?.uiOptions || {}}
             >
               <Button
@@ -188,6 +191,8 @@ export const CustomFieldExplorer = ({
           content={sampleFieldTemplate}
           contentIsSpec
           fieldExtensions={customFieldExtensions}
+          data={formState}
+          onUpdate={setFormState}
           setErrorText={() => null}
         />
       </div>

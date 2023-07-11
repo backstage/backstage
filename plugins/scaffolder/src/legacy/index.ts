@@ -1,5 +1,5 @@
 /*
- * Copyright 2021 The Backstage Authors
+ * Copyright 2023 The Backstage Authors
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -13,17 +13,6 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+export type { LegacyRouterProps } from './Router';
 
-import { FieldValidation } from '@rjsf/utils';
-import { KubernetesValidatorFunctions } from '@backstage/catalog-model';
-
-export const entityNamePickerValidation = (
-  value: string,
-  validation: FieldValidation,
-) => {
-  if (!KubernetesValidatorFunctions.isValidObjectName(value)) {
-    validation.addError(
-      'Must start and end with an alphanumeric character, and contain only alphanumeric characters, hyphens, underscores, and periods. Maximum length is 63 characters.',
-    );
-  }
-};
+export { LegacyTaskPage, type LegacyTaskPageProps } from './TaskPage';
