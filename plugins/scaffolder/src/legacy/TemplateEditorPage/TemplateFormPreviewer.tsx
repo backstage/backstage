@@ -33,9 +33,9 @@ import React, { useCallback, useState } from 'react';
 import useAsync from 'react-use/lib/useAsync';
 import yaml from 'yaml';
 import { type LayoutOptions } from '@backstage/plugin-scaffolder-react';
-import { NextFieldExtensionOptions } from '@backstage/plugin-scaffolder-react/alpha';
 import { TemplateEditorForm } from './TemplateEditorForm';
-import { TemplateEditorTextArea } from '../../components/TemplateEditorPage/TemplateEditorTextArea';
+import { TemplateEditorTextArea } from './TemplateEditorTextArea';
+import { LegacyFieldExtensionOptions } from '@backstage/plugin-scaffolder-react/alpha';
 
 const EXAMPLE_TEMPLATE_PARAMS_YAML = `# Edit the template parameters below to see how they will render in the scaffolder form UI
 parameters:
@@ -114,7 +114,7 @@ export const TemplateFormPreviewer = ({
   layouts = [],
 }: {
   defaultPreviewTemplate?: string;
-  customFieldExtensions?: NextFieldExtensionOptions<any, any>[];
+  customFieldExtensions?: LegacyFieldExtensionOptions<any, any>[];
   onClose?: () => void;
   layouts?: LayoutOptions[];
 }) => {
@@ -125,6 +125,7 @@ export const TemplateFormPreviewer = ({
   const [errorText, setErrorText] = useState<string>();
   const [templateOptions, setTemplateOptions] = useState<TemplateOption[]>([]);
   const [templateYaml, setTemplateYaml] = useState(defaultPreviewTemplate);
+  const [formState, setFormState] = useState({});
 
   const { loading } = useAsync(
     () =>
@@ -191,7 +192,7 @@ export const TemplateFormPreviewer = ({
             </Select>
           </FormControl>
 
-          <IconButton size="medium" onClick={onClose}>
+          <IconButton size="medium" onClick={onClose} aria-label="Close">
             <CloseIcon />
           </IconButton>
         </div>
@@ -207,6 +208,8 @@ export const TemplateFormPreviewer = ({
             content={templateYaml}
             contentIsSpec
             fieldExtensions={customFieldExtensions}
+            data={formState}
+            onUpdate={setFormState}
             setErrorText={setErrorText}
             layouts={layouts}
           />

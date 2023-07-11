@@ -13,17 +13,5 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
-import { FieldValidation } from '@rjsf/utils';
-import { KubernetesValidatorFunctions } from '@backstage/catalog-model';
-
-export const entityNamePickerValidation = (
-  value: string,
-  validation: FieldValidation,
-) => {
-  if (!KubernetesValidatorFunctions.isValidObjectName(value)) {
-    validation.addError(
-      'Must start and end with an alphanumeric character, and contain only alphanumeric characters, hyphens, underscores, and periods. Maximum length is 63 characters.',
-    );
-  }
-};
+export { LegacyTaskPage } from './TaskPage';
+export type { LegacyTaskPageProps } from './TaskPage';

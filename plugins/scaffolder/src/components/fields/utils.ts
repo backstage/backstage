@@ -13,13 +13,13 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import { JSONSchema7 } from 'json-schema';
-import { z } from 'zod';
-import zodToJsonSchema from 'zod-to-json-schema';
 import {
   CustomFieldExtensionSchema,
   FieldExtensionComponentProps,
 } from '@backstage/plugin-scaffolder-react';
+import { JSONSchema7 } from 'json-schema';
+import { z } from 'zod';
+import zodToJsonSchema from 'zod-to-json-schema';
 
 /**
  * @public
