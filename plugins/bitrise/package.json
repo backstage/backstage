@@ -38,8 +38,8 @@
     "recharts": "^2.5.0"
   },
   "peerDependencies": {
-    "react": "^17.0.0 || ^18.2.0",
-    "react-dom": "^17.0.0 || ^18.2.0",
+    "react": "^18.2.0",
+    "react-dom": "^18.2.0",
     "react-router-dom": "6.0.0-beta.0 || ^6.3.0"
   },
   "devDependencies": {
@@ -52,7 +52,7 @@
     "@testing-library/react": "^13.1",
     "@testing-library/user-event": "^14.4.3",
     "@types/node": "^16.11.26",
-    "@types/react": "^16.13.1 || ^17.0.0",
+    "@types/react": "^18.2.0",
     "@types/recharts": "^1.8.15",
     "msw": "^1.0.0"
   },

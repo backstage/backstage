@@ -61,7 +61,7 @@
     "@material-ui/icons": "^4.9.1",
     "@material-ui/lab": "4.0.0-alpha.61",
     "@react-hookz/web": "^23.0.0",
-    "@types/react": "^16.13.1 || ^17.0.0",
+    "@types/react": "^18.2.0",
     "classnames": "^2.2.6",
     "jwt-decode": "^3.1.0",
     "lodash": "^4.17.21",
@@ -72,8 +72,8 @@
     "zen-observable": "^0.10.0"
   },
   "peerDependencies": {
-    "react": "^17.0.0 || ^18.2.0",
-    "react-dom": "^17.0.0 || ^18.2.0",
+    "react": "^18.2.0",
+    "react-dom": "^18.2.0",
     "react-router-dom": "6.0.0-beta.0 || ^6.3.0"
   },
   "devDependencies": {
