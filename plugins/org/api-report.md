@@ -9,6 +9,7 @@ import { BackstagePlugin } from '@backstage/core-plugin-api';
 import { ExternalRouteRef } from '@backstage/core-plugin-api';
 import { IconComponent } from '@backstage/core-plugin-api';
 import { InfoCardVariants } from '@backstage/core-components';
+import { UserEntity } from '@backstage/catalog-model';
 
 // @public (undocumented)
 export const EntityGroupProfileCard: (props: {
@@ -21,6 +22,7 @@ export const EntityMembersListCard: (props: {
   memberDisplayTitle?: string | undefined;
   pageSize?: number | undefined;
   showAggregateMembersToggle?: boolean | undefined;
+  MemberComponent?: ((props: { member: UserEntity }) => any) | undefined;
 }) => JSX.Element;
 
 // @public (undocumented)
@@ -46,9 +48,10 @@ export const GroupProfileCard: (props: {
 
 // @public (undocumented)
 export const MembersListCard: (props: {
-  memberDisplayTitle?: string;
-  pageSize?: number;
-  showAggregateMembersToggle?: boolean;
+  memberDisplayTitle?: string | undefined;
+  pageSize?: number | undefined;
+  showAggregateMembersToggle?: boolean | undefined;
+  MemberComponent?: ((props: { member: UserEntity }) => any) | undefined;
 }) => JSX.Element;
 
 // @public
