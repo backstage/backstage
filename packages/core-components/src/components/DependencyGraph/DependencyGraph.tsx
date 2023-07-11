@@ -241,7 +241,7 @@ export function DependencyGraph<NodeData, EdgeData>(
           container.call(
             d3Zoom
               .zoom<SVGSVGElement, null>()
-              .scaleExtent([1, 10])
+              .scaleExtent([1, Infinity])
               .on('zoom', event => {
                 event.transform.x = Math.min(
                   0,
