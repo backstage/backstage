@@ -70,7 +70,7 @@ const useStyles = makeStyles((theme: Theme) => ({
   },
   adrBox: {
     display: 'flex',
-    justifyContent: 'space-around',
+    justifyContent: 'space-between',
     marginTop: '10px',
   },
 }));
