@@ -20,6 +20,8 @@ import path from 'path';
 import { Command } from 'commander';
 import * as tasks from './lib/tasks';
 import createApp from './createApp';
+import { findPaths } from '@backstage/cli-common';
+import { tmpdir } from 'os';
 
 jest.mock('./lib/tasks');
 
@@ -74,6 +76,18 @@ describe('command entrypoint', () => {
     expect(createTemporaryAppFolderMock).toHaveBeenCalled();
     expect(tryInitGitRepositoryMock).toHaveBeenCalled();
     expect(templatingMock).toHaveBeenCalled();
+    expect(templatingMock.mock.lastCall?.[0]).toEqual(
+      findPaths(__dirname).resolveTarget(
+        'packages',
+        'create-app',
+        'src',
+        'templates',
+        'default-app',
+      ),
+    );
+    expect(templatingMock.mock.lastCall?.[1]).toEqual(
+      path.join(tmpdir(), 'MyApp'),
+    );
     expect(moveAppMock).toHaveBeenCalled();
     expect(buildAppMock).toHaveBeenCalled();
   });
@@ -84,6 +98,48 @@ describe('command entrypoint', () => {
     expect(checkPathExistsMock).toHaveBeenCalled();
     expect(tryInitGitRepositoryMock).toHaveBeenCalled();
     expect(templatingMock).toHaveBeenCalled();
+    expect(templatingMock.mock.lastCall?.[0]).toEqual(
+      findPaths(__dirname).resolveTarget(
+        'packages',
+        'create-app',
+        'src',
+        'templates',
+        'default-app',
+      ),
+    );
+    expect(templatingMock.mock.lastCall?.[1]).toEqual('myDirectory');
+    expect(buildAppMock).toHaveBeenCalled();
+  });
+
+  it('should call expected tasks with relative --template-path option', async () => {
+    const cmd = {
+      path: 'myDirectory',
+      templatePath: 'templateDirectory',
+    } as unknown as Command;
+    await createApp(cmd);
+    expect(checkPathExistsMock).toHaveBeenCalled();
+    expect(tryInitGitRepositoryMock).toHaveBeenCalled();
+    expect(templatingMock).toHaveBeenCalled();
+    expect(templatingMock.mock.lastCall?.[0]).toEqual(
+      findPaths(__dirname).resolveTarget('templateDirectory'),
+    );
+    expect(templatingMock.mock.lastCall?.[1]).toEqual('myDirectory');
+    expect(buildAppMock).toHaveBeenCalled();
+  });
+
+  it('should call expected tasks with absolute --template-path option', async () => {
+    const cmd = {
+      path: 'myDirectory',
+      templatePath: path.resolve('somewhere', 'templateDirectory'),
+    } as unknown as Command;
+    await createApp(cmd);
+    expect(checkPathExistsMock).toHaveBeenCalled();
+    expect(tryInitGitRepositoryMock).toHaveBeenCalled();
+    expect(templatingMock).toHaveBeenCalled();
+    expect(templatingMock.mock.lastCall?.[0]).toEqual(
+      path.resolve('somewhere', 'templateDirectory'),
+    );
+    expect(templatingMock.mock.lastCall?.[1]).toEqual('myDirectory');
     expect(buildAppMock).toHaveBeenCalled();
   });
 
