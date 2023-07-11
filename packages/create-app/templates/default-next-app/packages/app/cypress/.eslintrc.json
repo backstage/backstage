@@ -1,0 +1,12 @@
+{
+  "plugins": ["cypress"],
+  "extends": ["plugin:cypress/recommended"],
+  "rules": {
+    "jest/expect-expect": [
+      "error",
+      {
+        "assertFunctionNames": ["expect", "cy.contains", "cy.**.should"]
+      }
+    ]
+  }
+}

@@ -46,7 +46,7 @@ const main = (argv: string[]) => {
     .addOption(
       new Option('--template-name [name]', 'Use the given template')
         .conflicts('--template-path')
-        .choices(['default-app'])
+        .choices(['default-app', 'default-next-app'])
         .default('default-app'),
     )
     .action(cmd => createApp(cmd));

@@ -1,0 +1,39 @@
+{
+  "name": "backend-next",
+  "version": "0.0.0",
+  "main": "dist/index.cjs.js",
+  "types": "src/index.ts",
+  "private": true,
+  "backstage": {
+    "role": "backend"
+  },
+  "scripts": {
+    "start": "EXPERIMENTAL_BACKEND_START=1 backstage-cli package start",
+    "build": "backstage-cli package build",
+    "lint": "backstage-cli package lint",
+    "test": "backstage-cli package test",
+    "clean": "backstage-cli package clean",
+    "build-image": "docker build ../.. -f Dockerfile --tag backstage"
+  },
+  "dependencies": {
+    "@backstage/backend-defaults": "^{{version '@backstage/backend-defaults'}}",
+    "@backstage/backend-tasks": "^{{version '@backstage/backend-tasks'}}",
+    "@backstage/plugin-app-backend": "^{{version '@backstage/plugin-app-backend'}}",
+    "@backstage/plugin-catalog-backend": "^{{version '@backstage/plugin-catalog-backend'}}",
+    "@backstage/plugin-catalog-backend-module-unprocessed": "^{{version '@backstage/plugin-catalog-backend-module-unprocessed'}}",
+    "@backstage/plugin-scaffolder-backend": "^{{version '@backstage/plugin-scaffolder-backend'}}",
+    "@backstage/plugin-search-backend": "^{{version '@backstage/plugin-search-backend'}}",
+    "@backstage/plugin-search-backend-module-catalog": "^{{version '@backstage/plugin-search-backend-module-catalog'}}",
+    "@backstage/plugin-search-backend-module-techdocs": "^{{version '@backstage/plugin-search-backend-module-techdocs'}}",
+    "@backstage/plugin-search-backend-node": "^{{version '@backstage/plugin-search-backend-node'}}",
+    "@backstage/plugin-techdocs-backend": "^{{version '@backstage/plugin-techdocs-backend'}}",
+    "better-sqlite3": "^8.0.0",
+    "app": "link:../app"
+  },
+  "devDependencies": {
+    "@backstage/cli": "^{{version '@backstage/cli'}}"
+  },
+  "files": [
+    "dist"
+  ]
+}

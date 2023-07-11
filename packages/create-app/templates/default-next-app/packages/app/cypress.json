@@ -1,0 +1,6 @@
+{
+  "baseUrl": "http://localhost:3001",
+  "fixturesFolder": false,
+  "pluginsFile": false,
+  "retries": 3
+}

@@ -33,6 +33,7 @@ import { version as root } from '../../../../package.json';
 
 import { version as appDefaults } from '../../../app-defaults/package.json';
 import { version as backendCommon } from '../../../backend-common/package.json';
+import { version as backendDefaults } from '../../../backend-defaults/package.json';
 import { version as backendTasks } from '../../../backend-tasks/package.json';
 import { version as catalogClient } from '../../../catalog-client/package.json';
 import { version as catalogModel } from '../../../catalog-model/package.json';
@@ -56,6 +57,7 @@ import { version as pluginCatalogReact } from '../../../../plugins/catalog-react
 import { version as pluginCatalogBackend } from '../../../../plugins/catalog-backend/package.json';
 import { version as pluginCatalogGraph } from '../../../../plugins/catalog-graph/package.json';
 import { version as pluginCatalogImport } from '../../../../plugins/catalog-import/package.json';
+import { version as pluginCatalogBackendModuleUnprocessed } from '../../../../plugins/catalog-backend-module-unprocessed/package.json';
 import { version as pluginCircleci } from '../../../../plugins/circleci/package.json';
 import { version as pluginExplore } from '../../../../plugins/explore/package.json';
 import { version as pluginGithubActions } from '../../../../plugins/github-actions/package.json';
@@ -72,6 +74,8 @@ import { version as pluginSearch } from '../../../../plugins/search/package.json
 import { version as pluginSearchReact } from '../../../../plugins/search-react/package.json';
 import { version as pluginSearchBackend } from '../../../../plugins/search-backend/package.json';
 import { version as pluginSearchBackendModulePg } from '../../../../plugins/search-backend-module-pg/package.json';
+import { version as pluginSearchBackendModuleCatalog } from '../../../../plugins/search-backend-module-catalog/package.json';
+import { version as pluginSearchBackendModuleTechdocs } from '../../../../plugins/search-backend-module-techdocs/package.json';
 import { version as pluginSearchBackendNode } from '../../../../plugins/search-backend-node/package.json';
 import { version as pluginTechRadar } from '../../../../plugins/tech-radar/package.json';
 import { version as pluginTechdocs } from '../../../../plugins/techdocs/package.json';
@@ -84,6 +88,7 @@ export const packageVersions = {
   root,
   '@backstage/app-defaults': appDefaults,
   '@backstage/backend-common': backendCommon,
+  '@backstage/backend-defaults': backendDefaults,
   '@backstage/backend-tasks': backendTasks,
   '@backstage/catalog-client': catalogClient,
   '@backstage/catalog-model': catalogModel,
@@ -104,6 +109,8 @@ export const packageVersions = {
   '@backstage/plugin-catalog-backend': pluginCatalogBackend,
   '@backstage/plugin-catalog-graph': pluginCatalogGraph,
   '@backstage/plugin-catalog-import': pluginCatalogImport,
+  '@backstage/plugin-catalog-backend-module-unprocessed':
+    pluginCatalogBackendModuleUnprocessed,
   '@backstage/plugin-circleci': pluginCircleci,
   '@backstage/plugin-explore': pluginExplore,
   '@backstage/plugin-github-actions': pluginGithubActions,
@@ -120,6 +127,10 @@ export const packageVersions = {
   '@backstage/plugin-search-react': pluginSearchReact,
   '@backstage/plugin-search-backend': pluginSearchBackend,
   '@backstage/plugin-search-backend-module-pg': pluginSearchBackendModulePg,
+  '@backstage/plugin-search-backend-module-catalog':
+    pluginSearchBackendModuleCatalog,
+  '@backstage/plugin-search-backend-module-techdocs':
+    pluginSearchBackendModuleTechdocs,
   '@backstage/plugin-search-backend-node': pluginSearchBackendNode,
   '@backstage/plugin-tech-radar': pluginTechRadar,
   '@backstage/plugin-techdocs': pluginTechdocs,
