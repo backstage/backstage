@@ -23,14 +23,15 @@ import {
   MockStarredEntitiesApi,
 } from '@backstage/plugin-catalog-react';
 import React from 'react';
-import { scaffolderApiRef, ScaffolderClient } from '../src';
-import { NextScaffolderPage, ScaffolderPage } from '../src/plugin';
+import { ScaffolderClient } from '../src';
+import { ScaffolderPage, LegacyScaffolderPage } from '../src/plugin';
 import {
   discoveryApiRef,
   fetchApiRef,
   identityApiRef,
 } from '@backstage/core-plugin-api';
 import { CatalogEntityPage } from '@backstage/plugin-catalog';
+import { scaffolderApiRef } from '@backstage/plugin-scaffolder-react';
 
 createDevApp()
   .addPage({
@@ -69,9 +70,9 @@ createDevApp()
     element: <ScaffolderPage />,
   })
   .addPage({
-    path: '/next-create',
-    title: 'Create (next)',
-    element: <NextScaffolderPage />,
+    path: '/legacy-create',
+    title: 'Create (legacy)',
+    element: <LegacyScaffolderPage />,
   })
   .addPage({
     path: '/create-groups',
@@ -92,10 +93,10 @@ createDevApp()
     ),
   })
   .addPage({
-    path: '/next-create-groups',
-    title: 'Groups (next)',
+    path: '/legacy-create-groups',
+    title: 'Groups (legacy)',
     element: (
-      <NextScaffolderPage
+      <LegacyScaffolderPage
         groups={[
           {
             filter: e => e.metadata.tags?.includes('techdocs') || false,

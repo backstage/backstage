@@ -17,7 +17,7 @@ import { IconComponent, useApp } from '@backstage/core-plugin-api';
 import { Button } from '@material-ui/core';
 import WebIcon from '@material-ui/icons/Web';
 import React from 'react';
-import { ScaffolderTaskOutput } from '../../../api';
+import { ScaffolderTaskOutput } from '../../api';
 
 export const TextOutputs = (props: {
   output: ScaffolderTaskOutput;

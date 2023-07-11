@@ -59,7 +59,7 @@ import { GraphiQLPage } from '@backstage/plugin-graphiql';
 import { HomepageCompositionRoot } from '@backstage/plugin-home';
 import { LighthousePage } from '@backstage/plugin-lighthouse';
 import { NewRelicPage } from '@backstage/plugin-newrelic';
-import { NextScaffolderPage } from '@backstage/plugin-scaffolder/alpha';
+import { LegacyScaffolderPage } from '@backstage/plugin-scaffolder/alpha';
 import { ScaffolderPage, scaffolderPlugin } from '@backstage/plugin-scaffolder';
 import {
   ScaffolderFieldExtensions,
@@ -219,11 +219,11 @@ const routes = (
         <LightBox />
       </TechDocsAddons>
     </Route>
-    <FeatureFlagged with="scaffolder-next-preview">
+    <FeatureFlagged with="scaffolder-legacy">
       <Route
         path="/create"
         element={
-          <NextScaffolderPage
+          <LegacyScaffolderPage
             groups={[
               {
                 title: 'Recommended',
@@ -242,7 +242,7 @@ const routes = (
         </ScaffolderLayouts>
       </Route>
     </FeatureFlagged>
-    <FeatureFlagged without="scaffolder-next-preview">
+    <FeatureFlagged without="scaffolder-legacy">
       <Route
         path="/create"
         element={

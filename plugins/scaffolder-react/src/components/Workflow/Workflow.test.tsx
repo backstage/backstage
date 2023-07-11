@@ -24,7 +24,7 @@ import { act, fireEvent } from '@testing-library/react';
 import React from 'react';
 import { Workflow } from './Workflow';
 import { analyticsApiRef } from '@backstage/core-plugin-api';
-import { ScaffolderApi, scaffolderApiRef } from '../../../api';
+import { ScaffolderApi, scaffolderApiRef } from '../../api';
 
 const scaffolderApiMock: jest.Mocked<ScaffolderApi> = {
   cancelTask: jest.fn(),

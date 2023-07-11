@@ -14,12 +14,12 @@
  * limitations under the License.
  */
 import React from 'react';
-import {
-  createScaffolderLayout,
-  LayoutTemplate,
-  scaffolderPlugin,
-} from '@backstage/plugin-scaffolder';
+import { scaffolderPlugin } from '@backstage/plugin-scaffolder';
 import { Grid } from '@material-ui/core';
+import {
+  LayoutTemplate,
+  createScaffolderLayout,
+} from '@backstage/plugin-scaffolder-react';
 
 const TwoColumn: LayoutTemplate = ({ properties, description, title }) => {
   const mid = Math.ceil(properties.length / 2);

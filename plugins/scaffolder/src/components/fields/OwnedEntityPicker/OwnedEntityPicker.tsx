@@ -34,7 +34,7 @@ export { OwnedEntityPickerSchema } from './schema';
 export const OwnedEntityPicker = (props: OwnedEntityPickerProps) => {
   const {
     schema: { title = 'Entity', description = 'An entity from the catalog' },
-    uiSchema,
+    uiSchema = {},
     required,
   } = props;
 

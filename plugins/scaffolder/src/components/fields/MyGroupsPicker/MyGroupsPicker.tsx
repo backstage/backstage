@@ -34,7 +34,7 @@ export const MyGroupsPicker = (props: MyGroupsPickerProps) => {
   const {
     schema: { title, description },
     required,
-    rawErrors,
+    rawErrors = [],
     onChange,
   } = props;
 

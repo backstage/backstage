@@ -31,7 +31,6 @@ import { RepoUrlPickerProps } from './schema';
 import { RepoUrlPickerState } from './types';
 import useDebounce from 'react-use/lib/useDebounce';
 import { useTemplateSecrets } from '@backstage/plugin-scaffolder-react';
-import { Field } from '@rjsf/utils';
 
 export { RepoUrlPickerSchema } from './schema';
 
