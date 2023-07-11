@@ -30,7 +30,7 @@ import {
   DefaultTemplateOutputs,
   TaskLogStream,
   TaskSteps,
-} from '@backstage/plugin-scaffolder-react/alpha';
+} from '@backstage/plugin-scaffolder-react';
 import { useAsync } from '@react-hookz/web';
 
 const useStyles = makeStyles(theme => ({

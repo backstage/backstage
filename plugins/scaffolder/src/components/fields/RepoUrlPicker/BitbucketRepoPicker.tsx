@@ -35,7 +35,7 @@ export const BitbucketRepoPicker = (props: {
   allowedProjects?: string[];
   onChange: (state: RepoUrlPickerState) => void;
   state: RepoUrlPickerState;
-  rawErrors: string[];
+  rawErrors?: string[];
 }) => {
   const {
     allowedOwners = [],
@@ -64,7 +64,7 @@ export const BitbucketRepoPicker = (props: {
         <FormControl
           margin="normal"
           required
-          error={rawErrors?.length > 0 && !workspace}
+          error={Array.isArray(rawErrors) && rawErrors.length > 0 && !workspace}
         >
           {allowedOwners?.length ? (
             <Select
@@ -95,7 +95,7 @@ export const BitbucketRepoPicker = (props: {
       <FormControl
         margin="normal"
         required
-        error={rawErrors?.length > 0 && !project}
+        error={Array.isArray(rawErrors) && rawErrors.length > 0 && !project}
       >
         {allowedProjects?.length ? (
           <Select

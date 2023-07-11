@@ -22,7 +22,14 @@ import {
 } from '@rjsf/utils';
 import { PropsWithChildren } from 'react';
 import { JsonObject } from '@backstage/types';
-import { CustomFieldExtensionSchema } from '@backstage/plugin-scaffolder-react';
+import { JSONSchema7 } from 'json-schema';
+
+/**
+ * The type used to wrap up the Layout and embed the input props
+ *
+ * @public
+ */
+export type FieldExtensionComponent<_TReturnValue, _TInputProps> = () => null;
 
 /**
  * Type for Field Extension Props for RJSF v5
@@ -61,6 +68,16 @@ export type CustomFieldValidator<TFieldReturnValue, TUiOptions = unknown> = (
     uiSchema?: FieldExtensionUiSchema<TFieldReturnValue, TUiOptions>;
   },
 ) => void | Promise<void>;
+
+/**
+ * Type for the Custom Field Extension schema.
+ *
+ * @public
+ */
+export type CustomFieldExtensionSchema = {
+  returnValue: JSONSchema7;
+  uiOptions?: JSONSchema7;
+};
 
 /**
  * Type for the Custom Field Extension with the

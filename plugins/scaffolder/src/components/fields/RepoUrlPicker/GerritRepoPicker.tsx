@@ -23,13 +23,16 @@ import { RepoUrlPickerState } from './types';
 export const GerritRepoPicker = (props: {
   onChange: (state: RepoUrlPickerState) => void;
   state: RepoUrlPickerState;
-  rawErrors: string[];
+  rawErrors?: string[];
 }) => {
   const { onChange, rawErrors, state } = props;
   const { workspace, owner } = state;
   return (
     <>
-      <FormControl margin="normal" error={rawErrors?.length > 0 && !workspace}>
+      <FormControl
+        margin="normal"
+        error={Array.isArray(rawErrors) && rawErrors.length > 0 && !workspace}
+      >
         <InputLabel htmlFor="ownerInput">Owner</InputLabel>
         <Input
           id="ownerInput"
@@ -41,7 +44,7 @@ export const GerritRepoPicker = (props: {
       <FormControl
         margin="normal"
         required
-        error={rawErrors?.length > 0 && !workspace}
+        error={Array.isArray(rawErrors) && rawErrors.length > 0 && !workspace}
       >
         <InputLabel htmlFor="parentInput">Parent</InputLabel>
         <Input

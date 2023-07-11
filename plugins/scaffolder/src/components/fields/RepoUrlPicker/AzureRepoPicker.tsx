@@ -25,7 +25,7 @@ import { Select, SelectItem } from '@backstage/core-components';
 export const AzureRepoPicker = (props: {
   allowedOrganizations?: string[];
   allowedOwners?: string[];
-  rawErrors: string[];
+  rawErrors?: string[];
   state: RepoUrlPickerState;
   onChange: (state: RepoUrlPickerState) => void;
 }) => {
@@ -52,7 +52,9 @@ export const AzureRepoPicker = (props: {
       <FormControl
         margin="normal"
         required
-        error={rawErrors?.length > 0 && !organization}
+        error={
+          Array.isArray(rawErrors) && rawErrors.length > 0 && !organization
+        }
       >
         {allowedOrganizations?.length ? (
           <Select
@@ -82,7 +84,7 @@ export const AzureRepoPicker = (props: {
       <FormControl
         margin="normal"
         required
-        error={rawErrors?.length > 0 && !owner}
+        error={Array.isArray(rawErrors) && rawErrors.length > 0 && !owner}
       >
         {allowedOwners?.length ? (
           <Select

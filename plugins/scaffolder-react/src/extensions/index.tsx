@@ -17,12 +17,14 @@
 import {
   CustomFieldValidator,
   FieldExtensionOptions,
+  CustomFieldExtensionSchema,
   FieldExtensionComponentProps,
   FieldExtensionUiSchema,
+  FieldExtensionComponent,
 } from './types';
 import { Extension, attachComponentData } from '@backstage/core-plugin-api';
 import { UIOptionsType } from '@rjsf/utils';
-import { FIELD_EXTENSION_KEY } from './keys';
+import { FIELD_EXTENSION_KEY, FIELD_EXTENSION_WRAPPER_KEY } from './keys';
 
 /**
  * Method for creating field extensions that can be used in the scaffolder
@@ -50,9 +52,26 @@ export function createScaffolderFieldExtension<
   };
 }
 
+/**
+ * The Wrapping component for defining fields extensions inside
+ *
+ * @public
+ */
+export const ScaffolderFieldExtensions: React.ComponentType<
+  React.PropsWithChildren<{}>
+> = (): JSX.Element | null => null;
+
+attachComponentData(
+  ScaffolderFieldExtensions,
+  FIELD_EXTENSION_WRAPPER_KEY,
+  true,
+);
+
 export type {
   CustomFieldValidator,
   FieldExtensionOptions,
   FieldExtensionComponentProps,
   FieldExtensionUiSchema,
+  FieldExtensionComponent,
+  CustomFieldExtensionSchema,
 };

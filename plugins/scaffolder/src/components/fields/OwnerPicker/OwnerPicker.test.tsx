@@ -18,9 +18,9 @@ import { type EntityFilterQuery } from '@backstage/catalog-client';
 import { Entity } from '@backstage/catalog-model';
 import { CatalogApi, catalogApiRef } from '@backstage/plugin-catalog-react';
 import { renderInTestApp, TestApiProvider } from '@backstage/test-utils';
-import { FieldProps } from '@rjsf/core';
 import React from 'react';
 import { OwnerPicker } from './OwnerPicker';
+import { OwnerPickerProps } from './schema';
 
 const makeEntity = (kind: string, namespace: string, name: string): Entity => ({
   apiVersion: 'backstage.io/v1beta1',
@@ -45,7 +45,7 @@ describe('<OwnerPicker />', () => {
   const rawErrors: string[] = [];
   const formData = undefined;
 
-  let props: FieldProps;
+  let props: OwnerPickerProps;
 
   const catalogApi: jest.Mocked<CatalogApi> = {
     getLocationById: jest.fn(),
@@ -82,7 +82,7 @@ describe('<OwnerPicker />', () => {
         uiSchema,
         rawErrors,
         formData,
-      } as unknown as FieldProps<any>;
+      } as unknown as OwnerPickerProps;
 
       catalogApi.getEntities.mockResolvedValue({ items: entities });
     });
@@ -112,7 +112,7 @@ describe('<OwnerPicker />', () => {
         uiSchema,
         rawErrors,
         formData,
-      } as unknown as FieldProps<any>;
+      } as unknown as OwnerPickerProps;
 
       catalogApi.getEntities.mockResolvedValue({ items: entities });
     });
@@ -151,7 +151,7 @@ describe('<OwnerPicker />', () => {
         uiSchema,
         rawErrors,
         formData,
-      } as unknown as FieldProps<any>;
+      } as unknown as OwnerPickerProps;
 
       catalogApi.getEntities.mockResolvedValue({ items: entities });
     });
@@ -196,7 +196,7 @@ describe('<OwnerPicker />', () => {
         uiSchema,
         rawErrors,
         formData,
-      } as unknown as FieldProps<any>;
+      } as unknown as OwnerPickerProps;
 
       catalogApi.getEntities.mockResolvedValue({ items: entities });
     });

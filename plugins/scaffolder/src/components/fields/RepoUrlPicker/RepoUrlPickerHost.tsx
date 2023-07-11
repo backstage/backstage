@@ -25,7 +25,7 @@ export const RepoUrlPickerHost = (props: {
   host?: string;
   hosts?: string[];
   onChange: (host: string) => void;
-  rawErrors: string[];
+  rawErrors?: string[];
 }) => {
   const { host, hosts, onChange, rawErrors } = props;
   const scaffolderApi = useApi(scaffolderApiRef);
@@ -68,7 +68,7 @@ export const RepoUrlPickerHost = (props: {
       <FormControl
         margin="normal"
         required
-        error={rawErrors?.length > 0 && !host}
+        error={Array.isArray(rawErrors) && rawErrors.length > 0 && !host}
       >
         <Select
           native
