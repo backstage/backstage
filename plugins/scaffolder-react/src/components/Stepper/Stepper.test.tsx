@@ -14,14 +14,14 @@
  * limitations under the License.
  */
 import React from 'react';
-import { TemplateParameterSchema } from '../../../types';
+import { TemplateParameterSchema } from '../../types';
 import { Stepper } from './Stepper';
 import { renderInTestApp } from '@backstage/test-utils';
 import { act, fireEvent } from '@testing-library/react';
 import type { RJSFValidationError } from '@rjsf/utils';
 import { JsonValue } from '@backstage/types';
-import { NextFieldExtensionComponentProps } from '../../../extensions';
-import { LayoutTemplate } from '../../../layouts';
+import { FieldExtensionComponentProps } from '../../extensions';
+import { LayoutTemplate } from '../../layouts';
 
 describe('Stepper', () => {
   it('should render the step titles for each step of the manifest', async () => {
@@ -115,7 +115,7 @@ describe('Stepper', () => {
   it('should merge nested formData correctly in multiple steps', async () => {
     const Repo = ({
       onChange,
-    }: NextFieldExtensionComponentProps<{ repository: string }, any>) => (
+    }: FieldExtensionComponentProps<{ repository: string }, any>) => (
       <input
         aria-label="repo"
         type="text"
@@ -126,7 +126,7 @@ describe('Stepper', () => {
 
     const Owner = ({
       onChange,
-    }: NextFieldExtensionComponentProps<{ owner: string }, any>) => (
+    }: FieldExtensionComponentProps<{ owner: string }, any>) => (
       <input
         aria-label="owner"
         type="text"
