@@ -1,5 +1,15 @@
 # @backstage/plugin-microsoft-calendar
 
+## 0.1.5-next.2
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/theme@0.4.1-next.1
+  - @backstage/core-plugin-api@1.5.3-next.1
+  - @backstage/core-components@0.13.3-next.2
+  - @backstage/errors@1.2.1-next.0
+
 ## 0.1.5-next.1
 
 ### Patch Changes

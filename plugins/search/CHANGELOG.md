@@ -1,5 +1,23 @@
 # @backstage/plugin-search
 
+## 1.3.3-next.2
+
+### Patch Changes
+
+- c3381408d633: Fixed bug in "View Full Results" link of Search Modal that did not navigate to the full results page.
+- Updated dependencies
+  - @backstage/plugin-catalog-react@1.8.0-next.2
+  - @backstage/theme@0.4.1-next.1
+  - @backstage/core-plugin-api@1.5.3-next.1
+  - @backstage/core-components@0.13.3-next.2
+  - @backstage/catalog-model@1.4.1-next.0
+  - @backstage/config@1.0.8
+  - @backstage/errors@1.2.1-next.0
+  - @backstage/types@1.1.0
+  - @backstage/version-bridge@1.0.4
+  - @backstage/plugin-search-common@1.2.5-next.0
+  - @backstage/plugin-search-react@1.6.3-next.2
+
 ## 1.3.3-next.1
 
 ### Patch Changes

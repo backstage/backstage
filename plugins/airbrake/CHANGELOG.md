@@ -1,5 +1,19 @@
 # @backstage/plugin-airbrake
 
+## 0.3.20-next.2
+
+### Patch Changes
+
+- 7b6033587650: Added documentation for the [new backend system](https://backstage.io/docs/backend-system/)
+- Updated dependencies
+  - @backstage/plugin-catalog-react@1.8.0-next.2
+  - @backstage/theme@0.4.1-next.1
+  - @backstage/test-utils@1.4.1-next.2
+  - @backstage/core-plugin-api@1.5.3-next.1
+  - @backstage/core-components@0.13.3-next.2
+  - @backstage/catalog-model@1.4.1-next.0
+  - @backstage/dev-utils@1.0.17-next.2
+
 ## 0.3.20-next.1
 
 ### Patch Changes

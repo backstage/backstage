@@ -1,5 +1,13 @@
 # @backstage/codemods
 
+## 0.1.45-next.0
+
+### Patch Changes
+
+- 325a32e9476e: Updated dependency `jscodeshift` to `^0.15.0`.
+- Updated dependencies
+  - @backstage/cli-common@0.1.12
+
 ## 0.1.44
 
 ### Patch Changes
