@@ -14,5 +14,4 @@
  * limitations under the License.
  */
 
-export * from './next';
-export type { FormProps } from './next';
+export * from './legacy';
