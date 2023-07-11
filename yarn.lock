@@ -4657,6 +4657,7 @@ __metadata:
   resolution: "@backstage/plugin-airbrake-backend@workspace:plugins/airbrake-backend"
   dependencies:
     "@backstage/backend-common": "workspace:^"
+    "@backstage/backend-plugin-api": "workspace:^"
     "@backstage/cli": "workspace:^"
     "@backstage/config": "workspace:^"
     "@types/express": "*"
