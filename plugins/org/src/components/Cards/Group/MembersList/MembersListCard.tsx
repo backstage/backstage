@@ -68,7 +68,7 @@ const useStyles = makeStyles((theme: Theme) =>
   }),
 );
 
-const MemberComponent = (props: { member: UserEntity }) => {
+const DefaultMemberComponent = (props: { member: UserEntity }) => {
   const classes = useStyles();
   const {
     metadata: { name: metaName, description },
@@ -132,11 +132,13 @@ export const MembersListCard = (props: {
   memberDisplayTitle?: string;
   pageSize?: number;
   showAggregateMembersToggle?: boolean;
+  MemberComponent?: (props: { member: UserEntity }) => any;
 }) => {
   const {
     memberDisplayTitle = 'Members',
     pageSize = 50,
     showAggregateMembersToggle,
+    MemberComponent = DefaultMemberComponent,
   } = props;
 
   const { entity: groupEntity } = useEntity<GroupEntity>();
