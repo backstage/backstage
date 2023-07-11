@@ -29,7 +29,7 @@ import { AppOptions, BackstageApp } from './types';
  * however, this low-level API allows you to provide a full set of options,
  * including your own `components`, `icons`, `defaultApis`, and `themes`. This
  * is particularly useful if you are not using `@backstage/core-components` or
- * MUI, as it allows you to avoid those dependencies completely.
+ * Material UI, as it allows you to avoid those dependencies completely.
  */
 export function createSpecializedApp(options: AppOptions): BackstageApp {
   return new AppManager(options);

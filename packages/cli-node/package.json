@@ -28,7 +28,7 @@
     "@manypkg/get-packages": "^1.1.3",
     "@yarnpkg/parsers": "^3.0.0-rc.4",
     "fs-extra": "10.1.0",
-    "semver": "^7.3.2",
+    "semver": "^7.5.3",
     "zod": "^3.21.4"
   },
   "devDependencies": {

@@ -29,7 +29,7 @@ import { defaultComponentThemes } from '../v5';
 import { transformV5ComponentThemesToV4 } from '../unified/overrides';
 
 /**
- * An old helper for creating MUI v4 theme options.
+ * An old helper for creating Material UI v4 theme options.
  *
  * @public
  * @deprecated Use {@link createBaseThemeOptions} instead.
@@ -47,7 +47,7 @@ export function createThemeOptions(options: SimpleThemeOptions): ThemeOptions {
 }
 
 /**
- * * An old helper for creating MUI v4 theme overrides.
+ * * An old helper for creating Material UI v4 theme overrides.
  *
  * @public
  * @deprecated Use {@link defaultComponentThemes} with {@link transformV5ComponentThemesToV4} instead.
@@ -61,7 +61,7 @@ export function createThemeOverrides(theme: Theme): Overrides {
 }
 
 /**
- * The old method to create a Backstage MUI v4 theme using a palette.
+ * The old method to create a Backstage Material UI v4 theme using a palette.
  * The theme is created with the common Backstage options and component styles.
  *
  * @public

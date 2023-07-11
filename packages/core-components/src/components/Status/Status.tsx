@@ -19,6 +19,13 @@ import Typography from '@material-ui/core/Typography';
 import classNames from 'classnames';
 import React, { PropsWithChildren } from 'react';
 
+import CheckIcon from '@material-ui/icons/Check';
+import WarningIcon from '@material-ui/icons/Warning';
+import ErrorIcon from '@material-ui/icons/Error';
+import HighlightOffIcon from '@material-ui/icons/HighlightOff';
+import ScheduleIcon from '@material-ui/icons/Schedule';
+import DirectionsRunIcon from '@material-ui/icons/DirectionsRun';
+
 export type StatusClassKey =
   | 'status'
   | 'ok'
@@ -31,44 +38,43 @@ export type StatusClassKey =
 const useStyles = makeStyles<BackstageTheme>(
   theme => ({
     status: {
+      alignItems: 'center',
+      display: 'flex',
+      flexFlow: 'row wrap',
       fontWeight: theme.typography.fontWeightMedium,
-      '&::before': {
-        width: '0.7em',
-        height: '0.7em',
-        display: 'inline-block',
+
+      '& > svg': {
         marginRight: theme.spacing(1),
-        borderRadius: '50%',
-        content: '""',
       },
     },
     ok: {
-      '&::before': {
-        backgroundColor: theme.palette.status.ok,
+      '& > svg': {
+        fill: theme.palette.status.ok,
       },
     },
     warning: {
-      '&::before': {
-        backgroundColor: theme.palette.status.warning,
+      '& > svg': {
+        fill: theme.palette.status.warning,
       },
     },
     error: {
-      '&::before': {
-        backgroundColor: theme.palette.status.error,
+      '& > svg': {
+        fill: theme.palette.status.error,
       },
     },
     pending: {
-      '&::before': {
-        backgroundColor: theme.palette.status.pending,
+      '& > svg': {
+        fill: theme.palette.status.pending,
       },
     },
     running: {
-      '&::before': {
-        backgroundColor: theme.palette.status.running,
+      '& > svg': {
+        fill: theme.palette.status.running,
       },
     },
     aborted: {
-      '&::before': {
-        backgroundColor: theme.palette.status.aborted,
+      '& > svg': {
+        fill: theme.palette.status.aborted,
       },
     },
   }),
@@ -77,78 +83,85 @@ const useStyles = makeStyles<BackstageTheme>(
 
 export function StatusOK(props: PropsWithChildren<{}>) {
   const classes = useStyles(props);
+
   return (
-    <Typography
-      component="span"
+    <div
       className={classNames(classes.status, classes.ok)}
-      aria-label="Status ok"
-      aria-hidden="true"
-      {...props}
-    />
+      aria-label={!props.children ? 'Ok' : undefined}
+      role={!props.children ? 'img' : undefined}
+    >
+      <CheckIcon style={{ fontSize: '1rem' }} />
+      <Typography component="span" {...props} />
+    </div>
   );
 }
 
 export function StatusWarning(props: PropsWithChildren<{}>) {
   const classes = useStyles(props);
   return (
-    <Typography
-      component="span"
+    <div
       className={classNames(classes.status, classes.warning)}
-      aria-label="Status warning"
-      aria-hidden="true"
-      {...props}
-    />
+      aria-label={!props.children ? 'Warning' : undefined}
+      role={!props.children ? 'img' : undefined}
+    >
+      <WarningIcon style={{ fontSize: '1rem' }} />
+      <Typography component="span" {...props} />
+    </div>
   );
 }
 
 export function StatusError(props: PropsWithChildren<{}>) {
   const classes = useStyles(props);
   return (
-    <Typography
-      component="span"
+    <div
       className={classNames(classes.status, classes.error)}
-      aria-label="Status error"
-      aria-hidden="true"
-      {...props}
-    />
+      aria-label={!props.children ? 'Error' : undefined}
+      role={!props.children ? 'img' : undefined}
+    >
+      <ErrorIcon style={{ fontSize: '1rem' }} />
+      <Typography component="span" {...props} />
+    </div>
   );
 }
 
 export function StatusPending(props: PropsWithChildren<{}>) {
   const classes = useStyles(props);
   return (
-    <Typography
-      component="span"
+    <div
       className={classNames(classes.status, classes.pending)}
-      aria-label="Status pending"
-      aria-hidden="true"
-      {...props}
-    />
+      aria-label={!props.children ? 'Pending' : undefined}
+      role={!props.children ? 'img' : undefined}
+    >
+      <ScheduleIcon style={{ fontSize: '1rem' }} />
+      <Typography component="span" {...props} />
+    </div>
   );
 }
 
 export function StatusRunning(props: PropsWithChildren<{}>) {
   const classes = useStyles(props);
   return (
-    <Typography
-      component="span"
+    <div
       className={classNames(classes.status, classes.running)}
-      aria-label="Status running"
-      aria-hidden="true"
-      {...props}
-    />
+      aria-label={!props.children ? 'Running' : undefined}
+      role={!props.children ? 'img' : undefined}
+    >
+      <DirectionsRunIcon style={{ fontSize: '1rem' }} />
+      <Typography component="span" {...props} />
+    </div>
   );
 }
 
 export function StatusAborted(props: PropsWithChildren<{}>) {
   const classes = useStyles(props);
   return (
-    <Typography
-      component="span"
+    <div
       className={classNames(classes.status, classes.aborted)}
-      aria-label="Status aborted"
-      aria-hidden="true"
-      {...props}
-    />
+      aria-label={!props.children ? 'Aborted' : undefined}
+      role={!props.children ? 'img' : undefined}
+    >
+      <HighlightOffIcon style={{ fontSize: '1rem' }} />
+      <Typography component="span" {...props} />
+    </div>
   );
 }

@@ -24,19 +24,19 @@ describe('StatusIcon', () => {
     let rendered = await renderInTestApp(
       <StatusIcon buildStatus="succeeded" />,
     );
-    expect(rendered.getByLabelText('Status ok')).toBeInTheDocument();
+    expect(rendered.getByLabelText('Ok')).toBeInTheDocument();
 
     rendered = await renderInTestApp(<StatusIcon buildStatus="failed" />);
-    expect(rendered.getByLabelText('Status error')).toBeInTheDocument();
+    expect(rendered.getByLabelText('Error')).toBeInTheDocument();
 
     rendered = await renderInTestApp(<StatusIcon buildStatus="stopped" />);
-    expect(rendered.getByLabelText('Status warning')).toBeInTheDocument();
+    expect(rendered.getByLabelText('Warning')).toBeInTheDocument();
   });
 
   it('should render invalid statuses', async () => {
     const rendered = await renderInTestApp(
       <StatusIcon buildStatus={'invalid' as BuildStatus} />,
     );
-    expect(rendered.getByLabelText('Status aborted')).toBeInTheDocument();
+    expect(rendered.getByLabelText('Aborted')).toBeInTheDocument();
   });
 });

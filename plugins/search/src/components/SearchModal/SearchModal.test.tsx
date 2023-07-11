@@ -45,6 +45,7 @@ describe('SearchModal', () => {
 
   beforeEach(() => {
     query.mockClear();
+    navigate.mockClear();
   });
 
   const toggleModal = jest.fn();
@@ -206,5 +207,38 @@ describe('SearchModal', () => {
     await userEvent.type(input, 'new term{enter}');
 
     expect(navigate).toHaveBeenCalledWith('/search?query=new term');
+  });
+
+  it('should navigate with correct search terms to full results', async () => {
+    const initialState = {
+      term: 'term',
+      filters: {},
+      types: [],
+      pageCursor: '',
+    };
+
+    await renderInTestApp(
+      <ApiProvider apis={apiRegistry}>
+        <SearchContextProvider initialState={initialState}>
+          <SearchModal open hidden={false} toggleModal={toggleModal} />
+        </SearchContextProvider>
+      </ApiProvider>,
+      {
+        mountedRoutes: {
+          '/search': rootRouteRef,
+        },
+      },
+    );
+
+    expect(query).toHaveBeenCalledWith(
+      expect.objectContaining({ term: 'term' }),
+    );
+
+    const fullResultsBtn = screen.getByRole('button', {
+      name: /view full results/i,
+    });
+    await userEvent.click(fullResultsBtn);
+
+    expect(navigate).toHaveBeenCalledWith('/search?query=term');
   });
 });

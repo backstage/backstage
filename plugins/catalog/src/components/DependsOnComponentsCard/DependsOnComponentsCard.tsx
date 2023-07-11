@@ -15,7 +15,11 @@
  */
 
 import { RELATION_DEPENDS_ON, ComponentEntity } from '@backstage/catalog-model';
-import { InfoCardVariants, TableColumn } from '@backstage/core-components';
+import {
+  InfoCardVariants,
+  TableColumn,
+  TableOptions,
+} from '@backstage/core-components';
 import React from 'react';
 import {
   asComponentEntities,
@@ -29,6 +33,7 @@ export interface DependsOnComponentsCardProps {
   variant?: InfoCardVariants;
   title?: string;
   columns?: TableColumn<ComponentEntity>[];
+  tableOptions?: TableOptions;
 }
 
 export function DependsOnComponentsCard(props: DependsOnComponentsCardProps) {
@@ -36,6 +41,7 @@ export function DependsOnComponentsCard(props: DependsOnComponentsCardProps) {
     variant = 'gridItem',
     title = 'Depends on components',
     columns = componentEntityColumns,
+    tableOptions = {},
   } = props;
   return (
     <RelatedEntitiesCard
@@ -47,6 +53,7 @@ export function DependsOnComponentsCard(props: DependsOnComponentsCardProps) {
       emptyMessage="No component is a dependency of this component"
       emptyHelpLink={componentEntityHelpLink}
       asRenderableEntities={asComponentEntities}
+      tableOptions={tableOptions}
     />
   );
 }

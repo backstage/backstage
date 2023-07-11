@@ -28,42 +28,52 @@ import {
 
 describe('<StatusOK />', () => {
   it('renders without exploding', async () => {
-    const { getByLabelText } = await renderInTestApp(<StatusOK />);
-    expect(getByLabelText('Status ok')).toBeInTheDocument();
+    const { getByText } = await renderInTestApp(<StatusOK>OK</StatusOK>);
+    expect(getByText('OK')).toBeInTheDocument();
   });
 });
 
 describe('<StatusWarning />', () => {
   it('renders without exploding', async () => {
-    const { getByLabelText } = await renderInTestApp(<StatusWarning />);
-    expect(getByLabelText('Status warning')).toBeInTheDocument();
+    const { getByText } = await renderInTestApp(
+      <StatusWarning>Warning</StatusWarning>,
+    );
+    expect(getByText('Warning')).toBeInTheDocument();
   });
 });
 
 describe('<StatusError />', () => {
   it('renders without exploding', async () => {
-    const { getByLabelText } = await renderInTestApp(<StatusError />);
-    expect(getByLabelText('Status error')).toBeInTheDocument();
+    const { getByText } = await renderInTestApp(
+      <StatusError>Error</StatusError>,
+    );
+    expect(getByText('Error')).toBeInTheDocument();
   });
 });
 
 describe('<StatusPending />', () => {
   it('renders without exploding', async () => {
-    const { getByLabelText } = await renderInTestApp(<StatusPending />);
-    expect(getByLabelText('Status pending')).toBeInTheDocument();
+    const { getByText } = await renderInTestApp(
+      <StatusPending>Pending</StatusPending>,
+    );
+    expect(getByText('Pending')).toBeInTheDocument();
   });
 });
 
 describe('<StatusRunning />', () => {
   it('renders without exploding', async () => {
-    const { getByLabelText } = await renderInTestApp(<StatusRunning />);
-    expect(getByLabelText('Status running')).toBeInTheDocument();
+    const { getByText } = await renderInTestApp(
+      <StatusRunning>Running</StatusRunning>,
+    );
+    expect(getByText('Running')).toBeInTheDocument();
   });
 });
 
 describe('<StatusAborted />', () => {
   it('renders without exploding', async () => {
-    const { getByLabelText } = await renderInTestApp(<StatusAborted />);
-    expect(getByLabelText('Status aborted')).toBeInTheDocument();
+    const { getByText } = await renderInTestApp(
+      <StatusAborted>Aborted</StatusAborted>,
+    );
+    expect(getByText('Aborted')).toBeInTheDocument();
   });
 });

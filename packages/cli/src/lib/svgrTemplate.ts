@@ -16,7 +16,7 @@
 
 /**
  * This template, together with loaders in the bundler and packages, allows
- * for SVG to be imported directly as MUI SvgIcon components by suffixing
+ * for SVG to be imported directly as Material UI SvgIcon components by suffixing
  * them with .icon.svg
  */
 export function svgrTemplate(

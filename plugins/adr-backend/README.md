@@ -58,6 +58,24 @@ async function main() {
 
 4. Now run `yarn start-backend` from the repo root
 
+### New Backend System
+
+The ADR backend plugin has support for the [new backend system](https://backstage.io/docs/backend-system/), here's how you can set that up:
+
+In your `packages/backend/src/index.ts` make the following changes:
+
+```diff
+
++ import { adrPlugin } from '@backstage/plugin-adr-backend';
+  const backend = createBackend();
+
++ backend.add(adrPlugin());
+
+// ... other feature additions
+
+  backend.start();
+```
+
 ## Indexing ADR documents for search
 
 Before you are able to start indexing ADR documents to search, you need to go through the [search getting started guide](https://backstage.io/docs/features/search/getting-started).

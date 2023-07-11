@@ -82,7 +82,7 @@ export const costInsightsDarkTheme = {
   },
 } as CostInsightsThemeOptions;
 
-// The opposite of MUI's emphasize function - darken darks, lighten lights
+// The opposite of Material UI's emphasize function - darken darks, lighten lights
 export function brighten(color: string, coefficient = 0.2) {
   return getLuminance(color) > 0.5
     ? lighten(color, coefficient)
