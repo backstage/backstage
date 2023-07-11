@@ -23,7 +23,7 @@ import { RepoUrlPickerState } from './types';
 
 export const GithubRepoPicker = (props: {
   allowedOwners?: string[];
-  rawErrors: string[];
+  rawErrors?: string[];
   state: RepoUrlPickerState;
   onChange: (state: RepoUrlPickerState) => void;
 }) => {
@@ -39,7 +39,7 @@ export const GithubRepoPicker = (props: {
       <FormControl
         margin="normal"
         required
-        error={rawErrors?.length > 0 && !owner}
+        error={Array.isArray(rawErrors) && rawErrors.length > 0 && !owner}
       >
         {allowedOwners?.length ? (
           <Select

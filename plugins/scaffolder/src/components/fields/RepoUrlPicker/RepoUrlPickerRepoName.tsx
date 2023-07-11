@@ -24,7 +24,7 @@ export const RepoUrlPickerRepoName = (props: {
   repoName?: string;
   allowedRepos?: string[];
   onChange: (host: string) => void;
-  rawErrors: string[];
+  rawErrors?: string[];
 }) => {
   const { repoName, allowedRepos, onChange, rawErrors } = props;
 
@@ -47,7 +47,7 @@ export const RepoUrlPickerRepoName = (props: {
       <FormControl
         margin="normal"
         required
-        error={rawErrors?.length > 0 && !repoName}
+        error={Array.isArray(rawErrors) && rawErrors.length > 0 && !repoName}
       >
         {allowedRepos?.length ? (
           <Select

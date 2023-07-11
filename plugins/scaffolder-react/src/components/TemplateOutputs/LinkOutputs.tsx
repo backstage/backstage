@@ -20,7 +20,7 @@ import React from 'react';
 import WebIcon from '@material-ui/icons/Web';
 import { parseEntityRef } from '@backstage/catalog-model';
 import { Link } from '@backstage/core-components';
-import { ScaffolderTaskOutput } from '../../../api';
+import { ScaffolderTaskOutput } from '../../api';
 
 const useStyles = makeStyles({
   root: {

@@ -15,7 +15,7 @@
  */
 import React from 'react';
 import { RepoUrlPicker } from './RepoUrlPicker';
-import Form from '@rjsf/core';
+
 import { renderInTestApp, TestApiProvider } from '@backstage/test-utils';
 import {
   scmIntegrationsApiRef,
@@ -29,6 +29,7 @@ import {
   scaffolderApiRef,
   ScaffolderApi,
   useTemplateSecrets,
+  Form,
 } from '@backstage/plugin-scaffolder-react';
 import { act, fireEvent } from '@testing-library/react';
 

@@ -24,11 +24,11 @@ import {
   TemplateParameterSchema,
 } from '@backstage/plugin-scaffolder-react';
 import {
-  NextFieldExtensionOptions,
+  FieldExtensionOptions,
   Stepper,
-} from '@backstage/plugin-scaffolder-react/alpha';
-import { useDryRun } from '../../components/TemplateEditorPage/DryRunContext';
-import { useDirectoryEditor } from '../../components/TemplateEditorPage/DirectoryEditorContext';
+} from '@backstage/plugin-scaffolder-react';
+import { useDryRun } from '../../legacy/TemplateEditorPage/DryRunContext';
+import { useDirectoryEditor } from '../../legacy/TemplateEditorPage/DirectoryEditorContext';
 
 const useStyles = makeStyles({
   containerWrapper: {
@@ -83,7 +83,7 @@ interface TemplateEditorFormProps {
   contentIsSpec?: boolean;
   setErrorText: (errorText?: string) => void;
   onDryRun?: (data: JsonObject) => Promise<void>;
-  fieldExtensions?: NextFieldExtensionOptions<any, any>[];
+  fieldExtensions?: FieldExtensionOptions<any, any>[];
   layouts?: LayoutOptions[];
 }
 
