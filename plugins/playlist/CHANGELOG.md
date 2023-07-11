@@ -1,5 +1,22 @@
 # @backstage/plugin-playlist
 
+## 0.1.12-next.2
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/plugin-catalog-react@1.8.0-next.2
+  - @backstage/theme@0.4.1-next.1
+  - @backstage/core-plugin-api@1.5.3-next.1
+  - @backstage/core-components@0.13.3-next.2
+  - @backstage/catalog-model@1.4.1-next.0
+  - @backstage/errors@1.2.1-next.0
+  - @backstage/plugin-catalog-common@1.0.15-next.0
+  - @backstage/plugin-permission-common@0.7.7-next.0
+  - @backstage/plugin-permission-react@0.4.14-next.2
+  - @backstage/plugin-playlist-common@0.1.8-next.0
+  - @backstage/plugin-search-react@1.6.3-next.2
+
 ## 0.1.12-next.1
 
 ### Patch Changes

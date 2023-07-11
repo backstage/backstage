@@ -1,5 +1,11 @@
 # @backstage/theme
 
+## 0.4.1-next.1
+
+### Patch Changes
+
+- 8174cf4c0edf: Fixing MUI / Material UI references
+
 ## 0.4.1-next.0
 
 ### Patch Changes
