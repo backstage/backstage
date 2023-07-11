@@ -1,5 +1,21 @@
 # @backstage/plugin-scaffolder-react
 
+## 1.5.1-next.2
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/plugin-catalog-react@1.8.0-next.2
+  - @backstage/theme@0.4.1-next.1
+  - @backstage/core-plugin-api@1.5.3-next.1
+  - @backstage/core-components@0.13.3-next.2
+  - @backstage/catalog-client@1.4.3-next.0
+  - @backstage/catalog-model@1.4.1-next.0
+  - @backstage/errors@1.2.1-next.0
+  - @backstage/types@1.1.0
+  - @backstage/version-bridge@1.0.4
+  - @backstage/plugin-scaffolder-common@1.3.2-next.0
+
 ## 1.5.1-next.1
 
 ### Patch Changes
@@ -34,7 +50,7 @@
 - 6b571405f806: `scaffolder/next`: Provide some default template components to `rjsf` to allow for standardization and markdown descriptions
 - 4505dc3b4598: `scaffolder/next`: Don't render `TemplateGroups` when there's no results in with search query
 - a452bda74d7a: Fixed typescript casting bug for useTemplateParameterSchema hook
-- 6b571405f806: `scaffolder/next`: provide a `ScaffolderField` component which is meant to replace some of the `FormControl` components from MUI, making it easier to write `FieldExtensions`.
+- 6b571405f806: `scaffolder/next`: provide a `ScaffolderField` component which is meant to replace some of the `FormControl` components from Material UI, making it easier to write `FieldExtensions`.
 
 ### Patch Changes
 
@@ -92,7 +108,7 @@
 
 - 6b571405f806: `scaffolder/next`: Provide some default template components to `rjsf` to allow for standardization and markdown descriptions
 - 4505dc3b4598: `scaffolder/next`: Don't render `TemplateGroups` when there's no results in with search query
-- 6b571405f806: `scaffolder/next`: provide a `ScaffolderField` component which is meant to replace some of the `FormControl` components from MUI, making it easier to write `FieldExtensions`.
+- 6b571405f806: `scaffolder/next`: provide a `ScaffolderField` component which is meant to replace some of the `FormControl` components from Material UI, making it easier to write `FieldExtensions`.
 
 ### Patch Changes
 

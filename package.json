@@ -47,7 +47,7 @@
     "@types/react": "^17",
     "@types/react-dom": "^17"
   },
-  "version": "1.16.0-next.1",
+  "version": "1.16.0-next.2",
   "dependencies": {
     "@backstage/errors": "workspace:^",
     "@manypkg/get-packages": "^1.1.3"
@@ -78,7 +78,7 @@
     "minimist": "^1.2.5",
     "node-gyp": "^9.4.0",
     "prettier": "^2.2.1",
-    "semver": "^7.3.2",
+    "semver": "^7.5.3",
     "shx": "^0.3.2",
     "ts-node": "^10.4.0",
     "typescript": "~5.0.0"

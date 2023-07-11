@@ -18,7 +18,7 @@ import { palettes } from '../base';
 import { createUnifiedTheme } from './UnifiedTheme';
 
 /**
- * Built-in Backstage MUI themes.
+ * Built-in Backstage Material UI themes.
  *
  * @public
  */

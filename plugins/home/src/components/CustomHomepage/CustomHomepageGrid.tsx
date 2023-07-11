@@ -178,6 +178,7 @@ const availableWidgetsFilter = (elements: ElementCollection) => {
           title: getComponentData<string>(elem, 'title'),
           description: getComponentData<string>(elem, 'description'),
           settingsSchema: config?.settings?.schema,
+          uiSchema: config?.settings?.uiSchema,
           width: config?.layout?.width?.defaultColumns,
           minWidth: config?.layout?.width?.minColumns,
           maxWidth: config?.layout?.width?.maxColumns,

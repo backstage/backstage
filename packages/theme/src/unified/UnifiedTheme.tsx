@@ -82,8 +82,8 @@ export function createUnifiedTheme(options: UnifiedThemeOptions): UnifiedTheme {
 }
 
 /**
- * Creates a new {@link UnifiedTheme} using MUI v4 theme options.
- * Note that this uses `adaptV4Theme` from MUI v5, which is deprecated.
+ * Creates a new {@link UnifiedTheme} using Material UI v4 theme options.
+ * Note that this uses `adaptV4Theme` from Material UI v5, which is deprecated.
  *
  * @public
  */

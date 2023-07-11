@@ -116,6 +116,21 @@ The Airbrake plugin provides connectivity between Backstage and Airbrake (https:
        airbrake.io/project-id: '123456'
    ```
 
+#### New Backend System
+
+The Airbrake backend plugin has support for the [new backend system](https://backstage.io/docs/backend-system/), here's how you can set that up:
+
+In your `packages/backend/src/index.ts` make the following changes:
+
+```diff
+  import { createBackend } from '@backstage/backend-defaults';
++ import { airbrakePlugin } from '@backstage/plugin-airbrake-backend';
+  const backend = createBackend();
+  // ... other feature additions
++ backend.add(airbrakePlugin());
+  backend.start();
+```
+
 ## Local Development
 
 Start this plugin in standalone mode by running `yarn start` inside the plugin directory. This method of serving the plugin provides quicker

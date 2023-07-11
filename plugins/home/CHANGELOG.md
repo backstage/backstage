@@ -1,5 +1,21 @@
 # @backstage/plugin-home
 
+## 0.5.4-next.2
+
+### Patch Changes
+
+- 0b89ca8ce24a: Add possibility to customize the settings widget for different
+  properties by using the `uiSchema` provided by the json-schema.
+  More information here: https://rjsf-team.github.io/react-jsonschema-form/docs/api-reference/uiSchema
+- Updated dependencies
+  - @backstage/plugin-catalog-react@1.8.0-next.2
+  - @backstage/plugin-home-react@0.1.1-next.2
+  - @backstage/theme@0.4.1-next.1
+  - @backstage/core-plugin-api@1.5.3-next.1
+  - @backstage/core-components@0.13.3-next.2
+  - @backstage/catalog-model@1.4.1-next.0
+  - @backstage/config@1.0.8
+
 ## 0.5.4-next.1
 
 ### Patch Changes

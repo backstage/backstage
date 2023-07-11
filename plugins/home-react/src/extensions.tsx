@@ -20,7 +20,7 @@ import SettingsIcon from '@material-ui/icons/Settings';
 import { InfoCard } from '@backstage/core-components';
 import { SettingsModal } from './components';
 import { createReactExtension, useApp } from '@backstage/core-plugin-api';
-import { RJSFSchema } from '@rjsf/utils';
+import { RJSFSchema, UiSchema } from '@rjsf/utils';
 
 /**
  * @public
@@ -62,6 +62,7 @@ export type CardLayout = {
  */
 export type CardSettings = {
   schema?: RJSFSchema;
+  uiSchema?: UiSchema;
 };
 
 /**

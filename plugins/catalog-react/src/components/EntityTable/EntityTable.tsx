@@ -23,6 +23,7 @@ import {
   InfoCardVariants,
   Table,
   TableColumn,
+  TableOptions,
 } from '@backstage/core-components';
 
 /**
@@ -36,6 +37,7 @@ export interface EntityTableProps<T extends Entity> {
   entities: T[];
   emptyContent?: ReactNode;
   columns: TableColumn<T>[];
+  tableOptions?: TableOptions;
 }
 
 const useStyles = makeStyles(theme => ({
@@ -59,6 +61,7 @@ export const EntityTable = <T extends Entity>(props: EntityTableProps<T>) => {
     emptyContent,
     variant = 'gridItem',
     columns,
+    tableOptions = {},
   } = props;
 
   const classes = useStyles();
@@ -86,6 +89,7 @@ export const EntityTable = <T extends Entity>(props: EntityTableProps<T>) => {
         actionsColumnIndex: -1,
         padding: 'dense',
         draggable: false,
+        ...tableOptions,
       }}
       data={entities}
     />

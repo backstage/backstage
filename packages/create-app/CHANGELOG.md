@@ -1,5 +1,13 @@
 # @backstage/create-app
 
+## 0.5.3-next.2
+
+### Patch Changes
+
+- 4f7292c74dff: Updated included Dockerfile to include `g++`. Also updated the comments to note that some of the dependencies are also needed by isolated-vm
+- Updated dependencies
+  - @backstage/cli-common@0.1.12
+
 ## 0.5.3-next.1
 
 ### Patch Changes

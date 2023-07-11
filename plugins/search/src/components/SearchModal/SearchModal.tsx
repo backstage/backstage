@@ -154,7 +154,7 @@ export const Modal = ({ toggleModal }: SearchModalChildrenProps) => {
               className={classes.button}
               color="primary"
               endIcon={<ArrowForwardIcon />}
-              onClick={handleSearchResultClick}
+              onClick={handleSearchBarSubmit}
               disableRipple
             >
               View Full Results

@@ -22,3 +22,4 @@
 
 export * from './search';
 export * from './service';
+export { adrPlugin } from './plugin';
