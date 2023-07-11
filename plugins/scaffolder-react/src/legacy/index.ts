@@ -13,17 +13,4 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
-export { useCustomFieldExtensions } from './useCustomFieldExtensions';
-export { useCustomLayouts } from './useCustomLayouts';
-export {
-  useTaskEventStream,
-  type TaskStream,
-  type ScaffolderStep,
-} from './useEventStream';
-export { useFormDataFromQuery } from './useFormDataFromQuery';
-export {
-  useTemplateSchema,
-  type ParsedTemplateSchema,
-} from './useTemplateSchema';
-export { useTemplateParameterSchema } from './useTemplateParameterSchema';
+export * from './extensions';

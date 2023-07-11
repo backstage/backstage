@@ -14,16 +14,23 @@
  * limitations under the License.
  */
 
-export { useCustomFieldExtensions } from './useCustomFieldExtensions';
-export { useCustomLayouts } from './useCustomLayouts';
-export {
-  useTaskEventStream,
-  type TaskStream,
-  type ScaffolderStep,
-} from './useEventStream';
-export { useFormDataFromQuery } from './useFormDataFromQuery';
-export {
-  useTemplateSchema,
-  type ParsedTemplateSchema,
-} from './useTemplateSchema';
-export { useTemplateParameterSchema } from './useTemplateParameterSchema';
+import useAsync from 'react-use/lib/useAsync';
+import { useApi } from '@backstage/core-plugin-api';
+import { scaffolderApiRef } from '../api';
+import { TemplateParameterSchema } from '../types';
+/**
+ * @public
+ */
+export const useTemplateParameterSchema = (templateRef: string) => {
+  const scaffolderApi = useApi(scaffolderApiRef);
+  const { value, loading, error } = useAsync(
+    () => scaffolderApi.getTemplateParameterSchema(templateRef),
+    [scaffolderApi, templateRef],
+  );
+
+  return {
+    manifest: value as TemplateParameterSchema | undefined,
+    loading,
+    error,
+  };
+};

@@ -14,29 +14,53 @@
  * limitations under the License.
  */
 import { ApiHolder } from '@backstage/core-plugin-api';
-import { FieldValidation, FieldProps } from '@rjsf/core';
-import { JSONSchema7 } from 'json-schema';
+import {
+  UIOptionsType,
+  FieldProps as FieldPropsV5,
+  UiSchema as UiSchemaV5,
+  FieldValidation as FieldValidationV5,
+} from '@rjsf/utils';
+import { PropsWithChildren } from 'react';
+import { JsonObject } from '@backstage/types';
+import { CustomFieldExtensionSchema } from '@backstage/plugin-scaffolder-react';
+
+/**
+ * Type for Field Extension Props for RJSF v5
+ *
+ * @public
+ */
+export interface FieldExtensionComponentProps<
+  TFieldReturnValue,
+  TUiOptions = {},
+> extends PropsWithChildren<FieldPropsV5<TFieldReturnValue>> {
+  uiSchema?: FieldExtensionUiSchema<TFieldReturnValue, TUiOptions>;
+}
+
+/**
+ * Type for Field Extension UiSchema
+ *
+ * @public
+ */
+export interface FieldExtensionUiSchema<TFieldReturnValue, TUiOptions>
+  extends UiSchemaV5<TFieldReturnValue> {
+  'ui:options'?: TUiOptions & UIOptionsType;
+}
 
 /**
  * Field validation type for Custom Field Extensions.
  *
  * @public
  */
-export type CustomFieldValidator<TFieldReturnValue> = (
+export type CustomFieldValidator<TFieldReturnValue, TUiOptions = unknown> = (
   data: TFieldReturnValue,
-  field: FieldValidation,
-  context: { apiHolder: ApiHolder },
+  field: FieldValidationV5,
+  context: {
+    apiHolder: ApiHolder;
+    formData: JsonObject;
+    schema: JsonObject;
+    uiSchema?: FieldExtensionUiSchema<TFieldReturnValue, TUiOptions>;
+  },
 ) => void | Promise<void>;
-
-/**
- * Type for the Custom Field Extension schema.
- *
- * @public
- */
-export type CustomFieldExtensionSchema = {
-  returnValue: JSONSchema7;
-  uiOptions?: JSONSchema7;
-};
 
 /**
  * Type for the Custom Field Extension with the
@@ -46,27 +70,12 @@ export type CustomFieldExtensionSchema = {
  */
 export type FieldExtensionOptions<
   TFieldReturnValue = unknown,
-  TInputProps = unknown,
+  TUiOptions = unknown,
 > = {
   name: string;
   component: (
-    props: FieldExtensionComponentProps<TFieldReturnValue, TInputProps>,
+    props: FieldExtensionComponentProps<TFieldReturnValue, TUiOptions>,
   ) => JSX.Element | null;
-  validation?: CustomFieldValidator<TFieldReturnValue>;
+  validation?: CustomFieldValidator<TFieldReturnValue, TUiOptions>;
   schema?: CustomFieldExtensionSchema;
 };
-
-/**
- * Type for field extensions and being able to type
- * incoming props easier.
- *
- * @public
- */
-export interface FieldExtensionComponentProps<
-  TFieldReturnValue,
-  TUiOptions = unknown,
-> extends FieldProps<TFieldReturnValue> {
-  uiSchema: FieldProps['uiSchema'] & {
-    'ui:options'?: TUiOptions;
-  };
-}

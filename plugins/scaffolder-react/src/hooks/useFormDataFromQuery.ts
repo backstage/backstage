@@ -14,31 +14,30 @@
  * limitations under the License.
  */
 
-import { JsonObject } from '@backstage/types';
-import type { FormProps as SchemaFormProps } from '@rjsf/core-v5';
+import { JsonValue } from '@backstage/types';
+import qs from 'qs';
+import { useState } from 'react';
 
 /**
- * The shape of each entry of parameters which gets rendered
- * as a separate step in the wizard input
- *
+ * This hook is used to get the formData from the query string.
  * @public
  */
-export type TemplateParameterSchema = {
-  title: string;
-  description?: string;
-  steps: Array<{
-    title: string;
-    description?: string;
-    schema: JsonObject;
-  }>;
+export const useFormDataFromQuery = (
+  initialState?: Record<string, JsonValue>,
+) => {
+  return useState<Record<string, any>>(() => {
+    if (initialState) {
+      return initialState;
+    }
+
+    const query = qs.parse(window.location.search, {
+      ignoreQueryPrefix: true,
+    });
+
+    try {
+      return JSON.parse(query.formData as string);
+    } catch (e) {
+      return {};
+    }
+  });
 };
-
-/**
- * Any `@rjsf/core` form properties that are publicly exposed to the `NextScaffolderpage`
- *
- * @public
- */
-export type FormProps = Pick<
-  SchemaFormProps,
-  'transformErrors' | 'noHtml5Validate'
->;
