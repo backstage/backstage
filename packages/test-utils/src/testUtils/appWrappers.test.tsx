@@ -92,6 +92,12 @@ describe('wrapInTestApp', () => {
     });
 
     expect(error).toEqual([
+      //  FIXME(RobotSail): Temporary fix around an error occurring twice after switching to React 18
+      expect.objectContaining({
+        detail: new Error(
+          'MockErrorApi received unexpected error, Error: NOPE',
+        ),
+      }),
       expect.objectContaining({
         detail: new Error(
           'MockErrorApi received unexpected error, Error: NOPE',
