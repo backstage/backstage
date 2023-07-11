@@ -11,7 +11,7 @@ import { Knex } from 'knex';
 export const catalogModuleUnprocessedEntities: () => BackendFeature;
 
 // @public
-export class UnprocessedEntitesModule {
+export class UnprocessedEntitiesModule {
   constructor(database: Knex, router: HttpRouterService);
   // (undocumented)
   registerRoutes(): void;
