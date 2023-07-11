@@ -113,6 +113,42 @@ export interface BackstageThemeOptions extends ThemeOptions_3 {
 }
 
 // @public
+export type BackstageTypography = {
+  htmlFontSize: number;
+  fontFamily: string;
+  h1: {
+    fontSize: number;
+    fontWeight: number;
+    marginBottom: number;
+  };
+  h2: {
+    fontSize: number;
+    fontWeight: number;
+    marginBottom: number;
+  };
+  h3: {
+    fontSize: number;
+    fontWeight: number;
+    marginBottom: number;
+  };
+  h4: {
+    fontSize: number;
+    fontWeight: number;
+    marginBottom: number;
+  };
+  h5: {
+    fontSize: number;
+    fontWeight: number;
+    marginBottom: number;
+  };
+  h6: {
+    fontSize: number;
+    fontWeight: number;
+    marginBottom: number;
+  };
+};
+
+// @public
 export interface BaseThemeOptionsInput<PaletteOptions> {
   // (undocumented)
   defaultPageTheme?: string;
@@ -125,7 +161,7 @@ export interface BaseThemeOptionsInput<PaletteOptions> {
   // (undocumented)
   palette: PaletteOptions;
   // (undocumented)
-  typography?: Typography;
+  typography?: BackstageTypography;
 }
 
 // @public
@@ -136,7 +172,7 @@ export function createBaseThemeOptions<PaletteOptions>(
   options: BaseThemeOptionsInput<PaletteOptions>,
 ): {
   palette: PaletteOptions;
-  typography: Typography;
+  typography: BackstageTypography;
   page: PageTheme;
   getPageTheme: ({ themeId }: PageThemeSelector) => PageTheme;
 };
@@ -348,7 +384,7 @@ export type SimpleThemeOptions = {
   pageTheme?: Record<string, PageTheme>;
   fontFamily?: string;
   htmlFontSize?: number;
-  typography?: Typography;
+  typography?: BackstageTypography;
 };
 
 // @public
@@ -373,42 +409,6 @@ export function transformV5ComponentThemesToV4(
 };
 
 // @public
-export type Typography = {
-  htmlFontSize: number;
-  fontFamily: string;
-  h1: {
-    fontSize: number;
-    fontWeight: number;
-    marginBottom: number;
-  };
-  h2: {
-    fontSize: number;
-    fontWeight: number;
-    marginBottom: number;
-  };
-  h3: {
-    fontSize: number;
-    fontWeight: number;
-    marginBottom: number;
-  };
-  h4: {
-    fontSize: number;
-    fontWeight: number;
-    marginBottom: number;
-  };
-  h5: {
-    fontSize: number;
-    fontWeight: number;
-    marginBottom: number;
-  };
-  h6: {
-    fontSize: number;
-    fontWeight: number;
-    marginBottom: number;
-  };
-};
-
-// @public
 export interface UnifiedTheme {
   // (undocumented)
   getTheme(version: SupportedVersions): SupportedThemes | undefined;
@@ -429,7 +429,7 @@ export interface UnifiedThemeOptions {
   // (undocumented)
   palette: PaletteOptions & PaletteOptions_2;
   // (undocumented)
-  typography?: Typography;
+  typography?: BackstageTypography;
 }
 
 // @public

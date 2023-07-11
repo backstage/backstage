@@ -23,5 +23,5 @@ export type {
   BackstagePaletteAdditions,
   PageTheme,
   PageThemeSelector,
-  Typography,
+  BackstageTypography,
 } from './types';

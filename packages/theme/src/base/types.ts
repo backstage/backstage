@@ -120,7 +120,7 @@ export type BackstageThemeAdditions = {
  *
  * @public
  */
-export type Typography = {
+export type BackstageTypography = {
   htmlFontSize: number;
   fontFamily: string;
   h1: {

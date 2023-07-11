@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { Typography, PageTheme, PageThemeSelector } from './types';
+import { BackstageTypography, PageTheme, PageThemeSelector } from './types';
 import { pageTheme as defaultPageThemes } from './pageTheme';
 
 const DEFAULT_HTML_FONT_SIZE = 16;
@@ -33,7 +33,7 @@ export interface BaseThemeOptionsInput<PaletteOptions> {
   pageTheme?: Record<string, PageTheme>;
   fontFamily?: string;
   htmlFontSize?: number;
-  typography?: Typography;
+  typography?: BackstageTypography;
 }
 
 /**
