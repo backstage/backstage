@@ -47,16 +47,28 @@ export type RouteFunc<Params extends AnyParams> = (
   ...[params]: Params extends undefined ? readonly [] : readonly [Params]
 ) => string;
 
-// A duplicate of the react-router RouteObject, but with routeRef added
-export interface BackstageRouteObject {
+export type BackstageBaseRouteObject = {
   caseSensitive: boolean;
-  children?: BackstageRouteObject[];
-  element: React.ReactNode;
   path: string;
   routeRefs: Set<RouteRef>;
   plugins: Set<BackstagePlugin>;
+  element: React.ReactNode;
+};
+
+export type BackstageIndexRouteObject = BackstageBaseRouteObject & {
   index: true;
-}
+  children?: undefined;
+};
+
+export type BackstageNonIndexRouteObject = BackstageBaseRouteObject & {
+  index?: false;
+  children: BackstageRouteObject[];
+};
+
+// A duplicate of the react-router RouteObject, but with routeRef added
+export type BackstageRouteObject =
+  | BackstageIndexRouteObject
+  | BackstageNonIndexRouteObject;
 
 export function isRouteRef<Params extends AnyParams>(
   routeRef:
