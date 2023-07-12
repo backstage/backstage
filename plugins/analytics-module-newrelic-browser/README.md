@@ -48,11 +48,13 @@ in New Relic Browser using the Copy/Paste method.
 app:
   analytics:
     nr:
+      endpoint: 'bam.nr-data.net',
       accountId: '1234567'
       applicationId: '987654321'
       licenseKey: 'NRJS-12a3456bc78de9123f4'
-      useEuEndpoint: false # Set this to true if you're using New Relic's EU data center
 ```
+
+> Note: Depending on New Relic's data center you are using you'll want to change the `endpoint` to `bam.eu01.nr-data.net` for the EU data center. Refer to [this document](https://docs.newrelic.com/docs/new-relic-solutions/get-started/networks/#data-ingest) for available endpoints.
 
 ## Configuration
 

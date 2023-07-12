@@ -19,6 +19,12 @@ export interface Config {
     analytics?: {
       nr: {
         /**
+         * Whether to use New Relic's EU Datacenter endpoints, defaults to false
+         * @visibility frontend
+         */
+        endpoint: 'bam.eu01.nr-data.net' | 'bam.nr-data.net';
+
+        /**
          * New Relic Account ID, e.g. 1234567
          * @visibility frontend
          */
@@ -47,12 +53,6 @@ export interface Config {
          * @visibility frontend
          */
         cookiesEnabled: boolean;
-
-        /**
-         * Whether to use New Relic's EU Datacenter endpoints, defaults to false
-         * @visibility frontend
-         */
-        useEuEndpoint: boolean;
       };
     };
   };

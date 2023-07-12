@@ -25,12 +25,12 @@ import type { setAPI } from '@newrelic/browser-agent/loaders/api/api';
 type NewRelicAPI = ReturnType<typeof setAPI>;
 
 type NewRelicBrowserOptions = {
+  endpoint: string;
   accountId: string;
   applicationId: string;
   licenseKey: string;
   distributedTracingEnabled: boolean;
   cookiesEnabled: boolean;
-  useEuEndpoint: boolean;
 };
 
 /**
@@ -54,18 +54,12 @@ export class NewRelicBrowser implements AnalyticsApi {
           cookies_enabled: options.cookiesEnabled,
         },
         ajax: {
-          deny_list: [
-            options.useEuEndpoint ? 'bam.eu01.nr-data.net' : 'bam.nr-data.net',
-          ],
+          deny_list: [options.endpoint],
         },
       },
       info: {
-        beacon: options.useEuEndpoint
-          ? 'bam.eu01.nr-data.net'
-          : 'bam.nr-data.net',
-        errorBeacon: options.useEuEndpoint
-          ? 'bam.eu01.nr-data.net'
-          : 'bam.nr-data.net',
+        beacon: options.endpoint,
+        errorBeacon: options.endpoint,
         licenseKey: options.licenseKey,
         applicationID: options.applicationId,
         sa: 1,
@@ -91,6 +85,7 @@ export class NewRelicBrowser implements AnalyticsApi {
 
   static fromConfig(config: Config, options: { identityApi?: IdentityApi }) {
     const browserOptions: NewRelicBrowserOptions = {
+      endpoint: config.getString('app.analytics.nr.endpoint'),
       accountId: config.getString('app.analytics.nr.accountId'),
       applicationId: config.getString('app.analytics.nr.applicationId'),
       licenseKey: config.getString('app.analytics.nr.licenseKey'),
@@ -100,8 +95,6 @@ export class NewRelicBrowser implements AnalyticsApi {
         ) ?? false,
       cookiesEnabled:
         config.getOptionalBoolean('app.analytics.nr.cookiesEnabled') ?? false,
-      useEuEndpoint:
-        config.getOptionalBoolean('app.analytics.nr.useEuEndpoint') ?? false,
     };
     return new NewRelicBrowser(browserOptions, options.identityApi);
   }
