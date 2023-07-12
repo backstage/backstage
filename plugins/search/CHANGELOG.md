@@ -1,5 +1,35 @@
 # @backstage/plugin-search
 
+## 1.3.3-next.2
+
+### Patch Changes
+
+- c3381408d633: Fixed bug in "View Full Results" link of Search Modal that did not navigate to the full results page.
+- Updated dependencies
+  - @backstage/plugin-catalog-react@1.8.0-next.2
+  - @backstage/theme@0.4.1-next.1
+  - @backstage/core-plugin-api@1.5.3-next.1
+  - @backstage/core-components@0.13.3-next.2
+  - @backstage/catalog-model@1.4.1-next.0
+  - @backstage/config@1.0.8
+  - @backstage/errors@1.2.1-next.0
+  - @backstage/types@1.1.0
+  - @backstage/version-bridge@1.0.4
+  - @backstage/plugin-search-common@1.2.5-next.0
+  - @backstage/plugin-search-react@1.6.3-next.2
+
+## 1.3.3-next.1
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/theme@0.4.1-next.0
+  - @backstage/core-components@0.13.3-next.1
+  - @backstage/core-plugin-api@1.5.3-next.0
+  - @backstage/plugin-catalog-react@1.7.1-next.1
+  - @backstage/plugin-search-react@1.6.3-next.1
+  - @backstage/config@1.0.8
+
 ## 1.3.3-next.0
 
 ### Patch Changes
@@ -106,7 +136,7 @@
 
 - 750e45539ad: Add close button & improve search input.
 
-  MUI's Paper wrapping the SearchBar in the SearchPage was removed, we recommend users update their apps accordingly.
+  Material UI's Paper wrapping the SearchBar in the SearchPage was removed, we recommend users update their apps accordingly.
 
   SearchBarBase's TextField's label support added & aria-label uses label string if present, tests relying on the default placeholder value should still work unless custom placeholder was given.
 
@@ -156,7 +186,7 @@
 
 - 750e45539ad: Add close button & improve search input.
 
-  MUI's Paper wrapping the SearchBar in the SearchPage was removed, we recommend users update their apps accordingly.
+  Material UI's Paper wrapping the SearchBar in the SearchPage was removed, we recommend users update their apps accordingly.
 
   SearchBarBase's TextField's label support added & aria-label uses label string if present, tests relying on the default placeholder value should still work unless custom placeholder was given.
 
@@ -1852,7 +1882,7 @@
 
 ### Patch Changes
 
-- 01707438b: Fix Material-UI warning for search filtering
+- 01707438b: Fix Material UI warning for search filtering
 - Updated dependencies [9c09a364f]
   - @backstage/plugin-catalog@0.2.10
 

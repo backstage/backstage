@@ -33,7 +33,7 @@ import {
  * The full Backstage palette.
  *
  * @public
- * @deprecated This type is deprecated, the MUI Palette type is now always extended instead.
+ * @deprecated This type is deprecated, the Material UI Palette type is now always extended instead.
  */
 export type BackstagePalette = MuiPalette & BackstagePaletteAdditions;
 
@@ -41,7 +41,7 @@ export type BackstagePalette = MuiPalette & BackstagePaletteAdditions;
  * The full Backstage palette options.
  *
  * @public
- * @deprecated This type is deprecated, the MUI PaletteOptions type is now always extended instead.
+ * @deprecated This type is deprecated, the Material UI PaletteOptions type is now always extended instead.
  */
 export type BackstagePaletteOptions = MuiPaletteOptions &
   BackstagePaletteAdditions;
@@ -50,7 +50,7 @@ export type BackstagePaletteOptions = MuiPaletteOptions &
  * Backstage theme options.
  *
  * @public
- * @deprecated This type is deprecated, the MUI ThemeOptions type is now always extended instead.
+ * @deprecated This type is deprecated, the Material UI ThemeOptions type is now always extended instead.
  * @remarks
  *
  * This is essentially a partial theme definition made by the user, that then
@@ -68,7 +68,7 @@ export interface BackstageThemeOptions extends MuiThemeOptions {
  * A Backstage theme.
  *
  * @public
- * @deprecated This type is deprecated, the MUI Theme type is now always extended instead.
+ * @deprecated This type is deprecated, the Material UI Theme type is now always extended instead.
  */
 export interface BackstageTheme extends MuiTheme {
   palette: BackstagePalette;
@@ -93,8 +93,12 @@ export type SimpleThemeOptions = {
 
 declare module '@material-ui/core/styles/createPalette' {
   interface Palette extends BackstagePaletteAdditions {}
+
+  interface PaletteOptions extends Partial<BackstagePaletteAdditions> {}
 }
 
 declare module '@material-ui/core/styles/createTheme' {
   interface Theme extends BackstageThemeAdditions {}
+
+  interface ThemeOptions extends Partial<BackstageThemeAdditions> {}
 }

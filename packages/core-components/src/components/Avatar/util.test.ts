@@ -27,6 +27,10 @@ describe('extractInitials', () => {
     expect(extractInitials('Jenny Doe')).toEqual('JD');
   });
 
+  it('extract unicode initials', async () => {
+    expect(extractInitials('Petr Čech')).toEqual('PČ');
+  });
+
   it('extract single letter for short name', async () => {
     expect(extractInitials('Doe')).toEqual('D');
   });

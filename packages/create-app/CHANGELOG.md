@@ -1,5 +1,21 @@
 # @backstage/create-app
 
+## 0.5.3-next.2
+
+### Patch Changes
+
+- 4f7292c74dff: Updated included Dockerfile to include `g++`. Also updated the comments to note that some of the dependencies are also needed by isolated-vm
+- Updated dependencies
+  - @backstage/cli-common@0.1.12
+
+## 0.5.3-next.1
+
+### Patch Changes
+
+- 76b83a4422bb: Post-create message - added instruction to run `yarn install` when app was created with `--skip-install`
+- e3ce5dd3f89a: add cy.\*\*.should to cypress eslintrc
+- 294b1629de28: Display a warning alert if relations are defined, which don't exist in the catalog.
+
 ## 0.5.3-next.0
 
 ### Patch Changes

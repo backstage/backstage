@@ -502,9 +502,14 @@ export const googleAuthApiRef: ApiRef<
 >;
 
 // @public
-export type IconComponent = ComponentType<{
-  fontSize?: 'default' | 'small' | 'large';
-}>;
+export type IconComponent = ComponentType<
+  | {
+      fontSize?: 'large' | 'small' | 'default';
+    }
+  | {
+      fontSize?: 'medium' | 'large' | 'small';
+    }
+>;
 
 // @public
 export type IdentityApi = {

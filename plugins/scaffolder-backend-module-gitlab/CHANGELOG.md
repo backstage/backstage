@@ -1,5 +1,16 @@
 # @backstage/plugin-scaffolder-backend-module-gitlab
 
+## 0.2.2-next.1
+
+### Patch Changes
+
+- dd367967e2e1: Fixed a bug in `gitlab:group:ensureExists` where `repos` was always set as the root group.
+- Updated dependencies
+  - @backstage/config@1.0.8
+  - @backstage/errors@1.2.1-next.0
+  - @backstage/integration@1.5.1-next.0
+  - @backstage/plugin-scaffolder-node@0.1.5-next.0
+
 ## 0.2.2-next.0
 
 ### Patch Changes

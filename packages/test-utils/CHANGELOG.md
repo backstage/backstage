@@ -1,5 +1,30 @@
 # @backstage/test-utils
 
+## 1.4.1-next.2
+
+### Patch Changes
+
+- 8174cf4c0edf: Fixing MUI / Material UI references
+- Updated dependencies
+  - @backstage/theme@0.4.1-next.1
+  - @backstage/core-plugin-api@1.5.3-next.1
+  - @backstage/core-app-api@1.8.2-next.1
+  - @backstage/config@1.0.8
+  - @backstage/types@1.1.0
+  - @backstage/plugin-permission-common@0.7.7-next.0
+  - @backstage/plugin-permission-react@0.4.14-next.2
+
+## 1.4.1-next.1
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/theme@0.4.1-next.0
+  - @backstage/core-plugin-api@1.5.3-next.0
+  - @backstage/core-app-api@1.8.2-next.0
+  - @backstage/plugin-permission-react@0.4.14-next.1
+  - @backstage/config@1.0.8
+
 ## 1.4.1-next.0
 
 ### Patch Changes
@@ -17,7 +42,7 @@
 
 ### Minor Changes
 
-- 1fd38bc4141a: Test App Wrapper is now using `UnifiedThemeProvider` for supporting MUI v5 next to MUI v4 in tests.
+- 1fd38bc4141a: Test App Wrapper is now using `UnifiedThemeProvider` for supporting Material UI v5 next to Material UI v4 in tests.
 
 ### Patch Changes
 
@@ -59,7 +84,7 @@
 
 ### Minor Changes
 
-- 1fd38bc4141a: Test App Wrapper is now using `UnifiedThemeProvider` for supporting MUI v5 next to MUI v4 in tests.
+- 1fd38bc4141a: Test App Wrapper is now using `UnifiedThemeProvider` for supporting Material UI v5 next to Material UI v4 in tests.
 
 ### Patch Changes
 

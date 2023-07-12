@@ -1,5 +1,29 @@
 # @backstage/core-components
 
+## 0.13.3-next.2
+
+### Patch Changes
+
+- 8174cf4c0edf: Fixing MUI / Material UI references
+- 4317b1c2f430: Remove zooming in restrictions in the catalog graph
+- Updated dependencies
+  - @backstage/theme@0.4.1-next.1
+  - @backstage/core-plugin-api@1.5.3-next.1
+  - @backstage/config@1.0.8
+  - @backstage/errors@1.2.1-next.0
+  - @backstage/version-bridge@1.0.4
+
+## 0.13.3-next.1
+
+### Patch Changes
+
+- 7e0f558fbc37: The `Skip to content` button on click focuses on the main article tag and skips the `h1` tag. Users are not able to identify which page they are on currently. Now it's changed the behaviour of the button and focuses on the `h1` tag on the page.
+- 015439b5b6ca: Updated dependency `rc-progress` to `3.4.2`.
+- Updated dependencies
+  - @backstage/theme@0.4.1-next.0
+  - @backstage/core-plugin-api@1.5.3-next.0
+  - @backstage/config@1.0.8
+
 ## 0.13.3-next.0
 
 ### Patch Changes
@@ -20,7 +44,7 @@
 - 4e697e88f0e2: Add resource utilization to Pod Drawer
 - 78cbb8ef8aea: Enhance the sidebar item accessibility by using appropriate header semantics.
 - 66ae4d8ca380: Added `exact` prop to `SidebarSubmenuItem` which causes it to only highlight if the current location is an exact match.
-- 83bdc3a555c1: Replaced usages of `theme.palette.theme.hint` with `theme.palette.text.secondary` as it has been removed in MUI v5
+- 83bdc3a555c1: Replaced usages of `theme.palette.theme.hint` with `theme.palette.text.secondary` as it has been removed in Material UI v5
 - b4cc4b1415e9: SupportButton auto focus first item when opened.
 - e33beb1f2a8e: Make the documentation pages printable (also handy for exporting to PDF)
 - Updated dependencies
@@ -57,7 +81,7 @@
 
 ### Patch Changes
 
-- 83bdc3a555c1: Replaced usages of `theme.palette.theme.hint` with `theme.palette.text.secondary` as it has been removed in MUI v5
+- 83bdc3a555c1: Replaced usages of `theme.palette.theme.hint` with `theme.palette.text.secondary` as it has been removed in Material UI v5
 - Updated dependencies
   - @backstage/errors@1.2.0-next.0
   - @backstage/core-plugin-api@1.5.2-next.0
@@ -394,7 +418,7 @@
 - 2e701b3796: Internal refactor to use `react-router-dom` rather than `react-router`.
 - d2e3bf6737: Made AlertDisplay not crash on undefined messages
 - 64a579a998: Add items prop to SupportButton. This prop can be used to override the items that would otherwise be grabbed from the config.
-- 5d3058355d: Add `react/forbid-elements` linter rule for button, suggest MUI `Button`
+- 5d3058355d: Add `react/forbid-elements` linter rule for button, suggest Material UI `Button`
 - 3280711113: Updated dependency `msw` to `^0.49.0`.
 - 19356df560: Updated dependency `zen-observable` to `^0.9.0`.
 - c3fa90e184: Updated dependency `zen-observable` to `^0.10.0`.

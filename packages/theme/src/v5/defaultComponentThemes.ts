@@ -240,4 +240,9 @@ export const defaultComponentThemes: ThemeOptions['components'] = {
       },
     },
   },
+  MuiLink: {
+    defaultProps: {
+      underline: 'hover',
+    },
+  },
 };

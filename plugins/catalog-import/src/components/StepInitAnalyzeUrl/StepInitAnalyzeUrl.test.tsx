@@ -64,12 +64,8 @@ describe('<StepInitAnalyzeUrl />', () => {
       wrapper: Wrapper,
     });
 
-    expect(
-      screen.getByRole('textbox', { name: /Repository/i }),
-    ).toBeInTheDocument();
-    expect(screen.getByRole('textbox', { name: /Repository/i })).toHaveValue(
-      '',
-    );
+    expect(screen.getByRole('textbox', { name: /URL/i })).toBeInTheDocument();
+    expect(screen.getByRole('textbox', { name: /URL/i })).toHaveValue('');
   });
 
   it('should use default analysis url', async () => {
@@ -83,10 +79,8 @@ describe('<StepInitAnalyzeUrl />', () => {
       },
     );
 
-    expect(
-      screen.getByRole('textbox', { name: /Repository/i }),
-    ).toBeInTheDocument();
-    expect(screen.getByRole('textbox', { name: /Repository/i })).toHaveValue(
+    expect(screen.getByRole('textbox', { name: /URL/i })).toBeInTheDocument();
+    expect(screen.getByRole('textbox', { name: /URL/i })).toHaveValue(
       'https://default',
     );
   });
@@ -120,7 +114,7 @@ describe('<StepInitAnalyzeUrl />', () => {
 
     await act(async () => {
       await userEvent.type(
-        screen.getByRole('textbox', { name: /Repository/i }),
+        screen.getByRole('textbox', { name: /URL/i }),
         'http:/',
       );
       await userEvent.click(screen.getByRole('button', { name: /Analyze/i }));
@@ -152,7 +146,7 @@ describe('<StepInitAnalyzeUrl />', () => {
 
     await act(async () => {
       await userEvent.type(
-        screen.getByRole('textbox', { name: /Repository/i }),
+        screen.getByRole('textbox', { name: /URL/i }),
         'https://my-repository',
       );
       await userEvent.click(screen.getByRole('button', { name: /Analyze/i }));
@@ -186,7 +180,7 @@ describe('<StepInitAnalyzeUrl />', () => {
 
     await act(async () => {
       await userEvent.type(
-        screen.getByRole('textbox', { name: /Repository/i }),
+        screen.getByRole('textbox', { name: /URL/i }),
         'https://my-repository-1',
       );
       await userEvent.click(screen.getByRole('button', { name: /Analyze/i }));
@@ -219,7 +213,7 @@ describe('<StepInitAnalyzeUrl />', () => {
 
     await act(async () => {
       await userEvent.type(
-        screen.getByRole('textbox', { name: /Repository/i }),
+        screen.getByRole('textbox', { name: /URL/i }),
         'https://my-repository-1',
       );
       await userEvent.click(screen.getByRole('button', { name: /Analyze/i }));
@@ -260,7 +254,7 @@ describe('<StepInitAnalyzeUrl />', () => {
 
     await act(async () => {
       await userEvent.type(
-        screen.getByRole('textbox', { name: /Repository/i }),
+        screen.getByRole('textbox', { name: /URL/i }),
         'https://my-repository-2',
       );
       await userEvent.click(screen.getByRole('button', { name: /Analyze/i }));
@@ -295,7 +289,7 @@ describe('<StepInitAnalyzeUrl />', () => {
 
     await act(async () => {
       await userEvent.type(
-        screen.getByRole('textbox', { name: /Repository/i }),
+        screen.getByRole('textbox', { name: /URL/i }),
         'https://my-repository-2',
       );
       await userEvent.click(screen.getByRole('button', { name: /Analyze/i }));
@@ -339,7 +333,7 @@ describe('<StepInitAnalyzeUrl />', () => {
 
     await act(async () => {
       await userEvent.type(
-        screen.getByRole('textbox', { name: /Repository/i }),
+        screen.getByRole('textbox', { name: /URL/i }),
         'https://my-repository-2',
       );
       await userEvent.click(screen.getByRole('button', { name: /Analyze/i }));
@@ -365,7 +359,7 @@ describe('<StepInitAnalyzeUrl />', () => {
 
     await act(async () => {
       await userEvent.type(
-        screen.getByRole('textbox', { name: /Repository/i }),
+        screen.getByRole('textbox', { name: /URL/i }),
         'https://my-repository-2',
       );
       await userEvent.click(screen.getByRole('button', { name: /Analyze/i }));

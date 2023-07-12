@@ -1,5 +1,37 @@
 # @backstage/plugin-techdocs-addons-test-utils
 
+## 1.0.16-next.2
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/plugin-catalog@1.12.0-next.2
+  - @backstage/theme@0.4.1-next.1
+  - @backstage/test-utils@1.4.1-next.2
+  - @backstage/core-plugin-api@1.5.3-next.1
+  - @backstage/core-components@0.13.3-next.2
+  - @backstage/core-app-api@1.8.2-next.1
+  - @backstage/integration-react@1.1.15-next.2
+  - @backstage/plugin-search-react@1.6.3-next.2
+  - @backstage/plugin-techdocs@1.6.5-next.2
+  - @backstage/plugin-techdocs-react@1.1.8-next.2
+
+## 1.0.16-next.1
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/theme@0.4.1-next.0
+  - @backstage/core-components@0.13.3-next.1
+  - @backstage/plugin-catalog@1.11.3-next.1
+  - @backstage/core-plugin-api@1.5.3-next.0
+  - @backstage/integration-react@1.1.15-next.1
+  - @backstage/test-utils@1.4.1-next.1
+  - @backstage/plugin-search-react@1.6.3-next.1
+  - @backstage/plugin-techdocs@1.6.5-next.1
+  - @backstage/plugin-techdocs-react@1.1.8-next.1
+  - @backstage/core-app-api@1.8.2-next.0
+
 ## 1.0.16-next.0
 
 ### Patch Changes

@@ -64,7 +64,7 @@ const AppRoutes = () => (
 );
 ```
 
-> **Note that the list of providers expects to be rendered within a MUI [`<List>`](https://material-ui.com/components/lists/)**
+> **Note that the list of providers expects to be rendered within a Material UI [`<List>`](https://v4.mui.com/components/lists/)**
 
 **Tabs**
 

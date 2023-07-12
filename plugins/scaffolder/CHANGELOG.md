@@ -1,5 +1,40 @@
 # @backstage/plugin-scaffolder
 
+## 1.14.1-next.2
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/plugin-catalog-react@1.8.0-next.2
+  - @backstage/theme@0.4.1-next.1
+  - @backstage/core-plugin-api@1.5.3-next.1
+  - @backstage/core-components@0.13.3-next.2
+  - @backstage/catalog-client@1.4.3-next.0
+  - @backstage/catalog-model@1.4.1-next.0
+  - @backstage/config@1.0.8
+  - @backstage/errors@1.2.1-next.0
+  - @backstage/integration@1.5.1-next.0
+  - @backstage/integration-react@1.1.15-next.2
+  - @backstage/types@1.1.0
+  - @backstage/plugin-catalog-common@1.0.15-next.0
+  - @backstage/plugin-permission-react@0.4.14-next.2
+  - @backstage/plugin-scaffolder-common@1.3.2-next.0
+  - @backstage/plugin-scaffolder-react@1.5.1-next.2
+
+## 1.14.1-next.1
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/theme@0.4.1-next.0
+  - @backstage/plugin-scaffolder-react@1.5.1-next.1
+  - @backstage/core-components@0.13.3-next.1
+  - @backstage/core-plugin-api@1.5.3-next.0
+  - @backstage/integration-react@1.1.15-next.1
+  - @backstage/plugin-catalog-react@1.7.1-next.1
+  - @backstage/plugin-permission-react@0.4.14-next.1
+  - @backstage/config@1.0.8
+
 ## 1.14.1-next.0
 
 ### Patch Changes
@@ -3060,7 +3095,7 @@
 ### Patch Changes
 
 - 12d8f27a6: Move logic for constructing the template form to the backend, using a new `./parameter-schema` endpoint that returns the form schema for a given template.
-- bc327dc42: Tweak the template cards to be even more compliant with MUI examples, and a little bit more dense.
+- bc327dc42: Tweak the template cards to be even more compliant with Material UI examples, and a little bit more dense.
 - Updated dependencies [12d8f27a6]
 - Updated dependencies [40c0fdbaa]
 - Updated dependencies [2a271d89e]

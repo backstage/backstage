@@ -1,5 +1,93 @@
 # @backstage/plugin-scaffolder-backend-module-confluence-to-markdown
 
+## 0.2.0-next.1
+
+### Minor Changes
+
+- 0a7e7c5d0c04: **BREAKING**
+
+  This change updates the configuration of the confluence-to-markdown action so that it does not conflict with other confluence plguins. Currently many plugins make use of the `confluence.auth` configuration. However, only the confluence-to-markdown action uses the `confluence.auth` as a string. This change updates it so that `confluence.auth` is an object.
+
+  ## Required Changes
+
+  Below are examples for updating `bearer`, `basic`, and `userpass` implementations.
+
+  For `bearer`:
+  Before:
+
+  ```yaml
+  confluence:
+    baseUrl: 'https://confluence.example.com'
+    auth: 'bearer'
+    token: '${CONFLUENCE_TOKEN}'
+  ```
+
+  After:
+
+  ```yaml
+  confluence:
+    baseUrl: 'https://confluence.example.com'
+    auth:
+      type: 'bearer'
+      token: '${CONFLUENCE_TOKEN}'
+  ```
+
+  For `basic`:
+
+  Before:
+
+  ```yaml
+  confluence:
+    baseUrl: 'https://confluence.example.com'
+    auth: 'basic'
+    token: '${CONFLUENCE_TOKEN}'
+    email: 'example@company.org'
+  ```
+
+  After:
+
+  ```yaml
+  confluence:
+    baseUrl: 'https://confluence.example.com'
+    auth:
+      type: 'basic'
+      token: '${CONFLUENCE_TOKEN}'
+      email: 'example@company.org'
+  ```
+
+  For `userpass`
+  Before:
+
+  ```yaml
+  confluence:
+    baseUrl: 'https://confluence.example.com'
+    auth: 'userpass'
+    username: 'your-username'
+    password: 'your-password'
+  ```
+
+  After:
+
+  ```yaml
+  confluence:
+    baseUrl: 'https://confluence.example.com'
+    auth:
+      type: 'userpass'
+      username: 'your-username'
+      password: 'your-password'
+  ```
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/plugin-scaffolder-backend@1.15.1-next.1
+  - @backstage/backend-common@0.19.1-next.0
+  - @backstage/config@1.0.8
+  - @backstage/errors@1.2.1-next.0
+  - @backstage/integration@1.5.1-next.0
+  - @backstage/types@1.1.0
+  - @backstage/plugin-scaffolder-node@0.1.5-next.0
+
 ## 0.1.4-next.0
 
 ### Patch Changes
