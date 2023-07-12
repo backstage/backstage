@@ -17,6 +17,9 @@ export class NewRelicBrowser implements AnalyticsApi {
     config: Config,
     options: {
       identityApi?: IdentityApi;
+      userIdTransform?:
+        | 'sha-256'
+        | ((userEntityRef: string) => Promise<string>);
     },
   ): NewRelicBrowser;
 }
