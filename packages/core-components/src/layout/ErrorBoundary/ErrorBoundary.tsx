@@ -15,7 +15,11 @@
  */
 
 import Typography from '@material-ui/core/Typography';
-import React, { Component, ErrorInfo, PropsWithChildren } from 'react';
+import React, {
+  Component,
+  type ErrorInfo,
+  type PropsWithChildren,
+} from 'react';
 import { LinkButton } from '../../components/LinkButton';
 import { ErrorPanel } from '../../components/ErrorPanel';
 
@@ -90,9 +94,7 @@ export class ErrorBoundary extends Component<
   }
 
   resetErrorBoundary(...args: any[]) {
-    const { error } = this.state;
-
-    if (error) {
+    if (this.state.error) {
       this.props.onReset?.({ args });
       this.setState(initialState);
     }

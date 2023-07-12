@@ -55,7 +55,12 @@ describe('<ErrorBoundary/>', () => {
 
   beforeEach(() => {
     errorApi = new MockErrorApi();
+
+    // just to clean up the console output
+    jest.spyOn(console, 'error').mockImplementation(() => {});
   });
+
+  afterEach(jest.restoreAllMocks);
 
   it('should render error boundary with and without error', async () => {
     const { error } = await withLogCollector(['error'], async () => {
@@ -136,6 +141,8 @@ describe('<ErrorBoundary/>', () => {
         </ErrorBoundary>
       </TestApiProvider>,
     );
+
+    expect(onReset).not.toHaveBeenCalled();
 
     fireEvent.click(getByText(/click me/i));
 
