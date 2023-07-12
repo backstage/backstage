@@ -1,7 +1,7 @@
 ---
 title: k8sgpt
 author: suxess-it
-authorUrl: github.com/suxess-it
+authorUrl: https://github.com/suxess-it
 category: Monitoring
 description: show all k8sgpt results of the k8sgpt operator related to your entity
 documentation: https://github.com/suxess-it/backstage-plugin-k8sgpt/blob/main/README.md
