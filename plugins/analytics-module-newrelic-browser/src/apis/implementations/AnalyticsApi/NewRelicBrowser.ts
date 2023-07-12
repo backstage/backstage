@@ -111,6 +111,9 @@ export class NewRelicBrowser implements AnalyticsApi {
     if (action === 'navigate' && context.extension === 'App') {
       const interaction = this.agent.interaction();
       interaction.setName(subject);
+      if (value) {
+        interaction.setAttribute('value', value);
+      }
       Object.keys(context).forEach(key => {
         if (context[key]) {
           interaction.setAttribute(`context.${key}`, context[key]);
@@ -125,6 +128,9 @@ export class NewRelicBrowser implements AnalyticsApi {
       const customAttributes: {
         [x: string]: string | number | boolean | undefined;
       } = {};
+      if (value) {
+        customAttributes.value = value;
+      }
       Object.keys(context).forEach(key => {
         if (context[key]) {
           customAttributes[`context.${key}`] = context[key];
