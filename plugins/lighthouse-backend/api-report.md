@@ -4,7 +4,7 @@
 
 ```ts
 import { BackendFeature } from '@backstage/backend-plugin-api';
-import { CatalogClient } from '@backstage/catalog-client';
+import { CatalogApi } from '@backstage/catalog-client';
 import { Config } from '@backstage/config';
 import { Logger } from 'winston';
 import { PluginTaskScheduler } from '@backstage/backend-tasks';
@@ -13,7 +13,7 @@ import { TokenManager } from '@backstage/backend-common';
 // @public (undocumented)
 export interface CreateLighthouseSchedulerOptions {
   // (undocumented)
-  catalogClient: CatalogClient;
+  catalogClient: CatalogApi;
   // (undocumented)
   config: Config;
   // (undocumented)
