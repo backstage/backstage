@@ -74,6 +74,32 @@ app:
 
 This plugin supports sending user context to New Relic Browser by providing a User ID. This requires instantiating the `NewRelicBrowser` instance with an `identityApi` instance passed to it, but this is optional. If omitted the plugin will not send user context to New Relic Browser.
 
+By default the user ID is calculated as a SHA-256 hash of the current user's `userEntityRef` as returned by the `identityApi`. To set a
+different value, provide a `userIdTransform` function alongside `identityApi` when you instantiate `NewRelicBrowser`. This function will be passed the `userEntityRef` as an argument and should resolve to the value you wish to set as the user ID. For example:
+
+```typescript
+import {
+  analyticsApiRef,
+  configApiRef,
+  identityApiRef,
+} from '@backstage/core-plugin-api';
+import { GoogleAnalytics } from '@backstage/plugin-analytics-module-newrelic-browser';
+
+export const apis: AnyApiFactory[] = [
+  createApiFactory({
+    api: analyticsApiRef,
+    deps: { configApi: configApiRef, identityApi: identityApiRef },
+    factory: ({ configApi, identityApi }) =>
+      NewRelicBrowser.fromConfig(configApi, {
+        identityApi,
+        userIdTransform: async (userEntityRef: string): Promise<string> => {
+          return customHashingFunction(userEntityRef);
+        },
+      }),
+  }),
+];
+```
+
 ## Development
 
 If you would like to contribute improvements to this plugin, the easiest way to

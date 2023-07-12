@@ -43,6 +43,7 @@ export class NewRelicBrowser implements AnalyticsApi {
   private constructor(
     options: NewRelicBrowserOptions,
     identityApi?: IdentityApi,
+    userIdTransform?: 'sha-256' | ((userEntityRef: string) => Promise<string>),
   ) {
     // Configure the New Relic Browser agent
     const agentOptions = {
@@ -76,14 +77,31 @@ export class NewRelicBrowser implements AnalyticsApi {
     // Initialize the agent
     this.agent = new BrowserAgent(agentOptions) as unknown as NewRelicAPI;
 
+    // Check if identity has been provided
     if (identityApi) {
       identityApi.getBackstageIdentity().then(identity => {
-        this.agent.setUserId(identity.userEntityRef);
+        if (typeof userIdTransform === 'function') {
+          userIdTransform(identity.userEntityRef).then(userId => {
+            this.agent.setUserId(userId);
+          });
+        } else {
+          this.hash(identity.userEntityRef).then(userId => {
+            this.agent.setUserId(userId);
+          });
+        }
       });
     }
   }
 
-  static fromConfig(config: Config, options: { identityApi?: IdentityApi }) {
+  static fromConfig(
+    config: Config,
+    options: {
+      identityApi?: IdentityApi;
+      userIdTransform?:
+        | 'sha-256'
+        | ((userEntityRef: string) => Promise<string>);
+    },
+  ) {
     const browserOptions: NewRelicBrowserOptions = {
       endpoint: config.getString('app.analytics.nr.endpoint'),
       accountId: config.getString('app.analytics.nr.accountId'),
@@ -96,7 +114,11 @@ export class NewRelicBrowser implements AnalyticsApi {
       cookiesEnabled:
         config.getOptionalBoolean('app.analytics.nr.cookiesEnabled') ?? false,
     };
-    return new NewRelicBrowser(browserOptions, options.identityApi);
+    return new NewRelicBrowser(
+      browserOptions,
+      options.identityApi,
+      options.userIdTransform,
+    );
   }
 
   captureEvent(event: AnalyticsEvent) {
@@ -137,5 +159,18 @@ export class NewRelicBrowser implements AnalyticsApi {
 
       this.agent.addPageAction(action, customAttributes);
     }
+  }
+
+  /**
+   * Simple hash function; relies on web cryptography + the sha-256 algorithm.
+   * @param value value to be hashed
+   */
+  private async hash(value: string): Promise<string> {
+    const digest = await window.crypto.subtle.digest(
+      'sha-256',
+      new TextEncoder().encode(value),
+    );
+    const hashArray = Array.from(new Uint8Array(digest));
+    return hashArray.map(b => b.toString(16).padStart(2, '0')).join('');
   }
 }
