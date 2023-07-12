@@ -19,7 +19,7 @@ export interface Config {
     analytics?: {
       nr: {
         /**
-         * Whether to use New Relic's EU Datacenter endpoints, defaults to false
+         * Data ingestion endpoint to use, either bam.eu01.nr-data.net (EU) or bam.nr-data.net (US)
          * @visibility frontend
          */
         endpoint: 'bam.eu01.nr-data.net' | 'bam.nr-data.net';

@@ -10,7 +10,7 @@ This plugin contains no other functionality.
 
 ```sh
 # From your Backstage root directory
-yarn add --cwd packages/app @backstage/plugin-analytics-module-nr
+yarn add --cwd packages/app @backstage/plugin-analytics-module-newrelic-browser
 ```
 
 2. Wire up the API implementation to your App:
