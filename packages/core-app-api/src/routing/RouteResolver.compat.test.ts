@@ -24,8 +24,9 @@ import {
   BackstagePlugin,
 } from '@backstage/core-plugin-api';
 import { MATCH_ALL_ROUTE } from './collectors';
+import { type ReactNode } from 'react';
 
-const element = () => null;
+const element: ReactNode = null;
 const rest = {
   element,
   caseSensitive: false,

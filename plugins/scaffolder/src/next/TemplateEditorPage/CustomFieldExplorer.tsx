@@ -102,7 +102,7 @@ export const CustomFieldExplorer = ({
   }, [customFieldExtensions]);
 
   const handleSelectionChange = useCallback(
-    selection => {
+    (selection: any) => {
       setSelectedField(selection);
       setFieldFormState({});
     },
@@ -110,7 +110,7 @@ export const CustomFieldExplorer = ({
   );
 
   const handleFieldConfigChange = useCallback(
-    state => {
+    (state: any) => {
       setFieldFormState(state);
       // Force TemplateEditorForm to re-render since some fields
       // may not be responsive to ui:option changes

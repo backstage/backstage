@@ -25,3 +25,6 @@ export type CompoundEntityRef = {
   namespace: string;
   name: string;
 };
+
+export type SelectPartial<T, K extends keyof T> = Omit<T, K> &
+  Partial<Pick<T, K>>;

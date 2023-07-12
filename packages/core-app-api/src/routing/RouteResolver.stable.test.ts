@@ -25,13 +25,14 @@ import {
 } from '@backstage/core-plugin-api';
 import { RouteResolver } from './RouteResolver';
 import { MATCH_ALL_ROUTE } from './collectors';
+import { type ReactNode } from 'react';
 
 jest.mock('react-router', () => jest.requireActual('react-router-stable'));
 jest.mock('react-router-dom', () =>
   jest.requireActual('react-router-dom-stable'),
 );
 
-const element = () => null;
+const element: ReactNode = null;
 const rest = {
   element,
   caseSensitive: false,

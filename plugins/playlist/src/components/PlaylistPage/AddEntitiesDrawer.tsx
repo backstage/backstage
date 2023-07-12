@@ -18,6 +18,8 @@ import {
   Entity,
   getCompoundEntityRef,
   stringifyEntityRef,
+  SelectPartial,
+  CompoundEntityRef,
 } from '@backstage/catalog-model';
 import { useApi, useRouteRef } from '@backstage/core-plugin-api';
 import { CatalogEntityDocument } from '@backstage/plugin-catalog-common';
@@ -85,6 +87,14 @@ const RestrictCatalogIndexResults = () => {
   return null;
 };
 
+function matchedGroupsSatisfyEntityRef(
+  m: Record<string, string>,
+): asserts m is SelectPartial<CompoundEntityRef, 'namespace'> {
+  if (!m.kind || !m.name) {
+    throw new Error('Matched groups did not contain kind and name');
+  }
+}
+
 export type AddEntitiesDrawerProps = {
   currentEntities: Entity[];
   open: boolean;
@@ -136,8 +146,14 @@ export const AddEntitiesDrawer = ({
       // contains the `metadata.name` field so we can derive the full ref and we only fall back to
       // parsing location if it's missing (ie. for older versions)
       const match = entityResult.location.match(entityLocationRegex);
-      if (match?.groups) {
-        onAdd(stringifyEntityRef(match?.groups));
+      if (match && match.groups) {
+        try {
+          matchedGroupsSatisfyEntityRef(match.groups);
+          onAdd(stringifyEntityRef(match?.groups));
+        } catch (error) {
+          // eslint-disable-next-line no-console
+          console.error(error);
+        }
       } else {
         // eslint-disable-next-line no-console
         console.error(

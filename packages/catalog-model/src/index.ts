@@ -24,5 +24,5 @@ export * from './entity';
 export { EntityPolicies } from './EntityPolicies';
 export * from './kinds';
 export * from './location';
-export type { CompoundEntityRef } from './types';
+export type { CompoundEntityRef, SelectPartial } from './types';
 export * from './validation';
