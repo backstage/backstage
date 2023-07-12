@@ -19,7 +19,8 @@ import {
   createBackendPlugin,
   coreServices,
 } from '@backstage/backend-plugin-api';
-import { CatalogClient } from '@backstage/catalog-client';
+import { catalogServiceRef } from '@backstage/plugin-catalog-node';
+
 import { createScheduler } from './service/createScheduler';
 
 /**
@@ -32,15 +33,14 @@ export const lighthousePlugin = createBackendPlugin({
   register(env) {
     env.registerInit({
       deps: {
+        catalogClient: catalogServiceRef,
         config: coreServices.config,
-        discovery: coreServices.discovery,
         logger: coreServices.logger,
         scheduler: coreServices.scheduler,
         tokenManager: coreServices.tokenManager,
       },
-      async init({ config, discovery, logger, scheduler, tokenManager }) {
+      async init({ catalogClient, config, logger, scheduler, tokenManager }) {
         const winstonLogger = loggerToWinstonLogger(logger);
-        const catalogClient = new CatalogClient({ discoveryApi: discovery });
 
         await createScheduler({
           catalogClient,
