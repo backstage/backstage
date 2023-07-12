@@ -402,6 +402,7 @@ Uffizzi
 ui
 unbreak
 Unconference
+unicode
 unmanaged
 unregister
 unregistering
