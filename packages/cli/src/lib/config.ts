@@ -19,7 +19,7 @@ import {
   loadConfig,
   loadConfigSchema,
 } from '@backstage/config-loader';
-import { ConfigReader } from '@backstage/config';
+import { AppConfig, ConfigReader } from '@backstage/config';
 import { paths } from './paths';
 import { isValidUrl } from './urls';
 import { getPackages } from '@manypkg/get-packages';
@@ -33,6 +33,7 @@ type Options = {
   withDeprecatedKeys?: boolean;
   fullVisibility?: boolean;
   strict?: boolean;
+  watch?: (newFrontendAppConfigs: AppConfig[]) => void;
 };
 
 export async function loadCliConfig(options: Options) {
@@ -80,6 +81,19 @@ export async function loadCliConfig(options: Options) {
       : undefined,
     configRoot: paths.targetRoot,
     configTargets: configTargets,
+    watch: options.watch && {
+      onChange(newAppConfigs) {
+        const newFrontendAppConfigs = schema.process(newAppConfigs, {
+          visibility: options.fullVisibility
+            ? ['frontend', 'backend', 'secret']
+            : ['frontend'],
+          withFilteredKeys: options.withFilteredKeys,
+          withDeprecatedKeys: options.withDeprecatedKeys,
+          ignoreSchemaErrors: !options.strict,
+        });
+        options.watch!(newFrontendAppConfigs);
+      },
+    },
   });
 
   // printing to stderr to not clobber stdout in case the cli command

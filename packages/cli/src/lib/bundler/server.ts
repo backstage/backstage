@@ -21,6 +21,7 @@ import openBrowser from 'react-dev-utils/openBrowser';
 import { createConfig, resolveBaseUrl } from './config';
 import { ServeOptions } from './types';
 import { resolveBundlingPaths } from './paths';
+import { AppConfig } from '@backstage/config';
 
 export async function serveBundle(options: ServeOptions) {
   const url = resolveBaseUrl(options.frontendConfig);
@@ -32,6 +33,8 @@ export async function serveBundle(options: ServeOptions) {
     Number(url.port) ||
     (url.protocol === 'https:' ? 443 : 80);
 
+  let latestFrontendAppConfigs = options.frontendAppConfigs;
+
   const paths = resolveBundlingPaths(options);
   const pkgPath = paths.targetPackageJson;
   const pkg = await fs.readJson(pkgPath);
@@ -39,6 +42,9 @@ export async function serveBundle(options: ServeOptions) {
     ...options,
     isDev: true,
     baseUrl: url,
+    getFrontendAppConfigs: () => {
+      return latestFrontendAppConfigs;
+    },
   });
 
   const compiler = webpack(config);
@@ -94,6 +100,13 @@ export async function serveBundle(options: ServeOptions) {
       resolve();
     });
   });
+
+  options.configChannel.port2.onmessage = ({
+    data,
+  }: MessageEvent<AppConfig[]>) => {
+    latestFrontendAppConfigs = data;
+    server.invalidate();
+  };
 
   const waitForExit = async () => {
     for (const signal of ['SIGINT', 'SIGTERM'] as const) {

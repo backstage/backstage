@@ -91,11 +91,16 @@ export async function startFrontend(options: StartAppOptions) {
 
   checkReactVersion();
 
+  const configChannel = new MessageChannel();
+
   const { name } = await fs.readJson(paths.resolveTarget('package.json'));
   const config = await loadCliConfig({
     args: options.configPaths,
     fromPackage: name,
     withFilteredKeys: true,
+    watch(appConfigs) {
+      configChannel.port1.postMessage(appConfigs);
+    },
   });
 
   const appBaseUrl = config.frontendConfig.getString('app.baseUrl');
@@ -119,6 +124,7 @@ export async function startFrontend(options: StartAppOptions) {
   const waitForExit = await serveBundle({
     entry: options.entry,
     checksEnabled: options.checksEnabled,
+    configChannel,
     ...config,
   });
 

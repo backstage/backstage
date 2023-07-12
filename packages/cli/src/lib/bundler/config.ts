@@ -118,12 +118,6 @@ export async function createConfig(
   );
 
   plugins.push(
-    new webpack.EnvironmentPlugin({
-      APP_CONFIG: options.frontendAppConfigs,
-    }),
-  );
-
-  plugins.push(
     new HtmlWebpackPlugin({
       template: paths.targetHtml,
       templateParameters: {
@@ -137,6 +131,10 @@ export async function createConfig(
   plugins.push(
     new webpack.DefinePlugin({
       'process.env.BUILD_INFO': JSON.stringify(buildInfo),
+      'process.env.APP_CONFIG': webpack.DefinePlugin.runtimeValue(
+        () => JSON.stringify(options.getFrontendAppConfigs()),
+        true,
+      ),
     }),
   );
 
