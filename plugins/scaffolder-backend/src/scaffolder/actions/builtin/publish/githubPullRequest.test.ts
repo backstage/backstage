@@ -85,6 +85,7 @@ describe('createPublishGithubPullRequestAction', () => {
       integrations,
       githubCredentialsProvider,
       clientFactory,
+      config: new ConfigReader({}),
     });
   });
 
@@ -156,6 +157,14 @@ describe('createPublishGithubPullRequestAction', () => {
         draft: true,
         changes: [
           {
+            committer: {
+              name: 'Scaffolder',
+              email: 'scaffolder@backstage.io',
+            },
+            author: {
+              name: 'Scaffolder',
+              email: 'scaffolder@backstage.io',
+            },
             commit: 'Create my new app',
             files: {
               'file.txt': {
@@ -220,6 +229,14 @@ describe('createPublishGithubPullRequestAction', () => {
         draft: true,
         changes: [
           {
+            committer: {
+              name: 'Scaffolder',
+              email: 'scaffolder@backstage.io',
+            },
+            author: {
+              name: 'Scaffolder',
+              email: 'scaffolder@backstage.io',
+            },
             commit: 'Create my new app',
             files: {
               'file.txt': {
@@ -286,6 +303,14 @@ describe('createPublishGithubPullRequestAction', () => {
         body: 'This PR is really good',
         changes: [
           {
+            committer: {
+              name: 'Scaffolder',
+              email: 'scaffolder@backstage.io',
+            },
+            author: {
+              name: 'Scaffolder',
+              email: 'scaffolder@backstage.io',
+            },
             commit: 'Create my new app',
             files: {
               'foo.txt': {
@@ -344,6 +369,14 @@ describe('createPublishGithubPullRequestAction', () => {
         body: 'This PR is really good',
         changes: [
           {
+            committer: {
+              name: 'Scaffolder',
+              email: 'scaffolder@backstage.io',
+            },
+            author: {
+              name: 'Scaffolder',
+              email: 'scaffolder@backstage.io',
+            },
             commit: 'Create my new app',
             files: {
               'file.txt': {
@@ -494,6 +527,14 @@ describe('createPublishGithubPullRequestAction', () => {
         body: 'This PR is really good',
         changes: [
           {
+            committer: {
+              name: 'Scaffolder',
+              email: 'scaffolder@backstage.io',
+            },
+            author: {
+              name: 'Scaffolder',
+              email: 'scaffolder@backstage.io',
+            },
             commit: 'Create my new app',
             files: {
               Makefile: {
@@ -549,6 +590,14 @@ describe('createPublishGithubPullRequestAction', () => {
         body: 'This PR is really good',
         changes: [
           {
+            committer: {
+              name: 'Scaffolder',
+              email: 'scaffolder@backstage.io',
+            },
+            author: {
+              name: 'Scaffolder',
+              email: 'scaffolder@backstage.io',
+            },
             commit: 'Create my new app',
             files: {
               'hello.sh': {
@@ -614,6 +663,14 @@ describe('createPublishGithubPullRequestAction', () => {
         body: 'This PR is really good',
         changes: [
           {
+            committer: {
+              name: 'Scaffolder',
+              email: 'scaffolder@backstage.io',
+            },
+            author: {
+              name: 'Scaffolder',
+              email: 'scaffolder@backstage.io',
+            },
             commit: 'Create my new app',
             files: {
               'hello.sh': {
@@ -635,6 +692,68 @@ describe('createPublishGithubPullRequestAction', () => {
         'https://github.com/myorg/myrepo/pull/123',
       );
       expect(ctx.output).toHaveBeenCalledWith('pullRequestNumber', 123);
+    });
+  });
+
+  describe('with git author', () => {
+    let input: GithubPullRequestActionInput;
+    let ctx: ActionContext<GithubPullRequestActionInput>;
+
+    beforeEach(() => {
+      input = {
+        repoUrl: 'github.com?owner=myorg&repo=myrepo',
+        title: 'Create my new app',
+        branchName: 'new-app',
+        description: 'This PR is really good',
+        commitMessage: 'Create my new app, but in the commit message',
+        gitAuthorEmail: 'example@example.com',
+        gitAuthorName: 'Test',
+      };
+
+      mockFs({
+        [workspacePath]: { 'file.txt': 'Hello there!' },
+      });
+
+      ctx = {
+        createTemporaryDirectory: jest.fn(),
+        output: jest.fn(),
+        logger: getRootLogger(),
+        logStream: new Writable(),
+        input,
+        workspacePath,
+      };
+    });
+
+    it('creates a pull request', async () => {
+      await instance.handler(ctx);
+
+      expect(fakeClient.createPullRequest).toHaveBeenCalledWith({
+        owner: 'myorg',
+        repo: 'myrepo',
+        title: 'Create my new app',
+        head: 'new-app',
+        body: 'This PR is really good',
+        changes: [
+          {
+            committer: {
+              name: 'Test',
+              email: 'example@example.com',
+            },
+            author: {
+              name: 'Test',
+              email: 'example@example.com',
+            },
+            commit: 'Create my new app, but in the commit message',
+            files: {
+              'file.txt': {
+                content: Buffer.from('Hello there!').toString('base64'),
+                encoding: 'base64',
+                mode: '100644',
+              },
+            },
+          },
+        ],
+      });
     });
   });
 
@@ -676,6 +795,14 @@ describe('createPublishGithubPullRequestAction', () => {
         body: 'This PR is really good',
         changes: [
           {
+            committer: {
+              name: 'Scaffolder',
+              email: 'scaffolder@backstage.io',
+            },
+            author: {
+              name: 'Scaffolder',
+              email: 'scaffolder@backstage.io',
+            },
             commit: 'Create my new app, but in the commit message',
             files: {
               'file.txt': {

@@ -274,6 +274,7 @@ export interface CreateGithubPullRequestActionOptions {
   clientFactory?: (
     input: CreateGithubPullRequestClientFactoryInput,
   ) => Promise<OctokitWithPullRequestPluginClient>;
+  config: Config;
   githubCredentialsProvider?: GithubCredentialsProvider;
   integrations: ScmIntegrationRegistry;
 }
@@ -654,6 +655,8 @@ export const createPublishGithubPullRequestAction: (
     reviewers?: string[] | undefined;
     teamReviewers?: string[] | undefined;
     commitMessage?: string | undefined;
+    gitAuthorName?: string | undefined;
+    gitAuthorEmail?: string | undefined;
   },
   JsonObject
 >;

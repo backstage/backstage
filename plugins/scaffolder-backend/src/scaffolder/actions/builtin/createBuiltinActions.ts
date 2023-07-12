@@ -145,6 +145,7 @@ export const createBuiltinActions = (
     createPublishGithubPullRequestAction({
       integrations,
       githubCredentialsProvider,
+      config,
     }),
     createPublishGitlabAction({
       integrations,
