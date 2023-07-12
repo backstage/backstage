@@ -4794,9 +4794,9 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@backstage/plugin-analytics-module-newrelic-browser@workspace:plugins/analytics-module-new-relic":
+"@backstage/plugin-analytics-module-newrelic-browser@workspace:plugins/analytics-module-newrelic-browser":
   version: 0.0.0-use.local
-  resolution: "@backstage/plugin-analytics-module-newrelic-browser@workspace:plugins/analytics-module-new-relic"
+  resolution: "@backstage/plugin-analytics-module-newrelic-browser@workspace:plugins/analytics-module-newrelic-browser"
   dependencies:
     "@backstage/cli": "workspace:^"
     "@backstage/config": "workspace:^"

@@ -107,7 +107,36 @@ export class NewRelicBrowser implements AnalyticsApi {
   }
 
   captureEvent(event: AnalyticsEvent) {
-    const { action, ...rest } = event;
-    this.agent.addPageAction(action, rest);
+    const { context, action, subject, value, attributes } = event;
+    if (action === 'navigate' && context.extension === 'App') {
+      const interaction = this.agent.interaction();
+      interaction.setName(subject);
+      Object.keys(context).forEach(key => {
+        if (context[key]) {
+          interaction.setAttribute(`context.${key}`, context[key]);
+        }
+      });
+      if (attributes) {
+        Object.keys(attributes).forEach(key => {
+          interaction.setAttribute(`attributes.${key}`, attributes[key]);
+        });
+      }
+    } else {
+      const customAttributes: {
+        [x: string]: string | number | boolean | undefined;
+      } = {};
+      Object.keys(context).forEach(key => {
+        if (context[key]) {
+          customAttributes[`context.${key}`] = context[key];
+        }
+      });
+      if (attributes) {
+        Object.keys(attributes).forEach(key => {
+          customAttributes[`attributes.${key}`] = attributes[key];
+        });
+      }
+
+      this.agent.addPageAction(action, customAttributes);
+    }
   }
 }
