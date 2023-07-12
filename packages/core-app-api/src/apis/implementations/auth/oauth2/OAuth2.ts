@@ -14,7 +14,10 @@
  * limitations under the License.
  */
 
-import { DefaultAuthConnector } from '../../../../lib/AuthConnector';
+import {
+  DefaultAuthConnector,
+  PopupOptions,
+} from '../../../../lib/AuthConnector';
 import { RefreshingAuthSessionManager } from '../../../../lib/AuthSessionManager';
 import { SessionManager } from '../../../../lib/AuthSessionManager/types';
 import {
@@ -38,6 +41,7 @@ import { OAuthApiCreateOptions } from '../types';
  */
 export type OAuth2CreateOptions = OAuthApiCreateOptions & {
   scopeTransform?: (scopes: string[]) => string[];
+  popupOptions?: PopupOptions;
 };
 
 export type OAuth2Response = {
@@ -79,6 +83,7 @@ export default class OAuth2
       oauthRequestApi,
       defaultScopes = [],
       scopeTransform = x => x,
+      popupOptions,
     } = options;
 
     const connector = new DefaultAuthConnector({
@@ -103,6 +108,7 @@ export default class OAuth2
           },
         };
       },
+      popupOptions,
     });
 
     const sessionManager = new RefreshingAuthSessionManager({
