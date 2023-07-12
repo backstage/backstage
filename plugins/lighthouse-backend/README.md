@@ -69,9 +69,7 @@ In your `packages/backend/src/index.ts` make the following changes:
 + import { lighthousePlugin } from '@backstage/plugin-lighthouse-backend';
   const backend = createBackend();
   // ... other feature additions
-+ backend.add(
-+   lighthousePlugin(),
-+ );
++ backend.add(lighthousePlugin());
   backend.start();
 ```
 
