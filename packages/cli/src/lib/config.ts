@@ -91,7 +91,7 @@ export async function loadCliConfig(options: Options) {
           withDeprecatedKeys: options.withDeprecatedKeys,
           ignoreSchemaErrors: !options.strict,
         });
-        options.watch!(newFrontendAppConfigs);
+        options.watch?.(newFrontendAppConfigs);
       },
     },
   });
