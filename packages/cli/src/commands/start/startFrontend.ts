@@ -14,11 +14,9 @@
  * limitations under the License.
  */
 
-import fs from 'fs-extra';
 import chalk from 'chalk';
 import uniq from 'lodash/uniq';
 import { serveBundle } from '../../lib/bundler';
-import { loadCliConfig } from '../../lib/config';
 import { PackageGraph } from '@backstage/cli-node';
 import { Lockfile } from '../../lib/versioning';
 import { forbiddenDuplicatesFilter, includedFilter } from '../versions/lint';
@@ -91,41 +89,10 @@ export async function startFrontend(options: StartAppOptions) {
 
   checkReactVersion();
 
-  const configChannel = new MessageChannel();
-
-  const { name } = await fs.readJson(paths.resolveTarget('package.json'));
-  const config = await loadCliConfig({
-    args: options.configPaths,
-    fromPackage: name,
-    withFilteredKeys: true,
-    watch(appConfigs) {
-      configChannel.port1.postMessage(appConfigs);
-    },
-  });
-
-  const appBaseUrl = config.frontendConfig.getString('app.baseUrl');
-  const backendBaseUrl = config.frontendConfig.getString('backend.baseUrl');
-  if (appBaseUrl === backendBaseUrl) {
-    console.log(
-      chalk.yellow(
-        `⚠️   Conflict between app baseUrl and backend baseUrl:
-
-    app.baseUrl:     ${appBaseUrl}
-    backend.baseUrl: ${backendBaseUrl}
-
-    Must have unique hostname and/or ports.
-
-    This can be resolved by changing app.baseUrl and backend.baseUrl to point to their respective local development ports.
-`,
-      ),
-    );
-  }
-
   const waitForExit = await serveBundle({
     entry: options.entry,
     checksEnabled: options.checksEnabled,
-    configChannel,
-    ...config,
+    configPaths: options.configPaths,
   });
 
   await waitForExit();

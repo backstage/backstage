@@ -29,10 +29,7 @@ export type BundlingOptions = {
 
 export type ServeOptions = BundlingPathsOptions & {
   checksEnabled: boolean;
-  frontendConfig: Config;
-  frontendAppConfigs: AppConfig[];
-  fullConfig: Config;
-  configChannel: MessageChannel;
+  configPaths: string[];
 };
 
 export type BuildOptions = BundlingPathsOptions & {
