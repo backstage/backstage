@@ -18,6 +18,8 @@ import fs from 'fs-extra';
 import webpack from 'webpack';
 import WebpackDevServer from 'webpack-dev-server';
 import openBrowser from 'react-dev-utils/openBrowser';
+import uniq from 'lodash/uniq';
+
 import { createConfig, resolveBaseUrl } from './config';
 import { ServeOptions } from './types';
 import { resolveBundlingPaths } from './paths';
@@ -25,8 +27,50 @@ import { paths as libPaths } from '../../lib/paths';
 import { loadCliConfig } from '../config';
 import chalk from 'chalk';
 import { AppConfig } from '@backstage/config';
+import { PackageGraph } from '@backstage/cli-node';
+import { Lockfile } from '../versioning';
+import {
+  forbiddenDuplicatesFilter,
+  includedFilter,
+} from '../../commands/versions/lint';
 
 export async function serveBundle(options: ServeOptions) {
+  if (options.verifyVersions) {
+    const lockfile = await Lockfile.load(
+      libPaths.resolveTargetRoot('yarn.lock'),
+    );
+    const result = lockfile.analyze({
+      filter: includedFilter,
+      localPackages: PackageGraph.fromPackages(
+        await PackageGraph.listTargetPackages(),
+      ),
+    });
+    const problemPackages = [...result.newVersions, ...result.newRanges]
+      .map(({ name }) => name)
+      .filter(forbiddenDuplicatesFilter);
+
+    if (problemPackages.length > 1) {
+      console.log(
+        chalk.yellow(
+          `⚠️   Some of the following packages may be outdated or have duplicate installations:
+
+          ${uniq(problemPackages).join(', ')}
+        `,
+        ),
+      );
+      console.log(
+        chalk.yellow(
+          `⚠️   This can be resolved using the following command:
+
+          yarn backstage-cli versions:check --fix
+      `,
+        ),
+      );
+    }
+  }
+
+  checkReactVersion();
+
   const { name } = await fs.readJson(libPaths.resolveTarget('package.json'));
 
   let server: WebpackDevServer | undefined = undefined;
@@ -152,4 +196,28 @@ export async function serveBundle(options: ServeOptions) {
   };
 
   return waitForExit;
+}
+
+function checkReactVersion() {
+  try {
+    // Make sure we're looking at the root of the target repo
+    const reactPkgPath = require.resolve('react/package.json', {
+      paths: [libPaths.targetRoot],
+    });
+    const reactPkg = require(reactPkgPath);
+    if (reactPkg.version.startsWith('16.')) {
+      console.log(
+        chalk.yellow(
+          `
+⚠️                                                                           ⚠️
+⚠️ You are using React version 16, which is deprecated for use in Backstage. ⚠️
+⚠️ Please upgrade to React 17 by updating your packages/app dependencies.    ⚠️
+⚠️                                                                           ⚠️
+`,
+        ),
+      );
+    }
+  } catch {
+    /* ignored */
+  }
 }
