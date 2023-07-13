@@ -106,6 +106,8 @@ export async function serveBundle(options: ServeOptions) {
   }
 
   const { frontendConfig, fullConfig } = cliConfig;
+  // TODO: proper
+  const extraPackages = ['@backstage/plugin-org'];
   const url = resolveBaseUrl(frontendConfig);
 
   const host =
@@ -119,7 +121,9 @@ export async function serveBundle(options: ServeOptions) {
   const pkgPath = paths.targetPackageJson;
   const pkg = await fs.readJson(pkgPath);
   const config = await createConfig(paths, {
+    ...options,
     checksEnabled: options.checksEnabled,
+    extraPackages,
     isDev: true,
     baseUrl: url,
     frontendConfig,
