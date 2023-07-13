@@ -29,6 +29,7 @@ export async function startFrontend(options: StartAppOptions) {
     entry: options.entry,
     checksEnabled: options.checksEnabled,
     configPaths: options.configPaths,
+    verifyVersions: options.verifyVersions,
   });
 
   await waitForExit();
