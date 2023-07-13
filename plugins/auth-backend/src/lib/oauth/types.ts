@@ -45,6 +45,7 @@ export type OAuthResult = {
   params: {
     id_token?: string;
     scope: string;
+    token_type?: string;
     expires_in: number;
   };
   accessToken: string;
