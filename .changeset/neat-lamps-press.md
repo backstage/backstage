@@ -6,4 +6,4 @@
 '@backstage/plugin-catalog': patch
 ---
 
-MUI v5 fix: express theme spacing without extra unit
+Material UI v5 fix: express theme spacing without extra unit
