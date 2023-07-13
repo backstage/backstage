@@ -134,7 +134,7 @@ export const FeedbackResponseDialog = (props: FeedbackResponseDialogProps) => {
           {Object.keys(responseSelections).every(
             key => responseSelections[key] === false,
           ) ? (
-            <FormHelperText error="true">
+            <FormHelperText error>
               *select the reason listed above
             </FormHelperText>
           ) : null}
@@ -152,7 +152,7 @@ export const FeedbackResponseDialog = (props: FeedbackResponseDialogProps) => {
               value={comments}
             />
             {!comments && (
-              <FormHelperText error="true">*add some comments</FormHelperText>
+              <FormHelperText error>*add some comments</FormHelperText>
             )}
           </FormControl>
         )}
