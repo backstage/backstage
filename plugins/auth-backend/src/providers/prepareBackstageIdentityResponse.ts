@@ -14,6 +14,7 @@
  * limitations under the License.
  */
 
+import { InputError } from '@backstage/errors';
 import {
   BackstageIdentityResponse,
   BackstageSignInResult,
@@ -34,6 +35,10 @@ function parseJwtPayload(token: string) {
 export function prepareBackstageIdentityResponse(
   result: BackstageSignInResult,
 ): BackstageIdentityResponse {
+  if (!result.token) {
+    throw new InputError(`Identity response must return a token`);
+  }
+
   const { sub, ent } = parseJwtPayload(result.token);
 
   return {
