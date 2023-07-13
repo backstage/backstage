@@ -16,10 +16,7 @@
 
 import { Logger } from 'winston';
 import { PluginTaskScheduler } from '@backstage/backend-tasks';
-import {
-  CATALOG_FILTER_EXISTS,
-  CatalogClient,
-} from '@backstage/catalog-client';
+import { CATALOG_FILTER_EXISTS, CatalogApi } from '@backstage/catalog-client';
 import { Config } from '@backstage/config';
 import { LighthouseRestApi } from '@backstage/plugin-lighthouse-common';
 import { stringifyEntityRef } from '@backstage/catalog-model';
@@ -31,7 +28,7 @@ export interface CreateLighthouseSchedulerOptions {
   logger: Logger;
   config: Config;
   scheduler?: PluginTaskScheduler;
-  catalogClient: CatalogClient;
+  catalogClient: CatalogApi;
   tokenManager: TokenManager;
 }
 
