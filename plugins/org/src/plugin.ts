@@ -27,6 +27,8 @@ export const orgPlugin = createPlugin({
   },
 });
 
+window.iAmTheOrgPlugin = orgPlugin;
+
 /** @public */
 export const EntityGroupProfileCard = orgPlugin.provide(
   createComponentExtension({

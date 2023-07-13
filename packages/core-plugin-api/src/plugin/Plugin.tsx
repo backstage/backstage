@@ -98,5 +98,7 @@ export function createPlugin<
 >(
   config: PluginConfig<Routes, ExternalRoutes, PluginInputOptions>,
 ): BackstagePlugin<Routes, ExternalRoutes, PluginInputOptions> {
-  return new PluginImpl(config);
+  const plugin = new PluginImpl(config);
+  window.allPlugins.push(plugin);
+  return plugin;
 }
