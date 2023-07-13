@@ -22,6 +22,9 @@
   flex-direction: row;
   color: var(--ifm-button-color);
   background-color: var(--ifm-color-primary);
+  margin-bottom: 1rem;
+  display: flex;
+  align-items: center;
 
   :global(.bannerContent) {
     flex: 1;
