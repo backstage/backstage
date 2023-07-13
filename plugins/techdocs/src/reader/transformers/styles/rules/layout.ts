@@ -18,6 +18,16 @@ import { RuleOptions } from './types';
 
 const SIDEBAR_WIDTH = '224px';
 
+// NOTE(freben): Since different versions of Material UI have been inconsistent
+// with whether they returned a unit or not with the theme spacing function, we
+// ensure that one is always added here to be sure that we work with all
+// versions of the library.
+export function ensurePxUnit(value: string | number) {
+  return typeof value === 'number' || value.match(/^[\d.-]+$/)
+    ? `${value}px`
+    : value;
+}
+
 export default ({ theme, sidebar }: RuleOptions) => `
 /*==================  Layout  ==================*/
 
@@ -42,7 +52,7 @@ export default ({ theme, sidebar }: RuleOptions) => `
 .md-nav__icon {
   height: 20px !important;
   width: 20px !important;
-  margin-left: ${theme.spacing(1)};
+  margin-left: ${ensurePxUnit(theme.spacing(1))};
 }
 .md-nav__icon svg {
   margin: 0;
@@ -76,7 +86,7 @@ export default ({ theme, sidebar }: RuleOptions) => `
   width: calc(12.1rem);
 }
 .md-sidebar--secondary {
-  right: ${theme.spacing(3)};
+  right: ${ensurePxUnit(theme.spacing(3))};
 }
 .md-sidebar::-webkit-scrollbar {
   width: 5px;
