@@ -28,6 +28,7 @@ import {
   FormControlLabel,
   FormGroup,
   FormLabel,
+  FormHelperText,
   Grid,
   makeStyles,
   Switch,
@@ -130,19 +131,31 @@ export const FeedbackResponseDialog = (props: FeedbackResponseDialogProps) => {
               />
             ))}
           </FormGroup>
+          {Object.keys(responseSelections).every(
+            key => responseSelections[key] === false,
+          ) ? (
+            <FormHelperText error="true">
+              *select the reason listed above
+            </FormHelperText>
+          ) : null}
         </FormControl>
-        <FormControl fullWidth>
-          <TextField
-            data-testid="feedback-response-dialog-comments-input"
-            disabled={saving}
-            label="Additional comments"
-            multiline
-            minRows={2}
-            onChange={e => setComments(e.target.value)}
-            variant="outlined"
-            value={comments}
-          />
-        </FormControl>
+        {responseSelections.other === true && (
+          <FormControl fullWidth>
+            <TextField
+              data-testid="feedback-response-dialog-comments-input"
+              disabled={saving}
+              label="Additional comments"
+              multiline
+              minRows={2}
+              onChange={e => setComments(e.target.value)}
+              variant="outlined"
+              value={comments}
+            />
+            {!comments && (
+              <FormHelperText error="true">*add some comments</FormHelperText>
+            )}
+          </FormControl>
+        )}
         <Typography className={classes.contactConsent}>
           Can we reach out to you for more info?
           <Grid component="label" container alignItems="center" spacing={1}>
@@ -165,7 +178,12 @@ export const FeedbackResponseDialog = (props: FeedbackResponseDialogProps) => {
         <Button
           color="primary"
           data-testid="feedback-response-dialog-submit-button"
-          disabled={saving}
+          disabled={
+            saving ||
+            Object.keys(responseSelections).every(
+              key => responseSelections[key] === false || !comments,
+            )
+          }
           onClick={saveResponse}
         >
           Submit
