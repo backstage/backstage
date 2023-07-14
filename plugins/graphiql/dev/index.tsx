@@ -28,65 +28,8 @@ import {
   graphQlBrowseApiRef,
   GraphiQLPage,
 } from '../src';
-// import * as orgPlugin from '@backstage/plugin-org';
 
-// console.log(`DEBUG: orgPlugin=`, orgPlugin);
-
-// // (process.env.EXTRA_PACKAGE_IMPORTS as string[]).map(name => require(name))
-// console.log(
-//   `DEBUG: process.env.EXTRA_PACKAGE_IMPORTS=`,
-//   process.env.EXTRA_PACKAGE_IMPORTS,
-// );
-
-// require.ensure(process.env.EXTRA_PACKAGE_IMPORTS as string[], innerRequire => {
-//   console.log(`DEBUG: innerRequire=`, innerRequire);
-//   const path3 = require.resolve('@backstage/plugin-org');
-//   console.log(`DEBUG: path3=`, path3);
-//   const loadedModules = (process.env.EXTRA_PACKAGE_IMPORTS as string[]).map(
-//     name => console.log('require', name) || require(name),
-//   );
-//   console.log(`DEBUG: loadedModules=`, loadedModules);
-// });
-
-console.log(process.env);
-console.log(
-  `DEBUG: process.env.EXTRA_PACKAGE_IMPORTS=`,
-  process.env.EXTRA_PACKAGE_IMPORTS,
-);
-// const orgPlugin = require([
-//   '@backstage/plugin-org',
-//   '@backstage/plugin-todo',
-// ], modules => {
-//   console.log(`DEBUG: modules=`, modules);
-// });
-// require.ensure(
-//   process.env.EXTRA_PACKAGE_IMPORTS,
-//   innerRequire => {
-//     console.log(
-//       `DEBUG: module1=`,
-//       require(process.env.EXTRA_PACKAGE_IMPORTS[0]),
-//     );
-//     // console.log(
-//     //   `DEBUG: module2=`,
-//     //   innerRequire(require.resolve('@backstage/plugin-todo')),
-//     // );
-//   },
-//   err => console.error('ERROR CALLBACK: ', err),
-// );
-
-// console.log(`DEBUG: orgPlugin=`, orgPlugin);
-
-// const orgPlugin2 = require(process.env.EXTRA_PACKAGE_IMPORTS, modules => {
-//   console.log(`DEBUG: modules=`, modules);
-// });
-// console.log(`DEBUG: orgPlugin2=`, orgPlugin2);
-// __webpack_require__(
-//   process.env.EXTRA_PACKAGE_IMPORTS as string[],
-//   loadedModules => {
-//     console.log(`DEBUG: loadedModules=`, loadedModules);
-//   },
-// );
-// require.context()
+console.log('modules', window.__backstage_detected_packages__.modules);
 
 createDevApp()
   .registerPlugin(graphiqlPlugin)
