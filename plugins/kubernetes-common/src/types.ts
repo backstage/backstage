@@ -79,7 +79,7 @@ export interface ClusterAttributes {
    * Note that you should specify the app used for the dashboard
    * using the dashboardApp property, in order to properly format
    * links to kubernetes resources,  otherwise it will assume that you're running the standard one.
-   * Also, for cloud clusters such as GKE, you should provide addititonal parameters using dashboardParameters.
+   * Also, for cloud clusters such as GKE, you should provide additional parameters using dashboardParameters.
    * @see dashboardApp
    */
   dashboardUrl?: string;
