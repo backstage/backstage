@@ -168,19 +168,24 @@ export class GitlabOrgDiscoveryEntityProvider implements EntityProvider {
       logger: logger,
     });
 
-    const users = paginated<GitLabUser>(options => client.listUsers(options), {
-      page: 1,
-      per_page: 100,
-      active: true,
-    });
+    let groups;
+    let users;
 
-    const groups = paginated<GitLabGroup>(
-      options => client.listGroups(options),
-      {
+    if (client.isSelfManaged()) {
+      groups = paginated<GitLabGroup>(options => client.listGroups(options), {
         page: 1,
         per_page: 100,
-      },
-    );
+      });
+
+      users = paginated<GitLabUser>(options => client.listUsers(options), {
+        page: 1,
+        per_page: 100,
+        active: true,
+      });
+    } else {
+      groups = (await client.listSaasGroups(this.config.group)).items;
+      users = (await client.listSaasUsers(this.config.group)).items;
+    }
 
     const idMappedUser: { [userId: number]: GitLabUser } = {};
 

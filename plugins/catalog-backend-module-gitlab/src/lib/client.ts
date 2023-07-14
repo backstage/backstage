@@ -20,7 +20,13 @@ import {
   GitLabIntegrationConfig,
 } from '@backstage/integration';
 import { Logger } from 'winston';
-import { GitLabGroup, GitLabGroupMembersResponse, GitLabUser } from './types';
+import {
+  GitLabGroup,
+  GitLabSaasUsersResponse,
+  GitLabSaasGroupsResponse,
+  GitLabGroupMembersResponse,
+  GitLabUser,
+} from './types';
 
 export type CommonListOptions = {
   [key: string]: string | number | boolean | undefined;
@@ -89,6 +95,163 @@ export class GitLabClient {
     options?: CommonListOptions,
   ): Promise<PagedResponse<GitLabGroup>> {
     return this.pagedRequest(`/groups`, options);
+  }
+
+  async listSaasUsers(groupPath: string): Promise<PagedResponse<GitLabUser>> {
+    const items: GitLabUser[] = [];
+    let hasNextPage: boolean = false;
+    let endCursor: string | null = null;
+
+    if (!groupPath) {
+      throw new Error(
+        `Missing required 'group' value in gitlab provider config.`,
+      );
+    }
+
+    do {
+      const response: GitLabSaasUsersResponse = await fetch(
+        `${this.config.baseUrl}/api/graphql`,
+        {
+          method: 'POST',
+          headers: {
+            ...getGitLabRequestOptions(this.config).headers,
+            ['Content-Type']: 'application/json',
+          },
+          body: JSON.stringify({
+            variables: { group: groupPath, endCursor },
+            query: `query($group: ID!, $endCursor: String) {
+              group(fullPath: $group) {
+                groupMembers(first: 100, relations: [DESCENDANTS], after: $endCursor) {
+                  nodes {
+                    user {
+                      id 
+                      username 
+                      commitEmail
+                      name
+                      state
+                      webUrl
+                      avatarUrl  
+                    }
+                  }
+                  pageInfo {
+                    endCursor
+                    hasNextPage
+                  }
+                }
+              }
+            }`,
+          }),
+        },
+      ).then(r => r.json());
+      if (response.errors) {
+        throw new Error(`GraphQL errors: ${JSON.stringify(response.errors)}`);
+      }
+
+      if (!response.data.group?.groupMembers?.nodes) {
+        this.logger.warn(
+          `Couldn't get members under ${groupPath}. The provided token might not have sufficient permissions`,
+        );
+        continue;
+      }
+
+      const usersData = response.data.group.groupMembers.nodes;
+
+      for (let i = 0; i < usersData.length; i++) {
+        const userItem = usersData[i];
+
+        const formattedUserResponse = {
+          id: Number(userItem.user.id.replace(/^gid:\/\/gitlab\/User\//, '')),
+          username: userItem.user.username,
+          email: userItem.user.commitEmail,
+          name: userItem.user.name,
+          state: userItem.user.state,
+          web_url: userItem.user.webUrl,
+          avatar_url: userItem.user.avatarUrl,
+        };
+
+        items.push(formattedUserResponse);
+      }
+      ({ hasNextPage, endCursor } = response.data.group.groupMembers.pageInfo);
+    } while (hasNextPage);
+    return { items };
+  }
+
+  async listSaasGroups(groupPath: string): Promise<PagedResponse<GitLabGroup>> {
+    const items: GitLabGroup[] = [];
+    let hasNextPage: boolean = false;
+    let endCursor: string | null = null;
+
+    if (!groupPath) {
+      throw new Error(
+        `Missing required 'group' value in gitlab provider config.`,
+      );
+    }
+
+    do {
+      const response: GitLabSaasGroupsResponse = await fetch(
+        `${this.config.baseUrl}/api/graphql`,
+        {
+          method: 'POST',
+          headers: {
+            ...getGitLabRequestOptions(this.config).headers,
+            ['Content-Type']: 'application/json',
+          },
+          body: JSON.stringify({
+            variables: { group: groupPath, endCursor },
+            query: `query($group: ID!, $endCursor: String) {
+            group(fullPath: $group) {
+                descendantGroups(first: 100, after: $endCursor){
+                    nodes{
+                        id
+                        name
+                        description
+                        fullPath
+                        parent{
+                            id
+                        }
+                    }
+                    pageInfo {
+                        endCursor
+                        hasNextPage
+                    }
+                }       
+            }
+          }`,
+          }),
+        },
+      ).then(r => r.json());
+      if (response.errors) {
+        throw new Error(`GraphQL errors: ${JSON.stringify(response.errors)}`);
+      }
+
+      if (!response.data.group?.descendantGroups.nodes) {
+        this.logger.warn(
+          `Could not get groups under ${groupPath}. The provided token might not have sufficient permissions`,
+        );
+        continue;
+      }
+
+      const groupsData = response.data.group.descendantGroups.nodes;
+
+      for (let i = 0; i < groupsData.length; i++) {
+        const groupItem = groupsData[i];
+
+        const formattedGroupResponse = {
+          id: Number(groupItem.id.replace(/^gid:\/\/gitlab\/Group\//, '')),
+          name: groupItem.name,
+          description: groupItem.description,
+          full_path: groupItem.fullPath,
+          parent_id: Number(
+            groupItem.parent.id.replace(/^gid:\/\/gitlab\/Group\//, ''),
+          ),
+        };
+
+        items.push(formattedGroupResponse);
+      }
+      ({ hasNextPage, endCursor } =
+        response.data.group.descendantGroups.pageInfo);
+    } while (hasNextPage);
+    return { items };
   }
 
   async getGroupMembers(groupPath: string): Promise<number[]> {
