@@ -113,6 +113,42 @@ export interface BackstageThemeOptions extends ThemeOptions_3 {
 }
 
 // @public
+export type BackstageTypography = {
+  htmlFontSize: number;
+  fontFamily: string;
+  h1: {
+    fontSize: number;
+    fontWeight: number;
+    marginBottom: number;
+  };
+  h2: {
+    fontSize: number;
+    fontWeight: number;
+    marginBottom: number;
+  };
+  h3: {
+    fontSize: number;
+    fontWeight: number;
+    marginBottom: number;
+  };
+  h4: {
+    fontSize: number;
+    fontWeight: number;
+    marginBottom: number;
+  };
+  h5: {
+    fontSize: number;
+    fontWeight: number;
+    marginBottom: number;
+  };
+  h6: {
+    fontSize: number;
+    fontWeight: number;
+    marginBottom: number;
+  };
+};
+
+// @public
 export interface BaseThemeOptionsInput<PaletteOptions> {
   // (undocumented)
   defaultPageTheme?: string;
@@ -124,6 +160,8 @@ export interface BaseThemeOptionsInput<PaletteOptions> {
   pageTheme?: Record<string, PageTheme>;
   // (undocumented)
   palette: PaletteOptions;
+  // (undocumented)
+  typography?: BackstageTypography;
 }
 
 // @public
@@ -134,40 +172,7 @@ export function createBaseThemeOptions<PaletteOptions>(
   options: BaseThemeOptionsInput<PaletteOptions>,
 ): {
   palette: PaletteOptions;
-  typography: {
-    htmlFontSize: number;
-    fontFamily: string;
-    h1: {
-      fontSize: number;
-      fontWeight: number;
-      marginBottom: number;
-    };
-    h2: {
-      fontSize: number;
-      fontWeight: number;
-      marginBottom: number;
-    };
-    h3: {
-      fontSize: number;
-      fontWeight: number;
-      marginBottom: number;
-    };
-    h4: {
-      fontWeight: number;
-      fontSize: number;
-      marginBottom: number;
-    };
-    h5: {
-      fontWeight: number;
-      fontSize: number;
-      marginBottom: number;
-    };
-    h6: {
-      fontWeight: number;
-      fontSize: number;
-      marginBottom: number;
-    };
-  };
+  typography: BackstageTypography;
   page: PageTheme;
   getPageTheme: ({ themeId }: PageThemeSelector) => PageTheme;
 };
@@ -379,6 +384,7 @@ export type SimpleThemeOptions = {
   pageTheme?: Record<string, PageTheme>;
   fontFamily?: string;
   htmlFontSize?: number;
+  typography?: BackstageTypography;
 };
 
 // @public
@@ -422,6 +428,8 @@ export interface UnifiedThemeOptions {
   pageTheme?: Record<string, PageTheme>;
   // (undocumented)
   palette: PaletteOptions & PaletteOptions_2;
+  // (undocumented)
+  typography?: BackstageTypography;
 }
 
 // @public

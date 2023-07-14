@@ -25,6 +25,7 @@ import type {
 import {
   BackstagePaletteAdditions,
   BackstageThemeAdditions,
+  BackstageTypography,
   PageTheme,
   PageThemeSelector,
 } from '../base/types';
@@ -89,6 +90,7 @@ export type SimpleThemeOptions = {
   pageTheme?: Record<string, PageTheme>;
   fontFamily?: string;
   htmlFontSize?: number;
+  typography?: BackstageTypography;
 };
 
 declare module '@material-ui/core/styles/createPalette' {
