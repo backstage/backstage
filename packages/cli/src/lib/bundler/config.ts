@@ -22,6 +22,7 @@ import ModuleScopePlugin from 'react-dev-utils/ModuleScopePlugin';
 import { RunScriptWebpackPlugin } from 'run-script-webpack-plugin';
 import webpack, { ProvidePlugin } from 'webpack';
 import nodeExternals from 'webpack-node-externals';
+import VirtualModulesPlugin from 'webpack-virtual-modules';
 import { isChildPath } from '@backstage/cli-common';
 import { getPackages } from '@manypkg/get-packages';
 import { optimization } from './optimization';
@@ -39,6 +40,7 @@ import pickBy from 'lodash/pickBy';
 import yn from 'yn';
 import { readEntryPoints } from '../entryPoints';
 
+const PACKAGES_GLOBAL = '__backstage_detected_packages__';
 const BUILD_CACHE_ENV_VAR = 'BACKSTAGE_CLI_EXPERIMENTAL_BUILD_CACHE';
 
 export function resolveBaseUrl(config: Config): URL {
@@ -84,7 +86,7 @@ export async function createConfig(
   paths: BundlingPaths,
   options: BundlingOptions,
 ): Promise<webpack.Configuration> {
-  const { checksEnabled, isDev, frontendConfig, extraPackages } = options;
+  const { checksEnabled, isDev, frontendConfig, extraPackages = [] } = options;
 
   const { plugins, loaders } = transforms(options);
   // Any package that is part of the monorepo but outside the monorepo root dir need
@@ -127,19 +129,17 @@ export async function createConfig(
     }),
   );
 
-  plugins.push(
-    new ProvidePlugin(
-      Object.fromEntries(
-        extraPackages?.map(name => [
-          `__backstageLoadedPackage_${name}`,
-          name,
-        ]) ?? [],
-      ),
-    ),
-  );
+  if (extraPackages.length > 0) {
+    const requirePackageScript = extraPackages
+      ?.map(pkg => `require('${pkg}')`)
+      .join(',');
 
-  // In browser
-  // const packageKeys = Object.keys(window).filter(key => key.startsWith('__backstageLoadedPackage_'))
+    plugins.push(
+      new VirtualModulesPlugin({
+        [`node_modules/${PACKAGES_GLOBAL}.js`]: `window['${PACKAGES_GLOBAL}'] = { modules: [${requirePackageScript}] }`,
+      }),
+    );
+  }
 
   const buildInfo = await readBuildInfo();
   plugins.push(
@@ -177,7 +177,10 @@ export async function createConfig(
     },
     devtool: isDev ? 'eval-cheap-module-source-map' : 'source-map',
     context: paths.targetPath,
-    entry: [paths.targetEntry, ...(extraPackages ?? [])],
+    entry: [
+      ...(extraPackages.length > 0 ? [`${PACKAGES_GLOBAL}.js`] : []),
+      paths.targetEntry,
+    ],
     resolve: {
       extensions: ['.ts', '.tsx', '.mjs', '.js', '.jsx', '.json', '.wasm'],
       mainFields: ['browser', 'module', 'main'],

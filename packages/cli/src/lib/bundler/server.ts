@@ -33,8 +33,34 @@ import {
   forbiddenDuplicatesFilter,
   includedFilter,
 } from '../../commands/versions/lint';
+import { BackstagePackageJson } from '@backstage/cli-node';
 
 export async function serveBundle(options: ServeOptions) {
+  const paths = resolveBundlingPaths(options);
+  const pkgPath = paths.targetPackageJson;
+  const pkg: BackstagePackageJson = await fs.readJson(pkgPath);
+
+  // TODO: proper
+  // Assumption for config string based on https://github.com/backstage/backstage/issues/18372 ^
+  const packageDetectionMode = options.fullConfig.getOptionalString(
+    'app.experimental.packages',
+  );
+  const extraPackages = [];
+  if (packageDetectionMode === 'all') {
+    for (const depName of Object.keys(pkg.dependencies ?? {})) {
+      const depPackageJson: BackstagePackageJson = require(require.resolve(
+        `${depName}/package.json`,
+        { paths: [paths.targetPath] },
+      ));
+      if (
+        ['frontend-plugin', 'frontend-plugin-module'].includes(
+          depPackageJson.backstage?.role || '',
+        )
+      ) {
+        extraPackages.push(depName);
+      }
+    }
+  }
   if (options.verifyVersions) {
     const lockfile = await Lockfile.load(
       libPaths.resolveTargetRoot('yarn.lock'),
@@ -107,7 +133,6 @@ export async function serveBundle(options: ServeOptions) {
 
   const { frontendConfig, fullConfig } = cliConfig;
   // TODO: proper
-  const extraPackages = ['@backstage/plugin-org'];
   const url = resolveBaseUrl(frontendConfig);
 
   const host =
@@ -117,9 +142,6 @@ export async function serveBundle(options: ServeOptions) {
     Number(url.port) ||
     (url.protocol === 'https:' ? 443 : 80);
 
-  const paths = resolveBundlingPaths(options);
-  const pkgPath = paths.targetPackageJson;
-  const pkg = await fs.readJson(pkgPath);
   const config = await createConfig(paths, {
     ...options,
     checksEnabled: options.checksEnabled,
