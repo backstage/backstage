@@ -2,8 +2,7 @@
 '@backstage/core-components': patch
 '@backstage/plugin-splunk-on-call': patch
 '@backstage/plugin-xcmetrics': patch
-'@backstage/plugin-techdocs': patch
 '@backstage/plugin-catalog': patch
 ---
 
-Material UI v5 fix: express theme spacing without extra unit
+Prefer simple `theme.spacing` without string interpolation
