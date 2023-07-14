@@ -89,6 +89,12 @@ export class GitlabOrgDiscoveryEntityProvider implements EntityProvider {
         );
       }
 
+      if (!providerConfig.group && providerConfig.host === 'gitlab.com') {
+        throw new Error(
+          `Missing 'group' value for GitlabOrgDiscoveryEntityProvider:${providerConfig.id}.`,
+        );
+      }
+
       if (!options.schedule && !providerConfig.schedule) {
         throw new Error(
           `No schedule provided neither via code nor config for GitlabOrgDiscoveryEntityProvider:${providerConfig.id}.`,

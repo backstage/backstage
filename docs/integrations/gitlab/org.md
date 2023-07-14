@@ -58,6 +58,8 @@ amount of data, this can take significant time and resources.
 The token used must have the `read_api` scope, and the Users and Groups fetched
 will be those visible to the account which provisioned the token.
 
+**NOTE**: If any groups that are being ingested are empty groups and the account which provisioned the token is shared at a higher level group via group sharing and you don't see the expected number of Groups in the catalog you may be hitting this [GitLab issue](https://gitlab.com/gitlab-org/gitlab/-/issues/267996).
+
 ```yaml
 catalog:
   providers:
@@ -65,7 +67,7 @@ catalog:
       yourProviderId:
         host: gitlab.com
         orgEnabled: true
-        group: org/teams # Optional. Must not end with slash. Accepts only groups under the provided path (which will be stripped)
+        group: org/teams # Required for gitlab.com. Optional for self managed. Must not end with slash. Accepts only groups under the provided path (which will be stripped)
         groupPattern: '[\s\S]*' # Optional. Filters found groups based on provided pattern. Defaults to `[\s\S]*`, which means to not filter anything
 ```
 

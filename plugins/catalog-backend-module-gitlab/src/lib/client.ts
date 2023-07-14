@@ -102,12 +102,6 @@ export class GitLabClient {
     let hasNextPage: boolean = false;
     let endCursor: string | null = null;
 
-    if (!groupPath) {
-      throw new Error(
-        `Missing required 'group' value in gitlab provider config.`,
-      );
-    }
-
     do {
       const response: GitLabSaasUsersResponse = await fetch(
         `${this.config.baseUrl}/api/graphql`,
@@ -181,12 +175,6 @@ export class GitLabClient {
     let hasNextPage: boolean = false;
     let endCursor: string | null = null;
 
-    if (!groupPath) {
-      throw new Error(
-        `Missing required 'group' value in gitlab provider config.`,
-      );
-    }
-
     do {
       const response: GitLabSaasGroupsResponse = await fetch(
         `${this.config.baseUrl}/api/graphql`,
@@ -226,7 +214,7 @@ export class GitLabClient {
 
       if (!response.data.group?.descendantGroups.nodes) {
         this.logger.warn(
-          `Could not get groups under ${groupPath}. The provided token might not have sufficient permissions`,
+          `Couldn't get groups under ${groupPath}. The provided token might not have sufficient permissions`,
         );
         continue;
       }
