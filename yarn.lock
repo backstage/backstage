@@ -18279,11 +18279,11 @@ __metadata:
   linkType: hard
 
 "@types/testing-library__jest-dom@npm:^5.9.1":
-  version: 5.14.6
-  resolution: "@types/testing-library__jest-dom@npm:5.14.6"
+  version: 5.14.8
+  resolution: "@types/testing-library__jest-dom@npm:5.14.8"
   dependencies:
     "@types/jest": "*"
-  checksum: 92f81cefeacba3b5c06d4b3fbea0341fe2bcaa6e425c026ae262de39f1148c2588cf3003112aa4ac0880c3972ffb77641a863f3be71518d1d8080402c944e326
+  checksum: 18f5ba7d0db8ebd91667b544537762ce63f11c4fd02b3d57afa92f9457a384d3ecf9bc7b50b6b445af1b3ea38b69862b4f95130720d4dd23621d598ac074d93a
   languageName: node
   linkType: hard
 
