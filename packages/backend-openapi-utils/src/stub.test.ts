@@ -27,7 +27,6 @@ describe('createRouter', () => {
     status: 'available',
     photoUrls: [],
   };
-
   it('does NOT override originalUrl and basePath after execution', async () => {
     expect.assertions(2);
     const router = createValidatedOpenApiRouter(singlePathSpec);
