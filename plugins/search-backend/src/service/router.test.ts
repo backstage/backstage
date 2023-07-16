@@ -66,6 +66,14 @@ describe('createRouter', () => {
       logger,
     });
     app = express().use(router);
+
+    if (process.env.OPTIC_PROXY) {
+      app = app.listen(3000) as any;
+      app = {
+        ...app,
+        address: () => new URL(process.env.OPTIC_PROXY!),
+      } as any;
+    }
   });
 
   beforeEach(() => {
@@ -78,6 +86,7 @@ describe('createRouter', () => {
       mockSearchEngine.query.mockRejectedValueOnce(error);
 
       const response = await request(app).get('/query');
+      console.log((response as any).text);
 
       expect(response.status).toEqual(500);
       expect(response.body).toMatchObject(

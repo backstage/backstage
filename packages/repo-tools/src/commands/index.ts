@@ -49,6 +49,11 @@ function registerSchemaCommand(program: Command) {
       'Fail on any linting severity messages, not just errors.',
     )
     .action(lazy(() => import('./openapi/lint').then(m => m.bulkCommand)));
+
+  openApiCommand
+    .command('test [paths...]')
+    .description('Test OpenAPI schemas against written tests')
+    .action(lazy(() => import('./openapi/test').then(m => m.bulkCommand)));
 }
 
 export function registerCommands(program: Command) {

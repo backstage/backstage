@@ -889,7 +889,7 @@ paths:
                     type: boolean
                   entities:
                     items:
-                      $ref: '#/components/schemas/Entity'
+                      $ref: '#/components/schemas/EntityTest'
                     type: array
                   location:
                     $ref: '#/components/schemas/Location'

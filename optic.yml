@@ -1,0 +1,15 @@
+ruleset:
+  - breaking-changes
+capture:
+  plugins/search-backend/src/schema/openapi.yaml:
+    # 🔧 Runnable example with simple get requests.
+    # Run with "optic capture plugins/catalog-backend/src/schema/openapi.yaml --update interactive"
+    # You can change the server and the 'requests' section to experiment
+    server:
+      url: http://localhost:3000
+    requests:
+      # ℹ️ Requests should be sent to the Optic proxy, the address of which is injected into 'run.command's env as OPTIC_PROXY (or the value of 'run.proxy_variable').
+      run:
+        # 🔧 Specify a command that will generate traffic
+        # We add the CI command here for the tests to run
+        command: cd plugins/search-backend && CI=1 yarn backstage-cli package test

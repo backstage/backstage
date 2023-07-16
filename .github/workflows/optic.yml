@@ -1,0 +1,28 @@
+name: optic
+on:
+  push:
+    branches:
+      - main
+  pull_request:
+
+jobs:
+  diff-all:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v3
+
+      - uses: opticdev/action@v1
+        with:
+
+          # A GitHub token with access to create comments on pull requests
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+
+          # If true, standard check failures will cause this action to fail.
+          # If false, standard check failures will show in PR comments and
+          # in Optic Cloud but will not cause the action to fail
+          standards_fail: true
+
+          # If you have more than one spec, separate matches with commas
+          # (openapi.yml,other.yml)
+          additional_args: --match **/src/schema/openapi.yaml
