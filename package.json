@@ -73,6 +73,7 @@
     "@techdocs/cli": "workspace:*",
     "@types/node": "^18.17.8",
     "@types/webpack": "^5.28.0",
+    "@useoptic/optic": "^0.50.7",
     "command-exists": "^1.2.9",
     "concurrently": "^8.0.0",
     "cross-env": "^7.0.0",

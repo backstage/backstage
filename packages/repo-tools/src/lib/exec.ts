@@ -13,23 +13,21 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+import { promisify } from 'util';
+import { ExecOptions, exec as execCb } from 'child_process';
 
-/**
- * Common functionalities for the openapi-router plugin.
- *
- * @packageDocumentation
- */
-import * as internal from './types';
+const execPromise = promisify(execCb);
 
-export { internal };
-export type {
-  Request,
-  Response,
-  QueryParameters,
-  HeaderParameters,
-  CookieParameters,
-  PathParameters,
-} from './utility';
-export type { ApiRouter } from './router';
-export { createValidatedOpenApiRouter } from './stub';
-export { wrapInOpenApiTestServer } from './testUtils';
+export const exec = (
+  command: string,
+  options: string[] = [],
+  execOptions?: ExecOptions,
+) => {
+  return execPromise(
+    [
+      command,
+      ...options.filter(e => e).map(e => (e.startsWith('-') ? e : `"${e}"`)),
+    ].join(' '),
+    execOptions,
+  );
+};
