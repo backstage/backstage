@@ -543,6 +543,42 @@ describe('GitlabOrgDiscoveryEntityProvider', () => {
     );
   });
 
+  it('fail with scheduler but no group config when host is gitlab.com', () => {
+    const scheduler = {
+      createScheduledTaskRunner: (_: any) => jest.fn(),
+    } as unknown as PluginTaskScheduler;
+    const config = new ConfigReader({
+      integrations: {
+        gitlab: [
+          {
+            host: 'test-gitlab',
+            apiBaseUrl: 'https://api.gitlab.example/api/v4',
+            token: '1234',
+          },
+        ],
+      },
+      catalog: {
+        providers: {
+          gitlab: {
+            'test-id': {
+              host: 'gitlab.com',
+              orgEnabled: true,
+            },
+          },
+        },
+      },
+    });
+
+    expect(() =>
+      GitlabOrgDiscoveryEntityProvider.fromConfig(config, {
+        logger,
+        scheduler,
+      }),
+    ).toThrow(
+      `Missing 'group' value for GitlabOrgDiscoveryEntityProvider:test-id`,
+    );
+  });
+
   it('single simple provider config with schedule in config', async () => {
     const schedule = new PersistingTaskRunner();
     const scheduler = {
