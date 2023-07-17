@@ -57,6 +57,11 @@ export interface Config {
          * will be broken in these scenarios.
          */
         legacyCopyReadmeMdToIndexMd?: boolean;
+
+        /**
+         * List of mkdocs plugins which should be added as default to all mkdocs.yml files.
+         */
+        defaultPlugins?: string[];
       };
     };
 
