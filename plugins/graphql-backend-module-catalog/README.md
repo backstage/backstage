@@ -1,4 +1,4 @@
-# Catalog GraphQL Plugin
+# GraphQL Backend Catalog Module
 
 A [GraphQL Module][graphql-module] providing access to the
 [Backstage Software Catalog][catalog]
@@ -26,28 +26,18 @@ Some key features are currently missing. These features may change the schema in
 
 ### Catalog module
 
-The `Catalog` module is installed just as any other [GraphQL
-Module][graphql-modules]: pass it to GraphQL Application Backend Module
+The `Catalog` module is installed just as any other Backstage Module:
 [`@backstage/plugin-graphql-backend`](../graphql-backend/README.md)
 
 ```ts
-// packages/backend/src/modules/graphqlApplication.ts
-import { createBackendModule } from '@backstage/backend-plugin-api';
-import { graphqlApplicationExtensionPoint } from '@backstage/plugin-graphql-backend';
-import { Catalog } from '@backstage/plugin-graphql-catalog';
+// packages/backend/src/index.ts
+import { graphqlModuleCatalog } from '@backstage/plugin-graphql-backend-module-catalog';
 
-export const graphqlModuleApplication = createBackendModule({
-  pluginId: 'graphql',
-  moduleId: 'application',
-  register(env) {
-    env.registerInit({
-      deps: { application: graphqlApplicationExtensionPoint },
-      async init({ application }) {
-        await application.addModule(Catalog);
-      },
-    });
-  },
-});
+const backend = createBackend();
+
+// GraphQL
+backend.use(graphqlPlugin());
+backend.use(graphqlModuleCatalog());
 ```
 
 ### Relation module
@@ -56,23 +46,14 @@ If you don't want to use basic Catalog types for some reason, but
 still want to use `@relation` directive, you can install `Relation` module
 
 ```ts
-// packages/backend/src/modules/graphqlApplication.ts
-import { createBackendModule } from '@backstage/backend-plugin-api';
-import { graphqlApplicationExtensionPoint } from '@backstage/plugin-graphql-backend';
-import { Relation } from '@backstage/plugin-graphql-catalog';
+// packages/backend/src/index.ts
+import { graphqlModuleRelationResolver } from '@backstage/plugin-graphql-backend-module-catalog';
 
-export const graphqlModuleApplication = createBackendModule({
-  pluginId: 'graphql',
-  moduleId: 'application',
-  register(env) {
-    env.registerInit({
-      deps: { application: graphqlApplicationExtensionPoint },
-      async init({ application }) {
-        await application.addModule(Relation);
-      },
-    });
-  },
-});
+const backend = createBackend();
+
+// GraphQL
+backend.use(graphqlPlugin());
+backend.use(graphqlModuleRelationResolver());
 ```
 
 ## Directives API

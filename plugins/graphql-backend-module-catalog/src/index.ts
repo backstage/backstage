@@ -13,5 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-/** @public */
-export const CATALOG_SOURCE = 'Catalog';
+export * from './catalog';
+export * from './relation';
+export * from './catalogModule';
+export * from './relationModule';

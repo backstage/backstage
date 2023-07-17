@@ -1,6 +1,6 @@
 {
-  "name": "@backstage/plugin-graphql-catalog",
-  "description": "An experimental Backstage GraphQL catalog schema module",
+  "name": "@backstage/plugin-graphql-backend-module-catalog",
+  "description": "An experimental module for the GraphQL backend that adds catalog schema",
   "version": "0.0.0",
   "main": "src/index.ts",
   "types": "src/index.ts",
@@ -41,8 +41,11 @@
   },
   "dependencies": {
     "@backstage/backend-common": "workspace:^",
+    "@backstage/backend-plugin-api": "workspace:^",
     "@backstage/catalog-client": "workspace:^",
     "@backstage/catalog-model": "workspace:^",
+    "@backstage/plugin-catalog-node": "workspace:^",
+    "@backstage/plugin-graphql-backend": "workspace:^",
     "@backstage/plugin-graphql-common": "workspace:^",
     "@graphql-tools/load-files": "^7.0.0",
     "@graphql-tools/utils": "^10.0.0",

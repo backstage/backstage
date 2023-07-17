@@ -26,7 +26,7 @@ import { resolvePackagePath } from '@backstage/backend-common';
 import { CATALOG_SOURCE } from '../constants';
 
 const catalogSchemaPath = resolvePackagePath(
-  '@backstage/plugin-graphql-catalog',
+  '@backstage/plugin-graphql-backend-module-catalog',
   'src/catalog/catalog.graphql',
 );
 

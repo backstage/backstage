@@ -20,7 +20,7 @@ import { loadFiles, loadFilesSync } from '@graphql-tools/load-files';
 import { resolvePackagePath } from '@backstage/backend-common';
 
 const relationSchemaPath = resolvePackagePath(
-  '@backstage/plugin-graphql-catalog',
+  '@backstage/plugin-graphql-backend-module-catalog',
   'src/relation/relation.graphql',
 );
 
