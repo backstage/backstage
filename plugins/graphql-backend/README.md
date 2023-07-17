@@ -51,41 +51,18 @@ The way to add new types and new resolvers to your GraphQL backend is
 with [GraphQL Modules][graphql-modules]. These are portable little
 bundles of schema that you can drop into place and have them extend
 your GraphQL server. The most important of these that is maintained by
-the Backstage team is the [graphql-catalog][] plugin that makes your
-Catalog accessible via GraphQL. To add this module to your GraphQL server,
-declare GraphQL Application backend module:
-
-```ts
-// packages/backend/src/modules/graphqlApplication.ts
-import { createBackendModule } from '@backstage/backend-plugin-api';
-import { graphqlApplicationExtensionPoint } from '@backstage/plugin-graphql-backend';
-import { Catalog } from '@backstage/plugin-graphql-catalog';
-
-export const graphqlModuleApplication = createBackendModule({
-  pluginId: 'graphql',
-  moduleId: 'application',
-  register(env) {
-    env.registerInit({
-      deps: { application: graphqlApplicationExtensionPoint },
-      async init({ application }) {
-        await application.addModule(Catalog);
-      },
-    });
-  },
-});
-```
-
-Then add module to your backend:
+the Backstage team is the [graphql-catalog][] module that makes your
+Catalog accessible via GraphQL. Add this module to your backend:
 
 ```ts
 // packages/backend/src/index.ts
-import { graphqlModuleApplication } from './modules/graphqlApplication';
+import { graphqlModuleCatalog } from '@backstage/plugin-graphql-backend-module-catalog';
 
 const backend = createBackend();
 
 // GraphQL
 backend.use(graphqlPlugin());
-backend.use(graphqlModuleApplication());
+backend.use(graphqlModuleCatalog());
 ```
 
 To learn more about adding your own modules, see the [graphql-common][] package.
@@ -194,7 +171,13 @@ export const graphqlModuleYoga = createBackendModule({
       deps: { yoga: graphqlYogaExtensionPoint },
       async init({ yoga }) {
         yoga.addLoader(
-          'MyAPI',
+          'ProjectAPI',
+          async (keys: readonly string[], context: GraphQLContext) => {
+            /* Fetch */
+          },
+        );
+        yoga.addLoader(
+          'TaskAPI',
           async (keys: readonly string[], context: GraphQLContext) => {
             /* Fetch */
           },
@@ -203,6 +186,23 @@ export const graphqlModuleYoga = createBackendModule({
     });
   },
 });
+```
+
+Then you can use `@resolve` directive in your GraphQL schemas
+
+```graphql
+interface Node
+  @discriminates(with: "__source")
+  @discriminationAlias(value: "Project", type: "ProjectAPI")
+  @discriminationAlias(value: "Tasks", type: "TaskAPI")
+
+type Project @implements(interface "Node") {
+  tasks: Tasks @resolve(at: "spec.projectId", from: "TaskAPI")
+}
+
+type Tasks @implements(interface "Node") {
+  list: [Task!] @field(at: "tasks")
+}
 ```
 
 ## Integrations

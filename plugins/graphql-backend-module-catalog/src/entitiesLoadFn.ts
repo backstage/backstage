@@ -13,14 +13,13 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import type { CatalogClient } from '@backstage/catalog-client';
+import type { CatalogApi } from '@backstage/catalog-client';
 import { Entity } from '@backstage/catalog-model';
 import { NodeQuery } from '@backstage/plugin-graphql-common';
 import { GraphQLError } from 'graphql';
 
-/** @public */
 export const createEntitiesLoadFn =
-  (catalog: CatalogClient) =>
+  (catalog: CatalogApi) =>
   async (
     queries: readonly (NodeQuery | undefined)[],
   ): Promise<Array<Entity | GraphQLError>> => {

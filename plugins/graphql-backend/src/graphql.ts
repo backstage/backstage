@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { errorHandler, SingleHostDiscovery } from '@backstage/backend-common';
+import { errorHandler } from '@backstage/backend-common';
 import Router from 'express-promise-router';
 import { Module } from 'graphql-modules';
 import {
@@ -24,12 +24,7 @@ import {
   BatchLoadFn,
   Core,
 } from '@backstage/plugin-graphql-common';
-import {
-  CATALOG_SOURCE,
-  createEntitiesLoadFn,
-} from '@backstage/plugin-graphql-catalog';
 import helmet from 'helmet';
-import { CatalogClient } from '@backstage/catalog-client';
 import { createYoga, Plugin, YogaServerInstance } from 'graphql-yoga';
 import { useGraphQLModules } from '@envelop/graphql-modules';
 import { useDataLoader } from '@envelop/dataloader';
@@ -98,36 +93,49 @@ class GraphQLYoga<TContext extends Record<string, any>>
   setDataloaderOptions(options: DataLoaderOptions<string, any>): void {
     this.dataloaderOptions = options;
   }
-  getDataLoader(
-    catalog: CatalogClient,
-  ): (ctx: GraphQLCoreContext) => DataLoader<string, any> {
-    return createLoader(
-      { [CATALOG_SOURCE]: createEntitiesLoadFn(catalog), ...this.loaders },
-      this.dataloaderOptions,
-    );
+  getDataLoader(): (
+    ctx: TContext & GraphQLCoreContext,
+  ) => DataLoader<string, any> {
+    return createLoader(this.loaders, this.dataloaderOptions);
   }
   setContext(
     context:
       | ((
-          initialContext: GraphQLCoreContext,
+          initialContext: Record<string, any> & GraphQLCoreContext,
         ) =>
           | (Record<string, any> & GraphQLCoreContext)
           | Promise<Record<string, any> & GraphQLCoreContext>)
       | Promise<Record<string, any>>
       | Record<string, any>,
   ): void {
-    this.context = context;
+    const ctx = this.context;
+
+    this.context = async (init: Record<string, any> & GraphQLCoreContext) => {
+      const merged = {
+        ...init,
+        ...(await (ctx instanceof Function ? ctx(init) : ctx)),
+      };
+      return {
+        ...merged,
+        ...(await (context instanceof Function ? context(merged) : context)),
+      };
+    };
   }
   getContext(
     initialContext: GraphQLCoreContext,
   ): (yogaContext: Record<string, any>) => Promise<Record<string, any>> {
-    return async (yogaContext: Record<string, any>) => ({
-      ...yogaContext,
-      ...initialContext,
-      ...(await (this.context instanceof Function
-        ? this.context(initialContext)
-        : this.context)),
-    });
+    return async (yogaContext: Record<string, any>) => {
+      const ctx = {
+        ...yogaContext,
+        ...initialContext,
+      };
+      return {
+        ...ctx,
+        ...(await (this.context instanceof Function
+          ? this.context(ctx)
+          : this.context)),
+      };
+    };
   }
 }
 
@@ -148,15 +156,12 @@ export const graphqlPlugin = createBackendPlugin((options?: RouterOptions) => ({
     env.registerInit({
       deps: {
         logger: coreServices.logger,
-        config: coreServices.config,
         http: coreServices.httpRouter,
       },
-      async init({ config, logger, http }) {
+      async init({ logger, http }) {
         const router = Router();
 
         let yoga: YogaServerInstance<any, any> | null = null;
-        const discovery = SingleHostDiscovery.fromConfig(config);
-        const catalog = new CatalogClient({ discoveryApi: discovery });
         const application = await createGraphQLApp({
           modules: [await Core(), ...graphqlApp.getModules()],
           generateOpaqueTypes: options?.generateOpaqueTypes,
@@ -188,7 +193,7 @@ export const graphqlPlugin = createBackendPlugin((options?: RouterOptions) => ({
             yoga = createYoga({
               plugins: [
                 useGraphQLModules(application),
-                useDataLoader('loader', graphqlYoga.getDataLoader(catalog)),
+                useDataLoader('loader', graphqlYoga.getDataLoader()),
                 ...graphqlYoga.getPlugins(),
               ],
               context: graphqlYoga.getContext({ application }),

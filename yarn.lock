@@ -6765,40 +6765,17 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@backstage/plugin-graphql-backend@workspace:plugins/graphql-backend":
+"@backstage/plugin-graphql-backend-module-catalog@workspace:plugins/graphql-backend-module-catalog":
   version: 0.0.0-use.local
-  resolution: "@backstage/plugin-graphql-backend@workspace:plugins/graphql-backend"
+  resolution: "@backstage/plugin-graphql-backend-module-catalog@workspace:plugins/graphql-backend-module-catalog"
   dependencies:
-    "@apollo/server": ^4.0.0
     "@backstage/backend-common": "workspace:^"
     "@backstage/backend-plugin-api": "workspace:^"
     "@backstage/catalog-client": "workspace:^"
     "@backstage/catalog-model": "workspace:^"
     "@backstage/cli": "workspace:^"
-    "@backstage/plugin-graphql-catalog": "workspace:^"
-    "@backstage/plugin-graphql-common": "workspace:^"
-    "@envelop/core": ^4.0.0
-    "@envelop/dataloader": ^5.0.0
-    "@envelop/graphql-modules": ^5.0.0
-    "@types/supertest": ^2.0.8
-    dataloader: ^2.1.0
-    express-promise-router: ^4.1.0
-    graphql: ^16.6.0
-    graphql-modules: ^2.1.0
-    graphql-yoga: ^3.3.0
-    helmet: ^6.0.0
-    supertest: ^6.1.3
-  languageName: unknown
-  linkType: soft
-
-"@backstage/plugin-graphql-catalog@workspace:^, @backstage/plugin-graphql-catalog@workspace:plugins/graphql-catalog":
-  version: 0.0.0-use.local
-  resolution: "@backstage/plugin-graphql-catalog@workspace:plugins/graphql-catalog"
-  dependencies:
-    "@backstage/backend-common": "workspace:^"
-    "@backstage/catalog-client": "workspace:^"
-    "@backstage/catalog-model": "workspace:^"
-    "@backstage/cli": "workspace:^"
+    "@backstage/plugin-catalog-node": "workspace:^"
+    "@backstage/plugin-graphql-backend": "workspace:^"
     "@backstage/plugin-graphql-common": "workspace:^"
     "@envelop/core": ^4.0.0
     "@envelop/dataloader": ^5.0.0
@@ -6817,6 +6794,30 @@ __metadata:
     graphql-modules: ^2.1.0
     graphql-relay: ^0.10.0
     graphql-type-json: ^0.3.2
+  languageName: unknown
+  linkType: soft
+
+"@backstage/plugin-graphql-backend@workspace:^, @backstage/plugin-graphql-backend@workspace:plugins/graphql-backend":
+  version: 0.0.0-use.local
+  resolution: "@backstage/plugin-graphql-backend@workspace:plugins/graphql-backend"
+  dependencies:
+    "@apollo/server": ^4.0.0
+    "@backstage/backend-common": "workspace:^"
+    "@backstage/backend-plugin-api": "workspace:^"
+    "@backstage/catalog-model": "workspace:^"
+    "@backstage/cli": "workspace:^"
+    "@backstage/plugin-graphql-common": "workspace:^"
+    "@envelop/core": ^4.0.0
+    "@envelop/dataloader": ^5.0.0
+    "@envelop/graphql-modules": ^5.0.0
+    "@types/supertest": ^2.0.8
+    dataloader: ^2.1.0
+    express-promise-router: ^4.1.0
+    graphql: ^16.6.0
+    graphql-modules: ^2.1.0
+    graphql-yoga: ^3.3.0
+    helmet: ^6.0.0
+    supertest: ^6.1.3
   languageName: unknown
   linkType: soft
 

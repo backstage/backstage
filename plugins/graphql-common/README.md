@@ -69,7 +69,6 @@ export const myModule = createModule({
 // packages/backend/src/modules/graphqlApplication.ts
 import { createBackendModule } from '@backstage/backend-plugin-api';
 import { graphqlApplicationExtensionPoint } from '@backstage/plugin-graphql-backend';
-import { Catalog } from '@backstage/plugin-graphql-catalog';
 import { MyModule } from '../modules/my-module/my-module';
 
 export const graphqlModuleApplication = createBackendModule({
@@ -79,12 +78,24 @@ export const graphqlModuleApplication = createBackendModule({
     env.registerInit({
       deps: { application: graphqlApplicationExtensionPoint },
       async init({ application }) {
-        await application.addModule(Catalog);
         await application.addModule(MyModule);
       },
     });
   },
 });
+```
+
+6. And then add it to your backend
+
+```ts
+// packages/backend/src/index.ts
+import { graphqlModuleApplication } from './modules/graphqlApplication';
+
+const backend = createBackend();
+
+// GraphQL
+backend.use(graphqlPlugin());
+backend.use(graphqlModuleApplication());
 ```
 
 ### Directives API
