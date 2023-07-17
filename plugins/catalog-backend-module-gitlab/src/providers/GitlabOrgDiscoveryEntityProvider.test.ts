@@ -551,8 +551,8 @@ describe('GitlabOrgDiscoveryEntityProvider', () => {
       integrations: {
         gitlab: [
           {
-            host: 'test-gitlab',
-            apiBaseUrl: 'https://api.gitlab.example/api/v4',
+            host: 'gitlab.com',
+            apiBaseUrl: 'https://gitlab.com/api/v4',
             token: '1234',
           },
         ],
