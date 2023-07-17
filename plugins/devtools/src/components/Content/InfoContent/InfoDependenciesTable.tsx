@@ -35,12 +35,14 @@ const columns: TableColumn[] = [
 
 export const InfoDependenciesTable = ({
   infoDependencies,
+  title,
 }: {
+  title: string;
   infoDependencies: PackageDependency[] | undefined;
 }) => {
   return (
     <Table
-      title="Package Dependencies"
+      title={title}
       options={{
         paging: true,
         pageSize: 15,
