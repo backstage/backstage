@@ -131,7 +131,7 @@ export async function createConfig(
 
   if (extraPackages.length > 0) {
     const requirePackageScript = extraPackages
-      ?.map(pkg => `require('${pkg}')`)
+      ?.map(pkg => `{name: '${pkg}', module: require('${pkg}')}`)
       .join(',');
 
     plugins.push(

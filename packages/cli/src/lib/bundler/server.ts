@@ -42,12 +42,29 @@ export async function serveBundle(options: ServeOptions) {
 
   // TODO: proper
   // Assumption for config string based on https://github.com/backstage/backstage/issues/18372 ^
-  const packageDetectionMode = options.fullConfig.getOptionalString(
+  const packageDetectionMode = options.fullConfig.getOptional(
     'app.experimental.packages',
   );
   const extraPackages = [];
   if (packageDetectionMode === 'all') {
     for (const depName of Object.keys(pkg.dependencies ?? {})) {
+      const depPackageJson: BackstagePackageJson = require(require.resolve(
+        `${depName}/package.json`,
+        { paths: [paths.targetPath] },
+      ));
+      if (
+        ['frontend-plugin', 'frontend-plugin-module'].includes(
+          depPackageJson.backstage?.role || '',
+        )
+      ) {
+        extraPackages.push(depName);
+      }
+    }
+  } else {
+    const packagesList = Array.isArray(packageDetectionMode)
+      ? packageDetectionMode
+      : [];
+    for (const depName of packagesList ?? []) {
       const depPackageJson: BackstagePackageJson = require(require.resolve(
         `${depName}/package.json`,
         { paths: [paths.targetPath] },
