@@ -131,13 +131,6 @@ export const FeedbackResponseDialog = (props: FeedbackResponseDialogProps) => {
               />
             ))}
           </FormGroup>
-          {Object.keys(responseSelections).every(
-            key => responseSelections[key] === false,
-          ) ? (
-            <FormHelperText error>
-              *select the reason listed above
-            </FormHelperText>
-          ) : null}
         </FormControl>
         {responseSelections.other === true && (
           <FormControl fullWidth>
@@ -178,12 +171,7 @@ export const FeedbackResponseDialog = (props: FeedbackResponseDialogProps) => {
         <Button
           color="primary"
           data-testid="feedback-response-dialog-submit-button"
-          disabled={
-            saving ||
-            Object.keys(responseSelections).every(
-              key => responseSelections[key] === false || !comments,
-            )
-          }
+          disabled={saving}
           onClick={saveResponse}
         >
           Submit
