@@ -19,10 +19,12 @@ import { makeStyles } from '@material-ui/core/styles';
 import IconButton from '@material-ui/core/IconButton';
 import Tooltip from '@material-ui/core/Tooltip';
 import EditIcon from '@material-ui/icons/Edit';
+import DeleteIcon from '@material-ui/icons/Delete';
 import { ShortcutIcon } from './ShortcutIcon';
 import { EditShortcut } from './EditShortcut';
 import { ShortcutApi } from './api';
 import { Shortcut } from './types';
+import { alertApiRef, useApi } from '@backstage/core-plugin-api';
 import { SidebarItem } from '@backstage/core-components';
 
 const useStyles = makeStyles(theme => ({
@@ -30,9 +32,13 @@ const useStyles = makeStyles(theme => ({
     '&:hover #edit': {
       visibility: 'visible',
     },
+    '&:hover #remove': {
+      visibility: 'visible',
+    },
   },
   button: {
     visibility: 'hidden',
+    padding: 3,
   },
   icon: {
     color: theme.palette.common.white,
@@ -64,10 +70,27 @@ type Props = {
 export const ShortcutItem = ({ shortcut, api, allowExternalLinks }: Props) => {
   const classes = useStyles();
   const [anchorEl, setAnchorEl] = React.useState<Element | undefined>();
+  const alertApi = useApi(alertApiRef);
 
   const handleClick = (event: React.MouseEvent<Element>) => {
     event.preventDefault();
     setAnchorEl(event.currentTarget);
+  };
+
+  const handleRemove = async () => {
+    try {
+      await api.remove(shortcut.id);
+      alertApi.post({
+        message: `Removed shortcut '${shortcut.title}' from your sidebar`,
+        severity: 'success',
+        display: 'transient',
+      });
+    } catch (error) {
+      alertApi.post({
+        message: `Could not delete shortcut: ${error.message}`,
+        severity: 'error',
+      });
+    }
   };
 
   const handleClose = () => {
@@ -93,6 +116,14 @@ export const ShortcutItem = ({ shortcut, api, allowExternalLinks }: Props) => {
             className={classes.button}
           >
             <EditIcon className={classes.icon} />
+          </IconButton>
+          <IconButton
+            id="remove"
+            data-testid="remove"
+            onClick={handleRemove}
+            className={classes.button}
+          >
+            <DeleteIcon className={classes.icon} />
           </IconButton>
         </SidebarItem>
       </Tooltip>
