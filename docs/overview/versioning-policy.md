@@ -32,7 +32,7 @@ their own release cadence and versioning policy.
 
 ## Main Release Line
 
-Release cadence: Monthly, specifically on the third Tuesday of each month. The first release took place in March 2022.
+Release cadence: Monthly, specifically on the Tuesday before the third Wednesday of each month. The first release took place in March 2022.
 
 The main release line in versioned with a major, minor and patch version but
 does **not** adhere to [semver](https://semver.org). The version format is
