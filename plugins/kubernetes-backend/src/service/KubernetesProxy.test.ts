@@ -13,39 +13,57 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
 import 'buffer';
+
 import { errorHandler, getVoidLogger } from '@backstage/backend-common';
-import { NotFoundError } from '@backstage/errors';
-import { getMockReq, getMockRes } from '@jest-mock/express';
-import type { Request } from 'express';
-import express from 'express';
-import request from 'supertest';
-import { rest } from 'msw';
-import { setupServer } from 'msw/node';
 import { setupRequestMockHandlers } from '@backstage/backend-test-utils';
-import { ClusterDetails, KubernetesClustersSupplier } from '../types/types';
-import {
-  APPLICATION_JSON,
-  HEADER_KUBERNETES_CLUSTER,
-  HEADER_KUBERNETES_AUTH,
-  KubernetesProxy,
-} from './KubernetesProxy';
+import { NotFoundError } from '@backstage/errors';
 import {
   AuthorizeResult,
   PermissionEvaluator,
 } from '@backstage/plugin-permission-common';
+import { getMockReq, getMockRes } from '@jest-mock/express';
+import express from 'express';
+import Router from 'express-promise-router';
+import { Server } from 'http';
+import { rest } from 'msw';
+import { setupServer } from 'msw/node';
+import request from 'supertest';
+import { WebSocket, WebSocketServer } from 'ws';
+
+import { LocalKubectlProxyClusterLocator } from '../cluster-locator/LocalKubectlProxyLocator';
 import {
   KubernetesAuthTranslator,
   NoopKubernetesAuthTranslator,
 } from '../kubernetes-auth-translator';
-import Router from 'express-promise-router';
-import { LocalKubectlProxyClusterLocator } from '../cluster-locator/LocalKubectlProxyLocator';
+import { ClusterDetails, KubernetesClustersSupplier } from '../types/types';
+import {
+  APPLICATION_JSON,
+  HEADER_KUBERNETES_AUTH,
+  HEADER_KUBERNETES_CLUSTER,
+  KubernetesProxy,
+} from './KubernetesProxy';
+import fetch from 'cross-fetch';
+
+import type { Request } from 'express';
 
 describe('KubernetesProxy', () => {
   let proxy: KubernetesProxy;
   const worker = setupServer();
   const logger = getVoidLogger();
+
+  const clusterSupplier: jest.Mocked<KubernetesClustersSupplier> = {
+    getClusters: jest.fn(),
+  };
+
+  const permissionApi: jest.Mocked<PermissionEvaluator> = {
+    authorize: jest.fn(),
+    authorizeConditional: jest.fn(),
+  };
+
+  const authTranslator: jest.Mocked<KubernetesAuthTranslator> = {
+    decorateClusterDetailsWithAuth: jest.fn(),
+  };
 
   setupRequestMockHandlers(worker);
 
@@ -76,29 +94,45 @@ describe('KubernetesProxy', () => {
     return req;
   };
 
-  const clusterSupplier: jest.Mocked<KubernetesClustersSupplier> = {
-    getClusters: jest.fn(),
-  };
+  const setupProxyPromise = ({
+    proxyPath,
+    requestPath,
+    headers,
+  }: {
+    proxyPath: string;
+    requestPath: string;
+    headers?: Record<string, string>;
+  }) => {
+    const app = express().use(
+      Router()
+        .use(proxyPath, proxy.createRequestHandler({ permissionApi }))
+        .use(errorHandler()),
+    );
 
-  const permissionApi: jest.Mocked<PermissionEvaluator> = {
-    authorize: jest.fn(),
-    authorizeConditional: jest.fn(),
-  };
+    const requestPromise = request(app).get(proxyPath + requestPath);
 
-  const authTranslator: jest.Mocked<KubernetesAuthTranslator> = {
-    decorateClusterDetailsWithAuth: jest.fn(),
+    if (headers) {
+      for (const [headerName, headerValue] of Object.entries(headers)) {
+        requestPromise.set(headerName, headerValue);
+      }
+    }
+
+    // Let this request through so it reaches the express router above
+    worker.use(rest.all(requestPromise.url, (req: any) => req.passthrough()));
+
+    return requestPromise;
   };
 
   beforeEach(() => {
     jest.resetAllMocks();
     proxy = new KubernetesProxy({ logger, clusterSupplier, authTranslator });
+    permissionApi.authorize.mockReturnValue(
+      Promise.resolve([{ result: AuthorizeResult.ALLOW }]),
+    );
   });
 
   it('should return a ERROR_NOT_FOUND if no clusters are found', async () => {
     clusterSupplier.getClusters.mockResolvedValue([]);
-    permissionApi.authorize.mockReturnValue(
-      Promise.resolve([{ result: AuthorizeResult.ALLOW }]),
-    );
 
     const req = buildMockRequest('test', 'api');
     const { res, next } = getMockRes();
@@ -124,10 +158,6 @@ describe('KubernetesProxy', () => {
       } as ClusterDetails,
     ]);
 
-    permissionApi.authorize.mockReturnValue(
-      Promise.resolve([{ result: AuthorizeResult.ALLOW }]),
-    );
-
     const req = buildMockRequest(undefined, 'api');
     const { res, next } = getMockRes();
 
@@ -145,10 +175,6 @@ describe('KubernetesProxy', () => {
         authProvider: 'googleServiceAccount',
       } as ClusterDetails,
     ]);
-
-    permissionApi.authorize.mockReturnValue(
-      Promise.resolve([{ result: AuthorizeResult.ALLOW }]),
-    );
 
     const req = buildMockRequest('test', 'api');
     const { res, next } = getMockRes();
@@ -179,10 +205,6 @@ describe('KubernetesProxy', () => {
       },
     ] as ClusterDetails[]);
 
-    permissionApi.authorize.mockReturnValue(
-      Promise.resolve([{ result: AuthorizeResult.ALLOW }]),
-    );
-
     authTranslator.decorateClusterDetailsWithAuth.mockResolvedValue({
       name: 'cluster1',
       url: 'https://localhost:9999',
@@ -190,18 +212,17 @@ describe('KubernetesProxy', () => {
       authProvider: 'serviceAccount',
     } as ClusterDetails);
 
-    const router = Router();
-    router.use('/mountpath', proxy.createRequestHandler({ permissionApi }));
-    const app = express().use(router);
-    const requestPromise = request(app)
-      .get('/mountpath/api')
-      .set(HEADER_KUBERNETES_CLUSTER, 'cluster1');
     worker.use(
       rest.get('https://localhost:9999/api', (_: any, res: any, ctx: any) =>
         res(ctx.status(299), ctx.json(apiResponse)),
       ),
-      rest.all(requestPromise.url, (req: any) => req.passthrough()),
     );
+
+    const requestPromise = setupProxyPromise({
+      proxyPath: '/mountpath',
+      requestPath: '/api',
+      headers: { [HEADER_KUBERNETES_CLUSTER]: 'cluster1' },
+    });
 
     const response = await requestPromise;
 
@@ -230,10 +251,6 @@ describe('KubernetesProxy', () => {
       },
     ] as ClusterDetails[]);
 
-    permissionApi.authorize.mockReturnValue(
-      Promise.resolve([{ result: AuthorizeResult.ALLOW }]),
-    );
-
     authTranslator.decorateClusterDetailsWithAuth.mockResolvedValue({
       name: 'cluster1',
       url: 'https://localhost:9999',
@@ -241,16 +258,16 @@ describe('KubernetesProxy', () => {
       authProvider: 'serviceAccount',
     } as ClusterDetails);
 
-    const router = Router();
-    router.use('/mountpath', proxy.createRequestHandler({ permissionApi }));
-    const app = express().use(router);
-    const requestPromise = request(app).get('/mountpath/api');
     worker.use(
       rest.get('https://localhost:9999/api', (_: any, res: any, ctx: any) =>
         res(ctx.status(299), ctx.json(apiResponse)),
       ),
-      rest.all(requestPromise.url, (req: any) => req.passthrough()),
     );
+
+    const requestPromise = setupProxyPromise({
+      proxyPath: '/mountpath',
+      requestPath: '/api',
+    });
 
     const response = await requestPromise;
 
@@ -270,9 +287,7 @@ describe('KubernetesProxy', () => {
         },
       ),
     );
-    permissionApi.authorize.mockResolvedValue([
-      { result: AuthorizeResult.ALLOW },
-    ]);
+
     clusterSupplier.getClusters.mockResolvedValue([
       {
         name: 'cluster1',
@@ -283,14 +298,14 @@ describe('KubernetesProxy', () => {
     authTranslator.decorateClusterDetailsWithAuth.mockImplementation(
       async x => x,
     );
-    const app = express().use(
-      Router().use('/mountpath', proxy.createRequestHandler({ permissionApi })),
-    );
 
-    const requestPromise = request(app)
-      .get('/mountpath/api/v1/namespaces')
-      .set(HEADER_KUBERNETES_CLUSTER, 'cluster1');
-    worker.use(rest.all(requestPromise.url, (req: any) => req.passthrough()));
+    const requestPromise = setupProxyPromise({
+      proxyPath: '/mountpath',
+      requestPath: '/api/v1/namespaces',
+
+      headers: { [HEADER_KUBERNETES_CLUSTER]: 'cluster1' },
+    });
+
     const response = await requestPromise;
 
     expect(response.status).toEqual(200);
@@ -324,10 +339,6 @@ describe('KubernetesProxy', () => {
       ),
     );
 
-    permissionApi.authorize.mockReturnValue(
-      Promise.resolve([{ result: AuthorizeResult.ALLOW }]),
-    );
-
     clusterSupplier.getClusters.mockResolvedValue([
       {
         name: 'cluster1',
@@ -344,15 +355,12 @@ describe('KubernetesProxy', () => {
       authProvider: 'serviceAccount',
     } as ClusterDetails);
 
-    const router = Router();
-    router.use('/mountpath', proxy.createRequestHandler({ permissionApi }));
-    const app = express().use(router);
+    const requestPromise = setupProxyPromise({
+      proxyPath: '/mountpath',
+      requestPath: '/api/v1/namespaces',
 
-    const requestPromise = request(app)
-      .get('/mountpath/api/v1/namespaces')
-      .set(HEADER_KUBERNETES_CLUSTER, 'cluster1');
-
-    worker.use(rest.all(requestPromise.url, (req: any) => req.passthrough()));
+      headers: { [HEADER_KUBERNETES_CLUSTER]: 'cluster1' },
+    });
 
     const response = await requestPromise;
 
@@ -381,10 +389,6 @@ describe('KubernetesProxy', () => {
       }),
     );
 
-    permissionApi.authorize.mockReturnValue(
-      Promise.resolve([{ result: AuthorizeResult.ALLOW }]),
-    );
-
     clusterSupplier.getClusters.mockResolvedValue([
       {
         name: 'cluster1',
@@ -400,15 +404,12 @@ describe('KubernetesProxy', () => {
       authProvider: 'googleServiceAccount',
     } as ClusterDetails);
 
-    const router = Router();
-    router.use('/mountpath', proxy.createRequestHandler({ permissionApi }));
-    const app = express().use(router);
+    const requestPromise = setupProxyPromise({
+      proxyPath: '/mountpath',
+      requestPath: '/api/v1/namespaces',
 
-    const requestPromise = request(app)
-      .get('/mountpath/api/v1/namespaces')
-      .set(HEADER_KUBERNETES_CLUSTER, 'cluster1');
-
-    worker.use(rest.all(requestPromise.url, (req: any) => req.passthrough()));
+      headers: { [HEADER_KUBERNETES_CLUSTER]: 'cluster1' },
+    });
 
     const response = await requestPromise;
 
@@ -442,10 +443,6 @@ describe('KubernetesProxy', () => {
       }),
     );
 
-    permissionApi.authorize.mockReturnValue(
-      Promise.resolve([{ result: AuthorizeResult.ALLOW }]),
-    );
-
     clusterSupplier.getClusters.mockResolvedValue([
       {
         name: 'cluster1',
@@ -461,16 +458,15 @@ describe('KubernetesProxy', () => {
       authProvider: 'googleServiceAccount',
     } as ClusterDetails);
 
-    const router = Router();
-    router.use('/mountpath', proxy.createRequestHandler({ permissionApi }));
-    const app = express().use(router);
+    const requestPromise = setupProxyPromise({
+      proxyPath: '/mountpath',
+      requestPath: '/api/v1/namespaces',
 
-    const requestPromise = request(app)
-      .get('/mountpath/api/v1/namespaces')
-      .set(HEADER_KUBERNETES_CLUSTER, 'cluster1')
-      .set(HEADER_KUBERNETES_AUTH, 'tokenB');
-
-    worker.use(rest.all(requestPromise.url, (req: any) => req.passthrough()));
+      headers: {
+        [HEADER_KUBERNETES_CLUSTER]: 'cluster1',
+        [HEADER_KUBERNETES_AUTH]: 'tokenB',
+      },
+    });
 
     const response = await requestPromise;
 
@@ -504,10 +500,6 @@ describe('KubernetesProxy', () => {
       }),
     );
 
-    permissionApi.authorize.mockReturnValue(
-      Promise.resolve([{ result: AuthorizeResult.ALLOW }]),
-    );
-
     clusterSupplier.getClusters.mockResolvedValue([
       {
         name: 'cluster1',
@@ -516,16 +508,15 @@ describe('KubernetesProxy', () => {
       },
     ] as ClusterDetails[]);
 
-    const router = Router();
-    router.use('/mountpath', proxy.createRequestHandler({ permissionApi }));
-    const app = express().use(router);
+    const requestPromise = setupProxyPromise({
+      proxyPath: '/mountpath',
+      requestPath: '/api/v1/namespaces',
 
-    const requestPromise = request(app)
-      .get('/mountpath/api/v1/namespaces')
-      .set(HEADER_KUBERNETES_CLUSTER, 'cluster1')
-      .set(HEADER_KUBERNETES_AUTH, 'tokenB');
-
-    worker.use(rest.all(requestPromise.url, (req: any) => req.passthrough()));
+      headers: {
+        [HEADER_KUBERNETES_CLUSTER]: 'cluster1',
+        [HEADER_KUBERNETES_AUTH]: 'tokenB',
+      },
+    });
 
     const response = await requestPromise;
 
@@ -562,19 +553,14 @@ describe('KubernetesProxy', () => {
       }),
     );
 
-    permissionApi.authorize.mockReturnValue(
-      Promise.resolve([{ result: AuthorizeResult.ALLOW }]),
-    );
+    const requestPromise = setupProxyPromise({
+      proxyPath: '/mountpath',
+      requestPath: '/api/v1/namespaces',
 
-    const router = Router();
-    router.use('/mountpath', proxy.createRequestHandler({ permissionApi }));
-    const app = express().use(router);
-
-    const requestPromise = request(app)
-      .get('/mountpath/api/v1/namespaces')
-      .set(HEADER_KUBERNETES_CLUSTER, 'local');
-
-    worker.use(rest.all(requestPromise.url, (req: any) => req.passthrough()));
+      headers: {
+        [HEADER_KUBERNETES_CLUSTER]: 'local',
+      },
+    });
 
     const response = await requestPromise;
 
@@ -608,10 +594,6 @@ describe('KubernetesProxy', () => {
       }),
     );
 
-    permissionApi.authorize.mockResolvedValue([
-      { result: AuthorizeResult.ALLOW },
-    ]);
-
     clusterSupplier.getClusters.mockResolvedValue([
       {
         name: 'cluster1',
@@ -625,16 +607,14 @@ describe('KubernetesProxy', () => {
       Error('some internal error'),
     );
 
-    const router = Router();
-    router.use('/mountpath', proxy.createRequestHandler({ permissionApi }));
-    router.use(errorHandler());
-    const app = express().use(router);
+    const requestPromise = setupProxyPromise({
+      proxyPath: '/mountpath',
+      requestPath: '/api/v1/namespaces',
 
-    const requestPromise = request(app)
-      .get('/mountpath/api/v1/namespaces')
-      .set(HEADER_KUBERNETES_CLUSTER, 'cluster1');
-
-    worker.use(rest.all(requestPromise.url, (req: any) => req.passthrough()));
+      headers: {
+        [HEADER_KUBERNETES_CLUSTER]: 'cluster1',
+      },
+    });
 
     const response = await requestPromise;
 
@@ -657,9 +637,7 @@ describe('KubernetesProxy', () => {
         },
       ),
     );
-    permissionApi.authorize.mockResolvedValue([
-      { result: AuthorizeResult.ALLOW },
-    ]);
+
     clusterSupplier.getClusters.mockResolvedValue([
       {
         name: 'cluster1',
@@ -667,19 +645,127 @@ describe('KubernetesProxy', () => {
         authProvider: '',
       },
     ]);
+
     authTranslator.decorateClusterDetailsWithAuth.mockImplementation(
       async x => x,
     );
-    const app = express().use(
-      Router().use('/mountpath', proxy.createRequestHandler({ permissionApi })),
-    );
 
-    const requestPromise = request(app)
-      .get('/mountpath/api/v1/namespaces')
-      .set(HEADER_KUBERNETES_CLUSTER, 'cluster1');
-    worker.use(rest.all(requestPromise.url, (req: any) => req.passthrough()));
+    const requestPromise = setupProxyPromise({
+      proxyPath: '/mountpath',
+      requestPath: '/api/v1/namespaces',
+
+      headers: {
+        [HEADER_KUBERNETES_CLUSTER]: 'cluster1',
+      },
+    });
+
     const response = await requestPromise;
 
     expect(response.status).toEqual(200);
+  });
+
+  describe('WebSocket', () => {
+    const proxyPath = '/proxy';
+    const proxyPort = 9000;
+    const wsPath = '/ws';
+    const wsPort = 9999;
+
+    let wsServer: WebSocketServer;
+    let expressApp: express.Express;
+    let expressServer: Server;
+
+    const eventPromiseFactory = (
+      ws: WebSocket,
+      event: 'connection' | 'open' | 'close' | 'error' | 'message',
+    ) => new Promise(resolve => ws.once(event, x => resolve(x?.toString())));
+
+    beforeAll(async () => {
+      await new Promise(resolve => {
+        expressApp = express().use(
+          Router()
+            .use(proxyPath, proxy.createRequestHandler({ permissionApi }))
+            .use(errorHandler()),
+        );
+
+        expressServer = expressApp.listen(proxyPort, '0.0.0.0', () => {
+          resolve(null);
+        });
+      });
+
+      wsServer = new WebSocketServer({ port: wsPort, path: wsPath });
+
+      wsServer.on('connection', (ws: WebSocket) => {
+        // send immediatly a feedback to the incoming connection
+        ws.send('connected');
+
+        // Echo message handling
+        ws.on('message', (message: string) => {
+          ws.send(message);
+        });
+      });
+
+      wsServer.on('error', console.error);
+    });
+
+    afterAll(() => {
+      wsServer.close();
+      expressServer.close();
+    });
+
+    // eslint-disable-next-line jest/no-done-callback
+    it('should proxy websocket connections', async () => {
+      clusterSupplier.getClusters.mockResolvedValue([
+        {
+          name: 'local',
+          url: `http://localhost:${wsPort}`,
+          serviceAccountToken: '',
+          authProvider: 'serviceAccount',
+        },
+      ] as ClusterDetails[]);
+
+      authTranslator.decorateClusterDetailsWithAuth.mockResolvedValue({
+        name: 'local',
+        url: `http://localhost:${wsPort}`,
+        serviceAccountToken: '',
+        authProvider: 'serviceAccount',
+      } as ClusterDetails);
+
+      const wsProxyAddress = `ws://localhost:${proxyPort}${proxyPath}${wsPath}`;
+      const wsAddress = `ws://localhost:${wsPort}${wsPath}`;
+
+      // Let this request through so it reaches the express router above
+      worker.use(
+        rest.all(wsAddress.replace('ws', 'http'), (req: any) =>
+          req.passthrough(),
+        ),
+        rest.all(wsProxyAddress.replace('ws', 'http'), (req: any) =>
+          req.passthrough(),
+        ),
+      );
+
+      // Prepopulate the proxy so the WebSocket upgrade can happen, result doesn't actually matter
+      const result = await fetch(wsProxyAddress.replace('ws', 'http'));
+      expect(result.ok).toBeFalsy();
+
+      const webSocket = new WebSocket(wsProxyAddress);
+
+      const connectMessagePromise = eventPromiseFactory(webSocket, 'message');
+
+      const openPromise = eventPromiseFactory(webSocket, 'open');
+      await openPromise;
+
+      const connectMessage = await connectMessagePromise;
+      expect(connectMessage).toBe('connected');
+
+      const echoMessagePromise = eventPromiseFactory(webSocket, 'message');
+      webSocket.send('echo');
+
+      const echoMessage = await echoMessagePromise;
+      expect(echoMessage).toBe('echo');
+
+      const closePromise = eventPromiseFactory(webSocket, 'close');
+      webSocket.close();
+      await closePromise;
+    });
   });
 });
