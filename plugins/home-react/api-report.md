@@ -55,7 +55,7 @@ export type ComponentRenderer = {
 
 // @public
 export function createCardExtension<T>(options: {
-  title: string;
+  title?: string;
   components: () => Promise<ComponentParts>;
   name?: string;
   description?: string;
@@ -65,14 +65,14 @@ export function createCardExtension<T>(options: {
 
 // @public (undocumented)
 export type RendererProps = {
-  title: string;
+  title?: string;
 } & ComponentParts;
 
 // @public (undocumented)
 export const SettingsModal: (props: {
   open: boolean;
   close: Function;
-  componentName: string;
+  componentName?: string;
   children: JSX.Element;
 }) => JSX.Element;
 ```
