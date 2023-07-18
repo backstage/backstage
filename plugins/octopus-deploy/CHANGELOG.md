@@ -1,5 +1,16 @@
 # @backstage/plugin-octopus-deploy
 
+## 0.2.2
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/theme@0.4.1
+  - @backstage/plugin-catalog-react@1.8.0
+  - @backstage/core-components@0.13.3
+  - @backstage/core-plugin-api@1.5.3
+  - @backstage/catalog-model@1.4.1
+
 ## 0.2.2-next.2
 
 ### Patch Changes

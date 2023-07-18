@@ -1,5 +1,15 @@
 # @backstage/plugin-airbrake-backend
 
+## 0.2.20
+
+### Patch Changes
+
+- a95bb64e461a: Added support for the [new backend system](https://backstage.io/docs/backend-system/)
+- Updated dependencies
+  - @backstage/backend-common@0.19.1
+  - @backstage/backend-plugin-api@0.5.4
+  - @backstage/config@1.0.8
+
 ## 0.2.20-next.1
 
 ### Patch Changes

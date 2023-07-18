@@ -1,5 +1,23 @@
 # @backstage/plugin-home
 
+## 0.5.4
+
+### Patch Changes
+
+- 88c62048fcbd: fix: update plugin home dependency for `@rjsf/material-ui` to `@rjsf/material-ui-v5`
+- 0b89ca8ce24a: Add possibility to customize the settings widget for different
+  properties by using the `uiSchema` provided by the json-schema.
+  More information here: https://rjsf-team.github.io/react-jsonschema-form/docs/api-reference/uiSchema
+- b8ebd3d2e4e5: Fix missing column breakpoints in `CustomHompageGrid`
+- Updated dependencies
+  - @backstage/theme@0.4.1
+  - @backstage/plugin-catalog-react@1.8.0
+  - @backstage/core-components@0.13.3
+  - @backstage/plugin-home-react@0.1.1
+  - @backstage/core-plugin-api@1.5.3
+  - @backstage/catalog-model@1.4.1
+  - @backstage/config@1.0.8
+
 ## 0.5.4-next.2
 
 ### Patch Changes

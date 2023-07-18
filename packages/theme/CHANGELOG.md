@@ -1,5 +1,16 @@
 # @backstage/theme
 
+## 0.4.1
+
+### Patch Changes
+
+- 4f28914d9f0e: Overwrite `PaletteOptions` & `ThemeOptions` type to allow use of `createTheme` from `@backstage/theme` as well as `@material-ui/core/styles` with the same type. Also replaced the default `CSSBaseline` with v4 instead of v5 for better backwards compatibility for now.
+- 41c5aa0ab589: Applying the modified `theme.spacing` method only to overrides instead of replacing it in the whole theme.
+- 9395baa82413: You can now customize the typography of your theme by passing in your own custom typography defaults
+- 8174cf4c0edf: Fixing MUI / Material UI references
+- f0444f094396: Removed the hard coded color and background color in the `MuiChip` overrides so that they work better with custom themes
+- 874c3e8bf909: Override the spacing to a v5 compliant method
+
 ## 0.4.1-next.1
 
 ### Patch Changes

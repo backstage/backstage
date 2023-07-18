@@ -1,5 +1,26 @@
 # @backstage/plugin-catalog-backend-module-github
 
+## 0.3.2
+
+### Patch Changes
+
+- b01b869d7158: fixed event handler to respect configured organization
+- 68531cc70e1f: Break some internal circular import chains
+- Updated dependencies
+  - @backstage/errors@1.2.1
+  - @backstage/backend-common@0.19.1
+  - @backstage/plugin-catalog-backend@1.11.0
+  - @backstage/plugin-catalog-node@1.4.0
+  - @backstage/backend-plugin-api@0.5.4
+  - @backstage/backend-tasks@0.5.4
+  - @backstage/catalog-client@1.4.3
+  - @backstage/catalog-model@1.4.1
+  - @backstage/config@1.0.8
+  - @backstage/integration@1.5.1
+  - @backstage/types@1.1.0
+  - @backstage/plugin-catalog-common@1.0.15
+  - @backstage/plugin-events-node@0.2.8
+
 ## 0.3.2-next.1
 
 ### Patch Changes

@@ -1,5 +1,21 @@
 # @backstage/plugin-lighthouse
 
+## 0.4.5
+
+### Patch Changes
+
+- cb200dbb8038: Added more verbose components (used to render `null`) when no audits for a website corresponding to the provided url were found.
+  Added `Create New Audit` button for the `AuditListForEntity` component used by `EntityLighthouseContent` and `EmbeddedRouter`.
+  Removed error alert from `errorApi` if error was due to no audits being found for a website (empty database query result).
+- Updated dependencies
+  - @backstage/theme@0.4.1
+  - @backstage/plugin-catalog-react@1.8.0
+  - @backstage/core-components@0.13.3
+  - @backstage/core-plugin-api@1.5.3
+  - @backstage/catalog-model@1.4.1
+  - @backstage/config@1.0.8
+  - @backstage/plugin-lighthouse-common@0.1.2
+
 ## 0.4.5-next.2
 
 ### Patch Changes
