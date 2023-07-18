@@ -40,6 +40,7 @@ import {
   DevToolsInfo,
   PackageDependency,
 } from '@backstage/plugin-devtools-common';
+import * as autodetect from '@backstage/autodetect';
 
 const PACKAGES_GLOBAL = '__backstage_detected_packages__';
 
@@ -77,7 +78,7 @@ const copyToClipboard = ({ about }: { about: DevToolsInfo | undefined }) => {
 export const InfoContent = () => {
   const classes = useStyles();
   const { about, loading, error } = useInfo();
-
+  console.log('ooo', autodetect.getAvailablePlugins());
   const availablePlugins: PackageDependency[] = (window as any)[PACKAGES_GLOBAL]
     ? (
         (window as any)[PACKAGES_GLOBAL].modules as Array<Record<string, any>>
