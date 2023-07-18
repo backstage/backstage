@@ -1,5 +1,21 @@
 # @backstage/plugin-kubernetes
 
+## 0.9.3
+
+### Patch Changes
+
+- d62fc3fe85ba: Make pod drawer headings consistent
+- cc27fa4a1aac: Changed Google cloud auth scope to read-only.
+- Updated dependencies
+  - @backstage/theme@0.4.1
+  - @backstage/errors@1.2.1
+  - @backstage/plugin-catalog-react@1.8.0
+  - @backstage/core-components@0.13.3
+  - @backstage/core-plugin-api@1.5.3
+  - @backstage/catalog-model@1.4.1
+  - @backstage/config@1.0.8
+  - @backstage/plugin-kubernetes-common@0.6.5
+
 ## 0.9.3-next.2
 
 ### Patch Changes

@@ -1,5 +1,16 @@
 # @backstage/core-plugin-api
 
+## 1.5.3
+
+### Patch Changes
+
+- 8174cf4c0edf: Fixing MUI / Material UI references
+- 13426ebd1235: Change `IconComponent` type to be compatible with Material UI v5 icons.
+- Updated dependencies
+  - @backstage/config@1.0.8
+  - @backstage/types@1.1.0
+  - @backstage/version-bridge@1.0.4
+
 ## 1.5.3-next.1
 
 ### Patch Changes

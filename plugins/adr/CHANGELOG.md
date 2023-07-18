@@ -1,5 +1,21 @@
 # @backstage/plugin-adr
 
+## 0.6.3
+
+### Patch Changes
+
+- 2b4513abb784: fixed error with date parsing.
+- Updated dependencies
+  - @backstage/theme@0.4.1
+  - @backstage/plugin-catalog-react@1.8.0
+  - @backstage/core-components@0.13.3
+  - @backstage/core-plugin-api@1.5.3
+  - @backstage/plugin-adr-common@0.2.11
+  - @backstage/catalog-model@1.4.1
+  - @backstage/integration-react@1.1.15
+  - @backstage/plugin-search-common@1.2.5
+  - @backstage/plugin-search-react@1.6.3
+
 ## 0.6.3-next.2
 
 ### Patch Changes

@@ -1,5 +1,16 @@
 # @backstage/plugin-azure-devops-backend
 
+## 0.3.26
+
+### Patch Changes
+
+- ae261e79d256: Added alpha support for the [new backend system](https://backstage.io/docs/backend-system/)
+- Updated dependencies
+  - @backstage/backend-common@0.19.1
+  - @backstage/backend-plugin-api@0.5.4
+  - @backstage/config@1.0.8
+  - @backstage/plugin-azure-devops-common@0.3.0
+
 ## 0.3.26-next.1
 
 ### Patch Changes

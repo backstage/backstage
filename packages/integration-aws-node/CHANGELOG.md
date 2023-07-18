@@ -1,5 +1,13 @@
 # @backstage/integration-aws-node
 
+## 0.1.5
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/errors@1.2.1
+  - @backstage/config@1.0.8
+
 ## 0.1.5-next.0
 
 ### Patch Changes

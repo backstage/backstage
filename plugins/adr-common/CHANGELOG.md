@@ -1,5 +1,15 @@
 # @backstage/plugin-adr-common
 
+## 0.2.11
+
+### Patch Changes
+
+- 2b4513abb784: fixed error with date parsing.
+- Updated dependencies
+  - @backstage/catalog-model@1.4.1
+  - @backstage/integration@1.5.1
+  - @backstage/plugin-search-common@1.2.5
+
 ## 0.2.11-next.1
 
 ### Patch Changes
