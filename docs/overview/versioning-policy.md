@@ -23,10 +23,6 @@ together. Think of it as a toolbox that comes with batteries included, but you
 can always add more plugins and libraries from the open source ecosystem as well
 as build your own.
 
-## Release Schedule
-
-Backstage releases occur on a monthly basis, specifically on the second Tuesday of each month. The first release took place in March 2022.
-
 ## Release Lines
 
 The Backstage project is structured around two different release lines, a
@@ -36,7 +32,7 @@ their own release cadence and versioning policy.
 
 ## Main Release Line
 
-Release cadence: Monthly
+Release cadence: Monthly, specifically on the third Tuesday of each month. The first release took place in March 2022.
 
 The main release line in versioned with a major, minor and patch version but
 does **not** adhere to [semver](https://semver.org). The version format is
