@@ -56,7 +56,7 @@
     "@envelop/graphql-modules": "^5.0.0",
     "@faker-js/faker": "^7.2.0",
     "@graphql-codegen/add": "^5.0.0",
-    "@graphql-codegen/cli": "4.0.0",
+    "@graphql-codegen/cli": "^4.0.0",
     "@graphql-codegen/graphql-modules-preset": "^4.0.0",
     "@graphql-codegen/plugin-helpers": "^5.0.0",
     "@graphql-codegen/schema-ast": "^4.0.0",
