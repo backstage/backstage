@@ -19,18 +19,10 @@ import {
   WelcomeTitle,
   HeaderWorldClock,
   ClockConfig,
-  HomePageStarredEntities,
   CustomHomepageGrid,
-  HomePageToolkit,
-  HomePageCompanyLogo,
 } from '@backstage/plugin-home';
 import { Content, Header, Page } from '@backstage/core-components';
-import { HomePageSearchBar } from '@backstage/plugin-search';
-import { HomePageCalendar } from '@backstage/plugin-gcalendar';
-import { MicrosoftCalendarCard } from '@backstage/plugin-microsoft-calendar';
 import React from 'react';
-import HomeIcon from '@material-ui/icons/Home';
-import { HomePagePagerDutyCard } from '@backstage/plugin-pagerduty';
 
 const clockConfigs: ClockConfig[] = [
   {
@@ -59,25 +51,11 @@ const timeFormat: Intl.DateTimeFormatOptions = {
 
 const defaultConfig = [
   {
-    component: 'CompanyLogo',
-    x: 0,
+    component: <HomePageRandomJoke />,
+    x: 2,
     y: 0,
-    width: 12,
-    height: 1,
-  },
-  {
-    component: 'WelcomeTitle',
-    x: 0,
-    y: 1,
-    width: 12,
-    height: 1,
-  },
-  {
-    component: 'HomePageSearchBar',
-    x: 0,
-    y: 2,
-    width: 12,
-    height: 1,
+    height: 2,
+    width: 8,
   },
 ];
 
@@ -91,23 +69,7 @@ export const homePage = (
     </Header>
     <Content>
       <CustomHomepageGrid config={defaultConfig}>
-        <HomePageSearchBar />
         <HomePageRandomJoke />
-        <HomePageCalendar />
-        <HomePagePagerDutyCard name="Rota" />
-        <MicrosoftCalendarCard />
-        <HomePageStarredEntities />
-        <HomePageCompanyLogo />
-        <WelcomeTitle />
-        <HomePageToolkit
-          tools={[
-            {
-              url: 'https://backstage.io',
-              label: 'Backstage Homepage',
-              icon: <HomeIcon />,
-            },
-          ]}
-        />
       </CustomHomepageGrid>
     </Content>
   </Page>
