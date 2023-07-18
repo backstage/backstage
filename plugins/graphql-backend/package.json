@@ -33,7 +33,6 @@
     "clean": "backstage-cli package clean"
   },
   "dependencies": {
-    "@apollo/server": "^4.0.0",
     "@backstage/backend-common": "workspace:^",
     "@backstage/backend-plugin-api": "workspace:^",
     "@backstage/catalog-model": "workspace:^",
@@ -45,7 +44,7 @@
     "express-promise-router": "^4.1.0",
     "graphql": "^16.6.0",
     "graphql-modules": "^2.1.0",
-    "graphql-yoga": "^3.3.0",
+    "graphql-yoga": "^4.0.3",
     "helmet": "^6.0.0"
   },
   "devDependencies": {
