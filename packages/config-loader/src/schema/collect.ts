@@ -190,7 +190,7 @@ async function compileTsSchemas(paths: string[]) {
         // This enables the use of these tags in TSDoc comments
         {
           required: true,
-          validationKeywords: ['visibility', 'deprecated'],
+          validationKeywords: ['visibility', 'deepVisibility', 'deprecated'],
         },
         [path.split(sep).join('/')], // Unix paths are expected for all OSes here
       ) as JsonObject | null;
