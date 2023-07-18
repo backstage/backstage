@@ -14,9 +14,16 @@
  * limitations under the License.
  */
 
+type Modules = Array<{
+  name: string;
+  module: object; // Loaded Webpack Module of Backstage Plugin
+}>;
+
 function getAvailablePlugins() {
-  return __webpack_require__(
+  const { modules }: { modules: Modules } = __webpack_require__(
     './node_modules/backstage-autodetected-plugins.js',
   );
+  return modules;
 }
+
 export { getAvailablePlugins };
