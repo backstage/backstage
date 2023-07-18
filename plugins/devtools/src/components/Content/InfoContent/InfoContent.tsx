@@ -79,7 +79,7 @@ export const InfoContent = () => {
   const { about, loading, error } = useInfo();
   const plugins = autodetect.getAvailablePlugins();
   const availablePlugins: PackageDependency[] = (
-    plugins.modules as Array<Record<string, any>>
+    plugins as Array<Record<string, any>>
   ).map(({ name, module }) => {
     const pluginImpl: any = Object.values(module).find((v: any) => !!v?.getId);
 
