@@ -29,8 +29,6 @@ import {
   GraphiQLPage,
 } from '../src';
 
-console.log('modules', window.__backstage_detected_packages__.modules);
-
 createDevApp()
   .registerPlugin(graphiqlPlugin)
   .registerApi({
