@@ -30,6 +30,7 @@ export type BundlingOptions = {
 export type ServeOptions = BundlingPathsOptions & {
   checksEnabled: boolean;
   configPaths: string[];
+  verifyVersions?: boolean;
 };
 
 export type BuildOptions = BundlingPathsOptions & {
