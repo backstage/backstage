@@ -18,7 +18,7 @@ import Box from '@material-ui/core/Box';
 import Button from '@material-ui/core/Button';
 import { makeStyles } from '@material-ui/core/styles';
 import Typography from '@material-ui/core/Typography';
-import React from 'react';
+import React, { createContext, useContext } from 'react';
 
 import { CodeSnippet } from '../CodeSnippet';
 import { Link } from '../Link';
@@ -42,9 +42,14 @@ const ANNOTATION_LINE = COMPONENT_YAML_TEMPLATE.split('\n').findIndex(line =>
   ANNOTATION_REGEXP.test(line),
 );
 
+export type LinkData = Record<string, string>;
+
+export const LinkContext = createContext<LinkData>({});
+
 type Props = {
   annotation: string | string[];
   readMoreUrl?: string;
+  readMoreUrlKey?: string;
 };
 
 export type MissingAnnotationEmptyStateClassKey = 'code';
@@ -93,9 +98,11 @@ function generateDescription(annotations: string[]) {
 }
 
 export function MissingAnnotationEmptyState(props: Props) {
+  const contextLinks = useContext(LinkContext);
   const { annotation, readMoreUrl } = props;
   const annotations = Array.isArray(annotation) ? annotation : [annotation];
   const url =
+    contextLinks[props.readMoreUrlKey || ''] ||
     readMoreUrl ||
     'https://backstage.io/docs/features/software-catalog/well-known-annotations';
   const classes = useStyles();
