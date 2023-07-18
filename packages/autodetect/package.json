@@ -27,5 +27,8 @@
   },
   "files": [
     "dist"
-  ]
+  ],
+  "dependencies": {
+    "@backstage/core-plugin-api": "workspace:^"
+  }
 }

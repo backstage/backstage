@@ -3340,6 +3340,7 @@ __metadata:
   resolution: "@backstage/autodetect@workspace:packages/autodetect"
   dependencies:
     "@backstage/cli": "workspace:^"
+    "@backstage/core-plugin-api": "workspace:^"
     "@testing-library/jest-dom": ^5.10.1
   languageName: unknown
   linkType: soft

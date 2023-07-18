@@ -77,16 +77,15 @@ export const InfoContent = () => {
   const classes = useStyles();
   const { about, loading, error } = useInfo();
   const plugins = autodetect.getAvailablePlugins();
-  const availablePlugins: PackageDependency[] = (
-    plugins as Array<Record<string, any>>
-  ).map(({ name, module }) => {
-    const pluginImpl: any = Object.values(module).find((v: any) => !!v?.getId);
 
-    return {
-      name,
-      versions: (pluginImpl?.getId() as string) || '',
-    };
-  });
+  const availablePlugins: PackageDependency[] = plugins.map(
+    ({ name, components }) => {
+      return {
+        name,
+        versions: Object.keys(components).toString(),
+      };
+    },
+  );
   if (loading) {
     return <Progress />;
   } else if (error) {

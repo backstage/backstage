@@ -14,16 +14,61 @@
  * limitations under the License.
  */
 
-type Modules = Array<{
-  name: string;
-  module: object; // Loaded Webpack Module of Backstage Plugin
-}>;
+import { BackstagePlugin } from '@backstage/core-plugin-api';
 
-function getAvailablePlugins() {
-  const { modules }: { modules: Modules } = __webpack_require__(
+/**
+ * @public
+ */
+type DetectedPlugin = {
+  name: string;
+  plugin: BackstagePlugin;
+  components: Record<string, any>;
+};
+
+type DetectedModule = {
+  name: string;
+  module: Record<string, any>;
+};
+
+/**
+ * @public
+ */
+function getAvailablePlugins(): DetectedPlugin[] {
+  const { modules } = __webpack_require__(
     './node_modules/backstage-autodetected-plugins.js',
+  ) as { modules: DetectedModule[] };
+
+  return modules
+    .map(splitPluginFromComponents)
+    .filter((m): m is DetectedPlugin => !!m.plugin);
+}
+
+function splitPluginFromComponents({ module, name }: DetectedModule) {
+  return Object.entries(module).reduce(
+    (acc, [k, v]) => {
+      if (!isBackstagePlugin(v)) {
+        acc.components[k] = v;
+      } else {
+        acc.plugin = v;
+      }
+      return acc;
+    },
+    { name, components: {} } as {
+      name: string;
+      plugin?: BackstagePlugin;
+      components: Record<string, any>;
+    },
   );
-  return modules;
+}
+
+function isBackstagePlugin(obj: Record<string, any>): obj is BackstagePlugin {
+  return (
+    typeof obj.getId !== 'undefined' &&
+    typeof obj.getApis !== 'undefined' &&
+    typeof obj.getFeatureFlags !== 'undefined' &&
+    typeof obj.provide !== 'undefined'
+  );
 }
 
 export { getAvailablePlugins };
+export type { DetectedPlugin };
