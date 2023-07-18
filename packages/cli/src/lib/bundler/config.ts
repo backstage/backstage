@@ -40,7 +40,6 @@ import pickBy from 'lodash/pickBy';
 import yn from 'yn';
 import { readEntryPoints } from '../entryPoints';
 
-const PACKAGES_GLOBAL = '__backstage_detected_packages__';
 const BUILD_CACHE_ENV_VAR = 'BACKSTAGE_CLI_EXPERIMENTAL_BUILD_CACHE';
 
 export function resolveBaseUrl(config: Config): URL {
@@ -136,7 +135,7 @@ export async function createConfig(
 
     plugins.push(
       new VirtualModulesPlugin({
-        [`node_modules/${PACKAGES_GLOBAL}.js`]: `window['${PACKAGES_GLOBAL}'] = { modules: [${requirePackageScript}] }`,
+        'node_modules/backstage-autodetected-plugins.js': `module.exports = { modules: [${requirePackageScript}] };`,
       }),
     );
   }
@@ -178,7 +177,9 @@ export async function createConfig(
     devtool: isDev ? 'eval-cheap-module-source-map' : 'source-map',
     context: paths.targetPath,
     entry: [
-      ...(extraPackages.length > 0 ? [`${PACKAGES_GLOBAL}.js`] : []),
+      ...(extraPackages.length > 0
+        ? [`backstage-autodetected-plugins.js`]
+        : []),
       paths.targetEntry,
     ],
     resolve: {
