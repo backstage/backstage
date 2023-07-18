@@ -23,6 +23,10 @@ together. Think of it as a toolbox that comes with batteries included, but you
 can always add more plugins and libraries from the open source ecosystem as well
 as build your own.
 
+## Release Schedule
+
+Backstage releases occur on a monthly basis, specifically on the second Tuesday of each month. The first release took place in March 2022.
+
 ## Release Lines
 
 The Backstage project is structured around two different release lines, a
