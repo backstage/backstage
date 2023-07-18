@@ -43,8 +43,6 @@ import {
 } from '@backstage/plugin-devtools-common';
 import * as autodetect from '@backstage/autodetect';
 
-const PACKAGES_GLOBAL = '__backstage_detected_packages__';
-
 const useStyles = makeStyles((theme: Theme) =>
   createStyles({
     paperStyle: {
@@ -79,22 +77,17 @@ const copyToClipboard = ({ about }: { about: DevToolsInfo | undefined }) => {
 export const InfoContent = () => {
   const classes = useStyles();
   const { about, loading, error } = useInfo();
-  console.log('ooo', autodetect.getAvailablePlugins());
-  const availablePlugins: PackageDependency[] = (window as any)[PACKAGES_GLOBAL]
-    ? (
-        (window as any)[PACKAGES_GLOBAL].modules as Array<Record<string, any>>
-      ).map(({ name, module }) => {
-        const pluginImpl: any = Object.values(module).find(
-          (v: any) => !!v?.getId,
-        );
+  const plugins = autodetect.getAvailablePlugins();
+  const availablePlugins: PackageDependency[] = (
+    plugins.modules as Array<Record<string, any>>
+  ).map(({ name, module }) => {
+    const pluginImpl: any = Object.values(module).find((v: any) => !!v?.getId);
 
-        return {
-          name,
-          versions: (pluginImpl?.getId() as string) || '',
-        };
-      })
-    : [];
-
+    return {
+      name,
+      versions: (pluginImpl?.getId() as string) || '',
+    };
+  });
   if (loading) {
     return <Progress />;
   } else if (error) {
