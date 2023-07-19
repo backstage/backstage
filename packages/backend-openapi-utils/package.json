@@ -24,17 +24,21 @@
     "postpack": "backstage-cli package postpack"
   },
   "devDependencies": {
-    "@backstage/cli": "workspace:^"
+    "@backstage/cli": "workspace:^",
+    "supertest": "^6.1.3"
   },
   "files": [
     "dist"
   ],
   "dependencies": {
+    "@backstage/errors": "workspace:^",
     "@types/express": "^4.17.6",
     "@types/express-serve-static-core": "^4.17.5",
     "express": "^4.17.1",
+    "express-openapi-validator": "^5.0.4",
     "express-promise-router": "^4.1.0",
     "json-schema-to-ts": "^2.6.2",
+    "lodash": "^4.17.21",
     "openapi3-ts": "^3.1.2"
   }
 }

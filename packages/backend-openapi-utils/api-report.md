@@ -7,10 +7,12 @@ import type { ContentObject } from 'openapi3-ts';
 import type core from 'express-serve-static-core';
 import { FromSchema } from 'json-schema-to-ts';
 import { JSONSchema7 } from 'json-schema-to-ts';
+import { middleware } from 'express-openapi-validator';
 import type { OpenAPIObject } from 'openapi3-ts';
 import type { ParameterObject } from 'openapi3-ts';
 import type { ReferenceObject } from 'openapi3-ts';
 import type { RequestBodyObject } from 'openapi3-ts';
+import { RequestHandler } from 'express';
 import type { ResponseObject } from 'openapi3-ts';
 import { Router } from 'express';
 import type { SchemaObject } from 'openapi3-ts';
@@ -79,6 +81,15 @@ type CookieSchema<
   Method extends DocPathMethod<Doc, Path>,
 > = ParametersSchema<Doc, DocPath<Doc, Path>, Method, ImmutableCookieObject>;
 
+// @public
+export function createValidatedOpenApiRouter<T extends RequiredDoc>(
+  spec: T,
+  options?: {
+    validatorOptions?: Partial<Parameters<typeof middleware>['0']>;
+    middleware?: RequestHandler[];
+  },
+): ApiRouter<T>;
+
 // @public (undocumented)
 type DiscriminateUnion<T, K extends keyof T, V extends T[K]> = Extract<
   T,
@@ -117,15 +128,18 @@ type DocParameters<
   Doc extends RequiredDoc,
   Path extends Extract<keyof Doc['paths'], string>,
   Method extends keyof Doc['paths'][Path],
-> = DocOperation<Doc, Path, Method>['parameters'] extends ReadonlyArray<any>
-  ? {
-      [Index in keyof DocOperation<
-        Doc,
-        Path,
-        Method
-      >['parameters']]: DocParameter<Doc, Path, Method, Index>;
-    }
-  : never;
+> = {
+  [Index in keyof DocOperation<
+    Doc,
+    Path,
+    Method
+  >['parameters'] as FromNumberStringToNumber<Index>]: DocParameter<
+    Doc,
+    Path,
+    Method,
+    Index
+  >;
+};
 
 // @public
 type DocPath<
@@ -203,6 +217,10 @@ interface DocRequestMatcher<
 
 // @public (undocumented)
 type Filter<T, U> = T extends U ? T : never;
+
+// @public
+type FromNumberStringToNumber<NumberString extends string | number | symbol> =
+  NumberString extends `${infer R extends number}` ? R : never;
 
 // @public (undocumented)
 type FullMap<
@@ -332,6 +350,7 @@ declare namespace internal {
     ImmutablePathObject,
     ImmutableSchemaObject,
     DocParameter,
+    FromNumberStringToNumber,
     DocParameters,
     ParameterSchema,
     MapToSchema,
@@ -425,17 +444,15 @@ type ParametersSchema<
   Path extends Extract<keyof Doc['paths'], string>,
   Method extends keyof Doc['paths'][Path],
   FilterType extends ImmutableParameterObject,
-> = number extends keyof DocParameters<Doc, Path, Method>
-  ? MapToSchema<
-      Doc,
-      FullMap<
-        MapDiscriminatedUnion<
-          Filter<DocParameters<Doc, Path, Method>[number], FilterType>,
-          'name'
-        >
-      >
+> = MapToSchema<
+  Doc,
+  FullMap<
+    MapDiscriminatedUnion<
+      Filter<ValueOf<DocParameters<Doc, Path, Method>>, FilterType>,
+      'name'
     >
-  : never;
+  >
+>;
 
 // @public (undocumented)
 type PathDoc = Pick<ImmutableOpenAPIObject, 'paths'>;
