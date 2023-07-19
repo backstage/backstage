@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-declare module 'backstage-autodetected-plugins' {
+declare module '__backstage-autodetected-plugins__' {
   type DetectedModule = {
     name: string;
     module: Record<string, any>;
