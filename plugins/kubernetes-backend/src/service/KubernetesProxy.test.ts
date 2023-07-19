@@ -749,8 +749,7 @@ describe('KubernetesProxy', () => {
 
       const connectMessagePromise = eventPromiseFactory(webSocket, 'message');
 
-      const openPromise = eventPromiseFactory(webSocket, 'open');
-      await openPromise;
+      await eventPromiseFactory(webSocket, 'open');
 
       const connectMessage = await connectMessagePromise;
       expect(connectMessage).toBe('connected');
