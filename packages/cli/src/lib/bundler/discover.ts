@@ -33,7 +33,7 @@ export async function writeDetectedPluginsModule(options: Options) {
     path.join(
       cliPaths.targetRoot,
       'node_modules',
-      'backstage-autodetected-plugins.js',
+      '__backstage-autodetected-plugins__.js',
     ),
     `export const modules = [${requirePackageScript}];`,
   );

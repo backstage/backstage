@@ -17,7 +17,7 @@
 import { BackstagePlugin } from '@backstage/core-plugin-api';
 
 // eslint-disable-next-line @backstage/no-undeclared-imports
-import { modules, DetectedModule } from 'backstage-autodetected-plugins';
+import { modules, DetectedModule } from '__backstage-autodetected-plugins__';
 
 /**
  * @public
