@@ -14,11 +14,11 @@
  * limitations under the License.
  */
 
-import fs from 'fs-extra';
 import webpack from 'webpack';
 import WebpackDevServer from 'webpack-dev-server';
 import openBrowser from 'react-dev-utils/openBrowser';
 import uniq from 'lodash/uniq';
+import fs from 'fs-extra';
 
 import { createConfig, resolveBaseUrl } from './config';
 import { ServeOptions } from './types';
