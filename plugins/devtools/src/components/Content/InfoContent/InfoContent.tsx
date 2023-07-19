@@ -40,7 +40,7 @@ import {
   DevToolsInfo,
   PackageDependency,
 } from '@backstage/plugin-devtools-common';
-import * as autodetect from '@backstage/autodetect';
+import { getAvailablePlugins } from '@backstage/autodetect';
 
 const useStyles = makeStyles((theme: Theme) =>
   createStyles({
@@ -76,7 +76,7 @@ const copyToClipboard = ({ about }: { about: DevToolsInfo | undefined }) => {
 export const InfoContent = () => {
   const classes = useStyles();
   const { about, loading, error } = useInfo();
-  const plugins = autodetect.getAvailablePlugins();
+  const plugins = getAvailablePlugins();
 
   const availablePlugins: PackageDependency[] = plugins.map(
     ({ name, components }) => {

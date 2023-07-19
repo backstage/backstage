@@ -16,29 +16,22 @@
 
 import { BackstagePlugin } from '@backstage/core-plugin-api';
 
+// eslint-disable-next-line @backstage/no-undeclared-imports
+import { modules, DetectedModule } from 'backstage-autodetected-plugins';
+
 /**
  * @public
  */
-type DetectedPlugin = {
+export type DetectedPlugin = {
   name: string;
   plugin: BackstagePlugin;
   components: Record<string, any>;
 };
 
-type DetectedModule = {
-  name: string;
-  module: Record<string, any>;
-};
-
 /**
  * @public
  */
-function getAvailablePlugins(): DetectedPlugin[] {
-  // eslint-disable-next-line @backstage/no-undeclared-imports
-  const { modules } = require('backstage-autodetected-plugins') as {
-    modules: DetectedModule[];
-  };
-
+export function getAvailablePlugins(): DetectedPlugin[] {
   return modules
     .map(splitPluginFromComponents)
     .filter((m): m is DetectedPlugin => !!m.plugin);
@@ -70,6 +63,3 @@ function isBackstagePlugin(obj: Record<string, any>): obj is BackstagePlugin {
     typeof obj.provide !== 'undefined'
   );
 }
-
-export { getAvailablePlugins };
-export type { DetectedPlugin };
