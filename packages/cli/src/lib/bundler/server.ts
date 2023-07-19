@@ -42,9 +42,8 @@ export async function serveBundle(options: ServeOptions) {
 
   // TODO: proper
   // Assumption for config string based on https://github.com/backstage/backstage/issues/18372 ^
-  const packageDetectionMode = options.fullConfig.getOptional(
-    'app.experimental.packages',
-  );
+  const packageDetectionMode =
+    options.fullConfig.getOptional('app.experimental.packages') || 'all';
   const extraPackages: string[] = [];
   if (packageDetectionMode === 'all') {
     for (const depName of Object.keys(pkg.dependencies ?? {})) {
