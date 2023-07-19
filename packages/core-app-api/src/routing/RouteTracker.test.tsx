@@ -39,6 +39,7 @@ describe('RouteTracker', () => {
   });
   const plugin0 = createPlugin({ id: 'home' });
   const plugin1 = createPlugin({ id: 'plugin1' });
+  const plugin2 = createPlugin({ id: 'plugin2' });
 
   const routeObjects: BackstageRouteObject[] = [
     {
@@ -61,7 +62,7 @@ describe('RouteTracker', () => {
       path: '/path2/:param',
       element: <div>hi there</div>,
       routeRefs: new Set([routeRef2]),
-      plugins: new Set(),
+      plugins: new Set([plugin2]),
       caseSensitive: false,
       children: [MATCH_ALL_ROUTE],
     },
@@ -124,7 +125,7 @@ describe('RouteTracker', () => {
       },
       context: {
         extension: 'App',
-        pluginId: 'root',
+        pluginId: 'plugin2',
         routeRef: 'route2',
       },
       subject: '/path2/hello',
@@ -179,7 +180,7 @@ describe('RouteTracker', () => {
     });
   });
 
-  it('should return default context when no plugin/routeRef is on the route', async () => {
+  it('should return default context when it would have otherwise matched on the root path', async () => {
     render(
       <MemoryRouter initialEntries={['/not-routable-extension']}>
         <TestApiProvider apis={[[analyticsApiRef, mockedAnalytics]]}>
@@ -203,6 +204,30 @@ describe('RouteTracker', () => {
         routeRef: 'unknown',
       },
       subject: '/not-routable-extension',
+      value: undefined,
+    });
+  });
+
+  it('should return parent route context on navigating to a sub-route', async () => {
+    render(
+      <MemoryRouter initialEntries={['/path2/param-value/sub-route']}>
+        <TestApiProvider apis={[[analyticsApiRef, mockedAnalytics]]}>
+          <RouteTracker routeObjects={routeObjects} />
+        </TestApiProvider>
+      </MemoryRouter>,
+    );
+
+    expect(mockedAnalytics.captureEvent).toHaveBeenCalledWith({
+      action: 'navigate',
+      attributes: {
+        param: 'param-value',
+      },
+      context: {
+        extension: 'App',
+        pluginId: 'plugin2',
+        routeRef: 'route2',
+      },
+      subject: '/path2/param-value/sub-route',
       value: undefined,
     });
   });
