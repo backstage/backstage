@@ -26,23 +26,18 @@ import { isChildPath } from '@backstage/cli-common';
 import { getPackages } from '@manypkg/get-packages';
 import { optimization } from './optimization';
 import { Config } from '@backstage/config';
-import {
-  BundlingPaths,
-  BundlingPathsOptions,
-  resolveBundlingPaths,
-} from './paths';
+import { BundlingPaths } from './paths';
 import { transforms } from './transforms';
 import { LinkedPackageResolvePlugin } from './LinkedPackageResolvePlugin';
 import { BundlingOptions, BackendBundlingOptions } from './types';
 import { version } from '../../lib/version';
 import { paths as cliPaths } from '../../lib/paths';
-import { BackstagePackage, BackstagePackageJson } from '@backstage/cli-node';
+import { BackstagePackage } from '@backstage/cli-node';
 import { runPlain } from '../run';
 import ESLintPlugin from 'eslint-webpack-plugin';
 import pickBy from 'lodash/pickBy';
 import yn from 'yn';
 import { readEntryPoints } from '../entryPoints';
-import path from 'path';
 
 const BUILD_CACHE_ENV_VAR = 'BACKSTAGE_CLI_EXPERIMENTAL_BUILD_CACHE';
 
@@ -130,24 +125,6 @@ export async function createConfig(
         config: frontendConfig,
       },
     }),
-  );
-
-  const detectedPlugins = await detectPlugins({
-    config: options.fullConfig,
-    entry: options.entry,
-    targetDir: options.targetDir,
-  });
-  const requirePackageScript = detectedPlugins
-    ?.map(pkg => `{name: '${pkg}', module: require('${pkg}')}`)
-    .join(',');
-
-  await fs.writeFile(
-    path.join(
-      cliPaths.targetRoot,
-      'node_modules',
-      'backstage-autodetected-plugins.js',
-    ),
-    `module.exports = { modules: [${requirePackageScript}] };`,
   );
 
   const buildInfo = await readBuildInfo();
@@ -387,40 +364,4 @@ function nodeExternalsWithResolve(
     currentContext = context!;
     return externals(context, request, callback);
   };
-}
-
-export async function detectPlugins({
-  config,
-  entry,
-  targetDir,
-}: { config: Config } & BundlingPathsOptions) {
-  const paths = resolveBundlingPaths({ entry, targetDir });
-  const pkg: BackstagePackageJson = await fs.readJson(paths.targetPackageJson);
-  // TODO: proper
-  // Assumption for config string based on https://github.com/backstage/backstage/issues/18372 ^
-
-  const packageDetectionMode =
-    config.getOptional('app.experimental.packages') || 'all';
-
-  const allowedPackages =
-    packageDetectionMode === 'all'
-      ? Object.keys(pkg.dependencies ?? {})
-      : config.getStringArray('app.experimental.packages');
-
-  return allowedPackages
-    .map(depName => {
-      const depPackageJson: BackstagePackageJson = require(require.resolve(
-        `${depName}/package.json`,
-        { paths: [paths.targetPath] },
-      ));
-      if (
-        ['frontend-plugin', 'frontend-plugin-module'].includes(
-          depPackageJson.backstage?.role || '',
-        )
-      ) {
-        return depName;
-      }
-      return undefined;
-    })
-    .filter((d): d is string => !!d);
 }
