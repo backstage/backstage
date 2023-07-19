@@ -24,11 +24,8 @@ export type BundlingOptions = {
   frontendConfig: Config;
   getFrontendAppConfigs(): AppConfig[];
   frontendAppConfigs: AppConfig[];
-  fullConfig: Config;
   baseUrl: URL;
   parallelism?: number;
-  entry: string;
-  targetDir?: string;
 };
 
 export type ServeOptions = BundlingPathsOptions & {
