@@ -126,8 +126,8 @@ describe('KubernetesProxy', () => {
   beforeEach(() => {
     jest.resetAllMocks();
     proxy = new KubernetesProxy({ logger, clusterSupplier, authTranslator });
-    permissionApi.authorize.mockReturnValue(
-      Promise.resolve([{ result: AuthorizeResult.ALLOW }]),
+    permissionApi.authorize.mockResolvedValue(
+      [{ result: AuthorizeResult.ALLOW }],
     );
   });
 
