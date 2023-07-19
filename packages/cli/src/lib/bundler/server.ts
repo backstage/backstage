@@ -34,6 +34,7 @@ import {
   includedFilter,
 } from '../../commands/versions/lint';
 import { BackstagePackageJson } from '@backstage/cli-node';
+import { writeDetectedPluginsModule } from './discover';
 
 export async function serveBundle(options: ServeOptions) {
   const paths = resolveBundlingPaths(options);
@@ -169,6 +170,12 @@ export async function serveBundle(options: ServeOptions) {
     getFrontendAppConfigs: () => {
       return latestFrontendAppConfigs;
     },
+  });
+
+  await writeDetectedPluginsModule({
+    config: options.fullConfig,
+    entry: options.entry,
+    targetDir: options.targetDir,
   });
 
   const compiler = webpack(config);
