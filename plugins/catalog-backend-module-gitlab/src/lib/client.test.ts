@@ -398,6 +398,149 @@ describe('GitLabClient', () => {
     ]);
   });
 
+  describe('listSaasUsers', () => {
+    it('gets all users under group', async () => {
+      server.use(
+        graphql
+          .link(`${MOCK_CONFIG.baseUrl}/api/graphql`)
+          .operation((_, res, ctx) =>
+            res(
+              ctx.data({
+                group: {
+                  groupMembers: {
+                    nodes: [
+                      {
+                        user: {
+                          id: 'gid://gitlab/User/1',
+                          username: 'user1',
+                          commitEmail: 'user1@example.com',
+                          name: 'user1',
+                          state: 'active',
+                          webUrl: 'user1.com',
+                          avatarUrl: 'user1',
+                        },
+                      },
+                    ],
+                    pageInfo: {
+                      endCursor: 'end',
+                      hasNextPage: false,
+                    },
+                  },
+                },
+              }),
+            ),
+          ),
+      );
+      const client = new GitLabClient({
+        config: MOCK_CONFIG,
+        logger: getVoidLogger(),
+      });
+
+      const saasMembers = (await client.listSaasUsers('group1')).items;
+
+      expect(saasMembers.length).toEqual(1);
+    });
+
+    it('gets all users with token without full permissions', async () => {
+      server.use(
+        graphql
+          .link(`${MOCK_CONFIG.baseUrl}/api/graphql`)
+          .operation((_, res, ctx) =>
+            res(
+              ctx.data({
+                group: {},
+              }),
+            ),
+          ),
+      );
+      const client = new GitLabClient({
+        config: MOCK_CONFIG,
+        logger: getVoidLogger(),
+      });
+
+      const saasMembers = (await client.listSaasUsers('group1')).items;
+
+      expect(saasMembers).toEqual([]);
+    });
+
+    it('rejects when GraphQL returns errors', async () => {
+      server.use(
+        graphql
+          .link(`${MOCK_CONFIG.baseUrl}/api/graphql`)
+          .operation((_, res, ctx) =>
+            res(
+              ctx.errors([
+                { message: 'Unexpected end of document', locations: [] },
+              ]),
+            ),
+          ),
+      );
+      const client = new GitLabClient({
+        config: MOCK_CONFIG,
+        logger: getVoidLogger(),
+      });
+
+      await expect(() => client.listSaasUsers('group1')).rejects.toThrow(
+        'GraphQL errors: [{"message":"Unexpected end of document","locations":[]}]',
+      );
+    });
+    it('traverses multi-page results', async () => {
+      server.use(
+        graphql
+          .link(`${MOCK_CONFIG.baseUrl}/api/graphql`)
+          .operation((req, res, ctx) =>
+            res(
+              ctx.data({
+                group: {
+                  groupMembers: {
+                    nodes: req.variables.endCursor
+                      ? [
+                          {
+                            user: {
+                              id: 'gid://gitlab/User/1',
+                              username: 'user1',
+                              commitEmail: 'user1@example.com',
+                              name: 'user1',
+                              state: 'active',
+                              webUrl: 'user1.com',
+                              avatarUrl: 'user1',
+                            },
+                          },
+                        ]
+                      : [
+                          {
+                            user: {
+                              id: 'gid://gitlab/User/2',
+                              username: 'user2',
+                              commitEmail: 'user2@example.com',
+                              name: 'user2',
+                              state: 'active',
+                              webUrl: 'user2.com',
+                              avatarUrl: 'user2',
+                            },
+                          },
+                        ],
+                    pageInfo: {
+                      endCursor: req.variables.endCursor ? 'end' : 'next',
+                      hasNextPage: !req.variables.endCursor,
+                    },
+                  },
+                },
+              }),
+            ),
+          ),
+      );
+      const client = new GitLabClient({
+        config: MOCK_CONFIG,
+        logger: getVoidLogger(),
+      });
+
+      const saasMembers = (await client.listSaasUsers('group1')).items;
+
+      expect(saasMembers.length).toEqual(2);
+    });
+  });
+
   describe('getGroupMembers', () => {
     it('gets member IDs', async () => {
       server.use(
