@@ -80,10 +80,10 @@ export const InfoContent = () => {
   const plugins = getAvailablePlugins();
 
   const availablePlugins: PackageDependency[] = plugins.map(
-    ({ name, components }) => {
+    ({ name, plugin }) => {
       return {
-        name,
-        versions: Object.keys(components).toString(),
+        name: `${name} (${plugin.getId()})`,
+        versions: '',
       };
     },
   );
