@@ -29,7 +29,7 @@ import { Server } from 'http';
 import { rest } from 'msw';
 import { setupServer } from 'msw/node';
 import request from 'supertest';
-import { WebSocket, WebSocketServer } from 'ws';
+import { AddressInfo, WebSocket, WebSocketServer } from 'ws';
 
 import { LocalKubectlProxyClusterLocator } from '../cluster-locator/LocalKubectlProxyLocator';
 import {
@@ -126,9 +126,9 @@ describe('KubernetesProxy', () => {
   beforeEach(() => {
     jest.resetAllMocks();
     proxy = new KubernetesProxy({ logger, clusterSupplier, authTranslator });
-    permissionApi.authorize.mockResolvedValue(
-      [{ result: AuthorizeResult.ALLOW }],
-    );
+    permissionApi.authorize.mockResolvedValue([
+      { result: AuthorizeResult.ALLOW },
+    ]);
   });
 
   it('should return a ERROR_NOT_FOUND if no clusters are found', async () => {
@@ -666,12 +666,11 @@ describe('KubernetesProxy', () => {
 
   describe('WebSocket', () => {
     const proxyPath = '/proxy';
-    const proxyPort = 9000;
     const wsPath = '/ws';
-    const wsPort = 9999;
 
-    let wsServer: WebSocketServer;
-    let expressApp: express.Express;
+    let wsPort: number;
+    let proxyPort: number;
+    let wsEchoServer: WebSocketServer;
     let expressServer: Server;
 
     const eventPromiseFactory = (
@@ -681,33 +680,38 @@ describe('KubernetesProxy', () => {
 
     beforeAll(async () => {
       await new Promise(resolve => {
-        expressApp = express().use(
-          Router()
-            .use(proxyPath, proxy.createRequestHandler({ permissionApi }))
-            .use(errorHandler()),
-        );
-
-        expressServer = expressApp.listen(proxyPort, '0.0.0.0', () => {
-          resolve(null);
-        });
+        expressServer = express()
+          .use(
+            Router()
+              .use(proxyPath, proxy.createRequestHandler({ permissionApi }))
+              .use(errorHandler()),
+          )
+          .listen(0, '0.0.0.0', () => {
+            proxyPort = (expressServer.address() as AddressInfo).port;
+            resolve(null);
+          });
       });
 
-      wsServer = new WebSocketServer({ port: wsPort, path: wsPath });
+      wsEchoServer = new WebSocketServer({
+        // server: expressServer,
+        port: 0,
+        path: wsPath,
+      });
+      wsPort = (wsEchoServer.address() as AddressInfo).port;
 
-      wsServer.on('connection', (ws: WebSocket) => {
+      wsEchoServer.on('connection', (ws: WebSocket) => {
         ws.send('connected');
 
-        // Echo message handling
         ws.on('message', (message: string) => {
           ws.send(message);
         });
       });
 
-      wsServer.on('error', console.error);
+      wsEchoServer.on('error', console.error);
     });
 
     afterAll(() => {
-      wsServer.close();
+      wsEchoServer.close();
       expressServer.close();
     });
 
@@ -730,6 +734,7 @@ describe('KubernetesProxy', () => {
 
       const wsProxyAddress = `ws://localhost:${proxyPort}${proxyPath}${wsPath}`;
       const wsAddress = `ws://localhost:${wsPort}${wsPath}`;
+      console.log('Ports: ', wsProxyAddress, wsAddress);
 
       // Let this request through so it reaches the express router above
       worker.use(
