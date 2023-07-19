@@ -407,18 +407,20 @@ export async function detectPlugins({
       ? Object.keys(pkg.dependencies ?? {})
       : config.getStringArray('app.experimental.packages');
 
-  return allowedPackages.reduce((packages, depName) => {
-    const depPackageJson: BackstagePackageJson = require(require.resolve(
-      `${depName}/package.json`,
-      { paths: [paths.targetPath] },
-    ));
-    if (
-      ['frontend-plugin', 'frontend-plugin-module'].includes(
-        depPackageJson.backstage?.role || '',
-      )
-    ) {
-      packages.push(depName);
-    }
-    return packages;
-  }, [] as string[]);
+  return allowedPackages
+    .map(depName => {
+      const depPackageJson: BackstagePackageJson = require(require.resolve(
+        `${depName}/package.json`,
+        { paths: [paths.targetPath] },
+      ));
+      if (
+        ['frontend-plugin', 'frontend-plugin-module'].includes(
+          depPackageJson.backstage?.role || '',
+        )
+      ) {
+        return depName;
+      }
+      return undefined;
+    })
+    .filter((d): d is string => !!d);
 }
