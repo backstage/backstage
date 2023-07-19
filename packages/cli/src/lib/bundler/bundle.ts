@@ -40,6 +40,7 @@ export async function buildBundle(options: BuildOptions) {
   const { statsJsonEnabled, schema: configSchema } = options;
 
   const paths = resolveBundlingPaths(options);
+
   const config = await createConfig(paths, {
     ...options,
     checksEnabled: false,

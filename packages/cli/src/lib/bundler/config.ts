@@ -26,13 +26,17 @@ import { isChildPath } from '@backstage/cli-common';
 import { getPackages } from '@manypkg/get-packages';
 import { optimization } from './optimization';
 import { Config } from '@backstage/config';
-import { BundlingPaths } from './paths';
+import {
+  BundlingPaths,
+  BundlingPathsOptions,
+  resolveBundlingPaths,
+} from './paths';
 import { transforms } from './transforms';
 import { LinkedPackageResolvePlugin } from './LinkedPackageResolvePlugin';
 import { BundlingOptions, BackendBundlingOptions } from './types';
 import { version } from '../../lib/version';
 import { paths as cliPaths } from '../../lib/paths';
-import { BackstagePackage } from '@backstage/cli-node';
+import { BackstagePackage, BackstagePackageJson } from '@backstage/cli-node';
 import { runPlain } from '../run';
 import ESLintPlugin from 'eslint-webpack-plugin';
 import pickBy from 'lodash/pickBy';
@@ -85,7 +89,7 @@ export async function createConfig(
   paths: BundlingPaths,
   options: BundlingOptions,
 ): Promise<webpack.Configuration> {
-  const { checksEnabled, isDev, frontendConfig, extraPackages = [] } = options;
+  const { checksEnabled, isDev, frontendConfig } = options;
 
   const { plugins, loaders } = transforms(options);
   // Any package that is part of the monorepo but outside the monorepo root dir need
@@ -128,7 +132,12 @@ export async function createConfig(
     }),
   );
 
-  const requirePackageScript = extraPackages
+  const detectedPlugins = await detectPlugins({
+    config: options.fullConfig,
+    entry: options.entry,
+    targetDir: options.targetDir,
+  });
+  const requirePackageScript = detectedPlugins
     ?.map(pkg => `{name: '${pkg}', module: require('${pkg}')}`)
     .join(',');
 
@@ -177,12 +186,7 @@ export async function createConfig(
     },
     devtool: isDev ? 'eval-cheap-module-source-map' : 'source-map',
     context: paths.targetPath,
-    entry: [
-      ...(extraPackages.length > 0
-        ? [`backstage-autodetected-plugins.js`]
-        : []),
-      paths.targetEntry,
-    ],
+    entry: paths.targetEntry,
     resolve: {
       extensions: ['.ts', '.tsx', '.mjs', '.js', '.jsx', '.json', '.wasm'],
       mainFields: ['browser', 'module', 'main'],
@@ -383,4 +387,38 @@ function nodeExternalsWithResolve(
     currentContext = context!;
     return externals(context, request, callback);
   };
+}
+
+export async function detectPlugins({
+  config,
+  entry,
+  targetDir,
+}: { config: Config } & BundlingPathsOptions) {
+  const paths = resolveBundlingPaths({ entry, targetDir });
+  const pkg: BackstagePackageJson = await fs.readJson(paths.targetPackageJson);
+  // TODO: proper
+  // Assumption for config string based on https://github.com/backstage/backstage/issues/18372 ^
+
+  const packageDetectionMode =
+    config.getOptional('app.experimental.packages') || 'all';
+
+  const allowedPackages =
+    packageDetectionMode === 'all'
+      ? Object.keys(pkg.dependencies ?? {})
+      : config.getStringArray('app.experimental.packages');
+
+  return allowedPackages.reduce((packages, depName) => {
+    const depPackageJson: BackstagePackageJson = require(require.resolve(
+      `${depName}/package.json`,
+      { paths: [paths.targetPath] },
+    ));
+    if (
+      ['frontend-plugin', 'frontend-plugin-module'].includes(
+        depPackageJson.backstage?.role || '',
+      )
+    ) {
+      packages.push(depName);
+    }
+    return packages;
+  }, [] as string[]);
 }
