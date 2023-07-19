@@ -22,7 +22,6 @@ import ModuleScopePlugin from 'react-dev-utils/ModuleScopePlugin';
 import { RunScriptWebpackPlugin } from 'run-script-webpack-plugin';
 import webpack, { ProvidePlugin } from 'webpack';
 import nodeExternals from 'webpack-node-externals';
-import VirtualModulesPlugin from 'webpack-virtual-modules';
 import { isChildPath } from '@backstage/cli-common';
 import { getPackages } from '@manypkg/get-packages';
 import { optimization } from './optimization';
@@ -39,6 +38,7 @@ import ESLintPlugin from 'eslint-webpack-plugin';
 import pickBy from 'lodash/pickBy';
 import yn from 'yn';
 import { readEntryPoints } from '../entryPoints';
+import path from 'path';
 
 const BUILD_CACHE_ENV_VAR = 'BACKSTAGE_CLI_EXPERIMENTAL_BUILD_CACHE';
 
@@ -128,17 +128,18 @@ export async function createConfig(
     }),
   );
 
-  if (extraPackages.length > 0) {
-    const requirePackageScript = extraPackages
-      ?.map(pkg => `{name: '${pkg}', module: require('${pkg}')}`)
-      .join(',');
+  const requirePackageScript = extraPackages
+    ?.map(pkg => `{name: '${pkg}', module: require('${pkg}')}`)
+    .join(',');
 
-    plugins.push(
-      new VirtualModulesPlugin({
-        'node_modules/backstage-autodetected-plugins.js': `module.exports = { modules: [${requirePackageScript}] };`,
-      }),
-    );
-  }
+  await fs.writeFile(
+    path.join(
+      cliPaths.targetRoot,
+      'node_modules',
+      'backstage-autodetected-plugins.js',
+    ),
+    `module.exports = { modules: [${requirePackageScript}] };`,
+  );
 
   const buildInfo = await readBuildInfo();
   plugins.push(
