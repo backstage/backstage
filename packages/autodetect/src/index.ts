@@ -34,9 +34,10 @@ type DetectedModule = {
  * @public
  */
 function getAvailablePlugins(): DetectedPlugin[] {
-  const { modules } = __webpack_require__(
-    './node_modules/backstage-autodetected-plugins.js',
-  ) as { modules: DetectedModule[] };
+  // eslint-disable-next-line @backstage/no-undeclared-imports
+  const { modules } = require('backstage-autodetected-plugins') as {
+    modules: DetectedModule[];
+  };
 
   return modules
     .map(splitPluginFromComponents)
