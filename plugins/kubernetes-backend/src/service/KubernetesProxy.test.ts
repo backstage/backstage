@@ -712,7 +712,6 @@ describe('KubernetesProxy', () => {
       expressServer.close();
     });
 
-    // eslint-disable-next-line jest/no-done-callback
     it('should proxy websocket connections', async () => {
       clusterSupplier.getClusters.mockResolvedValue([
         {
