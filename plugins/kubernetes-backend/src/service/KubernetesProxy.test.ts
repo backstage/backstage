@@ -695,7 +695,6 @@ describe('KubernetesProxy', () => {
       wsServer = new WebSocketServer({ port: wsPort, path: wsPath });
 
       wsServer.on('connection', (ws: WebSocket) => {
-        // send immediatly a feedback to the incoming connection
         ws.send('connected');
 
         // Echo message handling
