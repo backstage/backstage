@@ -39,10 +39,7 @@ const getExtensionContext = (
 
     // Of the matching routes, get the last (e.g. most specific) instance of
     // the BackstageRouteObject.
-
-    const routeMatch = matches
-      ?.filter(match => match?.route.routeRefs?.size > 0)
-      .pop();
+    const routeMatch = matches?.pop();
 
     const routeObject = routeMatch?.route;
 
@@ -66,7 +63,7 @@ const getExtensionContext = (
     const params = Object.entries(
       routeMatch?.params || {},
     ).reduce<AnalyticsEventAttributes>((acc, [key, value]) => {
-      if (value !== undefined) {
+      if (value !== undefined && key !== '*') {
         acc[key] = value;
       }
       return acc;
