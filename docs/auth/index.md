@@ -8,7 +8,7 @@ The authentication system in Backstage serves two distinct purposes: sign-in and
 identification of users, as well as delegating access to third-party resources. It is possible to
 configure Backstage to have any number of authentication providers, but only
 one of these will typically be used for sign-in, with the rest being used to provide
-access external resources.
+access to external resources.
 
 ## Built-in Authentication Providers
 
@@ -72,7 +72,7 @@ both in the frontend app, as well as the `auth` backend plugin. For information
 on how to configure the backend app, see [Sign-in Identities and Resolvers](./identity-resolver.md).
 The rest of this section will focus on how to configure sign-in for the frontend app.
 
-Sign-in is configured by providing a custom `SignInPage` app component. It will
+Sign-in is configured by providing a custom `SignInPage` app component. It will be
 rendered before any other routes in the app and is responsible for providing the
 identity of the current user. The `SignInPage` can render any number of pages and
 components, or just blank space with logic running in the background. In the end
@@ -113,7 +113,8 @@ const app = createApp({
 ```
 
 You can also use the `providers` prop to enable multiple sign-in methods, for example
-allows allowing guest access:
+
+- allowing guest access:
 
 ```tsx title="packages/app/src/App.tsx"
 const app = createApp({
