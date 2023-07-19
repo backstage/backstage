@@ -24,6 +24,21 @@ import { paths as cliPaths } from '../../lib/paths';
 
 type Options = { config: Config } & BundlingPathsOptions;
 
+export async function writeDetectedPluginsModule(options: Options) {
+  const requirePackageScript = (await detectPlugins(options))
+    ?.map(pkg => `{name: '${pkg}', module: require('${pkg}')}`)
+    .join(',');
+
+  await fs.writeFile(
+    path.join(
+      cliPaths.targetRoot,
+      'node_modules',
+      'backstage-autodetected-plugins.js',
+    ),
+    `export const modules = [${requirePackageScript}];`,
+  );
+}
+
 async function detectPlugins({ config, entry, targetDir }: Options) {
   const paths = resolveBundlingPaths({ entry, targetDir });
   const pkg: BackstagePackageJson = await fs.readJson(paths.targetPackageJson);
@@ -54,19 +69,4 @@ async function detectPlugins({ config, entry, targetDir }: Options) {
       return undefined;
     })
     .filter((d): d is string => !!d);
-}
-
-export async function writeDetectedPluginsModule(options: Options) {
-  const requirePackageScript = (await detectPlugins(options))
-    ?.map(pkg => `{name: '${pkg}', module: require('${pkg}')}`)
-    .join(',');
-
-  await fs.writeFile(
-    path.join(
-      cliPaths.targetRoot,
-      'node_modules',
-      'backstage-autodetected-plugins.js',
-    ),
-    `module.exports = { modules: [${requirePackageScript}] };`,
-  );
 }
