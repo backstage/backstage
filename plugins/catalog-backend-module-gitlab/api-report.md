@@ -9,6 +9,7 @@ import { Config } from '@backstage/config';
 import { EntityProvider } from '@backstage/plugin-catalog-node';
 import { EntityProviderConnection } from '@backstage/plugin-catalog-node';
 import { LocationSpec } from '@backstage/plugin-catalog-node';
+import { LocationSpec as LocationSpec_2 } from '@backstage/plugin-catalog-common';
 import { Logger } from 'winston';
 import { PluginTaskScheduler } from '@backstage/backend-tasks';
 import { TaskRunner } from '@backstage/backend-tasks';
@@ -24,6 +25,7 @@ export class GitlabDiscoveryEntityProvider implements EntityProvider {
       logger: Logger;
       schedule?: TaskRunner;
       scheduler?: PluginTaskScheduler;
+      createLocation?: GitlabLocationCallbackFn;
     },
   ): GitlabDiscoveryEntityProvider[];
   // (undocumented)
@@ -52,6 +54,9 @@ export class GitLabDiscoveryProcessor implements CatalogProcessor {
     emit: CatalogProcessorEmit,
   ): Promise<boolean>;
 }
+
+// @public
+export type GitlabLocationCallbackFn = (targetUrl: string) => LocationSpec_2;
 
 // @public
 export class GitlabOrgDiscoveryEntityProvider implements EntityProvider {

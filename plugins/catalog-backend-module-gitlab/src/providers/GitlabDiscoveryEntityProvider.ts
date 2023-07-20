@@ -20,9 +20,9 @@ import { GitLabIntegration, ScmIntegrations } from '@backstage/integration';
 import {
   EntityProvider,
   EntityProviderConnection,
-  LocationSpec,
   locationSpecToLocationEntity,
 } from '@backstage/plugin-catalog-node';
+import { LocationSpec } from '@backstage/plugin-catalog-common';
 import * as uuid from 'uuid';
 import { Logger } from 'winston';
 import {
@@ -31,6 +31,7 @@ import {
   GitlabProviderConfig,
   paginated,
   readGitlabConfigs,
+  GitlabLocationCallbackFn,
 } from '../lib';
 
 type Result = {
@@ -48,13 +49,14 @@ export class GitlabDiscoveryEntityProvider implements EntityProvider {
   private readonly logger: Logger;
   private readonly scheduleFn: () => Promise<void>;
   private connection?: EntityProviderConnection;
-
+  private readonly createLocationFn: GitlabLocationCallbackFn;
   static fromConfig(
     config: Config,
     options: {
       logger: Logger;
       schedule?: TaskRunner;
       scheduler?: PluginTaskScheduler;
+      createLocation?: GitlabLocationCallbackFn;
     },
   ): GitlabDiscoveryEntityProvider[] {
     if (!options.schedule && !options.scheduler) {
@@ -83,12 +85,14 @@ export class GitlabDiscoveryEntityProvider implements EntityProvider {
         options.schedule ??
         options.scheduler!.createScheduledTaskRunner(providerConfig.schedule!);
 
+      const createLocation = options.createLocation;
       providers.push(
         new GitlabDiscoveryEntityProvider({
           ...options,
           config: providerConfig,
           integration,
           taskRunner,
+          createLocation,
         }),
       );
     });
@@ -100,6 +104,7 @@ export class GitlabDiscoveryEntityProvider implements EntityProvider {
     integration: GitLabIntegration;
     logger: Logger;
     taskRunner: TaskRunner;
+    createLocation?: GitlabLocationCallbackFn;
   }) {
     this.config = options.config;
     this.integration = options.integration;
@@ -107,6 +112,8 @@ export class GitlabDiscoveryEntityProvider implements EntityProvider {
       target: this.getProviderName(),
     });
     this.scheduleFn = this.createScheduleFn(options.taskRunner);
+    this.createLocationFn =
+      options.createLocation ?? this.defaultCreateLocation;
   }
 
   getProviderName(): string {
@@ -185,14 +192,9 @@ export class GitlabDiscoveryEntityProvider implements EntityProvider {
         continue;
       }
 
-      const project_branch =
-        this.config.branch ??
-        project.default_branch ??
-        this.config.fallbackBranch;
-
       const projectHasFile: boolean = await client.hasFile(
         project.path_with_namespace ?? '',
-        project_branch,
+        this.branchSelector(project.default_branch),
         this.config.catalogFile,
       );
       if (projectHasFile) {
@@ -200,7 +202,9 @@ export class GitlabDiscoveryEntityProvider implements EntityProvider {
       }
     }
 
-    const locations = res.matches.map(p => this.createLocationSpec(p));
+    const locations = res.matches
+      .map(project => this.createLocationUrl(project))
+      .map(targetUrl => this.createLocationFn(targetUrl));
     await this.connection.applyMutation({
       type: 'full',
       entities: locations.map(location => ({
@@ -210,14 +214,22 @@ export class GitlabDiscoveryEntityProvider implements EntityProvider {
     });
   }
 
-  private createLocationSpec(project: GitLabProject): LocationSpec {
-    const project_branch =
-      this.config.branch ??
-      project.default_branch ??
-      this.config.fallbackBranch;
+  private branchSelector(projectDefaultBranch?: string): string {
+    return (
+      this.config.branch ?? projectDefaultBranch ?? this.config.fallbackBranch
+    );
+  }
+
+  private createLocationUrl(project: GitLabProject): string {
+    return `${project.web_url}/-/blob/${this.branchSelector(
+      project.default_branch,
+    )}/${this.config.catalogFile}`;
+  }
+
+  private defaultCreateLocation(targetUrl: string): LocationSpec {
     return {
       type: 'url',
-      target: `${project.web_url}/-/blob/${project_branch}/${this.config.catalogFile}`,
+      target: targetUrl,
       presence: 'optional',
     };
   }

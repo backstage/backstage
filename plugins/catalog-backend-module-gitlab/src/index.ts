@@ -25,3 +25,5 @@ export {
   GitlabDiscoveryEntityProvider,
   GitlabOrgDiscoveryEntityProvider,
 } from './providers';
+
+export type { GitlabLocationCallbackFn } from './lib';

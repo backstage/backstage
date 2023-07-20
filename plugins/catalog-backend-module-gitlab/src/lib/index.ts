@@ -19,5 +19,6 @@ export type {
   GitLabProject,
   GitlabProviderConfig,
   GitlabGroupDescription,
+  GitlabLocationCallbackFn,
 } from './types';
 export { readGitlabConfigs } from '../providers/config';

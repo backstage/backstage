@@ -15,6 +15,7 @@
  */
 
 import { TaskScheduleDefinition } from '@backstage/backend-tasks';
+import { LocationSpec } from '@backstage/plugin-catalog-common';
 
 export type GitlabGroupDescription = {
   id: number;
@@ -91,3 +92,10 @@ export type GitlabProviderConfig = {
   orgEnabled?: boolean;
   schedule?: TaskScheduleDefinition;
 };
+
+/**
+ * Function to create a custom LocationSpec
+ *
+ * @public
+ */
+export type GitlabLocationCallbackFn = (targetUrl: string) => LocationSpec;
