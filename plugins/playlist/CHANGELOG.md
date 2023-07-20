@@ -1,5 +1,23 @@
 # @backstage/plugin-playlist
 
+## 0.1.12
+
+### Patch Changes
+
+- 68531cc70e1f: Break some internal circular import chains
+- Updated dependencies
+  - @backstage/theme@0.4.1
+  - @backstage/errors@1.2.1
+  - @backstage/plugin-catalog-react@1.8.0
+  - @backstage/core-components@0.13.3
+  - @backstage/core-plugin-api@1.5.3
+  - @backstage/catalog-model@1.4.1
+  - @backstage/plugin-catalog-common@1.0.15
+  - @backstage/plugin-permission-common@0.7.7
+  - @backstage/plugin-permission-react@0.4.14
+  - @backstage/plugin-playlist-common@0.1.8
+  - @backstage/plugin-search-react@1.6.3
+
 ## 0.1.12-next.2
 
 ### Patch Changes

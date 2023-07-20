@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { PageTheme, PageThemeSelector } from './types';
+import { BackstageTypography, PageTheme, PageThemeSelector } from './types';
 import { pageTheme as defaultPageThemes } from './pageTheme';
 
 const DEFAULT_HTML_FONT_SIZE = 16;
@@ -33,6 +33,7 @@ export interface BaseThemeOptionsInput<PaletteOptions> {
   pageTheme?: Record<string, PageTheme>;
   fontFamily?: string;
   htmlFontSize?: number;
+  typography?: BackstageTypography;
 }
 
 /**
@@ -49,48 +50,51 @@ export function createBaseThemeOptions<PaletteOptions>(
     fontFamily = DEFAULT_FONT_FAMILY,
     defaultPageTheme = DEFAULT_PAGE_THEME,
     pageTheme = defaultPageThemes,
+    typography,
   } = options;
 
   if (!pageTheme[defaultPageTheme]) {
     throw new Error(`${defaultPageTheme} is not defined in pageTheme.`);
   }
 
+  const defaultTypography = {
+    htmlFontSize,
+    fontFamily,
+    h1: {
+      fontSize: 54,
+      fontWeight: 700,
+      marginBottom: 10,
+    },
+    h2: {
+      fontSize: 40,
+      fontWeight: 700,
+      marginBottom: 8,
+    },
+    h3: {
+      fontSize: 32,
+      fontWeight: 700,
+      marginBottom: 6,
+    },
+    h4: {
+      fontWeight: 700,
+      fontSize: 28,
+      marginBottom: 6,
+    },
+    h5: {
+      fontWeight: 700,
+      fontSize: 24,
+      marginBottom: 4,
+    },
+    h6: {
+      fontWeight: 700,
+      fontSize: 20,
+      marginBottom: 2,
+    },
+  };
+
   return {
     palette,
-    typography: {
-      htmlFontSize,
-      fontFamily,
-      h1: {
-        fontSize: 54,
-        fontWeight: 700,
-        marginBottom: 10,
-      },
-      h2: {
-        fontSize: 40,
-        fontWeight: 700,
-        marginBottom: 8,
-      },
-      h3: {
-        fontSize: 32,
-        fontWeight: 700,
-        marginBottom: 6,
-      },
-      h4: {
-        fontWeight: 700,
-        fontSize: 28,
-        marginBottom: 6,
-      },
-      h5: {
-        fontWeight: 700,
-        fontSize: 24,
-        marginBottom: 4,
-      },
-      h6: {
-        fontWeight: 700,
-        fontSize: 20,
-        marginBottom: 2,
-      },
-    },
+    typography: typography ?? defaultTypography,
     page: pageTheme[defaultPageTheme],
     getPageTheme: ({ themeId }: PageThemeSelector) =>
       pageTheme[themeId] ?? pageTheme[defaultPageTheme],

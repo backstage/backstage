@@ -518,7 +518,7 @@ describe('jsonPlaceholderResolver', () => {
   it('rejects invalid json', async () => {
     read.mockResolvedValue(Buffer.from('}', 'utf-8'));
     await expect(jsonPlaceholderResolver(params)).rejects.toThrow(
-      'Placeholder $a failed to parse JSON data at ./file.json, SyntaxError: Unexpected token } in JSON at position 0',
+      'Placeholder $a failed to parse JSON data at ./file.json',
     );
   });
 });

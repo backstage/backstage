@@ -18,7 +18,7 @@ import {
   coreServices,
   createBackendModule,
 } from '@backstage/backend-plugin-api';
-import { UnprocessedEntitesModule } from './UnprocessedEntitiesModule';
+import { UnprocessedEntitiesModule } from './UnprocessedEntitiesModule';
 
 /**
  * Catalog Module for Unprocessed Entities
@@ -36,7 +36,7 @@ export const catalogModuleUnprocessedEntities = createBackendModule({
         logger: coreServices.logger,
       },
       async init({ database, router, logger }) {
-        const module = new UnprocessedEntitesModule(
+        const module = new UnprocessedEntitiesModule(
           await database.getClient(),
           router,
         );

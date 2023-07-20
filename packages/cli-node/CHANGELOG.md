@@ -1,5 +1,15 @@
 # @backstage/cli-node
 
+## 0.1.2
+
+### Patch Changes
+
+- 4edd1ef71453: semver upgrade to 7.5.3
+- Updated dependencies
+  - @backstage/errors@1.2.1
+  - @backstage/cli-common@0.1.12
+  - @backstage/types@1.1.0
+
 ## 0.1.2-next.1
 
 ### Patch Changes

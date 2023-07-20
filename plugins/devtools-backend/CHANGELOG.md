@@ -1,5 +1,24 @@
 # @backstage/plugin-devtools-backend
 
+## 0.1.2
+
+### Patch Changes
+
+- 4edd1ef71453: semver upgrade to 7.5.3
+- ae261e79d256: Added alpha support for the [new backend system](https://backstage.io/docs/backend-system/)
+- Updated dependencies
+  - @backstage/errors@1.2.1
+  - @backstage/backend-common@0.19.1
+  - @backstage/backend-plugin-api@0.5.4
+  - @backstage/cli-common@0.1.12
+  - @backstage/config@1.0.8
+  - @backstage/config-loader@1.3.2
+  - @backstage/types@1.1.0
+  - @backstage/plugin-auth-node@0.2.16
+  - @backstage/plugin-devtools-common@0.1.2
+  - @backstage/plugin-permission-common@0.7.7
+  - @backstage/plugin-permission-node@0.7.10
+
 ## 0.1.2-next.2
 
 ### Patch Changes

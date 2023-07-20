@@ -74,6 +74,20 @@ export function compileConfigSchemas(
         };
       },
     })
+    .addKeyword({
+      keyword: 'deepVisibility',
+      metaSchema: {
+        type: 'string',
+        /**
+         * Disallow 'backend' deepVisibility to prevent cases of permission escaping.
+         *
+         * Something like:
+         * - deepVisibility secret -> backend -> frontend.
+         * - deepVisibility secret -> backend -> visibility frontend.
+         */
+        enum: ['frontend', 'secret'],
+      },
+    })
     .removeKeyword('deprecated') // remove `deprecated` keyword so that we can implement our own compiler
     .addKeyword({
       keyword: 'deprecated',
@@ -101,17 +115,54 @@ export function compileConfigSchemas(
 
   const merged = mergeConfigSchemas(schemas.map(_ => _.value));
 
-  if (options?.noUndeclaredProperties) {
-    traverse(merged, (schema: SchemaObject) => {
-      /**
-       * The `additionalProperties` key can only be applied to `type: object` in the JSON
-       *  schema.
-       */
-      if (schema?.type === 'object') {
-        schema.additionalProperties ||= false;
+  traverse(
+    merged,
+    (
+      schema: SchemaObject,
+      jsonPtr: string,
+      _1: any,
+      _2: any,
+      _3?: any,
+      parentSchema?: SchemaObject,
+    ) => {
+      // Inherit parent deepVisibility if we don't define one ourselves.
+      if (parentSchema?.deepVisibility) {
+        schema.deepVisibility ??= parentSchema?.deepVisibility;
       }
-    });
-  }
+
+      // Apply deep visibility to self.
+      if (schema?.deepVisibility) {
+        // This runs before we compile the AJV so visibilityByDataPath has the
+        //  correct data.
+        schema.visibility ??= schema.deepVisibility;
+
+        if (parentSchema) {
+          /**
+           * Validate that we're not trying to override a child's visibility
+           *  by setting the parent deep visibility.
+           */
+          const values = [schema.visibility, parentSchema.visibility];
+          const hasFrontend = values.some(e => e === 'frontend');
+          const hasSecret = values.some(e => e === 'secret');
+          if (hasFrontend && hasSecret) {
+            throw new Error(
+              `Config schema visibility is both 'frontend' and 'secret' for ${jsonPtr}`,
+            );
+          }
+        }
+      }
+
+      if (options?.noUndeclaredProperties) {
+        /**
+         * The `additionalProperties` key can only be applied to `type: object` in the JSON
+         *  schema.
+         */
+        if (schema?.type === 'object') {
+          schema.additionalProperties ||= false;
+        }
+      }
+    },
+  );
 
   const validate = ajv.compile(merged);
 

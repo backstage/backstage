@@ -1,5 +1,19 @@
 # @backstage/test-utils
 
+## 1.4.1
+
+### Patch Changes
+
+- 8174cf4c0edf: Fixing MUI / Material UI references
+- Updated dependencies
+  - @backstage/theme@0.4.1
+  - @backstage/core-app-api@1.9.0
+  - @backstage/core-plugin-api@1.5.3
+  - @backstage/config@1.0.8
+  - @backstage/types@1.1.0
+  - @backstage/plugin-permission-common@0.7.7
+  - @backstage/plugin-permission-react@0.4.14
+
 ## 1.4.1-next.2
 
 ### Patch Changes

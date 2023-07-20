@@ -1,5 +1,16 @@
 # @backstage/plugin-stackstorm
 
+## 0.1.4
+
+### Patch Changes
+
+- 1745959daf98: Add props to StackstormHome for Header Customization
+- Updated dependencies
+  - @backstage/theme@0.4.1
+  - @backstage/errors@1.2.1
+  - @backstage/core-components@0.13.3
+  - @backstage/core-plugin-api@1.5.3
+
 ## 0.1.4-next.2
 
 ### Patch Changes

@@ -22,13 +22,7 @@ import {
   EntityProvider,
 } from '@backstage/plugin-catalog-react';
 import { TestApiRegistry, wrapInTestApp } from '@backstage/test-utils';
-import {
-  BackstageTheme,
-  createTheme,
-  genPageTheme,
-  shapes,
-} from '@backstage/theme';
-import { Grid, ThemeProvider } from '@material-ui/core';
+import { Grid } from '@material-ui/core';
 import React from 'react';
 import { catalogIndexRouteRef } from '../../../routes';
 import { OwnershipCard } from './OwnershipCard';
@@ -110,40 +104,6 @@ export const Default = () =>
         </Grid>
       </EntityProvider>
     </ApiProvider>,
-    {
-      mountedRoutes: { '/catalog': catalogIndexRouteRef },
-    },
-  );
-
-const monochromeTheme = (outer: BackstageTheme) =>
-  createTheme({
-    ...outer,
-    defaultPageTheme: 'home',
-    pageTheme: {
-      home: genPageTheme({ colors: ['#444'], shape: shapes.wave2 }),
-      documentation: genPageTheme({ colors: ['#474747'], shape: shapes.wave2 }),
-      tool: genPageTheme({ colors: ['#222'], shape: shapes.wave2 }),
-      service: genPageTheme({ colors: ['#aaa'], shape: shapes.wave2 }),
-      website: genPageTheme({ colors: ['#0e0e0e'], shape: shapes.wave2 }),
-      library: genPageTheme({ colors: ['#9d9d9d'], shape: shapes.wave2 }),
-      other: genPageTheme({ colors: ['#aaa'], shape: shapes.wave2 }),
-      app: genPageTheme({ colors: ['#666'], shape: shapes.wave2 }),
-    },
-  });
-
-export const Themed = () =>
-  wrapInTestApp(
-    <ThemeProvider theme={monochromeTheme}>
-      <ApiProvider apis={apis}>
-        <EntityProvider entity={defaultEntity}>
-          <Grid container spacing={4}>
-            <Grid item xs={12} md={6}>
-              <OwnershipCard />
-            </Grid>
-          </Grid>
-        </EntityProvider>
-      </ApiProvider>
-    </ThemeProvider>,
     {
       mountedRoutes: { '/catalog': catalogIndexRouteRef },
     },

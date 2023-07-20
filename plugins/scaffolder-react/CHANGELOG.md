@@ -1,5 +1,22 @@
 # @backstage/plugin-scaffolder-react
 
+## 1.5.1
+
+### Patch Changes
+
+- f74a27de4d2c: Made markdown description theme-able
+- Updated dependencies
+  - @backstage/theme@0.4.1
+  - @backstage/errors@1.2.1
+  - @backstage/plugin-catalog-react@1.8.0
+  - @backstage/core-components@0.13.3
+  - @backstage/core-plugin-api@1.5.3
+  - @backstage/catalog-client@1.4.3
+  - @backstage/catalog-model@1.4.1
+  - @backstage/types@1.1.0
+  - @backstage/version-bridge@1.0.4
+  - @backstage/plugin-scaffolder-common@1.3.2
+
 ## 1.5.1-next.2
 
 ### Patch Changes

@@ -1,5 +1,19 @@
 # @backstage/plugin-sonarqube
 
+## 0.7.1
+
+### Patch Changes
+
+- fcaf4cfc70ee: Made default config optional
+- 015439b5b6ca: Updated dependency `rc-progress` to `3.4.2`.
+- Updated dependencies
+  - @backstage/theme@0.4.1
+  - @backstage/plugin-catalog-react@1.8.0
+  - @backstage/core-components@0.13.3
+  - @backstage/core-plugin-api@1.5.3
+  - @backstage/catalog-model@1.4.1
+  - @backstage/plugin-sonarqube-react@0.1.7
+
 ## 0.7.1-next.2
 
 ### Patch Changes

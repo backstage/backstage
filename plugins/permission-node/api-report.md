@@ -75,14 +75,17 @@ export type ConditionTransformer<TQuery> = (
 
 // @public
 export const createConditionAuthorizer: <TResource, TQuery>(
-  rules: PermissionRule<TResource, TQuery, string>[],
+  rules: PermissionRule<TResource, TQuery, string, PermissionRuleParams>[],
 ) => (decision: PolicyDecision, resource: TResource | undefined) => boolean;
 
 // @public
 export const createConditionExports: <
   TResourceType extends string,
   TResource,
-  TRules extends Record<string, PermissionRule<TResource, any, TResourceType>>,
+  TRules extends Record<
+    string,
+    PermissionRule<TResource, any, TResourceType, PermissionRuleParams>
+  >,
 >(options: {
   pluginId: string;
   resourceType: TResourceType;
@@ -91,7 +94,9 @@ export const createConditionExports: <
   conditions: Conditions<TRules>;
   createConditionalDecision: (
     permission: ResourcePermission<TResourceType>,
-    conditions: PermissionCriteria<PermissionCondition<TResourceType>>,
+    conditions: PermissionCriteria<
+      PermissionCondition<TResourceType, PermissionRuleParams>
+    >,
   ) => ConditionalPolicyDecision;
 };
 
@@ -106,7 +111,7 @@ export const createConditionFactory: <
 // @public
 export const createConditionTransformer: <
   TQuery,
-  TRules extends PermissionRule<any, TQuery, string>[],
+  TRules extends PermissionRule<any, TQuery, string, PermissionRuleParams>[],
 >(
   permissionRules: [...TRules],
 ) => ConditionTransformer<TQuery>;
