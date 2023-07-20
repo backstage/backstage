@@ -20,7 +20,7 @@ import {
   QueryEntitiesRequest,
 } from '../../catalog/types';
 import { decodeCursor } from '../util';
-import { parseIntegerParam, parseStringParam } from './common';
+import { parseStringParam } from './common';
 import { parseEntityFilterParams } from './parseEntityFilterParams';
 import { parseEntityOrderFieldParams } from './parseEntityOrderFieldParams';
 import { parseEntityTransformParams } from './parseEntityTransformParams';
@@ -28,16 +28,14 @@ import { parseFullTextFilterFields } from './parseFullTextFilterFields';
 
 export function parseQueryEntitiesParams(
   params: Record<string, unknown>,
-): Omit<QueryEntitiesRequest, 'authorizationToken'> {
+): Omit<QueryEntitiesRequest, 'authorizationToken' | 'limit'> {
   const fields = parseEntityTransformParams(params);
-  const limit = parseIntegerParam(params.limit, 'limit');
   const cursor = parseStringParam(params.cursor, 'cursor');
   if (cursor) {
     const decodedCursor = decodeCursor(cursor);
     const response: Omit<QueryEntitiesCursorRequest, 'authorizationToken'> = {
       cursor: decodedCursor,
       fields,
-      limit,
     };
     return response;
   }
@@ -54,7 +52,6 @@ export function parseQueryEntitiesParams(
   const response: Omit<QueryEntitiesInitialRequest, 'authorizationToken'> = {
     fields,
     filter,
-    limit,
     orderFields,
     fullTextFilter: {
       term: fullTextFilterTerm || '',

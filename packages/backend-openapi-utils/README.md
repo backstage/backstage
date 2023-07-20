@@ -13,15 +13,55 @@ This package is meant to provide a typed Express router for an OpenAPI spec. Bas
 2. In your plugin's `src/service/createRouter.ts`,
 
 ```ts
-import { ApiRouter } from `@backstage/backend-openapi-utils`;
-import spec from '../schema/openapi.generated';
+import { createOpenApiRouter } from '../schema/openapi.generated';
 // ...
 export function createRouter() {
-    const router = Router() as ApiRouter<typeof spec>;
-    // ...
-    return router;
+  const router = createOpenApiRouter();
+  // add routes to router, it's just an express router.
+  return router;
 }
 ```
+
+3. Add `@backstage/backend-openapi-utils` to your `package.json`'s `dependencies`.
+
+Why do I need to add this to `dependencies`? If you check the `src/schema/openapi.generated.ts` file, we're creating a router stub for you with the `@backstage/backend-openapi-utils` package.
+
+### Customization
+
+If the out of the box `router` doesn't work, you can do the following,
+
+```ts
+import { createOpenApiRouter } from '../schema/openapi.generated';
+// ...
+export function createRouter() {
+  // See https://github.com/cdimascio/express-openapi-validator/wiki/Documentation for available options.
+  const router = createOpenApiRouter(validatorOptions);
+  // add routes to router, it's just an express router.
+  return router;
+}
+```
+
+If you need even more control -- say for example you wanted to update the spec at runtime -- you can do the following,
+
+```ts
+import { spec } from '../schema/openapi.generated';
+import { createValidatedOpenApiRouter } from '@backstage/backend-openapi-utils';
+// ...
+export function createRouter() {
+  // Update the spec here.
+  const newSpec = { ...spec, myproperty123: 123 };
+
+  // See https://github.com/cdimascio/express-openapi-validator/wiki/Documentation for available options.
+  const router = createValidatedOpenApiRouter<typeof newSpec>(
+    newSpec,
+    validatorOptions,
+  );
+  // add routes to router, it's just an express router.
+  return router;
+}
+```
+
+## INTERNAL
 
 ### Limitations
 
@@ -40,6 +80,10 @@ Router() as ApiRouter<DeepWriteable<typeof spec>>
 
 ## Future Work
 
-### Runtime validation
+### Response Validation
 
-Using a package like [`express-openapi-validator`](https://www.npmjs.com/package/express-openapi-validator), would allow us to remove [validation of request bodies with `AJV`](https://github.com/backstage/backstage/blob/e0506af8fc54074a160fb91c83d6cae8172d3bb3/plugins/catalog-backend/src/service/util.ts#L58). However, `AJV` currently doesn't have support for OpenAPI 3.1 and `express-openapi-validator` enforces full URL matching for paths, meaning it cannot be mounted at the router level.
+This is a murky ground and something that will take a while to gain adoption. For now, keep responses in the spec and at the type level, but will need to work to drive adoption of response validation.
+
+### Common Error Format
+
+With the new `createRouter` method, we can start to control error response formats for input and coercion errors.

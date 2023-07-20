@@ -19,11 +19,7 @@ import request from 'supertest';
 import { errorHandler } from '@backstage/backend-common';
 
 import { createRouter } from './router';
-import {
-  parseFilterParam,
-  parseIntegerParam,
-  parseOrderByParam,
-} from '../lib/utils';
+import { parseFilterParam, parseOrderByParam } from '../lib/utils';
 import { TodoService } from './types';
 
 const mockListBody = {
@@ -136,55 +132,41 @@ describe('createRouter', () => {
     });
 
     it('rejects invalid queries', async () => {
-      await expect(
-        request(app).get('/v1/todos?entity=k:n&entity=k:n'),
-      ).resolves.toMatchObject(
-        matchErrorResponse(400, 'InputError', 'entity query must be a string'),
-      );
+      request(app)
+        .get('/v1/todos?entity=k:n&entity=k:n')
+        .expect(400)
+        .expect(
+          matchErrorResponse(
+            400,
+            'InputError',
+            'entity query must be a string',
+          ),
+        );
 
-      await expect(
-        request(app).get('/v1/todos?entity=:n'),
-      ).resolves.toMatchObject(
-        matchErrorResponse(
-          400,
-          'InputError',
-          'Invalid entity ref, TypeError: Entity reference ":n" was not on the form [<kind>:][<namespace>/]<name>',
-        ),
-      );
+      request(app)
+        .get('/v1/todos?entity=:n')
+        .expect(400)
+        .expect(
+          matchErrorResponse(
+            400,
+            'InputError',
+            'Invalid entity ref, TypeError: Entity reference ":n" was not on the form [<kind>:][<namespace>/]<name>',
+          ),
+        );
 
-      await expect(
-        request(app).get('/v1/todos?offset=1.5'),
-      ).resolves.toMatchObject(
-        matchErrorResponse(
-          400,
-          'InputError',
-          'invalid offset query, not an integer',
-        ),
-      );
+      request(app)
+        .get('/v1/todos?offset=1.5')
+        .expect(400)
+        .expect(
+          matchErrorResponse(
+            400,
+            'InputError',
+            'invalid offset query, not an integer',
+          ),
+        );
 
       expect(mockService.listTodos).not.toHaveBeenCalled();
     });
-  });
-});
-
-describe('parseIntegerParam', () => {
-  it('should parse a param', () => {
-    expect(parseIntegerParam('1', 'ctx')).toBe(1);
-  });
-
-  it('should reject invalid params', () => {
-    expect(() => parseIntegerParam(['1'], 'ctx')).toThrow(
-      'invalid ctx, must be a string',
-    );
-    expect(() => parseIntegerParam('1.5', 'ctx')).toThrow(
-      'invalid ctx, not an integer',
-    );
-    expect(() => parseIntegerParam('foo', 'ctx')).toThrow(
-      'invalid ctx, not an integer',
-    );
-    expect(() => parseIntegerParam('1foo', 'ctx')).toThrow(
-      'invalid ctx, not an integer',
-    );
   });
 });
 

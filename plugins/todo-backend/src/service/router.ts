@@ -17,16 +17,13 @@
 import { CompoundEntityRef, parseEntityRef } from '@backstage/catalog-model';
 import { InputError } from '@backstage/errors';
 import express from 'express';
-import Router from 'express-promise-router';
 import { type TodoService, TODO_FIELDS } from './types';
 import {
   getBearerToken,
   parseFilterParam,
-  parseIntegerParam,
   parseOrderByParam,
 } from '../lib/utils';
-import spec from '../schema/openapi.generated';
-import type { ApiRouter } from '@backstage/backend-openapi-utils';
+import { createOpenApiRouter } from '../schema/openapi.generated';
 
 /** @public */
 export interface RouterOptions {
@@ -37,14 +34,12 @@ export interface RouterOptions {
 export async function createRouter(
   options: RouterOptions,
 ): Promise<express.Router> {
+  const router = await createOpenApiRouter();
+  router.use(express.json());
   const { todoService } = options;
 
-  const router = Router() as ApiRouter<typeof spec>;
-  router.use(express.json());
-
   router.get('/v1/todos', async (req, res) => {
-    const offset = parseIntegerParam(req.query.offset, 'offset query');
-    const limit = parseIntegerParam(req.query.limit, 'limit query');
+    const { offset, limit } = req.query;
     const orderBy = parseOrderByParam(req.query.orderBy, TODO_FIELDS);
     const filters = parseFilterParam(req.query.filter, TODO_FIELDS);
 
