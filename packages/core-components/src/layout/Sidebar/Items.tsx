@@ -46,10 +46,11 @@ import React, {
   useContext,
   useMemo,
   useState,
+  type ForwardedRef,
 } from 'react';
 import {
   Link,
-  NavLinkProps,
+  NavLinkProps as RRDNavLinkProps,
   resolvePath,
   useLocation,
   useResolvedPath,
@@ -67,6 +68,8 @@ import { SidebarSubmenu, SidebarSubmenuProps } from './SidebarSubmenu';
 import { SidebarSubmenuItemProps } from './SidebarSubmenuItem';
 import { isLocationMatch } from './utils';
 import Button from '@material-ui/core/Button';
+
+type NavLinkProps = RRDNavLinkProps & { children: ReactNode };
 
 /** @public */
 export type SidebarItemClassKey =
@@ -274,19 +277,28 @@ type SidebarItemBaseProps = {
 };
 
 type SidebarItemButtonProps = SidebarItemBaseProps & {
+  type: 'button';
   onClick: (ev: React.MouseEvent) => void;
   children?: ReactNode;
 };
 
 type SidebarItemLinkProps = SidebarItemBaseProps & {
+  type: 'link';
   to: string;
   onClick?: (ev: React.MouseEvent) => void;
 } & NavLinkProps;
 
 type SidebarItemWithSubmenuProps = SidebarItemBaseProps & {
+  type: 'submenu';
   to?: string;
   onClick?: (ev: React.MouseEvent) => void;
   children: ReactNode;
+};
+
+type RefTypeEnum = {
+  button: HTMLButtonElement;
+  link: HTMLAnchorElement;
+  submenu: HTMLAnchorElement;
 };
 
 /**
@@ -299,11 +311,16 @@ type SidebarItemProps =
   | SidebarItemButtonProps
   | SidebarItemWithSubmenuProps;
 
-function isButtonItem(
-  props: SidebarItemProps,
-): props is SidebarItemButtonProps {
-  return (props as SidebarItemLinkProps).to === undefined;
+type GetSidebarItemType<PropType extends SidebarItemProps> = PropType extends {
+  type: infer ElementType;
 }
+  ? ElementType
+  : never;
+
+/* If the GetRefType has an error, update RefTypeEnum to include missing type */
+type GetRefType<T extends SidebarItemProps> = ForwardedRef<
+  RefTypeEnum[GetSidebarItemType<T>]
+>;
 
 const sidebarSubmenuType = React.createElement(SidebarSubmenu).type;
 
@@ -312,7 +329,10 @@ const sidebarSubmenuType = React.createElement(SidebarSubmenu).type;
 //               properly yet, matching for example /foobar with /foo.
 export const WorkaroundNavLink = React.forwardRef<
   HTMLAnchorElement,
-  NavLinkProps & { activeStyle?: CSSProperties; activeClassName?: string }
+  NavLinkProps & {
+    activeStyle?: CSSProperties;
+    activeClassName?: string;
+  }
 >(function WorkaroundNavLinkWithRef(
   {
     to,
@@ -323,6 +343,7 @@ export const WorkaroundNavLink = React.forwardRef<
     caseSensitive,
     activeClassName = 'active',
     'aria-current': ariaCurrentProp = 'page',
+    children,
     ...rest
   },
   ref,
@@ -343,6 +364,8 @@ export const WorkaroundNavLink = React.forwardRef<
 
   const ariaCurrent = isActive ? ariaCurrentProp : undefined;
 
+  // determine whether or not children is ReactNode or a function
+
   return (
     <Link
       {...rest}
@@ -361,127 +384,130 @@ export const WorkaroundNavLink = React.forwardRef<
 /**
  * Common component used by SidebarItem & SidebarItemWithSubmenu
  */
-const SidebarItemBase = forwardRef<any, SidebarItemProps>((props, ref) => {
-  const {
-    icon: Icon,
-    text,
-    hasNotifications = false,
-    hasSubmenu = false,
-    disableHighlight = false,
-    onClick,
-    noTrack,
-    children,
-    className,
-    ...navLinkProps
-  } = props;
-  const { sidebarConfig } = useContext(SidebarConfigContext);
-  const classes = useMemoStyles(sidebarConfig);
-  // XXX (@koroeskohr): unsure this is optimal. But I just really didn't want to have the item component
-  // depend on the current location, and at least have it being optionally forced to selected.
-  // Still waiting on a Q answered to fine tune the implementation
-  const { isOpen } = useSidebarOpenState();
-
-  const divStyle =
-    !isOpen && hasSubmenu
-      ? { display: 'flex', marginLeft: '20px' }
-      : { lineHeight: '0' };
-
-  const displayItemIcon = (
-    <Box style={divStyle}>
-      <Icon fontSize="small" />
-      {!isOpen && hasSubmenu ? <ArrowRightIcon fontSize="small" /> : <></>}
-    </Box>
-  );
-
-  const itemIcon = (
-    <Badge
-      color="secondary"
-      variant="dot"
-      overlap="circular"
-      invisible={!hasNotifications}
-      className={classnames({ [classes.closedItemIcon]: !isOpen })}
-    >
-      {displayItemIcon}
-    </Badge>
-  );
-
-  const openContent = (
-    <>
-      <Box data-testid="login-button" className={classes.iconContainer}>
-        {itemIcon}
-      </Box>
-      {text && (
-        <Typography
-          variant="subtitle2"
-          component="span"
-          className={classes.label}
-        >
-          {text}
-        </Typography>
-      )}
-      <div className={classes.secondaryAction}>{children}</div>
-    </>
-  );
-
-  const content = isOpen ? openContent : itemIcon;
-
-  const childProps = {
-    onClick,
-    className: classnames(
+const SidebarItemBase = forwardRef(
+  <T extends SidebarItemProps>(props: T, ref: GetRefType<T>) => {
+    const {
+      type,
+      icon: Icon,
+      text,
+      hasNotifications = false,
+      hasSubmenu = false,
+      disableHighlight = false,
+      onClick,
+      noTrack,
+      children,
       className,
-      classes.root,
-      isOpen ? classes.open : classes.closed,
-      isButtonItem(props) && classes.buttonItem,
-      { [classes.highlightable]: !disableHighlight },
-    ),
-  };
+      ...navLinkProps
+    } = props;
+    const { sidebarConfig } = useContext(SidebarConfigContext);
+    const classes = useMemoStyles(sidebarConfig);
+    // XXX (@koroeskohr): unsure this is optimal. But I just really didn't want to have the item component
+    // depend on the current location, and at least have it being optionally forced to selected.
+    // Still waiting on a Q answered to fine tune the implementation
+    const { isOpen } = useSidebarOpenState();
 
-  const analyticsApi = useAnalytics();
-  const { pathname: to } = useResolvedPath(
-    !isButtonItem(props) && props.to ? props.to : '',
-  );
+    const divStyle =
+      !isOpen && hasSubmenu
+        ? { display: 'flex', marginLeft: '20px' }
+        : { lineHeight: '0' };
 
-  const handleClick = useCallback(
-    (event: React.MouseEvent<HTMLAnchorElement | HTMLButtonElement>) => {
-      if (!noTrack) {
-        const action = 'click';
-        const subject = text ?? 'Sidebar Item';
-        const options = to ? { attributes: { to } } : undefined;
-        analyticsApi.captureEvent(action, subject, options);
-      }
-      onClick?.(event);
-    },
-    [analyticsApi, text, to, noTrack, onClick],
-  );
+    const displayItemIcon = (
+      <Box style={divStyle}>
+        <Icon fontSize="small" />
+        {!isOpen && hasSubmenu ? <ArrowRightIcon fontSize="small" /> : <></>}
+      </Box>
+    );
 
-  if (isButtonItem(props)) {
+    const itemIcon = (
+      <Badge
+        color="secondary"
+        variant="dot"
+        overlap="circular"
+        invisible={!hasNotifications}
+        className={classnames({ [classes.closedItemIcon]: !isOpen })}
+      >
+        {displayItemIcon}
+      </Badge>
+    );
+
+    const openContent = (
+      <>
+        <Box data-testid="login-button" className={classes.iconContainer}>
+          {itemIcon}
+        </Box>
+        {text && (
+          <Typography
+            variant="subtitle2"
+            component="span"
+            className={classes.label}
+          >
+            {text}
+          </Typography>
+        )}
+        <div className={classes.secondaryAction}>{children}</div>
+      </>
+    );
+
+    const content = isOpen ? openContent : itemIcon;
+
+    const childProps = {
+      onClick,
+      className: classnames(
+        className,
+        classes.root,
+        isOpen ? classes.open : classes.closed,
+        type === 'button' && classes.buttonItem,
+        { [classes.highlightable]: !disableHighlight },
+      ),
+    };
+
+    const analyticsApi = useAnalytics();
+    const { pathname: to } = useResolvedPath(
+      type === 'button' ? '' : props.to || '',
+    );
+
+    const handleClick = useCallback(
+      (event: React.MouseEvent<HTMLAnchorElement | HTMLButtonElement>) => {
+        if (!noTrack) {
+          const action = 'click';
+          const subject = text ?? 'Sidebar Item';
+          const options = to ? { attributes: { to } } : undefined;
+          analyticsApi.captureEvent(action, subject, options);
+        }
+        onClick?.(event);
+      },
+      [analyticsApi, text, to, noTrack, onClick],
+    );
+
+    if (type === 'button') {
+      return (
+        <Button
+          role="button"
+          aria-label={text}
+          {...childProps}
+          ref={ref as GetRefType<SidebarItemButtonProps>}
+          onClick={handleClick}
+        >
+          {content}
+        </Button>
+      );
+    }
+
     return (
-      <Button
-        role="button"
-        aria-label={text}
+      <WorkaroundNavLink
         {...childProps}
-        ref={ref}
+        activeClassName={classes.selected}
+        to={(type === 'link' || type === 'submenu') && props.to ? props.to : ''}
+        ref={ref as GetRefType<SidebarItemLinkProps>}
+        aria-label={text ? text : props.to}
+        {...navLinkProps}
         onClick={handleClick}
       >
         {content}
-      </Button>
+      </WorkaroundNavLink>
     );
-  }
-
-  return (
-    <WorkaroundNavLink
-      {...childProps}
-      activeClassName={classes.selected}
-      to={props.to ? props.to : ''}
-      ref={ref}
-      aria-label={text ? text : props.to}
-      {...navLinkProps}
-      onClick={handleClick}
-    >
-      {content}
-    </WorkaroundNavLink>
-  );
-});
+  },
+);
 
 const SidebarItemWithSubmenu = ({
   children,
@@ -535,6 +561,7 @@ const SidebarItemWithSubmenu = ({
         className={classnames(isHoveredOn && classes.highlighted)}
       >
         <SidebarItemBase
+          type="submenu"
           hasSubmenu
           className={isActive ? classes.selected : ''}
           {...props}
@@ -553,26 +580,28 @@ const SidebarItemWithSubmenu = ({
  * @remarks
  * If children contain a `SidebarSubmenu` component the `SidebarItem` will have a expandable submenu
  */
-export const SidebarItem = forwardRef<any, SidebarItemProps>((props, ref) => {
-  // Filter children for SidebarSubmenu components
-  const [submenu] = useElementFilter(props.children, elements =>
-    // Directly comparing child.type with SidebarSubmenu will not work with in
-    // combination with react-hot-loader
-    //
-    // https://github.com/gaearon/react-hot-loader/issues/304#issuecomment-456569720
-    elements.getElements().filter(child => child.type === sidebarSubmenuType),
-  );
-
-  if (submenu) {
-    return (
-      <SidebarItemWithSubmenu {...props}>
-        {submenu as React.ReactElement<SidebarSubmenuProps>}
-      </SidebarItemWithSubmenu>
+export const SidebarItem = forwardRef<HTMLAnchorElement, SidebarItemProps>(
+  (props, ref) => {
+    // Filter children for SidebarSubmenu components
+    const [submenu] = useElementFilter(props.children, elements =>
+      // Directly comparing child.type with SidebarSubmenu will not work with in
+      // combination with react-hot-loader
+      //
+      // https://github.com/gaearon/react-hot-loader/issues/304#issuecomment-456569720
+      elements.getElements().filter(child => child.type === sidebarSubmenuType),
     );
-  }
 
-  return <SidebarItemBase {...props} ref={ref} />;
-}) as (props: SidebarItemProps) => JSX.Element;
+    if (submenu) {
+      return (
+        <SidebarItemWithSubmenu {...props}>
+          {submenu as React.ReactElement<SidebarSubmenuProps>}
+        </SidebarItemWithSubmenu>
+      );
+    }
+
+    return <SidebarItemBase {...props} ref={ref} />;
+  },
+) as (props: SidebarItemProps) => JSX.Element;
 
 type SidebarSearchFieldProps = {
   onSearch: (input: string) => void;
@@ -621,6 +650,7 @@ export function SidebarSearchField(props: SidebarSearchFieldProps) {
         to={props.to}
         onClick={handleItemClick}
         disableHighlight
+        type="submenu"
       >
         <TextField
           placeholder="Search"
