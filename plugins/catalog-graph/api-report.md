@@ -10,6 +10,7 @@ import { CompoundEntityRef } from '@backstage/catalog-model';
 import { DependencyGraphTypes } from '@backstage/core-components';
 import { ExternalRouteRef } from '@backstage/core-plugin-api';
 import { InfoCardVariants } from '@backstage/core-components';
+import { JsonObject } from '@backstage/types';
 import { MouseEvent as MouseEvent_2 } from 'react';
 import { MouseEventHandler } from 'react';
 import { RouteRef } from '@backstage/core-plugin-api';
@@ -92,6 +93,7 @@ export type EntityNodeData = {
   kind?: string;
   title?: string;
   namespace: string;
+  spec?: JsonObject;
   focused?: boolean;
   color?: 'primary' | 'secondary' | 'default';
   onClick?: MouseEventHandler<unknown>;

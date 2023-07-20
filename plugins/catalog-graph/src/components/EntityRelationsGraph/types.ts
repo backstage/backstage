@@ -15,6 +15,7 @@
  */
 
 import { DependencyGraphTypes } from '@backstage/core-components';
+import { JsonObject } from '@backstage/types';
 import { MouseEventHandler } from 'react';
 
 /**
@@ -63,6 +64,10 @@ export type EntityNodeData = {
    * Namespace of the entity.
    */
   namespace: string;
+  /**
+   * Optional spec of the entity.
+   */
+  spec?: JsonObject;
   /**
    * Whether the entity is focused, optional, defaults to false. Focused
    * entities are highlighted in the graph.

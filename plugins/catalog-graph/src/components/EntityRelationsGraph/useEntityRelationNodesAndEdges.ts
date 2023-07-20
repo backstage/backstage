@@ -75,6 +75,7 @@ export function useEntityRelationNodesAndEdges({
           kind: entity.kind,
           name: entity.metadata.name,
           namespace: entity.metadata.namespace ?? DEFAULT_NAMESPACE,
+          spec: entity.spec ?? undefined,
           focused,
           color: focused ? 'secondary' : 'primary',
         };
