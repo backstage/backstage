@@ -38,7 +38,7 @@ const useStyles = makeStyles(theme => ({
   },
   button: {
     visibility: 'hidden',
-    padding: 3,
+    padding: theme.spacing(1 / 2),
   },
   icon: {
     color: theme.palette.common.white,
