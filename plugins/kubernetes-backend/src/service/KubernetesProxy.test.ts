@@ -693,7 +693,6 @@ describe('KubernetesProxy', () => {
       });
 
       wsEchoServer = new WebSocketServer({
-        // server: expressServer,
         port: 0,
         path: wsPath,
       });
