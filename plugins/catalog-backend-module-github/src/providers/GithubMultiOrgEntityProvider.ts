@@ -18,9 +18,11 @@ import { TaskRunner } from '@backstage/backend-tasks';
 import {
   ANNOTATION_LOCATION,
   ANNOTATION_ORIGIN_LOCATION,
+  areGroupEntities,
+  areUserEntities,
   DEFAULT_NAMESPACE,
   Entity,
-  GroupEntity,
+  isGroupEntity,
   parseEntityRef,
   stringifyEntityRef,
   UserEntity,
@@ -240,7 +242,7 @@ export class GithubMultiOrgEntityProvider implements EntityProvider {
     const { markReadComplete } = trackProgress(logger);
 
     const allUsersMap = new Map();
-    const allGroups: Entity[] = [];
+    const allTeams: Entity[] = [];
 
     const orgsToProcess = this.options.orgs?.length
       ? this.options.orgs
@@ -266,7 +268,7 @@ export class GithubMultiOrgEntityProvider implements EntityProvider {
           this.options.userTransformer,
         );
 
-        const { groups } = await getOrganizationTeams(
+        const { teams } = await getOrganizationTeams(
           client,
           org,
           this.defaultMultiOrgTeamTransformer.bind(this),
@@ -283,10 +285,14 @@ export class GithubMultiOrgEntityProvider implements EntityProvider {
           return allUsersMap.get(userRef);
         });
 
-        assignGroupsToUsers(pendingUsers, groups);
-        buildOrgHierarchy(groups);
+        if (areGroupEntities(teams)) {
+          buildOrgHierarchy(teams);
+          if (areUserEntities(pendingUsers)) {
+            assignGroupsToUsers(pendingUsers, teams);
+          }
+        }
 
-        allGroups.push(...groups);
+        allTeams.push(...teams);
       } catch (e) {
         logger.error(`Failed to read GitHub org data for ${org}: ${e}`);
       }
@@ -294,11 +300,11 @@ export class GithubMultiOrgEntityProvider implements EntityProvider {
 
     const allUsers = Array.from(allUsersMap.values());
 
-    const { markCommitComplete } = markReadComplete({ allUsers, allGroups });
+    const { markCommitComplete } = markReadComplete({ allUsers, allTeams });
 
     await this.connection.applyMutation({
       type: 'full',
-      entities: [...allUsers, ...allGroups].map(entity => ({
+      entities: [...allUsers, ...allTeams].map(entity => ({
         locationKey: `github-multi-org-provider:${this.options.id}`,
         entity: withLocations(
           `https://${this.options.gitHubConfig.host}`,
@@ -422,7 +428,7 @@ export class GithubMultiOrgEntityProvider implements EntityProvider {
       this.options.userTransformer,
     );
 
-    const { groups } = await getOrganizationTeams(
+    const { teams } = await getOrganizationTeams(
       client,
       org,
       this.defaultMultiOrgTeamTransformer.bind(this),
@@ -440,7 +446,7 @@ export class GithubMultiOrgEntityProvider implements EntityProvider {
         headers: orgHeaders,
       });
 
-      const { groups: userGroups } = await getOrganizationTeamsFromUsers(
+      const { teams: userTeams } = await getOrganizationTeamsFromUsers(
         orgClient,
         userOrg,
         users.map(
@@ -451,12 +457,14 @@ export class GithubMultiOrgEntityProvider implements EntityProvider {
         this.defaultMultiOrgTeamTransformer.bind(this),
       );
 
-      assignGroupsToUsers(users, userGroups);
+      if (areGroupEntities(userTeams) && areUserEntities(users)) {
+        assignGroupsToUsers(users, userTeams);
+      }
     }
 
     const { added, removed } = this.createAddEntitiesOperation([
       ...users,
-      ...groups,
+      ...teams,
     ]);
     await this.connection.applyMutation({
       type: 'delta',
@@ -536,14 +544,16 @@ export class GithubMultiOrgEntityProvider implements EntityProvider {
           headers: orgHeaders,
         });
 
-        const { groups } = await getOrganizationTeamsFromUsers(
+        const { teams } = await getOrganizationTeamsFromUsers(
           orgClient,
           userOrg,
           [login],
           this.defaultMultiOrgTeamTransformer.bind(this),
         );
 
-        assignGroupsToUsers([user], groups);
+        if (areGroupEntities(teams)) {
+          assignGroupsToUsers([user], teams);
+        }
       }
     }
 
@@ -623,7 +633,7 @@ export class GithubMultiOrgEntityProvider implements EntityProvider {
     });
 
     const teamSlug = event.team.slug;
-    const { group } = await getOrganizationTeam(
+    const { team } = await getOrganizationTeam(
       client,
       org,
       teamSlug,
@@ -637,10 +647,11 @@ export class GithubMultiOrgEntityProvider implements EntityProvider {
       this.options.userTransformer,
     );
 
-    const usersFromChangedGroup =
-      group.spec.members?.map(m =>
-        stringifyEntityRef(parseEntityRef(m, { defaultKind: 'user' })),
-      ) || [];
+    const usersFromChangedGroup = isGroupEntity(team)
+      ? team.spec.members?.map(m =>
+          stringifyEntityRef(parseEntityRef(m, { defaultKind: 'user' })),
+        ) || []
+      : [];
     const usersToRebuild = users.filter(u =>
       usersFromChangedGroup.includes(stringifyEntityRef(u)),
     );
@@ -656,7 +667,7 @@ export class GithubMultiOrgEntityProvider implements EntityProvider {
         headers: orgHeaders,
       });
 
-      const { groups } = await getOrganizationTeamsFromUsers(
+      const { teams } = await getOrganizationTeamsFromUsers(
         orgClient,
         userOrg,
         usersToRebuild.map(
@@ -667,7 +678,9 @@ export class GithubMultiOrgEntityProvider implements EntityProvider {
         this.defaultMultiOrgTeamTransformer.bind(this),
       );
 
-      assignGroupsToUsers(usersToRebuild, groups);
+      if (areGroupEntities(teams) && areUserEntities(usersToRebuild)) {
+        assignGroupsToUsers(usersToRebuild, teams);
+      }
     }
 
     const oldName = event.changes.name?.from || '';
@@ -693,7 +706,7 @@ export class GithubMultiOrgEntityProvider implements EntityProvider {
     const { removed } = this.createRemoveEntitiesOperation([oldGroup]);
     const { added } = this.createAddEntitiesOperation([
       ...usersToRebuild,
-      group,
+      team,
     ]);
     await this.connection.applyMutation({
       type: 'delta',
@@ -729,7 +742,7 @@ export class GithubMultiOrgEntityProvider implements EntityProvider {
     });
 
     const teamSlug = event.team.slug;
-    const { group } = await getOrganizationTeam(
+    const { team } = await getOrganizationTeam(
       client,
       org,
       teamSlug,
@@ -765,17 +778,19 @@ export class GithubMultiOrgEntityProvider implements EntityProvider {
         headers: orgHeaders,
       });
 
-      const { groups } = await getOrganizationTeamsFromUsers(
+      const { teams } = await getOrganizationTeamsFromUsers(
         orgClient,
         userOrg,
         [login],
         this.defaultMultiOrgTeamTransformer.bind(this),
       );
 
-      assignGroupsToUsers([user], groups);
+      if (areGroupEntities(teams)) {
+        assignGroupsToUsers([user], teams);
+      }
     }
 
-    const { added, removed } = this.createAddEntitiesOperation([user, group]);
+    const { added, removed } = this.createAddEntitiesOperation([user, team]);
     await this.connection.applyMutation({
       type: 'delta',
       removed,
@@ -812,14 +827,14 @@ export class GithubMultiOrgEntityProvider implements EntityProvider {
   private async defaultMultiOrgTeamTransformer(
     team: GithubTeam,
     ctx: TransformerContext,
-  ): Promise<GroupEntity | undefined> {
+  ): Promise<Entity | undefined> {
     if (this.options.teamTransformer) {
       return await this.options.teamTransformer(team, ctx);
     }
 
     const result = await defaultOrganizationTeamTransformer(team, ctx);
 
-    if (result) {
+    if (result && result.spec) {
       result.metadata.namespace = ctx.org.toLocaleLowerCase('en-US');
       // Group `spec.members` inherits the namespace of it's group so need to explicitly specify refs here
       result.spec.members = team.members.map(
@@ -885,9 +900,9 @@ function trackProgress(logger: Logger) {
 
   function markReadComplete(read: {
     allUsers: unknown[];
-    allGroups: unknown[];
+    allTeams: unknown[];
   }) {
-    summary = `${read.allUsers.length} GitHub users and ${read.allGroups.length} GitHub groups`;
+    summary = `${read.allUsers.length} GitHub users and ${read.allTeams.length} GitHub groups`;
     const readDuration = ((Date.now() - timestamp) / 1000).toFixed(1);
     timestamp = Date.now();
     logger.info(`Read ${summary} in ${readDuration} seconds. Committing...`);

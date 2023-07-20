@@ -444,7 +444,7 @@ describe('github', () => {
         customTeamTransformer,
       );
 
-      expect(teams.groups).toHaveLength(1);
+      expect(teams.teams).toHaveLength(1);
       expect(teams).toEqual(output);
     });
   });
