@@ -102,17 +102,17 @@ export class NewRelicBrowser implements AnalyticsApi {
         | ((userEntityRef: string) => Promise<string>);
     },
   ) {
+    const newRelicBrowserConfig = config.getConfig('app.analytics.newRelic');
     const browserOptions: NewRelicBrowserOptions = {
-      endpoint: config.getString('app.analytics.nr.endpoint'),
-      accountId: config.getString('app.analytics.nr.accountId'),
-      applicationId: config.getString('app.analytics.nr.applicationId'),
-      licenseKey: config.getString('app.analytics.nr.licenseKey'),
+      endpoint: newRelicBrowserConfig.getString('endpoint'),
+      accountId: newRelicBrowserConfig.getString('accountId'),
+      applicationId: newRelicBrowserConfig.getString('applicationId'),
+      licenseKey: newRelicBrowserConfig.getString('licenseKey'),
       distributedTracingEnabled:
-        config.getOptionalBoolean(
-          'app.analytics.nr.distributedTracingEnabled',
-        ) ?? false,
+        newRelicBrowserConfig.getOptionalBoolean('distributedTracingEnabled') ??
+        false,
       cookiesEnabled:
-        config.getOptionalBoolean('app.analytics.nr.cookiesEnabled') ?? false,
+        newRelicBrowserConfig.getOptionalBoolean('cookiesEnabled') ?? false,
     };
     return new NewRelicBrowser(
       browserOptions,

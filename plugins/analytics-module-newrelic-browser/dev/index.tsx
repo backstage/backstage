@@ -33,7 +33,7 @@ createDevApp()
       }),
   })
   .addPage({
-    path: '/nr',
+    path: '/newrelic',
     title: 'New Relic Playground',
     element: <Playground />,
   })

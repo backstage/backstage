@@ -17,7 +17,7 @@
 export interface Config {
   app: {
     analytics?: {
-      nr: {
+      newRelic: {
         /**
          * Data ingestion endpoint to use, either bam.eu01.nr-data.net (EU) or bam.nr-data.net (US)
          * @visibility frontend

@@ -47,7 +47,7 @@ in New Relic Browser using the Copy/Paste method.
 # app-config.yaml
 app:
   analytics:
-    nr:
+    newRelic:
       endpoint: 'bam.nr-data.net',
       accountId: '1234567'
       applicationId: '987654321'
@@ -64,7 +64,7 @@ By default the distributed tracing and cookies features are disabled. You can en
 # app-config.yaml
 app:
   analytics:
-    nr:
+    newRelic:
       ...
       distributedTracing: true
       cookiesEnabled: true
@@ -109,9 +109,9 @@ make and test changes is to do the following:
 2. Install all dependencies `yarn install`
 3. If one does not exist, create an `app-config.local.yaml` file in the root of
    the monorepo and add config for this plugin (see below)
-4. Enter this plugin's working directory: `cd plugins/analytics-provider-nr`
+4. Enter this plugin's working directory: `cd plugins/analytics-provider-newrelic-browser`
 5. Start the plugin in isolation: `yarn start`
-6. Navigate to the playground page at `http://localhost:3000/nr`
+6. Navigate to the playground page at `http://localhost:3000/newrelic`
 7. Open the web console to see events fire when you navigate or when you
    interact with instrumented components.
 
@@ -125,7 +125,7 @@ Paste this into your `app-config.local.yaml` while developing this plugin:
 ```yaml
 app:
   analytics:
-    nr:
+    newRelic:
       accountId: '1234567'
       applicationId: '987654321'
       licenseKey: 'NRJS-12a3456bc78de9123f4'
