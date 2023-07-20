@@ -2,4 +2,4 @@
 '@backstage/plugin-kubernetes-backend': patch
 ---
 
-WebSocket requests path were not being rewritten by the proxy properly, now they do.
+Fixed a bug where the proxy was not rewriting WebSocket request paths properly.
