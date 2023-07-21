@@ -243,6 +243,7 @@ interface GroupEntityV1alpha1 extends Entity {
     parent?: string;
     children: string[];
     members?: string[];
+    owners?: string[];
   };
 }
 export { GroupEntityV1alpha1 as GroupEntity };
@@ -475,6 +476,7 @@ interface UserEntityV1alpha1 extends Entity {
       picture?: string;
     };
     memberOf?: string[];
+    ownerOf?: string[];
   };
 }
 export { UserEntityV1alpha1 as UserEntity };

@@ -55,6 +55,8 @@ export type GroupConfig = {
     picture?: string;
     memberOf: string;
     members: string;
+    ownerOf: string;
+    owners: string;
   };
 };
 
@@ -214,6 +216,7 @@ export type UserConfig = {
     email: string;
     picture?: string;
     memberOf: string;
+    ownerOf: string;
   };
 };
 
