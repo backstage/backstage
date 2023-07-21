@@ -50,23 +50,38 @@ const onException = (e: Error, span: Span) => {
   });
 };
 
+function isPromiseLike<T, S>(obj: PromiseLike<T> | S): obj is PromiseLike<T> {
+  return (
+    !!obj &&
+    (typeof obj === 'object' || typeof obj === 'function') &&
+    'then' in obj &&
+    typeof obj.then === 'function'
+  );
+}
+
 function handleFn<F extends (span: Span) => ReturnType<F>>(
   span: Span,
   fn: F,
 ): ReturnType<F> {
   try {
-    const ret = fn(span) as Promise<ReturnType<F>>;
+    const ret = fn(span);
+
     // if fn is an async function attach a recordException and spanEnd callback to the promise
-    if (typeof ret.then === 'function' && typeof ret.catch === 'function') {
-      return ret
-        .catch((e: Error) => {
+    if (isPromiseLike(ret)) {
+      ret.then(
+        () => {
+          span.end();
+        },
+        e => {
           onException(e, span);
-          throw e;
-        })
-        .finally(() => span.end()) as ReturnType<F>;
+          span.end();
+        },
+      );
+    } else {
+      span.end();
     }
-    span.end();
-    return ret as ReturnType<F>;
+
+    return ret;
   } catch (e) {
     onException(e, span);
     span.end();
