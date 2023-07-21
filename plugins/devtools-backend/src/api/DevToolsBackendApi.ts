@@ -219,7 +219,12 @@ export class DevToolsBackendApi {
     const lockfilePath = paths.resolveTargetRoot('yarn.lock');
     const lockfile = await Lockfile.load(lockfilePath);
 
-    const deps = [...lockfile.keys()].filter(n => n.startsWith('@backstage/'));
+    const prefixes = this.config.getOptionalStringArray(
+      'devTools.packagePrefixes',
+    ) ?? ['@backstage/'];
+    const deps = [...lockfile.keys()].filter(n =>
+      prefixes.some(prefix => n.startsWith(prefix)),
+    );
 
     const infoDependencies: PackageDependency[] = [];
     for (const dep of deps) {

@@ -40,5 +40,10 @@ export interface Config {
         target: string;
       }>;
     };
+    /**
+     * A list of package prefixes that DevTools will use for filtering all available dependencies
+     * (default is ["@backstage"])
+     */
+    packagePrefixes?: string[];
   };
 }
