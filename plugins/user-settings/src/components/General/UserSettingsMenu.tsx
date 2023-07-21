@@ -25,7 +25,8 @@ import {
 } from '@backstage/core-plugin-api';
 
 /** @public */
-export const UserSettingsMenu = () => {
+export const UserSettingsMenu = (props: { onLogout?: () => void }) => {
+  const { onLogout } = props;
   const errorApi = useApi(errorApiRef);
   const identityApi = useApi(identityApiRef);
   const [open, setOpen] = React.useState(false);
@@ -55,9 +56,12 @@ export const UserSettingsMenu = () => {
       <Menu anchorEl={anchorEl} open={open} onClose={handleClose}>
         <MenuItem
           data-testid="sign-out"
-          onClick={() =>
-            identityApi.signOut().catch(error => errorApi.post(error))
-          }
+          onClick={() => {
+            identityApi.signOut().catch(error => errorApi.post(error));
+            if (onLogout) {
+              onLogout();
+            }
+          }}
         >
           <ListItemIcon>
             <SignOutIcon />

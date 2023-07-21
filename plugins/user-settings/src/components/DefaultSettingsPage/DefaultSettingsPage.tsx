@@ -26,13 +26,14 @@ import { SettingsLayout, SettingsLayoutRouteProps } from '../SettingsLayout';
 export const DefaultSettingsPage = (props: {
   tabs?: React.ReactElement<SettingsLayoutRouteProps>[];
   providerSettings?: JSX.Element;
+  onLogout?: () => void;
 }) => {
-  const { providerSettings, tabs } = props;
+  const { providerSettings, tabs, onLogout } = props;
 
   return (
     <SettingsLayout>
       <SettingsLayout.Route path="general" title="General">
-        <UserSettingsGeneral />
+        <UserSettingsGeneral onLogout={onLogout} />
       </SettingsLayout.Route>
       <SettingsLayout.Route
         path="auth-providers"

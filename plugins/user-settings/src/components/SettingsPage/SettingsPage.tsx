@@ -27,8 +27,11 @@ import {
 } from '../SettingsLayout/SettingsLayout';
 
 /** @public */
-export const SettingsPage = (props: { providerSettings?: JSX.Element }) => {
-  const { providerSettings } = props;
+export const SettingsPage = (props: {
+  providerSettings?: JSX.Element;
+  onLogout?: () => void;
+}) => {
+  const { providerSettings, onLogout } = props;
   const outlet = useOutlet();
   const layout = useElementFilter(outlet, elements =>
     elements
@@ -48,7 +51,11 @@ export const SettingsPage = (props: { providerSettings?: JSX.Element }) => {
   return (
     <>
       {(layout.length !== 0 && layout) || (
-        <DefaultSettingsPage tabs={tabs} providerSettings={providerSettings} />
+        <DefaultSettingsPage
+          tabs={tabs}
+          providerSettings={providerSettings}
+          onLogout={onLogout}
+        />
       )}
     </>
   );

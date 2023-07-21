@@ -22,7 +22,8 @@ import { useUserProfile } from '../useUserProfileInfo';
 import { InfoCard } from '@backstage/core-components';
 
 /** @public */
-export const UserSettingsProfileCard = () => {
+export const UserSettingsProfileCard = (props: { onLogout?: () => void }) => {
+  const { onLogout } = props;
   const { profile, displayName } = useUserProfile();
 
   return (
@@ -43,7 +44,7 @@ export const UserSettingsProfileCard = () => {
             </Grid>
           </Grid>
           <Grid item>
-            <UserSettingsMenu />
+            <UserSettingsMenu onLogout={onLogout} />
           </Grid>
         </Grid>
       </Grid>

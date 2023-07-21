@@ -21,11 +21,12 @@ import { UserSettingsAppearanceCard } from './UserSettingsAppearanceCard';
 import { UserSettingsIdentityCard } from './UserSettingsIdentityCard';
 
 /** @public */
-export const UserSettingsGeneral = () => {
+export const UserSettingsGeneral = (props: { onLogout?: () => void }) => {
+  const { onLogout } = props;
   return (
     <Grid container direction="row" spacing={3}>
       <Grid item xs={12} md={6}>
-        <UserSettingsProfileCard />
+        <UserSettingsProfileCard onLogout={onLogout} />
       </Grid>
       <Grid item xs={12} md={6}>
         <UserSettingsAppearanceCard />
