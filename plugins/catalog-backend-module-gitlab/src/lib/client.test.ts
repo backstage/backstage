@@ -556,7 +556,7 @@ describe('GitLabClient', () => {
                         id: 'gid://gitlab/Group/1',
                         name: 'group1',
                         description: 'description1',
-                        fullPath: 'path/user1',
+                        fullPath: 'path/group1',
                         parent: {
                           id: '123',
                         },
