@@ -212,7 +212,7 @@ export class GitLabClient {
         throw new Error(`GraphQL errors: ${JSON.stringify(response.errors)}`);
       }
 
-      if (!response.data.group?.descendantGroups.nodes) {
+      if (!response.data.group?.descendantGroups?.nodes) {
         this.logger.warn(
           `Couldn't get groups under ${groupPath}. The provided token might not have sufficient permissions`,
         );

@@ -413,11 +413,11 @@ describe('GitLabClient', () => {
                         user: {
                           id: 'gid://gitlab/User/1',
                           username: 'user1',
-                          email: 'user1@example.com',
+                          commitEmail: 'user1@example.com',
                           name: 'user1',
                           state: 'active',
-                          web_url: 'user1.com',
-                          avatar_url: 'user1',
+                          webUrl: 'user1.com',
+                          avatarUrl: 'user1',
                         },
                       },
                     ],
@@ -499,11 +499,11 @@ describe('GitLabClient', () => {
                             user: {
                               id: 'gid://gitlab/User/1',
                               username: 'user1',
-                              email: 'user1@example.com',
+                              commitEmail: 'user1@example.com',
                               name: 'user1',
                               state: 'active',
-                              web_url: 'user1.com',
-                              avatar_url: 'user1',
+                              webUrl: 'user1.com',
+                              avatarUrl: 'user1',
                             },
                           },
                         ]
@@ -512,11 +512,11 @@ describe('GitLabClient', () => {
                             user: {
                               id: 'gid://gitlab/User/2',
                               username: 'user2',
-                              email: 'user2@example.com',
+                              commitEmail: 'user2@example.com',
                               name: 'user2',
                               state: 'active',
-                              web_url: 'user2.com',
-                              avatar_url: 'user2',
+                              webUrl: 'user2.com',
+                              avatarUrl: 'user2',
                             },
                           },
                         ],
@@ -538,6 +538,143 @@ describe('GitLabClient', () => {
       const saasMembers = (await client.listSaasUsers('group1')).items;
 
       expect(saasMembers.length).toEqual(2);
+    });
+  });
+
+  describe('listSaasGroups', () => {
+    it('gets all groups under root', async () => {
+      server.use(
+        graphql
+          .link(`${MOCK_CONFIG.baseUrl}/api/graphql`)
+          .operation((_, res, ctx) =>
+            res(
+              ctx.data({
+                group: {
+                  descendantGroups: {
+                    nodes: [
+                      {
+                        id: 'gid://gitlab/Group/1',
+                        name: 'group1',
+                        description: 'description1',
+                        fullPath: 'path/user1',
+                        parent: {
+                          id: '123',
+                        },
+                      },
+                    ],
+                    pageInfo: {
+                      endCursor: 'end',
+                      hasNextPage: false,
+                    },
+                  },
+                },
+              }),
+            ),
+          ),
+      );
+      const client = new GitLabClient({
+        config: MOCK_CONFIG,
+        logger: getVoidLogger(),
+      });
+
+      const saasGroups = (await client.listSaasGroups('group1')).items;
+
+      expect(saasGroups.length).toEqual(1);
+    });
+
+    it('gets all descendant groups with token without full permissions', async () => {
+      server.use(
+        graphql
+          .link(`${MOCK_CONFIG.baseUrl}/api/graphql`)
+          .operation((_, res, ctx) =>
+            res(
+              ctx.data({
+                group: {},
+              }),
+            ),
+          ),
+      );
+      const client = new GitLabClient({
+        config: MOCK_CONFIG,
+        logger: getVoidLogger(),
+      });
+
+      const saasGroups = (await client.listSaasGroups('group1')).items;
+
+      expect(saasGroups).toEqual([]);
+    });
+
+    it('rejects when GraphQL returns errors', async () => {
+      server.use(
+        graphql
+          .link(`${MOCK_CONFIG.baseUrl}/api/graphql`)
+          .operation((_, res, ctx) =>
+            res(
+              ctx.errors([
+                { message: 'Unexpected end of document', locations: [] },
+              ]),
+            ),
+          ),
+      );
+      const client = new GitLabClient({
+        config: MOCK_CONFIG,
+        logger: getVoidLogger(),
+      });
+
+      await expect(() => client.listSaasGroups('group1')).rejects.toThrow(
+        'GraphQL errors: [{"message":"Unexpected end of document","locations":[]}]',
+      );
+    });
+    it('traverses multi-page results', async () => {
+      server.use(
+        graphql
+          .link(`${MOCK_CONFIG.baseUrl}/api/graphql`)
+          .operation((req, res, ctx) =>
+            res(
+              ctx.data({
+                group: {
+                  descendantGroups: {
+                    nodes: req.variables.endCursor
+                      ? [
+                          {
+                            id: 'gid://gitlab/Group/1',
+                            name: 'group1',
+                            description: 'description1',
+                            fullPath: 'root/group1',
+                            parent: {
+                              id: '123',
+                            },
+                          },
+                        ]
+                      : [
+                          {
+                            id: 'gid://gitlab/Group/2',
+                            name: 'group2',
+                            description: 'description2',
+                            fullPath: 'root/group2',
+                            parent: {
+                              id: '123',
+                            },
+                          },
+                        ],
+                    pageInfo: {
+                      endCursor: req.variables.endCursor ? 'end' : 'next',
+                      hasNextPage: !req.variables.endCursor,
+                    },
+                  },
+                },
+              }),
+            ),
+          ),
+      );
+      const client = new GitLabClient({
+        config: MOCK_CONFIG,
+        logger: getVoidLogger(),
+      });
+
+      const saasGroups = (await client.listSaasGroups('root')).items;
+
+      expect(saasGroups.length).toEqual(2);
     });
   });
 
