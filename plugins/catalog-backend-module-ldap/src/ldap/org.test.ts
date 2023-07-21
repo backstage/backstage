@@ -15,7 +15,7 @@
  */
 
 import { GroupEntity, UserEntity } from '@backstage/catalog-model';
-import { buildMemberOf, buildOrgHierarchy } from './org';
+import { buildMemberOf, buildOrgHierarchy, buildOwnerOf } from './org';
 
 function g(
   name: string,
@@ -73,18 +73,26 @@ describe('buildMemberOf', () => {
       apiVersion: 'backstage.io/v1alpha1',
       kind: 'User',
       metadata: { name: 'n' },
-      spec: { profile: {}, memberOf: ['group:c-namespace/c'] },
+      spec: {
+        profile: {},
+        memberOf: ['group:c-namespace/c'],
+        ownerOf: ['group:c-namespace/c'],
+      },
     };
 
     const groups = [a, b, c];
     buildOrgHierarchy(groups);
     buildMemberOf(groups, [u]);
+    buildOwnerOf(groups, [u]);
     expect(u.spec.memberOf).toEqual(
       expect.arrayContaining([
         'group:a-namespace/a',
         'group:b-namespace/b',
         'group:c-namespace/c',
       ]),
+    );
+    expect(u.spec.ownerOf).toEqual(
+      expect.arrayContaining(['group:c-namespace/c']),
     );
   });
 
@@ -109,6 +117,26 @@ describe('buildMemberOf', () => {
         'group:b-namespace/b',
         'group:c-namespace/c',
       ]),
+    );
+  });
+
+  it('takes group spec.owners into account', () => {
+    const a = g('a', 'a-namespace', undefined, []);
+    const b = g('b', 'b-namespace', 'group:a-namespace/a', []);
+    const c = g('c', 'c-namespace', 'group:b-namespace/b', []);
+    c.spec.owners = ['user:default/n'];
+    const u: UserEntity = {
+      apiVersion: 'backstage.io/v1alpha1',
+      kind: 'User',
+      metadata: { name: 'n' },
+      spec: { profile: {}, ownerOf: [] },
+    };
+
+    const groups = [a, b, c];
+    buildOrgHierarchy(groups);
+    buildOwnerOf(groups, [u]);
+    expect(u.spec.ownerOf).toEqual(
+      expect.arrayContaining(['group:c-namespace/c']),
     );
   });
 

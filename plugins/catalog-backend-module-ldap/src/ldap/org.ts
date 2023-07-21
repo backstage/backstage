@@ -89,3 +89,37 @@ export function buildMemberOf(groups: GroupEntity[], users: UserEntity[]) {
     user.spec.memberOf = [...transitiveMemberOf];
   });
 }
+
+// Ensure that users have their transitive group memberships. Requires that
+// the groups were previously processed with buildOrgHierarchy()
+export function buildOwnerOf(groups: GroupEntity[], users: UserEntity[]) {
+  const groupsByRef = new Map(groups.map(g => [stringifyEntityRef(g), g]));
+
+  users.forEach(user => {
+    const transitiveOwnerOf = new Set<string>();
+
+    const todo = [
+      ...(user.spec.ownerOf ?? []),
+      ...groups
+        .filter(g => g.spec.owners?.includes(stringifyEntityRef(user)))
+        .map(g => stringifyEntityRef(g)),
+    ];
+
+    for (;;) {
+      const current = todo.pop();
+      if (!current) {
+        break;
+      }
+
+      if (!transitiveOwnerOf.has(current)) {
+        transitiveOwnerOf.add(current);
+        const group = groupsByRef.get(current);
+        if (group?.spec.parent) {
+          todo.push(group.spec.parent);
+        }
+      }
+    }
+
+    user.spec.ownerOf = [...transitiveOwnerOf];
+  });
+}

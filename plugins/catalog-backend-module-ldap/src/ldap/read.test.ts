@@ -94,6 +94,7 @@ describe('readLdapUsers', () => {
           mail: ['mail-value'],
           avatarUrl: ['avatarUrl-value'],
           memberOf: ['x', 'y', 'z'],
+          ownerOf: ['a', 'b', 'c'],
           entryDN: ['dn-value'],
           entryUUID: ['uuid-value'],
         }),
@@ -110,6 +111,7 @@ describe('readLdapUsers', () => {
         email: 'mail',
         picture: 'avatarUrl',
         memberOf: 'memberOf',
+        ownerOf: 'ownerOf',
       },
     };
     const { users, userMemberOf } = await readLdapUsers(client, config);
@@ -131,6 +133,7 @@ describe('readLdapUsers', () => {
             picture: 'avatarUrl-value',
           },
           memberOf: [],
+          ownerOf: [],
         },
       }),
     ]);
@@ -171,6 +174,7 @@ describe('readLdapUsers', () => {
         email: 'mail',
         picture: 'avatarUrl',
         memberOf: 'memberOf',
+        ownerOf: 'ownerOf',
       },
     };
     const { users, userMemberOf } = await readLdapUsers(client, config);
@@ -192,6 +196,7 @@ describe('readLdapUsers', () => {
             picture: 'avatarUrl-value',
           },
           memberOf: [],
+          ownerOf: [],
         },
       }),
     ]);
@@ -227,6 +232,7 @@ describe('readLdapUsers', () => {
         email: 'mail',
         picture: 'avatarUrl',
         memberOf: 'memberOf',
+        ownerOf: 'ownerOf',
       },
     };
     const { users, userMemberOf } = await readLdapUsers(client, config);
@@ -248,6 +254,7 @@ describe('readLdapUsers', () => {
             picture: 'avatarUrl-value',
           },
           memberOf: [],
+          ownerOf: [],
         },
       }),
     ]);
@@ -295,6 +302,8 @@ describe('readLdapGroups', () => {
         type: 'tt',
         memberOf: 'memberOf',
         members: 'member',
+        ownerOf: 'ownerOf',
+        owners: 'owner',
       },
     };
     const { groups, groupMember, groupMemberOf } = await readLdapGroups(
@@ -366,6 +375,8 @@ describe('readLdapGroups', () => {
         type: 'tt',
         memberOf: 'memberOf',
         members: 'member',
+        ownerOf: 'ownerOf',
+        owners: 'owner',
       },
     };
     const { groups, groupMember, groupMemberOf } = await readLdapGroups(
@@ -423,12 +434,18 @@ describe('resolveRelations', () => {
         const groupMember = new Map<string, Set<string>>([
           ['pa', new Set(['ca'])],
         ]);
+        const groupOwner = new Map<string, Set<string>>([
+          ['pa', new Set(['ca'])],
+        ]);
         resolveRelations(
           [parent, child],
           [],
           new Map(),
           new Map(),
+          new Map(),
           groupMember,
+          new Map(),
+          groupOwner,
         );
         expect(parent.spec.children).toEqual(['group:default/child']);
         expect(child.spec.parent).toEqual('group:default/parent');
@@ -452,8 +469,48 @@ describe('resolveRelations', () => {
         const userMemberOf = new Map<string, Set<string>>([
           ['ma', new Set(['ha'])],
         ]);
-        resolveRelations([host], [member], userMemberOf, new Map(), new Map());
+        resolveRelations(
+          [host],
+          [member],
+          userMemberOf,
+          new Map(),
+          new Map(),
+          new Map(),
+          new Map(),
+          new Map(),
+        );
         expect(member.spec.memberOf).toEqual(['group:default/host']);
+      },
+    );
+  });
+
+  describe('userOwnerOf', () => {
+    it.each([LDAP_DN_ANNOTATION, LDAP_RDN_ANNOTATION, LDAP_UUID_ANNOTATION])(
+      'populates relations by %s',
+      annotation => {
+        const host = group({
+          metadata: { name: 'host', annotations: { [annotation]: 'ha' } },
+        });
+        const member = user({
+          metadata: {
+            name: 'member',
+            annotations: { [annotation]: 'ma' },
+          },
+        });
+        const userOwnerOf = new Map<string, Set<string>>([
+          ['ma', new Set(['ha'])],
+        ]);
+        resolveRelations(
+          [host],
+          [member],
+          new Map(),
+          userOwnerOf,
+          new Map(),
+          new Map(),
+          new Map(),
+          new Map(),
+        );
+        expect(member.spec.ownerOf).toEqual(['group:default/host']);
       },
     );
   });
@@ -481,7 +538,10 @@ describe('resolveRelations', () => {
           [parent, child],
           [],
           new Map(),
+          new Map(),
           groupMemberOf,
+          new Map(),
+          new Map(),
           new Map(),
         );
         expect(parent.spec.children).toEqual(['group:default/child']);
@@ -520,11 +580,55 @@ describe('resolveRelations', () => {
           [member],
           new Map(),
           new Map(),
+          new Map(),
           groupMember,
+          new Map(),
+          new Map(),
         );
         expect(parent.spec.children).toEqual(['group:default/child']);
         expect(child.spec.parent).toEqual('group:default/parent');
         expect(member.spec.memberOf).toEqual(['group:default/parent']);
+      },
+    );
+  });
+  describe('groupOwner', () => {
+    it.each([LDAP_DN_ANNOTATION, LDAP_RDN_ANNOTATION, LDAP_UUID_ANNOTATION])(
+      'populates relations by %s',
+      annotation => {
+        const parent = group({
+          metadata: {
+            name: 'parent',
+            annotations: { [annotation]: 'pa' },
+          },
+        });
+        const child = group({
+          metadata: {
+            name: 'child',
+            annotations: { [annotation]: 'ca' },
+          },
+        });
+        const member = user({
+          metadata: {
+            name: 'member',
+            annotations: { [annotation]: 'ma' },
+          },
+        });
+        const groupOwner = new Map<string, Set<string>>([
+          ['pa', new Set(['ca', 'ma'])],
+        ]);
+        resolveRelations(
+          [parent, child],
+          [member],
+          new Map(),
+          new Map(),
+          new Map(),
+          new Map(),
+          new Map(),
+          groupOwner,
+        );
+        expect(parent.spec.children).toEqual(['group:default/child']);
+        expect(child.spec.parent).toEqual('group:default/parent');
+        expect(member.spec.ownerOf).toEqual(['group:default/parent']);
       },
     );
   });
@@ -541,6 +645,7 @@ describe('defaultUserTransformer', () => {
         displayName: 'cn',
         email: 'mail',
         memberOf: 'memberOf',
+        ownerOf: 'ownerOf',
       },
       set: {
         'metadata.annotations.a': 1,
@@ -555,6 +660,7 @@ describe('defaultUserTransformer', () => {
       mail: ['mail-value'],
       avatarUrl: ['avatarUrl-value'],
       memberOf: ['x', 'y', 'z'],
+      ownerOf: ['a', 'b', 'c'],
       entryDN: ['dn-value'],
       entryUUID: ['uuid-value'],
     });
@@ -575,6 +681,7 @@ describe('defaultUserTransformer', () => {
       },
       spec: {
         memberOf: [],
+        ownerOf: [],
         profile: { displayName: 'cn-value', email: 'mail-value' },
       },
     });
@@ -598,6 +705,7 @@ describe('defaultUserTransformer', () => {
       },
       spec: {
         memberOf: [],
+        ownerOf: [],
         profile: { displayName: 'cn-value', email: 'mail-value' },
       },
     });
@@ -618,6 +726,8 @@ describe('defaultGroupTransformer', () => {
         type: 'type',
         members: 'members',
         memberOf: 'memberOf',
+        owners: 'owners',
+        ownerOf: 'ownerOf',
       },
       set: {
         'metadata.annotations.a': 1,

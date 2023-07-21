@@ -58,6 +58,7 @@ export async function defaultUserTransformer(
     spec: {
       profile: {},
       memberOf: [],
+      ownerOf: [],
     },
   };
 
@@ -109,12 +110,14 @@ export async function readLdapUsers(
 ): Promise<{
   users: UserEntity[]; // With all relations empty
   userMemberOf: Map<string, Set<string>>; // DN -> DN or UUID of groups
+  userOwnerOf: Map<string, Set<string>>;
 }> {
   const { dn, options, map } = config;
   const vendor = await client.getVendor();
 
   const entities: UserEntity[] = [];
   const userMemberOf: Map<string, Set<string>> = new Map();
+  const userOwnerOf: Map<string, Set<string>> = new Map();
 
   const transformer = opts?.transformer ?? defaultUserTransformer;
 
@@ -128,10 +131,15 @@ export async function readLdapUsers(
     mapReferencesAttr(user, vendor, map.memberOf, (myDn, vs) => {
       ensureItems(userMemberOf, myDn, vs);
     });
+
+    mapReferencesAttr(user, vendor, map.ownerOf, (myDn, vs) => {
+      ensureItems(userOwnerOf, myDn, vs);
+    });
+
     entities.push(entity);
   });
 
-  return { users: entities, userMemberOf };
+  return { users: entities, userMemberOf, userOwnerOf };
 }
 
 /**
@@ -214,10 +222,14 @@ export async function readLdapGroups(
   groups: GroupEntity[]; // With all relations empty
   groupMemberOf: Map<string, Set<string>>; // DN -> DN or UUID of groups
   groupMember: Map<string, Set<string>>; // DN -> DN or UUID of groups & users
+  groupOwnerOf: Map<string, Set<string>>; // DN -> DN or UUID of groups
+  groupOwner: Map<string, Set<string>>; // DN -> DN or UUID of groups & users
 }> {
   const groups: GroupEntity[] = [];
   const groupMemberOf: Map<string, Set<string>> = new Map();
   const groupMember: Map<string, Set<string>> = new Map();
+  const groupOwnerOf: Map<string, Set<string>> = new Map();
+  const groupOwner: Map<string, Set<string>> = new Map();
 
   const { dn, map, options } = config;
   const vendor = await client.getVendor();
@@ -242,6 +254,13 @@ export async function readLdapGroups(
       ensureItems(groupMember, myDn, vs);
     });
 
+    mapReferencesAttr(entry, vendor, map.ownerOf, (myDn, vs) => {
+      ensureItems(groupOwnerOf, myDn, vs);
+    });
+    mapReferencesAttr(entry, vendor, map.owners, (myDn, vs) => {
+      ensureItems(groupOwner, myDn, vs);
+    });
+
     groups.push(entity);
   });
 
@@ -249,6 +268,8 @@ export async function readLdapGroups(
     groups,
     groupMemberOf,
     groupMember,
+    groupOwnerOf,
+    groupOwner,
   };
 }
 
@@ -278,16 +299,28 @@ export async function readLdapOrg(
   // Invokes the above "raw" read functions and stitches together the results
   // with all relations etc filled in.
 
-  const { users, userMemberOf } = await readLdapUsers(client, userConfig, {
-    transformer: options?.userTransformer,
-  });
-  const { groups, groupMemberOf, groupMember } = await readLdapGroups(
+  const { users, userMemberOf, userOwnerOf } = await readLdapUsers(
     client,
-    groupConfig,
-    { transformer: options?.groupTransformer },
+    userConfig,
+    {
+      transformer: options?.userTransformer,
+    },
   );
+  const { groups, groupMemberOf, groupMember, groupOwnerOf, groupOwner } =
+    await readLdapGroups(client, groupConfig, {
+      transformer: options?.groupTransformer,
+    });
 
-  resolveRelations(groups, users, userMemberOf, groupMemberOf, groupMember);
+  resolveRelations(
+    groups,
+    users,
+    userMemberOf,
+    userOwnerOf,
+    groupMemberOf,
+    groupMember,
+    groupOwnerOf,
+    groupOwner,
+  );
   users.sort((a, b) => a.metadata.name.localeCompare(b.metadata.name));
   groups.sort((a, b) => a.metadata.name.localeCompare(b.metadata.name));
 
@@ -351,8 +384,11 @@ export function resolveRelations(
   groups: GroupEntity[],
   users: UserEntity[],
   userMemberOf: Map<string, Set<string>>,
+  userOwnerOf: Map<string, Set<string>>,
   groupMemberOf: Map<string, Set<string>>,
   groupMember: Map<string, Set<string>>,
+  groupOwnerOf: Map<string, Set<string>>,
+  groupOwner: Map<string, Set<string>>,
 ) {
   // Build reference lookup tables - all of the relations that are output from
   // the above calls can be expressed as either DNs or UUIDs so we need to be
@@ -385,6 +421,7 @@ export function resolveRelations(
   // than one or not (it gets filtered farther down). And group children are
   // only groups in here.
   const newUserMemberOf: Map<string, Set<string>> = new Map();
+  const newUserOwnerOf: Map<string, Set<string>> = new Map();
   const newGroupParents: Map<string, Set<string>> = new Map();
   const newGroupChildren: Map<string, Set<string>> = new Map();
 
@@ -400,6 +437,19 @@ export function resolveRelations(
         const group = groupMap.get(groupN);
         if (group) {
           ensureItems(newUserMemberOf, stringifyEntityRef(user), [
+            stringifyEntityRef(group),
+          ]);
+        }
+      }
+    }
+  }
+  for (const [userN, groupsN] of userOwnerOf.entries()) {
+    const user = userMap.get(userN);
+    if (user) {
+      for (const groupN of groupsN) {
+        const group = groupMap.get(groupN);
+        if (group) {
+          ensureItems(newUserOwnerOf, stringifyEntityRef(user), [
             stringifyEntityRef(group),
           ]);
         }
@@ -447,12 +497,59 @@ export function resolveRelations(
       }
     }
   }
+  for (const [groupN, parentsN] of groupOwnerOf.entries()) {
+    const group = groupMap.get(groupN);
+    if (group) {
+      for (const parentN of parentsN) {
+        const parentGroup = groupMap.get(parentN);
+        if (parentGroup) {
+          ensureItems(newGroupParents, stringifyEntityRef(group), [
+            stringifyEntityRef(parentGroup),
+          ]);
+          ensureItems(newGroupChildren, stringifyEntityRef(parentGroup), [
+            stringifyEntityRef(group),
+          ]);
+        }
+      }
+    }
+  }
+  for (const [groupN, membersN] of groupOwner.entries()) {
+    const group = groupMap.get(groupN);
+    if (group) {
+      for (const memberN of membersN) {
+        // Group members can be both users and groups in the input model, so
+        // try both
+        const memberUser = userMap.get(memberN);
+        if (memberUser) {
+          ensureItems(newUserOwnerOf, stringifyEntityRef(memberUser), [
+            stringifyEntityRef(group),
+          ]);
+        } else {
+          const memberGroup = groupMap.get(memberN);
+          if (memberGroup) {
+            ensureItems(newGroupChildren, stringifyEntityRef(group), [
+              stringifyEntityRef(memberGroup),
+            ]);
+            ensureItems(newGroupParents, stringifyEntityRef(memberGroup), [
+              stringifyEntityRef(group),
+            ]);
+          }
+        }
+      }
+    }
+  }
 
   // Write down the relations again into the actual entities
   for (const [userN, groupsN] of newUserMemberOf.entries()) {
     const user = userMap.get(userN);
     if (user) {
       user.spec.memberOf = Array.from(groupsN).sort();
+    }
+  }
+  for (const [userN, groupsN] of newUserOwnerOf.entries()) {
+    const user = userMap.get(userN);
+    if (user) {
+      user.spec.ownerOf = Array.from(groupsN).sort();
     }
   }
   for (const [groupN, parentsN] of newGroupParents.entries()) {

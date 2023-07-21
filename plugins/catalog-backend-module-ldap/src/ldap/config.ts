@@ -101,6 +101,9 @@ export type UserConfig = {
     // The name of the attribute that shall be used for the values of the
     // spec.memberOf field of the entity. Defaults to "memberOf".
     memberOf: string;
+    // The name of the attribute that shall be used for the values of the
+    // spec.ownerOf field of the entity. Defaults to "ownerOf".
+    ownerOf: string;
   };
 };
 
@@ -146,6 +149,12 @@ export type GroupConfig = {
     // The name of the attribute that shall be used for the values of the
     // spec.children field of the entity. Defaults to "member".
     members: string;
+    // The name of the attribute that shall be used for the values of the
+    // spec.parent field of the entity. Defaults to "ownerOf".
+    ownerOf: string;
+    // The name of the attribute that shall be used for the values of the
+    // spec.children field of the entity. Defaults to "owner".
+    owners: string;
   };
 };
 
@@ -161,6 +170,7 @@ const defaultConfig = {
       displayName: 'cn',
       email: 'mail',
       memberOf: 'memberOf',
+      ownerOf: 'ownerOf',
     },
   },
   groups: {
@@ -176,6 +186,8 @@ const defaultConfig = {
       type: 'groupType',
       memberOf: 'memberOf',
       members: 'member',
+      ownerOf: 'ownerOf',
+      owners: 'owner',
     },
   },
 };
@@ -281,6 +293,7 @@ export function readLdapConfig(config: Config): LdapProviderConfig[] {
       email: c.getOptionalString('email'),
       picture: c.getOptionalString('picture'),
       memberOf: c.getOptionalString('memberOf'),
+      ownerOf: c.getOptionalString('ownerOf'),
     };
   }
 
@@ -301,6 +314,8 @@ export function readLdapConfig(config: Config): LdapProviderConfig[] {
       picture: c.getOptionalString('picture'),
       memberOf: c.getOptionalString('memberOf'),
       members: c.getOptionalString('members'),
+      ownerOf: c.getOptionalString('ownerOf'),
+      owners: c.getOptionalString('owners'),
     };
   }
 
