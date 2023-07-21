@@ -108,6 +108,7 @@ export const CatalogGraphCard = (
   const catalogGraphParams = qs.stringify(
     {
       rootEntityRefs: [stringifyEntityRef(entity)],
+      maxDepth: maxDepth,
       unidirectional,
       mergeRelations,
       selectedKinds: kinds,
