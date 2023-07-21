@@ -127,39 +127,48 @@ CPU/Memory for pods returned by the API server. Defaults to `false`.
 ##### `clusters.\*.serviceAccountToken` (optional)
 
 The service account token to be used when using the `serviceAccount` auth
-provider. On versions of Kubernetes [prior to
-1.24](https://github.com/kubernetes/kubernetes/blob/master/CHANGELOG/CHANGELOG-1.24.md#no-really-you-must-read-this-before-you-upgrade-1),
-you could get an (automatically-generated) token for a service account with:
+provider. Note that, unless you have an effective credential rotation procedure
+in place or have a single Kubernetes cluster running both Backstage and all your
+services, this auth provider is probably not ideal for production.
 
-```sh
-kubectl -n <NAMESPACE> get secret $(kubectl -n <NAMESPACE> get sa <SERVICE_ACCOUNT_NAME> -o=json \
-| jq -r '.secrets[0].name') -o=json \
-| jq -r '.data["token"]' \
-| base64 --decode
-```
+Assuming you have already created a service account named `SERVICE_ACCOUNT_NAME`
+in namespace `NAMESPACE` and it has adequate
+[permissions](#role-based-access-control), here are some sample procedures to
+procure a long-lived service account token for use with this provider:
 
-For Kubernetes 1.24+, as described in [this
-guide](https://kubernetes.io/docs/concepts/configuration/secret/#service-account-token-secrets),
-you can obtain a long-lived token by creating a secret:
+- On versions of Kubernetes [prior to
+  1.24](https://github.com/kubernetes/kubernetes/blob/master/CHANGELOG/CHANGELOG-1.24.md#no-really-you-must-read-this-before-you-upgrade-1),
+  you could get an (automatically-generated) token for a service account with:
 
-```sh
-kubectl apply -f - <<EOF
-apiVersion: v1
-kind: Secret
-metadata:
-  name: <SECRET_NAME>
-  namespace: <NAMESPACE>
-  annotations:
-    kubernetes.io/service-account.name: <SERVICE_ACCOUNT_NAME>
-type: kubernetes.io/service-account-token
-EOF
-```
+  ```sh
+  kubectl -n <NAMESPACE> get secret $(kubectl -n <NAMESPACE> get sa <SERVICE_ACCOUNT_NAME> -o=json \
+  | jq -r '.secrets[0].name') -o=json \
+  | jq -r '.data["token"]' \
+  | base64 --decode
+  ```
 
-waiting for the token controller to populate a token, and retrieving it with:
+- For Kubernetes 1.24+, as described in [this
+  guide](https://kubernetes.io/docs/concepts/configuration/secret/#service-account-token-secrets),
+  you can obtain a long-lived token by creating a secret:
 
-```sh
-kubectl -n <NAMESPACE> get secret <SECRET_NAME> -o go-template='{{.data.token | base64decode}}'
-```
+  ```sh
+  kubectl apply -f - <<EOF
+  apiVersion: v1
+  kind: Secret
+  metadata:
+    name: <SECRET_NAME>
+    namespace: <NAMESPACE>
+    annotations:
+      kubernetes.io/service-account.name: <SERVICE_ACCOUNT_NAME>
+  type: kubernetes.io/service-account-token
+  EOF
+  ```
+
+  waiting for the token controller to populate a token, and retrieving it with:
+
+  ```sh
+  kubectl -n <NAMESPACE> get secret <SECRET_NAME> -o go-template='{{.data.token | base64decode}}'
+  ```
 
 If a cluster has `authProvider: serviceAccount` and the `serviceAccountToken`
 field is omitted, Backstage will ignore the configured URL and certificate data,
