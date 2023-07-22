@@ -27,17 +27,43 @@ import {
   ANNOTATION_KUBERNETES_API_SERVER_CA,
   ANNOTATION_KUBERNETES_AUTH_PROVIDER,
 } from '@backstage/plugin-kubernetes-common';
+import { Config } from '@backstage/config';
+import { SchedulerService } from '@backstage/backend-plugin-api';
 
 export class GkeEntityProvider implements EntityProvider {
   private readonly logger: Logger;
   private readonly scheduleFn: () => Promise<void>;
   private readonly gkeParents: string[];
+  private readonly clusterManagerClient: container.v1.ClusterManagerClient;
   private connection?: EntityProviderConnection;
 
-  constructor(logger: Logger, taskRunner: TaskRunner, gkeParents: string[]) {
+  constructor(
+    logger: Logger,
+    taskRunner: TaskRunner,
+    gkeParents: string[],
+    clusterManagerClient: container.v1.ClusterManagerClient,
+  ) {
     this.logger = logger;
     this.scheduleFn = this.createScheduleFn(taskRunner);
     this.gkeParents = gkeParents;
+    this.clusterManagerClient = clusterManagerClient;
+  }
+
+  public static fromConfig(
+    logger: Logger,
+    scheduler: SchedulerService,
+    config: Config,
+  ) {
+    return new GkeEntityProvider(
+      logger,
+      scheduler.createScheduledTaskRunner({
+        // TODO configize
+        frequency: { minutes: 30 },
+        timeout: { minutes: 3 },
+      }),
+      config.getStringArray('catalog.providers.gcp.gke.parents'),
+      new container.v1.ClusterManagerClient(),
+    );
   }
 
   getProviderName(): string {
@@ -107,7 +133,7 @@ export class GkeEntityProvider implements EntityProvider {
           try {
             await this.refresh();
           } catch (error) {
-            console.error(error);
+            this.logger.error(error);
           }
         },
       });
@@ -122,8 +148,9 @@ export class GkeEntityProvider implements EntityProvider {
         const request = {
           parent: parent,
         };
-        const client = new container.v1.ClusterManagerClient();
-        const [response] = await client.listClusters(request);
+        const [response] = await this.clusterManagerClient.listClusters(
+          request,
+        );
         return response.clusters?.filter(this.filterOutUndefinedCluster) ?? [];
       }),
     );

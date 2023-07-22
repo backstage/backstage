@@ -40,13 +40,10 @@ export const catalogModuleGcpGkeEntityProvider = createBackendModule({
       },
       async init({ config, catalog, logger, scheduler }) {
         catalog.addEntityProvider(
-          new GkeEntityProvider(
+          GkeEntityProvider.fromConfig(
             loggerToWinstonLogger(logger),
-            scheduler.createScheduledTaskRunner({
-              frequency: { minutes: 30 },
-              timeout: { minutes: 3 },
-            }),
-            config.getStringArray('catalog.providers.gcp.gke.parents'),
+            scheduler,
+            config,
           ),
         );
       },
