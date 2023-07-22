@@ -14,8 +14,6 @@
  * limitations under the License.
  */
 
-import { GetEntitiesRequest } from '@backstage/catalog-client';
-import { Entity } from '@backstage/catalog-model';
 import { Config } from '@backstage/config';
 import {
   BackstageIdentityResponse,
@@ -23,71 +21,24 @@ import {
 } from '@backstage/plugin-auth-node';
 import express from 'express';
 import { LoggerService } from '@backstage/backend-plugin-api';
-import { TokenParams } from '../identity/types';
+import {
+  AuthResolverCatalogUserQuery as _AuthResolverCatalogUserQuery,
+  AuthResolverContext as _AuthResolverContext,
+  ProfileInfo as _ProfileInfo,
+} from '@backstage/plugin-auth-node';
 import { OAuthStartRequest } from '../lib/oauth/types';
 
 /**
- * A query for a single user in the catalog.
- *
- * If `entityRef` is used, the default kind is `'User'`.
- *
- * If `annotations` are used, all annotations must be present and
- * match the provided value exactly. Only entities of kind `'User'` will be considered.
- *
- * If `filter` are used they are passed on as they are to the `CatalogApi`.
- *
- * Regardless of the query method, the query must match exactly one entity
- * in the catalog, or an error will be thrown.
- *
  * @public
+ * @deprecated import from `@backstage/plugin-auth-node` instead
  */
-export type AuthResolverCatalogUserQuery =
-  | {
-      entityRef:
-        | string
-        | {
-            kind?: string;
-            namespace?: string;
-            name: string;
-          };
-    }
-  | {
-      annotations: Record<string, string>;
-    }
-  | {
-      filter: Exclude<GetEntitiesRequest['filter'], undefined>;
-    };
+export type AuthResolverCatalogUserQuery = _AuthResolverCatalogUserQuery;
 
 /**
- * The context that is used for auth processing.
- *
  * @public
+ * @deprecated import from `@backstage/plugin-auth-node` instead
  */
-export type AuthResolverContext = {
-  /**
-   * Issues a Backstage token using the provided parameters.
-   */
-  issueToken(params: TokenParams): Promise<{ token: string }>;
-
-  /**
-   * Finds a single user in the catalog using the provided query.
-   *
-   * See {@link AuthResolverCatalogUserQuery} for details.
-   */
-  findCatalogUser(
-    query: AuthResolverCatalogUserQuery,
-  ): Promise<{ entity: Entity }>;
-
-  /**
-   * Finds a single user in the catalog using the provided query, and then
-   * issues an identity for that user using default ownership resolution.
-   *
-   * See {@link AuthResolverCatalogUserQuery} for details.
-   */
-  signInWithCatalogUser(
-    query: AuthResolverCatalogUserQuery,
-  ): Promise<BackstageSignInResult>;
-};
+export type AuthResolverContext = _AuthResolverContext;
 
 /**
  * The callback used to resolve the cookie configuration for auth providers that use cookies.
@@ -219,29 +170,10 @@ export type AuthResponse<ProviderInfo> = {
 };
 
 /**
- * Used to display login information to user, i.e. sidebar popup.
- *
- * It is also temporarily used as the profile of the signed-in user's Backstage
- * identity, but we want to replace that with data from identity and/org catalog
- * service
- *
  * @public
+ * @deprecated import from `@backstage/plugin-auth-node` instead
  */
-export type ProfileInfo = {
-  /**
-   * Email ID of the signed in user.
-   */
-  email?: string;
-  /**
-   * Display name that can be presented to the signed in user.
-   */
-  displayName?: string;
-  /**
-   * URL to an image that can be used as the display image or avatar of the
-   * signed in user.
-   */
-  picture?: string;
-};
+export type ProfileInfo = _ProfileInfo;
 
 /**
  * Type of sign in information context. Includes the profile information and

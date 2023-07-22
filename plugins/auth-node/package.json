@@ -29,8 +29,11 @@
   },
   "dependencies": {
     "@backstage/backend-common": "workspace:^",
+    "@backstage/catalog-client": "workspace:^",
+    "@backstage/catalog-model": "workspace:^",
     "@backstage/config": "workspace:^",
     "@backstage/errors": "workspace:^",
+    "@backstage/types": "workspace:^",
     "@types/express": "*",
     "express": "^4.17.1",
     "jose": "^4.6.0",

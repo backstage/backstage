@@ -14,6 +14,9 @@
  * limitations under the License.
  */
 
+import { EntityFilterQuery } from '@backstage/catalog-client';
+import { Entity } from '@backstage/catalog-model';
+import { JsonValue } from '@backstage/types';
 import { Request } from 'express';
 
 /**
@@ -75,4 +78,114 @@ export type BackstageUserIdentity = {
    * The user and group entities that the user claims ownership through
    */
   ownershipEntityRefs: string[];
+};
+
+/**
+ * A query for a single user in the catalog.
+ *
+ * If `entityRef` is used, the default kind is `'User'`.
+ *
+ * If `annotations` are used, all annotations must be present and
+ * match the provided value exactly. Only entities of kind `'User'` will be considered.
+ *
+ * If `filter` are used they are passed on as they are to the `CatalogApi`.
+ *
+ * Regardless of the query method, the query must match exactly one entity
+ * in the catalog, or an error will be thrown.
+ *
+ * @public
+ */
+export type AuthResolverCatalogUserQuery =
+  | {
+      entityRef:
+        | string
+        | {
+            kind?: string;
+            namespace?: string;
+            name: string;
+          };
+    }
+  | {
+      annotations: Record<string, string>;
+    }
+  | {
+      filter: EntityFilterQuery;
+    };
+
+/**
+ * Parameters used to issue new ID Tokens
+ *
+ * @public
+ */
+export type TokenParams = {
+  /**
+   * The claims that will be embedded within the token. At a minimum, this should include
+   * the subject claim, `sub`. It is common to also list entity ownership relations in the
+   * `ent` list. Additional claims may also be added at the developer's discretion except
+   * for the following list, which will be overwritten by the TokenIssuer: `iss`, `aud`,
+   * `iat`, and `exp`. The Backstage team also maintains the right add new claims in the future
+   * without listing the change as a "breaking change".
+   */
+  claims: {
+    /** The token subject, i.e. User ID */
+    sub: string;
+    /** A list of entity references that the user claims ownership through */
+    ent?: string[];
+  } & Record<string, JsonValue>;
+};
+
+/**
+ * The context that is used for auth processing.
+ *
+ * @public
+ */
+export type AuthResolverContext = {
+  /**
+   * Issues a Backstage token using the provided parameters.
+   */
+  issueToken(params: TokenParams): Promise<{ token: string }>;
+
+  /**
+   * Finds a single user in the catalog using the provided query.
+   *
+   * See {@link AuthResolverCatalogUserQuery} for details.
+   */
+  findCatalogUser(
+    query: AuthResolverCatalogUserQuery,
+  ): Promise<{ entity: Entity }>;
+
+  /**
+   * Finds a single user in the catalog using the provided query, and then
+   * issues an identity for that user using default ownership resolution.
+   *
+   * See {@link AuthResolverCatalogUserQuery} for details.
+   */
+  signInWithCatalogUser(
+    query: AuthResolverCatalogUserQuery,
+  ): Promise<BackstageSignInResult>;
+};
+
+/**
+ * Used to display login information to user, i.e. sidebar popup.
+ *
+ * It is also temporarily used as the profile of the signed-in user's Backstage
+ * identity, but we want to replace that with data from identity and/org catalog
+ * service
+ *
+ * @public
+ */
+export type ProfileInfo = {
+  /**
+   * Email ID of the signed in user.
+   */
+  email?: string;
+  /**
+   * Display name that can be presented to the signed in user.
+   */
+  displayName?: string;
+  /**
+   * URL to an image that can be used as the display image or avatar of the
+   * signed in user.
+   */
+  picture?: string;
 };
