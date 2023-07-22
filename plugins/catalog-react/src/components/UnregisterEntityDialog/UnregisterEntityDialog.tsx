@@ -213,7 +213,6 @@ const Contents = ({
             color="secondary"
             disabled={busy}
             onClick={onUnregister}
-            to = '/'
           >
             Unregister Location
           </Button>
