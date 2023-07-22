@@ -31,11 +31,13 @@ import {
 export class GkeEntityProvider implements EntityProvider {
   private readonly logger: Logger;
   private readonly scheduleFn: () => Promise<void>;
+  private readonly gkeParents: string[];
   private connection?: EntityProviderConnection;
 
-  constructor(logger: Logger, taskRunner: TaskRunner) {
+  constructor(logger: Logger, taskRunner: TaskRunner, gkeParents: string[]) {
     this.logger = logger;
     this.scheduleFn = this.createScheduleFn(taskRunner);
+    this.gkeParents = gkeParents;
   }
 
   getProviderName(): string {
@@ -47,19 +49,22 @@ export class GkeEntityProvider implements EntityProvider {
     await this.scheduleFn();
   }
 
-  private filterOutUndefined(
+  private filterOutUndefinedDeferredEntity(
     e: DeferredEntity | undefined,
   ): e is DeferredEntity {
     return e !== undefined;
   }
 
+  private filterOutUndefinedCluster(
+    c: container.protos.google.container.v1.ICluster | null | undefined,
+  ): c is container.protos.google.container.v1.ICluster {
+    return c !== undefined && c !== null;
+  }
+
   private clusterToResource(
     cluster: container.protos.google.container.v1.ICluster,
   ): DeferredEntity | undefined {
-    const location = (cluster.selfLink ?? '').replace(
-      'https://container.googleapis.com/v1/',
-      '',
-    );
+    const location = cluster.location;
 
     if (!cluster.name || !cluster.selfLink || !location) {
       // TODO log probably
@@ -67,8 +72,9 @@ export class GkeEntityProvider implements EntityProvider {
       return undefined;
     }
 
+    // TODO fix location type
     return {
-      locationKey: `gcp-gke:/${location}`,
+      locationKey: `url:${cluster.selfLink}`,
       entity: {
         apiVersion: 'backstage.io/v1alpha1',
         kind: 'Resource',
@@ -78,8 +84,8 @@ export class GkeEntityProvider implements EntityProvider {
             [ANNOTATION_KUBERNETES_API_SERVER_CA]:
               cluster.masterAuth?.clusterCaCertificate || '',
             [ANNOTATION_KUBERNETES_AUTH_PROVIDER]: 'google',
-            'backstage.io/managed-by-location': `gcp-gke:/${location}`,
-            'backstage.io/managed-by-origin-location': `gcp-gke:/${location}`,
+            'backstage.io/managed-by-location': `url:${cluster.selfLink}`,
+            'backstage.io/managed-by-origin-location': `url:${cluster.selfLink}`,
           },
           name: cluster.name,
           namespace: 'default',
@@ -108,23 +114,35 @@ export class GkeEntityProvider implements EntityProvider {
     };
   }
 
+  private async getClusters(): Promise<
+    container.protos.google.container.v1.ICluster[]
+  > {
+    const clusters = await Promise.all(
+      this.gkeParents.map(async parent => {
+        const request = {
+          parent: parent,
+        };
+        const client = new container.v1.ClusterManagerClient();
+        const [response] = await client.listClusters(request);
+        return response.clusters?.filter(this.filterOutUndefinedCluster) ?? [];
+      }),
+    );
+    return clusters.flat();
+  }
+
   async refresh() {
     if (!this.connection) {
       throw new Error('Not initialized');
     }
 
     this.logger.info('Discovering GKE clusters');
-    const request = {
-      // TODO configify this
-      parent: `projects/?????/locations/-`,
-    };
-    const client = new container.v1.ClusterManagerClient();
-    const [response] = await client.listClusters(request);
+
+    const clusters = await this.getClusters();
 
     const resources =
-      response.clusters
-        ?.map(this.clusterToResource)
-        .filter(this.filterOutUndefined) ?? [];
+      clusters
+        .map(this.clusterToResource)
+        .filter(this.filterOutUndefinedDeferredEntity) ?? [];
 
     this.logger.info(
       `Ingesting GKE clusters [${resources

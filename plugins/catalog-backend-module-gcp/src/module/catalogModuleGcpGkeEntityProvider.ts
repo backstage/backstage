@@ -46,6 +46,7 @@ export const catalogModuleGcpGkeEntityProvider = createBackendModule({
               frequency: { minutes: 30 },
               timeout: { minutes: 3 },
             }),
+            config.getStringArray('catalog.providers.gcp.gke.parents'),
           ),
         );
       },
