@@ -30,6 +30,11 @@ import {
 import { Config } from '@backstage/config';
 import { SchedulerService } from '@backstage/backend-plugin-api';
 
+/**
+ * Catalog provider to ingest GKE clusters
+ *
+ * @public
+ */
 export class GkeEntityProvider implements EntityProvider {
   private readonly logger: Logger;
   private readonly scheduleFn: () => Promise<void>;
