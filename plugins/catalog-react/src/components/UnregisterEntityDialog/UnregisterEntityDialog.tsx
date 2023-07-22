@@ -153,6 +153,7 @@ const Contents = ({
                 color="secondary"
                 disabled={busy}
                 onClick={onDelete}
+                href = "/catalog"
               >
                 Delete Entity
               </Button>
@@ -212,6 +213,7 @@ const Contents = ({
             color="secondary"
             disabled={busy}
             onClick={onUnregister}
+            to = '/'
           >
             Unregister Location
           </Button>
