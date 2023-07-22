@@ -14,7 +14,6 @@
  * limitations under the License.
  */
 
-import { getVoidLogger } from '@backstage/backend-common';
 import { GkeEntityProvider } from './GkeEntityProvider';
 import { TaskRunner } from '@backstage/backend-tasks';
 import {
@@ -22,9 +21,10 @@ import {
   ANNOTATION_KUBERNETES_API_SERVER_CA,
   ANNOTATION_KUBERNETES_AUTH_PROVIDER,
 } from '@backstage/plugin-kubernetes-common';
+import * as container from '@google-cloud/container';
 
 describe('GkeEntityProvider', () => {
-  const clusterClientMock = {
+  const clusterManagerClientMock = {
     listClusters: jest.fn(),
   };
   const connectionMock = {
@@ -35,20 +35,25 @@ describe('GkeEntityProvider', () => {
     createScheduleFn: jest.fn(),
     run: jest.fn(),
   } as TaskRunner;
-  const logger = getVoidLogger();
-  const gkeEntityProvider = new GkeEntityProvider(
-    logger,
-    taskRunner,
-    ['parent1', 'parent2'],
-    clusterClientMock as any,
-  );
+  const logger = {
+    info: jest.fn(),
+    error: jest.fn(),
+  };
+  let gkeEntityProvider: GkeEntityProvider;
 
-  beforeEach(() => {
+  beforeEach(async () => {
     jest.resetAllMocks();
+    gkeEntityProvider = new GkeEntityProvider(
+      logger as any,
+      taskRunner,
+      ['parent1', 'parent2'],
+      clusterManagerClientMock as any,
+    );
+    await gkeEntityProvider.connect(connectionMock);
   });
 
   it('should return clusters as Resources', async () => {
-    clusterClientMock.listClusters.mockImplementation(req => {
+    clusterManagerClientMock.listClusters.mockImplementation(req => {
       if (req.parent === 'parent1') {
         return [
           {
@@ -85,7 +90,6 @@ describe('GkeEntityProvider', () => {
 
       throw new Error(`unexpected parent ${req.parent}`);
     });
-    await gkeEntityProvider.connect(connectionMock);
     await gkeEntityProvider.refresh();
     expect(connectionMock.applyMutation).toHaveBeenCalledWith({
       type: 'full',
@@ -141,69 +145,85 @@ describe('GkeEntityProvider', () => {
       ],
     });
   });
-  it('should ignore partial clusters', async () => {
-    clusterClientMock.listClusters.mockImplementation(req => {
-      if (req.parent === 'parent1') {
+
+  const ignoredPartialClustersTests: [
+    string,
+    container.protos.google.container.v1.ICluster,
+  ][] = [
+    [
+      'no-cluster-name',
+      {
+        endpoint: 'http://127.0.0.1:1234',
+        location: 'some-location',
+        selfLink: 'http://127.0.0.1/some-link',
+        masterAuth: {
+          clusterCaCertificate: 'abcdefg',
+        },
+      },
+    ],
+    [
+      'no-self-link',
+      {
+        // no selfLink
+        name: 'some-name',
+        endpoint: 'http://127.0.0.1:1234',
+        location: 'some-location',
+        masterAuth: {
+          clusterCaCertificate: 'abcdefg',
+        },
+      },
+    ],
+    [
+      'no-endpoint',
+      {
+        name: 'some-name',
+        location: 'some-location',
+        selfLink: 'http://127.0.0.1/some-link',
+        masterAuth: {
+          clusterCaCertificate: 'abcdefg',
+        },
+      },
+    ],
+    [
+      'no-location',
+      {
+        name: 'some-name',
+        endpoint: 'http://127.0.0.1:1234',
+        selfLink: 'http://127.0.0.1/some-link',
+        masterAuth: {
+          clusterCaCertificate: 'abcdefg',
+        },
+      },
+    ],
+  ];
+
+  it.each(ignoredPartialClustersTests)(
+    'ignore cluster - %s',
+    async (_name, ignoredCluster) => {
+      clusterManagerClientMock.listClusters.mockImplementation(req => {
+        if (req.parent === 'parent1') {
+          return [ignoredCluster];
+        }
         return [
           {
-            clusters: [
-              {
-                // No name
-                endpoint: 'http://127.0.0.1:1234',
-                location: 'some-location',
-                selfLink: 'http://127.0.0.1/some-link',
-                masterAuth: {
-                  clusterCaCertificate: 'abcdefg',
-                },
-              },
-              {
-                // no selfLink
-                name: 'some-name',
-                endpoint: 'http://127.0.0.1:1234',
-                location: 'some-location',
-                masterAuth: {
-                  clusterCaCertificate: 'abcdefg',
-                },
-              },
-              {
-                // no endpoint
-                name: 'some-name',
-                location: 'some-location',
-                selfLink: 'http://127.0.0.1/some-link',
-                masterAuth: {
-                  clusterCaCertificate: 'abcdefg',
-                },
-              },
-              {
-                // no location
-                name: 'some-name',
-                endpoint: 'http://127.0.0.1:1234',
-                selfLink: 'http://127.0.0.1/some-link',
-                masterAuth: {
-                  clusterCaCertificate: 'abcdefg',
-                },
-              },
-            ],
+            clusters: [],
           },
         ];
-      }
-      return [
-        {
-          clusters: [],
-        },
-      ];
-    });
-    await gkeEntityProvider.connect(connectionMock);
-    await gkeEntityProvider.refresh();
-    expect(connectionMock.applyMutation).toHaveBeenCalledWith({
-      type: 'full',
-      entities: [],
-    });
-  });
-  it('should handle GKE API errors', async () => {
-    clusterClientMock.listClusters.mockRejectedValue(new Error('some-error'));
-    await gkeEntityProvider.connect(connectionMock);
+      });
+      await gkeEntityProvider.refresh();
+      expect(connectionMock.applyMutation).toHaveBeenCalledWith({
+        type: 'full',
+        entities: [],
+      });
+    },
+  );
+
+  it('should log GKE API errors', async () => {
+    clusterManagerClientMock.listClusters.mockRejectedValue(
+      new Error('some-error'),
+    );
     await gkeEntityProvider.refresh();
     expect(connectionMock.applyMutation).toHaveBeenCalledTimes(0);
+    expect(logger.error).toHaveBeenCalledTimes(1);
   });
 });
