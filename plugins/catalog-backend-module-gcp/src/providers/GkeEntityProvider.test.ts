@@ -36,13 +36,18 @@ describe('GkeEntityProvider', () => {
     run: jest.fn(),
   } as TaskRunner;
   const logger = getVoidLogger();
+  const gkeEntityProvider = new GkeEntityProvider(
+    logger,
+    taskRunner,
+    ['parent1', 'parent2'],
+    clusterClientMock as any,
+  );
+
+  beforeEach(() => {
+    jest.resetAllMocks();
+  });
+
   it('should return clusters as Resources', async () => {
-    const gkeEntityProvider = new GkeEntityProvider(
-      logger,
-      taskRunner,
-      ['parent1', 'parent2'],
-      clusterClientMock as any,
-    );
     clusterClientMock.listClusters.mockImplementation(req => {
       if (req.parent === 'parent1') {
         return [
@@ -70,7 +75,7 @@ describe('GkeEntityProvider', () => {
                 location: 'some-other-location',
                 selfLink: 'http://127.0.0.1/some-other-link',
                 masterAuth: {
-                  clusterCaCertificate: '12345',
+                  // no CA cert is ok
                 },
               },
             ],
@@ -117,7 +122,7 @@ describe('GkeEntityProvider', () => {
             metadata: {
               annotations: {
                 [ANNOTATION_KUBERNETES_API_SERVER]: 'http://127.0.0.1:5678',
-                [ANNOTATION_KUBERNETES_API_SERVER_CA]: '12345',
+                [ANNOTATION_KUBERNETES_API_SERVER_CA]: '',
                 [ANNOTATION_KUBERNETES_AUTH_PROVIDER]: 'google',
                 'backstage.io/managed-by-location':
                   'url:http://127.0.0.1/some-other-link',
@@ -135,5 +140,70 @@ describe('GkeEntityProvider', () => {
         },
       ],
     });
+  });
+  it('should ignore partial clusters', async () => {
+    clusterClientMock.listClusters.mockImplementation(req => {
+      if (req.parent === 'parent1') {
+        return [
+          {
+            clusters: [
+              {
+                // No name
+                endpoint: 'http://127.0.0.1:1234',
+                location: 'some-location',
+                selfLink: 'http://127.0.0.1/some-link',
+                masterAuth: {
+                  clusterCaCertificate: 'abcdefg',
+                },
+              },
+              {
+                // no selfLink
+                name: 'some-name',
+                endpoint: 'http://127.0.0.1:1234',
+                location: 'some-location',
+                masterAuth: {
+                  clusterCaCertificate: 'abcdefg',
+                },
+              },
+              {
+                // no endpoint
+                name: 'some-name',
+                location: 'some-location',
+                selfLink: 'http://127.0.0.1/some-link',
+                masterAuth: {
+                  clusterCaCertificate: 'abcdefg',
+                },
+              },
+              {
+                // no location
+                name: 'some-name',
+                endpoint: 'http://127.0.0.1:1234',
+                selfLink: 'http://127.0.0.1/some-link',
+                masterAuth: {
+                  clusterCaCertificate: 'abcdefg',
+                },
+              },
+            ],
+          },
+        ];
+      }
+      return [
+        {
+          clusters: [],
+        },
+      ];
+    });
+    await gkeEntityProvider.connect(connectionMock);
+    await gkeEntityProvider.refresh();
+    expect(connectionMock.applyMutation).toHaveBeenCalledWith({
+      type: 'full',
+      entities: [],
+    });
+  });
+  it('should handle GKE API errors', async () => {
+    clusterClientMock.listClusters.mockRejectedValue(new Error('some-error'));
+    await gkeEntityProvider.connect(connectionMock);
+    await gkeEntityProvider.refresh();
+    expect(connectionMock.applyMutation).toHaveBeenCalledTimes(0);
   });
 });

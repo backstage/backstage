@@ -100,9 +100,10 @@ export class GkeEntityProvider implements EntityProvider {
   ): DeferredEntity | undefined {
     const location = cluster.location;
 
-    if (!cluster.name || !cluster.selfLink || !location) {
-      // TODO log probably
-
+    if (!cluster.name || !cluster.selfLink || !location || !cluster.endpoint) {
+      this.logger.warn(
+        `ignoring partial cluster, one of name=${cluster.name}, endpoint=${cluster.endpoint}, selfLink=${cluster.selfLink} or location=${cluster.location} is missing`,
+      );
       return undefined;
     }
 
@@ -114,7 +115,7 @@ export class GkeEntityProvider implements EntityProvider {
         kind: 'Resource',
         metadata: {
           annotations: {
-            [ANNOTATION_KUBERNETES_API_SERVER]: cluster.endpoint || '',
+            [ANNOTATION_KUBERNETES_API_SERVER]: cluster.endpoint,
             [ANNOTATION_KUBERNETES_API_SERVER_CA]:
               cluster.masterAuth?.clusterCaCertificate || '',
             [ANNOTATION_KUBERNETES_AUTH_PROVIDER]: 'google',
@@ -172,11 +173,17 @@ export class GkeEntityProvider implements EntityProvider {
 
     this.logger.info('Discovering GKE clusters');
 
-    const clusters = await this.getClusters();
+    let clusters: container.protos.google.container.v1.ICluster[];
 
+    try {
+      clusters = await this.getClusters();
+    } catch (e) {
+      this.logger.error('error fetching GKE clusters', e);
+      return;
+    }
     const resources =
       clusters
-        .map(this.clusterToResource)
+        .map(c => this.clusterToResource(c))
         .filter(this.filterOutUndefinedDeferredEntity) ?? [];
 
     this.logger.info(
