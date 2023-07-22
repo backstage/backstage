@@ -23,7 +23,7 @@ import { catalogProcessingExtensionPoint } from '@backstage/plugin-catalog-node/
 import { GkeEntityProvider } from '../providers/GkeEntityProvider';
 
 /**
- * Registers the AwsS3EntityProvider with the catalog processing extension point.
+ * Registers the GcpGkeEntityProvider with the catalog processing extension point.
  *
  * @alpha
  */

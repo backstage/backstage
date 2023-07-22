@@ -15,7 +15,7 @@
  */
 
 /**
- * A Backstage catalog backend module that helps integrate towards AWS
+ * A Backstage catalog backend module that helps integrate towards GCP
  *
  * @packageDocumentation
  */
