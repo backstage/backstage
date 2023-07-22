@@ -44,7 +44,7 @@ const RadarTimeline = (props: Props): JSX.Element => {
         History
       </Typography>
       <TableContainer component={Paper}>
-        <Table aria-label="simple table">
+        <Table>
           <TableHead>
             <TableRow>
               <TableCell align="left">Moved in direction</TableCell>
@@ -61,9 +61,11 @@ const RadarTimeline = (props: Props): JSX.Element => {
                 </TableCell>
               </TableRow>
             )}
-            {timeline?.map(timeEntry => (
-              <TableRow key={timeEntry.description}>
-                <TableCell component="th" scope="row">
+            {timeline?.map((timeEntry, timeEntryIndex) => (
+              <TableRow
+                key={`time-entry-${timeEntry.ring.id}-${timeEntry.date}-${timeEntryIndex}`}
+              >
+                <TableCell>
                   {timeEntry.moved === MovedState.Up ? <ArrowUpwardIcon /> : ''}
                   {timeEntry.moved === MovedState.Down ? (
                     <ArrowDownwardIcon />

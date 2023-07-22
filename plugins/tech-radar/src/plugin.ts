@@ -23,7 +23,7 @@ import {
   createApiFactory,
 } from '@backstage/core-plugin-api';
 
-const rootRouteRef = createRouteRef({
+export const radarRouteRef = createRouteRef({
   id: 'tech-radar',
 });
 
@@ -35,7 +35,7 @@ const rootRouteRef = createRouteRef({
 export const techRadarPlugin = createPlugin({
   id: 'tech-radar',
   routes: {
-    root: rootRouteRef,
+    radar: radarRouteRef,
   },
   apis: [createApiFactory(techRadarApiRef, new SampleTechRadarApi())],
 });
@@ -52,7 +52,8 @@ export const techRadarPlugin = createPlugin({
 export const TechRadarPage = techRadarPlugin.provide(
   createRoutableExtension({
     name: 'TechRadarPage',
-    component: () => import('./components/RadarPage').then(m => m.RadarPage),
-    mountPoint: rootRouteRef,
+    component: () =>
+      import('./components/RadarPage').then(m => m.TechRadarPage),
+    mountPoint: radarRouteRef,
   }),
 );

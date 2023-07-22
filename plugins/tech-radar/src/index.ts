@@ -14,13 +14,13 @@
  * limitations under the License.
  */
 
+import { TechRadarPage } from './components';
+
 /**
  * A Backstage plugin that lets you display a Tech Radar for your organization
  *
  * @packageDocumentation
  */
-
-import { RadarPage } from './components';
 
 export {
   techRadarPlugin,
@@ -35,7 +35,7 @@ export * from './components';
  *
  * @public
  */
-export const Router = RadarPage;
+export const Router = TechRadarPage;
 
 /**
  * The TypeScript API for configuring Tech Radar.

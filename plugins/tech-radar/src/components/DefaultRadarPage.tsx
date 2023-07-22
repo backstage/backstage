@@ -13,16 +13,31 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
 import React from 'react';
-import { useOutlet } from 'react-router-dom';
-import { DefaultRadarPage } from './DefaultRadarPage';
+import { RadarComponent } from './RadarComponent';
+import { RadarLayout } from './RadarLayout/RadarLayout';
+import { RadarTablePage } from './RadarTable';
 import { TechRadarPageProps } from './types';
 
 /**
+ * Main Page of Tech Radar
+ *
  * @public
  */
-export const TechRadarPage = (props: TechRadarPageProps) => {
-  const outlet = useOutlet();
-
-  return <>{outlet || <DefaultRadarPage {...props} />}</>;
-};
+export function DefaultRadarPage(props: TechRadarPageProps) {
+  const {
+    title = 'Tech Radar',
+    subtitle = 'Pick the recommended technologies for your projects',
+  } = props;
+  return (
+    <RadarLayout title={title} subtitle={subtitle}>
+      <RadarLayout.Route path="/" title="Radar">
+        <RadarComponent {...props} />
+      </RadarLayout.Route>
+      <RadarLayout.Route path="search" title="Search">
+        <RadarTablePage />
+      </RadarLayout.Route>
+    </RadarLayout>
+  );
+}

@@ -16,4 +16,5 @@
 
 export { RadarComponent as TechRadarComponent } from './RadarComponent';
 export type { TechRadarComponentProps } from './RadarComponent';
+export type { TechRadarPageProps } from './types';
 export * from './RadarPage';

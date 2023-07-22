@@ -13,12 +13,12 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+import { Link, makeStyles, Theme } from '@material-ui/core';
 import { ClassNameMap } from '@material-ui/core/styles/withStyles';
 import Typography from '@material-ui/core/Typography';
 import React from 'react';
-import { WithLink } from '../../utils/components';
+import { EntrySnapshot } from '../../utils/types';
 import { RadarDescription } from '../RadarDescription';
-import type { EntrySnapshot } from '../../utils/types';
 
 type RadarLegendLinkProps = {
   url?: string;
@@ -30,15 +30,15 @@ type RadarLegendLinkProps = {
   timeline: EntrySnapshot[];
 };
 
-export const RadarLegendLink = ({
-  url,
-  description,
-  title,
-  classes,
-  active,
-  links,
-  timeline,
-}: RadarLegendLinkProps) => {
+const useStyles = makeStyles<Theme>(() => ({
+  entryLink: {
+    cursor: 'pointer',
+  },
+}));
+
+export const RadarLegendLink = (props: RadarLegendLinkProps) => {
+  const { url, description, title, active, links, timeline, classes } = props;
+  const internalClasses = useStyles();
   const [open, setOpen] = React.useState(false);
 
   const handleClickOpen = () => {
@@ -53,46 +53,36 @@ export const RadarLegendLink = ({
     setOpen(!open);
   };
 
-  if (description) {
-    return (
-      <>
+  return (
+    <>
+      {/** TODO(sennyeya): Update this to use the internal link implementation which requires to={...}. */}
+      <Link
+        component="a"
+        onClick={handleClickOpen}
+        role="button"
+        tabIndex={0}
+        className={internalClasses.entryLink}
+        onKeyPress={toggle}
+      >
         <Typography
           component="span"
-          className={classes.entryLink}
-          onClick={handleClickOpen}
-          role="button"
-          tabIndex={0}
-          onKeyPress={toggle}
+          variant="inherit"
+          className={active ? classes.activeEntry : classes.entry}
         >
-          <Typography
-            component="span"
-            className={active ? classes.activeEntry : classes.entry}
-          >
-            {title}
-          </Typography>
+          {title}
         </Typography>
-        {open && (
-          <RadarDescription
-            open={open}
-            onClose={handleClose}
-            title={title ? title : 'no title'}
-            url={url}
-            description={description}
-            timeline={timeline ? timeline : []}
-            links={links}
-          />
-        )}
-      </>
-    );
-  }
-  return (
-    <WithLink url={url} className={classes.entryLink}>
-      <Typography
-        component="span"
-        className={active ? classes.activeEntry : classes.entry}
-      >
-        {title}
-      </Typography>
-    </WithLink>
+      </Link>
+      {open && (
+        <RadarDescription
+          open={open}
+          onClose={handleClose}
+          title={title ? title : 'no title'}
+          url={url}
+          description={description}
+          timeline={timeline ? timeline : []}
+          links={links}
+        />
+      )}
+    </>
   );
 };

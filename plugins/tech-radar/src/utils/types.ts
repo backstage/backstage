@@ -21,6 +21,7 @@ export type Ring = {
   index?: number;
   name: string;
   color: string;
+  hidden?: boolean;
   outerRadius?: number;
   innerRadius?: number;
 };

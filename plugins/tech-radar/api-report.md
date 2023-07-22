@@ -44,9 +44,6 @@ export interface RadarEntrySnapshot {
 }
 
 // @public
-export function RadarPage(props: TechRadarPageProps): JSX.Element;
-
-// @public
 export interface RadarQuadrant {
   id: string;
   name: string;
@@ -55,12 +52,13 @@ export interface RadarQuadrant {
 // @public
 export interface RadarRing {
   color: string;
+  hidden?: boolean;
   id: string;
   name: string;
 }
 
 // @public @deprecated (undocumented)
-export const Router: typeof RadarPage;
+export const Router: (props: TechRadarPageProps) => JSX.Element;
 
 // @public
 export interface TechRadarApi {
@@ -77,6 +75,8 @@ export function TechRadarComponent(props: TechRadarComponentProps): JSX.Element;
 export interface TechRadarComponentProps {
   height: number;
   id?: string;
+  // (undocumented)
+  pageTitle?: string;
   searchText?: string;
   svgProps?: object;
   width: number;
@@ -90,10 +90,11 @@ export interface TechRadarLoaderResponse {
 }
 
 // @public
-export const TechRadarPage: RadarPage;
+export const TechRadarPage: (props: TechRadarPageProps) => JSX.Element;
 
 // @public
 export interface TechRadarPageProps extends TechRadarComponentProps {
+  // (undocumented)
   pageTitle?: string;
   subtitle?: string;
   title?: string;
@@ -102,7 +103,7 @@ export interface TechRadarPageProps extends TechRadarComponentProps {
 // @public
 const techRadarPlugin: BackstagePlugin<
   {
-    root: RouteRef<undefined>;
+    radar: RouteRef<undefined>;
   },
   {},
   {}

@@ -66,19 +66,15 @@ const useStyles = makeStyles<Theme>(theme => ({
   },
   entry: {
     pointerEvents: 'visiblePainted',
-    userSelect: 'none',
     fontSize: '11px',
+    userSelect: 'none',
   },
   activeEntry: {
     pointerEvents: 'visiblePainted',
-    userSelect: 'none',
     fontSize: '11px',
+    userSelect: 'none',
     background: '#6f6f6f',
     color: theme.palette.common.white,
-  },
-  entryLink: {
-    pointerEvents: 'visiblePainted',
-    cursor: 'pointer',
   },
 }));
 

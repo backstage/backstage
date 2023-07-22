@@ -71,6 +71,12 @@ export interface RadarRing {
    * Supports any value parseable by {@link https://www.npmjs.com/package/color-string | color-string}
    */
   color: string;
+
+  /**
+   * Used to hide rings from the radar view. Useful for adding items to search but not in the main view,
+   *  ie archived or already widely accepted items.
+   */
+  hidden?: boolean;
 }
 
 /**

@@ -17,7 +17,13 @@
 import React from 'react';
 import Dialog from '@material-ui/core/Dialog';
 import DialogTitle from '@material-ui/core/DialogTitle';
-import { Button, DialogActions, DialogContent } from '@material-ui/core';
+import {
+  Button,
+  DialogActions,
+  DialogContent,
+  Grid,
+  Typography,
+} from '@material-ui/core';
 import LinkIcon from '@material-ui/icons/Link';
 import { Link, MarkdownContent } from '@backstage/core-components';
 import { isValidUrl } from '../../utils/components';
@@ -28,7 +34,7 @@ export type Props = {
   open: boolean;
   onClose: () => void;
   title: string;
-  description: string;
+  description?: string;
   timeline?: EntrySnapshot[];
   url?: string;
   links?: Array<{ url: string; title: string }>;
@@ -45,13 +51,34 @@ const RadarDescription = (props: Props): JSX.Element => {
   const { open, onClose, title, description, timeline, url, links } = props;
 
   return (
-    <Dialog data-testid="radar-description" open={open} onClose={onClose}>
+    <Dialog
+      data-testid="radar-description"
+      open={open}
+      onClose={onClose}
+      fullWidth
+      maxWidth="md"
+    >
       <DialogTitle data-testid="radar-description-dialog-title">
         {title}
       </DialogTitle>
       <DialogContent dividers>
-        <MarkdownContent content={description} />
-        <RadarTimeline timeline={timeline} />
+        <Grid container spacing={3}>
+          <Grid item xs={12}>
+            <Typography variant="h6" gutterBottom>
+              Description
+            </Typography>
+            {description ? (
+              <MarkdownContent content={description} />
+            ) : (
+              <Typography component="i" variant="body2">
+                No description for this radar entry.
+              </Typography>
+            )}
+          </Grid>
+          <Grid item xs={12}>
+            <RadarTimeline timeline={timeline} />
+          </Grid>
+        </Grid>
       </DialogContent>
       {showDialogActions(url, links) && (
         <DialogActions>

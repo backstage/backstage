@@ -23,7 +23,7 @@ import {
 import { act, render, waitFor } from '@testing-library/react';
 import React from 'react';
 import GetBBoxPolyfill from '../utils/polyfills/getBBox';
-import { RadarPage } from './RadarPage';
+import { TechRadarPage as RadarPage } from './RadarPage';
 import { TechRadarLoaderResponse, techRadarApiRef, TechRadarApi } from '../api';
 
 import { errorApiRef } from '@backstage/core-plugin-api';

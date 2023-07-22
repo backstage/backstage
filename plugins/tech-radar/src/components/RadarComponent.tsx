@@ -14,50 +14,19 @@
  * limitations under the License.
  */
 
-import { Progress } from '@backstage/core-components';
-import { errorApiRef, useApi } from '@backstage/core-plugin-api';
-import React, { useEffect } from 'react';
-import useAsync from 'react-use/lib/useAsync';
-import { RadarEntry, techRadarApiRef, TechRadarLoaderResponse } from '../api';
+import {
+  ContentHeader,
+  Link,
+  Progress,
+  SupportButton,
+} from '@backstage/core-components';
+import { Grid, Input, makeStyles, Typography } from '@material-ui/core';
+import { Alert } from '@material-ui/lab';
+import React from 'react';
+import { RadarEntry } from '../api';
 import Radar from '../components/Radar';
-import { Entry } from '../utils/types';
-
-const useTechRadarLoader = (id: string | undefined) => {
-  const errorApi = useApi(errorApiRef);
-  const techRadarApi = useApi(techRadarApiRef);
-
-  const { error, value, loading } = useAsync(
-    async () => techRadarApi.load(id),
-    [techRadarApi, id],
-  );
-
-  useEffect(() => {
-    if (error) {
-      errorApi.post(error);
-    }
-  }, [error, errorApi]);
-
-  return { loading, value, error };
-};
-
-function matchFilter(filter?: string): (entry: RadarEntry) => boolean {
-  const terms = filter
-    ?.toLocaleLowerCase('en-US')
-    .split(/\s/)
-    .map(e => e.trim())
-    .filter(Boolean);
-
-  if (!terms?.length) {
-    return () => true;
-  }
-
-  return entry => {
-    const text = `${entry.title} ${
-      entry.timeline[0]?.description || ''
-    }`.toLocaleLowerCase('en-US');
-    return terms.every(term => text.includes(term));
-  };
-}
+import useTechRadarLoader from '../hooks/useTechRadarLoader';
+import { mapToEntries, matchFilter } from '../utils/processor';
 
 /**
  * Properties of {@link TechRadarComponent}
@@ -89,7 +58,15 @@ export interface TechRadarComponentProps {
    * Text to filter {@link RadarEntry} inside Tech Radar
    */
   searchText?: string;
+
+  pageTitle?: string;
 }
+
+const useStyles = makeStyles(() => ({
+  overflowXScroll: {
+    overflowX: 'scroll',
+  },
+}));
 
 /**
  * Main React component of Tech Radar
@@ -101,46 +78,73 @@ export interface TechRadarComponentProps {
  * @public
  */
 export function RadarComponent(props: TechRadarComponentProps) {
-  const { loading, error, value: data } = useTechRadarLoader(props.id);
+  const { id, pageTitle = 'Company Radar' } = props;
+  const classes = useStyles();
+  const [searchText, setSearchText] = React.useState('');
 
-  const mapToEntries = (
-    loaderResponse: TechRadarLoaderResponse,
-  ): Array<Entry> => {
-    return loaderResponse.entries
-      .filter(matchFilter(props.searchText))
-      .map(entry => ({
-        id: entry.key,
-        quadrant: loaderResponse.quadrants.find(q => q.id === entry.quadrant)!,
-        title: entry.title,
-        ring: loaderResponse.rings.find(
-          r => r.id === entry.timeline[0].ringId,
-        )!,
-        timeline: entry.timeline.map(e => {
-          return {
-            date: e.date,
-            ring: loaderResponse.rings.find(a => a.id === e.ringId)!,
-            description: e.description,
-            moved: e.moved,
-          };
-        }),
-        moved: entry.timeline[0].moved,
-        description: entry.description || entry.timeline[0].description,
-        url: entry.url,
-        links: entry.links,
-      }));
-  };
-
+  const { loading, error, value: data } = useTechRadarLoader(id);
+  const dataEntries = data && data.entries.filter(matchFilter(searchText));
+  const numberOfMissingElements =
+    (data &&
+      dataEntries?.filter(
+        entry =>
+          data.rings.find(ring => entry.timeline[0].ringId === ring.id)?.hidden,
+      ).length) ||
+    0;
   return (
     <>
-      {loading && <Progress />}
-      {!loading && !error && data && (
-        <Radar
-          {...props}
-          rings={data.rings}
-          quadrants={data.quadrants}
-          entries={mapToEntries(data)}
+      <ContentHeader title={pageTitle}>
+        <Input
+          id="tech-radar-filter"
+          type="search"
+          placeholder="Filter"
+          onChange={e => setSearchText(e.target.value)}
         />
-      )}
+        <SupportButton>
+          <Typography paragraph>
+            This is used for visualizing the official guidelines of different
+            areas of software development such as languages, frameworks,
+            infrastructure and processes. You can find an explanation for the
+            radar at{' '}
+            <Link to="https://opensource.zalando.com/tech-radar/">
+              Zalando Tech Radar
+            </Link>
+            .
+          </Typography>
+        </SupportButton>
+      </ContentHeader>
+      <Grid container spacing={3} direction="row">
+        {numberOfMissingElements > 0 && (
+          <Grid item xs={12}>
+            <Alert severity="warning">
+              {numberOfMissingElements} element
+              {numberOfMissingElements === 1 ? '' : 's'} hidden from the below
+              radar. Please check the <Link to="search">search view</Link>.
+            </Alert>
+          </Grid>
+        )}
+        <Grid item xs={12}>
+          <div className={classes.overflowXScroll}>
+            {loading && <Progress />}
+            {!loading && !error && data && dataEntries && (
+              <Radar
+                {...props}
+                rings={data.rings.filter(e => !e.hidden)}
+                quadrants={data.quadrants}
+                entries={mapToEntries({
+                  ...data,
+                  entries: dataEntries.filter(
+                    entry =>
+                      !data.rings.find(
+                        ring => entry.timeline[0].ringId === ring.id,
+                      )?.hidden,
+                  ),
+                })}
+              />
+            )}
+          </div>
+        </Grid>
+      </Grid>
     </>
   );
 }

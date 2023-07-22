@@ -15,8 +15,7 @@
  */
 
 import React from 'react';
-import { makeStyles, Theme } from '@material-ui/core';
-import { WithLink } from '../../utils/components';
+import { Link, makeStyles, Theme } from '@material-ui/core';
 import { RadarDescription } from '../RadarDescription';
 import type { EntrySnapshot } from '../../utils/types';
 
@@ -111,29 +110,23 @@ const RadarEntry = (props: Props): JSX.Element => {
           open={open}
           onClose={handleClose}
           title={title ? title : 'no title'}
-          description={description ? description : 'no description'}
+          description={description}
           timeline={timeline ? timeline : []}
           url={url}
           links={links}
         />
       )}
-      {description ? (
-        // eslint-disable-next-line jsx-a11y/anchor-is-valid
-        <a
-          className={classes.link}
-          onClick={handleClickOpen}
-          role="button"
-          href="#"
-          tabIndex={0}
-          onKeyPress={toggle}
-        >
-          {blip}
-        </a>
-      ) : (
-        <WithLink url={url} className={classes.link}>
-          {blip}
-        </WithLink>
-      )}
+      <Link
+        variant="button"
+        className={classes.link}
+        onClick={handleClickOpen}
+        role="button"
+        href="#"
+        tabIndex={0}
+        onKeyPress={toggle}
+      >
+        {blip}
+      </Link>
       <text y={3} className={classes.text}>
         {value}
       </text>

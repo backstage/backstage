@@ -23,6 +23,7 @@ import {
 } from './api';
 
 const rings = new Array<RadarRing>();
+rings.push({ id: 'use', name: 'USE', color: '#000000', hidden: true });
 rings.push({ id: 'adopt', name: 'ADOPT', color: '#5BA300' });
 rings.push({ id: 'trial', name: 'TRIAL', color: '#009EB0' });
 rings.push({ id: 'assess', name: 'ASSESS', color: '#C7BA00' });
@@ -35,6 +36,22 @@ quadrants.push({ id: 'languages', name: 'Languages' });
 quadrants.push({ id: 'process', name: 'Process' });
 
 const entries = new Array<RadarEntry>();
+entries.push({
+  timeline: [
+    {
+      moved: 0,
+      ringId: 'use',
+      date: new Date('2022-09-03'),
+      description: '',
+    },
+  ],
+  key: 'docker',
+  id: 'docker',
+  title: 'Docker',
+  quadrant: 'infrastructure',
+  links: [],
+  description: '',
+});
 entries.push({
   timeline: [
     {
