@@ -189,3 +189,23 @@ export type ProfileInfo = {
    */
   picture?: string;
 };
+
+/**
+ * The callback used to resolve the cookie configuration for auth providers that use cookies.
+ * @public
+ */
+export type CookieConfigurer = (ctx: {
+  /** ID of the auth provider that this configuration applies to */
+  providerId: string;
+  /** The externally reachable base URL of the auth-backend plugin */
+  baseUrl: string;
+  /** The configured callback URL of the auth provider */
+  callbackUrl: string;
+  /** The origin URL of the app */
+  appOrigin: string;
+}) => {
+  domain: string;
+  path: string;
+  secure: boolean;
+  sameSite?: 'none' | 'lax' | 'strict';
+};

@@ -24,6 +24,7 @@ import { LoggerService } from '@backstage/backend-plugin-api';
 import {
   AuthResolverCatalogUserQuery as _AuthResolverCatalogUserQuery,
   AuthResolverContext as _AuthResolverContext,
+  CookieConfigurer as _CookieConfigurer,
   ProfileInfo as _ProfileInfo,
 } from '@backstage/plugin-auth-node';
 import { OAuthStartRequest } from '../lib/oauth/types';
@@ -41,24 +42,10 @@ export type AuthResolverCatalogUserQuery = _AuthResolverCatalogUserQuery;
 export type AuthResolverContext = _AuthResolverContext;
 
 /**
- * The callback used to resolve the cookie configuration for auth providers that use cookies.
  * @public
+ * @deprecated import from `@backstage/plugin-auth-node` instead
  */
-export type CookieConfigurer = (ctx: {
-  /** ID of the auth provider that this configuration applies to */
-  providerId: string;
-  /** The externally reachable base URL of the auth-backend plugin */
-  baseUrl: string;
-  /** The configured callback URL of the auth provider */
-  callbackUrl: string;
-  /** The origin URL of the app */
-  appOrigin: string;
-}) => {
-  domain: string;
-  path: string;
-  secure: boolean;
-  sameSite?: 'none' | 'lax' | 'strict';
-};
+export type CookieConfigurer = _CookieConfigurer;
 
 /** @public */
 export type AuthProviderConfig = {

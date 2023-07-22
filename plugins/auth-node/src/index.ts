@@ -31,6 +31,7 @@ export type {
   BackstageIdentityResponse,
   BackstageSignInResult,
   BackstageUserIdentity,
+  CookieConfigurer,
   IdentityApiGetIdentityRequest,
   ProfileInfo,
   TokenParams,
