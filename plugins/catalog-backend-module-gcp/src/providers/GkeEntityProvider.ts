@@ -13,7 +13,10 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import { TaskRunner } from '@backstage/backend-tasks';
+import {
+  TaskRunner,
+  readTaskScheduleDefinitionFromConfig,
+} from '@backstage/backend-tasks';
 import {
   DeferredEntity,
   EntityProvider,
@@ -59,14 +62,14 @@ export class GkeEntityProvider implements EntityProvider {
     scheduler: SchedulerService,
     config: Config,
   ) {
+    const gkeProviderConfig = config.getConfig('catalog.providers.gcp.gke');
+    const schedule = readTaskScheduleDefinitionFromConfig(
+      gkeProviderConfig.getConfig('schedule'),
+    );
     return new GkeEntityProvider(
       logger,
-      scheduler.createScheduledTaskRunner({
-        // TODO configize
-        frequency: { minutes: 30 },
-        timeout: { minutes: 3 },
-      }),
-      config.getStringArray('catalog.providers.gcp.gke.parents'),
+      scheduler.createScheduledTaskRunner(schedule),
+      gkeProviderConfig.getStringArray('parents'),
       new container.v1.ClusterManagerClient(),
     );
   }
