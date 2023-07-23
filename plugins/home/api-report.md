@@ -184,5 +184,12 @@ export type ToolkitContentProps = {
 };
 
 // @public
-export const WelcomeTitle: () => JSX.Element;
+export const WelcomeTitle: ({
+  language,
+}: WelcomeTitleLanguageProps) => JSX.Element;
+
+// @public (undocumented)
+export type WelcomeTitleLanguageProps = {
+  language?: string[];
+};
 ```
