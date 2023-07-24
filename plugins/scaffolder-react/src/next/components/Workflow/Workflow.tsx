@@ -102,7 +102,7 @@ export const Workflow = (workflowProps: WorkflowProps): JSX.Element | null => {
           noPadding
           titleTypographyProps={{ component: 'h2' }}
         >
-          <Stepper manifest={manifest} {...props} />
+          <Stepper manifest={manifest} templateName={templateName} {...props} />
         </InfoCard>
       )}
     </Content>
