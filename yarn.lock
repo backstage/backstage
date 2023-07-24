@@ -5031,13 +5031,14 @@ __metadata:
     fs-extra: 10.1.0
     google-auth-library: ^8.0.0
     jose: ^4.6.0
-    jwt-decode: ^3.1.0
+    jwt-decode: ^3.1.2
     knex: ^2.0.0
     lodash: ^4.17.21
     luxon: ^3.0.0
     minimatch: ^5.0.0
     morgan: ^1.10.0
     msw: ^1.0.0
+    njwt: ^2.0.0
     node-cache: ^5.1.2
     node-fetch: ^2.6.7
     openid-client: ^5.2.1
@@ -18284,7 +18285,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@types/node@npm:^15.6.1":
+"@types/node@npm:^15.0.1, @types/node@npm:^15.6.1":
   version: 15.14.9
   resolution: "@types/node@npm:15.14.9"
   checksum: 49f7f0522a3af4b8389aee660e88426490cd54b86356672a1fedb49919a8797c00d090ec2dcc4a5df34edc2099d57fc2203d796c4e7fbd382f2022ccd789eee7
@@ -24426,7 +24427,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"ecdsa-sig-formatter@npm:1.0.11, ecdsa-sig-formatter@npm:^1.0.11":
+"ecdsa-sig-formatter@npm:1.0.11, ecdsa-sig-formatter@npm:^1.0.11, ecdsa-sig-formatter@npm:^1.0.5":
   version: 1.0.11
   resolution: "ecdsa-sig-formatter@npm:1.0.11"
   dependencies:
@@ -31177,7 +31178,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"jwt-decode@npm:*, jwt-decode@npm:^3.1.0":
+"jwt-decode@npm:*, jwt-decode@npm:^3.1.0, jwt-decode@npm:^3.1.2":
   version: 3.1.2
   resolution: "jwt-decode@npm:3.1.2"
   checksum: 20a4b072d44ce3479f42d0d2c8d3dabeb353081ba4982e40b83a779f2459a70be26441be6c160bfc8c3c6eadf9f6380a036fbb06ac5406b5674e35d8c4205eeb
@@ -33701,6 +33702,17 @@ __metadata:
     just-extend: ^4.0.2
     path-to-regexp: ^1.7.0
   checksum: 688c557333dcbc5b41f4f1f1b0ea32fb0f8b424541a8958140bc61074980362c954b2aeb027c282de26b9ddcb4b230656f68ac4206777499e405dd7e716ec1f8
+  languageName: node
+  linkType: hard
+
+"njwt@npm:^2.0.0":
+  version: 2.0.0
+  resolution: "njwt@npm:2.0.0"
+  dependencies:
+    "@types/node": ^15.0.1
+    ecdsa-sig-formatter: ^1.0.5
+    uuid: ^8.3.2
+  checksum: 3c6c33b2fd044bca7468171f5dca064f5a4f59ce0e63b567df62c1a8d720e3c3d65921d5e99ae72eb22fde3285ef42b6009b4c4469f06e3a0e66d88a6f393373
   languageName: node
   linkType: hard
 
