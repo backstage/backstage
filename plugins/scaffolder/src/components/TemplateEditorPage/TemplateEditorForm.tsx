@@ -27,8 +27,8 @@ import {
   FieldExtensionOptions,
   Stepper,
 } from '@backstage/plugin-scaffolder-react';
-import { useDryRun } from '../../legacy/TemplateEditorPage/DryRunContext';
-import { useDirectoryEditor } from '../../legacy/TemplateEditorPage/DirectoryEditorContext';
+import { useDryRun } from '../TemplateEditorPage/DryRunContext';
+import { useDirectoryEditor } from '../TemplateEditorPage/DirectoryEditorContext';
 
 const useStyles = makeStyles({
   containerWrapper: {

@@ -25,9 +25,9 @@ import type {
 } from '@backstage/plugin-scaffolder-react';
 import { MultistepJsonForm } from '../MultistepJsonForm';
 import { createValidator } from '../TemplatePage';
-import { useDirectoryEditor } from './DirectoryEditorContext';
-import { useDryRun } from './DryRunContext';
 import { LegacyFieldExtensionOptions } from '@backstage/plugin-scaffolder-react/alpha';
+import { useDryRun } from '../../components/TemplateEditorPage/DryRunContext';
+import { useDirectoryEditor } from '../../components/TemplateEditorPage/DirectoryEditorContext';
 
 const useStyles = makeStyles({
   containerWrapper: {

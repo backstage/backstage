@@ -19,12 +19,12 @@ import {
   TemplateDirectoryAccess,
   WebFileSystemAccess,
 } from '../../lib/filesystem';
-import { CustomFieldExplorer } from './CustomFieldExplorer';
-import { TemplateEditorIntro } from './TemplateEditorIntro';
 import { TemplateEditor } from './TemplateEditor';
 import { TemplateFormPreviewer } from './TemplateFormPreviewer';
 import { type LayoutOptions } from '@backstage/plugin-scaffolder-react';
 import { LegacyFieldExtensionOptions } from '@backstage/plugin-scaffolder-react/alpha';
+import { CustomFieldExplorer } from './CustomFieldExplorer';
+import { TemplateEditorIntro } from '../../components/TemplateEditorPage/TemplateEditorIntro';
 
 type Selection =
   | {
