@@ -19,8 +19,8 @@ import { Config } from '@backstage/config';
 import fs from 'fs-extra';
 import path from 'path';
 
-import { BundlingPathsOptions, resolveBundlingPaths } from './paths';
 import { paths as cliPaths } from '../../lib/paths';
+import { BundlingPathsOptions, resolveBundlingPaths } from './paths';
 
 type Options = { config: Config } & BundlingPathsOptions;
 

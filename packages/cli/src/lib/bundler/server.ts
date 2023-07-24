@@ -14,71 +14,30 @@
  * limitations under the License.
  */
 
+import { PackageGraph } from '@backstage/cli-node';
+import { AppConfig } from '@backstage/config';
+import chalk from 'chalk';
+import fs from 'fs-extra';
+import uniq from 'lodash/uniq';
+import openBrowser from 'react-dev-utils/openBrowser';
 import webpack from 'webpack';
 import WebpackDevServer from 'webpack-dev-server';
-import openBrowser from 'react-dev-utils/openBrowser';
-import uniq from 'lodash/uniq';
-import fs from 'fs-extra';
 
-import { createConfig, resolveBaseUrl } from './config';
-import { ServeOptions } from './types';
-import { resolveBundlingPaths } from './paths';
-import { paths as libPaths } from '../../lib/paths';
-import { loadCliConfig } from '../config';
-import chalk from 'chalk';
-import { AppConfig } from '@backstage/config';
-import { PackageGraph } from '@backstage/cli-node';
-import { Lockfile } from '../versioning';
 import {
   forbiddenDuplicatesFilter,
   includedFilter,
 } from '../../commands/versions/lint';
-import { BackstagePackageJson } from '@backstage/cli-node';
+import { paths as libPaths } from '../../lib/paths';
+import { loadCliConfig } from '../config';
+import { Lockfile } from '../versioning';
+import { createConfig, resolveBaseUrl } from './config';
 import { writeDetectedPluginsModule } from './discover';
+import { resolveBundlingPaths } from './paths';
+import { ServeOptions } from './types';
 
 export async function serveBundle(options: ServeOptions) {
   const paths = resolveBundlingPaths(options);
-  const pkgPath = paths.targetPackageJson;
-  const pkg: BackstagePackageJson = await fs.readJson(pkgPath);
 
-  // TODO: proper
-  // Assumption for config string based on https://github.com/backstage/backstage/issues/18372 ^
-  const packageDetectionMode =
-    options.fullConfig.getOptional('app.experimental.packages') || 'all';
-  const extraPackages: string[] = [];
-  if (packageDetectionMode === 'all') {
-    for (const depName of Object.keys(pkg.dependencies ?? {})) {
-      const depPackageJson: BackstagePackageJson = require(require.resolve(
-        `${depName}/package.json`,
-        { paths: [paths.targetPath] },
-      ));
-      if (
-        ['frontend-plugin', 'frontend-plugin-module'].includes(
-          depPackageJson.backstage?.role || '',
-        )
-      ) {
-        extraPackages.push(depName);
-      }
-    }
-  } else {
-    const packagesList = options.fullConfig.getStringArray(
-      'app.experimental.packages',
-    );
-
-    for (const depName of packagesList ?? []) {
-      const depPackageJson: BackstagePackageJson = require(require.resolve(
-        `${depName}/package.json`,
-        { paths: [paths.targetPath] },
-      ));
-      if (
-        ['frontend-plugin', 'frontend-plugin-module'].includes(
-          depPackageJson.backstage?.role || '',
-        )
-      ) {
-        extraPackages.push(depName);
-      }
-    }
-  }
   if (options.verifyVersions) {
     const lockfile = await Lockfile.load(
       libPaths.resolveTargetRoot('yarn.lock'),
@@ -163,17 +122,17 @@ export async function serveBundle(options: ServeOptions) {
   const config = await createConfig(paths, {
     ...options,
     checksEnabled: options.checksEnabled,
-    extraPackages,
     isDev: true,
     baseUrl: url,
     frontendConfig,
+    frontendAppConfigs: [],
     getFrontendAppConfigs: () => {
       return latestFrontendAppConfigs;
     },
   });
 
   await writeDetectedPluginsModule({
-    config: options.fullConfig,
+    config: fullConfig,
     entry: options.entry,
     targetDir: options.targetDir,
   });
