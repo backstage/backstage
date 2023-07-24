@@ -19,7 +19,6 @@ import compression from 'compression';
 import cors from 'cors';
 import express, { Router, ErrorRequestHandler } from 'express';
 import helmet, { HelmetOptions } from 'helmet';
-import { ContentSecurityPolicyOptions } from 'helmet/dist/types/middlewares/content-security-policy';
 import * as http from 'http';
 import { LoggerService } from '@backstage/backend-plugin-api';
 import { useHotCleanup } from '../../hot';
@@ -37,6 +36,11 @@ import {
   HttpServerOptions,
   createHttpServer,
 } from '@backstage/backend-app-api';
+
+type ContentSecurityPolicyOptions = Extract<
+  HelmetOptions['contentSecurityPolicy'],
+  object
+>;
 
 export type CspOptions = Record<string, string[]>;
 

@@ -17,7 +17,11 @@
 import { Config } from '@backstage/config';
 import helmet from 'helmet';
 import { HelmetOptions } from 'helmet';
-import { ContentSecurityPolicyOptions } from 'helmet/dist/types/middlewares/content-security-policy';
+
+type ContentSecurityPolicyOptions = Extract<
+  HelmetOptions['contentSecurityPolicy'],
+  object
+>;
 
 /**
  * Attempts to read Helmet options from the backend configuration object.
