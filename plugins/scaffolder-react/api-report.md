@@ -7,18 +7,30 @@
 
 import { ApiHolder } from '@backstage/core-plugin-api';
 import { ApiRef } from '@backstage/core-plugin-api';
+import { Dispatch } from 'react';
 import { Extension } from '@backstage/core-plugin-api';
-import { FieldProps } from '@rjsf/core';
-import { FieldValidation } from '@rjsf/core';
-import type { FormProps } from '@rjsf/core-v5';
+import { FieldProps } from '@rjsf/utils';
+import { FieldValidation } from '@rjsf/utils';
+import { FormProps as FormProps_2 } from '@rjsf/core-v5';
+import { IconComponent } from '@backstage/core-plugin-api';
 import { JsonObject } from '@backstage/types';
 import { JSONSchema7 } from 'json-schema';
 import { JsonValue } from '@backstage/types';
+import { LayoutOptions as LayoutOptions_2 } from '@backstage/plugin-scaffolder-react';
 import { Observable } from '@backstage/types';
 import { PropsWithChildren } from 'react';
 import { default as React_2 } from 'react';
+import { ReactElement } from 'react';
+import { ReactNode } from 'react';
+import { ScaffolderStep as ScaffolderStep_2 } from '@backstage/plugin-scaffolder-react';
+import { ScaffolderTaskOutput as ScaffolderTaskOutput_2 } from '@backstage/plugin-scaffolder-react';
+import { SetStateAction } from 'react';
 import { TaskSpec } from '@backstage/plugin-scaffolder-common';
 import { TaskStep } from '@backstage/plugin-scaffolder-common';
+import { TemplateEntityV1beta3 } from '@backstage/plugin-scaffolder-common';
+import { TemplateParameterSchema as TemplateParameterSchema_2 } from '@backstage/plugin-scaffolder-react';
+import { UIOptionsType } from '@rjsf/utils';
+import { UiSchema } from '@rjsf/utils';
 
 // @public
 export type Action = {
@@ -38,9 +50,12 @@ export type ActionExample = {
 };
 
 // @public
+export const createFieldValidation: () => FieldValidation;
+
+// @public
 export function createScaffolderFieldExtension<
   TReturnValue = unknown,
-  TInputProps = unknown,
+  TInputProps extends UIOptionsType = {},
 >(
   options: FieldExtensionOptions<TReturnValue, TInputProps>,
 ): Extension<FieldExtensionComponent<TReturnValue, TInputProps>>;
@@ -57,13 +72,30 @@ export type CustomFieldExtensionSchema = {
 };
 
 // @public
-export type CustomFieldValidator<TFieldReturnValue> = (
+export type CustomFieldValidator<TFieldReturnValue, TUiOptions = unknown> = (
   data: TFieldReturnValue,
   field: FieldValidation,
   context: {
     apiHolder: ApiHolder;
+    formData: JsonObject;
+    schema: JsonObject;
+    uiSchema?: FieldExtensionUiSchema<TFieldReturnValue, TUiOptions>;
   },
 ) => void | Promise<void>;
+
+// @public
+export const DefaultTemplateOutputs: (props: {
+  output?: ScaffolderTaskOutput_2;
+}) => JSX.Element | null;
+
+// @public (undocumented)
+export const EmbeddableWorkflow: (props: WorkflowProps) => JSX.Element;
+
+// @public
+export const extractSchemaFromStep: (inputStep: JsonObject) => {
+  uiSchema: UiSchema;
+  schema: JsonObject;
+};
 
 // @public
 export type FieldExtensionComponent<_TReturnValue, _TInputProps> = () => null;
@@ -71,26 +103,40 @@ export type FieldExtensionComponent<_TReturnValue, _TInputProps> = () => null;
 // @public
 export interface FieldExtensionComponentProps<
   TFieldReturnValue,
-  TUiOptions = unknown,
-> extends FieldProps<TFieldReturnValue> {
+  TUiOptions = {},
+> extends PropsWithChildren<FieldProps<TFieldReturnValue>> {
   // (undocumented)
-  uiSchema: FieldProps['uiSchema'] & {
-    'ui:options'?: TUiOptions;
-  };
+  uiSchema?: FieldExtensionUiSchema<TFieldReturnValue, TUiOptions>;
 }
 
 // @public
 export type FieldExtensionOptions<
   TFieldReturnValue = unknown,
-  TInputProps = unknown,
+  TUiOptions = unknown,
 > = {
   name: string;
   component: (
-    props: FieldExtensionComponentProps<TFieldReturnValue, TInputProps>,
+    props: FieldExtensionComponentProps<TFieldReturnValue, TUiOptions>,
   ) => JSX.Element | null;
-  validation?: CustomFieldValidator<TFieldReturnValue>;
+  validation?: CustomFieldValidator<TFieldReturnValue, TUiOptions>;
   schema?: CustomFieldExtensionSchema;
 };
+
+// @public
+export interface FieldExtensionUiSchema<TFieldReturnValue, TUiOptions>
+  extends UiSchema<TFieldReturnValue> {
+  // (undocumented)
+  'ui:options'?: TUiOptions & UIOptionsType;
+}
+
+// @public
+export const Form: (props: PropsWithChildren<FormProps_2>) => JSX.Element;
+
+// @public
+export type FormProps = Pick<
+  FormProps_2,
+  'transformErrors' | 'noHtml5Validate'
+>;
 
 // @public
 export type LayoutComponent<_TInputProps> = () => null;
@@ -105,7 +151,7 @@ export interface LayoutOptions<P = any> {
 
 // @public
 export type LayoutTemplate<T = any> = NonNullable<
-  FormProps<T>['uiSchema']
+  FormProps_2<T>['uiSchema']
 >['ui:ObjectFieldTemplate'];
 
 // @public
@@ -122,6 +168,29 @@ export type LogEvent = {
   createdAt: string;
   id: string;
   taskId: string;
+};
+
+// @public
+export interface ParsedTemplateSchema {
+  // (undocumented)
+  description?: string;
+  // (undocumented)
+  mergedSchema: JsonObject;
+  // (undocumented)
+  schema: JsonObject;
+  // (undocumented)
+  title: string;
+  // (undocumented)
+  uiSchema: UiSchema;
+}
+
+// @public
+export const ReviewState: (props: ReviewStateProps) => JSX.Element;
+
+// @public
+export type ReviewStateProps = {
+  schemas: ParsedTemplateSchema[];
+  formState: JsonObject;
 };
 
 // @public
@@ -186,9 +255,34 @@ export interface ScaffolderDryRunResponse {
 }
 
 // @public
-export const ScaffolderFieldExtensions: React_2.ComponentType<
-  React_2.PropsWithChildren<{}>
+export const ScaffolderField: (
+  props: PropsWithChildren<ScaffolderFieldProps>,
+) => JSX.Element;
+
+// @public
+export const ScaffolderFieldExtensions: React.ComponentType<
+  React.PropsWithChildren<{}>
 >;
+
+// @public
+export interface ScaffolderFieldProps {
+  // (undocumented)
+  disabled?: boolean;
+  // (undocumented)
+  displayLabel?: boolean;
+  // (undocumented)
+  errors?: ReactElement;
+  // (undocumented)
+  help?: ReactElement;
+  // (undocumented)
+  rawDescription?: string;
+  // (undocumented)
+  rawErrors?: string[];
+  // (undocumented)
+  rawHelp?: string;
+  // (undocumented)
+  required?: boolean;
+}
 
 // @public
 export interface ScaffolderGetIntegrationsListOptions {
@@ -224,6 +318,18 @@ export type ScaffolderOutputText = {
   title?: string;
   icon?: string;
   content?: string;
+};
+
+// @public (undocumented)
+export function ScaffolderPageContextMenu(
+  props: ScaffolderPageContextMenuProps,
+): JSX.Element | null;
+
+// @public (undocumented)
+export type ScaffolderPageContextMenuProps = {
+  onEditorClicked?: () => void;
+  onActionsClicked?: () => void;
+  onTasksClicked?: () => void;
 };
 
 // @public
@@ -298,6 +404,47 @@ export const SecretsContextProvider: (
 ) => JSX.Element;
 
 // @public
+export const Stepper: (stepperProps: StepperProps) => JSX.Element;
+
+// @public
+export type StepperProps = {
+  manifest: TemplateParameterSchema_2;
+  extensions: FieldExtensionOptions<any, any>[];
+  templateName?: string;
+  FormProps?: FormProps;
+  initialState?: Record<string, JsonValue>;
+  onCreate: (values: Record<string, JsonValue>) => Promise<void>;
+  components?: {
+    ReviewStateComponent?: (props: ReviewStateProps) => JSX.Element;
+    createButtonText?: ReactNode;
+    reviewButtonText?: ReactNode;
+  };
+  layouts?: LayoutOptions_2[];
+};
+
+// @public
+export const TaskLogStream: (props: {
+  logs: {
+    [k: string]: string[];
+  };
+}) => JSX.Element;
+
+// @public
+export const TaskSteps: (props: TaskStepsProps) => JSX.Element;
+
+// @public
+export interface TaskStepsProps {
+  // (undocumented)
+  activeStep?: number;
+  // (undocumented)
+  isComplete?: boolean;
+  // (undocumented)
+  isError?: boolean;
+  // (undocumented)
+  steps: (TaskStep & ScaffolderStep_2)[];
+}
+
+// @public
 export type TaskStream = {
   cancelled: boolean;
   loading: boolean;
@@ -312,6 +459,79 @@ export type TaskStream = {
   };
   output?: ScaffolderTaskOutput;
 };
+
+// @public
+export const TemplateCard: (props: TemplateCardProps) => JSX.Element;
+
+// @public
+export interface TemplateCardProps {
+  // (undocumented)
+  additionalLinks?: {
+    icon: IconComponent;
+    text: string;
+    url: string;
+  }[];
+  // (undocumented)
+  onSelected?: (template: TemplateEntityV1beta3) => void;
+  // (undocumented)
+  template: TemplateEntityV1beta3;
+}
+
+// @public
+export const TemplateCategoryPicker: () => JSX.Element | null;
+
+// @public
+export const TemplateGroup: (props: TemplateGroupProps) => JSX.Element | null;
+
+// @public (undocumented)
+export type TemplateGroupFilter = {
+  title?: React_2.ReactNode;
+  filter: (entity: TemplateEntityV1beta3) => boolean;
+};
+
+// @public
+export interface TemplateGroupProps {
+  // (undocumented)
+  components?: {
+    CardComponent?: React_2.ComponentType<TemplateCardProps>;
+  };
+  // (undocumented)
+  onSelected: (template: TemplateEntityV1beta3) => void;
+  // (undocumented)
+  templates: {
+    template: TemplateEntityV1beta3;
+    additionalLinks?: {
+      icon: IconComponent;
+      text: string;
+      url: string;
+    }[];
+  }[];
+  // (undocumented)
+  title: React_2.ReactNode;
+}
+
+// @public (undocumented)
+export const TemplateGroups: (props: TemplateGroupsProps) => JSX.Element | null;
+
+// @public (undocumented)
+export interface TemplateGroupsProps {
+  // (undocumented)
+  additionalLinksForEntity?: (template: TemplateEntityV1beta3) => {
+    icon: IconComponent;
+    text: string;
+    url: string;
+  }[];
+  // (undocumented)
+  groups: TemplateGroupFilter[];
+  // (undocumented)
+  onTemplateSelected?: (template: TemplateEntityV1beta3) => void;
+  // (undocumented)
+  TemplateCardComponent?: React_2.ComponentType<{
+    template: TemplateEntityV1beta3;
+  }>;
+  // (undocumented)
+  templateFilter?: (entity: TemplateEntityV1beta3) => boolean;
+}
 
 // @public
 export type TemplateParameterSchema = {
@@ -337,10 +557,47 @@ export const useCustomLayouts: <TComponentDataType = LayoutOptions<any>>(
 ) => TComponentDataType[];
 
 // @public
+export const useFormDataFromQuery: (
+  initialState?: Record<string, JsonValue>,
+) => [Record<string, any>, Dispatch<SetStateAction<Record<string, any>>>];
+
+// @public
 export const useTaskEventStream: (taskId: string) => TaskStream;
+
+// @public (undocumented)
+export const useTemplateParameterSchema: (templateRef: string) => {
+  manifest: TemplateParameterSchema | undefined;
+  loading: boolean;
+  error: Error | undefined;
+};
+
+// @public
+export const useTemplateSchema: (manifest: TemplateParameterSchema_2) => {
+  steps: ParsedTemplateSchema[];
+};
 
 // @public
 export const useTemplateSecrets: () => ScaffolderUseTemplateSecrets;
+
+// @public (undocumented)
+export const Workflow: (workflowProps: WorkflowProps) => JSX.Element | null;
+
+// @public (undocumented)
+export type WorkflowProps = {
+  title?: string;
+  description?: string;
+  namespace: string;
+  templateName: string;
+  onError(error: Error | undefined): JSX.Element | null;
+} & Pick<
+  StepperProps,
+  | 'extensions'
+  | 'FormProps'
+  | 'components'
+  | 'onCreate'
+  | 'initialState'
+  | 'layouts'
+>;
 
 // (No @packageDocumentation comment for this package)
 ```

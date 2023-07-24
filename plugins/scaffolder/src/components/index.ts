@@ -18,3 +18,5 @@ export type { RepoUrlPickerUiOptions } from './fields';
 export { TemplateTypePicker } from './TemplateTypePicker';
 export type { RouterProps } from './Router';
 export type { ReviewStepProps } from './types';
+export type { TemplateWizardPageProps } from './TemplateWizardPage';
+export type { TemplateListPageProps } from './TemplateListPage';
