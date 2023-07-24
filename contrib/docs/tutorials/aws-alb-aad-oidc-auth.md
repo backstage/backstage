@@ -91,8 +91,8 @@ const SampleSignInComponent: any = (props: SignInPageProps) => {
             },
           }),
         );
-      } catch (err) {
-        setError(err.message);
+      } catch (err: any) {
+        setError(err.message as string);
       }
     }
   }, [config]);
