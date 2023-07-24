@@ -135,8 +135,6 @@ export async function createConfig(
         () => JSON.stringify(options.getFrontendAppConfigs()),
         true,
       ),
-      'process.env.EXTRA_PACKAGE_IMPORTS': JSON.stringify(extraPackages),
-      'process.env.SINGLE_PACKAGE_IMPORT': JSON.stringify(extraPackages[0]),
     }),
   );
 
