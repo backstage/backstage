@@ -38,16 +38,21 @@ const getExtensionContext = (
     const matches = matchRoutes(routes, { pathname });
 
     // Of the matching routes, get the last (e.g. most specific) instance of
-    // the BackstageRouteObject.
-
+    // the BackstageRouteObject that contains a routeRef. Filtering by routeRef
+    // ensures subRouteRefs are aligned to their parent routes' context.
     const routeMatch = matches
       ?.filter(match => match?.route.routeRefs?.size > 0)
       .pop();
-
     const routeObject = routeMatch?.route;
 
     // If there is no route object, then allow inheritance of default context.
     if (!routeObject) {
+      return undefined;
+    }
+
+    // If the matched route is the root route (no path), and the pathname is
+    // not the path of the homepage, then inherit from the default context.
+    if (routeObject.path === '' && pathname !== '/') {
       return undefined;
     }
 
@@ -66,7 +71,7 @@ const getExtensionContext = (
     const params = Object.entries(
       routeMatch?.params || {},
     ).reduce<AnalyticsEventAttributes>((acc, [key, value]) => {
-      if (value !== undefined) {
+      if (value !== undefined && key !== '*') {
         acc[key] = value;
       }
       return acc;
