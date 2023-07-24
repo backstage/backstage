@@ -86,7 +86,7 @@ const useStyles = makeStyles((theme: Theme) =>
   }),
 );
 
-function useHomeStorage(
+export function useHomeStorage(
   defaultWidgets: GridWidget[],
 ): [GridWidget[], (value: GridWidget[]) => void] {
   const key = 'home';
@@ -365,7 +365,10 @@ export const CustomHomepageGrid = (props: CustomHomepageGridProps) => {
           layout: l,
         } as GridWidget;
       });
-      setWidgets(newWidgets);
+      // Only update if the old and new GridWidget are different
+      if (JSON.stringify(newWidgets) !== JSON.stringify(widgets)) {
+        setWidgets(newWidgets);
+      }
     }
   };
 
