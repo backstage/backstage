@@ -16,3 +16,5 @@
 export type { LegacyRouterProps } from './Router';
 
 export { LegacyTaskPage, type LegacyTaskPageProps } from './TaskPage';
+
+export type { ReviewStepProps } from '../components';
