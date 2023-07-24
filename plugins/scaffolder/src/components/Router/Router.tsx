@@ -66,6 +66,7 @@ export type RouterProps = {
     TemplateWizardPageComponent?: React.ComponentType<TemplateWizardPageProps>;
   };
   groups?: TemplateGroupFilter[];
+  defaultPreviewTemplate?: string;
   templateFilter?: (entity: TemplateEntityV1beta3) => boolean;
   // todo(blam): rename this to formProps
   FormProps?: FormProps;
@@ -149,6 +150,7 @@ export const Router = (props: PropsWithChildren<RouterProps>) => {
           <SecretsContextProvider>
             <TemplateEditorPage
               customFieldExtensions={fieldExtensions}
+              defaultPreviewTemplate={props.defaultPreviewTemplate}
               layouts={customLayouts}
             />
           </SecretsContextProvider>
