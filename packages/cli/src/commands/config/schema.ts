@@ -28,19 +28,23 @@ export default async (opts: OptionValues) => {
     mockEnv: true,
   });
 
-  const merged = mergeConfigSchemas(
-    (schema.serialize().schemas as JsonObject[]).map(
-      _ => _.value as JSONSchema,
-    ),
-  );
-
-  merged.title = 'Application Configuration Schema';
-  merged.description =
-    'This is the schema describing the structure of the app-config.yaml configuration file.';
+  let configSchema: JsonObject | JSONSchema;
+  if (!opts.nonMerged) {
+    configSchema = mergeConfigSchemas(
+      (schema.serialize().schemas as JsonObject[]).map(
+        _ => _.value as JSONSchema,
+      ),
+    );
+    configSchema.title = 'Application Configuration Schema';
+    configSchema.description =
+      'This is the schema describing the structure of the app-config.yaml configuration file.';
+  } else {
+    configSchema = schema.serialize();
+  }
 
   if (opts.format === 'json') {
-    process.stdout.write(`${JSON.stringify(merged, null, 2)}\n`);
+    process.stdout.write(`${JSON.stringify(configSchema, null, 2)}\n`);
   } else {
-    process.stdout.write(`${stringifyYaml(merged)}\n`);
+    process.stdout.write(`${stringifyYaml(configSchema)}\n`);
   }
 };

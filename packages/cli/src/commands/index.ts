@@ -365,6 +365,7 @@ export function registerCommands(program: Command) {
       '--format <format>',
       'Format to print the schema in, either json or yaml [yaml]',
     )
+    .option('--non-merged', 'Enable to print the config schema non merged')
     .description('Print configuration schema')
     .action(lazy(() => import('./config/schema').then(m => m.default)));
 
