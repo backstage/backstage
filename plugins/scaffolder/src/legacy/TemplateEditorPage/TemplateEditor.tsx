@@ -17,13 +17,13 @@ import { makeStyles } from '@material-ui/core';
 import React, { useState } from 'react';
 import type { LayoutOptions } from '@backstage/plugin-scaffolder-react';
 import { TemplateDirectoryAccess } from '../../lib/filesystem';
-import { DirectoryEditorProvider } from './DirectoryEditorContext';
-import { DryRunProvider } from './DryRunContext';
-import { DryRunResults } from './DryRunResults';
-import { TemplateEditorBrowser } from './TemplateEditorBrowser';
 import { TemplateEditorForm } from './TemplateEditorForm';
-import { TemplateEditorTextArea } from './TemplateEditorTextArea';
 import { LegacyFieldExtensionOptions } from '@backstage/plugin-scaffolder-react/alpha';
+import { DirectoryEditorProvider } from '../../components/TemplateEditorPage/DirectoryEditorContext';
+import { DryRunProvider } from '../../components/TemplateEditorPage/DryRunContext';
+import { TemplateEditorBrowser } from '../../components/TemplateEditorPage/TemplateEditorBrowser';
+import { TemplateEditorTextArea } from '../../components/TemplateEditorPage/TemplateEditorTextArea';
+import { DryRunResults } from '../../components/TemplateEditorPage/DryRunResults';
 
 const useStyles = makeStyles({
   // Reset and fix sizing to make sure scrolling behaves correctly

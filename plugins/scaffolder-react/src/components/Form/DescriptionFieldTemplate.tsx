@@ -37,7 +37,7 @@ const useStyles = makeStyles(theme => ({
 }));
 
 /** The `DescriptionField` is the template to use to render the description of a field
- * @pulic
+ * @public
  * @param props - The `DescriptionFieldProps` for this component
  */
 export const DescriptionFieldTemplate = <
