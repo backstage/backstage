@@ -18,13 +18,30 @@ import { BackstagePackageJson } from '@backstage/cli-node';
 import { Config } from '@backstage/config';
 import fs from 'fs-extra';
 import path from 'path';
+import chokidar from 'chokidar';
 
 import { paths as cliPaths } from '../../lib/paths';
 import { BundlingPathsOptions, resolveBundlingPaths } from './paths';
 
-type Options = { config: Config } & BundlingPathsOptions;
+type Options = { config: Config; watch: () => void } & BundlingPathsOptions;
 
-export async function writeDetectedPluginsModule(options: Options) {
+export async function buildDetectedPlugins(options: Options) {
+  const { entry, targetDir } = options;
+  const { targetPackageJson } = resolveBundlingPaths({ entry, targetDir });
+
+  if (!!options.watch) {
+    const watcher = chokidar.watch(targetPackageJson);
+
+    watcher.on('change', async () => {
+      await writeDetectedPluginsModule(options);
+      options.watch();
+    });
+  }
+
+  await writeDetectedPluginsModule(options);
+}
+
+async function writeDetectedPluginsModule(options: Options) {
   const requirePackageScript = (await detectPlugins(options))
     ?.map(pkg => `{name: '${pkg}', module: require('${pkg}')}`)
     .join(',');
