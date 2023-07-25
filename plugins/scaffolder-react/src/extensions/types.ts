@@ -50,7 +50,7 @@ export interface FieldExtensionComponentProps<
  */
 export interface FieldExtensionUiSchema<TFieldReturnValue, TUiOptions>
   extends UiSchemaV5<TFieldReturnValue> {
-  'ui:options'?: TUiOptions & UIOptionsType;
+  'ui:options'?: TUiOptions & UIOptionsType<TFieldReturnValue>;
 }
 
 /**

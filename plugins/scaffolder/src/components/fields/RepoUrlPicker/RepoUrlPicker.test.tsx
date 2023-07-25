@@ -23,6 +23,7 @@ import {
   scmAuthApiRef,
   ScmAuthApi,
 } from '@backstage/integration-react';
+import validator from '@rjsf/validator-ajv8';
 
 import {
   SecretsContextProvider,
@@ -32,6 +33,7 @@ import {
   Form,
 } from '@backstage/plugin-scaffolder-react';
 import { act, fireEvent } from '@testing-library/react';
+import { Field } from '@rjsf/utils';
 
 describe('RepoUrlPicker', () => {
   const mockScaffolderApi: Partial<ScaffolderApi> = {
@@ -76,7 +78,8 @@ describe('RepoUrlPicker', () => {
             <Form
               schema={{ type: 'string' }}
               uiSchema={{ 'ui:field': 'RepoUrlPicker' }}
-              fields={{ RepoUrlPicker: RepoUrlPicker }}
+              fields={{ RepoUrlPicker: RepoUrlPicker as unknown as Field }}
+              validator={validator}
               onSubmit={onSubmit}
             />
           </SecretsContextProvider>
@@ -115,7 +118,8 @@ describe('RepoUrlPicker', () => {
                 'ui:field': 'RepoUrlPicker',
                 'ui:options': { allowedHosts: ['dev.azure.com'] },
               }}
-              fields={{ RepoUrlPicker: RepoUrlPicker }}
+              fields={{ RepoUrlPicker: RepoUrlPicker as unknown as Field }}
+              validator={validator}
             />
           </SecretsContextProvider>
         </TestApiProvider>,
@@ -155,7 +159,8 @@ describe('RepoUrlPicker', () => {
                   },
                 },
               }}
-              fields={{ RepoUrlPicker: RepoUrlPicker }}
+              fields={{ RepoUrlPicker: RepoUrlPicker as unknown as Field }}
+              validator={validator}
             />
             <SecretsComponent />
           </SecretsContextProvider>
@@ -217,7 +222,8 @@ describe('RepoUrlPicker', () => {
                   },
                 },
               }}
-              fields={{ RepoUrlPicker: RepoUrlPicker }}
+              fields={{ RepoUrlPicker: RepoUrlPicker as unknown as Field }}
+              validator={validator}
             />
             <SecretsComponent />
           </SecretsContextProvider>
@@ -270,7 +276,8 @@ describe('RepoUrlPicker', () => {
                   },
                 },
               }}
-              fields={{ RepoUrlPicker: RepoUrlPicker }}
+              fields={{ RepoUrlPicker: RepoUrlPicker as unknown as Field }}
+              validator={validator}
             />
             <SecretsComponent />
           </SecretsContextProvider>
