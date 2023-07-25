@@ -29,7 +29,7 @@ const useStyles = makeStyles(theme => ({
       position: 'relative',
       top: 'unset',
       right: 'unset',
-      margin: `${theme.spacing(10)}px auto ${theme.spacing(4)}px`,
+      margin: theme.spacing(10, 'auto', 4),
     },
   },
 }));
