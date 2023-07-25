@@ -19,7 +19,7 @@ import { DocumentNode, GraphQLNamedType, printType } from 'graphql';
 import { createModule, gql } from 'graphql-modules';
 import { createGraphQLAPI } from './__testUtils__';
 import { transformSchema } from './transformSchema';
-import { NodeId } from './types';
+import { GraphQLContext, NodeId } from './types';
 import { CoreSync } from './core';
 import { decodeId, encodeId } from './helpers';
 import { createLoader } from './createLoader';
@@ -794,23 +794,24 @@ describe('mapDirectives', () => {
       kind: 'Component',
       metadata: { name: 'world', namespace: 'default' },
     };
-    const loader = createLoader({
-      Mock: async queries =>
-        queries.map(({ ref } = {}) => {
-          if (ref === 'component:default/hello') return entity;
-          if (ref === 'component:default/world') return parent;
-          return null;
-        }),
-      GraphQL: async queries => {
-        // eslint-disable-next-line @typescript-eslint/no-use-before-define
-        const { nodes } = await query(/* GraphQL */ `
+    const loader: (context: GraphQLContext) => DataLoader<string, any> =
+      createLoader({
+        Mock: async queries =>
+          queries.map(({ ref } = {}) => {
+            if (ref === 'component:default/hello') return entity;
+            if (ref === 'component:default/world') return parent;
+            return null;
+          }),
+        GraphQL: async queries => {
+          // eslint-disable-next-line @typescript-eslint/no-use-before-define
+          const { nodes } = await query(/* GraphQL */ `
           nodes(ids: ${JSON.stringify(queries.map(({ ref } = {}) => ref))}) {
             id, ...on Entity { name }
           }
         `);
-        return (nodes ?? []) as Array<any>;
-      },
-    });
+          return (nodes ?? []) as Array<any>;
+        },
+      });
     const query = await createGraphQLAPI(TestModule, loader);
     const result = await query(/* GraphQL */ `
       node(id: ${JSON.stringify(
