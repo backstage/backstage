@@ -240,10 +240,11 @@ To use the permission framework to secure the DevTools route you'll want to do t
    ```
 
 2. Then open the `packages/app/src/App.tsx` file
-3. The add this import after all the existing import statements:
+3. The add these imports after all the existing import statements:
 
    ```ts
    import { devToolsAdministerPermission } from '@backstage/plugin-devtools-common';
+   import { RequirePermission } from '@backstage/plugin-permission-react';
    ```
 
 4. Then make the following change:
