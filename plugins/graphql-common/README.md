@@ -12,7 +12,7 @@ types and how to resolve them.
     - [`@discriminates`](#discriminates)
     - [`@discriminationAlias`](#discriminationalias)
     - [`@resolve`](#resolve)
-    - [`@relation`](#../graphql-catalog/README.md#relation-directive)
+    - [`@relation`](../graphql-backend-module-catalog/README.md#relation-directive)
 - [Integrations](#integrations)
   - [@graphql-codegen/TypeScript](#graphql-codegentypescript)
 - [Questions](#questions)
@@ -20,7 +20,7 @@ types and how to resolve them.
 ## Extending your schema with a custom module
 
 > 💡If you have not already, you should start by installing the
-> [`@backstage/plugin-graphql-catalog`](../graphql-catalog/README.md).
+> [`@backstage/plugin-graphql-backend-module-catalog`](../graphql-backend-module-catalog/README.md).
 > This plugin provide as GraphQL module that allows you to access the
 > software catalog over GraphQL.
 
@@ -116,7 +116,7 @@ using a given path. It allows you to specify a resolver for a field
 from the schema without actually writing a real resolver at all. Under
 the hood, it's creating the resolver for you. To see this in action,
 check out the
-[`catalog.graphql`](../graphql-catalog/src/catalog/catalog.graphql)
+[`catalog.graphql`](../graphql-backend-module-catalog/src/catalog/catalog.graphql)
 which uses the `@field` directive extensively module to retrieve
 properties like `namespace`, `title` and others.
 
@@ -273,7 +273,7 @@ GraphQL modules resolvers, you'll need modify your `@graphql-codegen` config.
 
 ```ts
 import { CoreSync, transformSchema } from '@backstage/plugin-graphql-common';
-import { CatalogSync } from '@backstage/plugin-graphql-catalog';
+import { CatalogSync } from '@backstage/plugin-graphql-backend-module-catalog';
 import { printSchemaWithDirectives } from '@graphql-tools/utils';
 import { MyModule } from '../modules/my-module/my-module';
 
