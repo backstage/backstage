@@ -16,7 +16,7 @@
 import { Config } from '@backstage/config';
 import { UrlReader } from '@backstage/backend-common';
 import { ScmIntegrations } from '@backstage/integration';
-import { createFetchPlainAction } from '@backstage/plugin-scaffolder-backend';
+import { fetchContents } from '@backstage/plugin-scaffolder-backend';
 import { createTemplateAction } from '@backstage/plugin-scaffolder-node';
 import { InputError, ConflictError } from '@backstage/errors';
 import { NodeHtmlMarkdown } from 'node-html-markdown';
@@ -41,7 +41,6 @@ export const createConfluenceToMarkdownAction = (options: {
   config: Config;
 }) => {
   const { config, reader, integrations } = options;
-  const fetchPlainAction = createFetchPlainAction({ reader, integrations });
   type Obj = {
     [key: string]: string;
   };
@@ -82,18 +81,18 @@ export const createConfluenceToMarkdownAction = (options: {
         parsedRepoUrl.filepath.lastIndexOf('/') + 1,
       );
       const dirPath = ctx.workspacePath;
+      const repoFileDir = `${dirPath}/${parsedRepoUrl.filepath}`;
       let productArray: string[][] = [];
 
       ctx.logger.info(`Fetching the mkdocs.yml catalog from ${repoUrl}`);
 
       // This grabs the files from Github
-      const repoFileDir = `${dirPath}/${parsedRepoUrl.filepath}`;
-      await fetchPlainAction.handler({
-        ...ctx,
-        input: {
-          url: `https://${parsedRepoUrl.resource}/${parsedRepoUrl.owner}/${parsedRepoUrl.name}`,
-          targetPath: dirPath,
-        },
+      await fetchContents({
+        reader,
+        integrations,
+        baseUrl: ctx.templateInfo?.baseUrl,
+        fetchUrl: `https://${parsedRepoUrl.resource}/${parsedRepoUrl.owner}/${parsedRepoUrl.name}`,
+        outputPath: ctx.workspacePath,
       });
 
       for (const url of confluenceUrls) {
