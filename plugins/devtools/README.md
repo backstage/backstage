@@ -408,18 +408,18 @@ export const customDevToolsPage = <DevToolsPage />;
 
 ## Configuration
 
-The following sections outline the configuration for the DevTools plugin
+The following sections outline the configuration for the DevTools plugin.
 
 ### Package Dependencies
 
-By default, only packages with names starting with `@backstage/` will be listed on the main "Info" tab. If you would like additional packages to be listed, you can specify the package prefixes in your `app-config.yaml`. For example, to include backstage plugins provided by the core application as well as `@roadiehq` and `@spotify`:
+By default, only packages with names starting with `@backstage` and `@internal` will be listed on the main "Info" tab. If you would like additional packages to be listed, you can specify the package prefixes (not regular expressions) in your `app-config.yaml`. For example, to not only provide version information about backstage plugins provided by the core application (`@backstage/*` modules) but also `@roadiehq` and `@spotify` plugins, you can specify this configuration:
 
 ```yaml
 devTools:
-  packagePrefixes:
-    - @backstage/
-    - @roadiehq/backstage-
-    - @spotify/backstage-
+  info:
+    packagePrefixes:
+      - @roadiehq/backstage-
+      - @spotify/backstage-
 ```
 
 ### External Dependencies Configuration
