@@ -6,7 +6,6 @@
 import { Application } from 'graphql-modules';
 import DataLoader from 'dataloader';
 import { getDirective } from '@graphql-tools/utils';
-import { GraphQLContext as GraphQLContext_2 } from '@backstage/plugin-graphql-common';
 import { GraphQLError } from 'graphql';
 import { GraphQLFieldConfig } from 'graphql';
 import { GraphQLNamedType } from 'graphql';
@@ -50,9 +49,9 @@ export type createGraphQLAppOptions = {
 
 // @public (undocumented)
 export const createLoader: <TContext extends Record<string, any>>(
-  loaders: Record<string, BatchLoadFn<TContext & GraphQLContext_2>>,
+  loaders: Record<string, BatchLoadFn<TContext & GraphQLContext>>,
   options?: Options<string, any>,
-) => (context: TContext & GraphQLContext_2) => DataLoader<string, any>;
+) => (context: TContext & GraphQLContext) => DataLoader<string, any>;
 
 // @public (undocumented)
 export function decodeId(id: string): NodeId;
