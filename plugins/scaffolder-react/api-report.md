@@ -126,7 +126,7 @@ export type FieldExtensionOptions<
 export interface FieldExtensionUiSchema<TFieldReturnValue, TUiOptions>
   extends UiSchema<TFieldReturnValue> {
   // (undocumented)
-  'ui:options'?: TUiOptions & UIOptionsType;
+  'ui:options'?: TUiOptions & UIOptionsType<TFieldReturnValue>;
 }
 
 // @public
