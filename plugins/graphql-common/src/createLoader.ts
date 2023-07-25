@@ -13,10 +13,9 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import { GraphQLContext } from '@backstage/plugin-graphql-common';
 import DataLoader, { Options } from 'dataloader';
 import { GraphQLError } from 'graphql';
-import { BatchLoadFn, NodeQuery } from './types';
+import { BatchLoadFn, NodeQuery, GraphQLContext } from './types';
 import { decodeId } from './helpers';
 
 /** @public */
