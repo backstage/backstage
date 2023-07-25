@@ -29,7 +29,7 @@ export default async (opts: OptionValues) => {
   });
 
   let configSchema: JsonObject | JSONSchema;
-  if (opts.merged) {
+  if (opts.merge) {
     configSchema = mergeConfigSchemas(
       (schema.serialize().schemas as JsonObject[]).map(
         _ => _.value as JSONSchema,
