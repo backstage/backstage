@@ -1,5 +1,12 @@
 # @backstage/plugin-events-node
 
+## 0.2.9-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-plugin-api@0.5.5-next.0
+
 ## 0.2.8
 
 ### Patch Changes

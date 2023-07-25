@@ -1,5 +1,17 @@
 # @backstage/core-components
 
+## 0.13.4-next.0
+
+### Patch Changes
+
+- 3d86be999fdf: Prefer simple `theme.spacing` without string interpolation
+- Updated dependencies
+  - @backstage/core-plugin-api@1.5.3
+  - @backstage/config@1.0.8
+  - @backstage/errors@1.2.1
+  - @backstage/theme@0.4.1
+  - @backstage/version-bridge@1.0.4
+
 ## 0.13.3
 
 ### Patch Changes
