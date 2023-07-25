@@ -59,7 +59,7 @@ const useStyles = makeStyles((theme: Theme) =>
       display: 'flex',
       flexDirection: 'row',
       alignItems: 'center',
-      minWidth: `calc(100% - ${theme.spacing(2)})`,
+      minWidth: `calc(100% - ${theme.spacing(2)}px)`,
     },
     formHeader: {
       width: '50%',
