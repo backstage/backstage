@@ -31,7 +31,7 @@ import { paths as libPaths } from '../../lib/paths';
 import { loadCliConfig } from '../config';
 import { Lockfile } from '../versioning';
 import { createConfig, resolveBaseUrl } from './config';
-import { writeDetectedPluginsModule } from './discover';
+import { buildDetectedPlugins } from './discover';
 import { resolveBundlingPaths } from './paths';
 import { ServeOptions } from './types';
 
@@ -131,10 +131,13 @@ export async function serveBundle(options: ServeOptions) {
     },
   });
 
-  await writeDetectedPluginsModule({
+  await buildDetectedPlugins({
     config: fullConfig,
     entry: options.entry,
     targetDir: options.targetDir,
+    watch() {
+      server?.invalidate();
+    },
   });
 
   const compiler = webpack(config);
