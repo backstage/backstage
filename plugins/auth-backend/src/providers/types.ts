@@ -14,18 +14,17 @@
  * limitations under the License.
  */
 
-import { Config } from '@backstage/config';
 import {
-  BackstageIdentityResponse,
-  BackstageSignInResult,
-} from '@backstage/plugin-auth-node';
-import express from 'express';
-import { LoggerService } from '@backstage/backend-plugin-api';
-import {
+  AuthProviderConfig as _AuthProviderConfig,
+  AuthProviderRouteHandlers as _AuthProviderRouteHandlers,
+  AuthProviderFactory as _AuthProviderFactory,
   AuthResolverCatalogUserQuery as _AuthResolverCatalogUserQuery,
   AuthResolverContext as _AuthResolverContext,
+  ClientAuthResponse as _ClientAuthResponse,
   CookieConfigurer as _CookieConfigurer,
   ProfileInfo as _ProfileInfo,
+  SignInInfo as _SignInInfo,
+  SignInResolver as _SignInResolver,
 } from '@backstage/plugin-auth-node';
 import { OAuthStartRequest } from '../lib/oauth/types';
 
@@ -48,30 +47,6 @@ export type AuthResolverContext = _AuthResolverContext;
 export type CookieConfigurer = _CookieConfigurer;
 
 /** @public */
-export type AuthProviderConfig = {
-  /**
-   * The protocol://domain[:port] where the app is hosted. This is used to construct the
-   * callbackURL to redirect to once the user signs in to the auth provider.
-   */
-  baseUrl: string;
-
-  /**
-   * The base URL of the app as provided by app.baseUrl
-   */
-  appUrl: string;
-
-  /**
-   * A function that is called to check whether an origin is allowed to receive the authentication result.
-   */
-  isOriginAllowed: (origin: string) => boolean;
-
-  /**
-   * The function used to resolve cookie configuration based on the auth provider options.
-   */
-  cookieConfigurer?: CookieConfigurer;
-};
-
-/** @public */
 export type OAuthStartResponse = {
   /**
    * URL to redirect to
@@ -84,77 +59,28 @@ export type OAuthStartResponse = {
 };
 
 /**
- * Any Auth provider needs to implement this interface which handles the routes in the
- * auth backend. Any auth API requests from the frontend reaches these methods.
- *
- * The routes in the auth backend API are tied to these methods like below
- *
- * `/auth/[provider]/start -> start`
- * `/auth/[provider]/handler/frame -> frameHandler`
- * `/auth/[provider]/refresh -> refresh`
- * `/auth/[provider]/logout -> logout`
- *
  * @public
+ * @deprecated import from `@backstage/plugin-auth-node` instead
  */
-export interface AuthProviderRouteHandlers {
-  /**
-   * Handles the start route of the API. This initiates a sign in request with an auth provider.
-   *
-   * Request
-   * - scopes for the auth request (Optional)
-   * Response
-   * - redirect to the auth provider for the user to sign in or consent.
-   * - sets a nonce cookie and also pass the nonce as 'state' query parameter in the redirect request
-   */
-  start(req: express.Request, res: express.Response): Promise<void>;
+export type AuthProviderConfig = _AuthProviderConfig;
 
-  /**
-   * Once the user signs in or consents in the OAuth screen, the auth provider redirects to the
-   * callbackURL which is handled by this method.
-   *
-   * Request
-   * - to contain a nonce cookie and a 'state' query parameter
-   * Response
-   * - postMessage to the window with a payload that contains accessToken, expiryInSeconds?, idToken? and scope.
-   * - sets a refresh token cookie if the auth provider supports refresh tokens
-   */
-  frameHandler(req: express.Request, res: express.Response): Promise<void>;
+/**
+ * @public
+ * @deprecated import from `@backstage/plugin-auth-node` instead
+ */
+export type AuthProviderRouteHandlers = _AuthProviderRouteHandlers;
 
-  /**
-   * (Optional) If the auth provider supports refresh tokens then this method handles
-   * requests to get a new access token.
-   *
-   * Request
-   * - to contain a refresh token cookie and scope (Optional) query parameter.
-   * Response
-   * - payload with accessToken, expiryInSeconds?, idToken?, scope and user profile information.
-   */
-  refresh?(req: express.Request, res: express.Response): Promise<void>;
+/**
+ * @public
+ * @deprecated import from `@backstage/plugin-auth-node` instead
+ */
+export type AuthProviderFactory = _AuthProviderFactory;
 
-  /**
-   * (Optional) Handles sign out requests
-   *
-   * Response
-   * - removes the refresh token cookie
-   */
-  logout?(req: express.Request, res: express.Response): Promise<void>;
-}
-
-/** @public */
-export type AuthProviderFactory = (options: {
-  providerId: string;
-  globalConfig: AuthProviderConfig;
-  config: Config;
-  logger: LoggerService;
-  resolverContext: AuthResolverContext;
-}) => AuthProviderRouteHandlers;
-
-/** @public */
-export type AuthResponse<ProviderInfo> = {
-  providerInfo: ProviderInfo;
-  profile: ProfileInfo;
-  backstageIdentity?: BackstageIdentityResponse;
-};
+/**
+ * @public
+ * @deprecated import `ClientAuthResponse` from `@backstage/plugin-auth-node` instead
+ */
+export type AuthResponse<TProviderInfo> = _ClientAuthResponse<TProviderInfo>;
 
 /**
  * @public
@@ -163,34 +89,16 @@ export type AuthResponse<ProviderInfo> = {
 export type ProfileInfo = _ProfileInfo;
 
 /**
- * Type of sign in information context. Includes the profile information and
- * authentication result which contains auth related information.
- *
  * @public
+ * @deprecated import from `@backstage/plugin-auth-node` instead
  */
-export type SignInInfo<TAuthResult> = {
-  /**
-   * The simple profile passed down for use in the frontend.
-   */
-  profile: ProfileInfo;
-
-  /**
-   * The authentication result that was received from the authentication
-   * provider.
-   */
-  result: TAuthResult;
-};
+export type SignInInfo<TAuthResult> = _SignInInfo<TAuthResult>;
 
 /**
- * Describes the function which handles the result of a successful
- * authentication. Must return a valid {@link @backstage/plugin-auth-node#BackstageSignInResult}.
- *
  * @public
+ * @deprecated import from `@backstage/plugin-auth-node` instead
  */
-export type SignInResolver<TAuthResult> = (
-  info: SignInInfo<TAuthResult>,
-  context: AuthResolverContext,
-) => Promise<BackstageSignInResult>;
+export type SignInResolver<TAuthResult> = _SignInResolver<TAuthResult>;
 
 /**
  * The return type of an authentication handler. Must contain valid profile

@@ -26,13 +26,19 @@ export { IdentityClient } from './IdentityClient';
 export type { IdentityApi } from './IdentityApi';
 export type { IdentityClientOptions } from './DefaultIdentityClient';
 export type {
+  AuthProviderConfig,
+  AuthProviderRouteHandlers,
+  AuthProviderFactory,
   AuthResolverCatalogUserQuery,
   AuthResolverContext,
   BackstageIdentityResponse,
   BackstageSignInResult,
   BackstageUserIdentity,
+  ClientAuthResponse,
   CookieConfigurer,
   IdentityApiGetIdentityRequest,
   ProfileInfo,
+  SignInInfo,
+  SignInResolver,
   TokenParams,
 } from './types';
