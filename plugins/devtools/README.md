@@ -283,7 +283,7 @@ Here is an example permission policy that you might use to secure the DevTools p
 // packages/backend/src/plugins/permission.ts
 
 class TestPermissionPolicy implements PermissionPolicy {
-  async handle(request: PolicyQuery): Promise<PolicyDecision> {
+  async handle(request: PolicyQuery, user?: BackstageIdentityResponse): Promise<PolicyDecision> {
     if (isPermission(request.permission, devToolsAdministerPermission)) {
       if (
         user?.identity.ownershipEntityRefs.includes(
