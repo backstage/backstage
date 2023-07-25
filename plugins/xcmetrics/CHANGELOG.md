@@ -1,5 +1,16 @@
 # @backstage/plugin-xcmetrics
 
+## 0.2.41-next.0
+
+### Patch Changes
+
+- 3d86be999fdf: Prefer simple `theme.spacing` without string interpolation
+- Updated dependencies
+  - @backstage/core-components@0.13.4-next.0
+  - @backstage/core-plugin-api@1.5.3
+  - @backstage/errors@1.2.1
+  - @backstage/theme@0.4.1
+
 ## 0.2.40
 
 ### Patch Changes
