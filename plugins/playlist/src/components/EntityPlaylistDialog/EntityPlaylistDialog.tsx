@@ -132,6 +132,11 @@ export const EntityPlaylistDialog = (props: EntityPlaylistDialogProps) => {
           stringifyEntityRef(entity!),
         ]);
         navigate(playlistRoute({ playlistId }));
+        alertApi.post({
+          message: `Added playlist '${playlist.name}'`,
+          severity: 'success',
+          display: 'transient',
+        });
       } catch (e) {
         alertApi.post({
           message: `Failed to add entity to ${singularTitleLowerCase}: ${e}`,
