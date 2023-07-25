@@ -219,9 +219,9 @@ export class DevToolsBackendApi {
     const lockfilePath = paths.resolveTargetRoot('yarn.lock');
     const lockfile = await Lockfile.load(lockfilePath);
 
-    const prefixes = this.config.getOptionalStringArray(
-      'devTools.packagePrefixes',
-    ) ?? ['@backstage/'];
+    const prefixes = ['@backstage', '@internal'].concat(
+      this.config.getOptionalStringArray('devTools.info.packagePrefixes') ?? [],
+    );
     const deps = [...lockfile.keys()].filter(n =>
       prefixes.some(prefix => n.startsWith(prefix)),
     );
