@@ -17,8 +17,8 @@
 import { OptionValues } from 'commander';
 import { JSONSchema7 as JSONSchema } from 'json-schema';
 import { stringify as stringifyYaml } from 'yaml';
+import { pathToFileURL } from 'url';
 import { loadCliConfig } from '../../lib/config';
-import { JsonObject } from '@backstage/types';
 import { mergeConfigSchemas } from '@backstage/config-loader';
 
 export default async (opts: OptionValues) => {
@@ -28,18 +28,24 @@ export default async (opts: OptionValues) => {
     mockEnv: true,
   });
 
-  let configSchema: JsonObject | JSONSchema;
+  const serializedSchemas = schema.serialize().schemas as unknown as Array<{
+    value: JSONSchema;
+    path: string;
+  }>;
+
+  let configSchema: JSONSchema | { schemas: JSONSchema[] };
   if (opts.merge) {
-    configSchema = mergeConfigSchemas(
-      (schema.serialize().schemas as JsonObject[]).map(
-        _ => _.value as JSONSchema,
-      ),
-    );
+    configSchema = mergeConfigSchemas(serializedSchemas.map(_ => _.value));
     configSchema.title = 'Application Configuration Schema';
     configSchema.description =
       'This is the schema describing the structure of the app-config.yaml configuration file.';
   } else {
-    configSchema = schema.serialize();
+    configSchema = {
+      schemas: serializedSchemas.map(_ => ({
+        ...(_.value as JSONSchema),
+        $id: String(pathToFileURL(_.path)),
+      })),
+    };
   }
 
   if (opts.format === 'json') {
