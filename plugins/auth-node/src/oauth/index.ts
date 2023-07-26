@@ -1,5 +1,5 @@
 /*
- * Copyright 2020 The Backstage Authors
+ * Copyright 2023 The Backstage Authors
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,29 +14,19 @@
  * limitations under the License.
  */
 
-/**
- * Common functionality and types for the Backstage auth plugin.
- *
- * @packageDocumentation
- */
-
-export * from './flow';
-export * from './identity';
-export * from './oauth';
-export * from './passport';
-export type {
-  AuthProviderConfig,
-  AuthProviderRouteHandlers,
-  AuthProviderFactory,
-  AuthResolverCatalogUserQuery,
-  AuthResolverContext,
-  BackstageIdentityResponse,
-  BackstageSignInResult,
-  BackstageUserIdentity,
-  ClientAuthResponse,
-  CookieConfigurer,
-  ProfileInfo,
-  SignInInfo,
-  SignInResolver,
-  TokenParams,
+export {
+  createOAuthHandlers,
+  type OAuthHandlersOptions,
+} from './createOAuthHandlers';
+export { PassportOAuthAuthenticatorHelper } from './PassportOAuthAuthenticatorHelper';
+export {
+  createOAuthAuthenticator,
+  type OAuthAuthenticator,
+  type OAuthAuthenticatorAuthenticateInput,
+  type OAuthAuthenticatorLogoutInput,
+  type OAuthAuthenticatorRefreshInput,
+  type OAuthAuthenticatorResult,
+  type OAuthAuthenticatorStartInput,
+  type OAuthProfileTransform,
+  type OAuthSession,
 } from './types';
