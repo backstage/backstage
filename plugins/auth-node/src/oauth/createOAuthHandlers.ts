@@ -51,7 +51,7 @@ export interface OAuthHandlersOptions<TProfile> {
   providerId: string;
   config: Config;
   resolverContext: AuthResolverContext;
-  profileTransform: OAuthProfileTransform<TProfile>;
+  profileTransform?: OAuthProfileTransform<TProfile>;
   cookieConfigurer?: CookieConfigurer;
   signInResolver?: SignInResolver<OAuthAuthenticatorResult<TProfile>>;
 }
@@ -89,7 +89,6 @@ export function createOAuthHandlers<TProfile>(
     isOriginAllowed,
     cookieConfigurer,
     resolverContext,
-    profileTransform,
     signInResolver,
   } = options;
 
@@ -98,6 +97,8 @@ export function createOAuthHandlers<TProfile>(
     config.getOptionalString('callbackUrl') ??
     `${baseUrl}/${providerId}/handler/frame`;
 
+  const profileTransform =
+    options.profileTransform ?? authenticator.defaultProfileTransform;
   const authenticatorCtx = authenticator.initialize({ config, callbackUrl });
   const cookieManager = new OAuthCookieManager({
     baseUrl,
