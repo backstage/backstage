@@ -63,11 +63,14 @@ export const AddShortcut = ({
   const analytics = useAnalytics();
 
   const handleSave: SubmitHandler<FormValues> = async ({ url, title }) => {
-    analytics.captureEvent('click', `Clicked 'Save' in AddShortcut`);
+    if (!api.get().some(shortcutTitle => shortcutTitle.title === title)) {
+      analytics.captureEvent('click', `Clicked 'Save' in AddShortcut`);
+    }
     const shortcut: Omit<Shortcut, 'id'> = { url, title };
+    const shortcutData = api.get();
 
     try {
-      if (api.get().some(shortcutTitle => shortcutTitle.title === title)) {
+      if (shortcutData.some(shortcutTitle => shortcutTitle.title === title)) {
         alertApi.post({
           message: `Shortcut title already exist`,
           severity: 'error',
