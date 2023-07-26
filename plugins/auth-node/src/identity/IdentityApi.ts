@@ -13,10 +13,18 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import {
-  BackstageIdentityResponse,
-  IdentityApiGetIdentityRequest,
-} from './types';
+
+import { Request } from 'express';
+import { BackstageIdentityResponse } from '../types';
+
+/**
+ * Options to request the identity from a Backstage backend request
+ *
+ * @public
+ */
+export type IdentityApiGetIdentityRequest = {
+  request: Request<unknown>;
+};
 
 /**
  * An identity client api to authenticate Backstage

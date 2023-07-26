@@ -15,3 +15,10 @@
  */
 
 export { prepareBackstageIdentityResponse } from './prepareBackstageIdentityResponse';
+export { getBearerTokenFromAuthorizationHeader } from './getBearerTokenFromAuthorizationHeader';
+export {
+  DefaultIdentityClient,
+  type IdentityClientOptions,
+} from './DefaultIdentityClient';
+export { IdentityClient } from './IdentityClient';
+export type { IdentityApi } from './IdentityApi';

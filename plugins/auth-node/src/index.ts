@@ -23,11 +23,6 @@
 export * from './flow';
 export * from './identity';
 export * from './passport';
-export { getBearerTokenFromAuthorizationHeader } from './getBearerTokenFromAuthorizationHeader';
-export { DefaultIdentityClient } from './DefaultIdentityClient';
-export { IdentityClient } from './IdentityClient';
-export type { IdentityApi } from './IdentityApi';
-export type { IdentityClientOptions } from './DefaultIdentityClient';
 export type {
   AuthProviderConfig,
   AuthProviderRouteHandlers,
@@ -39,7 +34,6 @@ export type {
   BackstageUserIdentity,
   ClientAuthResponse,
   CookieConfigurer,
-  IdentityApiGetIdentityRequest,
   ProfileInfo,
   SignInInfo,
   SignInResolver,

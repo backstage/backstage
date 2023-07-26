@@ -37,15 +37,6 @@ export interface BackstageSignInResult {
 }
 
 /**
- * Options to request the identity from a Backstage backend request
- *
- * @public
- */
-export type IdentityApiGetIdentityRequest = {
-  request: Request<unknown>;
-};
-
-/**
  * Response object containing the {@link BackstageUserIdentity} and the token
  * from the authentication provider.
  *
