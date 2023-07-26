@@ -1,5 +1,5 @@
 /*
- * Copyright 2020 The Backstage Authors
+ * Copyright 2023 The Backstage Authors
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,11 +14,4 @@
  * limitations under the License.
  */
 
-import { prepareBackstageIdentityResponse as _prepareBackstageIdentityResponse } from '@backstage/plugin-auth-node';
-
-/**
- * @public
- * @deprecated import from `@backstage/plugin-auth-node` instead
- */
-export const prepareBackstageIdentityResponse =
-  _prepareBackstageIdentityResponse;
+export { prepareBackstageIdentityResponse } from './prepareBackstageIdentityResponse';

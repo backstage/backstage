@@ -20,6 +20,7 @@
  * @packageDocumentation
  */
 
+export * from './identity';
 export { getBearerTokenFromAuthorizationHeader } from './getBearerTokenFromAuthorizationHeader';
 export { DefaultIdentityClient } from './DefaultIdentityClient';
 export { IdentityClient } from './IdentityClient';
