@@ -210,7 +210,7 @@ To use the permission framework to secure the DevTools sidebar option you'll wan
    ```
 
 2. Then open the `packages/app/src/components/Root/Root.tsx` file
-3. The add these imports after all the existing import statements:
+3. Then add these imports after all the existing import statements:
 
    ```ts
    import { devToolsAdministerPermission } from '@backstage/plugin-devtools-common';
