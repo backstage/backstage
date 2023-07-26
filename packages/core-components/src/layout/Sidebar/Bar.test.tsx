@@ -39,7 +39,12 @@ async function renderScalableSidebar() {
     >
       <Sidebar disableExpandOnHover>
         <SidebarSearchField onSearch={() => {}} to="/search" />
-        <SidebarItem icon={MenuBookIcon} onClick={() => {}} text="Catalog">
+        <SidebarItem
+          icon={MenuBookIcon}
+          onClick={() => {}}
+          text="Catalog"
+          type="button"
+        >
           <SidebarSubmenu title="Catalog">
             <SidebarSubmenuItem title="Tools" to="/1" icon={BuildRoundedIcon} />
             <SidebarSubmenuItem
@@ -68,7 +73,12 @@ async function renderScalableSidebar() {
             />
           </SidebarSubmenu>
         </SidebarItem>
-        <SidebarItem icon={CreateComponentIcon} to="create" text="Create..." />
+        <SidebarItem
+          icon={CreateComponentIcon}
+          to="create"
+          text="Create..."
+          type="link"
+        />
         <SidebarExpandButton />
       </Sidebar>
     </SidebarPinStateProvider>,

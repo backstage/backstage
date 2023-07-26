@@ -80,6 +80,7 @@ export const SidebarThemeSwitcher = () => {
         aria-label="switch theme"
         aria-expanded={open ? 'true' : undefined}
         onClick={handleOpen}
+        type="button"
       />
 
       <Menu

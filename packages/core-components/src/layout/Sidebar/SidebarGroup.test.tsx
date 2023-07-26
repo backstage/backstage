@@ -28,9 +28,9 @@ import { SidebarGroup } from './SidebarGroup';
 const SidebarGroupWithItems = () => (
   <SidebarPage>
     <SidebarGroup icon={<HomeIcon />} label="Menu">
-      <SidebarItem icon={HomeIcon} to="/one" text="Home" />
-      <SidebarItem icon={LayersIcon} to="/two" text="Explore" />
-      <SidebarItem icon={LibraryBooks} to="/three" text="Docs" />
+      <SidebarItem icon={HomeIcon} to="/one" text="Home" type="link" />
+      <SidebarItem icon={LayersIcon} to="/two" text="Explore" type="link" />
+      <SidebarItem icon={LibraryBooks} to="/three" text="Docs" type="link" />
     </SidebarGroup>
   </SidebarPage>
 );

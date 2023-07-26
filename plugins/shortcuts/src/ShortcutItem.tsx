@@ -85,6 +85,7 @@ export const ShortcutItem = ({ shortcut, api, allowExternalLinks }: Props) => {
           to={shortcut.url}
           text={shortcut.title}
           icon={() => <ShortcutIcon text={text} color={color} />}
+          type="link"
         >
           <IconButton
             id="edit"

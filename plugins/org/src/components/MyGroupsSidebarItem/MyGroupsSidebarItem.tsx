@@ -85,13 +85,14 @@ export const MyGroupsSidebarItem = (props: {
         text={singularTitle}
         to={catalogEntityRoute(getCompoundEntityRef(group))}
         icon={icon}
+        type="link"
       />
     );
   }
 
   // Member of more than one group
   return (
-    <SidebarItem icon={icon} text={pluralTitle}>
+    <SidebarItem icon={icon} text={pluralTitle} type="submenu">
       <SidebarSubmenu title={pluralTitle}>
         {groups?.map(function groupsMap(group) {
           return (

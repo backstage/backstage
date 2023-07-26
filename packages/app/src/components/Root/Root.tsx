@@ -94,7 +94,7 @@ export const Root = ({ children }: PropsWithChildren<{}>) => (
       <SidebarDivider />
       <SidebarGroup label="Menu" icon={<MenuIcon />}>
         {/* Global nav, not org-specific */}
-        <SidebarItem icon={HomeIcon} to="catalog" text="Home">
+        <SidebarItem icon={HomeIcon} to="catalog" text="Home" type="link">
           <SidebarSubmenu title="Catalog">
             <SidebarSubmenuItem
               title="Domains"
@@ -144,27 +144,65 @@ export const Root = ({ children }: PropsWithChildren<{}>) => (
           icon={useApp().getSystemIcon('kind:api')!}
           to="api-docs"
           text="APIs"
+          type="link"
         />
         <SidebarItem
           icon={useApp().getSystemIcon('docs')!}
           to="docs"
           text="Docs"
+          type="link"
         />
-        <SidebarItem icon={PlaylistPlayIcon} to="playlist" text="Playlists" />
-        <SidebarItem icon={LayersIcon} to="explore" text="Explore" />
-        <SidebarItem icon={CreateComponentIcon} to="create" text="Create..." />
+        <SidebarItem
+          icon={PlaylistPlayIcon}
+          to="playlist"
+          text="Playlists"
+          type="link"
+        />
+        <SidebarItem
+          icon={LayersIcon}
+          to="explore"
+          text="Explore"
+          type="link"
+        />
+        <SidebarItem
+          icon={CreateComponentIcon}
+          to="create"
+          text="Create..."
+          type="link"
+        />
         {/* End global nav */}
         <SidebarDivider />
         <SidebarScrollWrapper>
-          <SidebarItem icon={MapIcon} to="tech-radar" text="Tech Radar" />
-          <SidebarItem icon={RuleIcon} to="lighthouse" text="Lighthouse" />
+          <SidebarItem
+            icon={MapIcon}
+            to="tech-radar"
+            text="Tech Radar"
+            type="link"
+          />
+          <SidebarItem
+            icon={RuleIcon}
+            to="lighthouse"
+            text="Lighthouse"
+            type="link"
+          />
           <SidebarItem
             icon={MoneyIcon}
             to="cost-insights"
             text="Cost Insights"
+            type="link"
           />
-          <SidebarItem icon={GraphiQLIcon} to="graphiql" text="GraphiQL" />
-          <SidebarItem icon={Score} to="score-board" text="Score board" />
+          <SidebarItem
+            icon={GraphiQLIcon}
+            to="graphiql"
+            text="GraphiQL"
+            type="link"
+          />
+          <SidebarItem
+            icon={Score}
+            to="score-board"
+            text="Score board"
+            type="link"
+          />
         </SidebarScrollWrapper>
         <SidebarDivider />
         <Shortcuts allowExternalLinks />
@@ -177,7 +215,12 @@ export const Root = ({ children }: PropsWithChildren<{}>) => (
         to="/settings"
       >
         <SidebarSettings />
-        <SidebarItem icon={BuildIcon} to="devtools" text="DevTools" />
+        <SidebarItem
+          icon={BuildIcon}
+          to="devtools"
+          text="DevTools"
+          type="link"
+        />
       </SidebarGroup>
     </Sidebar>
     {children}

@@ -62,8 +62,18 @@ export const SampleSidebar = () => (
       <SidebarGroup label="Menu" icon={MenuIcon}>
         <SidebarSearchField onSearch={handleSearch} to="/search" />
         <SidebarDivider />
-        <SidebarItem icon={HomeOutlinedIcon} to="#" text="Plugins" />
-        <SidebarItem icon={AddCircleOutlineIcon} to="#" text="Create..." />
+        <SidebarItem
+          icon={HomeOutlinedIcon}
+          to="#"
+          text="Plugins"
+          type="link"
+        />
+        <SidebarItem
+          icon={AddCircleOutlineIcon}
+          to="#"
+          text="Create..."
+          type="link"
+        />
         <SidebarDivider />
         <SidebarIntro />
         <SidebarSpace />
@@ -78,7 +88,7 @@ export const SampleScalableSidebar = () => (
       <SidebarSearchField onSearch={handleSearch} to="/search" />
       <SidebarDivider />
       <SidebarGroup label="Menu" icon={<MenuIcon />}>
-        <SidebarItem icon={MenuBookIcon} text="Catalog">
+        <SidebarItem icon={MenuBookIcon} text="Catalog" type="submenu">
           <SidebarSubmenu title="Catalog">
             <SidebarSubmenuItem title="Tools" to="/1" icon={BuildRoundedIcon} />
             <SidebarSubmenuItem title="APIs" to="/2" icon={CloudQueueIcon} />
@@ -100,8 +110,18 @@ export const SampleScalableSidebar = () => (
             />
           </SidebarSubmenu>
         </SidebarItem>
-        <SidebarItem icon={HomeOutlinedIcon} to="#" text="Plugins" />
-        <SidebarItem icon={AddCircleOutlineIcon} to="#" text="Create..." />
+        <SidebarItem
+          icon={HomeOutlinedIcon}
+          to="#"
+          text="Plugins"
+          type="link"
+        />
+        <SidebarItem
+          icon={AddCircleOutlineIcon}
+          to="#"
+          text="Create..."
+          type="link"
+        />
       </SidebarGroup>
       <SidebarDivider />
       <SidebarIntro />

@@ -47,12 +47,13 @@ async function renderSidebar() {
     <TestApiProvider apis={[[analyticsApiRef, analyticsApiMock]]}>
       <Sidebar>
         <SidebarSearchField onSearch={() => {}} to="/search" />
-        <SidebarItem text="Home" icon={HomeIcon} to="./" />
+        <SidebarItem text="Home" icon={HomeIcon} to="./" type="link" />
         <SidebarItem
           icon={CreateComponentIcon}
           onClick={handleSidebarItemClick}
           text="Create..."
           className={result.current.spotlight}
+          type="button"
         />
         <SidebarItem
           icon={CreateComponentIcon}
@@ -60,6 +61,7 @@ async function renderSidebar() {
           onClick={handleSidebarItemClick}
           text="Docs"
           className={result.current.spotlight}
+          type="link"
         />
         <SidebarItem
           icon={CreateComponentIcon}
@@ -68,6 +70,7 @@ async function renderSidebar() {
           text="Explore"
           className={result.current.spotlight}
           noTrack
+          type="link"
         />
         <SidebarExpandButton />
       </Sidebar>

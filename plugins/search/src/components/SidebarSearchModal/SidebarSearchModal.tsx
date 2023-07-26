@@ -45,6 +45,7 @@ const SidebarSearchModalContent = (props: SidebarSearchModalProps) => {
         icon={Icon}
         text="Search"
         onClick={toggleModal}
+        type="button"
       />
       <SearchModal
         {...state}

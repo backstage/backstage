@@ -140,6 +140,7 @@ export class DevAppBuilder {
           to={path}
           text={opts.title}
           icon={opts.icon ?? BookmarkIcon}
+          type="link"
         />,
       );
     }

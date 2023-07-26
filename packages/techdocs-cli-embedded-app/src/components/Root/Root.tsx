@@ -73,6 +73,7 @@ export const Root = ({ children }: PropsWithChildren<{}>) => (
         icon={LibraryBooks}
         to="/docs/default/component/local"
         text="Docs Preview"
+        type="link"
       />
       {/* End global nav */}
     </Sidebar>

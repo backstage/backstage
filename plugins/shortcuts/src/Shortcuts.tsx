@@ -58,6 +58,7 @@ export const Shortcuts = (props: ShortcutsProps) => {
         icon={props.icon ?? PlayListAddIcon}
         text="Add Shortcuts"
         onClick={handleClick}
+        type="button"
       />
       <AddShortcut
         onClose={handleClose}

@@ -47,6 +47,7 @@ import React, {
   useMemo,
   useState,
   type ForwardedRef,
+  type ElementRef,
 } from 'react';
 import {
   Link,
@@ -69,7 +70,7 @@ import { SidebarSubmenuItemProps } from './SidebarSubmenuItem';
 import { isLocationMatch } from './utils';
 import Button from '@material-ui/core/Button';
 
-type NavLinkProps = RRDNavLinkProps & { children: ReactNode };
+type NavLinkProps = RRDNavLinkProps & { children?: ReactNode };
 
 /** @public */
 export type SidebarItemClassKey =
@@ -296,9 +297,9 @@ type SidebarItemWithSubmenuProps = SidebarItemBaseProps & {
 };
 
 type RefTypeEnum = {
-  button: HTMLButtonElement;
-  link: HTMLAnchorElement;
-  submenu: HTMLAnchorElement;
+  button: ElementRef<'button'>;
+  link: ElementRef<'a'>;
+  submenu: ElementRef<'a'>;
 };
 
 /**

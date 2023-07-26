@@ -32,9 +32,9 @@ const MobileSidebarWithGroups = () => (
     <MobileSidebar>
       <h1>Header</h1>
       <SidebarGroup icon={<HomeIcon />} label="Menu">
-        <SidebarItem icon={HomeIcon} to="/" text="Home" />
-        <SidebarItem icon={LayersIcon} to="/" text="Explore" />
-        <SidebarItem icon={LibraryBooks} to="/" text="Docs" />
+        <SidebarItem icon={HomeIcon} to="/" text="Home" type="link" />
+        <SidebarItem icon={LayersIcon} to="/" text="Explore" type="link" />
+        <SidebarItem icon={LibraryBooks} to="/" text="Docs" type="link" />
       </SidebarGroup>
       <div>Content</div>
       <div>More Content</div>
@@ -47,9 +47,9 @@ const MobileSidebarWithGroups = () => (
 const MobileSidebarWithoutGroups = () => (
   <SidebarPage>
     <MobileSidebar>
-      <SidebarItem icon={HomeIcon} to="/one" text="Home" />
-      <SidebarItem icon={LayersIcon} to="/two" text="Explore" />
-      <SidebarItem icon={LibraryBooks} to="/three" text="Docs" />
+      <SidebarItem icon={HomeIcon} to="/one" text="Home" type="link" />
+      <SidebarItem icon={LayersIcon} to="/two" text="Explore" type="link" />
+      <SidebarItem icon={LibraryBooks} to="/three" text="Docs" type="link" />
     </MobileSidebar>
   </SidebarPage>
 );
@@ -63,7 +63,7 @@ describe('<MobileSidebar />', () => {
     const { getByTestId } = await renderInTestApp(
       <SidebarPage>
         <Sidebar>
-          <SidebarItem icon={HomeIcon} to="/one" text="Home" />
+          <SidebarItem icon={HomeIcon} to="/one" text="Home" type="link" />
         </Sidebar>
       </SidebarPage>,
     );
