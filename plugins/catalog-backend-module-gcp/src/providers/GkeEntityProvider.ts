@@ -45,7 +45,7 @@ export class GkeEntityProvider implements EntityProvider {
   private readonly clusterManagerClient: container.v1.ClusterManagerClient;
   private connection?: EntityProviderConnection;
 
-  constructor(
+  private constructor(
     logger: Logger,
     taskRunner: TaskRunner,
     gkeParents: string[],
@@ -57,11 +57,34 @@ export class GkeEntityProvider implements EntityProvider {
     this.clusterManagerClient = clusterManagerClient;
   }
 
-  public static fromConfig(
-    logger: Logger,
-    scheduler: SchedulerService,
-    config: Config,
-  ) {
+  public static fromConfig({
+    logger,
+    scheduler,
+    config,
+  }: {
+    logger: Logger;
+    scheduler: SchedulerService;
+    config: Config;
+  }) {
+    return GkeEntityProvider.fromConfigWithClient({
+      logger,
+      scheduler: scheduler,
+      config,
+      clusterManagerClient: new container.v1.ClusterManagerClient(),
+    });
+  }
+
+  public static fromConfigWithClient({
+    logger,
+    scheduler,
+    config,
+    clusterManagerClient,
+  }: {
+    logger: Logger;
+    scheduler: SchedulerService;
+    config: Config;
+    clusterManagerClient: container.v1.ClusterManagerClient;
+  }) {
     const gkeProviderConfig = config.getConfig('catalog.providers.gcp.gke');
     const schedule = readTaskScheduleDefinitionFromConfig(
       gkeProviderConfig.getConfig('schedule'),
@@ -70,7 +93,7 @@ export class GkeEntityProvider implements EntityProvider {
       logger,
       scheduler.createScheduledTaskRunner(schedule),
       gkeProviderConfig.getStringArray('parents'),
-      new container.v1.ClusterManagerClient(),
+      clusterManagerClient,
     );
   }
 

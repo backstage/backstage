@@ -14,6 +14,7 @@
  * limitations under the License.
  */
 
+import { SchedulerService } from '@backstage/backend-plugin-api';
 import { GkeEntityProvider } from './GkeEntityProvider';
 import { TaskRunner } from '@backstage/backend-tasks';
 import {
@@ -22,6 +23,7 @@ import {
   ANNOTATION_KUBERNETES_AUTH_PROVIDER,
 } from '@backstage/plugin-kubernetes-common';
 import * as container from '@google-cloud/container';
+import { Config, ConfigReader } from '@backstage/config';
 
 describe('GkeEntityProvider', () => {
   const clusterManagerClientMock = {
@@ -35,6 +37,9 @@ describe('GkeEntityProvider', () => {
     createScheduleFn: jest.fn(),
     run: jest.fn(),
   } as TaskRunner;
+  const schedulerMock = {
+    createScheduledTaskRunner: jest.fn(),
+  } as any;
   const logger = {
     info: jest.fn(),
     error: jest.fn(),
@@ -43,12 +48,31 @@ describe('GkeEntityProvider', () => {
 
   beforeEach(async () => {
     jest.resetAllMocks();
-    gkeEntityProvider = new GkeEntityProvider(
-      logger as any,
-      taskRunner,
-      ['parent1', 'parent2'],
-      clusterManagerClientMock as any,
-    );
+    schedulerMock.createScheduledTaskRunner.mockReturnValue(taskRunner);
+    gkeEntityProvider = GkeEntityProvider.fromConfigWithClient({
+      logger: logger as any,
+      config: new ConfigReader({
+        catalog: {
+          providers: {
+            gcp: {
+              gke: {
+                parents: ['parent1', 'parent2'],
+                schedule: {
+                  frequency: {
+                    minutes: 3,
+                  },
+                  timeout: {
+                    minutes: 3,
+                  },
+                },
+              },
+            },
+          },
+        },
+      }),
+      scheduler: schedulerMock,
+      clusterManagerClient: clusterManagerClientMock as any,
+    });
     await gkeEntityProvider.connect(connectionMock);
   });
 

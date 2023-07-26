@@ -12,7 +12,11 @@ import { GkeEntityProvider } from '@backstage/plugin-catalog-backend-module-gcp'
 ...
 
 builder.addEntityProvider(
-  GkeEntityProvider.fromConfig(env.logger, env.scheduler, env.config),
+  GkeEntityProvider.fromConfig({
+    logger: env.logger,
+    scheduler: env.scheduler,
+    config: env.config
+  })
 );
 ```
 

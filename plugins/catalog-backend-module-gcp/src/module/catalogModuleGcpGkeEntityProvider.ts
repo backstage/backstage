@@ -25,7 +25,7 @@ import { GkeEntityProvider } from '../providers/GkeEntityProvider';
 /**
  * Registers the GcpGkeEntityProvider with the catalog processing extension point.
  *
- * @alpha
+ * @public
  */
 export const catalogModuleGcpGkeEntityProvider = createBackendModule({
   pluginId: 'catalog',
@@ -40,11 +40,11 @@ export const catalogModuleGcpGkeEntityProvider = createBackendModule({
       },
       async init({ config, catalog, logger, scheduler }) {
         catalog.addEntityProvider(
-          GkeEntityProvider.fromConfig(
-            loggerToWinstonLogger(logger),
+          GkeEntityProvider.fromConfig({
+            logger: loggerToWinstonLogger(logger),
             scheduler,
             config,
-          ),
+          }),
         );
       },
     });
