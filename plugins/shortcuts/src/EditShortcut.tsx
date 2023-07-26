@@ -70,12 +70,19 @@ export const EditShortcut = ({
     };
 
     try {
-      await api.update(newShortcut);
-      alertApi.post({
-        message: `Updated shortcut '${title}'`,
-        severity: 'success',
-        display: 'transient',
-      });
+      if (api.get().some(shortcutTitle => shortcutTitle.title === title)) {
+        alertApi.post({
+          message: `Shortcut title already exist`,
+          severity: 'error',
+        });
+      } else {
+        await api.update(newShortcut);
+        alertApi.post({
+          message: `Updated shortcut '${title}'`,
+          severity: 'success',
+          display: 'transient',
+        });
+      }
     } catch (error) {
       alertApi.post({
         message: `Could not update shortcut: ${error.message}`,

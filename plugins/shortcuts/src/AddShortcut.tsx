@@ -67,12 +67,19 @@ export const AddShortcut = ({
     const shortcut: Omit<Shortcut, 'id'> = { url, title };
 
     try {
-      await api.add(shortcut);
-      alertApi.post({
-        message: `Added shortcut '${title}' to your sidebar`,
-        severity: 'success',
-        display: 'transient',
-      });
+      if (api.get().some(shortcutTitle => shortcutTitle.title === title)) {
+        alertApi.post({
+          message: `Shortcut title already exist`,
+          severity: 'error',
+        });
+      } else {
+        await api.add(shortcut);
+        alertApi.post({
+          message: `Added shortcut '${title}' to your sidebar`,
+          severity: 'success',
+          display: 'transient',
+        });
+      }
     } catch (error) {
       alertApi.post({
         message: `Could not add shortcut: ${error.message}`,
