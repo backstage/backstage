@@ -24,7 +24,7 @@ import {
   NotAllowedError,
 } from '@backstage/errors';
 import { defaultStateDecoder, defaultStateEncoder, OAuthState } from './state';
-import { postMessageResponse, ensuresXRequestedWith } from '../flow';
+import { postMessageResponse } from '../flow';
 import { prepareBackstageIdentityResponse } from '../identity';
 import { OAuthCookieManager } from './OAuthCookieManager';
 import {
@@ -259,7 +259,8 @@ export function createOAuthHandlers<TProfile>(
       req: express.Request,
       res: express.Response,
     ): Promise<void> {
-      if (!ensuresXRequestedWith(req)) {
+      // We use this as a lightweight CSRF protection
+      if (req.header('X-Requested-With') !== 'XMLHttpRequest') {
         throw new AuthenticationError('Invalid X-Requested-With header');
       }
 
@@ -279,7 +280,8 @@ export function createOAuthHandlers<TProfile>(
       req: express.Request,
       res: express.Response,
     ): Promise<void> {
-      if (!ensuresXRequestedWith(req)) {
+      // We use this as a lightweight CSRF protection
+      if (req.header('X-Requested-With') !== 'XMLHttpRequest') {
         throw new AuthenticationError('Invalid X-Requested-With header');
       }
 
