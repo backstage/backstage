@@ -20,6 +20,7 @@
  * @packageDocumentation
  */
 
+export * from './flow';
 export * from './identity';
 export * from './passport';
 export { getBearerTokenFromAuthorizationHeader } from './getBearerTokenFromAuthorizationHeader';

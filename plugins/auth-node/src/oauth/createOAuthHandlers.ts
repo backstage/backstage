@@ -24,7 +24,7 @@ import {
   NotAllowedError,
 } from '@backstage/errors';
 import { defaultStateDecoder, defaultStateEncoder, OAuthState } from './state';
-import { postMessageResponse } from '../flow';
+import { sendWebMessageResponse } from '../flow';
 import { prepareBackstageIdentityResponse } from '../identity';
 import { OAuthCookieManager } from './OAuthCookieManager';
 import {
@@ -238,7 +238,7 @@ export function createOAuthHandlers<TProfile>(
           res.redirect(state.redirectUrl);
         }
         // post message back to popup if successful
-        return postMessageResponse(res, appOrigin, {
+        return sendWebMessageResponse(res, appOrigin, {
           type: 'authorization_response',
           response,
         });
@@ -247,7 +247,7 @@ export function createOAuthHandlers<TProfile>(
           ? error
           : new Error('Encountered invalid error'); // Being a bit safe and not forwarding the bad value
         // post error message back to popup if failure
-        return postMessageResponse(res, appOrigin, {
+        return sendWebMessageResponse(res, appOrigin, {
           type: 'authorization_response',
           error: { name, message },
         });
