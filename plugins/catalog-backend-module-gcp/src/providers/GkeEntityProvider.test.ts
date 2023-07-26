@@ -14,7 +14,6 @@
  * limitations under the License.
  */
 
-import { SchedulerService } from '@backstage/backend-plugin-api';
 import { GkeEntityProvider } from './GkeEntityProvider';
 import { TaskRunner } from '@backstage/backend-tasks';
 import {
@@ -23,7 +22,7 @@ import {
   ANNOTATION_KUBERNETES_AUTH_PROVIDER,
 } from '@backstage/plugin-kubernetes-common';
 import * as container from '@google-cloud/container';
-import { Config, ConfigReader } from '@backstage/config';
+import { ConfigReader } from '@backstage/config';
 
 describe('GkeEntityProvider', () => {
   const clusterManagerClientMock = {
