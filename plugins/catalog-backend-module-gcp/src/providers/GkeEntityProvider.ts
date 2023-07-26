@@ -121,7 +121,7 @@ export class GkeEntityProvider implements EntityProvider {
   private clusterToResource(
     cluster: container.protos.google.container.v1.ICluster,
   ): DeferredEntity | undefined {
-    const location = cluster.location;
+    const location = `${this.getProviderName()}:${cluster.location}`;
 
     if (!cluster.name || !cluster.selfLink || !location || !cluster.endpoint) {
       this.logger.warn(
@@ -132,7 +132,7 @@ export class GkeEntityProvider implements EntityProvider {
 
     // TODO fix location type
     return {
-      locationKey: `url:${cluster.selfLink}`,
+      locationKey: location,
       entity: {
         apiVersion: 'backstage.io/v1alpha1',
         kind: 'Resource',
@@ -142,8 +142,8 @@ export class GkeEntityProvider implements EntityProvider {
             [ANNOTATION_KUBERNETES_API_SERVER_CA]:
               cluster.masterAuth?.clusterCaCertificate || '',
             [ANNOTATION_KUBERNETES_AUTH_PROVIDER]: 'google',
-            'backstage.io/managed-by-location': `url:${cluster.selfLink}`,
-            'backstage.io/managed-by-origin-location': `url:${cluster.selfLink}`,
+            'backstage.io/managed-by-location': location,
+            'backstage.io/managed-by-origin-location': location,
           },
           name: cluster.name,
           namespace: 'default',

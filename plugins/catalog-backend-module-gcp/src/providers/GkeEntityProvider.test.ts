@@ -119,7 +119,7 @@ describe('GkeEntityProvider', () => {
       type: 'full',
       entities: [
         {
-          locationKey: 'url:http://127.0.0.1/some-link',
+          locationKey: 'gcp-gke:some-location',
           entity: {
             apiVersion: 'backstage.io/v1alpha1',
             kind: 'Resource',
@@ -128,10 +128,9 @@ describe('GkeEntityProvider', () => {
                 [ANNOTATION_KUBERNETES_API_SERVER]: 'http://127.0.0.1:1234',
                 [ANNOTATION_KUBERNETES_API_SERVER_CA]: 'abcdefg',
                 [ANNOTATION_KUBERNETES_AUTH_PROVIDER]: 'google',
-                'backstage.io/managed-by-location':
-                  'url:http://127.0.0.1/some-link',
+                'backstage.io/managed-by-location': 'gcp-gke:some-location',
                 'backstage.io/managed-by-origin-location':
-                  'url:http://127.0.0.1/some-link',
+                  'gcp-gke:some-location',
               },
               name: 'some-cluster',
               namespace: 'default',
@@ -143,7 +142,7 @@ describe('GkeEntityProvider', () => {
           },
         },
         {
-          locationKey: 'url:http://127.0.0.1/some-other-link',
+          locationKey: 'gcp-gke:some-other-location',
           entity: {
             apiVersion: 'backstage.io/v1alpha1',
             kind: 'Resource',
@@ -153,9 +152,9 @@ describe('GkeEntityProvider', () => {
                 [ANNOTATION_KUBERNETES_API_SERVER_CA]: '',
                 [ANNOTATION_KUBERNETES_AUTH_PROVIDER]: 'google',
                 'backstage.io/managed-by-location':
-                  'url:http://127.0.0.1/some-other-link',
+                  'gcp-gke:some-other-location',
                 'backstage.io/managed-by-origin-location':
-                  'url:http://127.0.0.1/some-other-link',
+                  'gcp-gke:some-other-location',
               },
               name: 'some-other-cluster',
               namespace: 'default',
