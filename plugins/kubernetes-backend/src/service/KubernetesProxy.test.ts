@@ -731,7 +731,7 @@ describe('KubernetesProxy', () => {
         authProvider: 'serviceAccount',
       } as ClusterDetails);
 
-      const wsProxyAddress = `ws://localhost:${proxyPort}${proxyPath}${wsPath}`;
+      const wsProxyAddress = `ws://127.0.0.1:${proxyPort}${proxyPath}${wsPath}`;
       const wsAddress = `ws://localhost:${wsPort}${wsPath}`;
       console.log('Ports: ', wsProxyAddress, wsAddress);
 
