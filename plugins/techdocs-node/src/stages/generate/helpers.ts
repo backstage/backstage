@@ -158,7 +158,7 @@ export const MKDOCS_SCHEMA = DEFAULT_SCHEMA.extend([
  * required `site_name` property, default value is "Documentation Site"
  */
 export const generateMkdocsYml = async (
-  inputDir: string,
+  mkdocsYmlPath: string,
   siteOptions?: { name?: string },
 ) => {
   try {
@@ -167,7 +167,6 @@ export const generateMkdocsYml = async (
     // not provided then fall back to generating bare
     // minimum mkdocs.yml file
 
-    const mkdocsYmlPath = path.join(inputDir, 'mkdocs.yml');
     const defaultSiteName = siteOptions?.name ?? 'Documentation Site';
     const defaultMkdocsContent: DefaultMkdocsContent = {
       site_name: defaultSiteName,
@@ -184,6 +183,24 @@ export const generateMkdocsYml = async (
   }
 };
 
+const readMkdocsFileIfExists = async (
+  inputDir: string,
+  mkdocsFileName: string,
+): Promise<
+  { path: string; content: string; configIsTemporary: boolean } | undefined
+> => {
+  const mkdocsYmlPath = path.join(inputDir, mkdocsFileName);
+  if (await fs.pathExists(mkdocsYmlPath)) {
+    const mkdocsYmlFileString = await fs.readFile(mkdocsYmlPath, 'utf8');
+    return {
+      path: mkdocsYmlPath,
+      content: mkdocsYmlFileString,
+      configIsTemporary: false,
+    };
+  }
+  return undefined;
+};
+
 /**
  * Finds and loads the contents of either an mkdocs.yml or mkdocs.yaml file,
  * depending on which is present (MkDocs supports both as of v1.2.2).
@@ -197,44 +214,27 @@ export const getMkdocsYml = async (
   inputDir: string,
   siteOptions?: { name?: string },
 ): Promise<{ path: string; content: string; configIsTemporary: boolean }> => {
-  let mkdocsYmlPath: string;
-  let mkdocsYmlFileString: string;
   try {
-    mkdocsYmlPath = path.join(inputDir, 'mkdocs.yaml');
-    if (await fs.pathExists(mkdocsYmlPath)) {
-      mkdocsYmlFileString = await fs.readFile(mkdocsYmlPath, 'utf8');
-      return {
-        path: mkdocsYmlPath,
-        content: mkdocsYmlFileString,
-        configIsTemporary: false,
-      };
-    }
-
-    mkdocsYmlPath = path.join(inputDir, 'mkdocs.yml');
-    if (await fs.pathExists(mkdocsYmlPath)) {
-      mkdocsYmlFileString = await fs.readFile(mkdocsYmlPath, 'utf8');
-      return {
-        path: mkdocsYmlPath,
-        content: mkdocsYmlFileString,
-        configIsTemporary: false,
-      };
-    }
+    const mkdocsYaml = await readMkdocsFileIfExists(inputDir, 'mkdocs.yaml');
+    if (mkdocsYaml) return mkdocsYaml;
+    const mkdocsYml = await readMkdocsFileIfExists(inputDir, 'mkdocs.yml');
+    if (mkdocsYml) return mkdocsYml;
 
     // No mkdocs file, generate it
-    await generateMkdocsYml(inputDir, siteOptions);
-    mkdocsYmlFileString = await fs.readFile(mkdocsYmlPath, 'utf8');
+    const mkdocsYmlPath = path.join(inputDir, 'mkdocs.yml');
+    await generateMkdocsYml(mkdocsYmlPath, siteOptions);
+    const mkdocsYmlFileString = await fs.readFile(mkdocsYmlPath, 'utf8');
+    return {
+      path: mkdocsYmlPath,
+      content: mkdocsYmlFileString,
+      configIsTemporary: true,
+    };
   } catch (error) {
     throw new ForwardedError(
       'Could not read MkDocs YAML config file mkdocs.yml or mkdocs.yaml or default for validation',
       error,
     );
   }
-
-  return {
-    path: mkdocsYmlPath,
-    content: mkdocsYmlFileString,
-    configIsTemporary: true,
-  };
 };
 
 /**
