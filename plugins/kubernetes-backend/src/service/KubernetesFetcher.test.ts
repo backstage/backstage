@@ -27,7 +27,6 @@ import {
 import { setupServer } from 'msw/node';
 import { setupRequestMockHandlers } from '@backstage/backend-test-utils';
 import mockFs from 'mock-fs';
-import { FetchError } from 'node-fetch';
 
 const OBJECTS_TO_FETCH = new Set<ObjectToFetch>([
   {
