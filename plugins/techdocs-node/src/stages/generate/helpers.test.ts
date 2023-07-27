@@ -23,13 +23,9 @@ import os from 'os';
 import path, { resolve as resolvePath } from 'path';
 import { ParsedLocationAnnotation } from '../../helpers';
 import {
-  createOrUpdateMetadata,
   getGeneratorKey,
-  getMkdocsYml,
   getRepoUrlFromLocationAnnotation,
-  patchIndexPreBuild,
-  storeEtagMetadata,
-  validateMkdocsYaml,
+  MkdocsFileService,
 } from './helpers';
 import {
   patchMkdocsYmlPreBuild,
@@ -48,6 +44,9 @@ const mockEntity = {
 
 const mkdocsYml = fs.readFileSync(
   resolvePath(__filename, '../__fixtures__/mkdocs.yml'),
+);
+const defaultMkdocsYml = fs.readFileSync(
+  resolvePath(__filename, '../__fixtures__/default-mkdocs.yml'),
 );
 const mkdocsDefaultYml = fs.readFileSync(
   resolvePath(__filename, '../__fixtures__/mkdocs_default.yml'),
@@ -374,7 +373,10 @@ describe('helpers', () => {
         '/docs/README.md': 'docs/README.md content',
       });
 
-      await patchIndexPreBuild({ inputDir: '/', logger: mockLogger });
+      await MkdocsFileService.patchIndexPreBuild({
+        inputDir: '/',
+        logger: mockLogger,
+      });
 
       expect(fs.readFileSync('/docs/index.md', 'utf-8')).toEqual(
         'index.md content',
@@ -388,7 +390,10 @@ describe('helpers', () => {
         '/README.md': 'main README.md content',
       });
 
-      await patchIndexPreBuild({ inputDir: '/', logger: mockLogger });
+      await MkdocsFileService.patchIndexPreBuild({
+        inputDir: '/',
+        logger: mockLogger,
+      });
 
       expect(fs.readFileSync('/docs/index.md', 'utf-8')).toEqual(
         'docs/README.md content',
@@ -403,7 +408,10 @@ describe('helpers', () => {
         '/README.md': 'main README.md content',
       });
 
-      await patchIndexPreBuild({ inputDir: '/', logger: mockLogger });
+      await MkdocsFileService.patchIndexPreBuild({
+        inputDir: '/',
+        logger: mockLogger,
+      });
 
       expect(fs.readFileSync('/docs/index.md', 'utf-8')).toEqual(
         'main README.md content',
@@ -418,7 +426,10 @@ describe('helpers', () => {
     it('should not use any file as index.md if no one matches the requirements', async () => {
       mockFs({});
 
-      await patchIndexPreBuild({ inputDir: '/', logger: mockLogger });
+      await MkdocsFileService.patchIndexPreBuild({
+        inputDir: '/',
+        logger: mockLogger,
+      });
 
       expect(() => fs.readFileSync('/docs/index.md', 'utf-8')).toThrow();
       const paths = [
@@ -453,7 +464,7 @@ describe('helpers', () => {
 
     it('should create the file if it does not exist', async () => {
       const filePath = path.join(rootDir, 'wrong_techdocs_metadata.json');
-      await createOrUpdateMetadata(filePath, mockLogger);
+      await MkdocsFileService.createOrUpdateMetadata(filePath, mockLogger);
 
       // Check if the file exists
       await expect(
@@ -465,14 +476,14 @@ describe('helpers', () => {
       const filePath = path.join(rootDir, 'invalid_techdocs_metadata.json');
 
       await expect(
-        createOrUpdateMetadata(filePath, mockLogger),
+        MkdocsFileService.createOrUpdateMetadata(filePath, mockLogger),
       ).rejects.toThrow('Unexpected token d in JSON at position 0');
     });
 
     it('should add build timestamp to the metadata json', async () => {
       const filePath = path.join(rootDir, 'techdocs_metadata.json');
 
-      await createOrUpdateMetadata(filePath, mockLogger);
+      await MkdocsFileService.createOrUpdateMetadata(filePath, mockLogger);
 
       const json = await fs.readJson(filePath);
       expect(json.build_timestamp).toBeLessThanOrEqual(Date.now());
@@ -481,7 +492,7 @@ describe('helpers', () => {
     it('should add list of files to the metadata json', async () => {
       const filePath = path.join(rootDir, 'techdocs_metadata.json');
 
-      await createOrUpdateMetadata(filePath, mockLogger);
+      await MkdocsFileService.createOrUpdateMetadata(filePath, mockLogger);
 
       const json = await fs.readJson(filePath);
       expect(json.files[0]).toEqual(Object.keys(mockFiles)[0]);
@@ -502,15 +513,15 @@ describe('helpers', () => {
     it('should throw error when the JSON is invalid', async () => {
       const filePath = path.join(rootDir, 'invalid_techdocs_metadata.json');
 
-      await expect(storeEtagMetadata(filePath, 'etag123abc')).rejects.toThrow(
-        'Unexpected token d in JSON at position 0',
-      );
+      await expect(
+        MkdocsFileService.storeEtagMetadata(filePath, 'etag123abc'),
+      ).rejects.toThrow('Unexpected token d in JSON at position 0');
     });
 
     it('should add etag to the metadata json', async () => {
       const filePath = path.join(rootDir, 'techdocs_metadata.json');
 
-      await storeEtagMetadata(filePath, 'etag123abc');
+      await MkdocsFileService.storeEtagMetadata(filePath, 'etag123abc');
 
       const json = await fs.readJson(filePath);
       expect(json.etag).toBe('etag123abc');
@@ -530,7 +541,7 @@ describe('helpers', () => {
         path: mkdocsPath,
         content,
         configIsTemporary,
-      } = await getMkdocsYml(inputDir, siteOptions);
+      } = await MkdocsFileService.getMkdocsYml(inputDir, siteOptions);
 
       expect(mkdocsPath).toBe(key);
       expect(content).toBe(mkdocsYml.toString());
@@ -544,7 +555,7 @@ describe('helpers', () => {
         path: mkdocsPath,
         content,
         configIsTemporary,
-      } = await getMkdocsYml(inputDir, siteOptions);
+      } = await MkdocsFileService.getMkdocsYml(inputDir, siteOptions);
       expect(mkdocsPath).toBe(key);
       expect(content).toBe(mkdocsYml.toString());
       expect(configIsTemporary).toBe(false);
@@ -562,7 +573,7 @@ describe('helpers', () => {
         path: mkdocsPath,
         content,
         configIsTemporary,
-      } = await getMkdocsYml(inputDir, defaultSiteOptions);
+      } = await MkdocsFileService.getMkdocsYml(inputDir, defaultSiteOptions);
 
       expect(mkdocsPath).toBe(key);
       expect(content.split(/[\r\n]+/g)).toEqual(
@@ -573,7 +584,9 @@ describe('helpers', () => {
 
     it('throws when neither .yml nor .yaml nor default file is present', async () => {
       const invalidInputDir = resolvePath(__filename);
-      await expect(getMkdocsYml(invalidInputDir, siteOptions)).rejects.toThrow(
+      await expect(
+        MkdocsFileService.getMkdocsYml(invalidInputDir, siteOptions),
+      ).rejects.toThrow(
         /Could not read MkDocs YAML config file mkdocs.yml or mkdocs.yaml or default for validation/,
       );
     });
@@ -584,37 +597,52 @@ describe('helpers', () => {
 
     it('should return true on when no docs_dir present', async () => {
       await expect(
-        validateMkdocsYaml(inputDir, mkdocsYml.toString()),
+        MkdocsFileService.validateMkdocsYaml(inputDir, mkdocsYml.toString()),
       ).resolves.toBeUndefined();
     });
 
     it('should return true on when a valid docs_dir is present', async () => {
       await expect(
-        validateMkdocsYaml(inputDir, mkdocsYmlWithValidDocDir.toString()),
+        MkdocsFileService.validateMkdocsYaml(
+          inputDir,
+          mkdocsYmlWithValidDocDir.toString(),
+        ),
       ).resolves.toBe('docs/');
     });
 
     it('should return false on absolute doc_dir path', async () => {
       await expect(
-        validateMkdocsYaml(inputDir, mkdocsYmlWithInvalidDocDir.toString()),
+        MkdocsFileService.validateMkdocsYaml(
+          inputDir,
+          mkdocsYmlWithInvalidDocDir.toString(),
+        ),
       ).rejects.toThrow();
     });
 
     it('should return false on doc_dir path that traverses directory structure backwards', async () => {
       await expect(
-        validateMkdocsYaml(inputDir, mkdocsYmlWithInvalidDocDir2.toString()),
+        MkdocsFileService.validateMkdocsYaml(
+          inputDir,
+          mkdocsYmlWithInvalidDocDir2.toString(),
+        ),
       ).rejects.toThrow();
     });
 
     it('should validate files with custom yaml tags (scalar)', async () => {
       await expect(
-        validateMkdocsYaml(inputDir, mkdocsYmlWithExtensions.toString()),
+        MkdocsFileService.validateMkdocsYaml(
+          inputDir,
+          mkdocsYmlWithExtensions.toString(),
+        ),
       ).resolves.toBeUndefined();
     });
 
     it('should validate files with custom yaml tags (sequence)', async () => {
       await expect(
-        validateMkdocsYaml(inputDir, mkdocsYmlWithEnvTag.toString()),
+        MkdocsFileService.validateMkdocsYaml(
+          inputDir,
+          mkdocsYmlWithEnvTag.toString(),
+        ),
       ).resolves.toBeUndefined();
     });
   });

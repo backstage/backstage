@@ -150,237 +150,261 @@ export const MKDOCS_SCHEMA = DEFAULT_SCHEMA.extend([
   }),
 ]);
 
-/**
- * Generates a mkdocs.yml configuration file
- *
- * @param inputDir - base dir to where the mkdocs.yml file will be created
- * @param siteOptions - options for the site: `name` property will be used in mkdocs.yml for the
- * required `site_name` property, default value is "Documentation Site"
- */
-export const generateMkdocsYml = async (
-  mkdocsYmlPath: string,
-  siteOptions?: { name?: string },
-) => {
-  try {
-    // TODO(awanlin): Use a provided default mkdocs.yml
-    // from config or some specified location. If this is
-    // not provided then fall back to generating bare
-    // minimum mkdocs.yml file
-
-    const defaultSiteName = siteOptions?.name ?? 'Documentation Site';
-    const defaultMkdocsContent: DefaultMkdocsContent = {
-      site_name: defaultSiteName,
-      docs_dir: 'docs',
-      plugins: ['techdocs-core'],
-    };
-
-    await fs.writeFile(
-      mkdocsYmlPath,
-      yaml.dump(defaultMkdocsContent, { schema: MKDOCS_SCHEMA }),
-    );
-  } catch (error) {
-    throw new ForwardedError('Could not generate mkdocs.yml file', error);
-  }
-};
-
-const readMkdocsFileIfExists = async (
-  inputDir: string,
-  mkdocsFileName: string,
-): Promise<
-  { path: string; content: string; configIsTemporary: boolean } | undefined
-> => {
-  const mkdocsYmlPath = path.join(inputDir, mkdocsFileName);
-  if (await fs.pathExists(mkdocsYmlPath)) {
-    const mkdocsYmlFileString = await fs.readFile(mkdocsYmlPath, 'utf8');
-    return {
-      path: mkdocsYmlPath,
-      content: mkdocsYmlFileString,
-      configIsTemporary: false,
-    };
-  }
-  return undefined;
-};
-
-/**
- * Finds and loads the contents of either an mkdocs.yml or mkdocs.yaml file,
- * depending on which is present (MkDocs supports both as of v1.2.2).
- * @public
- *
- * @param inputDir - base dir to be searched for either an mkdocs.yml or mkdocs.yaml file.
- * @param siteOptions - options for the site: `name` property will be used in mkdocs.yml for the
- * required `site_name` property, default value is "Documentation Site"
- */
-export const getMkdocsYml = async (
-  inputDir: string,
-  siteOptions?: { name?: string },
-): Promise<{ path: string; content: string; configIsTemporary: boolean }> => {
-  try {
-    const mkdocsYaml = await readMkdocsFileIfExists(inputDir, 'mkdocs.yaml');
-    if (mkdocsYaml) return mkdocsYaml;
-    const mkdocsYml = await readMkdocsFileIfExists(inputDir, 'mkdocs.yml');
-    if (mkdocsYml) return mkdocsYml;
-
-    // No mkdocs file, generate it
-    const mkdocsYmlPath = path.join(inputDir, 'mkdocs.yml');
-    await generateMkdocsYml(mkdocsYmlPath, siteOptions);
-    const mkdocsYmlFileString = await fs.readFile(mkdocsYmlPath, 'utf8');
-    return {
-      path: mkdocsYmlPath,
-      content: mkdocsYmlFileString,
-      configIsTemporary: true,
-    };
-  } catch (error) {
-    throw new ForwardedError(
-      'Could not read MkDocs YAML config file mkdocs.yml or mkdocs.yaml or default for validation',
-      error,
-    );
-  }
-};
-
-/**
- * Validating mkdocs config file for incorrect/insecure values
- * Throws on invalid configs
- *
- * @param inputDir - base dir to be used as a docs_dir path validity check
- * @param mkdocsYmlFileString - The string contents of the loaded
- *   mkdocs.yml or equivalent of a docs site
- * @returns the parsed docs_dir or undefined
- */
-export const validateMkdocsYaml = async (
-  inputDir: string,
-  mkdocsYmlFileString: string,
-): Promise<string | undefined> => {
-  const mkdocsYml = yaml.load(mkdocsYmlFileString, {
-    schema: MKDOCS_SCHEMA,
-  });
-
-  if (mkdocsYml === null || typeof mkdocsYml !== 'object') {
-    return undefined;
-  }
-
-  const parsedMkdocsYml: Record<string, any> = mkdocsYml;
-  if (
-    parsedMkdocsYml.docs_dir &&
-    !isChildPath(inputDir, resolvePath(inputDir, parsedMkdocsYml.docs_dir))
+export class MkdocsFileService {
+  /**
+   * Generates a mkdocs.yml configuration file
+   *
+   * @param inputDir - base dir to where the mkdocs.yml file will be created
+   * @param siteOptions - options for the site: `name` property will be used in mkdocs.yml for the
+   * required `site_name` property, default value is "Documentation Site"
+   */
+  static async generateMkdocsYml(
+    mkdocsYmlPath: string,
+    siteOptions?: { name?: string },
   ) {
-    throw new Error(
-      `docs_dir configuration value in mkdocs can't be an absolute directory or start with ../ for security reasons.
-       Use relative paths instead which are resolved relative to your mkdocs.yml file location.`,
-    );
-  }
-  return parsedMkdocsYml.docs_dir;
-};
-
-/**
- * Update docs/index.md file before TechDocs generator uses it to generate docs site,
- * falling back to docs/README.md or README.md in case a default docs/index.md
- * is not provided.
- */
-export const patchIndexPreBuild = async ({
-  inputDir,
-  logger,
-  docsDir = 'docs',
-}: {
-  inputDir: string;
-  logger: Logger;
-  docsDir?: string;
-}) => {
-  const docsPath = path.join(inputDir, docsDir);
-  const indexMdPath = path.join(docsPath, 'index.md');
-
-  if (await fs.pathExists(indexMdPath)) {
-    return;
-  }
-  logger.warn(`${path.join(docsDir, 'index.md')} not found.`);
-  const fallbacks = [
-    path.join(docsPath, 'README.md'),
-    path.join(docsPath, 'readme.md'),
-    path.join(inputDir, 'README.md'),
-    path.join(inputDir, 'readme.md'),
-  ];
-
-  await fs.ensureDir(docsPath);
-  for (const filePath of fallbacks) {
     try {
-      await fs.copyFile(filePath, indexMdPath);
-      return;
+      // TODO(awanlin): Use a provided default mkdocs.yml
+      // from config or some specified location. If this is
+      // not provided then fall back to generating bare
+      // minimum mkdocs.yml file
+
+      const defaultSiteName = siteOptions?.name ?? 'Documentation Site';
+      const defaultMkdocsContent: DefaultMkdocsContent = {
+        site_name: defaultSiteName,
+        docs_dir: 'docs',
+        plugins: ['techdocs-core'],
+      };
+
+      await fs.writeFile(
+        mkdocsYmlPath,
+        yaml.dump(defaultMkdocsContent, { schema: MKDOCS_SCHEMA }),
+      );
     } catch (error) {
-      logger.warn(`${path.relative(inputDir, filePath)} not found.`);
+      throw new ForwardedError('Could not generate mkdocs.yml file', error);
     }
   }
 
-  logger.warn(
-    `Could not find any techdocs' index file. Please make sure at least one of ${[
-      indexMdPath,
-      ...fallbacks,
-    ].join(' ')} exists.`,
-  );
-};
-
-/**
- * Create or update the techdocs_metadata.json. Values initialized/updated are:
- * - The build_timestamp (now)
- * - The list of files generated
- *
- * @param techdocsMetadataPath - File path to techdocs_metadata.json
- */
-export const createOrUpdateMetadata = async (
-  techdocsMetadataPath: string,
-  logger: Logger,
-): Promise<void> => {
-  const techdocsMetadataDir = techdocsMetadataPath
-    .split(path.sep)
-    .slice(0, -1)
-    .join(path.sep);
-  // check if file exists, create if it does not.
-  try {
-    await fs.access(techdocsMetadataPath, fs.constants.F_OK);
-  } catch (err) {
-    // Bootstrap file with empty JSON
-    await fs.writeJson(techdocsMetadataPath, JSON.parse('{}'));
-  }
-  // check if valid Json
-  let json;
-  try {
-    json = await fs.readJson(techdocsMetadataPath);
-  } catch (err) {
-    assertError(err);
-    const message = `Invalid JSON at ${techdocsMetadataPath} with error ${err.message}`;
-    logger.error(message);
-    throw new Error(message);
+  static async readMkdocsFileIfExists(
+    inputDir: string,
+    mkdocsFileName: string,
+  ): Promise<
+    { path: string; content: string; configIsTemporary: boolean } | undefined
+  > {
+    const mkdocsYmlPath = path.join(inputDir, mkdocsFileName);
+    if (await fs.pathExists(mkdocsYmlPath)) {
+      const mkdocsYmlFileString = await fs.readFile(mkdocsYmlPath, 'utf8');
+      return {
+        path: mkdocsYmlPath,
+        content: mkdocsYmlFileString,
+        configIsTemporary: false,
+      };
+    }
+    return undefined;
   }
 
-  json.build_timestamp = Date.now();
+  /**
+   * Finds and loads the contents of either an mkdocs.yml or mkdocs.yaml file,
+   * depending on which is present (MkDocs supports both as of v1.2.2).
+   * @public
+   *
+   * @param inputDir - base dir to be searched for either an mkdocs.yml or mkdocs.yaml file.
+   * @param siteOptions - options for the site: `name` property will be used in mkdocs.yml for the
+   * required `site_name` property, default value is "Documentation Site"
+   */
+  static async getMkdocsYml(
+    inputDir: string,
+    siteOptions?: { name?: string },
+  ): Promise<{ path: string; content: string; configIsTemporary: boolean }> {
+    try {
+      const mkdocsYaml = await MkdocsFileService.readMkdocsFileIfExists(
+        inputDir,
+        'mkdocs.yaml',
+      );
+      if (mkdocsYaml) return mkdocsYaml;
+      const mkdocsYml = await MkdocsFileService.readMkdocsFileIfExists(
+        inputDir,
+        'mkdocs.yml',
+      );
+      if (mkdocsYml) return mkdocsYml;
 
-  // Get and write generated files to the metadata JSON. Each file string is in
-  // a form appropriate for invalidating the associated object from cache.
-  try {
-    json.files = (await getFileTreeRecursively(techdocsMetadataDir)).map(file =>
-      file.replace(`${techdocsMetadataDir}${path.sep}`, ''),
+      // No mkdocs file, generate it
+      const mkdocsYmlPath = path.join(inputDir, 'mkdocs.yml');
+      await MkdocsFileService.generateMkdocsYml(mkdocsYmlPath, siteOptions);
+      const mkdocsYmlFileString = await fs.readFile(mkdocsYmlPath, 'utf8');
+      return {
+        path: mkdocsYmlPath,
+        content: mkdocsYmlFileString,
+        configIsTemporary: true,
+      };
+    } catch (error) {
+      throw new ForwardedError(
+        'Could not read MkDocs YAML config file mkdocs.yml or mkdocs.yaml or default for validation',
+        error,
+      );
+    }
+  }
+
+  /**
+   * Validating mkdocs config file for incorrect/insecure values
+   * Throws on invalid configs
+   *
+   * @param inputDir - base dir to be used as a docs_dir path validity check
+   * @param mkdocsYmlFileString - The string contents of the loaded
+   *   mkdocs.yml or equivalent of a docs site
+   * @returns the parsed docs_dir or undefined
+   */
+  static async validateMkdocsYaml(
+    inputDir: string,
+    mkdocsYmlFileString: string,
+  ): Promise<string | undefined> {
+    const mkdocsYml = yaml.load(mkdocsYmlFileString, {
+      schema: MKDOCS_SCHEMA,
+    });
+
+    if (mkdocsYml === null || typeof mkdocsYml !== 'object') {
+      return undefined;
+    }
+
+    const parsedMkdocsYml: Record<string, any> = mkdocsYml;
+    if (
+      parsedMkdocsYml.docs_dir &&
+      !isChildPath(inputDir, resolvePath(inputDir, parsedMkdocsYml.docs_dir))
+    ) {
+      throw new Error(
+        `docs_dir configuration value in mkdocs can't be an absolute directory or start with ../ for security reasons.
+         Use relative paths instead which are resolved relative to your mkdocs.yml file location.`,
+      );
+    }
+    return parsedMkdocsYml.docs_dir;
+  }
+
+  /**
+   * Update docs/index.md file before TechDocs generator uses it to generate docs site,
+   * falling back to docs/README.md or README.md in case a default docs/index.md
+   * is not provided.
+   */
+  static async patchIndexPreBuild({
+    inputDir,
+    logger,
+    docsDir = 'docs',
+  }: {
+    inputDir: string;
+    logger: Logger;
+    docsDir?: string;
+  }) {
+    const docsPath = path.join(inputDir, docsDir);
+    const indexMdPath = path.join(docsPath, 'index.md');
+
+    if (await fs.pathExists(indexMdPath)) {
+      return;
+    }
+    logger.warn(`${path.join(docsDir, 'index.md')} not found.`);
+    const fallbacks = [
+      path.join(docsPath, 'README.md'),
+      path.join(docsPath, 'readme.md'),
+      path.join(inputDir, 'README.md'),
+      path.join(inputDir, 'readme.md'),
+    ];
+
+    await fs.ensureDir(docsPath);
+    for (const filePath of fallbacks) {
+      try {
+        await fs.copyFile(filePath, indexMdPath);
+        return;
+      } catch (error) {
+        logger.warn(`${path.relative(inputDir, filePath)} not found.`);
+      }
+    }
+
+    logger.warn(
+      `Could not find any techdocs' index file. Please make sure at least one of ${[
+        indexMdPath,
+        ...fallbacks,
+      ].join(' ')} exists.`,
     );
-  } catch (err) {
-    assertError(err);
-    json.files = [];
-    logger.warn(`Unable to add files list to metadata: ${err.message}`);
   }
 
-  await fs.writeJson(techdocsMetadataPath, json);
-  return;
-};
+  /**
+   * Create or update the techdocs_metadata.json. Values initialized/updated are:
+   * - The build_timestamp (now)
+   * - The list of files generated
+   *
+   * @param techdocsMetadataPath - File path to techdocs_metadata.json
+   */
+  static async createOrUpdateMetadata(
+    techdocsMetadataPath: string,
+    logger: Logger,
+  ): Promise<void> {
+    const techdocsMetadataDir = techdocsMetadataPath
+      .split(path.sep)
+      .slice(0, -1)
+      .join(path.sep);
+    // check if file exists, create if it does not.
+    try {
+      await fs.access(techdocsMetadataPath, fs.constants.F_OK);
+    } catch (err) {
+      // Bootstrap file with empty JSON
+      await fs.writeJson(techdocsMetadataPath, JSON.parse('{}'));
+    }
+    // check if valid Json
+    let json;
+    try {
+      json = await fs.readJson(techdocsMetadataPath);
+    } catch (err) {
+      assertError(err);
+      const message = `Invalid JSON at ${techdocsMetadataPath} with error ${err.message}`;
+      logger.error(message);
+      throw new Error(message);
+    }
 
-/**
- * Update the techdocs_metadata.json to add etag of the prepared tree (e.g. commit SHA or actual Etag of the resource).
- * This is helpful to check if a TechDocs site in storage has gone outdated, without maintaining an in-memory build info
- * per Backstage instance.
- *
- * @param techdocsMetadataPath - File path to techdocs_metadata.json
- * @param etag - The ETag to use
- */
-export const storeEtagMetadata = async (
-  techdocsMetadataPath: string,
-  etag: string,
-): Promise<void> => {
-  const json = await fs.readJson(techdocsMetadataPath);
-  json.etag = etag;
-  await fs.writeJson(techdocsMetadataPath, json);
-};
+    json.build_timestamp = Date.now();
+
+    // Get and write generated files to the metadata JSON. Each file string is in
+    // a form appropriate for invalidating the associated object from cache.
+    try {
+      json.files = (await getFileTreeRecursively(techdocsMetadataDir)).map(
+        file => file.replace(`${techdocsMetadataDir}${path.sep}`, ''),
+      );
+    } catch (err) {
+      assertError(err);
+      json.files = [];
+      logger.warn(`Unable to add files list to metadata: ${err.message}`);
+    }
+
+    await fs.writeJson(techdocsMetadataPath, json);
+    return;
+  }
+
+  /**
+   * Update the techdocs_metadata.json to add etag of the prepared tree (e.g. commit SHA or actual Etag of the resource).
+   * This is helpful to check if a TechDocs site in storage has gone outdated, without maintaining an in-memory build info
+   * per Backstage instance.
+   *
+   * @param techdocsMetadataPath - File path to techdocs_metadata.json
+   * @param etag - The ETag to use
+   */
+  static async storeEtagMetadata(
+    techdocsMetadataPath: string,
+    etag: string,
+  ): Promise<void> {
+    const json = await fs.readJson(techdocsMetadataPath);
+    json.etag = etag;
+    await fs.writeJson(techdocsMetadataPath, json);
+  }
+}
+
+// export interface MkdocsFileService {
+//   getMkdocsYml(
+//     inputDir: string,
+//     siteOptions?: { name?: string },
+//     configuredMkdocsFile?: string,
+//   ): Promise<{ path: string; content: string; configIsTemporary: boolean }>
+// }
+// export class MkdocsFileServiceImplementation implements MkdocsFileService {
+//   async getMkdocsYml(
+//     inputDir: string,
+//     siteOptions?: { name?: string },
+//     configuredMkdocsFile?: string): Promise<{ path: string; content: string; configIsTemporary: boolean; }> {
+//     return getMkdocsYml(inputDir, siteOptions, configuredMkdocsFile)
+//   }
+// }

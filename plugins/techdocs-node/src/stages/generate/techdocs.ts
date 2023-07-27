@@ -22,14 +22,7 @@ import {
   ScmIntegrationRegistry,
   ScmIntegrations,
 } from '@backstage/integration';
-import {
-  createOrUpdateMetadata,
-  getMkdocsYml,
-  patchIndexPreBuild,
-  runCommand,
-  storeEtagMetadata,
-  validateMkdocsYaml,
-} from './helpers';
+import { MkdocsFileService, runCommand } from './helpers';
 
 import {
   patchMkdocsYmlPreBuild,
@@ -100,13 +93,14 @@ export class TechdocsGenerator implements GeneratorBase {
     } = options;
 
     // Do some updates to mkdocs.yml before generating docs e.g. adding repo_url
-    const { path: mkdocsYmlPath, content } = await getMkdocsYml(
-      inputDir,
-      siteOptions,
-    );
+    const { path: mkdocsYmlPath, content } =
+      await MkdocsFileService.getMkdocsYml(inputDir, siteOptions);
 
     // validate the docs_dir first
-    const docsDir = await validateMkdocsYaml(inputDir, content);
+    const docsDir = await MkdocsFileService.validateMkdocsYaml(
+      inputDir,
+      content,
+    );
 
     if (parsedLocationAnnotation) {
       await patchMkdocsYmlPreBuild(
@@ -118,7 +112,11 @@ export class TechdocsGenerator implements GeneratorBase {
     }
 
     if (this.options.legacyCopyReadmeMdToIndexMd) {
-      await patchIndexPreBuild({ inputDir, logger: childLogger, docsDir });
+      await MkdocsFileService.patchIndexPreBuild({
+        inputDir,
+        logger: childLogger,
+        docsDir,
+      });
     }
 
     if (!this.options.omitTechdocsCoreMkdocsPlugin) {
@@ -189,7 +187,7 @@ export class TechdocsGenerator implements GeneratorBase {
 
     // Add build timestamp and files to techdocs_metadata.json
     // Creates techdocs_metadata.json if file does not exist.
-    await createOrUpdateMetadata(
+    await MkdocsFileService.createOrUpdateMetadata(
       path.join(outputDir, 'techdocs_metadata.json'),
       childLogger,
     );
@@ -197,7 +195,7 @@ export class TechdocsGenerator implements GeneratorBase {
     // Add etag of the prepared tree to techdocs_metadata.json
     // Assumes that the file already exists.
     if (etag) {
-      await storeEtagMetadata(
+      await MkdocsFileService.storeEtagMetadata(
         path.join(outputDir, 'techdocs_metadata.json'),
         etag,
       );
