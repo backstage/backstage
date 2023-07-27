@@ -129,7 +129,7 @@ describe('<MyGroupsPicker />', () => {
 
     expect(catalogApi.getEntities).toHaveBeenCalledWith({
       filter: {
-        type: 'Group',
+        kind: 'Group',
         'relations.hasMember': ['user:default/bob'],
       },
     });
@@ -201,8 +201,8 @@ describe('<MyGroupsPicker />', () => {
 
     // Simulate user input
     const inputField = getByRole('combobox');
-    userEvent.click(inputField);
-    userEvent.type(inputField, 'group');
+    await userEvent.click(inputField);
+    await userEvent.type(inputField, 'group');
 
     // Wait for the dropdown elements to appear
     await waitFor(() => {
@@ -257,8 +257,8 @@ describe('<MyGroupsPicker />', () => {
     );
 
     const inputField = getByRole('combobox');
-    userEvent.click(inputField);
-    userEvent.type(inputField, 'group');
+    await userEvent.click(inputField);
+    await userEvent.type(inputField, 'group');
 
     await waitFor(() => {
       expect(
@@ -267,7 +267,7 @@ describe('<MyGroupsPicker />', () => {
     });
 
     const option = getByRole('option', { name: 'My First Group' });
-    userEvent.click(option);
+    await userEvent.click(option);
 
     await waitFor(() => {
       expect(onChange).toHaveBeenCalledTimes(1);
