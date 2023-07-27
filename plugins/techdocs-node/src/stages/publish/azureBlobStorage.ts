@@ -78,6 +78,26 @@ export class AzureBlobStoragePublish implements PublisherBase {
       );
     }
 
+    const legacyPathCasing =
+      config.getOptionalBoolean(
+        'techdocs.legacyUseCaseSensitiveTripletPaths',
+      ) || false;
+
+    // Give more priority for azurite, if configured, return the AzureBlobStoragePublish object here itself
+    const azuriteConnString = config.getOptionalString(
+      'techdocs.publisher.azureBlobStorage.azuriteConnectionString',
+    );
+    if (azuriteConnString) {
+      const storageClient =
+        BlobServiceClient.fromConnectionString(azuriteConnString);
+      return new AzureBlobStoragePublish({
+        storageClient: storageClient,
+        containerName: containerName,
+        legacyPathCasing: legacyPathCasing,
+        logger: logger,
+      });
+    }
+
     let accountName = '';
     try {
       accountName = config.getString(
@@ -107,11 +127,6 @@ export class AzureBlobStoragePublish implements PublisherBase {
       `https://${accountName}.blob.core.windows.net`,
       credential,
     );
-
-    const legacyPathCasing =
-      config.getOptionalBoolean(
-        'techdocs.legacyUseCaseSensitiveTripletPaths',
-      ) || false;
 
     return new AzureBlobStoragePublish({
       storageClient: storageClient,
