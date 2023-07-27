@@ -35,7 +35,7 @@ describe('readGeneratorConfig', () => {
       },
     });
 
-    expect(readGeneratorConfig(config, logger)).toEqual({
+    expect(readGeneratorConfig(config, logger, __dirname)).toEqual({
       runIn: 'docker',
       dockerImage: undefined,
       pullImage: undefined,
@@ -51,7 +51,7 @@ describe('readGeneratorConfig', () => {
       },
     });
 
-    expect(readGeneratorConfig(config, logger)).toEqual({
+    expect(readGeneratorConfig(config, logger, __dirname)).toEqual({
       runIn: 'local',
     });
   });
@@ -65,7 +65,7 @@ describe('readGeneratorConfig', () => {
       },
     });
 
-    expect(readGeneratorConfig(config, logger)).toEqual({
+    expect(readGeneratorConfig(config, logger, __dirname)).toEqual({
       runIn: 'docker',
     });
   });
@@ -80,7 +80,7 @@ describe('readGeneratorConfig', () => {
       },
     });
 
-    expect(readGeneratorConfig(config, logger)).toEqual({
+    expect(readGeneratorConfig(config, logger, __dirname)).toEqual({
       runIn: 'docker',
       dockerImage: 'my-org/techdocs',
     });
@@ -97,11 +97,25 @@ describe('readGeneratorConfig', () => {
       },
     });
 
-    expect(readGeneratorConfig(config, logger)).toEqual({
+    expect(readGeneratorConfig(config, logger, __dirname)).toEqual({
       runIn: 'docker',
       dockerImage: 'my-org/techdocs',
       pullImage: false,
     });
+  });
+
+  it('should read the path for a default mkdocs file', () => {
+    const config = new ConfigReader({
+      techdocs: {
+        generator: {
+          defaultMkdocsFile: './default-mkdocs.yml',
+        },
+      },
+    });
+    const root = __dirname;
+    expect(
+      readGeneratorConfig(config, logger, root).defaultMkdocsFileAbsolutePath,
+    ).toEqual(root.concat('/default-mkdocs.yml'));
   });
 
   describe('with legacy techdocs.generators.techdocs config', () => {
@@ -114,7 +128,7 @@ describe('readGeneratorConfig', () => {
         },
       });
 
-      expect(readGeneratorConfig(config, logger)).toEqual({
+      expect(readGeneratorConfig(config, logger, __dirname)).toEqual({
         runIn: 'docker',
       });
     });
@@ -128,7 +142,7 @@ describe('readGeneratorConfig', () => {
         },
       });
 
-      expect(readGeneratorConfig(config, logger)).toEqual({
+      expect(readGeneratorConfig(config, logger, __dirname)).toEqual({
         runIn: 'local',
       });
       expect(logger.warn).toHaveBeenCalledWith(
@@ -150,7 +164,7 @@ describe('readGeneratorConfig', () => {
       },
     });
 
-    expect(readGeneratorConfig(config, logger)).toEqual({
+    expect(readGeneratorConfig(config, logger, __dirname)).toEqual({
       runIn: 'docker',
       dockerImage: 'my-org/techdocs',
       pullImage: false,

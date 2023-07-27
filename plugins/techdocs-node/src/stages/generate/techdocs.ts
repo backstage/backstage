@@ -16,7 +16,7 @@
 
 import { ContainerRunner } from '@backstage/backend-common';
 import { Config } from '@backstage/config';
-import path from 'path';
+import path, { resolve } from 'path';
 import { Logger } from 'winston';
 import {
   ScmIntegrationRegistry,
@@ -36,6 +36,7 @@ import {
   GeneratorRunOptions,
 } from './types';
 import { ForwardedError } from '@backstage/errors';
+import { findPaths } from '@backstage/cli-common';
 
 /**
  * Generates documentation files
@@ -75,7 +76,8 @@ export class TechdocsGenerator implements GeneratorBase {
     scmIntegrations: ScmIntegrationRegistry;
   }) {
     this.logger = options.logger;
-    this.options = readGeneratorConfig(options.config, options.logger);
+    const rootDir = findPaths(process.cwd()).targetRoot;
+    this.options = readGeneratorConfig(options.config, options.logger, rootDir);
     this.containerRunner = options.containerRunner;
     this.scmIntegrations = options.scmIntegrations;
   }
@@ -206,6 +208,7 @@ export class TechdocsGenerator implements GeneratorBase {
 export function readGeneratorConfig(
   config: Config,
   logger: Logger,
+  rootDir: string,
 ): GeneratorConfig {
   const legacyGeneratorType = config.getOptionalString(
     'techdocs.generators.techdocs',
@@ -217,6 +220,10 @@ export function readGeneratorConfig(
         `See here https://backstage.io/docs/features/techdocs/configuration`,
     );
   }
+
+  const maybeMkdocsFileRelativePath = config.getOptionalString(
+    'techdocs.generator.defaultMkdocsFile',
+  );
 
   return {
     runIn:
@@ -231,5 +238,8 @@ export function readGeneratorConfig(
     legacyCopyReadmeMdToIndexMd: config.getOptionalBoolean(
       'techdocs.generator.mkdocs.legacyCopyReadmeMdToIndexMd',
     ),
+    defaultMkdocsFileAbsolutePath:
+      maybeMkdocsFileRelativePath &&
+      resolve(rootDir, maybeMkdocsFileRelativePath),
   };
 }

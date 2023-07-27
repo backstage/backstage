@@ -41,6 +41,7 @@ export type GeneratorConfig = {
   pullImage?: boolean;
   omitTechdocsCoreMkdocsPlugin?: boolean;
   legacyCopyReadmeMdToIndexMd?: boolean;
+  defaultMkdocsFileAbsolutePath?: string;
 };
 
 /**
