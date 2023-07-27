@@ -17,6 +17,8 @@ The following is a full example entry in `app-config.yaml`:
 
 ```yaml
 kubernetes:
+  fetcher:
+    requestTimeout: 10000
   serviceLocatorMethod:
     type: 'multiTenant'
   clusterLocatorMethods:
@@ -46,6 +48,14 @@ kubernetes:
       skipMetricsLookup: true
       exposeDashboard: true
 ```
+
+## `fetcher`
+
+This configures requests to Kubernetes clusters.
+
+### `requestTimeout`
+
+Defines in milliseconds how long the backend will wait for a response from a Kubernetes cluster.
 
 ### `serviceLocatorMethod`
 
