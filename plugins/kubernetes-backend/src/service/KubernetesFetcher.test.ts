@@ -167,6 +167,7 @@ describe('KubernetesFetcher', () => {
     beforeEach(() => {
       sut = new KubernetesClientBasedFetcher({
         logger,
+        requestTimeout: 10000,
       });
     });
 
@@ -959,6 +960,7 @@ describe('KubernetesFetcher', () => {
     beforeEach(() => {
       sut = new KubernetesClientBasedFetcher({
         logger: getVoidLogger(),
+        requestTimeout: 10000,
       });
     });
 
