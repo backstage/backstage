@@ -41,7 +41,6 @@ const useStyles = makeStyles(theme => ({
 type Props = {
   formValues?: FormValues;
   onSave: SubmitHandler<FormValues>;
-  // api: ShortcutApi;
   onClose: () => void;
   allowExternalLinks?: boolean;
 };
@@ -49,7 +48,6 @@ type Props = {
 export const ShortcutForm = ({
   formValues,
   onSave,
-  // api,
   onClose,
   allowExternalLinks,
 }: Props) => {
