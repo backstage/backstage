@@ -1076,7 +1076,10 @@ describe('KubernetesFanOutHandler', () => {
         const logger = getVoidLogger();
         const kubernetesFanOutHandler = new KubernetesFanOutHandler({
           logger,
-          fetcher: new KubernetesClientBasedFetcher({ logger }),
+          fetcher: new KubernetesClientBasedFetcher({
+            logger,
+            requestTimeout: 10000,
+          }),
           serviceLocator: fleet,
           customResources: [],
           objectTypesToFetch: [
