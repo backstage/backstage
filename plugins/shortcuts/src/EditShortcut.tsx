@@ -60,7 +60,6 @@ export const EditShortcut = ({
   const alertApi = useApi(alertApiRef);
   const open = Boolean(anchorEl);
   const analytics = useAnalytics();
-  const shortcutData = api.get();
 
   const handleSave: SubmitHandler<FormValues> = async ({ url, title }) => {
     analytics.captureEvent('click', `Clicked 'Save' in Edit Shortcut`);
@@ -71,16 +70,12 @@ export const EditShortcut = ({
     };
 
     try {
-      if (shortcutData.some(shortcutTitle => shortcutTitle.title === title)) {
-        throw new Error(`Shortcut Title '${title}' already Exist`);
-      } else {
-        await api.update(newShortcut);
-        alertApi.post({
-          message: `Updated shortcut '${title}'`,
-          severity: 'success',
-          display: 'transient',
-        });
-      }
+      await api.update(newShortcut);
+      alertApi.post({
+        message: `Updated shortcut '${title}'`,
+        severity: 'success',
+        display: 'transient',
+      });
     } catch (error) {
       alertApi.post({
         message: `Could not update shortcut: ${error.message}`,

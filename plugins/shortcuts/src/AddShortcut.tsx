@@ -61,23 +61,18 @@ export const AddShortcut = ({
   const [formValues, setFormValues] = useState<FormValues>();
   const open = Boolean(anchorEl);
   const analytics = useAnalytics();
-  const shortcutData = api.get();
 
   const handleSave: SubmitHandler<FormValues> = async ({ url, title }) => {
     analytics.captureEvent('click', `Clicked 'Save' in AddShortcut`);
     const shortcut: Omit<Shortcut, 'id'> = { url, title };
 
     try {
-      if (shortcutData.some(shortcutTitle => shortcutTitle.title === title)) {
-        throw new Error(`Shortcut Title '${title}' already Exist`);
-      } else {
-        await api.add(shortcut);
-        alertApi.post({
-          message: `Added shortcut '${title}' to your sidebar`,
-          severity: 'success',
-          display: 'transient',
-        });
-      }
+      await api.add(shortcut);
+      alertApi.post({
+        message: `Added shortcut '${title}' to your sidebar`,
+        severity: 'success',
+        display: 'transient',
+      });
     } catch (error) {
       alertApi.post({
         message: `Could not add shortcut: ${error.message}`,
