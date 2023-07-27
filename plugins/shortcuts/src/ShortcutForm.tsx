@@ -24,7 +24,8 @@ import {
   TextField,
 } from '@material-ui/core';
 import { FormValues } from './types';
-import { ShortcutApi } from './api';
+import { shortcutsApiRef } from './api';
+import { useApi } from '@backstage/core-plugin-api';
 
 const useStyles = makeStyles(theme => ({
   field: {
@@ -40,7 +41,7 @@ const useStyles = makeStyles(theme => ({
 type Props = {
   formValues?: FormValues;
   onSave: SubmitHandler<FormValues>;
-  api: ShortcutApi;
+  // api: ShortcutApi;
   onClose: () => void;
   allowExternalLinks?: boolean;
 };
@@ -48,12 +49,13 @@ type Props = {
 export const ShortcutForm = ({
   formValues,
   onSave,
-  api,
+  // api,
   onClose,
   allowExternalLinks,
 }: Props) => {
   const classes = useStyles();
-  const shortcutData = api.get();
+  const shortcutApi = useApi(shortcutsApiRef);
+  const shortcutData = shortcutApi.get();
   const {
     handleSubmit,
     reset,
