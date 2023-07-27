@@ -40,6 +40,9 @@ describe('ShortcutForm', () => {
       expect(
         screen.getByText('Must be at least 2 characters'),
       ).toBeInTheDocument();
+      expect(
+        screen.getByText('This title name is already exist'),
+      ).toBeInTheDocument();
     });
   });
 
