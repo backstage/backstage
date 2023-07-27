@@ -64,9 +64,7 @@ export const AddShortcut = ({
   const shortcutData = api.get();
 
   const handleSave: SubmitHandler<FormValues> = async ({ url, title }) => {
-    if (!api.get().some(shortcutTitle => shortcutTitle.title === title)) {
-      analytics.captureEvent('click', `Clicked 'Save' in AddShortcut`);
-    }
+    analytics.captureEvent('click', `Clicked 'Save' in AddShortcut`);
     const shortcut: Omit<Shortcut, 'id'> = { url, title };
 
     try {
