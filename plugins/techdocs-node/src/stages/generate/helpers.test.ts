@@ -561,6 +561,30 @@ describe('helpers', () => {
       expect(configIsTemporary).toBe(false);
     });
 
+    it('returns expected contents when configured file is present', async () => {
+      const key = path.join(inputDir, 'default-mkdocs.yml');
+      const readMkdocsFileIfExists = MkdocsFileService.readMkdocsFileIfExists;
+      const mockPathExists = jest.spyOn(
+        MkdocsFileService,
+        'readMkdocsFileIfExists',
+      );
+      mockPathExists.mockImplementation((maybePath?: string) => {
+        if (maybePath === key) {
+          return readMkdocsFileIfExists(maybePath);
+        }
+        return Promise.resolve(undefined);
+      });
+      mockFs({ [key]: defaultMkdocsYml });
+      const {
+        path: mkdocsPath,
+        content,
+        configIsTemporary,
+      } = await MkdocsFileService.getMkdocsYml(inputDir, siteOptions, key);
+      expect(mkdocsPath).toBe(key);
+      expect(content).toBe(defaultMkdocsYml.toString());
+      expect(configIsTemporary).toBe(false);
+    });
+
     it('returns expected contents when default file is present', async () => {
       const defaultSiteOptions = {
         name: 'Default Test site name',

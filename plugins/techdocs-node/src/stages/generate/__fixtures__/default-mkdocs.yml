@@ -1,0 +1,4 @@
+site_name: Default Test site name
+docs_dir: .
+plugins:
+  - techdocs-core

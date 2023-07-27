@@ -185,16 +185,14 @@ export class MkdocsFileService {
   }
 
   static async readMkdocsFileIfExists(
-    inputDir: string,
-    mkdocsFileName: string,
+    mkdocsFilePath?: string,
   ): Promise<
     { path: string; content: string; configIsTemporary: boolean } | undefined
   > {
-    const mkdocsYmlPath = path.join(inputDir, mkdocsFileName);
-    if (await fs.pathExists(mkdocsYmlPath)) {
-      const mkdocsYmlFileString = await fs.readFile(mkdocsYmlPath, 'utf8');
+    if (mkdocsFilePath && (await fs.pathExists(mkdocsFilePath))) {
+      const mkdocsYmlFileString = await fs.readFile(mkdocsFilePath, 'utf8');
       return {
-        path: mkdocsYmlPath,
+        path: mkdocsFilePath,
         content: mkdocsYmlFileString,
         configIsTemporary: false,
       };
@@ -214,18 +212,24 @@ export class MkdocsFileService {
   static async getMkdocsYml(
     inputDir: string,
     siteOptions?: { name?: string },
+    configuredMkdocsFileAbsolutePath?: string,
   ): Promise<{ path: string; content: string; configIsTemporary: boolean }> {
     try {
       const mkdocsYaml = await MkdocsFileService.readMkdocsFileIfExists(
-        inputDir,
-        'mkdocs.yaml',
+        path.join(inputDir, 'mkdocs.yaml'),
       );
-      if (mkdocsYaml) return mkdocsYaml;
+      if (mkdocsYaml !== undefined) return mkdocsYaml;
       const mkdocsYml = await MkdocsFileService.readMkdocsFileIfExists(
-        inputDir,
-        'mkdocs.yml',
+        path.join(inputDir, 'mkdocs.yml'),
       );
-      if (mkdocsYml) return mkdocsYml;
+      if (mkdocsYml !== undefined) return mkdocsYml;
+
+      // No mkdocs file in repository, trying to get the default
+      const condifuredMkdocsYml =
+        await MkdocsFileService.readMkdocsFileIfExists(
+          configuredMkdocsFileAbsolutePath,
+        );
+      if (condifuredMkdocsYml !== undefined) return condifuredMkdocsYml;
 
       // No mkdocs file, generate it
       const mkdocsYmlPath = path.join(inputDir, 'mkdocs.yml');
