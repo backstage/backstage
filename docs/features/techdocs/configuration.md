@@ -49,6 +49,9 @@ techdocs:
       # will be broken in these scenarios.
       legacyCopyReadmeMdToIndexMd: false
 
+    # (Optional) techdocs.generator.defaultMkdocsFile can be used to specify a default mkdocs file to be applyed when a repository does not already contains mkdocs configuration
+    defaultMkdocsFile: './default-mkdocs.yml'
+
   # techdocs.builder can be either 'local' or 'external'.
   # Using the default build strategy, if builder is set to 'local' and you open a TechDocs page,
   # techdocs-backend will try to generate the docs, publish to storage and show the generated docs afterwards.
