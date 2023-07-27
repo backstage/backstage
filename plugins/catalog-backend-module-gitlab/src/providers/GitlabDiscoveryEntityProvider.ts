@@ -178,6 +178,13 @@ export class GitlabDiscoveryEntityProvider implements EntityProvider {
       }
 
       if (
+        this.config.skipForkedRepos &&
+        project.hasOwnProperty('forked_from_project')
+      ) {
+        continue;
+      }
+
+      if (
         !this.config.branch &&
         this.config.fallbackBranch === '*' &&
         project.default_branch === undefined
