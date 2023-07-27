@@ -44,6 +44,7 @@ import fs from 'fs-extra';
 
 export interface KubernetesClientBasedFetcherOptions {
   logger: Logger;
+  requestTimeout: number;
 }
 
 type FetchResult = FetchResponse | KubernetesFetchError;
@@ -81,9 +82,11 @@ const statusCodeToErrorType = (statusCode: number): KubernetesErrorTypes => {
 
 export class KubernetesClientBasedFetcher implements KubernetesFetcher {
   private readonly logger: Logger;
+  private readonly requestTimeout: number;
 
-  constructor({ logger }: KubernetesClientBasedFetcherOptions) {
+  constructor({ logger, requestTimeout }: KubernetesClientBasedFetcherOptions) {
     this.logger = logger;
+    this.requestTimeout = requestTimeout;
   }
 
   fetchObjectsForService(
@@ -231,6 +234,7 @@ export class KubernetesClientBasedFetcher implements KubernetesFetcher {
         'Content-Type': 'application/json',
         Authorization: `Bearer ${clusterDetails.serviceAccountToken}`,
       },
+      timeout: this.requestTimeout,
     };
 
     const url: URL = new URL(clusterDetails.url);
@@ -262,6 +266,7 @@ export class KubernetesClientBasedFetcher implements KubernetesFetcher {
         'Content-Type': 'application/json',
         Authorization: `Bearer ${token}`,
       },
+      timeout: this.requestTimeout,
     };
 
     const url = new URL(cluster.server);

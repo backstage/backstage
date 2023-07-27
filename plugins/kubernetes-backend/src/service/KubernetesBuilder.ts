@@ -248,6 +248,10 @@ export class KubernetesBuilder {
   protected buildFetcher(): KubernetesFetcher {
     this.fetcher = new KubernetesClientBasedFetcher({
       logger: this.env.logger,
+      requestTimeout:
+        this.env.config.getOptionalNumber(
+          'kubernetes.fetcher.requestTimeout',
+        ) ?? 10000,
     });
 
     return this.fetcher;

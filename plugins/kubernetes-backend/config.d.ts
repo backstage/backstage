@@ -16,6 +16,9 @@
 
 export interface Config {
   kubernetes?: {
+    fetcher?: {
+      requestTimeout?: number;
+    };
     objectTypes?: Array<
       | 'pods'
       | 'services'
