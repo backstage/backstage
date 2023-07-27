@@ -138,6 +138,34 @@ sonarqube:
       apiKey: abcdef0123456789abcedf0123456789ab
 ```
 
+#### Example - Different frontend and backend URLs
+
+In some instances, you might want to use one URL for the backend and another for the frontend.
+This can be achieved by using the optional `externalUrl` property in the config.
+
+##### Single instance config
+
+```yaml
+sonarqube:
+  baseUrl: https://sonarqube-internal.example.com
+  externalUrl: https://sonarqube.example.com
+  apiKey: 123456789abcdef0123456789abcedf012
+```
+
+##### Multiple instance config
+
+```yaml
+sonarqube:
+  instances:
+    - name: default
+      baseUrl: https://default-sonarqube-internal.example.com
+      externalUrl: https://default-sonarqube.example.com
+      apiKey: 123456789abcdef0123456789abcedf012
+    - name: specialProject
+      baseUrl: https://special-project-sonarqube.example.com
+      apiKey: abcdef0123456789abcedf0123456789ab
+```
+
 ## Links
 
 - [Sonarqube Frontend](../sonarqube/README.md)
