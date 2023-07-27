@@ -27,6 +27,7 @@ import {
 import { setupServer } from 'msw/node';
 import { setupRequestMockHandlers } from '@backstage/backend-test-utils';
 import mockFs from 'mock-fs';
+import { FetchError } from 'node-fetch';
 
 const OBJECTS_TO_FETCH = new Set<ObjectToFetch>([
   {
@@ -1118,6 +1119,58 @@ describe('KubernetesFetcher', () => {
         },
       ]);
       expect(result.responses).toMatchObject(POD_METRICS_FIXTURE);
+    });
+  });
+  describe('should support requestTimeout', () => {
+    let sut: KubernetesClientBasedFetcher;
+
+    beforeEach(() => {
+      sut = new KubernetesClientBasedFetcher({
+        logger: getVoidLogger(),
+        requestTimeout: 1000,
+      });
+    });
+
+    it('should timeout after timeout deadline', async () => {
+      worker.use(
+        rest.get(
+          'http://localhost:9999/k8s/clusters/1234/api/v1/pods',
+          (req, res, ctx) =>
+            res(
+              ctx.delay(1500),
+              checkToken(req, ctx, 'token'),
+              withLabels(req, ctx, {
+                items: [{ metadata: { name: 'pod-name' } }],
+              }),
+            ),
+        ),
+        rest.get(
+          'http://localhost:9999/k8s/clusters/1234/api/v1/services',
+          (req, res, ctx) =>
+            res(
+              checkToken(req, ctx, 'token'),
+              withLabels(req, ctx, {
+                items: [{ metadata: { name: 'service-name' } }],
+              }),
+            ),
+        ),
+      );
+      await expect(
+        sut.fetchObjectsForService({
+          serviceId: 'some-service',
+          clusterDetails: {
+            name: 'cluster1',
+            url: 'http://localhost:9999/k8s/clusters/1234',
+            serviceAccountToken: 'token',
+            authProvider: 'serviceAccount',
+          },
+          objectTypesToFetch: OBJECTS_TO_FETCH,
+          labelSelector: '',
+          customResources: [],
+        }),
+      ).rejects.toThrow(
+        'network timeout at: http://localhost:9999/k8s/clusters/1234/api/v1/pods?labelSelector=backstage.io%2Fkubernetes-id%3Dsome-service',
+      );
     });
   });
 });
