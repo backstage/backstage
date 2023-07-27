@@ -16,7 +16,7 @@
 
 import { TaskScheduleDefinitionConfig } from '@backstage/backend-tasks';
 
-export interface GCPCatalogModuleConfig {
+export interface Config {
   catalog?: {
     /**
      * List of provider-specific options and attributes
