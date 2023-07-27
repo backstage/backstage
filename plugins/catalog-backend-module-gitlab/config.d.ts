@@ -60,6 +60,10 @@ export interface Config {
            * (Optional) RegExp for the Group Name Pattern
            */
           groupPattern?: RegExp;
+          /**
+           * (Optional) Skip forked repository
+           */
+          skipForkedRepos?: boolean;
         }
       >;
     };
