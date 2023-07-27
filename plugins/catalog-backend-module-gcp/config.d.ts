@@ -13,3 +13,33 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
+import { TaskScheduleDefinitionConfig } from '@backstage/backend-tasks';
+
+export interface GCPCatalogModuleConfig {
+  catalog?: {
+    /**
+     * List of provider-specific options and attributes
+     */
+    providers?: {
+      /**
+       * GCPCatalogModuleConfig configuration
+       */
+      gcp?: {
+        /**
+         * Config for GKE clusters
+         */
+        gke?: {
+          /**
+           * Locations to list clusters from
+           */
+          parents: string[];
+          /**
+           * (Optional) TaskScheduleDefinition for the refresh.
+           */
+          schedule: TaskScheduleDefinitionConfig;
+        };
+      };
+    };
+  };
+}
