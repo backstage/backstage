@@ -59,9 +59,8 @@ export interface Config {
              */
             schedule?: TaskScheduleDefinitionConfig;
           }
-        | Record<
-            string,
-            {
+        | {
+            [name: string]: {
               /**
                * (Required) AWS S3 Bucket Name
                */
@@ -81,8 +80,8 @@ export interface Config {
                * (Optional) TaskScheduleDefinition for the refresh.
                */
               schedule?: TaskScheduleDefinitionConfig;
-            }
-          >;
+            };
+          };
     };
   };
 }
