@@ -95,7 +95,7 @@ describe('DefaultCatalogCollatorEntityTransformer', () => {
 
       expect(document).toMatchObject({
         title: userEntity.metadata.name,
-        text: `${userEntity.metadata.description} : ${userEntity.spec.profile.displayName} : ${userEntity.spec.profile.email}}`,
+        text: `${userEntity.metadata.description} : ${userEntity.spec.profile.displayName} : ${userEntity.spec.profile.email}`,
         namespace: 'default',
         componentType: 'other',
         lifecycle: '',
