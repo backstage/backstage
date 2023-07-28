@@ -23,10 +23,23 @@ export type {
   SupportedGeneratorKey,
 } from './types';
 import { MkdocsFileService } from './helpers';
+
+/**
+ * @public
+ */
+export const getMkdocsYml = (
+  inputDir: string,
+  siteOptions?: { name?: string },
+  configuredMkdocsFileAbsolutePath?: string,
+): Promise<{ path: string; content: string; configIsTemporary: boolean }> =>
+  MkdocsFileService.getMkdocsYml(
+    inputDir,
+    siteOptions,
+    configuredMkdocsFileAbsolutePath,
+  );
 /**
  * @public
  * @deprecated
  * Deprecated in favor of getMkdocsYml (lowercase 'd')
  */
-export const getMkDocsYml = MkdocsFileService.getMkdocsYml;
-export const getMkdocsYml = MkdocsFileService.getMkdocsYml;
+export const getMkDocsYml = getMkdocsYml;

@@ -88,23 +88,23 @@ export const getLocationForEntity: (
 // @public @deprecated (undocumented)
 export const getMkDocsYml: (
   inputDir: string,
-  siteOptions?:
-    | {
-        name?: string | undefined;
-      }
-    | undefined,
+  siteOptions?: {
+    name?: string;
+  },
+  configuredMkdocsFileAbsolutePath?: string,
 ) => Promise<{
   path: string;
   content: string;
   configIsTemporary: boolean;
 }>;
 
-// @public
+// @public (undocumented)
 export const getMkdocsYml: (
   inputDir: string,
   siteOptions?: {
     name?: string;
   },
+  configuredMkdocsFileAbsolutePath?: string,
 ) => Promise<{
   path: string;
   content: string;
