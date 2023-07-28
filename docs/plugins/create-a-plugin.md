@@ -27,6 +27,8 @@ will be built and added to the Backstage App automatically.
 > should be able to see the default page for your new plugin directly by
 > navigating to `http://localhost:3000/my-plugin`.
 
+NB: The URL above works only if you used `my-plugin` as ID. Change it to reflect the ID of the plugin you created.  
+
 ![](../assets/my-plugin_screenshot.png)
 
 You can also serve the plugin in isolation by running `yarn start` in the plugin
