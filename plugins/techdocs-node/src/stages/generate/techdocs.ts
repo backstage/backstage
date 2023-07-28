@@ -16,7 +16,7 @@
 
 import { ContainerRunner } from '@backstage/backend-common';
 import { Config } from '@backstage/config';
-import path, { resolve } from 'path';
+import path from 'path';
 import { Logger } from 'winston';
 import {
   ScmIntegrationRegistry,

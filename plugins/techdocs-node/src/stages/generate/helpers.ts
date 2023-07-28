@@ -184,7 +184,7 @@ export class MkdocsFileService {
     }
   }
 
-  private static async readMkdocsFileIfExists(
+  static async readMkdocsFileIfExists(
     mkdocsFilePath?: string,
   ): Promise<
     { path: string; content: string; configIsTemporary: boolean } | undefined
