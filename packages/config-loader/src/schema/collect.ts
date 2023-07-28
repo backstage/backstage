@@ -194,6 +194,12 @@ async function compileTsSchemas(paths: string[]) {
         [path.split(sep).join('/')], // Unix paths are expected for all OSes here
       );
 
+      // All schemas should export a `Config` symbol
+      value = generator?.getSchemaForSymbol('Config') as JsonObject | null;
+
+      // This makes sure that no additional symbols are defined in the schema. We don't allow
+      // this because they share a global namespace and will be merged together, leading to
+      // unpredictable behavior.
       const userSymbols = new Set(generator?.getUserSymbols());
       userSymbols.delete('Config');
       if (userSymbols.size !== 0) {
@@ -203,9 +209,8 @@ async function compileTsSchemas(paths: string[]) {
         );
       }
 
-      // All schemas should export a `Config` symbol
-      value = generator?.getSchemaForSymbol('Config') as JsonObject | null;
-
+      // This makes sure that no unsupported types are used in the schema, for example `Record<,>`.
+      // The generator will extract these as a schema reference, which will in turn be broken for our usage.
       const reffedDefs = Object.keys(generator?.ReffedDefinitions ?? {});
       if (reffedDefs.length !== 0) {
         const lines = reffedDefs.join(`${EOL}  `);
