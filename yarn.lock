@@ -15307,20 +15307,6 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@stoplight/json@npm:~3.20.1":
-  version: 3.20.3
-  resolution: "@stoplight/json@npm:3.20.3"
-  dependencies:
-    "@stoplight/ordered-object-literal": ^1.0.3
-    "@stoplight/path": ^1.3.2
-    "@stoplight/types": ^13.6.0
-    jsonc-parser: ~2.2.1
-    lodash: ^4.17.21
-    safe-stable-stringify: ^1.1
-  checksum: 52a4251deca0be91c98172287def5cb004ff2ab801c3b7bb24f02abe14ad0890ee453588f235401fa048c5fefe1a750d7f68857f681d57afb62dd5310f50d71a
-  languageName: node
-  linkType: hard
-
 "@stoplight/ordered-object-literal@npm:^1.0.1, @stoplight/ordered-object-literal@npm:^1.0.3":
   version: 1.0.4
   resolution: "@stoplight/ordered-object-literal@npm:1.0.4"
@@ -23606,9 +23592,9 @@ __metadata:
   linkType: hard
 
 "dompurify@npm:^2.2.7, dompurify@npm:^2.2.9, dompurify@npm:^2.3.6":
-  version: 2.4.5
-  resolution: "dompurify@npm:2.4.5"
-  checksum: d6d3c3b320f15cdb5b26aa1902c3275a3ab2c3705a9df4420bb94691d7c4df67959ec7b91e486c308320791b0ee000456f042734c45d76721e61c2768eac706e
+  version: 2.4.7
+  resolution: "dompurify@npm:2.4.7"
+  checksum: 13c047e772a1998348191554dda403950d45ef2ec75fa0b9915cc179ccea0a39ef780d283109bd72cf83a2a085af6c77664281d4d0106a737bc5f39906364efe
   languageName: node
   linkType: hard
 
