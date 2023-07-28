@@ -42,7 +42,7 @@ Click `Create Project` and complete any required steps (like linking your AWS ac
     {
       "id": "production",
       "name": "Production",
-      "region": "us-east-2",
+      "region": "us-west-2",
       "source": {
         "branch": "main"
       },
@@ -51,13 +51,13 @@ Click `Create Project` and complete any required steps (like linking your AWS ac
           "id": "my-webapp",
           "name": "My BackstageApp",
           "type": "fargate",
-          "healthCheckPath": "/catalog",
           "buildType": "docker",
           "dockerfilePath": "Dockerfile",
           "dockerContext": ".",
+          "healthCheckPath": "/catalog",
           "cpu": 0.25,
           "memory": 0.5,
-          "port": 3000,
+          "port": 7007,
           "minInstances": 1,
           "maxInstances": 1,
           "envVariables": {
