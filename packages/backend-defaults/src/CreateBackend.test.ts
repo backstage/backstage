@@ -16,15 +16,9 @@
 
 import {
   coreServices,
-  createBackendPlugin,
   createServiceFactory,
-  createServiceRef,
 } from '@backstage/backend-plugin-api';
 import { createBackend } from './CreateBackend';
-import { mockServices } from '@backstage/backend-test-utils';
-
-const fooServiceRef = createServiceRef<string>({ id: 'foo', scope: 'root' });
-const barServiceRef = createServiceRef<string>({ id: 'bar', scope: 'root' });
 
 describe('createBackend', () => {
   it('should not throw when overriding a default service implementation', () => {
