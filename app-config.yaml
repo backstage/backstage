@@ -137,6 +137,7 @@ techdocs:
     runIn: 'docker'
     # dockerImage: my-org/techdocs # use a custom docker image
     # pullImage: true # or false to disable automatic pulling of image (e.g. if custom docker login is required)
+    defaultMkdocsFile: './default-mkdocs.yaml'
   publisher:
     type: 'local' # Alternatives - 'googleGcs' or 'awsS3' or 'azureBlobStorage' or 'openStackSwift'. Read documentation for using alternatives.
 

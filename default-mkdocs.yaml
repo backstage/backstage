@@ -1,0 +1,4 @@
+site_name: Documentation Site
+docs_dir: documentation
+plugins:
+  - techdocs-core

@@ -136,6 +136,9 @@ dist-workspace
 
 # MkDocs build output
 site
+# The process will copy the default file to the repository folder 
+# when the app runs. Added to avoid it getting picked up by git
+plugins/techdocs-backend/examples/documented-default-mkdocs/mkdocs.yml
 
 # Local configuration files
 *.local.yaml
