@@ -184,7 +184,7 @@ export class MkdocsFileService {
     }
   }
 
-  static async readMkdocsFileIfExists(
+  private static async readMkdocsFileIfExists(
     mkdocsFilePath?: string,
   ): Promise<
     { path: string; content: string; configIsTemporary: boolean } | undefined
@@ -200,7 +200,7 @@ export class MkdocsFileService {
     return undefined;
   }
 
-  static async copyMkdocsFromConfiguration(
+  private static async copyMkdocsFromConfiguration(
     mkdocsYmlPath: string,
     configuredMkdocsFileAbsolutePath?: string,
   ): Promise<
