@@ -3,4 +3,4 @@
 '@backstage/backend-defaults': minor
 ---
 
-Removing shared environments concept from the new experimental backend system.
+**BREAKING**: Removing shared environments concept from the new experimental backend system.
