@@ -113,7 +113,7 @@ export class GitLabClient {
           },
           body: JSON.stringify({
             variables: { group: groupPath, endCursor },
-            query: `query($group: ID!, $endCursor: String) {
+            query: `query listSaasUsers($group: ID!, $endCursor: String) {
               group(fullPath: $group) {
                 groupMembers(first: 100, relations: [DESCENDANTS], after: $endCursor) {
                   nodes {
@@ -186,7 +186,7 @@ export class GitLabClient {
           },
           body: JSON.stringify({
             variables: { group: groupPath, endCursor },
-            query: `query($group: ID!, $endCursor: String) {
+            query: `query listSaasGroups($group: ID!, $endCursor: String) {
             group(fullPath: $group) {
                 descendantGroups(first: 100, after: $endCursor){
                     nodes{
@@ -257,7 +257,7 @@ export class GitLabClient {
           },
           body: JSON.stringify({
             variables: { group: groupPath, endCursor },
-            query: `query($group: ID!, $endCursor: String) {
+            query: `query getGroupMembers($group: ID!, $endCursor: String) {
               group(fullPath: $group) {
                 groupMembers(first: 100, relations: [DIRECT], after: $endCursor) {
                   nodes {

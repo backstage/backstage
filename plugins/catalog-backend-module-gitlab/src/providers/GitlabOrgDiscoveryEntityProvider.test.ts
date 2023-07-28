@@ -475,317 +475,197 @@ describe('GitlabOrgDiscoveryEntityProvider', () => {
     });
   });
 
-  // it('apply full update on scheduled execution for gitlab.com', async () => {
-  //   const config = new ConfigReader({
-  //     integrations: {
-  //       gitlab: [
-  //         {
-  //           host: 'gitlab.com',
-  //           apiBaseUrl: 'https://gitlab.com/api/v4',
-  //           token: '1234',
-  //         },
-  //       ],
-  //     },
-  //     catalog: {
-  //       providers: {
-  //         gitlab: {
-  //           'test-id': {
-  //             host: 'gitlab.com',
-  //             group: 'test-group',
-  //             orgEnabled: true,
-  //           },
-  //         },
-  //       },
-  //     },
-  //   });
-  //   const schedule = new PersistingTaskRunner();
-  //   const entityProviderConnection: EntityProviderConnection = {
-  //     applyMutation: jest.fn(),
-  //     refresh: jest.fn(),
-  //   };
-  //   const provider = GitlabOrgDiscoveryEntityProvider.fromConfig(config, {
-  //     logger,
-  //     schedule,
-  //   })[0];
-  //   expect(provider.getProviderName()).toEqual(
-  //     'GitlabOrgDiscoveryEntityProvider:test-id',
-  //   );
+  it('apply full update on scheduled execution for gitlab.com', async () => {
+    const config = new ConfigReader({
+      integrations: {
+        gitlab: [
+          {
+            host: 'gitlab.com',
+            apiBaseUrl: 'https://gitlab.com/api/v4',
+            token: '1234',
+          },
+        ],
+      },
+      catalog: {
+        providers: {
+          gitlab: {
+            'test-id': {
+              host: 'gitlab.com',
+              group: 'group1',
+              orgEnabled: true,
+            },
+          },
+        },
+      },
+    });
+    const schedule = new PersistingTaskRunner();
+    const entityProviderConnection: EntityProviderConnection = {
+      applyMutation: jest.fn(),
+      refresh: jest.fn(),
+    };
+    const provider = GitlabOrgDiscoveryEntityProvider.fromConfig(config, {
+      logger,
+      schedule,
+    })[0];
+    expect(provider.getProviderName()).toEqual(
+      'GitlabOrgDiscoveryEntityProvider:test-id',
+    );
 
-  //   server.use(
-  //     graphql
-  //     .link('https://gitlab.com/api/graphql')
-  //     .operation(
-  //       (_req, res, ctx) => {
-  //         const response =
-  //           {
-  //             id: 123,
-  //             default_branch: 'master',
-  //             archived: false,
-  //             last_activity_at: new Date().toString(),
-  //             web_url: 'https://gitlab.com/test-group/test-repo',
-  //             path_with_namespace: 'test-group/test-repo',
-  //           };
-  //         return res(ctx.data(response));
-  //       },
-  //     ),
-  //     graphql
-  //     .link('https://gitlab.com/api/graphql')
-  //     .operation((_req, res, ctx) => {
-  //       const response = [
-  //         {
-  //           id: 1,
-  //           username: 'test1',
-  //           name: 'Test Testit',
-  //           state: 'active',
-  //           avatar_url: 'https://secure.gravatar.com/',
-  //           web_url: 'https://gitlab.com/test1',
-  //           created_at: '2023-01-19T07:27:03.333Z',
-  //           bio: '',
-  //           location: null,
-  //           public_email: null,
-  //           skype: '',
-  //           linkedin: '',
-  //           twitter: '',
-  //           website_url: '',
-  //           organization: null,
-  //           job_title: '',
-  //           pronouns: null,
-  //           bot: false,
-  //           work_information: null,
-  //           followers: 0,
-  //           following: 0,
-  //           is_followed: false,
-  //           local_time: null,
-  //           last_sign_in_at: '2023-01-19T07:27:49.601Z',
-  //           confirmed_at: '2023-01-19T07:27:02.905Z',
-  //           last_activity_on: '2023-01-19',
-  //           email: 'test@example.com',
-  //           theme_id: 1,
-  //           color_scheme_id: 1,
-  //           projects_limit: 100000,
-  //           current_sign_in_at: '2023-01-19T09:09:10.676Z',
-  //           identities: [],
-  //           can_create_group: true,
-  //           can_create_project: true,
-  //           two_factor_enabled: false,
-  //           external: false,
-  //           private_profile: false,
-  //           commit_email: 'test@example.com',
-  //           is_admin: false,
-  //           note: '',
-  //         },
-  //         {
-  //           id: 2,
-  //           username: 'test2',
-  //           name: '',
-  //           state: 'active',
-  //           avatar_url: '',
-  //           web_url: 'https://gitlab.com/test2',
-  //           created_at: '2023-01-19T07:27:03.333Z',
-  //           bio: '',
-  //           location: null,
-  //           public_email: null,
-  //           skype: '',
-  //           linkedin: '',
-  //           twitter: '',
-  //           website_url: '',
-  //           organization: null,
-  //           job_title: '',
-  //           pronouns: null,
-  //           bot: false,
-  //           work_information: null,
-  //           followers: 0,
-  //           following: 0,
-  //           is_followed: false,
-  //           local_time: null,
-  //           last_sign_in_at: '2023-01-19T07:27:49.601Z',
-  //           confirmed_at: '2023-01-19T07:27:02.905Z',
-  //           last_activity_on: '2023-01-19',
-  //           email: 'test@example.com',
-  //           theme_id: 1,
-  //           color_scheme_id: 1,
-  //           projects_limit: 100000,
-  //           current_sign_in_at: '2023-01-19T09:09:10.676Z',
-  //           identities: [],
-  //           can_create_group: true,
-  //           can_create_project: true,
-  //           two_factor_enabled: false,
-  //           external: false,
-  //           private_profile: false,
-  //           commit_email: 'test@example.com',
-  //           is_admin: false,
-  //           note: '',
-  //         },
-  //       ];
-  //       return res(ctx.data(response));
-  //     }),
-  //     graphql
-  //     .link('https://gitlab.com/api/graphql')
-  //     .operation((_req, res, ctx) => {
-  //       const response = [
-  //         {
-  //           id: 1,
-  //           web_url: 'https://gitlab.com/groups/group1',
-  //           name: 'group1',
-  //           path: 'group1',
-  //           description: '',
-  //           visibility: 'internal',
-  //           share_with_group_lock: false,
-  //           require_two_factor_authentication: false,
-  //           two_factor_grace_period: 48,
-  //           project_creation_level: 'developer',
-  //           auto_devops_enabled: null,
-  //           subgroup_creation_level: 'owner',
-  //           emails_disabled: null,
-  //           mentions_disabled: null,
-  //           lfs_enabled: true,
-  //           default_branch_protection: 2,
-  //           avatar_url: null,
-  //           request_access_enabled: false,
-  //           full_name: '8020',
-  //           full_path: '8020',
-  //           created_at: '2017-06-19T06:42:34.160Z',
-  //           parent_id: null,
-  //         },
-  //         {
-  //           id: 2,
-  //           web_url: 'https://gitlab.com/groups/group1/group2',
-  //           name: 'group2',
-  //           path: 'group1/group2',
-  //           description: 'Group2',
-  //           visibility: 'internal',
-  //           share_with_group_lock: false,
-  //           require_two_factor_authentication: false,
-  //           two_factor_grace_period: 48,
-  //           project_creation_level: 'developer',
-  //           auto_devops_enabled: null,
-  //           subgroup_creation_level: 'owner',
-  //           emails_disabled: null,
-  //           mentions_disabled: null,
-  //           lfs_enabled: true,
-  //           request_access_enabled: false,
-  //           full_name: 'group2',
-  //           full_path: 'group1/group2',
-  //           created_at: '2017-12-07T13:20:40.675Z',
-  //           parent_id: null,
-  //         },
-  //       ];
-  //       return res(ctx.data(response));
-  //     }),
-  //     graphql
-  //       .link('https://gitlab.com/api/graphql')
-  //       .operation(async (req, res, ctx) =>
-  //         res(
-  //           ctx.data({
-  //             group: {
-  //               groupMembers: {
-  //                 nodes:
-  //                   req.variables.group === 'group1/group2'
-  //                     ? [{ user: { id: 'gid://gitlab/User/1' } }]
-  //                     : [],
-  //                 pageInfo: {
-  //                   endCursor: 'end',
-  //                   hasNextPage: false,
-  //                 },
-  //               },
-  //             },
-  //           }),
-  //         ),
-  //       ),
-  //   );
+    server.use(
+      graphql
+        .link('https://gitlab.com/api/graphql')
+        .query('listSaasGroups', async (_, res, ctx) =>
+          res(
+            ctx.data({
+              group: {
+                descendantGroups: {
+                  nodes: [
+                    {
+                      id: 'gid://gitlab/Group/456',
+                      name: 'group2',
+                      description: 'Group2',
+                      fullPath: 'group1/group2',
+                      parent: {
+                        id: 'gid://gitlab/Group/123',
+                      },
+                    },
+                    {
+                      id: 'gid://gitlab/Group/789',
+                      name: 'group3',
+                      description: 'Group3',
+                      fullPath: 'group1/group3',
+                      parent: {
+                        id: 'gid://gitlab/Group/123',
+                      },
+                    },
+                  ],
+                  pageInfo: {
+                    endCursor: 'end',
+                    hasNextPage: false,
+                  },
+                },
+              },
+            }),
+          ),
+        ),
+      graphql
+        .link('https://gitlab.com/api/graphql')
+        .query('listSaasUsers', async (_, res, ctx) =>
+          res(
+            ctx.data({
+              group: {
+                groupMembers: {
+                  nodes: [
+                    {
+                      user: {
+                        id: 'gid://gitlab/User/1234',
+                        username: 'testuser',
+                        commitEmail: 'testuser@example.com',
+                        state: 'active',
+                        name: 'Test User',
+                        webUrl: 'https://gitlab.com/testuser',
+                        avatarUrl: 'https://secure.gravatar.com/',
+                      },
+                    },
+                  ],
+                  pageInfo: {
+                    endCursor: 'end',
+                    hasNextPage: false,
+                  },
+                },
+              },
+            }),
+          ),
+        ),
+      graphql
+        .link('https://gitlab.com/api/graphql')
+        .query('getGroupMembers', async (req, res, ctx) =>
+          res(
+            ctx.data({
+              group: {
+                groupMembers: {
+                  nodes:
+                    req.variables.group === 'group1/group2'
+                      ? [{ user: { id: 'gid://gitlab/User/1234' } }]
+                      : [],
+                  pageInfo: {
+                    endCursor: 'end',
+                    hasNextPage: false,
+                  },
+                },
+              },
+            }),
+          ),
+        ),
+    );
 
-  //   await provider.connect(entityProviderConnection);
+    await provider.connect(entityProviderConnection);
 
-  //   const taskDef = schedule.getTasks()[0];
-  //   expect(taskDef.id).toEqual(
-  //     'GitlabOrgDiscoveryEntityProvider:test-id:refresh',
-  //   );
-  //   await (taskDef.fn as () => Promise<void>)();
+    const taskDef = schedule.getTasks()[0];
+    expect(taskDef.id).toEqual(
+      'GitlabOrgDiscoveryEntityProvider:test-id:refresh',
+    );
+    await (taskDef.fn as () => Promise<void>)();
 
-  //   const expectedEntities = [
-  //     {
-  //       entity: {
-  //         apiVersion: 'backstage.io/v1alpha1',
-  //         kind: 'User',
-  //         metadata: {
-  //           annotations: {
-  //             'backstage.io/managed-by-location':
-  //               'url:https://gitlab.com/test1',
-  //             'backstage.io/managed-by-origin-location':
-  //               'url:https://gitlab.com/test1',
-  //             'gitlab.com/user-login': 'https://gitlab.com/test1',
-  //           },
-  //           name: 'test1',
-  //         },
-  //         spec: {
-  //           memberOf: ['group1-group2'],
-  //           profile: {
-  //             displayName: 'Test Testit',
-  //             email: 'test@example.com',
-  //             picture: 'https://secure.gravatar.com/',
-  //           },
-  //         },
-  //       },
-  //       locationKey: 'GitlabOrgDiscoveryEntityProvider:test-id',
-  //     },
-  //     {
-  //       entity: {
-  //         apiVersion: 'backstage.io/v1alpha1',
-  //         kind: 'User',
-  //         metadata: {
-  //           annotations: {
-  //             'backstage.io/managed-by-location':
-  //               'url:https://gitlab.com/test2',
-  //             'backstage.io/managed-by-origin-location':
-  //               'url:https://gitlab.com/test2',
-  //             'gitlab.com/user-login': 'https://gitlab.com/test2',
-  //           },
-  //           name: 'test2',
-  //         },
-  //         spec: {
-  //           memberOf: [],
-  //           profile: {
-  //             displayName: undefined,
-  //             email: 'test@example.com',
-  //             picture: undefined,
-  //           },
-  //         },
-  //       },
-  //       locationKey: 'GitlabOrgDiscoveryEntityProvider:test-id',
-  //     },
-  //     {
-  //       entity: {
-  //         apiVersion: 'backstage.io/v1alpha1',
-  //         kind: 'Group',
-  //         metadata: {
-  //           annotations: {
-  //             'backstage.io/managed-by-location':
-  //               'url:https://gitlab.com/group1/group2',
-  //             'backstage.io/managed-by-origin-location':
-  //               'url:https://gitlab.com/group1/group2',
-  //             'gitlab.com/team-path': 'group1/group2',
-  //           },
-  //           description: 'Group2',
-  //           name: 'group1-group2',
-  //         },
-  //         spec: {
-  //           children: [],
-  //           profile: {
-  //             displayName: 'group2',
-  //           },
-  //           type: 'team',
-  //         },
-  //       },
-  //       locationKey: 'GitlabOrgDiscoveryEntityProvider:test-id',
-  //     },
-  //   ];
+    const expectedEntities = [
+      {
+        entity: {
+          apiVersion: 'backstage.io/v1alpha1',
+          kind: 'User',
+          metadata: {
+            annotations: {
+              'backstage.io/managed-by-location':
+                'url:https://gitlab.com/testuser',
+              'backstage.io/managed-by-origin-location':
+                'url:https://gitlab.com/testuser',
+              'gitlab.com/user-login': 'https://gitlab.com/testuser',
+            },
+            name: 'testuser',
+          },
+          spec: {
+            memberOf: ['group2'],
+            profile: {
+              displayName: 'Test User',
+              email: 'testuser@example.com',
+              picture: 'https://secure.gravatar.com/',
+            },
+          },
+        },
+        locationKey: 'GitlabOrgDiscoveryEntityProvider:test-id',
+      },
+      {
+        entity: {
+          apiVersion: 'backstage.io/v1alpha1',
+          kind: 'Group',
+          metadata: {
+            annotations: {
+              'backstage.io/managed-by-location':
+                'url:https://gitlab.com/group1/group2',
+              'backstage.io/managed-by-origin-location':
+                'url:https://gitlab.com/group1/group2',
+              'gitlab.com/team-path': 'group1/group2',
+            },
+            description: 'Group2',
+            name: 'group2',
+          },
+          spec: {
+            children: [],
+            profile: {
+              displayName: 'group2',
+            },
+            type: 'team',
+          },
+        },
+        locationKey: 'GitlabOrgDiscoveryEntityProvider:test-id',
+      },
+    ];
 
-  //   expect(entityProviderConnection.applyMutation).toHaveBeenCalledTimes(1);
-  //   expect(entityProviderConnection.applyMutation).toHaveBeenCalledWith({
-  //     type: 'full',
-  //     entities: expectedEntities,
-  //   });
-  // });
+    expect(entityProviderConnection.applyMutation).toHaveBeenCalledTimes(1);
+    expect(entityProviderConnection.applyMutation).toHaveBeenCalledWith({
+      type: 'full',
+      entities: expectedEntities,
+    });
+  });
 
   it('fail without schedule and scheduler', () => {
     const config = new ConfigReader({
