@@ -69,7 +69,7 @@ export const ShortcutForm = ({
 
   const titleIsUnique = async (title: string) => {
     if (shortcutData.some(shortcutTitle => shortcutTitle.title === title))
-      return 'This title name is already exist';
+      return 'A shortcut with this title already exists';
     return true;
   };
 
