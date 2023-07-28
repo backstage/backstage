@@ -27,7 +27,6 @@ import {
 } from '@backstage/test-utils';
 import { AlertDisplay } from '@backstage/core-components';
 import { analyticsApiRef } from '@backstage/core-plugin-api';
-import { shortcutsApiRef, shortcutApi } from './api';
 
 describe('EditShortcut', () => {
   const shortcut: Shortcut = {
@@ -87,12 +86,7 @@ describe('EditShortcut', () => {
     const spy = jest.spyOn(api, 'update');
 
     await renderInTestApp(
-      <TestApiProvider
-        apis={[
-          [analyticsApiRef, analyticsSpy],
-          [shortcutsApiRef, shortcutApi],
-        ]}
-      >
+      <TestApiProvider apis={[[analyticsApiRef, analyticsSpy]]}>
         <EditShortcut {...props} />
       </TestApiProvider>,
     );
