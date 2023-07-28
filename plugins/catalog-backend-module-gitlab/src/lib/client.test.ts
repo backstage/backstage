@@ -403,7 +403,7 @@ describe('GitLabClient', () => {
       server.use(
         graphql
           .link(`${MOCK_CONFIG.baseUrl}/api/graphql`)
-          .operation((_, res, ctx) =>
+          .query('listSaasUsers', async (_, res, ctx) =>
             res(
               ctx.data({
                 group: {
@@ -437,15 +437,27 @@ describe('GitLabClient', () => {
       });
 
       const saasMembers = (await client.listSaasUsers('group1')).items;
+      const expectedSaasMember = [
+        {
+          id: 1,
+          username: 'user1',
+          email: 'user1@example.com',
+          name: 'user1',
+          state: 'active',
+          web_url: 'user1.com',
+          avatar_url: 'user1',
+        },
+      ];
 
       expect(saasMembers.length).toEqual(1);
+      expect(saasMembers).toEqual(expectedSaasMember);
     });
 
     it('gets all users with token without full permissions', async () => {
       server.use(
         graphql
           .link(`${MOCK_CONFIG.baseUrl}/api/graphql`)
-          .operation((_, res, ctx) =>
+          .query('listSaasUsers', async (_, res, ctx) =>
             res(
               ctx.data({
                 group: {},
@@ -467,7 +479,7 @@ describe('GitLabClient', () => {
       server.use(
         graphql
           .link(`${MOCK_CONFIG.baseUrl}/api/graphql`)
-          .operation((_, res, ctx) =>
+          .query('listSaasUsers', async (_, res, ctx) =>
             res(
               ctx.errors([
                 { message: 'Unexpected end of document', locations: [] },
@@ -488,7 +500,7 @@ describe('GitLabClient', () => {
       server.use(
         graphql
           .link(`${MOCK_CONFIG.baseUrl}/api/graphql`)
-          .operation((req, res, ctx) =>
+          .query('listSaasUsers', async (req, res, ctx) =>
             res(
               ctx.data({
                 group: {
@@ -537,7 +549,29 @@ describe('GitLabClient', () => {
 
       const saasMembers = (await client.listSaasUsers('group1')).items;
 
+      const expectedSaasMember1 = {
+        id: 1,
+        username: 'user1',
+        email: 'user1@example.com',
+        name: 'user1',
+        state: 'active',
+        web_url: 'user1.com',
+        avatar_url: 'user1',
+      };
+
+      const expectedSaasMember2 = {
+        id: 2,
+        username: 'user2',
+        email: 'user2@example.com',
+        name: 'user2',
+        state: 'active',
+        web_url: 'user2.com',
+        avatar_url: 'user2',
+      };
+
       expect(saasMembers.length).toEqual(2);
+      expect(saasMembers[0]).toEqual(expectedSaasMember2);
+      expect(saasMembers[1]).toEqual(expectedSaasMember1);
     });
   });
 
@@ -546,7 +580,7 @@ describe('GitLabClient', () => {
       server.use(
         graphql
           .link(`${MOCK_CONFIG.baseUrl}/api/graphql`)
-          .operation((_, res, ctx) =>
+          .query('listSaasGroups', async (_, res, ctx) =>
             res(
               ctx.data({
                 group: {
@@ -579,14 +613,25 @@ describe('GitLabClient', () => {
 
       const saasGroups = (await client.listSaasGroups('group1')).items;
 
+      const expectedSaasGroup = [
+        {
+          id: 1,
+          name: 'group1',
+          description: 'description1',
+          full_path: 'path/group1',
+          parent_id: 123,
+        },
+      ];
+
       expect(saasGroups.length).toEqual(1);
+      expect(saasGroups).toEqual(expectedSaasGroup);
     });
 
     it('gets all descendant groups with token without full permissions', async () => {
       server.use(
         graphql
           .link(`${MOCK_CONFIG.baseUrl}/api/graphql`)
-          .operation((_, res, ctx) =>
+          .query('listSaasGroups', async (_, res, ctx) =>
             res(
               ctx.data({
                 group: {},
@@ -608,7 +653,7 @@ describe('GitLabClient', () => {
       server.use(
         graphql
           .link(`${MOCK_CONFIG.baseUrl}/api/graphql`)
-          .operation((_, res, ctx) =>
+          .query('listSaasGroups', async (_, res, ctx) =>
             res(
               ctx.errors([
                 { message: 'Unexpected end of document', locations: [] },
@@ -629,7 +674,7 @@ describe('GitLabClient', () => {
       server.use(
         graphql
           .link(`${MOCK_CONFIG.baseUrl}/api/graphql`)
-          .operation((req, res, ctx) =>
+          .query('listSaasGroups', async (req, res, ctx) =>
             res(
               ctx.data({
                 group: {
@@ -640,7 +685,7 @@ describe('GitLabClient', () => {
                             id: 'gid://gitlab/Group/1',
                             name: 'group1',
                             description: 'description1',
-                            fullPath: 'root/group1',
+                            fullPath: 'path/group1',
                             parent: {
                               id: '123',
                             },
@@ -651,7 +696,7 @@ describe('GitLabClient', () => {
                             id: 'gid://gitlab/Group/2',
                             name: 'group2',
                             description: 'description2',
-                            fullPath: 'root/group2',
+                            fullPath: 'path/group2',
                             parent: {
                               id: '123',
                             },
@@ -674,7 +719,25 @@ describe('GitLabClient', () => {
 
       const saasGroups = (await client.listSaasGroups('root')).items;
 
+      const expectedSaasGroup1 = {
+        id: 1,
+        name: 'group1',
+        description: 'description1',
+        full_path: 'path/group1',
+        parent_id: 123,
+      };
+
+      const expectedSaasGroup2 = {
+        id: 2,
+        name: 'group2',
+        description: 'description2',
+        full_path: 'path/group2',
+        parent_id: 123,
+      };
+
       expect(saasGroups.length).toEqual(2);
+      expect(saasGroups[0]).toEqual(expectedSaasGroup2);
+      expect(saasGroups[1]).toEqual(expectedSaasGroup1);
     });
   });
 
@@ -683,7 +746,7 @@ describe('GitLabClient', () => {
       server.use(
         graphql
           .link(`${MOCK_CONFIG.baseUrl}/api/graphql`)
-          .operation((_, res, ctx) =>
+          .query('getGroupMembers', async (_, res, ctx) =>
             res(
               ctx.data({
                 group: {
@@ -713,7 +776,7 @@ describe('GitLabClient', () => {
       server.use(
         graphql
           .link(`${MOCK_CONFIG.baseUrl}/api/graphql`)
-          .operation((_, res, ctx) =>
+          .query('getGroupMembers', async (_, res, ctx) =>
             res(
               ctx.data({
                 group: {},
@@ -735,7 +798,7 @@ describe('GitLabClient', () => {
       server.use(
         graphql
           .link(`${MOCK_CONFIG.baseUrl}/api/graphql`)
-          .operation((_, res, ctx) =>
+          .query('getGroupMembers', async (_, res, ctx) =>
             res(
               ctx.errors([
                 { message: 'Unexpected end of document', locations: [] },
@@ -757,7 +820,7 @@ describe('GitLabClient', () => {
       server.use(
         graphql
           .link(`${MOCK_CONFIG.baseUrl}/api/graphql`)
-          .operation((req, res, ctx) =>
+          .query('getGroupMembers', async (req, res, ctx) =>
             res(
               ctx.data({
                 group: {
