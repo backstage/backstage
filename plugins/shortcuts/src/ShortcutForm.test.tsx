@@ -41,7 +41,7 @@ describe('ShortcutForm', () => {
         screen.getByText('Must be at least 2 characters'),
       ).toBeInTheDocument();
       expect(
-        screen.getByText('This title name is already exist'),
+        screen.getByText('A shortcut with this title already exists'),
       ).toBeInTheDocument();
     });
   });
