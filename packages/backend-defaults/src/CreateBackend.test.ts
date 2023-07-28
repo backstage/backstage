@@ -19,10 +19,9 @@ import {
   createBackendPlugin,
   createServiceFactory,
   createServiceRef,
-  createSharedEnvironment,
 } from '@backstage/backend-plugin-api';
-import { mockServices } from '@backstage/backend-test-utils';
 import { createBackend } from './CreateBackend';
+import { mockServices } from '@backstage/backend-test-utils';
 
 const fooServiceRef = createServiceRef<string>({ id: 'foo', scope: 'root' });
 const barServiceRef = createServiceRef<string>({ id: 'bar', scope: 'root' });
@@ -86,65 +85,34 @@ describe('createBackend', () => {
     ).toThrow('The core.pluginMetadata service cannot be overridden');
   });
 
-  it('should throw if an unsupported InternalSharedEnvironment version is passed in', () => {
-    expect(() =>
-      createBackend({
-        env: {} as any,
-      }),
-    ).toThrow(
-      "Shared environment version 'undefined' is invalid or not supported",
-    );
-    expect(() =>
-      createBackend({
-        env: { version: {} } as any,
-      }),
-    ).toThrow(
-      "Shared environment version '[object Object]' is invalid or not supported",
-    );
-    expect(() =>
-      createBackend({
-        env: { version: 'v2' } as any,
-      }),
-    ).toThrow("Shared environment version 'v2' is invalid or not supported");
-  });
-
   it('should prioritize services correctly', async () => {
     const backend = createBackend({
-      env: createSharedEnvironment({
-        services: [
-          createServiceFactory({
-            service: coreServices.rootHttpRouter,
-            deps: {},
-            async factory() {
-              return {
-                use() {},
-              };
-            },
-          }),
-          mockServices.config.factory({
-            data: { root: 'root-env' },
-          }),
-          createServiceFactory({
-            service: fooServiceRef,
-            deps: {},
-            async factory() {
-              return 'foo-env';
-            },
-          }),
-          createServiceFactory({
-            service: barServiceRef,
-            deps: {},
-            async factory() {
-              return 'bar-env';
-            },
-          }),
-        ],
-      })(),
       services: [
+        createServiceFactory({
+          service: coreServices.rootHttpRouter,
+          deps: {},
+          async factory() {
+            return {
+              use() {},
+            };
+          },
+        }),
+        mockServices.config.factory({
+          data: { root: 'root-backend' },
+        }),
         createServiceFactory({
           service: fooServiceRef,
           deps: {},
-          factory: async () => 'foo-backend',
+          async factory() {
+            return 'foo-backend';
+          },
+        }),
+        createServiceFactory({
+          service: barServiceRef,
+          deps: {},
+          async factory() {
+            return 'bar-backend';
+          },
         }),
       ],
     });
@@ -161,9 +129,9 @@ describe('createBackend', () => {
               bar: barServiceRef,
             },
             async init({ config, foo, bar }) {
-              expect(config.get('root')).toBe('root-env');
+              expect(config.get('root')).toBe('root-backend');
               expect(foo).toBe('foo-backend');
-              expect(bar).toBe('bar-env');
+              expect(bar).toBe('bar-backend');
             },
           });
         },
