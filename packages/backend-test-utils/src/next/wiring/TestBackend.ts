@@ -108,7 +108,7 @@ export async function startTestBackend<
   const rootHttpRouterFactory = createServiceFactory({
     service: coreServices.rootHttpRouter,
     deps: {
-      config: coreServices.config,
+      config: coreServices.rootConfig,
       lifecycle: coreServices.rootLifecycle,
       rootLogger: coreServices.rootLogger,
     },

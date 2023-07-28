@@ -15,7 +15,7 @@
  */
 
 import {
-  ConfigService,
+  RootConfigService,
   coreServices,
   createServiceFactory,
   IdentityService,
@@ -61,13 +61,13 @@ function simpleFactory<
  * @public
  */
 export namespace mockServices {
-  export function config(options?: config.Options): ConfigService {
+  export function config(options?: config.Options): RootConfigService {
     return new ConfigReader(options?.data, 'mock-config');
   }
   export namespace config {
     export type Options = { data?: JsonObject };
 
-    export const factory = simpleFactory(coreServices.config, config);
+    export const factory = simpleFactory(coreServices.rootConfig, config);
   }
 
   export function rootLogger(options?: rootLogger.Options): LoggerService {

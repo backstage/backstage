@@ -31,7 +31,7 @@ export const bazaarPlugin = createBackendPlugin({
   register(env) {
     env.registerInit({
       deps: {
-        config: coreServices.config,
+        config: coreServices.rootConfig,
         database: coreServices.database,
         identity: coreServices.identity,
         logger: coreServices.logger,

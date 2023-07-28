@@ -168,7 +168,7 @@ describe('TestBackend', () => {
         env.registerInit({
           deps: {
             cache: coreServices.cache,
-            config: coreServices.config,
+            config: coreServices.rootConfig,
             database: coreServices.database,
             discovery: coreServices.discovery,
             httpRouter: coreServices.httpRouter,

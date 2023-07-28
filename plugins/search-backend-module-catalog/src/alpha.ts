@@ -53,7 +53,7 @@ export const searchModuleCatalogCollator = createBackendModule(
     register(env) {
       env.registerInit({
         deps: {
-          config: coreServices.config,
+          config: coreServices.rootConfig,
           discovery: coreServices.discovery,
           tokenManager: coreServices.tokenManager,
           scheduler: coreServices.scheduler,
