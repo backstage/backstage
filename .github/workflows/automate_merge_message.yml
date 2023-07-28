@@ -23,12 +23,6 @@ jobs:
     if: github.repository == 'backstage/backstage' && github.event.pull_request.merged == true
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v3
-        with:
-          ref: '${{ github.event.pull_request.merge_commit_sha }}'
-
-      - name: fetch head & base
-        run: git fetch --depth 1 origin ${{ github.event.pull_request.head.sha }} ${{ github.event.pull_request.base.sha }}
 
         # We avoid using the in-source script since this workflow has elevated permissions that we don't want to expose
       - name: Generate Message
