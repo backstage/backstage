@@ -50,15 +50,15 @@ export interface Config {
           /**
            * (Optional) RegExp for the Project Name Pattern
            */
-          projectPattern?: RegExp;
+          projectPattern?: string;
           /**
            * (Optional) RegExp for the User Name Pattern
            */
-          userPattern?: RegExp;
+          userPattern?: string;
           /**
            * (Optional) RegExp for the Group Name Pattern
            */
-          groupPattern?: RegExp;
+          groupPattern?: string;
           /**
            * (Optional) Skip forked repository
            */
