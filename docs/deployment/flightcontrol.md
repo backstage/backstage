@@ -57,6 +57,7 @@ Click `Create Project` and complete any required steps (like linking your AWS ac
           "healthCheckPath": "/catalog",
           "cpu": 0.25,
           "memory": 0.5,
+          "domain": "backstage.yourapp.com",
           "port": 7007,
           "minInstances": 1,
           "maxInstances": 1,
