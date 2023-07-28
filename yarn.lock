@@ -17529,11 +17529,11 @@ __metadata:
   linkType: hard
 
 "@types/node-forge@npm:^1.3.0":
-  version: 1.3.3
-  resolution: "@types/node-forge@npm:1.3.3"
+  version: 1.3.4
+  resolution: "@types/node-forge@npm:1.3.4"
   dependencies:
     "@types/node": "*"
-  checksum: 36e3b597517ad9007822b0a0c4d44a8bcbdc4e8d8c388839d17bfeb8ff005efc1f8d3e997a1921bc54edf530000675d555f3ccb9aac8ab273285a8677a9dcb0b
+  checksum: c3c53ee5039a10d724bfc64fe859106baf0e39c4cac90a5d0ddd3480bf044de6ce145f104d4fa0184c365dff59df7ab4b754172c9d87800f751d10ccd7dcd1ad
   languageName: node
   linkType: hard
 
