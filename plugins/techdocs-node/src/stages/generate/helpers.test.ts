@@ -564,23 +564,34 @@ describe('helpers', () => {
     it('returns expected contents when configured file is present', async () => {
       const key = path.join(inputDir, 'default-mkdocs.yml');
       const readMkdocsFileIfExists = MkdocsFileService.readMkdocsFileIfExists;
-      const mockPathExists = jest.spyOn(
+      const mockReadMkdocsFileIfExists = jest.spyOn(
         MkdocsFileService,
         'readMkdocsFileIfExists',
       );
-      mockPathExists.mockImplementation((maybePath?: string) => {
+      mockReadMkdocsFileIfExists.mockImplementation((maybePath?: string) => {
         if (maybePath === key) {
           return readMkdocsFileIfExists(maybePath);
         }
         return Promise.resolve(undefined);
       });
+      const mockCopy = jest.spyOn(fs, 'copy');
+      mockCopy.mockImplementation(() => Promise.resolve());
       mockFs({ [key]: defaultMkdocsYml });
       const {
         path: mkdocsPath,
         content,
         configIsTemporary,
       } = await MkdocsFileService.getMkdocsYml(inputDir, siteOptions, key);
-      expect(mkdocsPath).toBe(key);
+
+      const expectedMkdocsPath = path.join(inputDir, 'mkdocs.yml');
+
+      // verifying that the mkdocs file from configuration is written so the mkdocs command can pick it up
+      expect(mockCopy).toHaveBeenCalledTimes(1);
+      expect(mockCopy.mock.calls[0][0]).toBe(key);
+      expect(mockCopy.mock.calls[0][1]).toBe(expectedMkdocsPath);
+
+      // the name should be recognised by the mkdocs command
+      expect(mkdocsPath).toBe(expectedMkdocsPath);
       expect(content).toBe(defaultMkdocsYml.toString());
       expect(configIsTemporary).toBe(false);
     });
@@ -606,12 +617,12 @@ describe('helpers', () => {
       expect(configIsTemporary).toBe(true);
     });
 
-    it('throws when neither .yml nor .yaml nor default file is present', async () => {
+    it('throws when neither .yml nor .yaml nor configuration nor default file is present', async () => {
       const invalidInputDir = resolvePath(__filename);
       await expect(
         MkdocsFileService.getMkdocsYml(invalidInputDir, siteOptions),
       ).rejects.toThrow(
-        /Could not read MkDocs YAML config file mkdocs.yml or mkdocs.yaml or default for validation/,
+        /Could not read MkDocs YAML config file mkdocs.yml, mkdocs.yaml, configuration or default for validation/,
       );
     });
   });

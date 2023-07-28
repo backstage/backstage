@@ -224,15 +224,26 @@ export class MkdocsFileService {
       );
       if (mkdocsYml !== undefined) return mkdocsYml;
 
+      const mkdocsYmlPath = path.join(inputDir, 'mkdocs.yml');
+
       // No mkdocs file in repository, trying to get the default
-      const condifuredMkdocsYml =
-        await MkdocsFileService.readMkdocsFileIfExists(
+      if (
+        configuredMkdocsFileAbsolutePath &&
+        (await fs.pathExists(configuredMkdocsFileAbsolutePath))
+      ) {
+        fs.copy(configuredMkdocsFileAbsolutePath, mkdocsYmlPath);
+        const mkdocsYmlFileString = await fs.readFile(
           configuredMkdocsFileAbsolutePath,
+          'utf8',
         );
-      if (condifuredMkdocsYml !== undefined) return condifuredMkdocsYml;
+        return {
+          path: mkdocsYmlPath,
+          content: mkdocsYmlFileString,
+          configIsTemporary: false,
+        };
+      }
 
       // No mkdocs file, generate it
-      const mkdocsYmlPath = path.join(inputDir, 'mkdocs.yml');
       await MkdocsFileService.generateMkdocsYml(mkdocsYmlPath, siteOptions);
       const mkdocsYmlFileString = await fs.readFile(mkdocsYmlPath, 'utf8');
       return {
@@ -242,7 +253,7 @@ export class MkdocsFileService {
       };
     } catch (error) {
       throw new ForwardedError(
-        'Could not read MkDocs YAML config file mkdocs.yml or mkdocs.yaml or default for validation',
+        'Could not read MkDocs YAML config file mkdocs.yml, mkdocs.yaml, configuration or default for validation',
         error,
       );
     }
@@ -396,19 +407,3 @@ export class MkdocsFileService {
     await fs.writeJson(techdocsMetadataPath, json);
   }
 }
-
-// export interface MkdocsFileService {
-//   getMkdocsYml(
-//     inputDir: string,
-//     siteOptions?: { name?: string },
-//     configuredMkdocsFile?: string,
-//   ): Promise<{ path: string; content: string; configIsTemporary: boolean }>
-// }
-// export class MkdocsFileServiceImplementation implements MkdocsFileService {
-//   async getMkdocsYml(
-//     inputDir: string,
-//     siteOptions?: { name?: string },
-//     configuredMkdocsFile?: string): Promise<{ path: string; content: string; configIsTemporary: boolean; }> {
-//     return getMkdocsYml(inputDir, siteOptions, configuredMkdocsFile)
-//   }
-// }
