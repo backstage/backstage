@@ -15,7 +15,7 @@
  */
 
 import {
-  ConfigService,
+  RootConfigService,
   coreServices,
   createServiceFactory,
   LifecycleService,
@@ -36,7 +36,7 @@ export interface RootHttpRouterConfigureContext {
   app: Express;
   middleware: MiddlewareFactory;
   routes: RequestHandler;
-  config: ConfigService;
+  config: RootConfigService;
   logger: LoggerService;
   lifecycle: LifecycleService;
 }
@@ -70,7 +70,7 @@ export const rootHttpRouterServiceFactory = createServiceFactory(
   (options?: RootHttpRouterFactoryOptions) => ({
     service: coreServices.rootHttpRouter,
     deps: {
-      config: coreServices.config,
+      config: coreServices.rootConfig,
       rootLogger: coreServices.rootLogger,
       lifecycle: coreServices.rootLifecycle,
     },
