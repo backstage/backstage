@@ -23,8 +23,7 @@ jobs:
     if: github.repository == 'backstage/backstage' && github.event.pull_request.merged == true
     runs-on: ubuntu-latest
     steps:
-
-        # We avoid using the in-source script since this workflow has elevated permissions that we don't want to expose
+      # We avoid using the in-source script since this workflow has elevated permissions that we don't want to expose
       - name: Generate Message
         id: generate-message
         run: |
