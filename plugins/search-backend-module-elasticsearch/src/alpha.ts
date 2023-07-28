@@ -48,7 +48,7 @@ export const searchModuleElasticsearchEngine = createBackendModule(
         deps: {
           searchEngineRegistry: searchEngineRegistryExtensionPoint,
           logger: coreServices.logger,
-          config: coreServices.config,
+          config: coreServices.rootConfig,
         },
         async init({ searchEngineRegistry, logger, config }) {
           const searchEngine = await ElasticSearchSearchEngine.fromConfig({

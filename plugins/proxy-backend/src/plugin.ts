@@ -35,7 +35,7 @@ export const proxyPlugin = createBackendPlugin(
     register(env) {
       env.registerInit({
         deps: {
-          config: coreServices.config,
+          config: coreServices.rootConfig,
           discovery: coreServices.discovery,
           logger: coreServices.logger,
           httpRouter: coreServices.httpRouter,

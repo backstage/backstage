@@ -33,7 +33,7 @@ export const eventsModuleAwsSqsConsumingEventPublisher = createBackendModule({
   register(env) {
     env.registerInit({
       deps: {
-        config: coreServices.config,
+        config: coreServices.rootConfig,
         events: eventsExtensionPoint,
         logger: coreServices.logger,
         scheduler: coreServices.scheduler,
