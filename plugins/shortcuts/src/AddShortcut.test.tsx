@@ -26,6 +26,7 @@ import {
 import { AlertDisplay } from '@backstage/core-components';
 import { TestApiProvider } from '@backstage/test-utils';
 import { analyticsApiRef } from '@backstage/core-plugin-api';
+import { shortcutsApiRef } from './api';
 
 describe('AddShortcut', () => {
   const api = new DefaultShortcutsApi(MockStorageApi.create());
@@ -78,7 +79,9 @@ describe('AddShortcut', () => {
     const spy = jest.spyOn(api, 'add');
 
     await renderInTestApp(
-      <TestApiProvider apis={[[analyticsApiRef, analyticsSpy]]}>
+      <TestApiProvider
+        apis={[[analyticsApiRef, analyticsSpy, shortcutsApiRef]]}
+      >
         <AddShortcut {...props} />
       </TestApiProvider>,
     );
