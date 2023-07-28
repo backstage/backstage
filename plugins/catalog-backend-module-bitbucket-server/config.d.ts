@@ -52,9 +52,8 @@ export interface Config {
              */
             schedule?: TaskScheduleDefinitionConfig;
           }
-        | Record<
-            string,
-            {
+        | {
+            [name: string]: {
               /**
                * (Optional) Path to the catalog file. Default to "/catalog-info.yaml".
                * @visibility frontend
@@ -80,8 +79,8 @@ export interface Config {
                * (Optional) TaskScheduleDefinition for the refresh.
                */
               schedule?: TaskScheduleDefinitionConfig;
-            }
-          >;
+            };
+          };
     };
   };
 }

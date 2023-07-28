@@ -22,9 +22,8 @@ export interface Config {
       /**
        * GitlabDiscoveryEntityProvider configuration
        */
-      gitlab?: Record<
-        string,
-        {
+      gitlab?: {
+        [name: string]: {
           /**
            * (Required) Gitlab's host name.
            */
@@ -64,8 +63,8 @@ export interface Config {
            * (Optional) Skip forked repository
            */
           skipForkedRepos?: boolean;
-        }
-      >;
+        };
+      };
     };
   };
 }
