@@ -49,7 +49,7 @@ techdocs:
       # will be broken in these scenarios.
       legacyCopyReadmeMdToIndexMd: false
 
-    # (Optional) techdocs.generator.defaultMkdocsFile can be used to specify a default mkdocs file to be applyed when a repository does not already contains mkdocs configuration
+    # (Optional) techdocs.generator.defaultMkdocsFile can be used to specify a default mkdocs file to be applied when a repository does not already contains mkdocs configuration
     defaultMkdocsFile: './default-mkdocs.yml'
 
   # techdocs.builder can be either 'local' or 'external'.
