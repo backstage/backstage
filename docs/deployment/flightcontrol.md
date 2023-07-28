@@ -87,5 +87,5 @@ Click `Create Project` and complete any required steps (like linking your AWS ac
 
 ## Troubleshooting
 
-- [Flightcontrol Documentation](https://www.flightcontrol.dev/docs?ref=docs-hasura)
-- [Troubleshooting](https://www.flightcontrol.dev/docs/troubleshooting?ref=docs-hasura)
+- [Flightcontrol Documentation](https://www.flightcontrol.dev/docs?ref=backstage)
+- [Troubleshooting](https://www.flightcontrol.dev/docs/troubleshooting?ref=backstage)
