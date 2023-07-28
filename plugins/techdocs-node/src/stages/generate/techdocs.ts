@@ -37,6 +37,7 @@ import {
 } from './types';
 import { ForwardedError } from '@backstage/errors';
 import { findPaths } from '@backstage/cli-common';
+import { resolveSafeChildPath } from '@backstage/backend-common';
 
 /**
  * Generates documentation files
@@ -96,7 +97,11 @@ export class TechdocsGenerator implements GeneratorBase {
 
     // Do some updates to mkdocs.yml before generating docs e.g. adding repo_url
     const { path: mkdocsYmlPath, content } =
-      await MkdocsFileService.getMkdocsYml(inputDir, siteOptions);
+      await MkdocsFileService.getMkdocsYml(
+        inputDir,
+        siteOptions,
+        this.options.defaultMkdocsFileAbsolutePath,
+      );
 
     // validate the docs_dir first
     const docsDir = await MkdocsFileService.validateMkdocsYaml(
@@ -240,6 +245,6 @@ export function readGeneratorConfig(
     ),
     defaultMkdocsFileAbsolutePath:
       maybeMkdocsFileRelativePath &&
-      resolve(rootDir, maybeMkdocsFileRelativePath),
+      resolveSafeChildPath(rootDir, maybeMkdocsFileRelativePath),
   };
 }

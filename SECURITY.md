@@ -66,7 +66,7 @@ The insecure example above should instead be written like this:
 ```ts
 // THIS IS GOOD, DO THIS
 
-import { resolveSafeChildPath } from '@backstaghe/backend-common';
+import { resolveSafeChildPath } from '@backstage/backend-common';
 import fs from 'fs-extra';
 
 function writeTemporaryFile(tmpDir: string, name: string, content: string) {
