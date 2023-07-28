@@ -25,17 +25,15 @@ Then, choose `+ Add Web Server (Fargate)` under Services before entering the fol
 
 After that, select `+ Add Database (RDS)`
 
-### Step 5: Create your project
-
 Click `Create Project` and complete any required steps (like linking your AWS account).
 
 # Deployment via Code
 
-Step 1: Create a Flightcontrol project from your dashboard. Select a repository for the source.
+1. Create a Flightcontrol project from your dashboard. Select a repository for the source.
 
-Step 2: Select the `flightcontrol.json` Config Type.
+2. Select the `flightcontrol.json` Config Type.
 
-Step 3: Add a new file at the root of your repository called `flightcontrol.json`. Here's an example configuration that creates a Web Server for your Backstage app:
+3. Add a new file at the root of your repository called `flightcontrol.json`. Here's an example configuration that creates a Web Server for your Backstage app:
 
 ```json filename="flightcontrol.json"
 {
