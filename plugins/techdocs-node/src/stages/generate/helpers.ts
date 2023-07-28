@@ -200,6 +200,30 @@ export class MkdocsFileService {
     return undefined;
   }
 
+  static async copyMkdocsFromConfiguration(
+    mkdocsYmlPath: string,
+    configuredMkdocsFileAbsolutePath?: string,
+  ): Promise<
+    { path: string; content: string; configIsTemporary: boolean } | undefined
+  > {
+    if (
+      configuredMkdocsFileAbsolutePath &&
+      (await fs.pathExists(configuredMkdocsFileAbsolutePath))
+    ) {
+      fs.copy(configuredMkdocsFileAbsolutePath, mkdocsYmlPath);
+      const mkdocsYmlFileString = await fs.readFile(
+        configuredMkdocsFileAbsolutePath,
+        'utf8',
+      );
+      return {
+        path: mkdocsYmlPath,
+        content: mkdocsYmlFileString,
+        configIsTemporary: false,
+      };
+    }
+    return undefined;
+  }
+
   /**
    * Finds and loads the contents of either an mkdocs.yml or mkdocs.yaml file,
    * depending on which is present (MkDocs supports both as of v1.2.2).
@@ -227,21 +251,12 @@ export class MkdocsFileService {
       const mkdocsYmlPath = path.join(inputDir, 'mkdocs.yml');
 
       // No mkdocs file in repository, trying to get the default
-      if (
-        configuredMkdocsFileAbsolutePath &&
-        (await fs.pathExists(configuredMkdocsFileAbsolutePath))
-      ) {
-        fs.copy(configuredMkdocsFileAbsolutePath, mkdocsYmlPath);
-        const mkdocsYmlFileString = await fs.readFile(
+      const mkdocsFromConfiguration =
+        await MkdocsFileService.copyMkdocsFromConfiguration(
+          mkdocsYmlPath,
           configuredMkdocsFileAbsolutePath,
-          'utf8',
         );
-        return {
-          path: mkdocsYmlPath,
-          content: mkdocsYmlFileString,
-          configIsTemporary: false,
-        };
-      }
+      if (mkdocsFromConfiguration !== undefined) return mkdocsFromConfiguration;
 
       // No mkdocs file, generate it
       await MkdocsFileService.generateMkdocsYml(mkdocsYmlPath, siteOptions);
