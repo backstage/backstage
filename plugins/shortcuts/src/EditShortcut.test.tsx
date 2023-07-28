@@ -27,7 +27,7 @@ import {
 } from '@backstage/test-utils';
 import { AlertDisplay } from '@backstage/core-components';
 import { analyticsApiRef } from '@backstage/core-plugin-api';
-import { shortcutsApiRef } from './api';
+import { shortcutsApiRef, shortcutApi } from './api';
 
 describe('EditShortcut', () => {
   const shortcut: Shortcut = {
@@ -88,7 +88,10 @@ describe('EditShortcut', () => {
 
     await renderInTestApp(
       <TestApiProvider
-        apis={[[analyticsApiRef, analyticsSpy, shortcutsApiRef]]}
+        apis={[
+          [analyticsApiRef, analyticsSpy],
+          [shortcutsApiRef, shortcutApi],
+        ]}
       >
         <EditShortcut {...props} />
       </TestApiProvider>,

@@ -26,7 +26,7 @@ import {
 import { AlertDisplay } from '@backstage/core-components';
 import { TestApiProvider } from '@backstage/test-utils';
 import { analyticsApiRef } from '@backstage/core-plugin-api';
-import { shortcutsApiRef } from './api';
+import { shortcutsApiRef, shortcutApi } from './api';
 
 describe('AddShortcut', () => {
   const api = new DefaultShortcutsApi(MockStorageApi.create());
@@ -80,7 +80,10 @@ describe('AddShortcut', () => {
 
     await renderInTestApp(
       <TestApiProvider
-        apis={[[analyticsApiRef, analyticsSpy, shortcutsApiRef]]}
+        apis={[
+          [analyticsApiRef, analyticsSpy],
+          [shortcutsApiRef, shortcutApi],
+        ]}
       >
         <AddShortcut {...props} />
       </TestApiProvider>,
