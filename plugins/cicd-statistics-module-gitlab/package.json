@@ -13,6 +13,12 @@
   "backstage": {
     "role": "frontend-plugin-module"
   },
+  "homepage": "https://backstage.io",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/backstage/backstage",
+    "directory": "plugins/cicd-statistics-module-gitlab"
+  },
   "keywords": [
     "backstage",
     "cicd statistics",

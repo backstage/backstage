@@ -11,6 +11,12 @@
     "module": "dist/index.esm.js",
     "types": "dist/index.d.ts"
   },
+  "homepage": "https://backstage.io",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/backstage/backstage",
+    "directory": "packages/backend-openapi-utils"
+  },
   "backstage": {
     "role": "node-library"
   },

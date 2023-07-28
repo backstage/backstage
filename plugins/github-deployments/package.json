@@ -13,6 +13,12 @@
   "backstage": {
     "role": "frontend-plugin"
   },
+  "homepage": "https://backstage.io",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/backstage/backstage",
+    "directory": "plugins/github-deployments"
+  },
   "scripts": {
     "build": "backstage-cli package build",
     "start": "backstage-cli package start",

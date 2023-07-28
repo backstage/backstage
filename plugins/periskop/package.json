@@ -8,6 +8,11 @@
   "backstage": {
     "role": "frontend-plugin"
   },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/backstage/backstage",
+    "directory": "plugins/periskop"
+  },
   "publishConfig": {
     "access": "public",
     "main": "dist/index.esm.js",
