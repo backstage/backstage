@@ -29,6 +29,7 @@ import {
   TemplateGlobal,
 } from '../../../../lib/templating/SecureTemplater';
 import { createDefaultFilters } from '../../../../lib/templating/filters';
+import { examples } from './template.examples';
 
 /**
  * Downloads a skeleton, templates variables into file and directory names and content.
@@ -70,6 +71,7 @@ export function createFetchTemplateAction(options: {
     id: 'fetch:template',
     description:
       'Downloads a skeleton, templates variables into file and directory names and content, and places the result in the workspace, or optionally in a subdirectory specified by the `targetPath` input option.',
+    examples,
     schema: {
       input: {
         type: 'object',

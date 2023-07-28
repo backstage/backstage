@@ -19,28 +19,9 @@ import { ScmIntegrations } from '@backstage/integration';
 import { CatalogApi } from '@backstage/catalog-client';
 import { stringifyEntityRef, Entity } from '@backstage/catalog-model';
 import { createTemplateAction } from '@backstage/plugin-scaffolder-node';
-import yaml from 'yaml';
+import { examples } from './register.examples';
 
 const id = 'catalog:register';
-
-const examples = [
-  {
-    description: 'Register with the catalog',
-    example: yaml.stringify({
-      steps: [
-        {
-          action: id,
-          id: 'register-with-catalog',
-          name: 'Register with the catalog',
-          input: {
-            catalogInfoUrl:
-              'http://github.com/backstage/backstage/blob/master/catalog-info.yaml',
-          },
-        },
-      ],
-    }),
-  },
-];
 
 /**
  * Registers entities from a catalog descriptor file in the workspace into the software catalog.
