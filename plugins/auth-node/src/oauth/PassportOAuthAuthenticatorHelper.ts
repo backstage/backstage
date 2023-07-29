@@ -15,7 +15,11 @@
  */
 
 import { Strategy } from 'passport';
-import { PassportHelpers, PassportProfile } from '../passport';
+import {
+  PassportDoneCallback,
+  PassportHelpers,
+  PassportProfile,
+} from '../passport';
 import {
   OAuthAuthenticatorAuthenticateInput,
   OAuthAuthenticatorRefreshInput,
@@ -24,7 +28,7 @@ import {
   OAuthProfileTransform,
 } from './types';
 
-/** @internal */
+/** @public */
 export type PassportOAuthResult = {
   fullProfile: PassportProfile;
   params: {
@@ -35,6 +39,17 @@ export type PassportOAuthResult = {
   };
   accessToken: string;
 };
+
+/** @public */
+export type PassportOAuthPrivateInfo = {
+  refreshToken?: string;
+};
+
+/** @public */
+export type PassportOAuthDoneCallback = PassportDoneCallback<
+  PassportOAuthResult,
+  PassportOAuthPrivateInfo
+>;
 
 /** @public */
 export class PassportOAuthAuthenticatorHelper {
@@ -73,7 +88,7 @@ export class PassportOAuthAuthenticatorHelper {
     const { result, privateInfo } =
       await PassportHelpers.executeFrameHandlerStrategy<
         PassportOAuthResult,
-        { refreshToken?: string }
+        PassportOAuthPrivateInfo
       >(input.req, this.#strategy);
 
     return {

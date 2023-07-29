@@ -18,7 +18,12 @@ export {
   createOAuthHandlers,
   type OAuthHandlersOptions,
 } from './createOAuthHandlers';
-export { PassportOAuthAuthenticatorHelper } from './PassportOAuthAuthenticatorHelper';
+export {
+  PassportOAuthAuthenticatorHelper,
+  type PassportOAuthDoneCallback,
+  type PassportOAuthPrivateInfo,
+  type PassportOAuthResult,
+} from './PassportOAuthAuthenticatorHelper';
 export {
   createOAuthAuthenticator,
   type OAuthAuthenticator,
