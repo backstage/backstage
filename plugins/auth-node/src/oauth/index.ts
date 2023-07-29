@@ -25,6 +25,7 @@ export {
   type PassportOAuthResult,
 } from './PassportOAuthAuthenticatorHelper';
 export { OAuthEnvironmentHandler } from './OAuthEnvironmentHandler';
+export { createOAuthProviderFactory } from './createOAuthProviderFactory';
 export {
   createOAuthAuthenticator,
   type OAuthAuthenticator,
