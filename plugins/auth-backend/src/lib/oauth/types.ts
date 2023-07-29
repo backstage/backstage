@@ -16,13 +16,17 @@
 
 import express from 'express';
 import { Profile as PassportProfile } from 'passport';
-import { BackstageSignInResult } from '@backstage/plugin-auth-node';
+import {
+  BackstageSignInResult,
+  OAuthState as _OAuthState,
+} from '@backstage/plugin-auth-node';
 import { OAuthStartResponse, ProfileInfo } from '../../providers/types';
 
 /**
  * Common options for passport.js-based OAuth providers
  *
  * @public
+ * @deprecated
  */
 export type OAuthProviderOptions = {
   /**
@@ -39,7 +43,10 @@ export type OAuthProviderOptions = {
   callbackUrl: string;
 };
 
-/** @public */
+/**
+ * @public
+ * @deprecated Use `OAuthAuthenticatorResult<PassportProfile>` from `@backstage/plugin-auth-node` instead
+ */
 export type OAuthResult = {
   fullProfile: PassportProfile;
   params: {
@@ -53,9 +60,8 @@ export type OAuthResult = {
 };
 
 /**
- * The expected response from an OAuth flow.
- *
  * @public
+ * @deprecated Use `ClientAuthResponse` from `@backstage/plugin-auth-node` instead
  */
 export type OAuthResponse = {
   profile: ProfileInfo;
@@ -83,41 +89,41 @@ export type OAuthProviderInfo = {
   scope: string;
 };
 
-/** @public */
-export type OAuthState = {
-  /* A type for the serialized value in the `state` parameter of the OAuth authorization flow
-   */
-  nonce: string;
-  env: string;
-  origin?: string;
-  scope?: string;
-  redirectUrl?: string;
-  flow?: string;
-};
+/**
+ * @public
+ * @deprecated import from `@backstage/plugin-auth-node` instead
+ */
+export type OAuthState = _OAuthState;
 
-/** @public */
+/**
+ * @public
+ * @deprecated Use `createOAuthRouteHandlers` from `@backstage/plugin-auth-node` instead
+ */
 export type OAuthStartRequest = express.Request<{}> & {
   scope: string;
   state: OAuthState;
 };
 
-/** @public */
+/**
+ * @public
+ * @deprecated Use `createOAuthRouteHandlers` from `@backstage/plugin-auth-node` instead
+ */
 export type OAuthRefreshRequest = express.Request<{}> & {
   scope: string;
   refreshToken: string;
 };
 
-/** @public */
+/**
+ * @public
+ * @deprecated Use `createOAuthRouteHandlers` from `@backstage/plugin-auth-node` instead
+ */
 export type OAuthLogoutRequest = express.Request<{}> & {
   refreshToken: string;
 };
 
 /**
- * Any OAuth provider needs to implement this interface which has provider specific
- * handlers for different methods to perform authentication, get access tokens,
- * refresh tokens and perform sign out.
- *
  * @public
+ * @deprecated Use `createOAuthRouteHandlers` from `@backstage/plugin-auth-node` instead
  */
 export interface OAuthHandlers {
   /**
