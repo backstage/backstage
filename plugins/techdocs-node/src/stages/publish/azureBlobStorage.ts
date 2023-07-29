@@ -83,13 +83,16 @@ export class AzureBlobStoragePublish implements PublisherBase {
         'techdocs.legacyUseCaseSensitiveTripletPaths',
       ) || false;
 
-    // Give more priority for azurite, if configured, return the AzureBlobStoragePublish object here itself
-    const azuriteConnString = config.getOptionalString(
-      'techdocs.publisher.azureBlobStorage.azuriteConnectionString',
-    );
-    if (azuriteConnString) {
+    // Give more priority for connectionString, if configured, return the AzureBlobStoragePublish object here itself
+    const connectionStringKey =
+      'techdocs.publisher.azureBlobStorage.connectionString';
+    const connectionString = config.getOptionalString(connectionStringKey);
+    if (connectionString) {
+      logger.info(
+        `using ${connectionStringKey} string to create BlobServiceClient`,
+      );
       const storageClient =
-        BlobServiceClient.fromConnectionString(azuriteConnString);
+        BlobServiceClient.fromConnectionString(connectionString);
       return new AzureBlobStoragePublish({
         storageClient: storageClient,
         containerName: containerName,
