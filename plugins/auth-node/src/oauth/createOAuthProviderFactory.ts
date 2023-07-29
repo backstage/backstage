@@ -35,11 +35,11 @@ export function createOAuthProviderFactory<TProfile>(options: {
     return OAuthEnvironmentHandler.mapConfig(ctx.config, envConfig => {
       return createOAuthRouteHandlers<TProfile>({
         authenticator: options.authenticator,
-        appUrl: ctx.globalConfig.appUrl,
-        baseUrl: ctx.globalConfig.baseUrl,
+        appUrl: ctx.appUrl,
+        baseUrl: ctx.baseUrl,
         config: envConfig,
-        isOriginAllowed: ctx.globalConfig.isOriginAllowed,
-        cookieConfigurer: ctx.globalConfig.cookieConfigurer,
+        isOriginAllowed: ctx.isOriginAllowed,
+        cookieConfigurer: ctx.cookieConfigurer,
         providerId: ctx.providerId,
         resolverContext: ctx.resolverContext,
         stateTransform: options.stateTransform,

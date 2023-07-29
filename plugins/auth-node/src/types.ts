@@ -215,7 +215,10 @@ export interface AuthProviderRouteHandlers {
   logout?(req: Request, res: Response): Promise<void>;
 }
 
-/** @public */
+/**
+ * @public
+ * @deprecated Use top-level properties passed to `AuthProviderFactory` instead
+ */
 export type AuthProviderConfig = {
   /**
    * The protocol://domain[:port] where the app is hosted. This is used to construct the
@@ -242,15 +245,36 @@ export type AuthProviderConfig = {
 /** @public */
 export type AuthProviderFactory = (options: {
   providerId: string;
+  /** @deprecated Use top-level properties instead */
   globalConfig: AuthProviderConfig;
   config: Config;
   logger: LoggerService;
   resolverContext: AuthResolverContext;
+  /**
+   * The protocol://domain[:port] where the app is hosted. This is used to construct the
+   * callbackURL to redirect to once the user signs in to the auth provider.
+   */
+  baseUrl: string;
+
+  /**
+   * The base URL of the app as provided by app.baseUrl
+   */
+  appUrl: string;
+
+  /**
+   * A function that is called to check whether an origin is allowed to receive the authentication result.
+   */
+  isOriginAllowed: (origin: string) => boolean;
+
+  /**
+   * The function used to resolve cookie configuration based on the auth provider options.
+   */
+  cookieConfigurer?: CookieConfigurer;
 }) => AuthProviderRouteHandlers;
 
 /** @public */
-export type ClientAuthResponse<ProviderInfo> = {
-  providerInfo: ProviderInfo;
+export type ClientAuthResponse<TProviderInfo> = {
+  providerInfo: TProviderInfo;
   profile: ProfileInfo;
   backstageIdentity?: BackstageIdentityResponse;
 };
