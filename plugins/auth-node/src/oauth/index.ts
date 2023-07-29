@@ -27,6 +27,12 @@ export {
 export { OAuthEnvironmentHandler } from './OAuthEnvironmentHandler';
 export { createOAuthProviderFactory } from './createOAuthProviderFactory';
 export {
+  encodeOAuthState,
+  decodeOAuthState,
+  type OAuthState,
+  type OAuthStateTransform,
+} from './state';
+export {
   createOAuthAuthenticator,
   type OAuthAuthenticator,
   type OAuthAuthenticatorAuthenticateInput,
