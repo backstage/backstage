@@ -17,6 +17,7 @@
 import pickBy from 'lodash/pickBy';
 import { Request } from 'express';
 
+/** @public */
 export type OAuthState = {
   /* A type for the serialized value in the `state` parameter of the OAuth authorization flow
    */
@@ -29,28 +30,22 @@ export type OAuthState = {
 };
 
 /** @public */
-export type OAuthStateEncoder = (
+export type OAuthStateTransform = (
   state: OAuthState,
-  context: { req: Request },
-) => Promise<{ encodedState: string }>;
-
-/** @public */
-export type OAuthStateDecoder = (
-  encodedState: string,
   context: { req: Request },
 ) => Promise<{ state: OAuthState }>;
 
 /** @public */
-export const defaultStateEncoder: OAuthStateEncoder = async state => {
+export function encodeOAuthState(state: OAuthState): string {
   const stateString = new URLSearchParams(
     pickBy<string>(state, value => value !== undefined),
   ).toString();
 
-  return { encodedState: Buffer.from(stateString, 'utf-8').toString('hex') };
-};
+  return Buffer.from(stateString, 'utf-8').toString('hex');
+}
 
 /** @public */
-export const defaultStateDecoder: OAuthStateDecoder = async encodedState => {
+export function decodeOAuthState(encodedState: string): OAuthState {
   const state = Object.fromEntries(
     new URLSearchParams(Buffer.from(encodedState, 'hex').toString('utf-8')),
   );
@@ -63,5 +58,5 @@ export const defaultStateDecoder: OAuthStateDecoder = async encodedState => {
     throw Error(`Invalid state passed via request`);
   }
 
-  return { state: state as OAuthState };
-};
+  return state as OAuthState;
+}

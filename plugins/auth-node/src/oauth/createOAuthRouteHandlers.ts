@@ -23,7 +23,12 @@ import {
   isError,
   NotAllowedError,
 } from '@backstage/errors';
-import { defaultStateDecoder, defaultStateEncoder, OAuthState } from './state';
+import {
+  encodeOAuthState,
+  decodeOAuthState,
+  OAuthStateTransform,
+  OAuthState,
+} from './state';
 import { sendWebMessageResponse } from '../flow';
 import { prepareBackstageIdentityResponse } from '../identity';
 import { OAuthCookieManager } from './OAuthCookieManager';
@@ -42,15 +47,15 @@ import {
 import { Config } from '@backstage/config';
 
 /** @public */
-export interface OAuthHandlersOptions<TProfile> {
-  authenticator: OAuthAuthenticator<unknown, TProfile>;
+export interface OAuthRouteHandlersOptions<TProfile> {
+  authenticator: OAuthAuthenticator<any, TProfile>;
   appUrl: string;
   baseUrl: string;
   isOriginAllowed: (origin: string) => boolean;
-  callbackUrl: string;
   providerId: string;
   config: Config;
   resolverContext: AuthResolverContext;
+  stateTransform?: OAuthStateTransform;
   profileTransform?: OAuthProfileTransform<TProfile>;
   cookieConfigurer?: CookieConfigurer;
   signInResolver?: SignInResolver<OAuthAuthenticatorResult<TProfile>>;
@@ -77,8 +82,8 @@ type ClientOAuthResponse = ClientAuthResponse<{
 }>;
 
 /** @public */
-export function createOAuthHandlers<TProfile>(
-  options: OAuthHandlersOptions<TProfile>,
+export function createOAuthRouteHandlers<TProfile>(
+  options: OAuthRouteHandlersOptions<TProfile>,
 ): AuthProviderRouteHandlers {
   const {
     authenticator,
@@ -97,6 +102,7 @@ export function createOAuthHandlers<TProfile>(
     config.getOptionalString('callbackUrl') ??
     `${baseUrl}/${providerId}/handler/frame`;
 
+  const stateTransform = options.stateTransform ?? (state => ({ state }));
   const profileTransform =
     options.profileTransform ?? authenticator.defaultProfileTransform;
   const authenticatorCtx = authenticator.initialize({ config, callbackUrl });
@@ -137,7 +143,8 @@ export function createOAuthHandlers<TProfile>(
         state.scope = scope;
       }
 
-      const { encodedState } = await defaultStateEncoder(state, { req });
+      const { state: transformedState } = await stateTransform(state, { req });
+      const encodedState = encodeOAuthState(transformedState);
 
       const { url, status } = await options.authenticator.start(
         { req, scope, state: encodedState },
@@ -158,10 +165,7 @@ export function createOAuthHandlers<TProfile>(
       let appOrigin = defaultAppOrigin;
 
       try {
-        const { state } = await defaultStateDecoder(
-          req.query.state?.toString() ?? '',
-          { req },
-        );
+        const state = decodeOAuthState(req.query.state?.toString() ?? '');
 
         if (state.origin) {
           try {

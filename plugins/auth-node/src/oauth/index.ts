@@ -15,9 +15,9 @@
  */
 
 export {
-  createOAuthHandlers,
-  type OAuthHandlersOptions,
-} from './createOAuthHandlers';
+  createOAuthRouteHandlers,
+  type OAuthRouteHandlersOptions,
+} from './createOAuthRouteHandlers';
 export {
   PassportOAuthAuthenticatorHelper,
   type PassportOAuthDoneCallback,
