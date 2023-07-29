@@ -24,6 +24,7 @@ export {
   type PassportOAuthPrivateInfo,
   type PassportOAuthResult,
 } from './PassportOAuthAuthenticatorHelper';
+export { OAuthEnvironmentHandler } from './OAuthEnvironmentHandler';
 export {
   createOAuthAuthenticator,
   type OAuthAuthenticator,
