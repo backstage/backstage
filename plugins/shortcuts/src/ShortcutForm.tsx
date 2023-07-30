@@ -73,6 +73,12 @@ export const ShortcutForm = ({
     return true;
   };
 
+  const urlIsUnique = async (url: string) => {
+    if (shortcutApi.get().some(shortcutUrl => shortcutUrl.url === url))
+      return 'A shortcut with this url already exists';
+    return true;
+  };
+
   useEffect(() => {
     reset(formValues);
   }, [reset, formValues]);
@@ -85,6 +91,7 @@ export const ShortcutForm = ({
           control={control}
           rules={{
             required: true,
+            validate: urlIsUnique,
             ...(allowExternalLinks
               ? {
                   pattern: {
