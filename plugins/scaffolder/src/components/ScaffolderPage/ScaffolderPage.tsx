@@ -59,6 +59,7 @@ export type ScaffolderPageProps = {
     title?: string;
     subtitle?: string;
   };
+  supportButton?: React.ReactNode;
 };
 
 export const ScaffolderPageContents = ({
@@ -67,6 +68,7 @@ export const ScaffolderPageContents = ({
   templateFilter,
   contextMenu,
   headerOptions,
+  supportButton,
 }: ScaffolderPageProps) => {
   const registerComponentLink = useRouteRef(registerComponentRouteRef);
   const otherTemplatesGroup = {
@@ -99,11 +101,13 @@ export const ScaffolderPageContents = ({
               to={registerComponentLink && registerComponentLink()}
             />
           )}
-          <SupportButton>
-            Create new software components using standard templates. Different
-            templates create different kinds of components (services, websites,
-            documentation, ...).
-          </SupportButton>
+          {supportButton || (
+            <SupportButton>
+              Create new software components using standard templates. Different
+              templates create different kinds of components (services,
+              websites, documentation, ...).
+            </SupportButton>
+          )}
         </ContentHeader>
 
         <CatalogFilterLayout>
@@ -146,6 +150,7 @@ export const ScaffolderPage = ({
   templateFilter,
   contextMenu,
   headerOptions,
+  supportButton,
 }: ScaffolderPageProps) => (
   <EntityListProvider>
     <ScaffolderPageContents
@@ -154,6 +159,7 @@ export const ScaffolderPage = ({
       templateFilter={templateFilter}
       contextMenu={contextMenu}
       headerOptions={headerOptions}
+      supportButton={supportButton}
     />
   </EntityListProvider>
 );

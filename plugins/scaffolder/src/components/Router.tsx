@@ -74,6 +74,7 @@ export type RouterProps = {
     /** Whether to show a link to the actions documentation */
     actions?: boolean;
   };
+  supportButton?: React.ReactNode;
 };
 
 /**
@@ -87,6 +88,7 @@ export const Router = (props: RouterProps) => {
     templateFilter,
     components = {},
     defaultPreviewTemplate,
+    supportButton,
   } = props;
 
   const { ReviewStepComponent, TemplateCardComponent, TaskPageComponent } =
@@ -136,6 +138,7 @@ export const Router = (props: RouterProps) => {
             TemplateCardComponent={TemplateCardComponent}
             contextMenu={props.contextMenu}
             headerOptions={props.headerOptions}
+            supportButton={supportButton}
           />
         }
       />
