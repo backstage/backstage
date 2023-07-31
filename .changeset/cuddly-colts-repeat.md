@@ -2,4 +2,4 @@
 '@backstage/plugin-catalog-graph': patch
 ---
 
-Added maxDepth parameter to the catalogGraphParams in CatalogGraphCard.
+Added maximum depth parameter to the catalogGraphParams in CatalogGraphCard.
