@@ -425,6 +425,7 @@ export type RouterProps = {
     editor?: boolean;
     actions?: boolean;
   };
+  supportButton?: React_2.ReactNode;
 };
 
 // @public @deprecated (undocumented)
