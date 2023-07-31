@@ -8173,7 +8173,6 @@ __metadata:
     "@backstage/config": "workspace:^"
     "@backstage/errors": "workspace:^"
     "@backstage/integration": "workspace:^"
-    "@backstage/plugin-scaffolder-backend": "workspace:^"
     "@backstage/plugin-scaffolder-node": "workspace:^"
     "@backstage/types": "workspace:^"
     fs-extra: 10.1.0
@@ -8195,7 +8194,6 @@ __metadata:
     "@backstage/config": "workspace:^"
     "@backstage/errors": "workspace:^"
     "@backstage/integration": "workspace:^"
-    "@backstage/plugin-scaffolder-backend": "workspace:^"
     "@backstage/plugin-scaffolder-node": "workspace:^"
     "@backstage/types": "workspace:^"
     "@types/command-exists": ^1.2.0
@@ -8235,7 +8233,6 @@ __metadata:
     "@backstage/config": "workspace:^"
     "@backstage/errors": "workspace:^"
     "@backstage/integration": "workspace:^"
-    "@backstage/plugin-scaffolder-backend": "workspace:^"
     "@backstage/plugin-scaffolder-node": "workspace:^"
     "@backstage/types": "workspace:^"
     "@types/command-exists": ^1.2.0
@@ -8364,11 +8361,16 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "@backstage/plugin-scaffolder-node@workspace:plugins/scaffolder-node"
   dependencies:
+    "@backstage/backend-common": "workspace:^"
     "@backstage/backend-plugin-api": "workspace:^"
     "@backstage/catalog-model": "workspace:^"
     "@backstage/cli": "workspace:^"
+    "@backstage/config": "workspace:^"
+    "@backstage/errors": "workspace:^"
+    "@backstage/integration": "workspace:^"
     "@backstage/plugin-scaffolder-common": "workspace:^"
     "@backstage/types": "workspace:^"
+    fs-extra: 10.1.0
     jsonschema: ^1.2.6
     winston: ^3.2.1
     zod: ^3.21.4

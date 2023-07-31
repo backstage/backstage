@@ -25,9 +25,9 @@ import {
 } from '@backstage/backend-common';
 import { ScmIntegrations } from '@backstage/integration';
 import { PassThrough } from 'stream';
-import { fetchContents } from './helpers';
 import { createFetchTemplateAction } from './template';
 import {
+  fetchContents,
   ActionContext,
   TemplateAction,
 } from '@backstage/plugin-scaffolder-node';

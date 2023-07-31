@@ -30,17 +30,22 @@
     "postpack": "backstage-cli package postpack"
   },
   "dependencies": {
+    "@backstage/backend-common": "workspace:^",
     "@backstage/backend-plugin-api": "workspace:^",
     "@backstage/catalog-model": "workspace:^",
+    "@backstage/errors": "workspace:^",
+    "@backstage/integration": "workspace:^",
     "@backstage/plugin-scaffolder-common": "workspace:^",
     "@backstage/types": "workspace:^",
+    "fs-extra": "10.1.0",
     "jsonschema": "^1.2.6",
     "winston": "^3.2.1",
     "zod": "^3.21.4",
     "zod-to-json-schema": "^3.20.4"
   },
   "devDependencies": {
-    "@backstage/cli": "workspace:^"
+    "@backstage/cli": "workspace:^",
+    "@backstage/config": "workspace:^"
   },
   "files": [
     "alpha",
