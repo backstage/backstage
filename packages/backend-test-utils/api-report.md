@@ -6,7 +6,6 @@
 import { Backend } from '@backstage/backend-app-api';
 import { BackendFeature } from '@backstage/backend-plugin-api';
 import { CacheService } from '@backstage/backend-plugin-api';
-import { ConfigService } from '@backstage/backend-plugin-api';
 import { DatabaseService } from '@backstage/backend-plugin-api';
 import { ExtendedHttpServer } from '@backstage/backend-app-api';
 import { ExtensionPoint } from '@backstage/backend-plugin-api';
@@ -18,6 +17,7 @@ import { Knex } from 'knex';
 import { LifecycleService } from '@backstage/backend-plugin-api';
 import { LoggerService } from '@backstage/backend-plugin-api';
 import { PermissionsService } from '@backstage/backend-plugin-api';
+import { RootConfigService } from '@backstage/backend-plugin-api';
 import { RootLifecycleService } from '@backstage/backend-plugin-api';
 import { SchedulerService } from '@backstage/backend-plugin-api';
 import { ServiceFactory } from '@backstage/backend-plugin-api';
@@ -36,7 +36,7 @@ export namespace mockServices {
       factory: () => ServiceFactory<CacheService, 'plugin'>;
   }
   // (undocumented)
-  export function config(options?: config.Options): ConfigService;
+  export function config(options?: config.Options): RootConfigService;
   // (undocumented)
   export namespace config {
     // (undocumented)
@@ -46,7 +46,7 @@ export namespace mockServices {
     const // (undocumented)
       factory: (
         options?: Options | undefined,
-      ) => ServiceFactory<ConfigService, 'root'>;
+      ) => ServiceFactory<RootConfigService, 'root'>;
   }
   // (undocumented)
   export namespace database {
