@@ -14,7 +14,11 @@
  * limitations under the License.
  */
 
-import { createApiRef, DiscoveryApi } from '@backstage/core-plugin-api';
+import {
+  createApiRef,
+  DiscoveryApi,
+  FetchApi,
+} from '@backstage/core-plugin-api';
 
 export type NewRelicApplication = {
   id: number;
@@ -61,6 +65,7 @@ const DEFAULT_PROXY_PATH_BASE = '/newrelic';
 
 type Options = {
   discoveryApi: DiscoveryApi;
+  fetchApi: FetchApi;
   /**
    * Path to use for requests via the proxy, defaults to /newrelic
    */
@@ -71,27 +76,58 @@ export interface NewRelicApi {
   getApplications(): Promise<NewRelicApplications>;
 }
 
+interface PaginationInformation {
+  nextPageLink: string;
+  relation: string;
+}
+
+interface NewRelicPageReadResult {
+  hasMoreApplications: boolean;
+  pagination: PaginationInformation | undefined;
+  applicationsFromReadPage: NewRelicApplication[];
+}
+
 export class NewRelicClient implements NewRelicApi {
   private readonly discoveryApi: DiscoveryApi;
+  private readonly fetchApi: FetchApi;
   private readonly proxyPathBase: string;
 
   constructor(options: Options) {
     this.discoveryApi = options.discoveryApi;
+    this.fetchApi = options.fetchApi;
     this.proxyPathBase = options.proxyPathBase ?? DEFAULT_PROXY_PATH_BASE;
   }
 
   async getApplications(): Promise<NewRelicApplications> {
-    const url = await this.getApiUrl('apm', 'applications.json');
-    const response = await fetch(url);
-    let responseJson;
+    const proxyUrl = await this.discoveryApi.getBaseUrl('proxy');
+    let targetUrl = `${proxyUrl}${this.proxyPathBase}/apm/api/applications.json`;
+    let hasNextPage = true;
 
     try {
-      responseJson = await response.json();
-    } catch (e) {
-      responseJson = { applications: [] };
-    }
+      let applications: NewRelicApplication[] = [];
 
-    if (response.status !== 200) {
+      do {
+        const { hasMoreApplications, pagination, applicationsFromReadPage } =
+          await this.fetchNewRelic(targetUrl);
+
+        hasNextPage = hasMoreApplications;
+        targetUrl = pagination!.nextPageLink;
+        applications = applications.concat(applicationsFromReadPage);
+      } while (hasNextPage);
+
+      return { applications };
+    } catch (e) {
+      return { applications: [] };
+    }
+  }
+
+  private async fetchNewRelic(
+    targetUrl: string,
+  ): Promise<NewRelicPageReadResult> {
+    const response = await this.fetchApi.fetch(targetUrl);
+    const responseJson = await response.json();
+
+    if (!response.ok) {
       throw new Error(
         `Error communicating with New Relic: ${
           responseJson?.error?.title || response.statusText
@@ -99,11 +135,40 @@ export class NewRelicClient implements NewRelicApi {
       );
     }
 
-    return responseJson;
+    const readResponse = responseJson as NewRelicApplications;
+    const linkHeader =
+      response.headers.get('Link') || response.headers.get('link');
+    const pagination = this.parseLinkHeader(linkHeader);
+
+    return {
+      hasMoreApplications: !!(pagination && pagination.relation === 'next'),
+      pagination,
+      applicationsFromReadPage: readResponse.applications,
+    };
   }
 
-  private async getApiUrl(product: string, path: string) {
-    const proxyUrl = await this.discoveryApi.getBaseUrl('proxy');
-    return `${proxyUrl}${this.proxyPathBase}/${product}/api/${path}`;
+  private parseLinkHeader(
+    linkHeader: string | null,
+  ): PaginationInformation | undefined {
+    if (!linkHeader) {
+      return undefined;
+    }
+
+    const nextRelevantLink = linkHeader.replaceAll(' ', '').split(',')[0];
+
+    // Link should be of the format <nextPageLink>;rel="relation"
+    const linkParts = nextRelevantLink.match(/^<(.+)>;rel="(.+)"$/);
+    const nextPageLink = linkParts?.[1];
+    const relation = linkParts?.[2];
+    const isValidLink = !!(!!linkParts && nextPageLink && relation);
+
+    if (!nextRelevantLink || !isValidLink) {
+      return undefined;
+    }
+
+    return {
+      nextPageLink,
+      relation,
+    };
   }
 }
