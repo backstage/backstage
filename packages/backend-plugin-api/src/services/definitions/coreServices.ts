@@ -32,7 +32,7 @@ export namespace coreServices {
   });
 
   /**
-   * The service reference for the root scoped {@link ConfigService}.
+   * The service reference for the root scoped {@link RootConfigService}.
    *
    * @public
    */
