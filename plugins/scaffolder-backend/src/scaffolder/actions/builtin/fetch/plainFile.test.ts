@@ -21,9 +21,9 @@ import { resolve as resolvePath } from 'path';
 import { getVoidLogger, UrlReader } from '@backstage/backend-common';
 import { ConfigReader } from '@backstage/config';
 import { ScmIntegrations } from '@backstage/integration';
+import { fetchFile } from '@backstage/plugin-scaffolder-node';
 import { createFetchPlainFileAction } from './plainFile';
 import { PassThrough } from 'stream';
-import { fetchFile } from './helpers';
 
 describe('fetch:plain:file', () => {
   const integrations = ScmIntegrations.fromConfig(
