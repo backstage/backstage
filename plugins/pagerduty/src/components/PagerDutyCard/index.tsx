@@ -171,7 +171,7 @@ export const PagerDutyCard = (props: PagerDutyCardProps) => {
               />
             </CardTab>
             <>
-              {disableChangeEvents === true && (
+              {disableChangeEvents !== true && (
                 <CardTab label="Change Events">
                   <ChangeEvents
                     serviceId={service!.id}
