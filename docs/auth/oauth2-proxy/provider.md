@@ -60,6 +60,8 @@ providerFactories: {
 },
 ```
 
+[An example on how to sign a user in without a matching user](https://github.com/backstage/backstage/blob/master/packages/backend/src/plugins/auth.ts)
+
 ## Adding the provider to the Backstage frontend
 
 It is recommended to use the `ProxiedSignInPage` for this provider, which is
