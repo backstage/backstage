@@ -93,13 +93,10 @@ export type CacheServiceSetOptions = {
   ttl?: number;
 };
 
-// @public (undocumented)
-export interface ConfigService extends Config {}
-
 // @public
 export namespace coreServices {
   const cache: ServiceRef<CacheService, 'plugin'>;
-  const config: ServiceRef<ConfigService, 'root'>;
+  const rootConfig: ServiceRef<RootConfigService, 'root'>;
   const database: ServiceRef<DatabaseService, 'plugin'>;
   const discovery: ServiceRef<DiscoveryService, 'plugin'>;
   const httpRouter: ServiceRef<HttpRouterService, 'plugin'>;
@@ -379,6 +376,9 @@ export type ReadUrlResponse = {
   etag?: string;
   lastModifiedAt?: Date;
 };
+
+// @public (undocumented)
+export interface RootConfigService extends Config {}
 
 // @public (undocumented)
 export interface RootHttpRouterService {
