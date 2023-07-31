@@ -14,6 +14,12 @@
   "backstage": {
     "role": "common-library"
   },
+  "homepage": "https://backstage.io",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/backstage/backstage",
+    "directory": "plugins/linguist-common"
+  },
   "scripts": {
     "build": "backstage-cli package build",
     "lint": "backstage-cli package lint",

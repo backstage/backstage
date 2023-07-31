@@ -118,9 +118,8 @@ export interface Config {
              */
             schedule?: TaskScheduleDefinitionConfig;
           }
-        | Record<
-            string,
-            {
+        | {
+            [name: string]: {
               /**
                * (Optional) The hostname of your GitHub Enterprise instance.
                * Default: `github.com`.
@@ -182,8 +181,8 @@ export interface Config {
                * (Optional) TaskScheduleDefinition for the refresh.
                */
               schedule?: TaskScheduleDefinitionConfig;
-            }
-          >;
+            };
+          };
     };
   };
 }
