@@ -74,15 +74,13 @@ describe('AddShortcut', () => {
     const spy = jest.spyOn(api, 'add');
 
     await renderInTestApp(
-      await renderInTestApp(
-        <TestApiProvider
-          apis={[
-            [shortcutsApiRef, new DefaultShortcutsApi(MockStorageApi.create())],
-          ]}
-        >
-          <AddShortcut {...props} />
-        </TestApiProvider>,
-      ),
+      <TestApiProvider
+        apis={[
+          [shortcutsApiRef, new DefaultShortcutsApi(MockStorageApi.create())],
+        ]}
+      >
+        <AddShortcut {...props} />
+      </TestApiProvider>,
     );
 
     const urlInput = screen.getByPlaceholderText('Enter a URL');
