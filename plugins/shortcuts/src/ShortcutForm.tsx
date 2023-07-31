@@ -74,7 +74,7 @@ export const ShortcutForm = ({
   };
 
   const urlIsUnique = async (url: string) => {
-    if (shortcutApi.get().some(shortcutUrl => shortcutUrl.url === url))
+    if (shortcutData.get().some(shortcutUrl => shortcutUrl.url === url))
       return 'A shortcut with this url already exists';
     return true;
   };
