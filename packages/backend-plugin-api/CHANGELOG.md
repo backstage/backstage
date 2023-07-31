@@ -321,7 +321,7 @@
   createServiceFactory({
     service: coreServices.cache,
     deps: {
-      config: coreServices.rootConfig,
+      config: coreServices.config,
       plugin: coreServices.pluginMetadata,
     },
     async createRootContext({ config }) {
