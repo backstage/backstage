@@ -14,7 +14,10 @@
  * limitations under the License.
  */
 
-jest.mock('./helpers');
+jest.mock('@backstage/plugin-scaffolder-node', () => {
+  const actual = jest.requireActual('@backstage/plugin-scaffolder-node');
+  return { ...actual, fetchFile: jest.fn() };
+});
 
 import os from 'os';
 import { resolve as resolvePath } from 'path';
