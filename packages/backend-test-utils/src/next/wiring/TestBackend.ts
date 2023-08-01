@@ -73,7 +73,7 @@ export interface TestBackend extends Backend {
 
 const defaultServiceFactories = [
   mockServices.cache.factory(),
-  mockServices.config.factory(),
+  mockServices.rootConfig.factory(),
   mockServices.database.factory(),
   mockServices.httpRouter.factory(),
   mockServices.identity.factory(),
