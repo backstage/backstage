@@ -29,19 +29,21 @@ Before you begin, make sure you have a [Flightcontrol account](https://app.fligh
 
 # Deployment via Code
 
-1. Create a Flightcontrol project from your dashboard. Select a repository for the source.
+1. First upload your project on Github
 
-2. Select the `flightcontrol.json` Config Type.
+2. Create a Flightcontrol project from your dashboard. Select a repository for the source.
 
-3. Add a new file at the root of your repository called `flightcontrol.json`. Here's an example configuration that creates a Web Server for your Backstage app:
+3. Select the `flightcontrol.json` Config Type.
+
+4. Add a new file at the root of your repository called `flightcontrol.json`. Here's an example configuration that creates a Web Server for your Backstage app:
 
 ```json filename="flightcontrol.json"
 {
   "$schema": "https://app.flightcontrol.dev/schema.json",
   "environments": [
     {
-      "id": "production",
-      "name": "Production",
+      "id": "backstage",
+      "name": "Backstage",
       "region": "us-west-2",
       "source": {
         "branch": "main"
