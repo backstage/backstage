@@ -1,5 +1,16 @@
 # @backstage/plugin-proxy-backend
 
+## 0.2.42-next.1
+
+### Patch Changes
+
+- 629cbd194a87: Use `coreServices.rootConfig` instead of `coreService.config`
+- 4b82382ed8c2: Fixed invalid configuration schema. The configuration schema may be more strict as a result.
+- Updated dependencies
+  - @backstage/backend-common@0.19.2-next.1
+  - @backstage/backend-plugin-api@0.6.0-next.1
+  - @backstage/config@1.0.8
+
 ## 0.2.42-next.0
 
 ### Patch Changes
