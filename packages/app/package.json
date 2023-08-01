@@ -37,6 +37,7 @@
     "@backstage/plugin-explore": "workspace:^",
     "@backstage/plugin-gcalendar": "workspace:^",
     "@backstage/plugin-gcp-projects": "workspace:^",
+    "@backstage/plugin-gerrit": "^0.0.0",
     "@backstage/plugin-github-actions": "workspace:^",
     "@backstage/plugin-gocd": "workspace:^",
     "@backstage/plugin-graphiql": "workspace:^",
