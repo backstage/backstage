@@ -78,6 +78,11 @@ export interface BackendPluginConfig {
   register(reg: BackendPluginRegistrationPoints): void;
 }
 
+export const catalogPlugin = createBackendPlugin({
+  pluginId: 'catalog',
+  register() {},
+});
+
 /**
  * Creates a new backend plugin.
  *
@@ -89,7 +94,7 @@ export function createBackendPlugin<TOptions extends [options?: object] = []>(
   config: BackendPluginConfig | ((...params: TOptions) => BackendPluginConfig),
 ): (...params: TOptions) => BackendFeature {
   const configCallback = typeof config === 'function' ? config : () => config;
-  return (...options: TOptions): InternalBackendFeature => {
+  const factory = (...options: TOptions): InternalBackendFeature => {
     const c = configCallback(...options);
 
     let registrations: InternalBackendPluginRegistration[];
@@ -144,6 +149,9 @@ export function createBackendPlugin<TOptions extends [options?: object] = []>(
       },
     };
   };
+
+  factory.$$type = '@backstage/BackendFeatureFactory';
+  return factory;
 }
 
 /**
