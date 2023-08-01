@@ -34,7 +34,7 @@ export const kubernetesPlugin = createBackendPlugin({
       deps: {
         http: coreServices.httpRouter,
         logger: coreServices.logger,
-        config: coreServices.config,
+        config: coreServices.rootConfig,
         catalogApi: catalogServiceRef,
         permissions: coreServices.permissions,
       },

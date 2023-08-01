@@ -1,5 +1,15 @@
 # @backstage/plugin-apollo-explorer
 
+## 0.1.14-next.1
+
+### Patch Changes
+
+- 12a8c94eda8d: Add package repository and homepage metadata
+- Updated dependencies
+  - @backstage/core-components@0.13.4-next.0
+  - @backstage/core-plugin-api@1.5.3
+  - @backstage/theme@0.4.1
+
 ## 0.1.14-next.0
 
 ### Patch Changes

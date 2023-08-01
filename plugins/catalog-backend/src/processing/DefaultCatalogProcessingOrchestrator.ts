@@ -14,6 +14,7 @@
  * limitations under the License.
  */
 
+import { Span, trace } from '@opentelemetry/api';
 import {
   Entity,
   EntityPolicy,
@@ -55,6 +56,13 @@ import {
 } from './util';
 import { CatalogRulesEnforcer } from '../ingestion/CatalogRules';
 import { ProcessorCacheManager } from './ProcessorCacheManager';
+import {
+  addEntityAttributes,
+  TRACER_ID,
+  withActiveSpan,
+} from '../util/opentelemetry';
+
+const tracer = trace.getTracer(TRACER_ID);
 
 type Context = {
   entityRef: string;
@@ -63,6 +71,18 @@ type Context = {
   collector: ProcessorOutputCollector;
   cache: ProcessorCacheManager;
 };
+
+function addProcessorAttributes(
+  span: Span,
+  stage: string,
+  processor: CatalogProcessor,
+) {
+  span.setAttribute('backstage.catalog.processor.stage', stage);
+  span.setAttribute(
+    'backstage.catalog.processor.name',
+    processor.getProcessorName(),
+  );
+}
 
 /** @public */
 export class DefaultCatalogProcessingOrchestrator
@@ -179,54 +199,71 @@ export class DefaultCatalogProcessingOrchestrator
     entity: Entity,
     context: Context,
   ): Promise<Entity> {
-    let res = entity;
+    return await withActiveSpan(tracer, 'ProcessingStage', async stageSpan => {
+      addEntityAttributes(stageSpan, entity);
+      stageSpan.setAttribute('backstage.catalog.processor.stage', 'preProcess');
+      let res = entity;
 
-    for (const processor of this.options.processors) {
-      if (processor.preProcessEntity) {
-        try {
-          res = await processor.preProcessEntity(
-            res,
-            context.location,
-            context.collector.forProcessor(processor),
-            context.originLocation,
-            context.cache.forProcessor(processor),
-          );
-        } catch (e) {
-          throw new InputError(
-            `Processor ${processor.constructor.name} threw an error while preprocessing`,
-            e,
-          );
+      for (const processor of this.options.processors) {
+        if (processor.preProcessEntity) {
+          let innerRes = res;
+          res = await withActiveSpan(tracer, 'ProcessingStep', async span => {
+            addEntityAttributes(span, entity);
+            addProcessorAttributes(span, 'preProcessEntity', processor);
+            try {
+              innerRes = await processor.preProcessEntity!(
+                innerRes,
+                context.location,
+                context.collector.forProcessor(processor),
+                context.originLocation,
+                context.cache.forProcessor(processor),
+              );
+            } catch (e) {
+              throw new InputError(
+                `Processor ${processor.constructor.name} threw an error while preprocessing`,
+                e,
+              );
+            }
+            return innerRes;
+          });
         }
       }
-    }
 
-    return res;
+      return res;
+    });
   }
 
   /**
    * Enforce entity policies making sure that entities conform to a general schema
    */
   private async runPolicyStep(entity: Entity): Promise<Entity> {
-    let policyEnforcedEntity: Entity | undefined;
-
-    try {
-      policyEnforcedEntity = await this.options.policy.enforce(entity);
-    } catch (e) {
-      throw new InputError(
-        `Policy check failed for ${stringifyEntityRef(entity)}`,
-        e,
+    return await withActiveSpan(tracer, 'ProcessingStage', async stageSpan => {
+      addEntityAttributes(stageSpan, entity);
+      stageSpan.setAttribute(
+        'backstage.catalog.processor.stage',
+        'enforcePolicy',
       );
-    }
+      let policyEnforcedEntity: Entity | undefined;
 
-    if (!policyEnforcedEntity) {
-      throw new Error(
-        `Policy unexpectedly returned no data for ${stringifyEntityRef(
-          entity,
-        )}`,
-      );
-    }
+      try {
+        policyEnforcedEntity = await this.options.policy.enforce(entity);
+      } catch (e) {
+        throw new InputError(
+          `Policy check failed for ${stringifyEntityRef(entity)}`,
+          e,
+        );
+      }
 
-    return policyEnforcedEntity;
+      if (!policyEnforcedEntity) {
+        throw new Error(
+          `Policy unexpectedly returned no data for ${stringifyEntityRef(
+            entity,
+          )}`,
+        );
+      }
+
+      return policyEnforcedEntity;
+    });
   }
 
   /**
@@ -236,50 +273,62 @@ export class DefaultCatalogProcessingOrchestrator
     entity: Entity,
     context: Context,
   ): Promise<void> {
-    // Double check that none of the previous steps tried to change something
-    // related to the entity ref, which would break downstream
-    if (stringifyEntityRef(entity) !== context.entityRef) {
-      throw new ConflictError(
-        'Fatal: The entity kind, namespace, or name changed during processing',
-      );
-    }
+    return await withActiveSpan(tracer, 'ProcessingStage', async stageSpan => {
+      addEntityAttributes(stageSpan, entity);
+      stageSpan.setAttribute('backstage.catalog.processor.stage', 'validate');
+      // Double check that none of the previous steps tried to change something
+      // related to the entity ref, which would break downstream
+      if (stringifyEntityRef(entity) !== context.entityRef) {
+        throw new ConflictError(
+          'Fatal: The entity kind, namespace, or name changed during processing',
+        );
+      }
 
-    // Validate that the end result is a valid Entity at all
-    try {
-      validateEntity(entity);
-    } catch (e) {
-      throw new ConflictError(
-        `Entity envelope for ${context.entityRef} failed validation after preprocessing`,
-        e,
-      );
-    }
+      // Validate that the end result is a valid Entity at all
+      try {
+        validateEntity(entity);
+      } catch (e) {
+        throw new ConflictError(
+          `Entity envelope for ${context.entityRef} failed validation after preprocessing`,
+          e,
+        );
+      }
 
-    let valid = false;
+      let valid = false;
 
-    for (const processor of this.options.processors) {
-      if (processor.validateEntityKind) {
-        try {
-          const thisValid = await processor.validateEntityKind(entity);
-          if (thisValid) {
-            valid = true;
-            if (this.options.legacySingleProcessorValidation) {
-              break;
+      for (const processor of this.options.processors) {
+        if (processor.validateEntityKind) {
+          try {
+            const thisValid = await withActiveSpan(
+              tracer,
+              'ProcessingStep',
+              async span => {
+                addEntityAttributes(span, entity);
+                addProcessorAttributes(span, 'validateEntityKind', processor);
+                return await processor.validateEntityKind!(entity);
+              },
+            );
+            if (thisValid) {
+              valid = true;
+              if (this.options.legacySingleProcessorValidation) {
+                break;
+              }
             }
+          } catch (e) {
+            throw new InputError(
+              `Processor ${processor.constructor.name} threw an error while validating the entity ${context.entityRef}`,
+              e,
+            );
           }
-        } catch (e) {
-          throw new InputError(
-            `Processor ${processor.constructor.name} threw an error while validating the entity ${context.entityRef}`,
-            e,
-          );
         }
       }
-    }
 
-    if (!valid) {
-      throw new InputError(
-        `No processor recognized the entity ${context.entityRef} as valid, possibly caused by a foreign kind or apiVersion`,
-      );
-    }
+      if (!valid) {
+        throw new InputError(
+          `No processor recognized the entity ${context.entityRef} as valid, possibly caused by a foreign kind or apiVersion`,
+        );
+      }
+    });
   }
 
   /**
@@ -289,65 +338,81 @@ export class DefaultCatalogProcessingOrchestrator
     entity: LocationEntity,
     context: Context,
   ): Promise<void> {
-    const { type = context.location.type, presence = 'required' } = entity.spec;
-    const targets = new Array<string>();
-    if (entity.spec.target) {
-      targets.push(entity.spec.target);
-    }
-    if (entity.spec.targets) {
-      targets.push(...entity.spec.targets);
-    }
-
-    for (const maybeRelativeTarget of targets) {
-      if (type === 'file' && maybeRelativeTarget.endsWith(path.sep)) {
-        context.collector.generic()(
-          processingResult.inputError(
-            context.location,
-            `LocationEntityProcessor cannot handle ${type} type location with target ${context.location.target} that ends with a path separator`,
-          ),
-        );
-        continue;
-      }
-      const target = toAbsoluteUrl(
-        this.options.integrations,
-        context.location,
-        type,
-        maybeRelativeTarget,
+    return await withActiveSpan(tracer, 'ProcessingStage', async stageSpan => {
+      addEntityAttributes(stageSpan, entity);
+      stageSpan.setAttribute(
+        'backstage.catalog.processor.stage',
+        'readLocation',
       );
+      const { type = context.location.type, presence = 'required' } =
+        entity.spec;
+      const targets = new Array<string>();
+      if (entity.spec.target) {
+        targets.push(entity.spec.target);
+      }
+      if (entity.spec.targets) {
+        targets.push(...entity.spec.targets);
+      }
 
-      let didRead = false;
-      for (const processor of this.options.processors) {
-        if (processor.readLocation) {
-          try {
-            const read = await processor.readLocation(
-              {
-                type,
-                target,
-                presence,
-              },
-              presence === 'optional',
-              context.collector.forProcessor(processor),
-              this.options.parser,
-              context.cache.forProcessor(processor, target),
-            );
-            if (read) {
-              didRead = true;
-              break;
+      for (const maybeRelativeTarget of targets) {
+        if (type === 'file' && maybeRelativeTarget.endsWith(path.sep)) {
+          context.collector.generic()(
+            processingResult.inputError(
+              context.location,
+              `LocationEntityProcessor cannot handle ${type} type location with target ${context.location.target} that ends with a path separator`,
+            ),
+          );
+          continue;
+        }
+        const target = toAbsoluteUrl(
+          this.options.integrations,
+          context.location,
+          type,
+          maybeRelativeTarget,
+        );
+
+        let didRead = false;
+        for (const processor of this.options.processors) {
+          if (processor.readLocation) {
+            try {
+              const read = await withActiveSpan(
+                tracer,
+                'ProcessingStep',
+                async span => {
+                  addEntityAttributes(span, entity);
+                  addProcessorAttributes(span, 'readLocation', processor);
+                  return await processor.readLocation!(
+                    {
+                      type,
+                      target,
+                      presence,
+                    },
+                    presence === 'optional',
+                    context.collector.forProcessor(processor),
+                    this.options.parser,
+                    context.cache.forProcessor(processor, target),
+                  );
+                },
+              );
+              if (read) {
+                didRead = true;
+                break;
+              }
+            } catch (e) {
+              throw new InputError(
+                `Processor ${processor.constructor.name} threw an error while reading ${type}:${target}`,
+                e,
+              );
             }
-          } catch (e) {
-            throw new InputError(
-              `Processor ${processor.constructor.name} threw an error while reading ${type}:${target}`,
-              e,
-            );
           }
         }
+        if (!didRead) {
+          throw new InputError(
+            `No processor was able to handle reading of ${type}:${target}`,
+          );
+        }
       }
-      if (!didRead) {
-        throw new InputError(
-          `No processor was able to handle reading of ${type}:${target}`,
-        );
-      }
-    }
+    });
   }
 
   /**
@@ -357,26 +422,39 @@ export class DefaultCatalogProcessingOrchestrator
     entity: Entity,
     context: Context,
   ): Promise<Entity> {
-    let res = entity;
+    return await withActiveSpan(tracer, 'ProcessingStage', async stageSpan => {
+      addEntityAttributes(stageSpan, entity);
+      stageSpan.setAttribute(
+        'backstage.catalog.processor.stage',
+        'postProcessEntity',
+      );
+      let res = entity;
 
-    for (const processor of this.options.processors) {
-      if (processor.postProcessEntity) {
-        try {
-          res = await processor.postProcessEntity(
-            res,
-            context.location,
-            context.collector.forProcessor(processor),
-            context.cache.forProcessor(processor),
-          );
-        } catch (e) {
-          throw new InputError(
-            `Processor ${processor.constructor.name} threw an error while postprocessing`,
-            e,
-          );
+      for (const processor of this.options.processors) {
+        if (processor.postProcessEntity) {
+          let innerRes = res;
+          res = await withActiveSpan(tracer, 'ProcessingStep', async span => {
+            addEntityAttributes(span, entity);
+            addProcessorAttributes(span, 'postProcessEntity', processor);
+            try {
+              innerRes = await processor.postProcessEntity!(
+                innerRes,
+                context.location,
+                context.collector.forProcessor(processor),
+                context.cache.forProcessor(processor),
+              );
+            } catch (e) {
+              throw new InputError(
+                `Processor ${processor.constructor.name} threw an error while postprocessing`,
+                e,
+              );
+            }
+            return innerRes;
+          });
         }
       }
-    }
 
-    return res;
+      return res;
+    });
   }
 }

@@ -183,7 +183,7 @@ export const todoReaderServiceRef = createServiceRef<TodoReader>({
       service,
       deps: {
         reader: coreServices.urlReader,
-        config: coreServices.config,
+        config: coreServices.rootConfig,
         logger: coreServices.logger,
       },
       factory: async ({ reader, config, logger }) => {

@@ -42,13 +42,13 @@ export interface Config {
       username: string;
       /** @visibility secret */
       apiKey: string;
-      extraRequestHeaders?: Partial<{
+      extraRequestHeaders?: {
         /** @visibility secret */
-        Authorization: string;
+        Authorization?: string;
         /** @visibility secret */
-        authorization: string;
-        [key: string]: string;
-      }>;
+        authorization?: string;
+        [key: string]: string | undefined;
+      };
     }[];
   };
 }

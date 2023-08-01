@@ -1,5 +1,19 @@
 # @backstage/plugin-stack-overflow
 
+## 0.1.19-next.1
+
+### Patch Changes
+
+- 12a8c94eda8d: Add package repository and homepage metadata
+- Updated dependencies
+  - @backstage/config@1.0.8
+  - @backstage/core-components@0.13.4-next.0
+  - @backstage/core-plugin-api@1.5.3
+  - @backstage/theme@0.4.1
+  - @backstage/plugin-home-react@0.1.2-next.0
+  - @backstage/plugin-search-common@1.2.5
+  - @backstage/plugin-search-react@1.6.4-next.0
+
 ## 0.1.19-next.0
 
 ### Patch Changes

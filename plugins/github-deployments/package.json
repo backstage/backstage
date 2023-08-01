@@ -1,7 +1,7 @@
 {
   "name": "@backstage/plugin-github-deployments",
   "description": "A Backstage plugin that integrates towards GitHub Deployments",
-  "version": "0.1.52-next.0",
+  "version": "0.1.52-next.1",
   "main": "src/index.ts",
   "types": "src/index.ts",
   "license": "Apache-2.0",
@@ -12,6 +12,12 @@
   },
   "backstage": {
     "role": "frontend-plugin"
+  },
+  "homepage": "https://backstage.io",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/backstage/backstage",
+    "directory": "plugins/github-deployments"
   },
   "scripts": {
     "build": "backstage-cli package build",

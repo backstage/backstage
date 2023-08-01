@@ -1,5 +1,19 @@
 # @backstage/plugin-search-backend-node
 
+## 1.2.4-next.1
+
+### Patch Changes
+
+- 12a8c94eda8d: Add package repository and homepage metadata
+- Updated dependencies
+  - @backstage/backend-common@0.19.2-next.1
+  - @backstage/backend-plugin-api@0.6.0-next.1
+  - @backstage/backend-tasks@0.5.5-next.1
+  - @backstage/config@1.0.8
+  - @backstage/errors@1.2.1
+  - @backstage/plugin-permission-common@0.7.7
+  - @backstage/plugin-search-common@1.2.5
+
 ## 1.2.4-next.0
 
 ### Patch Changes

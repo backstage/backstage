@@ -210,7 +210,7 @@ To use the permission framework to secure the DevTools sidebar option you'll wan
    ```
 
 2. Then open the `packages/app/src/components/Root/Root.tsx` file
-3. The add these imports after all the existing import statements:
+3. Then add these imports after all the existing import statements:
 
    ```ts
    import { devToolsAdministerPermission } from '@backstage/plugin-devtools-common';
@@ -408,11 +408,23 @@ export const customDevToolsPage = <DevToolsPage />;
 
 ## Configuration
 
-The following sections outline the configuration for the DevTools plugin
+The following sections outline the configuration for the DevTools plugin.
+
+### Package Dependencies
+
+By default, only packages with names starting with `@backstage` and `@internal` will be listed on the main "Info" tab. If you would like additional packages to be listed, you can specify the package prefixes (not regular expressions) in your `app-config.yaml`. For example, to not only provide version information about backstage plugins provided by the core application (`@backstage/*` modules) but also `@roadiehq` and `@spotify` plugins, you can specify this configuration:
+
+```yaml
+devTools:
+  info:
+    packagePrefixes:
+      - @roadiehq/backstage-
+      - @spotify/backstage-
+```
 
 ### External Dependencies Configuration
 
-If you decide to use the External Dependencies tab then you'll need to setup the configuration for it in your `app-config.yaml`, if there is no config setup then the tab will be empty. Here's an example:
+If you decide to use the External Dependencies tab then you'll need to setup the configuration for it in your `app-config.yaml`. If there is no endpoints configured, then the tab will be empty. Here's an example:
 
 ```yaml
 devTools:

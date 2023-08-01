@@ -70,7 +70,7 @@ export const catalogModuleMicrosoftGraphOrgEntityProvider = createBackendModule(
       env.registerInit({
         deps: {
           catalog: catalogProcessingExtensionPoint,
-          config: coreServices.config,
+          config: coreServices.rootConfig,
           logger: coreServices.logger,
           scheduler: coreServices.scheduler,
         },
