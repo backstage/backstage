@@ -120,7 +120,7 @@ export class GitLabClient {
                     user {
                       id 
                       username 
-                      commitEmail
+                      publicEmail
                       name
                       state
                       webUrl
@@ -156,7 +156,7 @@ export class GitLabClient {
         const formattedUserResponse = {
           id: Number(userItem.user.id.replace(/^gid:\/\/gitlab\/User\//, '')),
           username: userItem.user.username,
-          email: userItem.user.commitEmail,
+          email: userItem.user.publicEmail,
           name: userItem.user.name,
           state: userItem.user.state,
           web_url: userItem.user.webUrl,
