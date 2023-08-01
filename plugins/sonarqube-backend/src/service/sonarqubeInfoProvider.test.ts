@@ -302,22 +302,22 @@ describe('DefaultSonarqubeInfoProvider', () => {
       });
     });
 
-    it('Provide external url for simple config', async () => {
+    it('Provide external base url for simple config', async () => {
       const provider = configureProvider({
         sonarqube: {
           baseUrl: 'https://sonarqube-internal.example.com',
-          externalUrl: 'https://sonarqube.example.com',
+          externalBaseUrl: 'https://sonarqube.example.com',
           apiKey: '123456789abcdef0123456789abcedf012',
         },
       });
 
       expect(provider.getBaseUrl()).toEqual({
         baseUrl: 'https://sonarqube-internal.example.com',
-        externalUrl: 'https://sonarqube.example.com',
+        externalBaseUrl: 'https://sonarqube.example.com',
       });
     });
 
-    it('Provide external url for named config', async () => {
+    it('Provide external base url for named config', async () => {
       const provider = configureProvider({
         sonarqube: {
           instances: [
@@ -329,7 +329,7 @@ describe('DefaultSonarqubeInfoProvider', () => {
             {
               name: 'other',
               baseUrl: 'https://sonarqube-other-internal.example.com',
-              externalUrl: 'https://sonarqube-other.example.com',
+              externalBaseUrl: 'https://sonarqube-other.example.com',
               apiKey: '123456789abcdef0123456789abcedf012',
             },
           ],
@@ -338,7 +338,7 @@ describe('DefaultSonarqubeInfoProvider', () => {
 
       expect(provider.getBaseUrl({ instanceName: 'other' })).toEqual({
         baseUrl: 'https://sonarqube-other-internal.example.com',
-        externalUrl: 'https://sonarqube-other.example.com',
+        externalBaseUrl: 'https://sonarqube-other.example.com',
       });
     });
   });

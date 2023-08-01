@@ -24,7 +24,7 @@ import { SonarqubeFindings } from './sonarqubeInfoProvider';
 describe('createRouter', () => {
   let app: express.Express;
   const getBaseUrlMock: jest.Mock<
-    { baseUrl: string; externalUrl?: string },
+    { baseUrl: string; externalBaseUrl?: string },
     [{ instanceName: string }]
   > = jest.fn();
   const getFindingsMock: jest.Mock<
@@ -147,10 +147,10 @@ describe('createRouter', () => {
       expect(response.body).toEqual({ instanceUrl: DUMMY_INSTANCE_URL });
     });
 
-    it('returns the external url when provided', async () => {
+    it('returns the external base url when provided', async () => {
       getBaseUrlMock.mockReturnValue({
         baseUrl: DUMMY_INSTANCE_URL,
-        externalUrl: DUMMY_INSTANCE_EXTERNAL_URL,
+        externalBaseUrl: DUMMY_INSTANCE_EXTERNAL_URL,
       });
       const response = await request(app).get('/instanceUrl').send();
       expect(response.status).toEqual(200);

@@ -28,7 +28,7 @@ export interface Config {
      * Use this if you want to use a different url for the frontend than the backend.
      * @visibility frontend
      */
-    externalUrl?: string;
+    externalBaseUrl?: string;
 
     /**
      * The api key to access the sonarqube instance under baseUrl.
@@ -58,7 +58,7 @@ export interface Config {
        * Use this if you want to use a different url for the frontend than the backend.
        * @visibility frontend
        */
-      externalUrl?: string;
+      externalBaseUrl?: string;
 
       /**
        * The api key to access the sonarqube instance.

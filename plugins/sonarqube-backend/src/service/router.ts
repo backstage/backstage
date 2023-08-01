@@ -81,11 +81,11 @@ export async function createRouter(
         ? `Retrieving sonarqube instance URL for key ${instanceKey}`
         : `Retrieving default sonarqube instance URL as instanceKey is not provided`,
     );
-    const { baseUrl, externalUrl } = sonarqubeInfoProvider.getBaseUrl({
+    const { baseUrl, externalBaseUrl } = sonarqubeInfoProvider.getBaseUrl({
       instanceName: instanceKey,
     });
     response.json({
-      instanceUrl: externalUrl || baseUrl,
+      instanceUrl: externalBaseUrl || baseUrl,
     });
   });
 

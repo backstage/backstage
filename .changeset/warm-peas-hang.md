@@ -2,4 +2,4 @@
 '@backstage/plugin-sonarqube-backend': minor
 ---
 
-Added optional `externalUrl` config for setting a different frontend URL
+Added optional `externalBaseUrl` config for setting a different frontend URL
