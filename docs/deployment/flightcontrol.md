@@ -11,11 +11,13 @@ Before you begin, make sure you have a [Flightcontrol account](https://app.fligh
 
 # Deployment Via Dashboard
 
-1. First upload your project on Github
+1. Create a new project from the Flightcontrol Dashboard
 
-2. Select `GUI` as the config type:
+2. Select the GitHub repo for your Backstage project
 
-3. Then, choose `+ Add Web Server (Fargate)` under Services before entering the following server information:
+3. Select `GUI` as the config type:
+
+4. Then, choose `+ Add Web Server (Fargate)` under Services before entering the following server information:
 
 | Field Name        | Value             |
 | ----------------- | ----------------- |
@@ -23,19 +25,17 @@ Before you begin, make sure you have a [Flightcontrol account](https://app.fligh
 | Health Check Path | /catalog          |
 | Port              | 7007              |
 
-4. After that, select `+ Add Database (RDS)`
+5. After that, select `+ Add Database (RDS)`
 
-5. Click `Create Project` and complete any required steps (like linking your AWS account).
+6. Click `Create Project` and complete any required steps (like linking your AWS account).
 
 # Deployment via Code
 
-1. First upload your project on Github
+1. Create a new project from the Flightcontrol Dashboard
 
-2. Create a Flightcontrol project from your dashboard. Select a repository for the source.
+2. Select the GitHub repo for your Backstage project
 
 3. Select the `flightcontrol.json` Config Type.
-
-4. Add a new file at the root of your repository called `flightcontrol.json`. Here's an example configuration that creates a Web Server for your Backstage app:
 
 ```json filename="flightcontrol.json"
 {
@@ -50,15 +50,15 @@ Before you begin, make sure you have a [Flightcontrol account](https://app.fligh
       },
       "services": [
         {
-          "id": "my-webapp",
-          "name": "My BackstageApp",
+          "id": "backstage",
+          "name": "Backstage",
           "type": "fargate",
           "buildType": "docker",
           "dockerfilePath": "Dockerfile",
           "dockerContext": ".",
           "healthCheckPath": "/catalog",
-          "cpu": 0.25,
-          "memory": 0.5,
+          "cpu": 0.5,
+          "memory": 1,
           "domain": "backstage.yourapp.com",
           "port": 7007,
           "minInstances": 1,
