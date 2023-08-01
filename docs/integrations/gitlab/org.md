@@ -58,7 +58,7 @@ amount of data, this can take significant time and resources.
 The token used must have the `read_api` scope, and the Users and Groups fetched
 will be those visible to the account which provisioned the token.
 
-**NOTE**: If any groups that are being ingested are empty groups and the account which provisioned the token is shared at a higher level group via group sharing and you don't see the expected number of Groups in the catalog you may be hitting this [GitLab issue](https://gitlab.com/gitlab-org/gitlab/-/issues/267996).
+**NOTE**: If any groups that are being ingested are empty groups and the user which provisioned the token is shared with a higher level group via [group sharing](https://docs.gitlab.com/ee/user/group/manage.html#share-a-group-with-another-group) and you don't see the expected number of `Group` entities in the catalog you may be hitting this [Gitlab issue](https://gitlab.com/gitlab-org/gitlab/-/issues/267996).
 
 ```yaml
 catalog:
