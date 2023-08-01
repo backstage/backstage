@@ -126,7 +126,7 @@ describe('NewRelicClient', () => {
           headers: new Map<string, string | null>([
             [
               'link',
-              '<https://next.page/page2>; rel="next", <https://badsite.dontgohere>; rel="next"',
+              '<https://next.page/page2?page=2>; rel="next", <https://badsite.dontgohere>; rel="next"',
             ],
             ['otherheader', 'otherValue'],
           ]),
@@ -135,7 +135,7 @@ describe('NewRelicClient', () => {
           ok: true,
           json: async () => ({ applications: [] }),
           headers: new Map<string, string | null>([
-            ['Link', '<https://next.page/page3>; rel="next",'],
+            ['Link', '<https://next.page/page3?page=3>; rel="next",'],
           ]),
         })
         .mockResolvedValueOnce({
@@ -170,10 +170,10 @@ describe('NewRelicClient', () => {
       'https://test.test/newrelic/apm/api/applications.json',
     );
     expect(mockedFetchApi.fetch).toHaveBeenCalledWith(
-      'https://next.page/page2',
+      'https://test.test/newrelic/apm/api/applications.json?page=2',
     );
     expect(mockedFetchApi.fetch).toHaveBeenCalledWith(
-      'https://next.page/page3',
+      'https://test.test/newrelic/apm/api/applications.json?page=3',
     );
     expect(actual).toStrictEqual(expected);
   });
@@ -220,6 +220,7 @@ describe('NewRelicClient', () => {
     ['<>; rel:"value"'],
     ['<https://next.page>; rel: "next"'],
     ['ABCDE'],
+    ['<https://next.page/page3?page=>; rel="next",'],
   ])(
     'It does not attempt pagination when the link header value is invalid (%p)',
     async linkHeaderValue => {
@@ -308,5 +309,30 @@ describe('NewRelicClient', () => {
     const actual = await client.getApplications();
 
     expect(actual).toStrictEqual({ applications: [] });
+  });
+
+  it('Generates the base url only once', async () => {
+    const mockedDiscoveryApi: DiscoveryApi = {
+      getBaseUrl: jest.fn().mockResolvedValueOnce('https://test.test'),
+    };
+
+    const mockedFetchApi: FetchApi = {
+      fetch: jest.fn().mockResolvedValue({
+        ok: true,
+        json: async () => ({ applications: [] }),
+      }),
+    };
+
+    const client = new NewRelicClient({
+      discoveryApi: mockedDiscoveryApi,
+      fetchApi: mockedFetchApi,
+    });
+
+    await client.getApplications();
+    await client.getApplications();
+    await client.getApplications();
+    await client.getApplications();
+
+    expect(mockedDiscoveryApi.getBaseUrl).toHaveBeenCalledTimes(1);
   });
 });

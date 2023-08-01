@@ -91,16 +91,22 @@ export class NewRelicClient implements NewRelicApi {
   private readonly discoveryApi: DiscoveryApi;
   private readonly fetchApi: FetchApi;
   private readonly proxyPathBase: string;
+  private baseUrl: string;
 
   constructor(options: Options) {
     this.discoveryApi = options.discoveryApi;
     this.fetchApi = options.fetchApi;
     this.proxyPathBase = options.proxyPathBase ?? DEFAULT_PROXY_PATH_BASE;
+    this.baseUrl = '';
   }
 
   async getApplications(): Promise<NewRelicApplications> {
-    const proxyUrl = await this.discoveryApi.getBaseUrl('proxy');
-    let targetUrl = `${proxyUrl}${this.proxyPathBase}/apm/api/applications.json`;
+    if (!this.baseUrl) {
+      const proxyUrl = await this.discoveryApi.getBaseUrl('proxy');
+      this.baseUrl = `${proxyUrl}${this.proxyPathBase}/apm/api/applications.json`;
+    }
+
+    let targetUrl = this.baseUrl;
     let hasNextPage = true;
 
     try {
@@ -111,7 +117,7 @@ export class NewRelicClient implements NewRelicApi {
           await this.fetchNewRelic(targetUrl);
 
         hasNextPage = hasMoreApplications;
-        targetUrl = pagination!.nextPageLink;
+        targetUrl = hasNextPage ? pagination!.nextPageLink : '';
         applications = applications.concat(applicationsFromReadPage);
       } while (hasNextPage);
 
@@ -155,12 +161,12 @@ export class NewRelicClient implements NewRelicApi {
     }
 
     const nextRelevantLink = linkHeader.replaceAll(' ', '').split(',')[0];
-
-    // Link should be of the format <nextPageLink>;rel="relation"
-    const linkParts = nextRelevantLink.match(/^<(.+)>;rel="(.+)"$/);
-    const nextPageLink = linkParts?.[1];
+    const linkParts = nextRelevantLink.match(/^<.+(\?page=.+)>;rel="(.+)"$/);
+    const nextPageNumber = linkParts?.[1];
     const relation = linkParts?.[2];
-    const isValidLink = !!(!!linkParts && nextPageLink && relation);
+
+    const nextPageLink = `${this.baseUrl}${nextPageNumber}`;
+    const isValidLink = !!(!!linkParts && nextPageNumber && relation);
 
     if (!nextRelevantLink || !isValidLink) {
       return undefined;
