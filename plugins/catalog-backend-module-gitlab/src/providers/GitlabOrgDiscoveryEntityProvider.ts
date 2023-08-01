@@ -190,7 +190,8 @@ export class GitlabOrgDiscoveryEntityProvider implements EntityProvider {
       });
     } else {
       groups = (await client.listSaasGroups(this.config.group)).items;
-      users = (await client.listSaasUsers(this.config.group)).items;
+      users = (await client.listSaasUsers(this.config.group.split('/')[0]))
+        .items;
     }
 
     const idMappedUser: { [userId: number]: GitLabUser } = {};
