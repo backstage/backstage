@@ -77,17 +77,17 @@ export interface Config {
        */
       connection:
         | string
-        | Partial<{
+        | {
             /**
              * Password that belongs to the client User
              * @visibility secret
              */
-            password: string;
+            password?: string;
             /**
              * Other connection settings
              */
             [key: string]: unknown;
-          }>;
+          };
       /** Database name prefix override */
       prefix?: string;
       /**

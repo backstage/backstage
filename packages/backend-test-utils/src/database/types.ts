@@ -24,6 +24,7 @@ import { getDockerImageForName } from '../util/getDockerImageForName';
  * @public
  */
 export type TestDatabaseId =
+  | 'POSTGRES_14'
   | 'POSTGRES_13'
   | 'POSTGRES_12'
   | 'POSTGRES_11'
@@ -46,6 +47,13 @@ export type Instance = {
 
 export const allDatabases: Record<TestDatabaseId, TestDatabaseProperties> =
   Object.freeze({
+    POSTGRES_14: {
+      name: 'Postgres 14.x',
+      driver: 'pg',
+      dockerImageName: getDockerImageForName('postgres:14'),
+      connectionStringEnvironmentVariableName:
+        'BACKSTAGE_TEST_DATABASE_POSTGRES14_CONNECTION_STRING',
+    },
     POSTGRES_13: {
       name: 'Postgres 13.x',
       driver: 'pg',

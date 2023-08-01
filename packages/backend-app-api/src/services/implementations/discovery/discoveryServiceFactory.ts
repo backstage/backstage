@@ -24,7 +24,7 @@ import {
 export const discoveryServiceFactory = createServiceFactory({
   service: coreServices.discovery,
   deps: {
-    config: coreServices.config,
+    config: coreServices.rootConfig,
   },
   async factory({ config }) {
     return HostDiscovery.fromConfig(config);

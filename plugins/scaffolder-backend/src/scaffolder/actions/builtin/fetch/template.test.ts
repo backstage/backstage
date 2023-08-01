@@ -14,6 +14,11 @@
  * limitations under the License.
  */
 
+jest.mock('@backstage/plugin-scaffolder-node', () => {
+  const actual = jest.requireActual('@backstage/plugin-scaffolder-node');
+  return { ...actual, fetchContents: jest.fn() };
+});
+
 import os from 'os';
 import { join as joinPath, sep as pathSep } from 'path';
 import fs from 'fs-extra';
@@ -25,16 +30,12 @@ import {
 } from '@backstage/backend-common';
 import { ScmIntegrations } from '@backstage/integration';
 import { PassThrough } from 'stream';
-import { fetchContents } from './helpers';
 import { createFetchTemplateAction } from './template';
 import {
+  fetchContents,
   ActionContext,
   TemplateAction,
 } from '@backstage/plugin-scaffolder-node';
-
-jest.mock('./helpers', () => ({
-  fetchContents: jest.fn(),
-}));
 
 type FetchTemplateInput = ReturnType<
   typeof createFetchTemplateAction

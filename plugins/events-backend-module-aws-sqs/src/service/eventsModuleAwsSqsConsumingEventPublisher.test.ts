@@ -64,7 +64,7 @@ describe('eventsModuleAwsSqsConsumingEventPublisher', () => {
     await startTestBackend({
       extensionPoints: [[eventsExtensionPoint, extensionPoint]],
       services: [
-        [coreServices.config, config],
+        [coreServices.rootConfig, config],
         [coreServices.logger, getVoidLogger()],
         [coreServices.scheduler, scheduler],
       ],
