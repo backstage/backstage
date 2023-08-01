@@ -78,8 +78,6 @@ export default async function generate(opts: OptionValues) {
     },
   });
 
-  logger.info('Config: ', config);
-
   // Docker client (conditionally) used by the generators, based on techdocs.generators config.
   let containerRunner: ContainerRunner | undefined;
 
