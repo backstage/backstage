@@ -1,5 +1,17 @@
 # @backstage/plugin-app-backend
 
+## 0.3.48-next.1
+
+### Patch Changes
+
+- 629cbd194a87: Use `coreServices.rootConfig` instead of `coreService.config`
+- Updated dependencies
+  - @backstage/backend-common@0.19.2-next.1
+  - @backstage/config-loader@1.4.0-next.1
+  - @backstage/backend-plugin-api@0.6.0-next.1
+  - @backstage/config@1.0.8
+  - @backstage/types@1.1.0
+
 ## 0.3.48-next.0
 
 ### Patch Changes

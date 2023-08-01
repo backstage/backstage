@@ -1,5 +1,22 @@
 # @backstage/backend-test-utils
 
+## 0.2.0-next.1
+
+### Minor Changes
+
+- b9c57a4f857e: **BREAKING**: Renamed `mockServices.config` to `mockServices.rootConfig`.
+
+### Patch Changes
+
+- ae9304818136: Add needed constants and constructs to support PostgreSQL version 14 as test database
+- Updated dependencies
+  - @backstage/backend-common@0.19.2-next.1
+  - @backstage/plugin-auth-node@0.2.17-next.1
+  - @backstage/backend-app-api@0.5.0-next.1
+  - @backstage/backend-plugin-api@0.6.0-next.1
+  - @backstage/config@1.0.8
+  - @backstage/types@1.1.0
+
 ## 0.1.40-next.0
 
 ### Patch Changes

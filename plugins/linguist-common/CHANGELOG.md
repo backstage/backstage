@@ -1,5 +1,11 @@
 # @backstage/plugin-linguist-common
 
+## 0.1.1-next.0
+
+### Patch Changes
+
+- 12a8c94eda8d: Add package repository and homepage metadata
+
 ## 0.1.0
 
 ### Minor Changes

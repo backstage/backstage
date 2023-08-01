@@ -1,5 +1,18 @@
 # @backstage/plugin-kafka
 
+## 0.3.21-next.1
+
+### Patch Changes
+
+- 12a8c94eda8d: Add package repository and homepage metadata
+- Updated dependencies
+  - @backstage/catalog-model@1.4.1
+  - @backstage/config@1.0.8
+  - @backstage/core-components@0.13.4-next.0
+  - @backstage/core-plugin-api@1.5.3
+  - @backstage/theme@0.4.1
+  - @backstage/plugin-catalog-react@1.8.1-next.0
+
 ## 0.3.21-next.0
 
 ### Patch Changes
