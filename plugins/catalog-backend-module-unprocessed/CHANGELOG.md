@@ -1,5 +1,15 @@
 # @backstage/plugin-catalog-backend-module-unprocessed
 
+## 0.2.0-next.1
+
+### Patch Changes
+
+- 12a8c94eda8d: Add package repository and homepage metadata
+- Updated dependencies
+  - @backstage/plugin-auth-node@0.2.17-next.1
+  - @backstage/backend-plugin-api@0.6.0-next.1
+  - @backstage/catalog-model@1.4.1
+
 ## 0.2.0-next.0
 
 ### Minor Changes
