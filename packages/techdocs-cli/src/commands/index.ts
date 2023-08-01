@@ -70,6 +70,11 @@ export function registerCommands(program: Command) {
       'Attempt to ensure an index.md exists falling back to using <docs-dir>/README.md or README.md in case a default <docs-dir>/index.md is not provided.',
       false,
     )
+    .option(
+      '--defaultMkdocsFile <PATH>',
+      'Mkdocs configuration file used when no mkdocs.[yaml,yml] exists in the repository',
+      undefined,
+    )
     .alias('build')
     .action(lazy(() => import('./generate/generate').then(m => m.default)));
 
