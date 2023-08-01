@@ -93,7 +93,7 @@ export class AnnotateLocationEntityProcessor implements CatalogProcessor_2 {
 export class AnnotateScmSlugEntityProcessor implements CatalogProcessor_2 {
   constructor(opts: {
     scmIntegrationRegistry: ScmIntegrationRegistry;
-    kinds: string[];
+    kinds: Set<string>;
   });
   // (undocumented)
   static fromConfig(
