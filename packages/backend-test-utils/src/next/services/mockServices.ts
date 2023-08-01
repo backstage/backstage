@@ -61,13 +61,13 @@ function simpleFactory<
  * @public
  */
 export namespace mockServices {
-  export function config(options?: config.Options): RootConfigService {
+  export function rootConfig(options?: rootConfig.Options): RootConfigService {
     return new ConfigReader(options?.data, 'mock-config');
   }
-  export namespace config {
+  export namespace rootConfig {
     export type Options = { data?: JsonObject };
 
-    export const factory = simpleFactory(coreServices.rootConfig, config);
+    export const factory = simpleFactory(coreServices.rootConfig, rootConfig);
   }
 
   export function rootLogger(options?: rootLogger.Options): LoggerService {

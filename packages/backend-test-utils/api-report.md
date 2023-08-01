@@ -36,19 +36,6 @@ export namespace mockServices {
       factory: () => ServiceFactory<CacheService, 'plugin'>;
   }
   // (undocumented)
-  export function config(options?: config.Options): RootConfigService;
-  // (undocumented)
-  export namespace config {
-    // (undocumented)
-    export type Options = {
-      data?: JsonObject;
-    };
-    const // (undocumented)
-      factory: (
-        options?: Options | undefined,
-      ) => ServiceFactory<RootConfigService, 'root'>;
-  }
-  // (undocumented)
   export namespace database {
     const // (undocumented)
       factory: () => ServiceFactory<DatabaseService, 'plugin'>;
@@ -81,6 +68,19 @@ export namespace mockServices {
   export namespace permissions {
     const // (undocumented)
       factory: () => ServiceFactory<PermissionsService, 'plugin'>;
+  }
+  // (undocumented)
+  export function rootConfig(options?: rootConfig.Options): RootConfigService;
+  // (undocumented)
+  export namespace rootConfig {
+    // (undocumented)
+    export type Options = {
+      data?: JsonObject;
+    };
+    const // (undocumented)
+      factory: (
+        options?: Options | undefined,
+      ) => ServiceFactory<RootConfigService, 'root'>;
   }
   // (undocumented)
   export namespace rootLifecycle {
