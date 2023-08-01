@@ -28,5 +28,6 @@ export type {
   BackendModuleRegistrationPoints,
   BackendPluginRegistrationPoints,
   BackendFeature,
+  BackendFeatureFactory,
   ExtensionPoint,
 } from './types';

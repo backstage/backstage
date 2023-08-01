@@ -16,6 +16,7 @@
 
 import {
   BackendFeature,
+  BackendFeatureFactory,
   RootConfigService,
   coreServices,
   createServiceFactory,
@@ -71,8 +72,11 @@ export class PackageDiscoveryService implements FeatureDiscoveryService {
       throw new Error('NOOOOOOOOOOOOOOOOOOOOOOOOOO');
     }
     console.log(`DEBUG: packageDir=`, packageDir);
-    const { dependencies } = require(resolvePath(packageDir, 'package.json'));
-    const dependencyNames = Object.keys(dependencies);
+    const { dependencies } = require(resolvePath(
+      packageDir,
+      'package.json',
+    )) as BackstagePackageJson;
+    const dependencyNames = Object.keys(dependencies || {});
     console.log(`DEBUG: dependencyNames=`, dependencyNames);
 
     const features: BackendFeature[] = [];
@@ -82,23 +86,16 @@ export class PackageDiscoveryService implements FeatureDiscoveryService {
       if (!LOADED_PACKAGE_ROLES.includes(depPkg?.backstage?.role ?? '')) {
         continue;
       }
-      const depModule = require(name); // @backstage/plugin-catalog-backend
+      const depModule = require(name);
       console.log(`DEBUG: loaded ${name} depModule=`, depModule);
-      Object.values(depModule).filter(exportValue => {
-        if (
-          exportValue &&
-          typeof exportValue === 'object' &&
-          (exportValue as any).$$type === '@backstage/BackendFeature'
-        ) {
-          features.push(exportValue as BackendFeature);
+      for (const exportValue of Object.values(depModule)) {
+        if (isBackendFeature(exportValue)) {
+          features.push(exportValue);
         }
-        if (
-          typeof exportValue === 'function' &&
-          (exportValue as any).$$type === '@backstage/BackendFeatureFactory'
-        ) {
-          features.push(exportValue() as BackendFeature);
+        if (isBackendFeatureFactory(exportValue)) {
+          features.push(exportValue());
         }
-      });
+      }
     }
 
     console.log(`DEBUG: features=`, features);
@@ -116,3 +113,22 @@ export const packageFeatureDiscoveryServiceFactory = createServiceFactory({
     return new PackageDiscoveryService(config);
   },
 });
+
+function isBackendFeature(value: unknown): value is BackendFeature {
+  return (
+    !!value &&
+    typeof value === 'object' &&
+    (value as BackendFeature).$$type === '@backstage/BackendFeature'
+  );
+}
+
+function isBackendFeatureFactory(
+  value: unknown,
+): value is BackendFeatureFactory {
+  return (
+    !!value &&
+    typeof value === 'object' &&
+    (value as BackendFeatureFactory).$$type ===
+      '@backstage/BackendFeatureFactory'
+  );
+}
