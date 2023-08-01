@@ -168,6 +168,7 @@ export interface TestBackendOptions<
 
 // @public
 export type TestDatabaseId =
+  | 'POSTGRES_14'
   | 'POSTGRES_13'
   | 'POSTGRES_12'
   | 'POSTGRES_11'
