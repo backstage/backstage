@@ -62,25 +62,7 @@ Before you begin, make sure you have a [Flightcontrol account](https://app.fligh
           "domain": "backstage.yourapp.com",
           "port": 7007,
           "minInstances": 1,
-          "maxInstances": 1,
-          "envVariables": {
-            "DATABASE_URL": {
-              "fromService": {
-                "id": "db",
-                "value": "dbConnectionString"
-              }
-            }
-          }
-        },
-        {
-          "id": "db",
-          "name": "Database",
-          "type": "rds",
-          "engine": "postgres",
-          "engineVersion": "13",
-          "instanceSize": "db.t4g.micro",
-          "storage": 20,
-          "private": false
+          "maxInstances": 1
         }
       ]
     }
