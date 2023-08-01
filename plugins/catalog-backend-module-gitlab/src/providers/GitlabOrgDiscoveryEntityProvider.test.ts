@@ -558,12 +558,23 @@ describe('GitlabOrgDiscoveryEntityProvider', () => {
                   nodes: [
                     {
                       user: {
-                        id: 'gid://gitlab/User/1234',
-                        username: 'testuser',
-                        commitEmail: 'testuser@example.com',
+                        id: 'gid://gitlab/User/12',
+                        username: 'testuser1',
+                        publicEmail: 'testuser1@example.com',
                         state: 'active',
-                        name: 'Test User',
-                        webUrl: 'https://gitlab.com/testuser',
+                        name: 'Test User 1',
+                        webUrl: 'https://gitlab.com/testuser1',
+                        avatarUrl: 'https://secure.gravatar.com/',
+                      },
+                    },
+                    {
+                      user: {
+                        id: 'gid://gitlab/User/34',
+                        username: 'testuser2',
+                        publicEmail: 'testuser2@example.com',
+                        state: 'active',
+                        name: 'Test User 2',
+                        webUrl: 'https://gitlab.com/testuser2',
                         avatarUrl: 'https://secure.gravatar.com/',
                       },
                     },
@@ -586,8 +597,8 @@ describe('GitlabOrgDiscoveryEntityProvider', () => {
                 groupMembers: {
                   nodes:
                     req.variables.group === 'group1/group2'
-                      ? [{ user: { id: 'gid://gitlab/User/1234' } }]
-                      : [],
+                      ? [{ user: { id: 'gid://gitlab/User/12' } }]
+                      : [{ user: { id: 'gid://gitlab/User/34' } }],
                   pageInfo: {
                     endCursor: 'end',
                     hasNextPage: false,
@@ -615,18 +626,43 @@ describe('GitlabOrgDiscoveryEntityProvider', () => {
           metadata: {
             annotations: {
               'backstage.io/managed-by-location':
-                'url:https://gitlab.com/testuser',
+                'url:https://gitlab.com/testuser1',
               'backstage.io/managed-by-origin-location':
-                'url:https://gitlab.com/testuser',
-              'gitlab.com/user-login': 'https://gitlab.com/testuser',
+                'url:https://gitlab.com/testuser1',
+              'gitlab.com/user-login': 'https://gitlab.com/testuser1',
             },
-            name: 'testuser',
+            name: 'testuser1',
           },
           spec: {
             memberOf: ['group2'],
             profile: {
-              displayName: 'Test User',
-              email: 'testuser@example.com',
+              displayName: 'Test User 1',
+              email: 'testuser1@example.com',
+              picture: 'https://secure.gravatar.com/',
+            },
+          },
+        },
+        locationKey: 'GitlabOrgDiscoveryEntityProvider:test-id',
+      },
+      {
+        entity: {
+          apiVersion: 'backstage.io/v1alpha1',
+          kind: 'User',
+          metadata: {
+            annotations: {
+              'backstage.io/managed-by-location':
+                'url:https://gitlab.com/testuser2',
+              'backstage.io/managed-by-origin-location':
+                'url:https://gitlab.com/testuser2',
+              'gitlab.com/user-login': 'https://gitlab.com/testuser2',
+            },
+            name: 'testuser2',
+          },
+          spec: {
+            memberOf: ['group3'],
+            profile: {
+              displayName: 'Test User 2',
+              email: 'testuser2@example.com',
               picture: 'https://secure.gravatar.com/',
             },
           },
@@ -652,6 +688,31 @@ describe('GitlabOrgDiscoveryEntityProvider', () => {
             children: [],
             profile: {
               displayName: 'group2',
+            },
+            type: 'team',
+          },
+        },
+        locationKey: 'GitlabOrgDiscoveryEntityProvider:test-id',
+      },
+      {
+        entity: {
+          apiVersion: 'backstage.io/v1alpha1',
+          kind: 'Group',
+          metadata: {
+            annotations: {
+              'backstage.io/managed-by-location':
+                'url:https://gitlab.com/group1/group3',
+              'backstage.io/managed-by-origin-location':
+                'url:https://gitlab.com/group1/group3',
+              'gitlab.com/team-path': 'group1/group3',
+            },
+            description: 'Group3',
+            name: 'group3',
+          },
+          spec: {
+            children: [],
+            profile: {
+              displayName: 'group3',
             },
             type: 'team',
           },
