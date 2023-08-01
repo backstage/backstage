@@ -110,7 +110,7 @@ cluster. Valid values are:
 | `google`               | This will use a user's Google access token from the [Google auth provider](https://backstage.io/docs/auth/google/provider) to access the Kubernetes API on GKE clusters.                                                                                                                                                                  |
 | `googleServiceAccount` | This will use the Google Cloud service account credentials to access resources in clusters                                                                                                                                                                                                                                                |
 | `oidc`                 | This will use [Oidc Tokens](https://kubernetes.io/docs/reference/access-authn-authz/authentication/#openid-connect-tokens) to authenticate to the Kubernetes API. When this is used the `oidcTokenProvider` field should also be set. Please note the cluster must support OIDC, at the time of writing AKS clusters do not support OIDC. |
-| `serviceAccount`       | This will use a Kubernetes [service account](https://kubernetes.io/docs/reference/access-authn-authz/service-accounts-admin/) to access the Kubernetes API. When this is used the `serviceAccountToken` field should also be set.                                                                                                         |
+| `serviceAccount`       | This will use a Kubernetes [service account](https://kubernetes.io/docs/reference/access-authn-authz/service-accounts-admin/) to access the Kubernetes API. When this is used the `serviceAccountToken` field should also be set, or else Backstage should be running in-cluster.                                                         |
 
 Check the [Kubernetes Authentication][4] section for additional explanation.
 
@@ -127,14 +127,54 @@ CPU/Memory for pods returned by the API server. Defaults to `false`.
 ##### `clusters.\*.serviceAccountToken` (optional)
 
 The service account token to be used when using the `serviceAccount` auth
-provider. You could get the service account token with:
+provider. Note that, unless you have an effective credential rotation procedure
+in place or have a single Kubernetes cluster running both Backstage and all your
+services, this auth provider is probably not ideal for production.
 
-```sh
-kubectl -n <NAMESPACE> get secret $(kubectl -n <NAMESPACE> get sa <SERVICE_ACCOUNT_NAME> -o=json \
-| jq -r '.secrets[0].name') -o=json \
-| jq -r '.data["token"]' \
-| base64 --decode
-```
+Assuming you have already created a service account named `SERVICE_ACCOUNT_NAME`
+in namespace `NAMESPACE` and it has adequate
+[permissions](#role-based-access-control), here are some sample procedures to
+procure a long-lived service account token for use with this provider:
+
+- On versions of Kubernetes [prior to
+  1.24](https://github.com/kubernetes/kubernetes/blob/master/CHANGELOG/CHANGELOG-1.24.md#no-really-you-must-read-this-before-you-upgrade-1),
+  you could get an (automatically-generated) token for a service account with:
+
+  ```sh
+  kubectl -n <NAMESPACE> get secret $(kubectl -n <NAMESPACE> get sa <SERVICE_ACCOUNT_NAME> -o=json \
+  | jq -r '.secrets[0].name') -o=json \
+  | jq -r '.data["token"]' \
+  | base64 --decode
+  ```
+
+- For Kubernetes 1.24+, as described in [this
+  guide](https://kubernetes.io/docs/concepts/configuration/secret/#service-account-token-secrets),
+  you can obtain a long-lived token by creating a secret:
+
+  ```sh
+  kubectl apply -f - <<EOF
+  apiVersion: v1
+  kind: Secret
+  metadata:
+    name: <SECRET_NAME>
+    namespace: <NAMESPACE>
+    annotations:
+      kubernetes.io/service-account.name: <SERVICE_ACCOUNT_NAME>
+  type: kubernetes.io/service-account-token
+  EOF
+  ```
+
+  waiting for the token controller to populate a token, and retrieving it with:
+
+  ```sh
+  kubectl -n <NAMESPACE> get secret <SECRET_NAME> -o go-template='{{.data.token | base64decode}}'
+  ```
+
+If a cluster has `authProvider: serviceAccount` and the `serviceAccountToken`
+field is omitted, Backstage will ignore the configured URL and certificate data,
+instead attempting to access the Kubernetes API via an in-cluster client as in
+[this
+example](https://github.com/kubernetes-client/javascript/blob/master/examples/in-cluster.js).
 
 ##### `clusters.\*.oidcTokenProvider` (optional)
 

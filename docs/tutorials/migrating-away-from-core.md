@@ -128,11 +128,11 @@ old usages by the `string` type.
 
 ### Constrained `IconComponent` type
 
-The `IconComponent` type used to allow all of the props from the MUI `SvgIcon`.
+The `IconComponent` type used to allow all of the props from the Material UI `SvgIcon`.
 This encouraged some bad patterns in open source plugins such as applying colors
 to the icons, which in turn hurt the ability to replace the icons with custom
 ones. The `IconComponent` type, which is now exported from
 `@backstage/core-plugin-api`, now only accepts a `fontSize` prop used to set the
-size of the icon. The type is compatible with the MUI `SvgIcon`, but there may
+size of the icon. The type is compatible with the Material UI `SvgIcon`, but there may
 be situations where an icon needs an explicit cast to `IconComponent` in order
 to narrow the type.

@@ -1,11 +1,70 @@
 # @backstage/plugin-api-docs
 
+## 0.9.7-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/core-components@0.13.4-next.0
+  - @backstage/plugin-catalog@1.12.1-next.0
+  - @backstage/core-plugin-api@1.5.3
+  - @backstage/plugin-catalog-react@1.8.1-next.0
+  - @backstage/catalog-model@1.4.1
+  - @backstage/theme@0.4.1
+
+## 0.9.6
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/theme@0.4.1
+  - @backstage/plugin-catalog-react@1.8.0
+  - @backstage/plugin-catalog@1.12.0
+  - @backstage/core-components@0.13.3
+  - @backstage/core-plugin-api@1.5.3
+  - @backstage/catalog-model@1.4.1
+
+## 0.9.6-next.2
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/plugin-catalog-react@1.8.0-next.2
+  - @backstage/plugin-catalog@1.12.0-next.2
+  - @backstage/theme@0.4.1-next.1
+  - @backstage/core-plugin-api@1.5.3-next.1
+  - @backstage/core-components@0.13.3-next.2
+  - @backstage/catalog-model@1.4.1-next.0
+
+## 0.9.6-next.1
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/theme@0.4.1-next.0
+  - @backstage/core-components@0.13.3-next.1
+  - @backstage/plugin-catalog@1.11.3-next.1
+  - @backstage/core-plugin-api@1.5.3-next.0
+  - @backstage/plugin-catalog-react@1.7.1-next.1
+
+## 0.9.6-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/core-components@0.13.3-next.0
+  - @backstage/catalog-model@1.4.1-next.0
+  - @backstage/core-plugin-api@1.5.2
+  - @backstage/theme@0.4.0
+  - @backstage/plugin-catalog@1.11.3-next.0
+  - @backstage/plugin-catalog-react@1.7.1-next.0
+
 ## 0.9.5
 
 ### Patch Changes
 
 - 865267a6b934: Updated dependency `@asyncapi/react-component` to `1.0.0-next.48`.
-- 83bdc3a555c1: Replaced usages of `theme.palette.theme.hint` with `theme.palette.text.secondary` as it has been removed in MUI v5
+- 83bdc3a555c1: Replaced usages of `theme.palette.theme.hint` with `theme.palette.text.secondary` as it has been removed in Material UI v5
 - af748a148d52: Add support for OpenAPI Specification (OAS) v3.1.0 using swagger-ui v5.0.0.
 - Updated dependencies
   - @backstage/core-plugin-api@1.5.2
@@ -44,7 +103,7 @@
 
 ### Patch Changes
 
-- 83bdc3a555c1: Replaced usages of `theme.palette.theme.hint` with `theme.palette.text.secondary` as it has been removed in MUI v5
+- 83bdc3a555c1: Replaced usages of `theme.palette.theme.hint` with `theme.palette.text.secondary` as it has been removed in Material UI v5
 - Updated dependencies
   - @backstage/plugin-catalog@1.11.1-next.1
   - @backstage/core-components@0.13.2-next.1

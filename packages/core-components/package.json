@@ -1,7 +1,7 @@
 {
   "name": "@backstage/core-components",
   "description": "Core components used by Backstage plugins and apps",
-  "version": "0.13.2",
+  "version": "0.13.4-next.0",
   "publishConfig": {
     "access": "public",
     "main": "dist/index.esm.js",
@@ -60,7 +60,7 @@
     "pluralize": "^8.0.0",
     "prop-types": "^15.7.2",
     "qs": "^6.9.4",
-    "rc-progress": "3.4.1",
+    "rc-progress": "3.4.2",
     "react-helmet": "6.1.0",
     "react-hook-form": "^7.12.2",
     "react-markdown": "^8.0.0",

@@ -1,5 +1,79 @@
 # @backstage/cli
 
+## 0.22.10-next.0
+
+### Patch Changes
+
+- 3f67cefb4780: Reload the frontend when app config changes
+- cebbf8a27f3c: Enable to print the config schema not merged with the `--no-merge` flag
+- Updated dependencies
+  - @backstage/config-loader@1.4.0-next.0
+  - @backstage/catalog-model@1.4.1
+  - @backstage/cli-common@0.1.12
+  - @backstage/cli-node@0.1.2
+  - @backstage/config@1.0.8
+  - @backstage/errors@1.2.1
+  - @backstage/eslint-plugin@0.1.3
+  - @backstage/integration@1.5.1
+  - @backstage/release-manifests@0.0.9
+  - @backstage/types@1.1.0
+
+## 0.22.9
+
+### Patch Changes
+
+- 6adb6f41711a: Fixed the `--alwaysYarnPack` flag on the`backstage-cli build-workspace` command.
+- 4edd1ef71453: semver upgrade to 7.5.3
+- ff45cb559e49: Updated dependency `esbuild` to `^0.18.0`.
+- 8174cf4c0edf: Fixing MUI / Material UI references
+- Updated dependencies
+  - @backstage/errors@1.2.1
+  - @backstage/cli-node@0.1.2
+  - @backstage/catalog-model@1.4.1
+  - @backstage/cli-common@0.1.12
+  - @backstage/config@1.0.8
+  - @backstage/config-loader@1.3.2
+  - @backstage/eslint-plugin@0.1.3
+  - @backstage/integration@1.5.1
+  - @backstage/release-manifests@0.0.9
+  - @backstage/types@1.1.0
+
+## 0.22.9-next.1
+
+### Patch Changes
+
+- 4edd1ef71453: semver upgrade to 7.5.3
+- ff45cb559e49: Updated dependency `esbuild` to `^0.18.0`.
+- 8174cf4c0edf: Fixing MUI / Material UI references
+- Updated dependencies
+  - @backstage/cli-node@0.1.2-next.1
+  - @backstage/catalog-model@1.4.1-next.0
+  - @backstage/cli-common@0.1.12
+  - @backstage/config@1.0.8
+  - @backstage/config-loader@1.3.2-next.0
+  - @backstage/errors@1.2.1-next.0
+  - @backstage/eslint-plugin@0.1.3
+  - @backstage/integration@1.5.1-next.0
+  - @backstage/release-manifests@0.0.9
+  - @backstage/types@1.1.0
+
+## 0.22.9-next.0
+
+### Patch Changes
+
+- 6adb6f41711a: Fixed the `--alwaysYarnPack` flag on the`backstage-cli build-workspace` command.
+- Updated dependencies
+  - @backstage/errors@1.2.1-next.0
+  - @backstage/catalog-model@1.4.1-next.0
+  - @backstage/cli-common@0.1.12
+  - @backstage/cli-node@0.1.2-next.0
+  - @backstage/config@1.0.8
+  - @backstage/config-loader@1.3.2-next.0
+  - @backstage/eslint-plugin@0.1.3
+  - @backstage/integration@1.5.1-next.0
+  - @backstage/release-manifests@0.0.9
+  - @backstage/types@1.1.0
+
 ## 0.22.8
 
 ### Patch Changes
@@ -9,7 +83,7 @@
 - 75540599124a: Updated example component for a newly scaffolded app.
 - 5d692f72ebfb: Make sure to include a `fetch` environment for `jsdom` in `jest` tests
 - 6816352500a7: Add discovery feature to the onboard cli command.
-- 20b7da6f1311: Enforcing MUI v5 specific linting to minimize bundle size.
+- 20b7da6f1311: Enforcing Material UI v5 specific linting to minimize bundle size.
 - Updated dependencies
   - @backstage/types@1.1.0
   - @backstage/config-loader@1.3.1
@@ -60,7 +134,7 @@
 
 ### Patch Changes
 
-- 20b7da6f1311: Enforcing MUI v5 specific linting to minimize bundle size.
+- 20b7da6f1311: Enforcing Material UI v5 specific linting to minimize bundle size.
 - Updated dependencies
   - @backstage/config-loader@1.3.1-next.0
   - @backstage/config@1.0.7

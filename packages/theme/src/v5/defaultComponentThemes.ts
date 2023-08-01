@@ -168,14 +168,9 @@ export const defaultComponentThemes: ThemeOptions['components'] = {
   MuiChip: {
     styleOverrides: {
       root: ({ theme }) => ({
-        backgroundColor: '#D9D9D9',
         // By default there's no margin, but it's usually wanted, so we add some trailing margin
         marginRight: theme.spacing(1),
         marginBottom: theme.spacing(1),
-        color: theme.palette.grey[900],
-      }),
-      outlined: ({ theme }) => ({
-        color: theme.palette.text.primary,
       }),
       label: ({ theme }) => ({
         lineHeight: theme.spacing(2.5),
@@ -186,15 +181,14 @@ export const defaultComponentThemes: ThemeOptions['components'] = {
         fontSize: theme.spacing(1.5),
       }),
       deleteIcon: ({ theme }) => ({
-        color: theme.palette.grey[500],
         width: theme.spacing(3),
         height: theme.spacing(3),
-        margin: `0 ${theme.spacing(0.75)} 0 -${theme.spacing(0.75)}`,
+        margin: theme.spacing(0, 0.75, 0, -0.75),
       }),
       deleteIconSmall: ({ theme }) => ({
         width: theme.spacing(2),
         height: theme.spacing(2),
-        margin: `0 ${theme.spacing(0.5)} 0 -${theme.spacing(0.5)}`,
+        margin: theme.spacing(0, 0.5, 0, -0.5),
       }),
     },
   },
@@ -238,6 +232,11 @@ export const defaultComponentThemes: ThemeOptions['components'] = {
         // We default to putting the card actions at the end
         justifyContent: 'flex-end',
       },
+    },
+  },
+  MuiLink: {
+    defaultProps: {
+      underline: 'hover',
     },
   },
 };

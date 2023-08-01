@@ -57,8 +57,10 @@ describe('getConfluenceConfig', () => {
     const config = new ConfigReader({
       confluence: {
         baseUrl: 'https://example.atlassian.net',
-        auth: 'bearer',
-        token: 'fake_token',
+        auth: {
+          type: 'bearer',
+          token: 'fake_token',
+        },
       },
     });
 
@@ -78,9 +80,11 @@ describe('getConfluenceConfig', () => {
     const config = new ConfigReader({
       confluence: {
         baseUrl: 'https://example.atlassian.net',
-        auth: 'basic',
-        token: 'fake_token',
-        email: 'example@example.atlassian.net',
+        auth: {
+          type: 'basic',
+          token: 'fake_token',
+          email: 'example@example.atlassian.net',
+        },
       },
     });
 
@@ -100,9 +104,11 @@ describe('getConfluenceConfig', () => {
     const config = new ConfigReader({
       confluence: {
         baseUrl: 'https://example.atlassian.net',
-        auth: 'userpass',
-        username: 'fake_user',
-        password: 'fake_password',
+        auth: {
+          type: 'userpass',
+          username: 'fake_user',
+          password: 'fake_password',
+        },
       },
     });
 

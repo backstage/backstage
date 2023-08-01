@@ -1,5 +1,91 @@
 # @backstage/plugin-techdocs
 
+## 1.6.6-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/core-components@0.13.4-next.0
+  - @backstage/core-plugin-api@1.5.3
+  - @backstage/plugin-catalog-react@1.8.1-next.0
+  - @backstage/plugin-search-react@1.6.4-next.0
+  - @backstage/catalog-model@1.4.1
+  - @backstage/config@1.0.8
+  - @backstage/errors@1.2.1
+  - @backstage/integration@1.5.1
+  - @backstage/integration-react@1.1.16-next.0
+  - @backstage/theme@0.4.1
+  - @backstage/plugin-search-common@1.2.5
+  - @backstage/plugin-techdocs-react@1.1.9-next.0
+
+## 1.6.5
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/theme@0.4.1
+  - @backstage/errors@1.2.1
+  - @backstage/plugin-catalog-react@1.8.0
+  - @backstage/core-components@0.13.3
+  - @backstage/core-plugin-api@1.5.3
+  - @backstage/catalog-model@1.4.1
+  - @backstage/config@1.0.8
+  - @backstage/integration@1.5.1
+  - @backstage/integration-react@1.1.15
+  - @backstage/plugin-search-common@1.2.5
+  - @backstage/plugin-search-react@1.6.3
+  - @backstage/plugin-techdocs-react@1.1.8
+
+## 1.6.5-next.2
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/plugin-catalog-react@1.8.0-next.2
+  - @backstage/theme@0.4.1-next.1
+  - @backstage/core-plugin-api@1.5.3-next.1
+  - @backstage/core-components@0.13.3-next.2
+  - @backstage/catalog-model@1.4.1-next.0
+  - @backstage/config@1.0.8
+  - @backstage/errors@1.2.1-next.0
+  - @backstage/integration@1.5.1-next.0
+  - @backstage/integration-react@1.1.15-next.2
+  - @backstage/plugin-search-common@1.2.5-next.0
+  - @backstage/plugin-search-react@1.6.3-next.2
+  - @backstage/plugin-techdocs-react@1.1.8-next.2
+
+## 1.6.5-next.1
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/theme@0.4.1-next.0
+  - @backstage/core-components@0.13.3-next.1
+  - @backstage/core-plugin-api@1.5.3-next.0
+  - @backstage/integration-react@1.1.15-next.1
+  - @backstage/plugin-catalog-react@1.7.1-next.1
+  - @backstage/plugin-search-react@1.6.3-next.1
+  - @backstage/plugin-techdocs-react@1.1.8-next.1
+  - @backstage/config@1.0.8
+
+## 1.6.5-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/errors@1.2.1-next.0
+  - @backstage/core-components@0.13.3-next.0
+  - @backstage/catalog-model@1.4.1-next.0
+  - @backstage/config@1.0.8
+  - @backstage/core-plugin-api@1.5.2
+  - @backstage/integration@1.5.1-next.0
+  - @backstage/integration-react@1.1.15-next.0
+  - @backstage/theme@0.4.0
+  - @backstage/plugin-catalog-react@1.7.1-next.0
+  - @backstage/plugin-search-common@1.2.5-next.0
+  - @backstage/plugin-search-react@1.6.3-next.0
+  - @backstage/plugin-techdocs-react@1.1.8-next.0
+
 ## 1.6.4
 
 ### Patch Changes
@@ -569,7 +655,7 @@
 - d3fea4ae0a: Internal fixes to avoid implicit usage of globals
 - 2e701b3796: Internal refactor to use `react-router-dom` rather than `react-router`.
 - a19cffbeed: Update search links to only have header as linkable text
-- 5d3058355d: Add `react/forbid-elements` linter rule for button, suggest MUI `Button`
+- 5d3058355d: Add `react/forbid-elements` linter rule for button, suggest Material UI `Button`
 - 3280711113: Updated dependency `msw` to `^0.49.0`.
 - 786f1b1419: Support older versions of react-router
 - Updated dependencies

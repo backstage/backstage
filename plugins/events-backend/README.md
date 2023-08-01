@@ -21,7 +21,7 @@ to the used event broker.
 
 ```bash
 # From your Backstage root directory
-yarn add --cwd packages/backend @backstage/plugin-events-backend
+yarn add --cwd packages/backend @backstage/plugin-events-backend @backstage/plugin-events-node
 ```
 
 ### Event Broker

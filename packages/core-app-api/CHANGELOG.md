@@ -1,5 +1,50 @@
 # @backstage/core-app-api
 
+## 1.9.1-next.0
+
+### Patch Changes
+
+- 9ae4e7e63836: Fixed a bug that could cause `navigate` analytics events to be misattributed to the plugin mounted on the root route (e.g. the `home` plugin at `/`) when the route that was navigated to wasn't associated with a routable extension.
+- Updated dependencies
+  - @backstage/core-plugin-api@1.5.3
+  - @backstage/config@1.0.8
+  - @backstage/types@1.1.0
+  - @backstage/version-bridge@1.0.4
+
+## 1.9.0
+
+### Minor Changes
+
+- a77ddf7ccd71: add login in popup options to config popup width and height
+
+### Patch Changes
+
+- 8174cf4c0edf: Fixing MUI / Material UI references
+- Updated dependencies
+  - @backstage/core-plugin-api@1.5.3
+  - @backstage/config@1.0.8
+  - @backstage/types@1.1.0
+  - @backstage/version-bridge@1.0.4
+
+## 1.8.2-next.1
+
+### Patch Changes
+
+- 8174cf4c0edf: Fixing MUI / Material UI references
+- Updated dependencies
+  - @backstage/core-plugin-api@1.5.3-next.1
+  - @backstage/config@1.0.8
+  - @backstage/types@1.1.0
+  - @backstage/version-bridge@1.0.4
+
+## 1.8.2-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/core-plugin-api@1.5.3-next.0
+  - @backstage/config@1.0.8
+
 ## 1.8.1
 
 ### Patch Changes
@@ -865,7 +910,7 @@
 
   Deprecated the `SamlSession` and `GithubSession` types.
 
-- 784d8078ab: Removed direct and transitive MUI dependencies.
+- 784d8078ab: Removed direct and transitive Material UI dependencies.
 - Updated dependencies
   - @backstage/config@0.1.12
   - @backstage/core-plugin-api@0.5.0
@@ -1064,7 +1109,7 @@
 
   The first and most commonly used one is `createApp` from the new `@backstage/app-defaults` package, which behaves just like the existing `createApp`. In the future this method is likely to be expanded to add more APIs and other pieces into the default setup, for example the Utility APIs from `@backstage/integration-react`.
 
-  The other option that we now provide is to use `createSpecializedApp` from `@backstage/core-app-api`. This is a more low-level API where you need to provide a full set of options, including your own `components`, `icons`, `defaultApis`, and `themes`. The `createSpecializedApp` way of creating an app is particularly useful if you are not using `@backstage/core-components` or MUI, as it allows you to avoid those dependencies completely.
+  The other option that we now provide is to use `createSpecializedApp` from `@backstage/core-app-api`. This is a more low-level API where you need to provide a full set of options, including your own `components`, `icons`, `defaultApis`, and `themes`. The `createSpecializedApp` way of creating an app is particularly useful if you are not using `@backstage/core-components` or Material UI, as it allows you to avoid those dependencies completely.
 
 - 475edb5bc5: move the BehaviorSubject init into the constructor
 - Updated dependencies

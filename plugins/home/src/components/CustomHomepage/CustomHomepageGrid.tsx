@@ -17,11 +17,11 @@
 import React, { ReactNode, useCallback, useMemo } from 'react';
 import { Layout, Layouts, Responsive, WidthProvider } from 'react-grid-layout';
 import {
+  ElementCollection,
+  getComponentData,
   storageApiRef,
   useApi,
-  getComponentData,
   useElementFilter,
-  ElementCollection,
 } from '@backstage/core-plugin-api';
 import 'react-grid-layout/css/styles.css';
 import 'react-resizable/css/styles.css';
@@ -29,8 +29,8 @@ import {
   createStyles,
   Dialog,
   makeStyles,
-  useTheme,
   Theme,
+  useTheme,
 } from '@material-ui/core';
 import { compact } from 'lodash';
 import useObservable from 'react-use/lib/useObservable';
@@ -42,10 +42,10 @@ import { CustomHomepageButtons } from './CustomHomepageButtons';
 import {
   CustomHomepageGridStateV1,
   CustomHomepageGridStateV1Schema,
-  LayoutConfiguration,
-  Widget,
   GridWidget,
+  LayoutConfiguration,
   LayoutConfigurationSchema,
+  Widget,
   WidgetSchema,
 } from './types';
 import { CardConfig } from '@backstage/plugin-home-react';
@@ -178,6 +178,7 @@ const availableWidgetsFilter = (elements: ElementCollection) => {
           title: getComponentData<string>(elem, 'title'),
           description: getComponentData<string>(elem, 'description'),
           settingsSchema: config?.settings?.schema,
+          uiSchema: config?.settings?.uiSchema,
           width: config?.layout?.width?.defaultColumns,
           minWidth: config?.layout?.width?.minColumns,
           maxWidth: config?.layout?.width?.maxColumns,
@@ -194,7 +195,7 @@ const availableWidgetsFilter = (elements: ElementCollection) => {
  *
  * @public
  */
-export type Breakpoint = 'xs' | 'sm' | 'md' | 'lg' | 'xl';
+export type Breakpoint = 'xxs' | 'xs' | 'sm' | 'md' | 'lg' | 'xl';
 
 /**
  * Props customizing the <CustomHomepageGrid/> component.
@@ -410,11 +411,13 @@ export const CustomHomepageGrid = (props: CustomHomepageGridProps) => {
           props.breakpoints ? props.breakpoints : theme.breakpoints.values
         }
         cols={
-          props.cols ? props.cols : { lg: 12, md: 10, sm: 6, xs: 4, xxs: 2 }
+          props.cols
+            ? props.cols
+            : { xl: 12, lg: 12, md: 10, sm: 6, xs: 4, xxs: 2 }
         }
         rowHeight={props.rowHeight ?? 60}
         onLayoutChange={handleLayoutChange}
-        layouts={{ lg: widgets.map(w => w.layout) }}
+        layouts={{ xl: widgets.map(w => w.layout) }}
       >
         {widgets.map((w: GridWidget) => {
           const l = w.layout;

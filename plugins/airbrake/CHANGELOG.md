@@ -1,5 +1,71 @@
 # @backstage/plugin-airbrake
 
+## 0.3.21-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/core-components@0.13.4-next.0
+  - @backstage/core-plugin-api@1.5.3
+  - @backstage/dev-utils@1.0.18-next.0
+  - @backstage/test-utils@1.4.2-next.0
+  - @backstage/plugin-catalog-react@1.8.1-next.0
+  - @backstage/catalog-model@1.4.1
+  - @backstage/theme@0.4.1
+
+## 0.3.20
+
+### Patch Changes
+
+- 7b6033587650: Added documentation for the [new backend system](https://backstage.io/docs/backend-system/)
+- Updated dependencies
+  - @backstage/theme@0.4.1
+  - @backstage/plugin-catalog-react@1.8.0
+  - @backstage/core-components@0.13.3
+  - @backstage/test-utils@1.4.1
+  - @backstage/core-plugin-api@1.5.3
+  - @backstage/catalog-model@1.4.1
+  - @backstage/dev-utils@1.0.17
+
+## 0.3.20-next.2
+
+### Patch Changes
+
+- 7b6033587650: Added documentation for the [new backend system](https://backstage.io/docs/backend-system/)
+- Updated dependencies
+  - @backstage/plugin-catalog-react@1.8.0-next.2
+  - @backstage/theme@0.4.1-next.1
+  - @backstage/test-utils@1.4.1-next.2
+  - @backstage/core-plugin-api@1.5.3-next.1
+  - @backstage/core-components@0.13.3-next.2
+  - @backstage/catalog-model@1.4.1-next.0
+  - @backstage/dev-utils@1.0.17-next.2
+
+## 0.3.20-next.1
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/theme@0.4.1-next.0
+  - @backstage/core-components@0.13.3-next.1
+  - @backstage/core-plugin-api@1.5.3-next.0
+  - @backstage/dev-utils@1.0.17-next.1
+  - @backstage/test-utils@1.4.1-next.1
+  - @backstage/plugin-catalog-react@1.7.1-next.1
+
+## 0.3.20-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/core-components@0.13.3-next.0
+  - @backstage/catalog-model@1.4.1-next.0
+  - @backstage/core-plugin-api@1.5.2
+  - @backstage/dev-utils@1.0.17-next.0
+  - @backstage/test-utils@1.4.1-next.0
+  - @backstage/theme@0.4.0
+  - @backstage/plugin-catalog-react@1.7.1-next.0
+
 ## 0.3.19
 
 ### Patch Changes

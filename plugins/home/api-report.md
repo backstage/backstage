@@ -20,7 +20,7 @@ import { RendererProps as RendererProps_2 } from '@backstage/plugin-home-react';
 import { RouteRef } from '@backstage/core-plugin-api';
 
 // @public
-export type Breakpoint = 'xs' | 'sm' | 'md' | 'lg' | 'xl';
+export type Breakpoint = 'xxs' | 'xs' | 'sm' | 'md' | 'lg' | 'xl';
 
 // @public @deprecated (undocumented)
 export type CardConfig = CardConfig_2;
@@ -42,7 +42,7 @@ export type ClockConfig = {
 
 // @public (undocumented)
 export const ComponentAccordion: (props: {
-  title: string;
+  title?: string | undefined;
   expanded?: boolean | undefined;
   Content: () => JSX.Element;
   Actions?: (() => JSX.Element) | undefined;
@@ -156,7 +156,7 @@ export type RendererProps = RendererProps_2;
 export const SettingsModal: (props: {
   open: boolean;
   close: Function;
-  componentName: string;
+  componentName?: string | undefined;
   children: JSX.Element;
 }) => JSX.Element;
 
@@ -184,5 +184,12 @@ export type ToolkitContentProps = {
 };
 
 // @public
-export const WelcomeTitle: () => JSX.Element;
+export const WelcomeTitle: ({
+  language,
+}: WelcomeTitleLanguageProps) => JSX.Element;
+
+// @public (undocumented)
+export type WelcomeTitleLanguageProps = {
+  language?: string[];
+};
 ```

@@ -1,12 +1,36 @@
 # @backstage/theme
 
+## 0.4.1
+
+### Patch Changes
+
+- 4f28914d9f0e: Overwrite `PaletteOptions` & `ThemeOptions` type to allow use of `createTheme` from `@backstage/theme` as well as `@material-ui/core/styles` with the same type. Also replaced the default `CSSBaseline` with v4 instead of v5 for better backwards compatibility for now.
+- 41c5aa0ab589: Applying the modified `theme.spacing` method only to overrides instead of replacing it in the whole theme.
+- 9395baa82413: You can now customize the typography of your theme by passing in your own custom typography defaults
+- 8174cf4c0edf: Fixing MUI / Material UI references
+- f0444f094396: Removed the hard coded color and background color in the `MuiChip` overrides so that they work better with custom themes
+- 874c3e8bf909: Override the spacing to a v5 compliant method
+
+## 0.4.1-next.1
+
+### Patch Changes
+
+- 8174cf4c0edf: Fixing MUI / Material UI references
+
+## 0.4.1-next.0
+
+### Patch Changes
+
+- 4f28914d9f0e: Overwrite `PaletteOptions` & `ThemeOptions` type to allow use of `createTheme` from `@backstage/theme` as well as `@material-ui/core/styles` with the same type. Also replaced the default `CSSBaseline` with v4 instead of v5 for better backwards compatibility for now.
+- 874c3e8bf909: Override the spacing to a v5 compliant method
+
 ## 0.4.0
 
 ### Minor Changes
 
-- 1fd38bc4141a: **MUI v5 Support:** Adding platform-wide support for MUI v5 allowing a transition phase for migrating central plugins & components over. We still support v4 instances & plugins by adding a
+- 1fd38bc4141a: **Material UI v5 Support:** Adding platform-wide support for Material UI v5 allowing a transition phase for migrating central plugins & components over. We still support v4 instances & plugins by adding a
 
-  To allow the future support of plugins & components using MUI v5 you want to upgrade your `AppTheme`'s to using the `UnifiedThemeProvider`
+  To allow the future support of plugins & components using Material UI v5 you want to upgrade your `AppTheme`'s to using the `UnifiedThemeProvider`
 
   ```diff
        Provider: ({ children }) => (
@@ -31,9 +55,9 @@
 
 ### Minor Changes
 
-- 1fd38bc4141a: **MUI v5 Support:** Adding platform-wide support for MUI v5 allowing a transition phase for migrating central plugins & components over. We still support v4 instances & plugins by adding a
+- 1fd38bc4141a: **Material UI v5 Support:** Adding platform-wide support for Material UI v5 allowing a transition phase for migrating central plugins & components over. We still support v4 instances & plugins by adding a
 
-  To allow the future support of plugins & components using MUI v5 you want to upgrade your `AppTheme`'s to using the `UnifiedThemeProvider`
+  To allow the future support of plugins & components using Material UI v5 you want to upgrade your `AppTheme`'s to using the `UnifiedThemeProvider`
 
   ```diff
        Provider: ({ children }) => (
@@ -201,7 +225,7 @@
 
 ### Patch Changes
 
-- 2089de76b: Deprecated `ItemCard`. Added `ItemCardGrid` and `ItemCardHeader` instead, that can be used to compose functionality around regular Material-UI `Card` components instead.
+- 2089de76b: Deprecated `ItemCard`. Added `ItemCardGrid` and `ItemCardHeader` instead, that can be used to compose functionality around regular Material UI `Card` components instead.
 
 ## 0.2.3
 

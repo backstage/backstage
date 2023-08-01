@@ -25,6 +25,8 @@ import {
   isKind,
   hasCatalogProcessingErrors,
   isOrphan,
+  hasRelationWarnings,
+  EntityRelationWarning,
 } from '@backstage/plugin-catalog';
 import {
   isGithubActionsAvailable,
@@ -97,6 +99,14 @@ const entityWarningContent = (
       <EntitySwitch.Case if={isOrphan}>
         <Grid item xs={12}>
           <EntityOrphanWarning />
+        </Grid>
+      </EntitySwitch.Case>
+    </EntitySwitch>
+
+    <EntitySwitch>
+      <EntitySwitch.Case if={hasRelationWarnings}>
+        <Grid item xs={12}>
+          <EntityRelationWarning />
         </Grid>
       </EntitySwitch.Case>
     </EntitySwitch>

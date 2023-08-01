@@ -1,5 +1,81 @@
 # @backstage/plugin-explore
 
+## 0.4.7-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/core-components@0.13.4-next.0
+  - @backstage/core-plugin-api@1.5.3
+  - @backstage/plugin-catalog-react@1.8.1-next.0
+  - @backstage/plugin-search-react@1.6.4-next.0
+  - @backstage/catalog-model@1.4.1
+  - @backstage/errors@1.2.1
+  - @backstage/theme@0.4.1
+  - @backstage/plugin-explore-common@0.0.1
+  - @backstage/plugin-explore-react@0.0.30
+  - @backstage/plugin-search-common@1.2.5
+
+## 0.4.6
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/theme@0.4.1
+  - @backstage/errors@1.2.1
+  - @backstage/plugin-catalog-react@1.8.0
+  - @backstage/core-components@0.13.3
+  - @backstage/core-plugin-api@1.5.3
+  - @backstage/catalog-model@1.4.1
+  - @backstage/plugin-explore-common@0.0.1
+  - @backstage/plugin-explore-react@0.0.30
+  - @backstage/plugin-search-common@1.2.5
+  - @backstage/plugin-search-react@1.6.3
+
+## 0.4.6-next.2
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/plugin-catalog-react@1.8.0-next.2
+  - @backstage/theme@0.4.1-next.1
+  - @backstage/core-plugin-api@1.5.3-next.1
+  - @backstage/core-components@0.13.3-next.2
+  - @backstage/catalog-model@1.4.1-next.0
+  - @backstage/errors@1.2.1-next.0
+  - @backstage/plugin-explore-common@0.0.1
+  - @backstage/plugin-explore-react@0.0.30-next.1
+  - @backstage/plugin-search-common@1.2.5-next.0
+  - @backstage/plugin-search-react@1.6.3-next.2
+
+## 0.4.6-next.1
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/theme@0.4.1-next.0
+  - @backstage/core-components@0.13.3-next.1
+  - @backstage/core-plugin-api@1.5.3-next.0
+  - @backstage/plugin-catalog-react@1.7.1-next.1
+  - @backstage/plugin-search-react@1.6.3-next.1
+  - @backstage/plugin-explore-react@0.0.30-next.0
+
+## 0.4.6-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/errors@1.2.1-next.0
+  - @backstage/core-components@0.13.3-next.0
+  - @backstage/catalog-model@1.4.1-next.0
+  - @backstage/core-plugin-api@1.5.2
+  - @backstage/theme@0.4.0
+  - @backstage/plugin-catalog-react@1.7.1-next.0
+  - @backstage/plugin-explore-common@0.0.1
+  - @backstage/plugin-explore-react@0.0.29
+  - @backstage/plugin-search-common@1.2.5-next.0
+  - @backstage/plugin-search-react@1.6.3-next.0
+
 ## 0.4.5
 
 ### Patch Changes

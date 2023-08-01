@@ -15,7 +15,6 @@
  */
 
 import express from 'express';
-import Router from 'express-promise-router';
 import { Logger } from 'winston';
 import { z } from 'zod';
 import { errorHandler } from '@backstage/backend-common';
@@ -35,8 +34,7 @@ import {
 } from '@backstage/plugin-search-common';
 import { SearchEngine } from '@backstage/plugin-search-common';
 import { AuthorizedSearchEngine } from './AuthorizedSearchEngine';
-import type { ApiRouter } from '@backstage/backend-openapi-utils';
-import spec from '../schema/openapi.generated';
+import { createOpenApiRouter } from '../schema/openapi.generated';
 
 const jsonObjectSchema: z.ZodSchema<JsonObject> = z.lazy(() => {
   const jsonValueSchema: z.ZodSchema<JsonValue> = z.lazy(() =>
@@ -73,6 +71,7 @@ const allowedLocationProtocols = ['http:', 'https:'];
 export async function createRouter(
   options: RouterOptions,
 ): Promise<express.Router> {
+  const router = await createOpenApiRouter();
   const { engine: inputEngine, types, permissions, config, logger } = options;
 
   const maxPageLimit =
@@ -86,14 +85,7 @@ export async function createRouter(
       .optional(),
     pageCursor: z.string().optional(),
     pageLimit: z
-      .string()
-      .transform(pageLimit => parseInt(pageLimit, 10))
-      .refine(
-        pageLimit => !isNaN(pageLimit),
-        pageLimit => ({
-          message: `The page limit "${pageLimit}" is not a number`,
-        }),
-      )
+      .number()
       .refine(
         pageLimit => pageLimit <= maxPageLimit,
         pageLimit => ({
@@ -148,7 +140,6 @@ export async function createRouter(
     })),
   });
 
-  const router = Router() as ApiRouter<typeof spec>;
   router.get('/query', async (req, res) => {
     const parseResult = requestSchema.passthrough().safeParse(req.query);
 

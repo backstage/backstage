@@ -1,5 +1,50 @@
 # @backstage/plugin-graphql-voyager
 
+## 0.1.6-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/core-components@0.13.4-next.0
+  - @backstage/core-plugin-api@1.5.3
+  - @backstage/theme@0.4.1
+
+## 0.1.5
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/theme@0.4.1
+  - @backstage/core-components@0.13.3
+  - @backstage/core-plugin-api@1.5.3
+
+## 0.1.5-next.2
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/theme@0.4.1-next.1
+  - @backstage/core-plugin-api@1.5.3-next.1
+  - @backstage/core-components@0.13.3-next.2
+
+## 0.1.5-next.1
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/theme@0.4.1-next.0
+  - @backstage/core-components@0.13.3-next.1
+  - @backstage/core-plugin-api@1.5.3-next.0
+
+## 0.1.5-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/core-components@0.13.3-next.0
+  - @backstage/core-plugin-api@1.5.2
+  - @backstage/theme@0.4.0
+
 ## 0.1.4
 
 ### Patch Changes

@@ -20,6 +20,7 @@ import {
 } from '@backstage/core-plugin-api';
 
 export type { OAuth2CreateOptions } from './OAuth2';
+export type { PopupOptions } from '../../../../lib/AuthConnector';
 /**
  * Session information for generic OAuth2 auth.
  *

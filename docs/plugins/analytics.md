@@ -34,15 +34,19 @@ is a concrete implementation of [AnalyticsApi][analytics-api-type], common
 integrations are packaged and provided as plugins. Find your analytics tool of
 choice below.
 
-| Analytics Tool         | Support Status |
-| ---------------------- | -------------- |
-| [Google Analytics][ga] | Yes ✅         |
+| Analytics Tool                        | Support Status |
+| ------------------------------------- | -------------- |
+| [Google Analytics][ga]                | Yes ✅         |
+| [Google Analytics 4][ga4]             | Yes ✅         |
+| [New Relic Browser][newrelic-browser] | Community ✅   |
 
 To suggest an integration, please [open an issue][add-tool] for the analytics
 tool your organization uses. Or jump to [Writing Integrations][int-howto] to
 learn how to contribute the integration yourself!
 
 [ga]: https://github.com/backstage/backstage/blob/master/plugins/analytics-module-ga/README.md
+[ga4]: https://github.com/backstage/backstage/blob/master/plugins/analytics-module-ga4/README.md
+[newrelic-browser]: https://github.com/backstage/backstage/blob/master/plugins/analytics-module-newrelic-browser/README.md
 [add-tool]: https://github.com/backstage/backstage/issues/new?assignees=&labels=plugin&template=plugin_template.md&title=%5BAnalytics+Module%5D+THE+ANALYTICS+TOOL+TO+INTEGRATE
 [int-howto]: #writing-integrations
 [analytics-api-type]: https://backstage.io/docs/reference/core-plugin-api.analyticsapi

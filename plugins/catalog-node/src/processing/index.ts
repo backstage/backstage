@@ -14,4 +14,10 @@
  * limitations under the License.
  */
 
-export type { DeferredEntity } from './types';
+export type {
+  DeferredEntity,
+  PlaceholderResolver,
+  PlaceholderResolverParams,
+  PlaceholderResolverRead,
+  PlaceholderResolverResolveUrl,
+} from './types';

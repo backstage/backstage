@@ -15,6 +15,7 @@
  */
 
 import fs from 'fs-extra';
+import { EOL } from 'os';
 import {
   resolve as resolvePath,
   relative as relativePath,
@@ -163,7 +164,7 @@ async function compileTsSchemas(paths: string[]) {
 
   // Lazy loaded, because this brings up all of TypeScript and we don't
   // want that eagerly loaded in tests
-  const { getProgramFromFiles, generateSchema } = await import(
+  const { getProgramFromFiles, buildGenerator } = await import(
     'typescript-json-schema'
   );
 
@@ -183,17 +184,40 @@ async function compileTsSchemas(paths: string[]) {
   const tsSchemas = paths.map(path => {
     let value;
     try {
-      value = generateSchema(
+      const generator = buildGenerator(
         program,
-        // All schemas should export a `Config` symbol
-        'Config',
         // This enables the use of these tags in TSDoc comments
         {
           required: true,
-          validationKeywords: ['visibility', 'deprecated'],
+          validationKeywords: ['visibility', 'deepVisibility', 'deprecated'],
         },
         [path.split(sep).join('/')], // Unix paths are expected for all OSes here
-      ) as JsonObject | null;
+      );
+
+      // All schemas should export a `Config` symbol
+      value = generator?.getSchemaForSymbol('Config') as JsonObject | null;
+
+      // This makes sure that no additional symbols are defined in the schema. We don't allow
+      // this because they share a global namespace and will be merged together, leading to
+      // unpredictable behavior.
+      const userSymbols = new Set(generator?.getUserSymbols());
+      userSymbols.delete('Config');
+      if (userSymbols.size !== 0) {
+        const names = Array.from(userSymbols).join("', '");
+        throw new Error(
+          `Invalid configuration schema in ${path}, additional symbol definitions are not allowed, found '${names}'`,
+        );
+      }
+
+      // This makes sure that no unsupported types are used in the schema, for example `Record<,>`.
+      // The generator will extract these as a schema reference, which will in turn be broken for our usage.
+      const reffedDefs = Object.keys(generator?.ReffedDefinitions ?? {});
+      if (reffedDefs.length !== 0) {
+        const lines = reffedDefs.join(`${EOL}  `);
+        throw new Error(
+          `Invalid configuration schema in ${path}, the following definitions are not supported:${EOL}${EOL}  ${lines}`,
+        );
+      }
     } catch (error) {
       assertError(error);
       if (error.message !== 'type Config not found') {

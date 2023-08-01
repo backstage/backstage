@@ -76,6 +76,24 @@ const createEnv = makeCreateEnv(config);
   apiRouter.use(notFoundHandler());
 ```
 
+### New Backend System
+
+The Badges backend plugin has support for the [new backend system](https://backstage.io/docs/backend-system/), here's how you can set that up:
+
+In your `packages/backend/src/index.ts` make the following changes:
+
+```diff
+  import { createBackend } from '@backstage/backend-defaults';
++ import { badgesPlugin } from '@backstage/plugin-badges-backend';
+  const backend = createBackend();
+
+  // ... other feature additions
+
++ backend.add(badgesPlugin());
+
+  backend.start();
+```
+
 ## Badge builder
 
 Badges are created by classes implementing the `BadgeBuilder` type. The default

@@ -47,7 +47,9 @@ describe('confluence:transform:markdown', () => {
   const config = new ConfigReader({
     confluence: {
       baseUrl: baseUrl,
-      token: 'fake_token',
+      auth: {
+        token: 'fake_token',
+      },
     },
   });
 
@@ -155,7 +157,7 @@ describe('confluence:transform:markdown', () => {
     expect(logger.info).toHaveBeenCalledWith(
       `Fetching the mkdocs.yml catalog from https://notreal.github.com/space/backstage/mkdocs.yml`,
     );
-    expect(logger.info).toHaveBeenCalledTimes(6);
+    expect(logger.info).toHaveBeenCalledTimes(5);
     expect(createWriteStream).toHaveBeenCalledTimes(1);
     expect(readFile).toHaveBeenCalledTimes(1);
     expect(writeFile).toHaveBeenCalledTimes(1);
@@ -202,7 +204,7 @@ describe('confluence:transform:markdown', () => {
     expect(logger.info).toHaveBeenCalledWith(
       `Fetching the mkdocs.yml catalog from https://notreal.github.com/space/backstage/mkdocs.yml`,
     );
-    expect(logger.info).toHaveBeenCalledTimes(6);
+    expect(logger.info).toHaveBeenCalledTimes(5);
 
     expect(createWriteStream).not.toHaveBeenCalled();
     expect(readFile).toHaveBeenCalledTimes(1);

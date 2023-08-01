@@ -1,5 +1,70 @@
 # @backstage/plugin-cost-insights
 
+## 0.12.10-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/core-components@0.13.4-next.0
+  - @backstage/core-plugin-api@1.5.3
+  - @backstage/plugin-catalog-react@1.8.1-next.0
+  - @backstage/catalog-model@1.4.1
+  - @backstage/config@1.0.8
+  - @backstage/theme@0.4.1
+  - @backstage/plugin-cost-insights-common@0.1.1
+
+## 0.12.9
+
+### Patch Changes
+
+- 8174cf4c0edf: Fixing MUI / Material UI references
+- Updated dependencies
+  - @backstage/theme@0.4.1
+  - @backstage/plugin-catalog-react@1.8.0
+  - @backstage/core-components@0.13.3
+  - @backstage/core-plugin-api@1.5.3
+  - @backstage/catalog-model@1.4.1
+  - @backstage/config@1.0.8
+  - @backstage/plugin-cost-insights-common@0.1.1
+
+## 0.12.9-next.2
+
+### Patch Changes
+
+- 8174cf4c0edf: Fixing MUI / Material UI references
+- Updated dependencies
+  - @backstage/plugin-catalog-react@1.8.0-next.2
+  - @backstage/theme@0.4.1-next.1
+  - @backstage/core-plugin-api@1.5.3-next.1
+  - @backstage/core-components@0.13.3-next.2
+  - @backstage/catalog-model@1.4.1-next.0
+  - @backstage/config@1.0.8
+  - @backstage/plugin-cost-insights-common@0.1.1
+
+## 0.12.9-next.1
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/theme@0.4.1-next.0
+  - @backstage/core-components@0.13.3-next.1
+  - @backstage/core-plugin-api@1.5.3-next.0
+  - @backstage/plugin-catalog-react@1.7.1-next.1
+  - @backstage/config@1.0.8
+
+## 0.12.9-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/core-components@0.13.3-next.0
+  - @backstage/catalog-model@1.4.1-next.0
+  - @backstage/config@1.0.8
+  - @backstage/core-plugin-api@1.5.2
+  - @backstage/theme@0.4.0
+  - @backstage/plugin-catalog-react@1.7.1-next.0
+  - @backstage/plugin-cost-insights-common@0.1.1
+
 ## 0.12.8
 
 ### Patch Changes

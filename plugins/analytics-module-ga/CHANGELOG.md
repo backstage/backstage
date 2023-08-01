@@ -1,5 +1,55 @@
 # @backstage/plugin-analytics-module-ga
 
+## 0.1.32-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/core-components@0.13.4-next.0
+  - @backstage/core-plugin-api@1.5.3
+  - @backstage/config@1.0.8
+  - @backstage/theme@0.4.1
+
+## 0.1.31
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/theme@0.4.1
+  - @backstage/core-components@0.13.3
+  - @backstage/core-plugin-api@1.5.3
+  - @backstage/config@1.0.8
+
+## 0.1.31-next.2
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/theme@0.4.1-next.1
+  - @backstage/core-plugin-api@1.5.3-next.1
+  - @backstage/core-components@0.13.3-next.2
+  - @backstage/config@1.0.8
+
+## 0.1.31-next.1
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/theme@0.4.1-next.0
+  - @backstage/core-components@0.13.3-next.1
+  - @backstage/core-plugin-api@1.5.3-next.0
+  - @backstage/config@1.0.8
+
+## 0.1.31-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/core-components@0.13.3-next.0
+  - @backstage/config@1.0.8
+  - @backstage/core-plugin-api@1.5.2
+  - @backstage/theme@0.4.0
+
 ## 0.1.30
 
 ### Patch Changes

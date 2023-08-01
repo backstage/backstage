@@ -29,6 +29,26 @@ type StaticStyleRules = Record<
   CSSProperties | Record<string, CSSProperties>
 >;
 
+// Utility function based on v5 `createSpacing`: https://github.com/mui/material-ui/blob/master/packages/mui-system/src/createTheme/createSpacing.ts#L42C3-L59C5
+const __v5Spacing =
+  (defaultSpacing: number) =>
+  (...argsInput: ReadonlyArray<number | string>) => {
+    const args = argsInput.length === 0 ? [1] : argsInput;
+    const transform = (argument: string | number, themeSpacing: number) => {
+      if (typeof argument === 'string') {
+        return argument;
+      }
+      return themeSpacing * argument;
+    };
+
+    return args
+      .map(argument => {
+        const output = transform(argument, defaultSpacing);
+        return typeof output === 'number' ? `${output}px` : output;
+      })
+      .join(' ');
+  };
+
 // Converts callback-based overrides to static styles, e.g.
 // { root: theme => ({ color: theme.color }) } -> { root: { color: 'red' } }
 function adaptV5CssBaselineOverride(
@@ -57,10 +77,17 @@ function adaptV5Override(
     return undefined;
   }
   if (typeof overrides === 'object') {
+    const _theme = { ...theme };
+    const defaultSpacing = theme.spacing(1);
+    if (typeof defaultSpacing === 'number') {
+      // Override potential v4 spacing method: https://mui.com/material-ui/migration/v5-style-changes/#%E2%9C%85-remove-px-suffix
+      // `adaptV4Theme as reference: https://github.com/mui/material-ui/blob/v5.x/packages/mui-material/src/styles/adaptV4Theme.js#L54C41-L54C41
+      _theme.spacing = __v5Spacing(defaultSpacing);
+    }
     return Object.fromEntries(
       Object.entries(overrides).map(([className, style]) => {
         if (typeof style === 'function') {
-          return [className, style({ theme })];
+          return [className, style({ theme: _theme })];
         }
         return [className, style];
       }),
@@ -105,7 +132,7 @@ function extractV5StateOverrides(
 }
 
 /**
- * Transform MUI v5 component themes into a v4 theme props and overrides.
+ * Transform Material UI v5 component themes into a v4 theme props and overrides.
  *
  * @public
  */

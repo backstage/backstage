@@ -35,7 +35,7 @@ import {
   NOMAD_JOB_ID_ANNOTATION,
   NOMAD_NAMESPACE_ANNOTATION,
   isNomadAllocationsAvailable,
-} from '../../Router';
+} from '../../annotations';
 import useAsync from 'react-use/lib/useAsync';
 
 type rowType = Allocation & { nomadAddr: string };

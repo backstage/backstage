@@ -142,4 +142,5 @@ export type GitlabProviderConfig = {
   groupPattern: RegExp;
   orgEnabled?: boolean;
   schedule?: TaskScheduleDefinition;
+  skipForkedRepos?: boolean;
 };

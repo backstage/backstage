@@ -31,7 +31,11 @@ export const useWebsiteForEntity = () => {
     () => lighthouseApi.getWebsiteByUrl(websiteUrl),
     [websiteUrl],
   );
-  if (response.error) {
+  // Do not display error alert if its due to no audits found for a website
+  if (
+    response.error &&
+    !response.error.message.includes('no audited website found for url')
+  ) {
     errorApi.post(response.error);
   }
   return response;

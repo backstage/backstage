@@ -1,5 +1,79 @@
 # @backstage/plugin-adr
 
+## 0.6.4-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/core-components@0.13.4-next.0
+  - @backstage/core-plugin-api@1.5.3
+  - @backstage/plugin-catalog-react@1.8.1-next.0
+  - @backstage/plugin-search-react@1.6.4-next.0
+  - @backstage/catalog-model@1.4.1
+  - @backstage/integration-react@1.1.16-next.0
+  - @backstage/theme@0.4.1
+  - @backstage/plugin-adr-common@0.2.11
+  - @backstage/plugin-search-common@1.2.5
+
+## 0.6.3
+
+### Patch Changes
+
+- 2b4513abb784: fixed error with date parsing.
+- Updated dependencies
+  - @backstage/theme@0.4.1
+  - @backstage/plugin-catalog-react@1.8.0
+  - @backstage/core-components@0.13.3
+  - @backstage/core-plugin-api@1.5.3
+  - @backstage/plugin-adr-common@0.2.11
+  - @backstage/catalog-model@1.4.1
+  - @backstage/integration-react@1.1.15
+  - @backstage/plugin-search-common@1.2.5
+  - @backstage/plugin-search-react@1.6.3
+
+## 0.6.3-next.2
+
+### Patch Changes
+
+- 2b4513abb784: fixed error with date parsing.
+- Updated dependencies
+  - @backstage/plugin-catalog-react@1.8.0-next.2
+  - @backstage/theme@0.4.1-next.1
+  - @backstage/core-plugin-api@1.5.3-next.1
+  - @backstage/core-components@0.13.3-next.2
+  - @backstage/plugin-adr-common@0.2.11-next.1
+  - @backstage/catalog-model@1.4.1-next.0
+  - @backstage/integration-react@1.1.15-next.2
+  - @backstage/plugin-search-common@1.2.5-next.0
+  - @backstage/plugin-search-react@1.6.3-next.2
+
+## 0.6.3-next.1
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/theme@0.4.1-next.0
+  - @backstage/core-components@0.13.3-next.1
+  - @backstage/core-plugin-api@1.5.3-next.0
+  - @backstage/integration-react@1.1.15-next.1
+  - @backstage/plugin-catalog-react@1.7.1-next.1
+  - @backstage/plugin-search-react@1.6.3-next.1
+
+## 0.6.3-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/core-components@0.13.3-next.0
+  - @backstage/catalog-model@1.4.1-next.0
+  - @backstage/core-plugin-api@1.5.2
+  - @backstage/integration-react@1.1.15-next.0
+  - @backstage/theme@0.4.0
+  - @backstage/plugin-adr-common@0.2.11-next.0
+  - @backstage/plugin-catalog-react@1.7.1-next.0
+  - @backstage/plugin-search-common@1.2.5-next.0
+  - @backstage/plugin-search-react@1.6.3-next.0
+
 ## 0.6.2
 
 ### Patch Changes

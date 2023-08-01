@@ -1,5 +1,97 @@
 # @backstage/plugin-kubernetes-backend
 
+## 0.11.3-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-common@0.19.2-next.0
+  - @backstage/backend-plugin-api@0.5.5-next.0
+  - @backstage/catalog-client@1.4.3
+  - @backstage/catalog-model@1.4.1
+  - @backstage/config@1.0.8
+  - @backstage/errors@1.2.1
+  - @backstage/integration-aws-node@0.1.5
+  - @backstage/plugin-auth-node@0.2.17-next.0
+  - @backstage/plugin-catalog-node@1.4.1-next.0
+  - @backstage/plugin-kubernetes-common@0.6.5
+  - @backstage/plugin-permission-common@0.7.7
+  - @backstage/plugin-permission-node@0.7.11-next.0
+
+## 0.11.2
+
+### Patch Changes
+
+- 4db037c20148: Replace reference to deprecated import
+- c2e530653539: Add WebSocket support to `kubernetes-backend` proxy.
+- be6395601d1f: Proxy endpoint supports cluster URLs with subpath
+- 47154c8ddba6: Fixed a bug where the proxy endpoint would error when used in combination with
+  a local kubectl proxy process and a token-based auth strategy on-cluster.
+- faac6b7425b2: Update readme with a valid link to k8s documentation
+- Updated dependencies
+  - @backstage/errors@1.2.1
+  - @backstage/backend-common@0.19.1
+  - @backstage/plugin-catalog-node@1.4.0
+  - @backstage/backend-plugin-api@0.5.4
+  - @backstage/catalog-client@1.4.3
+  - @backstage/catalog-model@1.4.1
+  - @backstage/config@1.0.8
+  - @backstage/integration-aws-node@0.1.5
+  - @backstage/plugin-auth-node@0.2.16
+  - @backstage/plugin-kubernetes-common@0.6.5
+  - @backstage/plugin-permission-common@0.7.7
+  - @backstage/plugin-permission-node@0.7.10
+
+## 0.11.2-next.2
+
+### Patch Changes
+
+- be6395601d1f: Proxy endpoint supports cluster URLs with subpath
+- 47154c8ddba6: Fixed a bug where the proxy endpoint would error when used in combination with
+  a local kubectl proxy process and a token-based auth strategy on-cluster.
+- Updated dependencies
+  - @backstage/backend-common@0.19.1-next.0
+  - @backstage/backend-plugin-api@0.5.4-next.0
+  - @backstage/catalog-client@1.4.3-next.0
+  - @backstage/catalog-model@1.4.1-next.0
+  - @backstage/config@1.0.8
+  - @backstage/errors@1.2.1-next.0
+  - @backstage/integration-aws-node@0.1.5-next.0
+  - @backstage/plugin-auth-node@0.2.16-next.0
+  - @backstage/plugin-catalog-node@1.4.0-next.0
+  - @backstage/plugin-kubernetes-common@0.6.5-next.0
+  - @backstage/plugin-permission-common@0.7.7-next.0
+  - @backstage/plugin-permission-node@0.7.10-next.0
+
+## 0.11.2-next.1
+
+### Patch Changes
+
+- 4db037c20148: Replace reference to deprecated import
+- c2e530653539: Add WebSocket support to `kubernetes-backend` proxy.
+- Updated dependencies
+  - @backstage/config@1.0.8
+  - @backstage/integration-aws-node@0.1.5-next.0
+
+## 0.11.2-next.0
+
+### Patch Changes
+
+- faac6b7425b2: Update readme with a valid link to k8s documentation
+- Updated dependencies
+  - @backstage/errors@1.2.1-next.0
+  - @backstage/backend-common@0.19.1-next.0
+  - @backstage/plugin-catalog-node@1.4.0-next.0
+  - @backstage/backend-plugin-api@0.5.4-next.0
+  - @backstage/catalog-client@1.4.3-next.0
+  - @backstage/catalog-model@1.4.1-next.0
+  - @backstage/config@1.0.8
+  - @backstage/integration-aws-node@0.1.5-next.0
+  - @backstage/plugin-auth-node@0.2.16-next.0
+  - @backstage/plugin-kubernetes-common@0.6.5-next.0
+  - @backstage/plugin-permission-common@0.7.7-next.0
+  - @backstage/plugin-permission-node@0.7.10-next.0
+
 ## 0.11.1
 
 ### Patch Changes

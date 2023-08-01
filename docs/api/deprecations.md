@@ -20,12 +20,12 @@ In order to provide more flexibility in what types of themes can be used and how
 they are applied, the `theme` property on the `AppTheme` type is being
 deprecated and replaced by a `Provider` property instead. The `Provider`
 property is a React component that will be mounted at the root of the app
-whenever that theme is active. This also removes the tight connection to MUI and
+whenever that theme is active. This also removes the tight connection to Material UI and
 opens up for other type of themes, and removes the hardcoded usage of
 `<CssBaseline>`.
 
 To migrate an existing theme, remove the `theme` property and move it over to a
-new `Provider` component, using `ThemeProvider` from MUI to provide the new
+new `Provider` component, using `ThemeProvider` from Material UI to provide the new
 theme, along with `<CssBaseline>`. For example a theme that currently looks like
 this:
 

@@ -150,7 +150,7 @@ export function createFetchTemplateAction(options: {
       let renderFilename: boolean;
       if (ctx.input.copyWithoutRender) {
         ctx.logger.warn(
-          '[Deprecated] Please use copyWithoutTemplating instead.',
+          '[Deprecated] copyWithoutRender is deprecated Please use copyWithoutTemplating instead.',
         );
         copyOnlyPatterns = ctx.input.copyWithoutRender;
         renderFilename = false;

@@ -1,5 +1,64 @@
 # @backstage/plugin-techdocs-module-addons-contrib
 
+## 1.0.16-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/core-components@0.13.4-next.0
+  - @backstage/core-plugin-api@1.5.3
+  - @backstage/integration@1.5.1
+  - @backstage/integration-react@1.1.16-next.0
+  - @backstage/theme@0.4.1
+  - @backstage/plugin-techdocs-react@1.1.9-next.0
+
+## 1.0.15
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/theme@0.4.1
+  - @backstage/core-components@0.13.3
+  - @backstage/core-plugin-api@1.5.3
+  - @backstage/integration@1.5.1
+  - @backstage/integration-react@1.1.15
+  - @backstage/plugin-techdocs-react@1.1.8
+
+## 1.0.15-next.2
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/theme@0.4.1-next.1
+  - @backstage/core-plugin-api@1.5.3-next.1
+  - @backstage/core-components@0.13.3-next.2
+  - @backstage/integration@1.5.1-next.0
+  - @backstage/integration-react@1.1.15-next.2
+  - @backstage/plugin-techdocs-react@1.1.8-next.2
+
+## 1.0.15-next.1
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/theme@0.4.1-next.0
+  - @backstage/core-components@0.13.3-next.1
+  - @backstage/core-plugin-api@1.5.3-next.0
+  - @backstage/integration-react@1.1.15-next.1
+  - @backstage/plugin-techdocs-react@1.1.8-next.1
+
+## 1.0.15-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/core-components@0.13.3-next.0
+  - @backstage/core-plugin-api@1.5.2
+  - @backstage/integration@1.5.1-next.0
+  - @backstage/integration-react@1.1.15-next.0
+  - @backstage/theme@0.4.0
+  - @backstage/plugin-techdocs-react@1.1.8-next.0
+
 ## 1.0.14
 
 ### Patch Changes

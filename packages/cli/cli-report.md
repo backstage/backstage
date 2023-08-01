@@ -97,6 +97,8 @@ Usage: backstage-cli config:schema [options]
 Options:
   --package <name>
   --format <format>
+  --merge
+  --no-merge
   -h, --help
 ```
 

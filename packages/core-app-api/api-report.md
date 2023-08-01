@@ -526,6 +526,7 @@ export class OAuth2
 // @public
 export type OAuth2CreateOptions = OAuthApiCreateOptions & {
   scopeTransform?: (scopes: string[]) => string[];
+  popupOptions?: PopupOptions;
 };
 
 // @public
@@ -575,6 +576,21 @@ export type OneLoginAuthCreateOptions = {
   oauthRequestApi: OAuthRequestApi;
   environment?: string;
   provider?: AuthProviderInfo;
+};
+
+// @public
+export type PopupOptions = {
+  size?:
+    | {
+        width: number;
+        height: number;
+        fullscreen?: never;
+      }
+    | {
+        width?: never;
+        height?: never;
+        fullscreen: boolean;
+      };
 };
 
 // @public

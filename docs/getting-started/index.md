@@ -53,6 +53,8 @@ create a subdirectory inside your current working directory.
 npx @backstage/create-app@latest
 ```
 
+> Note: If this fails on the `yarn install` step, it's likely that you will need to install some additional dependencies which are used to configure `isolated-vm`. You can find out more in their [requirements section](https://github.com/laverdet/isolated-vm#requirements), and then run `yarn install` manually again after you've completed those steps.
+
 The wizard will ask you for the name of the app, which will also be the name of the directory
 
 ![Screenshot of the wizard asking for a name for the app.](../assets/getting-started/wizard.png)

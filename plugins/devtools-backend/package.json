@@ -1,6 +1,6 @@
 {
   "name": "@backstage/plugin-devtools-backend",
-  "version": "0.1.1",
+  "version": "0.1.3-next.0",
   "main": "src/index.ts",
   "types": "src/index.ts",
   "license": "Apache-2.0",
@@ -11,6 +11,12 @@
   },
   "backstage": {
     "role": "backend-plugin"
+  },
+  "homepage": "https://backstage.io",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/backstage/backstage",
+    "directory": "plugins/devtools-backend"
   },
   "scripts": {
     "start": "backstage-cli package start",
@@ -23,6 +29,7 @@
   },
   "dependencies": {
     "@backstage/backend-common": "workspace:^",
+    "@backstage/backend-plugin-api": "workspace:^",
     "@backstage/cli-common": "workspace:^",
     "@backstage/config": "workspace:^",
     "@backstage/config-loader": "workspace:^",
@@ -42,7 +49,7 @@
     "lodash": "^4.17.21",
     "node-fetch": "^2.6.7",
     "ping": "^0.4.1",
-    "semver": "^7.3.2",
+    "semver": "^7.5.3",
     "winston": "^3.2.1",
     "yn": "^4.0.0"
   },

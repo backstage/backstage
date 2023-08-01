@@ -32,7 +32,7 @@ their own release cadence and versioning policy.
 
 ## Main Release Line
 
-Release cadence: Monthly
+Release cadence: Monthly, specifically on the Tuesday before the third Wednesday of each month. The first release took place in March 2022.
 
 The main release line in versioned with a major, minor and patch version but
 does **not** adhere to [semver](https://semver.org). The version format is
@@ -172,3 +172,13 @@ When we say _Supporting_ a Node.js release, that means the following:
 - The CI pipeline in the main Backstage repo tests towards the supported releases, and we encourage any other Backstage related projects to do the same.
 - New Backstage projects created with `@backstage/create-app` will have their `engines.node` version set accordingly.
 - Dropping compatibility with unsupported releases is not considered a breaking change. This includes using new syntax or APIs, as well as bumping dependencies that drop support for these versions.
+
+## TypeScript Releases
+
+The Backstage project uses [TypeScript](https://www.typescriptlang.org/) for type checking within the project, as well as external APIs and documentation. It is important to have a clear policy for which TypeScript versions we support, since we want to be able to adopt new TypeScript features, but at the same time not break existing projects that are using older versions.
+
+The TypeScript release cadence is roughly every three months. An important aspect of the TypeScript versioning is that it does not follow semver. In particular, there is no differentiation between major and minor versions, both of them are breaking. One way to think about it is to merge the two, for example version 4.7 can be considered major version 47, 5.0 is 50, and so on. Within these releases there can be a number of patch releases, which do follow semver.
+
+Our policy is to support the last 3 TypeScript versions, for example 4.8, 4.9, and 5.0. Converted to time, this means that we typically support the TypeScript version from the last six to nine months, depending on where in the TypeScript release window we are. This policy applies as a snapshot at the time of any given Backstage release, new TypeScript releases only apply to the following Backstage main-line release, not to the current one.
+
+For anyone maintaining their own Backstage project, this means that you should strive to bump to the latest TypeScript version at least every 6 months, or you may encounter breakages as you upgrade Backstage packages. If you encounter any issues in doing so, please [file an issue in the main Backstage repository](https://github.com/backstage/backstage/issues/new/choose), as per this policy we should always support the latest version. In order to ensure that we do not start using new TypeScript features too early, the Backstage project itself uses the version at the beginning of the currently supported window, in the above example that would be version 4.8.

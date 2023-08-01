@@ -10,7 +10,8 @@ import type { PaletteOptions } from '@material-ui/core/styles/createPalette';
 import { PaletteOptions as PaletteOptions_2 } from '@mui/material/styles';
 import { ReactNode } from 'react';
 import { Theme } from '@mui/material/styles';
-import { Theme as Theme_2 } from '@material-ui/core';
+import { Theme as Theme_2 } from '@material-ui/core/styles';
+import { Theme as Theme_3 } from '@material-ui/core';
 import { ThemeOptions } from '@mui/material/styles';
 import { ThemeOptions as ThemeOptions_2 } from '@material-ui/core/styles';
 import type { ThemeOptions as ThemeOptions_3 } from '@material-ui/core';
@@ -86,7 +87,7 @@ export type BackstagePaletteOptions = PaletteOptions &
   BackstagePaletteAdditions;
 
 // @public @deprecated
-export interface BackstageTheme extends Theme_2 {
+export interface BackstageTheme extends Theme_3 {
   // (undocumented)
   getPageTheme: (selector: PageThemeSelector) => PageTheme;
   // (undocumented)
@@ -112,6 +113,42 @@ export interface BackstageThemeOptions extends ThemeOptions_3 {
 }
 
 // @public
+export type BackstageTypography = {
+  htmlFontSize: number;
+  fontFamily: string;
+  h1: {
+    fontSize: number;
+    fontWeight: number;
+    marginBottom: number;
+  };
+  h2: {
+    fontSize: number;
+    fontWeight: number;
+    marginBottom: number;
+  };
+  h3: {
+    fontSize: number;
+    fontWeight: number;
+    marginBottom: number;
+  };
+  h4: {
+    fontSize: number;
+    fontWeight: number;
+    marginBottom: number;
+  };
+  h5: {
+    fontSize: number;
+    fontWeight: number;
+    marginBottom: number;
+  };
+  h6: {
+    fontSize: number;
+    fontWeight: number;
+    marginBottom: number;
+  };
+};
+
+// @public
 export interface BaseThemeOptionsInput<PaletteOptions> {
   // (undocumented)
   defaultPageTheme?: string;
@@ -123,6 +160,8 @@ export interface BaseThemeOptionsInput<PaletteOptions> {
   pageTheme?: Record<string, PageTheme>;
   // (undocumented)
   palette: PaletteOptions;
+  // (undocumented)
+  typography?: BackstageTypography;
 }
 
 // @public
@@ -133,52 +172,19 @@ export function createBaseThemeOptions<PaletteOptions>(
   options: BaseThemeOptionsInput<PaletteOptions>,
 ): {
   palette: PaletteOptions;
-  typography: {
-    htmlFontSize: number;
-    fontFamily: string;
-    h1: {
-      fontSize: number;
-      fontWeight: number;
-      marginBottom: number;
-    };
-    h2: {
-      fontSize: number;
-      fontWeight: number;
-      marginBottom: number;
-    };
-    h3: {
-      fontSize: number;
-      fontWeight: number;
-      marginBottom: number;
-    };
-    h4: {
-      fontWeight: number;
-      fontSize: number;
-      marginBottom: number;
-    };
-    h5: {
-      fontWeight: number;
-      fontSize: number;
-      marginBottom: number;
-    };
-    h6: {
-      fontWeight: number;
-      fontSize: number;
-      marginBottom: number;
-    };
-  };
+  typography: BackstageTypography;
   page: PageTheme;
   getPageTheme: ({ themeId }: PageThemeSelector) => PageTheme;
 };
 
 // @public @deprecated
-export function createTheme(options: SimpleThemeOptions): Theme_2;
+export function createTheme(options: SimpleThemeOptions): Theme_3;
 
 // @public @deprecated
 export function createThemeOptions(options: SimpleThemeOptions): ThemeOptions_3;
 
 // @public @deprecated
-export function createThemeOverrides(theme: Theme_2): Overrides;
+export function createThemeOverrides(theme: Theme_3): Overrides;
 
 // @public
 export function createUnifiedTheme(options: UnifiedThemeOptions): UnifiedTheme;
@@ -187,7 +193,7 @@ export function createUnifiedTheme(options: UnifiedThemeOptions): UnifiedTheme;
 export function createUnifiedThemeFromV4(options: ThemeOptions_2): UnifiedTheme;
 
 // @public @deprecated
-export const darkTheme: Theme_2;
+export const darkTheme: Theme_3;
 
 // @public
 export const defaultComponentThemes: ThemeOptions['components'];
@@ -202,7 +208,7 @@ export function genPageTheme(props: {
 }): PageTheme;
 
 // @public @deprecated
-export const lightTheme: Theme_2;
+export const lightTheme: Theme_3;
 
 // @public
 export type PageTheme = {
@@ -378,7 +384,14 @@ export type SimpleThemeOptions = {
   pageTheme?: Record<string, PageTheme>;
   fontFamily?: string;
   htmlFontSize?: number;
+  typography?: BackstageTypography;
 };
+
+// @public
+export type SupportedThemes = Theme_2 | Theme;
+
+// @public
+export type SupportedVersions = 'v4' | 'v5';
 
 // @public
 export const themes: {
@@ -398,7 +411,7 @@ export function transformV5ComponentThemesToV4(
 // @public
 export interface UnifiedTheme {
   // (undocumented)
-  getTheme(version: string): unknown | undefined;
+  getTheme(version: SupportedVersions): SupportedThemes | undefined;
 }
 
 // @public
@@ -415,6 +428,8 @@ export interface UnifiedThemeOptions {
   pageTheme?: Record<string, PageTheme>;
   // (undocumented)
   palette: PaletteOptions & PaletteOptions_2;
+  // (undocumented)
+  typography?: BackstageTypography;
 }
 
 // @public

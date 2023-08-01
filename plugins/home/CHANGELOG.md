@@ -1,5 +1,81 @@
 # @backstage/plugin-home
 
+## 0.5.5-next.0
+
+### Patch Changes
+
+- a559ff68de7e: Now, user can provide a language (optional) as input to receive a greeting in that specific language. Example: `<WelcomeTitle language={['English', 'Spanish']} />`
+- 6743d3917a52: Make sure the widget name is never empty in the `AddWidgetDialog`. If the title was set to "", the entry would contain an empty string. Use the name as a fallback
+- Updated dependencies
+  - @backstage/plugin-home-react@0.1.2-next.0
+  - @backstage/core-components@0.13.4-next.0
+  - @backstage/core-plugin-api@1.5.3
+  - @backstage/plugin-catalog-react@1.8.1-next.0
+  - @backstage/catalog-model@1.4.1
+  - @backstage/config@1.0.8
+  - @backstage/theme@0.4.1
+
+## 0.5.4
+
+### Patch Changes
+
+- 88c62048fcbd: fix: update plugin home dependency for `@rjsf/material-ui` to `@rjsf/material-ui-v5`
+- 0b89ca8ce24a: Add possibility to customize the settings widget for different
+  properties by using the `uiSchema` provided by the json-schema.
+  More information here: https://rjsf-team.github.io/react-jsonschema-form/docs/api-reference/uiSchema
+- b8ebd3d2e4e5: Fix missing column breakpoints in `CustomHompageGrid`
+- Updated dependencies
+  - @backstage/theme@0.4.1
+  - @backstage/plugin-catalog-react@1.8.0
+  - @backstage/core-components@0.13.3
+  - @backstage/plugin-home-react@0.1.1
+  - @backstage/core-plugin-api@1.5.3
+  - @backstage/catalog-model@1.4.1
+  - @backstage/config@1.0.8
+
+## 0.5.4-next.2
+
+### Patch Changes
+
+- 0b89ca8ce24a: Add possibility to customize the settings widget for different
+  properties by using the `uiSchema` provided by the json-schema.
+  More information here: https://rjsf-team.github.io/react-jsonschema-form/docs/api-reference/uiSchema
+- Updated dependencies
+  - @backstage/plugin-catalog-react@1.8.0-next.2
+  - @backstage/plugin-home-react@0.1.1-next.2
+  - @backstage/theme@0.4.1-next.1
+  - @backstage/core-plugin-api@1.5.3-next.1
+  - @backstage/core-components@0.13.3-next.2
+  - @backstage/catalog-model@1.4.1-next.0
+  - @backstage/config@1.0.8
+
+## 0.5.4-next.1
+
+### Patch Changes
+
+- b8ebd3d2e4e5: Fix missing column breakpoints in `CustomHompageGrid`
+- Updated dependencies
+  - @backstage/theme@0.4.1-next.0
+  - @backstage/core-components@0.13.3-next.1
+  - @backstage/core-plugin-api@1.5.3-next.0
+  - @backstage/plugin-catalog-react@1.7.1-next.1
+  - @backstage/plugin-home-react@0.1.1-next.1
+  - @backstage/config@1.0.8
+
+## 0.5.4-next.0
+
+### Patch Changes
+
+- 88c62048fcbd: fix: update plugin home dependency for `@rjsf/material-ui` to `@rjsf/material-ui-v5`
+- Updated dependencies
+  - @backstage/core-components@0.13.3-next.0
+  - @backstage/catalog-model@1.4.1-next.0
+  - @backstage/config@1.0.8
+  - @backstage/core-plugin-api@1.5.2
+  - @backstage/theme@0.4.0
+  - @backstage/plugin-catalog-react@1.7.1-next.0
+  - @backstage/plugin-home-react@0.1.1-next.0
+
 ## 0.5.3
 
 ### Patch Changes

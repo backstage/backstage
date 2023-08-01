@@ -91,15 +91,12 @@ export interface IncrementalEntityProvider<TCursor, TContext> {
      * optionally maps the payload to an object containing a delta
      * mutation.
      *
-     * If a valid delta is returned by this method, it will be ingested
-     * automatically by the provider.
+     * If a delta result is returned by this method, it will be ingested
+     * automatically by the provider. Alternatively, if an "ignored" result is
+     * returned, then it is understood that this event should not cause anything
+     * to be ingested.
      */
-    onEvent: (params: EventParams) =>
-      | undefined
-      | {
-          added: DeferredEntity[];
-          removed: { entityRef: string }[];
-        };
+    onEvent: (params: EventParams) => Promise<IncrementalEntityEventResult>;
 
     /**
      * This method returns an array of topics for the IncrementalEntityProvider
@@ -108,6 +105,22 @@ export interface IncrementalEntityProvider<TCursor, TContext> {
     supportsEventTopics: () => string[];
   };
 }
+
+/**
+ * An object returned by event handler to indicate whether to ignore the event
+ * or to apply a delta in response to the event.
+ *
+ * @public
+ */
+export type IncrementalEntityEventResult =
+  | {
+      type: 'ignored';
+    }
+  | {
+      type: 'delta';
+      added: DeferredEntity[];
+      removed: { entityRef: string }[];
+    };
 
 /**
  * Value returned by an {@link IncrementalEntityProvider} to provide a

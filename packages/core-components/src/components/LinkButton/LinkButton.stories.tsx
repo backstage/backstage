@@ -46,7 +46,7 @@ export default {
             A collection of buttons that should be used in the Backstage
             interface. These leverage the properties inherited from{' '}
             <Link to="https://material-ui.com/components/buttons/">
-              Material-UI Button
+              Material UI Button
             </Link>
             , but include an opinionated set that align to the Backstage design.
           </Typography>
@@ -131,7 +131,7 @@ export const ButtonLinks = () => {
           <LinkButton to={link()} color="default" variant="outlined">
             Route Ref
           </LinkButton>
-          &nbsp; has props for both Material-UI's component as well as for
+          &nbsp; has props for both Material UI's component as well as for
           react-router-dom's Route object.
         </ListItem>
 
@@ -151,7 +151,7 @@ export const ButtonLinks = () => {
           >
             View URL
           </MaterialButton>
-          &nbsp; links to a defined URL using Material-UI's Button.
+          &nbsp; links to a defined URL using Material UI's Button.
         </ListItem>
 
         <ListItem>
@@ -162,7 +162,7 @@ export const ButtonLinks = () => {
           >
             Trigger Event
           </MaterialButton>
-          &nbsp; triggers an onClick event using Material-UI's Button.
+          &nbsp; triggers an onClick event using Material UI's Button.
         </ListItem>
       </List>
     </>
