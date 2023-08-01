@@ -5,17 +5,17 @@ sidebar_label: AWS via Flightcontrol
 description: How to deploy Backstage to AWS via Flightcontrol
 ---
 
-This guide explains how to deploy Backstage to [Flightcontrol](https://www.flightcontrol.dev?ref=backstage), a platform that fully automates deployments to Amazon Web Services (AWS). Flightcontrol supports git-driven and container-based deployments.
+This guide explains how to deploy Backstage to [Flightcontrol](https://www.flightcontrol.dev?ref=backstage), a platform that fully automates deployments to Amazon Web Services (AWS). Flightcontrol supports git-driven and image registry deployments.
 
 Before you begin, make sure you have a [Flightcontrol account](https://app.flightcontrol.dev/signup?ref=backstage) and a [Github account](https://github.com/login) to follow this guide.
 
 # Deployment Via Dashboard
 
-First upload your project on Github
+1. First upload your project on Github
 
-Select `GUI` as the config type:
+2. Select `GUI` as the config type:
 
-Then, choose `+ Add Web Server (Fargate)` under Services before entering the following server information:
+3. Then, choose `+ Add Web Server (Fargate)` under Services before entering the following server information:
 
 | Field Name        | Value             |
 | ----------------- | ----------------- |
@@ -23,9 +23,9 @@ Then, choose `+ Add Web Server (Fargate)` under Services before entering the fol
 | Health Check Path | /catalog          |
 | Port              | 7007              |
 
-After that, select `+ Add Database (RDS)`
+4. After that, select `+ Add Database (RDS)`
 
-Click `Create Project` and complete any required steps (like linking your AWS account).
+5. Click `Create Project` and complete any required steps (like linking your AWS account).
 
 # Deployment via Code
 
