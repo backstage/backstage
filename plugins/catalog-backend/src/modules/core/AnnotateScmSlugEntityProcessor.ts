@@ -33,7 +33,7 @@ export class AnnotateScmSlugEntityProcessor implements CatalogProcessor {
   constructor(
     private readonly opts: {
       scmIntegrationRegistry: ScmIntegrationRegistry;
-      kinds: string[];
+      kinds: Set<string>;
     },
   ) {}
 
@@ -45,9 +45,17 @@ export class AnnotateScmSlugEntityProcessor implements CatalogProcessor {
     config: Config,
     kinds?: string[],
   ): AnnotateScmSlugEntityProcessor {
+    const uniqueKinds = new Set<string>();
+    if (kinds) {
+      kinds.forEach(kind => {
+        uniqueKinds.add(kind.toLowerCase());
+      });
+    } else {
+      uniqueKinds.add('component');
+    }
     return new AnnotateScmSlugEntityProcessor({
       scmIntegrationRegistry: ScmIntegrations.fromConfig(config),
-      kinds: kinds || ['Component'],
+      kinds: uniqueKinds,
     });
   }
 
@@ -55,7 +63,10 @@ export class AnnotateScmSlugEntityProcessor implements CatalogProcessor {
     entity: Entity,
     location: LocationSpec,
   ): Promise<Entity> {
-    if (!this.opts.kinds.includes(entity.kind) || location.type !== 'url') {
+    if (
+      !this.opts.kinds.has(entity.kind.toLowerCase()) ||
+      location.type !== 'url'
+    ) {
       return entity;
     }
 
