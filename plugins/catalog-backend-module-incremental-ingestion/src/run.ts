@@ -54,7 +54,7 @@ async function main() {
   const backend = createBackend({
     services: [
       createServiceFactory({
-        service: coreServices.config,
+        service: coreServices.rootConfig,
         deps: {},
         factory: () => new ConfigReader(config),
       }),

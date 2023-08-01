@@ -31,7 +31,7 @@ export const devtoolsPlugin = createBackendPlugin({
   register(env) {
     env.registerInit({
       deps: {
-        config: coreServices.config,
+        config: coreServices.rootConfig,
         logger: coreServices.logger,
         permissions: coreServices.permissions,
         httpRouter: coreServices.httpRouter,

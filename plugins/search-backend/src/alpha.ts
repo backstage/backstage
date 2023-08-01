@@ -93,7 +93,7 @@ export const searchPlugin = createBackendPlugin({
     env.registerInit({
       deps: {
         logger: coreServices.logger,
-        config: coreServices.config,
+        config: coreServices.rootConfig,
         permissions: coreServices.permissions,
         http: coreServices.httpRouter,
         searchIndexService: searchIndexServiceRef,

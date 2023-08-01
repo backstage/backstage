@@ -73,7 +73,7 @@ export interface TestBackend extends Backend {
 
 const defaultServiceFactories = [
   mockServices.cache.factory(),
-  mockServices.config.factory(),
+  mockServices.rootConfig.factory(),
   mockServices.database.factory(),
   mockServices.httpRouter.factory(),
   mockServices.identity.factory(),
@@ -108,7 +108,7 @@ export async function startTestBackend<
   const rootHttpRouterFactory = createServiceFactory({
     service: coreServices.rootHttpRouter,
     deps: {
-      config: coreServices.config,
+      config: coreServices.rootConfig,
       lifecycle: coreServices.rootLifecycle,
       rootLogger: coreServices.rootLogger,
     },

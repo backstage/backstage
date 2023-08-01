@@ -62,7 +62,7 @@ describe('catalogModuleAwsS3EntityProvider', () => {
     await startTestBackend({
       extensionPoints: [[catalogProcessingExtensionPoint, extensionPoint]],
       services: [
-        [coreServices.config, config],
+        [coreServices.rootConfig, config],
         [coreServices.logger, getVoidLogger()],
         [coreServices.scheduler, scheduler],
       ],

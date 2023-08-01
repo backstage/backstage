@@ -31,7 +31,7 @@ export const badgesPlugin = createBackendPlugin({
   register(env) {
     env.registerInit({
       deps: {
-        config: coreServices.config,
+        config: coreServices.rootConfig,
         logger: coreServices.logger,
         discovery: coreServices.discovery,
         tokenManager: coreServices.tokenManager,

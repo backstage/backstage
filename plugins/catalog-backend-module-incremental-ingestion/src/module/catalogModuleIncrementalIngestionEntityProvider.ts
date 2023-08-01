@@ -44,7 +44,7 @@ export const catalogModuleIncrementalIngestionEntityProvider =
         env.registerInit({
           deps: {
             catalog: catalogProcessingExtensionPoint,
-            config: coreServices.config,
+            config: coreServices.rootConfig,
             database: coreServices.database,
             httpRouter: coreServices.httpRouter,
             logger: coreServices.logger,

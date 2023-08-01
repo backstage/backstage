@@ -17,7 +17,7 @@
 import {
   Backend,
   cacheServiceFactory,
-  configServiceFactory,
+  rootConfigServiceFactory,
   createSpecializedBackend,
   databaseServiceFactory,
   discoveryServiceFactory,
@@ -40,7 +40,7 @@ import {
 
 export const defaultServiceFactories = [
   cacheServiceFactory(),
-  configServiceFactory(),
+  rootConfigServiceFactory(),
   databaseServiceFactory(),
   discoveryServiceFactory(),
   httpRouterServiceFactory(),
