@@ -23,7 +23,7 @@ import {
   FetchBuildsOptions,
   Stage,
 } from '@backstage/plugin-cicd-statistics';
-import { Gitlab } from '@gitbeaker/browser';
+import { Gitlab } from '@gitbeaker/rest';
 import { OAuthApi } from '@backstage/core-plugin-api';
 import limiterFactory from 'p-limit';
 import { Entity, getEntitySourceLocation } from '@backstage/catalog-model';

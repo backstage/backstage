@@ -16,7 +16,7 @@
 
 import { createTemplateAction } from '@backstage/plugin-scaffolder-node';
 import { ScmIntegrationRegistry } from '@backstage/integration';
-import { Gitlab } from '@gitbeaker/node';
+import { Gitlab } from '@gitbeaker/rest';
 import { getToken } from '../util';
 import commonGitlabConfig from '../commonGitlabConfig';
 import { z } from 'zod';

@@ -74,7 +74,7 @@
     "@backstage/plugin-tech-insights-node": "workspace:^",
     "@backstage/plugin-techdocs-backend": "workspace:^",
     "@backstage/plugin-todo-backend": "workspace:^",
-    "@gitbeaker/node": "^35.1.0",
+    "@gitbeaker/rest": "^39.10.2",
     "@octokit/rest": "^19.0.3",
     "@opentelemetry/api": "^1.4.1",
     "@opentelemetry/exporter-prometheus": "^0.39.1",

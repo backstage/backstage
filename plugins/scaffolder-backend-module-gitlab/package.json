@@ -35,7 +35,7 @@
     "@backstage/errors": "workspace:^",
     "@backstage/integration": "workspace:^",
     "@backstage/plugin-scaffolder-node": "workspace:^",
-    "@gitbeaker/node": "^35.8.0",
+    "@gitbeaker/rest": "^39.10.2",
     "zod": "^3.21.4"
   },
   "devDependencies": {

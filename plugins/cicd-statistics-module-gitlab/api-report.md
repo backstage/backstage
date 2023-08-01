@@ -9,7 +9,7 @@ import { CicdState } from '@backstage/plugin-cicd-statistics';
 import { CicdStatisticsApi } from '@backstage/plugin-cicd-statistics';
 import { Entity } from '@backstage/catalog-model';
 import { FetchBuildsOptions } from '@backstage/plugin-cicd-statistics';
-import { Gitlab } from '@gitbeaker/browser';
+import { Gitlab } from '@gitbeaker/rest';
 import { OAuthApi } from '@backstage/core-plugin-api';
 
 // @public

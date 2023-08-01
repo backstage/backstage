@@ -36,8 +36,7 @@
     "@backstage/catalog-model": "workspace:^",
     "@backstage/core-plugin-api": "workspace:^",
     "@backstage/plugin-cicd-statistics": "workspace:^",
-    "@gitbeaker/browser": "^35.6.0",
-    "@gitbeaker/core": "^35.6.0",
+    "@gitbeaker/rest": "^39.10.2",
     "luxon": "^3.0.0",
     "p-limit": "^4.0.0"
   },
