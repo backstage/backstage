@@ -1,5 +1,5 @@
 ---
-'@backstage/backend-plugin-api': patch
+'@backstage/backend-tasks': patch
 ---
 
 Make `readTaskScheduleDefinitionFromConfig` properly handle bad inputs

@@ -15,7 +15,7 @@
  */
 
 import { Config } from '@backstage/config';
-import { HumanDuration, JsonObject } from '@backstage/types';
+import { HumanDuration } from '@backstage/types';
 import { TaskScheduleDefinition } from './types';
 import { Duration } from 'luxon';
 
