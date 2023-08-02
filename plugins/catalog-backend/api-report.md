@@ -91,9 +91,17 @@ export class AnnotateLocationEntityProcessor implements CatalogProcessor_2 {
 
 // @public (undocumented)
 export class AnnotateScmSlugEntityProcessor implements CatalogProcessor_2 {
-  constructor(opts: { scmIntegrationRegistry: ScmIntegrationRegistry });
+  constructor(opts: {
+    scmIntegrationRegistry: ScmIntegrationRegistry;
+    kinds?: string[];
+  });
   // (undocumented)
-  static fromConfig(config: Config): AnnotateScmSlugEntityProcessor;
+  static fromConfig(
+    config: Config,
+    options?: {
+      kinds?: string[];
+    },
+  ): AnnotateScmSlugEntityProcessor;
   // (undocumented)
   getProcessorName(): string;
   // (undocumented)
