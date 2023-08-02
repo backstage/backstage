@@ -25,9 +25,7 @@ Before you begin, make sure you have a [Flightcontrol account](https://app.fligh
 | Health Check Path | /catalog          |
 | Port              | 7007              |
 
-5. After that, select `+ Add Database (RDS)`
-
-6. Click `Create Project` and complete any required steps (like linking your AWS account).
+5. Click `Create Project` and complete any required steps (like linking your AWS account).
 
 # Deployment via Code
 
@@ -69,6 +67,10 @@ Before you begin, make sure you have a [Flightcontrol account](https://app.fligh
   ]
 }
 ```
+
+# Databases in Redis
+
+If you need a database for your Backstage plugins, follow this [guide](https://www.flightcontrol.dev/docs/guides/flightcontrol/using-code#redis?ref=backstage) to add a Redis Database service.
 
 ## Troubleshooting
 
