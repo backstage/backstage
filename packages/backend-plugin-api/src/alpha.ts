@@ -22,7 +22,10 @@ export interface FeatureDiscoveryService {
   getBackendFeatures(): Promise<{ features: Array<BackendFeature> }>;
 }
 
-/** @alpha */
+/**
+ * An optional service that can be used to dynamically load in additional BackendFeatures at runtime.
+ * @alpha
+ */
 export const featureDiscoveryServiceRef =
   createServiceRef<FeatureDiscoveryService>({
     id: 'core.featureDiscovery',

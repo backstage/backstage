@@ -79,11 +79,13 @@ class PackageDiscoveryService implements FeatureDiscoveryService {
     const features: BackendFeature[] = [];
 
     for (const name of dependencyNames) {
-      const depPkg = require(`${name}/package.json`) as BackstagePackageJson;
+      const depPkg = require(require.resolve(`${name}/package.json`, {
+        paths: [packageDir],
+      })) as BackstagePackageJson;
       if (!LOADED_PACKAGE_ROLES.includes(depPkg?.backstage?.role ?? '')) {
         continue;
       }
-      const depModule = require(name);
+      const depModule = require(require.resolve(name, { paths: [packageDir] }));
       for (const exportValue of Object.values(depModule)) {
         if (isBackendFeature(exportValue)) {
           features.push(exportValue);
@@ -122,7 +124,7 @@ function isBackendFeatureFactory(
 ): value is BackendFeatureFactory {
   return (
     !!value &&
-    typeof value === 'object' &&
+    typeof value === 'function' &&
     (value as BackendFeatureFactory).$$type ===
       '@backstage/BackendFeatureFactory'
   );
