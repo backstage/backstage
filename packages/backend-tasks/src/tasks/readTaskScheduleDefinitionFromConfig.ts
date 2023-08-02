@@ -31,29 +31,48 @@ const propsOfHumanDuration = [
 ];
 
 function convertToHumanDuration(config: Config, key: string): HumanDuration {
-  const props = config.getConfig(key).keys();
-  if (!props.find(prop => propsOfHumanDuration.includes(prop))) {
+  // Ensures that the root is an object
+  const root = config.getConfig(key);
+
+  const result: Record<string, number> = {};
+  let found = false;
+  for (const prop of propsOfHumanDuration) {
+    const value = root.getOptionalNumber(prop);
+    if (value !== undefined) {
+      result[prop] = value;
+      found = true;
+    }
+  }
+
+  if (!found) {
     throw new Error(
       `HumanDuration needs at least one of: ${propsOfHumanDuration}`,
     );
   }
 
-  const invalidProps = props.filter(
-    prop => !propsOfHumanDuration.includes(prop),
-  );
+  const invalidProps = root
+    .keys()
+    .filter(prop => !propsOfHumanDuration.includes(prop));
   if (invalidProps.length > 0) {
     throw new Error(
       `HumanDuration does not contain properties: ${invalidProps}`,
     );
   }
 
-  return config.get<JsonObject>(key) as HumanDuration;
+  return result as HumanDuration;
 }
 
 function readDuration(config: Config, key: string): Duration | HumanDuration {
-  return typeof config.get(key) === 'string'
-    ? Duration.fromISO(config.getString(key))
-    : convertToHumanDuration(config, key);
+  if (typeof config.get(key) === 'string') {
+    const value = config.getString(key);
+    const duration = Duration.fromISO(value);
+    if (!duration.isValid) {
+      throw new Error(`Invalid duration: ${value}`);
+    }
+    return duration;
+  }
+
+  return convertToHumanDuration(config, key);
 }
 
 function readCronOrDuration(
