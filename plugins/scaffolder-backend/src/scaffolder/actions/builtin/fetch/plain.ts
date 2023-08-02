@@ -16,9 +16,12 @@
 
 import { UrlReader, resolveSafeChildPath } from '@backstage/backend-common';
 import { ScmIntegrations } from '@backstage/integration';
-import { fetchContents } from './helpers';
-import { createTemplateAction } from '@backstage/plugin-scaffolder-node';
 import { examples } from './plain.examples';
+
+import {
+  createTemplateAction,
+  fetchContents,
+} from '@backstage/plugin-scaffolder-node';
 
 export const ACTION_ID = 'fetch:plain';
 

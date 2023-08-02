@@ -24,7 +24,7 @@ import {
 } from '@backstage/config-loader';
 
 /** @public */
-export interface ConfigFactoryOptions {
+export interface RootConfigFactoryOptions {
   /**
    * Process arguments to use instead of the default `process.argv()`.
    */
@@ -37,9 +37,9 @@ export interface ConfigFactoryOptions {
 }
 
 /** @public */
-export const configServiceFactory = createServiceFactory(
-  (options?: ConfigFactoryOptions) => ({
-    service: coreServices.config,
+export const rootConfigServiceFactory = createServiceFactory(
+  (options?: RootConfigFactoryOptions) => ({
+    service: coreServices.rootConfig,
     deps: {},
     async factory() {
       const source = ConfigSources.default({

@@ -1,5 +1,14 @@
 # @backstage/plugin-jenkins-common
 
+## 0.1.18-next.0
+
+### Patch Changes
+
+- 12a8c94eda8d: Add package repository and homepage metadata
+- Updated dependencies
+  - @backstage/plugin-catalog-common@1.0.15
+  - @backstage/plugin-permission-common@0.7.7
+
 ## 0.1.17
 
 ### Patch Changes

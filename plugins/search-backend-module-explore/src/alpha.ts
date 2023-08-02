@@ -54,7 +54,7 @@ export const searchModuleExploreCollator = createBackendModule(
     register(env) {
       env.registerInit({
         deps: {
-          config: coreServices.config,
+          config: coreServices.rootConfig,
           logger: coreServices.logger,
           discovery: coreServices.discovery,
           scheduler: coreServices.scheduler,

@@ -1,7 +1,7 @@
 {
   "name": "@backstage/plugin-config-schema",
   "description": "A Backstage plugin that lets you browse the configuration schema of your app",
-  "version": "0.1.44-next.0",
+  "version": "0.1.44-next.1",
   "main": "src/index.ts",
   "types": "src/index.ts",
   "license": "Apache-2.0",
@@ -12,6 +12,12 @@
   },
   "backstage": {
     "role": "frontend-plugin"
+  },
+  "homepage": "https://backstage.io",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/backstage/backstage",
+    "directory": "plugins/config-schema"
   },
   "scripts": {
     "build": "backstage-cli package build",

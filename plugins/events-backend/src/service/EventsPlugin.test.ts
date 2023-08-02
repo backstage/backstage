@@ -71,7 +71,7 @@ describe('eventPlugin', () => {
     await startTestBackend({
       extensionPoints: [],
       services: [
-        [coreServices.config, config],
+        [coreServices.rootConfig, config],
         [coreServices.httpRouter, httpRouter],
         [coreServices.logger, getVoidLogger()],
       ],

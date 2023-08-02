@@ -61,11 +61,11 @@ All of these services can be replaced with your own implementations if you need 
 For example, let's say we want to customize the core configuration service to enable remote configuration loading. That would look something like this:
 
 ```ts
-import { configServiceFactory } from '@backstage/backend-app-api';
+import { rootConfigServiceFactory } from '@backstage/backend-app-api';
 
 const backend = createBackend({
   services: [
-    configServiceFactory({
+    rootConfigServiceFactory({
       remote: { reloadIntervalSeconds: 60 },
     }),
   ],
@@ -148,35 +148,3 @@ backend.start();
 ```
 
 We've now split the backend into two separate deployments, but we still need to make sure that they can communicate with each other. This is the hard and somewhat tedious part, as Backstage currently doesn't provide an out of the box solution that solves this. You'll need to manually configure the two backends with custom implementations of the `DiscoveryService` and have them return the correct URLs for each other. Likewise, you'll also need to provide a custom implementation of the `DiscoveryApi` in the frontend, unless you surface the two backends via a proxy that handles the routing instead.
-
-### Shared Environments
-
-To make it a bit easier to manage multiple backends, it's possible to create a shared environment that can be used across multiple backends. You would typically house it in a separate package that can be referenced by backends in your monorepo, or published to a package registry for broader use.
-
-A shared environment contains a set of service implementations that should be used across all backends. These services will override the default ones, but if a service is provided directly to the backend, it will override the one in the shared environment.
-
-A shared environment is defined using `createSharedEnvironment`. In this example we place it in a new and separate package called `backend-env`:
-
-```ts
-// packages/backend-env/src/index.ts
-import { createSharedEnvironment } from '@backstage/backend-plugin-api';
-import { customDiscoveryServiceFactory } from './customDiscoveryServiceFactory';
-
-export const env = createSharedEnvironment({
-  services: [
-    customDiscoveryServiceFactory(), // custom DiscoveryService implementation
-  ],
-});
-```
-
-And passed on to backends using the `env` option:
-
-```ts
-// packages/backend-b/src/index.ts, imports omitted
-import { env } from '@internal/backend-env';
-
-const backend = createBackend({ env });
-
-backend.add(scaffolderPlugin());
-backend.start();
-```
