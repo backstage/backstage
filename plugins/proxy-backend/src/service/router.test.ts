@@ -45,10 +45,12 @@ describe('createRouter', () => {
         },
       },
       proxy: {
-        '/test': {
-          target: 'https://example.com',
-          headers: {
-            Authorization: 'Bearer supersecret',
+        endpoints: {
+          '/test': {
+            target: 'https://example.com',
+            headers: {
+              Authorization: 'Bearer supersecret',
+            },
           },
         },
       },
@@ -112,9 +114,11 @@ describe('createRouter', () => {
         },
         // no target would cause the buildMiddleware to fail
         proxy: {
-          '/test': {
-            headers: {
-              Authorization: 'Bearer supersecret',
+          endpoints: {
+            '/test': {
+              headers: {
+                Authorization: 'Bearer supersecret',
+              },
             },
           },
         },
@@ -141,9 +145,11 @@ describe('createRouter', () => {
         },
         // no target would cause the buildMiddleware to fail
         proxy: {
-          '/test': {
-            headers: {
-              Authorization: 'Bearer supersecret',
+          endpoints: {
+            '/test': {
+              headers: {
+                Authorization: 'Bearer supersecret',
+              },
             },
           },
         },
