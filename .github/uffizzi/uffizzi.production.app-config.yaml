@@ -283,4 +283,4 @@ permission:
 
 search:
   query:
-    pageLimit: 100
+    pageLimit: 50
