@@ -39,6 +39,7 @@ import { devtoolsPlugin } from '@backstage/plugin-devtools-backend';
 import { TaskScheduleDefinition } from '@backstage/backend-tasks';
 import { adrPlugin } from '@backstage/plugin-adr-backend';
 import { lighthousePlugin } from '@backstage/plugin-lighthouse-backend';
+import { proxyPlugin } from '@backstage/plugin-proxy-backend';
 
 const backend = createBackend();
 
@@ -97,6 +98,9 @@ backend.add(kubernetesPlugin());
 
 // Lighthouse
 backend.add(lighthousePlugin());
+
+// Proxy
+backend.add(proxyPlugin());
 
 // Permissions
 backend.add(permissionPlugin());
