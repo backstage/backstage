@@ -11,13 +11,23 @@ export interface FeatureDiscoveryService {
   }>;
 }
 
-// Warning: (ae-forgotten-export) The symbol "ServiceRef" needs to be exported by the entry point alpha.d.ts
-//
 // @alpha
 export const featureDiscoveryServiceRef: ServiceRef<
   FeatureDiscoveryService,
-  'plugin'
+  'root'
 >;
+
+// @public
+export type ServiceRef<
+  TService,
+  TScope extends 'root' | 'plugin' = 'root' | 'plugin',
+> = {
+  id: string;
+  scope: TScope;
+  T: TService;
+  toString(): string;
+  $$type: '@backstage/ServiceRef';
+};
 
 // Warnings were encountered during analysis:
 //

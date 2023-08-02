@@ -29,4 +29,8 @@ export interface FeatureDiscoveryService {
 export const featureDiscoveryServiceRef =
   createServiceRef<FeatureDiscoveryService>({
     id: 'core.featureDiscovery',
+    scope: 'root',
   });
+
+export type { ServiceRef } from './services';
+export type { BackendFeature };
