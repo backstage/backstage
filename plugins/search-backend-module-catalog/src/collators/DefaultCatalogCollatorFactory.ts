@@ -14,7 +14,6 @@
  * limitations under the License.
  */
 
-import { Config } from '@backstage/config';
 import {
   PluginEndpointDiscovery,
   TokenManager,
@@ -24,27 +23,45 @@ import {
   CatalogClient,
   GetEntitiesRequest,
 } from '@backstage/catalog-client';
-import { DocumentCollatorFactory } from '@backstage/plugin-search-common';
-import { catalogEntityReadPermission } from '@backstage/plugin-catalog-common/alpha';
+import { stringifyEntityRef } from '@backstage/catalog-model';
+import { Config } from '@backstage/config';
 import { CatalogEntityDocument } from '@backstage/plugin-catalog-common';
+import { catalogEntityReadPermission } from '@backstage/plugin-catalog-common/alpha';
 import { Permission } from '@backstage/plugin-permission-common';
+import { DocumentCollatorFactory } from '@backstage/plugin-search-common';
 import { Readable } from 'stream';
 import { CatalogCollatorEntityTransformer } from './CatalogCollatorEntityTransformer';
+import { readCollatorConfigOptions } from './config';
 import { defaultCatalogCollatorEntityTransformer } from './defaultCatalogCollatorEntityTransformer';
-import { stringifyEntityRef } from '@backstage/catalog-model';
 
 /** @public */
 export type DefaultCatalogCollatorFactoryOptions = {
   discovery: PluginEndpointDiscovery;
   tokenManager: TokenManager;
+  /**
+   * @deprecated Use the config key `search.collators.catalog.locationTemplate` instead.
+   */
   locationTemplate?: string;
+  /**
+   * @deprecated Use the config key `search.collators.catalog.filter` instead.
+   */
   filter?: GetEntitiesRequest['filter'];
+  /**
+   * @deprecated Use the config key `search.collators.catalog.batchSize` instead.
+   */
   batchSize?: number;
   catalogClient?: CatalogApi;
+  /**
+   * Allows you to customize how entities are shaped into documents.
+   */
   entityTransformer?: CatalogCollatorEntityTransformer;
 };
 
-/** @public */
+/**
+ * Collates entities from the Catalog into documents for the search backend.
+ *
+ * @public
+ */
 export class DefaultCatalogCollatorFactory implements DocumentCollatorFactory {
   public readonly type = 'software-catalog';
   public readonly visibilityPermission: Permission =
@@ -58,13 +75,31 @@ export class DefaultCatalogCollatorFactory implements DocumentCollatorFactory {
   private entityTransformer: CatalogCollatorEntityTransformer;
 
   static fromConfig(
-    _config: Config,
+    configRoot: Config,
     options: DefaultCatalogCollatorFactoryOptions,
   ) {
-    return new DefaultCatalogCollatorFactory(options);
+    const configOptions = readCollatorConfigOptions(configRoot);
+    return new DefaultCatalogCollatorFactory({
+      locationTemplate:
+        options.locationTemplate ?? configOptions.locationTemplate,
+      filter: options.filter ?? configOptions.filter,
+      batchSize: options.batchSize ?? configOptions.batchSize,
+      entityTransformer: options.entityTransformer,
+      discovery: options.discovery,
+      tokenManager: options.tokenManager,
+      catalogClient: options.catalogClient,
+    });
   }
 
-  private constructor(options: DefaultCatalogCollatorFactoryOptions) {
+  private constructor(options: {
+    locationTemplate: string;
+    filter: GetEntitiesRequest['filter'];
+    batchSize: number;
+    entityTransformer?: CatalogCollatorEntityTransformer;
+    discovery: PluginEndpointDiscovery;
+    tokenManager: TokenManager;
+    catalogClient?: CatalogApi;
+  }) {
     const {
       batchSize,
       discovery,
@@ -75,10 +110,9 @@ export class DefaultCatalogCollatorFactory implements DocumentCollatorFactory {
       entityTransformer,
     } = options;
 
-    this.locationTemplate =
-      locationTemplate || '/catalog/:namespace/:kind/:name';
+    this.locationTemplate = locationTemplate;
     this.filter = filter;
-    this.batchSize = batchSize || 500;
+    this.batchSize = batchSize;
     this.catalogClient =
       catalogClient || new CatalogClient({ discoveryApi: discovery });
     this.tokenManager = tokenManager;

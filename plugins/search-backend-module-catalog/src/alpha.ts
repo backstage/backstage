@@ -23,25 +23,23 @@ import {
   coreServices,
   createBackendModule,
 } from '@backstage/backend-plugin-api';
-import { TaskScheduleDefinition } from '@backstage/backend-tasks';
-import { searchIndexRegistryExtensionPoint } from '@backstage/plugin-search-backend-node/alpha';
-
+import { catalogServiceRef } from '@backstage/plugin-catalog-node/alpha';
 import {
   DefaultCatalogCollatorFactory,
   DefaultCatalogCollatorFactoryOptions,
 } from '@backstage/plugin-search-backend-module-catalog';
-import { catalogServiceRef } from '@backstage/plugin-catalog-node/alpha';
+import { searchIndexRegistryExtensionPoint } from '@backstage/plugin-search-backend-node/alpha';
+import { readScheduleConfigOptions } from './collators/config';
 
 /**
- * @alpha
  * Options for {@link searchModuleCatalogCollator}.
+ *
+ * @alpha
  */
-export type SearchModuleCatalogCollatorOptions = Omit<
+export type SearchModuleCatalogCollatorOptions = Pick<
   DefaultCatalogCollatorFactoryOptions,
-  'discovery' | 'tokenManager' | 'catalogClient'
-> & {
-  schedule?: TaskScheduleDefinition;
-};
+  'entityTransformer'
+>;
 
 /**
  * Search backend module for the Catalog index.
@@ -70,15 +68,9 @@ export const searchModuleCatalogCollator = createBackendModule(
           indexRegistry,
           catalog,
         }) {
-          const defaultSchedule = {
-            frequency: { minutes: 10 },
-            timeout: { minutes: 15 },
-            initialDelay: { seconds: 3 },
-          };
-
           indexRegistry.addCollator({
             schedule: scheduler.createScheduledTaskRunner(
-              options?.schedule ?? defaultSchedule,
+              readScheduleConfigOptions(config),
             ),
             factory: DefaultCatalogCollatorFactory.fromConfig(config, {
               ...options,

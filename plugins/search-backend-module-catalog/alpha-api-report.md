@@ -5,7 +5,6 @@
 ```ts
 import { BackendFeature } from '@backstage/backend-plugin-api';
 import { DefaultCatalogCollatorFactoryOptions } from '@backstage/plugin-search-backend-module-catalog';
-import { TaskScheduleDefinition } from '@backstage/backend-tasks';
 
 // @alpha
 export const searchModuleCatalogCollator: (
@@ -13,12 +12,10 @@ export const searchModuleCatalogCollator: (
 ) => BackendFeature;
 
 // @alpha
-export type SearchModuleCatalogCollatorOptions = Omit<
+export type SearchModuleCatalogCollatorOptions = Pick<
   DefaultCatalogCollatorFactoryOptions,
-  'discovery' | 'tokenManager' | 'catalogClient'
-> & {
-  schedule?: TaskScheduleDefinition;
-};
+  'entityTransformer'
+>;
 
 // (No @packageDocumentation comment for this package)
 ```
