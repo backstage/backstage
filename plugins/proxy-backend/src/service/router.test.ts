@@ -15,6 +15,7 @@
  */
 
 import { getVoidLogger, SingleHostDiscovery } from '@backstage/backend-common';
+import { mockServices } from '@backstage/backend-test-utils';
 import { ConfigReader } from '@backstage/config';
 import { Request, Response } from 'express';
 import * as http from 'http';
@@ -68,6 +69,32 @@ describe('createRouter', () => {
         discovery,
       });
       expect(router).toBeDefined();
+    });
+
+    it('supports deprecated proxy configuration', async () => {
+      const router = await createRouter({
+        config: mockServices.rootConfig({
+          data: {
+            proxy: {
+              '/test': {
+                target: 'https://example.com',
+                headers: {
+                  Authorization: 'Bearer supersecret',
+                },
+              },
+            },
+          },
+        }),
+        logger,
+        discovery,
+      });
+      expect(router).toBeDefined();
+      expect(mockCreateProxyMiddleware).toHaveBeenCalledWith(
+        expect.any(Function),
+        expect.objectContaining({
+          target: 'https://example.com',
+        }),
+      );
     });
 
     it('revives request bodies when set', async () => {
