@@ -36,7 +36,7 @@
     "test": "backstage-cli package test",
     "prepack": "backstage-cli package prepack",
     "postpack": "backstage-cli package postpack",
-    "generate:types": "graphql-codegen",
+    "generate:types": "graphql-codegen -r ts-node/register",
     "clean": "backstage-cli package clean"
   },
   "dependencies": {

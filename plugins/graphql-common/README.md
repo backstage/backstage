@@ -288,7 +288,7 @@ export const schema = printSchemaWithDirectives(
 import { CodegenConfig } from '@graphql-codegen/cli';
 
 const config: CodegenConfig = {
-  schema: 'src/schema.ts',
+  schema: './src/schema.ts',
   generates: {
     /* ... */
   },

@@ -10,10 +10,5 @@
     "outDir": "dist-types",
     "rootDir": ".",
     "useUnknownInCatchVariables": false
-  },
-  "ts-node": {
-    "compilerOptions": {
-      "module": "CommonJS"
-    }
   }
 }
