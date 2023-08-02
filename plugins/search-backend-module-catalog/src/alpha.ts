@@ -30,6 +30,7 @@ import {
   DefaultCatalogCollatorFactory,
   DefaultCatalogCollatorFactoryOptions,
 } from '@backstage/plugin-search-backend-module-catalog';
+import { catalogServiceRef } from '@backstage/plugin-catalog-node/alpha';
 
 /**
  * @alpha
@@ -37,14 +38,15 @@ import {
  */
 export type SearchModuleCatalogCollatorOptions = Omit<
   DefaultCatalogCollatorFactoryOptions,
-  'discovery' | 'tokenManager'
+  'discovery' | 'tokenManager' | 'catalogClient'
 > & {
   schedule?: TaskScheduleDefinition;
 };
 
 /**
- * @alpha
  * Search backend module for the Catalog index.
+ *
+ * @alpha
  */
 export const searchModuleCatalogCollator = createBackendModule(
   (options?: SearchModuleCatalogCollatorOptions) => ({
@@ -58,6 +60,7 @@ export const searchModuleCatalogCollator = createBackendModule(
           tokenManager: coreServices.tokenManager,
           scheduler: coreServices.scheduler,
           indexRegistry: searchIndexRegistryExtensionPoint,
+          catalog: catalogServiceRef,
         },
         async init({
           config,
@@ -65,6 +68,7 @@ export const searchModuleCatalogCollator = createBackendModule(
           tokenManager,
           scheduler,
           indexRegistry,
+          catalog,
         }) {
           const defaultSchedule = {
             frequency: { minutes: 10 },
@@ -80,6 +84,7 @@ export const searchModuleCatalogCollator = createBackendModule(
               ...options,
               discovery,
               tokenManager,
+              catalogClient: catalog,
             }),
           });
         },
