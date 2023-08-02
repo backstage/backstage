@@ -8,20 +8,6 @@ Development is ongoing. You can follow the progress and contribute at the Backst
 
 Run `yarn dev` in the root directory, and then navigate to [/search](http://localhost:3000/search) to check out the plugin.
 
-### Optional Settings
-
-Configure the SearchPage component initial state via `app-config.yaml` to define how it behaves when it is first loaded or reset.
-
-```yaml
-# app-config.yaml
-app:
-  search:
-    initialState:
-      pageLimit: 50
-```
-
-Acceptable values for `pageLimit` are `10`, `25`, `50` or `100`.
-
 ### Areas of Responsibility
 
 This search plugin is primarily responsible for the following:

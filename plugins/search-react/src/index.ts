@@ -28,7 +28,6 @@ export {
   SearchContextProvider,
   useSearch,
   useSearchContextCheck,
-  getSearchContextInitialStateDefaults,
 } from './context';
 export type {
   SearchContextProviderProps,

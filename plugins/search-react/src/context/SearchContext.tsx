@@ -249,7 +249,7 @@ export const SearchContextProvider = (props: SearchContextProviderProps) => {
     ...searchInitialState,
     ...(initialState || {}),
     pageLimit:
-      configApi.getOptionalNumber('app.search.query.pageLimit') ||
+      configApi.getOptionalNumber('search.query.pageLimit') ||
       initialState?.pageLimit,
   };
 
