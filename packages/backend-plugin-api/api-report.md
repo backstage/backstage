@@ -21,6 +21,16 @@ export interface BackendFeature {
   $$type: '@backstage/BackendFeature';
 }
 
+// @public (undocumented)
+export interface BackendFeatureFactory<
+  TOptions extends [options?: object] = [],
+> {
+  // (undocumented)
+  $$type: '@backstage/BackendFeatureFactory';
+  // (undocumented)
+  (...options: TOptions): BackendFeature;
+}
+
 // @public
 export interface BackendModuleConfig {
   moduleId: string;
@@ -116,12 +126,12 @@ export namespace coreServices {
 // @public
 export function createBackendModule<TOptions extends [options?: object] = []>(
   config: BackendModuleConfig | ((...params: TOptions) => BackendModuleConfig),
-): (...params: TOptions) => BackendFeature;
+): BackendFeatureFactory<TOptions>;
 
 // @public
 export function createBackendPlugin<TOptions extends [options?: object] = []>(
   config: BackendPluginConfig | ((...params: TOptions) => BackendPluginConfig),
-): (...params: TOptions) => BackendFeature;
+): BackendFeatureFactory<TOptions>;
 
 // @public
 export function createExtensionPoint<T>(
