@@ -61,9 +61,6 @@ export type DefaultResultListItemProps = {
   toggleModal?: () => void;
 };
 
-// @public
-export const getSearchContextInitialStateDefaults: () => SearchContextState;
-
 // @public (undocumented)
 export const HighlightedSearchResultText: (
   props: HighlightedSearchResultTextProps,

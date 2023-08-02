@@ -40,5 +40,21 @@ export interface Config {
        */
       queryLatencyBudgetMs?: number;
     };
+
+    /**
+     * An object representing the default search query configuration.
+     * By configuring and modifying the values of this object,
+     * you can customize the default values of the search queries
+     * and define how it behaves by default.
+     */
+    query?: {
+      /**
+       * A number indicating the maximum number of results to be returned
+       * per page during pagination.
+       *
+       * @visibility frontend
+       */
+      pageLimit?: 10 | 25 | 50 | 100;
+    };
   };
 }
