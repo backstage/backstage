@@ -14,28 +14,32 @@
  * limitations under the License.
  */
 
-import { useApi } from '@backstage/core-plugin-api';
+import { configApiRef } from '@backstage/core-plugin-api';
 import { render, screen, waitFor } from '@testing-library/react';
 import { act, renderHook } from '@testing-library/react-hooks';
+import { MockConfigApi, TestApiProvider } from '@backstage/test-utils';
 import React from 'react';
 import {
   SearchContextProvider,
   useSearch,
   useSearchContextCheck,
 } from './SearchContext';
-
-jest.mock('@backstage/core-plugin-api', () => ({
-  ...jest.requireActual('@backstage/core-plugin-api'),
-  useApi: jest.fn(),
-}));
+import { searchApiRef } from '../api';
 
 describe('SearchContext', () => {
   const query = jest.fn();
 
-  const wrapper = ({ children, initialState }: any) => (
-    <SearchContextProvider initialState={initialState}>
-      {children}
-    </SearchContextProvider>
+  const wrapper = ({ children, initialState, config = {} }: any) => (
+    <TestApiProvider
+      apis={[
+        [configApiRef, new MockConfigApi(config)],
+        [searchApiRef, { query }],
+      ]}
+    >
+      <SearchContextProvider initialState={initialState}>
+        {children}
+      </SearchContextProvider>
+    </TestApiProvider>
   );
 
   const initialState = {
@@ -46,7 +50,6 @@ describe('SearchContext', () => {
 
   beforeEach(() => {
     query.mockResolvedValue({});
-    (useApi as jest.Mock).mockReturnValue({ query: query });
   });
 
   afterAll(() => {
@@ -56,11 +59,7 @@ describe('SearchContext', () => {
   it('Passes children', async () => {
     const text = 'text';
 
-    render(
-      <SearchContextProvider initialState={initialState}>
-        {text}
-      </SearchContextProvider>,
-    );
+    render(wrapper({ children: text, initialState }));
 
     await waitFor(() => {
       expect(screen.getByText(text)).toBeInTheDocument();
@@ -95,17 +94,61 @@ describe('SearchContext', () => {
     expect(result.current).toEqual(true);
   });
 
-  it('Uses initial state values', async () => {
-    const { result, waitForNextUpdate } = renderHook(() => useSearch(), {
-      wrapper,
-      initialProps: {
-        initialState,
-      },
+  describe('Uses initial state values', () => {
+    it('Uses default initial state values', async () => {
+      const { result, waitForNextUpdate } = renderHook(() => useSearch(), {
+        wrapper,
+      });
+
+      await waitForNextUpdate();
+
+      expect(result.current).toEqual(
+        expect.objectContaining({
+          term: '',
+          types: [],
+          filters: {},
+          pageLimit: undefined,
+          pageCursor: undefined,
+        }),
+      );
     });
 
-    await waitForNextUpdate();
+    it('Uses provided initial state values', async () => {
+      const { result, waitForNextUpdate } = renderHook(() => useSearch(), {
+        wrapper,
+        initialProps: {
+          initialState,
+        },
+      });
 
-    expect(result.current).toEqual(expect.objectContaining(initialState));
+      await waitForNextUpdate();
+
+      expect(result.current).toEqual(expect.objectContaining(initialState));
+    });
+
+    it('Uses page limit provided via config api', async () => {
+      const { result, waitForNextUpdate } = renderHook(() => useSearch(), {
+        wrapper,
+        initialProps: {
+          initialState,
+          config: {
+            app: {
+              search: {
+                query: {
+                  pageLimit: 100,
+                },
+              },
+            },
+          },
+        },
+      });
+
+      await waitForNextUpdate();
+
+      expect(result.current).toEqual(
+        expect.objectContaining({ ...initialState, pageLimit: 100 }),
+      );
+    });
   });
 
   describe('Resets cursor', () => {

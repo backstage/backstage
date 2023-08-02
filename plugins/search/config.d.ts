@@ -21,12 +21,12 @@ export interface Config {
      */
     search?: {
       /**
-       * An object representing the initial state configuration for the SearchPage
-       * component. By configuring and modifying the values of the initialState
-       * object attributes, you can customize the initial state of the search component
+       * An object representing the default search query configuration.
+       * By configuring and modifying the values of this object,
+       * you can customize the default values of the search component
        * and define how it behaves when it is first loaded or reset.
        */
-      initialState?: {
+      query?: {
         /**
          * A number indicating the maximum number of results to be returned
          * per page during pagination.

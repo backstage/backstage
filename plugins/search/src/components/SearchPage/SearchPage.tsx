@@ -21,10 +21,8 @@ import { useLocation, useOutlet } from 'react-router-dom';
 import {
   SearchContextProvider,
   useSearch,
-  getSearchContextInitialStateDefaults,
 } from '@backstage/plugin-search-react';
 import { JsonObject } from '@backstage/types';
-import { configApiRef, useApi } from '@backstage/core-plugin-api';
 
 export const UrlUpdater = () => {
   const location = useLocation();
@@ -93,15 +91,9 @@ export const UrlUpdater = () => {
  */
 export const SearchPage = () => {
   const outlet = useOutlet();
-  const configApi = useApi(configApiRef);
-
-  const initialState = {
-    ...getSearchContextInitialStateDefaults(),
-    pageLimit: configApi.getOptionalNumber('app.search.initialState.pageLimit'),
-  };
 
   return (
-    <SearchContextProvider initialState={initialState}>
+    <SearchContextProvider>
       <UrlUpdater />
       {outlet}
     </SearchContextProvider>
