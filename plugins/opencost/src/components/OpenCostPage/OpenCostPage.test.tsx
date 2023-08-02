@@ -37,6 +37,8 @@ describe('OpenCostPage', () => {
 
   it('should render', async () => {
     await renderInTestApp(<OpenCostPage />);
-    expect(screen.getByText('Open source Kubernetes cloud cost monitoring')).toBeInTheDocument();
+    expect(
+      screen.getByText('Open source Kubernetes cloud cost monitoring'),
+    ).toBeInTheDocument();
   });
 });

@@ -14,8 +14,8 @@
  * limitations under the License.
  */
 
-import { makeStyles } from '@material-ui/styles'
-import React from 'react'
+import { makeStyles } from '@material-ui/styles';
+import React from 'react';
 
 const useStyles = makeStyles({
   wrapper: {
@@ -29,21 +29,19 @@ const useStyles = makeStyles({
     display: 'flex',
     flexFlow: 'column',
     flexGrow: 1,
-  }
-})
+  },
+});
 
 const Page = props => {
-  const classes = useStyles()
+  const classes = useStyles();
 
   return (
     <div className={classes.flexGrow}>
       <div className={classes.wrapper}>
-        <div className={classes.flexGrow}>
-          {props.children}
-        </div>
+        <div className={classes.flexGrow}>{props.children}</div>
       </div>
     </div>
-  )
-}
+  );
+};
 
-export default Page
+export default Page;

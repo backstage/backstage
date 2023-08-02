@@ -13,10 +13,9 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
-import React from 'react'
-import DownloadControl from './Download'
-import EditControl from './Edit'
+import React from 'react';
+import DownloadControl from './Download';
+import EditControl from './Edit';
 
 const Controls = ({
   windowOptions,
@@ -34,7 +33,6 @@ const Controls = ({
   currencyOptions,
   setCurrency,
 }) => {
-
   return (
     <div>
       <EditControl
@@ -51,12 +49,9 @@ const Controls = ({
         currencyOptions={currencyOptions}
         setCurrency={setCurrency}
       />
-      <DownloadControl
-        cumulativeData={cumulativeData}
-        title={title}
-      />
+      <DownloadControl cumulativeData={cumulativeData} title={title} />
     </div>
-  )
-}
+  );
+};
 
-export default React.memo(Controls)
+export default React.memo(Controls);

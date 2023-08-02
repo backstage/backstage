@@ -38,10 +38,10 @@ export const OpenCostPage = () => (
         />
       </a>
     </Header>
-        <Content>
+    <Content>
       <Grid container spacing={3} direction="column">
         <Grid item>
-        <OpenCostReport />
+          <OpenCostReport />
         </Grid>
       </Grid>
     </Content>

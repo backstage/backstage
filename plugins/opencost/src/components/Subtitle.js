@@ -14,12 +14,12 @@
  * limitations under the License.
  */
 
-import React from 'react'
-import { makeStyles } from '@material-ui/styles'
-import { upperFirst } from 'lodash'
-import Breadcrumbs from '@material-ui/core/Breadcrumbs'
-import NavigateNextIcon from '@material-ui/icons/NavigateNext'
-import Typography from '@material-ui/core/Typography'
+import React from 'react';
+import { makeStyles } from '@material-ui/styles';
+import { upperFirst } from 'lodash';
+import Breadcrumbs from '@material-ui/core/Breadcrumbs';
+import NavigateNextIcon from '@material-ui/icons/NavigateNext';
+import Typography from '@material-ui/core/Typography';
 import { toVerboseTimeRange } from '../util';
 
 const useStyles = makeStyles({
@@ -29,14 +29,14 @@ const useStyles = makeStyles({
     },
   },
   link: {
-    cursor: "pointer",
+    cursor: 'pointer',
   },
-})
+});
 
 const Subtitle = ({ report }) => {
-  const classes = useStyles()
+  const classes = useStyles();
 
-  const { aggregateBy, window } = report
+  const { aggregateBy, window } = report;
 
   return (
     <div className={classes.root}>
@@ -45,13 +45,15 @@ const Subtitle = ({ report }) => {
         aria-label="breadcrumb"
       >
         {aggregateBy && aggregateBy.length > 0 ? (
-          <Typography>{toVerboseTimeRange(window)} by {upperFirst(aggregateBy)}</Typography>
+          <Typography>
+            {toVerboseTimeRange(window)} by {upperFirst(aggregateBy)}
+          </Typography>
         ) : (
           <Typography>{toVerboseTimeRange(window)}</Typography>
         )}
       </Breadcrumbs>
     </div>
-  )
-}
+  );
+};
 
-export default React.memo(Subtitle)
+export default React.memo(Subtitle);

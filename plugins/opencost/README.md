@@ -15,18 +15,18 @@ All of the code was originally ported from https://github.com/opencost/opencost/
     ```
 2.  Add the `OpenCostPage` to your `packages/app/src/App.tsx`:
 
-```tsx
-import { OpenCostPage } from '@backstage/plugin-opencost';
-```
+    ```tsx
+    import { OpenCostPage } from '@backstage/plugin-opencost';
+    ```
 
 and
 
-```tsx
-<FlatRoutes>
-  …
-  <Route path="/opencost" element={<OpenCostPage />} />
-</FlatRoutes>
-```
+    ```tsx
+    <FlatRoutes>
+      …
+      <Route path="/opencost" element={<OpenCostPage />} />
+    </FlatRoutes>
+    ```
 
 3.  Add link to OpenCost to your sidebar
 
@@ -74,6 +74,6 @@ opencost:
 - Allow for user-provided default reports and/or disabling controls
 - Support multiple hard-coded reports
 - clean up deprecation warnings and upgrade to all the latest React components
-- Fork(?) to support Kubecost, which could provide Alerts and Recommendations, similar to the Cost Explorer plugin
+- Fork(?) to support `Kubecost`, which could provide Alerts and Recommendations, similar to the Cost Explorer plugin
 
 ![Screenshot](screenshot.png)
