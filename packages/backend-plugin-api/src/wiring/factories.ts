@@ -77,11 +77,6 @@ export interface BackendPluginConfig {
   register(reg: BackendPluginRegistrationPoints): void;
 }
 
-export const catalogPlugin = createBackendPlugin({
-  pluginId: 'catalog',
-  register() {},
-});
-
 /**
  * Creates a new backend plugin.
  *
