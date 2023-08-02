@@ -4657,6 +4657,16 @@ __metadata:
   languageName: unknown
   linkType: soft
 
+"@backstage/plugin-app-node@workspace:^, @backstage/plugin-app-node@workspace:plugins/app-node":
+  version: 0.0.0-use.local
+  resolution: "@backstage/plugin-app-node@workspace:plugins/app-node"
+  dependencies:
+    "@backstage/backend-plugin-api": "workspace:^"
+    "@backstage/cli": "workspace:^"
+    express: ^4.18.2
+  languageName: unknown
+  linkType: soft
+
 "@backstage/plugin-auth-backend@workspace:^, @backstage/plugin-auth-backend@workspace:plugins/auth-backend":
   version: 0.0.0-use.local
   resolution: "@backstage/plugin-auth-backend@workspace:plugins/auth-backend"
