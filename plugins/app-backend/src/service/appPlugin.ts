@@ -53,22 +53,14 @@ export const appPlugin = createBackendPlugin({
       async init({ logger, config, database, httpRouter }) {
         const appPackageName =
           config.getOptionalString('app.packageName') ?? 'app';
-        const disableConfigInjection = config.getOptionalBoolean(
-          'app.disableConfigInjection',
-        );
-        const disableStaticFallbackCache = config.getOptionalBoolean(
-          'app.disableStaticFallbackCache',
-        );
-
         const winstonLogger = loggerToWinstonLogger(logger);
 
         const router = await createRouter({
           logger: winstonLogger,
           config,
-          database: disableStaticFallbackCache ? undefined : database,
+          database,
           appPackageName,
           staticFallbackHandler,
-          disableConfigInjection,
         });
         httpRouter.use(router);
       },
