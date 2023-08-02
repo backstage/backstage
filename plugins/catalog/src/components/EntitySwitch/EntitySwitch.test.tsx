@@ -20,7 +20,7 @@ import {
   EntityProvider,
 } from '@backstage/plugin-catalog-react';
 import { render, screen } from '@testing-library/react';
-import React from 'react';
+import React, { useEffect } from 'react';
 import { isKind } from './conditions';
 import { EntitySwitch } from './EntitySwitch';
 import { featureFlagsApiRef } from '@backstage/core-plugin-api';
@@ -207,6 +207,97 @@ describe('EntitySwitch', () => {
 
     expect(screen.queryByText('A')).not.toBeInTheDocument();
     expect(screen.queryByText('B')).not.toBeInTheDocument();
+  });
+
+  it('should display the children in case entity is available and loading is true', () => {
+    const entity = { metadata: { name: 'mock' }, kind: 'component' } as Entity;
+
+    render(
+      <Wrapper>
+        <AsyncEntityProvider entity={entity} loading>
+          <EntitySwitch>
+            <EntitySwitch.Case
+              if={isKind('component')}
+              children={<p>Component</p>}
+            />
+            <EntitySwitch.Case if={isKind('system')} children={<p>System</p>} />
+          </EntitySwitch>
+        </AsyncEntityProvider>
+      </Wrapper>,
+    );
+
+    expect(screen.queryByText('Component')).toBeInTheDocument();
+    expect(screen.queryByText('System')).not.toBeInTheDocument();
+  });
+
+  it(`shouldn't unmount the children on entity refresh`, () => {
+    const entity = { metadata: { name: 'mock' }, kind: 'component' } as Entity;
+
+    let mountsCount = 0;
+    function Component() {
+      useEffect(() => {
+        ++mountsCount;
+      }, []);
+
+      return <p>Component</p>;
+    }
+
+    const rendered = render(
+      <Wrapper>
+        <AsyncEntityProvider entity={entity} loading={false}>
+          <EntitySwitch>
+            <EntitySwitch.Case
+              if={isKind('component')}
+              children={<Component />}
+            />
+            <EntitySwitch.Case if={isKind('system')} children={<p>System</p>} />
+          </EntitySwitch>
+        </AsyncEntityProvider>
+      </Wrapper>,
+    );
+
+    expect(screen.queryByText('Component')).toBeInTheDocument();
+    expect(screen.queryByText('System')).not.toBeInTheDocument();
+
+    expect(mountsCount).toBe(1);
+
+    rendered.rerender(
+      <Wrapper>
+        <AsyncEntityProvider entity={entity} loading>
+          <EntitySwitch>
+            <EntitySwitch.Case
+              if={isKind('component')}
+              children={<Component />}
+            />
+            <EntitySwitch.Case if={isKind('system')} children={<p>System</p>} />
+          </EntitySwitch>
+        </AsyncEntityProvider>
+      </Wrapper>,
+    );
+
+    expect(screen.queryByText('Component')).toBeInTheDocument();
+    expect(screen.queryByText('System')).not.toBeInTheDocument();
+
+    expect(mountsCount).toBe(1);
+
+    rendered.rerender(
+      <Wrapper>
+        <AsyncEntityProvider entity={entity} loading={false}>
+          <EntitySwitch>
+            <EntitySwitch.Case
+              if={isKind('component')}
+              children={<Component />}
+            />
+            <EntitySwitch.Case if={isKind('system')} children={<p>System</p>} />
+          </EntitySwitch>
+        </AsyncEntityProvider>
+      </Wrapper>,
+    );
+
+    expect(screen.queryByText('Component')).toBeInTheDocument();
+    expect(screen.queryByText('System')).not.toBeInTheDocument();
+
+    expect(mountsCount).toBe(1);
   });
 
   it('should switch with async condition that is true', async () => {
