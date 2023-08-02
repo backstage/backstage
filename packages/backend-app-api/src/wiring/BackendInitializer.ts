@@ -141,8 +141,8 @@ export class BackendInitializer {
 
     if (featureDiscovery) {
       const { features } = await featureDiscovery.getBackendFeatures();
-      for (const plugin of features) {
-        this.#addFeature(plugin);
+      for (const feature of features) {
+        this.#addFeature(feature);
       }
     }
 
