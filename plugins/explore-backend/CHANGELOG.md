@@ -99,7 +99,7 @@
   - ];
   -
   - StaticExploreToolProvider.fromData(tools)
-  + StaticExploreToolProvider.fromData(env.config)
+  + StaticExploreToolProvider.fromConfig(env.config)
   ```
 
 - Updated dependencies
