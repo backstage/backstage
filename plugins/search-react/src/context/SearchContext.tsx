@@ -102,7 +102,7 @@ export const useSearchContextCheck = () => {
  * The initial state of `SearchContextProvider`.
  *
  */
-export const searchInitialState = {
+const searchInitialState: SearchContextState = {
   term: '',
   types: [],
   filters: {},
