@@ -25,16 +25,17 @@ import {
 } from '@backstage/backend-common';
 import { ScmIntegrations } from '@backstage/integration';
 import { PassThrough } from 'stream';
-import { fetchContents } from '@backstage/plugin-scaffolder-node';
 import { createFetchTemplateAction } from './template';
 import {
   ActionContext,
   TemplateAction,
+  fetchContents,
 } from '@backstage/plugin-scaffolder-node';
 import { examples } from './template.examples';
 import yaml from 'yaml';
 
-jest.mock('./helpers', () => ({
+jest.mock('@backstage/plugin-scaffolder-node', () => ({
+  ...jest.requireActual('@backstage/plugin-scaffolder-node'),
   fetchContents: jest.fn(),
 }));
 

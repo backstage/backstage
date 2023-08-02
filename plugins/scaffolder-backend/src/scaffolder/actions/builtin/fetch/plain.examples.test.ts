@@ -16,8 +16,6 @@
 
 import yaml from 'yaml';
 
-jest.mock('./helpers');
-
 import os from 'os';
 import { resolve as resolvePath } from 'path';
 import { getVoidLogger, UrlReader } from '@backstage/backend-common';
@@ -27,6 +25,11 @@ import { createFetchPlainAction } from './plain';
 import { PassThrough } from 'stream';
 import { fetchContents } from '@backstage/plugin-scaffolder-node';
 import { examples } from './plain.examples';
+
+jest.mock('@backstage/plugin-scaffolder-node', () => ({
+  ...jest.requireActual('@backstage/plugin-scaffolder-node'),
+  fetchContents: jest.fn(),
+}));
 
 describe('fetch:plain examples', () => {
   const integrations = ScmIntegrations.fromConfig(
