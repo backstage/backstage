@@ -132,11 +132,9 @@ describe('SearchContext', () => {
         initialProps: {
           initialState,
           config: {
-            app: {
-              search: {
-                query: {
-                  pageLimit: 100,
-                },
+            search: {
+              query: {
+                pageLimit: 100,
               },
             },
           },
