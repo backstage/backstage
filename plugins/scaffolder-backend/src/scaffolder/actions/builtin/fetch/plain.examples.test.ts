@@ -25,7 +25,7 @@ import { ConfigReader } from '@backstage/config';
 import { ScmIntegrations } from '@backstage/integration';
 import { createFetchPlainAction } from './plain';
 import { PassThrough } from 'stream';
-import { fetchContents } from './helpers';
+import { fetchContents } from '@backstage/plugin-scaffolder-node';
 import { examples } from './plain.examples';
 
 describe('fetch:plain examples', () => {
