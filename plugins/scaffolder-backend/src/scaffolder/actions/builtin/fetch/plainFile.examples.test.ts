@@ -14,6 +14,11 @@
  * limitations under the License.
  */
 
+jest.mock('@backstage/plugin-scaffolder-node', () => {
+  const actual = jest.requireActual('@backstage/plugin-scaffolder-node');
+  return { ...actual, fetchFile: jest.fn() };
+});
+
 import yaml from 'yaml';
 import os from 'os';
 import { resolve as resolvePath } from 'path';
@@ -24,11 +29,6 @@ import { createFetchPlainFileAction } from './plainFile';
 import { PassThrough } from 'stream';
 import { fetchFile } from '@backstage/plugin-scaffolder-node';
 import { examples } from './plainFile.examples';
-
-jest.mock('@backstage/plugin-scaffolder-node', () => ({
-  ...jest.requireActual('@backstage/plugin-scaffolder-node'),
-  fetchContents: jest.fn(),
-}));
 
 describe('fetch:plain:file examples', () => {
   const integrations = ScmIntegrations.fromConfig(
