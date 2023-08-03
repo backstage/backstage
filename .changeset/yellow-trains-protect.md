@@ -8,7 +8,7 @@
 '@backstage/backend-tasks': patch
 '@backstage/plugin-bazaar-backend': patch
 '@backstage/plugin-app-backend': patch
-'e2e-test': patch
+'@backstage/create-app': patch
 ---
 
 Expanded packages/backend-common added test to database manager specifically for MySQL for test that targets postgresql
