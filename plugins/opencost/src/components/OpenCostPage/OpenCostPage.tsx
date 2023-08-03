@@ -15,12 +15,7 @@
  */
 import React from 'react';
 import { Grid } from '@material-ui/core';
-import {
-  Header,
-  Page,
-  Content,
-  ContentHeader,
-} from '@backstage/core-components';
+import { Header, Page, Content } from '@backstage/core-components';
 import { OpenCostReport } from '../OpenCostReport';
 
 export const OpenCostPage = () => (

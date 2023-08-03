@@ -293,7 +293,7 @@ export function toVerboseTimeRange(window) {
       } ${end.getUTCFullYear()}`;
     }
   }
-  return null;
+  return '';
 }
 
 export function bytesToString(bytes) {

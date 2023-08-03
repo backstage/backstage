@@ -22,7 +22,7 @@ import Paper from '@material-ui/core/Paper';
 import RefreshIcon from '@material-ui/icons/Refresh';
 import Typography from '@material-ui/core/Typography';
 import { useLocation, useNavigate } from 'react-router-dom';
-import { find, forEach, get, sortBy, toArray } from 'lodash';
+import { find, get, sortBy, toArray } from 'lodash';
 import { makeStyles } from '@material-ui/styles';
 import AllocationReport from '../AllocationReport';
 import AllocationService from '../../services/allocation';
@@ -80,6 +80,7 @@ const useStyles = makeStyles({
 });
 
 // generateTitle generates a string title from a report object
+// @ts-ignore: implicitly has an 'any' type
 function generateTitle({ window, aggregateBy, accumulate }) {
   let windowName = get(find(windowOptions, { value: window }), 'name', '');
   if (windowName === '') {
@@ -208,6 +209,7 @@ export const OpenCostReport = () => {
     } catch (err) {
       if (err.message.indexOf('404') === 0) {
         setErrors([
+          // @ts-ignore: not assignable to type 'never'
           {
             primary: 'Failed to load report data',
             secondary:
@@ -221,6 +223,7 @@ export const OpenCostReport = () => {
           secondary = err.message;
         }
         setErrors([
+          // @ts-ignore: not assignable to type 'never'
           {
             primary: 'Failed to load report data',
             secondary: secondary,
@@ -255,6 +258,7 @@ export const OpenCostReport = () => {
             <Controls
               windowOptions={windowOptions}
               window={window}
+              // @ts-ignore: implicitly has an 'any' type
               setWindow={win => {
                 searchParams.set('window', win);
                 routerNavigate({
@@ -263,6 +267,7 @@ export const OpenCostReport = () => {
               }}
               aggregationOptions={aggregationOptions}
               aggregateBy={aggregateBy}
+              // @ts-ignore: implicitly has an 'any' type
               setAggregateBy={agg => {
                 searchParams.set('agg', agg);
                 routerNavigate({
@@ -271,6 +276,7 @@ export const OpenCostReport = () => {
               }}
               accumulateOptions={accumulateOptions}
               accumulate={accumulate}
+              // @ts-ignore: implicitly has an 'any' type
               setAccumulate={acc => {
                 searchParams.set('acc', acc);
                 routerNavigate({
@@ -281,6 +287,7 @@ export const OpenCostReport = () => {
               cumulativeData={cumulativeData}
               currency={currency}
               currencyOptions={currencyCodes}
+              // @ts-ignore: implicitly has an 'any' type
               setCurrency={curr => {
                 searchParams.set('currency', curr);
                 routerNavigate({
