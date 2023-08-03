@@ -143,15 +143,18 @@ export type TemplateActionOptions<
 > = {
   id: string;
   description?: string;
-  examples?: {
-    description: string;
-    example: string;
-  }[];
+  examples?: TemplateExample[];
   supportsDryRun?: boolean;
   schema?: {
     input?: TInputSchema;
     output?: TOutputSchema;
   };
   handler: (ctx: ActionContext<TActionInput, TActionOutput>) => Promise<void>;
+};
+
+// @public (undocumented)
+export type TemplateExample = {
+  description: string;
+  example: string;
 };
 ```
