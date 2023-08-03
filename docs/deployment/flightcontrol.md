@@ -68,9 +68,9 @@ Before you begin, make sure you have a [Flightcontrol account](https://app.fligh
 }
 ```
 
-# Databases in Redis
+# Databases and Redis
 
-If you need a database for your Backstage plugins, follow this [guide](https://www.flightcontrol.dev/docs/guides/flightcontrol/using-code#redis?ref=backstage) to add a Redis Database service.
+If you need a database or Redis for your Backstage plugins, you can easily add those to your Flightcontrol deployment. For more information, see [the flightcontrol docs](https://www.flightcontrol.dev/docs/guides/flightcontrol/using-code#redis?ref=backstage).
 
 ## Troubleshooting
 
