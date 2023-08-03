@@ -34,7 +34,7 @@ export const examples: TemplateExample[] = [
     }),
   },
   {
-    description: 'Fetch multiple entities by referencse',
+    description: 'Fetch multiple entities by reference',
     example: yaml.stringify({
       steps: [
         {
