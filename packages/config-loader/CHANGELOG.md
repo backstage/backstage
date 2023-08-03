@@ -1,5 +1,21 @@
 # @backstage/config-loader
 
+## 1.4.0-next.1
+
+### Minor Changes
+
+- 2f1859585998: Loading invalid TypeScript configuration schemas will now throw an error rather than silently being ignored.
+
+  In particular this includes defining any additional types other than `Config` in the schema file, or use of unsupported types such as `Record` or `Partial`.
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/cli-common@0.1.12
+  - @backstage/config@1.0.8
+  - @backstage/errors@1.2.1
+  - @backstage/types@1.1.0
+
 ## 1.4.0-next.0
 
 ### Minor Changes

@@ -8,6 +8,12 @@
   "backstage": {
     "role": "frontend-plugin"
   },
+  "homepage": "https://backstage.io",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/backstage/backstage",
+    "directory": "plugins/example-todo-list"
+  },
   "publishConfig": {
     "access": "public",
     "main": "dist/index.esm.js",

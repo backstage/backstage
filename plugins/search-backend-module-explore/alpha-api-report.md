@@ -5,7 +5,6 @@
 ```ts
 import { BackendFeature } from '@backstage/backend-plugin-api';
 import { TaskScheduleDefinition } from '@backstage/backend-tasks';
-import { ToolDocumentCollatorFactoryOptions } from '@backstage/plugin-search-backend-module-explore';
 
 // @alpha
 export const searchModuleExploreCollator: (
@@ -13,10 +12,7 @@ export const searchModuleExploreCollator: (
 ) => BackendFeature;
 
 // @alpha
-export type SearchModuleExploreCollatorOptions = Omit<
-  ToolDocumentCollatorFactoryOptions,
-  'logger' | 'discovery'
-> & {
+export type SearchModuleExploreCollatorOptions = {
   schedule?: TaskScheduleDefinition;
 };
 

@@ -16,35 +16,6 @@
 
 import { TaskScheduleDefinitionConfig } from '@backstage/backend-tasks';
 
-interface AzureDevOpsConfig {
-  /**
-   * (Optional) The DevOps host; leave empty for `dev.azure.com`, otherwise set to your self-hosted instance host.
-   */
-  host: string;
-  /**
-   * (Required) Your organization slug.
-   */
-  organization: string;
-  /**
-   * (Required) Your project slug.
-   */
-  project: string;
-  /**
-   * (Optional) The repository name. Wildcards are supported as show on the examples above.
-   * If not set, all repositories will be searched.
-   */
-  repository?: string;
-  /**
-   * (Optional) Where to find catalog-info.yaml files. Wildcards are supported.
-   * If not set, defaults to /catalog-info.yaml.
-   */
-  path?: string;
-  /**
-   * (Optional) TaskScheduleDefinition for the refresh.
-   */
-  schedule?: TaskScheduleDefinitionConfig;
-}
-
 export interface Config {
   catalog?: {
     /**
@@ -54,7 +25,36 @@ export interface Config {
       /**
        * AzureDevopsEntityProvider configuration
        */
-      azureDevOps?: Record<string, AzureDevOpsConfig>;
+      azureDevOps?: {
+        [name: string]: {
+          /**
+           * (Optional) The DevOps host; leave empty for `dev.azure.com`, otherwise set to your self-hosted instance host.
+           */
+          host: string;
+          /**
+           * (Required) Your organization slug.
+           */
+          organization: string;
+          /**
+           * (Required) Your project slug.
+           */
+          project: string;
+          /**
+           * (Optional) The repository name. Wildcards are supported as show on the examples above.
+           * If not set, all repositories will be searched.
+           */
+          repository?: string;
+          /**
+           * (Optional) Where to find catalog-info.yaml files. Wildcards are supported.
+           * If not set, defaults to /catalog-info.yaml.
+           */
+          path?: string;
+          /**
+           * (Optional) TaskScheduleDefinition for the refresh.
+           */
+          schedule?: TaskScheduleDefinitionConfig;
+        };
+      };
     };
   };
 }

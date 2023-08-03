@@ -15,7 +15,7 @@ export const searchModuleTechDocsCollator: (
 // @alpha
 export type SearchModuleTechDocsCollatorOptions = Omit<
   TechDocsCollatorFactoryOptions,
-  'logger' | 'discovery' | 'tokenManager'
+  'logger' | 'discovery' | 'tokenManager' | 'catalogClient'
 > & {
   schedule?: TaskScheduleDefinition;
 };

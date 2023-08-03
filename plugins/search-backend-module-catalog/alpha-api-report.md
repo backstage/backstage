@@ -15,7 +15,7 @@ export const searchModuleCatalogCollator: (
 // @alpha
 export type SearchModuleCatalogCollatorOptions = Omit<
   DefaultCatalogCollatorFactoryOptions,
-  'discovery' | 'tokenManager'
+  'discovery' | 'tokenManager' | 'catalogClient'
 > & {
   schedule?: TaskScheduleDefinition;
 };

@@ -1,5 +1,23 @@
 # @backstage/plugin-catalog-backend-module-gitlab
 
+## 0.2.4-next.1
+
+### Patch Changes
+
+- 629cbd194a87: Use `coreServices.rootConfig` instead of `coreService.config`
+- e6c721439f37: Added option to skip forked repos in GitlabDiscoveryEntityProvider
+- 4b82382ed8c2: Fixed invalid configuration schema. The configuration schema may be more strict as a result.
+- Updated dependencies
+  - @backstage/backend-common@0.19.2-next.1
+  - @backstage/plugin-catalog-node@1.4.1-next.1
+  - @backstage/backend-plugin-api@0.6.0-next.1
+  - @backstage/backend-tasks@0.5.5-next.1
+  - @backstage/integration@1.5.1
+  - @backstage/catalog-model@1.4.1
+  - @backstage/config@1.0.8
+  - @backstage/errors@1.2.1
+  - @backstage/types@1.1.0
+
 ## 0.2.4-next.0
 
 ### Patch Changes

@@ -43,6 +43,8 @@ function readGitlabConfig(id: string, config: Config): GitlabProviderConfig {
     config.getOptionalString('groupPattern') ?? /[\s\S]*/,
   );
   const orgEnabled: boolean = config.getOptionalBoolean('orgEnabled') ?? false;
+  const skipForkedRepos: boolean =
+    config.getOptionalBoolean('skipForkedRepos') ?? false;
 
   const schedule = config.has('schedule')
     ? readTaskScheduleDefinitionFromConfig(config.getConfig('schedule'))
@@ -60,6 +62,7 @@ function readGitlabConfig(id: string, config: Config): GitlabProviderConfig {
     groupPattern,
     schedule,
     orgEnabled,
+    skipForkedRepos,
   };
 }
 
