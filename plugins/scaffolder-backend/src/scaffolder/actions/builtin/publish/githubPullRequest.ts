@@ -42,6 +42,9 @@ export type OctokitWithPullRequestPluginClient = Octokit & {
     data: {
       html_url: string;
       number: number;
+      base: {
+        ref: string;
+      };
     };
   } | null>;
 };
@@ -128,6 +131,7 @@ export const createPublishGithubPullRequestAction = (
   return createTemplateAction<{
     title: string;
     branchName: string;
+    targetBranchName?: string;
     description: string;
     repoUrl: string;
     draft?: boolean;
@@ -153,6 +157,11 @@ export const createPublishGithubPullRequestAction = (
             type: 'string',
             title: 'Branch Name',
             description: 'The name for the branch',
+          },
+          targetBranchName: {
+            type: 'string',
+            title: 'Target Branch Name',
+            description: 'The target branch name of the merge request',
           },
           title: {
             type: 'string',
@@ -214,6 +223,10 @@ export const createPublishGithubPullRequestAction = (
         required: ['remoteUrl'],
         type: 'object',
         properties: {
+          targetBranchName: {
+            title: 'Target branch name of the merge request',
+            type: 'string',
+          },
           remoteUrl: {
             type: 'string',
             title: 'Pull Request URL',
@@ -231,6 +244,7 @@ export const createPublishGithubPullRequestAction = (
       const {
         repoUrl,
         branchName,
+        targetBranchName,
         title,
         description,
         draft,
@@ -298,7 +312,7 @@ export const createPublishGithubPullRequestAction = (
       );
 
       try {
-        const response = await client.createPullRequest({
+        const createOptions: createPullRequest.Options = {
           owner,
           repo,
           title,
@@ -311,7 +325,11 @@ export const createPublishGithubPullRequestAction = (
           body: description,
           head: branchName,
           draft,
-        });
+        };
+        if (targetBranchName) {
+          createOptions.base = targetBranchName;
+        }
+        const response = await client.createPullRequest(createOptions);
 
         if (!response) {
           throw new GithubResponseError('null response from Github');
@@ -329,6 +347,8 @@ export const createPublishGithubPullRequestAction = (
           );
         }
 
+        const targetBranch = response.data.base.ref;
+        ctx.output('targetBranchName', targetBranch);
         ctx.output('remoteUrl', response.data.html_url);
         ctx.output('pullRequestNumber', pullRequestNumber);
       } catch (e) {

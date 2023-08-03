@@ -32,7 +32,7 @@
       "$id": "#relation",
       "type": "object",
       "description": "A directed relation from one entity to another.",
-      "required": ["type", "target", "targetRef"],
+      "required": ["type", "targetRef"],
       "additionalProperties": false,
       "properties": {
         "type": {

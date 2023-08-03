@@ -7,6 +7,7 @@
 
 import { Extension } from '@backstage/core-plugin-api';
 import { RJSFSchema } from '@rjsf/utils';
+import { UiSchema } from '@rjsf/utils';
 
 // @public (undocumented)
 export type CardConfig = {
@@ -36,6 +37,7 @@ export type CardLayout = {
 // @public (undocumented)
 export type CardSettings = {
   schema?: RJSFSchema;
+  uiSchema?: UiSchema;
 };
 
 // @public (undocumented)
@@ -53,7 +55,7 @@ export type ComponentRenderer = {
 
 // @public
 export function createCardExtension<T>(options: {
-  title: string;
+  title?: string;
   components: () => Promise<ComponentParts>;
   name?: string;
   description?: string;
@@ -63,14 +65,14 @@ export function createCardExtension<T>(options: {
 
 // @public (undocumented)
 export type RendererProps = {
-  title: string;
+  title?: string;
 } & ComponentParts;
 
 // @public (undocumented)
 export const SettingsModal: (props: {
   open: boolean;
   close: Function;
-  componentName: string;
+  componentName?: string;
   children: JSX.Element;
 }) => JSX.Element;
 ```

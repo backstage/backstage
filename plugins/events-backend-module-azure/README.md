@@ -31,12 +31,12 @@ Install this module:
 yarn add --cwd packages/backend @backstage/plugin-events-backend-module-azure
 ```
 
-Add the event router to the `EventsBackend`:
+Add the event router to the `EventsBackend` instance in `packages/backend/src/plugins/events.ts`:
 
 ```diff
 +const azureEventRouter = new AzureDevOpsEventRouter();
 
- EventsBackend
+new EventsBackend(env.logger)
 +  .addPublishers(azureEventRouter)
 +  .addSubscribers(azureEventRouter);
 // [...]

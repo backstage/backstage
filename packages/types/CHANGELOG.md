@@ -1,5 +1,11 @@
 # @backstage/types
 
+## 1.1.0
+
+### Minor Changes
+
+- a5c5491ff50c: Added a `durationToMilliseconds` function to help with the conversion to a single duration number
+
 ## 1.0.2
 
 ### Patch Changes

@@ -1,5 +1,32 @@
 # @backstage/errors
 
+## 1.2.1
+
+### Patch Changes
+
+- e205b3e6ede8: Set `this.name` in all error classes that extend `CustomErrorBase` class to their actual name
+- Updated dependencies
+  - @backstage/types@1.1.0
+
+## 1.2.1-next.0
+
+### Patch Changes
+
+- e205b3e6ede8: Set `this.name` in all error classes that extend `CustomErrorBase` class to their actual name
+- Updated dependencies
+  - @backstage/types@1.1.0
+
+## 1.2.0
+
+### Minor Changes
+
+- c4e8fefd9f13: Added `ServiceUnavailableError`
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/types@1.1.0
+
 ## 1.2.0-next.0
 
 ### Minor Changes

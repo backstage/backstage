@@ -1,4 +1,4 @@
-openapi: 3.1.0
+openapi: 3.0.3
 
 info:
   title: '@backstage/plugin-catalog-backend'
@@ -61,15 +61,20 @@ components:
       in: query
       description: Restrict to just these fields in the response.
       required: false
+      allowReserved: true
       schema:
-        type: string
+        type: array
+        items:
+          type: string
     filter:
       name: filter
       in: query
       description: Filter for just the entities defined by this filter.
       required: false
       schema:
-        type: string
+        type: array
+        items:
+          type: string
     offset:
       name: offset
       in: query
@@ -86,17 +91,16 @@ components:
       schema:
         type: integer
         minimum: 1
-    sortField:
-      name: sortField
+    orderField:
+      name: orderField
       in: query
       description: The fields to sort returned results by.
       required: false
+      allowReserved: true
       schema:
         type: array
         items:
-          type: array
-          items:
-            type: string
+          type: string
           description: A two-item tuple of [field, order].
       explode: true
       style: form
@@ -208,7 +212,7 @@ components:
           required:
             - name
       description: Metadata fields common to all versions/kinds of entity.
-      additionalProperties: false
+      additionalProperties: true
     EntityRelation:
       type: object
       properties:
@@ -248,7 +252,34 @@ components:
         - kind
         - apiVersion
       description: The parts of the format that's common to all versions/kinds of entity.
-      additionalProperties: false
+      additionalProperties: true
+    NullableEntity:
+      type: object
+      properties:
+        relations:
+          type: array
+          items:
+            $ref: '#/components/schemas/EntityRelation'
+          description: The relations that this entity has with other entities.
+        spec:
+          $ref: '#/components/schemas/JsonObject'
+        metadata:
+          $ref: '#/components/schemas/EntityMeta'
+        kind:
+          type: string
+          description: The high level entity type being described.
+        apiVersion:
+          type: string
+          description: |-
+            The version of specification format for this particular entity that
+            this is written against.
+      required:
+        - metadata
+        - kind
+        - apiVersion
+      description: The parts of the format that's common to all versions/kinds of entity.
+      additionalProperties: true
+      nullable: true
     EntityAncestryResponse:
       type: object
       properties:
@@ -279,8 +310,7 @@ components:
           type: array
           items:
             anyOf:
-              - $ref: '#/components/schemas/Entity'
-              - type: 'null'
+              - $ref: '#/components/schemas/NullableEntity'
           description: |-
             The list of entities, in the same order as the refs in the request. Entries
             that are null signify that no entity existed with that ref.
@@ -326,11 +356,6 @@ components:
     LocationSpec:
       type: object
       properties:
-        presence:
-          type: string
-          enum:
-            - optional
-            - required
         target:
           type: string
         type:
@@ -478,9 +503,8 @@ components:
             field empty; which would currently make it owned by X" where X is taken from the
             codeowners file.
         value:
-          type:
-            - string
-            - 'null'
+          type: string
+          nullable: true
         state:
           type: string
           enum:
@@ -540,15 +564,9 @@ components:
           type: string
         target:
           type: string
-        presence:
-          type: string
-          enum:
-            - optional
-            - required
       required:
         - type
         - target
-        - presence
       additionalProperties: false
     SerializedError:
       allOf:
@@ -604,6 +622,7 @@ paths:
   /refresh:
     post:
       operationId: RefreshEntity
+      description: Refresh the entity related to entityRef.
       responses:
         '200':
           description: Refreshed
@@ -630,6 +649,7 @@ paths:
   /entities:
     get:
       operationId: GetEntities
+      description: Get all entities matching a given filter.
       responses:
         '200':
           description: ''
@@ -651,6 +671,7 @@ paths:
   /entities/by-uid/{uid}:
     get:
       operationId: GetEntityByUid
+      description: Get a single entity by the UID.
       responses:
         '200':
           description: Ok
@@ -665,6 +686,7 @@ paths:
         - $ref: '#/components/parameters/uid'
     delete:
       operationId: DeleteEntityByUid
+      description: Delete a single entity by UID.
       responses:
         '204':
           description: Deleted successfully.
@@ -676,6 +698,7 @@ paths:
   /entities/by-name/{kind}/{namespace}/{name}:
     get:
       operationId: GetEntityByName
+      description: Get an entity by an entity ref.
       responses:
         '200':
           description: Ok
@@ -693,6 +716,7 @@ paths:
   /entities/by-name/{kind}/{namespace}/{name}/ancestry:
     get:
       operationId: GetEntityAncestryByName
+      description: Get an entity's ancestry by entity ref.
       responses:
         '200':
           description: Ok
@@ -710,6 +734,7 @@ paths:
   /entities/by-refs:
     post:
       operationId: GetEntitiesByRefs
+      description: Get a batch set of entities given an array of entityRefs.
       responses:
         '200':
           description: Ok
@@ -742,6 +767,7 @@ paths:
   /entities/by-query:
     get:
       operationId: GetEntitiesByQuery
+      description: Search for entities by a given query.
       responses:
         '200':
           description: Ok
@@ -755,8 +781,9 @@ paths:
       parameters:
         - $ref: '#/components/parameters/fields'
         - $ref: '#/components/parameters/limit'
-        - $ref: '#/components/parameters/sortField'
+        - $ref: '#/components/parameters/orderField'
         - $ref: '#/components/parameters/cursor'
+        - $ref: '#/components/parameters/filter'
         - name: fullTextFilterTerm
           in: query
           description: Text search term.
@@ -776,6 +803,7 @@ paths:
   /entity-facets:
     get:
       operationId: GetEntityFacets
+      description: Get all entity facets that match the given filters.
       responses:
         '200':
           description: Ok
@@ -796,6 +824,7 @@ paths:
   /locations:
     post:
       operationId: CreateLocation
+      description: Create a location for a given target.
       responses:
         '200':
           description: Ok
@@ -831,21 +860,16 @@ paths:
             schema:
               type: object
               properties:
-                presence:
-                  type: string
-                  enum:
-                    - required
-                    - optional
                 target:
                   type: string
                 type:
                   type: string
               required:
-                - presence
                 - target
                 - type
     get:
       operationId: GetLocations
+      description: Get all locations
       responses:
         '200':
           description: Ok
@@ -867,6 +891,7 @@ paths:
   /locations/{id}:
     get:
       operationId: GetLocation
+      description: Get a location by id.
       responses:
         '200':
           description: Ok
@@ -885,6 +910,7 @@ paths:
             type: string
     delete:
       operationId: DeleteLocation
+      description: Delete a location by id.
       responses:
         '204':
           description: No content
@@ -900,6 +926,7 @@ paths:
   /analyze-location:
     post:
       operationId: AnalyzeLocation
+      description: Validate a given location.
       responses:
         '200':
           description: Ok
@@ -928,6 +955,7 @@ paths:
   /validate-entity:
     post:
       operationId: ValidateEntity
+      description: Validate that a passed in entity has no errors in schema.
       responses:
         '200':
           description: Ok
@@ -963,7 +991,8 @@ paths:
                 location:
                   type: string
                 entity:
-                  $ref: '#/components/schemas/Entity'
+                  type: object
+                  additionalProperties: true
               required:
                 - location
                 - entity

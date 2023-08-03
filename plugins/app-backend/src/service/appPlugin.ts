@@ -76,7 +76,7 @@ export const appPlugin = createBackendPlugin((options: AppPluginOptions) => ({
     env.registerInit({
       deps: {
         logger: coreServices.logger,
-        config: coreServices.config,
+        config: coreServices.rootConfig,
         database: coreServices.database,
         httpRouter: coreServices.httpRouter,
       },

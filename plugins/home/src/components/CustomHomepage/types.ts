@@ -17,9 +17,10 @@
 import { ReactElement } from 'react';
 import { Layout } from 'react-grid-layout';
 import { z } from 'zod';
-import { RJSFSchema } from '@rjsf/utils';
+import { RJSFSchema, UiSchema } from '@rjsf/utils';
 
 const RSJFTypeSchema: z.ZodType<RJSFSchema> = z.any();
+const RSJFTypeUiSchema: z.ZodType<UiSchema> = z.any();
 const ReactElementSchema: z.ZodType<ReactElement> = z.any();
 const LayoutSchema: z.ZodType<Layout> = z.any();
 
@@ -62,6 +63,7 @@ export const WidgetSchema = z.object({
     .positive('maxHeight must be positive number')
     .optional(),
   settingsSchema: RSJFTypeSchema.optional(),
+  uiSchema: RSJFTypeUiSchema.optional(),
 });
 
 export type Widget = z.infer<typeof WidgetSchema>;

@@ -1,5 +1,83 @@
 # @backstage/backend-test-utils
 
+## 0.2.0-next.1
+
+### Minor Changes
+
+- b9c57a4f857e: **BREAKING**: Renamed `mockServices.config` to `mockServices.rootConfig`.
+
+### Patch Changes
+
+- ae9304818136: Add needed constants and constructs to support PostgreSQL version 14 as test database
+- Updated dependencies
+  - @backstage/backend-common@0.19.2-next.1
+  - @backstage/plugin-auth-node@0.2.17-next.1
+  - @backstage/backend-app-api@0.5.0-next.1
+  - @backstage/backend-plugin-api@0.6.0-next.1
+  - @backstage/config@1.0.8
+  - @backstage/types@1.1.0
+
+## 0.1.40-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-app-api@0.4.6-next.0
+  - @backstage/backend-common@0.19.2-next.0
+  - @backstage/backend-plugin-api@0.5.5-next.0
+  - @backstage/config@1.0.8
+  - @backstage/types@1.1.0
+  - @backstage/plugin-auth-node@0.2.17-next.0
+
+## 0.1.39
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-common@0.19.1
+  - @backstage/backend-app-api@0.4.5
+  - @backstage/backend-plugin-api@0.5.4
+  - @backstage/config@1.0.8
+  - @backstage/types@1.1.0
+  - @backstage/plugin-auth-node@0.2.16
+
+## 0.1.39-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-common@0.19.1-next.0
+  - @backstage/backend-app-api@0.4.5-next.0
+  - @backstage/backend-plugin-api@0.5.4-next.0
+  - @backstage/config@1.0.8
+  - @backstage/types@1.1.0
+  - @backstage/plugin-auth-node@0.2.16-next.0
+
+## 0.1.38
+
+### Patch Changes
+
+- 68a21956ef52: Remove reference to deprecated import
+- Updated dependencies
+  - @backstage/backend-common@0.19.0
+  - @backstage/types@1.1.0
+  - @backstage/backend-app-api@0.4.4
+  - @backstage/backend-plugin-api@0.5.3
+  - @backstage/plugin-auth-node@0.2.15
+  - @backstage/config@1.0.8
+
+## 0.1.38-next.2
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-common@0.19.0-next.2
+  - @backstage/backend-app-api@0.4.4-next.2
+  - @backstage/backend-plugin-api@0.5.3-next.2
+  - @backstage/config@1.0.7
+  - @backstage/types@1.0.2
+  - @backstage/plugin-auth-node@0.2.15-next.2
+
 ## 0.1.38-next.1
 
 ### Patch Changes

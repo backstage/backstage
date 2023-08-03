@@ -21,7 +21,7 @@ import {
   OAuthRequester,
 } from '@backstage/core-plugin-api';
 import { showLoginPopup } from '../loginPopup';
-import { AuthConnector, CreateSessionOptions } from './types';
+import { AuthConnector, CreateSessionOptions, PopupOptions } from './types';
 
 let warned = false;
 
@@ -55,6 +55,10 @@ type Options<AuthSession> = {
    * ConfigApi instance used to configure authentication flow of pop-up or redirect.
    */
   configApi?: ConfigApi;
+  /**
+   * Options used to configure auth popup
+   */
+  popupOptions?: PopupOptions;
 };
 
 function defaultJoinScopes(scopes: Set<string>) {
@@ -76,6 +80,7 @@ export class DefaultAuthConnector<AuthSession>
   private readonly authRequester: OAuthRequester<AuthSession>;
   private readonly sessionTransform: (response: any) => Promise<AuthSession>;
   private readonly enableExperimentalRedirectFlow: boolean;
+  private readonly popupOptions: PopupOptions | undefined;
   constructor(options: Options<AuthSession>) {
     const {
       configApi,
@@ -85,6 +90,7 @@ export class DefaultAuthConnector<AuthSession>
       joinScopes = defaultJoinScopes,
       oauthRequestApi,
       sessionTransform = id => id,
+      popupOptions,
     } = options;
 
     if (!warned && !configApi) {
@@ -114,6 +120,7 @@ export class DefaultAuthConnector<AuthSession>
     this.provider = provider;
     this.joinScopesFunc = joinScopes;
     this.sessionTransform = sessionTransform;
+    this.popupOptions = popupOptions;
   }
 
   async createSession(options: CreateSessionOptions): Promise<AuthSession> {
@@ -188,12 +195,20 @@ export class DefaultAuthConnector<AuthSession>
       flow: 'popup',
     });
 
+    const width = this.popupOptions?.size?.fullscreen
+      ? window.screen.width
+      : this.popupOptions?.size?.width || 450;
+
+    const height = this.popupOptions?.size?.fullscreen
+      ? window.screen.height
+      : this.popupOptions?.size?.height || 730;
+
     const payload = await showLoginPopup({
       url: popupUrl,
       name: `${this.provider.title} Login`,
       origin: new URL(popupUrl).origin,
-      width: 450,
-      height: 730,
+      width,
+      height,
     });
 
     return await this.sessionTransform(payload);

@@ -18,8 +18,10 @@ import { extname } from 'path';
 import { resolveSafeChildPath, UrlReader } from '@backstage/backend-common';
 import { InputError } from '@backstage/errors';
 import { ScmIntegrations } from '@backstage/integration';
-import { fetchContents } from './helpers';
-import { createTemplateAction } from '@backstage/plugin-scaffolder-node';
+import {
+  createTemplateAction,
+  fetchContents,
+} from '@backstage/plugin-scaffolder-node';
 import globby from 'globby';
 import fs from 'fs-extra';
 import { isBinaryFile } from 'isbinaryfile';
@@ -150,7 +152,7 @@ export function createFetchTemplateAction(options: {
       let renderFilename: boolean;
       if (ctx.input.copyWithoutRender) {
         ctx.logger.warn(
-          '[Deprecated] Please use copyWithoutTemplating instead.',
+          '[Deprecated] copyWithoutRender is deprecated Please use copyWithoutTemplating instead.',
         );
         copyOnlyPatterns = ctx.input.copyWithoutRender;
         renderFilename = false;

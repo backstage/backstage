@@ -45,6 +45,7 @@ export async function buildBundle(options: BuildOptions) {
     checksEnabled: false,
     isDev: false,
     baseUrl: resolveBaseUrl(options.frontendConfig),
+    getFrontendAppConfigs: () => options.frontendAppConfigs,
   });
 
   const isCi = yn(process.env.CI, { default: false });

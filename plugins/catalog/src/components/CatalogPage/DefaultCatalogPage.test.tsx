@@ -15,12 +15,7 @@
  */
 
 import { CatalogApi } from '@backstage/catalog-client';
-import {
-  Entity,
-  parseEntityRef,
-  RELATION_MEMBER_OF,
-  RELATION_OWNED_BY,
-} from '@backstage/catalog-model';
+import { RELATION_OWNED_BY } from '@backstage/catalog-model';
 import { TableColumn, TableProps } from '@backstage/core-components';
 import {
   IdentityApi,
@@ -67,6 +62,7 @@ describe('DefaultCatalogPage', () => {
             kind: 'Component',
             metadata: {
               name: 'Entity1',
+              namespace: 'default',
             },
             spec: {
               owner: 'tools',
@@ -101,31 +97,18 @@ describe('DefaultCatalogPage', () => {
               },
             ],
           },
-        ] as Entity[],
+        ],
       }),
     getLocationByRef: () =>
       Promise.resolve({ id: 'id', type: 'url', target: 'url' }),
-    getEntityByRef: async entityRef => {
-      return {
-        apiVersion: 'backstage.io/v1alpha1',
-        kind: 'User',
-        metadata: { name: parseEntityRef(entityRef).name },
-        relations: [
-          {
-            type: RELATION_MEMBER_OF,
-            targetRef: 'group:default/tools',
-            target: { namespace: 'default', kind: 'Group', name: 'tools' },
-          },
+    getEntityFacets: async () => ({
+      facets: {
+        'relations.ownedBy': [
+          { count: 1, value: 'group:default/not-tools' },
+          { count: 1, value: 'group:default/tools' },
         ],
-      };
-    },
-    /**
-     * For the purposes of this test case, use existing functionality. The picker
-     *  isn't being tested, just needs this method to render correctly.
-     */
-    getEntitiesByRefs: async refs => {
-      return { items: refs.entityRefs.map(() => undefined) };
-    },
+      },
+    }),
   };
   const testProfile: Partial<ProfileInfo> = {
     displayName: 'Display Name',
@@ -205,7 +188,9 @@ describe('DefaultCatalogPage', () => {
   it('should render the default actions of an item in the grid', async () => {
     await renderWrapped(<DefaultCatalogPage />);
     fireEvent.click(screen.getByTestId('user-picker-owned'));
-    await expect(screen.findByText(/Owned \(1\)/)).resolves.toBeInTheDocument();
+    await expect(
+      screen.findByText(/Owned components \(1\)/),
+    ).resolves.toBeInTheDocument();
     await expect(screen.findByTitle(/View/)).resolves.toBeInTheDocument();
     await expect(screen.findByTitle(/Edit/)).resolves.toBeInTheDocument();
     await expect(
@@ -235,7 +220,9 @@ describe('DefaultCatalogPage', () => {
 
     await renderWrapped(<DefaultCatalogPage actions={actions} />);
     fireEvent.click(screen.getByTestId('user-picker-owned'));
-    await expect(screen.findByText(/Owned \(1\)/)).resolves.toBeInTheDocument();
+    await expect(
+      screen.findByText(/Owned components \(1\)/),
+    ).resolves.toBeInTheDocument();
     await expect(screen.findByTitle(/Foo Action/)).resolves.toBeInTheDocument();
     await expect(screen.findByTitle(/Bar Action/)).resolves.toBeInTheDocument();
     await expect(
@@ -249,14 +236,20 @@ describe('DefaultCatalogPage', () => {
   it('should render', async () => {
     await renderWrapped(<DefaultCatalogPage />);
     fireEvent.click(screen.getByTestId('user-picker-owned'));
-    await expect(screen.findByText(/Owned \(1\)/)).resolves.toBeInTheDocument();
+    await expect(
+      screen.findByText(/Owned components \(1\)/),
+    ).resolves.toBeInTheDocument();
     fireEvent.click(screen.getByTestId('user-picker-all'));
-    await expect(screen.findByText(/All \(2\)/)).resolves.toBeInTheDocument();
+    await expect(
+      screen.findByText(/All components \(2\)/),
+    ).resolves.toBeInTheDocument();
   }, 20_000);
 
   it('should set initial filter correctly', async () => {
     await renderWrapped(<DefaultCatalogPage initiallySelectedFilter="all" />);
-    await expect(screen.findByText(/All \(2\)/)).resolves.toBeInTheDocument();
+    await expect(
+      screen.findByText(/All components \(2\)/),
+    ).resolves.toBeInTheDocument();
   }, 20_000);
 
   // this test is for fixing the bug after favoriting an entity, the matching
@@ -264,7 +257,9 @@ describe('DefaultCatalogPage', () => {
   it('should render the correct entities filtered on the selected filter', async () => {
     await renderWrapped(<DefaultCatalogPage />);
     fireEvent.click(screen.getByTestId('user-picker-owned'));
-    await expect(screen.findByText(/Owned \(1\)/)).resolves.toBeInTheDocument();
+    await expect(
+      screen.findByText(/Owned components \(1\)/),
+    ).resolves.toBeInTheDocument();
     // The "Starred" menu option should initially be disabled, since there
     // aren't any starred entities.
     expect(screen.getByTestId('user-picker-starred')).toHaveAttribute(
@@ -272,11 +267,15 @@ describe('DefaultCatalogPage', () => {
       'true',
     );
     fireEvent.click(screen.getByTestId('user-picker-all'));
-    await expect(screen.findByText(/All \(2\)/)).resolves.toBeInTheDocument();
+    await expect(
+      screen.findByText(/All components \(2\)/),
+    ).resolves.toBeInTheDocument();
 
     const starredIcons = await screen.findAllByTitle('Add to favorites');
     fireEvent.click(starredIcons[0]);
-    await expect(screen.findByText(/All \(2\)/)).resolves.toBeInTheDocument();
+    await expect(
+      screen.findByText(/All components \(2\)/),
+    ).resolves.toBeInTheDocument();
 
     // Now that we've starred an entity, the "Starred" menu option should be
     // enabled.
@@ -286,7 +285,7 @@ describe('DefaultCatalogPage', () => {
     );
     fireEvent.click(screen.getByTestId('user-picker-starred'));
     await expect(
-      screen.findByText(/Starred \(1\)/),
+      screen.findByText(/Starred components \(1\)/),
     ).resolves.toBeInTheDocument();
   }, 20_000);
 

@@ -1,5 +1,178 @@
 # @backstage/plugin-scaffolder
 
+## 1.14.2-next.1
+
+### Patch Changes
+
+- 8a0490fb669e: Fix the get entities query in the `MyGroupsPicker` to query the `kind=Group` entities.
+- Updated dependencies
+  - @backstage/integration-react@1.1.16-next.1
+  - @backstage/integration@1.5.1
+  - @backstage/catalog-client@1.4.3
+  - @backstage/catalog-model@1.4.1
+  - @backstage/config@1.0.8
+  - @backstage/core-components@0.13.4-next.0
+  - @backstage/core-plugin-api@1.5.3
+  - @backstage/errors@1.2.1
+  - @backstage/theme@0.4.1
+  - @backstage/types@1.1.0
+  - @backstage/plugin-catalog-common@1.0.15
+  - @backstage/plugin-catalog-react@1.8.1-next.0
+  - @backstage/plugin-permission-react@0.4.14
+  - @backstage/plugin-scaffolder-common@1.3.2
+  - @backstage/plugin-scaffolder-react@1.5.2-next.0
+
+## 1.14.2-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/core-components@0.13.4-next.0
+  - @backstage/plugin-scaffolder-react@1.5.2-next.0
+  - @backstage/core-plugin-api@1.5.3
+  - @backstage/plugin-catalog-react@1.8.1-next.0
+  - @backstage/catalog-client@1.4.3
+  - @backstage/catalog-model@1.4.1
+  - @backstage/config@1.0.8
+  - @backstage/errors@1.2.1
+  - @backstage/integration@1.5.1
+  - @backstage/integration-react@1.1.16-next.0
+  - @backstage/theme@0.4.1
+  - @backstage/types@1.1.0
+  - @backstage/plugin-catalog-common@1.0.15
+  - @backstage/plugin-permission-react@0.4.14
+  - @backstage/plugin-scaffolder-common@1.3.2
+
+## 1.14.1
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/theme@0.4.1
+  - @backstage/errors@1.2.1
+  - @backstage/plugin-scaffolder-react@1.5.1
+  - @backstage/plugin-catalog-react@1.8.0
+  - @backstage/core-components@0.13.3
+  - @backstage/core-plugin-api@1.5.3
+  - @backstage/catalog-client@1.4.3
+  - @backstage/catalog-model@1.4.1
+  - @backstage/config@1.0.8
+  - @backstage/integration@1.5.1
+  - @backstage/integration-react@1.1.15
+  - @backstage/types@1.1.0
+  - @backstage/plugin-catalog-common@1.0.15
+  - @backstage/plugin-permission-react@0.4.14
+  - @backstage/plugin-scaffolder-common@1.3.2
+
+## 1.14.1-next.2
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/plugin-catalog-react@1.8.0-next.2
+  - @backstage/theme@0.4.1-next.1
+  - @backstage/core-plugin-api@1.5.3-next.1
+  - @backstage/core-components@0.13.3-next.2
+  - @backstage/catalog-client@1.4.3-next.0
+  - @backstage/catalog-model@1.4.1-next.0
+  - @backstage/config@1.0.8
+  - @backstage/errors@1.2.1-next.0
+  - @backstage/integration@1.5.1-next.0
+  - @backstage/integration-react@1.1.15-next.2
+  - @backstage/types@1.1.0
+  - @backstage/plugin-catalog-common@1.0.15-next.0
+  - @backstage/plugin-permission-react@0.4.14-next.2
+  - @backstage/plugin-scaffolder-common@1.3.2-next.0
+  - @backstage/plugin-scaffolder-react@1.5.1-next.2
+
+## 1.14.1-next.1
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/theme@0.4.1-next.0
+  - @backstage/plugin-scaffolder-react@1.5.1-next.1
+  - @backstage/core-components@0.13.3-next.1
+  - @backstage/core-plugin-api@1.5.3-next.0
+  - @backstage/integration-react@1.1.15-next.1
+  - @backstage/plugin-catalog-react@1.7.1-next.1
+  - @backstage/plugin-permission-react@0.4.14-next.1
+  - @backstage/config@1.0.8
+
+## 1.14.1-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/errors@1.2.1-next.0
+  - @backstage/core-components@0.13.3-next.0
+  - @backstage/catalog-client@1.4.3-next.0
+  - @backstage/catalog-model@1.4.1-next.0
+  - @backstage/config@1.0.8
+  - @backstage/core-plugin-api@1.5.2
+  - @backstage/integration@1.5.1-next.0
+  - @backstage/integration-react@1.1.15-next.0
+  - @backstage/theme@0.4.0
+  - @backstage/types@1.1.0
+  - @backstage/plugin-catalog-common@1.0.15-next.0
+  - @backstage/plugin-catalog-react@1.7.1-next.0
+  - @backstage/plugin-permission-react@0.4.14-next.0
+  - @backstage/plugin-scaffolder-common@1.3.2-next.0
+  - @backstage/plugin-scaffolder-react@1.5.1-next.0
+
+## 1.14.0
+
+### Minor Changes
+
+- 464125e9b1ba: Added `MyGroupsPicker` field extension that will display a dropdown of groups a user is part of.
+
+### Patch Changes
+
+- cda753a797b5: Forward `Authorization` header for `EventSource` when credentials are available.
+- 2ff94da135a4: bump `rjsf` dependencies to 5.7.3
+- 74b216ee4e50: Add `PropsWithChildren` to usages of `ComponentType`, in preparation for React 18 where the children are no longer implicit.
+- Updated dependencies
+  - @backstage/core-plugin-api@1.5.2
+  - @backstage/catalog-client@1.4.2
+  - @backstage/plugin-scaffolder-react@1.5.0
+  - @backstage/core-components@0.13.2
+  - @backstage/types@1.1.0
+  - @backstage/theme@0.4.0
+  - @backstage/integration@1.5.0
+  - @backstage/plugin-catalog-react@1.7.0
+  - @backstage/catalog-model@1.4.0
+  - @backstage/errors@1.2.0
+  - @backstage/integration-react@1.1.14
+  - @backstage/plugin-permission-react@0.4.13
+  - @backstage/config@1.0.8
+  - @backstage/plugin-catalog-common@1.0.14
+  - @backstage/plugin-scaffolder-common@1.3.1
+
+## 1.14.0-next.3
+
+### Minor Changes
+
+- 464125e9b1ba: Added `MyGroupsPicker` field extension that will display a dropdown of groups a user is part of.
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/core-components@0.13.2-next.3
+  - @backstage/catalog-model@1.4.0-next.1
+  - @backstage/plugin-scaffolder-react@1.5.0-next.3
+  - @backstage/catalog-client@1.4.2-next.2
+  - @backstage/config@1.0.7
+  - @backstage/core-plugin-api@1.5.2-next.0
+  - @backstage/errors@1.2.0-next.0
+  - @backstage/integration@1.5.0-next.0
+  - @backstage/integration-react@1.1.14-next.3
+  - @backstage/theme@0.4.0-next.1
+  - @backstage/types@1.0.2
+  - @backstage/plugin-catalog-common@1.0.14-next.1
+  - @backstage/plugin-catalog-react@1.7.0-next.3
+  - @backstage/plugin-permission-react@0.4.13-next.0
+  - @backstage/plugin-scaffolder-common@1.3.1-next.1
+
 ## 1.13.2-next.2
 
 ### Patch Changes
@@ -2986,7 +3159,7 @@
 ### Patch Changes
 
 - 12d8f27a6: Move logic for constructing the template form to the backend, using a new `./parameter-schema` endpoint that returns the form schema for a given template.
-- bc327dc42: Tweak the template cards to be even more compliant with MUI examples, and a little bit more dense.
+- bc327dc42: Tweak the template cards to be even more compliant with Material UI examples, and a little bit more dense.
 - Updated dependencies [12d8f27a6]
 - Updated dependencies [40c0fdbaa]
 - Updated dependencies [2a271d89e]

@@ -29,5 +29,9 @@ export const useTemplateParameterSchema = (templateRef: string) => {
     [scaffolderApi, templateRef],
   );
 
-  return { manifest: value as TemplateParameterSchema, loading, error };
+  return {
+    manifest: value as TemplateParameterSchema | undefined,
+    loading,
+    error,
+  };
 };

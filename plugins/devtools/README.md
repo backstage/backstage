@@ -12,6 +12,20 @@ Lists helpful information about your current running Backstage instance such as:
 
 ![Example of Info tab](./docs/devtools-info-tab.png)
 
+#### Backstage Version Reporting
+
+The Backstage Version that is reported requires `backstage.json` to be present at the root of the running backstage instance.  
+You may need to modify your Dockerfile to ensure `backstage.json` is copied into the `WORKDIR` of your image.
+
+```sh
+WORKDIR /app
+# This switches many Node.js dependencies to production mode.
+ENV NODE_ENV production
+
+# Then copy the rest of the backend bundle, along with any other files we might want (including backstage.json).
+COPY --chown=node:node ... backstage.json ./
+```
+
 ### Config
 
 Lists the configuration being used by your current running Backstage instance.
@@ -29,6 +43,12 @@ The DevTools plugin can be setup with other tabs with additional helpful feature
 Lists the status of configured External Dependencies based on your current running Backstage instance's ability to reach them.
 
 ![Example of external dependencies tab](./docs/devtools-external-dependencies.png)
+
+### Catalog Unprocessed Entities
+
+The [Catalog Unprocessed Entities plugin](https://github.com/backstage/backstage/tree/master/plugins/catalog-unprocessed-entities) has an optional tab that you can also be added that will show unprocessed entities:
+
+![Example of unprocessed entities tab](./docs/catalog-unprocessed-entities-tab.png)
 
 ## Setup
 
@@ -135,6 +155,43 @@ The DevTools plugin has been designed so that you can customize the tabs to suit
 
 With this setup you can add or remove the tabs as you'd like or add your own simply by editing your `CustomDevToolsPage.tsx` file
 
+### Adding Tabs From Other Plugins
+
+You can also add tabs to show content from other plugins that fit well with the other DevTools content.
+
+#### Catalog Unprocessed Entities Tab
+
+Here's how to add the Catalog Unprocessed Entities tab:
+
+1. Install and setup the [Catalog Unprocessed Entities plugin](https://github.com/backstage/backstage/tree/master/plugins/catalog-unprocessed-entities) as per its documentation
+2. Add the following import to your `CustomDevToolsPage.tsx`:
+
+   `import { UnprocessedEntitiesContent } from '@backstage/plugin-catalog-unprocessed-entities';`
+
+3. Then add a new `DevToolsLayout.Route` to the end of your `DevToolsLayout` like this:
+
+   ```diff
+     <DevToolsLayout>
+       <DevToolsLayout.Route path="info" title="Info">
+         <InfoContent />
+       </DevToolsLayout.Route>
+       <DevToolsLayout.Route path="config" title="Config">
+         <ConfigContent />
+       </DevToolsLayout.Route>
+       <DevToolsLayout.Route
+         path="external-dependencies"
+         title="External Dependencies"
+       >
+         <ExternalDependenciesContent />
+       </DevToolsLayout.Route>
+   +   <DevToolsLayout.Route path="unprocessed-entities" title="Unprocessed Entities">
+   +     <UnprocessedEntitiesContent />
+   +   </DevToolsLayout.Route>
+     </DevToolsLayout>
+   ```
+
+4. Now run `yarn dev` and navigate to the DevTools you'll see a new tab for Unprocessed Entities
+
 ## Permissions
 
 The DevTools plugin supports the [permissions framework](https://backstage.io/docs/permissions/overview), the following sections outline how you can use them with the assumption that you have the permissions framework setup and working.
@@ -153,7 +210,7 @@ To use the permission framework to secure the DevTools sidebar option you'll wan
    ```
 
 2. Then open the `packages/app/src/components/Root/Root.tsx` file
-3. The add these imports after all the existing import statements:
+3. Then add these imports after all the existing import statements:
 
    ```ts
    import { devToolsAdministerPermission } from '@backstage/plugin-devtools-common';
@@ -351,11 +408,23 @@ export const customDevToolsPage = <DevToolsPage />;
 
 ## Configuration
 
-The following sections outline the configuration for the DevTools plugin
+The following sections outline the configuration for the DevTools plugin.
+
+### Package Dependencies
+
+By default, only packages with names starting with `@backstage` and `@internal` will be listed on the main "Info" tab. If you would like additional packages to be listed, you can specify the package prefixes (not regular expressions) in your `app-config.yaml`. For example, to not only provide version information about backstage plugins provided by the core application (`@backstage/*` modules) but also `@roadiehq` and `@spotify` plugins, you can specify this configuration:
+
+```yaml
+devTools:
+  info:
+    packagePrefixes:
+      - @roadiehq/backstage-
+      - @spotify/backstage-
+```
 
 ### External Dependencies Configuration
 
-If you decide to use the External Dependencies tab then you'll need to setup the configuration for it in your `app-config.yaml`, if there is no config setup then the tab will be empty. Here's an example:
+If you decide to use the External Dependencies tab then you'll need to setup the configuration for it in your `app-config.yaml`. If there is no endpoints configured, then the tab will be empty. Here's an example:
 
 ```yaml
 devTools:
@@ -375,3 +444,15 @@ Configuration details:
 - `name` is the friendly name for your endpoint
 - `type` can be either `ping` or `fetch` and will perform the respective action on the `target`
 - `target` is either a URL or server that you want to trigger a `type` action on
+
+### External Dependencies Requirements
+
+If you are using the `ping` type you must ensure that `ping` is available in the Host OS that is running Backstage.
+For example you may need to add `ping` into the Dockerfile that builds your Backstage image:
+
+```sh
+RUN --mount=type=cache,target=/var/cache/apt,sharing=locked \
+    --mount=type=cache,target=/var/lib/apt,sharing=locked \
+    apt-get update && \
+    apt-get install -y  ... iputils-ping
+```

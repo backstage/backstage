@@ -84,7 +84,7 @@ For example, if you install the `api-docs` plugin, a matching `SidebarItem`
 could be something like this:
 
 ```tsx title="packages/app/src/components/Root/Root.tsx"
-// Import icon from MUI
+// Import icon from Material UI
 import ExtensionIcon from '@material-ui/icons/Extension';
 
 // ... inside the AppSidebar component

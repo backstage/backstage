@@ -178,6 +178,7 @@ Kaewkasi
 Kaswell
 Keyv
 Knex
+Koyeb
 KPIs
 Kuang
 kubectl
@@ -212,6 +213,7 @@ middleware
 minikube
 Minikube
 Minio
+misattributed
 misconfiguration
 misconfigured
 mkdocs
@@ -311,6 +313,8 @@ rsync
 ruleset
 runbook
 sam
+sandbox
+sandboxing
 sanitization
 scaffolded
 scaffolder
@@ -399,6 +403,7 @@ Uffizzi
 ui
 unbreak
 Unconference
+unicode
 unmanaged
 unregister
 unregistering
@@ -406,6 +411,7 @@ unregistration
 untracked
 upsert
 upvote
+url
 URIs
 URLs
 utils
@@ -434,3 +440,5 @@ zod
 Zolotusky
 zoomable
 zsh
+Pulumi
+Lightsail

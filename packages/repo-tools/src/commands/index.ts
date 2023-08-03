@@ -40,6 +40,15 @@ function registerSchemaCommand(program: Command) {
       'Generates a Typescript file from an OpenAPI yaml spec. For use with the `@backstage/backend-openapi-utils` ApiRouter type.',
     )
     .action(lazy(() => import('./openapi/generate').then(m => m.bulkCommand)));
+
+  openApiCommand
+    .command('lint [paths...]')
+    .description('Lint OpenAPI schemas.')
+    .option(
+      '--strict',
+      'Fail on any linting severity messages, not just errors.',
+    )
+    .action(lazy(() => import('./openapi/lint').then(m => m.bulkCommand)));
 }
 
 export function registerCommands(program: Command) {

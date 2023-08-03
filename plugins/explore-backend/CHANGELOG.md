@@ -1,5 +1,126 @@
 # @backstage/plugin-explore-backend
 
+## 0.0.10-next.1
+
+### Patch Changes
+
+- 12a8c94eda8d: Add package repository and homepage metadata
+- Updated dependencies
+  - @backstage/plugin-search-backend-module-explore@0.1.4-next.1
+  - @backstage/backend-common@0.19.2-next.1
+  - @backstage/config@1.0.8
+  - @backstage/types@1.1.0
+  - @backstage/plugin-explore-common@0.0.1
+  - @backstage/plugin-search-common@1.2.5
+
+## 0.0.10-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-common@0.19.2-next.0
+  - @backstage/config@1.0.8
+  - @backstage/types@1.1.0
+  - @backstage/plugin-explore-common@0.0.1
+  - @backstage/plugin-search-backend-module-explore@0.1.4-next.0
+  - @backstage/plugin-search-common@1.2.5
+
+## 0.0.9
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-common@0.19.1
+  - @backstage/config@1.0.8
+  - @backstage/types@1.1.0
+  - @backstage/plugin-explore-common@0.0.1
+  - @backstage/plugin-search-backend-module-explore@0.1.3
+  - @backstage/plugin-search-common@1.2.5
+
+## 0.0.9-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-common@0.19.1-next.0
+  - @backstage/config@1.0.8
+  - @backstage/types@1.1.0
+  - @backstage/plugin-explore-common@0.0.1
+  - @backstage/plugin-search-backend-module-explore@0.1.3-next.0
+  - @backstage/plugin-search-common@1.2.5-next.0
+
+## 0.0.8
+
+### Patch Changes
+
+- 31616c1fc4e4: Allow to provide explore tools through config instead of data in code.
+
+  ```yaml title="app-config.yaml"
+  explore:
+    tools:
+      - title: New Relic
+        description: Observability platform built to help engineers create and monitor their software
+        url: /newrelic
+        image: https://i.imgur.com/L37ikrX.jpg
+        tags:
+          - newrelic
+          - performance
+          - monitoring
+          - errors
+          - alerting
+      - title: CircleCI
+        description: Provides builds overview, detailed build info and retriggering functionality for CircleCI.
+        url: /circleci
+        image: https://miro.medium.com/max/1200/1*hkTBp22vLAqlIHkrkZHPnw.png
+        tags:
+          - circleci
+          - ci
+          - dev
+      # [...]
+  ```
+
+  ```diff title="packages/backend/src/plugins/explore.ts"
+  - import { ExploreTool } from '@backstage/plugin-explore-common';
+  - const exploreTools: ExploreTool[] = [
+  -   {
+  -     title: 'New Relic',
+  -     description: 'Observability platform built to help engineers create and monitor their software',
+  -     url: '/newrelic',
+  -     image: 'https://i.imgur.com/L37ikrX.jpg',
+  -     tags: ['newrelic', 'performance', 'monitoring', 'errors', 'alerting'],
+  -   },
+  -   {
+  -     title: 'CircleCI',
+  -     description: 'Provides builds overview, detailed build info and retriggering functionality for CircleCI.',
+  -     url: '/circleci',
+  -     image: 'https://miro.medium.com/max/1200/1*hkTBp22vLAqlIHkrkZHPnw.png',
+  -     tags: ['circleci', 'ci', 'dev'],
+  -   },
+  - ];
+  -
+  - StaticExploreToolProvider.fromData(tools)
+  + StaticExploreToolProvider.fromData(env.config)
+  ```
+
+- Updated dependencies
+  - @backstage/backend-common@0.19.0
+  - @backstage/types@1.1.0
+  - @backstage/plugin-search-backend-module-explore@0.1.2
+  - @backstage/config@1.0.8
+  - @backstage/plugin-explore-common@0.0.1
+  - @backstage/plugin-search-common@1.2.4
+
+## 0.0.8-next.2
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-common@0.19.0-next.2
+  - @backstage/config@1.0.7
+  - @backstage/plugin-explore-common@0.0.1
+  - @backstage/plugin-search-backend-module-explore@0.1.2-next.2
+  - @backstage/plugin-search-common@1.2.4-next.0
+
 ## 0.0.8-next.1
 
 ### Patch Changes

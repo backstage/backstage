@@ -16,11 +16,11 @@
 
 export interface Config {
   /** Optional configurations for the SonarQube plugin */
-  sonarQube?: {
+  sonarqube?: {
     /**
      * The base url of the sonarqube installation. Defaults to https://sonarcloud.io.
      * @visibility frontend
      */
-    baseUrl: string;
+    baseUrl?: string;
   };
 }

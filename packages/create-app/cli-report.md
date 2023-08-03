@@ -11,5 +11,6 @@ Options:
   -V, --version
   --path [directory]
   --skip-install
+  --template-path [directory]
   -h, --help
 ```

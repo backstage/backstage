@@ -42,7 +42,7 @@ const useStyles = makeStyles((theme: Theme) =>
       backgroundColor: theme.palette.background.paper,
     },
     progress: {
-      margin: `0 ${theme.spacing(2)}px`,
+      margin: theme.spacing(0, 2),
     },
   }),
 );

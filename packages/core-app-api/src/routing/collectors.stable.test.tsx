@@ -118,10 +118,11 @@ function routeObj(
         caseSensitive: false,
         element: 'match-all',
         routeRefs: new Set(),
+        plugins: new Set(),
       },
       ...children,
     ],
-    plugin: backstagePlugin,
+    plugins: backstagePlugin ? new Set([backstagePlugin]) : new Set(),
   };
 }
 
@@ -333,11 +334,11 @@ describe('discovery', () => {
       [ref5, ref3],
     ]);
     expect(routing.objects).toEqual([
-      routeObj('foo', [ref1, ref2], [], 'gathered'),
+      routeObj('foo', [ref1, ref2], [], 'gathered', plugin),
       routeObj(
         'bar',
         [ref3],
-        [routeObj('', [ref4, ref5], [], 'gathered')],
+        [routeObj('', [ref4, ref5], [], 'gathered', plugin)],
         undefined,
         plugin,
       ),
@@ -403,6 +404,7 @@ describe('discovery', () => {
               ),
             ],
             'gathered',
+            plugin,
           ),
         ],
         undefined,

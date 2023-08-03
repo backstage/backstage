@@ -22,7 +22,7 @@ import {
   ExtendedHttpServer,
   DefaultRootHttpRouter,
 } from '@backstage/backend-app-api';
-import { SingleHostDiscovery } from '@backstage/backend-common';
+import { HostDiscovery } from '@backstage/backend-common';
 import {
   ServiceFactory,
   ServiceRef,
@@ -73,7 +73,7 @@ export interface TestBackend extends Backend {
 
 const defaultServiceFactories = [
   mockServices.cache.factory(),
-  mockServices.config.factory(),
+  mockServices.rootConfig.factory(),
   mockServices.database.factory(),
   mockServices.httpRouter.factory(),
   mockServices.identity.factory(),
@@ -108,7 +108,7 @@ export async function startTestBackend<
   const rootHttpRouterFactory = createServiceFactory({
     service: coreServices.rootHttpRouter,
     deps: {
-      config: coreServices.config,
+      config: coreServices.rootConfig,
       lifecycle: coreServices.rootLifecycle,
       rootLogger: coreServices.rootLogger,
     },
@@ -148,7 +148,7 @@ export async function startTestBackend<
         throw new Error('Test server not started yet');
       }
       const port = server.port();
-      const discovery = SingleHostDiscovery.fromConfig(
+      const discovery = HostDiscovery.fromConfig(
         new ConfigReader({
           backend: { baseUrl: `http://localhost:${port}`, listen: { port } },
         }),

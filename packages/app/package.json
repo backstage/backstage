@@ -1,11 +1,17 @@
 {
   "name": "example-app",
-  "version": "0.2.84-next.2",
+  "version": "0.2.86-next.1",
   "private": true,
   "backstage": {
     "role": "frontend"
   },
   "bundled": true,
+  "homepage": "https://backstage.io",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/backstage/backstage",
+    "directory": "packages/app"
+  },
   "dependencies": {
     "@backstage/app-defaults": "workspace:^",
     "@backstage/catalog-model": "workspace:^",
@@ -50,6 +56,7 @@
     "@backstage/plugin-microsoft-calendar": "workspace:^",
     "@backstage/plugin-newrelic": "workspace:^",
     "@backstage/plugin-newrelic-dashboard": "workspace:^",
+    "@backstage/plugin-nomad": "workspace:^",
     "@backstage/plugin-octopus-deploy": "workspace:^",
     "@backstage/plugin-org": "workspace:^",
     "@backstage/plugin-pagerduty": "workspace:^",

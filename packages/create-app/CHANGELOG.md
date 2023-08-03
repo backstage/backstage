@@ -1,5 +1,88 @@
 # @backstage/create-app
 
+## 0.5.4-next.1
+
+### Patch Changes
+
+- Bumped create-app version.
+- Updated dependencies
+  - @backstage/cli-common@0.1.12
+
+## 0.5.4-next.0
+
+### Patch Changes
+
+- Bumped create-app version.
+- Updated dependencies
+  - @backstage/cli-common@0.1.12
+
+## 0.5.3
+
+### Patch Changes
+
+- 76b83a4422bb: Post-create message - added instruction to run `yarn install` when app was created with `--skip-install`
+- d72e2eeba6f1: Bumped create-app version.
+- e3ce5dd3f89a: add cy.\*\*.should to cypress eslintrc
+- f920a61031c5: Enable specifying an external application template when using the `create-app` CLI command.
+- 294b1629de28: Display a warning alert if relations are defined, which don't exist in the catalog.
+- 4f7292c74dff: Updated included Dockerfile to include `g++`. Also updated the comments to note that some of the dependencies are also needed by isolated-vm
+- Updated dependencies
+  - @backstage/cli-common@0.1.12
+
+## 0.5.3-next.2
+
+### Patch Changes
+
+- 4f7292c74dff: Updated included Dockerfile to include `g++`. Also updated the comments to note that some of the dependencies are also needed by isolated-vm
+- Updated dependencies
+  - @backstage/cli-common@0.1.12
+
+## 0.5.3-next.1
+
+### Patch Changes
+
+- 76b83a4422bb: Post-create message - added instruction to run `yarn install` when app was created with `--skip-install`
+- e3ce5dd3f89a: add cy.\*\*.should to cypress eslintrc
+- 294b1629de28: Display a warning alert if relations are defined, which don't exist in the catalog.
+
+## 0.5.3-next.0
+
+### Patch Changes
+
+- Bumped create-app version.
+- Updated dependencies
+  - @backstage/cli-common@0.1.12
+
+## 0.5.2
+
+### Patch Changes
+
+- 08f177b91084: Add link from Template entity to the scaffolder launch page for the template in the AboutCard.
+- 75a1c93784fe: Bumped create-app version.
+- e37573d60e79: Bumped create-app version.
+- 320ed502747a: Bumped create-app version.
+- 52d599817680: Changed the default backend CacheClient to an in-memory cache when not explicitly configured.
+
+  Explicit configuration of an **in-memory cache** can be removed from `app-config.yaml`, as this is now the default:
+
+  ```diff
+  backend:
+  -  cache:
+  -    store: memory
+  ```
+
+- 68a21956ef52: Remove reference to deprecated import
+- Updated dependencies
+  - @backstage/cli-common@0.1.12
+
+## 0.5.2-next.3
+
+### Patch Changes
+
+- Bumped create-app version.
+- Updated dependencies
+  - @backstage/cli-common@0.1.12
+
 ## 0.5.2-next.2
 
 ### Patch Changes

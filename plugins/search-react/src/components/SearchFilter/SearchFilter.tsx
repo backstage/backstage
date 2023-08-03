@@ -138,7 +138,6 @@ export const CheckboxFilter = (props: SearchFilterComponentProps) => {
           control={
             <Checkbox
               color="primary"
-              tabIndex={-1}
               inputProps={{ 'aria-labelledby': value }}
               value={value}
               name={value}

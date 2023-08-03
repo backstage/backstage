@@ -57,7 +57,9 @@ export class HostDiscovery implements PluginEndpointDiscovery {
    */
   static fromConfig(config: Config, options?: { basePath?: string }) {
     const basePath = options?.basePath ?? '/api';
-    const externalBaseUrl = config.getString('backend.baseUrl');
+    const externalBaseUrl = config
+      .getString('backend.baseUrl')
+      .replace(/\/+$/, '');
 
     const {
       listen: { host: listenHost = '::', port: listenPort },

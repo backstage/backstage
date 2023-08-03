@@ -1,6 +1,6 @@
 {
   "name": "@backstage/plugin-playlist",
-  "version": "0.1.10-next.2",
+  "version": "0.1.13-next.1",
   "main": "src/index.ts",
   "types": "src/index.ts",
   "license": "Apache-2.0",
@@ -12,6 +12,7 @@
   "backstage": {
     "role": "frontend-plugin"
   },
+  "homepage": "https://backstage.io",
   "repository": {
     "type": "git",
     "url": "https://github.com/backstage/backstage",
@@ -64,7 +65,6 @@
     "@testing-library/user-event": "^14.0.0",
     "@types/node": "*",
     "@types/react": "^16.13.1 || ^17.0.0",
-    "cross-fetch": "^3.1.5",
     "msw": "^1.0.0",
     "swr": "^2.0.0"
   },

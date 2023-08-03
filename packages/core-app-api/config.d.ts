@@ -122,4 +122,43 @@ export interface Config {
    * @visibility frontend
    */
   enableExperimentalRedirectFlow?: boolean;
+
+  /**
+   * Discovery options.
+   *
+   * @visibility frontend
+   */
+  discovery?: {
+    /**
+     * Endpoints
+     *
+     * A list of target baseUrls and the associated plugins.
+     *
+     * @visibility frontend
+     */
+    endpoints?: Array<{
+      /**
+       * The target baseUrl to use for the plugin
+       *
+       * Can be either a string or an object with internal and external keys. (Internal is used for the backend, external for the frontend)
+       * Targets with `{{pluginId}}` or `{{ pluginId }} in the url will be replaced with the pluginId.
+       *
+       * @visibility frontend
+       */
+      target:
+        | string
+        | {
+            /**
+             * @visibility frontend
+             */
+            external: string;
+          };
+      /**
+       * Array of plugins which use the target baseUrl.
+       *
+       * @visibility frontend
+       */
+      plugins: Array<string>;
+    }>;
+  };
 }

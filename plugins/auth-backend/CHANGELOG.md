@@ -1,5 +1,94 @@
 # @backstage/plugin-auth-backend
 
+## 0.18.6-next.1
+
+### Patch Changes
+
+- 9dad4b0e61bd: Updated config schema to match what was being used in code
+- Updated dependencies
+  - @backstage/backend-common@0.19.2-next.1
+  - @backstage/plugin-auth-node@0.2.17-next.1
+  - @backstage/catalog-client@1.4.3
+  - @backstage/catalog-model@1.4.1
+  - @backstage/config@1.0.8
+  - @backstage/errors@1.2.1
+  - @backstage/types@1.1.0
+
+## 0.18.6-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-common@0.19.2-next.0
+  - @backstage/catalog-client@1.4.3
+  - @backstage/catalog-model@1.4.1
+  - @backstage/config@1.0.8
+  - @backstage/errors@1.2.1
+  - @backstage/types@1.1.0
+  - @backstage/plugin-auth-node@0.2.17-next.0
+
+## 0.18.5
+
+### Patch Changes
+
+- c27ae5004fc2: Support for Token Endpoint Auth Method for OIDC Provider
+- Updated dependencies
+  - @backstage/errors@1.2.1
+  - @backstage/backend-common@0.19.1
+  - @backstage/catalog-client@1.4.3
+  - @backstage/catalog-model@1.4.1
+  - @backstage/config@1.0.8
+  - @backstage/types@1.1.0
+  - @backstage/plugin-auth-node@0.2.16
+
+## 0.18.5-next.1
+
+### Patch Changes
+
+- c27ae5004fc2: Support for Token Endpoint Auth Method for OIDC Provider
+- Updated dependencies
+  - @backstage/config@1.0.8
+
+## 0.18.5-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/errors@1.2.1-next.0
+  - @backstage/backend-common@0.19.1-next.0
+  - @backstage/catalog-client@1.4.3-next.0
+  - @backstage/catalog-model@1.4.1-next.0
+  - @backstage/config@1.0.8
+  - @backstage/types@1.1.0
+  - @backstage/plugin-auth-node@0.2.16-next.0
+
+## 0.18.4
+
+### Patch Changes
+
+- d0f5b0c886c2: Set the expiration time of oidc `idToken` to be less than backstage session expiration time.
+- Updated dependencies
+  - @backstage/backend-common@0.19.0
+  - @backstage/catalog-client@1.4.2
+  - @backstage/types@1.1.0
+  - @backstage/catalog-model@1.4.0
+  - @backstage/errors@1.2.0
+  - @backstage/plugin-auth-node@0.2.15
+  - @backstage/config@1.0.8
+
+## 0.18.4-next.3
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-common@0.19.0-next.2
+  - @backstage/catalog-model@1.4.0-next.1
+  - @backstage/catalog-client@1.4.2-next.2
+  - @backstage/config@1.0.7
+  - @backstage/errors@1.2.0-next.0
+  - @backstage/types@1.0.2
+  - @backstage/plugin-auth-node@0.2.15-next.2
+
 ## 0.18.4-next.2
 
 ### Patch Changes

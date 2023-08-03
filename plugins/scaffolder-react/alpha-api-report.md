@@ -289,7 +289,7 @@ export const useFormDataFromQuery: (
 
 // @alpha (undocumented)
 export const useTemplateParameterSchema: (templateRef: string) => {
-  manifest: TemplateParameterSchema;
+  manifest: TemplateParameterSchema | undefined;
   loading: boolean;
   error: Error | undefined;
 };

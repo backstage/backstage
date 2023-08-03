@@ -21,7 +21,7 @@ import CardContent from '@material-ui/core/CardContent';
 import CardMedia from '@material-ui/core/CardMedia';
 import Chip from '@material-ui/core/Chip';
 import React, { ReactNode } from 'react';
-import { LinkButton } from '../../components';
+import { LinkButton } from '../../components/LinkButton/LinkButton';
 import { ItemCardHeader } from './ItemCardHeader';
 
 type ItemCardProps = {
@@ -37,7 +37,7 @@ type ItemCardProps = {
 };
 
 /**
- * This card type has been deprecated. Instead use plain MUI Card and helpers
+ * This card type has been deprecated. Instead use plain Material UI Card and helpers
  * where appropriate.
  *
  *  @example
@@ -57,8 +57,8 @@ type ItemCardProps = {
  *   </Card>
  * ```
  *
- * @deprecated Use plain MUI `<Card>` and composable helpers instead.
- * @see https://material-ui.com/components/cards/
+ * @deprecated Use plain Material UI `<Card>` and composable helpers instead.
+ * @see https://v4.mui.com/components/cards/
  */
 export function ItemCard(props: ItemCardProps) {
   const { description, tags, title, type, subtitle, label, onClick, href } =

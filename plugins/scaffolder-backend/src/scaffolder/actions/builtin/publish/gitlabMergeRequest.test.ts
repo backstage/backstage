@@ -101,6 +101,49 @@ describe('createGitLabMergeRequest', () => {
     mockFs.restore();
   });
 
+  describe('createGitLabMergeRequestWithSpecifiedTargetBranch', () => {
+    it('removeSourceBranch is false by default when not passed in options', async () => {
+      const input = {
+        repoUrl: 'gitlab.com?repo=repo&owner=owner',
+        title: 'Create my new MR',
+        branchName: 'new-mr',
+        targetBranchName: 'test',
+        description: 'This MR is really good',
+        targetPath: 'Subdirectory',
+      };
+      mockFs({
+        [workspacePath]: {
+          source: { 'foo.txt': 'Hello there!' },
+          irrelevant: { 'bar.txt': 'Nothing to see here' },
+        },
+      });
+      const ctx = {
+        createTemporaryDirectory: jest.fn(),
+        output: jest.fn(),
+        logger: getRootLogger(),
+        logStream: new Writable(),
+        input,
+        workspacePath,
+      };
+      await instance.handler(ctx);
+
+      expect(mockGitlabClient.Projects.show).not.toHaveBeenCalled();
+      expect(mockGitlabClient.Branches.create).toHaveBeenCalledWith(
+        'owner/repo',
+        'new-mr',
+        'test',
+      );
+      expect(mockGitlabClient.MergeRequests.create).toHaveBeenCalledWith(
+        'owner/repo',
+        'new-mr',
+        'test',
+        'Create my new MR',
+        { description: 'This MR is really good', removeSourceBranch: false },
+      );
+      expect(ctx.output).toHaveBeenCalledWith('targetBranchName', 'test');
+    });
+  });
+
   describe('createGitLabMergeRequestWithoutRemoveBranch', () => {
     it('removeSourceBranch is false by default when not passed in options', async () => {
       const input = {
@@ -126,6 +169,12 @@ describe('createGitLabMergeRequest', () => {
       };
       await instance.handler(ctx);
 
+      expect(mockGitlabClient.Projects.show).toHaveBeenCalledWith('owner/repo');
+      expect(mockGitlabClient.Branches.create).toHaveBeenCalledWith(
+        'owner/repo',
+        'new-mr',
+        'main',
+      );
       expect(mockGitlabClient.MergeRequests.create).toHaveBeenCalledWith(
         'owner/repo',
         'new-mr',
@@ -133,6 +182,8 @@ describe('createGitLabMergeRequest', () => {
         'Create my new MR',
         { description: 'This MR is really good', removeSourceBranch: false },
       );
+
+      expect(ctx.output).toHaveBeenCalledWith('targetBranchName', 'main');
     });
   });
 

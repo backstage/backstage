@@ -225,6 +225,11 @@ export class BitbucketCloudEntityProvider
     return false;
   }
 
+  private enhanceEvent(event: Events.RepoPushEvent): void {
+    // add missing slug
+    event.repository.slug = event.repository.full_name!.split('/', 2)[1];
+  }
+
   async onRepoPush(event: Events.RepoPushEvent): Promise<void> {
     if (!this.canHandleEvents()) {
       return;
@@ -234,6 +239,8 @@ export class BitbucketCloudEntityProvider
       throw new Error('Not initialized');
     }
 
+    this.enhanceEvent(event);
+
     if (event.repository.workspace.slug !== this.config.workspace) {
       return;
     }
@@ -242,7 +249,7 @@ export class BitbucketCloudEntityProvider
       return;
     }
 
-    const repoName = event.repository.slug;
+    const repoSlug = event.repository.slug!;
     const repoUrl = event.repository.links!.html!.href!;
     this.logger.info(`handle repo:push event for ${repoUrl}`);
 
@@ -253,7 +260,7 @@ export class BitbucketCloudEntityProvider
     // Hence, we will just trigger a refresh for catalog file(s) within the repository
     // if we get notified about changes there.
 
-    const targets = await this.findCatalogFiles(repoName);
+    const targets = await this.findCatalogFiles(repoSlug);
 
     const { token } = await this.tokenManager!.getToken();
     const existing = await this.findExistingLocations(repoUrl, token);
@@ -316,7 +323,7 @@ export class BitbucketCloudEntityProvider
   }
 
   private async findCatalogFiles(
-    repoName?: string,
+    repoSlug?: string,
   ): Promise<IngestionTarget[]> {
     const workspace = this.config.workspace;
     const catalogPath = this.config.catalogPath;
@@ -340,7 +347,7 @@ export class BitbucketCloudEntityProvider
       // ...except the one we need
       '+values.file.commit.repository.links.html.href',
     ].join(',');
-    const optRepoFilter = repoName ? ` repo:${repoName}` : '';
+    const optRepoFilter = repoSlug ? ` repo:${repoSlug}` : '';
     const query = `"${catalogFilename}" path:${catalogPath}${optRepoFilter}`;
     const searchResults = this.client
       .searchCode(workspace, query, { fields })

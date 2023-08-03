@@ -1,7 +1,7 @@
 {
   "name": "@backstage/cli",
   "description": "CLI for developing Backstage plugins and apps",
-  "version": "0.22.8-next.1",
+  "version": "0.22.10-next.1",
   "publishConfig": {
     "access": "public"
   },
@@ -74,10 +74,11 @@
     "chalk": "^4.0.0",
     "chokidar": "^3.3.1",
     "commander": "^9.1.0",
+    "cross-fetch": "^3.1.5",
     "cross-spawn": "^7.0.3",
     "css-loader": "^6.5.1",
     "diff": "^5.0.0",
-    "esbuild": "^0.17.0",
+    "esbuild": "^0.18.0",
     "esbuild-loader": "^2.18.0",
     "eslint": "^8.6.0",
     "eslint-config-prettier": "^8.3.0",
@@ -122,7 +123,7 @@
     "rollup-plugin-postcss": "^4.0.0",
     "rollup-pluginutils": "^2.8.2",
     "run-script-webpack-plugin": "^0.1.0",
-    "semver": "^7.3.2",
+    "semver": "^7.5.3",
     "style-loader": "^3.3.1",
     "sucrase": "^3.20.2",
     "swc-loader": "^0.2.3",

@@ -22,8 +22,8 @@ import { ComponentType } from 'react';
  *
  * @remarks
  *
- * The type is based on SvgIcon from MUI, but both do not what the plugin-api
- * package to have a dependency on MUI, nor do we want the props to be as broad
+ * The type is based on SvgIcon from Material UI, but both do not what the plugin-api
+ * package to have a dependency on Material UI, nor do we want the props to be as broad
  * as the SvgIconProps interface.
  *
  * If you have the need to forward additional props from SvgIconProps, you can
@@ -32,6 +32,14 @@ import { ComponentType } from 'react';
  *
  * @public
  */
-export type IconComponent = ComponentType<{
-  fontSize?: 'default' | 'small' | 'large';
-}>;
+
+export type IconComponent = ComponentType<
+  /* Material UI v4 */
+  | {
+      fontSize?: 'large' | 'small' | 'default';
+    }
+  /* Material UI v5: https://mui.com/material-ui/migration/v5-component-changes/#icon */
+  | {
+      fontSize?: 'medium' | 'large' | 'small';
+    }
+>;

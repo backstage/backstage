@@ -13,17 +13,16 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
 import { useApp } from '@backstage/core-plugin-api';
 import { BackstageTheme } from '@backstage/theme';
 import Box from '@material-ui/core/Box';
 import Button from '@material-ui/core/Button';
 import DialogActions from '@material-ui/core/DialogActions';
 import IconButton from '@material-ui/core/IconButton';
-import List from '@material-ui/core/List';
-import ListItem from '@material-ui/core/ListItem';
 import ListItemIcon from '@material-ui/core/ListItemIcon';
 import ListItemText from '@material-ui/core/ListItemText';
+import MenuItem from '@material-ui/core/MenuItem';
+import MenuList from '@material-ui/core/MenuList';
 import Popover from '@material-ui/core/Popover';
 import { makeStyles } from '@material-ui/core/styles';
 import Typography from '@material-ui/core/Typography';
@@ -63,7 +62,7 @@ const SupportLink = ({ link }: { link: SupportItemLink }) => (
 
 const SupportListItem = ({ item }: { item: SupportItem }) => {
   return (
-    <ListItem>
+    <MenuItem>
       <ListItemIcon>
         <SupportIcon icon={item.icon} />
       </ListItemIcon>
@@ -78,7 +77,7 @@ const SupportListItem = ({ item }: { item: SupportItem }) => {
           [],
         )}
       />
-    </ListItem>
+    </MenuItem>
   );
 };
 
@@ -141,21 +140,24 @@ export function SupportButton(props: SupportButtonProps) {
         }}
         onClose={popoverCloseHandler}
       >
-        <List className={classes.popoverList}>
+        <MenuList
+          className={classes.popoverList}
+          autoFocusItem={Boolean(anchorEl)}
+        >
           {title && (
-            <ListItem alignItems="flex-start">
+            <MenuItem alignItems="flex-start">
               <Typography variant="subtitle1">{title}</Typography>
-            </ListItem>
+            </MenuItem>
           )}
           {React.Children.map(children, (child, i) => (
-            <ListItem alignItems="flex-start" key={`child-${i}`}>
+            <MenuItem alignItems="flex-start" key={`child-${i}`}>
               {child}
-            </ListItem>
+            </MenuItem>
           ))}
           {(items ?? configItems).map((item, i) => (
             <SupportListItem item={item} key={`item-${i}`} />
           ))}
-        </List>
+        </MenuList>
         <DialogActions>
           <Button
             color="primary"

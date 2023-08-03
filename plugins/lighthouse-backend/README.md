@@ -58,6 +58,21 @@ export default async function createPlugin(env: PluginEnvironment) {
 +  await lighthouse(lighthouseEnv)
 ```
 
+#### New Backend System
+
+The Lighthouse backend plugin has support for the [new backend system](https://backstage.io/docs/backend-system/), here's how you can set that up:
+
+In your `packages/backend/src/index.ts` make the following changes:
+
+```diff
+  import { createBackend } from '@backstage/backend-defaults';
++ import { lighthousePlugin } from '@backstage/plugin-lighthouse-backend';
+  const backend = createBackend();
+  // ... other feature additions
++ backend.add(lighthousePlugin());
+  backend.start();
+```
+
 ## Configuration
 
 You can define how often and when the scheduler should run the audits:

@@ -16,7 +16,7 @@ browser APIs or by depending on external modules to do the work.
 - Consider writing plugins in `TypeScript`.
 - Plan the directory structure of your plugin so that it becomes easy to manage.
 - Prefer using the [Backstage components](https://backstage.io/storybook),
-  otherwise go with [Material-UI](https://material-ui.com/).
+  otherwise go with [Material UI](https://material-ui.com/).
 - Check out the shared Backstage APIs before building a new one.
 
 ## Plugin concepts / API

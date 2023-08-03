@@ -18,7 +18,7 @@ concurrency:
 
 jobs:
   build:
-    runs-on: windows-2019
+    runs-on: windows-2022
 
     strategy:
       matrix:
@@ -48,10 +48,29 @@ jobs:
         uses: actions/setup-node@v3
         with:
           node-version: ${{ matrix.node-version }}
+
+      - name: setup python
+        uses: actions/setup-python@v4
+        with:
+          python-version: '3.10'
+
       - name: Add msbuild to PATH
         uses: microsoft/setup-msbuild@v1.3.1
+
+      - name: Setup gyp env
+        run: |
+          echo 'GYP_MSVS_VERSION=2022' >> $Env:GITHUB_ENV
+          echo 'GYP_MSVS_OVERRIDE_PATH=C:\\Dummy' >> $Env:GITHUB_ENV
+
+      - name: Install latest gyp and set node-gyp path
+        shell: powershell
+        run: |
+          npm prefix -g | % {npm config set dev_dir "c:\temp\.gyp2"}
+          npm prefix -g | % {npm config set node_gyp "$_\node_modules\node-gyp\bin\node-gyp.js"}
+
       - name: setup chrome
         uses: browser-actions/setup-chrome@latest
+
       - name: yarn install
         run: yarn install --immutable
 

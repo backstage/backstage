@@ -311,3 +311,29 @@ export type Cursor = {
    */
   totalItems?: number;
 };
+
+/**
+ * The details of the conflicting entity.
+ */
+export type CatalogConflictEventPayload = {
+  /**
+   * The new conflicting entity in raw, unvalidated form
+   */
+  unprocessedEntity: Entity;
+  /**
+   * The new conflicting entity's ref
+   */
+  entityRef: string;
+  /**
+   * The location key of this new conflicting entity
+   */
+  newLocationKey: string;
+  /**
+   * The location key of the entity already in the catalog that shares the same name and namespace as this entity
+   */
+  existingLocationKey: string;
+  /**
+   * The datetime that the conflict was processed at
+   */
+  lastConflictAt: string;
+};

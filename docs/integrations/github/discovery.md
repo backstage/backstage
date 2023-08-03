@@ -94,7 +94,7 @@ export default async function createPlugin(
     scheduler: env.scheduler,
   });
   env.eventBroker.subscribe(githubProvider);
-  builder.addEntityProvider(demoProvider);
+  builder.addEntityProvider(githubProvider);
   /* highlight-add-end */
   const { processingEngine, router } = await builder.build();
   await processingEngine.start();

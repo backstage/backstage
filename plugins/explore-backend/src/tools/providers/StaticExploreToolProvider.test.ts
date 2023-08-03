@@ -14,7 +14,9 @@
  * limitations under the License.
  */
 
+import { ConfigReader } from '@backstage/config';
 import { ExploreTool } from '@backstage/plugin-explore-common';
+import { JsonObject } from '@backstage/types';
 import { StaticExploreToolProvider } from './StaticExploreToolProvider';
 
 describe('StaticExploreToolProvider', () => {
@@ -40,7 +42,24 @@ describe('StaticExploreToolProvider', () => {
   const allTools: ExploreTool[] = [tool1, tool2, tool3];
 
   describe('getTools', () => {
-    it('returns a list of all tools', async () => {
+    it('fromConfig returns a list of all tools', async () => {
+      const config = new ConfigReader({
+        explore: {
+          tools: [
+            tool1 as JsonObject,
+            tool2 as JsonObject,
+            tool3 as JsonObject,
+          ],
+        },
+      });
+      const provider = StaticExploreToolProvider.fromConfig(config);
+
+      await expect(provider.getTools({})).resolves.toEqual({
+        tools: allTools,
+      });
+    });
+
+    it('fromData returns a list of all tools', async () => {
       const provider = StaticExploreToolProvider.fromData(allTools);
 
       await expect(provider.getTools({})).resolves.toEqual({

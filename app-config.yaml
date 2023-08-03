@@ -33,8 +33,6 @@ backend:
   database:
     client: better-sqlite3
     connection: ':memory:'
-  cache:
-    store: memory
   cors:
     origin: http://localhost:3000
     methods: [GET, HEAD, PATCH, POST, PUT, DELETE]
@@ -145,6 +143,9 @@ techdocs:
 dynatrace:
   baseUrl: https://your.dynatrace.instance.com
 
+nomad:
+  addr: 0.0.0.0
+
 # Score-cards sample configuration.
 scorecards:
   jsonDataUrl: https://raw.githubusercontent.com/Oriflame/backstage-plugins/main/plugins/score-card/sample-data/
@@ -210,7 +211,7 @@ integrations:
   #    clientEmail: 'example@example.com'
   #    privateKey: ${GCS_PRIVATE_KEY}
   awsS3:
-    - host: amazonaws.com
+    - endpoint: ${AWS_S3_ENDPOINT}
       accessKeyId: ${AWS_ACCESS_KEY_ID}
       secretAccessKey: ${AWS_SECRET_ACCESS_KEY}
 
@@ -351,8 +352,7 @@ auth:
         metadataUrl: ${AUTH_OIDC_METADATA_URL}
         clientId: ${AUTH_OIDC_CLIENT_ID}
         clientSecret: ${AUTH_OIDC_CLIENT_SECRET}
-        authorizationUrl: ${AUTH_OIDC_AUTH_URL}
-        tokenUrl: ${AUTH_OIDC_TOKEN_URL}
+        tokenEndpointAuthMethod: ${AUTH_OIDC_TOKEN_ENDPOINT_AUTH_METHOD} # default='client_secret_basic'
         tokenSignedResponseAlg: ${AUTH_OIDC_TOKEN_SIGNED_RESPONSE_ALG} # default='RS256'
         scope: ${AUTH_OIDC_SCOPE} # default='openid profile email'
         prompt: ${AUTH_OIDC_PROMPT} # default=none (allowed values: auto, none, consent, login)
@@ -432,8 +432,10 @@ costInsights:
       kind: 'PINTS_OF_ICE_CREAM'
       unit: 'ice cream pint'
       rate: 5.5
-pagerduty:
+
+pagerDuty:
   eventsBaseUrl: 'https://events.pagerduty.com/v2'
+
 jenkins:
   instances:
     - name: default

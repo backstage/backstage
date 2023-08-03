@@ -36,8 +36,12 @@ describe('<ToolCard />', () => {
   });
 
   it('renders props correctly', () => {
-    const { getByText } = render(wrapInTestApp(<ToolCard {...minProps} />));
-    expect(getByText(minProps.card.title)).toBeInTheDocument();
+    const { getByRole, getByText } = render(
+      wrapInTestApp(<ToolCard {...minProps} />),
+    );
+    expect(
+      getByRole('heading', { name: minProps.card.title }),
+    ).toBeInTheDocument();
     expect(getByText(minProps.card.description)).toBeInTheDocument();
   });
 

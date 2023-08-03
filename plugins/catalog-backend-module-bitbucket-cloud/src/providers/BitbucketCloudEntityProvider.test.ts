@@ -101,7 +101,7 @@ describe('BitbucketCloudEntityProvider', () => {
     },
     repository: {
       type: 'repository',
-      slug: 'test-repo',
+      full_name: 'test-ws/test-repo',
       links: {
         html: {
           href: 'https://bitbucket.org/test-ws/test-repo',
@@ -627,7 +627,7 @@ describe('BitbucketCloudEntityProvider', () => {
         ...repoPushEventParams.eventPayload,
         repository: {
           ...repoPushEventParams.eventPayload.repository,
-          slug: 'not-matching',
+          full_name: `${repoPushEventParams.eventPayload.repository.workspace.slug}/not-matching`,
         },
       },
     });

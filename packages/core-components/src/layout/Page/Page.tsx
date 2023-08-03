@@ -33,6 +33,11 @@ const useStyles = makeStyles<BackstageTheme>(
       [theme.breakpoints.down('xs')]: {
         height: '100%',
       },
+      '@media print': {
+        display: 'block',
+        height: 'auto',
+        overflowY: 'inherit',
+      },
     },
   }),
   { name: 'BackstagePage' },

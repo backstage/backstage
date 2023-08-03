@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { SingleHostDiscovery } from '@backstage/backend-common';
+import { HostDiscovery } from '@backstage/backend-common';
 import { Publisher } from '@backstage/plugin-techdocs-node';
 import { OptionValues } from 'commander';
 import { createLogger } from '../../lib/utility';
@@ -24,7 +24,7 @@ export default async function migrate(opts: OptionValues) {
   const logger = createLogger({ verbose: opts.verbose });
 
   const config = PublisherConfig.getValidConfig(opts);
-  const discovery = SingleHostDiscovery.fromConfig(config);
+  const discovery = HostDiscovery.fromConfig(config);
   const publisher = await Publisher.fromConfig(config, { logger, discovery });
 
   if (!publisher.migrateDocsCase) {

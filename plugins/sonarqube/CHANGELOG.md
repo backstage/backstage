@@ -1,5 +1,110 @@
 # @backstage/plugin-sonarqube
 
+## 0.7.2-next.1
+
+### Patch Changes
+
+- b2ccddefbdc6: Remove sonarQube card disable class
+- Updated dependencies
+  - @backstage/catalog-model@1.4.1
+  - @backstage/core-components@0.13.4-next.0
+  - @backstage/core-plugin-api@1.5.3
+  - @backstage/theme@0.4.1
+  - @backstage/plugin-catalog-react@1.8.1-next.0
+  - @backstage/plugin-sonarqube-react@0.1.7
+
+## 0.7.2-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/core-components@0.13.4-next.0
+  - @backstage/core-plugin-api@1.5.3
+  - @backstage/plugin-catalog-react@1.8.1-next.0
+  - @backstage/catalog-model@1.4.1
+  - @backstage/theme@0.4.1
+  - @backstage/plugin-sonarqube-react@0.1.7
+
+## 0.7.1
+
+### Patch Changes
+
+- fcaf4cfc70ee: Made default config optional
+- 015439b5b6ca: Updated dependency `rc-progress` to `3.4.2`.
+- Updated dependencies
+  - @backstage/theme@0.4.1
+  - @backstage/plugin-catalog-react@1.8.0
+  - @backstage/core-components@0.13.3
+  - @backstage/core-plugin-api@1.5.3
+  - @backstage/catalog-model@1.4.1
+  - @backstage/plugin-sonarqube-react@0.1.7
+
+## 0.7.1-next.2
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/plugin-catalog-react@1.8.0-next.2
+  - @backstage/theme@0.4.1-next.1
+  - @backstage/core-plugin-api@1.5.3-next.1
+  - @backstage/core-components@0.13.3-next.2
+  - @backstage/catalog-model@1.4.1-next.0
+  - @backstage/plugin-sonarqube-react@0.1.7-next.2
+
+## 0.7.1-next.1
+
+### Patch Changes
+
+- fcaf4cfc70ee: Made default config optional
+- 015439b5b6ca: Updated dependency `rc-progress` to `3.4.2`.
+- Updated dependencies
+  - @backstage/theme@0.4.1-next.0
+  - @backstage/core-components@0.13.3-next.1
+  - @backstage/core-plugin-api@1.5.3-next.0
+  - @backstage/plugin-catalog-react@1.7.1-next.1
+  - @backstage/plugin-sonarqube-react@0.1.7-next.1
+
+## 0.7.1-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/core-components@0.13.3-next.0
+  - @backstage/catalog-model@1.4.1-next.0
+  - @backstage/core-plugin-api@1.5.2
+  - @backstage/theme@0.4.0
+  - @backstage/plugin-catalog-react@1.7.1-next.0
+  - @backstage/plugin-sonarqube-react@0.1.7-next.0
+
+## 0.7.0
+
+### Minor Changes
+
+- ce9bc94c15e1: fix sonarqube case in config schema definition
+
+### Patch Changes
+
+- 1108f1c65d31: fixed issued related #18259 now using luxon as adr102 asked
+- Updated dependencies
+  - @backstage/core-plugin-api@1.5.2
+  - @backstage/core-components@0.13.2
+  - @backstage/theme@0.4.0
+  - @backstage/plugin-catalog-react@1.7.0
+  - @backstage/catalog-model@1.4.0
+  - @backstage/plugin-sonarqube-react@0.1.6
+
+## 0.6.8-next.3
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/core-components@0.13.2-next.3
+  - @backstage/catalog-model@1.4.0-next.1
+  - @backstage/core-plugin-api@1.5.2-next.0
+  - @backstage/theme@0.4.0-next.1
+  - @backstage/plugin-catalog-react@1.7.0-next.3
+  - @backstage/plugin-sonarqube-react@0.1.6-next.1
+
 ## 0.6.8-next.2
 
 ### Patch Changes

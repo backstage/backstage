@@ -41,10 +41,10 @@ async function verify(directoryPath: string) {
 
   const schema = await import(resolvePath(join(directoryPath, TS_MODULE)));
 
-  if (!schema.default) {
-    throw new Error(`\`${TS_SCHEMA_PATH}\` needs to have a default export.`);
+  if (!schema.spec) {
+    throw new Error(`\`${TS_SCHEMA_PATH}\` needs to have a 'spec' export.`);
   }
-  if (!isEqual(schema.default, yaml)) {
+  if (!isEqual(schema.spec, yaml)) {
     const path = relativePath(cliPaths.targetRoot, directoryPath);
     throw new Error(
       `\`${YAML_SCHEMA_PATH}\` and \`${TS_SCHEMA_PATH}\` do not match. Please run \`yarn backstage-repo-tools schema openapi generate ${path}\` to regenerate \`${TS_SCHEMA_PATH}\`.`,

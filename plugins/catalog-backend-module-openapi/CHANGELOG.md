@@ -1,5 +1,89 @@
 # @backstage/plugin-catalog-backend-module-openapi
 
+## 0.1.14-next.1
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-common@0.19.2-next.1
+  - @backstage/plugin-catalog-backend@1.12.0-next.1
+  - @backstage/plugin-catalog-node@1.4.1-next.1
+  - @backstage/integration@1.5.1
+  - @backstage/catalog-model@1.4.1
+  - @backstage/config@1.0.8
+  - @backstage/types@1.1.0
+  - @backstage/plugin-catalog-common@1.0.15
+
+## 0.1.14-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/plugin-catalog-backend@1.12.0-next.0
+  - @backstage/backend-common@0.19.2-next.0
+  - @backstage/catalog-model@1.4.1
+  - @backstage/config@1.0.8
+  - @backstage/integration@1.5.1
+  - @backstage/types@1.1.0
+  - @backstage/plugin-catalog-common@1.0.15
+  - @backstage/plugin-catalog-node@1.4.1-next.0
+
+## 0.1.13
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-common@0.19.1
+  - @backstage/plugin-catalog-backend@1.11.0
+  - @backstage/plugin-catalog-node@1.4.0
+  - @backstage/catalog-model@1.4.1
+  - @backstage/config@1.0.8
+  - @backstage/integration@1.5.1
+  - @backstage/types@1.1.0
+  - @backstage/plugin-catalog-common@1.0.15
+
+## 0.1.13-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-common@0.19.1-next.0
+  - @backstage/plugin-catalog-backend@1.11.0-next.0
+  - @backstage/plugin-catalog-node@1.4.0-next.0
+  - @backstage/catalog-model@1.4.1-next.0
+  - @backstage/config@1.0.8
+  - @backstage/integration@1.5.1-next.0
+  - @backstage/types@1.1.0
+  - @backstage/plugin-catalog-common@1.0.15-next.0
+
+## 0.1.12
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-common@0.19.0
+  - @backstage/types@1.1.0
+  - @backstage/plugin-catalog-backend@1.10.0
+  - @backstage/integration@1.5.0
+  - @backstage/catalog-model@1.4.0
+  - @backstage/plugin-catalog-node@1.3.7
+  - @backstage/config@1.0.8
+  - @backstage/plugin-catalog-common@1.0.14
+
+## 0.1.12-next.2
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-common@0.19.0-next.2
+  - @backstage/catalog-model@1.4.0-next.1
+  - @backstage/plugin-catalog-backend@1.10.0-next.2
+  - @backstage/config@1.0.7
+  - @backstage/integration@1.5.0-next.0
+  - @backstage/types@1.0.2
+  - @backstage/plugin-catalog-common@1.0.14-next.1
+  - @backstage/plugin-catalog-node@1.3.7-next.2
+
 ## 0.1.12-next.1
 
 ### Patch Changes

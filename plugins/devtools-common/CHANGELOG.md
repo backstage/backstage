@@ -1,5 +1,39 @@
 # @backstage/plugin-devtools-common
 
+## 0.1.3-next.0
+
+### Patch Changes
+
+- 12a8c94eda8d: Add package repository and homepage metadata
+- Updated dependencies
+  - @backstage/types@1.1.0
+  - @backstage/plugin-permission-common@0.7.7
+
+## 0.1.2
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/types@1.1.0
+  - @backstage/plugin-permission-common@0.7.7
+
+## 0.1.2-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/types@1.1.0
+  - @backstage/plugin-permission-common@0.7.7-next.0
+
+## 0.1.1
+
+### Patch Changes
+
+- 459331f657ec: Export the list of permissions
+- Updated dependencies
+  - @backstage/types@1.1.0
+  - @backstage/plugin-permission-common@0.7.6
+
 ## 0.1.1-next.0
 
 ### Patch Changes

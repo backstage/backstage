@@ -14,10 +14,9 @@
  * limitations under the License.
  */
 
-import { parseEntityRef } from '@backstage/catalog-model';
 import { ErrorPanel, Table } from '@backstage/core-components';
 import { useApi } from '@backstage/core-plugin-api';
-import { humanizeEntityRef } from '@backstage/plugin-catalog-react';
+import { EntityRefLink } from '@backstage/plugin-catalog-react';
 import { FeedbackResponse } from '@backstage/plugin-entity-feedback-common';
 import { BackstageTheme } from '@backstage/theme';
 import { Chip, makeStyles } from '@material-ui/core';
@@ -65,10 +64,9 @@ export const FeedbackResponseTable = (props: FeedbackResponseTableProps) => {
       title: 'User',
       field: 'userRef',
       width: '15%',
-      render: (response: ResponseRow) =>
-        humanizeEntityRef(parseEntityRef(response.userRef), {
-          defaultKind: 'user',
-        }),
+      render: (response: ResponseRow) => (
+        <EntityRefLink entityRef={response.userRef} defaultKind="user" />
+      ),
     },
     {
       title: 'OK to contact?',

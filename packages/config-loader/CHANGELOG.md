@@ -1,5 +1,117 @@
 # @backstage/config-loader
 
+## 1.4.0-next.1
+
+### Minor Changes
+
+- 2f1859585998: Loading invalid TypeScript configuration schemas will now throw an error rather than silently being ignored.
+
+  In particular this includes defining any additional types other than `Config` in the schema file, or use of unsupported types such as `Record` or `Partial`.
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/cli-common@0.1.12
+  - @backstage/config@1.0.8
+  - @backstage/errors@1.2.1
+  - @backstage/types@1.1.0
+
+## 1.4.0-next.0
+
+### Minor Changes
+
+- cd514545d1d0: Adds a new `deepVisibility` schema keyword that sets child visibility recursively to the defined value, respecting preexisting values or child `deepVisibility`.
+
+  Example usage:
+
+  ```ts
+  export interface Config {
+    /**
+     * Enforces a default of `secret` instead of `backend` for this object.
+     * @deepVisibility secret
+     */
+    mySecretProperty: {
+      type: 'object';
+      properties: {
+        secretValue: {
+          type: 'string';
+        };
+
+        verySecretProperty: {
+          type: 'string';
+        };
+      };
+    };
+  }
+  ```
+
+  Example of a schema that would not be allowed:
+
+  ```ts
+  export interface Config {
+    /**
+     * Set the top level property to secret, enforcing a default of `secret` instead of `backend` for this object.
+     * @deepVisibility secret
+     */
+    mySecretProperty: {
+      type: 'object';
+      properties: {
+        frontendUrl: {
+          /**
+           * We can NOT override the visibility to reveal a property to the front end.
+           * @visibility frontend
+           */
+          type: 'string';
+        };
+
+        verySecretProperty: {
+          type: 'string';
+        };
+      };
+    };
+  }
+  ```
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/cli-common@0.1.12
+  - @backstage/config@1.0.8
+  - @backstage/errors@1.2.1
+  - @backstage/types@1.1.0
+
+## 1.3.2
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/errors@1.2.1
+  - @backstage/cli-common@0.1.12
+  - @backstage/config@1.0.8
+  - @backstage/types@1.1.0
+
+## 1.3.2-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/errors@1.2.1-next.0
+  - @backstage/cli-common@0.1.12
+  - @backstage/config@1.0.8
+  - @backstage/types@1.1.0
+
+## 1.3.1
+
+### Patch Changes
+
+- f25427f665f7: Fix a bug where config items with `/` in the key were incorrectly handled.
+- a5c5491ff50c: Use `durationToMilliseconds` from `@backstage/types` instead of our own
+- Updated dependencies
+  - @backstage/types@1.1.0
+  - @backstage/errors@1.2.0
+  - @backstage/cli-common@0.1.12
+  - @backstage/config@1.0.8
+
 ## 1.3.1-next.1
 
 ### Patch Changes

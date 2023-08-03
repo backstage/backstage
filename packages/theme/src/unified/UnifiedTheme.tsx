@@ -20,21 +20,22 @@ import {
   createTheme,
 } from '@material-ui/core/styles';
 import type { PaletteOptions as PaletteOptionsV4 } from '@material-ui/core/styles/createPalette';
-import { PaletteOptions as PaletteOptionsV5 } from '@mui/material/styles';
 import {
-  adaptV4Theme,
+  DeprecatedThemeOptions,
   Theme as Mui5Theme,
-  createTheme as createV5Theme,
+  PaletteOptions as PaletteOptionsV5,
   ThemeOptions as ThemeOptionsV5,
+  adaptV4Theme,
+  createTheme as createV5Theme,
 } from '@mui/material/styles';
-import { transformV5ComponentThemesToV4 } from './overrides';
-import { PageTheme } from '../base/types';
-import { defaultComponentThemes } from '../v5';
 import { createBaseThemeOptions } from '../base/createBaseThemeOptions';
-import { UnifiedTheme } from './types';
+import { BackstageTypography, PageTheme } from '../base/types';
+import { defaultComponentThemes } from '../v5';
+import { transformV5ComponentThemesToV4 } from './overrides';
+import { SupportedThemes, SupportedVersions, UnifiedTheme } from './types';
 
 export class UnifiedThemeHolder implements UnifiedTheme {
-  #themes = new Map<string, unknown>();
+  #themes = new Map<SupportedVersions, SupportedThemes>();
 
   constructor(v4?: Mui4Theme, v5?: Mui5Theme) {
     this.#themes = new Map();
@@ -46,7 +47,7 @@ export class UnifiedThemeHolder implements UnifiedTheme {
     }
   }
 
-  getTheme(version: string): unknown | undefined {
+  getTheme(version: SupportedVersions): SupportedThemes | undefined {
     return this.#themes.get(version);
   }
 }
@@ -63,6 +64,7 @@ export interface UnifiedThemeOptions {
   fontFamily?: string;
   htmlFontSize?: number;
   components?: ThemeOptionsV5['components'];
+  typography?: BackstageTypography;
 }
 
 /**
@@ -75,27 +77,21 @@ export function createUnifiedTheme(options: UnifiedThemeOptions): UnifiedTheme {
   const components = { ...defaultComponentThemes, ...options.components };
   const v5Theme = createV5Theme({ ...themeOptions, components });
 
-  // TODO: Not super relevant in the beginning
-  /*   const mui4Styles = maybeLoadMui4Styles();
-  if (!mui4Styles) {
-    return new UnifiedThemeHolder(undefined, v5Theme);
-  } */
-
   const v4Overrides = transformV5ComponentThemesToV4(v5Theme, components);
   const v4Theme = { ...createTheme(themeOptions), ...v4Overrides };
   return new UnifiedThemeHolder(v4Theme, v5Theme);
 }
 
 /**
- * Creates a new {@link UnifiedTheme} using MUI v4 theme options.
- * Note that this uses `adaptV4Theme` from MUI v5, which is deprecated.
+ * Creates a new {@link UnifiedTheme} using Material UI v4 theme options.
+ * Note that this uses `adaptV4Theme` from Material UI v5, which is deprecated.
  *
  * @public
  */
 export function createUnifiedThemeFromV4(
   options: ThemeOptionsV4,
 ): UnifiedTheme {
-  const v5Theme = adaptV4Theme(options as any);
+  const v5Theme = adaptV4Theme(options as DeprecatedThemeOptions);
   const v4Theme = createTheme(options);
   return new UnifiedThemeHolder(v4Theme, v5Theme);
 }

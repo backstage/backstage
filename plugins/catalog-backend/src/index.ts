@@ -27,6 +27,7 @@ export * from './processing';
 export * from './search';
 export * from './service';
 export * from './deprecated';
+export * from './constants';
 
 import {
   DefaultCatalogCollatorFactory as _DefaultCatalogCollatorFactory,

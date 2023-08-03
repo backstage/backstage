@@ -1,5 +1,60 @@
 # @backstage/plugin-scaffolder-backend-module-yeoman
 
+## 0.2.21-next.1
+
+### Patch Changes
+
+- 12a8c94eda8d: Add package repository and homepage metadata
+- Updated dependencies
+  - @backstage/plugin-scaffolder-node@0.1.6-next.1
+  - @backstage/config@1.0.8
+  - @backstage/types@1.1.0
+
+## 0.2.21-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/config@1.0.8
+  - @backstage/types@1.1.0
+  - @backstage/plugin-scaffolder-node@0.1.6-next.0
+
+## 0.2.20
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/config@1.0.8
+  - @backstage/types@1.1.0
+  - @backstage/plugin-scaffolder-node@0.1.5
+
+## 0.2.20-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/config@1.0.8
+  - @backstage/types@1.1.0
+  - @backstage/plugin-scaffolder-node@0.1.5-next.0
+
+## 0.2.19
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/types@1.1.0
+  - @backstage/config@1.0.8
+  - @backstage/plugin-scaffolder-node@0.1.4
+
+## 0.2.19-next.2
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/config@1.0.7
+  - @backstage/types@1.0.2
+  - @backstage/plugin-scaffolder-node@0.1.4-next.2
+
 ## 0.2.19-next.1
 
 ### Patch Changes

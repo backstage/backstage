@@ -1,5 +1,72 @@
 # @backstage/plugin-app-backend
 
+## 0.3.48-next.1
+
+### Patch Changes
+
+- 629cbd194a87: Use `coreServices.rootConfig` instead of `coreService.config`
+- Updated dependencies
+  - @backstage/backend-common@0.19.2-next.1
+  - @backstage/config-loader@1.4.0-next.1
+  - @backstage/backend-plugin-api@0.6.0-next.1
+  - @backstage/config@1.0.8
+  - @backstage/types@1.1.0
+
+## 0.3.48-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/config-loader@1.4.0-next.0
+  - @backstage/backend-common@0.19.2-next.0
+  - @backstage/backend-plugin-api@0.5.5-next.0
+  - @backstage/config@1.0.8
+  - @backstage/types@1.1.0
+
+## 0.3.47
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-common@0.19.1
+  - @backstage/backend-plugin-api@0.5.4
+  - @backstage/config@1.0.8
+  - @backstage/config-loader@1.3.2
+  - @backstage/types@1.1.0
+
+## 0.3.47-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-common@0.19.1-next.0
+  - @backstage/backend-plugin-api@0.5.4-next.0
+  - @backstage/config@1.0.8
+  - @backstage/config-loader@1.3.2-next.0
+  - @backstage/types@1.1.0
+
+## 0.3.46
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-common@0.19.0
+  - @backstage/types@1.1.0
+  - @backstage/config-loader@1.3.1
+  - @backstage/backend-plugin-api@0.5.3
+  - @backstage/config@1.0.8
+
+## 0.3.46-next.2
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-common@0.19.0-next.2
+  - @backstage/backend-plugin-api@0.5.3-next.2
+  - @backstage/config@1.0.7
+  - @backstage/config-loader@1.3.1-next.1
+  - @backstage/types@1.0.2
+
 ## 0.3.46-next.1
 
 ### Patch Changes

@@ -60,6 +60,7 @@ Options:
 Commands:
   verify [paths...]
   generate [paths...]
+  lint [options] [paths...]
   help [command]
 ```
 
@@ -69,6 +70,16 @@ Commands:
 Usage: backstage-repo-tools schema openapi generate [options] [paths...]
 
 Options:
+  -h, --help
+```
+
+### `backstage-repo-tools schema openapi lint`
+
+```
+Usage: backstage-repo-tools schema openapi lint [options] [paths...]
+
+Options:
+  --strict
   -h, --help
 ```
 

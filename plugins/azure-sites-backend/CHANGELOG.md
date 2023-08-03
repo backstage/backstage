@@ -1,5 +1,60 @@
 # @backstage/plugin-azure-sites-backend
 
+## 0.1.10-next.1
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-common@0.19.2-next.1
+  - @backstage/config@1.0.8
+  - @backstage/plugin-azure-sites-common@0.1.0
+
+## 0.1.10-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-common@0.19.2-next.0
+  - @backstage/config@1.0.8
+  - @backstage/plugin-azure-sites-common@0.1.0
+
+## 0.1.9
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-common@0.19.1
+  - @backstage/config@1.0.8
+  - @backstage/plugin-azure-sites-common@0.1.0
+
+## 0.1.9-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-common@0.19.1-next.0
+  - @backstage/config@1.0.8
+  - @backstage/plugin-azure-sites-common@0.1.0
+
+## 0.1.8
+
+### Patch Changes
+
+- b43e030911f2: Upgrade `@azure/identity` to support using Workload Identity to authenticate against Azure.
+- Updated dependencies
+  - @backstage/backend-common@0.19.0
+  - @backstage/config@1.0.8
+  - @backstage/plugin-azure-sites-common@0.1.0
+
+## 0.1.8-next.2
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-common@0.19.0-next.2
+  - @backstage/config@1.0.7
+  - @backstage/plugin-azure-sites-common@0.1.0
+
 ## 0.1.8-next.1
 
 ### Patch Changes

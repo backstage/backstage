@@ -128,6 +128,10 @@ module.exports = {
             to: '/docs/features/techdocs/',
           },
           {
+            from: '/docs/features/kubernetes/overview',
+            to: '/docs/features/kubernetes/',
+          },
+          {
             from: '/docs/features/search/search-overview',
             to: '/docs/features/search/',
           },
@@ -173,7 +177,7 @@ module.exports = {
             position: 'left',
           },
           {
-            to: 'docs/releases/v1.14.0',
+            to: 'docs/releases/v1.16.0',
             label: 'Releases',
             position: 'left',
           },

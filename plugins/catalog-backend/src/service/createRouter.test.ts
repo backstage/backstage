@@ -247,6 +247,24 @@ describe('createRouter readonly disabled', () => {
       expect(response.status).toEqual(400);
       expect(response.body.error.message).toMatch(/Malformed cursor/);
     });
+
+    it('should throw in case of invalid limit', async () => {
+      const items: Entity[] = [
+        { apiVersion: 'a', kind: 'b', metadata: { name: 'n' } },
+      ];
+
+      entitiesCatalog.queryEntities.mockResolvedValueOnce({
+        items,
+        totalItems: 100,
+        pageInfo: { nextCursor: mockCursor() },
+      });
+
+      const response = await request(app).get(`/entities/by-query?limit=asdf`);
+      expect(response.status).toEqual(400);
+      expect(response.body.error.message).toMatch(
+        /request\/query\/limit must be integer/,
+      );
+    });
   });
 
   describe('GET /entities/by-uid/:uid', () => {

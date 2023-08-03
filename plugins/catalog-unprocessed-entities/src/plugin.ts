@@ -18,11 +18,12 @@ import {
   createPlugin,
   createRoutableExtension,
   discoveryApiRef,
+  fetchApiRef,
 } from '@backstage/core-plugin-api';
 
 import { rootRouteRef } from './routes';
 import {
-  CatalogUnprocessedEntitiesApi,
+  CatalogUnprocessedEntitiesClient,
   catalogUnprocessedEntitiesApiRef,
 } from './api';
 
@@ -39,9 +40,9 @@ export const catalogUnprocessedEntitiesPlugin = createPlugin({
   apis: [
     createApiFactory({
       api: catalogUnprocessedEntitiesApiRef,
-      deps: { discoveryApi: discoveryApiRef },
-      factory: ({ discoveryApi }) =>
-        new CatalogUnprocessedEntitiesApi(discoveryApi),
+      deps: { discoveryApi: discoveryApiRef, fetchApi: fetchApiRef },
+      factory: ({ discoveryApi, fetchApi }) =>
+        new CatalogUnprocessedEntitiesClient(discoveryApi, fetchApi),
     }),
   ],
 });

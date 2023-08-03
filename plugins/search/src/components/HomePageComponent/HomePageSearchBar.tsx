@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import React, { useCallback, useState } from 'react';
+import React, { useCallback, useRef, useState } from 'react';
 import { makeStyles } from '@material-ui/core/styles';
 import {
   SearchBarBase,
@@ -47,11 +47,15 @@ export type HomePageSearchBarProps = Partial<
 export const HomePageSearchBar = (props: HomePageSearchBarProps) => {
   const classes = useStyles(props);
   const [query, setQuery] = useState('');
+  const ref = useRef<HTMLInputElement | null>(null);
+
   const handleSearch = useNavigateToQuery();
 
-  const handleSubmit = () => {
-    handleSearch({ query });
-  };
+  // This handler is called when "enter" is pressed
+  const handleSubmit = useCallback(() => {
+    // Using ref to get the current field value without waiting for a query debounce
+    handleSearch({ query: ref.current?.value ?? '' });
+  }, [handleSearch]);
 
   const handleChange = useCallback(
     value => {
@@ -65,6 +69,7 @@ export const HomePageSearchBar = (props: HomePageSearchBarProps) => {
       value={query}
       onSubmit={handleSubmit}
       onChange={handleChange}
+      inputProps={{ ref }}
       InputProps={{
         ...props.InputProps,
         classes: {

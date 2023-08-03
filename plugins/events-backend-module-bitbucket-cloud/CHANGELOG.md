@@ -1,5 +1,55 @@
 # @backstage/plugin-events-backend-module-bitbucket-cloud
 
+## 0.1.10-next.1
+
+### Patch Changes
+
+- 12a8c94eda8d: Add package repository and homepage metadata
+- Updated dependencies
+  - @backstage/plugin-events-node@0.2.9-next.1
+  - @backstage/backend-plugin-api@0.6.0-next.1
+
+## 0.1.10-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-plugin-api@0.5.5-next.0
+  - @backstage/plugin-events-node@0.2.9-next.0
+
+## 0.1.9
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-plugin-api@0.5.4
+  - @backstage/plugin-events-node@0.2.8
+
+## 0.1.9-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-plugin-api@0.5.4-next.0
+  - @backstage/plugin-events-node@0.2.8-next.0
+
+## 0.1.8
+
+### Patch Changes
+
+- 807416a9ed39: fix Installation documentation
+- Updated dependencies
+  - @backstage/backend-plugin-api@0.5.3
+  - @backstage/plugin-events-node@0.2.7
+
+## 0.1.8-next.2
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-plugin-api@0.5.3-next.2
+  - @backstage/plugin-events-node@0.2.7-next.2
+
 ## 0.1.8-next.1
 
 ### Patch Changes

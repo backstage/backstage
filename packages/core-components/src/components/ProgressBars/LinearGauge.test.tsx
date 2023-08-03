@@ -34,4 +34,28 @@ describe('<LinearGauge />', () => {
     const { getByTitle } = await renderInTestApp(<LinearGauge value={1.5} />);
     expect(getByTitle('100%')).toBeInTheDocument();
   });
+
+  it('renders thick', async () => {
+    const { container, getByTitle } = await renderInTestApp(
+      <LinearGauge value={0.5} width="thick" />,
+    );
+    expect(getByTitle('50%')).toBeInTheDocument();
+    const linePaths = container.getElementsByClassName('rc-progress-line-path');
+    expect(linePaths).toHaveLength(1);
+    const linePath = linePaths[0];
+    expect(linePath).toHaveAttribute('stroke-width');
+    expect(linePath.getAttribute('stroke-width')).toBe('4');
+  });
+
+  it('renders thin', async () => {
+    const { container, getByTitle } = await renderInTestApp(
+      <LinearGauge value={0.5} width="thin" />,
+    );
+    expect(getByTitle('50%')).toBeInTheDocument();
+    const linePaths = container.getElementsByClassName('rc-progress-line-path');
+    expect(linePaths).toHaveLength(1);
+    const linePath = linePaths[0];
+    expect(linePath).toHaveAttribute('stroke-width');
+    expect(linePath.getAttribute('stroke-width')).toBe('1');
+  });
 });

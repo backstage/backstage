@@ -51,17 +51,17 @@ describe('gitlab:group:ensureExists', () => {
     mockGitlabClient.Groups.search.mockResolvedValue([
       {
         id: 1,
-        full_path: 'repos/bar',
+        full_path: 'bar',
       },
       {
         id: 2,
-        full_path: 'repos/foo',
+        full_path: 'foo',
       },
     ]);
 
     mockGitlabClient.Groups.create.mockResolvedValue({
       id: 3,
-      full_path: 'repos/foo/bar',
+      full_path: 'foo/bar',
     });
 
     const config = new ConfigReader({
@@ -98,15 +98,15 @@ describe('gitlab:group:ensureExists', () => {
     mockGitlabClient.Groups.search.mockResolvedValue([
       {
         id: 1,
-        full_path: 'repos/bar',
+        full_path: 'bar',
       },
       {
         id: 2,
-        full_path: 'repos/foo',
+        full_path: 'foo',
       },
       {
         id: 42,
-        full_path: 'repos/foo/bar',
+        full_path: 'foo/bar',
       },
     ]);
 

@@ -1,4 +1,4 @@
-# @backstage/plugin-catalog-backend-module-unprocessed-node
+# @backstage/plugin-catalog-backend-module-unprocessed
 
 This catalog-backend module adds support for viewing unprocessed entities. An unprocessed entity is one that doesn't show up in the catalog.
 
@@ -10,19 +10,22 @@ A `pending` entity has not been processed yet.
 
 ## Installation
 
+```shell
+yarn add --cwd packages/backend @backstage/plugin-catalog-backend-module-unprocessed
+```
+
 ### backend
 
 In `packages/backend/src/plugins/catalog.ts` import the module and initialize it after invoking `CatalogBuilder.build()`:
 
-```ts
-import { UnprocessedEntitesModule } from '@backstage/plugin-catalog-backend-module-unprocessed';
+```ts title="packages/backend/src/plugins/catalog.ts"
+import { UnprocessedEntitiesModule } from '@backstage/plugin-catalog-backend-module-unprocessed';
 
 //...
 
-const unprocessed = new UnprocessedEntitesModule(
+const unprocessed = new UnprocessedEntitiesModule(
   await env.database.getClient(),
   router,
-  env.logger,
 );
 unprocessed.registerRoutes();
 ```
@@ -31,7 +34,7 @@ unprocessed.registerRoutes();
 
 In `packages/backend-next/src/index.ts` add the module:
 
-```ts
+```ts title="packages/backend-next/src/index.ts"
 backend.add(catalogModuleUnprocessedEntities());
 ```
 

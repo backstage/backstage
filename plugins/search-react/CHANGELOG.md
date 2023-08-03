@@ -1,5 +1,89 @@
 # @backstage/plugin-search-react
 
+## 1.6.4-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/core-components@0.13.4-next.0
+  - @backstage/core-plugin-api@1.5.3
+  - @backstage/theme@0.4.1
+  - @backstage/types@1.1.0
+  - @backstage/version-bridge@1.0.4
+  - @backstage/plugin-search-common@1.2.5
+
+## 1.6.3
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/theme@0.4.1
+  - @backstage/core-components@0.13.3
+  - @backstage/core-plugin-api@1.5.3
+  - @backstage/types@1.1.0
+  - @backstage/version-bridge@1.0.4
+  - @backstage/plugin-search-common@1.2.5
+
+## 1.6.3-next.2
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/theme@0.4.1-next.1
+  - @backstage/core-plugin-api@1.5.3-next.1
+  - @backstage/core-components@0.13.3-next.2
+  - @backstage/types@1.1.0
+  - @backstage/version-bridge@1.0.4
+  - @backstage/plugin-search-common@1.2.5-next.0
+
+## 1.6.3-next.1
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/theme@0.4.1-next.0
+  - @backstage/core-components@0.13.3-next.1
+  - @backstage/core-plugin-api@1.5.3-next.0
+
+## 1.6.3-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/core-components@0.13.3-next.0
+  - @backstage/core-plugin-api@1.5.2
+  - @backstage/theme@0.4.0
+  - @backstage/types@1.1.0
+  - @backstage/version-bridge@1.0.4
+  - @backstage/plugin-search-common@1.2.5-next.0
+
+## 1.6.2
+
+### Patch Changes
+
+- 0134c1aa4f36: Fix accessibility issue in `SearchCheckbox` component, making it possible to use the field via keyboard.
+- 2f660eb573cc: Fix SearchBar styles & update StoryBook stories for custom styles for `notchedOutline` class.
+- Updated dependencies
+  - @backstage/core-plugin-api@1.5.2
+  - @backstage/core-components@0.13.2
+  - @backstage/types@1.1.0
+  - @backstage/theme@0.4.0
+  - @backstage/version-bridge@1.0.4
+  - @backstage/plugin-search-common@1.2.4
+
+## 1.6.2-next.3
+
+### Patch Changes
+
+- 0134c1aa4f36: Fix accessibility issue in `SearchCheckbox` component, making it possible to use the field via keyboard.
+- Updated dependencies
+  - @backstage/core-components@0.13.2-next.3
+  - @backstage/core-plugin-api@1.5.2-next.0
+  - @backstage/theme@0.4.0-next.1
+  - @backstage/types@1.0.2
+  - @backstage/version-bridge@1.0.4
+  - @backstage/plugin-search-common@1.2.4-next.0
+
 ## 1.6.1-next.2
 
 ### Patch Changes
@@ -40,7 +124,7 @@
 
 - 750e45539ad: Add close button & improve search input.
 
-  MUI's Paper wrapping the SearchBar in the SearchPage was removed, we recommend users update their apps accordingly.
+  Material UI's Paper wrapping the SearchBar in the SearchPage was removed, we recommend users update their apps accordingly.
 
   SearchBarBase's TextField's label support added & aria-label uses label string if present, tests relying on the default placeholder value should still work unless custom placeholder was given.
 
@@ -86,7 +170,7 @@
 
 - 750e45539ad: Add close button & improve search input.
 
-  MUI's Paper wrapping the SearchBar in the SearchPage was removed, we recommend users update their apps accordingly.
+  Material UI's Paper wrapping the SearchBar in the SearchPage was removed, we recommend users update their apps accordingly.
 
   SearchBarBase's TextField's label support added & aria-label uses label string if present, tests relying on the default placeholder value should still work unless custom placeholder was given.
 

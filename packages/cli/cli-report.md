@@ -24,7 +24,7 @@ Commands:
   versions:bump [options]
   versions:check [options]
   clean
-  build-workspace <workspace-dir> [packages...]
+  build-workspace [options] <workspace-dir> [packages...]
   create-github-app <github-org>
   info
   help [command]
@@ -36,6 +36,7 @@ Commands:
 Usage: backstage-cli build-workspace [options] <workspace-dir> [packages...]
 
 Options:
+  --alwaysYarnPack
   -h, --help
 ```
 
@@ -96,6 +97,8 @@ Usage: backstage-cli config:schema [options]
 Options:
   --package <name>
   --format <format>
+  --merge
+  --no-merge
   -h, --help
 ```
 

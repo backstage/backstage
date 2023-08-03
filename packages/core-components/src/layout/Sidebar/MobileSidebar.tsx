@@ -72,6 +72,9 @@ const useStyles = makeStyles<BackstageTheme, { sidebarConfig: SidebarConfig }>(
       zIndex: theme.zIndex.snackbar,
       // SidebarDivider color
       borderTop: '1px solid #383838',
+      '@media print': {
+        display: 'none',
+      },
     },
 
     overlay: props => ({

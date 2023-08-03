@@ -1,5 +1,91 @@
 # @backstage/plugin-lighthouse-backend
 
+## 0.2.4-next.1
+
+### Patch Changes
+
+- 629cbd194a87: Use `coreServices.rootConfig` instead of `coreService.config`
+- Updated dependencies
+  - @backstage/backend-common@0.19.2-next.1
+  - @backstage/plugin-catalog-node@1.4.1-next.1
+  - @backstage/backend-plugin-api@0.6.0-next.1
+  - @backstage/backend-tasks@0.5.5-next.1
+  - @backstage/catalog-client@1.4.3
+  - @backstage/catalog-model@1.4.1
+  - @backstage/config@1.0.8
+  - @backstage/types@1.1.0
+  - @backstage/plugin-lighthouse-common@0.1.2
+
+## 0.2.4-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-common@0.19.2-next.0
+  - @backstage/backend-plugin-api@0.5.5-next.0
+  - @backstage/backend-tasks@0.5.5-next.0
+  - @backstage/catalog-client@1.4.3
+  - @backstage/catalog-model@1.4.1
+  - @backstage/config@1.0.8
+  - @backstage/types@1.1.0
+  - @backstage/plugin-catalog-node@1.4.1-next.0
+  - @backstage/plugin-lighthouse-common@0.1.2
+
+## 0.2.3
+
+### Patch Changes
+
+- 402749b00531: Added support for the [new backend system](https://backstage.io/docs/backend-system/)
+- Updated dependencies
+  - @backstage/backend-common@0.19.1
+  - @backstage/plugin-catalog-node@1.4.0
+  - @backstage/backend-plugin-api@0.5.4
+  - @backstage/backend-tasks@0.5.4
+  - @backstage/catalog-client@1.4.3
+  - @backstage/catalog-model@1.4.1
+  - @backstage/config@1.0.8
+  - @backstage/types@1.1.0
+  - @backstage/plugin-lighthouse-common@0.1.2
+
+## 0.2.3-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-common@0.19.1-next.0
+  - @backstage/backend-tasks@0.5.4-next.0
+  - @backstage/catalog-client@1.4.3-next.0
+  - @backstage/catalog-model@1.4.1-next.0
+  - @backstage/config@1.0.8
+  - @backstage/types@1.1.0
+  - @backstage/plugin-lighthouse-common@0.1.2
+
+## 0.2.2
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-common@0.19.0
+  - @backstage/catalog-client@1.4.2
+  - @backstage/types@1.1.0
+  - @backstage/catalog-model@1.4.0
+  - @backstage/backend-tasks@0.5.3
+  - @backstage/config@1.0.8
+  - @backstage/plugin-lighthouse-common@0.1.2
+
+## 0.2.2-next.2
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-common@0.19.0-next.2
+  - @backstage/catalog-model@1.4.0-next.1
+  - @backstage/backend-tasks@0.5.3-next.2
+  - @backstage/catalog-client@1.4.2-next.2
+  - @backstage/config@1.0.7
+  - @backstage/types@1.0.2
+  - @backstage/plugin-lighthouse-common@0.1.1
+
 ## 0.2.2-next.1
 
 ### Patch Changes

@@ -167,6 +167,7 @@ describe('EntityPlaylistDialog', () => {
       expect(alertApi.post).toHaveBeenCalledWith({
         message: 'Entity added to playlist-2',
         severity: 'success',
+        display: 'transient',
       });
     });
   });

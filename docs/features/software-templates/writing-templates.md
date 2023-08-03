@@ -352,6 +352,8 @@ specific set of repository names. A full example could look like this:
           - backstage
 ```
 
+For a list of all possible `ui:options` input props for `RepoUrlPicker`, please visit [here](./ui-options-examples.md#repourlpicker).
+
 The `RepoUrlPicker` is a custom field that we provide part of the
 `plugin-scaffolder`. You can provide your own custom fields by
 [writing your own Custom Field Extensions](./writing-custom-field-extensions.md)
@@ -471,6 +473,8 @@ owner:
     catalogFilter:
       kind: [Group, User]
 ```
+
+For a list of all possible `ui:options` input props for `OwnerPicker`, please visit [here](./ui-options-examples.md#ownerpicker).
 
 #### `catalogFilter`
 

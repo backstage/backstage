@@ -296,6 +296,13 @@ export class GithubEntityProvider implements EntityProvider, EventSubscriber {
       throw new Error('Not initialized');
     }
 
+    if (this.config.organization !== event.repository.organization) {
+      this.logger.debug(
+        `skipping push event from organization ${event.repository.organization}`,
+      );
+      return;
+    }
+
     const repoName = event.repository.name;
     const repoUrl = event.repository.url;
     this.logger.debug(`handle github:push event for ${repoName} - ${repoUrl}`);

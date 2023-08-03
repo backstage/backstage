@@ -1,5 +1,61 @@
 # @backstage/repo-tools
 
+## 0.3.3-next.1
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/cli-node@0.1.3-next.0
+  - @backstage/cli-common@0.1.12
+  - @backstage/errors@1.2.1
+
+## 0.3.3-next.0
+
+### Patch Changes
+
+- ebeb77586975: Update `schema openapi generate` command to now create a default router that can be imported and used directly.
+- Updated dependencies
+  - @backstage/cli-common@0.1.12
+  - @backstage/cli-node@0.1.2
+  - @backstage/errors@1.2.1
+
+## 0.3.2
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/errors@1.2.1
+  - @backstage/cli-node@0.1.2
+  - @backstage/cli-common@0.1.12
+
+## 0.3.2-next.1
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/cli-node@0.1.2-next.1
+  - @backstage/cli-common@0.1.12
+  - @backstage/errors@1.2.1-next.0
+
+## 0.3.2-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/errors@1.2.1-next.0
+  - @backstage/cli-common@0.1.12
+  - @backstage/cli-node@0.1.2-next.0
+
+## 0.3.1
+
+### Patch Changes
+
+- ee411e7c2623: Adding a new command `schema openapi lint` to lint your OpenAPI specs and ensure consistent style across Backstage plugins.
+- Updated dependencies
+  - @backstage/errors@1.2.0
+  - @backstage/cli-common@0.1.12
+  - @backstage/cli-node@0.1.1
+
 ## 0.3.1-next.0
 
 ### Patch Changes

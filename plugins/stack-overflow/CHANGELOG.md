@@ -1,5 +1,110 @@
 # @backstage/plugin-stack-overflow
 
+## 0.1.19-next.1
+
+### Patch Changes
+
+- 12a8c94eda8d: Add package repository and homepage metadata
+- Updated dependencies
+  - @backstage/config@1.0.8
+  - @backstage/core-components@0.13.4-next.0
+  - @backstage/core-plugin-api@1.5.3
+  - @backstage/theme@0.4.1
+  - @backstage/plugin-home-react@0.1.2-next.0
+  - @backstage/plugin-search-common@1.2.5
+  - @backstage/plugin-search-react@1.6.4-next.0
+
+## 0.1.19-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/plugin-home-react@0.1.2-next.0
+  - @backstage/core-components@0.13.4-next.0
+  - @backstage/core-plugin-api@1.5.3
+  - @backstage/plugin-search-react@1.6.4-next.0
+  - @backstage/config@1.0.8
+  - @backstage/theme@0.4.1
+  - @backstage/plugin-search-common@1.2.5
+
+## 0.1.18
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/theme@0.4.1
+  - @backstage/core-components@0.13.3
+  - @backstage/plugin-home-react@0.1.1
+  - @backstage/core-plugin-api@1.5.3
+  - @backstage/config@1.0.8
+  - @backstage/plugin-search-common@1.2.5
+  - @backstage/plugin-search-react@1.6.3
+
+## 0.1.18-next.2
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/plugin-home-react@0.1.1-next.2
+  - @backstage/theme@0.4.1-next.1
+  - @backstage/core-plugin-api@1.5.3-next.1
+  - @backstage/core-components@0.13.3-next.2
+  - @backstage/config@1.0.8
+  - @backstage/plugin-search-common@1.2.5-next.0
+  - @backstage/plugin-search-react@1.6.3-next.2
+
+## 0.1.18-next.1
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/theme@0.4.1-next.0
+  - @backstage/core-components@0.13.3-next.1
+  - @backstage/core-plugin-api@1.5.3-next.0
+  - @backstage/plugin-search-react@1.6.3-next.1
+  - @backstage/plugin-home-react@0.1.1-next.1
+  - @backstage/config@1.0.8
+
+## 0.1.18-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/core-components@0.13.3-next.0
+  - @backstage/config@1.0.8
+  - @backstage/core-plugin-api@1.5.2
+  - @backstage/theme@0.4.0
+  - @backstage/plugin-home-react@0.1.1-next.0
+  - @backstage/plugin-search-common@1.2.5-next.0
+  - @backstage/plugin-search-react@1.6.3-next.0
+
+## 0.1.17
+
+### Patch Changes
+
+- 41e8037a8a6d: Extract new plugin-home-react package and deprecate createCardExtension in plugin-home
+- Updated dependencies
+  - @backstage/core-plugin-api@1.5.2
+  - @backstage/plugin-search-react@1.6.2
+  - @backstage/core-components@0.13.2
+  - @backstage/theme@0.4.0
+  - @backstage/plugin-home-react@0.1.0
+  - @backstage/config@1.0.8
+  - @backstage/plugin-search-common@1.2.4
+
+## 0.1.17-next.3
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/plugin-search-react@1.6.2-next.3
+  - @backstage/core-components@0.13.2-next.3
+  - @backstage/config@1.0.7
+  - @backstage/core-plugin-api@1.5.2-next.0
+  - @backstage/theme@0.4.0-next.1
+  - @backstage/plugin-home-react@0.1.0-next.3
+  - @backstage/plugin-search-common@1.2.4-next.0
+
 ## 0.1.16-next.2
 
 ### Patch Changes

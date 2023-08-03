@@ -17,3 +17,14 @@ export {
   catalogUnprocessedEntitiesPlugin,
   CatalogUnprocessedEntitiesPage,
 } from './plugin';
+export { UnprocessedEntitiesContent } from './components/UnprocessedEntities';
+export {
+  type CatalogUnprocessedEntitiesApiResponse,
+  type CatalogUnprocessedEntitiesApi,
+  catalogUnprocessedEntitiesApiRef,
+} from './api';
+export type {
+  UnprocessedEntity,
+  UnprocessedEntityCache,
+  UnprocessedEntityError,
+} from './types';

@@ -50,7 +50,7 @@ describe('catalogModuleIncrementalIngestionEntityProvider', () => {
         [catalogProcessingExtensionPoint, { addEntityProvider }],
       ],
       services: [
-        [coreServices.config, new ConfigReader({})],
+        [coreServices.rootConfig, new ConfigReader({})],
         [coreServices.database, database],
         [coreServices.httpRouter, httpRouter],
         [coreServices.logger, getVoidLogger()],

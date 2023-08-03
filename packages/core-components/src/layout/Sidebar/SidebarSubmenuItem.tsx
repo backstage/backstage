@@ -172,11 +172,19 @@ export const SidebarSubmenuItem = (props: SidebarSubmenuItemProps) => {
             )}
           >
             {Icon && <Icon fontSize="small" />}
-            <Typography variant="subtitle1" className={classes.label}>
+            <Typography
+              variant="subtitle1"
+              component="span"
+              className={classes.label}
+            >
               {title}
               <br />
               {subtitle && (
-                <Typography variant="caption" className={classes.subtitle}>
+                <Typography
+                  variant="caption"
+                  component="span"
+                  className={classes.subtitle}
+                >
                   {subtitle}
                 </Typography>
               )}
@@ -204,7 +212,7 @@ export const SidebarSubmenuItem = (props: SidebarSubmenuItemProps) => {
                   onClick={closeSubmenu}
                   onTouchStart={e => e.stopPropagation()}
                 >
-                  <Typography className={classes.textContent}>
+                  <Typography component="span" className={classes.textContent}>
                     {object.title}
                   </Typography>
                 </Link>
@@ -230,11 +238,19 @@ export const SidebarSubmenuItem = (props: SidebarSubmenuItemProps) => {
           onTouchStart={e => e.stopPropagation()}
         >
           {Icon && <Icon fontSize="small" />}
-          <Typography variant="subtitle1" className={classes.label}>
+          <Typography
+            variant="subtitle1"
+            component="span"
+            className={classes.label}
+          >
             {title}
             <br />
             {subtitle && (
-              <Typography variant="caption" className={classes.subtitle}>
+              <Typography
+                variant="caption"
+                component="span"
+                className={classes.subtitle}
+              >
                 {subtitle}
               </Typography>
             )}

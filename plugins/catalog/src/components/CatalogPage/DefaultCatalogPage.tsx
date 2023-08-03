@@ -36,6 +36,7 @@ import {
   UserListPicker,
   EntityKindPicker,
   EntityNamespacePicker,
+  EntityOwnerPickerProps,
 } from '@backstage/plugin-catalog-react';
 import React, { ReactNode } from 'react';
 import { createComponentRouteRef } from '../../routes';
@@ -54,6 +55,7 @@ export interface DefaultCatalogPageProps {
   initialKind?: string;
   tableOptions?: TableProps<CatalogTableRow>['options'];
   emptyContent?: ReactNode;
+  ownerPickerMode?: EntityOwnerPickerProps['mode'];
 }
 
 export function DefaultCatalogPage(props: DefaultCatalogPageProps) {
@@ -64,6 +66,7 @@ export function DefaultCatalogPage(props: DefaultCatalogPageProps) {
     initialKind = 'component',
     tableOptions = {},
     emptyContent,
+    ownerPickerMode,
   } = props;
   const orgName =
     useApi(configApiRef).getOptionalString('organization.name') ?? 'Backstage';
@@ -87,7 +90,7 @@ export function DefaultCatalogPage(props: DefaultCatalogPageProps) {
               <EntityKindPicker initialFilter={initialKind} />
               <EntityTypePicker />
               <UserListPicker initialFilter={initiallySelectedFilter} />
-              <EntityOwnerPicker />
+              <EntityOwnerPicker mode={ownerPickerMode} />
               <EntityLifecyclePicker />
               <EntityTagPicker />
               <EntityProcessingStatusPicker />

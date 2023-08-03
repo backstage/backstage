@@ -18,12 +18,14 @@ import { Theme } from '@mui/material/styles';
 import { transformV5ComponentThemesToV4 } from './overrides';
 
 describe('transformV5ComponentThemesToV4', () => {
+  // TODO: Create actual v5 Theme to avoid missing properties in test
   const mockTheme = {
     palette: {
       primary: {
         main: 'red',
       },
     },
+    spacing: (n: number) => `${n * 8}px`,
   } as unknown as Theme;
   it('transforms empty component themes', () => {
     expect(transformV5ComponentThemesToV4(mockTheme)).toEqual({

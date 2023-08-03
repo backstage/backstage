@@ -24,7 +24,7 @@ import {
 export const urlReaderServiceFactory = createServiceFactory({
   service: coreServices.urlReader,
   deps: {
-    config: coreServices.config,
+    config: coreServices.rootConfig,
     logger: coreServices.logger,
   },
   async factory({ config, logger }) {

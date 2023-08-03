@@ -17,60 +17,8 @@
 import { Git } from '@backstage/backend-common';
 import { Config } from '@backstage/config';
 import { assertError } from '@backstage/errors';
-import { spawn, SpawnOptionsWithoutStdio } from 'child_process';
 import { Octokit } from 'octokit';
-import { PassThrough, Writable } from 'stream';
 import { Logger } from 'winston';
-
-/** @public */
-export type RunCommandOptions = {
-  /** command to run */
-  command: string;
-  /** arguments to pass the command */
-  args: string[];
-  /** options to pass to spawn */
-  options?: SpawnOptionsWithoutStdio;
-  /** stream to capture stdout and stderr output */
-  logStream?: Writable;
-};
-
-/**
- * Run a command in a sub-process, normally a shell command.
- *
- * @public
- */
-export const executeShellCommand = async (options: RunCommandOptions) => {
-  const {
-    command,
-    args,
-    options: spawnOptions,
-    logStream = new PassThrough(),
-  } = options;
-  await new Promise<void>((resolve, reject) => {
-    const process = spawn(command, args, spawnOptions);
-
-    process.stdout.on('data', stream => {
-      logStream.write(stream);
-    });
-
-    process.stderr.on('data', stream => {
-      logStream.write(stream);
-    });
-
-    process.on('error', error => {
-      return reject(error);
-    });
-
-    process.on('close', code => {
-      if (code !== 0) {
-        return reject(
-          new Error(`Command ${command} failed, exit code: ${code}`),
-        );
-      }
-      return resolve();
-    });
-  });
-};
 
 export async function initRepoAndPush({
   dir,

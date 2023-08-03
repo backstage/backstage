@@ -26,6 +26,7 @@ import {
 import { TaskScheduleDefinition } from '@backstage/backend-tasks';
 import { loggerToWinstonLogger } from '@backstage/backend-common';
 import { searchIndexRegistryExtensionPoint } from '@backstage/plugin-search-backend-node/alpha';
+import { catalogServiceRef } from '@backstage/plugin-catalog-node/alpha';
 
 import {
   DefaultTechDocsCollatorFactory,
@@ -38,7 +39,7 @@ import {
  */
 export type SearchModuleTechDocsCollatorOptions = Omit<
   TechDocsCollatorFactoryOptions,
-  'logger' | 'discovery' | 'tokenManager'
+  'logger' | 'discovery' | 'tokenManager' | 'catalogClient'
 > & {
   schedule?: TaskScheduleDefinition;
 };
@@ -54,11 +55,12 @@ export const searchModuleTechDocsCollator = createBackendModule(
     register(env) {
       env.registerInit({
         deps: {
-          config: coreServices.config,
+          config: coreServices.rootConfig,
           logger: coreServices.logger,
           discovery: coreServices.discovery,
           tokenManager: coreServices.tokenManager,
           scheduler: coreServices.scheduler,
+          catalog: catalogServiceRef,
           indexRegistry: searchIndexRegistryExtensionPoint,
         },
         async init({
@@ -67,6 +69,7 @@ export const searchModuleTechDocsCollator = createBackendModule(
           discovery,
           tokenManager,
           scheduler,
+          catalog,
           indexRegistry,
         }) {
           const defaultSchedule = {
@@ -84,6 +87,7 @@ export const searchModuleTechDocsCollator = createBackendModule(
               discovery,
               tokenManager,
               logger: loggerToWinstonLogger(logger),
+              catalogClient: catalog,
             }),
           });
         },

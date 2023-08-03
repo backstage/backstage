@@ -93,7 +93,7 @@ next to them you can split up the UI in as many components as you feel like.
 
 We have the `ExampleComponent` to show an example Backstage page component. The
 `ExampleFetchComponent` showcases the common task of making an async request to
-a public API and plot the response data in a table using Material-UI components.
+a public API and plot the response data in a table using Material UI components.
 
 You may tweak these components, rename them and/or replace them completely.
 

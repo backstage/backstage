@@ -1,5 +1,125 @@
 # @backstage/dev-utils
 
+## 1.0.18-next.1
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/integration-react@1.1.16-next.1
+  - @backstage/app-defaults@1.4.2-next.0
+  - @backstage/catalog-model@1.4.1
+  - @backstage/core-app-api@1.9.1-next.0
+  - @backstage/core-components@0.13.4-next.0
+  - @backstage/core-plugin-api@1.5.3
+  - @backstage/test-utils@1.4.2-next.0
+  - @backstage/theme@0.4.1
+  - @backstage/plugin-catalog-react@1.8.1-next.0
+
+## 1.0.18-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/core-app-api@1.9.1-next.0
+  - @backstage/core-components@0.13.4-next.0
+  - @backstage/app-defaults@1.4.2-next.0
+  - @backstage/core-plugin-api@1.5.3
+  - @backstage/test-utils@1.4.2-next.0
+  - @backstage/plugin-catalog-react@1.8.1-next.0
+  - @backstage/catalog-model@1.4.1
+  - @backstage/integration-react@1.1.16-next.0
+  - @backstage/theme@0.4.1
+
+## 1.0.17
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/theme@0.4.1
+  - @backstage/plugin-catalog-react@1.8.0
+  - @backstage/core-components@0.13.3
+  - @backstage/core-app-api@1.9.0
+  - @backstage/test-utils@1.4.1
+  - @backstage/core-plugin-api@1.5.3
+  - @backstage/app-defaults@1.4.1
+  - @backstage/catalog-model@1.4.1
+  - @backstage/integration-react@1.1.15
+
+## 1.0.17-next.2
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/plugin-catalog-react@1.8.0-next.2
+  - @backstage/theme@0.4.1-next.1
+  - @backstage/test-utils@1.4.1-next.2
+  - @backstage/core-plugin-api@1.5.3-next.1
+  - @backstage/core-components@0.13.3-next.2
+  - @backstage/core-app-api@1.8.2-next.1
+  - @backstage/app-defaults@1.4.1-next.2
+  - @backstage/catalog-model@1.4.1-next.0
+  - @backstage/integration-react@1.1.15-next.2
+
+## 1.0.17-next.1
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/theme@0.4.1-next.0
+  - @backstage/core-components@0.13.3-next.1
+  - @backstage/core-plugin-api@1.5.3-next.0
+  - @backstage/app-defaults@1.4.1-next.1
+  - @backstage/integration-react@1.1.15-next.1
+  - @backstage/test-utils@1.4.1-next.1
+  - @backstage/plugin-catalog-react@1.7.1-next.1
+  - @backstage/core-app-api@1.8.2-next.0
+
+## 1.0.17-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/core-components@0.13.3-next.0
+  - @backstage/app-defaults@1.4.1-next.0
+  - @backstage/catalog-model@1.4.1-next.0
+  - @backstage/core-app-api@1.8.1
+  - @backstage/core-plugin-api@1.5.2
+  - @backstage/integration-react@1.1.15-next.0
+  - @backstage/test-utils@1.4.1-next.0
+  - @backstage/theme@0.4.0
+  - @backstage/plugin-catalog-react@1.7.1-next.0
+
+## 1.0.16
+
+### Patch Changes
+
+- 74b216ee4e50: Add `PropsWithChildren` to usages of `ComponentType`, in preparation for React 18 where the children are no longer implicit.
+- Updated dependencies
+  - @backstage/core-app-api@1.8.1
+  - @backstage/core-plugin-api@1.5.2
+  - @backstage/core-components@0.13.2
+  - @backstage/theme@0.4.0
+  - @backstage/plugin-catalog-react@1.7.0
+  - @backstage/catalog-model@1.4.0
+  - @backstage/test-utils@1.4.0
+  - @backstage/app-defaults@1.4.0
+  - @backstage/integration-react@1.1.14
+
+## 1.0.16-next.3
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/core-components@0.13.2-next.3
+  - @backstage/catalog-model@1.4.0-next.1
+  - @backstage/app-defaults@1.4.0-next.3
+  - @backstage/core-app-api@1.8.1-next.0
+  - @backstage/core-plugin-api@1.5.2-next.0
+  - @backstage/integration-react@1.1.14-next.3
+  - @backstage/test-utils@1.4.0-next.2
+  - @backstage/theme@0.4.0-next.1
+  - @backstage/plugin-catalog-react@1.7.0-next.3
+
 ## 1.0.16-next.2
 
 ### Patch Changes

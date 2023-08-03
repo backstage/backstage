@@ -14,6 +14,7 @@
  * limitations under the License.
  */
 
+import { entityRouteRef } from '@backstage/plugin-catalog-react';
 import { renderInTestApp, TestApiProvider } from '@backstage/test-utils';
 import React from 'react';
 import { EntityFeedbackApi, entityFeedbackApiRef } from '../../api';
@@ -44,6 +45,9 @@ describe('FeedbackResponseTable', () => {
       <TestApiProvider apis={[[entityFeedbackApiRef, feedbackApi]]}>
         <FeedbackResponseTable {...props} entityRef="component:default/test" />
       </TestApiProvider>,
+      {
+        mountedRoutes: { '/catalog/:namespace/:kind/:name': entityRouteRef },
+      },
     );
 
   beforeEach(() => {

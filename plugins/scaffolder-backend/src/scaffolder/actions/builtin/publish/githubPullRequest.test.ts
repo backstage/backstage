@@ -62,6 +62,9 @@ describe('createPublishGithubPullRequestAction', () => {
           data: {
             html_url: 'https://github.com/myorg/myrepo/pull/123',
             number: 123,
+            base: {
+              ref: 'main',
+            },
           },
         };
       }),
@@ -88,6 +91,94 @@ describe('createPublishGithubPullRequestAction', () => {
   afterEach(() => {
     mockFs.restore();
     jest.resetAllMocks();
+  });
+
+  describe('with targetBranchName', () => {
+    let input: GithubPullRequestActionInput;
+    let ctx: ActionContext<GithubPullRequestActionInput>;
+
+    beforeEach(() => {
+      fakeClient = {
+        createPullRequest: jest.fn(async (_: any) => {
+          return {
+            url: 'https://api.github.com/myorg/myrepo/pull/123',
+            headers: {},
+            status: 201,
+            data: {
+              html_url: 'https://github.com/myorg/myrepo/pull/123',
+              number: 123,
+              base: {
+                ref: 'test',
+              },
+            },
+          };
+        }),
+        rest: {
+          pulls: {
+            requestReviewers: jest.fn(async (_: any) => ({ data: {} })),
+          },
+        },
+      };
+
+      input = {
+        repoUrl: 'github.com?owner=myorg&repo=myrepo',
+        title: 'Create my new app',
+        branchName: 'new-app',
+        targetBranchName: 'test',
+        description: 'This PR is really good',
+        draft: true,
+      };
+
+      mockFs({
+        [workspacePath]: { 'file.txt': 'Hello there!' },
+      });
+
+      ctx = {
+        createTemporaryDirectory: jest.fn(),
+        output: jest.fn(),
+        logger: getRootLogger(),
+        logStream: new Writable(),
+        input,
+        workspacePath,
+      };
+    });
+
+    it('creates a pull request', async () => {
+      await instance.handler(ctx);
+
+      expect(fakeClient.createPullRequest).toHaveBeenCalledWith({
+        owner: 'myorg',
+        repo: 'myrepo',
+        title: 'Create my new app',
+        head: 'new-app',
+        base: 'test',
+        body: 'This PR is really good',
+        draft: true,
+        changes: [
+          {
+            commit: 'Create my new app',
+            files: {
+              'file.txt': {
+                content: Buffer.from('Hello there!').toString('base64'),
+                encoding: 'base64',
+                mode: '100644',
+              },
+            },
+          },
+        ],
+      });
+    });
+
+    it('creates outputs for the pull request url and number', async () => {
+      await instance.handler(ctx);
+
+      expect(ctx.output).toHaveBeenCalledWith('targetBranchName', 'test');
+      expect(ctx.output).toHaveBeenCalledWith(
+        'remoteUrl',
+        'https://github.com/myorg/myrepo/pull/123',
+      );
+      expect(ctx.output).toHaveBeenCalledWith('pullRequestNumber', 123);
+    });
   });
 
   describe('with no sourcePath', () => {
@@ -145,6 +236,7 @@ describe('createPublishGithubPullRequestAction', () => {
     it('creates outputs for the pull request url and number', async () => {
       await instance.handler(ctx);
 
+      expect(ctx.output).toHaveBeenCalledWith('targetBranchName', 'main');
       expect(ctx.output).toHaveBeenCalledWith(
         'remoteUrl',
         'https://github.com/myorg/myrepo/pull/123',

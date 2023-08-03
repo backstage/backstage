@@ -32,7 +32,7 @@ export const searchModulePostgresEngine = createBackendModule({
       deps: {
         searchEngineRegistry: searchEngineRegistryExtensionPoint,
         database: coreServices.database,
-        config: coreServices.config,
+        config: coreServices.rootConfig,
       },
       async init({ searchEngineRegistry, database, config }) {
         searchEngineRegistry.setSearchEngine(

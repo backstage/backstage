@@ -1,5 +1,141 @@
 # @backstage/plugin-playlist
 
+## 0.1.13-next.1
+
+### Patch Changes
+
+- d1e0588324d1: Displaying an alert popup each time the Playlist is created or deleted
+- 12a8c94eda8d: Add package repository and homepage metadata
+- Updated dependencies
+  - @backstage/plugin-playlist-common@0.1.9-next.0
+  - @backstage/catalog-model@1.4.1
+  - @backstage/core-components@0.13.4-next.0
+  - @backstage/core-plugin-api@1.5.3
+  - @backstage/errors@1.2.1
+  - @backstage/theme@0.4.1
+  - @backstage/plugin-catalog-common@1.0.15
+  - @backstage/plugin-catalog-react@1.8.1-next.0
+  - @backstage/plugin-permission-common@0.7.7
+  - @backstage/plugin-permission-react@0.4.14
+  - @backstage/plugin-search-react@1.6.4-next.0
+
+## 0.1.13-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/core-components@0.13.4-next.0
+  - @backstage/core-plugin-api@1.5.3
+  - @backstage/plugin-catalog-react@1.8.1-next.0
+  - @backstage/plugin-search-react@1.6.4-next.0
+  - @backstage/catalog-model@1.4.1
+  - @backstage/errors@1.2.1
+  - @backstage/theme@0.4.1
+  - @backstage/plugin-catalog-common@1.0.15
+  - @backstage/plugin-permission-common@0.7.7
+  - @backstage/plugin-permission-react@0.4.14
+  - @backstage/plugin-playlist-common@0.1.8
+
+## 0.1.12
+
+### Patch Changes
+
+- 68531cc70e1f: Break some internal circular import chains
+- Updated dependencies
+  - @backstage/theme@0.4.1
+  - @backstage/errors@1.2.1
+  - @backstage/plugin-catalog-react@1.8.0
+  - @backstage/core-components@0.13.3
+  - @backstage/core-plugin-api@1.5.3
+  - @backstage/catalog-model@1.4.1
+  - @backstage/plugin-catalog-common@1.0.15
+  - @backstage/plugin-permission-common@0.7.7
+  - @backstage/plugin-permission-react@0.4.14
+  - @backstage/plugin-playlist-common@0.1.8
+  - @backstage/plugin-search-react@1.6.3
+
+## 0.1.12-next.2
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/plugin-catalog-react@1.8.0-next.2
+  - @backstage/theme@0.4.1-next.1
+  - @backstage/core-plugin-api@1.5.3-next.1
+  - @backstage/core-components@0.13.3-next.2
+  - @backstage/catalog-model@1.4.1-next.0
+  - @backstage/errors@1.2.1-next.0
+  - @backstage/plugin-catalog-common@1.0.15-next.0
+  - @backstage/plugin-permission-common@0.7.7-next.0
+  - @backstage/plugin-permission-react@0.4.14-next.2
+  - @backstage/plugin-playlist-common@0.1.8-next.0
+  - @backstage/plugin-search-react@1.6.3-next.2
+
+## 0.1.12-next.1
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/theme@0.4.1-next.0
+  - @backstage/core-components@0.13.3-next.1
+  - @backstage/core-plugin-api@1.5.3-next.0
+  - @backstage/plugin-catalog-react@1.7.1-next.1
+  - @backstage/plugin-search-react@1.6.3-next.1
+  - @backstage/plugin-permission-react@0.4.14-next.1
+
+## 0.1.12-next.0
+
+### Patch Changes
+
+- 68531cc70e1f: Break some internal circular import chains
+- Updated dependencies
+  - @backstage/errors@1.2.1-next.0
+  - @backstage/core-components@0.13.3-next.0
+  - @backstage/catalog-model@1.4.1-next.0
+  - @backstage/core-plugin-api@1.5.2
+  - @backstage/theme@0.4.0
+  - @backstage/plugin-catalog-common@1.0.15-next.0
+  - @backstage/plugin-catalog-react@1.7.1-next.0
+  - @backstage/plugin-permission-common@0.7.7-next.0
+  - @backstage/plugin-permission-react@0.4.14-next.0
+  - @backstage/plugin-playlist-common@0.1.8-next.0
+  - @backstage/plugin-search-react@1.6.3-next.0
+
+## 0.1.11
+
+### Patch Changes
+
+- 2e036369d83b: Updated `alertApi` usages with severity of `info` or `success` to use `display: transient`
+- Updated dependencies
+  - @backstage/core-plugin-api@1.5.2
+  - @backstage/plugin-search-react@1.6.2
+  - @backstage/core-components@0.13.2
+  - @backstage/theme@0.4.0
+  - @backstage/plugin-catalog-react@1.7.0
+  - @backstage/catalog-model@1.4.0
+  - @backstage/errors@1.2.0
+  - @backstage/plugin-permission-react@0.4.13
+  - @backstage/plugin-catalog-common@1.0.14
+  - @backstage/plugin-permission-common@0.7.6
+  - @backstage/plugin-playlist-common@0.1.7
+
+## 0.1.11-next.3
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/plugin-search-react@1.6.2-next.3
+  - @backstage/core-components@0.13.2-next.3
+  - @backstage/catalog-model@1.4.0-next.1
+  - @backstage/core-plugin-api@1.5.2-next.0
+  - @backstage/errors@1.2.0-next.0
+  - @backstage/theme@0.4.0-next.1
+  - @backstage/plugin-catalog-common@1.0.14-next.1
+  - @backstage/plugin-catalog-react@1.7.0-next.3
+  - @backstage/plugin-permission-common@0.7.6-next.0
+  - @backstage/plugin-permission-react@0.4.13-next.0
+  - @backstage/plugin-playlist-common@0.1.7-next.0
+
 ## 0.1.10-next.2
 
 ### Patch Changes

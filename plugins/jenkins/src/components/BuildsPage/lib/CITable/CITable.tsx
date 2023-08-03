@@ -191,6 +191,7 @@ const generatedColumns: TableColumn[] = [
               alertApi.post({
                 message: 'Jenkins re-build has successfully executed',
                 severity: 'success',
+                display: 'transient',
               });
             } catch (e) {
               alertApi.post({

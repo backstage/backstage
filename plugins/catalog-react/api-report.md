@@ -25,6 +25,7 @@ import { ScmIntegrationRegistry } from '@backstage/integration';
 import { StyleRules } from '@material-ui/core/styles/withStyles';
 import { SystemEntity } from '@backstage/catalog-model';
 import { TableColumn } from '@backstage/core-components';
+import { TableOptions } from '@backstage/core-components';
 
 // @public
 export const AsyncEntityProvider: (
@@ -266,7 +267,14 @@ export class EntityOwnerFilter implements EntityFilter {
 }
 
 // @public (undocumented)
-export const EntityOwnerPicker: () => JSX.Element | null;
+export const EntityOwnerPicker: (
+  props?: EntityOwnerPickerProps,
+) => JSX.Element | null;
+
+// @public (undocumented)
+export type EntityOwnerPickerProps = {
+  mode?: 'owners-only' | 'all';
+};
 
 // @public
 export const EntityPeekAheadPopover: (
@@ -387,6 +395,8 @@ export interface EntityTableProps<T extends Entity> {
   emptyContent?: ReactNode;
   // (undocumented)
   entities: T[];
+  // (undocumented)
+  tableOptions?: TableOptions;
   // (undocumented)
   title: string;
   // (undocumented)

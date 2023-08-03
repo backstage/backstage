@@ -13,6 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
 import React from 'react';
 import {
   createStyles,
@@ -27,7 +28,7 @@ import {
 const BootstrapInput = withStyles((theme: Theme) =>
   createStyles({
     root: {
-      margin: `${theme.spacing(1)} 0px`,
+      margin: theme.spacing(1, 0),
       maxWidth: 300,
       'label + &': {
         marginTop: theme.spacing(3),

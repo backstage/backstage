@@ -37,7 +37,6 @@ describe('parseQueryEntitiesParams', () => {
       const parsedObj = parseQueryEntitiesParams(
         validRequest,
       ) as QueryEntitiesInitialRequest;
-      expect(parsedObj.limit).toBe(3);
       expect(parsedObj.fields).toBeDefined();
       expect(parsedObj.orderFields).toEqual([
         { field: 'metadata.name', order: 'desc' },
@@ -54,7 +53,6 @@ describe('parseQueryEntitiesParams', () => {
       const parsedObj = parseQueryEntitiesParams(
         {},
       ) as QueryEntitiesInitialRequest;
-      expect(parsedObj.limit).toBeUndefined();
       expect(parsedObj.fields).toBeUndefined();
       expect(parsedObj.orderFields).toBeUndefined();
       expect(parsedObj.filter).toBeUndefined();
@@ -64,9 +62,6 @@ describe('parseQueryEntitiesParams', () => {
     });
 
     it.each([
-      {
-        limit: 'asd',
-      },
       { filter: 3 },
       { orderField: ['metadata.uid,diagonal'] },
       { fields: [4] },
@@ -94,7 +89,6 @@ describe('parseQueryEntitiesParams', () => {
       const parsedObj = parseQueryEntitiesParams(
         validRequest,
       ) as QueryEntitiesCursorRequest;
-      expect(parsedObj.limit).toBe(3);
       expect(parsedObj.fields).toBeDefined();
       expect(parsedObj.cursor).toEqual(cursor);
     });
@@ -118,7 +112,6 @@ describe('parseQueryEntitiesParams', () => {
       const parsedObj = parseQueryEntitiesParams(
         validRequest,
       ) as QueryEntitiesCursorRequest;
-      expect(parsedObj.limit).toBe(3);
       expect(parsedObj.fields).toBeDefined();
       expect(parsedObj.cursor).toEqual(cursor);
       expect(parsedObj).not.toHaveProperty('filter');
@@ -130,18 +123,14 @@ describe('parseQueryEntitiesParams', () => {
       const parsedObj = parseQueryEntitiesParams(
         {},
       ) as QueryEntitiesCursorRequest;
-      expect(parsedObj.limit).toBeUndefined();
       expect(parsedObj.fields).toBeUndefined();
     });
 
-    it.each([
-      {
-        limit: 'asd',
+    it.each([{ cursor: [] }, { fields: [4] }])(
+      'should throw if some parameter is not valid %p',
+      params => {
+        expect(() => parseQueryEntitiesParams(params)).toThrow();
       },
-      { cursor: [] },
-      { fields: [4] },
-    ])('should throw if some parameter is not valid %p', params => {
-      expect(() => parseQueryEntitiesParams(params)).toThrow();
-    });
+    );
   });
 });

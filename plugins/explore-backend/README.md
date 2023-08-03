@@ -7,14 +7,61 @@ for these tools.
 
 ## Getting started
 
-### Install the Package
+### Adding the plugin to your `packages/backend`
+
+#### Tools as Config
+
+Install dependencies
+
+```bash
+# From your Backstage root directory
+yarn add --cwd packages/backend @backstage/plugin-explore-backend
+```
+
+You'll need to add the plugin to the router in your `backend` package. You can
+do this by creating a file called `packages/backend/src/plugins/explore.ts` with the following content:
+
+```ts title="packages/backend/src/plugins/explore.ts"
+import {
+  createRouter,
+  StaticExploreToolProvider,
+} from '@backstage/plugin-explore-backend';
+import { Router } from 'express';
+import { PluginEnvironment } from '../types';
+
+export default async function createPlugin(
+  env: PluginEnvironment,
+): Promise<Router> {
+  return await createRouter({
+    logger: env.logger,
+    toolProvider: StaticExploreToolProvider.fromConfig(env.config),
+  });
+}
+```
+
+#### Tools as Code
+
+Install dependencies
 
 ```bash
 # From your Backstage root directory
 yarn add --cwd packages/backend @backstage/plugin-explore-backend @backstage/plugin-explore-common
 ```
 
-### Adding the plugin to your `packages/backend`
+Config:
+
+```yaml
+explore:
+  tools:
+    - title: New Relic
+      description: new relic plugin
+      url: /newrelic
+      image: https://i.imgur.com/L37ikrX.jpg
+      tags:
+        - newrelic
+        - proxy
+        - nerdGraph
+```
 
 You'll need to add the plugin to the router in your `backend` package. You can
 do this by creating a file called `packages/backend/src/plugins/explore.ts` with the following content:
@@ -48,6 +95,8 @@ export default async function createPlugin(
   });
 }
 ```
+
+#### Register the plugin router
 
 With the `explore.ts` router setup in place, add the router to
 `packages/backend/src/index.ts`:

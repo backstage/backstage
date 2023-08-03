@@ -15,6 +15,7 @@ import { PermissionCriteria } from '@backstage/plugin-permission-common';
 import { PermissionEvaluator } from '@backstage/plugin-permission-common';
 import { PermissionPolicy } from '@backstage/plugin-permission-node';
 import { PermissionRule } from '@backstage/plugin-permission-node';
+import { PermissionRuleParams } from '@backstage/plugin-permission-common';
 import { PlaylistMetadata } from '@backstage/plugin-playlist-common';
 import { PluginDatabaseManager } from '@backstage/backend-common';
 import { PluginEndpointDiscovery } from '@backstage/backend-common';
@@ -25,7 +26,9 @@ import { ResourcePermission } from '@backstage/plugin-permission-common';
 // @public (undocumented)
 export const createPlaylistConditionalDecision: (
   permission: ResourcePermission<'playlist-list'>,
-  conditions: PermissionCriteria<PermissionCondition<'playlist-list'>>,
+  conditions: PermissionCriteria<
+    PermissionCondition<'playlist-list', PermissionRuleParams>
+  >,
 ) => ConditionalPolicyDecision;
 
 // @public (undocumented)

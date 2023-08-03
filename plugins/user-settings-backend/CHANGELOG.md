@@ -1,5 +1,78 @@
 # @backstage/plugin-user-settings-backend
 
+## 0.1.12-next.1
+
+### Patch Changes
+
+- 12a8c94eda8d: Add package repository and homepage metadata
+- Updated dependencies
+  - @backstage/backend-common@0.19.2-next.1
+  - @backstage/plugin-auth-node@0.2.17-next.1
+  - @backstage/backend-plugin-api@0.6.0-next.1
+  - @backstage/catalog-model@1.4.1
+  - @backstage/errors@1.2.1
+  - @backstage/types@1.1.0
+
+## 0.1.12-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-common@0.19.2-next.0
+  - @backstage/backend-plugin-api@0.5.5-next.0
+  - @backstage/catalog-model@1.4.1
+  - @backstage/errors@1.2.1
+  - @backstage/types@1.1.0
+  - @backstage/plugin-auth-node@0.2.17-next.0
+
+## 0.1.11
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/errors@1.2.1
+  - @backstage/backend-common@0.19.1
+  - @backstage/backend-plugin-api@0.5.4
+  - @backstage/catalog-model@1.4.1
+  - @backstage/types@1.1.0
+  - @backstage/plugin-auth-node@0.2.16
+
+## 0.1.11-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/errors@1.2.1-next.0
+  - @backstage/backend-common@0.19.1-next.0
+  - @backstage/backend-plugin-api@0.5.4-next.0
+  - @backstage/catalog-model@1.4.1-next.0
+  - @backstage/types@1.1.0
+  - @backstage/plugin-auth-node@0.2.16-next.0
+
+## 0.1.10
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-common@0.19.0
+  - @backstage/types@1.1.0
+  - @backstage/catalog-model@1.4.0
+  - @backstage/errors@1.2.0
+  - @backstage/backend-plugin-api@0.5.3
+  - @backstage/plugin-auth-node@0.2.15
+
+## 0.1.10-next.2
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-common@0.19.0-next.2
+  - @backstage/catalog-model@1.4.0-next.1
+  - @backstage/backend-plugin-api@0.5.3-next.2
+  - @backstage/errors@1.2.0-next.0
+  - @backstage/types@1.0.2
+  - @backstage/plugin-auth-node@0.2.15-next.2
+
 ## 0.1.10-next.1
 
 ### Patch Changes

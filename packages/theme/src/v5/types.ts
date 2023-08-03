@@ -23,13 +23,13 @@ import {
 declare module '@mui/material/styles' {
   interface Palette extends BackstagePaletteAdditions {}
 
-  interface PaletteOptions extends BackstagePaletteAdditions {}
+  interface PaletteOptions extends Partial<BackstagePaletteAdditions> {}
 }
 
 declare module '@mui/material/styles' {
   interface Theme extends BackstageThemeAdditions {}
 
-  interface ThemeOptions extends BackstageThemeAdditions {}
+  interface ThemeOptions extends Partial<BackstageThemeAdditions> {}
 }
 
 declare module '@mui/private-theming/defaultTheme' {

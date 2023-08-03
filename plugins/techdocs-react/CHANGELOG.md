@@ -1,5 +1,81 @@
 # @backstage/plugin-techdocs-react
 
+## 1.1.9-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/core-components@0.13.4-next.0
+  - @backstage/core-plugin-api@1.5.3
+  - @backstage/catalog-model@1.4.1
+  - @backstage/config@1.0.8
+  - @backstage/version-bridge@1.0.4
+
+## 1.1.8
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/core-components@0.13.3
+  - @backstage/core-plugin-api@1.5.3
+  - @backstage/catalog-model@1.4.1
+  - @backstage/config@1.0.8
+  - @backstage/version-bridge@1.0.4
+
+## 1.1.8-next.2
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/core-plugin-api@1.5.3-next.1
+  - @backstage/core-components@0.13.3-next.2
+  - @backstage/catalog-model@1.4.1-next.0
+  - @backstage/config@1.0.8
+  - @backstage/version-bridge@1.0.4
+
+## 1.1.8-next.1
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/core-components@0.13.3-next.1
+  - @backstage/core-plugin-api@1.5.3-next.0
+  - @backstage/config@1.0.8
+
+## 1.1.8-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/core-components@0.13.3-next.0
+  - @backstage/catalog-model@1.4.1-next.0
+  - @backstage/config@1.0.8
+  - @backstage/core-plugin-api@1.5.2
+  - @backstage/version-bridge@1.0.4
+
+## 1.1.7
+
+### Patch Changes
+
+- 3d11596a72b5: Update plugin installation docs to be more consistent across documentations
+- Updated dependencies
+  - @backstage/core-plugin-api@1.5.2
+  - @backstage/core-components@0.13.2
+  - @backstage/catalog-model@1.4.0
+  - @backstage/config@1.0.8
+  - @backstage/version-bridge@1.0.4
+
+## 1.1.7-next.3
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/core-components@0.13.2-next.3
+  - @backstage/catalog-model@1.4.0-next.1
+  - @backstage/config@1.0.7
+  - @backstage/core-plugin-api@1.5.2-next.0
+  - @backstage/version-bridge@1.0.4
+
 ## 1.1.7-next.2
 
 ### Patch Changes

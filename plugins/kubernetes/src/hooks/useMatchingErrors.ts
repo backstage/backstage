@@ -18,13 +18,27 @@ import { DetectedError, ResourceRef } from '../error-detection/types';
 import { TypeMeta } from '@kubernetes-models/base';
 import { IIoK8sApimachineryPkgApisMetaV1ObjectMeta as V1ObjectMeta } from '@kubernetes-models/apimachinery/apis/meta/v1/ObjectMeta';
 
+/**
+ * Context for detected errors
+ *
+ * @public
+ */
 export const DetectedErrorsContext = React.createContext<DetectedError[]>([]);
 
-type Matcher = {
+/**
+ *
+ * @public
+ */
+export type ErrorMatcher = {
   metadata?: V1ObjectMeta;
 } & TypeMeta;
 
-export const useMatchingErrors = (matcher: Matcher): DetectedError[] => {
+/**
+ * Find errors which match the resource
+ *
+ * @public
+ */
+export const useMatchingErrors = (matcher: ErrorMatcher): DetectedError[] => {
   const targetRef: ResourceRef = {
     name: matcher.metadata?.name ?? '',
     namespace: matcher.metadata?.namespace ?? '',

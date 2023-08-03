@@ -365,6 +365,8 @@ export function registerCommands(program: Command) {
       '--format <format>',
       'Format to print the schema in, either json or yaml [yaml]',
     )
+    .option('--merge', 'Print the config schemas merged', true)
+    .option('--no-merge', 'Print the config schemas not merged')
     .description('Print configuration schema')
     .action(lazy(() => import('./config/schema').then(m => m.default)));
 
@@ -402,6 +404,10 @@ export function registerCommands(program: Command) {
 
   program
     .command('build-workspace <workspace-dir> [packages...]')
+    .option(
+      '--alwaysYarnPack',
+      'Force workspace output to be a result of running `yarn pack` on each package (warning: very slow)',
+    )
     .description('Builds a temporary dist workspace from the provided packages')
     .action(lazy(() => import('./buildWorkspace').then(m => m.default)));
 

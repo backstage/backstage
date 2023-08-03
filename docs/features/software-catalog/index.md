@@ -130,7 +130,7 @@ infrastructure UIs (and incurring additional cognitive overhead each time they
 make a context switch), most of these tools can be organized around the entities
 in the catalog.
 
-![tools](https://backstage.io/blog/assets/20-05-20/tabs.png)
+![tools](https://backstage.io/assets/images/tabs-abfdf72185d3ceb1d92c4237f7f78809.png)
 
 The Backstage platform can be customized by incorporating
 [existing open source plugins](https://github.com/backstage/backstage/tree/master/plugins),

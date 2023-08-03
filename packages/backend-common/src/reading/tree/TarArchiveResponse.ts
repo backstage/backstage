@@ -151,7 +151,6 @@ export class TarArchiveResponse implements ReadTreeResponse {
     const strip = this.subPath ? this.subPath.split('/').length : 1;
 
     let filterError: Error | undefined = undefined;
-
     await pipeline(
       this.stream,
       tar.extract({

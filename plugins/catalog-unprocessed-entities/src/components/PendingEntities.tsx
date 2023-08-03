@@ -21,7 +21,7 @@ import {
   TableColumn,
   Table,
 } from '@backstage/core-components';
-import { Typography, makeStyles } from '@material-ui/core';
+import { Theme, Typography, makeStyles } from '@material-ui/core';
 
 import { UnprocessedEntity } from '../types';
 
@@ -29,9 +29,8 @@ import { EntityDialog } from './EntityDialog';
 import { useApi } from '@backstage/core-plugin-api';
 import useAsync from 'react-use/lib/useAsync';
 import { catalogUnprocessedEntitiesApiRef } from '../api';
-import { BackstageTheme } from '@backstage/theme';
 
-const useStyles = makeStyles((theme: BackstageTheme) => ({
+const useStyles = makeStyles((theme: Theme) => ({
   successMessage: {
     background: theme.palette.infoBackground,
     color: theme.palette.infoText,
@@ -82,7 +81,7 @@ export const PendingEntities = () => {
   return (
     <>
       <Table
-        options={{ pageSize: 40 }}
+        options={{ pageSize: 20 }}
         columns={columns}
         data={data?.entities || []}
         emptyContent={

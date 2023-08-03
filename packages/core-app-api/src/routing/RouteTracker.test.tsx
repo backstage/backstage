@@ -22,29 +22,49 @@ import { Link, MemoryRouter, Route, Routes } from 'react-router-dom';
 import {
   AnalyticsApi,
   analyticsApiRef,
+  createPlugin,
   createRouteRef,
 } from '@backstage/core-plugin-api';
+import { MATCH_ALL_ROUTE } from './collectors';
 
 describe('RouteTracker', () => {
+  const routeRef0 = createRouteRef({
+    id: 'home:root',
+  });
   const routeRef1 = createRouteRef({
     id: 'route1',
   });
   const routeRef2 = createRouteRef({
     id: 'route2',
   });
+  const plugin0 = createPlugin({ id: 'home' });
+  const plugin1 = createPlugin({ id: 'plugin1' });
+  const plugin2 = createPlugin({ id: 'plugin2' });
 
   const routeObjects: BackstageRouteObject[] = [
+    {
+      path: '',
+      element: <div>home page</div>,
+      routeRefs: new Set([routeRef0]),
+      plugins: new Set([plugin0]),
+      caseSensitive: false,
+      children: [MATCH_ALL_ROUTE],
+    },
     {
       path: '/path/:p1/:p2',
       element: <Link to="/path2/hello">go</Link>,
       routeRefs: new Set([routeRef1]),
+      plugins: new Set([plugin1]),
       caseSensitive: false,
+      children: [MATCH_ALL_ROUTE],
     },
     {
       path: '/path2/:param',
       element: <div>hi there</div>,
       routeRefs: new Set([routeRef2]),
+      plugins: new Set([plugin2]),
       caseSensitive: false,
+      children: [MATCH_ALL_ROUTE],
     },
   ];
 
@@ -73,7 +93,7 @@ describe('RouteTracker', () => {
       },
       context: {
         extension: 'App',
-        pluginId: 'root',
+        pluginId: 'plugin1',
         routeRef: 'route1',
       },
       subject: '/path/foo/bar',
@@ -88,8 +108,8 @@ describe('RouteTracker', () => {
           <RouteTracker routeObjects={routeObjects} />
 
           <Routes>
-            {routeObjects.map(({ routeRefs, ...props }) => (
-              <Route {...props} key={props.path} />
+            {routeObjects.map(({ path, element }) => (
+              <Route key={path} path={path || '/'} element={element} />
             ))}
           </Routes>
         </TestApiProvider>
@@ -105,10 +125,109 @@ describe('RouteTracker', () => {
       },
       context: {
         extension: 'App',
-        pluginId: 'root',
+        pluginId: 'plugin2',
         routeRef: 'route2',
       },
       subject: '/path2/hello',
+      value: undefined,
+    });
+  });
+
+  it('should capture path query and hash', async () => {
+    render(
+      <MemoryRouter initialEntries={['/path/foo/bar?q=1#header-1']}>
+        <TestApiProvider apis={[[analyticsApiRef, mockedAnalytics]]}>
+          <RouteTracker routeObjects={routeObjects} />
+        </TestApiProvider>
+      </MemoryRouter>,
+    );
+
+    expect(mockedAnalytics.captureEvent).toHaveBeenCalledWith({
+      action: 'navigate',
+      attributes: {
+        p1: 'foo',
+        p2: 'bar',
+      },
+      context: {
+        extension: 'App',
+        pluginId: 'plugin1',
+        routeRef: 'route1',
+      },
+      subject: '/path/foo/bar?q=1#header-1',
+      value: undefined,
+    });
+  });
+
+  it('should match the root path and send relevant context', async () => {
+    render(
+      <MemoryRouter initialEntries={['/']}>
+        <TestApiProvider apis={[[analyticsApiRef, mockedAnalytics]]}>
+          <RouteTracker routeObjects={routeObjects} />
+        </TestApiProvider>
+      </MemoryRouter>,
+    );
+
+    expect(mockedAnalytics.captureEvent).toHaveBeenCalledWith({
+      action: 'navigate',
+      attributes: {},
+      context: {
+        extension: 'App',
+        pluginId: 'home',
+        routeRef: 'home:root',
+      },
+      subject: '/',
+      value: undefined,
+    });
+  });
+
+  it('should return default context when it would have otherwise matched on the root path', async () => {
+    render(
+      <MemoryRouter initialEntries={['/not-routable-extension']}>
+        <TestApiProvider apis={[[analyticsApiRef, mockedAnalytics]]}>
+          <RouteTracker routeObjects={routeObjects} />
+          <Routes>
+            <Route
+              path="/not-routable-extension"
+              element={<>Non-extension</>}
+            />
+          </Routes>
+        </TestApiProvider>
+      </MemoryRouter>,
+    );
+
+    expect(mockedAnalytics.captureEvent).toHaveBeenCalledWith({
+      action: 'navigate',
+      attributes: {},
+      context: {
+        extension: 'App',
+        pluginId: 'root',
+        routeRef: 'unknown',
+      },
+      subject: '/not-routable-extension',
+      value: undefined,
+    });
+  });
+
+  it('should return parent route context on navigating to a sub-route', async () => {
+    render(
+      <MemoryRouter initialEntries={['/path2/param-value/sub-route']}>
+        <TestApiProvider apis={[[analyticsApiRef, mockedAnalytics]]}>
+          <RouteTracker routeObjects={routeObjects} />
+        </TestApiProvider>
+      </MemoryRouter>,
+    );
+
+    expect(mockedAnalytics.captureEvent).toHaveBeenCalledWith({
+      action: 'navigate',
+      attributes: {
+        param: 'param-value',
+      },
+      context: {
+        extension: 'App',
+        pluginId: 'plugin2',
+        routeRef: 'route2',
+      },
+      subject: '/path2/param-value/sub-route',
       value: undefined,
     });
   });

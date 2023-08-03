@@ -63,6 +63,9 @@ const useStyles = makeStyles<BackstageTheme, { sidebarConfig: SidebarConfig }>(
       '&::-webkit-scrollbar': {
         display: 'none',
       },
+      '@media print': {
+        display: 'none',
+      },
     },
     drawerWidth: props => ({
       width: props.sidebarConfig.drawerWidthClosed,

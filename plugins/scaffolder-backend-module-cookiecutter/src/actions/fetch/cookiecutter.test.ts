@@ -33,8 +33,8 @@ const executeShellCommand = jest.fn();
 const commandExists = jest.fn();
 const fetchContents = jest.fn();
 
-jest.mock('@backstage/plugin-scaffolder-backend', () => ({
-  ...jest.requireActual('@backstage/plugin-scaffolder-backend'),
+jest.mock('@backstage/plugin-scaffolder-node', () => ({
+  ...jest.requireActual('@backstage/plugin-scaffolder-node'),
   fetchContents: (...args: any[]) => fetchContents(...args),
   executeShellCommand: (...args: any[]) => executeShellCommand(...args),
 }));

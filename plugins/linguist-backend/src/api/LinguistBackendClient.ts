@@ -130,7 +130,8 @@ export class LinguistBackendClient implements LinguistBackendApi {
     const allEntities = await this.store.getAllEntities();
 
     for (const entityRef of allEntities) {
-      const result = await this.catalogApi.getEntityByRef(entityRef);
+      const { token } = await this.tokenManager.getToken();
+      const result = await this.catalogApi.getEntityByRef(entityRef, { token });
 
       if (!result) {
         this.logger?.info(
@@ -260,7 +261,7 @@ export class LinguistBackendClient implements LinguistBackendApi {
 
   /** @internal */
   async getLinguistResults(dir: string): Promise<Results> {
-    const results = await linguist(dir, this.linguistJsOptions);
+    const results = await linguist(dir, { ...this.linguistJsOptions });
     return results;
   }
 }

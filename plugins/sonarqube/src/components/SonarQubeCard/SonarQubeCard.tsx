@@ -42,6 +42,7 @@ import {
   Progress,
 } from '@backstage/core-components';
 import { useApi } from '@backstage/core-plugin-api';
+import { DateTime } from 'luxon';
 
 const useStyles = makeStyles(theme => ({
   badgeLabel: {
@@ -66,9 +67,6 @@ const useStyles = makeStyles(theme => ({
   },
   lastAnalyzed: {
     color: theme.palette.text.secondary,
-  },
-  disabled: {
-    backgroundColor: theme.palette.background.default,
   },
 }));
 
@@ -162,9 +160,6 @@ export const SonarQubeCard = (props: {
           action: classes.action,
         },
       }}
-      className={
-        !loading && (!projectTitle || !value) ? classes.disabled : undefined
-      }
     >
       {loading && <Progress />}
 
@@ -272,15 +267,9 @@ export const SonarQubeCard = (props: {
             </Grid>
             <Grid item className={classes.lastAnalyzed}>
               Last analyzed on{' '}
-              {new Date(value.lastAnalysis).toLocaleString('en-US', {
-                timeZone: 'UTC',
-                day: 'numeric',
-                month: 'short',
-                year: 'numeric',
-                hour: '2-digit',
-                minute: '2-digit',
-                hour12: false,
-              })}
+              {DateTime.fromISO(value.lastAnalysis).toLocaleString(
+                DateTime.DATETIME_MED,
+              )}
             </Grid>
           </Grid>
         </>

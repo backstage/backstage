@@ -31,9 +31,8 @@ export interface Config {
            * Contains a record per topic for which an AWS SQS queue
            * should be used as source of events.
            */
-          topics: Record<
-            string,
-            {
+          topics: {
+            [name: string]: {
               /**
                * (Required) Queue-related configuration.
                */
@@ -69,8 +68,8 @@ export interface Config {
                * Default: 1 minute.
                */
               waitTimeAfterEmptyReceive: HumanDuration;
-            }
-          >;
+            };
+          };
         };
       };
     };

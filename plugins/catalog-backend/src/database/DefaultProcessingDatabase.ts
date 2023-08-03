@@ -44,6 +44,10 @@ import { insertUnprocessedEntity } from './operations/refreshState/insertUnproce
 import { updateUnprocessedEntity } from './operations/refreshState/updateUnprocessedEntity';
 import { deleteOrphanedEntities } from './operations/util/deleteOrphanedEntities';
 import { generateStableHash } from './util';
+import { EventBroker, EventParams } from '@backstage/plugin-events-node';
+import { DateTime } from 'luxon';
+import { CATALOG_CONFLICTS_TOPIC } from '../constants';
+import { CatalogConflictEventPayload } from '../catalog/types';
 
 // The number of items that are sent per batch to the database layer, when
 // doing .batchInsert calls to knex. This needs to be low enough to not cause
@@ -57,6 +61,7 @@ export class DefaultProcessingDatabase implements ProcessingDatabase {
       database: Knex;
       logger: Logger;
       refreshInterval: ProcessingIntervalFunction;
+      eventBroker?: EventBroker;
     },
   ) {
     initDatabaseMetrics(options.database);
@@ -361,6 +366,19 @@ export class DefaultProcessingDatabase implements ProcessingDatabase {
         this.options.logger.warn(
           `Detected conflicting entityRef ${entityRef} already referenced by ${conflictingKey} and now also ${locationKey}`,
         );
+        if (this.options.eventBroker && locationKey) {
+          const eventParams: EventParams<CatalogConflictEventPayload> = {
+            topic: CATALOG_CONFLICTS_TOPIC,
+            eventPayload: {
+              unprocessedEntity: entity,
+              entityRef,
+              newLocationKey: locationKey,
+              existingLocationKey: conflictingKey,
+              lastConflictAt: DateTime.now().toISO(),
+            },
+          };
+          await this.options.eventBroker?.publish(eventParams);
+        }
       }
     }
 

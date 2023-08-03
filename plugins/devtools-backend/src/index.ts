@@ -22,3 +22,4 @@
 
 export { DevToolsBackendApi } from './api';
 export * from './service/router';
+export { devtoolsPlugin } from './plugin';

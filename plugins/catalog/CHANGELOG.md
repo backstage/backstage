@@ -1,5 +1,170 @@
 # @backstage/plugin-catalog
 
+## 1.12.1-next.1
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/integration-react@1.1.16-next.1
+  - @backstage/catalog-client@1.4.3
+  - @backstage/catalog-model@1.4.1
+  - @backstage/core-components@0.13.4-next.0
+  - @backstage/core-plugin-api@1.5.3
+  - @backstage/errors@1.2.1
+  - @backstage/theme@0.4.1
+  - @backstage/types@1.1.0
+  - @backstage/plugin-catalog-common@1.0.15
+  - @backstage/plugin-catalog-react@1.8.1-next.0
+  - @backstage/plugin-scaffolder-common@1.3.2
+  - @backstage/plugin-search-common@1.2.5
+  - @backstage/plugin-search-react@1.6.4-next.0
+
+## 1.12.1-next.0
+
+### Patch Changes
+
+- 3d86be999fdf: Prefer simple `theme.spacing` without string interpolation
+- Updated dependencies
+  - @backstage/core-components@0.13.4-next.0
+  - @backstage/core-plugin-api@1.5.3
+  - @backstage/plugin-catalog-react@1.8.1-next.0
+  - @backstage/plugin-search-react@1.6.4-next.0
+  - @backstage/catalog-client@1.4.3
+  - @backstage/catalog-model@1.4.1
+  - @backstage/errors@1.2.1
+  - @backstage/integration-react@1.1.16-next.0
+  - @backstage/theme@0.4.1
+  - @backstage/types@1.1.0
+  - @backstage/plugin-catalog-common@1.0.15
+  - @backstage/plugin-scaffolder-common@1.3.2
+  - @backstage/plugin-search-common@1.2.5
+
+## 1.12.0
+
+### Minor Changes
+
+- eae0352d3864: Tables which use `EntityTableProps` now have an additional `tableOptions` prop which can be used to provide additional table options to these components.
+
+### Patch Changes
+
+- 294b1629de28: Display a warning alert if relations are defined, which don't exist in the catalog.
+- Updated dependencies
+  - @backstage/theme@0.4.1
+  - @backstage/errors@1.2.1
+  - @backstage/plugin-catalog-react@1.8.0
+  - @backstage/core-components@0.13.3
+  - @backstage/core-plugin-api@1.5.3
+  - @backstage/catalog-client@1.4.3
+  - @backstage/catalog-model@1.4.1
+  - @backstage/integration-react@1.1.15
+  - @backstage/types@1.1.0
+  - @backstage/plugin-catalog-common@1.0.15
+  - @backstage/plugin-scaffolder-common@1.3.2
+  - @backstage/plugin-search-common@1.2.5
+  - @backstage/plugin-search-react@1.6.3
+
+## 1.12.0-next.2
+
+### Minor Changes
+
+- eae0352d3864: Tables which use `EntityTableProps` now have an additional `tableOptions` prop which can be used to provide additional table options to these components.
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/plugin-catalog-react@1.8.0-next.2
+  - @backstage/theme@0.4.1-next.1
+  - @backstage/core-plugin-api@1.5.3-next.1
+  - @backstage/core-components@0.13.3-next.2
+  - @backstage/catalog-client@1.4.3-next.0
+  - @backstage/catalog-model@1.4.1-next.0
+  - @backstage/errors@1.2.1-next.0
+  - @backstage/integration-react@1.1.15-next.2
+  - @backstage/types@1.1.0
+  - @backstage/plugin-catalog-common@1.0.15-next.0
+  - @backstage/plugin-scaffolder-common@1.3.2-next.0
+  - @backstage/plugin-search-common@1.2.5-next.0
+  - @backstage/plugin-search-react@1.6.3-next.2
+
+## 1.11.3-next.1
+
+### Patch Changes
+
+- 294b1629de28: Display a warning alert if relations are defined, which don't exist in the catalog.
+- Updated dependencies
+  - @backstage/theme@0.4.1-next.0
+  - @backstage/core-components@0.13.3-next.1
+  - @backstage/core-plugin-api@1.5.3-next.0
+  - @backstage/integration-react@1.1.15-next.1
+  - @backstage/plugin-catalog-react@1.7.1-next.1
+  - @backstage/plugin-search-react@1.6.3-next.1
+
+## 1.11.3-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/errors@1.2.1-next.0
+  - @backstage/core-components@0.13.3-next.0
+  - @backstage/catalog-client@1.4.3-next.0
+  - @backstage/catalog-model@1.4.1-next.0
+  - @backstage/core-plugin-api@1.5.2
+  - @backstage/integration-react@1.1.15-next.0
+  - @backstage/theme@0.4.0
+  - @backstage/types@1.1.0
+  - @backstage/plugin-catalog-common@1.0.15-next.0
+  - @backstage/plugin-catalog-react@1.7.1-next.0
+  - @backstage/plugin-scaffolder-common@1.3.2-next.0
+  - @backstage/plugin-search-common@1.2.5-next.0
+  - @backstage/plugin-search-react@1.6.3-next.0
+
+## 1.11.2
+
+### Patch Changes
+
+- 08f177b91084: Add link from Template entity to the scaffolder launch page for the template in the AboutCard.
+- 2e036369d83b: Updated `alertApi` usages with severity of `info` or `success` to use `display: transient`
+- 530b6f364c8c: Adding in type and kind entity details to catalog table title for user clarity
+- 886055301abe: `CatalogIndexPage` now accepts an optional `ownerPickerMode` for toggling the behavior of the `EntityOwnerPicker`,
+  exposing a new mode `<CatalogIndexPage ownerPickerMode="all" />` particularly suitable for larger catalogs. In this new mode, `EntityOwnerPicker` will display all the users and groups present in the catalog.
+- 47b01e4c5315: Keyboard navigation to open EntityContextMenu now focus visible the first element.
+- Updated dependencies
+  - @backstage/core-plugin-api@1.5.2
+  - @backstage/catalog-client@1.4.2
+  - @backstage/plugin-search-react@1.6.2
+  - @backstage/core-components@0.13.2
+  - @backstage/types@1.1.0
+  - @backstage/theme@0.4.0
+  - @backstage/plugin-catalog-react@1.7.0
+  - @backstage/catalog-model@1.4.0
+  - @backstage/errors@1.2.0
+  - @backstage/integration-react@1.1.14
+  - @backstage/plugin-catalog-common@1.0.14
+  - @backstage/plugin-scaffolder-common@1.3.1
+  - @backstage/plugin-search-common@1.2.4
+
+## 1.11.2-next.3
+
+### Patch Changes
+
+- 530b6f364c8c: Adding in type and kind entity details to catalog table title for user clarity
+- 886055301abe: `CatalogIndexPage` now accepts an optional `ownerPickerMode` for toggling the behavior of the `EntityOwnerPicker`,
+  exposing a new mode `<CatalogIndexPage ownerPickerMode="all" />` particularly suitable for larger catalogs. In this new mode, `EntityOwnerPicker` will display all the users and groups present in the catalog.
+- Updated dependencies
+  - @backstage/plugin-search-react@1.6.2-next.3
+  - @backstage/core-components@0.13.2-next.3
+  - @backstage/catalog-model@1.4.0-next.1
+  - @backstage/catalog-client@1.4.2-next.2
+  - @backstage/core-plugin-api@1.5.2-next.0
+  - @backstage/errors@1.2.0-next.0
+  - @backstage/integration-react@1.1.14-next.3
+  - @backstage/theme@0.4.0-next.1
+  - @backstage/types@1.0.2
+  - @backstage/plugin-catalog-common@1.0.14-next.1
+  - @backstage/plugin-catalog-react@1.7.0-next.3
+  - @backstage/plugin-scaffolder-common@1.3.1-next.1
+  - @backstage/plugin-search-common@1.2.4-next.0
+
 ## 1.11.1-next.2
 
 ### Patch Changes

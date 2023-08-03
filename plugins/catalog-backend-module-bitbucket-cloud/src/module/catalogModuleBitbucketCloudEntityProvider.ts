@@ -37,7 +37,7 @@ export const catalogModuleBitbucketCloudEntityProvider = createBackendModule({
       deps: {
         catalog: catalogProcessingExtensionPoint,
         catalogApi: catalogServiceRef,
-        config: coreServices.config,
+        config: coreServices.rootConfig,
         // TODO(pjungermann): How to make this optional for those which only want the provider without event support?
         //  Do we even want to support this?
         events: eventsExtensionPoint,

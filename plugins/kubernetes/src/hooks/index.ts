@@ -20,3 +20,5 @@ export * from './PodNamesWithErrors';
 export * from './PodNamesWithMetrics';
 export * from './GroupedResponses';
 export * from './Cluster';
+export * from './usePodMetrics';
+export * from './useMatchingErrors';

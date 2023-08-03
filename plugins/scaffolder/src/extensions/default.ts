@@ -39,6 +39,10 @@ import {
   OwnedEntityPicker,
   OwnedEntityPickerSchema,
 } from '../components/fields/OwnedEntityPicker/OwnedEntityPicker';
+import {
+  MyGroupsPicker,
+  MyGroupsPickerSchema,
+} from '../components/fields/MyGroupsPicker/MyGroupsPicker';
 
 export const DEFAULT_SCAFFOLDER_FIELD_EXTENSIONS = [
   {
@@ -72,5 +76,10 @@ export const DEFAULT_SCAFFOLDER_FIELD_EXTENSIONS = [
     component: OwnedEntityPicker,
     name: 'OwnedEntityPicker',
     schema: OwnedEntityPickerSchema,
+  },
+  {
+    component: MyGroupsPicker,
+    name: 'MyGroupsPicker',
+    schema: MyGroupsPickerSchema,
   },
 ];

@@ -1,5 +1,126 @@
 # @backstage/plugin-linguist-backend
 
+## 0.3.2-next.1
+
+### Patch Changes
+
+- 12a8c94eda8d: Add package repository and homepage metadata
+- Updated dependencies
+  - @backstage/backend-common@0.19.2-next.1
+  - @backstage/plugin-linguist-common@0.1.1-next.0
+  - @backstage/plugin-auth-node@0.2.17-next.1
+  - @backstage/backend-plugin-api@0.6.0-next.1
+  - @backstage/backend-tasks@0.5.5-next.1
+  - @backstage/catalog-client@1.4.3
+  - @backstage/catalog-model@1.4.1
+  - @backstage/config@1.0.8
+  - @backstage/errors@1.2.1
+  - @backstage/types@1.1.0
+
+## 0.3.2-next.0
+
+### Patch Changes
+
+- ca5e591cb86a: Fixed bug in LinguistBackendClient.ts file where if the linguistJsOptions is specified and sent over to the linguist-js package it would get changed (another attribute would be added) causing future entities of the batch to fail with an error
+- Updated dependencies
+  - @backstage/backend-common@0.19.2-next.0
+  - @backstage/backend-plugin-api@0.5.5-next.0
+  - @backstage/backend-tasks@0.5.5-next.0
+  - @backstage/catalog-client@1.4.3
+  - @backstage/catalog-model@1.4.1
+  - @backstage/config@1.0.8
+  - @backstage/errors@1.2.1
+  - @backstage/types@1.1.0
+  - @backstage/plugin-auth-node@0.2.17-next.0
+  - @backstage/plugin-linguist-common@0.1.0
+
+## 0.3.1
+
+### Patch Changes
+
+- ae261e79d256: Added alpha support for the [new backend system](https://backstage.io/docs/backend-system/)
+- Updated dependencies
+  - @backstage/errors@1.2.1
+  - @backstage/backend-common@0.19.1
+  - @backstage/backend-plugin-api@0.5.4
+  - @backstage/backend-tasks@0.5.4
+  - @backstage/catalog-client@1.4.3
+  - @backstage/catalog-model@1.4.1
+  - @backstage/config@1.0.8
+  - @backstage/types@1.1.0
+  - @backstage/plugin-auth-node@0.2.16
+  - @backstage/plugin-linguist-common@0.1.0
+
+## 0.3.1-next.1
+
+### Patch Changes
+
+- ae261e79d256: Added alpha support for the [new backend system](https://backstage.io/docs/backend-system/)
+- Updated dependencies
+  - @backstage/config@1.0.8
+
+## 0.3.1-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/errors@1.2.1-next.0
+  - @backstage/backend-common@0.19.1-next.0
+  - @backstage/backend-tasks@0.5.4-next.0
+  - @backstage/catalog-client@1.4.3-next.0
+  - @backstage/catalog-model@1.4.1-next.0
+  - @backstage/config@1.0.8
+  - @backstage/types@1.1.0
+  - @backstage/plugin-auth-node@0.2.16-next.0
+  - @backstage/plugin-linguist-common@0.1.0
+
+## 0.3.0
+
+### Minor Changes
+
+- bbf91840a52a: **BREAKING**: Removed public constructor from `LinguistBackendApi`. Removed export of `LinguistBackendDatabase` and `LinguistBackendStore`
+
+  Several improvements to the Linguist backend have been made:
+
+  - Added tests for the `LinguistBackendDatabase` and `LinguistBackendApi`
+  - Added support for using SQLite as a database, helpful for local development
+  - Removed the default from the `processes_date` column
+  - Converted the `LinguistBackendApi` into an Interface
+  - Added the `LinguistBackendClient` which implements the `LinguistBackendApi` Interface
+  - Unprocessed entities will get processed before stale entities
+  - Entities in the Linguist database but not in the Catalog anymore will be deleted
+  - Improved the README's headings
+
+### Patch Changes
+
+- e39c3829bbd4: Fix: CatalogClient call without token
+- 3d11596a72b5: Update plugin installation docs to be more consistent across documentations
+- Updated dependencies
+  - @backstage/backend-common@0.19.0
+  - @backstage/catalog-client@1.4.2
+  - @backstage/types@1.1.0
+  - @backstage/catalog-model@1.4.0
+  - @backstage/errors@1.2.0
+  - @backstage/backend-tasks@0.5.3
+  - @backstage/plugin-auth-node@0.2.15
+  - @backstage/config@1.0.8
+  - @backstage/plugin-linguist-common@0.1.0
+
+## 0.3.0-next.2
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-common@0.19.0-next.2
+  - @backstage/catalog-model@1.4.0-next.1
+  - @backstage/backend-tasks@0.5.3-next.2
+  - @backstage/catalog-client@1.4.2-next.2
+  - @backstage/config@1.0.7
+  - @backstage/errors@1.2.0-next.0
+  - @backstage/types@1.0.2
+  - @backstage/plugin-auth-node@0.2.15-next.2
+  - @backstage/plugin-linguist-common@0.1.0
+
 ## 0.3.0-next.1
 
 ### Patch Changes

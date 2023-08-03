@@ -62,25 +62,36 @@ describe('PodsTable', () => {
     expect(getByText('OK')).toBeInTheDocument();
   });
   it('should render pod, with metrics context', async () => {
-    const podNameToClientPodStatus = new Map<string, ClientPodStatus>();
+    const clusterToClientPodStatus = new Map<string, ClientPodStatus[]>();
 
-    podNameToClientPodStatus.set('dice-roller-6c8646bfd-2m5hv', {
-      memory: {
-        currentUsage: '1069056',
-        requestTotal: '67108864',
-        limitTotal: '134217728',
+    clusterToClientPodStatus.set('some-cluster', [
+      {
+        pod: {
+          metadata: {
+            name: 'dice-roller-6c8646bfd-2m5hv',
+            namespace: 'default',
+          },
+        },
+        memory: {
+          currentUsage: '1069056',
+          requestTotal: '67108864',
+          limitTotal: '134217728',
+        },
+        cpu: {
+          currentUsage: 0.4966115,
+          requestTotal: 0.05,
+          limitTotal: 0.05,
+        },
       },
-      cpu: {
-        currentUsage: 0.4966115,
-        requestTotal: 0.05,
-        limitTotal: 0.05,
-      },
-    } as any);
+    ] as any);
 
     const wrapper = kubernetesProviders(
       undefined,
       undefined,
-      podNameToClientPodStatus,
+      clusterToClientPodStatus,
+      {
+        name: 'some-cluster',
+      },
     );
     const { getByText } = render(
       wrapper(
@@ -114,7 +125,7 @@ describe('PodsTable', () => {
     expect(getByText('limits: 0% of 128MiB')).toBeInTheDocument();
   });
   it('should render placehoplder when empty metrics context', async () => {
-    const podNameToClientPodStatus = new Map<string, ClientPodStatus>();
+    const podNameToClientPodStatus = new Map<string, ClientPodStatus[]>();
 
     const wrapper = kubernetesProviders(
       undefined,

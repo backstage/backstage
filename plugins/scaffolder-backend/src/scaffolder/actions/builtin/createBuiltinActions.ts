@@ -42,6 +42,8 @@ import {
 } from './filesystem';
 import {
   createGithubActionsDispatchAction,
+  createGithubDeployKeyAction,
+  createGithubEnvironmentAction,
   createGithubIssuesLabelAction,
   createGithubRepoCreateAction,
   createGithubRepoPushAction,
@@ -52,6 +54,7 @@ import {
   createPublishBitbucketAction,
   createPublishBitbucketCloudAction,
   createPublishBitbucketServerAction,
+  createPublishBitbucketServerPullRequestAction,
   createPublishGerritAction,
   createPublishGerritReviewAction,
   createPublishGithubAction,
@@ -162,6 +165,10 @@ export const createBuiltinActions = (
       integrations,
       config,
     }),
+    createPublishBitbucketServerPullRequestAction({
+      integrations,
+      config,
+    }),
     createPublishAzureAction({
       integrations,
       config,
@@ -193,6 +200,12 @@ export const createBuiltinActions = (
       integrations,
       config,
       githubCredentialsProvider,
+    }),
+    createGithubEnvironmentAction({
+      integrations,
+    }),
+    createGithubDeployKeyAction({
+      integrations,
     }),
   ];
 

@@ -347,10 +347,10 @@ export class IncrementalIngestionEngine
       return;
     }
 
-    const delta = provider.eventHandler.onEvent(params);
+    const result = await provider.eventHandler.onEvent(params);
 
-    if (delta) {
-      if (delta.added.length > 0) {
+    if (result.type === 'delta') {
+      if (result.added.length > 0) {
         const ingestionRecord = await this.manager.getCurrentIngestionRecord(
           providerName,
         );
@@ -370,24 +370,21 @@ export class IncrementalIngestionEngine
               `Cannot apply delta, page records are missing! Please re-run incremental ingestion for ${providerName}.`,
             );
           }
-          await this.manager.createMarkEntities(mark.id, delta.added);
+          await this.manager.createMarkEntities(mark.id, result.added);
         }
       }
 
-      if (delta.removed.length > 0) {
-        await this.manager.deleteEntityRecordsByRef(delta.removed);
+      if (result.removed.length > 0) {
+        await this.manager.deleteEntityRecordsByRef(result.removed);
       }
 
-      await connection.applyMutation({
-        type: 'delta',
-        ...delta,
-      });
+      await connection.applyMutation(result);
       logger.debug(
         `incremental-engine: ${providerName} processed delta from '${topic}' event`,
       );
     } else {
-      logger.warn(
-        `incremental-engine: Rejected delta from '${topic}' event - empty or invalid`,
+      logger.debug(
+        `incremental-engine: ${providerName} ignored event from topic '${topic}'`,
       );
     }
   }
