@@ -26853,8 +26853,8 @@ __metadata:
   linkType: hard
 
 "google-gax@npm:^3.5.7, google-gax@npm:^3.5.8":
-  version: 3.6.0
-  resolution: "google-gax@npm:3.6.0"
+  version: 3.6.1
+  resolution: "google-gax@npm:3.6.1"
   dependencies:
     "@grpc/grpc-js": ~1.8.0
     "@grpc/proto-loader": ^0.7.0
@@ -26868,13 +26868,13 @@ __metadata:
     node-fetch: ^2.6.1
     object-hash: ^3.0.0
     proto3-json-serializer: ^1.0.0
-    protobufjs: 7.2.3
+    protobufjs: 7.2.4
     protobufjs-cli: 1.1.1
     retry-request: ^5.0.0
   bin:
     compileProtos: build/tools/compileProtos.js
     minifyProtoJson: build/tools/minify.js
-  checksum: 4c7b1b5a278ffda3eaa92e7f25a9e0ea2d0a76aca704aca4baee4fe9d109916e97e83062ad751006ed93ac675a7fd74028061204fa9ed92833a853e6657a71a1
+  checksum: 16e5fb211d75c6a4cb4d2e62adba7bbf41d160feba74fe39435a70fc31ef8ebc740af4527a2897abab39a1806d131792b2a761da432ae1b916198c9c43aab36e
   languageName: node
   linkType: hard
 
@@ -35919,11 +35919,11 @@ __metadata:
   linkType: hard
 
 "proto3-json-serializer@npm:^1.0.0":
-  version: 1.0.0
-  resolution: "proto3-json-serializer@npm:1.0.0"
+  version: 1.1.1
+  resolution: "proto3-json-serializer@npm:1.1.1"
   dependencies:
-    protobufjs: ^6.11.2
-  checksum: 47ac3b7c48eb177aba3e59431704c5db24d670827bd47ef7488e3529ab85e0de4833ed22615945fa72597dd382aa505b8dd427c917c4c50d31e7570d8af21294
+    protobufjs: ^7.0.0
+  checksum: 0cd94cb635a9b9b3a2d047700175be4a6c7b7a43e2698826edad17604793764bcdfc270585ea58cb94aa690211b6cdaae5bf7a22522bea68ca67a2844773b4b7
   languageName: node
   linkType: hard
 
@@ -35950,9 +35950,9 @@ __metadata:
   languageName: node
   linkType: hard
 
-"protobufjs@npm:7.2.3, protobufjs@npm:^7.0.0":
-  version: 7.2.3
-  resolution: "protobufjs@npm:7.2.3"
+"protobufjs@npm:7.2.4, protobufjs@npm:^7.0.0":
+  version: 7.2.4
+  resolution: "protobufjs@npm:7.2.4"
   dependencies:
     "@protobufjs/aspromise": ^1.1.2
     "@protobufjs/base64": ^1.1.2
@@ -35966,31 +35966,7 @@ __metadata:
     "@protobufjs/utf8": ^1.1.0
     "@types/node": ">=13.7.0"
     long: ^5.0.0
-  checksum: 9afa6de5fced0139a5180c063718508fac3ea734a9f1aceb99712367b15473a83327f91193f16b63540f9112b09a40912f5f0441a9b0d3f3c6a1c7f707d78249
-  languageName: node
-  linkType: hard
-
-"protobufjs@npm:^6.11.2":
-  version: 6.11.3
-  resolution: "protobufjs@npm:6.11.3"
-  dependencies:
-    "@protobufjs/aspromise": ^1.1.2
-    "@protobufjs/base64": ^1.1.2
-    "@protobufjs/codegen": ^2.0.4
-    "@protobufjs/eventemitter": ^1.1.0
-    "@protobufjs/fetch": ^1.1.0
-    "@protobufjs/float": ^1.0.2
-    "@protobufjs/inquire": ^1.1.0
-    "@protobufjs/path": ^1.1.2
-    "@protobufjs/pool": ^1.1.0
-    "@protobufjs/utf8": ^1.1.0
-    "@types/long": ^4.0.1
-    "@types/node": ">=13.7.0"
-    long: ^4.0.0
-  bin:
-    pbjs: bin/pbjs
-    pbts: bin/pbts
-  checksum: 4a6ce1964167e4c45c53fd8a312d7646415c777dd31b4ba346719947b88e61654912326101f927da387d6b6473ab52a7ea4f54d6f15d63b31130ce28e2e15070
+  checksum: a952cdf2a5e5250c16ae651b570849b6f5b20a5475c3eef63ffb290ad239aa2916adfc1cc676f7fc93c69f48113df268761c0c246f7f023118c85bdd1a170044
   languageName: node
   linkType: hard
 
