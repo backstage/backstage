@@ -4,6 +4,8 @@ x-uffizzi:
   ingress:
     service: backstage
     port: 7007
+    continuous_previews:
+      delete_preview_after: 720h
 
 services:
   backstage:
