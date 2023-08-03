@@ -526,8 +526,8 @@ input:
 each: [{ name: 'apple', count: 3 }, { name: 'orange', count: 1 }]
 input:
   values:
-    fruit: ${{ each.name }}
-    count: ${{ each.count }}
+    fruit: ${{ each.value.name }}
+    count: ${{ each.value.count }}
 ```
 
 When `each` is used, the outputs of a repeated step are returned as an array of outputs from each iteration.
