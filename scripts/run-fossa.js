@@ -15,6 +15,9 @@
  * limitations under the License.
  */
 
+// THIS SCRIPT IS NOT CURRENTLY USED. The .fossa.yaml at the root of the repo
+// should not be overwritten at this time.
+
 // This script generates an appropriate fossa config, and wraps the running
 // of `fossa analyze` in a retry loop as it frequently fails with a 502 error
 
