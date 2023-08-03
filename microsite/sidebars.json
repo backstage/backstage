@@ -328,6 +328,7 @@
       "deployment/index",
       "deployment/scaling",
       "deployment/docker",
+      "deployment/flightcontrol",
       "deployment/k8s",
       "deployment/heroku",
       "deployment/koyeb",
