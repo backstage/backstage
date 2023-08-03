@@ -1,4 +1,5 @@
 name: Verify FOSSA
+
 on:
   push:
     branches: [master]
@@ -6,19 +7,11 @@ on:
     branches: [master]
 
 jobs:
-  analyze:
+  fossa-scan:
     runs-on: ubuntu-latest
-
     steps:
-      - name: Checkout
-        uses: actions/checkout@v3
-
-      - name: Install Fossa
-        run: "curl -H 'Cache-Control: no-cache' https://raw.githubusercontent.com/fossas/fossa-cli/master/install.sh | bash"
-
-      - name: Fossa Configure & Analyze
-        env:
-          # FOSSA Push-Only API Token
-          GITHUB_REF: $GITHUB_REF
-          FOSSA_API_KEY: 9ee7e8893660832a7387dcc32377fb61
-        run: node scripts/run-fossa.js
+      - uses: actions/checkout@c85c95e3d7251135ab7dc9ce3241c5835cc595a9 # v3.5.3; hash pinned for build security
+      - name: Run FOSSA analysis for license compliance and security
+        uses: fossas/fossa-action@f61a4c0c263690f2ddb54b9822a719c25a7b608f #v1.3.1; hash pinned for build security
+        with:
+          api-key: 9ee7e8893660832a7387dcc32377fb61
