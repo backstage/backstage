@@ -166,7 +166,7 @@ export class NewRelicClient implements NewRelicApi {
     const relation = linkParts?.[2];
 
     const nextPageLink = `${this.baseUrl}${nextPageNumber}`;
-    const isValidLink = !!(!!linkParts && nextPageNumber && relation);
+    const isValidLink = !!(linkParts && nextPageNumber && relation);
 
     if (!nextRelevantLink || !isValidLink) {
       return undefined;
