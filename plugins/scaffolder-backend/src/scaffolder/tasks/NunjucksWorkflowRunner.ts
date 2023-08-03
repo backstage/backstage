@@ -315,7 +315,9 @@ export class NunjucksWorkflowRunner implements WorkflowRunner {
       const iterations = new Array<JsonValue>();
       if (step.each) {
         const each = await this.render(step.each, context, renderTemplate);
-        iterations.push(...each);
+        iterations.push(
+          ...Object.keys(each).map((key: any) => [key, each[key]]),
+        );
       } else {
         iterations.push({});
       }
@@ -324,13 +326,16 @@ export class NunjucksWorkflowRunner implements WorkflowRunner {
       for (const iteration of iterations) {
         if (step.each) {
           taskLogger.info(`Running step each: ${iteration}`);
-          context.each = iteration;
+          const iterationContext = {
+            ...context,
+            each: { key: iteration[0], value: iteration[1] },
+          };
           // re-render input with the modified context that includes each
           actionInput =
             (step.input &&
               this.render(
                 step.input,
-                { ...context, secrets: task.secrets ?? {} },
+                { ...iterationContext, secrets: task.secrets ?? {} },
                 renderTemplate,
               )) ??
             {};

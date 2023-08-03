@@ -574,7 +574,7 @@ describe('DefaultWorkflowRunner', () => {
   });
 
   describe('each', () => {
-    it('should run a step repeatedly', async () => {
+    it('should run a step repeatedly - flat values', async () => {
       const task = createMockTaskWithSpec({
         apiVersion: 'scaffolder.backstage.io/v1beta3',
         steps: [
@@ -583,7 +583,7 @@ describe('DefaultWorkflowRunner', () => {
             name: 'name',
             each: '${{parameters.colors}}',
             action: 'jest-mock-action',
-            input: { color: '${{each}}' },
+            input: { color: '${{each.value}}' },
           },
         ],
         output: {},
@@ -602,6 +602,68 @@ describe('DefaultWorkflowRunner', () => {
       );
       expect(fakeActionHandler).toHaveBeenCalledWith(
         expect.objectContaining({ input: { color: 'red' } }),
+      );
+    });
+
+    it('should run a step repeatedly - object list', async () => {
+      const task = createMockTaskWithSpec({
+        apiVersion: 'scaffolder.backstage.io/v1beta3',
+        steps: [
+          {
+            id: 'test',
+            name: 'name',
+            each: '${{parameters.settings}}',
+            action: 'jest-mock-action',
+            input: {
+              key: '${{each.key}}',
+              value: '${{each.value}}',
+            },
+          },
+        ],
+        output: {},
+        parameters: {
+          settings: [{ color: 'blue' }],
+        },
+      });
+
+      await runner.execute(task);
+
+      expect(fakeActionHandler).toHaveBeenCalledWith(
+        expect.objectContaining({
+          input: { key: '0', value: { color: 'blue' } },
+        }),
+      );
+    });
+
+    it('should run a step repeatedly - object', async () => {
+      const task = createMockTaskWithSpec({
+        apiVersion: 'scaffolder.backstage.io/v1beta3',
+        steps: [
+          {
+            id: 'test',
+            name: 'name',
+            each: '${{parameters.settings}}',
+            action: 'jest-mock-action',
+            input: { key: '${{each.key}}', value: '${{each.value}}' },
+          },
+        ],
+        output: {},
+        parameters: {
+          settings: { color: 'blue', transparent: 'yes' },
+        },
+      });
+
+      await runner.execute(task);
+
+      expect(fakeActionHandler).toHaveBeenCalledWith(
+        expect.objectContaining({
+          input: { key: 'color', value: 'blue' },
+        }),
+      );
+      expect(fakeActionHandler).toHaveBeenCalledWith(
+        expect.objectContaining({
+          input: { key: 'transparent', value: 'yes' },
+        }),
       );
     });
   });
