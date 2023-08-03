@@ -35,7 +35,9 @@ export interface Config {
        * A custom mapping of linguist languages to how they should be rendered as entity tags.
        * If a language is mapped to '' it will not be included as a tag.
        */
-      languageMap?: Record<string, string | undefined>;
+      languageMap?: {
+        [language: string]: string | undefined;
+      };
       /**
        * How long to cache entity languages for in memory. Used to avoid constant db hits during
        * processing. Defaults to 30 minutes.
