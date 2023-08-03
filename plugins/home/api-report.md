@@ -147,6 +147,9 @@ export type LayoutConfiguration = {
   y: number;
   width: number;
   height: number;
+  movable?: boolean;
+  deletable?: boolean;
+  resizable?: boolean;
 };
 
 // @public @deprecated (undocumented)

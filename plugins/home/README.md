@@ -233,6 +233,9 @@ const defaultConfig = [
     y: 0,
     width: 12,
     height: 1,
+    movable: true,
+    resizable: false,
+    deletable: false,
   },
 ];
 
