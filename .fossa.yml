@@ -1,0 +1,25 @@
+# Configuration for FOSSA license compliance and security analysis.
+#
+# Reference: https://github.com/fossas/fossa-cli/blob/master/docs/references/files/fossa-yml.md
+
+version: 3
+
+project:
+  link: https://backstage.io
+  url: github.com/backstage/backstage
+
+targets:
+  only:
+    - type: yarn
+      path: .
+    - type: npm
+      path: .
+
+paths:
+  only:
+    - packages/
+    - plugins/
+  exclude:
+    - packages/app/
+    - packages/backend/
+    - packages/eslint-plugin/src/__fixtures__/
