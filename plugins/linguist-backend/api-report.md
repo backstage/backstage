@@ -4,9 +4,15 @@
 
 ```ts
 import { BackendFeature } from '@backstage/backend-plugin-api';
+import { CatalogProcessor } from '@backstage/plugin-catalog-node';
+import { CatalogProcessorCache } from '@backstage/plugin-catalog-node';
+import { Config } from '@backstage/config';
+import { DiscoveryService } from '@backstage/backend-plugin-api';
+import { Entity } from '@backstage/catalog-model';
 import express from 'express';
 import { HumanDuration } from '@backstage/types';
 import { Languages } from '@backstage/plugin-linguist-common';
+import { LanguageType } from '@backstage/plugin-linguist-common';
 import { Logger } from 'winston';
 import { PluginDatabaseManager } from '@backstage/backend-common';
 import { PluginEndpointDiscovery } from '@backstage/backend-common';
@@ -48,6 +54,38 @@ export interface LinguistPluginOptions {
   useSourceLocation?: boolean;
 }
 
+// @public
+export class LinguistTagsProcessor implements CatalogProcessor {
+  constructor(options: LinguistTagsProcessorOptions);
+  // (undocumented)
+  static fromConfig(
+    config: Config,
+    options: LinguistTagsProcessorOptions,
+  ): LinguistTagsProcessor;
+  // (undocumented)
+  getProcessorName(): string;
+  preProcessEntity(
+    entity: Entity,
+    _: any,
+    __: any,
+    ___: any,
+    cache: CatalogProcessorCache,
+  ): Promise<Entity>;
+}
+
+// @public
+export interface LinguistTagsProcessorOptions {
+  bytesThreshold?: number;
+  cacheTTL?: HumanDuration;
+  // (undocumented)
+  discovery: DiscoveryService;
+  languageMap?: Record<string, string | undefined>;
+  languageTypes?: LanguageType[];
+  // (undocumented)
+  logger: Logger;
+  shouldProcessEntity?: ShouldProcessEntity;
+}
+
 // @public (undocumented)
 export interface PluginOptions {
   // (undocumented)
@@ -81,4 +119,7 @@ export interface RouterOptions {
   // (undocumented)
   tokenManager: TokenManager;
 }
+
+// @public
+export type ShouldProcessEntity = (entity: Entity) => boolean;
 ```
