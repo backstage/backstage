@@ -13,103 +13,33 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
 import React from 'react';
-import { screen, fireEvent, waitFor } from '@testing-library/react';
-import { ShortcutForm } from './ShortcutForm';
-import { renderInTestApp } from '@backstage/test-utils';
+import {
+  MockStorageApi,
+  renderInTestApp,
+  TestApiProvider,
+} from '@backstage/test-utils';
+import { screen, waitFor } from '@testing-library/react';
+import { Shortcuts } from './Shortcuts';
+import { DefaultShortcutsApi, shortcutsApiRef } from './api';
 
-describe('ShortcutForm', () => {
-  const props = {
-    onSave: jest.fn(),
-    onClose: jest.fn(),
-  };
+import { SidebarOpenStateProvider } from '@backstage/core-components';
 
-  it('displays validation messages', async () => {
-    await renderInTestApp(<ShortcutForm {...props} />);
-
-    const urlInput = screen.getByPlaceholderText('Enter a URL');
-    const titleInput = screen.getByPlaceholderText('Enter a display name');
-    fireEvent.change(urlInput, { target: { value: 'url' } });
-    fireEvent.change(titleInput, { target: { value: 't' } });
-
-    fireEvent.click(screen.getByText('Save'));
-    await waitFor(() => {
-      expect(
-        screen.getByText('Must be a relative URL (starts with a /)'),
-      ).toBeInTheDocument();
-      expect(
-        screen.getByText('Must be at least 2 characters'),
-      ).toBeInTheDocument();
-    });
-  });
-
-  it('allows external links', async () => {
-    await renderInTestApp(<ShortcutForm allowExternalLinks {...props} />);
-
-    const urlInput = screen.getByPlaceholderText('Enter a URL');
-    const titleInput = screen.getByPlaceholderText('Enter a display name');
-    fireEvent.change(urlInput, {
-      target: { value: 'https://www.backstage.io' },
-    });
-    fireEvent.change(titleInput, { target: { value: 'Backstage' } });
-
-    fireEvent.click(screen.getByText('Save'));
-    await waitFor(() => {
-      expect(props.onSave).toHaveBeenCalledWith(
-        expect.objectContaining({
-          title: 'Backstage',
-          url: 'https://www.backstage.io',
-        }),
-        expect.anything(),
-      );
-    });
-  });
-
-  it('allows relative links when external links are enabled', async () => {
-    await renderInTestApp(<ShortcutForm allowExternalLinks {...props} />);
-
-    const urlInput = screen.getByPlaceholderText('Enter a URL');
-    const titleInput = screen.getByPlaceholderText('Enter a display name');
-    fireEvent.change(urlInput, {
-      target: { value: '/catalog' },
-    });
-    fireEvent.change(titleInput, { target: { value: 'Catalog' } });
-
-    fireEvent.click(screen.getByText('Save'));
-    await waitFor(() => {
-      expect(props.onSave).toHaveBeenCalledWith(
-        expect.objectContaining({
-          title: 'Catalog',
-          url: '/catalog',
-        }),
-        expect.anything(),
-      );
-    });
-  });
-
-  it('calls the save handler', async () => {
+describe('Shortcuts', () => {
+  it('displays an add button', async () => {
     await renderInTestApp(
-      <ShortcutForm
-        {...props}
-        formValues={{ url: '/some-url', title: 'some title' }}
-      />,
+      <SidebarOpenStateProvider value={{ isOpen: true, setOpen: _open => {} }}>
+        <TestApiProvider
+          apis={[
+            [shortcutsApiRef, new DefaultShortcutsApi(MockStorageApi.create())],
+          ]}
+        >
+          <Shortcuts />
+        </TestApiProvider>
+      </SidebarOpenStateProvider>,
     );
-
-    fireEvent.click(screen.getByText('Save'));
-    await waitFor(() => {
-      expect(props.onSave).toHaveBeenCalledWith(
-        expect.objectContaining({ title: 'some title', url: '/some-url' }),
-        expect.anything(),
-      );
-    });
-  });
-
-  it('calls the close handler', async () => {
-    await renderInTestApp(<ShortcutForm {...props} />);
-
-    fireEvent.click(screen.getByText('Cancel'));
-    await waitFor(() => {
-      expect(props.onClose).toHaveBeenCalled();
-    });
+    await waitFor(() => !screen.queryByTestId('progress'));
+    expect(screen.getByText('Add Shortcuts')).toBeInTheDocument();
   });
 });
