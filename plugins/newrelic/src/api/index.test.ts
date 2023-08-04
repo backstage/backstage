@@ -126,7 +126,7 @@ describe('NewRelicClient', () => {
           headers: new Map<string, string | null>([
             [
               'link',
-              '<https://next.page/page2?page=2>; rel="next", <https://badsite.dontgohere>; rel="next"',
+              '<https://next.page/page2?page=2>; rel="next", <https://badsite.dontgohere>; rel="first"',
             ],
             ['otherheader', 'otherValue'],
           ]),

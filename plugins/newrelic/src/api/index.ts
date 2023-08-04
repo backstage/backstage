@@ -20,6 +20,8 @@ import {
   FetchApi,
 } from '@backstage/core-plugin-api';
 
+import parseLinkHeader from 'parse-link-header';
+
 export type NewRelicApplication = {
   id: number;
   application_summary: NewRelicApplicationSummary;
@@ -76,14 +78,8 @@ export interface NewRelicApi {
   getApplications(): Promise<NewRelicApplications>;
 }
 
-interface PaginationInformation {
-  nextPageLink: string;
-  relation: string;
-}
-
 interface NewRelicPageReadResult {
-  hasMoreApplications: boolean;
-  pagination: PaginationInformation | undefined;
+  nextPageUrl: string | undefined;
   applicationsFromReadPage: NewRelicApplication[];
 }
 
@@ -106,20 +102,17 @@ export class NewRelicClient implements NewRelicApi {
       this.baseUrl = `${proxyUrl}${this.proxyPathBase}/apm/api/applications.json`;
     }
 
-    let targetUrl = this.baseUrl;
-    let hasNextPage = true;
-
     try {
       let applications: NewRelicApplication[] = [];
+      let targetUrl = this.baseUrl;
 
       do {
-        const { hasMoreApplications, pagination, applicationsFromReadPage } =
+        const { nextPageUrl, applicationsFromReadPage } =
           await this.fetchNewRelic(targetUrl);
 
-        hasNextPage = hasMoreApplications;
-        targetUrl = hasNextPage ? pagination!.nextPageLink : '';
+        targetUrl = nextPageUrl ?? '';
         applications = applications.concat(applicationsFromReadPage);
-      } while (hasNextPage);
+      } while (!!targetUrl);
 
       return { applications };
     } catch (e) {
@@ -143,37 +136,12 @@ export class NewRelicClient implements NewRelicApi {
 
     const readResponse = responseJson as NewRelicApplications;
     const linkHeader = response.headers.get('link');
-    const pagination = this.parseLinkHeader(linkHeader);
+    const parseResult = parseLinkHeader(linkHeader);
+    const nextPageNumber = parseResult?.next?.page;
 
     return {
-      hasMoreApplications: !!(pagination && pagination.relation === 'next'),
-      pagination,
+      nextPageUrl: nextPageNumber && `${this.baseUrl}?page=${nextPageNumber}`,
       applicationsFromReadPage: readResponse.applications,
-    };
-  }
-
-  private parseLinkHeader(
-    linkHeader: string | null,
-  ): PaginationInformation | undefined {
-    if (!linkHeader) {
-      return undefined;
-    }
-
-    const nextRelevantLink = linkHeader.replaceAll(' ', '').split(',')[0];
-    const linkParts = nextRelevantLink.match(/^<.+(\?page=.+)>;rel="(.+)"$/);
-    const nextPageNumber = linkParts?.[1];
-    const relation = linkParts?.[2];
-
-    const nextPageLink = `${this.baseUrl}${nextPageNumber}`;
-    const isValidLink = !!(linkParts && nextPageNumber && relation);
-
-    if (!nextRelevantLink || !isValidLink) {
-      return undefined;
-    }
-
-    return {
-      nextPageLink,
-      relation,
     };
   }
 }
