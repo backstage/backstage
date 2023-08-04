@@ -93,13 +93,7 @@ describe('fs:rename examples', () => {
     await action.handler({
       ...mockContext,
       input: {
-        files: [
-          {
-            from: sourceFile,
-            to: destFile,
-            overwrite: true,
-          },
-        ],
+        files,
       },
     });
 
