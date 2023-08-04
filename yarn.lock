@@ -199,8 +199,8 @@ __metadata:
   linkType: hard
 
 "@apollo/server@npm:^4.0.0":
-  version: 4.8.1
-  resolution: "@apollo/server@npm:4.8.1"
+  version: 4.9.0
+  resolution: "@apollo/server@npm:4.9.0"
   dependencies:
     "@apollo/cache-control-types": ^1.0.3
     "@apollo/server-gateway-interface": ^1.1.1
@@ -230,7 +230,7 @@ __metadata:
     whatwg-mimetype: ^3.0.0
   peerDependencies:
     graphql: ^16.6.0
-  checksum: b59c60b23b90aed9e2f74de1d16f4ac7582f16e2f98d830c85e1339525867786ab17a9295aadf53cdcfdfd0540f81273706e013aae9148ebc3e55e86c820b21c
+  checksum: 15813114a65045583acf2c1648eefe852c1bfd1797e97f5354451d4e86d5c8e9365fef989c5cbcd10dbd116b33e9006251052f81fa07f4c539d35b8eb6952630
   languageName: node
   linkType: hard
 
