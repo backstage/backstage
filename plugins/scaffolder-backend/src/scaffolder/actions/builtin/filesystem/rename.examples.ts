@@ -28,8 +28,9 @@ export const examples: TemplateExample[] = [
           name: 'Rename files',
           input: {
             files: [
-              { from: 'file.txt', to: 'fileRenamed.txt', overwrite: true },
               { from: 'file1.txt', to: 'file1Renamed.txt' },
+              { from: 'file2.txt', to: 'file2Renamed.txt' },
+              { from: 'file3.txt', to: 'file3Renamed.txt', overwrite: true },
             ],
           },
         },

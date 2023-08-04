@@ -13,3 +13,67 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
+import { createFilesystemDeleteAction } from './delete';
+import { getVoidLogger } from '@backstage/backend-common';
+import { PassThrough } from 'stream';
+import { resolve as resolvePath } from 'path';
+import * as os from 'os';
+import mockFs from 'mock-fs';
+import fs from 'fs-extra';
+import yaml from 'yaml';
+import { examples } from './delete.examples';
+
+const root = os.platform() === 'win32' ? 'C:\\rootDir' : '/rootDir';
+const workspacePath = resolvePath(root, 'my-workspace');
+
+describe('fs:delete examples', () => {
+  const action = createFilesystemDeleteAction();
+
+  const files: string[] = yaml.parse(examples[0].example).steps[0].input.files;
+
+  const mockContext = {
+    input: {
+      files: files,
+    },
+    workspacePath,
+    logger: getVoidLogger(),
+    logStream: new PassThrough(),
+    output: jest.fn(),
+    createTemporaryDirectory: jest.fn(),
+  };
+
+  beforeEach(() => {
+    jest.restoreAllMocks();
+
+    mockFs({
+      [workspacePath]: {
+        [files[0]]: 'hello',
+        [files[1]]: 'world',
+        'a-folder': {
+          'unit-test-in-a-folder.js2': 'content',
+        },
+      },
+    });
+  });
+
+  afterEach(() => {
+    mockFs.restore();
+  });
+
+  it('should call fs.rm with the correct values', async () => {
+    files.forEach(file => {
+      const filePath = resolvePath(workspacePath, file);
+      const fileExists = fs.existsSync(filePath);
+      expect(fileExists).toBe(true);
+    });
+
+    await action.handler(mockContext);
+
+    files.forEach(file => {
+      const filePath = resolvePath(workspacePath, file);
+      const fileExists = fs.existsSync(filePath);
+      expect(fileExists).toBe(false);
+    });
+  });
+});
