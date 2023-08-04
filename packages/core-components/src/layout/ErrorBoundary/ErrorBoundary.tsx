@@ -17,33 +17,35 @@
 import Typography from '@material-ui/core/Typography';
 import React, {
   Component,
+  ComponentType,
   type ErrorInfo,
   type PropsWithChildren,
 } from 'react';
 import { LinkButton } from '../../components/LinkButton';
 import { ErrorPanel } from '../../components/ErrorPanel';
 
-type SlackChannel = {
+/** @public */
+export type SlackChannel = {
   name: string;
   href?: string;
 };
 
 /** @public */
-export type FallbackProps = {
+export type ErrorBoundaryFallbackProps = {
   error: Error;
   resetErrorBoundary: (...args: any[]) => void;
 };
 
 /** @public */
 export type ErrorBoundaryProps = {
-  FallbackComponent?: React.ComponentType<FallbackProps>;
+  FallbackComponent?: React.ComponentType<ErrorBoundaryFallbackProps>;
   onError?: (error: Error, errorInfo: ErrorInfo) => void;
   onReset?: (details: { args: any[] }) => void;
   slackChannel?: string | SlackChannel;
 };
 
 type ErrorBoundaryState = {
-  error: null | Error;
+  error?: Error;
 };
 
 const SlackLink = (props: { slackChannel?: string | SlackChannel }) => {
@@ -66,12 +68,10 @@ const SlackLink = (props: { slackChannel?: string | SlackChannel }) => {
   );
 };
 
-const initialState: ErrorBoundaryState = {
-  error: null,
-};
+const initialState: ErrorBoundaryState = {};
 
 /** @public */
-export class ErrorBoundary extends Component<
+export const ErrorBoundary: ComponentType<ErrorBoundaryProps> = class ErrorBoundary extends Component<
   PropsWithChildren<ErrorBoundaryProps>,
   ErrorBoundaryState
 > {
@@ -106,7 +106,7 @@ export class ErrorBoundary extends Component<
 
     if (error) {
       if (FallbackComponent) {
-        const errorProps: FallbackProps = {
+        const errorProps: ErrorBoundaryFallbackProps = {
           error,
           resetErrorBoundary: this.resetErrorBoundary,
         };
@@ -123,4 +123,4 @@ export class ErrorBoundary extends Component<
 
     return this.props.children;
   }
-}
+};

@@ -16,7 +16,10 @@
  */
 
 import React from 'react';
-import { ErrorBoundary, type FallbackProps } from './ErrorBoundary';
+import {
+  ErrorBoundary,
+  type ErrorBoundaryFallbackProps,
+} from './ErrorBoundary';
 import {
   MockErrorApi,
   renderInTestApp,
@@ -39,7 +42,7 @@ const Bomb = ({ shouldThrow }: BombProps) => {
   }
 };
 
-class Meh extends React.Component<FallbackProps> {
+class Meh extends React.Component<ErrorBoundaryFallbackProps> {
   render() {
     return (
       <>
