@@ -142,8 +142,7 @@ export class NewRelicClient implements NewRelicApi {
     }
 
     const readResponse = responseJson as NewRelicApplications;
-    const linkHeader =
-      response.headers.get('Link') || response.headers.get('link');
+    const linkHeader = response.headers.get('link');
     const pagination = this.parseLinkHeader(linkHeader);
 
     return {

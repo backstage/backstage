@@ -135,7 +135,7 @@ describe('NewRelicClient', () => {
           ok: true,
           json: async () => ({ applications: [] }),
           headers: new Map<string, string | null>([
-            ['Link', '<https://next.page/page3?page=3>; rel="next",'],
+            ['link', '<https://next.page/page3?page=3>; rel="next",'],
           ]),
         })
         .mockResolvedValueOnce({
@@ -178,7 +178,7 @@ describe('NewRelicClient', () => {
     expect(actual).toStrictEqual(expected);
   });
 
-  test.each([['LINK'], ['lINK']])(
+  test.each([['Link'], ['LINK'], ['lINK']])(
     'It does not attempt pagination when the link header name is invalid (%p)',
     async linkHeaderName => {
       const mockedDiscoveryApi: DiscoveryApi = {
