@@ -15,6 +15,7 @@
  */
 
 import React, { useEffect } from 'react';
+import useObservable from 'react-use/lib/useObservable';
 import { useForm, SubmitHandler, Controller } from 'react-hook-form';
 import {
   Button,
@@ -53,7 +54,10 @@ export const ShortcutForm = ({
 }: Props) => {
   const classes = useStyles();
   const shortcutApi = useApi(shortcutsApiRef);
-  const shortcutData = shortcutApi.get();
+  const shortcutData = useObservable(
+    shortcutApi.shortcut$(),
+    shortcutApi.get(),
+  );
   const {
     handleSubmit,
     reset,
@@ -67,13 +71,13 @@ export const ShortcutForm = ({
     },
   });
 
-  const titleIsUnique = async (title: string) => {
+  const titleIsUnique =  (title: string) => {
     if (shortcutData.some(shortcutTitle => shortcutTitle.title === title))
       return 'A shortcut with this title already exists';
     return true;
   };
 
-  const urlIsUnique = async (url: string) => {
+  const urlIsUnique =  (url: string) => {
     if (shortcutData.some(shortcutUrl => shortcutUrl.url === url))
       return 'A shortcut with this url already exists';
     return true;
