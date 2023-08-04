@@ -21,7 +21,7 @@ import {
   Table,
   TableFilter,
 } from '@backstage/core-components';
-import { errorApiRef, useApi } from '@backstage/core-plugin-api';
+import { errorApiRef, useApi, alertApiRef } from '@backstage/core-plugin-api';
 import { EntityRefLink } from '@backstage/plugin-catalog-react';
 import { usePermission } from '@backstage/plugin-permission-react';
 import { permissions } from '@backstage/plugin-playlist-common';
@@ -42,6 +42,7 @@ export const PlaylistEntitiesTable = ({
 }) => {
   const errorApi = useApi(errorApiRef);
   const playlistApi = useApi(playlistApiRef);
+  const alertApi = useApi(alertApiRef);
   const [openAddEntitiesDrawer, setOpenAddEntitiesDrawer] = useState(false);
 
   const { allowed: editAllowed } = usePermission({
@@ -78,11 +79,16 @@ export const PlaylistEntitiesTable = ({
           [entity].flat().map(stringifyEntityRef),
         );
         loadEntities();
+        alertApi.post({
+          message: `Removed entity '${entity.metadata.name}' from table`,
+          severity: 'success',
+          display: 'transient',
+        });
       } catch (e) {
         errorApi.post(e);
       }
     },
-    [errorApi, loadEntities, playlistApi, playlistId],
+    [errorApi, loadEntities, playlistApi, playlistId, alertApi],
   );
 
   const singularTitleLowerCase = useTitle({

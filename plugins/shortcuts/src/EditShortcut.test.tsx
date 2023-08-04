@@ -18,7 +18,7 @@ import React from 'react';
 import { screen, fireEvent, waitFor } from '@testing-library/react';
 import { EditShortcut } from './EditShortcut';
 import { Shortcut } from './types';
-import { DefaultShortcutsApi, shortcutsApiRef } from './api';
+import { DefaultShortcutsApi } from './api';
 import {
   MockAnalyticsApi,
   MockStorageApi,
@@ -48,29 +48,13 @@ describe('EditShortcut', () => {
   });
 
   it('displays the title', async () => {
-    await renderInTestApp(
-      <TestApiProvider
-        apis={[
-          [shortcutsApiRef, new DefaultShortcutsApi(MockStorageApi.create())],
-        ]}
-      >
-        <EditShortcut {...props} />
-      </TestApiProvider>,
-    );
+    await renderInTestApp(<EditShortcut {...props} />);
 
     expect(screen.getByText('Edit Shortcut')).toBeInTheDocument();
   });
 
   it('closes the popup', async () => {
-    await renderInTestApp(
-      <TestApiProvider
-        apis={[
-          [shortcutsApiRef, new DefaultShortcutsApi(MockStorageApi.create())],
-        ]}
-      >
-        <EditShortcut {...props} />
-      </TestApiProvider>,
-    );
+    await renderInTestApp(<EditShortcut {...props} />);
 
     fireEvent.click(screen.getByText('Cancel'));
     expect(props.onClose).toHaveBeenCalledTimes(1);
@@ -79,15 +63,7 @@ describe('EditShortcut', () => {
   it('updates the shortcut', async () => {
     const spy = jest.spyOn(api, 'update');
 
-    await renderInTestApp(
-      <TestApiProvider
-        apis={[
-          [shortcutsApiRef, new DefaultShortcutsApi(MockStorageApi.create())],
-        ]}
-      >
-        <EditShortcut {...props} />
-      </TestApiProvider>,
-    );
+    await renderInTestApp(<EditShortcut {...props} />);
 
     const urlInput = screen.getByPlaceholderText('Enter a URL');
     const titleInput = screen.getByPlaceholderText('Enter a display name');
@@ -110,12 +86,7 @@ describe('EditShortcut', () => {
     const spy = jest.spyOn(api, 'update');
 
     await renderInTestApp(
-      <TestApiProvider
-        apis={[
-          [analyticsApiRef, analyticsSpy],
-          [shortcutsApiRef, new DefaultShortcutsApi(MockStorageApi.create())],
-        ]}
-      >
+      <TestApiProvider apis={[[analyticsApiRef, analyticsSpy]]}>
         <EditShortcut {...props} />
       </TestApiProvider>,
     );
@@ -144,15 +115,7 @@ describe('EditShortcut', () => {
   it('removes the shortcut', async () => {
     const spy = jest.spyOn(api, 'remove');
 
-    await renderInTestApp(
-      <TestApiProvider
-        apis={[
-          [shortcutsApiRef, new DefaultShortcutsApi(MockStorageApi.create())],
-        ]}
-      >
-        <EditShortcut {...props} />
-      </TestApiProvider>,
-    );
+    await renderInTestApp(<EditShortcut {...props} />);
 
     fireEvent.click(screen.getByText('Remove'));
     expect(spy).toHaveBeenCalledWith('id');
@@ -169,14 +132,8 @@ describe('EditShortcut', () => {
 
     await renderInTestApp(
       <>
-        <TestApiProvider
-          apis={[
-            [shortcutsApiRef, new DefaultShortcutsApi(MockStorageApi.create())],
-          ]}
-        >
-          <AlertDisplay />
-          <EditShortcut {...props} />
-        </TestApiProvider>
+        <AlertDisplay />
+        <EditShortcut {...props} />
       </>,
     );
 

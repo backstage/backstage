@@ -17,7 +17,7 @@
 import React from 'react';
 import { screen, fireEvent, waitFor } from '@testing-library/react';
 import { AddShortcut } from './AddShortcut';
-import { DefaultShortcutsApi, shortcutsApiRef } from './api';
+import { DefaultShortcutsApi } from './api';
 import {
   MockAnalyticsApi,
   MockStorageApi,
@@ -42,29 +42,13 @@ describe('AddShortcut', () => {
   });
 
   it('displays the title', async () => {
-    await renderInTestApp(
-      <TestApiProvider
-        apis={[
-          [shortcutsApiRef, new DefaultShortcutsApi(MockStorageApi.create())],
-        ]}
-      >
-        <AddShortcut {...props} />
-      </TestApiProvider>,
-    );
+    await renderInTestApp(<AddShortcut {...props} />);
 
     expect(screen.getByText('Add Shortcut')).toBeInTheDocument();
   });
 
   it('closes the popup', async () => {
-    await renderInTestApp(
-      <TestApiProvider
-        apis={[
-          [shortcutsApiRef, new DefaultShortcutsApi(MockStorageApi.create())],
-        ]}
-      >
-        <AddShortcut {...props} />
-      </TestApiProvider>,
-    );
+    await renderInTestApp(<AddShortcut {...props} />);
 
     fireEvent.click(screen.getByText('Cancel'));
     expect(props.onClose).toHaveBeenCalledTimes(1);
@@ -73,15 +57,7 @@ describe('AddShortcut', () => {
   it('saves the input', async () => {
     const spy = jest.spyOn(api, 'add');
 
-    await renderInTestApp(
-      <TestApiProvider
-        apis={[
-          [shortcutsApiRef, new DefaultShortcutsApi(MockStorageApi.create())],
-        ]}
-      >
-        <AddShortcut {...props} />
-      </TestApiProvider>,
-    );
+    await renderInTestApp(<AddShortcut {...props} />);
 
     const urlInput = screen.getByPlaceholderText('Enter a URL');
     const titleInput = screen.getByPlaceholderText('Enter a display name');
@@ -102,12 +78,7 @@ describe('AddShortcut', () => {
     const spy = jest.spyOn(api, 'add');
 
     await renderInTestApp(
-      <TestApiProvider
-        apis={[
-          [analyticsApiRef, analyticsSpy],
-          [shortcutsApiRef, new DefaultShortcutsApi(MockStorageApi.create())],
-        ]}
-      >
+      <TestApiProvider apis={[[analyticsApiRef, analyticsSpy]]}>
         <AddShortcut {...props} />
       </TestApiProvider>,
     );
@@ -135,18 +106,9 @@ describe('AddShortcut', () => {
   it('pastes the values', async () => {
     const spy = jest.spyOn(api, 'add');
 
-    await renderInTestApp(
-      <TestApiProvider
-        apis={[
-          [shortcutsApiRef, new DefaultShortcutsApi(MockStorageApi.create())],
-        ]}
-      >
-        <AddShortcut {...props} />,
-      </TestApiProvider>,
-      {
-        routeEntries: ['/some-initial-url'],
-      },
-    );
+    await renderInTestApp(<AddShortcut {...props} />, {
+      routeEntries: ['/some-initial-url'],
+    });
 
     fireEvent.click(screen.getByText('Use current page'));
     fireEvent.click(screen.getByText('Save'));
@@ -163,14 +125,8 @@ describe('AddShortcut', () => {
 
     await renderInTestApp(
       <>
-        <TestApiProvider
-          apis={[
-            [shortcutsApiRef, new DefaultShortcutsApi(MockStorageApi.create())],
-          ]}
-        >
-          <AlertDisplay />
-          <AddShortcut {...props} />
-        </TestApiProvider>
+        <AlertDisplay />
+        <AddShortcut {...props} />
       </>,
     );
 
