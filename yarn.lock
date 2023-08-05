@@ -12882,9 +12882,9 @@ __metadata:
   linkType: hard
 
 "@microsoft/microsoft-graph-types@npm:^2.25.0, @microsoft/microsoft-graph-types@npm:^2.6.0":
-  version: 2.35.0
-  resolution: "@microsoft/microsoft-graph-types@npm:2.35.0"
-  checksum: d2053799a8b78f5743a64853727e3887101cbb6b26558b8a6e8501b561b04d4bca1dac6c74534229b9e40daa489f47188ae5837ada42108a50d4062cfb60f57e
+  version: 2.38.0
+  resolution: "@microsoft/microsoft-graph-types@npm:2.38.0"
+  checksum: f5778650655034a6d92fbb932376002aefcf0cd358de323267b65fbec59284e8c0208e895c5523dcbbe79c4b583f3822c6beea01b70c687da26929c92de93c92
   languageName: node
   linkType: hard
 
