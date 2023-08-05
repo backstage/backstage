@@ -63,7 +63,7 @@ jest.mock('octokit', () => ({
   },
 }));
 
-describe('github:repo:create', () => {
+describe('github:repo:create examples', () => {
   const config = new ConfigReader({
     integrations: {
       github: [
