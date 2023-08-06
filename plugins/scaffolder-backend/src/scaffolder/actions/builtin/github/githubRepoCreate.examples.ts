@@ -38,7 +38,7 @@ export const examples: TemplateExample[] = [
       steps: [
         {
           action: 'github:repo:create',
-          name: 'Create a new GitHub repository',
+          name: 'Create a new GitHub repository with a description',
           input: {
             repoUrl: 'github.com?repo=repo&owner=owner',
             description: 'My new repository',
@@ -53,7 +53,7 @@ export const examples: TemplateExample[] = [
       steps: [
         {
           action: 'github:repo:create',
-          name: 'Create a new GitHub repository',
+          name: 'Create a new GitHub repository without wiki and issues',
           input: {
             repoUrl: 'github.com?repo=repo&owner=owner',
             hasIssues: false,
