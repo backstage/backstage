@@ -19,7 +19,7 @@ import yaml from 'yaml';
 
 export const examples: TemplateExample[] = [
   {
-    description: 'Creates a GitHub repository.',
+    description: 'Creates a GitHub repository with default configuration.',
     example: yaml.stringify({
       steps: [
         {
@@ -27,6 +27,37 @@ export const examples: TemplateExample[] = [
           name: 'Create a new GitHub repository',
           input: {
             repoUrl: 'github.com?repo=repo&owner=owner',
+          },
+        },
+      ],
+    }),
+  },
+  {
+    description: 'Add a description.',
+    example: yaml.stringify({
+      steps: [
+        {
+          action: 'github:repo:create',
+          name: 'Create a new GitHub repository',
+          input: {
+            repoUrl: 'github.com?repo=repo&owner=owner',
+            description: 'My new repository',
+          },
+        },
+      ],
+    }),
+  },
+  {
+    description: 'Disable wiki and issues.',
+    example: yaml.stringify({
+      steps: [
+        {
+          action: 'github:repo:create',
+          name: 'Create a new GitHub repository',
+          input: {
+            repoUrl: 'github.com?repo=repo&owner=owner',
+            hasIssues: false,
+            hasWiki: false,
           },
         },
       ],

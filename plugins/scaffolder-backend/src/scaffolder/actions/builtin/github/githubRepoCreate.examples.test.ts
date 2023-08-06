@@ -132,4 +132,61 @@ describe('github:repo:create examples', () => {
       visibility: 'private',
     });
   });
+
+  it('should call the githubApis with a description for createInOrg', async () => {
+    mockOctokit.rest.users.getByUsername.mockResolvedValue({
+      data: { type: 'Organization' },
+    });
+
+    mockOctokit.rest.repos.createInOrg.mockResolvedValue({ data: {} });
+
+    await action.handler({
+      ...mockContext,
+      input: yaml.parse(examples[1].example).steps[0].input,
+    });
+
+    expect(mockOctokit.rest.repos.createInOrg).toHaveBeenCalledWith({
+      name: 'repo',
+      description: 'My new repository',
+      org: 'owner',
+      private: true,
+      delete_branch_on_merge: false,
+      allow_squash_merge: true,
+      squash_merge_commit_title: 'COMMIT_OR_PR_TITLE',
+      squash_merge_commit_message: 'COMMIT_MESSAGES',
+      allow_merge_commit: true,
+      allow_rebase_merge: true,
+      allow_auto_merge: false,
+      visibility: 'private',
+    });
+  });
+
+  it('should call the githubApis with wiki and issues disabled for createInOrg', async () => {
+    mockOctokit.rest.users.getByUsername.mockResolvedValue({
+      data: { type: 'Organization' },
+    });
+
+    mockOctokit.rest.repos.createInOrg.mockResolvedValue({ data: {} });
+
+    await action.handler({
+      ...mockContext,
+      input: yaml.parse(examples[2].example).steps[0].input,
+    });
+
+    expect(mockOctokit.rest.repos.createInOrg).toHaveBeenCalledWith({
+      name: 'repo',
+      org: 'owner',
+      private: true,
+      delete_branch_on_merge: false,
+      allow_squash_merge: true,
+      squash_merge_commit_title: 'COMMIT_OR_PR_TITLE',
+      squash_merge_commit_message: 'COMMIT_MESSAGES',
+      allow_merge_commit: true,
+      allow_rebase_merge: true,
+      allow_auto_merge: false,
+      visibility: 'private',
+      has_issues: false, // disable issues
+      has_wiki: false, // disable wiki
+    });
+  });
 });
