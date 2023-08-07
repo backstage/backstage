@@ -29616,11 +29616,11 @@ __metadata:
   linkType: hard
 
 "jest-when@npm:^3.1.0":
-  version: 3.5.2
-  resolution: "jest-when@npm:3.5.2"
+  version: 3.6.0
+  resolution: "jest-when@npm:3.6.0"
   peerDependencies:
     jest: ">= 25"
-  checksum: 9ad95552d377ef4d517c96a14c38bd8626d6856f518e7efc8a01d76a45a39d3c52281392c98da781c302114c78cd1ea17556c7f638d49d15971fcce9d58306e8
+  checksum: ed32ed84e5802bb6fec98966cdf862ce59677551be33d3795e6ac7a6207acf467ed559573d671c8d94c59f7fc0780cf358d2d165d81cdc7d9611250d975ee024
   languageName: node
   linkType: hard
 
