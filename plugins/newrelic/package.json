@@ -49,6 +49,7 @@
     "react-router-dom": "6.0.0-beta.0 || ^6.3.0"
   },
   "devDependencies": {
+    "@backstage/backend-test-utils": "workspace:^",
     "@backstage/cli": "workspace:^",
     "@backstage/core-app-api": "workspace:^",
     "@backstage/dev-utils": "workspace:^",
@@ -60,7 +61,7 @@
     "@types/node": "^16.11.26",
     "@types/react": "^16.13.1 || ^17.0.0",
     "cross-fetch": "^3.1.5",
-    "msw": "^1.0.0"
+    "msw": "^1.2.3"
   },
   "files": [
     "dist"
