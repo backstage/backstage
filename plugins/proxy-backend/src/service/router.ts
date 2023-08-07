@@ -192,20 +192,14 @@ export function buildMiddleware(
 }
 
 function readProxyConfig(config: Config, logger: Logger): unknown {
-  const endpoints = config.getOptional('proxy.endpoints');
+  const endpoints = config.getOptionalConfig('proxy.endpoints')?.get();
   if (endpoints) {
-    if (typeof endpoints !== 'object' || Array.isArray(endpoints)) {
-      throw new Error('proxy configuration must be an object');
-    }
     return endpoints;
   }
 
-  const root = config.getOptional('proxy');
+  const root = config.getOptionalConfig('proxy')?.get();
   if (!root) {
     return {};
-  }
-  if (typeof root !== 'object' || Array.isArray(root)) {
-    throw new Error('deprecated proxy configuration must be an object');
   }
 
   const rootEndpoints = Object.fromEntries(
