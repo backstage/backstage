@@ -4576,6 +4576,22 @@ __metadata:
   languageName: unknown
   linkType: soft
 
+"@backstage/plugin-auth-backend-module-gcp-iap-provider@workspace:plugins/auth-backend-module-gcp-iap-provider":
+  version: 0.0.0-use.local
+  resolution: "@backstage/plugin-auth-backend-module-gcp-iap-provider@workspace:plugins/auth-backend-module-gcp-iap-provider"
+  dependencies:
+    "@backstage/backend-plugin-api": "workspace:^"
+    "@backstage/backend-test-utils": "workspace:^"
+    "@backstage/cli": "workspace:^"
+    "@backstage/errors": "workspace:^"
+    "@backstage/plugin-auth-node": "workspace:^"
+    "@backstage/types": "workspace:^"
+    google-auth-library: ^8.0.0
+    msw: ^1.0.0
+    supertest: ^6.1.3
+  languageName: unknown
+  linkType: soft
+
 "@backstage/plugin-auth-backend-module-google-provider@workspace:plugins/auth-backend-module-google-provider":
   version: 0.0.0-use.local
   resolution: "@backstage/plugin-auth-backend-module-google-provider@workspace:plugins/auth-backend-module-google-provider"
