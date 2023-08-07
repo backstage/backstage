@@ -18,6 +18,7 @@ import { createTemplateAction } from '@backstage/plugin-scaffolder-node';
 import { resolveSafeChildPath } from '@backstage/backend-common';
 import { InputError } from '@backstage/errors';
 import fs from 'fs-extra';
+import { examples } from './rename.examples';
 
 /**
  * Creates a new action that allows renames of files and directories in the workspace.
@@ -33,6 +34,7 @@ export const createFilesystemRenameAction = () => {
   }>({
     id: 'fs:rename',
     description: 'Renames files and directories within the workspace',
+    examples,
     schema: {
       input: {
         required: ['files'],
