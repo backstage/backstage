@@ -31,6 +31,9 @@ export * from './lib/flow';
 // OAuth wrapper over a passport or a custom `strategy`.
 export * from './lib/oauth';
 
+// Helpers to convert new API in @backstage/plugin-auth-node to old API
+export * from './lib/legacy';
+
 export * from './lib/catalog';
 
 export { getDefaultOwnershipEntityRefs } from './lib/resolvers';
