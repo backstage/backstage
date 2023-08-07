@@ -14,6 +14,7 @@
  * limitations under the License.
  */
 
+import { readDeclarativeSignInResolver } from '../sign-in';
 import { AuthProviderFactory, SignInResolver } from '../types';
 import { OAuthEnvironmentHandler } from './OAuthEnvironmentHandler';
 import { createOAuthRouteHandlers } from './createOAuthRouteHandlers';
@@ -23,6 +24,7 @@ import {
   OAuthAuthenticatorResult,
   OAuthProfileTransform,
 } from './types';
+import { SignInResolverFactory } from '../sign-in/createSignInResolverFactory';
 
 /** @public */
 export function createOAuthProviderFactory<TProfile>(options: {
@@ -30,9 +32,21 @@ export function createOAuthProviderFactory<TProfile>(options: {
   stateTransform?: OAuthStateTransform;
   profileTransform?: OAuthProfileTransform<TProfile>;
   signInResolver?: SignInResolver<OAuthAuthenticatorResult<TProfile>>;
+  signInResolverFactories?: {
+    [name in string]: SignInResolverFactory<
+      OAuthAuthenticatorResult<TProfile>,
+      unknown
+    >;
+  };
 }): AuthProviderFactory {
   return ctx => {
     return OAuthEnvironmentHandler.mapConfig(ctx.config, envConfig => {
+      const signInResolver =
+        options.signInResolver ??
+        readDeclarativeSignInResolver(envConfig, {
+          signInResolverFactories: options.signInResolverFactories,
+        });
+
       return createOAuthRouteHandlers<TProfile>({
         authenticator: options.authenticator,
         appUrl: ctx.appUrl,
@@ -44,7 +58,7 @@ export function createOAuthProviderFactory<TProfile>(options: {
         resolverContext: ctx.resolverContext,
         stateTransform: options.stateTransform,
         profileTransform: options.profileTransform,
-        signInResolver: options.signInResolver,
+        signInResolver,
       });
     });
   };

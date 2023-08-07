@@ -15,3 +15,7 @@
  */
 
 export { createSignInResolverFactory } from './createSignInResolverFactory';
+export {
+  readDeclarativeSignInResolver,
+  type ReadDeclarativeSignInResolverOptions,
+} from './readDeclarativeSignInResolver';
