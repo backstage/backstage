@@ -241,9 +241,11 @@ export function createOAuthRouteHandlers<TProfile>(
             );
           }
           res.redirect(state.redirectUrl);
+          return;
         }
+
         // post message back to popup if successful
-        return sendWebMessageResponse(res, appOrigin, {
+        sendWebMessageResponse(res, appOrigin, {
           type: 'authorization_response',
           response,
         });
@@ -252,7 +254,7 @@ export function createOAuthRouteHandlers<TProfile>(
           ? error
           : new Error('Encountered invalid error'); // Being a bit safe and not forwarding the bad value
         // post error message back to popup if failure
-        return sendWebMessageResponse(res, appOrigin, {
+        sendWebMessageResponse(res, appOrigin, {
           type: 'authorization_response',
           error: { name, message },
         });
