@@ -17,7 +17,7 @@
 import { useEffect } from 'react';
 import { useShadowRootElements } from '@backstage/plugin-techdocs-react';
 // @ts-ignore
-import PhotoSwipeLightbox, { DataSource } from 'photoswipe/lightbox';
+import PhotoSwipeLightbox, { DataSource, ZoomLevel } from 'photoswipe/lightbox';
 import PhotoSwipe from 'photoswipe';
 import 'photoswipe/style.css';
 import './lightbox.css';
@@ -31,8 +31,20 @@ export const LightBoxAddon = () => {
     let lightbox = new PhotoSwipeLightbox({
       pswpModule: PhotoSwipe,
       initialZoomLevel: 1,
-      secondaryZoomLevel: 2.5,
-      maxZoomLevel: 4,
+      secondaryZoomLevel: (zoomLevelObject: ZoomLevel) => {
+        // photoswipe/lightbox won't zoom the image further then the given width and height.
+        // therefore we need to calculate the zoom factor needed to fit the complete image in the viewport manually.
+        const imageWidth = zoomLevelObject.elementSize.x;
+        const imageHeight = zoomLevelObject.elementSize.y;
+        const viewportWidth = zoomLevelObject.panAreaSize.x;
+        const viewportHeight = zoomLevelObject.panAreaSize.y;
+
+        const widthScale = viewportWidth / imageWidth;
+        const heightScale = viewportHeight / imageHeight;
+
+        const scaleFactor = Math.min(widthScale, heightScale);
+        return scaleFactor;
+      },
       wheelToZoom: true,
       arrowPrevSVG:
         '<svg class="MuiSvgIcon-root MuiSvgIcon-fontSizeLarge  css-c1sh5i" focusable="false" aria-hidden="true" viewBox="0 0 24 24" data-testid="ArrowBackIosIcon" aria-label="fontSize large"><path d="M11.67 3.87 9.9 2.1 0 12l9.9 9.9 1.77-1.77L3.54 12z"></path></svg>',
