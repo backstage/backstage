@@ -1,26 +1,25 @@
-name: "!Test Databases"
+name: '!Test Databases'
 
 on:
   workflow_dispatch:
   pull_request:
-    branches: [ "mysql" ]
+    branches: ['mysql']
 
 jobs:
   build:
-
     runs-on: ubuntu-latest
     strategy:
       matrix:
         node-version: [18.x]
 
     steps:
-    - uses: actions/checkout@v3
-    - name: Use Node.js ${{ matrix.node-version }}
-      uses: actions/setup-node@v3
-      with:
-        node-version: ${{ matrix.node-version }}
-        cache: yarn
-    - run: yarn install
-    - run: yarn tsc
-    - run: yarn build:all
-    - run: yarn test
+      - uses: actions/checkout@v3
+      - name: Use Node.js ${{ matrix.node-version }}
+        uses: actions/setup-node@v3
+        with:
+          node-version: ${{ matrix.node-version }}
+          cache: yarn
+      - run: yarn install
+      - run: yarn tsc
+      - run: yarn build:all
+      - run: yarn test

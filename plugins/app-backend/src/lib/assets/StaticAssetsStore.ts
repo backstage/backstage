@@ -138,16 +138,19 @@ export class StaticAssetsStore implements StaticAssetProvider {
    */
   async trimAssets(options: { maxAgeSeconds: number }) {
     const { maxAgeSeconds } = options;
+    let lastModifiedInterval = `now() + interval '${-maxAgeSeconds} seconds'`;
+    if (this.#db.client.config.client.includes('mysql')) {
+      lastModifiedInterval = `date_sub(now(), interval ${maxAgeSeconds} second)`;
+    } else if (this.#db.client.config.client.includes('sqlite3')) {
+      lastModifiedInterval = `datetime('now', ?)`;
+    }
     await this.#db<StaticAssetRow>('static_assets_cache')
       .where(
         'last_modified_at',
         '<=',
         this.#db.client.config.client.includes('sqlite3')
-          ? this.#db.raw(`datetime('now', ?)`, [`-${maxAgeSeconds} seconds`])
-          : (this.#db.client.config.client.includes('mysql') 
-            ? this.#db.raw(`date_sub(now(), interval ${maxAgeSeconds} second)`)
-            : this.#db.raw(`now() + interval '${-maxAgeSeconds} seconds'`)
-          ),
+          ? this.#db.raw(lastModifiedInterval, [`-${maxAgeSeconds} seconds`])
+          : this.#db.raw(lastModifiedInterval),
       )
       .delete();
   }

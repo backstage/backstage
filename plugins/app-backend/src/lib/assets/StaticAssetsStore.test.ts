@@ -153,18 +153,18 @@ describe('StaticAssetsStore', () => {
           content: async () => Buffer.alloc(0),
         },
       ]);
-
+      // interval check for postgresql
+      let hourPast = `now() + interval '-3600 seconds'`;
+      if (knex.client.config.client.includes('mysql')) {
+        hourPast = `date_sub(now(), interval 3600 second)`;
+      } else if (knex.client.config.client.includes('sqlite3')) {
+        hourPast = `datetime('now', '-3600 seconds')`;
+      }
       // Rewrite modified time of "old" to be 1h in the past
       const updated = await knex('static_assets_cache')
         .where({ path: 'old' })
         .update({
-          last_modified_at: knex.client.config.client.includes('sqlite3')
-            ? knex.raw(`datetime('now', '-3600 seconds')`)
-            : (
-              knex.client.config.client.includes('mysql') 
-                ? knex.raw(`date_sub(now(), interval 3600 second)`) 
-                : knex.raw(`now() + interval '-3600 seconds'`)
-            ),
+          last_modified_at: knex.raw(hourPast),
         });
       expect(updated).toBe(1);
 
