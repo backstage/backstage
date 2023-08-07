@@ -23,4 +23,4 @@ export {
   readDeclarativeSignInResolver,
   type ReadDeclarativeSignInResolverOptions,
 } from './readDeclarativeSignInResolver';
-export * as commonSignInResolvers from './resolvers';
+export { commonSignInResolvers } from './commonSignInResolvers';
