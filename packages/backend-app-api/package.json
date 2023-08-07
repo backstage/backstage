@@ -12,13 +12,13 @@
   },
   "exports": {
     ".": "./src/index.ts",
-    "./alpha": "./src/alpha/index.ts",
+    "./alpha": "./src/alpha.ts",
     "./package.json": "./package.json"
   },
   "typesVersions": {
     "*": {
       "alpha": [
-        "src/alpha/index.ts"
+        "src/alpha.ts"
       ],
       "package.json": [
         "package.json"
