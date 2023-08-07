@@ -63,7 +63,13 @@ export const catalogApiRef: ApiRef<CatalogApi>;
 // @public (undocumented)
 export const CatalogFilterLayout: {
   (props: { children: React_2.ReactNode }): JSX.Element;
-  Filters: (props: { children: React_2.ReactNode }) => JSX.Element;
+  Filters: (props: {
+    children: React_2.ReactNode;
+    options?: {
+      drawerBreakpoint?: 'xs' | 'sm' | 'md' | 'lg' | 'xl' | number;
+      drawerAnchor?: 'left' | 'right' | 'top' | 'bottom';
+    };
+  }) => JSX.Element;
   Content: (props: { children: React_2.ReactNode }) => JSX.Element;
 };
 
