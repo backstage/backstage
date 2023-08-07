@@ -86,11 +86,13 @@ function setupFakeServer(
       const last_activity_after = req.url.searchParams.get(
         'last_activity_after',
       );
-      const filteredData = response.data.filter(
-        v =>
-          !last_activity_after ||
-          Date.parse(v.last_activity_at) >= Date.parse(last_activity_after),
-      );
+      const filteredData = response.data
+        .filter(
+          v =>
+            !last_activity_after ||
+            Date.parse(v.last_activity_at) >= Date.parse(last_activity_after),
+        )
+        .filter(v => archived || !v.archived);
 
       return res(
         ctx.set('x-next-page', response.nextPage?.toString() ?? ''),
@@ -225,37 +227,6 @@ describe('GitlabDiscoveryProcessor', () => {
               nextPage: 2,
             };
           case 2:
-            if (request.archived) {
-              return {
-                data: [
-                  {
-                    id: 3,
-                    archived: false,
-                    default_branch: 'master',
-                    last_activity_at: '2021-08-05T11:03:05.774Z',
-                    web_url: 'https://gitlab.fake/3',
-                    path_with_namespace: '3',
-                  },
-                  {
-                    id: 4,
-                    archived: true, // ARCHIVED
-                    default_branch: 'master',
-                    last_activity_at: '2021-08-05T11:03:05.774Z',
-                    web_url: 'https://gitlab.fake/4',
-                    path_with_namespace: '4',
-                  },
-                  {
-                    id: 5,
-                    archived: false,
-                    default_branch: undefined, // MISSING DEFAULT BRANCH
-                    last_activity_at: '2021-08-05T11:03:05.774Z',
-                    web_url: 'https://gitlab.fake/g/5',
-                    path_with_namespace: 'g/5',
-                  },
-                ],
-              };
-            }
-
             return {
               data: [
                 {
@@ -265,6 +236,14 @@ describe('GitlabDiscoveryProcessor', () => {
                   last_activity_at: '2021-08-05T11:03:05.774Z',
                   web_url: 'https://gitlab.fake/3',
                   path_with_namespace: '3',
+                },
+                {
+                  id: 4,
+                  archived: true, // ARCHIVED
+                  default_branch: 'master',
+                  last_activity_at: '2021-08-05T11:03:05.774Z',
+                  web_url: 'https://gitlab.fake/4',
+                  path_with_namespace: '4',
                 },
                 {
                   id: 5,
