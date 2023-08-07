@@ -310,6 +310,19 @@ export type SignInResolver<TAuthResult> = (
 ) => Promise<BackstageSignInResult>;
 
 /**
+ * Describes the function that transforms the result of a successful
+ * authentication into a {@link ProfileInfo} object.
+ *
+ * This function may optionally throw an error in order to reject authentication.
+ *
+ * @public
+ */
+export type ProfileTransform<TResult> = (
+  result: TResult,
+  context: AuthResolverContext,
+) => Promise<{ profile: ProfileInfo }>;
+
+/**
  * Used to display login information to user, i.e. sidebar popup.
  *
  * It is also temporarily used as the profile of the signed-in user's Backstage

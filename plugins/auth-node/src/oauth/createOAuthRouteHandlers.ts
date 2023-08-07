@@ -37,13 +37,10 @@ import {
   AuthResolverContext,
   ClientAuthResponse,
   CookieConfigurer,
+  ProfileTransform,
   SignInResolver,
 } from '../types';
-import {
-  OAuthAuthenticator,
-  OAuthAuthenticatorResult,
-  OAuthProfileTransform,
-} from './types';
+import { OAuthAuthenticator, OAuthAuthenticatorResult } from './types';
 import { Config } from '@backstage/config';
 
 /** @public */
@@ -56,7 +53,7 @@ export interface OAuthRouteHandlersOptions<TProfile> {
   config: Config;
   resolverContext: AuthResolverContext;
   stateTransform?: OAuthStateTransform;
-  profileTransform?: OAuthProfileTransform<TProfile>;
+  profileTransform?: ProfileTransform<OAuthAuthenticatorResult<TProfile>>;
   cookieConfigurer?: CookieConfigurer;
   signInResolver?: SignInResolver<OAuthAuthenticatorResult<TProfile>>;
 }

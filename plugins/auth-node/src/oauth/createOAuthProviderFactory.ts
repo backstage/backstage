@@ -15,22 +15,22 @@
  */
 
 import { readDeclarativeSignInResolver } from '../sign-in';
-import { AuthProviderFactory, SignInResolver } from '../types';
+import {
+  AuthProviderFactory,
+  ProfileTransform,
+  SignInResolver,
+} from '../types';
 import { OAuthEnvironmentHandler } from './OAuthEnvironmentHandler';
 import { createOAuthRouteHandlers } from './createOAuthRouteHandlers';
 import { OAuthStateTransform } from './state';
-import {
-  OAuthAuthenticator,
-  OAuthAuthenticatorResult,
-  OAuthProfileTransform,
-} from './types';
+import { OAuthAuthenticator, OAuthAuthenticatorResult } from './types';
 import { SignInResolverFactory } from '../sign-in/createSignInResolverFactory';
 
 /** @public */
 export function createOAuthProviderFactory<TProfile>(options: {
   authenticator: OAuthAuthenticator<unknown, TProfile>;
   stateTransform?: OAuthStateTransform;
-  profileTransform?: OAuthProfileTransform<TProfile>;
+  profileTransform?: ProfileTransform<OAuthAuthenticatorResult<TProfile>>;
   signInResolver?: SignInResolver<OAuthAuthenticatorResult<TProfile>>;
   signInResolverFactories?: {
     [name in string]: SignInResolverFactory<
@@ -43,8 +43,9 @@ export function createOAuthProviderFactory<TProfile>(options: {
     return OAuthEnvironmentHandler.mapConfig(ctx.config, envConfig => {
       const signInResolver =
         options.signInResolver ??
-        readDeclarativeSignInResolver(envConfig, {
-          signInResolverFactories: options.signInResolverFactories,
+        readDeclarativeSignInResolver({
+          config: envConfig,
+          signInResolverFactories: options.signInResolverFactories ?? {},
         });
 
       return createOAuthRouteHandlers<TProfile>({

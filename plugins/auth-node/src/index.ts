@@ -38,6 +38,7 @@ export type {
   ClientAuthResponse,
   CookieConfigurer,
   ProfileInfo,
+  ProfileTransform,
   SignInInfo,
   SignInResolver,
   TokenParams,

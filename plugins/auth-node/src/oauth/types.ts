@@ -16,7 +16,7 @@
 
 import { Config } from '@backstage/config';
 import { Request } from 'express';
-import { AuthResolverContext, ProfileInfo } from '../types';
+import { ProfileTransform } from '../types';
 
 export interface OAuthSession {
   accessToken: string;
@@ -26,11 +26,6 @@ export interface OAuthSession {
   expiresInSeconds: number;
   refreshToken?: string;
 }
-
-export type OAuthProfileTransform<TProfile> = (
-  result: OAuthAuthenticatorResult<TProfile>,
-  context: AuthResolverContext,
-) => Promise<{ profile: ProfileInfo }>;
 
 export interface OAuthAuthenticatorStartInput {
   scope: string;
@@ -60,7 +55,7 @@ export interface OAuthAuthenticatorResult<TProfile> {
 }
 
 export interface OAuthAuthenticator<TContext, TProfile> {
-  defaultProfileTransform: OAuthProfileTransform<TProfile>;
+  defaultProfileTransform: ProfileTransform<OAuthAuthenticatorResult<TProfile>>;
   shouldPersistScopes?: boolean;
   initialize(ctx: { callbackUrl: string; config: Config }): TContext;
   start(

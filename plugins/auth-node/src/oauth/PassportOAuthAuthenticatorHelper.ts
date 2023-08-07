@@ -20,12 +20,12 @@ import {
   PassportHelpers,
   PassportProfile,
 } from '../passport';
+import { ProfileTransform } from '../types';
 import {
   OAuthAuthenticatorAuthenticateInput,
   OAuthAuthenticatorRefreshInput,
   OAuthAuthenticatorResult,
   OAuthAuthenticatorStartInput,
-  OAuthProfileTransform,
 } from './types';
 
 /** @public */
@@ -53,13 +53,14 @@ export type PassportOAuthDoneCallback = PassportDoneCallback<
 
 /** @public */
 export class PassportOAuthAuthenticatorHelper {
-  static defaultProfileTransform: OAuthProfileTransform<PassportProfile> =
-    async input => ({
-      profile: PassportHelpers.transformProfile(
-        input.fullProfile,
-        input.session.idToken,
-      ),
-    });
+  static defaultProfileTransform: ProfileTransform<
+    OAuthAuthenticatorResult<PassportProfile>
+  > = async input => ({
+    profile: PassportHelpers.transformProfile(
+      input.fullProfile,
+      input.session.idToken,
+    ),
+  });
 
   static from(strategy: Strategy) {
     return new PassportOAuthAuthenticatorHelper(strategy);
