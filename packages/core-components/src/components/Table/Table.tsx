@@ -54,6 +54,7 @@ import React, {
 import { SelectProps } from '../Select/Select';
 import { Filter, Filters, SelectedFilters, Without } from './Filters';
 import CircularProgress from '@material-ui/core/CircularProgress';
+import { useVisibileData } from '@backstage/plugin-catalog';
 
 // Material-table is not using the standard icons available in in material-ui. https://github.com/mbrn/material-table/issues/51
 const tableIcons: Icons = {
@@ -246,26 +247,34 @@ export interface TableOptions<T extends object = {}> extends Options<T> {}
 export function TableToolbar(toolbarProps: {
   toolbarRef: MutableRefObject<any>;
   setSearch: (value: string) => void;
+  setVisibleData: (value: any[]) => void;
   onSearchChanged: (value: string) => void;
   toggleFilters: () => void;
   hasFilters: boolean;
   selectedFiltersLength: number;
+  data: [];
 }) {
   const {
     toolbarRef,
     setSearch,
+    setVisibleData,
     hasFilters,
     selectedFiltersLength,
     toggleFilters,
   } = toolbarProps;
   const filtersClasses = useFilterStyles();
   const onSearchChanged = useCallback(
-    (searchText: string) => {
-      toolbarProps.onSearchChanged(searchText);
+    async (searchText: string) => {
+      await toolbarProps.onSearchChanged(searchText);
       setSearch(searchText);
     },
     [toolbarProps, setSearch],
   );
+
+  useEffect(() => {
+    setVisibleData(toolbarProps.data);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [toolbarProps.data]);
 
   if (hasFilters) {
     return (
@@ -332,7 +341,7 @@ export function Table<T extends object = {}>(props: TableProps<T>) {
   const [selectedFilters, setSelectedFilters] = useState(
     calculatedInitialState.filters,
   );
-
+  const [visibleData, setVisibleData] = useVisibileData();
   const MTColumns = convertColumns(columns, theme);
 
   const [search, setSearch] = useState(calculatedInitialState.search);
@@ -368,14 +377,15 @@ export function Table<T extends object = {}>(props: TableProps<T>) {
     if (typeof data === 'function') {
       return;
     }
-    if (!selectedFilters) {
+    if (!selectedFilters && !search) {
       setTableData(data as any[]);
+      setVisibleData(data as any[]);
       return;
     }
 
     const selectedFiltersArray = Object.values(selectedFilters);
     if (data && selectedFiltersArray.flat().length) {
-      const newData = (data as any[]).filter(
+      const newData = (search ? visibleData : (data as any[])).filter(
         el =>
           !!Object.entries(selectedFilters)
             .filter(([, value]) => !!(value as { length?: number }).length)
@@ -397,11 +407,16 @@ export function Table<T extends object = {}>(props: TableProps<T>) {
             }),
       );
       setTableData(newData);
+      setVisibleData(newData);
     } else {
+      if (!search) {
+        setVisibleData(data as any[]);
+      }
       setTableData(data as any[]);
     }
     setSelectedFiltersLength(selectedFiltersArray.flat().length);
-  }, [data, selectedFilters, getFieldByTitle]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [data, visibleData, selectedFilters, getFieldByTitle, search]);
 
   const constructFilters = (
     filterConfig: TableFilter[],
@@ -459,6 +474,7 @@ export function Table<T extends object = {}>(props: TableProps<T>) {
       return (
         <TableToolbar
           setSearch={setSearch}
+          setVisibleData={setVisibleData}
           hasFilters={hasFilters}
           selectedFiltersLength={selectedFiltersLength}
           toggleFilters={toggleFilters}
@@ -466,7 +482,13 @@ export function Table<T extends object = {}>(props: TableProps<T>) {
         />
       );
     },
-    [toggleFilters, hasFilters, selectedFiltersLength, setSearch],
+    [
+      toggleFilters,
+      hasFilters,
+      selectedFiltersLength,
+      setSearch,
+      setVisibleData,
+    ],
   );
 
   const hasNoRows = typeof data !== 'function' && data.length === 0;
