@@ -10944,8 +10944,8 @@ __metadata:
   linkType: hard
 
 "@google-cloud/storage@npm:^6.0.0":
-  version: 6.11.0
-  resolution: "@google-cloud/storage@npm:6.11.0"
+  version: 6.12.0
+  resolution: "@google-cloud/storage@npm:6.12.0"
   dependencies:
     "@google-cloud/paginator": ^3.0.7
     "@google-cloud/projectify": ^3.0.0
@@ -10956,6 +10956,7 @@ __metadata:
     duplexify: ^4.0.0
     ent: ^2.2.0
     extend: ^3.0.2
+    fast-xml-parser: ^4.2.2
     gaxios: ^5.0.0
     google-auth-library: ^8.0.1
     mime: ^3.0.0
@@ -10964,7 +10965,7 @@ __metadata:
     retry-request: ^5.0.0
     teeny-request: ^8.0.0
     uuid: ^8.0.0
-  checksum: 4183c0ad3b271e0c22b3aa01e9942590ae64b984efa142a787b96379baaf4c05a2ebdbb6015c8ea189951df251d57f4f35c6a28b920922828cc89d3e4147d1a1
+  checksum: cfe44e3f4d1bacd8eeefa7885d261f421c4ff84e82abe50200b5b77e28322baf9cb67497872b9868b25b43b14197b1a155d5eb7b70afb39d3476fa4bdead3338
   languageName: node
   linkType: hard
 
@@ -25697,6 +25698,17 @@ __metadata:
   bin:
     fxparser: src/cli/cli.js
   checksum: d32b22005504eeb207249bf40dc82d0994b5bb9ca9dcc731d335a1f425e47fe085b3cace3cf9d32172dd1a5544193c49e8615ca95b4bf95a4a4920a226b06d80
+  languageName: node
+  linkType: hard
+
+"fast-xml-parser@npm:^4.2.2":
+  version: 4.2.7
+  resolution: "fast-xml-parser@npm:4.2.7"
+  dependencies:
+    strnum: ^1.0.5
+  bin:
+    fxparser: src/cli/cli.js
+  checksum: d8b0c9e04756f6c43fa0399428f30149acadae21350e42e26e8fe98e24e6afa6b9b00aa554453795036b00e9fee974a1b556fe2ba18be391d51a9bf1ab790e7c
   languageName: node
   linkType: hard
 
