@@ -14,4 +14,13 @@
  * limitations under the License.
  */
 
-export { appPlugin } from './service/appPlugin';
+/**
+ * Node.js library for the app plugin.
+ *
+ * @packageDocumentation
+ */
+
+export {
+  staticFallbackHandlerExtensionPoint,
+  type StaticFallbackHandlerExtensionPoint,
+} from './extensions';

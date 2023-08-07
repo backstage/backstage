@@ -20,6 +20,8 @@ app:
           - url: https://discord.gg/backstage-687207715902193673
             title: '#backstage'
 
+  packageName: example-app
+
 backend:
   # Used for enabling authentication, secret is shared by all backend plugins
   # See https://backstage.io/docs/auth/service-to-service-auth for

@@ -42,7 +42,7 @@ import { lighthousePlugin } from '@backstage/plugin-lighthouse-backend';
 
 const backend = createBackend();
 
-backend.add(appPlugin({ appPackageName: 'example-app' }));
+backend.add(appPlugin());
 
 // Badges
 backend.add(badgesPlugin());
