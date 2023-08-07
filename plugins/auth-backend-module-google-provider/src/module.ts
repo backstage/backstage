@@ -17,9 +17,11 @@
 import { createBackendModule } from '@backstage/backend-plugin-api';
 import {
   authProvidersExtensionPoint,
+  commonSignInResolvers,
   createOAuthProviderFactory,
 } from '@backstage/plugin-auth-node';
 import { googleAuthenticator } from './authenticator';
+import { googleSignInResolvers } from './resolvers';
 
 export const authModuleGoogleProvider = createBackendModule({
   pluginId: 'auth',
@@ -34,6 +36,10 @@ export const authModuleGoogleProvider = createBackendModule({
           providerId: 'google',
           factory: createOAuthProviderFactory({
             authenticator: googleAuthenticator,
+            signInResolverFactories: {
+              ...googleSignInResolvers,
+              ...commonSignInResolvers,
+            },
           }),
         });
       },
