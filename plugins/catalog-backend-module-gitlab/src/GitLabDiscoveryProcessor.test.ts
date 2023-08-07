@@ -56,6 +56,7 @@ function setupFakeServer(
   listProjectsCallback: (request: {
     page: number;
     include_subgroups: boolean;
+    archived: boolean;
   }) => {
     data: GitLabProject[];
     nextPage?: number;
@@ -74,9 +75,11 @@ function setupFakeServer(
       }
       const page = req.url.searchParams.get('page');
       const include_subgroups = req.url.searchParams.get('include_subgroups');
+      const archived = req.url.searchParams.get('archived');
       const response = listProjectsCallback({
         page: parseInt(page!, 10),
         include_subgroups: include_subgroups === 'true',
+        archived: archived === 'true',
       });
 
       // Filter the fake results based on the `last_activity_after` parameter
@@ -222,6 +225,37 @@ describe('GitlabDiscoveryProcessor', () => {
               nextPage: 2,
             };
           case 2:
+            if (request.archived) {
+              return {
+                data: [
+                  {
+                    id: 3,
+                    archived: false,
+                    default_branch: 'master',
+                    last_activity_at: '2021-08-05T11:03:05.774Z',
+                    web_url: 'https://gitlab.fake/3',
+                    path_with_namespace: '3',
+                  },
+                  {
+                    id: 4,
+                    archived: true, // ARCHIVED
+                    default_branch: 'master',
+                    last_activity_at: '2021-08-05T11:03:05.774Z',
+                    web_url: 'https://gitlab.fake/4',
+                    path_with_namespace: '4',
+                  },
+                  {
+                    id: 5,
+                    archived: false,
+                    default_branch: undefined, // MISSING DEFAULT BRANCH
+                    last_activity_at: '2021-08-05T11:03:05.774Z',
+                    web_url: 'https://gitlab.fake/g/5',
+                    path_with_namespace: 'g/5',
+                  },
+                ],
+              };
+            }
+
             return {
               data: [
                 {
@@ -233,14 +267,6 @@ describe('GitlabDiscoveryProcessor', () => {
                   path_with_namespace: '3',
                 },
                 {
-                  id: 4,
-                  archived: true, // ARCHIVED
-                  default_branch: 'master',
-                  last_activity_at: '2021-08-05T11:03:05.774Z',
-                  web_url: 'https://gitlab.fake/4',
-                  path_with_namespace: '4',
-                },
-                {
                   id: 5,
                   archived: false,
                   default_branch: undefined, // MISSING DEFAULT BRANCH
@@ -250,6 +276,7 @@ describe('GitlabDiscoveryProcessor', () => {
                 },
               ],
             };
+
           default:
             throw new Error('Invalid request');
         }
