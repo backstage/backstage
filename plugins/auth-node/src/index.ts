@@ -25,6 +25,7 @@ export * from './flow';
 export * from './identity';
 export * from './oauth';
 export * from './passport';
+export * from './sign-in';
 export type {
   AuthProviderConfig,
   AuthProviderRouteHandlers,

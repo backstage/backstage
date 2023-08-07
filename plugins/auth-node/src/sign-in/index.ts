@@ -14,8 +14,13 @@
  * limitations under the License.
  */
 
-export { createSignInResolverFactory } from './createSignInResolverFactory';
+export {
+  createSignInResolverFactory,
+  type SignInResolverFactory,
+  type SignInResolverFactoryOptions,
+} from './createSignInResolverFactory';
 export {
   readDeclarativeSignInResolver,
   type ReadDeclarativeSignInResolverOptions,
 } from './readDeclarativeSignInResolver';
+export * as commonSignInResolvers from './resolvers';
