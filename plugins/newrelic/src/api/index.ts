@@ -103,7 +103,7 @@ export class NewRelicClient implements NewRelicApi {
     }
 
     try {
-      let applications: NewRelicApplication[] = [];
+      const applications: NewRelicApplication[] = [];
       let targetUrl = this.baseUrl;
 
       do {
@@ -111,7 +111,7 @@ export class NewRelicClient implements NewRelicApi {
           await this.fetchNewRelic(targetUrl);
 
         targetUrl = nextPageUrl ?? '';
-        applications = applications.concat(applicationsFromReadPage);
+        applications.push(...applicationsFromReadPage);
       } while (!!targetUrl);
 
       return { applications };
