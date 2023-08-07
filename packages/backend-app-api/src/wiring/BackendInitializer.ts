@@ -259,7 +259,12 @@ export class BackendInitializer {
     if (!this.#startPromise) {
       return;
     }
-    await this.#startPromise;
+
+    try {
+      await this.#startPromise;
+    } catch (error) {
+      // The startup failed, but we may still want to do cleanup so we continue silently
+    }
 
     const lifecycleService = await this.#getRootLifecycleImpl();
     await lifecycleService.shutdown();
