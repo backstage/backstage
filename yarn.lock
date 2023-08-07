@@ -16203,14 +16203,14 @@ __metadata:
   linkType: hard
 
 "@swc/jest@npm:^0.2.22":
-  version: 0.2.27
-  resolution: "@swc/jest@npm:0.2.27"
+  version: 0.2.28
+  resolution: "@swc/jest@npm:0.2.28"
   dependencies:
     "@jest/create-cache-key-function": ^27.4.2
     jsonc-parser: ^3.2.0
   peerDependencies:
     "@swc/core": "*"
-  checksum: db258e13f9eb9441d4d924684452939fb49016a4a2eaf7700cbf5eb4f90dff96bb7ce240ed539adbcd41b45fe62bacdc1d3f3d995403af44d54501b41f1ec72f
+  checksum: 9f9fe7e091077079511e602afe0d0f270c5a274197fe6d55e7f8a8a0f44aadc70f726d8c2571b0eb2af8030d2bba601786adff2d811d6c01f27395c94c746edd
   languageName: node
   linkType: hard
 
