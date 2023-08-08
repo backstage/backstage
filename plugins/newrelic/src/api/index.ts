@@ -102,39 +102,41 @@ export class NewRelicClient implements NewRelicApi {
       this.baseUrl = `${proxyUrl}${this.proxyPathBase}/apm/api/applications.json`;
     }
 
-    try {
-      const applications: NewRelicApplication[] = [];
-      let targetUrl = this.baseUrl;
+    const applications: NewRelicApplication[] = [];
+    let targetUrl = this.baseUrl;
 
-      do {
-        const { nextPageUrl, applicationsFromReadPage } =
-          await this.fetchNewRelic(targetUrl);
+    do {
+      const { nextPageUrl, applicationsFromReadPage } =
+        await this.fetchNewRelic(targetUrl);
 
-        targetUrl = nextPageUrl ?? '';
-        applications.push(...applicationsFromReadPage);
-      } while (!!targetUrl);
+      targetUrl = nextPageUrl ?? '';
+      applications.push(...applicationsFromReadPage);
+    } while (!!targetUrl);
 
-      return { applications };
-    } catch (e) {
-      return { applications: [] };
-    }
+    return { applications };
   }
 
   private async fetchNewRelic(
     targetUrl: string,
   ): Promise<NewRelicPageReadResult> {
     const response = await this.fetchApi.fetch(targetUrl);
-    const responseJson = await response.json();
 
     if (!response.ok) {
+      let specificErrorTitle = undefined;
+      try {
+        specificErrorTitle = (await response.json())?.error?.title;
+      } catch (e) {
+        /* empty */
+      }
+
       throw new Error(
         `Error communicating with New Relic: ${
-          responseJson?.error?.title || response.statusText
+          specificErrorTitle || response.statusText
         }`,
       );
     }
 
-    const readResponse = responseJson as NewRelicApplications;
+    const readResponse = (await response.json()) as NewRelicApplications;
     const linkHeader = response.headers.get('link');
     const parseResult = parseLinkHeader(linkHeader);
     const nextPageNumber = parseResult?.next?.page;

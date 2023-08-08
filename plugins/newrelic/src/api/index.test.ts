@@ -20,6 +20,10 @@ import { rest } from 'msw';
 import { setupServer } from 'msw/node';
 import { MockFetchApi, setupRequestMockHandlers } from '@backstage/test-utils';
 
+const mockedDiscoveryApi: DiscoveryApi = {
+  getBaseUrl: async () => 'https://test.test',
+};
+
 beforeEach(() => {
   jest.resetAllMocks();
 });
@@ -46,10 +50,6 @@ describe('NewRelicClient', () => {
         ),
       );
 
-      const mockedDiscoveryApi: DiscoveryApi = {
-        getBaseUrl: jest.fn().mockResolvedValueOnce('https://test.test'),
-      };
-
       const mockedFetchApi = new MockFetchApi();
       const fetchSpy = jest.spyOn(mockedFetchApi, 'fetch');
 
@@ -65,10 +65,6 @@ describe('NewRelicClient', () => {
   );
 
   it('Correctly reads all pages of results and returns the expected results', async () => {
-    const mockedDiscoveryApi: DiscoveryApi = {
-      getBaseUrl: jest.fn().mockResolvedValueOnce('https://test.test'),
-    };
-
     const mockedApplicationOne: NewRelicApplication = {
       id: 1,
       application_summary: {
@@ -219,10 +215,6 @@ describe('NewRelicClient', () => {
   test.each([['Link'], ['LINK'], ['lINK']])(
     'It does not attempt pagination when the link header name is invalid (%p)',
     async linkHeaderName => {
-      const mockedDiscoveryApi: DiscoveryApi = {
-        getBaseUrl: jest.fn().mockResolvedValueOnce('https://test.test'),
-      };
-
       const mockedFetchApi = new MockFetchApi();
       const fetchSpy = jest.spyOn(mockedFetchApi, 'fetch');
 
@@ -271,10 +263,6 @@ describe('NewRelicClient', () => {
   ])(
     'It does not attempt pagination when the link header value is invalid (%p)',
     async linkHeaderValue => {
-      const mockedDiscoveryApi: DiscoveryApi = {
-        getBaseUrl: jest.fn().mockResolvedValueOnce('https://test.test'),
-      };
-
       const mockedFetchApi = new MockFetchApi();
       const fetchSpy = jest.spyOn(mockedFetchApi, 'fetch');
 
@@ -309,19 +297,38 @@ describe('NewRelicClient', () => {
   );
 
   test.each([
-    [404, { error: { title: 'TESTING' } }],
-    [500, {}],
+    ['Error communicating with New Relic: Not Found', 404, JSON.stringify({})],
+    [
+      'Error communicating with New Relic: ERROR TITLE',
+      404,
+      JSON.stringify({
+        error: {
+          title: 'ERROR TITLE',
+        },
+      }),
+    ],
+    [
+      'Error communicating with New Relic: Internal Server Error',
+      500,
+      JSON.stringify(undefined),
+    ],
+    [
+      'Error communicating with New Relic: Internal Server Error',
+      500,
+      JSON.stringify(null),
+    ],
+    [
+      'Error communicating with New Relic: Internal Server Error',
+      500,
+      '<invalid></invalid',
+    ],
   ])(
-    'It returns an empty array of applications when the fetch is not okay',
-    async (statusCode, jsonBody) => {
-      const mockedDiscoveryApi: DiscoveryApi = {
-        getBaseUrl: jest.fn().mockResolvedValueOnce('https://test.test'),
-      };
-
+    'It throws this error: %p when the status code is %p and the body is %j',
+    async (expectedErrorMessage, statusCode, body) => {
       server.use(
         rest.get(
           'https://test.test/newrelic/apm/api/applications.json',
-          (_, res, ctx) => res(ctx.status(statusCode), ctx.json(jsonBody)),
+          (_, res, ctx) => res(ctx.status(statusCode), ctx.body(body)),
         ),
       );
 
@@ -329,36 +336,31 @@ describe('NewRelicClient', () => {
         discoveryApi: mockedDiscoveryApi,
         fetchApi: new MockFetchApi(),
       });
-      const actual = await client.getApplications();
 
-      expect(actual).toStrictEqual({ applications: [] });
+      await expect(client.getApplications()).rejects.toThrow(
+        expectedErrorMessage,
+      );
     },
   );
 
-  it('Returns an empty array when the fetch itself throws an error', async () => {
-    const mockedDiscoveryApi: DiscoveryApi = {
-      getBaseUrl: jest.fn().mockResolvedValueOnce('https://test.test'),
-    };
-
+  it('Throws an error when the body is invalid json but the status code is 200', async () => {
     server.use(
-      rest.get('https://test.test/newrelic/apm/api/applications.json', () => {
-        throw new Error('Network Error');
-      }),
+      rest.get(
+        'https://test.test/newrelic/apm/api/applications.json',
+        (_, res, ctx) => res(ctx.status(200), ctx.body('<Invalid></Invalid')),
+      ),
     );
 
     const client = new NewRelicClient({
       discoveryApi: mockedDiscoveryApi,
       fetchApi: new MockFetchApi(),
     });
-    const actual = await client.getApplications();
 
-    expect(actual).toStrictEqual({ applications: [] });
+    await expect(client.getApplications()).rejects.toThrow();
   });
 
   it('Generates the base url only once', async () => {
-    const mockedDiscoveryApi: DiscoveryApi = {
-      getBaseUrl: jest.fn().mockResolvedValueOnce('https://test.test'),
-    };
+    const getBaseUrlSpy = jest.spyOn(mockedDiscoveryApi, 'getBaseUrl');
 
     server.use(
       rest.get(
@@ -377,6 +379,6 @@ describe('NewRelicClient', () => {
     await client.getApplications();
     await client.getApplications();
 
-    expect(mockedDiscoveryApi.getBaseUrl).toHaveBeenCalledTimes(1);
+    expect(getBaseUrlSpy).toHaveBeenCalledTimes(1);
   });
 });
