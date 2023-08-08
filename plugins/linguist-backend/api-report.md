@@ -36,23 +36,7 @@ export interface LinguistBackendApi {
 }
 
 // @public
-export const linguistPlugin: (options: LinguistPluginOptions) => BackendFeature;
-
-// @public
-export interface LinguistPluginOptions {
-  // (undocumented)
-  age?: HumanDuration;
-  // (undocumented)
-  batchSize?: number;
-  // (undocumented)
-  kind?: string[];
-  // (undocumented)
-  linguistJsOptions?: Record<string, unknown>;
-  // (undocumented)
-  schedule?: TaskScheduleDefinition;
-  // (undocumented)
-  useSourceLocation?: boolean;
-}
+export const linguistPlugin: () => BackendFeature;
 
 // @public
 export class LinguistTagsProcessor implements CatalogProcessor {
