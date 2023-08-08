@@ -38,7 +38,7 @@ const DEFAULT_SCHEDULE: TaskScheduleDefinition = {
  *
  * @public
  */
-export const linguistPlugin = createBackendPlugin(() => ({
+export const linguistPlugin = createBackendPlugin({
   pluginId: 'linguist',
   register(env) {
     env.registerInit({
@@ -102,4 +102,4 @@ export const linguistPlugin = createBackendPlugin(() => ({
       },
     });
   },
-}));
+});
