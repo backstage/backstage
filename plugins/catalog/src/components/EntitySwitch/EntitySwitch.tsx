@@ -77,18 +77,14 @@ export const EntitySwitch = (props: EntitySwitchProps) => {
         })
         .getElements()
         .flatMap<SwitchCaseResult>((element: ReactElement) => {
+          // If the entity is missing or there is an error, render nothing
+          if (!entity) {
+            return [];
+          }
+
           const { if: condition, children: elementsChildren } =
             element.props as EntitySwitchCase;
 
-          // If the entity is missing or there is an error, render the default page
-          if (!entity) {
-            return [
-              {
-                if: condition === undefined,
-                children: elementsChildren,
-              },
-            ];
-          }
           return [
             {
               if: condition?.(entity, { apis }),
