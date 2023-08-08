@@ -23,14 +23,15 @@ import { AuthProviderRouteHandlers, AuthResolverContext } from '../types';
 import { createOAuthRouteHandlers } from './createOAuthRouteHandlers';
 import { OAuthAuthenticator } from './types';
 import { errorHandler } from '@backstage/backend-common';
+import { encodeOAuthState } from './state';
 
-const mockAuthenticator: OAuthAuthenticator<unknown, unknown> = {
-  initialize: jest.fn(),
+const mockAuthenticator: jest.Mocked<OAuthAuthenticator<unknown, unknown>> = {
+  initialize: jest.fn(_r => ({ ctx: 'authenticator' })),
   start: jest.fn(),
   authenticate: jest.fn(),
   refresh: jest.fn(),
   logout: jest.fn(),
-  defaultProfileTransform: jest.fn(async () => ({ profile: {} })),
+  defaultProfileTransform: jest.fn(async (_r, _c) => ({ profile: {} })),
 };
 
 const baseConfig = {
@@ -40,7 +41,7 @@ const baseConfig = {
   isOriginAllowed: () => true,
   providerId: 'my-provider',
   config: new ConfigReader({}),
-  resolverContext: { ctx: 'ctx' } as unknown as AuthResolverContext,
+  resolverContext: { ctx: 'resolver' } as unknown as AuthResolverContext,
 };
 
 function wrapInApp(handlers: AuthProviderRouteHandlers) {
@@ -66,8 +67,26 @@ function wrapInApp(handlers: AuthProviderRouteHandlers) {
   return app;
 }
 
-function getCookie(test: SuperAgentTest, name: string) {
-  return test.jar.getCookie(`my-provider-${name}`, {
+function getNonceCookie(test: SuperAgentTest) {
+  return test.jar.getCookie(`my-provider-nonce`, {
+    domain: 'localhost',
+    path: '/my-provider/handler',
+    script: false,
+    secure: false,
+  });
+}
+
+function getRefreshTokenCookie(test: SuperAgentTest) {
+  return test.jar.getCookie(`my-provider-refresh-token`, {
+    domain: 'localhost',
+    path: '/my-provider',
+    script: false,
+    secure: false,
+  });
+}
+
+function getGrantedScopesCookie(test: SuperAgentTest) {
+  return test.jar.getCookie(`my-provider-granted-scope`, {
     domain: 'localhost',
     path: '/my-provider',
     script: false,
@@ -76,6 +95,8 @@ function getCookie(test: SuperAgentTest, name: string) {
 }
 
 describe('createOAuthRouteHandlers', () => {
+  afterEach(() => jest.clearAllMocks());
+
   it('should be created', () => {
     const handlers = createOAuthRouteHandlers(baseConfig);
     expect(handlers).toEqual({
@@ -99,6 +120,87 @@ describe('createOAuthRouteHandlers', () => {
         },
       });
     });
+
+    it('should start', async () => {
+      const agent = request.agent(
+        wrapInApp(createOAuthRouteHandlers(baseConfig)),
+      );
+
+      mockAuthenticator.start.mockResolvedValue({
+        url: 'https://example.com/redirect',
+      });
+
+      const res = await agent.get('/start?env=development&scope=my-scope');
+
+      const { value: nonce } = getNonceCookie(agent);
+
+      expect(res.text).toBe('');
+      expect(res.status).toBe(302);
+      expect(res.get('Location')).toBe('https://example.com/redirect');
+      expect(res.get('Content-Length')).toBe('0');
+
+      expect(mockAuthenticator.start).toHaveBeenCalledWith(
+        {
+          req: expect.anything(),
+          scope: 'my-scope',
+          state: encodeOAuthState({
+            nonce: decodeURIComponent(nonce),
+            env: 'development',
+          }),
+        },
+        { ctx: 'authenticator' },
+      );
+    });
+
+    it('should start with additional parameters, transform state, and persist scopes', async () => {
+      const agent = request.agent(
+        wrapInApp(
+          createOAuthRouteHandlers({
+            ...baseConfig,
+            authenticator: {
+              ...mockAuthenticator,
+              shouldPersistScopes: true,
+            },
+            stateTransform: async state => ({
+              state: { ...state, nonce: '123' },
+            }),
+          }),
+        ),
+      );
+
+      mockAuthenticator.start.mockResolvedValue({
+        url: 'https://example.com/redirect',
+      });
+
+      const res = await agent.get('/start').query({
+        env: 'development',
+        scope: 'my-scope',
+        origin: 'https://remotehost',
+        redirectUrl: 'https://remotehost/redirect',
+        flow: 'redirect',
+      });
+
+      expect(res.text).toBe('');
+      expect(res.status).toBe(302);
+      expect(res.get('Location')).toBe('https://example.com/redirect');
+      expect(res.get('Content-Length')).toBe('0');
+
+      expect(mockAuthenticator.start).toHaveBeenCalledWith(
+        {
+          req: expect.anything(),
+          scope: 'my-scope',
+          state: encodeOAuthState({
+            nonce: '123',
+            env: 'development',
+            origin: 'https://remotehost',
+            redirectUrl: 'https://remotehost/redirect',
+            flow: 'redirect',
+            scope: 'my-scope',
+          }),
+        },
+        { ctx: 'authenticator' },
+      );
+    });
   });
 
   describe('logout', () => {
@@ -113,7 +215,7 @@ describe('createOAuthRouteHandlers', () => {
         '/my-provider',
       );
 
-      expect(getCookie(agent, 'refresh-token').value).toBe('my-refresh-token');
+      expect(getRefreshTokenCookie(agent).value).toBe('my-refresh-token');
 
       const res = await agent
         .post('/logout')
@@ -122,7 +224,7 @@ describe('createOAuthRouteHandlers', () => {
       expect(res.status).toBe(200);
       expect(res.body).toEqual({});
 
-      expect(getCookie(agent, 'refresh-token')).toBeUndefined();
+      expect(getRefreshTokenCookie(agent)).toBeUndefined();
     });
 
     it('should reject requests without CSRF header', async () => {
