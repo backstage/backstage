@@ -23,6 +23,7 @@ import {
 import { googleAuthenticator } from './authenticator';
 import { googleSignInResolvers } from './resolvers';
 
+/** @public */
 export const authModuleGoogleProvider = createBackendModule({
   pluginId: 'auth',
   moduleId: 'googleProvider',

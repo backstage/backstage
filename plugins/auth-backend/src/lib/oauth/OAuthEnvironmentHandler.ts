@@ -20,4 +20,4 @@ import { OAuthEnvironmentHandler as _OAuthEnvironmentHandler } from '@backstage/
  * @public
  * @deprecated import from `@backstage/plugin-auth-node` instead
  */
-export type OAuthEnvironmentHandler = _OAuthEnvironmentHandler;
+export const OAuthEnvironmentHandler = _OAuthEnvironmentHandler;

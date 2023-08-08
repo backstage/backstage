@@ -40,6 +40,5 @@ export {
   type OAuthAuthenticatorRefreshInput,
   type OAuthAuthenticatorResult,
   type OAuthAuthenticatorStartInput,
-  type OAuthProfileTransform,
   type OAuthSession,
 } from './types';

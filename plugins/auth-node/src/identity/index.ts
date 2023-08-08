@@ -21,4 +21,4 @@ export {
   type IdentityClientOptions,
 } from './DefaultIdentityClient';
 export { IdentityClient } from './IdentityClient';
-export type { IdentityApi } from './IdentityApi';
+export type { IdentityApi, IdentityApiGetIdentityRequest } from './IdentityApi';

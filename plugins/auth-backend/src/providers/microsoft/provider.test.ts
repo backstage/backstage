@@ -45,6 +45,9 @@ describe('MicrosoftAuthProvider', () => {
       },
     })({
       providerId: 'microsoft',
+      baseUrl: 'http://backstage.test/api/auth',
+      appUrl: 'http://backstage.test',
+      isOriginAllowed: _ => true,
       globalConfig: {
         baseUrl: 'http://backstage.test/api/auth',
         appUrl: 'http://backstage.test',

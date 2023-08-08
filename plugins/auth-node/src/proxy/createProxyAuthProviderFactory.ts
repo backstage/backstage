@@ -26,6 +26,7 @@ import {
 import { createProxyAuthRouteHandlers } from './createProxyRouteHandlers';
 import { ProxyAuthenticator } from './types';
 
+/** @public */
 export function createProxyAuthProviderFactory<TResult>(options: {
   authenticator: ProxyAuthenticator<unknown, TResult>;
   profileTransform?: ProfileTransform<TResult>;

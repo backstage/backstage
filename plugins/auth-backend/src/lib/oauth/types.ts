@@ -26,7 +26,7 @@ import { OAuthStartResponse, ProfileInfo } from '../../providers/types';
  * Common options for passport.js-based OAuth providers
  *
  * @public
- * @deprecated
+ * @deprecated No longer in use
  */
 export type OAuthProviderOptions = {
   /**

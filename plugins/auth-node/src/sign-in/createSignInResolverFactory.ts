@@ -19,6 +19,7 @@ import { SignInResolver } from '../types';
 import zodToJsonSchema from 'zod-to-json-schema';
 import { JsonObject } from '@backstage/types';
 
+/** @public */
 export interface SignInResolverFactory<TAuthResult, TOptions> {
   (
     ...options: undefined extends TOptions
@@ -28,6 +29,7 @@ export interface SignInResolverFactory<TAuthResult, TOptions> {
   optionsJsonSchema?: JsonObject;
 }
 
+/** @public */
 export interface SignInResolverFactoryOptions<
   TAuthResult,
   TOptionsOutput,
@@ -37,6 +39,7 @@ export interface SignInResolverFactoryOptions<
   create(options: TOptionsOutput): SignInResolver<TAuthResult>;
 }
 
+/** @public */
 export function createSignInResolverFactory<
   TAuthResult,
   TOptionsOutput,

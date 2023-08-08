@@ -21,7 +21,7 @@ import {
 } from '@backstage/plugin-auth-node';
 import { OAuthResult } from '../oauth';
 
-/** @public */
+/** @internal */
 export function adaptLegacyOAuthSignInResolver(
   signInResolver?: SignInResolver<OAuthResult>,
 ): SignInResolver<OAuthAuthenticatorResult<PassportProfile>> | undefined {

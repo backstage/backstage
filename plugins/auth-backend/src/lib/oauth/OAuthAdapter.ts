@@ -52,7 +52,7 @@ export const TEN_MINUTES_MS = 600 * 1000;
 
 /**
  * @public
- * @deprecated
+ * @deprecated Use `createOAuthRouteHandlers` from `@backstage/plugin-auth-node` instead
  */
 export type OAuthAdapterOptions = {
   providerId: string;

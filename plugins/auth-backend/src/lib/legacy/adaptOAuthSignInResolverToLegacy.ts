@@ -21,6 +21,7 @@ import {
 } from '@backstage/plugin-auth-node';
 import { OAuthResult } from '../oauth';
 
+/** @internal */
 export function adaptOAuthSignInResolverToLegacy<
   TKeys extends string,
 >(resolvers: {

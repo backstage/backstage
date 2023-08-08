@@ -18,6 +18,7 @@ import { Config } from '@backstage/config';
 import { Request } from 'express';
 import { ProfileTransform } from '../types';
 
+/** @public */
 export interface OAuthSession {
   accessToken: string;
   tokenType: string;
@@ -27,33 +28,39 @@ export interface OAuthSession {
   refreshToken?: string;
 }
 
+/** @public */
 export interface OAuthAuthenticatorStartInput {
   scope: string;
   state: string;
   req: Request;
 }
 
+/** @public */
 export interface OAuthAuthenticatorAuthenticateInput {
   req: Request;
 }
 
+/** @public */
 export interface OAuthAuthenticatorRefreshInput {
   scope: string;
   refreshToken: string;
   req: Request;
 }
 
+/** @public */
 export interface OAuthAuthenticatorLogoutInput {
   accessToken?: string;
   refreshToken?: string;
   req: Request;
 }
 
+/** @public */
 export interface OAuthAuthenticatorResult<TProfile> {
   fullProfile: TProfile;
   session: OAuthSession;
 }
 
+/** @public */
 export interface OAuthAuthenticator<TContext, TProfile> {
   defaultProfileTransform: ProfileTransform<OAuthAuthenticatorResult<TProfile>>;
   shouldPersistScopes?: boolean;
@@ -73,6 +80,7 @@ export interface OAuthAuthenticator<TContext, TProfile> {
   logout?(input: OAuthAuthenticatorLogoutInput, ctx: TContext): Promise<void>;
 }
 
+/** @public */
 export function createOAuthAuthenticator<TContext, TProfile>(
   authenticator: OAuthAuthenticator<TContext, TProfile>,
 ): OAuthAuthenticator<TContext, TProfile> {

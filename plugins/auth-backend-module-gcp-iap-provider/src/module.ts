@@ -23,6 +23,7 @@ import {
 import { gcpIapAuthenticator } from './authenticator';
 import { gcpIapSignInResolvers } from './resolvers';
 
+/** @public */
 export const authModuleGcpIapProvider = createBackendModule({
   pluginId: 'auth',
   moduleId: 'gcpIapProvider',

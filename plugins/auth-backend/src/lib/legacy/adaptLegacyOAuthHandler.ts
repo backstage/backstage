@@ -22,7 +22,7 @@ import { AuthHandler } from '../../providers';
 import { OAuthResult } from '../oauth';
 import { PassportProfile } from '../passport/types';
 
-/** @public */
+/** @internal */
 export function adaptLegacyOAuthHandler(
   authHandler?: AuthHandler<OAuthResult>,
 ): ProfileTransform<OAuthAuthenticatorResult<PassportProfile>> | undefined {

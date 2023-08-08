@@ -32,6 +32,6 @@ export type GcpIapTokenInfo = _GcpIapTokenInfo;
  * callbacks.
  *
  * @public
- * @deprecated
+ * @deprecated import from `@backstage/plugin-auth-backend-module-gcp-iap-provider` instead
  */
 export type GcpIapResult = _GcpIapResult;

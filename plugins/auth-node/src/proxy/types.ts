@@ -18,6 +18,7 @@ import { Config } from '@backstage/config';
 import { Request } from 'express';
 import { ProfileTransform } from '../types';
 
+/** @public */
 export interface ProxyAuthenticator<TContext, TResult> {
   defaultProfileTransform: ProfileTransform<TResult>;
   initialize(ctx: { config: Config }): Promise<TContext>;
@@ -27,6 +28,7 @@ export interface ProxyAuthenticator<TContext, TResult> {
   ): Promise<{ result: TResult }>;
 }
 
+/** @public */
 export function createProxyAuthenticator<TContext, TResult>(
   authenticator: ProxyAuthenticator<TContext, TResult>,
 ): ProxyAuthenticator<TContext, TResult> {
