@@ -1,5 +1,16 @@
 # @backstage/plugin-app-backend
 
+## 0.3.48-next.2
+
+### Patch Changes
+
+- d564ad142b17: Migrated the alpha `appBackend` export to use static configuration and extension points rather than accepting options.
+- Updated dependencies
+  - @backstage/plugin-app-node@0.1.0-next.0
+  - @backstage/backend-plugin-api@0.6.0-next.2
+  - @backstage/backend-common@0.19.2-next.2
+  - @backstage/config-loader@1.4.0-next.1
+
 ## 0.3.48-next.1
 
 ### Patch Changes

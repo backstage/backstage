@@ -1,5 +1,11 @@
 # @backstage/plugin-graphql-voyager
 
+## 0.1.6-next.2
+
+### Patch Changes
+
+- bb1e1c2b26cc: Fix typo in install instructions.
+
 ## 0.1.6-next.1
 
 ### Patch Changes

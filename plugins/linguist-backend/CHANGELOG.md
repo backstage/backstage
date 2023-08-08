@@ -1,5 +1,21 @@
 # @backstage/plugin-linguist-backend
 
+## 0.4.0-next.2
+
+### Minor Changes
+
+- d440f1dd0e72: Adds a processor to the linguist backend which can automatically add language tags to entities
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/plugin-linguist-common@0.1.1-next.1
+  - @backstage/backend-plugin-api@0.6.0-next.2
+  - @backstage/backend-tasks@0.5.5-next.2
+  - @backstage/backend-common@0.19.2-next.2
+  - @backstage/plugin-catalog-node@1.4.1-next.2
+  - @backstage/plugin-auth-node@0.2.17-next.2
+
 ## 0.3.2-next.1
 
 ### Patch Changes

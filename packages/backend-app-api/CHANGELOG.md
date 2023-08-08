@@ -1,5 +1,19 @@
 # @backstage/backend-app-api
 
+## 0.5.0-next.2
+
+### Patch Changes
+
+- e65c4896f755: Do not throw in backend.stop, if start failed
+- cc9256a33bcc: Added new experimental `featureDiscoveryServiceFactory`, available as an `/alpha` export.
+- Updated dependencies
+  - @backstage/backend-plugin-api@0.6.0-next.2
+  - @backstage/backend-tasks@0.5.5-next.2
+  - @backstage/backend-common@0.19.2-next.2
+  - @backstage/plugin-permission-node@0.7.11-next.2
+  - @backstage/plugin-auth-node@0.2.17-next.2
+  - @backstage/config-loader@1.4.0-next.1
+
 ## 0.5.0-next.1
 
 ### Minor Changes

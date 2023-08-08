@@ -1,5 +1,11 @@
 # @backstage/plugin-catalog-react
 
+## 1.8.1-next.1
+
+### Patch Changes
+
+- aa3feedce10a: Allow specifying screen size when catalog filters are hidden in drawer
+
 ## 1.8.1-next.0
 
 ### Patch Changes
