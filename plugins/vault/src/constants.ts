@@ -17,4 +17,5 @@
 /**
  * @public
  */
+export const VAULT_SECRET_ENGINE_ANNOTATION = 'vault.io/secrets-engine';
 export const VAULT_SECRET_PATH_ANNOTATION = 'vault.io/secrets-path';

@@ -66,7 +66,7 @@ To get started, first you need a running instance of Vault. You can follow [this
      baseUrl: http://your-internal-vault-url.svc
      publicUrl: https://your-vault-url.example.com
      token: <VAULT_TOKEN>
-     secretEngine: 'customSecretEngine' # Optional. By default it uses 'secrets'
+     secretEngine: 'customSecretEngine' # Optional. By default it uses 'secrets'. Can be overwritten by the annotation of the entity
      kvVersion: <kv-version> # Optional. The K/V version that your instance is using. The available options are '1' or '2'
    ```
 
@@ -106,6 +106,20 @@ The path is relative to your secrets engine folder. So if you want to get the se
 
 You will set the `vault.io/secret-path` to `test/backstage`. If the folder `backstage` contains other sub-folders, the plugin will fetch the secrets inside them and adapt the **View** and **Edit** URLs to point to the correct place.
 
+In case you need to support different secret engines for entities of the catalog you can proivde optional annotion to the entity in `catalog-info.yaml`:
+
+```diff
+ apiVersion: backstage.io/v1alpha1
+ kind: Component
+ metadata:
+   # ...
+   annotations:
+     vault.io/secrets-path: path/to/secrets
++    vault.io/secret-engine: customSecretEngine # Optional. By default it uses 'secertEngine' value from configuration.
+```
+
+That will overwrite the default secret engine from the configuration.
+
 ## Renew token
 
 In a secure Vault instance, it's usual that the tokens are refreshed after some time. In order to always have a valid token to fetch the secrets, it might be necessary to execute a renew action after some time. By default this is deactivated, but it can be easily activated and configured to be executed periodically (hourly by default, but customizable by the user). In order to do that, modify your `src/plugins/vault.ts` file to look like this one:
@@ -138,6 +152,7 @@ export default async function createPlugin(
 ## Features
 
 - List the secrets present in a certain path
+- Use different secret engines for different components
 - Open a link to view the secret
 - Open a link to edit the secret
 - Renew the token automatically with a defined periodicity

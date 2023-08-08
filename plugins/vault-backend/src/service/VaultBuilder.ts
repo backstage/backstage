@@ -140,11 +140,16 @@ export class VaultBuilder {
 
     router.get('/v1/secrets/:path', async (req, res) => {
       const { path } = req.params;
+      const { engine } = req.query;
+
       if (typeof path !== 'string') {
         throw new InputError(`Invalid path: ${path}`);
       }
+      if (engine && typeof engine !== 'string') {
+        throw new InputError(`Invalid engine: ${engine}`);
+      }
 
-      const secrets = await vaultApi.listSecrets(path);
+      const secrets = await vaultApi.listSecrets(path, engine);
       res.json({ items: secrets });
     });
 

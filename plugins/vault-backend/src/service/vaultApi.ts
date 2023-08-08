@@ -59,11 +59,17 @@ export interface VaultApi {
    * Returns the URL to access the Vault UI with the defined config.
    */
   getFrontendSecretsUrl(): string;
+
   /**
    * Returns a list of secrets used to show in a table.
    * @param secretPath - The path where the secrets are stored in Vault
+   * @param secretMount - The mount point of the secrets engine, optional, overrides default secret engine
    */
-  listSecrets(secretPath: string): Promise<VaultSecret[]>;
+  listSecrets(
+    secretPath: string,
+    secretMount?: string | undefined,
+  ): Promise<VaultSecret[]>;
+
   /**
    * Optional, to renew the token used to list the secrets. Throws an
    * error if the token renewal went wrong.
@@ -115,11 +121,16 @@ export class VaultClient implements VaultApi {
     return `${this.vaultConfig.baseUrl}/ui/vault/secrets/${this.vaultConfig.secretEngine}`;
   }
 
-  async listSecrets(secretPath: string): Promise<VaultSecret[]> {
+  async listSecrets(
+    secretPath: string,
+    secretEngine?: string | undefined,
+  ): Promise<VaultSecret[]> {
+    const mount = secretEngine || this.vaultConfig.secretEngine;
+
     const listUrl =
       this.vaultConfig.kvVersion === 2
-        ? `v1/${this.vaultConfig.secretEngine}/metadata/${secretPath}`
-        : `v1/${this.vaultConfig.secretEngine}/${secretPath}`;
+        ? `v1/${mount}/metadata/${secretPath}`
+        : `v1/${mount}/${secretPath}`;
     const result = await this.limit(() =>
       this.callApi<VaultSecretList>(listUrl, { list: true }),
     );
@@ -131,7 +142,7 @@ export class VaultClient implements VaultApi {
         if (secret.endsWith('/')) {
           secrets.push(
             ...(await this.limit(() =>
-              this.listSecrets(`${secretPath}/${secret.slice(0, -1)}`),
+              this.listSecrets(`${secretPath}/${secret.slice(0, -1)}`, mount),
             )),
           );
         } else {
@@ -140,8 +151,8 @@ export class VaultClient implements VaultApi {
           secrets.push({
             name: secret,
             path: secretPath,
-            editUrl: `${vaultUrl}/ui/vault/secrets/${this.vaultConfig.secretEngine}/edit/${secretPath}/${secret}`,
-            showUrl: `${vaultUrl}/ui/vault/secrets/${this.vaultConfig.secretEngine}/show/${secretPath}/${secret}`,
+            editUrl: `${vaultUrl}/ui/vault/secrets/${mount}/edit/${secretPath}/${secret}`,
+            showUrl: `${vaultUrl}/ui/vault/secrets/${mount}/show/${secretPath}/${secret}`,
           });
         }
       }),
