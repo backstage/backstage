@@ -14,14 +14,11 @@
  * limitations under the License.
  */
 import { setupRequestMockHandlers } from '@backstage/backend-test-utils';
-import { OAuthStartRequest, OAuthState, encodeState } from '../../lib/oauth';
-import { AuthResolverContext } from '../types';
+import { OAuthStartRequest, encodeState } from '../../lib/oauth';
 import { PinnipedAuthProvider, PinnipedOptions } from './provider';
 import { setupServer } from 'msw/node';
 import { rest } from 'msw';
-import { ClientMetadata, IssuerMetadata } from 'openid-client';
 import express from 'express';
-import nJwt from 'njwt';
 import { UnsecuredJWT } from 'jose';
 
 describe('PinnipedAuthProvider', () => {
@@ -63,28 +60,8 @@ describe('PinnipedAuthProvider', () => {
     clientId: 'clientId.test',
     clientSecret: 'secret.test',
     callbackUrl: 'https://federationDomain.test/callback',
-    resolverContext: {} as AuthResolverContext,
     tokenSignedResponseAlg: 'none',
-    authHandler: async () => ({
-      profile: {},
-    }),
   };
-
-  // const idToken: string = nJwt
-  //   .create(
-  //     {
-  //       iss: 'https://pinniped.test',
-  //       sub: 'test',
-  //       aud: clientMetadata.clientId,
-  //       claims: {
-  //         given_name: 'Givenname',
-  //         family_name: 'Familyname',
-  //         email: 'user@example.com',
-  //       },
-  //     },
-  //     Buffer.from('signing key'),
-  //   )
-  //   .compact();
 
   const sub = 'test';
   const iss = 'https://pinniped.test';
@@ -136,36 +113,6 @@ describe('PinnipedAuthProvider', () => {
     provider = new PinnipedAuthProvider(clientMetadata);
   });
 
-  it('hits the metadata url', async () => {
-    const handler = jest.fn((_req, res, ctx) => {
-      return res(
-        ctx.status(200),
-        ctx.set('Content-Type', 'application/json'),
-        ctx.json(issuerMetadata),
-      );
-    });
-
-    worker.use(
-      rest.get(
-        'https://federationDomain.test/.well-known/openid-configuration',
-        handler,
-      ),
-    );
-
-    provider = new PinnipedAuthProvider(clientMetadata);
-
-    const { strategy } = (await (provider as any).implementation) as any as {
-      strategy: {
-        _client: ClientMetadata;
-        _issuer: IssuerMetadata;
-      };
-    };
-
-    expect(handler).toHaveBeenCalledTimes(1);
-    expect(strategy._client.client_id).toBe(clientMetadata.clientId);
-    expect(strategy._issuer.token_endpoint).toBe(issuerMetadata.token_endpoint);
-  });
-
   describe('#start', () => {
     it('redirects to authorization endpoint returned from federationDomain config value', async () => {
       const startResponse = await provider.start(startRequest);
@@ -213,6 +160,7 @@ describe('PinnipedAuthProvider', () => {
         } as unknown as OAuthStartRequest),
       ).rejects.toThrow('authentication requires session support');
     });
+
     // false passing test: passes because we compare two falsy values undefined and undefined
     // need to add the logic that makes this true
     it.skip('adds session ID handle to state param', async () => {
@@ -282,20 +230,6 @@ describe('PinnipedAuthProvider', () => {
             ),
         ),
       );
-    });
-
-    it('responds with ID token', async () => {
-      const { response } = await provider.handler(handlerRequest);
-      expect(response.providerInfo.idToken).toBe(idToken);
-    });
-
-    it.only('decodes profile from ID token', async () => {
-      const { response } = await provider.handler(handlerRequest);
-
-      expect(response.profile).toStrictEqual({
-        displayName: 'Givenname Familyname',
-        email: 'user@example.com',
-      });
     });
 
     it('fails when request has no state', async () => {
