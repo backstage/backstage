@@ -38,6 +38,7 @@
     "@backstage/catalog-model": "workspace:^",
     "@backstage/config": "workspace:^",
     "@backstage/errors": "workspace:^",
+    "@backstage/plugin-auth-backend-module-google-provider": "workspace:^",
     "@backstage/plugin-auth-node": "workspace:^",
     "@backstage/types": "workspace:^",
     "@davidzemon/passport-okta-oauth": "^0.0.5",
