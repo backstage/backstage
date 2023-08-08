@@ -106,7 +106,7 @@ The path is relative to your secrets engine folder. So if you want to get the se
 
 You will set the `vault.io/secret-path` to `test/backstage`. If the folder `backstage` contains other sub-folders, the plugin will fetch the secrets inside them and adapt the **View** and **Edit** URLs to point to the correct place.
 
-In case you need to support different secret engines for entities of the catalog you can proivde optional annotion to the entity in `catalog-info.yaml`:
+In case you need to support different secret engines for entities of the catalog you can provide optional annotation to the entity in `catalog-info.yaml`:
 
 ```diff
  apiVersion: backstage.io/v1alpha1

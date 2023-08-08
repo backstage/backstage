@@ -87,7 +87,7 @@ If the annotation is missing for a certain component, then the card will show so
 
 ![Screenshot of the vault plugin with missing annotation](images/annotation-missing.png)
 
-In case you need to support different secret engines for entities of the catalog you can proivde optional annotion to the entity in `catalog-info.yaml`:
+In case you need to support different secret engines for entities of the catalog you can provide optional annotation to the entity in `catalog-info.yaml`:
 
 ```diff
  apiVersion: backstage.io/v1alpha1

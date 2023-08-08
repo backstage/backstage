@@ -3,4 +3,4 @@
 '@backstage/plugin-vault': minor
 ---
 
-Added ability to override vault secretEngine value on catalog entity level using annotation `vault.io/secrets-engine`
+Added ability to override vault secret engine value on catalog entity level using annotation `vault.io/secrets-engine`
