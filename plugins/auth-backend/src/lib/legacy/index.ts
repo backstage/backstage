@@ -15,5 +15,5 @@
  */
 
 export { adaptLegacyOAuthHandler } from './adaptLegacyOAuthHandler';
-export { adoptLegacyOAuthSignInResolver } from './adoptLegacyOAuthSignInResolver';
+export { adaptLegacyOAuthSignInResolver } from './adaptLegacyOAuthSignInResolver';
 export { adaptOAuthSignInResolverToLegacy } from './adaptOAuthSignInResolverToLegacy';

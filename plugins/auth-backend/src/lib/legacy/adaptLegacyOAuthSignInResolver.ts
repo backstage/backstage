@@ -22,7 +22,7 @@ import {
 import { OAuthResult } from '../oauth';
 
 /** @public */
-export function adoptLegacyOAuthSignInResolver(
+export function adaptLegacyOAuthSignInResolver(
   signInResolver?: SignInResolver<OAuthResult>,
 ): SignInResolver<OAuthAuthenticatorResult<PassportProfile>> | undefined {
   return (

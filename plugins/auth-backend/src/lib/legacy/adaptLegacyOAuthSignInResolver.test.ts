@@ -18,17 +18,17 @@ import {
   AuthResolverContext,
   PassportProfile,
 } from '@backstage/plugin-auth-node';
-import { adoptLegacyOAuthSignInResolver } from './adoptLegacyOAuthSignInResolver';
+import { adaptLegacyOAuthSignInResolver } from './adaptLegacyOAuthSignInResolver';
 
-describe('adoptLegacyOAuthSignInResolver', () => {
+describe('adaptLegacyOAuthSignInResolver', () => {
   it('should pass through undefined', () => {
-    expect(adoptLegacyOAuthSignInResolver(undefined)).toBeUndefined();
+    expect(adaptLegacyOAuthSignInResolver(undefined)).toBeUndefined();
   });
 
   it('should convert a legacy resolver to a new one', () => {
     const legacyResolver = jest.fn();
 
-    const newResolver = adoptLegacyOAuthSignInResolver(legacyResolver);
+    const newResolver = adaptLegacyOAuthSignInResolver(legacyResolver);
 
     newResolver?.(
       {
