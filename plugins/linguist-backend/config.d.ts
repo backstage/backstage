@@ -19,6 +19,8 @@ import { HumanDuration } from '@backstage/types';
 export interface Config {
   /** Configuration options for the linguist plugin */
   linguist?: {
+    // TODO
+
     /** Options for the tags processor */
     tagsProcessor?: {
       /**
