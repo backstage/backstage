@@ -1,5 +1,23 @@
 # @backstage/plugin-catalog-backend
 
+## 1.12.0-next.2
+
+### Minor Changes
+
+- b8cccd8ee858: Support configuring applicable kinds for `AnnotateScmSlugEntityProcessor`
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/plugin-search-backend-module-catalog@0.1.4-next.2
+  - @backstage/backend-plugin-api@0.6.0-next.2
+  - @backstage/backend-tasks@0.5.5-next.2
+  - @backstage/backend-common@0.19.2-next.2
+  - @backstage/plugin-catalog-node@1.4.1-next.2
+  - @backstage/plugin-events-node@0.2.9-next.2
+  - @backstage/plugin-permission-node@0.7.11-next.2
+  - @backstage/plugin-auth-node@0.2.17-next.2
+
 ## 1.12.0-next.1
 
 ### Minor Changes

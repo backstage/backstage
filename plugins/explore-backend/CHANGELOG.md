@@ -1,5 +1,14 @@
 # @backstage/plugin-explore-backend
 
+## 0.0.10-next.2
+
+### Patch Changes
+
+- eda2a699f40d: Moved the config example from the "Tools as Code" section to the "Tools as Config" section of the README
+- Updated dependencies
+  - @backstage/plugin-search-backend-module-explore@0.1.4-next.2
+  - @backstage/backend-common@0.19.2-next.2
+
 ## 0.0.10-next.1
 
 ### Patch Changes
