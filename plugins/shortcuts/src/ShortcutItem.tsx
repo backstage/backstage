@@ -73,8 +73,8 @@ type Props = {
 
 export const ShortcutItem = ({ shortcut, api, allowExternalLinks }: Props) => {
   const classes = useStyles();
-  const [anchorEl, setAnchorEl] = React.useState<Element | null>(null);
-  const [editAnchorEl, setEditAnchorEl] = React.useState<Element | null>(null);
+  const [anchorEl, setAnchorEl] = React.useState<Element | undefined>();
+  const [editAnchorEl, setEditAnchorEl] = React.useState<Element | undefined>();
   const alertApi = useApi(alertApiRef);
 
   const handleMoreVertClick = (event: React.MouseEvent<HTMLButtonElement>) => {
