@@ -255,6 +255,11 @@ describe('createOAuthRouteHandlers', () => {
         } as OAuthState),
       });
 
+      expect(mockAuthenticator.authenticate).toHaveBeenCalledWith(
+        { req: expect.anything() },
+        { ctx: 'authenticator' },
+      );
+
       expect(res.status).toBe(200);
       expect(parseWebMessageResponse(res.text).response).toEqual({
         type: 'authorization_response',
@@ -510,6 +515,184 @@ describe('createOAuthRouteHandlers', () => {
         error: {
           name: 'NotAllowedError',
           message: 'Invalid nonce',
+        },
+      });
+    });
+  });
+
+  describe('refresh', () => {
+    it('should refresh', async () => {
+      const agent = request.agent(
+        wrapInApp(createOAuthRouteHandlers(baseConfig)),
+      );
+
+      agent.jar.setCookie(
+        'my-provider-refresh-token=refresh-token',
+        '127.0.0.1',
+        '/my-provider',
+      );
+
+      mockAuthenticator.refresh.mockImplementation(async ({ scope }) => ({
+        fullProfile: { id: 'id' } as PassportProfile,
+        session: { ...mockSession, scope },
+      }));
+
+      const res = await agent
+        .post('/my-provider/refresh')
+        .set('X-Requested-With', 'XMLHttpRequest')
+        .query({ scope: 'my-scope' });
+
+      expect(mockAuthenticator.refresh).toHaveBeenCalledWith(
+        {
+          req: expect.anything(),
+          refreshToken: 'refresh-token',
+          scope: 'my-scope',
+        },
+        { ctx: 'authenticator' },
+      );
+
+      expect(res.status).toBe(200);
+      expect(res.body).toEqual({
+        profile: {},
+        providerInfo: {
+          accessToken: 'access-token',
+          expiresInSeconds: 3,
+          idToken: 'id-token',
+          scope: 'my-scope',
+        },
+      });
+    });
+
+    it('should refresh with sign-in, profile transform, and persisted scopes', async () => {
+      const agent = request.agent(
+        wrapInApp(
+          createOAuthRouteHandlers({
+            ...baseConfig,
+            authenticator: {
+              ...mockAuthenticator,
+              shouldPersistScopes: true,
+            },
+            profileTransform: async () => ({ profile: { email: 'em@i.l' } }),
+            signInResolver: async () => ({ token: mockBackstageToken }),
+          }),
+        ),
+      );
+
+      agent.jar.setCookie(
+        'my-provider-refresh-token=refresh-token',
+        '127.0.0.1',
+        '/my-provider',
+      );
+      agent.jar.setCookie(
+        'my-provider-granted-scope=persisted-scope',
+        '127.0.0.1',
+        '/my-provider',
+      );
+
+      mockAuthenticator.refresh.mockImplementation(async ({ scope }) => ({
+        fullProfile: { id: 'id' } as PassportProfile,
+        session: { ...mockSession, scope, refreshToken: 'new-refresh-token' },
+      }));
+
+      const res = await agent
+        .post('/my-provider/refresh')
+        .set('X-Requested-With', 'XMLHttpRequest');
+
+      expect(mockAuthenticator.refresh).toHaveBeenCalledWith(
+        {
+          req: expect.anything(),
+          refreshToken: 'refresh-token',
+          scope: 'persisted-scope',
+        },
+        { ctx: 'authenticator' },
+      );
+
+      expect(res.status).toBe(200);
+      expect(res.body).toEqual({
+        profile: { email: 'em@i.l' },
+        providerInfo: {
+          accessToken: 'access-token',
+          expiresInSeconds: 3,
+          idToken: 'id-token',
+          scope: 'persisted-scope',
+        },
+        backstageIdentity: {
+          identity: {
+            type: 'user',
+            ownershipEntityRefs: [],
+            userEntityRef: 'user:default/mock',
+          },
+          token: mockBackstageToken,
+        },
+      });
+      expect(getRefreshTokenCookie(agent).value).toBe('new-refresh-token');
+    });
+
+    it('should forward errors', async () => {
+      const agent = request.agent(
+        wrapInApp(createOAuthRouteHandlers(baseConfig)),
+      );
+
+      agent.jar.setCookie(
+        'my-provider-refresh-token=refresh-token',
+        '127.0.0.1',
+        '/my-provider',
+      );
+
+      mockAuthenticator.refresh.mockRejectedValue(new Error('NOPE'));
+
+      const res = await agent
+        .post('/my-provider/refresh')
+        .set('X-Requested-With', 'XMLHttpRequest');
+
+      expect(res.status).toBe(401);
+      expect(res.body).toMatchObject({
+        error: {
+          name: 'AuthenticationError',
+          message: 'Refresh failed; caused by Error: NOPE',
+        },
+      });
+    });
+
+    it('should require refresh cookie', async () => {
+      const res = await request(wrapInApp(createOAuthRouteHandlers(baseConfig)))
+        .post('/my-provider/refresh')
+        .set('X-Requested-With', 'XMLHttpRequest');
+
+      expect(res.status).toBe(401);
+      expect(res.body).toMatchObject({
+        error: {
+          name: 'AuthenticationError',
+          message:
+            'Refresh failed; caused by InputError: Missing session cookie',
+        },
+      });
+    });
+
+    it('should reject requests without CSRF header', async () => {
+      const res = await request(
+        wrapInApp(createOAuthRouteHandlers(baseConfig)),
+      ).post('/my-provider/refresh');
+
+      expect(res.status).toBe(401);
+      expect(res.body).toMatchObject({
+        error: {
+          name: 'AuthenticationError',
+          message: 'Invalid X-Requested-With header',
+        },
+      });
+    });
+
+    it('should reject requests with invalid CSRF header', async () => {
+      const res = await request(wrapInApp(createOAuthRouteHandlers(baseConfig)))
+        .post('/my-provider/refresh')
+        .set('X-Requested-With', 'invalid');
+
+      expect(res.status).toBe(401);
+      expect(res.body).toMatchObject({
+        error: {
+          name: 'AuthenticationError',
+          message: 'Invalid X-Requested-With header',
         },
       });
     });
