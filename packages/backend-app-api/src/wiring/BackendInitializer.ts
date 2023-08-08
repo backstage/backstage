@@ -27,6 +27,7 @@ import { EnumerableServiceHolder, ServiceOrExtensionPoint } from './types';
 // eslint-disable-next-line @backstage/no-forbidden-package-imports
 import { InternalBackendFeature } from '@backstage/backend-plugin-api/src/wiring/types';
 import { ForwardedError } from '@backstage/errors';
+import { featureDiscoveryServiceRef } from '@backstage/backend-plugin-api/alpha';
 
 export interface BackendRegisterInit {
   consumes: Set<ServiceOrExtensionPoint>;
@@ -87,6 +88,10 @@ export class BackendInitializer {
     if (this.#startPromise) {
       throw new Error('feature can not be added after the backend has started');
     }
+    this.#addFeature(feature);
+  }
+
+  #addFeature(feature: BackendFeature) {
     if (feature.$$type !== '@backstage/BackendFeature') {
       throw new Error(
         `Failed to add feature, invalid type '${feature.$$type}'`,
@@ -129,6 +134,18 @@ export class BackendInitializer {
   }
 
   async #doStart(): Promise<void> {
+    const featureDiscovery = await this.#serviceHolder.get(
+      featureDiscoveryServiceRef,
+      'root',
+    );
+
+    if (featureDiscovery) {
+      const { features } = await featureDiscovery.getBackendFeatures();
+      for (const feature of features) {
+        this.#addFeature(feature);
+      }
+    }
+
     // Initialize all root scoped services
     for (const ref of this.#serviceHolder.getServiceRefs()) {
       if (ref.scope === 'root') {
