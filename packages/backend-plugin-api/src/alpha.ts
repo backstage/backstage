@@ -14,8 +14,10 @@
  * limitations under the License.
  */
 
-import { createServiceRef } from './services';
-import { BackendFeature } from './wiring';
+import {
+  BackendFeature,
+  createServiceRef,
+} from '@backstage/backend-plugin-api';
 
 /** @alpha */
 export interface FeatureDiscoveryService {
@@ -31,6 +33,3 @@ export const featureDiscoveryServiceRef =
     id: 'core.featureDiscovery',
     scope: 'root',
   });
-
-export type { ServiceRef } from './services';
-export type { BackendFeature };
