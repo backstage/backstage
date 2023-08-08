@@ -94,8 +94,32 @@ export type GithubTeamResponse = Omit<GithubTeam, 'members'> & {
   members: Connection<GithubUser>;
 };
 
+/**
+ * Github Repository
+ *
+ * @public
+ */
+export type GithubRepository = {
+  name: string;
+  owner: {
+    login: string;
+  };
+  description?: string;
+  url: string;
+  isArchived: boolean;
+  isFork: boolean;
+  repositoryTopics: string[];
+  defaultBranchRef?: string;
+  isCatalogInfoFilePresent: boolean;
+  visibility: string;
+};
+
 export type RepositoryResponse = {
   name: string;
+  description: string;
+  owner: {
+    login: string;
+  };
   url: string;
   isArchived: boolean;
   isFork: boolean;
@@ -465,6 +489,10 @@ export async function getOrganizationRepositories(
         repositories(first: 100, after: $cursor) {
           nodes {
             name
+            description
+            owner {
+              login
+            }
             catalogInfoFile: object(expression: $catalogPathRef) {
               __typename
               ... on Blob {

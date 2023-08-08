@@ -31,6 +31,9 @@ import { UserEntity } from '@backstage/catalog-model';
 export const defaultOrganizationTeamTransformer: TeamTransformer;
 
 // @public
+export const defaultRepositoryTransformer: RepositoryTransformer;
+
+// @public
 export const defaultUserTransformer: UserTransformer;
 
 // @public
@@ -88,6 +91,7 @@ export class GithubEntityProvider implements EntityProvider, EventSubscriber {
       logger: Logger;
       schedule?: TaskRunner;
       scheduler?: PluginTaskScheduler;
+      repositoryTransformer?: RepositoryTransformer;
     },
   ): GithubEntityProvider[];
   // (undocumented)
@@ -278,6 +282,22 @@ export class GithubOrgReaderProcessor implements CatalogProcessor {
 }
 
 // @public
+export type GithubRepository = {
+  name: string;
+  owner: {
+    login: string;
+  };
+  description?: string;
+  url: string;
+  isArchived: boolean;
+  isFork: boolean;
+  repositoryTopics: string[];
+  defaultBranchRef?: string;
+  isCatalogInfoFilePresent: boolean;
+  visibility: string;
+};
+
+// @public
 export type GithubTeam = {
   slug: string;
   combinedSlug: string;
@@ -298,6 +318,9 @@ export type GithubUser = {
   name?: string;
   organizationVerifiedDomainEmails?: string[];
 };
+
+// @public
+export type RepositoryTransformer = (item: GithubRepository) => Promise<Entity>;
 
 // @public
 export type TeamTransformer = (

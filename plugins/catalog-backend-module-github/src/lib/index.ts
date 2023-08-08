@@ -20,10 +20,13 @@ export {
   getOrganizationRepositories,
   getOrganizationTeams,
   getOrganizationUsers,
+  type GithubRepository,
   type GithubUser,
   type GithubTeam,
 } from './github';
 export {
+  type RepositoryTransformer,
+  defaultRepositoryTransformer,
   type UserTransformer,
   defaultUserTransformer,
   type TeamTransformer,

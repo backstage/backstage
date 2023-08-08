@@ -32,8 +32,11 @@ export { GithubOrgEntityProvider } from './providers/GithubOrgEntityProvider';
 export type { GithubOrgEntityProviderOptions } from './providers/GithubOrgEntityProvider';
 export {
   type GithubMultiOrgConfig,
+  type GithubRepository,
   type GithubTeam,
   type GithubUser,
+  type RepositoryTransformer,
+  defaultRepositoryTransformer,
   type UserTransformer,
   defaultUserTransformer,
   type TeamTransformer,

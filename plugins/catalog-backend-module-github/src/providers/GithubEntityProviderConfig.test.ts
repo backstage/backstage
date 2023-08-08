@@ -127,6 +127,7 @@ describe('readProviderConfigs', () => {
       },
       schedule: undefined,
       validateLocationsExist: false,
+      createEntitiesWithoutCatalogInfo: false,
     });
     expect(providerConfigs[1]).toEqual({
       id: 'providerCustomCatalogPath',
@@ -145,6 +146,7 @@ describe('readProviderConfigs', () => {
       },
       schedule: undefined,
       validateLocationsExist: false,
+      createEntitiesWithoutCatalogInfo: false,
     });
     expect(providerConfigs[2]).toEqual({
       id: 'providerWithRepositoryFilter',
@@ -163,6 +165,7 @@ describe('readProviderConfigs', () => {
       },
       schedule: undefined,
       validateLocationsExist: false,
+      createEntitiesWithoutCatalogInfo: false,
     });
     expect(providerConfigs[3]).toEqual({
       id: 'providerWithBranchFilter',
@@ -181,6 +184,7 @@ describe('readProviderConfigs', () => {
       },
       schedule: undefined,
       validateLocationsExist: false,
+      createEntitiesWithoutCatalogInfo: false,
     });
     expect(providerConfigs[4]).toEqual({
       id: 'providerWithTopicFilter',
@@ -199,6 +203,7 @@ describe('readProviderConfigs', () => {
       },
       schedule: undefined,
       validateLocationsExist: false,
+      createEntitiesWithoutCatalogInfo: false,
     });
     expect(providerConfigs[5]).toEqual({
       id: 'providerWithForkFilter',
@@ -217,6 +222,7 @@ describe('readProviderConfigs', () => {
       },
       schedule: undefined,
       validateLocationsExist: false,
+      createEntitiesWithoutCatalogInfo: false,
     });
     expect(providerConfigs[6]).toEqual({
       id: 'providerWithVisibilityFilter',
@@ -235,6 +241,7 @@ describe('readProviderConfigs', () => {
       },
       schedule: undefined,
       validateLocationsExist: false,
+      createEntitiesWithoutCatalogInfo: false,
     });
     expect(providerConfigs[7]).toEqual({
       id: 'providerWithHost',
@@ -251,8 +258,9 @@ describe('readProviderConfigs', () => {
         },
         visibility: undefined,
       },
-      validateLocationsExist: false,
       schedule: undefined,
+      validateLocationsExist: false,
+      createEntitiesWithoutCatalogInfo: false,
     });
     expect(providerConfigs[8]).toEqual({
       id: 'providerWithSchedule',
@@ -276,6 +284,7 @@ describe('readProviderConfigs', () => {
         },
       },
       validateLocationsExist: false,
+      createEntitiesWithoutCatalogInfo: false,
     });
   });
 
@@ -292,6 +301,21 @@ describe('readProviderConfigs', () => {
     const providerConfigs = readProviderConfigs(config);
 
     expect(providerConfigs[0].validateLocationsExist).toEqual(false);
+  });
+
+  it('defaults createEntitiesWithoutCatalogInfo to false', () => {
+    const config = new ConfigReader({
+      catalog: {
+        providers: {
+          github: {
+            organization: 'test-org',
+          },
+        },
+      },
+    });
+    const providerConfigs = readProviderConfigs(config);
+
+    expect(providerConfigs[0].createEntitiesWithoutCatalogInfo).toEqual(false);
   });
 
   it('throws an error when a wildcard catalog path is configured with validation of locations', () => {

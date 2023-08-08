@@ -19,6 +19,7 @@ import {
   TaskScheduleDefinition,
 } from '@backstage/backend-tasks';
 import { Config } from '@backstage/config';
+import { RepositoryTransformer } from '../lib/defaultTransformers';
 
 const DEFAULT_CATALOG_PATH = '/catalog-info.yaml';
 const DEFAULT_PROVIDER_ID = 'default';
@@ -36,7 +37,9 @@ export type GithubEntityProviderConfig = {
     visibility?: string[];
   };
   validateLocationsExist: boolean;
+  createEntitiesWithoutCatalogInfo: boolean;
   schedule?: TaskScheduleDefinition;
+  repositoryTransformer?: RepositoryTransformer;
 };
 
 export type GithubTopicFilters = {
@@ -83,6 +86,8 @@ function readProviderConfig(
   );
   const validateLocationsExist =
     config?.getOptionalBoolean('validateLocationsExist') ?? false;
+  const createEntitiesWithoutCatalogInfo =
+    config?.getOptionalBoolean('createEntitiesWithoutCatalogInfo') ?? false;
 
   const catalogPathContainsWildcard = catalogPath.includes('*');
 
@@ -118,6 +123,7 @@ function readProviderConfig(
     },
     schedule,
     validateLocationsExist,
+    createEntitiesWithoutCatalogInfo,
   };
 }
 

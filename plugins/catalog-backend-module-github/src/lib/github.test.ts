@@ -515,6 +515,10 @@ describe('github', () => {
             nodes: [
               {
                 name: 'backstage',
+                description: 'some description',
+                owner: {
+                  login: 'test-org',
+                },
                 url: 'https://github.com/backstage/backstage',
                 isArchived: false,
                 isFork: false,
@@ -529,6 +533,10 @@ describe('github', () => {
               },
               {
                 name: 'demo',
+                description: 'some description',
+                owner: {
+                  login: 'test-org',
+                },
                 url: 'https://github.com/backstage/demo',
                 isArchived: true,
                 isFork: true,
@@ -555,6 +563,10 @@ describe('github', () => {
         repositories: [
           {
             name: 'backstage',
+            description: 'some description',
+            owner: {
+              login: 'test-org',
+            },
             url: 'https://github.com/backstage/backstage',
             isArchived: false,
             isFork: false,
@@ -569,6 +581,10 @@ describe('github', () => {
           },
           {
             name: 'demo',
+            description: 'some description',
+            owner: {
+              login: 'test-org',
+            },
             url: 'https://github.com/backstage/demo',
             isArchived: true,
             isFork: true,

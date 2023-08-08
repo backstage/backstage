@@ -14,13 +14,19 @@
  * limitations under the License.
  */
 
-import { GroupEntity, UserEntity } from '@backstage/catalog-model';
+import {
+  ComponentEntity,
+  Entity,
+  GroupEntity,
+  UserEntity,
+} from '@backstage/catalog-model';
+import { repoNameToMetadataName } from '@backstage/plugin-catalog-node';
 import { graphql } from '@octokit/graphql';
 import {
   ANNOTATION_GITHUB_TEAM_SLUG,
   ANNOTATION_GITHUB_USER_LOGIN,
 } from './annotation';
-import { GithubTeam, GithubUser } from './github';
+import { GithubRepository, GithubTeam, GithubUser } from './github';
 
 /**
  * Context passed to Transformers
@@ -32,6 +38,13 @@ export interface TransformerContext {
   query: string;
   org: string;
 }
+
+/**
+ * Transformer for GitHub Repository to Entity
+ *
+ * @public
+ */
+export type RepositoryTransformer = (item: GithubRepository) => Promise<Entity>;
 
 /**
  * Transformer for GitHub users to UserEntity
@@ -52,6 +65,48 @@ export type TeamTransformer = (
   item: GithubTeam,
   ctx: TransformerContext,
 ) => Promise<GroupEntity | undefined>;
+
+/**
+ * Default transformer for GitHub Repository to ComponentEntity
+ *
+ * @public
+ */
+export const defaultRepositoryTransformer: RepositoryTransformer =
+  async repository => {
+    const defaultBranchName = repository.defaultBranchRef ?? 'main';
+    const locationUrl = `${repository.url}/blob/${defaultBranchName}/catalog-info.yaml`;
+    const name = repoNameToMetadataName(repository.name, 'url', locationUrl);
+    // TODO: infer owner by CODEOWNERS or Teams/Users with admin|maintainer|write access
+    //       this may need to be done using a Processor
+    const owner = 'unknown';
+    const lifecycle =
+      repository.repositoryTopics
+        .filter(topic => topic.match(/experimental|production/))
+        .pop() || 'production';
+
+    const entity: ComponentEntity = {
+      apiVersion: 'backstage.io/v1alpha1',
+      kind: 'Component',
+      spec: {
+        type: 'other',
+        lifecycle,
+        owner,
+      },
+      metadata: {
+        name,
+        description: repository.description ?? undefined,
+        tags: [],
+        annotations: {
+          'backstage.io/source-location': `url:${repository.url}/tree/${defaultBranchName}/`,
+          'backstage.io/managed-by-location': `url:${locationUrl}`,
+          'backstage.io/managed-by-origin-location': `url:${locationUrl}`,
+          'github.com/project-slug': `${repository.owner.login}/${repository.name}`,
+        },
+      },
+    };
+
+    return entity;
+  };
 
 /**
  * Default transformer for GitHub users to UserEntity

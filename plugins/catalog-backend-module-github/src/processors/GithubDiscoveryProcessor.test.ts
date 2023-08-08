@@ -147,6 +147,10 @@ describe('GithubDiscoveryProcessor', () => {
         repositories: [
           {
             name: 'backstage',
+            description: 'some description',
+            owner: {
+              login: 'test-org',
+            },
             url: 'https://github.com/backstage/backstage',
             repositoryTopics: { nodes: [] },
             isArchived: false,
@@ -159,6 +163,10 @@ describe('GithubDiscoveryProcessor', () => {
           },
           {
             name: 'demo',
+            description: 'some description',
+            owner: {
+              login: 'test-org',
+            },
             url: 'https://github.com/backstage/demo',
             repositoryTopics: { nodes: [] },
             isArchived: false,
@@ -203,6 +211,10 @@ describe('GithubDiscoveryProcessor', () => {
         repositories: [
           {
             name: 'backstage',
+            description: 'some description',
+            owner: {
+              login: 'test-org',
+            },
             url: 'https://github.com/backstage/tech-docs',
             repositoryTopics: { nodes: [] },
             isArchived: false,
@@ -239,6 +251,10 @@ describe('GithubDiscoveryProcessor', () => {
         repositories: [
           {
             name: 'backstage',
+            description: 'some description',
+            owner: {
+              login: 'test-org',
+            },
             url: 'https://github.com/backstage/tech-docs',
             repositoryTopics: { nodes: [] },
             isArchived: false,
@@ -265,6 +281,10 @@ describe('GithubDiscoveryProcessor', () => {
         repositories: [
           {
             name: 'backstage',
+            description: 'some description',
+            owner: {
+              login: 'test-org',
+            },
             url: 'https://github.com/backstage/backstage',
             repositoryTopics: { nodes: [] },
             isArchived: false,
@@ -302,6 +322,10 @@ describe('GithubDiscoveryProcessor', () => {
         repositories: [
           {
             name: 'backstage',
+            description: 'some description',
+            owner: {
+              login: 'test-org',
+            },
             url: 'https://github.com/backstage/backstage',
             repositoryTopics: { nodes: [] },
             isArchived: false,
@@ -314,6 +338,10 @@ describe('GithubDiscoveryProcessor', () => {
           },
           {
             name: 'techdocs-cli',
+            description: 'some description',
+            owner: {
+              login: 'test-org',
+            },
             url: 'https://github.com/backstage/techdocs-cli',
             repositoryTopics: { nodes: [] },
             isArchived: false,
@@ -326,6 +354,10 @@ describe('GithubDiscoveryProcessor', () => {
           },
           {
             name: 'techdocs-container',
+            description: 'some description',
+            owner: {
+              login: 'test-org',
+            },
             url: 'https://github.com/backstage/techdocs-container',
             repositoryTopics: { nodes: [] },
             isArchived: false,
@@ -338,6 +370,10 @@ describe('GithubDiscoveryProcessor', () => {
           },
           {
             name: 'techdocs-durp',
+            description: 'some description',
+            owner: {
+              login: 'test-org',
+            },
             url: 'https://github.com/backstage/techdocs-durp',
             repositoryTopics: { nodes: [] },
             isArchived: false,
@@ -381,6 +417,10 @@ describe('GithubDiscoveryProcessor', () => {
         repositories: [
           {
             name: 'abstest',
+            description: 'some description',
+            owner: {
+              login: 'test-org',
+            },
             url: 'https://github.com/backstage/abctest',
             isArchived: false,
             isFork: false,
@@ -393,6 +433,10 @@ describe('GithubDiscoveryProcessor', () => {
           },
           {
             name: 'test',
+            description: 'some description',
+            owner: {
+              login: 'test-org',
+            },
             url: 'https://github.com/backstage/test',
             isArchived: false,
             isFork: false,
@@ -405,6 +449,10 @@ describe('GithubDiscoveryProcessor', () => {
           },
           {
             name: 'test-archived',
+            description: 'some description',
+            owner: {
+              login: 'test-org',
+            },
             url: 'https://github.com/backstage/test',
             repositoryTopics: { nodes: [] },
             isArchived: true,
@@ -417,6 +465,10 @@ describe('GithubDiscoveryProcessor', () => {
           },
           {
             name: 'testxyz',
+            description: 'some description',
+            owner: {
+              login: 'test-org',
+            },
             url: 'https://github.com/backstage/testxyz',
             repositoryTopics: { nodes: [] },
             isArchived: false,

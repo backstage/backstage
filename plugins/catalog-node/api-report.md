@@ -198,4 +198,11 @@ export const processingResult: Readonly<{
   readonly relation: (spec: EntityRelationSpec) => CatalogProcessorResult;
   readonly refresh: (key: string) => CatalogProcessorResult;
 }>;
+
+// @public
+export function repoNameToMetadataName(
+  name: string,
+  type: string | undefined,
+  target: string,
+): string;
 ```

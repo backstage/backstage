@@ -169,6 +169,10 @@ describe('GithubEntityProvider', () => {
         repositories: [
           {
             name: 'test-repo',
+            description: 'some description',
+            owner: {
+              login: 'test-org',
+            },
             url: 'https://github.com/test-org/test-repo',
             repositoryTopics: { nodes: [] },
             isArchived: false,
@@ -264,6 +268,10 @@ describe('GithubEntityProvider', () => {
         repositories: [
           {
             name: 'test-repo',
+            description: 'some description',
+            owner: {
+              login: 'test-org',
+            },
             url: 'https://github.com/test-org/test-repo',
             repositoryTopics: {
               nodes: [
@@ -345,6 +353,10 @@ describe('GithubEntityProvider', () => {
         repositories: [
           {
             name: 'test-repo',
+            description: 'some description',
+            owner: {
+              login: 'test-org',
+            },
             url: 'https://github.com/test-org/test-repo',
             repositoryTopics: {
               nodes: [
@@ -446,6 +458,10 @@ describe('GithubEntityProvider', () => {
         repositories: [
           {
             name: 'test-repo',
+            description: 'some description',
+            owner: {
+              login: 'test-org',
+            },
             url: 'https://github.com/test-org/test-repo',
             repositoryTopics: {
               nodes: [],
@@ -460,6 +476,10 @@ describe('GithubEntityProvider', () => {
           },
           {
             name: 'another-repo',
+            description: 'some description',
+            owner: {
+              login: 'test-org',
+            },
             url: 'https://github.com/test-org/another-repo',
             repositoryTopics: {
               nodes: [],
@@ -558,6 +578,10 @@ describe('GithubEntityProvider', () => {
         repositories: [
           {
             name: 'test-repo',
+            description: 'some description',
+            owner: {
+              login: 'test-org',
+            },
             url: 'https://github.com/test-org/test-repo',
             repositoryTopics: {
               nodes: [
@@ -580,6 +604,10 @@ describe('GithubEntityProvider', () => {
           },
           {
             name: 'test-repo-2',
+            description: 'some description',
+            owner: {
+              login: 'test-org',
+            },
             url: 'https://github.com/test-org/test-repo-2',
             repositoryTopics: {
               nodes: [
@@ -605,6 +633,10 @@ describe('GithubEntityProvider', () => {
           },
           {
             name: 'test-repo-3',
+            description: 'some description',
+            owner: {
+              login: 'test-org',
+            },
             url: 'https://github.com/test-org/test-repo-3',
             repositoryTopics: {
               nodes: [
@@ -772,6 +804,9 @@ describe('GithubEntityProvider', () => {
           stargazers: 0,
           master_branch: 'main',
           organization: 'test-org',
+          owner: {
+            login: 'test-org',
+          },
           topics: [],
         },
         created: true,
@@ -862,6 +897,9 @@ describe('GithubEntityProvider', () => {
           stargazers: 0,
           master_branch: 'main',
           organization: 'test-org',
+          owner: {
+            login: 'test-org',
+          },
           topics: [],
         },
         created: true,
@@ -952,6 +990,9 @@ describe('GithubEntityProvider', () => {
           stargazers: 0,
           master_branch: 'main',
           organization: 'test-org',
+          owner: {
+            login: 'test-org',
+          },
           topics: [],
         },
         created: true,
@@ -1042,6 +1083,9 @@ describe('GithubEntityProvider', () => {
           stargazers: 0,
           master_branch: 'main',
           organization: 'test-org',
+          owner: {
+            login: 'test-org',
+          },
           topics: [],
         },
         created: true,
@@ -1115,6 +1159,9 @@ describe('GithubEntityProvider', () => {
           stargazers: 0,
           master_branch: 'main',
           organization: 'test-org',
+          owner: {
+            login: 'test-org',
+          },
           topics: [],
         },
         created: true,
@@ -1187,6 +1234,9 @@ describe('GithubEntityProvider', () => {
           stargazers: 0,
           master_branch: 'main',
           organization: 'test-org',
+          owner: {
+            login: 'test-org',
+          },
           topics: [],
         },
         created: true,

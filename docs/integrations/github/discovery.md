@@ -47,6 +47,40 @@ export default async function createPlugin(
       }),
       // optional: alternatively, use schedule
       scheduler: env.scheduler,
+
+      // optional: decorate discovered entities with repositoryTransformer
+      repositoryTransformer: async (r): Entity => {
+        const entity = await defaultRepositoryTransformer(r);
+        const topicToTag: string[] = [
+          'aws',
+          'security',
+        ]
+        const enum topicToLifecycle {
+          'experimental': 'experimental'
+          'poc': 'experimental'
+          'production': 'production'
+          'prod': 'production'
+        }
+
+        // add tags from set list of topics
+        if (!entity.metadata.tags) {
+          entity.metadata.tags = [];
+        }
+        r.repositoryTopic
+          .filter(topic => topicToTag.includes(topic))
+          .map(topic => entity.metadata.tags.push(topic));
+
+        // add custom tags to all discovered entities missing catalog-info
+        entity.metadata.tags.push('catalog-info-missing', 'github-discovery');
+
+        // set lifecycle from topic
+        entity.spec.lifecycle = r.repositoryTopic
+          .filter(topic => topic in topicToLifecycle)
+          .map(topic => topicToLifecycle[topic])
+          .shift() // first match wins
+
+        return entity;
+      },
     }),
   );
   /* highlight-add-end */
@@ -162,6 +196,13 @@ catalog:
           branch: 'main' # string
           repository: '.*' # Regex
         validateLocationsExist: true # optional boolean
+      createEntitiesWithoutCatalogInfo:
+        organization: 'backstage' # string
+        catalogPath: '/catalog-info.yaml' # string
+        filters:
+          branch: 'main' # string
+          repository: '.*' # Regex
+        createEntitiesWithoutCatalogInfo: true # optional boolean
       visibilityProviderId:
         organization: 'backstage' # string
         catalogPath: '/catalog-info.yaml' # string
@@ -213,6 +254,12 @@ This provider supports multiple organizations via unique provider IDs.
   Defaults to `false`.
   Due to limitations in the GitHub API's ability to query for repository objects, this option cannot be used in
   conjunction with wildcards in the `catalogPath`.
+- **`createEntitiesWithoutCatalogInfo`** _(optional)_:
+  Whether to create a Component entity when a catalog-info location does not exist.
+  This option generates basic Component entities based on source repository metadata.
+  Defaults to `false`.
+  Because it will created entities are named based on repository names, existing entities that match a given repository name
+  will prevent the new entity from being created.
 - **`schedule`** _(optional)_:
   - **`frequency`**:
     How often you want the task to run. The system does its best to avoid overlapping invocations.
