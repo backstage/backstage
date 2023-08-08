@@ -25,7 +25,10 @@ export interface RouterOptions {
 // @public
 export interface VaultApi {
   getFrontendSecretsUrl(): string;
-  listSecrets(secretPath: string): Promise<VaultSecret[]>;
+  listSecrets(
+    secretPath: string,
+    secretMount?: string | undefined,
+  ): Promise<VaultSecret[]>;
   renewToken?(): Promise<void>;
 }
 
@@ -49,7 +52,10 @@ export class VaultClient implements VaultApi {
   // (undocumented)
   getFrontendSecretsUrl(): string;
   // (undocumented)
-  listSecrets(secretPath: string): Promise<VaultSecret[]>;
+  listSecrets(
+    secretPath: string,
+    secretEngine?: string | undefined,
+  ): Promise<VaultSecret[]>;
   // (undocumented)
   renewToken(): Promise<void>;
 }
