@@ -96,7 +96,7 @@ In case you need to support different secret engines for entities of the catalog
    # ...
    annotations:
      vault.io/secrets-path: path/to/secrets
-+    vault.io/secret-engine: customSecretEngine # Optional. By default it uses 'secertEngine' value from configuration.
++    vault.io/secrets-engine: customSecretEngine # Optional. By default it uses 'secertEngine' value from configuration.
 ```
 
 That will overwrite the default secret engine from the configuration.
