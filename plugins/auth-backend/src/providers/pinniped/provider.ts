@@ -31,7 +31,6 @@ import { OAuthStartResponse } from '../types';
 import express from 'express';
 import { OAuthAdapter, OAuthEnvironmentHandler } from '../../lib/oauth';
 import { createAuthProviderIntegration } from '../createAuthProviderIntegration';
-import { InternalOAuthError } from 'passport-oauth2';
 
 type OidcImpl = {
   strategy: OidcStrategy<undefined, Client>;
@@ -61,7 +60,7 @@ export class PinnipedAuthProvider implements OAuthHandlers {
   async start(req: OAuthStartRequest): Promise<OAuthStartResponse> {
     const { strategy } = await this.implementation;
     const options: Record<string, string> = {
-      scope: req.scope || 'openid profile email',
+      scope: req.scope || 'pinniped:request-audience username',
       state: encodeState(req.state),
     };
     return new Promise((resolve, reject) => {
@@ -79,7 +78,7 @@ export class PinnipedAuthProvider implements OAuthHandlers {
     req: express.Request,
   ): Promise<{ response: OAuthResponse; refreshToken?: string }> {
     const { strategy } = await this.implementation;
-    return new Promise((resolve, reject) => {
+    return new Promise((_, reject) => {
       strategy.fail = info => {
         reject(new Error(`Authentication rejected, ${info.message || ''}`));
       };
@@ -111,13 +110,7 @@ export class PinnipedAuthProvider implements OAuthHandlers {
         tokenset: TokenSet,
         done: PassportDoneCallback<{ tokenset: TokenSet }, PrivateInfo>,
       ) => {
-        done(
-          undefined,
-          { tokenset },
-          {
-            refreshToken: tokenset.refresh_token,
-          },
-        );
+        done(undefined, { tokenset }, {});
       },
     );
     return { strategy, client };

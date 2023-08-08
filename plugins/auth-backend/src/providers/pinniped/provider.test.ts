@@ -14,12 +14,13 @@
  * limitations under the License.
  */
 import { setupRequestMockHandlers } from '@backstage/backend-test-utils';
-import { OAuthStartRequest, encodeState } from '../../lib/oauth';
+import { OAuthStartRequest, encodeState, readState } from '../../lib/oauth';
 import { PinnipedAuthProvider, PinnipedOptions } from './provider';
 import { setupServer } from 'msw/node';
 import { rest } from 'msw';
 import express from 'express';
 import { UnsecuredJWT } from 'jose';
+import { OAuthState } from '../../lib/oauth';
 
 describe('PinnipedAuthProvider', () => {
   let provider: PinnipedAuthProvider;
@@ -75,6 +76,10 @@ describe('PinnipedAuthProvider', () => {
     .setIssuedAt(iat)
     .setExpirationTime(exp)
     .encode();
+  const oauthState: OAuthState = {
+    nonce: 'nonce',
+    env: 'env',
+  };
 
   beforeEach(() => {
     jest.clearAllMocks();
@@ -96,6 +101,7 @@ describe('PinnipedAuthProvider', () => {
       session: fakeSession,
       method: 'GET',
       url: 'test',
+      state: oauthState,
     } as unknown as OAuthStartRequest;
     const handler = jest.fn((_req, res, ctx) => {
       return res(
@@ -114,13 +120,20 @@ describe('PinnipedAuthProvider', () => {
   });
 
   describe('#start', () => {
-    it('redirects to authorization endpoint returned from federationDomain config value', async () => {
+    it('redirects to authorization endpoint returned from OIDC metadata endpoint', async () => {
       const startResponse = await provider.start(startRequest);
       const url = new URL(startResponse.url);
 
       expect(url.protocol).toBe('https:');
       expect(url.hostname).toBe('pinniped.test');
       expect(url.pathname).toBe('/oauth2/authorize');
+    });
+
+    it('initiates an authorization code grant', async () => {
+      const startResponse = await provider.start(startRequest);
+      const { searchParams } = new URL(startResponse.url);
+
+      expect(searchParams.get('response_type')).toBe('code');
     });
 
     it('passes client ID from config', async () => {
@@ -152,6 +165,16 @@ describe('PinnipedAuthProvider', () => {
       expect(fakeSession['oidc:pinniped.test'].code_verifier).toBeDefined();
     });
 
+    it('requests sufficient scopes for token exchange', async () => {
+      const startResponse = await provider.start(startRequest);
+      const { searchParams } = new URL(startResponse.url);
+      const scopes = searchParams.get('scope')?.split(' ') ?? [];
+
+      expect(scopes).toEqual(
+        expect.arrayContaining(['pinniped:request-audience', 'username']),
+      );
+    });
+
     it('fails when request has no session', async () => {
       return expect(
         provider.start({
@@ -161,20 +184,13 @@ describe('PinnipedAuthProvider', () => {
       ).rejects.toThrow('authentication requires session support');
     });
 
-    // false passing test: passes because we compare two falsy values undefined and undefined
-    // need to add the logic that makes this true
-    it.skip('adds session ID handle to state param', async () => {
+    it('encodes OAuth state in query param', async () => {
       const startResponse = await provider.start(startRequest);
-      // stateParam is empty string
-      const stateParam = new URL(startResponse.url).searchParams.get('state');
-      const state = Object.fromEntries(
-        new URLSearchParams(Buffer.from(stateParam!, 'hex').toString('utf-8')),
-      );
-      // handle is currently undefined
-      const { handle } = fakeSession['oidc:pinniped.test'].state;
-      console.log(`This is the param:`, stateParam);
-      // state.handle = undefined
-      expect(state.handle ?? '').toEqual(handle);
+      const { searchParams } = new URL(startResponse.url);
+      const stateParam = searchParams.get('state');
+      const decodedState = readState(stateParam!);
+
+      expect(decodedState).toMatchObject(oauthState);
     });
   });
 
