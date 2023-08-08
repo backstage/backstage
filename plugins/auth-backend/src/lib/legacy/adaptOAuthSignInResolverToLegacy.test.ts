@@ -76,7 +76,10 @@ describe('adaptOAuthSignInResolverToLegacy', () => {
     );
 
     expect(resolverB).not.toHaveBeenCalled();
-    legacyResolvers.resolverB()({} as any, {} as any);
+    legacyResolvers.resolverB()(
+      { profile: {}, result: { params: {} } } as any,
+      {} as any,
+    );
     expect(resolverB).toHaveBeenCalled();
   });
 });
