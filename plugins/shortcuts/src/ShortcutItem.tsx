@@ -17,25 +17,35 @@
 import React from 'react';
 import { makeStyles } from '@material-ui/core/styles';
 import IconButton from '@material-ui/core/IconButton';
-import Tooltip from '@material-ui/core/Tooltip';
+import MoreVertIcon from '@material-ui/icons/MoreVert';
 import EditIcon from '@material-ui/icons/Edit';
+import DeleteIcon from '@material-ui/icons/Delete';
 import { ShortcutIcon } from './ShortcutIcon';
 import { EditShortcut } from './EditShortcut';
 import { ShortcutApi } from './api';
 import { Shortcut } from './types';
+import { alertApiRef, useApi } from '@backstage/core-plugin-api';
 import { SidebarItem } from '@backstage/core-components';
+import Tooltip from '@material-ui/core/Tooltip';
+import Menu from '@material-ui/core/Menu';
+import MenuItem from '@material-ui/core/MenuItem';
 
 const useStyles = makeStyles(theme => ({
   root: {
-    '&:hover #edit': {
+    '&:hover #morevert': {
       visibility: 'visible',
     },
   },
   button: {
     visibility: 'hidden',
+    padding: theme.spacing(0.5),
   },
   icon: {
     color: theme.palette.common.white,
+    fontSize: 16,
+  },
+  actionicon: {
+    color: theme.palette.common.black,
     fontSize: 16,
   },
 }));
@@ -63,15 +73,42 @@ type Props = {
 
 export const ShortcutItem = ({ shortcut, api, allowExternalLinks }: Props) => {
   const classes = useStyles();
-  const [anchorEl, setAnchorEl] = React.useState<Element | undefined>();
+  const [anchorEl, setAnchorEl] = React.useState<Element | null>(null);
+  const [editAnchorEl, setEditAnchorEl] = React.useState<Element | null>(null);
+  const alertApi = useApi(alertApiRef);
 
-  const handleClick = (event: React.MouseEvent<Element>) => {
-    event.preventDefault();
+  const handleMoreVertClick = (event: React.MouseEvent<HTMLButtonElement>) => {
     setAnchorEl(event.currentTarget);
   };
 
-  const handleClose = () => {
-    setAnchorEl(undefined);
+  const handleMoreVertClose = () => {
+    setAnchorEl(null);
+  };
+
+  const handleEditClick = () => {
+    handleMoreVertClose();
+    setEditAnchorEl(anchorEl);
+  };
+
+  const handleRemove = async () => {
+    try {
+      await api.remove(shortcut.id);
+      alertApi.post({
+        message: `Removed shortcut '${shortcut.title}' from your sidebar`,
+        severity: 'success',
+        display: 'transient',
+      });
+    } catch (error) {
+      alertApi.post({
+        message: `Could not delete shortcut: ${error.message}`,
+        severity: 'error',
+      });
+    }
+  };
+
+  const handleRemoveClick = () => {
+    handleMoreVertClose();
+    handleRemove();
   };
 
   const text = getIconText(shortcut.title);
@@ -87,18 +124,30 @@ export const ShortcutItem = ({ shortcut, api, allowExternalLinks }: Props) => {
           icon={() => <ShortcutIcon text={text} color={color} />}
         >
           <IconButton
-            id="edit"
-            data-testid="edit"
-            onClick={handleClick}
+            id="morevert"
+            data-testid="morevert"
+            onClick={handleMoreVertClick}
             className={classes.button}
           >
-            <EditIcon className={classes.icon} />
+            <MoreVertIcon className={classes.icon} />
           </IconButton>
         </SidebarItem>
       </Tooltip>
-      <EditShortcut
-        onClose={handleClose}
+      <Menu
         anchorEl={anchorEl}
+        open={Boolean(anchorEl)}
+        onClose={handleMoreVertClose}
+      >
+        <MenuItem onClick={handleEditClick}>
+          <EditIcon className={classes.actionicon} />
+        </MenuItem>
+        <MenuItem onClick={handleRemoveClick}>
+          <DeleteIcon className={classes.actionicon} />
+        </MenuItem>
+      </Menu>
+      <EditShortcut
+        onClose={handleEditClick}
+        anchorEl={editAnchorEl}
         api={api}
         shortcut={shortcut}
         allowExternalLinks={allowExternalLinks}
