@@ -146,6 +146,43 @@ export class ServiceRegistry implements EnumerableServiceHolder {
     }
   }
 
+  #checkForCircularDeps(factory: InternalServiceFactory, pluginId: string) {
+    const head = factory;
+
+    const nodes = Object.values(factory.deps);
+
+    const depChain: Array<ServiceRef<unknown, 'plugin' | 'root'>> = [
+      head.service,
+    ];
+
+    let node = nodes.shift();
+
+    if (node) {
+      depChain.push(node);
+    }
+
+    while (!!node && node.id !== head.service.id) {
+      const nodeFactory = this.#providedFactories.get(node.id);
+      const nodeDeps = nodeFactory?.deps;
+      if (nodeDeps) {
+        nodes.unshift(...Object.values(nodeDeps));
+      }
+      node = nodes.shift();
+      if (node) {
+        depChain.push(node);
+      }
+    }
+
+    const isCircular = node?.id === head.service.id;
+
+    if (isCircular) {
+      const circularDepChain = depChain.map(r => `'${r.id}'`).join(' -> ');
+      throw new Error(
+        `Failed to instantiate service '${factory.service.id}' for '${pluginId}' because of the following circular dependency: ${circularDepChain}`,
+      );
+    }
+  }
+
   getServiceRefs(): ServiceRef<unknown>[] {
     return Array.from(this.#providedFactories.values()).map(f => f.service);
   }
@@ -156,6 +193,7 @@ export class ServiceRegistry implements EnumerableServiceHolder {
         let existing = this.#rootServiceImplementations.get(factory);
         if (!existing) {
           this.#checkForMissingDeps(factory, pluginId);
+          this.#checkForCircularDeps(factory, pluginId);
           const rootDeps = new Array<Promise<[name: string, impl: unknown]>>();
 
           for (const [name, serviceRef] of Object.entries(factory.deps)) {
@@ -179,6 +217,7 @@ export class ServiceRegistry implements EnumerableServiceHolder {
       let implementation = this.#implementations.get(factory);
       if (!implementation) {
         this.#checkForMissingDeps(factory, pluginId);
+        this.#checkForCircularDeps(factory, pluginId);
         const rootDeps = new Array<Promise<[name: string, impl: unknown]>>();
 
         for (const [name, serviceRef] of Object.entries(factory.deps)) {
