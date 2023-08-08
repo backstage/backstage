@@ -46,7 +46,10 @@ export type AuthResolverContext = _AuthResolverContext;
  */
 export type CookieConfigurer = _CookieConfigurer;
 
-/** @public */
+/**
+ * @public
+ * @deprecated Use `createOAuthAuthenticator` from `@backstage/plugin-auth-node` instead
+ */
 export type OAuthStartResponse = {
   /**
    * URL to redirect to
@@ -105,6 +108,7 @@ export type SignInResolver<TAuthResult> = _SignInResolver<TAuthResult>;
  * information.
  *
  * @public
+ * @deprecated Use `createOAuthRouteHandlers` from `@backstage/plugin-auth-node` instead
  */
 export type AuthHandlerResult = { profile: ProfileInfo };
 
@@ -120,13 +124,17 @@ export type AuthHandlerResult = { profile: ProfileInfo };
  * group of users.
  *
  * @public
+ * @deprecated Use `createOAuthRouteHandlers` from `@backstage/plugin-auth-node` instead
  */
 export type AuthHandler<TAuthResult> = (
   input: TAuthResult,
   context: AuthResolverContext,
 ) => Promise<AuthHandlerResult>;
 
-/** @public */
+/**
+ * @public
+ * @deprecated Use `createOAuthRouteHandlers` from `@backstage/plugin-auth-node` instead
+ */
 export type StateEncoder = (
   req: OAuthStartRequest,
 ) => Promise<{ encodedState: string }>;

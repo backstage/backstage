@@ -69,7 +69,10 @@ export type OAuthResponse = {
   backstageIdentity?: BackstageSignInResult;
 };
 
-/** @public */
+/**
+ * @public
+ * @deprecated Use `createOAuthRouteHandlers` from `@backstage/plugin-auth-node` instead
+ */
 export type OAuthProviderInfo = {
   /**
    * An access token issued for the signed in user.

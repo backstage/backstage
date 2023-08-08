@@ -11,7 +11,7 @@ import { AuthProviderRouteHandlers as AuthProviderRouteHandlers_2 } from '@backs
 import { AuthResolverCatalogUserQuery as AuthResolverCatalogUserQuery_2 } from '@backstage/plugin-auth-node';
 import { AuthResolverContext as AuthResolverContext_2 } from '@backstage/plugin-auth-node';
 import { BackstageSignInResult } from '@backstage/plugin-auth-node';
-import { CacheService } from '@backstage/backend-plugin-api';
+import { CacheClient } from '@backstage/backend-common';
 import { CatalogApi } from '@backstage/catalog-client';
 import { ClientAuthResponse } from '@backstage/plugin-auth-node';
 import { Config } from '@backstage/config';
@@ -40,13 +40,13 @@ import { UserEntity } from '@backstage/catalog-model';
 import { UserinfoResponse } from 'openid-client';
 import { WebMessageResponse as WebMessageResponse_2 } from '@backstage/plugin-auth-node';
 
-// @public
+// @public @deprecated
 export type AuthHandler<TAuthResult> = (
   input: TAuthResult,
   context: AuthResolverContext,
 ) => Promise<AuthHandlerResult>;
 
-// @public
+// @public @deprecated
 export type AuthHandlerResult = {
   profile: ProfileInfo;
 };
@@ -286,7 +286,7 @@ export type OAuthLogoutRequest = express.Request<{}> & {
   refreshToken: string;
 };
 
-// @public (undocumented)
+// @public @deprecated (undocumented)
 export type OAuthProviderInfo = {
   accessToken: string;
   idToken?: string;
@@ -333,7 +333,7 @@ export type OAuthStartRequest = express.Request<{}> & {
   state: OAuthState;
 };
 
-// @public (undocumented)
+// @public @deprecated (undocumented)
 export type OAuthStartResponse = {
   url: string;
   status?: number;
@@ -452,7 +452,7 @@ export const providers: Readonly<{
       signIn: {
         resolver: SignInResolver<CloudflareAccessResult>;
       };
-      cache?: CacheService | undefined;
+      cache?: CacheClient | undefined;
     }) => AuthProviderFactory_2;
     resolvers: Readonly<{
       emailMatchingUserEntityProfileEmail: () => SignInResolver<unknown>;
@@ -680,7 +680,7 @@ export type SignInInfo<TAuthResult> = SignInInfo_2<TAuthResult>;
 // @public @deprecated (undocumented)
 export type SignInResolver<TAuthResult> = SignInResolver_2<TAuthResult>;
 
-// @public (undocumented)
+// @public @deprecated (undocumented)
 export type StateEncoder = (req: OAuthStartRequest) => Promise<{
   encodedState: string;
 }>;
