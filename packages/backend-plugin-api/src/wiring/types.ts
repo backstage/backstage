@@ -67,7 +67,7 @@ export interface BackendModuleRegistrationPoints {
   }): void;
 }
 
-/** @public */
+/** @internal */
 export interface BackendFeatureFactory<
   TOptions extends [options?: object] = [],
 > {

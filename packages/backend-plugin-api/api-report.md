@@ -21,16 +21,6 @@ export interface BackendFeature {
   $$type: '@backstage/BackendFeature';
 }
 
-// @public (undocumented)
-export interface BackendFeatureFactory<
-  TOptions extends [options?: object] = [],
-> {
-  // (undocumented)
-  $$type: '@backstage/BackendFeatureFactory';
-  // (undocumented)
-  (...options: TOptions): BackendFeature;
-}
-
 // @public
 export interface BackendModuleConfig {
   moduleId: string;

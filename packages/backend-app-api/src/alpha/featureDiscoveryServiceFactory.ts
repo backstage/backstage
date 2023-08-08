@@ -16,7 +16,6 @@
 
 import {
   BackendFeature,
-  BackendFeatureFactory,
   RootConfigService,
   coreServices,
   createServiceFactory,
@@ -121,11 +120,10 @@ function isBackendFeature(value: unknown): value is BackendFeature {
 
 function isBackendFeatureFactory(
   value: unknown,
-): value is BackendFeatureFactory {
+): value is () => BackendFeature {
   return (
     !!value &&
     typeof value === 'function' &&
-    (value as BackendFeatureFactory).$$type ===
-      '@backstage/BackendFeatureFactory'
+    (value as any).$$type === '@backstage/BackendFeatureFactory'
   );
 }
