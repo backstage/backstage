@@ -19,7 +19,7 @@ import {
   AsyncEntityProvider,
   EntityProvider,
 } from '@backstage/plugin-catalog-react';
-import { render, screen } from '@testing-library/react';
+import { render, screen, waitFor } from '@testing-library/react';
 import React, { useEffect } from 'react';
 import { isKind } from './conditions';
 import { EntitySwitch } from './EntitySwitch';
@@ -35,6 +35,80 @@ const Wrapper = ({ children }: { children?: React.ReactNode }) => (
 );
 
 describe('EntitySwitch', () => {
+  it('should render only the first match', () => {
+    const content = (
+      <EntitySwitch>
+        <EntitySwitch.Case if={isKind('component')} children="A" />
+        <EntitySwitch.Case if={isKind('component')} children="B" />
+        <EntitySwitch.Case children="C" />
+      </EntitySwitch>
+    );
+
+    render(
+      <Wrapper>
+        <EntityProvider
+          entity={{ metadata: { name: 'mock' }, kind: 'component' } as Entity}
+        >
+          {content}
+        </EntityProvider>
+      </Wrapper>,
+    );
+
+    expect(screen.getByText('A')).toBeInTheDocument();
+    expect(screen.queryByText('B')).not.toBeInTheDocument();
+    expect(screen.queryByText('C')).not.toBeInTheDocument();
+  });
+
+  it('should render the fallback if no cases are matching', () => {
+    const content = (
+      <EntitySwitch>
+        <EntitySwitch.Case if={isKind('system')} children="A" />
+        <EntitySwitch.Case if={isKind('api')} children="B" />
+        <EntitySwitch.Case children="C" />
+      </EntitySwitch>
+    );
+
+    render(
+      <Wrapper>
+        <EntityProvider
+          entity={{ metadata: { name: 'mock' }, kind: 'component' } as Entity}
+        >
+          {content}
+        </EntityProvider>
+      </Wrapper>,
+    );
+
+    expect(screen.queryByText('A')).not.toBeInTheDocument();
+    expect(screen.queryByText('B')).not.toBeInTheDocument();
+    expect(screen.getByText('C')).toBeInTheDocument();
+  });
+
+  it('should render only the first fallback in case no cases are matching', () => {
+    const content = (
+      <EntitySwitch>
+        <EntitySwitch.Case if={isKind('system')} children="A" />
+        <EntitySwitch.Case if={isKind('api')} children="B" />
+        <EntitySwitch.Case children="C" />
+        <EntitySwitch.Case children="D" />
+      </EntitySwitch>
+    );
+
+    render(
+      <Wrapper>
+        <EntityProvider
+          entity={{ metadata: { name: 'mock' }, kind: 'component' } as Entity}
+        >
+          {content}
+        </EntityProvider>
+      </Wrapper>,
+    );
+
+    expect(screen.queryByText('A')).not.toBeInTheDocument();
+    expect(screen.queryByText('B')).not.toBeInTheDocument();
+    expect(screen.getByText('C')).toBeInTheDocument();
+    expect(screen.queryByText('D')).not.toBeInTheDocument();
+  });
+
   it('should switch child when entity switches', () => {
     const content = (
       <EntitySwitch>
@@ -96,7 +170,7 @@ describe('EntitySwitch', () => {
 
     expect(screen.queryByText('A')).not.toBeInTheDocument();
     expect(screen.queryByText('B')).not.toBeInTheDocument();
-    expect(screen.getByText('C')).toBeInTheDocument();
+    expect(screen.queryByText('C')).not.toBeInTheDocument();
   });
 
   it('should switch child when filters switch', () => {
@@ -383,10 +457,10 @@ describe('EntitySwitch', () => {
     expect(screen.queryByText('A')).not.toBeInTheDocument();
   });
 
-  it('should switch with sync condition that throws', async () => {
+  it('should switch with async condition that throws', async () => {
     const entity = { metadata: { name: 'mock' }, kind: 'component' } as Entity;
 
-    const shouldRender = () => Promise.reject();
+    const shouldRender = jest.fn().mockRejectedValue(undefined);
     render(
       <Wrapper>
         <EntityProvider entity={entity}>
@@ -399,7 +473,9 @@ describe('EntitySwitch', () => {
       </Wrapper>,
     );
 
-    await expect(screen.findByText('C')).resolves.toBeInTheDocument();
+    await waitFor(() => expect(shouldRender).toHaveBeenCalled());
+
+    expect(screen.getByText('C')).toBeInTheDocument();
     expect(screen.queryByText('A')).not.toBeInTheDocument();
     expect(screen.queryByText('B')).not.toBeInTheDocument();
   });
