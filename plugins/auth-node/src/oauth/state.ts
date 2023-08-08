@@ -16,6 +16,7 @@
 
 import pickBy from 'lodash/pickBy';
 import { Request } from 'express';
+import { NotAllowedError } from '@backstage/errors';
 
 /** @public */
 export type OAuthState = {
@@ -49,13 +50,11 @@ export function decodeOAuthState(encodedState: string): OAuthState {
   const state = Object.fromEntries(
     new URLSearchParams(Buffer.from(encodedState, 'hex').toString('utf-8')),
   );
-  if (
-    !state.nonce ||
-    !state.env ||
-    state.nonce?.length === 0 ||
-    state.env?.length === 0
-  ) {
-    throw Error(`Invalid state passed via request`);
+  if (!state.env || state.env?.length === 0) {
+    throw new NotAllowedError('OAuth state is invalid, missing env');
+  }
+  if (!state.nonce || state.nonce?.length === 0) {
+    throw new NotAllowedError('OAuth state is invalid, missing nonce');
   }
 
   return state as OAuthState;

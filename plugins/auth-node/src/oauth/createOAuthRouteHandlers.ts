@@ -179,13 +179,10 @@ export function createOAuthRouteHandlers<TProfile>(
         const cookieNonce = cookieManager.getNonce(req);
         const stateNonce = state.nonce;
         if (!cookieNonce) {
-          throw new Error('Auth response is missing cookie nonce');
-        }
-        if (stateNonce.length === 0) {
-          throw new Error('Auth response is missing state nonce');
+          throw new NotAllowedError('Auth response is missing cookie nonce');
         }
         if (cookieNonce !== stateNonce) {
-          throw new Error('Invalid nonce');
+          throw new NotAllowedError('Invalid nonce');
         }
 
         const result = await authenticator.authenticate(

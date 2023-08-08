@@ -23,7 +23,9 @@ import { AuthProviderRouteHandlers, AuthResolverContext } from '../types';
 import { createOAuthRouteHandlers } from './createOAuthRouteHandlers';
 import { OAuthAuthenticator } from './types';
 import { errorHandler } from '@backstage/backend-common';
-import { encodeOAuthState } from './state';
+import { encodeOAuthState, OAuthState } from './state';
+import { WebMessageResponse } from '../flow';
+import { PassportProfile } from '../passport';
 
 const mockAuthenticator: jest.Mocked<OAuthAuthenticator<unknown, unknown>> = {
   initialize: jest.fn(_r => ({ ctx: 'authenticator' })),
@@ -34,10 +36,23 @@ const mockAuthenticator: jest.Mocked<OAuthAuthenticator<unknown, unknown>> = {
   defaultProfileTransform: jest.fn(async (_r, _c) => ({ profile: {} })),
 };
 
+const mockBackstageToken = `a.${btoa(
+  JSON.stringify({ sub: 'user:default/mock', ent: [] }),
+)}.c`;
+
+const mockSession = {
+  accessToken: 'access-token',
+  expiresInSeconds: 3,
+  scope: 'my-scope',
+  tokenType: 'bear',
+  idToken: 'id-token',
+  refreshToken: 'refresh-token',
+};
+
 const baseConfig = {
   authenticator: mockAuthenticator,
-  appUrl: 'http://localhost:3000',
-  baseUrl: 'http://localhost:7007',
+  appUrl: 'http://127.0.0.1',
+  baseUrl: 'http://127.0.0.1:7007',
   isOriginAllowed: () => true,
   providerId: 'my-provider',
   config: new ConfigReader({}),
@@ -50,7 +65,7 @@ function wrapInApp(handlers: AuthProviderRouteHandlers) {
   const router = PromiseRouter();
 
   router.use(cookieParser());
-  app.use(router);
+  app.use('/my-provider', router);
   app.use(errorHandler());
 
   router.get('/start', handlers.start.bind(handlers));
@@ -68,8 +83,8 @@ function wrapInApp(handlers: AuthProviderRouteHandlers) {
 }
 
 function getNonceCookie(test: SuperAgentTest) {
-  return test.jar.getCookie(`my-provider-nonce`, {
-    domain: 'localhost',
+  return test.jar.getCookie('my-provider-nonce', {
+    domain: '127.0.0.1',
     path: '/my-provider/handler',
     script: false,
     secure: false,
@@ -77,8 +92,8 @@ function getNonceCookie(test: SuperAgentTest) {
 }
 
 function getRefreshTokenCookie(test: SuperAgentTest) {
-  return test.jar.getCookie(`my-provider-refresh-token`, {
-    domain: 'localhost',
+  return test.jar.getCookie('my-provider-refresh-token', {
+    domain: '127.0.0.1',
     path: '/my-provider',
     script: false,
     secure: false,
@@ -86,12 +101,23 @@ function getRefreshTokenCookie(test: SuperAgentTest) {
 }
 
 function getGrantedScopesCookie(test: SuperAgentTest) {
-  return test.jar.getCookie(`my-provider-granted-scope`, {
-    domain: 'localhost',
+  return test.jar.getCookie('my-provider-granted-scope', {
+    domain: '127.0.0.1',
     path: '/my-provider',
     script: false,
     secure: false,
   });
+}
+
+function parseWebMessageResponse(text: string): {
+  response: WebMessageResponse;
+  origin: string;
+} {
+  const [response, origin] = text.matchAll(/decodeURIComponent\('(.+?)'\)/g);
+  return {
+    response: JSON.parse(decodeURIComponent(response[1])),
+    origin: decodeURIComponent(origin[1]),
+  };
 }
 
 describe('createOAuthRouteHandlers', () => {
@@ -110,7 +136,7 @@ describe('createOAuthRouteHandlers', () => {
   describe('start', () => {
     it('should require an env query', async () => {
       const app = wrapInApp(createOAuthRouteHandlers(baseConfig));
-      const res = await request(app).get('/start');
+      const res = await request(app).get('/my-provider/start');
 
       expect(res.status).toBe(400);
       expect(res.body).toMatchObject({
@@ -130,7 +156,9 @@ describe('createOAuthRouteHandlers', () => {
         url: 'https://example.com/redirect',
       });
 
-      const res = await agent.get('/start?env=development&scope=my-scope');
+      const res = await agent.get(
+        '/my-provider/start?env=development&scope=my-scope',
+      );
 
       const { value: nonce } = getNonceCookie(agent);
 
@@ -172,7 +200,7 @@ describe('createOAuthRouteHandlers', () => {
         url: 'https://example.com/redirect',
       });
 
-      const res = await agent.get('/start').query({
+      const res = await agent.get('/my-provider/start').query({
         env: 'development',
         scope: 'my-scope',
         origin: 'https://remotehost',
@@ -203,6 +231,290 @@ describe('createOAuthRouteHandlers', () => {
     });
   });
 
+  describe('frameHandler', () => {
+    it('should authenticate', async () => {
+      const agent = request.agent(
+        wrapInApp(createOAuthRouteHandlers(baseConfig)),
+      );
+
+      agent.jar.setCookie(
+        'my-provider-nonce=123',
+        '127.0.0.1',
+        '/my-provider/handler',
+      );
+
+      mockAuthenticator.authenticate.mockResolvedValue({
+        fullProfile: { id: 'id' } as PassportProfile,
+        session: mockSession,
+      });
+
+      const res = await agent.get('/my-provider/handler/frame').query({
+        state: encodeOAuthState({
+          env: 'development',
+          nonce: '123',
+        } as OAuthState),
+      });
+
+      expect(res.status).toBe(200);
+      expect(parseWebMessageResponse(res.text).response).toEqual({
+        type: 'authorization_response',
+        response: {
+          profile: {},
+          providerInfo: {
+            accessToken: 'access-token',
+            expiresInSeconds: 3,
+            idToken: 'id-token',
+            scope: 'my-scope',
+          },
+        },
+      });
+
+      expect(getRefreshTokenCookie(agent).value).toBe('refresh-token');
+      expect(getGrantedScopesCookie(agent)).toBeUndefined();
+    });
+
+    it('should authenticate with sign-in, profile transform, and persisted scopes', async () => {
+      const agent = request.agent(
+        wrapInApp(
+          createOAuthRouteHandlers({
+            ...baseConfig,
+            authenticator: {
+              ...mockAuthenticator,
+              shouldPersistScopes: true,
+            },
+            profileTransform: async () => ({ profile: { email: 'em@i.l' } }),
+            signInResolver: async () => ({ token: mockBackstageToken }),
+          }),
+        ),
+      );
+
+      agent.jar.setCookie(
+        'my-provider-nonce=123',
+        '127.0.0.1',
+        '/my-provider/handler',
+      );
+
+      mockAuthenticator.authenticate.mockResolvedValue({
+        fullProfile: { id: 'id' } as PassportProfile,
+        session: mockSession,
+      });
+
+      const res = await agent.get('/my-provider/handler/frame').query({
+        state: encodeOAuthState({
+          env: 'development',
+          nonce: '123',
+          scope: 'my-scope',
+        } as OAuthState),
+      });
+
+      expect(res.status).toBe(200);
+      expect(parseWebMessageResponse(res.text).response).toEqual({
+        type: 'authorization_response',
+        response: {
+          profile: { email: 'em@i.l' },
+          providerInfo: {
+            accessToken: 'access-token',
+            expiresInSeconds: 3,
+            idToken: 'id-token',
+            scope: 'my-scope',
+          },
+          backstageIdentity: {
+            identity: {
+              type: 'user',
+              ownershipEntityRefs: [],
+              userEntityRef: 'user:default/mock',
+            },
+            token: mockBackstageToken,
+          },
+        },
+      });
+
+      expect(getRefreshTokenCookie(agent).value).toBe('refresh-token');
+      expect(getGrantedScopesCookie(agent).value).toBe('my-scope');
+    });
+
+    it('should redirect with persisted scope', async () => {
+      const agent = request.agent(
+        wrapInApp(
+          createOAuthRouteHandlers({
+            ...baseConfig,
+            authenticator: {
+              ...mockAuthenticator,
+              shouldPersistScopes: true,
+            },
+            profileTransform: async () => ({ profile: { email: 'em@i.l' } }),
+            signInResolver: async () => ({ token: mockBackstageToken }),
+          }),
+        ),
+      );
+
+      agent.jar.setCookie(
+        'my-provider-nonce=123',
+        '127.0.0.1',
+        '/my-provider/handler',
+      );
+
+      mockAuthenticator.authenticate.mockResolvedValue({
+        fullProfile: { id: 'id' } as PassportProfile,
+        session: mockSession,
+      });
+
+      const res = await agent.get('/my-provider/handler/frame').query({
+        state: encodeOAuthState({
+          env: 'development',
+          nonce: '123',
+          scope: 'my-scope',
+          flow: 'redirect',
+          redirectUrl: 'https://127.0.0.1:3000/redirect',
+        } as OAuthState),
+      });
+
+      expect(res.status).toBe(302);
+      expect(res.get('Location')).toBe('https://127.0.0.1:3000/redirect');
+
+      expect(getRefreshTokenCookie(agent).value).toBe('refresh-token');
+      expect(getGrantedScopesCookie(agent).value).toBe('my-scope');
+    });
+
+    it('should require a valid origin', async () => {
+      const app = wrapInApp(createOAuthRouteHandlers(baseConfig));
+      const res = await request(app)
+        .get('/my-provider/handler/frame')
+        .query({
+          state: encodeOAuthState({
+            env: 'development',
+            nonce: '123',
+            origin: 'invalid-origin',
+          }),
+        });
+
+      expect(res.status).toBe(200);
+      expect(parseWebMessageResponse(res.text).response).toEqual({
+        type: 'authorization_response',
+        error: {
+          name: 'NotAllowedError',
+          message: 'App origin is invalid, failed to parse',
+        },
+      });
+    });
+
+    it('should reject origins that are not allowed', async () => {
+      const app = wrapInApp(
+        createOAuthRouteHandlers({
+          ...baseConfig,
+          isOriginAllowed: () => false,
+        }),
+      );
+      const res = await request(app)
+        .get('/my-provider/handler/frame')
+        .query({
+          state: encodeOAuthState({
+            env: 'development',
+            nonce: '123',
+            origin: 'http://localhost:3000',
+          }),
+        });
+
+      expect(res.status).toBe(200);
+      expect(parseWebMessageResponse(res.text).response).toEqual({
+        type: 'authorization_response',
+        error: {
+          name: 'NotAllowedError',
+          message: "Origin 'http://localhost:3000' is not allowed",
+        },
+      });
+    });
+
+    it('should reject missing state env', async () => {
+      const app = wrapInApp(createOAuthRouteHandlers(baseConfig));
+      const res = await request(app)
+        .get('/my-provider/handler/frame')
+        .query({
+          state: encodeOAuthState({
+            nonce: '123',
+          } as OAuthState),
+        });
+
+      expect(res.status).toBe(200);
+      expect(parseWebMessageResponse(res.text).response).toEqual({
+        type: 'authorization_response',
+        error: {
+          name: 'NotAllowedError',
+          message: 'OAuth state is invalid, missing env',
+        },
+      });
+    });
+
+    it('should reject missing cookie nonce', async () => {
+      const app = wrapInApp(createOAuthRouteHandlers(baseConfig));
+      const res = await request(app)
+        .get('/my-provider/handler/frame')
+        .query({
+          state: encodeOAuthState({
+            env: 'development',
+            nonce: '123',
+          }),
+        });
+
+      expect(res.status).toBe(200);
+      expect(parseWebMessageResponse(res.text).response).toEqual({
+        type: 'authorization_response',
+        error: {
+          name: 'NotAllowedError',
+          message: 'Auth response is missing cookie nonce',
+        },
+      });
+    });
+
+    it('should reject missing state nonce', async () => {
+      const app = wrapInApp(createOAuthRouteHandlers(baseConfig));
+      const res = await request(app)
+        .get('/my-provider/handler/frame')
+        .query({
+          state: encodeOAuthState({
+            env: 'development',
+          } as OAuthState),
+        });
+
+      expect(res.status).toBe(200);
+      expect(parseWebMessageResponse(res.text).response).toEqual({
+        type: 'authorization_response',
+        error: {
+          name: 'NotAllowedError',
+          message: 'OAuth state is invalid, missing nonce',
+        },
+      });
+    });
+
+    it('should reject mismatched nonce', async () => {
+      const agent = request.agent(
+        wrapInApp(createOAuthRouteHandlers(baseConfig)),
+      );
+
+      agent.jar.setCookie(
+        'my-provider-nonce=456',
+        '127.0.0.1',
+        '/my-provider/handler',
+      );
+
+      const res = await agent.get('/my-provider/handler/frame').query({
+        state: encodeOAuthState({
+          env: 'development',
+          nonce: '123',
+        } as OAuthState),
+      });
+
+      expect(res.status).toBe(200);
+      expect(parseWebMessageResponse(res.text).response).toEqual({
+        type: 'authorization_response',
+        error: {
+          name: 'NotAllowedError',
+          message: 'Invalid nonce',
+        },
+      });
+    });
+  });
+
   describe('logout', () => {
     it('should log out', async () => {
       const agent = request.agent(
@@ -211,14 +523,14 @@ describe('createOAuthRouteHandlers', () => {
 
       agent.jar.setCookie(
         'my-provider-refresh-token=my-refresh-token',
-        'localhost',
+        '127.0.0.1',
         '/my-provider',
       );
 
       expect(getRefreshTokenCookie(agent).value).toBe('my-refresh-token');
 
       const res = await agent
-        .post('/logout')
+        .post('/my-provider/logout')
         .set('X-Requested-With', 'XMLHttpRequest');
 
       expect(res.status).toBe(200);
@@ -230,7 +542,7 @@ describe('createOAuthRouteHandlers', () => {
     it('should reject requests without CSRF header', async () => {
       const app = wrapInApp(createOAuthRouteHandlers(baseConfig));
 
-      const res = await request(app).post('/logout');
+      const res = await request(app).post('/my-provider/logout');
       expect(res.status).toBe(401);
       expect(res.body).toMatchObject({
         error: {
@@ -244,7 +556,7 @@ describe('createOAuthRouteHandlers', () => {
       const app = wrapInApp(createOAuthRouteHandlers(baseConfig));
 
       const res = await request(app)
-        .post('/logout')
+        .post('/my-provider/logout')
         .set('X-Requested-With', 'wrong-value');
       expect(res.status).toBe(401);
       expect(res.body).toMatchObject({
