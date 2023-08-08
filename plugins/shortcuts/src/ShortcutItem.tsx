@@ -82,7 +82,7 @@ export const ShortcutItem = ({ shortcut, api, allowExternalLinks }: Props) => {
   };
 
   const handleMoreVertClose = () => {
-    setAnchorEl(null);
+    setAnchorEl(undefined);
   };
 
   const handleEditClick = () => {
