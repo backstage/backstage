@@ -126,12 +126,12 @@ export namespace coreServices {
 // @public
 export function createBackendModule<TOptions extends [options?: object] = []>(
   config: BackendModuleConfig | ((...params: TOptions) => BackendModuleConfig),
-): BackendFeatureFactory<TOptions>;
+): (...params: TOptions) => BackendFeature;
 
 // @public
 export function createBackendPlugin<TOptions extends [options?: object] = []>(
   config: BackendPluginConfig | ((...params: TOptions) => BackendPluginConfig),
-): BackendFeatureFactory<TOptions>;
+): (...params: TOptions) => BackendFeature;
 
 // @public
 export function createExtensionPoint<T>(

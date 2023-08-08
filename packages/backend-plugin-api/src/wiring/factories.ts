@@ -21,6 +21,7 @@ import {
   InternalBackendModuleRegistration,
   InternalBackendPluginRegistration,
   BackendFeatureFactory,
+  BackendFeature,
 } from './types';
 
 /**
@@ -86,7 +87,7 @@ export interface BackendPluginConfig {
  */
 export function createBackendPlugin<TOptions extends [options?: object] = []>(
   config: BackendPluginConfig | ((...params: TOptions) => BackendPluginConfig),
-): BackendFeatureFactory<TOptions> {
+): (...params: TOptions) => BackendFeature {
   const configCallback = typeof config === 'function' ? config : () => config;
 
   const factory: BackendFeatureFactory<TOptions> = (...options) => {
@@ -179,7 +180,7 @@ export interface BackendModuleConfig {
  */
 export function createBackendModule<TOptions extends [options?: object] = []>(
   config: BackendModuleConfig | ((...params: TOptions) => BackendModuleConfig),
-): BackendFeatureFactory<TOptions> {
+): (...params: TOptions) => BackendFeature {
   const configCallback = typeof config === 'function' ? config : () => config;
   const factory: BackendFeatureFactory<TOptions> = (...options: TOptions) => {
     const c = configCallback(...options);

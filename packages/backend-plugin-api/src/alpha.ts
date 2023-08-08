@@ -15,7 +15,7 @@
  */
 
 import { createServiceRef } from './services';
-import { BackendFeature } from './wiring';
+import { BackendFeature, BackendFeatureFactory } from './wiring';
 
 /** @alpha */
 export interface FeatureDiscoveryService {
@@ -33,4 +33,4 @@ export const featureDiscoveryServiceRef =
   });
 
 export type { ServiceRef } from './services';
-export type { BackendFeature };
+export type { BackendFeature, BackendFeatureFactory };

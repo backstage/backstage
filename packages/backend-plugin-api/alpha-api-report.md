@@ -9,6 +9,16 @@ export interface BackendFeature {
   $$type: '@backstage/BackendFeature';
 }
 
+// @public (undocumented)
+export interface BackendFeatureFactory<
+  TOptions extends [options?: object] = [],
+> {
+  // (undocumented)
+  $$type: '@backstage/BackendFeatureFactory';
+  // (undocumented)
+  (...options: TOptions): BackendFeature;
+}
+
 // @alpha (undocumented)
 export interface FeatureDiscoveryService {
   // (undocumented)
