@@ -130,6 +130,9 @@ export async function createRouter(
       try {
         const provider = providerFactory({
           providerId,
+          appUrl,
+          baseUrl: authUrl,
+          isOriginAllowed,
           globalConfig: {
             baseUrl: authUrl,
             appUrl,
