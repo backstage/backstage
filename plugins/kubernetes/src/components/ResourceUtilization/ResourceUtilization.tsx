@@ -29,7 +29,7 @@ export interface ResourceUtilizationProps {
   title: string;
   usage: number | string;
   total: number | string;
-  totalFormated: string;
+  totalFormatted: string;
 }
 
 // Visible for testing
@@ -64,7 +64,7 @@ export const ResourceUtilization = ({
   title,
   usage,
   total,
-  totalFormated,
+  totalFormatted,
 }: ResourceUtilizationProps) => {
   const utilization = currentToDeclaredResourceToPerc(usage, total);
   return (
@@ -72,7 +72,7 @@ export const ResourceUtilization = ({
       <Grid item xs={12}>
         <Typography
           variant={compressed ? 'caption' : 'subtitle2'}
-        >{`${title}: ${totalFormated}`}</Typography>
+        >{`${title}: ${totalFormatted}`}</Typography>
       </Grid>
       <Grid item xs={12}>
         <LinearGauge

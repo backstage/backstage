@@ -31,7 +31,7 @@ import { PodScope, PodLogsDialog } from '../PodLogs';
 import { StructuredMetadataTable } from '@backstage/core-components';
 import { ClientContainerStatus } from '@backstage/plugin-kubernetes-common';
 import { ResourceUtilization } from '../../ResourceUtilization';
-import { bytesToMiB, formatMilicores } from '../../../utils/resources';
+import { bytesToMiB, formatMillicores } from '../../../utils/resources';
 
 const getContainerHealthChecks = (
   containerSpec: IContainer,
@@ -186,7 +186,7 @@ export const ContainerCard: React.FC<ContainerCardProps> = ({
                   title="CPU requests"
                   usage={containerMetrics.cpuUsage.currentUsage}
                   total={containerMetrics.cpuUsage.requestTotal}
-                  totalFormated={formatMilicores(
+                  totalFormatted={formatMillicores(
                     containerMetrics.cpuUsage.requestTotal,
                   )}
                 />
@@ -195,7 +195,7 @@ export const ContainerCard: React.FC<ContainerCardProps> = ({
                   title="CPU limits"
                   usage={containerMetrics.cpuUsage.currentUsage}
                   total={containerMetrics.cpuUsage.limitTotal}
-                  totalFormated={formatMilicores(
+                  totalFormatted={formatMillicores(
                     containerMetrics.cpuUsage.limitTotal,
                   )}
                 />
@@ -204,7 +204,7 @@ export const ContainerCard: React.FC<ContainerCardProps> = ({
                   title="Memory requests"
                   usage={containerMetrics.memoryUsage.currentUsage}
                   total={containerMetrics.memoryUsage.requestTotal}
-                  totalFormated={bytesToMiB(
+                  totalFormatted={bytesToMiB(
                     containerMetrics.memoryUsage.requestTotal,
                   )}
                 />
@@ -213,7 +213,7 @@ export const ContainerCard: React.FC<ContainerCardProps> = ({
                   title="Memory limits"
                   usage={containerMetrics.memoryUsage.currentUsage}
                   total={containerMetrics.memoryUsage.limitTotal}
-                  totalFormated={bytesToMiB(
+                  totalFormatted={bytesToMiB(
                     containerMetrics.memoryUsage.requestTotal,
                   )}
                 />
