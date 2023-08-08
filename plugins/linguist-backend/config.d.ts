@@ -14,12 +14,33 @@
  * limitations under the License.
  */
 
+import { TaskScheduleDefinition } from '@backstage/backend-tasks';
 import { HumanDuration } from '@backstage/types';
 
 export interface Config {
   /** Configuration options for the linguist plugin */
   linguist?: {
-    // TODO
+    schedule?: TaskScheduleDefinition;
+    /**
+     * @default 20
+     */
+    batchSize?: number;
+    /**
+     * @default false
+     */
+    useSourceLocation?: boolean;
+    /**
+     * Refresh generated language breakdown
+     */
+    age?: HumanDuration;
+    /**
+     * @default ['API', 'Component', 'Template']
+     */
+    kind?: string[];
+    /**
+     * [linguist-js](https://www.npmjs.com/package/linguist-js) options
+     */
+    linguistJsOptions: Record<string, unknown>;
 
     /** Options for the tags processor */
     tagsProcessor?: {

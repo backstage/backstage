@@ -19,7 +19,19 @@ import {
   coreServices,
   createBackendPlugin,
 } from '@backstage/backend-plugin-api';
+import {
+  TaskScheduleDefinition,
+  readTaskScheduleDefinitionFromConfig,
+} from '@backstage/backend-tasks';
+import { HumanDuration } from '@backstage/types';
+
 import { createRouter } from './service/router';
+
+const DEFAULT_SCHEDULE: TaskScheduleDefinition = {
+  frequency: { minutes: 2 },
+  timeout: { minutes: 15 },
+  initialDelay: { seconds: 15 },
+};
 
 /**
  * Linguist backend plugin
@@ -50,16 +62,42 @@ export const linguistPlugin = createBackendPlugin(() => ({
         tokenManager,
         httpRouter,
       }) {
+        const schedule = config.has('linguist.schedule')
+          ? readTaskScheduleDefinitionFromConfig(
+              config.getConfig('linguist.schedule'),
+            )
+          : DEFAULT_SCHEDULE;
+        const batchSize = config.getOptionalNumber('linguist.batchSize');
+        const useSourceLocation = config.getBoolean(
+          'linguist.useSourceLocation',
+        );
+        const age = config.getOptionalConfig('linguist.age') as
+          | HumanDuration
+          | undefined;
+        const kind = config.getOptionalStringArray('linguist.kind');
+        const linguistJsOptions = config.getOptionalConfig(
+          'linguist.linguistJsOptions',
+        );
+
         httpRouter.use(
-          await createRouter({
-            logger: loggerToWinstonLogger(logger),
-            config,
-            reader,
-            database,
-            discovery,
-            scheduler,
-            tokenManager,
-          }),
+          await createRouter(
+            {
+              schedule,
+              batchSize,
+              useSourceLocation,
+              age,
+              kind,
+              linguistJsOptions,
+            },
+            {
+              logger: loggerToWinstonLogger(logger),
+              reader,
+              database,
+              discovery,
+              scheduler,
+              tokenManager,
+            },
+          ),
         );
       },
     });

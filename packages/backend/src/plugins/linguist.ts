@@ -14,13 +14,27 @@
  * limitations under the License.
  */
 
+import { TaskScheduleDefinition } from '@backstage/backend-tasks';
 import { createRouter } from '@backstage/plugin-linguist-backend';
 import { Router } from 'express';
-
 import type { PluginEnvironment } from '../types';
 
 export default async function createPlugin(
   env: PluginEnvironment,
 ): Promise<Router> {
-  return createRouter({ ...env });
+  const schedule: TaskScheduleDefinition = {
+    frequency: { minutes: 2 },
+    timeout: { minutes: 15 },
+    initialDelay: { seconds: 15 },
+  };
+
+  return createRouter(
+    {
+      schedule: schedule,
+      age: { days: 30 },
+      batchSize: 2,
+      useSourceLocation: false,
+    },
+    { ...env },
+  );
 }

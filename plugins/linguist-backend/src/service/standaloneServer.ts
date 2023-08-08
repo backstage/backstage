@@ -26,6 +26,7 @@ import { Server } from 'http';
 import { Logger } from 'winston';
 import { createRouter } from './router';
 import knexFactory from 'knex';
+import { TaskScheduleDefinition } from '@backstage/backend-tasks';
 
 export interface ServerOptions {
   port: number;
@@ -52,15 +53,23 @@ export async function startStandaloneServer(
     return knex;
   });
 
+  const schedule: TaskScheduleDefinition = {
+    frequency: { minutes: 2 },
+    timeout: { minutes: 15 },
+    initialDelay: { seconds: 15 },
+  };
+
   logger.debug('Starting application server...');
-  const router = await createRouter({
-    database: { getClient: async () => db },
-    discovery: SingleHostDiscovery.fromConfig(config),
-    reader: UrlReaders.default({ logger, config }),
-    config,
-    logger,
-    tokenManager: ServerTokenManager.noop(),
-  });
+  const router = await createRouter(
+    { schedule: schedule, age: { days: 30 }, useSourceLocation: false },
+    {
+      database: { getClient: async () => db },
+      discovery: SingleHostDiscovery.fromConfig(config),
+      reader: UrlReaders.default({ logger, config }),
+      logger,
+      tokenManager: ServerTokenManager.noop(),
+    },
+  );
 
   let service = createServiceBuilder(module)
     .setPort(options.port)

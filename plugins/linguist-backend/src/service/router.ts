@@ -21,77 +21,53 @@ import {
   TokenManager,
   UrlReader,
 } from '@backstage/backend-common';
-import {
-  PluginTaskScheduler,
-  readTaskScheduleDefinitionFromConfig,
-  TaskScheduleDefinition,
-} from '@backstage/backend-tasks';
-import { CatalogClient } from '@backstage/catalog-client';
-import { Config } from '@backstage/config';
-import { HumanDuration } from '@backstage/types';
 import express from 'express';
 import Router from 'express-promise-router';
 import { Logger } from 'winston';
-
 import { LinguistBackendApi } from '../api';
-import { LinguistBackendClient } from '../api/LinguistBackendClient';
 import { LinguistBackendDatabase } from '../db';
+import {
+  PluginTaskScheduler,
+  TaskScheduleDefinition,
+} from '@backstage/backend-tasks';
+import { HumanDuration } from '@backstage/types';
+import { CatalogClient } from '@backstage/catalog-client';
+import { LinguistBackendClient } from '../api/LinguistBackendClient';
+
+/** @public */
+export interface PluginOptions {
+  schedule?: TaskScheduleDefinition;
+  age?: HumanDuration;
+  batchSize?: number;
+  useSourceLocation?: boolean;
+  linguistJsOptions?: Record<string, unknown>;
+  kind?: string[];
+}
 
 /** @public */
 export interface RouterOptions {
   linguistBackendApi?: LinguistBackendApi;
   logger: Logger;
   reader: UrlReader;
-  config: Config;
   tokenManager: TokenManager;
   database: PluginDatabaseManager;
   discovery: PluginEndpointDiscovery;
   scheduler?: PluginTaskScheduler;
 }
 
-const DEFAULT_SCHEDULE: TaskScheduleDefinition = {
-  frequency: { minutes: 2 },
-  timeout: { minutes: 15 },
-  initialDelay: { seconds: 15 },
-};
-// const DEFAULT_AGE = { days: 30 };
-const DEFAULT_BATCH_SIZE = 20;
-const DEFAULT_USE_SOURCE_LOCATION = false;
-
 /** @public */
 export async function createRouter(
+  pluginOptions: PluginOptions,
   routerOptions: RouterOptions,
 ): Promise<express.Router> {
-  const { config } = routerOptions;
-
-  const schedule = config.has('linguist.schedule')
-    ? readTaskScheduleDefinitionFromConfig(
-        config.getConfig('linguist.schedule'),
-      )
-    : DEFAULT_SCHEDULE;
-  const batchSize = config.has('linguist.batchSize')
-    ? config.getNumber('linguist.batchSize')
-    : DEFAULT_BATCH_SIZE;
-  const useSourceLocation = config.has('linguist.useSourceLocation')
-    ? config.getBoolean('linguist.useSourceLocation')
-    : DEFAULT_USE_SOURCE_LOCATION;
-
-  const age = config.getOptionalConfig('linguist.age') as
-    | HumanDuration
-    | undefined;
-  const kind = config.getOptionalStringArray('linguist.kind');
-  const linguistJsOptions = config.getOptionalConfig(
-    'linguist.linguistJsOptions',
-  );
-
-  console.log(
+  const {
+    schedule,
     age,
     batchSize,
     useSourceLocation,
     kind,
     linguistJsOptions,
-    schedule,
-  );
+  } = pluginOptions;
 
   const { logger, reader, database, discovery, scheduler, tokenManager } =
     routerOptions;
