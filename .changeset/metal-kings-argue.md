@@ -1,5 +1,5 @@
 ---
-'@backstage/plugin-search-backend-module-catalog': patch
+'@backstage/plugin-search-backend-module-catalog': minor
 ---
 
-Move collator settings from module options into app-config. You are now expected to set up the catalog collator under the `search.collators.catalog` configuration key.
+**BREAKING**: Moved collator settings from module options into app-config. You are now expected to set up the catalog collator under the `search.collators.catalog` configuration key.
