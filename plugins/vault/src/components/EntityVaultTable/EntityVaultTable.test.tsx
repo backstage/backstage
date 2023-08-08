@@ -100,6 +100,7 @@ describe('EntityVaultTable', () => {
   };
 
   beforeEach(() => {
+    jest.resetAllMocks();
     vaultClient = new VaultClient({ discoveryApi, fetchApi });
     apis = TestApiRegistry.from([vaultApiRef, vaultClient]);
     listSecretsSpy = jest.spyOn(vaultClient, 'listSecrets');

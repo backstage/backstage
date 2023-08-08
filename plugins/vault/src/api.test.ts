@@ -68,6 +68,8 @@ describe('api', () => {
   };
 
   beforeEach(() => {
+    jest.resetAllMocks();
+
     setupHandlers();
 
     api = new VaultClient({ discoveryApi, fetchApi });
