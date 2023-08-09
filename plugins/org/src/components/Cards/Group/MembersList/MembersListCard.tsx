@@ -47,11 +47,12 @@ import {
   Link,
   OverflowTooltip,
 } from '@backstage/core-components';
-import { useApi } from '@backstage/core-plugin-api';
+import { useApi, useRouteRef } from '@backstage/core-plugin-api';
 import {
   getAllDesendantMembersForGroupEntity,
   removeDuplicateEntitiesFrom,
 } from '../../../../helpers/helpers';
+import { catalogIndexRouteRef } from '../../../../routes';
 
 const useStyles = makeStyles((theme: Theme) =>
   createStyles({
@@ -70,6 +71,7 @@ const useStyles = makeStyles((theme: Theme) =>
 
 const MemberComponent = (props: { member: UserEntity }) => {
   const classes = useStyles();
+  const catalogLink = useRouteRef(catalogIndexRouteRef);
   const {
     metadata: { name: metaName, description },
     spec: { profile },
@@ -105,7 +107,7 @@ const MemberComponent = (props: { member: UserEntity }) => {
               <Link
                 data-testid="user-link"
                 to={generatePath(
-                  `/catalog/:namespace/user/${metaName}`,
+                  `${catalogLink()}/:namespace/user/${metaName}`,
                   entityRouteParams(props.member),
                 )}
               >
