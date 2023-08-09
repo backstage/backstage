@@ -214,7 +214,7 @@ export const ContainerCard: React.FC<ContainerCardProps> = ({
                   usage={containerMetrics.memoryUsage.currentUsage}
                   total={containerMetrics.memoryUsage.limitTotal}
                   totalFormated={bytesToMiB(
-                    containerMetrics.memoryUsage.requestTotal,
+                    containerMetrics.memoryUsage.limitTotal,
                   )}
                 />
               </Grid>
