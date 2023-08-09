@@ -39,6 +39,7 @@ import { EntityLayout } from '@backstage/plugin-catalog';
 import { screen } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { Observable } from '@backstage/types';
+import { catalogIndexRouteRef } from '../../../../routes';
 
 // Mock needed because jsdom doesn't correctly implement box-sizing
 // https://github.com/ShinyChang/React-Text-Truncate/issues/70
@@ -124,6 +125,11 @@ describe('MemberTab Test', () => {
           </EntityProvider>
           ,
         </TestApiProvider>,
+        {
+          mountedRoutes: {
+            '/catalog': catalogIndexRouteRef,
+          },
+        },
       ),
     );
 
@@ -152,6 +158,11 @@ describe('MemberTab Test', () => {
             <MembersListCard memberDisplayTitle="Testers" />
           </EntityProvider>
         </TestApiProvider>,
+        {
+          mountedRoutes: {
+            '/catalog': catalogIndexRouteRef,
+          },
+        },
       ),
     );
 
@@ -176,6 +187,11 @@ describe('MemberTab Test', () => {
             </EntityLayout>
           </EntityProvider>
         </TestApiProvider>,
+        {
+          mountedRoutes: {
+            '/catalog': catalogIndexRouteRef,
+          },
+        },
       );
 
       const toggleSwitch = screen.queryByRole('checkbox');
@@ -199,6 +215,11 @@ describe('MemberTab Test', () => {
             </EntityLayout>
           </EntityProvider>
         </TestApiProvider>,
+        {
+          mountedRoutes: {
+            '/catalog': catalogIndexRouteRef,
+          },
+        },
       );
 
       expect(screen.queryByRole('checkbox')).toBeInTheDocument();
@@ -221,6 +242,11 @@ describe('MemberTab Test', () => {
             </EntityLayout>
           </EntityProvider>
         </TestApiProvider>,
+        {
+          mountedRoutes: {
+            '/catalog': catalogIndexRouteRef,
+          },
+        },
       );
 
       const displayedMemberNames = screen.queryAllByTestId('user-link');
@@ -252,6 +278,11 @@ describe('MemberTab Test', () => {
             </EntityLayout>
           </EntityProvider>
         </TestApiProvider>,
+        {
+          mountedRoutes: {
+            '/catalog': catalogIndexRouteRef,
+          },
+        },
       );
 
       const displayedMemberNames = screen.queryAllByTestId('user-link');
@@ -283,6 +314,11 @@ describe('MemberTab Test', () => {
             </EntityLayout>
           </EntityProvider>
         </TestApiProvider>,
+        {
+          mountedRoutes: {
+            '/catalog': catalogIndexRouteRef,
+          },
+        },
       );
 
       // Click the toggle switch
