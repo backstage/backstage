@@ -165,7 +165,7 @@ export class ElasticSearchSearchEngine implements SearchEngine {
       logger.info('Initializing ElasticSearch search engine.');
     }
 
-    return new ElasticSearchSearchEngine(
+    const engine = new ElasticSearchSearchEngine(
       clientOptions,
       aliasPostfix,
       indexPrefix,
@@ -176,6 +176,14 @@ export class ElasticSearchSearchEngine implements SearchEngine {
         'search.elasticsearch.highlightOptions',
       ),
     );
+
+    for (const indexTemplate of this.readIndexTemplateConfig(
+      config.getConfig('search.elasticsearch'),
+    )) {
+      await engine.setIndexTemplate(indexTemplate);
+    }
+
+    return engine;
   }
 
   /**
@@ -517,6 +525,24 @@ export class ElasticSearchSearchEngine implements SearchEngine {
           }
         : {}),
     };
+  }
+
+  private static readIndexTemplateConfig(
+    config: Config,
+  ): ElasticSearchCustomIndexTemplate[] {
+    return (
+      config.getOptionalConfigArray('indexTemplates')?.map(templateConfig => {
+        const bodyConfig = templateConfig.getConfig('body');
+        return {
+          name: templateConfig.getString('name'),
+          body: {
+            index_patterns: bodyConfig.getStringArray('index_patterns'),
+            composed_of: bodyConfig.getOptionalStringArray('composed_of'),
+            template: bodyConfig.getOptionalConfig('template')?.get(),
+          },
+        };
+      }) ?? []
+    );
   }
 }
 
