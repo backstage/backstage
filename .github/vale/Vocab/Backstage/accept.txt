@@ -123,6 +123,8 @@ FireHydrant
 Firekube
 Firestore
 Fiverr
+Flightcontrol
+flightcontrol
 Francesco
 Frontside
 gerrit
@@ -405,6 +407,7 @@ unbreak
 Unconference
 unicode
 unmanaged
+unmount
 unregister
 unregistering
 unregistration

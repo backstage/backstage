@@ -90,7 +90,7 @@ export const permissionPlugin = createBackendPlugin(() => ({
     env.registerInit({
       deps: {
         http: coreServices.httpRouter,
-        config: coreServices.config,
+        config: coreServices.rootConfig,
         logger: coreServices.logger,
         discovery: coreServices.discovery,
         identity: coreServices.identity,

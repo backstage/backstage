@@ -17,5 +17,11 @@
 export {
   createTemplateAction,
   type TemplateActionOptions,
+  type TemplateExample,
 } from './createTemplateAction';
+export {
+  executeShellCommand,
+  type ExecuteShellCommandOptions,
+} from './executeShellCommand';
+export { fetchContents, fetchFile } from './fetch';
 export { type ActionContext, type TemplateAction } from './types';

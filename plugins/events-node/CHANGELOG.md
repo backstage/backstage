@@ -1,5 +1,20 @@
 # @backstage/plugin-events-node
 
+## 0.2.9-next.2
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-plugin-api@0.6.0-next.2
+
+## 0.2.9-next.1
+
+### Patch Changes
+
+- 12a8c94eda8d: Add package repository and homepage metadata
+- Updated dependencies
+  - @backstage/backend-plugin-api@0.6.0-next.1
+
 ## 0.2.9-next.0
 
 ### Patch Changes

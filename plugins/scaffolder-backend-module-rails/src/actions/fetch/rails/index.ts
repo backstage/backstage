@@ -19,8 +19,10 @@ import { JsonObject } from '@backstage/types';
 import { InputError } from '@backstage/errors';
 import { ScmIntegrations } from '@backstage/integration';
 import fs from 'fs-extra';
-import { fetchContents } from '@backstage/plugin-scaffolder-backend';
-import { createTemplateAction } from '@backstage/plugin-scaffolder-node';
+import {
+  createTemplateAction,
+  fetchContents,
+} from '@backstage/plugin-scaffolder-node';
 
 import { resolve as resolvePath } from 'path';
 import { RailsNewRunner } from './railsNewRunner';

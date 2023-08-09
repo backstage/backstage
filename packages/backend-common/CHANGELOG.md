@@ -1,5 +1,32 @@
 # @backstage/backend-common
 
+## 0.19.2-next.2
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-app-api@0.5.0-next.2
+  - @backstage/backend-plugin-api@0.6.0-next.2
+  - @backstage/config-loader@1.4.0-next.1
+
+## 0.19.2-next.1
+
+### Patch Changes
+
+- 629cbd194a87: Use `coreServices.rootConfig` instead of `coreService.config`
+- 4b82382ed8c2: Fixed invalid configuration schema. The configuration schema may be more strict as a result.
+- Updated dependencies
+  - @backstage/config-loader@1.4.0-next.1
+  - @backstage/backend-app-api@0.5.0-next.1
+  - @backstage/backend-plugin-api@0.6.0-next.1
+  - @backstage/integration@1.5.1
+  - @backstage/integration-aws-node@0.1.5
+  - @backstage/backend-dev-utils@0.1.1
+  - @backstage/cli-common@0.1.12
+  - @backstage/config@1.0.8
+  - @backstage/errors@1.2.1
+  - @backstage/types@1.1.0
+
 ## 0.19.2-next.0
 
 ### Patch Changes

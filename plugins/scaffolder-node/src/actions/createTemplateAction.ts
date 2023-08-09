@@ -21,6 +21,12 @@ import zodToJsonSchema from 'zod-to-json-schema';
 import { JsonObject } from '@backstage/types';
 
 /** @public */
+export type TemplateExample = {
+  description: string;
+  example: string;
+};
+
+/** @public */
 export type TemplateActionOptions<
   TActionInput extends JsonObject = {},
   TActionOutput extends JsonObject = {},
@@ -29,7 +35,7 @@ export type TemplateActionOptions<
 > = {
   id: string;
   description?: string;
-  examples?: { description: string; example: string }[];
+  examples?: TemplateExample[];
   supportsDryRun?: boolean;
   schema?: {
     input?: TInputSchema;

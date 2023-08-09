@@ -39,15 +39,6 @@ export default async function createPlugin(
 }
 ```
 
-#### Tools as Code
-
-Install dependencies
-
-```bash
-# From your Backstage root directory
-yarn add --cwd packages/backend @backstage/plugin-explore-backend @backstage/plugin-explore-common
-```
-
 Config:
 
 ```yaml
@@ -61,6 +52,15 @@ explore:
         - newrelic
         - proxy
         - nerdGraph
+```
+
+#### Tools as Code
+
+Install dependencies
+
+```bash
+# From your Backstage root directory
+yarn add --cwd packages/backend @backstage/plugin-explore-backend @backstage/plugin-explore-common
 ```
 
 You'll need to add the plugin to the router in your `backend` package. You can

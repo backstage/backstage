@@ -1,5 +1,13 @@
 # @backstage/backend-openapi-utils
 
+## 0.0.3-next.1
+
+### Patch Changes
+
+- 12a8c94eda8d: Add package repository and homepage metadata
+- Updated dependencies
+  - @backstage/errors@1.2.1
+
 ## 0.0.3-next.0
 
 ### Patch Changes

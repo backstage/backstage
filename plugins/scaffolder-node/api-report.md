@@ -9,7 +9,10 @@ import { ExtensionPoint } from '@backstage/backend-plugin-api';
 import { JsonObject } from '@backstage/types';
 import { Logger } from 'winston';
 import { Schema } from 'jsonschema';
+import { ScmIntegrations } from '@backstage/integration';
+import { SpawnOptionsWithoutStdio } from 'child_process';
 import { TemplateInfo } from '@backstage/plugin-scaffolder-common';
+import { UrlReader } from '@backstage/backend-common';
 import { UserEntity } from '@backstage/catalog-model';
 import { Writable } from 'stream';
 import { z } from 'zod';
@@ -67,6 +70,37 @@ export const createTemplateAction: <
   >,
 ) => TemplateAction<TActionInput, TActionOutput>;
 
+// @public
+export function executeShellCommand(
+  options: ExecuteShellCommandOptions,
+): Promise<void>;
+
+// @public
+export type ExecuteShellCommandOptions = {
+  command: string;
+  args: string[];
+  options?: SpawnOptionsWithoutStdio;
+  logStream?: Writable;
+};
+
+// @public
+export function fetchContents(options: {
+  reader: UrlReader;
+  integrations: ScmIntegrations;
+  baseUrl?: string;
+  fetchUrl?: string;
+  outputPath: string;
+}): Promise<void>;
+
+// @public
+export function fetchFile(options: {
+  reader: UrlReader;
+  integrations: ScmIntegrations;
+  baseUrl?: string;
+  fetchUrl?: string;
+  outputPath: string;
+}): Promise<void>;
+
 // @alpha
 export interface ScaffolderActionsExtensionPoint {
   // (undocumented)
@@ -109,15 +143,18 @@ export type TemplateActionOptions<
 > = {
   id: string;
   description?: string;
-  examples?: {
-    description: string;
-    example: string;
-  }[];
+  examples?: TemplateExample[];
   supportsDryRun?: boolean;
   schema?: {
     input?: TInputSchema;
     output?: TOutputSchema;
   };
   handler: (ctx: ActionContext<TActionInput, TActionOutput>) => Promise<void>;
+};
+
+// @public (undocumented)
+export type TemplateExample = {
+  description: string;
+  example: string;
 };
 ```

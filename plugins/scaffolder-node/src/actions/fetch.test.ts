@@ -21,10 +21,10 @@ import { resolve as resolvePath } from 'path';
 import { UrlReader } from '@backstage/backend-common';
 import { ConfigReader } from '@backstage/config';
 import { ScmIntegrations } from '@backstage/integration';
-import { fetchContents, fetchFile } from './helpers';
+import { fetchContents, fetchFile } from './fetch';
 import os from 'os';
 
-describe('fetchContent helper', () => {
+describe('fetchContents helper', () => {
   beforeEach(() => {
     jest.clearAllMocks();
   });

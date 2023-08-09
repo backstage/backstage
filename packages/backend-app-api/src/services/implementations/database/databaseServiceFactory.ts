@@ -25,7 +25,7 @@ import { ConfigReader } from '@backstage/config';
 export const databaseServiceFactory = createServiceFactory({
   service: coreServices.database,
   deps: {
-    config: coreServices.config,
+    config: coreServices.rootConfig,
     lifecycle: coreServices.lifecycle,
     pluginMetadata: coreServices.pluginMetadata,
   },

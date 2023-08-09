@@ -331,6 +331,7 @@
       "deployment/k8s",
       "deployment/heroku",
       "deployment/koyeb",
+      "deployment/flightcontrol",
       {
         "type": "category",
         "label": "Using Backstage Deploy (alpha)",

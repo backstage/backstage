@@ -1,5 +1,30 @@
 # @backstage/backend-plugin-api
 
+## 0.6.0-next.2
+
+### Patch Changes
+
+- cc9256a33bcc: Added new experimental `featureDiscoveryServiceRef`, available as an `/alpha` export.
+- Updated dependencies
+  - @backstage/backend-tasks@0.5.5-next.2
+  - @backstage/plugin-auth-node@0.2.17-next.2
+
+## 0.6.0-next.1
+
+### Minor Changes
+
+- 629cbd194a87: **BREAKING**: Renamed `coreServices.config` to `coreServices.rootConfig`.
+- d008aefef808: **BREAKING**: Removing shared environments concept from the new experimental backend system.
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/plugin-auth-node@0.2.17-next.1
+  - @backstage/backend-tasks@0.5.5-next.1
+  - @backstage/config@1.0.8
+  - @backstage/types@1.1.0
+  - @backstage/plugin-permission-common@0.7.7
+
 ## 0.5.5-next.0
 
 ### Patch Changes

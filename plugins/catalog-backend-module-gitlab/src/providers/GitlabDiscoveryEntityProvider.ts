@@ -155,6 +155,7 @@ export class GitlabDiscoveryEntityProvider implements EntityProvider {
     const projects = paginated<GitLabProject>(
       options => client.listProjects(options),
       {
+        archived: false,
         group: this.config.group,
         page: 1,
         per_page: 50,
@@ -172,10 +173,6 @@ export class GitlabDiscoveryEntityProvider implements EntityProvider {
       }
 
       res.scanned++;
-
-      if (project.archived) {
-        continue;
-      }
 
       if (
         this.config.skipForkedRepos &&
