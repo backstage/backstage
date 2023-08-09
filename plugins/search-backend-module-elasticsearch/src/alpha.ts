@@ -17,58 +17,65 @@ import {
   coreServices,
   createBackendModule,
 } from '@backstage/backend-plugin-api';
-import { loggerToWinstonLogger } from '@backstage/backend-common';
 import { searchEngineRegistryExtensionPoint } from '@backstage/plugin-search-backend-node/alpha';
-
-import {
-  ElasticSearchCustomIndexTemplate,
-  ElasticSearchQueryTranslator,
-  ElasticSearchSearchEngine,
-} from '@backstage/plugin-search-backend-module-elasticsearch';
+import { ElasticSearchSearchEngine } from '@backstage/plugin-search-backend-module-elasticsearch';
 
 /**
- * @alpha
- * Options for {@link searchModuleElasticsearchEngine}.
- */
-export type SearchModuleElasticsearchEngineOptions = {
-  translator?: ElasticSearchQueryTranslator;
-  indexTemplate?: ElasticSearchCustomIndexTemplate;
-};
-
-/**
- * @alpha
  * Search backend module for the Elasticsearch engine.
+ *
+ * @alpha
+ * @remarks
+ *
+ * If you need to customize the search engine beyond what is supported by the
+ * static configuration, you can create a custom module using the `ElasticSearchSearchEngine`.
+ *
+ * For example, this lets you configure your own query translator:
+ *
+ * ```ts
+ * export const searchModuleElasticsearchEngine = createBackendModule({
+ *   moduleId: 'elasticsearchEngine',
+ *   pluginId: 'search',
+ *   register(env) {
+ *     env.registerInit({
+ *       deps: {
+ *         searchEngineRegistry: searchEngineRegistryExtensionPoint,
+ *         logger: coreServices.logger,
+ *         config: coreServices.rootConfig,
+ *       },
+ *       async init({ searchEngineRegistry, logger, config }) {
+ *         searchEngineRegistry.setSearchEngine(
+ *           await ElasticSearchSearchEngine.fromConfig({
+ *             logger,
+ *             config,
+ *             translator(query) {
+ *               return ... // translated query
+ *             }
+ *           }),
+ *         );
+ *       },
+ *     });
+ *   },
+ * });
+ * ```
  */
-export const searchModuleElasticsearchEngine = createBackendModule(
-  (options?: SearchModuleElasticsearchEngineOptions) => ({
-    moduleId: 'elasticsearchEngine',
-    pluginId: 'search',
-    register(env) {
-      env.registerInit({
-        deps: {
-          searchEngineRegistry: searchEngineRegistryExtensionPoint,
-          logger: coreServices.logger,
-          config: coreServices.rootConfig,
-        },
-        async init({ searchEngineRegistry, logger, config }) {
-          const searchEngine = await ElasticSearchSearchEngine.fromConfig({
-            logger: loggerToWinstonLogger(logger),
-            config: config,
-          });
-
-          // set custom translator if available
-          if (options?.translator) {
-            searchEngine.setTranslator(options.translator);
-          }
-
-          // set custom index template if available
-          if (options?.indexTemplate) {
-            searchEngine.setIndexTemplate(options.indexTemplate);
-          }
-
-          searchEngineRegistry.setSearchEngine(searchEngine);
-        },
-      });
-    },
-  }),
-);
+export const searchModuleElasticsearchEngine = createBackendModule({
+  moduleId: 'elasticsearchEngine',
+  pluginId: 'search',
+  register(env) {
+    env.registerInit({
+      deps: {
+        searchEngineRegistry: searchEngineRegistryExtensionPoint,
+        logger: coreServices.logger,
+        config: coreServices.rootConfig,
+      },
+      async init({ searchEngineRegistry, logger, config }) {
+        searchEngineRegistry.setSearchEngine(
+          await ElasticSearchSearchEngine.fromConfig({
+            logger,
+            config,
+          }),
+        );
+      },
+    });
+  },
+});
