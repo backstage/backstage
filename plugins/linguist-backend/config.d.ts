@@ -40,7 +40,7 @@ export interface Config {
     /**
      * [linguist-js](https://www.npmjs.com/package/linguist-js) options
      */
-    linguistJsOptions: object;
+    linguistJsOptions?: object;
 
     /** Options for the tags processor */
     tagsProcessor?: {
