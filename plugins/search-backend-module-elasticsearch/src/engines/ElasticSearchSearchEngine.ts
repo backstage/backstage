@@ -78,6 +78,7 @@ export type ElasticSearchOptions = {
   config: Config;
   aliasPostfix?: string;
   indexPrefix?: string;
+  translator?: ElasticSearchQueryTranslator;
 };
 
 /**
@@ -150,6 +151,7 @@ export class ElasticSearchSearchEngine implements SearchEngine {
       config,
       aliasPostfix = `search`,
       indexPrefix = ``,
+      translator,
     } = options;
     const credentialProvider = DefaultAwsCredentialsManager.fromConfig(config);
     const clientOptions = await this.createElasticSearchClientOptions(
@@ -182,6 +184,10 @@ export class ElasticSearchSearchEngine implements SearchEngine {
       config.getConfig('search.elasticsearch'),
     )) {
       await engine.setIndexTemplate(indexTemplate);
+    }
+
+    if (translator) {
+      await engine.setTranslator(translator);
     }
 
     return engine;
