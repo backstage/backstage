@@ -19,6 +19,7 @@ import {
   CatalogApi,
   catalogApiRef,
   EntityProvider,
+  entityRouteRef,
   StarredEntitiesApi,
   starredEntitiesApiRef,
 } from '@backstage/plugin-catalog-react';
@@ -39,7 +40,6 @@ import { EntityLayout } from '@backstage/plugin-catalog';
 import { screen } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { Observable } from '@backstage/types';
-import { catalogIndexRouteRef } from '../../../../routes';
 
 // Mock needed because jsdom doesn't correctly implement box-sizing
 // https://github.com/ShinyChang/React-Text-Truncate/issues/70
@@ -127,7 +127,7 @@ describe('MemberTab Test', () => {
         </TestApiProvider>,
         {
           mountedRoutes: {
-            '/catalog': catalogIndexRouteRef,
+            '/catalog/:namespace/:kind/:name': entityRouteRef,
           },
         },
       ),
@@ -160,7 +160,7 @@ describe('MemberTab Test', () => {
         </TestApiProvider>,
         {
           mountedRoutes: {
-            '/catalog': catalogIndexRouteRef,
+            '/catalog/:namespace/:kind/:name': entityRouteRef,
           },
         },
       ),
@@ -189,7 +189,7 @@ describe('MemberTab Test', () => {
         </TestApiProvider>,
         {
           mountedRoutes: {
-            '/catalog': catalogIndexRouteRef,
+            '/catalog/:namespace/:kind/:name': entityRouteRef,
           },
         },
       );
@@ -217,7 +217,7 @@ describe('MemberTab Test', () => {
         </TestApiProvider>,
         {
           mountedRoutes: {
-            '/catalog': catalogIndexRouteRef,
+            '/catalog/:namespace/:kind/:name': entityRouteRef,
           },
         },
       );
@@ -244,7 +244,7 @@ describe('MemberTab Test', () => {
         </TestApiProvider>,
         {
           mountedRoutes: {
-            '/catalog': catalogIndexRouteRef,
+            '/catalog/:namespace/:kind/:name': entityRouteRef,
           },
         },
       );
@@ -280,7 +280,7 @@ describe('MemberTab Test', () => {
         </TestApiProvider>,
         {
           mountedRoutes: {
-            '/catalog': catalogIndexRouteRef,
+            '/catalog/:namespace/:kind/:name': entityRouteRef,
           },
         },
       );
@@ -316,7 +316,7 @@ describe('MemberTab Test', () => {
         </TestApiProvider>,
         {
           mountedRoutes: {
-            '/catalog': catalogIndexRouteRef,
+            '/catalog/:namespace/:kind/:name': entityRouteRef,
           },
         },
       );

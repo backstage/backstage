@@ -20,11 +20,7 @@ import {
   UserEntity,
   stringifyEntityRef,
 } from '@backstage/catalog-model';
-import {
-  catalogApiRef,
-  entityRouteParams,
-  useEntity,
-} from '@backstage/plugin-catalog-react';
+import { catalogApiRef, useEntity } from '@backstage/plugin-catalog-react';
 import {
   Box,
   createStyles,
@@ -36,7 +32,6 @@ import {
 } from '@material-ui/core';
 import Pagination from '@material-ui/lab/Pagination';
 import React, { useState } from 'react';
-import { generatePath } from 'react-router-dom';
 import useAsync from 'react-use/lib/useAsync';
 
 import {
@@ -47,12 +42,12 @@ import {
   Link,
   OverflowTooltip,
 } from '@backstage/core-components';
-import { useApi, useRouteRef } from '@backstage/core-plugin-api';
+import { useApi } from '@backstage/core-plugin-api';
 import {
   getAllDesendantMembersForGroupEntity,
   removeDuplicateEntitiesFrom,
 } from '../../../../helpers/helpers';
-import { catalogIndexRouteRef } from '../../../../routes';
+import { EntityRefLink } from '@backstage/plugin-catalog-react';
 
 const useStyles = makeStyles((theme: Theme) =>
   createStyles({
@@ -71,7 +66,6 @@ const useStyles = makeStyles((theme: Theme) =>
 
 const MemberComponent = (props: { member: UserEntity }) => {
   const classes = useStyles();
-  const catalogLink = useRouteRef(catalogIndexRouteRef);
   const {
     metadata: { name: metaName, description },
     spec: { profile },
@@ -104,15 +98,7 @@ const MemberComponent = (props: { member: UserEntity }) => {
             textAlign="center"
           >
             <Typography variant="h6">
-              <Link
-                data-testid="user-link"
-                to={generatePath(
-                  `${catalogLink()}/:namespace/user/${metaName}`,
-                  entityRouteParams(props.member),
-                )}
-              >
-                <OverflowTooltip text={displayName} />
-              </Link>
+              <EntityRefLink entityRef={props.member} title={displayName} />
             </Typography>
             {profile?.email && (
               <Link to={`mailto:${profile.email}`}>
