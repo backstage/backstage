@@ -174,10 +174,15 @@ describe('DefaultTechDocsCollatorFactory', () => {
 
     it('maps a returned entity with a custom locationTemplate', async () => {
       // Provide an alternate location template.
-      factory = DefaultTechDocsCollatorFactory.fromConfig(config, {
+      const _config = new ConfigReader({
+        ...config.get(),
+        search: {
+          techdocs: { collators: { locationTemplate: '/software/:name' } },
+        },
+      });
+      factory = DefaultTechDocsCollatorFactory.fromConfig(_config, {
         discovery: mockDiscoveryApi,
         tokenManager: mockTokenManager,
-        locationTemplate: '/software/:name',
         logger,
       });
       collator = await factory.getCollator();
@@ -194,10 +199,17 @@ describe('DefaultTechDocsCollatorFactory', () => {
       // A parallelismLimit of 1 is a catalog limit of 50 per request. Code
       // above in the /entities handler ensures valid entities are only
       // returned on the second page.
-      factory = DefaultTechDocsCollatorFactory.fromConfig(config, {
-        ...options,
-        parallelismLimit: 1,
+      const _config = new ConfigReader({
+        ...config.get(),
+        search: {
+          techdocs: {
+            collators: {
+              parallelismLimit: 1,
+            },
+          },
+        },
       });
+      factory = DefaultTechDocsCollatorFactory.fromConfig(_config, options);
       collator = await factory.getCollator();
 
       const pipeline = TestPipeline.fromCollator(collator);
@@ -205,6 +217,9 @@ describe('DefaultTechDocsCollatorFactory', () => {
 
       // Only 1 entity with TechDocs configured multiplied by 3 pages.
       expect(documents).toHaveLength(3);
+      expect(_config.get('search.techdocs.collators.parallelismLimit')).toEqual(
+        1,
+      );
     });
 
     describe('with legacyPathCasing configuration', () => {

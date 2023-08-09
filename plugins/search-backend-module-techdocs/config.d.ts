@@ -20,7 +20,7 @@ export interface Config {
   search?: {
     techdocs?: {
       schedule?: TaskScheduleDefinitionConfig;
-      collatorsFactory?: {
+      collators?: {
         locationTemplate?: string;
         parallelismLimit?: number;
         legacyPathCasing?: boolean;

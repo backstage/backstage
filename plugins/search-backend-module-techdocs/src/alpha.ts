@@ -71,15 +71,6 @@ export const searchModuleTechDocsCollator = createBackendModule({
         indexRegistry.addCollator({
           schedule: scheduler.createScheduledTaskRunner(schedule),
           factory: DefaultTechDocsCollatorFactory.fromConfig(config, {
-            locationTemplate: config.getOptionalString(
-              'search.techdocs.collatorsFactory.locationTemplate',
-            ),
-            parallelismLimit: config.getOptionalNumber(
-              'search.techdocs.collatorsFactory.parallelismLimit',
-            ),
-            legacyPathCasing: config.getOptionalBoolean(
-              'search.techdocs.collatorsFactory.legacyPathCasing',
-            ),
             discovery,
             tokenManager,
             logger: loggerToWinstonLogger(logger),
