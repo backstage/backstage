@@ -1,3 +1,4 @@
+/* eslint-disable no-console */
 /*
  * Copyright 2021 The Backstage Authors
  *
@@ -107,6 +108,7 @@ export type SidebarSubmenuProps = {
  * @public
  */
 export const SidebarSubmenu = (props: SidebarSubmenuProps) => {
+  console.log('sidebar submenu is rendering');
   const { isOpen } = useSidebarOpenState();
   const { sidebarConfig, submenuConfig } = useContext(SidebarConfigContext);
   const left = isOpen

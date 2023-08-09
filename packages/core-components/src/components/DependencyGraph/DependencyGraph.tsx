@@ -34,7 +34,7 @@ import { ARROW_MARKER_ID } from './constants';
  * `<NodeData>` and `<EdgeData>` are useful when rendering custom or edge labels
  */
 export interface DependencyGraphProps<NodeData, EdgeData>
-  extends React.SVGProps<SVGSVGElement> {
+  extends React.ComponentProps<'svg'> {
   /**
    * Edges of graph
    */
@@ -416,7 +416,7 @@ export function DependencyGraph<NodeData, EdgeData>(
             d="M8.59 16.59L13.17 12 8.59 7.41 10 6l6 6-6 6-1.41-1.41z"
           />
         </marker>
-        {defs}
+        {defs as unknown as React.ReactNode}
       </defs>
       <g id={WORKSPACE_ID}>
         <svg

@@ -139,7 +139,11 @@ export type SidebarSubmenuItemProps = {
  * @public
  */
 export const SidebarSubmenuItem = (props: SidebarSubmenuItemProps) => {
+  // eslint-disable-next-line no-console
+  console.log('rendering sidebar submenu item');
   const { title, subtitle, to, icon: Icon, dropdownItems, exact } = props;
+  // eslint-disable-next-line no-console
+  console.log('using title', title);
   const classes = useStyles();
   const { setIsHoveredOn } = useContext(SidebarItemWithSubmenuContext);
   const closeSubmenu = () => {

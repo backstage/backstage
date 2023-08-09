@@ -141,11 +141,15 @@ describe('Items', () => {
   });
   describe('SidebarSearchField', () => {
     it('should be defaultPrevented when enter is pressed', async () => {
-      const searchEvent = createEvent.keyDown(
-        await screen.findByPlaceholderText('Search'),
-        { key: 'Enter', code: 'Enter', charCode: 13 },
-      );
-      fireEvent(await screen.findByPlaceholderText('Search'), searchEvent);
+      await userEvent.hover(await screen.findByTestId('item-with-submenu'));
+
+      const input = await screen.findByTestId('search-field');
+      const searchEvent = createEvent.keyDown(input, {
+        key: 'Enter',
+        code: 'Enter',
+        charCode: 13,
+      });
+      fireEvent(input, searchEvent);
       expect(searchEvent.defaultPrevented).toBeTruthy();
     });
   });

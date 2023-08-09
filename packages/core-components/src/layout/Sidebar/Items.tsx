@@ -13,6 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
 import {
   IconComponent,
   useAnalytics,
@@ -46,12 +47,13 @@ import React, {
   useContext,
   useMemo,
   useState,
-  type ForwardedRef,
   type ElementRef,
+  type Ref,
 } from 'react';
 import {
   Link,
   NavLinkProps as RRDNavLinkProps,
+  To,
   resolvePath,
   useLocation,
   useResolvedPath,
@@ -65,7 +67,7 @@ import {
 import DoubleArrowLeft from './icons/DoubleArrowLeft';
 import DoubleArrowRight from './icons/DoubleArrowRight';
 import { useSidebarOpenState } from './SidebarOpenStateContext';
-import { SidebarSubmenu, SidebarSubmenuProps } from './SidebarSubmenu';
+import { SidebarSubmenuProps } from './SidebarSubmenu';
 import { SidebarSubmenuItemProps } from './SidebarSubmenuItem';
 import { isLocationMatch } from './utils';
 import Button from '@material-ui/core/Button';
@@ -277,24 +279,23 @@ type SidebarItemBaseProps = {
   onClick?: (ev: React.MouseEvent) => void;
 };
 
-type SidebarItemButtonProps = SidebarItemBaseProps & {
-  type: 'button';
-  onClick: (ev: React.MouseEvent) => void;
-  children?: ReactNode;
-};
+type SidebarItemButtonProps = SidebarItemBaseProps &
+  React.ComponentProps<'button'> & {
+    type: 'button';
+  };
 
-type SidebarItemLinkProps = SidebarItemBaseProps & {
-  type: 'link';
-  to: string;
-  onClick?: (ev: React.MouseEvent) => void;
-} & NavLinkProps;
+type SidebarItemLinkProps = SidebarItemBaseProps &
+  NavLinkProps &
+  React.ComponentProps<'a'> & {
+    type: 'link';
+    to: string;
+  };
 
-type SidebarItemWithSubmenuProps = SidebarItemBaseProps & {
-  type: 'submenu';
-  to?: string;
-  onClick?: (ev: React.MouseEvent) => void;
-  children: ReactNode;
-};
+type SidebarItemWithSubmenuProps = SidebarItemBaseProps &
+  React.ComponentProps<'nav'> & {
+    type: 'submenu';
+    children: React.ReactElement<SidebarSubmenuProps>;
+  };
 
 type RefTypeEnum = {
   button: ElementRef<'button'>;
@@ -319,17 +320,15 @@ type GetSidebarItemType<PropType extends SidebarItemProps> = PropType extends {
   : never;
 
 /* If the GetRefType has an error, update RefTypeEnum to include missing type */
-type GetRefType<T extends SidebarItemProps> = ForwardedRef<
+type GetRefType<T extends SidebarItemProps> = Ref<
   RefTypeEnum[GetSidebarItemType<T>]
 >;
-
-const sidebarSubmenuType = React.createElement(SidebarSubmenu).type;
 
 // TODO(Rugvip): Remove this once NavLink is updated in react-router-dom.
 //               This is needed because react-router doesn't handle the path comparison
 //               properly yet, matching for example /foobar with /foo.
 export const WorkaroundNavLink = React.forwardRef<
-  HTMLAnchorElement,
+  ElementRef<'a'>,
   NavLinkProps & {
     activeStyle?: CSSProperties;
     activeClassName?: string;
@@ -344,7 +343,6 @@ export const WorkaroundNavLink = React.forwardRef<
     caseSensitive,
     activeClassName = 'active',
     'aria-current': ariaCurrentProp = 'page',
-    children,
     ...rest
   },
   ref,
@@ -365,8 +363,6 @@ export const WorkaroundNavLink = React.forwardRef<
 
   const ariaCurrent = isActive ? ariaCurrentProp : undefined;
 
-  // determine whether or not children is ReactNode or a function
-
   return (
     <Link
       {...rest}
@@ -386,7 +382,10 @@ export const WorkaroundNavLink = React.forwardRef<
  * Common component used by SidebarItem & SidebarItemWithSubmenu
  */
 const SidebarItemBase = forwardRef(
-  <T extends SidebarItemProps>(props: T, ref: GetRefType<T>) => {
+  <T extends Exclude<SidebarItemProps, SidebarItemWithSubmenuProps>>(
+    props: T,
+    ref: GetRefType<T>,
+  ) => {
     const {
       type,
       icon: Icon,
@@ -398,7 +397,7 @@ const SidebarItemBase = forwardRef(
       noTrack,
       children,
       className,
-      ...navLinkProps
+      ...rest
     } = props;
     const { sidebarConfig } = useContext(SidebarConfigContext);
     const classes = useMemoStyles(sidebarConfig);
@@ -468,7 +467,7 @@ const SidebarItemBase = forwardRef(
     );
 
     const handleClick = useCallback(
-      (event: React.MouseEvent<HTMLAnchorElement | HTMLButtonElement>) => {
+      (event: React.MouseEvent) => {
         if (!noTrack) {
           const action = 'click';
           const subject = text ?? 'Sidebar Item';
@@ -496,12 +495,14 @@ const SidebarItemBase = forwardRef(
 
     return (
       <WorkaroundNavLink
+        {...(rest as React.ComponentProps<'a'>)}
         {...childProps}
         activeClassName={classes.selected}
-        to={(type === 'link' || type === 'submenu') && props.to ? props.to : ''}
-        ref={ref as GetRefType<SidebarItemLinkProps>}
-        aria-label={text ? text : props.to}
-        {...navLinkProps}
+        to={props.to ?? ''}
+        // XXX (@RobotSail): TypeScript doesn't properly infer the type of ref here, so we cast as any
+        // to avoid a type error.
+        ref={ref as any}
+        aria-label={text ?? props.to}
         onClick={handleClick}
       >
         {content}
@@ -512,10 +513,8 @@ const SidebarItemBase = forwardRef(
 
 const SidebarItemWithSubmenu = ({
   children,
-  ...props
-}: SidebarItemBaseProps & {
-  children: React.ReactElement<SidebarSubmenuProps>;
-}) => {
+  ...rest
+}: SidebarItemWithSubmenuProps) => {
   const { sidebarConfig } = useContext(SidebarConfigContext);
   const classes = useMemoStyles(sidebarConfig);
   const [isHoveredOn, setIsHoveredOn] = useState(false);
@@ -532,7 +531,7 @@ const SidebarItemWithSubmenu = ({
     setIsHoveredOn(false);
   };
 
-  const arrowIcon = () => {
+  const ArrowIcon: IconComponent = () => {
     if (isSmallScreen) {
       return isHoveredOn ? (
         <ArrowDropUp fontSize="small" className={classes.submenuArrow} />
@@ -540,11 +539,9 @@ const SidebarItemWithSubmenu = ({
         <ArrowDropDown fontSize="small" className={classes.submenuArrow} />
       );
     }
-    return (
-      !isHoveredOn && (
-        <ArrowRightIcon fontSize="small" className={classes.submenuArrow} />
-      )
-    );
+    return !isHoveredOn ? (
+      <ArrowRightIcon fontSize="small" className={classes.submenuArrow} />
+    ) : null;
   };
 
   return (
@@ -554,23 +551,22 @@ const SidebarItemWithSubmenu = ({
         setIsHoveredOn,
       }}
     >
-      <div
+      <nav
         data-testid="item-with-submenu"
         onMouseLeave={handleMouseLeave}
         onTouchStart={isHoveredOn ? handleMouseLeave : handleMouseEnter}
         onMouseEnter={handleMouseEnter}
         className={classnames(isHoveredOn && classes.highlighted)}
+        {...rest}
       >
         <SidebarItemBase
-          type="submenu"
+          type="button"
           hasSubmenu
           className={isActive ? classes.selected : ''}
-          {...props}
-        >
-          {arrowIcon()}
-        </SidebarItemBase>
+          icon={ArrowIcon}
+        />
         {isHoveredOn && children}
-      </div>
+      </nav>
     </SidebarItemWithSubmenuContext.Provider>
   );
 };
@@ -581,32 +577,25 @@ const SidebarItemWithSubmenu = ({
  * @remarks
  * If children contain a `SidebarSubmenu` component the `SidebarItem` will have a expandable submenu
  */
-export const SidebarItem = forwardRef<HTMLAnchorElement, SidebarItemProps>(
+export const SidebarItem = forwardRef<ElementRef<'a'>, SidebarItemProps>(
   (props, ref) => {
-    // Filter children for SidebarSubmenu components
-    const [submenu] = useElementFilter(props.children, elements =>
-      // Directly comparing child.type with SidebarSubmenu will not work with in
-      // combination with react-hot-loader
-      //
-      // https://github.com/gaearon/react-hot-loader/issues/304#issuecomment-456569720
-      elements.getElements().filter(child => child.type === sidebarSubmenuType),
-    );
-
-    if (submenu) {
+    if (props.type === 'submenu') {
+      console.log('[SidebarItem] rendering SidebarItemWithSubmenu');
       return (
         <SidebarItemWithSubmenu {...props}>
-          {submenu as React.ReactElement<SidebarSubmenuProps>}
+          {props.children as React.ReactElement<SidebarSubmenuProps>}
         </SidebarItemWithSubmenu>
       );
     }
 
+    console.log('[SidebarItem] rendering SidebarItemBase');
     return <SidebarItemBase {...props} ref={ref} />;
   },
 ) as (props: SidebarItemProps) => JSX.Element;
 
 type SidebarSearchFieldProps = {
   onSearch: (input: string) => void;
-  to?: string;
+  to?: To & string;
   icon?: IconComponent;
 };
 
@@ -648,13 +637,14 @@ export function SidebarSearchField(props: SidebarSearchFieldProps) {
     <Box className={classes.searchRoot}>
       <SidebarItem
         icon={Icon}
-        to={props.to}
+        to={props.to ?? ''}
         onClick={handleItemClick}
         disableHighlight
-        type="submenu"
+        type="link"
       >
         <TextField
           placeholder="Search"
+          data-testid="search-field"
           value={input}
           onClick={handleInputClick}
           onChange={handleInput}
