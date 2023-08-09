@@ -25,8 +25,8 @@ import {
 } from '@backstage/backend-plugin-api';
 import { catalogServiceRef } from '@backstage/plugin-catalog-node/alpha';
 import {
+  CatalogCollatorEntityTransformer,
   DefaultCatalogCollatorFactory,
-  DefaultCatalogCollatorFactoryOptions,
 } from '@backstage/plugin-search-backend-module-catalog';
 import { searchIndexRegistryExtensionPoint } from '@backstage/plugin-search-backend-node/alpha';
 import { readScheduleConfigOptions } from './collators/config';
@@ -36,10 +36,12 @@ import { readScheduleConfigOptions } from './collators/config';
  *
  * @alpha
  */
-export type SearchModuleCatalogCollatorOptions = Pick<
-  DefaultCatalogCollatorFactoryOptions,
-  'entityTransformer'
->;
+export type SearchModuleCatalogCollatorOptions = {
+  /**
+   * Allows you to customize how entities are shaped into documents.
+   */
+  entityTransformer?: CatalogCollatorEntityTransformer;
+};
 
 /**
  * Search backend module for the Catalog index.
@@ -73,7 +75,7 @@ export const searchModuleCatalogCollator = createBackendModule(
               readScheduleConfigOptions(config),
             ),
             factory: DefaultCatalogCollatorFactory.fromConfig(config, {
-              ...options,
+              entityTransformer: options?.entityTransformer,
               discovery,
               tokenManager,
               catalogClient: catalog,

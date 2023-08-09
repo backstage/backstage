@@ -4,7 +4,7 @@
 
 ```ts
 import { BackendFeature } from '@backstage/backend-plugin-api';
-import { DefaultCatalogCollatorFactoryOptions } from '@backstage/plugin-search-backend-module-catalog';
+import { CatalogCollatorEntityTransformer } from '@backstage/plugin-search-backend-module-catalog';
 
 // @alpha
 export const searchModuleCatalogCollator: (
@@ -12,10 +12,9 @@ export const searchModuleCatalogCollator: (
 ) => BackendFeature;
 
 // @alpha
-export type SearchModuleCatalogCollatorOptions = Pick<
-  DefaultCatalogCollatorFactoryOptions,
-  'entityTransformer'
->;
+export type SearchModuleCatalogCollatorOptions = {
+  entityTransformer?: CatalogCollatorEntityTransformer;
+};
 
 // (No @packageDocumentation comment for this package)
 ```
