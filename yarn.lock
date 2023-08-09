@@ -15453,12 +15453,12 @@ __metadata:
   linkType: hard
 
 "@stoplight/types@npm:^12.3.0 || ^13.0.0, @stoplight/types@npm:^13.0.0, @stoplight/types@npm:^13.14.0, @stoplight/types@npm:^13.15.0, @stoplight/types@npm:^13.6.0":
-  version: 13.15.0
-  resolution: "@stoplight/types@npm:13.15.0"
+  version: 13.18.0
+  resolution: "@stoplight/types@npm:13.18.0"
   dependencies:
     "@types/json-schema": ^7.0.4
     utility-types: ^3.10.0
-  checksum: 839f0bbedb791bd6792ef22b6a821ca504b14b705927f7c510c4cdcc591eddc8818c82b8857129501aa809d6f369b82e4487bfe18dfc5ce00e28317ecad2df9a
+  checksum: 17f464b6986fcb07719584cbb55c59e1c8d72d6d000ed64b13cae92acbdc069e5a725b4d14c4a2998eb701a0289e6ce3aee151e4200698df906ba058747e210f
   languageName: node
   linkType: hard
 
