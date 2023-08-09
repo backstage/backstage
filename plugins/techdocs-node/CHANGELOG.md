@@ -1,5 +1,12 @@
 # @backstage/plugin-techdocs-node
 
+## 1.7.4-next.2
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-common@0.19.2-next.2
+
 ## 1.7.4-next.1
 
 ### Patch Changes

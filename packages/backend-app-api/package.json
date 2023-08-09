@@ -1,16 +1,29 @@
 {
   "name": "@backstage/backend-app-api",
   "description": "Core API used by Backstage backend apps",
-  "version": "0.5.0-next.1",
+  "version": "0.5.0-next.2",
   "main": "src/index.ts",
   "types": "src/index.ts",
   "publishConfig": {
-    "access": "public",
-    "main": "dist/index.cjs.js",
-    "types": "dist/index.d.ts"
+    "access": "public"
   },
   "backstage": {
     "role": "node-library"
+  },
+  "exports": {
+    ".": "./src/index.ts",
+    "./alpha": "./src/alpha.ts",
+    "./package.json": "./package.json"
+  },
+  "typesVersions": {
+    "*": {
+      "alpha": [
+        "src/alpha.ts"
+      ],
+      "package.json": [
+        "package.json"
+      ]
+    }
   },
   "homepage": "https://backstage.io",
   "repository": {
@@ -36,6 +49,7 @@
     "@backstage/backend-plugin-api": "workspace:^",
     "@backstage/backend-tasks": "workspace:^",
     "@backstage/cli-common": "workspace:^",
+    "@backstage/cli-node": "workspace:^",
     "@backstage/config": "workspace:^",
     "@backstage/config-loader": "workspace:^",
     "@backstage/errors": "workspace:^",
@@ -73,6 +87,7 @@
     "@types/node-forge": "^1.3.0",
     "@types/stoppable": "^1.1.0",
     "http-errors": "^2.0.0",
+    "mock-fs": "^5.2.0",
     "supertest": "^6.1.3"
   },
   "files": [

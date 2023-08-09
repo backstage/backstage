@@ -1,5 +1,12 @@
 # @backstage/plugin-entity-feedback
 
+## 0.2.4-next.2
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/plugin-catalog-react@1.8.1-next.1
+
 ## 0.2.4-next.1
 
 ### Patch Changes

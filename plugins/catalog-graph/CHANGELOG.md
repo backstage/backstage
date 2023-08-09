@@ -1,5 +1,13 @@
 # @backstage/plugin-catalog-graph
 
+## 0.2.33-next.2
+
+### Patch Changes
+
+- 62dc7a2b1ad1: Added maximum depth parameter to the catalogGraphParams in CatalogGraphCard.
+- Updated dependencies
+  - @backstage/plugin-catalog-react@1.8.1-next.1
+
 ## 0.2.33-next.1
 
 ### Patch Changes
