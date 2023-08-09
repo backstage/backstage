@@ -11,7 +11,7 @@ import { AuthProviderRouteHandlers as AuthProviderRouteHandlers_2 } from '@backs
 import { AuthResolverCatalogUserQuery as AuthResolverCatalogUserQuery_2 } from '@backstage/plugin-auth-node';
 import { AuthResolverContext as AuthResolverContext_2 } from '@backstage/plugin-auth-node';
 import { BackstageSignInResult } from '@backstage/plugin-auth-node';
-import { CacheClient } from '@backstage/backend-common';
+import { CacheService } from '@backstage/backend-plugin-api';
 import { CatalogApi } from '@backstage/catalog-client';
 import { ClientAuthResponse } from '@backstage/plugin-auth-node';
 import { Config } from '@backstage/config';
@@ -452,7 +452,7 @@ export const providers: Readonly<{
       signIn: {
         resolver: SignInResolver<CloudflareAccessResult>;
       };
-      cache?: CacheClient | undefined;
+      cache?: CacheService | undefined;
     }) => AuthProviderFactory_2;
     resolvers: Readonly<{
       emailMatchingUserEntityProfileEmail: () => SignInResolver<unknown>;
