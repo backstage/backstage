@@ -38,6 +38,7 @@ import {
   AwsCredentialProvider,
   DefaultAwsCredentialsManager,
 } from '@backstage/integration-aws-node';
+import { LoggerService } from '@backstage/backend-plugin-api';
 
 export type { ElasticSearchClientOptions };
 
@@ -73,7 +74,7 @@ export type ElasticSearchQueryTranslator = (
  * @public
  */
 export type ElasticSearchOptions = {
-  logger: Logger;
+  logger: Logger | LoggerService;
   config: Config;
   aliasPostfix?: string;
   indexPrefix?: string;
@@ -126,7 +127,7 @@ export class ElasticSearchSearchEngine implements SearchEngine {
     private readonly elasticSearchClientOptions: ElasticSearchClientOptions,
     private readonly aliasPostfix: string,
     private readonly indexPrefix: string,
-    private readonly logger: Logger,
+    private readonly logger: Logger | LoggerService,
     private readonly batchSize: number,
     highlightOptions?: ElasticSearchHighlightOptions,
   ) {
@@ -229,11 +230,10 @@ export class ElasticSearchSearchEngine implements SearchEngine {
             .boolQuery()
             .should(value.map(it => esb.matchQuery(key, it.toString())));
         }
-        this.logger.error(
-          'Failed to query, unrecognized filter type',
+        this.logger.error('Failed to query, unrecognized filter type', {
           key,
           value,
-        );
+        });
         throw new Error(
           'Failed to add filters to query. Unrecognized filter type',
         );
