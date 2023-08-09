@@ -82,6 +82,7 @@ export class PinnipedAuthProvider implements OAuthHandlers {
       strategy.fail = info => {
         reject(new Error(`Authentication rejected, ${info.message || ''}`));
       };
+      strategy.error = reject;
 
       strategy.authenticate(req);
     });

@@ -20,16 +20,21 @@ import { setupRequestMockHandlers } from '@backstage/backend-test-utils';
 import { ConfigReader } from '@backstage/config';
 import { setupServer } from 'msw/node';
 import { rest } from 'msw';
-import crypto from 'crypto';
+import { Server } from 'http';
+import { AddressInfo } from 'net';
 import express from 'express';
 import request from 'supertest';
 import cookieParser from 'cookie-parser';
 import passport from 'passport';
 import session from 'express-session';
+import Router from 'express-promise-router';
+// import fetch from 'node-fetch';
+import { SignJWT, UnsecuredJWT, exportJWK, generateKeyPair, importJWK } from 'jose';
+import { v4 as uuid } from 'uuid';
 
 describe('pinniped.create', () => {
-  const server = setupServer();
-  setupRequestMockHandlers(server);
+  const fakePinnipedSupervisor = setupServer();
+  setupRequestMockHandlers(fakePinnipedSupervisor);
   const nonce = 'AAAAAAAAAAAAAAAAAAAAAA=='; // 16 bytes of zeros in base64
   const state = Buffer.from(
     `nonce=${encodeURIComponent(nonce)}&env=development`,
@@ -37,9 +42,33 @@ describe('pinniped.create', () => {
 
   let app: express.Express;
   let provider: AuthProviderRouteHandlers;
+  let backstageServer: Server;
+  let appUrl: string;
 
-  beforeEach(() => {
-    server.use(
+  beforeEach(async () => {
+    const secret = 'secret';
+    app = express()
+      .use(cookieParser(secret))
+      .use(
+        session({
+          secret,
+          saveUninitialized: false,
+          resave: false,
+          cookie: { secure: false },
+        }),
+      )
+      .use(passport.initialize())
+      .use(passport.session());
+    await new Promise(resolve => {
+      backstageServer = app.listen(0, '0.0.0.0', () => {
+        appUrl = `http://127.0.0.1:${
+          (backstageServer.address() as AddressInfo).port
+        }`;
+        resolve(null);
+      });
+    });
+    fakePinnipedSupervisor.use(
+      rest.all(`${appUrl}/*`, req => req.passthrough()),
       rest.all(
         'https://pinniped.test/.well-known/openid-configuration',
         (_, res, ctx) =>
@@ -52,8 +81,14 @@ describe('pinniped.create', () => {
               response_types_supported: ['code'],
               response_modes_supported: ['query', 'form_post'],
               subject_types_supported: ['public'],
-              id_token_signing_alg_values_supported: ['ES256'],
               token_endpoint_auth_methods_supported: ['client_secret_basic'],
+              id_token_signing_alg_values_supported: ['RS256', 'RS512', 'HS256', 'ES256'],
+              token_endpoint_auth_signing_alg_values_supported: [
+                'RS256',
+                'RS512',
+                'HS256',
+              ],
+              request_object_signing_alg_values_supported: ['RS256', 'RS512', 'HS256'],
               scopes_supported: [
                 'openid',
                 'offline_access',
@@ -71,11 +106,12 @@ describe('pinniped.create', () => {
           ),
       ),
     );
+
     provider = pinniped.create()({
       providerId: 'pinniped',
       globalConfig: {
-        baseUrl: 'http://backstage.test/api/auth',
-        appUrl: 'http://backstage.test',
+        baseUrl: `${appUrl}/api/auth`,
+        appUrl,
         isOriginAllowed: _ => true,
       },
       config: new ConfigReader({
@@ -98,65 +134,135 @@ describe('pinniped.create', () => {
         signInWithCatalogUser: async _ => ({ token: '' }),
       },
     });
-    const secret = 'secret';
-    app = express()
-      .use(cookieParser(secret))
-      .use(
-        session({
-          secret,
-          saveUninitialized: false,
-          resave: false,
-          cookie: { secure: false },
-        }),
-      )
-      .use(passport.initialize())
-      .use(passport.session())
+    const router = Router();
+    router
       .use('/api/auth/pinniped/start', provider.start.bind(provider))
       .use(
         '/api/auth/pinniped/handler/frame',
         provider.frameHandler.bind(provider),
       );
+    app.use(router);
   });
 
-  describe('#start', () => {
-    const randomBytes = jest.spyOn(
-      crypto,
-      'randomBytes',
-    ) as unknown as jest.MockedFunction<(size: number) => Buffer>;
-
-    afterEach(() => {
-      randomBytes.mockRestore();
-    });
-
-    it('redirects to authorization endpoint returned from federationDomain config value', async () => {
-      randomBytes.mockReturnValue(Buffer.from(nonce, 'base64'));
-
-      const responsePromise = request(app).get(
-        '/api/auth/pinniped/start?' +
-          'env=development&scope=openid+pinniped:request-audience+username',
-      );
-      const reqUrl = new URL(responsePromise.url);
-      reqUrl.search = '';
-      server.use(rest.all(reqUrl.toString(), req => req.passthrough()));
-
-      const response = await responsePromise;
-      expect((response as any).headers.location).toMatch(
-        'https://pinniped.test/oauth2/authorize' +
-          '?client_id=clientId' +
-          `&scope=${encodeURIComponent(
-            'openid pinniped:request-audience username',
-          )}` +
-          '&response_type=code' +
-          `&redirect_uri=${encodeURIComponent(
-            'http://backstage.test/api/auth/pinniped/handler/frame',
-          )}` +
-          `&state=${state}`,
-      );
-    });
+  afterEach(() => {
+    backstageServer.close();
   });
+
+  it('/handler/frame exchanges authorization codes from /start for access tokens', async () => {
+    const agent = request.agent('');
+    // make a /start request
+    const startResponse = await agent.get(
+      `${appUrl}/api/auth/pinniped/start?env=development`,
+    );
+    // follow the redirect to pinniped authorization endpoint
+    fakePinnipedSupervisor.use(
+      rest.get(
+        'https://pinniped.test/oauth2/authorize',
+        async (req, res, ctx) => {
+          const callbackUrl = new URL(
+            req.url.searchParams.get('redirect_uri')!,
+          );
+          callbackUrl.searchParams.set('code', 'authorization_code');
+          callbackUrl.searchParams.set(
+            'state',
+            req.url.searchParams.get('state')!,
+          );
+          return res(
+            ctx.status(302),
+            ctx.set('Location', callbackUrl.toString()),
+          );
+        },
+      ),
+    );
+    const authorizationResponse = await agent.get(
+      startResponse.header.location,
+    );
+
+    // follow the redirect back to /handler/frame
+    const sub = 'test';
+    const iss = 'https://pinniped.test';
+    const iat = Date.now();
+    const aud = 'clientId';
+    const exp = Date.now() + 10000;
+
+
+    // const jwt =  new UnsecuredJWT({ iss, sub, aud, iat, exp })
+    // .setIssuer(iss)
+    // .setAudience(aud)
+    // .setSubject(sub)
+    // .setIssuedAt(iat)
+    // .setExpirationTime(exp)
+    // .encode();
+
+    //we must use a signed token for this endpoint to work since the authentication header of none is not accepted????but why does it not work with the none alg header type?? Tried using an unsigned token but alg header was not accepted.
+
+    const key = await generateKeyPair('ES256');
+    const publicKey = await exportJWK(key.publicKey);
+    const privateKey = await exportJWK(key.privateKey);
+    publicKey.kid = privateKey.kid = uuid();
+    publicKey.alg = privateKey.alg = 'ES256';
+
+
+    const jwt = await new SignJWT({ iss, sub, aud, iat, exp})
+    .setProtectedHeader({ alg: privateKey.alg, kid: privateKey.kid })
+    .setIssuer(iss)
+    .setAudience(aud)
+    .setSubject(sub)
+    .setIssuedAt(iat)
+    .setExpirationTime(exp)
+    .sign(await importJWK(privateKey));
+
+
+
+
+    fakePinnipedSupervisor.use(
+      rest.post('https://pinniped.test/oauth2/token', async (req, res, ctx) =>
+        res(
+          // TODO verify client ID + secret, etc -- real token endpoint
+          new URLSearchParams(await req.text()).get('code') ===
+            'authorization_code'
+            ? ctx.json({ access_token: 'accessToken', id_token: jwt })
+            : ctx.status(401),
+        ),
+      ),
+      rest.get('https://pinniped.test/jwks.json', async (_req, res, ctx) => 
+        res(
+          ctx.status(200),
+          ctx.json({ "keys": [{
+            use: 'sig',
+            alg: 'ES256',
+            crv: 'P-256',
+            kid: '04f4bf90-3e70-4271-a17a-6ad2ff677b72',
+            kty: 'EC',
+            x: 'lt1BNQfB9Lu1TIWXxAyMDxd36arkK387lIU9Z6Z75pc',
+            y: 'nvNAmf9xAeBgVQcl5otaCJuTJV7Yea5n3B-4wZvuYCE',
+          }]
+          })
+        ))
+    );
+
+    const handlerResponse = await agent.get(
+      authorizationResponse.header.location,
+    );
+
+    expect(handlerResponse.text).toContain(
+      encodeURIComponent(
+        JSON.stringify({
+          type: 'authorization_response',
+          response: {
+            providerInfo: {
+              accessToken: 'accessToken',
+            },
+            profile: {},
+          },
+        }),
+      ),
+    );
+  });
+
   describe('#frameHandler', () => {
     it.skip('performs an rfc 8693 token exchange after getting access token', async () => {
-      server.use(
+      fakePinnipedSupervisor.use(
         rest.post('https://pinniped.test/oauth2/token', async (req, res, ctx) =>
           res(
             ctx.json(
@@ -183,7 +289,9 @@ describe('pinniped.create', () => {
         );
       const reqUrl = new URL(responsePromise.url);
       reqUrl.search = '';
-      server.use(rest.all(reqUrl.toString(), req => req.passthrough()));
+      fakePinnipedSupervisor.use(
+        rest.all(reqUrl.toString(), req => req.passthrough()),
+      );
 
       expect((await responsePromise).text).toContain(
         encodeURIComponent(
