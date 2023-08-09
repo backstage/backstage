@@ -400,7 +400,7 @@ describe('<AboutCard />', () => {
 
     expect(screen.getByText('View TechDocs').closest('a')).toHaveAttribute(
       'href',
-      '/docs/default/System/example',
+      '/docs/default/system/example',
     );
   });
 
