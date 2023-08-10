@@ -20,12 +20,16 @@
 import { createBackend } from '@backstage/backend-defaults';
 import {
   coreServices,
+  createBackendModule,
   createServiceFactory,
 } from '@backstage/backend-plugin-api';
 import { ConfigReader } from '@backstage/config';
 import { catalogPlugin } from '@backstage/plugin-catalog-backend/alpha';
 import { IncrementalEntityProvider } from '.';
-import { catalogModuleIncrementalIngestionEntityProvider } from './alpha';
+import {
+  catalogModuleIncrementalIngestionEntityProvider,
+  incrementalIngestionProvidersExtensionPoint,
+} from './alpha';
 
 const provider: IncrementalEntityProvider<number, {}> = {
   getProviderName: () => 'test-provider',
@@ -62,19 +66,27 @@ async function main() {
   });
 
   backend.add(catalogPlugin());
+  backend.add(catalogModuleIncrementalIngestionEntityProvider());
   backend.add(
-    catalogModuleIncrementalIngestionEntityProvider({
-      providers: [
-        {
-          provider: provider,
-          options: {
-            burstInterval: { seconds: 1 },
-            burstLength: { seconds: 10 },
-            restLength: { seconds: 10 },
+    createBackendModule({
+      pluginId: 'catalog',
+      moduleId: 'incrementalTestProvider',
+      register(reg) {
+        reg.registerInit({
+          deps: { extension: incrementalIngestionProvidersExtensionPoint },
+          async init({ extension }) {
+            extension.addProvider({
+              provider: provider,
+              options: {
+                burstInterval: { seconds: 1 },
+                burstLength: { seconds: 10 },
+                restLength: { seconds: 10 },
+              },
+            });
           },
-        },
-      ],
-    }),
+        });
+      },
+    })(),
   );
 
   await backend.start();
