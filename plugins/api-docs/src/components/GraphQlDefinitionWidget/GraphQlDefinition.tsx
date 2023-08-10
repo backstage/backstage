@@ -20,6 +20,7 @@ import GraphiQL from 'graphiql';
 import 'graphiql/graphiql.css';
 import { buildSchema } from 'graphql';
 import React from 'react';
+import { useEntity } from '@backstage/plugin-catalog-react';
 
 const useStyles = makeStyles<BackstageTheme>(() => ({
   root: {
@@ -46,16 +47,35 @@ type Props = {
 
 export const GraphQlDefinition = ({ definition }: Props) => {
   const classes = useStyles();
+  const { entity } = useEntity();
   const schema = buildSchema(definition);
+
+  const url = entity.metadata.annotations?.['backstage.io/api-graphql-url'];
 
   return (
     <div className={classes.root}>
       <div className={classes.graphiQlWrapper}>
         <GraphiQL
-          fetcher={() => Promise.resolve(null) as any}
+          fetcher={
+            url
+              ? async (params: any, options: any = {}) => {
+                  const body = JSON.stringify(params);
+                  const headers = {
+                    'Content-Type': 'application/json',
+                    ...options.headers,
+                  };
+
+                  const res = await fetch(url!, {
+                    method: 'POST',
+                    headers,
+                    body,
+                  });
+                  return res.json();
+                }
+              : () => Promise.resolve(null) as any
+          }
           schema={schema}
-          docExplorerOpen
-          defaultSecondaryEditorOpen={false}
+          visiblePlugin="Documentation Explorer"
         />
       </div>
     </div>

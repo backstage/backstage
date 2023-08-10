@@ -17,6 +17,19 @@
 import { renderInTestApp } from '@backstage/test-utils';
 import React from 'react';
 import { GraphQlDefinition } from './GraphQlDefinition';
+import { Entity } from '@backstage/catalog-model';
+import { EntityProvider } from '@backstage/plugin-catalog-react';
+
+const entityValue: Entity = {
+  apiVersion: 'backstage.io/v1alpha1',
+  kind: 'API',
+  metadata: {
+    name: 'API-Test',
+    annotations: {
+      'backstage.io/api-graphql-url': 'https://api.test.com/graphql',
+    },
+  },
+};
 
 describe('<GraphQlDefinition />', () => {
   it('renders graphql schema', async () => {
@@ -53,7 +66,9 @@ type Film {
     };
 
     const { getByText } = await renderInTestApp(
-      <GraphQlDefinition definition={definition} />,
+      <EntityProvider entity={entityValue}>
+        <GraphQlDefinition definition={definition} />
+      </EntityProvider>,
     );
 
     expect(getByText(/Film/i)).toBeInTheDocument();
