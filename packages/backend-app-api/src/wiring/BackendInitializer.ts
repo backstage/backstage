@@ -19,6 +19,7 @@ import {
   ExtensionPoint,
   coreServices,
   ServiceRef,
+  ServiceFactory,
 } from '@backstage/backend-plugin-api';
 import { BackendLifecycleImpl } from '../services/implementations/rootLifecycle/rootLifecycleServiceFactory';
 import { BackendPluginLifecycleImpl } from '../services/implementations/lifecycle/lifecycleServiceFactory';
@@ -104,13 +105,21 @@ export class BackendInitializer {
         `Failed to add feature, invalid type '${feature.$$type}'`,
       );
     }
-    const internalFeature = feature as InternalBackendFeature;
-    if (internalFeature.version !== 'v1') {
+
+    if (isServiceFactory(feature)) {
+      this.#serviceHolder.add(feature);
+    } else if (isInternalBackendFeature(feature)) {
+      if (feature.version !== 'v1') {
+        throw new Error(
+          `Failed to add feature, invalid version '${feature.version}'`,
+        );
+      }
+      this.#features.push(feature);
+    } else {
       throw new Error(
-        `Failed to add feature, invalid version '${internalFeature.version}'`,
+        `Failed to add feature, invalid feature ${JSON.stringify(feature)}`,
       );
     }
-    this.#features.push(internalFeature);
   }
 
   async start(): Promise<void> {
@@ -341,4 +350,16 @@ export class BackendInitializer {
     }
     throw new Error('Unexpected plugin lifecycle service implementation');
   }
+}
+
+function isServiceFactory(feature: BackendFeature): feature is ServiceFactory {
+  return !!(feature as ServiceFactory).service;
+}
+
+function isInternalBackendFeature(
+  feature: BackendFeature,
+): feature is InternalBackendFeature {
+  return (
+    typeof (feature as InternalBackendFeature).getRegistrations === 'function'
+  );
 }
