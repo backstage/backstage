@@ -100,13 +100,13 @@ alongside the entity's source code, the value of this annotation can point to an
 absolute URL, matching the location reference string format outlined above, for
 example: `url:https://github.com/backstage/backstage/tree/master`
 
-### backstage.io/techdocs-ref
+### backstage.io/techdocs-entity
 
 ```yaml
 # Example:
 metadata:
   annotations:
-    backstage.io/techdocs-external-ref: component:default/example
+    backstage.io/techdocs-entity: component:default/example
 ```
 
 The value of this annotation informs of an external entity that owns the TechDocs.

@@ -683,7 +683,7 @@ documentation to the appropriate location in the TechDocs external storage.
 
 In systems where you might have multiple entities for example a System with a Website and an API, when served from a Monorepo you might want to keep the TechDocs in one location in the repository.
 
-In this case you can add the `backstage.io/techdocs-external-ref` annotation and point to the owners `entityRef` and use its TechDocs. This allows the Subcomponents to read the parents docs, filling the TechDocs link on the `AboutCard` element and the Techdocs tab
+In this case you can add the `backstage.io/techdocs-entity` annotation and point to the owners `entityRef` and use its TechDocs. This allows the Subcomponents to read the parents docs, filling the TechDocs link on the `AboutCard` element and the Techdocs tab
 
 ```yaml
 apiVersion: backstage.io/v1alpha1
@@ -705,5 +705,5 @@ metadata:
   namespace: default
   description: This is the child entity
   annotations:
-    backstage.io/techdocs-external-ref: system:default/example
+    backstage.io/techdocs-entity: system:default/example
 ```

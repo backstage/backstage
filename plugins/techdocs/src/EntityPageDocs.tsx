@@ -30,10 +30,10 @@ type EntityPageDocsProps = { entity: Entity };
 export const EntityPageDocs = ({ entity }: EntityPageDocsProps) => {
   let entityRef = getCompoundEntityRef(entity);
 
-  if (entity.metadata.annotations?.['backstage.io/techdocs-external-ref']) {
+  if (entity.metadata.annotations?.['backstage.io/techdocs-entity']) {
     try {
       entityRef = parseEntityRef(
-        entity.metadata.annotations?.['backstage.io/techdocs-external-ref'],
+        entity.metadata.annotations?.['backstage.io/techdocs-entity'],
       );
     } catch {
       // not a fan of this but we don't care if the parseEntityRef fails

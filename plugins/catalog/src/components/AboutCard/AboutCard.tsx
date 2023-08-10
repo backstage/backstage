@@ -114,10 +114,10 @@ export function AboutCard(props: AboutCardProps) {
 
   let techdocsRef: CompoundEntityRef | undefined;
 
-  if (entity.metadata.annotations?.['backstage.io/techdocs-external-ref']) {
+  if (entity.metadata.annotations?.['backstage.io/techdocs-entity']) {
     try {
       techdocsRef = parseEntityRef(
-        entity.metadata.annotations?.['backstage.io/techdocs-external-ref'],
+        entity.metadata.annotations?.['backstage.io/techdocs-entity'],
       );
       // not a fan of this but we don't care if the parseEntityRef fails
     } catch {
@@ -136,7 +136,7 @@ export function AboutCard(props: AboutCardProps) {
     disabled:
       !(
         entity.metadata.annotations?.['backstage.io/techdocs-ref'] ||
-        entity.metadata.annotations?.['backstage.io/techdocs-external-ref']
+        entity.metadata.annotations?.['backstage.io/techdocs-entity']
       ) || !viewTechdocLink,
     icon: <DocsIcon />,
     href:

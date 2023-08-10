@@ -355,7 +355,7 @@ describe('<AboutCard />', () => {
       metadata: {
         name: 'software',
         annotations: {
-          'backstage.io/techdocs-external-ref': 'system:default/example',
+          'backstage.io/techdocs-entity': 'system:default/example',
         },
       },
       spec: {
