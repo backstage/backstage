@@ -39,7 +39,7 @@ function toInternalServiceFactory<TService, TScope extends 'plugin' | 'root'>(
   factory: ServiceFactory<TService, TScope>,
 ): InternalServiceFactory<TService, TScope> {
   const f = factory as InternalServiceFactory<TService, TScope>;
-  if (f.$$type !== '@backstage/ServiceFactory') {
+  if (f.$$type !== '@backstage/BackendFeature') {
     throw new Error(`Invalid service factory, bad type '${f.$$type}'`);
   }
   if (f.version !== 'v1') {
@@ -80,6 +80,13 @@ export class ServiceRegistry implements EnumerableServiceHolder {
     );
     this.#loadedDefaultFactories = new Map();
     this.#implementations = new Map();
+  }
+
+  add(serviceFactory: ServiceFactory) {
+    this.#providedFactories.set(
+      serviceFactory.service.id,
+      toInternalServiceFactory(serviceFactory),
+    );
   }
 
   #resolveFactory(
