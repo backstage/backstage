@@ -24,6 +24,16 @@ import { StyleRules } from '@material-ui/core/styles/withStyles';
 import { SystemEntity } from '@backstage/catalog-model';
 import { TableColumn } from '@backstage/core-components';
 import { TableOptions } from '@backstage/core-components';
+import { TextFieldProps } from '@material-ui/core';
+
+// @public (undocumented)
+export type AllowedEntityFilters<T extends DefaultEntityFilters> = {
+  [K in keyof T]-?: NonNullable<T[K]> extends EntityFilter & {
+    values: string[];
+  }
+    ? K
+    : never;
+}[keyof T];
 
 // @public
 export const AsyncEntityProvider: (
@@ -129,6 +139,12 @@ export const columnFactories: Readonly<{
 }>;
 
 // @public (undocumented)
+export interface ConstructableFilter<T> {
+  // (undocumented)
+  new (values: string[]): T;
+}
+
+// @public (undocumented)
 export type DefaultEntityFilters = {
   kind?: EntityKindFilter;
   type?: EntityTypeFilter;
@@ -140,6 +156,26 @@ export type DefaultEntityFilters = {
   orphan?: EntityOrphanFilter;
   error?: EntityErrorFilter;
   namespace?: EntityNamespaceFilter;
+};
+
+// @public (undocumented)
+export function EntityAutocompletePicker<
+  T extends DefaultEntityFilters = DefaultEntityFilters,
+  Name extends AllowedEntityFilters<T> = AllowedEntityFilters<T>,
+>(props: EntityAutocompletePickerProps<T, Name>): React_2.JSX.Element | null;
+
+// @public (undocumented)
+export type EntityAutocompletePickerProps<
+  T extends DefaultEntityFilters = DefaultEntityFilters,
+  Name extends AllowedEntityFilters<T> = AllowedEntityFilters<T>,
+> = {
+  label: string;
+  name: Name;
+  path: string;
+  showCounts?: boolean;
+  Filter: ConstructableFilter<NonNullable<T[Name]>>;
+  InputProps?: TextFieldProps;
+  initialSelectedOptions?: string[];
 };
 
 // @public
