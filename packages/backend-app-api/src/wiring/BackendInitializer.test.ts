@@ -21,7 +21,7 @@ import {
   createBackendPlugin,
   createBackendModule,
 } from '@backstage/backend-plugin-api';
-import { BackendInitializer } from './BackendInitializer';
+import { BackendInitializer, resolveInitChunks } from './BackendInitializer';
 import { ServiceRegistry } from './ServiceRegistry';
 import { rootLifecycleServiceFactory } from '../services/implementations';
 
@@ -173,6 +173,52 @@ describe('BackendInitializer', () => {
     );
     await expect(init.start()).rejects.toThrow(
       "Module 'mod' for plugin 'test' is already registered",
+    );
+  });
+});
+
+describe('resolveInitChunks', () => {
+  it('should resolve flat chunks', () => {
+    const resolved = resolveInitChunks(
+      new Map(
+        Object.entries({
+          a: { consumes: new Set(), provides: new Set(['a']) } as any,
+          b: { consumes: new Set(), provides: new Set(['b']) } as any,
+          c: { consumes: new Set(), provides: new Set(['c']) } as any,
+          d: { consumes: new Set(), provides: new Set(['d']) } as any,
+        }),
+      ),
+    ).map(chunk => Array.from(chunk.keys()));
+    expect(resolved).toEqual([['a', 'b', 'c', 'd']]);
+  });
+
+  it('should resolve nested chunks', () => {
+    const resolved = resolveInitChunks(
+      new Map(
+        Object.entries({
+          a: { consumes: new Set(), provides: new Set(['a']) } as any,
+          b: { consumes: new Set(['a']), provides: new Set(['b', 'c']) } as any,
+          c: { consumes: new Set(['b']), provides: new Set() } as any,
+          d: { consumes: new Set(['c']), provides: new Set() } as any,
+        }),
+      ),
+    ).map(chunk => Array.from(chunk.keys()));
+    expect(resolved).toEqual([['a'], ['b'], ['c', 'd']]);
+  });
+
+  it('should detect circular dependencies', () => {
+    expect(() =>
+      resolveInitChunks(
+        new Map(
+          Object.entries({
+            a: { consumes: new Set(), provides: new Set(['a']) } as any,
+            b: { consumes: new Set(['a', 'b']), provides: new Set() } as any,
+            c: { consumes: new Set(['a', 'c']), provides: new Set() } as any,
+          }),
+        ),
+      ),
+    ).toThrow(
+      "Failed to resolve module initialization order, the following modules have circular dependencies, 'b', 'c'",
     );
   });
 });

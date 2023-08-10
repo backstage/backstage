@@ -38,6 +38,58 @@ export interface BackendRegisterInit {
   };
 }
 
+/** @internal */
+export function resolveInitChunks(
+  registerInits: Map<string, BackendRegisterInit>,
+): Map<string, BackendRegisterInit>[] {
+  let registerInitsToOrder = Array.from(registerInits);
+  const orderedRegisterInits = new Array<Map<string, BackendRegisterInit>>();
+
+  // Keep track of all deps that have been provided so far
+  const provided = new Set<ServiceOrExtensionPoint>();
+
+  // Loop until we have ordered all registerInits
+  while (registerInitsToOrder.length > 0) {
+    const chunk = new Map<string, BackendRegisterInit>();
+
+    // Find all registerInits that have all their deps provided
+    for (const [id, registerInit] of registerInitsToOrder) {
+      if (
+        Array.from(registerInit.consumes).every(consumed =>
+          provided.has(consumed),
+        )
+      ) {
+        chunk.set(id, registerInit);
+      }
+    }
+
+    // Add to the result set
+    orderedRegisterInits.push(chunk);
+
+    // Register all the deps in the current chunk as provided
+    chunk.forEach(r => r.provides.forEach(p => provided.add(p)));
+
+    // Remove the current chunk from the registerInits to order
+    const newRegisterInitsToOrder = registerInitsToOrder.filter(
+      ([id]) => !chunk.has(id),
+    );
+    // Check that we have not hit a circular dependency
+    if (
+      registerInitsToOrder.length !== 0 &&
+      registerInitsToOrder.length === newRegisterInitsToOrder.length
+    ) {
+      throw new Error(
+        `Failed to resolve module initialization order, the following modules have circular dependencies, '${registerInitsToOrder
+          .map(r => r[0])
+          .join("', '")}'`,
+      );
+    }
+    registerInitsToOrder = newRegisterInitsToOrder;
+  }
+
+  return orderedRegisterInits;
+}
+
 export class BackendInitializer {
   #startPromise?: Promise<void>;
   #features = new Array<InternalBackendFeature>();
@@ -210,21 +262,23 @@ export class BackendInitializer {
     await Promise.all(
       allPluginIds.map(async pluginId => {
         // Modules are initialized before plugins, so that they can provide extension to the plugin
-        const modules = moduleInits.get(pluginId) ?? [];
-        await Promise.all(
-          Array.from(modules).map(async ([moduleId, moduleInit]) => {
-            const moduleDeps = await this.#getInitDeps(
-              moduleInit.init.deps,
-              pluginId,
-            );
-            await moduleInit.init.func(moduleDeps).catch(error => {
-              throw new ForwardedError(
-                `Module '${moduleId}' for plugin '${pluginId}' startup failed`,
-                error,
+        const modules = moduleInits.get(pluginId) ?? new Map();
+        for (const chunk of resolveInitChunks(modules)) {
+          await Promise.all(
+            Array.from(chunk).map(async ([moduleId, moduleInit]) => {
+              const moduleDeps = await this.#getInitDeps(
+                moduleInit.init.deps,
+                pluginId,
               );
-            });
-          }),
-        );
+              await moduleInit.init.func(moduleDeps).catch(error => {
+                throw new ForwardedError(
+                  `Module '${moduleId}' for plugin '${pluginId}' startup failed`,
+                  error,
+                );
+              });
+            }),
+          );
+        }
 
         // Once all modules have been initialized, we can initialize the plugin itself
         const pluginInit = pluginInits.get(pluginId);
