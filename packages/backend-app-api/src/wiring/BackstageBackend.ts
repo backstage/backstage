@@ -28,8 +28,8 @@ export class BackstageBackend implements Backend {
     this.#initializer = new BackendInitializer(this.#services);
   }
 
-  add(feature: BackendFeature): void {
-    this.#initializer.add(feature);
+  add(feature: BackendFeature | (() => BackendFeature)): void {
+    this.#initializer.add(typeof feature === 'function' ? feature() : feature);
   }
 
   async start(): Promise<void> {
