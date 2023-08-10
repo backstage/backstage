@@ -4,7 +4,7 @@ metadata:
   name: starwars-graphql
   description: SWAPI GraphQL Schema
   annotations: 
-    backstage.io/api-graphql-url: https://github.com/graphql/swapi-graphql
+    backstage.io/api-graphql-url: https://graphql-api.dev/graphql/swapi-graphql
   links:
     - url: https://github.com/graphql/swapi-graphql
       title: GitHub Repo
