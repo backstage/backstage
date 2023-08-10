@@ -139,6 +139,7 @@ Gource
 Grafana
 graphql
 GraphQL
+graphiql
 graphviz
 Hackathons
 haproxy
