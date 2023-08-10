@@ -161,7 +161,7 @@ export class BackendInitializer {
       for (const r of feature.getRegistrations()) {
         const provides = new Set<ExtensionPoint<unknown>>();
 
-        if (r.type === 'plugin') {
+        if (r.type === 'plugin' || r.type === 'module') {
           for (const [extRef, extImpl] of r.extensionPoints) {
             if (this.#extensionPoints.has(extRef)) {
               throw new Error(

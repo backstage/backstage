@@ -32,6 +32,11 @@ export interface BackendModuleConfig {
 // @public
 export interface BackendModuleRegistrationPoints {
   // (undocumented)
+  registerExtensionPoint<TExtensionPoint>(
+    ref: ExtensionPoint<TExtensionPoint>,
+    impl: TExtensionPoint,
+  ): void;
+  // (undocumented)
   registerInit<
     Deps extends {
       [name in string]: unknown;

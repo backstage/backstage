@@ -159,13 +159,14 @@ export function createBackendPlugin<TOptions extends [options?: object] = []>(
  */
 export interface BackendModuleConfig {
   /**
-   * The ID of this plugin.
+   * Should exactly match the `id` of the plugin that the module extends.
    *
    * @see {@link https://backstage.io/docs/backend-system/architecture/naming-patterns | Recommended naming patterns}
    */
   pluginId: string;
+
   /**
-   * Should exactly match the `id` of the plugin that the module extends.
+   * The ID of this module, used to identify the module and ensure that it is not installed twice.
    */
   moduleId: string;
   register(reg: BackendModuleRegistrationPoints): void;
@@ -194,10 +195,20 @@ export function createBackendModule<TOptions extends [options?: object] = []>(
         if (registrations) {
           return registrations;
         }
+        const extensionPoints: InternalBackendPluginRegistration['extensionPoints'] =
+          [];
         let init: InternalBackendModuleRegistration['init'] | undefined =
           undefined;
 
         c.register({
+          registerExtensionPoint(ext, impl) {
+            if (init) {
+              throw new Error(
+                'registerExtensionPoint called after registerInit',
+              );
+            }
+            extensionPoints.push([ext, impl]);
+          },
           registerInit(regInit) {
             if (init) {
               throw new Error('registerInit must only be called once');
@@ -220,6 +231,7 @@ export function createBackendModule<TOptions extends [options?: object] = []>(
             type: 'module',
             pluginId: c.pluginId,
             moduleId: c.moduleId,
+            extensionPoints,
             init,
           },
         ];
