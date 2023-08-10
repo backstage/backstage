@@ -279,7 +279,11 @@ export async function startTestBackend<
 
   const backend = createSpecializedBackend({
     ...otherOptions,
-    services: [...factories, rootHttpRouterFactory, discoveryFactory],
+    defaultServiceFactories: [
+      ...factories,
+      rootHttpRouterFactory,
+      discoveryFactory,
+    ],
   });
 
   backendInstancesToCleanUp.push(backend);

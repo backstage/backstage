@@ -34,7 +34,7 @@ export interface Backend {
  * @public
  */
 export interface CreateSpecializedBackendOptions {
-  services: ServiceFactoryOrFunction[];
+  defaultServiceFactories: ServiceFactoryOrFunction[];
 }
 
 export interface ServiceHolder {
