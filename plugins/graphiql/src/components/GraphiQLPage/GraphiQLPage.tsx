@@ -16,8 +16,8 @@
 import React from 'react';
 import { useApi } from '@backstage/core-plugin-api';
 import useAsync from 'react-use/lib/useAsync';
-import 'graphiql/graphiql.css';
-import { graphQlBrowseApiRef } from '../../lib/api';
+import { GraphQLEndpoints, graphQlBrowseApiRef } from '../../lib/api';
+import { catalogApiRef } from '@backstage/plugin-catalog-react';
 import { GraphiQLBrowser } from '../GraphiQLBrowser';
 import { Typography } from '@material-ui/core';
 import {
@@ -31,7 +31,13 @@ import {
 /** @public */
 export const GraphiQLPage = () => {
   const graphQlBrowseApi = useApi(graphQlBrowseApiRef);
-  const endpoints = useAsync(() => graphQlBrowseApi.getEndpoints());
+  const catalogApi = useApi(catalogApiRef);
+  const endpoints = useAsync(async () => {
+    const result = await graphQlBrowseApi.getEndpoints();
+    return result.concat(
+      await GraphQLEndpoints.fromCatalogEntities(catalogApi),
+    );
+  }, []);
 
   let content: JSX.Element;
 

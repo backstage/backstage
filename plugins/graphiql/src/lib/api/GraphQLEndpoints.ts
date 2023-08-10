@@ -16,6 +16,7 @@
 
 import { GraphQLBrowseApi, GraphQLEndpoint } from './types';
 import { ErrorApi, OAuthApi } from '@backstage/core-plugin-api';
+import { CatalogApi } from '@backstage/plugin-catalog-react';
 
 /**
  * Helper for generic http endpoints
@@ -74,6 +75,30 @@ export class GraphQLEndpoints implements GraphQLBrowseApi {
         return res.json();
       },
     };
+  }
+
+  // Create the GraphQLEndpoints from the catalog entities with kind=api and type = graphql.
+  static async fromCatalogEntities(
+    catalogApi: CatalogApi,
+  ): Promise<GraphQLEndpoint[]> {
+    const graphqlApiEntities = await catalogApi.getEntities({
+      filter: [{ kind: 'api', 'spec.type': 'graphql' }],
+      fields: ['metadata.name', 'metadata.description', 'metadata.annotations'],
+    });
+    const result = [];
+    for (const entity of graphqlApiEntities.items) {
+      if (entity.metadata.annotations?.['backstage.io/api-graphql-url']) {
+        result.push(
+          GraphQLEndpoints.create({
+            id: entity.metadata.name,
+            title: entity.metadata.name,
+            url: entity.metadata.annotations?.['backstage.io/api-graphql-url'],
+            method: 'POST',
+          }),
+        );
+      }
+    }
+    return result;
   }
 
   /**

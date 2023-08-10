@@ -19,6 +19,7 @@ import { GraphiQLPage } from './GraphiQLPage';
 import { act } from '@testing-library/react';
 import { renderInTestApp, TestApiProvider } from '@backstage/test-utils';
 import { GraphQLBrowseApi, graphQlBrowseApiRef } from '../../lib/api';
+import { CatalogApi, catalogApiRef } from '@backstage/plugin-catalog-react';
 
 jest.mock('../GraphiQLBrowser', () => ({
   GraphiQLBrowser: () => '<GraphiQLBrowser />',
@@ -34,8 +35,23 @@ describe('GraphiQLPage', () => {
       },
     };
 
+    const catalogApi: jest.Mocked<CatalogApi> = {
+      getLocationById: jest.fn(),
+      getEntityByName: jest.fn(),
+      getEntities: jest.fn(),
+      addLocation: jest.fn(),
+      getLocationByRef: jest.fn(),
+      removeEntityByUid: jest.fn(),
+      refreshEntity: jest.fn(),
+    } as any;
+
     const rendered = await renderInTestApp(
-      <TestApiProvider apis={[[graphQlBrowseApiRef, loadingApi]]}>
+      <TestApiProvider
+        apis={[
+          [graphQlBrowseApiRef, loadingApi],
+          [catalogApiRef, catalogApi],
+        ]}
+      >
         <GraphiQLPage />,
       </TestApiProvider>,
     );
@@ -54,8 +70,23 @@ describe('GraphiQLPage', () => {
       },
     };
 
+    const catalogApi: jest.Mocked<CatalogApi> = {
+      getLocationById: jest.fn(),
+      getEntityByName: jest.fn(),
+      getEntities: jest.fn(),
+      addLocation: jest.fn(),
+      getLocationByRef: jest.fn(),
+      removeEntityByUid: jest.fn(),
+      refreshEntity: jest.fn(),
+    } as any;
+
     const rendered = await renderInTestApp(
-      <TestApiProvider apis={[[graphQlBrowseApiRef, loadingApi]]}>
+      <TestApiProvider
+        apis={[
+          [graphQlBrowseApiRef, loadingApi],
+          [catalogApiRef, catalogApi],
+        ]}
+      >
         <GraphiQLPage />
       </TestApiProvider>,
     );
@@ -71,8 +102,25 @@ describe('GraphiQLPage', () => {
       },
     };
 
+    const catalogApi: jest.Mocked<CatalogApi> = {
+      getLocationById: jest.fn(),
+      getEntityByName: jest.fn(),
+      getEntities: jest.fn().mockResolvedValue({
+        items: [],
+      }),
+      addLocation: jest.fn(),
+      getLocationByRef: jest.fn(),
+      removeEntityByUid: jest.fn(),
+      refreshEntity: jest.fn(),
+    } as any;
+
     const rendered = await renderInTestApp(
-      <TestApiProvider apis={[[graphQlBrowseApiRef, loadingApi]]}>
+      <TestApiProvider
+        apis={[
+          [graphQlBrowseApiRef, loadingApi],
+          [catalogApiRef, catalogApi],
+        ]}
+      >
         <GraphiQLPage />
       </TestApiProvider>,
     );
