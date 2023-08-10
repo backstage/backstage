@@ -15,6 +15,7 @@
  */
 
 export type {
+  BackendFeature,
   ServiceRef,
   ServiceRefConfig,
   ServiceFactory,

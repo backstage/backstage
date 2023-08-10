@@ -51,9 +51,7 @@ export type ServiceRef<
 export interface ServiceFactory<
   TService = unknown,
   TScope extends 'plugin' | 'root' = 'plugin' | 'root',
-> {
-  $$type: '@backstage/ServiceFactory';
-
+> extends BackendFeature {
   service: ServiceRef<TService, TScope>;
 }
 
@@ -85,6 +83,20 @@ export interface ServiceRefConfig<TService, TScope extends 'root' | 'plugin'> {
   defaultFactory?: (
     service: ServiceRef<TService, TScope>,
   ) => Promise<ServiceFactoryOrFunction>;
+}
+
+/** @internal */
+export interface BackendFeatureFactory<
+  TOptions extends [options?: object] = [],
+> {
+  (...options: TOptions): BackendFeature;
+  $$type: '@backstage/BackendFeatureFactory';
+}
+
+/** @public */
+export interface BackendFeature {
+  // NOTE: This type is opaque in order to simplify future API evolution.
+  $$type: '@backstage/BackendFeature';
 }
 
 /**
@@ -248,7 +260,7 @@ export function createServiceFactory<
     if (anyConf.service.scope === 'root') {
       const c = anyConf as RootServiceFactoryConfig<TService, TImpl, TDeps>;
       return {
-        $$type: '@backstage/ServiceFactory',
+        $$type: '@backstage/BackendFeature',
         version: 'v1',
         service: c.service,
         deps: c.deps,
@@ -262,7 +274,7 @@ export function createServiceFactory<
       TDeps
     >;
     return {
-      $$type: '@backstage/ServiceFactory',
+      $$type: '@backstage/BackendFeature',
       version: 'v1',
       service: c.service,
       ...('createRootContext' in c

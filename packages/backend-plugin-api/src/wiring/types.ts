@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { ServiceRef } from '../services/system/types';
+import { BackendFeature, ServiceRef } from '../services/system/types';
 
 /**
  * TODO
@@ -69,18 +69,6 @@ export interface BackendModuleRegistrationPoints {
     };
     init(deps: Deps): Promise<void>;
   }): void;
-}
-
-/** @internal */
-export interface BackendFeatureFactory {
-  (): BackendFeature;
-  $$type: '@backstage/BackendFeatureFactory';
-}
-
-/** @public */
-export interface BackendFeature {
-  // NOTE: This type is opaque in order to simplify future API evolution.
-  $$type: '@backstage/BackendFeature';
 }
 
 /** @internal */

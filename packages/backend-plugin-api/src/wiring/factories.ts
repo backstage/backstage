@@ -15,13 +15,15 @@
  */
 
 import {
+  BackendFeature,
+  BackendFeatureFactory,
+} from '../services/system/types';
+import {
   BackendModuleRegistrationPoints,
   BackendPluginRegistrationPoints,
   ExtensionPoint,
   InternalBackendModuleRegistration,
   InternalBackendPluginRegistration,
-  BackendFeatureFactory,
-  BackendFeature,
 } from './types';
 
 /**
