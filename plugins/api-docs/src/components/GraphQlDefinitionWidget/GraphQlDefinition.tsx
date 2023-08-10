@@ -17,6 +17,7 @@
 import { BackstageTheme } from '@backstage/theme';
 import { makeStyles } from '@material-ui/core/styles';
 import GraphiQL from 'graphiql';
+import 'graphiql/graphiql.css';
 import { buildSchema } from 'graphql';
 import React from 'react';
 import { useEntity } from '@backstage/plugin-catalog-react';

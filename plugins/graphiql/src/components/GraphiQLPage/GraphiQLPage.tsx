@@ -16,6 +16,7 @@
 import React from 'react';
 import { useApi } from '@backstage/core-plugin-api';
 import useAsync from 'react-use/lib/useAsync';
+import 'graphiql/graphiql.css';
 import { GraphQLEndpoints, graphQlBrowseApiRef } from '../../lib/api';
 import { catalogApiRef } from '@backstage/plugin-catalog-react';
 import { GraphiQLBrowser } from '../GraphiQLBrowser';
