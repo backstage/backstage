@@ -19,7 +19,12 @@ import {
   HeaderActionMenu,
   HeaderLabel,
 } from '@backstage/core-components';
-import { errorApiRef, useApi, useRouteRef } from '@backstage/core-plugin-api';
+import {
+  errorApiRef,
+  useApi,
+  useRouteRef,
+  alertApiRef,
+} from '@backstage/core-plugin-api';
 import { EntityRefLink } from '@backstage/plugin-catalog-react';
 import { usePermission } from '@backstage/plugin-permission-react';
 import {
@@ -72,6 +77,7 @@ export type PlaylistHeaderProps = {
 export const PlaylistHeader = ({ playlist, onUpdate }: PlaylistHeaderProps) => {
   const classes = useStyles();
   const errorApi = useApi(errorApiRef);
+  const alertApi = useApi(alertApiRef);
   const playlistApi = useApi(playlistApiRef);
   const navigate = useNavigate();
   const rootRoute = useRouteRef(rootRouteRef);
@@ -94,17 +100,27 @@ export const PlaylistHeader = ({ playlist, onUpdate }: PlaylistHeaderProps) => {
         await playlistApi.updatePlaylist({ ...update, id: playlist.id });
         setOpenEditDialog(false);
         onUpdate();
+        alertApi.post({
+          message: `Updated playlist '${playlist.name}'`,
+          severity: 'success',
+          display: 'transient',
+        });
       } catch (e) {
         errorApi.post(e);
       }
     },
-    [errorApi, onUpdate, playlist, playlistApi],
+    [errorApi, onUpdate, playlist, playlistApi, alertApi],
   );
 
   const [deleting, deletePlaylist] = useAsyncFn(async () => {
     try {
       await playlistApi.deletePlaylist(playlist.id);
       navigate(rootRoute());
+      alertApi.post({
+        message: `Deleted playlist '${playlist.name}'`,
+        severity: 'success',
+        display: 'transient',
+      });
     } catch (e) {
       errorApi.post(e);
     }

@@ -176,6 +176,8 @@ properties. The `settings.schema` object should follow
 must be `object`. As well, the `uiSchema` can be defined if a certain UI style needs to be applied fo any of the defined
 properties. More documentation [here](https://rjsf-team.github.io/react-jsonschema-form/docs/api-reference/uiSchema).
 
+If you want to hide the card title, you can do it by setting a `name` and leaving the `title` empty.
+
 ```tsx
 import { createCardExtension } from '@backstage/plugin-home-react';
 

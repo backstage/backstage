@@ -123,6 +123,8 @@ FireHydrant
 Firekube
 Firestore
 Fiverr
+Flightcontrol
+flightcontrol
 Francesco
 Frontside
 gerrit
@@ -213,6 +215,7 @@ middleware
 minikube
 Minikube
 Minio
+misattributed
 misconfiguration
 misconfigured
 mkdocs
@@ -404,6 +407,7 @@ unbreak
 Unconference
 unicode
 unmanaged
+unmount
 unregister
 unregistering
 unregistration

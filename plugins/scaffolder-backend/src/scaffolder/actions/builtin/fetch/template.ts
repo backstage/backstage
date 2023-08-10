@@ -18,8 +18,10 @@ import { extname } from 'path';
 import { resolveSafeChildPath, UrlReader } from '@backstage/backend-common';
 import { InputError } from '@backstage/errors';
 import { ScmIntegrations } from '@backstage/integration';
-import { fetchContents } from './helpers';
-import { createTemplateAction } from '@backstage/plugin-scaffolder-node';
+import {
+  createTemplateAction,
+  fetchContents,
+} from '@backstage/plugin-scaffolder-node';
 import globby from 'globby';
 import fs from 'fs-extra';
 import { isBinaryFile } from 'isbinaryfile';
@@ -29,6 +31,7 @@ import {
   TemplateGlobal,
 } from '../../../../lib/templating/SecureTemplater';
 import { createDefaultFilters } from '../../../../lib/templating/filters';
+import { examples } from './template.examples';
 
 /**
  * Downloads a skeleton, templates variables into file and directory names and content.
@@ -70,6 +73,7 @@ export function createFetchTemplateAction(options: {
     id: 'fetch:template',
     description:
       'Downloads a skeleton, templates variables into file and directory names and content, and places the result in the workspace, or optionally in a subdirectory specified by the `targetPath` input option.',
+    examples,
     schema: {
       input: {
         type: 'object',

@@ -1,11 +1,17 @@
 {
   "name": "example-app",
-  "version": "0.2.85",
+  "version": "0.2.86-next.2",
   "private": true,
   "backstage": {
     "role": "frontend"
   },
   "bundled": true,
+  "homepage": "https://backstage.io",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/backstage/backstage",
+    "directory": "packages/app"
+  },
   "dependencies": {
     "@backstage/app-defaults": "workspace:^",
     "@backstage/catalog-model": "workspace:^",

@@ -24,7 +24,7 @@ import { ServerTokenManager } from '@backstage/backend-common';
 export const tokenManagerServiceFactory = createServiceFactory({
   service: coreServices.tokenManager,
   deps: {
-    config: coreServices.config,
+    config: coreServices.rootConfig,
     logger: coreServices.rootLogger,
   },
   createRootContext({ config, logger }) {

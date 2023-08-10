@@ -17,11 +17,11 @@
 import {
   BackendModuleRegistrationPoints,
   BackendPluginRegistrationPoints,
-  BackendFeature,
   ExtensionPoint,
-  InternalBackendFeature,
   InternalBackendModuleRegistration,
   InternalBackendPluginRegistration,
+  BackendFeatureFactory,
+  BackendFeature,
 } from './types';
 
 /**
@@ -89,7 +89,8 @@ export function createBackendPlugin<TOptions extends [options?: object] = []>(
   config: BackendPluginConfig | ((...params: TOptions) => BackendPluginConfig),
 ): (...params: TOptions) => BackendFeature {
   const configCallback = typeof config === 'function' ? config : () => config;
-  return (...options: TOptions): InternalBackendFeature => {
+
+  const factory: BackendFeatureFactory<TOptions> = (...options) => {
     const c = configCallback(...options);
 
     let registrations: InternalBackendPluginRegistration[];
@@ -144,6 +145,9 @@ export function createBackendPlugin<TOptions extends [options?: object] = []>(
       },
     };
   };
+  factory.$$type = '@backstage/BackendFeatureFactory';
+
+  return factory;
 }
 
 /**
@@ -178,7 +182,7 @@ export function createBackendModule<TOptions extends [options?: object] = []>(
   config: BackendModuleConfig | ((...params: TOptions) => BackendModuleConfig),
 ): (...params: TOptions) => BackendFeature {
   const configCallback = typeof config === 'function' ? config : () => config;
-  return (...options: TOptions): InternalBackendFeature => {
+  const factory: BackendFeatureFactory<TOptions> = (...options: TOptions) => {
     const c = configCallback(...options);
 
     let registrations: InternalBackendModuleRegistration[];
@@ -223,4 +227,7 @@ export function createBackendModule<TOptions extends [options?: object] = []>(
       },
     };
   };
+  factory.$$type = '@backstage/BackendFeatureFactory';
+
+  return factory;
 }

@@ -187,6 +187,7 @@ export class OAuthAdapter implements AuthProviderRouteHandlers {
           );
         }
         res.redirect(state.redirectUrl);
+        return undefined;
       }
       // post message back to popup if successful
       return postMessageResponse(res, appOrigin, responseObj);

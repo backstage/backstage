@@ -1,11 +1,17 @@
 {
   "name": "techdocs-cli-embedded-app",
-  "version": "0.2.84",
+  "version": "0.2.85-next.2",
   "private": true,
   "backstage": {
     "role": "frontend"
   },
   "bundled": true,
+  "homepage": "https://backstage.io",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/backstage/backstage",
+    "directory": "packages/techdocs-cli-embedded-app"
+  },
   "dependencies": {
     "@backstage/app-defaults": "workspace:^",
     "@backstage/catalog-model": "workspace:^",

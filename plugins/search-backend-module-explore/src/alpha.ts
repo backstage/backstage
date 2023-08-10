@@ -27,25 +27,21 @@ import { TaskScheduleDefinition } from '@backstage/backend-tasks';
 import { loggerToWinstonLogger } from '@backstage/backend-common';
 import { searchIndexRegistryExtensionPoint } from '@backstage/plugin-search-backend-node/alpha';
 
-import {
-  ToolDocumentCollatorFactory,
-  ToolDocumentCollatorFactoryOptions,
-} from '@backstage/plugin-search-backend-module-explore';
+import { ToolDocumentCollatorFactory } from '@backstage/plugin-search-backend-module-explore';
 
 /**
- * @alpha
  * Options for {@link searchModuleExploreCollator}.
+ *
+ * @alpha
  */
-export type SearchModuleExploreCollatorOptions = Omit<
-  ToolDocumentCollatorFactoryOptions,
-  'logger' | 'discovery'
-> & {
+export type SearchModuleExploreCollatorOptions = {
   schedule?: TaskScheduleDefinition;
 };
 
 /**
- * @alpha
  * Search backend module for the Explore index.
+ *
+ * @alpha
  */
 export const searchModuleExploreCollator = createBackendModule(
   (options?: SearchModuleExploreCollatorOptions) => ({
@@ -54,13 +50,21 @@ export const searchModuleExploreCollator = createBackendModule(
     register(env) {
       env.registerInit({
         deps: {
-          config: coreServices.config,
+          config: coreServices.rootConfig,
           logger: coreServices.logger,
           discovery: coreServices.discovery,
           scheduler: coreServices.scheduler,
+          tokenManager: coreServices.tokenManager,
           indexRegistry: searchIndexRegistryExtensionPoint,
         },
-        async init({ config, logger, discovery, scheduler, indexRegistry }) {
+        async init({
+          config,
+          logger,
+          discovery,
+          scheduler,
+          indexRegistry,
+          tokenManager,
+        }) {
           const defaultSchedule = {
             frequency: { minutes: 10 },
             timeout: { minutes: 15 },
@@ -72,9 +76,9 @@ export const searchModuleExploreCollator = createBackendModule(
               options?.schedule ?? defaultSchedule,
             ),
             factory: ToolDocumentCollatorFactory.fromConfig(config, {
-              ...options,
               discovery,
               logger: loggerToWinstonLogger(logger),
+              tokenManager,
             }),
           });
         },

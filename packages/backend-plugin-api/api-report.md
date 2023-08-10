@@ -93,13 +93,10 @@ export type CacheServiceSetOptions = {
   ttl?: number;
 };
 
-// @public (undocumented)
-export interface ConfigService extends Config {}
-
 // @public
 export namespace coreServices {
   const cache: ServiceRef<CacheService, 'plugin'>;
-  const config: ServiceRef<ConfigService, 'root'>;
+  const rootConfig: ServiceRef<RootConfigService, 'root'>;
   const database: ServiceRef<DatabaseService, 'plugin'>;
   const discovery: ServiceRef<DiscoveryService, 'plugin'>;
   const httpRouter: ServiceRef<HttpRouterService, 'plugin'>;
@@ -221,15 +218,6 @@ export function createServiceRef<TService>(
 export function createServiceRef<TService>(
   config: ServiceRefConfig<TService, 'root'>,
 ): ServiceRef<TService, 'root'>;
-
-// @public
-export function createSharedEnvironment<
-  TOptions extends [options?: object] = [],
->(
-  config:
-    | SharedBackendEnvironmentConfig
-    | ((...params: TOptions) => SharedBackendEnvironmentConfig),
-): (...options: TOptions) => SharedBackendEnvironment;
 
 // @public
 export interface DatabaseService {
@@ -390,6 +378,9 @@ export type ReadUrlResponse = {
 };
 
 // @public (undocumented)
+export interface RootConfigService extends Config {}
+
+// @public (undocumented)
 export interface RootHttpRouterService {
   use(path: string, handler: Handler): void;
 }
@@ -474,18 +465,6 @@ export interface ServiceRefConfig<TService, TScope extends 'root' | 'plugin'> {
   id: string;
   // (undocumented)
   scope?: TScope;
-}
-
-// @public
-export interface SharedBackendEnvironment {
-  // (undocumented)
-  $$type: '@backstage/SharedBackendEnvironment';
-}
-
-// @public
-export interface SharedBackendEnvironmentConfig {
-  // (undocumented)
-  services?: ServiceFactoryOrFunction[];
 }
 
 // @public

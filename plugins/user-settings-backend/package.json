@@ -1,7 +1,7 @@
 {
   "name": "@backstage/plugin-user-settings-backend",
   "description": "The Backstage backend plugin to manage user settings",
-  "version": "0.1.11",
+  "version": "0.1.12-next.2",
   "main": "src/index.ts",
   "types": "src/index.ts",
   "license": "Apache-2.0",
@@ -14,6 +14,7 @@
     "types": "dist/index.d.ts",
     "alphaTypes": "dist/index.alpha.d.ts"
   },
+  "homepage": "https://backstage.io",
   "repository": {
     "type": "git",
     "url": "https://github.com/backstage/backstage",

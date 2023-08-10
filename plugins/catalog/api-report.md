@@ -413,7 +413,22 @@ export interface EntitySwitchProps {
 }
 
 // @public @deprecated (undocumented)
-export const FilterContainer: (props: { children: ReactNode }) => JSX.Element;
+export const FilterContainer: (props: {
+  children: ReactNode;
+  options?:
+    | {
+        drawerBreakpoint?:
+          | number
+          | 'xs'
+          | 'sm'
+          | 'md'
+          | 'lg'
+          | 'xl'
+          | undefined;
+        drawerAnchor?: 'left' | 'top' | 'bottom' | 'right' | undefined;
+      }
+    | undefined;
+}) => JSX.Element;
 
 // @public @deprecated (undocumented)
 export const FilteredEntityLayout: (props: {

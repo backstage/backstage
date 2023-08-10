@@ -20,7 +20,7 @@ export type {
   CacheServiceOptions,
   CacheServiceSetOptions,
 } from './CacheService';
-export type { ConfigService } from './ConfigService';
+export type { RootConfigService } from './RootConfigService';
 export type { DatabaseService } from './DatabaseService';
 export type { DiscoveryService } from './DiscoveryService';
 export type { HttpRouterService } from './HttpRouterService';

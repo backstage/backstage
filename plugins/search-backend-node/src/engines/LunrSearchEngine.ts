@@ -309,8 +309,13 @@ export function parseHighlightFields({
   const highlightFieldPositions = Object.values(positionMetadata).reduce(
     (fieldPositions, metadata) => {
       Object.keys(metadata).map(fieldKey => {
-        fieldPositions[fieldKey] = fieldPositions[fieldKey] ?? [];
-        fieldPositions[fieldKey].push(...metadata[fieldKey].position);
+        const validFieldMetadataPositions = metadata[
+          fieldKey
+        ]?.position?.filter(position => Array.isArray(position));
+        if (validFieldMetadataPositions.length) {
+          fieldPositions[fieldKey] = fieldPositions[fieldKey] ?? [];
+          fieldPositions[fieldKey].push(...validFieldMetadataPositions);
+        }
       });
 
       return fieldPositions;

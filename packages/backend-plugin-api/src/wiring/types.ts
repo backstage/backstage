@@ -67,6 +67,14 @@ export interface BackendModuleRegistrationPoints {
   }): void;
 }
 
+/** @internal */
+export interface BackendFeatureFactory<
+  TOptions extends [options?: object] = [],
+> {
+  (...options: TOptions): BackendFeature;
+  $$type: '@backstage/BackendFeatureFactory';
+}
+
 /** @public */
 export interface BackendFeature {
   // NOTE: This type is opaque in order to simplify future API evolution.

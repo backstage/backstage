@@ -1,5 +1,14 @@
 # @backstage/plugin-home-react
 
+## 0.1.2-next.0
+
+### Patch Changes
+
+- bf67dce73174: Make `title` optional when defining the `createCardExtension`
+- Updated dependencies
+  - @backstage/core-components@0.13.4-next.0
+  - @backstage/core-plugin-api@1.5.3
+
 ## 0.1.1
 
 ### Patch Changes

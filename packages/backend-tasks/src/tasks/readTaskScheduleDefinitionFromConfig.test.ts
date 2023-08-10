@@ -76,7 +76,7 @@ describe('readTaskScheduleDefinitionFromConfig', () => {
     );
   });
 
-  it('invalid frequency value', () => {
+  it('invalid frequency key', () => {
     const config = new ConfigReader({
       frequency: {
         invalid: 'value',
@@ -86,6 +86,19 @@ describe('readTaskScheduleDefinitionFromConfig', () => {
 
     expect(() => readTaskScheduleDefinitionFromConfig(config)).toThrow(
       'HumanDuration needs at least one of',
+    );
+  });
+
+  it('invalid frequency value', () => {
+    const config = new ConfigReader({
+      frequency: {
+        minutes: 'value',
+      },
+      timeout: 'PT3M',
+    });
+
+    expect(() => readTaskScheduleDefinitionFromConfig(config)).toThrow(
+      "Unable to convert config value for key 'frequency.minutes' in 'mock-config' to a number",
     );
   });
 
