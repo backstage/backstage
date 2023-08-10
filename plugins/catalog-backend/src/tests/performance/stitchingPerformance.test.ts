@@ -16,16 +16,19 @@
 
 import {
   coreServices,
+  createBackendModule,
   createServiceFactory,
 } from '@backstage/backend-plugin-api';
 import { TestDatabases, startTestBackend } from '@backstage/backend-test-utils';
 import { catalogPlugin } from '@backstage/plugin-catalog-backend/alpha';
+import { catalogProcessingExtensionPoint } from '@backstage/plugin-catalog-node/alpha';
 import { Knex } from 'knex';
 import { applyDatabaseMigrations } from '../../database/migrations';
 import {
   SyntheticLoadEvents,
   SyntheticLoadOptions,
-  catalogModuleSyntheticLoadEntities,
+  SyntheticLoadEntitiesProvider,
+  SyntheticLoadEntitiesProcessor,
 } from './lib/catalogModuleSyntheticLoadEntities';
 import { describePerformanceTest, performanceTraceEnabled } from './lib/env';
 
@@ -180,10 +183,25 @@ describePerformanceTest('stitchingPerformance', () => {
         services: [staticDatabase(knex)],
         features: [
           catalogPlugin(),
-          catalogModuleSyntheticLoadEntities({
-            load,
-            events: tracker.events(),
-          }),
+          createBackendModule({
+            moduleId: 'syntheticLoadEntities',
+            pluginId: 'catalog',
+            register(reg) {
+              reg.registerInit({
+                deps: {
+                  catalog: catalogProcessingExtensionPoint,
+                },
+                async init({ catalog }) {
+                  catalog.addEntityProvider(
+                    new SyntheticLoadEntitiesProvider(load, tracker.events()),
+                  );
+                  catalog.addProcessor(
+                    new SyntheticLoadEntitiesProcessor(load),
+                  );
+                },
+              });
+            },
+          })(),
         ],
       });
 
