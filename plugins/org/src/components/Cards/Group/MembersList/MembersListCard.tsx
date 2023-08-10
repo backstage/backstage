@@ -98,7 +98,11 @@ const MemberComponent = (props: { member: UserEntity }) => {
             textAlign="center"
           >
             <Typography variant="h6">
-              <EntityRefLink entityRef={props.member} title={displayName} />
+              <EntityRefLink
+                data-testid="user-link"
+                entityRef={props.member}
+                title={displayName}
+              />
             </Typography>
             {profile?.email && (
               <Link to={`mailto:${profile.email}`}>
