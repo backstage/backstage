@@ -23,7 +23,7 @@ exports.up = async function up(knex) {
   await knex.schema.createTable('metadata', table => {
     table.comment('The table of Bazaar metadata');
     table
-      .text('entity_ref')
+      .string('entity_ref')
       .notNullable()
       .unique()
       .comment('The ref of the entity');
@@ -49,7 +49,7 @@ exports.up = async function up(knex) {
   await knex.schema.createTable('members', table => {
     table.comment('The table of Bazaar members');
     table
-      .text('entity_ref')
+      .string('entity_ref')
       .notNullable()
       .references('metadata.entity_ref')
       .onDelete('CASCADE')
