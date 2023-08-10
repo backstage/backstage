@@ -7,6 +7,7 @@
 '@backstage/backend-tasks': patch
 '@backstage/plugin-app-backend': patch
 '@backstage/create-app': patch
+'@backstage/plugin-bazaar-backend': patch
 ---
 
 Changes needed to support MySQL
