@@ -53,6 +53,7 @@ import React, {
 
 import { SelectProps } from '../Select/Select';
 import { Filter, Filters, SelectedFilters, Without } from './Filters';
+import { Skeleton } from '@material-ui/lab';
 
 // Material-table is not using the standard icons available in in material-ui. https://github.com/mbrn/material-table/issues/51
 const tableIcons: Icons = {
@@ -159,6 +160,10 @@ const useTableStyles = makeStyles<BackstageTheme>(
       display: 'flex',
       alignItems: 'start',
     },
+    loadingTd: {
+      width: '90%',
+      paddingLeft: '0.5rem',
+    },
   }),
   { name: 'BackstageTable' },
 );
@@ -236,6 +241,7 @@ export interface TableProps<T extends object = {}>
   filters?: TableFilter[];
   initialState?: TableState;
   emptyContent?: ReactNode;
+  initialContentLoading?: boolean;
   onStateChange?: (state: TableState) => any;
 }
 
@@ -309,6 +315,7 @@ export function Table<T extends object = {}>(props: TableProps<T>) {
     emptyContent,
     onStateChange,
     components,
+    initialContentLoading,
     ...restProps
   } = props;
   const tableClasses = useTableStyles();
@@ -470,6 +477,32 @@ export function Table<T extends object = {}>(props: TableProps<T>) {
   const columnCount = columns.length;
   const Body = useCallback(
     bodyProps => {
+      if (initialContentLoading) {
+        return (
+          <tbody>
+            {Array.from({ length: 5 }, row => {
+              return (
+                <tr key={`table-placeholder-row-${row}`}>
+                  {Array.from({ length: columnCount }, col => {
+                    return (
+                      <td
+                        key={`table-placeholder-row-${row}-col-${col}`}
+                        colSpan={1}
+                      >
+                        <Skeleton
+                          className={tableClasses.loadingTd}
+                          height="4rem"
+                        />
+                      </td>
+                    );
+                  })}
+                </tr>
+              );
+            })}
+          </tbody>
+        );
+      }
+
       if (emptyContent && hasNoRows) {
         return (
           <tbody>
@@ -482,7 +515,13 @@ export function Table<T extends object = {}>(props: TableProps<T>) {
 
       return <MTableBody {...bodyProps} />;
     },
-    [hasNoRows, emptyContent, columnCount],
+    [
+      hasNoRows,
+      emptyContent,
+      columnCount,
+      initialContentLoading,
+      tableClasses.loadingTd,
+    ],
   );
 
   return (
