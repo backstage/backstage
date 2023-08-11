@@ -519,7 +519,7 @@ Examples:
 each: ['apples', 'oranges']
 input:
   values:
-    fruit: ${{ each}}
+    fruit: ${{ each.value }}
 ```
 
 ```yaml
