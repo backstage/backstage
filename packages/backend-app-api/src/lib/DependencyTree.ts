@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { ConflictError, InputError } from '@backstage/errors';
+import { ConflictError, ForwardedError, InputError } from '@backstage/errors';
 
 interface NodeInput {
   id: string;
@@ -135,5 +135,65 @@ export class DependencyTree {
       }
     }
     return undefined;
+  }
+
+  async parallelTopologicalTraversal<T>(
+    fn: (nodeId: string) => Promise<T>,
+  ): Promise<T[]> {
+    const allProduced = this.#allProduced;
+    const producedSoFar = new Set<string>();
+    const waiting = new Set(this.nodes.values());
+    const visited = new Set<string>();
+    const results = new Array<T>();
+    let inFlight = 0;
+
+    async function processMoreNodes() {
+      if (waiting.size === 0) {
+        return;
+      }
+      const nodesToProcess = [];
+      for (const node of waiting) {
+        let ready = true;
+        for (const consumed of node.consumes) {
+          if (allProduced.has(consumed) && !producedSoFar.has(consumed)) {
+            ready = false;
+            continue;
+          }
+        }
+        if (ready) {
+          nodesToProcess.push(node);
+        }
+      }
+
+      for (const node of nodesToProcess) {
+        waiting.delete(node);
+      }
+
+      if (nodesToProcess.length === 0 && inFlight === 0) {
+        // We expect the caller to check for circular dependencies before
+        // traversal, so this error should never happen
+        throw new Error('Circular dependency detected');
+      }
+
+      await Promise.all(nodesToProcess.map(processNode));
+    }
+
+    async function processNode(node: Node) {
+      visited.add(node.id);
+      inFlight += 1;
+      try {
+        const result = await fn(node.id);
+        results.push(result);
+      } catch (error) {
+        throw new ForwardedError(`Failed at ${node.id}`, error);
+      }
+      node.produces.forEach(produced => producedSoFar.add(produced));
+      inFlight -= 1;
+      await processMoreNodes();
+    }
+
+    await processMoreNodes();
+
+    return results;
   }
 }

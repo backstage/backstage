@@ -121,4 +121,79 @@ describe('DependencyTree', () => {
       { id: '4', unsatisfied: ['c'] },
     ]);
   });
+
+  it('should traverse dependencies in topological order', async () => {
+    await expect(
+      DependencyTree.fromMap({
+        1: {},
+        2: {},
+        3: {},
+        4: {},
+      }).parallelTopologicalTraversal(async id => id),
+    ).resolves.toEqual(['1', '2', '3', '4']);
+
+    await expect(
+      DependencyTree.fromMap({
+        1: { produces: ['a'] },
+        2: { consumes: ['a'], produces: ['b', 'c'] },
+        3: { consumes: ['b'] },
+        4: { consumes: ['c'] },
+      }).parallelTopologicalTraversal(async id => id),
+    ).resolves.toEqual(['1', '2', '3', '4']);
+
+    await expect(
+      DependencyTree.fromMap({
+        1: { consumes: ['c'] },
+        2: { produces: ['c'], consumes: ['b'] },
+        3: { produces: ['b'], consumes: ['a'] },
+        4: { produces: ['a'] },
+      }).parallelTopologicalTraversal(async id => id),
+    ).resolves.toEqual(['4', '3', '2', '1']);
+
+    await expect(
+      DependencyTree.fromMap({
+        1: { produces: ['a'] },
+        2: { produces: ['b'], consumes: ['a'] },
+        3: { produces: ['c'], consumes: ['a'] },
+        4: { consumes: ['b'] },
+        5: { consumes: ['c'] },
+      }).parallelTopologicalTraversal(async id => id),
+    ).resolves.toEqual(['1', '2', '3', '4', '5']);
+
+    // Same as above, but with 2 being delayed
+    await expect(
+      DependencyTree.fromMap({
+        1: { produces: ['a'] },
+        2: { produces: ['b'], consumes: ['a'] },
+        3: { produces: ['c'], consumes: ['a'] },
+        4: { consumes: ['b'] },
+        5: { consumes: ['c'] },
+      }).parallelTopologicalTraversal(async id => {
+        // When delaying 2 we expect 3 and 5 to complete before 2 and 4
+        if (id === '2') {
+          await new Promise(resolve => setTimeout(resolve, 100));
+        }
+        return id;
+      }),
+    ).resolves.toEqual(['1', '3', '5', '2', '4']);
+
+    await expect(
+      DependencyTree.fromMap({
+        1: { produces: ['a'], consumes: ['a'] },
+      }).parallelTopologicalTraversal(async id => id),
+    ).rejects.toThrow('Circular dependency detected');
+    await expect(
+      DependencyTree.fromMap({
+        1: { produces: ['a'], consumes: ['b'] },
+        2: { produces: ['b'], consumes: ['a'] },
+      }).parallelTopologicalTraversal(async id => id),
+    ).rejects.toThrow('Circular dependency detected');
+    await expect(
+      DependencyTree.fromMap({
+        1: { produces: ['a'] },
+        2: { produces: ['c'], consumes: ['a', 'b'] },
+        3: { produces: ['b'], consumes: ['a', 'c'] },
+      }).parallelTopologicalTraversal(async id => id),
+    ).rejects.toThrow('Circular dependency detected');
+  });
 });
