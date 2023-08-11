@@ -17,6 +17,7 @@
 import { Response } from 'express';
 import crypto from 'crypto';
 import { ClientAuthResponse } from '../types';
+import { serializeError } from '@backstage/errors';
 
 /**
  * Payload sent as a post message after the auth request is complete.
@@ -47,7 +48,12 @@ export function sendWebMessageResponse(
   appOrigin: string,
   response: WebMessageResponse,
 ): void {
-  const jsonData = JSON.stringify(response);
+  const jsonData = JSON.stringify(response, (_, value) => {
+    if (value instanceof Error) {
+      return serializeError(value);
+    }
+    return value;
+  });
   const base64Data = safelyEncodeURIComponent(jsonData);
   const base64Origin = safelyEncodeURIComponent(appOrigin);
 

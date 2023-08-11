@@ -24,8 +24,8 @@ import { createOAuthRouteHandlers } from './createOAuthRouteHandlers';
 import { OAuthAuthenticator } from './types';
 import { errorHandler } from '@backstage/backend-common';
 import { encodeOAuthState, OAuthState } from './state';
-import { WebMessageResponse } from '../flow';
 import { PassportProfile } from '../passport';
+import { parseWebMessageResponse } from '../flow/__testUtils__/parseWebMessageResponse';
 
 const mockAuthenticator: jest.Mocked<OAuthAuthenticator<unknown, unknown>> = {
   initialize: jest.fn(_r => ({ ctx: 'authenticator' })),
@@ -107,17 +107,6 @@ function getGrantedScopesCookie(test: SuperAgentTest) {
     script: false,
     secure: false,
   });
-}
-
-function parseWebMessageResponse(text: string): {
-  response: WebMessageResponse;
-  origin: string;
-} {
-  const [response, origin] = text.matchAll(/decodeURIComponent\('(.+?)'\)/g);
-  return {
-    response: JSON.parse(decodeURIComponent(response[1])),
-    origin: decodeURIComponent(origin[1]),
-  };
 }
 
 describe('createOAuthRouteHandlers', () => {

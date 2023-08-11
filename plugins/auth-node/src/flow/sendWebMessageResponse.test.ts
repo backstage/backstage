@@ -20,6 +20,7 @@ import {
   sendWebMessageResponse,
   type WebMessageResponse,
 } from './sendWebMessageResponse';
+import { parseWebMessageResponse } from './__testUtils__/parseWebMessageResponse';
 
 describe('oauth helpers', () => {
   describe('safelyEncodeURIComponent', () => {
@@ -78,7 +79,12 @@ describe('oauth helpers', () => {
         type: 'authorization_response',
         error: new Error('Unknown error occurred'),
       };
-      const encoded = safelyEncodeURIComponent(JSON.stringify(data));
+      const encoded = safelyEncodeURIComponent(
+        JSON.stringify({
+          type: 'authorization_response',
+          error: { name: 'Error', message: 'Unknown error occurred' },
+        }),
+      );
 
       sendWebMessageResponse(mockResponse, appOrigin, data);
       expect(mockResponse.setHeader).toHaveBeenCalledTimes(3);
@@ -122,20 +128,29 @@ describe('oauth helpers', () => {
         },
       };
       sendWebMessageResponse(mockResponse, appOrigin, data);
-      expect(responseBody.match(/.postMessage\(/g)).toHaveLength(2);
-      expect(
-        responseBody.match(/.postMessage\([a-zA-z.()]*, \'\*\'\)/g),
-      ).toHaveLength(1);
+      expect(parseWebMessageResponse(responseBody).response).toEqual({
+        type: 'authorization_response',
+        response: {
+          providerInfo: expect.any(Object),
+          profile: {
+            email: 'foo@bar.com',
+          },
+          backstageIdentity: expect.any(Object),
+        },
+      });
 
       const errData: WebMessageResponse = {
         type: 'authorization_response',
         error: new Error('Unknown error occurred'),
       };
       sendWebMessageResponse(mockResponse, appOrigin, errData);
-      expect(responseBody.match(/.postMessage\(/g)).toHaveLength(2);
-      expect(
-        responseBody.match(/.postMessage\([a-zA-z.()]*, \'\*\'\)/g),
-      ).toHaveLength(1);
+      expect(parseWebMessageResponse(responseBody).response).toEqual({
+        type: 'authorization_response',
+        error: {
+          name: 'Error',
+          message: 'Unknown error occurred',
+        },
+      });
     });
 
     it('handles single quotes and unicode chars safely', () => {
