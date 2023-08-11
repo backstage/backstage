@@ -18,10 +18,11 @@ import pickBy from 'lodash/pickBy';
 import { Request } from 'express';
 import { NotAllowedError } from '@backstage/errors';
 
-/** @public */
+/**
+ * A type for the serialized value in the `state` parameter of the OAuth authorization flow
+ * @public
+ */
 export type OAuthState = {
-  /* A type for the serialized value in the `state` parameter of the OAuth authorization flow
-   */
   nonce: string;
   env: string;
   origin?: string;

@@ -388,7 +388,7 @@ export interface OAuthSession {
   tokenType: string;
 }
 
-// @public (undocumented)
+// @public
 export type OAuthState = {
   nonce: string;
   env: string;
