@@ -18,6 +18,7 @@ import { ZodSchema, ZodTypeDef } from 'zod';
 import { SignInResolver } from '../types';
 import zodToJsonSchema from 'zod-to-json-schema';
 import { JsonObject } from '@backstage/types';
+import { InputError } from '@backstage/errors';
 
 /** @public */
 export interface SignInResolverFactory<TAuthResult, TOptions> {
@@ -55,7 +56,7 @@ export function createSignInResolverFactory<
   if (!optionsSchema) {
     return (resolverOptions?: TOptionsInput) => {
       if (resolverOptions) {
-        throw new Error('sign-in resolver does not accept options');
+        throw new InputError('sign-in resolver does not accept options');
       }
       return options.create(undefined as TOptionsOutput);
     };

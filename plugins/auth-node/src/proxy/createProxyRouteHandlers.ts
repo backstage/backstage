@@ -25,6 +25,7 @@ import {
 } from '../types';
 import { ProxyAuthenticator } from './types';
 import { prepareBackstageIdentityResponse } from '../identity';
+import { NotImplementedError } from '@backstage/errors';
 
 /** @public */
 export interface ProxyAuthRouteHandlersOptions<TResult> {
@@ -47,11 +48,11 @@ export function createProxyAuthRouteHandlers<TResult>(
 
   return {
     async start(): Promise<void> {
-      throw new Error('Not implemented');
+      throw new NotImplementedError('Not implemented');
     },
 
     async frameHandler(): Promise<void> {
-      throw new Error('Not implemented');
+      throw new NotImplementedError('Not implemented');
     },
 
     async refresh(this: never, req: Request, res: Response): Promise<void> {
