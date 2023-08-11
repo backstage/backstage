@@ -4,7 +4,7 @@ title: Microsoft Teams Scaffolder Actions
 author: Gaurav Pandey
 authorUrl: https://github.com/grvpandey11
 category: Scaffolder
-description: Interact with Microsoft Teams from scaffolder templates
+description: Interact with Microsoft Teams from Scaffolder templates
 documentation: https://github.com/grvpandey11/backstage-plugin-scaffolder-backend-module-ms-teams/tree/main#readme
 iconUrl: img/Ms-Teams.png
 npmPackageName: '@grvpandey11/backstage-plugin-scaffolder-backend-module-ms-teams'
