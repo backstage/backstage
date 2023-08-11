@@ -199,6 +199,7 @@ export const EntityOwnerPicker = (props?: EntityOwnerPickerProps) => {
                 setText(e.currentTarget.value);
               }}
               variant="outlined"
+              onBlur={() => setText('')}
             />
           )}
           ListboxProps={{
