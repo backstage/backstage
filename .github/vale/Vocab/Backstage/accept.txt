@@ -127,6 +127,7 @@ Flightcontrol
 flightcontrol
 Francesco
 Frontside
+Gaurav
 gerrit
 Gerrit
 gitbeaker
@@ -259,6 +260,7 @@ padding
 paddings
 pagerduty
 pageview
+Pandey
 parallelization
 parseable
 Patrik
