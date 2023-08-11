@@ -17,11 +17,13 @@
 import { DependencyTree } from './DependencyTree';
 
 describe('DependencyTree', () => {
-  it('should be empty', () => {
+  it('should be empty', async () => {
     const empty = DependencyTree.fromMap({});
-    expect(Array.from(empty.nodes)).toEqual([]);
     expect(empty.findUnsatisfiedDeps()).toEqual([]);
     expect(empty.detectCircularDependency()).toBeUndefined();
+    await expect(
+      empty.parallelTopologicalTraversal(async id => id),
+    ).resolves.toEqual([]);
   });
 
   it('should detect circular dependencies', () => {
@@ -89,14 +91,14 @@ describe('DependencyTree', () => {
       DependencyTree.fromMap({
         1: { consumes: ['a'] },
       }).findUnsatisfiedDeps(),
-    ).toEqual([{ id: '1', unsatisfied: ['a'] }]);
+    ).toEqual([{ value: '1', unsatisfied: ['a'] }]);
 
     expect(
       DependencyTree.fromMap({
         1: { produces: ['a'], consumes: ['b'] },
         2: { produces: ['b'], consumes: ['a', 'd', 'e'] },
       }).findUnsatisfiedDeps(),
-    ).toEqual([{ id: '2', unsatisfied: ['d', 'e'] }]);
+    ).toEqual([{ value: '2', unsatisfied: ['d', 'e'] }]);
 
     expect(
       DependencyTree.fromMap({
@@ -106,8 +108,8 @@ describe('DependencyTree', () => {
         4: { produces: [], consumes: ['c', 'a'] },
       }).findUnsatisfiedDeps(),
     ).toEqual([
-      { id: '2', unsatisfied: ['d', 'e'] },
-      { id: '4', unsatisfied: ['c'] },
+      { value: '2', unsatisfied: ['d', 'e'] },
+      { value: '4', unsatisfied: ['c'] },
     ]);
   });
 

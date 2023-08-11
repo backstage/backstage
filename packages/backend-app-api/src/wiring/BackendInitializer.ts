@@ -214,36 +214,37 @@ export class BackendInitializer {
         const modules = moduleInits.get(pluginId);
         if (modules) {
           const tree = DependencyTree.fromIterable(
-            Array.from(modules).map(([id, { provides, consumes }]) => ({
-              id,
+            Array.from(modules).map(([moduleId, moduleInit]) => ({
+              value: { moduleId, moduleInit },
               // Relationships are reversed at this point since we're only interested in the extension points.
               // If a modules provides extension point A we want it to be initialized AFTER all modules
               // that depend on extension point A, so that they can provide their extensions.
-              consumes: Array.from(provides).map(p => p.id),
-              produces: Array.from(consumes).map(c => c.id),
+              consumes: Array.from(moduleInit.provides).map(p => p.id),
+              produces: Array.from(moduleInit.consumes).map(c => c.id),
             })),
           );
           const circular = tree.detectCircularDependency();
           if (circular) {
             throw new ConflictError(
-              `Circular dependency detected for modules of plugin '${pluginId}', '${circular.join(
-                "' -> '",
-              )}'`,
+              `Circular dependency detected for modules of plugin '${pluginId}', ${circular
+                .map(({ moduleId }) => `'${moduleId}'`)
+                .join(' -> ')}`,
             );
           }
-          await tree.parallelTopologicalTraversal(async moduleId => {
-            const moduleInit = modules.get(moduleId)!;
-            const moduleDeps = await this.#getInitDeps(
-              moduleInit.init.deps,
-              pluginId,
-            );
-            await moduleInit.init.func(moduleDeps).catch(error => {
-              throw new ForwardedError(
-                `Module '${moduleId}' for plugin '${pluginId}' startup failed`,
-                error,
+          await tree.parallelTopologicalTraversal(
+            async ({ moduleId, moduleInit }) => {
+              const moduleDeps = await this.#getInitDeps(
+                moduleInit.init.deps,
+                pluginId,
               );
-            });
-          });
+              await moduleInit.init.func(moduleDeps).catch(error => {
+                throw new ForwardedError(
+                  `Module '${moduleId}' for plugin '${pluginId}' startup failed`,
+                  error,
+                );
+              });
+            },
+          );
         }
 
         // Once all modules have been initialized, we can initialize the plugin itself

@@ -14,111 +14,109 @@
  * limitations under the License.
  */
 
-import { ForwardedError, InputError } from '@backstage/errors';
-
-interface NodeInput {
-  id: string;
+interface NodeInput<T> {
+  value: T;
   consumes?: Iterable<string>;
   produces?: Iterable<string>;
 }
 
 /** @internal */
-class Node {
-  static from(input: NodeInput) {
-    return new Node(
-      input.id,
+class Node<T> {
+  static from<T>(input: NodeInput<T>) {
+    return new Node<T>(
+      input.value,
       input.consumes ? new Set(input.consumes) : new Set(),
       input.produces ? new Set(input.produces) : new Set(),
     );
   }
 
   private constructor(
-    readonly id: string,
+    readonly value: T,
     readonly consumes: Set<string>,
     readonly produces: Set<string>,
   ) {}
 }
 
 /** @internal */
-export class DependencyTree {
-  static fromMap(nodes: Record<string, Omit<NodeInput, 'id'>>) {
+export class DependencyTree<T> {
+  static fromMap(
+    nodes: Record<string, Omit<NodeInput<unknown>, 'value'>>,
+  ): DependencyTree<string> {
     return this.fromIterable(
-      Object.entries(nodes).map(([id, node]) => ({ id, ...node })),
+      Object.entries(nodes).map(([key, node]) => ({
+        value: String(key),
+        ...node,
+      })),
     );
   }
 
-  static fromIterable(nodeInputs: Iterable<NodeInput>) {
-    const nodes = new Map<string, Node>();
+  static fromIterable<T>(
+    nodeInputs: Iterable<NodeInput<T>>,
+  ): DependencyTree<T> {
+    const nodes = new Array<Node<T>>();
     for (const nodeInput of nodeInputs) {
-      const node = Node.from(nodeInput);
-      if (nodes.has(node.id)) {
-        throw new InputError(`Duplicate node with id ${node.id}`);
-      }
-      nodes.set(node.id, node);
+      nodes.push(Node.from(nodeInput));
     }
 
     return new DependencyTree(nodes);
   }
 
+  #nodes: Array<Node<T>>;
   #allProduced: Set<string>;
   #allConsumed: Set<string>;
-  #consumedBy: Map<string, Set<string>>;
 
-  private constructor(readonly nodes: Map<string, Node>) {
+  private constructor(nodes: Array<Node<T>>) {
+    this.#nodes = nodes;
     this.#allProduced = new Set();
     this.#allConsumed = new Set();
-    this.#consumedBy = new Map();
 
-    for (const node of this.nodes.values()) {
+    for (const node of this.#nodes.values()) {
       for (const produced of node.produces) {
         this.#allProduced.add(produced);
       }
       for (const consumed of node.consumes) {
         this.#allConsumed.add(consumed);
-        if (!this.#consumedBy.get(consumed)?.add(node.id)) {
-          this.#consumedBy.set(consumed, new Set([node.id]));
-        }
       }
     }
   }
 
-  findUnsatisfiedDeps(): Array<{ id: string; unsatisfied: string[] }> {
+  findUnsatisfiedDeps(): Array<{ value: T; unsatisfied: string[] }> {
     const unsatisfiedDependencies = [];
-    for (const node of this.nodes.values()) {
+    for (const node of this.#nodes.values()) {
       const unsatisfied = Array.from(node.consumes).filter(
         id => !this.#allProduced.has(id),
       );
       if (unsatisfied.length > 0) {
-        unsatisfiedDependencies.push({ id: node.id, unsatisfied });
+        unsatisfiedDependencies.push({ value: node.value, unsatisfied });
       }
     }
     return unsatisfiedDependencies;
   }
 
-  detectCircularDependency(): string[] | undefined {
-    for (const nodeId of this.nodes.keys()) {
-      const visited = new Set<string>();
-      const stack = new Array<[id: string, path: string[]]>([nodeId, [nodeId]]);
+  detectCircularDependency(): T[] | undefined {
+    for (const startNode of this.#nodes) {
+      const visited = new Set<Node<T>>();
+      const stack = new Array<[node: Node<T>, path: T[]]>([
+        startNode,
+        [startNode.value],
+      ]);
 
       while (stack.length > 0) {
-        const [id, path] = stack.pop()!;
-        if (visited.has(id)) {
+        const [node, path] = stack.pop()!;
+        if (visited.has(node)) {
           continue;
         }
-        visited.add(id);
-        const node = this.nodes.get(id);
-        if (node) {
-          for (const produced of node.produces) {
-            const consumers = this.#consumedBy.get(produced);
-            if (consumers) {
-              for (const consumer of consumers) {
-                if (consumer === nodeId) {
-                  return [...path, nodeId];
-                }
-                if (!visited.has(consumer)) {
-                  stack.push([consumer, [...path, consumer]]);
-                }
-              }
+        visited.add(node);
+        for (const produced of node.produces) {
+          const consumerNodes = this.#nodes.filter(other =>
+            other.consumes.has(produced),
+          );
+          for (const consumer of consumerNodes) {
+            if (consumer === startNode) {
+              return [...path, startNode.value];
+            }
+            if (!visited.has(consumer)) {
+              stack.push([consumer, [...path, consumer.value]]);
             }
           }
         }
@@ -127,14 +125,14 @@ export class DependencyTree {
     return undefined;
   }
 
-  async parallelTopologicalTraversal<T>(
-    fn: (nodeId: string) => Promise<T>,
-  ): Promise<T[]> {
+  async parallelTopologicalTraversal<TResult>(
+    fn: (value: T) => Promise<TResult>,
+  ): Promise<TResult[]> {
     const allProduced = this.#allProduced;
     const producedSoFar = new Set<string>();
-    const waiting = new Set(this.nodes.values());
-    const visited = new Set<string>();
-    const results = new Array<T>();
+    const waiting = new Set(this.#nodes.values());
+    const visited = new Set<Node<T>>();
+    const results = new Array<TResult>();
     let inFlight = 0;
 
     async function processMoreNodes() {
@@ -168,15 +166,13 @@ export class DependencyTree {
       await Promise.all(nodesToProcess.map(processNode));
     }
 
-    async function processNode(node: Node) {
-      visited.add(node.id);
+    async function processNode(node: Node<T>) {
+      visited.add(node);
       inFlight += 1;
-      try {
-        const result = await fn(node.id);
-        results.push(result);
-      } catch (error) {
-        throw new ForwardedError(`Failed at ${node.id}`, error);
-      }
+
+      const result = await fn(node.value);
+      results.push(result);
+
       node.produces.forEach(produced => producedSoFar.add(produced));
       inFlight -= 1;
       await processMoreNodes();
