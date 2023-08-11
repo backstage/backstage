@@ -37,7 +37,10 @@ class Node<T> {
   ) {}
 }
 
-/** @internal */
+/**
+ * Internal helper to help validate and traverse a dependency graph.
+ * @internal
+ */
 export class DependencyGraph<T> {
   static fromMap(
     nodes: Record<string, Omit<NodeInput<unknown>, 'value'>>,
@@ -75,6 +78,7 @@ export class DependencyGraph<T> {
     }
   }
 
+  // Find all nodes that consume dependencies that are not provided by any other node
   findUnsatisfiedDeps(): Array<{ value: T; unsatisfied: string[] }> {
     const unsatisfiedDependencies = [];
     for (const node of this.#nodes.values()) {
@@ -88,6 +92,8 @@ export class DependencyGraph<T> {
     return unsatisfiedDependencies;
   }
 
+  // Detect circular dependencies within the graph, returning the path of nodes that
+  // form a cycle, with the same node as the first and last element of the array.
   detectCircularDependency(): T[] | undefined {
     for (const startNode of this.#nodes) {
       const visited = new Set<Node<T>>();
@@ -120,6 +126,15 @@ export class DependencyGraph<T> {
     return undefined;
   }
 
+  /**
+   * Traverses the dependency graph in topological order, calling the provided
+   * function for each node and waiting for it to resolve.
+   *
+   * The nodes are traversed in parallel, but in such a way that no node is
+   * visited before all of its dependencies.
+   *
+   * Dependencies of nodes that are not produced by any other nodes will be ignored.
+   */
   async parallelTopologicalTraversal<TResult>(
     fn: (value: T) => Promise<TResult>,
   ): Promise<TResult[]> {
@@ -128,8 +143,9 @@ export class DependencyGraph<T> {
     const waiting = new Set(this.#nodes.values());
     const visited = new Set<Node<T>>();
     const results = new Array<TResult>();
-    let inFlight = 0;
+    let inFlight = 0; // Keep track of how many callbacks are in flight, so that we know if we got stuck
 
+    // Find all nodes that have no dependencies that have not already been produced by visited nodes
     async function processMoreNodes() {
       if (waiting.size === 0) {
         return;
@@ -161,6 +177,7 @@ export class DependencyGraph<T> {
       await Promise.all(nodesToProcess.map(processNode));
     }
 
+    // Process an individual node, and then add its produced dependencies to the set of available products
     async function processNode(node: Node<T>) {
       visited.add(node);
       inFlight += 1;
