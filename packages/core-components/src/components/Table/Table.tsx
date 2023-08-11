@@ -22,6 +22,7 @@ import MTable, {
   MTableHeader,
   MTableToolbar,
   Options,
+  CircularProgress,
 } from '@material-table/core';
 import Box from '@material-ui/core/Box';
 import IconButton from '@material-ui/core/IconButton';
@@ -53,7 +54,6 @@ import React, {
 
 import { SelectProps } from '../Select/Select';
 import { Filter, Filters, SelectedFilters, Without } from './Filters';
-import { Skeleton } from '@material-ui/lab';
 
 // Material-table is not using the standard icons available in in material-ui. https://github.com/mbrn/material-table/issues/51
 const tableIcons: Icons = {
@@ -159,10 +159,6 @@ const useTableStyles = makeStyles<BackstageTheme>(
     root: {
       display: 'flex',
       alignItems: 'start',
-    },
-    loadingTd: {
-      width: '90%',
-      paddingLeft: '0.5rem',
     },
   }),
   { name: 'BackstageTable' },
@@ -480,25 +476,21 @@ export function Table<T extends object = {}>(props: TableProps<T>) {
       if (initialContentLoading) {
         return (
           <tbody>
-            {Array.from({ length: 5 }, row => {
-              return (
-                <tr key={`table-placeholder-row-${row}`}>
-                  {Array.from({ length: columnCount }, col => {
-                    return (
-                      <td
-                        key={`table-placeholder-row-${row}-col-${col}`}
-                        colSpan={1}
-                      >
-                        <Skeleton
-                          className={tableClasses.loadingTd}
-                          height="4rem"
-                        />
-                      </td>
-                    );
-                  })}
-                </tr>
-              );
-            })}
+            <tr>
+              <td colSpan={columnCount}>
+                <Box
+                  sx={{
+                    display: 'flex',
+                    justifyContent: 'center',
+                    alignItems: 'center',
+                    width: '100%',
+                    minHeight: '15rem',
+                  }}
+                >
+                  <CircularProgress size="5rem" />
+                </Box>
+              </td>
+            </tr>
           </tbody>
         );
       }
@@ -515,13 +507,7 @@ export function Table<T extends object = {}>(props: TableProps<T>) {
 
       return <MTableBody {...bodyProps} />;
     },
-    [
-      hasNoRows,
-      emptyContent,
-      columnCount,
-      initialContentLoading,
-      tableClasses.loadingTd,
-    ],
+    [hasNoRows, emptyContent, columnCount, initialContentLoading],
   );
 
   return (
