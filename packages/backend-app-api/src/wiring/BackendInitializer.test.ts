@@ -250,4 +250,48 @@ describe('BackendInitializer', () => {
       "Module 'mod' for plugin 'test' is already registered",
     );
   });
+
+  it('should reject modules with circular dependencies', async () => {
+    const extA = createExtensionPoint<string>({ id: 'a' });
+    const extB = createExtensionPoint<string>({ id: 'b' });
+    const init = new BackendInitializer(
+      new ServiceRegistry([
+        rootLifecycleServiceFactory(),
+        createServiceFactory({
+          service: coreServices.rootLogger,
+          deps: {},
+          factory: () => new MockLogger(),
+        })(),
+      ]),
+    );
+    init.add(
+      createBackendModule({
+        pluginId: 'test',
+        moduleId: 'modA',
+        register(reg) {
+          reg.registerExtensionPoint(extA, 'a');
+          reg.registerInit({
+            deps: { ext: extB },
+            async init() {},
+          });
+        },
+      })(),
+    );
+    init.add(
+      createBackendModule({
+        pluginId: 'test',
+        moduleId: 'modB',
+        register(reg) {
+          reg.registerExtensionPoint(extB, 'b');
+          reg.registerInit({
+            deps: { ext: extA },
+            async init() {},
+          });
+        },
+      })(),
+    );
+    await expect(init.start()).rejects.toThrow(
+      "Circular dependency detected for modules of plugin 'test', 'modA' -> 'modB' -> 'modA'",
+    );
+  });
 });

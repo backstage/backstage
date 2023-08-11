@@ -26,7 +26,7 @@ import { EnumerableServiceHolder, ServiceOrExtensionPoint } from './types';
 // Direct internal import to avoid duplication
 // eslint-disable-next-line @backstage/no-forbidden-package-imports
 import { InternalBackendFeature } from '@backstage/backend-plugin-api/src/wiring/types';
-import { ForwardedError, InputError } from '@backstage/errors';
+import { ForwardedError, ConflictError } from '@backstage/errors';
 import { featureDiscoveryServiceRef } from '@backstage/backend-plugin-api/alpha';
 import { DependencyTree } from '../lib/DependencyTree';
 
@@ -225,7 +225,7 @@ export class BackendInitializer {
           );
           const circular = tree.detectCircularDependency();
           if (circular) {
-            throw new InputError(
+            throw new ConflictError(
               `Circular dependency detected for modules of plugin '${pluginId}', '${circular.join(
                 "' -> '",
               )}'`,
