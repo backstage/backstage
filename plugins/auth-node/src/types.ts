@@ -106,7 +106,7 @@ export type AuthResolverCatalogUserQuery =
     };
 
 /**
- * Parameters used to issue new ID Tokens
+ * Parameters used to issue new Backstage Tokens
  *
  * @public
  */
@@ -198,6 +198,10 @@ export interface AuthProviderRouteHandlers {
   /**
    * (Optional) If the auth provider supports refresh tokens then this method handles
    * requests to get a new access token.
+   *
+   * Other types of providers may also use this method to implement its own logic to create new sessions
+   * upon request. For example, this can be used to create a new session for a provider that handles requests
+   * from an authenticating proxy.
    *
    * Request
    * - to contain a refresh token cookie and scope (Optional) query parameter.

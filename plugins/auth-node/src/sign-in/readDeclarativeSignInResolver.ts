@@ -45,7 +45,9 @@ export function readDeclarativeSignInResolver<TAuthResult>(
         const { resolver: _ignored, ...resolverOptions } =
           resolverConfig.get<JsonObject>();
 
-        return resolver(resolverOptions);
+        return resolver(
+          Object.keys(resolverOptions).length > 0 ? resolverOptions : undefined,
+        );
       }) ?? [];
 
   if (resolvers.length === 0) {
@@ -53,7 +55,7 @@ export function readDeclarativeSignInResolver<TAuthResult>(
   }
 
   return async (profile, context) => {
-    for (const resolver of resolvers ?? []) {
+    for (const resolver of resolvers) {
       try {
         return await resolver(profile, context);
       } catch (error) {
