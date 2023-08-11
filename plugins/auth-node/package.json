@@ -36,6 +36,7 @@
     "@backstage/errors": "workspace:^",
     "@backstage/types": "workspace:^",
     "@types/express": "*",
+    "@types/passport": "^1.0.3",
     "express": "^4.17.1",
     "jose": "^4.6.0",
     "lodash": "^4.17.21",
