@@ -24,17 +24,6 @@ describe('DependencyTree', () => {
     expect(empty.detectCircularDependency()).toBeUndefined();
   });
 
-  it('should reject multiple producers', () => {
-    expect(() =>
-      DependencyTree.fromMap({
-        1: { produces: ['a'] },
-        2: { produces: ['a'] },
-      }),
-    ).toThrow(
-      "Dependency conflict detected, 'a' may not be produced by both '1' and '2'",
-    );
-  });
-
   it('should detect circular dependencies', () => {
     expect(
       DependencyTree.fromMap({

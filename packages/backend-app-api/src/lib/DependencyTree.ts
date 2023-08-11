@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { ConflictError, ForwardedError, InputError } from '@backstage/errors';
+import { ForwardedError, InputError } from '@backstage/errors';
 
 interface NodeInput {
   id: string;
@@ -62,26 +62,16 @@ export class DependencyTree {
 
   #allProduced: Set<string>;
   #allConsumed: Set<string>;
-  #producedBy: Map<string, string>;
   #consumedBy: Map<string, Set<string>>;
 
   private constructor(readonly nodes: Map<string, Node>) {
     this.#allProduced = new Set();
     this.#allConsumed = new Set();
-    this.#producedBy = new Map();
     this.#consumedBy = new Map();
 
     for (const node of this.nodes.values()) {
       for (const produced of node.produces) {
         this.#allProduced.add(produced);
-        if (this.#producedBy.has(produced)) {
-          throw new ConflictError(
-            `Dependency conflict detected, '${produced}' may not be produced by both '${this.#producedBy.get(
-              produced,
-            )}' and '${node.id}'`,
-          );
-        }
-        this.#producedBy.set(produced, node.id);
       }
       for (const consumed of node.consumes) {
         this.#allConsumed.add(consumed);
