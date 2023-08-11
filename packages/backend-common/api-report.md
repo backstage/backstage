@@ -610,7 +610,9 @@ export interface ReadTreeResponseFactory {
   ): Promise<ReadTreeResponse>;
   // (undocumented)
   fromTarArchive(
-    options: ReadTreeResponseFactoryOptions,
+    options: ReadTreeResponseFactoryOptions & {
+      stripFirstDirectory?: boolean;
+    },
   ): Promise<ReadTreeResponse>;
   // (undocumented)
   fromZipArchive(
@@ -629,7 +631,6 @@ export type ReadTreeResponseFactoryOptions = {
       size: number;
     },
   ) => boolean;
-  tarStripFirstDirectory?: boolean;
 };
 
 export { ReadTreeResponseFile };

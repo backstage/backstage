@@ -257,9 +257,7 @@ describe('GerritUrlReader', () => {
 
       worker.use(
         rest.get(
-          new RegExp(
-            'https://gerrit.com/gitiles/app/web/\\+archive/refs/heads/master.tar.gz',
-          ),
+          'https://gerrit.com/gitiles/app/web/\\+archive/refs/heads/master.tar.gz',
           (_, res, ctx) =>
             res(
               ctx.status(200),
@@ -272,9 +270,7 @@ describe('GerritUrlReader', () => {
             ),
         ),
         rest.get(
-          new RegExp(
-            'https://gerrit.com/gitiles/app/web/\\+archive/refs/heads/master/docs.tar.gz',
-          ),
+          'https://gerrit.com/gitiles/app/web/\\+archive/refs/heads/master/docs.tar.gz',
           (_, res, ctx) =>
             res(
               ctx.status(200),

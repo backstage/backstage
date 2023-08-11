@@ -83,8 +83,6 @@ export type ReadTreeResponseFactoryOptions = {
   etag: string;
   // Filter passed on from the ReadTreeOptions
   filter?: (path: string, info?: { size: number }) => boolean;
-  // First directory of a tar archive is stripped when set to true
-  tarStripFirstDirectory?: boolean;
 };
 
 /**
@@ -118,7 +116,13 @@ export type FromReadableArrayOptions = Array<{
  */
 export interface ReadTreeResponseFactory {
   fromTarArchive(
-    options: ReadTreeResponseFactoryOptions,
+    options: ReadTreeResponseFactoryOptions & {
+      /**
+       * Strip the first parent directory of a tar archive.
+       * Defaults to true.
+       */
+      stripFirstDirectory?: boolean;
+    },
   ): Promise<ReadTreeResponse>;
   fromZipArchive(
     options: ReadTreeResponseFactoryOptions,

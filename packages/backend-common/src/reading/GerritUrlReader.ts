@@ -283,7 +283,7 @@ export class GerritUrlReader implements UrlReader {
       stream: archiveResponse.body as unknown as Readable,
       etag: revision,
       filter: options?.filter,
-      tarStripFirstDirectory: false,
+      stripFirstDirectory: false,
     });
   }
 }

@@ -37,7 +37,9 @@ export class DefaultReadTreeResponseFactory implements ReadTreeResponseFactory {
   constructor(private readonly workDir: string) {}
 
   async fromTarArchive(
-    options: ReadTreeResponseFactoryOptions,
+    options: ReadTreeResponseFactoryOptions & {
+      stripFirstDirectory?: boolean;
+    },
   ): Promise<ReadTreeResponse> {
     return new TarArchiveResponse(
       options.stream,
@@ -45,7 +47,7 @@ export class DefaultReadTreeResponseFactory implements ReadTreeResponseFactory {
       this.workDir,
       options.etag,
       options.filter,
-      options.tarStripFirstDirectory ?? true,
+      options.stripFirstDirectory ?? true,
     );
   }
 
