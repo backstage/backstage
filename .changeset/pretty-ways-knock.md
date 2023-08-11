@@ -1,5 +1,5 @@
 ---
-'@backstage/plugin-todo': patch
+'@backstage/plugin-todo-backend': patch
 ---
 
-Fixed URL encoding of filters where the filter was always rejected by the backend validation.
+Fixed a bug where filter queries from the frontend would always fail validation.

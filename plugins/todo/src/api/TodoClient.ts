@@ -67,17 +67,13 @@ export class TodoClient implements TodoApi {
       }
     }
 
-    const res = await fetch(
-      // TODO(Rugvip): Figure out a better solution to '*' not being URL encoded but that being required by OpenAPI
-      `${baseUrl}/v1/todos?${String(query).replace(/\*/g, '%2A')}`,
-      {
-        headers: token
-          ? {
-              Authorization: `Bearer ${token}`,
-            }
-          : undefined,
-      },
-    );
+    const res = await fetch(`${baseUrl}/v1/todos?${query}`, {
+      headers: token
+        ? {
+            Authorization: `Bearer ${token}`,
+          }
+        : undefined,
+    });
 
     if (!res.ok) {
       throw await ResponseError.fromResponse(res);
