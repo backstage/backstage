@@ -38,10 +38,10 @@ class Node<T> {
 }
 
 /** @internal */
-export class DependencyTree<T> {
+export class DependencyGraph<T> {
   static fromMap(
     nodes: Record<string, Omit<NodeInput<unknown>, 'value'>>,
-  ): DependencyTree<string> {
+  ): DependencyGraph<string> {
     return this.fromIterable(
       Object.entries(nodes).map(([key, node]) => ({
         value: String(key),
@@ -52,13 +52,13 @@ export class DependencyTree<T> {
 
   static fromIterable<T>(
     nodeInputs: Iterable<NodeInput<T>>,
-  ): DependencyTree<T> {
+  ): DependencyGraph<T> {
     const nodes = new Array<Node<T>>();
     for (const nodeInput of nodeInputs) {
       nodes.push(Node.from(nodeInput));
     }
 
-    return new DependencyTree(nodes);
+    return new DependencyGraph(nodes);
   }
 
   #nodes: Array<Node<T>>;

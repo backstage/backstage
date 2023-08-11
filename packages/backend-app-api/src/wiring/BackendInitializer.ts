@@ -28,7 +28,7 @@ import { EnumerableServiceHolder, ServiceOrExtensionPoint } from './types';
 import { InternalBackendFeature } from '@backstage/backend-plugin-api/src/wiring/types';
 import { ForwardedError, ConflictError } from '@backstage/errors';
 import { featureDiscoveryServiceRef } from '@backstage/backend-plugin-api/alpha';
-import { DependencyTree } from '../lib/DependencyTree';
+import { DependencyGraph } from '../lib/DependencyGraph';
 
 export interface BackendRegisterInit {
   consumes: Set<ServiceOrExtensionPoint>;
@@ -213,7 +213,7 @@ export class BackendInitializer {
         // Modules are initialized before plugins, so that they can provide extension to the plugin
         const modules = moduleInits.get(pluginId);
         if (modules) {
-          const tree = DependencyTree.fromIterable(
+          const tree = DependencyGraph.fromIterable(
             Array.from(modules).map(([moduleId, moduleInit]) => ({
               value: { moduleId, moduleInit },
               // Relationships are reversed at this point since we're only interested in the extension points.

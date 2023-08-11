@@ -14,11 +14,11 @@
  * limitations under the License.
  */
 
-import { DependencyTree } from './DependencyTree';
+import { DependencyGraph } from './DependencyGraph';
 
-describe('DependencyTree', () => {
+describe('DependencyGraph', () => {
   it('should be empty', async () => {
-    const empty = DependencyTree.fromMap({});
+    const empty = DependencyGraph.fromMap({});
     expect(empty.findUnsatisfiedDeps()).toEqual([]);
     expect(empty.detectCircularDependency()).toBeUndefined();
     await expect(
@@ -28,7 +28,7 @@ describe('DependencyTree', () => {
 
   it('should detect circular dependencies', () => {
     expect(
-      DependencyTree.fromMap({
+      DependencyGraph.fromMap({
         1: {},
         2: {},
         3: {},
@@ -37,7 +37,7 @@ describe('DependencyTree', () => {
     ).toBeUndefined();
 
     expect(
-      DependencyTree.fromMap({
+      DependencyGraph.fromMap({
         1: { provides: ['a'] },
         2: { consumes: ['a'], provides: ['b', 'c'] },
         3: { consumes: ['b'] },
@@ -46,20 +46,20 @@ describe('DependencyTree', () => {
     ).toBeUndefined();
 
     expect(
-      DependencyTree.fromMap({
+      DependencyGraph.fromMap({
         1: { provides: ['a'], consumes: ['a'] },
       }).detectCircularDependency(),
     ).toEqual(['1', '1']);
 
     expect(
-      DependencyTree.fromMap({
+      DependencyGraph.fromMap({
         1: { provides: ['a'], consumes: ['b'] },
         2: { provides: ['b'], consumes: ['a'] },
       }).detectCircularDependency(),
     ).toEqual(['1', '2', '1']);
 
     expect(
-      DependencyTree.fromMap({
+      DependencyGraph.fromMap({
         1: { provides: ['a'] },
         2: { provides: ['b'], consumes: ['a', 'e'] },
         3: { provides: ['c'], consumes: ['b'] },
@@ -70,7 +70,7 @@ describe('DependencyTree', () => {
 
   it('should find unsatisfied dependencies', () => {
     expect(
-      DependencyTree.fromMap({
+      DependencyGraph.fromMap({
         1: {},
         2: {},
         3: {},
@@ -79,7 +79,7 @@ describe('DependencyTree', () => {
     ).toEqual([]);
 
     expect(
-      DependencyTree.fromMap({
+      DependencyGraph.fromMap({
         1: { provides: ['a'] },
         2: { consumes: ['a'], provides: ['b', 'c'] },
         3: { consumes: ['b'] },
@@ -88,20 +88,20 @@ describe('DependencyTree', () => {
     ).toEqual([]);
 
     expect(
-      DependencyTree.fromMap({
+      DependencyGraph.fromMap({
         1: { consumes: ['a'] },
       }).findUnsatisfiedDeps(),
     ).toEqual([{ value: '1', unsatisfied: ['a'] }]);
 
     expect(
-      DependencyTree.fromMap({
+      DependencyGraph.fromMap({
         1: { provides: ['a'], consumes: ['b'] },
         2: { provides: ['b'], consumes: ['a', 'd', 'e'] },
       }).findUnsatisfiedDeps(),
     ).toEqual([{ value: '2', unsatisfied: ['d', 'e'] }]);
 
     expect(
-      DependencyTree.fromMap({
+      DependencyGraph.fromMap({
         1: { provides: ['a'] },
         2: { provides: ['b'], consumes: ['a', 'd', 'e'] },
         3: { provides: [], consumes: ['b'] },
@@ -115,7 +115,7 @@ describe('DependencyTree', () => {
 
   it('should traverse dependencies in topological order', async () => {
     await expect(
-      DependencyTree.fromMap({
+      DependencyGraph.fromMap({
         1: {},
         2: {},
         3: {},
@@ -124,7 +124,7 @@ describe('DependencyTree', () => {
     ).resolves.toEqual(['1', '2', '3', '4']);
 
     await expect(
-      DependencyTree.fromMap({
+      DependencyGraph.fromMap({
         1: { provides: ['a'] },
         2: { consumes: ['a'], provides: ['b', 'c'] },
         3: { consumes: ['b'] },
@@ -133,7 +133,7 @@ describe('DependencyTree', () => {
     ).resolves.toEqual(['1', '2', '3', '4']);
 
     await expect(
-      DependencyTree.fromMap({
+      DependencyGraph.fromMap({
         1: { consumes: ['c'] },
         2: { provides: ['c'], consumes: ['b'] },
         3: { provides: ['b'], consumes: ['a'] },
@@ -142,7 +142,7 @@ describe('DependencyTree', () => {
     ).resolves.toEqual(['4', '3', '2', '1']);
 
     await expect(
-      DependencyTree.fromMap({
+      DependencyGraph.fromMap({
         1: { provides: ['a'] },
         2: { provides: ['b'], consumes: ['a'] },
         3: { provides: ['c'], consumes: ['a'] },
@@ -153,7 +153,7 @@ describe('DependencyTree', () => {
 
     // Same as above, but with 2 being delayed
     await expect(
-      DependencyTree.fromMap({
+      DependencyGraph.fromMap({
         1: { provides: ['a'] },
         2: { provides: ['b'], consumes: ['a'] },
         3: { provides: ['c'], consumes: ['a'] },
@@ -169,18 +169,18 @@ describe('DependencyTree', () => {
     ).resolves.toEqual(['1', '3', '5', '2', '4']);
 
     await expect(
-      DependencyTree.fromMap({
+      DependencyGraph.fromMap({
         1: { provides: ['a'], consumes: ['a'] },
       }).parallelTopologicalTraversal(async id => id),
     ).rejects.toThrow('Circular dependency detected');
     await expect(
-      DependencyTree.fromMap({
+      DependencyGraph.fromMap({
         1: { provides: ['a'], consumes: ['b'] },
         2: { provides: ['b'], consumes: ['a'] },
       }).parallelTopologicalTraversal(async id => id),
     ).rejects.toThrow('Circular dependency detected');
     await expect(
-      DependencyTree.fromMap({
+      DependencyGraph.fromMap({
         1: { provides: ['a'] },
         2: { provides: ['c'], consumes: ['a', 'b'] },
         3: { provides: ['b'], consumes: ['a', 'c'] },
