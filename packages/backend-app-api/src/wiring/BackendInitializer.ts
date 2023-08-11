@@ -220,7 +220,7 @@ export class BackendInitializer {
               // If a modules provides extension point A we want it to be initialized AFTER all modules
               // that depend on extension point A, so that they can provide their extensions.
               consumes: Array.from(moduleInit.provides).map(p => p.id),
-              produces: Array.from(moduleInit.consumes).map(c => c.id),
+              provides: Array.from(moduleInit.consumes).map(c => c.id),
             })),
           );
           const circular = tree.detectCircularDependency();

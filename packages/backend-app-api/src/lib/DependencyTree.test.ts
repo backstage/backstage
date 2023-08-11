@@ -38,8 +38,8 @@ describe('DependencyTree', () => {
 
     expect(
       DependencyTree.fromMap({
-        1: { produces: ['a'] },
-        2: { consumes: ['a'], produces: ['b', 'c'] },
+        1: { provides: ['a'] },
+        2: { consumes: ['a'], provides: ['b', 'c'] },
         3: { consumes: ['b'] },
         4: { consumes: ['c'] },
       }).detectCircularDependency(),
@@ -47,23 +47,23 @@ describe('DependencyTree', () => {
 
     expect(
       DependencyTree.fromMap({
-        1: { produces: ['a'], consumes: ['a'] },
+        1: { provides: ['a'], consumes: ['a'] },
       }).detectCircularDependency(),
     ).toEqual(['1', '1']);
 
     expect(
       DependencyTree.fromMap({
-        1: { produces: ['a'], consumes: ['b'] },
-        2: { produces: ['b'], consumes: ['a'] },
+        1: { provides: ['a'], consumes: ['b'] },
+        2: { provides: ['b'], consumes: ['a'] },
       }).detectCircularDependency(),
     ).toEqual(['1', '2', '1']);
 
     expect(
       DependencyTree.fromMap({
-        1: { produces: ['a'] },
-        2: { produces: ['b'], consumes: ['a', 'e'] },
-        3: { produces: ['c'], consumes: ['b'] },
-        4: { produces: ['d', 'e'], consumes: ['c', 'a'] },
+        1: { provides: ['a'] },
+        2: { provides: ['b'], consumes: ['a', 'e'] },
+        3: { provides: ['c'], consumes: ['b'] },
+        4: { provides: ['d', 'e'], consumes: ['c', 'a'] },
       }).detectCircularDependency(),
     ).toEqual(['2', '3', '4', '2']);
   });
@@ -80,8 +80,8 @@ describe('DependencyTree', () => {
 
     expect(
       DependencyTree.fromMap({
-        1: { produces: ['a'] },
-        2: { consumes: ['a'], produces: ['b', 'c'] },
+        1: { provides: ['a'] },
+        2: { consumes: ['a'], provides: ['b', 'c'] },
         3: { consumes: ['b'] },
         4: { consumes: ['c'] },
       }).findUnsatisfiedDeps(),
@@ -95,17 +95,17 @@ describe('DependencyTree', () => {
 
     expect(
       DependencyTree.fromMap({
-        1: { produces: ['a'], consumes: ['b'] },
-        2: { produces: ['b'], consumes: ['a', 'd', 'e'] },
+        1: { provides: ['a'], consumes: ['b'] },
+        2: { provides: ['b'], consumes: ['a', 'd', 'e'] },
       }).findUnsatisfiedDeps(),
     ).toEqual([{ value: '2', unsatisfied: ['d', 'e'] }]);
 
     expect(
       DependencyTree.fromMap({
-        1: { produces: ['a'] },
-        2: { produces: ['b'], consumes: ['a', 'd', 'e'] },
-        3: { produces: [], consumes: ['b'] },
-        4: { produces: [], consumes: ['c', 'a'] },
+        1: { provides: ['a'] },
+        2: { provides: ['b'], consumes: ['a', 'd', 'e'] },
+        3: { provides: [], consumes: ['b'] },
+        4: { provides: [], consumes: ['c', 'a'] },
       }).findUnsatisfiedDeps(),
     ).toEqual([
       { value: '2', unsatisfied: ['d', 'e'] },
@@ -125,8 +125,8 @@ describe('DependencyTree', () => {
 
     await expect(
       DependencyTree.fromMap({
-        1: { produces: ['a'] },
-        2: { consumes: ['a'], produces: ['b', 'c'] },
+        1: { provides: ['a'] },
+        2: { consumes: ['a'], provides: ['b', 'c'] },
         3: { consumes: ['b'] },
         4: { consumes: ['c'] },
       }).parallelTopologicalTraversal(async id => id),
@@ -135,17 +135,17 @@ describe('DependencyTree', () => {
     await expect(
       DependencyTree.fromMap({
         1: { consumes: ['c'] },
-        2: { produces: ['c'], consumes: ['b'] },
-        3: { produces: ['b'], consumes: ['a'] },
-        4: { produces: ['a'] },
+        2: { provides: ['c'], consumes: ['b'] },
+        3: { provides: ['b'], consumes: ['a'] },
+        4: { provides: ['a'] },
       }).parallelTopologicalTraversal(async id => id),
     ).resolves.toEqual(['4', '3', '2', '1']);
 
     await expect(
       DependencyTree.fromMap({
-        1: { produces: ['a'] },
-        2: { produces: ['b'], consumes: ['a'] },
-        3: { produces: ['c'], consumes: ['a'] },
+        1: { provides: ['a'] },
+        2: { provides: ['b'], consumes: ['a'] },
+        3: { provides: ['c'], consumes: ['a'] },
         4: { consumes: ['b'] },
         5: { consumes: ['c'] },
       }).parallelTopologicalTraversal(async id => id),
@@ -154,9 +154,9 @@ describe('DependencyTree', () => {
     // Same as above, but with 2 being delayed
     await expect(
       DependencyTree.fromMap({
-        1: { produces: ['a'] },
-        2: { produces: ['b'], consumes: ['a'] },
-        3: { produces: ['c'], consumes: ['a'] },
+        1: { provides: ['a'] },
+        2: { provides: ['b'], consumes: ['a'] },
+        3: { provides: ['c'], consumes: ['a'] },
         4: { consumes: ['b'] },
         5: { consumes: ['c'] },
       }).parallelTopologicalTraversal(async id => {
@@ -170,20 +170,20 @@ describe('DependencyTree', () => {
 
     await expect(
       DependencyTree.fromMap({
-        1: { produces: ['a'], consumes: ['a'] },
+        1: { provides: ['a'], consumes: ['a'] },
       }).parallelTopologicalTraversal(async id => id),
     ).rejects.toThrow('Circular dependency detected');
     await expect(
       DependencyTree.fromMap({
-        1: { produces: ['a'], consumes: ['b'] },
-        2: { produces: ['b'], consumes: ['a'] },
+        1: { provides: ['a'], consumes: ['b'] },
+        2: { provides: ['b'], consumes: ['a'] },
       }).parallelTopologicalTraversal(async id => id),
     ).rejects.toThrow('Circular dependency detected');
     await expect(
       DependencyTree.fromMap({
-        1: { produces: ['a'] },
-        2: { produces: ['c'], consumes: ['a', 'b'] },
-        3: { produces: ['b'], consumes: ['a', 'c'] },
+        1: { provides: ['a'] },
+        2: { provides: ['c'], consumes: ['a', 'b'] },
+        3: { provides: ['b'], consumes: ['a', 'c'] },
       }).parallelTopologicalTraversal(async id => id),
     ).rejects.toThrow('Circular dependency detected');
   });

@@ -17,7 +17,7 @@
 interface NodeInput<T> {
   value: T;
   consumes?: Iterable<string>;
-  produces?: Iterable<string>;
+  provides?: Iterable<string>;
 }
 
 /** @internal */
@@ -26,14 +26,14 @@ class Node<T> {
     return new Node<T>(
       input.value,
       input.consumes ? new Set(input.consumes) : new Set(),
-      input.produces ? new Set(input.produces) : new Set(),
+      input.provides ? new Set(input.provides) : new Set(),
     );
   }
 
   private constructor(
     readonly value: T,
     readonly consumes: Set<string>,
-    readonly produces: Set<string>,
+    readonly provides: Set<string>,
   ) {}
 }
 
@@ -62,20 +62,15 @@ export class DependencyTree<T> {
   }
 
   #nodes: Array<Node<T>>;
-  #allProduced: Set<string>;
-  #allConsumed: Set<string>;
+  #allProvided: Set<string>;
 
   private constructor(nodes: Array<Node<T>>) {
     this.#nodes = nodes;
-    this.#allProduced = new Set();
-    this.#allConsumed = new Set();
+    this.#allProvided = new Set();
 
     for (const node of this.#nodes.values()) {
-      for (const produced of node.produces) {
-        this.#allProduced.add(produced);
-      }
-      for (const consumed of node.consumes) {
-        this.#allConsumed.add(consumed);
+      for (const produced of node.provides) {
+        this.#allProvided.add(produced);
       }
     }
   }
@@ -84,7 +79,7 @@ export class DependencyTree<T> {
     const unsatisfiedDependencies = [];
     for (const node of this.#nodes.values()) {
       const unsatisfied = Array.from(node.consumes).filter(
-        id => !this.#allProduced.has(id),
+        id => !this.#allProvided.has(id),
       );
       if (unsatisfied.length > 0) {
         unsatisfiedDependencies.push({ value: node.value, unsatisfied });
@@ -107,7 +102,7 @@ export class DependencyTree<T> {
           continue;
         }
         visited.add(node);
-        for (const produced of node.produces) {
+        for (const produced of node.provides) {
           const consumerNodes = this.#nodes.filter(other =>
             other.consumes.has(produced),
           );
@@ -128,7 +123,7 @@ export class DependencyTree<T> {
   async parallelTopologicalTraversal<TResult>(
     fn: (value: T) => Promise<TResult>,
   ): Promise<TResult[]> {
-    const allProduced = this.#allProduced;
+    const allProvided = this.#allProvided;
     const producedSoFar = new Set<string>();
     const waiting = new Set(this.#nodes.values());
     const visited = new Set<Node<T>>();
@@ -143,7 +138,7 @@ export class DependencyTree<T> {
       for (const node of waiting) {
         let ready = true;
         for (const consumed of node.consumes) {
-          if (allProduced.has(consumed) && !producedSoFar.has(consumed)) {
+          if (allProvided.has(consumed) && !producedSoFar.has(consumed)) {
             ready = false;
             continue;
           }
@@ -173,7 +168,7 @@ export class DependencyTree<T> {
       const result = await fn(node.value);
       results.push(result);
 
-      node.produces.forEach(produced => producedSoFar.add(produced));
+      node.provides.forEach(produced => producedSoFar.add(produced));
       inFlight -= 1;
       await processMoreNodes();
     }
