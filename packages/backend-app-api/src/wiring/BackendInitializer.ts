@@ -107,6 +107,11 @@ export class BackendInitializer {
     }
 
     if (isServiceFactory(feature)) {
+      if (feature.service.id === coreServices.pluginMetadata.id) {
+        throw new Error(
+          `The ${coreServices.pluginMetadata.id} service cannot be overridden`,
+        );
+      }
       this.#serviceHolder.add(feature);
     } else if (isInternalBackendFeature(feature)) {
       if (feature.version !== 'v1') {
