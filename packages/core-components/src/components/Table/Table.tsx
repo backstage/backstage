@@ -22,7 +22,6 @@ import MTable, {
   MTableHeader,
   MTableToolbar,
   Options,
-  CircularProgress,
 } from '@material-table/core';
 import Box from '@material-ui/core/Box';
 import IconButton from '@material-ui/core/IconButton';
@@ -54,6 +53,7 @@ import React, {
 
 import { SelectProps } from '../Select/Select';
 import { Filter, Filters, SelectedFilters, Without } from './Filters';
+import CircularProgress from '@material-ui/core/CircularProgress';
 
 // Material-table is not using the standard icons available in in material-ui. https://github.com/mbrn/material-table/issues/51
 const tableIcons: Icons = {
@@ -475,7 +475,7 @@ export function Table<T extends object = {}>(props: TableProps<T>) {
     bodyProps => {
       if (initialContentLoading) {
         return (
-          <tbody>
+          <tbody data-testid="loading-indicator">
             <tr>
               <td colSpan={columnCount}>
                 <Box
