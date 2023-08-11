@@ -49,10 +49,10 @@ function toInternalServiceFactory<TService, TScope extends 'plugin' | 'root'>(
 }
 
 const pluginMetadataServiceFactory = createServiceFactory(
-  (options: { pluginId: string }) => ({
+  (options?: { pluginId: string }) => ({
     service: coreServices.pluginMetadata,
     deps: {},
-    factory: async () => ({ getId: () => options.pluginId }),
+    factory: async () => ({ getId: () => options?.pluginId! }),
   }),
 );
 

@@ -192,20 +192,6 @@ export function createServiceFactory<
   config: (options?: TOpts) => RootServiceFactoryConfig<TService, TImpl, TDeps>,
 ): (options?: TOpts) => ServiceFactory<TService, 'root'>;
 /**
- * Creates a root scoped service factory with required options.
- *
- * @public
- * @param config - The service factory configuration.
- */
-export function createServiceFactory<
-  TService,
-  TImpl extends TService,
-  TDeps extends { [name in string]: ServiceRef<unknown> },
-  TOpts extends object | undefined = undefined,
->(
-  config: (options: TOpts) => RootServiceFactoryConfig<TService, TImpl, TDeps>,
-): (options: TOpts) => ServiceFactory<TService, 'root'>;
-/**
  * Creates a plugin scoped service factory without options.
  *
  * @public
@@ -237,25 +223,6 @@ export function createServiceFactory<
     options?: TOpts,
   ) => PluginServiceFactoryConfig<TService, TContext, TImpl, TDeps>,
 ): (options?: TOpts) => ServiceFactory<TService, 'plugin'>;
-/**
- * Creates a plugin scoped service factory with required options.
- *
- * @public
- * @param config - The service factory configuration.
- */
-export function createServiceFactory<
-  TService,
-  TImpl extends TService,
-  TDeps extends { [name in string]: ServiceRef<unknown> },
-  TContext = undefined,
-  TOpts extends object | undefined = undefined,
->(
-  config:
-    | PluginServiceFactoryConfig<TService, TContext, TImpl, TDeps>
-    | ((
-        options: TOpts,
-      ) => PluginServiceFactoryConfig<TService, TContext, TImpl, TDeps>),
-): (options: TOpts) => ServiceFactory<TService, 'plugin'>;
 export function createServiceFactory<
   TService,
   TImpl extends TService,
