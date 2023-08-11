@@ -37,7 +37,10 @@ function decodeJwtPayload(token: string): Record<string, string> {
   let payload: unknown;
   try {
     payload = JSON.parse(
-      atob(payloadStr.replace(/-/g, '+').replace(/_/g, '/')),
+      Buffer.from(
+        payloadStr.replace(/-/g, '+').replace(/_/g, '/'),
+        'base64',
+      ).toString('utf8'),
     );
   } catch (e) {
     throw new Error('Invalid JWT token');
