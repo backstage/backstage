@@ -39,6 +39,7 @@ export type ActionContext<
     ref?: string;
   };
   signal?: AbortSignal;
+  each?: JsonObject;
 };
 
 // @public
