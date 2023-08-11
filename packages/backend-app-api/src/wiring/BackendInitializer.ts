@@ -216,8 +216,11 @@ export class BackendInitializer {
           const tree = DependencyTree.fromIterable(
             Array.from(modules).map(([id, { provides, consumes }]) => ({
               id,
-              provides: Array.from(provides).map(p => p.id),
-              consumes: Array.from(consumes).map(c => c.id),
+              // Relationships are reversed at this point since we're only interested in the extension points.
+              // If a modules provides extension point A we want it to be initialized AFTER all modules
+              // that depend on extension point A, so that they can provide their extensions.
+              consumes: Array.from(provides).map(p => p.id),
+              produces: Array.from(consumes).map(c => c.id),
             })),
           );
           const circular = tree.detectCircularDependency();
