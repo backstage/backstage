@@ -74,16 +74,22 @@ export const PlaylistEntitiesTable = ({
   const removeEntity = useCallback(
     async (_, entity: Entity | Entity[]) => {
       try {
-        const entityName = [entity]
-          .flat()
-          .map(item => item.metadata.title ?? item.metadata.name);
+        const entityArray = [entity].flat();
+        const entityNames = entityArray.map(
+          item => item.metadata.title ?? item.metadata.name,
+        );
         await playlistApi.removePlaylistEntities(
           playlistId,
           [entity].flat().map(stringifyEntityRef),
         );
         loadEntities();
+        const message =
+          entityNames.length === 1
+            ? `Removed entity '${entityNames[0]}'`
+            : `Removed entitity: ${entityNames.join(', ')}`;
+
         alertApi.post({
-          message: `Removed entity '${entityName}'`,
+          message,
           severity: 'success',
           display: 'transient',
         });
