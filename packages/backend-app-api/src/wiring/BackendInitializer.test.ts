@@ -294,4 +294,36 @@ describe('BackendInitializer', () => {
       "Circular dependency detected for modules of plugin 'test', 'modA' -> 'modB' -> 'modA'",
     );
   });
+
+  it('should reject modules that depend on extension points other plugins', async () => {
+    const init = new BackendInitializer(new ServiceRegistry(baseFactories));
+    const extA = createExtensionPoint<string>({ id: 'a' });
+    init.add(
+      createBackendPlugin({
+        pluginId: 'testA',
+        register(reg) {
+          reg.registerExtensionPoint(extA, 'a');
+          reg.registerInit({
+            deps: {},
+            async init() {},
+          });
+        },
+      })(),
+    );
+    init.add(
+      createBackendModule({
+        pluginId: 'testB',
+        moduleId: 'mod',
+        register(reg) {
+          reg.registerInit({
+            deps: { ext: extA },
+            async init() {},
+          });
+        },
+      })(),
+    );
+    await expect(init.start()).rejects.toThrow(
+      "Extension point registered for plugin 'testA' may not be used by module for plugin 'testB'",
+    );
+  });
 });
