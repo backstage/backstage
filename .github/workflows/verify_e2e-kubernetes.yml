@@ -4,7 +4,7 @@ on:
   pull_request:
     paths:
       - 'yarn.lock'
-      - '.github/workflows/verify_kubernetes.yml'
+      - '.github/workflows/verify_e2e-kubernetes.yml'
       - 'packages/backend-common/src/**'
 
 jobs:
