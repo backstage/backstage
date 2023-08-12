@@ -24,6 +24,8 @@ documentation:
   - docs/**/*
 microsite:
   - microsite/**/*
+storybook:
+  - storybook/**/*
 auth:
   - plugins/auth-backend/**/*
   - packages/core-app-api/src/apis/implementations/auth/**/*
