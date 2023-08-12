@@ -86,7 +86,7 @@ export const PlaylistEntitiesTable = ({
         const message =
           entityNames.length === 1
             ? `Removed entity '${entityNames[0]}'`
-            : `Removed entities: ${entityNames.join(', ')}`;
+            : `Removed entities: '${entityNames.join("', '")}'`;
 
         alertApi.post({
           message,
