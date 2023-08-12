@@ -27,6 +27,7 @@ describe('SonarqubeConfig', () => {
   const SONARQUBE_DEFAULT_INSTANCE_NAME = 'default';
   const DUMMY_SONAR_URL = 'https://sonarqube.example.com';
   const DUMMY_SONAR_APIKEY = '123456789abcdef0123456789abcedf012';
+
   const DUMMY_SIMPLE_OBJECT_FOR_DEFAULT_SONARQUBE_CONFIG = {
     name: SONARQUBE_DEFAULT_INSTANCE_NAME,
     baseUrl: DUMMY_SONAR_URL,
@@ -112,6 +113,7 @@ describe('SonarqubeConfig', () => {
         },
       ]);
     });
+
     it('Throw an error if both a named default config and top level config', async () => {
       expect(() =>
         SonarqubeConfig.fromConfig(
@@ -299,6 +301,46 @@ describe('DefaultSonarqubeInfoProvider', () => {
         baseUrl: 'https://sonarqube-other.example.com',
       });
     });
+
+    it('Provide external base url for simple config', async () => {
+      const provider = configureProvider({
+        sonarqube: {
+          baseUrl: 'https://sonarqube-internal.example.com',
+          externalBaseUrl: 'https://sonarqube.example.com',
+          apiKey: '123456789abcdef0123456789abcedf012',
+        },
+      });
+
+      expect(provider.getBaseUrl()).toEqual({
+        baseUrl: 'https://sonarqube-internal.example.com',
+        externalBaseUrl: 'https://sonarqube.example.com',
+      });
+    });
+
+    it('Provide external base url for named config', async () => {
+      const provider = configureProvider({
+        sonarqube: {
+          instances: [
+            {
+              name: 'default',
+              baseUrl: 'https://sonarqube.example.com',
+              apiKey: '123456789abcdef0123456789abcedf012',
+            },
+            {
+              name: 'other',
+              baseUrl: 'https://sonarqube-other-internal.example.com',
+              externalBaseUrl: 'https://sonarqube-other.example.com',
+              apiKey: '123456789abcdef0123456789abcedf012',
+            },
+          ],
+        },
+      });
+
+      expect(provider.getBaseUrl({ instanceName: 'other' })).toEqual({
+        baseUrl: 'https://sonarqube-other-internal.example.com',
+        externalBaseUrl: 'https://sonarqube-other.example.com',
+      });
+    });
   });
 
   describe('getFindings', () => {
@@ -385,6 +427,7 @@ describe('DefaultSonarqubeInfoProvider', () => {
         apiKey: DUMMY_API_KEY,
       },
     };
+
     it('Provide findings when everything is ok', async () => {
       setupHandlers();
       const provider = configureProvider(DUMMY_SIMPLE_CONFIG_FOR_PROVIDER);
