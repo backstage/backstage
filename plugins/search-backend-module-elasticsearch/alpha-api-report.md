@@ -4,6 +4,17 @@
 
 ```ts
 import { BackendFeature } from '@backstage/backend-plugin-api';
+import { ElasticSearchQueryTranslator } from '@backstage/plugin-search-backend-module-elasticsearch';
+import { ExtensionPoint } from '@backstage/backend-plugin-api';
+
+// @alpha (undocumented)
+export interface ElasticSearchQueryTranslatorExtensionPoint {
+  // (undocumented)
+  setTranslator(translator: ElasticSearchQueryTranslator): void;
+}
+
+// @alpha
+export const elasticsearchTranslatorExtensionPoint: ExtensionPoint<ElasticSearchQueryTranslatorExtensionPoint>;
 
 // @alpha
 export const searchModuleElasticsearchEngine: () => BackendFeature;
