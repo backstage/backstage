@@ -56,7 +56,7 @@ describe('PodDrawer', () => {
                   type: 'some-error',
                   severity: 10,
                   message: 'some error message',
-                  occuranceCount: 1,
+                  occurrenceCount: 1,
                   sourceRef: {
                     name: 'some-pod',
                     namespace: 'some-namespace',

@@ -51,7 +51,7 @@ export interface DetectedError {
   message: string;
   proposedFix?: ProposedFix;
   sourceRef: ResourceRef;
-  occuranceCount: number;
+  occurrenceCount: number;
 }
 
 export type ProposedFix = LogSolution | DocsSolution | EventsSolution;
