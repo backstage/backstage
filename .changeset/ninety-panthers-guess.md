@@ -2,4 +2,4 @@
 '@backstage/plugin-catalog-backend-module-github': patch
 ---
 
-changed visibilityfilter and visibility to lowercase to prevent case-sensitive error.
+Fixed a bug where the visibility filter was case sensitive and casting was inconsistent. 
