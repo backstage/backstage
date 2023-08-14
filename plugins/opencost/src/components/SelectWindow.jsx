@@ -16,13 +16,13 @@
 
 import React, { useEffect, useState } from 'react';
 import { makeStyles } from '@material-ui/styles';
-import { endOfDay, startOfDay } from 'date-fns';
+import { endOfDay, startOfDay } from '@date-io/luxon';
 import {
   MuiPickersUtilsProvider,
   KeyboardDatePicker,
 } from '@material-ui/pickers';
 import Button from '@material-ui/core/Button';
-import DateFnsUtils from '@date-io/date-fns';
+import LuxonUtils from '@date-io/luxon';
 import FormControl from '@material-ui/core/FormControl';
 import Link from '@material-ui/core/Link';
 import Popover from '@material-ui/core/Popover';
@@ -141,7 +141,7 @@ const SelectWindow = ({ windowOptions, window, setWindow }) => {
       >
         <div className={classes.dateContainer}>
           <div className={classes.dateContainerColumn}>
-            <MuiPickersUtilsProvider utils={DateFnsUtils}>
+            <MuiPickersUtilsProvider utils={LuxonUtils}>
               <KeyboardDatePicker
                 style={{ width: '144px' }}
                 autoOk
