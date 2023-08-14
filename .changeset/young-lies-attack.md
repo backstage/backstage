@@ -11,7 +11,7 @@
 const backend = createBackend({ services: [myCustomServiceFactory] });
 ```
 
-In order to pass custom service factories use the `add` method:
+To instead pass the service factory via `backend.add(...)`:
 
 ```ts
 const backend = createBackend();
