@@ -22,6 +22,7 @@ import type {
   PaletteOptions as MuiPaletteOptions,
   Palette as MuiPalette,
 } from '@material-ui/core/styles/createPalette';
+import { CSSProperties } from '@material-ui/styles/withStyles';
 import {
   BackstagePaletteAdditions,
   BackstageThemeAdditions,
@@ -103,4 +104,22 @@ declare module '@material-ui/core/styles/createTheme' {
   interface Theme extends BackstageThemeAdditions {}
 
   interface ThemeOptions extends Partial<BackstageThemeAdditions> {}
+}
+
+// This fixes as type incompatibility that is caused by a variance in the declaration of
+// the font weight types in the MUI v4 theme typography and styles such as through `makeStyles()`.
+// The font weight in styles are defined to be `CSSProperties["fontWeight"]` from `csstype`, while the
+// front weight in the typography are defined to be `React.CSSProperties["fontWeight"]` from `@types/react`.
+//
+// This is usually not an issue, but with a bad combination of `csstype` version and the wrong Yarn workspace
+// hoisting, you can end up in a case where font weights from the theme are not assignable as styles.
+//
+// This makes sure that the font weights in the theme are compatible with the styles.
+declare module '@material-ui/core/styles/createTypography' {
+  interface Typography {
+    fontWeightLight: CSSProperties['fontWeight'];
+    fontWeightRegular: CSSProperties['fontWeight'];
+    fontWeightMedium: CSSProperties['fontWeight'];
+    fontWeightBold: CSSProperties['fontWeight'];
+  }
 }
