@@ -6,6 +6,9 @@ plugins:
     - id: trunk
       ref: v1.1.1
       uri: https://github.com/trunk-io/plugins
+merge:
+  required_statuses:
+    - test
 lint:
   enabled:
     - actionlint@1.6.25
