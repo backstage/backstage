@@ -3653,7 +3653,7 @@ __metadata:
     msw: ^1.0.0
     node-fetch: ^2.6.7
     node-libs-browser: ^2.2.1
-    nodemon: ^2.0.2
+    nodemon: ^3.0.1
     npm-packlist: ^5.0.0
     ora: ^5.3.0
     postcss: ^8.1.0
@@ -4017,7 +4017,7 @@ __metadata:
     handlebars: ^4.7.3
     inquirer: ^8.2.0
     mock-fs: ^5.1.1
-    nodemon: ^2.0.2
+    nodemon: ^3.0.1
     ora: ^5.3.0
     recursive-readdir: ^2.2.2
     ts-node: ^10.0.0
@@ -16257,7 +16257,7 @@ __metadata:
     fs-extra: ^10.0.1
     global-agent: ^3.0.0
     http-proxy: ^1.18.1
-    nodemon: ^2.0.2
+    nodemon: ^3.0.1
     react-dev-utils: ^12.0.0-next.60
     serve-handler: ^6.1.3
     techdocs-cli-embedded-app: "link:../techdocs-cli-embedded-app"
@@ -23664,7 +23664,7 @@ __metadata:
     cross-fetch: ^3.1.5
     fs-extra: 10.1.0
     handlebars: ^4.7.3
-    nodemon: ^2.0.2
+    nodemon: ^3.0.1
     pgtools: ^1.0.0
     puppeteer: ^17.0.0
     tree-kill: ^1.2.2
@@ -33269,23 +33269,23 @@ __metadata:
   languageName: node
   linkType: hard
 
-"nodemon@npm:^2.0.2":
-  version: 2.0.22
-  resolution: "nodemon@npm:2.0.22"
+"nodemon@npm:^3.0.1":
+  version: 3.0.1
+  resolution: "nodemon@npm:3.0.1"
   dependencies:
     chokidar: ^3.5.2
     debug: ^3.2.7
     ignore-by-default: ^1.0.1
     minimatch: ^3.1.2
     pstree.remy: ^1.1.8
-    semver: ^5.7.1
-    simple-update-notifier: ^1.0.7
+    semver: ^7.5.3
+    simple-update-notifier: ^2.0.0
     supports-color: ^5.5.0
     touch: ^3.1.0
     undefsafe: ^2.0.5
   bin:
     nodemon: bin/nodemon.js
-  checksum: 9c987e139748f5b5c480c6c9080bdc97304ee7d29172b7b3da1a7db590b1323ad57b96346304e9b522b0e445c336dc393ccd3f9f45c73b20d476d2347890dcd0
+  checksum: 6a5d81855760d6617049eccce10ccf02bddb482dab13ceea5280ae595ec7004eee13e7b934368e3f46c37fe4d970342a8c38c99cae7e93e4d7a3ed1c1ecb6acf
   languageName: node
   linkType: hard
 
@@ -38242,7 +38242,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"semver@npm:2 || 3 || 4 || 5, semver@npm:^5.6.0, semver@npm:^5.7.1":
+"semver@npm:2 || 3 || 4 || 5, semver@npm:^5.6.0":
   version: 5.7.2
   resolution: "semver@npm:5.7.2"
   bin:
@@ -38251,7 +38251,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"semver@npm:7.0.0, semver@npm:~7.0.0":
+"semver@npm:7.0.0":
   version: 7.0.0
   resolution: "semver@npm:7.0.0"
   bin:
@@ -38639,12 +38639,12 @@ __metadata:
   languageName: node
   linkType: hard
 
-"simple-update-notifier@npm:^1.0.7":
-  version: 1.0.7
-  resolution: "simple-update-notifier@npm:1.0.7"
+"simple-update-notifier@npm:^2.0.0":
+  version: 2.0.0
+  resolution: "simple-update-notifier@npm:2.0.0"
   dependencies:
-    semver: ~7.0.0
-  checksum: aaadc1f158ad5101b363d1c7aed1f30fc1cac59a760aa31702633e0e6fe423348f07d0e78185aef0aad29130a7b7f0f188c21c7bc7353f897a0ea3682e051a70
+    semver: ^7.5.3
+  checksum: 9ba00d38ce6a29682f64a46213834e4eb01634c2f52c813a9a7b8873ca49cdbb703696f3290f3b27dc067de6d9418b0b84bef22c3eb074acf352529b2d6c27fd
   languageName: node
   linkType: hard
 
