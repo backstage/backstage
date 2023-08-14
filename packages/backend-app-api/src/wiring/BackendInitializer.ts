@@ -26,8 +26,9 @@ import { EnumerableServiceHolder, ServiceOrExtensionPoint } from './types';
 // Direct internal import to avoid duplication
 // eslint-disable-next-line @backstage/no-forbidden-package-imports
 import { InternalBackendFeature } from '@backstage/backend-plugin-api/src/wiring/types';
-import { ForwardedError } from '@backstage/errors';
+import { ForwardedError, ConflictError } from '@backstage/errors';
 import { featureDiscoveryServiceRef } from '@backstage/backend-plugin-api/alpha';
+import { DependencyGraph } from '../lib/DependencyGraph';
 
 export interface BackendRegisterInit {
   consumes: Set<ServiceOrExtensionPoint>;
@@ -161,7 +162,7 @@ export class BackendInitializer {
       for (const r of feature.getRegistrations()) {
         const provides = new Set<ExtensionPoint<unknown>>();
 
-        if (r.type === 'plugin') {
+        if (r.type === 'plugin' || r.type === 'module') {
           for (const [extRef, extImpl] of r.extensionPoints) {
             if (this.#extensionPoints.has(extRef)) {
               throw new Error(
@@ -210,21 +211,41 @@ export class BackendInitializer {
     await Promise.all(
       allPluginIds.map(async pluginId => {
         // Modules are initialized before plugins, so that they can provide extension to the plugin
-        const modules = moduleInits.get(pluginId) ?? [];
-        await Promise.all(
-          Array.from(modules).map(async ([moduleId, moduleInit]) => {
-            const moduleDeps = await this.#getInitDeps(
-              moduleInit.init.deps,
-              pluginId,
+        const modules = moduleInits.get(pluginId);
+        if (modules) {
+          const tree = DependencyGraph.fromIterable(
+            Array.from(modules).map(([moduleId, moduleInit]) => ({
+              value: { moduleId, moduleInit },
+              // Relationships are reversed at this point since we're only interested in the extension points.
+              // If a modules provides extension point A we want it to be initialized AFTER all modules
+              // that depend on extension point A, so that they can provide their extensions.
+              consumes: Array.from(moduleInit.provides).map(p => p.id),
+              provides: Array.from(moduleInit.consumes).map(c => c.id),
+            })),
+          );
+          const circular = tree.detectCircularDependency();
+          if (circular) {
+            throw new ConflictError(
+              `Circular dependency detected for modules of plugin '${pluginId}', ${circular
+                .map(({ moduleId }) => `'${moduleId}'`)
+                .join(' -> ')}`,
             );
-            await moduleInit.init.func(moduleDeps).catch(error => {
-              throw new ForwardedError(
-                `Module '${moduleId}' for plugin '${pluginId}' startup failed`,
-                error,
+          }
+          await tree.parallelTopologicalTraversal(
+            async ({ moduleId, moduleInit }) => {
+              const moduleDeps = await this.#getInitDeps(
+                moduleInit.init.deps,
+                pluginId,
               );
-            });
-          }),
-        );
+              await moduleInit.init.func(moduleDeps).catch(error => {
+                throw new ForwardedError(
+                  `Module '${moduleId}' for plugin '${pluginId}' startup failed`,
+                  error,
+                );
+              });
+            },
+          );
+        }
 
         // Once all modules have been initialized, we can initialize the plugin itself
         const pluginInit = pluginInits.get(pluginId);

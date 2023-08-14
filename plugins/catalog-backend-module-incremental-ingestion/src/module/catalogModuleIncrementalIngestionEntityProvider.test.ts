@@ -15,12 +15,18 @@
  */
 
 import { getVoidLogger } from '@backstage/backend-common';
-import { coreServices } from '@backstage/backend-plugin-api';
+import {
+  coreServices,
+  createBackendModule,
+} from '@backstage/backend-plugin-api';
 import { startTestBackend } from '@backstage/backend-test-utils';
 import { ConfigReader } from '@backstage/config';
 import { catalogProcessingExtensionPoint } from '@backstage/plugin-catalog-node/alpha';
 import { IncrementalEntityProvider } from '../types';
-import { catalogModuleIncrementalIngestionEntityProvider } from './catalogModuleIncrementalIngestionEntityProvider';
+import {
+  catalogModuleIncrementalIngestionEntityProvider,
+  incrementalIngestionProvidersExtensionPoint,
+} from './catalogModuleIncrementalIngestionEntityProvider';
 
 describe('catalogModuleIncrementalIngestionEntityProvider', () => {
   it('should register provider at the catalog extension point', async () => {
@@ -57,18 +63,26 @@ describe('catalogModuleIncrementalIngestionEntityProvider', () => {
         [coreServices.scheduler, scheduler],
       ],
       features: [
-        catalogModuleIncrementalIngestionEntityProvider({
-          providers: [
-            {
-              provider: provider1,
-              options: {
-                burstInterval: { seconds: 1 },
-                burstLength: { seconds: 1 },
-                restLength: { seconds: 1 },
+        catalogModuleIncrementalIngestionEntityProvider(),
+        createBackendModule({
+          pluginId: 'catalog',
+          moduleId: 'incrementalTest',
+          register(env) {
+            env.registerInit({
+              deps: { extension: incrementalIngestionProvidersExtensionPoint },
+              async init({ extension }) {
+                extension.addProvider({
+                  provider: provider1,
+                  options: {
+                    burstInterval: { seconds: 1 },
+                    burstLength: { seconds: 1 },
+                    restLength: { seconds: 1 },
+                  },
+                });
               },
-            },
-          ],
-        }),
+            });
+          },
+        })(),
       ],
     });
 

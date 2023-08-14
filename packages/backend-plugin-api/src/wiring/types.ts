@@ -59,6 +59,10 @@ export interface BackendPluginRegistrationPoints {
  * @public
  */
 export interface BackendModuleRegistrationPoints {
+  registerExtensionPoint<TExtensionPoint>(
+    ref: ExtensionPoint<TExtensionPoint>,
+    impl: TExtensionPoint,
+  ): void;
   registerInit<Deps extends { [name in string]: unknown }>(options: {
     deps: {
       [name in keyof Deps]: ServiceRef<Deps[name]> | ExtensionPoint<Deps[name]>;
@@ -105,6 +109,7 @@ export interface InternalBackendModuleRegistration {
   pluginId: string;
   moduleId: string;
   type: 'module';
+  extensionPoints: Array<readonly [ExtensionPoint<unknown>, unknown]>;
   init: {
     deps: Record<string, ServiceRef<unknown> | ExtensionPoint<unknown>>;
     func(deps: Record<string, unknown>): Promise<void>;

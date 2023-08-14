@@ -20,10 +20,15 @@ import {
   coreServices,
   createBackendPlugin,
   createBackendModule,
+  createExtensionPoint,
 } from '@backstage/backend-plugin-api';
 import { BackendInitializer } from './BackendInitializer';
 import { ServiceRegistry } from './ServiceRegistry';
-import { rootLifecycleServiceFactory } from '../services/implementations';
+import {
+  lifecycleServiceFactory,
+  loggerServiceFactory,
+  rootLifecycleServiceFactory,
+} from '../services/implementations';
 
 const rootRef = createServiceRef<{ x: number }>({
   id: '1',
@@ -43,6 +48,17 @@ class MockLogger {
     return this;
   }
 }
+
+const baseFactories = [
+  lifecycleServiceFactory(),
+  rootLifecycleServiceFactory(),
+  createServiceFactory({
+    service: coreServices.rootLogger,
+    deps: {},
+    factory: () => new MockLogger(),
+  })(),
+  loggerServiceFactory(),
+];
 
 describe('BackendInitializer', () => {
   it('should initialize root scoped services', async () => {
@@ -73,6 +89,65 @@ describe('BackendInitializer', () => {
 
     expect(rootFactory).toHaveBeenCalled();
     expect(pluginFactory).not.toHaveBeenCalled();
+  });
+
+  it('should initialize modules with extension points', async () => {
+    expect.assertions(3);
+
+    const extensionPoint = createExtensionPoint<{ values: string[] }>({
+      id: 'a',
+    });
+    const init = new BackendInitializer(new ServiceRegistry(baseFactories));
+
+    init.add(
+      createBackendModule({
+        pluginId: 'test',
+        moduleId: 'modA',
+        register(reg) {
+          reg.registerInit({
+            deps: { extension: extensionPoint },
+            async init({ extension }) {
+              expect(extension.values).toEqual(['b']);
+              extension.values.push('a');
+            },
+          });
+        },
+      })(),
+    );
+
+    init.add(
+      createBackendModule({
+        pluginId: 'test',
+        moduleId: 'modB',
+        register(reg) {
+          const values = ['b'];
+          reg.registerExtensionPoint(extensionPoint, { values });
+          reg.registerInit({
+            deps: {},
+            async init() {
+              expect(values).toEqual(['b', 'a', 'c']);
+            },
+          });
+        },
+      })(),
+    );
+
+    init.add(
+      createBackendModule({
+        pluginId: 'test',
+        moduleId: 'modC',
+        register(reg) {
+          reg.registerInit({
+            deps: { extension: extensionPoint },
+            async init({ extension }) {
+              expect(extension.values).toEqual(['b', 'a']);
+              extension.values.push('c');
+            },
+          });
+        },
+      })(),
+    );
+    await init.start();
   });
 
   it('should forward errors when plugins fail to start', async () => {
@@ -173,6 +248,50 @@ describe('BackendInitializer', () => {
     );
     await expect(init.start()).rejects.toThrow(
       "Module 'mod' for plugin 'test' is already registered",
+    );
+  });
+
+  it('should reject modules with circular dependencies', async () => {
+    const extA = createExtensionPoint<string>({ id: 'a' });
+    const extB = createExtensionPoint<string>({ id: 'b' });
+    const init = new BackendInitializer(
+      new ServiceRegistry([
+        rootLifecycleServiceFactory(),
+        createServiceFactory({
+          service: coreServices.rootLogger,
+          deps: {},
+          factory: () => new MockLogger(),
+        })(),
+      ]),
+    );
+    init.add(
+      createBackendModule({
+        pluginId: 'test',
+        moduleId: 'modA',
+        register(reg) {
+          reg.registerExtensionPoint(extA, 'a');
+          reg.registerInit({
+            deps: { ext: extB },
+            async init() {},
+          });
+        },
+      })(),
+    );
+    init.add(
+      createBackendModule({
+        pluginId: 'test',
+        moduleId: 'modB',
+        register(reg) {
+          reg.registerExtensionPoint(extB, 'b');
+          reg.registerInit({
+            deps: { ext: extA },
+            async init() {},
+          });
+        },
+      })(),
+    );
+    await expect(init.start()).rejects.toThrow(
+      "Circular dependency detected for modules of plugin 'test', 'modA' -> 'modB' -> 'modA'",
     );
   });
 });

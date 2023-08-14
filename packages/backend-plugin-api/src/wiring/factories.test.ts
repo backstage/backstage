@@ -149,6 +149,7 @@ describe('createBackendModule', () => {
         type: 'module',
         pluginId: 'x',
         moduleId: 'y',
+        extensionPoints: [],
         init: {
           deps: expect.any(Object),
           func: expect.any(Function),
