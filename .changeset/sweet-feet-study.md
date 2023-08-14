@@ -2,4 +2,4 @@
 '@backstage/plugin-linguist-backend': patch
 ---
 
-Breaking change for the alpha export plugin options from exported `linguistPlugin()` in favour of static config.
+**BREAKING**: Removed the alpha export plugin options from exported `linguistPlugin()` (used by the new backend system) in favour of static config.
