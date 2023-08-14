@@ -1,19 +1,19 @@
 #!/bin/bash
 
-DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" >/dev/null 2>&1 && pwd )"
+DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" >/dev/null 2>&1 && pwd)"
 
-cd "$DIR"
+cd "${DIR}" || exit
 
 if [[ ! -f idp-public-cert.pem ]]; then
-  echo "Generating new SAML Certificates"
-  openssl req \
-    -x509 \
-    -newkey rsa:1024 \
-    -days 3650 \
-    -nodes \
-    -subj '/CN=localhost' \
-    -keyout "idp-private-key.pem" \
-    -out "idp-public-cert.pem"
+        echo "Generating new SAML Certificates"
+        openssl req \
+                -x509 \
+                -newkey rsa:1024 \
+                -days 3650 \
+                -nodes \
+                -subj '/CN=localhost' \
+                -keyout "idp-private-key.pem" \
+                -out "idp-public-cert.pem"
 fi
 
 echo "Downloading and starting SAML-IdP"

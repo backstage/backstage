@@ -16,10 +16,10 @@
 
 set -e
 
-SCRIPT_DIR=$(dirname $0)
+SCRIPT_DIR=$(dirname "$0")
 PLUGIN_DIR="${SCRIPT_DIR}/.."
 
 yarn --cwd "${PLUGIN_DIR}" openapi-generator-cli generate --generator-key backstage
-rm -d "${PLUGIN_DIR}/src/apis"  # empty dir or fails
+rm -d "${PLUGIN_DIR}/src/apis" # empty dir or fails
 "${SCRIPT_DIR}"/adjust-models.js
 yarn run -T prettier --check . -w
