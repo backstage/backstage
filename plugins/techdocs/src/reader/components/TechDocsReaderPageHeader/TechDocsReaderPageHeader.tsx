@@ -96,7 +96,7 @@ export const TechDocsReaderPageHeader = (
     });
   }, [metadata, setTitle, setSubtitle]);
 
-  const appTitle = configApi.getOptional('app.title') || 'Backstage';
+  const appTitle = configApi.getOptionalString('app.title') || 'Backstage';
   const tabTitle = [title, subtitle, appTitle].filter(Boolean).join(' | ');
 
   const { locationMetadata, spec } = entityMetadata || {};
@@ -133,7 +133,9 @@ export const TechDocsReaderPageHeader = (
           }
         />
       )}
-      {lifecycle ? <HeaderLabel label="Lifecycle" value={lifecycle} /> : null}
+      {lifecycle ? (
+        <HeaderLabel label="Lifecycle" value={String(lifecycle ?? '')} />
+      ) : null}
       {locationMetadata &&
       locationMetadata.type !== 'dir' &&
       locationMetadata.type !== 'file' ? (

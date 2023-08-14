@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { useEntity } from '@backstage/plugin-catalog-react';
+import { humanizeEntityRef, useEntity } from '@backstage/plugin-catalog-react';
 import {
   Box,
   Card,
@@ -37,6 +37,7 @@ import {
   TableColumn,
 } from '@backstage/core-components';
 import { useApi } from '@backstage/core-plugin-api';
+import { stringifyEntityRef } from '@backstage/catalog-model';
 
 type FileStructureObject = Record<string, any>;
 
@@ -173,7 +174,9 @@ export const FileExplorer = () => {
   }
   if (!value) {
     return (
-      <Alert severity="warning">No code coverage found for ${entity}</Alert>
+      <Alert severity="warning">
+        No code coverage found for ${humanizeEntityRef(entity)}
+      </Alert>
     );
   }
 

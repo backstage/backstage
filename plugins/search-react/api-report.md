@@ -11,7 +11,6 @@ import { AutocompleteProps } from '@material-ui/lab';
 import { Extension } from '@backstage/core-plugin-api';
 import { ForwardRefExoticComponent } from 'react';
 import { JsonObject } from '@backstage/types';
-import { JsonValue } from '@backstage/types';
 import { LinkProps } from '@backstage/core-components';
 import { ListItemProps } from '@material-ui/core';
 import { ListItemTextProps } from '@material-ui/core';
@@ -60,6 +59,15 @@ export type DefaultResultListItemProps = {
   lineClamp?: number;
   toggleModal?: () => void;
 };
+
+// @public
+export type FilterOption =
+  | string
+  | number
+  | (Record<PropertyKey, string> & {
+      value: string;
+      label: string;
+    });
 
 // @public (undocumented)
 export const HighlightedSearchResultText: (
@@ -302,8 +310,8 @@ export type SearchResultContextProps = {
 };
 
 // @public
-export function SearchResultGroup<FilterOption>(
-  props: SearchResultGroupProps<FilterOption>,
+export function SearchResultGroup<T extends FilterOption>(
+  props: SearchResultGroupProps<T>,
 ): React_2.JSX.Element;
 
 // @public
@@ -314,23 +322,23 @@ export const SearchResultGroupFilterFieldLayout: (
 // @public
 export type SearchResultGroupFilterFieldLayoutProps = PropsWithChildren<{
   label: string;
-  value?: JsonValue;
+  value?: string;
   onDelete: () => void;
 }>;
 
 // @public
 export type SearchResultGroupFilterFieldPropsWith<T> = T &
   SearchResultGroupFilterFieldLayoutProps & {
-    onChange: (value: JsonValue) => void;
+    onChange: (e: string) => void;
   };
 
 // @public
-export function SearchResultGroupLayout<FilterOption>(
-  props: SearchResultGroupLayoutProps<FilterOption>,
-): React_2.JSX.Element;
+export function SearchResultGroupLayout<T extends FilterOption>(
+  props: SearchResultGroupLayoutProps<T>,
+): JSX.Element | null;
 
 // @public
-export type SearchResultGroupLayoutProps<FilterOption> = ListProps & {
+export type SearchResultGroupLayoutProps<T extends FilterOption> = ListProps & {
   error?: Error;
   loading?: boolean;
   icon: JSX.Element;
@@ -338,11 +346,11 @@ export type SearchResultGroupLayoutProps<FilterOption> = ListProps & {
   titleProps?: Partial<TypographyProps>;
   link?: ReactNode;
   linkProps?: Partial<LinkProps>;
-  filterOptions?: FilterOption[];
+  filterOptions?: T[];
   renderFilterOption?: (
-    value: FilterOption,
+    value: T,
     index: number,
-    array: FilterOption[],
+    array: T[],
   ) => JSX.Element | null;
   filterFields?: string[];
   renderFilterField?: (key: string) => JSX.Element | null;
@@ -357,12 +365,12 @@ export type SearchResultGroupLayoutProps<FilterOption> = ListProps & {
 };
 
 // @public
-export type SearchResultGroupProps<FilterOption> = Pick<
+export type SearchResultGroupProps<T extends FilterOption> = Pick<
   SearchResultStateProps,
   'query'
 > &
   Omit<
-    SearchResultGroupLayoutProps<FilterOption>,
+    SearchResultGroupLayoutProps<T>,
     'loading' | 'error' | 'resultItems' | 'filterFields'
   >;
 

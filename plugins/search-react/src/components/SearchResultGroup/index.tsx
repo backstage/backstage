@@ -29,4 +29,5 @@ export type {
   SearchResultGroupFilterFieldLayoutProps,
   SearchResultGroupTextFilterFieldProps,
   SearchResultGroupSelectFilterFieldProps,
+  FilterOption,
 } from './SearchResultGroup';
