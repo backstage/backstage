@@ -109,6 +109,29 @@ describe('DependencyGraph', () => {
       ).toEqual([{ value: '1', unsatisfied: ['a'] }]);
     });
 
+    it('should handle circular dependencies', async () => {
+      expect(
+        DependencyGraph.fromMap({
+          1: { consumes: ['a'], provides: ['a'] },
+        }).findUnsatisfiedDeps(),
+      ).toEqual([]);
+
+      expect(
+        DependencyGraph.fromMap({
+          1: { consumes: ['a'], provides: ['b'] },
+          2: { consumes: ['b'], provides: ['a'] },
+        }).findUnsatisfiedDeps(),
+      ).toEqual([]);
+
+      expect(
+        DependencyGraph.fromMap({
+          1: { consumes: ['a'] },
+          2: { consumes: ['b'], provides: ['c'] },
+          3: { consumes: ['c'], provides: ['a', 'b'] },
+        }).findUnsatisfiedDeps(),
+      ).toEqual([]);
+    });
+
     it('should find multiple unsatisfied deps for one node', async () => {
       expect(
         DependencyGraph.fromMap({
