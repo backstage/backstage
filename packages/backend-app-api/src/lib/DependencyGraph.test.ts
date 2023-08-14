@@ -26,165 +26,197 @@ describe('DependencyGraph', () => {
     ).resolves.toEqual([]);
   });
 
-  it('should detect circular dependencies', () => {
-    expect(
-      DependencyGraph.fromMap({
-        1: {},
-        2: {},
-        3: {},
-        4: {},
-      }).detectCircularDependency(),
-    ).toBeUndefined();
+  describe('detectCircularDependency', () => {
+    it('should return undefined with not deps', () => {
+      expect(
+        DependencyGraph.fromMap({
+          1: {},
+          2: {},
+          3: {},
+          4: {},
+        }).detectCircularDependency(),
+      ).toBeUndefined();
+    });
 
-    expect(
-      DependencyGraph.fromMap({
-        1: { provides: ['a'] },
-        2: { consumes: ['a'], provides: ['b', 'c'] },
-        3: { consumes: ['b'] },
-        4: { consumes: ['c'] },
-      }).detectCircularDependency(),
-    ).toBeUndefined();
+    it('should return undefined with no circular deps', async () => {
+      expect(
+        DependencyGraph.fromMap({
+          1: { provides: ['a'] },
+          2: { consumes: ['a'], provides: ['b', 'c'] },
+          3: { consumes: ['b'] },
+          4: { consumes: ['c'] },
+        }).detectCircularDependency(),
+      ).toBeUndefined();
+    });
 
-    expect(
-      DependencyGraph.fromMap({
-        1: { provides: ['a'], consumes: ['a'] },
-      }).detectCircularDependency(),
-    ).toEqual(['1', '1']);
+    it('should detect an immediate circular dep', async () => {
+      expect(
+        DependencyGraph.fromMap({
+          1: { provides: ['a'], consumes: ['a'] },
+        }).detectCircularDependency(),
+      ).toEqual(['1', '1']);
+    });
 
-    expect(
-      DependencyGraph.fromMap({
-        1: { provides: ['a'], consumes: ['b'] },
-        2: { provides: ['b'], consumes: ['a'] },
-      }).detectCircularDependency(),
-    ).toEqual(['1', '2', '1']);
+    it('should detect a small circular dep', async () => {
+      expect(
+        DependencyGraph.fromMap({
+          1: { provides: ['a'], consumes: ['b'] },
+          2: { provides: ['b'], consumes: ['a'] },
+        }).detectCircularDependency(),
+      ).toEqual(['1', '2', '1']);
+    });
 
-    expect(
-      DependencyGraph.fromMap({
-        1: { provides: ['a'] },
-        2: { provides: ['b'], consumes: ['a', 'e'] },
-        3: { provides: ['c'], consumes: ['b'] },
-        4: { provides: ['d', 'e'], consumes: ['c', 'a'] },
-      }).detectCircularDependency(),
-    ).toEqual(['2', '3', '4', '2']);
+    it('should detect a larger distant circular dep', async () => {
+      expect(
+        DependencyGraph.fromMap({
+          1: { provides: ['a'] },
+          2: { provides: ['b'], consumes: ['a', 'e'] },
+          3: { provides: ['c'], consumes: ['b'] },
+          4: { provides: ['d', 'e'], consumes: ['c', 'a'] },
+        }).detectCircularDependency(),
+      ).toEqual(['2', '3', '4', '2']);
+    });
   });
 
-  it('should find unsatisfied dependencies', () => {
-    expect(
-      DependencyGraph.fromMap({
-        1: {},
-        2: {},
-        3: {},
-        4: {},
-      }).findUnsatisfiedDeps(),
-    ).toEqual([]);
+  describe('findUnsatisfiedDeps', () => {
+    it('should return nothing with no deps', () => {
+      expect(
+        DependencyGraph.fromMap({
+          1: {},
+          2: {},
+          3: {},
+          4: {},
+        }).findUnsatisfiedDeps(),
+      ).toEqual([]);
+    });
 
-    expect(
-      DependencyGraph.fromMap({
-        1: { provides: ['a'] },
-        2: { consumes: ['a'], provides: ['b', 'c'] },
-        3: { consumes: ['b'] },
-        4: { consumes: ['c'] },
-      }).findUnsatisfiedDeps(),
-    ).toEqual([]);
+    it('should return nothing when all deps are satisfied', async () => {
+      expect(
+        DependencyGraph.fromMap({
+          1: { provides: ['a'] },
+          2: { consumes: ['a'], provides: ['b', 'c'] },
+          3: { consumes: ['b'] },
+          4: { consumes: ['c'] },
+        }).findUnsatisfiedDeps(),
+      ).toEqual([]);
+    });
 
-    expect(
-      DependencyGraph.fromMap({
-        1: { consumes: ['a'] },
-      }).findUnsatisfiedDeps(),
-    ).toEqual([{ value: '1', unsatisfied: ['a'] }]);
+    it('should find a single unsatisfied dep', async () => {
+      expect(
+        DependencyGraph.fromMap({
+          1: { consumes: ['a'] },
+        }).findUnsatisfiedDeps(),
+      ).toEqual([{ value: '1', unsatisfied: ['a'] }]);
+    });
 
-    expect(
-      DependencyGraph.fromMap({
-        1: { provides: ['a'], consumes: ['b'] },
-        2: { provides: ['b'], consumes: ['a', 'd', 'e'] },
-      }).findUnsatisfiedDeps(),
-    ).toEqual([{ value: '2', unsatisfied: ['d', 'e'] }]);
+    it('should find multiple unsatisfied deps for one node', async () => {
+      expect(
+        DependencyGraph.fromMap({
+          1: { provides: ['a'], consumes: ['b'] },
+          2: { provides: ['b'], consumes: ['a', 'd', 'e'] },
+        }).findUnsatisfiedDeps(),
+      ).toEqual([{ value: '2', unsatisfied: ['d', 'e'] }]);
+    });
 
-    expect(
-      DependencyGraph.fromMap({
-        1: { provides: ['a'] },
-        2: { provides: ['b'], consumes: ['a', 'd', 'e'] },
-        3: { provides: [], consumes: ['b'] },
-        4: { provides: [], consumes: ['c', 'a'] },
-      }).findUnsatisfiedDeps(),
-    ).toEqual([
-      { value: '2', unsatisfied: ['d', 'e'] },
-      { value: '4', unsatisfied: ['c'] },
-    ]);
+    it('should find multiple unsatisfied deps for multiple nodes', async () => {
+      expect(
+        DependencyGraph.fromMap({
+          1: { provides: ['a'] },
+          2: { provides: ['b'], consumes: ['a', 'd', 'e'] },
+          3: { provides: [], consumes: ['b'] },
+          4: { provides: [], consumes: ['c', 'a'] },
+        }).findUnsatisfiedDeps(),
+      ).toEqual([
+        { value: '2', unsatisfied: ['d', 'e'] },
+        { value: '4', unsatisfied: ['c'] },
+      ]);
+    });
   });
 
-  it('should traverse dependencies in topological order', async () => {
-    await expect(
-      DependencyGraph.fromMap({
-        1: {},
-        2: {},
-        3: {},
-        4: {},
-      }).parallelTopologicalTraversal(async id => id),
-    ).resolves.toEqual(['1', '2', '3', '4']);
+  describe('parallelTopologicalTraversal', () => {
+    it('should traverse with no deps', async () => {
+      await expect(
+        DependencyGraph.fromMap({
+          1: {},
+          2: {},
+          3: {},
+          4: {},
+        }).parallelTopologicalTraversal(async id => id),
+      ).resolves.toEqual(['1', '2', '3', '4']);
+    });
 
-    await expect(
-      DependencyGraph.fromMap({
-        1: { provides: ['a'] },
-        2: { consumes: ['a'], provides: ['b', 'c'] },
-        3: { consumes: ['b'] },
-        4: { consumes: ['c'] },
-      }).parallelTopologicalTraversal(async id => id),
-    ).resolves.toEqual(['1', '2', '3', '4']);
+    it('should traverse with a few deps', async () => {
+      await expect(
+        DependencyGraph.fromMap({
+          1: { provides: ['a'] },
+          2: { consumes: ['a'], provides: ['b', 'c'] },
+          3: { consumes: ['b'] },
+          4: { consumes: ['c'] },
+        }).parallelTopologicalTraversal(async id => id),
+      ).resolves.toEqual(['1', '2', '3', '4']);
+    });
 
-    await expect(
-      DependencyGraph.fromMap({
-        1: { consumes: ['c'] },
-        2: { provides: ['c'], consumes: ['b'] },
-        3: { provides: ['b'], consumes: ['a'] },
-        4: { provides: ['a'] },
-      }).parallelTopologicalTraversal(async id => id),
-    ).resolves.toEqual(['4', '3', '2', '1']);
+    it('should traverse in reverse', async () => {
+      await expect(
+        DependencyGraph.fromMap({
+          1: { consumes: ['c'] },
+          2: { provides: ['c'], consumes: ['b'] },
+          3: { provides: ['b'], consumes: ['a'] },
+          4: { provides: ['a'] },
+        }).parallelTopologicalTraversal(async id => id),
+      ).resolves.toEqual(['4', '3', '2', '1']);
+    });
 
-    await expect(
-      DependencyGraph.fromMap({
-        1: { provides: ['a'] },
-        2: { provides: ['b'], consumes: ['a'] },
-        3: { provides: ['c'], consumes: ['a'] },
-        4: { consumes: ['b'] },
-        5: { consumes: ['c'] },
-      }).parallelTopologicalTraversal(async id => id),
-    ).resolves.toEqual(['1', '2', '3', '4', '5']);
+    it('should execute in parallel', async () => {
+      await expect(
+        DependencyGraph.fromMap({
+          1: { provides: ['a'] },
+          2: { provides: ['b'], consumes: ['a'] },
+          3: { provides: ['c'], consumes: ['a'] },
+          4: { consumes: ['b'] },
+          5: { consumes: ['c'] },
+        }).parallelTopologicalTraversal(async id => id),
+      ).resolves.toEqual(['1', '2', '3', '4', '5']);
 
-    // Same as above, but with 2 being delayed
-    await expect(
-      DependencyGraph.fromMap({
-        1: { provides: ['a'] },
-        2: { provides: ['b'], consumes: ['a'] },
-        3: { provides: ['c'], consumes: ['a'] },
-        4: { consumes: ['b'] },
-        5: { consumes: ['c'] },
-      }).parallelTopologicalTraversal(async id => {
-        // When delaying 2 we expect 3 and 5 to complete before 2 and 4
-        if (id === '2') {
-          await new Promise(resolve => setTimeout(resolve, 100));
-        }
-        return id;
-      }),
-    ).resolves.toEqual(['1', '3', '5', '2', '4']);
+      // Same as above, but with 2 being delayed
+      await expect(
+        DependencyGraph.fromMap({
+          1: { provides: ['a'] },
+          2: { provides: ['b'], consumes: ['a'] },
+          3: { provides: ['c'], consumes: ['a'] },
+          4: { consumes: ['b'] },
+          5: { consumes: ['c'] },
+        }).parallelTopologicalTraversal(async id => {
+          // When delaying 2 we expect 3 and 5 to complete before 2 and 4
+          if (id === '2') {
+            await new Promise(resolve => setTimeout(resolve, 100));
+          }
+          return id;
+        }),
+      ).resolves.toEqual(['1', '3', '5', '2', '4']);
+    });
 
-    await expect(
-      DependencyGraph.fromMap({
-        1: { provides: ['a'], consumes: ['a'] },
-      }).parallelTopologicalTraversal(async id => id),
-    ).rejects.toThrow('Circular dependency detected');
-    await expect(
-      DependencyGraph.fromMap({
-        1: { provides: ['a'], consumes: ['b'] },
-        2: { provides: ['b'], consumes: ['a'] },
-      }).parallelTopologicalTraversal(async id => id),
-    ).rejects.toThrow('Circular dependency detected');
-    await expect(
-      DependencyGraph.fromMap({
-        1: { provides: ['a'] },
-        2: { provides: ['c'], consumes: ['a', 'b'] },
-        3: { provides: ['b'], consumes: ['a', 'c'] },
-      }).parallelTopologicalTraversal(async id => id),
-    ).rejects.toThrow('Circular dependency detected');
+    it('should detect circular dependencies', async () => {
+      await expect(
+        DependencyGraph.fromMap({
+          1: { provides: ['a'], consumes: ['a'] },
+        }).parallelTopologicalTraversal(async id => id),
+      ).rejects.toThrow('Circular dependency detected');
+
+      await expect(
+        DependencyGraph.fromMap({
+          1: { provides: ['a'], consumes: ['b'] },
+          2: { provides: ['b'], consumes: ['a'] },
+        }).parallelTopologicalTraversal(async id => id),
+      ).rejects.toThrow('Circular dependency detected');
+
+      await expect(
+        DependencyGraph.fromMap({
+          1: { provides: ['a'] },
+          2: { provides: ['c'], consumes: ['a', 'b'] },
+          3: { provides: ['b'], consumes: ['a', 'c'] },
+        }).parallelTopologicalTraversal(async id => id),
+      ).rejects.toThrow('Circular dependency detected');
+    });
   });
 });
