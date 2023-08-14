@@ -30,11 +30,14 @@ import {
   BackendFeature,
   ExtensionPoint,
   coreServices,
-  createBackendPlugin,
+  createBackendModule,
 } from '@backstage/backend-plugin-api';
 import { mockServices } from '../services';
 import { ConfigReader } from '@backstage/config';
 import express from 'express';
+// Direct internal import to avoid duplication
+// eslint-disable-next-line @backstage/no-forbidden-package-imports
+import { InternalBackendFeature } from '@backstage/backend-plugin-api/src/wiring/types';
 
 /** @public */
 export interface TestBackendOptions<
@@ -87,6 +90,93 @@ const defaultServiceFactories = [
   mockServices.urlReader.factory(),
 ];
 
+/**
+ * Given a set of extension points and plugins, find
+ * @returns
+ */
+function createExtensionPointTestModules(
+  features: BackendFeature[],
+  extensionPointTuples?: readonly [
+    ref: ExtensionPoint<unknown>,
+    impl: unknown,
+  ][],
+): BackendFeature[] {
+  if (!extensionPointTuples) {
+    return [];
+  }
+
+  const registrations = features.flatMap(feature => {
+    if (feature.$$type !== '@backstage/BackendFeature') {
+      throw new Error(
+        `Failed to add feature, invalid type '${feature.$$type}'`,
+      );
+    }
+    const internalFeature = feature as InternalBackendFeature;
+    if (internalFeature.version !== 'v1') {
+      throw new Error(
+        `Failed to add feature, invalid version '${internalFeature.version}'`,
+      );
+    }
+    return internalFeature.getRegistrations();
+  });
+
+  const extensionPointMap = new Map(
+    extensionPointTuples.map(ep => [ep[0].id, ep]),
+  );
+  const extensionPointsToSort = new Set(extensionPointMap.keys());
+  const extensionPointsByPlugin = new Map<string, string[]>();
+
+  for (const registration of registrations) {
+    if (registration.type === 'module') {
+      const testDep = Object.values(registration.init.deps).filter(dep =>
+        extensionPointsToSort.has(dep.id),
+      );
+      if (testDep.length > 0) {
+        let points = extensionPointsByPlugin.get(registration.pluginId);
+        if (!points) {
+          points = [];
+          extensionPointsByPlugin.set(registration.pluginId, points);
+        }
+        for (const { id } of testDep) {
+          points.push(id);
+          extensionPointsToSort.delete(id);
+        }
+      }
+    }
+  }
+
+  if (extensionPointsToSort.size > 0) {
+    const list = Array.from(extensionPointsToSort)
+      .map(id => `'${id}'`)
+      .join(', ');
+    throw new Error(
+      `Unable to determine the plugin ID of extension point(s) ${list}. ` +
+        'Tested extension points must be depended on by one or more tested modules.',
+    );
+  }
+
+  const modules = [];
+
+  for (const [pluginId, pluginExtensionPointIds] of extensionPointsByPlugin) {
+    modules.push(
+      createBackendModule({
+        pluginId,
+        moduleId: 'testExtensionPointRegistration',
+        register(reg) {
+          for (const id of pluginExtensionPointIds) {
+            const tuple = extensionPointMap.get(id)!;
+            reg.registerExtensionPoint(...tuple);
+          }
+
+          reg.registerInit({ deps: {}, async init() {} });
+        },
+      })(),
+    );
+  }
+
+  return modules;
+}
+
 const backendInstancesToCleanUp = new Array<Backend>();
 
 /** @public */
@@ -98,7 +188,7 @@ export async function startTestBackend<
 ): Promise<TestBackend> {
   const {
     services = [],
-    extensionPoints = [],
+    extensionPoints,
     features = [],
     ...otherOptions
   } = options;
@@ -194,18 +284,9 @@ export async function startTestBackend<
 
   backendInstancesToCleanUp.push(backend);
 
-  backend.add(
-    createBackendPlugin({
-      pluginId: `---test-extension-point-registrar`,
-      register(reg) {
-        for (const [ref, impl] of extensionPoints) {
-          reg.registerExtensionPoint(ref, impl);
-        }
-
-        reg.registerInit({ deps: {}, async init() {} });
-      },
-    })(),
-  );
+  for (const m of createExtensionPointTestModules(features, extensionPoints)) {
+    backend.add(m);
+  }
 
   for (const feature of features) {
     backend.add(feature);

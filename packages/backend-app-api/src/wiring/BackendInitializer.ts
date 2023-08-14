@@ -42,7 +42,10 @@ export interface BackendRegisterInit {
 export class BackendInitializer {
   #startPromise?: Promise<void>;
   #features = new Array<InternalBackendFeature>();
-  #extensionPoints = new Map<ExtensionPoint<unknown>, unknown>();
+  #extensionPoints = new Map<
+    ExtensionPoint<unknown>,
+    { impl: unknown; pluginId: string }
+  >();
   #serviceHolder: EnumerableServiceHolder;
 
   constructor(serviceHolder: EnumerableServiceHolder) {
@@ -57,11 +60,14 @@ export class BackendInitializer {
     const missingRefs = new Set<ServiceOrExtensionPoint>();
 
     for (const [name, ref] of Object.entries(deps)) {
-      const extensionPoint = this.#extensionPoints.get(
-        ref as ExtensionPoint<unknown>,
-      );
-      if (extensionPoint) {
-        result.set(name, extensionPoint);
+      const ep = this.#extensionPoints.get(ref as ExtensionPoint<unknown>);
+      if (ep) {
+        if (ep.pluginId !== pluginId) {
+          throw new Error(
+            `Extension point registered for plugin '${ep.pluginId}' may not be used by module for plugin '${pluginId}'`,
+          );
+        }
+        result.set(name, ep.impl);
       } else {
         const impl = await this.#serviceHolder.get(
           ref as ServiceRef<unknown>,
@@ -169,7 +175,10 @@ export class BackendInitializer {
                 `ExtensionPoint with ID '${extRef.id}' is already registered`,
               );
             }
-            this.#extensionPoints.set(extRef, extImpl);
+            this.#extensionPoints.set(extRef, {
+              impl: extImpl,
+              pluginId: r.pluginId,
+            });
             provides.add(extRef);
           }
         }
