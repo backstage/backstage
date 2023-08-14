@@ -40,7 +40,6 @@ import {
 import AddIcon from '@material-ui/icons/Add';
 import ArrowRightIcon from '@material-ui/icons/ArrowForwardIos';
 
-import { JsonValue } from '@backstage/types';
 import {
   Link,
   LinkProps,
@@ -91,7 +90,7 @@ const useStyles = makeStyles((theme: Theme) => ({
  */
 export type SearchResultGroupFilterFieldLayoutProps = PropsWithChildren<{
   label: string;
-  value?: JsonValue;
+  value?: string;
   onDelete: () => void;
 }>;
 
@@ -128,7 +127,7 @@ const NullIcon = () => null;
  */
 export type SearchResultGroupFilterFieldPropsWith<T> = T &
   SearchResultGroupFilterFieldLayoutProps & {
-    onChange: (value: JsonValue) => void;
+    onChange: (e: string) => void;
   };
 
 const useSearchResultGroupTextFilterStyles = makeStyles((theme: Theme) => ({
@@ -253,7 +252,7 @@ export const SearchResultGroupSelectFilterField = (
 
   const handleChange = useCallback(
     (e: ChangeEvent<{ value: unknown }>) => {
-      onChange(e.target.value as JsonValue);
+      onChange(e.target.value as string);
     },
     [onChange],
   );
@@ -274,11 +273,19 @@ export const SearchResultGroupSelectFilterField = (
   );
 };
 
+type FilterOption =
+  | string
+  | number
+  | (Record<PropertyKey, string> & {
+      value: string;
+      label: string;
+    });
+
 /**
  * Props for {@link SearchResultGroupLayout}
  * @public
  */
-export type SearchResultGroupLayoutProps<FilterOption> = ListProps & {
+export type SearchResultGroupLayoutProps<T extends FilterOption> = ListProps & {
   /**
    * If defined, will render a default error panel.
    */
@@ -310,15 +317,15 @@ export type SearchResultGroupLayoutProps<FilterOption> = ListProps & {
   /**
    * A generic filter options that is rendered on the "Add filter" dropdown.
    */
-  filterOptions?: FilterOption[];
+  filterOptions?: T[];
   /**
    * Function to customize how filter options are rendered.
    * @remarks Defaults to a menu item where its value and label bounds to the option string.
    */
   renderFilterOption?: (
-    value: FilterOption,
+    value: T,
     index: number,
-    array: FilterOption[],
+    array: T[],
   ) => JSX.Element | null;
   /**
    * A list of search filter keys, also known as filter field names.
@@ -355,8 +362,8 @@ export type SearchResultGroupLayoutProps<FilterOption> = ListProps & {
  * @param props - See {@link SearchResultGroupLayoutProps}.
  * @public
  */
-export function SearchResultGroupLayout<FilterOption>(
-  props: SearchResultGroupLayoutProps<FilterOption>,
+export function SearchResultGroupLayout<T extends FilterOption>(
+  props: SearchResultGroupLayoutProps<T>,
 ) {
   const classes = useStyles();
   const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
@@ -375,11 +382,21 @@ export function SearchResultGroupLayout<FilterOption>(
     ),
     linkProps = {},
     filterOptions,
-    renderFilterOption = filterOption => (
-      <MenuItem key={String(filterOption)} value={String(filterOption)}>
-        {filterOption}
-      </MenuItem>
-    ),
+    renderFilterOption = filterOption => {
+      if (typeof filterOption === 'object') {
+        return (
+          <MenuItem key={filterOption.value} value={filterOption.value}>
+            {filterOption.label}
+          </MenuItem>
+        );
+      }
+
+      return (
+        <MenuItem key={filterOption} value={filterOption}>
+          {filterOption}
+        </MenuItem>
+      );
+    },
     filterFields,
     renderFilterField,
     resultItems,
@@ -418,7 +435,7 @@ export function SearchResultGroupLayout<FilterOption>(
   }
 
   if (!resultItems?.length) {
-    return <>{noResultsComponent}</>;
+    return noResultsComponent;
   }
 
   return (
@@ -472,12 +489,12 @@ export function SearchResultGroupLayout<FilterOption>(
  * Props for {@link SearchResultGroup}.
  * @public
  */
-export type SearchResultGroupProps<FilterOption> = Pick<
+export type SearchResultGroupProps<T extends FilterOption> = Pick<
   SearchResultStateProps,
   'query'
 > &
   Omit<
-    SearchResultGroupLayoutProps<FilterOption>,
+    SearchResultGroupLayoutProps<T>,
     'loading' | 'error' | 'resultItems' | 'filterFields'
   >;
 
@@ -486,8 +503,8 @@ export type SearchResultGroupProps<FilterOption> = Pick<
  * @param props - See {@link SearchResultGroupProps}.
  * @public
  */
-export function SearchResultGroup<FilterOption>(
-  props: SearchResultGroupProps<FilterOption>,
+export function SearchResultGroup<T extends FilterOption>(
+  props: SearchResultGroupProps<T>,
 ) {
   const { query, children, renderResultItem, linkProps = {}, ...rest } = props;
 

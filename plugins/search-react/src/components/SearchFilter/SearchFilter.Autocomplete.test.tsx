@@ -28,7 +28,7 @@ const SearchContextFilterSpy = ({ name }: { name: string }) => {
   const value = filters[name];
   return (
     <span data-testid={`${name}-filter-spy`}>
-      {Array.isArray(value) ? value.join(',') : value}
+      {JSON.stringify(Array.isArray(value) ? value.join(',') : value)}
     </span>
   );
 };

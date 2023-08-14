@@ -260,7 +260,7 @@ export const WithFilters = () => {
               <SearchResultGroupSelectFilterField
                 key={key}
                 label="Lifecycle"
-                value={query.filters?.lifecycle}
+                value={JSON.stringify(query.filters?.lifecycle)}
                 onChange={handleFilterChange('lifecycle')}
                 onDelete={handleFilterDelete('lifecycle')}
               >
@@ -273,7 +273,7 @@ export const WithFilters = () => {
               <SearchResultGroupTextFilterField
                 key={key}
                 label="Owner"
-                value={query.filters?.owner}
+                value={JSON.stringify(query.filters?.owner)}
                 onChange={handleFilterChange('owner')}
                 onDelete={handleFilterDelete('owner')}
               />
