@@ -1,5 +1,5 @@
 ---
-'@backstage/plugin-linguist-backend': minor
+'@backstage/plugin-linguist-backend': patch
 ---
 
-**BREAKING**: Removing options from exported `linguistPlugin()` in favour of static config
+Breaking change for the alpha export plugin options from exported `linguistPlugin()` in favour of static config.

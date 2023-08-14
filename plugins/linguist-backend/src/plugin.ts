@@ -19,10 +19,8 @@ import {
   coreServices,
   createBackendPlugin,
 } from '@backstage/backend-plugin-api';
-import { readTaskScheduleDefinitionFromConfig } from '@backstage/backend-tasks';
-import { HumanDuration } from '@backstage/types';
 
-import { createRouter } from './service/router';
+import { createRouterFromConfig } from './service/router';
 
 /**
  * Linguist backend plugin
@@ -53,43 +51,16 @@ export const linguistPlugin = createBackendPlugin({
         tokenManager,
         httpRouter,
       }) {
-        let schedule;
-        if (config.has('linguist.schedule')) {
-          schedule = readTaskScheduleDefinitionFromConfig(
-            config.getConfig('linguist.schedule'),
-          );
-        }
-        const batchSize = config.getOptionalNumber('linguist.batchSize');
-        const useSourceLocation = config.getBoolean(
-          'linguist.useSourceLocation',
-        );
-        const age = config.getOptionalConfig('linguist.age') as
-          | HumanDuration
-          | undefined;
-        const kind = config.getOptionalStringArray('linguist.kind');
-        const linguistJsOptions = config.getOptionalConfig(
-          'linguist.linguistJsOptions',
-        );
-
         httpRouter.use(
-          await createRouter(
-            {
-              schedule,
-              batchSize,
-              useSourceLocation,
-              age,
-              kind,
-              linguistJsOptions,
-            },
-            {
-              logger: loggerToWinstonLogger(logger),
-              reader,
-              database,
-              discovery,
-              scheduler,
-              tokenManager,
-            },
-          ),
+          await createRouterFromConfig({
+            logger: loggerToWinstonLogger(logger),
+            config,
+            reader,
+            database,
+            discovery,
+            scheduler,
+            tokenManager,
+          }),
         );
       },
     });

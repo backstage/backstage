@@ -15,7 +15,8 @@
  */
 
 import { TaskScheduleDefinition } from '@backstage/backend-tasks';
-import { HumanDuration, JsonObject } from '@backstage/types';
+import { HumanDuration } from '@backstage/types';
+import { Options as LinguistJsOptions } from 'linguist-js/dist/types';
 
 export interface Config {
   /** Configuration options for the linguist plugin */
@@ -40,7 +41,7 @@ export interface Config {
     /**
      * [linguist-js](https://www.npmjs.com/package/linguist-js) options
      */
-    linguistJsOptions?: JsonObject;
+    linguistJsOptions?: LinguistJsOptions;
 
     /** Options for the tags processor */
     tagsProcessor?: {

@@ -28,6 +28,11 @@ export function createRouter(
 ): Promise<express.Router>;
 
 // @public (undocumented)
+export function createRouterFromConfig(
+  routerOptions: RouterOptions,
+): Promise<express.Router>;
+
+// @public (undocumented)
 export interface LinguistBackendApi {
   // (undocumented)
   getEntityLanguages(entityRef: string): Promise<Languages>;
@@ -88,6 +93,8 @@ export interface PluginOptions {
 
 // @public (undocumented)
 export interface RouterOptions {
+  // (undocumented)
+  config?: Config;
   // (undocumented)
   database: PluginDatabaseManager;
   // (undocumented)
