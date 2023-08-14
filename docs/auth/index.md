@@ -10,6 +10,8 @@ configure Backstage to have any number of authentication providers, but only
 one of these will typically be used for sign-in, with the rest being used to provide
 access external resources.
 
+> Note: Backstage backend APIs are by default unauthenticated. Thus, if your Backstage instance is exposed to the Internet, anyone can access information in the Backstage. If you would like to learn more, read about how to [authenticate API requests"](https://github.com/backstage/backstage/blob/master/contrib/docs/tutorials/authenticate-api-requests.md).
+
 ## Built-in Authentication Providers
 
 Backstage comes with many common authentication providers in the core library:
