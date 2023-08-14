@@ -23,7 +23,7 @@ import {
   createExtensionPoint,
 } from '@backstage/backend-plugin-api';
 import { BackendInitializer } from './BackendInitializer';
-import { ServiceRegistry } from './ServiceRegistry';
+
 import {
   lifecycleServiceFactory,
   loggerServiceFactory,
@@ -65,7 +65,7 @@ describe('BackendInitializer', () => {
     const rootFactory = jest.fn();
     const pluginFactory = jest.fn();
 
-    const registry = new ServiceRegistry([
+    const services = [
       createServiceFactory({
         service: rootRef,
         deps: {},
@@ -82,9 +82,9 @@ describe('BackendInitializer', () => {
         deps: {},
         factory: () => new MockLogger(),
       })(),
-    ]);
+    ];
 
-    const init = new BackendInitializer(registry);
+    const init = new BackendInitializer(services);
     await init.start();
 
     expect(rootFactory).toHaveBeenCalled();
@@ -97,7 +97,7 @@ describe('BackendInitializer', () => {
     const extensionPoint = createExtensionPoint<{ values: string[] }>({
       id: 'a',
     });
-    const init = new BackendInitializer(new ServiceRegistry(baseFactories));
+    const init = new BackendInitializer(baseFactories);
 
     init.add(
       createBackendModule({
@@ -151,7 +151,7 @@ describe('BackendInitializer', () => {
   });
 
   it('should forward errors when plugins fail to start', async () => {
-    const init = new BackendInitializer(new ServiceRegistry([]));
+    const init = new BackendInitializer([]);
     init.add(
       createBackendPlugin({
         pluginId: 'test',
@@ -171,7 +171,7 @@ describe('BackendInitializer', () => {
   });
 
   it('should forward errors when modules fail to start', async () => {
-    const init = new BackendInitializer(new ServiceRegistry([]));
+    const init = new BackendInitializer([]);
     init.add(
       createBackendModule({
         pluginId: 'test',
@@ -192,7 +192,7 @@ describe('BackendInitializer', () => {
   });
 
   it('should reject duplicate plugins', async () => {
-    const init = new BackendInitializer(new ServiceRegistry([]));
+    const init = new BackendInitializer([]);
     init.add(
       createBackendPlugin({
         pluginId: 'test',
@@ -221,7 +221,7 @@ describe('BackendInitializer', () => {
   });
 
   it('should reject duplicate modules', async () => {
-    const init = new BackendInitializer(new ServiceRegistry([]));
+    const init = new BackendInitializer([]);
     init.add(
       createBackendModule({
         pluginId: 'test',
@@ -254,16 +254,14 @@ describe('BackendInitializer', () => {
   it('should reject modules with circular dependencies', async () => {
     const extA = createExtensionPoint<string>({ id: 'a' });
     const extB = createExtensionPoint<string>({ id: 'b' });
-    const init = new BackendInitializer(
-      new ServiceRegistry([
-        rootLifecycleServiceFactory(),
-        createServiceFactory({
-          service: coreServices.rootLogger,
-          deps: {},
-          factory: () => new MockLogger(),
-        })(),
-      ]),
-    );
+    const init = new BackendInitializer([
+      rootLifecycleServiceFactory(),
+      createServiceFactory({
+        service: coreServices.rootLogger,
+        deps: {},
+        factory: () => new MockLogger(),
+      })(),
+    ]);
     init.add(
       createBackendModule({
         pluginId: 'test',
@@ -296,7 +294,7 @@ describe('BackendInitializer', () => {
   });
 
   it('should reject modules that depend on extension points other plugins', async () => {
-    const init = new BackendInitializer(new ServiceRegistry(baseFactories));
+    const init = new BackendInitializer(baseFactories);
     const extA = createExtensionPoint<string>({ id: 'a' });
     init.add(
       createBackendPlugin({

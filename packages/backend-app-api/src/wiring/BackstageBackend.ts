@@ -14,18 +14,15 @@
  * limitations under the License.
  */
 
-import { ServiceFactory, BackendFeature } from '@backstage/backend-plugin-api';
+import { BackendFeature, ServiceFactory } from '@backstage/backend-plugin-api';
 import { BackendInitializer } from './BackendInitializer';
-import { ServiceRegistry } from './ServiceRegistry';
 import { Backend } from './types';
 
 export class BackstageBackend implements Backend {
-  #services: ServiceRegistry;
   #initializer: BackendInitializer;
 
-  constructor(apiFactories: ServiceFactory[]) {
-    this.#services = new ServiceRegistry(apiFactories);
-    this.#initializer = new BackendInitializer(this.#services);
+  constructor(defaultServiceFactories: ServiceFactory[]) {
+    this.#initializer = new BackendInitializer(defaultServiceFactories);
   }
 
   add(feature: BackendFeature | (() => BackendFeature)): void {
