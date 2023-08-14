@@ -9,7 +9,6 @@ import { ApiRef } from '@backstage/core-plugin-api';
 import { BackstagePlugin } from '@backstage/core-plugin-api';
 import { RouteRef } from '@backstage/core-plugin-api';
 import { VoyagerDisplayOptions } from 'graphql-voyager/typings/components/Voyager';
-import { WorkerCallback } from 'graphql-voyager/typings/utils/types';
 
 // @public (undocumented)
 export type GraphQLVoyagerApi = {
@@ -29,8 +28,6 @@ export type GraphQLVoyagerEndpoint = {
     displayOptions?: VoyagerDisplayOptions;
     hideDocs?: boolean;
     hideSettings?: boolean;
-    workerURI?: string;
-    loadWorker?: WorkerCallback;
   };
 };
 

@@ -15,7 +15,6 @@
  */
 import { createApiRef } from '@backstage/core-plugin-api';
 import { VoyagerDisplayOptions } from 'graphql-voyager/typings/components/Voyager';
-import { WorkerCallback } from 'graphql-voyager/typings/utils/types';
 
 /** @public */
 export type GraphQLVoyagerEndpoint = {
@@ -27,8 +26,6 @@ export type GraphQLVoyagerEndpoint = {
     displayOptions?: VoyagerDisplayOptions;
     hideDocs?: boolean;
     hideSettings?: boolean;
-    workerURI?: string;
-    loadWorker?: WorkerCallback;
   };
 };
 
