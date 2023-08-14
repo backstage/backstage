@@ -177,7 +177,7 @@ describe('DefaultTechDocsCollatorFactory', () => {
       const _config = new ConfigReader({
         ...config.get(),
         search: {
-          techdocs: { collators: { locationTemplate: '/software/:name' } },
+          collators: { techdocs: { locationTemplate: '/software/:name' } },
         },
       });
       factory = DefaultTechDocsCollatorFactory.fromConfig(_config, {
@@ -202,8 +202,8 @@ describe('DefaultTechDocsCollatorFactory', () => {
       const _config = new ConfigReader({
         ...config.get(),
         search: {
-          techdocs: {
-            collators: {
+          collators: {
+            techdocs: {
               parallelismLimit: 1,
             },
           },
