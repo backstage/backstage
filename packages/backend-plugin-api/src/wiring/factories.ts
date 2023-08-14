@@ -14,10 +14,7 @@
  * limitations under the License.
  */
 
-import {
-  BackendFeature,
-  BackendFeatureFactory,
-} from '../services/system/types';
+import { BackendFeature, BackendFeatureFactory } from '../types';
 import {
   BackendModuleRegistrationPoints,
   BackendPluginRegistrationPoints,

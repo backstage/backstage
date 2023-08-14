@@ -14,7 +14,8 @@
  * limitations under the License.
  */
 
-import { BackendFeature, ServiceRef } from '../services/system/types';
+import { ServiceRef } from '../services/system/types';
+import { BackendFeature } from '../types';
 
 /**
  * TODO
