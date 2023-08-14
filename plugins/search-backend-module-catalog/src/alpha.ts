@@ -22,6 +22,7 @@
 import {
   coreServices,
   createBackendModule,
+  createExtensionPoint,
 } from '@backstage/backend-plugin-api';
 import { catalogServiceRef } from '@backstage/plugin-catalog-node/alpha';
 import {
@@ -32,57 +33,78 @@ import { searchIndexRegistryExtensionPoint } from '@backstage/plugin-search-back
 import { readScheduleConfigOptions } from './collators/config';
 
 /**
- * Options for {@link searchModuleCatalogCollator}.
+ * Options for {@link catalogCollatorExtensionPoint}.
  *
  * @alpha
  */
-export type SearchModuleCatalogCollatorOptions = {
+export type CatalogCollatorExtensionPoint = {
   /**
    * Allows you to customize how entities are shaped into documents.
    */
-  entityTransformer?: CatalogCollatorEntityTransformer;
+  setEntityTransformer(transformer: CatalogCollatorEntityTransformer): void;
 };
+
+/**
+ * Extension point for customizing how catalog entities are shaped into
+ * documents for the search backend, when using
+ * {@link searchModuleCatalogCollator}.
+ *
+ * @alpha
+ */
+export const catalogCollatorExtensionPoint =
+  createExtensionPoint<CatalogCollatorExtensionPoint>({
+    id: 'search.catalogCollator.extension',
+  });
 
 /**
  * Search backend module for the Catalog index.
  *
  * @alpha
  */
-export const searchModuleCatalogCollator = createBackendModule(
-  (options?: SearchModuleCatalogCollatorOptions) => ({
-    moduleId: 'catalogCollator',
-    pluginId: 'search',
-    register(env) {
-      env.registerInit({
-        deps: {
-          config: coreServices.rootConfig,
-          discovery: coreServices.discovery,
-          tokenManager: coreServices.tokenManager,
-          scheduler: coreServices.scheduler,
-          indexRegistry: searchIndexRegistryExtensionPoint,
-          catalog: catalogServiceRef,
-        },
-        async init({
-          config,
-          discovery,
-          tokenManager,
-          scheduler,
-          indexRegistry,
-          catalog,
-        }) {
-          indexRegistry.addCollator({
-            schedule: scheduler.createScheduledTaskRunner(
-              readScheduleConfigOptions(config),
-            ),
-            factory: DefaultCatalogCollatorFactory.fromConfig(config, {
-              entityTransformer: options?.entityTransformer,
-              discovery,
-              tokenManager,
-              catalogClient: catalog,
-            }),
-          });
-        },
-      });
-    },
-  }),
-);
+export const searchModuleCatalogCollator = createBackendModule({
+  moduleId: 'catalogCollator',
+  pluginId: 'search',
+  register(env) {
+    let entityTransformer: CatalogCollatorEntityTransformer | undefined;
+
+    env.registerExtensionPoint(catalogCollatorExtensionPoint, {
+      setEntityTransformer(transformer) {
+        if (entityTransformer) {
+          throw new Error('setEntityTransformer can only be called once');
+        }
+        entityTransformer = transformer;
+      },
+    });
+
+    env.registerInit({
+      deps: {
+        config: coreServices.rootConfig,
+        discovery: coreServices.discovery,
+        tokenManager: coreServices.tokenManager,
+        scheduler: coreServices.scheduler,
+        indexRegistry: searchIndexRegistryExtensionPoint,
+        catalog: catalogServiceRef,
+      },
+      async init({
+        config,
+        discovery,
+        tokenManager,
+        scheduler,
+        indexRegistry,
+        catalog,
+      }) {
+        indexRegistry.addCollator({
+          schedule: scheduler.createScheduledTaskRunner(
+            readScheduleConfigOptions(config),
+          ),
+          factory: DefaultCatalogCollatorFactory.fromConfig(config, {
+            entityTransformer,
+            discovery,
+            tokenManager,
+            catalogClient: catalog,
+          }),
+        });
+      },
+    });
+  },
+});
