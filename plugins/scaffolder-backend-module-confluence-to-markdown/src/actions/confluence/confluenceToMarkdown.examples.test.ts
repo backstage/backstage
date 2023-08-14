@@ -1,20 +1,4 @@
 /*
- * Copyright 2021 The Backstage Authors
- *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
- *
- *     http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
- */
-
-/*
  * Copyright 2023 The Backstage Authors
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -43,6 +27,7 @@ import { rest } from 'msw';
 import { setupServer } from 'msw/node';
 import { examples } from './confluenceToMarkdown.examples';
 import yaml from 'yaml';
+import { ActionContext } from '@backstage/plugin-scaffolder-node';
 
 jest.mock('fs-extra', () => ({
   mkdirSync: jest.fn(),
@@ -57,7 +42,7 @@ jest.mock('fs-extra', () => ({
 }));
 
 describe('confluence:transform:markdown examples', () => {
-  const baseUrl = `https://nodomain.confluence.com`;
+  const baseUrl = `https://confluence.example.com`;
   const worker = setupServer();
   setupRequestMockHandlers(worker);
 
@@ -78,30 +63,34 @@ describe('confluence:transform:markdown examples', () => {
     }),
   );
 
+  let reader: UrlReader;
+  let mockContext: ActionContext<{
+    confluenceUrls: string[];
+    repoUrl: string;
+  }>;
+
   const logger = getVoidLogger();
   jest.spyOn(logger, 'info');
 
   const mockTmpDir = os.tmpdir();
 
-  const mockContext = {
-    workspacePath: '/tmp',
-    logger,
-    logStream: new PassThrough(),
-    output: jest.fn(),
-    createTemporaryDirectory: jest.fn().mockResolvedValue(mockTmpDir),
-  };
-
-  const reader: UrlReader = {
-    readUrl: jest.fn(),
-    readTree: jest.fn().mockResolvedValue({
-      dir: jest.fn(),
-    }),
-    search: jest.fn(),
-  };
-  mockFs({ [`${mockTmpDir}/src/docs`]: {} });
-
   beforeEach(() => {
-    jest.resetAllMocks();
+    reader = {
+      readUrl: jest.fn(),
+      readTree: jest.fn().mockResolvedValue({
+        dir: jest.fn(),
+      }),
+      search: jest.fn(),
+    };
+    mockContext = {
+      input: yaml.parse(examples[0].example).steps[0].input,
+      workspacePath: '/tmp',
+      logger,
+      logStream: new PassThrough(),
+      output: jest.fn(),
+      createTemporaryDirectory: jest.fn().mockResolvedValue(mockTmpDir),
+    };
+    mockFs({ [`${mockTmpDir}/src/docs`]: {} });
   });
   afterEach(() => {
     jest.clearAllMocks();
@@ -160,13 +149,10 @@ describe('confluence:transform:markdown examples', () => {
 
     const action = createConfluenceToMarkdownAction(options);
 
-    await action.handler({
-      ...mockContext,
-      input: yaml.parse(examples[0].example).steps[0].input,
-    });
+    await action.handler(mockContext);
 
     expect(logger.info).toHaveBeenCalledWith(
-      `Fetching the mkdocs.yml catalog from https://notreal.github.com/space/backstage/mkdocs.yml`,
+      `Fetching the mkdocs.yml catalog from https://github.com/organization-name/repo-name/blob/main/mkdocs.yml`,
     );
     expect(logger.info).toHaveBeenCalledTimes(5);
     expect(createWriteStream).toHaveBeenCalledTimes(1);

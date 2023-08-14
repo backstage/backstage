@@ -30,8 +30,6 @@ export const examples: TemplateExample[] = [
           input: {
             confluenceUrls: [
               'https://confluence.example.com/display/SPACEKEY/Page+Title',
-              'https://confluence.example.com/prefix/display/PREFIXSPACEKEY/Prefix+Page+Title',
-              'https://example.atlassian.net/wiki/spaces/CLOUDSPACEKEY/pages/1234567/Cloud+Page+Title',
             ],
             repoUrl:
               'https://github.com/organization-name/repo-name/blob/main/mkdocs.yml',
