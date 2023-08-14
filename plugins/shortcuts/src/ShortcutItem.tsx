@@ -29,6 +29,7 @@ import { SidebarItem } from '@backstage/core-components';
 import Tooltip from '@material-ui/core/Tooltip';
 import Menu from '@material-ui/core/Menu';
 import MenuItem from '@material-ui/core/MenuItem';
+import { red } from '@material-ui/core/colors';
 
 const useStyles = makeStyles(theme => ({
   root: {
@@ -44,8 +45,12 @@ const useStyles = makeStyles(theme => ({
     color: theme.palette.common.white,
     fontSize: 16,
   },
-  actionicon: {
+  editicon: {
     color: theme.palette.common.black,
+    fontSize: 16,
+  },
+  deleteicon: {
+    color: red[600],
     fontSize: 16,
   },
 }));
@@ -139,10 +144,10 @@ export const ShortcutItem = ({ shortcut, api, allowExternalLinks }: Props) => {
         onClose={handleMoreVertClose}
       >
         <MenuItem onClick={handleEditClick}>
-          <EditIcon className={classes.actionicon} />
+          <EditIcon className={classes.editicon} />
         </MenuItem>
         <MenuItem onClick={handleRemoveClick}>
-          <DeleteIcon className={classes.actionicon} />
+          <DeleteIcon className={classes.deleteicon} />
         </MenuItem>
       </Menu>
       <EditShortcut
