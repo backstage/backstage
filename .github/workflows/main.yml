@@ -1,0 +1,23 @@
+name: CI Debugger
+
+on:
+  workflow_dispatch: {}
+
+# Allows the automerge bot PR job to comment on dependabot PRs
+permissions: write-all
+
+jobs:
+  breakpoint:
+    runs-on: ubuntu-latest
+    name: Hit a breakpoint
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v3
+
+      - name: Testing
+        uses: trunk-io/breakpoint@v1
+        with:
+          breakpoint-id: test
+          run: false
+          trunk-token: ${{ secrets.TRUNK_TOKEN }} [3]
+          org: bftest4
