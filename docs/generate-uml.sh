@@ -8,13 +8,13 @@
 # Either call directly to generate diagrams for all markdown files in this directory,
 # or add a --watch flag to rebuild SVGs on changes.
 
-cd "$( dirname "${BASH_SOURCE[0]}" )"
+cd "$(dirname "${BASH_SOURCE[0]}")" || exit
 
-if [[ "$1" == '--watch' ]]; then
-  npx --no-install nodemon --ext md --exec './generate-uml.sh'
+if [[ $1 == '--watch' ]]; then
+        npx --no-install nodemon --ext md --exec './generate-uml.sh'
 fi
 
-grep '@startuml' -rl --include '*.md' . | while read -r file ; do
-  echo "Generating : $file"
-  plantuml -tsvg "$file" 2> >(grep -v "CoreText note:")
+grep '@startuml' -rl --include '*.md' . | while read -r file; do
+        echo "Generating : ${file}"
+        plantuml -tsvg "${file}" 2> >(grep -v "CoreText note:")
 done
