@@ -176,8 +176,8 @@ function convertColumns<T extends object>(
       headerStyle.color = theme.palette.textContrast;
 
       if (typeof cellStyle === 'object') {
-        (cellStyle as React.CSSProperties).fontWeight =
-          theme.typography.fontWeightBold;
+        (cellStyle as React.CSSProperties).fontWeight = theme.typography
+          .fontWeightBold as React.CSSProperties['fontWeight'];
       } else {
         const cellStyleFn = cellStyle as (
           data: any,
@@ -186,7 +186,11 @@ function convertColumns<T extends object>(
         ) => React.CSSProperties;
         cellStyle = (data, rowData, rowColumn) => {
           const style = cellStyleFn(data, rowData, rowColumn);
-          return { ...style, fontWeight: theme.typography.fontWeightBold };
+          return {
+            ...style,
+            fontWeight: theme.typography
+              .fontWeightBold as React.CSSProperties['fontWeight'],
+          };
         };
       }
     }
