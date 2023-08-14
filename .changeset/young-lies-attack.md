@@ -5,9 +5,7 @@
 '@backstage/backend-app-api': patch
 ---
 
-Removed options from `createBackend`.
-
-The `createBackend` method doesn't accept any options anymore as in the following:
+**BREAKING**: Removed options from `createBackend`. Service factories are now `BackendFeature`s and should be installed with `backend.add(...)` instead. The following should be migrated:
 
 ```ts
 const backend = createBackend({ services: [myCustomServiceFactory] });
