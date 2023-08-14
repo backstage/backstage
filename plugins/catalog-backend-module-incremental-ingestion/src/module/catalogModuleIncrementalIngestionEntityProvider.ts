@@ -49,6 +49,7 @@ export interface IncrementalIngestionProviderExtensionPoint {
  * ```ts
  * backend.add(createBackendModule({
  *   pluginId: 'catalog',
+ *   moduleId: 'myIncrementalProvider',
  *   register(env) {
  *     env.registerInit({
  *       deps: {
