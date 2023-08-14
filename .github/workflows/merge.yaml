@@ -1,0 +1,19 @@
+name: Mergequeue
+
+on:
+  pull_request: {}
+  push:
+    branches:
+      - trunk-merge/**
+
+permissions: write-all
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    name: test
+    steps:
+      - name: Test
+        run: echo 'hello'
+
+
