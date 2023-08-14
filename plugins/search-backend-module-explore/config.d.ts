@@ -18,8 +18,10 @@ import { TaskScheduleDefinitionConfig } from '@backstage/backend-tasks';
 
 export interface Config {
   search?: {
-    explore?: {
-      schedule?: TaskScheduleDefinitionConfig;
+    collators?: {
+      explore?: {
+        schedule?: TaskScheduleDefinitionConfig;
+      };
     };
   };
 }

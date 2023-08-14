@@ -1,5 +1,5 @@
 ---
-'@backstage/plugin-search-backend-module-explore': minor
+'@backstage/plugin-search-backend-module-explore': patch
 ---
 
-**BREAKING:** Moved `schedule` from module options into app-config for the new backend system. You can now pass in a `TaskScheduleDefinitionConfig` through the `search.explore.schedule` configuration key.
+Breaking change for the alpha export moved `schedule` from module options into app-config for the new backend system. You can now pass in a `TaskScheduleDefinitionConfig` through the `search.collators.explore.schedule` configuration key.

@@ -61,9 +61,9 @@ export const searchModuleExploreCollator = createBackendModule({
           initialDelay: { seconds: 3 },
         };
 
-        const schedule = config.has('search.explore.schedule')
+        const schedule = config.has('search.collators.explore.schedule')
           ? readTaskScheduleDefinitionFromConfig(
-              config.getConfig('search.explore.schedule'),
+              config.getConfig('search.collators.explore.schedule'),
             )
           : defaultSchedule;
 

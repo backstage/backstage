@@ -18,9 +18,9 @@ import { TaskScheduleDefinitionConfig } from '@backstage/backend-tasks';
 
 export interface Config {
   search?: {
-    techdocs?: {
-      schedule?: TaskScheduleDefinitionConfig;
-      collators?: {
+    collators?: {
+      techdocs?: {
+        schedule?: TaskScheduleDefinitionConfig;
         locationTemplate?: string;
         parallelismLimit?: number;
         legacyPathCasing?: boolean;

@@ -217,7 +217,7 @@ describe('DefaultTechDocsCollatorFactory', () => {
 
       // Only 1 entity with TechDocs configured multiplied by 3 pages.
       expect(documents).toHaveLength(3);
-      expect(_config.get('search.techdocs.collators.parallelismLimit')).toEqual(
+      expect(_config.get('search.collators.techdocs.parallelismLimit')).toEqual(
         1,
       );
     });

@@ -105,10 +105,10 @@ export class DefaultTechDocsCollatorFactory implements DocumentCollatorFactory {
         'techdocs.legacyUseCaseSensitiveTripletPaths',
       ) || false;
     const locationTemplate = config.getOptionalString(
-      'search.techdocs.collators.locationTemplate',
+      'search.collators.techdocs.locationTemplate',
     );
     const parallelismLimit = config.getOptionalNumber(
-      'search.techdocs.collators.parallelismLimit',
+      'search.collators.techdocs.parallelismLimit',
     );
     return new DefaultTechDocsCollatorFactory({
       ...options,
