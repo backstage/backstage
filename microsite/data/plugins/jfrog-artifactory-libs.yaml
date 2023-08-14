@@ -3,7 +3,8 @@ title: JFrog Artifactory Libs plugin
 author: Vity
 authorUrl: https://github.com/Vity01
 category: Discovery
-description: frontend plugin provides a simple way to display generated artifact (library) details like 
+description:
+  frontend plugin provides a simple way to display generated artifact (library) details like
   - group, artifact, repository, what is the latest version, and it simply
   allows to copy library definition for the package managers.
 documentation: https://github.com/Vity01/backstage-jfrog-artifactory-libs
