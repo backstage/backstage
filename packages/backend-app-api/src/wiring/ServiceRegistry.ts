@@ -82,13 +82,6 @@ export class ServiceRegistry implements EnumerableServiceHolder {
     this.#implementations = new Map();
   }
 
-  add(serviceFactory: ServiceFactory) {
-    this.#providedFactories.set(
-      serviceFactory.service.id,
-      toInternalServiceFactory(serviceFactory),
-    );
-  }
-
   #resolveFactory(
     ref: ServiceRef<unknown>,
     pluginId: string,

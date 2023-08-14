@@ -19,7 +19,6 @@ import {
   ExtensionPoint,
   ServiceRef,
   ServiceFactoryOrFunction,
-  ServiceFactory,
 } from '@backstage/backend-plugin-api';
 
 /**
@@ -40,7 +39,6 @@ export interface CreateSpecializedBackendOptions {
 
 export interface ServiceHolder {
   get<T>(api: ServiceRef<T>, pluginId: string): Promise<T> | undefined;
-  add(serviceFactory: ServiceFactory): void;
 }
 
 /**
