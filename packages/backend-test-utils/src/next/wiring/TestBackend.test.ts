@@ -220,4 +220,89 @@ describe('TestBackend', () => {
     expect(res.status).toEqual(200);
     expect(res.body).toEqual({ message: 'pong' });
   });
+
+  it('should provide extension point implementations', async () => {
+    expect.assertions(3);
+
+    const extensionPointA = createExtensionPoint<string>({ id: 'a' });
+    const extensionPointB = createExtensionPoint<string>({ id: 'b' });
+    await expect(
+      startTestBackend({
+        extensionPoints: [
+          [extensionPointA, 'a'],
+          [extensionPointB, 'b'],
+        ],
+        features: [
+          createBackendModule({
+            pluginId: 'testA',
+            moduleId: 'test',
+            register(reg) {
+              reg.registerInit({
+                deps: { ext: extensionPointA },
+                async init({ ext }) {
+                  expect(ext).toBe('a');
+                },
+              });
+            },
+          })(),
+          createBackendModule({
+            pluginId: 'testB',
+            moduleId: 'test',
+            register(reg) {
+              reg.registerInit({
+                deps: { ext: extensionPointB },
+                async init({ ext }) {
+                  expect(ext).toBe('b');
+                },
+              });
+            },
+          })(),
+        ],
+      }),
+    ).resolves.not.toBeUndefined();
+  });
+
+  it('should reject extension point used by multiple plugins', async () => {
+    const extensionPointA = createExtensionPoint<string>({ id: 'a' });
+    await expect(
+      startTestBackend({
+        extensionPoints: [[extensionPointA, 'a']],
+        features: [
+          createBackendModule({
+            pluginId: 'testA',
+            moduleId: 'test',
+            register(reg) {
+              reg.registerInit({
+                deps: { ext: extensionPointA },
+                async init() {},
+              });
+            },
+          })(),
+          createBackendModule({
+            pluginId: 'testB',
+            moduleId: 'test',
+            register(reg) {
+              reg.registerInit({
+                deps: { ext: extensionPointA },
+                async init() {},
+              });
+            },
+          })(),
+        ],
+      }),
+    ).rejects.toThrow(
+      "Extension point registered for plugin 'testA' may not be used by module for plugin 'testB'",
+    );
+  });
+
+  it('should reject extension point not used by any plugin', async () => {
+    const extensionPointA = createExtensionPoint<string>({ id: 'a' });
+    await expect(
+      startTestBackend({
+        extensionPoints: [[extensionPointA, 'a']],
+      }),
+    ).rejects.toThrow(
+      "Unable to determine the plugin ID of extension point(s) 'a'. Tested extension points must be depended on by one or more tested modules.",
+    );
+  });
 });
