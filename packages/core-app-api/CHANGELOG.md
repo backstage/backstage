@@ -1,5 +1,16 @@
 # @backstage/core-app-api
 
+## 1.9.1
+
+### Patch Changes
+
+- 9ae4e7e63836: Fixed a bug that could cause `navigate` analytics events to be misattributed to the plugin mounted on the root route (e.g. the `home` plugin at `/`) when the route that was navigated to wasn't associated with a routable extension.
+- Updated dependencies
+  - @backstage/core-plugin-api@1.5.3
+  - @backstage/config@1.0.8
+  - @backstage/types@1.1.0
+  - @backstage/version-bridge@1.0.4
+
 ## 1.9.1-next.0
 
 ### Patch Changes
