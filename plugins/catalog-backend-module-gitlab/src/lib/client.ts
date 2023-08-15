@@ -187,24 +187,24 @@ export class GitLabClient {
           body: JSON.stringify({
             variables: { group: groupPath, endCursor },
             query: `query listSaasGroups($group: ID!, $endCursor: String) {
-            group(fullPath: $group) {
-                descendantGroups(first: 100, after: $endCursor){
-                    nodes{
-                        id
-                        name
-                        description
-                        fullPath
-                        parent{
-                            id
-                        }
+              group(fullPath: $group) {
+                descendantGroups(first: 100, after: $endCursor) {
+                  nodes {
+                    id
+                    name
+                    description
+                    fullPath
+                    parent {
+                      id
                     }
-                    pageInfo {
-                        endCursor
-                        hasNextPage
-                    }
+                  }
+                  pageInfo {
+                    endCursor
+                    hasNextPage
+                  }
                 }       
-            }
-          }`,
+              }
+            }`,
           }),
         },
       ).then(r => r.json());
