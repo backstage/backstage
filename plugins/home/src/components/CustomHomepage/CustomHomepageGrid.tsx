@@ -68,7 +68,6 @@ const useStyles = makeStyles((theme: Theme) =>
       marginLeft: theme.spacing(2),
     },
     widgetWrapper: {
-      overflow: 'hidden',
       '& > div[class*="MuiCard-root"]': {
         width: '100%',
         height: '100%',
