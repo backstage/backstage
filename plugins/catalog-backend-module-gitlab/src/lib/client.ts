@@ -22,7 +22,6 @@ import {
 import { Logger } from 'winston';
 import {
   GitLabGroup,
-  GitLabSaasUsersResponse,
   GitLabSaasGroupsResponse,
   GitLabGroupMembersResponse,
   GitLabUser,
@@ -103,7 +102,7 @@ export class GitLabClient {
     let endCursor: string | null = null;
 
     do {
-      const response: GitLabSaasUsersResponse = await fetch(
+      const response: GitLabGroupMembersResponse = await fetch(
         `${this.config.baseUrl}/api/graphql`,
         {
           method: 'POST',
@@ -170,7 +169,9 @@ export class GitLabClient {
     return { items };
   }
 
-  async listSaasGroups(groupPath: string): Promise<PagedResponse<GitLabGroup>> {
+  async listDescendantGroups(
+    groupPath: string,
+  ): Promise<PagedResponse<GitLabGroup>> {
     const items: GitLabGroup[] = [];
     let hasNextPage: boolean = false;
     let endCursor: string | null = null;
@@ -186,7 +187,7 @@ export class GitLabClient {
           },
           body: JSON.stringify({
             variables: { group: groupPath, endCursor },
-            query: `query listSaasGroups($group: ID!, $endCursor: String) {
+            query: `query listDescendantGroups($group: ID!, $endCursor: String) {
             group(fullPath: $group) {
                 descendantGroups(first: 100, after: $endCursor){
                     nodes{

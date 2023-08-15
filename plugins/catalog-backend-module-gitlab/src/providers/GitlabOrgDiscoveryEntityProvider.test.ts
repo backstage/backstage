@@ -514,7 +514,7 @@ describe('GitlabOrgDiscoveryEntityProvider', () => {
     server.use(
       graphql
         .link('https://gitlab.com/api/graphql')
-        .query('listSaasGroups', async (_, res, ctx) =>
+        .query('listDescendantGroups', async (_, res, ctx) =>
           res(
             ctx.data({
               group: {

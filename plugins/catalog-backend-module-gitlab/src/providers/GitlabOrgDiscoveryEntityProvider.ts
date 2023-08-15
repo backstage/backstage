@@ -189,7 +189,7 @@ export class GitlabOrgDiscoveryEntityProvider implements EntityProvider {
         active: true,
       });
     } else {
-      groups = (await client.listSaasGroups(this.config.group)).items;
+      groups = (await client.listDescendantGroups(this.config.group)).items;
       users = (await client.listSaasUsers(this.config.group.split('/')[0]))
         .items;
     }

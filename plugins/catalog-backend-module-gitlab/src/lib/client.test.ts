@@ -575,12 +575,12 @@ describe('GitLabClient', () => {
     });
   });
 
-  describe('listSaasGroups', () => {
+  describe('listDescendantGroups', () => {
     it('gets all groups under root', async () => {
       server.use(
         graphql
           .link(`${MOCK_CONFIG.baseUrl}/api/graphql`)
-          .query('listSaasGroups', async (_, res, ctx) =>
+          .query('listDescendantGroups', async (_, res, ctx) =>
             res(
               ctx.data({
                 group: {
@@ -611,7 +611,7 @@ describe('GitLabClient', () => {
         logger: getVoidLogger(),
       });
 
-      const saasGroups = (await client.listSaasGroups('group1')).items;
+      const saasGroups = (await client.listDescendantGroups('group1')).items;
 
       const expectedSaasGroup = [
         {
@@ -631,7 +631,7 @@ describe('GitLabClient', () => {
       server.use(
         graphql
           .link(`${MOCK_CONFIG.baseUrl}/api/graphql`)
-          .query('listSaasGroups', async (_, res, ctx) =>
+          .query('listDescendantGroups', async (_, res, ctx) =>
             res(
               ctx.data({
                 group: {},
@@ -644,7 +644,7 @@ describe('GitLabClient', () => {
         logger: getVoidLogger(),
       });
 
-      const saasGroups = (await client.listSaasGroups('group1')).items;
+      const saasGroups = (await client.listDescendantGroups('group1')).items;
 
       expect(saasGroups).toEqual([]);
     });
@@ -653,7 +653,7 @@ describe('GitLabClient', () => {
       server.use(
         graphql
           .link(`${MOCK_CONFIG.baseUrl}/api/graphql`)
-          .query('listSaasGroups', async (_, res, ctx) =>
+          .query('listDescendantGroups', async (_, res, ctx) =>
             res(
               ctx.errors([
                 { message: 'Unexpected end of document', locations: [] },
@@ -666,7 +666,7 @@ describe('GitLabClient', () => {
         logger: getVoidLogger(),
       });
 
-      await expect(() => client.listSaasGroups('group1')).rejects.toThrow(
+      await expect(() => client.listDescendantGroups('group1')).rejects.toThrow(
         'GraphQL errors: [{"message":"Unexpected end of document","locations":[]}]',
       );
     });
@@ -674,7 +674,7 @@ describe('GitLabClient', () => {
       server.use(
         graphql
           .link(`${MOCK_CONFIG.baseUrl}/api/graphql`)
-          .query('listSaasGroups', async (req, res, ctx) =>
+          .query('listDescendantGroups', async (req, res, ctx) =>
             res(
               ctx.data({
                 group: {
@@ -717,7 +717,7 @@ describe('GitLabClient', () => {
         logger: getVoidLogger(),
       });
 
-      const saasGroups = (await client.listSaasGroups('root')).items;
+      const saasGroups = (await client.listDescendantGroups('root')).items;
 
       const expectedSaasGroup1 = {
         id: 1,
