@@ -26,6 +26,7 @@ import React, {
   useRef,
   useState,
 } from 'react';
+import * as zip from "@zip.js/zip.js";
 import {
   scaffolderApiRef,
   ScaffolderDryRunResponse,
@@ -50,6 +51,7 @@ interface DryRun {
 
   selectResult(id: number): void;
   deleteResult(id: number): void;
+  downloadResult(id: number): void;
   execute(options: DryRunOptions): Promise<void>;
 }
 
@@ -122,6 +124,22 @@ export function DryRunProvider(props: DryRunProviderProps) {
     });
   }, []);
 
+  const downloadResult = useCallback((id: number) => {
+    setState(prevState => {
+      const index = prevState.results.findIndex(r => r.id === id);
+      if (index === -1) {
+        return prevState;
+      }
+      const result = prevState.results[index];
+      console.log('Result', result.id);
+      createZipDownload(result.directoryContents, 'result_' + result.id)
+      return {
+        results: prevState.results,
+        selectedResult: prevState.selectedResult,
+      };
+    });
+  }, []);
+
   const execute = useCallback(
     async (options: DryRunOptions) => {
       if (!scaffolderApi.dryRun) {
@@ -158,6 +176,7 @@ export function DryRunProvider(props: DryRunProviderProps) {
       ...state,
       selectResult,
       deleteResult,
+      downloadResult,
       execute,
     }),
     [state, selectResult, deleteResult, execute],
@@ -177,3 +196,36 @@ export function useDryRun(): DryRun {
   }
   return value;
 }
+
+async function createZipDownload(directoryContents: { path: string; base64Content: string; executable: boolean; }[], name: string) {
+  // needs zip.js
+
+  // Creates a BlobWriter object where the zip content will be written.
+  const zipFileWriter = new zip.BlobWriter();
+
+  // Creates a ZipWriter object writing data via `zipFileWriter`, adds the entry
+  const zipWriter = new zip.ZipWriter(zipFileWriter);
+
+  for (const d of directoryContents) {
+    // Decode text content from base64 to ascii
+    const converted = atob(d.base64Content);
+    
+    // Creates a TextReader object storing the text of the entry to add in the zip (i.e. "Hello world!").
+    const fileReader = new zip.TextReader(converted);
+
+    await zipWriter.add(d.path, fileReader);
+  }
+
+  // Closes the writer.
+  await zipWriter.close();
+
+  // Retrieves the Blob object containing the zip content into `zipFileBlob`
+  const zipFileBlob = await zipFileWriter.getData();
+
+  // Download zip
+  const a = document.createElement('a');
+  a.href = URL.createObjectURL(zipFileBlob);
+  a.download = `dry-run-${name}.zip`;
+  a.click();
+}
+
