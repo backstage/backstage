@@ -85,7 +85,7 @@ async function main() {
           },
         });
       },
-    })(),
+    }),
   );
 
   await backend.start();

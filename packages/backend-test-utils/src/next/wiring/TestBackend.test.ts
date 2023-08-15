@@ -31,7 +31,6 @@ import { startTestBackend } from './TestBackend';
 let globalTestBackendHasBeenStopped = false;
 beforeAll(async () => {
   await startTestBackend({
-    services: [],
     features: [
       createBackendModule({
         moduleId: 'test.module',
@@ -46,7 +45,7 @@ beforeAll(async () => {
             },
           });
         },
-      })(),
+      }),
     ],
   });
 });
@@ -68,17 +67,37 @@ describe('TestBackend', () => {
     const extensionPoint5 = createExtensionPoint<Obj>({ id: 'b5' });
     await expect(
       startTestBackend({
-        services: [
+        features: [
           // @ts-expect-error
           [extensionPoint1, { a: 'a' }],
-          [serviceRef, { a: 'a' }],
-          [serviceRef, { a: 'a', b: 'b' }],
-          // @ts-expect-error
-          [serviceRef, { c: 'c' }],
-          // @ts-expect-error
-          [serviceRef, { a: 'a', c: 'c' }],
-          // @ts-expect-error
-          [serviceRef, { a: 'a', b: 'b', c: 'c' }],
+          createServiceFactory(() => ({
+            service: serviceRef,
+            deps: {},
+            // @ts-expect-error
+            factory: async () => ({ a: 'a' }),
+          })),
+          createServiceFactory(() => ({
+            service: serviceRef,
+            deps: {},
+            factory: async () => ({ a: 'a', b: 'b' }),
+          })),
+          createServiceFactory(() => ({
+            service: serviceRef,
+            deps: {},
+            // @ts-expect-error
+            factory: async () => ({ c: 'c' }),
+          })),
+          createServiceFactory(() => ({
+            service: serviceRef,
+            deps: {},
+            // @ts-expect-error
+            factory: async () => ({ a: 'a', c: 'c' }),
+          })),
+          createServiceFactory(() => ({
+            service: serviceRef,
+            deps: {},
+            factory: async () => ({ a: 'a', b: 'b', c: 'c' }),
+          })),
         ],
         extensionPoints: [
           // @ts-expect-error
@@ -124,8 +143,7 @@ describe('TestBackend', () => {
     });
 
     await startTestBackend({
-      services: [sf],
-      features: [testModule()],
+      features: [testModule(), sf()],
     });
 
     expect(testFn).toHaveBeenCalledWith('winning');
@@ -150,7 +168,6 @@ describe('TestBackend', () => {
     });
 
     const backend = await startTestBackend({
-      services: [],
       features: [testModule()],
     });
 
@@ -192,7 +209,6 @@ describe('TestBackend', () => {
     });
 
     await startTestBackend({
-      services: [],
       features: [testPlugin()],
     });
   });
@@ -244,7 +260,7 @@ describe('TestBackend', () => {
                 },
               });
             },
-          })(),
+          }),
           createBackendModule({
             pluginId: 'testB',
             moduleId: 'test',
@@ -256,7 +272,7 @@ describe('TestBackend', () => {
                 },
               });
             },
-          })(),
+          }),
         ],
       }),
     ).resolves.not.toBeUndefined();
@@ -277,7 +293,7 @@ describe('TestBackend', () => {
                 async init() {},
               });
             },
-          })(),
+          }),
           createBackendModule({
             pluginId: 'testB',
             moduleId: 'test',
@@ -287,7 +303,7 @@ describe('TestBackend', () => {
                 async init() {},
               });
             },
-          })(),
+          }),
         ],
       }),
     ).rejects.toThrow(

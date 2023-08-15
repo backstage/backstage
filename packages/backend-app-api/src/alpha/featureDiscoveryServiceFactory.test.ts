@@ -95,7 +95,7 @@ describe('featureDiscoveryServiceFactory', () => {
     const fn = jest.fn().mockResolvedValue({});
 
     await startTestBackend({
-      services: [
+      features: [
         createServiceFactory({
           service: coreServices.identity,
           deps: {},

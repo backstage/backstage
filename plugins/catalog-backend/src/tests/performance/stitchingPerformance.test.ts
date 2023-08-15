@@ -180,7 +180,6 @@ describePerformanceTest('stitchingPerformance', () => {
       const tracker = new Tracker(knex, load);
 
       const backend = await startTestBackend({
-        services: [staticDatabase(knex)],
         features: [
           catalogPlugin(),
           createBackendModule({
@@ -201,7 +200,8 @@ describePerformanceTest('stitchingPerformance', () => {
                 },
               });
             },
-          })(),
+          }),
+          staticDatabase(knex),
         ],
       });
 

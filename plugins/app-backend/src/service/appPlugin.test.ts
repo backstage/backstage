@@ -39,8 +39,8 @@ describe('appPlugin', () => {
 
   it('boots', async () => {
     const { server } = await startTestBackend({
-      features: [appPlugin()],
-      services: [
+      features: [
+        appPlugin(),
         mockServices.rootConfig.factory({
           data: {
             app: {

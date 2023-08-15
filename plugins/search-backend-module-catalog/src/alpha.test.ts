@@ -49,8 +49,8 @@ describe('searchModuleCatalogCollator', () => {
             },
           ],
         ],
-        features: [searchModuleCatalogCollator()],
-        services: [
+        features: [
+          searchModuleCatalogCollator(),
           mockServices.rootConfig.factory({
             data: {
               search: {

@@ -24,8 +24,6 @@ import {
 } from '@backstage/backend-app-api';
 import { HostDiscovery } from '@backstage/backend-common';
 import {
-  ServiceFactory,
-  ServiceRef,
   createServiceFactory,
   BackendFeature,
   ExtensionPoint,
@@ -40,18 +38,7 @@ import express from 'express';
 import { InternalBackendFeature } from '@backstage/backend-plugin-api/src/wiring/types';
 
 /** @public */
-export interface TestBackendOptions<
-  TServices extends any[],
-  TExtensionPoints extends any[],
-> {
-  services?: readonly [
-    ...{
-      [index in keyof TServices]:
-        | ServiceFactory<TServices[index]>
-        | (() => ServiceFactory<TServices[index]>)
-        | [ServiceRef<TServices[index]>, Partial<TServices[index]>];
-    },
-  ];
+export interface TestBackendOptions<TExtensionPoints extends any[]> {
   extensionPoints?: readonly [
     ...{
       [index in keyof TExtensionPoints]: [
@@ -60,7 +47,7 @@ export interface TestBackendOptions<
       ];
     },
   ];
-  features?: BackendFeature[];
+  features?: Array<BackendFeature | (() => BackendFeature)>;
 }
 
 /** @public */
@@ -95,17 +82,22 @@ const defaultServiceFactories = [
  * @returns
  */
 function createExtensionPointTestModules(
-  features: BackendFeature[],
+  features: Array<BackendFeature | (() => BackendFeature)>,
   extensionPointTuples?: readonly [
     ref: ExtensionPoint<unknown>,
     impl: unknown,
   ][],
-): BackendFeature[] {
+): Array<() => BackendFeature> {
   if (!extensionPointTuples) {
     return [];
   }
 
-  const registrations = features.flatMap(feature => {
+  const registrations = features.flatMap(featureOrFunction => {
+    const feature =
+      typeof featureOrFunction === 'function'
+        ? featureOrFunction()
+        : featureOrFunction;
+
     if (feature.$$type !== '@backstage/BackendFeature') {
       throw new Error(
         `Failed to add feature, invalid type '${feature.$$type}'`,
@@ -170,7 +162,7 @@ function createExtensionPointTestModules(
 
           reg.registerInit({ deps: {}, async init() {} });
         },
-      })(),
+      }),
     );
   }
 
@@ -180,18 +172,10 @@ function createExtensionPointTestModules(
 const backendInstancesToCleanUp = new Array<Backend>();
 
 /** @public */
-export async function startTestBackend<
-  TServices extends any[],
-  TExtensionPoints extends any[],
->(
-  options: TestBackendOptions<TServices, TExtensionPoints>,
+export async function startTestBackend<TExtensionPoints extends any[]>(
+  options: TestBackendOptions<TExtensionPoints>,
 ): Promise<TestBackend> {
-  const {
-    services = [],
-    extensionPoints,
-    features = [],
-    ...otherOptions
-  } = options;
+  const { extensionPoints, features = [], ...otherOptions } = options;
 
   let server: ExtendedHttpServer;
 
@@ -247,40 +231,10 @@ export async function startTestBackend<
     },
   });
 
-  const factories = services.map(serviceDef => {
-    if (Array.isArray(serviceDef)) {
-      // if type is ExtensionPoint?
-      // do something differently?
-      const [ref, impl] = serviceDef;
-      if (ref.scope === 'plugin') {
-        return createServiceFactory({
-          service: ref as ServiceRef<unknown, 'plugin'>,
-          deps: {},
-          factory: async () => impl,
-        })();
-      }
-      return createServiceFactory({
-        service: ref as ServiceRef<unknown, 'root'>,
-        deps: {},
-        factory: async () => impl,
-      })();
-    }
-    if (typeof serviceDef === 'function') {
-      return serviceDef();
-    }
-    return serviceDef as ServiceFactory;
-  });
-
-  for (const factory of defaultServiceFactories) {
-    if (!factories.some(f => f.service.id === factory.service.id)) {
-      factories.push(factory);
-    }
-  }
-
   const backend = createSpecializedBackend({
     ...otherOptions,
     defaultServiceFactories: [
-      ...factories,
+      ...defaultServiceFactories,
       rootHttpRouterFactory,
       discoveryFactory,
     ],
