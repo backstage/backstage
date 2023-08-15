@@ -1,5 +1,26 @@
 # @backstage/plugin-catalog-backend-module-aws
 
+## 0.2.3
+
+### Patch Changes
+
+- 629cbd194a87: Use `coreServices.rootConfig` instead of `coreService.config`
+- 4b82382ed8c2: Fixed invalid configuration schema. The configuration schema may be more strict as a result.
+- b4222908b0c3: Added option to configure AWS `accountId` in `AwsS3EntityProvider`
+- Updated dependencies
+  - @backstage/backend-common@0.19.2
+  - @backstage/backend-plugin-api@0.6.0
+  - @backstage/plugin-catalog-node@1.4.1
+  - @backstage/integration@1.6.0
+  - @backstage/backend-tasks@0.5.5
+  - @backstage/integration-aws-node@0.1.5
+  - @backstage/catalog-model@1.4.1
+  - @backstage/config@1.0.8
+  - @backstage/errors@1.2.1
+  - @backstage/types@1.1.0
+  - @backstage/plugin-catalog-common@1.0.15
+  - @backstage/plugin-kubernetes-common@0.6.5
+
 ## 0.2.3-next.2
 
 ### Patch Changes

@@ -1,5 +1,60 @@
 # example-backend
 
+## 0.2.86
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/plugin-search-backend-module-elasticsearch@1.3.3
+  - @backstage/plugin-search-backend-module-pg@0.5.9
+  - @backstage/plugin-azure-devops-backend@0.3.27
+  - @backstage/plugin-kubernetes-backend@0.11.3
+  - @backstage/plugin-lighthouse-backend@0.2.4
+  - @backstage/plugin-permission-backend@0.5.23
+  - @backstage/plugin-scaffolder-backend@1.16.0
+  - @backstage/plugin-devtools-backend@0.1.3
+  - @backstage/plugin-techdocs-backend@1.6.5
+  - @backstage/backend-common@0.19.2
+  - @backstage/plugin-catalog-backend@1.12.0
+  - @backstage/plugin-badges-backend@0.2.3
+  - @backstage/plugin-events-backend@0.2.9
+  - @backstage/plugin-search-backend@1.4.0
+  - @backstage/plugin-kafka-backend@0.2.41
+  - @backstage/plugin-proxy-backend@0.3.0
+  - @backstage/plugin-todo-backend@0.2.0
+  - @backstage/plugin-app-backend@0.3.48
+  - @backstage/plugin-scaffolder-backend-module-confluence-to-markdown@0.2.1
+  - @backstage/plugin-auth-backend@0.18.6
+  - @backstage/plugin-explore-backend@0.0.10
+  - @backstage/plugin-catalog-backend-module-unprocessed@0.2.0
+  - @backstage/plugin-scaffolder-backend-module-rails@0.4.17
+  - @backstage/plugin-entity-feedback-backend@0.1.6
+  - @backstage/plugin-code-coverage-backend@0.2.14
+  - @backstage/plugin-search-backend-node@1.2.4
+  - @backstage/plugin-linguist-backend@0.4.0
+  - @backstage/plugin-playlist-backend@0.3.4
+  - @backstage/plugin-jenkins-backend@0.2.3
+  - @backstage/plugin-nomad-backend@0.1.2
+  - @backstage/plugin-catalog-node@1.4.1
+  - @backstage/plugin-events-node@0.2.9
+  - @backstage/plugin-auth-node@0.2.17
+  - @backstage/integration@1.6.0
+  - @backstage/backend-tasks@0.5.5
+  - example-app@0.2.86
+  - @backstage/plugin-adr-backend@0.3.6
+  - @backstage/plugin-azure-sites-backend@0.1.10
+  - @backstage/plugin-graphql-backend@0.1.38
+  - @backstage/plugin-permission-node@0.7.11
+  - @backstage/plugin-rollbar-backend@0.1.45
+  - @backstage/plugin-tech-insights-backend@0.5.14
+  - @backstage/plugin-tech-insights-backend-module-jsonfc@0.1.32
+  - @backstage/plugin-tech-insights-node@0.4.6
+  - @backstage/catalog-client@1.4.3
+  - @backstage/catalog-model@1.4.1
+  - @backstage/config@1.0.8
+  - @backstage/plugin-permission-common@0.7.7
+  - @backstage/plugin-search-common@1.2.5
+
 ## 0.2.86-next.2
 
 ### Patch Changes

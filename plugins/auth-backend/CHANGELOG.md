@@ -1,5 +1,21 @@
 # @backstage/plugin-auth-backend
 
+## 0.18.6
+
+### Patch Changes
+
+- 16452cd007ae: Updated `frameHandler` to return `undefined` when using the redirect flow instead of returning `postMessageReponse` which was causing errors
+- 9dad4b0e61bd: Updated config schema to match what was being used in code
+- bb70a9c3886a: Add frontend visibility to provider objects in `auth` config.
+- Updated dependencies
+  - @backstage/backend-common@0.19.2
+  - @backstage/plugin-auth-node@0.2.17
+  - @backstage/catalog-client@1.4.3
+  - @backstage/catalog-model@1.4.1
+  - @backstage/config@1.0.8
+  - @backstage/errors@1.2.1
+  - @backstage/types@1.1.0
+
 ## 0.18.6-next.2
 
 ### Patch Changes
