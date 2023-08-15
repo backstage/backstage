@@ -26,4 +26,8 @@ export type { TemplateFilter, TemplateGlobal } from './types';
 export {
   scaffolderActionsExtensionPoint,
   type ScaffolderActionsExtensionPoint,
+  scaffolderTaskBrokerExtensionPoint,
+  type ScaffolderTaskBrokerExtensionPoint,
+  scaffolderTemplatingExtensionPoint,
+  type ScaffolderTemplatingExtensionPoint,
 } from './extensions';
