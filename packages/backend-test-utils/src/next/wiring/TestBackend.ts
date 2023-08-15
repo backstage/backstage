@@ -103,13 +103,16 @@ function createExtensionPointTestModules(
         `Failed to add feature, invalid type '${feature.$$type}'`,
       );
     }
-    const internalFeature = feature as InternalBackendFeature;
-    if (internalFeature.version !== 'v1') {
-      throw new Error(
-        `Failed to add feature, invalid version '${internalFeature.version}'`,
-      );
+
+    if (isInternalBackendFeature(feature)) {
+      if (feature.version !== 'v1') {
+        throw new Error(
+          `Failed to add feature, invalid version '${feature.version}'`,
+        );
+      }
+      return feature.getRegistrations();
     }
-    return internalFeature.getRegistrations();
+    return [];
   });
 
   const extensionPointMap = new Map(
@@ -287,3 +290,11 @@ function registerTestHooks() {
 }
 
 registerTestHooks();
+
+function isInternalBackendFeature(
+  feature: BackendFeature,
+): feature is InternalBackendFeature {
+  return (
+    typeof (feature as InternalBackendFeature).getRegistrations === 'function'
+  );
+}
