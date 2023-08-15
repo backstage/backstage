@@ -60,7 +60,7 @@ jobs:
       - run: yarn backstage-cli repo build
       - name: run E2E test
         run: |
-          yarn e2e-test run --dbms=mysql
+          yarn e2e-test run --dbms mysql
         env:
           BACKSTAGE_TEST_DISABLE_DOCKER: 1
           BACKSTAGE_TEST_DATABASE_MYSQL8_CONNECTION_STRING: mysql://root:root@localhost:${{ job.services.mysql8.ports[3306] }}/ignored
