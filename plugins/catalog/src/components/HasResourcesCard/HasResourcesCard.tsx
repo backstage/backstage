@@ -27,6 +27,7 @@ import {
 /** @public */
 export interface HasResourcesCardProps {
   variant?: InfoCardVariants;
+  title?: string;
 }
 
 export function HasResourcesCard(props: HasResourcesCardProps) {

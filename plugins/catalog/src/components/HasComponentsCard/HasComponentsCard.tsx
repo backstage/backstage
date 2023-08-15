@@ -27,6 +27,7 @@ import {
 /** @public */
 export interface HasComponentsCardProps {
   variant?: InfoCardVariants;
+  title?: string;
 }
 
 export function HasComponentsCard(props: HasComponentsCardProps) {

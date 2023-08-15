@@ -27,6 +27,7 @@ import {
 export interface HasSubcomponentsCardProps {
   variant?: InfoCardVariants;
   tableOptions?: TableOptions;
+  title?: string;
 }
 
 export function HasSubcomponentsCard(props: HasSubcomponentsCardProps) {
