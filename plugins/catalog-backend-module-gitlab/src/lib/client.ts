@@ -118,13 +118,13 @@ export class GitLabClient {
                 groupMembers(first: 100, relations: [DESCENDANTS], after: $endCursor) {
                   nodes {
                     user {
-                      id 
-                      username 
+                      id
+                      username
                       publicEmail
                       name
                       state
                       webUrl
-                      avatarUrl  
+                      avatarUrl
                     }
                   }
                   pageInfo {
