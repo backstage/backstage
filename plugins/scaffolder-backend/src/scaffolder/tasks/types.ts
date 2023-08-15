@@ -71,7 +71,7 @@ export type TaskEventType = _TaskEventType;
 export type SerializedTaskEvent = _SerializedTaskEvent;
 
 /**
- * The result of {@link TaskBroker.dispatch}
+ * The result of `TaskBroker.dispatch`.
  *
  * @public
  * @deprecated Import from `@backstage/plugin-scaffolder-node` instead.
@@ -79,7 +79,7 @@ export type SerializedTaskEvent = _SerializedTaskEvent;
 export type TaskBrokerDispatchResult = _TaskBrokerDispatchResult;
 
 /**
- * The options passed to {@link TaskBroker.dispatch}
+ * The options passed to `TaskBroker.dispatch`.
  * Currently a spec and optional secrets
  *
  * @public
