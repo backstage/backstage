@@ -19,10 +19,33 @@ import { TaskScheduleDefinitionConfig } from '@backstage/backend-tasks';
 export interface Config {
   search?: {
     collators?: {
+      /**
+       * Configuration options for `@backstage/plugin-search-backend-module-techdocs`
+       */
       techdocs?: {
+        /**
+         * The schedule for how often to run the collation job.
+         */
         schedule?: TaskScheduleDefinitionConfig;
+        /**
+         * A templating string with placeholders, to form the final location of
+         * the entity.
+         *
+         * @defaultValue '/docs/:namespace/:kind/:name/:path'
+         */
         locationTemplate?: string;
+        /**
+         * An abstract value that controls the concurrency level of the
+         * collation process. Increasing this value will both increase the
+         * number of entities fetched at a time from the catalog, as well as how
+         * many things are being processed concurrently.
+         *
+         * @defaultValue 10
+         */
         parallelismLimit?: number;
+        /**
+         * @defaultValue false
+         */
         legacyPathCasing?: boolean;
       };
     };
