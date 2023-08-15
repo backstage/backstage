@@ -25,6 +25,7 @@ import { makeStyles } from '@material-ui/core/styles';
 import CancelIcon from '@material-ui/icons/Cancel';
 import CheckIcon from '@material-ui/icons/Check';
 import DeleteIcon from '@material-ui/icons/Delete';
+import DownloadIcon from '@material-ui/icons/GetApp';
 import React from 'react';
 import { useDryRun } from '../DryRunContext';
 
@@ -69,7 +70,16 @@ export function DryRunResultsList() {
             <ListItemSecondaryAction>
               <IconButton
                 edge="end"
+                aria-label="download"
+                title="Download as .zip"
+                onClick={() => dryRun.downloadResult(result.id)}
+              >
+                <DownloadIcon />
+              </IconButton>
+              <IconButton
+                edge="end"
                 aria-label="delete"
+                title="Delete result"
                 onClick={() => dryRun.deleteResult(result.id)}
               >
                 <DeleteIcon />
