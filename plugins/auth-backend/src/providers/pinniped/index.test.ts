@@ -29,7 +29,7 @@ import passport from 'passport';
 import session from 'express-session';
 import Router from 'express-promise-router';
 // import fetch from 'node-fetch';
-import { SignJWT, UnsecuredJWT, exportJWK, generateKeyPair, importJWK } from 'jose';
+import { SignJWT, exportJWK, generateKeyPair, importJWK } from 'jose';
 import { v4 as uuid } from 'uuid';
 
 describe('pinniped.create', () => {
@@ -78,7 +78,7 @@ describe('pinniped.create', () => {
               authorization_endpoint: 'https://pinniped.test/oauth2/authorize',
               token_endpoint: 'https://pinniped.test/oauth2/token',
               jwks_uri: 'https://pinniped.test/jwks.json',
-              response_types_supported: ['code'],
+              response_types_supported: ['code', 'access_token'],
               response_modes_supported: ['query', 'form_post'],
               subject_types_supported: ['public'],
               token_endpoint_auth_methods_supported: ['client_secret_basic'],
@@ -96,7 +96,7 @@ describe('pinniped.create', () => {
                 'username',
                 'groups',
               ],
-              claims_supported: ['username', 'groups', 'additionalClaims'],
+              claims_supported: ['username', 'groups', 'additionalClaims', 'sub'],
               code_challenge_methods_supported: ['S256'],
               'discovery.supervisor.pinniped.dev/v1alpha1': {
                 pinniped_identity_providers_endpoint:
@@ -185,17 +185,6 @@ describe('pinniped.create', () => {
     const aud = 'clientId';
     const exp = Date.now() + 10000;
 
-
-    // const jwt =  new UnsecuredJWT({ iss, sub, aud, iat, exp })
-    // .setIssuer(iss)
-    // .setAudience(aud)
-    // .setSubject(sub)
-    // .setIssuedAt(iat)
-    // .setExpirationTime(exp)
-    // .encode();
-
-    //we must use a signed token for this endpoint to work since the authentication header of none is not accepted????but why does it not work with the none alg header type?? Tried using an unsigned token but alg header was not accepted.
-
     const key = await generateKeyPair('ES256');
     const publicKey = await exportJWK(key.publicKey);
     const privateKey = await exportJWK(key.privateKey);
@@ -228,15 +217,7 @@ describe('pinniped.create', () => {
       rest.get('https://pinniped.test/jwks.json', async (_req, res, ctx) => 
         res(
           ctx.status(200),
-          ctx.json({ "keys": [{
-            use: 'sig',
-            alg: 'ES256',
-            crv: 'P-256',
-            kid: '04f4bf90-3e70-4271-a17a-6ad2ff677b72',
-            kty: 'EC',
-            x: 'lt1BNQfB9Lu1TIWXxAyMDxd36arkK387lIU9Z6Z75pc',
-            y: 'nvNAmf9xAeBgVQcl5otaCJuTJV7Yea5n3B-4wZvuYCE',
-          }]
+          ctx.json({ "keys": [{...publicKey}]
           })
         ))
     );
@@ -244,7 +225,7 @@ describe('pinniped.create', () => {
     const handlerResponse = await agent.get(
       authorizationResponse.header.location,
     );
-
+      //our assertion doesnt include a scope but the return type does...might need to change our assertion?
     expect(handlerResponse.text).toContain(
       encodeURIComponent(
         JSON.stringify({
@@ -252,6 +233,7 @@ describe('pinniped.create', () => {
           response: {
             providerInfo: {
               accessToken: 'accessToken',
+              scope: "none"
             },
             profile: {},
           },
@@ -261,7 +243,7 @@ describe('pinniped.create', () => {
   });
 
   describe('#frameHandler', () => {
-    it.skip('performs an rfc 8693 token exchange after getting access token', async () => {
+    it('performs an rfc 8693 token exchange after getting access token', async () => {
       fakePinnipedSupervisor.use(
         rest.post('https://pinniped.test/oauth2/token', async (req, res, ctx) =>
           res(

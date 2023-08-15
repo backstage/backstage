@@ -78,7 +78,15 @@ export class PinnipedAuthProvider implements OAuthHandlers {
     req: express.Request,
   ): Promise<{ response: OAuthResponse; refreshToken?: string }> {
     const { strategy } = await this.implementation;
-    return new Promise((_, reject) => {
+
+    //TODO: what do we do about a defined scope here? one is expected to be returned by this handler method and i currently have it hardcoded. does our accesstoken need to worry about scope at all?
+    return new Promise((resolve, reject) => {
+      strategy.success = user => {
+        resolve({ response: {
+          providerInfo: {accessToken: user.tokenset.access_token, scope: "none"},
+          profile: {},
+        }})
+      }
       strategy.fail = info => {
         reject(new Error(`Authentication rejected, ${info.message || ''}`));
       };

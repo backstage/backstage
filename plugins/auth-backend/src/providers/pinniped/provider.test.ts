@@ -37,7 +37,7 @@ describe('PinnipedAuthProvider', () => {
     revocation_endpoint: 'https://pinniped.test/oauth2/revoke_token',
     userinfo_endpoint: 'https://pinniped.test/idp/userinfo.openid',
     introspection_endpoint: 'https://pinniped.test/introspect.oauth2',
-    jwks_uri: 'https://pinniped.test/pf/JWKS',
+    jwks_uri: 'https://pinniped.test/jwks.json',
     scopes_supported: [
       'openid',
       'offline_access',
@@ -263,5 +263,12 @@ describe('PinnipedAuthProvider', () => {
         'Authentication rejected, state missing from the response',
       );
     });
+
+    it.only('exchanges authorization code for a valid access_token', async() => {
+      const handlerResponse = await provider.handler(handlerRequest);
+      const accessToken = handlerResponse.response.providerInfo.accessToken
+      
+      expect(accessToken).toEqual('accessToken')
+    })
   });
 });
