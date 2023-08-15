@@ -71,7 +71,7 @@ export default async (opts: CreateFixPackageInfoYamlsOptions) => {
           throw e;
         }
 
-        fixCatalogInfoYaml({
+        await fixCatalogInfoYaml({
           yamlPath: infoYamlPath,
           packageJson,
           codeowners,
