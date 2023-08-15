@@ -1,11 +1,11 @@
 ---
 '@backstage/backend-plugin-api': patch
-'@backstage/backend-test-utils': patch
-'@backstage/backend-defaults': patch
-'@backstage/backend-app-api': patch
+'@backstage/backend-test-utils': minor
+'@backstage/backend-defaults': minor
+'@backstage/backend-app-api': minor
 ---
 
-**BREAKING**: Removed options from `createBackend`. Service factories are now `BackendFeature`s and should be installed with `backend.add(...)` instead. The following should be migrated:
+**BREAKING**: Removed the `services` option from `createBackend`. Service factories are now `BackendFeature`s and should be installed with `backend.add(...)` instead. The following should be migrated:
 
 ```ts
 const backend = createBackend({ services: [myCustomServiceFactory] });
