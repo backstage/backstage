@@ -24,8 +24,9 @@ exports.up = async function up(knex) {
     table.comment(
       'A cache of static assets that where previously deployed and may still be lazy-loaded by clients',
     );
+    // setting to 64KB to account for long paths
     table
-      .text('path', 'longtext')
+      .string('path', 65535)
       .primary()
       .notNullable()
       .comment('The path of the file');

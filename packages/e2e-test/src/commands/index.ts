@@ -22,8 +22,9 @@ export function registerCommands(program: Command) {
     .command('run')
     .description('Run e2e tests')
     .option(
-      '-db, --dbms',
+      '-db, --dbms <value>',
       'Selected database management system for e2e testing, (eg. mysql, postgres)',
+      'postgres',
     )
     .action(run);
 }

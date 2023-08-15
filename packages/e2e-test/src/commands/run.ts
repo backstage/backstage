@@ -46,7 +46,7 @@ const templatePackagePaths = [
   'packages/create-app/templates/default-app/packages/backend/package.json.hbs',
 ];
 
-export async function run(dbms: string = 'postgres') {
+export async function run(options: { dbms: string }) {
   const rootDir = await fs.mkdtemp(resolvePath(os.tmpdir(), 'backstage-e2e-'));
   print(`CLI E2E test root: ${rootDir}\n`);
 
@@ -74,7 +74,7 @@ export async function run(dbms: string = 'postgres') {
     Boolean(process.env.BACKSTAGE_TEST_DATABASE_MYSQL8_CONNECTION_STRING)
   ) {
     print('Testing the datbase backend startup');
-    await dropClientDatabases(dbms);
+    await dropClientDatabases(options.dbms);
     const appConfig = path.resolve(appDir, 'app-config.yaml');
     const productionConfig = path.resolve(appDir, 'app-config.production.yaml');
 
