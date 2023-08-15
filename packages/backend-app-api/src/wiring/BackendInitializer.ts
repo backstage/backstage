@@ -167,7 +167,10 @@ export class BackendInitializer {
   }
 
   async #doStart(): Promise<void> {
-    this.#serviceHolder = new ServiceRegistry(this.#defaultApiFactories);
+    this.#serviceHolder = new ServiceRegistry([
+      ...this.#defaultApiFactories,
+      ...this.#providedServiceFactories,
+    ]);
 
     const featureDiscovery = await this.#serviceHolder.get(
       featureDiscoveryServiceRef,
