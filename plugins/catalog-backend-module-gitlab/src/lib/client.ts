@@ -117,13 +117,13 @@ export class GitLabClient {
                 groupMembers(first: 100, relations: [DESCENDANTS], after: $endCursor) {
                   nodes {
                     user {
-                      id 
-                      username 
+                      id
+                      username
                       publicEmail
                       name
                       state
                       webUrl
-                      avatarUrl  
+                      avatarUrl
                     }
                   }
                   pageInfo {
@@ -188,24 +188,24 @@ export class GitLabClient {
           body: JSON.stringify({
             variables: { group: groupPath, endCursor },
             query: `query listDescendantGroups($group: ID!, $endCursor: String) {
-            group(fullPath: $group) {
-                descendantGroups(first: 100, after: $endCursor){
-                    nodes{
-                        id
-                        name
-                        description
-                        fullPath
-                        parent{
-                            id
-                        }
+              group(fullPath: $group) {
+                descendantGroups(first: 100, after: $endCursor) {
+                  nodes {
+                    id
+                    name
+                    description
+                    fullPath
+                    parent {
+                      id
                     }
-                    pageInfo {
-                        endCursor
-                        hasNextPage
-                    }
+                  }
+                  pageInfo {
+                    endCursor
+                    hasNextPage
+                  }
                 }       
-            }
-          }`,
+              }
+            }`,
           }),
         },
       ).then(r => r.json());
