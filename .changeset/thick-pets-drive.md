@@ -1,5 +1,5 @@
 ---
-'@backstage/plugin-catalog-backend-module-gitlab': patch
+'@backstage/plugin-catalog-backend-module-gitlab': minor
 ---
 
 Fix Gitlab.com user ingestion by scoping GitlabOrgDiscoveryEntityProvider to a group.
