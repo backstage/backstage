@@ -39,6 +39,12 @@ const useStyles = makeStyles<BackstageTheme>(() => ({
       },
     },
   },
+  hints: {
+    marginTop: '10px',
+    backgroundColor: '#fcf7ed',
+    width: '100%',
+    padding: '5px',
+  },
 }));
 
 type Props = {
@@ -75,8 +81,18 @@ export const GraphQlDefinition = ({ definition }: Props) => {
               : () => Promise.resolve(null) as any
           }
           schema={schema}
-          visiblePlugin="Documentation Explorer"
+          docExplorerOpen
+          defaultSecondaryEditorOpen={false}
+          headerEditorEnabled
         />
+        {url ? (
+          <div />
+        ) : (
+          <div className={classes.hints}>
+            <strong>Note</strong>: Please specify "backstage.io/api-graphql-url"
+            in your entity's annotation to try this API.
+          </div>
+        )}
       </div>
     </div>
   );
