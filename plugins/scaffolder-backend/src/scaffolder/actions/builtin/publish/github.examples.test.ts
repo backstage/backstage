@@ -23,13 +23,8 @@ import {
   GithubCredentialsProvider,
   ScmIntegrations,
 } from '@backstage/integration';
-import { when } from 'jest-when';
 import { PassThrough } from 'stream';
-import {
-  enableBranchProtectionOnDefaultRepoBranch,
-  entityRefToName,
-  initRepoAndPush,
-} from '../helpers';
+import { entityRefToName, initRepoAndPush } from '../helpers';
 import { createPublishGithubAction } from './github';
 import { examples } from './github.examples';
 import yaml from 'yaml';
