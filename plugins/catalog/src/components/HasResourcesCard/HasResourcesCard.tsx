@@ -30,11 +30,11 @@ export interface HasResourcesCardProps {
 }
 
 export function HasResourcesCard(props: HasResourcesCardProps) {
-  const { variant = 'gridItem' } = props;
+  const { variant = 'gridItem', title = 'Has resources' } = props;
   return (
     <RelatedEntitiesCard
       variant={variant}
-      title="Has resources"
+      title={title}
       entityKind="Resource"
       relationType={RELATION_HAS_PART}
       columns={resourceEntityColumns}
