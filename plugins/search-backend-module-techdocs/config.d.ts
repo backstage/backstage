@@ -31,7 +31,7 @@ export interface Config {
          * A templating string with placeholders, to form the final location of
          * the entity.
          *
-         * @defaultValue '/docs/:namespace/:kind/:name/:path'
+         * Defaults to `'/docs/:namespace/:kind/:name/:path'`.
          */
         locationTemplate?: string;
         /**
@@ -40,11 +40,11 @@ export interface Config {
          * number of entities fetched at a time from the catalog, as well as how
          * many things are being processed concurrently.
          *
-         * @defaultValue 10
+         * Defaults to `10`.
          */
         parallelismLimit?: number;
         /**
-         * @defaultValue false
+         * Defaults to `false`.
          */
         legacyPathCasing?: boolean;
       };
