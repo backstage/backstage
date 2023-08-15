@@ -60,34 +60,17 @@ export type GitLabGroupMembersResponse = {
   data: {
     group: {
       groupMembers: {
-        nodes: { user: { id: string } }[];
-        pageInfo: {
-          endCursor: string;
-          hasNextPage: boolean;
-        };
-      };
-    };
-  };
-};
-
-export type GitLabSaasUsersResponse = {
-  errors: { message: string }[];
-  data: {
-    group: {
-      groupMembers: {
-        nodes: [
-          {
-            user: {
-              id: string;
-              username: string;
-              publicEmail: string;
-              name: string;
-              state: string;
-              webUrl: string;
-              avatarUrl: string;
-            };
-          },
-        ];
+        nodes: {
+          user: {
+            id: string;
+            username: string;
+            publicEmail: string;
+            name: string;
+            state: string;
+            webUrl: string;
+            avatarUrl: string;
+          };
+        }[];
         pageInfo: {
           endCursor: string;
           hasNextPage: boolean;
