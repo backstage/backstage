@@ -14,14 +14,13 @@
  * limitations under the License.
  */
 
+import { BackendFeature, BackendFeatureFactory } from '../types';
 import {
   BackendModuleRegistrationPoints,
   BackendPluginRegistrationPoints,
   ExtensionPoint,
   InternalBackendModuleRegistration,
   InternalBackendPluginRegistration,
-  BackendFeatureFactory,
-  BackendFeature,
 } from './types';
 
 /**

@@ -14,6 +14,8 @@
  * limitations under the License.
  */
 
+import { BackendFeature } from '../../types';
+
 /**
  * TODO
  *
@@ -51,9 +53,7 @@ export type ServiceRef<
 export interface ServiceFactory<
   TService = unknown,
   TScope extends 'plugin' | 'root' = 'plugin' | 'root',
-> {
-  $$type: '@backstage/ServiceFactory';
-
+> extends BackendFeature {
   service: ServiceRef<TService, TScope>;
 }
 
@@ -248,7 +248,7 @@ export function createServiceFactory<
     if (anyConf.service.scope === 'root') {
       const c = anyConf as RootServiceFactoryConfig<TService, TImpl, TDeps>;
       return {
-        $$type: '@backstage/ServiceFactory',
+        $$type: '@backstage/BackendFeature',
         version: 'v1',
         service: c.service,
         deps: c.deps,
@@ -262,7 +262,7 @@ export function createServiceFactory<
       TDeps
     >;
     return {
-      $$type: '@backstage/ServiceFactory',
+      $$type: '@backstage/BackendFeature',
       version: 'v1',
       service: c.service,
       ...('createRootContext' in c

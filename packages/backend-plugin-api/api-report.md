@@ -409,9 +409,7 @@ export type SearchResponseFile = {
 export interface ServiceFactory<
   TService = unknown,
   TScope extends 'plugin' | 'root' = 'plugin' | 'root',
-> {
-  // (undocumented)
-  $$type: '@backstage/ServiceFactory';
+> extends BackendFeature {
   // (undocumented)
   service: ServiceRef<TService, TScope>;
 }

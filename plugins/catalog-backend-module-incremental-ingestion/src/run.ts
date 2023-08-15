@@ -55,16 +55,15 @@ async function main() {
     },
   };
 
-  const backend = createBackend({
-    services: [
-      createServiceFactory({
-        service: coreServices.rootConfig,
-        deps: {},
-        factory: () => new ConfigReader(config),
-      }),
-    ],
-  });
+  const backend = createBackend();
 
+  backend.add(
+    createServiceFactory({
+      service: coreServices.rootConfig,
+      deps: {},
+      factory: () => new ConfigReader(config),
+    }),
+  );
   backend.add(catalogPlugin());
   backend.add(catalogModuleIncrementalIngestionEntityProvider());
   backend.add(
@@ -86,7 +85,7 @@ async function main() {
           },
         });
       },
-    })(),
+    }),
   );
 
   await backend.start();

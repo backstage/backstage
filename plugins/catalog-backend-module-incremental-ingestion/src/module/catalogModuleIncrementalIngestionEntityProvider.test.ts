@@ -14,13 +14,12 @@
  * limitations under the License.
  */
 
-import { getVoidLogger } from '@backstage/backend-common';
 import {
   coreServices,
   createBackendModule,
+  createServiceFactory,
 } from '@backstage/backend-plugin-api';
 import { startTestBackend } from '@backstage/backend-test-utils';
-import { ConfigReader } from '@backstage/config';
 import { catalogProcessingExtensionPoint } from '@backstage/plugin-catalog-node/alpha';
 import { IncrementalEntityProvider } from '../types';
 import {
@@ -43,26 +42,16 @@ describe('catalogModuleIncrementalIngestionEntityProvider', () => {
     const addEntityProvider = jest.fn();
     const httpRouterUse = jest.fn();
 
-    const scheduler = {};
-    const database = {
-      getClient: jest.fn(),
-    };
-    const httpRouter = {
-      use: httpRouterUse,
-    };
-
     await startTestBackend({
       extensionPoints: [
         [catalogProcessingExtensionPoint, { addEntityProvider }],
       ],
-      services: [
-        [coreServices.rootConfig, new ConfigReader({})],
-        [coreServices.database, database],
-        [coreServices.httpRouter, httpRouter],
-        [coreServices.logger, getVoidLogger()],
-        [coreServices.scheduler, scheduler],
-      ],
       features: [
+        createServiceFactory({
+          service: coreServices.httpRouter,
+          deps: {},
+          factory: () => ({ use: httpRouterUse }),
+        }),
         catalogModuleIncrementalIngestionEntityProvider(),
         createBackendModule({
           pluginId: 'catalog',
@@ -82,7 +71,7 @@ describe('catalogModuleIncrementalIngestionEntityProvider', () => {
               },
             });
           },
-        })(),
+        }),
       ],
     });
 

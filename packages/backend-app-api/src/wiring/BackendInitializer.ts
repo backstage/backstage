@@ -19,6 +19,7 @@ import {
   ExtensionPoint,
   coreServices,
   ServiceRef,
+  ServiceFactory,
 } from '@backstage/backend-plugin-api';
 import { BackendLifecycleImpl } from '../services/implementations/rootLifecycle/rootLifecycleServiceFactory';
 import { BackendPluginLifecycleImpl } from '../services/implementations/lifecycle/lifecycleServiceFactory';
@@ -29,6 +30,7 @@ import { InternalBackendFeature } from '@backstage/backend-plugin-api/src/wiring
 import { ForwardedError, ConflictError } from '@backstage/errors';
 import { featureDiscoveryServiceRef } from '@backstage/backend-plugin-api/alpha';
 import { DependencyGraph } from '../lib/DependencyGraph';
+import { ServiceRegistry } from './ServiceRegistry';
 
 export interface BackendRegisterInit {
   consumes: Set<ServiceOrExtensionPoint>;
@@ -46,10 +48,12 @@ export class BackendInitializer {
     ExtensionPoint<unknown>,
     { impl: unknown; pluginId: string }
   >();
-  #serviceHolder: EnumerableServiceHolder;
+  #serviceHolder: EnumerableServiceHolder | undefined;
+  #providedServiceFactories = new Array<ServiceFactory>();
+  #defaultApiFactories: ServiceFactory[];
 
-  constructor(serviceHolder: EnumerableServiceHolder) {
-    this.#serviceHolder = serviceHolder;
+  constructor(defaultApiFactories: ServiceFactory[]) {
+    this.#defaultApiFactories = defaultApiFactories;
   }
 
   async #getInitDeps(
@@ -69,7 +73,7 @@ export class BackendInitializer {
         }
         result.set(name, ep.impl);
       } else {
-        const impl = await this.#serviceHolder.get(
+        const impl = await this.#serviceHolder!.get(
           ref as ServiceRef<unknown>,
           pluginId,
         );
@@ -104,13 +108,35 @@ export class BackendInitializer {
         `Failed to add feature, invalid type '${feature.$$type}'`,
       );
     }
-    const internalFeature = feature as InternalBackendFeature;
-    if (internalFeature.version !== 'v1') {
+
+    if (isServiceFactory(feature)) {
+      if (feature.service.id === coreServices.pluginMetadata.id) {
+        throw new Error(
+          `The ${coreServices.pluginMetadata.id} service cannot be overridden`,
+        );
+      }
+      if (
+        this.#providedServiceFactories.find(
+          sf => sf.service.id === feature.service.id,
+        )
+      ) {
+        throw new Error(
+          `Duplicate service implementations provided for ${feature.service.id}`,
+        );
+      }
+      this.#providedServiceFactories.push(feature);
+    } else if (isInternalBackendFeature(feature)) {
+      if (feature.version !== 'v1') {
+        throw new Error(
+          `Failed to add feature, invalid version '${feature.version}'`,
+        );
+      }
+      this.#features.push(feature);
+    } else {
       throw new Error(
-        `Failed to add feature, invalid version '${internalFeature.version}'`,
+        `Failed to add feature, invalid feature ${JSON.stringify(feature)}`,
       );
     }
-    this.#features.push(internalFeature);
   }
 
   async start(): Promise<void> {
@@ -141,6 +167,11 @@ export class BackendInitializer {
   }
 
   async #doStart(): Promise<void> {
+    this.#serviceHolder = new ServiceRegistry([
+      ...this.#defaultApiFactories,
+      ...this.#providedServiceFactories,
+    ]);
+
     const featureDiscovery = await this.#serviceHolder.get(
       featureDiscoveryServiceRef,
       'root',
@@ -319,7 +350,7 @@ export class BackendInitializer {
 
   // Bit of a hacky way to grab the lifecycle services, potentially find a nicer way to do this
   async #getRootLifecycleImpl(): Promise<BackendLifecycleImpl> {
-    const lifecycleService = await this.#serviceHolder.get(
+    const lifecycleService = await this.#serviceHolder!.get(
       coreServices.rootLifecycle,
       'root',
     );
@@ -332,7 +363,7 @@ export class BackendInitializer {
   async #getPluginLifecycleImpl(
     pluginId: string,
   ): Promise<BackendPluginLifecycleImpl> {
-    const lifecycleService = await this.#serviceHolder.get(
+    const lifecycleService = await this.#serviceHolder!.get(
       coreServices.lifecycle,
       pluginId,
     );
@@ -341,4 +372,16 @@ export class BackendInitializer {
     }
     throw new Error('Unexpected plugin lifecycle service implementation');
   }
+}
+
+function isServiceFactory(feature: BackendFeature): feature is ServiceFactory {
+  return !!(feature as ServiceFactory).service;
+}
+
+function isInternalBackendFeature(
+  feature: BackendFeature,
+): feature is InternalBackendFeature {
+  return (
+    typeof (feature as InternalBackendFeature).getRegistrations === 'function'
+  );
 }

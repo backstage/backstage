@@ -1,5 +1,5 @@
 /*
- * Copyright 2022 The Backstage Authors
+ * Copyright 2023 The Backstage Authors
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,18 +14,16 @@
  * limitations under the License.
  */
 
-export type {
-  BackendModuleConfig,
-  BackendPluginConfig,
-  ExtensionPointConfig,
-} from './factories';
-export {
-  createBackendModule,
-  createBackendPlugin,
-  createExtensionPoint,
-} from './factories';
-export type {
-  BackendModuleRegistrationPoints,
-  BackendPluginRegistrationPoints,
-  ExtensionPoint,
-} from './types';
+/** @internal */
+export interface BackendFeatureFactory<
+  TOptions extends [options?: object] = [],
+> {
+  (...options: TOptions): BackendFeature;
+  $$type: '@backstage/BackendFeatureFactory';
+}
+
+/** @public */
+export interface BackendFeature {
+  // NOTE: This type is opaque in order to simplify future API evolution.
+  $$type: '@backstage/BackendFeature';
+}
