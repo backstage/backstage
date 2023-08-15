@@ -18,5 +18,12 @@ import { Command } from 'commander';
 import { run } from './run';
 
 export function registerCommands(program: Command) {
-  program.command('run').description('Run e2e tests').action(run);
+  program
+    .command('run')
+    .description('Run e2e tests')
+    .option(
+      '-db, --dbms',
+      'Selected database management system for e2e testing, (eg. mysql, postgres)',
+    )
+    .action(run);
 }

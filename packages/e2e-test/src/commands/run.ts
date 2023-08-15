@@ -46,7 +46,7 @@ const templatePackagePaths = [
   'packages/create-app/templates/default-app/packages/backend/package.json.hbs',
 ];
 
-export async function run() {
+export async function run(dbms: string = 'postgres') {
   const rootDir = await fs.mkdtemp(resolvePath(os.tmpdir(), 'backstage-e2e-'));
   print(`CLI E2E test root: ${rootDir}\n`);
 
@@ -69,17 +69,15 @@ export async function run() {
   print('Starting the app');
   await testAppServe(pluginId, appDir);
 
-  if (Boolean(process.env.POSTGRES_USER) || Boolean(process.env.MYSQL_USER)) {
+  if (
+    Boolean(process.env.POSTGRES_USER) ||
+    Boolean(process.env.BACKSTAGE_TEST_DATABASE_MYSQL8_CONNECTION_STRING)
+  ) {
     print('Testing the datbase backend startup');
-    await preCleanDatabase();
+    await dropClientDatabases(dbms);
     const appConfig = path.resolve(appDir, 'app-config.yaml');
-    let productionConfig = path.resolve(appDir, 'app-config.production.yaml');
-    if (Boolean(process.env.MYSQL_HOST)) {
-      productionConfig = path.resolve(
-        appDir,
-        'app-config.production.mysql.yaml',
-      );
-    }
+    const productionConfig = path.resolve(appDir, 'app-config.production.yaml');
+
     await testBackendStart(
       appDir,
       '--config',
@@ -435,10 +433,10 @@ async function testAppServe(pluginId: string, appDir: string) {
   }
 }
 
-/** Drops PG databases */
-async function dropDB(database: string, client: string) {
+/** Drops databases */
+async function dropDB(database: string, dbms: string) {
   try {
-    if (client === 'postgres') {
+    if (dbms === 'postgres') {
       const config = {
         host: process.env.POSTGRES_HOST ? process.env.POSTGRES_HOST : '',
         port: process.env.POSTGRES_PORT ? process.env.POSTGRES_PORT : '',
@@ -448,7 +446,7 @@ async function dropDB(database: string, client: string) {
           : '',
       };
       await pgtools.dropdb(config, database);
-    } else if (client === 'mysql') {
+    } else if (dbms === 'mysql') {
       const connectionString =
         process.env.BACKSTAGE_TEST_DATABASE_MYSQL8_CONNECTION_STRING ?? '';
       const connection = await mysql.createConnection(connectionString);
@@ -460,18 +458,8 @@ async function dropDB(database: string, client: string) {
 }
 
 /** Clean remnants from prior e2e runs */
-async function preCleanDatabase() {
+async function dropClientDatabases(dbms: string) {
   print('Dropping old DBs');
-  if (Boolean(process.env.POSTGRES_HOST)) {
-    await dropClientDatabases('postgres');
-  }
-  if (Boolean(process.env.BACKSTAGE_TEST_DATABASE_MYSQL8_CONNECTION_STRING)) {
-    await dropClientDatabases('mysql');
-  }
-  print('Created DBs');
-}
-
-async function dropClientDatabases(client: string) {
   await Promise.all(
     [
       'catalog',
@@ -481,8 +469,9 @@ async function dropClientDatabases(client: string) {
       'proxy',
       'techdocs',
       'search',
-    ].map(name => dropDB(`backstage_plugin_${name}`, client)),
+    ].map(name => dropDB(`backstage_plugin_${name}`, dbms)),
   );
+  print('Created DBs');
 }
 
 /**
