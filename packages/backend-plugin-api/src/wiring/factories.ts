@@ -85,14 +85,10 @@ export interface BackendPluginConfig {
  * @see {@link https://backstage.io/docs/backend-system/architecture/plugins | The architecture of plugins}
  * @see {@link https://backstage.io/docs/backend-system/architecture/naming-patterns | Recommended naming patterns}
  */
-export function createBackendPlugin<TOptions extends [options?: object] = []>(
-  config: BackendPluginConfig | ((...params: TOptions) => BackendPluginConfig),
-): (...params: TOptions) => BackendFeature {
-  const configCallback = typeof config === 'function' ? config : () => config;
-
-  const factory: BackendFeatureFactory<TOptions> = (...options) => {
-    const c = configCallback(...options);
-
+export function createBackendPlugin(
+  config: BackendPluginConfig,
+): () => BackendFeature {
+  const factory: BackendFeatureFactory = () => {
     let registrations: InternalBackendPluginRegistration[];
 
     return {
@@ -107,7 +103,7 @@ export function createBackendPlugin<TOptions extends [options?: object] = []>(
         let init: InternalBackendPluginRegistration['init'] | undefined =
           undefined;
 
-        c.register({
+        config.register({
           registerExtensionPoint(ext, impl) {
             if (init) {
               throw new Error(
@@ -129,14 +125,14 @@ export function createBackendPlugin<TOptions extends [options?: object] = []>(
 
         if (!init) {
           throw new Error(
-            `registerInit was not called by register in ${c.pluginId}`,
+            `registerInit was not called by register in ${config.pluginId}`,
           );
         }
 
         registrations = [
           {
             type: 'plugin',
-            pluginId: c.pluginId,
+            pluginId: config.pluginId,
             extensionPoints,
             init,
           },
@@ -179,13 +175,10 @@ export interface BackendModuleConfig {
  * @see {@link https://backstage.io/docs/backend-system/architecture/modules | The architecture of modules}
  * @see {@link https://backstage.io/docs/backend-system/architecture/naming-patterns | Recommended naming patterns}
  */
-export function createBackendModule<TOptions extends [options?: object] = []>(
-  config: BackendModuleConfig | ((...params: TOptions) => BackendModuleConfig),
-): (...params: TOptions) => BackendFeature {
-  const configCallback = typeof config === 'function' ? config : () => config;
-  const factory: BackendFeatureFactory<TOptions> = (...options: TOptions) => {
-    const c = configCallback(...options);
-
+export function createBackendModule(
+  config: BackendModuleConfig,
+): () => BackendFeature {
+  const factory: BackendFeatureFactory = () => {
     let registrations: InternalBackendModuleRegistration[];
 
     return {
@@ -200,7 +193,7 @@ export function createBackendModule<TOptions extends [options?: object] = []>(
         let init: InternalBackendModuleRegistration['init'] | undefined =
           undefined;
 
-        c.register({
+        config.register({
           registerExtensionPoint(ext, impl) {
             if (init) {
               throw new Error(
@@ -222,15 +215,15 @@ export function createBackendModule<TOptions extends [options?: object] = []>(
 
         if (!init) {
           throw new Error(
-            `registerInit was not called by register in ${c.moduleId} module for ${c.pluginId}`,
+            `registerInit was not called by register in ${config.moduleId} module for ${config.pluginId}`,
           );
         }
 
         registrations = [
           {
             type: 'module',
-            pluginId: c.pluginId,
-            moduleId: c.moduleId,
+            pluginId: config.pluginId,
+            moduleId: config.moduleId,
             extensionPoints,
             init,
           },

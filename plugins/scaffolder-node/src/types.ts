@@ -14,15 +14,12 @@
  * limitations under the License.
  */
 
-export type {
-  TaskSecrets,
-  SerializedTask,
-  SerializedTaskEvent,
-  TaskBroker,
-  TaskBrokerDispatchOptions,
-  TaskBrokerDispatchResult,
-  TaskCompletionState,
-  TaskContext,
-  TaskEventType,
-  TaskStatus,
-} from './types';
+import { JsonValue } from '@backstage/types';
+
+/** @public */
+export type TemplateFilter = (...args: JsonValue[]) => JsonValue | undefined;
+
+/** @public */
+export type TemplateGlobal =
+  | ((...args: JsonValue[]) => JsonValue | undefined)
+  | JsonValue;

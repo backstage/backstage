@@ -119,14 +119,14 @@ export namespace coreServices {
 }
 
 // @public
-export function createBackendModule<TOptions extends [options?: object] = []>(
-  config: BackendModuleConfig | ((...params: TOptions) => BackendModuleConfig),
-): (...params: TOptions) => BackendFeature;
+export function createBackendModule(
+  config: BackendModuleConfig,
+): () => BackendFeature;
 
 // @public
-export function createBackendPlugin<TOptions extends [options?: object] = []>(
-  config: BackendPluginConfig | ((...params: TOptions) => BackendPluginConfig),
-): (...params: TOptions) => BackendFeature;
+export function createBackendPlugin(
+  config: BackendPluginConfig,
+): () => BackendFeature;
 
 // @public
 export function createExtensionPoint<T>(
