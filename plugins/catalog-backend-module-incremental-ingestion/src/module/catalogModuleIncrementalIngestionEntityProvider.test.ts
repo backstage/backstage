@@ -14,8 +14,12 @@
  * limitations under the License.
  */
 
-import { createBackendModule } from '@backstage/backend-plugin-api';
-import { mockServices, startTestBackend } from '@backstage/backend-test-utils';
+import {
+  coreServices,
+  createBackendModule,
+  createServiceFactory,
+} from '@backstage/backend-plugin-api';
+import { startTestBackend } from '@backstage/backend-test-utils';
 import { catalogProcessingExtensionPoint } from '@backstage/plugin-catalog-node/alpha';
 import { IncrementalEntityProvider } from '../types';
 import {
@@ -43,11 +47,11 @@ describe('catalogModuleIncrementalIngestionEntityProvider', () => {
         [catalogProcessingExtensionPoint, { addEntityProvider }],
       ],
       features: [
-        mockServices.rootConfig.factory(),
-        mockServices.database.factory(),
-        mockServices.httpRouter.factory(),
-        mockServices.logger.factory(),
-        mockServices.scheduler.factory(),
+        createServiceFactory({
+          service: coreServices.httpRouter,
+          deps: {},
+          factory: () => ({ use: httpRouterUse }),
+        }),
         catalogModuleIncrementalIngestionEntityProvider(),
         createBackendModule({
           pluginId: 'catalog',
