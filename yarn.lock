@@ -8796,6 +8796,7 @@ __metadata:
     "@types/json-schema": ^7.0.9
     "@types/react": ^16.13.1 || ^17.0.0
     "@uiw/react-codemirror": ^4.9.3
+    "@zip.js/zip.js": ^2.7.24
     classnames: ^2.2.6
     event-source-polyfill: ^1.0.31
     git-url-parse: ^13.0.0
@@ -19343,6 +19344,13 @@ __metadata:
     js-yaml: ^3.10.0
     tslib: ^2.4.0
   checksum: c0741ef01089a7d452dfb75b8c24a82ddcc3e218dac22b794a06f2e50c7070378c460f63f63fb7ed0f62f634114e448e3d85a75ccd4db84e1526242ae9b4a7d5
+  languageName: node
+  linkType: hard
+
+"@zip.js/zip.js@npm:^2.7.24":
+  version: 2.7.28
+  resolution: "@zip.js/zip.js@npm:2.7.28"
+  checksum: 2447e7250daeb0a518c68347034075ad244e8e53e3ee83a2e3e078f919328edcc24a6c68f1814d42e231526230360164cce79d70f14cb9a16a07e91ae1e25257
   languageName: node
   linkType: hard
 
