@@ -15,7 +15,12 @@
  */
 
 import { createExtensionPoint } from '@backstage/backend-plugin-api';
-import { TemplateAction } from './actions';
+import {
+  TemplateAction,
+  TemplateFilter,
+  TemplateGlobal,
+  TaskBroker,
+} from '@backstage/plugin-scaffolder-node';
 
 /**
  * Extension point for managing scaffolder actions.
@@ -34,4 +39,43 @@ export interface ScaffolderActionsExtensionPoint {
 export const scaffolderActionsExtensionPoint =
   createExtensionPoint<ScaffolderActionsExtensionPoint>({
     id: 'scaffolder.actions',
+  });
+
+/**
+ * Extension point for replacing the scaffolder task broker.
+ *
+ * @alpha
+ */
+export interface ScaffolderTaskBrokerExtensionPoint {
+  setTaskBroker(taskBroker: TaskBroker): void;
+}
+
+/**
+ * Extension point for replacing the scaffolder task broker.
+ *
+ * @alpha
+ */
+export const scaffolderTaskBrokerExtensionPoint =
+  createExtensionPoint<ScaffolderTaskBrokerExtensionPoint>({
+    id: 'scaffolder.taskBroker',
+  });
+
+/**
+ * Extension point for adding template filters and globals.
+ *
+ * @alpha
+ */
+export interface ScaffolderTemplatingExtensionPoint {
+  addTemplateFilters(filters: Record<string, TemplateFilter>): void;
+  addTemplateGlobals(filters: Record<string, TemplateGlobal>): void;
+}
+
+/**
+ * Extension point for adding template filters and globals.
+ *
+ * @alpha
+ */
+export const scaffolderTemplatingExtensionPoint =
+  createExtensionPoint<ScaffolderTemplatingExtensionPoint>({
+    id: 'scaffolder.templating',
   });

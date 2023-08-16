@@ -173,6 +173,7 @@ export const spec = {
             name: 'filter',
             in: 'query',
             required: false,
+            allowReserved: true,
             schema: {
               type: 'array',
               description:

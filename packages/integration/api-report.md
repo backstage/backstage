@@ -173,6 +173,14 @@ export type BitbucketServerIntegrationConfig = {
 };
 
 // @public
+export function buildGerritGitilesArchiveUrl(
+  config: GerritIntegrationConfig,
+  project: string,
+  branch: string,
+  filePath: string,
+): string;
+
+// @public
 export class DefaultGithubCredentialsProvider
   implements GithubCredentialsProvider
 {

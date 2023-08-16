@@ -1,5 +1,40 @@
 # @backstage/plugin-search-backend-module-catalog
 
+## 0.1.4
+
+### Patch Changes
+
+- 629cbd194a87: Use `coreServices.rootConfig` instead of `coreService.config`
+- 29f77f923c71: Ensure that all services are dependency injected into the module instead of taken from options
+- 12a8c94eda8d: Add package repository and homepage metadata
+- ec1032129e47: Breaking change in the alpha export `searchModuleCatalogCollator`: Moved collator settings from module options into app-config. You are now expected to set up the catalog collator under the `search.collators.catalog` configuration key. There is also a new `catalogCollatorExtensionPoint` extension point for the module, wherein you can set custom transformers.
+- d4f19a16bd52: Add User Entity email to the search index so that users can be found by their email.
+- Updated dependencies
+  - @backstage/backend-common@0.19.2
+  - @backstage/backend-plugin-api@0.6.0
+  - @backstage/plugin-search-backend-node@1.2.4
+  - @backstage/plugin-catalog-node@1.4.1
+  - @backstage/backend-tasks@0.5.5
+  - @backstage/catalog-client@1.4.3
+  - @backstage/catalog-model@1.4.1
+  - @backstage/config@1.0.8
+  - @backstage/errors@1.2.1
+  - @backstage/plugin-catalog-common@1.0.15
+  - @backstage/plugin-permission-common@0.7.7
+  - @backstage/plugin-search-common@1.2.5
+
+## 0.1.4-next.2
+
+### Patch Changes
+
+- 29f77f923c71: Ensure that all services are dependency injected into the module instead of taken from options
+- Updated dependencies
+  - @backstage/backend-plugin-api@0.6.0-next.2
+  - @backstage/backend-tasks@0.5.5-next.2
+  - @backstage/backend-common@0.19.2-next.2
+  - @backstage/plugin-catalog-node@1.4.1-next.2
+  - @backstage/plugin-search-backend-node@1.2.4-next.2
+
 ## 0.1.4-next.1
 
 ### Patch Changes

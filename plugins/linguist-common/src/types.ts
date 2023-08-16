@@ -29,11 +29,14 @@ export type Languages = {
 };
 
 /** @public */
+export type LanguageType = 'programming' | 'data' | 'markup' | 'prose';
+
+/** @public */
 export type Language = {
   name: string;
   percentage: number;
   bytes: number;
-  type: string;
+  type: LanguageType;
   color?: `#${string}`;
 };
 

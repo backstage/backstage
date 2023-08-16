@@ -164,7 +164,7 @@ describe('detectErrors', () => {
           'The container other-side-car has crashed many times, it will be exponentially restarted until it stops crashing',
         type: 'logs',
       },
-      occuranceCount: 1,
+      occurrenceCount: 1,
       type: 'container-waiting',
     });
 
@@ -186,7 +186,7 @@ describe('detectErrors', () => {
       message:
         'back-off 5m0s restarting failed container=side-car pod=dice-roller-canary-7d64cd756c-55rfq_default(65ad28e3-5d51-4b4b-9bf8-4cb069803034)',
       severity: 4,
-      occuranceCount: 1,
+      occurrenceCount: 1,
       type: 'container-waiting',
     });
 
@@ -199,7 +199,7 @@ describe('detectErrors', () => {
       },
       message: 'container=other-side-car restarted 123 times',
       severity: 4,
-      occuranceCount: 123,
+      occurrenceCount: 123,
       proposedFix: {
         container: 'other-side-car',
         errorType: 'Error',
@@ -228,7 +228,7 @@ describe('detectErrors', () => {
       },
       message: 'container=side-car restarted 38 times',
       severity: 4,
-      occuranceCount: 38,
+      occurrenceCount: 38,
       type: 'containers-restarting',
     });
   });
@@ -246,7 +246,7 @@ describe('detectErrors', () => {
 
     expect(err1).toStrictEqual({
       message: 'configmap "some-cm" not found',
-      occuranceCount: 1,
+      occurrenceCount: 1,
       proposedFix: {
         docsLink:
           'https://kubernetes.io/docs/tasks/configure-pod-container/configure-pod-configmap/',
@@ -300,7 +300,7 @@ describe('detectErrors', () => {
       },
       message: 'Deployment does not have minimum availability.',
       severity: 6,
-      occuranceCount: 1,
+      occurrenceCount: 1,
       type: 'condition-message-present',
     });
   });
@@ -336,7 +336,7 @@ describe('detectErrors', () => {
       message:
         'Current number of replicas (10) is equal to the configured max number of replicas (10)',
       severity: 8,
-      occuranceCount: 1,
+      occurrenceCount: 1,
       type: 'hpa-max-current-replicas',
     });
   });
@@ -469,7 +469,7 @@ describe('detectErrors', () => {
     expect(err1).toStrictEqual({
       message:
         'The container some-container failed to start properly, but is not crashing',
-      occuranceCount: 1,
+      occurrenceCount: 1,
       proposedFix: {
         errorType: 'ReadinessProbeFailed',
         podName: '',

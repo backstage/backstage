@@ -43,6 +43,37 @@ describe('ShortcutForm', () => {
     });
   });
 
+  it('displays duplicate validation messages for title and URL', async () => {
+    const mockShortcutApi = new DefaultShortcutsApi(MockStorageApi.create());
+    mockShortcutApi.add({ title: 'Existing Title', url: '/existing-url' });
+
+    await renderInTestApp(
+      <TestApiProvider apis={[[shortcutsApiRef, mockShortcutApi]]}>
+        <ShortcutForm {...props} />
+      </TestApiProvider>,
+    );
+
+    const urlInput = screen.getByPlaceholderText('Enter a URL');
+    const titleInput = screen.getByPlaceholderText('Enter a display name');
+
+    fireEvent.change(urlInput, { target: { value: '/existing-url' } });
+    fireEvent.change(titleInput, { target: { value: 'Existing Title' } });
+
+    fireEvent.click(screen.getByText('Save'));
+
+    await waitFor(() => {
+      expect(
+        screen.getByText('A shortcut with this title already exists'),
+      ).toBeInTheDocument();
+      expect(
+        screen.getByText('A shortcut with this url already exists'),
+      ).toBeInTheDocument();
+    });
+
+    expect(props.onSave).not.toHaveBeenCalled();
+    expect(props.onClose).not.toHaveBeenCalled();
+  });
+
   it('allows external links', async () => {
     await renderInTestApp(<ShortcutForm allowExternalLinks {...props} />);
 

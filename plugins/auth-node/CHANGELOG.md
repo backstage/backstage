@@ -1,5 +1,22 @@
 # @backstage/plugin-auth-node
 
+## 0.2.17
+
+### Patch Changes
+
+- 12a8c94eda8d: Add package repository and homepage metadata
+- Updated dependencies
+  - @backstage/backend-common@0.19.2
+  - @backstage/config@1.0.8
+  - @backstage/errors@1.2.1
+
+## 0.2.17-next.2
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-common@0.19.2-next.2
+
 ## 0.2.17-next.1
 
 ### Patch Changes

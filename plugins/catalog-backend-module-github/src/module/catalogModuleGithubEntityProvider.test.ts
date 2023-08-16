@@ -14,18 +14,19 @@
  * limitations under the License.
  */
 
-import { getVoidLogger } from '@backstage/backend-common';
-import { coreServices } from '@backstage/backend-plugin-api';
 import {
   PluginTaskScheduler,
   TaskScheduleDefinition,
 } from '@backstage/backend-tasks';
-import { startTestBackend } from '@backstage/backend-test-utils';
-import { ConfigReader } from '@backstage/config';
+import { mockServices, startTestBackend } from '@backstage/backend-test-utils';
 import { catalogProcessingExtensionPoint } from '@backstage/plugin-catalog-node/alpha';
 import { Duration } from 'luxon';
 import { catalogModuleGithubEntityProvider } from './catalogModuleGithubEntityProvider';
 import { GithubEntityProvider } from '../providers/GithubEntityProvider';
+import {
+  coreServices,
+  createServiceFactory,
+} from '@backstage/backend-plugin-api';
 
 describe('catalogModuleGithubEntityProvider', () => {
   it('should register provider at the catalog extension point', async () => {
@@ -45,7 +46,7 @@ describe('catalogModuleGithubEntityProvider', () => {
       },
     } as unknown as PluginTaskScheduler;
 
-    const config = new ConfigReader({
+    const config = {
       catalog: {
         providers: {
           github: {
@@ -57,16 +58,19 @@ describe('catalogModuleGithubEntityProvider', () => {
           },
         },
       },
-    });
+    };
 
     await startTestBackend({
       extensionPoints: [[catalogProcessingExtensionPoint, extensionPoint]],
-      services: [
-        [coreServices.rootConfig, config],
-        [coreServices.logger, getVoidLogger()],
-        [coreServices.scheduler, scheduler],
+      features: [
+        catalogModuleGithubEntityProvider(),
+        mockServices.rootConfig.factory({ data: config }),
+        createServiceFactory({
+          service: coreServices.scheduler,
+          deps: {},
+          factory: async () => scheduler,
+        }),
       ],
-      features: [catalogModuleGithubEntityProvider()],
     });
 
     expect(usedSchedule?.frequency).toEqual(Duration.fromISO('P1M'));

@@ -1,7 +1,7 @@
 {
   "name": "@backstage/repo-tools",
   "description": "CLI for Backstage repo tooling ",
-  "version": "0.3.3-next.1",
+  "version": "0.3.3",
   "publishConfig": {
     "access": "public"
   },
@@ -32,12 +32,13 @@
   "dependencies": {
     "@apidevtools/swagger-parser": "^10.1.0",
     "@apisyouwonthate/style-guide": "^1.4.0",
+    "@backstage/catalog-model": "workspace:^",
     "@backstage/cli-common": "workspace:^",
     "@backstage/cli-node": "workspace:^",
     "@backstage/errors": "workspace:^",
     "@manypkg/get-packages": "^1.1.3",
-    "@microsoft/api-documenter": "^7.19.27",
-    "@microsoft/api-extractor": "^7.33.7",
+    "@microsoft/api-documenter": "^7.22.33",
+    "@microsoft/api-extractor": "^7.36.4",
     "@stoplight/spectral-core": "^1.18.0",
     "@stoplight/spectral-formatters": "^1.1.0",
     "@stoplight/spectral-functions": "^1.7.2",
@@ -46,6 +47,7 @@
     "@stoplight/spectral-runtime": "^1.1.2",
     "@stoplight/types": "^13.14.0",
     "chalk": "^4.0.0",
+    "codeowners-utils": "^1.0.2",
     "commander": "^9.1.0",
     "fs-extra": "10.1.0",
     "glob": "^8.0.3",
@@ -54,7 +56,8 @@
     "lodash": "^4.17.21",
     "minimatch": "^5.1.1",
     "p-limit": "^3.0.2",
-    "ts-node": "^10.0.0"
+    "ts-node": "^10.0.0",
+    "yaml-diff-patch": "^2.0.0"
   },
   "devDependencies": {
     "@backstage/cli": "workspace:^",

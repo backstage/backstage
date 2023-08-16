@@ -14,13 +14,18 @@
  * limitations under the License.
  */
 
-import { getVoidLogger } from '@backstage/backend-common';
-import { coreServices } from '@backstage/backend-plugin-api';
+import {
+  coreServices,
+  createBackendModule,
+  createServiceFactory,
+} from '@backstage/backend-plugin-api';
 import { startTestBackend } from '@backstage/backend-test-utils';
-import { ConfigReader } from '@backstage/config';
 import { catalogProcessingExtensionPoint } from '@backstage/plugin-catalog-node/alpha';
 import { IncrementalEntityProvider } from '../types';
-import { catalogModuleIncrementalIngestionEntityProvider } from './catalogModuleIncrementalIngestionEntityProvider';
+import {
+  catalogModuleIncrementalIngestionEntityProvider,
+  incrementalIngestionProvidersExtensionPoint,
+} from './catalogModuleIncrementalIngestionEntityProvider';
 
 describe('catalogModuleIncrementalIngestionEntityProvider', () => {
   it('should register provider at the catalog extension point', async () => {
@@ -37,37 +42,35 @@ describe('catalogModuleIncrementalIngestionEntityProvider', () => {
     const addEntityProvider = jest.fn();
     const httpRouterUse = jest.fn();
 
-    const scheduler = {};
-    const database = {
-      getClient: jest.fn(),
-    };
-    const httpRouter = {
-      use: httpRouterUse,
-    };
-
     await startTestBackend({
       extensionPoints: [
         [catalogProcessingExtensionPoint, { addEntityProvider }],
       ],
-      services: [
-        [coreServices.rootConfig, new ConfigReader({})],
-        [coreServices.database, database],
-        [coreServices.httpRouter, httpRouter],
-        [coreServices.logger, getVoidLogger()],
-        [coreServices.scheduler, scheduler],
-      ],
       features: [
-        catalogModuleIncrementalIngestionEntityProvider({
-          providers: [
-            {
-              provider: provider1,
-              options: {
-                burstInterval: { seconds: 1 },
-                burstLength: { seconds: 1 },
-                restLength: { seconds: 1 },
+        createServiceFactory({
+          service: coreServices.httpRouter,
+          deps: {},
+          factory: () => ({ use: httpRouterUse }),
+        }),
+        catalogModuleIncrementalIngestionEntityProvider(),
+        createBackendModule({
+          pluginId: 'catalog',
+          moduleId: 'incrementalTest',
+          register(env) {
+            env.registerInit({
+              deps: { extension: incrementalIngestionProvidersExtensionPoint },
+              async init({ extension }) {
+                extension.addProvider({
+                  provider: provider1,
+                  options: {
+                    burstInterval: { seconds: 1 },
+                    burstLength: { seconds: 1 },
+                    restLength: { seconds: 1 },
+                  },
+                });
               },
-            },
-          ],
+            });
+          },
         }),
       ],
     });

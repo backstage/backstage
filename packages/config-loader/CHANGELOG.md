@@ -1,5 +1,73 @@
 # @backstage/config-loader
 
+## 1.4.0
+
+### Minor Changes
+
+- 2f1859585998: Loading invalid TypeScript configuration schemas will now throw an error rather than silently being ignored.
+
+  In particular this includes defining any additional types other than `Config` in the schema file, or use of unsupported types such as `Record` or `Partial`.
+
+- cd514545d1d0: Adds a new `deepVisibility` schema keyword that sets child visibility recursively to the defined value, respecting preexisting values or child `deepVisibility`.
+
+  Example usage:
+
+  ```ts
+  export interface Config {
+    /**
+     * Enforces a default of `secret` instead of `backend` for this object.
+     * @deepVisibility secret
+     */
+    mySecretProperty: {
+      type: 'object';
+      properties: {
+        secretValue: {
+          type: 'string';
+        };
+
+        verySecretProperty: {
+          type: 'string';
+        };
+      };
+    };
+  }
+  ```
+
+  Example of a schema that would not be allowed:
+
+  ```ts
+  export interface Config {
+    /**
+     * Set the top level property to secret, enforcing a default of `secret` instead of `backend` for this object.
+     * @deepVisibility secret
+     */
+    mySecretProperty: {
+      type: 'object';
+      properties: {
+        frontendUrl: {
+          /**
+           * We can NOT override the visibility to reveal a property to the front end.
+           * @visibility frontend
+           */
+          type: 'string';
+        };
+
+        verySecretProperty: {
+          type: 'string';
+        };
+      };
+    };
+  }
+  ```
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/cli-common@0.1.12
+  - @backstage/config@1.0.8
+  - @backstage/errors@1.2.1
+  - @backstage/types@1.1.0
+
 ## 1.4.0-next.1
 
 ### Minor Changes

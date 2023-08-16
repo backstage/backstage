@@ -16,6 +16,7 @@
 
 import { UrlReader, resolveSafeChildPath } from '@backstage/backend-common';
 import { ScmIntegrations } from '@backstage/integration';
+import { examples } from './plainFile.examples';
 import {
   createTemplateAction,
   fetchFile,
@@ -35,6 +36,7 @@ export function createFetchPlainFileAction(options: {
   return createTemplateAction<{ url: string; targetPath: string }>({
     id: 'fetch:plain:file',
     description: 'Downloads single file and places it in the workspace.',
+    examples,
     schema: {
       input: {
         type: 'object',

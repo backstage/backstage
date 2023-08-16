@@ -231,13 +231,15 @@ export async function createRouter(
     catalogClient,
     actions,
     taskWorkers,
-    concurrentTasksLimit,
     scheduler,
     additionalTemplateFilters,
     additionalTemplateGlobals,
     permissions,
     permissionRules,
   } = options;
+  const concurrentTasksLimit =
+    options.concurrentTasksLimit ??
+    options.config.getOptionalNumber('scaffolder.concurrentTasksLimit');
 
   const logger = parentLogger.child({ plugin: 'scaffolder' });
 
@@ -275,19 +277,21 @@ export async function createRouter(
   const actionRegistry = new TemplateActionRegistry();
 
   const workers = [];
-  for (let i = 0; i < (taskWorkers || 1); i++) {
-    const worker = await TaskWorker.create({
-      taskBroker,
-      actionRegistry,
-      integrations,
-      logger,
-      workingDirectory,
-      additionalTemplateFilters,
-      additionalTemplateGlobals,
-      concurrentTasksLimit,
-      permissions,
-    });
-    workers.push(worker);
+  if (concurrentTasksLimit !== 0) {
+    for (let i = 0; i < (taskWorkers || 1); i++) {
+      const worker = await TaskWorker.create({
+        taskBroker,
+        actionRegistry,
+        integrations,
+        logger,
+        workingDirectory,
+        additionalTemplateFilters,
+        additionalTemplateGlobals,
+        concurrentTasksLimit,
+        permissions,
+      });
+      workers.push(worker);
+    }
   }
 
   const actionsToRegister = Array.isArray(actions)

@@ -4,6 +4,7 @@
 
 ```ts
 import { BackendFeature } from '@backstage/backend-plugin-api';
+import { ExtensionPoint } from '@backstage/backend-plugin-api';
 import { GroupTransformer } from '@backstage/plugin-catalog-backend-module-msgraph';
 import { OrganizationTransformer } from '@backstage/plugin-catalog-backend-module-msgraph';
 import { UserTransformer } from '@backstage/plugin-catalog-backend-module-msgraph';
@@ -12,12 +13,21 @@ import { UserTransformer } from '@backstage/plugin-catalog-backend-module-msgrap
 export const catalogModuleMicrosoftGraphOrgEntityProvider: () => BackendFeature;
 
 // @alpha
-export interface CatalogModuleMicrosoftGraphOrgEntityProviderOptions {
-  groupTransformer?: GroupTransformer | Record<string, GroupTransformer>;
-  organizationTransformer?:
-    | OrganizationTransformer
-    | Record<string, OrganizationTransformer>;
-  userTransformer?: UserTransformer | Record<string, UserTransformer>;
+export const microsoftGraphOrgEntityProviderTransformExtensionPoint: ExtensionPoint<MicrosoftGraphOrgEntityProviderTransformsExtensionPoint>;
+
+// @alpha
+export interface MicrosoftGraphOrgEntityProviderTransformsExtensionPoint {
+  setGroupTransformer(
+    transformer: GroupTransformer | Record<string, GroupTransformer>,
+  ): void;
+  setOrganizationTransformer(
+    transformer:
+      | OrganizationTransformer
+      | Record<string, OrganizationTransformer>,
+  ): void;
+  setUserTransformer(
+    transformer: UserTransformer | Record<string, UserTransformer>,
+  ): void;
 }
 
 // (No @packageDocumentation comment for this package)

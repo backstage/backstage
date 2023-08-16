@@ -17,6 +17,7 @@
 export {
   createTemplateAction,
   type TemplateActionOptions,
+  type TemplateExample,
 } from './createTemplateAction';
 export {
   executeShellCommand,

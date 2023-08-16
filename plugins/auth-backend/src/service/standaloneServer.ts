@@ -23,11 +23,11 @@ import {
 } from '@backstage/backend-common';
 import { Server } from 'http';
 import Knex from 'knex';
-import { Logger } from 'winston';
+import { LoggerService } from '@backstage/backend-plugin-api';
 import { createRouter } from './router';
 
 export interface ServerOptions {
-  logger: Logger;
+  logger: LoggerService;
 }
 
 export async function startStandaloneServer(

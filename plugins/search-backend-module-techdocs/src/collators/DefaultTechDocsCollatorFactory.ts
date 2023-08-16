@@ -104,7 +104,18 @@ export class DefaultTechDocsCollatorFactory implements DocumentCollatorFactory {
       config.getOptionalBoolean(
         'techdocs.legacyUseCaseSensitiveTripletPaths',
       ) || false;
-    return new DefaultTechDocsCollatorFactory({ ...options, legacyPathCasing });
+    const locationTemplate = config.getOptionalString(
+      'search.collators.techdocs.locationTemplate',
+    );
+    const parallelismLimit = config.getOptionalNumber(
+      'search.collators.techdocs.parallelismLimit',
+    );
+    return new DefaultTechDocsCollatorFactory({
+      ...options,
+      locationTemplate,
+      parallelismLimit,
+      legacyPathCasing,
+    });
   }
 
   async getCollator(): Promise<Readable> {

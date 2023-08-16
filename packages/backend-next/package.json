@@ -1,6 +1,6 @@
 {
   "name": "example-backend-next",
-  "version": "0.0.14-next.1",
+  "version": "0.0.14",
   "main": "dist/index.cjs.js",
   "types": "src/index.ts",
   "license": "Apache-2.0",
@@ -26,6 +26,7 @@
   },
   "dependencies": {
     "@backstage/backend-defaults": "workspace:^",
+    "@backstage/backend-plugin-api": "workspace:^",
     "@backstage/backend-tasks": "workspace:^",
     "@backstage/plugin-adr-backend": "workspace:^",
     "@backstage/plugin-app-backend": "workspace:^",
@@ -42,6 +43,7 @@
     "@backstage/plugin-permission-backend": "workspace:^",
     "@backstage/plugin-permission-common": "workspace:^",
     "@backstage/plugin-permission-node": "workspace:^",
+    "@backstage/plugin-proxy-backend": "workspace:^",
     "@backstage/plugin-scaffolder-backend": "workspace:^",
     "@backstage/plugin-search-backend": "workspace:^",
     "@backstage/plugin-search-backend-module-catalog": "workspace:^",

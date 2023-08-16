@@ -1,5 +1,32 @@
 # @backstage/plugin-playlist
 
+## 0.1.13
+
+### Patch Changes
+
+- d1e0588324d1: Displaying an alert popup each time the Playlist is created or deleted
+- 12a8c94eda8d: Add package repository and homepage metadata
+- 8a997547f02a: Adding alert popup whenever user delete the entities from playlist entity table
+- Updated dependencies
+  - @backstage/plugin-playlist-common@0.1.9
+  - @backstage/core-components@0.13.4
+  - @backstage/plugin-catalog-react@1.8.1
+  - @backstage/core-plugin-api@1.5.3
+  - @backstage/plugin-search-react@1.6.4
+  - @backstage/catalog-model@1.4.1
+  - @backstage/errors@1.2.1
+  - @backstage/theme@0.4.1
+  - @backstage/plugin-catalog-common@1.0.15
+  - @backstage/plugin-permission-common@0.7.7
+  - @backstage/plugin-permission-react@0.4.14
+
+## 0.1.13-next.2
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/plugin-catalog-react@1.8.1-next.1
+
 ## 0.1.13-next.1
 
 ### Patch Changes

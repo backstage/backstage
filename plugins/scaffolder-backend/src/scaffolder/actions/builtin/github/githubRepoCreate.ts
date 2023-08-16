@@ -28,6 +28,7 @@ import {
 } from './helpers';
 import * as inputProps from './inputProperties';
 import * as outputProps from './outputProperties';
+import { examples } from './githubRepoCreate.examples';
 
 /**
  * Creates a new action that initializes a git repository
@@ -96,6 +97,7 @@ export function createGithubRepoCreateAction(options: {
   }>({
     id: 'github:repo:create',
     description: 'Creates a GitHub repository.',
+    examples,
     schema: {
       input: {
         type: 'object',

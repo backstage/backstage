@@ -17,7 +17,7 @@
 import express from 'express';
 import Router from 'express-promise-router';
 import cookieParser from 'cookie-parser';
-import { Logger } from 'winston';
+import { LoggerService } from '@backstage/backend-plugin-api';
 import {
   defaultAuthProviderFactories,
   AuthProviderFactory,
@@ -44,7 +44,7 @@ export type ProviderFactories = { [s: string]: AuthProviderFactory };
 
 /** @public */
 export interface RouterOptions {
-  logger: Logger;
+  logger: LoggerService;
   database: PluginDatabaseManager;
   config: Config;
   discovery: PluginEndpointDiscovery;
@@ -130,6 +130,9 @@ export async function createRouter(
       try {
         const provider = providerFactory({
           providerId,
+          appUrl,
+          baseUrl: authUrl,
+          isOriginAllowed,
           globalConfig: {
             baseUrl: authUrl,
             appUrl,
