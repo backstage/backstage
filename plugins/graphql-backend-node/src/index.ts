@@ -1,5 +1,5 @@
 /*
- * Copyright 2020 The Backstage Authors
+ * Copyright 2023 The Backstage Authors
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -13,12 +13,4 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
-/**
- * An experimental Backstage backend plugin for GraphQL
- *
- * @packageDocumentation
- */
-
-export * from './graphql';
-export * from '@backstage/plugin-graphql-backend-node';
+export * from './extensions';

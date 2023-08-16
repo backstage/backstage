@@ -6608,14 +6608,27 @@ __metadata:
   languageName: unknown
   linkType: soft
 
+"@backstage/plugin-graphql-backend-node@workspace:^, @backstage/plugin-graphql-backend-node@workspace:plugins/graphql-backend-node":
+  version: 0.0.0-use.local
+  resolution: "@backstage/plugin-graphql-backend-node@workspace:plugins/graphql-backend-node"
+  dependencies:
+    "@backstage/backend-plugin-api": "workspace:^"
+    "@backstage/cli": "workspace:^"
+    "@backstage/plugin-graphql-common": "workspace:^"
+    dataloader: ^2.1.0
+    graphql-modules: ^2.1.0
+    graphql-yoga: ^4.0.3
+  languageName: unknown
+  linkType: soft
+
 "@backstage/plugin-graphql-backend@workspace:^, @backstage/plugin-graphql-backend@workspace:plugins/graphql-backend":
   version: 0.0.0-use.local
   resolution: "@backstage/plugin-graphql-backend@workspace:plugins/graphql-backend"
   dependencies:
     "@backstage/backend-common": "workspace:^"
     "@backstage/backend-plugin-api": "workspace:^"
-    "@backstage/catalog-model": "workspace:^"
     "@backstage/cli": "workspace:^"
+    "@backstage/plugin-graphql-backend-node": "workspace:^"
     "@backstage/plugin-graphql-common": "workspace:^"
     "@envelop/core": ^4.0.0
     "@envelop/dataloader": ^5.0.0

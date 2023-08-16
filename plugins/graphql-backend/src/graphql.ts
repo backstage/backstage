@@ -37,11 +37,9 @@ import {
 import {
   graphqlApplicationExtensionPoint,
   GraphQLApplicationExtensionPoint,
-} from './extensions/graphqlApplicationExtension';
-import {
   graphqlYogaExtensionPoint,
   GraphQLYogaExtensionPoint,
-} from './extensions/graphqlYogaExtension';
+} from '@backstage/plugin-graphql-backend-node';
 
 class GraphQLApplication implements GraphQLApplicationExtensionPoint {
   private schemas = new Set<string>();

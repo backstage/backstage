@@ -4,25 +4,6 @@
 
 ```ts
 import { BackendFeature } from '@backstage/backend-plugin-api';
-import { BatchLoadFn } from '@backstage/plugin-graphql-common';
-import { ExtensionPoint } from '@backstage/backend-plugin-api';
-import { GraphQLContext } from '@backstage/plugin-graphql-common';
-import { Module } from 'graphql-modules';
-import { Options } from 'dataloader';
-import { Plugin as Plugin_2 } from 'graphql-yoga';
-
-// @public (undocumented)
-export interface GraphQLApplicationExtensionPoint {
-  // (undocumented)
-  addModule(
-    module: (() => Module | Promise<Module>) | Module | Promise<Module>,
-  ): void;
-  // (undocumented)
-  addSchema(schema: string): void;
-}
-
-// @public (undocumented)
-export const graphqlApplicationExtensionPoint: ExtensionPoint<GraphQLApplicationExtensionPoint>;
 
 // @public (undocumented)
 export const graphqlPlugin: (
@@ -30,28 +11,10 @@ export const graphqlPlugin: (
 ) => BackendFeature;
 
 // @public (undocumented)
-export interface GraphQLYogaExtensionPoint {
-  // (undocumented)
-  addLoader(name: string, loader: BatchLoadFn<GraphQLContext>): void;
-  // (undocumented)
-  addPlugin(plugin: Plugin_2): void;
-  // (undocumented)
-  setContext<TContext extends Record<string, any>>(
-    context:
-      | ((initialContext: GraphQLContext) => TContext | Promise<TContext>)
-      | Promise<TContext>
-      | TContext,
-  ): void;
-  // (undocumented)
-  setDataloaderOptions(options: Options<string, any>): void;
-}
-
-// @public (undocumented)
-export const graphqlYogaExtensionPoint: ExtensionPoint<GraphQLYogaExtensionPoint>;
-
-// @public (undocumented)
 export interface RouterOptions {
   // (undocumented)
   generateOpaqueTypes?: boolean;
 }
+
+export * from '@backstage/plugin-graphql-backend-node';
 ```
