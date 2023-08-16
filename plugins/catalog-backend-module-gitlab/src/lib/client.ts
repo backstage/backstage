@@ -188,7 +188,7 @@ export class GitLabClient {
           },
           body: JSON.stringify({
             variables: { group: groupPath, relations: relations, endCursor },
-            query: `query getGroupMembers($group: ID!, $endCursor: String) {
+            query: `query getGroupMembers($group: ID!, $relations: GroupMemberRelation!, $endCursor: String) {
               group(fullPath: $group) {
                 groupMembers(first: 100, relations: [$relations], after: $endCursor) {
                   nodes {

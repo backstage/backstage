@@ -191,10 +191,7 @@ export class GitlabOrgDiscoveryEntityProvider implements EntityProvider {
     } else {
       groups = (await client.listDescendantGroups(this.config.group)).items;
       users = (
-        await client.getGroupMembers(
-          this.config.group.split('/')[0],
-          'DIRECT, DESCENDANTS',
-        )
+        await client.getGroupMembers(this.config.group.split('/')[0], 'DIRECT')
       ).items;
     }
 
