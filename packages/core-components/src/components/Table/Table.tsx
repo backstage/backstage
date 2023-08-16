@@ -237,7 +237,7 @@ export interface TableProps<T extends object = {}>
   filters?: TableFilter[];
   initialState?: TableState;
   emptyContent?: ReactNode;
-  initialContentLoading?: boolean;
+  isLoading?: boolean;
   onStateChange?: (state: TableState) => any;
 }
 
@@ -311,7 +311,7 @@ export function Table<T extends object = {}>(props: TableProps<T>) {
     emptyContent,
     onStateChange,
     components,
-    initialContentLoading,
+    isLoading: isLoading,
     ...restProps
   } = props;
   const tableClasses = useTableStyles();
@@ -473,7 +473,7 @@ export function Table<T extends object = {}>(props: TableProps<T>) {
   const columnCount = columns.length;
   const Body = useCallback(
     bodyProps => {
-      if (initialContentLoading) {
+      if (isLoading) {
         return (
           <tbody data-testid="loading-indicator">
             <tr>
@@ -507,7 +507,7 @@ export function Table<T extends object = {}>(props: TableProps<T>) {
 
       return <MTableBody {...bodyProps} />;
     },
-    [hasNoRows, emptyContent, columnCount, initialContentLoading],
+    [hasNoRows, emptyContent, columnCount, isLoading],
   );
 
   return (

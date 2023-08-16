@@ -89,7 +89,7 @@ export const DefaultTable = () => {
   );
 };
 
-export const InitialLoadingTable = () => {
+export const LoadingTable = () => {
   const classes = useStyles();
   const columns: TableColumn[] = [
     {
@@ -119,7 +119,7 @@ export const InitialLoadingTable = () => {
         options={{ paging: false }}
         data={[]}
         columns={columns}
-        initialContentLoading
+        isLoading
         title="Backstage Table"
       />
     </div>

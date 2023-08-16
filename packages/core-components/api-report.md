@@ -1354,7 +1354,7 @@ export interface TableProps<T extends object = {}>
   // (undocumented)
   filters?: TableFilter[];
   // (undocumented)
-  initialContentLoading?: boolean;
+  isLoading?: boolean;
   // (undocumented)
   initialState?: TableState;
   // (undocumented)

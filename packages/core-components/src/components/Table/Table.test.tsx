@@ -49,9 +49,7 @@ describe('<Table />', () => {
   });
 
   it('renders loading without exploding', async () => {
-    const rendered = await renderInTestApp(
-      <Table {...minProps} initialContentLoading />,
-    );
+    const rendered = await renderInTestApp(<Table {...minProps} isLoading />);
     expect(rendered.getByTestId('loading-indicator')).toBeInTheDocument();
   });
 
