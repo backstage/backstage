@@ -9604,10 +9604,10 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@braintree/sanitize-url@npm:=6.0.2":
-  version: 6.0.2
-  resolution: "@braintree/sanitize-url@npm:6.0.2"
-  checksum: 6a9dfd4081cc96516eeb281d1a83d3b5f1ad3d2837adf968fcc2ba18889ee833554f9c641b4083c36d3360a932e4504ddf25b0b51e9933c3742622df82cf7c9a
+"@braintree/sanitize-url@npm:=6.0.4":
+  version: 6.0.4
+  resolution: "@braintree/sanitize-url@npm:6.0.4"
+  checksum: f5ec6048973722ea1c46ae555d2e9eb848d7fa258994f8ea7d6db9514ee754ea3ef344ef71b3696d486776bcb839f3124e79f67c6b5b2814ed2da220b340627c
   languageName: node
   linkType: hard
 
@@ -39959,11 +39959,11 @@ __metadata:
   linkType: hard
 
 "swagger-ui-react@npm:^5.0.0":
-  version: 5.3.1
-  resolution: "swagger-ui-react@npm:5.3.1"
+  version: 5.3.2
+  resolution: "swagger-ui-react@npm:5.3.2"
   dependencies:
     "@babel/runtime-corejs3": ^7.22.6
-    "@braintree/sanitize-url": =6.0.2
+    "@braintree/sanitize-url": =6.0.4
     base64-js: ^1.5.1
     classnames: ^2.3.1
     css.escape: 1.5.1
@@ -39999,7 +39999,7 @@ __metadata:
   peerDependencies:
     react: ">=17.0.0"
     react-dom: ">=17.0.0"
-  checksum: 6f27e72bbd537a0c9d9d091d4632b4a09d95077c59815330186c495d67e17fd4dd1af649d5e8d93a61c896163d81d3faa2ae402418c3e7f43853b7d840712f7c
+  checksum: d01e011cfd3915bbd17f0a0c886062a292cbef99f0feff247a18eea457bf4500f9d8fe932977cfc6e68b19197d8e52809ca58f269f9fe3128347901ee3cf621b
   languageName: node
   linkType: hard
 
