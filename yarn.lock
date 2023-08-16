@@ -9907,8 +9907,8 @@ __metadata:
   linkType: hard
 
 "@codemirror/language@npm:^6.0.0":
-  version: 6.8.0
-  resolution: "@codemirror/language@npm:6.8.0"
+  version: 6.9.0
+  resolution: "@codemirror/language@npm:6.9.0"
   dependencies:
     "@codemirror/state": ^6.0.0
     "@codemirror/view": ^6.0.0
@@ -9916,7 +9916,7 @@ __metadata:
     "@lezer/highlight": ^1.0.0
     "@lezer/lr": ^1.0.0
     style-mod: ^4.0.0
-  checksum: 64408d996641931fa4c6b892e17ee1fdaee0f63d3d84c019a6ea7b1e6d1c774f92357b95c2ebaed60545062b795b72d0a058c03578b2bf4023c87726e97b5d2f
+  checksum: 9a897fb0f569159eeafb7dce83061b425af7244bbeae2649e0e677488548b2a02eaf0c13c0c5b4d59da55e8866e6f4dc7abe3dfaa09c13749a2fa2c0dbc0c565
   languageName: node
   linkType: hard
 
