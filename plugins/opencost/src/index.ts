@@ -14,4 +14,10 @@
  * limitations under the License.
  */
 
+/**
+ * A Backstage plugin that integrates with OpenCost
+ *
+ * @packageDocumentation
+ */
+
 export { openCostPlugin, OpenCostPage } from './plugin';

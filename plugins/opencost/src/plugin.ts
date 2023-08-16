@@ -21,6 +21,7 @@ import {
 
 import { rootRouteRef } from './routes';
 
+/** @public */
 export const openCostPlugin = createPlugin({
   id: 'opencost',
   routes: {
@@ -28,6 +29,7 @@ export const openCostPlugin = createPlugin({
   },
 });
 
+/** @public */
 export const OpenCostPage = openCostPlugin.provide(
   createRoutableExtension({
     name: 'OpenCostPage',
