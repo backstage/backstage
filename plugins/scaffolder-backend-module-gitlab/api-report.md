@@ -26,8 +26,8 @@ export const createGitlabProjectAccessTokenAction: (options: {
   integrations: ScmIntegrationRegistry;
 }) => TemplateAction<
   {
-    repoUrl: string;
     projectId: string | number;
+    repoUrl: string;
     token?: string | undefined;
     name?: string | undefined;
     accessLevel?: number | undefined;
@@ -44,8 +44,8 @@ export const createGitlabProjectDeployTokenAction: (options: {
 }) => TemplateAction<
   {
     name: string;
-    repoUrl: string;
     projectId: string | number;
+    repoUrl: string;
     token?: string | undefined;
     username?: string | undefined;
     scopes?: string[] | undefined;
@@ -63,8 +63,8 @@ export const createGitlabProjectVariableAction: (options: {
   {
     key: string;
     value: string;
-    repoUrl: string;
     projectId: string | number;
+    repoUrl: string;
     variableType: string;
     token?: string | undefined;
     variableProtected?: boolean | undefined;

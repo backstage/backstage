@@ -446,6 +446,8 @@ export function hasCatalogProcessingErrors(
 // @public (undocumented)
 export interface HasComponentsCardProps {
   // (undocumented)
+  title?: string;
+  // (undocumented)
   variant?: InfoCardVariants;
 }
 
@@ -463,6 +465,8 @@ export function hasRelationWarnings(
 // @public (undocumented)
 export interface HasResourcesCardProps {
   // (undocumented)
+  title?: string;
+  // (undocumented)
   variant?: InfoCardVariants;
 }
 
@@ -471,11 +475,15 @@ export interface HasSubcomponentsCardProps {
   // (undocumented)
   tableOptions?: TableOptions;
   // (undocumented)
+  title?: string;
+  // (undocumented)
   variant?: InfoCardVariants;
 }
 
 // @public (undocumented)
 export interface HasSystemsCardProps {
+  // (undocumented)
+  title?: string;
   // (undocumented)
   variant?: InfoCardVariants;
 }
