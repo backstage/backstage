@@ -28,7 +28,6 @@ import {
   FormControlLabel,
   FormGroup,
   FormLabel,
-  FormHelperText,
   Grid,
   makeStyles,
   Switch,
@@ -95,14 +94,24 @@ export const FeedbackResponseDialog = (props: FeedbackResponseDialogProps) => {
   const [consent, setConsent] = useState(true);
   const [errorMessage, setErrorMessage] = useState('');
 
+  const isFormValid =
+    Object.keys(responseSelections).some(key => responseSelections[key]) ||
+    comments ||
+    errorMessage !== '';
+
   const [{ loading: saving }, saveResponse] = useAsyncFn(async () => {
     try {
+      const selectedResponses = Object.keys(responseSelections).filter(
+        id => responseSelections[id],
+      );
+      const responseWithComments = responseSelections.other
+        ? [...selectedResponses, 'other']
+        : selectedResponses;
+
       await feedbackApi.recordResponse(stringifyEntityRef(entity), {
         comments,
         consent,
-        response: Object.keys(responseSelections)
-          .filter(id => responseSelections[id])
-          .join(','),
+        response: responseWithComments.join(','),
       });
       onClose();
     } catch (e) {
@@ -139,15 +148,8 @@ export const FeedbackResponseDialog = (props: FeedbackResponseDialogProps) => {
               />
             ))}
           </FormGroup>
-          {Object.keys(responseSelections).every(
-            key => responseSelections[key] === false,
-          ) ? (
-            <FormHelperText error>
-              *select the reason listed above
-            </FormHelperText>
-          ) : null}
         </FormControl>
-        {responseSelections.other === true && (
+        {responseSelections.other && (
           <FormControl fullWidth>
             <TextField
               data-testid="feedback-response-dialog-comments-input"
@@ -159,9 +161,6 @@ export const FeedbackResponseDialog = (props: FeedbackResponseDialogProps) => {
               variant="outlined"
               value={comments}
             />
-            {!comments && (
-              <FormHelperText error>*add some comments</FormHelperText>
-            )}
           </FormControl>
         )}
         <Typography className={classes.contactConsent}>
@@ -178,26 +177,20 @@ export const FeedbackResponseDialog = (props: FeedbackResponseDialogProps) => {
             <Grid item>Yes</Grid>
           </Grid>
         </Typography>
+        <DialogActions>
+          <Button color="primary" disabled={saving} onClick={onClose}>
+            Close
+          </Button>
+          <Button
+            color="primary"
+            data-testid="feedback-response-dialog-submit-button"
+            disabled={saving || !isFormValid}
+            onClick={saveResponse}
+          >
+            Submit
+          </Button>
+        </DialogActions>
       </DialogContent>
-      <DialogActions>
-        <Button color="primary" disabled={saving} onClick={onClose}>
-          Close
-        </Button>
-        <Button
-          color="primary"
-          data-testid="feedback-response-dialog-submit-button"
-          disabled={
-            saving ||
-            Object.keys(responseSelections).every(
-              key => responseSelections[key] === false || !comments,
-            ) ||
-            errorMessage !== ''
-          }
-          onClick={saveResponse}
-        >
-          Submit
-        </Button>
-      </DialogActions>
     </Dialog>
   );
 };
