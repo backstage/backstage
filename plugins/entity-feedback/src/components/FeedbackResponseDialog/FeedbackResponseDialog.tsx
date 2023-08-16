@@ -163,20 +163,6 @@ export const FeedbackResponseDialog = (props: FeedbackResponseDialogProps) => {
             />
           </FormControl>
         )}
-        <Typography className={classes.contactConsent}>
-          Can we reach out to you for more info?
-          <Grid component="label" container alignItems="center" spacing={1}>
-            <Grid item>No</Grid>
-            <Grid item>
-              <Switch
-                checked={consent}
-                disabled={saving}
-                onChange={e => setConsent(e.target.checked)}
-              />
-            </Grid>
-            <Grid item>Yes</Grid>
-          </Grid>
-        </Typography>
         <DialogActions>
           <Button color="primary" disabled={saving} onClick={onClose}>
             Close
