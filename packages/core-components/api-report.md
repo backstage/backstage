@@ -1354,9 +1354,9 @@ export interface TableProps<T extends object = {}>
   // (undocumented)
   filters?: TableFilter[];
   // (undocumented)
-  isLoading?: boolean;
-  // (undocumented)
   initialState?: TableState;
+  // (undocumented)
+  isLoading?: boolean;
   // (undocumented)
   onStateChange?: (state: TableState) => any;
   // (undocumented)
