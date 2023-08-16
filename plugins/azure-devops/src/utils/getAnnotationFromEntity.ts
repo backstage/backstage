@@ -18,6 +18,7 @@ import {
   AZURE_DEVOPS_BUILD_DEFINITION_ANNOTATION,
   AZURE_DEVOPS_PROJECT_ANNOTATION,
   AZURE_DEVOPS_REPO_ANNOTATION,
+  AZURE_DEVOPS_PROJECT_LOCATION,
 } from '../constants';
 
 import { Entity } from '@backstage/catalog-model';
@@ -37,6 +38,20 @@ export function getAnnotationFromEntity(entity: Entity): {
 
   const project =
     entity.metadata.annotations?.[AZURE_DEVOPS_PROJECT_ANNOTATION];
+
+  const location = entity.metadata.annotations?.[AZURE_DEVOPS_PROJECT_LOCATION];
+  const isAzureDevUrl = location?.includes('dev.azure.com');
+
+  if (!project && location && isAzureDevUrl) {
+    const locInfoArr = location
+      .substring(location.indexOf('//') + 2)
+      .split('/');
+
+    const [proj, repo] = [locInfoArr[2], locInfoArr[4].split('?')[0]];
+    const definition = undefined;
+    return { project: proj, repo, definition };
+  }
+
   if (!project) {
     throw new Error('Value for annotation dev.azure.com/project was not found');
   }
