@@ -62,6 +62,7 @@ export interface Config {
      * @additionalProperties true
      */
     providers?: {
+      /** @visibility frontend */
       google?: {
         [authEnv: string]: {
           clientId: string;
@@ -72,6 +73,7 @@ export interface Config {
           callbackUrl?: string;
         };
       };
+      /** @visibility frontend */
       github?: {
         [authEnv: string]: {
           clientId: string;
@@ -83,6 +85,7 @@ export interface Config {
           enterpriseInstanceUrl?: string;
         };
       };
+      /** @visibility frontend */
       gitlab?: {
         [authEnv: string]: {
           clientId: string;
@@ -94,6 +97,7 @@ export interface Config {
           callbackUrl?: string;
         };
       };
+      /** @visibility frontend */
       saml?: {
         entryPoint: string;
         logoutUrl?: string;
@@ -117,6 +121,7 @@ export interface Config {
         digestAlgorithm?: string;
         acceptedClockSkewMs?: number;
       };
+      /** @visibility frontend */
       okta?: {
         [authEnv: string]: {
           clientId: string;
@@ -130,6 +135,7 @@ export interface Config {
           callbackUrl?: string;
         };
       };
+      /** @visibility frontend */
       oauth2?: {
         [authEnv: string]: {
           clientId: string;
@@ -143,6 +149,7 @@ export interface Config {
           disableRefresh?: boolean;
         };
       };
+      /** @visibility frontend */
       oidc?: {
         [authEnv: string]: {
           clientId: string;
@@ -152,10 +159,13 @@ export interface Config {
           clientSecret: string;
           callbackUrl?: string;
           metadataUrl: string;
+          tokenEndpointAuthMethod?: string;
+          tokenSignedResponseAlg?: string;
           scope?: string;
           prompt?: string;
         };
       };
+      /** @visibility frontend */
       auth0?: {
         [authEnv: string]: {
           clientId: string;
@@ -170,6 +180,7 @@ export interface Config {
           connectionScope?: string;
         };
       };
+      /** @visibility frontend */
       microsoft?: {
         [authEnv: string]: {
           clientId: string;
@@ -181,6 +192,7 @@ export interface Config {
           callbackUrl?: string;
         };
       };
+      /** @visibility frontend */
       onelogin?: {
         [authEnv: string]: {
           clientId: string;
@@ -192,10 +204,12 @@ export interface Config {
           callbackUrl?: string;
         };
       };
+      /** @visibility frontend */
       awsalb?: {
         iss?: string;
         region: string;
       };
+      /** @visibility frontend */
       cfaccess?: {
         teamName: string;
       };

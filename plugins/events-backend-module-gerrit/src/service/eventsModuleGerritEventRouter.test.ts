@@ -34,7 +34,6 @@ describe('eventsModuleGerritEventRouter', () => {
 
     await startTestBackend({
       extensionPoints: [[eventsExtensionPoint, extensionPoint]],
-      services: [],
       features: [eventsModuleGerritEventRouter()],
     });
 

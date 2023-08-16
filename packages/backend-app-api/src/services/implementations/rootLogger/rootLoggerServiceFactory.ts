@@ -26,7 +26,7 @@ import { createConfigSecretEnumerator } from '../../../config';
 export const rootLoggerServiceFactory = createServiceFactory({
   service: coreServices.rootLogger,
   deps: {
-    config: coreServices.config,
+    config: coreServices.rootConfig,
   },
   async factory({ config }) {
     const logger = WinstonLogger.create({

@@ -14,14 +14,15 @@
  * limitations under the License.
  */
 
-import { getVoidLogger } from '@backstage/backend-common';
-import { coreServices } from '@backstage/backend-plugin-api';
+import {
+  coreServices,
+  createServiceFactory,
+} from '@backstage/backend-plugin-api';
 import {
   PluginTaskScheduler,
   TaskScheduleDefinition,
 } from '@backstage/backend-tasks';
-import { startTestBackend } from '@backstage/backend-test-utils';
-import { ConfigReader } from '@backstage/config';
+import { mockServices, startTestBackend } from '@backstage/backend-test-utils';
 import { catalogProcessingExtensionPoint } from '@backstage/plugin-catalog-node/alpha';
 import { catalogModulePuppetDbEntityProvider } from './catalogModulePuppetDbEntityProvider';
 import { PuppetDbEntityProvider } from '../providers/PuppetDbEntityProvider';
@@ -44,7 +45,7 @@ describe('catalogModulePuppetDbEntityProvider', () => {
       },
     } as unknown as PluginTaskScheduler;
 
-    const config = new ConfigReader({
+    const config = {
       catalog: {
         providers: {
           puppetdb: {
@@ -56,16 +57,19 @@ describe('catalogModulePuppetDbEntityProvider', () => {
           },
         },
       },
-    });
+    };
 
     await startTestBackend({
       extensionPoints: [[catalogProcessingExtensionPoint, extensionPoint]],
-      services: [
-        [coreServices.config, config],
-        [coreServices.logger, getVoidLogger()],
-        [coreServices.scheduler, scheduler],
+      features: [
+        catalogModulePuppetDbEntityProvider(),
+        mockServices.rootConfig.factory({ data: config }),
+        createServiceFactory(() => ({
+          deps: {},
+          service: coreServices.scheduler,
+          factory: async () => scheduler,
+        })),
       ],
-      features: [catalogModulePuppetDbEntityProvider()],
     });
 
     expect(usedSchedule?.frequency).toEqual({ minutes: 10 });

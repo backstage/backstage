@@ -1,5 +1,43 @@
 # @backstage/plugin-catalog-graph
 
+## 0.2.33
+
+### Patch Changes
+
+- 64ee2c0c7ca5: Propagate entity spec to EntityNode so that spec info such as type can be used for graph node customization
+- 62dc7a2b1ad1: Added maximum depth parameter to the catalogGraphParams in CatalogGraphCard.
+- 12a8c94eda8d: Add package repository and homepage metadata
+- Updated dependencies
+  - @backstage/core-components@0.13.4
+  - @backstage/plugin-catalog-react@1.8.1
+  - @backstage/core-plugin-api@1.5.3
+  - @backstage/catalog-client@1.4.3
+  - @backstage/catalog-model@1.4.1
+  - @backstage/theme@0.4.1
+  - @backstage/types@1.1.0
+
+## 0.2.33-next.2
+
+### Patch Changes
+
+- 62dc7a2b1ad1: Added maximum depth parameter to the catalogGraphParams in CatalogGraphCard.
+- Updated dependencies
+  - @backstage/plugin-catalog-react@1.8.1-next.1
+
+## 0.2.33-next.1
+
+### Patch Changes
+
+- 12a8c94eda8d: Add package repository and homepage metadata
+- Updated dependencies
+  - @backstage/catalog-client@1.4.3
+  - @backstage/catalog-model@1.4.1
+  - @backstage/core-components@0.13.4-next.0
+  - @backstage/core-plugin-api@1.5.3
+  - @backstage/theme@0.4.1
+  - @backstage/types@1.1.0
+  - @backstage/plugin-catalog-react@1.8.1-next.0
+
 ## 0.2.33-next.0
 
 ### Patch Changes

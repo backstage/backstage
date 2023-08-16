@@ -1,7 +1,7 @@
 {
   "name": "@backstage/cli",
   "description": "CLI for developing Backstage plugins and apps",
-  "version": "0.22.10-next.0",
+  "version": "0.22.10",
   "publishConfig": {
     "access": "public"
   },
@@ -78,7 +78,7 @@
     "cross-spawn": "^7.0.3",
     "css-loader": "^6.5.1",
     "diff": "^5.0.0",
-    "esbuild": "^0.18.0",
+    "esbuild": "^0.19.0",
     "esbuild-loader": "^2.18.0",
     "eslint": "^8.6.0",
     "eslint-config-prettier": "^8.3.0",
@@ -167,7 +167,7 @@
     "del": "^7.0.0",
     "mock-fs": "^5.1.0",
     "msw": "^1.0.0",
-    "nodemon": "^2.0.2",
+    "nodemon": "^3.0.1",
     "ts-node": "^10.0.0",
     "type-fest": "^2.19.0"
   },

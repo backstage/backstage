@@ -68,9 +68,6 @@ const useStyles = makeStyles(theme => ({
   lastAnalyzed: {
     color: theme.palette.text.secondary,
   },
-  disabled: {
-    backgroundColor: theme.palette.background.default,
-  },
 }));
 
 /** @public */
@@ -163,9 +160,6 @@ export const SonarQubeCard = (props: {
           action: classes.action,
         },
       }}
-      className={
-        !loading && (!projectTitle || !value) ? classes.disabled : undefined
-      }
     >
       {loading && <Progress />}
 

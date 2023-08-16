@@ -16,44 +16,11 @@
 
 import { CatalogApi } from '@backstage/catalog-client';
 import { createTemplateAction } from '@backstage/plugin-scaffolder-node';
-import yaml from 'yaml';
 import { z } from 'zod';
 import { parseEntityRef, stringifyEntityRef } from '@backstage/catalog-model';
+import { examples } from './fetch.examples';
 
 const id = 'catalog:fetch';
-
-const examples = [
-  {
-    description: 'Fetch entity by reference',
-    example: yaml.stringify({
-      steps: [
-        {
-          action: id,
-          id: 'fetch',
-          name: 'Fetch catalog entity',
-          input: {
-            entityRef: 'component:default/name',
-          },
-        },
-      ],
-    }),
-  },
-  {
-    description: 'Fetch multiple entities by referencse',
-    example: yaml.stringify({
-      steps: [
-        {
-          action: id,
-          id: 'fetchMultiple',
-          name: 'Fetch catalog entities',
-          input: {
-            entityRefs: ['component:default/name'],
-          },
-        },
-      ],
-    }),
-  },
-];
 
 /**
  * Returns entity or entities from the catalog by entity reference(s).

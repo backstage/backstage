@@ -32,13 +32,13 @@ export namespace coreServices {
   });
 
   /**
-   * The service reference for the root scoped {@link ConfigService}.
+   * The service reference for the root scoped {@link RootConfigService}.
    *
    * @public
    */
-  export const config = createServiceRef<
-    import('./ConfigService').ConfigService
-  >({ id: 'core.config', scope: 'root' });
+  export const rootConfig = createServiceRef<
+    import('./RootConfigService').RootConfigService
+  >({ id: 'core.rootConfig', scope: 'root' });
 
   /**
    * The service reference for the plugin scoped {@link DatabaseService}.

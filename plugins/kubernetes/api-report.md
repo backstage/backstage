@@ -137,7 +137,7 @@ export interface DetectedError {
   // (undocumented)
   message: string;
   // (undocumented)
-  occuranceCount: number;
+  occurrenceCount: number;
   // Warning: (ae-forgotten-export) The symbol "ProposedFix" needs to be exported by the entry point index.d.ts
   //
   // (undocumented)
@@ -714,7 +714,7 @@ export const ResourceUtilization: ({
   title,
   usage,
   total,
-  totalFormated,
+  totalFormatted,
 }: ResourceUtilizationProps) => JSX.Element;
 
 // Warning: (ae-missing-release-tag) "Router" is part of the package's API, but it is missing a release tag (@alpha, @beta, @public, or @internal)

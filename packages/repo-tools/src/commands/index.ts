@@ -96,6 +96,21 @@ export function registerCommands(program: Command) {
     .description('Find inconsistencies in types of all packages and plugins')
     .action(lazy(() => import('./type-deps/type-deps').then(m => m.default)));
 
+  program
+    .command('generate-catalog-info')
+    .option(
+      '--dry-run',
+      'Shows what would happen without actually writing any yaml.',
+    )
+    .description('Create or fix info yaml files for all backstage packages')
+    .action(
+      lazy(() =>
+        import('./generate-catalog-info/generate-catalog-info').then(
+          m => m.default,
+        ),
+      ),
+    );
+
   registerSchemaCommand(program);
 }
 

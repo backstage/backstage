@@ -20,8 +20,10 @@ The provider configuration can be added to your `app-config.yaml` under the root
 
 ```yaml title="app-config.yaml"
 auth:
+  environment: development
   providers:
-    oauth2Proxy: {}
+    oauth2Proxy:
+      development: {}
 ```
 
 Right now no configuration options are supported, but the empty object is needed
@@ -57,6 +59,8 @@ providerFactories: {
   }),
 },
 ```
+
+[An example on how to sign a user in without a matching user](https://github.com/backstage/backstage/blob/master/packages/backend/src/plugins/auth.ts)
 
 ## Adding the provider to the Backstage frontend
 

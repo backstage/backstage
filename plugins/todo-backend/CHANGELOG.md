@@ -1,5 +1,51 @@
 # @backstage/plugin-todo-backend
 
+## 0.2.0
+
+### Minor Changes
+
+- ebeb77586975: Now performs request validation based on OpenAPI schema through `@backstage/backend-openapi-utils`. Error responses for invalid input, like `"a"` instead of a number, may have changed.
+
+### Patch Changes
+
+- 629cbd194a87: Use `coreServices.rootConfig` instead of `coreService.config`
+- ad3fb5401729: Fixed a bug where filter queries from the frontend would always fail validation.
+- Updated dependencies
+  - @backstage/backend-common@0.19.2
+  - @backstage/backend-plugin-api@0.6.0
+  - @backstage/backend-openapi-utils@0.0.3
+  - @backstage/plugin-catalog-node@1.4.1
+  - @backstage/integration@1.6.0
+  - @backstage/catalog-client@1.4.3
+  - @backstage/catalog-model@1.4.1
+  - @backstage/config@1.0.8
+  - @backstage/errors@1.2.1
+
+## 0.2.0-next.2
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-plugin-api@0.6.0-next.2
+  - @backstage/backend-common@0.19.2-next.2
+  - @backstage/plugin-catalog-node@1.4.1-next.2
+
+## 0.2.0-next.1
+
+### Patch Changes
+
+- 629cbd194a87: Use `coreServices.rootConfig` instead of `coreService.config`
+- Updated dependencies
+  - @backstage/backend-common@0.19.2-next.1
+  - @backstage/backend-openapi-utils@0.0.3-next.1
+  - @backstage/plugin-catalog-node@1.4.1-next.1
+  - @backstage/backend-plugin-api@0.6.0-next.1
+  - @backstage/integration@1.5.1
+  - @backstage/catalog-client@1.4.3
+  - @backstage/catalog-model@1.4.1
+  - @backstage/config@1.0.8
+  - @backstage/errors@1.2.1
+
 ## 0.2.0-next.0
 
 ### Minor Changes

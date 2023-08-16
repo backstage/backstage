@@ -62,7 +62,7 @@ export const MyGroupsPicker = (props: MyGroupsPickerProps) => {
 
     const { items } = await catalogApi.getEntities({
       filter: {
-        type: 'Group',
+        kind: 'Group',
         ['relations.hasMember']: [userEntityRef],
       },
     });

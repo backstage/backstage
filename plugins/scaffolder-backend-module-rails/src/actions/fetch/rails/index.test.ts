@@ -15,8 +15,8 @@
  */
 
 const mockRailsTemplater = { run: jest.fn() };
-jest.mock('@backstage/plugin-scaffolder-backend', () => ({
-  ...jest.requireActual('@backstage/plugin-scaffolder-backend'),
+jest.mock('@backstage/plugin-scaffolder-node', () => ({
+  ...jest.requireActual('@backstage/plugin-scaffolder-node'),
   fetchContents: jest.fn(),
 }));
 jest.mock('./railsNewRunner', () => {
@@ -39,7 +39,7 @@ import os from 'os';
 import { resolve as resolvePath } from 'path';
 import { PassThrough } from 'stream';
 import { createFetchRailsAction } from './index';
-import { fetchContents } from '@backstage/plugin-scaffolder-backend';
+import { fetchContents } from '@backstage/plugin-scaffolder-node';
 
 describe('fetch:rails', () => {
   const integrations = ScmIntegrations.fromConfig(

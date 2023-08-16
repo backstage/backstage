@@ -109,6 +109,7 @@ export class GitLabDiscoveryProcessor implements CatalogProcessor {
 
     const lastActivity = (await this.cache.get(this.getCacheKey())) as string;
     const opts = {
+      archived: false,
       group,
       page: 1,
       // We check for the existence of lastActivity and only set it if it's present to ensure
@@ -124,10 +125,6 @@ export class GitLabDiscoveryProcessor implements CatalogProcessor {
     };
     for await (const project of projects) {
       res.scanned++;
-
-      if (project.archived) {
-        continue;
-      }
 
       if (branch === '*' && project.default_branch === undefined) {
         continue;

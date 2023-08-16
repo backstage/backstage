@@ -36,7 +36,7 @@ Example:
 ```yaml
 # in app-config.yaml
 proxy:
-  simple-example: http://simple.example.com:8080
+  /simple-example: http://simple.example.com:8080
   '/larger-example/v1':
     target: http://larger.example.com:8080/svc.v1
     headers:

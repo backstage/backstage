@@ -4,21 +4,9 @@
 
 ```ts
 import { BackendFeature } from '@backstage/backend-plugin-api';
-import { TaskScheduleDefinition } from '@backstage/backend-tasks';
-import { ToolDocumentCollatorFactoryOptions } from '@backstage/plugin-search-backend-module-explore';
 
 // @alpha
-export const searchModuleExploreCollator: (
-  options?: SearchModuleExploreCollatorOptions | undefined,
-) => BackendFeature;
-
-// @alpha
-export type SearchModuleExploreCollatorOptions = Omit<
-  ToolDocumentCollatorFactoryOptions,
-  'logger' | 'discovery'
-> & {
-  schedule?: TaskScheduleDefinition;
-};
+export const searchModuleExploreCollator: () => BackendFeature;
 
 // (No @packageDocumentation comment for this package)
 ```

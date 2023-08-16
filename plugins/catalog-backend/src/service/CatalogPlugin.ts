@@ -84,7 +84,7 @@ export const catalogPlugin = createBackendPlugin({
     env.registerInit({
       deps: {
         logger: coreServices.logger,
-        config: coreServices.config,
+        config: coreServices.rootConfig,
         reader: coreServices.urlReader,
         permissions: coreServices.permissions,
         database: coreServices.database,

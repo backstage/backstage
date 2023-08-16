@@ -6,7 +6,6 @@
 import { Backend } from '@backstage/backend-app-api';
 import { BackendFeature } from '@backstage/backend-plugin-api';
 import { CacheService } from '@backstage/backend-plugin-api';
-import { ConfigService } from '@backstage/backend-plugin-api';
 import { DatabaseService } from '@backstage/backend-plugin-api';
 import { ExtendedHttpServer } from '@backstage/backend-app-api';
 import { ExtensionPoint } from '@backstage/backend-plugin-api';
@@ -18,10 +17,10 @@ import { Knex } from 'knex';
 import { LifecycleService } from '@backstage/backend-plugin-api';
 import { LoggerService } from '@backstage/backend-plugin-api';
 import { PermissionsService } from '@backstage/backend-plugin-api';
+import { RootConfigService } from '@backstage/backend-plugin-api';
 import { RootLifecycleService } from '@backstage/backend-plugin-api';
 import { SchedulerService } from '@backstage/backend-plugin-api';
 import { ServiceFactory } from '@backstage/backend-plugin-api';
-import { ServiceRef } from '@backstage/backend-plugin-api';
 import { TokenManagerService } from '@backstage/backend-plugin-api';
 import { UrlReaderService } from '@backstage/backend-plugin-api';
 
@@ -34,19 +33,6 @@ export namespace mockServices {
   export namespace cache {
     const // (undocumented)
       factory: () => ServiceFactory<CacheService, 'plugin'>;
-  }
-  // (undocumented)
-  export function config(options?: config.Options): ConfigService;
-  // (undocumented)
-  export namespace config {
-    // (undocumented)
-    export type Options = {
-      data?: JsonObject;
-    };
-    const // (undocumented)
-      factory: (
-        options?: Options | undefined,
-      ) => ServiceFactory<ConfigService, 'root'>;
   }
   // (undocumented)
   export namespace database {
@@ -81,6 +67,19 @@ export namespace mockServices {
   export namespace permissions {
     const // (undocumented)
       factory: () => ServiceFactory<PermissionsService, 'plugin'>;
+  }
+  // (undocumented)
+  export function rootConfig(options?: rootConfig.Options): RootConfigService;
+  // (undocumented)
+  export namespace rootConfig {
+    // (undocumented)
+    export type Options = {
+      data?: JsonObject;
+    };
+    const // (undocumented)
+      factory: (
+        options?: Options | undefined,
+      ) => ServiceFactory<RootConfigService, 'root'>;
   }
   // (undocumented)
   export namespace rootLifecycle {
@@ -127,11 +126,8 @@ export function setupRequestMockHandlers(worker: {
 }): void;
 
 // @public (undocumented)
-export function startTestBackend<
-  TServices extends any[],
-  TExtensionPoints extends any[],
->(
-  options: TestBackendOptions<TServices, TExtensionPoints>,
+export function startTestBackend<TExtensionPoints extends any[]>(
+  options: TestBackendOptions<TExtensionPoints>,
 ): Promise<TestBackend>;
 
 // @public (undocumented)
@@ -140,10 +136,7 @@ export interface TestBackend extends Backend {
 }
 
 // @public (undocumented)
-export interface TestBackendOptions<
-  TServices extends any[],
-  TExtensionPoints extends any[],
-> {
+export interface TestBackendOptions<TExtensionPoints extends any[]> {
   // (undocumented)
   extensionPoints?: readonly [
     ...{
@@ -154,20 +147,12 @@ export interface TestBackendOptions<
     },
   ];
   // (undocumented)
-  features?: BackendFeature[];
-  // (undocumented)
-  services?: readonly [
-    ...{
-      [index in keyof TServices]:
-        | ServiceFactory<TServices[index]>
-        | (() => ServiceFactory<TServices[index]>)
-        | [ServiceRef<TServices[index]>, Partial<TServices[index]>];
-    },
-  ];
+  features?: Array<BackendFeature | (() => BackendFeature)>;
 }
 
 // @public
 export type TestDatabaseId =
+  | 'POSTGRES_14'
   | 'POSTGRES_13'
   | 'POSTGRES_12'
   | 'POSTGRES_11'

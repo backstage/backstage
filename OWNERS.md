@@ -42,6 +42,7 @@ Scope: Discoverability within Backstage, including the home page, information ar
 | Emma Indal               | Spotify      | BUX  | [emmaindal](http://github.com/emmaindal) | emmaindal#7503     |
 | Raghunandan Balachandran | Spotify      | BUX  | [soapraj](http://github.com/soapraj)     | raghunandanb#1114  |
 | Renan Mendes Carvalho    | Spotify      | BUX  | [aitherios](http://github.com/aitherios) | aitherios#0593     |
+| Bailey Brooks            | Spotify      | BUX  | [bailey](http://github.com/bailey)       | \_bailey4          |
 
 ### Helm Charts
 

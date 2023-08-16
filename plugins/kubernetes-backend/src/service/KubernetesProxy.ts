@@ -145,7 +145,7 @@ export class KubernetesProxy {
           const cluster = await this.getClusterForRequest(req);
           const url = new URL(cluster.url);
           return path.replace(
-            new RegExp(`^${req.baseUrl}`),
+            new RegExp(`^${originalReq.baseUrl}`),
             url.pathname || '',
           );
         },

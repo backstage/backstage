@@ -4,18 +4,9 @@
 
 ```ts
 import { BackendFeature } from '@backstage/backend-plugin-api';
-import express from 'express';
 
 // @alpha
-export const appPlugin: (options: AppPluginOptions) => BackendFeature;
-
-// @alpha (undocumented)
-export type AppPluginOptions = {
-  appPackageName?: string;
-  staticFallbackHandler?: express.Handler;
-  disableConfigInjection?: boolean;
-  disableStaticFallbackCache?: boolean;
-};
+export const appPlugin: () => BackendFeature;
 
 // (No @packageDocumentation comment for this package)
 ```

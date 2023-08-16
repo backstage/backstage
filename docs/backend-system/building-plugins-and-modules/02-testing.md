@@ -37,7 +37,7 @@ describe('myPlugin', () => {
 
     const { server } = await startTestBackend({
       features: [myPlugin()],
-      services: [mockServices.config.factory({ data: fakeConfig })],
+      services: [mockServices.rootConfig.factory({ data: fakeConfig })],
     });
 
     const response = await request(server).get('/api/example/get-value');

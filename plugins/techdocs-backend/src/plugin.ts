@@ -41,7 +41,7 @@ export const techdocsPlugin = createBackendPlugin({
   register(env) {
     env.registerInit({
       deps: {
-        config: coreServices.config,
+        config: coreServices.rootConfig,
         logger: coreServices.logger,
         urlReader: coreServices.urlReader,
         http: coreServices.httpRouter,

@@ -15,7 +15,7 @@
  */
 
 import { createApp } from '@backstage/app-defaults';
-import { FlatRoutes } from '@backstage/core-app-api';
+import { AppRouter, FlatRoutes } from '@backstage/core-app-api';
 import {
   AlertDisplay,
   OAuthRequestDialog,
@@ -195,35 +195,30 @@ export class DevAppBuilder {
       },
     });
 
-    const AppProvider = app.getProvider();
-    const AppRouter = app.getRouter();
+    const DevApp = (
+      <>
+        <AlertDisplay />
+        <OAuthRequestDialog />
+        {this.rootChildren}
+        <AppRouter>
+          <SidebarPage>
+            <Sidebar>
+              <SidebarSpacer />
+              {this.sidebarItems}
+              <SidebarSpace />
+              <SidebarDivider />
+              <SidebarThemeSwitcher />
+            </Sidebar>
+            <FlatRoutes>
+              {this.routes}
+              <Route path="/_external_route" element={<FakePage />} />
+            </FlatRoutes>
+          </SidebarPage>
+        </AppRouter>
+      </>
+    );
 
-    const DevApp = () => {
-      return (
-        <AppProvider>
-          <AlertDisplay />
-          <OAuthRequestDialog />
-          {this.rootChildren}
-          <AppRouter>
-            <SidebarPage>
-              <Sidebar>
-                <SidebarSpacer />
-                {this.sidebarItems}
-                <SidebarSpace />
-                <SidebarDivider />
-                <SidebarThemeSwitcher />
-              </Sidebar>
-              <FlatRoutes>
-                {this.routes}
-                <Route path="/_external_route" element={<FakePage />} />
-              </FlatRoutes>
-            </SidebarPage>
-          </AppRouter>
-        </AppProvider>
-      );
-    };
-
-    return DevApp;
+    return app.createRoot(DevApp);
   }
 
   /**

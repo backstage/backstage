@@ -21,84 +21,49 @@ import {
 } from '@backstage/backend-plugin-api';
 import { createRouter } from './router';
 import { loggerToWinstonLogger } from '@backstage/backend-common';
-
-/** @alpha */
-export type AppPluginOptions = {
-  /**
-   * The name of the app package (in most Backstage repositories, this is the
-   * "name" field in `packages/app/package.json`) that content should be served
-   * from. The same app package should be added as a dependency to the backend
-   * package in order for it to be accessible at runtime.
-   *
-   * In a typical setup with a single app package, this will default to 'app'.
-   */
-  appPackageName?: string;
-
-  /**
-   * A request handler to handle requests for static content that are not present in the app bundle.
-   *
-   * This can be used to avoid issues with clients on older deployment versions trying to access lazy
-   * loaded content that is no longer present. Typically the requests would fall back to a long-term
-   * object store where all recently deployed versions of the app are present.
-   *
-   * Another option is to provide a `database` that will take care of storing the static assets instead.
-   *
-   * If both `database` and `staticFallbackHandler` are provided, the `database` will attempt to serve
-   * static assets first, and if they are not found, the `staticFallbackHandler` will be called.
-   */
-  staticFallbackHandler?: express.Handler;
-
-  /**
-   * Disables the configuration injection. This can be useful if you're running in an environment
-   * with a read-only filesystem, or for some other reason don't want configuration to be injected.
-   *
-   * Note that this will cause the configuration used when building the app bundle to be used, unless
-   * a separate configuration loading strategy is set up.
-   *
-   * This also disables configuration injection though `APP_CONFIG_` environment variables.
-   */
-  disableConfigInjection?: boolean;
-
-  /**
-   * By default the app backend plugin will cache previously deployed static assets in the database.
-   * If you disable this, it is recommended to set a `staticFallbackHandler` instead.
-   */
-  disableStaticFallbackCache?: boolean;
-};
+import { staticFallbackHandlerExtensionPoint } from '@backstage/plugin-app-node';
 
 /**
  * The App plugin is responsible for serving the frontend app bundle and static assets.
  * @alpha
  */
-export const appPlugin = createBackendPlugin((options: AppPluginOptions) => ({
+export const appPlugin = createBackendPlugin({
   pluginId: 'app',
   register(env) {
+    let staticFallbackHandler: express.Handler | undefined;
+
+    env.registerExtensionPoint(staticFallbackHandlerExtensionPoint, {
+      setStaticFallbackHandler(handler) {
+        if (staticFallbackHandler) {
+          throw new Error(
+            'Attempted to install a static fallback handler for the app-backend twice',
+          );
+        }
+        staticFallbackHandler = handler;
+      },
+    });
+
     env.registerInit({
       deps: {
         logger: coreServices.logger,
-        config: coreServices.config,
+        config: coreServices.rootConfig,
         database: coreServices.database,
         httpRouter: coreServices.httpRouter,
       },
       async init({ logger, config, database, httpRouter }) {
-        const {
-          appPackageName,
-          staticFallbackHandler,
-          disableConfigInjection,
-          disableStaticFallbackCache,
-        } = options;
+        const appPackageName =
+          config.getOptionalString('app.packageName') ?? 'app';
         const winstonLogger = loggerToWinstonLogger(logger);
 
         const router = await createRouter({
           logger: winstonLogger,
           config,
-          database: disableStaticFallbackCache ? undefined : database,
-          appPackageName: appPackageName ?? 'app',
+          database,
+          appPackageName,
           staticFallbackHandler,
-          disableConfigInjection,
         });
         httpRouter.use(router);
       },
     });
   },
-}));
+});
