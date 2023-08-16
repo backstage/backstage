@@ -14,14 +14,15 @@
  * limitations under the License.
  */
 
-import { getVoidLogger } from '@backstage/backend-common';
-import { coreServices } from '@backstage/backend-plugin-api';
+import {
+  coreServices,
+  createServiceFactory,
+} from '@backstage/backend-plugin-api';
 import {
   PluginTaskScheduler,
   TaskScheduleDefinition,
 } from '@backstage/backend-tasks';
-import { startTestBackend } from '@backstage/backend-test-utils';
-import { ConfigReader } from '@backstage/config';
+import { mockServices, startTestBackend } from '@backstage/backend-test-utils';
 import { catalogProcessingExtensionPoint } from '@backstage/plugin-catalog-node/alpha';
 import { Duration } from 'luxon';
 import { catalogModuleAzureDevOpsEntityProvider } from './catalogModuleAzureDevOpsEntityProvider';
@@ -45,7 +46,7 @@ describe('catalogModuleAzureDevOpsEntityProvider', () => {
       },
     } as unknown as PluginTaskScheduler;
 
-    const config = new ConfigReader({
+    const config = {
       catalog: {
         providers: {
           azureDevOps: {
@@ -60,16 +61,20 @@ describe('catalogModuleAzureDevOpsEntityProvider', () => {
           },
         },
       },
-    });
+    };
 
     await startTestBackend({
       extensionPoints: [[catalogProcessingExtensionPoint, extensionPoint]],
-      services: [
-        [coreServices.config, config],
-        [coreServices.logger, getVoidLogger()],
-        [coreServices.scheduler, scheduler],
+      features: [
+        catalogModuleAzureDevOpsEntityProvider(),
+        mockServices.rootConfig.factory({ data: config }),
+        mockServices.logger.factory(),
+        createServiceFactory(() => ({
+          deps: {},
+          service: coreServices.scheduler,
+          factory: async () => scheduler,
+        })),
       ],
-      features: [catalogModuleAzureDevOpsEntityProvider()],
     });
 
     expect(usedSchedule?.frequency).toEqual(Duration.fromISO('P1M'));

@@ -29,7 +29,7 @@ import {
 } from '@backstage/core-components';
 import { ClientPodStatus } from '@backstage/plugin-kubernetes-common';
 import { Pod } from 'kubernetes-models/v1/Pod';
-import { bytesToMiB, formatMilicores } from './resources';
+import { bytesToMiB, formatMillicores } from './resources';
 
 export const imageChips = (pod: V1Pod): ReactNode => {
   const containerStatuses = pod.status?.containerStatuses ?? [];
@@ -148,11 +148,11 @@ export const podStatusToCpuUtil = (podStatus: ClientPodStatus): ReactNode => {
       value={`requests: ${currentToDeclaredResourceToPerc(
         currentUsage,
         cpuUtil.requestTotal,
-      )} of ${formatMilicores(cpuUtil.requestTotal)}`}
+      )} of ${formatMillicores(cpuUtil.requestTotal)}`}
       subvalue={`limits: ${currentToDeclaredResourceToPerc(
         currentUsage,
         cpuUtil.limitTotal,
-      )} of ${formatMilicores(cpuUtil.limitTotal)}`}
+      )} of ${formatMillicores(cpuUtil.limitTotal)}`}
     />
   );
 };

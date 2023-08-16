@@ -61,11 +61,11 @@ All of these services can be replaced with your own implementations if you need 
 For example, let's say we want to customize the core configuration service to enable remote configuration loading. That would look something like this:
 
 ```ts
-import { configServiceFactory } from '@backstage/backend-app-api';
+import { rootConfigServiceFactory } from '@backstage/backend-app-api';
 
 const backend = createBackend({
   services: [
-    configServiceFactory({
+    rootConfigServiceFactory({
       remote: { reloadIntervalSeconds: 60 },
     }),
   ],

@@ -17,7 +17,7 @@
 import {
   Backend,
   cacheServiceFactory,
-  configServiceFactory,
+  rootConfigServiceFactory,
   createSpecializedBackend,
   databaseServiceFactory,
   discoveryServiceFactory,
@@ -33,14 +33,10 @@ import {
   urlReaderServiceFactory,
   identityServiceFactory,
 } from '@backstage/backend-app-api';
-import {
-  ServiceFactory,
-  ServiceFactoryOrFunction,
-} from '@backstage/backend-plugin-api';
 
 export const defaultServiceFactories = [
   cacheServiceFactory(),
-  configServiceFactory(),
+  rootConfigServiceFactory(),
   databaseServiceFactory(),
   discoveryServiceFactory(),
   httpRouterServiceFactory(),
@@ -59,27 +55,6 @@ export const defaultServiceFactories = [
 /**
  * @public
  */
-export interface CreateBackendOptions {
-  services?: ServiceFactoryOrFunction[];
-}
-
-/**
- * @public
- */
-export function createBackend(options?: CreateBackendOptions): Backend {
-  const services = new Array<ServiceFactory>();
-
-  // Highest priority: Services passed directly to createBackend
-  const providedServices = (options?.services ?? []).map(sf =>
-    typeof sf === 'function' ? sf() : sf,
-  );
-  services.push(...providedServices);
-
-  // Lowest priority: Default services that are not already provided by environment or directly to createBackend
-  const defaultServices = defaultServiceFactories.filter(
-    sf => !services.some(({ service }) => service.id === sf.service.id),
-  );
-  services.push(...defaultServices);
-
-  return createSpecializedBackend({ services });
+export function createBackend(): Backend {
+  return createSpecializedBackend({ defaultServiceFactories });
 }

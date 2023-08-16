@@ -22,6 +22,7 @@ export const EntityPagerDutyCard: (
 // @public (undocumented)
 export type EntityPagerDutyCardProps = {
   readOnly?: boolean;
+  disableChangeEvents?: boolean;
 };
 
 // @public (undocumented)

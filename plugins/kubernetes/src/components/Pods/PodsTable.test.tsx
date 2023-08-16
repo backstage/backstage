@@ -124,7 +124,7 @@ describe('PodsTable', () => {
     expect(getByText('requests: 1% of 64MiB')).toBeInTheDocument();
     expect(getByText('limits: 0% of 128MiB')).toBeInTheDocument();
   });
-  it('should render placehoplder when empty metrics context', async () => {
+  it('should render placeholder when empty metrics context', async () => {
     const podNameToClientPodStatus = new Map<string, ClientPodStatus[]>();
 
     const wrapper = kubernetesProviders(

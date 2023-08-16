@@ -1,5 +1,44 @@
 # @backstage/plugin-scaffolder-backend-module-confluence-to-markdown
 
+## 0.2.1
+
+### Patch Changes
+
+- 0a9b3b14e904: Added example for the `confluence:transform:markdown` that will show in the installed actions list
+- 12a8c94eda8d: Add package repository and homepage metadata
+- 0d347efc8f18: Use `fetchContents` directly instead of a `fetchPlainAction`
+- c186c631b429: Import helpers from the node package instead of the backend package
+- Updated dependencies
+  - @backstage/backend-common@0.19.2
+  - @backstage/plugin-scaffolder-node@0.2.0
+  - @backstage/integration@1.6.0
+  - @backstage/config@1.0.8
+  - @backstage/errors@1.2.1
+  - @backstage/types@1.1.0
+
+## 0.2.1-next.2
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/plugin-scaffolder-node@0.1.6-next.2
+  - @backstage/backend-common@0.19.2-next.2
+
+## 0.2.1-next.1
+
+### Patch Changes
+
+- 12a8c94eda8d: Add package repository and homepage metadata
+- 0d347efc8f18: Use `fetchContents` directly instead of a `fetchPlainAction`
+- c186c631b429: Import helpers from the node package instead of the backend package
+- Updated dependencies
+  - @backstage/backend-common@0.19.2-next.1
+  - @backstage/plugin-scaffolder-node@0.1.6-next.1
+  - @backstage/integration@1.5.1
+  - @backstage/config@1.0.8
+  - @backstage/errors@1.2.1
+  - @backstage/types@1.1.0
+
 ## 0.2.1-next.0
 
 ### Patch Changes

@@ -4,21 +4,9 @@
 
 ```ts
 import { BackendFeature } from '@backstage/backend-plugin-api';
-import { TaskScheduleDefinition } from '@backstage/backend-tasks';
-import { TechDocsCollatorFactoryOptions } from '@backstage/plugin-search-backend-module-techdocs';
 
 // @alpha
-export const searchModuleTechDocsCollator: (
-  options?: SearchModuleTechDocsCollatorOptions | undefined,
-) => BackendFeature;
-
-// @alpha
-export type SearchModuleTechDocsCollatorOptions = Omit<
-  TechDocsCollatorFactoryOptions,
-  'logger' | 'discovery' | 'tokenManager'
-> & {
-  schedule?: TaskScheduleDefinition;
-};
+export const searchModuleTechDocsCollator: () => BackendFeature;
 
 // (No @packageDocumentation comment for this package)
 ```

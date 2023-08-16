@@ -18,7 +18,6 @@ import { CacheService as CacheClient } from '@backstage/backend-plugin-api';
 import { CacheServiceOptions as CacheClientOptions } from '@backstage/backend-plugin-api';
 import { CacheServiceSetOptions as CacheClientSetOptions } from '@backstage/backend-plugin-api';
 import { Config } from '@backstage/config';
-import { ConfigService } from '@backstage/backend-plugin-api';
 import cors from 'cors';
 import Docker from 'dockerode';
 import { ErrorRequestHandler } from 'express';
@@ -51,6 +50,7 @@ import { ReadTreeResponseFile } from '@backstage/backend-plugin-api';
 import { ReadUrlOptions } from '@backstage/backend-plugin-api';
 import { ReadUrlResponse } from '@backstage/backend-plugin-api';
 import { RequestHandler } from 'express';
+import { RootConfigService } from '@backstage/backend-plugin-api';
 import { Router } from 'express';
 import { SchedulerService } from '@backstage/backend-plugin-api';
 import { SearchOptions } from '@backstage/backend-plugin-api';
@@ -525,7 +525,7 @@ export const legacyPlugin: (
       TransformedEnv<
         {
           cache: CacheClient;
-          config: ConfigService;
+          config: RootConfigService;
           database: PluginDatabaseManager;
           discovery: PluginEndpointDiscovery;
           logger: LoggerService;
@@ -610,7 +610,9 @@ export interface ReadTreeResponseFactory {
   ): Promise<ReadTreeResponse>;
   // (undocumented)
   fromTarArchive(
-    options: ReadTreeResponseFactoryOptions,
+    options: ReadTreeResponseFactoryOptions & {
+      stripFirstDirectory?: boolean;
+    },
   ): Promise<ReadTreeResponse>;
   // (undocumented)
   fromZipArchive(

@@ -92,6 +92,13 @@ export async function createRouter(
 ): Promise<express.Router> {
   const { config, logger, appPackageName, staticFallbackHandler } = options;
 
+  const disableConfigInjection =
+    options.disableConfigInjection ??
+    config.getOptionalBoolean('app.disableConfigInjection');
+  const disableStaticFallbackCache = config.getOptionalBoolean(
+    'app.disableStaticFallbackCache',
+  );
+
   const appDistDir = resolvePackagePath(appPackageName, 'dist');
   const staticDir = resolvePath(appDistDir, 'static');
 
@@ -107,7 +114,7 @@ export async function createRouter(
 
   logger.info(`Serving static app content from ${appDistDir}`);
 
-  if (!options.disableConfigInjection) {
+  if (!disableConfigInjection) {
     const appConfigs = await readConfigs({
       config,
       appDistDir,
@@ -131,7 +138,7 @@ export async function createRouter(
     }),
   );
 
-  if (options.database) {
+  if (options.database && !disableStaticFallbackCache) {
     const store = await StaticAssetsStore.create({
       logger,
       database: options.database,

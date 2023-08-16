@@ -15,7 +15,7 @@
  */
 
 import type { EntityMeta, UserEntity } from '@backstage/catalog-model';
-import type { JsonObject, JsonValue } from '@backstage/types';
+import type { JsonArray, JsonObject, JsonValue } from '@backstage/types';
 
 /**
  * Information about a template that is stored on a task specification.
@@ -70,6 +70,10 @@ export interface TaskStep {
    * When this is false, or if the templated value string evaluates to something that is falsy the step will be skipped.
    */
   if?: string | boolean;
+  /**
+   * Run step repeatedly
+   */
+  each?: string | JsonArray;
 }
 
 /**

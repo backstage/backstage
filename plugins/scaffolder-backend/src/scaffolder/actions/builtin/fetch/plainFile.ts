@@ -16,8 +16,11 @@
 
 import { UrlReader, resolveSafeChildPath } from '@backstage/backend-common';
 import { ScmIntegrations } from '@backstage/integration';
-import { fetchFile } from './helpers';
-import { createTemplateAction } from '@backstage/plugin-scaffolder-node';
+import { examples } from './plainFile.examples';
+import {
+  createTemplateAction,
+  fetchFile,
+} from '@backstage/plugin-scaffolder-node';
 
 /**
  * Downloads content and places it in the workspace, or optionally
@@ -33,6 +36,7 @@ export function createFetchPlainFileAction(options: {
   return createTemplateAction<{ url: string; targetPath: string }>({
     id: 'fetch:plain:file',
     description: 'Downloads single file and places it in the workspace.',
+    examples,
     schema: {
       input: {
         type: 'object',

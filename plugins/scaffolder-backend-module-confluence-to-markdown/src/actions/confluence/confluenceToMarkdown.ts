@@ -13,11 +13,14 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
 import { Config } from '@backstage/config';
 import { UrlReader } from '@backstage/backend-common';
 import { ScmIntegrations } from '@backstage/integration';
-import { fetchContents } from '@backstage/plugin-scaffolder-backend';
-import { createTemplateAction } from '@backstage/plugin-scaffolder-node';
+import {
+  createTemplateAction,
+  fetchContents,
+} from '@backstage/plugin-scaffolder-node';
 import { InputError, ConflictError } from '@backstage/errors';
 import { NodeHtmlMarkdown } from 'node-html-markdown';
 import fs from 'fs-extra';
@@ -30,6 +33,7 @@ import {
   createConfluenceVariables,
   getConfluenceConfig,
 } from './helpers';
+import { examples } from './confluenceToMarkdown.examples';
 
 /**
  * @public
@@ -50,6 +54,8 @@ export const createConfluenceToMarkdownAction = (options: {
     repoUrl: string;
   }>({
     id: 'confluence:transform:markdown',
+    description: 'Transforms Confluence content to Markdown',
+    examples,
     schema: {
       input: {
         properties: {

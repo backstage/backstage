@@ -50,7 +50,10 @@ import { prepareBackstageIdentityResponse } from '../../providers/prepareBacksta
 export const THOUSAND_DAYS_MS = 1000 * 24 * 60 * 60 * 1000;
 export const TEN_MINUTES_MS = 600 * 1000;
 
-/** @public */
+/**
+ * @public
+ * @deprecated Use `createOAuthRouteHandlers` from `@backstage/plugin-auth-node` instead
+ */
 export type OAuthAdapterOptions = {
   providerId: string;
   persistScopes?: boolean;
@@ -61,7 +64,10 @@ export type OAuthAdapterOptions = {
   callbackUrl: string;
 };
 
-/** @public */
+/**
+ * @public
+ * @deprecated Use `createOAuthRouteHandlers` from `@backstage/plugin-auth-node` instead
+ */
 export class OAuthAdapter implements AuthProviderRouteHandlers {
   static fromConfig(
     config: AuthProviderConfig,
@@ -187,6 +193,7 @@ export class OAuthAdapter implements AuthProviderRouteHandlers {
           );
         }
         res.redirect(state.redirectUrl);
+        return undefined;
       }
       // post message back to popup if successful
       return postMessageResponse(res, appOrigin, responseObj);

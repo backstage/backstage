@@ -14,14 +14,15 @@
  * limitations under the License.
  */
 
-import { getVoidLogger } from '@backstage/backend-common';
-import { coreServices } from '@backstage/backend-plugin-api';
+import {
+  coreServices,
+  createServiceFactory,
+} from '@backstage/backend-plugin-api';
 import {
   PluginTaskScheduler,
   TaskScheduleDefinition,
 } from '@backstage/backend-tasks';
-import { startTestBackend } from '@backstage/backend-test-utils';
-import { ConfigReader } from '@backstage/config';
+import { mockServices, startTestBackend } from '@backstage/backend-test-utils';
 import { catalogProcessingExtensionPoint } from '@backstage/plugin-catalog-node/alpha';
 import { Duration } from 'luxon';
 import { catalogModuleGerritEntityProvider } from './catalogModuleGerritEntityProvider';
@@ -45,7 +46,7 @@ describe('catalogModuleGerritEntityProvider', () => {
       },
     } as unknown as PluginTaskScheduler;
 
-    const config = new ConfigReader({
+    const config = {
       catalog: {
         providers: {
           gerrit: {
@@ -70,16 +71,20 @@ describe('catalogModuleGerritEntityProvider', () => {
           },
         ],
       },
-    });
+    };
 
     await startTestBackend({
       extensionPoints: [[catalogProcessingExtensionPoint, extensionPoint]],
-      services: [
-        [coreServices.config, config],
-        [coreServices.logger, getVoidLogger()],
-        [coreServices.scheduler, scheduler],
+      features: [
+        catalogModuleGerritEntityProvider(),
+        mockServices.rootConfig.factory({ data: config }),
+        mockServices.logger.factory(),
+        createServiceFactory({
+          service: coreServices.scheduler,
+          deps: {},
+          factory: async () => scheduler,
+        }),
       ],
-      features: [catalogModuleGerritEntityProvider()],
     });
 
     expect(usedSchedule?.frequency).toEqual(Duration.fromISO('P1M'));

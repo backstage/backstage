@@ -4,7 +4,7 @@ on:
   pull_request:
     paths:
       - 'yarn.lock'
-      - '.github/workflows/verify_kubernetes.yml'
+      - '.github/workflows/verify_e2e-kubernetes.yml'
       - 'packages/backend-common/src/**'
 
 jobs:
@@ -35,7 +35,7 @@ jobs:
           cache-prefix: ${{ runner.os }}-v${{ matrix.node-version }}
 
       - name: bootstrap kind
-        uses: helm/kind-action@v1.7.0
+        uses: helm/kind-action@v1.8.0
 
       - name: kubernetes test
         working-directory: packages/backend-common

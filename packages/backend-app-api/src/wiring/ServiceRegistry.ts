@@ -39,7 +39,7 @@ function toInternalServiceFactory<TService, TScope extends 'plugin' | 'root'>(
   factory: ServiceFactory<TService, TScope>,
 ): InternalServiceFactory<TService, TScope> {
   const f = factory as InternalServiceFactory<TService, TScope>;
-  if (f.$$type !== '@backstage/ServiceFactory') {
+  if (f.$$type !== '@backstage/BackendFeature') {
     throw new Error(`Invalid service factory, bad type '${f.$$type}'`);
   }
   if (f.version !== 'v1') {
@@ -49,10 +49,10 @@ function toInternalServiceFactory<TService, TScope extends 'plugin' | 'root'>(
 }
 
 const pluginMetadataServiceFactory = createServiceFactory(
-  (options: { pluginId: string }) => ({
+  (options?: { pluginId: string }) => ({
     service: coreServices.pluginMetadata,
     deps: {},
-    factory: async () => ({ getId: () => options.pluginId }),
+    factory: async () => ({ getId: () => options?.pluginId! }),
   }),
 );
 

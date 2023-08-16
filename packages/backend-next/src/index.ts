@@ -36,13 +36,13 @@ import { badgesPlugin } from '@backstage/plugin-badges-backend';
 import { azureDevOpsPlugin } from '@backstage/plugin-azure-devops-backend';
 import { linguistPlugin } from '@backstage/plugin-linguist-backend';
 import { devtoolsPlugin } from '@backstage/plugin-devtools-backend';
-import { TaskScheduleDefinition } from '@backstage/backend-tasks';
 import { adrPlugin } from '@backstage/plugin-adr-backend';
 import { lighthousePlugin } from '@backstage/plugin-lighthouse-backend';
+import { proxyPlugin } from '@backstage/plugin-proxy-backend';
 
 const backend = createBackend();
 
-backend.add(appPlugin({ appPackageName: 'example-app' }));
+backend.add(appPlugin());
 
 // Badges
 backend.add(badgesPlugin());
@@ -57,20 +57,7 @@ backend.add(devtoolsPlugin());
 backend.add(entityFeedbackPlugin());
 
 // Linguist
-const linguistSchedule: TaskScheduleDefinition = {
-  frequency: { minutes: 2 },
-  timeout: { minutes: 15 },
-  initialDelay: { seconds: 15 },
-};
-
-backend.add(
-  linguistPlugin({
-    schedule: linguistSchedule,
-    age: { days: 30 },
-    batchSize: 2,
-    useSourceLocation: false,
-  }),
-);
+backend.add(linguistPlugin());
 
 // Todo
 backend.add(todoPlugin());
@@ -97,6 +84,9 @@ backend.add(kubernetesPlugin());
 
 // Lighthouse
 backend.add(lighthousePlugin());
+
+// Proxy
+backend.add(proxyPlugin());
 
 // Permissions
 backend.add(permissionPlugin());

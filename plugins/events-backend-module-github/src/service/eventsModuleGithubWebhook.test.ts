@@ -14,9 +14,7 @@
  * limitations under the License.
  */
 
-import { coreServices } from '@backstage/backend-plugin-api';
-import { startTestBackend } from '@backstage/backend-test-utils';
-import { ConfigReader } from '@backstage/config';
+import { mockServices, startTestBackend } from '@backstage/backend-test-utils';
 import { eventsExtensionPoint } from '@backstage/plugin-events-node/alpha';
 import {
   HttpPostIngressOptions,
@@ -47,20 +45,22 @@ describe('eventsModuleGithubWebhook', () => {
       },
     };
 
-    const config = new ConfigReader({
-      events: {
-        modules: {
-          github: {
-            webhookSecret: secret,
-          },
-        },
-      },
-    });
-
     await startTestBackend({
       extensionPoints: [[eventsExtensionPoint, extensionPoint]],
-      services: [[coreServices.config, config]],
-      features: [eventsModuleGithubWebhook()],
+      features: [
+        eventsModuleGithubWebhook(),
+        mockServices.rootConfig.factory({
+          data: {
+            events: {
+              modules: {
+                github: {
+                  webhookSecret: secret,
+                },
+              },
+            },
+          },
+        }),
+      ],
     });
 
     expect(addedIngress).not.toBeUndefined();

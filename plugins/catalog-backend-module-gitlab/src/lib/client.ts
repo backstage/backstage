@@ -35,6 +35,7 @@ export type CommonListOptions = {
 };
 
 interface ListProjectOptions extends CommonListOptions {
+  archived?: boolean;
   group?: string;
 }
 

@@ -15,6 +15,7 @@
  */
 
 import React, { useEffect } from 'react';
+import useObservable from 'react-use/lib/useObservable';
 import { useForm, SubmitHandler, Controller } from 'react-hook-form';
 import {
   Button,
@@ -24,6 +25,8 @@ import {
   TextField,
 } from '@material-ui/core';
 import { FormValues } from './types';
+import { shortcutsApiRef } from './api';
+import { useApi } from '@backstage/core-plugin-api';
 
 const useStyles = makeStyles(theme => ({
   field: {
@@ -50,6 +53,11 @@ export const ShortcutForm = ({
   allowExternalLinks,
 }: Props) => {
   const classes = useStyles();
+  const shortcutApi = useApi(shortcutsApiRef);
+  const shortcutData = useObservable(
+    shortcutApi.shortcut$(),
+    shortcutApi.get(),
+  );
   const {
     handleSubmit,
     reset,
@@ -63,6 +71,18 @@ export const ShortcutForm = ({
     },
   });
 
+  const titleIsUnique = (title: string) => {
+    if (shortcutData.some(shortcutTitle => shortcutTitle.title === title))
+      return 'A shortcut with this title already exists';
+    return true;
+  };
+
+  const urlIsUnique = (url: string) => {
+    if (shortcutData.some(shortcutUrl => shortcutUrl.url === url))
+      return 'A shortcut with this url already exists';
+    return true;
+  };
+
   useEffect(() => {
     reset(formValues);
   }, [reset, formValues]);
@@ -75,6 +95,7 @@ export const ShortcutForm = ({
           control={control}
           rules={{
             required: true,
+            validate: urlIsUnique,
             ...(allowExternalLinks
               ? {
                   pattern: {
@@ -112,6 +133,7 @@ export const ShortcutForm = ({
           control={control}
           rules={{
             required: true,
+            validate: titleIsUnique,
             minLength: {
               value: 2,
               message: 'Must be at least 2 characters',

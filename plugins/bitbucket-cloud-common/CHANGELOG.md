@@ -1,5 +1,21 @@
 # @backstage/plugin-bitbucket-cloud-common
 
+## 0.2.9
+
+### Patch Changes
+
+- 12a8c94eda8d: Add package repository and homepage metadata
+- Updated dependencies
+  - @backstage/integration@1.6.0
+
+## 0.2.9-next.0
+
+### Patch Changes
+
+- 12a8c94eda8d: Add package repository and homepage metadata
+- Updated dependencies
+  - @backstage/integration@1.5.1
+
 ## 0.2.8
 
 ### Patch Changes

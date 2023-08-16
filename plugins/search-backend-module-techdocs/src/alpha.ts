@@ -19,75 +19,65 @@
  * A module for the search backend that exports TechDocs modules.
  */
 
+import { loggerToWinstonLogger } from '@backstage/backend-common';
 import {
   coreServices,
   createBackendModule,
 } from '@backstage/backend-plugin-api';
-import { TaskScheduleDefinition } from '@backstage/backend-tasks';
-import { loggerToWinstonLogger } from '@backstage/backend-common';
+import { readTaskScheduleDefinitionFromConfig } from '@backstage/backend-tasks';
+import { catalogServiceRef } from '@backstage/plugin-catalog-node/alpha';
+import { DefaultTechDocsCollatorFactory } from '@backstage/plugin-search-backend-module-techdocs';
 import { searchIndexRegistryExtensionPoint } from '@backstage/plugin-search-backend-node/alpha';
-
-import {
-  DefaultTechDocsCollatorFactory,
-  TechDocsCollatorFactoryOptions,
-} from '@backstage/plugin-search-backend-module-techdocs';
-
-/**
- * @alpha
- * Options for {@link searchModuleTechDocsCollator}.
- */
-export type SearchModuleTechDocsCollatorOptions = Omit<
-  TechDocsCollatorFactoryOptions,
-  'logger' | 'discovery' | 'tokenManager'
-> & {
-  schedule?: TaskScheduleDefinition;
-};
 
 /**
  * @alpha
  * Search backend module for the TechDocs index.
  */
-export const searchModuleTechDocsCollator = createBackendModule(
-  (options?: SearchModuleTechDocsCollatorOptions) => ({
-    moduleId: 'techDocsCollator',
-    pluginId: 'search',
-    register(env) {
-      env.registerInit({
-        deps: {
-          config: coreServices.config,
-          logger: coreServices.logger,
-          discovery: coreServices.discovery,
-          tokenManager: coreServices.tokenManager,
-          scheduler: coreServices.scheduler,
-          indexRegistry: searchIndexRegistryExtensionPoint,
-        },
-        async init({
-          config,
-          logger,
-          discovery,
-          tokenManager,
-          scheduler,
-          indexRegistry,
-        }) {
-          const defaultSchedule = {
-            frequency: { minutes: 10 },
-            timeout: { minutes: 15 },
-            initialDelay: { seconds: 3 },
-          };
+export const searchModuleTechDocsCollator = createBackendModule({
+  moduleId: 'techDocsCollator',
+  pluginId: 'search',
+  register(env) {
+    env.registerInit({
+      deps: {
+        config: coreServices.rootConfig,
+        logger: coreServices.logger,
+        discovery: coreServices.discovery,
+        tokenManager: coreServices.tokenManager,
+        scheduler: coreServices.scheduler,
+        catalog: catalogServiceRef,
+        indexRegistry: searchIndexRegistryExtensionPoint,
+      },
+      async init({
+        config,
+        logger,
+        discovery,
+        tokenManager,
+        scheduler,
+        catalog,
+        indexRegistry,
+      }) {
+        const defaultSchedule = {
+          frequency: { minutes: 10 },
+          timeout: { minutes: 15 },
+          initialDelay: { seconds: 3 },
+        };
 
-          indexRegistry.addCollator({
-            schedule: scheduler.createScheduledTaskRunner(
-              options?.schedule ?? defaultSchedule,
-            ),
-            factory: DefaultTechDocsCollatorFactory.fromConfig(config, {
-              ...options,
-              discovery,
-              tokenManager,
-              logger: loggerToWinstonLogger(logger),
-            }),
-          });
-        },
-      });
-    },
-  }),
-);
+        const schedule = config.has('search.collators.techdocs.schedule')
+          ? readTaskScheduleDefinitionFromConfig(
+              config.getConfig('search.collators.techdocs.schedule'),
+            )
+          : defaultSchedule;
+
+        indexRegistry.addCollator({
+          schedule: scheduler.createScheduledTaskRunner(schedule),
+          factory: DefaultTechDocsCollatorFactory.fromConfig(config, {
+            discovery,
+            tokenManager,
+            logger: loggerToWinstonLogger(logger),
+            catalogClient: catalog,
+          }),
+        });
+      },
+    });
+  },
+});
