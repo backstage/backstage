@@ -191,7 +191,10 @@ export class GitlabOrgDiscoveryEntityProvider implements EntityProvider {
     } else {
       groups = (await client.listDescendantGroups(this.config.group)).items;
       users = (
-        await client.getGroupMembers(this.config.group.split('/')[0], 'DIRECT')
+        await client.getGroupMembers(this.config.group.split('/')[0], [
+          'DIRECT',
+          'DESCENDANTS',
+        ])
       ).items;
     }
 
@@ -237,10 +240,9 @@ export class GitlabOrgDiscoveryEntityProvider implements EntityProvider {
       groupRes.scanned++;
       groupRes.matches.push(group);
 
-      const groupUsers = await client.getGroupMembers(
-        group.full_path,
+      const groupUsers = await client.getGroupMembers(group.full_path, [
         'DIRECT',
-      );
+      ]);
 
       for (const groupUser of groupUsers.items) {
         const user = idMappedUser[groupUser.id];

@@ -173,7 +173,7 @@ export class GitLabClient {
 
   async getGroupMembers(
     groupPath: string,
-    relations: string,
+    relations: string[],
   ): Promise<PagedResponse<GitLabUser>> {
     const items: GitLabUser[] = [];
     let hasNextPage: boolean = false;
@@ -189,9 +189,9 @@ export class GitLabClient {
           },
           body: JSON.stringify({
             variables: { group: groupPath, relations: relations, endCursor },
-            query: `query getGroupMembers($group: ID!, $relations: GroupMemberRelation!, $endCursor: String) {
+            query: `query getGroupMembers($group: ID!, $relations: [GroupMemberRelation!], $endCursor: String) {
               group(fullPath: $group) {
-                groupMembers(first: 100, relations: [$relations], after: $endCursor) {
+                groupMembers(first: 100, relations: $relations, after: $endCursor) {
                   nodes {
                     user {
                       id
