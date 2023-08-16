@@ -224,7 +224,7 @@ describe('bump', () => {
     });
   });
 
-  it('should bump backstage dependencies but not them installed', async () => {
+  it('should bump backstage dependencies but not install them', async () => {
     mockFs({
       '/yarn.lock': lockfileMock,
       '/package.json': JSON.stringify({
@@ -453,68 +453,36 @@ describe('bump', () => {
     jest.spyOn(runObj, 'run').mockResolvedValue(undefined);
     worker.use(
       rest.get(
-        'https://versions.backstage.io/v1/releases/1.0.0/manifest.json',
-        (_, res, ctx) =>
-          res(
-            ctx.status(200),
-            ctx.json({
-              releaseVersion: '2.0.0',
-              packages: [
-                { name: '@backstage/core', version: '5.0.0' },
-                { name: '@backstage/core-api', version: '5.0.0' },
-              ],
-            }),
-          ),
+        'https://versions.backstage.io/v1/releases/999.0.1/manifest.json',
+        (_, res, ctx) => res(ctx.status(404), ctx.json({})),
       ),
     );
     const { log: logs } = await withLogCollector(['log'], async () => {
       await expect(
-        bump({ pattern: null, release: '1.0.0' } as unknown as Command),
-      ).rejects.toThrow('Duplicate versions present after package bump');
+        bump({ pattern: null, release: '999.0.1' } as unknown as Command),
+      ).rejects.toThrow('No release found for 999.0.1 version');
     });
     expect(logs.filter(Boolean)).toEqual([
       'Using default pattern glob @backstage/*',
-      'Checking for updates of @backstage/core',
-      'Checking for updates of @backstage/theme',
-      'Package info not found, ignoring package @backstage/theme',
-      'Checking for updates of @backstage/core',
-      'Checking for updates of @backstage/theme',
-      'Checking for updates of @backstage/core-api',
-      'Package info not found, ignoring package @backstage/theme',
-      'Some packages are outdated, updating',
-      'bumping @backstage/core in a to ^5.0.0',
-      'bumping @backstage/core in b to ^5.0.0',
-      'Your project is now at version 2.0.0, which has been written to backstage.json',
-      'Running yarn install to install new versions',
-      '⚠️  The following packages may have breaking changes:',
-      '  @backstage/core : 1.0.3 ~> 5.0.0',
-      '    https://github.com/backstage/backstage/blob/master/packages/core/CHANGELOG.md',
-      'Version bump complete!',
     ]);
 
-    expect(runObj.run).toHaveBeenCalledTimes(1);
-    expect(runObj.run).toHaveBeenCalledWith(
-      'yarn',
-      ['install'],
-      expect.any(Object),
-    );
+    expect(runObj.run).toHaveBeenCalledTimes(0);
 
     const packageA = await fs.readJson('/packages/a/package.json');
     expect(packageA).toEqual({
       name: 'a',
       dependencies: {
-        '@backstage/core': '^5.0.0',
+        '@backstage/core': '^1.0.5',
       },
     });
     const packageB = await fs.readJson('/packages/b/package.json');
     expect(packageB).toEqual({
       name: 'b',
       dependencies: {
-        '@backstage/core': '^5.0.0',
+        '@backstage/core': '^1.0.3',
         '@backstage/theme': '^1.0.0',
       },
     });
-    expect(await fs.readJson('/backstage.json')).toEqual({ version: '2.0.0' });
   });
 
   it('should prefer versions from the highest manifest version when main is not specified', async () => {
@@ -824,6 +792,69 @@ describe('bump', () => {
         '@backstage/theme': '^2.0.0', // not bumped
       },
     });
+  });
+
+  it('should log duplicates', async () => {
+    mockFs({
+      '/yarn.lock': lockfileMock,
+      '/package.json': JSON.stringify({
+        workspaces: {
+          packages: ['packages/*'],
+        },
+      }),
+      '/packages/a/package.json': JSON.stringify({
+        name: 'a',
+        dependencies: {
+          '@backstage/core': '^1.0.5',
+        },
+      }),
+      '/packages/b/package.json': JSON.stringify({
+        name: 'b',
+        dependencies: {
+          '@backstage/core': '^1.0.3',
+          '@backstage/theme': '^1.0.0',
+        },
+      }),
+    });
+
+    jest
+      .spyOn(paths, 'resolveTargetRoot')
+      .mockImplementation((...path) => resolvePath('/', ...path));
+    jest.spyOn(runObj, 'run').mockResolvedValue(undefined);
+    worker.use(
+      rest.get(
+        'https://versions.backstage.io/v1/tags/main/manifest.json',
+        (_, res, ctx) =>
+          res(
+            ctx.status(200),
+            ctx.json({
+              packages: [],
+            }),
+          ),
+      ),
+    );
+    const { log: logs } = await withLogCollector(['log'], async () => {
+      await bump({ pattern: null, release: 'main' } as unknown as Command);
+    });
+    expect(logs.filter(Boolean)).toEqual([
+      'Using default pattern glob @backstage/*',
+      'Checking for updates of @backstage/core',
+      'Checking for updates of @backstage/theme',
+      'Checking for updates of @backstage/core-api',
+      'Some packages are outdated, updating',
+      'unlocking @backstage/core@^1.0.3 ~> 1.0.6',
+      'unlocking @backstage/core-api@^1.0.6 ~> 1.0.7',
+      'unlocking @backstage/core-api@^1.0.3 ~> 1.0.7',
+      'bumping @backstage/core in a to ^1.0.6',
+      'bumping @backstage/core in b to ^1.0.6',
+      'bumping @backstage/theme in b to ^2.0.0',
+      'Running yarn install to install new versions',
+      '⚠️  The following packages may have breaking changes:',
+      '  @backstage/theme : 1.0.0 ~> 2.0.0',
+      '    https://github.com/backstage/backstage/blob/master/packages/theme/CHANGELOG.md',
+      'Version bump complete!',
+      'The following packages have duplicates but have been allowed:',
+    ]);
   });
 });
 
