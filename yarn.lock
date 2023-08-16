@@ -13850,8 +13850,8 @@ __metadata:
   linkType: hard
 
 "@pmmmwh/react-refresh-webpack-plugin@npm:^0.5.7":
-  version: 0.5.10
-  resolution: "@pmmmwh/react-refresh-webpack-plugin@npm:0.5.10"
+  version: 0.5.11
+  resolution: "@pmmmwh/react-refresh-webpack-plugin@npm:0.5.11"
   dependencies:
     ansi-html-community: ^0.0.8
     common-path-prefix: ^3.0.0
@@ -13866,7 +13866,7 @@ __metadata:
     "@types/webpack": 4.x || 5.x
     react-refresh: ">=0.10.0 <1.0.0"
     sockjs-client: ^1.4.0
-    type-fest: ">=0.17.0 <4.0.0"
+    type-fest: ">=0.17.0 <5.0.0"
     webpack: ">=4.43.0 <6.0.0"
     webpack-dev-server: 3.x || 4.x
     webpack-hot-middleware: 2.x
@@ -13884,7 +13884,7 @@ __metadata:
       optional: true
     webpack-plugin-serve:
       optional: true
-  checksum: c45beded9c56fbbdc7213a2c36131ace5db360ed704d462cc39d6678f980173a91c9a3f691e6bd3a026f25486644cd0027e8a12a0a4eced8e8b886a0472e7d34
+  checksum: a82eced9519f4dcac424acae719f819ab4150bfcf2874ac7daaf25a4f1c409e3d8b9d693fea0c686c24d520a5473756df32da90d8b89739670f8f8084c600bb4
   languageName: node
   linkType: hard
 
