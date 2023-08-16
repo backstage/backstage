@@ -2,7 +2,7 @@
 '@backstage/plugin-techdocs-node': minor
 ---
 
-Added connectionString option to 'techdocs.publisher.azureBlobStorage'
+Added connection string option to `techdocs.publisher.azureBlobStorage`
 
 These changes are **required** to `docs/features/techdocs/configuration.md` and `plugins/techdocs-node/src/stages/publish/azureBlobStorage.ts`
 
