@@ -17,9 +17,8 @@ import { Entity } from '@backstage/catalog-model';
 import { AZURE_DEVOPS_PROJECT_LOCATION } from '../constants';
 
 export const isDevAzureLocation = (entity: Entity): boolean => {
-  return (
-    entity.metadata.annotations?.[AZURE_DEVOPS_PROJECT_LOCATION].includes(
-      'dev.azure.com',
-    ) || false
-  );
+  const location = entity.metadata.annotations?.[AZURE_DEVOPS_PROJECT_LOCATION];
+
+  if (location) return location.includes('dev.azure.com');
+  return false;
 };
