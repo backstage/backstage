@@ -7,10 +7,12 @@
 
 import { BackstagePlugin } from '@backstage/core-plugin-api';
 import { Entity } from '@backstage/catalog-model';
+import { JSX as JSX_2 } from 'react';
+import { default as React_2 } from 'react';
 import { RouteRef } from '@backstage/core-plugin-api';
 
 // @public (undocumented)
-export const EntityKafkaContent: () => JSX.Element;
+export const EntityKafkaContent: () => JSX_2.Element;
 
 // @public (undocumented)
 const isPluginApplicableToEntity: (entity: Entity) => boolean;
@@ -33,5 +35,5 @@ export { kafkaPlugin };
 export { kafkaPlugin as plugin };
 
 // @public (undocumented)
-export const Router: () => JSX.Element;
+export const Router: () => React_2.JSX.Element;
 ```

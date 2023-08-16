@@ -7,10 +7,11 @@
 
 import { BackstagePlugin } from '@backstage/core-plugin-api';
 import { Entity } from '@backstage/catalog-model';
+import { JSX as JSX_2 } from 'react';
 import { RouteRef } from '@backstage/core-plugin-api';
 
 // @public (undocumented)
-export const FirehydrantCard: () => JSX.Element;
+export const FirehydrantCard: () => JSX_2.Element;
 
 // @public (undocumented)
 export const firehydrantPlugin: BackstagePlugin<

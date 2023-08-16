@@ -30,6 +30,7 @@ import { OpenIdConnectApi } from '@backstage/core-plugin-api';
 import { Pod } from 'kubernetes-models/v1/Pod';
 import { Pod as Pod_2 } from 'kubernetes-models/v1';
 import { default as React_2 } from 'react';
+import * as React_3 from 'react';
 import { RouteRef } from '@backstage/core-plugin-api';
 import { TypeMeta } from '@kubernetes-models/base';
 import { V1ConfigMap } from '@kubernetes/client-node';
@@ -52,7 +53,7 @@ import { WorkloadsByEntityRequest } from '@backstage/plugin-kubernetes-common';
 export const Cluster: ({
   clusterObjects,
   podsWithErrors,
-}: ClusterProps) => JSX.Element;
+}: ClusterProps) => React_2.JSX.Element;
 
 // Warning: (ae-missing-release-tag) "ClusterContext" is part of the package's API, but it is missing a release tag (@alpha, @beta, @public, or @internal)
 //
@@ -110,13 +111,13 @@ export interface ContainerScope extends PodScope {
 // Warning: (ae-missing-release-tag) "CronJobsAccordions" is part of the package's API, but it is missing a release tag (@alpha, @beta, @public, or @internal)
 //
 // @public (undocumented)
-export const CronJobsAccordions: ({}: CronJobsAccordionsProps) => JSX.Element;
+export const CronJobsAccordions: ({}: CronJobsAccordionsProps) => React_2.JSX.Element;
 
 // Warning: (ae-forgotten-export) The symbol "CustomResourcesProps" needs to be exported by the entry point index.d.ts
 // Warning: (ae-missing-release-tag) "CustomResources" is part of the package's API, but it is missing a release tag (@alpha, @beta, @public, or @internal)
 //
 // @public (undocumented)
-export const CustomResources: ({}: CustomResourcesProps) => JSX.Element;
+export const CustomResources: ({}: CustomResourcesProps) => React_2.JSX.Element;
 
 // Warning: (ae-missing-release-tag) "DeploymentResources" is part of the package's API, but it is missing a release tag (@alpha, @beta, @public, or @internal)
 //
@@ -174,7 +175,9 @@ export type EntityKubernetesContentProps = {
 };
 
 // @public
-export const ErrorList: ({ podAndErrors }: ErrorListProps) => JSX.Element;
+export const ErrorList: ({
+  podAndErrors,
+}: ErrorListProps) => React_2.JSX.Element;
 
 // @public
 export interface ErrorListProps {
@@ -195,7 +198,7 @@ export const ErrorPanel: ({
   entityName,
   errorMessage,
   clustersWithErrors,
-}: ErrorPanelProps) => JSX.Element;
+}: ErrorPanelProps) => React_2.JSX.Element;
 
 // Warning: (ae-forgotten-export) The symbol "ErrorReportingProps" needs to be exported by the entry point index.d.ts
 // Warning: (ae-missing-release-tag) "ErrorReporting" is part of the package's API, but it is missing a release tag (@alpha, @beta, @public, or @internal)
@@ -203,7 +206,7 @@ export const ErrorPanel: ({
 // @public (undocumented)
 export const ErrorReporting: ({
   detectedErrors,
-}: ErrorReportingProps) => JSX.Element;
+}: ErrorReportingProps) => React_3.JSX.Element;
 
 // @public
 export type ErrorSeverity = 0 | 1 | 2 | 3 | 4 | 5 | 6 | 7 | 8 | 9 | 10;
@@ -214,13 +217,13 @@ export const Events: ({
   namespace,
   clusterName,
   warningEventsOnly,
-}: EventsProps) => JSX.Element;
+}: EventsProps) => React_2.JSX.Element;
 
 // @public
 export const EventsContent: ({
   events,
   warningEventsOnly,
-}: EventsContentProps) => JSX.Element;
+}: EventsContentProps) => React_2.JSX.Element;
 
 // @public
 export interface EventsContentProps {
@@ -323,13 +326,13 @@ export const HorizontalPodAutoscalerDrawer: (props: {
   hpa: V1HorizontalPodAutoscaler;
   expanded?: boolean;
   children?: React_2.ReactNode;
-}) => JSX.Element;
+}) => React_2.JSX.Element;
 
 // Warning: (ae-forgotten-export) The symbol "IngressesAccordionsProps" needs to be exported by the entry point index.d.ts
 // Warning: (ae-missing-release-tag) "IngressesAccordions" is part of the package's API, but it is missing a release tag (@alpha, @beta, @public, or @internal)
 //
 // @public (undocumented)
-export const IngressesAccordions: ({}: IngressesAccordionsProps) => JSX.Element;
+export const IngressesAccordions: ({}: IngressesAccordionsProps) => React_2.JSX.Element;
 
 // Warning: (ae-missing-release-tag) "isKubernetesAvailable" is part of the package's API, but it is missing a release tag (@alpha, @beta, @public, or @internal)
 //
@@ -340,7 +343,9 @@ export const isKubernetesAvailable: (entity: Entity) => boolean;
 // Warning: (ae-missing-release-tag) "JobsAccordions" is part of the package's API, but it is missing a release tag (@alpha, @beta, @public, or @internal)
 //
 // @public (undocumented)
-export const JobsAccordions: ({ jobs }: JobsAccordionsProps) => JSX.Element;
+export const JobsAccordions: ({
+  jobs,
+}: JobsAccordionsProps) => React_2.JSX.Element;
 
 // Warning: (ae-missing-release-tag) "KubernetesApi" is part of the package's API, but it is missing a release tag (@alpha, @beta, @public, or @internal)
 //
@@ -464,7 +469,7 @@ export class KubernetesBackendClient implements KubernetesApi {
 export const KubernetesContent: ({
   entity,
   refreshIntervalMs,
-}: KubernetesContentProps) => JSX.Element;
+}: KubernetesContentProps) => React_2.JSX.Element;
 
 // Warning: (ae-forgotten-export) The symbol "KubernetesDrawerProps" needs to be exported by the entry point index.d.ts
 // Warning: (ae-missing-release-tag) "KubernetesDrawer" is part of the package's API, but it is missing a release tag (@alpha, @beta, @public, or @internal)
@@ -476,7 +481,7 @@ export const KubernetesDrawer: ({
   drawerContentsHeader,
   kubernetesObject,
   children,
-}: KubernetesDrawerProps) => JSX.Element;
+}: KubernetesDrawerProps) => React_2.JSX.Element;
 
 // Warning: (ae-forgotten-export) The symbol "KubernetesDrawerContentProps" needs to be exported by the entry point index.d.ts
 // Warning: (ae-missing-release-tag) "KubernetesDrawerContent" is part of the package's API, but it is missing a release tag (@alpha, @beta, @public, or @internal)
@@ -487,7 +492,7 @@ export const KubernetesDrawerContent: ({
   header,
   kubernetesObject,
   close,
-}: KubernetesDrawerContentProps) => JSX.Element;
+}: KubernetesDrawerContentProps) => React_2.JSX.Element;
 
 // Warning: (ae-missing-release-tag) "KubernetesObjects" is part of the package's API, but it is missing a release tag (@alpha, @beta, @public, or @internal)
 //
@@ -586,7 +591,7 @@ export const KubernetesStructuredMetadataTableDrawer: <
   buttonVariant,
   expanded,
   children,
-}: KubernetesStructuredMetadataTableDrawerProps<T>) => JSX.Element;
+}: KubernetesStructuredMetadataTableDrawerProps<T>) => React_2.JSX.Element;
 
 // Warning: (ae-forgotten-export) The symbol "ErrorPanelProps_2" needs to be exported by the entry point index.d.ts
 // Warning: (ae-missing-release-tag) "LinkErrorPanel" is part of the package's API, but it is missing a release tag (@alpha, @beta, @public, or @internal)
@@ -595,12 +600,12 @@ export const KubernetesStructuredMetadataTableDrawer: <
 export const LinkErrorPanel: ({
   cluster,
   errorMessage,
-}: ErrorPanelProps_2) => JSX.Element;
+}: ErrorPanelProps_2) => React_2.JSX.Element;
 
 // @public
 export const PendingPodContent: ({
   pod,
-}: PendingPodContentProps) => JSX.Element;
+}: PendingPodContentProps) => React_2.JSX.Element;
 
 // @public
 export interface PendingPodContentProps {
@@ -621,7 +626,10 @@ export interface PodAndErrors {
 // Warning: (ae-forgotten-export) The symbol "PodDrawerProps" needs to be exported by the entry point index.d.ts
 //
 // @public
-export const PodDrawer: ({ podAndErrors, open }: PodDrawerProps) => JSX.Element;
+export const PodDrawer: ({
+  podAndErrors,
+  open,
+}: PodDrawerProps) => React_2.JSX.Element;
 
 // @public
 export const PodLogs: React_2.FC<PodLogsProps>;
@@ -629,7 +637,7 @@ export const PodLogs: React_2.FC<PodLogsProps>;
 // @public
 export const PodLogsDialog: ({
   containerScope,
-}: PodLogsDialogProps) => JSX.Element;
+}: PodLogsDialogProps) => React_2.JSX.Element;
 
 // @public
 export interface PodLogsDialogProps {
@@ -692,7 +700,7 @@ export interface PodScope {
 export const PodsTable: ({
   pods,
   extraColumns,
-}: PodsTablesProps) => JSX.Element;
+}: PodsTablesProps) => React_2.JSX.Element;
 
 // @public
 export interface ResourceRef {
@@ -715,12 +723,14 @@ export const ResourceUtilization: ({
   usage,
   total,
   totalFormatted,
-}: ResourceUtilizationProps) => JSX.Element;
+}: ResourceUtilizationProps) => React_2.JSX.Element;
 
 // Warning: (ae-missing-release-tag) "Router" is part of the package's API, but it is missing a release tag (@alpha, @beta, @public, or @internal)
 //
 // @public (undocumented)
-export const Router: (props: { refreshIntervalMs?: number }) => JSX.Element;
+export const Router: (props: {
+  refreshIntervalMs?: number;
+}) => React_2.JSX.Element;
 
 // @public
 export class ServerSideKubernetesAuthProvider
@@ -738,7 +748,7 @@ export class ServerSideKubernetesAuthProvider
 // Warning: (ae-missing-release-tag) "ServicesAccordions" is part of the package's API, but it is missing a release tag (@alpha, @beta, @public, or @internal)
 //
 // @public (undocumented)
-export const ServicesAccordions: ({}: ServicesAccordionsProps) => JSX.Element;
+export const ServicesAccordions: ({}: ServicesAccordionsProps) => React_2.JSX.Element;
 
 // @public
 export const useCustomResources: (

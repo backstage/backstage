@@ -11,6 +11,8 @@ import { ConfigApi } from '@backstage/core-plugin-api';
 import { DiscoveryApi } from '@backstage/core-plugin-api';
 import { Entity } from '@backstage/catalog-model';
 import { IconComponent } from '@backstage/core-plugin-api';
+import { JSX as JSX_2 } from 'react';
+import { default as React_2 } from 'react';
 import { RouteRef } from '@backstage/core-plugin-api';
 
 // @public (undocumented)
@@ -302,7 +304,7 @@ export type AlertStatus = typeof PENDING | typeof ACCEPTED | typeof RESOLVED;
 export const DEGRADED = 'DEGRADED';
 
 // @public (undocumented)
-export const EntityILertCard: () => JSX.Element;
+export const EntityILertCard: () => JSX_2.Element;
 
 // @public (undocumented)
 export interface EscalationPolicy {
@@ -442,7 +444,7 @@ export interface ILertApi {
 export const ilertApiRef: ApiRef<ILertApi>;
 
 // @public (undocumented)
-export const ILertCard: () => JSX.Element;
+export const ILertCard: () => React_2.JSX.Element;
 
 // @public (undocumented)
 export class ILertClient implements ILertApi {
@@ -530,7 +532,7 @@ export class ILertClient implements ILertApi {
 export const ILertIcon: IconComponent;
 
 // @public (undocumented)
-export const ILertPage: () => JSX.Element;
+export const ILertPage: () => JSX_2.Element;
 
 // @public (undocumented)
 const ilertPlugin: BackstagePlugin<
@@ -649,7 +651,7 @@ export interface Responder {
 }
 
 // @public (undocumented)
-export const Router: () => JSX.Element;
+export const Router: () => React_2.JSX.Element;
 
 // @public (undocumented)
 export interface Schedule {

@@ -10,6 +10,8 @@ import { BackstagePlugin } from '@backstage/core-plugin-api';
 import { ConfigApi } from '@backstage/core-plugin-api';
 import { Entity } from '@backstage/catalog-model';
 import { InfoCardVariants } from '@backstage/core-components';
+import { JSX as JSX_2 } from 'react';
+import { default as React_2 } from 'react';
 import { RestEndpointMethodTypes } from '@octokit/rest';
 import { RouteRef } from '@backstage/core-plugin-api';
 import { ScmAuthApi } from '@backstage/integration-react';
@@ -27,19 +29,19 @@ export enum BuildStatus {
 }
 
 // @public (undocumented)
-export const EntityGithubActionsContent: () => JSX.Element;
+export const EntityGithubActionsContent: () => JSX_2.Element;
 
 // @public (undocumented)
 export const EntityLatestGithubActionRunCard: (props: {
   branch: string;
   variant?: InfoCardVariants | undefined;
-}) => JSX.Element;
+}) => JSX_2.Element;
 
 // @public (undocumented)
 export const EntityLatestGithubActionsForBranchCard: (props: {
   branch: string;
   variant?: InfoCardVariants | undefined;
-}) => JSX.Element;
+}) => JSX_2.Element;
 
 // @public (undocumented)
 export const EntityRecentGithubActionsRunsCard: (props: {
@@ -47,7 +49,7 @@ export const EntityRecentGithubActionsRunsCard: (props: {
   dense?: boolean | undefined;
   limit?: number | undefined;
   variant?: InfoCardVariants | undefined;
-}) => JSX.Element;
+}) => JSX_2.Element;
 
 // @public (undocumented)
 export const GITHUB_ACTIONS_ANNOTATION = 'github.com/project-slug';
@@ -208,13 +210,13 @@ export type Jobs = {
 export const LatestWorkflowRunCard: (props: {
   branch: string;
   variant?: InfoCardVariants;
-}) => JSX.Element;
+}) => React_2.JSX.Element;
 
 // @public (undocumented)
 export const LatestWorkflowsForBranchCard: (props: {
   branch: string;
   variant?: InfoCardVariants;
-}) => JSX.Element;
+}) => React_2.JSX.Element;
 
 // @public (undocumented)
 export const RecentWorkflowRunsCard: (props: {
@@ -222,10 +224,10 @@ export const RecentWorkflowRunsCard: (props: {
   dense?: boolean;
   limit?: number;
   variant?: InfoCardVariants;
-}) => JSX.Element;
+}) => React_2.JSX.Element;
 
 // @public (undocumented)
-export const Router: () => JSX.Element;
+export const Router: () => React_2.JSX.Element;
 
 // @public (undocumented)
 export type Step = {

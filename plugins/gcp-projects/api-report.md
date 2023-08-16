@@ -7,6 +7,7 @@
 
 import { ApiRef } from '@backstage/core-plugin-api';
 import { BackstagePlugin } from '@backstage/core-plugin-api';
+import { JSX as JSX_2 } from 'react';
 import { OAuthApi } from '@backstage/core-plugin-api';
 import { RouteRef } from '@backstage/core-plugin-api';
 
@@ -40,7 +41,7 @@ export class GcpClient implements GcpApi {
 }
 
 // @public (undocumented)
-export const GcpProjectsPage: () => JSX.Element;
+export const GcpProjectsPage: () => JSX_2.Element;
 
 // @public (undocumented)
 const gcpProjectsPlugin: BackstagePlugin<

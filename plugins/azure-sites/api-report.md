@@ -13,6 +13,8 @@ import { BackstagePlugin } from '@backstage/core-plugin-api';
 import { DiscoveryApi } from '@backstage/core-plugin-api';
 import { Entity } from '@backstage/catalog-model';
 import { IdentityApi } from '@backstage/core-plugin-api';
+import { JSX as JSX_2 } from 'react';
+import { default as React_2 } from 'react';
 import { RouteRef } from '@backstage/core-plugin-api';
 
 // @public (undocumented)
@@ -40,7 +42,7 @@ export class AzureSitesApiBackendClient implements AzureSitesApi {
 }
 
 // @public (undocumented)
-export const AzureSitesOverviewWidget: () => JSX.Element;
+export const AzureSitesOverviewWidget: () => React_2.JSX.Element;
 
 // @public (undocumented)
 export const azureSitesPlugin: BackstagePlugin<
@@ -52,7 +54,7 @@ export const azureSitesPlugin: BackstagePlugin<
 >;
 
 // @public (undocumented)
-export const EntityAzureSitesOverviewWidget: () => JSX.Element;
+export const EntityAzureSitesOverviewWidget: () => JSX_2.Element;
 
 // @public (undocumented)
 export const isAzureWebSiteNameAvailable: (

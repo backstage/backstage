@@ -8,7 +8,9 @@
 import { ApiRef } from '@backstage/core-plugin-api';
 import { BackstagePlugin } from '@backstage/core-plugin-api';
 import { Entity } from '@backstage/catalog-model';
+import { JSX as JSX_2 } from 'react';
 import { OAuthApi } from '@backstage/core-plugin-api';
+import { default as React_2 } from 'react';
 import { RouteRef } from '@backstage/core-plugin-api';
 
 // @public (undocumented)
@@ -109,17 +111,17 @@ export { cloudbuildPlugin };
 export { cloudbuildPlugin as plugin };
 
 // @public (undocumented)
-export const EntityCloudbuildContent: () => JSX.Element;
+export const EntityCloudbuildContent: () => JSX_2.Element;
 
 // @public (undocumented)
 export const EntityLatestCloudbuildRunCard: (props: {
   branch: string;
-}) => JSX.Element;
+}) => JSX_2.Element;
 
 // @public (undocumented)
 export const EntityLatestCloudbuildsForBranchCard: (props: {
   branch: string;
-}) => JSX.Element;
+}) => JSX_2.Element;
 
 // @public (undocumented)
 export interface FETCHSOURCE {
@@ -135,12 +137,14 @@ export { isCloudbuildAvailable };
 export { isCloudbuildAvailable as isPluginApplicableToEntity };
 
 // @public (undocumented)
-export const LatestWorkflowRunCard: (props: { branch: string }) => JSX.Element;
+export const LatestWorkflowRunCard: (props: {
+  branch: string;
+}) => React_2.JSX.Element;
 
 // @public (undocumented)
 export const LatestWorkflowsForBranchCard: (props: {
   branch: string;
-}) => JSX.Element;
+}) => React_2.JSX.Element;
 
 // @public (undocumented)
 export interface Options {
@@ -181,7 +185,7 @@ export interface Results {
 }
 
 // @public (undocumented)
-export const Router: () => JSX.Element;
+export const Router: () => React_2.JSX.Element;
 
 // @public (undocumented)
 export interface Source {

@@ -8,9 +8,10 @@
 import { ApiRef } from '@backstage/core-plugin-api';
 import { BackstagePlugin } from '@backstage/core-plugin-api';
 import { Entity } from '@backstage/catalog-model';
+import { JSX as JSX_2 } from 'react';
 
 // @public
-export const EntityVaultCard: () => JSX.Element;
+export const EntityVaultCard: () => JSX_2.Element;
 
 // @public
 export function isVaultAvailable(entity: Entity): boolean;
