@@ -388,9 +388,6 @@ export type SimpleThemeOptions = {
 };
 
 // @public
-export type SupportedThemes = Theme_2 | Theme;
-
-// @public
 export type SupportedVersions = 'v4' | 'v5';
 
 // @public
@@ -411,7 +408,12 @@ export function transformV5ComponentThemesToV4(
 // @public
 export interface UnifiedTheme {
   // (undocumented)
-  getTheme(version: SupportedVersions): SupportedThemes | undefined;
+  getTheme<Version extends SupportedVersions>(
+    version: Version,
+  ):
+    | VersionedTheme<Version>
+    | ((outerTheme: VersionedTheme<Version>) => VersionedTheme<Version>)
+    | undefined;
 }
 
 // @public
@@ -446,4 +448,8 @@ export interface UnifiedThemeProviderProps {
   // (undocumented)
   theme: UnifiedTheme;
 }
+
+// @public
+export type VersionedTheme<Version extends SupportedVersions> =
+  Version extends 'v4' ? Theme_2 : Version extends 'v5' ? Theme : never;
 ```

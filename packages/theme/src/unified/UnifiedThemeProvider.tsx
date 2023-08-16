@@ -59,8 +59,8 @@ export function UnifiedThemeProvider(
 ): JSX.Element {
   const { children, theme, noCssBaseline = false } = props;
 
-  const v4Theme = theme.getTheme('v4') as Mui4Theme;
-  const v5Theme = theme.getTheme('v5') as Mui5Theme;
+  const v4Theme = theme.getTheme('v4');
+  const v5Theme = theme.getTheme('v5');
 
   let cssBaseline: JSX.Element | undefined = undefined;
   if (!noCssBaseline) {
@@ -77,7 +77,7 @@ export function UnifiedThemeProvider(
   if (v4Theme) {
     result = (
       <StylesProvider generateClassName={generateV4ClassName}>
-        <ThemeProvider theme={v4Theme}>{result}</ThemeProvider>
+        <ThemeProvider<Mui4Theme> theme={v4Theme}>{result}</ThemeProvider>
       </StylesProvider>
     );
   }
@@ -85,7 +85,7 @@ export function UnifiedThemeProvider(
   if (v5Theme) {
     result = (
       <StyledEngineProvider injectFirst>
-        <Mui5Provider theme={v5Theme}>{result}</Mui5Provider>
+        <Mui5Provider<Mui5Theme> theme={v5Theme}>{result}</Mui5Provider>
       </StyledEngineProvider>
     );
   }

@@ -32,23 +32,22 @@ import { createBaseThemeOptions } from '../base/createBaseThemeOptions';
 import { BackstageTypography, PageTheme } from '../base/types';
 import { defaultComponentThemes } from '../v5';
 import { transformV5ComponentThemesToV4 } from './overrides';
-import { SupportedThemes, SupportedVersions, UnifiedTheme } from './types';
+import { SupportedVersions, UnifiedTheme, VersionedTheme } from './types';
 
 export class UnifiedThemeHolder implements UnifiedTheme {
-  #themes = new Map<SupportedVersions, SupportedThemes>();
+  constructor(readonly v4?: Mui4Theme, readonly v5?: Mui5Theme) {}
 
-  constructor(v4?: Mui4Theme, v5?: Mui5Theme) {
-    this.#themes = new Map();
-    if (v4) {
-      this.#themes.set('v4', v4);
+  getTheme<Version extends SupportedVersions>(
+    version: Version,
+  ): VersionedTheme<Version> | undefined {
+    switch (version) {
+      case 'v4':
+        return this.v4 as VersionedTheme<Version> | undefined;
+      case 'v5':
+        return this.v5 as VersionedTheme<Version> | undefined;
+      default:
+        return undefined;
     }
-    if (v5) {
-      this.#themes.set('v5', v5);
-    }
-  }
-
-  getTheme(version: SupportedVersions): SupportedThemes | undefined {
-    return this.#themes.get(version);
   }
 }
 

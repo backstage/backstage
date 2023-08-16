@@ -20,4 +20,4 @@ export type { UnifiedThemeOptions } from './UnifiedTheme';
 export { themes } from './themes';
 export { UnifiedThemeProvider } from './UnifiedThemeProvider';
 export type { UnifiedThemeProviderProps } from './UnifiedThemeProvider';
-export type { UnifiedTheme, SupportedThemes, SupportedVersions } from './types';
+export type { UnifiedTheme, VersionedTheme, SupportedVersions } from './types';

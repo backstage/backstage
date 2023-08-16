@@ -31,7 +31,8 @@ export type SupportedVersions = 'v4' | 'v5';
  *
  * @public
  */
-export type SupportedThemes = Mui4Theme | Mui5Theme;
+export type VersionedTheme<Version extends SupportedVersions> =
+  Version extends 'v4' ? Mui4Theme : Version extends 'v5' ? Mui5Theme : never;
 
 /**
  * A container of one theme for multiple different Material UI versions.
@@ -41,5 +42,10 @@ export type SupportedThemes = Mui4Theme | Mui5Theme;
  * @public
  */
 export interface UnifiedTheme {
-  getTheme(version: SupportedVersions): SupportedThemes | undefined;
+  getTheme<Version extends SupportedVersions>(
+    version: Version,
+  ):
+    | VersionedTheme<Version>
+    | ((outerTheme: VersionedTheme<Version>) => VersionedTheme<Version>)
+    | undefined;
 }
