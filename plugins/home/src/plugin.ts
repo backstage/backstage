@@ -172,3 +172,14 @@ export const HeaderWorldClock = homePlugin.provide(
     },
   }),
 );
+
+/**
+ * Display recently visited pages for the homepage
+ * @public
+ */
+export const HomePageRecentlyVisited = homePlugin.provide(
+  createCardExtension({
+    name: 'HomePageRecentlyVisited',
+    components: () => import('./homePageComponents/RecentlyVisited'),
+  }),
+);
