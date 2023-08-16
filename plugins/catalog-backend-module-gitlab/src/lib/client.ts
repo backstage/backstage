@@ -96,79 +96,6 @@ export class GitLabClient {
     return this.pagedRequest(`/groups`, options);
   }
 
-  async listSaasUsers(groupPath: string): Promise<PagedResponse<GitLabUser>> {
-    const items: GitLabUser[] = [];
-    let hasNextPage: boolean = false;
-    let endCursor: string | null = null;
-
-    do {
-      const response: GitLabGroupMembersResponse = await fetch(
-        `${this.config.baseUrl}/api/graphql`,
-        {
-          method: 'POST',
-          headers: {
-            ...getGitLabRequestOptions(this.config).headers,
-            ['Content-Type']: 'application/json',
-          },
-          body: JSON.stringify({
-            variables: { group: groupPath, endCursor },
-            query: `query listSaasUsers($group: ID!, $endCursor: String) {
-              group(fullPath: $group) {
-                groupMembers(first: 100, relations: [DESCENDANTS], after: $endCursor) {
-                  nodes {
-                    user {
-                      id
-                      username
-                      publicEmail
-                      name
-                      state
-                      webUrl
-                      avatarUrl
-                    }
-                  }
-                  pageInfo {
-                    endCursor
-                    hasNextPage
-                  }
-                }
-              }
-            }`,
-          }),
-        },
-      ).then(r => r.json());
-      if (response.errors) {
-        throw new Error(`GraphQL errors: ${JSON.stringify(response.errors)}`);
-      }
-
-      if (!response.data.group?.groupMembers?.nodes) {
-        this.logger.warn(
-          `Couldn't get members under ${groupPath}. The provided token might not have sufficient permissions`,
-        );
-        continue;
-      }
-
-      const usersData = response.data.group.groupMembers.nodes;
-
-      for (let i = 0; i < usersData.length; i++) {
-        const userItem = usersData[i];
-
-        const formattedUserResponse = {
-          id: Number(userItem.user.id.replace(/^gid:\/\/gitlab\/User\//, '')),
-          username: userItem.user.username,
-          email: userItem.user.publicEmail,
-          name: userItem.user.name,
-          state: userItem.user.state,
-          web_url: userItem.user.webUrl,
-          avatar_url: userItem.user.avatarUrl,
-        };
-
-        items.push(formattedUserResponse);
-      }
-      ({ hasNextPage, endCursor } = response.data.group.groupMembers.pageInfo);
-    } while (hasNextPage);
-    return { items };
-  }
-
   async listDescendantGroups(
     groupPath: string,
   ): Promise<PagedResponse<GitLabGroup>> {
@@ -243,8 +170,11 @@ export class GitLabClient {
     return { items };
   }
 
-  async getGroupMembers(groupPath: string): Promise<number[]> {
-    const memberIds = [];
+  async getGroupMembers(
+    groupPath: string,
+    relations: string,
+  ): Promise<PagedResponse<GitLabUser>> {
+    const items: GitLabUser[] = [];
     let hasNextPage: boolean = false;
     let endCursor: string | null = null;
     do {
@@ -257,13 +187,19 @@ export class GitLabClient {
             ['Content-Type']: 'application/json',
           },
           body: JSON.stringify({
-            variables: { group: groupPath, endCursor },
+            variables: { group: groupPath, relations: relations, endCursor },
             query: `query getGroupMembers($group: ID!, $endCursor: String) {
               group(fullPath: $group) {
-                groupMembers(first: 100, relations: [DIRECT], after: $endCursor) {
+                groupMembers(first: 100, relations: [$relations], after: $endCursor) {
                   nodes {
                     user {
                       id
+                      username
+                      publicEmail
+                      name
+                      state
+                      webUrl
+                      avatarUrl
                     }
                   }
                   pageInfo {
@@ -287,16 +223,26 @@ export class GitLabClient {
         continue;
       }
 
-      memberIds.push(
-        ...response.data.group.groupMembers.nodes
-          .filter(n => n.user)
-          .map(node =>
-            Number(node.user.id.replace(/^gid:\/\/gitlab\/User\//, '')),
-          ),
-      );
+      const usersData = response.data.group.groupMembers.nodes;
+
+      for (let i = 0; i < usersData.length; i++) {
+        const userItem = usersData[i];
+
+        const formattedUserResponse = {
+          id: Number(userItem.user.id.replace(/^gid:\/\/gitlab\/User\//, '')),
+          username: userItem.user.username,
+          email: userItem.user.publicEmail,
+          name: userItem.user.name,
+          state: userItem.user.state,
+          web_url: userItem.user.webUrl,
+          avatar_url: userItem.user.avatarUrl,
+        };
+
+        items.push(formattedUserResponse);
+      }
       ({ hasNextPage, endCursor } = response.data.group.groupMembers.pageInfo);
     } while (hasNextPage);
-    return memberIds;
+    return { items };
   }
 
   /**

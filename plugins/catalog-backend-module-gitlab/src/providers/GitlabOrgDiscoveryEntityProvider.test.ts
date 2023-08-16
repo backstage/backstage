@@ -550,7 +550,7 @@ describe('GitlabOrgDiscoveryEntityProvider', () => {
         ),
       graphql
         .link('https://gitlab.com/api/graphql')
-        .query('listSaasUsers', async (_, res, ctx) =>
+        .query('getGroupMembers', async (_, res, ctx) =>
           res(
             ctx.data({
               group: {
@@ -634,7 +634,7 @@ describe('GitlabOrgDiscoveryEntityProvider', () => {
             name: 'testuser1',
           },
           spec: {
-            memberOf: ['group2'],
+            memberOf: ['group2', 'group3'],
             profile: {
               displayName: 'Test User 1',
               email: 'testuser1@example.com',
@@ -659,7 +659,7 @@ describe('GitlabOrgDiscoveryEntityProvider', () => {
             name: 'testuser2',
           },
           spec: {
-            memberOf: ['group3'],
+            memberOf: ['group2', 'group3'],
             profile: {
               displayName: 'Test User 2',
               email: 'testuser2@example.com',

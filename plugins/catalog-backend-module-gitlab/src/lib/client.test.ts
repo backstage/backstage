@@ -398,12 +398,12 @@ describe('GitLabClient', () => {
     ]);
   });
 
-  describe('listSaasUsers', () => {
+  describe('get gitlab.com users', () => {
     it('gets all users under group', async () => {
       server.use(
         graphql
           .link(`${MOCK_CONFIG.baseUrl}/api/graphql`)
-          .query('listSaasUsers', async (_, res, ctx) =>
+          .query('getGroupMembers', async (_, res, ctx) =>
             res(
               ctx.data({
                 group: {
@@ -436,7 +436,9 @@ describe('GitLabClient', () => {
         logger: getVoidLogger(),
       });
 
-      const saasMembers = (await client.listSaasUsers('group1')).items;
+      const saasMembers = (
+        await client.getGroupMembers('group1', 'DIRECT, DESCENDANTS')
+      ).items;
       const expectedSaasMember = [
         {
           id: 1,
@@ -457,7 +459,7 @@ describe('GitLabClient', () => {
       server.use(
         graphql
           .link(`${MOCK_CONFIG.baseUrl}/api/graphql`)
-          .query('listSaasUsers', async (_, res, ctx) =>
+          .query('getGroupMembers', async (_, res, ctx) =>
             res(
               ctx.data({
                 group: {},
@@ -470,7 +472,9 @@ describe('GitLabClient', () => {
         logger: getVoidLogger(),
       });
 
-      const saasMembers = (await client.listSaasUsers('group1')).items;
+      const saasMembers = (
+        await client.getGroupMembers('group1', 'DIRECT, DESCENDANTS')
+      ).items;
 
       expect(saasMembers).toEqual([]);
     });
@@ -479,7 +483,7 @@ describe('GitLabClient', () => {
       server.use(
         graphql
           .link(`${MOCK_CONFIG.baseUrl}/api/graphql`)
-          .query('listSaasUsers', async (_, res, ctx) =>
+          .query('getGroupMembers', async (_, res, ctx) =>
             res(
               ctx.errors([
                 { message: 'Unexpected end of document', locations: [] },
@@ -492,7 +496,9 @@ describe('GitLabClient', () => {
         logger: getVoidLogger(),
       });
 
-      await expect(() => client.listSaasUsers('group1')).rejects.toThrow(
+      await expect(() =>
+        client.getGroupMembers('group1', 'DIRECT, DESCENDANTS'),
+      ).rejects.toThrow(
         'GraphQL errors: [{"message":"Unexpected end of document","locations":[]}]',
       );
     });
@@ -500,7 +506,7 @@ describe('GitLabClient', () => {
       server.use(
         graphql
           .link(`${MOCK_CONFIG.baseUrl}/api/graphql`)
-          .query('listSaasUsers', async (req, res, ctx) =>
+          .query('getGroupMembers', async (req, res, ctx) =>
             res(
               ctx.data({
                 group: {
@@ -547,7 +553,9 @@ describe('GitLabClient', () => {
         logger: getVoidLogger(),
       });
 
-      const saasMembers = (await client.listSaasUsers('group1')).items;
+      const saasMembers = (
+        await client.getGroupMembers('group1', 'DIRECT, DESCENDANTS')
+      ).items;
 
       const expectedSaasMember1 = {
         id: 1,
@@ -751,7 +759,19 @@ describe('GitLabClient', () => {
               ctx.data({
                 group: {
                   groupMembers: {
-                    nodes: [{ user: { id: 'gid://gitlab/User/1' } }],
+                    nodes: [
+                      {
+                        user: {
+                          id: 'gid://gitlab/User/1',
+                          username: 'user1',
+                          publicEmail: 'user1@example.com',
+                          name: 'user1',
+                          state: 'active',
+                          webUrl: 'user1.com',
+                          avatarUrl: 'user1',
+                        },
+                      },
+                    ],
                     pageInfo: {
                       endCursor: 'end',
                       hasNextPage: false,
@@ -767,9 +787,19 @@ describe('GitLabClient', () => {
         logger: getVoidLogger(),
       });
 
-      const members = await client.getGroupMembers('group1');
+      const members = await client.getGroupMembers('group1', 'DIRECT');
 
-      expect(members).toEqual([1]);
+      const user = {
+        id: 1,
+        username: 'user1',
+        email: 'user1@example.com',
+        name: 'user1',
+        state: 'active',
+        web_url: 'user1.com',
+        avatar_url: 'user1',
+      };
+
+      expect(members.items).toEqual([user]);
     });
 
     it('gets member IDs with token without full permissions', async () => {
@@ -789,9 +819,9 @@ describe('GitLabClient', () => {
         logger: getVoidLogger(),
       });
 
-      const members = await client.getGroupMembers('group1');
+      const members = await client.getGroupMembers('group1', 'DIRECT');
 
-      expect(members).toEqual([]);
+      expect(members.items).toEqual([]);
     });
 
     it('rejects when GraphQL returns errors', async () => {
@@ -811,7 +841,9 @@ describe('GitLabClient', () => {
         logger: getVoidLogger(),
       });
 
-      await expect(() => client.getGroupMembers('group1')).rejects.toThrow(
+      await expect(() =>
+        client.getGroupMembers('group1', 'DIRECT'),
+      ).rejects.toThrow(
         'GraphQL errors: [{"message":"Unexpected end of document","locations":[]}]',
       );
     });
@@ -843,9 +875,10 @@ describe('GitLabClient', () => {
         logger: getVoidLogger(),
       });
 
-      const members = await client.getGroupMembers('group1');
+      const members = await client.getGroupMembers('group1', 'DIRECT');
 
-      expect(members).toEqual([1, 2]);
+      expect(members.items[0].id).toEqual(1);
+      expect(members.items[1].id).toEqual(2);
     });
   });
 });
