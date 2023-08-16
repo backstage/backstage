@@ -18,7 +18,7 @@ import {
   DefaultIdentityClient,
   IdentityClientOptions,
 } from './DefaultIdentityClient';
-import { BackstageIdentityResponse } from './types';
+import { BackstageIdentityResponse } from '../types';
 
 /**
  * An identity client to interact with auth-backend and authenticate Backstage

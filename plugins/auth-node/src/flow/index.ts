@@ -13,25 +13,8 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import {
-  BackstageIdentityResponse,
-  IdentityApiGetIdentityRequest,
-} from './types';
 
-/**
- * An identity client api to authenticate Backstage
- * tokens
- *
- * @experimental This is not a stable API yet
- * @public
- */
-export interface IdentityApi {
-  /**
-   * Verifies the given backstage identity token
-   * Returns a BackstageIdentity (user) matching the token.
-   * The method throws an error if verification fails.
-   */
-  getIdentity(
-    options: IdentityApiGetIdentityRequest,
-  ): Promise<BackstageIdentityResponse | undefined>;
-}
+export {
+  sendWebMessageResponse,
+  type WebMessageResponse,
+} from './sendWebMessageResponse';

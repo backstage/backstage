@@ -25,12 +25,9 @@ import {
   jwtVerify,
 } from 'jose';
 import { GetKeyFunction } from 'jose/dist/types/types';
-import {
-  BackstageIdentityResponse,
-  IdentityApiGetIdentityRequest,
-} from './types';
 import { getBearerTokenFromAuthorizationHeader } from './getBearerTokenFromAuthorizationHeader';
-import { IdentityApi } from './IdentityApi';
+import { IdentityApi, IdentityApiGetIdentityRequest } from './IdentityApi';
+import { BackstageIdentityResponse } from '../types';
 
 const CLOCK_MARGIN_S = 10;
 

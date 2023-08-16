@@ -14,34 +14,11 @@
  * limitations under the License.
  */
 
-import {
-  BackstageIdentityResponse,
-  BackstageSignInResult,
-} from '@backstage/plugin-auth-node';
-
-function parseJwtPayload(token: string) {
-  const [_header, payload, _signature] = token.split('.');
-  return JSON.parse(Buffer.from(payload, 'base64').toString());
-}
+import { prepareBackstageIdentityResponse as _prepareBackstageIdentityResponse } from '@backstage/plugin-auth-node';
 
 /**
- * Parses a Backstage-issued token and decorates the
- * {@link @backstage/plugin-auth-node#BackstageIdentityResponse} with identity information sourced from the
- * token.
- *
  * @public
+ * @deprecated import from `@backstage/plugin-auth-node` instead
  */
-export function prepareBackstageIdentityResponse(
-  result: BackstageSignInResult,
-): BackstageIdentityResponse {
-  const { sub, ent } = parseJwtPayload(result.token);
-
-  return {
-    ...result,
-    identity: {
-      type: 'user',
-      userEntityRef: sub,
-      ownershipEntityRefs: ent ?? [],
-    },
-  };
-}
+export const prepareBackstageIdentityResponse =
+  _prepareBackstageIdentityResponse;

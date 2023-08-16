@@ -26,7 +26,7 @@ import { setupServer } from 'msw/node';
 import { v4 as uuid } from 'uuid';
 
 import { DefaultIdentityClient } from './DefaultIdentityClient';
-import { IdentityApiGetIdentityRequest } from './types';
+import { IdentityApiGetIdentityRequest } from './IdentityApi';
 
 interface AnyJWK extends Record<string, string> {
   use: 'sig';
