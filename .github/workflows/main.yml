@@ -19,5 +19,5 @@ jobs:
         with:
           breakpoint-id: test
           run: false
-          trunk-token: ${{ secrets.TRUNK_TOKEN }} [3]
+          trunk-token: ${{ secrets.TRUNK_TOKEN }}
           org: bftest4
