@@ -26,7 +26,7 @@ exports.up = async function up(knex) {
     );
     // setting to 64KB to account for long paths
     table
-      .string('path', 65535)
+      .string('path', 16383)
       .primary()
       .notNullable()
       .comment('The path of the file');
