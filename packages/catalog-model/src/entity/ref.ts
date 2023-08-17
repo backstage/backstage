@@ -15,14 +15,12 @@
  */
 
 import { DEFAULT_NAMESPACE } from './constants';
-import { CompoundEntityRef } from '../types';
+import { CompoundEntityRef, SelectPartial } from '../types';
 import { Entity } from './Entity';
 
-function parseRefString(ref: string): {
-  kind?: string;
-  namespace?: string;
-  name: string;
-} {
+function parseRefString(
+  ref: string,
+): SelectPartial<CompoundEntityRef, 'kind' | 'namespace'> {
   let colonI = ref.indexOf(':');
   const slashI = ref.indexOf('/');
 
@@ -55,7 +53,7 @@ function parseRefString(ref: string): {
 export function getCompoundEntityRef(entity: Entity): CompoundEntityRef {
   return {
     kind: entity.kind,
-    namespace: entity.metadata.namespace || DEFAULT_NAMESPACE,
+    namespace: entity.metadata.namespace ?? DEFAULT_NAMESPACE,
     name: entity.metadata.name,
   };
 }
@@ -138,7 +136,7 @@ export function parseEntityRef(
  * @returns The same reference on either string or compound form
  */
 export function stringifyEntityRef(
-  ref: Entity | { kind: string; namespace?: string; name: string },
+  ref: Entity | SelectPartial<CompoundEntityRef, 'namespace'>,
 ): string {
   let kind;
   let namespace;
