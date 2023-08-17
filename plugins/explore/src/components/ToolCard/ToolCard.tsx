@@ -32,27 +32,32 @@ import React from 'react';
 
 // TODO: Align styling between Domain and ToolCard
 
-const useStyles = makeStyles<BackstageTheme>(theme => ({
-  media: {
-    height: 128,
+const useStyles = makeStyles<BackstageTheme>(
+  theme => ({
+    media: {
+      height: 128,
+    },
+    mediaContain: {
+      backgroundSize: 'contain',
+    },
+    lifecycle: {
+      lineHeight: '0.8em',
+      color: theme.palette.common.white,
+    },
+    ga: {
+      backgroundColor: theme.palette.status.ok,
+    },
+    alpha: {
+      backgroundColor: theme.palette.status.error,
+    },
+    beta: {
+      backgroundColor: theme.palette.status.warning,
+    },
+  }),
+  {
+    name: 'ExploreToolCard',
   },
-  mediaContain: {
-    backgroundSize: 'contain',
-  },
-  lifecycle: {
-    lineHeight: '0.8em',
-    color: theme.palette.common.white,
-  },
-  ga: {
-    backgroundColor: theme.palette.status.ok,
-  },
-  alpha: {
-    backgroundColor: theme.palette.status.error,
-  },
-  beta: {
-    backgroundColor: theme.palette.status.warning,
-  },
-}));
+);
 
 type Props = {
   card: ExploreTool;

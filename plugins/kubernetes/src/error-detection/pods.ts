@@ -209,7 +209,7 @@ const podErrorMappers: ErrorMapper<Pod>[] = [
             kind: 'Pod',
             apiGroup: 'v1',
           },
-          occuranceCount: 1,
+          occurrenceCount: 1,
         }));
     },
   },
@@ -228,7 +228,7 @@ const podErrorMappers: ErrorMapper<Pod>[] = [
             kind: 'Pod',
             apiGroup: 'v1',
           },
-          occuranceCount: 1,
+          occurrenceCount: 1,
         }));
     },
   },
@@ -247,7 +247,7 @@ const podErrorMappers: ErrorMapper<Pod>[] = [
             kind: 'Pod',
             apiGroup: 'v1',
           },
-          occuranceCount: cs.restartCount,
+          occurrenceCount: cs.restartCount,
         }));
     },
   },

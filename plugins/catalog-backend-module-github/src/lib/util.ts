@@ -107,5 +107,10 @@ export function satisfiesVisibilityFilter(
   if (!visibilities.length) {
     return true;
   }
-  return visibilities.includes(visibility);
+  const lowerCaseVisibilities = visibilities.map(v =>
+    v.toLocaleLowerCase('en-US'),
+  );
+  const lowerCaseVisibility = visibility.toLocaleLowerCase('en-US');
+
+  return lowerCaseVisibilities.includes(lowerCaseVisibility);
 }

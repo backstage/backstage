@@ -14,4 +14,15 @@
  * limitations under the License.
  */
 
-export { type TaskSecrets } from './types';
+export type {
+  TaskSecrets,
+  SerializedTask,
+  SerializedTaskEvent,
+  TaskBroker,
+  TaskBrokerDispatchOptions,
+  TaskBrokerDispatchResult,
+  TaskCompletionState,
+  TaskContext,
+  TaskEventType,
+  TaskStatus,
+} from './types';

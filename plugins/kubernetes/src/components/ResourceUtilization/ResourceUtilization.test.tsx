@@ -27,7 +27,7 @@ describe('ResourceUtilization', () => {
           title="some-title"
           usage="1000"
           total="10000"
-          totalFormated="15%"
+          totalFormatted="15%"
         />,
       ),
     );
@@ -43,7 +43,7 @@ describe('ResourceUtilization', () => {
           title="some-title"
           usage="1000"
           total="10000"
-          totalFormated="15%"
+          totalFormatted="15%"
         />,
       ),
     );

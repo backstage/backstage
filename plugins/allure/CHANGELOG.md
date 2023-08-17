@@ -1,5 +1,24 @@
 # @backstage/plugin-allure
 
+## 0.1.37
+
+### Patch Changes
+
+- 12a8c94eda8d: Add package repository and homepage metadata
+- Updated dependencies
+  - @backstage/core-components@0.13.4
+  - @backstage/plugin-catalog-react@1.8.1
+  - @backstage/core-plugin-api@1.5.3
+  - @backstage/catalog-model@1.4.1
+  - @backstage/theme@0.4.1
+
+## 0.1.37-next.2
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/plugin-catalog-react@1.8.1-next.1
+
 ## 0.1.37-next.1
 
 ### Patch Changes

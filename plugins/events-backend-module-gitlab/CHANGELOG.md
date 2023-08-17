@@ -1,5 +1,24 @@
 # @backstage/plugin-events-backend-module-gitlab
 
+## 0.1.10
+
+### Patch Changes
+
+- 629cbd194a87: Use `coreServices.rootConfig` instead of `coreService.config`
+- 12a8c94eda8d: Add package repository and homepage metadata
+- Updated dependencies
+  - @backstage/backend-plugin-api@0.6.0
+  - @backstage/plugin-events-node@0.2.9
+  - @backstage/config@1.0.8
+
+## 0.1.10-next.2
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-plugin-api@0.6.0-next.2
+  - @backstage/plugin-events-node@0.2.9-next.2
+
 ## 0.1.10-next.1
 
 ### Patch Changes

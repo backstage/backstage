@@ -1,5 +1,24 @@
 # @backstage/backend-tasks
 
+## 0.5.5
+
+### Patch Changes
+
+- dfd1b6b2fc33: Make `readTaskScheduleDefinitionFromConfig` properly handle bad inputs
+- Updated dependencies
+  - @backstage/backend-common@0.19.2
+  - @backstage/config@1.0.8
+  - @backstage/errors@1.2.1
+  - @backstage/types@1.1.0
+
+## 0.5.5-next.2
+
+### Patch Changes
+
+- dfd1b6b2fc33: Make `readTaskScheduleDefinitionFromConfig` properly handle bad inputs
+- Updated dependencies
+  - @backstage/backend-common@0.19.2-next.2
+
 ## 0.5.5-next.1
 
 ### Patch Changes

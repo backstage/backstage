@@ -21,7 +21,6 @@ import { RootConfigService } from '@backstage/backend-plugin-api';
 import { RootLifecycleService } from '@backstage/backend-plugin-api';
 import { SchedulerService } from '@backstage/backend-plugin-api';
 import { ServiceFactory } from '@backstage/backend-plugin-api';
-import { ServiceRef } from '@backstage/backend-plugin-api';
 import { TokenManagerService } from '@backstage/backend-plugin-api';
 import { UrlReaderService } from '@backstage/backend-plugin-api';
 
@@ -127,11 +126,8 @@ export function setupRequestMockHandlers(worker: {
 }): void;
 
 // @public (undocumented)
-export function startTestBackend<
-  TServices extends any[],
-  TExtensionPoints extends any[],
->(
-  options: TestBackendOptions<TServices, TExtensionPoints>,
+export function startTestBackend<TExtensionPoints extends any[]>(
+  options: TestBackendOptions<TExtensionPoints>,
 ): Promise<TestBackend>;
 
 // @public (undocumented)
@@ -140,10 +136,7 @@ export interface TestBackend extends Backend {
 }
 
 // @public (undocumented)
-export interface TestBackendOptions<
-  TServices extends any[],
-  TExtensionPoints extends any[],
-> {
+export interface TestBackendOptions<TExtensionPoints extends any[]> {
   // (undocumented)
   extensionPoints?: readonly [
     ...{
@@ -154,16 +147,7 @@ export interface TestBackendOptions<
     },
   ];
   // (undocumented)
-  features?: BackendFeature[];
-  // (undocumented)
-  services?: readonly [
-    ...{
-      [index in keyof TServices]:
-        | ServiceFactory<TServices[index]>
-        | (() => ServiceFactory<TServices[index]>)
-        | [ServiceRef<TServices[index]>, Partial<TServices[index]>];
-    },
-  ];
+  features?: Array<BackendFeature | (() => BackendFeature)>;
 }
 
 // @public

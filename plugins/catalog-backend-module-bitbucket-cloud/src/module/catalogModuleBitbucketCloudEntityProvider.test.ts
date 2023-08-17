@@ -14,7 +14,10 @@
  * limitations under the License.
  */
 
-import { coreServices } from '@backstage/backend-plugin-api';
+import {
+  coreServices,
+  createServiceFactory,
+} from '@backstage/backend-plugin-api';
 import {
   PluginTaskScheduler,
   TaskScheduleDefinition,
@@ -55,7 +58,8 @@ describe('catalogModuleBitbucketCloudEntityProvider', () => {
         [catalogProcessingExtensionPoint, catalogExtensionPointImpl],
         [eventsExtensionPoint, eventsExtensionPointImpl],
       ],
-      services: [
+      features: [
+        catalogModuleBitbucketCloudEntityProvider(),
         mockServices.rootConfig.factory({
           data: {
             catalog: {
@@ -71,9 +75,12 @@ describe('catalogModuleBitbucketCloudEntityProvider', () => {
             },
           },
         }),
-        [coreServices.scheduler, scheduler],
+        createServiceFactory({
+          service: coreServices.scheduler,
+          deps: {},
+          factory: async () => scheduler,
+        }),
       ],
-      features: [catalogModuleBitbucketCloudEntityProvider()],
     });
 
     expect(usedSchedule?.frequency).toEqual(Duration.fromISO('P1M'));

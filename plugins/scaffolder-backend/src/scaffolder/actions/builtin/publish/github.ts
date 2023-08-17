@@ -30,6 +30,7 @@ import {
 import * as inputProps from '../github/inputProperties';
 import * as outputProps from '../github/outputProperties';
 import { parseRepoUrl } from './util';
+import { examples } from './github.examples';
 
 /**
  * Creates a new action that initializes a git repository of the content in the workspace
@@ -111,6 +112,7 @@ export function createPublishGithubAction(options: {
     id: 'publish:github',
     description:
       'Initializes a git repository of contents in workspace and publishes it to GitHub.',
+    examples,
     schema: {
       input: {
         type: 'object',

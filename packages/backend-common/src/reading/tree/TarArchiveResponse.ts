@@ -44,6 +44,7 @@ export class TarArchiveResponse implements ReadTreeResponse {
     private readonly workDir: string,
     public readonly etag: string,
     private readonly filter?: (path: string, info: { size: number }) => boolean,
+    private readonly stripFirstDirectory: boolean = true,
   ) {
     if (subPath) {
       if (!subPath.endsWith('/')) {
@@ -81,7 +82,9 @@ export class TarArchiveResponse implements ReadTreeResponse {
 
       // File path relative to the root extracted directory. Will remove the
       // top level dir name from the path since its name is hard to predetermine.
-      const relativePath = stripFirstDirectoryFromPath(entry.path);
+      const relativePath = this.stripFirstDirectory
+        ? stripFirstDirectoryFromPath(entry.path)
+        : entry.path;
 
       if (this.subPath) {
         if (!relativePath.startsWith(this.subPath)) {
@@ -148,7 +151,10 @@ export class TarArchiveResponse implements ReadTreeResponse {
 
     // Equivalent of tar --strip-components=N
     // When no subPath is given, remove just 1 top level directory
-    const strip = this.subPath ? this.subPath.split('/').length : 1;
+    let strip = this.subPath ? this.subPath.split('/').length : 1;
+    if (!this.stripFirstDirectory) {
+      strip--;
+    }
 
     let filterError: Error | undefined = undefined;
     await pipeline(
@@ -164,7 +170,9 @@ export class TarArchiveResponse implements ReadTreeResponse {
 
           // File path relative to the root extracted directory. Will remove the
           // top level dir name from the path since its name is hard to predetermine.
-          const relativePath = stripFirstDirectoryFromPath(path);
+          const relativePath = this.stripFirstDirectory
+            ? stripFirstDirectoryFromPath(path)
+            : path;
           if (this.subPath && !relativePath.startsWith(this.subPath)) {
             return false;
           }

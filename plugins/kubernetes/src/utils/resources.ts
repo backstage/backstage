@@ -33,6 +33,6 @@ export const bytesToMiB = (value: string | number): string => {
   return `${(parseFloat(value.toString()) / 1024 / 1024).toFixed(0)}MiB`;
 };
 
-export const formatMilicores = (value: string | number): string => {
+export const formatMillicores = (value: string | number): string => {
   return `${(parseFloat(value.toString()) * 1000).toFixed(0)}m`;
 };

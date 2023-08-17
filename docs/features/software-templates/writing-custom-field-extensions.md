@@ -89,10 +89,8 @@ export const validateKebabCaseValidation = (
   then please use `scaffolderPlugin.provide` from there instead and export it part of your `plugin.ts` rather than re-using the `scaffolder.plugin`.
 */
 
-import {
-  scaffolderPlugin,
-  createScaffolderFieldExtension,
-} from '@backstage/plugin-scaffolder';
+import { scaffolderPlugin } from '@backstage/plugin-scaffolder';
+import { createScaffolderFieldExtension } from '@backstage/plugin-scaffolder-react';
 import {
   ValidateKebabCase,
   validateKebabCaseValidation,
@@ -133,7 +131,7 @@ Should look something like this instead:
 
 ```tsx
 import { ValidateKebabCaseFieldExtension } from './scaffolder/ValidateKebabCase';
-import { ScaffolderFieldExtensions } from '@backstage/plugin-scaffolder';
+import { ScaffolderFieldExtensions } from '@backstage/plugin-scaffolder-react';
 
 const routes = (
   <FlatRoutes>
