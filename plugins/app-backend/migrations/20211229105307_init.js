@@ -24,12 +24,12 @@ exports.up = async function up(knex) {
     table.comment(
       'A cache of static assets that where previously deployed and may still be lazy-loaded by clients',
     );
-    // setting to 64KB to account for long paths
     table
-      .string('path', 16383)
+      .uuid('id')
       .primary()
       .notNullable()
-      .comment('The path of the file');
+      .comment('Auto-generated ID of the asset');
+    table.text('path', 'text').notNullable().comment('The path of the file');
     table
       .dateTime('last_modified_at')
       .defaultTo(knex.fn.now())
