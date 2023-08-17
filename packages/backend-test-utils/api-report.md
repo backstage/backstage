@@ -5,50 +5,25 @@
 ```ts
 /// <reference types="jest" />
 
-import { AuthorizePermissionRequest } from '@backstage/plugin-permission-common';
 import { Backend } from '@backstage/backend-app-api';
 import { BackendFeature } from '@backstage/backend-plugin-api';
-import { BackstageIdentityResponse } from '@backstage/plugin-auth-node';
 import { CacheService } from '@backstage/backend-plugin-api';
-import { CacheServiceOptions } from '@backstage/backend-plugin-api';
-import { CacheServiceSetOptions } from '@backstage/backend-plugin-api';
 import { DatabaseService } from '@backstage/backend-plugin-api';
-import { DefinitivePolicyDecision } from '@backstage/plugin-permission-common';
-import { EvaluatorRequestOptions } from '@backstage/plugin-permission-common';
 import { ExtendedHttpServer } from '@backstage/backend-app-api';
 import { ExtensionPoint } from '@backstage/backend-plugin-api';
-import { Handler } from 'express';
 import { HttpRouterFactoryOptions } from '@backstage/backend-app-api';
 import { HttpRouterService } from '@backstage/backend-plugin-api';
-import { IdentityApiGetIdentityRequest } from '@backstage/plugin-auth-node';
 import { IdentityService } from '@backstage/backend-plugin-api';
 import { JsonObject } from '@backstage/types';
-import { JsonValue } from '@backstage/types';
 import { Knex } from 'knex';
 import { LifecycleService } from '@backstage/backend-plugin-api';
-import { LifecycleServiceShutdownHook } from '@backstage/backend-plugin-api';
-import { LifecycleServiceShutdownOptions } from '@backstage/backend-plugin-api';
-import { LifecycleServiceStartupHook } from '@backstage/backend-plugin-api';
-import { LifecycleServiceStartupOptions } from '@backstage/backend-plugin-api';
 import { LoggerService } from '@backstage/backend-plugin-api';
 import { PermissionsService } from '@backstage/backend-plugin-api';
-import { PolicyDecision } from '@backstage/plugin-permission-common';
-import { QueryPermissionRequest } from '@backstage/plugin-permission-common';
-import { ReadTreeOptions } from '@backstage/backend-plugin-api';
-import { ReadTreeResponse } from '@backstage/backend-plugin-api';
-import { ReadUrlOptions } from '@backstage/backend-plugin-api';
-import { ReadUrlResponse } from '@backstage/backend-plugin-api';
 import { RootConfigService } from '@backstage/backend-plugin-api';
 import { RootLifecycleService } from '@backstage/backend-plugin-api';
 import { RootLoggerService } from '@backstage/backend-plugin-api';
 import { SchedulerService } from '@backstage/backend-plugin-api';
-import { SearchOptions } from '@backstage/backend-plugin-api';
-import { SearchResponse } from '@backstage/backend-plugin-api';
 import { ServiceFactory } from '@backstage/backend-plugin-api';
-import { TaskDescriptor } from '@backstage/backend-tasks';
-import { TaskInvocationDefinition } from '@backstage/backend-tasks';
-import { TaskRunner } from '@backstage/backend-tasks';
-import { TaskScheduleDefinition } from '@backstage/backend-tasks';
 import { TokenManagerService } from '@backstage/backend-plugin-api';
 import { UrlReaderService } from '@backstage/backend-plugin-api';
 
@@ -62,46 +37,18 @@ export namespace mockServices {
     const // (undocumented)
       factory: () => ServiceFactory<CacheService, 'plugin'>;
     const // (undocumented)
-      mock: (partialImpl?: Partial<CacheService> | undefined) => {
-        factory: ServiceFactory<CacheService, 'root' | 'plugin'>;
-      } & {
-        get: jest.MockInstance<
-          Promise<JsonValue | undefined>,
-          [key: string],
-          unknown
-        >;
-        set: jest.MockInstance<
-          Promise<void>,
-          [
-            key: string,
-            value: JsonValue,
-            options?: CacheServiceSetOptions | undefined,
-          ],
-          unknown
-        >;
-        delete: jest.MockInstance<Promise<void>, [key: string], unknown>;
-        withOptions: jest.MockInstance<
-          CacheService,
-          [options: CacheServiceOptions],
-          unknown
-        >;
-      } & CacheService;
+      mock: (
+        partialImpl?: Partial<CacheService> | undefined,
+      ) => ServiceMock<CacheService>;
   }
   // (undocumented)
   export namespace database {
     const // (undocumented)
       factory: () => ServiceFactory<DatabaseService, 'plugin'>;
     const // (undocumented)
-      mock: (partialImpl?: Partial<DatabaseService> | undefined) => {
-        factory: ServiceFactory<DatabaseService, 'root' | 'plugin'>;
-      } & {
-        getClient: jest.MockInstance<Promise<Knex<any, any[]>>, [], unknown>;
-        migrations?:
-          | {
-              skip?: boolean | undefined;
-            }
-          | undefined;
-      } & DatabaseService;
+      mock: (
+        partialImpl?: Partial<DatabaseService> | undefined,
+      ) => ServiceMock<DatabaseService>;
   }
   // (undocumented)
   export namespace httpRouter {
@@ -110,11 +57,9 @@ export namespace mockServices {
         options?: HttpRouterFactoryOptions | undefined,
       ) => ServiceFactory<HttpRouterService, 'plugin'>;
     const // (undocumented)
-      mock: (partialImpl?: Partial<HttpRouterService> | undefined) => {
-        factory: ServiceFactory<HttpRouterService, 'root' | 'plugin'>;
-      } & {
-        use: jest.MockInstance<void, [handler: Handler], unknown>;
-      } & HttpRouterService;
+      mock: (
+        partialImpl?: Partial<HttpRouterService> | undefined,
+      ) => ServiceMock<HttpRouterService>;
   }
   // (undocumented)
   export function identity(): IdentityService;
@@ -123,98 +68,36 @@ export namespace mockServices {
     const // (undocumented)
       factory: () => ServiceFactory<IdentityService, 'plugin'>;
     const // (undocumented)
-      mock: (partialImpl?: Partial<IdentityService> | undefined) => {
-        factory: ServiceFactory<IdentityService, 'root' | 'plugin'>;
-      } & {
-        getIdentity: jest.MockInstance<
-          Promise<BackstageIdentityResponse | undefined>,
-          [options: IdentityApiGetIdentityRequest],
-          unknown
-        >;
-      } & IdentityService;
+      mock: (
+        partialImpl?: Partial<IdentityService> | undefined,
+      ) => ServiceMock<IdentityService>;
   }
   // (undocumented)
   export namespace lifecycle {
     const // (undocumented)
       factory: () => ServiceFactory<LifecycleService, 'plugin'>;
     const // (undocumented)
-      mock: (partialImpl?: Partial<LifecycleService> | undefined) => {
-        factory: ServiceFactory<LifecycleService, 'root' | 'plugin'>;
-      } & {
-        addStartupHook: jest.MockInstance<
-          void,
-          [
-            hook: LifecycleServiceStartupHook,
-            options?: LifecycleServiceStartupOptions | undefined,
-          ],
-          unknown
-        >;
-        addShutdownHook: jest.MockInstance<
-          void,
-          [
-            hook: LifecycleServiceShutdownHook,
-            options?: LifecycleServiceShutdownOptions | undefined,
-          ],
-          unknown
-        >;
-      } & LifecycleService;
+      mock: (
+        partialImpl?: Partial<LifecycleService> | undefined,
+      ) => ServiceMock<LifecycleService>;
   }
   // (undocumented)
   export namespace logger {
     const // (undocumented)
       factory: () => ServiceFactory<LoggerService, 'plugin'>;
     const // (undocumented)
-      mock: (partialImpl?: Partial<LoggerService> | undefined) => {
-        factory: ServiceFactory<LoggerService, 'root' | 'plugin'>;
-      } & {
-        error: jest.MockInstance<
-          void,
-          [message: string, meta?: Error | JsonObject | undefined],
-          unknown
-        >;
-        warn: jest.MockInstance<
-          void,
-          [message: string, meta?: Error | JsonObject | undefined],
-          unknown
-        >;
-        info: jest.MockInstance<
-          void,
-          [message: string, meta?: Error | JsonObject | undefined],
-          unknown
-        >;
-        debug: jest.MockInstance<
-          void,
-          [message: string, meta?: Error | JsonObject | undefined],
-          unknown
-        >;
-        child: jest.MockInstance<LoggerService, [meta: JsonObject], unknown>;
-      } & LoggerService;
+      mock: (
+        partialImpl?: Partial<LoggerService> | undefined,
+      ) => ServiceMock<LoggerService>;
   }
   // (undocumented)
   export namespace permissions {
     const // (undocumented)
       factory: () => ServiceFactory<PermissionsService, 'plugin'>;
     const // (undocumented)
-      mock: (partialImpl?: Partial<PermissionsService> | undefined) => {
-        factory: ServiceFactory<PermissionsService, 'root' | 'plugin'>;
-      } & {
-        authorize: jest.MockInstance<
-          Promise<DefinitivePolicyDecision[]>,
-          [
-            requests: AuthorizePermissionRequest[],
-            options?: EvaluatorRequestOptions | undefined,
-          ],
-          unknown
-        >;
-        authorizeConditional: jest.MockInstance<
-          Promise<PolicyDecision[]>,
-          [
-            requests: QueryPermissionRequest[],
-            options?: EvaluatorRequestOptions | undefined,
-          ],
-          unknown
-        >;
-      } & PermissionsService;
+      mock: (
+        partialImpl?: Partial<PermissionsService> | undefined,
+      ) => ServiceMock<PermissionsService>;
   }
   // (undocumented)
   export function rootConfig(options?: rootConfig.Options): RootConfigService;
@@ -234,26 +117,9 @@ export namespace mockServices {
     const // (undocumented)
       factory: () => ServiceFactory<RootLifecycleService, 'root'>;
     const // (undocumented)
-      mock: (partialImpl?: Partial<RootLifecycleService> | undefined) => {
-        factory: ServiceFactory<RootLifecycleService, 'root' | 'plugin'>;
-      } & {
-        addStartupHook: jest.MockInstance<
-          void,
-          [
-            hook: LifecycleServiceStartupHook,
-            options?: LifecycleServiceStartupOptions | undefined,
-          ],
-          unknown
-        >;
-        addShutdownHook: jest.MockInstance<
-          void,
-          [
-            hook: LifecycleServiceShutdownHook,
-            options?: LifecycleServiceShutdownOptions | undefined,
-          ],
-          unknown
-        >;
-      } & RootLifecycleService;
+      mock: (
+        partialImpl?: Partial<RootLifecycleService> | undefined,
+      ) => ServiceMock<RootLifecycleService>;
   }
   // (undocumented)
   export function rootLogger(options?: rootLogger.Options): LoggerService;
@@ -268,57 +134,18 @@ export namespace mockServices {
         options?: Options | undefined,
       ) => ServiceFactory<LoggerService, 'root'>;
     const // (undocumented)
-      mock: (partialImpl?: Partial<RootLoggerService> | undefined) => {
-        factory: ServiceFactory<RootLoggerService, 'root' | 'plugin'>;
-      } & {
-        error: jest.MockInstance<
-          void,
-          [message: string, meta?: Error | JsonObject | undefined],
-          unknown
-        >;
-        warn: jest.MockInstance<
-          void,
-          [message: string, meta?: Error | JsonObject | undefined],
-          unknown
-        >;
-        info: jest.MockInstance<
-          void,
-          [message: string, meta?: Error | JsonObject | undefined],
-          unknown
-        >;
-        debug: jest.MockInstance<
-          void,
-          [message: string, meta?: Error | JsonObject | undefined],
-          unknown
-        >;
-        child: jest.MockInstance<LoggerService, [meta: JsonObject], unknown>;
-      } & RootLoggerService;
+      mock: (
+        partialImpl?: Partial<RootLoggerService> | undefined,
+      ) => ServiceMock<RootLoggerService>;
   }
   // (undocumented)
   export namespace scheduler {
     const // (undocumented)
       factory: () => ServiceFactory<SchedulerService, 'plugin'>;
     const // (undocumented)
-      mock: (partialImpl?: Partial<SchedulerService> | undefined) => {
-        factory: ServiceFactory<SchedulerService, 'root' | 'plugin'>;
-      } & {
-        triggerTask: jest.MockInstance<Promise<void>, [id: string], unknown>;
-        scheduleTask: jest.MockInstance<
-          Promise<void>,
-          [task: TaskScheduleDefinition & TaskInvocationDefinition],
-          unknown
-        >;
-        createScheduledTaskRunner: jest.MockInstance<
-          TaskRunner,
-          [schedule: TaskScheduleDefinition],
-          unknown
-        >;
-        getScheduledTasks: jest.MockInstance<
-          Promise<TaskDescriptor[]>,
-          [],
-          unknown
-        >;
-      } & SchedulerService;
+      mock: (
+        partialImpl?: Partial<SchedulerService> | undefined,
+      ) => ServiceMock<SchedulerService>;
   }
   // (undocumented)
   export function tokenManager(): TokenManagerService;
@@ -327,49 +154,32 @@ export namespace mockServices {
     const // (undocumented)
       factory: () => ServiceFactory<TokenManagerService, 'plugin'>;
     const // (undocumented)
-      mock: (partialImpl?: Partial<TokenManagerService> | undefined) => {
-        factory: ServiceFactory<TokenManagerService, 'root' | 'plugin'>;
-      } & {
-        getToken: jest.MockInstance<
-          Promise<{
-            token: string;
-          }>,
-          [],
-          unknown
-        >;
-        authenticate: jest.MockInstance<
-          Promise<void>,
-          [token: string],
-          unknown
-        >;
-      } & TokenManagerService;
+      mock: (
+        partialImpl?: Partial<TokenManagerService> | undefined,
+      ) => ServiceMock<TokenManagerService>;
   }
   // (undocumented)
   export namespace urlReader {
     const // (undocumented)
       factory: () => ServiceFactory<UrlReaderService, 'plugin'>;
     const // (undocumented)
-      mock: (partialImpl?: Partial<UrlReaderService> | undefined) => {
-        factory: ServiceFactory<UrlReaderService, 'root' | 'plugin'>;
-      } & {
-        readUrl: jest.MockInstance<
-          Promise<ReadUrlResponse>,
-          [url: string, options?: ReadUrlOptions | undefined],
-          unknown
-        >;
-        readTree: jest.MockInstance<
-          Promise<ReadTreeResponse>,
-          [url: string, options?: ReadTreeOptions | undefined],
-          unknown
-        >;
-        search: jest.MockInstance<
-          Promise<SearchResponse>,
-          [url: string, options?: SearchOptions | undefined],
-          unknown
-        >;
-      } & UrlReaderService;
+      mock: (
+        partialImpl?: Partial<UrlReaderService> | undefined,
+      ) => ServiceMock<UrlReaderService>;
   }
 }
+
+// @public (undocumented)
+export type ServiceMock<TService> = {
+  factory: ServiceFactory<TService>;
+} & {
+  [Key in keyof TService]: TService[Key] extends (
+    this: infer This,
+    ...args: infer Args
+  ) => infer Return
+    ? TService[Key] & jest.MockInstance<Return, Args, This>
+    : TService[Key];
+};
 
 // @public
 export function setupRequestMockHandlers(worker: {

@@ -58,13 +58,23 @@ function simpleFactory<
   })) as (...options: TOptions) => ServiceFactory<TService, any>;
 }
 
+/** @public */
+export type ServiceMock<TService> = {
+  factory: ServiceFactory<TService>;
+} & {
+  [Key in keyof TService]: TService[Key] extends (
+    this: infer This,
+    ...args: infer Args
+  ) => infer Return
+    ? TService[Key] & jest.MockInstance<Return, Args, This>
+    : TService[Key];
+};
+
 /** @internal */
 function simpleMock<TService>(
   ref: ServiceRef<TService, any>,
   mockFactory: () => jest.Mocked<TService>,
-): (
-  partialImpl?: Partial<TService>,
-) => { factory: ServiceFactory<TService> } & jest.Mocked<TService> {
+): (partialImpl?: Partial<TService>) => ServiceMock<TService> {
   return partialImpl => {
     const mock = mockFactory();
     if (partialImpl) {
@@ -82,7 +92,7 @@ function simpleMock<TService>(
         deps: {},
         factory: () => mock,
       })(),
-    });
+    }) as ServiceMock<TService>;
   };
 }
 
