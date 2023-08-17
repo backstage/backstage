@@ -18,6 +18,7 @@ import { makeStyles } from '@material-ui/core/styles';
 import React, { useEffect, useState } from 'react';
 import SwaggerUI from 'swagger-ui-react';
 import 'swagger-ui-react/swagger-ui.css';
+import { Request } from './';
 
 const useStyles = makeStyles(theme => ({
   root: {
@@ -136,9 +137,13 @@ const useStyles = makeStyles(theme => ({
 
 export type OpenApiDefinitionProps = {
   definition: string;
+  requestInterceptor?: (req: Request) => Request | Promise<Request>;
 };
 
-export const OpenApiDefinition = ({ definition }: OpenApiDefinitionProps) => {
+export const OpenApiDefinition = ({
+  definition,
+  requestInterceptor,
+}: OpenApiDefinitionProps) => {
   const classes = useStyles();
 
   // Due to a bug in the swagger-ui-react component, the component needs
@@ -152,7 +157,12 @@ export const OpenApiDefinition = ({ definition }: OpenApiDefinitionProps) => {
 
   return (
     <div className={classes.root}>
-      <SwaggerUI spec={def} url="" deepLinking />
+      <SwaggerUI
+        spec={def}
+        url=""
+        requestInterceptor={requestInterceptor}
+        deepLinking
+      />
     </div>
   );
 };

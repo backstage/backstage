@@ -222,3 +222,42 @@ security:
 ## Links
 
 - [The Backstage homepage](https://backstage.io)
+
+### Adding requestInterceptor to Swagger UI
+
+To configure a [requestInterceptor for Swagger UI](https://github.com/swagger-api/swagger-ui/tree/master/flavors/swagger-ui-react#requestinterceptor-proptypesfunc) you'll need to add the following to your `api.tsx`:
+
+```tsx
+...
+import { OpenApiDefinitionWidget, apiDocsConfigRef, defaultDefinitionWidgets } from '@backstage/plugin-api-docs';
+import { ApiEntity } from '@backstage/catalog-model';
+
+export const apis: AnyApiFactory[] = [
+...
+createApiFactory({
+    api: apiDocsConfigRef,
+    deps: {},
+    factory: () => {
+      // Overriding openapi definition widget to add cors-anywhere proxy
+      const requestInterceptor = (req: any) => {
+        // Adding cors-anywhere proxy to the request url
+        console.log(req);
+        req.url = "https://cors-anywhere.herokuapp.com/" + req.url;
+        return req;
+      };
+      const definitionWidgets = defaultDefinitionWidgets();
+      definitionWidgets[definitionWidgets.findIndex(obj => obj.type === 'openapi')] = {
+        type: 'openapi',
+        title: 'OpenAPI',
+        rawLanguage: 'yaml',
+        component: (definition) => <OpenApiDefinitionWidget definition={definition} requestInterceptor={requestInterceptor} />,
+      };
+
+      return {
+        getApiDefinitionWidget: (apiEntity: ApiEntity) => {
+          return definitionWidgets.find(d => d.type === apiEntity.spec.type);
+        },
+      };
+    },
+  })
+```
