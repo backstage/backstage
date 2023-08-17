@@ -43,7 +43,7 @@ import {
 } from '@material-ui/core';
 import EditIcon from '@material-ui/icons/Edit';
 import DeleteIcon from '@material-ui/icons/Delete';
-import React, { useCallback, useState } from 'react';
+import React, { useCallback, useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import useAsyncFn from 'react-use/lib/useAsyncFn';
 
@@ -83,6 +83,7 @@ export const PlaylistHeader = ({ playlist, onUpdate }: PlaylistHeaderProps) => {
   const rootRoute = useRouteRef(rootRouteRef);
   const [openEditDialog, setOpenEditDialog] = useState(false);
   const [openDeleteDialog, setOpenDeleteDialog] = useState(false);
+  const [popupMessage, setPopupMessage] = useState('');
 
   const { allowed: editAllowed } = usePermission({
     permission: permissions.playlistListUpdate,
@@ -94,22 +95,35 @@ export const PlaylistHeader = ({ playlist, onUpdate }: PlaylistHeaderProps) => {
     resourceRef: playlist.id,
   });
 
+  useEffect(() => {
+    if (popupMessage) {
+      alertApi.post({
+        message: popupMessage,
+        severity: 'success',
+        display: 'transient',
+      });
+      setPopupMessage('');
+    }
+  }, [popupMessage, alertApi]);
+
   const updatePlaylist = useCallback(
     async (update: Omit<PlaylistMetadata, 'id'>) => {
       try {
         await playlistApi.updatePlaylist({ ...update, id: playlist.id });
         setOpenEditDialog(false);
+        if (update.name !== playlist.name) {
+          setPopupMessage(
+            `Updated playlist name '${playlist.name}' to '${update.name}'`,
+          );
+        } else {
+          setPopupMessage(`Updated playlist '${playlist.name}'`);
+        }
         onUpdate();
-        alertApi.post({
-          message: `Updated playlist '${playlist.name}'`,
-          severity: 'success',
-          display: 'transient',
-        });
       } catch (e) {
         errorApi.post(e);
       }
     },
-    [errorApi, onUpdate, playlist, playlistApi, alertApi],
+    [errorApi, onUpdate, playlist, playlistApi, setPopupMessage],
   );
 
   const [deleting, deletePlaylist] = useAsyncFn(async () => {
