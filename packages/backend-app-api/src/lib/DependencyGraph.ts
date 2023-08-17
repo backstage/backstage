@@ -108,16 +108,16 @@ export class DependencyGraph<T> {
           continue;
         }
         visited.add(node);
-        for (const produced of node.provides) {
-          const consumerNodes = this.#nodes.filter(other =>
-            other.consumes.has(produced),
+        for (const consumed of node.consumes) {
+          const providerNodes = this.#nodes.filter(other =>
+            other.provides.has(consumed),
           );
-          for (const consumer of consumerNodes) {
-            if (consumer === startNode) {
+          for (const provider of providerNodes) {
+            if (provider === startNode) {
               return [...path, startNode.value];
             }
-            if (!visited.has(consumer)) {
-              stack.push([consumer, [...path, consumer.value]]);
+            if (!visited.has(provider)) {
+              stack.push([provider, [...path, provider.value]]);
             }
           }
         }

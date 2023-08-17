@@ -66,6 +66,17 @@ describe('DependencyGraph', () => {
       ).toEqual(['1', '2', '1']);
     });
 
+    it('should detect a circular dep starting from the first node', async () => {
+      expect(
+        DependencyGraph.fromMap({
+          1: { provides: ['a'], consumes: ['b'] },
+          2: { provides: ['b'], consumes: ['c'] },
+          3: { provides: ['c'], consumes: ['d'] },
+          4: { provides: ['d'], consumes: ['a'] },
+        }).detectCircularDependency(),
+      ).toEqual(['1', '2', '3', '4', '1']);
+    });
+
     it('should detect a larger distant circular dep', async () => {
       expect(
         DependencyGraph.fromMap({
@@ -74,7 +85,7 @@ describe('DependencyGraph', () => {
           3: { provides: ['c'], consumes: ['b'] },
           4: { provides: ['d', 'e'], consumes: ['c', 'a'] },
         }).detectCircularDependency(),
-      ).toEqual(['2', '3', '4', '2']);
+      ).toEqual(['2', '4', '3', '2']);
     });
   });
 
