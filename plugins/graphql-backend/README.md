@@ -80,19 +80,19 @@ leaking to your client in production, add the [`useMaskedErrors`][usemaskederror
 package.
 
 ```ts
-// packages/backend/src/modules/graphqlYoga.ts
+// packages/backend/src/modules/graphqlPlugins.ts
 import { createBackendModule } from '@backstage/backend-plugin-api';
-import { graphqlYogaExtensionPoint } from '@backstage/plugin-graphql-backend';
+import { graphqlPluginsExtensionPoint } from '@backstage/plugin-graphql-backend-node';
 import { useMaskedErrors } from '@envelop/core';
 
-export const graphqlModuleYoga = createBackendModule({
+export const graphqlModulePlugins = createBackendModule({
   pluginId: 'graphql',
-  moduleId: 'yoga',
+  moduleId: 'plugins',
   register(env) {
     env.registerInit({
-      deps: { yoga: graphqlYogaExtensionPoint },
-      async init({ yoga }) {
-        yoga.addPlugin(useMaskedErrors());
+      deps: { plugins: graphqlPluginsExtensionPoint },
+      async init({ plugins }) {
+        plugins.addPlugins([useMaskedErrors()]);
       },
     });
   },
@@ -103,13 +103,13 @@ Then add module to your backend:
 
 ```ts
 // packages/backend/src/index.ts
-import { graphqlModuleYoga } from './modules/graphqlYoga';
+import { graphqlModulePlugins } from './modules/graphqlPlugins';
 
 const backend = createBackend();
 
 // GraphQL
 backend.use(graphqlPlugin());
-backend.use(graphqlModuleYoga());
+backend.use(graphqlModulePlugins());
 ```
 
 ## GraphQL Context
@@ -121,18 +121,18 @@ multiple resolvers, such as a database connection or a logger.
 You can add additional data to the context to GraphQL Yoga backend module:
 
 ```ts
-// packages/backend/src/modules/graphqlYoga.ts
+// packages/backend/src/modules/graphqlContext.ts
 import { createBackendModule } from '@backstage/backend-plugin-api';
-import { graphqlYogaExtensionPoint } from '@backstage/plugin-graphql-backend';
+import { graphqlContextExtensionPoint } from '@backstage/plugin-graphql-backend-node';
 
-export const graphqlModuleYoga = createBackendModule({
+export const graphqlModuleContext = createBackendModule({
   pluginId: 'graphql',
-  moduleId: 'yoga',
+  moduleId: 'context',
   register(env) {
     env.registerInit({
-      deps: { yoga: graphqlYogaExtensionPoint },
-      async init({ yoga }) {
-        yoga.setContext({ myContext: 'Hello World' });
+      deps: { context: graphqlContextExtensionPoint },
+      async init({ context }) {
+        context.setContext({ myContext: 'Hello World' });
       },
     });
   },
@@ -159,29 +159,28 @@ is stored under a unique key which is encoded inside node's id as a data
 source name
 
 ```ts
-// packages/backend/src/modules/graphqlYoga.ts
+// packages/backend/src/modules/graphqlLoaders.ts
 import { createBackendModule } from '@backstage/backend-plugin-api';
-import { graphqlYogaExtensionPoint } from '@backstage/plugin-graphql-backend';
+import { graphqlLoadersExtensionPoint } from '@backstage/plugin-graphql-backend-node';
 
-export const graphqlModuleYoga = createBackendModule({
+export const graphqlModuleLoaders = createBackendModule({
   pluginId: 'graphql',
-  moduleId: 'yoga',
+  moduleId: 'loaders',
   register(env) {
     env.registerInit({
-      deps: { yoga: graphqlYogaExtensionPoint },
-      async init({ yoga }) {
-        yoga.addLoader(
-          'ProjectAPI',
-          async (keys: readonly string[], context: GraphQLContext) => {
+      deps: { loaders: graphqlLoadersExtensionPoint },
+      async init({ loaders }) {
+        loaders.addLoaders({
+          ProjectAPI: async (
+            keys: readonly string[],
+            context: GraphQLContext,
+          ) => {
             /* Fetch */
           },
-        );
-        yoga.addLoader(
-          'TaskAPI',
-          async (keys: readonly string[], context: GraphQLContext) => {
+          TaskAPI: async (keys: readonly string[], context: GraphQLContext) => {
             /* Fetch */
           },
-        );
+        });
       },
     });
   },

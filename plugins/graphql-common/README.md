@@ -66,19 +66,19 @@ export const myModule = createModule({
    module
 
 ```ts
-// packages/backend/src/modules/graphqlApplication.ts
+// packages/backend/src/modules/graphqlMyModule.ts
 import { createBackendModule } from '@backstage/backend-plugin-api';
-import { graphqlApplicationExtensionPoint } from '@backstage/plugin-graphql-backend';
+import { graphqlModulesExtensionPoint } from '@backstage/plugin-graphql-backend-node';
 import { MyModule } from '../modules/my-module/my-module';
 
-export const graphqlModuleApplication = createBackendModule({
+export const graphqlModuleMyModule = createBackendModule({
   pluginId: 'graphql',
-  moduleId: 'application',
+  moduleId: 'myModule',
   register(env) {
     env.registerInit({
-      deps: { application: graphqlApplicationExtensionPoint },
-      async init({ application }) {
-        await application.addModule(MyModule);
+      deps: { modules: graphqlModulesExtensionPoint },
+      async init({ modules }) {
+        await modules.addModules([MyModule]);
       },
     });
   },
@@ -89,13 +89,13 @@ export const graphqlModuleApplication = createBackendModule({
 
 ```ts
 // packages/backend/src/index.ts
-import { graphqlModuleApplication } from './modules/graphqlApplication';
+import { graphqlModuleMyModule } from './modules/graphqlMyModule';
 
 const backend = createBackend();
 
 // GraphQL
 backend.use(graphqlPlugin());
-backend.use(graphqlModuleApplication());
+backend.use(graphqlModuleMyModule());
 ```
 
 ### Directives API

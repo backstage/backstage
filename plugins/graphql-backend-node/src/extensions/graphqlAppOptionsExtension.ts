@@ -13,10 +13,20 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-export * from './graphqlAppOptionsExtension';
-export * from './graphqlContextExtension';
-export * from './graphqlDataloaderOptionsExtension';
-export * from './graphqlLoadersExtension';
-export * from './graphqlModulesExtension';
-export * from './graphqlPluginsExtension';
-export * from './graphqlSchemasExtension';
+import { createExtensionPoint } from '@backstage/backend-plugin-api';
+
+/** @public */
+export interface GraphQLAppOptions {
+  generateOpaqueTypes?: boolean;
+}
+
+/** @public */
+export interface GraphQLAppOptionsExtensionPoint {
+  setAppOptions(appOptions: GraphQLAppOptions): void;
+}
+
+/** @public */
+export const graphqlAppOptionsExtensionPoint =
+  createExtensionPoint<GraphQLAppOptionsExtensionPoint>({
+    id: 'graphql.appOptions',
+  });

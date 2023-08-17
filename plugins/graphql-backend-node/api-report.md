@@ -11,24 +11,22 @@ import { Options } from 'dataloader';
 import { Plugin as Plugin_2 } from 'graphql-yoga';
 
 // @public (undocumented)
-export interface GraphQLApplicationExtensionPoint {
+export interface GraphQLAppOptions {
   // (undocumented)
-  addModule(
-    module: (() => Module | Promise<Module>) | Module | Promise<Module>,
-  ): void;
-  // (undocumented)
-  addSchema(schema: string): void;
+  generateOpaqueTypes?: boolean;
 }
 
 // @public (undocumented)
-export const graphqlApplicationExtensionPoint: ExtensionPoint<GraphQLApplicationExtensionPoint>;
+export interface GraphQLAppOptionsExtensionPoint {
+  // (undocumented)
+  setAppOptions(appOptions: GraphQLAppOptions): void;
+}
 
 // @public (undocumented)
-export interface GraphQLYogaExtensionPoint {
-  // (undocumented)
-  addLoader(name: string, loader: BatchLoadFn<GraphQLContext>): void;
-  // (undocumented)
-  addPlugin(plugin: Plugin_2): void;
+export const graphqlAppOptionsExtensionPoint: ExtensionPoint<GraphQLAppOptionsExtensionPoint>;
+
+// @public (undocumented)
+export interface GraphQLContextExtensionPoint {
   // (undocumented)
   setContext<TContext extends Record<string, any>>(
     context:
@@ -36,12 +34,57 @@ export interface GraphQLYogaExtensionPoint {
       | Promise<TContext>
       | TContext,
   ): void;
+}
+
+// @public (undocumented)
+export const graphqlContextExtensionPoint: ExtensionPoint<GraphQLContextExtensionPoint>;
+
+// @public (undocumented)
+export interface GraphQLDataloaderOptionsExtensionPoint {
   // (undocumented)
   setDataloaderOptions(options: Options<string, any>): void;
 }
 
 // @public (undocumented)
-export const graphqlYogaExtensionPoint: ExtensionPoint<GraphQLYogaExtensionPoint>;
+export const graphqlDataloaderOptionsExtensionPoint: ExtensionPoint<GraphQLDataloaderOptionsExtensionPoint>;
+
+// @public (undocumented)
+export interface GraphQLLoadersExtensionPoint {
+  // (undocumented)
+  addLoaders(loaders: Record<string, BatchLoadFn<GraphQLContext>>): void;
+}
+
+// @public (undocumented)
+export const graphqlLoadersExtensionPoint: ExtensionPoint<GraphQLLoadersExtensionPoint>;
+
+// @public (undocumented)
+export interface GraphQLModulesExtensionPoint {
+  // (undocumented)
+  addModules(
+    modules: ((() => Module | Promise<Module>) | Module | Promise<Module>)[],
+  ): void;
+}
+
+// @public (undocumented)
+export const graphqlModulesExtensionPoint: ExtensionPoint<GraphQLModulesExtensionPoint>;
+
+// @public (undocumented)
+export interface GraphQLPluginsExtensionPoint {
+  // (undocumented)
+  addPlugins(plugins: Plugin_2[]): void;
+}
+
+// @public (undocumented)
+export const graphqlPluginsExtensionPoint: ExtensionPoint<GraphQLPluginsExtensionPoint>;
+
+// @public (undocumented)
+export interface GraphQLSchemasExtensionPoint {
+  // (undocumented)
+  addSchemas(schemas: string[]): void;
+}
+
+// @public (undocumented)
+export const graphqlSchemasExtensionPoint: ExtensionPoint<GraphQLSchemasExtensionPoint>;
 
 // (No @packageDocumentation comment for this package)
 ```

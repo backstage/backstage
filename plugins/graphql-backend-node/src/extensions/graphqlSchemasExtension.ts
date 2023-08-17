@@ -13,10 +13,15 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-export * from './graphqlAppOptionsExtension';
-export * from './graphqlContextExtension';
-export * from './graphqlDataloaderOptionsExtension';
-export * from './graphqlLoadersExtension';
-export * from './graphqlModulesExtension';
-export * from './graphqlPluginsExtension';
-export * from './graphqlSchemasExtension';
+import { createExtensionPoint } from '@backstage/backend-plugin-api';
+
+/** @public */
+export interface GraphQLSchemasExtensionPoint {
+  addSchemas(schemas: string[]): void;
+}
+
+/** @public */
+export const graphqlSchemasExtensionPoint =
+  createExtensionPoint<GraphQLSchemasExtensionPoint>({
+    id: 'graphql.schemas',
+  });

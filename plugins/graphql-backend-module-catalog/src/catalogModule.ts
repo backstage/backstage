@@ -16,8 +16,8 @@
 import { createBackendModule } from '@backstage/backend-plugin-api';
 import { catalogServiceRef } from '@backstage/plugin-catalog-node/alpha';
 import {
-  graphqlApplicationExtensionPoint,
-  graphqlYogaExtensionPoint,
+  graphqlLoadersExtensionPoint,
+  graphqlModulesExtensionPoint,
 } from '@backstage/plugin-graphql-backend';
 import { createEntitiesLoadFn } from './entitiesLoadFn';
 import { CATALOG_SOURCE } from './constants';
@@ -31,12 +31,12 @@ export const graphqlModuleCatalog = createBackendModule({
     env.registerInit({
       deps: {
         catalog: catalogServiceRef,
-        graphql: graphqlApplicationExtensionPoint,
-        yoga: graphqlYogaExtensionPoint,
+        modules: graphqlModulesExtensionPoint,
+        loaders: graphqlLoadersExtensionPoint,
       },
-      async init({ catalog, graphql, yoga }) {
-        graphql.addModule(Catalog);
-        yoga.addLoader(CATALOG_SOURCE, createEntitiesLoadFn(catalog));
+      async init({ catalog, modules, loaders }) {
+        modules.addModules([Catalog]);
+        loaders.addLoaders({ [CATALOG_SOURCE]: createEntitiesLoadFn(catalog) });
       },
     });
   },

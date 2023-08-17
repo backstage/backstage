@@ -13,10 +13,18 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-export * from './graphqlAppOptionsExtension';
-export * from './graphqlContextExtension';
-export * from './graphqlDataloaderOptionsExtension';
-export * from './graphqlLoadersExtension';
-export * from './graphqlModulesExtension';
-export * from './graphqlPluginsExtension';
-export * from './graphqlSchemasExtension';
+import { createExtensionPoint } from '@backstage/backend-plugin-api';
+import { Module } from 'graphql-modules';
+
+/** @public */
+export interface GraphQLModulesExtensionPoint {
+  addModules(
+    modules: ((() => Module | Promise<Module>) | Module | Promise<Module>)[],
+  ): void;
+}
+
+/** @public */
+export const graphqlModulesExtensionPoint =
+  createExtensionPoint<GraphQLModulesExtensionPoint>({
+    id: 'graphql.modules',
+  });

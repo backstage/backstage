@@ -14,18 +14,15 @@
  * limitations under the License.
  */
 import { createExtensionPoint } from '@backstage/backend-plugin-api';
-import { Module } from 'graphql-modules';
+import { Options } from 'dataloader';
 
 /** @public */
-export interface GraphQLApplicationExtensionPoint {
-  addSchema(schema: string): void;
-  addModule(
-    module: (() => Module | Promise<Module>) | Module | Promise<Module>,
-  ): void;
+export interface GraphQLDataloaderOptionsExtensionPoint {
+  setDataloaderOptions(options: Options<string, any>): void;
 }
 
 /** @public */
-export const graphqlApplicationExtensionPoint =
-  createExtensionPoint<GraphQLApplicationExtensionPoint>({
-    id: 'graphql.application',
+export const graphqlDataloaderOptionsExtensionPoint =
+  createExtensionPoint<GraphQLDataloaderOptionsExtensionPoint>({
+    id: 'graphql.dataloaderOptions',
   });

@@ -13,26 +13,16 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import { BatchLoadFn, GraphQLContext } from '@backstage/plugin-graphql-common';
-import { Plugin } from 'graphql-yoga';
-import { Options as DataLoaderOptions } from 'dataloader';
 import { createExtensionPoint } from '@backstage/backend-plugin-api';
+import { Plugin } from 'graphql-yoga';
 
 /** @public */
-export interface GraphQLYogaExtensionPoint {
-  addPlugin(plugin: Plugin): void;
-  addLoader(name: string, loader: BatchLoadFn<GraphQLContext>): void;
-  setDataloaderOptions(options: DataLoaderOptions<string, any>): void;
-  setContext<TContext extends Record<string, any>>(
-    context:
-      | ((initialContext: GraphQLContext) => TContext | Promise<TContext>)
-      | Promise<TContext>
-      | TContext,
-  ): void;
+export interface GraphQLPluginsExtensionPoint {
+  addPlugins(plugins: Plugin[]): void;
 }
 
 /** @public */
-export const graphqlYogaExtensionPoint =
-  createExtensionPoint<GraphQLYogaExtensionPoint>({
-    id: 'graphql.yoga',
+export const graphqlPluginsExtensionPoint =
+  createExtensionPoint<GraphQLPluginsExtensionPoint>({
+    id: 'graphql.plugins',
   });

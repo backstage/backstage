@@ -6,15 +6,7 @@
 import { BackendFeature } from '@backstage/backend-plugin-api';
 
 // @public (undocumented)
-export const graphqlPlugin: (
-  options?: RouterOptions | undefined,
-) => BackendFeature;
-
-// @public (undocumented)
-export interface RouterOptions {
-  // (undocumented)
-  generateOpaqueTypes?: boolean;
-}
+export const graphqlPlugin: () => BackendFeature;
 
 export * from '@backstage/plugin-graphql-backend-node';
 ```

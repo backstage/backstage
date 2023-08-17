@@ -13,10 +13,16 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-export * from './graphqlAppOptionsExtension';
-export * from './graphqlContextExtension';
-export * from './graphqlDataloaderOptionsExtension';
-export * from './graphqlLoadersExtension';
-export * from './graphqlModulesExtension';
-export * from './graphqlPluginsExtension';
-export * from './graphqlSchemasExtension';
+import { createExtensionPoint } from '@backstage/backend-plugin-api';
+import { BatchLoadFn, GraphQLContext } from '@backstage/plugin-graphql-common';
+
+/** @public */
+export interface GraphQLLoadersExtensionPoint {
+  addLoaders(loaders: Record<string, BatchLoadFn<GraphQLContext>>): void;
+}
+
+/** @public */
+export const graphqlLoadersExtensionPoint =
+  createExtensionPoint<GraphQLLoadersExtensionPoint>({
+    id: 'graphql.loaders',
+  });
