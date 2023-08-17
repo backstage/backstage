@@ -148,7 +148,10 @@ export class AzureDevOpsEntityProvider implements EntityProvider {
 
     logger.info(`Discovered ${files.length} catalog files`);
 
-    const locations = files.map(key => this.createLocationSpec(key));
+    const targets = files.map(key => this.createObjectUrl(key));
+    const locations = Array.from(new Set(targets)).map(key =>
+      this.createLocationSpec(key),
+    );
 
     await this.connection.applyMutation({
       type: 'full',
@@ -165,9 +168,7 @@ export class AzureDevOpsEntityProvider implements EntityProvider {
     );
   }
 
-  private createLocationSpec(file: CodeSearchResultItem): LocationSpec {
-    const target = this.createObjectUrl(file);
-
+  private createLocationSpec(target: string): LocationSpec {
     return {
       type: 'url',
       target: target,
