@@ -85,6 +85,8 @@ declare a dependency on the plugin package itself. This is to avoid a direct
 dependency and potentially cause duplicate installations of the plugin package,
 while duplicate installations of library packages should always be supported.
 
+To create a Backend module, run `yarn new`, select `backend-module`, and fill out the rest of the prompts. This will create a new package at `plugins/<pluginId>-backend-module-<moduleId>`.
+
 The following is an example of how to create a module that adds a new processor
 using the `catalogProcessingExtensionPoint`:
 
