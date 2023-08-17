@@ -18,6 +18,7 @@ import { parseEntityRef } from '@backstage/catalog-model';
 import { identityApiRef, useApi } from '@backstage/core-plugin-api';
 import { humanizeEntityRef } from '@backstage/plugin-catalog-react';
 import { PlaylistMetadata } from '@backstage/plugin-playlist-common';
+import { playlistApiRef } from '../../api';
 import {
   Button,
   CircularProgress,
@@ -35,7 +36,7 @@ import {
   Select,
   TextField,
 } from '@material-ui/core';
-import React from 'react';
+import React, { useState } from 'react'; // Import useState
 import { useForm, Controller } from 'react-hook-form';
 import useAsync from 'react-use/lib/useAsync';
 import useAsyncFn from 'react-use/lib/useAsyncFn';
@@ -74,12 +75,33 @@ export const PlaylistEditDialog = ({
 }: PlaylistEditDialogProps) => {
   const classes = useStyles();
   const identityApi = useApi(identityApiRef);
+  const playlistApi = useApi(playlistApiRef);
+  const playListApiData = playlistApi.getAllPlaylists();
+
+  const [editingOtherFields, setEditingOtherFields] = useState(false);
+
+  const fetchAndProcessData = async () => {
+    const playlistArray = await playListApiData;
+    return playlistArray;
+  };
 
   const { loading: loadingOwnership, value: ownershipRefs } =
     useAsync(async () => {
       const { ownershipEntityRefs } = await identityApi.getBackstageIdentity();
       return ownershipEntityRefs;
     }, []);
+
+  const nameIsUnique = async (name: string) => {
+    const playlistArray = await fetchAndProcessData();
+    if (
+      editingOtherFields ||
+      (await playlistArray.some(
+        (playlistData: { name: string }) => playlistData.name === name,
+      ))
+    )
+      return 'A playlist with this name already exists';
+    return true;
+  };
 
   const defaultValues = {
     ...playlist,
@@ -103,6 +125,7 @@ export const PlaylistEditDialog = ({
     if (!saving.loading) {
       onClose();
       reset(defaultValues);
+      setEditingOtherFields(false);
     }
   };
 
@@ -117,13 +140,17 @@ export const PlaylistEditDialog = ({
         <Controller
           name="name"
           control={control}
-          rules={{ required: true }}
+          rules={{
+            required: true,
+            validate: editingOtherFields ? undefined : nameIsUnique,
+          }}
           render={({ field }) => (
             <TextField
               {...field}
               disabled={saving.loading}
               data-testid="edit-dialog-name-input"
               error={!!errors.name}
+              helperText={errors.name?.message}
               fullWidth
               label="Name"
               margin="dense"
@@ -147,6 +174,7 @@ export const PlaylistEditDialog = ({
               multiline
               placeholder={`Describe your ${titleSingularLowerCase}`}
               type="text"
+              onBlur={() => setEditingOtherFields(true)}
             />
           )}
         />
