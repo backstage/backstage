@@ -28,7 +28,6 @@ import {
   FormControlLabel,
   FormGroup,
   FormLabel,
-  makeStyles,
   TextField,
 } from '@material-ui/core';
 import React, { ReactNode, useState } from 'react';
@@ -60,12 +59,6 @@ export interface FeedbackResponseDialogProps {
   open: boolean;
   onClose: () => void;
 }
-
-const useStyles = makeStyles({
-  contactConsent: {
-    marginTop: '5px',
-  },
-});
 
 export const FeedbackResponseDialog = (props: FeedbackResponseDialogProps) => {
   const {
