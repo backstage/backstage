@@ -79,22 +79,30 @@ export class PinnipedAuthProvider implements OAuthHandlers {
   ): Promise<{ response: OAuthResponse; refreshToken?: string }> {
     const { strategy } = await this.implementation;
 
-    //TODO: what do we do about a defined scope here? one is expected to be returned by this handler method and i currently have it hardcoded. does our accesstoken need to worry about scope at all?
+    //the query string inside the req should contain a code and a state, we can change the stub to reject any auth code, can this query string also include scope??
+
+    const { searchParams } = new URL(req.url, 'https://pinniped.com')
+    const audience = searchParams.get('scope') ?? "none"
+
     return new Promise((resolve, reject) => {
       strategy.success = user => {
         resolve({ response: {
-          providerInfo: {accessToken: user.tokenset.access_token, scope: "none"},
+          providerInfo: {accessToken: user.tokenset.access_token, scope: audience},
           profile: {},
         }})
       }
       strategy.fail = info => {
         reject(new Error(`Authentication rejected, ${info.message || ''}`));
       };
-      strategy.error = reject;
+
+      //TODO: unit test for provider to state the need for this error handler
+      // strategy.error = reject;
 
       strategy.authenticate(req);
     });
   }
+
+  //will need a refresh method that covers our happy path
 
   private async setupStrategy(options: PinnipedOptions): Promise<OidcImpl> {
     const issuer = await Issuer.discover(

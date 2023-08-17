@@ -21,6 +21,7 @@ import { rest } from 'msw';
 import express from 'express';
 import { UnsecuredJWT } from 'jose';
 import { OAuthState } from '../../lib/oauth';
+import { EntityAzurePipelinesContent } from '@backstage/plugin-azure-devops';
 
 describe('PinnipedAuthProvider', () => {
   let provider: PinnipedAuthProvider;
@@ -136,6 +137,21 @@ describe('PinnipedAuthProvider', () => {
       expect(searchParams.get('response_type')).toBe('code');
     });
 
+    it('passes default audience as a scope parameter in the redirect url if not defined in the request', async () => {
+      const startResponse = await provider.start(startRequest)
+      const { searchParams } = new URL(startResponse.url)
+
+      expect(searchParams.get('scope')).toBe('pinniped:request-audience username')
+    })
+
+    it('passes audience as a scope parameter in the redirect url when defined in the request', async () => {
+      startRequest.scope = 'pinniped:request-audience testusername'
+      const startResponse = await provider.start(startRequest)
+      const { searchParams } = new URL(startResponse.url)
+
+      expect(searchParams.get('scope')).toBe('pinniped:request-audience testusername')
+    })
+
     it('passes client ID from config', async () => {
       const startResponse = await provider.start(startRequest);
       const { searchParams } = new URL(startResponse.url);
@@ -208,7 +224,7 @@ describe('PinnipedAuthProvider', () => {
 
       handlerRequest = {
         method: 'GET',
-        url: `https://test?code=authorization_code&state=${testState}`,
+        url: `https://test?code=authorization_code&state=${testState}&scope=pinniped:request-audience username`,
         session: {
           'oidc:pinniped.test': {
             state: testState,
@@ -263,12 +279,22 @@ describe('PinnipedAuthProvider', () => {
         'Authentication rejected, state missing from the response',
       );
     });
-
-    it.only('exchanges authorization code for a valid access_token', async() => {
+    
+    it('exchanges authorization code for a valid access_token', async() => {
       const handlerResponse = await provider.handler(handlerRequest);
       const accessToken = handlerResponse.response.providerInfo.accessToken
       
       expect(accessToken).toEqual('accessToken')
     })
+
+    it('responds with the correct audience as scope', async() => {
+      const handlerResponse = await provider.handler(handlerRequest);
+      const audience = handlerResponse.response.providerInfo.scope
+      
+      expect(audience).toEqual('pinniped:request-audience username')
+    })
+
+    //if no valid key is in the jwks array or even an unsigned jwt
+    //have pinniped reject your clientid and secret possibly as a unit test
   });
 });

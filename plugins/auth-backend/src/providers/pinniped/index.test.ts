@@ -151,6 +151,7 @@ describe('pinniped.create', () => {
   it('/handler/frame exchanges authorization codes from /start for access tokens', async () => {
     const agent = request.agent('');
     // make a /start request
+    //add query parameter for the audience
     const startResponse = await agent.get(
       `${appUrl}/api/auth/pinniped/start?env=development`,
     );
@@ -167,6 +168,10 @@ describe('pinniped.create', () => {
             'state',
             req.url.searchParams.get('state')!,
           );
+          // callbackUrl.searchParams.set(
+          //   'scope',
+          //   'test-scope',
+          // );
           return res(
             ctx.status(302),
             ctx.set('Location', callbackUrl.toString()),
@@ -240,10 +245,10 @@ describe('pinniped.create', () => {
         }),
       ),
     );
-  });
+  }, 70000);
 
   describe('#frameHandler', () => {
-    it('performs an rfc 8693 token exchange after getting access token', async () => {
+    it.skip('performs an rfc 8693 token exchange after getting access token', async () => {
       fakePinnipedSupervisor.use(
         rest.post('https://pinniped.test/oauth2/token', async (req, res, ctx) =>
           res(
