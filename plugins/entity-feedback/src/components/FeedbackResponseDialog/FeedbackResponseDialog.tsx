@@ -13,7 +13,6 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
 import { Entity, stringifyEntityRef } from '@backstage/catalog-model';
 import { Progress } from '@backstage/core-components';
 import { ErrorApiError, errorApiRef, useApi } from '@backstage/core-plugin-api';
@@ -28,7 +27,11 @@ import {
   FormControlLabel,
   FormGroup,
   FormLabel,
+  Grid,
+  makeStyles,
+  Switch,
   TextField,
+  Typography,
 } from '@material-ui/core';
 import React, { ReactNode, useState } from 'react';
 import useAsyncFn from 'react-use/lib/useAsyncFn';
@@ -60,6 +63,12 @@ export interface FeedbackResponseDialogProps {
   onClose: () => void;
 }
 
+const useStyles = makeStyles({
+  contactConsent: {
+    marginTop: '5px',
+  },
+});
+
 export const FeedbackResponseDialog = (props: FeedbackResponseDialogProps) => {
   const {
     entity,
@@ -68,6 +77,7 @@ export const FeedbackResponseDialog = (props: FeedbackResponseDialogProps) => {
     open,
     onClose,
   } = props;
+  const classes = useStyles();
   const errorApi = useApi(errorApiRef);
   const feedbackApi = useApi(entityFeedbackApiRef);
   const [responseSelections, setResponseSelections] = useState(() => {
@@ -80,6 +90,7 @@ export const FeedbackResponseDialog = (props: FeedbackResponseDialogProps) => {
     return initialSelections;
   });
   const [comments, setComments] = useState('');
+  const [consent, setConsent] = useState(true);
   const [errorMessage, setErrorMessage] = useState('');
 
   const isFormValid =
@@ -98,6 +109,7 @@ export const FeedbackResponseDialog = (props: FeedbackResponseDialogProps) => {
 
       await feedbackApi.recordResponse(stringifyEntityRef(entity), {
         comments,
+        consent,
         response: responseWithComments.join(','),
       });
       onClose();
@@ -105,7 +117,7 @@ export const FeedbackResponseDialog = (props: FeedbackResponseDialogProps) => {
       errorApi.post(e as ErrorApiError);
       setErrorMessage('An error occurred while saving the response.');
     }
-  }, [comments, entity, feedbackApi, onClose, responseSelections]);
+  }, [comments, consent, entity, feedbackApi, onClose, responseSelections]);
 
   return (
     <Dialog open={open} onClose={() => !saving && onClose()}>
@@ -150,20 +162,34 @@ export const FeedbackResponseDialog = (props: FeedbackResponseDialogProps) => {
             />
           </FormControl>
         )}
-        <DialogActions>
-          <Button color="primary" disabled={saving} onClick={onClose}>
-            Close
-          </Button>
-          <Button
-            color="primary"
-            data-testid="feedback-response-dialog-submit-button"
-            disabled={saving || !isFormValid}
-            onClick={saveResponse}
-          >
-            Submit
-          </Button>
-        </DialogActions>
+        <Typography className={classes.contactConsent}>
+          Can we reach out to you for more info?
+          <Grid component="label" container alignItems="center" spacing={1}>
+            <Grid item>No</Grid>
+            <Grid item>
+              <Switch
+                checked={consent}
+                disabled={saving}
+                onChange={e => setConsent(e.target.checked)}
+              />
+            </Grid>
+            <Grid item>Yes</Grid>
+          </Grid>
+        </Typography>
       </DialogContent>
+      <DialogActions>
+        <Button color="primary" disabled={saving} onClick={onClose}>
+          Close
+        </Button>
+        <Button
+          color="primary"
+          data-testid="feedback-response-dialog-submit-button"
+          disabled={saving || !isFormValid}
+          onClick={saveResponse}
+        >
+          Submit
+        </Button>
+      </DialogActions>
     </Dialog>
   );
 };
