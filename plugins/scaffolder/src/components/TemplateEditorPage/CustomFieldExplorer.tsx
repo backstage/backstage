@@ -104,7 +104,7 @@ export const CustomFieldExplorer = ({
   }, [customFieldExtensions]);
 
   const handleSelectionChange = useCallback(
-    selection => {
+    (selection: any) => {
       setSelectedField(selection);
       setFieldFormState({});
       setFormState({});
@@ -113,7 +113,7 @@ export const CustomFieldExplorer = ({
   );
 
   const handleFieldConfigChange = useCallback(
-    state => {
+    (state: any) => {
       setFieldFormState(state);
       setFormState({});
       // Force TemplateEditorForm to re-render since some fields
@@ -158,7 +158,7 @@ export const CustomFieldExplorer = ({
               noHtml5Validate
               formData={fieldFormState}
               formContext={{ fieldFormState }}
-              onSubmit={e => handleFieldConfigChange(e.formData)}
+              onSubmit={(e: any) => handleFieldConfigChange(e.formData)}
               schema={selectedField.schema?.uiOptions || {}}
             >
               <Button
