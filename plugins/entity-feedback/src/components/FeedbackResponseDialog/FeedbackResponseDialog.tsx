@@ -28,11 +28,8 @@ import {
   FormControlLabel,
   FormGroup,
   FormLabel,
-  Grid,
   makeStyles,
-  Switch,
   TextField,
-  Typography,
 } from '@material-ui/core';
 import React, { ReactNode, useState } from 'react';
 import useAsyncFn from 'react-use/lib/useAsyncFn';
@@ -78,7 +75,6 @@ export const FeedbackResponseDialog = (props: FeedbackResponseDialogProps) => {
     open,
     onClose,
   } = props;
-  const classes = useStyles();
   const errorApi = useApi(errorApiRef);
   const feedbackApi = useApi(entityFeedbackApiRef);
   const [responseSelections, setResponseSelections] = useState(() => {
@@ -91,7 +87,6 @@ export const FeedbackResponseDialog = (props: FeedbackResponseDialogProps) => {
     return initialSelections;
   });
   const [comments, setComments] = useState('');
-  const [consent, setConsent] = useState(true);
   const [errorMessage, setErrorMessage] = useState('');
 
   const isFormValid =
@@ -110,7 +105,6 @@ export const FeedbackResponseDialog = (props: FeedbackResponseDialogProps) => {
 
       await feedbackApi.recordResponse(stringifyEntityRef(entity), {
         comments,
-        consent,
         response: responseWithComments.join(','),
       });
       onClose();
@@ -118,7 +112,7 @@ export const FeedbackResponseDialog = (props: FeedbackResponseDialogProps) => {
       errorApi.post(e as ErrorApiError);
       setErrorMessage('An error occurred while saving the response.');
     }
-  }, [comments, consent, entity, feedbackApi, onClose, responseSelections]);
+  }, [comments, entity, feedbackApi, onClose, responseSelections]);
 
   return (
     <Dialog open={open} onClose={() => !saving && onClose()}>
