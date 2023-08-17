@@ -23,9 +23,9 @@ compound reference structure.
 
 ## String References
 
-This is the most common alternative, that is used in almost all circumstances.
+This is the most common alternative and is used in almost all circumstances.
 
-The string is on the form `[<kind>:][<namespace>/]<name>`, that is, it is
+The string is of the form `[<kind>:][<namespace>/]<name>`. That is, it is
 composed of between one and three parts in this specific order, without any
 additional encoding:
 
