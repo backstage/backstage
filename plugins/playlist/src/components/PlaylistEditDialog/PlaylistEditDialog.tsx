@@ -91,15 +91,31 @@ export const PlaylistEditDialog = ({
       return ownershipEntityRefs;
     }, []);
 
-  const nameIsUnique = async (name: string) => {
-    const playlistArray = await fetchAndProcessData();
-    if (
-      editingOtherFields ||
-      (await playlistArray.some(
-        (playlistData: { name: string }) => playlistData.name === name,
-      ))
-    )
-      return 'A playlist with this name already exists';
+  const nameIsUnique = async (
+    name: string,
+    isEditing: boolean,
+    originalName: string,
+  ) => {
+    if (!isEditing) {
+      const playlistArray = await fetchAndProcessData();
+      if (
+        playlistArray.some(
+          (playlistData: { name: string }) => playlistData.name === name,
+        )
+      ) {
+        return 'A playlist with this name already exists';
+      }
+    } else if (name !== originalName) {
+      const playlistArray = await fetchAndProcessData();
+      if (
+        playlistArray.some(
+          (playlistData: { name: string }) => playlistData.name === name,
+        )
+      ) {
+        return 'A playlist with this name already exists';
+      }
+    }
+
     return true;
   };
 
@@ -142,7 +158,8 @@ export const PlaylistEditDialog = ({
           control={control}
           rules={{
             required: true,
-            validate: editingOtherFields ? undefined : nameIsUnique,
+            validate: value =>
+              nameIsUnique(value, editingOtherFields, playlist.name),
           }}
           render={({ field }) => (
             <TextField
