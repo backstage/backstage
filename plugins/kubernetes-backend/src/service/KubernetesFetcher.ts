@@ -41,6 +41,7 @@ import {
 import fetch, { RequestInit, Response } from 'node-fetch';
 import * as https from 'https';
 import fs from 'fs-extra';
+import { JsonObject } from '@backstage/types';
 
 export interface KubernetesClientBasedFetcherOptions {
   logger: Logger;
@@ -108,8 +109,8 @@ export class KubernetesClientBasedFetcher implements KubernetesFetcher {
                     type: objectType,
                     resources:
                       objectType === 'customresources'
-                        ? items.map(i => ({
-                            ...i,
+                        ? items.map((item: JsonObject) => ({
+                            ...item,
                             kind: kind.replace(/(List)$/, ''),
                           }))
                         : items,
