@@ -30,7 +30,7 @@ import { Pod } from 'kubernetes-models/v1';
 import { ContainerCard } from './ContainerCard';
 
 import { PodAndErrors } from '../types';
-import { KubernetesDrawer } from '../../KubernetesDrawer';
+import { KubernetesDrawer } from '@backstage/plugin-kubernetes-react';
 import { PendingPodContent } from './PendingPodContent';
 import { ErrorList } from '../ErrorList';
 import { usePodMetrics } from '../../../hooks/usePodMetrics';

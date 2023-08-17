@@ -7641,6 +7641,21 @@ __metadata:
   languageName: unknown
   linkType: soft
 
+"@backstage/plugin-kubernetes-react@workspace:^, @backstage/plugin-kubernetes-react@workspace:plugins/kubernetes-react":
+  version: 0.0.0-use.local
+  resolution: "@backstage/plugin-kubernetes-react@workspace:plugins/kubernetes-react"
+  dependencies:
+    "@backstage/cli": "workspace:^"
+    "@backstage/core-plugin-api": "workspace:^"
+    "@backstage/test-utils": "workspace:^"
+    "@material-ui/core": ^4.9.13
+    "@testing-library/jest-dom": ^5.10.1
+    "@testing-library/react": ^12.1.3
+  peerDependencies:
+    react: ^16.13.1 || ^17.0.0
+  languageName: unknown
+  linkType: soft
+
 "@backstage/plugin-kubernetes@workspace:^, @backstage/plugin-kubernetes@workspace:plugins/kubernetes":
   version: 0.0.0-use.local
   resolution: "@backstage/plugin-kubernetes@workspace:plugins/kubernetes"
@@ -7655,6 +7670,7 @@ __metadata:
     "@backstage/errors": "workspace:^"
     "@backstage/plugin-catalog-react": "workspace:^"
     "@backstage/plugin-kubernetes-common": "workspace:^"
+    "@backstage/plugin-kubernetes-react": "workspace:^"
     "@backstage/test-utils": "workspace:^"
     "@backstage/theme": "workspace:^"
     "@backstage/types": "workspace:^"

@@ -471,10 +471,13 @@ export const KubernetesContent: ({
   refreshIntervalMs,
 }: KubernetesContentProps) => React_2.JSX.Element;
 
+// Warning: (tsdoc-at-sign-in-word) The "@" character looks like part of a TSDoc tag; use a backslash to escape it
+// Warning: (tsdoc-escape-right-brace) The "}" character should be escaped using a backslash to avoid confusion with a TSDoc inline tag
+// Warning: (tsdoc-malformed-inline-tag) Expecting a TSDoc tag starting with "{@"
 // Warning: (ae-forgotten-export) The symbol "KubernetesDrawerProps" needs to be exported by the entry point index.d.ts
 // Warning: (ae-missing-release-tag) "KubernetesDrawer" is part of the package's API, but it is missing a release tag (@alpha, @beta, @public, or @internal)
 //
-// @public (undocumented)
+// @public @deprecated (undocumented)
 export const KubernetesDrawer: ({
   open,
   label,
@@ -483,10 +486,13 @@ export const KubernetesDrawer: ({
   children,
 }: KubernetesDrawerProps) => React_2.JSX.Element;
 
+// Warning: (tsdoc-at-sign-in-word) The "@" character looks like part of a TSDoc tag; use a backslash to escape it
+// Warning: (tsdoc-escape-right-brace) The "}" character should be escaped using a backslash to avoid confusion with a TSDoc inline tag
+// Warning: (tsdoc-malformed-inline-tag) Expecting a TSDoc tag starting with "{@"
 // Warning: (ae-forgotten-export) The symbol "KubernetesDrawerContentProps" needs to be exported by the entry point index.d.ts
 // Warning: (ae-missing-release-tag) "KubernetesDrawerContent" is part of the package's API, but it is missing a release tag (@alpha, @beta, @public, or @internal)
 //
-// @public (undocumented)
+// @public @deprecated (undocumented)
 export const KubernetesDrawerContent: ({
   children,
   header,
@@ -576,11 +582,14 @@ export class KubernetesProxyClient {
   }>;
 }
 
+// Warning: (tsdoc-at-sign-in-word) The "@" character looks like part of a TSDoc tag; use a backslash to escape it
+// Warning: (tsdoc-escape-right-brace) The "}" character should be escaped using a backslash to avoid confusion with a TSDoc inline tag
+// Warning: (tsdoc-malformed-inline-tag) Expecting a TSDoc tag starting with "{@"
 // Warning: (ae-forgotten-export) The symbol "KubernetesDrawerable" needs to be exported by the entry point index.d.ts
 // Warning: (ae-forgotten-export) The symbol "KubernetesStructuredMetadataTableDrawerProps" needs to be exported by the entry point index.d.ts
 // Warning: (ae-missing-release-tag) "KubernetesStructuredMetadataTableDrawer" is part of the package's API, but it is missing a release tag (@alpha, @beta, @public, or @internal)
 //
-// @public (undocumented)
+// @public @deprecated (undocumented)
 export const KubernetesStructuredMetadataTableDrawer: <
   T extends KubernetesDrawerable,
 >({

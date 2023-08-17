@@ -40,7 +40,7 @@ import { ClusterContext } from '../../hooks';
 import { formatClusterLink } from '../../utils/clusterLinks';
 import { ClusterAttributes } from '@backstage/plugin-kubernetes-common';
 import { FormatClusterLinkOptions } from '../../utils/clusterLinks/formatClusterLink';
-import { ManifestYaml } from './ManifestYaml';
+import { ManifestYaml } from '@backstage/plugin-kubernetes-react';
 
 const useDrawerStyles = makeStyles((theme: Theme) =>
   createStyles({
@@ -91,7 +91,6 @@ type ErrorPanelProps = {
   errorMessage?: string;
   children?: React.ReactNode;
 };
-
 export const LinkErrorPanel = ({ cluster, errorMessage }: ErrorPanelProps) => (
   <WarningPanel
     title="There was a problem formatting the link to the Kubernetes dashboard"
@@ -245,6 +244,10 @@ interface KubernetesStructuredMetadataTableDrawerProps<
   children?: React.ReactNode;
 }
 
+/**
+ *
+ * @public @deprecated use import { KubernetesDrawer } from '@backstage/kubernetes-react'
+ */
 export const KubernetesStructuredMetadataTableDrawer = <
   T extends KubernetesDrawerable,
 >({

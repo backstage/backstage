@@ -1,5 +1,5 @@
 /*
- * Copyright 2022 The Backstage Authors
+ * Copyright 2020 The Backstage Authors
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -13,5 +13,8 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+import { ClusterLinksFormatterOptions } from '../../../types/types';
 
-export * from './KubernetesStructuredMetadataTableDrawer';
+export function eksFormatter(_options: ClusterLinksFormatterOptions): URL {
+  throw new Error('EKS formatter is not yet implemented. Please, contribute!');
+}

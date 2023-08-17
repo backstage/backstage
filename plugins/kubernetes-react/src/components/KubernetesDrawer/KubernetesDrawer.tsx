@@ -48,7 +48,12 @@ const useDrawerContentStyles = makeStyles((_theme: Theme) =>
   }),
 );
 
-interface KubernetesObject {
+/**
+ * The type of object that can be represented by the Drawer
+ *
+ * @public
+ */
+export interface KubernetesObject {
   kind: string;
   metadata?: IObjectMeta;
 }
@@ -60,7 +65,7 @@ interface KubernetesDrawerContentProps {
   children?: React.ReactNode;
 }
 
-export const KubernetesDrawerContent = ({
+const KubernetesDrawerContent = ({
   children,
   header,
   kubernetesObject,
@@ -115,7 +120,12 @@ export const KubernetesDrawerContent = ({
   );
 };
 
-interface KubernetesDrawerProps {
+/**
+ * Props of KubernetesDrawer
+ *
+ * @public
+ */
+export interface KubernetesDrawerProps {
   open?: boolean;
   kubernetesObject: KubernetesObject;
   label: React.ReactNode;
@@ -142,6 +152,11 @@ const DrawerButton = withStyles({
   },
 })(Button);
 
+/**
+ * Button/Drawer component for Kubernetes Objects
+ *
+ * @public
+ */
 export const KubernetesDrawer = ({
   open,
   label,

@@ -18,10 +18,20 @@ import { FormControlLabel, Switch } from '@material-ui/core';
 import jsyaml from 'js-yaml';
 import React, { useState } from 'react';
 
+/**
+ * Props of ManifestYaml
+ *
+ * @public
+ */
 export interface ManifestYamlProps {
   object: object;
 }
 
+/**
+ * Renders a Kubernetes object as a YAML code snippet
+ *
+ * @public
+ */
 export const ManifestYaml = ({ object }: ManifestYamlProps) => {
   // Toggle whether the Kubernetes resource managed fields should be shown in
   // the YAML display. This toggle is only available when the YAML is being
