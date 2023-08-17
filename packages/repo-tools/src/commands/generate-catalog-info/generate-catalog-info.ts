@@ -149,9 +149,8 @@ function fixCatalogInfoYaml(options: FixOptions) {
   const badName = yamlJson.metadata.name !== safeName;
   const badType =
     yamlJson.spec?.type !== `backstage-${packageJson.backstage.role}`;
-  const badDesc = yamlJson.metadata.description !== packageJson.description;
 
-  if (badOwner || badTitle || badName || badType || badDesc) {
+  if (badOwner || badTitle || badName || badType) {
     const owner = badOwner
       ? getOwnerFromCodeowners(codeowners, yamlPath)
       : yamlJson.spec?.owner;
