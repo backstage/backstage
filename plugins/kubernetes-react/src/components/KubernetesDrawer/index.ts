@@ -15,5 +15,8 @@
  */
 
 export * from './KubernetesStructuredMetadataTableDrawer';
+<<<<<<<< HEAD:plugins/kubernetes-react/src/components/KubernetesDrawer/index.ts
 export * from './KubernetesDrawer';
 export * from './ManifestYaml';
+========
+>>>>>>>> b17da43891f7 (refactor: k8s plugins):plugins/kubernetes/src/components/KubernetesDrawer/index.ts
