@@ -24,7 +24,11 @@ exports.up = async function up(knex) {
     table.comment(
       'A cache of static assets that where previously deployed and may still be lazy-loaded by clients',
     );
-    table.text('path').primary().notNullable().comment('The path of the file');
+    table
+      .text('path', 'text')
+      .unique()
+      .notNullable()
+      .comment('The path of the file');
     table
       .dateTime('last_modified_at')
       .defaultTo(knex.fn.now())
