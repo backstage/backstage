@@ -53,6 +53,7 @@ import React, {
 
 import { SelectProps } from '../Select/Select';
 import { Filter, Filters, SelectedFilters, Without } from './Filters';
+import CircularProgress from '@material-ui/core/CircularProgress';
 
 // Material-table is not using the standard icons available in in material-ui. https://github.com/mbrn/material-table/issues/51
 const tableIcons: Icons = {
@@ -236,6 +237,7 @@ export interface TableProps<T extends object = {}>
   filters?: TableFilter[];
   initialState?: TableState;
   emptyContent?: ReactNode;
+  isLoading?: boolean;
   onStateChange?: (state: TableState) => any;
 }
 
@@ -309,6 +311,7 @@ export function Table<T extends object = {}>(props: TableProps<T>) {
     emptyContent,
     onStateChange,
     components,
+    isLoading: isLoading,
     ...restProps
   } = props;
   const tableClasses = useTableStyles();
@@ -470,6 +473,28 @@ export function Table<T extends object = {}>(props: TableProps<T>) {
   const columnCount = columns.length;
   const Body = useCallback(
     bodyProps => {
+      if (isLoading) {
+        return (
+          <tbody data-testid="loading-indicator">
+            <tr>
+              <td colSpan={columnCount}>
+                <Box
+                  sx={{
+                    display: 'flex',
+                    justifyContent: 'center',
+                    alignItems: 'center',
+                    width: '100%',
+                    minHeight: '15rem',
+                  }}
+                >
+                  <CircularProgress size="5rem" />
+                </Box>
+              </td>
+            </tr>
+          </tbody>
+        );
+      }
+
       if (emptyContent && hasNoRows) {
         return (
           <tbody>
@@ -482,7 +507,7 @@ export function Table<T extends object = {}>(props: TableProps<T>) {
 
       return <MTableBody {...bodyProps} />;
     },
-    [hasNoRows, emptyContent, columnCount],
+    [hasNoRows, emptyContent, columnCount, isLoading],
   );
 
   return (
