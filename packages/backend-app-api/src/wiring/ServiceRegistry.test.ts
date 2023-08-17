@@ -425,6 +425,66 @@ describe('ServiceRegistry', () => {
     );
   });
 
+  it('should throw if there are circular dependencies', async () => {
+    const refA = createServiceRef<string>({ id: 'a' });
+    const refB = createServiceRef<string>({ id: 'b' });
+    const refC = createServiceRef<string>({ id: 'c' });
+
+    const factoryA = createServiceFactory({
+      service: refA,
+      deps: { b: refB, c: refC },
+      factory: async ({ b, c }) => b + c,
+    });
+
+    const factoryB = createServiceFactory({
+      service: refB,
+      deps: {},
+      factory: async () => 'b',
+    });
+
+    const factoryC = createServiceFactory({
+      service: refC,
+      deps: { a: refA },
+      factory: async ({ a }) => a,
+    });
+
+    const registry = new ServiceRegistry([factoryA(), factoryB(), factoryC()]);
+
+    await expect(registry.get(refC, 'catalog')).rejects.toThrow(
+      "Failed to instantiate service 'c' for 'catalog' because of the following circular dependency: 'a' -> 'c' -> 'a'",
+    );
+  });
+
+  it('should not infinitely loop if there are circular dependencies where not all nodes are in the cycle', async () => {
+    const refA = createServiceRef<string>({ id: 'a' });
+    const refB = createServiceRef<string>({ id: 'b' });
+    const refC = createServiceRef<string>({ id: 'c' });
+
+    const factoryA = createServiceFactory({
+      service: refA,
+      deps: { b: refB },
+      factory: async ({ b }) => b,
+    });
+
+    const factoryB = createServiceFactory({
+      service: refB,
+      deps: { c: refC },
+      factory: async ({ c }) => c,
+    });
+
+    const factoryC = createServiceFactory({
+      service: refC,
+      deps: { b: refB },
+      factory: async ({ b }) => b,
+    });
+
+    const registry = new ServiceRegistry([factoryA(), factoryB(), factoryC()]);
+
+    await expect(registry.get(refA, 'catalog')).rejects.toThrow(
+      "Failed to instantiate service 'a' for 'catalog' because of the following circular dependency: 'b' -> 'c' -> 'b'",
+    );
+  });
+
   it('should decorate error messages thrown by the top-level factory function', async () => {
     const myFactory = createServiceFactory({
       service: ref1,

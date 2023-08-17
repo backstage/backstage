@@ -25,6 +25,7 @@ import { EnumerableServiceHolder } from './types';
 // Direct internal import to avoid duplication
 // eslint-disable-next-line @backstage/no-forbidden-package-imports
 import { InternalServiceFactory } from '@backstage/backend-plugin-api/src/services/system/types';
+import { DependencyGraph } from '../lib/DependencyGraph';
 /**
  * Keep in sync with `@backstage/backend-plugin-api/src/services/system/types.ts`
  * @internal
@@ -147,36 +148,21 @@ export class ServiceRegistry implements EnumerableServiceHolder {
   }
 
   #checkForCircularDeps(factory: InternalServiceFactory, pluginId: string) {
-    const head = factory;
+    const tree = DependencyGraph.fromIterable(
+      Array.from(this.#providedFactories).map(
+        ([serviceId, serviceFactory]) => ({
+          value: { serviceId, serviceFactory },
+          provides: [serviceId],
+          consumes: serviceFactory ? Object.keys(serviceFactory.deps) : [],
+        }),
+      ),
+    );
+    const circular = tree.detectCircularDependency();
 
-    const nodes = Object.values(factory.deps);
-
-    const depChain: Array<ServiceRef<unknown, 'plugin' | 'root'>> = [
-      head.service,
-    ];
-
-    let node = nodes.shift();
-
-    if (node) {
-      depChain.push(node);
-    }
-
-    while (!!node && node.id !== head.service.id) {
-      const nodeFactory = this.#providedFactories.get(node.id);
-      const nodeDeps = nodeFactory?.deps;
-      if (nodeDeps) {
-        nodes.unshift(...Object.values(nodeDeps));
-      }
-      node = nodes.shift();
-      if (node) {
-        depChain.push(node);
-      }
-    }
-
-    const isCircular = node?.id === head.service.id;
-
-    if (isCircular) {
-      const circularDepChain = depChain.map(r => `'${r.id}'`).join(' -> ');
+    if (circular) {
+      const circularDepChain = circular
+        .map(({ serviceId }) => `'${serviceId}'`)
+        .join(' -> ');
       throw new Error(
         `Failed to instantiate service '${factory.service.id}' for '${pluginId}' because of the following circular dependency: ${circularDepChain}`,
       );
