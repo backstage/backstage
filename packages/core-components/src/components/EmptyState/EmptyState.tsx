@@ -52,7 +52,7 @@ type Props = {
  * @public
  *
  */
-export function EmptyState(props: Props) {
+export function EmptyState(props: Props): JSX.Element {
   const { title, description, missing, action } = props;
   const classes = useStyles();
   return (
