@@ -76,7 +76,7 @@ export const PlaylistEditDialog = ({
   const classes = useStyles();
   const identityApi = useApi(identityApiRef);
   const playlistApi = useApi(playlistApiRef);
-  const playListApiData = playlistApi.getAllPlaylists();
+  const playListApiData = playlistApi.getAllPlaylists({ editable: true });
 
   const [editingOtherFields, setEditingOtherFields] = useState(false);
 
