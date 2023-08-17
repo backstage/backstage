@@ -351,6 +351,7 @@ describe('KubernetesFetcher', () => {
           res(
             checkToken(req, ctx, 'token'),
             withLabels(req, ctx, {
+              kind: 'PodList',
               items: [{ metadata: { name: 'pod-name' } }],
             }),
           ),
@@ -359,6 +360,7 @@ describe('KubernetesFetcher', () => {
           res(
             checkToken(req, ctx, 'token'),
             withLabels(req, ctx, {
+              kind: 'ServiceList',
               items: [{ metadata: { name: 'service-name' } }],
             }),
           ),
@@ -369,6 +371,7 @@ describe('KubernetesFetcher', () => {
             res(
               checkToken(req, ctx, 'token'),
               withLabels(req, ctx, {
+                kind: 'ThingList',
                 items: [{ metadata: { name: 'something-else' } }],
               }),
             ),
@@ -424,6 +427,7 @@ describe('KubernetesFetcher', () => {
             type: 'customresources',
             resources: [
               {
+                kind: 'Thing',
                 metadata: {
                   name: 'something-else',
                   labels: { 'backstage.io/kubernetes-id': 'some-service' },

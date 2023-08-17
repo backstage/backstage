@@ -104,9 +104,15 @@ export class KubernetesClientBasedFetcher implements KubernetesFetcher {
           (r: Response): Promise<FetchResult> =>
             r.ok
               ? r.json().then(
-                  ({ items }): FetchResponse => ({
+                  ({ kind, items }): FetchResponse => ({
                     type: objectType,
-                    resources: items,
+                    resources:
+                      objectType === 'customresources'
+                        ? items.map(i => ({
+                            ...i,
+                            kind: kind.replace(/(List)$/, ''),
+                          }))
+                        : items,
                   }),
                 )
               : this.handleUnsuccessfulResponse(params.clusterDetails.name, r),
