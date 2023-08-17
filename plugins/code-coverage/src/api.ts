@@ -20,10 +20,13 @@ import {
 } from '@backstage/catalog-model';
 import { ResponseError } from '@backstage/errors';
 import { JsonCodeCoverage, JsonCoverageHistory } from './types';
-import { createApiRef, DiscoveryApi } from '@backstage/core-plugin-api';
+import {
+  createApiRef,
+  DiscoveryApi,
+  IdentityApi,
+} from '@backstage/core-plugin-api';
 
 export type CodeCoverageApi = {
-  discovery: DiscoveryApi;
   getCoverageForEntity: (
     entity: CompoundEntityRef,
   ) => Promise<JsonCodeCoverage>;
@@ -42,18 +45,29 @@ export const codeCoverageApiRef = createApiRef<CodeCoverageApi>({
 });
 
 export class CodeCoverageRestApi implements CodeCoverageApi {
-  url: string = '';
+  private readonly discoveryApi: DiscoveryApi;
+  private readonly identityApi: IdentityApi;
 
-  constructor(public discovery: DiscoveryApi) {}
+  private url: string = '';
+
+  public constructor(options: {
+    discoveryApi: DiscoveryApi;
+    identityApi: IdentityApi;
+  }) {
+    this.discoveryApi = options.discoveryApi;
+    this.identityApi = options.identityApi;
+  }
 
   private async fetch<T = unknown | string | JsonCoverageHistory>(
     path: string,
-    init?: RequestInit,
   ): Promise<T | string> {
     if (!this.url) {
-      this.url = await this.discovery.getBaseUrl('code-coverage');
+      this.url = await this.discoveryApi.getBaseUrl('code-coverage');
     }
-    const resp = await fetch(`${this.url}${path}`, init);
+    const { token } = await this.identityApi.getCredentials();
+    const resp = await fetch(`${this.url}${path}`, {
+      headers: token ? { Authorization: `Bearer ${token}` } : {},
+    });
     if (!resp.ok) {
       throw await ResponseError.fromResponse(resp);
     }
