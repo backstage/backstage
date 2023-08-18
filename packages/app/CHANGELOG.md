@@ -1,5 +1,19 @@
 # example-app
 
+## 0.2.87
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/plugin-api-docs@0.9.8
+  - @internal/plugin-catalog-customized@0.0.14
+  - @backstage/plugin-catalog-graph@0.2.33
+  - @backstage/plugin-explore@0.4.7
+  - @backstage/plugin-org@0.6.11
+  - @backstage/plugin-scaffolder@1.14.2
+  - @backstage/plugin-scaffolder-react@1.5.2
+  - @backstage/plugin-techdocs-module-addons-contrib@1.0.16
+
 ## 0.2.86
 
 ### Patch Changes
