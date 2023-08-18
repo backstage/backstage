@@ -38,10 +38,64 @@ export const entityPresentationApiRef: ApiRef<EntityPresentationApi> =
  * @public
  */
 export interface EntityRefPresentationSnapshot {
+  /**
+   * The ref to the entity that this snapshot represents.
+   *
+   * @remarks
+   *
+   * Note that when the input data was broken or had missing vital pieces of
+   * information, this string may contain placeholders such as "unknown". You
+   * can therefore not necessarily assume that the ref is completely valid and
+   * usable for example for forming a clickable link to the entity.
+   */
   entityRef: string;
+  /**
+   * The entity that this snapshot represents.
+   *
+   * @remarks
+   *
+   * Note that this may be a partial entity, i.e. it may not contain all of the
+   * fields that the kind at hand normally contains, since the input to the
+   * representation renderer might have been a partial entity. So be careful
+   * when accessing fields on this.
+   */
   entity?: Entity | undefined;
+  /**
+   * A string that can be used as a plain representation of the entity, for
+   * example in a header or a link.
+   *
+   * @remarks
+   *
+   * The title may be short and not contain all of the information that the
+   * entity holds. When rendering the primary title, you may also want to
+   * make sure to add more contextual information nearby such as the icon or
+   * secondary title, since the primary could for example just be the
+   * `metadata.name` of tne entity which might be ambiguous to the reader.
+   */
   primaryTitle: string;
+  /**
+   * Optionally, some additional textual information about the entity, to be
+   * used as a clarification on top of the primary title.
+   *
+   * @remarks
+   *
+   * This text can for example be rendered in a tooltip or be used as a
+   * subtitle. It may not be sufficient to display on its own; it should
+   * typically be used in conjunction with the primary title. It can contain
+   * such information as the entity ref and/or a `spec.type` etc.
+   */
   secondaryTitle?: string;
+  /**
+   * Optionally, an icon that represents the kind/type of entity.
+   *
+   * @remarks
+   *
+   * This icon should ideally be easily recognizable as the kind of entity, and
+   * be used consistently throughout the Backstage interface. It can be rendered
+   * both in larger formats such as in a header, or in smaller formats such as
+   * inline with regular text, so bear in mind that the legibility should be
+   * high in both cases.
+   */
   Icon?: IconComponent | undefined;
 }
 
