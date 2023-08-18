@@ -3514,6 +3514,8 @@ __metadata:
     supertest: ^6.1.3
     testcontainers: ^8.1.2
     uuid: ^8.0.0
+  peerDependencies:
+    "@types/jest": "*"
   languageName: unknown
   linkType: soft
 

@@ -14,12 +14,8 @@
  * limitations under the License.
  */
 
-import {
-  coreServices,
-  createBackendModule,
-  createServiceFactory,
-} from '@backstage/backend-plugin-api';
-import { startTestBackend } from '@backstage/backend-test-utils';
+import { createBackendModule } from '@backstage/backend-plugin-api';
+import { mockServices, startTestBackend } from '@backstage/backend-test-utils';
 import { catalogProcessingExtensionPoint } from '@backstage/plugin-catalog-node/alpha';
 import { IncrementalEntityProvider } from '../types';
 import {
@@ -40,18 +36,15 @@ describe('catalogModuleIncrementalIngestionEntityProvider', () => {
     };
 
     const addEntityProvider = jest.fn();
-    const httpRouterUse = jest.fn();
+
+    const httpRouterMock = mockServices.httpRouter.mock();
 
     await startTestBackend({
       extensionPoints: [
         [catalogProcessingExtensionPoint, { addEntityProvider }],
       ],
       features: [
-        createServiceFactory({
-          service: coreServices.httpRouter,
-          deps: {},
-          factory: () => ({ use: httpRouterUse }),
-        }),
+        httpRouterMock.factory,
         catalogModuleIncrementalIngestionEntityProvider(),
         createBackendModule({
           pluginId: 'catalog',
@@ -79,6 +72,6 @@ describe('catalogModuleIncrementalIngestionEntityProvider', () => {
     expect(addEntityProvider.mock.calls[0][0].getProviderName()).toBe(
       'provider1',
     );
-    expect(httpRouterUse).toHaveBeenCalledTimes(1);
+    expect(httpRouterMock.use).toHaveBeenCalledTimes(1);
   });
 });

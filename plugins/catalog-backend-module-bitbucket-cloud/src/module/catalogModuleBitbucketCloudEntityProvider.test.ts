@@ -14,14 +14,7 @@
  * limitations under the License.
  */
 
-import {
-  coreServices,
-  createServiceFactory,
-} from '@backstage/backend-plugin-api';
-import {
-  PluginTaskScheduler,
-  TaskScheduleDefinition,
-} from '@backstage/backend-tasks';
+import { TaskScheduleDefinition } from '@backstage/backend-tasks';
 import { startTestBackend, mockServices } from '@backstage/backend-test-utils';
 import { catalogProcessingExtensionPoint } from '@backstage/plugin-catalog-node/alpha';
 import { eventsExtensionPoint } from '@backstage/plugin-events-node/alpha';
@@ -46,12 +39,12 @@ describe('catalogModuleBitbucketCloudEntityProvider', () => {
       },
     };
     const runner = jest.fn();
-    const scheduler = {
-      createScheduledTaskRunner: (schedule: TaskScheduleDefinition) => {
+    const scheduler = mockServices.scheduler.mock({
+      createScheduledTaskRunner(schedule) {
         usedSchedule = schedule;
-        return runner;
+        return { run: runner };
       },
-    } as unknown as PluginTaskScheduler;
+    });
 
     await startTestBackend({
       extensionPoints: [
@@ -75,11 +68,7 @@ describe('catalogModuleBitbucketCloudEntityProvider', () => {
             },
           },
         }),
-        createServiceFactory({
-          service: coreServices.scheduler,
-          deps: {},
-          factory: async () => scheduler,
-        }),
+        scheduler.factory,
       ],
     });
 

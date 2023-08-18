@@ -57,6 +57,9 @@
     "testcontainers": "^8.1.2",
     "uuid": "^8.0.0"
   },
+  "peerDependencies": {
+    "@types/jest": "*"
+  },
   "devDependencies": {
     "@backstage/cli": "workspace:^",
     "@types/supertest": "^2.0.8",
