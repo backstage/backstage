@@ -1356,6 +1356,8 @@ export interface TableProps<T extends object = {}>
   // (undocumented)
   initialState?: TableState;
   // (undocumented)
+  isLoading?: boolean;
+  // (undocumented)
   onStateChange?: (state: TableState) => any;
   // (undocumented)
   subtitle?: string;
