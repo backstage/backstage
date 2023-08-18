@@ -23,7 +23,7 @@ import { JsonCodeCoverage, JsonCoverageHistory } from './types';
 import {
   createApiRef,
   DiscoveryApi,
-  IdentityApi,
+  FetchApi,
 } from '@backstage/core-plugin-api';
 
 export type CodeCoverageApi = {
@@ -46,16 +46,16 @@ export const codeCoverageApiRef = createApiRef<CodeCoverageApi>({
 
 export class CodeCoverageRestApi implements CodeCoverageApi {
   private readonly discoveryApi: DiscoveryApi;
-  private readonly identityApi: IdentityApi;
+  private readonly fetchApi: FetchApi;
 
   private url: string = '';
 
   public constructor(options: {
     discoveryApi: DiscoveryApi;
-    identityApi: IdentityApi;
+    fetchApi: FetchApi;
   }) {
     this.discoveryApi = options.discoveryApi;
-    this.identityApi = options.identityApi;
+    this.fetchApi = options.fetchApi;
   }
 
   private async fetch<T = unknown | string | JsonCoverageHistory>(
@@ -64,10 +64,7 @@ export class CodeCoverageRestApi implements CodeCoverageApi {
     if (!this.url) {
       this.url = await this.discoveryApi.getBaseUrl('code-coverage');
     }
-    const { token } = await this.identityApi.getCredentials();
-    const resp = await fetch(`${this.url}${path}`, {
-      headers: token ? { Authorization: `Bearer ${token}` } : {},
-    });
+    const resp = await this.fetchApi.fetch(`${this.url}${path}`);
     if (!resp.ok) {
       throw await ResponseError.fromResponse(resp);
     }

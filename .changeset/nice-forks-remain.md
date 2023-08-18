@@ -2,4 +2,4 @@
 '@backstage/plugin-code-coverage': patch
 ---
 
-Include authorization token (if one exists) when fetching code-coverage data
+Use fetchApi to ensure authorization is used when fetching code-coverage data
