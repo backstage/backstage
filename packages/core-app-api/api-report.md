@@ -538,10 +538,10 @@ export type OAuth2Session = {
     idToken: string;
     accessToken: string;
     scopes: Set<string>;
-    expiresAt: Date;
+    expiresAt?: Date;
   };
   profile: ProfileInfo;
-  backstageIdentity: BackstageIdentityResponse;
+  backstageIdentity?: BackstageIdentityResponse;
 };
 
 // @public

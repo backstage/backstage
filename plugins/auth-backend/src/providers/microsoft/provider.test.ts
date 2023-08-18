@@ -30,6 +30,10 @@ describe('MicrosoftAuthProvider', () => {
   const state = Buffer.from(
     `nonce=${encodeURIComponent(nonce)}&env=development`,
   ).toString('hex');
+  const mockBackstageToken = `header.${Buffer.from(
+    JSON.stringify({ sub: 'user:default/mock' }),
+    'utf8',
+  ).toString('base64')}.backstage`;
 
   const server = setupServer();
   const microsoftApi = new FakeMicrosoftAPI();
@@ -64,10 +68,9 @@ describe('MicrosoftAuthProvider', () => {
       resolverContext: {
         issueToken: jest.fn(),
         findCatalogUser: jest.fn(),
-        signInWithCatalogUser: _ =>
-          Promise.resolve({
-            token: 'header.e30K.backstage',
-          }),
+        signInWithCatalogUser: async _ => ({
+          token: mockBackstageToken,
+        }),
       } as AuthResolverContext,
     }) as AuthProviderRouteHandlers;
 
@@ -209,8 +212,12 @@ describe('MicrosoftAuthProvider', () => {
                   displayName: 'Conrad',
                 },
                 backstageIdentity: {
-                  token: 'header.e30K.backstage',
-                  identity: { type: 'user', ownershipEntityRefs: [] },
+                  token: mockBackstageToken,
+                  identity: {
+                    type: 'user',
+                    userEntityRef: 'user:default/mock',
+                    ownershipEntityRefs: [],
+                  },
                 },
               },
             }),
@@ -330,8 +337,12 @@ describe('MicrosoftAuthProvider', () => {
                   displayName: 'Conrad',
                 },
                 backstageIdentity: {
-                  token: 'header.e30K.backstage',
-                  identity: { type: 'user', ownershipEntityRefs: [] },
+                  token: mockBackstageToken,
+                  identity: {
+                    type: 'user',
+                    userEntityRef: 'user:default/mock',
+                    ownershipEntityRefs: [],
+                  },
                 },
               },
             }),
@@ -430,7 +441,7 @@ describe('MicrosoftAuthProvider', () => {
       expect(response.json).toHaveBeenCalledWith(
         expect.objectContaining({
           backstageIdentity: expect.objectContaining({
-            token: 'header.e30K.backstage',
+            token: mockBackstageToken,
           }),
         }),
       );

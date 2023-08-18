@@ -214,6 +214,7 @@ export type BackstageIdentityApi = {
 // @public
 export type BackstageIdentityResponse = {
   token: string;
+  expiresAt?: Date;
   identity: BackstageUserIdentity;
 };
 

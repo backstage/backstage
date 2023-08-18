@@ -44,6 +44,11 @@ export interface BackstageSignInResult {
  */
 export interface BackstageIdentityResponse extends BackstageSignInResult {
   /**
+   * The number of seconds until the token expires. If not set, it can be assumed that the token does not expire.
+   */
+  expiresInSeconds?: number;
+
+  /**
    * A plaintext description of the identity that is encapsulated within the token.
    */
   identity: BackstageUserIdentity;
