@@ -27,9 +27,7 @@ import {
 } from '@material-ui/core';
 import React, { useState } from 'react';
 import { ComponentsGrid } from './ComponentsGrid';
-import { type RelationType, DefaultRelationType } from './useGetEntities';
-
-export { type RelationType, DefaultRelationType } from './useGetEntities';
+import { DefaultRelationType, RelationType } from './types';
 
 const useStyles = makeStyles(theme => ({
   list: {

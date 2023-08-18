@@ -33,7 +33,8 @@ import {
 import React from 'react';
 import pluralize from 'pluralize';
 import { catalogIndexRouteRef } from '../../../routes';
-import { RelationType, useGetEntities } from './useGetEntities';
+import { useGetEntities } from './useGetEntities';
+import { RelationType } from './types';
 
 const useStyles = makeStyles((theme: BackstageTheme) =>
   createStyles({

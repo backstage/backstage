@@ -41,10 +41,12 @@ const givenUserEntity = {
   },
 } as Partial<Entity> as Entity;
 
-const catalogApiMock: Pick<CatalogApi, 'getEntities' | 'getEntityByRef'> = {
+const catalogApiMock: Pick<CatalogApi, 'getEntities' | 'getEntitiesByRefs'> = {
   getEntities: jest.fn(async () => Promise.resolve({ items: [] })),
-  getEntityByRef: jest.fn(async ({ name }: CompoundEntityRef) =>
-    name === givenParentGroup ? givenParentGroupEntity : givenLeafGroupEntity,
+  getEntitiesByRefs: jest.fn(async ({ entityRefs: [ref] }) =>
+    ref.includes(givenParentGroup)
+      ? { items: [givenParentGroupEntity] }
+      : { items: [givenLeafGroupEntity] },
   ),
 };
 

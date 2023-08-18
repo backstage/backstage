@@ -31,6 +31,7 @@ import limiterFactory from 'p-limit';
 import { useApi } from '@backstage/core-plugin-api';
 import useAsync from 'react-use/lib/useAsync';
 import qs from 'qs';
+import { RelationType } from './types';
 
 const limiter = limiterFactory(10);
 
@@ -92,13 +93,14 @@ const getChildOwnershipEntityRefs = async (
   const hasChildGroups = childGroups.length > 0;
 
   if (hasChildGroups) {
-    const childGroupEntities = (
-      await Promise.all(
-        childGroups.map(childGroup =>
-          limiter(() => catalogApi.getEntityByRef(childGroup)),
-        ),
-      )
-    ).filter(isEntity);
+    const entityRefs = childGroups.map(
+      ({ kind, namespace, name }) => `${kind}:${namespace}/${name}`,
+    );
+    const childGroupResponse = await catalogApi.getEntitiesByRefs({
+      fields: ['kind', 'metadata.namespace', 'metadata.name'],
+      entityRefs,
+    });
+    const childGroupEntities = childGroupResponse.items.filter(isEntity);
 
     return (
       await Promise.all(
@@ -147,16 +149,6 @@ const getOwners = async (
 
   return owners;
 };
-
-/** @public */
-export const DefaultRelationType = {
-  Direct: 'direct',
-  Aggregated: 'aggregated',
-} as const;
-
-/** @public */
-export type RelationType =
-  (typeof DefaultRelationType)[keyof typeof DefaultRelationType];
 
 const getOwnedEntitiesByOwners = (
   owners: string[],
