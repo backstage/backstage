@@ -434,17 +434,14 @@ async function dropDB(database: string, client: string) {
   try {
     if (client === 'postgres') {
       const config = {
-        host: process.env.POSTGRES_HOST ? process.env.POSTGRES_HOST : '',
-        port: process.env.POSTGRES_PORT ? process.env.POSTGRES_PORT : '',
-        user: process.env.POSTGRES_USER ? process.env.POSTGRES_USER : '',
-        password: process.env.POSTGRES_PASSWORD
-          ? process.env.POSTGRES_PASSWORD
-          : '',
+        host: process.env.POSTGRES_HOST,
+        port: process.env.POSTGRES_PORT,
+        user: process.env.POSTGRES_USER,
+        password: process.env.POSTGRES_PASSWORD,
       };
       await pgtools.dropdb(config, database);
     } else if (client === 'mysql') {
-      const connectionString =
-        process.env.BACKSTAGE_TEST_DATABASE_MYSQL8_CONNECTION_STRING ?? '';
+      const connectionString = process.env.MYSQL_CONNECTION ?? '';
       const connection = await mysql.createConnection(connectionString);
       await connection.execute('DROP DATABASE ?', [database]);
     }
@@ -459,10 +456,10 @@ async function preCleanDatabase() {
   if (Boolean(process.env.POSTGRES_HOST)) {
     await dropClientDatabases('postgres');
   }
-  if (Boolean(process.env.BACKSTAGE_TEST_DATABASE_MYSQL8_CONNECTION_STRING)) {
+  if (Boolean(process.env.MYSQL_CONNECTION)) {
     await dropClientDatabases('mysql');
   }
-  print('Created DBs');
+  print('Dropped DBs');
 }
 
 async function dropClientDatabases(client: string) {
