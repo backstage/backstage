@@ -54,7 +54,7 @@ const apiDocsPlugin: BackstagePlugin<
   {
     registerApi: ExternalRouteRef<undefined, true>;
   },
-  ApiDocsInputPluginOptions
+  {}
 >;
 export { apiDocsPlugin };
 export { apiDocsPlugin as plugin };
@@ -163,6 +163,7 @@ export const OpenApiDefinitionWidget: (
 // @public (undocumented)
 export type OpenApiDefinitionWidgetProps = {
   definition: string;
+  requestInterceptor?: (req: Request_2) => Request_2 | Promise<Request_2>;
 };
 
 // @public (undocumented)
@@ -186,6 +187,15 @@ export const ProvidedApisCard: (props: {
 export const ProvidingComponentsCard: (props: {
   variant?: InfoCardVariants;
 }) => JSX.Element;
+
+// Warning: (ae-missing-release-tag) "Request" is part of the package's API, but it is missing a release tag (@alpha, @beta, @public, or @internal)
+//
+// @public (undocumented)
+interface Request_2 {
+  // (undocumented)
+  [k: string]: any;
+}
+export { Request_2 as Request };
 
 // @public (undocumented)
 export const TrpcApiDefinitionWidget: (
