@@ -1,5 +1,12 @@
 # @backstage/plugin-bazaar
 
+## 0.2.13
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/plugin-catalog@1.12.2
+
 ## 0.2.12
 
 ### Patch Changes

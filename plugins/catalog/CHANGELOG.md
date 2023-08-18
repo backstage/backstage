@@ -1,5 +1,11 @@
 # @backstage/plugin-catalog
 
+## 1.12.2
+
+### Patch Changes
+
+- 6529eec003e1: Fixed an issue where `EntitySwitch` was preventing the display of entity errors.
+
 ## 1.12.1
 
 ### Patch Changes
