@@ -48,8 +48,6 @@ export class CodeCoverageRestApi implements CodeCoverageApi {
   private readonly discoveryApi: DiscoveryApi;
   private readonly fetchApi: FetchApi;
 
-  private url: string = '';
-
   public constructor(options: {
     discoveryApi: DiscoveryApi;
     fetchApi: FetchApi;
@@ -61,10 +59,8 @@ export class CodeCoverageRestApi implements CodeCoverageApi {
   private async fetch<T = unknown | string | JsonCoverageHistory>(
     path: string,
   ): Promise<T | string> {
-    if (!this.url) {
-      this.url = await this.discoveryApi.getBaseUrl('code-coverage');
-    }
-    const resp = await this.fetchApi.fetch(`${this.url}${path}`);
+    const url = await this.discoveryApi.getBaseUrl('code-coverage');
+    const resp = await this.fetchApi.fetch(`${url}${path}`);
     if (!resp.ok) {
       throw await ResponseError.fromResponse(resp);
     }
