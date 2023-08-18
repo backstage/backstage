@@ -140,6 +140,8 @@
   },
   "devDependencies": {
     "@backstage/backend-common": "workspace:^",
+    "@backstage/backend-plugin-api": "workspace:^",
+    "@backstage/backend-test-utils": "workspace:^",
     "@backstage/config": "workspace:^",
     "@backstage/core-app-api": "workspace:^",
     "@backstage/core-components": "workspace:^",
