@@ -45,7 +45,7 @@ export const analyticsApiRef: ApiRef<AnalyticsApi>;
 export const AnalyticsContext: (options: {
   attributes: Partial<AnalyticsContextValue>;
   children: ReactNode;
-}) => JSX.Element;
+}) => React_2.JSX.Element;
 
 // @public
 export type AnalyticsContextValue = CommonAnalyticsContext & {
@@ -782,7 +782,9 @@ export function withApis<T extends {}>(
 ): <TProps extends T>(
   WrappedComponent: React_2.ComponentType<TProps>,
 ) => {
-  (props: React_2.PropsWithChildren<Omit<TProps, keyof T>>): JSX.Element;
+  (
+    props: React_2.PropsWithChildren<Omit<TProps, keyof T>>,
+  ): React_2.JSX.Element;
   displayName: string;
 };
 ```

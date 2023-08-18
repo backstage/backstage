@@ -9,20 +9,22 @@ import { ApiRef } from '@backstage/core-plugin-api';
 import { BackstagePlugin } from '@backstage/core-plugin-api';
 import { Entity } from '@backstage/catalog-model';
 import { InfoCardVariants } from '@backstage/core-components';
+import { JSX as JSX_2 } from 'react';
 import { LighthouseApi } from '@backstage/plugin-lighthouse-common';
+import { default as React_2 } from 'react';
 import { RouteRef } from '@backstage/core-plugin-api';
 
 // @public (undocumented)
-export const EmbeddedRouter: () => JSX.Element;
+export const EmbeddedRouter: () => React_2.JSX.Element;
 
 // @public (undocumented)
 export const EntityLastLighthouseAuditCard: (props: {
   dense?: boolean | undefined;
   variant?: InfoCardVariants | undefined;
-}) => JSX.Element;
+}) => JSX_2.Element;
 
 // @public (undocumented)
-export const EntityLighthouseContent: () => JSX.Element;
+export const EntityLighthouseContent: () => JSX_2.Element;
 
 // @public (undocumented)
 const isLighthouseAvailable: (entity: Entity) => boolean;
@@ -33,13 +35,13 @@ export { isLighthouseAvailable as isPluginApplicableToEntity };
 export const LastLighthouseAuditCard: (props: {
   dense?: boolean;
   variant?: InfoCardVariants;
-}) => JSX.Element;
+}) => React_2.JSX.Element;
 
 // @public (undocumented)
 export const lighthouseApiRef: ApiRef<LighthouseApi>;
 
 // @public (undocumented)
-export const LighthousePage: () => JSX.Element;
+export const LighthousePage: () => JSX_2.Element;
 
 // @public (undocumented)
 const lighthousePlugin: BackstagePlugin<
@@ -54,5 +56,5 @@ export { lighthousePlugin };
 export { lighthousePlugin as plugin };
 
 // @public (undocumented)
-export const Router: () => JSX.Element;
+export const Router: () => React_2.JSX.Element;
 ```

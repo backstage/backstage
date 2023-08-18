@@ -6,6 +6,7 @@
 /// <reference types="react" />
 
 import { BackstagePlugin } from '@backstage/core-plugin-api';
+import { JSX as JSX_2 } from 'react';
 
 // @public (undocumented)
 export const badgesPlugin: BackstagePlugin<{}, {}, {}>;
@@ -14,5 +15,5 @@ export const badgesPlugin: BackstagePlugin<{}, {}, {}>;
 export const EntityBadgesDialog: (props: {
   open: boolean;
   onClose?: (() => any) | undefined;
-}) => JSX.Element;
+}) => JSX_2.Element;
 ```

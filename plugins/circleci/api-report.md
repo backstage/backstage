@@ -15,8 +15,10 @@ import { CircleCIOptions } from 'circleci-api';
 import { DiscoveryApi } from '@backstage/core-plugin-api';
 import { Entity } from '@backstage/catalog-model';
 import { GitType } from 'circleci-api';
+import { JSX as JSX_2 } from 'react';
 import { Me } from 'circleci-api';
 import { PathParams } from '@backstage/core-plugin-api';
+import { default as React_2 } from 'react';
 import { RouteRef } from '@backstage/core-plugin-api';
 import { SubRouteRef } from '@backstage/core-plugin-api';
 
@@ -69,7 +71,7 @@ export { circleCIPlugin as plugin };
 export const circleCIRouteRef: RouteRef<undefined>;
 
 // @public (undocumented)
-export const EntityCircleCIContent: () => JSX.Element;
+export const EntityCircleCIContent: () => JSX_2.Element;
 
 export { GitType };
 
@@ -79,5 +81,5 @@ export { isCircleCIAvailable };
 export { isCircleCIAvailable as isPluginApplicableToEntity };
 
 // @public (undocumented)
-export const Router: () => JSX.Element;
+export const Router: () => React_2.JSX.Element;
 ```

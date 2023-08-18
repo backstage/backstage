@@ -31,6 +31,7 @@
     "@material-ui/lab": "^4.0.0-alpha.60",
     "@material-ui/pickers": "^3.3.10",
     "@material-ui/styles": "^4.11.5",
+    "@types/react": "^16.13.1 || ^17.0.0",
     "axios": "^1.4.0",
     "date-fns": "^2.30.0",
     "lodash": "^4.17.21",

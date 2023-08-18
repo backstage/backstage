@@ -7,6 +7,7 @@
 
 import { BackstagePlugin } from '@backstage/core-plugin-api';
 import { Entity } from '@backstage/catalog-model';
+import { JSX as JSX_2 } from 'react';
 import { RouteRef } from '@backstage/core-plugin-api';
 
 // @public
@@ -14,13 +15,13 @@ export const DashboardSnapshotComponent: (props: {
   guid: string;
   name: string;
   permalink: string;
-}) => JSX.Element;
+}) => JSX_2.Element;
 
 // @public (undocumented)
-export const EntityNewRelicDashboardCard: () => JSX.Element;
+export const EntityNewRelicDashboardCard: () => JSX_2.Element;
 
 // @public (undocumented)
-export const EntityNewRelicDashboardContent: () => JSX.Element;
+export const EntityNewRelicDashboardContent: () => JSX_2.Element;
 
 // @public (undocumented)
 export const isNewRelicDashboardAvailable: (entity: Entity) => boolean;

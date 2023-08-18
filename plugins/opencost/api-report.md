@@ -6,10 +6,11 @@
 /// <reference types="react" />
 
 import { BackstagePlugin } from '@backstage/core-plugin-api';
+import { JSX as JSX_2 } from 'react';
 import { RouteRef } from '@backstage/core-plugin-api';
 
 // @public (undocumented)
-export const OpenCostPage: () => JSX.Element;
+export const OpenCostPage: () => JSX_2.Element;
 
 // @public (undocumented)
 export const openCostPlugin: BackstagePlugin<

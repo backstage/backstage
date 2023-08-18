@@ -10,13 +10,15 @@ import { BackstagePlugin } from '@backstage/core-plugin-api';
 import { DiscoveryApi } from '@backstage/core-plugin-api';
 import { Entity } from '@backstage/catalog-model';
 import { IdentityApi } from '@backstage/core-plugin-api';
+import { JSX as JSX_2 } from 'react';
+import { default as React_2 } from 'react';
 import { RouteRef } from '@backstage/core-plugin-api';
 
 // @public (undocumented)
-export const EntityPageRollbar: () => JSX.Element;
+export const EntityPageRollbar: () => React_2.JSX.Element;
 
 // @public (undocumented)
-export const EntityRollbarContent: () => JSX.Element;
+export const EntityRollbarContent: () => JSX_2.Element;
 
 // @public (undocumented)
 const isPluginApplicableToEntity: (entity: Entity) => boolean;
@@ -238,5 +240,5 @@ export type RollbarTopActiveItem = {
 };
 
 // @public (undocumented)
-export const Router: () => JSX.Element;
+export const Router: () => React_2.JSX.Element;
 ```

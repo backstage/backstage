@@ -31,6 +31,7 @@
     "postpack": "backstage-cli package postpack"
   },
   "dependencies": {
+    "@types/react": "^16.13.1 || ^17.0.0",
     "grpc-docs": "^1.1.2"
   },
   "peerDependencies": {
@@ -40,8 +41,7 @@
   },
   "devDependencies": {
     "@backstage/cli": "workspace:^",
-    "@testing-library/jest-dom": "^5.16.4",
-    "@types/react": "^16.13.1 || ^17.0.0"
+    "@testing-library/jest-dom": "^5.16.4"
   },
   "files": [
     "dist"

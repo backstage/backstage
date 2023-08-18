@@ -10,6 +10,7 @@ import { BackstagePlugin } from '@backstage/core-plugin-api';
 import { DiscoveryApi } from '@backstage/core-plugin-api';
 import { Entity } from '@backstage/catalog-model';
 import { FetchApi } from '@backstage/core-plugin-api';
+import { JSX as JSX_2 } from 'react';
 import { Playlist } from '@backstage/plugin-playlist-common';
 import { PlaylistMetadata } from '@backstage/plugin-playlist-common';
 import { RouteRef } from '@backstage/core-plugin-api';
@@ -17,7 +18,7 @@ import { RouteRef } from '@backstage/core-plugin-api';
 // @public (undocumented)
 export const EntityPlaylistDialog: (
   props: EntityPlaylistDialogProps,
-) => JSX.Element;
+) => JSX_2.Element;
 
 // @public (undocumented)
 export type EntityPlaylistDialogProps = {
@@ -93,7 +94,7 @@ export class PlaylistClient implements PlaylistApi {
 }
 
 // @public (undocumented)
-export const PlaylistIndexPage: () => JSX.Element;
+export const PlaylistIndexPage: () => JSX_2.Element;
 
 // @public (undocumented)
 export const playlistPlugin: BackstagePlugin<

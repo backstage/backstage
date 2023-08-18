@@ -11,6 +11,8 @@ import { Entity } from '@backstage/catalog-model';
 import { FindingSummary } from '@backstage/plugin-sonarqube-react';
 import { IdentityApi } from '@backstage/core-plugin-api';
 import { InfoCardVariants } from '@backstage/core-components';
+import { JSX as JSX_2 } from 'react';
+import { default as React_2 } from 'react';
 import { SonarQubeApi } from '@backstage/plugin-sonarqube-react';
 
 // @public (undocumented)
@@ -23,12 +25,12 @@ export type DuplicationRating = {
 export const EntitySonarQubeCard: (props: {
   variant?: InfoCardVariants | undefined;
   duplicationRatings?: DuplicationRating[] | undefined;
-}) => JSX.Element;
+}) => JSX_2.Element;
 
 // @public (undocumented)
 export const EntitySonarQubeContentPage: (
   props: SonarQubeContentPageProps,
-) => JSX.Element;
+) => JSX_2.Element;
 
 // @public @deprecated (undocumented)
 export const isSonarQubeAvailable: (entity: Entity) => boolean;
@@ -40,7 +42,7 @@ export const SONARQUBE_PROJECT_KEY_ANNOTATION = 'sonarqube.org/project-key';
 export const SonarQubeCard: (props: {
   variant?: InfoCardVariants;
   duplicationRatings?: DuplicationRating[];
-}) => JSX.Element;
+}) => React_2.JSX.Element;
 
 // @public (undocumented)
 export class SonarQubeClient implements SonarQubeApi {

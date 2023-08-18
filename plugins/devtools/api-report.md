@@ -7,15 +7,17 @@
 
 import { BackstagePlugin } from '@backstage/core-plugin-api';
 import { default as default_2 } from 'react';
+import { JSX as JSX_2 } from 'react';
+import { default as React_2 } from 'react';
 import { RouteRef } from '@backstage/core-plugin-api';
 import { TabProps } from '@material-ui/core';
 
 // @public (undocumented)
-export const ConfigContent: () => JSX.Element;
+export const ConfigContent: () => React_2.JSX.Element;
 
 // @public
 export const DevToolsLayout: {
-  ({ children, title, subtitle }: DevToolsLayoutProps): JSX.Element;
+  ({ children, title, subtitle }: DevToolsLayoutProps): default_2.JSX.Element;
   Route: (props: SubRoute) => null;
 };
 
@@ -27,7 +29,7 @@ export type DevToolsLayoutProps = {
 };
 
 // @public (undocumented)
-export const DevToolsPage: () => JSX.Element;
+export const DevToolsPage: () => JSX_2.Element;
 
 // @public (undocumented)
 export const devToolsPlugin: BackstagePlugin<
@@ -39,10 +41,10 @@ export const devToolsPlugin: BackstagePlugin<
 >;
 
 // @public (undocumented)
-export const ExternalDependenciesContent: () => JSX.Element;
+export const ExternalDependenciesContent: () => React_2.JSX.Element;
 
 // @public (undocumented)
-export const InfoContent: () => JSX.Element;
+export const InfoContent: () => React_2.JSX.Element;
 
 // @public (undocumented)
 export type SubRoute = {
