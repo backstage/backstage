@@ -4570,6 +4570,7 @@ __metadata:
   resolution: "@backstage/plugin-auth-backend@workspace:plugins/auth-backend"
   dependencies:
     "@backstage/backend-common": "workspace:^"
+    "@backstage/backend-defaults": "workspace:^"
     "@backstage/backend-plugin-api": "workspace:^"
     "@backstage/backend-test-utils": "workspace:^"
     "@backstage/catalog-client": "workspace:^"
@@ -4580,6 +4581,7 @@ __metadata:
     "@backstage/plugin-auth-backend-module-gcp-iap-provider": "workspace:^"
     "@backstage/plugin-auth-backend-module-google-provider": "workspace:^"
     "@backstage/plugin-auth-node": "workspace:^"
+    "@backstage/plugin-catalog-node": "workspace:^"
     "@backstage/types": "workspace:^"
     "@davidzemon/passport-okta-oauth": ^0.0.5
     "@google-cloud/firestore": ^6.0.0

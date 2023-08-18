@@ -51,6 +51,7 @@ export interface RouterOptions {
   tokenManager: TokenManager;
   tokenFactoryAlgorithm?: string;
   providerFactories?: ProviderFactories;
+  disableDefaultProviderFactories?: boolean;
   catalogApi?: CatalogApi;
 }
 
@@ -65,7 +66,7 @@ export async function createRouter(
     database,
     tokenManager,
     tokenFactoryAlgorithm,
-    providerFactories,
+    providerFactories = {},
     catalogApi,
   } = options;
   const router = Router();
@@ -85,7 +86,9 @@ export async function createRouter(
     keyStore,
     keyDurationSeconds,
     logger: logger.child({ component: 'token-factory' }),
-    algorithm: tokenFactoryAlgorithm,
+    algorithm:
+      tokenFactoryAlgorithm ??
+      config.getOptionalString('auth.identityTokenAlgorithm'),
   });
 
   const secret = config.getOptionalString('auth.session.secret');
@@ -113,19 +116,21 @@ export async function createRouter(
   router.use(express.urlencoded({ extended: false }));
   router.use(express.json());
 
-  const allProviderFactories = {
-    ...defaultAuthProviderFactories,
-    ...providerFactories,
-  };
-  const providersConfig = config.getConfig('auth.providers');
-  const configuredProviders = providersConfig.keys();
+  const allProviderFactories = options.disableDefaultProviderFactories
+    ? providerFactories
+    : {
+        ...defaultAuthProviderFactories,
+        ...providerFactories,
+      };
+
+  const providersConfig = config.getOptionalConfig('auth.providers');
 
   const isOriginAllowed = createOriginFilter(config);
 
   for (const [providerId, providerFactory] of Object.entries(
     allProviderFactories,
   )) {
-    if (configuredProviders.includes(providerId)) {
+    if (providersConfig?.has(providerId)) {
       logger.info(`Configuring auth provider: ${providerId}`);
       try {
         const provider = providerFactory({
