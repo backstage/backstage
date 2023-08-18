@@ -90,10 +90,15 @@ Team: @backstage/techdocs-maintainers
 
 Scope: The TechDocs plugin and related tooling
 
-| Name                     | Organization | Team         | GitHub                                           | Discord            |
-| ------------------------ | ------------ | ------------ | ------------------------------------------------ | ------------------ |
-| Morgan Bentell           | Spotify      | Pulp Fiction | [agentbellnorm](http://github.com/agentbellnorm) | morganbentell#9030 |
-| Raghunandan Balachandran | Spotify      | Pulp Fiction | [soapraj](http://github.com/soapraj)             | raghunandanb#1114  |
+| Name                     | Organization | Team    | GitHub                                            | Discord             |
+| ------------------------ | ------------ | ------- | ------------------------------------------------- | ------------------- |
+| Alex Lorenzi             | Spotify      | ProTean | [AlexLorenzi](https://github.com/AlexLorenzi)     | `alexlorenzi`       |
+| Bond Yan                 | Spotify      | ProTean | [byan1197](https://github.com/byan1197)           | `bondify`           |
+| Jackson Chen             | Spotify      | ProTean | [PeaWarrior](https://github.com/PeaWarrior)       | `jacksonc#3322`     |
+| John Philip              | Spotify      | ProTean | [johnphilip283](https://github.com/johnphilip283) | -                   |
+| Morgan Bentell           | Spotify      | ProTean | [agentbellnorm](http://github.com/agentbellnorm)  | `morganbentell`     |
+| Raghunandan Balachandran | Spotify      | BUX     | [soapraj](http://github.com/soapraj)              | `raghunandanb#1114` |
+| Squidney                 | Spotify      | ProTean | [squid-ney](https://github.com/squid-ney)         | -                   |
 
 ## Incubating Project Areas
 
@@ -128,6 +133,7 @@ Scope: Tooling for frontend and backend schema-first OpenAPI development.
 | Aramis Sennyey                 |                           | [sennyeya](https://github.com/sennyeya)               | `Aramis#7984`                  |
 | Brian Fletcher                 | Roadie.io                 | [punkle](https://github.com/punkle)                   | `Brian Fletcher#7051`          |
 | Carlos Esteban Lopez Jaramillo | VMWare                    | [luchillo17](https://github.com/luchillo17)           | `luchillo17#8777`              |
+| Daniel Lochrie                 | Spotify                   | [dlochrie](https://github.com/dlochrie)               | -                              |
 | David Tuite                    | Roadie.io                 | [dtuite](https://github.com/dtuite)                   | `David Tuite (roadie.io)#1010` |
 | Himanshu Mishra                | Harness.io                | [OrkoHunter](https://github.com/OrkoHunter)           | `OrkoHunter#1520`              |
 | Irma Solakovic                 | Roadie.io                 | [Irma12](https://github.com/Irma12)                   | `Irma#7629`                    |
@@ -139,6 +145,7 @@ Scope: Tooling for frontend and backend schema-first OpenAPI development.
 | Patrick Jungermann             | Bonial International GmbH | [pjungermann](https://github.com/pjungermann)         | `pjungermann#6933`             |
 | Phil Kuang                     | FactSet Research Systems  | [kuangp](https://github.com/kuangp)                   | `pkuang#3202`                  |
 | Taras Mankovski                | Frontside                 | [taras](https://github.com/taras)                     | `tarasm#1256`                  |
+| Vojta Burian                   | Spotify                   | [sankaritan](https://github.com/sankaritan)           | `vojtabu`                      |
 
 ## Emeritus Core Maintainers
 
