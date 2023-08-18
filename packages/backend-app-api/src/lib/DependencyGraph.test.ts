@@ -27,7 +27,7 @@ describe('DependencyGraph', () => {
   });
 
   describe('detectCircularDependency', () => {
-    it('should return undefined with not deps', () => {
+    it('should return undefined with no deps', () => {
       expect(
         DependencyGraph.fromMap({
           1: {},
@@ -38,7 +38,7 @@ describe('DependencyGraph', () => {
       ).toBeUndefined();
     });
 
-    it('should return undefined with no circular deps', async () => {
+    it('should return undefined with no circular deps', () => {
       expect(
         DependencyGraph.fromMap({
           1: { provides: ['a'] },
@@ -49,7 +49,7 @@ describe('DependencyGraph', () => {
       ).toBeUndefined();
     });
 
-    it('should detect an immediate circular dep', async () => {
+    it('should detect an immediate circular dependency', () => {
       expect(
         DependencyGraph.fromMap({
           1: { provides: ['a'], consumes: ['a'] },
@@ -57,7 +57,7 @@ describe('DependencyGraph', () => {
       ).toEqual(['1', '1']);
     });
 
-    it('should detect a small circular dep', async () => {
+    it('should detect a small circular dependency', () => {
       expect(
         DependencyGraph.fromMap({
           1: { provides: ['a'], consumes: ['b'] },
@@ -66,7 +66,18 @@ describe('DependencyGraph', () => {
       ).toEqual(['1', '2', '1']);
     });
 
-    it('should detect a circular dep starting from the first node', async () => {
+    it('should detect a larger distance circular dependency', () => {
+      expect(
+        DependencyGraph.fromMap({
+          1: { provides: ['a'] },
+          2: { provides: ['b'], consumes: ['a', 'e'] },
+          3: { provides: ['c'], consumes: ['b'] },
+          4: { provides: ['d', 'e'], consumes: ['c', 'a'] },
+        }).detectCircularDependency(),
+      ).toEqual(['2', '4', '3', '2']);
+    });
+
+    it('should detect a circular dependency starting from the first node', () => {
       expect(
         DependencyGraph.fromMap({
           1: { provides: ['a'], consumes: ['b'] },
@@ -77,15 +88,266 @@ describe('DependencyGraph', () => {
       ).toEqual(['1', '2', '3', '4', '1']);
     });
 
-    it('should detect a larger distant circular dep', async () => {
+    it('should detect all independent circular dependency cycles', () => {
       expect(
-        DependencyGraph.fromMap({
-          1: { provides: ['a'] },
-          2: { provides: ['b'], consumes: ['a', 'e'] },
-          3: { provides: ['c'], consumes: ['b'] },
-          4: { provides: ['d', 'e'], consumes: ['c', 'a'] },
-        }).detectCircularDependency(),
-      ).toEqual(['2', '4', '3', '2']);
+        Array.from(
+          DependencyGraph.fromMap({
+            // Cycle 1
+            1: { provides: ['a'], consumes: ['b'] },
+            2: { provides: ['b'], consumes: ['c'] },
+            3: { provides: ['c'], consumes: ['a'] },
+
+            // Cycle 2
+            4: { provides: ['d'], consumes: ['e'] },
+            5: { provides: ['e'], consumes: ['f'] },
+            6: { provides: ['f'], consumes: ['d'] },
+
+            // Cycle 3
+            7: { provides: ['g'], consumes: ['h'] },
+            8: { provides: ['h'], consumes: ['i'] },
+            9: { provides: ['i'], consumes: ['g'] },
+          }).detectCircularDependencies(),
+        ),
+      ).toEqual([
+        ['1', '2', '3', '1'],
+        ['4', '5', '6', '4'],
+        ['7', '8', '9', '7'],
+      ]);
+    });
+
+    it('should only detect unique circular dependency cycles', () => {
+      expect(
+        Array.from(
+          DependencyGraph.fromMap({
+            1: { provides: ['a'], consumes: ['b'] },
+            2: { provides: ['b'], consumes: ['c', 'a'] },
+            3: { provides: ['c'], consumes: ['d', 'a'] },
+            4: { provides: ['d'], consumes: ['e', 'a'] },
+            5: { provides: ['e'], consumes: ['f', 'a'] },
+            6: { provides: ['f'], consumes: ['h', 'a'] },
+            7: { provides: ['h'], consumes: ['a'] },
+          }).detectCircularDependencies(),
+        ),
+      ).toEqual([
+        ['1', '2', '1'],
+        ['1', '2', '3', '1'],
+        ['1', '2', '3', '4', '1'],
+        ['1', '2', '3', '4', '5', '1'],
+        ['1', '2', '3', '4', '5', '6', '1'],
+        ['1', '2', '3', '4', '5', '6', '7', '1'],
+      ]);
+    });
+
+    it('should detect circular dependency cycles in order when fromIterable', () => {
+      expect(
+        Array.from(
+          DependencyGraph.fromIterable([
+            { value: 'a', provides: ['a'], consumes: ['b'] },
+            { value: 'b', provides: ['b'], consumes: ['c', 'a'] },
+            { value: 'c', provides: ['c'], consumes: ['d', 'a'] },
+            { value: '4', provides: ['d'], consumes: ['e', 'a'] },
+            { value: '5', provides: ['e'], consumes: ['f', 'a'] },
+            { value: '6', provides: ['f'], consumes: ['h', 'a'] },
+          ]).detectCircularDependencies(),
+        ),
+      ).toEqual([
+        ['a', 'b', 'a'],
+        ['a', 'b', 'c', 'a'],
+        ['a', 'b', 'c', '4', 'a'],
+        ['a', 'b', 'c', '4', '5', 'a'],
+        ['a', 'b', 'c', '4', '5', '6', 'a'],
+      ]);
+    });
+
+    it('should detect circular dependency cycles in order by key when fromMap', () => {
+      expect(
+        Array.from(
+          DependencyGraph.fromMap({
+            1: { provides: ['a'], consumes: ['b'] },
+            2: { provides: ['b'], consumes: ['c', 'a'] },
+            3: { provides: ['c'], consumes: ['d', 'a'] },
+            4: { provides: ['d'], consumes: ['e', 'a'] },
+            5: { provides: ['e'], consumes: ['f', 'a'] },
+            6: { provides: ['f'], consumes: ['h', 'a'] },
+          }).detectCircularDependencies(),
+        ),
+      ).toEqual([
+        ['1', '2', '1'],
+        ['1', '2', '3', '1'],
+        ['1', '2', '3', '4', '1'],
+        ['1', '2', '3', '4', '5', '1'],
+        ['1', '2', '3', '4', '5', '6', '1'],
+      ]);
+    });
+
+    it('should detect circular dependency cycles in order by key when fromMap 2', () => {
+      expect(
+        Array.from(
+          DependencyGraph.fromMap({
+            a: { provides: ['a'], consumes: ['b'] },
+            b: { provides: ['b'], consumes: ['c', 'a'] },
+            c: { provides: ['c'], consumes: ['d', 'a'] },
+            4: { provides: ['d'], consumes: ['e', 'a'] },
+            5: { provides: ['e'], consumes: ['f', 'a'] },
+            6: { provides: ['f'], consumes: ['h', 'a'] },
+          }).detectCircularDependencies(),
+        ),
+      ).toEqual([
+        ['4', 'a', 'b', 'c', '4'],
+        ['5', 'a', 'b', 'c', '4', '5'],
+        ['6', 'a', 'b', 'c', '4', '5', '6'],
+        ['a', 'b', 'a'],
+        ['a', 'b', 'c', 'a'],
+      ]);
+    });
+
+    it('should detect circular dependency cycles in order by key when fromMap 3', () => {
+      expect(
+        Array.from(
+          DependencyGraph.fromMap({
+            a: { provides: ['a'], consumes: ['b'] },
+            b: { provides: ['b'], consumes: ['c', 'a'] },
+            c: { provides: ['c'], consumes: ['d', 'a'] },
+            d: { provides: ['d'], consumes: ['e', 'a'] },
+            e: { provides: ['e'], consumes: ['f', 'a'] },
+            f: { provides: ['f'], consumes: ['h', 'a'] },
+          }).detectCircularDependencies(),
+        ),
+      ).toEqual([
+        ['a', 'b', 'a'],
+        ['a', 'b', 'c', 'a'],
+        ['a', 'b', 'c', 'd', 'a'],
+        ['a', 'b', 'c', 'd', 'e', 'a'],
+        ['a', 'b', 'c', 'd', 'e', 'f', 'a'],
+      ]);
+    });
+
+    it('should detect circular dependency cycles with duplicate keys when fromIterable', () => {
+      expect(
+        Array.from(
+          DependencyGraph.fromIterable([
+            { value: 'a', provides: ['a'], consumes: ['b'] },
+            { value: 'a', provides: ['b'], consumes: ['c', 'a'] },
+            { value: 'a', provides: ['c'], consumes: ['d', 'a'] },
+            { value: 'a', provides: ['d'], consumes: ['e', 'a'] },
+            { value: 'a', provides: ['e'], consumes: ['f', 'a'] },
+            { value: 'a', provides: ['f'], consumes: ['h', 'a'] },
+          ]).detectCircularDependencies(),
+        ),
+      ).toEqual([
+        ['a', 'a', 'a'],
+        ['a', 'a', 'a', 'a'],
+        ['a', 'a', 'a', 'a', 'a'],
+        ['a', 'a', 'a', 'a', 'a', 'a'],
+        ['a', 'a', 'a', 'a', 'a', 'a', 'a'],
+      ]);
+    });
+
+    it('should detect circular dependency cycles with object values when fromIterable', () => {
+      expect(
+        Array.from(
+          DependencyGraph.fromIterable([
+            { value: { key: 1 }, provides: ['a'], consumes: ['b'] },
+            { value: { key: 2 }, provides: ['b'], consumes: ['c', 'a'] },
+            { value: { key: 3 }, provides: ['c'], consumes: ['d', 'a'] },
+            { value: { key: 4 }, provides: ['d'], consumes: ['e', 'a'] },
+            { value: { key: 5 }, provides: ['e'], consumes: ['f', 'a'] },
+            { value: { key: 6 }, provides: ['f'], consumes: ['h', 'a'] },
+          ]).detectCircularDependencies(),
+        ),
+      ).toEqual([
+        [{ key: 1 }, { key: 2 }, { key: 1 }],
+        [{ key: 1 }, { key: 2 }, { key: 3 }, { key: 1 }],
+        [{ key: 1 }, { key: 2 }, { key: 3 }, { key: 4 }, { key: 1 }],
+        [
+          { key: 1 },
+          { key: 2 },
+          { key: 3 },
+          { key: 4 },
+          { key: 5 },
+          { key: 1 },
+        ],
+        [
+          { key: 1 },
+          { key: 2 },
+          { key: 3 },
+          { key: 4 },
+          { key: 5 },
+          { key: 6 },
+          { key: 1 },
+        ],
+      ]);
+    });
+
+    it('should detect circular dependency cycles with array values when fromIterable', () => {
+      expect(
+        Array.from(
+          DependencyGraph.fromIterable([
+            { value: [1], provides: ['a'], consumes: ['b'] },
+            { value: [2], provides: ['b'], consumes: ['c', 'a'] },
+            { value: [3], provides: ['c'], consumes: ['d', 'a'] },
+            { value: [4], provides: ['d'], consumes: ['e', 'a'] },
+            { value: [5], provides: ['e'], consumes: ['f', 'a'] },
+            { value: [6], provides: ['f'], consumes: ['h', 'a'] },
+          ]).detectCircularDependencies(),
+        ),
+      ).toEqual([
+        [[1], [2], [1]],
+        [[1], [2], [3], [1]],
+        [[1], [2], [3], [4], [1]],
+        [[1], [2], [3], [4], [5], [1]],
+        [[1], [2], [3], [4], [5], [6], [1]],
+      ]);
+    });
+
+    it('should detect circular dependency cycles by reference with symbol values when fromIterable', () => {
+      const symbol1 = Symbol(1);
+      const symbol2 = Symbol(2);
+      const symbol3 = Symbol(3);
+      const symbol4 = Symbol(4);
+      const symbol5 = Symbol(5);
+      const symbol6 = Symbol(6);
+
+      expect(
+        Array.from(
+          DependencyGraph.fromIterable([
+            { value: symbol1, provides: ['a'], consumes: ['b'] },
+            { value: symbol2, provides: ['b'], consumes: ['c', 'a'] },
+            { value: symbol3, provides: ['c'], consumes: ['d', 'a'] },
+            { value: symbol4, provides: ['d'], consumes: ['e', 'a'] },
+            { value: symbol5, provides: ['e'], consumes: ['f', 'a'] },
+            { value: symbol6, provides: ['f'], consumes: ['h', 'a'] },
+          ]).detectCircularDependencies(),
+        ),
+      ).toEqual([
+        [symbol1, symbol2, symbol1],
+        [symbol1, symbol2, symbol3, symbol1],
+        [symbol1, symbol2, symbol3, symbol4, symbol1],
+        [symbol1, symbol2, symbol3, symbol4, symbol5, symbol1],
+        [symbol1, symbol2, symbol3, symbol4, symbol5, symbol6, symbol1],
+      ]);
+    });
+
+    it('should ignore circular dependency cycles by reference with symbol values when fromMap', () => {
+      const symbol1 = Symbol('1');
+      const symbol2 = Symbol('2');
+      const symbol3 = Symbol('3');
+      const symbol4 = Symbol('4');
+      const symbol5 = Symbol('5');
+      const symbol6 = Symbol('6');
+
+      expect(
+        Array.from(
+          DependencyGraph.fromMap({
+            [symbol1]: { provides: ['a'], consumes: ['b'] },
+            [symbol2]: { provides: ['b'], consumes: ['c', 'a'] },
+            [symbol3]: { provides: ['c'], consumes: ['d', 'a'] },
+            [symbol4]: { provides: ['d'], consumes: ['e', 'a'] },
+            [symbol5]: { provides: ['e'], consumes: ['f', 'a'] },
+            [symbol6]: { provides: ['f'], consumes: ['h', 'a'] },
+          }).detectCircularDependencies(),
+        ),
+      ).toEqual([]);
     });
   });
 
