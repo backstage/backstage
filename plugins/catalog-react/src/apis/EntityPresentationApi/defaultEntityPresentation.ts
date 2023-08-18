@@ -85,9 +85,9 @@ export function defaultEntityPresentation(
 
   const shortRef = getShortRef({ kind, namespace, name, context });
 
-  const primary = [displayName, title, shortRef].filter(
+  const primary = [displayName, title, shortRef].find(
     candidate => candidate && typeof candidate === 'string',
-  )[0]!;
+  )!;
 
   const secondary = [
     primary !== entityRef ? entityRef : undefined,
@@ -134,35 +134,35 @@ function getParts(entityOrRef: Entity | CompoundEntityRef | string): {
   }
 
   if (typeof entityOrRef === 'object' && entityOrRef !== null) {
-    const kind = [get(entityOrRef, 'kind')].filter(
+    const kind = [get(entityOrRef, 'kind')].find(
       candidate => candidate && typeof candidate === 'string',
-    )[0];
+    );
 
     const namespace = [
       get(entityOrRef, 'metadata.namespace'),
       get(entityOrRef, 'namespace'),
-    ].filter(candidate => candidate && typeof candidate === 'string')[0];
+    ].find(candidate => candidate && typeof candidate === 'string');
 
     const name = [
       get(entityOrRef, 'metadata.name'),
       get(entityOrRef, 'name'),
-    ].filter(candidate => candidate && typeof candidate === 'string')[0];
+    ].find(candidate => candidate && typeof candidate === 'string');
 
-    const title = [get(entityOrRef, 'metadata.title')].filter(
+    const title = [get(entityOrRef, 'metadata.title')].find(
       candidate => candidate && typeof candidate === 'string',
-    )[0];
+    );
 
-    const description = [get(entityOrRef, 'metadata.description')].filter(
+    const description = [get(entityOrRef, 'metadata.description')].find(
       candidate => candidate && typeof candidate === 'string',
-    )[0];
+    );
 
-    const displayName = [get(entityOrRef, 'spec.profile.displayName')].filter(
+    const displayName = [get(entityOrRef, 'spec.profile.displayName')].find(
       candidate => candidate && typeof candidate === 'string',
-    )[0];
+    );
 
-    const type = [get(entityOrRef, 'spec.type')].filter(
+    const type = [get(entityOrRef, 'spec.type')].find(
       candidate => candidate && typeof candidate === 'string',
-    )[0];
+    );
 
     return { kind, namespace, name, title, description, displayName, type };
   }
@@ -177,23 +177,27 @@ function getShortRef(options: {
   context?: { defaultKind?: string; defaultNamespace?: string };
 }): string {
   const kind = options.kind?.toLocaleLowerCase('en-US') || 'unknown';
-  const namespace =
-    options.namespace?.toLocaleLowerCase('en-US') || DEFAULT_NAMESPACE;
-  const name = options.name?.toLocaleLowerCase('en-US') || 'unknown';
-  const defaultKind = options.context?.defaultKind?.toLocaleLowerCase('en-US');
-  const defaultNamespace =
+  const namespace = options.namespace || DEFAULT_NAMESPACE;
+  const name = options.name || 'unknown';
+  const defaultKindLower =
+    options.context?.defaultKind?.toLocaleLowerCase('en-US');
+  const defaultNamespaceLower =
     options.context?.defaultNamespace?.toLocaleLowerCase('en-US');
 
   let result = name;
 
   if (
-    (defaultNamespace && namespace !== defaultNamespace) ||
+    (defaultNamespaceLower &&
+      namespace.toLocaleLowerCase('en-US') !== defaultNamespaceLower) ||
     namespace !== DEFAULT_NAMESPACE
   ) {
     result = `${namespace}/${result}`;
   }
 
-  if (defaultKind && kind !== defaultKind) {
+  if (
+    defaultKindLower &&
+    kind.toLocaleLowerCase('en-US') !== defaultKindLower
+  ) {
     result = `${kind}:${result}`;
   }
 
