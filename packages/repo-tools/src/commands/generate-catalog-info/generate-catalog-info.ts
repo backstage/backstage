@@ -144,7 +144,7 @@ function fixCatalogInfoYaml(options: FixOptions) {
     throw new Error(`Unable to parse ${relativePath('.', yamlPath)}: ${e}`);
   }
 
-  const badOwner = !possibleOwners.includes(yamlJson.spec?.owner);
+  const badOwner = possibleOwners[0] !== yamlJson.spec?.owner; // we want the first codeowner to take precedence
   const badTitle = yamlJson.metadata.title !== packageJson.name;
   const badName = yamlJson.metadata.name !== safeName;
   const badType =
