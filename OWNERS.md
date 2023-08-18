@@ -98,7 +98,7 @@ Scope: The TechDocs plugin and related tooling
 | John Philip              | Spotify      | ProTean | [johnphilip283](https://github.com/johnphilip283) | -                   |
 | Morgan Bentell           | Spotify      | ProTean | [agentbellnorm](http://github.com/agentbellnorm)  | `morganbentell`     |
 | Raghunandan Balachandran | Spotify      | BUX     | [soapraj](http://github.com/soapraj)              | `raghunandanb#1114` |
-| Squidney                 | Spotify      | ProTean | [squid-ney](https://github.com/squid-ney)         | -                   |
+| Sydney Achinger          | Spotify      | ProTean | [squid-ney](https://github.com/squid-ney)         | -                   |
 
 ## Incubating Project Areas
 
