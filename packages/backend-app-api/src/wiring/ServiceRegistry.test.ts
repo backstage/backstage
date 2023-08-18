@@ -330,159 +330,222 @@ describe('ServiceRegistry', () => {
     );
   });
 
-  it('should throw if there are shallow circular dependencies', async () => {
-    const refA = createServiceRef<string>({ id: 'a' });
-    const refB = createServiceRef<string>({ id: 'b' });
+  describe('checkForCircularDeps', () => {
+    it('should throw if there are shallow circular dependencies', async () => {
+      const refA = createServiceRef<string>({ id: 'a' });
+      const refB = createServiceRef<string>({ id: 'b' });
 
-    const factoryA = createServiceFactory({
-      service: refA,
-      deps: { b: refB },
-      factory: async ({ b }) => b,
+      const factoryA = createServiceFactory({
+        service: refA,
+        deps: { b: refB },
+        factory: async ({ b }) => b,
+      });
+
+      const factoryB = createServiceFactory({
+        service: refB,
+        deps: { a: refA },
+        factory: async ({ a }) => a,
+      });
+
+      const registry = new ServiceRegistry([factoryA(), factoryB()]);
+
+      expect(() => registry.checkForCircularDeps()).toThrow(
+        `Circular dependencies detected:
+  'a' -> 'b' -> 'a'`,
+      );
     });
 
-    const factoryB = createServiceFactory({
-      service: refB,
-      deps: { a: refA },
-      factory: async ({ a }) => a,
+    it('should throw if there are multiple circular dependency cycles', async () => {
+      const refA = createServiceRef<string>({ id: 'a' });
+      const refB = createServiceRef<string>({ id: 'b' });
+      const refC = createServiceRef<string>({ id: 'c' });
+      const refD = createServiceRef<string>({ id: 'd' });
+
+      const factoryA = createServiceFactory({
+        service: refA,
+        deps: { b: refB },
+        factory: async ({ b }) => b,
+      });
+
+      const factoryB = createServiceFactory({
+        service: refB,
+        deps: { a: refA },
+        factory: async ({ a }) => a,
+      });
+
+      const factoryC = createServiceFactory({
+        service: refC,
+        deps: { d: refD },
+        factory: async ({ d }) => d,
+      });
+
+      const factoryD = createServiceFactory({
+        service: refD,
+        deps: { c: refC },
+        factory: async ({ c }) => c,
+      });
+
+      const registry = new ServiceRegistry([
+        factoryA(),
+        factoryB(),
+        factoryC(),
+        factoryD(),
+      ]);
+
+      expect(() => registry.checkForCircularDeps()).toThrow(
+        `Circular dependencies detected:
+  'a' -> 'b' -> 'a'
+  'c' -> 'd' -> 'c'`,
+      );
     });
 
-    const registry = new ServiceRegistry([factoryA(), factoryB()]);
+    it('should throw if there are deep circular dependencies', async () => {
+      const refA = createServiceRef<string>({ id: 'a' });
+      const refB = createServiceRef<string>({ id: 'b' });
+      const refC = createServiceRef<string>({ id: 'c' });
 
-    await expect(registry.get(refA, 'catalog')).rejects.toThrow(
-      "Failed to instantiate service 'a' for 'catalog' because of the following circular dependency: 'a' -> 'b' -> 'a'",
-    );
-  });
+      const factoryA = createServiceFactory({
+        service: refA,
+        deps: { b: refB },
+        factory: async ({ b }) => b,
+      });
 
-  it('should throw if there are deep circular dependencies', async () => {
-    const refA = createServiceRef<string>({ id: 'a' });
-    const refB = createServiceRef<string>({ id: 'b' });
-    const refC = createServiceRef<string>({ id: 'c' });
+      const factoryB = createServiceFactory({
+        service: refB,
+        deps: { c: refC },
+        factory: async ({ c }) => c,
+      });
 
-    const factoryA = createServiceFactory({
-      service: refA,
-      deps: { b: refB },
-      factory: async ({ b }) => b,
+      const factoryC = createServiceFactory({
+        service: refC,
+        deps: { a: refA },
+        factory: async ({ a }) => a,
+      });
+
+      const registry = new ServiceRegistry([
+        factoryA(),
+        factoryB(),
+        factoryC(),
+      ]);
+
+      expect(() => registry.checkForCircularDeps()).toThrow(
+        `Circular dependencies detected:
+  'a' -> 'b' -> 'c' -> 'a'`,
+      );
     });
 
-    const factoryB = createServiceFactory({
-      service: refB,
-      deps: { c: refC },
-      factory: async ({ c }) => c,
+    it('should throw if there are deep circular dependencies 2', async () => {
+      const refA = createServiceRef<string>({ id: 'a' });
+      const refB = createServiceRef<string>({ id: 'b' });
+      const refC = createServiceRef<string>({ id: 'c' });
+      const refD = createServiceRef<string>({ id: 'd' });
+
+      const factoryA = createServiceFactory({
+        service: refA,
+        deps: { b: refB },
+        factory: async ({ b }) => b,
+      });
+
+      const factoryB = createServiceFactory({
+        service: refB,
+        deps: { c: refC, d: refD },
+        factory: async ({ c, d }) => c + d,
+      });
+
+      const factoryC = createServiceFactory({
+        service: refC,
+        deps: { a: refA },
+        factory: async ({ a }) => a,
+      });
+
+      const factoryD = createServiceFactory({
+        service: refD,
+        deps: {},
+        factory: async () => 'd',
+      });
+
+      const registry = new ServiceRegistry([
+        factoryA(),
+        factoryB(),
+        factoryC(),
+        factoryD(),
+      ]);
+
+      expect(() => registry.checkForCircularDeps()).toThrow(
+        `Circular dependencies detected:
+  'a' -> 'b' -> 'c' -> 'a'`,
+      );
     });
 
-    const factoryC = createServiceFactory({
-      service: refC,
-      deps: { a: refA },
-      factory: async ({ a }) => a,
+    it('should throw if there are circular dependencies', async () => {
+      const refA = createServiceRef<string>({ id: 'a' });
+      const refB = createServiceRef<string>({ id: 'b' });
+      const refC = createServiceRef<string>({ id: 'c' });
+
+      const factoryA = createServiceFactory({
+        service: refA,
+        deps: { b: refB, c: refC },
+        factory: async ({ b, c }) => b + c,
+      });
+
+      const factoryB = createServiceFactory({
+        service: refB,
+        deps: {},
+        factory: async () => 'b',
+      });
+
+      const factoryC = createServiceFactory({
+        service: refC,
+        deps: { a: refA },
+        factory: async ({ a }) => a,
+      });
+
+      const registry = new ServiceRegistry([
+        factoryA(),
+        factoryB(),
+        factoryC(),
+      ]);
+
+      expect(() => registry.checkForCircularDeps()).toThrow(
+        `Circular dependencies detected:
+  'a' -> 'c' -> 'a'`,
+      );
     });
 
-    const registry = new ServiceRegistry([factoryA(), factoryB(), factoryC()]);
+    it('should not infinitely loop if there are circular dependencies where not all nodes are in the cycle', async () => {
+      const refA = createServiceRef<string>({ id: 'a' });
+      const refB = createServiceRef<string>({ id: 'b' });
+      const refC = createServiceRef<string>({ id: 'c' });
 
-    await expect(registry.get(refA, 'catalog')).rejects.toThrow(
-      "Failed to instantiate service 'a' for 'catalog' because of the following circular dependency: 'a' -> 'b' -> 'c' -> 'a'",
-    );
-  });
+      const factoryA = createServiceFactory({
+        service: refA,
+        deps: { b: refB },
+        factory: async ({ b }) => b,
+      });
 
-  it('should throw if there are deep circular dependencies 2', async () => {
-    const refA = createServiceRef<string>({ id: 'a' });
-    const refB = createServiceRef<string>({ id: 'b' });
-    const refC = createServiceRef<string>({ id: 'c' });
-    const refD = createServiceRef<string>({ id: 'd' });
+      const factoryB = createServiceFactory({
+        service: refB,
+        deps: { c: refC },
+        factory: async ({ c }) => c,
+      });
 
-    const factoryA = createServiceFactory({
-      service: refA,
-      deps: { b: refB },
-      factory: async ({ b }) => b,
+      const factoryC = createServiceFactory({
+        service: refC,
+        deps: { b: refB },
+        factory: async ({ b }) => b,
+      });
+
+      const registry = new ServiceRegistry([
+        factoryA(),
+        factoryB(),
+        factoryC(),
+      ]);
+
+      expect(() => registry.checkForCircularDeps()).toThrow(
+        `Circular dependencies detected:
+  'b' -> 'c' -> 'b'`,
+      );
     });
-
-    const factoryB = createServiceFactory({
-      service: refB,
-      deps: { c: refC, d: refD },
-      factory: async ({ c, d }) => c + d,
-    });
-
-    const factoryC = createServiceFactory({
-      service: refC,
-      deps: { a: refA },
-      factory: async ({ a }) => a,
-    });
-
-    const factoryD = createServiceFactory({
-      service: refD,
-      deps: {},
-      factory: async () => 'd',
-    });
-
-    const registry = new ServiceRegistry([
-      factoryA(),
-      factoryB(),
-      factoryC(),
-      factoryD(),
-    ]);
-
-    await expect(registry.get(refA, 'catalog')).rejects.toThrow(
-      "Failed to instantiate service 'a' for 'catalog' because of the following circular dependency: 'a' -> 'b' -> 'c' -> 'a'",
-    );
-  });
-
-  it('should throw if there are circular dependencies', async () => {
-    const refA = createServiceRef<string>({ id: 'a' });
-    const refB = createServiceRef<string>({ id: 'b' });
-    const refC = createServiceRef<string>({ id: 'c' });
-
-    const factoryA = createServiceFactory({
-      service: refA,
-      deps: { b: refB, c: refC },
-      factory: async ({ b, c }) => b + c,
-    });
-
-    const factoryB = createServiceFactory({
-      service: refB,
-      deps: {},
-      factory: async () => 'b',
-    });
-
-    const factoryC = createServiceFactory({
-      service: refC,
-      deps: { a: refA },
-      factory: async ({ a }) => a,
-    });
-
-    const registry = new ServiceRegistry([factoryA(), factoryB(), factoryC()]);
-
-    await expect(registry.get(refC, 'catalog')).rejects.toThrow(
-      "Failed to instantiate service 'c' for 'catalog' because of the following circular dependency: 'a' -> 'c' -> 'a'",
-    );
-  });
-
-  it('should not infinitely loop if there are circular dependencies where not all nodes are in the cycle', async () => {
-    const refA = createServiceRef<string>({ id: 'a' });
-    const refB = createServiceRef<string>({ id: 'b' });
-    const refC = createServiceRef<string>({ id: 'c' });
-
-    const factoryA = createServiceFactory({
-      service: refA,
-      deps: { b: refB },
-      factory: async ({ b }) => b,
-    });
-
-    const factoryB = createServiceFactory({
-      service: refB,
-      deps: { c: refC },
-      factory: async ({ c }) => c,
-    });
-
-    const factoryC = createServiceFactory({
-      service: refC,
-      deps: { b: refB },
-      factory: async ({ b }) => b,
-    });
-
-    const registry = new ServiceRegistry([factoryA(), factoryB(), factoryC()]);
-
-    await expect(registry.get(refA, 'catalog')).rejects.toThrow(
-      "Failed to instantiate service 'a' for 'catalog' because of the following circular dependency: 'b' -> 'c' -> 'b'",
-    );
   });
 
   it('should decorate error messages thrown by the top-level factory function', async () => {

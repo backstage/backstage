@@ -324,4 +324,25 @@ describe('BackendInitializer', () => {
       "Extension point registered for plugin 'testA' may not be used by module for plugin 'testB'",
     );
   });
+
+  it('should throw if circular dependency cycles are detected', async () => {
+    const refA = createServiceRef<string>({ id: 'a' });
+    const refB = createServiceRef<string>({ id: 'b' });
+    const init = new BackendInitializer([
+      createServiceFactory({
+        service: refA,
+        deps: { b: refB },
+        factory: async ({ b }) => b,
+      })(),
+      createServiceFactory({
+        service: refB,
+        deps: { a: refA },
+        factory: async ({ a }) => a,
+      })(),
+    ]);
+    await expect(init.start()).rejects.toThrow(
+      `Circular dependencies detected:
+  'a' -> 'b' -> 'a'`,
+    );
+  });
 });

@@ -172,6 +172,8 @@ export class BackendInitializer {
       ...this.#providedServiceFactories,
     ]);
 
+    this.#serviceHolder.checkForCircularDeps();
+
     const featureDiscovery = await this.#serviceHolder.get(
       featureDiscoveryServiceRef,
       'root',

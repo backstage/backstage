@@ -20,7 +20,7 @@ import {
   coreServices,
   createServiceFactory,
 } from '@backstage/backend-plugin-api';
-import { stringifyError } from '@backstage/errors';
+import { ConflictError, stringifyError } from '@backstage/errors';
 import { EnumerableServiceHolder } from './types';
 // Direct internal import to avoid duplication
 // eslint-disable-next-line @backstage/no-forbidden-package-imports
@@ -74,6 +74,7 @@ export class ServiceRegistry implements EnumerableServiceHolder {
     InternalServiceFactory,
     Promise<unknown>
   >();
+  readonly #dependencyGraph: DependencyGraph<string>;
 
   constructor(factories: Array<ServiceFactory>) {
     this.#providedFactories = new Map(
@@ -81,6 +82,15 @@ export class ServiceRegistry implements EnumerableServiceHolder {
     );
     this.#loadedDefaultFactories = new Map();
     this.#implementations = new Map();
+    this.#dependencyGraph = DependencyGraph.fromIterable(
+      Array.from(this.#providedFactories).map(
+        ([serviceId, serviceFactory]) => ({
+          value: serviceId,
+          provides: [serviceId],
+          consumes: Object.values(serviceFactory.deps).map(d => d.id),
+        }),
+      ),
+    );
   }
 
   #resolveFactory(
@@ -147,25 +157,17 @@ export class ServiceRegistry implements EnumerableServiceHolder {
     }
   }
 
-  #checkForCircularDeps(factory: InternalServiceFactory, pluginId: string) {
-    const tree = DependencyGraph.fromIterable(
-      Array.from(this.#providedFactories).map(
-        ([serviceId, serviceFactory]) => ({
-          value: { serviceId, serviceFactory },
-          provides: [serviceId],
-          consumes: serviceFactory ? Object.keys(serviceFactory.deps) : [],
-        }),
-      ),
+  checkForCircularDeps(): void {
+    const circularDependencies = Array.from(
+      this.#dependencyGraph.detectCircularDependencies(),
     );
-    const circular = tree.detectCircularDependency();
 
-    if (circular) {
-      const circularDepChain = circular
-        .map(({ serviceId }) => `'${serviceId}'`)
-        .join(' -> ');
-      throw new Error(
-        `Failed to instantiate service '${factory.service.id}' for '${pluginId}' because of the following circular dependency: ${circularDepChain}`,
-      );
+    if (circularDependencies.length) {
+      const cycles = circularDependencies
+        .map(c => c.map(id => `'${id}'`).join(' -> '))
+        .join('\n  ');
+
+      throw new ConflictError(`Circular dependencies detected:\n  ${cycles}`);
     }
   }
 
@@ -179,7 +181,6 @@ export class ServiceRegistry implements EnumerableServiceHolder {
         let existing = this.#rootServiceImplementations.get(factory);
         if (!existing) {
           this.#checkForMissingDeps(factory, pluginId);
-          this.#checkForCircularDeps(factory, pluginId);
           const rootDeps = new Array<Promise<[name: string, impl: unknown]>>();
 
           for (const [name, serviceRef] of Object.entries(factory.deps)) {
@@ -203,7 +204,6 @@ export class ServiceRegistry implements EnumerableServiceHolder {
       let implementation = this.#implementations.get(factory);
       if (!implementation) {
         this.#checkForMissingDeps(factory, pluginId);
-        this.#checkForCircularDeps(factory, pluginId);
         const rootDeps = new Array<Promise<[name: string, impl: unknown]>>();
 
         for (const [name, serviceRef] of Object.entries(factory.deps)) {
