@@ -10,6 +10,7 @@ import { AuthProviderFactory as AuthProviderFactory_2 } from '@backstage/plugin-
 import { AuthProviderRouteHandlers as AuthProviderRouteHandlers_2 } from '@backstage/plugin-auth-node';
 import { AuthResolverCatalogUserQuery as AuthResolverCatalogUserQuery_2 } from '@backstage/plugin-auth-node';
 import { AuthResolverContext as AuthResolverContext_2 } from '@backstage/plugin-auth-node';
+import { BackendFeature } from '@backstage/backend-plugin-api';
 import { BackstageSignInResult } from '@backstage/plugin-auth-node';
 import { CacheService } from '@backstage/backend-plugin-api';
 import { CatalogApi } from '@backstage/catalog-client';
@@ -50,6 +51,9 @@ export type AuthHandler<TAuthResult> = (
 export type AuthHandlerResult = {
   profile: ProfileInfo;
 };
+
+// @public
+export const authPlugin: () => BackendFeature;
 
 // @public @deprecated (undocumented)
 export type AuthProviderConfig = AuthProviderConfig_2;
@@ -657,6 +661,8 @@ export interface RouterOptions {
   config: Config;
   // (undocumented)
   database: PluginDatabaseManager;
+  // (undocumented)
+  disableDefaultProviderFactories?: boolean;
   // (undocumented)
   discovery: PluginEndpointDiscovery;
   // (undocumented)

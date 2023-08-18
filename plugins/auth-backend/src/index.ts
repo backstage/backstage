@@ -20,6 +20,7 @@
  * @packageDocumentation
  */
 
+export { authPlugin } from './authPlugin';
 export * from './service/router';
 export type { TokenParams } from './identity';
 export * from './providers';
