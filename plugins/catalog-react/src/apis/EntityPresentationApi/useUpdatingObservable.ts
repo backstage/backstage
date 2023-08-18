@@ -15,7 +15,7 @@
  */
 
 import { Observable } from '@backstage/types';
-import { DependencyList, useEffect, useRef, useState } from 'react';
+import { DependencyList, useEffect, useState } from 'react';
 
 /**
  * Subscribe to an observable and return the latest value from it.
@@ -36,17 +36,14 @@ export function useUpdatingObservable<T>(
   observable: Observable<T> | undefined,
   deps: DependencyList,
 ): T {
-  const snapshot = useRef(value);
-  const [, setCounter] = useState(0);
+  const [snapshot, setSnapshot] = useState(value);
 
   useEffect(() => {
-    snapshot.current = value;
-    setCounter(counter => counter + 1);
+    setSnapshot(value);
 
     const subscription = observable?.subscribe({
       next: updatedValue => {
-        snapshot.current = updatedValue;
-        setCounter(counter => counter + 1);
+        setSnapshot(updatedValue);
       },
       complete: () => {
         subscription?.unsubscribe();
@@ -59,5 +56,5 @@ export function useUpdatingObservable<T>(
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, deps);
 
-  return snapshot.current;
+  return snapshot;
 }
