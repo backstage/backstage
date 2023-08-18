@@ -36,7 +36,7 @@ import {
   Select,
   TextField,
 } from '@material-ui/core';
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { useForm, Controller } from 'react-hook-form';
 import useAsync from 'react-use/lib/useAsync';
 import useAsyncFn from 'react-use/lib/useAsyncFn';
@@ -76,14 +76,17 @@ export const PlaylistEditDialog = ({
   const classes = useStyles();
   const identityApi = useApi(identityApiRef);
   const playlistApi = useApi(playlistApiRef);
-  const playListApiData = playlistApi.getAllPlaylists({ editable: true });
-
+  const [playlistArray, setPlaylistArray] = useState([]);
   const [editingOtherFields, setEditingOtherFields] = useState(false);
 
-  const fetchAndProcessData = async () => {
-    const playlistArray = await playListApiData;
-    return playlistArray;
-  };
+  useEffect(() => {
+    const fetchPlaylists = async () => {
+      const playlists = await playlistApi.getAllPlaylists({ editable: true });
+      setPlaylistArray(playlists);
+    };
+
+    fetchPlaylists();
+  }, [playlistApi]);
 
   const { loading: loadingOwnership, value: ownershipRefs } =
     useAsync(async () => {
@@ -96,24 +99,10 @@ export const PlaylistEditDialog = ({
     isEditing: boolean,
     originalName: string,
   ) => {
-    if (!isEditing) {
-      const playlistArray = await fetchAndProcessData();
-      if (
-        playlistArray.some(
-          (playlistData: { name: string }) => playlistData.name === name,
-        )
-      ) {
-        return 'A playlist with this name already exists';
-      }
-    } else if (name !== originalName) {
-      const playlistArray = await fetchAndProcessData();
-      if (
-        playlistArray.some(
-          (playlistData: { name: string }) => playlistData.name === name,
-        )
-      ) {
-        return 'A playlist with this name already exists';
-      }
+    if (!isEditing || name !== originalName) {
+      return playlistArray.some(p => p.name === name)
+        ? 'A playlist with this name already exists'
+        : true;
     }
 
     return true;

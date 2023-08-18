@@ -43,7 +43,7 @@ import {
 } from '@material-ui/core';
 import EditIcon from '@material-ui/icons/Edit';
 import DeleteIcon from '@material-ui/icons/Delete';
-import React, { useCallback, useState, useEffect } from 'react';
+import React, { useCallback, useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import useAsyncFn from 'react-use/lib/useAsyncFn';
 
@@ -81,9 +81,9 @@ export const PlaylistHeader = ({ playlist, onUpdate }: PlaylistHeaderProps) => {
   const playlistApi = useApi(playlistApiRef);
   const navigate = useNavigate();
   const rootRoute = useRouteRef(rootRouteRef);
+
   const [openEditDialog, setOpenEditDialog] = useState(false);
   const [openDeleteDialog, setOpenDeleteDialog] = useState(false);
-  const [popupMessage, setPopupMessage] = useState('');
 
   const { allowed: editAllowed } = usePermission({
     permission: permissions.playlistListUpdate,
@@ -95,50 +95,48 @@ export const PlaylistHeader = ({ playlist, onUpdate }: PlaylistHeaderProps) => {
     resourceRef: playlist.id,
   });
 
-  useEffect(() => {
-    if (popupMessage) {
-      alertApi.post({
-        message: popupMessage,
-        severity: 'success',
-        display: 'transient',
-      });
-      setPopupMessage('');
-    }
-  }, [popupMessage, alertApi]);
-
   const updatePlaylist = useCallback(
     async (update: Omit<PlaylistMetadata, 'id'>) => {
       try {
         await playlistApi.updatePlaylist({ ...update, id: playlist.id });
         setOpenEditDialog(false);
         if (update.name !== playlist.name) {
-          setPopupMessage(
-            `Updated playlist name '${playlist.name}' to '${update.name}'`,
-          );
+          const message = `Updated playlist name '${playlist.name}' to '${update.name}'`;
+          alertApi.post({
+            message,
+            severity: 'success',
+            display: 'transient',
+          });
         } else {
-          setPopupMessage(`Updated playlist '${playlist.name}'`);
+          const message = `Updated playlist '${playlist.name}'`;
+          alertApi.post({
+            message,
+            severity: 'success',
+            display: 'transient',
+          });
         }
         onUpdate();
       } catch (e) {
         errorApi.post(e);
       }
     },
-    [errorApi, onUpdate, playlist, playlistApi, setPopupMessage],
+    [errorApi, onUpdate, playlist, playlistApi, alertApi],
   );
 
   const [deleting, deletePlaylist] = useAsyncFn(async () => {
     try {
       await playlistApi.deletePlaylist(playlist.id);
       navigate(rootRoute());
+      const message = `Deleted playlist '${playlist.name}'`;
       alertApi.post({
-        message: `Deleted playlist '${playlist.name}'`,
+        message,
         severity: 'success',
         display: 'transient',
       });
     } catch (e) {
       errorApi.post(e);
     }
-  }, [playlistApi]);
+  }, [playlistApi, alertApi]);
 
   const singularTitle = useTitle({
     pluralize: false,
