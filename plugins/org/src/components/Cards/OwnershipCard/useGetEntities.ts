@@ -31,7 +31,7 @@ import limiterFactory from 'p-limit';
 import { useApi } from '@backstage/core-plugin-api';
 import useAsync from 'react-use/lib/useAsync';
 import qs from 'qs';
-import { RelationType } from './types';
+import { EntityRelationAggregation as EntityRelationsAggregation } from './types';
 
 const limiter = limiterFactory(10);
 
@@ -124,11 +124,11 @@ const getChildOwnershipEntityRefs = async (
 
 const getOwners = async (
   entity: Entity,
-  relationsType: RelationType,
+  relations: EntityRelationsAggregation,
   catalogApi: CatalogApi,
 ): Promise<string[]> => {
   const isGroup = entity.kind === 'Group';
-  const isAggregated = relationsType === 'aggregated';
+  const isAggregated = relations === 'aggregated';
   const isUserEntity = entity.kind === 'User';
 
   const owners: string[] = [];
@@ -173,7 +173,7 @@ const getOwnedEntitiesByOwners = (
 
 export function useGetEntities(
   entity: Entity,
-  relationsType: RelationType,
+  relations: EntityRelationsAggregation,
   entityFilterKind?: string[],
   entityLimit = 6,
 ): {
@@ -196,7 +196,7 @@ export function useGetEntities(
     error,
     value: componentsWithCounters,
   } = useAsync(async () => {
-    const owners = await getOwners(entity, relationsType, catalogApi);
+    const owners = await getOwners(entity, relations, catalogApi);
 
     const ownedEntitiesList = await getOwnedEntitiesByOwners(
       owners,
@@ -237,7 +237,7 @@ export function useGetEntities(
       kind: string;
       queryParams: string;
     }>;
-  }, [catalogApi, entity, relationsType]);
+  }, [catalogApi, entity, relations]);
 
   return {
     componentsWithCounters,

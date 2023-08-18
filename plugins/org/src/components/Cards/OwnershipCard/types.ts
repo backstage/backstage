@@ -15,11 +15,4 @@
  */
 
 /** @public */
-export const DefaultRelationType = {
-  Direct: 'direct',
-  Aggregated: 'aggregated',
-} as const;
-
-/** @public */
-export type RelationType =
-  (typeof DefaultRelationType)[keyof typeof DefaultRelationType];
+export type EntityRelationAggregation = 'direct' | 'aggregated';

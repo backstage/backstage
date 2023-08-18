@@ -11,12 +11,6 @@ import { IconComponent } from '@backstage/core-plugin-api';
 import { InfoCardVariants } from '@backstage/core-components';
 
 // @public (undocumented)
-export const DefaultRelationType: {
-  readonly Direct: 'direct';
-  readonly Aggregated: 'aggregated';
-};
-
-// @public (undocumented)
 export const EntityGroupProfileCard: (props: {
   variant?: InfoCardVariants | undefined;
   showLinks?: boolean | undefined;
@@ -34,9 +28,12 @@ export const EntityOwnershipCard: (props: {
   variant?: InfoCardVariants | undefined;
   entityFilterKind?: string[] | undefined;
   hideRelationsToggle?: boolean | undefined;
-  relationsType?: RelationType | undefined;
+  relationsType?: EntityRelationAggregation | undefined;
   entityLimit?: number | undefined;
 }) => JSX.Element;
+
+// @public (undocumented)
+export type EntityRelationAggregation = 'direct' | 'aggregated';
 
 // @public (undocumented)
 export const EntityUserProfileCard: (props: {
@@ -81,13 +78,9 @@ export const OwnershipCard: (props: {
   variant?: InfoCardVariants;
   entityFilterKind?: string[];
   hideRelationsToggle?: boolean;
-  relationsType?: RelationType;
+  relationsType?: EntityRelationAggregation;
   entityLimit?: number;
 }) => JSX.Element;
-
-// @public (undocumented)
-export type RelationType =
-  (typeof DefaultRelationType)[keyof typeof DefaultRelationType];
 
 // @public (undocumented)
 export const UserProfileCard: (props: {

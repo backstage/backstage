@@ -27,7 +27,7 @@ import {
 } from '@material-ui/core';
 import React, { useState } from 'react';
 import { ComponentsGrid } from './ComponentsGrid';
-import { DefaultRelationType, RelationType } from './types';
+import { EntityRelationAggregation } from './types';
 
 const useStyles = makeStyles(theme => ({
   list: {
@@ -57,7 +57,7 @@ export const OwnershipCard = (props: {
   variant?: InfoCardVariants;
   entityFilterKind?: string[];
   hideRelationsToggle?: boolean;
-  relationsType?: RelationType;
+  relationsType?: EntityRelationAggregation;
   entityLimit?: number;
 }) => {
   const {
@@ -72,7 +72,7 @@ export const OwnershipCard = (props: {
   const classes = useStyles();
   const { entity } = useEntity();
   const [getRelationsType, setRelationsType] = useState(
-    relationsType || DefaultRelationType.Direct,
+    relationsType || 'direct',
   );
 
   return (
