@@ -1,5 +1,11 @@
 # @backstage/plugin-scaffolder-backend
 
+## 1.16.1
+
+### Patch Changes
+
+- 2ba07bcdb046: Fixed the plugin and module ID of the alpha `catalogModuleTemplateKind` export.
+
 ## 1.16.0
 
 ### Minor Changes

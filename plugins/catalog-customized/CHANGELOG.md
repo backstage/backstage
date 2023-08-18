@@ -1,5 +1,12 @@
 # @internal/plugin-catalog-customized
 
+## 0.0.14
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/plugin-catalog@1.12.2
+
 ## 0.0.13
 
 ### Patch Changes

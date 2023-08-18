@@ -24,8 +24,8 @@ import { ScaffolderEntitiesProcessor } from '../processor';
  * @alpha
  */
 export const catalogModuleTemplateKind = createBackendModule({
-  moduleId: 'scaffolder',
-  pluginId: 'templateKind',
+  moduleId: 'templateKind',
+  pluginId: 'catalog',
   register(env) {
     env.registerInit({
       deps: {
