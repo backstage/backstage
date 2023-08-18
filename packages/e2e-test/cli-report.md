@@ -12,7 +12,7 @@ Options:
   -h, --help
 
 Commands:
-  run [options]
+  run
   help [command]
 ```
 
@@ -22,6 +22,5 @@ Commands:
 Usage: e2e-test run [options]
 
 Options:
-  -db, --dbms <value>
   -h, --help
 ```
