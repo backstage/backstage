@@ -56,6 +56,7 @@ import { ProfileInfo } from '@backstage/core-plugin-api';
 import { ProfileInfoApi } from '@backstage/core-plugin-api';
 import { PropsWithChildren } from 'react';
 import PropTypes from 'prop-types';
+import { default as React_2 } from 'react';
 import { ReactNode } from 'react';
 import { RouteRef } from '@backstage/core-plugin-api';
 import { SessionApi } from '@backstage/core-plugin-api';
@@ -113,7 +114,7 @@ export type ApiFactoryScope = 'default' | 'app' | 'static';
 
 // @public
 export const ApiProvider: {
-  (props: PropsWithChildren<ApiProviderProps>): JSX.Element;
+  (props: PropsWithChildren<ApiProviderProps>): React_2.JSX.Element;
   propTypes: {
     apis: PropTypes.Validator<
       NonNullable<
@@ -235,7 +236,7 @@ export type AppRouteBinder = <
 ) => void;
 
 // @public
-export function AppRouter(props: AppRouterProps): JSX.Element;
+export function AppRouter(props: AppRouterProps): React_2.JSX.Element;
 
 // @public
 export interface AppRouterProps {
@@ -368,7 +369,9 @@ export type ErrorBoundaryFallbackProps = PropsWithChildren<{
 }>;
 
 // @public
-export const FeatureFlagged: (props: FeatureFlaggedProps) => JSX.Element;
+export const FeatureFlagged: (
+  props: FeatureFlaggedProps,
+) => React_2.JSX.Element;
 
 // @public
 export type FeatureFlaggedProps = {

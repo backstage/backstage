@@ -41,6 +41,7 @@
     "@backstage/plugin-auth-backend-module-gcp-iap-provider": "workspace:^",
     "@backstage/plugin-auth-backend-module-google-provider": "workspace:^",
     "@backstage/plugin-auth-node": "workspace:^",
+    "@backstage/plugin-catalog-node": "workspace:^",
     "@backstage/types": "workspace:^",
     "@davidzemon/passport-okta-oauth": "^0.0.5",
     "@google-cloud/firestore": "^6.0.0",
@@ -80,6 +81,7 @@
     "yn": "^4.0.0"
   },
   "devDependencies": {
+    "@backstage/backend-defaults": "workspace:^",
     "@backstage/backend-test-utils": "workspace:^",
     "@backstage/cli": "workspace:^",
     "@types/body-parser": "^1.19.0",

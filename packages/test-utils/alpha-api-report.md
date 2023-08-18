@@ -4,11 +4,12 @@
 
 ```ts
 import { PropsWithChildren } from 'react';
+import { default as React_2 } from 'react';
 
 // @alpha
 export const MockPluginProvider: ({
   children,
-}: PropsWithChildren<{}>) => JSX.Element;
+}: PropsWithChildren<{}>) => React_2.JSX.Element;
 
 // (No @packageDocumentation comment for this package)
 ```

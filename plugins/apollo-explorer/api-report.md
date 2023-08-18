@@ -7,6 +7,7 @@
 
 import { BackstagePlugin } from '@backstage/core-plugin-api';
 import { JSONObject } from '@apollo/explorer/src/helpers/types';
+import { JSX as JSX_2 } from 'react';
 import { RouteRef } from '@backstage/core-plugin-api';
 
 // @public
@@ -30,7 +31,7 @@ export const ApolloExplorerPage: (props: {
         }
       | undefined;
   }[];
-}) => JSX.Element;
+}) => JSX_2.Element;
 
 // @public
 export const apolloExplorerPlugin: BackstagePlugin<

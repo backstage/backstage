@@ -10,6 +10,7 @@ import { BackstagePlugin } from '@backstage/core-plugin-api';
 import { ConfigApi } from '@backstage/core-plugin-api';
 import { DiscoveryApi } from '@backstage/core-plugin-api';
 import { Entity } from '@backstage/catalog-model';
+import { JSX as JSX_2 } from 'react';
 import { RouteRef } from '@backstage/core-plugin-api';
 
 // @public (undocumented)
@@ -21,7 +22,7 @@ export type ClientApiConfig = {
 // @public (undocumented)
 export const EntitySplunkOnCallCard: (
   props: EntitySplunkOnCallCardProps,
-) => JSX.Element;
+) => JSX_2.Element;
 
 // @public (undocumented)
 export type EntitySplunkOnCallCardProps = {

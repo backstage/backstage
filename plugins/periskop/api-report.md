@@ -10,6 +10,7 @@ import { BackstagePlugin } from '@backstage/core-plugin-api';
 import { ConfigApi } from '@backstage/core-plugin-api';
 import { DiscoveryApi } from '@backstage/core-plugin-api';
 import { Entity } from '@backstage/catalog-model';
+import { JSX as JSX_2 } from 'react';
 
 // @public (undocumented)
 export interface AggregatedError {
@@ -24,7 +25,7 @@ export interface AggregatedError {
 }
 
 // @public (undocumented)
-export const EntityPeriskopErrorsCard: () => JSX.Element;
+export const EntityPeriskopErrorsCard: () => JSX_2.Element;
 
 // @public (undocumented)
 interface Error_2 {
