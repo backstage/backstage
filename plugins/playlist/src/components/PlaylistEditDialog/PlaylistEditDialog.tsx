@@ -76,7 +76,7 @@ export const PlaylistEditDialog = ({
   const classes = useStyles();
   const identityApi = useApi(identityApiRef);
   const playlistApi = useApi(playlistApiRef);
-  const [playlistArray, setPlaylistArray] = useState([]);
+  const [playlistArray, setPlaylistArray] = useState<PlaylistMetadata[]>([]);
   const [editingOtherFields, setEditingOtherFields] = useState(false);
 
   useEffect(() => {
