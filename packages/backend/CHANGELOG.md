@@ -1,5 +1,12 @@
 # example-backend
 
+## 0.2.87
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/plugin-scaffolder-backend@1.16.1
+
 ## 0.2.86
 
 ### Patch Changes
