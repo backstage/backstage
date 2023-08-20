@@ -27,7 +27,7 @@ export default async function createPlugin(
     const builder = await CatalogBuilder.create(env);
 
  +   builder.addProcessor(
- +       await AwsOrganizationCloudAccountProcessor.fromConfig( 
+ +       await AwsOrganizationCloudAccountProcessor.fromConfig(
  +           env.config,
  +           {logger: env.logger}
  +      )
@@ -45,7 +45,7 @@ catalog:
     awsOrganization:
       provider:
         roleArn: '<role-arn>' # Should be a role that has a AWSOrganizationsReadOnlyAccess policy attached.
-  ...  
+  ...
   locations:
     - type: aws-cloud-accounts
       target: <The AWS Organization ID>
