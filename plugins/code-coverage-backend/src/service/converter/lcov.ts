@@ -22,58 +22,105 @@ export class Lcov implements Converter {
     this.logger = logger;
   }
 
+  /**
+   * convert lcov into shared json coverage format
+   *
+   * @param raw - raw lcov report
+   * @param scmFiles - list of files that are committed to SCM
+   */
   convert(raw: string, scmFiles: string[]): FileEntry[] {
     const lines = raw.split(/\r?\n/);
     const jscov: Array<FileEntry> = [];
     let currentFile: FileEntry | null = null;
 
     lines.forEach(line => {
-      // If the line starts with SF, it's a new file
-      if (/^SF:/.test(line)) {
-        const coverageFilename = line.replace(/^SF:/, '');
-        const filename = scmFiles
-          .map(f => f.trimEnd())
-          .find(f => coverageFilename.endsWith(f));
+      const [section, value] = line.split(':');
 
-        this.logger.debug(`matched ${coverageFilename} to ${currentFile}`);
-
-        if (filename) {
-          currentFile = {
-            filename,
-            lineHits: {},
-            branchHits: {},
-          };
-        }
-
+      switch (section) {
+        // If the line starts with SF, it's a new file
+        case 'SF':
+          currentFile = this.processNewFile(value, scmFiles);
+          break;
         // If the line starts with DA, it's a line hit
-      } else if (currentFile && /^DA:/.test(line)) {
-        const [, lineNumber, hits] = line.split(/[,:]+/);
-        currentFile.lineHits[Number(lineNumber)] = Number(hits);
-
-        // If the line starts with BRDA, it's a branch
-      } else if (currentFile && /^BRDA:/.test(line)) {
-        const [, lineNumber, , , hits] = line.split(/[,:]+/);
-        const isHit = Number(hits) > 0;
-
-        if (!currentFile.branchHits[Number(lineNumber)]) {
-          currentFile.branchHits[Number(lineNumber)] = {
-            covered: isHit ? 1 : 0,
-            available: 1,
-            missed: isHit ? 0 : 1,
-          };
-        } else {
-          currentFile.branchHits[Number(lineNumber)].available += 1;
-          currentFile.branchHits[Number(lineNumber)].covered += isHit ? 1 : 0;
-          currentFile.branchHits[Number(lineNumber)].missed += isHit ? 0 : 1;
-        }
-
+        case 'DA':
+          this.processLineHit(currentFile, value);
+          break;
+        // If the line starts with BRDA, it's a branch line
+        case 'BRDA':
+          this.processBranchHit(currentFile, value);
+          break;
         // If the line starts with end_of_record, it's the end of current file
-      } else if (currentFile && /^end_of_record/.test(line)) {
-        jscov.push(currentFile);
-        currentFile = null;
+        case 'end_of_record':
+          if (currentFile) {
+            jscov.push(currentFile);
+            currentFile = null;
+          }
+          break;
+        default:
+          break;
       }
     });
 
     return jscov;
+  }
+
+  /**
+   * Parses a new file entry
+   *
+   * @param file - file name from coverage report
+   * @param scmFiles - list of files that are committed to SCM
+   */
+  private processNewFile(file: string, scmFiles: string[]): FileEntry | null {
+    const filename = scmFiles.map(f => f.trimEnd()).find(f => file.endsWith(f));
+
+    this.logger.debug(`matched ${file} to ${filename}`);
+
+    if (filename) {
+      return {
+        filename,
+        lineHits: {},
+        branchHits: {},
+      };
+    }
+
+    return null;
+  }
+
+  /**
+   * Parses line coverage information
+   *
+   * @param currentFile - current file entry
+   * @param value - line coverage information
+   */
+  private processLineHit(currentFile: FileEntry | null, value: string): void {
+    if (!currentFile) return;
+
+    const [lineNumber, hits] = value.split(',');
+    currentFile.lineHits[Number(lineNumber)] = Number(hits);
+  }
+
+  /**
+   * Parses branch coverage information
+   *
+   * @param currentFile - current file entry
+   * @param value - branch coverage information
+   */
+  private processBranchHit(currentFile: FileEntry | null, value: string): void {
+    if (!currentFile) return;
+
+    const [lineNumber, , , hits] = value.split(',');
+    const lineNumberNum = Number(lineNumber);
+    const isHit = Number(hits) > 0;
+    const branch = currentFile.branchHits[lineNumberNum] || {
+      covered: 0,
+      available: 0,
+      missed: 0,
+    };
+
+    branch.available++;
+    branch.covered += isHit ? 1 : 0;
+    branch.missed += isHit ? 0 : 1;
+
+    currentFile.branchHits[lineNumberNum] = branch;
   }
 }
