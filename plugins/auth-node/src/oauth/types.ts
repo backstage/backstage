@@ -26,6 +26,7 @@ export interface OAuthSession {
   scope: string;
   expiresInSeconds?: number;
   refreshToken?: string;
+  refreshTokenExpiresInSeconds?: number;
 }
 
 /** @public */
