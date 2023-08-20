@@ -4553,7 +4553,7 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@backstage/plugin-auth-backend-module-github-provider@workspace:plugins/auth-backend-module-github-provider":
+"@backstage/plugin-auth-backend-module-github-provider@workspace:^, @backstage/plugin-auth-backend-module-github-provider@workspace:plugins/auth-backend-module-github-provider":
   version: 0.0.0-use.local
   resolution: "@backstage/plugin-auth-backend-module-github-provider@workspace:plugins/auth-backend-module-github-provider"
   dependencies:
@@ -4599,6 +4599,7 @@ __metadata:
     "@backstage/config": "workspace:^"
     "@backstage/errors": "workspace:^"
     "@backstage/plugin-auth-backend-module-gcp-iap-provider": "workspace:^"
+    "@backstage/plugin-auth-backend-module-github-provider": "workspace:^"
     "@backstage/plugin-auth-backend-module-google-provider": "workspace:^"
     "@backstage/plugin-auth-node": "workspace:^"
     "@backstage/plugin-catalog-node": "workspace:^"
