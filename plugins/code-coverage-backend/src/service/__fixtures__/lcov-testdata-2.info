@@ -1,0 +1,50 @@
+SF:/Some/Path/src/Calc/Main.cs
+FN:4,System.Int32 Calc.Main::Calc(System.Int32,System.Int32,System.String)
+FNDA:4,System.Int32 Calc.Main::Calc(System.Int32,System.Int32,System.String)
+DA:5,4
+DA:6,4
+DA:7,1
+DA:8,0
+DA:9,2
+DA:10,1
+DA:11,4
+BRDA:5,15,0,3
+BRDA:5,28,0,3
+BRDA:5,15,1,1
+BRDA:5,28,1,0
+BRDA:5,41,1,2
+BRDA:5,41,0,1
+LF:7
+LH:6
+BRF:6
+BRH:5
+FNF:1
+FNH:1
+end_of_record
+SF:/Some/Path/src/Calc/Math.cs
+FN:4,System.Int32 Calc.Math::Addition(System.Int32,System.Int32)
+FNDA:1,System.Int32 Calc.Math::Addition(System.Int32,System.Int32)
+DA:5,1
+FN:5,System.Int32 Calc.Math::Subtraction(System.Int32,System.Int32)
+FNDA:0,System.Int32 Calc.Math::Subtraction(System.Int32,System.Int32)
+DA:6,0
+FN:6,System.Int32 Calc.Math::Division(System.Int32,System.Int32)
+FNDA:2,System.Int32 Calc.Math::Division(System.Int32,System.Int32)
+DA:7,2
+DA:8,2
+DA:9,0
+DA:11,3
+DA:12,1
+DA:14,1
+DA:15,1
+BRDA:8,7,0,0
+BRDA:8,7,1,2
+BRDA:11,22,0,1
+BRDA:11,22,1,1
+LF:9
+LH:7
+BRF:4
+BRH:3
+FNF:3
+FNH:2
+end_of_record
