@@ -14,6 +14,7 @@
  * limitations under the License.
  */
 
+import { logger } from '@azure/identity';
 import { trimStart } from 'lodash';
 import { GerritIntegrationConfig } from './config';
 
@@ -156,14 +157,18 @@ export function getAuthenticationPrefix(
 export function getGitilesAuthenticationUrl(
   config: GerritIntegrationConfig,
 ): string {
-  const parsedUrl = new URL(config.gitilesBaseUrl!);
-  parsedUrl.pathname = parsedUrl.pathname.replace(/\/?$/, '');
-  parsedUrl.pathname = parsedUrl.pathname.replace(
-    /\/([^\/]*)$/,
-    `${getAuthenticationPrefix(config)}$1`,
-  );
-
-  return parsedUrl.toString();
+  if (config.gitilesBaseUrl!.startsWith(config.baseUrl!)) {
+    return config.gitilesBaseUrl!.replace(
+      config.baseUrl!.concat('/'),
+      config.baseUrl!.concat(getAuthenticationPrefix(config)),
+    );
+  }
+  if (config.password) {
+    logger.warning(
+      'Since the baseUrl (Gerrit) is not part of the gitilesBaseUrl, an authentication URL could not be constructed.',
+    );
+  }
+  return config.gitilesBaseUrl!;
 }
 
 /**
