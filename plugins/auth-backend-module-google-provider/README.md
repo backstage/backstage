@@ -1,6 +1,6 @@
 # Auth Module: Google Provider
 
-This module provides an Google auth provider implementation for `@backstage/plugin-auth-backend`.
+This module provides a Google auth provider implementation for `@backstage/plugin-auth-backend`.
 
 ## Links
 
