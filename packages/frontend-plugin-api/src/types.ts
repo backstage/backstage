@@ -14,7 +14,6 @@
  * limitations under the License.
  */
 
-import mapValues from 'lodash/mapValues';
 import { ComponentType } from 'react';
 
 /** @public */
@@ -84,43 +83,6 @@ export function createExtension<
   TPoint extends Record<string, { extensionData: AnyExtensionDataMap }>,
 >(options: CreateExtensionOptions<TData, TPoint>): Extension {
   return { ...options, $$type: 'extension', inputs: options.inputs ?? {} };
-}
-
-/** @public */
-export type ExtensionDataId = string;
-
-/** @public */
-export interface ExtensionInstance {
-  id: string;
-  data: Map<ExtensionDataId, unknown>;
-  $$type: 'extension-instance';
-}
-
-/** @public */
-export function createExtensionInstance(options: {
-  id: string;
-  extension: Extension;
-  config: unknown;
-  attachments: Record<string, ExtensionInstance[]>;
-}): ExtensionInstance {
-  const { extension, config, attachments } = options;
-  const extensionData = new Map<ExtensionDataId, unknown>();
-  extension.factory({
-    config,
-    bind: mapValues(extension.output, ref => {
-      return (value: unknown) => extensionData.set(ref.id, value);
-    }),
-    inputs: mapValues(
-      extension.inputs,
-      ({ extensionData: pointData }, inputName) => {
-        // TODO: validation
-        return (attachments[inputName] ?? []).map(attachment =>
-          mapValues(pointData, ref => attachment.data.get(ref.id)),
-        );
-      },
-    ),
-  });
-  return { id: options.id, data: extensionData, $$type: 'extension-instance' };
 }
 
 /** @public */

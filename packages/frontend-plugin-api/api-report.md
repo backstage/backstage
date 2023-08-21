@@ -44,14 +44,6 @@ export function createExtension<
 >(options: CreateExtensionOptions<TData, TPoint>): Extension;
 
 // @public (undocumented)
-export function createExtensionInstance(options: {
-  id: string;
-  extension: Extension;
-  config: unknown;
-  attachments: Record<string, ExtensionInstance[]>;
-}): ExtensionInstance;
-
-// @public (undocumented)
 export interface CreateExtensionOptions<
   TData extends AnyExtensionDataMap,
   TPoint extends Record<
@@ -107,9 +99,6 @@ export type ExtensionDataBind<TData extends AnyExtensionDataMap> = {
 };
 
 // @public (undocumented)
-export type ExtensionDataId = string;
-
-// @public (undocumented)
 export type ExtensionDataRef<T> = {
   id: string;
   T: T;
@@ -120,16 +109,6 @@ export type ExtensionDataRef<T> = {
 export type ExtensionDataValue<TData extends AnyExtensionDataMap> = {
   [K in keyof TData]: TData[K]['T'];
 };
-
-// @public (undocumented)
-export interface ExtensionInstance {
-  // (undocumented)
-  $$type: 'extension-instance';
-  // (undocumented)
-  data: Map<ExtensionDataId, unknown>;
-  // (undocumented)
-  id: string;
-}
 
 // @public (undocumented)
 export interface ExtensionInstanceConfig {

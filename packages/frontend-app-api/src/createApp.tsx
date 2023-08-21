@@ -19,11 +19,13 @@ import { Config, ConfigReader } from '@backstage/config';
 import {
   ExtensionInstanceConfig,
   BackstagePlugin,
-  ExtensionInstance,
-  createExtensionInstance,
   coreExtensionData,
 } from '@backstage/frontend-plugin-api';
 import { RouteExtension } from './extensions/RouteExtension';
+import {
+  createExtensionInstance,
+  ExtensionInstance,
+} from './createExtensionInstance';
 
 // Since we'll never merge arrays in config the config reader context
 // isn't too much of a help. Fall back to manual config reading logic

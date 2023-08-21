@@ -22,18 +22,15 @@
 
 export {
   createExtension,
-  createExtensionInstance,
   coreExtensionData,
   createPlugin,
   type ExtensionInstanceConfig,
   type BackstagePlugin,
-  type ExtensionInstance,
   type Extension,
   type AnyExtensionDataMap,
   type BackstagePluginOptions,
   type CreateExtensionOptions,
   type ExtensionDataBind,
-  type ExtensionDataId,
   type ExtensionDataRef,
   type ExtensionDataValue,
 } from './types';

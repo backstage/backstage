@@ -32,10 +32,11 @@
   "dependencies": {
     "@backstage/config": "workspace:^",
     "@backstage/frontend-plugin-api": "workspace:^",
-    "@backstage/plugin-graphiql": "workspace:^"
+    "@backstage/plugin-graphiql": "workspace:^",
+    "lodash": "^4.17.21"
   },
   "peerDependencies": {
-    "react": "*",
-    "react-router-dom": "*"
+    "react": "^16.13.1 || ^17.0.0",
+    "react-router-dom": "6.0.0-beta.0 || ^6.3.0"
   }
 }
