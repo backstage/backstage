@@ -39,6 +39,7 @@ describe('compileConfigSchemas', () => {
         },
       ],
       visibilityByDataPath: new Map(),
+      deepVisibilityByDataPath: new Map(),
       visibilityBySchemaPath: new Map(),
       deprecationByDataPath: new Map(),
     });
@@ -53,6 +54,7 @@ describe('compileConfigSchemas', () => {
         },
       ],
       visibilityByDataPath: new Map(),
+      deepVisibilityByDataPath: new Map(),
       visibilityBySchemaPath: new Map(),
       deprecationByDataPath: new Map(),
     });
@@ -106,6 +108,7 @@ describe('compileConfigSchemas', () => {
           '/d/0': 'frontend',
         }),
       ),
+      deepVisibilityByDataPath: new Map(),
       visibilityBySchemaPath: new Map(
         Object.entries({
           '/properties/a': 'frontend',
@@ -166,6 +169,7 @@ describe('compileConfigSchemas', () => {
           '/b': 'deprecation reason for b',
         }),
       ),
+      deepVisibilityByDataPath: new Map(),
       visibilityByDataPath: new Map(),
       visibilityBySchemaPath: new Map(),
     });
@@ -221,6 +225,7 @@ describe('compileConfigSchemas', () => {
           '//circleci/api/headers/Circle-Token': 'secret',
         }),
       ),
+      deepVisibilityByDataPath: new Map(),
       visibilityBySchemaPath: new Map(
         Object.entries({
           '/properties//circleci/api/properties/headers/properties/Circle-Token':
@@ -277,18 +282,18 @@ describe('deepVisibility', () => {
     ).toEqual({
       visibilityByDataPath: new Map(
         Object.entries({
-          '': 'secret',
           '/b': 'secret',
-          '/d': 'secret',
-          '/d/0': 'secret',
+        }),
+      ),
+      deepVisibilityByDataPath: new Map(
+        Object.entries({
+          '': 'secret',
         }),
       ),
       visibilityBySchemaPath: new Map(
         Object.entries({
           '': 'secret',
           '/properties/b': 'secret',
-          '/properties/d': 'secret',
-          '/properties/d/items': 'secret',
         }),
       ),
       deprecationByDataPath: new Map(),
@@ -340,26 +345,6 @@ describe('deepVisibility', () => {
     expect(() =>
       compileConfigSchemas([
         {
-          path: 'a1',
-          value: {
-            type: 'object',
-            properties: {
-              a: {
-                type: 'object',
-                properties: {
-                  a: { type: 'string' },
-                },
-              },
-              b: { type: 'string', visibility: 'backend' },
-              c: { type: 'string' },
-              d: {
-                type: 'array',
-                items: { type: 'string' },
-              },
-            },
-          },
-        },
-        {
           path: 'a2',
           value: {
             type: 'object',
@@ -368,7 +353,7 @@ describe('deepVisibility', () => {
               a: {
                 type: 'object',
                 properties: {
-                  a: { type: 'string', visibility: 'frontend' },
+                  a: { type: 'string', deepVisibility: 'frontend' },
                 },
               },
               b: { type: 'string', visibility: 'secret' },
@@ -376,6 +361,28 @@ describe('deepVisibility', () => {
               d: {
                 type: 'array',
                 items: { type: 'string' },
+              },
+            },
+          },
+        },
+      ]),
+    ).toThrow(
+      `Config schema visibility is both 'frontend' and 'secret' for /properties/a`,
+    );
+  });
+
+  it('should throw when the same schema node has a conflicting deepVisibility', () => {
+    expect(() =>
+      compileConfigSchemas([
+        {
+          path: 'a2',
+          value: {
+            type: 'object',
+            properties: {
+              a: {
+                type: 'string',
+                deepVisibility: 'secret',
+                visibility: 'frontend',
               },
             },
           },
