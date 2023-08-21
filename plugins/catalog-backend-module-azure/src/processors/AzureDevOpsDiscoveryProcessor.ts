@@ -16,6 +16,8 @@
 
 import { Config } from '@backstage/config';
 import {
+  AzureDevOpsCredentialsProvider,
+  DefaultAzureDevOpsCredentialsProvider,
   ScmIntegrationRegistry,
   ScmIntegrations,
 } from '@backstage/integration';
@@ -46,6 +48,7 @@ import { codeSearch } from '../lib';
  */
 export class AzureDevOpsDiscoveryProcessor implements CatalogProcessor {
   private readonly integrations: ScmIntegrationRegistry;
+  private readonly credentialsProvider: AzureDevOpsCredentialsProvider;
   private readonly logger: Logger;
 
   static fromConfig(config: Config, options: { logger: Logger }) {
@@ -63,6 +66,10 @@ export class AzureDevOpsDiscoveryProcessor implements CatalogProcessor {
   }) {
     this.integrations = options.integrations;
     this.logger = options.logger;
+    this.credentialsProvider =
+      DefaultAzureDevOpsCredentialsProvider.fromIntegrations(
+        options.integrations,
+      );
   }
 
   getProcessorName(): string {
@@ -93,6 +100,7 @@ export class AzureDevOpsDiscoveryProcessor implements CatalogProcessor {
     );
 
     const files = await codeSearch(
+      this.credentialsProvider,
       azureConfig,
       org,
       project,

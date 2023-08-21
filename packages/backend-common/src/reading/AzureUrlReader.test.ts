@@ -17,7 +17,11 @@
 import { ConfigReader } from '@backstage/config';
 import {
   AzureIntegration,
+  DefaultAzureDevOpsCredentialsProvider,
   readAzureIntegrationConfig,
+  ScmIntegrations,
+  AzureDevOpsCredentialLike,
+  AzureIntegrationConfig,
 } from '@backstage/integration';
 import { setupRequestMockHandlers } from '@backstage/backend-test-utils';
 import fs from 'fs-extra';
@@ -31,11 +35,39 @@ import { getVoidLogger } from '../logging';
 import { AzureUrlReader } from './AzureUrlReader';
 import { DefaultReadTreeResponseFactory } from './tree';
 
+type AzureIntegrationConfigLike = Partial<
+  Omit<AzureIntegrationConfig, 'credential' | 'credentials'>
+> & {
+  credentials?: Partial<AzureDevOpsCredentialLike>[];
+};
+
 const logger = getVoidLogger();
 
 const treeResponseFactory = DefaultReadTreeResponseFactory.create({
   config: new ConfigReader({}),
 });
+
+const urlReaderFactory = (azureIntegration: AzureIntegrationConfigLike) => {
+  const credentialsProvider =
+    DefaultAzureDevOpsCredentialsProvider.fromIntegrations(
+      ScmIntegrations.fromConfig(
+        new ConfigReader({
+          integrations: {
+            azure: [azureIntegration],
+          },
+        }),
+      ),
+    );
+  return new AzureUrlReader(
+    new AzureIntegration(
+      readAzureIntegrationConfig(new ConfigReader(azureIntegration)),
+    ),
+    {
+      treeResponseFactory,
+      credentialsProvider,
+    },
+  );
+};
 
 const tmpDir = os.platform() === 'win32' ? 'C:\\tmp' : '/tmp';
 
@@ -68,13 +100,29 @@ describe('AzureUrlReader', () => {
       );
     });
 
-    const createConfig = (token?: string) =>
-      new ConfigReader(
+    const createConfig = (token?: string) => {
+      let credentials: AzureDevOpsCredentialLike[] | undefined = undefined;
+      if (token !== undefined) {
+        credentials = [
+          {
+            personalAccessToken: token,
+          },
+        ];
+      }
+      return new ConfigReader(
         {
-          integrations: { azure: [{ host: 'dev.azure.com', token }] },
+          integrations: {
+            azure: [
+              {
+                host: 'dev.azure.com',
+                credentials: credentials,
+              },
+            ],
+          },
         },
         'test-config',
       );
+    };
 
     it.each([
       {
@@ -104,8 +152,8 @@ describe('AzureUrlReader', () => {
         url: 'https://dev.azure.com/a/b/_git/repo-name?path=my-template.yaml',
         config: createConfig(undefined),
         response: expect.objectContaining({
-          headers: expect.not.objectContaining({
-            authorization: expect.anything(),
+          headers: expect.objectContaining({
+            authorization: expect.stringMatching(/^Bearer /),
           }),
         }),
       },
@@ -137,7 +185,7 @@ describe('AzureUrlReader', () => {
         url: '',
         config: createConfig(''),
         error:
-          "Invalid type in config for key 'integrations.azure[0].token' in 'test-config', got empty-string, wanted string",
+          "Invalid type in config for key 'integrations.azure[0].credentials[0].personalAccessToken' in 'test-config', got empty-string, wanted string",
       },
     ])('should handle error path %#', async ({ url, config, error }) => {
       await expect(async () => {
@@ -156,16 +204,14 @@ describe('AzureUrlReader', () => {
       path.resolve(__dirname, '__fixtures__/mock-main.zip'),
     );
 
-    const processor = new AzureUrlReader(
-      new AzureIntegration(
-        readAzureIntegrationConfig(
-          new ConfigReader({
-            host: 'dev.azure.com',
-          }),
-        ),
-      ),
-      { treeResponseFactory },
-    );
+    const processor = urlReaderFactory({
+      host: 'dev.azure.com',
+      credentials: [
+        {
+          personalAccessToken: 'my-pat',
+        },
+      ],
+    });
 
     beforeEach(() => {
       worker.use(
@@ -268,16 +314,14 @@ describe('AzureUrlReader', () => {
       path.resolve(__dirname, '__fixtures__/mock-main.zip'),
     );
 
-    const processor = new AzureUrlReader(
-      new AzureIntegration(
-        readAzureIntegrationConfig(
-          new ConfigReader({
-            host: 'dev.azure.com',
-          }),
-        ),
-      ),
-      { treeResponseFactory },
-    );
+    const processor = urlReaderFactory({
+      host: 'dev.azure.com',
+      credentials: [
+        {
+          personalAccessToken: 'my-pat',
+        },
+      ],
+    });
 
     beforeEach(() => {
       worker.use(

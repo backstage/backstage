@@ -16,7 +16,12 @@
 
 import { PluginTaskScheduler, TaskRunner } from '@backstage/backend-tasks';
 import { Config } from '@backstage/config';
-import { AzureIntegration, ScmIntegrations } from '@backstage/integration';
+import {
+  AzureDevOpsCredentialsProvider,
+  AzureIntegration,
+  DefaultAzureDevOpsCredentialsProvider,
+  ScmIntegrations,
+} from '@backstage/integration';
 import {
   EntityProvider,
   EntityProviderConnection,
@@ -50,6 +55,9 @@ export class AzureDevOpsEntityProvider implements EntityProvider {
     },
   ): AzureDevOpsEntityProvider[] {
     const providerConfigs = readAzureDevOpsConfigs(configRoot);
+    const scmIntegrations = ScmIntegrations.fromConfig(configRoot);
+    const credentialsProvider =
+      DefaultAzureDevOpsCredentialsProvider.fromIntegrations(scmIntegrations);
 
     if (!options.schedule && !options.scheduler) {
       throw new Error('Either schedule or scheduler must be provided.');
@@ -79,6 +87,7 @@ export class AzureDevOpsEntityProvider implements EntityProvider {
       return new AzureDevOpsEntityProvider(
         providerConfig,
         integration,
+        credentialsProvider,
         options.logger,
         taskRunner,
       );
@@ -88,6 +97,7 @@ export class AzureDevOpsEntityProvider implements EntityProvider {
   private constructor(
     private readonly config: AzureDevOpsConfig,
     private readonly integration: AzureIntegration,
+    private readonly credentialsProvider: AzureDevOpsCredentialsProvider,
     logger: Logger,
     taskRunner: TaskRunner,
   ) {
@@ -139,6 +149,7 @@ export class AzureDevOpsEntityProvider implements EntityProvider {
     logger.info('Discovering Azure DevOps catalog files');
 
     const files = await codeSearch(
+      this.credentialsProvider,
       this.integration.config,
       this.config.organization,
       this.config.project,
