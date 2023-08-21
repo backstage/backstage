@@ -1,5 +1,14 @@
 # @backstage/integration
 
+## 1.6.1
+
+### Patch Changes
+
+- 842eb24ef5e8: Gitiles: Fixed auth prefix issue
+- Updated dependencies
+  - @backstage/config@1.0.8
+  - @backstage/errors@1.2.1
+
 ## 1.6.0
 
 ### Minor Changes

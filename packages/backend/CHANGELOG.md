@@ -1,5 +1,60 @@
 # example-backend
 
+## 0.2.88
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/integration@1.6.1
+  - @backstage/plugin-catalog-backend@1.12.1
+  - @backstage/backend-common@0.19.3
+  - @backstage/plugin-adr-backend@0.3.7
+  - @backstage/plugin-code-coverage-backend@0.2.15
+  - @backstage/plugin-scaffolder-backend@1.16.2
+  - @backstage/plugin-scaffolder-backend-module-confluence-to-markdown@0.2.2
+  - @backstage/plugin-scaffolder-backend-module-rails@0.4.18
+  - @backstage/plugin-techdocs-backend@1.6.6
+  - @backstage/plugin-todo-backend@0.2.1
+  - @backstage/backend-tasks@0.5.6
+  - @backstage/plugin-app-backend@0.3.49
+  - @backstage/plugin-auth-backend@0.18.7
+  - @backstage/plugin-auth-node@0.2.18
+  - @backstage/plugin-azure-devops-backend@0.3.28
+  - @backstage/plugin-azure-sites-backend@0.1.11
+  - @backstage/plugin-badges-backend@0.2.4
+  - @backstage/plugin-catalog-node@1.4.2
+  - @backstage/plugin-devtools-backend@0.1.4
+  - @backstage/plugin-entity-feedback-backend@0.1.7
+  - @backstage/plugin-events-backend@0.2.10
+  - @backstage/plugin-explore-backend@0.0.11
+  - @backstage/plugin-graphql-backend@0.1.39
+  - @backstage/plugin-jenkins-backend@0.2.4
+  - @backstage/plugin-kafka-backend@0.2.42
+  - @backstage/plugin-kubernetes-backend@0.11.4
+  - @backstage/plugin-lighthouse-backend@0.2.5
+  - @backstage/plugin-linguist-backend@0.4.1
+  - @backstage/plugin-nomad-backend@0.1.3
+  - @backstage/plugin-permission-backend@0.5.24
+  - @backstage/plugin-permission-node@0.7.12
+  - @backstage/plugin-playlist-backend@0.3.5
+  - @backstage/plugin-proxy-backend@0.3.1
+  - @backstage/plugin-rollbar-backend@0.1.46
+  - @backstage/plugin-search-backend@1.4.1
+  - @backstage/plugin-search-backend-module-elasticsearch@1.3.4
+  - @backstage/plugin-search-backend-module-pg@0.5.10
+  - @backstage/plugin-search-backend-node@1.2.5
+  - @backstage/plugin-tech-insights-backend@0.5.15
+  - @backstage/plugin-tech-insights-backend-module-jsonfc@0.1.33
+  - @backstage/plugin-tech-insights-node@0.4.7
+  - example-app@0.2.88
+  - @backstage/catalog-client@1.4.3
+  - @backstage/catalog-model@1.4.1
+  - @backstage/config@1.0.8
+  - @backstage/plugin-catalog-backend-module-unprocessed@0.2.1
+  - @backstage/plugin-events-node@0.2.10
+  - @backstage/plugin-permission-common@0.7.7
+  - @backstage/plugin-search-common@1.2.5
+
 ## 0.2.87
 
 ### Patch Changes
