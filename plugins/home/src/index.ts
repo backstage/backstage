@@ -37,3 +37,4 @@ export * from './components';
 export * from './assets';
 export * from './homePageComponents';
 export * from './deprecated';
+export * from './api';

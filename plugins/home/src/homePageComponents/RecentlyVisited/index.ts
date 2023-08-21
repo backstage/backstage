@@ -15,3 +15,6 @@
  */
 
 export { Content } from './Content';
+export { Actions } from './Actions';
+export { ContextProvider } from './Context';
+export type { RecentlyVisitedProps } from './Content';

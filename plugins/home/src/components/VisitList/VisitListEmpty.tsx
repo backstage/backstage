@@ -1,5 +1,5 @@
 /*
- * Copyright 2021 The Backstage Authors
+ * Copyright 2023 The Backstage Authors
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,7 +14,17 @@
  * limitations under the License.
  */
 
-export type { ToolkitContentProps, Tool } from './Toolkit';
-export type { ClockConfig } from './HeaderWorldClock';
-export type { WelcomeTitleLanguageProps } from './WelcomeTitle';
-export type { RecentlyVisitedProps } from './RecentlyVisited';
+import React from 'react';
+import { Typography } from '@material-ui/core';
+
+export const VisitListEmpty = () => (
+  <>
+    <Typography variant="body2" color="textSecondary">
+      There are no visits to show yet.
+    </Typography>
+    <Typography variant="body2" color="textSecondary">
+      Once you start using Backstage, your visits will appear here as a quick
+      link to carry on where you left off.
+    </Typography>
+  </>
+);
