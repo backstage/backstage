@@ -188,8 +188,6 @@ export const ProvidingComponentsCard: (props: {
   variant?: InfoCardVariants;
 }) => JSX.Element;
 
-// Warning: (ae-missing-release-tag) "Request" is part of the package's API, but it is missing a release tag (@alpha, @beta, @public, or @internal)
-//
 // @public (undocumented)
 interface Request_2 {
   // (undocumented)
