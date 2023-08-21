@@ -1,5 +1,16 @@
 # @backstage/plugin-splunk-on-call
 
+## 0.4.11
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/plugin-catalog-react@1.8.2
+  - @backstage/catalog-model@1.4.1
+  - @backstage/core-components@0.13.4
+  - @backstage/core-plugin-api@1.5.3
+  - @backstage/theme@0.4.1
+
 ## 0.4.10
 
 ### Patch Changes

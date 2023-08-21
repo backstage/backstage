@@ -1,5 +1,21 @@
 # @backstage/plugin-catalog-backend-module-azure
 
+## 0.1.20
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/integration@1.6.1
+  - @backstage/backend-common@0.19.3
+  - @backstage/backend-tasks@0.5.6
+  - @backstage/plugin-catalog-node@1.4.2
+  - @backstage/backend-plugin-api@0.6.1
+  - @backstage/catalog-model@1.4.1
+  - @backstage/config@1.0.8
+  - @backstage/errors@1.2.1
+  - @backstage/types@1.1.0
+  - @backstage/plugin-catalog-common@1.0.15
+
 ## 0.1.19
 
 ### Patch Changes

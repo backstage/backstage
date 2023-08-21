@@ -1,5 +1,19 @@
 # @backstage/plugin-github-deployments
 
+## 0.1.53
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/integration@1.6.1
+  - @backstage/integration-react@1.1.17
+  - @backstage/plugin-catalog-react@1.8.2
+  - @backstage/catalog-model@1.4.1
+  - @backstage/core-components@0.13.4
+  - @backstage/core-plugin-api@1.5.3
+  - @backstage/errors@1.2.1
+  - @backstage/theme@0.4.1
+
 ## 0.1.52
 
 ### Patch Changes

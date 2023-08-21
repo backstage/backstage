@@ -39,6 +39,14 @@ describe('gerrit core', () => {
       host: 'gerrit.com',
       gitilesBaseUrl: 'https://gerrit.com/gitiles',
     };
+    const configWithPath: GerritIntegrationConfig = {
+      host: 'gerrit.com',
+      gitilesBaseUrl: 'https://gerrit.com/path/gitiles',
+    };
+    const configWithPathSlash: GerritIntegrationConfig = {
+      host: 'gerrit.com',
+      gitilesBaseUrl: 'https://gerrit.com/path1/path2/gitiles/',
+    };
     it('can create an archive url for a branch', () => {
       expect(buildGerritGitilesArchiveUrl(config, 'repo', 'dev', '')).toEqual(
         'https://gerrit.com/gitiles/repo/+archive/refs/heads/dev.tar.gz',
@@ -65,6 +73,30 @@ describe('gerrit core', () => {
         buildGerritGitilesArchiveUrl(authConfig, 'repo', 'dev', 'docs'),
       ).toEqual(
         'https://gerrit.com/a/gitiles/repo/+archive/refs/heads/dev/docs.tar.gz',
+      );
+    });
+    it('can create an authenticated url when auth is enabled and an url-path is used', () => {
+      const authConfig = {
+        ...configWithPath,
+        username: 'username',
+        password: 'password',
+      };
+      expect(
+        buildGerritGitilesArchiveUrl(authConfig, 'repo', 'dev', 'docs'),
+      ).toEqual(
+        'https://gerrit.com/path/a/gitiles/repo/+archive/refs/heads/dev/docs.tar.gz',
+      );
+    });
+    it('can create an authenticated url when auth is enabled and an url-path + slash is used', () => {
+      const authConfig = {
+        ...configWithPathSlash,
+        username: 'username',
+        password: 'password',
+      };
+      expect(
+        buildGerritGitilesArchiveUrl(authConfig, 'repo', 'dev', 'docs'),
+      ).toEqual(
+        'https://gerrit.com/path1/path2/a/gitiles/repo/+archive/refs/heads/dev/docs.tar.gz',
       );
     });
   });

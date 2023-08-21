@@ -1087,7 +1087,10 @@ export const spec = {
             name: 'facet',
             required: true,
             schema: {
-              type: 'string',
+              type: 'array',
+              items: {
+                type: 'string',
+              },
             },
           },
           {
