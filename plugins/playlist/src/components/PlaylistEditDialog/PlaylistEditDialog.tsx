@@ -76,15 +76,15 @@ export const PlaylistEditDialog = ({
   const classes = useStyles();
   const identityApi = useApi(identityApiRef);
   const playlistApi = useApi(playlistApiRef);
+  const playlistPromise = useRef(
+    playlistApi.getAllPlaylists({ editable: true }),
+  );
   const [editingOtherFields, setEditingOtherFields] = useState(false);
   const { loading: loadingOwnership, value: ownershipRefs } =
     useAsync(async () => {
       const { ownershipEntityRefs } = await identityApi.getBackstageIdentity();
       return ownershipEntityRefs;
     }, []);
-  const playlistPromise = useRef(
-    playlistApi.getAllPlaylists({ editable: true }),
-  );
 
   const nameIsUnique = async (
     name: string,
