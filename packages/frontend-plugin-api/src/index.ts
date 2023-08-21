@@ -13,4 +13,27 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-export {};
+
+/**
+ * TODO
+ *
+ * @packageDocumentation
+ */
+
+export {
+  createExtension,
+  createExtensionInstance,
+  coreExtensionData,
+  createPlugin,
+  type ExtensionInstanceConfig,
+  type BackstagePlugin,
+  type ExtensionInstance,
+  type Extension,
+  type AnyExtensionDataMap,
+  type BackstagePluginOptions,
+  type CreateExtensionOptions,
+  type ExtensionDataBind,
+  type ExtensionDataId,
+  type ExtensionDataRef,
+  type ExtensionDataValue,
+} from './types';

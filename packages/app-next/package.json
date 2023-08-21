@@ -14,6 +14,8 @@
     "@backstage/core-app-api": "workspace:^",
     "@backstage/core-components": "workspace:^",
     "@backstage/core-plugin-api": "workspace:^",
+    "@backstage/frontend-app-api": "workspace:^",
+    "@backstage/frontend-plugin-api": "workspace:^",
     "@backstage/integration-react": "workspace:^",
     "@backstage/plugin-adr": "workspace:^",
     "@backstage/plugin-airbrake": "workspace:^",
