@@ -157,9 +157,13 @@ export function getGitilesAuthenticationUrl(
   config: GerritIntegrationConfig,
 ): string {
   const parsedUrl = new URL(config.gitilesBaseUrl!);
-  return `${parsedUrl.protocol}//${parsedUrl.host}${getAuthenticationPrefix(
-    config,
-  )}${parsedUrl.pathname.substring(1)}`;
+  parsedUrl.pathname = parsedUrl.pathname.replace(/\/?$/, '');
+  parsedUrl.pathname = parsedUrl.pathname.replace(
+    /\/([^\/]*)$/,
+    `${getAuthenticationPrefix(config)}$1`,
+  );
+
+  return parsedUrl.toString();
 }
 
 /**
