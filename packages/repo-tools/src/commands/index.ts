@@ -102,6 +102,10 @@ export function registerCommands(program: Command) {
       '--dry-run',
       'Shows what would happen without actually writing any yaml.',
     )
+    .option(
+      '--ci',
+      'CI run checks that there are no changes to catalog-info.yaml files',
+    )
     .description('Create or fix info yaml files for all backstage packages')
     .action(
       lazy(() =>
