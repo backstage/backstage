@@ -4060,6 +4060,24 @@ __metadata:
   languageName: unknown
   linkType: soft
 
+"@backstage/frontend-app-api@workspace:packages/frontend-app-api":
+  version: 0.0.0-use.local
+  resolution: "@backstage/frontend-app-api@workspace:packages/frontend-app-api"
+  dependencies:
+    "@backstage/cli": "workspace:^"
+    "@testing-library/jest-dom": ^5.10.1
+  languageName: unknown
+  linkType: soft
+
+"@backstage/frontend-plugin-api@workspace:packages/frontend-plugin-api":
+  version: 0.0.0-use.local
+  resolution: "@backstage/frontend-plugin-api@workspace:packages/frontend-plugin-api"
+  dependencies:
+    "@backstage/cli": "workspace:^"
+    "@testing-library/jest-dom": ^5.10.1
+  languageName: unknown
+  linkType: soft
+
 "@backstage/integration-aws-node@workspace:^, @backstage/integration-aws-node@workspace:packages/integration-aws-node":
   version: 0.0.0-use.local
   resolution: "@backstage/integration-aws-node@workspace:packages/integration-aws-node"
