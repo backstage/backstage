@@ -36,7 +36,7 @@ import {
   Select,
   TextField,
 } from '@material-ui/core';
-import React, { useEffect, useState } from 'react';
+import React, { useState, useRef } from 'react';
 import { useForm, Controller } from 'react-hook-form';
 import useAsync from 'react-use/lib/useAsync';
 import useAsyncFn from 'react-use/lib/useAsyncFn';
@@ -76,31 +76,25 @@ export const PlaylistEditDialog = ({
   const classes = useStyles();
   const identityApi = useApi(identityApiRef);
   const playlistApi = useApi(playlistApiRef);
-  const [playlistArray, setPlaylistArray] = useState<PlaylistMetadata[]>([]);
   const [editingOtherFields, setEditingOtherFields] = useState(false);
-
-  useEffect(() => {
-    const fetchPlaylists = async () => {
-      const playlists = await playlistApi.getAllPlaylists({ editable: true });
-      setPlaylistArray(playlists);
-    };
-
-    fetchPlaylists();
-  }, [playlistApi]);
-
   const { loading: loadingOwnership, value: ownershipRefs } =
     useAsync(async () => {
       const { ownershipEntityRefs } = await identityApi.getBackstageIdentity();
       return ownershipEntityRefs;
     }, []);
+  const playlistPromise = useRef(
+    playlistApi.getAllPlaylists({ editable: true }),
+  );
 
   const nameIsUnique = async (
     name: string,
     isEditing: boolean,
     originalName: string,
   ) => {
+    const playlists = await playlistPromise.current;
+
     if (!isEditing || name !== originalName) {
-      return playlistArray.some(p => p.name === name)
+      return playlists.some(p => p.name === name)
         ? 'A playlist with this name already exists'
         : true;
     }
