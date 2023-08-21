@@ -55,7 +55,7 @@ export const EntityPicker = (props: EntityPickerProps) => {
     schema: { title = 'Entity', description = 'An entity from the catalog' },
     required,
     uiSchema,
-    rawErrors = [],
+    rawErrors,
     formData,
     idSchema,
   } = props;
