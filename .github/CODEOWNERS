@@ -5,7 +5,9 @@
 # https://help.github.com/articles/about-codeowners/
 
 *                                                 @backstage/maintainers
+yarn.lock                                         @backstage/maintainers @backstage-service
 */yarn.lock                                       @backstage/maintainers @backstage-service
+/.changeset/*.md
 /cypress/src/integration/plugins/techdocs.spec.ts @backstage/techdocs-maintainers
 /docs/assets/search                               @backstage/discoverability-maintainers
 /docs/features/search                             @backstage/discoverability-maintainers
@@ -91,4 +93,3 @@
 /tech-insights-backend-module-jsonfc              @backstage/maintainers @xantier @iain-b
 /tech-insights-tech-insights-common               @backstage/maintainers @xantier @iain-b
 /tech-insights-tech-insights-node                 @backstage/maintainers @xantier @iain-b
-yarn.lock                                         @backstage/maintainers @backstage-service
