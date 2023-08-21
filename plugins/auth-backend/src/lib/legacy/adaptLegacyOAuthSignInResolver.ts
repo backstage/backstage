@@ -39,7 +39,7 @@ export function adaptLegacyOAuthSignInResolver(
               scope: input.result.session.scope,
               id_token: input.result.session.idToken,
               token_type: input.result.session.tokenType,
-              expires_in: input.result.session.expiresInSeconds,
+              expires_in: input.result.session.expiresInSeconds!,
             },
           },
         },

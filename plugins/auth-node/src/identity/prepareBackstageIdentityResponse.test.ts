@@ -23,7 +23,37 @@ function mkToken(payload: unknown) {
 }
 
 describe('prepareBackstageIdentityResponse', () => {
+  afterEach(jest.resetAllMocks);
+
   it('parses a complete token to determine the identity', () => {
+    jest.spyOn(Date, 'now').mockReturnValue(5000);
+
+    const token = mkToken({ sub: 'k:ns/n', ent: ['k:ns/o'], exp: 1005 });
+    expect(
+      prepareBackstageIdentityResponse({
+        token,
+      }),
+    ).toEqual({
+      token,
+      expiresInSeconds: 1000,
+      identity: {
+        type: 'user',
+        userEntityRef: 'k:ns/n',
+        ownershipEntityRefs: ['k:ns/o'],
+      },
+    });
+  });
+
+  it('should reject tokens without subject', () => {
+    const token = mkToken({});
+    expect(() =>
+      prepareBackstageIdentityResponse({
+        token,
+      }),
+    ).toThrow('Identity response must return a token with subject claim');
+  });
+
+  it('should treat expiration as optional', () => {
     const token = mkToken({ sub: 'k:ns/n', ent: ['k:ns/o'] });
     expect(
       prepareBackstageIdentityResponse({
@@ -37,5 +67,16 @@ describe('prepareBackstageIdentityResponse', () => {
         ownershipEntityRefs: ['k:ns/o'],
       },
     });
+  });
+
+  it('should reject tokens with negative expiration', () => {
+    jest.spyOn(Date, 'now').mockReturnValue(5000);
+
+    const token = mkToken({ sub: 'k:ns/n', ent: ['k:ns/o'], exp: 1 });
+    expect(() =>
+      prepareBackstageIdentityResponse({
+        token,
+      }),
+    ).toThrow('Identity response must not return an expired token');
   });
 });

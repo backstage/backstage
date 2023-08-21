@@ -24,7 +24,7 @@ export interface OAuthSession {
   tokenType: string;
   idToken?: string;
   scope: string;
-  expiresInSeconds: number;
+  expiresInSeconds?: number;
   refreshToken?: string;
 }
 

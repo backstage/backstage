@@ -39,14 +39,28 @@ export function prepareBackstageIdentityResponse(
     throw new InputError(`Identity response must return a token`);
   }
 
-  const { sub, ent } = parseJwtPayload(result.token);
+  const { sub, ent = [], exp: expStr } = parseJwtPayload(result.token);
+  if (!sub) {
+    throw new InputError(
+      `Identity response must return a token with subject claim`,
+    );
+  }
+
+  const expAt = Number(expStr);
+
+  // Default to 1 hour if no expiration is set, in particular to make testing simpler
+  const exp = expAt ? Math.round(expAt - Date.now() / 1000) : undefined;
+  if (exp && exp < 0) {
+    throw new InputError(`Identity response must not return an expired token`);
+  }
 
   return {
     ...result,
+    expiresInSeconds: exp,
     identity: {
       type: 'user',
       userEntityRef: sub,
-      ownershipEntityRefs: ent ?? [],
+      ownershipEntityRefs: ent,
     },
   };
 }
