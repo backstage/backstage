@@ -64,6 +64,12 @@ export async function codeSearch(
       method: 'POST',
       body: JSON.stringify({
         searchText: `path:${path} repo:${repo || '*'} proj:${project || '*'}`,
+        $orderBy: [
+          {
+            field: 'path',
+            sortOrder: 'ASC',
+          },
+        ],
         $skip: items.length,
         $top: PAGE_SIZE,
       }),
