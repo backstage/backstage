@@ -69,7 +69,10 @@ export async function run() {
   print('Starting the app');
   await testAppServe(pluginId, appDir);
 
-  if (Boolean(process.env.POSTGRES_USER) || Boolean(process.env.MYSQL_USER)) {
+  if (
+    Boolean(process.env.POSTGRES_USER) ||
+    Boolean(process.env.MYSQL_CONNECTION)
+  ) {
     print('Testing the database backend startup');
     await preCleanDatabase();
     const appConfig = path.resolve(appDir, 'app-config.yaml');

@@ -21,7 +21,7 @@
  */
 exports.up = async function up(knex) {
   const isMySQL = knex.client.config.client.includes('mysql');
-  return knex.schema.createTable('static_assets_cache', table => {
+  await knex.schema.createTable('static_assets_cache', table => {
     table.comment(
       'A cache of static assets that where previously deployed and may still be lazy-loaded by clients',
     );
@@ -32,7 +32,6 @@ exports.up = async function up(knex) {
         .notNullable()
         .comment('The path of the file');
     } else {
-      // cannot have a unique key in mysql with a text column greater than 733 bytes
       table.text('path').notNullable().comment('The path of the file');
     }
     table
@@ -45,6 +44,12 @@ exports.up = async function up(knex) {
     table.binary('content').notNullable().comment('The asset content');
     table.index('last_modified_at', 'static_asset_cache_last_modified_at_idx');
   });
+  // specifically for mysql specify a unique index up to 254 characters(mysql limit)
+  if (isMySQL) {
+    await knex.schema.raw(
+      'create unique index static_assets_cache_path_idx on static_assets_cache(path(254));',
+    );
+  }
 };
 
 /**
