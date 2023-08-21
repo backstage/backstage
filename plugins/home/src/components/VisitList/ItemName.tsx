@@ -15,25 +15,27 @@
  */
 
 import React from 'react';
-import { VisitList } from '../../components/VisitList';
-import { useContext } from './Context';
-/**
- * Display recently visited pages for the homepage
- * @public
- */
-export const RecentlyVisited = () => {
-  const { collapsed, numVisitsOpen, numVisitsTotal, visits, loading } =
-    useContext();
+import { Typography, makeStyles } from '@material-ui/core';
+import { Visit } from '../../api/VisitsApi';
+import { Link } from '@backstage/core-components';
+
+const useStyles = makeStyles(_theme => ({
+  name: {
+    marginLeft: '0.8rem',
+    marginRight: '0.8rem',
+  },
+}));
+export const ItemName = ({ visit }: { visit: Visit }) => {
+  const classes = useStyles();
 
   return (
-    <VisitList
-      visits={visits}
-      title="Recently visited"
-      detailType="time-ago"
-      collapsed={collapsed}
-      numVisitsOpen={numVisitsOpen}
-      numVisitsTotal={numVisitsTotal}
-      loading={loading}
-    />
+    <Typography
+      component={Link}
+      to={visit.pathname}
+      noWrap
+      className={classes.name}
+    >
+      {visit.name}
+    </Typography>
   );
 };

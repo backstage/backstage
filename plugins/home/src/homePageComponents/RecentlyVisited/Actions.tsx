@@ -14,26 +14,24 @@
  * limitations under the License.
  */
 
-import React from 'react';
-import { VisitList } from '../../components/VisitList';
+import React, { useCallback } from 'react';
+import { Button } from '@material-ui/core';
 import { useContext } from './Context';
-/**
- * Display recently visited pages for the homepage
- * @public
- */
-export const RecentlyVisited = () => {
-  const { collapsed, numVisitsOpen, numVisitsTotal, visits, loading } =
+
+export const Actions = () => {
+  const { collapsed, setCollapsed, visits, numVisitsOpen, loading } =
     useContext();
+  const onClick = useCallback(
+    () => setCollapsed(prevCollapsed => !prevCollapsed),
+    [setCollapsed],
+  );
+  const label = collapsed ? 'View More' : 'View Less';
+
+  if (!loading && visits.length <= numVisitsOpen) return <></>;
 
   return (
-    <VisitList
-      visits={visits}
-      title="Recently visited"
-      detailType="time-ago"
-      collapsed={collapsed}
-      numVisitsOpen={numVisitsOpen}
-      numVisitsTotal={numVisitsTotal}
-      loading={loading}
-    />
+    <Button variant="text" onClick={onClick}>
+      {label}
+    </Button>
   );
 };
