@@ -28,20 +28,12 @@ import { permissions } from '@backstage/plugin-playlist-common';
 import AddBoxIcon from '@material-ui/icons/AddBox';
 import DeleteIcon from '@material-ui/icons/Delete';
 import SearchIcon from '@material-ui/icons/Search';
-import { makeStyles } from '@material-ui/core';
-import { red } from '@material-ui/core/colors';
 import React, { forwardRef, useCallback, useEffect, useState } from 'react';
 import useAsyncFn from 'react-use/lib/useAsyncFn';
 
 import { playlistApiRef } from '../../api';
 import { useTitle } from '../../hooks';
 import { AddEntitiesDrawer } from './AddEntitiesDrawer';
-
-const useStyles = makeStyles({
-  deleteicon: {
-    color: red[600],
-  },
-});
 
 export const PlaylistEntitiesTable = ({
   playlistId,
@@ -51,7 +43,6 @@ export const PlaylistEntitiesTable = ({
   const errorApi = useApi(errorApiRef);
   const playlistApi = useApi(playlistApiRef);
   const alertApi = useApi(alertApiRef);
-  const classes = useStyles();
   const [openAddEntitiesDrawer, setOpenAddEntitiesDrawer] = useState(false);
 
   const { allowed: editAllowed } = usePermission({
@@ -117,7 +108,7 @@ export const PlaylistEntitiesTable = ({
   const actions = editAllowed
     ? [
         {
-          icon: () => <DeleteIcon className={classes.deleteicon} />,
+          icon: () => <DeleteIcon color="secondary" />,
           tooltip: `Remove from ${singularTitleLowerCase}`,
           onClick: removeEntity,
         },

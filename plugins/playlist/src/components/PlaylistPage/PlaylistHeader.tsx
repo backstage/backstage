@@ -43,7 +43,6 @@ import {
 } from '@material-ui/core';
 import EditIcon from '@material-ui/icons/Edit';
 import DeleteIcon from '@material-ui/icons/Delete';
-import { red } from '@material-ui/core/colors';
 import React, { useCallback, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import useAsyncFn from 'react-use/lib/useAsyncFn';
@@ -67,9 +66,6 @@ const useStyles = makeStyles({
   chip: {
     marginTop: '5px',
     marginBottom: '5px',
-  },
-  deleteicon: {
-    color: red[600],
   },
 });
 
@@ -170,7 +166,7 @@ export const PlaylistHeader = ({ playlist, onUpdate }: PlaylistHeaderProps) => {
           },
           {
             label: `Delete ${singularTitle}`,
-            icon: <DeleteIcon className={classes.deleteicon} />,
+            icon: <DeleteIcon color="secondary" />,
             disabled: !deleteAllowed,
             onClick: () => setOpenDeleteDialog(true),
           },
