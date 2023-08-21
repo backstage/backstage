@@ -34,6 +34,12 @@ describe('azure', () => {
             expect(req.headers.get('Authorization')).toBe('Basic OkFCQw==');
             expect(req.body).toEqual({
               searchText: 'path:/catalog-info.yaml repo:* proj:engineering',
+              $orderBy: [
+                {
+                  field: 'path',
+                  sortOrder: 'ASC',
+                },
+              ],
               $skip: 0,
               $top: 1000,
             });
@@ -88,6 +94,12 @@ describe('azure', () => {
           expect(req.headers.get('Authorization')).toBe('Basic OkFCQw==');
           expect(req.body).toEqual({
             searchText: 'path:/catalog-info.yaml repo:* proj:engineering',
+            $orderBy: [
+              {
+                field: 'path',
+                sortOrder: 'ASC',
+              },
+            ],
             $skip: 0,
             $top: 1000,
           });
@@ -132,6 +144,12 @@ describe('azure', () => {
           expect(req.body).toEqual({
             searchText:
               'path:/catalog-info.yaml repo:backstage proj:engineering',
+            $orderBy: [
+              {
+                field: 'path',
+                sortOrder: 'ASC',
+              },
+            ],
             $skip: 0,
             $top: 1000,
           });
@@ -175,6 +193,12 @@ describe('azure', () => {
           expect(req.headers.get('Authorization')).toBe('Basic OkFCQw==');
           expect(req.body).toEqual({
             searchText: 'path:/catalog-info.yaml repo:* proj:engineering',
+            $orderBy: [
+              {
+                field: 'path',
+                sortOrder: 'ASC',
+              },
+            ],
             $skip: 0,
             $top: 1000,
           });
