@@ -59,8 +59,17 @@ export class PinnipedAuthProvider implements OAuthHandlers {
 
   async start(req: OAuthStartRequest): Promise<OAuthStartResponse> {
     const { strategy } = await this.implementation;
+
+    // we are practicing with this scope and it works openid pinniped:request-audience username
+    // whats the bare minimum needed for our request to fail?
+
+    // http://127.0.0.1:7007/api/auth/pinniped/start?env=development&audience=host-cluster
+    // having scope seperated by + results in an error
+
+    // `{"type":"authorization_response","error":{"name":"OPError","message":"invalid_scope (The requested scope is invalid, unknown, or malformed. The OAuth 2.0 Client is not allowed to request scope 'openid+pinniped:request-audience+username'.)"}}`
+
     const options: Record<string, string> = {
-      scope: req.scope || 'pinniped:request-audience username',
+      scope: req.scope || 'openid+pinniped:request-audience+username',
       state: encodeState(req.state),
     };
     return new Promise((resolve, reject) => {
@@ -79,30 +88,42 @@ export class PinnipedAuthProvider implements OAuthHandlers {
   ): Promise<{ response: OAuthResponse; refreshToken?: string }> {
     const { strategy } = await this.implementation;
 
-    //the query string inside the req should contain a code and a state, we can change the stub to reject any auth code, can this query string also include scope??
+    // the query string inside the req should contain a code and a state, we can change the stub to reject any auth code,
+    // can this query string also include scope? It already does get a scope in its redirect url when start is called by default.
+    // but when the fake supervisor hits the handler a scope must be returned by the oauth2/authorize endpoint for it to be present in the req
 
-    const { searchParams } = new URL(req.url, 'https://pinniped.com')
-    const audience = searchParams.get('scope') ?? "none"
+    const { searchParams } = new URL(req.url, 'https://pinniped.com');
+    const audience = searchParams.get('scope') ?? 'none';
 
     return new Promise((resolve, reject) => {
       strategy.success = user => {
-        resolve({ response: {
-          providerInfo: {accessToken: user.tokenset.access_token, scope: audience},
-          profile: {},
-        }})
-      }
+        resolve({
+          response: {
+            providerInfo: {
+              accessToken: user.tokenset.access_token,
+              scope: audience,
+            },
+            profile: {},
+          },
+        });
+      };
       strategy.fail = info => {
         reject(new Error(`Authentication rejected, ${info.message || ''}`));
       };
 
-      //TODO: unit test for provider to state the need for this error handler
-      // strategy.error = reject;
+      strategy.error = (error: Error) => {
+        reject(error);
+      };
+
+      strategy.redirect = () => {
+        reject(new Error('Unexpected redirect'));
+      };
 
       strategy.authenticate(req);
     });
   }
 
-  //will need a refresh method that covers our happy path
+  // will need a refresh method that covers our happy path
 
   private async setupStrategy(options: PinnipedOptions): Promise<OidcImpl> {
     const issuer = await Issuer.discover(
@@ -114,7 +135,7 @@ export class PinnipedAuthProvider implements OAuthHandlers {
       client_secret: options.clientSecret,
       redirect_uris: [options.callbackUrl],
       response_types: ['code'],
-      id_token_signed_response_alg: options.tokenSignedResponseAlg || 'RS256',
+      id_token_signed_response_alg: options.tokenSignedResponseAlg || 'ES256',
       scope: options.scope || '',
     });
 

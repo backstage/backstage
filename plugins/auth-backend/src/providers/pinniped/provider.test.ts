@@ -222,6 +222,7 @@ describe('PinnipedAuthProvider', () => {
         origin: 'undefined',
       });
 
+      //we want to somehow pass an authentication header in this request for testing purposes
       handlerRequest = {
         method: 'GET',
         url: `https://test?code=authorization_code&state=${testState}&scope=pinniped:request-audience username`,
@@ -293,6 +294,20 @@ describe('PinnipedAuthProvider', () => {
       
       expect(audience).toEqual('pinniped:request-audience username')
     })
+
+    it('request errors out with missing authorization_code parameter in the request_url', async() => {
+      handlerRequest.url = "test"
+      return expect(provider.handler(handlerRequest)).rejects.toThrow('Unexpected redirect')
+    })
+
+    it('fails when request has no session', async () => {
+      return expect(
+        provider.handler({
+          method: 'GET',
+          url: 'test',
+        } as unknown as OAuthStartRequest),
+      ).rejects.toThrow('authentication requires session support');
+    });
 
     //if no valid key is in the jwks array or even an unsigned jwt
     //have pinniped reject your clientid and secret possibly as a unit test
