@@ -819,7 +819,9 @@ paths:
           name: facet
           required: true
           schema:
-            type: string
+            type: array
+            items:
+              type: string
         - $ref: '#/components/parameters/filter'
   /locations:
     post:
