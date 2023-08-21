@@ -24,6 +24,24 @@ import { BrowserRouter, useRoutes } from 'react-router-dom';
 import mapValues from 'lodash/mapValues';
 import { Config, ConfigReader } from '@backstage/config';
 
+/*
+
+# Notes
+
+TODO:
+ - proper createApp
+ - connect extensions and plugins, provide method?
+ - higher level API for creating standard extensions + higher order framework API for creating those?
+ - extension config schema + validation
+ - figure out how to resolve configured extension ref to runtime value, e.g. '@backstage/plugin-graphiql#GraphiqlPage'
+ - make sure all shorthands work + tests
+ - figure out package structure / how to ship, frontend-plugin-api/frontend-app-api
+ - figure out routing, useRouteRef in the new system
+ - Legacy plugins / interop
+ - dynamic updates, runtime API
+
+*/
+
 /* core */
 
 // const discoverPackages = async () => {
@@ -31,31 +49,20 @@ import { Config, ConfigReader } from '@backstage/config';
 //   return ['@backstage/plugin-graphiql'];
 // };
 
-interface ExtensionInstanceConfig {
+interface ExtensionDataRef<T> {
   id: string;
-  at: string;
-  extension: Extension;
-  config: unknown;
+  T: T;
+  $$type: 'extension-data';
 }
 
-interface BackstagePluginOptions {
-  id: string;
-  defaultExtensionInstances?: ExtensionInstanceConfig[];
+function createExtensionDataRef<T>(id: string) {
+  return { id, $$type: 'extension-data' } as ExtensionDataRef<T>;
 }
 
-interface BackstagePlugin {
-  $$type: 'backstage-plugin';
-  id: string;
-  defaultExtensionInstances: ExtensionInstanceConfig[];
-}
-
-function createPlugin(options: BackstagePluginOptions): BackstagePlugin {
-  return {
-    ...options,
-    $$type: 'backstage-plugin',
-    defaultExtensionInstances: options.defaultExtensionInstances ?? [],
-  };
-}
+const coreExtensionData = {
+  reactComponent: createExtensionDataRef<ComponentType>('core.reactComponent'),
+  routePath: createExtensionDataRef<string>('core.routing.path'),
+};
 
 type AnyExtensionDataMap = Record<string, ExtensionDataRef<any>>;
 
@@ -102,21 +109,6 @@ function createExtension<
   return { ...options, $$type: 'extension', inputs: options.inputs ?? {} };
 }
 
-interface ExtensionDataRef<T> {
-  id: string;
-  T: T;
-  $$type: 'extension-data';
-}
-
-function createExtensionDataRef<T>(id: string) {
-  return { id, $$type: 'extension-data' } as ExtensionDataRef<T>;
-}
-
-const coreExtensionData = {
-  reactComponent: createExtensionDataRef<ComponentType>('core.reactComponent'),
-  routePath: createExtensionDataRef<string>('core.routing.path'),
-};
-
 type ExtensionDataId = string;
 
 interface ExtensionInstance {
@@ -149,6 +141,32 @@ function createExtensionInstance(options: {
     ),
   });
   return { id: options.id, data: extensionData, $$type: 'extension-instance' };
+}
+
+interface ExtensionInstanceConfig {
+  id: string;
+  at: string;
+  extension: Extension;
+  config: unknown;
+}
+
+interface BackstagePluginOptions {
+  id: string;
+  defaultExtensionInstances?: ExtensionInstanceConfig[];
+}
+
+interface BackstagePlugin {
+  $$type: 'backstage-plugin';
+  id: string;
+  defaultExtensionInstances: ExtensionInstanceConfig[];
+}
+
+function createPlugin(options: BackstagePluginOptions): BackstagePlugin {
+  return {
+    ...options,
+    $$type: 'backstage-plugin',
+    defaultExtensionInstances: options.defaultExtensionInstances ?? [],
+  };
 }
 
 /* core extensions */
