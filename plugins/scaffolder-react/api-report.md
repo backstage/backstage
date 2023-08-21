@@ -86,10 +86,10 @@ export type CustomFieldValidator<TFieldReturnValue, TUiOptions = unknown> = (
 // @public
 export const DefaultTemplateOutputs: (props: {
   output?: ScaffolderTaskOutput_2;
-}) => JSX.Element | null;
+}) => React_2.JSX.Element | null;
 
 // @public (undocumented)
-export const EmbeddableWorkflow: (props: WorkflowProps) => JSX.Element;
+export const EmbeddableWorkflow: (props: WorkflowProps) => React_2.JSX.Element;
 
 // @public
 export const extractSchemaFromStep: (inputStep: JsonObject) => {
@@ -130,7 +130,9 @@ export interface FieldExtensionUiSchema<TFieldReturnValue, TUiOptions>
 }
 
 // @public
-export const Form: (props: PropsWithChildren<FormProps_2>) => JSX.Element;
+export const Form: (
+  props: PropsWithChildren<FormProps_2>,
+) => React_2.JSX.Element;
 
 // @public
 export type FormProps = Pick<
@@ -185,7 +187,7 @@ export interface ParsedTemplateSchema {
 }
 
 // @public
-export const ReviewState: (props: ReviewStateProps) => JSX.Element;
+export const ReviewState: (props: ReviewStateProps) => React_2.JSX.Element;
 
 // @public
 export type ReviewStateProps = {
@@ -257,7 +259,7 @@ export interface ScaffolderDryRunResponse {
 // @public
 export const ScaffolderField: (
   props: PropsWithChildren<ScaffolderFieldProps>,
-) => JSX.Element;
+) => React_2.JSX.Element;
 
 // @public
 export const ScaffolderFieldExtensions: React.ComponentType<
@@ -323,7 +325,7 @@ export type ScaffolderOutputText = {
 // @public (undocumented)
 export function ScaffolderPageContextMenu(
   props: ScaffolderPageContextMenuProps,
-): JSX.Element | null;
+): React_2.JSX.Element | null;
 
 // @public (undocumented)
 export type ScaffolderPageContextMenuProps = {
@@ -404,7 +406,7 @@ export const SecretsContextProvider: (
 ) => React_2.JSX.Element;
 
 // @public
-export const Stepper: (stepperProps: StepperProps) => JSX.Element;
+export const Stepper: (stepperProps: StepperProps) => React_2.JSX.Element;
 
 // @public
 export type StepperProps = {
@@ -427,10 +429,10 @@ export const TaskLogStream: (props: {
   logs: {
     [k: string]: string[];
   };
-}) => JSX.Element;
+}) => React_2.JSX.Element;
 
 // @public
-export const TaskSteps: (props: TaskStepsProps) => JSX.Element;
+export const TaskSteps: (props: TaskStepsProps) => React_2.JSX.Element;
 
 // @public
 export interface TaskStepsProps {
@@ -461,7 +463,7 @@ export type TaskStream = {
 };
 
 // @public
-export const TemplateCard: (props: TemplateCardProps) => JSX.Element;
+export const TemplateCard: (props: TemplateCardProps) => React_2.JSX.Element;
 
 // @public
 export interface TemplateCardProps {
@@ -478,10 +480,12 @@ export interface TemplateCardProps {
 }
 
 // @public
-export const TemplateCategoryPicker: () => JSX.Element | null;
+export const TemplateCategoryPicker: () => React_2.JSX.Element | null;
 
 // @public
-export const TemplateGroup: (props: TemplateGroupProps) => JSX.Element | null;
+export const TemplateGroup: (
+  props: TemplateGroupProps,
+) => React_2.JSX.Element | null;
 
 // @public (undocumented)
 export type TemplateGroupFilter = {
@@ -511,7 +515,9 @@ export interface TemplateGroupProps {
 }
 
 // @public (undocumented)
-export const TemplateGroups: (props: TemplateGroupsProps) => JSX.Element | null;
+export const TemplateGroups: (
+  props: TemplateGroupsProps,
+) => React_2.JSX.Element | null;
 
 // @public (undocumented)
 export interface TemplateGroupsProps {
