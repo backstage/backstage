@@ -28,9 +28,9 @@ const TextValuePicker = (props: FieldExtensionComponentProps<string>) => {
     onChange,
     required,
     schema: { title, description },
-    rawErrors = [],
+    rawErrors,
     formData,
-    uiSchema: { 'ui:autofocus': autoFocus } = {},
+    uiSchema: { 'ui:autofocus': autoFocus },
     idSchema,
     placeholder,
   } = props;

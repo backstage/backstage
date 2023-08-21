@@ -31,9 +31,9 @@ import {
   ScaffolderApi,
   useTemplateSecrets,
   Form,
+  ScaffolderRJSFField,
 } from '@backstage/plugin-scaffolder-react';
 import { act, fireEvent } from '@testing-library/react';
-import { Field } from '@rjsf/utils';
 
 describe('RepoUrlPicker', () => {
   const mockScaffolderApi: Partial<ScaffolderApi> = {
@@ -78,7 +78,9 @@ describe('RepoUrlPicker', () => {
             <Form
               schema={{ type: 'string' }}
               uiSchema={{ 'ui:field': 'RepoUrlPicker' }}
-              fields={{ RepoUrlPicker: RepoUrlPicker as unknown as Field }}
+              fields={{
+                RepoUrlPicker: RepoUrlPicker as unknown as ScaffolderRJSFField,
+              }}
               validator={validator}
               onSubmit={onSubmit}
             />
@@ -118,7 +120,9 @@ describe('RepoUrlPicker', () => {
                 'ui:field': 'RepoUrlPicker',
                 'ui:options': { allowedHosts: ['dev.azure.com'] },
               }}
-              fields={{ RepoUrlPicker: RepoUrlPicker as unknown as Field }}
+              fields={{
+                RepoUrlPicker: RepoUrlPicker as unknown as ScaffolderRJSFField,
+              }}
               validator={validator}
             />
           </SecretsContextProvider>
@@ -159,7 +163,9 @@ describe('RepoUrlPicker', () => {
                   },
                 },
               }}
-              fields={{ RepoUrlPicker: RepoUrlPicker as unknown as Field }}
+              fields={{
+                RepoUrlPicker: RepoUrlPicker as unknown as ScaffolderRJSFField,
+              }}
               validator={validator}
             />
             <SecretsComponent />
@@ -222,7 +228,9 @@ describe('RepoUrlPicker', () => {
                   },
                 },
               }}
-              fields={{ RepoUrlPicker: RepoUrlPicker as unknown as Field }}
+              fields={{
+                RepoUrlPicker: RepoUrlPicker as unknown as ScaffolderRJSFField,
+              }}
               validator={validator}
             />
             <SecretsComponent />
@@ -276,7 +284,9 @@ describe('RepoUrlPicker', () => {
                   },
                 },
               }}
-              fields={{ RepoUrlPicker: RepoUrlPicker as unknown as Field }}
+              fields={{
+                RepoUrlPicker: RepoUrlPicker as unknown as ScaffolderRJSFField,
+              }}
               validator={validator}
             />
             <SecretsComponent />

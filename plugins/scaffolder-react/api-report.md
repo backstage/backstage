@@ -7,12 +7,24 @@
 
 import { ApiHolder } from '@backstage/core-plugin-api';
 import { ApiRef } from '@backstage/core-plugin-api';
+import { ComponentType } from 'react';
+import { CustomValidator } from '@rjsf/utils';
 import { Dispatch } from 'react';
+import { ElementType } from 'react';
+import { ErrorSchema } from '@rjsf/utils';
+import { ErrorTransformer } from '@rjsf/utils';
+import { Experimental_DefaultFormStateBehavior } from '@rjsf/utils';
 import { Extension } from '@backstage/core-plugin-api';
-import { FieldProps } from '@rjsf/utils';
 import { FieldValidation } from '@rjsf/utils';
-import { FormProps as FormProps_2 } from '@rjsf/core-v5';
+import { default as Form_2 } from '@rjsf/core-v5';
+import { FormContextType } from '@rjsf/utils';
+import { FormEvent } from 'react';
+import type { FormProps as FormProps_2 } from '@rjsf/core-v5';
+import { GenericObjectType } from '@rjsf/utils';
+import { HTMLAttributes } from 'react';
+import { IChangeEvent } from '@rjsf/core-v5';
 import { IconComponent } from '@backstage/core-plugin-api';
+import { IdSchema } from '@rjsf/utils';
 import { JsonObject } from '@backstage/types';
 import { JSONSchema7 } from 'json-schema';
 import { JsonValue } from '@backstage/types';
@@ -22,15 +34,23 @@ import { PropsWithChildren } from 'react';
 import { default as React_2 } from 'react';
 import { ReactElement } from 'react';
 import { ReactNode } from 'react';
+import { Ref } from 'react';
+import { Registry } from '@rjsf/utils';
+import { RegistryWidgetsType } from '@rjsf/utils';
+import { RJSFSchema } from '@rjsf/utils';
+import { RJSFValidationError } from '@rjsf/utils';
 import { ScaffolderStep as ScaffolderStep_2 } from '@backstage/plugin-scaffolder-react';
 import { ScaffolderTaskOutput as ScaffolderTaskOutput_2 } from '@backstage/plugin-scaffolder-react';
 import { SetStateAction } from 'react';
+import { StrictRJSFSchema } from '@rjsf/utils';
 import { TaskSpec } from '@backstage/plugin-scaffolder-common';
 import { TaskStep } from '@backstage/plugin-scaffolder-common';
 import { TemplateEntityV1beta3 } from '@backstage/plugin-scaffolder-common';
 import { TemplateParameterSchema as TemplateParameterSchema_2 } from '@backstage/plugin-scaffolder-react';
+import { TemplatesType } from '@rjsf/utils';
 import { UIOptionsType } from '@rjsf/utils';
 import { UiSchema } from '@rjsf/utils';
+import { ValidatorType } from '@rjsf/utils';
 
 // @public
 export type Action = {
@@ -104,9 +124,9 @@ export type FieldExtensionComponent<_TReturnValue, _TInputProps> = () => null;
 export interface FieldExtensionComponentProps<
   TFieldReturnValue,
   TUiOptions = {},
-> extends PropsWithChildren<FieldProps<TFieldReturnValue>> {
+> extends PropsWithChildren<ScaffolderRJSFFieldProps<TFieldReturnValue>> {
   // (undocumented)
-  uiSchema?: FieldExtensionUiSchema<TFieldReturnValue, TUiOptions>;
+  uiSchema: FieldExtensionUiSchema<TFieldReturnValue, TUiOptions>;
 }
 
 // @public
@@ -131,7 +151,7 @@ export interface FieldExtensionUiSchema<TFieldReturnValue, TUiOptions>
 
 // @public
 export const Form: (
-  props: PropsWithChildren<FormProps_2>,
+  props: PropsWithChildren<ScaffolderRJSFFormProps>,
 ) => React_2.JSX.Element;
 
 // @public
@@ -332,6 +352,113 @@ export type ScaffolderPageContextMenuProps = {
   onEditorClicked?: () => void;
   onActionsClicked?: () => void;
   onTasksClicked?: () => void;
+};
+
+// @public
+export type ScaffolderRJSFField<
+  T = any,
+  S extends StrictRJSFSchema = RJSFSchema,
+  F extends FormContextType = any,
+> = ComponentType<ScaffolderRJSFFieldProps<T, S, F>>;
+
+// @public
+export interface ScaffolderRJSFFieldProps<
+  T = any,
+  S extends StrictRJSFSchema = RJSFSchema,
+  F extends FormContextType = any,
+> extends GenericObjectType,
+    Pick<
+      HTMLAttributes<HTMLElement>,
+      Exclude<
+        keyof HTMLAttributes<HTMLElement>,
+        'onBlur' | 'onFocus' | 'onChange'
+      >
+    > {
+  autofocus?: boolean;
+  disabled: boolean;
+  errorSchema?: ErrorSchema<T>;
+  formContext?: F;
+  formData: T;
+  hideError?: boolean;
+  idPrefix?: string;
+  idSchema: IdSchema<T>;
+  idSeparator?: string;
+  name: string;
+  onBlur: (id: string, value: any) => void;
+  onChange: (
+    newFormData: T | undefined,
+    es?: ErrorSchema<T>,
+    id?: string,
+  ) => any;
+  onFocus: (id: string, value: any) => void;
+  rawErrors: string[];
+  readonly: boolean;
+  registry: Registry<T, S, F>;
+  required?: boolean;
+  schema: S;
+  uiSchema: UiSchema<T, S, F>;
+}
+
+// @public
+export interface ScaffolderRJSFFormProps<
+  T = any,
+  S extends StrictRJSFSchema = RJSFSchema,
+  F extends FormContextType = any,
+> {
+  acceptcharset?: string;
+  action?: string;
+  autoComplete?: string;
+  children?: ReactNode;
+  className?: string;
+  customValidate?: CustomValidator<T, S, F>;
+  disabled?: boolean;
+  enctype?: string;
+  experimental_defaultFormStateBehavior?: Experimental_DefaultFormStateBehavior;
+  extraErrors?: ErrorSchema<T>;
+  fields?: ScaffolderRJSFRegistryFieldsType<T, S, F>;
+  focusOnFirstError?: boolean | ((error: RJSFValidationError) => void);
+  formContext?: F;
+  formData?: T;
+  id?: string;
+  idPrefix?: string;
+  idSeparator?: string;
+  _internalFormWrapper?: ElementType;
+  liveOmit?: boolean;
+  liveValidate?: boolean;
+  method?: string;
+  name?: string;
+  noHtml5Validate?: boolean;
+  // @deprecated
+  noValidate?: boolean;
+  omitExtraData?: boolean;
+  onBlur?: (id: string, data: any) => void;
+  onChange?: (data: IChangeEvent<T, S, F>, id?: string) => void;
+  onError?: (errors: RJSFValidationError[]) => void;
+  onFocus?: (id: string, data: any) => void;
+  onSubmit?: (data: IChangeEvent<T, S, F>, event: FormEvent<any>) => void;
+  readonly?: boolean;
+  ref?: Ref<Form_2<T, S, F>>;
+  schema: S;
+  showErrorList?: false | 'top' | 'bottom';
+  tagName?: ElementType;
+  target?: string;
+  templates?: Partial<Omit<TemplatesType<T, S, F>, 'ButtonTemplates'>> & {
+    ButtonTemplates?: Partial<TemplatesType<T, S, F>['ButtonTemplates']>;
+  };
+  transformErrors?: ErrorTransformer<T, S, F>;
+  translateString?: Registry['translateString'];
+  uiSchema?: UiSchema<T, S, F>;
+  validator: ValidatorType<T, S, F>;
+  widgets?: RegistryWidgetsType<T, S, F>;
+}
+
+// @public
+export type ScaffolderRJSFRegistryFieldsType<
+  T = any,
+  S extends StrictRJSFSchema = RJSFSchema,
+  F extends FormContextType = any,
+> = {
+  [name: string]: ScaffolderRJSFField<T, S, F>;
 };
 
 // @public

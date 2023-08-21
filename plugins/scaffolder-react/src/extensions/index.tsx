@@ -75,3 +75,5 @@ export type {
   FieldExtensionComponent,
   CustomFieldExtensionSchema,
 };
+
+export * from './rjsf';
