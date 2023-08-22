@@ -22,7 +22,7 @@ import {
 import { Logger } from 'winston';
 import {
   GitLabGroup,
-  GitLabSaasGroupsResponse,
+  GitLabDescendantGroupsResponse,
   GitLabGroupMembersResponse,
   GitLabUser,
 } from './types';
@@ -105,7 +105,7 @@ export class GitLabClient {
     let endCursor: string | null = null;
 
     do {
-      const response: GitLabSaasGroupsResponse = await fetch(
+      const response: GitLabDescendantGroupsResponse = await fetch(
         `${this.config.baseUrl}/api/graphql`,
         {
           method: 'POST',
@@ -191,27 +191,37 @@ export class GitLabClient {
           },
           body: JSON.stringify({
             variables: { group: groupPath, relations: relations, endCursor },
-            query: /* GraphQL */ `query getGroupMembers($group: ID!, $relations: [GroupMemberRelation!], $endCursor: String) {
-              group(fullPath: $group) {
-                groupMembers(first: 100, relations: $relations, after: $endCursor) {
-                  nodes {
-                    user {
-                      id
-                      username
-                      publicEmail
-                      name
-                      state
-                      webUrl
-                      avatarUrl
+            query: /* GraphQL */ `
+              query getGroupMembers(
+                $group: ID!
+                $relations: [GroupMemberRelation!]
+                $endCursor: String
+              ) {
+                group(fullPath: $group) {
+                  groupMembers(
+                    first: 100
+                    relations: $relations
+                    after: $endCursor
+                  ) {
+                    nodes {
+                      user {
+                        id
+                        username
+                        publicEmail
+                        name
+                        state
+                        webUrl
+                        avatarUrl
+                      }
                     }
-                  }
-                  pageInfo {
-                    endCursor
-                    hasNextPage
+                    pageInfo {
+                      endCursor
+                      hasNextPage
+                    }
                   }
                 }
               }
-            }`,
+            `,
           }),
         },
       ).then(r => r.json());
