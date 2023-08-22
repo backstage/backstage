@@ -78,7 +78,7 @@ e.g. If `group` is `org/teams`, the name for `org/teams/avengers/gotg` will be
 
 For gitlab.com, when `orgEnabled: true`, the `group` parameter is required in
 order to limit the ingestion to a group within your organisation. `Group`
-entities will only be ingested for the configured group, or it's descendant groups,
+entities will only be ingested for the configured group, or its descendant groups,
 but not any ancestor groups higher than the configured group path. Only groups
 which contain members will be ingested.
 

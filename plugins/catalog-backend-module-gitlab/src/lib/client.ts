@@ -115,25 +115,27 @@ export class GitLabClient {
           },
           body: JSON.stringify({
             variables: { group: groupPath, endCursor },
-            query: `query listDescendantGroups($group: ID!, $endCursor: String) {
-              group(fullPath: $group) {
-                descendantGroups(first: 100, after: $endCursor) {
-                  nodes {
-                    id
-                    name
-                    description
-                    fullPath
-                    parent {
+            query: /* GraphQL */ `
+              query listDescendantGroups($group: ID!, $endCursor: String) {
+                group(fullPath: $group) {
+                  descendantGroups(first: 100, after: $endCursor) {
+                    nodes {
                       id
+                      name
+                      description
+                      fullPath
+                      parent {
+                        id
+                      }
+                    }
+                    pageInfo {
+                      endCursor
+                      hasNextPage
                     }
                   }
-                  pageInfo {
-                    endCursor
-                    hasNextPage
-                  }
-                }       
+                }
               }
-            }`,
+            `,
           }),
         },
       ).then(r => r.json());
@@ -189,7 +191,7 @@ export class GitLabClient {
           },
           body: JSON.stringify({
             variables: { group: groupPath, relations: relations, endCursor },
-            query: `query getGroupMembers($group: ID!, $relations: [GroupMemberRelation!], $endCursor: String) {
+            query: /* GraphQL */ `query getGroupMembers($group: ID!, $relations: [GroupMemberRelation!], $endCursor: String) {
               group(fullPath: $group) {
                 groupMembers(first: 100, relations: $relations, after: $endCursor) {
                   nodes {

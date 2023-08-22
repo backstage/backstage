@@ -80,7 +80,7 @@ export type GitLabGroupMembersResponse = {
   };
 };
 
-export type GitLabSaasGroupsResponse = {
+export type GitLabDescendantGroupsResponse = {
   errors: { message: string }[];
   data: {
     group: {
