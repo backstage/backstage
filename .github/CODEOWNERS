@@ -18,13 +18,10 @@ yarn.lock                                         @backstage/maintainers @backst
 /packages/techdocs-cli-embedded-app               @backstage/techdocs-maintainers
 /plugins/adr                                      @backstage/maintainers @backstage/reviewers @kuangp
 /plugins/adr-*                                    @backstage/maintainers @backstage/reviewers @kuangp
-/plugins/allure                                   @backstage/maintainers @backstage/reviewers @deepak-bhardwaj-ps
-/plugins/analytics-module-newrelic-browser        @backstage/maintainers @backstage/reviewers @jmezach
-/plugins/apache-airflow                           @backstage/maintainers @backstage/reviewers @cmpadden
 /plugins/api-docs                                 @backstage/maintainers @backstage/reviewers @backstage/sda-se-reviewers
-/plugins/azure-devops                             @backstage/maintainers @backstage/reviewers @marleypowell @awanlin
-/plugins/azure-devops-backend                     @backstage/maintainers @backstage/reviewers @marleypowell @awanlin
-/plugins/azure-devops-common                      @backstage/maintainers @backstage/reviewers @marleypowell @awanlin
+/plugins/azure-devops                             @backstage/maintainers @backstage/reviewers @awanlin
+/plugins/azure-devops-backend                     @backstage/maintainers @backstage/reviewers @awanlin
+/plugins/azure-devops-common                      @backstage/maintainers @backstage/reviewers @awanlin
 /plugins/bitbucket-cloud-common                   @backstage/maintainers @backstage/reviewers @pjungermann
 /plugins/bitrise                                  @backstage/maintainers @backstage/reviewers @backstage/sda-se-reviewers
 /plugins/catalog                                  @backstage/maintainers @backstage/reviewers @backstage/catalog-maintainers
@@ -32,12 +29,11 @@ yarn.lock                                         @backstage/maintainers @backst
 /plugins/catalog-backend-module-aws               @backstage/maintainers @backstage/reviewers @backstage/catalog-maintainers @pjungermann
 /plugins/catalog-backend-module-bitbucket-cloud   @backstage/maintainers @backstage/reviewers @backstage/catalog-maintainers @pjungermann
 /plugins/catalog-backend-module-msgraph           @backstage/maintainers @backstage/reviewers @backstage/catalog-maintainers @pjungermann
-/plugins/catalog-backend-module-puppetdb          @backstage/maintainers @backstage/reviewers @backstage/catalog-maintainers @tdabasinskas
+/plugins/catalog-backend-module-puppetdb          @backstage/maintainers @backstage/reviewers @backstage/catalog-maintainers
 /plugins/catalog-graph                            @backstage/maintainers @backstage/reviewers @backstage/catalog-maintainers @backstage/sda-se-reviewers
 /plugins/circleci                                 @backstage/maintainers @backstage/reviewers @adamdmharvey
-/plugins/cloudbuild                               @backstage/maintainers @backstage/reviewers @trivago/ebarrios
-/plugins/code-coverage                            @backstage/maintainers @backstage/reviewers @alde @nissayeva
-/plugins/code-coverage-backend                    @backstage/maintainers @backstage/reviewers @alde @nissayeva
+/plugins/code-coverage                            @backstage/maintainers @backstage/reviewers @alde
+/plugins/code-coverage-backend                    @backstage/maintainers @backstage/reviewers @alde
 /plugins/cost-insights                            @backstage/maintainers @backstage/reviewers @backstage/silver-lining
 /plugins/cost-insights-*                          @backstage/maintainers @backstage/reviewers @backstage/silver-lining
 /plugins/devtools                                 @backstage/maintainers @backstage/reviewers @awanlin
@@ -57,30 +53,21 @@ yarn.lock                                         @backstage/maintainers @backst
 /plugins/explore                                  @backstage/maintainers @backstage/reviewers @backstage/sda-se-reviewers
 /plugins/explore-react                            @backstage/maintainers @backstage/reviewers @backstage/sda-se-reviewers
 /plugins/fossa                                    @backstage/maintainers @backstage/reviewers @backstage/sda-se-reviewers
-/plugins/gcalendar                                @backstage/maintainers @backstage/reviewers @szubster @ptychu @kielosz @alexrybch
 /plugins/git-release-manager                      @backstage/maintainers @backstage/reviewers @erikengervall
 /plugins/home                                     @backstage/discoverability-maintainers
 /plugins/home-*                                   @backstage/discoverability-maintainers
-/plugins/ilert                                    @backstage/maintainers @backstage/reviewers @yacut
-/plugins/jenkins                                  @backstage/maintainers @backstage/reviewers @timja
-/plugins/jenkins-backend                          @backstage/maintainers @backstage/reviewers @timja
-/plugins/kafka                                    @backstage/maintainers @backstage/reviewers @nirga @andrewthauer
-/plugins/kafka-backend                            @backstage/maintainers @backstage/reviewers @nirga @andrewthauer
+/plugins/kafka                                    @backstage/maintainers @backstage/reviewers @andrewthauer
+/plugins/kafka-backend                            @backstage/maintainers @backstage/reviewers @andrewthauer
 /plugins/kubernetes                               @backstage/maintainers @backstage/reviewers @backstage/kubernetes-maintainers
 /plugins/kubernetes-*                             @backstage/maintainers @backstage/reviewers @backstage/kubernetes-maintainers
 /plugins/linguist                                 @backstage/maintainers @backstage/reviewers @awanlin
 /plugins/linguist-backend                         @backstage/maintainers @backstage/reviewers @awanlin
 /plugins/linguist-common                          @backstage/maintainers @backstage/reviewers @awanlin
-/plugins/microsoft-calendar                       @backstage/maintainers @backstage/reviewers @abhay-soni-developer @NishkarshRaj
-/plugins/newrelic-dashboard                       @backstage/maintainers @backstage/reviewers @mufaddal7
 /plugins/permission-*                             @backstage/permission-maintainers
 /plugins/playlist                                 @backstage/maintainers @backstage/reviewers @kuangp
 /plugins/playlist-*                               @backstage/maintainers @backstage/reviewers @kuangp
-/plugins/puppetdb                                 @backstage/maintainers @backstage/reviewers @tdabasinskas
 /plugins/rollbar                                  @backstage/maintainers @backstage/reviewers @andrewthauer
 /plugins/rollbar-backend                          @backstage/maintainers @backstage/reviewers @andrewthauer
-/plugins/scaffolder-backend-module-rails          @backstage/maintainers @backstage/reviewers @angeliski
-/plugins/scaffolder-backend-module-yeoman         @backstage/maintainers @backstage/reviewers @pawelmitka
 /plugins/search                                   @backstage/discoverability-maintainers
 /plugins/search-*                                 @backstage/discoverability-maintainers
 /plugins/sonarqube                                @backstage/maintainers @backstage/reviewers @backstage/sda-se-reviewers
@@ -89,7 +76,7 @@ yarn.lock                                         @backstage/maintainers @backst
 /plugins/techdocs                                 @backstage/techdocs-maintainers
 /plugins/techdocs-*                               @backstage/techdocs-maintainers
 /plugins/user-settings-backend                    @backstage/maintainers @backstage/reviewers @backstage/sda-se-reviewers
-/plugins/tech-insights-backend                    @backstage/maintainers @backstage/reviewers @xantier @iain-b
-/plugins/tech-insights-backend-module-jsonfc      @backstage/maintainers @backstage/reviewers @xantier @iain-b
-/plugins/tech-insights-tech-insights-common       @backstage/maintainers @backstage/reviewers @xantier @iain-b
-/plugins/tech-insights-tech-insights-node         @backstage/maintainers @backstage/reviewers @xantier @iain-b
+/plugins/tech-insights-backend                    @backstage/maintainers @backstage/reviewers @xantier
+/plugins/tech-insights-backend-module-jsonfc      @backstage/maintainers @backstage/reviewers @xantier
+/plugins/tech-insights-tech-insights-common       @backstage/maintainers @backstage/reviewers @xantier
+/plugins/tech-insights-tech-insights-node         @backstage/maintainers @backstage/reviewers @xantier
