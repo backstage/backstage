@@ -37,15 +37,18 @@ describe('gerrit core', () => {
   describe('buildGerritGitilesArchiveUrl', () => {
     const config: GerritIntegrationConfig = {
       host: 'gerrit.com',
+      baseUrl: 'https://gerrit.com',
       gitilesBaseUrl: 'https://gerrit.com/gitiles',
     };
     const configWithPath: GerritIntegrationConfig = {
       host: 'gerrit.com',
-      gitilesBaseUrl: 'https://gerrit.com/path/gitiles',
+      baseUrl: 'https://gerrit.com/gerrit',
+      gitilesBaseUrl: 'https://gerrit.com/gerrit/plugins/gitiles',
     };
-    const configWithPathSlash: GerritIntegrationConfig = {
+    const configWithDedicatedGitiles: GerritIntegrationConfig = {
       host: 'gerrit.com',
-      gitilesBaseUrl: 'https://gerrit.com/path1/path2/gitiles/',
+      baseUrl: 'https://gerrit.com/gerrit',
+      gitilesBaseUrl: 'https://dedicated-gitiles-server.com/gerrit/gitiles',
     };
     it('can create an archive url for a branch', () => {
       expect(buildGerritGitilesArchiveUrl(config, 'repo', 'dev', '')).toEqual(
@@ -84,19 +87,29 @@ describe('gerrit core', () => {
       expect(
         buildGerritGitilesArchiveUrl(authConfig, 'repo', 'dev', 'docs'),
       ).toEqual(
-        'https://gerrit.com/path/a/gitiles/repo/+archive/refs/heads/dev/docs.tar.gz',
+        'https://gerrit.com/gerrit/a/plugins/gitiles/repo/+archive/refs/heads/dev/docs.tar.gz',
       );
     });
-    it('can create an authenticated url when auth is enabled and an url-path + slash is used', () => {
+    it('Cannot build an authenticated url when a dedicated Gitiles server is used', () => {
       const authConfig = {
-        ...configWithPathSlash,
+        ...configWithDedicatedGitiles,
         username: 'username',
         password: 'password',
+      };
+      expect(() =>
+        buildGerritGitilesArchiveUrl(authConfig, 'repo', 'dev', 'docs'),
+      ).toThrow(
+        'Since the baseUrl (Gerrit) is not part of the gitilesBaseUrl, an authentication URL could not be constructed.',
+      );
+    });
+    it('Build a non-authenticated url when a dedicated Gitiles server is used', () => {
+      const authConfig = {
+        ...configWithDedicatedGitiles,
       };
       expect(
         buildGerritGitilesArchiveUrl(authConfig, 'repo', 'dev', 'docs'),
       ).toEqual(
-        'https://gerrit.com/path1/path2/a/gitiles/repo/+archive/refs/heads/dev/docs.tar.gz',
+        'https://dedicated-gitiles-server.com/gerrit/gitiles/repo/+archive/refs/heads/dev/docs.tar.gz',
       );
     });
   });
