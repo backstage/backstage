@@ -27,20 +27,23 @@ import {
 import { searchApiRef } from '../api';
 
 describe('SearchContext', () => {
-  const query = jest.fn();
+  const searchApiMock = { query: jest.fn() };
 
-  const wrapper = ({ children, initialState, config = {} }: any) => (
-    <TestApiProvider
-      apis={[
-        [configApiRef, new MockConfigApi(config)],
-        [searchApiRef, { query }],
-      ]}
-    >
-      <SearchContextProvider initialState={initialState}>
-        {children}
-      </SearchContextProvider>
-    </TestApiProvider>
-  );
+  const wrapper = ({ children, initialState, config = {} }: any) => {
+    const configApiMock = new MockConfigApi(config);
+    return (
+      <TestApiProvider
+        apis={[
+          [configApiRef, configApiMock],
+          [searchApiRef, searchApiMock],
+        ]}
+      >
+        <SearchContextProvider initialState={initialState}>
+          {children}
+        </SearchContextProvider>
+      </TestApiProvider>
+    );
+  };
 
   const initialState = {
     term: '',
@@ -49,7 +52,7 @@ describe('SearchContext', () => {
   };
 
   beforeEach(() => {
-    query.mockResolvedValue({});
+    searchApiMock.query.mockResolvedValue({});
   });
 
   afterAll(() => {
@@ -276,7 +279,7 @@ describe('SearchContext', () => {
 
       await waitForNextUpdate();
 
-      expect(query).toHaveBeenLastCalledWith({
+      expect(searchApiMock.query).toHaveBeenLastCalledWith({
         term,
         types: ['*'],
         filters: {},
@@ -301,7 +304,7 @@ describe('SearchContext', () => {
 
       await waitForNextUpdate();
 
-      expect(query).toHaveBeenLastCalledWith({
+      expect(searchApiMock.query).toHaveBeenLastCalledWith({
         types,
         term: '',
         filters: {},
@@ -326,7 +329,7 @@ describe('SearchContext', () => {
 
       await waitForNextUpdate();
 
-      expect(query).toHaveBeenLastCalledWith({
+      expect(searchApiMock.query).toHaveBeenLastCalledWith({
         filters,
         term: '',
         types: ['*'],
@@ -351,7 +354,7 @@ describe('SearchContext', () => {
 
       await waitForNextUpdate();
 
-      expect(query).toHaveBeenLastCalledWith({
+      expect(searchApiMock.query).toHaveBeenLastCalledWith({
         pageLimit,
         term: '',
         types: ['*'],
@@ -377,7 +380,7 @@ describe('SearchContext', () => {
 
       await waitForNextUpdate();
 
-      expect(query).toHaveBeenLastCalledWith({
+      expect(searchApiMock.query).toHaveBeenLastCalledWith({
         pageCursor,
         term: '',
         types: ['*'],
@@ -386,7 +389,7 @@ describe('SearchContext', () => {
     });
 
     it('provides function for fetch the next page', async () => {
-      query.mockResolvedValue({
+      searchApiMock.query.mockResolvedValue({
         results: [],
         nextPageCursor: 'NEXT',
       });
@@ -409,7 +412,7 @@ describe('SearchContext', () => {
 
       await waitForNextUpdate();
 
-      expect(query).toHaveBeenLastCalledWith({
+      expect(searchApiMock.query).toHaveBeenLastCalledWith({
         term: '',
         types: ['*'],
         filters: {},
@@ -418,7 +421,7 @@ describe('SearchContext', () => {
     });
 
     it('provides function for fetch the previous page', async () => {
-      query.mockResolvedValue({
+      searchApiMock.query.mockResolvedValue({
         results: [],
         previousPageCursor: 'PREVIOUS',
       });
@@ -441,7 +444,7 @@ describe('SearchContext', () => {
 
       await waitForNextUpdate();
 
-      expect(query).toHaveBeenLastCalledWith({
+      expect(searchApiMock.query).toHaveBeenLastCalledWith({
         term: '',
         types: ['*'],
         filters: {},
