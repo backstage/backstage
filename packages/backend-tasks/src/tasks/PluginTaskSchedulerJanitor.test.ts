@@ -42,6 +42,7 @@ describe('PluginTaskSchedulerJanitor', () => {
       'POSTGRES_13',
       'POSTGRES_9',
       'SQLITE_3',
+      'MYSQL_8',
     ],
   });
 
