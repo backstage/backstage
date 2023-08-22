@@ -7,6 +7,8 @@
 
 import { ApiRef } from '@backstage/core-plugin-api';
 import { BackstagePlugin } from '@backstage/core-plugin-api';
+import { JSX as JSX_2 } from 'react';
+import { default as React_2 } from 'react';
 import { RouteRef } from '@backstage/core-plugin-api';
 import { VoyagerDisplayOptions } from 'graphql-voyager/typings/components/Voyager';
 import { WorkerCallback } from 'graphql-voyager/typings/utils/types';
@@ -45,7 +47,7 @@ export class GraphQLVoyagerEndpoints implements GraphQLVoyagerApi {
 // @public (undocumented)
 export const GraphqlVoyagerPage: (
   props: GraphQLVoyagerPageProps,
-) => JSX.Element;
+) => JSX_2.Element;
 
 // @public (undocumented)
 export type GraphQLVoyagerPageProps = {
@@ -65,7 +67,7 @@ export const graphqlVoyagerPlugin: BackstagePlugin<
 export const introspectionQuery: string;
 
 // @public (undocumented)
-export const Router: (props: GraphQLVoyagerPageProps) => JSX.Element;
+export const Router: (props: GraphQLVoyagerPageProps) => React_2.JSX.Element;
 
 // (No @packageDocumentation comment for this package)
 ```

@@ -175,11 +175,15 @@ export class TaskWorker {
       const time = new CronTime(settings.cadence)
         .sendAt()
         .minus({ seconds: 1 }) // immediately, if "* * * * * *"
-        .toUTC()
-        .toISO();
-      startAt = this.knex.client.config.client.includes('sqlite3')
-        ? this.knex.raw('datetime(?)', [time])
-        : this.knex.raw(`?`, [time]);
+        .toUTC();
+
+      if (this.knex.client.config.client.includes('sqlite3')) {
+        startAt = this.knex.raw('datetime(?)', [time.toISO()]);
+      } else if (this.knex.client.config.client.includes('mysql')) {
+        startAt = this.knex.raw(`?`, [time.toSQL({ includeOffset: false })]);
+      } else {
+        startAt = this.knex.raw(`?`, [time.toISO()]);
+      }
     } else {
       startAt = this.knex.fn.now();
     }
@@ -279,11 +283,16 @@ export class TaskWorker {
 
     let nextRun: Knex.Raw;
     if (isCron) {
-      const time = new CronTime(settings.cadence).sendAt().toUTC().toISO();
+      const time = new CronTime(settings.cadence).sendAt().toUTC();
       this.logger.debug(`task: ${this.taskId} will next occur around ${time}`);
-      nextRun = this.knex.client.config.client.includes('sqlite3')
-        ? this.knex.raw('datetime(?)', [time])
-        : this.knex.raw(`?`, [time]);
+
+      if (this.knex.client.config.client.includes('sqlite3')) {
+        nextRun = this.knex.raw('datetime(?)', [time.toISO()]);
+      } else if (this.knex.client.config.client.includes('mysql')) {
+        nextRun = this.knex.raw(`?`, [time.toSQL({ includeOffset: false })]);
+      } else {
+        nextRun = this.knex.raw(`?`, [time.toISO()]);
+      }
     } else {
       const dt = Duration.fromISO(settings.cadence).as('seconds');
       this.logger.debug(

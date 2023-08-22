@@ -1,5 +1,17 @@
 # @backstage/core-components
 
+## 0.13.5-next.0
+
+### Patch Changes
+
+- 47782f4bfa5b: Add loading indicator to Table
+- Updated dependencies
+  - @backstage/core-plugin-api@1.6.0-next.0
+  - @backstage/config@1.0.8
+  - @backstage/errors@1.2.1
+  - @backstage/theme@0.4.1
+  - @backstage/version-bridge@1.0.4
+
 ## 0.13.4
 
 ### Patch Changes

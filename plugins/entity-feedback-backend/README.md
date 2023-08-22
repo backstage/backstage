@@ -4,6 +4,10 @@ Welcome to the entity-feedback backend plugin!
 
 ## Installation
 
+Note: this plugin requires authentication and identity configured so Backstage can identify
+which user has rated the entity. If you are using the guest identity provider which comes
+out of the box, this plugin will not work when you test it.
+
 ### Install the package
 
 ```bash

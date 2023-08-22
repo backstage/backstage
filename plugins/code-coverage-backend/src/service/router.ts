@@ -30,9 +30,7 @@ import { Config } from '@backstage/config';
 import { ScmIntegrations } from '@backstage/integration';
 import { CodeCoverageDatabase } from './CodeCoverageDatabase';
 import { aggregateCoverage, CoverageUtils } from './CoverageUtils';
-import { Cobertura } from './converter/cobertura';
-import { Jacoco } from './converter/jacoco';
-import { Converter } from './converter';
+import { Converter, Jacoco, Cobertura, Lcov } from './converter';
 import { getEntitySourceLocation } from '@backstage/catalog-model';
 
 /**
@@ -182,6 +180,8 @@ export const makeRouter = async (
       converter = new Jacoco(logger);
     } else if (coverageType === 'cobertura') {
       converter = new Cobertura(logger);
+    } else if (coverageType === 'lcov') {
+      converter = new Lcov(logger);
     } else {
       throw new InputError(`Unsupported coverage type '${coverageType}`);
     }

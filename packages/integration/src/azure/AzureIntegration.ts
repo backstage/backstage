@@ -29,6 +29,7 @@ export class AzureIntegration implements ScmIntegration {
     const configs = readAzureIntegrationConfigs(
       config.getOptionalConfigArray('integrations.azure') ?? [],
     );
+
     return basicIntegrations(
       configs.map(c => new AzureIntegration(c)),
       i => i.config.host,

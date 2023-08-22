@@ -9,7 +9,9 @@ import { ApiRef } from '@backstage/core-plugin-api';
 import { BackstagePlugin } from '@backstage/core-plugin-api';
 import { ErrorApi } from '@backstage/core-plugin-api';
 import { IconComponent } from '@backstage/core-plugin-api';
+import { JSX as JSX_2 } from 'react';
 import { OAuthApi } from '@backstage/core-plugin-api';
+import { default as React_2 } from 'react';
 import { RouteRef } from '@backstage/core-plugin-api';
 
 // @public
@@ -36,7 +38,7 @@ export type GithubEndpointConfig = {
 export const GraphiQLIcon: IconComponent;
 
 // @public (undocumented)
-export const GraphiQLPage: () => JSX.Element;
+export const GraphiQLPage: () => JSX_2.Element;
 
 // @public (undocumented)
 const graphiqlPlugin: BackstagePlugin<{}, {}, {}>;
@@ -73,7 +75,7 @@ export class GraphQLEndpoints implements GraphQLBrowseApi {
 }
 
 // @public (undocumented)
-export const Router: () => JSX.Element;
+export const Router: () => React_2.JSX.Element;
 
 // (No @packageDocumentation comment for this package)
 ```

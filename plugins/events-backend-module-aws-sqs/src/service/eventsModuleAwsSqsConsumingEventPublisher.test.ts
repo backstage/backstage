@@ -14,11 +14,6 @@
  * limitations under the License.
  */
 
-import {
-  coreServices,
-  createServiceFactory,
-  SchedulerService,
-} from '@backstage/backend-plugin-api';
 import { mockServices, startTestBackend } from '@backstage/backend-test-utils';
 import { eventsExtensionPoint } from '@backstage/plugin-events-node/alpha';
 import { TestEventBroker } from '@backstage/plugin-events-backend-test-utils';
@@ -34,9 +29,7 @@ describe('eventsModuleAwsSqsConsumingEventPublisher', () => {
       },
     };
 
-    const scheduler = {
-      scheduleTask: jest.fn(),
-    } as unknown as SchedulerService;
+    const scheduler = mockServices.scheduler.mock();
 
     await startTestBackend({
       extensionPoints: [[eventsExtensionPoint, extensionPoint]],
@@ -68,11 +61,7 @@ describe('eventsModuleAwsSqsConsumingEventPublisher', () => {
             },
           },
         }),
-        createServiceFactory({
-          service: coreServices.scheduler,
-          deps: {},
-          factory: () => scheduler,
-        }),
+        scheduler.factory,
       ],
     });
 

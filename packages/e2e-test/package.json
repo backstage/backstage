@@ -1,7 +1,7 @@
 {
   "name": "e2e-test",
   "description": "E2E test for verifying Backstage packages",
-  "version": "0.2.6",
+  "version": "0.2.7-next.0",
   "private": true,
   "backstage": {
     "role": "cli"
@@ -35,6 +35,7 @@
     "cross-fetch": "^3.1.5",
     "fs-extra": "10.1.0",
     "handlebars": "^4.7.3",
+    "mysql2": "^2.2.5",
     "pgtools": "^1.0.0",
     "puppeteer": "^17.0.0",
     "tree-kill": "^1.2.2"

@@ -9,6 +9,7 @@
 import { ApiRef } from '@backstage/core-plugin-api';
 import { BackstagePlugin } from '@backstage/core-plugin-api';
 import { FetchApi } from '@backstage/core-plugin-api';
+import { JSX as JSX_2 } from 'react';
 import { OAuthApi } from '@backstage/core-plugin-api';
 import { RouteRef } from '@backstage/core-plugin-api';
 
@@ -55,7 +56,7 @@ export const gcalendarPlugin: BackstagePlugin<
 >;
 
 // @public (undocumented)
-export const HomePageCalendar: () => JSX.Element;
+export const HomePageCalendar: () => JSX_2.Element;
 
 // @public (undocumented)
 export enum ResponseStatus {

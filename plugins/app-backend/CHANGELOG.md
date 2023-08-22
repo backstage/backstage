@@ -1,5 +1,18 @@
 # @backstage/plugin-app-backend
 
+## 0.3.50-next.0
+
+### Patch Changes
+
+- cfc3ca6ce060: Changes needed to support MySQL
+- Updated dependencies
+  - @backstage/backend-common@0.19.4-next.0
+  - @backstage/config-loader@1.5.0-next.0
+  - @backstage/backend-plugin-api@0.6.2-next.0
+  - @backstage/config@1.0.8
+  - @backstage/types@1.1.0
+  - @backstage/plugin-app-node@0.1.2-next.0
+
 ## 0.3.48
 
 ### Patch Changes

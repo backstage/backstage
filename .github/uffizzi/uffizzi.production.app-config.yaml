@@ -280,3 +280,7 @@ gocd:
 
 permission:
   enabled: true
+
+search:
+  query:
+    pageLimit: 50

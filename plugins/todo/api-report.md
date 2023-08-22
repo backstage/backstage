@@ -10,10 +10,11 @@ import { BackstagePlugin } from '@backstage/core-plugin-api';
 import { DiscoveryApi } from '@backstage/core-plugin-api';
 import { Entity } from '@backstage/catalog-model';
 import { IdentityApi } from '@backstage/core-plugin-api';
+import { JSX as JSX_2 } from 'react';
 import { RouteRef } from '@backstage/core-plugin-api';
 
 // @public
-export const EntityTodoContent: () => JSX.Element;
+export const EntityTodoContent: () => JSX_2.Element;
 
 // @public
 export interface TodoApi {

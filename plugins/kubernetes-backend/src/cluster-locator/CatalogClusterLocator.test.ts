@@ -29,10 +29,28 @@ const mockCatalogApi = {
           annotations: {
             'kubernetes.io/api-server': 'https://apiserver.com',
             'kubernetes.io/api-server-certificate-authority': 'caData',
-            'kubernetes.io/auth-provider': 'aws',
+            'kubernetes.io/auth-provider': 'oidc',
             'kubernetes.io/oidc-token-provider': 'google',
             'kubernetes.io/skip-metrics-lookup': 'true',
             'kubernetes.io/skip-tls-verify': 'true',
+            'kubernetes.io/dashboard-url': 'my-url',
+            'kubernetes.io/dashboard-app': 'my-app',
+          },
+          name: 'owned',
+          namespace: 'default',
+        },
+      },
+      {
+        apiVersion: 'version',
+        kind: 'User',
+        metadata: {
+          annotations: {
+            'kubernetes.io/api-server': 'https://apiserver.com',
+            'kubernetes.io/api-server-certificate-authority': 'caData',
+            'kubernetes.io/auth-provider': 'aws',
+            'kubernetes.io/aws-assume-role': 'my-role',
+            'kubernetes.io/aws-external-id': 'my-id',
+            'kubernetes.io/oidc-token-provider': 'google',
             'kubernetes.io/dashboard-url': 'my-url',
             'kubernetes.io/dashboard-app': 'my-app',
           },
@@ -67,15 +85,36 @@ describe('CatalogClusterLocator', () => {
 
     const result = await clusterSupplier.getClusters();
 
-    expect(result).toHaveLength(1);
+    expect(result).toHaveLength(2);
     expect(result[0]).toStrictEqual({
       name: 'owned',
       url: 'https://apiserver.com',
       caData: 'caData',
-      authProvider: 'aws',
+      authProvider: 'oidc',
       oidcTokenProvider: 'google',
       skipMetricsLookup: true,
       skipTLSVerify: true,
+      dashboardUrl: 'my-url',
+      dashboardApp: 'my-app',
+    });
+  });
+
+  it('returns the aws cluster details provided by annotations', async () => {
+    const clusterSupplier = CatalogClusterLocator.fromConfig(mockCatalogApi);
+
+    const result = await clusterSupplier.getClusters();
+
+    expect(result).toHaveLength(2);
+    expect(result[1]).toStrictEqual({
+      name: 'owned',
+      url: 'https://apiserver.com',
+      caData: 'caData',
+      authProvider: 'aws',
+      assumeRole: 'my-role',
+      externalId: 'my-id',
+      oidcTokenProvider: 'google',
+      skipMetricsLookup: false,
+      skipTLSVerify: false,
       dashboardUrl: 'my-url',
       dashboardApp: 'my-app',
     });

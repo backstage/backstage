@@ -13,6 +13,7 @@ import { CardSettings as CardSettings_2 } from '@backstage/plugin-home-react';
 import { ComponentParts as ComponentParts_2 } from '@backstage/plugin-home-react';
 import { ComponentRenderer as ComponentRenderer_2 } from '@backstage/plugin-home-react';
 import { createCardExtension as createCardExtension_2 } from '@backstage/plugin-home-react';
+import { JSX as JSX_2 } from 'react';
 import { default as React_2 } from 'react';
 import { ReactElement } from 'react';
 import { ReactNode } from 'react';
@@ -48,7 +49,7 @@ export const ComponentAccordion: (props: {
   Actions?: (() => JSX.Element) | undefined;
   Settings?: (() => JSX.Element) | undefined;
   ContextProvider?: ((props: any) => JSX.Element) | undefined;
-}) => JSX.Element;
+}) => JSX_2.Element;
 
 // @public @deprecated (undocumented)
 export type ComponentParts = ComponentParts_2;
@@ -61,7 +62,7 @@ export const ComponentTab: (props: {
   title: string;
   Content: () => JSX.Element;
   ContextProvider?: ((props: any) => JSX.Element) | undefined;
-}) => JSX.Element;
+}) => JSX_2.Element;
 
 // @public (undocumented)
 export const ComponentTabs: (props: {
@@ -70,7 +71,7 @@ export const ComponentTabs: (props: {
     label: string;
     Component: () => JSX.Element;
   }[];
-}) => JSX.Element;
+}) => JSX_2.Element;
 
 // @public @deprecated (undocumented)
 export const createCardExtension: typeof createCardExtension_2;
@@ -78,7 +79,7 @@ export const createCardExtension: typeof createCardExtension_2;
 // @public
 export const CustomHomepageGrid: (
   props: CustomHomepageGridProps,
-) => JSX.Element;
+) => React_2.JSX.Element;
 
 // @public
 export type CustomHomepageGridProps = {
@@ -100,36 +101,36 @@ export type CustomHomepageGridProps = {
 export const HeaderWorldClock: (props: {
   clockConfigs: ClockConfig[];
   customTimeFormat?: Intl.DateTimeFormatOptions | undefined;
-}) => JSX.Element | null;
+}) => JSX_2.Element | null;
 
 // @public
 export const HomePageCompanyLogo: (props: {
   logo?: ReactNode;
   className?: string | undefined;
-}) => JSX.Element;
+}) => JSX_2.Element;
 
 // @public (undocumented)
 export const HomepageCompositionRoot: (props: {
   title?: string | undefined;
   children?: ReactNode;
-}) => JSX.Element;
+}) => JSX_2.Element;
 
 // @public (undocumented)
 export const HomePageRandomJoke: (
   props: CardExtensionProps_2<{
     defaultCategory?: 'any' | 'programming' | undefined;
   }>,
-) => JSX.Element;
+) => JSX_2.Element;
 
 // @public
 export const HomePageStarredEntities: (
   props: CardExtensionProps_2<unknown>,
-) => JSX.Element;
+) => JSX_2.Element;
 
 // @public
 export const HomePageToolkit: (
   props: CardExtensionProps_2<ToolkitContentProps>,
-) => JSX.Element;
+) => JSX_2.Element;
 
 // @public (undocumented)
 export const homePlugin: BackstagePlugin<
@@ -158,7 +159,7 @@ export const SettingsModal: (props: {
   close: Function;
   componentName?: string | undefined;
   children: JSX.Element;
-}) => JSX.Element;
+}) => JSX_2.Element;
 
 // @public (undocumented)
 export const TemplateBackstageLogo: (props: {
@@ -166,10 +167,10 @@ export const TemplateBackstageLogo: (props: {
     svg: string;
     path: string;
   };
-}) => JSX.Element;
+}) => React_2.JSX.Element;
 
 // @public (undocumented)
-export const TemplateBackstageLogoIcon: () => JSX.Element;
+export const TemplateBackstageLogoIcon: () => React_2.JSX.Element;
 
 // @public (undocumented)
 export type Tool = {
@@ -186,7 +187,7 @@ export type ToolkitContentProps = {
 // @public
 export const WelcomeTitle: ({
   language,
-}: WelcomeTitleLanguageProps) => JSX.Element;
+}: WelcomeTitleLanguageProps) => JSX_2.Element;
 
 // @public (undocumented)
 export type WelcomeTitleLanguageProps = {

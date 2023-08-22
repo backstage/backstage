@@ -135,7 +135,7 @@ export const spec = {
         required: false,
         schema: {
           type: 'integer',
-          minimum: 1,
+          minimum: 0,
         },
       },
       orderField: {
@@ -1087,7 +1087,10 @@ export const spec = {
             name: 'facet',
             required: true,
             schema: {
-              type: 'string',
+              type: 'array',
+              items: {
+                type: 'string',
+              },
             },
           },
           {

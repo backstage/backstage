@@ -13,7 +13,6 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
 import { trimStart } from 'lodash';
 import { GerritIntegrationConfig } from './config';
 
@@ -156,10 +155,23 @@ export function getAuthenticationPrefix(
 export function getGitilesAuthenticationUrl(
   config: GerritIntegrationConfig,
 ): string {
-  const parsedUrl = new URL(config.gitilesBaseUrl!);
-  return `${parsedUrl.protocol}//${parsedUrl.host}${getAuthenticationPrefix(
-    config,
-  )}${parsedUrl.pathname.substring(1)}`;
+  if (!config.baseUrl || !config.gitilesBaseUrl) {
+    throw new Error(
+      'Unexpected Gerrit config values. baseUrl or gitilesBaseUrl not set.',
+    );
+  }
+  if (config.gitilesBaseUrl.startsWith(config.baseUrl)) {
+    return config.gitilesBaseUrl.replace(
+      config.baseUrl.concat('/'),
+      config.baseUrl.concat(getAuthenticationPrefix(config)),
+    );
+  }
+  if (config.password) {
+    throw new Error(
+      'Since the baseUrl (Gerrit) is not part of the gitilesBaseUrl, an authentication URL could not be constructed.',
+    );
+  }
+  return config.gitilesBaseUrl!;
 }
 
 /**

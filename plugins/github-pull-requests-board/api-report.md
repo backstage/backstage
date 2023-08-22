@@ -5,10 +5,12 @@
 ```ts
 /// <reference types="react" />
 
+import { JSX as JSX_2 } from 'react';
+
 // @public (undocumented)
 export const EntityTeamPullRequestsCard: (
   props: EntityTeamPullRequestsCardProps,
-) => JSX.Element;
+) => JSX_2.Element;
 
 // @public (undocumented)
 export interface EntityTeamPullRequestsCardProps {
@@ -19,7 +21,7 @@ export interface EntityTeamPullRequestsCardProps {
 // @public (undocumented)
 export const EntityTeamPullRequestsContent: (
   props: EntityTeamPullRequestsContentProps,
-) => JSX.Element;
+) => JSX_2.Element;
 
 // @public (undocumented)
 export interface EntityTeamPullRequestsContentProps {

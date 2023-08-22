@@ -31,6 +31,16 @@ export interface Config {
       secret?: string;
     };
 
+    /**
+     * JWS "alg" (Algorithm) Header Parameter value. Defaults to ES256.
+     * Must match one of the algorithms defined for IdentityClient.
+     * When setting a different algorithm, check if the `key` field
+     * of the `signing_keys` table can fit the length of the generated keys.
+     * If not, add a knex migration file in the migrations folder.
+     * More info on supported algorithms: https://github.com/panva/jose
+     */
+    identityTokenAlgorithm?: string;
+
     /** To control how to store JWK data in auth-backend */
     keyStore?: {
       provider?: 'database' | 'memory' | 'firestore';
@@ -83,18 +93,6 @@ export interface Config {
           clientSecret: string;
           callbackUrl?: string;
           enterpriseInstanceUrl?: string;
-        };
-      };
-      /** @visibility frontend */
-      gitlab?: {
-        [authEnv: string]: {
-          clientId: string;
-          /**
-           * @visibility secret
-           */
-          clientSecret: string;
-          audience?: string;
-          callbackUrl?: string;
         };
       };
       /** @visibility frontend */

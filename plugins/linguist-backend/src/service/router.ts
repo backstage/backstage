@@ -150,9 +150,8 @@ export async function createRouterFromConfig(routerOptions: RouterOptions) {
       );
     }
     pluginOptions.batchSize = config.getOptionalNumber('linguist.batchSize');
-    pluginOptions.useSourceLocation = config.getBoolean(
-      'linguist.useSourceLocation',
-    );
+    pluginOptions.useSourceLocation =
+      config.getOptionalBoolean('linguist.useSourceLocation') ?? false;
     pluginOptions.age = config.getOptionalConfig('linguist.age') as
       | HumanDuration
       | undefined;

@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { Logger } from 'winston';
+import { LoggerService } from '@backstage/backend-plugin-api';
 import { ConflictError, NotFoundError } from '@backstage/errors';
 import { CatalogApi } from '@backstage/catalog-client';
 import {
@@ -78,7 +78,7 @@ export class CatalogIdentityClient {
    */
   async resolveCatalogMembership(query: {
     entityRefs: string[];
-    logger?: Logger;
+    logger?: LoggerService;
   }): Promise<string[]> {
     const { entityRefs, logger } = query;
     const resolvedEntityRefs = entityRefs

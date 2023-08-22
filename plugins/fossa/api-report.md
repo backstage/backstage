@@ -7,15 +7,16 @@
 
 import { BackstagePlugin } from '@backstage/core-plugin-api';
 import { InfoCardVariants } from '@backstage/core-components';
+import { JSX as JSX_2 } from 'react';
 import { RouteRef } from '@backstage/core-plugin-api';
 
 // @public (undocumented)
 export const EntityFossaCard: (props: {
   variant?: InfoCardVariants | undefined;
-}) => JSX.Element;
+}) => JSX_2.Element;
 
 // @public (undocumented)
-export const FossaPage: (props: FossaPageProps) => JSX.Element;
+export const FossaPage: (props: FossaPageProps) => JSX_2.Element;
 
 // @public (undocumented)
 export type FossaPageProps = {

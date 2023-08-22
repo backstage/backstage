@@ -14,70 +14,11 @@
  * limitations under the License.
  */
 
-import express from 'express';
-import { TokenPayload } from 'google-auth-library';
+import { gcpIapAuthenticator } from '@backstage/plugin-auth-backend-module-gcp-iap-provider';
+import { createProxyAuthProviderFactory } from '@backstage/plugin-auth-node';
 import { createAuthProviderIntegration } from '../createAuthProviderIntegration';
-import { prepareBackstageIdentityResponse } from '../prepareBackstageIdentityResponse';
-import {
-  AuthHandler,
-  AuthProviderRouteHandlers,
-  AuthResolverContext,
-  SignInResolver,
-} from '../types';
-import {
-  createTokenValidator,
-  defaultAuthHandler,
-  parseRequestToken,
-} from './helpers';
-import { GcpIapResponse, GcpIapResult, DEFAULT_IAP_JWT_HEADER } from './types';
-
-export class GcpIapProvider implements AuthProviderRouteHandlers {
-  private readonly authHandler: AuthHandler<GcpIapResult>;
-  private readonly signInResolver: SignInResolver<GcpIapResult>;
-  private readonly tokenValidator: (token: string) => Promise<TokenPayload>;
-  private readonly resolverContext: AuthResolverContext;
-  private readonly jwtHeader: string;
-
-  constructor(options: {
-    authHandler: AuthHandler<GcpIapResult>;
-    signInResolver: SignInResolver<GcpIapResult>;
-    tokenValidator: (token: string) => Promise<TokenPayload>;
-    resolverContext: AuthResolverContext;
-    jwtHeader?: string;
-  }) {
-    this.authHandler = options.authHandler;
-    this.signInResolver = options.signInResolver;
-    this.tokenValidator = options.tokenValidator;
-    this.resolverContext = options.resolverContext;
-    this.jwtHeader = options?.jwtHeader || DEFAULT_IAP_JWT_HEADER;
-  }
-
-  async start() {}
-
-  async frameHandler() {}
-
-  async refresh(req: express.Request, res: express.Response): Promise<void> {
-    const result = await parseRequestToken(
-      req.header(this.jwtHeader),
-      this.tokenValidator,
-    );
-
-    const { profile } = await this.authHandler(result, this.resolverContext);
-
-    const backstageIdentity = await this.signInResolver(
-      { profile, result },
-      this.resolverContext,
-    );
-
-    const response: GcpIapResponse = {
-      providerInfo: { iapToken: result.iapToken },
-      profile,
-      backstageIdentity: prepareBackstageIdentityResponse(backstageIdentity),
-    };
-
-    res.json(response);
-  }
-}
+import { AuthHandler, SignInResolver } from '../types';
+import { GcpIapResult } from './types';
 
 /**
  * Auth provider integration for Google Identity-Aware Proxy auth
@@ -104,21 +45,10 @@ export const gcpIap = createAuthProviderIntegration({
       resolver: SignInResolver<GcpIapResult>;
     };
   }) {
-    return ({ config, resolverContext }) => {
-      const audience = config.getString('audience');
-      const jwtHeader = config.getOptionalString('jwtHeader');
-
-      const authHandler = options.authHandler ?? defaultAuthHandler;
-      const signInResolver = options.signIn.resolver;
-      const tokenValidator = createTokenValidator(audience);
-
-      return new GcpIapProvider({
-        authHandler,
-        signInResolver,
-        tokenValidator,
-        resolverContext,
-        jwtHeader,
-      });
-    };
+    return createProxyAuthProviderFactory({
+      authenticator: gcpIapAuthenticator,
+      profileTransform: options?.authHandler,
+      signInResolver: options?.signIn?.resolver,
+    });
   },
 });

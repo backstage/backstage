@@ -90,7 +90,7 @@ components:
       required: false
       schema:
         type: integer
-        minimum: 1
+        minimum: 0
     orderField:
       name: orderField
       in: query
@@ -819,7 +819,9 @@ paths:
           name: facet
           required: true
           schema:
-            type: string
+            type: array
+            items:
+              type: string
         - $ref: '#/components/parameters/filter'
   /locations:
     post:

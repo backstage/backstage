@@ -14,20 +14,10 @@
  * limitations under the License.
  */
 
-import { AuthResponse } from '../../providers/types';
+import { WebMessageResponse as _WebMessageResponse } from '@backstage/plugin-auth-node';
 
 /**
- * Payload sent as a post message after the auth request is complete.
- * If successful then has a valid payload with Auth information else contains an error.
- *
  * @public
+ * @deprecated import from `@backstage/plugin-auth-node` instead
  */
-export type WebMessageResponse =
-  | {
-      type: 'authorization_response';
-      response: AuthResponse<unknown>;
-    }
-  | {
-      type: 'authorization_response';
-      error: Error;
-    };
+export type WebMessageResponse = _WebMessageResponse;

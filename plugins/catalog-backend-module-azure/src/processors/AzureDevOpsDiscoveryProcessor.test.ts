@@ -158,6 +158,7 @@ describe('AzureDevOpsDiscoveryProcessor', () => {
       await processor.readLocation(location, false, emitter);
 
       expect(mockCodeSearch).toHaveBeenCalledWith(
+        expect.anything(),
         { host: 'dev.azure.com' },
         'shopify',
         'engineering',
@@ -207,6 +208,7 @@ describe('AzureDevOpsDiscoveryProcessor', () => {
       await processor.readLocation(location, false, emitter);
 
       expect(mockCodeSearch).toHaveBeenCalledWith(
+        expect.anything(),
         { host: 'dev.azure.com' },
         'shopify',
         'engineering',
@@ -248,6 +250,7 @@ describe('AzureDevOpsDiscoveryProcessor', () => {
       await processor.readLocation(location, false, emitter);
 
       expect(mockCodeSearch).toHaveBeenCalledWith(
+        expect.anything(),
         { host: 'dev.azure.com' },
         'shopify',
         'engineering',
@@ -277,6 +280,7 @@ describe('AzureDevOpsDiscoveryProcessor', () => {
       await processor.readLocation(location, false, emitter);
 
       expect(mockCodeSearch).toHaveBeenCalledWith(
+        expect.anything(),
         { host: 'dev.azure.com' },
         'shopify',
         'engineering',
