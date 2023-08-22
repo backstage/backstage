@@ -96,18 +96,6 @@ export interface Config {
         };
       };
       /** @visibility frontend */
-      gitlab?: {
-        [authEnv: string]: {
-          clientId: string;
-          /**
-           * @visibility secret
-           */
-          clientSecret: string;
-          audience?: string;
-          callbackUrl?: string;
-        };
-      };
-      /** @visibility frontend */
       saml?: {
         entryPoint: string;
         logoutUrl?: string;
