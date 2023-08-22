@@ -157,10 +157,15 @@ export function getAuthenticationPrefix(
 export function getGitilesAuthenticationUrl(
   config: GerritIntegrationConfig,
 ): string {
-  if (config.gitilesBaseUrl!.startsWith(config.baseUrl!)) {
-    return config.gitilesBaseUrl!.replace(
-      config.baseUrl!.concat('/'),
-      config.baseUrl!.concat(getAuthenticationPrefix(config)),
+  if (!config.baseUrl || !config.gitilesBaseUrl) {
+    throw new Error(
+      'Unexpected Gerrit config values. baseUrl or gitilesBaseUrl not set.',
+    );
+  }
+  if (config.gitilesBaseUrl.startsWith(config.baseUrl)) {
+    return config.gitilesBaseUrl.replace(
+      config.baseUrl.concat('/'),
+      config.baseUrl.concat(getAuthenticationPrefix(config)),
     );
   }
   if (config.password) {

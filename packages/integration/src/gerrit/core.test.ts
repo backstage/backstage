@@ -47,6 +47,7 @@ describe('gerrit core', () => {
     };
     const configWithDedicatedGitiles: GerritIntegrationConfig = {
       host: 'gerrit.com',
+      baseUrl: 'https://gerrit.com/gerrit',
       gitilesBaseUrl: 'https://dedicated-gitiles-server.com/gerrit/gitiles',
     };
     it('can create an archive url for a branch', () => {
