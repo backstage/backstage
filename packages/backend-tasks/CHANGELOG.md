@@ -1,5 +1,16 @@
 # @backstage/backend-tasks
 
+## 0.5.7-next.0
+
+### Patch Changes
+
+- cfc3ca6ce060: Changes needed to support MySQL
+- Updated dependencies
+  - @backstage/backend-common@0.19.4-next.0
+  - @backstage/config@1.0.8
+  - @backstage/errors@1.2.1
+  - @backstage/types@1.1.0
+
 ## 0.5.5
 
 ### Patch Changes
