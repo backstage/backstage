@@ -77,17 +77,16 @@ export const PlaylistEditDialog = ({
   const identityApi = useApi(identityApiRef);
   const playlistApi = useApi(playlistApiRef);
   const playlistPromise = useRef(playlistApi.getAllPlaylists({}));
-  const [editingOtherFields, setEditingOtherFields] = useState(false);
   const { loading: loadingOwnership, value: ownershipRefs } =
     useAsync(async () => {
       const { ownershipEntityRefs } = await identityApi.getBackstageIdentity();
       return ownershipEntityRefs;
     }, []);
 
-  const nameIsUnique = async (name: string, isEditing: boolean) => {
+  const nameIsUnique = async (name: string) => {
     const playlists = await playlistPromise.current;
 
-    if (!isEditing || name !== playlist.name) {
+    if (name !== playlist.name) {
       return (
         !playlists.some(p => p.name === name) ||
         'A playlist with this name already exists'
@@ -119,7 +118,6 @@ export const PlaylistEditDialog = ({
     if (!saving.loading) {
       onClose();
       reset(defaultValues);
-      setEditingOtherFields(false);
     }
   };
 
@@ -136,7 +134,7 @@ export const PlaylistEditDialog = ({
           control={control}
           rules={{
             required: true,
-            validate: value => nameIsUnique(value, editingOtherFields),
+            validate: value => nameIsUnique(value),
           }}
           render={({ field }) => (
             <TextField
@@ -168,7 +166,6 @@ export const PlaylistEditDialog = ({
               multiline
               placeholder={`Describe your ${titleSingularLowerCase}`}
               type="text"
-              onBlur={() => setEditingOtherFields(true)}
             />
           )}
         />
