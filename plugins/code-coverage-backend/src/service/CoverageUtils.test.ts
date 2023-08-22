@@ -224,11 +224,11 @@ describe('CodeCoverageUtils', () => {
         err = error;
       }
       expect(err?.message).toEqual(
-        'Content-Type header "application/json" not supported, expected "text/xml" possibly followed by a charset',
+        'Content-Type header "application/json" not supported, expected "text/xml" or "text/plain" possibly followed by a charset',
       );
     });
 
-    it('parses the body', () => {
+    it('parses the xml body', () => {
       const data: Readable = utils.validateRequestBody({
         headers: {
           'content-type': 'text/xml',
@@ -239,6 +239,19 @@ describe('CodeCoverageUtils', () => {
       } as Request);
 
       expect(data.read()).toContain('<?xml');
+    });
+
+    it('parses the plain body', () => {
+      const data: Readable = utils.validateRequestBody({
+        headers: {
+          'content-type': 'text/plain',
+        },
+        body: Readable.from(
+          'TN:\nSF:/src/index.js\nFNF:0\nFNH:0\nLF:1\nLH:1\nBRF:0\nBRH:0\nend_of_record',
+        ),
+      } as Request);
+
+      expect(data.read()).toMatch(/^TN:\nSF:\/src\/index.js/);
     });
   });
 
