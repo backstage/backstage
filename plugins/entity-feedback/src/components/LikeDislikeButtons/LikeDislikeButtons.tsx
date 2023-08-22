@@ -127,9 +127,9 @@ export const LikeDislikeButtons = (props: LikeDislikeButtonsProps) => {
         onClick={() => applyRating(FeedbackRatings.like)}
       >
         {rating === FeedbackRatings.like ? (
-          <ThumbUpIcon fontSize="small" />
+          <ThumbUpIcon fontSize="small" color="primary" />
         ) : (
-          <ThumbUpOutlinedIcon fontSize="small" />
+          <ThumbUpOutlinedIcon fontSize="small" color="primary" />
         )}
       </IconButton>
       <IconButton
@@ -137,9 +137,9 @@ export const LikeDislikeButtons = (props: LikeDislikeButtonsProps) => {
         onClick={() => applyRating(FeedbackRatings.dislike)}
       >
         {rating === FeedbackRatings.dislike ? (
-          <ThumbDownIcon fontSize="small" />
+          <ThumbDownIcon fontSize="small" color="secondary" />
         ) : (
-          <ThumbDownOutlinedIcon fontSize="small" />
+          <ThumbDownOutlinedIcon fontSize="small" color="secondary" />
         )}
       </IconButton>
       <FeedbackResponseDialog
