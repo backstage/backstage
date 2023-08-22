@@ -1,5 +1,20 @@
 # @backstage/core-app-api
 
+## 1.10.0-next.0
+
+### Minor Changes
+
+- 18619f793c94: Fixed two bugs in how the `OAuth2Session` type represents the underlying data. The `expiresAt` and `backstageIdentity` are now both optional, since that's what they are in practice. This is not considered a breaking change since it was effectively a bug in the modelling of the state that this type represents, and the type was not used in any other external contract.
+- 18619f793c94: The `OAuth` class which is used by all OAuth providers will now consider both the session expiration of both the Backstage identity as well as the upstream identity provider, and refresh the session with either of them is about to expire.
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/core-plugin-api@1.6.0-next.0
+  - @backstage/config@1.0.8
+  - @backstage/types@1.1.0
+  - @backstage/version-bridge@1.0.4
+
 ## 1.9.1
 
 ### Patch Changes

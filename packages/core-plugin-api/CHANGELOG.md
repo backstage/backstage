@@ -1,5 +1,18 @@
 # @backstage/core-plugin-api
 
+## 1.6.0-next.0
+
+### Minor Changes
+
+- 18619f793c94: Added the optional `expiresAt` field that may now be part of a `BackstageIdentityResponse`.
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/config@1.0.8
+  - @backstage/types@1.1.0
+  - @backstage/version-bridge@1.0.4
+
 ## 1.5.3
 
 ### Patch Changes

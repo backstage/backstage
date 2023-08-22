@@ -1,5 +1,16 @@
 # @backstage/plugin-xcmetrics
 
+## 0.2.42-next.0
+
+### Patch Changes
+
+- 482bb5c0bbf8: Moved `@types/react` to be a regular dependency
+- Updated dependencies
+  - @backstage/core-plugin-api@1.6.0-next.0
+  - @backstage/core-components@0.13.5-next.0
+  - @backstage/errors@1.2.1
+  - @backstage/theme@0.4.1
+
 ## 0.2.41
 
 ### Patch Changes

@@ -1,5 +1,19 @@
 # @backstage/plugin-entity-feedback
 
+## 0.2.6-next.0
+
+### Patch Changes
+
+- 5e2e06db747a: Improve README to note that Backstage identity is required to be configured
+- Updated dependencies
+  - @backstage/core-plugin-api@1.6.0-next.0
+  - @backstage/core-components@0.13.5-next.0
+  - @backstage/catalog-model@1.4.1
+  - @backstage/errors@1.2.1
+  - @backstage/theme@0.4.1
+  - @backstage/plugin-catalog-react@1.8.3-next.0
+  - @backstage/plugin-entity-feedback-common@0.1.2
+
 ## 0.2.4
 
 ### Patch Changes

@@ -1,5 +1,39 @@
 # @backstage/config-loader
 
+## 1.5.0-next.0
+
+### Minor Changes
+
+- 9606ba0939e6: Deep visibility now also applies to values that are not covered by the configuration schema.
+
+  For example, given the following configuration schema:
+
+  ```ts
+  // plugins/a/config.schema.ts
+  export interface Config {
+    /** @deepVisibility frontend */
+    a?: unknown;
+  }
+
+  // plugins/a/config.schema.ts
+  export interface Config {
+    a?: {
+      b?: string;
+    };
+  }
+  ```
+
+  All values under `a` are now visible to the frontend, while previously only `a` and `a/b` would've been visible.
+
+### Patch Changes
+
+- f9657b891b00: Do not unnecessarily notify subscribers when no-op updates to config happen
+- Updated dependencies
+  - @backstage/cli-common@0.1.12
+  - @backstage/config@1.0.8
+  - @backstage/errors@1.2.1
+  - @backstage/types@1.1.0
+
 ## 1.4.0
 
 ### Minor Changes

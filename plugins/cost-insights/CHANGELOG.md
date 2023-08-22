@@ -1,5 +1,19 @@
 # @backstage/plugin-cost-insights
 
+## 0.12.12-next.0
+
+### Patch Changes
+
+- a54cd411639e: Updated dependency `@types/pluralize` to `^0.0.30`.
+- Updated dependencies
+  - @backstage/core-plugin-api@1.6.0-next.0
+  - @backstage/core-components@0.13.5-next.0
+  - @backstage/catalog-model@1.4.1
+  - @backstage/config@1.0.8
+  - @backstage/theme@0.4.1
+  - @backstage/plugin-catalog-react@1.8.3-next.0
+  - @backstage/plugin-cost-insights-common@0.1.1
+
 ## 0.12.10
 
 ### Patch Changes
