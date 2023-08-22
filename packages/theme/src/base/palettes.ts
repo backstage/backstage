@@ -49,7 +49,7 @@ export const palettes = {
       main: '#1F5493',
     },
     banner: {
-      info: '#2E77D0',
+      info: '#348FCB',
       error: '#E22134',
       text: '#FFFFFF',
       link: '#000000',
@@ -123,7 +123,7 @@ export const palettes = {
       main: '#FF88B2',
     },
     banner: {
-      info: '#2E77D0',
+      info: '#348FCB',
       error: '#E22134',
       text: '#FFFFFF',
       link: '#000000',
