@@ -85,7 +85,21 @@ const Contents = ({
         setBusy(true);
         try {
           await state.deleteEntity();
+          const entityArray = [entity].flat();
+          const entityNames = entityArray.map(
+            item => item.metadata.title ?? item.metadata.name,
+          );
           onConfirm();
+          const message =
+            entityNames.length === 1
+              ? `Removed entity '${entityNames[0]}'`
+              : `Removed entities: '${entityNames.join("', '")}'`;
+
+          alertApi.post({
+            message,
+            severity: 'success',
+            display: 'transient',
+          });
         } catch (err) {
           assertError(err);
           alertApi.post({ message: err.message });
@@ -94,7 +108,7 @@ const Contents = ({
         }
       }
     },
-    [alertApi, onConfirm, state],
+    [alertApi, onConfirm, state, entity],
   );
 
   const DialogActionsPanel = () => (
