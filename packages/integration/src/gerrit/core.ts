@@ -13,8 +13,6 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
-import { logger } from '@azure/identity';
 import { trimStart } from 'lodash';
 import { GerritIntegrationConfig } from './config';
 
@@ -169,7 +167,7 @@ export function getGitilesAuthenticationUrl(
     );
   }
   if (config.password) {
-    logger.warning(
+    throw new Error(
       'Since the baseUrl (Gerrit) is not part of the gitilesBaseUrl, an authentication URL could not be constructed.',
     );
   }

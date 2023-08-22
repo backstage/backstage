@@ -90,11 +90,21 @@ describe('gerrit core', () => {
         'https://gerrit.com/gerrit/a/plugins/gitiles/repo/+archive/refs/heads/dev/docs.tar.gz',
       );
     });
-    it('can create an authenticated url when auth is enabled and an url-path + slash is used', () => {
+    it('Cannot build an authenticated url when a dedicated Gitiles server is used', () => {
       const authConfig = {
         ...configWithDedicatedGitiles,
         username: 'username',
         password: 'password',
+      };
+      expect(() =>
+        buildGerritGitilesArchiveUrl(authConfig, 'repo', 'dev', 'docs'),
+      ).toThrow(
+        'Since the baseUrl (Gerrit) is not part of the gitilesBaseUrl, an authentication URL could not be constructed.',
+      );
+    });
+    it('Build a non-authenticated url when a dedicated Gitiles server is used', () => {
+      const authConfig = {
+        ...configWithDedicatedGitiles,
       };
       expect(
         buildGerritGitilesArchiveUrl(authConfig, 'repo', 'dev', 'docs'),
