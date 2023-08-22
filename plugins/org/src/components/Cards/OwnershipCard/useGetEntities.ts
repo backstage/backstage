@@ -109,11 +109,7 @@ const getChildOwnershipEntityRefs = async (
   }
 
   return [
-    stringifyEntityRef({
-      kind: entity.kind,
-      namespace: entity.metadata.namespace,
-      name: entity.metadata.name,
-    }),
+    stringifyEntityRef(entity),
   ];
 };
 
