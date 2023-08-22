@@ -25,6 +25,7 @@ import {
   OAuthResponse,
   OAuthStartRequest,
   encodeState,
+  readState,
 } from '../../lib/oauth';
 import { PassportDoneCallback } from '../../lib/passport';
 import { OAuthStartResponse } from '../types';
@@ -68,9 +69,12 @@ export class PinnipedAuthProvider implements OAuthHandlers {
 
     // `{"type":"authorization_response","error":{"name":"OPError","message":"invalid_scope (The requested scope is invalid, unknown, or malformed. The OAuth 2.0 Client is not allowed to request scope 'openid+pinniped:request-audience+username'.)"}}`
 
+    const stringifiedAudience = req.query?.audience as string
+    const state = {...req.state, audience: stringifiedAudience }
+
     const options: Record<string, string> = {
-      scope: req.scope || 'openid+pinniped:request-audience+username',
-      state: encodeState(req.state),
+      scope: req.scope || 'openid pinniped:request-audience username',
+      state: encodeState(state),
     };
     return new Promise((resolve, reject) => {
       strategy.redirect = (url: string) => {
@@ -89,11 +93,11 @@ export class PinnipedAuthProvider implements OAuthHandlers {
     const { strategy } = await this.implementation;
 
     // the query string inside the req should contain a code and a state, we can change the stub to reject any auth code,
-    // can this query string also include scope? It already does get a scope in its redirect url when start is called by default.
-    // but when the fake supervisor hits the handler a scope must be returned by the oauth2/authorize endpoint for it to be present in the req
 
-    const { searchParams } = new URL(req.url, 'https://pinniped.com');
-    const audience = searchParams.get('scope') ?? 'none';
+    //if we dont add a base url our integration fails with invalid_url error in integration test
+    const { searchParams } = new URL(req.url, 'https://pinniped.com')
+    const stateParam = searchParams.get('state')
+    const audience = stateParam ? readState(stateParam).audience : "none"
 
     return new Promise((resolve, reject) => {
       strategy.success = user => {
@@ -101,7 +105,7 @@ export class PinnipedAuthProvider implements OAuthHandlers {
           response: {
             providerInfo: {
               accessToken: user.tokenset.access_token,
-              scope: audience,
+              scope: 'none',
             },
             profile: {},
           },

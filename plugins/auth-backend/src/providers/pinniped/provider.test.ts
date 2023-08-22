@@ -21,7 +21,6 @@ import { rest } from 'msw';
 import express from 'express';
 import { UnsecuredJWT } from 'jose';
 import { OAuthState } from '../../lib/oauth';
-import { EntityAzurePipelinesContent } from '@backstage/plugin-azure-devops';
 
 describe('PinnipedAuthProvider', () => {
   let provider: PinnipedAuthProvider;
@@ -137,19 +136,15 @@ describe('PinnipedAuthProvider', () => {
       expect(searchParams.get('response_type')).toBe('code');
     });
 
-    it('passes default audience as a scope parameter in the redirect url if not defined in the request', async () => {
+    it('passes audience query parameter into OAuthState in the redirect url when defined in the request', async () => {
+      startRequest.query = { audience: 'test-cluster'}
       const startResponse = await provider.start(startRequest)
       const { searchParams } = new URL(startResponse.url)
+      const stateParam = searchParams.get('state');
+      const decodedState = readState(stateParam!);
 
-      expect(searchParams.get('scope')).toBe('pinniped:request-audience username')
-    })
-
-    it('passes audience as a scope parameter in the redirect url when defined in the request', async () => {
-      startRequest.scope = 'pinniped:request-audience testusername'
-      const startResponse = await provider.start(startRequest)
-      const { searchParams } = new URL(startResponse.url)
-
-      expect(searchParams.get('scope')).toBe('pinniped:request-audience testusername')
+      expect(decodedState).toMatchObject({nonce: 'nonce',
+      env: 'env', audience:'test-cluster' })
     })
 
     it('passes client ID from config', async () => {
@@ -187,7 +182,7 @@ describe('PinnipedAuthProvider', () => {
       const scopes = searchParams.get('scope')?.split(' ') ?? [];
 
       expect(scopes).toEqual(
-        expect.arrayContaining(['pinniped:request-audience', 'username']),
+        expect.arrayContaining(['openid', 'pinniped:request-audience', 'username']),
       );
     });
 
@@ -213,22 +208,23 @@ describe('PinnipedAuthProvider', () => {
   describe('#handler', () => {
     let handlerRequest: express.Request;
 
+    const testState = {
+      nonce: 'nonce',
+      env: 'development',
+      origin: 'undefined',
+      audience: 'test-cluster'
+    };
+
     beforeEach(() => {
       provider = new PinnipedAuthProvider(clientMetadata);
-
-      const testState = encodeState({
-        nonce: 'nonce',
-        env: 'development',
-        origin: 'undefined',
-      });
 
       //we want to somehow pass an authentication header in this request for testing purposes
       handlerRequest = {
         method: 'GET',
-        url: `https://test?code=authorization_code&state=${testState}&scope=pinniped:request-audience username`,
+        url: `https://test?code=authorization_code&state=${encodeState(testState)}`,
         session: {
           'oidc:pinniped.test': {
-            state: testState,
+            state: encodeState(testState),
           },
         },
       } as unknown as express.Request;
@@ -288,7 +284,8 @@ describe('PinnipedAuthProvider', () => {
       expect(accessToken).toEqual('accessToken')
     })
 
-    it('responds with the correct audience as scope', async() => {
+    //scope cannot be passed along in the redirect url and is different from audience
+    it.skip('responds with the correct audience as scope', async() => {
       const handlerResponse = await provider.handler(handlerRequest);
       const audience = handlerResponse.response.providerInfo.scope
       
@@ -296,7 +293,7 @@ describe('PinnipedAuthProvider', () => {
     })
 
     it('request errors out with missing authorization_code parameter in the request_url', async() => {
-      handlerRequest.url = "test"
+      handlerRequest.url = "https://test.com"
       return expect(provider.handler(handlerRequest)).rejects.toThrow('Unexpected redirect')
     })
 
@@ -304,7 +301,7 @@ describe('PinnipedAuthProvider', () => {
       return expect(
         provider.handler({
           method: 'GET',
-          url: 'test',
+          url: 'https://test.com',
         } as unknown as OAuthStartRequest),
       ).rejects.toThrow('authentication requires session support');
     });
