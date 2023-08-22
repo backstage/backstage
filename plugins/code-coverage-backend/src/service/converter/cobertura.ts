@@ -107,14 +107,10 @@ export class Cobertura implements Converter {
    * @param clz - class coverage information
    */
   private extractLines(clz: InnerClass): Array<LineHit> {
-    const classLines = clz.lines.flatMap(l => l.line);
-    const methodLines = clz.methods
-      ?.flatMap(m => m.method)
-      .filter(Boolean)
-      .flatMap(m => m.lines)
-      .filter(Boolean)
-      .flatMap(l => l.line);
-    const lines = [classLines, methodLines].flat().filter(Boolean);
+    const lines = clz.lines
+      .flatMap(l => l.line)
+      .flat()
+      .filter(Boolean);
     const lineHits = lines.map(l => {
       return {
         number: parseInt(l.$.number as unknown as string, 10),
