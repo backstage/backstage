@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 import { setupRequestMockHandlers } from '@backstage/backend-test-utils';
-import { OAuthStartRequest, encodeState, readState } from '../../lib/oauth';
+import { OAuthRefreshRequest, OAuthStartRequest, encodeState, readState } from '../../lib/oauth';
 import { PinnipedAuthProvider, PinnipedOptions } from './provider';
 import { setupServer } from 'msw/node';
 import { rest } from 'msw';
@@ -64,25 +64,31 @@ describe('PinnipedAuthProvider', () => {
     tokenSignedResponseAlg: 'none',
   };
 
-  const sub = 'test';
-  const iss = 'https://pinniped.test';
-  const iat = Date.now();
-  const aud = clientMetadata.clientId;
-  const exp = Date.now() + 10000;
-  const idToken = new UnsecuredJWT({ iss, sub, aud, iat, exp })
-    .setIssuer(iss)
-    .setAudience(aud)
-    .setSubject(sub)
-    .setIssuedAt(iat)
-    .setExpirationTime(exp)
+  const testTokenMetadata = {
+    sub: 'test',
+    iss: 'https://pinniped.test',
+    iat: Date.now(),
+    aud: clientMetadata.clientId,
+    exp: Date.now() + 10000,
+  }
+
+  const idToken = new UnsecuredJWT(testTokenMetadata)
+    .setIssuer(testTokenMetadata.iss)
+    .setAudience(testTokenMetadata.aud)
+    .setSubject(testTokenMetadata.sub)
+    .setIssuedAt(testTokenMetadata.iat)
+    .setExpirationTime(testTokenMetadata.exp)
     .encode();
+
   const oauthState: OAuthState = {
     nonce: 'nonce',
     env: 'env',
+    origin: 'undefined',
   };
 
   beforeEach(() => {
     jest.clearAllMocks();
+
     worker.use(
       rest.post('https://pinniped.test/oauth2/token', (req, res, ctx) =>
         res(
@@ -95,7 +101,45 @@ describe('PinnipedAuthProvider', () => {
             : ctx.status(401),
         ),
       ),
+      rest.all(
+        'https://federationDomain.test/.well-known/openid-configuration', (_req, res, ctx) => 
+           res(
+            ctx.status(200),
+            ctx.set('Content-Type', 'application/json'),
+            ctx.json(issuerMetadata),
+          )
+        
+      ),
+      rest.post('https://pinniped.test/oauth2/token', (req, res, ctx) =>
+          res(
+            req.headers.get('Authorization')
+              ? ctx.json({
+                  access_token: 'accessToken',
+                  refresh_token: 'refreshToken',
+                  id_token: idToken,
+                })
+              : ctx.status(401),
+          ),
+        ),
+      rest.get(
+        'https://pinniped.test/idp/userinfo.openid',
+        (_req, res, ctx) =>
+          res(
+            ctx.json({
+              iss: 'https://pinniped.test',
+              sub: 'test',
+              aud: clientMetadata.clientId,
+              claims: {
+                given_name: 'Givenname',
+                family_name: 'Familyname',
+                email: 'user@example.com',
+              },
+            }),
+            ctx.status(200),
+          ),
+      ),
     );
+
     fakeSession = {};
     startRequest = {
       session: fakeSession,
@@ -103,19 +147,7 @@ describe('PinnipedAuthProvider', () => {
       url: 'test',
       state: oauthState,
     } as unknown as OAuthStartRequest;
-    const handler = jest.fn((_req, res, ctx) => {
-      return res(
-        ctx.status(200),
-        ctx.set('Content-Type', 'application/json'),
-        ctx.json(issuerMetadata),
-      );
-    });
-    worker.use(
-      rest.all(
-        'https://federationDomain.test/.well-known/openid-configuration',
-        handler,
-      ),
-    );
+    
     provider = new PinnipedAuthProvider(clientMetadata);
   });
 
@@ -186,15 +218,6 @@ describe('PinnipedAuthProvider', () => {
       );
     });
 
-    it('fails when request has no session', async () => {
-      return expect(
-        provider.start({
-          method: 'GET',
-          url: 'test',
-        } as unknown as OAuthStartRequest),
-      ).rejects.toThrow('authentication requires session support');
-    });
-
     it('encodes OAuth state in query param', async () => {
       const startResponse = await provider.start(startRequest);
       const { searchParams } = new URL(startResponse.url);
@@ -203,65 +226,46 @@ describe('PinnipedAuthProvider', () => {
 
       expect(decodedState).toMatchObject(oauthState);
     });
+
+    it('fails when request has no session', async () => {
+      return expect(
+        provider.start({
+          method: 'GET',
+          url: 'test',
+        } as unknown as OAuthStartRequest),
+      ).rejects.toThrow('authentication requires session support');
+    });
   });
 
   describe('#handler', () => {
     let handlerRequest: express.Request;
 
-    const testState = {
-      nonce: 'nonce',
-      env: 'development',
-      origin: 'undefined',
-      audience: 'test-cluster'
-    };
-
     beforeEach(() => {
-      provider = new PinnipedAuthProvider(clientMetadata);
-
       //we want to somehow pass an authentication header in this request for testing purposes
       handlerRequest = {
         method: 'GET',
-        url: `https://test?code=authorization_code&state=${encodeState(testState)}`,
+        url: `https://test?code=authorization_code&state=${encodeState(oauthState)}`,
         session: {
           'oidc:pinniped.test': {
-            state: encodeState(testState),
+            state: encodeState(oauthState),
           },
         },
       } as unknown as express.Request;
-
-      worker.use(
-        rest.post('https://pinniped.test/oauth2/token', (req, res, ctx) =>
-          res(
-            req.headers.get('Authorization')
-              ? ctx.json({
-                  access_token: 'accessToken',
-                  refresh_token: 'refreshToken',
-                  id_token: idToken,
-                })
-              : ctx.status(401),
-          ),
-        ),
-        rest.get(
-          'https://pinniped.test/idp/userinfo.openid',
-          (_req, res, ctx) =>
-            res(
-              ctx.json({
-                iss: 'https://pinniped.test',
-                sub: 'test',
-                aud: clientMetadata.clientId,
-                claims: {
-                  given_name: 'Givenname',
-                  family_name: 'Familyname',
-                  email: 'user@example.com',
-                },
-              }),
-              ctx.status(200),
-            ),
-        ),
-      );
     });
+    
+    it('exchanges authorization code for a valid access_token', async() => {
+      const handlerResponse = await provider.handler(handlerRequest);
+      const accessToken = handlerResponse.response.providerInfo.accessToken
+      
+      expect(accessToken).toEqual('accessToken')
+    })
 
-    it('fails when request has no state', async () => {
+    it('request errors out with missing authorization_code parameter in the request_url', async() => {
+      handlerRequest.url = "https://test.com"
+      return expect(provider.handler(handlerRequest)).rejects.toThrow('Unexpected redirect')
+    })
+
+    it('fails when request has no state in req_url', async () => {
       return expect(
         provider.handler({
           method: 'GET',
@@ -276,26 +280,6 @@ describe('PinnipedAuthProvider', () => {
         'Authentication rejected, state missing from the response',
       );
     });
-    
-    it('exchanges authorization code for a valid access_token', async() => {
-      const handlerResponse = await provider.handler(handlerRequest);
-      const accessToken = handlerResponse.response.providerInfo.accessToken
-      
-      expect(accessToken).toEqual('accessToken')
-    })
-
-    //scope cannot be passed along in the redirect url and is different from audience
-    it.skip('responds with the correct audience as scope', async() => {
-      const handlerResponse = await provider.handler(handlerRequest);
-      const audience = handlerResponse.response.providerInfo.scope
-      
-      expect(audience).toEqual('pinniped:request-audience username')
-    })
-
-    it('request errors out with missing authorization_code parameter in the request_url', async() => {
-      handlerRequest.url = "https://test.com"
-      return expect(provider.handler(handlerRequest)).rejects.toThrow('Unexpected redirect')
-    })
 
     it('fails when request has no session', async () => {
       return expect(
@@ -309,4 +293,30 @@ describe('PinnipedAuthProvider', () => {
     //if no valid key is in the jwks array or even an unsigned jwt
     //have pinniped reject your clientid and secret possibly as a unit test
   });
+
+  describe('#refresh', () => {
+    let refreshRequest: OAuthRefreshRequest;
+
+    beforeEach(() => {
+      refreshRequest = {
+        refreshToken: 'otherRefreshToken'
+      } as unknown as OAuthRefreshRequest;
+    });
+
+    it('gets new refresh token', async() => {
+      const { refreshToken } = await provider.refresh(refreshRequest);
+      
+      expect(refreshToken).toBe('refreshToken')
+    })
+
+    it('gets an access_token', async() => {
+      const { response } = await provider.refresh(refreshRequest)
+
+      expect(response.providerInfo.accessToken).toBe("accessToken")
+    })
+    //find out when refresh requests are even made?
+    //so far looks like the response should be exactly like the one returned by the handler
+    //what are we exchanging exactly to get this refresh token??
+
+  })
 });

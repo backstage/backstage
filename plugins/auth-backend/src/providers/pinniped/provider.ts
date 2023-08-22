@@ -22,6 +22,7 @@ import {
 import {
   OAuthHandlers,
   OAuthProviderOptions,
+  OAuthRefreshRequest,
   OAuthResponse,
   OAuthStartRequest,
   encodeState,
@@ -60,14 +61,6 @@ export class PinnipedAuthProvider implements OAuthHandlers {
 
   async start(req: OAuthStartRequest): Promise<OAuthStartResponse> {
     const { strategy } = await this.implementation;
-
-    // we are practicing with this scope and it works openid pinniped:request-audience username
-    // whats the bare minimum needed for our request to fail?
-
-    // http://127.0.0.1:7007/api/auth/pinniped/start?env=development&audience=host-cluster
-    // having scope seperated by + results in an error
-
-    // `{"type":"authorization_response","error":{"name":"OPError","message":"invalid_scope (The requested scope is invalid, unknown, or malformed. The OAuth 2.0 Client is not allowed to request scope 'openid+pinniped:request-audience+username'.)"}}`
 
     const stringifiedAudience = req.query?.audience as string
     const state = {...req.state, audience: stringifiedAudience }
@@ -127,7 +120,27 @@ export class PinnipedAuthProvider implements OAuthHandlers {
     });
   }
 
-  // will need a refresh method that covers our happy path
+  async refresh(req: OAuthRefreshRequest): Promise<{ response: OAuthResponse; refreshToken?: string }> {
+    const { client } = await this.implementation;
+    const tokenset = await client.refresh(req.refreshToken);
+
+    return new Promise((resolve, reject) => {
+      if(!tokenset.access_token){
+        reject(new Error('Refresh Failed'))
+      }
+
+      resolve({
+        response: {
+          providerInfo: {
+            accessToken: tokenset.access_token!,
+            scope: 'none',
+          },
+          profile: {},
+        },
+        refreshToken: tokenset.refresh_token,
+      });
+    })
+  }
 
   private async setupStrategy(options: PinnipedOptions): Promise<OidcImpl> {
     const issuer = await Issuer.discover(
