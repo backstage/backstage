@@ -45,6 +45,7 @@ export const spec = {
         name: 'kind',
         in: 'path',
         required: true,
+        allowReserved: true,
         schema: {
           type: 'string',
         },
@@ -53,6 +54,7 @@ export const spec = {
         name: 'namespace',
         in: 'path',
         required: true,
+        allowReserved: true,
         schema: {
           type: 'string',
         },
@@ -61,6 +63,7 @@ export const spec = {
         name: 'name',
         in: 'path',
         required: true,
+        allowReserved: true,
         schema: {
           type: 'string',
         },
@@ -69,6 +72,7 @@ export const spec = {
         name: 'uid',
         in: 'path',
         required: true,
+        allowReserved: true,
         schema: {
           type: 'string',
         },
@@ -78,6 +82,7 @@ export const spec = {
         in: 'query',
         description: 'Cursor to a set page of results.',
         required: false,
+        allowReserved: true,
         schema: {
           type: 'string',
           minLength: 1,
@@ -88,6 +93,7 @@ export const spec = {
         in: 'query',
         description: 'Pointer to the previous page of results.',
         required: false,
+        allowReserved: true,
         schema: {
           type: 'string',
           minLength: 1,
@@ -111,6 +117,7 @@ export const spec = {
         in: 'query',
         description: 'Filter for just the entities defined by this filter.',
         required: false,
+        allowReserved: true,
         schema: {
           type: 'array',
           items: {
@@ -123,6 +130,7 @@ export const spec = {
         in: 'query',
         description: 'Number of records to skip in the query page.',
         required: false,
+        allowReserved: true,
         schema: {
           type: 'integer',
           minimum: 0,
@@ -133,6 +141,7 @@ export const spec = {
         in: 'query',
         description: 'Number of records to return in the response.',
         required: false,
+        allowReserved: true,
         schema: {
           type: 'integer',
           minimum: 1,
@@ -1037,6 +1046,7 @@ export const spec = {
             in: 'query',
             description: 'Text search term.',
             required: false,
+            allowReserved: true,
             schema: {
               type: 'string',
             },
@@ -1047,6 +1057,7 @@ export const spec = {
             description:
               'A comma separated list of fields to sort returned results by.',
             required: false,
+            allowReserved: true,
             schema: {
               type: 'array',
               items: {
@@ -1086,6 +1097,7 @@ export const spec = {
             in: 'query',
             name: 'facet',
             required: true,
+            allowReserved: true,
             schema: {
               type: 'array',
               items: {
@@ -1141,6 +1153,7 @@ export const spec = {
             in: 'query',
             name: 'dryRun',
             required: false,
+            allowReserved: true,
             schema: {
               type: 'string',
             },
@@ -1226,6 +1239,7 @@ export const spec = {
             in: 'path',
             name: 'id',
             required: true,
+            allowReserved: true,
             schema: {
               type: 'string',
             },
@@ -1251,6 +1265,7 @@ export const spec = {
             in: 'path',
             name: 'id',
             required: true,
+            allowReserved: true,
             schema: {
               type: 'string',
             },
