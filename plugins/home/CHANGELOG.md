@@ -1,5 +1,41 @@
 # @backstage/plugin-home
 
+## 0.5.7-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/plugin-home-react@0.1.3-next.0
+  - @backstage/core-plugin-api@1.6.0-next.0
+  - @backstage/core-components@0.13.5-next.0
+  - @backstage/catalog-model@1.4.1
+  - @backstage/config@1.0.8
+  - @backstage/theme@0.4.1
+  - @backstage/plugin-catalog-react@1.8.3-next.0
+
+## 0.5.5
+
+### Patch Changes
+
+- a559ff68de7e: Now, user can provide a language (optional) as input to receive a greeting in that specific language. Example: `<WelcomeTitle language={['English', 'Spanish']} />`
+- 6743d3917a52: Make sure the widget name is never empty in the `AddWidgetDialog`. If the title was set to "", the entry would contain an empty string. Use the name as a fallback
+- Updated dependencies
+  - @backstage/plugin-home-react@0.1.2
+  - @backstage/core-components@0.13.4
+  - @backstage/plugin-catalog-react@1.8.1
+  - @backstage/core-plugin-api@1.5.3
+  - @backstage/catalog-model@1.4.1
+  - @backstage/config@1.0.8
+  - @backstage/theme@0.4.1
+
+## 0.5.5-next.1
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/plugin-catalog-react@1.8.1-next.1
+  - @backstage/plugin-home-react@0.1.2-next.0
+
 ## 0.5.5-next.0
 
 ### Patch Changes

@@ -1,5 +1,49 @@
 # @backstage/plugin-scaffolder-node
 
+## 0.2.2-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-common@0.19.4-next.0
+  - @backstage/integration@1.7.0-next.0
+  - @backstage/backend-plugin-api@0.6.2-next.0
+  - @backstage/catalog-model@1.4.1
+  - @backstage/errors@1.2.1
+  - @backstage/types@1.1.0
+  - @backstage/plugin-scaffolder-common@1.4.0
+
+## 0.2.0
+
+### Minor Changes
+
+- e514aac3eac0: Introduce `each` property on action steps, allowing them to be ran repeatedly.
+
+### Patch Changes
+
+- 12a8c94eda8d: Add package repository and homepage metadata
+- e07a4914f621: Added several new types that were moved from `@backstage/plugin-scaffolder-backend`.
+- 349611126ae2: Added two new alpha extension points, `scaffolderTaskBrokerExtensionPoint` and `scaffolderTemplatingExtensionPoint`.
+- 0b1d775be05b: Export `TemplateExample` from the `createTemplateAction` type.
+- d3b31a791eb1: Deprecated `executeShellCommand`, `RunCommandOptions`, and `fetchContents` from `@backstage/plugin-scaffolder-backend`, since they are useful for Scaffolder modules (who should not be importing from the plugin package itself). You should now import these from `@backstage/plugin-scaffolder-backend-node` instead. `RunCommandOptions` was renamed in the Node package as `ExecuteShellCommandOptions`, for consistency.
+- Updated dependencies
+  - @backstage/backend-common@0.19.2
+  - @backstage/backend-plugin-api@0.6.0
+  - @backstage/integration@1.6.0
+  - @backstage/plugin-scaffolder-common@1.4.0
+  - @backstage/catalog-model@1.4.1
+  - @backstage/errors@1.2.1
+  - @backstage/types@1.1.0
+
+## 0.1.6-next.2
+
+### Patch Changes
+
+- 0b1d775be05b: Export `TemplateExample` from the `createTemplateAction` type.
+- Updated dependencies
+  - @backstage/backend-plugin-api@0.6.0-next.2
+  - @backstage/backend-common@0.19.2-next.2
+
 ## 0.1.6-next.1
 
 ### Patch Changes

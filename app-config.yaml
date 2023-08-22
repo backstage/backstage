@@ -73,6 +73,8 @@ proxy:
       target: https://api.newrelic.com/v2
       headers:
         X-Api-Key: ${NEW_RELIC_REST_API_KEY}
+      allowedHeaders:
+        - link
 
     '/newrelic/api':
       target: https://api.newrelic.com

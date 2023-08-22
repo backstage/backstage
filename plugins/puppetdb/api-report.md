@@ -7,7 +7,9 @@
 
 import { BackstagePlugin } from '@backstage/core-plugin-api';
 import { Entity } from '@backstage/catalog-model';
+import { JSX as JSX_2 } from 'react';
 import { PathParams } from '@backstage/core-plugin-api';
+import { default as React_2 } from 'react';
 import { RouteRef } from '@backstage/core-plugin-api';
 import { SubRouteRef } from '@backstage/core-plugin-api';
 
@@ -15,7 +17,7 @@ import { SubRouteRef } from '@backstage/core-plugin-api';
 export const isPuppetDbAvailable: (entity: Entity) => boolean;
 
 // @public
-export const PuppetDbPage: () => JSX.Element;
+export const PuppetDbPage: () => JSX_2.Element;
 
 // @public
 const puppetdbPlugin: BackstagePlugin<{}, {}, {}>;
@@ -29,7 +31,7 @@ export const puppetDbReportRouteRef: SubRouteRef<PathParams<'/:hash'>>;
 export const puppetDbRouteRef: RouteRef<undefined>;
 
 // @public (undocumented)
-export const Router: () => JSX.Element;
+export const Router: () => React_2.JSX.Element;
 
 // (No @packageDocumentation comment for this package)
 ```

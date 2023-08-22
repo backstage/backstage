@@ -4,17 +4,9 @@
 
 ```ts
 import { BackendFeature } from '@backstage/backend-plugin-api';
-import { TaskScheduleDefinition } from '@backstage/backend-tasks';
 
 // @alpha
-export const searchModuleExploreCollator: (
-  options?: SearchModuleExploreCollatorOptions | undefined,
-) => BackendFeature;
-
-// @alpha
-export type SearchModuleExploreCollatorOptions = {
-  schedule?: TaskScheduleDefinition;
-};
+export const searchModuleExploreCollator: () => BackendFeature;
 
 // (No @packageDocumentation comment for this package)
 ```

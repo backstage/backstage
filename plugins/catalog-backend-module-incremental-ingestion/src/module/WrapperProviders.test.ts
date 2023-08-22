@@ -24,7 +24,7 @@ import { WrapperProviders } from './WrapperProviders';
 describe('WrapperProviders', () => {
   const applyDatabaseMigrations = jest.fn();
   const databases = TestDatabases.create({
-    ids: ['POSTGRES_13', 'POSTGRES_9', 'SQLITE_3'],
+    ids: ['POSTGRES_13', 'POSTGRES_9', 'SQLITE_3', 'MYSQL_8'],
   });
   const config = new ConfigReader({});
   const logger = getVoidLogger();

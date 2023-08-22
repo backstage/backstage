@@ -16,6 +16,7 @@ import { Entity } from '@backstage/catalog-model';
 import { FieldErrors } from 'react-hook-form';
 import { IdentityApi } from '@backstage/core-plugin-api';
 import { InfoCardVariants } from '@backstage/core-components';
+import { JSX as JSX_2 } from 'react';
 import { default as React_2 } from 'react';
 import { RouteRef } from '@backstage/core-plugin-api';
 import { ScmAuthApi } from '@backstage/integration-react';
@@ -46,7 +47,7 @@ export type AnalyzeResult =
 // @public
 export const AutocompleteTextField: <TFieldValue extends string>(
   props: AutocompleteTextFieldProps<TFieldValue>,
-) => JSX.Element;
+) => React_2.JSX.Element;
 
 // @public
 export interface AutocompleteTextFieldProps<TFieldValue extends string> {
@@ -126,7 +127,7 @@ export class CatalogImportClient implements CatalogImportApi {
 }
 
 // @public
-export const CatalogImportPage: () => JSX.Element;
+export const CatalogImportPage: () => JSX_2.Element;
 
 // @public
 const catalogImportPlugin: BackstagePlugin<
@@ -148,12 +149,12 @@ export function defaultGenerateStepper(
 ): StepperProvider;
 
 // @public
-export const DefaultImportPage: () => JSX.Element;
+export const DefaultImportPage: () => React_2.JSX.Element;
 
 // @public
 export const EntityListComponent: (
   props: EntityListComponentProps,
-) => JSX.Element;
+) => React_2.JSX.Element;
 
 // @public
 export interface EntityListComponentProps {
@@ -182,7 +183,9 @@ export type ImportFlows =
   | 'no-location';
 
 // @public
-export const ImportInfoCard: (props: ImportInfoCardProps) => JSX.Element;
+export const ImportInfoCard: (
+  props: ImportInfoCardProps,
+) => React_2.JSX.Element;
 
 // @public
 export interface ImportInfoCardProps {
@@ -205,7 +208,7 @@ export type ImportState = State & {
 };
 
 // @public
-export const ImportStepper: (props: ImportStepperProps) => JSX.Element;
+export const ImportStepper: (props: ImportStepperProps) => React_2.JSX.Element;
 
 // @public
 export interface ImportStepperProps {
@@ -223,7 +226,7 @@ export interface ImportStepperProps {
 // @public
 export const PreparePullRequestForm: <TFieldValues extends Record<string, any>>(
   props: PreparePullRequestFormProps<TFieldValues>,
-) => JSX.Element;
+) => React_2.JSX.Element;
 
 // @public
 export type PreparePullRequestFormProps<
@@ -266,7 +269,7 @@ export type PrepareResult =
 // @public
 export const PreviewCatalogInfoComponent: (
   props: PreviewCatalogInfoComponentProps,
-) => JSX.Element;
+) => React_2.JSX.Element;
 
 // @public
 export interface PreviewCatalogInfoComponentProps {
@@ -284,7 +287,7 @@ export interface PreviewCatalogInfoComponentProps {
 // @public
 export const PreviewPullRequestComponent: (
   props: PreviewPullRequestComponentProps,
-) => JSX.Element;
+) => React_2.JSX.Element;
 
 // @public
 export interface PreviewPullRequestComponentProps {
@@ -302,7 +305,7 @@ export interface PreviewPullRequestComponentProps {
 // @public
 export const StepInitAnalyzeUrl: (
   props: StepInitAnalyzeUrlProps,
-) => JSX.Element;
+) => React_2.JSX.Element;
 
 // @public
 export interface StepInitAnalyzeUrlProps {
@@ -326,7 +329,7 @@ export interface StepInitAnalyzeUrlProps {
 // @public
 export const StepPrepareCreatePullRequest: (
   props: StepPrepareCreatePullRequestProps,
-) => JSX.Element;
+) => React_2.JSX.Element;
 
 // @public
 export interface StepPrepareCreatePullRequestProps {

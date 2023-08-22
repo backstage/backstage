@@ -43,7 +43,7 @@ import { UrlReader } from '@backstage/backend-common';
 // @public (undocumented)
 export interface Backend {
   // (undocumented)
-  add(feature: BackendFeature): void;
+  add(feature: BackendFeature | (() => BackendFeature)): void;
   // (undocumented)
   start(): Promise<void>;
   // (undocumented)
@@ -81,7 +81,7 @@ export function createSpecializedBackend(
 // @public (undocumented)
 export interface CreateSpecializedBackendOptions {
   // (undocumented)
-  services: ServiceFactoryOrFunction[];
+  defaultServiceFactories: ServiceFactoryOrFunction[];
 }
 
 // @public (undocumented)

@@ -30,7 +30,11 @@ import {
   createVersionedValueMap,
 } from '@backstage/version-bridge';
 import { JsonObject } from '@backstage/types';
-import { AnalyticsContext, useApi } from '@backstage/core-plugin-api';
+import {
+  AnalyticsContext,
+  useApi,
+  configApiRef,
+} from '@backstage/core-plugin-api';
 import { SearchResultSet } from '@backstage/plugin-search-common';
 
 import { searchApiRef } from '../api';
@@ -239,10 +243,20 @@ export const SearchContextProvider = (props: SearchContextProviderProps) => {
   const { initialState, inheritParentContextIfAvailable, children } = props;
   const hasParentContext = useSearchContextCheck();
 
+  const configApi = useApi(configApiRef);
+
+  const searchContextInitialState = {
+    ...searchInitialState,
+    ...(initialState || {}),
+    pageLimit:
+      configApi.getOptionalNumber('search.query.pageLimit') ||
+      initialState?.pageLimit,
+  };
+
   return hasParentContext && inheritParentContextIfAvailable ? (
     <>{children}</>
   ) : (
-    <LocalSearchContext initialState={initialState}>
+    <LocalSearchContext initialState={searchContextInitialState}>
       {children}
     </LocalSearchContext>
   );

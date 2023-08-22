@@ -26,6 +26,7 @@ import { parseRepoUrl } from '../publish/util';
 import { getOctokitOptions, initRepoPushAndProtect } from './helpers';
 import * as inputProps from './inputProperties';
 import * as outputProps from './outputProperties';
+import { examples } from './githubRepoPush.examples';
 
 /**
  * Creates a new action that initializes a git repository of the content in the workspace
@@ -76,6 +77,7 @@ export function createGithubRepoPushAction(options: {
     id: 'github:repo:push',
     description:
       'Initializes a git repository of contents in workspace and publishes it to GitHub.',
+    examples,
     schema: {
       input: {
         type: 'object',

@@ -22,7 +22,7 @@ jest.mock('@backstage/catalog-client');
 import { AuthenticationError } from '@backstage/errors';
 import express from 'express';
 import * as jose from 'jose';
-import { Logger } from 'winston';
+import { LoggerService } from '@backstage/backend-plugin-api';
 import { AuthHandler, AuthResolverContext, SignInResolver } from '../types';
 import {
   oauth2Proxy,
@@ -36,7 +36,7 @@ describe('Oauth2ProxyAuthProvider', () => {
     'eyblob.eyJzdWIiOiJ1c2VyOmRlZmF1bHQvamltbXltYXJrdW0iLCJlbnQiOlsidXNlcjpkZWZhdWx0L2ppbW15bWFya3VtIl19.eyblob';
 
   let provider: Oauth2ProxyAuthProvider<any>;
-  let logger: jest.Mocked<Logger>;
+  let logger: jest.Mocked<LoggerService>;
   let signInResolver: jest.MockedFunction<
     SignInResolver<OAuth2ProxyResult<any>>
   >;
@@ -53,7 +53,7 @@ describe('Oauth2ProxyAuthProvider', () => {
     >;
     authHandler = jest.fn();
     signInResolver = jest.fn();
-    logger = { error: jest.fn() } as unknown as jest.Mocked<Logger>;
+    logger = { error: jest.fn() } as unknown as jest.Mocked<LoggerService>;
 
     mockResponse = {
       status: jest.fn(),

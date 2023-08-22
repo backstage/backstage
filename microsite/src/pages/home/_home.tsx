@@ -32,27 +32,6 @@ const HomePage = () => {
           <BannerSectionGrid
             header={
               <>
-                <div
-                  className={clsx(
-                    'card',
-                    'padding--md',
-                    homeStyles.newsletterBanner,
-                  )}
-                >
-                  <div className="text--left bannerContent">
-                    CFP is now open for BackstageCon 2023 🚀
-                  </div>
-                  <div>
-                    <a
-                      className="button button--outline button--secondary"
-                      href="https://bit.ly/BackstageConCFP"
-                      rel="noopener noreferrer"
-                      target="_blank"
-                    >
-                      Submit a talk
-                    </a>
-                  </div>
-                </div>
                 {!hiddenNewsletterBanner && (
                   <div
                     className={clsx(

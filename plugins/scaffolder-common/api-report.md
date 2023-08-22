@@ -5,6 +5,7 @@
 ```ts
 import { Entity } from '@backstage/catalog-model';
 import type { EntityMeta } from '@backstage/catalog-model';
+import type { JsonArray } from '@backstage/types';
 import { JsonObject } from '@backstage/types';
 import type { JsonValue } from '@backstage/types';
 import { KindValidator } from '@backstage/catalog-model';
@@ -36,6 +37,7 @@ export interface TaskSpecV1beta3 {
 // @public
 export interface TaskStep {
   action: string;
+  each?: string | JsonArray;
   id: string;
   if?: string | boolean;
   input?: JsonObject;

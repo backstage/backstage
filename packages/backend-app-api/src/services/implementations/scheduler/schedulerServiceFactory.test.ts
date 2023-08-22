@@ -61,8 +61,7 @@ describe('schedulerFactory', () => {
     });
 
     await startTestBackend({
-      features: [plugin()],
-      services: [subject],
+      features: [plugin(), subject],
     });
   });
 });

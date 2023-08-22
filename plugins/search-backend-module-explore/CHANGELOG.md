@@ -1,5 +1,46 @@
 # @backstage/plugin-search-backend-module-explore
 
+## 0.1.6-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-common@0.19.4-next.0
+  - @backstage/backend-tasks@0.5.7-next.0
+  - @backstage/backend-plugin-api@0.6.2-next.0
+  - @backstage/config@1.0.8
+  - @backstage/plugin-explore-common@0.0.1
+  - @backstage/plugin-search-backend-node@1.2.6-next.0
+  - @backstage/plugin-search-common@1.2.5
+
+## 0.1.4
+
+### Patch Changes
+
+- 629cbd194a87: Use `coreServices.rootConfig` instead of `coreService.config`
+- 29f77f923c71: Ensure that all services are dependency injected into the module instead of taken from options
+- 12a8c94eda8d: Add package repository and homepage metadata
+- 6694e79ab396: Breaking change for the alpha export moved `schedule` from module options into app-config for the new backend system. You can now pass in a `TaskScheduleDefinitionConfig` through the `search.collators.explore.schedule` configuration key.
+- Updated dependencies
+  - @backstage/backend-common@0.19.2
+  - @backstage/backend-plugin-api@0.6.0
+  - @backstage/plugin-search-backend-node@1.2.4
+  - @backstage/backend-tasks@0.5.5
+  - @backstage/config@1.0.8
+  - @backstage/plugin-explore-common@0.0.1
+  - @backstage/plugin-search-common@1.2.5
+
+## 0.1.4-next.2
+
+### Patch Changes
+
+- 29f77f923c71: Ensure that all services are dependency injected into the module instead of taken from options
+- Updated dependencies
+  - @backstage/backend-plugin-api@0.6.0-next.2
+  - @backstage/backend-tasks@0.5.5-next.2
+  - @backstage/backend-common@0.19.2-next.2
+  - @backstage/plugin-search-backend-node@1.2.4-next.2
+
 ## 0.1.4-next.1
 
 ### Patch Changes

@@ -70,22 +70,30 @@ In your `packages/backend/src/index.ts` make the following changes:
 
   // ... other feature additions
 
-+ const linguistSchedule: TaskScheduleDefinition = {
-+   frequency: { minutes: 2 },
-+   timeout: { minutes: 15 },
-+   initialDelay: { seconds: 15 },
-+ };
-
-+ backend.add(
-+   linguistPlugin({
-+     schedule: linguistSchedule,
-+     age: { days: 30 },
-+     batchSize: 2,
-+     useSourceLocation: false,
-+   }),
-+ );
++ backend.add(linguistPlugin());
 
   backend.start();
+```
+
+The plugin options can be set through the `app-config.yaml`:
+
+```yaml
+// ...
+
+linguist:
+  schedule:
+    frequency:
+      minutes: 2
+    timeout:
+      minutes: 2
+    initialDelay:
+      seconds: 15
+  age:
+    days: 30
+  batchSize: 2
+  useSourceLocation: false
+
+// ...
 ```
 
 ## Plugin Option

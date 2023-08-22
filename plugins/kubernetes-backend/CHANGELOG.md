@@ -1,5 +1,54 @@
 # @backstage/plugin-kubernetes-backend
 
+## 0.11.5-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/plugin-auth-node@0.3.0-next.0
+  - @backstage/backend-common@0.19.4-next.0
+  - @backstage/backend-plugin-api@0.6.2-next.0
+  - @backstage/catalog-client@1.4.3
+  - @backstage/catalog-model@1.4.1
+  - @backstage/config@1.0.8
+  - @backstage/errors@1.2.1
+  - @backstage/integration-aws-node@0.1.5
+  - @backstage/plugin-catalog-node@1.4.3-next.0
+  - @backstage/plugin-kubernetes-common@0.6.5
+  - @backstage/plugin-permission-common@0.7.7
+  - @backstage/plugin-permission-node@0.7.13-next.0
+
+## 0.11.3
+
+### Patch Changes
+
+- 629cbd194a87: Use `coreServices.rootConfig` instead of `coreService.config`
+- bbf4e9c894b5: Fixed a bug where the proxy was not rewriting WebSocket request paths properly.
+- Updated dependencies
+  - @backstage/backend-common@0.19.2
+  - @backstage/backend-plugin-api@0.6.0
+  - @backstage/plugin-catalog-node@1.4.1
+  - @backstage/plugin-auth-node@0.2.17
+  - @backstage/plugin-permission-node@0.7.11
+  - @backstage/integration-aws-node@0.1.5
+  - @backstage/catalog-client@1.4.3
+  - @backstage/catalog-model@1.4.1
+  - @backstage/config@1.0.8
+  - @backstage/errors@1.2.1
+  - @backstage/plugin-kubernetes-common@0.6.5
+  - @backstage/plugin-permission-common@0.7.7
+
+## 0.11.3-next.2
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-plugin-api@0.6.0-next.2
+  - @backstage/backend-common@0.19.2-next.2
+  - @backstage/plugin-catalog-node@1.4.1-next.2
+  - @backstage/plugin-permission-node@0.7.11-next.2
+  - @backstage/plugin-auth-node@0.2.17-next.2
+
 ## 0.11.3-next.1
 
 ### Patch Changes

@@ -1,5 +1,57 @@
 # @backstage/backend-test-utils
 
+## 0.2.2-next.0
+
+### Patch Changes
+
+- 9fb3b5373c45: Extended `mockService` to also include mocked variants, for example `mockServices.lifecycle.mock()`. The returned mocked implementation will have a `factory` property which is a service factory for itself. You can also pass a partial implementation of the service to the mock function to use a mock implementation of specific methods.
+- Updated dependencies
+  - @backstage/plugin-auth-node@0.3.0-next.0
+  - @backstage/backend-common@0.19.4-next.0
+  - @backstage/backend-app-api@0.5.2-next.0
+  - @backstage/backend-plugin-api@0.6.2-next.0
+  - @backstage/config@1.0.8
+  - @backstage/types@1.1.0
+
+## 0.2.0
+
+### Minor Changes
+
+- b9c57a4f857e: **BREAKING**: Renamed `mockServices.config` to `mockServices.rootConfig`.
+- a6d7983f349c: **BREAKING**: Removed the `services` option from `createBackend`. Service factories are now `BackendFeature`s and should be installed with `backend.add(...)` instead. The following should be migrated:
+
+  ```ts
+  const backend = createBackend({ services: [myCustomServiceFactory] });
+  ```
+
+  To instead pass the service factory via `backend.add(...)`:
+
+  ```ts
+  const backend = createBackend();
+  backend.add(customRootLoggerServiceFactory);
+  ```
+
+### Patch Changes
+
+- ae9304818136: Add needed constants and constructs to support PostgreSQL version 14 as test database
+- Updated dependencies
+  - @backstage/backend-common@0.19.2
+  - @backstage/backend-app-api@0.5.0
+  - @backstage/backend-plugin-api@0.6.0
+  - @backstage/plugin-auth-node@0.2.17
+  - @backstage/config@1.0.8
+  - @backstage/types@1.1.0
+
+## 0.2.0-next.2
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-app-api@0.5.0-next.2
+  - @backstage/backend-plugin-api@0.6.0-next.2
+  - @backstage/backend-common@0.19.2-next.2
+  - @backstage/plugin-auth-node@0.2.17-next.2
+
 ## 0.2.0-next.1
 
 ### Minor Changes

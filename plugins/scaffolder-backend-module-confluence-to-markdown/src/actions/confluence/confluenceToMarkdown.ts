@@ -33,6 +33,7 @@ import {
   createConfluenceVariables,
   getConfluenceConfig,
 } from './helpers';
+import { examples } from './confluenceToMarkdown.examples';
 
 /**
  * @public
@@ -53,6 +54,8 @@ export const createConfluenceToMarkdownAction = (options: {
     repoUrl: string;
   }>({
     id: 'confluence:transform:markdown',
+    description: 'Transforms Confluence content to Markdown',
+    examples,
     schema: {
       input: {
         properties: {

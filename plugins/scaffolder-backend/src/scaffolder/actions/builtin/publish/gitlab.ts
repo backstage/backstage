@@ -21,6 +21,7 @@ import { Gitlab } from '@gitbeaker/node';
 import { initRepoAndPush } from '../helpers';
 import { getRepoSourceDirectory, parseRepoUrl } from './util';
 import { Config } from '@backstage/config';
+import { examples } from './gitlab.examples';
 
 /**
  * Creates a new action that initializes a git repository of the content in the workspace
@@ -49,6 +50,7 @@ export function createPublishGitlabAction(options: {
     id: 'publish:gitlab',
     description:
       'Initializes a git repository of the content in the workspace, and publishes it to GitLab.',
+    examples,
     schema: {
       input: {
         type: 'object',
