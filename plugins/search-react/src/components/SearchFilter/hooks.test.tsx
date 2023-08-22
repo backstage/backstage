@@ -15,19 +15,32 @@
  */
 import React from 'react';
 import { ApiProvider } from '@backstage/core-app-api';
-import { TestApiRegistry } from '@backstage/test-utils';
+import { MockConfigApi, TestApiRegistry } from '@backstage/test-utils';
 import { renderHook } from '@testing-library/react-hooks';
 
 import { searchApiRef } from '../../api';
 import { SearchContextProvider, useSearch } from '../../context';
 import { useDefaultFilterValue, useAsyncFilterValues } from './hooks';
+import { configApiRef } from '@backstage/core-plugin-api';
 
 jest.useFakeTimers();
 
 describe('SearchFilter.hooks', () => {
   describe('useDefaultFilterValue', () => {
-    const query = jest.fn().mockResolvedValue({});
-    const mockApis = TestApiRegistry.from([searchApiRef, { query }]);
+    const configApiMock = new MockConfigApi({
+      search: {
+        query: {
+          pageLimit: 100,
+        },
+      },
+    });
+    const searchApiMock = {
+      query: jest.fn().mockResolvedValue({ results: [] }),
+    };
+    const mockApis = TestApiRegistry.from(
+      [searchApiRef, searchApiMock],
+      [configApiRef, configApiMock],
+    );
     const wrapper = ({
       children,
       overrides = {},
