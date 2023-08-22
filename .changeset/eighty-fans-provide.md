@@ -2,4 +2,4 @@
 '@backstage/core-components': patch
 ---
 
-Fix "cannot convert undefined or null to object"
+Fixed an issue causing `StructuredMetadataTable` to crash in case metadata contained `null` values.
