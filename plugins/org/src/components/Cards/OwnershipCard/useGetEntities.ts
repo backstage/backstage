@@ -88,9 +88,7 @@ const getChildOwnershipEntityRefs = async (
   const hasChildGroups = childGroups.length > 0;
 
   if (hasChildGroups) {
-    const entityRefs = childGroups.map(
-      r => stringifyEntityRef(r),
-    );
+    const entityRefs = childGroups.map(r => stringifyEntityRef(r));
     const childGroupResponse = await catalogApi.getEntitiesByRefs({
       fields: ['kind', 'metadata.namespace', 'metadata.name'],
       entityRefs,
@@ -108,9 +106,7 @@ const getChildOwnershipEntityRefs = async (
     ).flatMap(aggregated => aggregated);
   }
 
-  return [
-    stringifyEntityRef(entity),
-  ];
+  return [stringifyEntityRef(entity)];
 };
 
 const getOwners = async (
