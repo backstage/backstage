@@ -9,6 +9,7 @@ import { ApiRef } from '@backstage/core-plugin-api';
 import { Calendar } from '@microsoft/microsoft-graph-types';
 import { Event as Event_2 } from '@microsoft/microsoft-graph-types';
 import { FetchApi } from '@backstage/core-plugin-api';
+import { JSX as JSX_2 } from 'react';
 import { OAuthApi } from '@backstage/core-plugin-api';
 
 // @public (undocumented)
@@ -33,7 +34,7 @@ export class MicrosoftCalendarApiClient {
 export const microsoftCalendarApiRef: ApiRef<MicrosoftCalendarApiClient>;
 
 // @public (undocumented)
-export const MicrosoftCalendarCard: () => JSX.Element;
+export const MicrosoftCalendarCard: () => JSX_2.Element;
 
 // (No @packageDocumentation comment for this package)
 ```

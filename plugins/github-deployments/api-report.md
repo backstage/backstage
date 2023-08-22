@@ -7,6 +7,8 @@
 
 import { BackstagePlugin } from '@backstage/core-plugin-api';
 import { Entity } from '@backstage/catalog-model';
+import { JSX as JSX_2 } from 'react';
+import { default as React_2 } from 'react';
 import { TableColumn } from '@backstage/core-components';
 
 // @public (undocumented)
@@ -14,7 +16,7 @@ export const EntityGithubDeploymentsCard: (props: {
   last?: number | undefined;
   lastStatuses?: number | undefined;
   columns?: TableColumn<GithubDeployment>[] | undefined;
-}) => JSX.Element;
+}) => JSX_2.Element;
 
 // @public (undocumented)
 export const GITHUB_PROJECT_SLUG_ANNOTATION = 'github.com/project-slug';
@@ -50,7 +52,7 @@ export const GithubDeploymentsTable: {
     isLoading: boolean;
     reload: () => void;
     columns: TableColumn<GithubDeployment>[];
-  }): JSX.Element;
+  }): React_2.JSX.Element;
   columns: Readonly<{
     createEnvironmentColumn(): TableColumn<GithubDeployment>;
     createStatusColumn(): TableColumn<GithubDeployment>;

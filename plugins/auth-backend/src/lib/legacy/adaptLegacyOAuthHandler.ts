@@ -37,7 +37,7 @@ export function adaptLegacyOAuthHandler(
             scope: result.session.scope,
             id_token: result.session.idToken,
             token_type: result.session.tokenType,
-            expires_in: result.session.expiresInSeconds,
+            expires_in: result.session.expiresInSeconds!,
           },
         },
         ctx,

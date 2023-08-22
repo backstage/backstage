@@ -38,6 +38,7 @@
     "@material-ui/core": "^4.12.2",
     "@material-ui/icons": "^4.9.1",
     "@material-ui/lab": "4.0.0-alpha.61",
+    "@types/react": "^16.13.1 || ^17.0.0",
     "graphiql": "^1.5.12",
     "graphql": "^16.0.0",
     "graphql-ws": "^5.4.1",
@@ -59,7 +60,6 @@
     "@testing-library/user-event": "^14.0.0",
     "@types/codemirror": "^5.0.0",
     "@types/node": "^16.11.26",
-    "@types/react": "^16.13.1 || ^17.0.0",
     "cross-fetch": "^3.1.5",
     "msw": "^1.0.0"
   },

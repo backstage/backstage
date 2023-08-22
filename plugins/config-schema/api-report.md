@@ -7,6 +7,7 @@
 
 import { ApiRef } from '@backstage/core-plugin-api';
 import { BackstagePlugin } from '@backstage/core-plugin-api';
+import { JSX as JSX_2 } from 'react';
 import { Observable } from '@backstage/types';
 import { RouteRef } from '@backstage/core-plugin-api';
 import { Schema } from 'jsonschema';
@@ -21,7 +22,7 @@ export interface ConfigSchemaApi {
 export const configSchemaApiRef: ApiRef<ConfigSchemaApi>;
 
 // @public (undocumented)
-export const ConfigSchemaPage: () => JSX.Element;
+export const ConfigSchemaPage: () => JSX_2.Element;
 
 // @public (undocumented)
 export const configSchemaPlugin: BackstagePlugin<

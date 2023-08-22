@@ -6,6 +6,7 @@
 /// <reference types="react" />
 
 import { BackstagePlugin } from '@backstage/core-plugin-api';
+import { JSX as JSX_2 } from 'react';
 import { default as React_2 } from 'react';
 import { RouteRef } from '@backstage/core-plugin-api';
 
@@ -17,7 +18,7 @@ export type StackstormHomeProps = {
 };
 
 // @public
-export const StackstormPage: (props: StackstormHomeProps) => JSX.Element;
+export const StackstormPage: (props: StackstormHomeProps) => JSX_2.Element;
 
 // @public
 export const stackstormPlugin: BackstagePlugin<

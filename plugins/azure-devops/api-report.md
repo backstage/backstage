@@ -14,8 +14,10 @@ import { DiscoveryApi } from '@backstage/core-plugin-api';
 import { Entity } from '@backstage/catalog-model';
 import { GitTag } from '@backstage/plugin-azure-devops-common';
 import { IdentityApi } from '@backstage/core-plugin-api';
+import { JSX as JSX_2 } from 'react';
 import { PullRequest } from '@backstage/plugin-azure-devops-common';
 import { PullRequestOptions } from '@backstage/plugin-azure-devops-common';
+import { default as React_2 } from 'react';
 import { Readme } from '@backstage/plugin-azure-devops-common';
 import { ReadmeConfig } from '@backstage/plugin-azure-devops-common';
 import { RepoBuild } from '@backstage/plugin-azure-devops-common';
@@ -163,14 +165,16 @@ export class AzureDevOpsClient implements AzureDevOpsApi {
 export const azureDevOpsPlugin: BackstagePlugin<{}, {}, {}>;
 
 // @public (undocumented)
-export const AzurePullRequestsIcon: (props: SvgIconProps) => JSX.Element;
+export const AzurePullRequestsIcon: (
+  props: SvgIconProps,
+) => React_2.JSX.Element;
 
 // @public (undocumented)
 export const AzurePullRequestsPage: (props: {
   projectName?: string | undefined;
   pollingInterval?: number | undefined;
   defaultColumnConfigs?: PullRequestColumnConfig[] | undefined;
-}) => JSX.Element;
+}) => JSX_2.Element;
 
 // @public (undocumented)
 export type BaseFilter = {
@@ -223,22 +227,22 @@ export type CreatedByUserFilter = BaseFilter &
   );
 
 // @public (undocumented)
-export const EntityAzureGitTagsContent: () => JSX.Element;
+export const EntityAzureGitTagsContent: () => JSX_2.Element;
 
 // @public (undocumented)
 export const EntityAzurePipelinesContent: (props: {
   defaultLimit?: number | undefined;
-}) => JSX.Element;
+}) => JSX_2.Element;
 
 // @public (undocumented)
 export const EntityAzurePullRequestsContent: (props: {
   defaultLimit?: number | undefined;
-}) => JSX.Element;
+}) => JSX_2.Element;
 
 // @public (undocumented)
 export const EntityAzureReadmeCard: (props: {
   maxHeight?: number | undefined;
-}) => JSX.Element;
+}) => JSX_2.Element;
 
 // @public (undocumented)
 export type Filter =

@@ -59,7 +59,7 @@ export function getOwnerFromCodeowners(
 ): string {
   const relPath = relativePath('.', absPath);
   const possibleOwners = getPossibleCodeowners(codeowners, relPath);
-  const owner = possibleOwners.slice(-1)[0];
+  const owner = possibleOwners[0];
 
   if (!owner) {
     throw new Error(`${relPath} isn't owned by anyone in CODEOWNERS`);
