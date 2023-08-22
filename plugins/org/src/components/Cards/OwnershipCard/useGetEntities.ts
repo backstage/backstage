@@ -71,12 +71,7 @@ const getMemberOfEntityRefs = (owner: Entity): string[] => {
     }),
   );
 
-  const {
-    kind,
-    metadata: { namespace, name },
-  } = owner;
-
-  return [...ownerGroupsNames, stringifyEntityRef({ kind, namespace, name })];
+  return [...ownerGroupsNames, stringifyEntityRef(owner)];
 };
 
 const isEntity = (entity: Entity | undefined): entity is Entity =>
