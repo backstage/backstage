@@ -100,21 +100,16 @@ export const PlaylistHeader = ({ playlist, onUpdate }: PlaylistHeaderProps) => {
       try {
         await playlistApi.updatePlaylist({ ...update, id: playlist.id });
         setOpenEditDialog(false);
+        let message = `Updated playlist '${playlist.name}'`;
         if (update.name !== playlist.name) {
-          const message = `Updated playlist name '${playlist.name}' to '${update.name}'`;
-          alertApi.post({
-            message,
-            severity: 'success',
-            display: 'transient',
-          });
-        } else {
-          const message = `Updated playlist '${playlist.name}'`;
-          alertApi.post({
-            message,
-            severity: 'success',
-            display: 'transient',
-          });
+          message = `Updated playlist name '${playlist.name}' to '${update.name}'`;
         }
+
+        alertApi.post({
+          message,
+          severity: 'success',
+          display: 'transient',
+        });
         onUpdate();
       } catch (e) {
         errorApi.post(e);
