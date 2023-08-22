@@ -76,9 +76,7 @@ export const PlaylistEditDialog = ({
   const classes = useStyles();
   const identityApi = useApi(identityApiRef);
   const playlistApi = useApi(playlistApiRef);
-  const playlistPromise = useRef(
-    playlistApi.getAllPlaylists({ editable: true }),
-  );
+  const playlistPromise = useRef(playlistApi.getAllPlaylists());
   const [editingOtherFields, setEditingOtherFields] = useState(false);
   const { loading: loadingOwnership, value: ownershipRefs } =
     useAsync(async () => {
@@ -86,17 +84,14 @@ export const PlaylistEditDialog = ({
       return ownershipEntityRefs;
     }, []);
 
-  const nameIsUnique = async (
-    name: string,
-    isEditing: boolean,
-    originalName: string,
-  ) => {
+  const nameIsUnique = async (name: string, isEditing: boolean) => {
     const playlists = await playlistPromise.current;
 
-    if (!isEditing || name !== originalName) {
-      return playlists.some(p => p.name === name)
-        ? 'A playlist with this name already exists'
-        : true;
+    if (!isEditing || name !== playlist.name) {
+      return (
+        !playlists.some(p => p.name === name) ||
+        'A playlist with this name already exists'
+      );
     }
 
     return true;
@@ -141,8 +136,7 @@ export const PlaylistEditDialog = ({
           control={control}
           rules={{
             required: true,
-            validate: value =>
-              nameIsUnique(value, editingOtherFields, playlist.name),
+            validate: value => nameIsUnique(value, editingOtherFields),
           }}
           render={({ field }) => (
             <TextField
