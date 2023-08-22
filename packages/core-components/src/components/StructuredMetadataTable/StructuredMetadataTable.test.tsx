@@ -21,7 +21,7 @@ import { StructuredMetadataTable } from './StructuredMetadataTable';
 
 describe('<StructuredMetadataTable />', () => {
   it('renders without exploding', () => {
-    const metadata = { hello: 'world' };
+    const metadata = { hello: 'world', foo: null };
     const { getByText } = render(
       <StructuredMetadataTable metadata={metadata} />,
     );
