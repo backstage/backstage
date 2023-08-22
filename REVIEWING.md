@@ -20,6 +20,14 @@ When reviewing pull requests it's important to consider our [versioning policy a
 
 One other thing to keep in mind, especially when merging pull requests, is where in the release cycle we're currently at. In particular you want to avoid merging any large or risky changes towards the end of each release cycle. If there is a change that is ready to be merged, but you want to hold off until the next main line release, then you can label it with the `merge-after-release` label.
 
+## Configuration
+
+Pull requests that have [configuration related](https://backstage.io/docs/conf/defining) changes or additions need some extra consideration.
+
+- Every configuration field consumed by code should have a corresponding `config.d.ts` declaration.
+- Carefully consider the `@visibility` of configuration fields in the schema. The default is `backend`. Take extra care that sensitive/secret fields are marked as `@visibility secret` so that they don't accidentally leak. Also ensure that fields that the frontend wants to consume are marked as `@visibility frontend`, otherwise they can't be sent to the browser at all.
+- Check that the `config.d.ts` is mentioned in the consuming package's `package.json` as illustrated [in the docs](https://backstage.io/docs/conf/defining). Otherwise it won't get packaged and picked up by the runtime.
+
 ## Changesets
 
 We use changesets to track changes in all published packages. Changesets both define what should go into the changelog of each package, but also what kind of version bump should be done for the next release.
@@ -52,6 +60,7 @@ Some things that changeset should NOT contain are:
 - Information related to a different package.
 - A large amount of content, consider for example a separate migration guide instead, either in the package README or [./docs/](./docs/), and then link to that instead.
 - Documentation - changesets can describe new features, but it should not be relied on for documenting them. Documentation should either be placed in [TSDoc](https://tsdoc.org) comments, package README, or [./docs/](./docs/).
+- Diffs of internal code, for example mirroring what the pull request changes _inside_ a plugin rather than public surfaces. This is not of interest to the reader of a package changelog. Sometimes, however, a small and concise diff can be used in a changeset to illustrate changes that the user will have to make in _their own_ Backstage installation as part of an upgrade, specifically when breaking changes are made to a package.
 
 ### When is a changeset needed?
 
