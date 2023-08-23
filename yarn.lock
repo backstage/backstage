@@ -3696,7 +3696,7 @@ __metadata:
   resolution: "@backstage/cli-common@workspace:packages/cli-common"
   dependencies:
     "@backstage/cli": "workspace:^"
-    "@types/node": ^16.0.0
+    "@types/node": ^18.17.8
   languageName: unknown
   linkType: soft
 
@@ -3773,7 +3773,7 @@ __metadata:
     "@types/jest": ^29.0.0
     "@types/minimatch": ^5.0.0
     "@types/mock-fs": ^4.13.0
-    "@types/node": ^16.11.26
+    "@types/node": ^18.17.8
     "@types/npm-packlist": ^3.0.0
     "@types/recursive-readdir": ^2.2.0
     "@types/rollup-plugin-peer-deps-external": ^2.2.0
@@ -3878,7 +3878,7 @@ __metadata:
     "@backstage/cli": "workspace:^"
     "@backstage/cli-common": "workspace:^"
     "@types/jscodeshift": ^0.11.0
-    "@types/node": ^16.11.26
+    "@types/node": ^18.17.8
     chalk: ^4.0.0
     commander: ^9.1.0
     jscodeshift: ^0.15.0
@@ -4133,7 +4133,7 @@ __metadata:
     "@types/command-exists": ^1.2.0
     "@types/fs-extra": ^9.0.1
     "@types/inquirer": ^8.1.3
-    "@types/node": ^16.11.26
+    "@types/node": ^18.17.8
     "@types/recursive-readdir": ^2.2.0
     chalk: ^4.0.0
     commander: ^9.1.0
@@ -8344,7 +8344,7 @@ __metadata:
     "@types/command-exists": ^1.2.0
     "@types/fs-extra": ^9.0.1
     "@types/mock-fs": ^4.13.0
-    "@types/node": ^16.11.26
+    "@types/node": ^18.17.8
     command-exists: ^1.2.9
     fs-extra: ^10.0.1
     jest-when: ^3.1.0
@@ -9719,7 +9719,7 @@ __metadata:
     "@stoplight/types": ^13.14.0
     "@types/is-glob": ^4.0.2
     "@types/mock-fs": ^4.13.0
-    "@types/node": ^16.11.26
+    "@types/node": ^18.17.8
     chalk: ^4.0.0
     codeowners-utils: ^1.0.2
     commander: ^9.1.0
@@ -16457,7 +16457,7 @@ __metadata:
     "@types/dockerode": ^3.3.0
     "@types/fs-extra": ^9.0.6
     "@types/http-proxy": ^1.17.4
-    "@types/node": ^16.11.26
+    "@types/node": ^18.17.8
     "@types/serve-handler": ^6.1.0
     "@types/webpack-env": ^1.15.3
     commander: ^9.1.0
@@ -17767,17 +17767,17 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@types/node@npm:^16.0.0, @types/node@npm:^16.11.26, @types/node@npm:^16.9.2":
-  version: 16.18.50
-  resolution: "@types/node@npm:16.18.50"
-  checksum: 8aec1eaf83407197ec2fe947182c238f49b82a7aace867cee1f81f72eb8a76c3c8b2adb1fd356e7443317cffb2546708da8934299a579edd25e3160bf7af30a1
+"@types/node@npm:^16.9.2":
+  version: 16.18.43
+  resolution: "@types/node@npm:16.18.43"
+  checksum: a3ae424834818d1aa53d05e9de954b4559aaa9c02294e654403d9bd2a2b1db608c328755970071369a0c85159a6f2969502e1b9c7e1f29d2629ca677c33c8bdb
   languageName: node
   linkType: hard
 
-"@types/node@npm:^18.11.17":
-  version: 18.17.15
-  resolution: "@types/node@npm:18.17.15"
-  checksum: eed11d4398ccdb999a4c65658ee75de621a4ad57aece48ed2fb8803b1e2711fadf58d8aefbdb0a447d69cf3cba602ca32fe0fc92077575950a796e1dc13baa0f
+"@types/node@npm:^18.11.17, @types/node@npm:^18.17.8":
+  version: 18.17.8
+  resolution: "@types/node@npm:18.17.8"
+  checksum: ebb71526368c9c58f03e2c2408bfda4aa686c13d84226e2c9b48d9c4aee244fb82e672aaf4aa8ccb6e4993b4274d5f4b2b3d52d0a2e57ab187ae653903376411
   languageName: node
   linkType: hard
 
@@ -23929,7 +23929,7 @@ __metadata:
     "@backstage/create-app": "workspace:^"
     "@backstage/errors": "workspace:^"
     "@types/fs-extra": ^9.0.1
-    "@types/node": ^16.11.26
+    "@types/node": ^18.17.8
     "@types/puppeteer": ^5.4.4
     chalk: ^4.0.0
     commander: ^9.1.0
@@ -38444,7 +38444,7 @@ __metadata:
     "@spotify/eslint-plugin": ^14.1.3
     "@spotify/prettier-config": ^14.0.0
     "@techdocs/cli": "workspace:*"
-    "@types/node": ^16.11.26
+    "@types/node": ^18.17.8
     "@types/webpack": ^5.28.0
     command-exists: ^1.2.9
     concurrently: ^8.0.0
