@@ -26,7 +26,7 @@ import React, {
   useRef,
   useState,
 } from 'react';
-import JSZip from 'jszip';
+const {default: JSZip} = await import('jszip');
 import {
   scaffolderApiRef,
   ScaffolderDryRunResponse,
