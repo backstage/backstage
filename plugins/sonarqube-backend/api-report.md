@@ -15,6 +15,7 @@ export class DefaultSonarqubeInfoProvider implements SonarqubeInfoProvider {
   static fromConfig(config: Config): DefaultSonarqubeInfoProvider;
   getBaseUrl(options?: { instanceName?: string }): {
     baseUrl: string;
+    externalBaseUrl?: string;
   };
   getFindings(options: {
     componentKey: string;
@@ -49,6 +50,7 @@ export interface SonarqubeFindings {
 export interface SonarqubeInfoProvider {
   getBaseUrl(options?: { instanceName?: string }): {
     baseUrl: string;
+    externalBaseUrl?: string;
   };
   getFindings(options: {
     componentKey: string;
@@ -60,6 +62,7 @@ export interface SonarqubeInfoProvider {
 export interface SonarqubeInstanceConfig {
   apiKey: string;
   baseUrl: string;
+  externalBaseUrl?: string;
   name: string;
 }
 

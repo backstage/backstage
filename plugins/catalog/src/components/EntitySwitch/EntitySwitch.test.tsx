@@ -59,6 +59,50 @@ describe('EntitySwitch', () => {
     expect(screen.queryByText('C')).not.toBeInTheDocument();
   });
 
+  it('should render the default case if entity is not found', () => {
+    const content = (
+      <EntitySwitch>
+        <EntitySwitch.Case if={isKind('component')} children="A" />
+        <EntitySwitch.Case if={isKind('api')} children="B" />
+        <EntitySwitch.Case children="C" />
+      </EntitySwitch>
+    );
+
+    render(
+      <Wrapper>
+        <AsyncEntityProvider entity={undefined} loading={false}>
+          {content}
+        </AsyncEntityProvider>
+      </Wrapper>,
+    );
+
+    expect(screen.queryByText('A')).not.toBeInTheDocument();
+    expect(screen.queryByText('B')).not.toBeInTheDocument();
+    expect(screen.queryByText('C')).toBeInTheDocument();
+  });
+
+  it(`shouldn't render any children if entity is loading and no entity exists in the context`, () => {
+    const content = (
+      <EntitySwitch>
+        <EntitySwitch.Case if={isKind('component')} children="A" />
+        <EntitySwitch.Case if={isKind('api')} children="B" />
+        <EntitySwitch.Case children="C" />
+      </EntitySwitch>
+    );
+
+    render(
+      <Wrapper>
+        <AsyncEntityProvider entity={undefined} loading>
+          {content}
+        </AsyncEntityProvider>
+      </Wrapper>,
+    );
+
+    expect(screen.queryByText('A')).not.toBeInTheDocument();
+    expect(screen.queryByText('B')).not.toBeInTheDocument();
+    expect(screen.queryByText('C')).not.toBeInTheDocument();
+  });
+
   it('should render the fallback if no cases are matching', () => {
     const content = (
       <EntitySwitch>
@@ -170,7 +214,7 @@ describe('EntitySwitch', () => {
 
     expect(screen.queryByText('A')).not.toBeInTheDocument();
     expect(screen.queryByText('B')).not.toBeInTheDocument();
-    expect(screen.queryByText('C')).not.toBeInTheDocument();
+    expect(screen.queryByText('C')).toBeInTheDocument();
   });
 
   it('should switch child when filters switch', () => {

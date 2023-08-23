@@ -1,5 +1,12 @@
 # @backstage/plugin-linguist-common
 
+## 0.1.1
+
+### Patch Changes
+
+- 12a8c94eda8d: Add package repository and homepage metadata
+- d440f1dd0e72: Exported new LanguageType type alias
+
 ## 0.1.1-next.1
 
 ### Patch Changes

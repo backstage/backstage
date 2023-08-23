@@ -28,5 +28,14 @@ export interface Config {
      * The commit message used when new components are created.
      */
     defaultCommitMessage?: string;
+
+    /**
+     * Sets the number of concurrent tasks that can be run at any given time on the TaskWorker.
+     *
+     * Defaults to 10.
+     *
+     * Set to 0 to disable task workers altogether.
+     */
+    concurrentTasksLimit?: number;
   };
 }

@@ -20,11 +20,7 @@ import {
   UserEntity,
   stringifyEntityRef,
 } from '@backstage/catalog-model';
-import {
-  catalogApiRef,
-  entityRouteParams,
-  useEntity,
-} from '@backstage/plugin-catalog-react';
+import { catalogApiRef, useEntity } from '@backstage/plugin-catalog-react';
 import {
   Box,
   createStyles,
@@ -36,7 +32,6 @@ import {
 } from '@material-ui/core';
 import Pagination from '@material-ui/lab/Pagination';
 import React, { useState } from 'react';
-import { generatePath } from 'react-router-dom';
 import useAsync from 'react-use/lib/useAsync';
 
 import {
@@ -52,6 +47,7 @@ import {
   getAllDesendantMembersForGroupEntity,
   removeDuplicateEntitiesFrom,
 } from '../../../../helpers/helpers';
+import { EntityRefLink } from '@backstage/plugin-catalog-react';
 
 const useStyles = makeStyles((theme: Theme) =>
   createStyles({
@@ -102,15 +98,11 @@ const MemberComponent = (props: { member: UserEntity }) => {
             textAlign="center"
           >
             <Typography variant="h6">
-              <Link
+              <EntityRefLink
                 data-testid="user-link"
-                to={generatePath(
-                  `/catalog/:namespace/user/${metaName}`,
-                  entityRouteParams(props.member),
-                )}
-              >
-                <OverflowTooltip text={displayName} />
-              </Link>
+                entityRef={props.member}
+                title={displayName}
+              />
             </Typography>
             {profile?.email && (
               <Link to={`mailto:${profile.email}`}>

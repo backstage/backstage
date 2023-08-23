@@ -1,5 +1,11 @@
 # @backstage/plugin-entity-feedback-common
 
+## 0.1.2
+
+### Patch Changes
+
+- 12a8c94eda8d: Add package repository and homepage metadata
+
 ## 0.1.2-next.0
 
 ### Patch Changes

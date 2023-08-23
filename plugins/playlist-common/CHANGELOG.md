@@ -1,5 +1,13 @@
 # @backstage/plugin-playlist-common
 
+## 0.1.9
+
+### Patch Changes
+
+- 12a8c94eda8d: Add package repository and homepage metadata
+- Updated dependencies
+  - @backstage/plugin-permission-common@0.7.7
+
 ## 0.1.9-next.0
 
 ### Patch Changes

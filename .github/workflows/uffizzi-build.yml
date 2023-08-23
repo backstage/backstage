@@ -4,6 +4,8 @@ on:
     types: [opened, synchronize, reopened, closed]
     paths-ignore:
       - 'microsite/**'
+      - 'storybook/**'
+      - 'contrib/**'
       - '*.md'
 
 jobs:

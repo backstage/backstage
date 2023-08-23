@@ -43,10 +43,6 @@ const createInitialState = ({
 describe('SearchBar', () => {
   const user = userEvent.setup({ delay: null });
 
-  const query = jest.fn().mockResolvedValue({ results: [] });
-
-  const searchApiMock = { query };
-
   const configApiMock = new ConfigReader({
     app: {
       title: 'Mock title',
@@ -57,6 +53,8 @@ describe('SearchBar', () => {
       },
     },
   });
+
+  const searchApiMock = { query: jest.fn().mockResolvedValue({ results: [] }) };
 
   beforeEach(() => {
     jest.clearAllMocks();
@@ -172,7 +170,7 @@ describe('SearchBar', () => {
 
     await waitFor(() => expect(textbox).toHaveValue(value));
 
-    expect(query).toHaveBeenLastCalledWith(
+    expect(searchApiMock.query).toHaveBeenLastCalledWith(
       expect.objectContaining({ term: value }),
     );
 
@@ -204,7 +202,7 @@ describe('SearchBar', () => {
 
     await waitFor(() => expect(textbox).toHaveValue(''));
 
-    expect(query).toHaveBeenLastCalledWith(
+    expect(searchApiMock.query).toHaveBeenLastCalledWith(
       expect.objectContaining({ term: '' }),
     );
   });
@@ -255,7 +253,7 @@ describe('SearchBar', () => {
     await user.type(textbox, value);
 
     await waitFor(() =>
-      expect(query).not.toHaveBeenLastCalledWith(
+      expect(searchApiMock.query).not.toHaveBeenLastCalledWith(
         expect.objectContaining({ term: value }),
       ),
     );
@@ -266,7 +264,7 @@ describe('SearchBar', () => {
 
     await waitFor(() => expect(textbox).toHaveValue(value));
 
-    expect(query).toHaveBeenLastCalledWith(
+    expect(searchApiMock.query).toHaveBeenLastCalledWith(
       expect.objectContaining({ term: value }),
     );
 

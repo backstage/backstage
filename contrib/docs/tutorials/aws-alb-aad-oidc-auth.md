@@ -29,7 +29,7 @@ In the AWS console, configure ALB Authentication:
 - Select `OIDC` under `Authenticate`
 - Set `Issuer` to `https://login.microsoftonline.com/{TENANT_ID}/v2.0`, replacing `{TENANT_ID}` with the value of `Directory (tenant) ID` of the AAD App.
 - Set `Authorization endpoint` to `https://login.microsoftonline.com/{TENANT_ID}/oauth2/v2.0/authorize`, replacing `{TENANT_ID}` with the value of `Directory (tenant) ID` of the AAD App.
-- Set `Token endpoint` to `https://login.microsoftonline.com/{TENANT_ID}/oauth2/v2.0/authorize`, replacing `{TENANT_ID}` with the value of `Directory (tenant) ID` of the AAD App.
+- Set `Token endpoint` to `https://login.microsoftonline.com/{TENANT_ID}/oauth2/v2.0/token`, replacing `{TENANT_ID}` with the value of `Directory (tenant) ID` of the AAD App.
 - Set `User info endpoint` to `https://graph.microsoft.com/oidc/userinfo`
 - Set `Client ID` to the AAD App `Application (client) Id`
 - Set `Client secret` to the AAD APP `client secret`

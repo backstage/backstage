@@ -76,6 +76,37 @@ describe('OAuth2', () => {
     );
   });
 
+  it('should forward backstage identity', async () => {
+    getSession = jest.fn().mockResolvedValue({
+      providerInfo: { accessToken: 'access-token', expiresAt: theFuture },
+      backstageIdentity: {
+        token: 'a.b.c',
+        expiresAt: theFuture,
+        identity: {
+          type: 'user',
+          userEntityRef: 'user:default/mock',
+          ownershipEntityRefs: [],
+        },
+      },
+    });
+    const oauth2 = OAuth2.create({
+      configApi: configApi,
+      scopeTransform: scopes => scopes.map(scope => `my-prefix/${scope}`),
+      oauthRequestApi: new MockOAuthApi(),
+      discoveryApi: UrlPatternDiscovery.compile('http://example.com'),
+    });
+
+    await expect(oauth2.getBackstageIdentity()).resolves.toEqual({
+      token: 'a.b.c',
+      expiresAt: theFuture,
+      identity: {
+        type: 'user',
+        userEntityRef: 'user:default/mock',
+        ownershipEntityRefs: [],
+      },
+    });
+  });
+
   it('should get refreshed id token', async () => {
     getSession = jest.fn().mockResolvedValue({
       providerInfo: { idToken: 'id-token', expiresAt: theFuture },

@@ -1,5 +1,52 @@
 # @backstage/plugin-devtools-backend
 
+## 0.1.5-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/plugin-auth-node@0.3.0-next.0
+  - @backstage/backend-common@0.19.4-next.0
+  - @backstage/config-loader@1.5.0-next.0
+  - @backstage/backend-plugin-api@0.6.2-next.0
+  - @backstage/cli-common@0.1.12
+  - @backstage/config@1.0.8
+  - @backstage/errors@1.2.1
+  - @backstage/types@1.1.0
+  - @backstage/plugin-devtools-common@0.1.3
+  - @backstage/plugin-permission-common@0.7.7
+  - @backstage/plugin-permission-node@0.7.13-next.0
+
+## 0.1.3
+
+### Patch Changes
+
+- 629cbd194a87: Use `coreServices.rootConfig` instead of `coreService.config`
+- 12a8c94eda8d: Add package repository and homepage metadata
+- 2b4f77a4e900: Add DevTools configuration to enable dependency listing to be filtered with custom prefixes. For instance, in your `app-config.yaml`:
+
+  ```yaml
+  devTools:
+    info:
+      packagePrefixes:
+        - @backstage/
+        - @roadiehq/backstage-
+        - @spotify/backstage-
+  ```
+
+- Updated dependencies
+  - @backstage/backend-common@0.19.2
+  - @backstage/config-loader@1.4.0
+  - @backstage/backend-plugin-api@0.6.0
+  - @backstage/plugin-devtools-common@0.1.3
+  - @backstage/plugin-auth-node@0.2.17
+  - @backstage/plugin-permission-node@0.7.11
+  - @backstage/cli-common@0.1.12
+  - @backstage/config@1.0.8
+  - @backstage/errors@1.2.1
+  - @backstage/types@1.1.0
+  - @backstage/plugin-permission-common@0.7.7
+
 ## 0.1.3-next.2
 
 ### Patch Changes

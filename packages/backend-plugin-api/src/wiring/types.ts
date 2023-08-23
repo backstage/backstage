@@ -15,6 +15,7 @@
  */
 
 import { ServiceRef } from '../services/system/types';
+import { BackendFeature } from '../types';
 
 /**
  * TODO
@@ -59,26 +60,16 @@ export interface BackendPluginRegistrationPoints {
  * @public
  */
 export interface BackendModuleRegistrationPoints {
+  registerExtensionPoint<TExtensionPoint>(
+    ref: ExtensionPoint<TExtensionPoint>,
+    impl: TExtensionPoint,
+  ): void;
   registerInit<Deps extends { [name in string]: unknown }>(options: {
     deps: {
       [name in keyof Deps]: ServiceRef<Deps[name]> | ExtensionPoint<Deps[name]>;
     };
     init(deps: Deps): Promise<void>;
   }): void;
-}
-
-/** @internal */
-export interface BackendFeatureFactory<
-  TOptions extends [options?: object] = [],
-> {
-  (...options: TOptions): BackendFeature;
-  $$type: '@backstage/BackendFeatureFactory';
-}
-
-/** @public */
-export interface BackendFeature {
-  // NOTE: This type is opaque in order to simplify future API evolution.
-  $$type: '@backstage/BackendFeature';
 }
 
 /** @internal */
@@ -105,6 +96,7 @@ export interface InternalBackendModuleRegistration {
   pluginId: string;
   moduleId: string;
   type: 'module';
+  extensionPoints: Array<readonly [ExtensionPoint<unknown>, unknown]>;
   init: {
     deps: Record<string, ServiceRef<unknown> | ExtensionPoint<unknown>>;
     func(deps: Record<string, unknown>): Promise<void>;

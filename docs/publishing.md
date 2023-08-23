@@ -18,6 +18,22 @@ PR is merged. This is typically done every Tuesday around noon CET.
 **This emergency release process is intended only for the Backstage
 maintainers.**
 
+Given one or more PRs towards master that we want to create a patch release for, run the following script from the repo root:
+
+```bash
+./scripts/patch-release-for-pr.js <pr-number> <pr-number-2> ...
+```
+
+Wait until the script has finished executing, at the end of the output you will find a link of the format `https://github.com/backstage/backstage/compare/patch/...`. Open this link in your browser to create a PR for the patch release. Finish the sentence "This release fixes an issue where..." and create the PR.
+
+Once the PR has been approved and merged, the patch release will be automatically created. The patch release is complete when a notification has been posted to Discord in the `#announcements` channel. Keep an eye on "Deploy Packages" workflow and re-trigger if it fails. It is safe to re-trigger any part of this workflow, including the release step.
+
+If the above process fails, you can fall back to the manual process documented below.
+
+### Old Process
+
+This is the old and manual process that we used before the patch script, provided here as a reference:
+
 For this example we will be using the `@backstage/plugin-foo` package as an
 example and assume that it is currently version `6.5.0` in the master branch.
 

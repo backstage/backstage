@@ -24,7 +24,7 @@ import { Backend, CreateSpecializedBackendOptions } from './types';
 export function createSpecializedBackend(
   options: CreateSpecializedBackendOptions,
 ): Backend {
-  const services = options.services.map(sf =>
+  const services = options.defaultServiceFactories.map(sf =>
     typeof sf === 'function' ? sf() : sf,
   );
 

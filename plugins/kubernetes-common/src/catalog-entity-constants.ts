@@ -76,3 +76,19 @@ export const ANNOTATION_KUBERNETES_DASHBOARD_URL =
  */
 export const ANNOTATION_KUBERNETES_DASHBOARD_APP =
   'kubernetes.io/dashboard-app';
+
+/**
+ * Annotation for specifying the assume role use to authenticate with AWS.
+ *
+ * @public
+ */
+export const ANNOTATION_KUBERNETES_AWS_ASSUME_ROLE =
+  'kubernetes.io/aws-assume-role';
+
+/**
+ * Annotation for specifying an external id when communicating with AWS
+ *
+ * @public
+ */
+export const ANNOTATION_KUBERNETES_AWS_EXTERNAL_ID =
+  'kubernetes.io/aws-external-id';
