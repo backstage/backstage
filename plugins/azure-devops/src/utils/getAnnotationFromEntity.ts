@@ -19,7 +19,10 @@ import {
   AZURE_DEVOPS_PROJECT_ANNOTATION,
   AZURE_DEVOPS_REPO_ANNOTATION,
   AZURE_DEVOPS_PROJECT_LOCATION,
+  AZURE_DEVOPS_URL_FORMAT,
 } from '../constants';
+
+import parseGitUrl from 'git-url-parse';
 
 import { Entity } from '@backstage/catalog-model';
 
@@ -40,14 +43,15 @@ export function getAnnotationFromEntity(entity: Entity): {
     entity.metadata.annotations?.[AZURE_DEVOPS_PROJECT_ANNOTATION];
 
   const location = entity.metadata.annotations?.[AZURE_DEVOPS_PROJECT_LOCATION];
-  const isAzureDevUrl = location?.includes('dev.azure.com');
+  const isAzureDevUrl = location?.includes(AZURE_DEVOPS_URL_FORMAT);
 
   if (!project && location && isAzureDevUrl) {
-    const locInfoArr = location
-      .substring(location.indexOf('//') + 2)
-      .split('/');
+    const { name: repo, owner } = parseGitUrl(location);
 
-    const [proj, repo] = [locInfoArr[2], locInfoArr[4].split('?')[0]];
+    const projArrData = owner.split('/');
+
+    const proj = projArrData[projArrData.length - 2];
+
     const definition = undefined;
     return { project: proj, repo, definition };
   }

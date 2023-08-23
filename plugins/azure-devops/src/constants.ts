@@ -20,3 +20,4 @@ export const AZURE_DEVOPS_PROJECT_ANNOTATION = 'dev.azure.com/project';
 export const AZURE_DEVOPS_REPO_ANNOTATION = 'dev.azure.com/project-repo';
 export const AZURE_DEVOPS_PROJECT_LOCATION = 'backstage.io/managed-by-location';
 export const AZURE_DEVOPS_DEFAULT_TOP: number = 10;
+export const AZURE_DEVOPS_URL_FORMAT = 'https://dev.azure.com';

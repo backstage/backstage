@@ -14,11 +14,14 @@
  * limitations under the License.
  */
 import { Entity } from '@backstage/catalog-model';
-import { AZURE_DEVOPS_PROJECT_LOCATION } from '../constants';
+import {
+  AZURE_DEVOPS_PROJECT_LOCATION,
+  AZURE_DEVOPS_URL_FORMAT,
+} from '../constants';
 
 export const isDevAzureLocation = (entity: Entity): boolean => {
   const location = entity.metadata.annotations?.[AZURE_DEVOPS_PROJECT_LOCATION];
 
-  if (location) return location.includes('dev.azure.com');
+  if (location) return location.includes(AZURE_DEVOPS_URL_FORMAT);
   return false;
 };

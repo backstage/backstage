@@ -65,7 +65,7 @@ spec:
 backstage.io/managed-by-location: https://dev.azure.com/{org}/{project}/_git/{repo}?path=/.catalog/component.yml
 ```
 
-if `dev.azure.com/project-repo` annotation is not provided and `dev.azure.com/project` not exits then to extract the project and repo information we can use `backstage.io/managed-by-location` annotation if location contains `dev.azure.com` in url to enable CICD tab.
+In cases where the annotations `dev.azure.com/project-repo` or `dev.azure.com/project` are not present, **the project and repository details can be obtained using the `backstage.io/managed-by-location` annotation**. This method comes into play when the URL within the location includes `dev.azure.com`, which then triggers the activation of the CICD tab.
 
 #### Azure Pipelines Only
 
