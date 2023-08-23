@@ -16,7 +16,6 @@
 
 import React, { useEffect, useState } from 'react';
 import { makeStyles } from '@material-ui/styles';
-import { endOfDay, startOfDay } from '@date-io/luxon';
 import {
   MuiPickersUtilsProvider,
   KeyboardDatePicker,
@@ -67,14 +66,14 @@ const SelectWindow = ({ windowOptions, window, setWindow }) => {
   };
 
   const handleStartDateChange = date => {
-    if (isValid(date)) {
-      setStartDate(startOfDay(date));
+    if (isValid(date.toJSDate())) {
+      setStartDate(date.startOf('day').toJSDate());
     }
   };
 
   const handleEndDateChange = date => {
-    if (isValid(date)) {
-      setEndDate(endOfDay(date));
+    if (isValid(date.toJSDate())) {
+      setEndDate(date.endOf('day').toJSDate());
     }
   };
 
