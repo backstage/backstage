@@ -144,7 +144,7 @@ export const spec = {
         allowReserved: true,
         schema: {
           type: 'integer',
-          minimum: 1,
+          minimum: 0,
         },
       },
       orderField: {
