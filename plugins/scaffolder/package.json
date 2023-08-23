@@ -71,6 +71,7 @@
     "@rjsf/material-ui": "^3.2.1",
     "@rjsf/utils": "5.7.3",
     "@rjsf/validator-ajv8": "5.7.3",
+    "@types/react": "^16.13.1 || ^17.0.0",
     "@uiw/react-codemirror": "^4.9.3",
     "classnames": "^2.2.6",
     "event-source-polyfill": "^1.0.31",
@@ -107,7 +108,6 @@
     "@types/humanize-duration": "^3.18.1",
     "@types/json-schema": "^7.0.9",
     "@types/node": "^16.11.26",
-    "@types/react": "^16.13.1 || ^17.0.0",
     "msw": "^1.0.0"
   },
   "files": [
