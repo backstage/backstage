@@ -21,6 +21,7 @@ import {
 } from '@backstage/integration';
 import { createTemplateAction } from '@backstage/plugin-scaffolder-node';
 import { Octokit } from 'octokit';
+import { throttling } from '@octokit/plugin-throttling';
 import { parseRepoUrl } from '../publish/util';
 import { getOctokitOptions } from './helpers';
 
@@ -98,14 +99,26 @@ export function createGithubActionsDispatchAction(options: {
         throw new InputError('Invalid repository owner provided in repoUrl');
       }
 
-      const client = new Octokit(
-        await getOctokitOptions({
+      const ThrottledRetry = Octokit.plugin(throttling);
+      const client = new ThrottledRetry({
+        ...(await getOctokitOptions({
           integrations,
           repoUrl,
           credentialsProvider: githubCredentialsProvider,
           token: providedToken,
-        }),
-      );
+        })),
+        throttle: {
+          onRateLimit: (_: number, opts: any) => {
+            // retry three times
+            return opts.request.retryCount < 4;
+          },
+          onSecondaryRateLimit: (_: number, opts: any) => {
+            // retry three times
+            return opts.request.retryCount < 4;
+          },
+          fallbackSecondaryRateRetryAfter: 5,
+        },
+      });
 
       await client.rest.actions.createWorkflowDispatch({
         owner,
