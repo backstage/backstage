@@ -33,7 +33,7 @@ import {
 } from './helpers';
 import {
   patchMkdocsYmlPreBuild,
-  pathMkdocsYmlWithTechdocsPlugin,
+  patchMkdocsYmlWithPlugins,
 } from './mkdocsPatchers';
 import yaml from 'js-yaml';
 
@@ -310,7 +310,7 @@ describe('helpers', () => {
     });
   });
 
-  describe('pathMkdocsYmlWithTechdocsPlugin', () => {
+  describe('patchMkdocsYmlWithPlugins', () => {
     beforeEach(() => {
       mockFs({
         '/mkdocs_with_techdocs_plugin.yml': mkdocsYmlWithTechdocsPlugins,
@@ -319,7 +319,7 @@ describe('helpers', () => {
       });
     });
     it('should not add additional plugins if techdocs exists already in mkdocs file', async () => {
-      await pathMkdocsYmlWithTechdocsPlugin(
+      await patchMkdocsYmlWithPlugins(
         '/mkdocs_with_techdocs_plugin.yml',
         mockLogger,
       );
@@ -334,7 +334,7 @@ describe('helpers', () => {
       expect(parsedYml.plugins).toContain('techdocs-core');
     });
     it("should add the needed plugin if it doesn't exist in mkdocs file", async () => {
-      await pathMkdocsYmlWithTechdocsPlugin(
+      await patchMkdocsYmlWithPlugins(
         '/mkdocs_without_plugins.yml',
         mockLogger,
       );
@@ -347,7 +347,7 @@ describe('helpers', () => {
       expect(parsedYml.plugins).toContain('techdocs-core');
     });
     it('should not override existing plugins', async () => {
-      await pathMkdocsYmlWithTechdocsPlugin(
+      await patchMkdocsYmlWithPlugins(
         '/mkdocs_with_additional_plugins.yml',
         mockLogger,
       );
@@ -361,6 +361,23 @@ describe('helpers', () => {
       expect(parsedYml.plugins).toContain('techdocs-core');
       expect(parsedYml.plugins).toContain('not-techdocs-core');
       expect(parsedYml.plugins).toContain('also-not-techdocs-core');
+    });
+    it('should add all provided default plugins', async () => {
+      await patchMkdocsYmlWithPlugins(
+        '/mkdocs_with_additional_plugins.yml',
+        mockLogger,
+        ['techdocs-core', 'custom-plugin'],
+      );
+
+      const updatedMkdocsYml = await fs.readFile(
+        '/mkdocs_with_additional_plugins.yml',
+      );
+      const parsedYml = yaml.load(updatedMkdocsYml.toString()) as {
+        plugins: string[];
+      };
+      expect(parsedYml.plugins).toHaveLength(4);
+      expect(parsedYml.plugins).toContain('techdocs-core');
+      expect(parsedYml.plugins).toContain('custom-plugin');
     });
   });
 
