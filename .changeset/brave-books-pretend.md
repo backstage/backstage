@@ -2,4 +2,4 @@
 '@backstage/plugin-playlist': patch
 ---
 
-change color of delete icon to red in playlist table
+change color of delete icon to secondary in playlist table
