@@ -4,6 +4,10 @@
 
 ```ts
 import { ComponentType } from 'react';
+import { JsonObject } from '@backstage/types';
+import { z } from 'zod';
+import { ZodSchema } from 'zod';
+import { ZodTypeDef } from 'zod';
 
 // @public (undocumented)
 export type AnyExtensionDataMap = Record<string, ExtensionDataRef<any>>;
@@ -41,7 +45,8 @@ export function createExtension<
       extensionData: AnyExtensionDataMap;
     }
   >,
->(options: CreateExtensionOptions<TData, TPoint>): Extension;
+  TConfig = never,
+>(options: CreateExtensionOptions<TData, TPoint, TConfig>): Extension<TConfig>;
 
 // @public (undocumented)
 export interface CreateExtensionOptions<
@@ -52,11 +57,14 @@ export interface CreateExtensionOptions<
       extensionData: AnyExtensionDataMap;
     }
   >,
+  TConfig,
 > {
+  // (undocumented)
+  configSchema?: PortableSchema<TConfig>;
   // (undocumented)
   factory(options: {
     bind: ExtensionDataBind<TData>;
-    config?: unknown;
+    config: TConfig;
     inputs: {
       [pointName in keyof TPoint]: ExtensionDataValue<
         TPoint[pointName]['extensionData']
@@ -73,13 +81,20 @@ export interface CreateExtensionOptions<
 export function createPlugin(options: BackstagePluginOptions): BackstagePlugin;
 
 // @public (undocumented)
-export interface Extension {
+export function createSchemaFromZod<TOutput, TInput>(
+  schemaCreator: (zImpl: typeof z) => ZodSchema<TOutput, ZodTypeDef, TInput>,
+): PortableSchema<TOutput>;
+
+// @public (undocumented)
+export interface Extension<TConfig> {
   // (undocumented)
   $$type: 'extension';
   // (undocumented)
+  configSchema?: PortableSchema<TConfig>;
+  // (undocumented)
   factory(options: {
     bind: ExtensionDataBind<AnyExtensionDataMap>;
-    config?: unknown;
+    config: TConfig;
     inputs: Record<string, Array<Record<string, unknown>>>;
   }): void;
   // (undocumented)
@@ -115,10 +130,16 @@ export interface ExtensionInstanceConfig {
   // (undocumented)
   at: string;
   // (undocumented)
-  config: unknown;
+  config?: unknown;
   // (undocumented)
-  extension: Extension;
+  extension: Extension<unknown>;
   // (undocumented)
   id: string;
 }
+
+// @public (undocumented)
+export type PortableSchema<TOutput> = {
+  parse: (input: unknown) => TOutput;
+  schema: JsonObject;
+};
 ```

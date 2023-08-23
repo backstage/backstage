@@ -4153,8 +4153,11 @@ __metadata:
   resolution: "@backstage/frontend-plugin-api@workspace:packages/frontend-plugin-api"
   dependencies:
     "@backstage/cli": "workspace:^"
+    "@backstage/types": "workspace:^"
     "@testing-library/jest-dom": ^5.10.1
     lodash: ^4.17.21
+    zod: ^3.21.4
+    zod-to-json-schema: ^3.21.4
   peerDependencies:
     react: ^16.13.1 || ^17.0.0
   languageName: unknown
