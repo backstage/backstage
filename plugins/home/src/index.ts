@@ -32,6 +32,7 @@ export {
   ComponentTab,
   WelcomeTitle,
   HeaderWorldClock,
+  HomePageVisitedByType,
 } from './plugin';
 export * from './components';
 export * from './assets';

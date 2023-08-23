@@ -18,10 +18,17 @@ import React from 'react';
 import { TestApiProvider, wrapInTestApp } from '@backstage/test-utils';
 import { ComponentType, PropsWithChildren } from 'react';
 import { Grid } from '@material-ui/core';
-import { HomePageRecentlyVisited } from '../../plugin';
+import { HomePageVisitedByType } from '../../plugin';
 import { Visit, visitsApiRef } from '../../api/VisitsApi';
 
 const visits: Array<Visit> = [
+  {
+    id: 'tech-radar',
+    name: 'Tech Radar',
+    pathname: '/tech-radar',
+    hits: 40,
+    timestamp: Date.now() - 360_000,
+  },
   {
     id: 'explore',
     name: 'Explore Backstage',
@@ -73,16 +80,9 @@ const visits: Array<Visit> = [
     id: 'hello-world',
     name: 'Hello World gRPC',
     pathname: '/catalog/default/api/hello-world',
-    hits: 5,
+    hits: 1,
     timestamp: Date.now() - 86400_000 * 7,
     entityRef: 'API:default/hello-world',
-  },
-  {
-    id: 'tech-radar',
-    name: 'Tech Radar',
-    pathname: '/tech-radar',
-    hits: 1,
-    timestamp: Date.now() - 360_000,
   },
 ];
 
@@ -92,7 +92,7 @@ const mockVisitsApi = {
 };
 
 export default {
-  title: 'Plugins/Home/Components/RecentlyVisited',
+  title: 'Plugins/Home/Components/VisitedByType',
   decorators: [
     (Story: ComponentType<PropsWithChildren<{}>>) =>
       wrapInTestApp(
@@ -103,42 +103,96 @@ export default {
   ],
 };
 
-export const Default = () => {
+export const RecentlyDefault = () => {
   return (
     <Grid item xs={12} md={6}>
-      <HomePageRecentlyVisited />
+      <HomePageVisitedByType kind="recent" />
     </Grid>
   );
 };
 
-export const Empty = () => {
+export const RecentlyEmpty = () => {
   return (
     <Grid item xs={12} md={6}>
-      <HomePageRecentlyVisited visits={[]} />
+      <HomePageVisitedByType kind="recent" visits={[]} />
     </Grid>
   );
 };
 
-export const FewItems = () => {
+export const RecentlyFewItems = () => {
   return (
     <Grid item xs={12} md={6}>
-      <HomePageRecentlyVisited visits={visits.slice(0, 1)} />
+      <HomePageVisitedByType kind="recent" visits={visits.slice(0, 1)} />
     </Grid>
   );
 };
 
-export const MoreItems = () => {
+export const RecentlyMoreItems = () => {
   return (
     <Grid item xs={12} md={6}>
-      <HomePageRecentlyVisited numVisitsOpen={5} numVisitsTotal={6} />
+      <HomePageVisitedByType
+        kind="recent"
+        numVisitsOpen={5}
+        numVisitsTotal={6}
+      />
     </Grid>
   );
 };
 
-export const Loading = () => {
+export const RecentlyLoading = () => {
   return (
     <Grid item xs={12} md={6}>
-      <HomePageRecentlyVisited numVisitsOpen={5} numVisitsTotal={6} loading />
+      <HomePageVisitedByType
+        kind="recent"
+        numVisitsOpen={5}
+        numVisitsTotal={6}
+        loading
+      />
+    </Grid>
+  );
+};
+
+export const TopDefault = () => {
+  return (
+    <Grid item xs={12} md={6}>
+      <HomePageVisitedByType kind="top" />
+    </Grid>
+  );
+};
+
+export const TopEmpty = () => {
+  return (
+    <Grid item xs={12} md={6}>
+      <HomePageVisitedByType kind="top" visits={[]} />
+    </Grid>
+  );
+};
+
+export const TopFewItems = () => {
+  return (
+    <Grid item xs={12} md={6}>
+      <HomePageVisitedByType kind="top" visits={visits.slice(0, 1)} />
+    </Grid>
+  );
+};
+
+export const TopMoreItems = () => {
+  return (
+    <Grid item xs={12} md={6}>
+      <HomePageVisitedByType kind="top" numVisitsOpen={5} numVisitsTotal={6} />
+    </Grid>
+  );
+};
+
+export const TopLoading = () => {
+  return (
+    <Grid item xs={12} md={6}>
+      <HomePageVisitedByType
+        kind="top"
+        numVisitsOpen={5}
+        numVisitsTotal={6}
+        loading
+      />
     </Grid>
   );
 };

@@ -15,17 +15,22 @@
  */
 
 import React, { useEffect } from 'react';
-import { RecentlyVisited } from './RecentlyVisited';
+import { VisitedByType } from './VisitedByType';
 import { Visit, visitsApiRef } from '../../api/VisitsApi';
-import { useContext } from './Context';
+import { ContextValueOnly, useContext } from './Context';
 import { useApi } from '@backstage/core-plugin-api';
 import useAsync from 'react-use/lib/useAsync';
 
-export type RecentlyVisitedProps = {
+/** @public */
+export type VisitedByTypeKind = 'recent' | 'top';
+
+/** @public */
+export type VisitedByTypeProps = {
   visits?: Array<Visit>;
   numVisitsOpen?: number;
   numVisitsTotal?: number;
   loading?: boolean;
+  kind: VisitedByTypeKind;
 };
 
 /**
@@ -37,40 +42,44 @@ export const Content = ({
   numVisitsOpen,
   numVisitsTotal,
   loading,
-}: RecentlyVisitedProps) => {
-  const { setVisits, setNumVisitsOpen, setNumVisitsTotal, setLoading } =
-    useContext();
+  kind,
+}: VisitedByTypeProps) => {
+  const { setContext, setVisits, setLoading } = useContext();
   // Allows behavior override from properties
   useEffect(() => {
+    const context: Partial<ContextValueOnly> = {};
+    context.kind = kind;
     if (visits) {
-      setVisits(visits);
-      setLoading(false);
+      context.visits = visits;
+      context.loading = false;
     } else if (loading) {
-      setLoading(loading);
+      context.loading = loading;
     }
-    if (numVisitsOpen) setNumVisitsOpen(numVisitsOpen);
-    if (numVisitsTotal) setNumVisitsTotal(numVisitsTotal);
-  }, [
-    visits,
-    numVisitsOpen,
-    numVisitsTotal,
-    loading,
-    setVisits,
-    setNumVisitsOpen,
-    setNumVisitsTotal,
-    setLoading,
-  ]);
+    if (numVisitsOpen) context.numVisitsOpen = numVisitsOpen;
+    if (numVisitsTotal) context.numVisitsTotal = numVisitsTotal;
+    setContext(state => ({ ...state, ...context }));
+  }, [setContext, kind, visits, loading, numVisitsOpen, numVisitsTotal]);
+
   // Fetches data from visitsApi in case visits and loading are not provided
   const visitsApi = useApi(visitsApiRef);
   const { loading: reqLoading } = useAsync(async () => {
-    if (!visits && !loading) {
-      await visitsApi
+    if (!visits && !loading && kind === 'recent') {
+      return await visitsApi
         .listUserVisits({
           limit: numVisitsTotal ?? 8,
           orderBy: { timestamp: 'desc' },
         })
         .then(setVisits);
     }
+    if (!visits && !loading && kind === 'top') {
+      return await visitsApi
+        .listUserVisits({
+          limit: numVisitsTotal ?? 8,
+          orderBy: { hits: 'desc' },
+        })
+        .then(setVisits);
+    }
+    return undefined;
   }, [visitsApi, visits, loading, setVisits]);
   useEffect(() => {
     if (!loading) {
@@ -78,5 +87,5 @@ export const Content = ({
     }
   }, [loading, setLoading, reqLoading]);
 
-  return <RecentlyVisited />;
+  return <VisitedByType />;
 };
