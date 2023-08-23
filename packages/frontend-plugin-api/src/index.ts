@@ -24,7 +24,7 @@ export {
   createExtension,
   coreExtensionData,
   createPlugin,
-  type ExtensionInstanceConfig,
+  type ExtensionInstanceParameters as ExtensionInstanceConfig,
   type BackstagePlugin,
   type Extension,
   type AnyExtensionDataMap,
@@ -34,3 +34,7 @@ export {
   type ExtensionDataRef,
   type ExtensionDataValue,
 } from './types';
+export {
+  createSchemaFromZod,
+  type PortableSchema,
+} from './createSchemaFromZod';
