@@ -17716,11 +17716,11 @@ __metadata:
   linkType: hard
 
 "@types/morgan@npm:^1.9.0":
-  version: 1.9.4
-  resolution: "@types/morgan@npm:1.9.4"
+  version: 1.9.5
+  resolution: "@types/morgan@npm:1.9.5"
   dependencies:
     "@types/node": "*"
-  checksum: d1e99c66a43501dcdf6e94e013dfff4e6c152cbb5f782d954bb722d230a9c1c0fe06fab6df3f3dfa3547735a7598f9471633cc6813d794e9562fd022e217c6ae
+  checksum: f98deb4c7f2ad6049ad34ed7b0f0d427546bdf2358011070af9d597de1b0a03b38cc10cfe65ef2e7673e569c384303d949e76df701acefe288d547f614142973
   languageName: node
   linkType: hard
 
