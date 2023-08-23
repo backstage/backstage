@@ -227,5 +227,7 @@ async function createZipDownload(directoryContents: { path: string; base64Conten
   a.href = URL.createObjectURL(zipFileBlob);
   a.download = `dry-run-${name}.zip`;
   a.click();
+  URL.revokeObjectURL(a.href);
+  a.remove();
 }
 
