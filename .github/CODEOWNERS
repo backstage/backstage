@@ -58,8 +58,8 @@ yarn.lock                                         @backstage/maintainers @backst
 /plugins/home-*                                   @backstage/discoverability-maintainers
 /plugins/kafka                                    @backstage/maintainers @backstage/reviewers @andrewthauer
 /plugins/kafka-backend                            @backstage/maintainers @backstage/reviewers @andrewthauer
-/plugins/kubernetes                               @backstage/maintainers @backstage/reviewers @backstage/kubernetes-maintainers
-/plugins/kubernetes-*                             @backstage/maintainers @backstage/reviewers @backstage/kubernetes-maintainers
+/plugins/kubernetes                               @backstage/kubernetes-maintainers
+/plugins/kubernetes-*                             @backstage/kubernetes-maintainers
 /plugins/linguist                                 @backstage/maintainers @backstage/reviewers @awanlin
 /plugins/linguist-backend                         @backstage/maintainers @backstage/reviewers @awanlin
 /plugins/linguist-common                          @backstage/maintainers @backstage/reviewers @awanlin
