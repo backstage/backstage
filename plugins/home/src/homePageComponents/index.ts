@@ -17,4 +17,4 @@
 export type { ToolkitContentProps, Tool } from './Toolkit';
 export type { ClockConfig } from './HeaderWorldClock';
 export type { WelcomeTitleLanguageProps } from './WelcomeTitle';
-export type { RecentlyVisitedProps } from './RecentlyVisited';
+export type { VisitedByTypeProps, VisitedByTypeKind } from './VisitedByType';

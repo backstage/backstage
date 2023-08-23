@@ -20,10 +20,7 @@ import {
   createRoutableExtension,
 } from '@backstage/core-plugin-api';
 import { createCardExtension } from '@backstage/plugin-home-react';
-import {
-  ToolkitContentProps,
-  RecentlyVisitedProps,
-} from './homePageComponents';
+import { ToolkitContentProps, VisitedByTypeProps } from './homePageComponents';
 import { rootRouteRef } from './routes';
 
 /** @public */
@@ -177,12 +174,12 @@ export const HeaderWorldClock = homePlugin.provide(
 );
 
 /**
- * Display recently visited pages for the homepage
+ * Display recently/top visited pages for the homepage
  * @public
  */
-export const HomePageRecentlyVisited = homePlugin.provide(
-  createCardExtension<RecentlyVisitedProps>({
-    name: 'HomePageRecentlyVisited',
-    components: () => import('./homePageComponents/RecentlyVisited'),
+export const HomePageVisitedByType = homePlugin.provide(
+  createCardExtension<VisitedByTypeProps>({
+    name: 'HomePageVisitedByType',
+    components: () => import('./homePageComponents/VisitedByType'),
   }),
 );

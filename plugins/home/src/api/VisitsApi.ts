@@ -18,7 +18,7 @@ import { createApiRef } from '@backstage/core-plugin-api';
 import { JsonValue } from '@backstage/types';
 
 /**
- @experimental
+ * @public
  * Model for a visit entity.
  */
 export type Visit = {
@@ -48,6 +48,7 @@ export type Visit = {
   entityRef?: string;
 };
 
+/** @public */
 export type VisitFilter = {
   field: string;
   operator: '<' | '<=' | '==' | '>' | '>=' | 'contains';
@@ -55,7 +56,7 @@ export type VisitFilter = {
 };
 
 /**
- @experimental
+ * @public
  * This data structure represents the parameters associated with search queries for visits.
  */
 export type VisitsApiQueryParams = {
@@ -85,22 +86,23 @@ export type VisitsApiQueryParams = {
 };
 
 /**
- * @experimental
+ * @public
  * Visits API public contract.
  */
 export interface VisitsApi {
   /**
    * Persist a new visit.
-   * @param pageVisit | a new visit data.
+   * @param pageVisit - a new visit data
    */
   saveVisit(pageVisit: Omit<Visit, 'id' | 'hits' | 'timestamp'>): Promise<void>;
   /**
    * Get the logged user visits.
-   * @param queryParams | optional search query params.
+   * @param queryParams - optional search query params.
    */
-  listUserVisits(queryParams: VisitsApiQueryParams): Promise<Visit[]>;
+  listUserVisits(queryParams?: VisitsApiQueryParams): Promise<Visit[]>;
 }
 
+/** @public */
 export const visitsApiRef = createApiRef<VisitsApi>({
   id: 'homepage.visits',
 });

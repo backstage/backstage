@@ -17,19 +17,16 @@
 import React from 'react';
 import { VisitList } from '../../components/VisitList';
 import { useContext } from './Context';
-/**
- * Display recently visited pages for the homepage
- * @public
- */
-export const RecentlyVisited = () => {
-  const { collapsed, numVisitsOpen, numVisitsTotal, visits, loading } =
+
+export const VisitedByType = () => {
+  const { collapsed, numVisitsOpen, numVisitsTotal, visits, loading, kind } =
     useContext();
 
   return (
     <VisitList
       visits={visits}
-      title="Recently visited"
-      detailType="time-ago"
+      title={kind === 'top' ? 'Top Visited' : 'Recently Visited'}
+      detailType={kind === 'top' ? 'hits' : 'time-ago'}
       collapsed={collapsed}
       numVisitsOpen={numVisitsOpen}
       numVisitsTotal={numVisitsTotal}

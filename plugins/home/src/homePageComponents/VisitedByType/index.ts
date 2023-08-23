@@ -14,13 +14,7 @@
  * limitations under the License.
  */
 
-import React from 'react';
-import { RecentlyVisited } from './RecentlyVisited';
-import { renderInTestApp } from '@backstage/test-utils';
-
-describe('<RecentlyVisited/>', () => {
-  it('should render', async () => {
-    const { getByText } = await renderInTestApp(<RecentlyVisited />);
-    expect(getByText('RecentlyVisited')).toBeInTheDocument();
-  });
-});
+export { Content } from './Content';
+export { Actions } from './Actions';
+export { ContextProvider } from './Context';
+export type { VisitedByTypeProps, VisitedByTypeKind } from './Content';

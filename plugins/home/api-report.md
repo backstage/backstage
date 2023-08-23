@@ -15,6 +15,7 @@ import { ComponentParts as ComponentParts_2 } from '@backstage/plugin-home-react
 import { ComponentRenderer as ComponentRenderer_2 } from '@backstage/plugin-home-react';
 import { createCardExtension as createCardExtension_2 } from '@backstage/plugin-home-react';
 import { JsonValue } from '@backstage/types';
+import { JSX as JSX_2 } from 'react';
 import { default as React_2 } from 'react';
 import { ReactElement } from 'react';
 import { ReactNode } from 'react';
@@ -50,7 +51,7 @@ export const ComponentAccordion: (props: {
   Actions?: (() => JSX.Element) | undefined;
   Settings?: (() => JSX.Element) | undefined;
   ContextProvider?: ((props: any) => JSX.Element) | undefined;
-}) => JSX.Element;
+}) => JSX_2.Element;
 
 // @public @deprecated (undocumented)
 export type ComponentParts = ComponentParts_2;
@@ -63,7 +64,7 @@ export const ComponentTab: (props: {
   title: string;
   Content: () => JSX.Element;
   ContextProvider?: ((props: any) => JSX.Element) | undefined;
-}) => JSX.Element;
+}) => JSX_2.Element;
 
 // @public (undocumented)
 export const ComponentTabs: (props: {
@@ -72,7 +73,7 @@ export const ComponentTabs: (props: {
     label: string;
     Component: () => JSX.Element;
   }[];
-}) => JSX.Element;
+}) => JSX_2.Element;
 
 // @public @deprecated (undocumented)
 export const createCardExtension: typeof createCardExtension_2;
@@ -80,7 +81,7 @@ export const createCardExtension: typeof createCardExtension_2;
 // @public
 export const CustomHomepageGrid: (
   props: CustomHomepageGridProps,
-) => JSX.Element;
+) => React_2.JSX.Element;
 
 // @public
 export type CustomHomepageGridProps = {
@@ -102,41 +103,41 @@ export type CustomHomepageGridProps = {
 export const HeaderWorldClock: (props: {
   clockConfigs: ClockConfig[];
   customTimeFormat?: Intl.DateTimeFormatOptions | undefined;
-}) => JSX.Element | null;
+}) => JSX_2.Element | null;
 
 // @public
 export const HomePageCompanyLogo: (props: {
   logo?: ReactNode;
   className?: string | undefined;
-}) => JSX.Element;
+}) => JSX_2.Element;
 
 // @public (undocumented)
 export const HomepageCompositionRoot: (props: {
   title?: string | undefined;
   children?: ReactNode;
-}) => JSX.Element;
+}) => JSX_2.Element;
 
 // @public (undocumented)
 export const HomePageRandomJoke: (
   props: CardExtensionProps_2<{
     defaultCategory?: 'any' | 'programming' | undefined;
   }>,
-) => JSX.Element;
+) => JSX_2.Element;
 
 // @public
 export const HomePageStarredEntities: (
   props: CardExtensionProps_2<unknown>,
-) => JSX.Element;
+) => JSX_2.Element;
 
 // @public
 export const HomePageToolkit: (
   props: CardExtensionProps_2<ToolkitContentProps>,
-) => JSX.Element;
+) => JSX_2.Element;
 
 // @public
 export const HomePageVisitedByType: (
   props: CardExtensionProps_2<VisitedByTypeProps>,
-) => JSX.Element;
+) => JSX_2.Element;
 
 // @public (undocumented)
 export const homePlugin: BackstagePlugin<
@@ -167,7 +168,7 @@ export const SettingsModal: (props: {
   close: Function;
   componentName?: string | undefined;
   children: JSX.Element;
-}) => JSX.Element;
+}) => JSX_2.Element;
 
 // @public (undocumented)
 export const TemplateBackstageLogo: (props: {
@@ -175,10 +176,10 @@ export const TemplateBackstageLogo: (props: {
     svg: string;
     path: string;
   };
-}) => JSX.Element;
+}) => React_2.JSX.Element;
 
 // @public (undocumented)
-export const TemplateBackstageLogoIcon: () => JSX.Element;
+export const TemplateBackstageLogoIcon: () => React_2.JSX.Element;
 
 // @public (undocumented)
 export type Tool = {
@@ -192,8 +193,6 @@ export type ToolkitContentProps = {
   tools: Tool[];
 };
 
-// Warning: (ae-missing-release-tag) "Visit" is part of the package's API, but it is missing a release tag (@alpha, @beta, @public, or @internal)
-//
 // @public
 export type Visit = {
   id: string;
@@ -204,8 +203,9 @@ export type Visit = {
   entityRef?: string;
 };
 
-// Warning: (ae-missing-release-tag) "VisitedByTypeProps" is part of the package's API, but it is missing a release tag (@alpha, @beta, @public, or @internal)
-//
+// @public (undocumented)
+export type VisitedByTypeKind = 'recent' | 'top';
+
 // @public (undocumented)
 export type VisitedByTypeProps = {
   visits?: Array<Visit>;
@@ -215,8 +215,6 @@ export type VisitedByTypeProps = {
   kind: VisitedByTypeKind;
 };
 
-// Warning: (ae-missing-release-tag) "VisitFilter" is part of the package's API, but it is missing a release tag (@alpha, @beta, @public, or @internal)
-//
 // @public (undocumented)
 export type VisitFilter = {
   field: string;
@@ -224,18 +222,12 @@ export type VisitFilter = {
   value: JsonValue;
 };
 
-// Warning: (ae-missing-release-tag) "VisitsApi" is part of the package's API, but it is missing a release tag (@alpha, @beta, @public, or @internal)
-//
 // @public
 export interface VisitsApi {
-  // Warning: (tsdoc-param-tag-missing-hyphen) The @param block should be followed by a parameter name and then a hyphen
-  listUserVisits(queryParams: VisitsApiQueryParams): Promise<Visit[]>;
-  // Warning: (tsdoc-param-tag-missing-hyphen) The @param block should be followed by a parameter name and then a hyphen
+  listUserVisits(queryParams?: VisitsApiQueryParams): Promise<Visit[]>;
   saveVisit(pageVisit: Omit<Visit, 'id' | 'hits' | 'timestamp'>): Promise<void>;
 }
 
-// Warning: (ae-missing-release-tag) "VisitsApiQueryParams" is part of the package's API, but it is missing a release tag (@alpha, @beta, @public, or @internal)
-//
 // @public
 export type VisitsApiQueryParams = {
   limit?: number;
@@ -243,22 +235,16 @@ export type VisitsApiQueryParams = {
   filterBy?: VisitFilter[];
 };
 
-// Warning: (ae-missing-release-tag) "visitsApiRef" is part of the package's API, but it is missing a release tag (@alpha, @beta, @public, or @internal)
-//
 // @public (undocumented)
 export const visitsApiRef: ApiRef<VisitsApi>;
 
 // @public
 export const WelcomeTitle: ({
   language,
-}: WelcomeTitleLanguageProps) => JSX.Element;
+}: WelcomeTitleLanguageProps) => JSX_2.Element;
 
 // @public (undocumented)
 export type WelcomeTitleLanguageProps = {
   language?: string[];
 };
-
-// Warnings were encountered during analysis:
-//
-// src/homePageComponents/VisitedByType/Content.d.ts:9:5 - (ae-forgotten-export) The symbol "VisitedByTypeKind" needs to be exported by the entry point index.d.ts
 ```

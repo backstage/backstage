@@ -30,21 +30,21 @@ const useStyles = makeStyles(_theme => ({
 }));
 
 export const VisitList = ({
-  visits,
   title,
   detailType,
+  visits = [],
   numVisitsOpen = 3,
   numVisitsTotal = 8,
   collapsed = true,
   loading = false,
 }: {
-  visits: Array<Visit>;
   title: string;
   detailType: ItemDetailType;
+  visits?: Visit[];
   numVisitsOpen?: number;
   numVisitsTotal?: number;
-  collapsed: boolean;
-  loading: boolean;
+  collapsed?: boolean;
+  loading?: boolean;
 }) => {
   const classes = useStyles();
 
