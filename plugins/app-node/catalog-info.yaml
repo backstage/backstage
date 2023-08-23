@@ -1,0 +1,10 @@
+apiVersion: backstage.io/v1alpha1
+kind: Component
+metadata:
+  name: backstage-plugin-app-node
+  title: '@backstage/plugin-app-node'
+  description: Node.js library for the app plugin
+spec:
+  lifecycle: experimental
+  type: backstage-node-library
+  owner: maintainers
