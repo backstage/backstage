@@ -1,5 +1,11 @@
 # @backstage/plugin-catalog-backend
 
+## 1.12.2
+
+### Patch Changes
+
+- 85656d3ed8b2: Fix to the `limit` parameter on entity queries.
+
 ## 1.12.1
 
 ### Patch Changes
