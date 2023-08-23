@@ -28,6 +28,7 @@ import {
   FormControlLabel,
   FormGroup,
   FormLabel,
+  FormHelperText,
   Grid,
   makeStyles,
   Switch,
@@ -62,6 +63,8 @@ export interface FeedbackResponseDialogProps {
   feedbackDialogTitle?: ReactNode;
   open: boolean;
   onClose: () => void;
+  enableValidation?: boolean;
+  showCommentsTextBox?: boolean;
 }
 
 const useStyles = makeStyles({
@@ -77,18 +80,40 @@ export const FeedbackResponseDialog = (props: FeedbackResponseDialogProps) => {
     feedbackDialogTitle = 'Please provide feedback on what can be improved',
     open,
     onClose,
+    enableValidation = true,
+    showCommentsTextBox = true,
   } = props;
   const classes = useStyles();
   const errorApi = useApi(errorApiRef);
   const feedbackApi = useApi(entityFeedbackApiRef);
-  const [responseSelections, setResponseSelections] = useState(
-    Object.fromEntries(feedbackDialogResponses.map(r => [r.id, false])),
-  );
+  const [responseSelections, setResponseSelections] = useState(() => {
+    const initialSelections = Object.fromEntries(
+      feedbackDialogResponses.map(r => [r.id, false]),
+    );
+    if (!initialSelections.hasOwnProperty('other')) {
+      initialSelections.other = false;
+    }
+    return initialSelections;
+  });
   const [comments, setComments] = useState('');
   const [consent, setConsent] = useState(true);
+  const [errorMessage, setErrorMessage] = useState('');
 
   const [{ loading: saving }, saveResponse] = useAsyncFn(async () => {
     try {
+      if (
+        enableValidation &&
+        Object.keys(responseSelections).every(key => !responseSelections[key])
+      ) {
+        setErrorMessage('Please select at least one reason.');
+        return;
+      }
+
+      if (showCommentsTextBox && responseSelections.other && !comments) {
+        setErrorMessage('Please add some comments.');
+        return;
+      }
+
       await feedbackApi.recordResponse(stringifyEntityRef(entity), {
         comments,
         consent,
@@ -99,8 +124,18 @@ export const FeedbackResponseDialog = (props: FeedbackResponseDialogProps) => {
       onClose();
     } catch (e) {
       errorApi.post(e as ErrorApiError);
+      setErrorMessage('An error occurred while saving the response.');
     }
-  }, [comments, consent, entity, feedbackApi, onClose, responseSelections]);
+  }, [
+    comments,
+    consent,
+    entity,
+    feedbackApi,
+    enableValidation,
+    onClose,
+    responseSelections,
+    showCommentsTextBox,
+  ]);
 
   return (
     <Dialog open={open} onClose={() => !saving && onClose()}>
@@ -130,19 +165,32 @@ export const FeedbackResponseDialog = (props: FeedbackResponseDialogProps) => {
               />
             ))}
           </FormGroup>
+          {enableValidation &&
+          Object.keys(responseSelections).every(
+            key => !responseSelections[key],
+          ) ? (
+            <FormHelperText error>
+              *select the reason listed above
+            </FormHelperText>
+          ) : null}
         </FormControl>
-        <FormControl fullWidth>
-          <TextField
-            data-testid="feedback-response-dialog-comments-input"
-            disabled={saving}
-            label="Additional comments"
-            multiline
-            minRows={2}
-            onChange={e => setComments(e.target.value)}
-            variant="outlined"
-            value={comments}
-          />
-        </FormControl>
+        {showCommentsTextBox && responseSelections.other === true && (
+          <FormControl fullWidth>
+            <TextField
+              data-testid="feedback-response-dialog-comments-input"
+              disabled={saving}
+              label="Additional comments"
+              multiline
+              minRows={2}
+              onChange={e => setComments(e.target.value)}
+              variant="outlined"
+              value={comments}
+            />
+            {!comments && (
+              <FormHelperText error>*add some comments</FormHelperText>
+            )}
+          </FormControl>
+        )}
         <Typography className={classes.contactConsent}>
           Can we reach out to you for more info?
           <Grid component="label" container alignItems="center" spacing={1}>
@@ -165,7 +213,15 @@ export const FeedbackResponseDialog = (props: FeedbackResponseDialogProps) => {
         <Button
           color="primary"
           data-testid="feedback-response-dialog-submit-button"
-          disabled={saving}
+          disabled={
+            saving ||
+            (enableValidation &&
+              Object.keys(responseSelections).every(
+                key => !responseSelections[key],
+              )) ||
+            (showCommentsTextBox && responseSelections.other && !comments) ||
+            errorMessage !== ''
+          }
           onClick={saveResponse}
         >
           Submit
