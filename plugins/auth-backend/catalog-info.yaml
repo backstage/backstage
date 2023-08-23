@@ -1,0 +1,10 @@
+apiVersion: backstage.io/v1alpha1
+kind: Component
+metadata:
+  name: backstage-plugin-auth-backend
+  title: '@backstage/plugin-auth-backend'
+  description: A Backstage backend plugin that handles authentication
+spec:
+  lifecycle: experimental
+  type: backstage-backend-plugin
+  owner: maintainers

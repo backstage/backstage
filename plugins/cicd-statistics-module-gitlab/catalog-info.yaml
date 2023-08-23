@@ -1,0 +1,10 @@
+apiVersion: backstage.io/v1alpha1
+kind: Component
+metadata:
+  name: backstage-plugin-cicd-statistics-module-gitlab
+  title: '@backstage/plugin-cicd-statistics-module-gitlab'
+  description: CI/CD Statistics plugin module; Gitlab CICD
+spec:
+  lifecycle: experimental
+  type: backstage-frontend-plugin-module
+  owner: maintainers
