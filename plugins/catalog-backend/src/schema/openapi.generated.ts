@@ -1310,7 +1310,7 @@ export const spec = {
                     $ref: '#/components/schemas/LocationInput',
                   },
                 },
-                required: ['catalogFileName', 'location'],
+                required: ['location'],
               },
             },
           },
