@@ -17085,12 +17085,12 @@ __metadata:
   linkType: hard
 
 "@types/d3-zoom@npm:^3.0.1":
-  version: 3.0.3
-  resolution: "@types/d3-zoom@npm:3.0.3"
+  version: 3.0.4
+  resolution: "@types/d3-zoom@npm:3.0.4"
   dependencies:
     "@types/d3-interpolate": "*"
     "@types/d3-selection": "*"
-  checksum: 1c828538e2b04c47f659ead552824bed1c545dd1934f38abfec95f4a3c1cb4eaf7e107959ebd05a3dfec0166fa98677037ede6f633383c6502b1a05eaeb1d418
+  checksum: 6330b8411822b979ab0fd5a7a7755295377b4dfc61fd8f925d97e5b388e3dd604b455c0009b0eda3320c14c4ea367f740a04991a71d35befdca5f75218492a68
   languageName: node
   linkType: hard
 
