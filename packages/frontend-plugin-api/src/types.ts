@@ -97,6 +97,7 @@ export interface ExtensionInstanceParameters {
   at: string;
   extension: Extension<unknown>;
   config?: unknown;
+  disabled?: boolean;
 }
 
 /** @public */
