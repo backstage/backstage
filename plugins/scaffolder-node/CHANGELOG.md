@@ -1,5 +1,18 @@
 # @backstage/plugin-scaffolder-node
 
+## 0.2.2
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/integration@1.6.2
+  - @backstage/backend-common@0.19.4
+  - @backstage/backend-plugin-api@0.6.2
+  - @backstage/catalog-model@1.4.1
+  - @backstage/errors@1.2.1
+  - @backstage/types@1.1.0
+  - @backstage/plugin-scaffolder-common@1.4.0
+
 ## 0.2.1
 
 ### Patch Changes
