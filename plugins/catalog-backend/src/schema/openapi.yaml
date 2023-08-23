@@ -20,24 +20,28 @@ components:
       name: kind
       in: path
       required: true
+      allowReserved: true
       schema:
         type: string
     namespace:
       name: namespace
       in: path
       required: true
+      allowReserved: true
       schema:
         type: string
     name:
       name: name
       in: path
       required: true
+      allowReserved: true
       schema:
         type: string
     uid:
       name: uid
       in: path
       required: true
+      allowReserved: true
       schema:
         type: string
     cursor:
@@ -45,6 +49,7 @@ components:
       in: query
       description: Cursor to a set page of results.
       required: false
+      allowReserved: true
       schema:
         type: string
         minLength: 1
@@ -53,6 +58,7 @@ components:
       in: query
       description: Pointer to the previous page of results.
       required: false
+      allowReserved: true
       schema:
         type: string
         minLength: 1
@@ -71,6 +77,7 @@ components:
       in: query
       description: Filter for just the entities defined by this filter.
       required: false
+      allowReserved: true
       schema:
         type: array
         items:
@@ -80,6 +87,7 @@ components:
       in: query
       description: Number of records to skip in the query page.
       required: false
+      allowReserved: true
       schema:
         type: integer
         minimum: 0
@@ -88,9 +96,10 @@ components:
       in: query
       description: Number of records to return in the response.
       required: false
+      allowReserved: true
       schema:
         type: integer
-        minimum: 1
+        minimum: 0
     orderField:
       name: orderField
       in: query
@@ -788,12 +797,14 @@ paths:
           in: query
           description: Text search term.
           required: false
+          allowReserved: true
           schema:
             type: string
         - name: fullTextFilterFields
           in: query
           description: A comma separated list of fields to sort returned results by.
           required: false
+          allowReserved: true
           schema:
             type: array
             items:
@@ -818,6 +829,7 @@ paths:
         - in: query
           name: facet
           required: true
+          allowReserved: true
           schema:
             type: array
             items:
@@ -853,6 +865,7 @@ paths:
         - in: query
           name: dryRun
           required: false
+          allowReserved: true
           schema:
             type: string
       requestBody:
@@ -908,6 +921,7 @@ paths:
         - in: path
           name: id
           required: true
+          allowReserved: true
           schema:
             type: string
     delete:
@@ -923,6 +937,7 @@ paths:
         - in: path
           name: id
           required: true
+          allowReserved: true
           schema:
             type: string
   /analyze-location:
