@@ -80,7 +80,7 @@ export const FeedbackResponseDialog = (props: FeedbackResponseDialogProps) => {
     feedbackDialogTitle = 'Please provide feedback on what can be improved',
     open,
     onClose,
-    enableValidation = true,
+    enableValidation = false,
     showCommentsTextBox = true,
   } = props;
   const classes = useStyles();
@@ -101,9 +101,13 @@ export const FeedbackResponseDialog = (props: FeedbackResponseDialogProps) => {
 
   const [{ loading: saving }, saveResponse] = useAsyncFn(async () => {
     try {
+      setErrorMessage(''); // Clear any previous error message
+
       if (
         enableValidation &&
-        Object.keys(responseSelections).every(key => !responseSelections[key])
+        Object.keys(responseSelections).every(key =>
+          key !== 'other' ? !responseSelections[key] : true,
+        )
       ) {
         setErrorMessage('Please select at least one reason.');
         return;
@@ -124,7 +128,6 @@ export const FeedbackResponseDialog = (props: FeedbackResponseDialogProps) => {
       onClose();
     } catch (e) {
       errorApi.post(e as ErrorApiError);
-      setErrorMessage('An error occurred while saving the response.');
     }
   }, [
     comments,
@@ -166,8 +169,8 @@ export const FeedbackResponseDialog = (props: FeedbackResponseDialogProps) => {
             ))}
           </FormGroup>
           {enableValidation &&
-          Object.keys(responseSelections).every(
-            key => !responseSelections[key],
+          Object.keys(responseSelections).every(key =>
+            key !== 'other' ? !responseSelections[key] : true,
           ) ? (
             <FormHelperText error>
               *select the reason listed above
@@ -186,7 +189,7 @@ export const FeedbackResponseDialog = (props: FeedbackResponseDialogProps) => {
               variant="outlined"
               value={comments}
             />
-            {!comments && (
+            {showCommentsTextBox && !comments && (
               <FormHelperText error>*add some comments</FormHelperText>
             )}
           </FormControl>
@@ -213,15 +216,7 @@ export const FeedbackResponseDialog = (props: FeedbackResponseDialogProps) => {
         <Button
           color="primary"
           data-testid="feedback-response-dialog-submit-button"
-          disabled={
-            saving ||
-            (enableValidation &&
-              Object.keys(responseSelections).every(
-                key => !responseSelections[key],
-              )) ||
-            (showCommentsTextBox && responseSelections.other && !comments) ||
-            errorMessage !== ''
-          }
+          disabled={saving || errorMessage !== ''}
           onClick={saveResponse}
         >
           Submit
