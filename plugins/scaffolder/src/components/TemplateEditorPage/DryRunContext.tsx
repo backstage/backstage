@@ -26,7 +26,7 @@ import React, {
   useRef,
   useState,
 } from 'react';
-import * as zip from "@zip.js/zip.js";
+import JSZip from 'jszip';
 import {
   scaffolderApiRef,
   ScaffolderDryRunResponse,
@@ -198,33 +198,28 @@ export function useDryRun(): DryRun {
 }
 
 async function createZipDownload(directoryContents: { path: string; base64Content: string; executable: boolean; }[], name: string) {
-  // needs zip.js
-
-  // Creates a BlobWriter object where the zip content will be written.
-  const zipFileWriter = new zip.BlobWriter();
-
-  // Creates a ZipWriter object writing data via `zipFileWriter`, adds the entry
-  const zipWriter = new zip.ZipWriter(zipFileWriter);
+  const zip = new JSZip();
 
   for (const d of directoryContents) {
     // Decode text content from base64 to ascii
     const converted = atob(d.base64Content);
     
-    // Creates a TextReader object storing the text of the entry to add in the zip (i.e. "Hello world!").
-    const fileReader = new zip.TextReader(converted);
-
-    await zipWriter.add(d.path, fileReader);
+    // add folder/file to zip
+    await zip.file(d.path, converted);
   }
 
-  // Closes the writer.
-  await zipWriter.close();
+  zip.generateAsync({type:"blob"}).then((blob) => { 
+      saveAs(blob, name);
+  }, (err) => {
+      throw new Error(err);
+  });
+}
 
-  // Retrieves the Blob object containing the zip content into `zipFileBlob`
-  const zipFileBlob = await zipFileWriter.getData();
 
-  // Download zip
+// Download zip
+function saveAs(blob: Blob, name: string) {
   const a = document.createElement('a');
-  a.href = URL.createObjectURL(zipFileBlob);
+  a.href = URL.createObjectURL(blob);
   a.download = `dry-run-${name}.zip`;
   a.click();
   URL.revokeObjectURL(a.href);
