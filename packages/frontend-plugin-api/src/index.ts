@@ -24,7 +24,7 @@ export {
   createExtension,
   coreExtensionData,
   createPlugin,
-  type ExtensionInstanceParameters as ExtensionInstanceConfig,
+  type ExtensionInstanceParameters,
   type BackstagePlugin,
   type Extension,
   type AnyExtensionDataMap,

@@ -17,7 +17,7 @@ export interface BackstagePlugin {
   // (undocumented)
   $$type: 'backstage-plugin';
   // (undocumented)
-  defaultExtensionInstances: ExtensionInstanceConfig[];
+  defaultExtensionInstances: ExtensionInstanceParameters[];
   // (undocumented)
   id: string;
 }
@@ -25,7 +25,7 @@ export interface BackstagePlugin {
 // @public (undocumented)
 export interface BackstagePluginOptions {
   // (undocumented)
-  defaultExtensionInstances?: ExtensionInstanceConfig[];
+  defaultExtensionInstances?: ExtensionInstanceParameters[];
   // (undocumented)
   id: string;
 }
@@ -126,11 +126,13 @@ export type ExtensionDataValue<TData extends AnyExtensionDataMap> = {
 };
 
 // @public (undocumented)
-export interface ExtensionInstanceConfig {
+export interface ExtensionInstanceParameters {
   // (undocumented)
   at: string;
   // (undocumented)
   config?: unknown;
+  // (undocumented)
+  disabled?: boolean;
   // (undocumented)
   extension: Extension<unknown>;
   // (undocumented)
