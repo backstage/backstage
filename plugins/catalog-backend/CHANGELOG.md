@@ -1,5 +1,11 @@
 # @backstage/plugin-catalog-backend
 
+## 1.12.3
+
+### Patch Changes
+
+- b0dbcb3eed4e: Fix issue with `catalogFileName` not being a required property for `/analyze-location`
+
 ## 1.12.2
 
 ### Patch Changes
