@@ -14,26 +14,7 @@
  * limitations under the License.
  */
 
-import React from 'react';
-import { VisitList } from '../../components/VisitList';
-import { useContext } from './Context';
-/**
- * Display recently visited pages for the homepage
- * @public
- */
-export const RecentlyVisited = () => {
-  const { collapsed, numVisitsOpen, numVisitsTotal, visits, loading } =
-    useContext();
-
-  return (
-    <VisitList
-      visits={visits}
-      title="Recently visited"
-      detailType="time-ago"
-      collapsed={collapsed}
-      numVisitsOpen={numVisitsOpen}
-      numVisitsTotal={numVisitsTotal}
-      loading={loading}
-    />
-  );
-};
+export { Content } from './Content';
+export { Actions } from './Actions';
+export { ContextProvider } from './Context';
+export type { VisitedByTypeProps } from './Content';

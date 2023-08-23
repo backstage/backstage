@@ -15,12 +15,22 @@
  */
 
 import React from 'react';
-import { RecentlyVisited } from './RecentlyVisited';
-import { renderInTestApp } from '@backstage/test-utils';
+import { VisitList } from '../../components/VisitList';
+import { useContext } from './Context';
 
-describe('<RecentlyVisited/>', () => {
-  it('should render', async () => {
-    const { getByText } = await renderInTestApp(<RecentlyVisited />);
-    expect(getByText('RecentlyVisited')).toBeInTheDocument();
-  });
-});
+export const VisitedByType = () => {
+  const { collapsed, numVisitsOpen, numVisitsTotal, visits, loading, kind } =
+    useContext();
+
+  return (
+    <VisitList
+      visits={visits}
+      title={kind === 'top' ? 'Top Visited' : 'Recently Visited'}
+      detailType={kind === 'top' ? 'hits' : 'time-ago'}
+      collapsed={collapsed}
+      numVisitsOpen={numVisitsOpen}
+      numVisitsTotal={numVisitsTotal}
+      loading={loading}
+    />
+  );
+};
