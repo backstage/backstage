@@ -17,8 +17,6 @@
 import {
   DEFAULT_NAMESPACE,
   Entity,
-  areGroupEntities,
-  areUserEntities,
   isGroupEntity,
   stringifyEntityRef,
 } from '@backstage/catalog-model';
@@ -51,6 +49,7 @@ import {
   TeamTransformer,
   UserTransformer,
 } from '../lib';
+import { areGroupEntities, areUserEntities } from '../lib/guards';
 
 /**
  * Extracts teams and users out of a multiple GitHub orgs namespaced per org.

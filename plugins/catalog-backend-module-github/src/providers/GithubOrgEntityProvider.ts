@@ -19,8 +19,6 @@ import {
   ANNOTATION_LOCATION,
   ANNOTATION_ORIGIN_LOCATION,
   Entity,
-  areGroupEntities,
-  areUserEntities,
   isGroupEntity,
 } from '@backstage/catalog-model';
 import { Config } from '@backstage/config';
@@ -71,6 +69,7 @@ import {
 } from '../lib/github';
 import { assignGroupsToUsers, buildOrgHierarchy } from '../lib/org';
 import { parseGithubOrgUrl, splitTeamSlug } from '../lib/util';
+import { areGroupEntities, areUserEntities } from '../lib/guards';
 
 /**
  * Options for {@link GithubOrgEntityProvider}.

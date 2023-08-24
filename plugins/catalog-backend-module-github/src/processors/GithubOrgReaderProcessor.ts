@@ -37,7 +37,7 @@ import {
   getOrganizationUsers,
   parseGithubOrgUrl,
 } from '../lib';
-import { areGroupEntities, areUserEntities } from '@backstage/catalog-model';
+import { areGroupEntities, areUserEntities } from '../lib/guards';
 
 type GraphQL = typeof graphql;
 

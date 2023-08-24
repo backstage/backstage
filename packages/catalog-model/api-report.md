@@ -53,16 +53,6 @@ export { ApiEntityV1alpha1 };
 // @public
 export const apiEntityV1alpha1Validator: KindValidator;
 
-// @public (undocumented)
-export function areGroupEntities(
-  entities: Entity[],
-): entities is GroupEntityV1alpha1[];
-
-// @public (undocumented)
-export function areUserEntities(
-  entities: Entity[],
-): entities is UserEntityV1alpha1[];
-
 // @public
 export class CommonValidatorFunctions {
   static isJsonSafe(value: unknown): boolean;

@@ -53,14 +53,6 @@ export function isGroupEntity(entity: Entity): entity is GroupEntity {
 /**
  * @public
  */
-export function areGroupEntities(
-  entities: Entity[],
-): entities is GroupEntity[] {
-  return entities.every(e => isGroupEntity(e));
-}
-/**
- * @public
- */
 export function isLocationEntity(entity: Entity): entity is LocationEntity {
   return entity.kind.toLocaleUpperCase('en-US') === 'LOCATION';
 }
@@ -81,10 +73,4 @@ export function isSystemEntity(entity: Entity): entity is SystemEntity {
  */
 export function isUserEntity(entity: Entity): entity is UserEntity {
   return entity.kind.toLocaleUpperCase('en-US') === 'USER';
-}
-/**
- * @public
- */
-export function areUserEntities(entities: Entity[]): entities is UserEntity[] {
-  return entities.every(e => isUserEntity(e));
 }

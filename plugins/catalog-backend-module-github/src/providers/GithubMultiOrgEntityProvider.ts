@@ -18,8 +18,6 @@ import { TaskRunner } from '@backstage/backend-tasks';
 import {
   ANNOTATION_LOCATION,
   ANNOTATION_ORIGIN_LOCATION,
-  areGroupEntities,
-  areUserEntities,
   DEFAULT_NAMESPACE,
   Entity,
   isGroupEntity,
@@ -80,6 +78,7 @@ import {
   getOrganizationTeamsFromUsers,
 } from '../lib/github';
 import { splitTeamSlug } from '../lib/util';
+import { areGroupEntities, areUserEntities } from '../lib/guards';
 
 /**
  * Options for {@link GithubMultiOrgEntityProvider}.
