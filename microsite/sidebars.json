@@ -1,6 +1,7 @@
 {
   "releases": {
     "Release Notes": [
+      "releases/v1.17.0",
       "releases/v1.16.0",
       "releases/v1.15.0",
       "releases/v1.14.0",
@@ -331,6 +332,7 @@
       "deployment/k8s",
       "deployment/heroku",
       "deployment/koyeb",
+      "deployment/flightcontrol",
       {
         "type": "category",
         "label": "Using Backstage Deploy (alpha)",

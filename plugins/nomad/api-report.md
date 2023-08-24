@@ -7,13 +7,14 @@
 
 import { BackstagePlugin } from '@backstage/core-plugin-api';
 import { Entity } from '@backstage/catalog-model';
+import { JSX as JSX_2 } from 'react';
 import { RouteRef } from '@backstage/core-plugin-api';
 
 // @public
-export const EntityNomadAllocationListTable: () => JSX.Element;
+export const EntityNomadAllocationListTable: () => JSX_2.Element;
 
 // @public
-export const EntityNomadJobVersionListCard: () => JSX.Element | null;
+export const EntityNomadJobVersionListCard: () => JSX_2.Element | null;
 
 // @public (undocumented)
 export const isNomadAllocationsAvailable: (entity: Entity) => boolean;

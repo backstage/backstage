@@ -26,7 +26,17 @@ interface StartBackendOptions {
 }
 
 export async function startBackend(options: StartBackendOptions) {
-  if (process.env.EXPERIMENTAL_BACKEND_START) {
+  const hasDev = await fs.pathExists(paths.resolveTarget('dev'));
+  if (hasDev) {
+    const waitForExit = await startBackendExperimental({
+      entry: 'dev/index',
+      checksEnabled: false, // not supported
+      inspectEnabled: options.inspectEnabled,
+      inspectBrkEnabled: options.inspectBrkEnabled,
+    });
+
+    await waitForExit();
+  } else if (process.env.EXPERIMENTAL_BACKEND_START) {
     const waitForExit = await startBackendExperimental({
       entry: 'src/index',
       checksEnabled: false, // not supported

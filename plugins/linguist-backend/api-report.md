@@ -28,6 +28,11 @@ export function createRouter(
 ): Promise<express.Router>;
 
 // @public (undocumented)
+export function createRouterFromConfig(
+  routerOptions: RouterOptions,
+): Promise<express.Router>;
+
+// @public (undocumented)
 export interface LinguistBackendApi {
   // (undocumented)
   getEntityLanguages(entityRef: string): Promise<Languages>;
@@ -36,23 +41,7 @@ export interface LinguistBackendApi {
 }
 
 // @public
-export const linguistPlugin: (options: LinguistPluginOptions) => BackendFeature;
-
-// @public
-export interface LinguistPluginOptions {
-  // (undocumented)
-  age?: HumanDuration;
-  // (undocumented)
-  batchSize?: number;
-  // (undocumented)
-  kind?: string[];
-  // (undocumented)
-  linguistJsOptions?: Record<string, unknown>;
-  // (undocumented)
-  schedule?: TaskScheduleDefinition;
-  // (undocumented)
-  useSourceLocation?: boolean;
-}
+export const linguistPlugin: () => BackendFeature;
 
 // @public
 export class LinguistTagsProcessor implements CatalogProcessor {
@@ -104,6 +93,8 @@ export interface PluginOptions {
 
 // @public (undocumented)
 export interface RouterOptions {
+  // (undocumented)
+  config?: Config;
   // (undocumented)
   database: PluginDatabaseManager;
   // (undocumented)

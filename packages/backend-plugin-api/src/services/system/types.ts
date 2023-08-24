@@ -14,6 +14,8 @@
  * limitations under the License.
  */
 
+import { BackendFeature } from '../../types';
+
 /**
  * TODO
  *
@@ -51,9 +53,7 @@ export type ServiceRef<
 export interface ServiceFactory<
   TService = unknown,
   TScope extends 'plugin' | 'root' = 'plugin' | 'root',
-> {
-  $$type: '@backstage/ServiceFactory';
-
+> extends BackendFeature {
   service: ServiceRef<TService, TScope>;
 }
 
@@ -192,20 +192,6 @@ export function createServiceFactory<
   config: (options?: TOpts) => RootServiceFactoryConfig<TService, TImpl, TDeps>,
 ): (options?: TOpts) => ServiceFactory<TService, 'root'>;
 /**
- * Creates a root scoped service factory with required options.
- *
- * @public
- * @param config - The service factory configuration.
- */
-export function createServiceFactory<
-  TService,
-  TImpl extends TService,
-  TDeps extends { [name in string]: ServiceRef<unknown> },
-  TOpts extends object | undefined = undefined,
->(
-  config: (options: TOpts) => RootServiceFactoryConfig<TService, TImpl, TDeps>,
-): (options: TOpts) => ServiceFactory<TService, 'root'>;
-/**
  * Creates a plugin scoped service factory without options.
  *
  * @public
@@ -237,25 +223,6 @@ export function createServiceFactory<
     options?: TOpts,
   ) => PluginServiceFactoryConfig<TService, TContext, TImpl, TDeps>,
 ): (options?: TOpts) => ServiceFactory<TService, 'plugin'>;
-/**
- * Creates a plugin scoped service factory with required options.
- *
- * @public
- * @param config - The service factory configuration.
- */
-export function createServiceFactory<
-  TService,
-  TImpl extends TService,
-  TDeps extends { [name in string]: ServiceRef<unknown> },
-  TContext = undefined,
-  TOpts extends object | undefined = undefined,
->(
-  config:
-    | PluginServiceFactoryConfig<TService, TContext, TImpl, TDeps>
-    | ((
-        options: TOpts,
-      ) => PluginServiceFactoryConfig<TService, TContext, TImpl, TDeps>),
-): (options: TOpts) => ServiceFactory<TService, 'plugin'>;
 export function createServiceFactory<
   TService,
   TImpl extends TService,
@@ -281,7 +248,7 @@ export function createServiceFactory<
     if (anyConf.service.scope === 'root') {
       const c = anyConf as RootServiceFactoryConfig<TService, TImpl, TDeps>;
       return {
-        $$type: '@backstage/ServiceFactory',
+        $$type: '@backstage/BackendFeature',
         version: 'v1',
         service: c.service,
         deps: c.deps,
@@ -295,7 +262,7 @@ export function createServiceFactory<
       TDeps
     >;
     return {
-      $$type: '@backstage/ServiceFactory',
+      $$type: '@backstage/BackendFeature',
       version: 'v1',
       service: c.service,
       ...('createRootContext' in c

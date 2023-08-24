@@ -1,5 +1,11 @@
 # @backstage/plugin-api-docs-module-protoc-gen-doc
 
+## 0.1.3-next.0
+
+### Patch Changes
+
+- 482bb5c0bbf8: Moved `@types/react` to be a regular dependency
+
 ## 0.1.2
 
 ### Patch Changes

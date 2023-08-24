@@ -25,7 +25,7 @@ import {
  * @public
  */
 export interface Backend {
-  add(feature: BackendFeature): void;
+  add(feature: BackendFeature | (() => BackendFeature)): void;
   start(): Promise<void>;
   stop(): Promise<void>;
 }
@@ -34,7 +34,7 @@ export interface Backend {
  * @public
  */
 export interface CreateSpecializedBackendOptions {
-  services: ServiceFactoryOrFunction[];
+  defaultServiceFactories: ServiceFactoryOrFunction[];
 }
 
 export interface ServiceHolder {

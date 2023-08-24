@@ -14,11 +14,7 @@
  * limitations under the License.
  */
 
-import {
-  getAzureFileFetchUrl,
-  getAzureDownloadUrl,
-  getAzureRequestOptions,
-} from './core';
+import { getAzureFileFetchUrl, getAzureDownloadUrl } from './core';
 import {
   AccessToken,
   ClientSecretCredential,
@@ -44,66 +40,6 @@ MockedManagedIdentityCredential.prototype.getToken.mockImplementation(() =>
 );
 
 describe('azure core', () => {
-  describe('getAzureRequestOptions', () => {
-    it('should not add authorization header when not using token or credential', async () => {
-      expect(await getAzureRequestOptions({ host: '' })).toEqual(
-        expect.objectContaining({
-          headers: expect.not.objectContaining({
-            Authorization: expect.anything(),
-          }),
-        }),
-      );
-    });
-
-    it('should add authorization header when using a personal access token', async () => {
-      expect(
-        await getAzureRequestOptions({ host: '', token: '0123456789' }),
-      ).toEqual(
-        expect.objectContaining({
-          headers: expect.objectContaining({
-            Authorization: 'Basic OjAxMjM0NTY3ODk=',
-          }),
-        }),
-      );
-    });
-
-    it('should add authorization header when using a client secret', async () => {
-      expect(
-        await getAzureRequestOptions({
-          host: '',
-          credential: {
-            clientId: 'fake-id',
-            clientSecret: 'fake-secret',
-            tenantId: 'fake-tenant',
-          },
-        }),
-      ).toEqual(
-        expect.objectContaining({
-          headers: expect.objectContaining({
-            Authorization: 'Bearer fake-client-secret-token',
-          }),
-        }),
-      );
-    });
-
-    it('should add authorization header when using a managed identity', async () => {
-      expect(
-        await getAzureRequestOptions({
-          host: '',
-          credential: {
-            clientId: 'fake-id',
-          },
-        }),
-      ).toEqual(
-        expect.objectContaining({
-          headers: expect.objectContaining({
-            Authorization: 'Bearer fake-managed-identity-token',
-          }),
-        }),
-      );
-    });
-  });
-
   describe('getAzureFileFetchUrl', () => {
     it.each([
       {

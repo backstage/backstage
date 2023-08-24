@@ -8,6 +8,7 @@
 import { ApiRef } from '@backstage/core-plugin-api';
 import { BackstagePlugin } from '@backstage/core-plugin-api';
 import { CardExtensionProps } from '@backstage/plugin-home-react';
+import { JSX as JSX_2 } from 'react';
 import { default as React_2 } from 'react';
 import { ResultHighlight } from '@backstage/plugin-search-common';
 import { SearchResultListItemExtensionProps } from '@backstage/plugin-search-react';
@@ -15,7 +16,7 @@ import { SearchResultListItemExtensionProps } from '@backstage/plugin-search-rea
 // @public
 export const HomePageStackOverflowQuestions: (
   props: CardExtensionProps<StackOverflowQuestionsContentProps>,
-) => JSX.Element;
+) => JSX_2.Element;
 
 // @public (undocumented)
 export type StackOverflowApi = {
@@ -28,7 +29,7 @@ export type StackOverflowApi = {
 export const stackOverflowApiRef: ApiRef<StackOverflowApi>;
 
 // @public
-export const StackOverflowIcon: () => JSX.Element;
+export const StackOverflowIcon: () => React_2.JSX.Element;
 
 // @public
 export const stackOverflowPlugin: BackstagePlugin<{}, {}, {}>;

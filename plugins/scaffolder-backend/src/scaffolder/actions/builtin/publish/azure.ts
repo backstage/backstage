@@ -15,10 +15,17 @@
  */
 
 import { InputError } from '@backstage/errors';
-import { ScmIntegrationRegistry } from '@backstage/integration';
+import {
+  DefaultAzureDevOpsCredentialsProvider,
+  ScmIntegrationRegistry,
+} from '@backstage/integration';
 import { initRepoAndPush } from '../helpers';
 import { GitRepositoryCreateOptions } from 'azure-devops-node-api/interfaces/GitInterfaces';
-import { getPersonalAccessTokenHandler, WebApi } from 'azure-devops-node-api';
+import {
+  getBearerHandler,
+  getPersonalAccessTokenHandler,
+  WebApi,
+} from 'azure-devops-node-api';
 import { getRepoSourceDirectory, parseRepoUrl } from './util';
 import { createTemplateAction } from '@backstage/plugin-scaffolder-node';
 import { Config } from '@backstage/config';
@@ -135,22 +142,23 @@ export function createPublishAzureAction(options: {
         );
       }
 
-      const integrationConfig = integrations.azure.byHost(host);
+      const url = `https://${host}/${organization}`;
+      const credentialProvider =
+        DefaultAzureDevOpsCredentialsProvider.fromIntegrations(integrations);
+      const credentials = await credentialProvider.getCredentials({ url: url });
 
-      if (!integrationConfig) {
+      if (credentials === undefined && ctx.input.token === undefined) {
         throw new InputError(
-          `No matching integration configuration for host ${host}, please check your integrations config`,
+          `No credentials provided ${url}, please check your integrations config`,
         );
       }
 
-      if (!integrationConfig.config.token && !ctx.input.token) {
-        throw new InputError(`No token provided for Azure Integration ${host}`);
-      }
+      const authHandler =
+        ctx.input.token || credentials?.type === 'pat'
+          ? getPersonalAccessTokenHandler(ctx.input.token ?? credentials!.token)
+          : getBearerHandler(credentials!.token);
 
-      const token = ctx.input.token ?? integrationConfig.config.token!;
-      const authHandler = getPersonalAccessTokenHandler(token);
-
-      const webApi = new WebApi(`https://${host}/${organization}`, authHandler);
+      const webApi = new WebApi(url, authHandler);
       const client = await webApi.getGitApi();
       const createOptions: GitRepositoryCreateOptions = { name: repo };
       const returnedRepo = await client.createRepository(createOptions, owner);
@@ -187,14 +195,19 @@ export function createPublishAzureAction(options: {
           : config.getOptionalString('scaffolder.defaultAuthor.email'),
       };
 
+      const auth =
+        ctx.input.token || credentials?.type === 'pat'
+          ? {
+              username: 'notempty',
+              password: ctx.input.token ?? credentials!.token,
+            }
+          : { token: credentials!.token };
+
       const commitResult = await initRepoAndPush({
         dir: getRepoSourceDirectory(ctx.workspacePath, ctx.input.sourcePath),
         remoteUrl,
         defaultBranch,
-        auth: {
-          username: 'notempty',
-          password: token,
-        },
+        auth: auth,
         logger: ctx.logger,
         commitMessage: gitCommitMessage
           ? gitCommitMessage

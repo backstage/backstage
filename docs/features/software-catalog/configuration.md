@@ -123,3 +123,14 @@ source that should be mirrored into Backstage. To make Backstage a mirror of
 this remote source, users cannot also register new entities with e.g. the
 [catalog-import](https://github.com/backstage/backstage/tree/master/plugins/catalog-import)
 plugin.
+
+## Clean up orphaned entities
+
+In short entities can become orphaned through multiple means, such as when a catalog-info YAML file is moved from one place to another in the version control system without updating the registration in the catalog. For safety reasons the default behavior is to just tag the orphaned entities, and keep them around. You can read more about orphaned entities [here](life-of-an-entity.md#orphaning).
+
+However, if you do with to automatically remove the orphaned entities, you can use the following configuration, and everything with an orphaned entity tag will be eventually deleted.
+
+```
+catalog:
+  orphanStrategy: delete
+```

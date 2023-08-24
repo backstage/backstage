@@ -16,7 +16,12 @@
 import React from 'react';
 import { screen, fireEvent, waitFor } from '@testing-library/react';
 import { ShortcutForm } from './ShortcutForm';
-import { renderInTestApp } from '@backstage/test-utils';
+import { DefaultShortcutsApi, shortcutsApiRef } from './api';
+import {
+  renderInTestApp,
+  TestApiProvider,
+  MockStorageApi,
+} from '@backstage/test-utils';
 
 describe('ShortcutForm', () => {
   const props = {
@@ -25,7 +30,15 @@ describe('ShortcutForm', () => {
   };
 
   it('displays validation messages', async () => {
-    await renderInTestApp(<ShortcutForm {...props} />);
+    await renderInTestApp(
+      <TestApiProvider
+        apis={[
+          [shortcutsApiRef, new DefaultShortcutsApi(MockStorageApi.create())],
+        ]}
+      >
+        <ShortcutForm {...props} />
+      </TestApiProvider>,
+    );
 
     const urlInput = screen.getByPlaceholderText('Enter a URL');
     const titleInput = screen.getByPlaceholderText('Enter a display name');
@@ -43,8 +56,47 @@ describe('ShortcutForm', () => {
     });
   });
 
+  it('displays duplicate validation messages for title and URL', async () => {
+    const mockShortcutApi = new DefaultShortcutsApi(MockStorageApi.create());
+    mockShortcutApi.add({ title: 'Existing Title', url: '/existing-url' });
+
+    await renderInTestApp(
+      <TestApiProvider apis={[[shortcutsApiRef, mockShortcutApi]]}>
+        <ShortcutForm {...props} />
+      </TestApiProvider>,
+    );
+
+    const urlInput = screen.getByPlaceholderText('Enter a URL');
+    const titleInput = screen.getByPlaceholderText('Enter a display name');
+
+    fireEvent.change(urlInput, { target: { value: '/existing-url' } });
+    fireEvent.change(titleInput, { target: { value: 'Existing Title' } });
+
+    fireEvent.click(screen.getByText('Save'));
+
+    await waitFor(() => {
+      expect(
+        screen.getByText('A shortcut with this title already exists'),
+      ).toBeInTheDocument();
+      expect(
+        screen.getByText('A shortcut with this url already exists'),
+      ).toBeInTheDocument();
+    });
+
+    expect(props.onSave).not.toHaveBeenCalled();
+    expect(props.onClose).not.toHaveBeenCalled();
+  });
+
   it('allows external links', async () => {
-    await renderInTestApp(<ShortcutForm allowExternalLinks {...props} />);
+    await renderInTestApp(
+      <TestApiProvider
+        apis={[
+          [shortcutsApiRef, new DefaultShortcutsApi(MockStorageApi.create())],
+        ]}
+      >
+        <ShortcutForm allowExternalLinks {...props} />
+      </TestApiProvider>,
+    );
 
     const urlInput = screen.getByPlaceholderText('Enter a URL');
     const titleInput = screen.getByPlaceholderText('Enter a display name');
@@ -66,7 +118,15 @@ describe('ShortcutForm', () => {
   });
 
   it('allows relative links when external links are enabled', async () => {
-    await renderInTestApp(<ShortcutForm allowExternalLinks {...props} />);
+    await renderInTestApp(
+      <TestApiProvider
+        apis={[
+          [shortcutsApiRef, new DefaultShortcutsApi(MockStorageApi.create())],
+        ]}
+      >
+        <ShortcutForm allowExternalLinks {...props} />
+      </TestApiProvider>,
+    );
 
     const urlInput = screen.getByPlaceholderText('Enter a URL');
     const titleInput = screen.getByPlaceholderText('Enter a display name');
@@ -89,10 +149,17 @@ describe('ShortcutForm', () => {
 
   it('calls the save handler', async () => {
     await renderInTestApp(
-      <ShortcutForm
-        {...props}
-        formValues={{ url: '/some-url', title: 'some title' }}
-      />,
+      <TestApiProvider
+        apis={[
+          [shortcutsApiRef, new DefaultShortcutsApi(MockStorageApi.create())],
+        ]}
+      >
+        <ShortcutForm
+          {...props}
+          formValues={{ url: '/some-url', title: 'some title' }}
+        />
+        ,
+      </TestApiProvider>,
     );
 
     fireEvent.click(screen.getByText('Save'));
@@ -105,7 +172,15 @@ describe('ShortcutForm', () => {
   });
 
   it('calls the close handler', async () => {
-    await renderInTestApp(<ShortcutForm {...props} />);
+    await renderInTestApp(
+      <TestApiProvider
+        apis={[
+          [shortcutsApiRef, new DefaultShortcutsApi(MockStorageApi.create())],
+        ]}
+      >
+        <ShortcutForm {...props} />
+      </TestApiProvider>,
+    );
 
     fireEvent.click(screen.getByText('Cancel'));
     await waitFor(() => {

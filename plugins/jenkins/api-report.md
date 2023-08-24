@@ -12,16 +12,18 @@ import { DiscoveryApi } from '@backstage/core-plugin-api';
 import { Entity } from '@backstage/catalog-model';
 import { IdentityApi } from '@backstage/core-plugin-api';
 import { InfoCardVariants } from '@backstage/core-components';
+import { JSX as JSX_2 } from 'react';
+import { default as React_2 } from 'react';
 import { RouteRef } from '@backstage/core-plugin-api';
 
 // @public (undocumented)
-export const EntityJenkinsContent: () => JSX.Element;
+export const EntityJenkinsContent: () => JSX_2.Element;
 
 // @public (undocumented)
 export const EntityLatestJenkinsRunCard: (props: {
   branch: string;
   variant?: InfoCardVariants | undefined;
-}) => JSX.Element;
+}) => JSX_2.Element;
 
 // @public (undocumented)
 const isJenkinsAvailable: (entity: Entity) => boolean;
@@ -109,7 +111,7 @@ export { jenkinsPlugin as plugin };
 export const LatestRunCard: (props: {
   branch: string;
   variant?: InfoCardVariants;
-}) => JSX.Element;
+}) => React_2.JSX.Element;
 
 // Warning: (ae-missing-release-tag) "LEGACY_JENKINS_ANNOTATION" is part of the package's API, but it is missing a release tag (@alpha, @beta, @public, or @internal)
 //
@@ -119,5 +121,5 @@ export const LEGACY_JENKINS_ANNOTATION = 'jenkins.io/github-folder';
 // Warning: (ae-missing-release-tag) "Router" is part of the package's API, but it is missing a release tag (@alpha, @beta, @public, or @internal)
 //
 // @public (undocumented)
-export const Router: () => JSX.Element;
+export const Router: () => React_2.JSX.Element;
 ```

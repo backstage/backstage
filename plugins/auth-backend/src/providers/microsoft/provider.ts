@@ -47,7 +47,7 @@ import {
   commonByEmailLocalPartResolver,
   commonByEmailResolver,
 } from '../resolvers';
-import { Logger } from 'winston';
+import { LoggerService } from '@backstage/backend-plugin-api';
 import fetch from 'node-fetch';
 import { decodeJwt } from 'jose';
 import { Profile as PassportProfile } from 'passport';
@@ -60,7 +60,7 @@ type PrivateInfo = {
 type Options = OAuthProviderOptions & {
   signInResolver?: SignInResolver<OAuthResult>;
   authHandler: AuthHandler<OAuthResult>;
-  logger: Logger;
+  logger: LoggerService;
   resolverContext: AuthResolverContext;
   authorizationUrl?: string;
   tokenUrl?: string;
@@ -70,7 +70,7 @@ export class MicrosoftAuthProvider implements OAuthHandlers {
   private readonly _strategy: MicrosoftStrategy;
   private readonly signInResolver?: SignInResolver<OAuthResult>;
   private readonly authHandler: AuthHandler<OAuthResult>;
-  private readonly logger: Logger;
+  private readonly logger: LoggerService;
   private readonly resolverContext: AuthResolverContext;
 
   constructor(options: Options) {

@@ -131,6 +131,23 @@ describe('createRouter', () => {
       );
     });
 
+    it('forwards filter query', async () => {
+      mockService.listTodos.mockResolvedValueOnce(mockListBody);
+
+      const response = await request(app).get('/v1/todos?filter=text=*borked*');
+      expect(response.status).toEqual(200);
+      expect(response.body).toEqual(mockListBody);
+      expect(mockService.listTodos).toHaveBeenCalledWith(
+        {
+          entity: undefined,
+          offset: undefined,
+          limit: undefined,
+          filters: [{ field: 'text', value: '*borked*' }],
+        },
+        { token: undefined },
+      );
+    });
+
     it('rejects invalid queries', async () => {
       request(app)
         .get('/v1/todos?entity=k:n&entity=k:n')

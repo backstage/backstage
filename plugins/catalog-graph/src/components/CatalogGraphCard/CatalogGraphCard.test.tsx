@@ -133,7 +133,7 @@ describe('<CatalogGraphCard/>', () => {
     expect(button).toBeInTheDocument();
     expect(button.closest('a')).toHaveAttribute(
       'href',
-      '/catalog-graph?rootEntityRefs%5B%5D=b%3Ad%2Fc&unidirectional=true&mergeRelations=true&direction=LR',
+      '/catalog-graph?rootEntityRefs%5B%5D=b%3Ad%2Fc&maxDepth=1&unidirectional=true&mergeRelations=true&direction=LR',
     );
   });
 
@@ -157,7 +157,7 @@ describe('<CatalogGraphCard/>', () => {
     expect(button).toBeInTheDocument();
     expect(button.closest('a')).toHaveAttribute(
       'href',
-      '/catalog-graph?rootEntityRefs%5B%5D=b%3Ad%2Fc&unidirectional=true&mergeRelations=false&direction=LR',
+      '/catalog-graph?rootEntityRefs%5B%5D=b%3Ad%2Fc&maxDepth=2&unidirectional=true&mergeRelations=false&direction=LR',
     );
   });
 

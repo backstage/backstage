@@ -19,6 +19,7 @@ import {
   CatalogApi,
   catalogApiRef,
   EntityProvider,
+  entityRouteRef,
   StarredEntitiesApi,
   starredEntitiesApiRef,
 } from '@backstage/plugin-catalog-react';
@@ -124,6 +125,11 @@ describe('MemberTab Test', () => {
           </EntityProvider>
           ,
         </TestApiProvider>,
+        {
+          mountedRoutes: {
+            '/catalog/:namespace/:kind/:name': entityRouteRef,
+          },
+        },
       ),
     );
 
@@ -152,6 +158,11 @@ describe('MemberTab Test', () => {
             <MembersListCard memberDisplayTitle="Testers" />
           </EntityProvider>
         </TestApiProvider>,
+        {
+          mountedRoutes: {
+            '/catalog/:namespace/:kind/:name': entityRouteRef,
+          },
+        },
       ),
     );
 
@@ -176,12 +187,15 @@ describe('MemberTab Test', () => {
             </EntityLayout>
           </EntityProvider>
         </TestApiProvider>,
+        {
+          mountedRoutes: {
+            '/catalog/:namespace/:kind/:name': entityRouteRef,
+          },
+        },
       );
-
       const toggleSwitch = screen.queryByRole('checkbox');
       expect(toggleSwitch).toBeNull();
     });
-
     it('Shows the aggregate members toggle if the showAggregateMembersToggle prop is true', async () => {
       await renderInTestApp(
         <TestApiProvider
@@ -199,11 +213,14 @@ describe('MemberTab Test', () => {
             </EntityLayout>
           </EntityProvider>
         </TestApiProvider>,
+        {
+          mountedRoutes: {
+            '/catalog/:namespace/:kind/:name': entityRouteRef,
+          },
+        },
       );
-
       expect(screen.queryByRole('checkbox')).toBeInTheDocument();
     });
-
     it('Shows only direct members if the showAggregateMembersToggle prop is undefined', async () => {
       await renderInTestApp(
         <TestApiProvider
@@ -221,12 +238,15 @@ describe('MemberTab Test', () => {
             </EntityLayout>
           </EntityProvider>
         </TestApiProvider>,
+        {
+          mountedRoutes: {
+            '/catalog/:namespace/:kind/:name': entityRouteRef,
+          },
+        },
       );
-
       const displayedMemberNames = screen.queryAllByTestId('user-link');
       const duplicatedUserText = screen.getByText('Duplicated User');
       const groupAUserOneText = screen.getByText('Group A User One');
-
       expect(displayedMemberNames).toHaveLength(2);
       expect(duplicatedUserText).toBeInTheDocument();
       expect(groupAUserOneText).toBeInTheDocument();
@@ -234,7 +254,6 @@ describe('MemberTab Test', () => {
         duplicatedUserText.compareDocumentPosition(groupAUserOneText),
       ).toBe(Node.DOCUMENT_POSITION_FOLLOWING);
     });
-
     it('Shows only direct members if the aggregate members switch is turned off', async () => {
       await renderInTestApp(
         <TestApiProvider
@@ -252,12 +271,15 @@ describe('MemberTab Test', () => {
             </EntityLayout>
           </EntityProvider>
         </TestApiProvider>,
+        {
+          mountedRoutes: {
+            '/catalog/:namespace/:kind/:name': entityRouteRef,
+          },
+        },
       );
-
       const displayedMemberNames = screen.queryAllByTestId('user-link');
       const duplicatedUserText = screen.getByText('Duplicated User');
       const groupAUserOneText = screen.getByText('Group A User One');
-
       expect(displayedMemberNames).toHaveLength(2);
       expect(duplicatedUserText).toBeInTheDocument();
       expect(groupAUserOneText).toBeInTheDocument();
@@ -265,7 +287,6 @@ describe('MemberTab Test', () => {
         duplicatedUserText.compareDocumentPosition(groupAUserOneText),
       ).toBe(Node.DOCUMENT_POSITION_FOLLOWING);
     });
-
     it('Shows all descendant members of the group when the aggregate users switch is turned on, showing duplicated members only once', async () => {
       await renderInTestApp(
         <TestApiProvider
@@ -283,26 +304,26 @@ describe('MemberTab Test', () => {
             </EntityLayout>
           </EntityProvider>
         </TestApiProvider>,
+        {
+          mountedRoutes: {
+            '/catalog/:namespace/:kind/:name': entityRouteRef,
+          },
+        },
       );
-
       // Click the toggle switch
       await userEvent.click(screen.getByRole('checkbox'));
-
       const displayedMemberNames = screen.queryAllByTestId('user-link');
       const duplicatedUserText = screen.getByText('Duplicated User');
       const groupAUserOneText = screen.getByText('Group A User One');
       const groupBUserOneText = screen.getByText('Group B User One');
       const groupDUserOneText = screen.getByText('Group D User One');
       const groupEUserOneText = screen.getByText('Group E User One');
-
       expect(displayedMemberNames).toHaveLength(5);
-
       expect(duplicatedUserText).toBeInTheDocument();
       expect(groupAUserOneText).toBeInTheDocument();
       expect(groupBUserOneText).toBeInTheDocument();
       expect(groupDUserOneText).toBeInTheDocument();
       expect(groupEUserOneText).toBeInTheDocument();
-
       expect(
         duplicatedUserText.compareDocumentPosition(groupAUserOneText),
       ).toBe(Node.DOCUMENT_POSITION_FOLLOWING);

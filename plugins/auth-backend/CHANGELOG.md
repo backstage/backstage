@@ -1,5 +1,53 @@
 # @backstage/plugin-auth-backend
 
+## 0.18.8-next.0
+
+### Patch Changes
+
+- 7944d43f4790: Added `authPlugin` export for the new backend system. The plugin does not include any built-in auth providers, they must instead be added by installing additional modules, for example `authModuleGoogleProvider` from `@backstage/plugin-auth-backend-module-google-provider`.
+- 8513cd7d00e3: Deprecated several exports that are now available from `@backstage/plugin-auth-node` instead.
+- 7944d43f4790: Added the ability to disable the built-in auth providers by passing `disableDefaultProviderFactories` to `createRouter`.
+- 7944d43f4790: The algorithm used when generating Backstage tokens can be configured via `auth.identityTokenAlgorithm`.
+- Updated dependencies
+  - @backstage/plugin-auth-backend-module-gcp-iap-provider@0.1.0-next.0
+  - @backstage/plugin-auth-node@0.3.0-next.0
+  - @backstage/backend-common@0.19.4-next.0
+  - @backstage/plugin-auth-backend-module-google-provider@0.1.0-next.0
+  - @backstage/plugin-auth-backend-module-github-provider@0.1.0-next.0
+  - @backstage/backend-plugin-api@0.6.2-next.0
+  - @backstage/catalog-client@1.4.3
+  - @backstage/catalog-model@1.4.1
+  - @backstage/config@1.0.8
+  - @backstage/errors@1.2.1
+  - @backstage/types@1.1.0
+  - @backstage/plugin-catalog-node@1.4.3-next.0
+
+## 0.18.6
+
+### Patch Changes
+
+- 16452cd007ae: Updated `frameHandler` to return `undefined` when using the redirect flow instead of returning `postMessageReponse` which was causing errors
+- 9dad4b0e61bd: Updated config schema to match what was being used in code
+- bb70a9c3886a: Add frontend visibility to provider objects in `auth` config.
+- Updated dependencies
+  - @backstage/backend-common@0.19.2
+  - @backstage/plugin-auth-node@0.2.17
+  - @backstage/catalog-client@1.4.3
+  - @backstage/catalog-model@1.4.1
+  - @backstage/config@1.0.8
+  - @backstage/errors@1.2.1
+  - @backstage/types@1.1.0
+
+## 0.18.6-next.2
+
+### Patch Changes
+
+- 16452cd007ae: Updated `frameHandler` to return `undefined` when using the redirect flow instead of returning `postMessageReponse` which was causing errors
+- bb70a9c3886a: Add frontend visibility to provider objects in `auth` config.
+- Updated dependencies
+  - @backstage/backend-common@0.19.2-next.2
+  - @backstage/plugin-auth-node@0.2.17-next.2
+
 ## 0.18.6-next.1
 
 ### Patch Changes

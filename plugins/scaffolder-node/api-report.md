@@ -7,10 +7,17 @@
 
 import { ExtensionPoint } from '@backstage/backend-plugin-api';
 import { JsonObject } from '@backstage/types';
+import { JsonValue } from '@backstage/types';
 import { Logger } from 'winston';
+import { Observable } from '@backstage/types';
 import { Schema } from 'jsonschema';
 import { ScmIntegrations } from '@backstage/integration';
 import { SpawnOptionsWithoutStdio } from 'child_process';
+import { TaskBroker as TaskBroker_2 } from '@backstage/plugin-scaffolder-node';
+import { TaskSpec } from '@backstage/plugin-scaffolder-common';
+import { TemplateAction as TemplateAction_2 } from '@backstage/plugin-scaffolder-node';
+import { TemplateFilter as TemplateFilter_2 } from '@backstage/plugin-scaffolder-node';
+import { TemplateGlobal as TemplateGlobal_2 } from '@backstage/plugin-scaffolder-node';
 import { TemplateInfo } from '@backstage/plugin-scaffolder-common';
 import { UrlReader } from '@backstage/backend-common';
 import { UserEntity } from '@backstage/catalog-model';
@@ -39,6 +46,7 @@ export type ActionContext<
     ref?: string;
   };
   signal?: AbortSignal;
+  each?: JsonObject;
 };
 
 // @public
@@ -104,16 +112,128 @@ export function fetchFile(options: {
 // @alpha
 export interface ScaffolderActionsExtensionPoint {
   // (undocumented)
-  addActions(...actions: TemplateAction<any, any>[]): void;
+  addActions(...actions: TemplateAction_2<any, any>[]): void;
 }
 
 // @alpha
 export const scaffolderActionsExtensionPoint: ExtensionPoint<ScaffolderActionsExtensionPoint>;
 
+// @alpha
+export interface ScaffolderTaskBrokerExtensionPoint {
+  // (undocumented)
+  setTaskBroker(taskBroker: TaskBroker_2): void;
+}
+
+// @alpha
+export const scaffolderTaskBrokerExtensionPoint: ExtensionPoint<ScaffolderTaskBrokerExtensionPoint>;
+
+// @alpha
+export interface ScaffolderTemplatingExtensionPoint {
+  // (undocumented)
+  addTemplateFilters(filters: Record<string, TemplateFilter_2>): void;
+  // (undocumented)
+  addTemplateGlobals(filters: Record<string, TemplateGlobal_2>): void;
+}
+
+// @alpha
+export const scaffolderTemplatingExtensionPoint: ExtensionPoint<ScaffolderTemplatingExtensionPoint>;
+
+// @public
+export type SerializedTask = {
+  id: string;
+  spec: TaskSpec;
+  status: TaskStatus;
+  createdAt: string;
+  lastHeartbeatAt?: string;
+  createdBy?: string;
+  secrets?: TaskSecrets;
+};
+
+// @public
+export type SerializedTaskEvent = {
+  id: number;
+  taskId: string;
+  body: JsonObject;
+  type: TaskEventType;
+  createdAt: string;
+};
+
+// @public
+export interface TaskBroker {
+  // (undocumented)
+  cancel?(taskId: string): Promise<void>;
+  // (undocumented)
+  claim(): Promise<TaskContext>;
+  // (undocumented)
+  dispatch(
+    options: TaskBrokerDispatchOptions,
+  ): Promise<TaskBrokerDispatchResult>;
+  // (undocumented)
+  event$(options: { taskId: string; after: number | undefined }): Observable<{
+    events: SerializedTaskEvent[];
+  }>;
+  // (undocumented)
+  get(taskId: string): Promise<SerializedTask>;
+  // (undocumented)
+  list?(options?: { createdBy?: string }): Promise<{
+    tasks: SerializedTask[];
+  }>;
+  // (undocumented)
+  vacuumTasks(options: { timeoutS: number }): Promise<void>;
+}
+
+// @public
+export type TaskBrokerDispatchOptions = {
+  spec: TaskSpec;
+  secrets?: TaskSecrets;
+  createdBy?: string;
+};
+
+// @public
+export type TaskBrokerDispatchResult = {
+  taskId: string;
+};
+
+// @public
+export type TaskCompletionState = 'failed' | 'completed';
+
+// @public
+export interface TaskContext {
+  // (undocumented)
+  cancelSignal: AbortSignal;
+  // (undocumented)
+  complete(result: TaskCompletionState, metadata?: JsonObject): Promise<void>;
+  // (undocumented)
+  createdBy?: string;
+  // (undocumented)
+  done: boolean;
+  // (undocumented)
+  emitLog(message: string, logMetadata?: JsonObject): Promise<void>;
+  // (undocumented)
+  getWorkspaceName(): Promise<string>;
+  // (undocumented)
+  isDryRun?: boolean;
+  // (undocumented)
+  secrets?: TaskSecrets;
+  // (undocumented)
+  spec: TaskSpec;
+}
+
+// @public
+export type TaskEventType = 'completion' | 'log' | 'cancelled';
+
 // @public
 export type TaskSecrets = Record<string, string> & {
   backstageToken?: string;
 };
+
+// @public
+export type TaskStatus =
+  | 'cancelled'
+  | 'completed'
+  | 'failed'
+  | 'open'
+  | 'processing';
 
 // @public (undocumented)
 export type TemplateAction<
@@ -157,4 +277,12 @@ export type TemplateExample = {
   description: string;
   example: string;
 };
+
+// @public (undocumented)
+export type TemplateFilter = (...args: JsonValue[]) => JsonValue | undefined;
+
+// @public (undocumented)
+export type TemplateGlobal =
+  | ((...args: JsonValue[]) => JsonValue | undefined)
+  | JsonValue;
 ```

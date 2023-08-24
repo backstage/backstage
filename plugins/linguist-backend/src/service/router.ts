@@ -28,11 +28,13 @@ import { LinguistBackendApi } from '../api';
 import { LinguistBackendDatabase } from '../db';
 import {
   PluginTaskScheduler,
+  readTaskScheduleDefinitionFromConfig,
   TaskScheduleDefinition,
 } from '@backstage/backend-tasks';
 import { HumanDuration } from '@backstage/types';
 import { CatalogClient } from '@backstage/catalog-client';
 import { LinguistBackendClient } from '../api/LinguistBackendClient';
+import { Config } from '@backstage/config';
 
 /** @public */
 export interface PluginOptions {
@@ -53,6 +55,7 @@ export interface RouterOptions {
   database: PluginDatabaseManager;
   discovery: PluginEndpointDiscovery;
   scheduler?: PluginTaskScheduler;
+  config?: Config;
 }
 
 /** @public */
@@ -60,6 +63,9 @@ export async function createRouter(
   pluginOptions: PluginOptions,
   routerOptions: RouterOptions,
 ): Promise<express.Router> {
+  const { logger, reader, database, discovery, scheduler, tokenManager } =
+    routerOptions;
+
   const {
     schedule,
     age,
@@ -68,9 +74,6 @@ export async function createRouter(
     kind,
     linguistJsOptions,
   } = pluginOptions;
-
-  const { logger, reader, database, discovery, scheduler, tokenManager } =
-    routerOptions;
 
   const linguistBackendStore = await LinguistBackendDatabase.create(
     await database.getClient(),
@@ -134,4 +137,28 @@ export async function createRouter(
 
   router.use(errorHandler());
   return router;
+}
+
+/** @public */
+export async function createRouterFromConfig(routerOptions: RouterOptions) {
+  const { config } = routerOptions;
+  const pluginOptions: PluginOptions = {};
+  if (config) {
+    if (config.has('linguist.schedule')) {
+      pluginOptions.schedule = readTaskScheduleDefinitionFromConfig(
+        config.getConfig('linguist.schedule'),
+      );
+    }
+    pluginOptions.batchSize = config.getOptionalNumber('linguist.batchSize');
+    pluginOptions.useSourceLocation =
+      config.getOptionalBoolean('linguist.useSourceLocation') ?? false;
+    pluginOptions.age = config.getOptionalConfig('linguist.age') as
+      | HumanDuration
+      | undefined;
+    pluginOptions.kind = config.getOptionalStringArray('linguist.kind');
+    pluginOptions.linguistJsOptions = config.getOptionalConfig(
+      'linguist.linguistJsOptions',
+    );
+  }
+  return createRouter(pluginOptions, routerOptions);
 }

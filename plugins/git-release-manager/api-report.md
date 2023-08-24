@@ -142,7 +142,7 @@ export interface CreateRcOnSuccessArgs {
 // Warning: (ae-missing-release-tag) "Differ" is part of the package's API, but it is missing a release tag (@alpha, @beta, @public, or @internal)
 //
 // @public (undocumented)
-const Differ: ({ current, next, icon }: DifferProps) => JSX.Element;
+const Differ: ({ current, next, icon }: DifferProps) => React_2.JSX.Element;
 
 // Warning: (ae-missing-release-tag) "DISABLE_CACHE" is part of the package's API, but it is missing a release tag (@alpha, @beta, @public, or @internal)
 //
@@ -156,7 +156,7 @@ const DISABLE_CACHE: {
 // Warning: (ae-missing-release-tag) "Divider" is part of the package's API, but it is missing a release tag (@alpha, @beta, @public, or @internal)
 //
 // @public (undocumented)
-const Divider: () => JSX.Element;
+const Divider: () => React_2.JSX.Element;
 
 // Warning: (ae-forgotten-export) The symbol "SemverTagParts" needs to be exported by the entry point index.d.ts
 //
@@ -285,7 +285,9 @@ declare namespace helpers {
 }
 
 // @public (undocumented)
-const InfoCardPlus: (props: { children?: React_2.ReactNode }) => JSX.Element;
+const InfoCardPlus: (props: {
+  children?: React_2.ReactNode;
+}) => React_2.JSX.Element;
 
 declare namespace internals {
   export { components, constants, helpers, testHelpers };
@@ -311,7 +313,7 @@ function isProjectValid(project: any): project is Project;
 function LinearProgressWithLabel(props: {
   progress: number;
   responseSteps: ResponseStep[];
-}): JSX.Element;
+}): React_2.JSX.Element;
 
 // Warning: (ae-missing-release-tag) "MOCK_RELEASE_BRANCH_NAME_CALVER" is part of the package's API, but it is missing a release tag (@alpha, @beta, @public, or @internal)
 //
@@ -523,7 +525,7 @@ const mockUsername = 'mock_username';
 // Warning: (ae-missing-release-tag) "NoLatestRelease" is part of the package's API, but it is missing a release tag (@alpha, @beta, @public, or @internal)
 //
 // @public (undocumented)
-const NoLatestRelease: () => JSX.Element;
+const NoLatestRelease: () => React_2.JSX.Element;
 
 // Warning: (ae-missing-release-tag) "PatchOnSuccessArgs" is part of the package's API, but it is missing a release tag (@alpha, @beta, @public, or @internal)
 //
@@ -601,7 +603,7 @@ const ResponseStepDialog: ({
   progress,
   responseSteps,
   title,
-}: DialogProps) => JSX.Element;
+}: DialogProps) => React_2.JSX.Element;
 
 // Warning: (ae-forgotten-export) The symbol "ResponseStepListProps" needs to be exported by the entry point index.d.ts
 // Warning: (ae-missing-release-tag) "ResponseStepList" is part of the package's API, but it is missing a release tag (@alpha, @beta, @public, or @internal)
@@ -613,7 +615,7 @@ const ResponseStepList: ({
   loading,
   denseList,
   children,
-}: PropsWithChildren<ResponseStepListProps>) => JSX.Element;
+}: PropsWithChildren<ResponseStepListProps>) => React_2.JSX.Element;
 
 // Warning: (ae-forgotten-export) The symbol "ResponseStepListItemProps" needs to be exported by the entry point index.d.ts
 // Warning: (ae-missing-release-tag) "ResponseStepListItem" is part of the package's API, but it is missing a release tag (@alpha, @beta, @public, or @internal)
@@ -622,7 +624,7 @@ const ResponseStepList: ({
 const ResponseStepListItem: ({
   responseStep,
   animationDelay,
-}: ResponseStepListItemProps) => JSX.Element;
+}: ResponseStepListItemProps) => React_2.JSX.Element;
 
 // Warning: (ae-missing-release-tag) "SEMVER_PARTS" is part of the package's API, but it is missing a release tag (@alpha, @beta, @public, or @internal)
 //

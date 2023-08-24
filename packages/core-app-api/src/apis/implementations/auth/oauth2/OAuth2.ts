@@ -30,6 +30,7 @@ import {
   SessionState,
   SessionApi,
   BackstageIdentityApi,
+  BackstageUserIdentity,
 } from '@backstage/core-plugin-api';
 import { Observable } from '@backstage/types';
 import { OAuth2Session } from './types';
@@ -49,10 +50,14 @@ export type OAuth2Response = {
     accessToken: string;
     idToken: string;
     scope: string;
-    expiresInSeconds: number;
+    expiresInSeconds?: number;
   };
   profile: ProfileInfo;
-  backstageIdentity: BackstageIdentityResponse;
+  backstageIdentity: {
+    token: string;
+    expiresInSeconds?: number;
+    identity: BackstageUserIdentity;
+  };
 };
 
 const DEFAULT_PROVIDER = {
@@ -92,8 +97,11 @@ export default class OAuth2
       environment,
       provider,
       oauthRequestApi: oauthRequestApi,
-      sessionTransform(res: OAuth2Response): OAuth2Session {
-        return {
+      sessionTransform({
+        backstageIdentity,
+        ...res
+      }: OAuth2Response): OAuth2Session {
+        const session: OAuth2Session = {
           ...res,
           providerInfo: {
             idToken: res.providerInfo.idToken,
@@ -102,11 +110,26 @@ export default class OAuth2
               scopeTransform,
               res.providerInfo.scope,
             ),
-            expiresAt: new Date(
-              Date.now() + res.providerInfo.expiresInSeconds * 1000,
-            ),
+            expiresAt: res.providerInfo.expiresInSeconds
+              ? new Date(Date.now() + res.providerInfo.expiresInSeconds * 1000)
+              : undefined,
           },
         };
+        if (backstageIdentity) {
+          // TODO(Rugvip): This fallback can be removed a few releases after 1.18. It's there to avoid
+          //               breaking deployments that update their frontend before updating their backend.
+          const expInSec =
+            backstageIdentity.expiresInSeconds ??
+            res.providerInfo.expiresInSeconds;
+          session.backstageIdentity = {
+            token: backstageIdentity.token,
+            identity: backstageIdentity.identity,
+            expiresAt: expInSec
+              ? new Date(Date.now() + expInSec * 1000)
+              : undefined,
+          };
+        }
+        return session;
       },
       popupOptions,
     });
@@ -116,9 +139,21 @@ export default class OAuth2
       defaultScopes: new Set(defaultScopes),
       sessionScopes: (session: OAuth2Session) => session.providerInfo.scopes,
       sessionShouldRefresh: (session: OAuth2Session) => {
-        const expiresInSec =
-          (session.providerInfo.expiresAt.getTime() - Date.now()) / 1000;
-        return expiresInSec < 60 * 5;
+        // TODO(Rugvip): Optimize to use separate checks for provider vs backstage session expiration
+        let min = Infinity;
+        if (session.providerInfo?.expiresAt) {
+          min = Math.min(
+            min,
+            (session.providerInfo.expiresAt.getTime() - Date.now()) / 1000,
+          );
+        }
+        if (session.backstageIdentity?.expiresAt) {
+          min = Math.min(
+            min,
+            (session.backstageIdentity.expiresAt.getTime() - Date.now()) / 1000,
+          );
+        }
+        return min < 60 * 5;
       },
     });
 

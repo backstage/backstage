@@ -80,7 +80,7 @@ export const permissionModuleAllowAllPolicy = createBackendModule({
  *
  * @alpha
  */
-export const permissionPlugin = createBackendPlugin(() => ({
+export const permissionPlugin = createBackendPlugin({
   pluginId: 'permission',
   register(env) {
     const policies = new PolicyExtensionPointImpl();
@@ -115,4 +115,4 @@ export const permissionPlugin = createBackendPlugin(() => ({
       },
     });
   },
-}));
+});
