@@ -153,7 +153,6 @@ export function expandShorthandExtensionParameters(
 
   // The remaining case is the generic object. Example YAML:
   // - core.router/routes:
-  //     id: redirects.catalog
   //     extension: '@backstage/core-app-api#Redirect'
   //     config:
   //       path: /
@@ -186,9 +185,16 @@ export function expandShorthandExtensionParameters(
         ),
       );
     }
-    if (id === undefined) {
-      id = generateExtensionId();
+    if (id !== undefined) {
+      throw new Error(
+        errorMsg(
+          `must not specify 'id' when the extension input ID form of the key is used (with a slash); please replace the key '${key}' with the id instead, and put that key in the 'at' field`,
+          key,
+          'id',
+        ),
+      );
     }
+    id = generateExtensionId();
     at = key;
   } else {
     if (id !== undefined) {
