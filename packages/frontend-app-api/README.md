@@ -1,12 +1,9 @@
 # @backstage/frontend-app-api
 
-_This package was created through the Backstage CLI_.
+**This package is EXPERIMENTAL, we recommend against using it for production deployments**
 
-## Installation
+This package provides the core API used by Backstage frontend apps. It implements the design outlined in [RFC: Frontend System Evolution](https://github.com/backstage/backstage/issues/18372).
 
-Install the package via Yarn:
+## Documentation
 
-```sh
-cd <package-dir> # if within a monorepo
-yarn add @backstage/frontend-app-api
-```
+- [Backstage Documentation](https://backstage.io/docs)

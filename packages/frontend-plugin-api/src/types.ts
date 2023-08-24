@@ -15,6 +15,7 @@
  */
 
 import { ComponentType } from 'react';
+import { PortableSchema } from './createSchemaFromZod';
 
 /** @public */
 export type ExtensionDataRef<T> = {
@@ -51,12 +52,14 @@ export type ExtensionDataValue<TData extends AnyExtensionDataMap> = {
 export interface CreateExtensionOptions<
   TData extends AnyExtensionDataMap,
   TPoint extends Record<string, { extensionData: AnyExtensionDataMap }>,
+  TConfig,
 > {
   inputs?: TPoint;
   output: TData;
+  configSchema?: PortableSchema<TConfig>;
   factory(options: {
     bind: ExtensionDataBind<TData>;
-    config?: unknown;
+    config: TConfig;
     inputs: {
       [pointName in keyof TPoint]: ExtensionDataValue<
         TPoint[pointName]['extensionData']
@@ -66,13 +69,15 @@ export interface CreateExtensionOptions<
 }
 
 /** @public */
-export interface Extension {
+export interface Extension<TConfig> {
   $$type: 'extension';
+  // TODO: will extensions have a default "at" as part of their contract, making it optional in the instance config?
   inputs: Record<string, { extensionData: AnyExtensionDataMap }>;
   output: AnyExtensionDataMap;
+  configSchema?: PortableSchema<TConfig>;
   factory(options: {
     bind: ExtensionDataBind<AnyExtensionDataMap>;
-    config?: unknown;
+    config: TConfig;
     inputs: Record<string, Array<Record<string, unknown>>>;
   }): void;
 }
@@ -81,29 +86,31 @@ export interface Extension {
 export function createExtension<
   TData extends AnyExtensionDataMap,
   TPoint extends Record<string, { extensionData: AnyExtensionDataMap }>,
->(options: CreateExtensionOptions<TData, TPoint>): Extension {
+  TConfig = never,
+>(options: CreateExtensionOptions<TData, TPoint, TConfig>): Extension<TConfig> {
   return { ...options, $$type: 'extension', inputs: options.inputs ?? {} };
 }
 
 /** @public */
-export interface ExtensionInstanceConfig {
+export interface ExtensionInstanceParameters {
   id: string;
   at: string;
-  extension: Extension;
-  config: unknown;
+  extension: Extension<unknown>;
+  config?: unknown;
+  disabled?: boolean;
 }
 
 /** @public */
 export interface BackstagePluginOptions {
   id: string;
-  defaultExtensionInstances?: ExtensionInstanceConfig[];
+  defaultExtensionInstances?: ExtensionInstanceParameters[];
 }
 
 /** @public */
 export interface BackstagePlugin {
   $$type: 'backstage-plugin';
   id: string;
-  defaultExtensionInstances: ExtensionInstanceConfig[];
+  defaultExtensionInstances: ExtensionInstanceParameters[];
 }
 
 /** @public */

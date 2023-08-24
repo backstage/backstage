@@ -49,6 +49,15 @@ techdocs:
       # will be broken in these scenarios.
       legacyCopyReadmeMdToIndexMd: false
 
+      # (Optional) Configures the default plugins which should be added
+      # automatically to every mkdocs.yaml file. This simplifies the usage as
+      # e.g. styling plugins can be added once for all.
+      # Make sure that the defined plugins are installed locally / in the Docker
+      # image.
+      # By default, only the techdocs-core plugin will be added (except if
+      # omitTechdocsCorePlugin: true).
+      defaultPlugins: ['techdocs-core']
+
   # techdocs.builder can be either 'local' or 'external'.
   # Using the default build strategy, if builder is set to 'local' and you open a TechDocs page,
   # techdocs-backend will try to generate the docs, publish to storage and show the generated docs afterwards.
