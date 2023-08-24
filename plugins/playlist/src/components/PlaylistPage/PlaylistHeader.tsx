@@ -166,7 +166,7 @@ export const PlaylistHeader = ({ playlist, onUpdate }: PlaylistHeaderProps) => {
           },
           {
             label: `Delete ${singularTitle}`,
-            icon: <DeleteIcon />,
+            icon: <DeleteIcon color="secondary" />,
             disabled: !deleteAllowed,
             onClick: () => setOpenDeleteDialog(true),
           },

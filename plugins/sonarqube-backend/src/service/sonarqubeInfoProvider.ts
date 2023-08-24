@@ -30,7 +30,10 @@ export interface SonarqubeInfoProvider {
    * @param instanceName - Name of the sonarqube instance to get the info from
    * @returns the url of the instance
    */
-  getBaseUrl(options?: { instanceName?: string }): { baseUrl: string };
+  getBaseUrl(options?: { instanceName?: string }): {
+    baseUrl: string;
+    externalBaseUrl?: string;
+  };
 
   /**
    * Query the sonarqube instance corresponding to the instanceName to get all
@@ -97,6 +100,10 @@ export interface SonarqubeInstanceConfig {
    */
   baseUrl: string;
   /**
+   * External url to access the instance from the frontend
+   */
+  externalBaseUrl?: string;
+  /**
    * Access token to access the sonarqube instance as generated in user profile.
    */
   apiKey: string;
@@ -132,6 +139,7 @@ export class SonarqubeConfig {
       sonarqubeConfig.getOptionalConfigArray('instances')?.map(c => ({
         name: c.getString('name'),
         baseUrl: c.getString('baseUrl'),
+        externalBaseUrl: c.getOptionalString('externalBaseUrl'),
         apiKey: c.getString('apiKey'),
       })) || [];
 
@@ -142,9 +150,11 @@ export class SonarqubeConfig {
 
     // Get these as optional strings and check to give a better error message
     const baseUrl = sonarqubeConfig.getOptionalString('baseUrl');
+    const externalBaseUrl =
+      sonarqubeConfig.getOptionalString('externalBaseUrl');
     const apiKey = sonarqubeConfig.getOptionalString('apiKey');
 
-    if (hasNamedDefault && (baseUrl || apiKey)) {
+    if (hasNamedDefault && (baseUrl || externalBaseUrl || apiKey)) {
       throw new Error(
         `Found both a named sonarqube instance with name ${DEFAULT_SONARQUBE_NAME} and top level baseUrl or apiKey config. Use only one style of config.`,
       );
@@ -160,10 +170,11 @@ export class SonarqubeConfig {
 
     if (unnamedAllPresent) {
       const unnamedInstanceConfig = [
-        { name: DEFAULT_SONARQUBE_NAME, baseUrl, apiKey },
+        { name: DEFAULT_SONARQUBE_NAME, baseUrl, externalBaseUrl, apiKey },
       ] as {
         name: string;
         baseUrl: string;
+        externalBaseUrl?: string;
         apiKey: string;
       }[];
 
@@ -303,11 +314,15 @@ export class DefaultSonarqubeInfoProvider implements SonarqubeInfoProvider {
    */
   getBaseUrl(options: { instanceName?: string } = {}): {
     baseUrl: string;
+    externalBaseUrl?: string;
   } {
     const instanceConfig = this.config.getInstanceConfig({
       sonarqubeName: options.instanceName,
     });
-    return { baseUrl: instanceConfig.baseUrl };
+    return {
+      baseUrl: instanceConfig.baseUrl,
+      externalBaseUrl: instanceConfig.externalBaseUrl,
+    };
   }
 
   /**

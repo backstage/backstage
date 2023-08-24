@@ -188,15 +188,12 @@ import {
 } from '@backstage/plugin-techdocs';
 import { Entity } from '@backstage/catalog-model';
 
-import {
-  EntityListDocsGrid,
-  DocsGroupConfig,
-} from '@backstage/plugin-techdocs';
+import { EntityListDocsGrid } from '@backstage/plugin-techdocs';
 
 export type CustomTechDocsHomeProps = {
   groups?: Array<{
     title: React.ReactNode;
-    filterPredicate: (entity: Entity) => boolean;
+    filterPredicate: ((entity: Entity) => boolean) | string;
   }>;
 };
 

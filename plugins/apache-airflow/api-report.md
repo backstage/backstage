@@ -6,15 +6,16 @@
 /// <reference types="react" />
 
 import { BackstagePlugin } from '@backstage/core-plugin-api';
+import { JSX as JSX_2 } from 'react';
 import { RouteRef } from '@backstage/core-plugin-api';
 
 // @public
 export const ApacheAirflowDagTable: (props: {
   dagIds?: string[] | undefined;
-}) => JSX.Element;
+}) => JSX_2.Element;
 
 // @public (undocumented)
-export const ApacheAirflowPage: () => JSX.Element;
+export const ApacheAirflowPage: () => JSX_2.Element;
 
 // @public (undocumented)
 export const apacheAirflowPlugin: BackstagePlugin<

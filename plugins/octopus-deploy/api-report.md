@@ -10,11 +10,12 @@ import { BackstagePlugin } from '@backstage/core-plugin-api';
 import { DiscoveryApi } from '@backstage/core-plugin-api';
 import { Entity } from '@backstage/catalog-model';
 import { FetchApi } from '@backstage/core-plugin-api';
+import { JSX as JSX_2 } from 'react';
 
 // @public (undocumented)
 export const EntityOctopusDeployContent: (props: {
   defaultLimit?: number | undefined;
-}) => JSX.Element;
+}) => JSX_2.Element;
 
 // @public (undocumented)
 export const isOctopusDeployAvailable: (entity: Entity) => boolean;

@@ -1,5 +1,20 @@
 # @backstage/plugin-events-backend-test-utils
 
+## 0.1.12-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/plugin-events-node@0.2.11-next.0
+
+## 0.1.10
+
+### Patch Changes
+
+- 12a8c94eda8d: Add package repository and homepage metadata
+- Updated dependencies
+  - @backstage/plugin-events-node@0.2.9
+
 ## 0.1.10-next.2
 
 ### Patch Changes

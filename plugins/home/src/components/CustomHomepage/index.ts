@@ -14,5 +14,8 @@
  * limitations under the License.
  */
 export { CustomHomepageGrid } from './CustomHomepageGrid';
-export type { CustomHomepageGridProps, Breakpoint } from './CustomHomepageGrid';
-export type { LayoutConfiguration } from './types';
+export type {
+  CustomHomepageGridProps,
+  Breakpoint,
+  LayoutConfiguration,
+} from './types';

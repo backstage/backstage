@@ -7,6 +7,7 @@
 
 import { ApiRef } from '@backstage/core-plugin-api';
 import { BackstagePlugin } from '@backstage/core-plugin-api';
+import { JSX as JSX_2 } from 'react';
 import { RouteRef } from '@backstage/core-plugin-api';
 
 // @public (undocumented)
@@ -105,13 +106,13 @@ export type GitOpsApi = {
 export const gitOpsApiRef: ApiRef<GitOpsApi>;
 
 // @public (undocumented)
-export const GitopsProfilesClusterListPage: () => JSX.Element;
+export const GitopsProfilesClusterListPage: () => JSX_2.Element;
 
 // @public (undocumented)
-export const GitopsProfilesClusterPage: () => JSX.Element;
+export const GitopsProfilesClusterPage: () => JSX_2.Element;
 
 // @public (undocumented)
-export const GitopsProfilesCreatePage: () => JSX.Element;
+export const GitopsProfilesCreatePage: () => JSX_2.Element;
 
 // @public (undocumented)
 const gitopsProfilesPlugin: BackstagePlugin<

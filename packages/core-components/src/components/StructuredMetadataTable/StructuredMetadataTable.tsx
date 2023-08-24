@@ -113,7 +113,7 @@ function toValue(
     return <Fragment>{value}</Fragment>;
   }
 
-  if (typeof value === 'object' && !Array.isArray(value)) {
+  if (value !== null && typeof value === 'object' && !Array.isArray(value)) {
     return renderMap(value, options, nested);
   }
 

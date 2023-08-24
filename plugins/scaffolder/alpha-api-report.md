@@ -7,6 +7,7 @@
 
 import { FormProps as FormProps_2 } from '@backstage/plugin-scaffolder-react/alpha';
 import type { FormProps as FormProps_3 } from '@rjsf/core-v5';
+import { JSX as JSX_2 } from 'react';
 import { LayoutOptions } from '@backstage/plugin-scaffolder-react';
 import { NextFieldExtensionOptions } from '@backstage/plugin-scaffolder-react/alpha';
 import { PropsWithChildren } from 'react';
@@ -47,7 +48,7 @@ export type NextRouterProps = {
 // @alpha
 export const NextScaffolderPage: (
   props: PropsWithChildren<NextRouterProps>,
-) => JSX.Element;
+) => JSX_2.Element;
 
 // @alpha (undocumented)
 export type TemplateListPageProps = {

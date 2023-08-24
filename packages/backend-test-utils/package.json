@@ -1,7 +1,7 @@
 {
   "name": "@backstage/backend-test-utils",
   "description": "Test helpers library for Backstage backends",
-  "version": "0.2.0-next.2",
+  "version": "0.2.2-next.0",
   "main": "src/index.ts",
   "types": "src/index.ts",
   "publishConfig": {
@@ -56,6 +56,9 @@
     "pg": "^8.3.0",
     "testcontainers": "^8.1.2",
     "uuid": "^8.0.0"
+  },
+  "peerDependencies": {
+    "@types/jest": "*"
   },
   "devDependencies": {
     "@backstage/cli": "workspace:^",

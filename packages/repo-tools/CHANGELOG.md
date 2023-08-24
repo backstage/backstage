@@ -1,5 +1,33 @@
 # @backstage/repo-tools
 
+## 0.3.4-next.0
+
+### Patch Changes
+
+- 0109d3f11159: The `generate-catalog-info` command now uses the first listed `CODEOWNER` as Component owner when initially
+  creating the `catalog-info.yaml` file. It continues to allow any one listed `CODEOWNER` when updating
+  entity metadata.
+- ec13d3e86028: Fixed a bug with the `generate-catalog-info` command that could cause the `--dry-run` flag to indicate changes to files when no changes would actually be made if the command were run without the flag.
+- db60a16e0a54: Added a `--ci` flag to the `generate-catalog-info` command. This flag behaves similarly to the same flag on `api-reports`: if `catalog-info.yaml` files would have been added or modified, then the process exits with status code `1`, and instructions are printed.
+- Updated dependencies
+  - @backstage/catalog-model@1.4.1
+  - @backstage/cli-common@0.1.12
+  - @backstage/cli-node@0.1.3
+  - @backstage/errors@1.2.1
+
+## 0.3.3
+
+### Patch Changes
+
+- 75702e85862a: Bumped `@microsoft/api-extractor` dependency to `^7.36.4`, and `@microsoft/api-documenter` to `^7.22.33`.
+- 1f3337ebc707: Introducing a new, experimental command `backstage-repo-tools generate-catalog-info`, which can be used to create standardized `catalog-info.yaml` files for each Backstage package in a Backstage monorepo. It can also be used to automatically fix existing `catalog-info.yaml` files with the correct metadata (including `metadata.name`, `metadata.title`, and `metadata.description` introspected from the package's `package.json`, as well as `spec.owner` introspected from `CODEOWNERS`), e.g. in a post-commit hook.
+- ebeb77586975: Update `schema openapi generate` command to now create a default router that can be imported and used directly.
+- Updated dependencies
+  - @backstage/cli-node@0.1.3
+  - @backstage/catalog-model@1.4.1
+  - @backstage/cli-common@0.1.12
+  - @backstage/errors@1.2.1
+
 ## 0.3.3-next.1
 
 ### Patch Changes

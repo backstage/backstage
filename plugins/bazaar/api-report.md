@@ -8,12 +8,14 @@
 import { ApiHolder } from '@backstage/core-plugin-api';
 import { BackstagePlugin } from '@backstage/core-plugin-api';
 import { Entity } from '@backstage/catalog-model';
+import { JSX as JSX_2 } from 'react';
+import { default as React_2 } from 'react';
 import { RouteRef } from '@backstage/core-plugin-api';
 
 // @public (undocumented)
 export const BazaarOverviewCard: (
   props: BazaarOverviewCardProps,
-) => JSX.Element;
+) => React_2.JSX.Element;
 
 // @public (undocumented)
 export type BazaarOverviewCardProps = {
@@ -24,7 +26,7 @@ export type BazaarOverviewCardProps = {
 };
 
 // @public (undocumented)
-export const BazaarPage: (props: BazaarPageProps) => JSX.Element;
+export const BazaarPage: (props: BazaarPageProps) => JSX_2.Element;
 
 // @public (undocumented)
 export type BazaarPageProps = {
@@ -44,7 +46,7 @@ export const bazaarPlugin: BackstagePlugin<
 >;
 
 // @public (undocumented)
-export const EntityBazaarInfoCard: () => JSX.Element | null;
+export const EntityBazaarInfoCard: () => React_2.JSX.Element | null;
 
 // @public (undocumented)
 export const isBazaarAvailable: (
@@ -55,7 +57,7 @@ export const isBazaarAvailable: (
 ) => Promise<boolean>;
 
 // @public (undocumented)
-export const SortView: (props: SortViewProps) => JSX.Element;
+export const SortView: (props: SortViewProps) => React_2.JSX.Element;
 
 // @public (undocumented)
 export type SortViewProps = {

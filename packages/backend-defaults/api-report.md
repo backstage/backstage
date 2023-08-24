@@ -4,14 +4,7 @@
 
 ```ts
 import { Backend } from '@backstage/backend-app-api';
-import { ServiceFactoryOrFunction } from '@backstage/backend-plugin-api';
 
 // @public (undocumented)
-export function createBackend(options?: CreateBackendOptions): Backend;
-
-// @public (undocumented)
-export interface CreateBackendOptions {
-  // (undocumented)
-  services?: ServiceFactoryOrFunction[];
-}
+export function createBackend(): Backend;
 ```

@@ -31,7 +31,10 @@ import {
   waitForExit,
   print,
 } from '../lib/helpers';
+
+import mysql from 'mysql2/promise';
 import pgtools from 'pgtools';
+
 import { findPaths } from '@backstage/cli-common';
 
 // eslint-disable-next-line no-restricted-syntax
@@ -66,9 +69,12 @@ export async function run() {
   print('Starting the app');
   await testAppServe(pluginId, appDir);
 
-  if (Boolean(process.env.POSTGRES_USER)) {
-    print('Testing the PostgreSQL backend startup');
-    await preCleanPostgres();
+  if (
+    Boolean(process.env.POSTGRES_USER) ||
+    Boolean(process.env.MYSQL_CONNECTION)
+  ) {
+    print('Testing the database backend startup');
+    await preCleanDatabase();
     const appConfig = path.resolve(appDir, 'app-config.yaml');
     const productionConfig = path.resolve(appDir, 'app-config.production.yaml');
     await testBackendStart(
@@ -79,7 +85,7 @@ export async function run() {
       productionConfig,
     );
   }
-  print('Testing the SQLite backend startup');
+  print('Testing the Database backend startup');
   await testBackendStart(appDir);
 
   if (process.env.CI) {
@@ -427,24 +433,39 @@ async function testAppServe(pluginId: string, appDir: string) {
 }
 
 /** Drops PG databases */
-async function dropDB(database: string) {
-  const config = {
-    host: process.env.POSTGRES_HOST,
-    port: process.env.POSTGRES_PORT,
-    user: process.env.POSTGRES_USER,
-    password: process.env.POSTGRES_PASSWORD,
-  };
-
+async function dropDB(database: string, client: string) {
   try {
-    await pgtools.dropdb(config, database);
+    if (client === 'postgres') {
+      const config = {
+        host: process.env.POSTGRES_HOST,
+        port: process.env.POSTGRES_PORT,
+        user: process.env.POSTGRES_USER,
+        password: process.env.POSTGRES_PASSWORD,
+      };
+      await pgtools.dropdb(config, database);
+    } else if (client === 'mysql') {
+      const connectionString = process.env.MYSQL_CONNECTION ?? '';
+      const connection = await mysql.createConnection(connectionString);
+      await connection.execute('DROP DATABASE ?', [database]);
+    }
   } catch (_) {
-    /* do nothing*/
+    /* do nothing */
   }
 }
 
 /** Clean remnants from prior e2e runs */
-async function preCleanPostgres() {
+async function preCleanDatabase() {
   print('Dropping old DBs');
+  if (Boolean(process.env.POSTGRES_HOST)) {
+    await dropClientDatabases('postgres');
+  }
+  if (Boolean(process.env.MYSQL_CONNECTION)) {
+    await dropClientDatabases('mysql');
+  }
+  print('Dropped DBs');
+}
+
+async function dropClientDatabases(client: string) {
   await Promise.all(
     [
       'catalog',
@@ -454,9 +475,8 @@ async function preCleanPostgres() {
       'proxy',
       'techdocs',
       'search',
-    ].map(name => dropDB(`backstage_plugin_${name}`)),
+    ].map(name => dropDB(`backstage_plugin_${name}`, client)),
   );
-  print('Created DBs');
 }
 
 /**

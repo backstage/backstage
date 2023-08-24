@@ -44,10 +44,10 @@ export function createNextScaffolderFieldExtension<
 // @alpha
 export const DefaultTemplateOutputs: (props: {
   output?: ScaffolderTaskOutput;
-}) => JSX.Element | null;
+}) => React_2.JSX.Element | null;
 
 // @alpha (undocumented)
-export const EmbeddableWorkflow: (props: WorkflowProps) => JSX.Element;
+export const EmbeddableWorkflow: (props: WorkflowProps) => React_2.JSX.Element;
 
 // @alpha
 export const extractSchemaFromStep: (inputStep: JsonObject) => {
@@ -56,7 +56,9 @@ export const extractSchemaFromStep: (inputStep: JsonObject) => {
 };
 
 // @alpha
-export const Form: (props: PropsWithChildren<FormProps_2>) => JSX.Element;
+export const Form: (
+  props: PropsWithChildren<FormProps_2>,
+) => React_2.JSX.Element;
 
 // @alpha
 export type FormProps = Pick<
@@ -123,7 +125,7 @@ export interface ParsedTemplateSchema {
 }
 
 // @alpha
-export const ReviewState: (props: ReviewStateProps) => JSX.Element;
+export const ReviewState: (props: ReviewStateProps) => React_2.JSX.Element;
 
 // @alpha
 export type ReviewStateProps = {
@@ -134,7 +136,7 @@ export type ReviewStateProps = {
 // @alpha
 export const ScaffolderField: (
   props: PropsWithChildren<ScaffolderFieldProps>,
-) => JSX.Element;
+) => React_2.JSX.Element;
 
 // @alpha
 export interface ScaffolderFieldProps {
@@ -159,7 +161,7 @@ export interface ScaffolderFieldProps {
 // @alpha (undocumented)
 export function ScaffolderPageContextMenu(
   props: ScaffolderPageContextMenuProps,
-): JSX.Element | null;
+): React_2.JSX.Element | null;
 
 // @alpha (undocumented)
 export type ScaffolderPageContextMenuProps = {
@@ -169,7 +171,7 @@ export type ScaffolderPageContextMenuProps = {
 };
 
 // @alpha
-export const Stepper: (stepperProps: StepperProps) => JSX.Element;
+export const Stepper: (stepperProps: StepperProps) => React_2.JSX.Element;
 
 // @alpha
 export type StepperProps = {
@@ -192,10 +194,10 @@ export const TaskLogStream: (props: {
   logs: {
     [k: string]: string[];
   };
-}) => JSX.Element;
+}) => React_2.JSX.Element;
 
 // @alpha
-export const TaskSteps: (props: TaskStepsProps) => JSX.Element;
+export const TaskSteps: (props: TaskStepsProps) => React_2.JSX.Element;
 
 // @alpha
 export interface TaskStepsProps {
@@ -210,7 +212,7 @@ export interface TaskStepsProps {
 }
 
 // @alpha
-export const TemplateCard: (props: TemplateCardProps) => JSX.Element;
+export const TemplateCard: (props: TemplateCardProps) => React_2.JSX.Element;
 
 // @alpha
 export interface TemplateCardProps {
@@ -227,10 +229,12 @@ export interface TemplateCardProps {
 }
 
 // @alpha
-export const TemplateCategoryPicker: () => JSX.Element | null;
+export const TemplateCategoryPicker: () => React_2.JSX.Element | null;
 
 // @alpha
-export const TemplateGroup: (props: TemplateGroupProps) => JSX.Element | null;
+export const TemplateGroup: (
+  props: TemplateGroupProps,
+) => React_2.JSX.Element | null;
 
 // @alpha (undocumented)
 export type TemplateGroupFilter = {
@@ -260,7 +264,9 @@ export interface TemplateGroupProps {
 }
 
 // @alpha (undocumented)
-export const TemplateGroups: (props: TemplateGroupsProps) => JSX.Element | null;
+export const TemplateGroups: (
+  props: TemplateGroupsProps,
+) => React_2.JSX.Element | null;
 
 // @alpha (undocumented)
 export interface TemplateGroupsProps {

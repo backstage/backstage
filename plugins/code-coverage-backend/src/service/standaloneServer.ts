@@ -16,8 +16,8 @@
 
 import {
   createServiceBuilder,
+  HostDiscovery,
   loadBackendConfig,
-  SingleHostDiscovery,
   UrlReaders,
   useHotMemoize,
 } from '@backstage/backend-common';
@@ -71,7 +71,7 @@ export async function startStandaloneServer(
   const router = await createRouter({
     database: { getClient: async () => db },
     config,
-    discovery: SingleHostDiscovery.fromConfig(config),
+    discovery: HostDiscovery.fromConfig(config),
     urlReader: UrlReaders.default({ logger, config }),
     logger,
     catalogApi,

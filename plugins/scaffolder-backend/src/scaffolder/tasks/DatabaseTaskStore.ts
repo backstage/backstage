@@ -261,18 +261,21 @@ export class DatabaseTaskStore implements TaskStore {
     tasks: { taskId: string }[];
   }> {
     const { timeoutS } = options;
-
+    let heartbeatInterval = this.db.raw(`? - interval '${timeoutS} seconds'`, [
+      this.db.fn.now(),
+    ]);
+    if (this.db.client.config.client.includes('mysql')) {
+      heartbeatInterval = this.db.raw(
+        `date_sub(now(), interval ${timeoutS} second)`,
+      );
+    } else if (this.db.client.config.client.includes('sqlite3')) {
+      heartbeatInterval = this.db.raw(`datetime('now', ?)`, [
+        `-${timeoutS} seconds`,
+      ]);
+    }
     const rawRows = await this.db<RawDbTaskRow>('tasks')
       .where('status', 'processing')
-      .andWhere(
-        'last_heartbeat_at',
-        '<=',
-        this.db.client.config.client.includes('sqlite3')
-          ? this.db.raw(`datetime('now', ?)`, [`-${timeoutS} seconds`])
-          : this.db.raw(`? - interval '${timeoutS} seconds'`, [
-              this.db.fn.now(),
-            ]),
-      );
+      .andWhere('last_heartbeat_at', '<=', heartbeatInterval);
     const tasks = rawRows.map(row => ({
       taskId: row.id,
     }));
