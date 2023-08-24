@@ -7,6 +7,6 @@ metadata:
     Common functionalities for the scaffolder, to be shared between scaffolder
     and scaffolder-backend plugin
 spec:
-  lifecycle: experimental
+  lifecycle: production
   type: backstage-common-library
   owner: maintainers

@@ -5,6 +5,6 @@ metadata:
   title: '@backstage/catalog-model'
   description: Types and validators that help describe the model of a Backstage Catalog
 spec:
-  lifecycle: experimental
+  lifecycle: production
   type: backstage-common-library
   owner: maintainers

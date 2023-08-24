@@ -5,6 +5,6 @@ metadata:
   title: '@backstage/dev-utils'
   description: Utilities for developing Backstage plugins.
 spec:
-  lifecycle: experimental
+  lifecycle: production
   type: backstage-web-library
   owner: maintainers

@@ -5,6 +5,6 @@ metadata:
   title: '@backstage/test-utils'
   description: Utilities to test Backstage plugins and apps.
 spec:
-  lifecycle: experimental
+  lifecycle: production
   type: backstage-web-library
   owner: maintainers
