@@ -67,7 +67,7 @@ export const Content = ({
       return await visitsApi
         .listUserVisits({
           limit: numVisitsTotal ?? 8,
-          orderBy: { timestamp: 'desc' },
+          orderBy: [{ field: 'timestamp', direction: 'desc' }],
         })
         .then(setVisits);
     }
@@ -75,7 +75,7 @@ export const Content = ({
       return await visitsApi
         .listUserVisits({
           limit: numVisitsTotal ?? 8,
-          orderBy: { hits: 'desc' },
+          orderBy: [{ field: 'hits', direction: 'desc' }],
         })
         .then(setVisits);
     }

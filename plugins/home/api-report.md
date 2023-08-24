@@ -14,13 +14,15 @@ import { CardSettings as CardSettings_2 } from '@backstage/plugin-home-react';
 import { ComponentParts as ComponentParts_2 } from '@backstage/plugin-home-react';
 import { ComponentRenderer as ComponentRenderer_2 } from '@backstage/plugin-home-react';
 import { createCardExtension as createCardExtension_2 } from '@backstage/plugin-home-react';
-import { JsonValue } from '@backstage/types';
+import { Dispatch } from 'react';
 import { JSX as JSX_2 } from 'react';
 import { default as React_2 } from 'react';
 import { ReactElement } from 'react';
 import { ReactNode } from 'react';
 import { RendererProps as RendererProps_2 } from '@backstage/plugin-home-react';
 import { RouteRef } from '@backstage/core-plugin-api';
+import { SetStateAction } from 'react';
+import { stringifyEntityRef } from '@backstage/catalog-model';
 
 // @public
 export type Breakpoint = 'xxs' | 'xs' | 'sm' | 'md' | 'lg' | 'xl';
@@ -98,6 +100,25 @@ export type CustomHomepageGridProps = {
   allowOverlap?: boolean;
   preventCollision?: boolean;
 };
+
+// @public
+export const DoNotTrack: ({
+  children,
+}: {
+  children?: ReactNode;
+}) => JSX.Element;
+
+// @public
+export const getToEntityRef: ({
+  rootPath,
+  stringifyEntityRefImpl,
+}?: {
+  rootPath?: string | undefined;
+  stringifyEntityRefImpl?: typeof stringifyEntityRef | undefined;
+}) => ({ pathname }: { pathname: string }) => string | undefined;
+
+// @public
+export const getVisitName: (document: Document) => () => string;
 
 // @public
 export const HeaderWorldClock: (props: {
@@ -194,6 +215,9 @@ export type ToolkitContentProps = {
 };
 
 // @public
+export const useVisitListener: () => VisitListenerContextValue;
+
+// @public
 export type Visit = {
   id: string;
   name: string;
@@ -215,24 +239,46 @@ export type VisitedByTypeProps = {
   kind: VisitedByTypeKind;
 };
 
+// @public
+export const VisitListener: ({
+  children,
+  toEntityRef,
+  visitName,
+}: {
+  children?: React_2.ReactNode;
+  toEntityRef?:
+    | (({ pathname }: { pathname: string }) => string | undefined)
+    | undefined;
+  visitName?: (({ pathname }: { pathname: string }) => string) | undefined;
+}) => JSX.Element;
+
 // @public (undocumented)
-export type VisitFilter = {
-  field: string;
-  operator: '<' | '<=' | '==' | '>' | '>=' | 'contains';
-  value: JsonValue;
+export const VisitListenerContext: React_2.Context<VisitListenerContextValue>;
+
+// @public (undocumented)
+export type VisitListenerContextValue = {
+  doNotTrack: boolean;
+  setDoNotTrack: Dispatch<SetStateAction<boolean>>;
 };
 
 // @public
 export interface VisitsApi {
   listUserVisits(queryParams?: VisitsApiQueryParams): Promise<Visit[]>;
-  saveVisit(saveParams: VisitsApiSaveParams): Promise<void>;
+  saveVisit(saveParams: VisitsApiSaveParams): Promise<Visit>;
 }
 
 // @public
 export type VisitsApiQueryParams = {
   limit?: number;
-  orderBy?: Record<string, 'asc' | 'desc'>;
-  filterBy?: VisitFilter[];
+  orderBy?: Array<{
+    field: keyof Visit;
+    direction: 'asc' | 'desc';
+  }>;
+  filterBy?: Array<{
+    field: keyof Visit;
+    operator: '<' | '<=' | '==' | '>' | '>=' | 'contains';
+    value: string | number;
+  }>;
 };
 
 // @public (undocumented)
