@@ -430,7 +430,7 @@ describe('expandShorthandExtensionParameters', () => {
     expect(() =>
       run({ 'core.router': { foo: { settings: true } } }),
     ).toThrowErrorMatchingInlineSnapshot(
-      `"Invalid extension configuration at app.extensions[1][core.router].foo, unknown parameter; expected one of 'id', 'at', 'disabled', 'extension', 'config'"`,
+      `"Invalid extension configuration at app.extensions[1][core.router].foo, unknown parameter; expected one of 'at', 'disabled', 'extension', 'config'"`,
     );
   });
 });
