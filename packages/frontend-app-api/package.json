@@ -35,6 +35,7 @@
     "@backstage/config": "workspace:^",
     "@backstage/frontend-plugin-api": "workspace:^",
     "@backstage/plugin-graphiql": "workspace:^",
+    "@backstage/types": "workspace:^",
     "lodash": "^4.17.21"
   },
   "peerDependencies": {

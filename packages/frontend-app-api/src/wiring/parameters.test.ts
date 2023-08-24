@@ -17,6 +17,7 @@
 import { ConfigReader } from '@backstage/config';
 import { Extension } from '@backstage/frontend-plugin-api';
 import {
+  expandShorthandExtensionParameters,
   mergeExtensionParameters,
   readAppExtensionParameters,
 } from './parameters';
@@ -171,5 +172,13 @@ describe('readAppExtensionParameters', () => {
         disabled: false,
       },
     ]);
+  });
+});
+
+describe('expandShorthandExtensionParameters', () => {
+  it('should expand string entries', () => {
+    expect(expandShorthandExtensionParameters('core.router', 1)).toBe({
+      id: 'generated.1',
+    });
   });
 });

@@ -16,6 +16,12 @@
 
 import { Config } from '@backstage/config';
 import { ExtensionInstanceParameters } from '@backstage/frontend-plugin-api';
+import { JsonValue } from '@backstage/types';
+
+const generateExtensionId = (() => {
+  let index = 1;
+  return () => `generated.${index++}`;
+})();
 
 // Since we'll never merge arrays in config the config reader context
 // isn't too much of a help. Fall back to manual config reading logic
@@ -34,55 +40,115 @@ export function readAppExtensionParameters(
     return [];
   }
 
-  return arr.map((value, index) => {
-    function errorMsg(msg: string, key?: string, prop?: string) {
-      return `Invalid extension configuration at app.extensions[${index}]${
-        key ? `[${key}]` : ''
-      }${prop ? `.${prop}` : ''}, ${msg}`;
-    }
+  return arr.map(expandShorthandExtensionParameters);
+}
 
-    if (typeof value === 'string') {
-      return { id: value };
-    } else if (
-      typeof value !== 'object' ||
-      value === null ||
-      Array.isArray(value)
-    ) {
-      throw new Error(errorMsg('must be a string or an object'));
-    }
+/** @internal */
+export function expandShorthandExtensionParameters(
+  arrayEntry: JsonValue,
+  arrayIndex: number,
+): ExtensionInstanceParameters {
+  function errorMsg(msg: string, key?: string, prop?: string) {
+    return `Invalid extension configuration at app.extensions[${arrayIndex}]${
+      key ? `[${key}]` : ''
+    }${prop ? `.${prop}` : ''}, ${msg}`;
+  }
 
-    const keys = Object.keys(value);
-    if (keys.length !== 1) {
-      const joinedKeys = `"${keys.join('", "')}"`;
-      throw new Error(errorMsg(`must have exactly one key, got ${joinedKeys}`));
-    }
+  // YAML example:
+  // - entity.card.about
+  if (typeof arrayEntry === 'string') {
+    return {
+      id: arrayEntry,
+    };
+  }
 
-    const key = keys[0];
-    const obj = value[key];
-    if (typeof obj === 'boolean') {
-      return { id: key, disabled: !obj };
-    }
+  // All remaining cases are single-key objects
+  if (
+    typeof arrayEntry !== 'object' ||
+    arrayEntry === null ||
+    Array.isArray(arrayEntry)
+  ) {
+    throw new Error(errorMsg('must be a string or an object'));
+  }
+  const keys = Object.keys(arrayEntry);
+  if (keys.length !== 1) {
+    const joinedKeys = `"${keys.join('", "')}"`;
+    throw new Error(errorMsg(`must have exactly one key, got ${joinedKeys}`));
+  }
 
-    if (typeof obj !== 'object' || obj === null || Array.isArray(obj)) {
-      throw new Error(errorMsg('must be an object', key));
+  const key = keys[0];
+  const value = arrayEntry[key];
+
+  // YAML example:
+  // - catalog.page.cicd: false
+  if (typeof value === 'boolean') {
+    if (key.includes('/')) {
+      const suggestion = key.split('/')[0];
+      throw new Error(
+        errorMsg(
+          `cannot target an extension instance input (key cannot contain slashes; did you mean '${suggestion}'?)`,
+          key,
+        ),
+      );
     }
-    const at = obj.at;
-    if (at !== undefined && typeof at !== 'string') {
-      throw new Error(errorMsg('must be a string', key, 'at'));
-    }
-    const disabled = obj.disabled;
-    if (disabled !== undefined && typeof disabled !== 'boolean') {
-      throw new Error(errorMsg('must be a boolean', key, 'disabled'));
-    }
-    const extension = obj.extension;
-    if (extension !== undefined && typeof extension !== 'string') {
-      throw new Error(errorMsg('must be a string', key, 'extension'));
-    }
-    if (extension) {
-      throw new Error('TODO: implement extension resolution');
-    }
-    return { id: key, at, disabled, config: obj.config /* validate later */ };
-  });
+    return {
+      id: key,
+      disabled: !value,
+    };
+  }
+
+  // All remaining cases have object-shaped values
+  if (typeof value !== 'object' || value === null || Array.isArray(value)) {
+    throw new Error(errorMsg('must be an object', key));
+  }
+
+  // YAML examples:
+  // - tech-radar.page:
+  //     at: core.router/routes
+  //     extension: '@backstage/plugin-tech-radar#TechRadarPage'
+  //     config:
+  //       path: /tech-radar
+  //       width: 1500
+  //       height: 800
+  // - core.router/routes:
+  //     id: tech-radar.page
+  //     extension: '@backstage/plugin-tech-radar#TechRadarPage'
+  //     config:
+  //       path: /tech-radar
+  //       width: 1500
+  //       height: 800
+  const { id, at, disabled, extension, config, ...unknownProperties } = value;
+  if (id !== undefined && typeof id !== 'string') {
+    throw new Error(errorMsg('must be a string', key, 'id'));
+  } else if (at !== undefined && typeof at !== 'string') {
+    throw new Error(errorMsg('must be a string', key, 'at'));
+  } else if (disabled !== undefined && typeof disabled !== 'boolean') {
+    throw new Error(errorMsg('must be a boolean', key, 'disabled'));
+  } else if (extension !== undefined && typeof extension !== 'string') {
+    throw new Error(errorMsg('must be a string', key, 'extension'));
+  } else if (extension) {
+    throw new Error('TODO: implement extension resolution');
+  } else if (
+    config !== undefined &&
+    (typeof config !== 'object' || config === null || Array.isArray(config))
+  ) {
+    throw new Error(errorMsg('must be an object', key, 'config'));
+  } else if (Object.entries(unknownProperties).length) {
+    throw new Error(
+      errorMsg(
+        'is an unknown property',
+        key,
+        Object.keys(unknownProperties)[0],
+      ),
+    );
+  }
+
+  return {
+    id: key,
+    at,
+    disabled,
+    config: value.config /* validate later */,
+  };
 }
 
 /** @internal */
