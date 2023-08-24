@@ -62,11 +62,12 @@ export class PinnipedAuthProvider implements OAuthHandlers {
   async start(req: OAuthStartRequest): Promise<OAuthStartResponse> {
     const { strategy } = await this.implementation;
 
-    const stringifiedAudience = req.query?.audience as string
-    const state = {...req.state, audience: stringifiedAudience }
+    const stringifiedAudience = req.query?.audience as string;
+    const state = { ...req.state, audience: stringifiedAudience };
 
     const options: Record<string, string> = {
-      scope: req.scope || 'openid pinniped:request-audience username',
+      scope:
+        req.scope || 'openid pinniped:request-audience username offline_access',
       state: encodeState(state),
     };
     return new Promise((resolve, reject) => {
@@ -87,10 +88,10 @@ export class PinnipedAuthProvider implements OAuthHandlers {
 
     // the query string inside the req should contain a code and a state, we can change the stub to reject any auth code,
 
-    //if we dont add a base url our integration fails with invalid_url error in integration test
-    const { searchParams } = new URL(req.url, 'https://pinniped.com')
-    const stateParam = searchParams.get('state')
-    const audience = stateParam ? readState(stateParam).audience : "none"
+    // if we dont add a base url our integration fails with invalid_url error in integration test
+    const { searchParams } = new URL(req.url, 'https://pinniped.com');
+    const stateParam = searchParams.get('state');
+    const audience = stateParam ? readState(stateParam).audience : 'none';
 
     return new Promise((resolve, reject) => {
       strategy.success = user => {
@@ -102,6 +103,7 @@ export class PinnipedAuthProvider implements OAuthHandlers {
             },
             profile: {},
           },
+          refreshToken: user.tokenset.refresh_token,
         });
       };
       strategy.fail = info => {
@@ -120,13 +122,15 @@ export class PinnipedAuthProvider implements OAuthHandlers {
     });
   }
 
-  async refresh(req: OAuthRefreshRequest): Promise<{ response: OAuthResponse; refreshToken?: string }> {
+  async refresh(
+    req: OAuthRefreshRequest,
+  ): Promise<{ response: OAuthResponse; refreshToken?: string }> {
     const { client } = await this.implementation;
     const tokenset = await client.refresh(req.refreshToken);
 
     return new Promise((resolve, reject) => {
-      if(!tokenset.access_token){
-        reject(new Error('Refresh Failed'))
+      if (!tokenset.access_token) {
+        reject(new Error('Refresh Failed'));
       }
 
       resolve({
@@ -139,7 +143,7 @@ export class PinnipedAuthProvider implements OAuthHandlers {
         },
         refreshToken: tokenset.refresh_token,
       });
-    })
+    });
   }
 
   private async setupStrategy(options: PinnipedOptions): Promise<OidcImpl> {

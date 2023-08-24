@@ -14,7 +14,12 @@
  * limitations under the License.
  */
 import { setupRequestMockHandlers } from '@backstage/backend-test-utils';
-import { OAuthRefreshRequest, OAuthStartRequest, encodeState, readState } from '../../lib/oauth';
+import {
+  OAuthRefreshRequest,
+  OAuthStartRequest,
+  encodeState,
+  readState,
+} from '../../lib/oauth';
 import { PinnipedAuthProvider, PinnipedOptions } from './provider';
 import { setupServer } from 'msw/node';
 import { rest } from 'msw';
@@ -70,7 +75,7 @@ describe('PinnipedAuthProvider', () => {
     iat: Date.now(),
     aud: clientMetadata.clientId,
     exp: Date.now() + 10000,
-  }
+  };
 
   const idToken = new UnsecuredJWT(testTokenMetadata)
     .setIssuer(testTokenMetadata.iss)
@@ -102,41 +107,39 @@ describe('PinnipedAuthProvider', () => {
         ),
       ),
       rest.all(
-        'https://federationDomain.test/.well-known/openid-configuration', (_req, res, ctx) => 
-           res(
+        'https://federationDomain.test/.well-known/openid-configuration',
+        (_req, res, ctx) =>
+          res(
             ctx.status(200),
             ctx.set('Content-Type', 'application/json'),
             ctx.json(issuerMetadata),
-          )
-        
+          ),
       ),
       rest.post('https://pinniped.test/oauth2/token', (req, res, ctx) =>
-          res(
-            req.headers.get('Authorization')
-              ? ctx.json({
-                  access_token: 'accessToken',
-                  refresh_token: 'refreshToken',
-                  id_token: idToken,
-                })
-              : ctx.status(401),
-          ),
+        res(
+          req.headers.get('Authorization')
+            ? ctx.json({
+                access_token: 'accessToken',
+                refresh_token: 'refreshToken',
+                id_token: idToken,
+              })
+            : ctx.status(401),
         ),
-      rest.get(
-        'https://pinniped.test/idp/userinfo.openid',
-        (_req, res, ctx) =>
-          res(
-            ctx.json({
-              iss: 'https://pinniped.test',
-              sub: 'test',
-              aud: clientMetadata.clientId,
-              claims: {
-                given_name: 'Givenname',
-                family_name: 'Familyname',
-                email: 'user@example.com',
-              },
-            }),
-            ctx.status(200),
-          ),
+      ),
+      rest.get('https://pinniped.test/idp/userinfo.openid', (_req, res, ctx) =>
+        res(
+          ctx.json({
+            iss: 'https://pinniped.test',
+            sub: 'test',
+            aud: clientMetadata.clientId,
+            claims: {
+              given_name: 'Givenname',
+              family_name: 'Familyname',
+              email: 'user@example.com',
+            },
+          }),
+          ctx.status(200),
+        ),
       ),
     );
 
@@ -147,7 +150,7 @@ describe('PinnipedAuthProvider', () => {
       url: 'test',
       state: oauthState,
     } as unknown as OAuthStartRequest;
-    
+
     provider = new PinnipedAuthProvider(clientMetadata);
   });
 
@@ -169,15 +172,18 @@ describe('PinnipedAuthProvider', () => {
     });
 
     it('passes audience query parameter into OAuthState in the redirect url when defined in the request', async () => {
-      startRequest.query = { audience: 'test-cluster'}
-      const startResponse = await provider.start(startRequest)
-      const { searchParams } = new URL(startResponse.url)
+      startRequest.query = { audience: 'test-cluster' };
+      const startResponse = await provider.start(startRequest);
+      const { searchParams } = new URL(startResponse.url);
       const stateParam = searchParams.get('state');
       const decodedState = readState(stateParam!);
 
-      expect(decodedState).toMatchObject({nonce: 'nonce',
-      env: 'env', audience:'test-cluster' })
-    })
+      expect(decodedState).toMatchObject({
+        nonce: 'nonce',
+        env: 'env',
+        audience: 'test-cluster',
+      });
+    });
 
     it('passes client ID from config', async () => {
       const startResponse = await provider.start(startRequest);
@@ -214,7 +220,12 @@ describe('PinnipedAuthProvider', () => {
       const scopes = searchParams.get('scope')?.split(' ') ?? [];
 
       expect(scopes).toEqual(
-        expect.arrayContaining(['openid', 'pinniped:request-audience', 'username']),
+        expect.arrayContaining([
+          'openid',
+          'pinniped:request-audience',
+          'username',
+          'offline_access',
+        ]),
       );
     });
 
@@ -241,10 +252,12 @@ describe('PinnipedAuthProvider', () => {
     let handlerRequest: express.Request;
 
     beforeEach(() => {
-      //we want to somehow pass an authentication header in this request for testing purposes
+      // we want to somehow pass an authentication header in this request for testing purposes
       handlerRequest = {
         method: 'GET',
-        url: `https://test?code=authorization_code&state=${encodeState(oauthState)}`,
+        url: `https://test?code=authorization_code&state=${encodeState(
+          oauthState,
+        )}`,
         session: {
           'oidc:pinniped.test': {
             state: encodeState(oauthState),
@@ -252,18 +265,27 @@ describe('PinnipedAuthProvider', () => {
         },
       } as unknown as express.Request;
     });
-    
-    it('exchanges authorization code for a valid access_token', async() => {
-      const handlerResponse = await provider.handler(handlerRequest);
-      const accessToken = handlerResponse.response.providerInfo.accessToken
-      
-      expect(accessToken).toEqual('accessToken')
-    })
 
-    it('request errors out with missing authorization_code parameter in the request_url', async() => {
-      handlerRequest.url = "https://test.com"
-      return expect(provider.handler(handlerRequest)).rejects.toThrow('Unexpected redirect')
-    })
+    it('exchanges authorization code for a access_token', async () => {
+      const handlerResponse = await provider.handler(handlerRequest);
+      const accessToken = handlerResponse.response.providerInfo.accessToken;
+
+      expect(accessToken).toEqual('accessToken');
+    });
+
+    it('exchanges authorization code for a refresh_token', async () => {
+      const handlerResponse = await provider.handler(handlerRequest);
+      const refreshToken = handlerResponse.refreshToken;
+
+      expect(refreshToken).toEqual('refreshToken');
+    });
+
+    it('request errors out with missing authorization_code parameter in the request_url', async () => {
+      handlerRequest.url = 'https://test.com';
+      return expect(provider.handler(handlerRequest)).rejects.toThrow(
+        'Unexpected redirect',
+      );
+    });
 
     it('fails when request has no state in req_url', async () => {
       return expect(
@@ -290,8 +312,8 @@ describe('PinnipedAuthProvider', () => {
       ).rejects.toThrow('authentication requires session support');
     });
 
-    //if no valid key is in the jwks array or even an unsigned jwt
-    //have pinniped reject your clientid and secret possibly as a unit test
+    // if no valid key is in the jwks array or even an unsigned jwt
+    // have pinniped reject your clientid and secret possibly as a unit test
   });
 
   describe('#refresh', () => {
@@ -299,24 +321,20 @@ describe('PinnipedAuthProvider', () => {
 
     beforeEach(() => {
       refreshRequest = {
-        refreshToken: 'otherRefreshToken'
+        refreshToken: 'otherRefreshToken',
       } as unknown as OAuthRefreshRequest;
     });
 
-    it('gets new refresh token', async() => {
+    it('gets new refresh token', async () => {
       const { refreshToken } = await provider.refresh(refreshRequest);
-      
-      expect(refreshToken).toBe('refreshToken')
-    })
 
-    it('gets an access_token', async() => {
-      const { response } = await provider.refresh(refreshRequest)
+      expect(refreshToken).toBe('refreshToken');
+    });
 
-      expect(response.providerInfo.accessToken).toBe("accessToken")
-    })
-    //find out when refresh requests are even made?
-    //so far looks like the response should be exactly like the one returned by the handler
-    //what are we exchanging exactly to get this refresh token??
+    it('gets an access_token', async () => {
+      const { response } = await provider.refresh(refreshRequest);
 
-  })
+      expect(response.providerInfo.accessToken).toBe('accessToken');
+    });
+  });
 });
