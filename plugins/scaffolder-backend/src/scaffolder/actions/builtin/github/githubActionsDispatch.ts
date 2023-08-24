@@ -121,5 +121,3 @@ export function createGithubActionsDispatchAction(options: {
     },
   });
 }
-
-export { examples };
