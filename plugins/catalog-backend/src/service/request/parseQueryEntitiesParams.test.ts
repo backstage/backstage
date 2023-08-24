@@ -28,11 +28,11 @@ describe('parseQueryEntitiesParams', () => {
       const validRequest = {
         authorizationToken: 'to_not_be_returned',
         fields: ['kind'],
-        limit: '3',
+        limit: 3,
         filter: ['a=1', 'b=2'],
         orderField: ['metadata.name,desc'],
         fullTextFilterTerm: 'query',
-        fullTextFilterFields: 'metadata.name,metadata.namespace',
+        fullTextFilterFields: ['metadata.name', 'metadata.namespace'],
       };
       const parsedObj = parseQueryEntitiesParams(
         validRequest,
@@ -65,9 +65,7 @@ describe('parseQueryEntitiesParams', () => {
       { filter: 3 },
       { orderField: ['metadata.uid,diagonal'] },
       { fields: [4] },
-      { fullTextFilterTerm: [] },
-      { fullTextFilterFields: 3 },
-    ])('should throw if some parameter is not valid %p', params => {
+    ])('should throw if some parameter is not valid %p', (params: any) => {
       expect(() => parseQueryEntitiesParams(params)).toThrow();
     });
   });
@@ -83,7 +81,7 @@ describe('parseQueryEntitiesParams', () => {
       const validRequest = {
         authorizationToken: 'to_not_be_returned',
         fields: ['kind'],
-        limit: '3',
+        limit: 3,
         cursor: encodeCursor(cursor),
       };
       const parsedObj = parseQueryEntitiesParams(
@@ -103,10 +101,10 @@ describe('parseQueryEntitiesParams', () => {
       const validRequest = {
         authorizationToken: 'to_not_be_returned',
         fields: ['kind'],
-        limit: '3',
+        limit: 3,
         cursor: encodeCursor(cursor),
         filter: ['a=1', 'b=2'],
-        orderField: 'orderField,desc',
+        orderField: ['orderField,desc'],
         query: 'query',
       };
       const parsedObj = parseQueryEntitiesParams(
@@ -128,7 +126,7 @@ describe('parseQueryEntitiesParams', () => {
 
     it.each([{ cursor: [] }, { fields: [4] }])(
       'should throw if some parameter is not valid %p',
-      params => {
+      (params: any) => {
         expect(() => parseQueryEntitiesParams(params)).toThrow();
       },
     );
