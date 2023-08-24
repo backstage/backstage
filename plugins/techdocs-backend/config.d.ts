@@ -201,12 +201,12 @@ export interface Config {
              * (Optional) Connection string of the storage container.
              * @visibility secret
              */
-            connectionString: string;
+            connectionString?: string;
             /**
              * (Optional) Credentials used to access a storage container.
              * @visibility secret
              */
-            credentials: {
+            credentials?: {
               /**
                * Account access name
                * @visibility secret
