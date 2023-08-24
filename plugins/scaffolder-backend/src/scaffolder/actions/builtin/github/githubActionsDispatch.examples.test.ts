@@ -93,7 +93,6 @@ describe('github:actions:dispatch', () => {
       input: { repoUrl, workflowId, branchOrTagName },
     });
     await action.handler(ctx);
-    console.log(ctx);
 
     expect(
       mockOctokit.rest.actions.createWorkflowDispatch,
