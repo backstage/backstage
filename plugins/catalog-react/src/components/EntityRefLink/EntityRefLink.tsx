@@ -71,7 +71,7 @@ export const EntityRefLink = forwardRef<any, EntityRefLinkProps>(
     kind = kind.toLocaleLowerCase('en-US');
     namespace = namespace?.toLocaleLowerCase('en-US') ?? DEFAULT_NAMESPACE;
 
-    const routeParams = { kind, namespace, name };
+    const routeParams = { kind, namespace, name: encodeURIComponent(name) };
     const formattedEntityRefTitle = humanizeEntityRef(
       { kind, namespace, name },
       { defaultKind },

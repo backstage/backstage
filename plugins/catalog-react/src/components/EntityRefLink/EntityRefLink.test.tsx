@@ -174,4 +174,26 @@ describe('<EntityRefLink />', () => {
       '/catalog/test/component/software',
     );
   });
+
+  it('renders link by encoding name as URI component', async () => {
+    const entityName = {
+      kind: 'Component',
+      namespace: 'test',
+      name: 'softw#are',
+    };
+    await renderInTestApp(
+      <EntityRefLink entityRef={entityName} defaultKind="component">
+        Custom Children
+      </EntityRefLink>,
+      {
+        mountedRoutes: {
+          '/catalog/:namespace/:kind/:name/*': entityRouteRef,
+        },
+      },
+    );
+    expect(screen.getByText('Custom Children')).toHaveAttribute(
+      'href',
+      '/catalog/test/component/softw%23are',
+    );
+  });
 });
