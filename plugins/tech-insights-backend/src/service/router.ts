@@ -33,6 +33,7 @@ import {
 } from '@backstage/catalog-model';
 import { errorHandler } from '@backstage/backend-common';
 import { serializeError } from '@backstage/errors';
+import { FactRetrieverEngine } from './fact/FactRetrieverEngine';
 
 /**
  * @public
@@ -54,6 +55,11 @@ export interface RouterOptions<
    * TechInsights PersistenceContext. Should contain an implementation of TechInsightsStore
    */
   persistenceContext: PersistenceContext;
+
+  /**
+   * Fact Retriever Engine Implementation
+   */
+  factRetrieverEngine: FactRetrieverEngine;
 
   /**
    * Backstage config object
@@ -82,7 +88,8 @@ export async function createRouter<
 >(options: RouterOptions<CheckType, CheckResultType>): Promise<express.Router> {
   const router = Router();
   router.use(express.json());
-  const { persistenceContext, factChecker, logger } = options;
+  const { persistenceContext, factChecker, factRetrieverEngine, logger } =
+    options;
   const { techInsightsStore } = persistenceContext;
 
   if (factChecker) {
@@ -189,6 +196,16 @@ export async function createRouter<
         endDatetime,
       ),
     );
+  });
+
+  router.post('/facts/:namespace/:kind/:name', async (req, res) => {
+    const { namespace, kind, name } = req.params;
+    await factRetrieverEngine.recalculateFactsForComponent?.({
+      kind,
+      name,
+      namespace,
+    });
+    res.status(201).send();
   });
 
   router.use(errorHandler());

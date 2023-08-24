@@ -65,6 +65,20 @@ export interface FactRetrieverEngine {
    * @param ref - Reference to the task name stored in the executor database. By convention this is the fact retriever id
    */
   getJobRegistration(ref: string): Promise<FactRetrieverRegistration>;
+
+  /**
+   * Allows for recalculation of facts for a single entity, without having to run the entire fact retriever job
+   * @param entityRef - Reference of a component in the software catalog
+   */
+  recalculateFactsForComponent({
+    kind,
+    name,
+    namespace,
+  }: {
+    kind: string;
+    namespace: string;
+    name: string;
+  }): Promise<void>;
 }
 
 export class DefaultFactRetrieverEngine implements FactRetrieverEngine {
@@ -151,6 +165,44 @@ export class DefaultFactRetrieverEngine implements FactRetrieverEngine {
     this.logger.info(
       `Scheduled ${newRegs.length}/${registrations.length} fact retrievers into the tech-insights engine`,
     );
+  }
+
+  /**
+   * For a given entity reference, trigger all of the factRetrievers where the entityFilter will be exactly that single entityRef
+   * So recalculation of facts is allowed to run for a single entity.
+   * @param entityRef
+   */
+  async recalculateFactsForComponent({
+    kind,
+    name,
+    namespace,
+  }: {
+    kind: string;
+    namespace: string;
+    name: string;
+  }): Promise<void> {
+    const registrations = await this.factRetrieverRegistry.listRegistrations();
+
+    const factRetrieverHandlers = await Promise.all(
+      registrations.map(registration => {
+        const singleFactRetriever: FactRetriever = {
+          ...registration.factRetriever,
+          entityFilter: [
+            {
+              kind,
+              'metadata.name': name,
+              'metadata.namespace': namespace,
+            },
+          ],
+        };
+        return this.createFactRetrieverHandler(
+          singleFactRetriever,
+          registration.lifecycle,
+        );
+      }),
+    );
+
+    await Promise.all(factRetrieverHandlers.map(handler => handler()));
   }
 
   getJobRegistration(ref: string): Promise<FactRetrieverRegistration> {
