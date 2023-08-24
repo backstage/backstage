@@ -7,6 +7,7 @@
 
 import { ApiRef } from '@backstage/core-plugin-api';
 import { BackstagePlugin } from '@backstage/core-plugin-api';
+import { CatalogApi } from '@backstage/plugin-catalog-react';
 import { ErrorApi } from '@backstage/core-plugin-api';
 import { IconComponent } from '@backstage/core-plugin-api';
 import { JSX as JSX_2 } from 'react';
@@ -69,6 +70,10 @@ export class GraphQLEndpoints implements GraphQLBrowseApi {
   static create(config: EndpointConfig): GraphQLEndpoint;
   // (undocumented)
   static from(endpoints: GraphQLEndpoint[]): GraphQLEndpoints;
+  // (undocumented)
+  static fromCatalogEntities(
+    catalogApi: CatalogApi,
+  ): Promise<GraphQLEndpoint[]>;
   // (undocumented)
   getEndpoints(): Promise<GraphQLEndpoint[]>;
   static github(config: GithubEndpointConfig): GraphQLEndpoint;
