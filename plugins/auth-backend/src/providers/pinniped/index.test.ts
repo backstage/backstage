@@ -82,13 +82,22 @@ describe('pinniped.create', () => {
               response_modes_supported: ['query', 'form_post'],
               subject_types_supported: ['public'],
               token_endpoint_auth_methods_supported: ['client_secret_basic'],
-              id_token_signing_alg_values_supported: ['RS256', 'RS512', 'HS256', 'ES256'],
+              id_token_signing_alg_values_supported: [
+                'RS256',
+                'RS512',
+                'HS256',
+                'ES256',
+              ],
               token_endpoint_auth_signing_alg_values_supported: [
                 'RS256',
                 'RS512',
                 'HS256',
               ],
-              request_object_signing_alg_values_supported: ['RS256', 'RS512', 'HS256'],
+              request_object_signing_alg_values_supported: [
+                'RS256',
+                'RS512',
+                'HS256',
+              ],
               scopes_supported: [
                 'openid',
                 'offline_access',
@@ -96,7 +105,12 @@ describe('pinniped.create', () => {
                 'username',
                 'groups',
               ],
-              claims_supported: ['username', 'groups', 'additionalClaims', 'sub'],
+              claims_supported: [
+                'username',
+                'groups',
+                'additionalClaims',
+                'sub',
+              ],
               code_challenge_methods_supported: ['S256'],
               'discovery.supervisor.pinniped.dev/v1alpha1': {
                 pinniped_identity_providers_endpoint:
@@ -151,7 +165,7 @@ describe('pinniped.create', () => {
   it('/handler/frame exchanges authorization codes from /start for access tokens', async () => {
     const agent = request.agent('');
     // make a /start request
-    //add query parameter for the audience
+    // add query parameter for the audience
     const startResponse = await agent.get(
       `${appUrl}/api/auth/pinniped/start?env=development`,
     );
@@ -196,18 +210,14 @@ describe('pinniped.create', () => {
     publicKey.kid = privateKey.kid = uuid();
     publicKey.alg = privateKey.alg = 'ES256';
 
-
-    const jwt = await new SignJWT({ iss, sub, aud, iat, exp})
-    .setProtectedHeader({ alg: privateKey.alg, kid: privateKey.kid })
-    .setIssuer(iss)
-    .setAudience(aud)
-    .setSubject(sub)
-    .setIssuedAt(iat)
-    .setExpirationTime(exp)
-    .sign(await importJWK(privateKey));
-
-
-
+    const jwt = await new SignJWT({ iss, sub, aud, iat, exp })
+      .setProtectedHeader({ alg: privateKey.alg, kid: privateKey.kid })
+      .setIssuer(iss)
+      .setAudience(aud)
+      .setSubject(sub)
+      .setIssuedAt(iat)
+      .setExpirationTime(exp)
+      .sign(await importJWK(privateKey));
 
     fakePinnipedSupervisor.use(
       rest.post('https://pinniped.test/oauth2/token', async (req, res, ctx) =>
@@ -215,22 +225,23 @@ describe('pinniped.create', () => {
           // TODO verify client ID + secret, etc -- real token endpoint
           new URLSearchParams(await req.text()).get('code') ===
             'authorization_code'
-            ? ctx.json({ access_token: 'accessToken', id_token: jwt })
+            ? ctx.json({
+                access_token: 'accessToken',
+                id_token: jwt,
+                scope: 'testScope',
+              })
             : ctx.status(401),
         ),
       ),
-      rest.get('https://pinniped.test/jwks.json', async (_req, res, ctx) => 
-        res(
-          ctx.status(200),
-          ctx.json({ "keys": [{...publicKey}]
-          })
-        ))
+      rest.get('https://pinniped.test/jwks.json', async (_req, res, ctx) =>
+        res(ctx.status(200), ctx.json({ keys: [{ ...publicKey }] })),
+      ),
     );
 
     const handlerResponse = await agent.get(
       authorizationResponse.header.location,
     );
-      //our assertion doesnt include a scope but the return type does...might need to change our assertion?
+    // our assertion doesnt include a scope but the return type does...might need to change our assertion?
     expect(handlerResponse.text).toContain(
       encodeURIComponent(
         JSON.stringify({
@@ -238,7 +249,7 @@ describe('pinniped.create', () => {
           response: {
             providerInfo: {
               accessToken: 'accessToken',
-              scope: "none"
+              scope: 'testScope',
             },
             profile: {},
           },

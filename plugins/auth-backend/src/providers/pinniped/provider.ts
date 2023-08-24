@@ -99,7 +99,7 @@ export class PinnipedAuthProvider implements OAuthHandlers {
           response: {
             providerInfo: {
               accessToken: user.tokenset.access_token,
-              scope: 'none',
+              scope: user.tokenset.scope,
             },
             profile: {},
           },

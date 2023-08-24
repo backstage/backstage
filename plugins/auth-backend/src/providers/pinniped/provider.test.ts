@@ -95,17 +95,6 @@ describe('PinnipedAuthProvider', () => {
     jest.clearAllMocks();
 
     worker.use(
-      rest.post('https://pinniped.test/oauth2/token', (req, res, ctx) =>
-        res(
-          req.headers.get('Authorization')
-            ? ctx.json({
-                access_token: 'accessToken',
-                refresh_token: 'refreshToken',
-                id_token: idToken,
-              })
-            : ctx.status(401),
-        ),
-      ),
       rest.all(
         'https://federationDomain.test/.well-known/openid-configuration',
         (_req, res, ctx) =>
@@ -122,6 +111,7 @@ describe('PinnipedAuthProvider', () => {
                 access_token: 'accessToken',
                 refresh_token: 'refreshToken',
                 id_token: idToken,
+                scope: 'testScope',
               })
             : ctx.status(401),
         ),
@@ -278,6 +268,13 @@ describe('PinnipedAuthProvider', () => {
       const refreshToken = handlerResponse.refreshToken;
 
       expect(refreshToken).toEqual('refreshToken');
+    });
+
+    it('exchanges authorization_code for a tokenset with a defined scope', async () => {
+      const handlerResponse = await provider.handler(handlerRequest);
+      const responseScope = handlerResponse.response.providerInfo.scope;
+
+      expect(responseScope).toEqual('testScope');
     });
 
     it('request errors out with missing authorization_code parameter in the request_url', async () => {
