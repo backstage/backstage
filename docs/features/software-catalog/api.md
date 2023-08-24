@@ -286,13 +286,15 @@ Lists locations.
 Response type is JSON, on the form
 
 ```json
-{
-  "data": {
-    "id": "b9784c38-7118-472f-9e22-5638fc73bab0",
-    "target": "https://git.example.com/example-project/example-repository/blob/main/catalog-info.yaml",
-    "type": "url"
+[
+  {
+    "data": {
+      "id": "b9784c38-7118-472f-9e22-5638fc73bab0",
+      "target": "https://git.example.com/example-project/example-repository/blob/main/catalog-info.yaml",
+      "type": "url"
+    }
   }
-}
+]
 ```
 
 ### `POST /locations`
