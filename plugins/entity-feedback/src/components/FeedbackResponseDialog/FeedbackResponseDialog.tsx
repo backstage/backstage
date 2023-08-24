@@ -90,9 +90,14 @@ export const FeedbackResponseDialog = (props: FeedbackResponseDialogProps) => {
     const initialSelections = Object.fromEntries(
       feedbackDialogResponses.map(r => [r.id, false]),
     );
-    if (!initialSelections.hasOwnProperty('other')) {
+
+    if (
+      feedbackDialogResponses.some(response => response.id === 'other') &&
+      !initialSelections.hasOwnProperty('other')
+    ) {
       initialSelections.other = false;
     }
+
     return initialSelections;
   });
   const [comments, setComments] = useState('');
@@ -101,7 +106,7 @@ export const FeedbackResponseDialog = (props: FeedbackResponseDialogProps) => {
 
   const [{ loading: saving }, saveResponse] = useAsyncFn(async () => {
     try {
-      setErrorMessage(''); // Clear any previous error message
+      setErrorMessage('');
 
       if (
         enableValidation &&
@@ -113,7 +118,12 @@ export const FeedbackResponseDialog = (props: FeedbackResponseDialogProps) => {
         return;
       }
 
-      if (showCommentsTextBox && responseSelections.other && !comments) {
+      if (
+        showCommentsTextBox &&
+        (responseSelections.other ||
+          !feedbackDialogResponses.some(response => response.id === 'other')) &&
+        !comments
+      ) {
         setErrorMessage('Please add some comments.');
         return;
       }
@@ -128,6 +138,7 @@ export const FeedbackResponseDialog = (props: FeedbackResponseDialogProps) => {
       onClose();
     } catch (e) {
       errorApi.post(e as ErrorApiError);
+      setErrorMessage('An error occurred. Please try again.');
     }
   }, [
     comments,
@@ -168,32 +179,33 @@ export const FeedbackResponseDialog = (props: FeedbackResponseDialogProps) => {
               />
             ))}
           </FormGroup>
-          {enableValidation &&
-          Object.keys(responseSelections).every(key =>
-            key !== 'other' ? !responseSelections[key] : true,
-          ) ? (
+          {enableValidation && errorMessage ? (
             <FormHelperText error>
               *select the reason listed above
             </FormHelperText>
           ) : null}
         </FormControl>
-        {showCommentsTextBox && responseSelections.other === true && (
-          <FormControl fullWidth>
-            <TextField
-              data-testid="feedback-response-dialog-comments-input"
-              disabled={saving}
-              label="Additional comments"
-              multiline
-              minRows={2}
-              onChange={e => setComments(e.target.value)}
-              variant="outlined"
-              value={comments}
-            />
-            {showCommentsTextBox && !comments && (
-              <FormHelperText error>*add some comments</FormHelperText>
-            )}
-          </FormControl>
-        )}
+        {showCommentsTextBox &&
+          (responseSelections.other ||
+            !feedbackDialogResponses.some(
+              response => response.id === 'other',
+            )) && (
+            <FormControl fullWidth>
+              <TextField
+                data-testid="feedback-response-dialog-comments-input"
+                disabled={saving}
+                label="Additional comments"
+                multiline
+                minRows={2}
+                onChange={e => setComments(e.target.value)}
+                variant="outlined"
+                value={comments}
+              />
+              {showCommentsTextBox && !comments && (
+                <FormHelperText error>*add some comments</FormHelperText>
+              )}
+            </FormControl>
+          )}
         <Typography className={classes.contactConsent}>
           Can we reach out to you for more info?
           <Grid component="label" container alignItems="center" spacing={1}>
@@ -210,13 +222,13 @@ export const FeedbackResponseDialog = (props: FeedbackResponseDialogProps) => {
         </Typography>
       </DialogContent>
       <DialogActions>
-        <Button color="primary" disabled={saving} onClick={onClose}>
+        <Button color="primary" onClick={onClose}>
           Close
         </Button>
         <Button
           color="primary"
           data-testid="feedback-response-dialog-submit-button"
-          disabled={saving || errorMessage !== ''}
+          disabled={saving}
           onClick={saveResponse}
         >
           Submit
