@@ -15,7 +15,10 @@
  */
 
 import { Config } from '@backstage/config';
-import { ExtensionInstanceParameters } from '@backstage/frontend-plugin-api';
+import {
+  Extension,
+  ExtensionInstanceParameters,
+} from '@backstage/frontend-plugin-api';
 
 // Since we'll never merge arrays in config the config reader context
 // isn't too much of a help. Fall back to manual config reading logic
@@ -23,6 +26,9 @@ import { ExtensionInstanceParameters } from '@backstage/frontend-plugin-api';
 /** @internal */
 export function readAppExtensionParameters(
   rootConfig: Config,
+  resolveExtensionRef: (ref: string) => Extension<unknown> = () => {
+    throw new Error('Not Implemented');
+  },
 ): Partial<ExtensionInstanceParameters>[] {
   const arr = rootConfig.getOptional('app.extensions');
   if (!Array.isArray(arr)) {
@@ -34,54 +40,92 @@ export function readAppExtensionParameters(
     return [];
   }
 
-  return arr.map((value, index) => {
+  const generateIndex = (() => {
+    let generatedIndex = 1;
+    return () => `generated.${generatedIndex++}`;
+  })();
+
+  return arr.map((arrayEntry, index) => {
     function errorMsg(msg: string, key?: string, prop?: string) {
       return `Invalid extension configuration at app.extensions[${index}]${
         key ? `[${key}]` : ''
       }${prop ? `.${prop}` : ''}, ${msg}`;
     }
 
-    if (typeof value === 'string') {
-      return { id: value };
-    } else if (
-      typeof value !== 'object' ||
-      value === null ||
-      Array.isArray(value)
+    // Example YAML:
+    //   - entity.card.about
+    if (typeof arrayEntry === 'string') {
+      return { id: arrayEntry };
+    }
+
+    // All other forms are single-key objects
+    if (
+      typeof arrayEntry !== 'object' ||
+      arrayEntry === null ||
+      Array.isArray(arrayEntry)
     ) {
       throw new Error(errorMsg('must be a string or an object'));
     }
-
-    const keys = Object.keys(value);
+    const keys = Object.keys(arrayEntry);
     if (keys.length !== 1) {
       const joinedKeys = `"${keys.join('", "')}"`;
       throw new Error(errorMsg(`must have exactly one key, got ${joinedKeys}`));
     }
 
     const key = keys[0];
-    const obj = value[key];
-    if (typeof obj === 'boolean') {
-      return { id: key, disabled: !obj };
-    }
+    let value = arrayEntry[key];
 
-    if (typeof obj !== 'object' || obj === null || Array.isArray(obj)) {
+    let at = key.includes('/') ? key : undefined;
+    const id = at ? generateIndex() : key;
+    if (typeof value === 'boolean') {
+      if (at) {
+        throw new Error(
+          errorMsg('cannot be applied to an instance input', key),
+        );
+      }
+      value = { disabled: !value };
+    } else if (typeof value === 'string') {
+      value = { extension: value };
+    } else if (
+      typeof value !== 'object' ||
+      value === null ||
+      Array.isArray(value)
+    ) {
       throw new Error(errorMsg('must be an object', key));
     }
-    const at = obj.at;
-    if (at !== undefined && typeof at !== 'string') {
+
+    const atRef = value.at;
+    if (atRef !== undefined && typeof atRef !== 'string') {
       throw new Error(errorMsg('must be a string', key, 'at'));
+    } else if (atRef !== undefined) {
+      if (at) {
+        throw new Error(
+          errorMsg(
+            `must not specify 'at' when using attachment shorthand form`,
+            key,
+          ),
+        );
+      }
+      at = atRef;
     }
-    const disabled = obj.disabled;
+    const disabled = value.disabled;
     if (disabled !== undefined && typeof disabled !== 'boolean') {
       throw new Error(errorMsg('must be a boolean', key, 'disabled'));
     }
-    const extension = obj.extension;
-    if (extension !== undefined && typeof extension !== 'string') {
+    const extensionRef = value.extension;
+    if (extensionRef !== undefined && typeof extensionRef !== 'string') {
       throw new Error(errorMsg('must be a string', key, 'extension'));
     }
-    if (extension) {
-      throw new Error('TODO: implement extension resolution');
-    }
-    return { id: key, at, disabled, config: obj.config /* validate later */ };
+    const extension = extensionRef
+      ? resolveExtensionRef(extensionRef)
+      : undefined;
+    return {
+      id,
+      at,
+      disabled,
+      extension,
+      config: value.config /* validate later */,
+    };
   });
 }
 

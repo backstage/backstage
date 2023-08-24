@@ -172,4 +172,88 @@ describe('readAppExtensionParameters', () => {
       },
     ]);
   });
+
+  it('should support extension implementation shorthand', () => {
+    expect(
+      readAppExtensionParameters(
+        new ConfigReader({
+          app: {
+            extensions: [{ 'core.router': 'example-package#CustomRouter' }],
+          },
+        }),
+        ref => ({ ref } as unknown as Extension<unknown>),
+      ),
+    ).toEqual([
+      {
+        id: 'core.router',
+        extension: { ref: 'example-package#CustomRouter' },
+      },
+    ]);
+  });
+
+  it('should support attachment shorthand', () => {
+    expect(
+      readAppExtensionParameters(
+        new ConfigReader({
+          app: {
+            extensions: [
+              {
+                'core.router/routes': {
+                  extension: 'example-package#MyPage',
+                  config: { foo: 'bar' },
+                },
+              },
+            ],
+          },
+        }),
+        ref => ({ ref } as unknown as Extension<unknown>),
+      ),
+    ).toEqual([
+      {
+        id: 'generated.1',
+        at: 'core.router/routes',
+        extension: { ref: 'example-package#MyPage' },
+        config: { foo: 'bar' },
+      },
+    ]);
+  });
+
+  it('should support attachment with extension shorthand', () => {
+    expect(
+      readAppExtensionParameters(
+        new ConfigReader({
+          app: {
+            extensions: [{ 'core.router/routes': 'example-package#MyPage' }],
+          },
+        }),
+        ref => ({ ref } as unknown as Extension<unknown>),
+      ),
+    ).toEqual([
+      {
+        id: 'generated.1',
+        at: 'core.router/routes',
+        extension: { ref: 'example-package#MyPage' },
+      },
+    ]);
+  });
+
+  it('should reject attachment shorthand with explicit attachment', () => {
+    expect(() =>
+      readAppExtensionParameters(
+        new ConfigReader({
+          app: {
+            extensions: [
+              {
+                'core.router/routes': {
+                  at: 'other/input',
+                },
+              },
+            ],
+          },
+        }),
+      ),
+    ).toThrow(
+      `Invalid extension configuration at app.extensions[0][core.router/routes], must not specify 'at' when using attachment shorthand form`,
+    );
+  });
 });
