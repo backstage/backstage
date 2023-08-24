@@ -286,55 +286,56 @@ Lists locations.
 Response type is JSON, on the form
 
 ```json
-    {
-        "data": {
-            "id": "b9784c38-7118-472f-9e22-5638fc73bab0",
-            "target": "https://git.example.com/example-project/example-repository/blob/main/catalog-info.yaml",
-            "type": "url"
-        }
-    }
+{
+  "data": {
+    "id": "b9784c38-7118-472f-9e22-5638fc73bab0",
+    "target": "https://git.example.com/example-project/example-repository/blob/main/catalog-info.yaml",
+    "type": "url"
+  }
+}
 ```
 
 ### `POST /locations`
+
 Adds a location to be ingested by the catalog.
 
 If successful the response code will be `HTTP/1.1 201 Created` and a JSON on the form
 
 ```json
 {
-    "entities": [],
-    "location": {
-        "id": "b9784c38-7118-472f-9e22-5638fc73bab0",
-        "target": "https://git.example.com/example-project/example-repository/blob/main/catalog-info.yaml",
-        "type": "url"
-    }
+  "entities": [],
+  "location": {
+    "id": "b9784c38-7118-472f-9e22-5638fc73bab0",
+    "target": "https://git.example.com/example-project/example-repository/blob/main/catalog-info.yaml",
+    "type": "url"
+  }
 }
 ```
 
 If the location already exists the response will be `HTTP/1.1 409 Conflict` and a JSON on the form
+
 ```json
 {
-    "error": {
-        "message": "Location url:https://git.example.com/example-project/example-repository/blob/main/catalog-info.yaml already exists",
-        "name": "ConflictError",
-        "stack": "ConflictError: Location url:https://git.example.com/example-project/example-repository/blob/main/catalog-info.yaml already exists\n..."
-    },
-    "request": {
-        "method": "POST",
-        "url": "/locations"
-    },
-    "response": {
-        "statusCode": 409
-    }
+  "error": {
+    "message": "Location url:https://git.example.com/example-project/example-repository/blob/main/catalog-info.yaml already exists",
+    "name": "ConflictError",
+    "stack": "ConflictError: Location url:https://git.example.com/example-project/example-repository/blob/main/catalog-info.yaml already exists\n..."
+  },
+  "request": {
+    "method": "POST",
+    "url": "/locations"
+  },
+  "response": {
+    "statusCode": 409
+  }
 }
 ```
 
 Supports the `?dryRun=true` query parameter, which will perform validation and not write anything to the database. In the event of successfully passing validation, the `entities` field of the response JSON will be populated with entities present in the location.
 
-
 ### `DELETE /locations/<uid>`
 
-Delete a location by its id.  On success response code will be `HTTP/1.1 204 No Content`.
+Delete a location by its id. On success response code will be `HTTP/1.1 204 No Content`.
 
 ## Other
 
