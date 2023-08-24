@@ -4233,9 +4233,9 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@backstage/integration@npm:^1.6.1":
-  version: 1.6.1
-  resolution: "@backstage/integration@npm:1.6.1"
+"@backstage/integration@npm:^1.6.1, @backstage/integration@npm:^1.6.2":
+  version: 1.6.2
+  resolution: "@backstage/integration@npm:1.6.2"
   dependencies:
     "@azure/identity": ^3.2.1
     "@backstage/config": ^1.0.8
@@ -4246,7 +4246,7 @@ __metadata:
     git-url-parse: ^13.0.0
     lodash: ^4.17.21
     luxon: ^3.0.0
-  checksum: 1846abd59b8366219956ecedf6a24a20f65bbe8594eda37f8cca06485c31df173630774fed543a617a26498b9ba367224eb019edc29a36c7c32435fc8e1b24f1
+  checksum: 5ae6a3def92ee9feb114fecea8a36337df592f49f23875fa619b0eba223f287ed7bbe993c15cac99c2b45c3150e10bb2e1bb4389b34a09de5377365ab13e9ae7
   languageName: node
   linkType: hard
 
@@ -5701,16 +5701,16 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@backstage/plugin-catalog-react@npm:^1.2.4, @backstage/plugin-catalog-react@npm:^1.8.0, @backstage/plugin-catalog-react@npm:^1.8.2":
-  version: 1.8.2
-  resolution: "@backstage/plugin-catalog-react@npm:1.8.2"
+"@backstage/plugin-catalog-react@npm:^1.2.4, @backstage/plugin-catalog-react@npm:^1.8.0, @backstage/plugin-catalog-react@npm:^1.8.2, @backstage/plugin-catalog-react@npm:^1.8.3":
+  version: 1.8.3
+  resolution: "@backstage/plugin-catalog-react@npm:1.8.3"
   dependencies:
     "@backstage/catalog-client": ^1.4.3
     "@backstage/catalog-model": ^1.4.1
     "@backstage/core-components": ^0.13.4
     "@backstage/core-plugin-api": ^1.5.3
     "@backstage/errors": ^1.2.1
-    "@backstage/integration": ^1.6.1
+    "@backstage/integration": ^1.6.2
     "@backstage/plugin-catalog-common": ^1.0.15
     "@backstage/plugin-permission-common": ^0.7.7
     "@backstage/plugin-permission-react": ^0.4.14
@@ -5734,7 +5734,7 @@ __metadata:
     react: ^16.13.1 || ^17.0.0
     react-dom: ^16.13.1 || ^17.0.0
     react-router-dom: 6.0.0-beta.0 || ^6.3.0
-  checksum: e49413cfe0a41f9d8991355f74903c8b84a000134dd6ea07a3410a0940f0c28311bf75c50ae9f9450f4322a628b286209a56e00c8326402bb64f49f8854abf8d
+  checksum: 8d334dc8eb35399fb4fde7eb218589cc3bedf6f65665a0f379a578ca892ab4a06a83a6e0de2c392e16d12981a91c903efdaa78f577639dd8f73604c61541f60e
   languageName: node
   linkType: hard
 
@@ -14561,13 +14561,13 @@ __metadata:
   linkType: hard
 
 "@roadiehq/backstage-plugin-buildkite@npm:^2.0.8":
-  version: 2.1.13
-  resolution: "@roadiehq/backstage-plugin-buildkite@npm:2.1.13"
+  version: 2.1.14
+  resolution: "@roadiehq/backstage-plugin-buildkite@npm:2.1.14"
   dependencies:
     "@backstage/catalog-model": ^1.4.1
-    "@backstage/core-components": ^0.13.3
+    "@backstage/core-components": ^0.13.4
     "@backstage/core-plugin-api": ^1.5.3
-    "@backstage/plugin-catalog-react": ^1.8.0
+    "@backstage/plugin-catalog-react": ^1.8.3
     "@backstage/theme": ^0.4.1
     "@material-ui/core": ^4.12.1
     "@material-ui/icons": ^4.11.2
@@ -14580,7 +14580,7 @@ __metadata:
     react-dom: ^16.13.1 || ^17.0.0
     react-router: 6.0.0-beta.0 || ^6.3.0
     react-router-dom: 6.0.0-beta.0 || ^6.3.0
-  checksum: 03945723ee9f71717f7ea1ac0a240fb516b33740b86a11c0be0f22021bb0cfa5eec541b3cadc5e77efa9ef432c4e978885cd0124b8eabc74f410b6fbc7d55f91
+  checksum: 938fa38d6199a1c5199eb47851ddc0edb2f0d3064fa189baf104ff820096700cb95843c499353efc77b10c1fc721aa2a32b0146c1d3df1bea31f5af61dfd250b
   languageName: node
   linkType: hard
 
