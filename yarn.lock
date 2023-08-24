@@ -12962,8 +12962,8 @@ __metadata:
   linkType: hard
 
 "@material-ui/pickers@npm:^3.2.10, @material-ui/pickers@npm:^3.3.10":
-  version: 3.3.10
-  resolution: "@material-ui/pickers@npm:3.3.10"
+  version: 3.3.11
+  resolution: "@material-ui/pickers@npm:3.3.11"
   dependencies:
     "@babel/runtime": ^7.6.0
     "@date-io/core": 1.x
@@ -12977,7 +12977,7 @@ __metadata:
     prop-types: ^15.6.0
     react: ^16.8.0 || ^17.0.0
     react-dom: ^16.8.0 || ^17.0.0
-  checksum: b8ec52f2e8a4dfae8f14e29c41428a708c843d2c64b5ece64747d8d9401edaeb4d7de6cce985d13e486f2addec1b7787eeed7a3dfcbba90803c23f1ba2ed2420
+  checksum: c97822ae407877d1aa9ab7b14c335511d6879ca2546455ac7a3b156d70966b5678372a6d4d3470c2dced84e59857e2c1e1b2be61d26ab43f7f29806666f33064
   languageName: node
   linkType: hard
 
