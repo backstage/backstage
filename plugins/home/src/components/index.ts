@@ -16,3 +16,4 @@
 
 export { HomepageCompositionRoot } from './HomepageCompositionRoot';
 export * from './CustomHomepage';
+export * from './VisitListener';

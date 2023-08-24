@@ -15,7 +15,6 @@
  */
 
 import { createApiRef } from '@backstage/core-plugin-api';
-import { JsonValue } from '@backstage/types';
 
 /**
  @experimental
@@ -48,12 +47,6 @@ export type Visit = {
   entityRef?: string;
 };
 
-export type VisitFilter = {
-  field: string;
-  operator: '<' | '<=' | '==' | '>' | '>=' | 'contains';
-  value: JsonValue;
-};
-
 /**
  @experimental
  * This data structure represents the parameters associated with search queries for visits.
@@ -64,24 +57,36 @@ export type VisitsApiQueryParams = {
    */
   limit?: number;
   /**
-   * A record for which the key is a field name to sort on, and the value is the sort direction.
-   * For a multi-field sorting query, add multi entries to the record.
+   * Allows ordering visits on entity properties.
    * @example
    * Sort ascending by the timestamp field.
    * ```
-   * { orderBy: { timestamp: 'asc' } }
+   * { orderBy: [{ field: 'timestamp', direction: 'asc' }] }
    * ```
    */
-  orderBy?: Record<string, 'asc' | 'desc'>;
+  orderBy?: Array<{
+    field: keyof Visit;
+    direction: 'asc' | 'desc';
+  }>;
   /**
-   * Allows filtering visits on number of hits, timestamp and/or entityRef attributes.
+   * Allows filtering visits on entity properties.
    * @example
    * Most popular docs on the past 7 days
    * ```
-   * { orderBy: { hits: 'desc' }, filterBy: [{ field: 'timestamp', operator: '>=', value: <date> }, { field: 'entityRef', operator: 'contains', value: 'docs' }] }
+   * {
+   *   orderBy: [{ field: 'hits', direction: 'desc' }],
+   *   filterBy: [
+   *     { field: 'timestamp', operator: '>=', value: <date> },
+   *     { field: 'entityRef', operator: 'contains', value: 'docs' }
+   *   ]
+   * }
    * ```
    */
-  filterBy?: VisitFilter[];
+  filterBy?: Array<{
+    field: keyof Visit;
+    operator: '<' | '<=' | '==' | '>' | '>=' | 'contains';
+    value: string | number;
+  }>;
 };
 
 /**
@@ -91,14 +96,14 @@ export type VisitsApiQueryParams = {
 export interface VisitsApi {
   /**
    * Persist a new visit.
-   * @param pageVisit | a new visit data.
+   * @param visit | a new visit data.
    */
-  saveVisit(pageVisit: Omit<Visit, 'id' | 'hits' | 'timestamp'>): Promise<void>;
+  saveVisit(visit: Omit<Visit, 'id' | 'hits' | 'timestamp'>): Promise<Visit>;
   /**
-   * Get the logged user visits.
+   * Get the user visits.
    * @param queryParams | optional search query params.
    */
-  listUserVisits(queryParams: VisitsApiQueryParams): Promise<Visit[]>;
+  listVisits(queryParams?: VisitsApiQueryParams): Promise<Visit[]>;
 }
 
 export const visitsApiRef = createApiRef<VisitsApi>({
