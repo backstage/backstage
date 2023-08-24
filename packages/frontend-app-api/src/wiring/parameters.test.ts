@@ -347,13 +347,12 @@ describe('expandShorthandExtensionParameters', () => {
     });
   });
 
-  it('supports object id', () => {
-    expect(
-      run({ 'core.router/routes': { id: 'example-package#MyRouter' } }),
-    ).toEqual({
-      id: 'example-package#MyRouter',
-      at: 'core.router/routes',
-    });
+  it('supports object id only in the key', () => {
+    expect(() =>
+      run({ 'core.router/routes': { id: 'some.id' } }),
+    ).toThrowErrorMatchingInlineSnapshot(
+      `"Invalid extension configuration at app.extensions[1][core.router/routes].id, must not specify 'id' when the extension input ID form of the key is used (with a slash); please replace the key 'core.router/routes' with the id instead, and put that key in the 'at' field"`,
+    );
     expect(() =>
       run({
         'core.router/routes': {
