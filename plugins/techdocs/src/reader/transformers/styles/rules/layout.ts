@@ -102,9 +102,20 @@ export default ({ theme, sidebar }: RuleOptions) => `
 }
 
 .md-content {
-  max-width: calc(100% - 16rem * 2);
-  margin-left: 16rem;
   margin-bottom: 50px;
+}
+
+.md-sidebar--primary:not([hidden]) ~ .md-content{
+  margin-left: 16rem;
+  max-width: calc(100% - 16rem * 1);
+}
+
+.md-sidebar--secondary:not([hidden]) ~ .md-content{
+  max-width: calc(100% - 16rem * 1);
+}
+
+.md-sidebar--primary:not([hidden]) ~ .md-sidebar--secondary:not([hidden]) ~ .md-content{
+  max-width: calc(100% - 16rem * 2);
 }
 
 .md-footer {
