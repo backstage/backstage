@@ -1,6 +1,7 @@
 ---
-'@backstage/backend-app-api': patch
+'@backstage/backend-app-api': minor
 ---
 
-fix: :bug: implemented up front circular dependency check in the `BackendInitializer`
-fix: :bug: updated `detectCircularDependency` in `DependencyGraph` to return circular dependencies starting from the first node
+refactor!: updated `ServiceRegistry` to have a static create method and private constructor.
+fix: updated `ServiceRegistry` to perform circular dependency check on creation.
+fix: updated `detectCircularDependency` in `DependencyGraph` to return circular dependencies starting from the first node

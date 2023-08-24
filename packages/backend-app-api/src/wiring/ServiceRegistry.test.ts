@@ -90,12 +90,12 @@ const refDefault2b = createServiceRef<{ x: number }>({
 
 describe('ServiceRegistry', () => {
   it('should return undefined if there is no factory defined', async () => {
-    const registry = new ServiceRegistry([]);
+    const registry = ServiceRegistry.create([]);
     expect(registry.get(ref1, 'catalog')).toBe(undefined);
   });
 
   it('should return an implementation for a registered ref', async () => {
-    const registry = new ServiceRegistry([sf1()]);
+    const registry = ServiceRegistry.create([sf1()]);
     await expect(registry.get(ref1, 'catalog')).resolves.toEqual({ x: 1 });
     await expect(registry.get(ref1, 'scaffolder')).resolves.toEqual({ x: 1 });
     expect(await registry.get(ref1, 'catalog')).toBe(
@@ -110,7 +110,7 @@ describe('ServiceRegistry', () => {
   });
 
   it('should handle multiple factories with different serviceRefs', async () => {
-    const registry = new ServiceRegistry([sf1(), sf2()]);
+    const registry = ServiceRegistry.create([sf1(), sf2()]);
 
     await expect(registry.get(ref1, 'catalog')).resolves.toEqual({
       x: 1,
@@ -131,7 +131,7 @@ describe('ServiceRegistry', () => {
         return { x: 2 };
       },
     });
-    const registry = new ServiceRegistry([factory(), sf1()]);
+    const registry = ServiceRegistry.create([factory(), sf1()]);
     await expect(registry.get(ref2, 'catalog')).rejects.toThrow(
       "Failed to instantiate 'root' scoped service '2' because it depends on 'plugin' scoped service '1'.",
     );
@@ -145,7 +145,7 @@ describe('ServiceRegistry', () => {
         return { x: rootDep.x };
       },
     });
-    const registry = new ServiceRegistry([factory(), sf2()]);
+    const registry = ServiceRegistry.create([factory(), sf2()]);
     await expect(registry.get(ref1, 'catalog')).resolves.toEqual({
       x: 2,
     });
@@ -160,7 +160,7 @@ describe('ServiceRegistry', () => {
         return { x: rootDep.x };
       },
     });
-    const registry = new ServiceRegistry([factory(), sf2()]);
+    const registry = ServiceRegistry.create([factory(), sf2()]);
     await expect(registry.get(ref, 'catalog')).resolves.toEqual({
       x: 2,
     });
@@ -175,35 +175,35 @@ describe('ServiceRegistry', () => {
         return { pluginId: meta.getId() };
       },
     });
-    const registry = new ServiceRegistry([factory()]);
+    const registry = ServiceRegistry.create([factory()]);
     await expect(registry.get(ref, 'catalog')).resolves.toEqual({
       pluginId: 'catalog',
     });
   });
 
   it('should use the last factory for each ref', async () => {
-    const registry = new ServiceRegistry([sf2(), sf2b()]);
+    const registry = ServiceRegistry.create([sf2(), sf2b()]);
     await expect(registry.get(ref2, 'catalog')).resolves.toEqual({
       x: 22,
     });
   });
 
   it('should use the defaultFactory from the ref if not provided to the registry', async () => {
-    const registry = new ServiceRegistry([]);
+    const registry = ServiceRegistry.create([]);
     await expect(registry.get(refDefault1, 'catalog')).resolves.toEqual({
       x: 10,
     });
   });
 
   it('should not use the defaultFactory from the ref if provided to the registry', async () => {
-    const registry = new ServiceRegistry([sf1()]);
+    const registry = ServiceRegistry.create([sf1()]);
     await expect(registry.get(refDefault1, 'catalog')).resolves.toEqual({
       x: 1,
     });
   });
 
   it('should handle duplicate defaultFactories by duplicating the implementations', async () => {
-    const registry = new ServiceRegistry([]);
+    const registry = ServiceRegistry.create([]);
     await expect(registry.get(refDefault2a, 'catalog')).resolves.toEqual({
       x: 20,
     });
@@ -234,7 +234,7 @@ describe('ServiceRegistry', () => {
       defaultFactory: factoryLoader,
     });
 
-    const registry = new ServiceRegistry([]);
+    const registry = ServiceRegistry.create([]);
     await Promise.all([
       expect(registry.get(ref, 'catalog')).resolves.toBeUndefined(),
       expect(registry.get(ref, 'catalog')).resolves.toBeUndefined(),
@@ -252,7 +252,7 @@ describe('ServiceRegistry', () => {
       factory,
     });
 
-    const registry = new ServiceRegistry([myFactory()]);
+    const registry = ServiceRegistry.create([myFactory()]);
 
     await Promise.all([
       registry.get(ref1, 'catalog')!,
@@ -274,7 +274,7 @@ describe('ServiceRegistry', () => {
       factory,
     });
 
-    const registry = new ServiceRegistry([myFactory()]);
+    const registry = ServiceRegistry.create([myFactory()]);
 
     await Promise.all([
       registry.get(ref1, 'catalog')!,
@@ -296,7 +296,7 @@ describe('ServiceRegistry', () => {
       },
     });
 
-    const registry = new ServiceRegistry([myFactory()]);
+    const registry = ServiceRegistry.create([myFactory()]);
 
     await expect(registry.get(ref1, 'catalog')).rejects.toThrow(
       "Failed to instantiate service '1' for 'catalog' because the following dependent services are missing: '2'",
@@ -323,7 +323,7 @@ describe('ServiceRegistry', () => {
       },
     });
 
-    const registry = new ServiceRegistry([factoryA(), factoryB()]);
+    const registry = ServiceRegistry.create([factoryA(), factoryB()]);
 
     await expect(registry.get(refA, 'catalog')).rejects.toThrow(
       "Failed to instantiate service 'a' for 'catalog' because the factory function threw an error, Error: Failed to instantiate service 'b' for 'catalog' because the following dependent services are missing: 'c', 'd'",
@@ -347,9 +347,7 @@ describe('ServiceRegistry', () => {
         factory: async ({ a }) => a,
       });
 
-      const registry = new ServiceRegistry([factoryA(), factoryB()]);
-
-      expect(() => registry.checkForCircularDeps()).toThrow(
+      expect(() => ServiceRegistry.create([factoryA(), factoryB()])).toThrow(
         `Circular dependencies detected:
   'a' -> 'b' -> 'a'`,
       );
@@ -385,14 +383,14 @@ describe('ServiceRegistry', () => {
         factory: async ({ c }) => c,
       });
 
-      const registry = new ServiceRegistry([
-        factoryA(),
-        factoryB(),
-        factoryC(),
-        factoryD(),
-      ]);
-
-      expect(() => registry.checkForCircularDeps()).toThrow(
+      expect(() =>
+        ServiceRegistry.create([
+          factoryA(),
+          factoryB(),
+          factoryC(),
+          factoryD(),
+        ]),
+      ).toThrow(
         `Circular dependencies detected:
   'a' -> 'b' -> 'a'
   'c' -> 'd' -> 'c'`,
@@ -422,13 +420,9 @@ describe('ServiceRegistry', () => {
         factory: async ({ a }) => a,
       });
 
-      const registry = new ServiceRegistry([
-        factoryA(),
-        factoryB(),
-        factoryC(),
-      ]);
-
-      expect(() => registry.checkForCircularDeps()).toThrow(
+      expect(() =>
+        ServiceRegistry.create([factoryA(), factoryB(), factoryC()]),
+      ).toThrow(
         `Circular dependencies detected:
   'a' -> 'b' -> 'c' -> 'a'`,
       );
@@ -464,14 +458,14 @@ describe('ServiceRegistry', () => {
         factory: async () => 'd',
       });
 
-      const registry = new ServiceRegistry([
-        factoryA(),
-        factoryB(),
-        factoryC(),
-        factoryD(),
-      ]);
-
-      expect(() => registry.checkForCircularDeps()).toThrow(
+      expect(() =>
+        ServiceRegistry.create([
+          factoryA(),
+          factoryB(),
+          factoryC(),
+          factoryD(),
+        ]),
+      ).toThrow(
         `Circular dependencies detected:
   'a' -> 'b' -> 'c' -> 'a'`,
       );
@@ -500,13 +494,9 @@ describe('ServiceRegistry', () => {
         factory: async ({ a }) => a,
       });
 
-      const registry = new ServiceRegistry([
-        factoryA(),
-        factoryB(),
-        factoryC(),
-      ]);
-
-      expect(() => registry.checkForCircularDeps()).toThrow(
+      expect(() =>
+        ServiceRegistry.create([factoryA(), factoryB(), factoryC()]),
+      ).toThrow(
         `Circular dependencies detected:
   'a' -> 'c' -> 'a'`,
       );
@@ -535,13 +525,9 @@ describe('ServiceRegistry', () => {
         factory: async ({ b }) => b,
       });
 
-      const registry = new ServiceRegistry([
-        factoryA(),
-        factoryB(),
-        factoryC(),
-      ]);
-
-      expect(() => registry.checkForCircularDeps()).toThrow(
+      expect(() =>
+        ServiceRegistry.create([factoryA(), factoryB(), factoryC()]),
+      ).toThrow(
         `Circular dependencies detected:
   'b' -> 'c' -> 'b'`,
       );
@@ -560,7 +546,7 @@ describe('ServiceRegistry', () => {
       },
     });
 
-    const registry = new ServiceRegistry([myFactory()]);
+    const registry = ServiceRegistry.create([myFactory()]);
 
     await expect(registry.get(ref1, 'catalog')).rejects.toThrow(
       "Failed to instantiate service '1' because createRootContext threw an error, Error: top-level error",
@@ -576,7 +562,7 @@ describe('ServiceRegistry', () => {
       },
     });
 
-    const registry = new ServiceRegistry([myFactory()]);
+    const registry = ServiceRegistry.create([myFactory()]);
 
     await expect(registry.get(ref1, 'catalog')).rejects.toThrow(
       "Failed to instantiate service '1' for 'catalog' because the factory function threw an error, Error: error in plugin",
@@ -591,7 +577,7 @@ describe('ServiceRegistry', () => {
       },
     });
 
-    const registry = new ServiceRegistry([]);
+    const registry = ServiceRegistry.create([]);
 
     await expect(registry.get(ref, 'catalog')).rejects.toThrow(
       "Failed to instantiate service '1' because the default factory loader threw an error, Error: default factory error",

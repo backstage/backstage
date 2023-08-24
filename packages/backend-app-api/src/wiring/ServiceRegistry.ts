@@ -58,6 +58,12 @@ const pluginMetadataServiceFactory = createServiceFactory(
 );
 
 export class ServiceRegistry implements EnumerableServiceHolder {
+  static create(factories: Array<ServiceFactory>): EnumerableServiceHolder {
+    const registry = new ServiceRegistry(factories);
+    registry.checkForCircularDeps();
+    return registry;
+  }
+
   readonly #providedFactories: Map<string, InternalServiceFactory>;
   readonly #loadedDefaultFactories: Map<
     Function,
@@ -76,7 +82,7 @@ export class ServiceRegistry implements EnumerableServiceHolder {
   >();
   readonly #dependencyGraph: DependencyGraph<string>;
 
-  constructor(factories: Array<ServiceFactory>) {
+  private constructor(factories: Array<ServiceFactory>) {
     this.#providedFactories = new Map(
       factories.map(sf => [sf.service.id, toInternalServiceFactory(sf)]),
     );

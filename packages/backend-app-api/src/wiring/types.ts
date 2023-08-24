@@ -39,7 +39,6 @@ export interface CreateSpecializedBackendOptions {
 
 export interface ServiceHolder {
   get<T>(api: ServiceRef<T>, pluginId: string): Promise<T> | undefined;
-  checkForCircularDeps(): void;
 }
 
 /**
