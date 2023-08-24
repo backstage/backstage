@@ -15,7 +15,6 @@
  */
 
 import { createApiRef } from '@backstage/core-plugin-api';
-import { JsonValue } from '@backstage/types';
 
 /**
  * @public
@@ -48,13 +47,6 @@ export type Visit = {
   entityRef?: string;
 };
 
-/** @public */
-export type VisitFilter = {
-  field: string;
-  operator: '<' | '<=' | '==' | '>' | '>=' | 'contains';
-  value: JsonValue;
-};
-
 /**
  * @public
  * This data structure represents the parameters associated with search queries for visits.
@@ -65,24 +57,36 @@ export type VisitsApiQueryParams = {
    */
   limit?: number;
   /**
-   * A record for which the key is a field name to sort on, and the value is the sort direction.
-   * For a multi-field sorting query, add multi entries to the record.
+   * Allows ordering visits on entity properties.
    * @example
    * Sort ascending by the timestamp field.
    * ```
-   * { orderBy: { timestamp: 'asc' } }
+   * { orderBy: [{ field: 'timestamp', direction: 'asc' }] }
    * ```
    */
-  orderBy?: Record<string, 'asc' | 'desc'>;
+  orderBy?: Array<{
+    field: keyof Visit;
+    direction: 'asc' | 'desc';
+  }>;
   /**
-   * Allows filtering visits on number of hits, timestamp and/or entityRef attributes.
+   * Allows filtering visits on entity properties.
    * @example
    * Most popular docs on the past 7 days
    * ```
-   * { orderBy: { hits: 'desc' }, filterBy: [{ field: 'timestamp', operator: '>=', value: <date> }, { field: 'entityRef', operator: 'contains', value: 'docs' }] }
+   * {
+   *   orderBy: [{ field: 'hits', direction: 'desc' }],
+   *   filterBy: [
+   *     { field: 'timestamp', operator: '>=', value: <date> },
+   *     { field: 'entityRef', operator: 'contains', value: 'docs' }
+   *   ]
+   * }
    * ```
    */
-  filterBy?: VisitFilter[];
+  filterBy?: Array<{
+    field: keyof Visit;
+    operator: '<' | '<=' | '==' | '>' | '>=' | 'contains';
+    value: string | number;
+  }>;
 };
 
 /**
@@ -102,7 +106,7 @@ export interface VisitsApi {
    * Persist a new visit.
    * @param pageVisit - a new visit data
    */
-  saveVisit(saveParams: VisitsApiSaveParams): Promise<void>;
+  saveVisit(saveParams: VisitsApiSaveParams): Promise<Visit>;
   /**
    * Get the logged user visits.
    * @param queryParams - optional search query params.
