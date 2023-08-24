@@ -4140,6 +4140,7 @@ __metadata:
     "@backstage/config": "workspace:^"
     "@backstage/frontend-plugin-api": "workspace:^"
     "@backstage/plugin-graphiql": "workspace:^"
+    "@backstage/types": "workspace:^"
     "@testing-library/jest-dom": ^5.10.1
     lodash: ^4.17.21
   peerDependencies:
