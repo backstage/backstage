@@ -23,7 +23,6 @@ import { JsonValue } from '@backstage/types';
 import omitBy from 'lodash/omitBy';
 
 const knownExtensionInstanceParameters = [
-  'id',
   'at',
   'disabled',
   'extension',
