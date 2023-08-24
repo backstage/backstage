@@ -5,6 +5,6 @@ metadata:
   title: '@backstage/config-loader'
   description: Config loading functionality used by Backstage backend, and CLI
 spec:
-  lifecycle: experimental
+  lifecycle: production
   type: backstage-node-library
   owner: maintainers

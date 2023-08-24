@@ -7,6 +7,6 @@ metadata:
     Utilities used by @backstage packages to support multiple concurrent
     versions
 spec:
-  lifecycle: experimental
+  lifecycle: production
   type: backstage-web-library
   owner: maintainers

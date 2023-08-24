@@ -5,6 +5,6 @@ metadata:
   title: '@backstage/plugin-scaffolder-backend'
   description: The Backstage backend plugin that helps you create new things
 spec:
-  lifecycle: experimental
+  lifecycle: production
   type: backstage-backend-plugin
   owner: maintainers
