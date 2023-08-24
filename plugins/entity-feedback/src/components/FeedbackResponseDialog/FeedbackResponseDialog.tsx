@@ -57,6 +57,7 @@ const defaultFeedbackResponses: EntityFeedbackResponse[] = [
 /**
  * @public
  */
+
 export interface FeedbackResponseDialogProps {
   entity: Entity;
   feedbackDialogResponses?: EntityFeedbackResponse[];
@@ -65,6 +66,7 @@ export interface FeedbackResponseDialogProps {
   onClose: () => void;
   enableValidation?: boolean;
   showCommentsTextBox?: boolean;
+  validate: (selections: string[], comments: string) => string | undefined;
 }
 
 const useStyles = makeStyles({
@@ -82,6 +84,7 @@ export const FeedbackResponseDialog = (props: FeedbackResponseDialogProps) => {
     onClose,
     enableValidation = false,
     showCommentsTextBox = true,
+    validate,
   } = props;
   const classes = useStyles();
   const errorApi = useApi(errorApiRef);
@@ -105,50 +108,37 @@ export const FeedbackResponseDialog = (props: FeedbackResponseDialogProps) => {
   const [errorMessage, setErrorMessage] = useState('');
 
   const [{ loading: saving }, saveResponse] = useAsyncFn(async () => {
+    setErrorMessage('');
+
+    const selectedResponses = Object.keys(responseSelections).filter(
+      id => responseSelections[id],
+    );
+
+    const validationError = validate(selectedResponses, comments);
+
+    if (validationError) {
+      setErrorMessage(validationError);
+      return;
+    }
+
     try {
-      setErrorMessage('');
-
-      if (
-        enableValidation &&
-        Object.keys(responseSelections).every(key =>
-          key !== 'other' ? !responseSelections[key] : true,
-        )
-      ) {
-        setErrorMessage('Please select at least one reason.');
-        return;
-      }
-
-      if (
-        showCommentsTextBox &&
-        (responseSelections.other ||
-          !feedbackDialogResponses.some(response => response.id === 'other')) &&
-        !comments
-      ) {
-        setErrorMessage('Please add some comments.');
-        return;
-      }
-
       await feedbackApi.recordResponse(stringifyEntityRef(entity), {
         comments,
         consent,
-        response: Object.keys(responseSelections)
-          .filter(id => responseSelections[id])
-          .join(','),
+        response: selectedResponses.join(','),
       });
       onClose();
     } catch (e) {
       errorApi.post(e as ErrorApiError);
-      setErrorMessage('An error occurred. Please try again.');
     }
   }, [
     comments,
     consent,
     entity,
     feedbackApi,
-    enableValidation,
     onClose,
     responseSelections,
-    showCommentsTextBox,
+    validate,
   ]);
 
   return (
@@ -179,11 +169,9 @@ export const FeedbackResponseDialog = (props: FeedbackResponseDialogProps) => {
               />
             ))}
           </FormGroup>
-          {enableValidation && errorMessage ? (
-            <FormHelperText error>
-              *select the reason listed above
-            </FormHelperText>
-          ) : null}
+          {enableValidation && errorMessage && (
+            <FormHelperText error>{errorMessage}</FormHelperText>
+          )}
         </FormControl>
         {showCommentsTextBox &&
           (responseSelections.other ||
@@ -222,7 +210,7 @@ export const FeedbackResponseDialog = (props: FeedbackResponseDialogProps) => {
         </Typography>
       </DialogContent>
       <DialogActions>
-        <Button color="primary" onClick={onClose}>
+        <Button color="primary" disabled={saving} onClick={onClose}>
           Close
         </Button>
         <Button
