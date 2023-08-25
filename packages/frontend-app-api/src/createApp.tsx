@@ -56,9 +56,6 @@ export function createApp(options: { plugins: BackstagePlugin[] }): {
     readAppExtensionParameters(appConfig),
   );
 
-  // TODO: validate the config of all extension instances
-  // We do it at this point to ensure that merging (if any) of config has already happened
-
   // Create attachment map so that we can look attachments up during instance creation
   const attachmentMap = new Map<
     string,

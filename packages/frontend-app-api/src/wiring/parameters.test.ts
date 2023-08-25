@@ -23,12 +23,17 @@ import {
   readAppExtensionParameters,
 } from './parameters';
 
+const dummyParse = (x: unknown) => x;
+
 function makeExt(id: string, status: 'disabled' | 'enabled' = 'enabled') {
   return {
     id,
     at: 'foo/bar',
-    extension: {} as Extension<unknown>,
+    extension: {
+      configSchema: { parse: dummyParse },
+    } as unknown as Extension<unknown>,
     disabled: status === 'disabled',
+    config: {},
   };
 }
 
@@ -110,6 +115,68 @@ describe('mergeExtensionParameters', () => {
         ],
       ),
     ).toEqual([makeExt('b'), makeExt('a')]);
+  });
+
+  it('validates config', () => {
+    expect(() =>
+      mergeExtensionParameters(
+        [
+          {
+            id: 'good',
+            at: '',
+            extension: {
+              configSchema: {
+                parse: (x: unknown) => {
+                  expect(x).toEqual({ foo: 'bar' });
+                },
+              },
+            } as unknown as Extension<unknown>,
+            config: { foo: 'bar' },
+          },
+        ],
+        [],
+      ),
+    ).not.toThrow();
+
+    expect(() =>
+      mergeExtensionParameters(
+        [
+          {
+            id: 'bad',
+            at: '',
+            extension: {
+              configSchema: {
+                parse: () => {
+                  throw new Error('NO GOOD');
+                },
+              },
+            } as unknown as Extension<unknown>,
+            config: { foo: 'bar' },
+          },
+        ],
+        [],
+      ),
+    ).toThrowErrorMatchingInlineSnapshot(
+      `"Configuration error for extension with ID 'bad', Error: NO GOOD"`,
+    );
+
+    expect(() =>
+      mergeExtensionParameters(
+        [
+          {
+            id: 'bad',
+            at: '',
+            extension: {
+              // does not define configSchema
+            } as unknown as Extension<unknown>,
+            config: { foo: 'bar' },
+          },
+        ],
+        [],
+      ),
+    ).toThrowErrorMatchingInlineSnapshot(
+      `"Extension 'bad' does not support configuration, but got {"foo":"bar"}"`,
+    );
   });
 });
 

@@ -258,7 +258,7 @@ export function mergeExtensionParameters(
   base: ExtensionInstanceParameters[],
   overrides: Array<Partial<ExtensionInstanceParameters>>,
 ): ExtensionInstanceParameters[] {
-  const extensionInstanceParams = base.slice();
+  let extensionInstanceParams = base.slice();
 
   for (const overrideParam of overrides) {
     const existingParamIndex = extensionInstanceParams.findIndex(
@@ -295,5 +295,34 @@ export function mergeExtensionParameters(
     }
   }
 
-  return extensionInstanceParams.filter(param => !param.disabled);
+  extensionInstanceParams = extensionInstanceParams.filter(
+    param => !param.disabled,
+  );
+
+  // Validate configuration
+  for (const instanceParams of extensionInstanceParams) {
+    const config = instanceParams.config ?? {};
+    const schema = instanceParams.extension.configSchema;
+
+    if (schema) {
+      try {
+        instanceParams.config = schema.parse(config ?? {});
+      } catch (error) {
+        // TODO(freben): This turns out to be an uncaught error in the browser,
+        // which is not very helpful. Should probably return an alternate
+        // createRoot that returns an error page, or similar.
+        throw new Error(
+          `Configuration error for extension with ID '${instanceParams.id}', ${error}`,
+        );
+      }
+    } else if (Object.keys(config).length) {
+      throw new Error(
+        `Extension '${
+          instanceParams.id
+        }' does not support configuration, but got ${JSON.stringify(config)}`,
+      );
+    }
+  }
+
+  return extensionInstanceParams;
 }
