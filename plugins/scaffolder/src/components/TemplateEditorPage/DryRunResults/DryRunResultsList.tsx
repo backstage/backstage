@@ -116,10 +116,6 @@ async function downloadDirectoryContents(directoryContents: { path: string; base
     await zip.file(d.path, converted);
   }
 
-  zip.generateAsync({type:"blob"}).then((blob) => { 
-      // Download zip
-      downloadBlob(blob, name);
-  }, (err) => {
-      throw new Error(err);
-  });
+  const blob = await zip.generateAsync({type:"blob"});
+  downloadBlob(blob, name);
 }
