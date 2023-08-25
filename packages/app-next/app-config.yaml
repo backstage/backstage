@@ -5,6 +5,8 @@ app:
     - graphiql.page:
         config:
           path: /
+#    - catalog.catalogClient: true
+    - catalog.catalogClient: '@evilcorp/catalog-client#someCatalogExtension'
 
     # - core.signInPage:
     #     props:

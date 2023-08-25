@@ -20,6 +20,7 @@ import {
   ExtensionInstanceParameters,
   BackstagePlugin,
   coreExtensionData,
+  Extension,
 } from '@backstage/frontend-plugin-api';
 import { RouteExtension } from './extensions/RouteExtension';
 import {

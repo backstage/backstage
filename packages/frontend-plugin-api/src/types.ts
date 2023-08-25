@@ -14,6 +14,7 @@
  * limitations under the License.
  */
 
+import { AnyApiFactory } from '@backstage/core-plugin-api';
 import { ComponentType } from 'react';
 import { PortableSchema } from './createSchemaFromZod';
 
@@ -32,6 +33,7 @@ export function createExtensionDataRef<T>(id: string): ExtensionDataRef<T> {
 /** @public */
 export const coreExtensionData = {
   reactComponent: createExtensionDataRef<ComponentType>('core.reactComponent'),
+  apiFactory: createExtensionDataRef<AnyApiFactory>('core.apiFactory'),
   routePath: createExtensionDataRef<string>('core.routing.path'),
 };
 
@@ -54,6 +56,7 @@ export interface CreateExtensionOptions<
   TPoint extends Record<string, { extensionData: AnyExtensionDataMap }>,
   TConfig,
 > {
+  defaultInstanceParameters?: Omit<ExtensionInstanceParameters, 'extension'>;
   inputs?: TPoint;
   output: TData;
   configSchema?: PortableSchema<TConfig>;
@@ -72,6 +75,7 @@ export interface CreateExtensionOptions<
 export interface Extension<TConfig> {
   $$type: 'extension';
   // TODO: will extensions have a default "at" as part of their contract, making it optional in the instance config?
+  defaultInstanceParameters?: Omit<ExtensionInstanceParameters, 'extension'>;
   inputs: Record<string, { extensionData: AnyExtensionDataMap }>;
   output: AnyExtensionDataMap;
   configSchema?: PortableSchema<TConfig>;

@@ -131,7 +131,7 @@ export function readAppExtensionParameters(
 
 /** @internal */
 export function mergeExtensionParameters(
-  base: ExtensionInstanceParameters[],
+  base: Partial<ExtensionInstanceParameters>[],
   overrides: Array<Partial<ExtensionInstanceParameters>>,
 ): ExtensionInstanceParameters[] {
   const extensionInstanceParams = base.slice();
