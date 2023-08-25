@@ -1,0 +1,10 @@
+apiVersion: backstage.io/v1alpha1
+kind: Component
+metadata:
+  name: backstage-plugin-allure
+  title: '@backstage/plugin-allure'
+  description: A Backstage plugin that integrates with Allure
+spec:
+  lifecycle: experimental
+  type: backstage-frontend-plugin
+  owner: maintainers
