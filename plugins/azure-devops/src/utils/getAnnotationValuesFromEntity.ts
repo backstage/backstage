@@ -16,23 +16,28 @@
 
 import {
   AZURE_DEVOPS_BUILD_DEFINITION_ANNOTATION,
+  AZURE_DEVOPS_ORGANIZATION_ANNOTATION,
   AZURE_DEVOPS_PROJECT_ANNOTATION,
   AZURE_DEVOPS_REPO_ANNOTATION,
 } from '../constants';
 
 import { Entity } from '@backstage/catalog-model';
 
-export function getAnnotationFromEntity(entity: Entity): {
+export function getAnnotationValuesFromEntity(entity: Entity): {
   project: string;
   repo?: string;
   definition?: string;
+  org?: string;
 } {
+  const org =
+    entity.metadata.annotations?.[AZURE_DEVOPS_ORGANIZATION_ANNOTATION];
+
   const annotation =
     entity.metadata.annotations?.[AZURE_DEVOPS_REPO_ANNOTATION];
   if (annotation) {
     const { project, repo } = getProjectRepo(annotation);
     const definition = undefined;
-    return { project, repo, definition };
+    return { project, repo, definition, org };
   }
 
   const project =
@@ -50,18 +55,30 @@ export function getAnnotationFromEntity(entity: Entity): {
   }
 
   const repo = undefined;
-  return { project, repo, definition };
+  return { project, repo, definition, org };
 }
 
 function getProjectRepo(annotation: string): {
   project: string;
   repo: string;
 } {
-  const [project, repo] = annotation.split('/');
-
-  if (!project && !repo) {
+  if (!annotation.includes('/')) {
     throw new Error(
       'Value for annotation dev.azure.com/project-repo was not in the correct format: <project-name>/<repo-name>',
+    );
+  }
+
+  const [project, repo] = annotation.split('/');
+
+  if (!project) {
+    throw new Error(
+      'Project Name for annotation dev.azure.com/project-repo was not found; expected format is: <project-name>/<repo-name>',
+    );
+  }
+
+  if (!repo) {
+    throw new Error(
+      'Repo Name for annotation dev.azure.com/project-repo was not found; expected format is: <project-name>/<repo-name>',
     );
   }
 
