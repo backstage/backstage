@@ -17,7 +17,8 @@
 import express from 'express';
 import Router from 'express-promise-router';
 import { Logger } from 'winston';
-import xmlparser from 'express-xml-bodyparser';
+import BodyParser from 'body-parser';
+import bodyParserXml from 'body-parser-xml';
 import { CatalogApi, CatalogClient } from '@backstage/catalog-client';
 import {
   errorHandler,
@@ -62,8 +63,9 @@ export const makeRouter = async (
     options.catalogApi ?? new CatalogClient({ discoveryApi: discovery });
   const scm = ScmIntegrations.fromConfig(config);
 
+  bodyParserXml(BodyParser);
   const router = Router();
-  router.use(xmlparser());
+  router.use(BodyParser.xml());
   router.use(express.json());
 
   const utils = new CoverageUtils(scm, urlReader);
