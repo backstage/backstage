@@ -14,6 +14,8 @@
  * limitations under the License.
  */
 
+import { createBarrier } from './util';
+
 const DEFAULT_POLLING_INTERVAL_MS = 1000;
 
 type Options<T> = {
@@ -72,50 +74,58 @@ export function startTaskPipeline<T>(options: Options<T>) {
     throw new Error('lowWatermark must be lower than highWatermark');
   }
 
-  let loading = false;
-  let stopped = false;
-  let inFlightCount = 0;
+  // State is in an object so that it can be stably referenced from within
+  // callbacks below
+  const state = { inFlightCount: 0 };
+  const abortController = new AbortController();
+  const abortSignal = abortController.signal;
 
-  async function maybeLoadMore() {
-    if (stopped || loading || inFlightCount > lowWatermark) {
-      return;
-    }
-
-    // Once we hit the low watermark we load in enough items to reach the high watermark
-    loading = true;
-    const loadCount = highWatermark - inFlightCount;
-    const loadedItems = await loadTasks(loadCount);
-    loading = false;
-
-    // We might not reach the high watermark here, in case there weren't enough items to load
-    inFlightCount += loadedItems.length;
-    loadedItems.forEach(item => {
-      processTask(item).finally(() => {
-        if (stopped) {
-          return;
-        }
-
-        // For each item we complete we check if it's time to load more
-        inFlightCount -= 1;
-        maybeLoadMore();
-      });
+  async function pipelineLoop() {
+    const barrier = createBarrier({
+      waitTimeoutMillis: pollingIntervalMs,
+      signal: abortSignal,
     });
 
-    // We might have processed some tasks while we where loading, so check if we can load more
-    if (loadedItems.length > 1) {
-      maybeLoadMore();
+    while (!abortSignal.aborted) {
+      if (state.inFlightCount <= lowWatermark) {
+        const loadCount = highWatermark - state.inFlightCount;
+        const loadedItems = await Promise.resolve()
+          .then(() => loadTasks(loadCount))
+          .catch(() => {
+            // Silently swallow errors and go back to sleep to try again; we
+            // delegate to the loadTasks function itself to catch errors and log
+            // if it so desires
+            return [];
+          });
+        if (loadedItems.length && !abortSignal.aborted) {
+          state.inFlightCount += loadedItems.length;
+          for (const item of loadedItems) {
+            Promise.resolve()
+              .then(() => processTask(item))
+              .catch(() => {
+                // Silently swallow errors and go back to sleep to try again; we
+                // delegate to the processTask function itself to catch errors
+                // and log if it so desires
+              })
+              .finally(() => {
+                state.inFlightCount -= 1;
+                barrier.release();
+              });
+          }
+        }
+      }
+
+      await barrier.wait();
     }
   }
 
-  // This interval makes sure that we load in new items if the loop runs
-  // dry because of the lack of available tasks. As long as there are
-  // enough items to process this will be a noop.
-  const intervalId = setInterval(() => {
-    maybeLoadMore();
-  }, pollingIntervalMs);
+  pipelineLoop().catch(_error => {
+    // This should be impossible, but if it did happen, it would signal a
+    // programming error inside the loop (errors should definitely be caught
+    // inside of it).
+  });
 
   return () => {
-    stopped = true;
-    clearInterval(intervalId);
+    abortController.abort();
   };
 }
