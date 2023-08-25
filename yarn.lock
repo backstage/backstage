@@ -1731,19 +1731,18 @@ __metadata:
   linkType: hard
 
 "@azure/ms-rest-js@npm:^2.2.0":
-  version: 2.6.2
-  resolution: "@azure/ms-rest-js@npm:2.6.2"
+  version: 2.7.0
+  resolution: "@azure/ms-rest-js@npm:2.7.0"
   dependencies:
     "@azure/core-auth": ^1.1.4
     abort-controller: ^3.0.0
     form-data: ^2.5.0
     node-fetch: ^2.6.7
-    tough-cookie: ^3.0.1
     tslib: ^1.10.0
     tunnel: 0.0.6
     uuid: ^8.3.2
-    xml2js: ^0.4.19
-  checksum: de650dfc3928a2036923fb3bf50e0324f9f36f5d320ca6d128005b1345ad80b39ab3410073ac35fb137dec4c7d799c602b1cafdf9573b3432b6b8eee8a1e39f8
+    xml2js: ^0.5.0
+  checksum: 38434010f3fc54a625f637a7758358d7ce0ad3e55ce9a6c7490bf05bbec8ea75ae95fe80041d2376beb3ef78ee6e55858bd0541477d7a88703246e368cfd59c1
   languageName: node
   linkType: hard
 
@@ -28651,13 +28650,6 @@ __metadata:
   languageName: node
   linkType: hard
 
-"ip-regex@npm:^2.1.0":
-  version: 2.1.0
-  resolution: "ip-regex@npm:2.1.0"
-  checksum: 331d95052aa53ce245745ea0fc3a6a1e2e3c8d6da65fa8ea52bf73768c1b22a9ac50629d1d2b08c04e7b3ac4c21b536693c149ce2c2615ee4796030e5b3e3cba
-  languageName: node
-  linkType: hard
-
 "ip@npm:^1.1.5":
   version: 1.1.5
   resolution: "ip@npm:1.1.5"
@@ -41043,17 +41035,6 @@ __metadata:
   languageName: node
   linkType: hard
 
-"tough-cookie@npm:^3.0.1":
-  version: 3.0.1
-  resolution: "tough-cookie@npm:3.0.1"
-  dependencies:
-    ip-regex: ^2.1.0
-    psl: ^1.1.28
-    punycode: ^2.1.1
-  checksum: 796f6239bce5674a1267b19f41972a2602a2a23715817237b5922b0dc2343512512eea7d41d29210a4ec545f8ef32173bbbf01277dd8ec3ae3841b19cbe69f67
-  languageName: node
-  linkType: hard
-
 "tough-cookie@npm:^4.0.0":
   version: 4.0.0
   resolution: "tough-cookie@npm:4.0.0"
@@ -43160,7 +43141,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"xml2js@npm:^0.4.11, xml2js@npm:^0.4.19":
+"xml2js@npm:^0.4.11":
   version: 0.4.23
   resolution: "xml2js@npm:0.4.23"
   dependencies:
