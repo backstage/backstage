@@ -1,0 +1,10 @@
+apiVersion: backstage.io/v1alpha1
+kind: Component
+metadata:
+  name: backstage-plugin-kafka
+  title: '@backstage/plugin-kafka'
+  description: A Backstage plugin that integrates towards Kafka
+spec:
+  lifecycle: experimental
+  type: backstage-frontend-plugin
+  owner: andrewthauer
