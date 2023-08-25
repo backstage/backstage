@@ -96,6 +96,13 @@
     "*.md": [
       "node ./scripts/check-docs-quality"
     ],
+    "{plugins,packages}/*/catalog-info.yaml": [
+      "yarn backstage-repo-tools generate-catalog-info --ci"
+    ],
+    "{.github/CODEOWNERS,package.json}": [
+      "yarn backstage-repo-tools generate-catalog-info",
+      "git add */catalog-info.yaml"
+    ],
     "./yarn.lock": [
       "node ./scripts/verify-lockfile-duplicates --fix"
     ],
