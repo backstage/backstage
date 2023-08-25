@@ -20,11 +20,10 @@ import { RepoBuild } from '@backstage/plugin-azure-devops-common';
 import { Team } from '@backstage/plugin-azure-devops-common';
 import { TeamMember } from '@backstage/plugin-azure-devops-common';
 import { UrlReader } from '@backstage/backend-common';
-import { WebApi } from 'azure-devops-node-api';
 
 // @public (undocumented)
 export class AzureDevOpsApi {
-  constructor(logger: Logger, webApi: WebApi, urlReader: UrlReader);
+  constructor(logger: Logger, urlReader: UrlReader, config: Config);
   // (undocumented)
   getAllTeams(): Promise<Team[]>;
   // (undocumented)

@@ -49,23 +49,51 @@ import {
 import { TeamMember as AdoTeamMember } from 'azure-devops-node-api/interfaces/common/VSSInterfaces';
 import { Logger } from 'winston';
 import { PolicyEvaluationRecord } from 'azure-devops-node-api/interfaces/PolicyInterfaces';
-import { WebApi } from 'azure-devops-node-api';
+import { WebApi, getPersonalAccessTokenHandler } from 'azure-devops-node-api';
 import {
   TeamProjectReference,
   WebApiTeam,
 } from 'azure-devops-node-api/interfaces/CoreInterfaces';
 import { UrlReader } from '@backstage/backend-common';
+import { Config } from '@backstage/config';
+import {
+  DefaultAzureDevOpsCredentialsProvider,
+  ScmIntegrations,
+} from '@backstage/integration';
 
 /** @public */
 export class AzureDevOpsApi {
   public constructor(
     private readonly logger: Logger,
-    private readonly webApi: WebApi,
     private readonly urlReader: UrlReader,
+    private readonly config: Config,
   ) {}
 
+  private async getWebApi(host?: string, org?: string): Promise<WebApi> {
+    const validHost = host ?? this.config.getString('azureDevOps.host');
+    const validOrg = org ?? this.config.getString('azureDevOps.organization');
+    const scmIntegrations = ScmIntegrations.fromConfig(this.config);
+    const credentialsProvider =
+      DefaultAzureDevOpsCredentialsProvider.fromIntegrations(scmIntegrations);
+    const credentials = await credentialsProvider.getCredentials({
+      url: `https://${validHost}/${validOrg}`,
+    });
+
+    let validToken: string;
+    if (credentials && credentials.token) {
+      validToken = credentials.token;
+    } else {
+      validToken = this.config.getString('azureDevOps.token');
+    }
+
+    const authHandler = getPersonalAccessTokenHandler(validToken);
+    const webApi = new WebApi(`https://${validHost}/${validOrg}`, authHandler);
+    return webApi;
+  }
+
   public async getProjects(): Promise<Project[]> {
-    const client = await this.webApi.getCoreApi();
+    const webApi = await this.getWebApi();
+    const client = await webApi.getCoreApi();
     const projectList: TeamProjectReference[] = await client.getProjects();
 
     const projects: Project[] = projectList.map(project => ({
@@ -87,7 +115,8 @@ export class AzureDevOpsApi {
       `Calling Azure DevOps REST API, getting Repository ${repoName} for Project ${projectName}`,
     );
 
-    const client = await this.webApi.getGitApi();
+    const webApi = await this.getWebApi();
+    const client = await webApi.getGitApi();
     return client.getRepository(repoName, projectName);
   }
 
@@ -100,7 +129,8 @@ export class AzureDevOpsApi {
       `Calling Azure DevOps REST API, getting up to ${top} Builds for Repository Id ${repoId} for Project ${projectName}`,
     );
 
-    const client = await this.webApi.getBuildApi();
+    const webApi = await this.getWebApi();
+    const client = await webApi.getBuildApi();
     return client.getBuilds(
       projectName,
       undefined,
@@ -158,7 +188,8 @@ export class AzureDevOpsApi {
     );
 
     const gitRepository = await this.getGitRepository(projectName, repoName);
-    const client = await this.webApi.getGitApi();
+    const webApi = await this.getWebApi();
+    const client = await webApi.getGitApi();
     const tagRefs: GitRef[] = await client.getRefs(
       gitRepository.id as string,
       projectName,
@@ -169,10 +200,10 @@ export class AzureDevOpsApi {
       false,
       true,
     );
-    const linkBaseUrl = `${this.webApi.serverUrl}/${encodeURIComponent(
+    const linkBaseUrl = `${webApi.serverUrl}/${encodeURIComponent(
       projectName,
     )}/_git/${encodeURIComponent(repoName)}?version=GT`;
-    const commitBaseUrl = `${this.webApi.serverUrl}/${encodeURIComponent(
+    const commitBaseUrl = `${webApi.serverUrl}/${encodeURIComponent(
       projectName,
     )}/_git/${encodeURIComponent(repoName)}/commit`;
     const gitTags: GitTag[] = tagRefs.map(tagRef => {
@@ -192,7 +223,8 @@ export class AzureDevOpsApi {
     );
 
     const gitRepository = await this.getGitRepository(projectName, repoName);
-    const client = await this.webApi.getGitApi();
+    const webApi = await this.getWebApi();
+    const client = await webApi.getGitApi();
     const searchCriteria: GitPullRequestSearchCriteria = {
       status: options.status,
     };
@@ -204,7 +236,7 @@ export class AzureDevOpsApi {
       undefined,
       options.top,
     );
-    const linkBaseUrl = `${this.webApi.serverUrl}/${encodeURIComponent(
+    const linkBaseUrl = `${webApi.serverUrl}/${encodeURIComponent(
       projectName,
     )}/_git/${encodeURIComponent(repoName)}/pullrequest`;
     const pullRequests: PullRequest[] = gitPullRequests.map(gitPullRequest => {
@@ -222,7 +254,8 @@ export class AzureDevOpsApi {
       `Getting dashboard pull requests for project '${projectName}'.`,
     );
 
-    const client = await this.webApi.getGitApi();
+    const webApi = await this.getWebApi();
+    const client = await webApi.getGitApi();
 
     const searchCriteria: GitPullRequestSearchCriteria = {
       status: options.status,
@@ -254,7 +287,7 @@ export class AzureDevOpsApi {
 
         return convertDashboardPullRequest(
           gitPullRequest,
-          this.webApi.serverUrl,
+          webApi.serverUrl,
           policies,
         );
       }),
@@ -270,7 +303,8 @@ export class AzureDevOpsApi {
       `Getting pull request policies for pull request id '${pullRequestId}'.`,
     );
 
-    const client = await this.webApi.getPolicyApi();
+    const webApi = await this.getWebApi();
+    const client = await webApi.getPolicyApi();
 
     const artifactId = getArtifactId(projectId, pullRequestId);
 
@@ -285,7 +319,8 @@ export class AzureDevOpsApi {
   public async getAllTeams(): Promise<Team[]> {
     this.logger?.debug('Getting all teams.');
 
-    const client = await this.webApi.getCoreApi();
+    const webApi = await this.getWebApi();
+    const client = await webApi.getCoreApi();
     const webApiTeams: WebApiTeam[] = await client.getAllTeams();
 
     const teams: Team[] = webApiTeams.map(team => ({
@@ -307,7 +342,8 @@ export class AzureDevOpsApi {
     const { projectId, teamId } = options;
     this.logger?.debug(`Getting team member ids for team '${teamId}'.`);
 
-    const client = await this.webApi.getCoreApi();
+    const webApi = await this.getWebApi();
+    const client = await webApi.getCoreApi();
 
     const teamMembers: AdoTeamMember[] =
       await client.getTeamMembersWithExtendedProperties(projectId, teamId);
@@ -327,7 +363,8 @@ export class AzureDevOpsApi {
       `Calling Azure DevOps REST API, getting Build Definitions for ${definitionName} in Project ${projectName}`,
     );
 
-    const client = await this.webApi.getBuildApi();
+    const webApi = await this.getWebApi();
+    const client = await webApi.getBuildApi();
     return client.getDefinitions(projectName, definitionName);
   }
 
@@ -341,7 +378,8 @@ export class AzureDevOpsApi {
       `Calling Azure DevOps REST API, getting up to ${top} Builds for Repository Id ${repoId} for Project ${projectName}`,
     );
 
-    const client = await this.webApi.getBuildApi();
+    const webApi = await this.getWebApi();
+    const client = await webApi.getBuildApi();
     return client.getBuilds(
       projectName,
       definitions,
