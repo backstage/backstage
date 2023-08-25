@@ -24,6 +24,8 @@ export interface Config {
     /**
      * Token used to authenticate requests.
      * @visibility secret
+     * @deprecated Use `integrations.azure` instead.
+     * @see https://backstage.io/docs/integrations/azure/locations
      */
     token: string;
     /**
