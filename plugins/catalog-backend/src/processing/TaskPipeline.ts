@@ -117,10 +117,13 @@ export function startTaskPipeline<T>(options: Options<T>) {
     }
   }
 
-  pipelineLoop().catch(_error => {
+  pipelineLoop().catch(error => {
     // This should be impossible, but if it did happen, it would signal a
     // programming error inside the loop (errors should definitely be caught
-    // inside of it).
+    // inside of it). Let's rethrow with more information, and let it be caught
+    // by the process' uncaught exception handler, which will log the occurrence
+    // at a high level.
+    throw new Error(`Unexpected error in processing pipeline loop`, error);
   });
 
   return () => {
