@@ -28,6 +28,7 @@ import DeleteIcon from '@material-ui/icons/Delete';
 import DownloadIcon from '@material-ui/icons/GetApp';
 import React from 'react';
 import { DryRunResult, useDryRun } from '../DryRunContext';
+import { downloadBlob } from '../../../lib/download';
 
 const useStyles = makeStyles((theme: BackstageTheme) => ({
   root: {
@@ -116,15 +117,4 @@ async function createZipDownload(directoryContents: { path: string; base64Conten
   }, (err) => {
       throw new Error(err);
   });
-}
-
-
-
-function downloadBlob(blob: Blob, name: string) {
-  const a = document.createElement('a');
-  a.href = URL.createObjectURL(blob);
-  a.download = name;
-  a.click();
-  URL.revokeObjectURL(a.href);
-  a.remove();
 }
