@@ -14,8 +14,6 @@
  * limitations under the License.
  */
 
-import { createBarrier } from './util';
-
 const DEFAULT_POLLING_INTERVAL_MS = 1000;
 
 type Options<T> = {
@@ -80,12 +78,12 @@ export function startTaskPipeline<T>(options: Options<T>) {
   const abortController = new AbortController();
   const abortSignal = abortController.signal;
 
-  async function pipelineLoop() {
-    const barrier = createBarrier({
-      waitTimeoutMillis: pollingIntervalMs,
-      signal: abortSignal,
-    });
+  const barrier = createBarrier({
+    waitTimeoutMillis: pollingIntervalMs,
+    signal: abortSignal,
+  });
 
+  async function pipelineLoop() {
     while (!abortSignal.aborted) {
       if (state.inFlightCount <= lowWatermark) {
         const loadCount = highWatermark - state.inFlightCount;
@@ -127,5 +125,56 @@ export function startTaskPipeline<T>(options: Options<T>) {
 
   return () => {
     abortController.abort();
+    barrier.destroy();
+  };
+}
+
+/**
+ * Creates a barrier with a timeout, that can be awaited or prematurely
+ * released either manually or by an abort signal.
+ */
+export function createBarrier(options: {
+  waitTimeoutMillis: number;
+  signal: AbortSignal;
+}): {
+  wait: () => Promise<void>;
+  release: () => void;
+  destroy: () => void;
+} {
+  const { waitTimeoutMillis, signal } = options;
+  const resolvers = new Set<() => void>();
+
+  function wait() {
+    if (signal.aborted || !(waitTimeoutMillis > 0)) {
+      return Promise.resolve();
+    }
+
+    return new Promise<void>(resolve => {
+      const timeoutHandle = setTimeout(done, waitTimeoutMillis);
+
+      function done() {
+        resolvers.delete(done);
+        clearTimeout(timeoutHandle);
+        resolve();
+      }
+
+      resolvers.add(done);
+    });
+  }
+
+  function release() {
+    const resolversToCall = new Set(resolvers);
+    resolvers.clear();
+    for (const resolver of resolversToCall) {
+      resolver();
+    }
+  }
+
+  signal.addEventListener('abort', release);
+
+  return {
+    wait,
+    release,
+    destroy: () => signal.removeEventListener('abort', release),
   };
 }
