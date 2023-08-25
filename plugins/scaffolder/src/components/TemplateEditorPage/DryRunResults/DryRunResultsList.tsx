@@ -27,7 +27,7 @@ import CheckIcon from '@material-ui/icons/Check';
 import DeleteIcon from '@material-ui/icons/Delete';
 import DownloadIcon from '@material-ui/icons/GetApp';
 import React from 'react';
-import { useDryRun } from '../DryRunContext';
+import { DryRunResult, useDryRun } from '../DryRunContext';
 
 const useStyles = makeStyles((theme: BackstageTheme) => ({
   root: {
@@ -72,7 +72,7 @@ export function DryRunResultsList() {
                 edge="end"
                 aria-label="download"
                 title="Download as .zip"
-                onClick={() => dryRun.downloadResult(result.id)}
+                onClick={() => downloadResult(result)}
               >
                 <DownloadIcon />
               </IconButton>
@@ -90,4 +90,41 @@ export function DryRunResultsList() {
       })}
     </List>
   );
+}
+
+
+async function downloadResult(result: DryRunResult) {
+  await createZipDownload(result.directoryContents, `dry-run-result-${result.id}.zip`)
+}
+
+
+async function createZipDownload(directoryContents: { path: string; base64Content: string; executable: boolean; }[], name: string) {
+  const {default: JSZip} = await import('jszip');
+  const zip = new JSZip();
+
+  for (const d of directoryContents) {
+    // Decode text content from base64 to ascii
+    const converted = atob(d.base64Content);
+    
+    // add folder/file to zip
+    await zip.file(d.path, converted);
+  }
+
+  zip.generateAsync({type:"blob"}).then((blob) => { 
+      // Download zip
+      downloadBlob(blob, name);
+  }, (err) => {
+      throw new Error(err);
+  });
+}
+
+
+
+function downloadBlob(blob: Blob, name: string) {
+  const a = document.createElement('a');
+  a.href = URL.createObjectURL(blob);
+  a.download = name;
+  a.click();
+  URL.revokeObjectURL(a.href);
+  a.remove();
 }

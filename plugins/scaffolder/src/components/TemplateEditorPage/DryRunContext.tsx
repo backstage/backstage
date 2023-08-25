@@ -26,7 +26,6 @@ import React, {
   useRef,
   useState,
 } from 'react';
-const {default: JSZip} = await import('jszip');
 import {
   scaffolderApiRef,
   ScaffolderDryRunResponse,
@@ -41,7 +40,7 @@ interface DryRunOptions {
   files: Array<{ path: string; content: string }>;
 }
 
-interface DryRunResult extends ScaffolderDryRunResponse {
+export interface DryRunResult extends ScaffolderDryRunResponse {
   id: number;
 }
 
@@ -51,7 +50,6 @@ interface DryRun {
 
   selectResult(id: number): void;
   deleteResult(id: number): void;
-  downloadResult(id: number): void;
   execute(options: DryRunOptions): Promise<void>;
 }
 
@@ -124,22 +122,6 @@ export function DryRunProvider(props: DryRunProviderProps) {
     });
   }, []);
 
-  const downloadResult = useCallback((id: number) => {
-    setState(prevState => {
-      const index = prevState.results.findIndex(r => r.id === id);
-      if (index === -1) {
-        return prevState;
-      }
-      const result = prevState.results[index];
-      console.log('Result', result.id);
-      createZipDownload(result.directoryContents, 'result_' + result.id)
-      return {
-        results: prevState.results,
-        selectedResult: prevState.selectedResult,
-      };
-    });
-  }, []);
-
   const execute = useCallback(
     async (options: DryRunOptions) => {
       if (!scaffolderApi.dryRun) {
@@ -176,7 +158,6 @@ export function DryRunProvider(props: DryRunProviderProps) {
       ...state,
       selectResult,
       deleteResult,
-      downloadResult,
       execute,
     }),
     [state, selectResult, deleteResult, execute],
@@ -196,33 +177,3 @@ export function useDryRun(): DryRun {
   }
   return value;
 }
-
-async function createZipDownload(directoryContents: { path: string; base64Content: string; executable: boolean; }[], name: string) {
-  const zip = new JSZip();
-
-  for (const d of directoryContents) {
-    // Decode text content from base64 to ascii
-    const converted = atob(d.base64Content);
-    
-    // add folder/file to zip
-    await zip.file(d.path, converted);
-  }
-
-  zip.generateAsync({type:"blob"}).then((blob) => { 
-      saveAs(blob, name);
-  }, (err) => {
-      throw new Error(err);
-  });
-}
-
-
-// Download zip
-function saveAs(blob: Blob, name: string) {
-  const a = document.createElement('a');
-  a.href = URL.createObjectURL(blob);
-  a.download = `dry-run-${name}.zip`;
-  a.click();
-  URL.revokeObjectURL(a.href);
-  a.remove();
-}
-
