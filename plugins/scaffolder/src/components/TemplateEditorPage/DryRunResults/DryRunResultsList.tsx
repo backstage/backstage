@@ -55,6 +55,14 @@ export function DryRunResultsList() {
     <List className={classes.root} dense>
       {dryRun.results.map(result => {
         const failed = result.log.some(l => l.body.status === 'failed');
+        let isLoading = false;
+
+        async function downloadResult() {
+          isLoading = true;
+          await downloadDirectoryContents(result.directoryContents, `dry-run-result-${result.id}.zip`)
+          isLoading = false;
+        }
+        
         return (
           <ListItem
             button
@@ -73,7 +81,8 @@ export function DryRunResultsList() {
                 edge="end"
                 aria-label="download"
                 title="Download as .zip"
-                onClick={() => downloadResult(result)}
+                disabled={isLoading}
+                onClick={() => downloadResult()}
               >
                 <DownloadIcon />
               </IconButton>
@@ -94,12 +103,8 @@ export function DryRunResultsList() {
 }
 
 
-async function downloadResult(result: DryRunResult) {
-  await createZipDownload(result.directoryContents, `dry-run-result-${result.id}.zip`)
-}
 
-
-async function createZipDownload(directoryContents: { path: string; base64Content: string; executable: boolean; }[], name: string) {
+async function downloadDirectoryContents(directoryContents: { path: string; base64Content: string; executable: boolean; }[], name: string) {
   const {default: JSZip} = await import('jszip');
   const zip = new JSZip();
 
