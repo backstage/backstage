@@ -19,6 +19,15 @@ import {
   Extension,
   ExtensionInstanceParameters,
 } from '@backstage/frontend-plugin-api';
+import { JsonValue } from '@backstage/types';
+import omitBy from 'lodash/omitBy';
+
+const knownExtensionInstanceParameters = [
+  'at',
+  'disabled',
+  'extension',
+  'config',
+];
 
 // Since we'll never merge arrays in config the config reader context
 // isn't too much of a help. Fall back to manual config reading logic
@@ -40,93 +49,208 @@ export function readAppExtensionParameters(
     return [];
   }
 
-  const generateIndex = (() => {
-    let generatedIndex = 1;
-    return () => `generated.${generatedIndex++}`;
+  const generateExtensionId = (() => {
+    let index = 1;
+    return () => `generated.${index++}`;
   })();
 
-  return arr.map((arrayEntry, index) => {
-    function errorMsg(msg: string, key?: string, prop?: string) {
-      return `Invalid extension configuration at app.extensions[${index}]${
-        key ? `[${key}]` : ''
-      }${prop ? `.${prop}` : ''}, ${msg}`;
-    }
+  return arr.map((arrayEntry, arrayIndex) =>
+    expandShorthandExtensionParameters(
+      arrayEntry,
+      arrayIndex,
+      resolveExtensionRef,
+      generateExtensionId,
+    ),
+  );
+}
 
-    // Example YAML:
-    //   - entity.card.about
-    if (typeof arrayEntry === 'string') {
-      return { id: arrayEntry };
-    }
+/** @internal */
+export function expandShorthandExtensionParameters(
+  arrayEntry: JsonValue,
+  arrayIndex: number,
+  resolveExtensionRef: (ref: string) => Extension<unknown>,
+  generateExtensionId: () => string,
+): Partial<ExtensionInstanceParameters> {
+  function errorMsg(msg: string, key?: string, prop?: string) {
+    return `Invalid extension configuration at app.extensions[${arrayIndex}]${
+      key ? `[${key}]` : ''
+    }${prop ? `.${prop}` : ''}, ${msg}`;
+  }
 
-    // All other forms are single-key objects
-    if (
-      typeof arrayEntry !== 'object' ||
-      arrayEntry === null ||
-      Array.isArray(arrayEntry)
-    ) {
-      throw new Error(errorMsg('must be a string or an object'));
+  // Example YAML:
+  // - entity.card.about
+  if (typeof arrayEntry === 'string') {
+    if (arrayEntry.includes('/')) {
+      const suggestion = arrayEntry.split('/')[0];
+      throw new Error(
+        errorMsg(
+          `cannot target an extension instance input with the string shorthand (key cannot contain slashes; did you mean '${suggestion}'?)`,
+        ),
+      );
     }
-    const keys = Object.keys(arrayEntry);
-    if (keys.length !== 1) {
-      const joinedKeys = `"${keys.join('", "')}"`;
-      throw new Error(errorMsg(`must have exactly one key, got ${joinedKeys}`));
+    if (!arrayEntry) {
+      throw new Error(errorMsg('string shorthand cannot be the empty string'));
     }
-
-    const key = keys[0];
-    let value = arrayEntry[key];
-
-    let at = key.includes('/') ? key : undefined;
-    const id = at ? generateIndex() : key;
-    if (typeof value === 'boolean') {
-      if (at) {
-        throw new Error(
-          errorMsg('cannot be applied to an instance input', key),
-        );
-      }
-      value = { disabled: !value };
-    } else if (typeof value === 'string') {
-      value = { extension: value };
-    } else if (
-      typeof value !== 'object' ||
-      value === null ||
-      Array.isArray(value)
-    ) {
-      throw new Error(errorMsg('must be an object', key));
-    }
-
-    const atRef = value.at;
-    if (atRef !== undefined && typeof atRef !== 'string') {
-      throw new Error(errorMsg('must be a string', key, 'at'));
-    } else if (atRef !== undefined) {
-      if (at) {
-        throw new Error(
-          errorMsg(
-            `must not specify 'at' when using attachment shorthand form`,
-            key,
-          ),
-        );
-      }
-      at = atRef;
-    }
-    const disabled = value.disabled;
-    if (disabled !== undefined && typeof disabled !== 'boolean') {
-      throw new Error(errorMsg('must be a boolean', key, 'disabled'));
-    }
-    const extensionRef = value.extension;
-    if (extensionRef !== undefined && typeof extensionRef !== 'string') {
-      throw new Error(errorMsg('must be a string', key, 'extension'));
-    }
-    const extension = extensionRef
-      ? resolveExtensionRef(extensionRef)
-      : undefined;
     return {
+      id: arrayEntry,
+    };
+  }
+
+  // All remaining cases are single-key objects
+  if (
+    typeof arrayEntry !== 'object' ||
+    arrayEntry === null ||
+    Array.isArray(arrayEntry)
+  ) {
+    throw new Error(errorMsg('must be a string or an object'));
+  }
+  const keys = Object.keys(arrayEntry);
+  if (keys.length !== 1) {
+    const joinedKeys = keys.length ? `'${keys.join("', '")}'` : 'none';
+    throw new Error(errorMsg(`must have exactly one key, got ${joinedKeys}`));
+  }
+
+  const key = keys[0];
+  const value = arrayEntry[key];
+
+  // Example YAML:
+  // - catalog.page.cicd: false
+  if (typeof value === 'boolean') {
+    if (key.includes('/')) {
+      const suggestion = key.split('/')[0];
+      throw new Error(
+        errorMsg(
+          `cannot target an extension instance input (key cannot contain slashes; did you mean '${suggestion}'?)`,
+          key,
+        ),
+      );
+    }
+
+    return {
+      id: key,
+      disabled: !value,
+    };
+  }
+
+  // Example YAML:
+  // - core.router/routes: '@backstage/plugin-some-plugin#MyPage'
+  // - some-plugin.page: '@internal/frontend-customizations#MyModifiedPage'
+  if (typeof value === 'string') {
+    if (key.includes('/')) {
+      return {
+        id: generateExtensionId(),
+        at: key,
+        extension: resolveExtensionRef(value),
+      };
+    }
+
+    return {
+      id: key,
+      extension: resolveExtensionRef(value),
+    };
+  }
+
+  // The remaining case is the generic object. Example YAML:
+  // - core.router/routes:
+  //     extension: '@backstage/core-app-api#Redirect'
+  //     config:
+  //       path: /
+  //       to: /catalog
+  //  - tech-radar.page:
+  //      at: core.router/routes
+  //      extension: '@backstage/plugin-tech-radar#TechRadarPage'
+  //      config:
+  //        path: /tech-radar
+  //        width: 1500
+  //        height: 800
+  if (typeof value !== 'object' || value === null || Array.isArray(value)) {
+    throw new Error(
+      errorMsg('value must be a boolean, string, or object', key),
+    );
+  }
+
+  let id = value.id;
+  let at = value.at;
+  const disabled = value.disabled;
+  const extensionRef = value.extension;
+  const config = value.config;
+
+  if (key.includes('/')) {
+    if (at !== undefined) {
+      throw new Error(
+        errorMsg(
+          `must not redundantly specify 'at' when the extension input ID form of the key is used (with a slash); the 'at' is already implicitly '${key}'`,
+          key,
+        ),
+      );
+    }
+    if (id !== undefined) {
+      throw new Error(
+        errorMsg(
+          `must not specify 'id' when the extension input ID form of the key is used (with a slash); please replace the key '${key}' with the id instead, and put that key in the 'at' field`,
+          key,
+          'id',
+        ),
+      );
+    }
+    id = generateExtensionId();
+    at = key;
+  } else {
+    if (id !== undefined) {
+      throw new Error(
+        errorMsg(
+          `must not redundantly specify 'id' when the extension instance ID form of the key is used (without a slash); the 'id' is already implicitly '${key}'`,
+          key,
+        ),
+      );
+    }
+    id = key;
+  }
+
+  if (id !== undefined && typeof id !== 'string') {
+    throw new Error(errorMsg('must be a string', key, 'id'));
+  } else if (at !== undefined && typeof at !== 'string') {
+    throw new Error(errorMsg('must be a string', key, 'at'));
+  } else if (disabled !== undefined && typeof disabled !== 'boolean') {
+    throw new Error(errorMsg('must be a boolean', key, 'disabled'));
+  } else if (extensionRef !== undefined && typeof extensionRef !== 'string') {
+    throw new Error(errorMsg('must be a string', key, 'extension'));
+  } else if (
+    config !== undefined &&
+    (typeof config !== 'object' || config === null || Array.isArray(config))
+  ) {
+    throw new Error(errorMsg('must be an object', key, 'config'));
+  }
+
+  const unknownKeys = Object.keys(value).filter(
+    k => !knownExtensionInstanceParameters.includes(k),
+  );
+  if (unknownKeys.length > 0) {
+    throw new Error(
+      errorMsg(
+        `unknown parameter; expected one of '${knownExtensionInstanceParameters.join(
+          "', '",
+        )}'`,
+        key,
+        unknownKeys.join(', '),
+      ),
+    );
+  }
+
+  const extension: Extension<unknown> | undefined = extensionRef
+    ? resolveExtensionRef(extensionRef)
+    : undefined;
+
+  return omitBy(
+    {
       id,
       at,
       disabled,
       extension,
-      config: value.config /* validate later */,
-    };
-  });
+      config,
+    },
+    v => v === undefined,
+  );
 }
 
 /** @internal */
