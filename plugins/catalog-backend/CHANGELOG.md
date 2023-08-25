@@ -1,5 +1,11 @@
 # @backstage/plugin-catalog-backend
 
+## 1.12.4
+
+### Patch Changes
+
+- cec43bb2428a: Fixed validation of the `fullTextFilterFields` query parameter.
+
 ## 1.12.3
 
 ### Patch Changes
