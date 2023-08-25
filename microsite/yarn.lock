@@ -5028,14 +5028,14 @@ __metadata:
   linkType: hard
 
 "docusaurus-plugin-sass@npm:^0.2.3":
-  version: 0.2.4
-  resolution: "docusaurus-plugin-sass@npm:0.2.4"
+  version: 0.2.5
+  resolution: "docusaurus-plugin-sass@npm:0.2.5"
   dependencies:
     sass-loader: ^10.1.1
   peerDependencies:
-    "@docusaurus/core": ^2.0.0-beta
+    "@docusaurus/core": ^2.0.0-beta || ^3.0.0-alpha
     sass: ^1.30.0
-  checksum: 10e0c9f519dd7ef4666b1fb82d120738feab03ea451c18bab7f785627887f65b8cb72457065a9b2a2664af1490c20b38df9adf525c1b58ce3e324d2b50412734
+  checksum: db17a8c87a344330717962fe195c94089e32281dc7f79b66bf99587254ebad71353b8588c5b74feb1c2841c6183e59b20259f5fb1a5c74026903557cbb113a68
   languageName: node
   linkType: hard
 
