@@ -53,7 +53,7 @@ export const UserSettingsFeatureFlags = () => {
     initialFeatureFlags,
     featureFlagsApi,
   );
-  const [featureFlags] = useState(initialFeatureFlagsSorted);
+  const [featureFlags, setFeatureFlags] = useState(initialFeatureFlagsSorted);
 
   const initialFlagState = Object.fromEntries(
     featureFlags.map(({ name }) => [name, featureFlagsApi.isActive(name)]),
@@ -77,6 +77,13 @@ export const UserSettingsFeatureFlags = () => {
         ...prevState,
         [flagName]: newState === FeatureFlagState.Active,
       }));
+
+      const updatedFlags = sortFlags(
+        featureFlagsApi.getRegisteredFlags(),
+        featureFlagsApi,
+      );
+
+      setFeatureFlags(updatedFlags);
     },
     [featureFlagsApi],
   );
@@ -99,9 +106,6 @@ export const UserSettingsFeatureFlags = () => {
     <Grid container style={{ justifyContent: 'space-between' }}>
       <Grid item xs={6} md={8}>
         <Typography variant="h5">Feature Flags</Typography>
-        <Typography variant="subtitle1">
-          Please refresh the page when toggling feature flags
-        </Typography>
       </Grid>
       {featureFlags.length >= 10 && (
         <Grid item xs={6} md={4}>
