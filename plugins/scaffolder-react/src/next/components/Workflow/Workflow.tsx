@@ -23,10 +23,16 @@ import {
 import { stringifyEntityRef } from '@backstage/catalog-model';
 import { makeStyles } from '@material-ui/core';
 import { BackstageTheme } from '@backstage/theme';
-import { errorApiRef, useApi } from '@backstage/core-plugin-api';
+import {
+  errorApiRef,
+  useApi,
+  featureFlagsApiRef,
+} from '@backstage/core-plugin-api';
 import { useTemplateParameterSchema } from '../../hooks/useTemplateParameterSchema';
 import { Stepper, type StepperProps } from '../Stepper/Stepper';
 import { SecretsContextProvider } from '../../../secrets/SecretsContext';
+import cloneDeep from 'lodash/cloneDeep';
+import { useMemo, useCallback } from 'react';
 
 const useStyles = makeStyles<BackstageTheme>(() => ({
   markdown: {
@@ -74,8 +80,70 @@ export const Workflow = (workflowProps: WorkflowProps): JSX.Element | null => {
   });
 
   const errorApi = useApi(errorApiRef);
-
   const { loading, manifest, error } = useTemplateParameterSchema(templateRef);
+
+  const featureFlagKey = 'backstage:featureFlag';
+  const featureFlagApi = useApi(featureFlagsApiRef);
+
+  const filterOutProperties = useCallback(
+    (step: Step): Step => {
+      const filteredStep = cloneDeep(step);
+      const removedPropertyKeys: Array<string> = [];
+      if (filteredStep.schema.properties) {
+        filteredStep.schema.properties = Object.fromEntries(
+          Object.entries(filteredStep.schema.properties).filter(
+            ([key, value]) => {
+              if (value[featureFlagKey]) {
+                if (featureFlagApi.isActive(value[featureFlagKey])) {
+                  return true;
+                }
+                removedPropertyKeys.push(key);
+                return false;
+              }
+              return true;
+            },
+          ),
+        );
+
+        // remove the feature flag property key from required if they are not active
+        filteredStep.schema.required = Array.isArray(
+          filteredStep.schema.required,
+        )
+          ? filteredStep.schema.required?.filter(
+              r => !removedPropertyKeys.includes(r as string),
+            )
+          : filteredStep.schema.required;
+      }
+      return filteredStep;
+    },
+    [featureFlagKey, featureFlagApi],
+  );
+
+  const filterOutSteps = useCallback(
+    m => {
+      if (m) {
+        const filteredSteps = m.steps
+          .filter(step => {
+            const featureFlag = step.schema[featureFlagKey];
+            return (
+              typeof featureFlag !== 'string' ||
+              featureFlagApi.isActive(featureFlag)
+            );
+          })
+          .map(filterOutProperties);
+
+        m.steps = filteredSteps;
+      }
+
+      return m;
+    },
+    [featureFlagApi, filterOutProperties, featureFlagKey],
+  );
+
+  const sortedManifest = useMemo(
+    () => filterOutSteps(manifest),
+    [manifest, filterOutSteps],
+  );
 
   useEffect(() => {
     if (error) {
@@ -90,7 +158,7 @@ export const Workflow = (workflowProps: WorkflowProps): JSX.Element | null => {
   return (
     <Content>
       {loading && <Progress />}
-      {manifest && (
+      {sortedManifest && (
         <InfoCard
           title={title ?? manifest.title}
           subheader={
