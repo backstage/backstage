@@ -23,11 +23,11 @@ import {
   ErrorPanel,
 } from '@backstage/core-components';
 import { useEntity } from '@backstage/plugin-catalog-react';
-import { useProjectRepoFromEntity } from '../../hooks';
 import { useApi } from '@backstage/core-plugin-api';
 import React from 'react';
 import { azureDevOpsApiRef } from '../../api';
 import useAsync from 'react-use/lib/useAsync';
+import { getAnnotationValuesFromEntity } from '../../utils';
 
 const useStyles = makeStyles(theme => ({
   readMe: {
@@ -87,16 +87,14 @@ export const ReadmeCard = (props: Props) => {
   const classes = useStyles();
   const api = useApi(azureDevOpsApiRef);
   const { entity } = useEntity();
-  const { project, repo } = useProjectRepoFromEntity(entity);
+  const { project, repo } = getAnnotationValuesFromEntity(entity);
 
-  const { loading, error, value } = useAsync(
-    () =>
-      api.getReadme({
-        project,
-        repo,
-      }),
-    [api, project, repo, entity],
-  );
+  const { loading, error, value } = useAsync(async () => {
+    if (repo) {
+      return await api.getReadme({ project, repo });
+    }
+    return undefined;
+  }, [api, project, repo, entity]);
 
   if (loading) {
     return <Progress />;

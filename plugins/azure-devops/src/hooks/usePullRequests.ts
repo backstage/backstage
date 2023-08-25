@@ -25,7 +25,7 @@ import { Entity } from '@backstage/catalog-model';
 import { azureDevOpsApiRef } from '../api';
 import { useApi } from '@backstage/core-plugin-api';
 import useAsync from 'react-use/lib/useAsync';
-import { useProjectRepoFromEntity } from './useProjectRepoFromEntity';
+import { getAnnotationValuesFromEntity } from '../utils';
 
 export function usePullRequests(
   entity: Entity,
@@ -44,10 +44,13 @@ export function usePullRequests(
   };
 
   const api = useApi(azureDevOpsApiRef);
-  const { project, repo } = useProjectRepoFromEntity(entity);
+  const { project, repo } = getAnnotationValuesFromEntity(entity);
 
-  const { value, loading, error } = useAsync(() => {
-    return api.getPullRequests(project, repo, options);
+  const { value, loading, error } = useAsync(async () => {
+    if (repo) {
+      return await api.getPullRequests(project, repo, options);
+    }
+    return undefined;
   }, [api, project, repo, top, status]);
 
   return {
