@@ -16,7 +16,7 @@
 
 import {
   AZURE_DEVOPS_BUILD_DEFINITION_ANNOTATION,
-  AZURE_DEVOPS_ORGANIZATION_ANNOTATION,
+  AZURE_DEVOPS_HOST_ORG_ANNOTATION,
   AZURE_DEVOPS_PROJECT_ANNOTATION,
   AZURE_DEVOPS_REPO_ANNOTATION,
 } from '../constants';
@@ -27,35 +27,39 @@ export function getAnnotationValuesFromEntity(entity: Entity): {
   project: string;
   repo?: string;
   definition?: string;
+  host?: string;
   org?: string;
 } {
-  const org =
-    entity.metadata.annotations?.[AZURE_DEVOPS_ORGANIZATION_ANNOTATION];
+  const hostOrgAnnotation =
+    entity.metadata.annotations?.[AZURE_DEVOPS_HOST_ORG_ANNOTATION];
+  const { host, org } = getHostOrg(hostOrgAnnotation);
 
-  const annotation =
+  const projectRepoAnnotation =
     entity.metadata.annotations?.[AZURE_DEVOPS_REPO_ANNOTATION];
-  if (annotation) {
-    const { project, repo } = getProjectRepo(annotation);
+  if (projectRepoAnnotation) {
+    const { project, repo } = getProjectRepo(projectRepoAnnotation);
     const definition = undefined;
-    return { project, repo, definition, org };
+    return { project, repo, definition, host, org };
   }
 
   const project =
     entity.metadata.annotations?.[AZURE_DEVOPS_PROJECT_ANNOTATION];
   if (!project) {
-    throw new Error('Value for annotation dev.azure.com/project was not found');
+    throw new Error(
+      `Value for annotation ${AZURE_DEVOPS_PROJECT_ANNOTATION} was not found`,
+    );
   }
 
   const definition =
     entity.metadata.annotations?.[AZURE_DEVOPS_BUILD_DEFINITION_ANNOTATION];
   if (!definition) {
     throw new Error(
-      'Value for annotation dev.azure.com/build-definition was not found',
+      `Value for annotation ${AZURE_DEVOPS_BUILD_DEFINITION_ANNOTATION} was not found`,
     );
   }
 
   const repo = undefined;
-  return { project, repo, definition, org };
+  return { project, repo, definition, host, org };
 }
 
 function getProjectRepo(annotation: string): {
@@ -64,7 +68,7 @@ function getProjectRepo(annotation: string): {
 } {
   if (!annotation.includes('/')) {
     throw new Error(
-      'Value for annotation dev.azure.com/project-repo was not in the correct format: <project-name>/<repo-name>',
+      `Value for annotation ${AZURE_DEVOPS_REPO_ANNOTATION} was not in the correct format: <project-name>/<repo-name>`,
     );
   }
 
@@ -72,15 +76,46 @@ function getProjectRepo(annotation: string): {
 
   if (!project) {
     throw new Error(
-      'Project Name for annotation dev.azure.com/project-repo was not found; expected format is: <project-name>/<repo-name>',
+      `Project Name for annotation ${AZURE_DEVOPS_REPO_ANNOTATION} was not found; expected format is: <project-name>/<repo-name>`,
     );
   }
 
   if (!repo) {
     throw new Error(
-      'Repo Name for annotation dev.azure.com/project-repo was not found; expected format is: <project-name>/<repo-name>',
+      `Repo Name for annotation ${AZURE_DEVOPS_REPO_ANNOTATION} was not found; expected format is: <project-name>/<repo-name>`,
     );
   }
 
   return { project, repo };
+}
+
+function getHostOrg(annotation?: string): {
+  host?: string;
+  org?: string;
+} {
+  if (!annotation) {
+    return { host: undefined, org: undefined };
+  }
+
+  if (!annotation.includes('/')) {
+    throw new Error(
+      `Value for annotation ${AZURE_DEVOPS_HOST_ORG_ANNOTATION} was not in the correct format: <host-name>/<organization-name>`,
+    );
+  }
+
+  const [host, org] = annotation.split('/');
+
+  if (!host) {
+    throw new Error(
+      `Host for annotation ${AZURE_DEVOPS_HOST_ORG_ANNOTATION} was not found; expected format is: <host-name>/<organization-name>`,
+    );
+  }
+
+  if (!org) {
+    throw new Error(
+      `Organization for annotation ${AZURE_DEVOPS_HOST_ORG_ANNOTATION} was not found; expected format is: <host-name>/<organization-name>`,
+    );
+  }
+
+  return { host, org };
 }

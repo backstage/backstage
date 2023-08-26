@@ -31,11 +31,12 @@ describe('getAnnotationValuesFromEntity', () => {
           },
         },
       };
-      const { project, repo, definition, org } =
+      const { project, repo, definition, host, org } =
         getAnnotationValuesFromEntity(entity);
       expect(project).toEqual('projectName');
       expect(repo).toEqual('repoName');
       expect(definition).toEqual(undefined);
+      expect(host).toEqual(undefined);
       expect(org).toEqual(undefined);
     });
   });
@@ -126,17 +127,18 @@ describe('getAnnotationValuesFromEntity', () => {
           },
         },
       };
-      const { project, repo, definition, org } =
+      const { project, repo, definition, host, org } =
         getAnnotationValuesFromEntity(entity);
       expect(project).toEqual('projectName');
       expect(repo).toEqual(undefined);
       expect(definition).toEqual('buildDefinitionName');
+      expect(host).toEqual(undefined);
       expect(org).toEqual(undefined);
     });
   });
 
   describe('with only project annotation', () => {
-    it('should return project and definition', () => {
+    it('should should throw annotation not found error', () => {
       const entity: Entity = {
         apiVersion: 'backstage.io/v1alpha1',
         kind: 'Component',
@@ -159,7 +161,7 @@ describe('getAnnotationValuesFromEntity', () => {
   });
 
   describe('with only build-definition annotation', () => {
-    it('should return project and definition', () => {
+    it('should should throw annotation not found error', () => {
       const entity: Entity = {
         apiVersion: 'backstage.io/v1alpha1',
         kind: 'Component',
@@ -181,8 +183,8 @@ describe('getAnnotationValuesFromEntity', () => {
     });
   });
 
-  describe('with valid project-repo and org annotations', () => {
-    it('should return project, repo, and org', () => {
+  describe('with valid project-repo and host-org annotations', () => {
+    it('should return project, repo, host, and org', () => {
       const entity: Entity = {
         apiVersion: 'backstage.io/v1alpha1',
         kind: 'Component',
@@ -191,21 +193,22 @@ describe('getAnnotationValuesFromEntity', () => {
           name: 'project-repo',
           annotations: {
             'dev.azure.com/project-repo': 'projectName/repoName',
-            'dev.azure.com/organization': 'organizationName',
+            'dev.azure.com/host-org': 'hostName/organizationName',
           },
         },
       };
-      const { project, repo, definition, org } =
+      const { project, repo, definition, host, org } =
         getAnnotationValuesFromEntity(entity);
       expect(project).toEqual('projectName');
       expect(repo).toEqual('repoName');
       expect(definition).toEqual(undefined);
+      expect(host).toEqual('hostName');
       expect(org).toEqual('organizationName');
     });
   });
 
-  describe('with valid project, build-definition, and org annotations', () => {
-    it('should return project, definition, and org', () => {
+  describe('with valid project, build-definition, and host-org annotations', () => {
+    it('should return project, definition, host and org', () => {
       const entity: Entity = {
         apiVersion: 'backstage.io/v1alpha1',
         kind: 'Component',
@@ -215,16 +218,89 @@ describe('getAnnotationValuesFromEntity', () => {
           annotations: {
             'dev.azure.com/project': 'projectName',
             'dev.azure.com/build-definition': 'buildDefinitionName',
-            'dev.azure.com/organization': 'organizationName',
+            'dev.azure.com/host-org': 'hostName/organizationName',
           },
         },
       };
-      const { project, repo, definition, org } =
+      const { project, repo, definition, host, org } =
         getAnnotationValuesFromEntity(entity);
       expect(project).toEqual('projectName');
       expect(repo).toEqual(undefined);
       expect(definition).toEqual('buildDefinitionName');
+      expect(host).toEqual('hostName');
       expect(org).toEqual('organizationName');
+    });
+  });
+
+  describe('with invalid host-org annotation', () => {
+    it('should throw incorrect format error', () => {
+      const entity: Entity = {
+        apiVersion: 'backstage.io/v1alpha1',
+        kind: 'Component',
+        metadata: {
+          namespace: 'default',
+          name: 'host-org',
+          annotations: {
+            'dev.azure.com/host-org': 'host',
+          },
+        },
+      };
+
+      const test = () => {
+        return getAnnotationValuesFromEntity(entity);
+      };
+
+      expect(test).toThrow(
+        'Value for annotation dev.azure.com/host-org was not in the correct format: <host-name>/<organization-name>',
+      );
+    });
+  });
+
+  describe('with host-rg annotation missing host', () => {
+    it('should throw missing project error', () => {
+      const entity: Entity = {
+        apiVersion: 'backstage.io/v1alpha1',
+        kind: 'Component',
+        metadata: {
+          namespace: 'default',
+          name: 'host-org',
+          annotations: {
+            'dev.azure.com/host-org': '/org',
+          },
+        },
+      };
+
+      const test = () => {
+        return getAnnotationValuesFromEntity(entity);
+      };
+
+      expect(test).toThrow(
+        'Host for annotation dev.azure.com/host-org was not found; expected format is: <host-name>/<organization-name>',
+      );
+    });
+  });
+
+  describe('with host-org annotation missing org', () => {
+    it('should throw missing repo error', () => {
+      const entity: Entity = {
+        apiVersion: 'backstage.io/v1alpha1',
+        kind: 'Component',
+        metadata: {
+          namespace: 'default',
+          name: 'host-org',
+          annotations: {
+            'dev.azure.com/host-org': 'host/',
+          },
+        },
+      };
+
+      const test = () => {
+        return getAnnotationValuesFromEntity(entity);
+      };
+
+      expect(test).toThrow(
+        'Organization for annotation dev.azure.com/host-org was not found; expected format is: <host-name>/<organization-name>',
+      );
     });
   });
 });
