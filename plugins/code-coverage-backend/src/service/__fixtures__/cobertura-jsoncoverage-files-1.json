@@ -1,7 +1,6 @@
 [
   {
     "filename": "src/main/scala/com/example/Main.scala",
-    "branchHits": {},
     "lineHits": {
       "100": 2,
       "103": 1,
@@ -81,11 +80,11 @@
       "95": 1,
       "97": 4,
       "99": 1
-    }
+    },
+    "branchHits": {}
   },
   {
     "filename": "src/main/scala/com/example/Other.scala",
-    "branchHits": {},
     "lineHits": {
       "103": 6,
       "104": 2,
@@ -152,15 +151,16 @@
       "92": 4,
       "93": 3,
       "94": 2
-    }
+    },
+    "branchHits": {}
   },
   {
     "filename": "src/main/scala/com/example/utils/Util.scala",
-    "branchHits": {},
     "lineHits": {
       "7": 1,
       "8": 2,
       "13": 1
-    }
+    },
+    "branchHits": {}
   }
 ]
