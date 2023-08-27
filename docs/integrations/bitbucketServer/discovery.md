@@ -14,6 +14,8 @@ This can be useful as an alternative to static locations or manually adding thin
 
 ## Installation
 
+### Installation without Events Support
+
 You will have to add the entity provider in the catalog initialization code of your
 backend. The provider is not installed by default, therefore you have to add a
 dependency to `@backstage/plugin-catalog-backend-module-bitbucket-server` to your backend
@@ -46,6 +48,59 @@ export default async function createPlugin(
   // ..
 }
 ```
+
+### Installation with Events Support
+
+Please follow the installation instructions at
+
+- <https://github.com/backstage/backstage/tree/master/plugins/events-backend/README.md>
+- <https://github.com/backstage/backstage/tree/master/plugins/events-backend-module-bitbucket-server/README.md>
+
+Additionally, you need to decide how you want to receive events from external sources like
+
+- [via HTTP endpoint](https://github.com/backstage/backstage/tree/master/plugins/events-backend/README.md)
+  - Bitbucket Server events webhook url should be set to `{backstageBaseUrl}/api/events/http/bitbucketServer`
+- [via an AWS SQS queue](https://github.com/backstage/backstage/tree/master/plugins/events-backend-module-aws-sqs/README.md)
+
+Set up your provider
+
+```ts title="packages/backend/src/plugins/catalog.ts"
+import { CatalogBuilder } from '@backstage/plugin-catalog-backend';
+/* highlight-add-start */
+import { BitbucketServerEntityProvider } from '@backstage/plugin-catalog-backend-module-bitbucket-server';
+/* highlight-add-end */
+
+import { ScaffolderEntitiesProcessor } from '@backstage/plugin-scaffolder-backend';
+import { Router } from 'express';
+import { PluginEnvironment } from '../types';
+
+export default async function createPlugin(
+  env: PluginEnvironment,
+): Promise<Router> {
+  const builder = await CatalogBuilder.create(env);
+  builder.addProcessor(new ScaffolderEntitiesProcessor());
+  /* highlight-add-start */
+  const bitbucketServerProvider = BitbucketServerEntityProvider.fromConfig(
+    env.config,
+    {
+      catalogApi: new CatalogClient({ discoveryApi: env.discovery }),
+      logger: env.logger,
+      scheduler: env.scheduler,
+      tokenManager: env.tokenManager,
+    },
+  );
+  env.eventBroker.subscribe(bitbucketServerProvider);
+  builder.addEntityProvider(bitbucketServerProvider);
+  /* highlight-add-end */
+  const { processingEngine, router } = await builder.build();
+  await processingEngine.start();
+  return router;
+}
+```
+
+**Attention:**
+`catalogApi` and `tokenManager` are required at this variant
+compared to the one without events support.
 
 ## Configuration
 
