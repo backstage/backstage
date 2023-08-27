@@ -1,7 +1,6 @@
 [
   {
     "filename": "Sources/TDSOptions.m",
-    "branchHits": {},
     "lineHits": {
       "32": 0,
       "33": 0,
@@ -39,11 +38,11 @@
       "75": 0,
       "76": 0,
       "77": 0
-    }
+    },
+    "branchHits": {}
   },
   {
     "filename": "Sources/TDSUserLock.m",
-    "branchHits": {},
     "lineHits": {
       "17": 0,
       "18": 0,
@@ -89,11 +88,11 @@
       "68": 0,
       "69": 0,
       "70": 0
-    }
+    },
+    "branchHits": {}
   },
   {
     "filename": "Sources/TDSUserManager.m",
-    "branchHits": {},
     "lineHits": {
       "24": 0,
       "25": 0,
@@ -329,11 +328,11 @@
       "294": 0,
       "295": 0,
       "296": 0
-    }
+    },
+    "branchHits": {}
   },
   {
     "filename": "Sources/TDSUtil.m",
-    "branchHits": {},
     "lineHits": {
       "8": 0,
       "9": 0,
@@ -346,6 +345,7 @@
       "18": 0,
       "19": 0,
       "20": 0
-    }
+    },
+    "branchHits": {}
   }
 ]
