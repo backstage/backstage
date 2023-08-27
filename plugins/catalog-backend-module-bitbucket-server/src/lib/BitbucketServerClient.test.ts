@@ -23,7 +23,12 @@ import {
   BitbucketServerPagedResponse,
   paginated,
 } from './BitbucketServerClient';
-import { BitbucketServerProject, BitbucketServerRepository } from './types';
+import {
+  BitbucketServerDefaultBranch,
+  BitbucketServerProject,
+  BitbucketServerRepository,
+} from './types';
+import { NotFoundError } from '@backstage/errors';
 
 const server = setupServer();
 
@@ -122,6 +127,7 @@ describe('BitbucketServerClient', () => {
                     ],
                   },
                   archived: false,
+                  defaultBranch: 'master',
                 },
               ],
             };
@@ -200,6 +206,7 @@ describe('BitbucketServerClient', () => {
               ],
             },
             archived: false,
+            defaultBranch: 'master',
           };
 
           return res(ctx.json(response));
@@ -216,5 +223,83 @@ describe('BitbucketServerClient', () => {
     expect(repo.links.self[0].href).toEqual(
       'https://bitbucket.mycompany.com/projects/test-project',
     );
+  });
+
+  it('getRepository no repo', async () => {
+    server.use(
+      rest.get(
+        `${config.apiBaseUrl}/projects/test-project/repos/wrong-repo`,
+        (_, res, ctx) => {
+          return res(ctx.status(404));
+        },
+      ),
+    );
+
+    const error = async () => {
+      await client.getRepository({
+        projectKey: 'test-project',
+        repo: 'wrong-repo',
+      });
+    };
+
+    await expect(error).rejects.toThrow(
+      "Repository 'wrong-repo' in project 'test-project' does not exist.",
+    );
+    await expect(error).rejects.toThrow(NotFoundError);
+  });
+
+  it('getDefaultBranch success', async () => {
+    server.use(
+      rest.get(
+        `${config.apiBaseUrl}/projects/test-project/repos/test-repo/default-branch`,
+        (req, res, ctx) => {
+          if (
+            req.headers.get('authorization') !==
+            'Basic dGVzdC11c2VyOnRlc3QtcHc='
+          ) {
+            return res(ctx.status(400));
+          }
+          const response: BitbucketServerDefaultBranch = {
+            id: 'refs/heads/master',
+            displayId: 'master',
+            type: 'BRANCH',
+            latestCommit: '0f2f3ae484054696568bf4560ba4da280f7df82a',
+            latestChangeset: '0f2f3ae484054696568bf4560ba4da280f7df82a',
+            isDefault: true,
+          };
+
+          return res(ctx.json(response));
+        },
+      ),
+    );
+
+    const repo = await client.getDefaultBranch({
+      projectKey: 'test-project',
+      repo: 'test-repo',
+    });
+    expect(repo.displayId).toEqual('master');
+  });
+
+  it('getDefaultBranch endpoint', async () => {
+    server.use(
+      rest.get(
+        `${config.apiBaseUrl}/projects/test-project/repos/wrong-repo/default-branch`,
+        (_, res, ctx) => {
+          return res(ctx.status(404));
+        },
+      ),
+    );
+
+    const error = async () => {
+      await client.getDefaultBranch({
+        projectKey: 'test-project',
+        repo: 'wrong-repo',
+      });
+    };
+
+    await expect(error).rejects.toThrow(
+      "Your Bitbucket Server version no longer supports the default branch endpoint or 'wrong-repo' in 'test-project' does not exist.",
+    );
+    await expect(error).rejects.toThrow(NotFoundError);
   });
 });

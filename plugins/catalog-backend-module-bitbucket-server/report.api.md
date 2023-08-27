@@ -5,14 +5,18 @@
 ```ts
 import { BackendFeature } from '@backstage/backend-plugin-api';
 import { BitbucketServerIntegrationConfig } from '@backstage/integration';
+import { CatalogApi } from '@backstage/catalog-client';
 import { Config } from '@backstage/config';
 import { Entity } from '@backstage/catalog-model';
 import { EntityProvider } from '@backstage/plugin-catalog-node';
 import { EntityProviderConnection } from '@backstage/plugin-catalog-node';
-import { LocationSpec } from '@backstage/plugin-catalog-node';
+import { EventsService } from '@backstage/plugin-events-node';
+import { LocationSpec } from '@backstage/plugin-catalog-common';
 import { LoggerService } from '@backstage/backend-plugin-api';
 import { SchedulerService } from '@backstage/backend-plugin-api';
 import { SchedulerServiceTaskRunner } from '@backstage/backend-plugin-api';
+import { TaskRunner } from '@backstage/backend-tasks';
+import { TokenManager } from '@backstage/backend-common';
 
 // @public
 export class BitbucketServerClient {
@@ -21,6 +25,11 @@ export class BitbucketServerClient {
   static fromConfig(options: {
     config: BitbucketServerIntegrationConfig;
   }): BitbucketServerClient;
+  // (undocumented)
+  getDefaultBranch(options: {
+    projectKey: string;
+    repo: string;
+  }): Promise<BitbucketServerDefaultBranch>;
   // (undocumented)
   getFile(options: {
     projectKey: string;
@@ -47,6 +56,16 @@ export class BitbucketServerClient {
   };
 }
 
+// @public (undocumented)
+export type BitbucketServerDefaultBranch = {
+  id: string;
+  displayId: string;
+  type: string;
+  latestCommit: string;
+  latestChangeset: string;
+  isDefault: boolean;
+};
+
 // @public
 export class BitbucketServerEntityProvider implements EntityProvider {
   connect(connection: EntityProviderConnection): Promise<void>;
@@ -55,14 +74,63 @@ export class BitbucketServerEntityProvider implements EntityProvider {
     config: Config,
     options: {
       logger: LoggerService;
+      events?: EventsService;
       parser?: BitbucketServerLocationParser;
-      schedule?: SchedulerServiceTaskRunner;
-      scheduler?: SchedulerService;
+      schedule?: TaskRunner;
+      scheduler?: PluginTaskScheduler;
+      catalogApi?: CatalogApi;
+      tokenManager?: TokenManager;
     },
   ): BitbucketServerEntityProvider[];
   getProviderName(): string;
   // (undocumented)
   refresh(logger: LoggerService): Promise<void>;
+}
+
+// @public (undocumented)
+export namespace BitbucketServerEvents {
+  // (undocumented)
+  export type Actor = {
+    name?: string;
+    id: number;
+  };
+  // (undocumented)
+  export type Change = {
+    ref: {
+      id: string;
+      displayId: string;
+      type: string;
+    };
+  };
+  // (undocumented)
+  export interface Event {
+    // (undocumented)
+    eventKey: string;
+  }
+  // (undocumented)
+  export interface RefsChangedEvent extends Event {
+    // (undocumented)
+    actor: Actor;
+    // (undocumented)
+    changes: Change[];
+    // (undocumented)
+    commits: undefined;
+    // (undocumented)
+    date: string;
+    // (undocumented)
+    repository: Repository;
+    // (undocumented)
+    ToCommit: undefined;
+  }
+  // (undocumented)
+  export type Repository = {
+    slug: string;
+    id: number;
+    name: string;
+    project: BitbucketServerProject;
+  };
+  {
+  }
 }
 
 // @public (undocumented)
@@ -108,6 +176,7 @@ export type BitbucketServerRepository = {
     }[]
   >;
   archived: boolean;
+  defaultBranch: string;
 };
 
 // @public (undocumented)

@@ -18,7 +18,6 @@ import {
   BitbucketServerIntegrationConfig,
   getBitbucketServerRequestOptions,
 } from '@backstage/integration';
-import { BitbucketServerProject, BitbucketServerRepository } from './types';
 import pThrottle from 'p-throttle';
 
 // 1 per second
@@ -32,6 +31,15 @@ const throttledFetch = throttle(
     return await fetch(url, options);
   },
 );
+import {
+  BitbucketServerDefaultBranch,
+  BitbucketServerRepository,
+} from './index';
+
+import { BitbucketServerProject } from './types';
+import { NotFoundError } from '@backstage/errors';
+
+import { ResponseError } from '@backstage/errors';
 
 /**
  * A client for interacting with a Bitbucket Server instance
@@ -92,7 +100,35 @@ export class BitbucketServerClient {
       request,
       getBitbucketServerRequestOptions(this.config),
     );
-    return response.json();
+    if (response.ok) {
+      return response.json();
+    }
+    if (response.status === 404) {
+      throw new NotFoundError(
+        `Repository '${options.repo}' in project '${options.projectKey}' does not exist.`,
+      );
+    }
+    throw await ResponseError.fromResponse(response);
+  }
+
+  async getDefaultBranch(options: {
+    projectKey: string;
+    repo: string;
+  }): Promise<BitbucketServerDefaultBranch> {
+    const request = `${this.config.apiBaseUrl}/projects/${options.projectKey}/repos/${options.repo}/default-branch`;
+    const response = await fetch(
+      request,
+      getBitbucketServerRequestOptions(this.config),
+    );
+    if (response.ok) {
+      return response.json();
+    }
+    if (response.status === 404) {
+      throw new NotFoundError(
+        `Your Bitbucket Server version no longer supports the default branch endpoint or '${options.repo}' in '${options.projectKey}' does not exist.`,
+      );
+    }
+    throw await ResponseError.fromResponse(response);
   }
 
   resolvePath(options: { projectKey: string; repo: string; path: string }): {
@@ -163,7 +199,9 @@ export type BitbucketServerPagedResponse<T> = {
   values: T[];
   nextPageStart: number;
 };
-
+/**
+ * @public
+ */
 export async function* paginated(
   request: (
     options: BitbucketServerListOptions,
