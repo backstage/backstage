@@ -82,11 +82,7 @@ export const EmbeddedDocsRouter = (props: PropsWithChildren<{}>) => {
     entity.metadata.annotations?.[TECHDOCS_EXTERNAL_ANNOTATION];
 
   if (!projectId) {
-    return (
-      <MissingAnnotationEmptyState
-        annotation={[TECHDOCS_ANNOTATION]}
-      />
-    );
+    return <MissingAnnotationEmptyState annotation={[TECHDOCS_ANNOTATION]} />;
   }
 
   return element;
