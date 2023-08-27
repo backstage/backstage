@@ -1,5 +1,3 @@
-import { parseStringParam } from './common';
-
 /*
  * Copyright 2023 The Backstage Authors
  *
@@ -15,14 +13,6 @@ import { parseStringParam } from './common';
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-export function parseFullTextFilterFields(params: Record<string, unknown>) {
-  const fullTextFilterFields = parseStringParam(
-    params.fullTextFilterFields,
-    'fullTextFilterFields',
-  );
-  if (!fullTextFilterFields) {
-    return undefined;
-  }
 
-  return fullTextFilterFields.split(',');
-}
+/** @public */
+export type EntityRelationAggregation = 'direct' | 'aggregated';

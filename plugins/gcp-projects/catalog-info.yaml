@@ -1,0 +1,10 @@
+apiVersion: backstage.io/v1alpha1
+kind: Component
+metadata:
+  name: backstage-plugin-gcp-projects
+  title: '@backstage/plugin-gcp-projects'
+  description: A Backstage plugin that helps you manage projects in GCP
+spec:
+  lifecycle: experimental
+  type: backstage-frontend-plugin
+  owner: maintainers

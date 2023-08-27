@@ -253,7 +253,7 @@ function createOrMergeEntity(
       // Provide default name/title/description values.
       name: safeEntityName,
       title: packageJson.name,
-      ...(packageJson.description
+      ...(packageJson.description && !existingEntity.metadata?.description
         ? { description: packageJson.description }
         : undefined),
     },

@@ -14,11 +14,11 @@
  * limitations under the License.
  */
 
-import React from 'react';
 import {
   createExtension,
   createPlugin,
   coreExtensionData,
+  createSchemaFromZod,
 } from '@backstage/frontend-plugin-api';
 import { Router as GraphiQLPage } from '@backstage/plugin-graphiql';
 
@@ -27,12 +27,12 @@ export const GraphiqlPageExtension = createExtension({
     component: coreExtensionData.reactComponent,
     path: coreExtensionData.routePath,
   },
+  configSchema: createSchemaFromZod(z =>
+    z.object({ path: z.string().default('/graphiql') }),
+  ),
   factory({ bind, config }) {
-    bind.component(() => {
-      return <GraphiQLPage />;
-    });
-    // TODO: In need of schemas and type safety
-    bind.path((config as { path: string }).path);
+    bind.component(GraphiQLPage);
+    bind.path(config.path);
   },
 });
 
@@ -43,7 +43,6 @@ export const graphiqlPlugin = createPlugin({
       id: 'graphiql.page',
       at: 'core.router/routes',
       extension: GraphiqlPageExtension,
-      config: { path: '/graphiql' },
     },
   ],
 });
