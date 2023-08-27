@@ -84,7 +84,7 @@ export const EmbeddedDocsRouter = (props: PropsWithChildren<{}>) => {
   if (!projectId) {
     return (
       <MissingAnnotationEmptyState
-        annotation={[TECHDOCS_ANNOTATION, TECHDOCS_EXTERNAL_ANNOTATION]}
+        annotation={[TECHDOCS_ANNOTATION]}
       />
     );
   }

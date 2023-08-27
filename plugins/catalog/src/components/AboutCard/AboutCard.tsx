@@ -61,6 +61,10 @@ import EditIcon from '@material-ui/icons/Edit';
 import { isTemplateEntityV1beta3 } from '@backstage/plugin-scaffolder-common';
 import { parseEntityRef } from '@backstage/catalog-model';
 
+const TECHDOCS_ANNOTATION = 'backstage.io/techdocs-ref';
+
+const TECHDOCS_EXTERNAL_ANNOTATION = 'backstage.io/techdocs-entity';
+
 const useStyles = makeStyles({
   gridItemCard: {
     display: 'flex',
@@ -114,10 +118,10 @@ export function AboutCard(props: AboutCardProps) {
 
   let techdocsRef: CompoundEntityRef | undefined;
 
-  if (entity.metadata.annotations?.['backstage.io/techdocs-entity']) {
+  if (entity.metadata.annotations?.[TECHDOCS_EXTERNAL_ANNOTATION]) {
     try {
       techdocsRef = parseEntityRef(
-        entity.metadata.annotations?.['backstage.io/techdocs-entity'],
+        entity.metadata.annotations?.[TECHDOCS_EXTERNAL_ANNOTATION],
       );
       // not a fan of this but we don't care if the parseEntityRef fails
     } catch {
@@ -135,8 +139,8 @@ export function AboutCard(props: AboutCardProps) {
     label: 'View TechDocs',
     disabled:
       !(
-        entity.metadata.annotations?.['backstage.io/techdocs-ref'] ||
-        entity.metadata.annotations?.['backstage.io/techdocs-entity']
+        entity.metadata.annotations?.[TECHDOCS_ANNOTATION] ||
+        entity.metadata.annotations?.[TECHDOCS_EXTERNAL_ANNOTATION]
       ) || !viewTechdocLink,
     icon: <DocsIcon />,
     href:

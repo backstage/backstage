@@ -25,15 +25,17 @@ import { TechDocsReaderPage } from './plugin';
 import { TechDocsReaderPageContent } from './reader/components/TechDocsReaderPageContent';
 import { TechDocsReaderPageSubheader } from './reader/components/TechDocsReaderPageSubheader';
 
+const TECHDOCS_EXTERNAL_ANNOTATION = 'backstage.io/techdocs-entity';
+
 type EntityPageDocsProps = { entity: Entity };
 
 export const EntityPageDocs = ({ entity }: EntityPageDocsProps) => {
   let entityRef = getCompoundEntityRef(entity);
 
-  if (entity.metadata.annotations?.['backstage.io/techdocs-entity']) {
+  if (entity.metadata.annotations?.[TECHDOCS_EXTERNAL_ANNOTATION]) {
     try {
       entityRef = parseEntityRef(
-        entity.metadata.annotations?.['backstage.io/techdocs-entity'],
+        entity.metadata.annotations?.[TECHDOCS_EXTERNAL_ANNOTATION],
       );
     } catch {
       // not a fan of this but we don't care if the parseEntityRef fails
