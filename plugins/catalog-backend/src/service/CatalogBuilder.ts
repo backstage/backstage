@@ -775,7 +775,7 @@ export class CatalogBuilder {
     const duration = readDurationFromConfig(config, {
       key: processingIntervalKey,
     });
-    const seconds = Math.min(
+    const seconds = Math.max(
       1,
       Math.round(durationToMilliseconds(duration) / 1000),
     );
