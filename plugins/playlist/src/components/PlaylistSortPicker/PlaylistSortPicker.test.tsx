@@ -27,6 +27,7 @@ import {
 } from './PlaylistSortPicker';
 import { ConfigApi, configApiRef } from '@backstage/core-plugin-api';
 import { PlaylistList } from '../PlaylistList';
+import { Playlist } from '@backstage/plugin-playlist-common';
 
 const mockConfigApi = {
   getOptionalString: () => undefined,
