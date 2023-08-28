@@ -33,6 +33,7 @@ import { OAuthStartResponse } from '../types';
 import express from 'express';
 import { OAuthAdapter, OAuthEnvironmentHandler } from '../../lib/oauth';
 import { createAuthProviderIntegration } from '../createAuthProviderIntegration';
+import fetch from 'node-fetch';
 
 type OidcImpl = {
   strategy: OidcStrategy<undefined, Client>;
@@ -54,9 +55,15 @@ export type PinnipedOptions = OAuthProviderOptions & {
 
 export class PinnipedAuthProvider implements OAuthHandlers {
   private readonly implementation: Promise<OidcImpl>;
+  private readonly clientId: string;
+  private readonly clientSecret: string;
+  private readonly federationDomain: string;
 
   constructor(options: PinnipedOptions) {
     this.implementation = this.setupStrategy(options);
+    this.clientId = options.clientId;
+    this.clientSecret = options.clientSecret;
+    this.federationDomain = options.federationDomain;
   }
 
   async start(req: OAuthStartRequest): Promise<OAuthStartResponse> {
@@ -81,31 +88,66 @@ export class PinnipedAuthProvider implements OAuthHandlers {
     });
   }
 
+  private async rfc8693TokenExchange({ accessToken, audience }) {
+    const tokenEndpoint = `${this.federationDomain}/oauth2/token`;
+    const authString: string = `${this.clientId}:${this.clientSecret}`;
+    const encodedAuthString = Buffer.from(authString, 'base64');
+
+    const requestOptions = {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'x-www-form-urlencoded',
+        Authorization: `Basic ${encodedAuthString}`,
+      },
+      body: `grant_type=urn:ietf:params:oauth:grant-type:token-exchange
+      &subject_token=${accessToken}
+      &subject_token_type=urn:ietf:params:oauth:token-type:access_token
+      &requested_token_type=urn:ietf:params:oauth:token-type:jwt
+      &audience=${audience}`,
+    };
+    const response = await fetch(tokenEndpoint, requestOptions);
+    return response.idToken;
+  }
+
   async handler(
     req: express.Request,
   ): Promise<{ response: OAuthResponse; refreshToken?: string }> {
-    const { strategy } = await this.implementation;
-
-    // the query string inside the req should contain a code and a state, we can change the stub to reject any auth code,
+    const { strategy, client } = await this.implementation;
 
     // if we dont add a base url our integration fails with invalid_url error in integration test
     const { searchParams } = new URL(req.url, 'https://pinniped.com');
     const stateParam = searchParams.get('state');
-    const audience = stateParam ? readState(stateParam).audience : 'none';
+    const audience = stateParam ? readState(stateParam).audience : undefined;
 
     return new Promise((resolve, reject) => {
       strategy.success = user => {
-        resolve({
-          response: {
-            providerInfo: {
-              accessToken: user.tokenset.access_token,
-              scope: user.tokenset.scope,
+        (audience
+          ? client
+              .grant({
+                grant_type: 'urn:ietf:params:oauth:grant-type:token-exchange',
+                subject_token: user.tokenset.access_token,
+                audience,
+                subject_token_type:
+                  'urn:ietf:params:oauth:token-type:access_token',
+                requested_token_type: 'urn:ietf:params:oauth:token-type:jwt',
+              })
+              .then(tokenset => tokenset.access_token)
+          : Promise.resolve(user.tokenset.id_token)
+        ).then(idToken => {
+          resolve({
+            response: {
+              providerInfo: {
+                accessToken: user.tokenset.access_token,
+                scope: user.tokenset.scope,
+                idToken,
+              },
+              profile: {},
             },
-            profile: {},
-          },
-          refreshToken: user.tokenset.refresh_token,
+            refreshToken: user.tokenset.refresh_token,
+          });
         });
       };
+
       strategy.fail = info => {
         reject(new Error(`Authentication rejected, ${info.message || ''}`));
       };

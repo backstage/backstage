@@ -162,6 +162,9 @@ describe('pinniped.create', () => {
     backstageServer.close();
   });
 
+  // also include an audience parameter and only assert on the id_token
+
+  // repurpose this test
   it('/handler/frame exchanges authorization codes from /start for access tokens', async () => {
     const agent = request.agent('');
     // make a /start request
@@ -182,10 +185,7 @@ describe('pinniped.create', () => {
             'state',
             req.url.searchParams.get('state')!,
           );
-          // callbackUrl.searchParams.set(
-          //   'scope',
-          //   'test-scope',
-          // );
+          callbackUrl.searchParams.set('scope', 'test-scope');
           return res(
             ctx.status(302),
             ctx.set('Location', callbackUrl.toString()),
@@ -198,11 +198,13 @@ describe('pinniped.create', () => {
     );
 
     // follow the redirect back to /handler/frame
-    const sub = 'test';
-    const iss = 'https://pinniped.test';
-    const iat = Date.now();
-    const aud = 'clientId';
-    const exp = Date.now() + 10000;
+    const testTokenMetadata = {
+      sub: 'test',
+      iss: 'https://pinniped.test',
+      iat: Date.now(),
+      aud: 'clientId',
+      exp: Date.now() + 10000,
+    };
 
     const key = await generateKeyPair('ES256');
     const publicKey = await exportJWK(key.publicKey);
@@ -210,13 +212,13 @@ describe('pinniped.create', () => {
     publicKey.kid = privateKey.kid = uuid();
     publicKey.alg = privateKey.alg = 'ES256';
 
-    const jwt = await new SignJWT({ iss, sub, aud, iat, exp })
+    const jwt = await new SignJWT(testTokenMetadata)
       .setProtectedHeader({ alg: privateKey.alg, kid: privateKey.kid })
-      .setIssuer(iss)
-      .setAudience(aud)
-      .setSubject(sub)
-      .setIssuedAt(iat)
-      .setExpirationTime(exp)
+      .setIssuer(testTokenMetadata.iss)
+      .setAudience(testTokenMetadata.aud)
+      .setSubject(testTokenMetadata.sub)
+      .setIssuedAt(testTokenMetadata.iat)
+      .setExpirationTime(testTokenMetadata.exp)
       .sign(await importJWK(privateKey));
 
     fakePinnipedSupervisor.use(
@@ -248,7 +250,7 @@ describe('pinniped.create', () => {
           type: 'authorization_response',
           response: {
             providerInfo: {
-              accessToken: 'accessToken',
+              idToken: 'accessToken',
               scope: 'testScope',
             },
             profile: {},
@@ -260,44 +262,125 @@ describe('pinniped.create', () => {
 
   describe('#frameHandler', () => {
     it.skip('performs an rfc 8693 token exchange after getting access token', async () => {
+      const agent = request.agent('');
+
+      // make a start request with an audience query
+      const startResponse = await agent.get(
+        `${appUrl}/api/auth/pinniped/start?env=development&aud=testCluster`,
+      );
+
+      const testTokenMetadata = {
+        sub: 'test',
+        iss: 'https://pinniped.test',
+        iat: Date.now(),
+        aud: 'clientId',
+        exp: Date.now() + 10000,
+      };
+
+      const key = await generateKeyPair('ES256');
+      const publicKey = await exportJWK(key.publicKey);
+      const privateKey = await exportJWK(key.privateKey);
+      publicKey.kid = privateKey.kid = uuid();
+      publicKey.alg = privateKey.alg = 'ES256';
+
+      const jwt = await new SignJWT(testTokenMetadata)
+        .setProtectedHeader({ alg: privateKey.alg, kid: privateKey.kid })
+        .setIssuer(testTokenMetadata.iss)
+        .setAudience(testTokenMetadata.aud)
+        .setSubject(testTokenMetadata.sub)
+        .setIssuedAt(testTokenMetadata.iat)
+        .setExpirationTime(testTokenMetadata.exp)
+        .sign(await importJWK(privateKey));
+
+      // follow the redirect to pinniped authorization endpoint
       fakePinnipedSupervisor.use(
+        rest.get(
+          'https://pinniped.test/oauth2/authorize',
+          async (req, res, ctx) => {
+            const callbackUrl = new URL(
+              req.url.searchParams.get('redirect_uri')!,
+            );
+            callbackUrl.searchParams.set('code', 'authorization_code');
+            callbackUrl.searchParams.set(
+              'state',
+              req.url.searchParams.get('state')!,
+            );
+            callbackUrl.searchParams.set('scope', 'test-scope');
+            return res(
+              ctx.status(302),
+              ctx.set('Location', callbackUrl.toString()),
+            );
+          },
+        ),
         rest.post('https://pinniped.test/oauth2/token', async (req, res, ctx) =>
           res(
             ctx.json(
               new URLSearchParams(await req.text()).get('grant_type') ===
                 'urn:ietf:params:oauth:grant-type:token-exchange'
-                ? { access_token: 'accessToken' }
-                : { id_token: 'clusterToken' },
+                ? { access_token: 'accessToken', scope: 'test-scope' }
+                : {
+                    accessToken: 'accessToken',
+                    scope: 'test-scope',
+                    idToken: jwt,
+                  },
             ),
           ),
         ),
+        rest.get('https://pinniped.test/jwks.json', async (_req, res, ctx) =>
+          res(ctx.status(200), ctx.json({ keys: [{ ...publicKey }] })),
+        ),
       );
 
-      const responsePromise = request(app)
-        .get(
-          '/api/auth/pinniped/handler/frame?' +
-            'code=pin_ac_xU69qZGejOCu8Loz5iOD6Bm25SgQewmT0VVE1hOAQzA.WzxrI9bCder5UJHtCOX_yEnsM2OVh8pVSFI7NPs5yUM&' +
-            'scope=openid+pinniped%3Arequest-audience+username&' +
-            `state=${state}`,
-        )
-        .set(
-          'Cookie',
-          `pinniped-nonce=${nonce}; ` +
-            'connect.sid=s:p3_hKHiFr_i58jyTPIZxtWN9pejiOujD.SN2irLt6oIL18v0GzGCPO1sibEmzybiVlT9ca3ZjT68',
-        );
-      const reqUrl = new URL(responsePromise.url);
-      reqUrl.search = '';
-      fakePinnipedSupervisor.use(
-        rest.all(reqUrl.toString(), req => req.passthrough()),
+      // fakePinnipedSupervisor.use(
+      //   rest.post('https://pinniped.test/oauth2/token', async (req, res, ctx) =>
+      //     res(
+      //       ctx.json(
+      //         new URLSearchParams(await req.text()).get('grant_type') ===
+      //           'urn:ietf:params:oauth:grant-type:token-exchange'
+      //           ? { access_token: 'accessToken' }
+      //           : { id_token: 'clusterToken' },
+      //       ),
+      //     ),
+      //   ),
+      // );
+
+      const authorizationResponse = await agent.get(
+        startResponse.header.location,
       );
 
-      expect((await responsePromise).text).toContain(
+      const handlerResponse = await agent.get(
+        authorizationResponse.header.location,
+      );
+
+      // const responsePromise = request(app)
+      //   .get(
+      //     '/api/auth/pinniped/handler/frame?' +
+      //       'code=pin_ac_xU69qZGejOCu8Loz5iOD6Bm25SgQewmT0VVE1hOAQzA.WzxrI9bCder5UJHtCOX_yEnsM2OVh8pVSFI7NPs5yUM&' +
+      //       'scope=openid+pinniped%3Arequest-audience+username&' +
+      //       `state=${state}`,
+      //   )
+      //   .set(
+      //     'Cookie',
+      //     `pinniped-nonce=${nonce}; ` +
+      //       'connect.sid=s:p3_hKHiFr_i58jyTPIZxtWN9pejiOujD.SN2irLt6oIL18v0GzGCPO1sibEmzybiVlT9ca3ZjT68',
+      //   );
+
+      // const reqUrl = new URL(responsePromise.url);
+      // reqUrl.search = '';
+
+      // fakePinnipedSupervisor.use(
+      //   rest.all(reqUrl.toString(), req => req.passthrough()),
+      // );
+
+      expect(handlerResponse.text).toContain(
         encodeURIComponent(
           JSON.stringify({
             type: 'authorization_response',
             response: {
               providerInfo: {
-                idToken: 'clusterToken',
+                accessToken: 'accessToken',
+                scope: 'test-scope',
+                idToken: jwt,
               },
               profile: {},
             },

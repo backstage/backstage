@@ -91,6 +91,8 @@ describe('PinnipedAuthProvider', () => {
     origin: 'undefined',
   };
 
+  const clusterScopedIdToken = 'dummy-token';
+
   beforeEach(() => {
     jest.clearAllMocks();
 
@@ -104,18 +106,33 @@ describe('PinnipedAuthProvider', () => {
             ctx.json(issuerMetadata),
           ),
       ),
-      rest.post('https://pinniped.test/oauth2/token', (req, res, ctx) =>
-        res(
-          req.headers.get('Authorization')
+      rest.post('https://pinniped.test/oauth2/token', async (req, res, ctx) => {
+        const formBody = new URLSearchParams(await req.text());
+        const isGrantTypeTokenExchange =
+          formBody.get('grant_type') ===
+          'urn:ietf:params:oauth:grant-type:token-exchange';
+        const hasValidTokenExchangeParams =
+          formBody.get('subject_token') === 'accessToken' &&
+          formBody.get('audience') === 'test_cluster' &&
+          formBody.get('subject_token_type') ===
+            'urn:ietf:params:oauth:token-type:access_token' &&
+          formBody.get('requested_token_type') ===
+            'urn:ietf:params:oauth:token-type:jwt';
+
+        return res(
+          req.headers.get('Authorization') &&
+            (!isGrantTypeTokenExchange || hasValidTokenExchangeParams)
             ? ctx.json({
-                access_token: 'accessToken',
+                access_token: isGrantTypeTokenExchange
+                  ? clusterScopedIdToken
+                  : 'accessToken',
                 refresh_token: 'refreshToken',
-                id_token: idToken,
+                ...(!isGrantTypeTokenExchange && { id_token: idToken }),
                 scope: 'testScope',
               })
             : ctx.status(401),
-        ),
-      ),
+        );
+      }),
       rest.get('https://pinniped.test/idp/userinfo.openid', (_req, res, ctx) =>
         res(
           ctx.json({
@@ -275,6 +292,26 @@ describe('PinnipedAuthProvider', () => {
       const responseScope = handlerResponse.response.providerInfo.scope;
 
       expect(responseScope).toEqual('testScope');
+    });
+
+    it('returns cluster-scoped ID token when audience is specified', async () => {
+      oauthState.audience = 'test_cluster';
+      handlerRequest = {
+        method: 'GET',
+        url: `https://test?code=authorization_code&state=${encodeState(
+          oauthState,
+        )}`,
+        session: {
+          'oidc:pinniped.test': {
+            state: encodeState(oauthState),
+          },
+        },
+      } as unknown as express.Request;
+
+      const handlerResponse = await provider.handler(handlerRequest);
+      const responseIdToken = handlerResponse.response.providerInfo.idToken;
+
+      expect(responseIdToken).toEqual(clusterScopedIdToken);
     });
 
     it('request errors out with missing authorization_code parameter in the request_url', async () => {
