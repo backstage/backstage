@@ -486,7 +486,7 @@ describe('backend-plugin-manager', () => {
       };
 
       const backend = createSpecializedBackend({
-        services: [
+        defaultServiceFactories: [
           rootLifecycleServiceFactory(),
           createServiceFactory({
             service: coreServices.rootConfig,
@@ -494,7 +494,14 @@ describe('backend-plugin-manager', () => {
             async factory({}) {
               return await ConfigSources.toConfig({
                 async *readConfigData() {
-                  yield { configs: [] };
+                  yield {
+                    configs: [
+                      {
+                        context: 'test',
+                        data: {},
+                      },
+                    ],
+                  };
                 },
               });
             },

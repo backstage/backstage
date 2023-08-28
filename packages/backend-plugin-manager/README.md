@@ -17,19 +17,11 @@ The backend plugin manager is a service that scans a configured root directory (
 In the `backend-next` application, it can be enabled by adding the `backend-plugin-manager` as a dependency in the `package.json` and the following lines in the `src/index.ts` file:
 
 ```ts
--
--const backend = createBackend();
-+import {
-+  dynamicPluginsServiceFactory,
-+  dynamicPluginsFeatureDiscoveryServiceFactory,
-+} from '@backstage/backend-plugin-manager';
+const backend = createBackend();
 +
-+const backend = createBackend({
-+  services: [
-+    dynamicPluginsServiceFactory(),
-+    dynamicPluginsFeatureDiscoveryServiceFactory(), // overridden version of the FeatureDiscoveryService which provides features loaded by dynamic plugins
-+  ],
-+});
++ backend.add(dynamicPluginsFeatureDiscoveryServiceFactory()) // overridden version of the FeatureDiscoveryService which provides features loaded by dynamic plugins
++ backend.add(dynamicPluginsServiceFactory())
++
 ```
 
 ### About the expected dynamic plugin structure
