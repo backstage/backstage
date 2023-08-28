@@ -18,21 +18,61 @@ import { fireEvent, getByRole, render, waitFor } from '@testing-library/react';
 import { act } from '@testing-library/react-hooks';
 import React from 'react';
 
+import { TestApiProvider } from '@backstage/test-utils';
 import { MockPlaylistListProvider } from '../../testUtils';
 import {
   DefaultPlaylistSortTypes,
   DefaultSortCompareFunctions,
   PlaylistSortPicker,
 } from './PlaylistSortPicker';
+import { ConfigApi, configApiRef } from '@backstage/core-plugin-api';
+import { PlaylistList } from '../PlaylistList';
+
+const mockConfigApi = {
+  getOptionalString: () => undefined,
+} as Partial<ConfigApi>;
+
+jest.mock('../PlaylistCard', () => ({
+  PlaylistCard: ({ playlist }: { playlist: Playlist }) => (
+    <div>{playlist.name}</div>
+  ),
+}));
 
 describe('PlaylistSortPicker', () => {
   it('should update sort based on selection', async () => {
     const updateSort = jest.fn();
 
     const { getByText, getByTestId } = render(
-      <MockPlaylistListProvider value={{ updateSort }}>
-        <PlaylistSortPicker />
-      </MockPlaylistListProvider>,
+      <TestApiProvider apis={[[configApiRef, mockConfigApi]]}>
+        <MockPlaylistListProvider
+          value={{
+            updateSort,
+            playlists: [
+              {
+                id: 'id1',
+                name: 'playlist-1',
+                owner: 'group:default/some-owner',
+                public: true,
+                entities: 1,
+                followers: 2,
+                isFollowing: false,
+              },
+              {
+                id: 'id2',
+                name: 'playlist-2',
+                owner: 'group:default/another-owner',
+                public: true,
+                entities: 2,
+                followers: 1,
+                isFollowing: true,
+              },
+            ],
+          }}
+        >
+          <PlaylistSortPicker />
+          <PlaylistList />
+        </MockPlaylistListProvider>
+      </TestApiProvider>,
     );
 
     act(() => {
@@ -51,6 +91,9 @@ describe('PlaylistSortPicker', () => {
       );
     });
 
+    expect(getByText('playlist-1')).toBeInTheDocument();
+    expect(getByText('playlist-2')).toBeInTheDocument();
+
     const zyxSort = getByText('Z-A (descending)');
     expect(zyxSort).toBeInTheDocument();
 
@@ -60,6 +103,9 @@ describe('PlaylistSortPicker', () => {
         DefaultSortCompareFunctions[DefaultPlaylistSortTypes.descending],
       );
     });
+
+    expect(getByText('playlist-2')).toBeInTheDocument();
+    expect(getByText('playlist-1')).toBeInTheDocument();
 
     act(() => {
       fireEvent.mouseDown(
