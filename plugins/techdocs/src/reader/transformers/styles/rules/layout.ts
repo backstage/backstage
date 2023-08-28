@@ -64,11 +64,6 @@ export default ({ theme, sidebar }: RuleOptions) => `
 }
 
 .md-sidebar {
-  bottom: 75px;
-  position: fixed;
-  width: 16rem;
-  overflow-y: auto;
-  overflow-x: hidden;
   scrollbar-color: rgb(193, 193, 193) #eee;
   scrollbar-width: thin;
 }
@@ -103,19 +98,6 @@ export default ({ theme, sidebar }: RuleOptions) => `
 
 .md-content {
   margin-bottom: 50px;
-}
-
-.md-sidebar--primary:not([hidden]) ~ .md-content{
-  margin-left: 16rem;
-  max-width: calc(100% - 16rem * 1);
-}
-
-.md-sidebar--secondary:not([hidden]) ~ .md-content{
-  max-width: calc(100% - 16rem * 1);
-}
-
-.md-sidebar--primary:not([hidden]) ~ .md-sidebar--secondary:not([hidden]) ~ .md-content{
-  max-width: calc(100% - 16rem * 2);
 }
 
 .md-footer {

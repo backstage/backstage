@@ -16,7 +16,7 @@
 
 import { useCallback, useEffect, useState } from 'react';
 
-import { useTheme, useMediaQuery } from '@material-ui/core';
+import { useTheme } from '@material-ui/core';
 
 import { BackstageTheme } from '@backstage/theme';
 import { CompoundEntityRef } from '@backstage/catalog-model';
@@ -48,8 +48,6 @@ import {
 } from '../../transformers';
 import { useNavigateUrl } from './useNavigateUrl';
 
-const MOBILE_MEDIA_QUERY = 'screen and (max-width: 76.1875em)';
-
 /**
  * Hook that encapsulates the behavior of getting raw HTML and applying
  * transforms to it in order to make it function at a basic level in the
@@ -60,7 +58,6 @@ export const useTechDocsReaderDom = (
 ): Element | null => {
   const navigate = useNavigateUrl();
   const theme = useTheme<BackstageTheme>();
-  const isMobileMedia = useMediaQuery(MOBILE_MEDIA_QUERY);
   const sanitizerTransformer = useSanitizerTransformer();
   const stylesTransformer = useStylesTransformer();
   const analytics = useAnalytics();
@@ -72,44 +69,6 @@ export const useTechDocsReaderDom = (
 
   const [dom, setDom] = useState<HTMLElement | null>(null);
   const isStyleLoading = useShadowDomStylesLoading(dom);
-
-  const updateSidebarPosition = useCallback(() => {
-    if (!dom) return;
-
-    const sidebars = dom.querySelectorAll<HTMLElement>('.md-sidebar');
-
-    sidebars.forEach(element => {
-      // set sidebar position to render in correct position
-      if (isMobileMedia) {
-        element.style.top = '0px';
-      } else {
-        const page = document?.querySelector('.techdocs-reader-page');
-        const pageTop = page?.getBoundingClientRect().top ?? 0;
-        let domTop = dom.getBoundingClientRect().top ?? 0;
-
-        const tabs = dom.querySelector('.md-container > .md-tabs');
-        const tabsHeight = tabs?.getBoundingClientRect().height ?? 0;
-
-        // the sidebars should not scroll beyond the total height of the header and tabs
-        if (domTop < pageTop) {
-          domTop = pageTop;
-        }
-        element.style.top = `${Math.max(domTop, 0) + tabsHeight}px`;
-      }
-
-      // show the sidebar only after updating its position
-      element.style.setProperty('opacity', '1');
-    });
-  }, [dom, isMobileMedia]);
-
-  useEffect(() => {
-    window.addEventListener('resize', updateSidebarPosition);
-    window.addEventListener('scroll', updateSidebarPosition, true);
-    return () => {
-      window.removeEventListener('resize', updateSidebarPosition);
-      window.removeEventListener('scroll', updateSidebarPosition, true);
-    };
-  }, [dom, updateSidebarPosition]);
 
   // dynamically set width of footer to accommodate for pinning of the sidebar
   const updateFooterWidth = useCallback(() => {
@@ -131,10 +90,9 @@ export const useTechDocsReaderDom = (
   useEffect(() => {
     if (!isStyleLoading) {
       updateFooterWidth();
-      updateSidebarPosition();
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [state, isStyleLoading, updateFooterWidth, updateSidebarPosition]);
+  }, [state, isStyleLoading, updateFooterWidth]);
 
   // a function that performs transformations that are executed prior to adding it to the DOM
   const preRender = useCallback(
@@ -211,18 +169,6 @@ export const useTechDocsReaderDom = (
               .querySelector('.md-nav__title')
               ?.removeAttribute('for');
           },
-        }),
-        // hide sidebars until their positions are updated
-        onCssReady({
-          onLoading: () => {
-            const sidebars = Array.from(
-              transformedElement.querySelectorAll<HTMLElement>('.md-sidebar'),
-            );
-            sidebars.forEach(element => {
-              element.style.setProperty('opacity', '0');
-            });
-          },
-          onLoaded: () => {},
         }),
       ]),
     [theme, navigate, analytics],
