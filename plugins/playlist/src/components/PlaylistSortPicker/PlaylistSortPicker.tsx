@@ -32,8 +32,8 @@ import { PlaylistSortCompareFunction } from '../../types';
 export const enum DefaultPlaylistSortTypes {
   popular = 'popular',
   numEntities = 'numEntities',
-  ascending = 'A-Z',
-  descending = 'Z-A',
+  ascending = 'ascending',
+  descending = 'descending',
 }
 
 export const DefaultSortCompareFunctions: {
@@ -65,7 +65,7 @@ const sortTypeLabels = {
   [DefaultPlaylistSortTypes.popular]: 'Popular',
   [DefaultPlaylistSortTypes.numEntities]: '# Entities',
   [DefaultPlaylistSortTypes.ascending]: 'A-Z (ascending)',
-  [DefaultPlaylistSortTypes.descending]: 'Z-A (descending )',
+  [DefaultPlaylistSortTypes.descending]: 'Z-A (descending)',
 };
 
 const useStyles = makeStyles({

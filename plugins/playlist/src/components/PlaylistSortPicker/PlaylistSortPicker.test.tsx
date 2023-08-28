@@ -41,7 +41,7 @@ describe('PlaylistSortPicker', () => {
       );
     });
 
-    const abcSort = getByText('A-Z');
+    const abcSort = getByText('A-Z (ascending)');
     expect(abcSort).toBeInTheDocument();
 
     fireEvent.click(abcSort);
@@ -51,7 +51,7 @@ describe('PlaylistSortPicker', () => {
       );
     });
 
-    const zyxSort = getByText('Z-A');
+    const zyxSort = getByText('Z-A (descending)');
     expect(zyxSort).toBeInTheDocument();
 
     fireEvent.click(zyxSort);
