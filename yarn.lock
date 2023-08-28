@@ -3784,6 +3784,7 @@ __metadata:
   resolution: "@backstage/config@workspace:packages/config"
   dependencies:
     "@backstage/cli": "workspace:^"
+    "@backstage/errors": "workspace:^"
     "@backstage/test-utils": "workspace:^"
     "@backstage/types": "workspace:^"
     "@types/node": ^16.0.0
