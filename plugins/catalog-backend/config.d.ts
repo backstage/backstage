@@ -150,6 +150,13 @@ export interface Config {
      *
      * @remarks
      *
+     * Example:
+     *
+     * ```yaml
+     * catalog:
+     *   processingInterval: { minutes: 30 }
+     * ```
+     *
      * Note that this is only a suggested minimum, and the actual interval may
      * be longer. Internally, the catalog will scale up this number by a small
      * factor and choose random numbers in that range to spread out the load. If
