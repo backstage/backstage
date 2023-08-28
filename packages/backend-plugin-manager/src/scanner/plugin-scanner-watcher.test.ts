@@ -19,7 +19,8 @@ import { Logs, MockedLogger } from '../__testUtils__/testUtils';
 import { Config, ConfigReader } from '@backstage/config';
 import path, { join } from 'path';
 import { ScannedPluginPackage } from './types';
-import { mkdirSync, mkdtempSync, rmSync, writeFileSync } from 'fs';
+import { mkdtempSync, rmSync } from 'fs';
+import { mkdir, writeFile, rm } from 'fs/promises';
 import { tmpdir } from 'os';
 import waitForExpect from 'wait-for-expect';
 
@@ -33,15 +34,20 @@ describe('plugin-scanner', () => {
     });
     afterEach(() => {
       if (backstageRootDirectory) {
-        rmSync(backstageRootDirectory, { recursive: true });
+        rmSync(backstageRootDirectory, { recursive: true, force: true });
+      }
+    });
+    process.on('beforeExit', () => {
+      if (backstageRootDirectory) {
+        rmSync(backstageRootDirectory, { recursive: true, force: true });
       }
     });
 
     it('watch for config and file system changes', async () => {
       const logger = new MockedLogger();
 
-      mkdirSync(join(backstageRootDirectory, 'first-dir'));
-      mkdirSync(join(backstageRootDirectory, 'second-dir'));
+      await mkdir(join(backstageRootDirectory, 'first-dir'));
+      await mkdir(join(backstageRootDirectory, 'second-dir'));
 
       const config: Config = new ConfigReader({
         dynamicPlugins: {
@@ -77,10 +83,10 @@ describe('plugin-scanner', () => {
       });
       pluginScanner.subscribeToRootDirectoryChange(rootDirectorySubscriber);
 
-      mkdirSync(
+      await mkdir(
         join(backstageRootDirectory, 'first-dir', 'test-backend-plugin'),
       );
-      writeFileSync(
+      await writeFile(
         join(
           backstageRootDirectory,
           'first-dir',
@@ -96,7 +102,7 @@ describe('plugin-scanner', () => {
       );
 
       await waitForExpect(() => {
-        expect(rootDirectorySubscriber).toHaveBeenCalledTimes(2);
+        expect(rootDirectorySubscriber).toHaveBeenCalledTimes(1);
       });
       rootDirectorySubscriber.mockClear();
       await waitForExpect(() => {
@@ -151,14 +157,14 @@ describe('plugin-scanner', () => {
       });
       logger.logs = {};
 
-      mkdirSync(
+      await mkdir(
         join(
           backstageRootDirectory,
           'second-dir',
           'second-test-backend-plugin',
         ),
       );
-      writeFileSync(
+      await writeFile(
         join(
           backstageRootDirectory,
           'second-dir',
@@ -174,7 +180,7 @@ describe('plugin-scanner', () => {
       );
 
       await waitForExpect(() => {
-        expect(rootDirectorySubscriber).toHaveBeenCalledTimes(2);
+        expect(rootDirectorySubscriber).toHaveBeenCalledTimes(1);
       });
       rootDirectorySubscriber.mockClear();
       await waitForExpect(() => {
@@ -210,7 +216,7 @@ describe('plugin-scanner', () => {
       const debug = jest.spyOn(logger, 'debug');
 
       // Check that not all file changes trigger a new scan of plugins
-      mkdirSync(
+      await mkdir(
         join(
           backstageRootDirectory,
           'second-dir',
@@ -221,7 +227,7 @@ describe('plugin-scanner', () => {
       await waitForExpect(() => {
         expect(debug).toHaveBeenCalledTimes(1);
       });
-      writeFileSync(
+      await writeFile(
         join(
           backstageRootDirectory,
           'second-dir',
@@ -233,7 +239,7 @@ describe('plugin-scanner', () => {
       await waitForExpect(() => {
         expect(debug).toHaveBeenCalledTimes(2);
       });
-      rmSync(
+      await rm(
         join(
           backstageRootDirectory,
           'second-dir',
@@ -244,7 +250,7 @@ describe('plugin-scanner', () => {
       await waitForExpect(() => {
         expect(debug).toHaveBeenCalledTimes(3);
       });
-      rmSync(
+      await rm(
         join(
           backstageRootDirectory,
           'second-dir',
@@ -277,7 +283,7 @@ describe('plugin-scanner', () => {
 
       // Now check that removal of some plugin home directory triggers a new scan of plugins
 
-      rmSync(
+      await rm(
         join(
           backstageRootDirectory,
           'second-dir',
@@ -315,7 +321,7 @@ describe('plugin-scanner', () => {
       });
       logger.logs = {};
 
-      rmSync(
+      await rm(
         join(
           backstageRootDirectory,
           'second-dir',

@@ -30,7 +30,7 @@ import {
   DynamicPlugin,
   LegacyBackendPluginInstaller,
   NewBackendPluginInstaller,
-  PluginEnvironment,
+  LegacyPluginEnvironment,
 } from './types';
 import { ScannedPluginManifest, ScannedPluginPackage } from '../scanner/types';
 import { randomUUID } from 'crypto';
@@ -40,7 +40,7 @@ import {
   rootLifecycleServiceFactory,
 } from '@backstage/backend-app-api';
 import { ConfigSources } from '@backstage/config-loader';
-import { Logs, MockedLogger, logContent } from '../__testUtils__/testUtils';
+import { Logs, MockedLogger, LogContent } from '../__testUtils__/testUtils';
 import { PluginScanner } from '../scanner/plugin-scanner';
 import { findPaths } from '@backstage/cli-common';
 
@@ -59,10 +59,10 @@ describe('backend-plugin-manager', () => {
         content?: string;
       };
       expectedLogs?(location: URL): {
-        errors?: logContent[];
-        warns?: logContent[];
-        infos?: logContent[];
-        debugs?: logContent[];
+        errors?: LogContent[];
+        warns?: LogContent[];
+        infos?: LogContent[];
+        debugs?: LogContent[];
       };
       checkLoadedPlugins: (loadedPlugins: BaseDynamicPlugin[]) => void;
     };
@@ -327,7 +327,7 @@ describe('backend-plugin-manager', () => {
           ]);
           const installer = (plugins[0] as BackendDynamicPlugin)
             .installer as LegacyBackendPluginInstaller;
-          expect(installer.scaffolder!({} as PluginEnvironment)).toEqual<
+          expect(installer.scaffolder!({} as LegacyPluginEnvironment)).toEqual<
             TemplateAction<any>[]
           >([]);
         },

@@ -42,8 +42,17 @@ import { PermissionPolicy } from '@backstage/plugin-permission-node';
 
 /**
  * @public
+ *
+ * @deprecated
+ *
+ * Support for the legacy backend system will be removed in the future.
+ *
+ * When adding a legacy plugin installer entrypoint in your plugin,
+ * you should always take the opportunity to also implement support
+ * for the new backend system if not already done.
+ *
  */
-export type PluginEnvironment = {
+export type LegacyPluginEnvironment = {
   logger: Logger;
   cache: PluginCacheManager;
   database: PluginDatabaseManager;
@@ -115,7 +124,7 @@ export interface NewBackendPluginInstaller {
  * @public
  * @deprecated
  *
- * Support for the legacy backend suystem will be removed in the future.
+ * Support for the legacy backend system will be removed in the future.
  *
  * When adding a legacy plugin installer entrypoint in your plugin,
  * you should always take the opportunity to also implement support
@@ -127,19 +136,19 @@ export interface LegacyBackendPluginInstaller {
 
   router?: {
     pluginID: string;
-    createPlugin(env: PluginEnvironment): Promise<Router>;
+    createPlugin(env: LegacyPluginEnvironment): Promise<Router>;
   };
 
-  catalog?(builder: CatalogBuilder, env: PluginEnvironment): void;
-  scaffolder?(env: PluginEnvironment): TemplateAction<any>[];
+  catalog?(builder: CatalogBuilder, env: LegacyPluginEnvironment): void;
+  scaffolder?(env: LegacyPluginEnvironment): TemplateAction<any>[];
   search?(
     indexBuilder: IndexBuilder,
     schedule: TaskRunner,
-    env: PluginEnvironment,
+    env: LegacyPluginEnvironment,
   ): void;
   events?(
     eventsBackend: EventsBackend,
-    env: PluginEnvironment,
+    env: LegacyPluginEnvironment,
   ): HttpPostIngressOptions[];
   permissions?: {
     policy?: PermissionPolicy;

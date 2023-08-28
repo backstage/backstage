@@ -15,11 +15,9 @@
  */
 
 export interface Config {
-  /** @visibility frontend */
   dynamicPlugins?: {
     /**
      * The local path, relative to the backstage root, that contains dynamic plugins.
-     * @visibility frontend
      */
     rootDirectory: string;
   };

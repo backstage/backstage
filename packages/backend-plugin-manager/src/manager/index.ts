@@ -14,6 +14,25 @@
  * limitations under the License.
  */
 
-export * from './loader';
-export * from './scanner';
-export * from './manager';
+export { isBackendDynamicPluginInstaller } from './types';
+
+export type {
+  BaseDynamicPlugin,
+  DynamicPlugin,
+  FrontendDynamicPlugin,
+  BackendDynamicPlugin,
+  BackendDynamicPluginInstaller,
+  NewBackendPluginInstaller,
+  LegacyBackendPluginInstaller,
+  LegacyPluginEnvironment,
+  BackendPluginProvider,
+} from './types';
+
+export {
+  PluginManager,
+  dynamicPluginsFeatureDiscoveryServiceFactory,
+  dynamicPluginsServiceFactory,
+  dynamicPluginsServiceRef,
+} from './plugin-manager';
+
+export type { DynamicPluginsFactoryOptions } from './plugin-manager';

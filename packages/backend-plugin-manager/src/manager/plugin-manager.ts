@@ -20,9 +20,11 @@ import {
   isBackendDynamicPluginInstaller,
   DynamicPlugin,
 } from './types';
+import { ScannedPluginPackage } from '../scanner';
 import { PluginScanner } from '../scanner/plugin-scanner';
+import { ModuleLoader } from '../loader';
+import { CommonJSModuleLoader } from '../loader/CommonJSModuleLoader';
 import * as url from 'url';
-import { ScannedPluginPackage } from '../scanner/types';
 import {
   BackendFeature,
   LoggerService,
@@ -34,8 +36,6 @@ import { PackageRoles } from '@backstage/cli-node';
 import { findPaths } from '@backstage/cli-common';
 import path from 'path';
 import * as fs from 'fs';
-import { ModuleLoader } from '../loader/types';
-import { CommonJSModuleLoader } from '../loader/CommonJSModuleLoader';
 import {
   FeatureDiscoveryService,
   featureDiscoveryServiceRef,

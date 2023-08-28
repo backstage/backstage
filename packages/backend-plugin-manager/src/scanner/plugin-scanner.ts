@@ -20,6 +20,7 @@ import { Stats, lstatSync } from 'fs';
 import * as chokidar from 'chokidar';
 import * as path from 'path';
 import * as url from 'url';
+import debounce from 'lodash/debounce';
 import { PackagePlatform, PackageRoles } from '@backstage/cli-node';
 import { LoggerService } from '@backstage/backend-plugin-api';
 
@@ -210,6 +211,9 @@ export class PluginScanner {
           resolve();
           return;
         }
+        const callSubscribers = debounce(() => {
+          this.subscribers.forEach(s => s());
+        }, 500);
         let ready = false;
         this.rootDirectoryWatcher = chokidar
           .watch(this._rootDirectory, {
@@ -234,7 +238,7 @@ export class PluginScanner {
                 this.logger.info(
                   `rootDirectory changed (${event} - ${eventPath}): scanning plugins again`,
                 );
-                this.subscribers.forEach(s => s());
+                callSubscribers();
               } else {
                 this.logger.debug(
                   `rootDirectory changed (${event} - ${eventPath}): no need to scan plugins again`,

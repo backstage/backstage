@@ -17,13 +17,13 @@
 import { LoggerService } from '@backstage/backend-plugin-api';
 import { JsonObject } from '@backstage/types';
 
-export type logContent = { message: string; meta?: Error | JsonObject };
+export type LogContent = { message: string; meta?: Error | JsonObject };
 
 export type Logs = {
-  errors?: logContent[];
-  warns?: logContent[];
-  infos?: logContent[];
-  debugs?: logContent[];
+  errors?: LogContent[];
+  warns?: LogContent[];
+  infos?: LogContent[];
+  debugs?: LogContent[];
 };
 
 export class MockedLogger implements LoggerService {
@@ -59,7 +59,7 @@ export class MockedLogger implements LoggerService {
   }
 }
 
-function toLogContent(message: string, meta?: Error | JsonObject): logContent {
+function toLogContent(message: string, meta?: Error | JsonObject): LogContent {
   if (!meta) {
     return { message };
   }

@@ -14,6 +14,4 @@
  * limitations under the License.
  */
 
-export * from './loader';
-export * from './scanner';
-export * from './manager';
+export type { ModuleLoader } from './types';

@@ -101,11 +101,11 @@ export function isBackendDynamicPluginInstaller(
 // @public @deprecated (undocumented)
 export interface LegacyBackendPluginInstaller {
   // (undocumented)
-  catalog?(builder: CatalogBuilder, env: PluginEnvironment): void;
+  catalog?(builder: CatalogBuilder, env: LegacyPluginEnvironment): void;
   // (undocumented)
   events?(
     eventsBackend: EventsBackend,
-    env: PluginEnvironment,
+    env: LegacyPluginEnvironment,
   ): HttpPostIngressOptions[];
   // (undocumented)
   kind: 'legacy';
@@ -116,17 +116,33 @@ export interface LegacyBackendPluginInstaller {
   // (undocumented)
   router?: {
     pluginID: string;
-    createPlugin(env: PluginEnvironment): Promise<Router>;
+    createPlugin(env: LegacyPluginEnvironment): Promise<Router>;
   };
   // (undocumented)
-  scaffolder?(env: PluginEnvironment): TemplateAction<any>[];
+  scaffolder?(env: LegacyPluginEnvironment): TemplateAction<any>[];
   // (undocumented)
   search?(
     indexBuilder: IndexBuilder,
     schedule: TaskRunner,
-    env: PluginEnvironment,
+    env: LegacyPluginEnvironment,
   ): void;
 }
+
+// @public @deprecated (undocumented)
+export type LegacyPluginEnvironment = {
+  logger: Logger;
+  cache: PluginCacheManager;
+  database: PluginDatabaseManager;
+  config: Config;
+  reader: UrlReader;
+  discovery: PluginEndpointDiscovery;
+  tokenManager: TokenManager;
+  permissions: PermissionEvaluator;
+  scheduler: PluginTaskScheduler;
+  identity: IdentityApi;
+  eventBroker: EventBroker;
+  pluginProvider: BackendPluginProvider;
+};
 
 // @public (undocumented)
 export interface ModuleLoader {
@@ -145,22 +161,6 @@ export interface NewBackendPluginInstaller {
   // (undocumented)
   kind: 'new';
 }
-
-// @public (undocumented)
-export type PluginEnvironment = {
-  logger: Logger;
-  cache: PluginCacheManager;
-  database: PluginDatabaseManager;
-  config: Config;
-  reader: UrlReader;
-  discovery: PluginEndpointDiscovery;
-  tokenManager: TokenManager;
-  permissions: PermissionEvaluator;
-  scheduler: PluginTaskScheduler;
-  identity: IdentityApi;
-  eventBroker: EventBroker;
-  pluginProvider: BackendPluginProvider;
-};
 
 // @public (undocumented)
 export class PluginManager implements BackendPluginProvider {
