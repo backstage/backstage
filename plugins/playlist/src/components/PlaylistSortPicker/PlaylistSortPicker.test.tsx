@@ -40,13 +40,24 @@ describe('PlaylistSortPicker', () => {
         getByRole(getByTestId('sort-picker-select'), 'button'),
       );
     });
-    const abcSort = getByText('Alphabetical');
+
+    const abcSort = getByText('A-Z');
     expect(abcSort).toBeInTheDocument();
 
     fireEvent.click(abcSort);
     await waitFor(() => {
       expect(updateSort).toHaveBeenLastCalledWith(
-        DefaultSortCompareFunctions[DefaultPlaylistSortTypes.alphabetical],
+        DefaultSortCompareFunctions[DefaultPlaylistSortTypes.ascending],
+      );
+    });
+
+    const zyxSort = getByText('Z-A');
+    expect(zyxSort).toBeInTheDocument();
+
+    fireEvent.click(zyxSort);
+    await waitFor(() => {
+      expect(updateSort).toHaveBeenLastCalledWith(
+        DefaultSortCompareFunctions[DefaultPlaylistSortTypes.descending],
       );
     });
 
