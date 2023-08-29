@@ -33,7 +33,7 @@ const visits = [
 
 const mockVisitsApi = {
   saveVisit: async () => visits[0],
-  listUserVisits: async () => visits,
+  listVisits: async () => visits,
 };
 
 describe('<Content kind="recent"/>', () => {
