@@ -51,10 +51,8 @@ describe('<PlaylistCard/>', () => {
     expect(rendered.getByText('3 entities')).toBeInTheDocument();
     expect(rendered.getByText('2 followers')).toBeInTheDocument();
   });
-});
 
-describe('<OverflowTooltip />', () => {
-  it('renders without exploding', async () => {
+  it('renders description', async () => {
     render(<OverflowTooltip text="test description" />);
   });
 });
