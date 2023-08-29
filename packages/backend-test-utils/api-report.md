@@ -183,26 +183,26 @@ export namespace mockServices {
   }
 }
 
-// @public (undocumented)
+// @public
 export class ServiceFactoryTester<TService, TScope extends 'root' | 'plugin'> {
-  // (undocumented)
   static from<TService, TScope extends 'root' | 'plugin'>(
     subject:
       | ServiceFactory<TService, TScope>
       | (() => ServiceFactory<TService, TScope>),
-    options?: {
-      dependencies?: Array<ServiceFactory | (() => ServiceFactory)>;
-    },
+    options?: ServiceFactoryTesterOptions,
   ): ServiceFactoryTester<TService, TScope>;
-  // (undocumented)
   get(
     ...args: 'root' extends TScope ? [] : [pluginId?: string]
   ): Promise<TService>;
-  // (undocumented)
   getService<TGetService, TGetScope extends 'root' | 'plugin'>(
     service: ServiceRef<TGetService, TGetScope>,
     ...args: 'root' extends TGetScope ? [] : [pluginId?: string]
   ): Promise<TGetService>;
+}
+
+// @public
+export interface ServiceFactoryTesterOptions {
+  dependencies?: Array<ServiceFactory | (() => ServiceFactory)>;
 }
 
 // @public (undocumented)

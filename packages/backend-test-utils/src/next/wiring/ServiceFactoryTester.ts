@@ -22,16 +22,43 @@ import { defaultServiceFactories } from './TestBackend';
 // eslint-disable-next-line @backstage/no-relative-monorepo-imports
 import { ServiceRegistry } from '../../../../backend-app-api/src/wiring/ServiceRegistry';
 
-/** @public */
+/**
+ * Options for {@link ServiceFactoryTester}.
+ * @public
+ */
+export interface ServiceFactoryTesterOptions {
+  /**
+   * Additional service factories to make available as dependencies.
+   *
+   * @remarks
+   *
+   * If a service factory is provided for a service that already has a default
+   * implementation, the provided factory will override the default.
+   */
+  dependencies?: Array<ServiceFactory | (() => ServiceFactory)>;
+}
+
+/**
+ * A utility to help test service factories in isolation.
+ *
+ * @public
+ */
 export class ServiceFactoryTester<TService, TScope extends 'root' | 'plugin'> {
   readonly #subject: ServiceRef<TService, TScope>;
   readonly #registry: ServiceRegistry;
 
+  /**
+   * Creates a new {@link ServiceFactoryTester} used to test the provided subject.
+   *
+   * @param subject - The service factory to test.
+   * @param options - Additional options
+   * @returns A new tester instance for the provided subject.
+   */
   static from<TService, TScope extends 'root' | 'plugin'>(
     subject:
       | ServiceFactory<TService, TScope>
       | (() => ServiceFactory<TService, TScope>),
-    options?: { dependencies?: Array<ServiceFactory | (() => ServiceFactory)> },
+    options?: ServiceFactoryTesterOptions,
   ) {
     return new ServiceFactoryTester(
       typeof subject === 'function' ? subject() : subject,
@@ -52,6 +79,16 @@ export class ServiceFactoryTester<TService, TScope extends 'root' | 'plugin'> {
     ]);
   }
 
+  /**
+   * Returns the service instance for the subject.
+   *
+   * @remarks
+   *
+   * If the subject is a plugin scoped service factory a plugin ID
+   * can be provided to instantiate the service for a specific plugin.
+   *
+   * By default the plugin ID 'test' is used.
+   */
   async get(
     ...args: 'root' extends TScope ? [] : [pluginId?: string]
   ): Promise<TService> {
@@ -59,6 +96,13 @@ export class ServiceFactoryTester<TService, TScope extends 'root' | 'plugin'> {
     return this.#registry.get(this.#subject, pluginId ?? 'test')!;
   }
 
+  /**
+   * Return the service instance for any of the provided dependencies or built-in services.
+   *
+   * @remarks
+   *
+   * A plugin ID can optionally be provided for plugin scoped services, otherwise the plugin ID 'test' is used.
+   */
   async getService<TGetService, TGetScope extends 'root' | 'plugin'>(
     service: ServiceRef<TGetService, TGetScope>,
     ...args: 'root' extends TGetScope ? [] : [pluginId?: string]
