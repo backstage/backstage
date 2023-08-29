@@ -26,24 +26,12 @@ import { RootLifecycleService } from '@backstage/backend-plugin-api';
 import { RootLoggerService } from '@backstage/backend-plugin-api';
 import { SchedulerService } from '@backstage/backend-plugin-api';
 import { ServiceFactory } from '@backstage/backend-plugin-api';
+import { ServiceRef } from '@backstage/backend-plugin-api';
 import { TokenManagerService } from '@backstage/backend-plugin-api';
 import { UrlReaderService } from '@backstage/backend-plugin-api';
 
 // @public (undocumented)
 export function isDockerDisabledForTests(): boolean;
-
-// @public (undocumented)
-export function makeServiceFactoryTester<
-  TService,
-  TScope extends 'root' | 'plugin',
->(
-  subject:
-    | ServiceFactory<TService, TScope>
-    | (() => ServiceFactory<TService, TScope>),
-  dependencies?: Array<ServiceFactory | (() => ServiceFactory)>,
-): 'root' extends TScope
-  ? () => Promise<TService>
-  : (pluginId: string) => Promise<TService>;
 
 // @public (undocumented)
 export namespace mockServices {
@@ -193,6 +181,28 @@ export namespace mockServices {
         partialImpl?: Partial<UrlReaderService> | undefined,
       ) => ServiceMock<UrlReaderService>;
   }
+}
+
+// @public (undocumented)
+export class ServiceFactoryTester<TService, TScope extends 'root' | 'plugin'> {
+  // (undocumented)
+  static from<TService, TScope extends 'root' | 'plugin'>(
+    subject:
+      | ServiceFactory<TService, TScope>
+      | (() => ServiceFactory<TService, TScope>),
+    options?: {
+      dependencies?: Array<ServiceFactory | (() => ServiceFactory)>;
+    },
+  ): ServiceFactoryTester<TService, TScope>;
+  // (undocumented)
+  get(
+    ...args: 'root' extends TScope ? [] : [pluginId?: string]
+  ): Promise<TService>;
+  // (undocumented)
+  getService<TGetService, TGetScope extends 'root' | 'plugin'>(
+    service: ServiceRef<TGetService, TGetScope>,
+    ...args: 'root' extends TGetScope ? [] : [pluginId?: string]
+  ): Promise<TGetService>;
 }
 
 // @public (undocumented)

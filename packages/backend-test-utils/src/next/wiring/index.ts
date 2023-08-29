@@ -14,6 +14,6 @@
  * limitations under the License.
  */
 
-export { makeServiceFactoryTester } from './makeServiceFactoryTester';
+export { ServiceFactoryTester } from './ServiceFactoryTester';
 export { startTestBackend } from './TestBackend';
 export type { TestBackend, TestBackendOptions } from './TestBackend';
