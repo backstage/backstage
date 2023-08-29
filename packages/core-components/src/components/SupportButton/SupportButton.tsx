@@ -155,7 +155,7 @@ export function SupportButton(props: SupportButtonProps) {
             </MenuItem>
           )}
           {React.Children.map(children, (child, i) => (
-            <Tooltip title={child}>
+            <Tooltip title={child || ''} key={`child-${i}`}>
               <MenuItem alignItems="flex-start" key={`child-${i}`}>
                 {child}
               </MenuItem>
