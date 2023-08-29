@@ -27,7 +27,7 @@ export const createDefaultFilters = ({
 }): Record<string, TemplateFilter> => {
   return {
     parseRepoUrl: url => parseRepoUrl(url as string, integrations),
-    parseEntityRef: (ref, context?) =>
+    parseEntityRef: (ref: JsonValue, context?: JsonValue) =>
       parseEntityRef(ref as string, context as JsonObject),
     pick: (obj: JsonValue, key: JsonValue) => get(obj, key as string),
     projectSlug: repoUrl => {
