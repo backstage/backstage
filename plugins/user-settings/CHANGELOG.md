@@ -1,5 +1,19 @@
 # @backstage/plugin-user-settings
 
+## 0.7.9-next.1
+
+### Patch Changes
+
+- ce77b23423cb: conditionally rendering the user email in user profile card
+- Updated dependencies
+  - @backstage/plugin-catalog-react@1.8.4-next.1
+  - @backstage/core-components@0.13.5-next.1
+  - @backstage/core-app-api@1.10.0-next.1
+  - @backstage/core-plugin-api@1.6.0-next.1
+  - @backstage/errors@1.2.1
+  - @backstage/theme@0.4.1
+  - @backstage/types@1.1.0
+
 ## 0.7.8-next.0
 
 ### Patch Changes

@@ -1,5 +1,17 @@
 # @backstage/plugin-search-backend-module-pg
 
+## 0.5.12-next.1
+
+### Patch Changes
+
+- 4ccf9204bc95: Added `indexerBatchSize` option to be able to control the size of the batches being indexed. Also added a debug log entry to list out all the entities in the batch
+- Updated dependencies
+  - @backstage/config@1.1.0-next.0
+  - @backstage/backend-common@0.19.5-next.1
+  - @backstage/backend-plugin-api@0.6.3-next.1
+  - @backstage/plugin-search-backend-node@1.2.7-next.1
+  - @backstage/plugin-search-common@1.2.6-next.0
+
 ## 0.5.11-next.0
 
 ### Patch Changes
