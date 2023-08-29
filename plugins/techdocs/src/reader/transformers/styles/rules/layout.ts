@@ -22,6 +22,11 @@ export default ({ theme, sidebar }: RuleOptions) => `
 /*==================  Layout  ==================*/
 
 /* mkdocs material v9 compat */
+
+html.no-js {
+  overflow: visible
+}
+
 .md-nav__title {
   color: var(--md-default-fg-color);
 }
