@@ -108,10 +108,10 @@ export interface VisitsApi {
    */
   saveVisit(saveParams: VisitsApiSaveParams): Promise<Visit>;
   /**
-   * Get the logged user visits.
+   * Get user visits.
    * @param queryParams - optional search query params.
    */
-  listUserVisits(queryParams?: VisitsApiQueryParams): Promise<Visit[]>;
+  listVisits(queryParams?: VisitsApiQueryParams): Promise<Visit[]>;
 }
 
 /** @public */
