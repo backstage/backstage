@@ -1,5 +1,16 @@
 # @backstage/repo-tools
 
+## 0.3.4-next.1
+
+### Patch Changes
+
+- 6f874cdb04eb: Fixed a bug with the `generate-catalog-info` command that could cause `metadata.description` values to be overwritten by `package.json` description values only because unrelated attributes were being changed.
+- Updated dependencies
+  - @backstage/catalog-model@1.4.2-next.0
+  - @backstage/cli-common@0.1.12
+  - @backstage/cli-node@0.1.3
+  - @backstage/errors@1.2.1
+
 ## 0.3.4-next.0
 
 ### Patch Changes
