@@ -33,6 +33,19 @@ import { UrlReaderService } from '@backstage/backend-plugin-api';
 export function isDockerDisabledForTests(): boolean;
 
 // @public (undocumented)
+export function makeServiceFactoryTester<
+  TService,
+  TScope extends 'root' | 'plugin',
+>(
+  subject:
+    | ServiceFactory<TService, TScope>
+    | (() => ServiceFactory<TService, TScope>),
+  dependencies?: Array<ServiceFactory | (() => ServiceFactory)>,
+): 'root' extends TScope
+  ? () => Promise<TService>
+  : (pluginId: string) => Promise<TService>;
+
+// @public (undocumented)
 export namespace mockServices {
   // (undocumented)
   export namespace cache {
