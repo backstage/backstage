@@ -17,7 +17,7 @@
 import {
   ItemCardHeader,
   LinkButton,
-  MarkdownContent,
+  OverflowTooltip,
 } from '@backstage/core-components';
 import { useRouteRef } from '@backstage/core-plugin-api';
 import { EntityRefLinks } from '@backstage/plugin-catalog-react';
@@ -108,7 +108,7 @@ export const PlaylistCard = ({ playlist }: PlaylistCardProps) => {
           <Typography variant="body2" className={classes.label}>
             Description
           </Typography>
-          <MarkdownContent content={playlist.description ?? ''} />
+          <OverflowTooltip text={playlist.description ?? ''} line={8} />
         </Box>
         <Box className={classes.box}>
           <Typography variant="body2" className={classes.label}>
