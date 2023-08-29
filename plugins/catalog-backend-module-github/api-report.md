@@ -16,7 +16,6 @@ import { EventSubscriber } from '@backstage/plugin-events-node';
 import { GithubCredentialsProvider } from '@backstage/integration';
 import { GithubIntegrationConfig } from '@backstage/integration';
 import { graphql } from '@octokit/graphql';
-import { GroupEntity } from '@backstage/catalog-model';
 import { LocationSpec } from '@backstage/plugin-catalog-node';
 import { Logger } from 'winston';
 import { PluginEndpointDiscovery } from '@backstage/backend-common';
@@ -25,7 +24,6 @@ import { ScmIntegrationRegistry } from '@backstage/integration';
 import { ScmLocationAnalyzer } from '@backstage/plugin-catalog-backend';
 import { TaskRunner } from '@backstage/backend-tasks';
 import { TokenManager } from '@backstage/backend-common';
-import { UserEntity } from '@backstage/catalog-model';
 
 // @public
 export const defaultOrganizationTeamTransformer: TeamTransformer;
@@ -303,7 +301,7 @@ export type GithubUser = {
 export type TeamTransformer = (
   item: GithubTeam,
   ctx: TransformerContext,
-) => Promise<GroupEntity | undefined>;
+) => Promise<Entity | undefined>;
 
 // @public
 export interface TransformerContext {
@@ -319,5 +317,5 @@ export interface TransformerContext {
 export type UserTransformer = (
   item: GithubUser,
   ctx: TransformerContext,
-) => Promise<UserEntity | undefined>;
+) => Promise<Entity | undefined>;
 ```
