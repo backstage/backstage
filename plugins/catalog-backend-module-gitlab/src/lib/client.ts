@@ -187,7 +187,7 @@ export class GitLabClient {
           method: 'POST',
           headers: {
             ...getGitLabRequestOptions(this.config).headers,
-            ['Content-Type']: 'application/json',
+            'Content-Type': 'application/json',
           },
           body: JSON.stringify({
             variables: { group: groupPath, relations: relations, endCursor },
