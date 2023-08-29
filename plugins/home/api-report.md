@@ -161,6 +161,19 @@ export type LayoutConfiguration = {
   resizable?: boolean;
 };
 
+// @public
+export class LocalStorageVisitsApi extends VisitsApiFactory {
+  constructor({
+    localStorage,
+    randomUUID,
+    limit,
+  }?: {
+    localStorage?: Window['localStorage'];
+    randomUUID?: Window['crypto']['randomUUID'];
+    limit?: number;
+  });
+}
+
 // @public @deprecated (undocumented)
 export type RendererProps = RendererProps_2;
 
@@ -232,7 +245,34 @@ export const VisitListener: ({
 
 // @public
 export interface VisitsApi {
-  listUserVisits(queryParams?: VisitsApiQueryParams): Promise<Visit[]>;
+  listVisits(queryParams?: VisitsApiQueryParams): Promise<Visit[]>;
+  saveVisit(saveParams: VisitsApiSaveParams): Promise<Visit>;
+}
+
+// @public
+export class VisitsApiFactory implements VisitsApi {
+  constructor({
+    randomUUID,
+    limit,
+    retrieveAll,
+    persistAll,
+  }: {
+    randomUUID: Window['crypto']['randomUUID'];
+    limit: number;
+    retrieveAll?: () => Promise<Array<Visit>>;
+    persistAll?: (visits: Array<Visit>) => Promise<void>;
+  });
+  // (undocumented)
+  protected readonly limit: number;
+  // (undocumented)
+  listVisits(queryParams?: VisitsApiQueryParams): Promise<Visit[]>;
+  // (undocumented)
+  protected persistAll: (visits: Array<Visit>) => Promise<void>;
+  // (undocumented)
+  protected readonly randomUUID: Window['crypto']['randomUUID'];
+  // (undocumented)
+  protected retrieveAll: () => Promise<Array<Visit>>;
+  // (undocumented)
   saveVisit(saveParams: VisitsApiSaveParams): Promise<Visit>;
 }
 

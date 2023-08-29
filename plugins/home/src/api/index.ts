@@ -15,3 +15,5 @@
  */
 
 export * from './VisitsApi';
+export * from './LocalStorageVisitsApi';
+export * from './VisitsApiFactory';
