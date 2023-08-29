@@ -108,7 +108,7 @@ export const PlaylistCard = ({ playlist }: PlaylistCardProps) => {
           <Typography variant="body2" className={classes.label}>
             Description
           </Typography>
-          <OverflowTooltip text={playlist.description ?? ''} line={8} />
+          <OverflowTooltip text={playlist.description ?? ''} line={4} />
         </Box>
         <Box className={classes.box}>
           <Typography variant="body2" className={classes.label}>
