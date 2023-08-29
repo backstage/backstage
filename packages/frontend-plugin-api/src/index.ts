@@ -20,21 +20,22 @@
  * @packageDocumentation
  */
 
-export {
-  createExtension,
-  coreExtensionData,
-  createPlugin,
-  type ExtensionInstanceParameters,
-  type BackstagePlugin,
-  type Extension,
-  type AnyExtensionDataMap,
-  type BackstagePluginOptions,
-  type CreateExtensionOptions,
-  type ExtensionDataBind,
-  type ExtensionDataRef,
-  type ExtensionDataValue,
-} from './types';
+export { createPageExtension } from './createPageExtension';
 export {
   createSchemaFromZod,
   type PortableSchema,
 } from './createSchemaFromZod';
+export {
+  coreExtensionData,
+  createExtension,
+  createPlugin,
+  type AnyExtensionDataMap,
+  type BackstagePlugin,
+  type BackstagePluginOptions,
+  type CreateExtensionOptions,
+  type Extension,
+  type ExtensionDataBind,
+  type ExtensionDataRef,
+  type ExtensionDataValue,
+  type ExtensionInstanceParameters,
+} from './types';
