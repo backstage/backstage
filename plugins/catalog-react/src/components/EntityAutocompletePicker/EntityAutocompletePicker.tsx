@@ -39,11 +39,6 @@ export type AllowedEntityFilters<T extends DefaultEntityFilters> = {
 }[keyof T];
 
 /** @public */
-export interface ConstructableFilter<T> {
-  new (values: string[]): T;
-}
-
-/** @public */
 export type EntityAutocompletePickerProps<
   T extends DefaultEntityFilters = DefaultEntityFilters,
   Name extends AllowedEntityFilters<T> = AllowedEntityFilters<T>,
@@ -52,7 +47,7 @@ export type EntityAutocompletePickerProps<
   name: Name;
   path: string;
   showCounts?: boolean;
-  Filter: ConstructableFilter<NonNullable<T[Name]>>;
+  Filter: { new (values: string[]): NonNullable<T[Name]> };
   InputProps?: TextFieldProps;
   initialSelectedOptions?: string[];
 };

@@ -18,5 +18,4 @@ export { EntityAutocompletePicker } from './EntityAutocompletePicker';
 export type {
   EntityAutocompletePickerProps,
   AllowedEntityFilters,
-  ConstructableFilter,
 } from './EntityAutocompletePicker';

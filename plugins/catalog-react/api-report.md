@@ -139,12 +139,6 @@ export const columnFactories: Readonly<{
 }>;
 
 // @public (undocumented)
-export interface ConstructableFilter<T> {
-  // (undocumented)
-  new (values: string[]): T;
-}
-
-// @public (undocumented)
 export type DefaultEntityFilters = {
   kind?: EntityKindFilter;
   type?: EntityTypeFilter;
@@ -173,7 +167,9 @@ export type EntityAutocompletePickerProps<
   name: Name;
   path: string;
   showCounts?: boolean;
-  Filter: ConstructableFilter<NonNullable<T[Name]>>;
+  Filter: {
+    new (values: string[]): NonNullable<T[Name]>;
+  };
   InputProps?: TextFieldProps;
   initialSelectedOptions?: string[];
 };
