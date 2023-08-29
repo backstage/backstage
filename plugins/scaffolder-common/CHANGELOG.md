@@ -1,5 +1,27 @@
 # @backstage/plugin-scaffolder-common
 
+## 1.4.1-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/catalog-model@1.4.2-next.0
+  - @backstage/plugin-permission-common@0.7.8-next.0
+  - @backstage/types@1.1.0
+
+## 1.4.0
+
+### Minor Changes
+
+- e514aac3eac0: Introduce `each` property on action steps, allowing them to be ran repeatedly.
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/catalog-model@1.4.1
+  - @backstage/types@1.1.0
+  - @backstage/plugin-permission-common@0.7.7
+
 ## 1.3.2
 
 ### Patch Changes

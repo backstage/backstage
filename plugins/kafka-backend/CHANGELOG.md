@@ -1,5 +1,47 @@
 # @backstage/plugin-kafka-backend
 
+## 0.2.44-next.1
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/config@1.1.0-next.0
+  - @backstage/backend-common@0.19.5-next.1
+  - @backstage/backend-plugin-api@0.6.3-next.1
+  - @backstage/catalog-model@1.4.2-next.0
+  - @backstage/errors@1.2.1
+
+## 0.2.43-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-common@0.19.4-next.0
+  - @backstage/backend-plugin-api@0.6.2-next.0
+  - @backstage/catalog-model@1.4.1
+  - @backstage/config@1.0.8
+  - @backstage/errors@1.2.1
+
+## 0.2.41
+
+### Patch Changes
+
+- 629cbd194a87: Use `coreServices.rootConfig` instead of `coreService.config`
+- Updated dependencies
+  - @backstage/backend-common@0.19.2
+  - @backstage/backend-plugin-api@0.6.0
+  - @backstage/catalog-model@1.4.1
+  - @backstage/config@1.0.8
+  - @backstage/errors@1.2.1
+
+## 0.2.41-next.2
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-plugin-api@0.6.0-next.2
+  - @backstage/backend-common@0.19.2-next.2
+
 ## 0.2.41-next.1
 
 ### Patch Changes

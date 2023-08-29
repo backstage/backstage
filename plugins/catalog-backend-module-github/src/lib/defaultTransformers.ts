@@ -47,24 +47,24 @@ export interface TransformerContext {
 export type RepositoryTransformer = (item: GithubRepository) => Promise<Entity>;
 
 /**
- * Transformer for GitHub users to UserEntity
+ * Transformer for GitHub user to an Entity
  *
  * @public
  */
 export type UserTransformer = (
   item: GithubUser,
   ctx: TransformerContext,
-) => Promise<UserEntity | undefined>;
+) => Promise<Entity | undefined>;
 
 /**
- * Transformer for GitHub Team to GroupEntity
+ * Transformer for GitHub Team to an Entity
  *
  * @public
  */
 export type TeamTransformer = (
   item: GithubTeam,
   ctx: TransformerContext,
-) => Promise<GroupEntity | undefined>;
+) => Promise<Entity | undefined>;
 
 /**
  * Default transformer for GitHub Repository to ComponentEntity

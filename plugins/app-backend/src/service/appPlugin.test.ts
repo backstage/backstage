@@ -17,7 +17,7 @@
 import mockFs from 'mock-fs';
 import { resolve as resolvePath } from 'path';
 import fetch from 'node-fetch';
-import { startTestBackend } from '@backstage/backend-test-utils';
+import { mockServices, startTestBackend } from '@backstage/backend-test-utils';
 import { appPlugin } from './appPlugin';
 
 describe('appPlugin', () => {
@@ -40,9 +40,13 @@ describe('appPlugin', () => {
   it('boots', async () => {
     const { server } = await startTestBackend({
       features: [
-        appPlugin({
-          appPackageName: 'app',
-          disableStaticFallbackCache: true,
+        appPlugin(),
+        mockServices.rootConfig.factory({
+          data: {
+            app: {
+              disableStaticFallbackCache: true,
+            },
+          },
         }),
       ],
     });

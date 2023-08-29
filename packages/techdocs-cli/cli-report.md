@@ -37,6 +37,7 @@ Options:
   -v --verbose
   --omitTechdocsCoreMkdocsPlugin
   --legacyCopyReadmeMdToIndexMd
+  --defaultPlugin [defaultPlugins...]
   -h, --help
 ```
 

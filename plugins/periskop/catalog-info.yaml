@@ -1,0 +1,9 @@
+apiVersion: backstage.io/v1alpha1
+kind: Component
+metadata:
+  name: backstage-plugin-periskop
+  title: '@backstage/plugin-periskop'
+spec:
+  lifecycle: experimental
+  type: backstage-frontend-plugin
+  owner: maintainers

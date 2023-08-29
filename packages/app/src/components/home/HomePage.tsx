@@ -15,14 +15,14 @@
  */
 
 import {
-  HomePageRandomJoke,
-  WelcomeTitle,
-  HeaderWorldClock,
   ClockConfig,
-  HomePageStarredEntities,
   CustomHomepageGrid,
-  HomePageToolkit,
+  HeaderWorldClock,
   HomePageCompanyLogo,
+  HomePageRandomJoke,
+  HomePageStarredEntities,
+  HomePageToolkit,
+  WelcomeTitle,
 } from '@backstage/plugin-home';
 import { Content, Header, Page } from '@backstage/core-components';
 import { HomePageSearchBar } from '@backstage/plugin-search';
@@ -64,6 +64,9 @@ const defaultConfig = [
     y: 0,
     width: 12,
     height: 1,
+    movable: false,
+    resizable: false,
+    deletable: false,
   },
   {
     component: 'WelcomeTitle',
@@ -77,7 +80,7 @@ const defaultConfig = [
     x: 0,
     y: 2,
     width: 12,
-    height: 1,
+    height: 2,
   },
 ];
 

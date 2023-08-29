@@ -1,0 +1,10 @@
+apiVersion: backstage.io/v1alpha1
+kind: Component
+metadata:
+  name: backstage-plugin-git-release-manager
+  title: '@backstage/plugin-git-release-manager'
+  description: A Backstage plugin that helps you manage releases in git
+spec:
+  lifecycle: experimental
+  type: backstage-frontend-plugin
+  owner: erikengervall

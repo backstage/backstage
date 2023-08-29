@@ -1,5 +1,38 @@
 # @backstage/plugin-shortcuts
 
+## 0.3.14-next.1
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/core-components@0.13.5-next.1
+  - @backstage/core-plugin-api@1.6.0-next.1
+  - @backstage/theme@0.4.1
+  - @backstage/types@1.1.0
+
+## 0.3.14-next.0
+
+### Patch Changes
+
+- 482bb5c0bbf8: Moved `@types/react` to be a regular dependency
+- Updated dependencies
+  - @backstage/core-plugin-api@1.6.0-next.0
+  - @backstage/core-components@0.13.5-next.0
+  - @backstage/theme@0.4.1
+  - @backstage/types@1.1.0
+
+## 0.3.13
+
+### Patch Changes
+
+- 12a8c94eda8d: Add package repository and homepage metadata
+- ee52a48b63d5: Limit the use of the duplicate shortcut name when adding a shortcut
+- Updated dependencies
+  - @backstage/core-components@0.13.4
+  - @backstage/core-plugin-api@1.5.3
+  - @backstage/theme@0.4.1
+  - @backstage/types@1.1.0
+
 ## 0.3.13-next.1
 
 ### Patch Changes

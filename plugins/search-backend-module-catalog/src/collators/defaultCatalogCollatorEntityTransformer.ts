@@ -27,6 +27,12 @@ const getDocumentText = (entity: Entity): string => {
     }
   }
 
+  if (isUserEntity(entity)) {
+    if (entity.spec?.profile?.email) {
+      documentTexts.push(entity.spec.profile.email);
+    }
+  }
+
   return documentTexts.join(' : ');
 };
 

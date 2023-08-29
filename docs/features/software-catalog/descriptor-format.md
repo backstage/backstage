@@ -978,9 +978,9 @@ way.
 The entries of this array are
 [entity references](https://backstage.io/docs/features/software-catalog/references).
 
-| [`kind`](#apiversion-and-kind-required) | Default [`namespace`](#namespace-optional) | Generated [relation](well-known-relations.md) type                                    |
-| --------------------------------------- | ------------------------------------------ | ------------------------------------------------------------------------------------- |
-| [`Group`](#kind-group) (default)        | Same as this entity, typically `default`   | [`hasMember`, and reverse `memberOf`](well-known-relations.md#memberof-and-hasmember) |
+| [`kind`](#apiversion-and-kind-required) | Default [`namespace`](#namespace-optional) | Generated [relation](well-known-relations.md) type                                |
+| --------------------------------------- | ------------------------------------------ | --------------------------------------------------------------------------------- |
+| [`Group`](#kind-group) (default)        | Same as this entity, typically `default`   | [`parentOf`, and reverse `childOf`](well-known-relations.md#parentof-and-childof) |
 
 ### `spec.members` [optional]
 

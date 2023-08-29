@@ -1,5 +1,56 @@
 # @backstage/plugin-techdocs-node
 
+## 1.8.0-next.1
+
+### Minor Changes
+
+- 5985d458ee30: Add a `techdocs.publisher.azureBlobStorage.connectionString` app-config setting, which can be leveraged for improved Azurite support.
+- 10a86bd4ae12: Add optional config and cli option for techdocs to specify default mkdocs plugins.
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/config@1.1.0-next.0
+  - @backstage/integration@1.7.0-next.1
+  - @backstage/backend-common@0.19.5-next.1
+  - @backstage/catalog-model@1.4.2-next.0
+  - @backstage/integration-aws-node@0.1.6-next.0
+  - @backstage/errors@1.2.1
+  - @backstage/plugin-search-common@1.2.6-next.0
+
+## 1.7.6-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-common@0.19.4-next.0
+  - @backstage/integration@1.7.0-next.0
+  - @backstage/catalog-model@1.4.1
+  - @backstage/config@1.0.8
+  - @backstage/errors@1.2.1
+  - @backstage/integration-aws-node@0.1.5
+  - @backstage/plugin-search-common@1.2.5
+
+## 1.7.4
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-common@0.19.2
+  - @backstage/integration@1.6.0
+  - @backstage/integration-aws-node@0.1.5
+  - @backstage/catalog-model@1.4.1
+  - @backstage/config@1.0.8
+  - @backstage/errors@1.2.1
+  - @backstage/plugin-search-common@1.2.5
+
+## 1.7.4-next.2
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-common@0.19.2-next.2
+
 ## 1.7.4-next.1
 
 ### Patch Changes

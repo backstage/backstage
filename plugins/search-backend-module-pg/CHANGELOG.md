@@ -1,5 +1,50 @@
 # @backstage/plugin-search-backend-module-pg
 
+## 0.5.12-next.1
+
+### Patch Changes
+
+- 4ccf9204bc95: Added `indexerBatchSize` option to be able to control the size of the batches being indexed. Also added a debug log entry to list out all the entities in the batch
+- Updated dependencies
+  - @backstage/config@1.1.0-next.0
+  - @backstage/backend-common@0.19.5-next.1
+  - @backstage/backend-plugin-api@0.6.3-next.1
+  - @backstage/plugin-search-backend-node@1.2.7-next.1
+  - @backstage/plugin-search-common@1.2.6-next.0
+
+## 0.5.11-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-common@0.19.4-next.0
+  - @backstage/backend-plugin-api@0.6.2-next.0
+  - @backstage/config@1.0.8
+  - @backstage/plugin-search-backend-node@1.2.6-next.0
+  - @backstage/plugin-search-common@1.2.5
+
+## 0.5.9
+
+### Patch Changes
+
+- 629cbd194a87: Use `coreServices.rootConfig` instead of `coreService.config`
+- 12a8c94eda8d: Add package repository and homepage metadata
+- Updated dependencies
+  - @backstage/backend-common@0.19.2
+  - @backstage/backend-plugin-api@0.6.0
+  - @backstage/plugin-search-backend-node@1.2.4
+  - @backstage/config@1.0.8
+  - @backstage/plugin-search-common@1.2.5
+
+## 0.5.9-next.2
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-plugin-api@0.6.0-next.2
+  - @backstage/backend-common@0.19.2-next.2
+  - @backstage/plugin-search-backend-node@1.2.4-next.2
+
 ## 0.5.9-next.1
 
 ### Patch Changes

@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { Entity, GroupEntity, UserEntity } from '@backstage/catalog-model';
+import { Entity } from '@backstage/catalog-model';
 import { GithubCredentialType } from '@backstage/integration';
 import { graphql } from '@octokit/graphql';
 import {
@@ -163,7 +163,7 @@ export async function getOrganizationUsers(
   org: string,
   tokenType: GithubCredentialType,
   userTransformer: UserTransformer = defaultUserTransformer,
-): Promise<{ users: UserEntity[] }> {
+): Promise<{ users: Entity[] }> {
   const query = `
     query users($org: String!, $email: Boolean!, $cursor: String) {
       organization(login: $org) {
@@ -212,7 +212,7 @@ export async function getOrganizationTeams(
   org: string,
   teamTransformer: TeamTransformer = defaultOrganizationTeamTransformer,
 ): Promise<{
-  groups: GroupEntity[];
+  teams: Entity[];
 }> {
   const query = `
     query teams($org: String!, $cursor: String) {
@@ -246,7 +246,7 @@ export async function getOrganizationTeams(
   const materialisedTeams = async (
     item: GithubTeamResponse,
     ctx: TransformerContext,
-  ): Promise<GroupEntity | undefined> => {
+  ): Promise<Entity | undefined> => {
     const memberNames: GithubUser[] = [];
 
     if (!item.members.pageInfo.hasNextPage) {
@@ -271,7 +271,7 @@ export async function getOrganizationTeams(
     return await teamTransformer(team, ctx);
   };
 
-  const groups = await queryWithPaging(
+  const teams = await queryWithPaging(
     client,
     query,
     org,
@@ -280,7 +280,7 @@ export async function getOrganizationTeams(
     { org },
   );
 
-  return { groups };
+  return { teams };
 }
 
 export async function getOrganizationTeamsFromUsers(
@@ -289,7 +289,7 @@ export async function getOrganizationTeamsFromUsers(
   userLogins: string[],
   teamTransformer: TeamTransformer = defaultOrganizationTeamTransformer,
 ): Promise<{
-  groups: GroupEntity[];
+  teams: Entity[];
 }> {
   const query = `
    query teams($org: String!, $cursor: String, $userLogins: [String!] = "") {
@@ -330,7 +330,7 @@ export async function getOrganizationTeamsFromUsers(
   const materialisedTeams = async (
     item: GithubTeamResponse,
     ctx: TransformerContext,
-  ): Promise<GroupEntity | undefined> => {
+  ): Promise<Entity | undefined> => {
     const memberNames: GithubUser[] = [];
 
     if (!item.members.pageInfo.hasNextPage) {
@@ -355,7 +355,7 @@ export async function getOrganizationTeamsFromUsers(
     return await teamTransformer(team, ctx);
   };
 
-  const groups = await queryWithPaging(
+  const teams = await queryWithPaging(
     client,
     query,
     org,
@@ -364,7 +364,7 @@ export async function getOrganizationTeamsFromUsers(
     { org, userLogins },
   );
 
-  return { groups };
+  return { teams };
 }
 
 export async function getOrganizationsFromUser(
@@ -401,7 +401,7 @@ export async function getOrganizationTeam(
   teamSlug: string,
   teamTransformer: TeamTransformer = defaultOrganizationTeamTransformer,
 ): Promise<{
-  group: GroupEntity;
+  team: Entity;
 }> {
   const query = `
   query teams($org: String!, $teamSlug: String!) {
@@ -425,7 +425,7 @@ export async function getOrganizationTeam(
   const materialisedTeam = async (
     item: GithubTeamResponse,
     ctx: TransformerContext,
-  ): Promise<GroupEntity | undefined> => {
+  ): Promise<Entity | undefined> => {
     const memberNames: GithubUser[] = [];
 
     if (!item.members.pageInfo.hasNextPage) {
@@ -456,17 +456,17 @@ export async function getOrganizationTeam(
   });
 
   if (!response.organization?.team)
-    throw new Error(`Found no match for group ${teamSlug}`);
+    throw new Error(`Found no match for team ${teamSlug}`);
 
-  const group = await materialisedTeam(response.organization?.team, {
+  const team = await materialisedTeam(response.organization?.team, {
     query,
     client,
     org,
   });
 
-  if (!group) throw new Error(`Can't transform for group ${teamSlug}`);
+  if (!team) throw new Error(`Can't transform for team ${teamSlug}`);
 
-  return { group };
+  return { team };
 }
 
 export async function getOrganizationRepositories(

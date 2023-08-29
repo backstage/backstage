@@ -34,7 +34,7 @@ const deploymentErrorMappers: ErrorMapper<Deployment>[] = [
             kind: 'Deployment',
             apiGroup: 'apps/v1',
           },
-          occuranceCount: 1,
+          occurrenceCount: 1,
         }));
     },
   },

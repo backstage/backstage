@@ -207,5 +207,9 @@ scaffolder backend:
 | Azure Pipeline Actions   | [scaffolder-backend-module-azure-pipelines](https://www.npmjs.com/package/@parfuemerie-douglas/scaffolder-backend-module-azure-pipelines)       | [Parfümerie Douglas](https://github.com/Parfuemerie-Douglas) |
 | Azure Repository Actions | [scaffolder-backend-module-azure-repositories](https://www.npmjs.com/package/@parfuemerie-douglas/scaffolder-backend-module-azure-repositories) | [Parfümerie Douglas](https://github.com/Parfuemerie-Douglas) |
 | Snyk Import Project      | [plugin-scaffolder-backend-module-snyk](https://www.npmjs.com/package/@ma11hewthomas/plugin-scaffolder-backend-module-snyk)                     | [Matthew Thomas](https://github.com/Ma11hewThomas)           |
+| JSON Merge Actions       | [plugin-scaffolder-json-merge-actions](https://www.npmjs.com/package/@mdude2314/backstage-plugin-scaffolder-json-merge-actions)                 | [Drew Hill](https://github.com/arhill05)                     |
+| NPM Actions              | [plugin-scaffolder-npm-actions](https://www.npmjs.com/package/@mdude2314/backstage-plugin-scaffolder-npm-actions)                               | [Drew Hill](https://github.com/arhill05)                     |
+| Slack Actions            | [plugin-scaffolder-backend-module-slack](https://www.npmjs.com/package/@mdude2314/backstage-plugin-scaffolder-backend-module-slack)             | [Drew Hill](https://github.com/arhill05)                     |
+| Microsoft Teams Actions  | [plugin-scaffolder-backend-module-ms-teams](https://www.npmjs.com/package/@grvpandey11/backstage-plugin-scaffolder-backend-module-ms-teams)     | [Gaurav Pandey](https://github.com/grvpandey11)              |
 
 Have fun! 🚀

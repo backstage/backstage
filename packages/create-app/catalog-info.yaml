@@ -1,0 +1,10 @@
+apiVersion: backstage.io/v1alpha1
+kind: Component
+metadata:
+  name: backstage-create-app
+  title: '@backstage/create-app'
+  description: A CLI that helps you create your own Backstage app
+spec:
+  lifecycle: experimental
+  type: backstage-cli
+  owner: maintainers

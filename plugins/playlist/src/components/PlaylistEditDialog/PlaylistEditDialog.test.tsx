@@ -18,11 +18,32 @@ import { IdentityApi, identityApiRef } from '@backstage/core-plugin-api';
 import { renderInTestApp, TestApiProvider } from '@backstage/test-utils';
 import { fireEvent, getByRole, waitFor } from '@testing-library/react';
 import { act } from '@testing-library/react-hooks';
+import { PlaylistApi, playlistApiRef } from '../../api';
 import React from 'react';
 
 import { PlaylistEditDialog } from './PlaylistEditDialog';
 
 describe('<PlaylistEditDialog/>', () => {
+  const samplePlaylists = [
+    {
+      id: 'id1',
+      name: 'playlist-1',
+      owner: 'group:default/some-owner',
+      public: true,
+      entities: 1,
+      followers: 2,
+      isFollowing: false,
+    },
+    {
+      id: 'id2',
+      name: 'playlist-2',
+      owner: 'group:default/another-owner',
+      public: true,
+      entities: 2,
+      followers: 1,
+      isFollowing: true,
+    },
+  ];
   it('handle saving with an edited playlist', async () => {
     const identityApi: Partial<IdentityApi> = {
       getBackstageIdentity: async () => ({
@@ -33,8 +54,18 @@ describe('<PlaylistEditDialog/>', () => {
     };
 
     const mockOnSave = jest.fn().mockImplementation(async () => {});
+    const playlistApi: Partial<PlaylistApi> = {
+      getAllPlaylists: jest
+        .fn()
+        .mockImplementation(async () => samplePlaylists),
+    };
     const rendered = await renderInTestApp(
-      <TestApiProvider apis={[[identityApiRef, identityApi]]}>
+      <TestApiProvider
+        apis={[
+          [identityApiRef, identityApi],
+          [playlistApiRef, playlistApi],
+        ]}
+      >
         <PlaylistEditDialog open onClose={jest.fn()} onSave={mockOnSave} />
       </TestApiProvider>,
     );
@@ -82,5 +113,54 @@ describe('<PlaylistEditDialog/>', () => {
         public: true,
       });
     });
+  });
+
+  it('displays duplicate validation message for playlist name', async () => {
+    const identityApi: Partial<IdentityApi> = {
+      getBackstageIdentity: async () => ({
+        type: 'user',
+        userEntityRef: 'user:default/me',
+        ownershipEntityRefs: ['group:default/test-owner', 'user:default/me'],
+      }),
+    };
+
+    const mockOnSave = jest.fn().mockImplementation(async () => {});
+    const playlistApi: Partial<PlaylistApi> = {
+      getAllPlaylists: jest
+        .fn()
+        .mockImplementation(async () => [...samplePlaylists]),
+    };
+
+    const rendered = await renderInTestApp(
+      <TestApiProvider
+        apis={[
+          [identityApiRef, identityApi],
+          [playlistApiRef, playlistApi],
+        ]}
+      >
+        <PlaylistEditDialog open onClose={jest.fn()} onSave={mockOnSave} />
+      </TestApiProvider>,
+    );
+
+    act(() => {
+      fireEvent.input(
+        getByRole(rendered.getByTestId('edit-dialog-name-input'), 'textbox'),
+        {
+          target: {
+            value: 'playlist-1',
+          },
+        },
+      );
+
+      fireEvent.click(rendered.getByTestId('edit-dialog-save-button'));
+    });
+
+    await waitFor(() => {
+      expect(
+        rendered.getByText('A playlist with this name already exists'),
+      ).toBeInTheDocument();
+    });
+
+    expect(mockOnSave).not.toHaveBeenCalled();
   });
 });

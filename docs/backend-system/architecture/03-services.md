@@ -40,7 +40,7 @@ export const fooServiceRef = createServiceRef<FooService>({
 
 The `fooServiceRef` that we create above should be exported, and can then be used to declare a dependency on the `FooService` interface and receive an implementation of it at runtime.
 
-When creating a service reference you need to give it an ID. This ID needs to be globally unique, and should generally be of the format `'<pluginId>.<serviceName>'`. For more naming patters surrounding services, see the [naming patterns](./07-naming-patterns.md#services) page.
+When creating a service reference you need to give it an ID. This ID needs to be globally unique, and should generally be of the format `'<pluginId>.<serviceName>'`. For more naming patterns surrounding services, see the [naming patterns](./07-naming-patterns.md#services) page.
 
 A note on naming: the frontend and backend systems intentionally use the separate names "APIs" and "Services" for concepts that are quite similar. This is to avoid confusion between the two, both in documentation and discussion, but also in code. While the two systems are quite similar, they are not identical, and they can't be used interchangeably.
 

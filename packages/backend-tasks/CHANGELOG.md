@@ -1,5 +1,46 @@
 # @backstage/backend-tasks
 
+## 0.5.8-next.1
+
+### Patch Changes
+
+- 62f448edb0b5: Use `readDurationFromConfig` from the config package
+- Updated dependencies
+  - @backstage/config@1.1.0-next.0
+  - @backstage/backend-common@0.19.5-next.1
+  - @backstage/errors@1.2.1
+  - @backstage/types@1.1.0
+
+## 0.5.7-next.0
+
+### Patch Changes
+
+- cfc3ca6ce060: Changes needed to support MySQL
+- Updated dependencies
+  - @backstage/backend-common@0.19.4-next.0
+  - @backstage/config@1.0.8
+  - @backstage/errors@1.2.1
+  - @backstage/types@1.1.0
+
+## 0.5.5
+
+### Patch Changes
+
+- dfd1b6b2fc33: Make `readTaskScheduleDefinitionFromConfig` properly handle bad inputs
+- Updated dependencies
+  - @backstage/backend-common@0.19.2
+  - @backstage/config@1.0.8
+  - @backstage/errors@1.2.1
+  - @backstage/types@1.1.0
+
+## 0.5.5-next.2
+
+### Patch Changes
+
+- dfd1b6b2fc33: Make `readTaskScheduleDefinitionFromConfig` properly handle bad inputs
+- Updated dependencies
+  - @backstage/backend-common@0.19.2-next.2
+
 ## 0.5.5-next.1
 
 ### Patch Changes

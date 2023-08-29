@@ -26,32 +26,25 @@ import { createRouter } from './service/router';
  *
  * @alpha
  */
-export const proxyPlugin = createBackendPlugin(
-  (options?: {
-    skipInvalidProxies?: boolean;
-    reviveConsumedRequestBodies?: boolean;
-  }) => ({
-    pluginId: 'proxy',
-    register(env) {
-      env.registerInit({
-        deps: {
-          config: coreServices.rootConfig,
-          discovery: coreServices.discovery,
-          logger: coreServices.logger,
-          httpRouter: coreServices.httpRouter,
-        },
-        async init({ config, discovery, logger, httpRouter }) {
-          httpRouter.use(
-            await createRouter({
-              config,
-              discovery,
-              logger: loggerToWinstonLogger(logger),
-              skipInvalidProxies: options?.skipInvalidProxies,
-              reviveConsumedRequestBodies: options?.reviveConsumedRequestBodies,
-            }),
-          );
-        },
-      });
-    },
-  }),
-);
+export const proxyPlugin = createBackendPlugin({
+  pluginId: 'proxy',
+  register(env) {
+    env.registerInit({
+      deps: {
+        config: coreServices.rootConfig,
+        discovery: coreServices.discovery,
+        logger: coreServices.logger,
+        httpRouter: coreServices.httpRouter,
+      },
+      async init({ config, discovery, logger, httpRouter }) {
+        httpRouter.use(
+          await createRouter({
+            config,
+            discovery,
+            logger: loggerToWinstonLogger(logger),
+          }),
+        );
+      },
+    });
+  },
+});

@@ -1,5 +1,40 @@
 # @backstage/create-app
 
+## 0.5.5-next.1
+
+### Patch Changes
+
+- Bumped create-app version.
+- Updated dependencies
+  - @backstage/cli-common@0.1.12
+
+## 0.5.5-next.0
+
+### Patch Changes
+
+- Bumped create-app version.
+- Updated dependencies
+  - @backstage/cli-common@0.1.12
+
+## 0.5.4
+
+### Patch Changes
+
+- b441642fbe0d: Bumped create-app version.
+- 572abc7edf55: Bumped create-app version.
+- 74f77f151a96: Bumped create-app version.
+- 5cc0ac5ef3d1: Bump to a newer version of the `concurrently` library
+- 46c9a798e41d: Updated the `app-config.yaml` template to use `proxy.endpoints`.
+- 971bdd6a4732: Bumped internal `nodemon` dependency.
+- Updated dependencies
+  - @backstage/cli-common@0.1.12
+
+## 0.5.4-next.2
+
+### Patch Changes
+
+- Bumped create-app version.
+
 ## 0.5.4-next.1
 
 ### Patch Changes

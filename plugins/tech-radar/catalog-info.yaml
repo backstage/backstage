@@ -1,0 +1,10 @@
+apiVersion: backstage.io/v1alpha1
+kind: Component
+metadata:
+  name: backstage-plugin-tech-radar
+  title: '@backstage/plugin-tech-radar'
+  description: A Backstage plugin that lets you display a Tech Radar for your organization
+spec:
+  lifecycle: experimental
+  type: backstage-frontend-plugin
+  owner: maintainers

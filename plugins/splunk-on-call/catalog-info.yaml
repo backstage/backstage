@@ -1,0 +1,10 @@
+apiVersion: backstage.io/v1alpha1
+kind: Component
+metadata:
+  name: backstage-plugin-splunk-on-call
+  title: '@backstage/plugin-splunk-on-call'
+  description: A Backstage plugin that integrates towards Splunk On-Call
+spec:
+  lifecycle: experimental
+  type: backstage-frontend-plugin
+  owner: maintainers

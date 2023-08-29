@@ -19,11 +19,9 @@ import { GithubCredentialsProvider } from '@backstage/integration';
 import { HumanDuration } from '@backstage/types';
 import { IdentityApi } from '@backstage/plugin-auth-node';
 import { JsonObject } from '@backstage/types';
-import { JsonValue } from '@backstage/types';
 import { Knex } from 'knex';
 import { LocationSpec } from '@backstage/plugin-catalog-common';
 import { Logger } from 'winston';
-import { Observable } from '@backstage/types';
 import { Octokit } from 'octokit';
 import { PermissionEvaluator } from '@backstage/plugin-permission-common';
 import { PermissionRule } from '@backstage/plugin-permission-node';
@@ -35,12 +33,23 @@ import { RESOURCE_TYPE_SCAFFOLDER_TEMPLATE } from '@backstage/plugin-scaffolder-
 import { Schema } from 'jsonschema';
 import { ScmIntegrationRegistry } from '@backstage/integration';
 import { ScmIntegrations } from '@backstage/integration';
+import { SerializedTask as SerializedTask_2 } from '@backstage/plugin-scaffolder-node';
+import { SerializedTaskEvent as SerializedTaskEvent_2 } from '@backstage/plugin-scaffolder-node';
+import { TaskBroker as TaskBroker_2 } from '@backstage/plugin-scaffolder-node';
+import { TaskBrokerDispatchOptions as TaskBrokerDispatchOptions_2 } from '@backstage/plugin-scaffolder-node';
+import { TaskBrokerDispatchResult as TaskBrokerDispatchResult_2 } from '@backstage/plugin-scaffolder-node';
+import { TaskCompletionState as TaskCompletionState_2 } from '@backstage/plugin-scaffolder-node';
+import { TaskContext as TaskContext_2 } from '@backstage/plugin-scaffolder-node';
+import { TaskEventType as TaskEventType_2 } from '@backstage/plugin-scaffolder-node';
 import { TaskSecrets as TaskSecrets_2 } from '@backstage/plugin-scaffolder-node';
 import { TaskSpec } from '@backstage/plugin-scaffolder-common';
 import { TaskSpecV1beta3 } from '@backstage/plugin-scaffolder-common';
+import { TaskStatus as TaskStatus_2 } from '@backstage/plugin-scaffolder-node';
 import { TemplateAction as TemplateAction_2 } from '@backstage/plugin-scaffolder-node';
 import { TemplateActionOptions } from '@backstage/plugin-scaffolder-node';
 import { TemplateEntityStepV1beta3 } from '@backstage/plugin-scaffolder-common';
+import { TemplateFilter as TemplateFilter_2 } from '@backstage/plugin-scaffolder-node';
+import { TemplateGlobal as TemplateGlobal_2 } from '@backstage/plugin-scaffolder-node';
 import { TemplateParametersV1beta3 } from '@backstage/plugin-scaffolder-common';
 import { UrlReader } from '@backstage/backend-common';
 import { ZodType } from 'zod';
@@ -886,89 +895,29 @@ export class ScaffolderEntitiesProcessor implements CatalogProcessor {
   validateEntityKind(entity: Entity): Promise<boolean>;
 }
 
-// @public
-export type SerializedTask = {
-  id: string;
-  spec: TaskSpec;
-  status: TaskStatus;
-  createdAt: string;
-  lastHeartbeatAt?: string;
-  createdBy?: string;
-  secrets?: TaskSecrets_2;
-};
+// @public @deprecated
+export type SerializedTask = SerializedTask_2;
 
-// @public
-export type SerializedTaskEvent = {
-  id: number;
-  taskId: string;
-  body: JsonObject;
-  type: TaskEventType;
-  createdAt: string;
-};
+// @public @deprecated
+export type SerializedTaskEvent = SerializedTaskEvent_2;
 
-// @public
-export interface TaskBroker {
-  // (undocumented)
-  cancel?(taskId: string): Promise<void>;
-  // (undocumented)
-  claim(): Promise<TaskContext>;
-  // (undocumented)
-  dispatch(
-    options: TaskBrokerDispatchOptions,
-  ): Promise<TaskBrokerDispatchResult>;
-  // (undocumented)
-  event$(options: { taskId: string; after: number | undefined }): Observable<{
-    events: SerializedTaskEvent[];
-  }>;
-  // (undocumented)
-  get(taskId: string): Promise<SerializedTask>;
-  // (undocumented)
-  list?(options?: { createdBy?: string }): Promise<{
-    tasks: SerializedTask[];
-  }>;
-  // (undocumented)
-  vacuumTasks(options: { timeoutS: number }): Promise<void>;
-}
+// @public @deprecated
+export type TaskBroker = TaskBroker_2;
 
-// @public
-export type TaskBrokerDispatchOptions = {
-  spec: TaskSpec;
-  secrets?: TaskSecrets_2;
-  createdBy?: string;
-};
+// @public @deprecated
+export type TaskBrokerDispatchOptions = TaskBrokerDispatchOptions_2;
 
-// @public
-export type TaskBrokerDispatchResult = {
-  taskId: string;
-};
+// @public @deprecated
+export type TaskBrokerDispatchResult = TaskBrokerDispatchResult_2;
 
-// @public
-export type TaskCompletionState = 'failed' | 'completed';
+// @public @deprecated
+export type TaskCompletionState = TaskCompletionState_2;
 
-// @public
-export interface TaskContext {
-  // (undocumented)
-  cancelSignal: AbortSignal;
-  // (undocumented)
-  complete(result: TaskCompletionState, metadata?: JsonObject): Promise<void>;
-  // (undocumented)
-  createdBy?: string;
-  // (undocumented)
-  done: boolean;
-  // (undocumented)
-  emitLog(message: string, logMetadata?: JsonObject): Promise<void>;
-  // (undocumented)
-  getWorkspaceName(): Promise<string>;
-  // (undocumented)
-  isDryRun?: boolean;
-  // (undocumented)
-  secrets?: TaskSecrets_2;
-  // (undocumented)
-  spec: TaskSpec;
-}
+// @public @deprecated
+export type TaskContext = TaskContext_2;
 
-// @public
-export type TaskEventType = 'completion' | 'log' | 'cancelled';
+// @public @deprecated
+export type TaskEventType = TaskEventType_2;
 
 // @public
 export class TaskManager implements TaskContext {
@@ -1000,13 +949,8 @@ export class TaskManager implements TaskContext {
 // @public @deprecated (undocumented)
 export type TaskSecrets = TaskSecrets_2;
 
-// @public
-export type TaskStatus =
-  | 'cancelled'
-  | 'completed'
-  | 'failed'
-  | 'open'
-  | 'processing';
+// @public @deprecated
+export type TaskStatus = TaskStatus_2;
 
 // @public
 export interface TaskStore {
@@ -1103,13 +1047,11 @@ export class TemplateActionRegistry {
   register(action: TemplateAction_2): void;
 }
 
-// @public (undocumented)
-export type TemplateFilter = (...args: JsonValue[]) => JsonValue | undefined;
+// @public @deprecated (undocumented)
+export type TemplateFilter = TemplateFilter_2;
 
-// @public (undocumented)
-export type TemplateGlobal =
-  | ((...args: JsonValue[]) => JsonValue | undefined)
-  | JsonValue;
+// @public @deprecated (undocumented)
+export type TemplateGlobal = TemplateGlobal_2;
 
 // @public (undocumented)
 export type TemplatePermissionRuleInput<

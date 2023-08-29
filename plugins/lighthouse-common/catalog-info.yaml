@@ -1,0 +1,12 @@
+apiVersion: backstage.io/v1alpha1
+kind: Component
+metadata:
+  name: backstage-plugin-lighthouse-common
+  title: '@backstage/plugin-lighthouse-common'
+  description: >-
+    Common functionalities for lighthouse, to be shared between lighthouse and
+    lighthouse-backend plugin
+spec:
+  lifecycle: experimental
+  type: backstage-common-library
+  owner: maintainers

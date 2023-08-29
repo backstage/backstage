@@ -13,8 +13,6 @@
 [![OpenSSF Best Practices](https://bestpractices.coreinfrastructure.org/projects/7678/badge)](https://bestpractices.coreinfrastructure.org/projects/7678)
 [![OpenSSF Scorecard](https://api.securityscorecards.dev/projects/github.com/backstage/backstage/badge)](https://securityscorecards.dev/viewer/?uri=github.com/backstage/backstage)
 
-> 🏖️ The week beginning the 26th of June, some of the maintainers will be taking a well earned Summer Holiday break. We will be slower to respond to issues and PRs during this time. Releases will continue to be shipped weekly. Normal service will resume on the 24th of July. 🏝️
-
 ## What is Backstage?
 
 [Backstage](https://backstage.io/) is an open platform for building developer portals. Powered by a centralized software catalog, Backstage restores order to your microservices and infrastructure and enables your product teams to ship high-quality code quickly without compromising autonomy.

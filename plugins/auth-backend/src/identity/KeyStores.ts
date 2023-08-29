@@ -15,7 +15,7 @@
  */
 
 import { pickBy } from 'lodash';
-import { Logger } from 'winston';
+import { LoggerService } from '@backstage/backend-plugin-api';
 
 import { Config } from '@backstage/config';
 
@@ -26,7 +26,7 @@ import { MemoryKeyStore } from './MemoryKeyStore';
 import { KeyStore } from './types';
 
 type Options = {
-  logger: Logger;
+  logger: LoggerService;
   database: AuthDatabase;
 };
 

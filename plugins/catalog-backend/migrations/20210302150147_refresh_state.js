@@ -37,7 +37,7 @@ exports.up = async function up(knex) {
       .notNullable()
       .comment('The unprocessed entity (in original form) as JSON');
     table
-      .text('processed_entity')
+      .text('processed_entity', 'longtext')
       .nullable()
       .comment('The processed entity (not yet stitched) as JSON');
     table
@@ -83,7 +83,7 @@ exports.up = async function up(knex) {
       .notNullable()
       .comment('Random value representing a unique stitch attempt ticket');
     table
-      .text('final_entity')
+      .text('final_entity', 'longtext')
       .nullable()
       .comment('The JSON encoded final entity');
     table.index('entity_id', 'final_entities_entity_id_idx');

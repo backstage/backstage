@@ -42,6 +42,7 @@ Scope: Discoverability within Backstage, including the home page, information ar
 | Emma Indal               | Spotify      | BUX  | [emmaindal](http://github.com/emmaindal) | emmaindal#7503     |
 | Raghunandan Balachandran | Spotify      | BUX  | [soapraj](http://github.com/soapraj)     | raghunandanb#1114  |
 | Renan Mendes Carvalho    | Spotify      | BUX  | [aitherios](http://github.com/aitherios) | aitherios#0593     |
+| Bailey Brooks            | Spotify      | BUX  | [bailey](http://github.com/bailey)       | \_bailey4          |
 
 ### Helm Charts
 
@@ -89,10 +90,17 @@ Team: @backstage/techdocs-maintainers
 
 Scope: The TechDocs plugin and related tooling
 
-| Name                     | Organization | Team         | GitHub                                           | Discord            |
-| ------------------------ | ------------ | ------------ | ------------------------------------------------ | ------------------ |
-| Morgan Bentell           | Spotify      | Pulp Fiction | [agentbellnorm](http://github.com/agentbellnorm) | morganbentell#9030 |
-| Raghunandan Balachandran | Spotify      | Pulp Fiction | [soapraj](http://github.com/soapraj)             | raghunandanb#1114  |
+| Name                     | Organization | Team    | GitHub                                            | Discord             |
+| ------------------------ | ------------ | ------- | ------------------------------------------------- | ------------------- |
+| Alex Lorenzi             | Spotify      | ProTean | [AlexLorenzi](https://github.com/AlexLorenzi)     | `alexlorenzi`       |
+| Bond Yan                 | Spotify      | ProTean | [byan1197](https://github.com/byan1197)           | `bondify`           |
+| Daniel Lochrie           | Spotify      | ProTean | [dlochrie](https://github.com/dlochrie)           | -                   |
+| Jackson Chen             | Spotify      | ProTean | [PeaWarrior](https://github.com/PeaWarrior)       | `jacksonc#3322`     |
+| John Philip              | Spotify      | ProTean | [johnphilip283](https://github.com/johnphilip283) | `john_philip#2399`  |
+| Morgan Bentell           | Spotify      | ProTean | [agentbellnorm](http://github.com/agentbellnorm)  | `morganbentell`     |
+| Raghunandan Balachandran | Spotify      | BUX     | [soapraj](http://github.com/soapraj)              | `raghunandanb#1114` |
+| Sydney Achinger          | Spotify      | ProTean | [squid-ney](https://github.com/squid-ney)         | -                   |
+| Vojta Burian             | Spotify      | ProTean | [sankaritan](https://github.com/sankaritan)       | `vojtabu`           |
 
 ## Incubating Project Areas
 

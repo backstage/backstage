@@ -33,7 +33,7 @@ import {
 
 import {
   patchMkdocsYmlPreBuild,
-  pathMkdocsYmlWithTechdocsPlugin,
+  patchMkdocsYmlWithPlugins,
 } from './mkdocsPatchers';
 import {
   GeneratorBase,
@@ -121,9 +121,17 @@ export class TechdocsGenerator implements GeneratorBase {
       await patchIndexPreBuild({ inputDir, logger: childLogger, docsDir });
     }
 
-    if (!this.options.omitTechdocsCoreMkdocsPlugin) {
-      await pathMkdocsYmlWithTechdocsPlugin(mkdocsYmlPath, childLogger);
+    // patch the list of mkdocs plugins
+    const defaultPlugins = this.options.defaultPlugins ?? [];
+
+    if (
+      !this.options.omitTechdocsCoreMkdocsPlugin &&
+      !defaultPlugins.includes('techdocs-core')
+    ) {
+      defaultPlugins.push('techdocs-core');
     }
+
+    await patchMkdocsYmlWithPlugins(mkdocsYmlPath, childLogger, defaultPlugins);
 
     // Directories to bind on container
     const mountDirs = {
@@ -232,6 +240,9 @@ export function readGeneratorConfig(
     ),
     legacyCopyReadmeMdToIndexMd: config.getOptionalBoolean(
       'techdocs.generator.mkdocs.legacyCopyReadmeMdToIndexMd',
+    ),
+    defaultPlugins: config.getOptionalStringArray(
+      'techdocs.generator.mkdocs.defaultPlugins',
     ),
   };
 }

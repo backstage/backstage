@@ -1,5 +1,51 @@
 # @techdocs/cli
 
+## 1.5.0-next.1
+
+### Minor Changes
+
+- 10a86bd4ae12: Add optional config and cli option for techdocs to specify default mkdocs plugins.
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/config@1.1.0-next.0
+  - @backstage/plugin-techdocs-node@1.8.0-next.1
+  - @backstage/backend-common@0.19.5-next.1
+  - @backstage/catalog-model@1.4.2-next.0
+  - @backstage/cli-common@0.1.12
+
+## 1.4.7-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-common@0.19.4-next.0
+  - @backstage/catalog-model@1.4.1
+  - @backstage/cli-common@0.1.12
+  - @backstage/config@1.0.8
+  - @backstage/plugin-techdocs-node@1.7.6-next.0
+
+## 1.4.5
+
+### Patch Changes
+
+- 971bdd6a4732: Bumped internal `nodemon` dependency.
+- Updated dependencies
+  - @backstage/backend-common@0.19.2
+  - @backstage/plugin-techdocs-node@1.7.4
+  - @backstage/catalog-model@1.4.1
+  - @backstage/cli-common@0.1.12
+  - @backstage/config@1.0.8
+
+## 1.4.5-next.2
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-common@0.19.2-next.2
+  - @backstage/plugin-techdocs-node@1.7.4-next.2
+
 ## 1.4.5-next.1
 
 ### Patch Changes

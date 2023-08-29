@@ -1,5 +1,69 @@
 # @backstage/plugin-catalog-backend-module-bitbucket-cloud
 
+## 0.1.18-next.1
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/config@1.1.0-next.0
+  - @backstage/integration@1.7.0-next.1
+  - @backstage/backend-tasks@0.5.8-next.1
+  - @backstage/backend-common@0.19.5-next.1
+  - @backstage/backend-plugin-api@0.6.3-next.1
+  - @backstage/catalog-model@1.4.2-next.0
+  - @backstage/plugin-bitbucket-cloud-common@0.2.12-next.1
+  - @backstage/plugin-catalog-node@1.4.4-next.1
+  - @backstage/plugin-events-node@0.2.12-next.1
+  - @backstage/catalog-client@1.4.4-next.0
+  - @backstage/plugin-catalog-common@1.0.16-next.0
+
+## 0.1.17-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-common@0.19.4-next.0
+  - @backstage/integration@1.7.0-next.0
+  - @backstage/backend-tasks@0.5.7-next.0
+  - @backstage/backend-plugin-api@0.6.2-next.0
+  - @backstage/catalog-client@1.4.3
+  - @backstage/catalog-model@1.4.1
+  - @backstage/config@1.0.8
+  - @backstage/plugin-bitbucket-cloud-common@0.2.11-next.0
+  - @backstage/plugin-catalog-common@1.0.15
+  - @backstage/plugin-catalog-node@1.4.3-next.0
+  - @backstage/plugin-events-node@0.2.11-next.0
+
+## 0.1.15
+
+### Patch Changes
+
+- 629cbd194a87: Use `coreServices.rootConfig` instead of `coreService.config`
+- 4b82382ed8c2: Fixed invalid configuration schema. The configuration schema may be more strict as a result.
+- Updated dependencies
+  - @backstage/backend-common@0.19.2
+  - @backstage/backend-plugin-api@0.6.0
+  - @backstage/plugin-bitbucket-cloud-common@0.2.9
+  - @backstage/plugin-catalog-node@1.4.1
+  - @backstage/plugin-events-node@0.2.9
+  - @backstage/integration@1.6.0
+  - @backstage/backend-tasks@0.5.5
+  - @backstage/catalog-client@1.4.3
+  - @backstage/catalog-model@1.4.1
+  - @backstage/config@1.0.8
+  - @backstage/plugin-catalog-common@1.0.15
+
+## 0.1.15-next.2
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-plugin-api@0.6.0-next.2
+  - @backstage/backend-tasks@0.5.5-next.2
+  - @backstage/backend-common@0.19.2-next.2
+  - @backstage/plugin-catalog-node@1.4.1-next.2
+  - @backstage/plugin-events-node@0.2.9-next.2
+
 ## 0.1.15-next.1
 
 ### Patch Changes

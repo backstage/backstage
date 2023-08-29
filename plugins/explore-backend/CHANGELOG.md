@@ -1,5 +1,52 @@
 # @backstage/plugin-explore-backend
 
+## 0.0.13-next.1
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/config@1.1.0-next.0
+  - @backstage/backend-common@0.19.5-next.1
+  - @backstage/plugin-search-backend-module-explore@0.1.7-next.1
+  - @backstage/types@1.1.0
+  - @backstage/plugin-explore-common@0.0.1
+  - @backstage/plugin-search-common@1.2.6-next.0
+
+## 0.0.12-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-common@0.19.4-next.0
+  - @backstage/config@1.0.8
+  - @backstage/types@1.1.0
+  - @backstage/plugin-explore-common@0.0.1
+  - @backstage/plugin-search-backend-module-explore@0.1.6-next.0
+  - @backstage/plugin-search-common@1.2.5
+
+## 0.0.10
+
+### Patch Changes
+
+- eda2a699f40d: Moved the config example from the "Tools as Code" section to the "Tools as Config" section of the README
+- 12a8c94eda8d: Add package repository and homepage metadata
+- Updated dependencies
+  - @backstage/plugin-search-backend-module-explore@0.1.4
+  - @backstage/backend-common@0.19.2
+  - @backstage/config@1.0.8
+  - @backstage/types@1.1.0
+  - @backstage/plugin-explore-common@0.0.1
+  - @backstage/plugin-search-common@1.2.5
+
+## 0.0.10-next.2
+
+### Patch Changes
+
+- eda2a699f40d: Moved the config example from the "Tools as Code" section to the "Tools as Config" section of the README
+- Updated dependencies
+  - @backstage/plugin-search-backend-module-explore@0.1.4-next.2
+  - @backstage/backend-common@0.19.2-next.2
+
 ## 0.0.10-next.1
 
 ### Patch Changes

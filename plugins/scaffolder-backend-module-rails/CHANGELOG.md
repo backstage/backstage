@@ -1,5 +1,51 @@
 # @backstage/plugin-scaffolder-backend-module-rails
 
+## 0.4.20-next.1
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/config@1.1.0-next.0
+  - @backstage/integration@1.7.0-next.1
+  - @backstage/backend-common@0.19.5-next.1
+  - @backstage/plugin-scaffolder-node@0.2.3-next.1
+  - @backstage/errors@1.2.1
+  - @backstage/types@1.1.0
+
+## 0.4.19-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-common@0.19.4-next.0
+  - @backstage/integration@1.7.0-next.0
+  - @backstage/config@1.0.8
+  - @backstage/errors@1.2.1
+  - @backstage/types@1.1.0
+  - @backstage/plugin-scaffolder-node@0.2.2-next.0
+
+## 0.4.17
+
+### Patch Changes
+
+- 12a8c94eda8d: Add package repository and homepage metadata
+- c186c631b429: Import helpers from the node package instead of the backend package
+- Updated dependencies
+  - @backstage/backend-common@0.19.2
+  - @backstage/plugin-scaffolder-node@0.2.0
+  - @backstage/integration@1.6.0
+  - @backstage/config@1.0.8
+  - @backstage/errors@1.2.1
+  - @backstage/types@1.1.0
+
+## 0.4.17-next.2
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/plugin-scaffolder-node@0.1.6-next.2
+  - @backstage/backend-common@0.19.2-next.2
+
 ## 0.4.17-next.1
 
 ### Patch Changes

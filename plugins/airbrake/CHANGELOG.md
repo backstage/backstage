@@ -1,5 +1,54 @@
 # @backstage/plugin-airbrake
 
+## 0.3.24-next.1
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/plugin-catalog-react@1.8.4-next.1
+  - @backstage/core-components@0.13.5-next.1
+  - @backstage/dev-utils@1.0.21-next.1
+  - @backstage/catalog-model@1.4.2-next.0
+  - @backstage/core-plugin-api@1.6.0-next.1
+  - @backstage/test-utils@1.4.3-next.1
+  - @backstage/theme@0.4.1
+
+## 0.3.23-next.0
+
+### Patch Changes
+
+- 482bb5c0bbf8: Moved `@types/react` to be a regular dependency
+- Updated dependencies
+  - @backstage/core-plugin-api@1.6.0-next.0
+  - @backstage/core-components@0.13.5-next.0
+  - @backstage/dev-utils@1.0.20-next.0
+  - @backstage/catalog-model@1.4.1
+  - @backstage/test-utils@1.4.3-next.0
+  - @backstage/theme@0.4.1
+  - @backstage/plugin-catalog-react@1.8.3-next.0
+
+## 0.3.21
+
+### Patch Changes
+
+- 12a8c94eda8d: Add package repository and homepage metadata
+- Updated dependencies
+  - @backstage/dev-utils@1.0.18
+  - @backstage/core-components@0.13.4
+  - @backstage/plugin-catalog-react@1.8.1
+  - @backstage/core-plugin-api@1.5.3
+  - @backstage/test-utils@1.4.2
+  - @backstage/catalog-model@1.4.1
+  - @backstage/theme@0.4.1
+
+## 0.3.21-next.2
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/plugin-catalog-react@1.8.1-next.1
+  - @backstage/dev-utils@1.0.18-next.2
+
 ## 0.3.21-next.1
 
 ### Patch Changes

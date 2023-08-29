@@ -1,5 +1,68 @@
 # @backstage/plugin-catalog-backend-module-azure
 
+## 0.1.22-next.1
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/config@1.1.0-next.0
+  - @backstage/integration@1.7.0-next.1
+  - @backstage/backend-tasks@0.5.8-next.1
+  - @backstage/backend-common@0.19.5-next.1
+  - @backstage/backend-plugin-api@0.6.3-next.1
+  - @backstage/catalog-model@1.4.2-next.0
+  - @backstage/plugin-catalog-node@1.4.4-next.1
+  - @backstage/plugin-catalog-common@1.0.16-next.0
+  - @backstage/errors@1.2.1
+  - @backstage/types@1.1.0
+
+## 0.1.21-next.0
+
+### Patch Changes
+
+- 94f96508491d: Improve consistency of results from the `AzureDevOpsEntityProvider`.
+- 5f1a92b9f19f: Use `DefaultAzureDevOpsCredentialsProvider` to retrieve credentials for Azure DevOps.
+- 044b4f2fb1e3: Remove duplications from Azure search before committing the new locations to the catalog.
+- Updated dependencies
+  - @backstage/backend-common@0.19.4-next.0
+  - @backstage/integration@1.7.0-next.0
+  - @backstage/backend-tasks@0.5.7-next.0
+  - @backstage/backend-plugin-api@0.6.2-next.0
+  - @backstage/catalog-model@1.4.1
+  - @backstage/config@1.0.8
+  - @backstage/errors@1.2.1
+  - @backstage/types@1.1.0
+  - @backstage/plugin-catalog-common@1.0.15
+  - @backstage/plugin-catalog-node@1.4.3-next.0
+
+## 0.1.19
+
+### Patch Changes
+
+- 629cbd194a87: Use `coreServices.rootConfig` instead of `coreService.config`
+- 4b82382ed8c2: Fixed invalid configuration schema. The configuration schema may be more strict as a result.
+- Updated dependencies
+  - @backstage/backend-common@0.19.2
+  - @backstage/backend-plugin-api@0.6.0
+  - @backstage/plugin-catalog-node@1.4.1
+  - @backstage/integration@1.6.0
+  - @backstage/backend-tasks@0.5.5
+  - @backstage/catalog-model@1.4.1
+  - @backstage/config@1.0.8
+  - @backstage/errors@1.2.1
+  - @backstage/types@1.1.0
+  - @backstage/plugin-catalog-common@1.0.15
+
+## 0.1.19-next.2
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-plugin-api@0.6.0-next.2
+  - @backstage/backend-tasks@0.5.5-next.2
+  - @backstage/backend-common@0.19.2-next.2
+  - @backstage/plugin-catalog-node@1.4.1-next.2
+
 ## 0.1.19-next.1
 
 ### Patch Changes

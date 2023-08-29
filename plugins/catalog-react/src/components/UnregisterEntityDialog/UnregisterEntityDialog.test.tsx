@@ -48,6 +48,10 @@ describe('UnregisterEntityDialog', () => {
     },
   };
 
+  beforeEach(() => {
+    jest.spyOn(alertApi, 'post').mockImplementation(() => {});
+  });
+
   const entity = {
     apiVersion: 'backstage.io/v1alpha1',
     kind: 'Component',
@@ -346,6 +350,11 @@ describe('UnregisterEntityDialog', () => {
     await waitFor(() => {
       expect(deleteEntity).toHaveBeenCalled();
       expect(onConfirm).toHaveBeenCalled();
+      expect(alertApi.post).toHaveBeenCalledWith({
+        message: 'Removed entity n',
+        severity: 'success',
+        display: 'transient',
+      });
     });
   });
 });

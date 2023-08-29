@@ -11,6 +11,7 @@ import { BackstagePlugin } from '@backstage/core-plugin-api';
 import { CatalogTableRow } from '@backstage/plugin-catalog';
 import { ExternalRouteRef } from '@backstage/core-plugin-api';
 import { InfoCardVariants } from '@backstage/core-components';
+import { JSX as JSX_2 } from 'react';
 import { default as React_2 } from 'react';
 import { RouteRef } from '@backstage/core-plugin-api';
 import { TableColumn } from '@backstage/core-components';
@@ -18,14 +19,14 @@ import { TableProps } from '@backstage/core-components';
 import { UserListFilterKind } from '@backstage/plugin-catalog-react';
 
 // @public (undocumented)
-export const ApiDefinitionCard: () => JSX.Element;
+export const ApiDefinitionCard: () => React_2.JSX.Element;
 
 // @public
 export function ApiDefinitionDialog(props: {
   open: boolean;
   entity: ApiEntity;
   onClose: () => void;
-}): JSX.Element;
+}): React_2.JSX.Element;
 
 // @public (undocumented)
 export type ApiDefinitionWidget = {
@@ -62,20 +63,22 @@ export { apiDocsPlugin as plugin };
 // @public
 export const ApiExplorerIndexPage: (
   props: DefaultApiExplorerPageProps,
-) => JSX.Element;
+) => React_2.JSX.Element;
 
 // @public (undocumented)
 export const ApiExplorerPage: (
   props: DefaultApiExplorerPageProps,
-) => JSX.Element;
+) => JSX_2.Element;
 
 // @public (undocumented)
-export const ApiTypeTitle: (props: { apiEntity: ApiEntity }) => JSX.Element;
+export const ApiTypeTitle: (props: {
+  apiEntity: ApiEntity;
+}) => React_2.JSX.Element;
 
 // @public (undocumented)
 export const AsyncApiDefinitionWidget: (
   props: AsyncApiDefinitionWidgetProps,
-) => JSX.Element;
+) => React_2.JSX.Element;
 
 // @public (undocumented)
 export type AsyncApiDefinitionWidgetProps = {
@@ -86,17 +89,17 @@ export type AsyncApiDefinitionWidgetProps = {
 export const ConsumedApisCard: (props: {
   variant?: InfoCardVariants;
   columns?: TableColumn<ApiEntity>[];
-}) => JSX.Element;
+}) => React_2.JSX.Element;
 
 // @public (undocumented)
 export const ConsumingComponentsCard: (props: {
   variant?: InfoCardVariants;
-}) => JSX.Element;
+}) => React_2.JSX.Element;
 
 // @public
 export const DefaultApiExplorerPage: (
   props: DefaultApiExplorerPageProps,
-) => JSX.Element;
+) => React_2.JSX.Element;
 
 // @public
 export type DefaultApiExplorerPageProps = {
@@ -109,40 +112,40 @@ export type DefaultApiExplorerPageProps = {
 export function defaultDefinitionWidgets(): ApiDefinitionWidget[];
 
 // @public (undocumented)
-export const EntityApiDefinitionCard: () => JSX.Element;
+export const EntityApiDefinitionCard: () => JSX_2.Element;
 
 // @public (undocumented)
 export const EntityConsumedApisCard: (props: {
   variant?: InfoCardVariants | undefined;
   columns?: TableColumn<ApiEntity>[] | undefined;
-}) => JSX.Element;
+}) => JSX_2.Element;
 
 // @public (undocumented)
 export const EntityConsumingComponentsCard: (props: {
   variant?: InfoCardVariants | undefined;
-}) => JSX.Element;
+}) => JSX_2.Element;
 
 // @public (undocumented)
 export const EntityHasApisCard: (props: {
   variant?: InfoCardVariants | undefined;
   columns?: TableColumn<ApiEntity>[] | undefined;
-}) => JSX.Element;
+}) => JSX_2.Element;
 
 // @public (undocumented)
 export const EntityProvidedApisCard: (props: {
   variant?: InfoCardVariants | undefined;
   columns?: TableColumn<ApiEntity>[] | undefined;
-}) => JSX.Element;
+}) => JSX_2.Element;
 
 // @public (undocumented)
 export const EntityProvidingComponentsCard: (props: {
   variant?: InfoCardVariants | undefined;
-}) => JSX.Element;
+}) => JSX_2.Element;
 
 // @public (undocumented)
 export const GraphQlDefinitionWidget: (
   props: GraphQlDefinitionWidgetProps,
-) => JSX.Element;
+) => React_2.JSX.Element;
 
 // @public (undocumented)
 export type GraphQlDefinitionWidgetProps = {
@@ -153,12 +156,12 @@ export type GraphQlDefinitionWidgetProps = {
 export const HasApisCard: (props: {
   variant?: InfoCardVariants;
   columns?: TableColumn<ApiEntity>[];
-}) => JSX.Element;
+}) => React_2.JSX.Element;
 
 // @public (undocumented)
 export const OpenApiDefinitionWidget: (
   props: OpenApiDefinitionWidgetProps,
-) => JSX.Element;
+) => React_2.JSX.Element;
 
 // @public (undocumented)
 export type OpenApiDefinitionWidgetProps = {
@@ -168,7 +171,7 @@ export type OpenApiDefinitionWidgetProps = {
 // @public (undocumented)
 export const PlainApiDefinitionWidget: (
   props: PlainApiDefinitionWidgetProps,
-) => JSX.Element;
+) => React_2.JSX.Element;
 
 // @public (undocumented)
 export type PlainApiDefinitionWidgetProps = {
@@ -180,17 +183,17 @@ export type PlainApiDefinitionWidgetProps = {
 export const ProvidedApisCard: (props: {
   variant?: InfoCardVariants;
   columns?: TableColumn<ApiEntity>[];
-}) => JSX.Element;
+}) => React_2.JSX.Element;
 
 // @public (undocumented)
 export const ProvidingComponentsCard: (props: {
   variant?: InfoCardVariants;
-}) => JSX.Element;
+}) => React_2.JSX.Element;
 
 // @public (undocumented)
 export const TrpcApiDefinitionWidget: (
   props: TrpcApiDefinitionWidgetProps,
-) => JSX.Element;
+) => React_2.JSX.Element;
 
 // @public (undocumented)
 export type TrpcApiDefinitionWidgetProps = {

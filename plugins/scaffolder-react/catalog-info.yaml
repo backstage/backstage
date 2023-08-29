@@ -1,0 +1,12 @@
+apiVersion: backstage.io/v1alpha1
+kind: Component
+metadata:
+  name: backstage-plugin-scaffolder-react
+  title: '@backstage/plugin-scaffolder-react'
+  description: >-
+    A frontend library that helps other Backstage plugins interact with the
+    Scaffolder
+spec:
+  lifecycle: production
+  type: backstage-web-library
+  owner: maintainers

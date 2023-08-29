@@ -30,3 +30,4 @@ export * from './UnregisterEntityDialog';
 export * from './UserListPicker';
 export * from './EntityProcessingStatusPicker';
 export * from './EntityNamespacePicker';
+export * from './EntityAutocompletePicker';
