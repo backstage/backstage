@@ -22,6 +22,7 @@ import { ReactNode } from 'react';
 import { RendererProps as RendererProps_2 } from '@backstage/plugin-home-react';
 import { RouteRef } from '@backstage/core-plugin-api';
 import { SetStateAction } from 'react';
+import { StorageApi } from '@backstage/core-plugin-api';
 import { stringifyEntityRef } from '@backstage/catalog-model';
 
 // @public
@@ -76,6 +77,19 @@ export const ComponentTabs: (props: {
     Component: () => JSX.Element;
   }[];
 }) => JSX_2.Element;
+
+// @public
+export class CoreStorageVisitsApi extends VisitsApiFactory {
+  constructor({
+    storageApi,
+    randomUUID,
+    limit,
+  }: {
+    storageApi: StorageApi;
+    randomUUID?: Window['crypto']['randomUUID'];
+    limit?: number;
+  });
+}
 
 // @public @deprecated (undocumented)
 export const createCardExtension: typeof createCardExtension_2;
