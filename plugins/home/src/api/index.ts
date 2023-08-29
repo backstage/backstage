@@ -14,6 +14,7 @@
  * limitations under the License.
  */
 
-export * from './VisitsApi';
+export * from './CoreStorageVisitsApi';
 export * from './LocalStorageVisitsApi';
+export * from './VisitsApi';
 export * from './VisitsApiFactory';
