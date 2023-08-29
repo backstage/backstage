@@ -65,7 +65,7 @@ export const Content = ({
   const { loading: reqLoading } = useAsync(async () => {
     if (!visits && !loading && kind === 'recent') {
       return await visitsApi
-        .listUserVisits({
+        .listVisits({
           limit: numVisitsTotal ?? 8,
           orderBy: [{ field: 'timestamp', direction: 'desc' }],
         })
@@ -73,7 +73,7 @@ export const Content = ({
     }
     if (!visits && !loading && kind === 'top') {
       return await visitsApi
-        .listUserVisits({
+        .listVisits({
           limit: numVisitsTotal ?? 8,
           orderBy: [{ field: 'hits', direction: 'desc' }],
         })
