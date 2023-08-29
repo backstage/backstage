@@ -47,7 +47,6 @@
     "@backstage/types": "workspace:^",
     "@davidzemon/passport-okta-oauth": "^0.0.5",
     "@google-cloud/firestore": "^6.0.0",
-    "@node-saml/passport-saml": "^4.0.4",
     "@types/express": "^4.17.6",
     "@types/passport": "^1.0.3",
     "compression": "^1.7.4",
@@ -78,6 +77,7 @@
     "passport-microsoft": "^1.0.0",
     "passport-oauth2": "^1.6.1",
     "passport-onelogin-oauth": "^0.0.1",
+    "passport-saml": "^3.1.2",
     "uuid": "^8.0.0",
     "winston": "^3.2.1",
     "yn": "^4.0.0"
