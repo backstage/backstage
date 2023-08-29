@@ -26,6 +26,7 @@ import MenuList from '@material-ui/core/MenuList';
 import Popover from '@material-ui/core/Popover';
 import { makeStyles } from '@material-ui/core/styles';
 import Typography from '@material-ui/core/Typography';
+import Tooltip from '@material-ui/core/Tooltip';
 import useMediaQuery from '@material-ui/core/useMediaQuery';
 import React, { MouseEventHandler, useState } from 'react';
 import { SupportItem, SupportItemLink, useSupportConfig } from '../../hooks';
@@ -62,22 +63,24 @@ const SupportLink = ({ link }: { link: SupportItemLink }) => (
 
 const SupportListItem = ({ item }: { item: SupportItem }) => {
   return (
-    <MenuItem>
-      <ListItemIcon>
-        <SupportIcon icon={item.icon} />
-      </ListItemIcon>
-      <ListItemText
-        primary={item.title}
-        secondary={item.links?.reduce<React.ReactNode[]>(
-          (prev, link, idx) => [
-            ...prev,
-            idx > 0 && <br key={idx} />,
-            <SupportLink link={link} key={link.url} />,
-          ],
-          [],
-        )}
-      />
-    </MenuItem>
+    <Tooltip title={item.title}>
+      <MenuItem>
+        <ListItemIcon>
+          <SupportIcon icon={item.icon} />
+        </ListItemIcon>
+        <ListItemText
+          primary={item.title}
+          secondary={item.links?.reduce<React.ReactNode[]>(
+            (prev, link, idx) => [
+              ...prev,
+              idx > 0 && <br key={idx} />,
+              <SupportLink link={link} key={link.url} />,
+            ],
+            [],
+          )}
+        />
+      </MenuItem>
+    </Tooltip>
   );
 };
 
@@ -146,13 +149,17 @@ export function SupportButton(props: SupportButtonProps) {
         >
           {title && (
             <MenuItem alignItems="flex-start">
-              <Typography variant="subtitle1">{title}</Typography>
+              <Tooltip title={title}>
+                <Typography variant="subtitle1">{title}</Typography>
+              </Tooltip>
             </MenuItem>
           )}
           {React.Children.map(children, (child, i) => (
-            <MenuItem alignItems="flex-start" key={`child-${i}`}>
-              {child}
-            </MenuItem>
+            <Tooltip title={child}>
+              <MenuItem alignItems="flex-start" key={`child-${i}`}>
+                {child}
+              </MenuItem>
+            </Tooltip>
           ))}
           {(items ?? configItems).map((item, i) => (
             <SupportListItem item={item} key={`item-${i}`} />
