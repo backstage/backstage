@@ -20,6 +20,8 @@ import { LifecycleService } from '@backstage/backend-plugin-api';
 import { LoggerService } from '@backstage/backend-plugin-api';
 import { PermissionsService } from '@backstage/backend-plugin-api';
 import { RootConfigService } from '@backstage/backend-plugin-api';
+import { RootHttpRouterFactoryOptions } from '@backstage/backend-app-api';
+import { RootHttpRouterService } from '@backstage/backend-plugin-api';
 import { RootLifecycleService } from '@backstage/backend-plugin-api';
 import { RootLoggerService } from '@backstage/backend-plugin-api';
 import { SchedulerService } from '@backstage/backend-plugin-api';
@@ -111,6 +113,17 @@ export namespace mockServices {
       factory: (
         options?: Options | undefined,
       ) => ServiceFactory<RootConfigService, 'root'>;
+  }
+  // (undocumented)
+  export namespace rootHttpRouter {
+    const // (undocumented)
+      factory: (
+        options?: RootHttpRouterFactoryOptions | undefined,
+      ) => ServiceFactory<RootHttpRouterService, 'root'>;
+    const // (undocumented)
+      mock: (
+        partialImpl?: Partial<RootHttpRouterService> | undefined,
+      ) => ServiceMock<RootHttpRouterService>;
   }
   // (undocumented)
   export namespace rootLifecycle {

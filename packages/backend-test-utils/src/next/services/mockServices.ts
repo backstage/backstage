@@ -31,6 +31,7 @@ import {
   lifecycleServiceFactory,
   loggerServiceFactory,
   permissionsServiceFactory,
+  rootHttpRouterServiceFactory,
   rootLifecycleServiceFactory,
   schedulerServiceFactory,
   urlReaderServiceFactory,
@@ -181,6 +182,12 @@ export namespace mockServices {
   export namespace httpRouter {
     export const factory = httpRouterServiceFactory;
     export const mock = simpleMock(coreServices.httpRouter, () => ({
+      use: jest.fn(),
+    }));
+  }
+  export namespace rootHttpRouter {
+    export const factory = rootHttpRouterServiceFactory;
+    export const mock = simpleMock(coreServices.rootHttpRouter, () => ({
       use: jest.fn(),
     }));
   }
