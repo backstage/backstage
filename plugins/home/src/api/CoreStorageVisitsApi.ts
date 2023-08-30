@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import { StorageApi } from '@backstage/core-plugin-api';
+import { IdentityApi, StorageApi } from '@backstage/core-plugin-api';
 import { Visit } from './VisitsApi';
 import { VisitsApiFactory } from './VisitsApiFactory';
 
@@ -23,30 +23,40 @@ import { VisitsApiFactory } from './VisitsApiFactory';
  */
 export class CoreStorageVisitsApi extends VisitsApiFactory {
   private readonly storageApi: StorageApi;
-  private readonly storageKey = '@backstage/plugin-home:visits';
+  private readonly storageKeyPrefix = '@backstage/plugin-home:visits';
+  private readonly identityApi: IdentityApi;
 
   constructor({
     storageApi,
+    identityApi,
     randomUUID = window?.crypto?.randomUUID,
     limit = 100,
   }: {
     storageApi: StorageApi;
     randomUUID?: Window['crypto']['randomUUID'];
     limit?: number;
+    identityApi: IdentityApi;
   }) {
     super({ randomUUID, limit });
     this.storageApi = storageApi;
+    this.identityApi = identityApi;
     this.retrieveAll = async (): Promise<Array<Visit>> => {
       let visits: Array<Visit>;
+      const { userEntityRef } = await this.identityApi.getBackstageIdentity();
+      const storageKey = `${this.storageKeyPrefix}:${userEntityRef}`;
+
       try {
-        visits =
-          this.storageApi.snapshot<Array<Visit>>(this.storageKey).value ?? [];
+        visits = this.storageApi.snapshot<Array<Visit>>(storageKey).value ?? [];
       } catch {
         visits = [];
       }
       return visits;
     };
-    this.persistAll = async (visits: Array<Visit>) =>
-      this.storageApi.set<Array<Visit>>(this.storageKey, visits);
+    this.persistAll = async (visits: Array<Visit>) => {
+      const { userEntityRef } = await this.identityApi.getBackstageIdentity();
+      const storageKey = `${this.storageKeyPrefix}:${userEntityRef}`;
+
+      return this.storageApi.set<Array<Visit>>(storageKey, visits);
+    };
   }
 }
