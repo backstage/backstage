@@ -65,7 +65,7 @@ describe('featureDiscoveryServiceFactory', () => {
           name: 'detected-module',
           main: 'index.js',
           backstage: {
-            role: 'backend-module',
+            role: 'backend-plugin-module',
           },
         }),
         'index.js': `

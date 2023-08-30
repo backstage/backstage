@@ -28,7 +28,7 @@ import { resolve as resolvePath, dirname } from 'path';
 import fs from 'fs-extra';
 import { BackstagePackageJson } from '@backstage/cli-node';
 
-const LOADED_PACKAGE_ROLES = ['backend-plugin', 'backend-module'];
+const LOADED_PACKAGE_ROLES = ['backend-plugin', 'backend-plugin-module'];
 
 /** @internal */
 async function findClosestPackageDir(
