@@ -1,5 +1,18 @@
 # @backstage/plugin-code-coverage-backend
 
+## 0.2.17-next.1
+
+### Patch Changes
+
+- d409ed988aed: Correct the line hits calculation for Cobertura reports
+- Updated dependencies
+  - @backstage/config@1.1.0-next.0
+  - @backstage/integration@1.7.0-next.1
+  - @backstage/backend-common@0.19.5-next.1
+  - @backstage/catalog-model@1.4.2-next.0
+  - @backstage/catalog-client@1.4.4-next.0
+  - @backstage/errors@1.2.1
+
 ## 0.2.16-next.0
 
 ### Patch Changes

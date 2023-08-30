@@ -37,6 +37,7 @@ import {
   getOrganizationUsers,
   parseGithubOrgUrl,
 } from '../lib';
+import { areGroupEntities, areUserEntities } from '../lib/guards';
 
 type GraphQL = typeof graphql;
 
@@ -101,19 +102,23 @@ export class GithubOrgReaderProcessor implements CatalogProcessor {
     this.logger.info('Reading GitHub users and groups');
 
     const { users } = await getOrganizationUsers(client, org, tokenType);
-    const { groups } = await getOrganizationTeams(client, org);
+    const { teams } = await getOrganizationTeams(client, org);
 
     const duration = ((Date.now() - startTimestamp) / 1000).toFixed(1);
     this.logger.debug(
-      `Read ${users.length} GitHub users and ${groups.length} GitHub groups in ${duration} seconds`,
+      `Read ${users.length} GitHub users and ${teams.length} GitHub teams in ${duration} seconds`,
     );
 
-    assignGroupsToUsers(users, groups);
-    buildOrgHierarchy(groups);
+    if (areGroupEntities(teams)) {
+      buildOrgHierarchy(teams);
+      if (areUserEntities(users)) {
+        assignGroupsToUsers(users, teams);
+      }
+    }
 
     // Done!
-    for (const group of groups) {
-      emit(processingResult.entity(location, group));
+    for (const team of teams) {
+      emit(processingResult.entity(location, team));
     }
     for (const user of users) {
       emit(processingResult.entity(location, user));

@@ -1,5 +1,14 @@
 # @backstage/integration
 
+## 1.7.0-next.1
+
+### Patch Changes
+
+- 2d2fc9d20ebb: Additional fix for Gitiles auth links
+- Updated dependencies
+  - @backstage/config@1.1.0-next.0
+  - @backstage/errors@1.2.1
+
 ## 1.7.0-next.0
 
 ### Minor Changes

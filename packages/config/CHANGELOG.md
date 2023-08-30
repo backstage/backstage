@@ -1,5 +1,17 @@
 # @backstage/config
 
+## 1.1.0-next.0
+
+### Minor Changes
+
+- 62f448edb0b5: Added a `readDurationFromConfig` function
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/errors@1.2.1
+  - @backstage/types@1.1.0
+
 ## 1.0.8
 
 ### Patch Changes

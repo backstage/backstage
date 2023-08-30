@@ -1,5 +1,21 @@
 # @backstage/backend-common
 
+## 0.19.5-next.1
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/config@1.1.0-next.0
+  - @backstage/integration@1.7.0-next.1
+  - @backstage/backend-app-api@0.5.3-next.1
+  - @backstage/backend-plugin-api@0.6.3-next.1
+  - @backstage/config-loader@1.5.0-next.1
+  - @backstage/integration-aws-node@0.1.6-next.0
+  - @backstage/backend-dev-utils@0.1.1
+  - @backstage/cli-common@0.1.12
+  - @backstage/errors@1.2.1
+  - @backstage/types@1.1.0
+
 ## 0.19.4-next.0
 
 ### Patch Changes

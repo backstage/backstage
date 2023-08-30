@@ -1,5 +1,14 @@
 # @backstage/plugin-devtools-common
 
+## 0.1.4-next.0
+
+### Patch Changes
+
+- 12e644aa4eef: Show resource utilization in `DevTools` plugin
+- Updated dependencies
+  - @backstage/plugin-permission-common@0.7.8-next.0
+  - @backstage/types@1.1.0
+
 ## 0.1.3
 
 ### Patch Changes
