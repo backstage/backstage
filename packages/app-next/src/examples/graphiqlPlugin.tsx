@@ -21,6 +21,7 @@ import {
 import React from 'react';
 
 export const GraphiqlPage = createPageExtension({
+  id: 'graphiql.page',
   defaultPath: '/graphiql',
   component: () =>
     import('@backstage/plugin-graphiql').then(({ Router }) => <Router />),
@@ -28,11 +29,5 @@ export const GraphiqlPage = createPageExtension({
 
 export const graphiqlPlugin = createPlugin({
   id: 'graphiql',
-  defaultExtensionInstances: [
-    {
-      id: 'graphiql.page',
-      at: 'core.router/routes',
-      extension: GraphiqlPage,
-    },
-  ],
+  defaultExtensions: [GraphiqlPage],
 });

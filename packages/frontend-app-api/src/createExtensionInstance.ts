@@ -26,12 +26,11 @@ export interface ExtensionInstance {
 
 /** @internal */
 export function createExtensionInstance(options: {
-  id: string;
   extension: Extension<unknown>;
   config: unknown;
   attachments: Record<string, ExtensionInstance[]>;
 }): ExtensionInstance {
-  const { id, extension, config, attachments } = options;
+  const { extension, config, attachments } = options;
   const extensionData = new Map<string, unknown>();
 
   let parsedConfig: unknown;
@@ -39,7 +38,7 @@ export function createExtensionInstance(options: {
     parsedConfig = extension.configSchema?.parse(config ?? {});
   } catch (e) {
     throw new Error(
-      `Invalid configuration for extension instance '${id}', ${e}`,
+      `Invalid configuration for extension instance '${extension.id}', ${e}`,
     );
   }
 
@@ -60,11 +59,13 @@ export function createExtensionInstance(options: {
       ),
     });
   } catch (e) {
-    throw new Error(`Failed to instantiate extension instance '${id}', ${e}`);
+    throw new Error(
+      `Failed to instantiate extension instance '${extension.id}', ${e}`,
+    );
   }
 
   return {
-    id: options.id,
+    id: options.extension.id,
     data: extensionData,
     $$type: 'extension-instance',
   };

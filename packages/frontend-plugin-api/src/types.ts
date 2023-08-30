@@ -54,6 +54,9 @@ export interface CreateExtensionOptions<
   TPoint extends Record<string, { extensionData: AnyExtensionDataMap }>,
   TConfig,
 > {
+  id: string;
+  at: string;
+  disabled?: boolean;
   inputs?: TPoint;
   output: TData;
   configSchema?: PortableSchema<TConfig>;
@@ -71,7 +74,9 @@ export interface CreateExtensionOptions<
 /** @public */
 export interface Extension<TConfig> {
   $$type: 'extension';
-  // TODO: will extensions have a default "at" as part of their contract, making it optional in the instance config?
+  id: string;
+  at: string;
+  disabled: boolean;
   inputs: Record<string, { extensionData: AnyExtensionDataMap }>;
   output: AnyExtensionDataMap;
   configSchema?: PortableSchema<TConfig>;
@@ -88,29 +93,25 @@ export function createExtension<
   TPoint extends Record<string, { extensionData: AnyExtensionDataMap }>,
   TConfig = never,
 >(options: CreateExtensionOptions<TData, TPoint, TConfig>): Extension<TConfig> {
-  return { ...options, $$type: 'extension', inputs: options.inputs ?? {} };
-}
-
-/** @public */
-export interface ExtensionInstanceParameters {
-  id: string;
-  at: string;
-  extension: Extension<unknown>;
-  config?: unknown;
-  disabled?: boolean;
+  return {
+    ...options,
+    disabled: options.disabled ?? false,
+    $$type: 'extension',
+    inputs: options.inputs ?? {},
+  };
 }
 
 /** @public */
 export interface BackstagePluginOptions {
   id: string;
-  defaultExtensionInstances?: ExtensionInstanceParameters[];
+  defaultExtensions?: Extension<unknown>[];
 }
 
 /** @public */
 export interface BackstagePlugin {
   $$type: 'backstage-plugin';
   id: string;
-  defaultExtensionInstances: ExtensionInstanceParameters[];
+  defaultExtensions: Extension<unknown>[];
 }
 
 /** @public */
@@ -118,6 +119,6 @@ export function createPlugin(options: BackstagePluginOptions): BackstagePlugin {
   return {
     ...options,
     $$type: 'backstage-plugin',
-    defaultExtensionInstances: options.defaultExtensionInstances ?? [],
+    defaultExtensions: options.defaultExtensions ?? [],
   };
 }

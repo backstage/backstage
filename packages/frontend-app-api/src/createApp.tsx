@@ -17,7 +17,6 @@
 import React from 'react';
 import { ConfigReader } from '@backstage/config';
 import {
-  ExtensionInstanceParameters,
   BackstagePlugin,
   coreExtensionData,
 } from '@backstage/frontend-plugin-api';
@@ -27,6 +26,7 @@ import {
   ExtensionInstance,
 } from './createExtensionInstance';
 import {
+  ExtensionInstanceParameters,
   mergeExtensionParameters,
   readAppExtensionParameters,
 } from './wiring/parameters';
@@ -37,21 +37,14 @@ export function createApp(options: { plugins: BackstagePlugin[] }): {
 } {
   const appConfig = ConfigReader.fromConfigs(process.env.APP_CONFIG as any);
 
-  const builtinExtensionInstanceParams = [
-    {
-      id: 'core.router',
-      at: 'root/default',
-      extension: RouteExtension,
-      config: undefined,
-    },
-  ];
+  const builtinExtensions = [RouteExtension];
 
   // pull in default extension instance from discovered packages
   // apply config to adjust default extension instances and add more
-  const extensionInstanceParams = mergeExtensionParameters(
+  const extensionParams = mergeExtensionParameters(
     [
-      ...options.plugins.flatMap(plugin => plugin.defaultExtensionInstances),
-      ...builtinExtensionInstanceParams,
+      ...options.plugins.flatMap(plugin => plugin.defaultExtensions),
+      ...builtinExtensions,
     ],
     readAppExtensionParameters(appConfig),
   );
@@ -64,7 +57,7 @@ export function createApp(options: { plugins: BackstagePlugin[] }): {
     string,
     Map<string, ExtensionInstanceParameters[]>
   >();
-  for (const instanceParams of extensionInstanceParams) {
+  for (const instanceParams of extensionParams) {
     const [extensionId, pointId = 'default'] = instanceParams.at.split('/');
 
     let pointMap = attachmentMap.get(extensionId);
@@ -87,24 +80,23 @@ export function createApp(options: { plugins: BackstagePlugin[] }): {
   function createInstance(
     instanceParams: ExtensionInstanceParameters,
   ): ExtensionInstance {
-    const existingInstance = instances.get(instanceParams.id);
+    const existingInstance = instances.get(instanceParams.extension.id);
     if (existingInstance) {
       return existingInstance;
     }
 
     const attachments = Object.fromEntries(
-      Array.from(attachmentMap.get(instanceParams.id)?.entries() ?? []).map(
-        ([inputName, attachmentConfigs]) => [
-          inputName,
-          attachmentConfigs.map(createInstance),
-        ],
-      ),
+      Array.from(
+        attachmentMap.get(instanceParams.extension.id)?.entries() ?? [],
+      ).map(([inputName, attachmentConfigs]) => [
+        inputName,
+        attachmentConfigs.map(createInstance),
+      ]),
     );
 
     return createExtensionInstance({
-      id: instanceParams.id,
-      config: instanceParams.config,
       extension: instanceParams.extension,
+      config: instanceParams.config,
       attachments,
     });
   }
