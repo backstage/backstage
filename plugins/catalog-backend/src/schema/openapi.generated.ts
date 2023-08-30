@@ -788,6 +788,18 @@ export default {
           {
             $ref: '#/components/parameters/after',
           },
+          {
+            name: 'order',
+            in: 'query',
+            allowReserved: true,
+            required: false,
+            schema: {
+              type: 'array',
+              item: {
+                type: 'string',
+              },
+            },
+          },
         ],
       },
     },

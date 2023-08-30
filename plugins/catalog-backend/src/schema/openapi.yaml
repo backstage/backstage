@@ -650,6 +650,14 @@ paths:
         - $ref: '#/components/parameters/filter'
         - $ref: '#/components/parameters/offset'
         - $ref: '#/components/parameters/after'
+        - name: order
+          in: query
+          allowReserved: true
+          required: false
+          schema:
+            type: array
+            item:
+              type: string
   /entities/by-uid/{uid}:
     get:
       operationId: GetEntityByUid
