@@ -14,20 +14,8 @@
  * limitations under the License.
  */
 
-import {
-  createPageExtension,
+export {
   createPlugin,
-} from '@backstage/frontend-plugin-api';
-import React from 'react';
-
-export const GraphiqlPage = createPageExtension({
-  id: 'graphiql.page',
-  defaultPath: '/graphiql',
-  component: () =>
-    import('@backstage/plugin-graphiql').then(({ Router }) => <Router />),
-});
-
-export const graphiqlPlugin = createPlugin({
-  id: 'graphiql',
-  extensions: [GraphiqlPage],
-});
+  type BackstagePlugin,
+  type PluginOptions,
+} from './createPlugin';

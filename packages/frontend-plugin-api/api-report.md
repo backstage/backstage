@@ -19,15 +19,7 @@ export interface BackstagePlugin {
   // (undocumented)
   $$type: 'backstage-plugin';
   // (undocumented)
-  defaultExtensions: Extension<unknown>[];
-  // (undocumented)
-  id: string;
-}
-
-// @public (undocumented)
-export interface BackstagePluginOptions {
-  // (undocumented)
-  defaultExtensions?: Extension<unknown>[];
+  extensions: Extension<unknown>[];
   // (undocumented)
   id: string;
 }
@@ -121,7 +113,7 @@ export function createPageExtension<
 ): Extension<TConfig>;
 
 // @public (undocumented)
-export function createPlugin(options: BackstagePluginOptions): BackstagePlugin;
+export function createPlugin(options: PluginOptions): BackstagePlugin;
 
 // @public (undocumented)
 export function createSchemaFromZod<TOutput, TInput>(
@@ -173,6 +165,14 @@ export type ExtensionDataRef<T> = {
 export type ExtensionDataValue<TData extends AnyExtensionDataMap> = {
   [K in keyof TData]: TData[K]['T'];
 };
+
+// @public (undocumented)
+export interface PluginOptions {
+  // (undocumented)
+  extensions?: Extension<unknown>[];
+  // (undocumented)
+  id: string;
+}
 
 // @public (undocumented)
 export type PortableSchema<TOutput> = {

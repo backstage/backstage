@@ -15,14 +15,14 @@
  */
 
 import React from 'react';
-import { createSchemaFromZod, PortableSchema } from './createSchemaFromZod';
+import { createSchemaFromZod, PortableSchema } from '../createSchemaFromZod';
 import {
   AnyExtensionDataMap,
   coreExtensionData,
   createExtension,
   Extension,
   ExtensionDataValue,
-} from './types';
+} from '../types';
 
 /**
  * Helper for creating extensions for a routable React page component.

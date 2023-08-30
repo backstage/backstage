@@ -25,6 +25,7 @@ export type ExtensionDataRef<T> = {
 };
 
 /** @public */
+// TODO: change to options object with ID.
 export function createExtensionDataRef<T>(id: string): ExtensionDataRef<T> {
   return { id, $$type: 'extension-data' } as ExtensionDataRef<T>;
 }
@@ -98,27 +99,5 @@ export function createExtension<
     disabled: options.disabled ?? false,
     $$type: 'extension',
     inputs: options.inputs ?? {},
-  };
-}
-
-/** @public */
-export interface BackstagePluginOptions {
-  id: string;
-  defaultExtensions?: Extension<unknown>[];
-}
-
-/** @public */
-export interface BackstagePlugin {
-  $$type: 'backstage-plugin';
-  id: string;
-  defaultExtensions: Extension<unknown>[];
-}
-
-/** @public */
-export function createPlugin(options: BackstagePluginOptions): BackstagePlugin {
-  return {
-    ...options,
-    $$type: 'backstage-plugin',
-    defaultExtensions: options.defaultExtensions ?? [],
   };
 }
