@@ -78,18 +78,17 @@ export const ComponentTabs: (props: {
 
 // @public
 export class CoreStorageVisitsApi extends VisitsApiFactory {
-  constructor({
-    storageApi,
-    identityApi,
-    randomUUID,
-    limit,
-  }: {
-    storageApi: StorageApi;
-    randomUUID?: Window['crypto']['randomUUID'];
-    limit?: number;
-    identityApi: IdentityApi;
-  });
+  // (undocumented)
+  static create(options: CoreStorageVisitsApiOptions): CoreStorageVisitsApi;
 }
+
+// @public (undocumented)
+export type CoreStorageVisitsApiOptions = {
+  storageApi: StorageApi;
+  randomUUID?: Window['crypto']['randomUUID'];
+  limit?: number;
+  identityApi: IdentityApi;
+};
 
 // @public @deprecated (undocumented)
 export const createCardExtension: typeof createCardExtension_2;
@@ -180,18 +179,17 @@ export type LayoutConfiguration = {
 
 // @public
 export class LocalStorageVisitsApi extends VisitsApiFactory {
-  constructor({
-    localStorage,
-    randomUUID,
-    limit,
-    identityApi,
-  }: {
-    localStorage?: Window['localStorage'];
-    randomUUID?: Window['crypto']['randomUUID'];
-    limit?: number;
-    identityApi: IdentityApi;
-  });
+  // (undocumented)
+  static create(options: LocalStorageVisitsApiOptions): LocalStorageVisitsApi;
 }
+
+// @public (undocumented)
+export type LocalStorageVisitsApiOptions = {
+  localStorage?: Window['localStorage'];
+  randomUUID?: Window['crypto']['randomUUID'];
+  limit?: number;
+  identityApi: IdentityApi;
+};
 
 // @public @deprecated (undocumented)
 export type RendererProps = RendererProps_2;
@@ -270,17 +268,12 @@ export interface VisitsApi {
 
 // @public
 export class VisitsApiFactory implements VisitsApi {
-  constructor({
+  protected constructor({
     randomUUID,
     limit,
     retrieveAll,
     persistAll,
-  }: {
-    randomUUID: Window['crypto']['randomUUID'];
-    limit: number;
-    retrieveAll?: () => Promise<Array<Visit>>;
-    persistAll?: (visits: Array<Visit>) => Promise<void>;
-  });
+  }: VisitsApiFactoryOptions);
   // (undocumented)
   protected readonly limit: number;
   // (undocumented)
@@ -294,6 +287,14 @@ export class VisitsApiFactory implements VisitsApi {
   // (undocumented)
   saveVisit(saveParams: VisitsApiSaveParams): Promise<Visit>;
 }
+
+// @public (undocumented)
+export type VisitsApiFactoryOptions = {
+  randomUUID: Window['crypto']['randomUUID'];
+  limit: number;
+  retrieveAll?: () => Promise<Array<Visit>>;
+  persistAll?: (visits: Array<Visit>) => Promise<void>;
+};
 
 // @public
 export type VisitsApiQueryParams = {
