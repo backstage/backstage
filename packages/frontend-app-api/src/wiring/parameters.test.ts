@@ -211,7 +211,7 @@ describe('readAppExtensionParameters', () => {
         }),
       ),
     ).toThrow(
-      'Invalid extension configuration at app.extensions[0], key must only contain letters, numbers and dots, got core.router/routes',
+      "Invalid extension configuration at app.extensions[0], extension ID must only contain letters, numbers, dashes, and dots, got 'core.router/routes'",
     );
   });
 });
@@ -260,10 +260,10 @@ describe('expandShorthandExtensionParameters', () => {
       disabled: false,
     });
     expect(() => run('')).toThrowErrorMatchingInlineSnapshot(
-      `"Invalid extension configuration at app.extensions[1], string shorthand cannot be the empty string"`,
+      `"Invalid extension configuration at app.extensions[1], extension ID must only contain letters, numbers, dashes, and dots, got ''"`,
     );
     expect(() => run('core.router/routes')).toThrowErrorMatchingInlineSnapshot(
-      `"Invalid extension configuration at app.extensions[1], cannot target an extension instance input with the string shorthand (key cannot contain slashes; did you mean 'core.router'?)"`,
+      `"Invalid extension configuration at app.extensions[1], extension ID must only contain letters, numbers, dashes, and dots, got 'core.router/routes'"`,
     );
   });
 

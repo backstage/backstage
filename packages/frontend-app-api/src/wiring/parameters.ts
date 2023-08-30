@@ -60,20 +60,20 @@ export function expandShorthandExtensionParameters(
     }${prop ? `.${prop}` : ''}, ${msg}`;
   }
 
-  // Example YAML:
-  // - entity.card.about
-  if (typeof arrayEntry === 'string') {
-    if (arrayEntry.includes('/')) {
-      const suggestion = arrayEntry.split('/')[0];
+  function assertValidId(id: string) {
+    if (!id.match(/^[\.a-zA-Z0-9-]+$/)) {
       throw new Error(
         errorMsg(
-          `cannot target an extension instance input with the string shorthand (key cannot contain slashes; did you mean '${suggestion}'?)`,
+          `extension ID must only contain letters, numbers, dashes, and dots, got '${id}'`,
         ),
       );
     }
-    if (!arrayEntry) {
-      throw new Error(errorMsg('string shorthand cannot be the empty string'));
-    }
+  }
+
+  // Example YAML:
+  // - entity.card.about
+  if (typeof arrayEntry === 'string') {
+    assertValidId(arrayEntry);
     return {
       id: arrayEntry,
       disabled: false,
@@ -94,19 +94,15 @@ export function expandShorthandExtensionParameters(
     throw new Error(errorMsg(`must have exactly one key, got ${joinedKeys}`));
   }
 
-  const key = String(keys[0]);
-  const value = arrayEntry[key];
-  if (!key.match(/^[\.a-zA-Z0-9]+$/)) {
-    throw new Error(
-      errorMsg(`key must only contain letters, numbers and dots, got ${key}`),
-    );
-  }
+  const id = String(keys[0]);
+  const value = arrayEntry[id];
+  assertValidId(id);
 
   // Example YAML:
   // - catalog.page.cicd: false
   if (typeof value === 'boolean') {
     return {
-      id: key,
+      id,
       disabled: !value,
     };
   }
@@ -120,7 +116,7 @@ export function expandShorthandExtensionParameters(
   //        width: 1500
   //        height: 800
   if (typeof value !== 'object' || value === null || Array.isArray(value)) {
-    throw new Error(errorMsg('value must be a boolean or object', key));
+    throw new Error(errorMsg('value must be a boolean or object', id));
   }
 
   const at = value.at;
@@ -128,14 +124,14 @@ export function expandShorthandExtensionParameters(
   const config = value.config;
 
   if (at !== undefined && typeof at !== 'string') {
-    throw new Error(errorMsg('must be a string', key, 'at'));
+    throw new Error(errorMsg('must be a string', id, 'at'));
   } else if (disabled !== undefined && typeof disabled !== 'boolean') {
-    throw new Error(errorMsg('must be a boolean', key, 'disabled'));
+    throw new Error(errorMsg('must be a boolean', id, 'disabled'));
   } else if (
     config !== undefined &&
     (typeof config !== 'object' || config === null || Array.isArray(config))
   ) {
-    throw new Error(errorMsg('must be an object', key, 'config'));
+    throw new Error(errorMsg('must be an object', id, 'config'));
   }
 
   const unknownKeys = Object.keys(value).filter(
@@ -147,14 +143,14 @@ export function expandShorthandExtensionParameters(
         `unknown parameter; expected one of '${knownExtensionParameters.join(
           "', '",
         )}'`,
-        key,
+        id,
         unknownKeys.join(', '),
       ),
     );
   }
 
   return {
-    id: key,
+    id,
     at,
     disabled,
     config,
