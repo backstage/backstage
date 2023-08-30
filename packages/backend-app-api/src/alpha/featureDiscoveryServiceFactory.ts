@@ -27,7 +27,6 @@ import {
 import { resolve as resolvePath, dirname } from 'path';
 import fs from 'fs-extra';
 import { BackstagePackageJson } from '@backstage/cli-node';
-import { JsonObject, JsonValue } from '@backstage/types';
 
 const LOADED_PACKAGE_ROLES = ['backend-plugin', 'backend-plugin-module'];
 
