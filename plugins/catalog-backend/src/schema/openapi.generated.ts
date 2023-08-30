@@ -826,6 +826,18 @@ export const spec = {
           {
             $ref: '#/components/parameters/after',
           },
+          {
+            name: 'order',
+            in: 'query',
+            allowReserved: true,
+            required: false,
+            schema: {
+              type: 'array',
+              items: {
+                type: 'string',
+              },
+            },
+          },
         ],
       },
     },
