@@ -124,7 +124,7 @@ class PackageDiscoveryService implements FeatureDiscoveryService {
           require.resolve(`${name}/alpha`, { paths: [packageDir] }),
         );
       } catch (e) {
-        /* No alpha exports so ignore  */
+        /* ignore */
       }
 
       for (const modulePath of exportedModulePaths) {
