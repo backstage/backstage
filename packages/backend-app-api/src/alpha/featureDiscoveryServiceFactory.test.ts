@@ -34,6 +34,7 @@ describe('featureDiscoveryServiceFactory', () => {
           dependencies: {
             'detected-plugin': '0.0.0',
             'detected-module': '0.0.0',
+            'another-detected-plugin': '0.0.0',
           },
         }),
       },
@@ -84,6 +85,29 @@ describe('featureDiscoveryServiceFactory', () => {
         });
         `,
       },
+      [resolvePath(rootDir, 'node_modules/another-detected-plugin')]: {
+        'package.json': JSON.stringify({
+          name: 'another-detected-plugin',
+          main: 'index.js',
+          backstage: {
+            role: 'backend-plugin',
+          },
+        }),
+        'index.js': `
+        const { createBackendPlugin, coreServices } = require('@backstage/backend-plugin-api');
+        exports.detectedPlugin = createBackendPlugin({
+            pluginId: 'another-detected',
+            register(env) {
+              env.registerInit({
+                deps: { identity: coreServices.identity },
+                async init({ identity }) {
+                  identity.getIdentity('another-detected-plugin');
+                },
+              });
+            },
+        });
+        `,
+      },
     });
   });
 
@@ -91,7 +115,7 @@ describe('featureDiscoveryServiceFactory', () => {
     mockFs.restore();
   });
 
-  it('should detect plugin and module packages', async () => {
+  it('should detect plugin and module packages when "all" is specified', async () => {
     const fn = jest.fn().mockResolvedValue({});
 
     await startTestBackend({
@@ -110,5 +134,191 @@ describe('featureDiscoveryServiceFactory', () => {
 
     expect(fn).toHaveBeenCalledWith('detected-plugin');
     expect(fn).toHaveBeenCalledWith('detected-module');
+    expect(fn).toHaveBeenCalledWith('another-detected-plugin');
+  });
+
+  it('detects only the packages that are listed as included', async () => {
+    const fn = jest.fn().mockResolvedValue({});
+
+    await startTestBackend({
+      features: [
+        createServiceFactory({
+          service: coreServices.identity,
+          deps: {},
+          factory: () => ({ getIdentity: fn }),
+        }),
+        featureDiscoveryServiceFactory(),
+        mockServices.rootConfig.factory({
+          data: {
+            backend: {
+              packages: {
+                include: ['detected-plugin', 'another-detected-plugin'],
+              },
+            },
+          },
+        }),
+      ],
+    });
+
+    expect(fn).toHaveBeenCalledWith('detected-plugin');
+    expect(fn).toHaveBeenCalledWith('another-detected-plugin');
+    expect(fn).not.toHaveBeenCalledWith('detected-module');
+  });
+
+  it('does not detect packages when included is an empty list', async () => {
+    const fn = jest.fn().mockResolvedValue({});
+
+    await startTestBackend({
+      features: [
+        createServiceFactory({
+          service: coreServices.identity,
+          deps: {},
+          factory: () => ({ getIdentity: fn }),
+        }),
+        featureDiscoveryServiceFactory(),
+        mockServices.rootConfig.factory({
+          data: {
+            backend: {
+              packages: {
+                include: [],
+              },
+            },
+          },
+        }),
+      ],
+    });
+
+    expect(fn).not.toHaveBeenCalledWith('detected-plugin');
+    expect(fn).not.toHaveBeenCalledWith('another-detected-plugin');
+    expect(fn).not.toHaveBeenCalledWith('detected-module');
+  });
+
+  it('does not detect an excluded packages', async () => {
+    const fn = jest.fn().mockResolvedValue({});
+
+    await startTestBackend({
+      features: [
+        createServiceFactory({
+          service: coreServices.identity,
+          deps: {},
+          factory: () => ({ getIdentity: fn }),
+        }),
+        featureDiscoveryServiceFactory(),
+        mockServices.rootConfig.factory({
+          data: {
+            backend: {
+              packages: {
+                exclude: ['detected-plugin', 'detected-module'],
+              },
+            },
+          },
+        }),
+      ],
+    });
+
+    expect(fn).not.toHaveBeenCalledWith('detected-plugin');
+    expect(fn).not.toHaveBeenCalledWith('detected-module');
+    expect(fn).toHaveBeenCalledWith('another-detected-plugin');
+  });
+
+  it('does not excluded packages when it is an empty list', async () => {
+    const fn = jest.fn().mockResolvedValue({});
+
+    await startTestBackend({
+      features: [
+        createServiceFactory({
+          service: coreServices.identity,
+          deps: {},
+          factory: () => ({ getIdentity: fn }),
+        }),
+        featureDiscoveryServiceFactory(),
+        mockServices.rootConfig.factory({
+          data: {
+            backend: {
+              packages: {
+                exclude: [],
+              },
+            },
+          },
+        }),
+      ],
+    });
+
+    expect(fn).toHaveBeenCalledWith('detected-plugin');
+    expect(fn).toHaveBeenCalledWith('detected-module');
+    expect(fn).toHaveBeenCalledWith('another-detected-plugin');
+  });
+
+  it('does not detect packages that are included and excluded', async () => {
+    const fn = jest.fn().mockResolvedValue({});
+
+    await startTestBackend({
+      features: [
+        createServiceFactory({
+          service: coreServices.identity,
+          deps: {},
+          factory: () => ({ getIdentity: fn }),
+        }),
+        featureDiscoveryServiceFactory(),
+        mockServices.rootConfig.factory({
+          data: {
+            backend: {
+              packages: {
+                include: [
+                  'detected-plugin',
+                  'detected-module',
+                  'another-detected-plugin',
+                ],
+                exclude: ['detected-plugin'],
+              },
+            },
+          },
+        }),
+      ],
+    });
+
+    expect(fn).not.toHaveBeenCalledWith('detected-plugin');
+    expect(fn).toHaveBeenCalledWith('detected-module');
+    expect(fn).toHaveBeenCalledWith('another-detected-plugin');
+  });
+
+  it('does not detect any packages when "packages" is empty', async () => {
+    const fn = jest.fn().mockResolvedValue({});
+
+    await startTestBackend({
+      features: [
+        createServiceFactory({
+          service: coreServices.identity,
+          deps: {},
+          factory: () => ({ getIdentity: fn }),
+        }),
+        featureDiscoveryServiceFactory(),
+        mockServices.rootConfig.factory({
+          data: { backend: { packages: {} } },
+        }),
+      ],
+    });
+
+    expect(fn).not.toHaveBeenCalled();
+  });
+
+  it('does not detect any packages when "packages" is not present', async () => {
+    const fn = jest.fn().mockResolvedValue({});
+
+    await startTestBackend({
+      features: [
+        createServiceFactory({
+          service: coreServices.identity,
+          deps: {},
+          factory: () => ({ getIdentity: fn }),
+        }),
+        featureDiscoveryServiceFactory(),
+        mockServices.rootConfig.factory({
+          data: { backend: {} },
+        }),
+      ],
+    });
+
+    expect(fn).not.toHaveBeenCalled();
   });
 });

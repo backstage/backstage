@@ -60,8 +60,33 @@ async function findClosestPackageDir(
 class PackageDiscoveryService implements FeatureDiscoveryService {
   constructor(private readonly config: RootConfigService) {}
 
+  getDependencyNames(path: string) {
+    const { dependencies } = require(path) as BackstagePackageJson;
+    const packagesConfig = this.config.getOptional('backend.packages');
+
+    const dependencyNames = Object.keys(dependencies || {});
+
+    if (packagesConfig === 'all') {
+      return dependencyNames;
+    }
+
+    const includedPackagesConfig = this.config.getOptionalStringArray(
+      'backend.packages.include',
+    );
+
+    const includedPackages = includedPackagesConfig
+      ? new Set(includedPackagesConfig)
+      : dependencyNames;
+    const excludedPackagesSet = new Set(
+      this.config.getOptionalStringArray('backend.packages.exclude'),
+    );
+
+    return [...includedPackages].filter(name => !excludedPackagesSet.has(name));
+  }
+
   async getBackendFeatures(): Promise<{ features: Array<BackendFeature> }> {
-    if (this.config.getOptionalString('backend.packages') !== 'all') {
+    const packagesConfig = this.config.getOptional('backend.packages');
+    if (!packagesConfig || Object.keys(packagesConfig).length === 0) {
       return { features: [] };
     }
 
@@ -69,11 +94,9 @@ class PackageDiscoveryService implements FeatureDiscoveryService {
     if (!packageDir) {
       throw new Error('Package discovery failed to find package.json');
     }
-    const { dependencies } = require(resolvePath(
-      packageDir,
-      'package.json',
-    )) as BackstagePackageJson;
-    const dependencyNames = Object.keys(dependencies || {});
+    const dependencyNames = this.getDependencyNames(
+      resolvePath(packageDir, 'package.json'),
+    );
 
     const features: BackendFeature[] = [];
 
