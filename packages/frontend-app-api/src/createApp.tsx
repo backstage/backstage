@@ -43,7 +43,7 @@ export function createApp(options: { plugins: BackstagePlugin[] }): {
   // apply config to adjust default extension instances and add more
   const extensionParams = mergeExtensionParameters(
     [
-      ...options.plugins.flatMap(plugin => plugin.defaultExtensions),
+      ...options.plugins.flatMap(plugin => plugin.extensions),
       ...builtinExtensions,
     ],
     readAppExtensionParameters(appConfig),
@@ -116,8 +116,8 @@ export function createApp(options: { plugins: BackstagePlugin[] }): {
       );
       return (
         <>
-          {rootComponents.map(Component => (
-            <Component />
+          {rootComponents.map((Component, i) => (
+            <Component key={i} />
           ))}
         </>
       );

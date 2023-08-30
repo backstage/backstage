@@ -15,7 +15,7 @@
  */
 
 /**
- * TODO
+ * Core API used by Backstage frontend apps.
  *
  * @packageDocumentation
  */
