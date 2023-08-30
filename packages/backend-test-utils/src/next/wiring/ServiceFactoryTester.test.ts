@@ -54,13 +54,13 @@ const sharedPluginFactory = createServiceFactory({
 
 describe('ServiceFactoryTester', () => {
   it('should test a root service factory', async () => {
-    const tester = ServiceFactoryTester.from(rootFactory());
+    const tester = ServiceFactoryTester.from(rootFactory);
 
     await expect(tester.get()).resolves.toBe('root');
   });
 
   it('should test a plugin service factory', async () => {
-    const tester = ServiceFactoryTester.from(pluginFactory());
+    const tester = ServiceFactoryTester.from(pluginFactory);
 
     await expect(tester.get('x')).resolves.toBe('x-plugin');
     await expect(tester.get('y')).resolves.toBe('y-plugin');
@@ -68,7 +68,7 @@ describe('ServiceFactoryTester', () => {
   });
 
   it('should test a plugin service factory with root context', async () => {
-    const tester = ServiceFactoryTester.from(sharedPluginFactory());
+    const tester = ServiceFactoryTester.from(sharedPluginFactory);
 
     await expect(tester.get('x')).resolves.toBe('x-1-plugin');
     await expect(tester.get('y')).resolves.toBe('y-2-plugin');
@@ -76,7 +76,7 @@ describe('ServiceFactoryTester', () => {
     await expect(tester.get('y')).resolves.toBe('y-2-plugin');
     await expect(tester.get('z')).resolves.toBe('z-3-plugin');
 
-    const tester2 = ServiceFactoryTester.from(sharedPluginFactory());
+    const tester2 = ServiceFactoryTester.from(sharedPluginFactory);
 
     await expect(tester2.get('z')).resolves.toBe('z-1-plugin');
     await expect(tester2.get('y')).resolves.toBe('y-2-plugin');

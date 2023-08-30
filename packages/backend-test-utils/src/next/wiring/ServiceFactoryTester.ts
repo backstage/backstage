@@ -60,23 +60,23 @@ export class ServiceFactoryTester<TService, TScope extends 'root' | 'plugin'> {
       | (() => ServiceFactory<TService, TScope>),
     options?: ServiceFactoryTesterOptions,
   ) {
-    return new ServiceFactoryTester(
-      typeof subject === 'function' ? subject() : subject,
-      options?.dependencies,
-    );
+    const subjectFactory = typeof subject === 'function' ? subject() : subject;
+    const registry = new ServiceRegistry([
+      ...defaultServiceFactories,
+      ...(options?.dependencies?.map(f =>
+        typeof f === 'function' ? f() : f,
+      ) ?? []),
+      subjectFactory,
+    ]);
+    return new ServiceFactoryTester(subjectFactory.service, registry);
   }
 
   private constructor(
-    subject: ServiceFactory<TService, TScope>,
-    dependencies?: Array<ServiceFactory | (() => ServiceFactory)>,
+    subject: ServiceRef<TService, TScope>,
+    registry: ServiceRegistry,
   ) {
-    this.#subject = subject.service;
-
-    this.#registry = new ServiceRegistry([
-      ...defaultServiceFactories,
-      ...(dependencies?.map(f => (typeof f === 'function' ? f() : f)) ?? []),
-      subject,
-    ]);
+    this.#subject = subject;
+    this.#registry = registry;
   }
 
   /**

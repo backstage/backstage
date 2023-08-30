@@ -23,7 +23,7 @@ import { httpRouterServiceFactory } from './httpRouterServiceFactory';
 describe('httpRouterFactory', () => {
   it('should register plugin paths', async () => {
     const rootHttpRouter = mockServices.rootHttpRouter.mock();
-    const tester = ServiceFactoryTester.from(httpRouterServiceFactory(), {
+    const tester = ServiceFactoryTester.from(httpRouterServiceFactory, {
       dependencies: [rootHttpRouter.factory],
     });
 
