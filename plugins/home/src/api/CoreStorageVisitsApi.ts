@@ -17,6 +17,14 @@ import { IdentityApi, StorageApi } from '@backstage/core-plugin-api';
 import { Visit } from './VisitsApi';
 import { VisitsApiFactory } from './VisitsApiFactory';
 
+/** @public */
+export type CoreStorageVisitsApiOptions = {
+  storageApi: StorageApi;
+  randomUUID?: Window['crypto']['randomUUID'];
+  limit?: number;
+  identityApi: IdentityApi;
+};
+
 /**
  * @public
  * This is an implementation of VisitsApi that relies on a StorageApi
@@ -26,17 +34,16 @@ export class CoreStorageVisitsApi extends VisitsApiFactory {
   private readonly storageKeyPrefix = '@backstage/plugin-home:visits';
   private readonly identityApi: IdentityApi;
 
-  constructor({
+  static create(options: CoreStorageVisitsApiOptions) {
+    return new CoreStorageVisitsApi(options);
+  }
+
+  private constructor({
     storageApi,
     identityApi,
     randomUUID = window?.crypto?.randomUUID,
     limit = 100,
-  }: {
-    storageApi: StorageApi;
-    randomUUID?: Window['crypto']['randomUUID'];
-    limit?: number;
-    identityApi: IdentityApi;
-  }) {
+  }: CoreStorageVisitsApiOptions) {
     super({ randomUUID, limit });
     this.storageApi = storageApi;
     this.identityApi = identityApi;
