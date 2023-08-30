@@ -37,5 +37,4 @@ export {
   type ExtensionDataBind,
   type ExtensionDataRef,
   type ExtensionDataValue,
-  type ExtensionInstanceParameters,
 } from './types';

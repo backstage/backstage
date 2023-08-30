@@ -41,6 +41,9 @@ export function createPageExtension<
         configSchema: PortableSchema<TConfig>;
       }
   ) & {
+    id: string;
+    at?: string;
+    disabled?: boolean;
     inputs?: TInputs;
     component: (props: {
       config: TConfig;
@@ -60,6 +63,9 @@ export function createPageExtension<
         ) as PortableSchema<TConfig>);
 
   return createExtension({
+    id: options.id,
+    at: options.at ?? 'core.router/routes',
+    disabled: options.disabled,
     output: {
       component: coreExtensionData.reactComponent,
       path: coreExtensionData.routePath,

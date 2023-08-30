@@ -19,7 +19,7 @@ export interface BackstagePlugin {
   // (undocumented)
   $$type: 'backstage-plugin';
   // (undocumented)
-  defaultExtensionInstances: ExtensionInstanceParameters[];
+  defaultExtensions: Extension<unknown>[];
   // (undocumented)
   id: string;
 }
@@ -27,7 +27,7 @@ export interface BackstagePlugin {
 // @public (undocumented)
 export interface BackstagePluginOptions {
   // (undocumented)
-  defaultExtensionInstances?: ExtensionInstanceParameters[];
+  defaultExtensions?: Extension<unknown>[];
   // (undocumented)
   id: string;
 }
@@ -62,7 +62,11 @@ export interface CreateExtensionOptions<
   TConfig,
 > {
   // (undocumented)
+  at: string;
+  // (undocumented)
   configSchema?: PortableSchema<TConfig>;
+  // (undocumented)
+  disabled?: boolean;
   // (undocumented)
   factory(options: {
     bind: ExtensionDataBind<TData>;
@@ -73,6 +77,8 @@ export interface CreateExtensionOptions<
       >[];
     };
   }): void;
+  // (undocumented)
+  id: string;
   // (undocumented)
   inputs?: TPoint;
   // (undocumented)
@@ -99,6 +105,9 @@ export function createPageExtension<
         configSchema: PortableSchema<TConfig>;
       }
   ) & {
+    id: string;
+    at?: string;
+    disabled?: boolean;
     inputs?: TInputs;
     component: (props: {
       config: TConfig;
@@ -124,13 +133,19 @@ export interface Extension<TConfig> {
   // (undocumented)
   $$type: 'extension';
   // (undocumented)
+  at: string;
+  // (undocumented)
   configSchema?: PortableSchema<TConfig>;
+  // (undocumented)
+  disabled: boolean;
   // (undocumented)
   factory(options: {
     bind: ExtensionDataBind<AnyExtensionDataMap>;
     config: TConfig;
     inputs: Record<string, Array<Record<string, unknown>>>;
   }): void;
+  // (undocumented)
+  id: string;
   // (undocumented)
   inputs: Record<
     string,
@@ -158,20 +173,6 @@ export type ExtensionDataRef<T> = {
 export type ExtensionDataValue<TData extends AnyExtensionDataMap> = {
   [K in keyof TData]: TData[K]['T'];
 };
-
-// @public (undocumented)
-export interface ExtensionInstanceParameters {
-  // (undocumented)
-  at: string;
-  // (undocumented)
-  config?: unknown;
-  // (undocumented)
-  disabled?: boolean;
-  // (undocumented)
-  extension: Extension<unknown>;
-  // (undocumented)
-  id: string;
-}
 
 // @public (undocumented)
 export type PortableSchema<TOutput> = {
