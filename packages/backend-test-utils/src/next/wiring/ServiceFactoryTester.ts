@@ -61,7 +61,7 @@ export class ServiceFactoryTester<TService, TScope extends 'root' | 'plugin'> {
     options?: ServiceFactoryTesterOptions,
   ) {
     const subjectFactory = typeof subject === 'function' ? subject() : subject;
-    const registry = new ServiceRegistry([
+    const registry = ServiceRegistry.create([
       ...defaultServiceFactories,
       ...(options?.dependencies?.map(f =>
         typeof f === 'function' ? f() : f,
