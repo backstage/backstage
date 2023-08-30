@@ -49,7 +49,6 @@ export type PinnipedProviderOptions = OAuthProviderOptions & {
   clientSecret: string;
   callbackUrl: string;
   scope?: string;
-  tokenSignedResponseAlg?: string;
 };
 
 export class PinnipedAuthProvider implements OAuthHandlers {
@@ -169,7 +168,6 @@ export class PinnipedAuthProvider implements OAuthHandlers {
       client_secret: options.clientSecret,
       redirect_uris: [options.callbackUrl],
       response_types: ['code'],
-      id_token_signed_response_alg: options.tokenSignedResponseAlg || 'ES256',
       scope: options.scope || '',
     });
 
@@ -205,14 +203,12 @@ export const pinniped = createAuthProviderIntegration({
         const callbackUrl =
           customCallbackUrl ||
           `${globalConfig.baseUrl}/${providerId}/handler/frame`;
-        const tokenSignedResponseAlg = 'ES256';
 
         const provider = new PinnipedAuthProvider({
           federationDomain,
           clientId,
           clientSecret,
           callbackUrl,
-          tokenSignedResponseAlg,
         });
 
         return OAuthAdapter.fromConfig(globalConfig, provider, {
