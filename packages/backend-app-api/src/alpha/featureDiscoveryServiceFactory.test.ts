@@ -34,7 +34,7 @@ describe('featureDiscoveryServiceFactory', () => {
           dependencies: {
             'detected-plugin': '0.0.0',
             'detected-module': '0.0.0',
-            'another-detected-plugin': '0.0.0',
+            'detected-plugin-with-alpha': '0.0.0',
           },
         }),
       },
@@ -85,23 +85,33 @@ describe('featureDiscoveryServiceFactory', () => {
         });
         `,
       },
-      [resolvePath(rootDir, 'node_modules/another-detected-plugin')]: {
+      [resolvePath(rootDir, 'node_modules/detected-plugin-with-alpha')]: {
         'package.json': JSON.stringify({
-          name: 'another-detected-plugin',
+          name: 'detected-plugin-with-alpha',
           main: 'index.js',
+          exports: {
+            '.': {
+              default: 'index.js',
+            },
+            './alpha': {
+              default: 'alpha.js',
+            },
+            './package.json': './package.json',
+          },
           backstage: {
             role: 'backend-plugin',
           },
         }),
-        'index.js': `
+        'index.js': `exports.detectedPlugin = undefined;`,
+        'alpha.js': `
         const { createBackendPlugin, coreServices } = require('@backstage/backend-plugin-api');
-        exports.detectedPlugin = createBackendPlugin({
-            pluginId: 'another-detected',
+        exports.detectedPluginAlpha = createBackendPlugin({
+            pluginId: 'detected-alpha',
             register(env) {
               env.registerInit({
                 deps: { identity: coreServices.identity },
                 async init({ identity }) {
-                  identity.getIdentity('another-detected-plugin');
+                  identity.getIdentity('detected-plugin-with-alpha');
                 },
               });
             },
@@ -134,7 +144,7 @@ describe('featureDiscoveryServiceFactory', () => {
 
     expect(fn).toHaveBeenCalledWith('detected-plugin');
     expect(fn).toHaveBeenCalledWith('detected-module');
-    expect(fn).toHaveBeenCalledWith('another-detected-plugin');
+    expect(fn).toHaveBeenCalledWith('detected-plugin-with-alpha');
   });
 
   it('detects only the packages that are listed as included', async () => {
@@ -152,7 +162,7 @@ describe('featureDiscoveryServiceFactory', () => {
           data: {
             backend: {
               packages: {
-                include: ['detected-plugin', 'another-detected-plugin'],
+                include: ['detected-plugin', 'detected-plugin-with-alpha'],
               },
             },
           },
@@ -161,7 +171,7 @@ describe('featureDiscoveryServiceFactory', () => {
     });
 
     expect(fn).toHaveBeenCalledWith('detected-plugin');
-    expect(fn).toHaveBeenCalledWith('another-detected-plugin');
+    expect(fn).toHaveBeenCalledWith('detected-plugin-with-alpha');
     expect(fn).not.toHaveBeenCalledWith('detected-module');
   });
 
@@ -189,7 +199,7 @@ describe('featureDiscoveryServiceFactory', () => {
     });
 
     expect(fn).not.toHaveBeenCalledWith('detected-plugin');
-    expect(fn).not.toHaveBeenCalledWith('another-detected-plugin');
+    expect(fn).not.toHaveBeenCalledWith('detected-plugin-with-alpha');
     expect(fn).not.toHaveBeenCalledWith('detected-module');
   });
 
@@ -218,7 +228,7 @@ describe('featureDiscoveryServiceFactory', () => {
 
     expect(fn).not.toHaveBeenCalledWith('detected-plugin');
     expect(fn).not.toHaveBeenCalledWith('detected-module');
-    expect(fn).toHaveBeenCalledWith('another-detected-plugin');
+    expect(fn).toHaveBeenCalledWith('detected-plugin-with-alpha');
   });
 
   it('does not excluded packages when it is an empty list', async () => {
@@ -246,7 +256,7 @@ describe('featureDiscoveryServiceFactory', () => {
 
     expect(fn).toHaveBeenCalledWith('detected-plugin');
     expect(fn).toHaveBeenCalledWith('detected-module');
-    expect(fn).toHaveBeenCalledWith('another-detected-plugin');
+    expect(fn).toHaveBeenCalledWith('detected-plugin-with-alpha');
   });
 
   it('does not detect packages that are included and excluded', async () => {
@@ -267,7 +277,7 @@ describe('featureDiscoveryServiceFactory', () => {
                 include: [
                   'detected-plugin',
                   'detected-module',
-                  'another-detected-plugin',
+                  'detected-plugin-with-alpha',
                 ],
                 exclude: ['detected-plugin'],
               },
@@ -279,7 +289,7 @@ describe('featureDiscoveryServiceFactory', () => {
 
     expect(fn).not.toHaveBeenCalledWith('detected-plugin');
     expect(fn).toHaveBeenCalledWith('detected-module');
-    expect(fn).toHaveBeenCalledWith('another-detected-plugin');
+    expect(fn).toHaveBeenCalledWith('detected-plugin-with-alpha');
   });
 
   it('does not detect any packages when "packages" is empty', async () => {

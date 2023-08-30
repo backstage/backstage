@@ -27,6 +27,7 @@ import {
 import { resolve as resolvePath, dirname } from 'path';
 import fs from 'fs-extra';
 import { BackstagePackageJson } from '@backstage/cli-node';
+import { JsonObject, JsonValue } from '@backstage/types';
 
 const LOADED_PACKAGE_ROLES = ['backend-plugin', 'backend-plugin-module'];
 
@@ -107,13 +108,31 @@ class PackageDiscoveryService implements FeatureDiscoveryService {
       if (!LOADED_PACKAGE_ROLES.includes(depPkg?.backstage?.role ?? '')) {
         continue;
       }
-      const depModule = require(require.resolve(name, { paths: [packageDir] }));
-      for (const exportValue of Object.values(depModule)) {
-        if (isBackendFeature(exportValue)) {
-          features.push(exportValue);
-        }
-        if (isBackendFeatureFactory(exportValue)) {
-          features.push(exportValue());
+
+      const exportedModulePaths = [
+        require.resolve(name, {
+          paths: [packageDir],
+        }),
+      ];
+
+      // Find modules exported as alpha
+      try {
+        exportedModulePaths.push(
+          require.resolve(`${name}/alpha`, { paths: [packageDir] }),
+        );
+      } catch (e) {
+        /* No alpha exports so ignore  */
+      }
+
+      for (const modulePath of exportedModulePaths) {
+        const module = require(modulePath);
+        for (const exportValue of Object.values(module)) {
+          if (isBackendFeature(exportValue)) {
+            features.push(exportValue);
+          }
+          if (isBackendFeatureFactory(exportValue)) {
+            features.push(exportValue());
+          }
         }
       }
     }
