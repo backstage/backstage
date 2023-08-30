@@ -17,7 +17,7 @@
 import { BackstageUserIdentity, IdentityApi } from '@backstage/core-plugin-api';
 import { LocalStorageVisitsApi } from './LocalStorageVisitsApi';
 
-describe('new LocalStorageVisitsApi()', () => {
+describe('LocalStorageVisitsApi.create()', () => {
   const mockRandomUUID = () =>
     '068f3129-7440-4e0e-8fd4-xxxxxxxxxxxx'.replace(
       /x/g,
@@ -42,12 +42,12 @@ describe('new LocalStorageVisitsApi()', () => {
   });
 
   it('instantiates with only identitiyApi', () => {
-    const api = new LocalStorageVisitsApi({ identityApi: mockIdentityApi });
+    const api = LocalStorageVisitsApi.create({ identityApi: mockIdentityApi });
     expect(api).toBeTruthy();
   });
 
   it('saves a visit', async () => {
-    const api = new LocalStorageVisitsApi({ identityApi: mockIdentityApi });
+    const api = LocalStorageVisitsApi.create({ identityApi: mockIdentityApi });
     const visit = {
       pathname: '/catalog/default/component/playback-order',
       entityRef: 'component:default/playback-order',
@@ -61,7 +61,7 @@ describe('new LocalStorageVisitsApi()', () => {
   });
 
   it('retrieves visits', async () => {
-    const api = new LocalStorageVisitsApi({ identityApi: mockIdentityApi });
+    const api = LocalStorageVisitsApi.create({ identityApi: mockIdentityApi });
     const visit = {
       pathname: '/catalog/default/component/playback-order',
       entityRef: 'component:default/playback-order',
