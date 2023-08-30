@@ -20,11 +20,12 @@ import {
   coreServices,
   createServiceFactory,
 } from '@backstage/backend-plugin-api';
-import { stringifyError } from '@backstage/errors';
+import { ConflictError, stringifyError } from '@backstage/errors';
 import { EnumerableServiceHolder } from './types';
 // Direct internal import to avoid duplication
 // eslint-disable-next-line @backstage/no-forbidden-package-imports
 import { InternalServiceFactory } from '@backstage/backend-plugin-api/src/services/system/types';
+import { DependencyGraph } from '../lib/DependencyGraph';
 /**
  * Keep in sync with `@backstage/backend-plugin-api/src/services/system/types.ts`
  * @internal
@@ -57,6 +58,12 @@ const pluginMetadataServiceFactory = createServiceFactory(
 );
 
 export class ServiceRegistry implements EnumerableServiceHolder {
+  static create(factories: Array<ServiceFactory>): EnumerableServiceHolder {
+    const registry = new ServiceRegistry(factories);
+    registry.checkForCircularDeps();
+    return registry;
+  }
+
   readonly #providedFactories: Map<string, InternalServiceFactory>;
   readonly #loadedDefaultFactories: Map<
     Function,
@@ -73,13 +80,23 @@ export class ServiceRegistry implements EnumerableServiceHolder {
     InternalServiceFactory,
     Promise<unknown>
   >();
+  readonly #dependencyGraph: DependencyGraph<string>;
 
-  constructor(factories: Array<ServiceFactory>) {
+  private constructor(factories: Array<ServiceFactory>) {
     this.#providedFactories = new Map(
       factories.map(sf => [sf.service.id, toInternalServiceFactory(sf)]),
     );
     this.#loadedDefaultFactories = new Map();
     this.#implementations = new Map();
+    this.#dependencyGraph = DependencyGraph.fromIterable(
+      Array.from(this.#providedFactories).map(
+        ([serviceId, serviceFactory]) => ({
+          value: serviceId,
+          provides: [serviceId],
+          consumes: Object.values(serviceFactory.deps).map(d => d.id),
+        }),
+      ),
+    );
   }
 
   #resolveFactory(
@@ -143,6 +160,20 @@ export class ServiceRegistry implements EnumerableServiceHolder {
       throw new Error(
         `Failed to instantiate service '${factory.service.id}' for '${pluginId}' because the following dependent services are missing: ${missing}`,
       );
+    }
+  }
+
+  checkForCircularDeps(): void {
+    const circularDependencies = Array.from(
+      this.#dependencyGraph.detectCircularDependencies(),
+    );
+
+    if (circularDependencies.length) {
+      const cycles = circularDependencies
+        .map(c => c.map(id => `'${id}'`).join(' -> '))
+        .join('\n  ');
+
+      throw new ConflictError(`Circular dependencies detected:\n  ${cycles}`);
     }
   }
 
