@@ -61,10 +61,10 @@ export function expandShorthandExtensionParameters(
   }
 
   function assertValidId(id: string) {
-    if (!id.match(/^[\.a-zA-Z0-9-]+$/)) {
+    if (!id.match(/^[\.a-zA-Z0-9]+$/)) {
       throw new Error(
         errorMsg(
-          `extension ID must only contain letters, numbers, dashes, and dots, got '${id}'`,
+          `extension ID must only contain letters, numbers, and dots; got '${id}'`,
         ),
       );
     }
