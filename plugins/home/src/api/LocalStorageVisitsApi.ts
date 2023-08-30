@@ -13,6 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+import { IdentityApi } from '@backstage/core-plugin-api';
 import { Visit } from './VisitsApi';
 import { VisitsApiFactory } from './VisitsApiFactory';
 
@@ -22,31 +23,41 @@ import { VisitsApiFactory } from './VisitsApiFactory';
  */
 export class LocalStorageVisitsApi extends VisitsApiFactory {
   private readonly localStorage: Window['localStorage'];
-  private readonly storageKey = '@backstage/plugin-home:visits';
+  private readonly storageKeyPrefix = '@backstage/plugin-home:visits';
+  private readonly identityApi: IdentityApi;
 
   constructor({
     localStorage = window?.localStorage,
     randomUUID = window?.crypto?.randomUUID,
     limit = 100,
+    identityApi,
   }: {
     localStorage?: Window['localStorage'];
     randomUUID?: Window['crypto']['randomUUID'];
     limit?: number;
-  } = {}) {
+    identityApi: IdentityApi;
+  }) {
     super({ randomUUID, limit });
     this.localStorage = localStorage;
+    this.identityApi = identityApi;
     this.retrieveAll = async (): Promise<Array<Visit>> => {
       let visits: Array<Visit>;
+      const { userEntityRef } = await this.identityApi.getBackstageIdentity();
+      const storageKey = `${this.storageKeyPrefix}:${userEntityRef}`;
+
       try {
-        visits = JSON.parse(this.localStorage.getItem(this.storageKey) ?? '[]');
+        visits = JSON.parse(this.localStorage.getItem(storageKey) ?? '[]');
       } catch {
         visits = [];
       }
       return visits;
     };
     this.persistAll = async (visits: Array<Visit>) => {
-      this.localStorage.setItem(
-        this.storageKey,
+      const { userEntityRef } = await this.identityApi.getBackstageIdentity();
+      const storageKey = `${this.storageKeyPrefix}:${userEntityRef}`;
+
+      return this.localStorage.setItem(
+        storageKey,
         JSON.stringify(visits.splice(0, this.limit)),
       );
     };

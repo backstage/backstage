@@ -14,6 +14,7 @@
  * limitations under the License.
  */
 
+import { BackstageUserIdentity, IdentityApi } from '@backstage/core-plugin-api';
 import { CoreStorageVisitsApi } from './CoreStorageVisitsApi';
 import { MockStorageApi } from '@backstage/test-utils';
 
@@ -24,6 +25,14 @@ describe('new CoreStorageVisitsApi({ storageApi: MockStorageApi.create() })', ()
       () => Math.floor(Math.random() * 16).toString(16), // 0x0 to 0xf
     ) as `${string}-${string}-${string}-${string}-${string}`;
 
+  const mockIdentityApi: IdentityApi = {
+    signOut: jest.fn(),
+    getProfileInfo: jest.fn(),
+    getBackstageIdentity: async () =>
+      ({ userEntityRef: 'user:default/guest' } as BackstageUserIdentity),
+    getCredentials: jest.fn(),
+  };
+
   beforeEach(() => {
     window.crypto.randomUUID = mockRandomUUID;
   });
@@ -32,9 +41,10 @@ describe('new CoreStorageVisitsApi({ storageApi: MockStorageApi.create() })', ()
     window.localStorage.clear();
   });
 
-  it('instantiates with no configuration', () => {
+  it('instantiates', () => {
     const api = new CoreStorageVisitsApi({
       storageApi: MockStorageApi.create(),
+      identityApi: mockIdentityApi,
     });
     expect(api).toBeTruthy();
   });
@@ -42,6 +52,7 @@ describe('new CoreStorageVisitsApi({ storageApi: MockStorageApi.create() })', ()
   it('saves a visit', async () => {
     const api = new CoreStorageVisitsApi({
       storageApi: MockStorageApi.create(),
+      identityApi: mockIdentityApi,
     });
     const visit = {
       pathname: '/catalog/default/component/playback-order',
@@ -58,6 +69,7 @@ describe('new CoreStorageVisitsApi({ storageApi: MockStorageApi.create() })', ()
   it('retrieves visits', async () => {
     const api = new CoreStorageVisitsApi({
       storageApi: MockStorageApi.create(),
+      identityApi: mockIdentityApi,
     });
     const visit = {
       pathname: '/catalog/default/component/playback-order',

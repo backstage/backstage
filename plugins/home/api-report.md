@@ -15,6 +15,7 @@ import { ComponentParts as ComponentParts_2 } from '@backstage/plugin-home-react
 import { ComponentRenderer as ComponentRenderer_2 } from '@backstage/plugin-home-react';
 import { createCardExtension as createCardExtension_2 } from '@backstage/plugin-home-react';
 import { Dispatch } from 'react';
+import { IdentityApi } from '@backstage/core-plugin-api';
 import { JSX as JSX_2 } from 'react';
 import { default as React_2 } from 'react';
 import { ReactElement } from 'react';
@@ -82,12 +83,14 @@ export const ComponentTabs: (props: {
 export class CoreStorageVisitsApi extends VisitsApiFactory {
   constructor({
     storageApi,
+    identityApi,
     randomUUID,
     limit,
   }: {
     storageApi: StorageApi;
     randomUUID?: Window['crypto']['randomUUID'];
     limit?: number;
+    identityApi: IdentityApi;
   });
 }
 
@@ -201,10 +204,12 @@ export class LocalStorageVisitsApi extends VisitsApiFactory {
     localStorage,
     randomUUID,
     limit,
-  }?: {
+    identityApi,
+  }: {
     localStorage?: Window['localStorage'];
     randomUUID?: Window['crypto']['randomUUID'];
     limit?: number;
+    identityApi: IdentityApi;
   });
 }
 
