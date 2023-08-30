@@ -656,7 +656,7 @@ paths:
           required: false
           schema:
             type: array
-            item:
+            items:
               type: string
   /entities/by-uid/{uid}:
     get:
