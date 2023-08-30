@@ -17,6 +17,14 @@ import { Visit, VisitsApi, VisitsApiQueryParams, VisitsApiSaveParams } from './V
 
 type ArrayElement<A> = A extends readonly (infer T)[] ? T : never;
 
+/** @public */
+export type VisitsApiFactoryOptions = {
+  randomUUID: Window['crypto']['randomUUID'];
+  limit: number;
+  retrieveAll?: () => Promise<Array<Visit>>;
+  persistAll?: (visits: Array<Visit>) => Promise<void>;
+};
+
 /**
  * @public
  * This helps the creation of VisitApi implementations. Important to note
@@ -30,17 +38,12 @@ export class VisitsApiFactory implements VisitsApi {
   protected retrieveAll: () => Promise<Array<Visit>>;
   protected persistAll: (visits: Array<Visit>) => Promise<void>;
 
-  constructor({
+  protected constructor({
     randomUUID = window?.crypto?.randomUUID,
     limit = 100,
     retrieveAll,
     persistAll,
-  }: {
-    randomUUID: Window['crypto']['randomUUID'];
-    limit: number;
-    retrieveAll?: () => Promise<Array<Visit>>;
-    persistAll?: (visits: Array<Visit>) => Promise<void>;
-  }) {
+  }: VisitsApiFactoryOptions) {
     this.randomUUID = randomUUID;
     this.limit = Math.abs(limit);
     this.retrieveAll = retrieveAll ?? (async () => []);
@@ -59,6 +62,7 @@ export class VisitsApiFactory implements VisitsApi {
       }
     });
 
+    // reversing order to guarantee filterBy priority
     (queryParams?.filterBy ?? []).reverse().forEach(filter => {
       visits = visits.filter(visit => {
         const field = visit[filter.field] as number | string;
