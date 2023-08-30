@@ -108,6 +108,7 @@ export class AwsEKSClusterProcessor implements CatalogProcessor {
     const eksClient = new EKS({
       credentials,
       credentialDefaultProvider: providerFunction,
+      region,
     });
     const clusters = await eksClient.listClusters({});
     if (clusters.clusters === undefined) {
