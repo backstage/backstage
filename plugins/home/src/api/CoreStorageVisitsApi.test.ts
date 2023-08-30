@@ -18,7 +18,7 @@ import { BackstageUserIdentity, IdentityApi } from '@backstage/core-plugin-api';
 import { CoreStorageVisitsApi } from './CoreStorageVisitsApi';
 import { MockStorageApi } from '@backstage/test-utils';
 
-describe('new CoreStorageVisitsApi({ storageApi: MockStorageApi.create() })', () => {
+describe('CoreStorageVisitsApi.create({ storageApi: MockStorageApi.create() })', () => {
   const mockRandomUUID = () =>
     '068f3129-7440-4e0e-8fd4-xxxxxxxxxxxx'.replace(
       /x/g,
@@ -42,7 +42,7 @@ describe('new CoreStorageVisitsApi({ storageApi: MockStorageApi.create() })', ()
   });
 
   it('instantiates', () => {
-    const api = new CoreStorageVisitsApi({
+    const api = CoreStorageVisitsApi.create({
       storageApi: MockStorageApi.create(),
       identityApi: mockIdentityApi,
     });
@@ -50,7 +50,7 @@ describe('new CoreStorageVisitsApi({ storageApi: MockStorageApi.create() })', ()
   });
 
   it('saves a visit', async () => {
-    const api = new CoreStorageVisitsApi({
+    const api = CoreStorageVisitsApi.create({
       storageApi: MockStorageApi.create(),
       identityApi: mockIdentityApi,
     });
@@ -67,7 +67,7 @@ describe('new CoreStorageVisitsApi({ storageApi: MockStorageApi.create() })', ()
   });
 
   it('retrieves visits', async () => {
-    const api = new CoreStorageVisitsApi({
+    const api = CoreStorageVisitsApi.create({
       storageApi: MockStorageApi.create(),
       identityApi: mockIdentityApi,
     });
