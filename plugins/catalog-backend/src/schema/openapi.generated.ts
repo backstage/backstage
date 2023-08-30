@@ -795,7 +795,7 @@ export default {
             required: false,
             schema: {
               type: 'array',
-              item: {
+              items: {
                 type: 'string',
               },
             },
