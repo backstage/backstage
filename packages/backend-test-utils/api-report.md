@@ -20,10 +20,13 @@ import { LifecycleService } from '@backstage/backend-plugin-api';
 import { LoggerService } from '@backstage/backend-plugin-api';
 import { PermissionsService } from '@backstage/backend-plugin-api';
 import { RootConfigService } from '@backstage/backend-plugin-api';
+import { RootHttpRouterFactoryOptions } from '@backstage/backend-app-api';
+import { RootHttpRouterService } from '@backstage/backend-plugin-api';
 import { RootLifecycleService } from '@backstage/backend-plugin-api';
 import { RootLoggerService } from '@backstage/backend-plugin-api';
 import { SchedulerService } from '@backstage/backend-plugin-api';
 import { ServiceFactory } from '@backstage/backend-plugin-api';
+import { ServiceRef } from '@backstage/backend-plugin-api';
 import { TokenManagerService } from '@backstage/backend-plugin-api';
 import { UrlReaderService } from '@backstage/backend-plugin-api';
 
@@ -113,6 +116,17 @@ export namespace mockServices {
       ) => ServiceFactory<RootConfigService, 'root'>;
   }
   // (undocumented)
+  export namespace rootHttpRouter {
+    const // (undocumented)
+      factory: (
+        options?: RootHttpRouterFactoryOptions | undefined,
+      ) => ServiceFactory<RootHttpRouterService, 'root'>;
+    const // (undocumented)
+      mock: (
+        partialImpl?: Partial<RootHttpRouterService> | undefined,
+      ) => ServiceMock<RootHttpRouterService>;
+  }
+  // (undocumented)
   export namespace rootLifecycle {
     const // (undocumented)
       factory: () => ServiceFactory<RootLifecycleService, 'root'>;
@@ -167,6 +181,28 @@ export namespace mockServices {
         partialImpl?: Partial<UrlReaderService> | undefined,
       ) => ServiceMock<UrlReaderService>;
   }
+}
+
+// @public
+export class ServiceFactoryTester<TService, TScope extends 'root' | 'plugin'> {
+  static from<TService, TScope extends 'root' | 'plugin'>(
+    subject:
+      | ServiceFactory<TService, TScope>
+      | (() => ServiceFactory<TService, TScope>),
+    options?: ServiceFactoryTesterOptions,
+  ): ServiceFactoryTester<TService, TScope>;
+  get(
+    ...args: 'root' extends TScope ? [] : [pluginId?: string]
+  ): Promise<TService>;
+  getService<TGetService, TGetScope extends 'root' | 'plugin'>(
+    service: ServiceRef<TGetService, TGetScope>,
+    ...args: 'root' extends TGetScope ? [] : [pluginId?: string]
+  ): Promise<TGetService>;
+}
+
+// @public
+export interface ServiceFactoryTesterOptions {
+  dependencies?: Array<ServiceFactory | (() => ServiceFactory)>;
 }
 
 // @public (undocumented)
