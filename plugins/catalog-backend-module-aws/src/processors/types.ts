@@ -1,5 +1,5 @@
 /*
- * Copyright 2020 The Backstage Authors
+ * Copyright 2023 The Backstage Authors
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -13,14 +13,15 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+import type { Cluster } from '@aws-sdk/client-eks';
+import type { Entity } from '@backstage/catalog-model';
 
 /**
- * A Backstage catalog backend module that helps integrate towards AWS
+ * Options for the eks cluster entity callback function
  *
- * @packageDocumentation
+ * @public
  */
-
-export * from './processors';
-export * from './providers';
-export * from './types';
-export * from './constants';
+export type EKSClusterEntityTransformer = (
+  cluster: Cluster,
+  accountId: string,
+) => Promise<Entity>;
