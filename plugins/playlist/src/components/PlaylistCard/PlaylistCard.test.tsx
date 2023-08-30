@@ -16,12 +16,10 @@
 
 import { entityRouteRef } from '@backstage/plugin-catalog-react';
 import { renderInTestApp } from '@backstage/test-utils';
-import { render } from '@testing-library/react';
 import React from 'react';
 
 import { rootRouteRef } from '../../routes';
 import { PlaylistCard } from './PlaylistCard';
-import { OverflowTooltip } from '@backstage/core-components';
 
 describe('<PlaylistCard/>', () => {
   it('renders playlist info', async () => {
@@ -47,12 +45,9 @@ describe('<PlaylistCard/>', () => {
     );
 
     expect(rendered.getByText('playlist-1')).toBeInTheDocument();
+    expect(rendered.getByText('test description')).toBeInTheDocument();
     expect(rendered.getByText('some-owner')).toBeInTheDocument();
     expect(rendered.getByText('3 entities')).toBeInTheDocument();
     expect(rendered.getByText('2 followers')).toBeInTheDocument();
-  });
-
-  it('renders description', async () => {
-    render(<OverflowTooltip text="test description" />);
   });
 });

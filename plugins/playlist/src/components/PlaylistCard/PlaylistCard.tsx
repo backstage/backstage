@@ -17,7 +17,7 @@
 import {
   ItemCardHeader,
   LinkButton,
-  OverflowTooltip,
+  MarkdownContent,
 } from '@backstage/core-components';
 import { useRouteRef } from '@backstage/core-plugin-api';
 import { EntityRefLinks } from '@backstage/plugin-catalog-react';
@@ -72,6 +72,11 @@ const useStyles = makeStyles((theme: BackstageTheme) => ({
     right: theme.spacing(0.5),
     padding: '0.25rem',
   },
+  descriptionBox: {
+    maxHeight: '20em',
+    overflow: 'auto',
+    paddingRight: theme.spacing(1),
+  },
 }));
 
 export type PlaylistCardProps = {
@@ -104,11 +109,11 @@ export const PlaylistCard = ({ playlist }: PlaylistCardProps) => {
         </ItemCardHeader>
       </CardMedia>
       <CardContent style={{ display: 'grid' }}>
-        <Box className={classes.box}>
+        <Box className={classes.descriptionBox}>
           <Typography variant="body2" className={classes.label}>
             Description
           </Typography>
-          <OverflowTooltip text={playlist.description ?? ''} line={4} />
+          <MarkdownContent content={playlist.description ?? ''} />
         </Box>
         <Box className={classes.box}>
           <Typography variant="body2" className={classes.label}>
