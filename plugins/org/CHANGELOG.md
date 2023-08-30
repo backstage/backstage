@@ -1,5 +1,17 @@
 # @backstage/plugin-org
 
+## 0.6.14-next.1
+
+### Patch Changes
+
+- 43a2137bb829: Ensure direct relations are shown for User entities while keeping support for aggregating closest parent group ownership
+- Updated dependencies
+  - @backstage/plugin-catalog-react@1.8.4-next.1
+  - @backstage/core-components@0.13.5-next.1
+  - @backstage/catalog-model@1.4.2-next.0
+  - @backstage/core-plugin-api@1.6.0-next.1
+  - @backstage/theme@0.4.1
+
 ## 0.6.13-next.0
 
 ### Patch Changes

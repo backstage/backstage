@@ -1,5 +1,20 @@
 # @backstage/plugin-home
 
+## 0.5.8-next.1
+
+### Patch Changes
+
+- 98bb77c1f0b8: Align zod dependency to align with other packages.
+- 1853ffa09b50: Allow specifying static widgets to custom home page
+- Updated dependencies
+  - @backstage/plugin-catalog-react@1.8.4-next.1
+  - @backstage/core-components@0.13.5-next.1
+  - @backstage/config@1.1.0-next.0
+  - @backstage/plugin-home-react@0.1.3-next.1
+  - @backstage/catalog-model@1.4.2-next.0
+  - @backstage/core-plugin-api@1.6.0-next.1
+  - @backstage/theme@0.4.1
+
 ## 0.5.7-next.0
 
 ### Patch Changes

@@ -167,6 +167,12 @@ techdocs:
       # (Required) Azure Blob Storage Container Name
       containerName: 'techdocs-storage'
 
+      # (Optional) Azure blob storage connection string.
+      # Can be useful for local testing through azurite
+      # Defaults to undefined
+      # if provided, takes higher priority, 'techdocs.publisher.azureBlobStorage.credentials' will become irrelevant
+      connectionString: ''
+
       # (Required) An account name is required to write to a storage blob container.
       # https://docs.microsoft.com/en-us/rest/api/storageservices/authorize-with-shared-key
       credentials:

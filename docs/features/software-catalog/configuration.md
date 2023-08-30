@@ -130,7 +130,36 @@ In short entities can become orphaned through multiple means, such as when a cat
 
 However, if you do with to automatically remove the orphaned entities, you can use the following configuration, and everything with an orphaned entity tag will be eventually deleted.
 
-```
+```yaml
 catalog:
   orphanStrategy: delete
 ```
+
+## Processing Interval
+
+The [processing loop](https://backstage.io/docs/features/software-catalog/life-of-an-entity) is
+responsible for running your registered processors on all entities, on a certain
+interval. That interval can be configured with the `processingInterval`
+app-config parameter.
+
+```yaml
+catalog:
+  processingInterval: { minutes: 45 }
+```
+
+The value is a duration object, that has one or more of the fields `years`,
+`months`, `weeks`, `days`, `hours`, `minutes`, `seconds`, and `milliseconds`.
+You can combine them, for example as `{ hours: 1, minutes: 15 }` which
+essentially means that you want the processing loop to visit entities roughly
+once every 75 minutes.
+
+Note that this is only a suggested minimum, and the actual interval may be
+longer. Internally, the catalog will scale up this number by a small factor and
+choose random numbers in that range to spread out the load. If the catalog is
+overloaded and cannot process all entities during the interval, the time taken
+between processing runs of any given entity may also be longer than specified
+here.
+
+Setting this value too low risks exhausting rate limits on external systems that
+are queried by processors, such as version control systems housing catalog-info
+files.

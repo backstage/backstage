@@ -15,16 +15,16 @@
  */
 
 import express from 'express';
-import { SamlConfig } from '@node-saml/passport-saml';
+import { SamlConfig } from 'passport-saml/lib/passport-saml/types';
 import {
-  Profile as SamlProfile,
   Strategy as SamlStrategy,
-  VerifiedCallback,
+  Profile as SamlProfile,
   VerifyWithoutRequest,
-} from '@node-saml/passport-saml';
+} from 'passport-saml';
 import {
   executeFrameHandlerStrategy,
   executeRedirectStrategy,
+  PassportDoneCallback,
 } from '../../lib/passport';
 import {
   AuthProviderRouteHandlers,
@@ -62,18 +62,17 @@ export class SamlAuthProvider implements AuthProviderRouteHandlers {
     this.signInResolver = options.signInResolver;
     this.authHandler = options.authHandler;
     this.resolverContext = options.resolverContext;
-    const verifier: VerifyWithoutRequest = (
-      profile: SamlProfile | null,
-      done: VerifiedCallback,
+    this.strategy = new SamlStrategy({ ...options }, ((
+      fullProfile: SamlProfile,
+      done: PassportDoneCallback<SamlAuthResult>,
     ) => {
       // TODO: There's plenty more validation and profile handling to do here,
       //       this provider is currently only intended to validate the provider pattern
       //       for non-oauth auth flows.
       // TODO: This flow doesn't issue an identity token that can be used to validate
       //       the identity of the user in other backends, which we need in some form.
-      done(null, { fullProfile: profile });
-    };
-    this.strategy = new SamlStrategy(options, verifier, verifier);
+      done(undefined, { fullProfile });
+    }) as VerifyWithoutRequest);
   }
 
   async start(req: express.Request, res: express.Response): Promise<void> {

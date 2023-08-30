@@ -203,10 +203,15 @@ export interface Config {
            */
           azureBlobStorage?: {
             /**
-             * (Required) Credentials used to access a storage container.
+             * (Optional) Connection string of the storage container.
              * @visibility secret
              */
-            credentials: {
+            connectionString?: string;
+            /**
+             * (Optional) Credentials used to access a storage container.
+             * @visibility secret
+             */
+            credentials?: {
               /**
                * Account access name
                * @visibility secret
