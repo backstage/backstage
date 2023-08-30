@@ -135,7 +135,7 @@ class PackageDiscoveryService implements FeatureDiscoveryService {
             features.push(exportValue);
           }
           if (isBackendFeatureFactory(exportValue)) {
-            this.logger.info(`Detected Factory: ${name}#${exportName}`);
+            this.logger.info(`Detected: ${name}#${exportName}`);
             features.push(exportValue());
           }
         }
