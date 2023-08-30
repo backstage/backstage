@@ -17,6 +17,7 @@
 import {
   BackendFeature,
   RootConfigService,
+  RootLoggerService,
   coreServices,
   createServiceFactory,
 } from '@backstage/backend-plugin-api';
@@ -58,7 +59,10 @@ async function findClosestPackageDir(
 
 /** @internal */
 class PackageDiscoveryService implements FeatureDiscoveryService {
-  constructor(private readonly config: RootConfigService) {}
+  constructor(
+    private readonly config: RootConfigService,
+    private readonly logger: RootLoggerService,
+  ) {}
 
   getDependencyNames(path: string) {
     const { dependencies } = require(path) as BackstagePackageJson;
@@ -125,11 +129,13 @@ class PackageDiscoveryService implements FeatureDiscoveryService {
 
       for (const modulePath of exportedModulePaths) {
         const module = require(modulePath);
-        for (const exportValue of Object.values(module)) {
+        for (const [exportName, exportValue] of Object.entries(module)) {
           if (isBackendFeature(exportValue)) {
+            this.logger.info(`Detected: ${name}#${exportName}`);
             features.push(exportValue);
           }
           if (isBackendFeatureFactory(exportValue)) {
+            this.logger.info(`Detected Factory: ${name}#${exportName}`);
             features.push(exportValue());
           }
         }
@@ -145,9 +151,10 @@ export const featureDiscoveryServiceFactory = createServiceFactory({
   service: featureDiscoveryServiceRef,
   deps: {
     config: coreServices.rootConfig,
+    logger: coreServices.rootLogger,
   },
-  factory({ config }) {
-    return new PackageDiscoveryService(config);
+  factory({ config, logger }) {
+    return new PackageDiscoveryService(config, logger);
   },
 });
 
