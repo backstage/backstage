@@ -17,6 +17,7 @@
 import {
   BackendFeature,
   RootConfigService,
+  RootLoggerService,
   coreServices,
   createServiceFactory,
 } from '@backstage/backend-plugin-api';
@@ -28,7 +29,7 @@ import { resolve as resolvePath, dirname } from 'path';
 import fs from 'fs-extra';
 import { BackstagePackageJson } from '@backstage/cli-node';
 
-const LOADED_PACKAGE_ROLES = ['backend-plugin', 'backend-module'];
+const LOADED_PACKAGE_ROLES = ['backend-plugin', 'backend-plugin-module'];
 
 /** @internal */
 async function findClosestPackageDir(
@@ -58,10 +59,38 @@ async function findClosestPackageDir(
 
 /** @internal */
 class PackageDiscoveryService implements FeatureDiscoveryService {
-  constructor(private readonly config: RootConfigService) {}
+  constructor(
+    private readonly config: RootConfigService,
+    private readonly logger: RootLoggerService,
+  ) {}
+
+  getDependencyNames(path: string) {
+    const { dependencies } = require(path) as BackstagePackageJson;
+    const packagesConfig = this.config.getOptional('backend.packages');
+
+    const dependencyNames = Object.keys(dependencies || {});
+
+    if (packagesConfig === 'all') {
+      return dependencyNames;
+    }
+
+    const includedPackagesConfig = this.config.getOptionalStringArray(
+      'backend.packages.include',
+    );
+
+    const includedPackages = includedPackagesConfig
+      ? new Set(includedPackagesConfig)
+      : dependencyNames;
+    const excludedPackagesSet = new Set(
+      this.config.getOptionalStringArray('backend.packages.exclude'),
+    );
+
+    return [...includedPackages].filter(name => !excludedPackagesSet.has(name));
+  }
 
   async getBackendFeatures(): Promise<{ features: Array<BackendFeature> }> {
-    if (this.config.getOptionalString('backend.packages') !== 'all') {
+    const packagesConfig = this.config.getOptional('backend.packages');
+    if (!packagesConfig || Object.keys(packagesConfig).length === 0) {
       return { features: [] };
     }
 
@@ -69,11 +98,9 @@ class PackageDiscoveryService implements FeatureDiscoveryService {
     if (!packageDir) {
       throw new Error('Package discovery failed to find package.json');
     }
-    const { dependencies } = require(resolvePath(
-      packageDir,
-      'package.json',
-    )) as BackstagePackageJson;
-    const dependencyNames = Object.keys(dependencies || {});
+    const dependencyNames = this.getDependencyNames(
+      resolvePath(packageDir, 'package.json'),
+    );
 
     const features: BackendFeature[] = [];
 
@@ -84,13 +111,33 @@ class PackageDiscoveryService implements FeatureDiscoveryService {
       if (!LOADED_PACKAGE_ROLES.includes(depPkg?.backstage?.role ?? '')) {
         continue;
       }
-      const depModule = require(require.resolve(name, { paths: [packageDir] }));
-      for (const exportValue of Object.values(depModule)) {
-        if (isBackendFeature(exportValue)) {
-          features.push(exportValue);
-        }
-        if (isBackendFeatureFactory(exportValue)) {
-          features.push(exportValue());
+
+      const exportedModulePaths = [
+        require.resolve(name, {
+          paths: [packageDir],
+        }),
+      ];
+
+      // Find modules exported as alpha
+      try {
+        exportedModulePaths.push(
+          require.resolve(`${name}/alpha`, { paths: [packageDir] }),
+        );
+      } catch {
+        /* ignore */
+      }
+
+      for (const modulePath of exportedModulePaths) {
+        const module = require(modulePath);
+        for (const [exportName, exportValue] of Object.entries(module)) {
+          if (isBackendFeature(exportValue)) {
+            this.logger.info(`Detected: ${name}#${exportName}`);
+            features.push(exportValue);
+          }
+          if (isBackendFeatureFactory(exportValue)) {
+            this.logger.info(`Detected: ${name}#${exportName}`);
+            features.push(exportValue());
+          }
         }
       }
     }
@@ -104,9 +151,10 @@ export const featureDiscoveryServiceFactory = createServiceFactory({
   service: featureDiscoveryServiceRef,
   deps: {
     config: coreServices.rootConfig,
+    logger: coreServices.rootLogger,
   },
-  factory({ config }) {
-    return new PackageDiscoveryService(config);
+  factory({ config, logger }) {
+    return new PackageDiscoveryService(config, logger);
   },
 });
 
