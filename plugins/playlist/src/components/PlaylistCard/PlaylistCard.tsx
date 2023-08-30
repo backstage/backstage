@@ -109,11 +109,13 @@ export const PlaylistCard = ({ playlist }: PlaylistCardProps) => {
         </ItemCardHeader>
       </CardMedia>
       <CardContent style={{ display: 'grid' }}>
-        <Box className={classes.descriptionBox}>
+        <Box className={classes.box}>
           <Typography variant="body2" className={classes.label}>
             Description
           </Typography>
-          <MarkdownContent content={playlist.description ?? ''} />
+          <Box className={classes.descriptionBox}>
+            <MarkdownContent content={playlist.description ?? ''} />
+          </Box>
         </Box>
         <Box className={classes.box}>
           <Typography variant="body2" className={classes.label}>
