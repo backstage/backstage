@@ -15,7 +15,3 @@
  */
 
 export { bitbucket } from './provider';
-export type {
-  BitbucketPassportProfile,
-  BitbucketOAuthResult,
-} from './provider';
