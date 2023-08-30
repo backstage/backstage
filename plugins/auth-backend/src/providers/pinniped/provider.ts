@@ -43,7 +43,7 @@ type PrivateInfo = {
   refreshToken?: string;
 };
 
-export type PinnipedOptions = OAuthProviderOptions & {
+export type PinnipedProviderOptions = OAuthProviderOptions & {
   federationDomain: string;
   clientId: string;
   clientSecret: string;
@@ -55,7 +55,7 @@ export type PinnipedOptions = OAuthProviderOptions & {
 export class PinnipedAuthProvider implements OAuthHandlers {
   private readonly implementation: Promise<OidcImpl>;
 
-  constructor(options: PinnipedOptions) {
+  constructor(options: PinnipedProviderOptions) {
     this.implementation = this.setupStrategy(options);
   }
 
@@ -157,7 +157,9 @@ export class PinnipedAuthProvider implements OAuthHandlers {
     });
   }
 
-  private async setupStrategy(options: PinnipedOptions): Promise<OidcImpl> {
+  private async setupStrategy(
+    options: PinnipedProviderOptions,
+  ): Promise<OidcImpl> {
     const issuer = await Issuer.discover(
       `${options.federationDomain}/.well-known/openid-configuration`,
     );

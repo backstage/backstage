@@ -20,11 +20,10 @@ import {
   encodeState,
   readState,
 } from '../../lib/oauth';
-import { PinnipedAuthProvider, PinnipedOptions } from './provider';
+import { PinnipedAuthProvider, PinnipedProviderOptions } from './provider';
 import { setupServer } from 'msw/node';
 import { rest } from 'msw';
 import express from 'express';
-import { UnsecuredJWT } from 'jose';
 import { OAuthState } from '../../lib/oauth';
 import { Server } from 'http';
 import cookieParser from 'cookie-parser';
@@ -37,7 +36,13 @@ import { AuthProviderRouteHandlers } from '../types';
 import { getVoidLogger } from '@backstage/backend-common';
 import { AddressInfo } from 'net';
 import request from 'supertest';
-import { SignJWT, exportJWK, generateKeyPair, importJWK } from 'jose';
+import {
+  SignJWT,
+  exportJWK,
+  generateKeyPair,
+  importJWK,
+  UnsecuredJWT,
+} from 'jose';
 import { v4 as uuid } from 'uuid';
 
 describe('PinnipedAuthProvider', () => {
@@ -74,7 +79,7 @@ describe('PinnipedAuthProvider', () => {
     request_object_signing_alg_values_supported: ['RS256', 'RS512', 'HS256'],
   };
 
-  const clientMetadata: PinnipedOptions = {
+  const clientMetadata: PinnipedProviderOptions = {
     federationDomain: 'https://federationDomain.test',
     clientId: 'clientId',
     clientSecret: 'secret',
@@ -462,6 +467,9 @@ describe('PinnipedAuthProvider', () => {
           }),
           signInWithCatalogUser: async _ => ({ token: '' }),
         },
+        baseUrl: `${appUrl}/api/auth`,
+        appUrl,
+        isOriginAllowed: _ => true,
       });
       const router = Router();
       router
