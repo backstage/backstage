@@ -123,7 +123,7 @@ class PackageDiscoveryService implements FeatureDiscoveryService {
         exportedModulePaths.push(
           require.resolve(`${name}/alpha`, { paths: [packageDir] }),
         );
-      } catch (e) {
+      } catch {
         /* ignore */
       }
 
