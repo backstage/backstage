@@ -58,9 +58,9 @@ const pluginMetadataServiceFactory = createServiceFactory(
 );
 
 export class ServiceRegistry implements EnumerableServiceHolder {
-  static create(factories: Array<ServiceFactory>): EnumerableServiceHolder {
+  static create(factories: Array<ServiceFactory>): ServiceRegistry {
     const registry = new ServiceRegistry(factories);
-    registry.checkForCircularDeps();
+    registry.#checkForCircularDeps();
     return registry;
   }
 
@@ -80,7 +80,6 @@ export class ServiceRegistry implements EnumerableServiceHolder {
     InternalServiceFactory,
     Promise<unknown>
   >();
-  readonly #dependencyGraph: DependencyGraph<string>;
 
   private constructor(factories: Array<ServiceFactory>) {
     this.#providedFactories = new Map(
@@ -88,15 +87,6 @@ export class ServiceRegistry implements EnumerableServiceHolder {
     );
     this.#loadedDefaultFactories = new Map();
     this.#implementations = new Map();
-    this.#dependencyGraph = DependencyGraph.fromIterable(
-      Array.from(this.#providedFactories).map(
-        ([serviceId, serviceFactory]) => ({
-          value: serviceId,
-          provides: [serviceId],
-          consumes: Object.values(serviceFactory.deps).map(d => d.id),
-        }),
-      ),
-    );
   }
 
   #resolveFactory(
@@ -163,10 +153,17 @@ export class ServiceRegistry implements EnumerableServiceHolder {
     }
   }
 
-  checkForCircularDeps(): void {
-    const circularDependencies = Array.from(
-      this.#dependencyGraph.detectCircularDependencies(),
+  #checkForCircularDeps(): void {
+    const graph = DependencyGraph.fromIterable(
+      Array.from(this.#providedFactories).map(
+        ([serviceId, serviceFactory]) => ({
+          value: serviceId,
+          provides: [serviceId],
+          consumes: Object.values(serviceFactory.deps).map(d => d.id),
+        }),
+      ),
     );
+    const circularDependencies = Array.from(graph.detectCircularDependencies());
 
     if (circularDependencies.length) {
       const cycles = circularDependencies
