@@ -103,6 +103,16 @@ describe('DefaultCatalogPage', () => {
       Promise.resolve({ id: 'id', type: 'url', target: 'url' }),
     getEntityFacets: async () => ({
       facets: {
+        kind: [
+          {
+            value: 'System',
+            count: 3,
+          },
+          {
+            value: 'Component',
+            count: 3,
+          },
+        ],
         'relations.ownedBy': [
           { count: 1, value: 'group:default/not-tools' },
           { count: 1, value: 'group:default/tools' },
@@ -298,5 +308,10 @@ describe('DefaultCatalogPage', () => {
     ).toBeInTheDocument();
     fireEvent.click(button);
     expect(screen.getByRole('presentation')).toBeVisible();
+  }, 20_000);
+
+  it('should render only allowed kinds in filter', async () => {
+    await renderWrapped(<DefaultCatalogPage allowedKinds={['System']} />);
+    expect(screen.queryByText('Component')).not.toBeInTheDocument();
   }, 20_000);
 });

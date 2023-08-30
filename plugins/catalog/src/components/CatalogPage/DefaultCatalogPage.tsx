@@ -53,6 +53,10 @@ export interface DefaultCatalogPageProps {
   columns?: TableColumn<CatalogTableRow>[];
   actions?: TableProps<CatalogTableRow>['actions'];
   initialKind?: string;
+  /**
+   * See {@link EntityKindPickerProps#allowedKinds}
+   */
+  allowedKinds?: string[];
   tableOptions?: TableProps<CatalogTableRow>['options'];
   emptyContent?: ReactNode;
   ownerPickerMode?: EntityOwnerPickerProps['mode'];
@@ -64,6 +68,7 @@ export function DefaultCatalogPage(props: DefaultCatalogPageProps) {
     actions,
     initiallySelectedFilter = 'owned',
     initialKind = 'component',
+    allowedKinds,
     tableOptions = {},
     emptyContent,
     ownerPickerMode,
@@ -87,7 +92,10 @@ export function DefaultCatalogPage(props: DefaultCatalogPageProps) {
         <EntityListProvider>
           <CatalogFilterLayout>
             <CatalogFilterLayout.Filters>
-              <EntityKindPicker initialFilter={initialKind} />
+              <EntityKindPicker
+                initialFilter={initialKind}
+                allowedKinds={allowedKinds}
+              />
               <EntityTypePicker />
               <UserListPicker initialFilter={initiallySelectedFilter} />
               <EntityOwnerPicker mode={ownerPickerMode} />
