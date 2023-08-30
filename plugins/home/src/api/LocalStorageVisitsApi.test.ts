@@ -14,6 +14,7 @@
  * limitations under the License.
  */
 
+import { BackstageUserIdentity, IdentityApi } from '@backstage/core-plugin-api';
 import { LocalStorageVisitsApi } from './LocalStorageVisitsApi';
 
 describe('new LocalStorageVisitsApi()', () => {
@@ -23,21 +24,30 @@ describe('new LocalStorageVisitsApi()', () => {
       () => Math.floor(Math.random() * 16).toString(16), // 0x0 to 0xf
     ) as `${string}-${string}-${string}-${string}-${string}`;
 
+  const mockIdentityApi: IdentityApi = {
+    signOut: jest.fn(),
+    getProfileInfo: jest.fn(),
+    getBackstageIdentity: async () =>
+      ({ userEntityRef: 'user:default/guest' } as BackstageUserIdentity),
+    getCredentials: jest.fn(),
+  };
+
   beforeEach(() => {
     window.crypto.randomUUID = mockRandomUUID;
   });
 
   afterEach(() => {
     window.localStorage.clear();
+    jest.resetAllMocks();
   });
 
-  it('instantiates with no configuration', () => {
-    const api = new LocalStorageVisitsApi();
+  it('instantiates with only identitiyApi', () => {
+    const api = new LocalStorageVisitsApi({ identityApi: mockIdentityApi });
     expect(api).toBeTruthy();
   });
 
   it('saves a visit', async () => {
-    const api = new LocalStorageVisitsApi();
+    const api = new LocalStorageVisitsApi({ identityApi: mockIdentityApi });
     const visit = {
       pathname: '/catalog/default/component/playback-order',
       entityRef: 'component:default/playback-order',
@@ -51,7 +61,7 @@ describe('new LocalStorageVisitsApi()', () => {
   });
 
   it('retrieves visits', async () => {
-    const api = new LocalStorageVisitsApi();
+    const api = new LocalStorageVisitsApi({ identityApi: mockIdentityApi });
     const visit = {
       pathname: '/catalog/default/component/playback-order',
       entityRef: 'component:default/playback-order',
