@@ -22,6 +22,8 @@ import {
 import { BrowserRouter, useRoutes } from 'react-router-dom';
 
 export const RouteExtension = createExtension({
+  id: 'core.router',
+  at: 'root',
   inputs: {
     routes: {
       extensionData: {

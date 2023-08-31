@@ -164,7 +164,7 @@ export class BackendInitializer {
   }
 
   async #doStart(): Promise<void> {
-    this.#serviceHolder = new ServiceRegistry([
+    this.#serviceHolder = ServiceRegistry.create([
       ...this.#defaultApiFactories,
       ...this.#providedServiceFactories,
     ]);

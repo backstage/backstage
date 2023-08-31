@@ -61,7 +61,7 @@ export interface TestBackend extends Backend {
   readonly server: ExtendedHttpServer;
 }
 
-const defaultServiceFactories = [
+export const defaultServiceFactories = [
   mockServices.cache.factory(),
   mockServices.rootConfig.factory(),
   mockServices.database.factory(),

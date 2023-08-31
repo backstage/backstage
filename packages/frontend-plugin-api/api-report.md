@@ -5,6 +5,8 @@
 ```ts
 /// <reference types="react" />
 
+import { AnyApiFactory } from '@backstage/core-plugin-api';
+import { AnyApiRef } from '@backstage/core-plugin-api';
 import { ComponentType } from 'react';
 import { JsonObject } from '@backstage/types';
 import { z } from 'zod';
@@ -19,15 +21,7 @@ export interface BackstagePlugin {
   // (undocumented)
   $$type: 'backstage-plugin';
   // (undocumented)
-  defaultExtensionInstances: ExtensionInstanceParameters[];
-  // (undocumented)
-  id: string;
-}
-
-// @public (undocumented)
-export interface BackstagePluginOptions {
-  // (undocumented)
-  defaultExtensionInstances?: ExtensionInstanceParameters[];
+  extensions: Extension<unknown>[];
   // (undocumented)
   id: string;
 }
@@ -36,7 +30,39 @@ export interface BackstagePluginOptions {
 export const coreExtensionData: {
   reactComponent: ExtensionDataRef<ComponentType<{}>>;
   routePath: ExtensionDataRef<string>;
+  apiFactory: ExtensionDataRef<AnyApiFactory>;
 };
+
+// @public (undocumented)
+export function createApiExtension<
+  TConfig extends {},
+  TInputs extends Record<
+    string,
+    {
+      extensionData: AnyExtensionDataMap;
+    }
+  >,
+>(
+  options: (
+    | {
+        api: AnyApiRef;
+        factory: (options: {
+          config: TConfig;
+          inputs: {
+            [pointName in keyof TInputs]: ExtensionDataValue<
+              TInputs[pointName]['extensionData']
+            >[];
+          };
+        }) => AnyApiFactory;
+      }
+    | {
+        factory: AnyApiFactory;
+      }
+  ) & {
+    configSchema?: PortableSchema<TConfig>;
+    inputs?: TInputs;
+  },
+): Extension<TConfig>;
 
 // @public (undocumented)
 export function createExtension<
@@ -62,7 +88,11 @@ export interface CreateExtensionOptions<
   TConfig,
 > {
   // (undocumented)
+  at: string;
+  // (undocumented)
   configSchema?: PortableSchema<TConfig>;
+  // (undocumented)
+  disabled?: boolean;
   // (undocumented)
   factory(options: {
     bind: ExtensionDataBind<TData>;
@@ -73,6 +103,8 @@ export interface CreateExtensionOptions<
       >[];
     };
   }): void;
+  // (undocumented)
+  id: string;
   // (undocumented)
   inputs?: TPoint;
   // (undocumented)
@@ -99,6 +131,9 @@ export function createPageExtension<
         configSchema: PortableSchema<TConfig>;
       }
   ) & {
+    id: string;
+    at?: string;
+    disabled?: boolean;
     inputs?: TInputs;
     component: (props: {
       config: TConfig;
@@ -112,7 +147,7 @@ export function createPageExtension<
 ): Extension<TConfig>;
 
 // @public (undocumented)
-export function createPlugin(options: BackstagePluginOptions): BackstagePlugin;
+export function createPlugin(options: PluginOptions): BackstagePlugin;
 
 // @public (undocumented)
 export function createSchemaFromZod<TOutput, TInput>(
@@ -124,13 +159,19 @@ export interface Extension<TConfig> {
   // (undocumented)
   $$type: 'extension';
   // (undocumented)
+  at: string;
+  // (undocumented)
   configSchema?: PortableSchema<TConfig>;
+  // (undocumented)
+  disabled: boolean;
   // (undocumented)
   factory(options: {
     bind: ExtensionDataBind<AnyExtensionDataMap>;
     config: TConfig;
     inputs: Record<string, Array<Record<string, unknown>>>;
   }): void;
+  // (undocumented)
+  id: string;
   // (undocumented)
   inputs: Record<
     string,
@@ -160,15 +201,9 @@ export type ExtensionDataValue<TData extends AnyExtensionDataMap> = {
 };
 
 // @public (undocumented)
-export interface ExtensionInstanceParameters {
+export interface PluginOptions {
   // (undocumented)
-  at: string;
-  // (undocumented)
-  config?: unknown;
-  // (undocumented)
-  disabled?: boolean;
-  // (undocumented)
-  extension: Extension<unknown>;
+  extensions?: Extension<unknown>[];
   // (undocumented)
   id: string;
 }

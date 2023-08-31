@@ -15,14 +15,14 @@
  */
 
 import React from 'react';
-import { createSchemaFromZod, PortableSchema } from './createSchemaFromZod';
+import { createSchemaFromZod, PortableSchema } from '../createSchemaFromZod';
 import {
   AnyExtensionDataMap,
   coreExtensionData,
   createExtension,
   Extension,
   ExtensionDataValue,
-} from './types';
+} from '../types';
 
 /**
  * Helper for creating extensions for a routable React page component.
@@ -41,6 +41,9 @@ export function createPageExtension<
         configSchema: PortableSchema<TConfig>;
       }
   ) & {
+    id: string;
+    at?: string;
+    disabled?: boolean;
     inputs?: TInputs;
     component: (props: {
       config: TConfig;
@@ -60,6 +63,9 @@ export function createPageExtension<
         ) as PortableSchema<TConfig>);
 
   return createExtension({
+    id: options.id,
+    at: options.at ?? 'core.router/routes',
+    disabled: options.disabled,
     output: {
       component: coreExtensionData.reactComponent,
       path: coreExtensionData.routePath,

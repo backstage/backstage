@@ -13,9 +13,9 @@ __metadata:
   linkType: hard
 
 "@adobe/css-tools@npm:^4.0.1":
-  version: 4.0.1
-  resolution: "@adobe/css-tools@npm:4.0.1"
-  checksum: 80226e2229024c21da9ffa6b5cd4a34b931f071e06f45aba4777ade071d7a6c94605cf73b13718b0c4b34e8b124c65c607b82eaa53a326d3eb73d9682a04a593
+  version: 4.3.1
+  resolution: "@adobe/css-tools@npm:4.3.1"
+  checksum: ad43456379ff391132aff687ece190cb23ea69395e23c9b96690eeabe2468da89a4aaf266e4f8b6eaab53db3d1064107ce0f63c3a974e864f4a04affc768da3f
   languageName: node
   linkType: hard
 
@@ -200,8 +200,8 @@ __metadata:
   linkType: hard
 
 "@apollo/server@npm:^4.0.0":
-  version: 4.9.2
-  resolution: "@apollo/server@npm:4.9.2"
+  version: 4.9.3
+  resolution: "@apollo/server@npm:4.9.3"
   dependencies:
     "@apollo/cache-control-types": ^1.0.3
     "@apollo/server-gateway-interface": ^1.1.1
@@ -231,7 +231,7 @@ __metadata:
     whatwg-mimetype: ^3.0.0
   peerDependencies:
     graphql: ^16.6.0
-  checksum: 4ae005e7959ef34ec85f5c421e983f35b6b4b4e93cd21af081c314e554296df1c2f5794b76328b780222b05f59b46ee479365310352414b289d7b58682b0a9c1
+  checksum: 28537d7646669a5dc1302cfd75d8a9bf473459ee585c6b778d174628a2cfb3f89a5ac742eca7de2a779b6c9e3f30da509a8787a71227520d009ac190aa7a9207
   languageName: node
   linkType: hard
 
@@ -3577,6 +3577,41 @@ __metadata:
   languageName: unknown
   linkType: soft
 
+"@backstage/backend-plugin-manager@workspace:packages/backend-plugin-manager":
+  version: 0.0.0-use.local
+  resolution: "@backstage/backend-plugin-manager@workspace:packages/backend-plugin-manager"
+  dependencies:
+    "@backstage/backend-app-api": "workspace:^"
+    "@backstage/backend-common": "workspace:^"
+    "@backstage/backend-plugin-api": "workspace:^"
+    "@backstage/backend-tasks": "workspace:^"
+    "@backstage/backend-test-utils": "workspace:^"
+    "@backstage/cli": "workspace:^"
+    "@backstage/cli-common": "workspace:^"
+    "@backstage/cli-node": "workspace:^"
+    "@backstage/config": "workspace:^"
+    "@backstage/config-loader": "workspace:^"
+    "@backstage/errors": "workspace:^"
+    "@backstage/plugin-auth-node": "workspace:^"
+    "@backstage/plugin-catalog-backend": "workspace:^"
+    "@backstage/plugin-events-backend": "workspace:^"
+    "@backstage/plugin-events-node": "workspace:^"
+    "@backstage/plugin-permission-common": "workspace:^"
+    "@backstage/plugin-permission-node": "workspace:^"
+    "@backstage/plugin-scaffolder-node": "workspace:^"
+    "@backstage/plugin-search-backend-node": "workspace:^"
+    "@backstage/plugin-search-common": "workspace:^"
+    "@backstage/types": "workspace:^"
+    "@types/express": ^4.17.6
+    chokidar: ^3.5.3
+    express: ^4.17.1
+    lodash: ^4.17.21
+    mock-fs: ^5.2.0
+    wait-for-expect: ^3.0.2
+    winston: ^3.2.1
+  languageName: unknown
+  linkType: soft
+
 "@backstage/backend-tasks@workspace:^, @backstage/backend-tasks@workspace:packages/backend-tasks":
   version: 0.0.0-use.local
   resolution: "@backstage/backend-tasks@workspace:packages/backend-tasks"
@@ -4298,8 +4333,11 @@ __metadata:
   resolution: "@backstage/frontend-plugin-api@workspace:packages/frontend-plugin-api"
   dependencies:
     "@backstage/cli": "workspace:^"
+    "@backstage/core-plugin-api": "workspace:^"
+    "@backstage/frontend-app-api": "workspace:^"
     "@backstage/types": "workspace:^"
     "@testing-library/jest-dom": ^5.10.1
+    "@testing-library/react": ^12.1.3
     lodash: ^4.17.21
     zod: ^3.21.4
     zod-to-json-schema: ^3.21.4
@@ -6199,12 +6237,13 @@ __metadata:
     "@backstage/config": "workspace:^"
     "@backstage/errors": "workspace:^"
     "@backstage/integration": "workspace:^"
+    "@types/body-parser-xml": ^2.0.2
     "@types/express": ^4.17.6
-    "@types/express-xml-bodyparser": ^0.3.2
     "@types/supertest": ^2.0.8
+    body-parser: ^1.20.0
+    body-parser-xml: ^2.0.5
     express: ^4.17.1
     express-promise-router: ^4.1.0
-    express-xml-bodyparser: ^0.3.0
     knex: ^2.0.0
     msw: ^1.0.0
     supertest: ^6.1.6
@@ -17030,6 +17069,19 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@types/body-parser-xml@npm:^2.0.2":
+  version: 2.0.2
+  resolution: "@types/body-parser-xml@npm:2.0.2"
+  dependencies:
+    "@types/body-parser": "*"
+    "@types/connect": "*"
+    "@types/express-serve-static-core": "*"
+    "@types/node": "*"
+    "@types/xml2js": "*"
+  checksum: ddac93399bc85b7402193004954215b9152374cd3e0e54e6f500ea71e8bf962ff091300a265551832c863e63539af1a2d9483838073ff43362d0bdf867802a50
+  languageName: node
+  linkType: hard
+
 "@types/body-parser@npm:*, @types/body-parser@npm:^1.19.0":
   version: 1.19.2
   resolution: "@types/body-parser@npm:1.19.2"
@@ -17475,16 +17527,6 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@types/express-xml-bodyparser@npm:^0.3.2":
-  version: 0.3.2
-  resolution: "@types/express-xml-bodyparser@npm:0.3.2"
-  dependencies:
-    "@types/express": "*"
-    "@types/xml2js": "*"
-  checksum: 5d40669bf8b1f031c405e7172f12ecf53ccff5a35a7d08a7824a79f5a33bf450204bc1fa4c5bc618e32c9826dbf81170118f9aa6db7d0f2fa007ddc59e21929f
-  languageName: node
-  linkType: hard
-
 "@types/express@npm:*, @types/express@npm:^4.17.13, @types/express@npm:^4.17.17, @types/express@npm:^4.17.6":
   version: 4.17.17
   resolution: "@types/express@npm:4.17.17"
@@ -17848,9 +17890,9 @@ __metadata:
   linkType: hard
 
 "@types/libsodium-wrappers@npm:^0.7.10":
-  version: 0.7.10
-  resolution: "@types/libsodium-wrappers@npm:0.7.10"
-  checksum: 717054ebcb5fa553e378144b8d564bed8b691905c0d4e90b95c64d77ba24ec9fe798cb2c58cd61dad545ceacb1f05ab69b5597217f9829f2da7a23f0688d11d0
+  version: 0.7.11
+  resolution: "@types/libsodium-wrappers@npm:0.7.11"
+  checksum: e3c3acdfc178a466a04d81c030ba1b748abc9335b1d66421125eb55b32cbaf6a9076e32a98744fcb84ba2fa2af342203ff29054262dcc465c12c4feddddb64ac
   languageName: node
   linkType: hard
 
@@ -18877,9 +18919,9 @@ __metadata:
   linkType: hard
 
 "@types/zen-observable@npm:^0.8.0, @types/zen-observable@npm:^0.8.2":
-  version: 0.8.3
-  resolution: "@types/zen-observable@npm:0.8.3"
-  checksum: 08c88354abcf03a2176a2ec32e07da1f25fdad94fbc2f419bea53d77deb04ad4759518b4fe3fc695e61065dd4bdf7c8bd26b5211a6cd5be2233872806bdee48d
+  version: 0.8.4
+  resolution: "@types/zen-observable@npm:0.8.4"
+  checksum: 784bae5554de07c9b0beda9ff0b81dfa4b52dee2f112d1c874e942114be00133b8159b413c5ba2503b8f0b1baa281c33e91028fe00b44abca0a22552c536e3ec
   languageName: node
   linkType: hard
 
@@ -20802,6 +20844,15 @@ __metadata:
   version: 4.12.0
   resolution: "bn.js@npm:4.12.0"
   checksum: 39afb4f15f4ea537b55eaf1446c896af28ac948fdcf47171961475724d1bb65118cca49fa6e3d67706e4790955ec0e74de584e45c8f1ef89f46c812bee5b5a12
+  languageName: node
+  linkType: hard
+
+"body-parser-xml@npm:^2.0.5":
+  version: 2.0.5
+  resolution: "body-parser-xml@npm:2.0.5"
+  dependencies:
+    xml2js: ^0.5.0
+  checksum: 57133dbe6439f74f2ffb814b54ab806596a31c51e0d93e045b3068402ae184d4fcb799b2966414d1f393f8dcc8342529d4d3ce4cdeaa219c3af140d961c56dfd
   languageName: node
   linkType: hard
 
@@ -26060,15 +26111,6 @@ __metadata:
     safe-buffer: 5.2.1
     uid-safe: ~2.1.5
   checksum: 1021a793433cbc6a1b32c803fcb2daa1e03a8f50dd907e8745ae57994370315a5cfde5b6ef7b062d9a9a0754ff268844bda211c08240b3a0e01014dcf1073ec5
-  languageName: node
-  linkType: hard
-
-"express-xml-bodyparser@npm:^0.3.0":
-  version: 0.3.0
-  resolution: "express-xml-bodyparser@npm:0.3.0"
-  dependencies:
-    xml2js: ^0.4.11
-  checksum: 37c2d2f9bc5bd748f7481423a26a334d82c352be1d58694dbc0b149e54bdcb3fc7aa70800c3bbbbbbede29c868680f2e4d4fc6990459191b5de615e263d28fec
   languageName: node
   linkType: hard
 
@@ -33442,8 +33484,8 @@ __metadata:
   linkType: hard
 
 "msw@npm:^1.0.0, msw@npm:^1.0.1, msw@npm:^1.2.1, msw@npm:^1.2.3":
-  version: 1.2.4
-  resolution: "msw@npm:1.2.4"
+  version: 1.2.5
+  resolution: "msw@npm:1.2.5"
   dependencies:
     "@mswjs/cookies": ^0.2.2
     "@mswjs/interceptors": ^0.17.5
@@ -33471,7 +33513,7 @@ __metadata:
       optional: true
   bin:
     msw: cli/index.js
-  checksum: ff32efd2e89b6e4e0b646362907658c2b37756a92d46a294171e0ef5c4488217f87381b7740a6c9e5d7ed9c490ce33474f56f5dba8524340233cd89f1de0b0e1
+  checksum: 652c44a100cba0382d6cdf4c2a4dfb90edd9665c7d06bc10f15bd96fe458c6a6f4943c2dec3f1a9d5efef0f7d59ae805ebdf289b52991956d95601e5f42fb8b1
   languageName: node
   linkType: hard
 
@@ -43186,7 +43228,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"xml2js@npm:^0.4.11, xml2js@npm:^0.4.23":
+"xml2js@npm:^0.4.23":
   version: 0.4.23
   resolution: "xml2js@npm:0.4.23"
   dependencies:
