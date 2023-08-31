@@ -14,6 +14,7 @@
  * limitations under the License.
  */
 
+import { Strategy as BitbucketStrategy } from 'passport-bitbucket-oauth2';
 import {
   createOAuthAuthenticator,
   PassportOAuthAuthenticatorHelper,

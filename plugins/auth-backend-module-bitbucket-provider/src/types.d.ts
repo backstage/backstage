@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-declare module 'passport-bitbucket2' {
+declare module 'passport-bitbucket-oauth2' {
   import { Request } from 'express';
   import { StrategyCreated } from 'passport';
 
