@@ -56,7 +56,6 @@
     "@testing-library/user-event": "^14.0.0",
     "@types/humanize-duration": "^3.27.1",
     "@types/luxon": "^3.0.0",
-    "@types/node": "^16.11.26",
     "msw": "^1.0.0"
   },
   "files": [

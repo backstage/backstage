@@ -51,8 +51,7 @@
     "@backstage/core-app-api": "workspace:^",
     "@backstage/dev-utils": "workspace:^",
     "@backstage/test-utils": "workspace:^",
-    "@testing-library/jest-dom": "^5.16.5",
-    "@types/node": "^16.11.26"
+    "@testing-library/jest-dom": "^5.16.5"
   },
   "files": [
     "dist"
