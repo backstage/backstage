@@ -14,6 +14,7 @@
  * limitations under the License.
  */
 
+import { RouteRef } from '@backstage/core-plugin-api';
 import React from 'react';
 import { ExtensionBoundary } from '../components';
 import { createSchemaFromZod, PortableSchema } from '../createSchemaFromZod';
@@ -46,6 +47,7 @@ export function createPageExtension<
     at?: string;
     disabled?: boolean;
     inputs?: TInputs;
+    routeRef?: RouteRef;
     component: (props: {
       config: TConfig;
       inputs: {
@@ -70,6 +72,7 @@ export function createPageExtension<
     output: {
       component: coreExtensionData.reactComponent,
       path: coreExtensionData.routePath,
+      ...(options.routeRef && { routeRef: coreExtensionData.routeRef }),
     },
     inputs: options.inputs,
     configSchema,
@@ -87,6 +90,9 @@ export function createPageExtension<
           </React.Suspense>
         </ExtensionBoundary>
       ));
+      if (options.routeRef) {
+        bind.routeRef!(options.routeRef);
+      }
     },
   });
 }

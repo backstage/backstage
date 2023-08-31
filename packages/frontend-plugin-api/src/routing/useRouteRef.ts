@@ -14,21 +14,19 @@
  * limitations under the License.
  */
 
-import {
-  createPageExtension,
-  createPlugin,
-} from '@backstage/frontend-plugin-api';
-import React from 'react';
+import { RouteRef } from '@backstage/core-plugin-api';
+import { RoutingContext } from '@backstage/frontend-app-api/src/routing/RoutingContext';
+import { useContext, useMemo } from 'react';
+import { useLocation } from 'react-router-dom';
 
-export const GraphiqlPage = createPageExtension({
-  id: 'graphiql.page',
-  defaultPath: '/graphiql',
-  disabled: true,
-  component: () =>
-    import('@backstage/plugin-graphiql').then(({ Router }) => <Router />),
-});
+export function useRouteRef(routeRef: RouteRef<any>): () => string | undefined {
+  const { pathname } = useLocation();
+  const resolver = useContext(RoutingContext);
 
-export const graphiqlPlugin = createPlugin({
-  id: 'graphiql',
-  extensions: [GraphiqlPage],
-});
+  const routeFunc = useMemo(
+    () => resolver && resolver.resolve(routeRef, { pathname }),
+    [resolver, routeRef, pathname],
+  );
+
+  return routeFunc;
+}

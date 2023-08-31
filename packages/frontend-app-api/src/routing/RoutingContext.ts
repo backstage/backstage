@@ -13,22 +13,13 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+import { RouteRef } from '@backstage/core-plugin-api';
+import { createContext } from 'react';
 
-import {
-  createPageExtension,
-  createPlugin,
-} from '@backstage/frontend-plugin-api';
-import React from 'react';
+export interface RoutingContextType {
+  resolve(routeRef: RouteRef, options: { pathname: string }): () => string;
+}
 
-export const GraphiqlPage = createPageExtension({
-  id: 'graphiql.page',
-  defaultPath: '/graphiql',
-  disabled: true,
-  component: () =>
-    import('@backstage/plugin-graphiql').then(({ Router }) => <Router />),
-});
-
-export const graphiqlPlugin = createPlugin({
-  id: 'graphiql',
-  extensions: [GraphiqlPage],
+export const RoutingContext = createContext<RoutingContextType>({
+  resolve: () => () => '',
 });

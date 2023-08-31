@@ -19,19 +19,31 @@ import { Link } from '@backstage/core-components';
 import {
   createPageExtension,
   createPlugin,
+  useRouteRef,
 } from '@backstage/frontend-plugin-api';
+import { createRouteRef, createSubRouteRef } from '@backstage/core-plugin-api';
+import { Route, Routes } from 'react-router-dom';
+
+const indexRouteRef = createRouteRef({ id: 'index' });
+const page1RouteRef = createRouteRef({ id: 'page1' });
+// const page2RouteRef = createSubRouteRef({
+//   id: 'page2',
+//   parent: page1RouteRef,
+//   path: '/page2',
+// });
 
 const IndexPage = createPageExtension({
   id: 'index',
   defaultPath: '/',
+  // indexRouteRef
   component: async () => {
     const Component = () => {
-      // const page1 = useRouteRef();
+      const page1Link = useRouteRef(page1RouteRef);
       return (
         <div>
           op
           <div>
-            <Link to="/page1">Page 1</Link>
+            <Link to={page1Link()}>Page 1</Link>
           </div>
           <div>
             <Link to="/graphiql">GraphiQL</Link>
@@ -46,17 +58,42 @@ const IndexPage = createPageExtension({
 const Page1 = createPageExtension({
   id: 'page1',
   defaultPath: '/page1',
+  routeRef: page1RouteRef,
   component: async () => {
-    const Component = () => (
-      <div>
-        <h1>This is page 1</h1>
-      </div>
-    );
+    const Component = () => {
+      const indexLink = useRouteRef(indexRouteRef);
+      // const page2Link = useRouteRef(page2RouteRef);
+
+      return (
+        <div>
+          <h1>This is page 1</h1>
+          <Link to={indexLink()}>Go back</Link>
+          {/* <Link to={page2Link()}>Page 2</Link> */}
+
+          <div>
+            Sub-page content:
+            <div>
+              <Routes>
+                <Route path="/" element={<h2>This is also page 1</h2>} />
+                <Route path="/page2" element={<h2>This is page 2</h2>} />
+              </Routes>
+            </div>
+          </div>
+        </div>
+      );
+    };
     return <Component />;
   },
 });
 
 export const pagesPlugin = createPlugin({
   id: 'pages',
+  // routes: {
+  //   index: indexRouteRef,
+  //   // reference in config:
+  //   //   'plugin.pages.routes.index'
+  //   //     OR
+  //   //   'page1'
+  // },
   extensions: [IndexPage, Page1],
 });
