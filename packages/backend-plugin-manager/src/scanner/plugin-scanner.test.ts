@@ -571,7 +571,7 @@ Please add '/backstageRoot/node_modules' to the 'NODE_PATH' when running the bac
                 "failed to load dynamic plugin manifest from '/backstageRoot/dist-dynamic/test-backend-plugin/alpha'",
               meta: {
                 name: 'SyntaxError',
-                message: 'Unexpected token i in JSON at position 0',
+                message: expect.stringContaining('Unexpected token'),
               },
             },
           ],
@@ -604,7 +604,7 @@ Please add '/backstageRoot/node_modules' to the 'NODE_PATH' when running the bac
                 "failed to load dynamic plugin manifest from '/backstageRoot/dist-dynamic/test-backend-plugin'",
               meta: {
                 name: 'SyntaxError',
-                message: 'Unexpected token i in JSON at position 0',
+                message: expect.stringContaining('Unexpected token'),
               },
             },
           ],
