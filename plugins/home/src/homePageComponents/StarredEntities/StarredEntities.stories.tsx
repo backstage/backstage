@@ -14,16 +14,16 @@
  * limitations under the License.
  */
 
-import { HomePageStarredEntities } from '../../plugin';
-import { wrapInTestApp, TestApiProvider } from '@backstage/test-utils';
 import {
-  catalogApiRef,
-  starredEntitiesApiRef,
   MockStarredEntitiesApi,
+  catalogApiRef,
   entityRouteRef,
+  starredEntitiesApiRef,
 } from '@backstage/plugin-catalog-react';
+import { TestApiProvider, wrapInTestApp } from '@backstage/test-utils';
 import { Grid } from '@material-ui/core';
-import React, { ComponentType, PropsWithChildren } from 'react';
+import React, { PropsWithChildren } from 'react';
+import { HomePageStarredEntities } from '../../plugin';
 
 const starredEntitiesApi = new MockStarredEntitiesApi();
 starredEntitiesApi.toggleStarred('component:default/example-starred-entity');
@@ -73,7 +73,7 @@ const mockCatalogApi = {
 export default {
   title: 'Plugins/Home/Components/StarredEntities',
   decorators: [
-    (Story: ComponentType<PropsWithChildren<{}>>) =>
+    (Story: (props: PropsWithChildren<{}>) => JSX.Element) =>
       wrapInTestApp(
         <TestApiProvider
           apis={[

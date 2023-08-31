@@ -13,16 +13,16 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import React, { ComponentType, PropsWithChildren } from 'react';
-import { Link } from './Link';
-import {
-  Route,
-  useLocation,
-  NavLink as RouterNavLink,
-  Routes,
-} from 'react-router-dom';
 import { createRouteRef, useRouteRef } from '@backstage/core-plugin-api';
 import { wrapInTestApp } from '@backstage/test-utils';
+import React, { PropsWithChildren } from 'react';
+import {
+  Route,
+  NavLink as RouterNavLink,
+  Routes,
+  useLocation,
+} from 'react-router-dom';
+import { Link } from './Link';
 
 const routeRef = createRouteRef({
   id: 'storybook.test-route',
@@ -37,7 +37,7 @@ export default {
   title: 'Navigation/Link',
   component: Link,
   decorators: [
-    (Story: ComponentType<PropsWithChildren<{}>>) =>
+    (Story: (props: PropsWithChildren<{}>) => JSX.Element) =>
       wrapInTestApp(
         <div>
           <div>

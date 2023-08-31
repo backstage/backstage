@@ -14,24 +14,24 @@
  * limitations under the License.
  */
 
-import React, { ComponentType, PropsWithChildren } from 'react';
+import React, { PropsWithChildren } from 'react';
 
 import { List, ListItem } from '@material-ui/core';
 import DefaultIcon from '@material-ui/icons/InsertDriveFile';
 import CustomIcon from '@material-ui/icons/NoteAdd';
 
 import { Link } from '@backstage/core-components';
-import { TestApiProvider, wrapInTestApp } from '@backstage/test-utils';
 import { createPlugin } from '@backstage/core-plugin-api';
 import { SearchDocument } from '@backstage/plugin-search-common';
+import { TestApiProvider, wrapInTestApp } from '@backstage/test-utils';
 
+import { MockSearchApi, searchApiRef } from '../../api';
 import { SearchContextProvider } from '../../context';
-import { searchApiRef, MockSearchApi } from '../../api';
 import { createSearchResultListItemExtension } from '../../extensions';
 
-import { SearchResultListLayout } from '../SearchResultList';
-import { SearchResultGroupLayout } from '../SearchResultGroup';
 import { DefaultResultListItem } from '../DefaultResultListItem';
+import { SearchResultGroupLayout } from '../SearchResultGroup';
+import { SearchResultListLayout } from '../SearchResultList';
 
 import { SearchResult } from './SearchResult';
 
@@ -70,7 +70,7 @@ export default {
   title: 'Plugins/Search/SearchResult',
   component: SearchResult,
   decorators: [
-    (Story: ComponentType<PropsWithChildren<{}>>) =>
+    (Story: (props: PropsWithChildren<{}>) => JSX.Element) =>
       wrapInTestApp(
         <TestApiProvider apis={[[searchApiRef, searchApiMock]]}>
           <SearchContextProvider>

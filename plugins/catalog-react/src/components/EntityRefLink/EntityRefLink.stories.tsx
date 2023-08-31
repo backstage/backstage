@@ -14,10 +14,10 @@
  * limitations under the License.
  */
 
-import React, { ComponentType, PropsWithChildren } from 'react';
-import { EntityRefLink, EntityRefLinkProps } from './EntityRefLink';
 import { wrapInTestApp } from '@backstage/test-utils';
+import React, { PropsWithChildren } from 'react';
 import { entityRouteRef } from '../../routes';
+import { EntityRefLink, EntityRefLinkProps } from './EntityRefLink';
 
 const defaultArgs = {
   entityRef: 'component:default/playback',
@@ -26,7 +26,7 @@ const defaultArgs = {
 export default {
   title: 'Catalog /EntityRefLink',
   decorators: [
-    (Story: ComponentType<PropsWithChildren<{}>>) =>
+    (Story: (props: PropsWithChildren<{}>) => JSX.Element) =>
       wrapInTestApp(<Story />, {
         mountedRoutes: {
           '/catalog/:namespace/:kind/:name': entityRouteRef,

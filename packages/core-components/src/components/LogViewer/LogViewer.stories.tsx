@@ -14,15 +14,16 @@
  * limitations under the License.
  */
 
-import React, { ComponentType, PropsWithChildren } from 'react';
 import { wrapInTestApp } from '@backstage/test-utils';
+import React, { PropsWithChildren } from 'react';
 import { LogViewer } from './LogViewer';
 
 export default {
   title: 'Data Display/LogViewer',
   component: LogViewer,
   decorators: [
-    (Story: ComponentType<PropsWithChildren<{}>>) => wrapInTestApp(<Story />),
+    (Story: (props: PropsWithChildren<{}>) => JSX.Element) =>
+      wrapInTestApp(<Story />),
   ],
 };
 

@@ -19,15 +19,15 @@ import { TestApiProvider } from '@backstage/test-utils';
 import { act, renderHook } from '@testing-library/react-hooks';
 import React, { PropsWithChildren } from 'react';
 import {
-  starredEntitiesApiRef,
-  StarredEntitiesApi,
   MockStarredEntitiesApi,
+  StarredEntitiesApi,
+  starredEntitiesApiRef,
 } from '../apis';
 import { useStarredEntities } from './useStarredEntities';
 
 describe('useStarredEntities', () => {
   let mockApi: StarredEntitiesApi;
-  let wrapper: React.ComponentType<React.PropsWithChildren<{}>>;
+  let wrapper: (props: React.PropsWithChildren<{}>) => JSX.Element;
 
   const mockEntity: Entity = {
     apiVersion: '1',

@@ -14,9 +14,9 @@
  * limitations under the License.
  */
 
-import React, { PropsWithChildren } from 'react';
-import { ApiRef, ApiHolder, TypesToApiRefs } from './types';
 import { useVersionedContext } from '@backstage/version-bridge';
+import React, { PropsWithChildren } from 'react';
+import { ApiHolder, ApiRef, TypesToApiRefs } from './types';
 
 /**
  * React hook for retrieving {@link ApiHolder}, an API catalog.
@@ -60,7 +60,7 @@ export function useApi<T>(apiRef: ApiRef<T>): T {
  */
 export function withApis<T extends {}>(apis: TypesToApiRefs<T>) {
   return function withApisWrapper<TProps extends T>(
-    WrappedComponent: React.ComponentType<TProps>,
+    WrappedComponent: React.FC<TProps>,
   ) {
     const Hoc = (props: PropsWithChildren<Omit<TProps, keyof T>>) => {
       const apiHolder = useApiHolder();

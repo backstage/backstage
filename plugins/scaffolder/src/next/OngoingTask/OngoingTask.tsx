@@ -13,25 +13,25 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import { Content, ErrorPanel, Header, Page } from '@backstage/core-components';
-import { useNavigate, useParams } from 'react-router-dom';
-import { Box, Button, makeStyles, Paper } from '@material-ui/core';
+import { useApi, useRouteRef } from '@backstage/core-plugin-api';
 import {
   ScaffolderTaskOutput,
   scaffolderApiRef,
   useTaskEventStream,
 } from '@backstage/plugin-scaffolder-react';
-import { selectedTemplateRouteRef } from '../../routes';
-import { useApi, useRouteRef } from '@backstage/core-plugin-api';
-import qs from 'qs';
-import { ContextMenu } from './ContextMenu';
 import {
   DefaultTemplateOutputs,
   TaskLogStream,
   TaskSteps,
 } from '@backstage/plugin-scaffolder-react/alpha';
+import { Box, Button, Paper, makeStyles } from '@material-ui/core';
 import { useAsync } from '@react-hookz/web';
+import qs from 'qs';
+import React, { useCallback, useEffect, useMemo, useState } from 'react';
+import { useNavigate, useParams } from 'react-router-dom';
+import { selectedTemplateRouteRef } from '../../routes';
+import { ContextMenu } from './ContextMenu';
 
 const useStyles = makeStyles(theme => ({
   contentWrapper: {
@@ -49,9 +49,9 @@ const useStyles = makeStyles(theme => ({
 }));
 
 export const OngoingTask = (props: {
-  TemplateOutputsComponent?: React.ComponentType<{
+  TemplateOutputsComponent?: (props: {
     output?: ScaffolderTaskOutput;
-  }>;
+  }) => JSX.Element;
 }) => {
   // todo(blam): check that task Id actually exists, and that it's valid. otherwise redirect to something more useful.
   const { taskId } = useParams();

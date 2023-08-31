@@ -14,31 +14,31 @@
  * limitations under the License.
  */
 
+import { ConfigReader } from '@backstage/config';
+import { Content, InfoCard, Page } from '@backstage/core-components';
+import { configApiRef } from '@backstage/core-plugin-api';
 import {
-  HomePageToolkit,
+  MockStarredEntitiesApi,
+  catalogApiRef,
+  entityRouteRef,
+  starredEntitiesApiRef,
+} from '@backstage/plugin-catalog-react';
+import {
   HomePageCompanyLogo,
   HomePageStarredEntities,
+  HomePageToolkit,
   TemplateBackstageLogo,
   TemplateBackstageLogoIcon,
 } from '@backstage/plugin-home';
-import { wrapInTestApp, TestApiProvider } from '@backstage/test-utils';
-import { Content, Page, InfoCard } from '@backstage/core-components';
-import {
-  starredEntitiesApiRef,
-  MockStarredEntitiesApi,
-  entityRouteRef,
-  catalogApiRef,
-} from '@backstage/plugin-catalog-react';
-import { configApiRef } from '@backstage/core-plugin-api';
-import { ConfigReader } from '@backstage/config';
 import { HomePageSearchBar, searchPlugin } from '@backstage/plugin-search';
 import {
-  searchApiRef,
   SearchContextProvider,
+  searchApiRef,
 } from '@backstage/plugin-search-react';
-import { stackOverflowApiRef, HomePageStackOverflowQuestions } from '@backstage/plugin-stack-overflow';
+import { HomePageStackOverflowQuestions, stackOverflowApiRef } from '@backstage/plugin-stack-overflow';
+import { TestApiProvider, wrapInTestApp } from '@backstage/test-utils';
 import { Grid, makeStyles } from '@material-ui/core';
-import React, { ComponentType, PropsWithChildren } from 'react';
+import React, { PropsWithChildren } from 'react';
 
 const entities = [
   {
@@ -107,7 +107,7 @@ starredEntitiesApi.toggleStarred('component:default/example-starred-entity-4');
 export default {
   title: 'Plugins/Home/Templates',
   decorators: [
-    (Story: ComponentType<PropsWithChildren<{}>>) =>
+    (Story: ((props: PropsWithChildren<{}>) => JSX.Element)) =>
       wrapInTestApp(
         <>
           <TestApiProvider

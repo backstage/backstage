@@ -15,15 +15,15 @@
  */
 import React, { useCallback } from 'react';
 
+import { Link, Progress } from '@backstage/core-components';
+import { errorApiRef, IconComponent, useApi } from '@backstage/core-plugin-api';
 import { useEntityList } from '@backstage/plugin-catalog-react';
 import {
   isTemplateEntityV1beta3,
   TemplateEntityV1beta3,
 } from '@backstage/plugin-scaffolder-common';
-import { Progress, Link } from '@backstage/core-components';
-import { Typography } from '@material-ui/core';
-import { errorApiRef, IconComponent, useApi } from '@backstage/core-plugin-api';
 import { TemplateGroup } from '@backstage/plugin-scaffolder-react/alpha';
+import { Typography } from '@material-ui/core';
 
 /**
  * @alpha
@@ -39,9 +39,9 @@ export type TemplateGroupFilter = {
 export interface TemplateGroupsProps {
   groups: TemplateGroupFilter[];
   templateFilter?: (entity: TemplateEntityV1beta3) => boolean;
-  TemplateCardComponent?: React.ComponentType<{
+  TemplateCardComponent?: (props: {
     template: TemplateEntityV1beta3;
-  }>;
+  }) => JSX.Element;
   onTemplateSelected?: (template: TemplateEntityV1beta3) => void;
   additionalLinksForEntity?: (template: TemplateEntityV1beta3) => {
     icon: IconComponent;

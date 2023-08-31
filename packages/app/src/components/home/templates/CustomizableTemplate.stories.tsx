@@ -14,25 +14,25 @@
  * limitations under the License.
  */
 
-import {
-  HomePageStarredEntities,
-  HomePageRandomJoke,
-  CustomHomepageGrid,
-} from '@backstage/plugin-home';
-import {
-  starredEntitiesApiRef,
-  MockStarredEntitiesApi,
-  entityRouteRef,
-  catalogApiRef,
-} from '@backstage/plugin-catalog-react';
-import { wrapInTestApp, TestApiProvider } from '@backstage/test-utils';
-import { configApiRef } from '@backstage/core-plugin-api';
 import { ConfigReader } from '@backstage/config';
-import { searchApiRef } from '@backstage/plugin-search-react';
-import { HomePageSearchBar, searchPlugin } from '@backstage/plugin-search';
+import { configApiRef } from '@backstage/core-plugin-api';
+import {
+  MockStarredEntitiesApi,
+  catalogApiRef,
+  entityRouteRef,
+  starredEntitiesApiRef,
+} from '@backstage/plugin-catalog-react';
 import { HomePageCalendar } from '@backstage/plugin-gcalendar';
+import {
+  CustomHomepageGrid,
+  HomePageRandomJoke,
+  HomePageStarredEntities,
+} from '@backstage/plugin-home';
 import { MicrosoftCalendarCard } from '@backstage/plugin-microsoft-calendar';
-import React, { ComponentType } from 'react';
+import { HomePageSearchBar, searchPlugin } from '@backstage/plugin-search';
+import { searchApiRef } from '@backstage/plugin-search-react';
+import { TestApiProvider, wrapInTestApp } from '@backstage/test-utils';
+import React from 'react';
 
 const entities = [
   {
@@ -82,7 +82,7 @@ starredEntitiesApi.toggleStarred('component:default/example-starred-entity-4');
 export default {
   title: 'Plugins/Home/Templates',
   decorators: [
-    (Story: ComponentType<{}>) =>
+    (Story: ((props: {}) => JSX.Element)) =>
       wrapInTestApp(
         <>
           <TestApiProvider

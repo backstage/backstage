@@ -11,7 +11,6 @@ import { JSX as JSX_2 } from 'react';
 import { LayoutOptions } from '@backstage/plugin-scaffolder-react';
 import { NextFieldExtensionOptions } from '@backstage/plugin-scaffolder-react/alpha';
 import { PropsWithChildren } from 'react';
-import { default as React_2 } from 'react';
 import { ScaffolderTaskOutput } from '@backstage/plugin-scaffolder-react';
 import { TemplateEntityV1beta3 } from '@backstage/plugin-scaffolder-common';
 import { TemplateGroupFilter } from '@backstage/plugin-scaffolder-react/alpha';
@@ -25,15 +24,17 @@ export type FormProps = Pick<
 // @alpha
 export type NextRouterProps = {
   components?: {
-    TemplateCardComponent?: React_2.ComponentType<{
+    TemplateCardComponent?: (props: {
       template: TemplateEntityV1beta3;
-    }>;
-    TaskPageComponent?: React_2.ComponentType<PropsWithChildren<{}>>;
-    TemplateOutputsComponent?: React_2.ComponentType<{
+    }) => JSX.Element;
+    TaskPageComponent?: (props: PropsWithChildren<{}>) => JSX.Element;
+    TemplateOutputsComponent?: (props: {
       output?: ScaffolderTaskOutput;
-    }>;
-    TemplateListPageComponent?: React_2.ComponentType<TemplateListPageProps>;
-    TemplateWizardPageComponent?: React_2.ComponentType<TemplateWizardPageProps>;
+    }) => JSX.Element;
+    TemplateListPageComponent?: (props: TemplateListPageProps) => JSX.Element;
+    TemplateWizardPageComponent?: (
+      props: TemplateWizardPageProps,
+    ) => JSX.Element;
   };
   groups?: TemplateGroupFilter[];
   templateFilter?: (entity: TemplateEntityV1beta3) => boolean;
@@ -52,9 +53,9 @@ export const NextScaffolderPage: (
 
 // @alpha (undocumented)
 export type TemplateListPageProps = {
-  TemplateCardComponent?: React_2.ComponentType<{
+  TemplateCardComponent?: (props: {
     template: TemplateEntityV1beta3;
-  }>;
+  }) => JSX.Element;
   groups?: TemplateGroupFilter[];
   templateFilter?: (entity: TemplateEntityV1beta3) => boolean;
   contextMenu?: {

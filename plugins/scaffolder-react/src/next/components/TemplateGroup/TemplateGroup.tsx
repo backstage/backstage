@@ -13,16 +13,16 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import { TemplateEntityV1beta3 } from '@backstage/plugin-scaffolder-common';
-import React from 'react';
+import { stringifyEntityRef } from '@backstage/catalog-model';
 import {
   Content,
   ContentHeader,
   ItemCardGrid,
 } from '@backstage/core-components';
-import { stringifyEntityRef } from '@backstage/catalog-model';
-import { TemplateCardProps, TemplateCard } from '../TemplateCard';
 import { IconComponent } from '@backstage/core-plugin-api';
+import { TemplateEntityV1beta3 } from '@backstage/plugin-scaffolder-common';
+import React from 'react';
+import { TemplateCard, TemplateCardProps } from '../TemplateCard';
 
 /**
  * The props for the {@link TemplateGroup} component.
@@ -40,7 +40,7 @@ export interface TemplateGroupProps {
   onSelected: (template: TemplateEntityV1beta3) => void;
   title: React.ReactNode;
   components?: {
-    CardComponent?: React.ComponentType<TemplateCardProps>;
+    CardComponent?: (props: TemplateCardProps) => JSX.Element;
   };
 }
 

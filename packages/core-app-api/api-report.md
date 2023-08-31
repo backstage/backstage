@@ -23,7 +23,6 @@ import { BackstageIdentityResponse } from '@backstage/core-plugin-api';
 import { BackstagePlugin } from '@backstage/core-plugin-api';
 import { bitbucketAuthApiRef } from '@backstage/core-plugin-api';
 import { bitbucketServerAuthApiRef } from '@backstage/core-plugin-api';
-import { ComponentType } from 'react';
 import { Config } from '@backstage/config';
 import { ConfigApi } from '@backstage/core-plugin-api';
 import { ConfigReader } from '@backstage/config';
@@ -146,17 +145,19 @@ export class ApiResolver implements ApiHolder {
 
 // @public
 export type AppComponents = {
-  NotFoundErrorPage: ComponentType<PropsWithChildren<{}>>;
-  BootErrorPage: ComponentType<BootErrorPageProps>;
-  Progress: ComponentType<PropsWithChildren<{}>>;
-  Router: ComponentType<
-    PropsWithChildren<{
+  NotFoundErrorPage: (props: PropsWithChildren<{}>) => JSX.Element | null;
+  BootErrorPage: (props: BootErrorPageProps) => JSX.Element | null;
+  Progress: (props: PropsWithChildren<{}>) => JSX.Element | null;
+  Router: (
+    props: PropsWithChildren<{
       basename?: string;
-    }>
-  >;
-  ErrorBoundaryFallback: ComponentType<ErrorBoundaryFallbackProps>;
-  ThemeProvider?: ComponentType<PropsWithChildren<{}>>;
-  SignInPage?: ComponentType<SignInPageProps>;
+    }>,
+  ) => JSX.Element;
+  ErrorBoundaryFallback: (
+    props: ErrorBoundaryFallbackProps,
+  ) => JSX.Element | null;
+  ThemeProvider?: (props: PropsWithChildren<{}>) => JSX.Element;
+  SignInPage?: (props: SignInPageProps) => JSX.Element;
 };
 
 // @public
@@ -277,9 +278,11 @@ export type AuthApiCreateOptions = {
 export type BackstageApp = {
   getPlugins(): BackstagePlugin[];
   getSystemIcon(key: string): IconComponent | undefined;
-  createRoot(element: JSX.Element): ComponentType<PropsWithChildren<{}>>;
-  getProvider(): ComponentType<PropsWithChildren<{}>>;
-  getRouter(): ComponentType<PropsWithChildren<{}>>;
+  createRoot(
+    element: JSX.Element,
+  ): (props: PropsWithChildren<{}>) => JSX.Element;
+  getProvider(): (props: PropsWithChildren<{}>) => JSX.Element;
+  getRouter(): (props: PropsWithChildren<{}>) => JSX.Element;
 };
 
 // @public

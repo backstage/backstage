@@ -246,7 +246,7 @@ export type TemplateGroupFilter = {
 export interface TemplateGroupProps {
   // (undocumented)
   components?: {
-    CardComponent?: React_2.ComponentType<TemplateCardProps>;
+    CardComponent?: (props: TemplateCardProps) => JSX.Element;
   };
   // (undocumented)
   onSelected: (template: TemplateEntityV1beta3) => void;
@@ -281,9 +281,9 @@ export interface TemplateGroupsProps {
   // (undocumented)
   onTemplateSelected?: (template: TemplateEntityV1beta3) => void;
   // (undocumented)
-  TemplateCardComponent?: React_2.ComponentType<{
+  TemplateCardComponent?: (props: {
     template: TemplateEntityV1beta3;
-  }>;
+  }) => JSX.Element;
   // (undocumented)
   templateFilter?: (entity: TemplateEntityV1beta3) => boolean;
 }

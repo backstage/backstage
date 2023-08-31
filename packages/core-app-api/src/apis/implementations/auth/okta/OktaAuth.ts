@@ -21,7 +21,6 @@ import { OAuthApiCreateOptions } from '../types';
 const DEFAULT_PROVIDER = {
   id: 'okta',
   title: 'Okta',
-  icon: () => null,
 };
 
 const OKTA_OIDC_SCOPES: Set<String> = new Set([

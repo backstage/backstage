@@ -14,12 +14,7 @@
  * limitations under the License.
  */
 
-import React, { ComponentType } from 'react';
 import { Entity, stringifyEntityRef } from '@backstage/catalog-model';
-import {
-  isTemplateEntityV1beta3,
-  TemplateEntityV1beta3,
-} from '@backstage/plugin-scaffolder-common';
 import {
   Content,
   ContentHeader,
@@ -29,7 +24,12 @@ import {
   WarningPanel,
 } from '@backstage/core-components';
 import { useEntityList } from '@backstage/plugin-catalog-react';
+import {
+  TemplateEntityV1beta3,
+  isTemplateEntityV1beta3,
+} from '@backstage/plugin-scaffolder-common';
 import { Typography } from '@material-ui/core';
+import React from 'react';
 import { TemplateCard } from '../TemplateCard';
 
 /**
@@ -37,7 +37,7 @@ import { TemplateCard } from '../TemplateCard';
  */
 export type TemplateListProps = {
   TemplateCardComponent?:
-    | ComponentType<{ template: TemplateEntityV1beta3 }>
+    | ((props: { template: TemplateEntityV1beta3 }) => JSX.Element)
     | undefined;
   group?: {
     title?: React.ReactNode;

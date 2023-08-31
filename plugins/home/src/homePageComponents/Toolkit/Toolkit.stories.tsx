@@ -17,15 +17,16 @@
 import { InfoCard } from '@backstage/core-components';
 import { wrapInTestApp } from '@backstage/test-utils';
 import { Grid } from '@material-ui/core';
-import React, { ComponentType, PropsWithChildren } from 'react';
+import React, { PropsWithChildren } from 'react';
+import { TemplateBackstageLogoIcon } from '../../assets';
 import { ComponentAccordion } from '../../componentRenderers';
 import { HomePageToolkit } from '../../plugin';
-import { TemplateBackstageLogoIcon } from '../../assets';
 
 export default {
   title: 'Plugins/Home/Components/Toolkit',
   decorators: [
-    (Story: ComponentType<PropsWithChildren<{}>>) => wrapInTestApp(<Story />),
+    (Story: (props: PropsWithChildren<{}>) => JSX.Element) =>
+      wrapInTestApp(<Story />),
   ],
 };
 

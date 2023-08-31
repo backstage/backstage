@@ -15,19 +15,18 @@
  */
 
 import {
-  microsoftAuthApiRef,
-  AuthRequestOptions,
   AuthProviderInfo,
+  AuthRequestOptions,
   ConfigApi,
   DiscoveryApi,
   OAuthRequestApi,
+  microsoftAuthApiRef,
 } from '@backstage/core-plugin-api';
 import { OAuth2, OAuth2CreateOptions } from '../oauth2';
 
 const DEFAULT_PROVIDER = {
   id: 'microsoft',
   title: 'Microsoft',
-  icon: () => null,
 };
 
 /**

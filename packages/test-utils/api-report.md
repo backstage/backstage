@@ -8,7 +8,6 @@ import { AnalyticsEvent } from '@backstage/core-plugin-api';
 import { ApiHolder } from '@backstage/core-plugin-api';
 import { ApiRef } from '@backstage/core-plugin-api';
 import { AuthorizeResult } from '@backstage/plugin-permission-common';
-import { ComponentType } from 'react';
 import { Config } from '@backstage/config';
 import { ConfigApi } from '@backstage/core-plugin-api';
 import crossFetch from 'cross-fetch';
@@ -192,7 +191,7 @@ export type MockStorageBucket = {
 
 // @public
 export function renderInTestApp(
-  Component: ComponentType | ReactNode,
+  Component: React_2.FC | ReactNode,
   options?: TestAppOptions,
 ): Promise<RenderResult>;
 
@@ -266,7 +265,7 @@ export function withLogCollector<T extends LogFuncs>(
 
 // @public
 export function wrapInTestApp(
-  Component: ComponentType | ReactNode,
+  Component: React_2.FC | ReactNode,
   options?: TestAppOptions,
 ): ReactElement;
 ```

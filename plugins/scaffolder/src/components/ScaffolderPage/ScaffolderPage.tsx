@@ -22,8 +22,8 @@ import {
   Page,
   SupportButton,
 } from '@backstage/core-components';
-import { TemplateEntityV1beta3 } from '@backstage/plugin-scaffolder-common';
 import { useRouteRef } from '@backstage/core-plugin-api';
+import { catalogEntityCreatePermission } from '@backstage/plugin-catalog-common/alpha';
 import {
   CatalogFilterLayout,
   EntityKindPicker,
@@ -32,17 +32,17 @@ import {
   EntityTagPicker,
   UserListPicker,
 } from '@backstage/plugin-catalog-react';
-import React, { ComponentType } from 'react';
+import { usePermission } from '@backstage/plugin-permission-react';
+import { TemplateEntityV1beta3 } from '@backstage/plugin-scaffolder-common';
+import React from 'react';
+import { registerComponentRouteRef } from '../../routes';
 import { TemplateList } from '../TemplateList';
 import { TemplateTypePicker } from '../TemplateTypePicker';
-import { catalogEntityCreatePermission } from '@backstage/plugin-catalog-common/alpha';
-import { usePermission } from '@backstage/plugin-permission-react';
 import { ScaffolderPageContextMenu } from './ScaffolderPageContextMenu';
-import { registerComponentRouteRef } from '../../routes';
 
 export type ScaffolderPageProps = {
   TemplateCardComponent?:
-    | ComponentType<{ template: TemplateEntityV1beta3 }>
+    | ((props: { template: TemplateEntityV1beta3 }) => JSX.Element)
     | undefined;
   groups?: Array<{
     title?: React.ReactNode;

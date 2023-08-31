@@ -14,19 +14,19 @@
  * limitations under the License.
  */
 
+import { ConfigReader } from '@backstage/core-app-api';
+import { configApiRef } from '@backstage/core-plugin-api';
+import { TestApiProvider, wrapInTestApp } from '@backstage/test-utils';
+import { Grid, makeStyles } from '@material-ui/core';
+import React, { PropsWithChildren } from 'react';
 import { TemplateBackstageLogo } from '../../assets';
 import { HomePageCompanyLogo } from '../../plugin';
 import { rootRouteRef } from '../../routes';
-import { wrapInTestApp, TestApiProvider } from '@backstage/test-utils';
-import { configApiRef } from '@backstage/core-plugin-api';
-import { ConfigReader } from '@backstage/core-app-api';
-import { Grid, makeStyles } from '@material-ui/core';
-import React, { ComponentType, PropsWithChildren } from 'react';
 
 export default {
   title: 'Plugins/Home/Components/CompanyLogo',
   decorators: [
-    (Story: ComponentType<PropsWithChildren<{}>>) =>
+    (Story: (props: PropsWithChildren<{}>) => JSX.Element) =>
       wrapInTestApp(
         <TestApiProvider
           apis={[

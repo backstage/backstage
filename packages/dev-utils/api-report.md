@@ -8,7 +8,6 @@
 import { ApiFactory } from '@backstage/core-plugin-api';
 import { AppTheme } from '@backstage/core-plugin-api';
 import { BackstagePlugin } from '@backstage/core-plugin-api';
-import { ComponentType } from 'react';
 import { Entity } from '@backstage/catalog-model';
 import { GridProps } from '@material-ui/core';
 import { IconComponent } from '@backstage/core-plugin-api';
@@ -23,7 +22,7 @@ export class DevAppBuilder {
   addPage(opts: DevAppPageOptions): DevAppBuilder;
   addRootChild(node: ReactNode): DevAppBuilder;
   addThemes(themes: AppTheme[]): this;
-  build(): ComponentType<PropsWithChildren<{}>>;
+  build(): (props: PropsWithChildren<{}>) => JSX.Element;
   registerApi<
     Api,
     Impl extends Api,

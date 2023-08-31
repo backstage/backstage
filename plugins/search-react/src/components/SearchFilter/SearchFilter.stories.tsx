@@ -14,12 +14,12 @@
  * limitations under the License.
  */
 
-import React, { ComponentType, PropsWithChildren } from 'react';
 import { Grid, Paper } from '@material-ui/core';
+import React, { PropsWithChildren } from 'react';
 
 import { TestApiProvider } from '@backstage/test-utils';
 
-import { searchApiRef, MockSearchApi } from '../../api';
+import { MockSearchApi, searchApiRef } from '../../api';
 import { SearchContextProvider } from '../../context';
 import { SearchFilter } from './SearchFilter';
 
@@ -27,7 +27,7 @@ export default {
   title: 'Plugins/Search/SearchFilter',
   component: SearchFilter,
   decorators: [
-    (Story: ComponentType<PropsWithChildren<{}>>) => (
+    (Story: (props: PropsWithChildren<{}>) => JSX.Element) => (
       <TestApiProvider apis={[[searchApiRef, new MockSearchApi()]]}>
         <SearchContextProvider>
           <Grid container direction="row">

@@ -14,15 +14,15 @@
  * limitations under the License.
  */
 
-import { DefaultAuthConnector } from './DefaultAuthConnector';
-import MockOAuthApi from '../../apis/implementations/OAuthRequestApi/MockOAuthApi';
-import * as loginPopup from '../loginPopup';
-import { UrlPatternDiscovery } from '../../apis';
-import { setupRequestMockHandlers } from '@backstage/test-utils';
-import { setupServer } from 'msw/node';
-import { rest } from 'msw';
 import { ConfigReader } from '@backstage/config';
 import { ConfigApi } from '@backstage/core-plugin-api';
+import { setupRequestMockHandlers } from '@backstage/test-utils';
+import { rest } from 'msw';
+import { setupServer } from 'msw/node';
+import { UrlPatternDiscovery } from '../../apis';
+import MockOAuthApi from '../../apis/implementations/OAuthRequestApi/MockOAuthApi';
+import * as loginPopup from '../loginPopup';
+import { DefaultAuthConnector } from './DefaultAuthConnector';
 
 jest.mock('../loginPopup', () => {
   return {
@@ -40,7 +40,6 @@ const defaultOptions = {
   provider: {
     id: 'my-provider',
     title: 'My Provider',
-    icon: () => null,
   },
   oauthRequestApi: new MockOAuthApi(),
   sessionTransform: ({ expiresInSeconds, ...res }: any) => ({

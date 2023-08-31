@@ -15,7 +15,6 @@
  */
 
 import { AnyApiFactory } from '@backstage/core-plugin-api';
-import { ComponentType } from 'react';
 import { PortableSchema } from './createSchemaFromZod';
 
 /** @public */
@@ -33,7 +32,9 @@ export function createExtensionDataRef<T>(id: string): ExtensionDataRef<T> {
 
 /** @public */
 export const coreExtensionData = {
-  reactComponent: createExtensionDataRef<ComponentType>('core.reactComponent'),
+  reactComponent: createExtensionDataRef<() => JSX.Element>(
+    'core.reactComponent',
+  ),
   routePath: createExtensionDataRef<string>('core.routing.path'),
   apiFactory: createExtensionDataRef<AnyApiFactory>('core.api.factory'),
 };

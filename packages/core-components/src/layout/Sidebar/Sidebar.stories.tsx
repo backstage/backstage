@@ -15,18 +15,17 @@
  */
 import { createRouteRef } from '@backstage/core-plugin-api';
 import { wrapInTestApp } from '@backstage/test-utils';
+import AcUnitIcon from '@material-ui/icons/AcUnit';
 import AddCircleOutlineIcon from '@material-ui/icons/AddCircleOutline';
+import AppsIcon from '@material-ui/icons/Apps';
+import BuildRoundedIcon from '@material-ui/icons/BuildRounded';
+import CloudQueueIcon from '@material-ui/icons/CloudQueue';
 import HomeOutlinedIcon from '@material-ui/icons/HomeOutlined';
 import MenuIcon from '@material-ui/icons/Menu';
-import BuildRoundedIcon from '@material-ui/icons/BuildRounded';
 import MenuBookIcon from '@material-ui/icons/MenuBook';
-import CloudQueueIcon from '@material-ui/icons/CloudQueue';
-import AcUnitIcon from '@material-ui/icons/AcUnit';
-import AppsIcon from '@material-ui/icons/Apps';
-import React, { ComponentType, PropsWithChildren } from 'react';
-import { SidebarPage } from './Page';
+import React, { PropsWithChildren } from 'react';
 import { Sidebar } from './Bar';
-import { SidebarGroup } from './SidebarGroup';
+import { SidebarIntro } from './Intro';
 import {
   SidebarDivider,
   SidebarExpandButton,
@@ -34,7 +33,8 @@ import {
   SidebarSearchField,
   SidebarSpace,
 } from './Items';
-import { SidebarIntro } from './Intro';
+import { SidebarPage } from './Page';
+import { SidebarGroup } from './SidebarGroup';
 import { SidebarSubmenu } from './SidebarSubmenu';
 import { SidebarSubmenuItem } from './SidebarSubmenuItem';
 
@@ -46,7 +46,7 @@ export default {
   title: 'Layout/Sidebar',
   component: Sidebar,
   decorators: [
-    (Story: ComponentType<PropsWithChildren<{}>>) =>
+    (Story: (props: PropsWithChildren<{}>) => JSX.Element) =>
       wrapInTestApp(<Story />, { mountedRoutes: { '/': routeRef } }),
   ],
 };

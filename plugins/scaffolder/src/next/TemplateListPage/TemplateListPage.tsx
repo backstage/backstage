@@ -14,10 +14,10 @@
  * limitations under the License.
  */
 
+import { useApp, useRouteRef } from '@backstage/core-plugin-api';
+import { TemplateEntityV1beta3 } from '@backstage/plugin-scaffolder-common';
 import React, { useCallback } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { TemplateEntityV1beta3 } from '@backstage/plugin-scaffolder-common';
-import { useApp, useRouteRef } from '@backstage/core-plugin-api';
 
 import {
   Content,
@@ -28,11 +28,11 @@ import {
   SupportButton,
 } from '@backstage/core-components';
 import {
+  CatalogFilterLayout,
   EntityKindPicker,
   EntityListProvider,
   EntitySearchBar,
   EntityTagPicker,
-  CatalogFilterLayout,
   UserListPicker,
 } from '@backstage/plugin-catalog-react';
 import {
@@ -42,7 +42,7 @@ import {
   TemplateGroups,
 } from '@backstage/plugin-scaffolder-react/alpha';
 
-import { RegisterExistingButton } from './RegisterExistingButton';
+import { parseEntityRef, stringifyEntityRef } from '@backstage/catalog-model';
 import {
   actionsRouteRef,
   editRouteRef,
@@ -51,15 +51,15 @@ import {
   selectedTemplateRouteRef,
   viewTechDocRouteRef,
 } from '../../routes';
-import { parseEntityRef, stringifyEntityRef } from '@backstage/catalog-model';
+import { RegisterExistingButton } from './RegisterExistingButton';
 
 /**
  * @alpha
  */
 export type TemplateListPageProps = {
-  TemplateCardComponent?: React.ComponentType<{
+  TemplateCardComponent?: (props: {
     template: TemplateEntityV1beta3;
-  }>;
+  }) => JSX.Element;
   groups?: TemplateGroupFilter[];
   templateFilter?: (entity: TemplateEntityV1beta3) => boolean;
   contextMenu?: {

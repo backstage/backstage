@@ -14,8 +14,6 @@
  * limitations under the License.
  */
 
-import { ComponentType } from 'react';
-
 /**
  * IconComponent is the common icon type used throughout Backstage when
  * working with and rendering generic icons, including the app system icons.
@@ -33,13 +31,13 @@ import { ComponentType } from 'react';
  * @public
  */
 
-export type IconComponent = ComponentType<
-  /* Material UI v4 */
+export type IconComponent = (
+  props: /* Material UI v4 */
   | {
-      fontSize?: 'large' | 'small' | 'default';
-    }
-  /* Material UI v5: https://mui.com/material-ui/migration/v5-component-changes/#icon */
-  | {
-      fontSize?: 'medium' | 'large' | 'small';
-    }
->;
+        fontSize?: 'large' | 'small' | 'default';
+      }
+    /* Material UI v5: https://mui.com/material-ui/migration/v5-component-changes/#icon */
+    | {
+        fontSize?: 'medium' | 'large' | 'small';
+      },
+) => JSX.Element;

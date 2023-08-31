@@ -30,7 +30,7 @@ describe('<ApiDefinitionCard />', () => {
   const apiDocsConfig: jest.Mocked<ApiDocsConfig> = {
     getApiDefinitionWidget: jest.fn(),
   } as any;
-  let Wrapper: React.ComponentType<React.PropsWithChildren<{}>>;
+  let Wrapper: (props: React.PropsWithChildren<{}>) => JSX.Element;
 
   beforeEach(() => {
     Wrapper = ({ children }: { children?: React.ReactNode }) => (

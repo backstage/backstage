@@ -17,11 +17,11 @@
 import {
   AuthRequestOptions,
   BackstageIdentityApi,
+  BackstageIdentityResponse,
   ProfileInfo,
   ProfileInfoApi,
   SessionApi,
   SessionState,
-  BackstageIdentityResponse,
 } from '@backstage/core-plugin-api';
 import { Observable } from '@backstage/types';
 import { DirectAuthConnector } from '../../../../lib/AuthConnector';
@@ -41,7 +41,6 @@ export type SamlAuthResponse = {
 const DEFAULT_PROVIDER = {
   id: 'saml',
   title: 'SAML',
-  icon: () => null,
 };
 
 /**

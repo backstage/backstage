@@ -14,23 +14,22 @@
  * limitations under the License.
  */
 
-import React, { ComponentType, ReactNode, ReactElement } from 'react';
-import { MemoryRouter } from 'react-router-dom';
-import { Route } from 'react-router-dom';
-import { UnifiedThemeProvider, themes } from '@backstage/theme';
-import MockIcon from '@material-ui/icons/AcUnit';
 import { createSpecializedApp } from '@backstage/core-app-api';
 import {
   BootErrorPageProps,
-  RouteRef,
   ExternalRouteRef,
+  RouteRef,
   attachComponentData,
   createRouteRef,
 } from '@backstage/core-plugin-api';
+import { UnifiedThemeProvider, themes } from '@backstage/theme';
+import MockIcon from '@material-ui/icons/AcUnit';
 import { MatcherFunction, RenderResult } from '@testing-library/react';
-import { renderWithEffects } from './testingLibrary';
+import React, { ReactElement, ReactNode } from 'react';
+import { MemoryRouter, Route } from 'react-router-dom';
 import { defaultApis } from './defaultApis';
 import { mockApis } from './mockApis';
+import { renderWithEffects } from './testingLibrary';
 
 const mockIcons = {
   'kind:api': MockIcon,
@@ -199,14 +198,14 @@ export function createTestAppWrapper(
  * @public
  */
 export function wrapInTestApp(
-  Component: ComponentType | ReactNode,
+  Component: React.FC | ReactNode,
   options: TestAppOptions = {},
 ): ReactElement {
   const TestAppWrapper = createTestAppWrapper(options);
 
   let wrappedElement: React.ReactElement;
   if (Component instanceof Function) {
-    wrappedElement = React.createElement(Component as ComponentType);
+    wrappedElement = React.createElement(Component as React.FC);
   } else {
     wrappedElement = Component as React.ReactElement;
   }
@@ -226,12 +225,12 @@ export function wrapInTestApp(
  * @public
  */
 export async function renderInTestApp(
-  Component: ComponentType | ReactNode,
+  Component: React.FC | ReactNode,
   options: TestAppOptions = {},
 ): Promise<RenderResult> {
   let wrappedElement: React.ReactElement;
   if (Component instanceof Function) {
-    wrappedElement = React.createElement(Component as ComponentType);
+    wrappedElement = React.createElement(Component as React.FC);
   } else {
     wrappedElement = Component as React.ReactElement;
   }

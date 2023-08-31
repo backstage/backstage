@@ -17,12 +17,12 @@
 import { Entity, RELATION_HAS_PART } from '@backstage/catalog-model';
 import {
   CatalogApi,
-  catalogApiRef,
   EntityProvider,
+  catalogApiRef,
   entityRouteRef,
 } from '@backstage/plugin-catalog-react';
-import { renderInTestApp, TestApiProvider } from '@backstage/test-utils';
-import { waitFor, screen } from '@testing-library/react';
+import { TestApiProvider, renderInTestApp } from '@backstage/test-utils';
+import { screen, waitFor } from '@testing-library/react';
 import React from 'react';
 import { HasSubcomponentsCard } from './HasSubcomponentsCard';
 
@@ -30,7 +30,7 @@ describe('<HasSubcomponentsCard />', () => {
   const getEntitiesByRefs: jest.MockedFunction<
     CatalogApi['getEntitiesByRefs']
   > = jest.fn();
-  let Wrapper: React.ComponentType<React.PropsWithChildren<{}>>;
+  let Wrapper: (props: React.PropsWithChildren<{}>) => JSX.Element;
 
   beforeEach(() => {
     Wrapper = ({ children }: { children?: React.ReactNode }) => (

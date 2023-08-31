@@ -13,21 +13,22 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+import {
+  scaffolderApiRef,
+  useTemplateSecrets,
+  type FieldExtensionOptions,
+  type LayoutOptions,
+} from '@backstage/plugin-scaffolder-react';
 import { LinearProgress } from '@material-ui/core';
 import { IChangeEvent } from '@rjsf/core';
 import qs from 'qs';
-import React, { ComponentType, useCallback, useState } from 'react';
+import React, { useCallback, useState } from 'react';
 import { Navigate, useNavigate } from 'react-router-dom';
 import useAsync from 'react-use/lib/useAsync';
-import {
-  type FieldExtensionOptions,
-  type LayoutOptions,
-  scaffolderApiRef,
-  useTemplateSecrets,
-} from '@backstage/plugin-scaffolder-react';
 import { MultistepJsonForm } from '../MultistepJsonForm';
 import { createValidator } from './createValidator';
 
+import { stringifyEntityRef } from '@backstage/catalog-model';
 import { Content, Header, InfoCard, Page } from '@backstage/core-components';
 import {
   AnalyticsContext,
@@ -37,13 +38,12 @@ import {
   useRouteRef,
   useRouteRefParams,
 } from '@backstage/core-plugin-api';
-import { stringifyEntityRef } from '@backstage/catalog-model';
-import { ReviewStepProps } from '../types';
 import {
   rootRouteRef,
   scaffolderTaskRouteRef,
   selectedTemplateRouteRef,
 } from '../../routes';
+import { ReviewStepProps } from '../types';
 
 const useTemplateParameterSchema = (templateRef: string) => {
   const scaffolderApi = useApi(scaffolderApiRef);
@@ -55,7 +55,7 @@ const useTemplateParameterSchema = (templateRef: string) => {
 };
 
 type Props = {
-  ReviewStepComponent?: ComponentType<ReviewStepProps>;
+  ReviewStepComponent?: (props: ReviewStepProps) => JSX.Element;
   customFieldExtensions?: FieldExtensionOptions<any, any>[];
   layouts?: LayoutOptions[];
   headerOptions?: {

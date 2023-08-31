@@ -15,11 +15,11 @@
  */
 
 import {
-  oneloginAuthApiRef,
-  OAuthRequestApi,
   AuthProviderInfo,
   ConfigApi,
   DiscoveryApi,
+  OAuthRequestApi,
+  oneloginAuthApiRef,
 } from '@backstage/core-plugin-api';
 import { OAuth2 } from '../oauth2';
 
@@ -38,7 +38,6 @@ export type OneLoginAuthCreateOptions = {
 const DEFAULT_PROVIDER = {
   id: 'onelogin',
   title: 'onelogin',
-  icon: () => null,
 };
 
 const OIDC_SCOPES: Set<String> = new Set([

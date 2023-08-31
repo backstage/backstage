@@ -14,8 +14,8 @@
  * limitations under the License.
  */
 
-import { ComponentType, ReactNode } from 'react';
 import { getOrCreateGlobalSingleton } from '@backstage/version-bridge';
+import { ReactNode } from 'react';
 
 type DataContainer = {
   map: Map<string, unknown>;
@@ -25,7 +25,7 @@ type DataContainer = {
 // will be removed in the future for the reasons described below.
 const globalStore = getOrCreateGlobalSingleton(
   'component-data-store',
-  () => new WeakMap<ComponentType<any>, DataContainer>(),
+  () => new WeakMap<React.FC<any>, DataContainer>(),
 );
 
 // This key is used to attach component data to the component type (function or class)
@@ -33,7 +33,7 @@ const globalStore = getOrCreateGlobalSingleton(
 // like react-hot-loader, as opposed to the WeakMap method or using a symbol.
 const componentDataKey = '__backstage_data';
 
-type ComponentWithData = ComponentType<any> & {
+type ComponentWithData = React.FC<any> & {
   [componentDataKey]?: DataContainer;
 };
 
@@ -54,7 +54,7 @@ type MaybeComponentNode = ReactNode & {
  * @public
  */
 export function attachComponentData<P>(
-  component: ComponentType<P>,
+  component: React.FC<P>,
   type: string,
   data: unknown,
 ) {

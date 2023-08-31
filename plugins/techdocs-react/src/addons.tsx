@@ -43,9 +43,9 @@ export const TECHDOCS_ADDONS_WRAPPER_KEY = 'techdocs.addons.wrapper.v1';
  * TechDocs Addon registry.
  * @public
  */
-export const TechDocsAddons: React.ComponentType<
-  React.PropsWithChildren<{}>
-> = () => null;
+export const TechDocsAddons: (
+  props: React.PropsWithChildren<{}>,
+) => JSX.Element | null = () => null;
 
 attachComponentData(TechDocsAddons, TECHDOCS_ADDONS_WRAPPER_KEY, true);
 

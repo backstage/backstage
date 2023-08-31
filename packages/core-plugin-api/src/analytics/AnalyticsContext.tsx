@@ -92,7 +92,7 @@ export const AnalyticsContext = (options: {
  * @internal
  */
 export function withAnalyticsContext<TProps extends {}>(
-  Component: React.ComponentType<TProps>,
+  Component: React.FC<TProps>,
   values: AnalyticsContextValue,
 ) {
   const ComponentWithAnalyticsContext = (props: TProps) => {

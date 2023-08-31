@@ -14,9 +14,9 @@
  * limitations under the License.
  */
 
-import { ApiRef, createApiRef } from '../system';
-import { IconComponent } from '../../icons/types';
 import { Observable } from '@backstage/types';
+import { IconComponent } from '../../icons/types';
+import { ApiRef, createApiRef } from '../system';
 
 /**
  * This file contains declarations for common interfaces of auth-related APIs.
@@ -53,7 +53,7 @@ export type AuthProviderInfo = {
   /**
    * Icon for the auth provider.
    */
-  icon: IconComponent;
+  icon?: IconComponent;
 };
 
 /**

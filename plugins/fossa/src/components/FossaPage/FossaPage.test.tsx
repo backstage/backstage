@@ -16,7 +16,7 @@
 
 import { Entity } from '@backstage/catalog-model';
 import { catalogApiRef, entityRouteRef } from '@backstage/plugin-catalog-react';
-import { renderInTestApp, TestApiProvider } from '@backstage/test-utils';
+import { TestApiProvider, renderInTestApp } from '@backstage/test-utils';
 import React from 'react';
 import { FossaApi, fossaApiRef } from '../../api';
 import { FossaPage } from './FossaPage';
@@ -38,7 +38,7 @@ describe('<FossaPage />', () => {
     getFindingSummary: jest.fn(),
     getFindingSummaries: jest.fn(),
   };
-  let Wrapper: React.ComponentType<React.PropsWithChildren<{}>>;
+  let Wrapper: (props: React.PropsWithChildren<{}>) => JSX.Element;
 
   beforeEach(() => {
     Wrapper = ({ children }: { children?: React.ReactNode }) => (

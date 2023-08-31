@@ -14,20 +14,20 @@
  * limitations under the License.
  */
 
-import React, { useContext, ReactNode, ComponentType, useState } from 'react';
 import {
   ConfigApi,
-  configApiRef,
   IdentityApi,
   SignInPageProps,
+  configApiRef,
   useApi,
   useApp,
 } from '@backstage/core-plugin-api';
-import { InternalAppContext } from './InternalAppContext';
-import { isReactRouterBeta } from './isReactRouterBeta';
-import { RouteTracker } from '../routing/RouteTracker';
+import React, { ReactNode, useContext, useState } from 'react';
 import { Route, Routes } from 'react-router-dom';
 import { AppIdentityProxy } from '../apis/implementations/IdentityApi/AppIdentityProxy';
+import { RouteTracker } from '../routing/RouteTracker';
+import { InternalAppContext } from './InternalAppContext';
+import { isReactRouterBeta } from './isReactRouterBeta';
 
 /**
  * Get the app base path from the configured app baseUrl.
@@ -64,7 +64,7 @@ function SignInPageWrapper({
   appIdentityProxy,
   children,
 }: {
-  component: ComponentType<SignInPageProps>;
+  component: (props: SignInPageProps) => JSX.Element;
   appIdentityProxy: AppIdentityProxy;
   children: ReactNode;
 }) {

@@ -14,7 +14,6 @@
  * limitations under the License.
  */
 
-import { ComponentType } from 'react';
 import { Entity } from '@backstage/catalog-model';
 
 /**
@@ -113,5 +112,5 @@ export const TechDocsAddonLocations = Object.freeze({
 export type TechDocsAddonOptions<TAddonProps = {}> = {
   name: string;
   location: keyof typeof TechDocsAddonLocations;
-  component: ComponentType<TAddonProps>;
+  component: (props: TAddonProps) => JSX.Element | null;
 };

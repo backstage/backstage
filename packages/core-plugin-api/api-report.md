@@ -6,7 +6,6 @@
 /// <reference types="react" />
 
 import { BackstagePlugin as BackstagePlugin_2 } from '@backstage/core-plugin-api';
-import { ComponentType } from 'react';
 import { Config } from '@backstage/config';
 import { IconComponent as IconComponent_2 } from '@backstage/core-plugin-api';
 import { IdentityApi as IdentityApi_2 } from '@backstage/core-plugin-api';
@@ -138,17 +137,19 @@ export type ApiRefConfig = {
 
 // @public
 export type AppComponents = {
-  NotFoundErrorPage: ComponentType<PropsWithChildren<{}>>;
-  BootErrorPage: ComponentType<BootErrorPageProps>;
-  Progress: ComponentType<PropsWithChildren<{}>>;
-  Router: ComponentType<
-    PropsWithChildren<{
+  NotFoundErrorPage: (props: PropsWithChildren<{}>) => JSX.Element | null;
+  BootErrorPage: (props: BootErrorPageProps) => JSX.Element | null;
+  Progress: (props: PropsWithChildren<{}>) => JSX.Element | null;
+  Router: (
+    props: PropsWithChildren<{
       basename?: string;
-    }>
-  >;
-  ErrorBoundaryFallback: ComponentType<ErrorBoundaryFallbackProps>;
-  ThemeProvider?: ComponentType<PropsWithChildren<{}>>;
-  SignInPage?: ComponentType<SignInPageProps>;
+    }>,
+  ) => JSX.Element;
+  ErrorBoundaryFallback: (
+    props: ErrorBoundaryFallbackProps,
+  ) => JSX.Element | null;
+  ThemeProvider?: (props: PropsWithChildren<{}>) => JSX.Element;
+  SignInPage?: (props: SignInPageProps) => JSX.Element;
 };
 
 // @public
@@ -186,7 +187,7 @@ export const atlassianAuthApiRef: ApiRef<
 
 // @public
 export function attachComponentData<P>(
-  component: ComponentType<P>,
+  component: React.FC<P>,
   type: string,
   data: unknown,
 ): void;
@@ -195,7 +196,7 @@ export function attachComponentData<P>(
 export type AuthProviderInfo = {
   id: string;
   title: string;
-  icon: IconComponent;
+  icon?: IconComponent;
 };
 
 // @public
@@ -503,14 +504,15 @@ export const googleAuthApiRef: ApiRef<
 >;
 
 // @public
-export type IconComponent = ComponentType<
-  | {
-      fontSize?: 'large' | 'small' | 'default';
-    }
-  | {
-      fontSize?: 'medium' | 'large' | 'small';
-    }
->;
+export type IconComponent = (
+  props:
+    | {
+        fontSize?: 'large' | 'small' | 'default';
+      }
+    | {
+        fontSize?: 'medium' | 'large' | 'small';
+      },
+) => JSX.Element;
 
 // @public
 export type IdentityApi = {
@@ -781,7 +783,7 @@ export function useRouteRefParams<Params extends AnyParams>(
 export function withApis<T extends {}>(
   apis: TypesToApiRefs<T>,
 ): <TProps extends T>(
-  WrappedComponent: React_2.ComponentType<TProps>,
+  WrappedComponent: React_2.FC<TProps>,
 ) => {
   (
     props: React_2.PropsWithChildren<Omit<TProps, keyof T>>,

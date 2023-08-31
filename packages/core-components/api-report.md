@@ -909,11 +909,9 @@ export type SidebarContextType = {
 // Warning: (ae-missing-release-tag) "SidebarDivider" is part of the package's API, but it is missing a release tag (@alpha, @beta, @public, or @internal)
 //
 // @public (undocumented)
-export const SidebarDivider: React_2.ComponentType<
-  React_2.ClassAttributes<HTMLHRElement> &
-    React_2.HTMLAttributes<HTMLHRElement> &
-    StyledComponentProps<'root'>
->;
+export const SidebarDivider: (
+  props: ComponentProps<'hr'> & StyledComponentProps<'root'>,
+) => JSX.Element;
 
 // Warning: (ae-missing-release-tag) "SidebarDividerClassKey" is part of the package's API, but it is missing a release tag (@alpha, @beta, @public, or @internal)
 //
@@ -1042,11 +1040,9 @@ export type SidebarProps = {
 // Warning: (ae-missing-release-tag) "SidebarScrollWrapper" is part of the package's API, but it is missing a release tag (@alpha, @beta, @public, or @internal)
 //
 // @public (undocumented)
-export const SidebarScrollWrapper: React_2.ComponentType<
-  React_2.ClassAttributes<HTMLDivElement> &
-    React_2.HTMLAttributes<HTMLDivElement> &
-    StyledComponentProps<'root'>
->;
+export const SidebarScrollWrapper: (
+  props: ComponentProps<'div'> & StyledComponentProps<'root'>,
+) => JSX.Element;
 
 // Warning: (ae-forgotten-export) The symbol "SidebarSearchFieldProps" needs to be exported by the entry point index.d.ts
 // Warning: (ae-missing-release-tag) "SidebarSearchField" is part of the package's API, but it is missing a release tag (@alpha, @beta, @public, or @internal)
@@ -1059,11 +1055,9 @@ export function SidebarSearchField(
 // Warning: (ae-missing-release-tag) "SidebarSpace" is part of the package's API, but it is missing a release tag (@alpha, @beta, @public, or @internal)
 //
 // @public (undocumented)
-export const SidebarSpace: React_2.ComponentType<
-  React_2.ClassAttributes<HTMLDivElement> &
-    React_2.HTMLAttributes<HTMLDivElement> &
-    StyledComponentProps<'root'>
->;
+export const SidebarSpace: (
+  props: ComponentProps<'div'> & StyledComponentProps<'root'>,
+) => JSX.Element;
 
 // Warning: (ae-missing-release-tag) "SidebarSpaceClassKey" is part of the package's API, but it is missing a release tag (@alpha, @beta, @public, or @internal)
 //
@@ -1073,11 +1067,9 @@ export type SidebarSpaceClassKey = 'root';
 // Warning: (ae-missing-release-tag) "SidebarSpacer" is part of the package's API, but it is missing a release tag (@alpha, @beta, @public, or @internal)
 //
 // @public (undocumented)
-export const SidebarSpacer: React_2.ComponentType<
-  React_2.ClassAttributes<HTMLDivElement> &
-    React_2.HTMLAttributes<HTMLDivElement> &
-    StyledComponentProps<'root'>
->;
+export const SidebarSpacer: (
+  props: ComponentProps<'div'> & StyledComponentProps<'root'>,
+) => JSX.Element;
 
 // Warning: (ae-missing-release-tag) "SidebarSpacerClassKey" is part of the package's API, but it is missing a release tag (@alpha, @beta, @public, or @internal)
 //

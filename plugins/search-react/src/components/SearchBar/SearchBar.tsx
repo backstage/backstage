@@ -24,10 +24,9 @@ import { TextFieldProps } from '@material-ui/core/TextField';
 import SearchIcon from '@material-ui/icons/Search';
 import React, {
   ChangeEvent,
-  ComponentType,
-  forwardRef,
   ForwardRefExoticComponent,
   KeyboardEvent,
+  forwardRef,
   useCallback,
   useEffect,
   useState,
@@ -37,7 +36,7 @@ import useDebounce from 'react-use/lib/useDebounce';
 import { SearchContextProvider, useSearch } from '../../context';
 import { TrackSearch } from '../SearchTracker';
 
-function withContext<T>(Component: ComponentType<T>) {
+function withContext<T>(Component: (props: T) => JSX.Element | null) {
   return forwardRef<HTMLDivElement, T>((props, ref) => (
     <SearchContextProvider inheritParentContextIfAvailable>
       <Component {...props} ref={ref} />

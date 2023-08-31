@@ -17,11 +17,11 @@
 import { Entity, RELATION_HAS_PART } from '@backstage/catalog-model';
 import {
   CatalogApi,
-  catalogApiRef,
   EntityProvider,
+  catalogApiRef,
   entityRouteRef,
 } from '@backstage/plugin-catalog-react';
-import { renderInTestApp, TestApiProvider } from '@backstage/test-utils';
+import { TestApiProvider, renderInTestApp } from '@backstage/test-utils';
 import { waitFor } from '@testing-library/react';
 import React from 'react';
 import { ApiDocsConfig, apiDocsConfigRef } from '../../config';
@@ -34,7 +34,7 @@ describe('<HasApisCard />', () => {
   const catalogApi: jest.Mocked<CatalogApi> = {
     getEntitiesByRefs: jest.fn(),
   } as any;
-  let Wrapper: React.ComponentType<React.PropsWithChildren<{}>>;
+  let Wrapper: (props: React.PropsWithChildren<{}>) => JSX.Element;
 
   beforeEach(() => {
     Wrapper = ({ children }: { children?: React.ReactNode }) => (

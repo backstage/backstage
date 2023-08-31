@@ -14,21 +14,21 @@
  * limitations under the License.
  */
 
-import React, { ComponentType, useState, PropsWithChildren } from 'react';
+import React, { PropsWithChildren, useState } from 'react';
 
 import { Grid, ListItem, ListItemIcon, ListItemText } from '@material-ui/core';
 
 import { CatalogIcon, Link } from '@backstage/core-components';
-import { TestApiProvider, wrapInTestApp } from '@backstage/test-utils';
 import { createPlugin, createRouteRef } from '@backstage/core-plugin-api';
 import { SearchQuery, SearchResultSet } from '@backstage/plugin-search-common';
+import { TestApiProvider, wrapInTestApp } from '@backstage/test-utils';
 
+import { MockSearchApi, searchApiRef } from '../../api';
 import { SearchContextProvider } from '../../context';
-import { searchApiRef, MockSearchApi } from '../../api';
 import { createSearchResultListItemExtension } from '../../extensions';
 
-import { SearchResultList } from './SearchResultList';
 import { DefaultResultListItem } from '../DefaultResultListItem';
+import { SearchResultList } from './SearchResultList';
 
 const routeRef = createRouteRef({
   id: 'storybook.search.results.list.route',
@@ -59,7 +59,7 @@ export default {
   title: 'Plugins/Search/SearchResultList',
   component: SearchResultList,
   decorators: [
-    (Story: ComponentType<PropsWithChildren<{}>>) =>
+    (Story: (props: PropsWithChildren<{}>) => JSX.Element) =>
       wrapInTestApp(
         <TestApiProvider apis={[[searchApiRef, searchApiMock]]}>
           <Grid container direction="row">

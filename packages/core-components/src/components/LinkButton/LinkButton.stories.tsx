@@ -13,18 +13,18 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import React, { ComponentType, PropsWithChildren } from 'react';
-import { LinkButton } from './LinkButton';
-import { useLocation } from 'react-router-dom';
 import { createRouteRef, useRouteRef } from '@backstage/core-plugin-api';
+import { wrapInTestApp } from '@backstage/test-utils';
+import MaterialButton from '@material-ui/core/Button';
 import Divider from '@material-ui/core/Divider';
 import List from '@material-ui/core/List';
 import ListItem from '@material-ui/core/ListItem';
 import ListItemText from '@material-ui/core/ListItemText';
 import Typography from '@material-ui/core/Typography';
-import MaterialButton from '@material-ui/core/Button';
-import { wrapInTestApp } from '@backstage/test-utils';
+import React, { PropsWithChildren } from 'react';
+import { useLocation } from 'react-router-dom';
 import { Link } from '../Link';
+import { LinkButton } from './LinkButton';
 
 const routeRef = createRouteRef({
   id: 'storybook.test-route',
@@ -39,7 +39,7 @@ export default {
   title: 'Inputs/Button',
   component: LinkButton,
   decorators: [
-    (Story: ComponentType<PropsWithChildren<{}>>) =>
+    (Story: (props: PropsWithChildren<{}>) => JSX.Element) =>
       wrapInTestApp(
         <>
           <Typography>

@@ -13,28 +13,31 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import React, { PropsWithChildren } from 'react';
-import { Routes, Route, useOutlet } from 'react-router-dom';
-import { TemplateListPage, TemplateListPageProps } from '../TemplateListPage';
-import {
-  TemplateWizardPage,
-  TemplateWizardPageProps,
-} from '../TemplateWizardPage';
-import {
-  NextFieldExtensionOptions,
-  FormProps,
-  TemplateGroupFilter,
-} from '@backstage/plugin-scaffolder-react/alpha';
 import {
   ScaffolderTaskOutput,
   SecretsContextProvider,
   useCustomFieldExtensions,
   useCustomLayouts,
 } from '@backstage/plugin-scaffolder-react';
+import {
+  FormProps,
+  NextFieldExtensionOptions,
+  TemplateGroupFilter,
+} from '@backstage/plugin-scaffolder-react/alpha';
+import React, { PropsWithChildren } from 'react';
+import { Route, Routes, useOutlet } from 'react-router-dom';
+import { TemplateListPage, TemplateListPageProps } from '../TemplateListPage';
+import {
+  TemplateWizardPage,
+  TemplateWizardPageProps,
+} from '../TemplateWizardPage';
 
 import { TemplateEntityV1beta3 } from '@backstage/plugin-scaffolder-common';
 import { DEFAULT_SCAFFOLDER_FIELD_EXTENSIONS } from '../../extensions/default';
 
+import { ErrorPage } from '@backstage/core-components';
+import { ActionsPage } from '../../components/ActionsPage';
+import { ListTasksPage } from '../../components/ListTasksPage';
 import {
   actionsRouteRef,
   editRouteRef,
@@ -42,10 +45,7 @@ import {
   scaffolderTaskRouteRef,
   selectedTemplateRouteRef,
 } from '../../routes';
-import { ErrorPage } from '@backstage/core-components';
 import { OngoingTask } from '../OngoingTask';
-import { ActionsPage } from '../../components/ActionsPage';
-import { ListTasksPage } from '../../components/ListTasksPage';
 import { TemplateEditorPage } from '../TemplateEditorPage';
 
 /**
@@ -55,15 +55,17 @@ import { TemplateEditorPage } from '../TemplateEditorPage';
  */
 export type NextRouterProps = {
   components?: {
-    TemplateCardComponent?: React.ComponentType<{
+    TemplateCardComponent?: (props: {
       template: TemplateEntityV1beta3;
-    }>;
-    TaskPageComponent?: React.ComponentType<PropsWithChildren<{}>>;
-    TemplateOutputsComponent?: React.ComponentType<{
+    }) => JSX.Element;
+    TaskPageComponent?: (props: PropsWithChildren<{}>) => JSX.Element;
+    TemplateOutputsComponent?: (props: {
       output?: ScaffolderTaskOutput;
-    }>;
-    TemplateListPageComponent?: React.ComponentType<TemplateListPageProps>;
-    TemplateWizardPageComponent?: React.ComponentType<TemplateWizardPageProps>;
+    }) => JSX.Element;
+    TemplateListPageComponent?: (props: TemplateListPageProps) => JSX.Element;
+    TemplateWizardPageComponent?: (
+      props: TemplateWizardPageProps,
+    ) => JSX.Element;
   };
   groups?: TemplateGroupFilter[];
   templateFilter?: (entity: TemplateEntityV1beta3) => boolean;

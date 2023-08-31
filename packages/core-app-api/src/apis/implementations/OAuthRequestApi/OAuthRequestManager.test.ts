@@ -27,7 +27,6 @@ describe('OAuthRequestManager', () => {
       provider: {
         id: 'my-provider',
         title: 'My Provider',
-        icon: () => null,
       },
       onAuthRequest: async () => 'hello',
     });

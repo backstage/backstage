@@ -14,16 +14,17 @@
  * limitations under the License.
  */
 
-import { StackOverflowSearchResultListItem } from '../../plugin';
 import { wrapInTestApp } from '@backstage/test-utils';
-import React, { ComponentType, PropsWithChildren } from 'react';
+import React, { PropsWithChildren } from 'react';
 import { StackOverflowIcon } from '../../icons';
+import { StackOverflowSearchResultListItem } from '../../plugin';
 
 export default {
   title: 'Plugins/Search/StackOverflowResultListItem',
   component: StackOverflowSearchResultListItem,
   decorators: [
-    (Story: ComponentType<PropsWithChildren<{}>>) => wrapInTestApp(<Story />),
+    (Story: (props: PropsWithChildren<{}>) => JSX.Element) =>
+      wrapInTestApp(<Story />),
   ],
 };
 

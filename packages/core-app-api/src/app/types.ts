@@ -14,19 +14,19 @@
  * limitations under the License.
  */
 
-import { ComponentType, PropsWithChildren } from 'react';
+import { AppConfig } from '@backstage/config';
 import {
   AnyApiFactory,
   AppTheme,
-  IconComponent,
   BackstagePlugin,
+  ExternalRouteRef,
+  FeatureFlag,
+  IconComponent,
+  IdentityApi,
   RouteRef,
   SubRouteRef,
-  ExternalRouteRef,
-  IdentityApi,
-  FeatureFlag,
 } from '@backstage/core-plugin-api';
-import { AppConfig } from '@backstage/config';
+import { PropsWithChildren } from 'react';
 
 /**
  * Props for the `BootErrorPage` component of {@link AppComponents}.
@@ -67,12 +67,14 @@ export type ErrorBoundaryFallbackProps = PropsWithChildren<{
  * @public
  */
 export type AppComponents = {
-  NotFoundErrorPage: ComponentType<PropsWithChildren<{}>>;
-  BootErrorPage: ComponentType<BootErrorPageProps>;
-  Progress: ComponentType<PropsWithChildren<{}>>;
-  Router: ComponentType<PropsWithChildren<{ basename?: string }>>;
-  ErrorBoundaryFallback: ComponentType<ErrorBoundaryFallbackProps>;
-  ThemeProvider?: ComponentType<PropsWithChildren<{}>>;
+  NotFoundErrorPage: (props: PropsWithChildren<{}>) => JSX.Element | null;
+  BootErrorPage: (props: BootErrorPageProps) => JSX.Element | null;
+  Progress: (props: PropsWithChildren<{}>) => JSX.Element | null;
+  Router: (props: PropsWithChildren<{ basename?: string }>) => JSX.Element;
+  ErrorBoundaryFallback: (
+    props: ErrorBoundaryFallbackProps,
+  ) => JSX.Element | null;
+  ThemeProvider?: (props: PropsWithChildren<{}>) => JSX.Element;
 
   /**
    * An optional sign-in page that will be rendered instead of the AppRouter at startup.
@@ -83,7 +85,7 @@ export type AppComponents = {
    * The sign-in page will be displayed until it has passed up a result to the parent,
    * and which point the AppRouter and all of its children will be rendered instead.
    */
-  SignInPage?: ComponentType<SignInPageProps>;
+  SignInPage?: (props: SignInPageProps) => JSX.Element;
 };
 
 /**
@@ -319,7 +321,9 @@ export type BackstageApp = {
    * );
    * ```
    */
-  createRoot(element: JSX.Element): ComponentType<PropsWithChildren<{}>>;
+  createRoot(
+    element: JSX.Element,
+  ): (props: PropsWithChildren<{}>) => JSX.Element;
 
   /**
    * Provider component that should wrap the Router created with getRouter()
@@ -327,7 +331,7 @@ export type BackstageApp = {
    *
    * @deprecated Use {@link BackstageApp.createRoot} instead.
    */
-  getProvider(): ComponentType<PropsWithChildren<{}>>;
+  getProvider(): (props: PropsWithChildren<{}>) => JSX.Element;
 
   /**
    * Router component that should wrap the App Routes create with getRoutes()
@@ -335,7 +339,7 @@ export type BackstageApp = {
    *
    * @deprecated Import and use the {@link AppRouter} component from `@backstage/core-app-api` instead
    */
-  getRouter(): ComponentType<PropsWithChildren<{}>>;
+  getRouter(): (props: PropsWithChildren<{}>) => JSX.Element;
 };
 
 /**

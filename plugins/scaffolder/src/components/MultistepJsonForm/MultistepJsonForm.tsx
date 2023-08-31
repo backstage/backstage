@@ -14,32 +14,32 @@
  * limitations under the License.
  */
 import {
-  Button,
-  Step as StepUI,
-  StepContent,
-  StepLabel,
-  Stepper,
-  Typography,
-} from '@material-ui/core';
-import { JsonObject } from '@backstage/types';
-import {
   errorApiRef,
   featureFlagsApiRef,
   useAnalytics,
-  useRouteRefParams,
   useApi,
+  useRouteRefParams,
 } from '@backstage/core-plugin-api';
+import { LayoutOptions } from '@backstage/plugin-scaffolder-react';
+import { extractSchemaFromStep } from '@backstage/plugin-scaffolder-react/alpha';
+import { JsonObject } from '@backstage/types';
+import {
+  Button,
+  StepContent,
+  StepLabel,
+  Step as StepUI,
+  Stepper,
+  Typography,
+} from '@material-ui/core';
 import { FormProps, IChangeEvent, withTheme } from '@rjsf/core';
 import { Theme as MuiTheme } from '@rjsf/material-ui';
-import React, { ComponentType, useState } from 'react';
-import { transformSchemaToProps } from './schema';
 import cloneDeep from 'lodash/cloneDeep';
-import * as fieldOverrides from './FieldOverrides';
-import { ReviewStepProps } from '../types';
-import { ReviewStep } from './ReviewStep';
-import { extractSchemaFromStep } from '@backstage/plugin-scaffolder-react/alpha';
+import React, { useState } from 'react';
 import { selectedTemplateRouteRef } from '../../routes';
-import { LayoutOptions } from '@backstage/plugin-scaffolder-react';
+import { ReviewStepProps } from '../types';
+import * as fieldOverrides from './FieldOverrides';
+import { ReviewStep } from './ReviewStep';
+import { transformSchemaToProps } from './schema';
 
 const Form = withTheme(MuiTheme);
 
@@ -64,7 +64,7 @@ export type MultistepJsonFormProps = {
   fields?: FormProps<any>['fields'];
   finishButtonLabel?: string;
   layouts: LayoutOptions[];
-  ReviewStepComponent?: ComponentType<ReviewStepProps>;
+  ReviewStepComponent?: (props: ReviewStepProps) => JSX.Element;
 };
 
 export function getSchemasFromSteps(steps: Step[]) {

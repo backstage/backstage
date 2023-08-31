@@ -14,15 +14,15 @@
  * limitations under the License.
  */
 
+import { Extension, attachComponentData } from '@backstage/core-plugin-api';
 import React from 'react';
+import { FIELD_EXTENSION_KEY, FIELD_EXTENSION_WRAPPER_KEY } from './keys';
 import {
   CustomFieldExtensionSchema,
   CustomFieldValidator,
-  FieldExtensionOptions,
   FieldExtensionComponentProps,
+  FieldExtensionOptions,
 } from './types';
-import { Extension, attachComponentData } from '@backstage/core-plugin-api';
-import { FIELD_EXTENSION_KEY, FIELD_EXTENSION_WRAPPER_KEY } from './keys';
 
 /**
  * The type used to wrap up the Layout and embed the input props
@@ -62,9 +62,9 @@ export function createScaffolderFieldExtension<
  *
  * @public
  */
-export const ScaffolderFieldExtensions: React.ComponentType<
-  React.PropsWithChildren<{}>
-> = (): JSX.Element | null => null;
+export const ScaffolderFieldExtensions: (
+  props: React.PropsWithChildren<{}>,
+) => JSX.Element | null = (): JSX.Element | null => null;
 
 attachComponentData(
   ScaffolderFieldExtensions,
@@ -75,6 +75,6 @@ attachComponentData(
 export type {
   CustomFieldExtensionSchema,
   CustomFieldValidator,
-  FieldExtensionOptions,
   FieldExtensionComponentProps,
+  FieldExtensionOptions,
 };

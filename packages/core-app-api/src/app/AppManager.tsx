@@ -15,12 +15,21 @@
  */
 
 import { AppConfig, Config } from '@backstage/config';
-import React, {
-  ComponentType,
-  PropsWithChildren,
-  useMemo,
-  useRef,
-} from 'react';
+import {
+  AnyApiFactory,
+  ApiHolder,
+  AppTheme,
+  AppThemeApi,
+  BackstagePlugin,
+  ConfigApi,
+  FeatureFlag,
+  IconComponent,
+  appThemeApiRef,
+  configApiRef,
+  featureFlagsApiRef,
+  identityApiRef,
+} from '@backstage/core-plugin-api';
+import React, { PropsWithChildren, useMemo, useRef } from 'react';
 import useAsync from 'react-use/lib/useAsync';
 import {
   ApiProvider,
@@ -28,39 +37,32 @@ import {
   ConfigReader,
   LocalStorageFeatureFlags,
 } from '../apis';
-import {
-  AnyApiFactory,
-  ApiHolder,
-  IconComponent,
-  AppTheme,
-  appThemeApiRef,
-  configApiRef,
-  AppThemeApi,
-  ConfigApi,
-  featureFlagsApiRef,
-  identityApiRef,
-  BackstagePlugin,
-  FeatureFlag,
-} from '@backstage/core-plugin-api';
+import { AppIdentityProxy } from '../apis/implementations/IdentityApi/AppIdentityProxy';
 import { ApiFactoryRegistry, ApiResolver } from '../apis/system';
+import { ApiRegistry } from '../apis/system/ApiRegistry';
 import {
   childDiscoverer,
   routeElementDiscoverer,
   traverseElementTree,
 } from '../extensions/traversal';
 import { pluginCollector } from '../plugins/collectors';
+import { RoutingProvider } from '../routing/RoutingProvider';
 import {
   featureFlagCollector,
   routingV1Collector,
   routingV2Collector,
 } from '../routing/collectors';
-import { RoutingProvider } from '../routing/RoutingProvider';
 import {
-  validateRouteParameters,
   validateRouteBindings,
+  validateRouteParameters,
 } from '../routing/validation';
 import { AppContextProvider } from './AppContext';
-import { AppIdentityProxy } from '../apis/implementations/IdentityApi/AppIdentityProxy';
+import { AppRouter, getBasePath } from './AppRouter';
+import { AppThemeProvider } from './AppThemeProvider';
+import { InternalAppContext } from './InternalAppContext';
+import { defaultConfigLoader } from './defaultConfigLoader';
+import { isReactRouterBeta } from './isReactRouterBeta';
+import { resolveRouteBindings } from './resolveRouteBindings';
 import {
   AppComponents,
   AppConfigLoader,
@@ -68,13 +70,6 @@ import {
   AppOptions,
   BackstageApp,
 } from './types';
-import { AppThemeProvider } from './AppThemeProvider';
-import { defaultConfigLoader } from './defaultConfigLoader';
-import { ApiRegistry } from '../apis/system/ApiRegistry';
-import { resolveRouteBindings } from './resolveRouteBindings';
-import { isReactRouterBeta } from './isReactRouterBeta';
-import { InternalAppContext } from './InternalAppContext';
-import { AppRouter, getBasePath } from './AppRouter';
 
 type CompatiblePlugin =
   | BackstagePlugin
@@ -242,7 +237,9 @@ export class AppManager implements BackstageApp {
     return this.components;
   }
 
-  createRoot(element: JSX.Element): ComponentType<PropsWithChildren<{}>> {
+  createRoot(
+    element: JSX.Element,
+  ): (props: PropsWithChildren<{}>) => JSX.Element {
     const AppProvider = this.getProvider();
     const AppRoot = () => {
       return <AppProvider>{element}</AppProvider>;
@@ -251,7 +248,7 @@ export class AppManager implements BackstageApp {
   }
 
   #getProviderCalled = false;
-  getProvider(): ComponentType<PropsWithChildren<{}>> {
+  getProvider(): (props: PropsWithChildren<{}>) => JSX.Element {
     if (this.#getProviderCalled) {
       throw new Error(
         'app.getProvider() or app.createRoot() has already been called, and can only be called once',
@@ -404,7 +401,7 @@ export class AppManager implements BackstageApp {
     return Provider;
   }
 
-  getRouter(): ComponentType<PropsWithChildren<{}>> {
+  getRouter(): (props: PropsWithChildren<{}>) => JSX.Element {
     return AppRouter;
   }
 

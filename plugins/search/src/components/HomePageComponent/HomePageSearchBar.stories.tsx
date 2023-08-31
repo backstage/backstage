@@ -14,16 +14,16 @@
  * limitations under the License.
  */
 
-import { rootRouteRef, HomePageSearchBar } from '../../plugin';
 import { searchApiRef } from '@backstage/plugin-search-react';
-import { wrapInTestApp, TestApiProvider } from '@backstage/test-utils';
+import { TestApiProvider, wrapInTestApp } from '@backstage/test-utils';
 import { Grid, makeStyles } from '@material-ui/core';
-import React, { ComponentType, PropsWithChildren } from 'react';
+import React, { PropsWithChildren } from 'react';
+import { HomePageSearchBar, rootRouteRef } from '../../plugin';
 
 export default {
   title: 'Plugins/Home/Components/SearchBar',
   decorators: [
-    (Story: ComponentType<PropsWithChildren<{}>>) =>
+    (Story: (props: PropsWithChildren<{}>) => JSX.Element) =>
       wrapInTestApp(
         <>
           <TestApiProvider

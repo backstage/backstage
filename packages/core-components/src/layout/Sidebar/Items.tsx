@@ -37,7 +37,6 @@ import classnames from 'classnames';
 import { Location } from 'history';
 import React, {
   ComponentProps,
-  ComponentType,
   CSSProperties,
   forwardRef,
   KeyboardEventHandler,
@@ -55,6 +54,7 @@ import {
   useResolvedPath,
 } from 'react-router-dom';
 
+import Button from '@material-ui/core/Button';
 import {
   SidebarConfig,
   SidebarConfigContext,
@@ -66,7 +66,6 @@ import { useSidebarOpenState } from './SidebarOpenStateContext';
 import { SidebarSubmenu, SidebarSubmenuProps } from './SidebarSubmenu';
 import { SidebarSubmenuItemProps } from './SidebarSubmenuItem';
 import { isLocationMatch } from './utils';
-import Button from '@material-ui/core/Button';
 
 /** @public */
 export type SidebarItemClassKey =
@@ -649,7 +648,9 @@ export const SidebarSpace = styled('div')(
     flex: 1,
   },
   { name: 'BackstageSidebarSpace' },
-) as ComponentType<ComponentProps<'div'> & StyledComponentProps<'root'>>;
+) as (
+  props: ComponentProps<'div'> & StyledComponentProps<'root'>,
+) => JSX.Element;
 
 export type SidebarSpacerClassKey = 'root';
 
@@ -658,7 +659,9 @@ export const SidebarSpacer = styled('div')(
     height: 8,
   },
   { name: 'BackstageSidebarSpacer' },
-) as ComponentType<ComponentProps<'div'> & StyledComponentProps<'root'>>;
+) as (
+  props: ComponentProps<'div'> & StyledComponentProps<'root'>,
+) => JSX.Element;
 
 export type SidebarDividerClassKey = 'root';
 
@@ -671,7 +674,9 @@ export const SidebarDivider = styled('hr')(
     margin: theme.spacing(1.2, 0),
   }),
   { name: 'BackstageSidebarDivider' },
-) as ComponentType<ComponentProps<'hr'> & StyledComponentProps<'root'>>;
+) as (
+  props: ComponentProps<'hr'> & StyledComponentProps<'root'>,
+) => JSX.Element;
 
 const styledScrollbar = (theme: Theme): CreateCSSProperties => ({
   overflowY: 'auto',
@@ -700,7 +705,9 @@ export const SidebarScrollWrapper = styled('div')(({ theme }) => {
     '@media (hover: none)': scrollbarStyles,
     '&:hover': scrollbarStyles,
   };
-}) as ComponentType<ComponentProps<'div'> & StyledComponentProps<'root'>>;
+}) as (
+  props: ComponentProps<'div'> & StyledComponentProps<'root'>,
+) => JSX.Element;
 
 /**
  * A button which allows you to expand the sidebar when clicked.

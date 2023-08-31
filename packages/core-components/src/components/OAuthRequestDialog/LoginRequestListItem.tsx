@@ -14,15 +14,15 @@
  * limitations under the License.
  */
 
-import { makeStyles, Theme } from '@material-ui/core/styles';
+import { PendingOAuthRequest } from '@backstage/core-plugin-api';
+import { isError } from '@backstage/errors';
+import Button from '@material-ui/core/Button';
 import ListItem from '@material-ui/core/ListItem';
 import ListItemAvatar from '@material-ui/core/ListItemAvatar';
 import ListItemText from '@material-ui/core/ListItemText';
+import { makeStyles, Theme } from '@material-ui/core/styles';
 import Typography from '@material-ui/core/Typography';
-import Button from '@material-ui/core/Button';
 import React, { useState } from 'react';
-import { isError } from '@backstage/errors';
-import { PendingOAuthRequest } from '@backstage/core-plugin-api';
 
 export type LoginRequestListItemClassKey = 'root';
 
@@ -60,9 +60,11 @@ const LoginRequestListItem = ({ request, busy, setBusy }: RowProps) => {
 
   return (
     <ListItem disabled={busy} classes={{ root: classes.root }}>
-      <ListItemAvatar>
-        <IconComponent fontSize="large" />
-      </ListItemAvatar>
+      {IconComponent && (
+        <ListItemAvatar>
+          <IconComponent fontSize="large" />
+        </ListItemAvatar>
+      )}
       <ListItemText
         primary={request.provider.title}
         secondary={error && <Typography color="error">{error}</Typography>}

@@ -15,11 +15,11 @@
  */
 jest.mock('../TemplateCard', () => ({ TemplateCard: jest.fn(() => null) }));
 
-import React from 'react';
-import { TemplateGroup } from './TemplateGroup';
-import { render } from '@testing-library/react';
-import { TemplateCard } from '../TemplateCard';
 import { TemplateEntityV1beta3 } from '@backstage/plugin-scaffolder-common';
+import { render } from '@testing-library/react';
+import React from 'react';
+import { TemplateCard } from '../TemplateCard';
+import { TemplateGroup } from './TemplateGroup';
 
 describe('TemplateGroup', () => {
   it('should render a card for each template with the template being passed as a prop', () => {
@@ -104,7 +104,7 @@ describe('TemplateGroup', () => {
         onSelected={mockOnSelected}
         title="Test"
         templates={mockTemplates}
-        components={{ CardComponent: mockTemplateCardComponent }}
+        components={{ CardComponent: mockTemplateCardComponent as any }}
       />,
     );
 

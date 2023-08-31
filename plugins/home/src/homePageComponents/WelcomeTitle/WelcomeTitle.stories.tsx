@@ -16,13 +16,14 @@
 
 import { Header } from '@backstage/core-components';
 import { wrapInTestApp } from '@backstage/test-utils';
-import React, { ComponentType, PropsWithChildren } from 'react';
+import React, { PropsWithChildren } from 'react';
 import { WelcomeTitle } from './WelcomeTitle';
 
 export default {
   title: 'Plugins/Home/Components/WelcomeTitle',
   decorators: [
-    (Story: ComponentType<PropsWithChildren<{}>>) => wrapInTestApp(<Story />),
+    (Story: (props: PropsWithChildren<{}>) => JSX.Element) =>
+      wrapInTestApp(<Story />),
   ],
 };
 

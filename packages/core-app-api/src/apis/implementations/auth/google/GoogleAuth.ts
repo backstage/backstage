@@ -21,7 +21,6 @@ import { OAuthApiCreateOptions } from '../types';
 const DEFAULT_PROVIDER = {
   id: 'google',
   title: 'Google',
-  icon: () => null,
 };
 
 const SCOPE_PREFIX = 'https://www.googleapis.com/auth/';

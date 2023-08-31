@@ -14,24 +14,24 @@
  * limitations under the License.
  */
 
-import { Grid, Paper } from '@material-ui/core';
-import CatalogIcon from '@material-ui/icons/MenuBook';
-import DocsIcon from '@material-ui/icons/Description';
-import UsersGroupsIcon from '@material-ui/icons/Person';
-import React, { ComponentType, PropsWithChildren } from 'react';
-import { SearchType } from './SearchType';
-import { TestApiProvider } from '@backstage/test-utils';
 import {
-  searchApiRef,
   MockSearchApi,
   SearchContextProvider,
+  searchApiRef,
 } from '@backstage/plugin-search-react';
+import { TestApiProvider } from '@backstage/test-utils';
+import { Grid, Paper } from '@material-ui/core';
+import DocsIcon from '@material-ui/icons/Description';
+import CatalogIcon from '@material-ui/icons/MenuBook';
+import UsersGroupsIcon from '@material-ui/icons/Person';
+import React, { PropsWithChildren } from 'react';
+import { SearchType } from './SearchType';
 
 export default {
   title: 'Plugins/Search/SearchType',
   component: SearchType,
   decorators: [
-    (Story: ComponentType<PropsWithChildren<{}>>) => (
+    (Story: (props: PropsWithChildren<{}>) => JSX.Element) => (
       <TestApiProvider apis={[[searchApiRef, new MockSearchApi()]]}>
         <SearchContextProvider>
           <Grid container direction="row">

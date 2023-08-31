@@ -14,15 +14,14 @@
  * limitations under the License.
  */
 
-import { ComponentType } from 'react';
 import {
-  SignInPageProps,
   ApiHolder,
   ApiRef,
-  ProfileInfoApi,
   BackstageIdentityApi,
-  SessionApi,
   IdentityApi,
+  ProfileInfoApi,
+  SessionApi,
+  SignInPageProps,
 } from '@backstage/core-plugin-api';
 
 export type SignInProviderConfig = {
@@ -44,13 +43,13 @@ export type onSignInFailure = () => void;
  */
 export type onSignInStarted = () => void;
 
-export type ProviderComponent = ComponentType<
-  SignInPageProps & {
+export type ProviderComponent = (
+  props: SignInPageProps & {
     config: SignInProviderConfig;
     onSignInStarted(): void;
     onSignInFailure(): void;
-  }
->;
+  },
+) => JSX.Element;
 
 export type ProviderLoader = (
   apis: ApiHolder,

@@ -14,14 +14,14 @@
  * limitations under the License.
  */
 
-import React, { ComponentType, PropsWithChildren } from 'react';
+import React, { PropsWithChildren } from 'react';
 
 import { Grid } from '@material-ui/core';
 import LabelIcon from '@material-ui/icons/Label';
 
 import { TestApiProvider } from '@backstage/test-utils';
 
-import { searchApiRef, MockSearchApi } from '../../api';
+import { MockSearchApi, searchApiRef } from '../../api';
 import { SearchContextProvider } from '../../context';
 
 import { SearchAutocomplete } from './SearchAutocomplete';
@@ -31,7 +31,7 @@ export default {
   title: 'Plugins/Search/SearchAutocomplete',
   component: SearchAutocomplete,
   decorators: [
-    (Story: ComponentType<PropsWithChildren<{}>>) => (
+    (Story: (props: PropsWithChildren<{}>) => JSX.Element) => (
       <TestApiProvider apis={[[searchApiRef, new MockSearchApi()]]}>
         <SearchContextProvider>
           <Grid container direction="row">

@@ -14,12 +14,7 @@
  * limitations under the License.
  */
 
-import React, {
-  ComponentType,
-  useCallback,
-  useState,
-  PropsWithChildren,
-} from 'react';
+import React, { PropsWithChildren, useCallback, useState } from 'react';
 
 import {
   Grid,
@@ -30,22 +25,22 @@ import {
 } from '@material-ui/core';
 import DocsIcon from '@material-ui/icons/InsertDriveFile';
 
-import { JsonValue } from '@backstage/types';
 import { Link } from '@backstage/core-components';
-import { TestApiProvider, wrapInTestApp } from '@backstage/test-utils';
 import { createPlugin, createRouteRef } from '@backstage/core-plugin-api';
 import { SearchQuery, SearchResultSet } from '@backstage/plugin-search-common';
+import { TestApiProvider, wrapInTestApp } from '@backstage/test-utils';
+import { JsonValue } from '@backstage/types';
 
 import { DefaultResultListItem } from '../DefaultResultListItem';
 
+import { MockSearchApi, searchApiRef } from '../../api';
 import { SearchContextProvider } from '../../context';
-import { searchApiRef, MockSearchApi } from '../../api';
 import { createSearchResultListItemExtension } from '../../extensions';
 
 import {
   SearchResultGroup,
-  SearchResultGroupTextFilterField,
   SearchResultGroupSelectFilterField,
+  SearchResultGroupTextFilterField,
 } from './SearchResultGroup';
 
 const routeRef = createRouteRef({
@@ -77,7 +72,7 @@ export default {
   title: 'Plugins/Search/SearchResultGroup',
   component: SearchResultGroup,
   decorators: [
-    (Story: ComponentType<PropsWithChildren<{}>>) =>
+    (Story: (props: PropsWithChildren<{}>) => JSX.Element) =>
       wrapInTestApp(
         <TestApiProvider apis={[[searchApiRef, searchApiMock]]}>
           <Grid container direction="row">

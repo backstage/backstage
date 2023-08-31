@@ -14,23 +14,23 @@
  * limitations under the License.
  */
 
-import React, { ComponentType, PropsWithChildren } from 'react';
+import React, { PropsWithChildren } from 'react';
 import { routingV2Collector } from './collectors';
 
 import {
-  traverseElementTree,
-  childDiscoverer,
-  routeElementDiscoverer,
-} from '../extensions/traversal';
-import {
-  createRoutableExtension,
-  createRouteRef,
-  createPlugin,
+  BackstagePlugin,
   RouteRef,
   attachComponentData,
-  BackstagePlugin,
+  createPlugin,
+  createRoutableExtension,
+  createRouteRef,
 } from '@backstage/core-plugin-api';
-import { MemoryRouter, Routes, Route } from 'react-router-dom';
+import { MemoryRouter, Route, Routes } from 'react-router-dom';
+import {
+  childDiscoverer,
+  routeElementDiscoverer,
+  traverseElementTree,
+} from '../extensions/traversal';
 
 jest.mock('react-router', () => jest.requireActual('react-router-stable'));
 jest.mock('react-router-dom', () =>
@@ -428,7 +428,7 @@ describe('discovery', () => {
   });
 
   it('should throw when element prop is not a string', () => {
-    const Div = 'div' as unknown as ComponentType<{ path: boolean }>;
+    const Div = 'div' as unknown as (props: { path: boolean }) => JSX.Element;
     expect(() => {
       traverseElementTree({
         root: <Div path />,

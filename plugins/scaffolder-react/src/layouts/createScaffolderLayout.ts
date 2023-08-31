@@ -14,10 +14,10 @@
  * limitations under the License.
  */
 
-import { LAYOUTS_KEY, LAYOUTS_WRAPPER_KEY } from './keys';
-import { attachComponentData, Extension } from '@backstage/core-plugin-api';
+import { Extension, attachComponentData } from '@backstage/core-plugin-api';
 import type { FormProps as SchemaFormProps } from '@rjsf/core-v5';
 import React from 'react';
+import { LAYOUTS_KEY, LAYOUTS_WRAPPER_KEY } from './keys';
 
 /**
  * The field template from `@rjsf/core` which is a react component that gets passed `@rjsf/core` field related props.
@@ -68,8 +68,8 @@ export function createScaffolderLayout<TInputProps = unknown>(
  *
  * @public
  */
-export const ScaffolderLayouts: React.ComponentType<
-  React.PropsWithChildren<{}>
-> = (): JSX.Element | null => null;
+export const ScaffolderLayouts: (
+  props: React.PropsWithChildren<{}>,
+) => JSX.Element | null = (): JSX.Element | null => null;
 
 attachComponentData(ScaffolderLayouts, LAYOUTS_WRAPPER_KEY, true);

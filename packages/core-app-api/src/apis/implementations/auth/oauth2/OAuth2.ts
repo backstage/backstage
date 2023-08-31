@@ -15,26 +15,26 @@
  */
 
 import {
+  AuthRequestOptions,
+  BackstageIdentityApi,
+  BackstageIdentityResponse,
+  BackstageUserIdentity,
+  OAuthApi,
+  OpenIdConnectApi,
+  ProfileInfo,
+  ProfileInfoApi,
+  SessionApi,
+  SessionState,
+} from '@backstage/core-plugin-api';
+import { Observable } from '@backstage/types';
+import {
   DefaultAuthConnector,
   PopupOptions,
 } from '../../../../lib/AuthConnector';
 import { RefreshingAuthSessionManager } from '../../../../lib/AuthSessionManager';
 import { SessionManager } from '../../../../lib/AuthSessionManager/types';
-import {
-  AuthRequestOptions,
-  BackstageIdentityResponse,
-  OAuthApi,
-  OpenIdConnectApi,
-  ProfileInfo,
-  ProfileInfoApi,
-  SessionState,
-  SessionApi,
-  BackstageIdentityApi,
-  BackstageUserIdentity,
-} from '@backstage/core-plugin-api';
-import { Observable } from '@backstage/types';
-import { OAuth2Session } from './types';
 import { OAuthApiCreateOptions } from '../types';
+import { OAuth2Session } from './types';
 
 /**
  * OAuth2 create options.
@@ -63,7 +63,6 @@ export type OAuth2Response = {
 const DEFAULT_PROVIDER = {
   id: 'oauth2',
   title: 'Your Identity Provider',
-  icon: () => null,
 };
 
 /**

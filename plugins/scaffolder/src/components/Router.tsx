@@ -14,25 +14,18 @@
  * limitations under the License.
  */
 
-import React, { ComponentType, useEffect, PropsWithChildren } from 'react';
-import { Navigate, Route, Routes, useOutlet } from 'react-router-dom';
 import { Entity } from '@backstage/catalog-model';
-import { TemplateEntityV1beta3 } from '@backstage/plugin-scaffolder-common';
-import { ScaffolderPage } from './ScaffolderPage';
-import { TemplatePage } from './TemplatePage';
-import { TaskPage } from './TaskPage';
-import { ActionsPage } from './ActionsPage';
-import { TemplateEditorPage } from './TemplateEditorPage';
-import { DEFAULT_SCAFFOLDER_FIELD_EXTENSIONS } from '../extensions/default';
 import { useRouteRef, useRouteRefParams } from '@backstage/core-plugin-api';
+import { TemplateEntityV1beta3 } from '@backstage/plugin-scaffolder-common';
 import {
   FieldExtensionOptions,
   SecretsContextProvider,
   useCustomFieldExtensions,
   useCustomLayouts,
 } from '@backstage/plugin-scaffolder-react';
-import { ListTasksPage } from './ListTasksPage';
-import { ReviewStepProps } from './types';
+import React, { PropsWithChildren, useEffect } from 'react';
+import { Navigate, Route, Routes, useOutlet } from 'react-router-dom';
+import { DEFAULT_SCAFFOLDER_FIELD_EXTENSIONS } from '../extensions/default';
 import {
   actionsRouteRef,
   editRouteRef,
@@ -41,6 +34,13 @@ import {
   scaffolderTaskRouteRef,
   selectedTemplateRouteRef,
 } from '../routes';
+import { ActionsPage } from './ActionsPage';
+import { ListTasksPage } from './ListTasksPage';
+import { ScaffolderPage } from './ScaffolderPage';
+import { TaskPage } from './TaskPage';
+import { TemplateEditorPage } from './TemplateEditorPage';
+import { TemplatePage } from './TemplatePage';
+import { ReviewStepProps } from './types';
 
 /**
  * The props for the entrypoint `ScaffolderPage` component the plugin.
@@ -48,11 +48,11 @@ import {
  */
 export type RouterProps = {
   components?: {
-    ReviewStepComponent?: ComponentType<ReviewStepProps>;
+    ReviewStepComponent?: (props: ReviewStepProps) => JSX.Element;
     TemplateCardComponent?:
-      | ComponentType<{ template: TemplateEntityV1beta3 }>
+      | ((props: { template: TemplateEntityV1beta3 }) => JSX.Element)
       | undefined;
-    TaskPageComponent?: ComponentType<PropsWithChildren<{}>>;
+    TaskPageComponent?: (props: PropsWithChildren<{}>) => JSX.Element;
   };
   groups?: Array<{
     title?: React.ReactNode;

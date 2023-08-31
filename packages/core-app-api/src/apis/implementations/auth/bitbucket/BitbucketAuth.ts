@@ -20,8 +20,8 @@ import {
   ProfileInfo,
 } from '@backstage/core-plugin-api';
 
-import { OAuthApiCreateOptions } from '../types';
 import { OAuth2 } from '../oauth2';
+import { OAuthApiCreateOptions } from '../types';
 
 export type BitbucketAuthResponse = {
   providerInfo: {
@@ -36,7 +36,6 @@ export type BitbucketAuthResponse = {
 const DEFAULT_PROVIDER = {
   id: 'bitbucket',
   title: 'Bitbucket',
-  icon: () => null,
 };
 
 /**

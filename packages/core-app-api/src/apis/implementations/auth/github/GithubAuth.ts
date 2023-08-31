@@ -21,7 +21,6 @@ import { OAuthApiCreateOptions } from '../types';
 const DEFAULT_PROVIDER = {
   id: 'github',
   title: 'GitHub',
-  icon: () => null,
 };
 
 /**

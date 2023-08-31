@@ -7,7 +7,6 @@
 
 import { AnyApiFactory } from '@backstage/core-plugin-api';
 import { AnyApiRef } from '@backstage/core-plugin-api';
-import { ComponentType } from 'react';
 import { JsonObject } from '@backstage/types';
 import { z } from 'zod';
 import { ZodSchema } from 'zod';
@@ -28,7 +27,7 @@ export interface BackstagePlugin {
 
 // @public (undocumented)
 export const coreExtensionData: {
-  reactComponent: ExtensionDataRef<ComponentType<{}>>;
+  reactComponent: ExtensionDataRef<() => JSX.Element>;
   routePath: ExtensionDataRef<string>;
   apiFactory: ExtensionDataRef<AnyApiFactory>;
 };

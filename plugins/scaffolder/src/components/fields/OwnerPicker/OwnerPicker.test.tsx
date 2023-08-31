@@ -17,7 +17,7 @@
 import { type EntityFilterQuery } from '@backstage/catalog-client';
 import { Entity } from '@backstage/catalog-model';
 import { CatalogApi, catalogApiRef } from '@backstage/plugin-catalog-react';
-import { renderInTestApp, TestApiProvider } from '@backstage/test-utils';
+import { TestApiProvider, renderInTestApp } from '@backstage/test-utils';
 import { FieldProps } from '@rjsf/core';
 import React from 'react';
 import { OwnerPicker } from './OwnerPicker';
@@ -55,7 +55,7 @@ describe('<OwnerPicker />', () => {
     getLocationByRef: jest.fn(),
     removeEntityByUid: jest.fn(),
   } as any;
-  let Wrapper: React.ComponentType<React.PropsWithChildren<{}>>;
+  let Wrapper: (props: React.PropsWithChildren<{}>) => JSX.Element;
 
   beforeEach(() => {
     entities = [

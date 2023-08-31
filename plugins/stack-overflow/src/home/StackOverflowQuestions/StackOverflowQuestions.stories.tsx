@@ -14,14 +14,14 @@
  * limitations under the License.
  */
 
-import { HomePageStackOverflowQuestions } from '../../plugin';
-import { wrapInTestApp, TestApiProvider } from '@backstage/test-utils';
-import { configApiRef } from '@backstage/core-plugin-api';
 import { ConfigReader } from '@backstage/config';
+import { configApiRef } from '@backstage/core-plugin-api';
+import { TestApiProvider, wrapInTestApp } from '@backstage/test-utils';
 import { Grid } from '@material-ui/core';
-import React, { ComponentType, PropsWithChildren } from 'react';
-import { StackOverflowIcon } from '../../icons';
+import React, { PropsWithChildren } from 'react';
 import { stackOverflowApiRef } from '../../api';
+import { StackOverflowIcon } from '../../icons';
+import { HomePageStackOverflowQuestions } from '../../plugin';
 
 const mockStackOverflowApi = {
   listQuestions: async () => [
@@ -46,7 +46,7 @@ export default {
   title: 'Plugins/Home/Components/StackOverflow',
   component: HomePageStackOverflowQuestions,
   decorators: [
-    (Story: ComponentType<PropsWithChildren<{}>>) =>
+    (Story: (props: PropsWithChildren<{}>) => JSX.Element) =>
       wrapInTestApp(
         <>
           <TestApiProvider

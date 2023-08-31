@@ -14,23 +14,23 @@
  * limitations under the License.
  */
 
-import React, { ComponentType, PropsWithChildren } from 'react';
-import {
-  EntityPeekAheadPopover,
-  EntityPeekAheadPopoverProps,
-} from './EntityPeekAheadPopover';
-import Button from '@material-ui/core/Button';
-import { wrapInTestApp, TestApiProvider } from '@backstage/test-utils';
-import { catalogApiRef } from '../../api';
+import { CatalogApi } from '@backstage/catalog-client';
 import {
   CompoundEntityRef,
   parseEntityRef,
   stringifyEntityRef,
 } from '@backstage/catalog-model';
-import { entityRouteRef } from '../../routes';
-import { CatalogApi } from '@backstage/catalog-client';
 import { Table, TableColumn } from '@backstage/core-components';
+import { TestApiProvider, wrapInTestApp } from '@backstage/test-utils';
+import Button from '@material-ui/core/Button';
+import React, { PropsWithChildren } from 'react';
+import { catalogApiRef } from '../../api';
+import { entityRouteRef } from '../../routes';
 import { EntityRefLink } from '../EntityRefLink';
+import {
+  EntityPeekAheadPopover,
+  EntityPeekAheadPopoverProps,
+} from './EntityPeekAheadPopover';
 
 const mockCatalogApi = {
   getEntityByRef: async (entityRef: string) => {
@@ -80,7 +80,7 @@ const defaultArgs = {
 export default {
   title: 'Catalog /PeekAheadPopover',
   decorators: [
-    (Story: ComponentType<PropsWithChildren<{}>>) =>
+    (Story: (props: PropsWithChildren<{}>) => JSX.Element) =>
       wrapInTestApp(
         <>
           <TestApiProvider

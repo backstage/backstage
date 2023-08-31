@@ -61,10 +61,9 @@ declare module '*.yaml' {
 }
 
 declare module '*.icon.svg' {
-  import { ComponentType } from 'react';
   import { SvgIconProps } from '@material-ui/core';
 
-  const Icon: ComponentType<SvgIconProps>;
+  const Icon: (props: SvgIconProps) => JSX.Element;
   export default Icon;
 }
 

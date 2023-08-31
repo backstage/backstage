@@ -30,13 +30,13 @@ import {
   AnyApiFactory,
   ApiFactory,
   AppTheme,
-  attachComponentData,
   BackstagePlugin,
+  IconComponent,
+  RouteRef,
+  attachComponentData,
   configApiRef,
   createApiFactory,
   createRouteRef,
-  IconComponent,
-  RouteRef,
 } from '@backstage/core-plugin-api';
 import {
   ScmIntegrationsApi,
@@ -44,9 +44,9 @@ import {
 } from '@backstage/integration-react';
 import { Box } from '@material-ui/core';
 import BookmarkIcon from '@material-ui/icons/Bookmark';
-import React, { ComponentType, ReactNode, PropsWithChildren } from 'react';
+import React, { PropsWithChildren, ReactNode } from 'react';
 import ReactDOM from 'react-dom';
-import { createRoutesFromChildren, Route } from 'react-router-dom';
+import { Route, createRoutesFromChildren } from 'react-router-dom';
 import { SidebarThemeSwitcher } from './SidebarThemeSwitcher';
 
 export function isReactRouterBeta(): boolean {
@@ -164,7 +164,7 @@ export class DevAppBuilder {
   /**
    * Build a DevApp component using the resources registered so far
    */
-  build(): ComponentType<PropsWithChildren<{}>> {
+  build(): (props: PropsWithChildren<{}>) => JSX.Element {
     const fakeRouteRef = createRouteRef({ id: 'fake' });
     const FakePage = () => <Box p={3}>Page belonging to another plugin.</Box>;
     attachComponentData(FakePage, 'core.mountPoint', fakeRouteRef);

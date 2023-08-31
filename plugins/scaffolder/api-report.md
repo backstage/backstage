@@ -8,7 +8,6 @@
 import { ApiHolder } from '@backstage/core-plugin-api';
 import { ApiRef } from '@backstage/core-plugin-api';
 import { BackstagePlugin } from '@backstage/core-plugin-api';
-import { ComponentType } from 'react';
 import { createScaffolderFieldExtension as createScaffolderFieldExtension_2 } from '@backstage/plugin-scaffolder-react';
 import { createScaffolderLayout as createScaffolderLayout_2 } from '@backstage/plugin-scaffolder-react';
 import { CustomFieldExtensionSchema as CustomFieldExtensionSchema_2 } from '@backstage/plugin-scaffolder-react';
@@ -403,13 +402,11 @@ export const rootRouteRef: RouteRef<undefined>;
 // @public
 export type RouterProps = {
   components?: {
-    ReviewStepComponent?: ComponentType<ReviewStepProps>;
+    ReviewStepComponent?: (props: ReviewStepProps) => JSX.Element;
     TemplateCardComponent?:
-      | ComponentType<{
-          template: TemplateEntityV1beta3;
-        }>
+      | ((props: { template: TemplateEntityV1beta3 }) => JSX.Element)
       | undefined;
-    TaskPageComponent?: ComponentType<PropsWithChildren<{}>>;
+    TaskPageComponent?: (props: PropsWithChildren<{}>) => JSX.Element;
   };
   groups?: Array<{
     title?: React_2.ReactNode;
@@ -480,9 +477,9 @@ export type ScaffolderDryRunOptions = ScaffolderDryRunOptions_2;
 export type ScaffolderDryRunResponse = ScaffolderDryRunResponse_2;
 
 // @public @deprecated (undocumented)
-export const ScaffolderFieldExtensions: ComponentType<{
+export const ScaffolderFieldExtensions: (props: {
   children?: ReactNode;
-}>;
+}) => JSX.Element | null;
 
 // @public @deprecated (undocumented)
 export type ScaffolderGetIntegrationsListOptions =
@@ -493,9 +490,9 @@ export type ScaffolderGetIntegrationsListResponse =
   ScaffolderGetIntegrationsListResponse_2;
 
 // @public @deprecated (undocumented)
-export const ScaffolderLayouts: ComponentType<{
+export const ScaffolderLayouts: (props: {
   children?: ReactNode;
-}>;
+}) => JSX.Element | null;
 
 // @public @deprecated (undocumented)
 export type ScaffolderOutputlink = ScaffolderOutputLink;

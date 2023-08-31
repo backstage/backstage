@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { Entity, CompoundEntityRef } from '@backstage/catalog-model';
+import { CompoundEntityRef, Entity } from '@backstage/catalog-model';
 import { TestApiProvider } from '@backstage/test-utils';
 import { renderHook } from '@testing-library/react-hooks';
 import React, { PropsWithChildren } from 'react';
@@ -27,7 +27,7 @@ describe('useStarredEntity', () => {
     toggleStarred: jest.fn(),
     starredEntitie$: jest.fn(),
   };
-  let wrapper: React.ComponentType<React.PropsWithChildren<{}>>;
+  let wrapper: (props: React.PropsWithChildren<{}>) => JSX.Element;
 
   beforeEach(() => {
     wrapper = (props: PropsWithChildren<{}>) => (
