@@ -35,6 +35,7 @@
     "@backstage/plugin-adr-backend": "workspace:^",
     "@backstage/plugin-app-backend": "workspace:^",
     "@backstage/plugin-auth-backend": "workspace:^",
+    "@backstage/plugin-auth-backend-module-pinniped-provider": "^0.0.0",
     "@backstage/plugin-auth-node": "workspace:^",
     "@backstage/plugin-azure-devops-backend": "workspace:^",
     "@backstage/plugin-azure-sites-backend": "workspace:^",
