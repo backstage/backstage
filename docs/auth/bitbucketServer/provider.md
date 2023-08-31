@@ -27,6 +27,7 @@ auth:
         host: bitbucket.org
         clientId: ${AUTH_BITBUCKET_SERVER_CLIENT_ID}
         clientSecret: ${AUTH_BITBUCKET_SERVER_CLIENT_SECRET}
+        scope: ${AUTH_BITBUCKET_SERVER_SCOPE} # Optional parameter which overrides default value - ['REPO_READ']
 ```
 
 The Bitbucket Server provider is a structure with two configuration keys:

@@ -68,6 +68,7 @@ export type BitbucketServerAuthProviderOptions = OAuthProviderOptions & {
   authHandler: AuthHandler<BitbucketServerOAuthResult>;
   signInResolver?: SignInResolver<BitbucketServerOAuthResult>;
   resolverContext: AuthResolverContext;
+  scope?: string;
 };
 
 export class BitbucketServerAuthProvider implements OAuthHandlers {
@@ -76,6 +77,7 @@ export class BitbucketServerAuthProvider implements OAuthHandlers {
   private readonly resolverContext: AuthResolverContext;
   private readonly strategy: OAuth2Strategy;
   private readonly host: string;
+  private readonly scope?: string;
 
   constructor(options: BitbucketServerAuthProviderOptions) {
     this.signInResolver = options.signInResolver;
@@ -88,6 +90,7 @@ export class BitbucketServerAuthProvider implements OAuthHandlers {
         clientID: options.clientId,
         clientSecret: options.clientSecret,
         callbackURL: options.callbackUrl,
+        scope: options.scope,
       },
       (
         accessToken: string,
@@ -100,13 +103,14 @@ export class BitbucketServerAuthProvider implements OAuthHandlers {
       },
     );
     this.host = options.host;
+    this.scope = options.scope;
   }
 
   async start(req: OAuthStartRequest): Promise<OAuthStartResponse> {
     return await executeRedirectStrategy(req, this.strategy, {
       accessType: 'offline',
       prompt: 'consent',
-      scope: req.scope,
+      scope: this.scope || req.scope,
       state: encodeState(req.state),
     });
   }
@@ -264,6 +268,7 @@ export const bitbucketServer = createAuthProviderIntegration({
         const clientSecret = envConfig.getString('clientSecret');
         const host = envConfig.getString('host');
         const customCallbackUrl = envConfig.getOptionalString('callbackUrl');
+        const scope = envConfig.getOptionalString('scope');
         const callbackUrl =
           customCallbackUrl ||
           `${globalConfig.baseUrl}/${providerId}/handler/frame`;
@@ -287,6 +292,7 @@ export const bitbucketServer = createAuthProviderIntegration({
           authHandler,
           signInResolver: options?.signIn?.resolver,
           resolverContext,
+          scope,
         });
 
         return OAuthAdapter.fromConfig(globalConfig, provider, {

@@ -380,6 +380,12 @@ auth:
       development:
         clientId: ${AUTH_BITBUCKET_CLIENT_ID}
         clientSecret: ${AUTH_BITBUCKET_CLIENT_SECRET}
+    bitbucketServer:
+      development:
+        host: bitbucket.org
+        clientId: ${AUTH_BITBUCKET_SERVER_CLIENT_ID}
+        clientSecret: ${AUTH_BITBUCKET_SERVER_CLIENT_SECRET}
+        scope: ${AUTH_BITBUCKET_SERVER_SCOPE} # Optional parameter which overrides default value - ['REPO_READ']
     atlassian:
       development:
         clientId: ${AUTH_ATLASSIAN_CLIENT_ID}
