@@ -11,12 +11,9 @@ repository.
 ## Cloning the Repository
 
 Ok. So you're gonna want some code right? Go ahead and fork the repository into
-your own GitHub account and clone that code to your local machine or you can
-grab the one for the origin like so:
-
-```bash
-git clone git@github.com:backstage/backstage --depth 1
-```
+your own GitHub account and clone that code to your local machine. GitHub's [Fork
+a repo](https://docs.github.com/en/get-started/quickstart/fork-a-repo) documentation
+has a great step by step guide if you are not sure how to do this.
 
 If you cloned a fork, you can add the upstream dependency like so:
 
@@ -29,10 +26,10 @@ After you have cloned the Backstage repository, you should run the following
 commands once to set things up for development:
 
 ```bash
-$ cd backstage  # change to root directory of project
+cd backstage  # change to root directory of project
 
-$ yarn install  # fetch dependency packages - may take a while
-$ yarn tsc      # does a first run of type generation and checks
+yarn install  # fetch dependency packages - may take a while
+yarn tsc      # does a first run of type generation and checks
 ```
 
 ## Serving the Example App
@@ -41,7 +38,7 @@ Open a terminal window and start the web app by using the following command from
 the project root. Make sure you have run the above mentioned commands first.
 
 ```bash
-$ yarn dev
+yarn dev
 ```
 
 This is going to start two things, the frontend (:3000) and the backend (:7007).
@@ -78,7 +75,19 @@ serves the react app ([0]) and the backend ([1]);
 Visit http://localhost:3000 and you should see the bleeding edge of Backstage
 ready for contributions!
 
-## Editor
+## Coding Guidelines
+
+All code is formatted with `prettier` using the configuration in the repo. If possible we recommend configuring your editor to format automatically, but you can also use the `yarn prettier --write <file>` command to format files.
+
+A consistent coding style is included via [EditorConfig](https://editorconfig.org/) with the file [`.editorconfig`](.editorconfig) at the root of the repo. Depending on your editor of choice, it will either support it out of the box or you can [download a plugin](https://editorconfig.org/#download) for the config to be applied.
+
+If you're contributing to the backend or CLI tooling, be mindful of cross-platform support. [This](https://shapeshed.com/writing-cross-platform-node/) blog post is a good guide of what to keep in mind when writing cross-platform NodeJS.
+
+Also be sure to skim through our [ADRs](docs/architecture-decisions) to see if they cover what you're working on. In particular [ADR006: Avoid React.FC and React.SFC](docs/architecture-decisions/adr006-avoid-react-fc.md) is one to look out for.
+
+If there are any updates in `markdown` file please make sure to run `yarn run lint:docs`. Though it is checked on `lint-staged`. It is required to install [vale](https://docs.errata.ai/vale/install) separately and make sure it is accessed by global command.
+
+### Editor
 
 The Backstage development environment does not require any specific editor, but
 it is intended to be used with one that has built-in linting and type-checking.
@@ -92,7 +101,7 @@ There are many commands to be found in the root
 [package.json](https://github.com/backstage/backstage/blob/master/package.json),
 here are some useful ones:
 
-```python
+```shell
 yarn start # Start serving the example app, use --check to include type checks and linting
 
 yarn storybook # Start local storybook, useful for working on components in @backstage/core-components
@@ -104,6 +113,7 @@ yarn tsc:full # Run full type checking, for example without skipLibCheck, use in
 
 yarn build:backend # Build the backend package, depends on tsc
 yarn build:all # Build published versions of packages, depends on tsc
+yarn build:api-reports # Build API Reports used for documentation
 
 yarn lint # lint packages that have changed since later commit on origin/master
 yarn lint:all # lint all packages
@@ -142,7 +152,29 @@ default app configs.
 You can learn more about the local configuration in
 [Static Configuration in Backstage](../conf/) section.
 
-## Writing changesets
+## Creating Changesets
+
+We use [changesets](https://github.com/atlassian/changesets) to help us prepare releases. They help us make sure that every package affected by a change gets a proper version number and an entry in its `CHANGELOG.md`. To make the process of generating releases easy, it helps when contributors include changesets with their pull requests.
+
+### When to use a changeset?
+
+Any time a patch, minor, or major change aligning to [Semantic Versioning](https://semver.org) is made to any published package in `packages/` or `plugins/`, a changeset should be used. It helps to align your change to the [Backstage package versioning policy](https://backstage.io/docs/overview/versioning-policy#package-versioning-policy) for the package you are changing, for example, when to provide additional clarity on deprecation or impacting changes which will then be included into CHANGELOGs.
+
+In general, changesets are only needed for changes to packages within `packages/` or `plugins/` directories, and only for the packages that are not marked as `private`. Changesets are also not needed for changes that do not affect the published version of each package, for example changes to tests or in-line source code comments.
+
+Changesets **are** needed for new packages, as that is what triggers the package to be part of the next release.
+
+### How to create a changeset
+
+1. Run `yarn changeset` from the root of the repo
+2. Select which packages you want to include a changeset for
+3. Select impact of the change you're introducing. If the package you are changing is at version `0.x`, use `minor` for breaking changes and `patch` otherwise. If the package is at `1.0.0` or higher, use `major` for breaking changes, `minor` for backwards compatible API changes, and `patch` otherwise. See the [Semantic Versioning specification](https://semver.org/#semantic-versioning-specification-semver) for more details.
+4. Explain your changes in the generated changeset. See [examples of well written changesets](#writing-changesets).
+5. Add generated changeset to Git
+6. Push the commit with your changeset to the branch associated with your PR
+7. Accept our gratitude for making the release process easier on the maintainers
+
+### Writing changesets
 
 Changesets are an important part of the development process. They are used to
 generate Changelog entries for all changes to the project. Ultimately they are
@@ -156,16 +188,17 @@ Here are some important do's and don'ts when writing changesets:
 
 #### Bad
 
-```
+```md
 ---
 '@backstage/catalog': patch
 ---
+
 Fixed table layout
 ```
 
 #### Good
 
-```
+```md
 ---
 '@backstage/catalog': patch
 ---
@@ -177,7 +210,7 @@ Fixed bug in EntityTable component where table layout did not readjust properly 
 
 #### Bad
 
-```
+```md
 ---
 '@backstage/catalog': minor
 ---
@@ -187,7 +220,7 @@ getEntity is now a function that returns a Promise.
 
 #### Good
 
-```
+```md
 ---
 '@backstage/catalog': minor
 ---
@@ -199,7 +232,7 @@ getEntity is now a function that returns a Promise.
 
 #### Bad
 
-```
+```md
 ---
 '@backstage/catalog': patch
 ---
@@ -209,24 +242,125 @@ getEntity is now a function that returns a Promise.
 
 #### Good
 
-    ---
-    '@backstage/catalog': patch
-    ---
+````md
+---
+'@backstage/catalog': patch
+---
 
-    **BREAKING** The catalog createRouter now requires that a `FluxCapacitor` is
-    passed to the router.
+**BREAKING** The catalog createRouter now requires that a `FluxCapacitor` is
+passed to the router.
 
-    These changes are **required** to `packages/backend/src/plugins/catalog.ts`
+These changes are **required** to `packages/backend/src/plugins/catalog.ts`
 
-    ```diff
-    + import { FluxCapacitor } from '@backstage/time';
-    + const fluxCapacitor = new FluxCapacitor();
-      return await createRouter({
-        entitiesCatalog,
-        locationAnalyzer,
-        locationService,
-    +   fluxCapacitor,
-        logger: env.logger,
-        config: env.config,
-      });
-    ```
+```diff
++ import { FluxCapacitor } from '@backstage/time';
++ const fluxCapacitor = new FluxCapacitor();
+  return await createRouter({
+    entitiesCatalog,
+    locationAnalyzer,
+    locationService,
++   fluxCapacitor,
+    logger: env.logger,
+    config: env.config,
+  });
+```
+````
+
+## Developer Certificate of Origin
+
+As with other CNCF projects, Backstage has adopted a [Developers Certificate of Origin (DCO)](https://developercertificate.org/). A DCO is a lightweight way for a developer to certify that they wrote or otherwise have the right to submit code or documentation to a project.
+
+To certify the code you submit to the repository you'll need to add a `Signed-off-by` line to your commits.
+
+`$ git commit -s -m 'Awesome commit message'`
+
+Which will look something like the following in the repo;
+
+```text
+Awesome commit message
+
+Signed-off-by: Jane Smith <jane.smith@example.com>
+```
+
+- In case you forgot to add it to the most recent commit, use `git commit --amend --signoff`
+- In case you forgot to add it to the last N commits in your branch, use `git rebase --signoff HEAD~N` and replace N with the number of new commits you created in your branch.
+- If you have a very deep branch with a lot of commits, run `git rebase -i --signoff $(git merge-base -a master HEAD)`, double check to make sense of the commits (keep all lines as `pick`) and save and close the editor. This should bulk sign all the commits in your PR. Do be careful though. If you have a complex flow with a lot of branching and re-merging of work branches and stuff, merge-base may not be the right solution for you.
+
+Note: If you have already pushed your branch to a remote, you might have to force push: `git push -f` after the rebase.
+
+### Using GitHub Desktop?
+
+If you are using the GitHub Desktop client, you need to manually add the `Signed-off-by` line to the Description field on the Changes tab before committing:
+
+```text
+Awesome description (commit message)
+
+Signed-off-by: Jane Smith <jane.smith@example.com>
+```
+
+In case you forgot to add the line to your most recent commit, you can amend the commit message from the History tab before pushing your branch (GitHub Desktop 2.9 or later).
+
+## API Reports
+
+Backstage uses [API Extractor](https://api-extractor.com/) and TSDoc comments to generate API Reports in Markdown format. These reports are what drive the [API Reference documentation](https://backstage.io/docs/reference/). What this means is that if you are making changes to the API or adding a new plugin then you will need either generate a new API Report or update an existing API Report. If you don't do this the CI build will fail when you create your Pull Request.
+
+There are two ways you can do this:
+
+1. You can run `yarn build:api-reports` from the root of the project and it will go through all of the existing API Reports and update them or create new ones as needed. This may take a while but is generally the best method if you are new to this.
+2. You can run `yarn build:api-reports plugins/<your-plugin-with-changes>` from the root and it will update the existing API Report or create a new one
+
+> Note: the above commands assume you've run `yarn install` before hand or recently
+
+Each plugin/package has its own API Report which means you might see more then one file updated or created depending on your changes. These changes will then need to be committed as well.
+
+## Submitting a Pull Request
+
+When you've got your contribution working, tested, and committed to your branch it's time to create a Pull Request (PR). If you are unsure how to do this GitHub's [Creating a pull request from a fork](https://docs.github.com/en/pull-requests/collaborating-with-pull-requests/proposing-changes-to-your-work-with-pull-requests/creating-a-pull-request-from-a-fork) documentation will help you with that. Once you create your PR you will be presented with a template in the PR's description that looks like this:
+
+```md
+## Hey, I just made a Pull Request!
+
+<!-- Please describe what you added, and add a screenshot if possible.
+     That makes it easier to understand the change so we can :shipit: faster. -->
+
+#### :heavy_check_mark: Checklist
+
+<!--- Please include the following in your Pull Request when applicable: -->
+
+- [ ] A changeset describing the change and affected packages. ([more info](https://github.com/backstage/backstage/blob/master/CONTRIBUTING.md#creating-changesets))
+- [ ] Added or updated documentation
+- [ ] Tests for new functionality and regression tests for bug fixes
+- [ ] Screenshots attached (for UI changes)
+- [ ] All your commits have a `Signed-off-by` line in the message. ([more info](https://github.com/backstage/backstage/blob/master/CONTRIBUTING.md#developer-certificate-of-origin))
+```
+
+From here all you need to do is fill in the information as requested by the template. Please do not remove this as it helps both you and the reviewers confirm that the various tasks have been completed.
+
+Here are some examples of good PR descriptions:
+
+- <https://github.com/backstage/backstage/pull/19473>
+- <https://github.com/backstage/backstage/pull/19623>
+- <https://github.com/backstage/backstage/pull/15881>
+- <https://github.com/backstage/backstage/pull/16401>
+
+## Review Process
+
+Once you've submitted a Pull Request (PR) the various bots will come out and do their work:
+
+- assigning reviewers from the various areas impacted by changes in your PR
+- adding labels to help make reviewing PRs easier
+- checking for missing changesets or confirming them
+- checking for commits for their DCO (Developer Certificate of Origin)
+- kick of the various CI builds
+
+Once these have been completed it's just a matter of being patient as the reviewers have time they will begin to review your PR. When the review begins there may be a few layers to this but the general rule is that you need approval from one of the core maintainers and one from the specific area impacted by your PR. You may also have someone from the community review your changes, this can really help speed things up as they may catch some early items making the review for the maintainers simpler. Once you have the two (2) approvals it's ready to be merged, this task is also done by the maintainers.
+
+### Review Tips
+
+Here are a few things that can help as you go through the review process:
+
+- You'll want to make sure all the automated checks are passing as generally the PR won't get a review if something like the CI build is failing
+- PRs get automatically assigned so you don't need to ping people, they will be notified and have a process of their own for this
+- If you are waiting for a review or mid-review and your PR goes stale one of the easiest ways to clear the stale bot is by simply rebasing your PR
+- There are times where you might run into conflict with the `yarn.lock` during a rebase, to help with that make sure your `master` branch is up to date and then in your branch run `git checkout master yarn.lock` and then run `yarn install`, this will get you a conflict free `yarn.lock` file you can commit
+- If Vale finds issues with your documentation but it's a code reference you can fix it by putting backticks (`) around it. Now if it is a special word or maybe a name there are two ways you can fix that by adding it to the list of accepted words in the [accept.txt file](https://github.com/backstage/backstage/blob/master/.github/vale/Vocab/Backstage/accept.txt) and them committing that change
