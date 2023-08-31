@@ -14,6 +14,7 @@
  * limitations under the License.
  */
 
+import { AnyApiFactory } from '@backstage/core-plugin-api';
 import { ComponentType } from 'react';
 import { PortableSchema } from './createSchemaFromZod';
 
@@ -34,6 +35,7 @@ export function createExtensionDataRef<T>(id: string): ExtensionDataRef<T> {
 export const coreExtensionData = {
   reactComponent: createExtensionDataRef<ComponentType>('core.reactComponent'),
   routePath: createExtensionDataRef<string>('core.routing.path'),
+  apiFactory: createExtensionDataRef<AnyApiFactory>('core.api.factory'),
 };
 
 /** @public */
