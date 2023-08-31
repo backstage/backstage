@@ -15,17 +15,32 @@
  */
 
 import {
+  createApiFactory,
   createComponentExtension,
   createPlugin,
   createRoutableExtension,
+  identityApiRef,
+  storageApiRef,
 } from '@backstage/core-plugin-api';
 import { createCardExtension } from '@backstage/plugin-home-react';
 import { ToolkitContentProps, VisitedByTypeProps } from './homePageComponents';
 import { rootRouteRef } from './routes';
+import { CoreStorageVisitsApi, visitsApiRef } from './api';
 
 /** @public */
 export const homePlugin = createPlugin({
   id: 'home',
+  apis: [
+    createApiFactory({
+      api: visitsApiRef,
+      deps: {
+        storageApi: storageApiRef,
+        identityApi: identityApiRef,
+      },
+      factory: ({ storageApi, identityApi }) =>
+        CoreStorageVisitsApi.create({ storageApi, identityApi }),
+    }),
+  ],
   routes: {
     root: rootRouteRef,
   },
