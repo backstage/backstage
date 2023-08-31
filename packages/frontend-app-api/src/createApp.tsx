@@ -92,12 +92,16 @@ export function createApp(options: { plugins: BackstagePlugin[] }): {
       ]),
     );
 
-    return createExtensionInstance({
+    const newInstance = createExtensionInstance({
       extension: instanceParams.extension,
       source: instanceParams.source,
       config: instanceParams.config,
       attachments,
     });
+
+    instances.set(instanceParams.extension.id, newInstance);
+
+    return newInstance;
   }
 
   const rootConfigs = attachmentMap.get('root')?.get('default') ?? [];
