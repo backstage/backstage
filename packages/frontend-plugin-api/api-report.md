@@ -5,6 +5,8 @@
 ```ts
 /// <reference types="react" />
 
+import { AnyApiFactory } from '@backstage/core-plugin-api';
+import { AnyApiRef } from '@backstage/core-plugin-api';
 import { ComponentType } from 'react';
 import { JsonObject } from '@backstage/types';
 import { z } from 'zod';
@@ -28,7 +30,39 @@ export interface BackstagePlugin {
 export const coreExtensionData: {
   reactComponent: ExtensionDataRef<ComponentType<{}>>;
   routePath: ExtensionDataRef<string>;
+  apiFactory: ExtensionDataRef<AnyApiFactory>;
 };
+
+// @public (undocumented)
+export function createApiExtension<
+  TConfig extends {},
+  TInputs extends Record<
+    string,
+    {
+      extensionData: AnyExtensionDataMap;
+    }
+  >,
+>(
+  options: (
+    | {
+        api: AnyApiRef;
+        factory: (options: {
+          config: TConfig;
+          inputs: {
+            [pointName in keyof TInputs]: ExtensionDataValue<
+              TInputs[pointName]['extensionData']
+            >[];
+          };
+        }) => AnyApiFactory;
+      }
+    | {
+        factory: AnyApiFactory;
+      }
+  ) & {
+    configSchema?: PortableSchema<TConfig>;
+    inputs?: TInputs;
+  },
+): Extension<TConfig>;
 
 // @public (undocumented)
 export function createExtension<

@@ -4298,6 +4298,7 @@ __metadata:
   resolution: "@backstage/frontend-plugin-api@workspace:packages/frontend-plugin-api"
   dependencies:
     "@backstage/cli": "workspace:^"
+    "@backstage/core-plugin-api": "workspace:^"
     "@backstage/frontend-app-api": "workspace:^"
     "@backstage/types": "workspace:^"
     "@testing-library/jest-dom": ^5.10.1
