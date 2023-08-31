@@ -14,36 +14,20 @@
  * limitations under the License.
  */
 
-import React from 'react';
 import {
-  createExtension,
+  createPageExtension,
   createPlugin,
-  coreExtensionData,
 } from '@backstage/frontend-plugin-api';
-import { Router as GraphiQLPage } from '@backstage/plugin-graphiql';
+import React from 'react';
 
-export const GraphiqlPageExtension = createExtension({
-  output: {
-    component: coreExtensionData.reactComponent,
-    path: coreExtensionData.routePath,
-  },
-  factory({ bind, config }) {
-    bind.component(() => {
-      return <GraphiQLPage />;
-    });
-    // TODO: In need of schemas and type safety
-    bind.path((config as { path: string }).path);
-  },
+export const GraphiqlPage = createPageExtension({
+  id: 'graphiql.page',
+  defaultPath: '/graphiql',
+  component: () =>
+    import('@backstage/plugin-graphiql').then(({ Router }) => <Router />),
 });
 
 export const graphiqlPlugin = createPlugin({
   id: 'graphiql',
-  defaultExtensionInstances: [
-    {
-      id: 'graphiql.page',
-      at: 'core.router/routes',
-      extension: GraphiqlPageExtension,
-      config: { path: '/graphiql' },
-    },
-  ],
+  extensions: [GraphiqlPage],
 });

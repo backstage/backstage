@@ -59,6 +59,11 @@ export class PgSearchEngineIndexer extends BatchSearchEngineIndexer {
   async index(documents: IndexableDocument[]): Promise<void> {
     this.numRecords += documents.length;
 
+    const refs = [...new Set(documents.map(d => d.authorization?.resourceRef))];
+    this.logger.debug(
+      `Attempting to index the following entities: ${refs.toString()}`,
+    );
+
     try {
       await this.store.insertDocuments(this.tx!, this.type, documents);
     } catch (e) {

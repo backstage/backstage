@@ -34,6 +34,7 @@ import React from 'react';
 import pluralize from 'pluralize';
 import { catalogIndexRouteRef } from '../../../routes';
 import { useGetEntities } from './useGetEntities';
+import { EntityRelationAggregation } from './types';
 
 const useStyles = makeStyles((theme: BackstageTheme) =>
   createStyles({
@@ -109,13 +110,11 @@ const EntityCountTile = ({
 export const ComponentsGrid = ({
   entity,
   relationsType,
-  isGroup,
   entityFilterKind,
   entityLimit = 6,
 }: {
   entity: Entity;
-  relationsType: string;
-  isGroup: boolean;
+  relationsType: EntityRelationAggregation;
   entityFilterKind?: string[];
   entityLimit?: number;
 }) => {
@@ -123,7 +122,6 @@ export const ComponentsGrid = ({
   const { componentsWithCounters, loading, error } = useGetEntities(
     entity,
     relationsType,
-    isGroup,
     entityFilterKind,
     entityLimit,
   );

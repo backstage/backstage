@@ -14,7 +14,9 @@
  * limitations under the License.
  */
 
+import { AnyApiFactory } from '@backstage/core-plugin-api';
 import { ComponentType } from 'react';
+import { PortableSchema } from './createSchemaFromZod';
 
 /** @public */
 export type ExtensionDataRef<T> = {
@@ -24,6 +26,7 @@ export type ExtensionDataRef<T> = {
 };
 
 /** @public */
+// TODO: change to options object with ID.
 export function createExtensionDataRef<T>(id: string): ExtensionDataRef<T> {
   return { id, $$type: 'extension-data' } as ExtensionDataRef<T>;
 }
@@ -32,6 +35,7 @@ export function createExtensionDataRef<T>(id: string): ExtensionDataRef<T> {
 export const coreExtensionData = {
   reactComponent: createExtensionDataRef<ComponentType>('core.reactComponent'),
   routePath: createExtensionDataRef<string>('core.routing.path'),
+  apiFactory: createExtensionDataRef<AnyApiFactory>('core.api.factory'),
 };
 
 /** @public */
@@ -51,12 +55,17 @@ export type ExtensionDataValue<TData extends AnyExtensionDataMap> = {
 export interface CreateExtensionOptions<
   TData extends AnyExtensionDataMap,
   TPoint extends Record<string, { extensionData: AnyExtensionDataMap }>,
+  TConfig,
 > {
+  id: string;
+  at: string;
+  disabled?: boolean;
   inputs?: TPoint;
   output: TData;
+  configSchema?: PortableSchema<TConfig>;
   factory(options: {
     bind: ExtensionDataBind<TData>;
-    config?: unknown;
+    config: TConfig;
     inputs: {
       [pointName in keyof TPoint]: ExtensionDataValue<
         TPoint[pointName]['extensionData']
@@ -66,13 +75,17 @@ export interface CreateExtensionOptions<
 }
 
 /** @public */
-export interface Extension {
+export interface Extension<TConfig> {
   $$type: 'extension';
+  id: string;
+  at: string;
+  disabled: boolean;
   inputs: Record<string, { extensionData: AnyExtensionDataMap }>;
   output: AnyExtensionDataMap;
+  configSchema?: PortableSchema<TConfig>;
   factory(options: {
     bind: ExtensionDataBind<AnyExtensionDataMap>;
-    config?: unknown;
+    config: TConfig;
     inputs: Record<string, Array<Record<string, unknown>>>;
   }): void;
 }
@@ -81,36 +94,12 @@ export interface Extension {
 export function createExtension<
   TData extends AnyExtensionDataMap,
   TPoint extends Record<string, { extensionData: AnyExtensionDataMap }>,
->(options: CreateExtensionOptions<TData, TPoint>): Extension {
-  return { ...options, $$type: 'extension', inputs: options.inputs ?? {} };
-}
-
-/** @public */
-export interface ExtensionInstanceConfig {
-  id: string;
-  at: string;
-  extension: Extension;
-  config: unknown;
-}
-
-/** @public */
-export interface BackstagePluginOptions {
-  id: string;
-  defaultExtensionInstances?: ExtensionInstanceConfig[];
-}
-
-/** @public */
-export interface BackstagePlugin {
-  $$type: 'backstage-plugin';
-  id: string;
-  defaultExtensionInstances: ExtensionInstanceConfig[];
-}
-
-/** @public */
-export function createPlugin(options: BackstagePluginOptions): BackstagePlugin {
+  TConfig = never,
+>(options: CreateExtensionOptions<TData, TPoint, TConfig>): Extension<TConfig> {
   return {
     ...options,
-    $$type: 'backstage-plugin',
-    defaultExtensionInstances: options.defaultExtensionInstances ?? [],
+    disabled: options.disabled ?? false,
+    $$type: 'extension',
+    inputs: options.inputs ?? {},
   };
 }

@@ -1,0 +1,10 @@
+apiVersion: backstage.io/v1alpha1
+kind: Component
+metadata:
+  name: backstage-plugin-adr-common
+  title: '@backstage/plugin-adr-common'
+  description: Common functionalities for the adr plugin
+spec:
+  lifecycle: experimental
+  type: backstage-common-library
+  owner: kuangp

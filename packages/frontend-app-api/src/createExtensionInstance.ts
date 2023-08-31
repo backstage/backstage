@@ -26,27 +26,47 @@ export interface ExtensionInstance {
 
 /** @internal */
 export function createExtensionInstance(options: {
-  id: string;
-  extension: Extension;
+  extension: Extension<unknown>;
   config: unknown;
   attachments: Record<string, ExtensionInstance[]>;
 }): ExtensionInstance {
   const { extension, config, attachments } = options;
   const extensionData = new Map<string, unknown>();
-  extension.factory({
-    config,
-    bind: mapValues(extension.output, ref => {
-      return (value: unknown) => extensionData.set(ref.id, value);
-    }),
-    inputs: mapValues(
-      extension.inputs,
-      ({ extensionData: pointData }, inputName) => {
-        // TODO: validation
-        return (attachments[inputName] ?? []).map(attachment =>
-          mapValues(pointData, ref => attachment.data.get(ref.id)),
-        );
-      },
-    ),
-  });
-  return { id: options.id, data: extensionData, $$type: 'extension-instance' };
+
+  let parsedConfig: unknown;
+  try {
+    parsedConfig = extension.configSchema?.parse(config ?? {});
+  } catch (e) {
+    throw new Error(
+      `Invalid configuration for extension instance '${extension.id}', ${e}`,
+    );
+  }
+
+  try {
+    extension.factory({
+      config: parsedConfig,
+      bind: mapValues(extension.output, ref => {
+        return (value: unknown) => extensionData.set(ref.id, value);
+      }),
+      inputs: mapValues(
+        extension.inputs,
+        ({ extensionData: pointData }, inputName) => {
+          // TODO: validation
+          return (attachments[inputName] ?? []).map(attachment =>
+            mapValues(pointData, ref => attachment.data.get(ref.id)),
+          );
+        },
+      ),
+    });
+  } catch (e) {
+    throw new Error(
+      `Failed to instantiate extension instance '${extension.id}', ${e}`,
+    );
+  }
+
+  return {
+    id: options.extension.id,
+    data: extensionData,
+    $$type: 'extension-instance',
+  };
 }

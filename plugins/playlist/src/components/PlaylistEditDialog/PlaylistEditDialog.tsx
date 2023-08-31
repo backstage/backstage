@@ -18,6 +18,7 @@ import { parseEntityRef } from '@backstage/catalog-model';
 import { identityApiRef, useApi } from '@backstage/core-plugin-api';
 import { humanizeEntityRef } from '@backstage/plugin-catalog-react';
 import { PlaylistMetadata } from '@backstage/plugin-playlist-common';
+import { playlistApiRef } from '../../api';
 import {
   Button,
   CircularProgress,
@@ -35,7 +36,7 @@ import {
   Select,
   TextField,
 } from '@material-ui/core';
-import React from 'react';
+import React, { useRef } from 'react';
 import { useForm, Controller } from 'react-hook-form';
 import useAsync from 'react-use/lib/useAsync';
 import useAsyncFn from 'react-use/lib/useAsyncFn';
@@ -74,12 +75,26 @@ export const PlaylistEditDialog = ({
 }: PlaylistEditDialogProps) => {
   const classes = useStyles();
   const identityApi = useApi(identityApiRef);
-
+  const playlistApi = useApi(playlistApiRef);
+  const playlistPromise = useRef(playlistApi.getAllPlaylists({}));
   const { loading: loadingOwnership, value: ownershipRefs } =
     useAsync(async () => {
       const { ownershipEntityRefs } = await identityApi.getBackstageIdentity();
       return ownershipEntityRefs;
     }, []);
+
+  const nameIsUnique = async (name: string) => {
+    const playlists = await playlistPromise.current;
+
+    if (name !== playlist.name) {
+      return (
+        !playlists.some(p => p.name === name) ||
+        'A playlist with this name already exists'
+      );
+    }
+
+    return true;
+  };
 
   const defaultValues = {
     ...playlist,
@@ -117,13 +132,17 @@ export const PlaylistEditDialog = ({
         <Controller
           name="name"
           control={control}
-          rules={{ required: true }}
+          rules={{
+            required: true,
+            validate: value => nameIsUnique(value),
+          }}
           render={({ field }) => (
             <TextField
               {...field}
               disabled={saving.loading}
               data-testid="edit-dialog-name-input"
               error={!!errors.name}
+              helperText={errors.name?.message}
               fullWidth
               label="Name"
               margin="dense"

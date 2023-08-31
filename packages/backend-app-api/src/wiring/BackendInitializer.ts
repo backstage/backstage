@@ -44,10 +44,7 @@ export interface BackendRegisterInit {
 export class BackendInitializer {
   #startPromise?: Promise<void>;
   #features = new Array<InternalBackendFeature>();
-  #extensionPoints = new Map<
-    ExtensionPoint<unknown>,
-    { impl: unknown; pluginId: string }
-  >();
+  #extensionPoints = new Map<string, { impl: unknown; pluginId: string }>();
   #serviceHolder: EnumerableServiceHolder | undefined;
   #providedServiceFactories = new Array<ServiceFactory>();
   #defaultApiFactories: ServiceFactory[];
@@ -64,7 +61,7 @@ export class BackendInitializer {
     const missingRefs = new Set<ServiceOrExtensionPoint>();
 
     for (const [name, ref] of Object.entries(deps)) {
-      const ep = this.#extensionPoints.get(ref as ExtensionPoint<unknown>);
+      const ep = this.#extensionPoints.get(ref.id);
       if (ep) {
         if (ep.pluginId !== pluginId) {
           throw new Error(
@@ -167,7 +164,7 @@ export class BackendInitializer {
   }
 
   async #doStart(): Promise<void> {
-    this.#serviceHolder = new ServiceRegistry([
+    this.#serviceHolder = ServiceRegistry.create([
       ...this.#defaultApiFactories,
       ...this.#providedServiceFactories,
     ]);
@@ -201,12 +198,12 @@ export class BackendInitializer {
 
         if (r.type === 'plugin' || r.type === 'module') {
           for (const [extRef, extImpl] of r.extensionPoints) {
-            if (this.#extensionPoints.has(extRef)) {
+            if (this.#extensionPoints.has(extRef.id)) {
               throw new Error(
                 `ExtensionPoint with ID '${extRef.id}' is already registered`,
               );
             }
-            this.#extensionPoints.set(extRef, {
+            this.#extensionPoints.set(extRef.id, {
               impl: extImpl,
               pluginId: r.pluginId,
             });

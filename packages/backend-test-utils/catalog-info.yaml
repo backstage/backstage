@@ -1,0 +1,10 @@
+apiVersion: backstage.io/v1alpha1
+kind: Component
+metadata:
+  name: backstage-backend-test-utils
+  title: '@backstage/backend-test-utils'
+  description: Test helpers library for Backstage backends
+spec:
+  lifecycle: experimental
+  type: backstage-node-library
+  owner: maintainers

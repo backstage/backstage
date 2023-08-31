@@ -1,5 +1,17 @@
 # @backstage/core-components
 
+## 0.13.5-next.1
+
+### Patch Changes
+
+- 0c9907645aab: Fixed an issue causing `StructuredMetadataTable` to crash in case metadata contained `null` values.
+- Updated dependencies
+  - @backstage/config@1.1.0-next.0
+  - @backstage/core-plugin-api@1.6.0-next.1
+  - @backstage/errors@1.2.1
+  - @backstage/theme@0.4.1
+  - @backstage/version-bridge@1.0.4
+
 ## 0.13.5-next.0
 
 ### Patch Changes

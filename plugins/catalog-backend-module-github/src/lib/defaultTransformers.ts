@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { GroupEntity, UserEntity } from '@backstage/catalog-model';
+import { Entity, GroupEntity, UserEntity } from '@backstage/catalog-model';
 import { graphql } from '@octokit/graphql';
 import {
   ANNOTATION_GITHUB_TEAM_SLUG,
@@ -34,24 +34,24 @@ export interface TransformerContext {
 }
 
 /**
- * Transformer for GitHub users to UserEntity
+ * Transformer for GitHub users to an Entity
  *
  * @public
  */
 export type UserTransformer = (
   item: GithubUser,
   ctx: TransformerContext,
-) => Promise<UserEntity | undefined>;
+) => Promise<Entity | undefined>;
 
 /**
- * Transformer for GitHub Team to GroupEntity
+ * Transformer for GitHub Team to an Entity
  *
  * @public
  */
 export type TeamTransformer = (
   item: GithubTeam,
   ctx: TransformerContext,
-) => Promise<GroupEntity | undefined>;
+) => Promise<Entity | undefined>;
 
 /**
  * Default transformer for GitHub users to UserEntity

@@ -53,7 +53,7 @@ bound to the regular cadence and are instead released whenever needed.
 
 ## Next Release Line
 
-Release cadence: Weekly
+Release cadence: Weekly, specifically on Tuesdays.
 
 The next release line is a weekly release of the project. Consuming these
 releases gives you early access to upcoming functionality in Backstage. There

@@ -1,5 +1,25 @@
 # @backstage/plugin-auth-backend
 
+## 0.18.9-next.1
+
+### Patch Changes
+
+- 080cc7794700: Migrated the GitLab auth provider to be implemented using the new `@backstage/plugin-auth-backend-module-gitlab-provider` module.
+- Updated dependencies
+  - @backstage/config@1.1.0-next.0
+  - @backstage/plugin-auth-backend-module-gitlab-provider@0.1.0-next.0
+  - @backstage/plugin-auth-backend-module-github-provider@0.1.0-next.1
+  - @backstage/plugin-auth-backend-module-google-provider@0.1.0-next.1
+  - @backstage/backend-common@0.19.5-next.1
+  - @backstage/backend-plugin-api@0.6.3-next.1
+  - @backstage/catalog-model@1.4.2-next.0
+  - @backstage/plugin-auth-node@0.3.0-next.1
+  - @backstage/plugin-catalog-node@1.4.4-next.1
+  - @backstage/plugin-auth-backend-module-gcp-iap-provider@0.1.0-next.1
+  - @backstage/catalog-client@1.4.4-next.0
+  - @backstage/errors@1.2.1
+  - @backstage/types@1.1.0
+
 ## 0.18.8-next.0
 
 ### Patch Changes

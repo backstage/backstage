@@ -108,7 +108,7 @@ export const PlaylistEntitiesTable = ({
   const actions = editAllowed
     ? [
         {
-          icon: DeleteIcon,
+          icon: () => <DeleteIcon color="secondary" />,
           tooltip: `Remove from ${singularTitleLowerCase}`,
           onClick: removeEntity,
         },

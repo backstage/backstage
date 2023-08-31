@@ -123,3 +123,43 @@ source that should be mirrored into Backstage. To make Backstage a mirror of
 this remote source, users cannot also register new entities with e.g. the
 [catalog-import](https://github.com/backstage/backstage/tree/master/plugins/catalog-import)
 plugin.
+
+## Clean up orphaned entities
+
+In short entities can become orphaned through multiple means, such as when a catalog-info YAML file is moved from one place to another in the version control system without updating the registration in the catalog. For safety reasons the default behavior is to just tag the orphaned entities, and keep them around. You can read more about orphaned entities [here](life-of-an-entity.md#orphaning).
+
+However, if you do with to automatically remove the orphaned entities, you can use the following configuration, and everything with an orphaned entity tag will be eventually deleted.
+
+```yaml
+catalog:
+  orphanStrategy: delete
+```
+
+## Processing Interval
+
+The [processing loop](https://backstage.io/docs/features/software-catalog/life-of-an-entity) is
+responsible for running your registered processors on all entities, on a certain
+interval. That interval can be configured with the `processingInterval`
+app-config parameter.
+
+```yaml
+catalog:
+  processingInterval: { minutes: 45 }
+```
+
+The value is a duration object, that has one or more of the fields `years`,
+`months`, `weeks`, `days`, `hours`, `minutes`, `seconds`, and `milliseconds`.
+You can combine them, for example as `{ hours: 1, minutes: 15 }` which
+essentially means that you want the processing loop to visit entities roughly
+once every 75 minutes.
+
+Note that this is only a suggested minimum, and the actual interval may be
+longer. Internally, the catalog will scale up this number by a small factor and
+choose random numbers in that range to spread out the load. If the catalog is
+overloaded and cannot process all entities during the interval, the time taken
+between processing runs of any given entity may also be longer than specified
+here.
+
+Setting this value too low risks exhausting rate limits on external systems that
+are queried by processors, such as version control systems housing catalog-info
+files.

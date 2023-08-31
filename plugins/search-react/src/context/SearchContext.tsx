@@ -102,7 +102,7 @@ export const useSearchContextCheck = () => {
  * The initial state of `SearchContextProvider`.
  *
  */
-const searchInitialState: SearchContextState = {
+const defaultInitialSearchState: SearchContextState = {
   term: '',
   types: [],
   filters: {},
@@ -111,7 +111,7 @@ const searchInitialState: SearchContextState = {
 };
 
 const useSearchContextValue = (
-  initialValue: SearchContextState = searchInitialState,
+  initialValue: SearchContextState = defaultInitialSearchState,
 ) => {
   const searchApi = useApi(searchApiRef);
 
@@ -245,12 +245,16 @@ export const SearchContextProvider = (props: SearchContextProviderProps) => {
 
   const configApi = useApi(configApiRef);
 
+  const propsInitialSearchState = initialState ?? {};
+
+  const configInitialSearchState = configApi.has('search.query.pageLimit')
+    ? { pageLimit: configApi.getNumber('search.query.pageLimit') }
+    : {};
+
   const searchContextInitialState = {
-    ...searchInitialState,
-    ...(initialState || {}),
-    pageLimit:
-      configApi.getOptionalNumber('search.query.pageLimit') ||
-      initialState?.pageLimit,
+    ...defaultInitialSearchState,
+    ...propsInitialSearchState,
+    ...configInitialSearchState,
   };
 
   return hasParentContext && inheritParentContextIfAvailable ? (

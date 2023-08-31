@@ -13,6 +13,34 @@ npm.
 Releases are handled by changesets and trigger whenever the "Version Packages"
 PR is merged. This is typically done every Tuesday around noon CET.
 
+## Next Line Release Process
+
+- PR Checks: Ensure there are no outstanding PRs pending to be merged for this version. If there are any, reach out to maintainers and relevant owners of the affected code reminding them of the deadline for the release.
+- [optional] Lock main branch
+  - Lock the main branch to prevent any new merges.
+  - Note: Admin rights are required to lock the branch. If you lack the necessary permissions, contact a core maintainer to perform this action on your behalf.
+- Check [`Version Packages (next)` Pull Request](https://github.com/backstage/backstage/pulls?q=is%3Aopen+is%3Apr+in%3Atitle+%22Version+Packages+%28next%29%22)
+  - Verify the version we are shipping is correct, by looking at the version packages PR title. It should be "Version Packages (next)"
+  - Check [`.changeset/pre.json`](https://github.com/backstage/backstage/blob/master/.changeset/pre.json) if the `mode` is set to `pre`. If you encounter `mode: "exit"` or if it's not defined, it indicates a mainline release.
+- Verify that there are no active/unfinished `sync_version-packages` actions running (https://github.com/backstage/backstage/actions/workflows/sync_version-packages.yml)
+  - Locking the main branch will prevent new ones to be created, but be sure to check for running actions again after unlocking, since it may cause pending auto-merge PRs to be merged.
+- Check [`Version Packages (next)` Pull Request](https://github.com/backstage/backstage/pulls?q=is%3Aopen+is%3Apr+in%3Atitle+%22Version+Packages+%28next%29%22) for sufficient approval to be merged
+  - Check generated `changelog` in the changed files of the pull request under `docs/releases` to see if there are any unexpected major bumps e.g. by searching the file
+  - Review & approve changes
+  - Reach out to core maintainer to merge the pull request
+  - Heads-up: The microsite building step can be skipped as long as the `prettier` task passes & everything else looks green
+
+Merging the `Version Packages (next)` Pull Request will trigger the deployment workflows. Follow along the [deployment workflow](https://github.com/backstage/backstage/actions/workflows/deploy_packages.yml). If you notice flakiness (e.g. if the build is flaky or if the release step runs into an error with releasing to npm) just restart the workflow.
+
+Congratulations on the release! There should be now a post in the [`#announcements` channel](https://discord.com/channels/687207715902193673/705123584468582400) in Discord linking to the release tag - check if links & tag look as expected. Finally unlock the main branch again. Merging PRs in master directly after release should be done with caution as it potential complicates fixing issues introduced in the release.
+
+## Switching Release Modes
+
+- To enter pre-release mode: `yarn changeset pre enter next` & create PR + merge changes
+- To exit pre-release mode: `yarn changeset pre exit` & create PR + merge changes
+  - Has to be done before the mainline release
+- It's not time critical; Affects the next release happening
+
 ## Emergency Release Process
 
 **This emergency release process is intended only for the Backstage
