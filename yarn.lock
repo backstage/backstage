@@ -18865,9 +18865,9 @@ __metadata:
   linkType: hard
 
 "@types/zen-observable@npm:^0.8.0, @types/zen-observable@npm:^0.8.2":
-  version: 0.8.3
-  resolution: "@types/zen-observable@npm:0.8.3"
-  checksum: 08c88354abcf03a2176a2ec32e07da1f25fdad94fbc2f419bea53d77deb04ad4759518b4fe3fc695e61065dd4bdf7c8bd26b5211a6cd5be2233872806bdee48d
+  version: 0.8.4
+  resolution: "@types/zen-observable@npm:0.8.4"
+  checksum: 784bae5554de07c9b0beda9ff0b81dfa4b52dee2f112d1c874e942114be00133b8159b413c5ba2503b8f0b1baa281c33e91028fe00b44abca0a22552c536e3ec
   languageName: node
   linkType: hard
 
