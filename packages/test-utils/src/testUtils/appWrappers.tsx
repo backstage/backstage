@@ -14,7 +14,12 @@
  * limitations under the License.
  */
 
-import React, { ComponentType, ReactNode, ReactElement } from 'react';
+import React, {
+  ComponentType,
+  ReactNode,
+  ReactElement,
+  PropsWithChildren,
+} from 'react';
 import { MemoryRouter } from 'react-router-dom';
 import { Route } from 'react-router-dom';
 import { UnifiedThemeProvider, themes } from '@backstage/theme';
@@ -226,7 +231,7 @@ export function wrapInTestApp(
  * @public
  */
 export async function renderInTestApp(
-  Component: ComponentType | ReactNode,
+  Component: ComponentType<PropsWithChildren<{}>> | ReactNode,
   options: TestAppOptions = {},
 ): Promise<RenderResult> {
   let wrappedElement: React.ReactElement;

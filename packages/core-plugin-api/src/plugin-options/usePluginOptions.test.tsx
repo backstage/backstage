@@ -38,7 +38,7 @@ describe('usePluginOptions', () => {
     });
 
     const rendered = renderHook(() => usePluginOptions(), {
-      wrapper: ({ children }) => (
+      wrapper: ({ children }: React.PropsWithChildren<{}>) => (
         <PluginProvider plugin={plugin}>{children}</PluginProvider>
       ),
     });

@@ -18,10 +18,10 @@ import React from 'react';
 import { AppContext } from '../app/types';
 import { BackstagePlugin } from '../plugin';
 
-type Props = {
+type Props = React.PropsWithChildren<{
   app: AppContext;
   plugin: BackstagePlugin;
-};
+}>;
 
 type State = { error: Error | undefined };
 

@@ -26,6 +26,7 @@ import { JsonValue } from '@backstage/types';
 import { MatcherFunction } from '@testing-library/react';
 import { Observable } from '@backstage/types';
 import { PermissionApi } from '@backstage/plugin-permission-react';
+import { PropsWithChildren } from 'react';
 import { default as React_2 } from 'react';
 import { ReactElement } from 'react';
 import { ReactNode } from 'react';
@@ -192,7 +193,7 @@ export type MockStorageBucket = {
 
 // @public
 export function renderInTestApp(
-  Component: ComponentType | ReactNode,
+  Component: ComponentType<PropsWithChildren<{}>> | ReactNode,
   options?: TestAppOptions,
 ): Promise<RenderResult>;
 
