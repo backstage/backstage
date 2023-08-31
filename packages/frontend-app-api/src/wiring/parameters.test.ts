@@ -210,8 +210,8 @@ describe('readAppExtensionParameters', () => {
           },
         }),
       ),
-    ).toThrow(
-      "Invalid extension configuration at app.extensions[0], extension ID must only contain letters, numbers, and dots; got 'core.router/routes'",
+    ).toThrowErrorMatchingInlineSnapshot(
+      `"Invalid extension configuration at app.extensions[0], extension ID must not contain slashes; got 'core.router/routes', did you mean 'core.router'?"`,
     );
   });
 });
@@ -243,9 +243,6 @@ describe('expandShorthandExtensionParameters', () => {
   });
 
   it('rejects unknown values', () => {
-    expect(() => run({ a: null })).toThrowErrorMatchingInlineSnapshot(
-      `"Invalid extension configuration at app.extensions[1][a], value must be a boolean or object"`,
-    );
     expect(() => run({ a: 1 })).toThrowErrorMatchingInlineSnapshot(
       `"Invalid extension configuration at app.extensions[1][a], value must be a boolean or object"`,
     );
@@ -260,11 +257,24 @@ describe('expandShorthandExtensionParameters', () => {
       disabled: false,
     });
     expect(() => run('')).toThrowErrorMatchingInlineSnapshot(
-      `"Invalid extension configuration at app.extensions[1], extension ID must only contain letters, numbers, and dots; got ''"`,
+      `"Invalid extension configuration at app.extensions[1], extension ID must not be empty or contain whitespace"`,
+    );
+    expect(() => run(' a')).toThrowErrorMatchingInlineSnapshot(
+      `"Invalid extension configuration at app.extensions[1], extension ID must not be empty or contain whitespace"`,
     );
     expect(() => run('core.router/routes')).toThrowErrorMatchingInlineSnapshot(
-      `"Invalid extension configuration at app.extensions[1], extension ID must only contain letters, numbers, and dots; got 'core.router/routes'"`,
+      `"Invalid extension configuration at app.extensions[1], extension ID must not contain slashes; got 'core.router/routes', did you mean 'core.router'?"`,
     );
+  });
+
+  it('supports null value', () => {
+    // this is the result of typing:
+    // - core.router:
+    // The missing value is interpreted as null by the yaml parser so we deal with that
+    expect(run({ 'core.router': null })).toEqual({
+      id: 'core.router',
+      disabled: false,
+    });
   });
 
   it('supports boolean value', () => {

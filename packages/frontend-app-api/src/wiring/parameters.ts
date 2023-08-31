@@ -60,13 +60,25 @@ export function expandShorthandExtensionParameters(
     }${prop ? `.${prop}` : ''}, ${msg}`;
   }
 
+  // NOTE(freben): This check is intentionally not complete and doesn't check
+  // whether letters and digits are used, etc. It's not up to the config reading
+  // logic to decide what constitutes a valid extension ID; that should be
+  // decided by the logic that loads and instantiates the extensions. This check
+  // is just here to catch real mistakes or truly conceptually wrong input.
   function assertValidId(id: string) {
-    if (!id.match(/^[\.a-zA-Z0-9]+$/)) {
+    if (!id || id !== id.trim()) {
       throw new Error(
-        errorMsg(
-          `extension ID must only contain letters, numbers, and dots; got '${id}'`,
-        ),
+        errorMsg('extension ID must not be empty or contain whitespace'),
       );
+    }
+
+    if (id.includes('/')) {
+      let message = `extension ID must not contain slashes; got '${id}'`;
+      const good = id.split('/')[0];
+      if (good) {
+        message += `, did you mean '${good}'?`;
+      }
+      throw new Error(errorMsg(message));
     }
   }
 
@@ -98,6 +110,16 @@ export function expandShorthandExtensionParameters(
   const value = arrayEntry[id];
   assertValidId(id);
 
+  // This example covers a potentially common mistake in the syntax
+  // Example YAML:
+  // - entity.card.about:
+  if (value === null) {
+    return {
+      id,
+      disabled: false,
+    };
+  }
+
   // Example YAML:
   // - catalog.page.cicd: false
   if (typeof value === 'boolean') {
@@ -115,7 +137,9 @@ export function expandShorthandExtensionParameters(
   //        path: /tech-radar
   //        width: 1500
   //        height: 800
-  if (typeof value !== 'object' || value === null || Array.isArray(value)) {
+  if (typeof value !== 'object' || Array.isArray(value)) {
+    // We don't mention null here - we don't want people to explicitly enter
+    // - entity.card.about: null
     throw new Error(errorMsg('value must be a boolean or object', id));
   }
 
