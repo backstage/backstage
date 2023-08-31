@@ -640,8 +640,45 @@ Please add '/backstageRoot/node_modules' to the 'NODE_PATH' when running the bac
               message:
                 "failed to load dynamic plugin manifest from '/backstageRoot/dist-dynamic/test-backend-plugin'",
               meta: {
-                name: 'TypeError',
-                message: "Cannot read properties of undefined (reading 'role')",
+                name: 'Error',
+                message: "field 'backstage.role' not found in 'package.json'",
+              },
+            },
+          ],
+        },
+      },
+      {
+        name: 'missing main field in package.json',
+        fileSystem: {
+          '/backstageRoot': mockFs.directory({
+            items: {
+              'dist-dynamic': mockFs.directory({
+                items: {
+                  'test-backend-plugin': mockFs.directory({
+                    items: {
+                      'package.json': mockFs.file({
+                        content: JSON.stringify({
+                          name: 'test-backend-plugin-dynamic',
+                          version: '0.0.0',
+                          backstage: { role: 'backend-plugin' },
+                        }),
+                      }),
+                    },
+                  }),
+                },
+              }),
+            },
+          }),
+        },
+        expectedPluginPackages: [],
+        expectedLogs: {
+          errors: [
+            {
+              message:
+                "failed to load dynamic plugin manifest from '/backstageRoot/dist-dynamic/test-backend-plugin'",
+              meta: {
+                name: 'Error',
+                message: "field 'main' not found in 'package.json'",
               },
             },
           ],

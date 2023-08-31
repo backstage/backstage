@@ -143,21 +143,19 @@ export class PluginScanner {
       }
 
       let scannedPlugin: ScannedPluginPackage;
-      try {
-        scannedPlugin = await this.scanDir(pluginHome);
-      } catch (e) {
-        this.logger.error(
-          `failed to load dynamic plugin manifest from '${pluginHome}'`,
-          e,
-        );
-        continue;
-      }
-
       let platform: PackagePlatform;
       try {
-        platform = PackageRoles.getRoleInfo(
-          scannedPlugin.manifest.backstage.role,
-        ).platform;
+        scannedPlugin = await this.scanDir(pluginHome);
+        if (!scannedPlugin.manifest.main) {
+          throw new Error("field 'main' not found in 'package.json'");
+        }
+        if (scannedPlugin.manifest.backstage?.role) {
+          platform = PackageRoles.getRoleInfo(
+            scannedPlugin.manifest.backstage.role,
+          ).platform;
+        } else {
+          throw new Error("field 'backstage.role' not found in 'package.json'");
+        }
       } catch (e) {
         this.logger.error(
           `failed to load dynamic plugin manifest from '${pluginHome}'`,

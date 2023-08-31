@@ -14,14 +14,10 @@
  * limitations under the License.
  */
 
-import { LoggerService } from '@backstage/backend-plugin-api';
-
 /**
  * @public
  */
 export interface ModuleLoader {
-  logger: LoggerService;
-
   bootstrap(backstageRoot: string, dynamicPluginPaths: string[]): Promise<void>;
 
   load(id: string): Promise<any>;

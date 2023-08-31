@@ -4,6 +4,7 @@
 
 ```ts
 import { BackendFeature } from '@backstage/backend-plugin-api';
+import { BackstagePackageJson } from '@backstage/cli-node';
 import { CatalogBuilder } from '@backstage/plugin-catalog-backend';
 import { Config } from '@backstage/config';
 import { EventBroker } from '@backstage/plugin-events-node';
@@ -150,8 +151,6 @@ export interface ModuleLoader {
   bootstrap(backstageRoot: string, dynamicPluginPaths: string[]): Promise<void>;
   // (undocumented)
   load(id: string): Promise<any>;
-  // (undocumented)
-  logger: LoggerService;
 }
 
 // @public (undocumented)
@@ -182,18 +181,11 @@ export class PluginManager implements BackendPluginProvider {
 }
 
 // @public (undocumented)
-export interface ScannedPluginManifest {
-  // (undocumented)
-  backstage: {
-    role: PackageRole;
+export type ScannedPluginManifest = BackstagePackageJson &
+  Required<Pick<BackstagePackageJson, 'main'>> &
+  Required<Pick<BackstagePackageJson, 'backstage'>> & {
+    backstage: Required<BackstagePackageJson['backstage']>;
   };
-  // (undocumented)
-  main: string;
-  // (undocumented)
-  name: string;
-  // (undocumented)
-  version: string;
-}
 
 // @public (undocumented)
 export interface ScannedPluginPackage {
