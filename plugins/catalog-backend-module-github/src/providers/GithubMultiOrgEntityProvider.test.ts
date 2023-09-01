@@ -1702,31 +1702,6 @@ describe('GithubMultiOrgEntityProvider', () => {
             {
               entity: {
                 apiVersion: 'backstage.io/v1alpha1',
-                kind: 'User',
-                metadata: {
-                  annotations: {
-                    'backstage.io/managed-by-location':
-                      'url:https://github.com/a',
-                    'backstage.io/managed-by-origin-location':
-                      'url:https://github.com/a',
-                    'github.com/user-login': 'a',
-                  },
-                  name: 'a',
-                },
-                spec: {
-                  memberOf: ['orga/team', 'orgb/team'],
-                  profile: {
-                    displayName: 'a',
-                    email: 'user1@test.com',
-                    picture: 'https://avatars.githubusercontent.com/u/83820368',
-                  },
-                },
-              },
-              locationKey: 'github-multi-org-provider:my-id',
-            },
-            {
-              entity: {
-                apiVersion: 'backstage.io/v1alpha1',
                 kind: 'Group',
                 metadata: {
                   annotations: {
@@ -1750,6 +1725,31 @@ describe('GithubMultiOrgEntityProvider', () => {
                   },
                   type: 'team',
                   members: ['default/a'],
+                },
+              },
+              locationKey: 'github-multi-org-provider:my-id',
+            },
+            {
+              entity: {
+                apiVersion: 'backstage.io/v1alpha1',
+                kind: 'User',
+                metadata: {
+                  annotations: {
+                    'backstage.io/managed-by-location':
+                      'url:https://github.com/a',
+                    'backstage.io/managed-by-origin-location':
+                      'url:https://github.com/a',
+                    'github.com/user-login': 'a',
+                  },
+                  name: 'a',
+                },
+                spec: {
+                  memberOf: ['orga/team', 'orgb/team'],
+                  profile: {
+                    displayName: 'a',
+                    email: 'user1@test.com',
+                    picture: 'https://avatars.githubusercontent.com/u/83820368',
+                  },
                 },
               },
               locationKey: 'github-multi-org-provider:my-id',
@@ -1874,31 +1874,6 @@ describe('GithubMultiOrgEntityProvider', () => {
             {
               entity: {
                 apiVersion: 'backstage.io/v1alpha1',
-                kind: 'User',
-                metadata: {
-                  annotations: {
-                    'backstage.io/managed-by-location':
-                      'url:https://github.com/a',
-                    'backstage.io/managed-by-origin-location':
-                      'url:https://github.com/a',
-                    'github.com/user-login': 'a',
-                  },
-                  name: 'a',
-                },
-                spec: {
-                  memberOf: ['orgb/team'],
-                  profile: {
-                    displayName: 'a',
-                    email: 'user1@test.com',
-                    picture: 'https://avatars.githubusercontent.com/u/83820368',
-                  },
-                },
-              },
-              locationKey: 'github-multi-org-provider:my-id',
-            },
-            {
-              entity: {
-                apiVersion: 'backstage.io/v1alpha1',
                 kind: 'Group',
                 metadata: {
                   annotations: {
@@ -1922,6 +1897,31 @@ describe('GithubMultiOrgEntityProvider', () => {
                   },
                   type: 'team',
                   members: [],
+                },
+              },
+              locationKey: 'github-multi-org-provider:my-id',
+            },
+            {
+              entity: {
+                apiVersion: 'backstage.io/v1alpha1',
+                kind: 'User',
+                metadata: {
+                  annotations: {
+                    'backstage.io/managed-by-location':
+                      'url:https://github.com/a',
+                    'backstage.io/managed-by-origin-location':
+                      'url:https://github.com/a',
+                    'github.com/user-login': 'a',
+                  },
+                  name: 'a',
+                },
+                spec: {
+                  memberOf: ['orgb/team'],
+                  profile: {
+                    displayName: 'a',
+                    email: 'user1@test.com',
+                    picture: 'https://avatars.githubusercontent.com/u/83820368',
+                  },
                 },
               },
               locationKey: 'github-multi-org-provider:my-id',
