@@ -167,26 +167,22 @@ describe('backend-plugin-manager', () => {
           main: 'dist/index.cjs.js',
         },
         expectedLogs(location) {
-          const loadOrigin = 'manager/plugin-manager.test.ts';
-          /*          
-          if (process.env.CI === 'true') {
-            // CI runs the tests in a different way which produces a different relative path
-            loadOrigin =
-              '../../../packages/backend-plugin-manager/src/manager/plugin-manager.test.ts';
-          }
-*/
           return {
             errors: [
               {
                 message: `an error occured while loading dynamic backend plugin 'backend-dynamic-plugin-test' from '${location}'`,
                 meta: {
                   name: 'Error',
-                  message: `Cannot find module '${url.fileURLToPath(
-                    location,
-                  )}/dist/index.cjs.js' from '${loadOrigin}'`,
-                  _originalMessage: `Cannot find module '${url.fileURLToPath(
-                    location,
-                  )}/dist/index.cjs.js' from '${loadOrigin}'`,
+                  message: expect.stringContaining(
+                    `Cannot find module '${url.fileURLToPath(
+                      location,
+                    )}/dist/index.cjs.js' from `,
+                  ),
+                  _originalMessage: expect.stringContaining(
+                    `Cannot find module '${url.fileURLToPath(
+                      location,
+                    )}/dist/index.cjs.js' from `,
+                  ),
                   code: 'MODULE_NOT_FOUND',
                   hint: '',
                   moduleName: `${url.fileURLToPath(
