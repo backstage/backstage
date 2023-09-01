@@ -19,6 +19,8 @@ import { AllowAllPermissionPolicy } from './policy';
 
 /**
  * A permission policy module that allows all requests.
+ *
+ * @public
  */
 export const permissionModuleAllowAllPolicy = createBackendModule({
   moduleId: 'allowAllPolicy',

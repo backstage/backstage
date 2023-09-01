@@ -6,9 +6,6 @@
 import { BackendFeature } from '@backstage/backend-plugin-api';
 
 // @alpha
-export const permissionModuleAllowAllPolicy: () => BackendFeature;
-
-// @alpha
 export const permissionPlugin: () => BackendFeature;
 
 // (No @packageDocumentation comment for this package)
