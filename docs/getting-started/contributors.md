@@ -72,7 +72,7 @@ $ backstage-cli backend:dev
 You'll see how you get both logs for the frontend `webpack-dev-server` which
 serves the react app ([0]) and the backend ([1]);
 
-Visit http://localhost:3000 and you should see the bleeding edge of Backstage
+Visit <http://localhost:3000> and you should see the bleeding edge of Backstage
 ready for contributions!
 
 ## Coding Guidelines
@@ -85,7 +85,7 @@ If you're contributing to the backend or CLI tooling, be mindful of cross-platfo
 
 Also be sure to skim through our [ADRs](../architecture-decisions) to see if they cover what you're working on. In particular [ADR006: Avoid React.FC and React.SFC](../architecture-decisions/adr006-avoid-react-fc.md) is one to look out for.
 
-If there are any updates in `markdown` file please make sure to run `yarn run lint:docs`. Though it is checked on `lint-staged`. It is required to install [vale](https://docs.errata.ai/vale/install) separately and make sure it is accessed by global command.
+If there are any updates in any Markdown files please make sure to run `yarn run lint:docs`. (Though it is also checked by `lint-staged` when you commit via [Husky](https://github.com/typicode/husky).) It is required to install [Vale](https://docs.errata.ai/vale/install) separately and make sure it is accessed by global command.
 
 ### Editor
 
@@ -117,6 +117,7 @@ yarn build:api-reports # Build API Reports used for documentation
 
 yarn lint # lint packages that have changed since later commit on origin/master
 yarn lint:all # lint all packages
+yarn lind:docs # lint all the Markdown files
 yarn lint:type-deps # verify that @types/* dependencies are placed correctly in packages
 
 yarn test # test packages that have changed since later commit on origin/master
@@ -307,7 +308,7 @@ Backstage uses [API Extractor](https://api-extractor.com/) and TSDoc comments to
 There are two ways you can do this:
 
 1. You can run `yarn build:api-reports` from the root of the project and it will go through all of the existing API Reports and update them or create new ones as needed. This may take a while but is generally the best method if you are new to this.
-2. You can run `yarn build:api-reports plugins/<your-plugin-with-changes>` from the root and it will update the existing API Report or create a new one
+2. You can run `yarn build:api-reports plugins/<your-plugin-with-changes>` from the root and it will update the existing API Report or create a new one.
 
 > Note: the above commands assume you've run `yarn install` before hand or recently
 
