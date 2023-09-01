@@ -176,7 +176,13 @@ export function useGetEntities(
   error?: Error;
 } {
   const catalogApi = useApi(catalogApiRef);
-  const kinds = entityFilterKind ?? ['Component', 'API', 'System'];
+  const kinds = entityFilterKind ?? [
+    'Component',
+    'API',
+    'System',
+    'Domain',
+    'Resource',
+  ];
 
   const {
     loading,
