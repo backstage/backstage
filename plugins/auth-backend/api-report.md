@@ -81,33 +81,6 @@ export type AwsAlbResult = {
 };
 
 // @public (undocumented)
-export type BitbucketOAuthResult = {
-  fullProfile: BitbucketPassportProfile;
-  params: {
-    id_token?: string;
-    scope: string;
-    expires_in: number;
-  };
-  accessToken: string;
-  refreshToken?: string;
-};
-
-// @public (undocumented)
-export type BitbucketPassportProfile = Profile & {
-  id?: string;
-  displayName?: string;
-  username?: string;
-  avatarUrl?: string;
-  _json?: {
-    links?: {
-      avatar?: {
-        href?: string;
-      };
-    };
-  };
-};
-
-// @public (undocumented)
 export type BitbucketServerOAuthResult = {
   fullProfile: Profile;
   params: {
