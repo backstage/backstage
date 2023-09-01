@@ -33,6 +33,7 @@ import { CodeCoverageDatabase } from './CodeCoverageDatabase';
 import { aggregateCoverage, CoverageUtils } from './CoverageUtils';
 import { Converter, Jacoco, Cobertura, Lcov } from './converter';
 import { getEntitySourceLocation } from '@backstage/catalog-model';
+import { getBearerTokenFromAuthorizationHeader } from '@backstage/plugin-auth-node';
 
 /**
  * Options for {@link createRouter}.
@@ -79,7 +80,9 @@ export const makeRouter = async (
    */
   router.get('/report', async (req, res) => {
     const { entity } = req.query;
-    const entityLookup = await catalogApi.getEntityByRef(entity as string);
+    const entityLookup = await catalogApi.getEntityByRef(entity as string, {
+      token: getBearerTokenFromAuthorizationHeader(req.headers.authorization),
+    });
     if (!entityLookup) {
       throw new NotFoundError(`No entity found matching ${entity}`);
     }
@@ -101,7 +104,9 @@ export const makeRouter = async (
    */
   router.get('/history', async (req, res) => {
     const { entity } = req.query;
-    const entityLookup = await catalogApi.getEntityByRef(entity as string);
+    const entityLookup = await catalogApi.getEntityByRef(entity as string, {
+      token: getBearerTokenFromAuthorizationHeader(req.headers.authorization),
+    });
     if (!entityLookup) {
       throw new NotFoundError(`No entity found matching ${entity}`);
     }
@@ -119,7 +124,9 @@ export const makeRouter = async (
    */
   router.get('/file-content', async (req, res) => {
     const { entity, path } = req.query;
-    const entityLookup = await catalogApi.getEntityByRef(entity as string);
+    const entityLookup = await catalogApi.getEntityByRef(entity as string, {
+      token: getBearerTokenFromAuthorizationHeader(req.headers.authorization),
+    });
     if (!entityLookup) {
       throw new NotFoundError(`No entity found matching ${entity}`);
     }
@@ -170,7 +177,9 @@ export const makeRouter = async (
    */
   router.post('/report', async (req, res) => {
     const { entity: entityRef, coverageType } = req.query;
-    const entity = await catalogApi.getEntityByRef(entityRef as string);
+    const entity = await catalogApi.getEntityByRef(entityRef as string, {
+      token: getBearerTokenFromAuthorizationHeader(req.headers.authorization),
+    });
     if (!entity) {
       throw new NotFoundError(`No entity found matching ${entityRef}`);
     }
