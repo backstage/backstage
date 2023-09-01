@@ -31,13 +31,14 @@ describe('getAnnotationValuesFromEntity', () => {
           },
         },
       };
-      const { project, repo, definition, host, org } =
-        getAnnotationValuesFromEntity(entity);
-      expect(project).toEqual('projectName');
-      expect(repo).toEqual('repoName');
-      expect(definition).toEqual(undefined);
-      expect(host).toEqual(undefined);
-      expect(org).toEqual(undefined);
+      const values = getAnnotationValuesFromEntity(entity);
+      expect(values).toEqual({
+        project: 'projectName',
+        repo: 'repoName',
+        definition: undefined,
+        host: undefined,
+        org: undefined,
+      });
     });
   });
 
@@ -127,13 +128,14 @@ describe('getAnnotationValuesFromEntity', () => {
           },
         },
       };
-      const { project, repo, definition, host, org } =
-        getAnnotationValuesFromEntity(entity);
-      expect(project).toEqual('projectName');
-      expect(repo).toEqual(undefined);
-      expect(definition).toEqual('buildDefinitionName');
-      expect(host).toEqual(undefined);
-      expect(org).toEqual(undefined);
+      const values = getAnnotationValuesFromEntity(entity);
+      expect(values).toEqual({
+        project: 'projectName',
+        repo: undefined,
+        definition: 'buildDefinitionName',
+        host: undefined,
+        org: undefined,
+      });
     });
   });
 
@@ -197,13 +199,14 @@ describe('getAnnotationValuesFromEntity', () => {
           },
         },
       };
-      const { project, repo, definition, host, org } =
-        getAnnotationValuesFromEntity(entity);
-      expect(project).toEqual('projectName');
-      expect(repo).toEqual('repoName');
-      expect(definition).toEqual(undefined);
-      expect(host).toEqual('hostName');
-      expect(org).toEqual('organizationName');
+      const values = getAnnotationValuesFromEntity(entity);
+      expect(values).toEqual({
+        project: 'projectName',
+        repo: 'repoName',
+        definition: undefined,
+        host: 'hostName',
+        org: 'organizationName',
+      });
     });
   });
 
@@ -222,13 +225,14 @@ describe('getAnnotationValuesFromEntity', () => {
           },
         },
       };
-      const { project, repo, definition, host, org } =
-        getAnnotationValuesFromEntity(entity);
-      expect(project).toEqual('projectName');
-      expect(repo).toEqual(undefined);
-      expect(definition).toEqual('buildDefinitionName');
-      expect(host).toEqual('hostName');
-      expect(org).toEqual('organizationName');
+      const values = getAnnotationValuesFromEntity(entity);
+      expect(values).toEqual({
+        project: 'projectName',
+        repo: undefined,
+        definition: 'buildDefinitionName',
+        host: 'hostName',
+        org: 'organizationName',
+      });
     });
   });
 
@@ -256,7 +260,7 @@ describe('getAnnotationValuesFromEntity', () => {
     });
   });
 
-  describe('with host-rg annotation missing host', () => {
+  describe('with host-org annotation missing host', () => {
     it('should throw missing project error', () => {
       const entity: Entity = {
         apiVersion: 'backstage.io/v1alpha1',

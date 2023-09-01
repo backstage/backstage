@@ -30,16 +30,16 @@ export function getAnnotationValuesFromEntity(entity: Entity): {
   host?: string;
   org?: string;
 } {
-  const hostOrgAnnotation =
-    entity.metadata.annotations?.[AZURE_DEVOPS_HOST_ORG_ANNOTATION];
-  const { host, org } = getHostOrg(hostOrgAnnotation);
+  const { host, org } = getHostOrg(entity.metadata.annotations);
 
-  const projectRepoAnnotation =
-    entity.metadata.annotations?.[AZURE_DEVOPS_REPO_ANNOTATION];
-  if (projectRepoAnnotation) {
-    const { project, repo } = getProjectRepo(projectRepoAnnotation);
-    const definition = undefined;
-    return { project, repo, definition, host, org };
+  const projectRepoValues = getProjectRepo(entity.metadata.annotations);
+  if (projectRepoValues.project && projectRepoValues.repo) {
+    return {
+      project: projectRepoValues.project,
+      repo: projectRepoValues.repo,
+      host,
+      org,
+    };
   }
 
   const project =
@@ -57,15 +57,18 @@ export function getAnnotationValuesFromEntity(entity: Entity): {
       `Value for annotation ${AZURE_DEVOPS_BUILD_DEFINITION_ANNOTATION} was not found`,
     );
   }
-
-  const repo = undefined;
-  return { project, repo, definition, host, org };
+  return { project, definition, host, org };
 }
 
-function getProjectRepo(annotation: string): {
-  project: string;
-  repo: string;
+function getProjectRepo(annotations?: Record<string, string>): {
+  project?: string;
+  repo?: string;
 } {
+  const annotation = annotations?.[AZURE_DEVOPS_REPO_ANNOTATION];
+  if (!annotation) {
+    return { project: undefined, repo: undefined };
+  }
+
   if (!annotation.includes('/')) {
     throw new Error(
       `Value for annotation ${AZURE_DEVOPS_REPO_ANNOTATION} was not in the correct format: <project-name>/<repo-name>`,
@@ -89,10 +92,11 @@ function getProjectRepo(annotation: string): {
   return { project, repo };
 }
 
-function getHostOrg(annotation?: string): {
+function getHostOrg(annotations?: Record<string, string>): {
   host?: string;
   org?: string;
 } {
+  const annotation = annotations?.[AZURE_DEVOPS_HOST_ORG_ANNOTATION];
   if (!annotation) {
     return { host: undefined, org: undefined };
   }
