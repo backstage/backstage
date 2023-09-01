@@ -64,7 +64,18 @@ const RadarPlot = (props: Props): JSX.Element => {
       />
       <g transform={`translate(${width / 2}, ${height / 2})`}>
         <RadarGrid radius={radius} rings={rings} />
-        <RadarFooter x={-0.5 * width} y={0.5 * height} />
+        <RadarFooter
+          x={-0.5 * width}
+          y={0.5 * height}
+          spaces={rings.some(ring => ring.description) ? 2 : undefined}
+          labels={
+            rings
+              .map(
+                ring => ring.description && `${ring.name}: ${ring.description}`,
+              )
+              .filter(e => e) as string[]
+          }
+        />
         {entries.map(entry => (
           <RadarEntry
             key={entry.id}
