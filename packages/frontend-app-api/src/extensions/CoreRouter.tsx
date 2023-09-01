@@ -21,7 +21,7 @@ import {
 } from '@backstage/frontend-plugin-api';
 import { BrowserRouter, useRoutes } from 'react-router-dom';
 
-export const RouteExtension = createExtension({
+export const CoreRouter = createExtension({
   id: 'core.router',
   at: 'root',
   inputs: {

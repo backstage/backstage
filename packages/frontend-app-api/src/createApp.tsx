@@ -20,7 +20,7 @@ import {
   BackstagePlugin,
   coreExtensionData,
 } from '@backstage/frontend-plugin-api';
-import { RouteExtension } from './extensions/RouteExtension';
+import { CoreRouter } from './extensions/CoreRouter';
 import {
   createExtensionInstance,
   ExtensionInstance,
@@ -39,7 +39,7 @@ export function createApp(options: { plugins: BackstagePlugin[] }): {
 } {
   const appConfig = ConfigReader.fromConfigs(process.env.APP_CONFIG as any);
 
-  const builtinExtensions = [RouteExtension];
+  const builtinExtensions = [CoreRouter];
 
   // pull in default extension instance from discovered packages
   // apply config to adjust default extension instances and add more
