@@ -1,5 +1,5 @@
 /*
- * Copyright 2021 The Backstage Authors
+ * Copyright 2023 The Backstage Authors
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -13,13 +13,8 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+import { AsyncState } from 'react-use/lib/useAsync';
 
-export * from './useIsPodExecTerminalSupported';
-export * from './useKubernetesObjects';
-export * from './useCustomResources';
-export * from './PodNamesWithErrors';
-export * from './PodNamesWithMetrics';
-export * from './GroupedResponses';
-export * from './Cluster';
-export * from './usePodMetrics';
-export * from './useMatchingErrors';
+export const useIsPodExecTerminalSupported: () => AsyncState<boolean> = jest.fn(
+  () => ({ loading: false, value: false } as AsyncState<boolean>),
+);

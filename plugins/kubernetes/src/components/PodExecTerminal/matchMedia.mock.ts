@@ -1,5 +1,5 @@
 /*
- * Copyright 2021 The Backstage Authors
+ * Copyright 2023 The Backstage Authors
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,12 +14,18 @@
  * limitations under the License.
  */
 
-export * from './useIsPodExecTerminalSupported';
-export * from './useKubernetesObjects';
-export * from './useCustomResources';
-export * from './PodNamesWithErrors';
-export * from './PodNamesWithMetrics';
-export * from './GroupedResponses';
-export * from './Cluster';
-export * from './usePodMetrics';
-export * from './useMatchingErrors';
+Object.defineProperty(window, 'matchMedia', {
+  writable: true,
+  value: jest.fn().mockImplementation(query => ({
+    matches: false,
+    media: query,
+    onchange: null,
+    addListener: jest.fn(), // deprecated
+    removeListener: jest.fn(), // deprecated
+    addEventListener: jest.fn(),
+    removeEventListener: jest.fn(),
+    dispatchEvent: jest.fn(),
+  })),
+});
+
+export {};

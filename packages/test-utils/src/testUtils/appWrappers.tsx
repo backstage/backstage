@@ -255,7 +255,8 @@ export const textContentMatcher =
       return false;
     }
 
-    const hasText = (textNode: Element) => textNode?.textContent === text;
+    const hasText = (textNode: Element) =>
+      textNode?.textContent?.includes(text) ?? false;
     const childrenDontHaveText = (containerNode: Element) =>
       Array.from(containerNode?.children).every(child => !hasText(child));
 

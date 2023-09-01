@@ -22,6 +22,8 @@ import { wrapInTestApp } from '@backstage/test-utils';
 import { ContainerCard } from './ContainerCard';
 import { DateTime } from 'luxon';
 
+jest.mock('../../../hooks/useIsPodExecTerminalSupported');
+
 const now = DateTime.now();
 const oneHourAgo = now.minus({ hours: 1 }).toISO();
 const twoHoursAgo = now.minus({ hours: 2 }).toISO();
