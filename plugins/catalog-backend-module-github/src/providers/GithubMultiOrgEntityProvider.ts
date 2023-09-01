@@ -21,9 +21,9 @@ import {
   DEFAULT_NAMESPACE,
   Entity,
   isGroupEntity,
+  isUserEntity,
   parseEntityRef,
   stringifyEntityRef,
-  UserEntity,
 } from '@backstage/catalog-model';
 import { Config } from '@backstage/config';
 import {
@@ -433,31 +433,33 @@ export class GithubMultiOrgEntityProvider implements EntityProvider {
       this.defaultMultiOrgTeamTransformer.bind(this),
     );
 
-    // Fetch group memberships of users in case they already exist and
-    // have memberships in groups from other applicable orgs
-    for (const userOrg of applicableOrgs) {
-      const { headers: orgHeaders } =
-        await this.options.githubCredentialsProvider.getCredentials({
-          url: `${this.options.githubUrl}/${userOrg}`,
+    if (users.length) {
+      // Fetch group memberships of users in case they already exist and
+      // have memberships in groups from other applicable orgs
+      for (const userOrg of applicableOrgs) {
+        const { headers: orgHeaders } =
+          await this.options.githubCredentialsProvider.getCredentials({
+            url: `${this.options.githubUrl}/${userOrg}`,
+          });
+        const orgClient = graphql.defaults({
+          baseUrl: this.options.gitHubConfig.apiBaseUrl,
+          headers: orgHeaders,
         });
-      const orgClient = graphql.defaults({
-        baseUrl: this.options.gitHubConfig.apiBaseUrl,
-        headers: orgHeaders,
-      });
 
-      const { teams: userTeams } = await getOrganizationTeamsFromUsers(
-        orgClient,
-        userOrg,
-        users.map(
-          u =>
-            u.metadata.annotations?.[ANNOTATION_GITHUB_USER_LOGIN] ||
-            u.metadata.name,
-        ),
-        this.defaultMultiOrgTeamTransformer.bind(this),
-      );
+        const { teams: userTeams } = await getOrganizationTeamsFromUsers(
+          orgClient,
+          userOrg,
+          users.map(
+            u =>
+              u.metadata.annotations?.[ANNOTATION_GITHUB_USER_LOGIN] ||
+              u.metadata.name,
+          ),
+          this.defaultMultiOrgTeamTransformer.bind(this),
+        );
 
-      if (areGroupEntities(userTeams) && areUserEntities(users)) {
-        assignGroupsToUsers(users, userTeams);
+        if (areGroupEntities(userTeams) && areUserEntities(users)) {
+          assignGroupsToUsers(users, userTeams);
+        }
       }
     }
 
@@ -518,7 +520,7 @@ export class GithubMultiOrgEntityProvider implements EntityProvider {
       updateMemberships = true;
     }
 
-    const user = (await userTransformer(
+    const user = await userTransformer(
       {
         name,
         avatarUrl,
@@ -530,7 +532,11 @@ export class GithubMultiOrgEntityProvider implements EntityProvider {
         client,
         query: '',
       },
-    )) as UserEntity;
+    );
+
+    if (!user) {
+      return;
+    }
 
     if (updateMemberships) {
       for (const userOrg of userApplicableOrgs) {
@@ -550,7 +556,7 @@ export class GithubMultiOrgEntityProvider implements EntityProvider {
           this.defaultMultiOrgTeamTransformer.bind(this),
         );
 
-        if (areGroupEntities(teams)) {
+        if (isUserEntity(user) && areGroupEntities(teams)) {
           assignGroupsToUsers([user], teams);
         }
       }
@@ -655,30 +661,32 @@ export class GithubMultiOrgEntityProvider implements EntityProvider {
       usersFromChangedGroup.includes(stringifyEntityRef(u)),
     );
 
-    // Update memberships of associated members of this group in case the group entity ref changed
-    for (const userOrg of applicableOrgs) {
-      const { headers: orgHeaders } =
-        await this.options.githubCredentialsProvider.getCredentials({
-          url: `${this.options.githubUrl}/${userOrg}`,
+    if (usersToRebuild.length) {
+      // Update memberships of associated members of this group in case the group entity ref changed
+      for (const userOrg of applicableOrgs) {
+        const { headers: orgHeaders } =
+          await this.options.githubCredentialsProvider.getCredentials({
+            url: `${this.options.githubUrl}/${userOrg}`,
+          });
+        const orgClient = graphql.defaults({
+          baseUrl: this.options.gitHubConfig.apiBaseUrl,
+          headers: orgHeaders,
         });
-      const orgClient = graphql.defaults({
-        baseUrl: this.options.gitHubConfig.apiBaseUrl,
-        headers: orgHeaders,
-      });
 
-      const { teams } = await getOrganizationTeamsFromUsers(
-        orgClient,
-        userOrg,
-        usersToRebuild.map(
-          u =>
-            u.metadata.annotations?.[ANNOTATION_GITHUB_USER_LOGIN] ||
-            u.metadata.name,
-        ),
-        this.defaultMultiOrgTeamTransformer.bind(this),
-      );
+        const { teams } = await getOrganizationTeamsFromUsers(
+          orgClient,
+          userOrg,
+          usersToRebuild.map(
+            u =>
+              u.metadata.annotations?.[ANNOTATION_GITHUB_USER_LOGIN] ||
+              u.metadata.name,
+          ),
+          this.defaultMultiOrgTeamTransformer.bind(this),
+        );
 
-      if (areGroupEntities(teams) && areUserEntities(usersToRebuild)) {
-        assignGroupsToUsers(usersToRebuild, teams);
+        if (areGroupEntities(teams) && areUserEntities(usersToRebuild)) {
+          assignGroupsToUsers(usersToRebuild, teams);
+        }
       }
     }
 
@@ -751,7 +759,7 @@ export class GithubMultiOrgEntityProvider implements EntityProvider {
     const userTransformer =
       this.options.userTransformer || defaultUserTransformer;
     const { name, avatar_url: avatarUrl, email, login } = event.member;
-    const user = (await userTransformer(
+    const user = await userTransformer(
       {
         name,
         avatarUrl,
@@ -763,33 +771,40 @@ export class GithubMultiOrgEntityProvider implements EntityProvider {
         client,
         query: '',
       },
-    )) as UserEntity;
+    );
 
-    const { orgs } = await getOrganizationsFromUser(client, login);
-    const userApplicableOrgs = orgs.filter(o => applicableOrgs.includes(o));
-    for (const userOrg of userApplicableOrgs) {
-      const { headers: orgHeaders } =
-        await this.options.githubCredentialsProvider.getCredentials({
-          url: `${this.options.githubUrl}/${userOrg}`,
+    const mutationEntities = [team];
+
+    if (user && isUserEntity(user)) {
+      const { orgs } = await getOrganizationsFromUser(client, login);
+      const userApplicableOrgs = orgs.filter(o => applicableOrgs.includes(o));
+      for (const userOrg of userApplicableOrgs) {
+        const { headers: orgHeaders } =
+          await this.options.githubCredentialsProvider.getCredentials({
+            url: `${this.options.githubUrl}/${userOrg}`,
+          });
+        const orgClient = graphql.defaults({
+          baseUrl: this.options.gitHubConfig.apiBaseUrl,
+          headers: orgHeaders,
         });
-      const orgClient = graphql.defaults({
-        baseUrl: this.options.gitHubConfig.apiBaseUrl,
-        headers: orgHeaders,
-      });
 
-      const { teams } = await getOrganizationTeamsFromUsers(
-        orgClient,
-        userOrg,
-        [login],
-        this.defaultMultiOrgTeamTransformer.bind(this),
-      );
+        const { teams } = await getOrganizationTeamsFromUsers(
+          orgClient,
+          userOrg,
+          [login],
+          this.defaultMultiOrgTeamTransformer.bind(this),
+        );
 
-      if (areGroupEntities(teams)) {
-        assignGroupsToUsers([user], teams);
+        if (areGroupEntities(teams)) {
+          assignGroupsToUsers([user], teams);
+        }
       }
+
+      mutationEntities.push(user);
     }
 
-    const { added, removed } = this.createAddEntitiesOperation([user, team]);
+    const { added, removed } =
+      this.createAddEntitiesOperation(mutationEntities);
     await this.connection.applyMutation({
       type: 'delta',
       removed,
