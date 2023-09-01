@@ -560,7 +560,7 @@ describe('GitlabOrgDiscoveryEntityProvider', () => {
                       user: {
                         id: 'gid://gitlab/User/12',
                         username: 'testuser1',
-                        publicEmail: 'testuser1@example.com',
+                        commitEmail: 'testuser1@example.com',
                         state: 'active',
                         name: 'Test User 1',
                         webUrl: 'https://gitlab.com/testuser1',
@@ -571,7 +571,7 @@ describe('GitlabOrgDiscoveryEntityProvider', () => {
                       user: {
                         id: 'gid://gitlab/User/34',
                         username: 'testuser2',
-                        publicEmail: 'testuser2@example.com',
+                        commitEmail: 'testuser2@example.com',
                         state: 'active',
                         name: 'Test User 2',
                         webUrl: 'https://gitlab.com/testuser2',

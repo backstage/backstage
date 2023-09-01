@@ -413,7 +413,7 @@ describe('GitLabClient', () => {
                         user: {
                           id: 'gid://gitlab/User/1',
                           username: 'user1',
-                          publicEmail: 'user1@example.com',
+                          commitEmail: 'user1@example.com',
                           name: 'user1',
                           state: 'active',
                           webUrl: 'user1.com',
@@ -517,7 +517,7 @@ describe('GitLabClient', () => {
                             user: {
                               id: 'gid://gitlab/User/1',
                               username: 'user1',
-                              publicEmail: 'user1@example.com',
+                              commitEmail: 'user1@example.com',
                               name: 'user1',
                               state: 'active',
                               webUrl: 'user1.com',
@@ -530,7 +530,7 @@ describe('GitLabClient', () => {
                             user: {
                               id: 'gid://gitlab/User/2',
                               username: 'user2',
-                              publicEmail: 'user2@example.com',
+                              commitEmail: 'user2@example.com',
                               name: 'user2',
                               state: 'active',
                               webUrl: 'user2.com',
@@ -764,7 +764,7 @@ describe('GitLabClient', () => {
                         user: {
                           id: 'gid://gitlab/User/1',
                           username: 'user1',
-                          publicEmail: 'user1@example.com',
+                          commitEmail: 'user1@example.com',
                           name: 'user1',
                           state: 'active',
                           webUrl: 'user1.com',

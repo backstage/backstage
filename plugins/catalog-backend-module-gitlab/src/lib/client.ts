@@ -236,7 +236,7 @@ export class GitLabClient {
         const formattedUserResponse = {
           id: Number(userItem.user.id.replace(/^gid:\/\/gitlab\/User\//, '')),
           username: userItem.user.username,
-          email: userItem.user.publicEmail,
+          email: userItem.user.commitEmail,
           name: userItem.user.name,
           state: userItem.user.state,
           web_url: userItem.user.webUrl,

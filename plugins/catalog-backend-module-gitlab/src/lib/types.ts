@@ -64,7 +64,7 @@ export type GitLabGroupMembersResponse = {
           user: {
             id: string;
             username: string;
-            publicEmail: string;
+            commitEmail: string;
             name: string;
             state: string;
             webUrl: string;
