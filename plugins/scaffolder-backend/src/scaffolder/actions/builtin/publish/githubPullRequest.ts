@@ -31,6 +31,7 @@ import {
   serializeDirectoryContents,
 } from '../../../../lib/files';
 import { Logger } from 'winston';
+import { isBinaryFile } from 'isbinaryfile';
 
 export type Encoding = 'utf-8' | 'base64';
 
@@ -60,6 +61,7 @@ export type CreateGithubPullRequestClientFactoryInput = {
   owner: string;
   repo: string;
   token?: string;
+  throttleEnabled?: boolean;
 };
 
 export const defaultClientFactory = async ({
@@ -69,6 +71,7 @@ export const defaultClientFactory = async ({
   repo,
   host = 'github.com',
   token: providedToken,
+  throttleEnabled = false,
 }: CreateGithubPullRequestClientFactoryInput): Promise<OctokitWithPullRequestPluginClient> => {
   const [encodedHost, encodedOwner, encodedRepo] = [host, owner, repo].map(
     encodeURIComponent,
@@ -84,7 +87,7 @@ export const defaultClientFactory = async ({
   const OctokitPR = Octokit.plugin(createPullRequest);
   return new OctokitPR({
     ...octokitOptions,
-    ...{ throttle: { enabled: false } },
+    ...{ throttle: { enabled: throttleEnabled } },
   });
 };
 
@@ -141,6 +144,7 @@ export const createPublishGithubPullRequestAction = (
     reviewers?: string[];
     teamReviewers?: string[];
     commitMessage?: string;
+    experimentalSafeMode?: boolean;
   }>({
     id: 'publish:github:pull-request',
     schema: {
@@ -217,6 +221,12 @@ export const createPublishGithubPullRequestAction = (
             title: 'Commit Message',
             description: 'The commit message for the pull request commit',
           },
+          experimentalSafeMode: {
+            type: 'boolean',
+            title: 'Experimental Safe Mode',
+            description:
+              'Whether to use experimental safe mode. This should reduce rate limit errors when creating pull requests. Do not enable if you use .gitattributes to mark files as binary. See: https://github.com/backstage/backstage/issues/17188',
+          },
         },
       },
       output: {
@@ -254,6 +264,7 @@ export const createPublishGithubPullRequestAction = (
         reviewers,
         teamReviewers,
         commitMessage,
+        experimentalSafeMode = false,
       } = ctx.input;
 
       const { owner, repo, host } = parseRepoUrl(repoUrl, integrations);
@@ -271,6 +282,7 @@ export const createPublishGithubPullRequestAction = (
         owner,
         repo,
         token: providedToken,
+        throttleEnabled: experimentalSafeMode,
       });
 
       const fileRoot = sourcePath
@@ -287,28 +299,47 @@ export const createPublishGithubPullRequestAction = (
         return '100644';
       };
 
-      const determineFileEncoding = (
+      const determineFileEncoding = async (
         file: SerializedFile,
-      ): 'utf-8' | 'base64' => (file.symlink ? 'utf-8' : 'base64');
+      ): Promise<'utf-8' | 'base64'> => {
+        if (experimentalSafeMode) {
+          // Only use base64 encoding for binary files
+          // This is because base64 encoded files must be pushed to github
+          // as blobs, which incurs an API call per file. We want to minimize
+          // that. See: https://github.com/backstage/backstage/issues/17188
+          //
+          // Notes:
+          // * isBinaryFile detects more types of files as binary than git does
+          //   (Git looks for a null byte in the first 8000 bytes of the file)
+          //   https://git.kernel.org/pub/scm/git/git.git/tree/xdiff-interface.c?h=v2.30.0#n187
+          // * This does not handle the case of someone using .gitattributes to
+          //   set a file as binary
+          return (await isBinaryFile(file.content)) ? 'base64' : 'utf-8';
+        }
+
+        // Always use base64 encoding where possible to avoid doubling a binary file in size
+        // due to interpreting a binary file as utf-8 and sending github
+        // the utf-8 encoded content. Symlinks are kept as utf-8 to avoid them
+        // being formatted as a series of scrambled characters
+        //
+        // For example, the original gradle-wrapper.jar is 57.8k in https://github.com/kennethzfeng/pull-request-test/pull/5/files.
+        // Its size could be doubled to 98.3K (See https://github.com/kennethzfeng/pull-request-test/pull/4/files)
+        return file.symlink ? 'utf-8' : 'base64';
+      };
 
       const files = Object.fromEntries(
-        directoryContents.map(file => [
-          targetPath ? path.posix.join(targetPath, file.path) : file.path,
-          {
-            // See the properties of tree items
-            // in https://docs.github.com/en/rest/reference/git#trees
-            mode: determineFileMode(file),
-            // Always use base64 encoding where possible to avoid doubling a binary file in size
-            // due to interpreting a binary file as utf-8 and sending github
-            // the utf-8 encoded content. Symlinks are kept as utf-8 to avoid them
-            // being formatted as a series of scrambled characters
-            //
-            // For example, the original gradle-wrapper.jar is 57.8k in https://github.com/kennethzfeng/pull-request-test/pull/5/files.
-            // Its size could be doubled to 98.3K (See https://github.com/kennethzfeng/pull-request-test/pull/4/files)
-            encoding: determineFileEncoding(file),
-            content: file.content.toString(determineFileEncoding(file)),
-          },
-        ]),
+        await Promise.all(
+          directoryContents.map(async file => [
+            targetPath ? path.posix.join(targetPath, file.path) : file.path,
+            {
+              // See the properties of tree items
+              // in https://docs.github.com/en/rest/reference/git#trees
+              mode: determineFileMode(file),
+              encoding: await determineFileEncoding(file),
+              content: file.content.toString(await determineFileEncoding(file)),
+            },
+          ]),
+        ),
       );
 
       try {

@@ -44,6 +44,7 @@ type GithubPullRequestActionInput = ReturnType<
 
 describe('createPublishGithubPullRequestAction', () => {
   let instance: TemplateAction<GithubPullRequestActionInput>;
+  let clientFactory: jest.Mock;
   let fakeClient: {
     createPullRequest: jest.Mock;
     rest: {
@@ -74,7 +75,7 @@ describe('createPublishGithubPullRequestAction', () => {
         },
       },
     };
-    const clientFactory = jest.fn(
+    clientFactory = jest.fn(
       async () => fakeClient as unknown as OctokitWithPullRequestPluginClient,
     );
     const githubCredentialsProvider: GithubCredentialsProvider = {
@@ -682,6 +683,163 @@ describe('createPublishGithubPullRequestAction', () => {
                 content: Buffer.from('Hello there!').toString('base64'),
                 encoding: 'base64',
                 mode: '100644',
+              },
+            },
+          },
+        ],
+      });
+    });
+  });
+
+  describe('without experimentalSafeMode', () => {
+    let input: GithubPullRequestActionInput;
+    let ctx: ActionContext<GithubPullRequestActionInput>;
+    // Content of a 1x1 gif loaded by backstage.io
+    const base64Content = 'R0lGODlhAQABAIAAAP///wAAACwAAAAAAQABAAACAkQBADs=';
+
+    beforeEach(() => {
+      input = {
+        repoUrl: 'github.com?owner=myorg&repo=myrepo',
+        title: 'Create my new app',
+        branchName: 'new-app',
+        description: 'This PR is really good',
+      };
+
+      mockFs({
+        [workspacePath]: {
+          'file.txt': 'Hello there!',
+          'hello.sh': mockFs.file({
+            content: 'echo Hello there!',
+            mode: 0o100755,
+          }),
+          '1x1.gif': mockFs.file({
+            content: Buffer.from(base64Content, 'base64'),
+            mode: 0o100644,
+          }),
+        },
+      });
+
+      ctx = {
+        createTemporaryDirectory: jest.fn(),
+        output: jest.fn(),
+        logger: getRootLogger(),
+        logStream: new Writable(),
+        input,
+        workspacePath,
+      };
+    });
+
+    it('creates a pull request', async () => {
+      await instance.handler(ctx);
+
+      expect(clientFactory).toHaveBeenCalledWith(
+        expect.objectContaining({ throttleEnabled: false }),
+      );
+      expect(fakeClient.createPullRequest).toHaveBeenCalledWith({
+        owner: 'myorg',
+        repo: 'myrepo',
+        title: 'Create my new app',
+        head: 'new-app',
+        body: 'This PR is really good',
+        changes: [
+          {
+            commit: 'Create my new app',
+            files: {
+              // All files encoded as base64
+              '1x1.gif': {
+                content: base64Content,
+                encoding: 'base64',
+                mode: '100644',
+              },
+              'file.txt': {
+                content: Buffer.from('Hello there!').toString('base64'),
+                encoding: 'base64',
+                mode: '100644',
+              },
+              'hello.sh': {
+                content: Buffer.from('echo Hello there!').toString('base64'),
+                encoding: 'base64',
+                mode: '100755',
+              },
+            },
+          },
+        ],
+      });
+    });
+  });
+
+  describe('with experimentalSafeMode', () => {
+    let input: GithubPullRequestActionInput;
+    let ctx: ActionContext<GithubPullRequestActionInput>;
+    // Content of a 1x1 gif loaded by backstage.io
+    const base64Content = 'R0lGODlhAQABAIAAAP///wAAACwAAAAAAQABAAACAkQBADs=';
+
+    beforeEach(() => {
+      input = {
+        repoUrl: 'github.com?owner=myorg&repo=myrepo',
+        title: 'Create my new app',
+        branchName: 'new-app',
+        description: 'This PR is really good',
+        experimentalSafeMode: true,
+      };
+
+      mockFs({
+        [workspacePath]: {
+          'file.txt': 'Hello there!',
+          'hello.sh': mockFs.file({
+            content: 'echo Hello there!',
+            mode: 0o100755,
+          }),
+          '1x1.gif': mockFs.file({
+            content: Buffer.from(base64Content, 'base64'),
+            mode: 0o100644,
+          }),
+        },
+      });
+
+      ctx = {
+        createTemporaryDirectory: jest.fn(),
+        output: jest.fn(),
+        logger: getRootLogger(),
+        logStream: new Writable(),
+        input,
+        workspacePath,
+      };
+    });
+
+    it('creates a pull request', async () => {
+      await instance.handler(ctx);
+
+      expect(clientFactory).toHaveBeenCalledWith(
+        expect.objectContaining({ throttleEnabled: true }),
+      );
+      expect(fakeClient.createPullRequest).toHaveBeenCalledWith({
+        owner: 'myorg',
+        repo: 'myrepo',
+        title: 'Create my new app',
+        head: 'new-app',
+        body: 'This PR is really good',
+        changes: [
+          {
+            commit: 'Create my new app',
+            files: {
+              // Binary files encoded as base64
+              '1x1.gif': {
+                content: base64Content,
+                encoding: 'base64',
+                mode: '100644',
+              },
+              // Text files encoded as utf-8
+              'file.txt': {
+                content: 'Hello there!',
+                encoding: 'utf-8',
+                mode: '100644',
+              },
+              // Executable (text) files encoded as utf-8
+              'hello.sh': {
+                content: 'echo Hello there!',
+                encoding: 'utf-8',
+                mode: '100755',
               },
             },
           },
