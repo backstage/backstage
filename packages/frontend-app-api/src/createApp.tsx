@@ -83,7 +83,7 @@ export function createApp(options: { plugins: BackstagePlugin[] }): {
       return existingInstance;
     }
 
-    const attachments = Object.fromEntries(
+    const attachments = new Map(
       Array.from(
         attachmentMap.get(instanceParams.extension.id)?.entries() ?? [],
       ).map(([inputName, attachmentConfigs]) => [
