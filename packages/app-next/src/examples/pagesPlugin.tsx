@@ -21,7 +21,7 @@ import {
   createPlugin,
   useRouteRef,
 } from '@backstage/frontend-plugin-api';
-import { createRouteRef, createSubRouteRef } from '@backstage/core-plugin-api';
+import { createRouteRef } from '@backstage/core-plugin-api';
 import { Route, Routes } from 'react-router-dom';
 
 const indexRouteRef = createRouteRef({ id: 'index' });
@@ -35,7 +35,7 @@ const page1RouteRef = createRouteRef({ id: 'page1' });
 const IndexPage = createPageExtension({
   id: 'index',
   defaultPath: '/',
-  // indexRouteRef
+  routeRef: indexRouteRef,
   component: async () => {
     const Component = () => {
       const page1Link = useRouteRef(page1RouteRef);

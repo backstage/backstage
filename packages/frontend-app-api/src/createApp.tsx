@@ -30,6 +30,8 @@ import {
   mergeExtensionParameters,
   readAppExtensionParameters,
 } from './wiring/parameters';
+import { RoutingProvider } from './routing/RoutingContext';
+import { RouteRef } from '@backstage/core-plugin-api';
 
 /** @public */
 export function createApp(options: { plugins: BackstagePlugin[] }): {
@@ -109,6 +111,8 @@ export function createApp(options: { plugins: BackstagePlugin[] }): {
     createInstance(instanceParams),
   );
 
+  const routePaths = extractRouteInfoFromInstanceTree(rootInstances);
+
   return {
     createRoot() {
       const rootComponents = rootInstances.map(
@@ -118,12 +122,42 @@ export function createApp(options: { plugins: BackstagePlugin[] }): {
           ) as typeof coreExtensionData.reactComponent.T,
       );
       return (
-        <>
+        <RoutingProvider routePaths={routePaths}>
           {rootComponents.map((Component, i) => (
             <Component key={i} />
           ))}
-        </>
+        </RoutingProvider>
       );
     },
   };
+}
+
+export function extractRouteInfoFromInstanceTree(
+  roots: ExtensionInstance[],
+): Map<RouteRef, string> {
+  const results = new Map<RouteRef, string>();
+
+  function visit(current: ExtensionInstance, basePath: string) {
+    const routePath = current.data.get(coreExtensionData.routePath.id) ?? '';
+    const routeRef = current.data.get(
+      coreExtensionData.routeRef.id,
+    ) as RouteRef;
+
+    // TODO: join paths in a more robust way
+    const fullPath = basePath + routePath;
+    if (routeRef) {
+      results.set(routeRef, fullPath);
+    }
+
+    for (const children of current.attachments.values()) {
+      for (const child of children) {
+        visit(child, fullPath);
+      }
+    }
+  }
+
+  for (const root of roots) {
+    visit(root, '');
+  }
+  return results;
 }

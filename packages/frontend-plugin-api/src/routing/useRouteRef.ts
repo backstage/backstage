@@ -15,11 +15,12 @@
  */
 
 import { RouteRef } from '@backstage/core-plugin-api';
+// eslint-disable-next-line @backstage/no-forbidden-package-imports
 import { RoutingContext } from '@backstage/frontend-app-api/src/routing/RoutingContext';
 import { useContext, useMemo } from 'react';
 import { useLocation } from 'react-router-dom';
 
-export function useRouteRef(routeRef: RouteRef<any>): () => string | undefined {
+export function useRouteRef(routeRef: RouteRef<any>): () => string {
   const { pathname } = useLocation();
   const resolver = useContext(RoutingContext);
 
@@ -27,6 +28,10 @@ export function useRouteRef(routeRef: RouteRef<any>): () => string | undefined {
     () => resolver && resolver.resolve(routeRef, { pathname }),
     [resolver, routeRef, pathname],
   );
+
+  if (!routeFunc) {
+    throw new Error(`Failed to resolve routeRef ${routeRef}`);
+  }
 
   return routeFunc;
 }

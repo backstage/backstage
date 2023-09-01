@@ -28,6 +28,7 @@ export const RouteExtension = createExtension({
     routes: {
       extensionData: {
         path: coreExtensionData.routePath,
+        ref: coreExtensionData.routeRef,
         component: coreExtensionData.reactComponent,
       },
     },
