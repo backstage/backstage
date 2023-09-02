@@ -66,7 +66,7 @@ Stop Backstage, and go to the root directory of your freshly installed Backstage
 App. Use the following commands to start the PostgreSQL client installation:
 
 ```bash
-# From your Backstage root directory
+# From your Backstage app root directory
 yarn add --cwd packages/backend pg
 ```
 
