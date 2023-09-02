@@ -18756,11 +18756,11 @@ __metadata:
   linkType: hard
 
 "@types/xml2js@npm:*, @types/xml2js@npm:^0.4.7":
-  version: 0.4.11
-  resolution: "@types/xml2js@npm:0.4.11"
+  version: 0.4.12
+  resolution: "@types/xml2js@npm:0.4.12"
   dependencies:
     "@types/node": "*"
-  checksum: d0e7d2a8c7e0a53147c777a6756bdea0eb26a3de0d3c1f42c17e63332e4e2dc532f687c19ca26a0518336f5de60e1ec4345d7ef71e7ba0656fcf3390c9388eb5
+  checksum: 6197f6d51d70ba7e6d3169ef6d58adacfeddeb2d8cfe4d2bb24eda86223c7dd77c82896c3aa3c636b3b1442cebc6d05959d1e65fa206dac2caeb99aa2c943716
   languageName: node
   linkType: hard
 
