@@ -15845,8 +15845,8 @@ __metadata:
   linkType: hard
 
 "@stoplight/spectral-rulesets@npm:^1.16.0":
-  version: 1.16.0
-  resolution: "@stoplight/spectral-rulesets@npm:1.16.0"
+  version: 1.17.0
+  resolution: "@stoplight/spectral-rulesets@npm:1.17.0"
   dependencies:
     "@asyncapi/specs": ^4.1.0
     "@stoplight/better-ajv-errors": 1.0.3
@@ -15862,7 +15862,7 @@ __metadata:
     json-schema-traverse: ^1.0.0
     lodash: ~4.17.21
     tslib: ^2.3.0
-  checksum: d6e47d4cb96c30d10571dcdbc24ed6bf53f09bdbccbd59bc9538ceb716d82eca68595780dd489f4ca5fcd4398c9adbd5dc931894f26040dcff33fd45b67463eb
+  checksum: 3f79636fde7e2ae26f6af5f5e50e2faa385cbd7b22ea658ea15cf0f1c04a3827e168340f877310f4ab7d6bacc82910e21b2aa43f60b95a923dc430ee0978569b
   languageName: node
   linkType: hard
 
