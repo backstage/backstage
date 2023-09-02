@@ -23597,8 +23597,8 @@ __metadata:
   linkType: hard
 
 "del@npm:^7.0.0":
-  version: 7.0.0
-  resolution: "del@npm:7.0.0"
+  version: 7.1.0
+  resolution: "del@npm:7.1.0"
   dependencies:
     globby: ^13.1.2
     graceful-fs: ^4.2.10
@@ -23608,7 +23608,7 @@ __metadata:
     p-map: ^5.5.0
     rimraf: ^3.0.2
     slash: ^4.0.0
-  checksum: 33e5077f18b5dfbe81971d1f8a2cd8bf676dd5ede491bab85ec17a4a1d59001bd3ec47fd38e9a4ae01a3c98c07b98c7b3dc56190b86d88926798802d7858d827
+  checksum: 93527e78e95125809ff20a112814b00648ed64af204be1a565862698060c9ec8f5c5fe1a4866725acfde9b0da6423f4b7a7642c1d38cd4b05cbeb643a7b089e3
   languageName: node
   linkType: hard
 
