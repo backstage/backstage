@@ -14,10 +14,14 @@
  * limitations under the License.
  */
 
-import { CatalogApi } from '@backstage/catalog-client';
-import { Entity } from '@backstage/catalog-model';
+import { CatalogApi, CatalogClient } from '@backstage/catalog-client';
+import { ANNOTATION_ORIGIN_LOCATION, Entity } from '@backstage/catalog-model';
 import { ApiProvider } from '@backstage/core-app-api';
-import { AlertApi, alertApiRef } from '@backstage/core-plugin-api';
+import {
+  AlertApi,
+  DiscoveryApi,
+  alertApiRef,
+} from '@backstage/core-plugin-api';
 import {
   AsyncEntityProvider,
   catalogApiRef,
@@ -25,16 +29,20 @@ import {
   entityRouteRef,
   starredEntitiesApiRef,
   MockStarredEntitiesApi,
+  UnregisterEntityDialog,
 } from '@backstage/plugin-catalog-react';
 import { permissionApiRef } from '@backstage/plugin-permission-react';
 import {
   MockPermissionApi,
   renderInTestApp,
+  TestApiProvider,
   TestApiRegistry,
 } from '@backstage/test-utils';
-import { act, fireEvent, screen } from '@testing-library/react';
+import { act, fireEvent, screen, waitFor } from '@testing-library/react';
 import React from 'react';
 import { EntityLayout } from './EntityLayout';
+import { rootRouteRef } from '../../routes';
+import userEvent from '@testing-library/user-event';
 
 const mockEntity = {
   kind: 'MyKind',
@@ -231,5 +239,76 @@ describe('EntityLayout', () => {
     expect(screen.getByText('tabbed-test-title')).toBeInTheDocument();
     expect(screen.queryByText('tabbed-test-title-2')).not.toBeInTheDocument();
     expect(screen.getByText('tabbed-test-title-3')).toBeInTheDocument();
+  });
+});
+
+describe('UnregisterEntityDialog', () => {
+  const discoveryApi: DiscoveryApi = {
+    async getBaseUrl(catalog) {
+      return `http://example.com/${catalog}`;
+    },
+  };
+  const alertApi: AlertApi = {
+    post() {
+      return undefined;
+    },
+    alert$() {
+      throw new Error('not implemented');
+    },
+  };
+
+  const entity = {
+    apiVersion: 'backstage.io/v1alpha1',
+    kind: 'Component',
+    metadata: {
+      name: 'n',
+      namespace: 'ns',
+      annotations: {
+        [ANNOTATION_ORIGIN_LOCATION]: 'url:http://example.com',
+      },
+    },
+    spec: {},
+  };
+
+  const Wrapper = (props: { children?: React.ReactNode }) => (
+    <TestApiProvider
+      apis={[
+        [catalogApiRef, new CatalogClient({ discoveryApi })],
+        [alertApiRef, alertApi],
+      ]}
+    >
+      {props.children}
+    </TestApiProvider>
+  );
+
+  afterEach(() => {
+    jest.resetAllMocks();
+  });
+
+  it('redirects to "/catalogue" post unregistering an entity', async () => {
+    const onConfirm = jest.fn();
+
+    await renderInTestApp(
+      <Wrapper>
+        <UnregisterEntityDialog
+          open
+          onClose={() => {}}
+          onConfirm={onConfirm}
+          entity={entity}
+        />
+      </Wrapper>,
+      {
+        mountedRoutes: {
+          '/catalog/:namespace/:kind/:name/*': rootRouteRef,
+        },
+      },
+    );
+
+    await userEvent.click(screen.getByText('Delete Entity'));
+
+    await waitFor(() => {
+      expect(onConfirm).toHaveBeenCalled();
+      expect(discoveryApi).toBe('/catalog');
+    });
   });
 });
