@@ -10400,13 +10400,13 @@ __metadata:
   linkType: hard
 
 "@codemirror/view@npm:^6.0.0":
-  version: 6.16.0
-  resolution: "@codemirror/view@npm:6.16.0"
+  version: 6.17.1
+  resolution: "@codemirror/view@npm:6.17.1"
   dependencies:
     "@codemirror/state": ^6.1.4
-    style-mod: ^4.0.0
+    style-mod: ^4.1.0
     w3c-keyname: ^2.2.4
-  checksum: 54d412b5159716c8a1a9c46fa04ff083e68a663cb887e6e2a4ca86fe9c3930d5255200fe84c65620e0a442f62dc2c13df277bcd1d4eef2e11e3c4e124fcf9d38
+  checksum: b70a50632817c75b39f60f1a962206e64787fc58fc7b1d6ce883dc2302d4dcfe077003c9c307358791c1150c96ae623140f069537a6b705f1c3526b2e41954a5
   languageName: node
   linkType: hard
 
@@ -40274,10 +40274,10 @@ __metadata:
   languageName: node
   linkType: hard
 
-"style-mod@npm:^4.0.0":
-  version: 4.0.0
-  resolution: "style-mod@npm:4.0.0"
-  checksum: c19f73d660a94244f0715180a6141bf75d05e5b156cc956ba11970b83cd303c3f7edafe5fb61a3192da6186cc008bdcdd803a979070f9b64e13046463644043c
+"style-mod@npm:^4.0.0, style-mod@npm:^4.1.0":
+  version: 4.1.0
+  resolution: "style-mod@npm:4.1.0"
+  checksum: 8402b14ca11113a3640d46b3cf7ba49f05452df7846bc5185a3535d9b6a64a3019e7fb636b59ccbb7816aeb0725b24723e77a85b05612a9360e419958e13b4e6
   languageName: node
   linkType: hard
 
