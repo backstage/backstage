@@ -13,21 +13,4 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
-import React from 'react';
-import { Content, Header, Page } from '@backstage/core-components';
-import { EntityValidationContent } from '../EntityValidationContent';
-
-export const EntityValidationPage = () => {
-  return (
-    <Page themeId="tool">
-      <Header
-        title="Entity Validator"
-        subtitle="Tool to validate catalog-info.yaml files"
-      />
-      <Content>
-        <EntityValidationContent />
-      </Content>
-    </Page>
-  );
-};
+export * from './EntityValidationContent';

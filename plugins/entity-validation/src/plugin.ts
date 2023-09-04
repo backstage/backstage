@@ -40,3 +40,15 @@ export const EntityValidationPage = entityValidationPlugin.provide(
     },
   }),
 );
+
+export const EntityValidationContent = entityValidationPlugin.provide(
+  createComponentExtension({
+    name: 'EntityValidationContent',
+    component: {
+      lazy: () =>
+        import('./components/EntityValidationContent').then(
+          m => m.EntityValidationContent,
+        ),
+    },
+  }),
+);
