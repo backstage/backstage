@@ -14,26 +14,7 @@
  * limitations under the License.
  */
 
-/**
- * Core API used by Backstage frontend plugins.
- *
- * @packageDocumentation
- */
-
 export {
-  createSchemaFromZod,
-  type PortableSchema,
-} from './createSchemaFromZod';
-export * from './components';
-export * from './extensions';
-export {
-  coreExtensionData,
-  createExtension,
-  type AnyExtensionDataMap,
-  type CreateExtensionOptions,
-  type Extension,
-  type ExtensionDataBind,
-  type ExtensionDataRef,
-  type ExtensionDataValue,
-} from './types';
-export * from './wiring';
+  ExtensionBoundary,
+  type ExtensionBoundaryProps,
+} from './ExtensionBoundary';

@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { Extension } from '@backstage/frontend-plugin-api';
+import { BackstagePlugin, Extension } from '@backstage/frontend-plugin-api';
 import mapValues from 'lodash/mapValues';
 
 /** @internal */
@@ -28,9 +28,10 @@ export interface ExtensionInstance {
 export function createExtensionInstance(options: {
   extension: Extension<unknown>;
   config: unknown;
+  source?: BackstagePlugin;
   attachments: Record<string, ExtensionInstance[]>;
 }): ExtensionInstance {
-  const { extension, config, attachments } = options;
+  const { extension, config, source, attachments } = options;
   const extensionData = new Map<string, unknown>();
 
   let parsedConfig: unknown;
@@ -44,6 +45,7 @@ export function createExtensionInstance(options: {
 
   try {
     extension.factory({
+      source,
       config: parsedConfig,
       bind: mapValues(extension.output, ref => {
         return (value: unknown) => extensionData.set(ref.id, value);

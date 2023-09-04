@@ -41,13 +41,11 @@ export function createApp(options: { plugins: BackstagePlugin[] }): {
 
   // pull in default extension instance from discovered packages
   // apply config to adjust default extension instances and add more
-  const extensionParams = mergeExtensionParameters(
-    [
-      ...options.plugins.flatMap(plugin => plugin.extensions),
-      ...builtinExtensions,
-    ],
-    readAppExtensionParameters(appConfig),
-  );
+  const extensionParams = mergeExtensionParameters({
+    sources: options.plugins,
+    builtinExtensions,
+    parameters: readAppExtensionParameters(appConfig),
+  });
 
   // TODO: validate the config of all extension instances
   // We do it at this point to ensure that merging (if any) of config has already happened
@@ -96,6 +94,7 @@ export function createApp(options: { plugins: BackstagePlugin[] }): {
 
     return createExtensionInstance({
       extension: instanceParams.extension,
+      source: instanceParams.source,
       config: instanceParams.config,
       attachments,
     });
