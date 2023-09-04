@@ -14,6 +14,6 @@
  * limitations under the License.
  */
 
-export * from './plugin-options';
-export * from './translation';
-export * from './apis/alpha';
+export * from './TranslationRef';
+export * from './types';
+export * from './useTranslationRef';

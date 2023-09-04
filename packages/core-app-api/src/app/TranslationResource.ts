@@ -14,6 +14,21 @@
  * limitations under the License.
  */
 
-export * from './plugin-options';
-export * from './translation';
-export * from './apis/alpha';
+import { TranslationRef } from '@backstage/core-plugin-api/alpha';
+
+/** @alpha */
+export type TranslationMessages<T> = T extends TranslationRef<infer R>
+  ? Record<string, Partial<R>>
+  : never;
+
+/** @alpha */
+export function createTranslationResource<T extends TranslationRef>(options: {
+  ref: T;
+  messages?: TranslationMessages<T>;
+  lazyMessages: Record<
+    string,
+    () => Promise<{ messages: TranslationMessages<T> }>
+  >;
+}) {
+  return options;
+}

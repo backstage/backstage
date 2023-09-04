@@ -14,9 +14,8 @@
  * limitations under the License.
  */
 
-import React, { cloneElement } from 'react';
-import useObservable from 'react-use/lib/useObservable';
-import AutoIcon from '@material-ui/icons/BrightnessAuto';
+import React, { useMemo } from 'react';
+import { useTranslationRef } from '@backstage/core-plugin-api/alpha';
 import ToggleButton from '@material-ui/lab/ToggleButton';
 import ToggleButtonGroup from '@material-ui/lab/ToggleButtonGroup';
 import {
@@ -26,24 +25,8 @@ import {
   Tooltip,
   makeStyles,
 } from '@material-ui/core';
-import { appThemeApiRef, useApi } from '@backstage/core-plugin-api';
-import { useTranslationRef } from '@backstage/core-plugin-api/alpha';
 import { userSettingsTranslationRef } from '../../translation';
-
-type ThemeIconProps = {
-  id: string;
-  activeId: string | undefined;
-  icon: JSX.Element | undefined;
-};
-
-const ThemeIcon = ({ id, activeId, icon }: ThemeIconProps) =>
-  icon ? (
-    cloneElement(icon, {
-      color: activeId === id ? 'primary' : undefined,
-    })
-  ) : (
-    <AutoIcon color={activeId === id ? 'primary' : undefined} />
-  );
+import { useTranslation } from 'react-i18next';
 
 type TooltipToggleButtonProps = {
   children: JSX.Element;
@@ -100,26 +83,28 @@ const TooltipToggleButton = ({
 );
 
 /** @public */
-export const UserSettingsThemeToggle = () => {
+export const UserSettingsLanguageToggle = () => {
   const classes = useStyles();
-  const appThemeApi = useApi(appThemeApiRef);
-  const activeThemeId = useObservable(
-    appThemeApi.activeThemeId$(),
-    appThemeApi.getActiveThemeId(),
-  );
-
-  const themeIds = appThemeApi.getInstalledThemes();
-
+  const { i18n } = useTranslation();
   const t = useTranslationRef(userSettingsTranslationRef);
 
-  const handleSetTheme = (
+  const supportedLngs = useMemo(
+    () => (i18n.options.supportedLngs || []).filter(lng => lng !== 'cimode'),
+    [i18n],
+  );
+
+  if (supportedLngs.length <= 1) {
+    return null;
+  }
+
+  const handleSetLanguage = (
     _event: React.MouseEvent<HTMLElement>,
-    newThemeId: string | undefined,
+    newLanguage: string | undefined,
   ) => {
-    if (themeIds.some(it => it.id === newThemeId)) {
-      appThemeApi.setActiveThemeId(newThemeId);
+    if (supportedLngs.some(it => it === newLanguage)) {
+      i18n.changeLanguage(newLanguage);
     } else {
-      appThemeApi.setActiveThemeId(undefined);
+      i18n.changeLanguage(undefined);
     }
   };
 
@@ -130,48 +115,33 @@ export const UserSettingsThemeToggle = () => {
     >
       <ListItemText
         className={classes.listItemText}
-        primary={t('theme')}
-        secondary={t('change_the_theme_mode')}
+        primary={t('language')}
+        secondary={t('change_the_language')}
       />
       <ListItemSecondaryAction className={classes.listItemSecondaryAction}>
         <ToggleButtonGroup
           exclusive
           size="small"
-          value={activeThemeId ?? 'auto'}
-          onChange={handleSetTheme}
+          value={i18n.language}
+          onChange={handleSetLanguage}
         >
-          {themeIds.map(theme => {
-            const themeIcon = themeIds.find(it => it.id === theme.id)?.icon;
-            const themeId = theme.id as 'light' | 'dark';
+          {supportedLngs.map(lng => {
             return (
               <TooltipToggleButton
-                key={theme.id}
-                title={
-                  theme.title
-                    ? t('select_theme_custom', { custom: theme.title })
-                    : t(`select_theme_${themeId}`)
-                }
-                value={theme.id}
+                key={lng}
+                title={t('select_lng', {
+                  language: lng,
+                })}
+                value={lng}
               >
                 <>
-                  {theme.title || t(`theme_${themeId}`)}&nbsp;
-                  <ThemeIcon
-                    id={theme.id}
-                    icon={themeIcon}
-                    activeId={themeId}
-                  />
+                  {t('lng', {
+                    language: lng,
+                  })}
                 </>
               </TooltipToggleButton>
             );
           })}
-          <Tooltip placement="top" arrow title={t('select_theme_auto')}>
-            <ToggleButton value="auto" selected={activeThemeId === undefined}>
-              {t('theme_auto')}&nbsp;
-              <AutoIcon
-                color={activeThemeId === undefined ? 'primary' : undefined}
-              />
-            </ToggleButton>
-          </Tooltip>
         </ToggleButtonGroup>
       </ListItemSecondaryAction>
     </ListItem>

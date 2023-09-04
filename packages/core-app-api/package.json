@@ -3,9 +3,22 @@
   "description": "Core app API used by Backstage apps",
   "version": "1.10.0-next.1",
   "publishConfig": {
-    "access": "public",
-    "main": "dist/index.esm.js",
-    "types": "dist/index.d.ts"
+    "access": "public"
+  },
+  "exports": {
+    ".": "./src/index.ts",
+    "./alpha": "./src/alpha.ts",
+    "./package.json": "./package.json"
+  },
+  "typesVersions": {
+    "*": {
+      "alpha": [
+        "src/alpha.ts"
+      ],
+      "package.json": [
+        "package.json"
+      ]
+    }
   },
   "backstage": {
     "role": "web-library"
@@ -39,7 +52,10 @@
     "@types/prop-types": "^15.7.3",
     "@types/react": "^16.13.1 || ^17.0.0",
     "history": "^5.0.0",
+    "i18next": "^22.4.15",
+    "i18next-browser-languagedetector": "^7.0.2",
     "prop-types": "^15.7.2",
+    "react-i18next": "^12.3.1",
     "react-use": "^17.2.4",
     "zen-observable": "^0.10.0",
     "zod": "^3.21.4"
