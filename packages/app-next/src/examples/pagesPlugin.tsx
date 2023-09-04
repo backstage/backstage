@@ -68,6 +68,7 @@ const Page1 = createPageExtension({
         <div>
           <h1>This is page 1</h1>
           <Link to={indexLink()}>Go back</Link>
+          <Link to="./page2">Page 2</Link>
           {/* <Link to={page2Link()}>Page 2</Link> */}
 
           <div>
