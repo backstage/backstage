@@ -10,7 +10,12 @@ configure Backstage to have any number of authentication providers, but only
 one of these will typically be used for sign-in, with the rest being used to provide
 access external resources.
 
-> Note: Backstage backend APIs are by default unauthenticated. Thus, if your Backstage instance is exposed to the Internet, anyone can access information in the Backstage. If you would like to learn more, read about how to [authenticate API requests"](https://github.com/backstage/backstage/blob/master/contrib/docs/tutorials/authenticate-api-requests.md).
+> NOTE: Identity management and the Sign-In page in Backstage is NOT a method for blocking
+> access for unauthorized users. The identity system only serves to provide a personalized
+> experience and access to a Backstage Identity Token, which can be passed to backend plugins.
+> This also means that your Backstage backend APIs are by default unauthenticated.
+> Thus, if your Backstage instance is exposed to the Internet, anyone can access
+> information in the Backstage. You can lear more [here](../overview/threat-model#integrator-responsibilities).
 
 ## Built-in Authentication Providers
 
@@ -60,13 +65,6 @@ local frontend against a deployed backend. The provider configuration matching
 the local `auth.environment` setting will be selected.
 
 ## Sign-In Configuration
-
-> NOTE: Identity management and the `SignInPage` in Backstage is NOT a method
-> for blocking access for unauthorized users, that either requires additional
-> backend implementation or a separate service like Google's Identity-Aware
-> Proxy. The identity system only serves to provide a personalized experience
-> and access to a Backstage Identity Token, which can be passed to backend
-> plugins.
 
 Using an authentication provider for sign-in is something you need to configure
 both in the frontend app, as well as the `auth` backend plugin. For information
