@@ -15,6 +15,7 @@
  */
 
 import React from 'react';
+import { ExtensionBoundary } from '../components';
 import { createSchemaFromZod, PortableSchema } from '../createSchemaFromZod';
 import {
   AnyExtensionDataMap,
@@ -72,7 +73,7 @@ export function createPageExtension<
     },
     inputs: options.inputs,
     configSchema,
-    factory({ bind, config, inputs }) {
+    factory({ bind, config, inputs, source }) {
       const LazyComponent = React.lazy(() =>
         options
           .component({ config, inputs })
@@ -80,9 +81,11 @@ export function createPageExtension<
       );
       bind.path(config.path);
       bind.component(() => (
-        <React.Suspense fallback="...">
-          <LazyComponent />
-        </React.Suspense>
+        <ExtensionBoundary source={source}>
+          <React.Suspense fallback="...">
+            <LazyComponent />
+          </React.Suspense>
+        </ExtensionBoundary>
       ));
     },
   });

@@ -14,26 +14,16 @@
  * limitations under the License.
  */
 
-/**
- * Core API used by Backstage frontend plugins.
- *
- * @packageDocumentation
- */
+import React, { ReactNode } from 'react';
+import { BackstagePlugin } from '../wiring';
 
-export {
-  createSchemaFromZod,
-  type PortableSchema,
-} from './createSchemaFromZod';
-export * from './components';
-export * from './extensions';
-export {
-  coreExtensionData,
-  createExtension,
-  type AnyExtensionDataMap,
-  type CreateExtensionOptions,
-  type Extension,
-  type ExtensionDataBind,
-  type ExtensionDataRef,
-  type ExtensionDataValue,
-} from './types';
-export * from './wiring';
+/** @public */
+export interface ExtensionBoundaryProps {
+  children: ReactNode;
+  source?: BackstagePlugin;
+}
+
+/** @public */
+export function ExtensionBoundary(props: ExtensionBoundaryProps) {
+  return <>{props.children}</>;
+}

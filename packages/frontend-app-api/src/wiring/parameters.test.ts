@@ -15,7 +15,7 @@
  */
 
 import { ConfigReader } from '@backstage/config';
-import { Extension } from '@backstage/frontend-plugin-api';
+import { createPlugin, Extension } from '@backstage/frontend-plugin-api';
 import { JsonValue } from '@backstage/types';
 import {
   expandShorthandExtensionParameters,
@@ -33,15 +33,25 @@ function makeExt(id: string, status: 'disabled' | 'enabled' = 'enabled') {
 
 describe('mergeExtensionParameters', () => {
   it('should filter out disabled extension instances', () => {
-    expect(mergeExtensionParameters([makeExt('a', 'disabled')], [])).toEqual(
-      [],
-    );
+    expect(
+      mergeExtensionParameters({
+        sources: [],
+        builtinExtensions: [makeExt('a', 'disabled')],
+        parameters: [],
+      }),
+    ).toEqual([]);
   });
 
   it('should pass through extension instances', () => {
     const a = makeExt('a');
     const b = makeExt('b');
-    expect(mergeExtensionParameters([a, b], [])).toEqual([
+    expect(
+      mergeExtensionParameters({
+        sources: [],
+        builtinExtensions: [a, b],
+        parameters: [],
+      }),
+    ).toEqual([
       { extension: a, at: 'root' },
       { extension: b, at: 'root' },
     ]);
@@ -50,18 +60,20 @@ describe('mergeExtensionParameters', () => {
   it('should override attachment points', () => {
     const a = makeExt('a');
     const b = makeExt('b');
+    const pluginA = createPlugin({ id: 'test', extensions: [a] });
     expect(
-      mergeExtensionParameters(
-        [a, b],
-        [
+      mergeExtensionParameters({
+        sources: [pluginA],
+        builtinExtensions: [b],
+        parameters: [
           {
             id: 'b',
             at: 'derp',
           },
         ],
-      ),
+      }),
     ).toEqual([
-      { extension: a, at: 'root' },
+      { extension: a, at: 'root', source: pluginA },
       { extension: b, at: 'derp' },
     ]);
   });
@@ -69,10 +81,12 @@ describe('mergeExtensionParameters', () => {
   it('should fully override configuration and duplicate', () => {
     const a = makeExt('a');
     const b = makeExt('b');
+    const plugin = createPlugin({ id: 'test', extensions: [a, b] });
     expect(
-      mergeExtensionParameters(
-        [a, b],
-        [
+      mergeExtensionParameters({
+        sources: [plugin],
+        builtinExtensions: [],
+        parameters: [
           {
             id: 'a',
             config: { foo: { bar: 1 } },
@@ -86,10 +100,10 @@ describe('mergeExtensionParameters', () => {
             config: { foo: { qux: 3 } },
           },
         ],
-      ),
+      }),
     ).toEqual([
-      { extension: a, at: 'root', config: { foo: { bar: 1 } } },
-      { extension: b, at: 'root', config: { foo: { qux: 3 } } },
+      { extension: a, at: 'root', source: plugin, config: { foo: { bar: 1 } } },
+      { extension: b, at: 'root', source: plugin, config: { foo: { qux: 3 } } },
     ]);
   });
 
@@ -97,9 +111,10 @@ describe('mergeExtensionParameters', () => {
     const a = makeExt('a', 'disabled');
     const b = makeExt('b', 'disabled');
     expect(
-      mergeExtensionParameters(
-        [a, b],
-        [
+      mergeExtensionParameters({
+        sources: [createPlugin({ id: 'empty', extensions: [] })],
+        builtinExtensions: [a, b],
+        parameters: [
           {
             id: 'b',
             disabled: false,
@@ -109,7 +124,7 @@ describe('mergeExtensionParameters', () => {
             disabled: false,
           },
         ],
-      ),
+      }),
     ).toEqual([
       { extension: b, at: 'root' },
       { extension: a, at: 'root' },

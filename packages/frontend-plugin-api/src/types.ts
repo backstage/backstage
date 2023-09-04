@@ -17,6 +17,7 @@
 import { AnyApiFactory } from '@backstage/core-plugin-api';
 import { ComponentType } from 'react';
 import { PortableSchema } from './createSchemaFromZod';
+import { BackstagePlugin } from './wiring';
 
 /** @public */
 export type ExtensionDataRef<T> = {
@@ -64,6 +65,7 @@ export interface CreateExtensionOptions<
   output: TData;
   configSchema?: PortableSchema<TConfig>;
   factory(options: {
+    source?: BackstagePlugin;
     bind: ExtensionDataBind<TData>;
     config: TConfig;
     inputs: {
@@ -84,6 +86,7 @@ export interface Extension<TConfig> {
   output: AnyExtensionDataMap;
   configSchema?: PortableSchema<TConfig>;
   factory(options: {
+    source?: BackstagePlugin;
     bind: ExtensionDataBind<AnyExtensionDataMap>;
     config: TConfig;
     inputs: Record<string, Array<Record<string, unknown>>>;

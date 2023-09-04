@@ -9,6 +9,8 @@ import { AnyApiFactory } from '@backstage/core-plugin-api';
 import { AnyApiRef } from '@backstage/core-plugin-api';
 import { ComponentType } from 'react';
 import { JsonObject } from '@backstage/types';
+import { default as React_2 } from 'react';
+import { ReactNode } from 'react';
 import { z } from 'zod';
 import { ZodSchema } from 'zod';
 import { ZodTypeDef } from 'zod';
@@ -95,6 +97,7 @@ export interface CreateExtensionOptions<
   disabled?: boolean;
   // (undocumented)
   factory(options: {
+    source?: BackstagePlugin;
     bind: ExtensionDataBind<TData>;
     config: TConfig;
     inputs: {
@@ -166,6 +169,7 @@ export interface Extension<TConfig> {
   disabled: boolean;
   // (undocumented)
   factory(options: {
+    source?: BackstagePlugin;
     bind: ExtensionDataBind<AnyExtensionDataMap>;
     config: TConfig;
     inputs: Record<string, Array<Record<string, unknown>>>;
@@ -181,6 +185,19 @@ export interface Extension<TConfig> {
   >;
   // (undocumented)
   output: AnyExtensionDataMap;
+}
+
+// @public (undocumented)
+export function ExtensionBoundary(
+  props: ExtensionBoundaryProps,
+): React_2.JSX.Element;
+
+// @public (undocumented)
+export interface ExtensionBoundaryProps {
+  // (undocumented)
+  children: ReactNode;
+  // (undocumented)
+  source?: BackstagePlugin;
 }
 
 // @public (undocumented)
