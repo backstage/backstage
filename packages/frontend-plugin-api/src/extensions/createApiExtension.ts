@@ -15,13 +15,13 @@
  */
 
 import { AnyApiFactory, AnyApiRef } from '@backstage/core-plugin-api';
-import { PortableSchema } from '../createSchemaFromZod';
+import { PortableSchema } from '../schema';
 import {
   AnyExtensionDataMap,
-  coreExtensionData,
-  createExtension,
   ExtensionDataValue,
-} from '../types';
+  createExtension,
+  coreExtensionData,
+} from '../wiring';
 
 /** @public */
 export function createApiExtension<

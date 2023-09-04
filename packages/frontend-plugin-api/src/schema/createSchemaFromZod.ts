@@ -17,12 +17,7 @@
 import { JsonObject } from '@backstage/types';
 import { z, ZodSchema, ZodTypeDef } from 'zod';
 import zodToJsonSchema from 'zod-to-json-schema';
-
-/** @public */
-export type PortableSchema<TOutput> = {
-  parse: (input: unknown) => TOutput;
-  schema: JsonObject;
-};
+import { PortableSchema } from './types';
 
 /** @public */
 export function createSchemaFromZod<TOutput, TInput>(

@@ -14,20 +14,5 @@
  * limitations under the License.
  */
 
-export { coreExtensionData } from './coreExtensionData';
-export {
-  createExtension,
-  type CreateExtensionOptions,
-  type ExtensionDataBind,
-  type ExtensionDataValue,
-} from './createExtension';
-export {
-  createExtensionDataRef,
-  type ExtensionDataRef,
-} from './createExtensionDataRef';
-export {
-  createPlugin,
-  type BackstagePlugin,
-  type PluginOptions,
-} from './createPlugin';
-export type { AnyExtensionDataMap, Extension } from './types';
+export { createSchemaFromZod } from './createSchemaFromZod';
+export { type PortableSchema } from './types';

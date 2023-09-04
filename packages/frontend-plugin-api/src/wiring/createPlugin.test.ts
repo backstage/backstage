@@ -17,14 +17,12 @@
 import React from 'react';
 import { createApp } from '@backstage/frontend-app-api';
 import { render, screen } from '@testing-library/react';
-import { createSchemaFromZod } from '../createSchemaFromZod';
-import {
-  createExtension,
-  coreExtensionData,
-  createExtensionDataRef,
-} from '../types';
+import { createSchemaFromZod } from '../schema/createSchemaFromZod';
 import { createPlugin, BackstagePlugin } from './createPlugin';
 import { JsonObject } from '@backstage/types';
+import { createExtension } from './createExtension';
+import { createExtensionDataRef } from './createExtensionDataRef';
+import { coreExtensionData } from './coreExtensionData';
 
 const nameExtensionDataRef = createExtensionDataRef<string>('name');
 

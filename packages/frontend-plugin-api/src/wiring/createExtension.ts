@@ -14,35 +14,9 @@
  * limitations under the License.
  */
 
-import { AnyApiFactory } from '@backstage/core-plugin-api';
-import { RouteRef } from '@backstage/core-plugin-api';
-import { ComponentType } from 'react';
-import { PortableSchema } from './createSchemaFromZod';
-import { BackstagePlugin } from './wiring';
-
-/** @public */
-export type ExtensionDataRef<T> = {
-  id: string;
-  T: T;
-  $$type: 'extension-data';
-};
-
-/** @public */
-// TODO: change to options object with ID.
-export function createExtensionDataRef<T>(id: string): ExtensionDataRef<T> {
-  return { id, $$type: 'extension-data' } as ExtensionDataRef<T>;
-}
-
-/** @public */
-export const coreExtensionData = {
-  reactComponent: createExtensionDataRef<ComponentType>('core.reactComponent'),
-  routePath: createExtensionDataRef<string>('core.routing.path'),
-  apiFactory: createExtensionDataRef<AnyApiFactory>('core.api.factory'),
-  routeRef: createExtensionDataRef<RouteRef>('core.routing.ref'),
-};
-
-/** @public */
-export type AnyExtensionDataMap = Record<string, ExtensionDataRef<any>>;
+import { PortableSchema } from '../schema';
+import { BackstagePlugin } from './createPlugin';
+import { AnyExtensionDataMap, Extension } from './types';
 
 /** @public */
 export type ExtensionDataBind<TData extends AnyExtensionDataMap> = {
@@ -75,23 +49,6 @@ export interface CreateExtensionOptions<
         TPoint[pointName]['extensionData']
       >[];
     };
-  }): void;
-}
-
-/** @public */
-export interface Extension<TConfig> {
-  $$type: 'extension';
-  id: string;
-  at: string;
-  disabled: boolean;
-  inputs: Record<string, { extensionData: AnyExtensionDataMap }>;
-  output: AnyExtensionDataMap;
-  configSchema?: PortableSchema<TConfig>;
-  factory(options: {
-    source?: BackstagePlugin;
-    bind: ExtensionDataBind<AnyExtensionDataMap>;
-    config: TConfig;
-    inputs: Record<string, Array<Record<string, unknown>>>;
   }): void;
 }
 

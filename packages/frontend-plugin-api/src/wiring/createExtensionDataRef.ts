@@ -14,20 +14,15 @@
  * limitations under the License.
  */
 
-export { coreExtensionData } from './coreExtensionData';
-export {
-  createExtension,
-  type CreateExtensionOptions,
-  type ExtensionDataBind,
-  type ExtensionDataValue,
-} from './createExtension';
-export {
-  createExtensionDataRef,
-  type ExtensionDataRef,
-} from './createExtensionDataRef';
-export {
-  createPlugin,
-  type BackstagePlugin,
-  type PluginOptions,
-} from './createPlugin';
-export type { AnyExtensionDataMap, Extension } from './types';
+/** @public */
+export type ExtensionDataRef<T> = {
+  id: string;
+  T: T;
+  $$type: 'extension-data';
+};
+
+/** @public */
+// TODO: change to options object with ID.
+export function createExtensionDataRef<T>(id: string): ExtensionDataRef<T> {
+  return { id, $$type: 'extension-data' } as ExtensionDataRef<T>;
+}

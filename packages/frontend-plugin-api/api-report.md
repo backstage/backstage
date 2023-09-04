@@ -81,6 +81,9 @@ export function createExtension<
 >(options: CreateExtensionOptions<TData, TPoint, TConfig>): Extension<TConfig>;
 
 // @public (undocumented)
+export function createExtensionDataRef<T>(id: string): ExtensionDataRef<T>;
+
+// @public (undocumented)
 export interface CreateExtensionOptions<
   TData extends AnyExtensionDataMap,
   TPoint extends Record<

@@ -14,20 +14,14 @@
  * limitations under the License.
  */
 
-export { coreExtensionData } from './coreExtensionData';
-export {
-  createExtension,
-  type CreateExtensionOptions,
-  type ExtensionDataBind,
-  type ExtensionDataValue,
-} from './createExtension';
-export {
-  createExtensionDataRef,
-  type ExtensionDataRef,
-} from './createExtensionDataRef';
-export {
-  createPlugin,
-  type BackstagePlugin,
-  type PluginOptions,
-} from './createPlugin';
-export type { AnyExtensionDataMap, Extension } from './types';
+import { AnyApiFactory, RouteRef } from '@backstage/core-plugin-api';
+import { ComponentType } from 'react';
+import { createExtensionDataRef } from './createExtensionDataRef';
+
+/** @public */
+export const coreExtensionData = {
+  reactComponent: createExtensionDataRef<ComponentType>('core.reactComponent'),
+  routePath: createExtensionDataRef<string>('core.routing.path'),
+  apiFactory: createExtensionDataRef<AnyApiFactory>('core.api.factory'),
+  routeRef: createExtensionDataRef<RouteRef>('core.routing.ref'),
+};

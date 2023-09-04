@@ -20,21 +20,8 @@
  * @packageDocumentation
  */
 
-export {
-  createSchemaFromZod,
-  type PortableSchema,
-} from './createSchemaFromZod';
 export * from './components';
 export * from './extensions';
-export {
-  coreExtensionData,
-  createExtension,
-  type AnyExtensionDataMap,
-  type CreateExtensionOptions,
-  type Extension,
-  type ExtensionDataBind,
-  type ExtensionDataRef,
-  type ExtensionDataValue,
-} from './types';
+export * from './schema';
 export * from './wiring';
 export * from './routing';

@@ -15,8 +15,8 @@
  */
 
 import React from 'react';
-import { PortableSchema } from '../createSchemaFromZod';
-import { coreExtensionData } from '../types';
+import { PortableSchema } from '../schema';
+import { coreExtensionData } from '../wiring';
 import { createPageExtension } from './createPageExtension';
 
 describe('createPageExtension', () => {

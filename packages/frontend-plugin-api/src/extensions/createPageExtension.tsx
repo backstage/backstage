@@ -17,14 +17,14 @@
 import { RouteRef } from '@backstage/core-plugin-api';
 import React from 'react';
 import { ExtensionBoundary } from '../components';
-import { createSchemaFromZod, PortableSchema } from '../createSchemaFromZod';
+import { createSchemaFromZod, PortableSchema } from '../schema';
 import {
   AnyExtensionDataMap,
   coreExtensionData,
   createExtension,
   Extension,
   ExtensionDataValue,
-} from '../types';
+} from '../wiring';
 
 /**
  * Helper for creating extensions for a routable React page component.
