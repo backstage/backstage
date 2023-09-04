@@ -8741,7 +8741,7 @@ __metadata:
     luxon: ^3.0.0
     qs: ^6.9.4
     react-use: ^17.2.4
-    use-immer: ^0.8.0
+    use-immer: ^0.9.0
     zen-observable: ^0.10.0
     zod: ^3.21.4
     zod-to-json-schema: ^3.20.4
@@ -42051,13 +42051,13 @@ __metadata:
   languageName: node
   linkType: hard
 
-"use-immer@npm:^0.8.0":
-  version: 0.8.1
-  resolution: "use-immer@npm:0.8.1"
+"use-immer@npm:^0.9.0":
+  version: 0.9.0
+  resolution: "use-immer@npm:0.9.0"
   peerDependencies:
     immer: ">=2.0.0"
     react: ^16.8.0 || ^17.0.1 || ^18.0.0
-  checksum: 9ffc1a201a92b6b026c420718e6a00e72ba48b62420bb515927b379bb1d791b5b4766b57c755b4851c0e1f80000e639bc1cf8e73424e44466741c159391d35dd
+  checksum: 3f02e31d38f354125e6cffaaed0a08d9bf122b9df261aa7b38a25246813b3bd8b22bf97b192099d4e84adcfbbb07e69e14ba29520e0ac8d93f3991ef3a3652b4
   languageName: node
   linkType: hard
 
