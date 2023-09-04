@@ -122,7 +122,7 @@
     "rollup-plugin-esbuild": "^4.7.2",
     "rollup-plugin-postcss": "^4.0.0",
     "rollup-pluginutils": "^2.8.2",
-    "run-script-webpack-plugin": "^0.1.0",
+    "run-script-webpack-plugin": "^0.2.0",
     "semver": "^7.5.3",
     "style-loader": "^3.3.1",
     "sucrase": "^3.20.2",
