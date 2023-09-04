@@ -194,10 +194,7 @@ describe('<CatalogGraphPage/>', () => {
       },
     );
 
-    expect(await screen.findAllByTestId('node')).toHaveLength(2);
-
-    // We wait a bit here to reliably reproduce an issue where that requires the `baseVal` and `view` mocks
-    await new Promise(r => setTimeout(r, 100));
+    await expect(screen.findAllByTestId('node')).resolves.toHaveLength(2);
 
     await userEvent.click(screen.getByText('b:d/e'));
 
