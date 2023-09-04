@@ -246,12 +246,15 @@ createApiFactory({
         return req;
       };
       const definitionWidgets = defaultDefinitionWidgets();
-      definitionWidgets[definitionWidgets.findIndex(obj => obj.type === 'openapi')] = {
-        type: 'openapi',
-        title: 'OpenAPI',
-        rawLanguage: 'yaml',
-        component: (definition) => <OpenApiDefinitionWidget definition={definition} requestInterceptor={requestInterceptor} />,
-      };
+      definitionWidgets.map(obj => {
+        if (obj.type === 'openapi') {
+          return {
+            ...obj,
+            component: (definition) => <OpenApiDefinitionWidget definition={definition} requestInterceptor={requestInterceptor} />,
+          }
+        }
+        return obj;
+      });
 
       return {
         getApiDefinitionWidget: (apiEntity: ApiEntity) => {

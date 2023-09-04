@@ -163,7 +163,7 @@ export const OpenApiDefinitionWidget: (
 // @public (undocumented)
 export type OpenApiDefinitionWidgetProps = {
   definition: string;
-  requestInterceptor?: (req: Request_2) => Request_2 | Promise<Request_2>;
+  requestInterceptor?: (req: any) => any | Promise<any>;
 };
 
 // @public (undocumented)
@@ -187,13 +187,6 @@ export const ProvidedApisCard: (props: {
 export const ProvidingComponentsCard: (props: {
   variant?: InfoCardVariants;
 }) => JSX.Element;
-
-// @public (undocumented)
-interface Request_2 {
-  // (undocumented)
-  [k: string]: any;
-}
-export { Request_2 as Request };
 
 // @public (undocumented)
 export const TrpcApiDefinitionWidget: (

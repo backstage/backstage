@@ -18,7 +18,6 @@ import { makeStyles } from '@material-ui/core/styles';
 import React, { useEffect, useState } from 'react';
 import SwaggerUI from 'swagger-ui-react';
 import 'swagger-ui-react/swagger-ui.css';
-import { Request } from './';
 
 const useStyles = makeStyles(theme => ({
   root: {
@@ -137,7 +136,7 @@ const useStyles = makeStyles(theme => ({
 
 export type OpenApiDefinitionProps = {
   definition: string;
-  requestInterceptor?: (req: Request) => Request | Promise<Request>;
+  requestInterceptor?: (req: any) => any | Promise<any>;
 };
 
 export const OpenApiDefinition = ({

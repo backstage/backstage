@@ -16,7 +16,6 @@
 
 import { Progress } from '@backstage/core-components';
 import React, { Suspense } from 'react';
-import { Request } from './';
 
 // The swagger-ui component and related CSS has a significant size, only load it
 // if the element is actually used.
@@ -29,7 +28,7 @@ const LazyOpenApiDefinition = React.lazy(() =>
 /** @public */
 export type OpenApiDefinitionWidgetProps = {
   definition: string;
-  requestInterceptor?: (req: Request) => Request | Promise<Request>;
+  requestInterceptor?: (req: any) => any | Promise<any>;
 };
 
 /** @public */
