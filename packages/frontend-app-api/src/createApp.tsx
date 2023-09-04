@@ -146,6 +146,12 @@ export function extractRouteInfoFromInstanceTree(
     // TODO: join paths in a more robust way
     const fullPath = basePath + routePath;
     if (routeRef) {
+      const routeRefId = (routeRef as any).id; // TODO: properly
+      if (routeRefId !== current.id) {
+        throw new Error(
+          `Route ref '${routeRefId}' must have the same ID as extension '${current.id}'`,
+        );
+      }
       results.set(routeRef, fullPath);
     }
 
