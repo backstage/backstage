@@ -22,4 +22,3 @@ export function downloadBlob(blob: Blob, name: string) {
   URL.revokeObjectURL(a.href);
   a.remove();
 }
-

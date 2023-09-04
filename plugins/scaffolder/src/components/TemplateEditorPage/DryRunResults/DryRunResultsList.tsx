@@ -27,7 +27,7 @@ import CheckIcon from '@material-ui/icons/Check';
 import DeleteIcon from '@material-ui/icons/Delete';
 import DownloadIcon from '@material-ui/icons/GetApp';
 import React from 'react';
-import { DryRunResult, useDryRun } from '../DryRunContext';
+import { useDryRun } from '../DryRunContext';
 import { downloadBlob } from '../../../lib/download';
 
 const useStyles = makeStyles((theme: BackstageTheme) => ({
@@ -59,10 +59,13 @@ export function DryRunResultsList() {
 
         async function downloadResult() {
           isLoading = true;
-          await downloadDirectoryContents(result.directoryContents, `dry-run-result-${result.id}.zip`)
+          await downloadDirectoryContents(
+            result.directoryContents,
+            `dry-run-result-${result.id}.zip`,
+          );
           isLoading = false;
         }
-        
+
         return (
           <ListItem
             button
@@ -102,20 +105,25 @@ export function DryRunResultsList() {
   );
 }
 
-
-
-async function downloadDirectoryContents(directoryContents: { path: string; base64Content: string; executable: boolean; }[], name: string) {
-  const {default: JSZip} = await import('jszip');
+async function downloadDirectoryContents(
+  directoryContents: {
+    path: string;
+    base64Content: string;
+    executable: boolean;
+  }[],
+  name: string,
+) {
+  const { default: JSZip } = await import('jszip');
   const zip = new JSZip();
 
   for (const d of directoryContents) {
     // Decode text content from base64 to ascii
     const converted = atob(d.base64Content);
-    
+
     // add folder/file to zip
     await zip.file(d.path, converted);
   }
 
-  const blob = await zip.generateAsync({type:"blob"});
+  const blob = await zip.generateAsync({ type: 'blob' });
   downloadBlob(blob, name);
 }
