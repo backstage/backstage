@@ -49,4 +49,42 @@ describe('createExtension', () => {
     });
     expect(extension.id).toBe('test');
   });
+
+  it('should create an extension with a some optional output', () => {
+    const extension = createExtension({
+      id: 'test',
+      at: 'root',
+      output: {
+        foo: stringData,
+        bar: stringData.optional(),
+      },
+      factory({ bind }) {
+        bind({
+          foo: 'bar',
+        });
+        bind({
+          foo: 'bar',
+          bar: 'baz',
+        });
+        bind({
+          // @ts-expect-error
+          foo: 3,
+        });
+        bind({
+          foo: 'bar',
+          // @ts-expect-error
+          bar: 3,
+        });
+        // @ts-expect-error
+        bind({ bar: 'bar' });
+        // @ts-expect-error
+        bind({});
+        // @ts-expect-error
+        bind();
+        // @ts-expect-error
+        bind('bar');
+      },
+    });
+    expect(extension.id).toBe('test');
+  });
 });

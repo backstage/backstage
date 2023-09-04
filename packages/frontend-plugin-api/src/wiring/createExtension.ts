@@ -18,10 +18,26 @@ import { PortableSchema } from '../schema';
 import { BackstagePlugin } from './createPlugin';
 import { AnyExtensionDataMap, Extension } from './types';
 
+type OnlyRequiredKeys<TOutput extends AnyExtensionDataMap> = {
+  [K in keyof TOutput]: TOutput[K]['config']['optional'] extends true
+    ? never
+    : K;
+}[keyof TOutput];
+
+type OnlyOptionalKeys<TOutput extends AnyExtensionDataMap> = {
+  [K in keyof TOutput]: TOutput[K]['config']['optional'] extends false
+    ? never
+    : K;
+}[keyof TOutput];
+
 /** @public */
-export type ExtensionDataBind<TOutput extends AnyExtensionDataMap> = (outputs: {
-  [K in keyof TOutput]: TOutput[K]['T'];
-}) => void;
+export type ExtensionDataBind<TOutput extends AnyExtensionDataMap> = (
+  outputs: {
+    [K in OnlyRequiredKeys<TOutput>]: TOutput[K]['T'];
+  } & {
+    [K in OnlyOptionalKeys<TOutput>]?: TOutput[K]['T'];
+  },
+) => void;
 
 /** @public */
 export type ExtensionDataValue<TData extends AnyExtensionDataMap> = {

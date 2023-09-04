@@ -20,7 +20,7 @@ import { ExtensionDataRef } from './createExtensionDataRef';
 import { BackstagePlugin } from './createPlugin';
 
 /** @public */
-export type AnyExtensionDataMap = Record<string, ExtensionDataRef<any>>;
+export type AnyExtensionDataMap = Record<string, ExtensionDataRef<any, any>>;
 
 /** @public */
 export interface Extension<TConfig> {

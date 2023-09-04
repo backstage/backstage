@@ -15,14 +15,35 @@
  */
 
 /** @public */
-export type ExtensionDataRef<T> = {
+export type ExtensionDataRef<
+  TData,
+  TConfig extends { optional: boolean } = { optional: false },
+> = {
   id: string;
-  T: T;
+  T: TData;
+  config: TConfig;
   $$type: 'extension-data';
 };
 
 /** @public */
+export interface ConfigurableExtensionDataRef<
+  TData,
+  TConfig extends { optional: boolean },
+> extends ExtensionDataRef<TData, TConfig> {
+  optional(): ConfigurableExtensionDataRef<TData, TData & { optional: true }>;
+}
+
+/** @public */
 // TODO: change to options object with ID.
-export function createExtensionDataRef<T>(id: string): ExtensionDataRef<T> {
-  return { id, $$type: 'extension-data' } as ExtensionDataRef<T>;
+export function createExtensionDataRef<TData>(
+  id: string,
+): ConfigurableExtensionDataRef<TData, { optional: false }> {
+  return {
+    id,
+    $$type: 'extension-data',
+    config: { optional: false },
+    optional() {
+      return { ...this, config: { ...this.config, optional: true } };
+    },
+  } as ConfigurableExtensionDataRef<TData, { optional: false }>;
 }
