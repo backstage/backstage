@@ -13,7 +13,4 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
-export * from './plugin-options';
 export * from './translation';
-export * from './apis/alpha';

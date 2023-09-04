@@ -64,6 +64,7 @@ import { SessionState } from '@backstage/core-plugin-api';
 import { StorageApi } from '@backstage/core-plugin-api';
 import { StorageValueSnapshot } from '@backstage/core-plugin-api';
 import { SubRouteRef } from '@backstage/core-plugin-api';
+import { TranslationRef } from '@backstage/core-plugin-api/alpha';
 
 // @public
 export class AlertApiForwarder implements AlertApi {
@@ -220,6 +221,20 @@ export type AppOptions = {
   themes: (Partial<AppTheme> & Omit<AppTheme, 'theme'>)[];
   configLoader?: AppConfigLoader;
   bindRoutes?(context: { bind: AppRouteBinder }): void;
+  __experimentalI18n?: {
+    supportedLanguages: string[];
+    fallbackLanguage?: string | string[];
+    messages?: Array<{
+      ref: TranslationRef;
+      messages?: TranslationMessages<TranslationRef>;
+      lazyMessages: Record<
+        string,
+        () => Promise<{
+          messages: TranslationMessages<TranslationRef>;
+        }>
+      >;
+    }>;
+  };
 };
 
 // @public
