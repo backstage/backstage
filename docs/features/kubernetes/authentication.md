@@ -58,7 +58,7 @@ aws:
   accountDefaults:
 ```
 
-Either of these sections needs to be present for the Kubernetes configuration to use the 'aws' `authProvider`. The Kubernetes configuration looks like this:
+Either of these sections needs to be present for the Kubernetes configuration to use the `aws` `authProvider`. The Kubernetes configuration looks like this:
 
 ```yaml
 kubernetes:
