@@ -175,7 +175,7 @@ describe('OwnershipCard', () => {
     expect(catalogApi.getEntities).toHaveBeenCalledWith({
       filter: [
         {
-          kind: ['Component', 'API', 'System'],
+          kind: ['Component', 'API', 'System', 'Resource', 'Domain'],
           'relations.ownedBy': ['group:default/my-team'],
         },
       ],
