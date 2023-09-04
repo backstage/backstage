@@ -3295,13 +3295,13 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@babel/runtime-corejs3@npm:^7.20.13, @babel/runtime-corejs3@npm:^7.20.7, @babel/runtime-corejs3@npm:^7.22.6":
-  version: 7.22.10
-  resolution: "@babel/runtime-corejs3@npm:7.22.10"
+"@babel/runtime-corejs3@npm:^7.20.13, @babel/runtime-corejs3@npm:^7.20.7, @babel/runtime-corejs3@npm:^7.22.11":
+  version: 7.22.15
+  resolution: "@babel/runtime-corejs3@npm:7.22.15"
   dependencies:
     core-js-pure: ^3.30.2
     regenerator-runtime: ^0.14.0
-  checksum: 00c50bf21fa7d0db1af7944f4fd56569da0dddedd68dbbc18587eedbd0e04aa4efea7010ff4a44ba590ea7ff3c91f0edf87136020c930de14dc4cdec511b6d22
+  checksum: 6e27ca3890282612316aa87a9cd60fc19888ac26c802af926b4488ad67b3b06929086884974e9237fa550f48a5fe22c9c5e5be229bba9c4c017cfb2374835518
   languageName: node
   linkType: hard
 
@@ -30682,12 +30682,12 @@ __metadata:
   languageName: node
   linkType: hard
 
-"json-stable-stringify@npm:^1.0.1":
-  version: 1.0.1
-  resolution: "json-stable-stringify@npm:1.0.1"
+"json-stable-stringify@npm:^1.0.1, json-stable-stringify@npm:^1.0.2":
+  version: 1.0.2
+  resolution: "json-stable-stringify@npm:1.0.2"
   dependencies:
-    jsonify: ~0.0.0
-  checksum: 65d6cbf0fca72a4136999f65f4401cf39a129f7aeff0fdd987ac3d3423a2113659294045fb8377e6e20d865cac32b1b8d70f3d87346c9786adcee60661d96ca5
+    jsonify: ^0.0.1
+  checksum: ec10863493fb728481ed7576551382768a173d5b884758db530def00523b862083a3fd70fee24b39e2f47f5f502e22f9a1489dd66da3535b63bf6241dbfca800
   languageName: node
   linkType: hard
 
@@ -30791,10 +30791,10 @@ __metadata:
   languageName: node
   linkType: hard
 
-"jsonify@npm:~0.0.0":
-  version: 0.0.0
-  resolution: "jsonify@npm:0.0.0"
-  checksum: d8d4ed476c116e6987a460dcb82f22284686caae9f498ac87b0502c1765ac1522f4f450a4cad4cc368d202fd3b27a3860735140a82867fc6d558f5f199c38bce
+"jsonify@npm:^0.0.1":
+  version: 0.0.1
+  resolution: "jsonify@npm:0.0.1"
+  checksum: 027287e1c0294fce15f18c0ff990cfc2318e7f01fb76515f784d5cd0784abfec6fc5c2355c3a2f2cb0ad7f4aa2f5b74ebbfe4e80476c35b2d13cabdb572e1134
   languageName: node
   linkType: hard
 
@@ -35098,9 +35098,9 @@ __metadata:
   languageName: node
   linkType: hard
 
-"patch-package@npm:^7.0.2":
-  version: 7.0.2
-  resolution: "patch-package@npm:7.0.2"
+"patch-package@npm:^8.0.0":
+  version: 8.0.0
+  resolution: "patch-package@npm:8.0.0"
   dependencies:
     "@yarnpkg/lockfile": ^1.1.0
     chalk: ^4.1.2
@@ -35108,6 +35108,7 @@ __metadata:
     cross-spawn: ^7.0.3
     find-yarn-workspace-root: ^2.0.0
     fs-extra: ^9.0.0
+    json-stable-stringify: ^1.0.2
     klaw-sync: ^6.0.0
     minimist: ^1.2.6
     open: ^7.4.2
@@ -35118,7 +35119,7 @@ __metadata:
     yaml: ^2.2.2
   bin:
     patch-package: index.js
-  checksum: de2cf60effc8b59ee15d4930f84eea63c217525f0133c926850ee3a2437651d8aabbd0fec4ddee1b8b8da4fd380bcea90ef3c4acd69026057fa80cdc823b59a4
+  checksum: d23cddc4d1622e2d8c7ca31b145c6eddb24bd271f69905e766de5e1f199f0b9a5479a6a6939ea857288399d4ed249285639d539a2c00fbddb7daa39934b007a2
   languageName: node
   linkType: hard
 
@@ -40495,10 +40496,10 @@ __metadata:
   linkType: hard
 
 "swagger-ui-react@npm:^5.0.0":
-  version: 5.3.2
-  resolution: "swagger-ui-react@npm:5.3.2"
+  version: 5.5.0
+  resolution: "swagger-ui-react@npm:5.5.0"
   dependencies:
-    "@babel/runtime-corejs3": ^7.22.6
+    "@babel/runtime-corejs3": ^7.22.11
     "@braintree/sanitize-url": =6.0.4
     base64-js: ^1.5.1
     classnames: ^2.3.1
@@ -40510,7 +40511,7 @@ __metadata:
     js-file-download: ^0.4.12
     js-yaml: =4.1.0
     lodash: ^4.17.21
-    patch-package: ^7.0.2
+    patch-package: ^8.0.0
     prop-types: ^15.8.1
     randexp: ^0.5.3
     randombytes: ^2.1.0
@@ -40535,7 +40536,7 @@ __metadata:
   peerDependencies:
     react: ">=17.0.0"
     react-dom: ">=17.0.0"
-  checksum: d01e011cfd3915bbd17f0a0c886062a292cbef99f0feff247a18eea457bf4500f9d8fe932977cfc6e68b19197d8e52809ca58f269f9fe3128347901ee3cf621b
+  checksum: 4fc415a499e2cada9bb4de1298f39b1636a36533cdc8113360a4aaee9670ba8276ee718a23e6b9ef52f9be92e32601c78fc524c8428d40700d33ad330cbb3aeb
   languageName: node
   linkType: hard
 
