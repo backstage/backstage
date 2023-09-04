@@ -11,6 +11,7 @@ import { ComponentType } from 'react';
 import { JsonObject } from '@backstage/types';
 import { default as React_2 } from 'react';
 import { ReactNode } from 'react';
+import { RouteRef } from '@backstage/core-plugin-api';
 import { z } from 'zod';
 import { ZodSchema } from 'zod';
 import { ZodTypeDef } from 'zod';
@@ -33,6 +34,7 @@ export const coreExtensionData: {
   reactComponent: ExtensionDataRef<ComponentType<{}>>;
   routePath: ExtensionDataRef<string>;
   apiFactory: ExtensionDataRef<AnyApiFactory>;
+  routeRef: ExtensionDataRef<RouteRef<any>>;
 };
 
 // @public (undocumented)
@@ -138,6 +140,7 @@ export function createPageExtension<
     at?: string;
     disabled?: boolean;
     inputs?: TInputs;
+    routeRef?: RouteRef;
     component: (props: {
       config: TConfig;
       inputs: {
@@ -230,4 +233,7 @@ export type PortableSchema<TOutput> = {
   parse: (input: unknown) => TOutput;
   schema: JsonObject;
 };
+
+// @public (undocumented)
+export function useRouteRef(routeRef: RouteRef<any>): () => string;
 ```

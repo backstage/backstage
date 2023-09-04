@@ -20,6 +20,7 @@ import { RoutingContext } from '@backstage/frontend-app-api/src/routing/RoutingC
 import { useContext, useMemo } from 'react';
 import { useLocation } from 'react-router-dom';
 
+/** @public */
 export function useRouteRef(routeRef: RouteRef<any>): () => string {
   const { pathname } = useLocation();
   const resolver = useContext(RoutingContext);
