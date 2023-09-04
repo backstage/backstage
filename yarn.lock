@@ -40359,9 +40359,10 @@ __metadata:
   linkType: hard
 
 "sucrase@npm:^3.20.2":
-  version: 3.30.0
-  resolution: "sucrase@npm:3.30.0"
+  version: 3.34.0
+  resolution: "sucrase@npm:3.34.0"
   dependencies:
+    "@jridgewell/gen-mapping": ^0.3.2
     commander: ^4.0.0
     glob: 7.1.6
     lines-and-columns: ^1.1.6
@@ -40371,7 +40372,7 @@ __metadata:
   bin:
     sucrase: bin/sucrase
     sucrase-node: bin/sucrase-node
-  checksum: 9d53ee132f8063573c9f336c2dbc00a1f91fb976a4ad4dca29a15a898d361e6d4a06ada086c6881fe63389d96392cbd761d790a8175a6ecb184eaa337d58f363
+  checksum: 61860063bdf6103413698e13247a3074d25843e91170825a9752e4af7668ffadd331b6e99e92fc32ee5b3c484ee134936f926fa9039d5711fafff29d017a2110
   languageName: node
   linkType: hard
 
