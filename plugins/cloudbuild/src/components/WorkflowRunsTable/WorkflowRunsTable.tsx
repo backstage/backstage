@@ -87,7 +87,7 @@ const generatedColumns: TableColumn[] = [
     title: 'Created',
     render: (row: Partial<WorkflowRun>) => (
       <Typography data-testid="cell-created" variant="body2" noWrap>
-        {DateTime.fromISO(row.createTime ?? DateTime.now().toISO()).toFormat(
+        {DateTime.fromISO(row.createTime ?? DateTime.now().toISO()!).toFormat(
           'dd-MM-yyyy hh:mm:ss',
         )}
       </Typography>

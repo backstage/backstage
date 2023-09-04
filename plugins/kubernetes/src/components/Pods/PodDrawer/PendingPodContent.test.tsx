@@ -13,6 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
 import React from 'react';
 
 import { render } from '@testing-library/react';
@@ -44,7 +45,7 @@ const podWithConditions = (conditions: IPodCondition[]): any => {
 
 describe('PendingPodContent', () => {
   it('show startup conditions - all healthy', async () => {
-    const oneDayAgo = DateTime.now().minus({ days: 1 }).toISO();
+    const oneDayAgo = DateTime.now().minus({ days: 1 }).toISO()!;
     const { getByText, queryByLabelText, queryAllByLabelText } = render(
       wrapInTestApp(
         <PendingPodContent
@@ -87,7 +88,7 @@ describe('PendingPodContent', () => {
     expect(queryByLabelText('Status error')).not.toBeInTheDocument();
   });
   it('show startup conditions - all fail', async () => {
-    const oneHourAgo = DateTime.now().minus({ hours: 1 }).toISO();
+    const oneHourAgo = DateTime.now().minus({ hours: 1 }).toISO()!;
     const { getByText, queryByLabelText, queryAllByLabelText } = render(
       wrapInTestApp(
         <PendingPodContent
@@ -154,7 +155,7 @@ describe('PendingPodContent', () => {
     expect(queryAllByLabelText('Status error')).toHaveLength(4);
   });
   it('show startup conditions - show unknown', async () => {
-    const oneHourAgo = DateTime.now().minus({ hours: 1 }).toISO();
+    const oneHourAgo = DateTime.now().minus({ hours: 1 }).toISO()!;
     const { getByText, queryByLabelText, getByLabelText } = render(
       wrapInTestApp(
         <PendingPodContent
