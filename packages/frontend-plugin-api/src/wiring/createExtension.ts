@@ -19,9 +19,9 @@ import { BackstagePlugin } from './createPlugin';
 import { AnyExtensionDataMap, Extension } from './types';
 
 /** @public */
-export type ExtensionDataBind<TData extends AnyExtensionDataMap> = {
-  [K in keyof TData]: (value: TData[K]['T']) => void;
-};
+export type ExtensionDataBind<TOutput extends AnyExtensionDataMap> = (outputs: {
+  [K in keyof TOutput]: TOutput[K]['T'];
+}) => void;
 
 /** @public */
 export type ExtensionDataValue<TData extends AnyExtensionDataMap> = {
@@ -30,23 +30,23 @@ export type ExtensionDataValue<TData extends AnyExtensionDataMap> = {
 
 /** @public */
 export interface CreateExtensionOptions<
-  TData extends AnyExtensionDataMap,
-  TPoint extends Record<string, { extensionData: AnyExtensionDataMap }>,
+  TOutput extends AnyExtensionDataMap,
+  TInputs extends Record<string, { extensionData: AnyExtensionDataMap }>,
   TConfig,
 > {
   id: string;
   at: string;
   disabled?: boolean;
-  inputs?: TPoint;
-  output: TData;
+  inputs?: TInputs;
+  output: TOutput;
   configSchema?: PortableSchema<TConfig>;
   factory(options: {
     source?: BackstagePlugin;
-    bind: ExtensionDataBind<TData>;
+    bind: ExtensionDataBind<TOutput>;
     config: TConfig;
     inputs: {
-      [pointName in keyof TPoint]: ExtensionDataValue<
-        TPoint[pointName]['extensionData']
+      [pointName in keyof TInputs]: ExtensionDataValue<
+        TInputs[pointName]['extensionData']
       >[];
     };
   }): void;
@@ -54,14 +54,28 @@ export interface CreateExtensionOptions<
 
 /** @public */
 export function createExtension<
-  TData extends AnyExtensionDataMap,
-  TPoint extends Record<string, { extensionData: AnyExtensionDataMap }>,
+  TOutput extends AnyExtensionDataMap,
+  TInputs extends Record<string, { extensionData: AnyExtensionDataMap }>,
   TConfig = never,
->(options: CreateExtensionOptions<TData, TPoint, TConfig>): Extension<TConfig> {
+>(
+  options: CreateExtensionOptions<TOutput, TInputs, TConfig>,
+): Extension<TConfig> {
   return {
     ...options,
     disabled: options.disabled ?? false,
     $$type: 'extension',
     inputs: options.inputs ?? {},
+    factory({ bind, config, inputs }) {
+      // TODO: Simplify this, but TS wouldn't infer the input type for some reason
+      return options.factory({
+        bind,
+        config,
+        inputs: inputs as {
+          [pointName in keyof TInputs]: ExtensionDataValue<
+            TInputs[pointName]['extensionData']
+          >[];
+        },
+      });
+    },
   };
 }

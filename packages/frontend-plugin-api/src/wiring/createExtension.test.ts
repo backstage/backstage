@@ -25,21 +25,26 @@ describe('createExtension', () => {
       id: 'test',
       at: 'root',
       output: {
-        foo: coreExtensionData.title,
-        foo2: stringData,
+        foo: stringData,
       },
       factory({ bind }) {
-        // Make it work well with required and optional output
-        // HOH - High Order Helper
         bind({
           foo: 'bar',
         });
+        bind({
+          // @ts-expect-error
+          foo: 3,
+        });
+        bind({
+          // @ts-expect-error
+          bar: 'bar',
+        });
         // @ts-expect-error
-        bind.foo(3);
+        bind({});
         // @ts-expect-error
-        bind.foo();
+        bind();
         // @ts-expect-error
-        bind.bar('bar');
+        bind('bar');
       },
     });
     expect(extension.id).toBe('test');

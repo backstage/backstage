@@ -54,9 +54,17 @@ export function createExtensionInstance(options: {
     extension.factory({
       source,
       config: parsedConfig,
-      bind: mapValues(extension.output, ref => {
-        return (value: unknown) => extensionData.set(ref.id, value);
-      }),
+      bind: namedOutputs => {
+        for (const [name, output] of Object.entries(namedOutputs)) {
+          const ref = extension.output[name];
+          if (!ref) {
+            throw new Error(
+              `Extension instance '${extension.id}' tried to bind unknown output '${name}'`,
+            );
+          }
+          extensionData.set(ref.id, output);
+        }
+      },
       inputs: mapValues(
         extension.inputs,
         ({ extensionData: pointData }, inputName) => {

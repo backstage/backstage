@@ -82,17 +82,18 @@ export function createPageExtension<
           .component({ config, inputs })
           .then(element => ({ default: () => element })),
       );
-      bind.path(config.path);
-      bind.component(() => (
-        <ExtensionBoundary source={source}>
-          <React.Suspense fallback="...">
-            <LazyComponent />
-          </React.Suspense>
-        </ExtensionBoundary>
-      ));
-      if (options.routeRef) {
-        bind.routeRef!(options.routeRef);
-      }
+
+      bind({
+        path: config.path,
+        component: () => (
+          <ExtensionBoundary source={source}>
+            <React.Suspense fallback="...">
+              <LazyComponent />
+            </React.Suspense>
+          </ExtensionBoundary>
+        ),
+        routeRef: options.routeRef,
+      });
     },
   });
 }

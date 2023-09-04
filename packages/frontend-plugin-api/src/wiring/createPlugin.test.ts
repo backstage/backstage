@@ -33,7 +33,7 @@ const TechRadarPage = createExtension({
     name: nameExtensionDataRef,
   },
   factory({ bind }) {
-    bind.name('TechRadar');
+    bind({ name: 'TechRadar' });
   },
 });
 
@@ -47,7 +47,7 @@ const CatalogPage = createExtension({
     z.object({ name: z.string().default('Catalog') }),
   ),
   factory({ bind, config }) {
-    bind.name(config.name);
+    bind({ name: config.name });
   },
 });
 
@@ -61,7 +61,7 @@ const TechDocsAddon = createExtension({
     z.object({ name: z.string().default('TechDocsAddon') }),
   ),
   factory({ bind, config }) {
-    bind.name(config.name);
+    bind({ name: config.name });
   },
 });
 
@@ -79,7 +79,7 @@ const TechDocsPage = createExtension({
     name: nameExtensionDataRef,
   },
   factory({ bind, inputs }) {
-    bind.name(`TechDocs-${inputs.addons.map(n => n.name).join('-')}`);
+    bind({ name: `TechDocs-${inputs.addons.map(n => n.name).join('-')}` });
   },
 });
 
@@ -97,11 +97,12 @@ const outputExtension = createExtension({
     component: coreExtensionData.reactComponent,
   },
   factory({ bind, inputs }) {
-    bind.component(() =>
-      React.createElement('span', {}, [
-        `Names: ${inputs.names.map(n => n.name).join(', ')}`,
-      ]),
-    );
+    bind({
+      component: () =>
+        React.createElement('span', {}, [
+          `Names: ${inputs.names.map(n => n.name).join(', ')}`,
+        ]),
+    });
   },
 });
 

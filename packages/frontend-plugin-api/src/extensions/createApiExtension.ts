@@ -63,9 +63,9 @@ export function createApiExtension<
     },
     factory({ bind, config, inputs }) {
       if (typeof factory === 'function') {
-        bind.api(factory({ config, inputs }));
+        bind({ api: factory({ config, inputs }) });
       } else {
-        bind.api(factory);
+        bind({ api: factory });
       }
     },
   });
