@@ -266,7 +266,7 @@ export const homePage = (
 
 There are some requirements to provide its functionality, so please ensure the following:
 
-These components need an api to handle visit data, please refer to the [utility-apis](../../docs/api/utility-apis.md)
+These components need an API to handle visit data, please refer to the [utility-apis](../../docs/api/utility-apis.md)
 documentation for more information. Bellow you can see an example for two options:
 
 ```ts
