@@ -31,7 +31,7 @@ import { paths as libPaths } from '../../lib/paths';
 import { loadCliConfig } from '../config';
 import { Lockfile } from '../versioning';
 import { createConfig, resolveBaseUrl } from './config';
-import { buildDetectedPlugins } from './discover';
+import { createDetectedModulesEntrypoint as createDetectedModulesEntryPoint } from './discover';
 import { resolveBundlingPaths } from './paths';
 import { ServeOptions } from './types';
 
@@ -119,6 +119,14 @@ export async function serveBundle(options: ServeOptions) {
     Number(url.port) ||
     (url.protocol === 'https:' ? 443 : 80);
 
+  const detectedModulesEntryPoint = await createDetectedModulesEntryPoint({
+    config: fullConfig,
+    targetPath: paths.targetPath,
+    watch() {
+      server?.invalidate();
+    },
+  });
+
   const config = await createConfig(paths, {
     ...options,
     checksEnabled: options.checksEnabled,
@@ -129,14 +137,7 @@ export async function serveBundle(options: ServeOptions) {
     getFrontendAppConfigs: () => {
       return latestFrontendAppConfigs;
     },
-  });
-
-  await buildDetectedPlugins({
-    config: fullConfig,
-    targetPath: paths.targetPath,
-    watch() {
-      server?.invalidate();
-    },
+    additionalEntryPoints: detectedModulesEntryPoint,
   });
 
   const compiler = webpack(config);

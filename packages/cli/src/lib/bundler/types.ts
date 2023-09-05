@@ -26,6 +26,7 @@ export type BundlingOptions = {
   frontendAppConfigs: AppConfig[];
   baseUrl: URL;
   parallelism?: number;
+  additionalEntryPoints?: string[];
 };
 
 export type ServeOptions = BundlingPathsOptions & {

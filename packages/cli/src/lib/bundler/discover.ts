@@ -21,29 +21,72 @@ import fs from 'fs-extra';
 import { join as joinPath, resolve as resolvePath } from 'path';
 import { paths as cliPaths } from '../../lib/paths';
 
-export async function buildDetectedPlugins(options: {
-  config: Config;
-  targetPath: string;
-  watch?: () => void;
-}) {
-  const { watch, targetPath } = options;
-  if (watch) {
-    const watcher = chokidar.watch(resolvePath(targetPath, 'package.json'));
+const DETECTED_MODULES_MODULE_NAME = '__backstage-autodetected-plugins__';
 
-    watcher.on('change', async () => {
-      await writeDetectedPluginsModule(options);
-      watch();
-    });
-  }
-
-  await writeDetectedPluginsModule(options);
+interface PackageDetectionConfig {
+  include?: string[];
+  exclude?: string[];
 }
 
-async function writeDetectedPluginsModule(options: {
-  config: Config;
-  targetPath: string;
-}) {
-  const requirePackageScript = (await detectPlugins(options))
+function readPackageDetectionConfig(
+  config: Config,
+): PackageDetectionConfig | undefined {
+  const packages = config.getOptional('app.experimental.packages');
+  if (!packages) {
+    return undefined;
+  }
+
+  if (typeof packages === 'string') {
+    if (packages !== 'all') {
+      throw new Error(
+        `Invalid app.experimental.packages mode, got '${packages}', expected 'all'`,
+      );
+    }
+    return {};
+  }
+
+  return {
+    include: config.getOptionalStringArray('app.experimental.packages.include'),
+    exclude: config.getOptionalStringArray('app.experimental.packages.exclude'),
+  };
+}
+
+async function detectPackages(
+  targetPath: string,
+  { include, exclude }: PackageDetectionConfig,
+) {
+  const pkg: BackstagePackageJson = await fs.readJson(
+    resolvePath(targetPath, 'package.json'),
+  );
+
+  return Object.keys(pkg.dependencies ?? {})
+    .flatMap(depName => {
+      const depPackageJson: BackstagePackageJson = require(require.resolve(
+        `${depName}/package.json`,
+        { paths: [targetPath] },
+      ));
+      if (
+        ['frontend-plugin', 'frontend-plugin-module'].includes(
+          depPackageJson.backstage?.role ?? '',
+        )
+      ) {
+        return [depName];
+      }
+      return [];
+    })
+    .filter(name => {
+      if (exclude?.includes(name)) {
+        return false;
+      }
+      if (include && !include.includes(name)) {
+        return false;
+      }
+      return true;
+    });
+}
+
+async function writeDetectedPackagesModule(packageNames: string[]) {
+  const requirePackageScript = packageNames
     ?.map(pkg => `{name: '${pkg}', module: require('${pkg}')}`)
     .join(',');
 
@@ -51,47 +94,38 @@ async function writeDetectedPluginsModule(options: {
     joinPath(
       cliPaths.targetRoot,
       'node_modules',
-      '__backstage-autodetected-plugins__.js',
+      `${DETECTED_MODULES_MODULE_NAME}.js`,
     ),
     `export const modules = [${requirePackageScript}];`,
   );
 }
 
-async function detectPlugins({
-  config,
-  targetPath,
-}: {
+export async function createDetectedModulesEntrypoint(options: {
   config: Config;
   targetPath: string;
-}) {
-  const pkg: BackstagePackageJson = await fs.readJson(
-    resolvePath(targetPath, 'package.json'),
+  watch?: () => void;
+}): Promise<string[]> {
+  const { config, watch, targetPath } = options;
+
+  const detectionConfig = readPackageDetectionConfig(config);
+  if (!detectionConfig) {
+    return [];
+  }
+
+  if (watch) {
+    const watcher = chokidar.watch(resolvePath(targetPath, 'package.json'));
+
+    watcher.on('change', async () => {
+      await writeDetectedPackagesModule(
+        await detectPackages(targetPath, detectionConfig),
+      );
+      watch();
+    });
+  }
+
+  await writeDetectedPackagesModule(
+    await detectPackages(targetPath, detectionConfig),
   );
-  // TODO: proper
-  // Assumption for config string based on https://github.com/backstage/backstage/issues/18372 ^
 
-  const packageDetectionMode =
-    config.getOptional('app.experimental.packages') || 'all';
-
-  const allowedPackages =
-    packageDetectionMode === 'all'
-      ? Object.keys(pkg.dependencies ?? {})
-      : config.getStringArray('app.experimental.packages');
-
-  return allowedPackages
-    .map(depName => {
-      const depPackageJson: BackstagePackageJson = require(require.resolve(
-        `${depName}/package.json`,
-        { paths: [targetPath] },
-      ));
-      if (
-        ['frontend-plugin', 'frontend-plugin-module'].includes(
-          depPackageJson.backstage?.role || '',
-        )
-      ) {
-        return depName;
-      }
-      return undefined;
-    })
-    .filter((d): d is string => !!d);
+  return [DETECTED_MODULES_MODULE_NAME];
 }
