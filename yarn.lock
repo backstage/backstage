@@ -3377,16 +3377,6 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@backstage/autodetect@workspace:^, @backstage/autodetect@workspace:packages/autodetect":
-  version: 0.0.0-use.local
-  resolution: "@backstage/autodetect@workspace:packages/autodetect"
-  dependencies:
-    "@backstage/cli": "workspace:^"
-    "@backstage/core-plugin-api": "workspace:^"
-    "@testing-library/jest-dom": ^5.10.1
-  languageName: unknown
-  linkType: soft
-
 "@backstage/backend-app-api@workspace:^, @backstage/backend-app-api@workspace:packages/backend-app-api":
   version: 0.0.0-use.local
   resolution: "@backstage/backend-app-api@workspace:packages/backend-app-api"
@@ -6438,7 +6428,6 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "@backstage/plugin-devtools@workspace:plugins/devtools"
   dependencies:
-    "@backstage/autodetect": "workspace:^"
     "@backstage/cli": "workspace:^"
     "@backstage/core-app-api": "workspace:^"
     "@backstage/core-components": "workspace:^"
@@ -19747,6 +19736,23 @@ __metadata:
   languageName: node
   linkType: hard
 
+"app-next-example-plugin@workspace:^, app-next-example-plugin@workspace:packages/app-next-example-plugin":
+  version: 0.0.0-use.local
+  resolution: "app-next-example-plugin@workspace:packages/app-next-example-plugin"
+  dependencies:
+    "@backstage/cli": "workspace:^"
+    "@backstage/core-components": "workspace:^"
+    "@backstage/frontend-plugin-api": "workspace:^"
+    "@material-ui/icons": ^4.9.1
+    cross-fetch: ^3.1.5
+    msw: ^1.0.0
+  peerDependencies:
+    react: ^16.13.1 || ^17.0.0
+    react-dom: ^16.13.1 || ^17.0.0
+    react-router-dom: 6.0.0-beta.0 || ^6.3.0
+  languageName: unknown
+  linkType: soft
+
 "append-field@npm:^1.0.0":
   version: 1.0.0
   resolution: "append-field@npm:1.0.0"
@@ -25632,6 +25638,7 @@ __metadata:
     "@types/react": "*"
     "@types/react-dom": "*"
     "@types/zen-observable": ^0.8.0
+    app-next-example-plugin: "workspace:^"
     cross-env: ^7.0.0
     cypress: ^10.0.0
     eslint-plugin-cypress: ^2.10.3
