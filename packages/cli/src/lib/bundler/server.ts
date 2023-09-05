@@ -31,7 +31,7 @@ import { paths as libPaths } from '../../lib/paths';
 import { loadCliConfig } from '../config';
 import { Lockfile } from '../versioning';
 import { createConfig, resolveBaseUrl } from './config';
-import { createDetectedModulesEntrypoint as createDetectedModulesEntryPoint } from './discover';
+import { createDetectedModulesEntrypoint as createDetectedModulesEntryPoint } from './packageDetection';
 import { resolveBundlingPaths } from './paths';
 import { ServeOptions } from './types';
 

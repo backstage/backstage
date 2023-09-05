@@ -19,7 +19,7 @@ import { Config } from '@backstage/config';
 import chokidar from 'chokidar';
 import fs from 'fs-extra';
 import { join as joinPath, resolve as resolvePath } from 'path';
-import { paths as cliPaths } from '../../lib/paths';
+import { paths as cliPaths } from '../paths';
 
 const DETECTED_MODULES_MODULE_NAME = '__backstage-autodetected-plugins__';
 
