@@ -132,6 +132,7 @@ export function createApp(options: { plugins: BackstagePlugin[] }): {
   };
 }
 
+/** @internal */
 export function extractRouteInfoFromInstanceTree(
   roots: ExtensionInstance[],
 ): Map<RouteRef, string> {
