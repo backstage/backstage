@@ -245,7 +245,7 @@ const defaultConfig = [
 ## Page visit homepage component (HomePageVisitedByType)
 
 This component shows the homepage user a view for "Recently visited" or "Top visited".
-Being provided by the `<HomePageVisitedByType/>` component, see it in usage on a homepage example bellow:
+Being provided by the `<HomePageVisitedByType/>` component, see it in use on a homepage example below:
 
 ```tsx
 import React from 'react';
