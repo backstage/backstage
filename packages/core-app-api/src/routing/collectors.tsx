@@ -34,6 +34,7 @@ export const MATCH_ALL_ROUTE: BackstageRouteObject = {
   element: 'match-all', // These elements aren't used, so we add in a bit of debug information
   routeRefs: new Set(),
   plugins: new Set(),
+  index: true,
 };
 
 function stringifyNode(node: ReactNode): string {
@@ -137,7 +138,7 @@ export const routingV2Collector = createCollector(
           );
         }
 
-        const newObj = {
+        const newObj: BackstageRouteObject = {
           path,
           element: 'gathered',
           routeRefs: new Set<RouteRef>(),
@@ -167,7 +168,7 @@ export const routingV2Collector = createCollector(
         }
         const { routeRef, plugin } = extension;
 
-        const newObj = {
+        const newObj: BackstageRouteObject = {
           path,
           element: 'mounted',
           routeRefs: new Set([routeRef]),
@@ -253,7 +254,7 @@ export const routingV1Collector = createCollector(
       return ctx;
     }
 
-    let currentObj = ctx?.obj;
+    let currentObj: BackstageRouteObject | undefined = ctx?.obj;
     let currentParentRouteRef = ctx?.routeRef;
     let sticky = ctx?.sticky;
 

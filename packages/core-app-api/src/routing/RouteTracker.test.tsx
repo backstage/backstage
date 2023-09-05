@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 import { TestApiProvider } from '@backstage/test-utils';
-import React from 'react';
+import React, { type ReactNode } from 'react';
 import { BackstageRouteObject } from './types';
 import { fireEvent, render } from '@testing-library/react';
 import { RouteTracker } from './RouteTracker';
@@ -26,6 +26,51 @@ import {
   createRouteRef,
 } from '@backstage/core-plugin-api';
 import { MATCH_ALL_ROUTE } from './collectors';
+
+// buildRoutes recursively builds the route object, recursing into the children
+// FIXME(RobotSail): <Route /> can't accept the "plugins" parameter, even though
+// this is present on the BackstageRouteObject. Surely, this will cause issues.
+const buildRoutes = (routes: BackstageRouteObject[]): ReactNode => {
+  if (routes.length === 0) {
+    return null;
+  }
+  const routeNodes: React.ReactNode[] = [];
+  for (const route of routes) {
+    let routeChildren: ReactNode;
+    if (route.children) {
+      routeChildren = buildRoutes(route.children);
+    }
+    if (route.index) {
+      routeNodes.push(
+        <Route
+          caseSensitive={route.caseSensitive}
+          element={route.element}
+          path={route.path ?? '/'}
+          key={route.path}
+          index={route.index}
+        />,
+      );
+    } else {
+      routeNodes.push(
+        <Route
+          caseSensitive={route.caseSensitive}
+          children={routeChildren}
+          element={route.element}
+          path={route.path ?? '/'}
+          key={route.path}
+          index={route.index}
+        />,
+      );
+    }
+  }
+  if (routeNodes.length === 0) {
+    return null;
+  }
+  if (routeNodes.length === 1) {
+    return routeNodes[0];
+  }
+  return <>{routeNodes}</>;
+};
 
 describe('RouteTracker', () => {
   const routeRef0 = createRouteRef({
@@ -107,11 +152,7 @@ describe('RouteTracker', () => {
         <TestApiProvider apis={[[analyticsApiRef, mockedAnalytics]]}>
           <RouteTracker routeObjects={routeObjects} />
 
-          <Routes>
-            {routeObjects.map(({ path, element }) => (
-              <Route key={path} path={path || '/'} element={element} />
-            ))}
-          </Routes>
+          <Routes>{buildRoutes(routeObjects)}</Routes>
         </TestApiProvider>
       </MemoryRouter>,
     );
