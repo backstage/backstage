@@ -67,6 +67,7 @@ export const makeRouter = async (
   bodyParserXml(BodyParser);
   const router = Router();
   router.use(BodyParser.xml());
+  router.use(BodyParser.text());
   router.use(express.json());
 
   const utils = new CoverageUtils(scm, urlReader);
