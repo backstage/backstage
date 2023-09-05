@@ -111,14 +111,14 @@ describe('<CatalogGraphPage/>', () => {
 
     await renderInTestApp(wrapper, {
       mountedRoutes: {
-        '/entity/{kind}/{namespace}/{name}': entityRouteRef,
+        '/entity/:kind/:namespace/:name': entityRouteRef,
       },
     });
 
     expect(screen.getByText('Catalog Graph')).toBeInTheDocument();
-    expect(await screen.findByText('b:d/c')).toBeInTheDocument();
-    expect(await screen.findByText('b:d/e')).toBeInTheDocument();
-    expect(await screen.findAllByTestId('node')).toHaveLength(2);
+    await expect(screen.findByText('b:d/c')).resolves.toBeInTheDocument();
+    await expect(screen.findByText('b:d/e')).resolves.toBeInTheDocument();
+    await expect(screen.findAllByTestId('node')).resolves.toHaveLength(2);
     expect(catalog.getEntityByRef).toHaveBeenCalledTimes(2);
   });
 
@@ -129,7 +129,7 @@ describe('<CatalogGraphPage/>', () => {
 
     await renderInTestApp(wrapper, {
       mountedRoutes: {
-        '/entity/{kind}/{namespace}/{name}': entityRouteRef,
+        '/entity/:kind/:namespace/:name': entityRouteRef,
       },
     });
 
@@ -147,15 +147,15 @@ describe('<CatalogGraphPage/>', () => {
 
     await renderInTestApp(wrapper, {
       mountedRoutes: {
-        '/entity/{kind}/{namespace}/{name}': entityRouteRef,
+        '/entity/:kind/:namespace/:name': entityRouteRef,
       },
     });
 
-    expect(await screen.findAllByTestId('node')).toHaveLength(2);
+    await expect(screen.findAllByTestId('node')).resolves.toHaveLength(2);
 
     await userEvent.click(screen.getByText('b:d/e'));
 
-    expect(await screen.findByText('hasPart')).toBeInTheDocument();
+    await expect(screen.findByText('hasPart')).resolves.toBeInTheDocument();
   });
 
   test('should navigate to entity', async () => {
@@ -165,16 +165,16 @@ describe('<CatalogGraphPage/>', () => {
 
     await renderInTestApp(wrapper, {
       mountedRoutes: {
-        '/entity/{kind}/{namespace}/{name}': entityRouteRef,
+        '/entity/:kind/:namespace/:name': entityRouteRef,
       },
     });
 
-    expect(await screen.findAllByTestId('node')).toHaveLength(2);
+    await expect(screen.findAllByTestId('node')).resolves.toHaveLength(2);
 
     const user = userEvent.setup();
     await user.keyboard('{Shift>}');
     await user.click(screen.getByText('b:d/e'));
-    expect(navigate).toHaveBeenCalledWith('/entity/{kind}/{namespace}/{name}');
+    expect(navigate).toHaveBeenCalledWith('/entity/b/d/e');
   });
 
   test('should capture analytics event when selecting other entity', async () => {
@@ -189,7 +189,7 @@ describe('<CatalogGraphPage/>', () => {
       </TestApiProvider>,
       {
         mountedRoutes: {
-          '/entity/{kind}/{namespace}/{name}': entityRouteRef,
+          '/entity/:kind/:namespace/:name': entityRouteRef,
         },
       },
     );
@@ -216,12 +216,12 @@ describe('<CatalogGraphPage/>', () => {
       </TestApiProvider>,
       {
         mountedRoutes: {
-          '/entity/{kind}/{namespace}/{name}': entityRouteRef,
+          '/entity/:kind/:namespace/:name': entityRouteRef,
         },
       },
     );
 
-    expect(await screen.findAllByTestId('node')).toHaveLength(2);
+    await expect(screen.findAllByTestId('node')).resolves.toHaveLength(2);
 
     const user = userEvent.setup();
     await user.keyboard('{Shift>}');
@@ -231,7 +231,7 @@ describe('<CatalogGraphPage/>', () => {
       action: 'click',
       subject: 'b:d/e',
       attributes: {
-        to: '/entity/{kind}/{namespace}/{name}',
+        to: '/entity/b/d/e',
       },
     });
   });
