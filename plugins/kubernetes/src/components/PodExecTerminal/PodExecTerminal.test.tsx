@@ -31,7 +31,7 @@ import { PodExecTerminal } from './PodExecTerminal';
 
 const textEncoder = new TextEncoder();
 
-describe('K8sTerminal', () => {
+describe('PodExecTerminal', () => {
   const clusterName = 'cluster1';
   const containerName = 'container2';
   const podName = 'pod1';
