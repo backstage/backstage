@@ -109,7 +109,6 @@ export async function serveBundle(options: ServeOptions) {
   }
 
   const { frontendConfig, fullConfig } = cliConfig;
-  // TODO: proper
   const url = resolveBaseUrl(frontendConfig);
 
   const host =
@@ -133,7 +132,6 @@ export async function serveBundle(options: ServeOptions) {
     isDev: true,
     baseUrl: url,
     frontendConfig,
-    frontendAppConfigs: [],
     getFrontendAppConfigs: () => {
       return latestFrontendAppConfigs;
     },

@@ -32,7 +32,7 @@ import {
 } from './wiring/parameters';
 import { RoutingProvider } from './routing/RoutingContext';
 import { RouteRef } from '@backstage/core-plugin-api';
-import { getAvailablePlugins } from './discover';
+import { getAvailablePlugins } from './wiring/discovery';
 
 /** @public */
 export function createApp(options: { plugins: BackstagePlugin[] }): {

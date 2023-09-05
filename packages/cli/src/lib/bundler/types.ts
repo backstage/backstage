@@ -23,7 +23,6 @@ export type BundlingOptions = {
   isDev: boolean;
   frontendConfig: Config;
   getFrontendAppConfigs(): AppConfig[];
-  frontendAppConfigs: AppConfig[];
   baseUrl: URL;
   parallelism?: number;
   additionalEntryPoints?: string[];
