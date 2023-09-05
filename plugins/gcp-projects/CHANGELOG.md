@@ -1,5 +1,15 @@
 # @backstage/plugin-gcp-projects
 
+## 0.3.41-next.2
+
+### Patch Changes
+
+- 8cec7664e146: Removed `@types/node` dependency
+- Updated dependencies
+  - @backstage/core-components@0.13.5-next.2
+  - @backstage/core-plugin-api@1.6.0-next.2
+  - @backstage/theme@0.4.1
+
 ## 0.3.41-next.1
 
 ### Patch Changes

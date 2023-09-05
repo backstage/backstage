@@ -1,5 +1,19 @@
 # @backstage/plugin-permission-backend
 
+## 0.5.26-next.2
+
+### Patch Changes
+
+- 84ad6fccd4d5: Moved `permissionModuleAllowAllPolicy` to `@backstage/plugin-permission-backend-module-allow-all-policy`
+- Updated dependencies
+  - @backstage/config@1.1.0-next.1
+  - @backstage/backend-common@0.19.5-next.2
+  - @backstage/plugin-auth-node@0.3.0-next.2
+  - @backstage/plugin-permission-node@0.7.14-next.2
+  - @backstage/backend-plugin-api@0.6.3-next.2
+  - @backstage/plugin-permission-common@0.7.8-next.1
+  - @backstage/errors@1.2.1
+
 ## 0.5.26-next.1
 
 ### Patch Changes

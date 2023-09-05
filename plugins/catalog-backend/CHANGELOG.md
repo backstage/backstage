@@ -1,5 +1,33 @@
 # @backstage/plugin-catalog-backend
 
+## 1.13.0-next.2
+
+### Patch Changes
+
+- acffa17027b6: Added some examples to the catalog OpenAPI definition
+- 45947d3b2759: Fixes an issue where `order` was not a recognized parameter for the `/entities` endpoint.
+- 814feeed7343: Update to handle invalid luxon values
+- Updated dependencies
+  - @backstage/config@1.1.0-next.1
+  - @backstage/backend-tasks@0.5.8-next.2
+  - @backstage/backend-common@0.19.5-next.2
+  - @backstage/plugin-auth-node@0.3.0-next.2
+  - @backstage/plugin-catalog-node@1.4.4-next.2
+  - @backstage/plugin-permission-node@0.7.14-next.2
+  - @backstage/plugin-search-backend-module-catalog@0.1.7-next.2
+  - @backstage/integration@1.7.0-next.2
+  - @backstage/backend-plugin-api@0.6.3-next.2
+  - @backstage/catalog-model@1.4.2-next.1
+  - @backstage/plugin-permission-common@0.7.8-next.1
+  - @backstage/backend-openapi-utils@0.0.3
+  - @backstage/catalog-client@1.4.4-next.1
+  - @backstage/errors@1.2.1
+  - @backstage/types@1.1.0
+  - @backstage/plugin-catalog-common@1.0.16-next.1
+  - @backstage/plugin-events-node@0.2.12-next.2
+  - @backstage/plugin-scaffolder-common@1.4.1-next.1
+  - @backstage/plugin-search-common@1.2.6-next.1
+
 ## 1.13.0-next.1
 
 ### Minor Changes

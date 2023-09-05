@@ -1,5 +1,19 @@
 # @backstage/plugin-devtools
 
+## 0.1.4-next.2
+
+### Patch Changes
+
+- 8cec7664e146: Removed `@types/node` dependency
+- Updated dependencies
+  - @backstage/core-components@0.13.5-next.2
+  - @backstage/core-plugin-api@1.6.0-next.2
+  - @backstage/plugin-permission-react@0.4.15-next.2
+  - @backstage/errors@1.2.1
+  - @backstage/theme@0.4.1
+  - @backstage/types@1.1.0
+  - @backstage/plugin-devtools-common@0.1.4-next.1
+
 ## 0.1.4-next.1
 
 ### Patch Changes

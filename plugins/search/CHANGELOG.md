@@ -1,5 +1,23 @@
 # @backstage/plugin-search
 
+## 1.4.0-next.2
+
+### Patch Changes
+
+- 8cec7664e146: Removed `@types/node` dependency
+- Updated dependencies
+  - @backstage/core-components@0.13.5-next.2
+  - @backstage/core-plugin-api@1.6.0-next.2
+  - @backstage/config@1.1.0-next.1
+  - @backstage/plugin-catalog-react@1.8.4-next.2
+  - @backstage/plugin-search-react@1.7.0-next.2
+  - @backstage/catalog-model@1.4.2-next.1
+  - @backstage/errors@1.2.1
+  - @backstage/theme@0.4.1
+  - @backstage/types@1.1.0
+  - @backstage/version-bridge@1.0.4
+  - @backstage/plugin-search-common@1.2.6-next.1
+
 ## 1.4.0-next.1
 
 ### Minor Changes

@@ -1,5 +1,19 @@
 # @backstage/plugin-sonarqube
 
+## 0.7.5-next.2
+
+### Patch Changes
+
+- 8cec7664e146: Removed `@types/node` dependency
+- db92d1244897: Updated dependency `rc-progress` to `3.5.1`.
+- Updated dependencies
+  - @backstage/core-components@0.13.5-next.2
+  - @backstage/core-plugin-api@1.6.0-next.2
+  - @backstage/plugin-catalog-react@1.8.4-next.2
+  - @backstage/plugin-sonarqube-react@0.1.8-next.2
+  - @backstage/catalog-model@1.4.2-next.1
+  - @backstage/theme@0.4.1
+
 ## 0.7.5-next.1
 
 ### Patch Changes

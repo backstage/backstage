@@ -1,5 +1,27 @@
 # @backstage/plugin-scaffolder
 
+## 1.14.5-next.2
+
+### Patch Changes
+
+- 8cec7664e146: Removed `@types/node` dependency
+- Updated dependencies
+  - @backstage/integration-react@1.1.19-next.2
+  - @backstage/core-components@0.13.5-next.2
+  - @backstage/core-plugin-api@1.6.0-next.2
+  - @backstage/config@1.1.0-next.1
+  - @backstage/plugin-scaffolder-react@1.5.5-next.2
+  - @backstage/plugin-catalog-react@1.8.4-next.2
+  - @backstage/plugin-permission-react@0.4.15-next.2
+  - @backstage/integration@1.7.0-next.2
+  - @backstage/catalog-model@1.4.2-next.1
+  - @backstage/catalog-client@1.4.4-next.1
+  - @backstage/errors@1.2.1
+  - @backstage/theme@0.4.1
+  - @backstage/types@1.1.0
+  - @backstage/plugin-catalog-common@1.0.16-next.1
+  - @backstage/plugin-scaffolder-common@1.4.1-next.1
+
 ## 1.14.5-next.1
 
 ### Patch Changes

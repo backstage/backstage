@@ -1,5 +1,11 @@
 # @backstage/release-manifests
 
+## 0.0.10-next.0
+
+### Patch Changes
+
+- 8cec7664e146: Removed `@types/node` dependency
+
 ## 0.0.9
 
 ### Patch Changes

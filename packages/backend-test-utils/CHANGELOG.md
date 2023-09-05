@@ -1,5 +1,18 @@
 # @backstage/backend-test-utils
 
+## 0.2.3-next.2
+
+### Patch Changes
+
+- 58cb5e5cea7b: Introduced a new utility for testing service factories, `ServiceFactoryTester`.
+- Updated dependencies
+  - @backstage/backend-app-api@0.5.3-next.2
+  - @backstage/config@1.1.0-next.1
+  - @backstage/backend-common@0.19.5-next.2
+  - @backstage/plugin-auth-node@0.3.0-next.2
+  - @backstage/backend-plugin-api@0.6.3-next.2
+  - @backstage/types@1.1.0
+
 ## 0.2.3-next.1
 
 ### Patch Changes
