@@ -15,6 +15,11 @@
  */
 
 import { Config } from '@backstage/config';
+import {
+  ANNOTATION_KUBERNETES_AWS_ASSUME_ROLE,
+  ANNOTATION_KUBERNETES_AWS_EXTERNAL_ID,
+  ANNOTATION_KUBERNETES_OIDC_TOKEN_PROVIDER,
+} from '@backstage/plugin-kubernetes-common';
 import { ClusterDetails, KubernetesClustersSupplier } from '../types/types';
 
 export class ConfigClusterLocator implements KubernetesClustersSupplier {
@@ -75,8 +80,12 @@ export class ConfigClusterLocator implements KubernetesClustersSupplier {
 
             return {
               authMetadata: {
-                ...(assumeRole && { assumeRole }),
-                ...(externalId && { externalId }),
+                ...(assumeRole && {
+                  [ANNOTATION_KUBERNETES_AWS_ASSUME_ROLE]: assumeRole,
+                }),
+                ...(externalId && {
+                  [ANNOTATION_KUBERNETES_AWS_EXTERNAL_ID]: externalId,
+                }),
                 ...clusterDetails.authMetadata,
               },
               ...clusterDetails,
@@ -90,7 +99,7 @@ export class ConfigClusterLocator implements KubernetesClustersSupplier {
 
             return {
               authMetadata: {
-                oidcTokenProvider,
+                [ANNOTATION_KUBERNETES_OIDC_TOKEN_PROVIDER]: oidcTokenProvider,
                 ...clusterDetails.authMetadata,
               },
               ...clusterDetails,

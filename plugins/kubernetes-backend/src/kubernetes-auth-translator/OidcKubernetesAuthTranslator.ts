@@ -13,10 +13,12 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
+import {
+  ANNOTATION_KUBERNETES_OIDC_TOKEN_PROVIDER,
+  KubernetesRequestAuth,
+} from '@backstage/plugin-kubernetes-common';
 import { KubernetesAuthTranslator } from './types';
 import { ClusterDetails } from '../types/types';
-import { KubernetesRequestAuth } from '@backstage/plugin-kubernetes-common';
 
 /**
  *
@@ -32,7 +34,8 @@ export class OidcKubernetesAuthTranslator implements KubernetesAuthTranslator {
       clusterDetails,
     );
 
-    const oidcTokenProvider = clusterDetails.authMetadata?.oidcTokenProvider;
+    const oidcTokenProvider =
+      clusterDetails.authMetadata?.[ANNOTATION_KUBERNETES_OIDC_TOKEN_PROVIDER];
 
     if (!oidcTokenProvider || oidcTokenProvider === '') {
       throw new Error(

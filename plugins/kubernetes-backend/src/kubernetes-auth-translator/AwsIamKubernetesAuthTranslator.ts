@@ -13,8 +13,6 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import { ClusterDetails } from '../types/types';
-import { KubernetesAuthTranslator } from './types';
 import { fromTemporaryCredentials } from '@aws-sdk/credential-providers';
 import { SignatureV4 } from '@aws-sdk/signature-v4';
 import { Sha256 } from '@aws-crypto/sha256-js';
@@ -23,6 +21,12 @@ import {
   DefaultAwsCredentialsManager,
 } from '@backstage/integration-aws-node';
 import { Config } from '@backstage/config';
+import {
+  ANNOTATION_KUBERNETES_AWS_ASSUME_ROLE,
+  ANNOTATION_KUBERNETES_AWS_EXTERNAL_ID,
+} from '@backstage/plugin-kubernetes-common';
+import { ClusterDetails } from '../types/types';
+import { KubernetesAuthTranslator } from './types';
 
 /**
  *
@@ -120,8 +124,8 @@ export class AwsIamKubernetesAuthTranslator
     clusterDetailsWithAuthToken.authMetadata = {
       serviceAccountToken: await this.getBearerToken(
         clusterDetails.name,
-        clusterDetails.authMetadata?.assumeRole,
-        clusterDetails.authMetadata?.externalId,
+        clusterDetails.authMetadata?.[ANNOTATION_KUBERNETES_AWS_ASSUME_ROLE],
+        clusterDetails.authMetadata?.[ANNOTATION_KUBERNETES_AWS_EXTERNAL_ID],
       ),
       ...clusterDetailsWithAuthToken.authMetadata,
     };

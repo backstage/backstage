@@ -13,8 +13,12 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import { AwsIamKubernetesAuthTranslator } from './AwsIamKubernetesAuthTranslator';
 import { ConfigReader } from '@backstage/config';
+import {
+  ANNOTATION_KUBERNETES_AWS_ASSUME_ROLE,
+  ANNOTATION_KUBERNETES_AWS_EXTERNAL_ID,
+} from '@backstage/plugin-kubernetes-common';
+import { AwsIamKubernetesAuthTranslator } from './AwsIamKubernetesAuthTranslator';
 
 let presign = jest.fn(async () => ({
   hostname: 'https://example.com',
@@ -73,7 +77,7 @@ describe('AwsIamKubernetesAuthTranslator tests', () => {
       name: 'test-cluster',
       url: '',
       authProvider: 'aws',
-      authMetadata: { assumeRole: 'SomeRole' },
+      authMetadata: { [ANNOTATION_KUBERNETES_AWS_ASSUME_ROLE]: 'SomeRole' },
     });
     expect((await authPromise).authMetadata!.serviceAccountToken).toEqual(
       'k8s-aws-v1.aHR0cHM6Ly9odHRwczovL2V4YW1wbGUuY29tL2FzZGY_',
@@ -100,8 +104,8 @@ describe('AwsIamKubernetesAuthTranslator tests', () => {
       url: '',
       authProvider: 'aws',
       authMetadata: {
-        assumeRole: 'SomeRole',
-        externalId: 'external-id',
+        [ANNOTATION_KUBERNETES_AWS_ASSUME_ROLE]: 'SomeRole',
+        [ANNOTATION_KUBERNETES_AWS_EXTERNAL_ID]: 'external-id',
       },
     });
     expect((await authPromise).authMetadata!.serviceAccountToken).toEqual(

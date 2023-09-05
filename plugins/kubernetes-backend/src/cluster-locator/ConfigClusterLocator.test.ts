@@ -16,6 +16,10 @@
 
 import '@backstage/backend-common';
 import { ConfigReader, Config } from '@backstage/config';
+import {
+  ANNOTATION_KUBERNETES_AWS_ASSUME_ROLE,
+  ANNOTATION_KUBERNETES_AWS_EXTERNAL_ID,
+} from '@backstage/plugin-kubernetes-common';
 import { ConfigClusterLocator } from './ConfigClusterLocator';
 import { ClusterDetails } from '../types/types';
 
@@ -160,7 +164,7 @@ describe('ConfigClusterLocator', () => {
         url: 'http://localhost:8081',
         authProvider: 'aws',
         authMetadata: {
-          assumeRole: 'SomeRole',
+          [ANNOTATION_KUBERNETES_AWS_ASSUME_ROLE]: 'SomeRole',
         },
         skipTLSVerify: true,
         skipMetricsLookup: false,
@@ -172,8 +176,8 @@ describe('ConfigClusterLocator', () => {
         url: 'http://localhost:8081',
         authProvider: 'aws',
         authMetadata: {
-          assumeRole: 'SomeRole',
-          externalId: 'SomeExternalId',
+          [ANNOTATION_KUBERNETES_AWS_ASSUME_ROLE]: 'SomeRole',
+          [ANNOTATION_KUBERNETES_AWS_EXTERNAL_ID]: 'SomeExternalId',
         },
         skipTLSVerify: true,
         skipMetricsLookup: false,
