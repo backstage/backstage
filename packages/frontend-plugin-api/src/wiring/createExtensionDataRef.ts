@@ -17,7 +17,7 @@
 /** @public */
 export type ExtensionDataRef<
   TData,
-  TConfig extends { optional: boolean } = { optional: false },
+  TConfig extends { optional?: true } = {},
 > = {
   id: string;
   T: TData;
@@ -28,7 +28,7 @@ export type ExtensionDataRef<
 /** @public */
 export interface ConfigurableExtensionDataRef<
   TData,
-  TConfig extends { optional: boolean },
+  TConfig extends { optional?: true } = {},
 > extends ExtensionDataRef<TData, TConfig> {
   optional(): ConfigurableExtensionDataRef<TData, TData & { optional: true }>;
 }
@@ -37,13 +37,13 @@ export interface ConfigurableExtensionDataRef<
 /** @public */
 export function createExtensionDataRef<TData>(
   id: string,
-): ConfigurableExtensionDataRef<TData, { optional: false }> {
+): ConfigurableExtensionDataRef<TData> {
   return {
     id,
     $$type: 'extension-data',
-    config: { optional: false },
+    config: {},
     optional() {
       return { ...this, config: { ...this.config, optional: true } };
     },
-  } as ConfigurableExtensionDataRef<TData, { optional: false }>;
+  } as ConfigurableExtensionDataRef<TData>;
 }

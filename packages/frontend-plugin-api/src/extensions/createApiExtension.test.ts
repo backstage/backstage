@@ -41,9 +41,7 @@ describe('createApiExtension', () => {
         api: expect.objectContaining({
           $$type: 'extension-data',
           id: 'core.api.factory',
-          config: {
-            optional: false,
-          },
+          config: {},
         }),
       },
       factory: expect.any(Function),
@@ -77,9 +75,7 @@ describe('createApiExtension', () => {
         api: expect.objectContaining({
           $$type: 'extension-data',
           id: 'core.api.factory',
-          config: {
-            optional: false,
-          },
+          config: {},
         }),
       },
       factory: expect.any(Function),

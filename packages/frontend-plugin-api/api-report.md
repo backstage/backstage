@@ -35,8 +35,8 @@ export interface BackstagePlugin {
 export interface ConfigurableExtensionDataRef<
   TData,
   TConfig extends {
-    optional: boolean;
-  },
+    optional?: true;
+  } = {},
 > extends ExtensionDataRef<TData, TConfig> {
   // (undocumented)
   optional(): ConfigurableExtensionDataRef<
@@ -49,30 +49,10 @@ export interface ConfigurableExtensionDataRef<
 
 // @public (undocumented)
 export const coreExtensionData: {
-  reactComponent: ConfigurableExtensionDataRef<
-    ComponentType<{}>,
-    {
-      optional: false;
-    }
-  >;
-  routePath: ConfigurableExtensionDataRef<
-    string,
-    {
-      optional: false;
-    }
-  >;
-  apiFactory: ConfigurableExtensionDataRef<
-    AnyApiFactory,
-    {
-      optional: false;
-    }
-  >;
-  routeRef: ConfigurableExtensionDataRef<
-    RouteRef<any>,
-    {
-      optional: false;
-    }
-  >;
+  reactComponent: ConfigurableExtensionDataRef<ComponentType<{}>, {}>;
+  routePath: ConfigurableExtensionDataRef<string, {}>;
+  apiFactory: ConfigurableExtensionDataRef<AnyApiFactory, {}>;
+  routeRef: ConfigurableExtensionDataRef<RouteRef<any>, {}>;
 };
 
 // @public (undocumented)
@@ -119,12 +99,7 @@ export function createExtension<
 // @public (undocumented)
 export function createExtensionDataRef<TData>(
   id: string,
-): ConfigurableExtensionDataRef<
-  TData,
-  {
-    optional: false;
-  }
->;
+): ConfigurableExtensionDataRef<TData>;
 
 // @public (undocumented)
 export interface CreateExtensionOptions<
@@ -245,10 +220,10 @@ export interface ExtensionBoundaryProps {
 export type ExtensionDataBind<TMap extends AnyExtensionDataMap> = (
   values: {
     [DataName in keyof TMap as TMap[DataName]['config'] extends {
-      optional: false;
+      optional: true;
     }
-      ? DataName
-      : never]: TMap[DataName]['T'];
+      ? never
+      : DataName]: TMap[DataName]['T'];
   } & {
     [DataName in keyof TMap as TMap[DataName]['config'] extends {
       optional: true;
@@ -271,14 +246,14 @@ export type ExtensionDataInputValues<
       [DataName in keyof TInputs[InputName]['extensionData'] as TInputs[InputName]['extensionData'][DataName]['config'] extends {
         optional: true;
       }
-        ? DataName
-        : never]?: TInputs[InputName]['extensionData'][DataName]['T'];
+        ? never
+        : DataName]: TInputs[InputName]['extensionData'][DataName]['T'];
     } & {
       [DataName in keyof TInputs[InputName]['extensionData'] as TInputs[InputName]['extensionData'][DataName]['config'] extends {
-        optional: false;
+        optional: true;
       }
         ? DataName
-        : never]: TInputs[InputName]['extensionData'][DataName]['T'];
+        : never]?: TInputs[InputName]['extensionData'][DataName]['T'];
     }
   >;
 };
@@ -287,10 +262,8 @@ export type ExtensionDataInputValues<
 export type ExtensionDataRef<
   TData,
   TConfig extends {
-    optional: boolean;
-  } = {
-    optional: false;
-  },
+    optional?: true;
+  } = {},
 > = {
   id: string;
   T: TData;

@@ -27,14 +27,14 @@ export type ExtensionDataInputValues<
       [DataName in keyof TInputs[InputName]['extensionData'] as TInputs[InputName]['extensionData'][DataName]['config'] extends {
         optional: true;
       }
-        ? DataName
-        : never]?: TInputs[InputName]['extensionData'][DataName]['T'];
+        ? never
+        : DataName]: TInputs[InputName]['extensionData'][DataName]['T'];
     } & {
       [DataName in keyof TInputs[InputName]['extensionData'] as TInputs[InputName]['extensionData'][DataName]['config'] extends {
-        optional: false;
+        optional: true;
       }
         ? DataName
-        : never]: TInputs[InputName]['extensionData'][DataName]['T'];
+        : never]?: TInputs[InputName]['extensionData'][DataName]['T'];
     }
   >;
 };
@@ -43,10 +43,10 @@ export type ExtensionDataInputValues<
 export type ExtensionDataBind<TMap extends AnyExtensionDataMap> = (
   values: {
     [DataName in keyof TMap as TMap[DataName]['config'] extends {
-      optional: false;
+      optional: true;
     }
-      ? DataName
-      : never]: TMap[DataName]['T'];
+      ? never
+      : DataName]: TMap[DataName]['T'];
   } & {
     [DataName in keyof TMap as TMap[DataName]['config'] extends {
       optional: true;
