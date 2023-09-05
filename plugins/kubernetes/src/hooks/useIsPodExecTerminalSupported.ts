@@ -19,7 +19,7 @@ import useAsync, { AsyncState } from 'react-use/lib/useAsync';
 import { kubernetesApiRef } from '../api';
 
 /**
- * Check if conditions for K8sTerminal through K8sProxy are met
+ * Check if conditions for a pod exec call through the proxy endpoint are met
  *
  * @internal
  */
