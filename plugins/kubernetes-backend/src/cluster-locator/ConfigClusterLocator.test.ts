@@ -315,4 +315,19 @@ describe('ConfigClusterLocator', () => {
       },
     ]);
   });
+
+  it('errors when authProvider is oidc but oidcTokenProvider is missing', async () => {
+    const cluster = {
+      name: 'oidc-cluster',
+      url: 'https://aks.test',
+      authProvider: 'oidc',
+    };
+    expect(() =>
+      ConfigClusterLocator.fromConfig(
+        new ConfigReader({ clusters: [cluster] }),
+      ),
+    ).toThrow(
+      `Cluster 'oidc-cluster' missing required config value for 'oidcTokenProvider'`,
+    );
+  });
 });
