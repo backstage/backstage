@@ -347,18 +347,6 @@ export const JobsAccordions: ({
   jobs,
 }: JobsAccordionsProps) => React_2.JSX.Element;
 
-// @public
-export interface K8sTerminalProps {
-  // (undocumented)
-  clusterName: string;
-  // (undocumented)
-  containerName: string;
-  // (undocumented)
-  podName: string;
-  // (undocumented)
-  podNamespace: string;
-}
-
 // Warning: (ae-missing-release-tag) "KubernetesApi" is part of the package's API, but it is missing a release tag (@alpha, @beta, @public, or @internal)
 //
 // @public (undocumented)
@@ -644,12 +632,26 @@ export const PodDrawer: ({
 }: PodDrawerProps) => React_2.JSX.Element;
 
 // @public
-export const PodExecTerminal: (props: K8sTerminalProps) => React_2.JSX.Element;
+export const PodExecTerminal: (
+  props: PodExecTerminalProps,
+) => React_2.JSX.Element;
 
 // @public
 export const PodExecTerminalDialog: (
-  props: K8sTerminalProps,
+  props: PodExecTerminalProps,
 ) => React_2.JSX.Element;
+
+// @public
+export interface PodExecTerminalProps {
+  // (undocumented)
+  clusterName: string;
+  // (undocumented)
+  containerName: string;
+  // (undocumented)
+  podName: string;
+  // (undocumented)
+  podNamespace: string;
+}
 
 // @public
 export const PodLogs: React_2.FC<PodLogsProps>;
