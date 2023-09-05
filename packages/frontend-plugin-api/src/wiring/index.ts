@@ -24,6 +24,7 @@ export {
 export {
   createExtensionDataRef,
   type ExtensionDataRef,
+  type ConfigurableExtensionDataRef,
 } from './createExtensionDataRef';
 export {
   createPlugin,

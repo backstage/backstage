@@ -33,8 +33,8 @@ export interface ConfigurableExtensionDataRef<
   optional(): ConfigurableExtensionDataRef<TData, TData & { optional: true }>;
 }
 
-/** @public */
 // TODO: change to options object with ID.
+/** @public */
 export function createExtensionDataRef<TData>(
   id: string,
 ): ConfigurableExtensionDataRef<TData, { optional: false }> {
