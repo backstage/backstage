@@ -133,8 +133,7 @@ export async function serveBundle(options: ServeOptions) {
 
   await buildDetectedPlugins({
     config: fullConfig,
-    entry: options.entry,
-    targetDir: options.targetDir,
+    targetPath: paths.targetPath,
     watch() {
       server?.invalidate();
     },

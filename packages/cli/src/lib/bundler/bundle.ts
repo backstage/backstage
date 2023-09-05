@@ -27,7 +27,7 @@ import { createConfig, resolveBaseUrl } from './config';
 import { BuildOptions } from './types';
 import { resolveBundlingPaths } from './paths';
 import chalk from 'chalk';
-import { writeDetectedPluginsModule } from './discover';
+import { buildDetectedPlugins } from './discover';
 
 // TODO(Rugvip): Limits from CRA, we might want to tweak these though.
 const WARN_AFTER_BUNDLE_GZIP_SIZE = 512 * 1024;
@@ -50,10 +50,9 @@ export async function buildBundle(options: BuildOptions) {
     getFrontendAppConfigs: () => options.frontendAppConfigs,
   });
 
-  await writeDetectedPluginsModule({
+  await buildDetectedPlugins({
     config: options.fullConfig,
-    entry: options.entry,
-    targetDir: options.targetDir,
+    targetPath: paths.targetPath,
   });
 
   const isCi = yn(process.env.CI, { default: false });

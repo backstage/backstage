@@ -16,38 +16,39 @@
 
 import { BackstagePackageJson } from '@backstage/cli-node';
 import { Config } from '@backstage/config';
-import fs from 'fs-extra';
-import path from 'path';
 import chokidar from 'chokidar';
-
+import fs from 'fs-extra';
+import { join as joinPath, resolve as resolvePath } from 'path';
 import { paths as cliPaths } from '../../lib/paths';
-import { BundlingPathsOptions, resolveBundlingPaths } from './paths';
 
-type Options = { config: Config; watch: () => void } & BundlingPathsOptions;
-
-export async function buildDetectedPlugins(options: Options) {
-  const { entry, targetDir } = options;
-  const { targetPackageJson } = resolveBundlingPaths({ entry, targetDir });
-
-  if (!!options.watch) {
-    const watcher = chokidar.watch(targetPackageJson);
+export async function buildDetectedPlugins(options: {
+  config: Config;
+  targetPath: string;
+  watch?: () => void;
+}) {
+  const { watch, targetPath } = options;
+  if (watch) {
+    const watcher = chokidar.watch(resolvePath(targetPath, 'package.json'));
 
     watcher.on('change', async () => {
       await writeDetectedPluginsModule(options);
-      options.watch();
+      watch();
     });
   }
 
   await writeDetectedPluginsModule(options);
 }
 
-async function writeDetectedPluginsModule(options: Options) {
+async function writeDetectedPluginsModule(options: {
+  config: Config;
+  targetPath: string;
+}) {
   const requirePackageScript = (await detectPlugins(options))
     ?.map(pkg => `{name: '${pkg}', module: require('${pkg}')}`)
     .join(',');
 
   await fs.writeFile(
-    path.join(
+    joinPath(
       cliPaths.targetRoot,
       'node_modules',
       '__backstage-autodetected-plugins__.js',
@@ -56,9 +57,16 @@ async function writeDetectedPluginsModule(options: Options) {
   );
 }
 
-async function detectPlugins({ config, entry, targetDir }: Options) {
-  const paths = resolveBundlingPaths({ entry, targetDir });
-  const pkg: BackstagePackageJson = await fs.readJson(paths.targetPackageJson);
+async function detectPlugins({
+  config,
+  targetPath,
+}: {
+  config: Config;
+  targetPath: string;
+}) {
+  const pkg: BackstagePackageJson = await fs.readJson(
+    resolvePath(targetPath, 'package.json'),
+  );
   // TODO: proper
   // Assumption for config string based on https://github.com/backstage/backstage/issues/18372 ^
 
@@ -74,7 +82,7 @@ async function detectPlugins({ config, entry, targetDir }: Options) {
     .map(depName => {
       const depPackageJson: BackstagePackageJson = require(require.resolve(
         `${depName}/package.json`,
-        { paths: [paths.targetPath] },
+        { paths: [targetPath] },
       ));
       if (
         ['frontend-plugin', 'frontend-plugin-module'].includes(
