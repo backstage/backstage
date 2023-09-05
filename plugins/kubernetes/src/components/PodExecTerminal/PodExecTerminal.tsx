@@ -38,7 +38,7 @@ const hasSocketProtocol = (url: string | URL) =>
   /wss?:\/\//.test(url.toString());
 
 /**
- * Opens a Terminal shell to the given pod's container in a Dialog
+ * Executes a `/bin/sh` process in the given pod's container and opens a terminal connected to it
  *
  * @public
  */
