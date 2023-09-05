@@ -1,5 +1,14 @@
 # @backstage/create-app
 
+## 0.5.5-next.2
+
+### Patch Changes
+
+- 8db70ecbb325: Updated Dockerfile to include `apt-get update` when installing the SQLite dependency
+- 8cec7664e146: Removed `@types/node` dependency
+- Updated dependencies
+  - @backstage/cli-common@0.1.12
+
 ## 0.5.5-next.1
 
 ### Patch Changes

@@ -1,5 +1,18 @@
 # @backstage/plugin-org
 
+## 0.6.14-next.2
+
+### Patch Changes
+
+- dd9329caea1c: Entity relations toggle should by default be aggregated for User entities
+- 8cec7664e146: Removed `@types/node` dependency
+- Updated dependencies
+  - @backstage/core-components@0.13.5-next.2
+  - @backstage/core-plugin-api@1.6.0-next.2
+  - @backstage/plugin-catalog-react@1.8.4-next.2
+  - @backstage/catalog-model@1.4.2-next.1
+  - @backstage/theme@0.4.1
+
 ## 0.6.14-next.1
 
 ### Patch Changes

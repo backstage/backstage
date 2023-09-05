@@ -1,5 +1,16 @@
 # @backstage/backend-tasks
 
+## 0.5.8-next.2
+
+### Patch Changes
+
+- 814feeed7343: Update to handle invalid luxon values
+- Updated dependencies
+  - @backstage/config@1.1.0-next.1
+  - @backstage/backend-common@0.19.5-next.2
+  - @backstage/errors@1.2.1
+  - @backstage/types@1.1.0
+
 ## 0.5.8-next.1
 
 ### Patch Changes

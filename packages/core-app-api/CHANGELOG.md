@@ -1,5 +1,20 @@
 # @backstage/core-app-api
 
+## 1.10.0-next.2
+
+### Minor Changes
+
+- 6e30769cc627: Introduced experimental support for internationalization.
+
+### Patch Changes
+
+- 8cec7664e146: Removed `@types/node` dependency
+- Updated dependencies
+  - @backstage/core-plugin-api@1.6.0-next.2
+  - @backstage/config@1.1.0-next.1
+  - @backstage/types@1.1.0
+  - @backstage/version-bridge@1.0.4
+
 ## 1.10.0-next.1
 
 ### Patch Changes

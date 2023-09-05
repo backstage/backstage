@@ -1,5 +1,19 @@
 # @backstage/test-utils
 
+## 1.4.3-next.2
+
+### Patch Changes
+
+- 8cec7664e146: Removed `@types/node` dependency
+- Updated dependencies
+  - @backstage/core-plugin-api@1.6.0-next.2
+  - @backstage/core-app-api@1.10.0-next.2
+  - @backstage/config@1.1.0-next.1
+  - @backstage/plugin-permission-react@0.4.15-next.2
+  - @backstage/plugin-permission-common@0.7.8-next.1
+  - @backstage/theme@0.4.1
+  - @backstage/types@1.1.0
+
 ## 1.4.3-next.1
 
 ### Patch Changes
