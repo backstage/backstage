@@ -17,7 +17,9 @@ import { ZodSchema } from 'zod';
 import { ZodTypeDef } from 'zod';
 
 // @public (undocumented)
-export type AnyExtensionDataMap = Record<string, ExtensionDataRef<any>>;
+export type AnyExtensionDataMap = {
+  [name in string]: ExtensionDataRef<any, any>;
+};
 
 // @public (undocumented)
 export interface BackstagePlugin {
@@ -30,11 +32,27 @@ export interface BackstagePlugin {
 }
 
 // @public (undocumented)
+export interface ConfigurableExtensionDataRef<
+  TData,
+  TConfig extends {
+    optional?: true;
+  } = {},
+> extends ExtensionDataRef<TData, TConfig> {
+  // (undocumented)
+  optional(): ConfigurableExtensionDataRef<
+    TData,
+    TData & {
+      optional: true;
+    }
+  >;
+}
+
+// @public (undocumented)
 export const coreExtensionData: {
-  reactComponent: ExtensionDataRef<ComponentType<{}>>;
-  routePath: ExtensionDataRef<string>;
-  apiFactory: ExtensionDataRef<AnyApiFactory>;
-  routeRef: ExtensionDataRef<RouteRef<any>>;
+  reactComponent: ConfigurableExtensionDataRef<ComponentType<{}>, {}>;
+  routePath: ConfigurableExtensionDataRef<string, {}>;
+  apiFactory: ConfigurableExtensionDataRef<AnyApiFactory, {}>;
+  routeRef: ConfigurableExtensionDataRef<RouteRef<any>, {}>;
 };
 
 // @public (undocumented)
@@ -52,11 +70,7 @@ export function createApiExtension<
         api: AnyApiRef;
         factory: (options: {
           config: TConfig;
-          inputs: {
-            [pointName in keyof TInputs]: ExtensionDataValue<
-              TInputs[pointName]['extensionData']
-            >[];
-          };
+          inputs: ExtensionDataInputValues<TInputs>;
         }) => AnyApiFactory;
       }
     | {
@@ -70,20 +84,27 @@ export function createApiExtension<
 
 // @public (undocumented)
 export function createExtension<
-  TData extends AnyExtensionDataMap,
-  TPoint extends Record<
+  TOutput extends AnyExtensionDataMap,
+  TInputs extends Record<
     string,
     {
       extensionData: AnyExtensionDataMap;
     }
   >,
   TConfig = never,
->(options: CreateExtensionOptions<TData, TPoint, TConfig>): Extension<TConfig>;
+>(
+  options: CreateExtensionOptions<TOutput, TInputs, TConfig>,
+): Extension<TConfig>;
+
+// @public (undocumented)
+export function createExtensionDataRef<TData>(
+  id: string,
+): ConfigurableExtensionDataRef<TData>;
 
 // @public (undocumented)
 export interface CreateExtensionOptions<
-  TData extends AnyExtensionDataMap,
-  TPoint extends Record<
+  TOutput extends AnyExtensionDataMap,
+  TInputs extends Record<
     string,
     {
       extensionData: AnyExtensionDataMap;
@@ -100,20 +121,16 @@ export interface CreateExtensionOptions<
   // (undocumented)
   factory(options: {
     source?: BackstagePlugin;
-    bind: ExtensionDataBind<TData>;
+    bind: ExtensionDataBind<TOutput>;
     config: TConfig;
-    inputs: {
-      [pointName in keyof TPoint]: ExtensionDataValue<
-        TPoint[pointName]['extensionData']
-      >[];
-    };
+    inputs: ExtensionDataInputValues<TInputs>;
   }): void;
   // (undocumented)
   id: string;
   // (undocumented)
-  inputs?: TPoint;
+  inputs?: TInputs;
   // (undocumented)
-  output: TData;
+  output: TOutput;
 }
 
 // @public
@@ -143,11 +160,7 @@ export function createPageExtension<
     routeRef?: RouteRef;
     component: (props: {
       config: TConfig;
-      inputs: {
-        [pointName in keyof TInputs]: ExtensionDataValue<
-          TInputs[pointName]['extensionData']
-        >[];
-      };
+      inputs: ExtensionDataInputValues<TInputs>;
     }) => Promise<JSX.Element>;
   },
 ): Extension<TConfig>;
@@ -204,20 +217,58 @@ export interface ExtensionBoundaryProps {
 }
 
 // @public (undocumented)
-export type ExtensionDataBind<TData extends AnyExtensionDataMap> = {
-  [K in keyof TData]: (value: TData[K]['T']) => void;
+export type ExtensionDataBind<TMap extends AnyExtensionDataMap> = (
+  values: {
+    [DataName in keyof TMap as TMap[DataName]['config'] extends {
+      optional: true;
+    }
+      ? never
+      : DataName]: TMap[DataName]['T'];
+  } & {
+    [DataName in keyof TMap as TMap[DataName]['config'] extends {
+      optional: true;
+    }
+      ? DataName
+      : never]?: TMap[DataName]['T'];
+  },
+) => void;
+
+// @public (undocumented)
+export type ExtensionDataInputValues<
+  TInputs extends {
+    [name in string]: {
+      extensionData: AnyExtensionDataMap;
+    };
+  },
+> = {
+  [InputName in keyof TInputs]: Array<
+    {
+      [DataName in keyof TInputs[InputName]['extensionData'] as TInputs[InputName]['extensionData'][DataName]['config'] extends {
+        optional: true;
+      }
+        ? never
+        : DataName]: TInputs[InputName]['extensionData'][DataName]['T'];
+    } & {
+      [DataName in keyof TInputs[InputName]['extensionData'] as TInputs[InputName]['extensionData'][DataName]['config'] extends {
+        optional: true;
+      }
+        ? DataName
+        : never]?: TInputs[InputName]['extensionData'][DataName]['T'];
+    }
+  >;
 };
 
 // @public (undocumented)
-export type ExtensionDataRef<T> = {
+export type ExtensionDataRef<
+  TData,
+  TConfig extends {
+    optional?: true;
+  } = {},
+> = {
   id: string;
-  T: T;
+  T: TData;
+  config: TConfig;
   $$type: 'extension-data';
-};
-
-// @public (undocumented)
-export type ExtensionDataValue<TData extends AnyExtensionDataMap> = {
-  [K in keyof TData]: TData[K]['T'];
 };
 
 // @public (undocumented)

@@ -47,10 +47,12 @@ export const CoreRouter = createExtension({
 
       return element;
     };
-    bind.component(() => (
-      <BrowserRouter>
-        <Routes />
-      </BrowserRouter>
-    ));
+    bind({
+      component: () => (
+        <BrowserRouter>
+          <Routes />
+        </BrowserRouter>
+      ),
+    });
   },
 });

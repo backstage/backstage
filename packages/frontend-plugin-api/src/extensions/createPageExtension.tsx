@@ -17,14 +17,14 @@
 import { RouteRef } from '@backstage/core-plugin-api';
 import React from 'react';
 import { ExtensionBoundary } from '../components';
-import { createSchemaFromZod, PortableSchema } from '../createSchemaFromZod';
+import { createSchemaFromZod, PortableSchema } from '../schema';
 import {
   AnyExtensionDataMap,
   coreExtensionData,
   createExtension,
   Extension,
-  ExtensionDataValue,
-} from '../types';
+  ExtensionDataInputValues,
+} from '../wiring';
 
 /**
  * Helper for creating extensions for a routable React page component.
@@ -50,11 +50,7 @@ export function createPageExtension<
     routeRef?: RouteRef;
     component: (props: {
       config: TConfig;
-      inputs: {
-        [pointName in keyof TInputs]: ExtensionDataValue<
-          TInputs[pointName]['extensionData']
-        >[];
-      };
+      inputs: ExtensionDataInputValues<TInputs>;
     }) => Promise<JSX.Element>;
   },
 ): Extension<TConfig> {
@@ -72,7 +68,7 @@ export function createPageExtension<
     output: {
       component: coreExtensionData.reactComponent,
       path: coreExtensionData.routePath,
-      ...(options.routeRef && { routeRef: coreExtensionData.routeRef }),
+      routeRef: coreExtensionData.routeRef.optional(),
     },
     inputs: options.inputs,
     configSchema,
@@ -82,17 +78,18 @@ export function createPageExtension<
           .component({ config, inputs })
           .then(element => ({ default: () => element })),
       );
-      bind.path(config.path);
-      bind.component(() => (
-        <ExtensionBoundary source={source}>
-          <React.Suspense fallback="...">
-            <LazyComponent />
-          </React.Suspense>
-        </ExtensionBoundary>
-      ));
-      if (options.routeRef) {
-        bind.routeRef!(options.routeRef);
-      }
+
+      bind({
+        path: config.path,
+        component: () => (
+          <ExtensionBoundary source={source}>
+            <React.Suspense fallback="...">
+              <LazyComponent />
+            </React.Suspense>
+          </ExtensionBoundary>
+        ),
+        routeRef: options.routeRef,
+      });
     },
   });
 }

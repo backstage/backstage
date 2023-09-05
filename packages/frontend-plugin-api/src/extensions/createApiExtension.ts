@@ -15,13 +15,13 @@
  */
 
 import { AnyApiFactory, AnyApiRef } from '@backstage/core-plugin-api';
-import { PortableSchema } from '../createSchemaFromZod';
+import { PortableSchema } from '../schema';
 import {
   AnyExtensionDataMap,
-  coreExtensionData,
+  ExtensionDataInputValues,
   createExtension,
-  ExtensionDataValue,
-} from '../types';
+  coreExtensionData,
+} from '../wiring';
 
 /** @public */
 export function createApiExtension<
@@ -33,11 +33,7 @@ export function createApiExtension<
         api: AnyApiRef;
         factory: (options: {
           config: TConfig;
-          inputs: {
-            [pointName in keyof TInputs]: ExtensionDataValue<
-              TInputs[pointName]['extensionData']
-            >[];
-          };
+          inputs: ExtensionDataInputValues<TInputs>;
         }) => AnyApiFactory;
       }
     | {
@@ -63,9 +59,9 @@ export function createApiExtension<
     },
     factory({ bind, config, inputs }) {
       if (typeof factory === 'function') {
-        bind.api(factory({ config, inputs }));
+        bind({ api: factory({ config, inputs }) });
       } else {
-        bind.api(factory);
+        bind({ api: factory });
       }
     },
   });
