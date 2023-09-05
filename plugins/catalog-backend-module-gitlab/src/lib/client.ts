@@ -150,7 +150,9 @@ export class GitLabClient {
         continue;
       }
 
-      for (const groupItem of response.data.group.descendantGroups.nodes) {
+      for (const groupItem of response.data.group.descendantGroups.nodes.filter(
+        group => group.id,
+      )) {
         const formattedGroupResponse = {
           id: Number(groupItem.id.replace(/^gid:\/\/gitlab\/Group\//, '')),
           name: groupItem.name,
@@ -232,7 +234,9 @@ export class GitLabClient {
         continue;
       }
 
-      for (const userItem of response.data.group.groupMembers.nodes) {
+      for (const userItem of response.data.group.groupMembers.nodes.filter(
+        user => user.user.id,
+      )) {
         const formattedUserResponse = {
           id: Number(userItem.user.id.replace(/^gid:\/\/gitlab\/User\//, '')),
           username: userItem.user.username,
