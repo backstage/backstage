@@ -61,12 +61,6 @@ spec:
   # ...
 ```
 
-```yaml
-backstage.io/managed-by-location: https://dev.azure.com/{org}/{project}/_git/{repo}?path=/.catalog/component.yml
-```
-
-In cases where the annotations `dev.azure.com/project-repo` or `dev.azure.com/project` are not present, **the project and repository details can be obtained using the `backstage.io/managed-by-location` annotation**. This method comes into play when the URL within the location includes `dev.azure.com`, which then triggers the activation of the CICD tab.
-
 #### Azure Pipelines Only
 
 If you are only using Azure Pipelines along with a different SCM tool then you can use the following two annotations to see Builds:

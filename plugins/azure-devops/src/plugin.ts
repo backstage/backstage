@@ -37,7 +37,6 @@ import {
 import { AzureDevOpsClient } from './api/AzureDevOpsClient';
 import { Entity } from '@backstage/catalog-model';
 import { azureDevOpsApiRef } from './api/AzureDevOpsApi';
-import { isDevAzureLocation } from './utils/isAzureLocation';
 
 /** @public */
 export const isAzureDevOpsAvailable = (entity: Entity) =>
@@ -46,7 +45,6 @@ export const isAzureDevOpsAvailable = (entity: Entity) =>
 /** @public */
 export const isAzurePipelinesAvailable = (entity: Entity) =>
   Boolean(entity.metadata.annotations?.[AZURE_DEVOPS_REPO_ANNOTATION]) ||
-  isDevAzureLocation(entity) ||
   (Boolean(entity.metadata.annotations?.[AZURE_DEVOPS_PROJECT_ANNOTATION]) &&
     Boolean(
       entity.metadata.annotations?.[AZURE_DEVOPS_BUILD_DEFINITION_ANNOTATION],
