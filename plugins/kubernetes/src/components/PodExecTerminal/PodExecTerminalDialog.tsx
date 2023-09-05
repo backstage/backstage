@@ -44,7 +44,7 @@ const useStyles = makeStyles((theme: Theme) =>
 );
 
 /**
- * Opens a Terminal shell to the given pod's container in a Dialog
+ * Opens a terminal connected to the given pod's container in a dialog
  *
  * @public
  */
