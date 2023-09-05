@@ -15,13 +15,6 @@
  */
 
 export { examplePlugin } from './plugin';
-// TODO: This should be an extension created & exported in the `plugin.tsx`
-// YEAHHH most likely but there's no api(output) for it yet.
-export { ExampleSidebarItem } from './ExampleSidebarItem';
 
-export const a1 = null;
-export const a2 = false;
-export const a3 = true;
-export const a4 = Symbol('b');
-export const a5 = 3;
-export const a6 = [];
+// TODO: This should be an extension created & exported in the `plugin.tsx`
+export { ExampleSidebarItem } from './ExampleSidebarItem';
