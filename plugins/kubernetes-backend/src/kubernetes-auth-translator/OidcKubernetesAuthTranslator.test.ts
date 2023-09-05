@@ -36,7 +36,7 @@ describe('OidcKubernetesAuthTranslator tests', () => {
       },
     );
 
-    expect(details.serviceAccountToken).toBe('fakeToken');
+    expect(details.authMetadata!.serviceAccountToken).toBe('fakeToken');
   });
 
   it('returns error when oidcTokenProvider is not configured', async () => {

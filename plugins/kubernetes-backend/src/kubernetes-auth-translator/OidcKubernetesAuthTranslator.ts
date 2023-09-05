@@ -43,7 +43,10 @@ export class OidcKubernetesAuthTranslator implements KubernetesAuthTranslator {
     const authToken: string | undefined = authConfig.oidc?.[oidcTokenProvider];
 
     if (authToken) {
-      clusterDetailsWithAuthToken.serviceAccountToken = authToken;
+      clusterDetailsWithAuthToken.authMetadata = {
+        serviceAccountToken: authToken,
+        ...clusterDetailsWithAuthToken.authMetadata,
+      };
     } else {
       throw new Error(
         `Auth token not found under oidc.${oidcTokenProvider} in request body`,

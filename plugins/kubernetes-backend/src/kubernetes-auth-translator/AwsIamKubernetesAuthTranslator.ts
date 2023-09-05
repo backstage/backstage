@@ -117,11 +117,14 @@ export class AwsIamKubernetesAuthTranslator
       clusterDetails,
     );
 
-    clusterDetailsWithAuthToken.serviceAccountToken = await this.getBearerToken(
-      clusterDetails.name,
-      clusterDetails.assumeRole,
-      clusterDetails.externalId,
-    );
+    clusterDetailsWithAuthToken.authMetadata = {
+      serviceAccountToken: await this.getBearerToken(
+        clusterDetails.name,
+        clusterDetails.assumeRole,
+        clusterDetails.externalId,
+      ),
+      ...clusterDetailsWithAuthToken.authMetadata,
+    };
     return clusterDetailsWithAuthToken;
   }
 }

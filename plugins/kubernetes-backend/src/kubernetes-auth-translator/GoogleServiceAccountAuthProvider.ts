@@ -35,7 +35,10 @@ export class GoogleServiceAccountAuthTranslator
     const accessToken = await client.auth.getAccessToken();
 
     if (accessToken) {
-      clusterDetailsWithAuthToken.serviceAccountToken = accessToken;
+      clusterDetailsWithAuthToken.authMetadata = {
+        serviceAccountToken: accessToken,
+        ...clusterDetailsWithAuthToken.authMetadata,
+      };
     } else {
       throw new Error(
         'Unable to obtain access token for the current Google Application Default Credentials',

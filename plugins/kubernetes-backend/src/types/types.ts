@@ -33,11 +33,7 @@ import { Config } from '@backstage/config';
  */
 export interface ObjectFetchParams {
   serviceId: string;
-  clusterDetails:
-    | AWSClusterDetails
-    | GKEClusterDetails
-    | ServiceAccountClusterDetails
-    | ClusterDetails;
+  clusterDetails: AWSClusterDetails | GKEClusterDetails | ClusterDetails;
   objectTypesToFetch: Set<ObjectToFetch>;
   labelSelector: string;
   customResources: CustomResource[];
@@ -159,7 +155,6 @@ export interface ClusterDetails {
   name: string;
   url: string;
   authProvider: string;
-  serviceAccountToken?: string | undefined;
   /**
    * oidc provider used to get id tokens to authenticate against kubernetes
    */
@@ -209,6 +204,8 @@ export interface ClusterDetails {
    * Kubernetes resources.
    */
   customResources?: CustomResourceMatcher[];
+
+  authMetadata?: Record<string, string>;
 }
 
 /**
@@ -222,12 +219,6 @@ export interface GKEClusterDetails extends ClusterDetails {}
  * @public
  */
 export interface AzureClusterDetails extends ClusterDetails {}
-
-/**
- *
- * @public
- */
-export interface ServiceAccountClusterDetails extends ClusterDetails {}
 
 /**
  *

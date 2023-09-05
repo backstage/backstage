@@ -64,7 +64,6 @@ describe('KubernetesBuilder', () => {
         name: 'some-cluster',
         authProvider: 'serviceAccount',
         url: 'https://localhost:1234',
-        serviceAccountToken: 'someToken',
       },
       {
         name: 'some-other-cluster',
@@ -192,7 +191,6 @@ describe('KubernetesBuilder', () => {
         name: 'some-cluster',
         authProvider: 'serviceAccount',
         url: 'https://localhost:1234',
-        serviceAccountToken: 'someToken',
       };
       const clusters: ClusterDetails[] = [
         someCluster,

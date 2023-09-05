@@ -48,7 +48,10 @@ export class AzureIdentityKubernetesAuthTranslator
       clusterDetails,
     );
 
-    clusterDetailsWithAuthToken.serviceAccountToken = await this.getToken();
+    clusterDetailsWithAuthToken.authMetadata = {
+      serviceAccountToken: await this.getToken(),
+      ...clusterDetailsWithAuthToken.authMetadata,
+    };
     return clusterDetailsWithAuthToken;
   }
 

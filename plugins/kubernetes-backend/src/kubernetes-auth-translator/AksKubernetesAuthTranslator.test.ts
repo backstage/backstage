@@ -24,6 +24,6 @@ describe('AksKubernetesAuthTranslator', () => {
       { aks: 'aksToken' },
     );
 
-    expect(details.serviceAccountToken).toBe('aksToken');
+    expect(details.authMetadata!.serviceAccountToken).toBe('aksToken');
   });
 });

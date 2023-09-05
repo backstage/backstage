@@ -55,9 +55,9 @@ describe('getCombinedClusterSupplier', () => {
     expect(result).toStrictEqual<ClusterDetails[]>([
       {
         name: 'cluster1',
-        serviceAccountToken: 'token',
         url: 'http://localhost:8080',
         authProvider: 'serviceAccount',
+        authMetadata: { serviceAccountToken: 'token' },
         skipMetricsLookup: false,
         skipTLSVerify: false,
         caData: undefined,
@@ -65,7 +65,6 @@ describe('getCombinedClusterSupplier', () => {
       },
       {
         name: 'cluster2',
-        serviceAccountToken: undefined,
         url: 'http://localhost:8081',
         authProvider: 'google',
         skipMetricsLookup: false,

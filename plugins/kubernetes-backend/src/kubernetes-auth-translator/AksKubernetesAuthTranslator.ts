@@ -25,6 +25,14 @@ export class AksKubernetesAuthTranslator {
     clusterDetails: ClusterDetails,
     auth: KubernetesRequestAuth,
   ): Promise<ClusterDetails> {
-    return { ...clusterDetails, serviceAccountToken: auth.aks };
+    return {
+      ...clusterDetails,
+      ...(auth.aks && {
+        authMetadata: {
+          serviceAccountToken: auth.aks,
+          ...clusterDetails.authMetadata,
+        },
+      }),
+    };
   }
 }

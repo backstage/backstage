@@ -61,7 +61,7 @@ describe('AwsIamKubernetesAuthTranslator tests', () => {
       url: '',
       authProvider: 'aws',
     });
-    expect((await authPromise).serviceAccountToken).toEqual(
+    expect((await authPromise).authMetadata!.serviceAccountToken).toEqual(
       'k8s-aws-v1.aHR0cHM6Ly9odHRwczovL2V4YW1wbGUuY29tL2FzZGY_',
     );
   });
@@ -75,7 +75,7 @@ describe('AwsIamKubernetesAuthTranslator tests', () => {
       url: '',
       authProvider: 'aws',
     });
-    expect((await authPromise).serviceAccountToken).toEqual(
+    expect((await authPromise).authMetadata!.serviceAccountToken).toEqual(
       'k8s-aws-v1.aHR0cHM6Ly9odHRwczovL2V4YW1wbGUuY29tL2FzZGY_',
     );
     expect(fromTemporaryCredentials).toHaveBeenCalledWith({
@@ -102,7 +102,7 @@ describe('AwsIamKubernetesAuthTranslator tests', () => {
       url: '',
       authProvider: 'aws',
     });
-    expect((await authPromise).serviceAccountToken).toEqual(
+    expect((await authPromise).authMetadata!.serviceAccountToken).toEqual(
       'k8s-aws-v1.aHR0cHM6Ly9odHRwczovL2V4YW1wbGUuY29tL2FzZGY_',
     );
     expect(fromTemporaryCredentials).toHaveBeenCalledWith({

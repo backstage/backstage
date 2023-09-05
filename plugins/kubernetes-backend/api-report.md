@@ -66,6 +66,8 @@ export class AzureIdentityKubernetesAuthTranslator
 // @public (undocumented)
 export interface ClusterDetails {
   // (undocumented)
+  authMetadata?: Record<string, string>;
+  // (undocumented)
   authProvider: string;
   // (undocumented)
   caData?: string | undefined;
@@ -77,8 +79,6 @@ export interface ClusterDetails {
   dashboardUrl?: string;
   name: string;
   oidcTokenProvider?: string | undefined;
-  // (undocumented)
-  serviceAccountToken?: string | undefined;
   skipMetricsLookup?: boolean;
   // (undocumented)
   skipTLSVerify?: boolean;
@@ -399,18 +399,14 @@ export interface KubernetesServiceLocator {
 export class NoopKubernetesAuthTranslator implements KubernetesAuthTranslator {
   // (undocumented)
   decorateClusterDetailsWithAuth(
-    clusterDetails: ServiceAccountClusterDetails,
-  ): Promise<ServiceAccountClusterDetails>;
+    clusterDetails: ClusterDetails,
+  ): Promise<ClusterDetails>;
 }
 
 // @public (undocumented)
 export interface ObjectFetchParams {
   // (undocumented)
-  clusterDetails:
-    | AWSClusterDetails
-    | GKEClusterDetails
-    | ServiceAccountClusterDetails
-    | ClusterDetails;
+  clusterDetails: AWSClusterDetails | GKEClusterDetails | ClusterDetails;
   // (undocumented)
   customResources: CustomResource[];
   // (undocumented)
@@ -462,9 +458,6 @@ export interface RouterOptions {
   // (undocumented)
   permissions: PermissionEvaluator;
 }
-
-// @public (undocumented)
-export interface ServiceAccountClusterDetails extends ClusterDetails {}
 
 // @public (undocumented)
 export type ServiceLocatorMethod = 'multiTenant' | 'http';

@@ -36,7 +36,7 @@ describe('decorateClusterDetailsWithAuth', () => {
       url: 'notanything.com',
       name: 'randomName',
       authProvider: 'google',
-      serviceAccountToken: 'added by mock translator',
+      authMetadata: { serviceAccountToken: 'added by mock translator' },
     };
 
     mockTranslator.decorateClusterDetailsWithAuth.mockResolvedValue(

@@ -17,7 +17,7 @@
 import '@backstage/backend-common';
 import { ConfigReader, Config } from '@backstage/config';
 import { ConfigClusterLocator } from './ConfigClusterLocator';
-import { ClusterDetails } from '../types/types';
+import { AWSClusterDetails, ClusterDetails } from '../types/types';
 
 describe('ConfigClusterLocator', () => {
   it('empty clusters returns empty cluster details', async () => {
@@ -50,7 +50,6 @@ describe('ConfigClusterLocator', () => {
     expect(result).toStrictEqual<ClusterDetails[]>([
       {
         name: 'cluster1',
-        serviceAccountToken: undefined,
         url: 'http://localhost:8080',
         authProvider: 'serviceAccount',
         skipMetricsLookup: false,
@@ -91,17 +90,16 @@ describe('ConfigClusterLocator', () => {
       {
         name: 'cluster1',
         dashboardUrl: 'https://k8s.foo.com',
-        serviceAccountToken: 'token',
         url: 'http://localhost:8080',
         authProvider: 'serviceAccount',
         skipTLSVerify: false,
         skipMetricsLookup: true,
         caData: undefined,
         caFile: undefined,
+        authMetadata: { serviceAccountToken: 'token' },
       },
       {
         name: 'cluster2',
-        serviceAccountToken: undefined,
         url: 'http://localhost:8081',
         authProvider: 'google',
         skipTLSVerify: true,
@@ -144,14 +142,14 @@ describe('ConfigClusterLocator', () => {
 
     const result = await sut.getClusters();
 
-    expect(result).toStrictEqual<ClusterDetails[]>([
+    expect(result).toStrictEqual<AWSClusterDetails[]>([
       {
         assumeRole: undefined,
         name: 'cluster1',
-        serviceAccountToken: 'token',
         externalId: undefined,
         url: 'http://localhost:8080',
         authProvider: 'aws',
+        authMetadata: { serviceAccountToken: 'token' },
         skipTLSVerify: false,
         skipMetricsLookup: false,
         caData: undefined,
@@ -161,7 +159,6 @@ describe('ConfigClusterLocator', () => {
         assumeRole: 'SomeRole',
         name: 'cluster2',
         externalId: undefined,
-        serviceAccountToken: undefined,
         url: 'http://localhost:8081',
         authProvider: 'aws',
         skipTLSVerify: true,
@@ -174,7 +171,6 @@ describe('ConfigClusterLocator', () => {
         name: 'cluster2',
         externalId: 'SomeExternalId',
         url: 'http://localhost:8081',
-        serviceAccountToken: undefined,
         authProvider: 'aws',
         skipTLSVerify: true,
         skipMetricsLookup: false,
@@ -208,7 +204,6 @@ describe('ConfigClusterLocator', () => {
     expect(result).toStrictEqual<ClusterDetails[]>([
       {
         name: 'cluster1',
-        serviceAccountToken: undefined,
         url: 'http://localhost:8080',
         authProvider: 'serviceAccount',
         skipMetricsLookup: false,
@@ -245,7 +240,6 @@ describe('ConfigClusterLocator', () => {
     expect(result).toStrictEqual<ClusterDetails[]>([
       {
         name: 'cluster1',
-        serviceAccountToken: undefined,
         url: 'http://localhost:8080',
         authProvider: 'serviceAccount',
         skipMetricsLookup: false,
@@ -298,7 +292,6 @@ describe('ConfigClusterLocator', () => {
     expect(result).toStrictEqual<ClusterDetails[]>([
       {
         name: 'cluster1',
-        serviceAccountToken: undefined,
         url: 'http://localhost:8080',
         authProvider: 'serviceAccount',
         skipMetricsLookup: false,

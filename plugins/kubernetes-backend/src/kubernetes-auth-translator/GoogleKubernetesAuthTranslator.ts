@@ -36,7 +36,10 @@ export class GoogleKubernetesAuthTranslator
     const authToken: string | undefined = authConfig.google;
 
     if (authToken) {
-      clusterDetailsWithAuthToken.serviceAccountToken = authToken;
+      clusterDetailsWithAuthToken.authMetadata = {
+        serviceAccountToken: authToken,
+        ...clusterDetailsWithAuthToken.authMetadata,
+      };
     } else {
       throw new Error(
         'Google token not found under auth.google in request body',
