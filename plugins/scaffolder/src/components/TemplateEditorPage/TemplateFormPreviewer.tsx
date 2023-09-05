@@ -164,9 +164,10 @@ export const TemplateFormPreviewer = ({
   );
 
   const handleSelectChange = useCallback(
-    selected => {
+    (selected: any) => {
+      const selectedYaml = selected as Entity;
       setSelectedTemplate(selected);
-      setTemplateYaml(yaml.stringify(selected.spec));
+      setTemplateYaml(yaml.stringify(selectedYaml.spec));
     },
     [setTemplateYaml],
   );

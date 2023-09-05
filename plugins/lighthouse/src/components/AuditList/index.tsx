@@ -45,7 +45,9 @@ export const LIMIT = 10;
 
 const AuditList = () => {
   const [dismissedStored] = useLocalStorage(LIGHTHOUSE_INTRO_LOCAL_STORAGE);
-  const [dismissed, setDismissed] = useState(dismissedStored);
+  const [dismissed, setDismissed] = useState<boolean>(
+    dismissedStored as boolean,
+  );
 
   const query = useQuery();
   const page = query.get('page')
