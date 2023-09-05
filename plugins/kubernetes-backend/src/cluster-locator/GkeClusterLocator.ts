@@ -19,11 +19,7 @@ import { ForwardedError } from '@backstage/errors';
 import * as container from '@google-cloud/container';
 import { Duration } from 'luxon';
 import { runPeriodically } from '../service/runPeriodically';
-import {
-  ClusterDetails,
-  GKEClusterDetails,
-  KubernetesClustersSupplier,
-} from '../types/types';
+import { ClusterDetails, KubernetesClustersSupplier } from '../types/types';
 
 interface MatchResourceLabelEntry {
   key: string;
@@ -43,7 +39,7 @@ export class GkeClusterLocator implements KubernetesClustersSupplier {
   constructor(
     private readonly options: GkeClusterLocatorOptions,
     private readonly client: container.v1.ClusterManagerClient,
-    private clusterDetails: GKEClusterDetails[] | undefined = undefined,
+    private clusterDetails: ClusterDetails[] | undefined = undefined,
     private hasClusterDetails: boolean = false,
   ) {}
 

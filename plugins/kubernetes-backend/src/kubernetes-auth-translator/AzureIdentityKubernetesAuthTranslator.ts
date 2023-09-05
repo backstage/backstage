@@ -16,7 +16,7 @@
 
 import { Logger } from 'winston';
 import { KubernetesAuthTranslator } from './types';
-import { AzureClusterDetails } from '../types/types';
+import { ClusterDetails } from '../types/types';
 import {
   AccessToken,
   DefaultAzureCredential,
@@ -41,9 +41,9 @@ export class AzureIdentityKubernetesAuthTranslator
   ) {}
 
   async decorateClusterDetailsWithAuth(
-    clusterDetails: AzureClusterDetails,
-  ): Promise<AzureClusterDetails> {
-    const clusterDetailsWithAuthToken: AzureClusterDetails = Object.assign(
+    clusterDetails: ClusterDetails,
+  ): Promise<ClusterDetails> {
+    const clusterDetailsWithAuthToken: ClusterDetails = Object.assign(
       {},
       clusterDetails,
     );

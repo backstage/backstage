@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 import { KubernetesAuthTranslator } from './types';
-import { GKEClusterDetails } from '../types/types';
+import { ClusterDetails } from '../types/types';
 import * as container from '@google-cloud/container';
 
 /**
@@ -25,9 +25,9 @@ export class GoogleServiceAccountAuthTranslator
   implements KubernetesAuthTranslator
 {
   async decorateClusterDetailsWithAuth(
-    clusterDetails: GKEClusterDetails,
-  ): Promise<GKEClusterDetails> {
-    const clusterDetailsWithAuthToken: GKEClusterDetails = Object.assign(
+    clusterDetails: ClusterDetails,
+  ): Promise<ClusterDetails> {
+    const clusterDetailsWithAuthToken: ClusterDetails = Object.assign(
       {},
       clusterDetails,
     );

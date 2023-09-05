@@ -42,17 +42,14 @@ export class AwsIamKubernetesAuthTranslator
 }
 
 // @public (undocumented)
-export interface AzureClusterDetails extends ClusterDetails {}
-
-// @public (undocumented)
 export class AzureIdentityKubernetesAuthTranslator
   implements KubernetesAuthTranslator
 {
   constructor(logger: Logger, tokenCredential?: TokenCredential);
   // (undocumented)
   decorateClusterDetailsWithAuth(
-    clusterDetails: AzureClusterDetails,
-  ): Promise<AzureClusterDetails>;
+    clusterDetails: ClusterDetails,
+  ): Promise<ClusterDetails>;
 }
 
 // @public (undocumented)
@@ -124,17 +121,14 @@ export interface FetchResponseWrapper {
 }
 
 // @public (undocumented)
-export interface GKEClusterDetails extends ClusterDetails {}
-
-// @public (undocumented)
 export class GoogleKubernetesAuthTranslator
   implements KubernetesAuthTranslator
 {
   // (undocumented)
   decorateClusterDetailsWithAuth(
-    clusterDetails: GKEClusterDetails,
+    clusterDetails: ClusterDetails,
     authConfig: KubernetesRequestAuth,
-  ): Promise<GKEClusterDetails>;
+  ): Promise<ClusterDetails>;
 }
 
 // @public (undocumented)
@@ -143,8 +137,8 @@ export class GoogleServiceAccountAuthTranslator
 {
   // (undocumented)
   decorateClusterDetailsWithAuth(
-    clusterDetails: GKEClusterDetails,
-  ): Promise<GKEClusterDetails>;
+    clusterDetails: ClusterDetails,
+  ): Promise<ClusterDetails>;
 }
 
 // @public
@@ -398,7 +392,7 @@ export class NoopKubernetesAuthTranslator implements KubernetesAuthTranslator {
 // @public (undocumented)
 export interface ObjectFetchParams {
   // (undocumented)
-  clusterDetails: GKEClusterDetails | ClusterDetails;
+  clusterDetails: ClusterDetails;
   // (undocumented)
   customResources: CustomResource[];
   // (undocumented)
