@@ -15,6 +15,7 @@
  */
 
 import { AnyApiFactory } from '@backstage/core-plugin-api';
+import { RouteRef } from '@backstage/core-plugin-api';
 import { ComponentType } from 'react';
 import { PortableSchema } from './createSchemaFromZod';
 import { BackstagePlugin } from './wiring';
@@ -37,6 +38,7 @@ export const coreExtensionData = {
   reactComponent: createExtensionDataRef<ComponentType>('core.reactComponent'),
   routePath: createExtensionDataRef<string>('core.routing.path'),
   apiFactory: createExtensionDataRef<AnyApiFactory>('core.api.factory'),
+  routeRef: createExtensionDataRef<RouteRef>('core.routing.ref'),
 };
 
 /** @public */

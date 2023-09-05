@@ -19,9 +19,16 @@ import mapValues from 'lodash/mapValues';
 
 /** @internal */
 export interface ExtensionInstance {
-  id: string;
-  data: Map<string, unknown>;
-  $$type: 'extension-instance';
+  readonly id: string;
+  /**
+   * Maps extension data ref IDs to extensions produced.
+   */
+  readonly data: Map<string, unknown>;
+  /**
+   * Maps input names to the actual instances given to them.
+   */
+  readonly attachments: Map<string, ExtensionInstance[]>;
+  readonly $$type: 'extension-instance';
 }
 
 /** @internal */
@@ -29,7 +36,7 @@ export function createExtensionInstance(options: {
   extension: Extension<unknown>;
   config: unknown;
   source?: BackstagePlugin;
-  attachments: Record<string, ExtensionInstance[]>;
+  attachments: Map<string, ExtensionInstance[]>;
 }): ExtensionInstance {
   const { extension, config, source, attachments } = options;
   const extensionData = new Map<string, unknown>();
@@ -54,7 +61,7 @@ export function createExtensionInstance(options: {
         extension.inputs,
         ({ extensionData: pointData }, inputName) => {
           // TODO: validation
-          return (attachments[inputName] ?? []).map(attachment =>
+          return (attachments.get(inputName) ?? []).map(attachment =>
             mapValues(pointData, ref => attachment.data.get(ref.id)),
           );
         },
@@ -69,6 +76,7 @@ export function createExtensionInstance(options: {
   return {
     id: options.extension.id,
     data: extensionData,
+    attachments,
     $$type: 'extension-instance',
   };
 }

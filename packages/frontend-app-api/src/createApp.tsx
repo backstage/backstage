@@ -20,7 +20,7 @@ import {
   BackstagePlugin,
   coreExtensionData,
 } from '@backstage/frontend-plugin-api';
-import { RouteExtension } from './extensions/RouteExtension';
+import { CoreRouter } from './extensions/CoreRouter';
 import {
   createExtensionInstance,
   ExtensionInstance,
@@ -30,6 +30,8 @@ import {
   mergeExtensionParameters,
   readAppExtensionParameters,
 } from './wiring/parameters';
+import { RoutingProvider } from './routing/RoutingContext';
+import { RouteRef } from '@backstage/core-plugin-api';
 
 /** @public */
 export function createApp(options: { plugins: BackstagePlugin[] }): {
@@ -37,7 +39,7 @@ export function createApp(options: { plugins: BackstagePlugin[] }): {
 } {
   const appConfig = ConfigReader.fromConfigs(process.env.APP_CONFIG as any);
 
-  const builtinExtensions = [RouteExtension];
+  const builtinExtensions = [CoreRouter];
 
   // pull in default extension instance from discovered packages
   // apply config to adjust default extension instances and add more
@@ -83,7 +85,7 @@ export function createApp(options: { plugins: BackstagePlugin[] }): {
       return existingInstance;
     }
 
-    const attachments = Object.fromEntries(
+    const attachments = new Map(
       Array.from(
         attachmentMap.get(instanceParams.extension.id)?.entries() ?? [],
       ).map(([inputName, attachmentConfigs]) => [
@@ -92,18 +94,24 @@ export function createApp(options: { plugins: BackstagePlugin[] }): {
       ]),
     );
 
-    return createExtensionInstance({
+    const newInstance = createExtensionInstance({
       extension: instanceParams.extension,
       source: instanceParams.source,
       config: instanceParams.config,
       attachments,
     });
+
+    instances.set(instanceParams.extension.id, newInstance);
+
+    return newInstance;
   }
 
   const rootConfigs = attachmentMap.get('root')?.get('default') ?? [];
   const rootInstances = rootConfigs.map(instanceParams =>
     createInstance(instanceParams),
   );
+
+  const routePaths = extractRouteInfoFromInstanceTree(rootInstances);
 
   return {
     createRoot() {
@@ -114,12 +122,49 @@ export function createApp(options: { plugins: BackstagePlugin[] }): {
           ) as typeof coreExtensionData.reactComponent.T,
       );
       return (
-        <>
+        <RoutingProvider routePaths={routePaths}>
           {rootComponents.map((Component, i) => (
             <Component key={i} />
           ))}
-        </>
+        </RoutingProvider>
       );
     },
   };
+}
+
+/** @internal */
+export function extractRouteInfoFromInstanceTree(
+  roots: ExtensionInstance[],
+): Map<RouteRef, string> {
+  const results = new Map<RouteRef, string>();
+
+  function visit(current: ExtensionInstance, basePath: string) {
+    const routePath = current.data.get(coreExtensionData.routePath.id) ?? '';
+    const routeRef = current.data.get(
+      coreExtensionData.routeRef.id,
+    ) as RouteRef;
+
+    // TODO: join paths in a more robust way
+    const fullPath = basePath + routePath;
+    if (routeRef) {
+      const routeRefId = (routeRef as any).id; // TODO: properly
+      if (routeRefId !== current.id) {
+        throw new Error(
+          `Route ref '${routeRefId}' must have the same ID as extension '${current.id}'`,
+        );
+      }
+      results.set(routeRef, fullPath);
+    }
+
+    for (const children of current.attachments.values()) {
+      for (const child of children) {
+        visit(child, fullPath);
+      }
+    }
+  }
+
+  for (const root of roots) {
+    visit(root, '');
+  }
+  return results;
 }

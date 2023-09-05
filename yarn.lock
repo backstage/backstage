@@ -4316,6 +4316,7 @@ __metadata:
   dependencies:
     "@backstage/cli": "workspace:^"
     "@backstage/config": "workspace:^"
+    "@backstage/core-plugin-api": "workspace:^"
     "@backstage/frontend-plugin-api": "workspace:^"
     "@backstage/plugin-graphiql": "workspace:^"
     "@backstage/types": "workspace:^"
@@ -4342,6 +4343,7 @@ __metadata:
     zod-to-json-schema: ^3.21.4
   peerDependencies:
     react: ^16.13.1 || ^17.0.0
+    react-router-dom: 6.0.0-beta.0 || ^6.3.0
   languageName: unknown
   linkType: soft
 
