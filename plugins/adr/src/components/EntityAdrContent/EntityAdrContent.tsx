@@ -160,8 +160,9 @@ const AdrListContainer = (props: {
 export const EntityAdrContent = (props: {
   contentDecorators?: AdrContentDecorator[];
   filePathFilterFn?: AdrFilePathFilterFn;
+  headerTitle?: string;
 }) => {
-  const { contentDecorators, filePathFilterFn } = props;
+  const { contentDecorators, filePathFilterFn, headerTitle } = props;
   const classes = useStyles();
   const { entity } = useEntity();
   const [adrList, setAdrList] = useState<AdrFileInfo[]>([]);
@@ -214,7 +215,7 @@ export const EntityAdrContent = (props: {
 
   return (
     <Content>
-      <ContentHeader title="Architecture Decision Records">
+      <ContentHeader title={headerTitle ?? 'Architecture Decision Records'}>
         {appSupportConfigured && <SupportButton />}
       </ContentHeader>
 
