@@ -30,7 +30,7 @@ export function getAvailablePlugins(): BackstagePlugin[] {
 
   return (
     discovered?.modules.flatMap(({ module: mod }) =>
-      Object.values(mod).flatMap(val => (isBackstagePlugin(val) ? [val] : [])),
+      Object.values(mod).filter(isBackstagePlugin),
     ) ?? []
   );
 }

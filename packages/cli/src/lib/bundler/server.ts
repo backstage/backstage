@@ -31,12 +31,13 @@ import { paths as libPaths } from '../../lib/paths';
 import { loadCliConfig } from '../config';
 import { Lockfile } from '../versioning';
 import { createConfig, resolveBaseUrl } from './config';
-import { createDetectedModulesEntrypoint as createDetectedModulesEntryPoint } from './packageDetection';
+import { createDetectedModulesEntryPoint } from './packageDetection';
 import { resolveBundlingPaths } from './paths';
 import { ServeOptions } from './types';
 
 export async function serveBundle(options: ServeOptions) {
   const paths = resolveBundlingPaths(options);
+  const targetPkg = await fs.readJson(paths.targetPackageJson);
 
   if (options.verifyVersions) {
     const lockfile = await Lockfile.load(
@@ -170,6 +171,7 @@ export async function serveBundle(options: ServeOptions) {
           : false,
       host,
       port,
+      proxy: targetPkg.proxy,
       // When the dev server is behind a proxy, the host and public hostname differ
       allowedHosts: [url.hostname],
       client: {

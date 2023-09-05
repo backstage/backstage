@@ -32,7 +32,7 @@ function readPackageDetectionConfig(
   config: Config,
 ): PackageDetectionConfig | undefined {
   const packages = config.getOptional('app.experimental.packages');
-  if (!packages) {
+  if (packages === undefined || packages === null) {
     return undefined;
   }
 
@@ -100,7 +100,7 @@ async function writeDetectedPackagesModule(packageNames: string[]) {
   );
 }
 
-export async function createDetectedModulesEntrypoint(options: {
+export async function createDetectedModulesEntryPoint(options: {
   config: Config;
   targetPath: string;
   watch?: () => void;

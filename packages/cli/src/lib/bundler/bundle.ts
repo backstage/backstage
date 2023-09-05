@@ -27,7 +27,7 @@ import { createConfig, resolveBaseUrl } from './config';
 import { BuildOptions } from './types';
 import { resolveBundlingPaths } from './paths';
 import chalk from 'chalk';
-import { createDetectedModulesEntrypoint } from './packageDetection';
+import { createDetectedModulesEntryPoint } from './packageDetection';
 
 // TODO(Rugvip): Limits from CRA, we might want to tweak these though.
 const WARN_AFTER_BUNDLE_GZIP_SIZE = 512 * 1024;
@@ -42,7 +42,7 @@ export async function buildBundle(options: BuildOptions) {
 
   const paths = resolveBundlingPaths(options);
 
-  const detectedModulesEntryPoint = await createDetectedModulesEntrypoint({
+  const detectedModulesEntryPoint = await createDetectedModulesEntryPoint({
     config: options.fullConfig,
     targetPath: paths.targetPath,
   });
