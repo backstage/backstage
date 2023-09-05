@@ -72,7 +72,7 @@ export function createPageExtension<
     output: {
       component: coreExtensionData.reactComponent,
       path: coreExtensionData.routePath,
-      ...(options.routeRef && { routeRef: coreExtensionData.routeRef }),
+      routeRef: coreExtensionData.routeRef.optional(),
     },
     inputs: options.inputs,
     configSchema,
