@@ -18,6 +18,6 @@ import React from 'react';
 
 export const Component = () => (
   <div>
-    <h1>Winning</h1>
+    <h1>SHIP IT!</h1>
   </div>
 );

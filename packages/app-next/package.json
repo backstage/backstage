@@ -86,6 +86,7 @@
     "@roadiehq/backstage-plugin-github-insights": "^2.0.5",
     "@roadiehq/backstage-plugin-github-pull-requests": "^2.2.7",
     "@roadiehq/backstage-plugin-travis-ci": "^2.0.5",
+    "app-next-example-plugin": "workspace:^",
     "history": "^5.0.0",
     "lodash": "^4.17.21",
     "prop-types": "^15.7.2",

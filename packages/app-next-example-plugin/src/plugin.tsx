@@ -14,16 +14,16 @@
  * limitations under the License.
  */
 
+import React from 'react';
 import {
   createPageExtension,
   createPlugin,
 } from '@backstage/frontend-plugin-api';
-import { Component } from './Component';
 
 export const ExamplePage = createPageExtension({
   id: 'example.page',
   defaultPath: '/example',
-  component: () => () => Component,
+  component: () => import('./Component').then(m => <m.Component />),
 });
 
 export const examplePlugin = createPlugin({
