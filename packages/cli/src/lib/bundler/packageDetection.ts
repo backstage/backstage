@@ -96,7 +96,7 @@ async function writeDetectedPackagesModule(packageNames: string[]) {
       'node_modules',
       `${DETECTED_MODULES_MODULE_NAME}.js`,
     ),
-    `export const modules = [${requirePackageScript}];`,
+    `window['__@backstage/discovered__'] = { modules: [${requirePackageScript}] };`,
   );
 }
 

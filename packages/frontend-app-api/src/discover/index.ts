@@ -16,15 +16,22 @@
 
 import { BackstagePlugin } from '@backstage/frontend-plugin-api';
 
-// eslint-disable-next-line @backstage/no-undeclared-imports
-import { modules } from '__backstage-autodetected-plugins__';
+interface DiscoveryGlobal {
+  modules: Array<{ name: string; module: object }>;
+}
 
 /**
  * @public
  */
 export function getAvailablePlugins(): BackstagePlugin[] {
-  return modules.flatMap(({ module: mod }) =>
-    Object.values(mod).flatMap(val => (isBackstagePlugin(val) ? [val] : [])),
+  const discovered = (
+    window as { '__@backstage/discovered__'?: DiscoveryGlobal }
+  )['__@backstage/discovered__'];
+
+  return (
+    discovered?.modules.flatMap(({ module: mod }) =>
+      Object.values(mod).flatMap(val => (isBackstagePlugin(val) ? [val] : [])),
+    ) ?? []
   );
 }
 
