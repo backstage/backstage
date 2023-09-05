@@ -199,7 +199,7 @@ export class TaskWorker {
         next_run_start_at: startAt,
       })
       .onConflict('id')
-      .merge(['settings_json']);
+      .merge(['settings_json', 'next_run_start_at']);
   }
 
   /**
