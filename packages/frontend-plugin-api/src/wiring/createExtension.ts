@@ -18,31 +18,43 @@ import { PortableSchema } from '../schema';
 import { BackstagePlugin } from './createPlugin';
 import { AnyExtensionDataMap, Extension } from './types';
 
-type OnlyRequiredKeys<TOutput extends AnyExtensionDataMap> = {
-  [K in keyof TOutput]: TOutput[K]['config']['optional'] extends true
-    ? never
-    : K;
-}[keyof TOutput];
-
-type OnlyOptionalKeys<TOutput extends AnyExtensionDataMap> = {
-  [K in keyof TOutput]: TOutput[K]['config']['optional'] extends false
-    ? never
-    : K;
-}[keyof TOutput];
+/** @public */
+export type ExtensionDataInputValues<
+  TInputs extends { [name in string]: { extensionData: AnyExtensionDataMap } },
+> = {
+  [InputName in keyof TInputs]: Array<
+    {
+      [DataName in keyof TInputs[InputName]['extensionData'] as TInputs[InputName]['extensionData'][DataName]['config'] extends {
+        optional: true;
+      }
+        ? DataName
+        : never]?: TInputs[InputName]['extensionData'][DataName]['T'];
+    } & {
+      [DataName in keyof TInputs[InputName]['extensionData'] as TInputs[InputName]['extensionData'][DataName]['config'] extends {
+        optional: false;
+      }
+        ? DataName
+        : never]: TInputs[InputName]['extensionData'][DataName]['T'];
+    }
+  >;
+};
 
 /** @public */
-export type ExtensionDataBind<TOutput extends AnyExtensionDataMap> = (
-  outputs: {
-    [K in OnlyRequiredKeys<TOutput>]: TOutput[K]['T'];
+export type ExtensionDataBind<TMap extends AnyExtensionDataMap> = (
+  values: {
+    [DataName in keyof TMap as TMap[DataName]['config'] extends {
+      optional: false;
+    }
+      ? DataName
+      : never]: TMap[DataName]['T'];
   } & {
-    [K in OnlyOptionalKeys<TOutput>]?: TOutput[K]['T'];
+    [DataName in keyof TMap as TMap[DataName]['config'] extends {
+      optional: true;
+    }
+      ? DataName
+      : never]?: TMap[DataName]['T'];
   },
 ) => void;
-
-/** @public */
-export type ExtensionDataValue<TData extends AnyExtensionDataMap> = {
-  [K in keyof TData]: TData[K]['T'];
-};
 
 /** @public */
 export interface CreateExtensionOptions<
@@ -60,11 +72,7 @@ export interface CreateExtensionOptions<
     source?: BackstagePlugin;
     bind: ExtensionDataBind<TOutput>;
     config: TConfig;
-    inputs: {
-      [pointName in keyof TInputs]: ExtensionDataValue<
-        TInputs[pointName]['extensionData']
-      >[];
-    };
+    inputs: ExtensionDataInputValues<TInputs>;
   }): void;
 }
 
@@ -86,11 +94,7 @@ export function createExtension<
       return options.factory({
         bind,
         config,
-        inputs: inputs as {
-          [pointName in keyof TInputs]: ExtensionDataValue<
-            TInputs[pointName]['extensionData']
-          >[];
-        },
+        inputs: inputs as ExtensionDataInputValues<TInputs>,
       });
     },
   };

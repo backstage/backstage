@@ -19,7 +19,7 @@ export {
   createExtension,
   type CreateExtensionOptions,
   type ExtensionDataBind,
-  type ExtensionDataValue,
+  type ExtensionDataInputValues,
 } from './createExtension';
 export {
   createExtensionDataRef,
