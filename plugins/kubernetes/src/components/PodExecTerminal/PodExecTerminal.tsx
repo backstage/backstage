@@ -23,11 +23,11 @@ import { FitAddon } from 'xterm-addon-fit';
 import { PodExecTerminalAttachAddon } from './PodExecTerminalAttachAddon';
 
 /**
- * Props drilled down to the K8sTerminal component
+ * Props drilled down to the PodExecTerminal component
  *
  * @public
  */
-export interface K8sTerminalProps {
+export interface PodExecTerminalProps {
   clusterName: string;
   containerName: string;
   podName: string;
@@ -42,7 +42,7 @@ const hasSocketProtocol = (url: string | URL) =>
  *
  * @public
  */
-export const PodExecTerminal = (props: K8sTerminalProps) => {
+export const PodExecTerminal = (props: PodExecTerminalProps) => {
   const { containerName, podNamespace, podName } = props;
 
   const [baseUrl, setBaseUrl] = useState(window.location.host);

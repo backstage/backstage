@@ -28,7 +28,7 @@ import OpenInBrowserIcon from '@material-ui/icons/OpenInBrowser';
 import React, { useState } from 'react';
 
 import { useIsPodExecTerminalSupported } from '../../hooks';
-import { PodExecTerminal, K8sTerminalProps } from './PodExecTerminal';
+import { PodExecTerminal, PodExecTerminalProps } from './PodExecTerminal';
 
 const useStyles = makeStyles((theme: Theme) =>
   createStyles({
@@ -48,7 +48,7 @@ const useStyles = makeStyles((theme: Theme) =>
  *
  * @public
  */
-export const PodExecTerminalDialog = (props: K8sTerminalProps) => {
+export const PodExecTerminalDialog = (props: PodExecTerminalProps) => {
   const classes = useStyles();
   const { clusterName, containerName, podName } = props;
 
