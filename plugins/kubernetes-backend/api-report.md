@@ -31,22 +31,14 @@ export class AksKubernetesAuthTranslator {
 }
 
 // @public (undocumented)
-export interface AWSClusterDetails extends ClusterDetails {
-  // (undocumented)
-  assumeRole?: string;
-  // (undocumented)
-  externalId?: string;
-}
-
-// @public (undocumented)
 export class AwsIamKubernetesAuthTranslator
   implements KubernetesAuthTranslator
 {
   constructor(opts: { config: Config });
   // (undocumented)
   decorateClusterDetailsWithAuth(
-    clusterDetails: AWSClusterDetails,
-  ): Promise<AWSClusterDetails>;
+    clusterDetails: ClusterDetails,
+  ): Promise<ClusterDetails>;
 }
 
 // @public (undocumented)
@@ -406,7 +398,7 @@ export class NoopKubernetesAuthTranslator implements KubernetesAuthTranslator {
 // @public (undocumented)
 export interface ObjectFetchParams {
   // (undocumented)
-  clusterDetails: AWSClusterDetails | GKEClusterDetails | ClusterDetails;
+  clusterDetails: GKEClusterDetails | ClusterDetails;
   // (undocumented)
   customResources: CustomResource[];
   // (undocumented)

@@ -14,11 +14,7 @@
  * limitations under the License.
  */
 
-import {
-  AWSClusterDetails,
-  ClusterDetails,
-  KubernetesClustersSupplier,
-} from '../types/types';
+import { ClusterDetails, KubernetesClustersSupplier } from '../types/types';
 import { CATALOG_FILTER_EXISTS, CatalogApi } from '@backstage/catalog-client';
 import {
   ANNOTATION_KUBERNETES_API_SERVER,
@@ -89,15 +85,17 @@ export class CatalogClusterLocator implements KubernetesClustersSupplier {
       if (clusterDetails.authProvider === 'aws') {
         return {
           ...clusterDetails,
-          assumeRole:
-            entity.metadata.annotations![
-              ANNOTATION_KUBERNETES_AWS_ASSUME_ROLE
-            ]!,
-          externalId:
-            entity.metadata.annotations![
-              ANNOTATION_KUBERNETES_AWS_EXTERNAL_ID
-            ]!,
-        } as AWSClusterDetails;
+          authMetadata: {
+            assumeRole:
+              entity.metadata.annotations![
+                ANNOTATION_KUBERNETES_AWS_ASSUME_ROLE
+              ]!,
+            externalId:
+              entity.metadata.annotations![
+                ANNOTATION_KUBERNETES_AWS_EXTERNAL_ID
+              ]!,
+          },
+        };
       }
 
       return clusterDetails;

@@ -17,7 +17,7 @@
 import '@backstage/backend-common';
 import { ConfigReader, Config } from '@backstage/config';
 import { ConfigClusterLocator } from './ConfigClusterLocator';
-import { AWSClusterDetails, ClusterDetails } from '../types/types';
+import { ClusterDetails } from '../types/types';
 
 describe('ConfigClusterLocator', () => {
   it('empty clusters returns empty cluster details', async () => {
@@ -142,36 +142,39 @@ describe('ConfigClusterLocator', () => {
 
     const result = await sut.getClusters();
 
-    expect(result).toStrictEqual<AWSClusterDetails[]>([
+    expect(result).toStrictEqual<ClusterDetails[]>([
       {
-        assumeRole: undefined,
         name: 'cluster1',
-        externalId: undefined,
         url: 'http://localhost:8080',
         authProvider: 'aws',
-        authMetadata: { serviceAccountToken: 'token' },
+        authMetadata: {
+          serviceAccountToken: 'token',
+        },
         skipTLSVerify: false,
         skipMetricsLookup: false,
         caData: undefined,
         caFile: undefined,
       },
       {
-        assumeRole: 'SomeRole',
         name: 'cluster2',
-        externalId: undefined,
         url: 'http://localhost:8081',
         authProvider: 'aws',
+        authMetadata: {
+          assumeRole: 'SomeRole',
+        },
         skipTLSVerify: true,
         skipMetricsLookup: false,
         caData: undefined,
         caFile: undefined,
       },
       {
-        assumeRole: 'SomeRole',
         name: 'cluster2',
-        externalId: 'SomeExternalId',
         url: 'http://localhost:8081',
         authProvider: 'aws',
+        authMetadata: {
+          assumeRole: 'SomeRole',
+          externalId: 'SomeExternalId',
+        },
         skipTLSVerify: true,
         skipMetricsLookup: false,
         caData: undefined,

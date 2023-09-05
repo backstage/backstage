@@ -33,7 +33,7 @@ import { Config } from '@backstage/config';
  */
 export interface ObjectFetchParams {
   serviceId: string;
-  clusterDetails: AWSClusterDetails | GKEClusterDetails | ClusterDetails;
+  clusterDetails: GKEClusterDetails | ClusterDetails;
   objectTypesToFetch: Set<ObjectToFetch>;
   labelSelector: string;
   customResources: CustomResource[];
@@ -219,15 +219,6 @@ export interface GKEClusterDetails extends ClusterDetails {}
  * @public
  */
 export interface AzureClusterDetails extends ClusterDetails {}
-
-/**
- *
- * @public
- */
-export interface AWSClusterDetails extends ClusterDetails {
-  assumeRole?: string;
-  externalId?: string;
-}
 
 /**
  *

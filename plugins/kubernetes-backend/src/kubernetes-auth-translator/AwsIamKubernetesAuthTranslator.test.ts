@@ -70,10 +70,10 @@ describe('AwsIamKubernetesAuthTranslator tests', () => {
     const authTranslator = new AwsIamKubernetesAuthTranslator({ config });
 
     const authPromise = authTranslator.decorateClusterDetailsWithAuth({
-      assumeRole: 'SomeRole',
       name: 'test-cluster',
       url: '',
       authProvider: 'aws',
+      authMetadata: { assumeRole: 'SomeRole' },
     });
     expect((await authPromise).authMetadata!.serviceAccountToken).toEqual(
       'k8s-aws-v1.aHR0cHM6Ly9odHRwczovL2V4YW1wbGUuY29tL2FzZGY_',
@@ -96,11 +96,13 @@ describe('AwsIamKubernetesAuthTranslator tests', () => {
     const authTranslator = new AwsIamKubernetesAuthTranslator({ config });
 
     const authPromise = authTranslator.decorateClusterDetailsWithAuth({
-      assumeRole: 'SomeRole',
-      externalId: 'external-id',
       name: 'test-cluster',
       url: '',
       authProvider: 'aws',
+      authMetadata: {
+        assumeRole: 'SomeRole',
+        externalId: 'external-id',
+      },
     });
     expect((await authPromise).authMetadata!.serviceAccountToken).toEqual(
       'k8s-aws-v1.aHR0cHM6Ly9odHRwczovL2V4YW1wbGUuY29tL2FzZGY_',

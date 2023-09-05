@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import { AWSClusterDetails } from '../types/types';
+import { ClusterDetails } from '../types/types';
 import { KubernetesAuthTranslator } from './types';
 import { fromTemporaryCredentials } from '@aws-sdk/credential-providers';
 import { SignatureV4 } from '@aws-sdk/signature-v4';
@@ -110,9 +110,9 @@ export class AwsIamKubernetesAuthTranslator
   }
 
   async decorateClusterDetailsWithAuth(
-    clusterDetails: AWSClusterDetails,
-  ): Promise<AWSClusterDetails> {
-    const clusterDetailsWithAuthToken: AWSClusterDetails = Object.assign(
+    clusterDetails: ClusterDetails,
+  ): Promise<ClusterDetails> {
+    const clusterDetailsWithAuthToken: ClusterDetails = Object.assign(
       {},
       clusterDetails,
     );
@@ -120,8 +120,8 @@ export class AwsIamKubernetesAuthTranslator
     clusterDetailsWithAuthToken.authMetadata = {
       serviceAccountToken: await this.getBearerToken(
         clusterDetails.name,
-        clusterDetails.assumeRole,
-        clusterDetails.externalId,
+        clusterDetails.authMetadata?.assumeRole,
+        clusterDetails.authMetadata?.externalId,
       ),
       ...clusterDetailsWithAuthToken.authMetadata,
     };

@@ -111,8 +111,10 @@ describe('CatalogClusterLocator', () => {
       url: 'https://apiserver.com',
       caData: 'caData',
       authProvider: 'aws',
-      assumeRole: 'my-role',
-      externalId: 'my-id',
+      authMetadata: {
+        assumeRole: 'my-role',
+        externalId: 'my-id',
+      },
       oidcTokenProvider: 'google',
       skipMetricsLookup: false,
       skipTLSVerify: false,
