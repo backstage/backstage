@@ -17,6 +17,7 @@
 import '@backstage/backend-common';
 import { CatalogClusterLocator } from './CatalogClusterLocator';
 import { CatalogApi } from '@backstage/catalog-client';
+import { ClusterDetails } from '../types/types';
 
 const mockCatalogApi = {
   getEntityByRef: jest.fn(),
@@ -86,7 +87,7 @@ describe('CatalogClusterLocator', () => {
     const result = await clusterSupplier.getClusters();
 
     expect(result).toHaveLength(2);
-    expect(result[0]).toStrictEqual({
+    expect(result[0]).toStrictEqual<ClusterDetails>({
       name: 'owned',
       url: 'https://apiserver.com',
       caData: 'caData',
@@ -105,7 +106,7 @@ describe('CatalogClusterLocator', () => {
     const result = await clusterSupplier.getClusters();
 
     expect(result).toHaveLength(2);
-    expect(result[1]).toStrictEqual({
+    expect(result[1]).toStrictEqual<ClusterDetails>({
       name: 'owned',
       url: 'https://apiserver.com',
       caData: 'caData',

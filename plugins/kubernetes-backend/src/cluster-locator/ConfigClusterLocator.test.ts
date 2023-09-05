@@ -17,6 +17,7 @@
 import '@backstage/backend-common';
 import { ConfigReader, Config } from '@backstage/config';
 import { ConfigClusterLocator } from './ConfigClusterLocator';
+import { ClusterDetails } from '../types/types';
 
 describe('ConfigClusterLocator', () => {
   it('empty clusters returns empty cluster details', async () => {
@@ -46,7 +47,7 @@ describe('ConfigClusterLocator', () => {
 
     const result = await sut.getClusters();
 
-    expect(result).toStrictEqual([
+    expect(result).toStrictEqual<ClusterDetails[]>([
       {
         name: 'cluster1',
         serviceAccountToken: undefined,
@@ -86,7 +87,7 @@ describe('ConfigClusterLocator', () => {
 
     const result = await sut.getClusters();
 
-    expect(result).toStrictEqual([
+    expect(result).toStrictEqual<ClusterDetails[]>([
       {
         name: 'cluster1',
         dashboardUrl: 'https://k8s.foo.com',
@@ -143,7 +144,7 @@ describe('ConfigClusterLocator', () => {
 
     const result = await sut.getClusters();
 
-    expect(result).toStrictEqual([
+    expect(result).toStrictEqual<ClusterDetails[]>([
       {
         assumeRole: undefined,
         name: 'cluster1',
@@ -204,7 +205,7 @@ describe('ConfigClusterLocator', () => {
 
     const result = await sut.getClusters();
 
-    expect(result).toStrictEqual([
+    expect(result).toStrictEqual<ClusterDetails[]>([
       {
         name: 'cluster1',
         serviceAccountToken: undefined,
@@ -241,7 +242,7 @@ describe('ConfigClusterLocator', () => {
 
     const result = await sut.getClusters();
 
-    expect(result).toStrictEqual([
+    expect(result).toStrictEqual<ClusterDetails[]>([
       {
         name: 'cluster1',
         serviceAccountToken: undefined,
@@ -294,7 +295,7 @@ describe('ConfigClusterLocator', () => {
 
     const result = await sut.getClusters();
 
-    expect(result).toStrictEqual([
+    expect(result).toStrictEqual<ClusterDetails[]>([
       {
         name: 'cluster1',
         serviceAccountToken: undefined,

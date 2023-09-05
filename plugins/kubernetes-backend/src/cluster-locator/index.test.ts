@@ -17,6 +17,7 @@
 import { Config, ConfigReader } from '@backstage/config';
 import { getCombinedClusterSupplier } from './index';
 import { CatalogApi } from '@backstage/catalog-client';
+import { ClusterDetails } from '../types/types';
 
 describe('getCombinedClusterSupplier', () => {
   let catalogApi: CatalogApi;
@@ -51,7 +52,7 @@ describe('getCombinedClusterSupplier', () => {
     const clusterSupplier = getCombinedClusterSupplier(config, catalogApi);
     const result = await clusterSupplier.getClusters();
 
-    expect(result).toStrictEqual([
+    expect(result).toStrictEqual<ClusterDetails[]>([
       {
         name: 'cluster1',
         serviceAccountToken: 'token',
