@@ -1,5 +1,5 @@
 ---
-'@backstage/plugin-azure-devops': minor
+'@backstage/plugin-azure-devops': patch
 ---
 
-the project and repository details can be obtained using the `backstage.io/managed-by-location` annotation
+set azure annotation `dev.azure.com/project-repo` in `AnnotateScmSlugEntityProcessor` to find the project and repo information for the repos that contains `dev.azure.com` in the url
