@@ -61,7 +61,7 @@ export const permissionPlugin = createBackendPlugin({
         const winstonLogger = loggerToWinstonLogger(logger);
         if (!policies.policy) {
           throw new Error(
-            'No policy module installed! Please install a policy module. If you want to allow all requests, use @backstage/plugin-permission-backend-module-policy-allow-all permissionModuleAllowAllPolicy',
+            'No policy module installed! Please install a policy module. If you want to allow all requests, use @backstage/plugin-permission-backend-module-allow-all-policy permissionModuleAllowAllPolicy',
           );
         }
 

@@ -1,4 +1,4 @@
-# @backstage/plugin-permission-backend-module-policy-allow-all
+# @backstage/plugin-permission-backend-module-allow-all-policy
 
 The allow all policy backend module for the permission plugin.
 

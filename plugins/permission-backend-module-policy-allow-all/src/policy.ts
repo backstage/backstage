@@ -1,13 +1,3 @@
-import { BackstageIdentityResponse } from '@backstage/plugin-auth-node';
-import {
-  AuthorizeResult,
-  PolicyDecision,
-} from '@backstage/plugin-permission-common';
-import {
-  PermissionPolicy,
-  PolicyQuery,
-} from '@backstage/plugin-permission-node';
-
 /*
  * Copyright 2023 The Backstage Authors
  *
@@ -23,6 +13,17 @@ import {
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
+import { BackstageIdentityResponse } from '@backstage/plugin-auth-node';
+import {
+  AuthorizeResult,
+  PolicyDecision,
+} from '@backstage/plugin-permission-common';
+import {
+  PermissionPolicy,
+  PolicyQuery,
+} from '@backstage/plugin-permission-node';
+
 export class AllowAllPermissionPolicy implements PermissionPolicy {
   async handle(
     _request: PolicyQuery,

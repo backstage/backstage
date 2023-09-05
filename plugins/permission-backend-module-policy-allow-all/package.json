@@ -1,5 +1,5 @@
 {
-  "name": "@backstage/plugin-permission-backend-module-policy-allow-all",
+  "name": "@backstage/plugin-permission-backend-module-allow-all-policy",
   "description": "Allow all policy backend module for the permission plugin.",
   "version": "0.0.0",
   "main": "src/index.ts",

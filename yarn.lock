@@ -8223,9 +8223,9 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@backstage/plugin-permission-backend-module-policy-allow-all@workspace:^, @backstage/plugin-permission-backend-module-policy-allow-all@workspace:plugins/permission-backend-module-policy-allow-all":
+"@backstage/plugin-permission-backend-module-allow-all-policy@workspace:^, @backstage/plugin-permission-backend-module-allow-all-policy@workspace:plugins/permission-backend-module-policy-allow-all":
   version: 0.0.0-use.local
-  resolution: "@backstage/plugin-permission-backend-module-policy-allow-all@workspace:plugins/permission-backend-module-policy-allow-all"
+  resolution: "@backstage/plugin-permission-backend-module-allow-all-policy@workspace:plugins/permission-backend-module-policy-allow-all"
   dependencies:
     "@backstage/backend-common": "workspace:^"
     "@backstage/backend-plugin-api": "workspace:^"
@@ -25833,7 +25833,7 @@ __metadata:
     "@backstage/plugin-lighthouse-backend": "workspace:^"
     "@backstage/plugin-linguist-backend": "workspace:^"
     "@backstage/plugin-permission-backend": "workspace:^"
-    "@backstage/plugin-permission-backend-module-policy-allow-all": "workspace:^"
+    "@backstage/plugin-permission-backend-module-allow-all-policy": "workspace:^"
     "@backstage/plugin-permission-common": "workspace:^"
     "@backstage/plugin-permission-node": "workspace:^"
     "@backstage/plugin-proxy-backend": "workspace:^"

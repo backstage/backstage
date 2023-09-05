@@ -19,7 +19,7 @@ import { appPlugin } from '@backstage/plugin-app-backend/alpha';
 import { catalogPlugin } from '@backstage/plugin-catalog-backend/alpha';
 import { kubernetesPlugin } from '@backstage/plugin-kubernetes-backend/alpha';
 import { permissionPlugin } from '@backstage/plugin-permission-backend/alpha';
-import { permissionModuleAllowAllPolicy } from '@backstage/plugin-permission-backend-module-policy-allow-all';
+import { permissionModuleAllowAllPolicy } from '@backstage/plugin-permission-backend-module-allow-all-policy';
 import { scaffolderPlugin } from '@backstage/plugin-scaffolder-backend/alpha';
 import { catalogModuleTemplateKind } from '@backstage/plugin-scaffolder-backend/alpha';
 import { searchModuleCatalogCollator } from '@backstage/plugin-search-backend-module-catalog/alpha';
