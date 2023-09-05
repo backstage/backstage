@@ -339,12 +339,15 @@ export class KubernetesBuilder {
     router.get('/clusters', async (_, res) => {
       const clusterDetails = await this.fetchClusterDetails(clusterSupplier);
       res.json({
-        items: clusterDetails.map(cd => ({
-          name: cd.name,
-          dashboardUrl: cd.dashboardUrl,
-          authProvider: cd.authProvider,
-          oidcTokenProvider: cd.oidcTokenProvider,
-        })),
+        items: clusterDetails.map(cd => {
+          const oidcTokenProvider = cd.authMetadata?.oidcTokenProvider;
+          return {
+            name: cd.name,
+            dashboardUrl: cd.dashboardUrl,
+            authProvider: cd.authProvider,
+            ...(oidcTokenProvider && { oidcTokenProvider }),
+          };
+        }),
       });
     });
 

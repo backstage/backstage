@@ -92,7 +92,7 @@ describe('CatalogClusterLocator', () => {
       url: 'https://apiserver.com',
       caData: 'caData',
       authProvider: 'oidc',
-      oidcTokenProvider: 'google',
+      authMetadata: { oidcTokenProvider: 'google' },
       skipMetricsLookup: true,
       skipTLSVerify: true,
       dashboardUrl: 'my-url',
@@ -114,8 +114,8 @@ describe('CatalogClusterLocator', () => {
       authMetadata: {
         assumeRole: 'my-role',
         externalId: 'my-id',
+        oidcTokenProvider: 'google',
       },
-      oidcTokenProvider: 'google',
       skipMetricsLookup: false,
       skipTLSVerify: false,
       dashboardUrl: 'my-url',

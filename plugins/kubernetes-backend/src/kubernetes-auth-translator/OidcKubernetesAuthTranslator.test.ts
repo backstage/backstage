@@ -28,7 +28,7 @@ describe('OidcKubernetesAuthTranslator tests', () => {
   it('returns cluster details with auth token', async () => {
     const details = await at.decorateClusterDetailsWithAuth(
       {
-        oidcTokenProvider: 'okta',
+        authMetadata: { oidcTokenProvider: 'okta' },
         ...baseClusterDetails,
       },
       {
@@ -50,7 +50,7 @@ describe('OidcKubernetesAuthTranslator tests', () => {
   it('returns error when token is not included in request body', async () => {
     await expect(
       at.decorateClusterDetailsWithAuth(
-        { oidcTokenProvider: 'okta', ...baseClusterDetails },
+        { authMetadata: { oidcTokenProvider: 'okta' }, ...baseClusterDetails },
         {},
       ),
     ).rejects.toThrow('Auth token not found under oidc.okta in request body');

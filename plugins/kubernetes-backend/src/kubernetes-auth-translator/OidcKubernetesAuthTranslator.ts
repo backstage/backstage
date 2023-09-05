@@ -32,7 +32,7 @@ export class OidcKubernetesAuthTranslator implements KubernetesAuthTranslator {
       clusterDetails,
     );
 
-    const { oidcTokenProvider } = clusterDetails;
+    const oidcTokenProvider = clusterDetails.authMetadata?.oidcTokenProvider;
 
     if (!oidcTokenProvider || oidcTokenProvider === '') {
       throw new Error(

@@ -54,7 +54,6 @@ export class AzureIdentityKubernetesAuthTranslator
 
 // @public (undocumented)
 export interface ClusterDetails {
-  // (undocumented)
   authMetadata?: Record<string, string>;
   // (undocumented)
   authProvider: string;
@@ -67,7 +66,6 @@ export interface ClusterDetails {
   dashboardParameters?: JsonObject;
   dashboardUrl?: string;
   name: string;
-  oidcTokenProvider?: string | undefined;
   skipMetricsLookup?: boolean;
   // (undocumented)
   skipTLSVerify?: boolean;

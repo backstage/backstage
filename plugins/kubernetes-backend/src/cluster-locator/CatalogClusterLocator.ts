@@ -57,6 +57,10 @@ export class CatalogClusterLocator implements KubernetesClustersSupplier {
       filter: [filter],
     });
     return clusters.items.map(entity => {
+      const oidcTokenProvider =
+        entity.metadata.annotations?.[
+          ANNOTATION_KUBERNETES_OIDC_TOKEN_PROVIDER
+        ];
       const clusterDetails: ClusterDetails = {
         name: entity.metadata.name,
         url: entity.metadata.annotations![ANNOTATION_KUBERNETES_API_SERVER]!,
@@ -64,10 +68,7 @@ export class CatalogClusterLocator implements KubernetesClustersSupplier {
           entity.metadata.annotations![ANNOTATION_KUBERNETES_API_SERVER_CA]!,
         authProvider:
           entity.metadata.annotations![ANNOTATION_KUBERNETES_AUTH_PROVIDER]!,
-        oidcTokenProvider:
-          entity.metadata.annotations![
-            ANNOTATION_KUBERNETES_OIDC_TOKEN_PROVIDER
-          ]!,
+        ...(oidcTokenProvider && { authMetadata: { oidcTokenProvider } }),
         skipMetricsLookup:
           entity.metadata.annotations![
             ANNOTATION_KUBERNETES_SKIP_METRICS_LOOKUP
@@ -94,6 +95,7 @@ export class CatalogClusterLocator implements KubernetesClustersSupplier {
               entity.metadata.annotations![
                 ANNOTATION_KUBERNETES_AWS_EXTERNAL_ID
               ]!,
+            ...clusterDetails.authMetadata,
           },
         };
       }
