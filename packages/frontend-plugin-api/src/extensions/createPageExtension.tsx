@@ -23,7 +23,7 @@ import {
   coreExtensionData,
   createExtension,
   Extension,
-  ExtensionDataValue,
+  ExtensionDataInputValues,
 } from '../wiring';
 
 /**
@@ -50,11 +50,7 @@ export function createPageExtension<
     routeRef?: RouteRef;
     component: (props: {
       config: TConfig;
-      inputs: {
-        [pointName in keyof TInputs]: ExtensionDataValue<
-          TInputs[pointName]['extensionData']
-        >[];
-      };
+      inputs: ExtensionDataInputValues<TInputs>;
     }) => Promise<JSX.Element>;
   },
 ): Extension<TConfig> {

@@ -38,10 +38,13 @@ describe('createApiExtension', () => {
       configSchema: undefined,
       inputs: {},
       output: {
-        api: {
+        api: expect.objectContaining({
           $$type: 'extension-data',
           id: 'core.api.factory',
-        },
+          config: {
+            optional: false,
+          },
+        }),
       },
       factory: expect.any(Function),
     });
@@ -71,10 +74,13 @@ describe('createApiExtension', () => {
       configSchema: undefined,
       inputs: {},
       output: {
-        api: {
+        api: expect.objectContaining({
           $$type: 'extension-data',
           id: 'core.api.factory',
-        },
+          config: {
+            optional: false,
+          },
+        }),
       },
       factory: expect.any(Function),
     });
