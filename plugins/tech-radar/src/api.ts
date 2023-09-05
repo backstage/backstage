@@ -71,6 +71,10 @@ export interface RadarRing {
    * Supports any value parseable by {@link https://www.npmjs.com/package/color-string | color-string}
    */
   color: string;
+  /**
+   * Description of the Ring
+   */
+  description?: string;
 }
 
 /**

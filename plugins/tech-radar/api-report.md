@@ -54,6 +54,7 @@ export interface RadarQuadrant {
 // @public
 export interface RadarRing {
   color: string;
+  description?: string;
   id: string;
   name: string;
 }
