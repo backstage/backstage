@@ -37,7 +37,6 @@ export function getAnnotationFromEntity(entity: Entity): {
 
   const project =
     entity.metadata.annotations?.[AZURE_DEVOPS_PROJECT_ANNOTATION];
-
   if (!project) {
     throw new Error('Value for annotation dev.azure.com/project was not found');
   }
