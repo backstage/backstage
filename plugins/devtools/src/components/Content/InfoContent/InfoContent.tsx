@@ -37,11 +37,7 @@ import MemoryIcon from '@material-ui/icons/Memory';
 import DeveloperBoardIcon from '@material-ui/icons/DeveloperBoard';
 import { BackstageLogoIcon } from './BackstageLogoIcon';
 import FileCopyIcon from '@material-ui/icons/FileCopy';
-import {
-  DevToolsInfo,
-  PackageDependency,
-} from '@backstage/plugin-devtools-common';
-import { getAvailablePlugins } from '@backstage/autodetect';
+import { DevToolsInfo } from '@backstage/plugin-devtools-common';
 
 const useStyles = makeStyles((theme: Theme) =>
   createStyles({
@@ -77,16 +73,7 @@ const copyToClipboard = ({ about }: { about: DevToolsInfo | undefined }) => {
 export const InfoContent = () => {
   const classes = useStyles();
   const { about, loading, error } = useInfo();
-  const plugins = getAvailablePlugins();
 
-  const availablePlugins: PackageDependency[] = plugins.map(
-    ({ name, plugin }) => {
-      return {
-        name: `${name} (${plugin.getId()})`,
-        versions: '',
-      };
-    },
-  );
   if (loading) {
     return <Progress />;
   } else if (error) {
@@ -157,18 +144,7 @@ export const InfoContent = () => {
           </ListItem>
         </List>
       </Paper>
-      <Paper className={classes.paperStyle}>
-        <InfoDependenciesTable
-          title="Package Dependencies"
-          infoDependencies={about?.dependencies}
-        />
-      </Paper>
-      <Paper className={classes.paperStyle}>
-        <InfoDependenciesTable
-          title="Available Plugins"
-          infoDependencies={availablePlugins}
-        />
-      </Paper>
+      <InfoDependenciesTable infoDependencies={about?.dependencies} />
     </Box>
   );
 };
