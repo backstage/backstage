@@ -25,6 +25,29 @@ import { ClusterDetails, KubernetesClustersSupplier } from '../types/types';
 export class ConfigClusterLocator implements KubernetesClustersSupplier {
   private readonly clusterDetails: ClusterDetails[];
 
+  private static authValidators: Record<
+    string,
+    (clusterDetails: ClusterDetails) => void
+  > = {
+    google: _ => {},
+    aws: _ => {},
+    azure: _ => {},
+    oidc: clusterDetails => {
+      if (
+        !clusterDetails.authMetadata?.[
+          ANNOTATION_KUBERNETES_OIDC_TOKEN_PROVIDER
+        ]
+      ) {
+        throw new Error(
+          `Cluster '${clusterDetails.name}' missing required config value for 'oidcTokenProvider'`,
+        );
+      }
+    },
+    serviceAccount: _ => {},
+    googleServiceAccount: _ => {},
+    aks: _ => {},
+  };
+
   constructor(clusterDetails: ClusterDetails[]) {
     this.clusterDetails = clusterDetails;
   }
@@ -67,43 +90,13 @@ export class ConfigClusterLocator implements KubernetesClustersSupplier {
           clusterDetails.dashboardParameters = c.get('dashboardParameters');
         }
 
-        switch (authProvider) {
-          case 'google': {
-            return clusterDetails;
-          }
-          case 'aws': {
-            return clusterDetails;
-          }
-          case 'azure': {
-            return clusterDetails;
-          }
-          case 'oidc': {
-            if (
-              !clusterDetails.authMetadata?.[
-                ANNOTATION_KUBERNETES_OIDC_TOKEN_PROVIDER
-              ]
-            ) {
-              throw new Error(
-                `Cluster '${clusterDetails.name}' missing required config value for 'oidcTokenProvider'`,
-              );
-            }
-            return clusterDetails;
-          }
-          case 'serviceAccount': {
-            return clusterDetails;
-          }
-          case 'googleServiceAccount': {
-            return clusterDetails;
-          }
-          case 'aks': {
-            return clusterDetails;
-          }
-          default: {
-            throw new Error(
-              `authProvider "${authProvider}" has no config associated with it`,
-            );
-          }
+        if (authProvider in ConfigClusterLocator.authValidators) {
+          ConfigClusterLocator.authValidators[authProvider](clusterDetails);
+          return clusterDetails;
         }
+        throw new Error(
+          `authProvider "${authProvider}" has no config associated with it`,
+        );
       }),
     );
   }
@@ -119,7 +112,7 @@ export class ConfigClusterLocator implements KubernetesClustersSupplier {
     const oidcTokenProvider =
       clusterConfig.getOptionalString('oidcTokenProvider');
 
-    return serviceAccountToken || assumeRole || externalId
+    return serviceAccountToken || assumeRole || externalId || oidcTokenProvider
       ? {
           authMetadata: {
             ...(serviceAccountToken && { serviceAccountToken }),
