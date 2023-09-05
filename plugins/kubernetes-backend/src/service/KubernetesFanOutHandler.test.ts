@@ -20,6 +20,7 @@ import {
   CustomResource,
   ObjectFetchParams,
   KubernetesServiceLocator,
+  ServiceLocatorRequestContext,
 } from '../types/types';
 import { KubernetesFanOutHandler } from './KubernetesFanOutHandler';
 import { KubernetesClientBasedFetcher } from './KubernetesFetcher';
@@ -28,6 +29,7 @@ import { setupServer } from 'msw/node';
 import { setupRequestMockHandlers } from '@backstage/backend-test-utils';
 import { ObjectsByEntityResponse } from '@backstage/plugin-kubernetes-common';
 import { Config, ConfigReader } from '@backstage/config';
+import { Entity } from '@backstage/catalog-model';
 
 describe('KubernetesFanOutHandler', () => {
   const fetchObjectsForService = jest.fn();
@@ -1054,24 +1056,29 @@ describe('KubernetesFanOutHandler', () => {
         );
 
         const fleet: jest.Mocked<KubernetesServiceLocator> = {
-          getClustersByEntity: jest.fn().mockResolvedValue({
-            clusters: [
-              {
-                name: 'works',
-                url: 'https://works',
-                authProvider: 'serviceAccount',
-                serviceAccountToken: 'token',
-                skipMetricsLookup: true,
-              },
-              {
-                name: 'fails',
-                url: 'https://fails',
-                authProvider: 'serviceAccount',
-                serviceAccountToken: 'token',
-                skipMetricsLookup: true,
-              },
-            ],
-          }),
+          getClustersByEntity: jest
+            .fn<
+              Promise<{ clusters: ClusterDetails[] }>,
+              [Entity, ServiceLocatorRequestContext]
+            >()
+            .mockResolvedValue({
+              clusters: [
+                {
+                  name: 'works',
+                  url: 'https://works',
+                  authProvider: 'serviceAccount',
+                  skipMetricsLookup: true,
+                  serviceAccountToken: 'token',
+                },
+                {
+                  name: 'fails',
+                  url: 'https://fails',
+                  authProvider: 'serviceAccount',
+                  skipMetricsLookup: true,
+                  serviceAccountToken: 'token',
+                },
+              ],
+            }),
         };
         const logger = getVoidLogger();
         const kubernetesFanOutHandler = new KubernetesFanOutHandler({
