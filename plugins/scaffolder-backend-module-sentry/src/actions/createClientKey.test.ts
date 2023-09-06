@@ -19,6 +19,15 @@ import { PassThrough } from 'stream';
 import { ConfigReader } from '@backstage/config';
 import { exampleResponseBody } from './test-fixutres';
 
+if (!global.fetch) {
+  global.fetch = fetch;
+  global.Headers = fetch.Headers;
+  global.Response = fetch.Response;
+  global.AbortController = AbortController;
+}
+
+global.Headers = global.fetch.Headers;
+
 global.fetch = jest.fn(() => {
   const response = {
     json: () => Promise.resolve(exampleResponseBody),
