@@ -59,6 +59,8 @@ import FolderIcon from '@material-ui/icons/Folder';
 import { adrApiRef, AdrFileInfo } from '../../api';
 import { rootRouteRef } from '../../routes';
 import { AdrContentDecorator, AdrReader } from '../AdrReader';
+import { useTranslationRef } from '@backstage/core-plugin-api/alpha';
+import { adrTranslationRef } from '../../translations';
 
 const useStyles = makeStyles((theme: Theme) => ({
   adrMenu: {
@@ -160,9 +162,8 @@ const AdrListContainer = (props: {
 export const EntityAdrContent = (props: {
   contentDecorators?: AdrContentDecorator[];
   filePathFilterFn?: AdrFilePathFilterFn;
-  headerTitle?: string;
 }) => {
-  const { contentDecorators, filePathFilterFn, headerTitle } = props;
+  const { contentDecorators, filePathFilterFn } = props;
   const classes = useStyles();
   const { entity } = useEntity();
   const [adrList, setAdrList] = useState<AdrFileInfo[]>([]);
@@ -170,6 +171,7 @@ export const EntityAdrContent = (props: {
   const scmIntegrations = useApi(scmIntegrationsApiRef);
   const adrApi = useApi(adrApiRef);
   const entityHasAdrs = isAdrAvailable(entity);
+  const t = useTranslationRef(adrTranslationRef);
 
   const config = useApi(configApiRef);
   const appSupportConfigured = config?.getOptionalConfig('app.support');
@@ -215,7 +217,7 @@ export const EntityAdrContent = (props: {
 
   return (
     <Content>
-      <ContentHeader title={headerTitle ?? 'Architecture Decision Records'}>
+      <ContentHeader title={t('content_header_title')}>
         {appSupportConfigured && <SupportButton />}
       </ContentHeader>
 
@@ -226,7 +228,7 @@ export const EntityAdrContent = (props: {
       {loading && <Progress />}
 
       {entityHasAdrs && !loading && error && (
-        <WarningPanel title="Failed to fetch ADRs" message={error?.message} />
+        <WarningPanel title={t('failed_to_fetch')} message={error?.message} />
       )}
 
       {entityHasAdrs &&
@@ -253,7 +255,7 @@ export const EntityAdrContent = (props: {
             </Grid>
           </Grid>
         ) : (
-          <Typography>No ADRs found</Typography>
+          <Typography>{t('no_adrs')}</Typography>
         ))}
     </Content>
   );

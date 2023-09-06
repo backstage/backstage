@@ -1,5 +1,5 @@
 ---
-'@backstage/plugin-adr': minor
+'@backstage/plugin-adr': patch
 ---
 
-configurable component header title
+support for i18n feature
