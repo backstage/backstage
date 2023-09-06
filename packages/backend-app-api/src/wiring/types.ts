@@ -25,7 +25,12 @@ import {
  * @public
  */
 export interface Backend {
-  add(feature: BackendFeature | (() => BackendFeature)): void;
+  add(
+    feature:
+      | BackendFeature
+      | (() => BackendFeature)
+      | Promise<{ default: BackendFeature | (() => BackendFeature) }>,
+  ): void;
   start(): Promise<void>;
   stop(): Promise<void>;
 }

@@ -46,6 +46,7 @@ export class BackendInitializer {
   #features = new Array<InternalBackendFeature>();
   #extensionPoints = new Map<string, { impl: unknown; pluginId: string }>();
   #serviceRegistry: ServiceRegistry;
+  #registeredFeatures = new Array<Promise<BackendFeature>>();
 
   constructor(defaultApiFactories: ServiceFactory[]) {
     this.#serviceRegistry = ServiceRegistry.create([...defaultApiFactories]);
@@ -90,11 +91,11 @@ export class BackendInitializer {
     return Object.fromEntries(result);
   }
 
-  add(feature: BackendFeature) {
+  add(feature: Promise<BackendFeature>) {
     if (this.#startPromise) {
       throw new Error('feature can not be added after the backend has started');
     }
-    this.#addFeature(feature);
+    this.#registeredFeatures.push(feature);
   }
 
   #addFeature(feature: BackendFeature) {
@@ -149,6 +150,10 @@ export class BackendInitializer {
 
   async #doStart(): Promise<void> {
     this.#serviceRegistry.checkForCircularDeps();
+
+    for (const feature of this.#registeredFeatures) {
+      this.#addFeature(await feature);
+    }
 
     const featureDiscovery = await this.#serviceRegistry.get(
       featureDiscoveryServiceRef,
