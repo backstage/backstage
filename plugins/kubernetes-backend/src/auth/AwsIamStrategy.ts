@@ -25,7 +25,7 @@ import {
   ANNOTATION_KUBERNETES_AWS_ASSUME_ROLE,
   ANNOTATION_KUBERNETES_AWS_EXTERNAL_ID,
 } from '@backstage/plugin-kubernetes-common';
-import { ClusterDetails } from '../types/types';
+import { AuthMetadata, ClusterDetails } from '../types/types';
 import { AuthenticationStrategy } from './types';
 
 /**
@@ -46,9 +46,31 @@ const defaultRegion = 'us-east-1';
  */
 export class AwsIamStrategy implements AuthenticationStrategy {
   private readonly credsManager: AwsCredentialsManager;
+
   constructor(opts: { config: Config }) {
     this.credsManager = DefaultAwsCredentialsManager.fromConfig(opts.config);
   }
+
+  public async decorateClusterDetailsWithAuth(
+    clusterDetails: ClusterDetails,
+  ): Promise<ClusterDetails> {
+    const clusterDetailsWithAuthToken: ClusterDetails = Object.assign(
+      {},
+      clusterDetails,
+    );
+
+    clusterDetailsWithAuthToken.authMetadata = {
+      serviceAccountToken: await this.getBearerToken(
+        clusterDetails.name,
+        clusterDetails.authMetadata[ANNOTATION_KUBERNETES_AWS_ASSUME_ROLE],
+        clusterDetails.authMetadata[ANNOTATION_KUBERNETES_AWS_EXTERNAL_ID],
+      ),
+      ...clusterDetailsWithAuthToken.authMetadata,
+    };
+    return clusterDetailsWithAuthToken;
+  }
+
+  public validate(_: AuthMetadata) {}
 
   private async getBearerToken(
     clusterName: string,
@@ -109,24 +131,5 @@ export class AwsIamStrategy implements AuthenticationStrategy {
     const url = `https://${request.hostname}${request.path}?${query}`;
 
     return `k8s-aws-v1.${Buffer.from(url).toString('base64url')}`;
-  }
-
-  async decorateClusterDetailsWithAuth(
-    clusterDetails: ClusterDetails,
-  ): Promise<ClusterDetails> {
-    const clusterDetailsWithAuthToken: ClusterDetails = Object.assign(
-      {},
-      clusterDetails,
-    );
-
-    clusterDetailsWithAuthToken.authMetadata = {
-      serviceAccountToken: await this.getBearerToken(
-        clusterDetails.name,
-        clusterDetails.authMetadata?.[ANNOTATION_KUBERNETES_AWS_ASSUME_ROLE],
-        clusterDetails.authMetadata?.[ANNOTATION_KUBERNETES_AWS_EXTERNAL_ID],
-      ),
-      ...clusterDetailsWithAuthToken.authMetadata,
-    };
-    return clusterDetailsWithAuthToken;
   }
 }

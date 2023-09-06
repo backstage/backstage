@@ -55,7 +55,7 @@ describe('ConfigClusterLocator', () => {
       {
         name: 'cluster1',
         url: 'http://localhost:8080',
-        authProvider: 'serviceAccount',
+        authMetadata: { authProvider: 'serviceAccount' },
         skipMetricsLookup: false,
         skipTLSVerify: false,
         caData: undefined,
@@ -95,17 +95,19 @@ describe('ConfigClusterLocator', () => {
         name: 'cluster1',
         dashboardUrl: 'https://k8s.foo.com',
         url: 'http://localhost:8080',
-        authProvider: 'serviceAccount',
+        authMetadata: {
+          authProvider: 'serviceAccount',
+          serviceAccountToken: 'token',
+        },
         skipTLSVerify: false,
         skipMetricsLookup: true,
         caData: undefined,
         caFile: undefined,
-        authMetadata: { serviceAccountToken: 'token' },
       },
       {
         name: 'cluster2',
         url: 'http://localhost:8081',
-        authProvider: 'google',
+        authMetadata: { authProvider: 'google' },
         skipTLSVerify: true,
         skipMetricsLookup: false,
         caData: undefined,
@@ -150,8 +152,8 @@ describe('ConfigClusterLocator', () => {
       {
         name: 'cluster1',
         url: 'http://localhost:8080',
-        authProvider: 'aws',
         authMetadata: {
+          authProvider: 'aws',
           serviceAccountToken: 'token',
         },
         skipTLSVerify: false,
@@ -162,8 +164,8 @@ describe('ConfigClusterLocator', () => {
       {
         name: 'cluster2',
         url: 'http://localhost:8081',
-        authProvider: 'aws',
         authMetadata: {
+          authProvider: 'aws',
           [ANNOTATION_KUBERNETES_AWS_ASSUME_ROLE]: 'SomeRole',
         },
         skipTLSVerify: true,
@@ -174,8 +176,8 @@ describe('ConfigClusterLocator', () => {
       {
         name: 'cluster2',
         url: 'http://localhost:8081',
-        authProvider: 'aws',
         authMetadata: {
+          authProvider: 'aws',
           [ANNOTATION_KUBERNETES_AWS_ASSUME_ROLE]: 'SomeRole',
           [ANNOTATION_KUBERNETES_AWS_EXTERNAL_ID]: 'SomeExternalId',
         },
@@ -212,7 +214,7 @@ describe('ConfigClusterLocator', () => {
       {
         name: 'cluster1',
         url: 'http://localhost:8080',
-        authProvider: 'serviceAccount',
+        authMetadata: { authProvider: 'serviceAccount' },
         skipMetricsLookup: false,
         skipTLSVerify: false,
         caData: undefined,
@@ -248,7 +250,7 @@ describe('ConfigClusterLocator', () => {
       {
         name: 'cluster1',
         url: 'http://localhost:8080',
-        authProvider: 'serviceAccount',
+        authMetadata: { authProvider: 'serviceAccount' },
         skipMetricsLookup: false,
         skipTLSVerify: false,
         caData: undefined,
@@ -260,18 +262,31 @@ describe('ConfigClusterLocator', () => {
   });
 
   it('supports aks authProvider', async () => {
-    const cluster = {
-      name: 'aks-cluster',
-      url: 'https://aks.test',
-      authProvider: 'aks',
-    };
     const sut = ConfigClusterLocator.fromConfig(
-      new ConfigReader({ clusters: [cluster] }),
+      new ConfigReader({
+        clusters: [
+          {
+            name: 'aks-cluster',
+            url: 'https://aks.test',
+            authProvider: 'aks',
+          },
+        ],
+      }),
     );
 
     const result = await sut.getClusters();
 
-    expect(result).toMatchObject([cluster]);
+    expect(result).toStrictEqual([
+      {
+        name: 'aks-cluster',
+        url: 'https://aks.test',
+        authMetadata: { authProvider: 'aks' },
+        skipMetricsLookup: false,
+        skipTLSVerify: false,
+        caData: undefined,
+        caFile: undefined,
+      },
+    ]);
   });
 
   it('has cluster level defined customResources returns clusterDetails with those CRDs', async () => {
@@ -300,7 +315,7 @@ describe('ConfigClusterLocator', () => {
       {
         name: 'cluster1',
         url: 'http://localhost:8080',
-        authProvider: 'serviceAccount',
+        authMetadata: { authProvider: 'serviceAccount' },
         skipMetricsLookup: false,
         skipTLSVerify: false,
         caData: undefined,
@@ -316,18 +331,22 @@ describe('ConfigClusterLocator', () => {
     ]);
   });
 
+  // TODO move this to a test on OidcStrategy#validate
   it('errors when authProvider is oidc but oidcTokenProvider is missing', async () => {
-    const cluster = {
-      name: 'oidc-cluster',
-      url: 'https://aks.test',
-      authProvider: 'oidc',
-    };
     expect(() =>
       ConfigClusterLocator.fromConfig(
-        new ConfigReader({ clusters: [cluster] }),
+        new ConfigReader({
+          clusters: [
+            {
+              name: 'oidc-cluster',
+              url: 'https://aks.test',
+              authProvider: 'oidc',
+            },
+          ],
+        }),
       ),
     ).toThrow(
-      `Cluster 'oidc-cluster' missing required config value for 'oidcTokenProvider'`,
+      `Invalid cluster 'oidc-cluster': Must specify a token provider for 'oidc' strategy`,
     );
   });
 });

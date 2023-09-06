@@ -62,13 +62,13 @@ describe('KubernetesBuilder', () => {
     const clusters: ClusterDetails[] = [
       {
         name: 'some-cluster',
-        authProvider: 'serviceAccount',
         url: 'https://localhost:1234',
+        authMetadata: { authProvider: 'serviceAccount' },
       },
       {
         name: 'some-other-cluster',
         url: 'https://localhost:1235',
-        authProvider: 'google',
+        authMetadata: { authProvider: 'google' },
       },
     ];
     const clusterSupplier: KubernetesClustersSupplier = {
@@ -189,15 +189,15 @@ describe('KubernetesBuilder', () => {
       const logger = getVoidLogger();
       const someCluster: ClusterDetails = {
         name: 'some-cluster',
-        authProvider: 'serviceAccount',
         url: 'https://localhost:1234',
+        authMetadata: { authProvider: 'serviceAccount' },
       };
       const clusters: ClusterDetails[] = [
         someCluster,
         {
           name: 'some-other-cluster',
           url: 'https://localhost:1235',
-          authProvider: 'google',
+          authMetadata: { authProvider: 'google' },
         },
       ];
       const clusterSupplier: KubernetesClustersSupplier = {

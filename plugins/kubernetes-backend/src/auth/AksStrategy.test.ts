@@ -20,10 +20,10 @@ describe('AksStrategy', () => {
     const strategy = new AksStrategy();
 
     const details = await strategy.decorateClusterDetailsWithAuth(
-      { name: '', authProvider: 'aks', url: '' },
+      { name: '', url: '', authMetadata: { authProvider: 'aks' } },
       { aks: 'aksToken' },
     );
 
-    expect(details.authMetadata!.serviceAccountToken).toBe('aksToken');
+    expect(details.authMetadata.serviceAccountToken).toBe('aksToken');
   });
 });

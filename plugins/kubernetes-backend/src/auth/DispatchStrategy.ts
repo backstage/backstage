@@ -15,7 +15,7 @@
  */
 
 import { AuthenticationStrategy } from './types';
-import { ClusterDetails } from '../types';
+import { AuthMetadata, ClusterDetails } from '../types';
 import { KubernetesRequestAuth } from '@backstage/plugin-kubernetes-common';
 
 /**
@@ -42,13 +42,25 @@ export class DispatchStrategy implements AuthenticationStrategy {
     clusterDetails: ClusterDetails,
     auth: KubernetesRequestAuth,
   ) {
-    if (this.strategyMap[clusterDetails.authProvider]) {
-      return this.strategyMap[
-        clusterDetails.authProvider
-      ].decorateClusterDetailsWithAuth(clusterDetails, auth);
+    const authProvider = clusterDetails.authMetadata.authProvider;
+    if (this.strategyMap[authProvider]) {
+      return this.strategyMap[authProvider].decorateClusterDetailsWithAuth(
+        clusterDetails,
+        auth,
+      );
     }
     throw new Error(
-      `authProvider "${clusterDetails.authProvider}" has no AuthenticationStrategy associated with it`,
+      `authProvider "${authProvider}" has no AuthenticationStrategy associated with it`,
     );
+  }
+
+  public validate(authMetadata: AuthMetadata) {
+    const strategy = this.strategyMap[authMetadata.authProvider];
+    if (!strategy) {
+      throw new Error(
+        `authProvider "${authMetadata.authProvider}" has no config associated with it`,
+      );
+    }
+    strategy.validate(authMetadata);
   }
 }

@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import { ClusterDetails } from '../types/types';
+import { AuthMetadata, ClusterDetails } from '../types/types';
 import { AuthenticationStrategy } from './types';
 import { KubernetesRequestAuth } from '@backstage/plugin-kubernetes-common';
 
@@ -22,7 +22,7 @@ import { KubernetesRequestAuth } from '@backstage/plugin-kubernetes-common';
  * @public
  */
 export class AksStrategy implements AuthenticationStrategy {
-  async decorateClusterDetailsWithAuth(
+  public async decorateClusterDetailsWithAuth(
     clusterDetails: ClusterDetails,
     auth: KubernetesRequestAuth,
   ): Promise<ClusterDetails> {
@@ -36,4 +36,5 @@ export class AksStrategy implements AuthenticationStrategy {
       }),
     };
   }
+  public validate(_: AuthMetadata) {}
 }

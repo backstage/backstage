@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { ClusterDetails } from '../types/types';
+import { AuthMetadata, ClusterDetails } from '../types/types';
 import { KubernetesRequestAuth } from '@backstage/plugin-kubernetes-common';
 
 /**
@@ -26,4 +26,5 @@ export interface AuthenticationStrategy {
     clusterDetails: ClusterDetails,
     authConfig: KubernetesRequestAuth,
   ): Promise<ClusterDetails>;
+  validate(authMetadata: AuthMetadata): void;
 }

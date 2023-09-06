@@ -96,8 +96,8 @@ describe('CatalogClusterLocator', () => {
       name: 'owned',
       url: 'https://apiserver.com',
       caData: 'caData',
-      authProvider: 'oidc',
       authMetadata: {
+        authProvider: 'oidc',
         'kubernetes.io/api-server': 'https://apiserver.com',
         'kubernetes.io/api-server-certificate-authority': 'caData',
         'kubernetes.io/auth-provider': 'oidc',
@@ -124,8 +124,8 @@ describe('CatalogClusterLocator', () => {
       name: 'owned',
       url: 'https://apiserver.com',
       caData: 'caData',
-      authProvider: 'aws',
       authMetadata: {
+        authProvider: 'aws',
         'kubernetes.io/api-server': 'https://apiserver.com',
         'kubernetes.io/api-server-certificate-authority': 'caData',
         'kubernetes.io/auth-provider': 'aws',

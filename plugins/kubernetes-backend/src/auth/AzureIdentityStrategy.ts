@@ -16,7 +16,7 @@
 
 import { Logger } from 'winston';
 import { AuthenticationStrategy } from './types';
-import { ClusterDetails } from '../types/types';
+import { AuthMetadata, ClusterDetails } from '../types/types';
 import {
   AccessToken,
   DefaultAzureCredential,
@@ -38,7 +38,7 @@ export class AzureIdentityStrategy implements AuthenticationStrategy {
     private readonly tokenCredential: TokenCredential = new DefaultAzureCredential(),
   ) {}
 
-  async decorateClusterDetailsWithAuth(
+  public async decorateClusterDetailsWithAuth(
     clusterDetails: ClusterDetails,
   ): Promise<ClusterDetails> {
     const clusterDetailsWithAuthToken: ClusterDetails = Object.assign(
@@ -52,6 +52,8 @@ export class AzureIdentityStrategy implements AuthenticationStrategy {
     };
     return clusterDetailsWithAuthToken;
   }
+
+  public validate(_: AuthMetadata) {}
 
   private async getToken(): Promise<string> {
     if (!this.tokenRequiresRefresh()) {

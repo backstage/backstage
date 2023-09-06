@@ -104,9 +104,9 @@ describe('GkeClusterLocator', () => {
 
       expect(result).toStrictEqual([
         {
-          authProvider: 'google',
           name: 'some-cluster',
           url: 'https://1.2.3.4',
+          authMetadata: { authProvider: 'google' },
           skipTLSVerify: false,
           skipMetricsLookup: true,
         },
@@ -141,9 +141,9 @@ describe('GkeClusterLocator', () => {
 
       expect(result).toStrictEqual([
         {
-          authProvider: 'google',
           name: 'some-cluster',
           url: 'https://1.2.3.4',
+          authMetadata: { authProvider: 'google' },
           skipTLSVerify: false,
           skipMetricsLookup: false,
         },
@@ -183,16 +183,16 @@ describe('GkeClusterLocator', () => {
 
       expect(result).toStrictEqual([
         {
-          authProvider: 'google',
           name: 'some-cluster',
           url: 'https://1.2.3.4',
+          authMetadata: { authProvider: 'google' },
           skipTLSVerify: false,
           skipMetricsLookup: false,
         },
         {
-          authProvider: 'google',
           name: 'some-other-cluster',
           url: 'https://6.7.8.9',
+          authMetadata: { authProvider: 'google' },
           skipTLSVerify: false,
           skipMetricsLookup: false,
         },
@@ -238,16 +238,16 @@ describe('GkeClusterLocator', () => {
 
       expect(result).toStrictEqual([
         {
-          authProvider: 'google',
           name: 'some-cluster',
           url: 'https://1.2.3.4',
+          authMetadata: { authProvider: 'google' },
           skipTLSVerify: false,
           skipMetricsLookup: false,
         },
         {
-          authProvider: 'google',
           name: 'some-other-cluster',
           url: 'https://6.7.8.9',
+          authMetadata: { authProvider: 'google' },
           skipTLSVerify: false,
           skipMetricsLookup: false,
         },
@@ -299,9 +299,9 @@ describe('GkeClusterLocator', () => {
 
       expect(result).toStrictEqual([
         {
-          authProvider: 'google',
           name: 'some-cluster',
           url: 'https://1.2.3.4',
+          authMetadata: { authProvider: 'google' },
           skipTLSVerify: false,
           skipMetricsLookup: false,
         },
@@ -363,9 +363,9 @@ describe('GkeClusterLocator', () => {
 
       expect(result).toStrictEqual([
         {
-          authProvider: 'google',
           name: 'some-cluster',
           url: 'https://1.2.3.4',
+          authMetadata: { authProvider: 'google' },
           skipTLSVerify: false,
           skipMetricsLookup: true,
           dashboardApp: 'gke',

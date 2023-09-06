@@ -16,7 +16,7 @@
 
 import '@backstage/backend-common';
 import { Entity } from '@backstage/catalog-model';
-import { ServiceLocatorRequestContext } from '../types/types';
+import { AuthMetadata, ServiceLocatorRequestContext } from '../types/types';
 import { MultiTenantServiceLocator } from './MultiTenantServiceLocator';
 
 describe('MultiTenantConfigClusterLocator', () => {
@@ -40,8 +40,10 @@ describe('MultiTenantConfigClusterLocator', () => {
           {
             name: 'cluster1',
             url: 'http://localhost:8080',
-            authProvider: 'serviceAccount',
-            serviceAccountToken: '12345',
+            authMetadata: {
+              authProvider: 'serviceAccount',
+              serviceAccountToken: '12345',
+            },
           },
         ];
       },
@@ -56,9 +58,11 @@ describe('MultiTenantConfigClusterLocator', () => {
       clusters: [
         {
           name: 'cluster1',
-          serviceAccountToken: '12345',
           url: 'http://localhost:8080',
-          authProvider: 'serviceAccount',
+          authMetadata: {
+            authProvider: 'serviceAccount',
+            serviceAccountToken: '12345',
+          },
         },
       ],
     });
@@ -70,14 +74,16 @@ describe('MultiTenantConfigClusterLocator', () => {
         return [
           {
             name: 'cluster1',
-            serviceAccountToken: 'token',
             url: 'http://localhost:8080',
-            authProvider: 'serviceAccount',
+            authMetadata: {
+              authProvider: 'serviceAccount',
+              serviceAccountToken: 'token',
+            } as AuthMetadata,
           },
           {
             name: 'cluster2',
             url: 'http://localhost:8081',
-            authProvider: 'google',
+            authMetadata: { authProvider: 'google' } as AuthMetadata,
           },
         ];
       },
@@ -92,14 +98,16 @@ describe('MultiTenantConfigClusterLocator', () => {
       clusters: [
         {
           name: 'cluster1',
-          serviceAccountToken: 'token',
           url: 'http://localhost:8080',
-          authProvider: 'serviceAccount',
+          authMetadata: {
+            authProvider: 'serviceAccount',
+            serviceAccountToken: 'token',
+          },
         },
         {
           name: 'cluster2',
           url: 'http://localhost:8081',
-          authProvider: 'google',
+          authMetadata: { authProvider: 'google' },
         },
       ],
     });

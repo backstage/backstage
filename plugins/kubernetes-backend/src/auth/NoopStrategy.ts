@@ -15,16 +15,18 @@
  */
 
 import { AuthenticationStrategy } from './types';
-import { ClusterDetails } from '../types/types';
+import { AuthMetadata, ClusterDetails } from '../types/types';
 
 /**
  *
  * @public
  */
 export class NoopStrategy implements AuthenticationStrategy {
-  async decorateClusterDetailsWithAuth(
+  public async decorateClusterDetailsWithAuth(
     clusterDetails: ClusterDetails,
   ): Promise<ClusterDetails> {
     return clusterDetails;
   }
+
+  public validate(_: AuthMetadata) {}
 }

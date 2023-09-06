@@ -15,7 +15,7 @@
  */
 
 import { AuthenticationStrategy } from './types';
-import { ClusterDetails } from '../types/types';
+import { AuthMetadata, ClusterDetails } from '../types/types';
 import { KubernetesRequestAuth } from '@backstage/plugin-kubernetes-common';
 
 /**
@@ -23,7 +23,7 @@ import { KubernetesRequestAuth } from '@backstage/plugin-kubernetes-common';
  * @public
  */
 export class GoogleStrategy implements AuthenticationStrategy {
-  async decorateClusterDetailsWithAuth(
+  public async decorateClusterDetailsWithAuth(
     clusterDetails: ClusterDetails,
     authConfig: KubernetesRequestAuth,
   ): Promise<ClusterDetails> {
@@ -45,4 +45,5 @@ export class GoogleStrategy implements AuthenticationStrategy {
     }
     return clusterDetailsWithAuthToken;
   }
+  public validate(_: AuthMetadata) {}
 }

@@ -145,6 +145,12 @@ export interface KubernetesServiceLocator {
 export type ServiceLocatorMethod = 'multiTenant' | 'http'; // TODO implement http
 
 /**
+ * Provider-specific authentication configuration
+ * @public
+ */
+export type AuthMetadata = Record<string, string>;
+
+/**
  *
  * @public
  */
@@ -154,11 +160,7 @@ export interface ClusterDetails {
    */
   name: string;
   url: string;
-  authProvider: string;
-  /**
-   * Provider-specific authentication configuration
-   */
-  authMetadata?: Record<string, string>;
+  authMetadata: AuthMetadata;
   skipTLSVerify?: boolean;
   /**
    * Whether to skip the lookup to the metrics server to retrieve pod resource usage.

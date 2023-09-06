@@ -34,7 +34,10 @@ import { Entity } from '@backstage/catalog-model';
 describe('KubernetesFanOutHandler', () => {
   const fetchObjectsForService = jest.fn();
   const fetchPodMetricsByNamespaces = jest.fn();
-  const getClustersByEntity = jest.fn();
+  const getClustersByEntity = jest.fn<
+    Promise<{ clusters: ClusterDetails[] }>,
+    [Entity]
+  >();
 
   let config: Config;
   let sut: KubernetesFanOutHandler;
@@ -73,7 +76,8 @@ describe('KubernetesFanOutHandler', () => {
 
   const cluster1 = {
     name: 'test-cluster',
-    authProvider: 'serviceAccount',
+    url: '',
+    authMetadata: { authProvider: 'serviceAccount' },
     customResources: [
       {
         group: 'some-other-crd.example.com',
@@ -85,7 +89,8 @@ describe('KubernetesFanOutHandler', () => {
 
   const cluster2 = {
     name: 'cluster-two',
-    authProvider: 'serviceAccount',
+    url: '',
+    authMetadata: { authProvider: 'serviceAccount' },
     customResources: [
       {
         group: 'crd-two.example.com',
@@ -183,6 +188,7 @@ describe('KubernetesFanOutHandler', () => {
         decorateClusterDetailsWithAuth: async (clusterDetails, _) => {
           return clusterDetails;
         },
+        validate: jest.fn(),
       },
       config,
     });
@@ -345,7 +351,8 @@ describe('KubernetesFanOutHandler', () => {
           clusters: [
             {
               name: 'test-cluster',
-              authProvider: 'serviceAccount',
+              url: '',
+              authMetadata: { authProvider: 'serviceAccount' },
             },
           ],
         }),
@@ -459,7 +466,8 @@ describe('KubernetesFanOutHandler', () => {
           clusters: [
             {
               name: 'test-cluster',
-              authProvider: 'serviceAccount',
+              url: '',
+              authMetadata: { authProvider: 'serviceAccount' },
             },
             cluster2,
           ],
@@ -513,7 +521,8 @@ describe('KubernetesFanOutHandler', () => {
           clusters: [
             {
               name: 'profile-cluster-1',
-              authProvider: 'serviceAccount',
+              url: '',
+              authMetadata: { authProvider: 'serviceAccount' },
               customResourceProfile: 'build',
               customResources: [
                 {
@@ -561,7 +570,8 @@ describe('KubernetesFanOutHandler', () => {
           clusters: [
             {
               name: 'profile-cluster-1',
-              authProvider: 'serviceAccount',
+              url: '',
+              authMetadata: { authProvider: 'serviceAccount' },
             },
           ],
         }),
@@ -601,7 +611,8 @@ describe('KubernetesFanOutHandler', () => {
           clusters: [
             {
               name: 'test-cluster',
-              authProvider: 'serviceAccount',
+              url: '',
+              authMetadata: { authProvider: 'serviceAccount' },
             },
           ],
         }),
@@ -698,7 +709,8 @@ describe('KubernetesFanOutHandler', () => {
           clusters: [
             {
               name: 'test-cluster',
-              authProvider: 'serviceAccount',
+              url: '',
+              authMetadata: { authProvider: 'serviceAccount' },
             },
           ],
         }),
@@ -737,12 +749,14 @@ describe('KubernetesFanOutHandler', () => {
           clusters: [
             {
               name: 'test-cluster',
-              authProvider: 'serviceAccount',
+              url: '',
+              authMetadata: { authProvider: 'serviceAccount' },
               dashboardUrl: 'https://k8s.foo.coom',
             },
             {
               name: 'other-cluster',
-              authProvider: 'google',
+              url: '',
+              authMetadata: { authProvider: 'google' },
             },
           ],
         }),
@@ -788,15 +802,18 @@ describe('KubernetesFanOutHandler', () => {
           clusters: [
             {
               name: 'test-cluster',
-              authProvider: 'serviceAccount',
+              url: '',
+              authMetadata: { authProvider: 'serviceAccount' },
             },
             {
               name: 'other-cluster',
-              authProvider: 'google',
+              url: '',
+              authMetadata: { authProvider: 'google' },
             },
             {
               name: 'empty-cluster',
-              authProvider: 'google',
+              url: '',
+              authMetadata: { authProvider: 'google' },
             },
           ],
         }),
@@ -841,19 +858,23 @@ describe('KubernetesFanOutHandler', () => {
           clusters: [
             {
               name: 'test-cluster',
-              authProvider: 'serviceAccount',
+              url: '',
+              authMetadata: { authProvider: 'serviceAccount' },
             },
             {
               name: 'other-cluster',
-              authProvider: 'google',
+              url: '',
+              authMetadata: { authProvider: 'google' },
             },
             {
               name: 'empty-cluster',
-              authProvider: 'google',
+              url: '',
+              authMetadata: { authProvider: 'google' },
             },
             {
               name: 'error-cluster',
-              authProvider: 'google',
+              url: '',
+              authMetadata: { authProvider: 'google' },
             },
           ],
         }),
@@ -919,12 +940,14 @@ describe('KubernetesFanOutHandler', () => {
           clusters: [
             {
               name: 'test-cluster',
-              authProvider: 'serviceAccount',
+              url: '',
+              authMetadata: { authProvider: 'serviceAccount' },
               dashboardUrl: 'https://k8s.foo.coom',
             },
             {
               name: 'other-cluster',
-              authProvider: 'google',
+              url: '',
+              authMetadata: { authProvider: 'google' },
             },
           ],
         }),
@@ -1017,7 +1040,8 @@ describe('KubernetesFanOutHandler', () => {
         clusters: [
           {
             name: 'test-cluster',
-            authProvider: 'serviceAccount',
+            url: '',
+            authMetadata: { authProvider: 'serviceAccount' },
             skipMetricsLookup: true,
           },
         ],
@@ -1066,16 +1090,20 @@ describe('KubernetesFanOutHandler', () => {
                 {
                   name: 'works',
                   url: 'https://works',
-                  authProvider: 'serviceAccount',
+                  authMetadata: {
+                    authProvider: 'serviceAccount',
+                    serviceAccountToken: 'token',
+                  },
                   skipMetricsLookup: true,
-                  authMetadata: { serviceAccountToken: 'token' },
                 },
                 {
                   name: 'fails',
                   url: 'https://fails',
-                  authProvider: 'serviceAccount',
+                  authMetadata: {
+                    authProvider: 'serviceAccount',
+                    serviceAccountToken: 'token',
+                  },
                   skipMetricsLookup: true,
-                  authMetadata: { serviceAccountToken: 'token' },
                 },
               ],
             }),
@@ -1104,6 +1132,7 @@ describe('KubernetesFanOutHandler', () => {
             decorateClusterDetailsWithAuth: async (clusterDetails, _) => {
               return clusterDetails;
             },
+            validate: jest.fn(),
           },
           config,
         });
@@ -1199,7 +1228,8 @@ describe('KubernetesFanOutHandler', () => {
           clusters: [
             {
               name: 'test-cluster',
-              authProvider: 'serviceAccount',
+              url: '',
+              authMetadata: { authProvider: 'serviceAccount' },
             },
             cluster2,
           ],
@@ -1272,7 +1302,8 @@ describe('KubernetesFanOutHandler', () => {
           clusters: [
             {
               name: 'profile-cluster-1',
-              authProvider: 'serviceAccount',
+              url: '',
+              authMetadata: { authProvider: 'serviceAccount' },
               customResourceProfile: 'build',
             },
           ],

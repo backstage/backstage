@@ -63,9 +63,9 @@ describe('AwsIamStrategy tests', () => {
     const authPromise = strategy.decorateClusterDetailsWithAuth({
       name: 'test-cluster',
       url: '',
-      authProvider: 'aws',
+      authMetadata: { authProvider: 'aws' },
     });
-    expect((await authPromise).authMetadata!.serviceAccountToken).toEqual(
+    expect((await authPromise).authMetadata.serviceAccountToken).toEqual(
       'k8s-aws-v1.aHR0cHM6Ly9odHRwczovL2V4YW1wbGUuY29tL2FzZGY_',
     );
   });
@@ -76,10 +76,12 @@ describe('AwsIamStrategy tests', () => {
     const authPromise = strategy.decorateClusterDetailsWithAuth({
       name: 'test-cluster',
       url: '',
-      authProvider: 'aws',
-      authMetadata: { [ANNOTATION_KUBERNETES_AWS_ASSUME_ROLE]: 'SomeRole' },
+      authMetadata: {
+        authProvider: 'aws',
+        [ANNOTATION_KUBERNETES_AWS_ASSUME_ROLE]: 'SomeRole',
+      },
     });
-    expect((await authPromise).authMetadata!.serviceAccountToken).toEqual(
+    expect((await authPromise).authMetadata.serviceAccountToken).toEqual(
       'k8s-aws-v1.aHR0cHM6Ly9odHRwczovL2V4YW1wbGUuY29tL2FzZGY_',
     );
     expect(fromTemporaryCredentials).toHaveBeenCalledWith({
@@ -102,13 +104,13 @@ describe('AwsIamStrategy tests', () => {
     const authPromise = strategy.decorateClusterDetailsWithAuth({
       name: 'test-cluster',
       url: '',
-      authProvider: 'aws',
       authMetadata: {
+        authProvider: 'aws',
         [ANNOTATION_KUBERNETES_AWS_ASSUME_ROLE]: 'SomeRole',
         [ANNOTATION_KUBERNETES_AWS_EXTERNAL_ID]: 'external-id',
       },
     });
-    expect((await authPromise).authMetadata!.serviceAccountToken).toEqual(
+    expect((await authPromise).authMetadata.serviceAccountToken).toEqual(
       'k8s-aws-v1.aHR0cHM6Ly9odHRwczovL2V4YW1wbGUuY29tL2FzZGY_',
     );
     expect(fromTemporaryCredentials).toHaveBeenCalledWith({
@@ -137,7 +139,7 @@ describe('AwsIamStrategy tests', () => {
         strategy.decorateClusterDetailsWithAuth({
           name: 'test-cluster',
           url: '',
-          authProvider: 'aws',
+          authMetadata: { authProvider: 'aws' },
         }),
       ).rejects.toThrow('no way');
     });

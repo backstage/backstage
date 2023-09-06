@@ -18,6 +18,7 @@ import { Config, ConfigReader } from '@backstage/config';
 import { getCombinedClusterSupplier } from './index';
 import { CatalogApi } from '@backstage/catalog-client';
 import { ClusterDetails } from '../types/types';
+import { AuthenticationStrategy, DispatchStrategy } from '../auth';
 
 describe('getCombinedClusterSupplier', () => {
   let catalogApi: CatalogApi;
@@ -48,16 +49,31 @@ describe('getCombinedClusterSupplier', () => {
       },
       'ctx',
     );
+    const mockStrategy: jest.Mocked<AuthenticationStrategy> = {
+      decorateClusterDetailsWithAuth: jest.fn(),
+      validate: jest.fn(),
+    };
 
-    const clusterSupplier = getCombinedClusterSupplier(config, catalogApi);
+    const clusterSupplier = getCombinedClusterSupplier(
+      config,
+      catalogApi,
+      new DispatchStrategy({
+        authStrategyMap: {
+          serviceAccount: mockStrategy,
+          google: mockStrategy,
+        },
+      }),
+    );
     const result = await clusterSupplier.getClusters();
 
     expect(result).toStrictEqual<ClusterDetails[]>([
       {
         name: 'cluster1',
         url: 'http://localhost:8080',
-        authProvider: 'serviceAccount',
-        authMetadata: { serviceAccountToken: 'token' },
+        authMetadata: {
+          authProvider: 'serviceAccount',
+          serviceAccountToken: 'token',
+        },
         skipMetricsLookup: false,
         skipTLSVerify: false,
         caData: undefined,
@@ -66,7 +82,7 @@ describe('getCombinedClusterSupplier', () => {
       {
         name: 'cluster2',
         url: 'http://localhost:8081',
-        authProvider: 'google',
+        authMetadata: { authProvider: 'google' },
         skipMetricsLookup: false,
         skipTLSVerify: false,
         caData: undefined,
@@ -77,35 +93,17 @@ describe('getCombinedClusterSupplier', () => {
 
   it('throws an error when using an unsupported cluster locator', async () => {
     const config: Config = new ConfigReader(
-      {
-        kubernetes: {
-          clusterLocatorMethods: [
-            {
-              type: 'config',
-              clusters: [
-                {
-                  name: 'cluster1',
-                  serviceAccountToken: 'token',
-                  url: 'http://localhost:8080',
-                  authProvider: 'serviceAccount',
-                },
-                {
-                  name: 'cluster2',
-                  url: 'http://localhost:8081',
-                  authProvider: 'google',
-                },
-              ],
-            },
-            {
-              type: 'magic',
-            },
-          ],
-        },
-      },
+      { kubernetes: { clusterLocatorMethods: [{ type: 'magic' }] } },
       'ctx',
     );
 
-    expect(() => getCombinedClusterSupplier(config, catalogApi)).toThrow(
+    expect(() =>
+      getCombinedClusterSupplier(
+        config,
+        catalogApi,
+        new DispatchStrategy({ authStrategyMap: {} }),
+      ),
+    ).toThrow(
       new Error('Unsupported kubernetes.clusterLocatorMethods: "magic"'),
     );
   });

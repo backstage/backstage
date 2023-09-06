@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 import { AuthenticationStrategy } from './types';
-import { ClusterDetails } from '../types/types';
+import { AuthMetadata, ClusterDetails } from '../types/types';
 import * as container from '@google-cloud/container';
 
 /**
@@ -22,7 +22,7 @@ import * as container from '@google-cloud/container';
  * @public
  */
 export class GoogleServiceAccountStrategy implements AuthenticationStrategy {
-  async decorateClusterDetailsWithAuth(
+  public async decorateClusterDetailsWithAuth(
     clusterDetails: ClusterDetails,
   ): Promise<ClusterDetails> {
     const clusterDetailsWithAuthToken: ClusterDetails = Object.assign(
@@ -44,4 +44,6 @@ export class GoogleServiceAccountStrategy implements AuthenticationStrategy {
     }
     return clusterDetailsWithAuthToken;
   }
+
+  public validate(_: AuthMetadata) {}
 }

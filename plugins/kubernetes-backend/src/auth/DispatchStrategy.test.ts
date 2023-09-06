@@ -25,7 +25,10 @@ describe('decorateClusterDetailsWithAuth', () => {
   const authObject: KubernetesRequestAuth = {};
 
   beforeEach(() => {
-    mockStrategy = { decorateClusterDetailsWithAuth: jest.fn() };
+    mockStrategy = {
+      decorateClusterDetailsWithAuth: jest.fn(),
+      validate: jest.fn(),
+    };
     strategy = new DispatchStrategy({
       authStrategyMap: { google: mockStrategy },
     });
@@ -35,8 +38,10 @@ describe('decorateClusterDetailsWithAuth', () => {
     const expectedClusterDetails: ClusterDetails = {
       url: 'notanything.com',
       name: 'randomName',
-      authProvider: 'google',
-      authMetadata: { serviceAccountToken: 'added by mock strategy' },
+      authMetadata: {
+        authProvider: 'google',
+        serviceAccountToken: 'added by mock strategy',
+      },
     };
 
     mockStrategy.decorateClusterDetailsWithAuth.mockResolvedValue(
@@ -44,12 +49,20 @@ describe('decorateClusterDetailsWithAuth', () => {
     );
 
     const returnedValue = await strategy.decorateClusterDetailsWithAuth(
-      { name: 'googleCluster', url: 'anything.com', authProvider: 'google' },
+      {
+        name: 'googleCluster',
+        url: 'anything.com',
+        authMetadata: { authProvider: 'google' },
+      },
       authObject,
     );
 
     expect(mockStrategy.decorateClusterDetailsWithAuth).toHaveBeenCalledWith(
-      { name: 'googleCluster', url: 'anything.com', authProvider: 'google' },
+      {
+        name: 'googleCluster',
+        url: 'anything.com',
+        authMetadata: { authProvider: 'google' },
+      },
       authObject,
     );
     expect(returnedValue).toBe(expectedClusterDetails);
@@ -61,7 +74,7 @@ describe('decorateClusterDetailsWithAuth', () => {
         {
           name: 'test-cluster',
           url: 'anything.com',
-          authProvider: 'linode',
+          authMetadata: { authProvider: 'linode' },
         },
         authObject,
       ),

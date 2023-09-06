@@ -18,14 +18,14 @@ import {
   KubernetesRequestAuth,
 } from '@backstage/plugin-kubernetes-common';
 import { AuthenticationStrategy } from './types';
-import { ClusterDetails } from '../types/types';
+import { AuthMetadata, ClusterDetails } from '../types/types';
 
 /**
  *
  * @public
  */
 export class OidcStrategy implements AuthenticationStrategy {
-  async decorateClusterDetailsWithAuth(
+  public async decorateClusterDetailsWithAuth(
     clusterDetails: ClusterDetails,
     authConfig: KubernetesRequestAuth,
   ): Promise<ClusterDetails> {
@@ -35,7 +35,7 @@ export class OidcStrategy implements AuthenticationStrategy {
     );
 
     const oidcTokenProvider =
-      clusterDetails.authMetadata?.[ANNOTATION_KUBERNETES_OIDC_TOKEN_PROVIDER];
+      clusterDetails.authMetadata[ANNOTATION_KUBERNETES_OIDC_TOKEN_PROVIDER];
 
     if (!oidcTokenProvider || oidcTokenProvider === '') {
       throw new Error(
@@ -56,5 +56,13 @@ export class OidcStrategy implements AuthenticationStrategy {
       );
     }
     return clusterDetailsWithAuthToken;
+  }
+
+  public validate(authMetadata: AuthMetadata) {
+    const oidcTokenProvider =
+      authMetadata[ANNOTATION_KUBERNETES_OIDC_TOKEN_PROVIDER];
+    if (!oidcTokenProvider || oidcTokenProvider === '') {
+      throw new Error(`Must specify a token provider for 'oidc' strategy`);
+    }
   }
 }

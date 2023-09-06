@@ -26,7 +26,7 @@ export class LocalKubectlProxyClusterLocator
       {
         name: 'local',
         url: 'http:/localhost:8001',
-        authProvider: 'localKubectlProxy',
+        authMetadata: { authProvider: 'localKubectlProxy' },
         skipMetricsLookup: true,
       },
     ];

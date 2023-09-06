@@ -201,8 +201,8 @@ export class KubernetesClientBasedFetcher implements KubernetesFetcher {
     let url: URL;
     let requestInit: RequestInit;
     if (
-      clusterDetails?.authMetadata?.serviceAccountToken ||
-      clusterDetails.authProvider === 'localKubectlProxy'
+      clusterDetails.authMetadata.serviceAccountToken ||
+      clusterDetails.authMetadata.authProvider === 'localKubectlProxy'
     ) {
       [url, requestInit] = this.fetchArgsFromClusterDetails(clusterDetails);
     } else if (fs.pathExistsSync(Config.SERVICEACCOUNT_TOKEN_PATH)) {
@@ -236,7 +236,7 @@ export class KubernetesClientBasedFetcher implements KubernetesFetcher {
       headers: {
         Accept: 'application/json',
         'Content-Type': 'application/json',
-        Authorization: `Bearer ${clusterDetails.authMetadata?.serviceAccountToken}`,
+        Authorization: `Bearer ${clusterDetails.authMetadata.serviceAccountToken}`,
       },
     };
 

@@ -225,6 +225,7 @@ export class KubernetesBuilder {
     this.clusterSupplier = getCombinedClusterSupplier(
       config,
       this.env.catalogApi,
+      new DispatchStrategy({ authStrategyMap: this.getAuthStrategyMap() }),
       refreshInterval,
     );
 
@@ -340,11 +341,11 @@ export class KubernetesBuilder {
       const clusterDetails = await this.fetchClusterDetails(clusterSupplier);
       res.json({
         items: clusterDetails.map(cd => {
-          const oidcTokenProvider = cd.authMetadata?.oidcTokenProvider;
+          const oidcTokenProvider = cd.authMetadata.oidcTokenProvider;
           return {
             name: cd.name,
             dashboardUrl: cd.dashboardUrl,
-            authProvider: cd.authProvider,
+            authProvider: cd.authMetadata.authProvider,
             ...(oidcTokenProvider && { oidcTokenProvider }),
           };
         }),
@@ -358,14 +359,14 @@ export class KubernetesBuilder {
 
   protected buildAuthStrategyMap() {
     this.authStrategyMap = {
-      google: new GoogleStrategy(),
       aks: new AksStrategy(),
       aws: new AwsIamStrategy({ config: this.env.config }),
       azure: new AzureIdentityStrategy(this.env.logger),
-      serviceAccount: new NoopStrategy(),
+      google: new GoogleStrategy(),
       googleServiceAccount: new GoogleServiceAccountStrategy(),
-      oidc: new OidcStrategy(),
       localKubectlProxy: new NoopStrategy(),
+      oidc: new OidcStrategy(),
+      serviceAccount: new NoopStrategy(),
     };
     return this.authStrategyMap;
   }

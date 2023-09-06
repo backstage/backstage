@@ -28,6 +28,8 @@ export class AksStrategy implements AuthenticationStrategy {
     clusterDetails: ClusterDetails,
     auth: KubernetesRequestAuth,
   ): Promise<ClusterDetails>;
+  // (undocumented)
+  validate(_: AuthMetadata): void;
 }
 
 // @public (undocumented)
@@ -37,7 +39,12 @@ export interface AuthenticationStrategy {
     clusterDetails: ClusterDetails,
     authConfig: KubernetesRequestAuth,
   ): Promise<ClusterDetails>;
+  // (undocumented)
+  validate(authMetadata: AuthMetadata): void;
 }
+
+// @public
+export type AuthMetadata = Record<string, string>;
 
 // @public (undocumented)
 export class AwsIamStrategy implements AuthenticationStrategy {
@@ -46,6 +53,8 @@ export class AwsIamStrategy implements AuthenticationStrategy {
   decorateClusterDetailsWithAuth(
     clusterDetails: ClusterDetails,
   ): Promise<ClusterDetails>;
+  // (undocumented)
+  validate(_: AuthMetadata): void;
 }
 
 // @public (undocumented)
@@ -55,13 +64,14 @@ export class AzureIdentityStrategy implements AuthenticationStrategy {
   decorateClusterDetailsWithAuth(
     clusterDetails: ClusterDetails,
   ): Promise<ClusterDetails>;
+  // (undocumented)
+  validate(_: AuthMetadata): void;
 }
 
 // @public (undocumented)
 export interface ClusterDetails {
-  authMetadata?: Record<string, string>;
   // (undocumented)
-  authProvider: string;
+  authMetadata: AuthMetadata;
   // (undocumented)
   caData?: string | undefined;
   // (undocumented)
@@ -104,6 +114,8 @@ export class DispatchStrategy implements AuthenticationStrategy {
     clusterDetails: ClusterDetails,
     auth: KubernetesRequestAuth,
   ): Promise<ClusterDetails>;
+  // (undocumented)
+  validate(authMetadata: AuthMetadata): void;
 }
 
 // @public (undocumented)
@@ -127,6 +139,8 @@ export class GoogleServiceAccountStrategy implements AuthenticationStrategy {
   decorateClusterDetailsWithAuth(
     clusterDetails: ClusterDetails,
   ): Promise<ClusterDetails>;
+  // (undocumented)
+  validate(_: AuthMetadata): void;
 }
 
 // @public (undocumented)
@@ -136,6 +150,8 @@ export class GoogleStrategy implements AuthenticationStrategy {
     clusterDetails: ClusterDetails,
     authConfig: KubernetesRequestAuth,
   ): Promise<ClusterDetails>;
+  // (undocumented)
+  validate(_: AuthMetadata): void;
 }
 
 // @public
@@ -375,6 +391,8 @@ export class NoopStrategy implements AuthenticationStrategy {
   decorateClusterDetailsWithAuth(
     clusterDetails: ClusterDetails,
   ): Promise<ClusterDetails>;
+  // (undocumented)
+  validate(_: AuthMetadata): void;
 }
 
 // @public (undocumented)
@@ -415,6 +433,8 @@ export class OidcStrategy implements AuthenticationStrategy {
     clusterDetails: ClusterDetails,
     authConfig: KubernetesRequestAuth,
   ): Promise<ClusterDetails>;
+  // (undocumented)
+  validate(authMetadata: AuthMetadata): void;
 }
 
 // @public (undocumented)

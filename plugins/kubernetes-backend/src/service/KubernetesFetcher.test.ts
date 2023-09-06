@@ -138,8 +138,10 @@ describe('KubernetesFetcher', () => {
         clusterDetails: {
           name: 'cluster1',
           url: 'http://localhost:9999',
-          authProvider: 'serviceAccount',
-          authMetadata: { serviceAccountToken: 'token' },
+          authMetadata: {
+            authProvider: 'serviceAccount',
+            serviceAccountToken: 'token',
+          },
         },
         objectTypesToFetch: OBJECTS_TO_FETCH,
         labelSelector: '',
@@ -199,8 +201,10 @@ describe('KubernetesFetcher', () => {
         clusterDetails: {
           name: 'cluster1',
           url: 'http://localhost:9999/k8s/clusters/1234',
-          authProvider: 'serviceAccount',
-          authMetadata: { serviceAccountToken: 'token' },
+          authMetadata: {
+            authProvider: 'serviceAccount',
+            serviceAccountToken: 'token',
+          },
         },
         objectTypesToFetch: OBJECTS_TO_FETCH,
         labelSelector: '',
@@ -253,7 +257,7 @@ describe('KubernetesFetcher', () => {
         clusterDetails: {
           name: 'cluster1',
           url: 'http://localhost:9999/k8s/clusters/1234',
-          authProvider: 'localKubectlProxy',
+          authMetadata: { authProvider: 'localKubectlProxy' },
         },
         objectTypesToFetch: new Set([
           {
@@ -309,8 +313,10 @@ describe('KubernetesFetcher', () => {
         clusterDetails: {
           name: 'cluster1',
           url: 'http://localhost:9999',
-          authProvider: 'serviceAccount',
-          authMetadata: { serviceAccountToken: 'token' },
+          authMetadata: {
+            authProvider: 'serviceAccount',
+            serviceAccountToken: 'token',
+          },
         },
         objectTypesToFetch: OBJECTS_TO_FETCH,
         labelSelector: '',
@@ -383,8 +389,10 @@ describe('KubernetesFetcher', () => {
         clusterDetails: {
           name: 'cluster1',
           url: 'http://localhost:9999',
-          authProvider: 'serviceAccount',
-          authMetadata: { serviceAccountToken: 'token' },
+          authMetadata: {
+            authProvider: 'serviceAccount',
+            serviceAccountToken: 'token',
+          },
         },
         objectTypesToFetch: OBJECTS_TO_FETCH,
         labelSelector: '',
@@ -475,8 +483,10 @@ describe('KubernetesFetcher', () => {
         clusterDetails: {
           name: 'cluster1',
           url: 'http://localhost:9999',
-          authProvider: 'serviceAccount',
-          authMetadata: { serviceAccountToken: 'token' },
+          authMetadata: {
+            authProvider: 'serviceAccount',
+            serviceAccountToken: 'token',
+          },
         },
         objectTypesToFetch: OBJECTS_TO_FETCH,
         labelSelector: '',
@@ -563,8 +573,10 @@ describe('KubernetesFetcher', () => {
         clusterDetails: {
           name: 'cluster1',
           url: 'http://badurl.does.not.exist',
-          authProvider: 'serviceAccount',
-          authMetadata: { serviceAccountToken: 'token' },
+          authMetadata: {
+            authProvider: 'serviceAccount',
+            serviceAccountToken: 'token',
+          },
         },
         objectTypesToFetch: OBJECTS_TO_FETCH,
         labelSelector: '',
@@ -600,8 +612,10 @@ describe('KubernetesFetcher', () => {
         clusterDetails: {
           name: 'cluster1',
           url: 'http://localhost:9999',
-          authProvider: 'serviceAccount',
-          authMetadata: { serviceAccountToken: 'token' },
+          authMetadata: {
+            authProvider: 'serviceAccount',
+            serviceAccountToken: 'token',
+          },
         },
         objectTypesToFetch: OBJECTS_TO_FETCH,
         labelSelector: 'service-label=value',
@@ -667,8 +681,10 @@ describe('KubernetesFetcher', () => {
           clusterDetails: {
             name: 'cluster1',
             url: 'https://localhost:9999',
-            authProvider: 'serviceAccount',
-            authMetadata: { serviceAccountToken: 'token' },
+            authMetadata: {
+              authProvider: 'serviceAccount',
+              serviceAccountToken: 'token',
+            },
             caData: 'MOCKCA',
           },
           objectTypesToFetch: new Set<ObjectToFetch>([
@@ -704,8 +720,10 @@ describe('KubernetesFetcher', () => {
           clusterDetails: {
             name: 'cluster1',
             url: 'https://localhost:9999',
-            authProvider: 'serviceAccount',
-            authMetadata: { serviceAccountToken: 'token' },
+            authMetadata: {
+              authProvider: 'serviceAccount',
+              serviceAccountToken: 'token',
+            },
           },
           objectTypesToFetch: new Set<ObjectToFetch>([
             {
@@ -747,8 +765,10 @@ describe('KubernetesFetcher', () => {
             clusterDetails: {
               name: 'cluster1',
               url: 'https://localhost:9999',
-              authProvider: 'serviceAccount',
-              authMetadata: { serviceAccountToken: 'token' },
+              authMetadata: {
+                authProvider: 'serviceAccount',
+                serviceAccountToken: 'token',
+              },
               caFile: '/path/to/ca.crt',
             },
             objectTypesToFetch: new Set<ObjectToFetch>([
@@ -785,8 +805,10 @@ describe('KubernetesFetcher', () => {
           clusterDetails: {
             name: 'cluster1',
             url: 'https://localhost:9999',
-            authProvider: 'serviceAccount',
-            authMetadata: { serviceAccountToken: 'token' },
+            authMetadata: {
+              authProvider: 'serviceAccount',
+              serviceAccountToken: 'token',
+            },
             skipTLSVerify: true,
           },
           objectTypesToFetch: new Set<ObjectToFetch>([
@@ -836,8 +858,10 @@ describe('KubernetesFetcher', () => {
         clusterDetails: {
           name: 'cluster1',
           url: 'http://localhost:9999',
-          authProvider: 'serviceAccount',
-          authMetadata: { serviceAccountToken: 'token' },
+          authMetadata: {
+            authProvider: 'serviceAccount',
+            serviceAccountToken: 'token',
+          },
         },
         objectTypesToFetch: OBJECTS_TO_FETCH,
         labelSelector: '',
@@ -880,7 +904,7 @@ describe('KubernetesFetcher', () => {
           clusterDetails: {
             name: 'unauthenticated-cluster',
             url: 'http://ignored',
-            authProvider: 'serviceAccount',
+            authMetadata: { authProvider: 'serviceAccount' },
           },
           objectTypesToFetch: OBJECTS_TO_FETCH,
           labelSelector: '',
@@ -923,7 +947,7 @@ describe('KubernetesFetcher', () => {
           clusterDetails: {
             name: 'overridden-to-in-cluster',
             url: 'http://ignored',
-            authProvider: 'serviceAccount',
+            authMetadata: { authProvider: 'serviceAccount' },
           },
           objectTypesToFetch: new Set<ObjectToFetch>([
             {
@@ -1019,8 +1043,10 @@ describe('KubernetesFetcher', () => {
         {
           name: 'cluster1',
           url: 'http://localhost:9999',
-          authProvider: 'serviceAccount',
-          authMetadata: { serviceAccountToken: 'token' },
+          authMetadata: {
+            authProvider: 'serviceAccount',
+            serviceAccountToken: 'token',
+          },
         },
         new Set(['ns-a']),
       );
@@ -1106,8 +1132,10 @@ describe('KubernetesFetcher', () => {
         {
           name: 'cluster1',
           url: 'http://localhost:9999',
-          authProvider: 'serviceAccount',
-          authMetadata: { serviceAccountToken: 'token' },
+          authMetadata: {
+            authProvider: 'serviceAccount',
+            serviceAccountToken: 'token',
+          },
         },
         new Set(['ns-a', 'ns-b']),
       );

@@ -21,38 +21,39 @@ import {
   ANNOTATION_KUBERNETES_OIDC_TOKEN_PROVIDER,
 } from '@backstage/plugin-kubernetes-common';
 import { ClusterDetails, KubernetesClustersSupplier } from '../types/types';
+import {
+  AuthenticationStrategy,
+  AksStrategy,
+  DispatchStrategy,
+  GoogleStrategy,
+  GoogleServiceAccountStrategy,
+  NoopStrategy,
+  OidcStrategy,
+} from '../auth';
+
+const defaultAuthStrategies: Record<string, AuthenticationStrategy> = {
+  aks: new AksStrategy(),
+  aws: new NoopStrategy(),
+  google: new GoogleStrategy(),
+  googleServiceAccount: new GoogleServiceAccountStrategy(),
+  localKubectlProxy: new NoopStrategy(),
+  oidc: new OidcStrategy(),
+  serviceAccount: new NoopStrategy(),
+};
 
 export class ConfigClusterLocator implements KubernetesClustersSupplier {
   private readonly clusterDetails: ClusterDetails[];
-
-  private static authValidators: Record<
-    string,
-    (clusterDetails: ClusterDetails) => void
-  > = {
-    google: _ => {},
-    aws: _ => {},
-    azure: _ => {},
-    oidc: clusterDetails => {
-      if (
-        !clusterDetails.authMetadata?.[
-          ANNOTATION_KUBERNETES_OIDC_TOKEN_PROVIDER
-        ]
-      ) {
-        throw new Error(
-          `Cluster '${clusterDetails.name}' missing required config value for 'oidcTokenProvider'`,
-        );
-      }
-    },
-    serviceAccount: _ => {},
-    googleServiceAccount: _ => {},
-    aks: _ => {},
-  };
 
   constructor(clusterDetails: ClusterDetails[]) {
     this.clusterDetails = clusterDetails;
   }
 
-  static fromConfig(config: Config): ConfigClusterLocator {
+  static fromConfig(
+    config: Config,
+    authStrategy: AuthenticationStrategy = new DispatchStrategy({
+      authStrategyMap: defaultAuthStrategies,
+    }),
+  ): ConfigClusterLocator {
     return new ConfigClusterLocator(
       config.getConfigArray('clusters').map(c => {
         const authProvider = c.getString('authProvider');
@@ -63,8 +64,10 @@ export class ConfigClusterLocator implements KubernetesClustersSupplier {
           skipMetricsLookup: c.getOptionalBoolean('skipMetricsLookup') ?? false,
           caData: c.getOptionalString('caData'),
           caFile: c.getOptionalString('caFile'),
-          authProvider: authProvider,
-          ...ConfigClusterLocator.parseAuthMetadata(c),
+          authMetadata: {
+            authProvider,
+            ...ConfigClusterLocator.parseAuthMetadata(c),
+          },
         };
 
         const customResources = c.getOptionalConfigArray('customResources');
@@ -90,20 +93,21 @@ export class ConfigClusterLocator implements KubernetesClustersSupplier {
           clusterDetails.dashboardParameters = c.get('dashboardParameters');
         }
 
-        if (authProvider in ConfigClusterLocator.authValidators) {
-          ConfigClusterLocator.authValidators[authProvider](clusterDetails);
-          return clusterDetails;
+        try {
+          authStrategy.validate(clusterDetails.authMetadata);
+        } catch (e) {
+          throw new Error(
+            `Invalid cluster '${clusterDetails.name}': ${e.message}`,
+          );
         }
-        throw new Error(
-          `authProvider "${authProvider}" has no config associated with it`,
-        );
+        return clusterDetails;
       }),
     );
   }
 
   private static parseAuthMetadata(
     clusterConfig: Config,
-  ): { authMetadata: Record<string, string> } | undefined {
+  ): Record<string, string> | undefined {
     const serviceAccountToken = clusterConfig.getOptionalString(
       'serviceAccountToken',
     );
@@ -114,18 +118,16 @@ export class ConfigClusterLocator implements KubernetesClustersSupplier {
 
     return serviceAccountToken || assumeRole || externalId || oidcTokenProvider
       ? {
-          authMetadata: {
-            ...(serviceAccountToken && { serviceAccountToken }),
-            ...(assumeRole && {
-              [ANNOTATION_KUBERNETES_AWS_ASSUME_ROLE]: assumeRole,
-            }),
-            ...(externalId && {
-              [ANNOTATION_KUBERNETES_AWS_EXTERNAL_ID]: externalId,
-            }),
-            ...(oidcTokenProvider && {
-              [ANNOTATION_KUBERNETES_OIDC_TOKEN_PROVIDER]: oidcTokenProvider,
-            }),
-          },
+          ...(serviceAccountToken && { serviceAccountToken }),
+          ...(assumeRole && {
+            [ANNOTATION_KUBERNETES_AWS_ASSUME_ROLE]: assumeRole,
+          }),
+          ...(externalId && {
+            [ANNOTATION_KUBERNETES_AWS_EXTERNAL_ID]: externalId,
+          }),
+          ...(oidcTokenProvider && {
+            [ANNOTATION_KUBERNETES_OIDC_TOKEN_PROVIDER]: oidcTokenProvider,
+          }),
         }
       : undefined;
   }

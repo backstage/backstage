@@ -120,7 +120,7 @@ export class GkeClusterLocator implements KubernetesClustersSupplier {
           // TODO filter out clusters which don't have name or endpoint
           name: r.name ?? 'unknown',
           url: `https://${r.endpoint ?? ''}`,
-          authProvider: 'google',
+          authMetadata: { authProvider: 'google' },
           skipTLSVerify,
           skipMetricsLookup,
           ...(exposeDashboard
