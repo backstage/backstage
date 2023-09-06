@@ -17163,9 +17163,9 @@ __metadata:
   linkType: hard
 
 "@types/core-js@npm:^2.5.4":
-  version: 2.5.5
-  resolution: "@types/core-js@npm:2.5.5"
-  checksum: 54eb91dc52206d8e524771cd079be4bed6a41947d08183a7954df7a3dc25ae21c8b7176143dc7203df82a6e5ff1df8998edc8d407c4a082bdbf0ede35369c5c3
+  version: 2.5.6
+  resolution: "@types/core-js@npm:2.5.6"
+  checksum: 05cfeea4c918c88afcff5949e05a66c9c6cccd67f3de80732609d2546da0fdbd4350d6ecb415d4301f877e5ae1073c8afc0d500233f2b8826dd66d14c6e0c854
   languageName: node
   linkType: hard
 
