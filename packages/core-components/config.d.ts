@@ -50,13 +50,6 @@ export interface Config {
       useWorkerTimers?: boolean;
 
       /**
-       * List of events that the autologout event listener will catch to detect if the user is active
-       * These events are standard DOM events.
-       * @visibility frontend
-       */
-      events?: string[];
-
-      /**
        * Enable/disable the automatic logout also on users that are logged in but with no Backstage tabs open.
        * Default is true.
        * @visibility frontend

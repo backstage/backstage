@@ -21,9 +21,10 @@ import DialogContent from '@material-ui/core/DialogContent';
 import DialogContentText from '@material-ui/core/DialogContentText';
 import DialogTitle from '@material-ui/core/DialogTitle';
 import React, { useEffect } from 'react';
-import { useIdleTimerContext } from 'react-idle-timer';
+import { IIdleTimer } from 'react-idle-timer';
 
 export interface StillTherePromptProps {
+  idleTimer: IIdleTimer;
   promptTimeoutMillis: number;
   remainingTime: number;
   setRemainingTime: (amount: number) => void;
@@ -33,13 +34,13 @@ export interface StillTherePromptProps {
 
 export const StillTherePrompt = (props: StillTherePromptProps) => {
   const {
+    idleTimer,
     setOpen,
     open,
     promptTimeoutMillis,
     remainingTime,
     setRemainingTime,
   } = props;
-  const idleTimer = useIdleTimerContext();
 
   useEffect(() => {
     const interval = setInterval(() => {
@@ -63,7 +64,7 @@ export const StillTherePrompt = (props: StillTherePromptProps) => {
   const seconds = timeTillPrompt > 1 ? 'seconds' : 'second';
 
   return (
-    <Dialog open={open}>
+    <Dialog open={open} data-testid="inactivity-prompt-dialog">
       <DialogTitle>Logging out due to inactivity</DialogTitle>
       <DialogContent>
         <DialogContentText>

@@ -18,10 +18,10 @@ import { createMocks } from 'react-idle-timer';
 import { MessageChannel } from 'worker_threads';
 import { ApiProvider } from '@backstage/core-app-api';
 import { identityApiRef } from '@backstage/core-plugin-api';
-import { renderWithEffects, TestApiRegistry } from '@backstage/test-utils';
+import { TestApiRegistry } from '@backstage/test-utils';
 import React from 'react';
 
-import { AutoLogoutProvider } from './AutoLogoutProvider';
+import { AutoLogout } from './AutoLogout';
 import { cleanup, render } from '@testing-library/react';
 
 // Mock the signOut function of identityApiRef
@@ -43,29 +43,15 @@ describe('AutoLogoutProvider', () => {
     jest.clearAllMocks();
   });
 
-  it('renders children even when enabled is false', async () => {
-    const { queryByText } = await renderWithEffects(
-      <ApiProvider apis={apis}>
-        <AutoLogoutProvider enabled={false}>
-          <div>Test Child</div>
-        </AutoLogoutProvider>
-      </ApiProvider>,
-    );
-
-    expect(queryByText('Test Child')).not.toBeNull();
-    expect(mockSignOut).not.toHaveBeenCalled();
-  });
-
   it('should throw error if idleTimeoutMinutes is smaller than promptBeforeSeconds', async () => {
     expect(() =>
       render(
         <ApiProvider apis={apis}>
-          <AutoLogoutProvider
+          <AutoLogout
+            enabled
             idleTimeoutMinutes={0.5}
             promptBeforeIdleSeconds={120}
-          >
-            <div>Test Child</div>
-          </AutoLogoutProvider>
+          />
         </ApiProvider>,
       ),
     ).toThrow();
@@ -75,9 +61,8 @@ describe('AutoLogoutProvider', () => {
     expect(() =>
       render(
         <ApiProvider apis={apis}>
-          <AutoLogoutProvider idleTimeoutMinutes={0.49}>
-            <div>Test Child</div>
-          </AutoLogoutProvider>
+          <AutoLogout enabled idleTimeoutMinutes={0.49} />
+          <div>Test Child</div>
         </ApiProvider>,
       ),
     ).toThrow();

@@ -22,7 +22,7 @@ This is how it looks like:
 
 ## Quick start
 
-To enable and configure Auto Logout, you will need to add the `<AutoLogoutProvider>` component to your Backstage's instance entry point, located at `App.tsx`.
+To enable and configure Auto Logout, you will need to add the `<AutoLogout>` component to your Backstage's instance entry point, located at `App.tsx`.
 
 Here's how to add it:
 
@@ -34,9 +34,10 @@ import { AutoLogoutProvider } from '@backstage/core-components';
 export default app.createRoot(
   <>
     // ...
-    <AutoLogoutProvider>
+    <AutoLogout />
+    <AppRouter>
       <Root>{routes}</Root>
-    </AutoLogoutProvider>
+    </AppRouter>
     // ...
   </>,
 );
@@ -44,39 +45,17 @@ export default app.createRoot(
 
 ## Configuration
 
-You can further adjust the Auto Logout settings by tweaking the available `<AutoLogoutProvider>` properties:
+You can further adjust the Auto Logout settings by tweaking the available `<AutoLogout>` properties:
 
 ```ts
-<AutoLogoutProvider
+<AutoLogout
   idleTimeoutMinutes={30}
   useWorkerTimers={false}
   logoutIfDisconnected={false}
->
-  <Root>{routes}</Root>
-</AutoLogoutProvider>
+/>
 ```
 
-If you prefer to have different settings for each Backstage instance deployed at your infrastructure, you can instead leverage the `<ConfigBasedAutoLogoutProvider>` which reads the Auto Logout settings from `app-config`.
-
-To do so, adjust your `App.tsx` as follows:
-
-```ts
-import { ConfigBasedAutoLogoutProvider } from '@backstage/core-components';
-
-// ... App.tsx contents
-
-export default app.createRoot(
-  <>
-    // ...
-    <ConfigBasedAutoLogoutProvider>
-      <Root>{routes}</Root>
-    </ConfigBasedAutoLogoutProvider>
-    // ...
-  </>,
-);
-```
-
-And add these lines into your `app-config`:
+If you prefer to have different settings for each Backstage instance deployed at your infrastructure, you can instead leverage your `app-config` and place some configuration properties:
 
 ```yaml
 auth:
@@ -84,13 +63,13 @@ auth:
     enabled: true
 ```
 
+Bear in mind that, in case the same property is found both in the `<AutoLogout>` component and the `app-config` file then the properties set in the React component take precedence over configuration properties found inside your `app-config`.
 You will now be able to configure the AutoLogoutProvider through your `app-config`. These are the available settings:
 
-| Configuration Key                         | Component Property        | Description                                                                                                                                                                                                                                                            | Allowed Values                                                                                | Default Value                                                                                                                                                  |
-| ----------------------------------------- | ------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | --------------------------------------------------------------------------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| `auth.autologout.enabled`                 | `enabled`                 | Enable/disable the Auto Logout feature.                                                                                                                                                                                                                                | `true`/`false`                                                                                | With `<AutoLogoutProvider>` default is enabled (`true`). With `<ConfigBasedAutoLogoutProvider>` default is disabled (`false`)                                  |
-| `auth.autologout.idleTimeoutMinutes`      | `idleTimeoutMinutes`      | Sets the idle time (in minutes) after which the user will be logged out.                                                                                                                                                                                               | `>= 0.5` minutes                                                                              | `60`                                                                                                                                                           |
-| `auth.autologout.promptBeforeIdleSeconds` | `promptBeforeIdleSeconds` | Determines the time (in seconds) prior to idle state when a prompt will appear. A value of 0 disables the prompt. This must be less than the value of `idleTimeoutMinutes`.                                                                                            | `>= 0` seconds                                                                                | `10`                                                                                                                                                           |
-| `auth.autologout.events`                  | `events`                  | Specifies the list of events used to detect user activity.                                                                                                                                                                                                             | Allowed values are standard [DOM events](https://developer.mozilla.org/en-US/docs/Web/Events) | `'mousemove', 'keydown', 'wheel', 'DOMMouseScroll', 'mousewheel', 'mousedown', 'touchstart' 'touchmove', 'MSPointerDown', 'MSPointerMove', 'visibilitychange'` |
-| `auth.autologout.useWorkerTimers`         | `useWorkerTimers`         | Enables or disables the use of Node's worker thread timers instead of main thread timers. This can be beneficial if the browser is terminating timers in inactive tabs, like those used by auto logout. In case of browser incompatibility, try setting this to false. | `true`/`false`                                                                                | `true`                                                                                                                                                         |
-| `auth.autologout.logoutIfDisconnected`    | `logoutIfDisconnected`    | Enable/disable auto logout for disconnected users. Disconnected users are those who are logged in but do not have any active Backstage tabs open in their browsers. If enabled, such users will be automatically logged out after `idleTimeoutMinutes`.                | `true`/`false`                                                                                | `true`                                                                                                                                                         |
+| Configuration Key                         | Component Property        | Description                                                                                                                                                                                                                                                            | Allowed Values   | Default Value                                                                                                                 |
+| ----------------------------------------- | ------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ---------------- | ----------------------------------------------------------------------------------------------------------------------------- |
+| `auth.autologout.enabled`                 | `enabled`                 | Enable/disable the Auto Logout feature.                                                                                                                                                                                                                                | `true`/`false`   | With `<AutoLogoutProvider>` default is enabled (`true`). With `<ConfigBasedAutoLogoutProvider>` default is disabled (`false`) |
+| `auth.autologout.idleTimeoutMinutes`      | `idleTimeoutMinutes`      | Sets the idle time (in minutes) after which the user will be logged out.                                                                                                                                                                                               | `>= 0.5` minutes | `60`                                                                                                                          |
+| `auth.autologout.promptBeforeIdleSeconds` | `promptBeforeIdleSeconds` | Determines the time (in seconds) prior to idle state when a prompt will appear. A value of 0 disables the prompt. This must be less than the value of `idleTimeoutMinutes`.                                                                                            | `>= 0` seconds   | `10`                                                                                                                          |
+| `auth.autologout.useWorkerTimers`         | `useWorkerTimers`         | Enables or disables the use of Node's worker thread timers instead of main thread timers. This can be beneficial if the browser is terminating timers in inactive tabs, like those used by auto logout. In case of browser incompatibility, try setting this to false. | `true`/`false`   | `true`                                                                                                                        |
+| `auth.autologout.logoutIfDisconnected`    | `logoutIfDisconnected`    | Enable/disable auto logout for disconnected users. Disconnected users are those who are logged in but do not have any active Backstage tabs open in their browsers. If enabled, such users will be automatically logged out after `idleTimeoutMinutes`.                | `true`/`false`   | `true`                                                                                                                        |

@@ -110,11 +110,5 @@
     "dist",
     "config.d.ts"
   ],
-  "configSchema": "config.d.ts",
-  "jest": {
-    "resetMocks": false,
-    "setupFiles": [
-      "jest-localstorage-mock"
-    ]
-  }
+  "configSchema": "config.d.ts"
 }
