@@ -8,6 +8,17 @@ import { JsonObject } from '@backstage/types';
 import { TemplateAction } from '@backstage/plugin-scaffolder-node';
 
 // @public
+export function createSentryClientAction(config: Config): TemplateAction<
+  {
+    organizationSlug: string;
+    projectSlug?: string | undefined;
+    authToken?: string | undefined;
+    apiBaseUrl?: string | undefined;
+  },
+  JsonObject
+>;
+
+// @public
 export function createSentryCreateProjectAction(options: {
   config: Config;
 }): TemplateAction<
@@ -17,6 +28,7 @@ export function createSentryCreateProjectAction(options: {
     name: string;
     slug?: string | undefined;
     authToken?: string | undefined;
+    apiBaseUrl?: string | undefined;
   },
   JsonObject
 >;

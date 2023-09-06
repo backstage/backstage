@@ -28,8 +28,8 @@
     "postpack": "backstage-cli package postpack"
   },
   "dependencies": {
-    "@backstage/config": "workspace:^",
     "@backstage/backend-common": "workspace:^",
+    "@backstage/config": "workspace:^",
     "@backstage/errors": "workspace:^",
     "@backstage/plugin-scaffolder-node": "workspace:^"
   },
