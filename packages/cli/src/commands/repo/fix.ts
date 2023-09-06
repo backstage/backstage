@@ -18,6 +18,7 @@ import {
   BackstagePackage,
   BackstagePackageJson,
   PackageGraph,
+  PackageRoles,
 } from '@backstage/cli-node';
 import { OptionValues } from 'commander';
 import fs from 'fs-extra';
@@ -155,11 +156,45 @@ export function fixPackageExports(pkg: FixablePackage) {
   }
 }
 
+export function fixSideEffects(pkg: FixablePackage) {
+  const role = PackageRoles.getRoleFromPackage(pkg.packageJson);
+  if (!role) {
+    return;
+  }
+
+  const roleInfo = PackageRoles.getRoleInfo(role);
+
+  // Only web and common packages benefit from being marked as side effect free
+  if (roleInfo.platform === 'node') {
+    return;
+  }
+  // Bundled packages don't need to mark themselves as having no side effects
+  if (roleInfo.output.length === 1 && roleInfo.output[0] === 'bundle') {
+    return;
+  }
+
+  // Already declared
+  if ('sideEffects' in pkg.packageJson) {
+    return;
+  }
+
+  const pkgEntries = Object.entries(pkg.packageJson);
+  pkgEntries.splice(
+    // Place it just above the scripts field
+    pkgEntries.findIndex(([name]) => name === 'scripts'),
+    0,
+    ['sideEffects', false],
+  );
+  pkg.packageJson = Object.fromEntries(pkgEntries) as BackstagePackageJson;
+  pkg.changed = true;
+}
+
 export async function command(opts: OptionValues): Promise<void> {
   const packages = await readFixablePackages();
 
   for (const pkg of packages) {
     fixPackageExports(pkg);
+    fixSideEffects(pkg);
   }
 
   if (opts.check) {
