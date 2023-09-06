@@ -22,7 +22,7 @@ import { exampleResponseBody } from './test-fixutres';
 global.fetch = jest.fn(() => {
   const response = {
     json: () => Promise.resolve(exampleResponseBody),
-    headers: new Headers([['Content-Type', 'application/json']]),
+    headers: new global.Headers([['Content-Type', 'application/json']]),
     ok: false,
     redirected: false,
     status: 201,
