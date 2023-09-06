@@ -101,7 +101,7 @@ const ConditionalAutoLogout = ({
   const promptBeforeIdleMillis = promptBeforeIdleSeconds * 1000;
   const promptBeforeIdle = promptBeforeIdleMillis > 0 ? true : false;
 
-  const onPrompt = () => {
+  const onPrompt = async () => {
     // onPrompt will be called `promptBeforeIdle` milliseconds before `timeout`.
     // All events are disabled while the prompt is active.
     // If the user wishes to stay active, call the `activate()` method.
@@ -232,6 +232,18 @@ const parseConfig = (
 export const AutoLogout = (props: AutoLogoutProps): JSX.Element => {
   const identityApi = useApi(identityApiRef);
   const configApi = useApi(configApiRef);
+  const [isLogged, setIsLogged] = useState(false);
+  useEffect(() => {
+    // if the user is not logged in, the autologout feature won't affect the app even if enabled
+    async function isLoggedIn(identity: IdentityApi) {
+      if ((await identity.getCredentials()).token) {
+        setIsLogged(true);
+      } else {
+        setIsLogged(false);
+      }
+    }
+    isLoggedIn(identityApi);
+  }, [identityApi]);
 
   const {
     enabled,
@@ -274,13 +286,13 @@ export const AutoLogout = (props: AutoLogoutProps): JSX.Element => {
 
   useLogoutDisconnectedUserEffect({
     enableEffect: logoutIfDisconnected,
-    autologoutIsEnabled: enabled,
+    autologoutIsEnabled: enabled && isLogged,
     idleTimeoutSeconds: idleTimeoutMinutes * 60,
     lastSeenOnlineStore,
     identityApi,
   });
 
-  if (!enabled) {
+  if (!enabled || !isLogged) {
     return <></>;
   }
 
