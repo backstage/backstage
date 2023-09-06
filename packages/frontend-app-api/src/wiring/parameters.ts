@@ -15,7 +15,7 @@
  */
 
 import { Config } from '@backstage/config';
-import { Extension } from '@backstage/frontend-plugin-api';
+import { BackstagePlugin, Extension } from '@backstage/frontend-plugin-api';
 import { JsonValue } from '@backstage/types';
 
 export interface ExtensionParameters {
@@ -183,23 +183,41 @@ export function expandShorthandExtensionParameters(
 
 export interface ExtensionInstanceParameters {
   extension: Extension<unknown>;
+  source?: BackstagePlugin;
   at: string;
   config?: unknown;
 }
 
 /** @internal */
-export function mergeExtensionParameters(
-  base: Extension<unknown>[],
-  parameters: Array<ExtensionParameters>,
-): ExtensionInstanceParameters[] {
-  const overrides = base.map(extension => ({
-    extension,
-    params: {
-      at: extension.at,
-      disabled: extension.disabled,
-      config: undefined as unknown,
-    },
-  }));
+export function mergeExtensionParameters(options: {
+  sources: BackstagePlugin[];
+  builtinExtensions: Extension<unknown>[];
+  parameters: Array<ExtensionParameters>;
+}): ExtensionInstanceParameters[] {
+  const { sources, builtinExtensions, parameters } = options;
+
+  const overrides = [
+    ...sources.flatMap(plugin =>
+      plugin.extensions.map(extension => ({
+        extension,
+        params: {
+          source: plugin,
+          at: extension.at,
+          disabled: extension.disabled,
+          config: undefined as unknown,
+        },
+      })),
+    ),
+    ...builtinExtensions.map(extension => ({
+      extension,
+      params: {
+        source: undefined,
+        at: extension.at,
+        disabled: extension.disabled,
+        config: undefined as unknown,
+      },
+    })),
+  ];
 
   for (const overrideParam of parameters) {
     const existingIndex = overrides.findIndex(
@@ -234,6 +252,7 @@ export function mergeExtensionParameters(
     .map(param => ({
       extension: param.extension,
       at: param.params.at,
+      source: param.params.source,
       config: param.params.config,
     }));
 }

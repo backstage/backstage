@@ -1,5 +1,19 @@
 # @backstage/plugin-airbrake
 
+## 0.3.24-next.2
+
+### Patch Changes
+
+- 8cec7664e146: Removed `@types/node` dependency
+- Updated dependencies
+  - @backstage/core-components@0.13.5-next.2
+  - @backstage/core-plugin-api@1.6.0-next.2
+  - @backstage/test-utils@1.4.3-next.2
+  - @backstage/dev-utils@1.0.21-next.2
+  - @backstage/plugin-catalog-react@1.8.4-next.2
+  - @backstage/catalog-model@1.4.2-next.1
+  - @backstage/theme@0.4.1
+
 ## 0.3.24-next.1
 
 ### Patch Changes

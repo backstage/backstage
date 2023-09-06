@@ -1,7 +1,7 @@
 {
   "name": "@backstage/core-components",
   "description": "Core components used by Backstage plugins and apps",
-  "version": "0.13.5-next.1",
+  "version": "0.13.5-next.2",
   "publishConfig": {
     "access": "public",
     "main": "dist/index.esm.js",
@@ -60,7 +60,7 @@
     "pluralize": "^8.0.0",
     "prop-types": "^15.7.2",
     "qs": "^6.9.4",
-    "rc-progress": "3.4.2",
+    "rc-progress": "3.5.1",
     "react-helmet": "6.1.0",
     "react-hook-form": "^7.12.2",
     "react-markdown": "^8.0.0",
@@ -95,7 +95,6 @@
     "@types/d3-zoom": "^3.0.1",
     "@types/dagre": "^0.7.44",
     "@types/google-protobuf": "^3.7.2",
-    "@types/node": "^16.11.26",
     "@types/react-helmet": "^6.1.0",
     "@types/react-syntax-highlighter": "^15.0.0",
     "@types/react-virtualized-auto-sizer": "^1.0.1",

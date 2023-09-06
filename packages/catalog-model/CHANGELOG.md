@@ -1,5 +1,14 @@
 # @backstage/catalog-model
 
+## 1.4.2-next.1
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/config@1.1.0-next.1
+  - @backstage/errors@1.2.1
+  - @backstage/types@1.1.0
+
 ## 1.4.2-next.0
 
 ### Patch Changes

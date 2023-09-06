@@ -1,5 +1,17 @@
 # @backstage/integration-react
 
+## 1.1.19-next.2
+
+### Patch Changes
+
+- 8cec7664e146: Removed `@types/node` dependency
+- Updated dependencies
+  - @backstage/core-components@0.13.5-next.2
+  - @backstage/core-plugin-api@1.6.0-next.2
+  - @backstage/config@1.1.0-next.1
+  - @backstage/integration@1.7.0-next.2
+  - @backstage/theme@0.4.1
+
 ## 1.1.19-next.1
 
 ### Patch Changes

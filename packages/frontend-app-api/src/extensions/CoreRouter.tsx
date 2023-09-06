@@ -21,13 +21,14 @@ import {
 } from '@backstage/frontend-plugin-api';
 import { BrowserRouter, useRoutes } from 'react-router-dom';
 
-export const RouteExtension = createExtension({
+export const CoreRouter = createExtension({
   id: 'core.router',
   at: 'root',
   inputs: {
     routes: {
       extensionData: {
         path: coreExtensionData.routePath,
+        ref: coreExtensionData.routeRef,
         component: coreExtensionData.reactComponent,
       },
     },
@@ -46,10 +47,12 @@ export const RouteExtension = createExtension({
 
       return element;
     };
-    bind.component(() => (
-      <BrowserRouter>
-        <Routes />
-      </BrowserRouter>
-    ));
+    bind({
+      component: () => (
+        <BrowserRouter>
+          <Routes />
+        </BrowserRouter>
+      ),
+    });
   },
 });

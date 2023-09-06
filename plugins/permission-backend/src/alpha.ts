@@ -14,4 +14,4 @@
  * limitations under the License.
  */
 
-export { permissionPlugin, permissionModuleAllowAllPolicy } from './plugin';
+export { permissionPlugin } from './plugin';

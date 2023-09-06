@@ -17,6 +17,7 @@
 import { graphiqlPlugin as legacyGraphiqlPlugin } from '@backstage/plugin-graphiql';
 import { createApp as createLegacyApp } from '@backstage/app-defaults';
 import { createApp } from '@backstage/frontend-app-api';
+import { pagesPlugin } from './examples/pagesPlugin';
 import { graphiqlPlugin } from './examples/graphiqlPlugin';
 
 /*
@@ -49,7 +50,7 @@ TODO:
 /* app.tsx */
 
 const app = createApp({
-  plugins: [graphiqlPlugin],
+  plugins: [graphiqlPlugin, pagesPlugin],
   // bindRoutes({ bind }) {
   //   bind(catalogPlugin.externalRoutes, {
   //     createComponent: scaffolderPlugin.routes.root,

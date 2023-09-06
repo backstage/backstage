@@ -14,23 +14,31 @@
  * limitations under the License.
  */
 
-import { Extension } from '@backstage/frontend-plugin-api';
+import { BackstagePlugin, Extension } from '@backstage/frontend-plugin-api';
 import mapValues from 'lodash/mapValues';
 
 /** @internal */
 export interface ExtensionInstance {
-  id: string;
-  data: Map<string, unknown>;
-  $$type: 'extension-instance';
+  readonly id: string;
+  /**
+   * Maps extension data ref IDs to extensions produced.
+   */
+  readonly data: Map<string, unknown>;
+  /**
+   * Maps input names to the actual instances given to them.
+   */
+  readonly attachments: Map<string, ExtensionInstance[]>;
+  readonly $$type: 'extension-instance';
 }
 
 /** @internal */
 export function createExtensionInstance(options: {
   extension: Extension<unknown>;
   config: unknown;
-  attachments: Record<string, ExtensionInstance[]>;
+  source?: BackstagePlugin;
+  attachments: Map<string, ExtensionInstance[]>;
 }): ExtensionInstance {
-  const { extension, config, attachments } = options;
+  const { extension, config, source, attachments } = options;
   const extensionData = new Map<string, unknown>();
 
   let parsedConfig: unknown;
@@ -44,15 +52,24 @@ export function createExtensionInstance(options: {
 
   try {
     extension.factory({
+      source,
       config: parsedConfig,
-      bind: mapValues(extension.output, ref => {
-        return (value: unknown) => extensionData.set(ref.id, value);
-      }),
+      bind: namedOutputs => {
+        for (const [name, output] of Object.entries(namedOutputs)) {
+          const ref = extension.output[name];
+          if (!ref) {
+            throw new Error(
+              `Extension instance '${extension.id}' tried to bind unknown output '${name}'`,
+            );
+          }
+          extensionData.set(ref.id, output);
+        }
+      },
       inputs: mapValues(
         extension.inputs,
         ({ extensionData: pointData }, inputName) => {
           // TODO: validation
-          return (attachments[inputName] ?? []).map(attachment =>
+          return (attachments.get(inputName) ?? []).map(attachment =>
             mapValues(pointData, ref => attachment.data.get(ref.id)),
           );
         },
@@ -67,6 +84,7 @@ export function createExtensionInstance(options: {
   return {
     id: options.extension.id,
     data: extensionData,
+    attachments,
     $$type: 'extension-instance',
   };
 }

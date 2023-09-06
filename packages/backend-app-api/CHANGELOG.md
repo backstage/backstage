@@ -1,5 +1,26 @@
 # @backstage/backend-app-api
 
+## 0.5.3-next.2
+
+### Patch Changes
+
+- 37a20c7f14aa: Adds include and exclude configuration to feature discovery of backend packages
+  Adds alpha modules to feature discovery
+- 3fc64b9e2f8f: Extension points are now tracked via their ID rather than reference, in order to support package duplication.
+- b219d097b3f4: Backend startup will now fail if any circular service dependencies are detected.
+- Updated dependencies
+  - @backstage/config-loader@1.5.0-next.2
+  - @backstage/config@1.1.0-next.1
+  - @backstage/backend-tasks@0.5.8-next.2
+  - @backstage/backend-common@0.19.5-next.2
+  - @backstage/plugin-auth-node@0.3.0-next.2
+  - @backstage/plugin-permission-node@0.7.14-next.2
+  - @backstage/backend-plugin-api@0.6.3-next.2
+  - @backstage/cli-common@0.1.12
+  - @backstage/cli-node@0.1.3
+  - @backstage/errors@1.2.1
+  - @backstage/types@1.1.0
+
 ## 0.5.3-next.1
 
 ### Patch Changes

@@ -375,7 +375,7 @@ export class DefaultProcessingDatabase implements ProcessingDatabase {
               entityRef,
               newLocationKey: locationKey,
               existingLocationKey: conflictingKey,
-              lastConflictAt: DateTime.now().toISO(),
+              lastConflictAt: DateTime.now().toISO()!,
             },
           };
           await this.options.eventBroker?.publish(eventParams);

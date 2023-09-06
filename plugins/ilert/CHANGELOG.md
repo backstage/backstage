@@ -1,5 +1,19 @@
 # @backstage/plugin-ilert
 
+## 0.2.13-next.2
+
+### Patch Changes
+
+- 8cec7664e146: Removed `@types/node` dependency
+- 814feeed7343: Update to handle invalid luxon values
+- Updated dependencies
+  - @backstage/core-components@0.13.5-next.2
+  - @backstage/core-plugin-api@1.6.0-next.2
+  - @backstage/plugin-catalog-react@1.8.4-next.2
+  - @backstage/catalog-model@1.4.2-next.1
+  - @backstage/errors@1.2.1
+  - @backstage/theme@0.4.1
+
 ## 0.2.13-next.1
 
 ### Patch Changes

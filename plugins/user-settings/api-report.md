@@ -94,6 +94,9 @@ export const UserSettingsGeneral: () => React_2.JSX.Element;
 export const UserSettingsIdentityCard: () => React_2.JSX.Element;
 
 // @public (undocumented)
+export const UserSettingsLanguageToggle: () => React_2.JSX.Element | null;
+
+// @public (undocumented)
 export const UserSettingsMenu: () => React_2.JSX.Element;
 
 // @public (undocumented)

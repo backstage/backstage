@@ -1,5 +1,23 @@
 # @backstage/cli
 
+## 0.22.13-next.2
+
+### Patch Changes
+
+- 8cec7664e146: Removed `@types/node` dependency
+- ea779492ad88: Updated dependency `run-script-webpack-plugin` to `^0.2.0`.
+- Updated dependencies
+  - @backstage/release-manifests@0.0.10-next.0
+  - @backstage/config-loader@1.5.0-next.2
+  - @backstage/config@1.1.0-next.1
+  - @backstage/integration@1.7.0-next.2
+  - @backstage/catalog-model@1.4.2-next.1
+  - @backstage/cli-common@0.1.12
+  - @backstage/cli-node@0.1.3
+  - @backstage/errors@1.2.1
+  - @backstage/eslint-plugin@0.1.3
+  - @backstage/types@1.1.0
+
 ## 0.22.13-next.1
 
 ### Patch Changes

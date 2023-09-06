@@ -42,6 +42,10 @@ import {
   BackstagePlugin,
   FeatureFlag,
 } from '@backstage/core-plugin-api';
+import {
+  AppTranslationApi,
+  appTranslationApiRef,
+} from '@backstage/core-plugin-api/alpha';
 import { ApiFactoryRegistry, ApiResolver } from '../apis/system';
 import {
   childDiscoverer,
@@ -75,6 +79,8 @@ import { resolveRouteBindings } from './resolveRouteBindings';
 import { isReactRouterBeta } from './isReactRouterBeta';
 import { InternalAppContext } from './InternalAppContext';
 import { AppRouter, getBasePath } from './AppRouter';
+import { AppTranslationProvider } from './AppTranslationProvider';
+import { AppTranslationApiImpl } from '../apis/implementations/AppTranslationApi';
 
 type CompatiblePlugin =
   | BackstagePlugin
@@ -209,6 +215,7 @@ export class AppManager implements BackstageApp {
   private readonly configLoader?: AppConfigLoader;
   private readonly defaultApis: Iterable<AnyApiFactory>;
   private readonly bindRoutes: AppOptions['bindRoutes'];
+  private readonly appTranslationApi: AppTranslationApi;
 
   private readonly appIdentityProxy = new AppIdentityProxy();
   private readonly apiFactoryRegistry: ApiFactoryRegistry;
@@ -224,6 +231,9 @@ export class AppManager implements BackstageApp {
     this.defaultApis = options.defaultApis ?? [];
     this.bindRoutes = options.bindRoutes;
     this.apiFactoryRegistry = new ApiFactoryRegistry();
+    this.appTranslationApi = AppTranslationApiImpl.create(
+      options.__experimentalI18n,
+    );
   }
 
   getPlugins(): BackstagePlugin[] {
@@ -379,24 +389,26 @@ export class AppManager implements BackstageApp {
       return (
         <ApiProvider apis={this.getApiHolder()}>
           <AppContextProvider appContext={appContext}>
-            <ThemeProvider>
-              <RoutingProvider
-                routePaths={routing.paths}
-                routeParents={routing.parents}
-                routeObjects={routing.objects}
-                routeBindings={routeBindings}
-                basePath={getBasePath(loadedConfig.api)}
-              >
-                <InternalAppContext.Provider
-                  value={{
-                    routeObjects: routing.objects,
-                    appIdentityProxy: this.appIdentityProxy,
-                  }}
+            <AppTranslationProvider>
+              <ThemeProvider>
+                <RoutingProvider
+                  routePaths={routing.paths}
+                  routeParents={routing.parents}
+                  routeObjects={routing.objects}
+                  routeBindings={routeBindings}
+                  basePath={getBasePath(loadedConfig.api)}
                 >
-                  {children}
-                </InternalAppContext.Provider>
-              </RoutingProvider>
-            </ThemeProvider>
+                  <InternalAppContext.Provider
+                    value={{
+                      routeObjects: routing.objects,
+                      appIdentityProxy: this.appIdentityProxy,
+                    }}
+                  >
+                    {children}
+                  </InternalAppContext.Provider>
+                </RoutingProvider>
+              </ThemeProvider>
+            </AppTranslationProvider>
           </AppContextProvider>
         </ApiProvider>
       );
@@ -446,6 +458,11 @@ export class AppManager implements BackstageApp {
       api: identityApiRef,
       deps: {},
       factory: () => this.appIdentityProxy,
+    });
+    this.apiFactoryRegistry.register('static', {
+      api: appTranslationApiRef,
+      deps: {},
+      factory: () => this.appTranslationApi,
     });
 
     // It's possible to replace the feature flag API, but since we must have at least
