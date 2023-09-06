@@ -19,6 +19,7 @@
     "url": "https://github.com/backstage/backstage",
     "directory": "plugins/org"
   },
+  "sideEffects": false,
   "scripts": {
     "build": "backstage-cli package build",
     "start": "backstage-cli package start",

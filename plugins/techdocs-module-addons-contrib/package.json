@@ -23,6 +23,7 @@
     "backstage",
     "techdocs"
   ],
+  "sideEffects": false,
   "scripts": {
     "start": "backstage-cli package start",
     "build": "backstage-cli package build",

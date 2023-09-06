@@ -25,6 +25,7 @@
     "sonarqube",
     "sonarcloud"
   ],
+  "sideEffects": false,
   "scripts": {
     "build": "backstage-cli package build --experimental-type-build",
     "start": "backstage-cli package start",

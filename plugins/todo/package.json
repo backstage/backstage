@@ -20,6 +20,7 @@
     "url": "https://github.com/backstage/backstage",
     "directory": "plugins/todo"
   },
+  "sideEffects": false,
   "scripts": {
     "build": "backstage-cli package build --experimental-type-build",
     "start": "backstage-cli package start",
