@@ -6,13 +6,9 @@
 import { BackstagePlugin } from '@backstage/frontend-plugin-api';
 import { default as React_2 } from 'react';
 
-// Warning: (ae-missing-release-tag) "examplePlugin" is part of the package's API, but it is missing a release tag (@alpha, @beta, @public, or @internal)
-//
 // @public (undocumented)
 export const examplePlugin: BackstagePlugin;
 
-// Warning: (ae-missing-release-tag) "ExampleSidebarItem" is part of the package's API, but it is missing a release tag (@alpha, @beta, @public, or @internal)
-//
 // @public (undocumented)
 export const ExampleSidebarItem: () => React_2.JSX.Element;
 
