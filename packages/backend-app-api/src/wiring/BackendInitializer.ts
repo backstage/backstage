@@ -23,7 +23,7 @@ import {
 } from '@backstage/backend-plugin-api';
 import { BackendLifecycleImpl } from '../services/implementations/rootLifecycle/rootLifecycleServiceFactory';
 import { BackendPluginLifecycleImpl } from '../services/implementations/lifecycle/lifecycleServiceFactory';
-import { EnumerableServiceHolder, ServiceOrExtensionPoint } from './types';
+import { ServiceOrExtensionPoint } from './types';
 // Direct internal import to avoid duplication
 // eslint-disable-next-line @backstage/no-forbidden-package-imports
 import { InternalBackendFeature } from '@backstage/backend-plugin-api/src/wiring/types';
@@ -45,12 +45,10 @@ export class BackendInitializer {
   #startPromise?: Promise<void>;
   #features = new Array<InternalBackendFeature>();
   #extensionPoints = new Map<string, { impl: unknown; pluginId: string }>();
-  #serviceHolder: EnumerableServiceHolder | undefined;
-  #providedServiceFactories = new Array<ServiceFactory>();
-  #defaultApiFactories: ServiceFactory[];
+  #serviceRegistry: ServiceRegistry;
 
   constructor(defaultApiFactories: ServiceFactory[]) {
-    this.#defaultApiFactories = defaultApiFactories;
+    this.#serviceRegistry = ServiceRegistry.create([...defaultApiFactories]);
   }
 
   async #getInitDeps(
@@ -70,7 +68,7 @@ export class BackendInitializer {
         }
         result.set(name, ep.impl);
       } else {
-        const impl = await this.#serviceHolder!.get(
+        const impl = await this.#serviceRegistry.get(
           ref as ServiceRef<unknown>,
           pluginId,
         );
@@ -107,21 +105,7 @@ export class BackendInitializer {
     }
 
     if (isServiceFactory(feature)) {
-      if (feature.service.id === coreServices.pluginMetadata.id) {
-        throw new Error(
-          `The ${coreServices.pluginMetadata.id} service cannot be overridden`,
-        );
-      }
-      if (
-        this.#providedServiceFactories.find(
-          sf => sf.service.id === feature.service.id,
-        )
-      ) {
-        throw new Error(
-          `Duplicate service implementations provided for ${feature.service.id}`,
-        );
-      }
-      this.#providedServiceFactories.push(feature);
+      this.#serviceRegistry.add(feature);
     } else if (isInternalBackendFeature(feature)) {
       if (feature.version !== 'v1') {
         throw new Error(
@@ -164,12 +148,9 @@ export class BackendInitializer {
   }
 
   async #doStart(): Promise<void> {
-    this.#serviceHolder = ServiceRegistry.create([
-      ...this.#defaultApiFactories,
-      ...this.#providedServiceFactories,
-    ]);
+    this.#serviceRegistry.checkForCircularDeps();
 
-    const featureDiscovery = await this.#serviceHolder.get(
+    const featureDiscovery = await this.#serviceRegistry.get(
       featureDiscoveryServiceRef,
       'root',
     );
@@ -179,12 +160,13 @@ export class BackendInitializer {
       for (const feature of features) {
         this.#addFeature(feature);
       }
+      this.#serviceRegistry.checkForCircularDeps();
     }
 
     // Initialize all root scoped services
-    for (const ref of this.#serviceHolder.getServiceRefs()) {
+    for (const ref of this.#serviceRegistry.getServiceRefs()) {
       if (ref.scope === 'root') {
-        await this.#serviceHolder.get(ref, 'root');
+        await this.#serviceRegistry.get(ref, 'root');
       }
     }
 
@@ -313,7 +295,7 @@ export class BackendInitializer {
     // Once the backend is started, any uncaught errors or unhandled rejections are caught
     // and logged, in order to avoid crashing the entire backend on local failures.
     if (process.env.NODE_ENV !== 'test') {
-      const rootLogger = await this.#serviceHolder.get(
+      const rootLogger = await this.#serviceRegistry.get(
         coreServices.rootLogger,
         'root',
       );
@@ -347,7 +329,7 @@ export class BackendInitializer {
 
   // Bit of a hacky way to grab the lifecycle services, potentially find a nicer way to do this
   async #getRootLifecycleImpl(): Promise<BackendLifecycleImpl> {
-    const lifecycleService = await this.#serviceHolder!.get(
+    const lifecycleService = await this.#serviceRegistry.get(
       coreServices.rootLifecycle,
       'root',
     );
@@ -360,7 +342,7 @@ export class BackendInitializer {
   async #getPluginLifecycleImpl(
     pluginId: string,
   ): Promise<BackendPluginLifecycleImpl> {
-    const lifecycleService = await this.#serviceHolder!.get(
+    const lifecycleService = await this.#serviceRegistry.get(
       coreServices.lifecycle,
       pluginId,
     );
