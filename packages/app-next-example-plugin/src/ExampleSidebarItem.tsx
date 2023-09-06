@@ -18,6 +18,7 @@ import React from 'react';
 import { SidebarItem } from '@backstage/core-components';
 import SaveIcon from '@material-ui/icons/Save';
 
+/** @public */
 export const ExampleSidebarItem = () => (
   <SidebarItem text="Example" to="/example" icon={SaveIcon} />
 );

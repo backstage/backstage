@@ -26,6 +26,7 @@ export const ExamplePage = createPageExtension({
   component: () => import('./Component').then(m => <m.Component />),
 });
 
+/** @public */
 export const examplePlugin = createPlugin({
   id: 'example',
   extensions: [ExamplePage],
