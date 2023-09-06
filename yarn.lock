@@ -33198,10 +33198,17 @@ __metadata:
   languageName: node
   linkType: hard
 
-"mock-fs@npm:^5.2.0":
+"mock-fs@npm:5.2.0":
   version: 5.2.0
   resolution: "mock-fs@npm:5.2.0"
   checksum: c25835247bd26fa4e0189addd61f98973f61a72741e4d2a5694b143a2069b84978443a7ac0fdb1a71aead99273ec22ff4e9c968de11bbd076db020264c5b8312
+  languageName: node
+  linkType: hard
+
+"mock-fs@patch:mock-fs@npm%3A5.2.0#./.yarn/patches/mock-fs-npm-5.2.0-5103a7b507.patch::locator=root%40workspace%3A.":
+  version: 5.2.0
+  resolution: "mock-fs@patch:mock-fs@npm%3A5.2.0#./.yarn/patches/mock-fs-npm-5.2.0-5103a7b507.patch::version=5.2.0&hash=920f99&locator=root%40workspace%3A."
+  checksum: 84e306d7a798735ed8ee110b60ed8fc0b5db451df3a990e2a01432fac99decd15e5534c92d87f8067425329dbd9bf5c12e2673d3d770fb40f2936810e02bb07a
   languageName: node
   linkType: hard
 
