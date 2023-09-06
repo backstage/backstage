@@ -91,11 +91,11 @@ export class BackendInitializer {
     return Object.fromEntries(result);
   }
 
-  add(feature: Promise<BackendFeature>) {
+  add(feature: BackendFeature | Promise<BackendFeature>) {
     if (this.#startPromise) {
       throw new Error('feature can not be added after the backend has started');
     }
-    this.#registeredFeatures.push(feature);
+    this.#registeredFeatures.push(Promise.resolve(feature));
   }
 
   #addFeature(feature: BackendFeature) {

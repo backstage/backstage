@@ -34,7 +34,7 @@ export class BackstageBackend implements Backend {
     if (isPromise(feature)) {
       this.#initializer.add(feature.then(f => unwrapFeature(f.default)));
     } else {
-      this.#initializer.add(Promise.resolve(unwrapFeature(feature)));
+      this.#initializer.add(unwrapFeature(feature));
     }
   }
 
