@@ -86,7 +86,8 @@ export const scaffolderActionConditions: Conditions<{
 }>;
 
 // @alpha
-export const scaffolderPlugin: () => BackendFeature;
+const scaffolderPlugin: () => BackendFeature;
+export default scaffolderPlugin;
 
 // @alpha
 export const scaffolderTemplateConditions: Conditions<{

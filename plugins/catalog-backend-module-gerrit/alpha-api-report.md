@@ -6,7 +6,8 @@
 import { BackendFeature } from '@backstage/backend-plugin-api';
 
 // @alpha (undocumented)
-export const catalogModuleGerritEntityProvider: () => BackendFeature;
+const catalogModuleGerritEntityProvider: () => BackendFeature;
+export default catalogModuleGerritEntityProvider;
 
 // (No @packageDocumentation comment for this package)
 ```
