@@ -15,7 +15,7 @@ access external resources.
 > experience and access to a Backstage Identity Token, which can be passed to backend plugins.
 > This also means that your Backstage backend APIs are by default unauthenticated.
 > Thus, if your Backstage instance is exposed to the Internet, anyone can access
-> information in the Backstage. You can learn more [here](../overview/threat-model#integrator-responsibilities).
+> information in the Backstage. You can learn more [here](../overview/threat-model.md#integrator-responsibilities).
 
 ## Built-in Authentication Providers
 
