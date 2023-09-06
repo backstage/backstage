@@ -17087,9 +17087,9 @@ __metadata:
   linkType: hard
 
 "@types/command-exists@npm:^1.2.0":
-  version: 1.2.0
-  resolution: "@types/command-exists@npm:1.2.0"
-  checksum: 7c5a626c38898d0267375dbf24ea374e6fcc8a85837f38eeb4485a5699a905eda89941059ea4f82ffc92b2207b29bdd7f7ab8dcbae95ed661b65cafe958e3fb1
+  version: 1.2.1
+  resolution: "@types/command-exists@npm:1.2.1"
+  checksum: 51e5d13cb06b9a5780e85e0612b924eda01d00919a75b6645fbdc7344c610ac19e8e122e2da9db5e91473cf88a3d71cfd93a294f1c31f2beabb835b6ab7e85d1
   languageName: node
   linkType: hard
 
