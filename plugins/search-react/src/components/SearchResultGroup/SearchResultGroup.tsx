@@ -274,22 +274,21 @@ export const SearchResultGroupSelectFilterField = (
 };
 
 /**
- * Type to represent a filter option.
+ * Function to customize how filter options are rendered.
+ * @remarks Defaults to a menu item where its value and label bounds to the option string.
  * @public
  */
-export type FilterOption =
-  | string
-  | number
-  | (Record<PropertyKey, string> & {
-      value: string;
-      label: string;
-    });
+export type RenderFilterOption<T> = (
+  value: T,
+  index: number,
+  array: T[],
+) => JSX.Element;
 
 /**
  * Props for {@link SearchResultGroupLayout}
  * @public
  */
-export type SearchResultGroupLayoutProps<T extends FilterOption> = ListProps & {
+export type SearchResultGroupLayoutProps<T> = ListProps & {
   /**
    * If defined, will render a default error panel.
    */
@@ -326,11 +325,9 @@ export type SearchResultGroupLayoutProps<T extends FilterOption> = ListProps & {
    * Function to customize how filter options are rendered.
    * @remarks Defaults to a menu item where its value and label bounds to the option string.
    */
-  renderFilterOption?: (
-    value: T,
-    index: number,
-    array: T[],
-  ) => JSX.Element | null;
+  renderFilterOption?: T extends string | number | undefined | null
+    ? RenderFilterOption<T> | undefined
+    : RenderFilterOption<T>;
   /**
    * A list of search filter keys, also known as filter field names.
    */
@@ -348,8 +345,8 @@ export type SearchResultGroupLayoutProps<T extends FilterOption> = ListProps & {
    */
   renderResultItem?: (
     value: SearchResult,
-    index: number,
-    array: SearchResult[],
+    index?: number,
+    array?: SearchResult[],
   ) => JSX.Element | null;
   /**
    * Optional component to render when no results. Default to <EmptyState /> component.
@@ -366,7 +363,7 @@ export type SearchResultGroupLayoutProps<T extends FilterOption> = ListProps & {
  * @param props - See {@link SearchResultGroupLayoutProps}.
  * @public
  */
-export function SearchResultGroupLayout<T extends FilterOption>(
+export function SearchResultGroupLayout<T>(
   props: SearchResultGroupLayoutProps<T>,
 ): JSX.Element | null {
   const classes = useStyles();
@@ -386,18 +383,14 @@ export function SearchResultGroupLayout<T extends FilterOption>(
     ),
     linkProps = {},
     filterOptions,
-    renderFilterOption = filterOption => {
-      if (typeof filterOption === 'object') {
-        return (
-          <MenuItem key={filterOption.value} value={filterOption.value}>
-            {filterOption.label}
-          </MenuItem>
-        );
+    renderFilterOption = (value: T) => {
+      if (typeof value !== 'string' && typeof value !== 'number') {
+        return null;
       }
 
       return (
-        <MenuItem key={filterOption} value={filterOption}>
-          {filterOption}
+        <MenuItem key={value} value={value}>
+          {value}
         </MenuItem>
       );
     },
@@ -459,7 +452,7 @@ export function SearchResultGroupLayout<T extends FilterOption>(
         >
           {title}
         </Typography>
-        {filterOptions ? (
+        {filterOptions && (
           <Chip
             className={classes.listSubheaderChip}
             component="button"
@@ -470,8 +463,8 @@ export function SearchResultGroupLayout<T extends FilterOption>(
             aria-haspopup="true"
             onClick={handleClick}
           />
-        ) : null}
-        {filterOptions ? (
+        )}
+        {filterOptions && (
           <Menu
             id="filters-menu"
             anchorEl={anchorEl}
@@ -482,7 +475,7 @@ export function SearchResultGroupLayout<T extends FilterOption>(
           >
             {filterOptions.map(renderFilterOption)}
           </Menu>
-        ) : null}
+        )}
         {filterFields?.map(
           filterField => renderFilterField?.(filterField) ?? null,
         )}
@@ -499,10 +492,7 @@ export function SearchResultGroupLayout<T extends FilterOption>(
  * Props for {@link SearchResultGroup}.
  * @public
  */
-export type SearchResultGroupProps<T extends FilterOption> = Pick<
-  SearchResultStateProps,
-  'query'
-> &
+export type SearchResultGroupProps<T> = Pick<SearchResultStateProps, 'query'> &
   Omit<
     SearchResultGroupLayoutProps<T>,
     'loading' | 'error' | 'resultItems' | 'filterFields'
@@ -513,9 +503,7 @@ export type SearchResultGroupProps<T extends FilterOption> = Pick<
  * @param props - See {@link SearchResultGroupProps}.
  * @public
  */
-export function SearchResultGroup<T extends FilterOption>(
-  props: SearchResultGroupProps<T>,
-) {
+export function SearchResultGroup<T>(props: SearchResultGroupProps<T>) {
   const { query, children, renderResultItem, linkProps = {}, ...rest } = props;
 
   const defaultRenderResultItem = useSearchResultListItemExtensions(children);

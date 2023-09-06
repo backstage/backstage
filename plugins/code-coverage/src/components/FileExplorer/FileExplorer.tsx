@@ -37,7 +37,6 @@ import {
   TableColumn,
 } from '@backstage/core-components';
 import { useApi } from '@backstage/core-plugin-api';
-import { stringifyEntityRef } from '@backstage/catalog-model';
 
 type FileStructureObject = Record<string, any>;
 

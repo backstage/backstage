@@ -9,6 +9,3 @@
 
 Updates usage of JsonValue and other Object types to be explicitly stringified before being passed into JSX.
 Additionally, FilterOption is now defined with a more explicit type in the search-react plugin.
-
-
-

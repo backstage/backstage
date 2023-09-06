@@ -60,15 +60,6 @@ export type DefaultResultListItemProps = {
   toggleModal?: () => void;
 };
 
-// @public
-export type FilterOption =
-  | string
-  | number
-  | (Record<PropertyKey, string> & {
-      value: string;
-      label: string;
-    });
-
 // @public (undocumented)
 export const HighlightedSearchResultText: (
   props: HighlightedSearchResultTextProps,
@@ -89,6 +80,13 @@ export class MockSearchApi implements SearchApi {
   // (undocumented)
   query(): Promise<SearchResultSet>;
 }
+
+// @public
+export type RenderFilterOption<T> = (
+  value: T,
+  index: number,
+  array: T[],
+) => JSX.Element;
 
 // @public (undocumented)
 export interface SearchApi {
@@ -310,7 +308,7 @@ export type SearchResultContextProps = {
 };
 
 // @public
-export function SearchResultGroup<T extends FilterOption>(
+export function SearchResultGroup<T>(
   props: SearchResultGroupProps<T>,
 ): React_2.JSX.Element;
 
@@ -333,12 +331,12 @@ export type SearchResultGroupFilterFieldPropsWith<T> = T &
   };
 
 // @public
-export function SearchResultGroupLayout<T extends FilterOption>(
+export function SearchResultGroupLayout<T>(
   props: SearchResultGroupLayoutProps<T>,
 ): JSX.Element | null;
 
 // @public
-export type SearchResultGroupLayoutProps<T extends FilterOption> = ListProps & {
+export type SearchResultGroupLayoutProps<T> = ListProps & {
   error?: Error;
   loading?: boolean;
   icon: JSX.Element;
@@ -347,28 +345,23 @@ export type SearchResultGroupLayoutProps<T extends FilterOption> = ListProps & {
   link?: ReactNode;
   linkProps?: Partial<LinkProps>;
   filterOptions?: T[];
-  renderFilterOption?: (
-    value: T,
-    index: number,
-    array: T[],
-  ) => JSX.Element | null;
+  renderFilterOption?: T extends string | number | undefined | null
+    ? RenderFilterOption<T> | undefined
+    : RenderFilterOption<T>;
   filterFields?: string[];
   renderFilterField?: (key: string) => JSX.Element | null;
   resultItems?: SearchResult_2[];
   renderResultItem?: (
     value: SearchResult_2,
-    index: number,
-    array: SearchResult_2[],
+    index?: number,
+    array?: SearchResult_2[],
   ) => JSX.Element | null;
   noResultsComponent?: ReactNode;
   disableRenderingWithNoResults?: boolean;
 };
 
 // @public
-export type SearchResultGroupProps<T extends FilterOption> = Pick<
-  SearchResultStateProps,
-  'query'
-> &
+export type SearchResultGroupProps<T> = Pick<SearchResultStateProps, 'query'> &
   Omit<
     SearchResultGroupLayoutProps<T>,
     'loading' | 'error' | 'resultItems' | 'filterFields'
