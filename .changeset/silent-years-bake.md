@@ -8,4 +8,4 @@
 '@backstage/repo-tools': patch
 ---
 
-Bumped `@types/node` dependency to `^18.17.8`.
+Bumped dev dependencies `@types/node` and `mock-fs`.

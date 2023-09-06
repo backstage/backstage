@@ -65,7 +65,7 @@
     "@types/is-glob": "^4.0.2",
     "@types/mock-fs": "^4.13.0",
     "@types/node": "^18.17.8",
-    "mock-fs": "^5.1.0"
+    "mock-fs": "^5.2.0"
   },
   "peerDependencies": {
     "@microsoft/api-extractor-model": "*",

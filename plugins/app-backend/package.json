@@ -69,7 +69,7 @@
     "@backstage/cli": "workspace:^",
     "@backstage/types": "workspace:^",
     "@types/supertest": "^2.0.8",
-    "mock-fs": "^5.1.0",
+    "mock-fs": "^5.2.0",
     "msw": "^1.0.0",
     "node-fetch": "^2.6.7",
     "supertest": "^6.1.3"
