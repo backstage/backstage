@@ -47,7 +47,11 @@ export interface TestBackendOptions<TExtensionPoints extends any[]> {
       ];
     },
   ];
-  features?: Array<BackendFeature | (() => BackendFeature)>;
+  features?: Array<
+    | BackendFeature
+    | (() => BackendFeature)
+    | Promise<{ default: BackendFeature | (() => BackendFeature) }>
+  >;
 }
 
 /** @public */
@@ -78,11 +82,12 @@ export const defaultServiceFactories = [
 ];
 
 /**
- * Given a set of extension points and plugins, find
+ * Given a set of extension points and features, find the extension
+ * points that we mock and tie them to the correct plugin ID.
  * @returns
  */
 function createExtensionPointTestModules(
-  features: Array<BackendFeature | (() => BackendFeature)>,
+  features: Array<BackendFeature>,
   extensionPointTuples?: readonly [
     ref: ExtensionPoint<unknown>,
     impl: unknown,
@@ -92,12 +97,7 @@ function createExtensionPointTestModules(
     return [];
   }
 
-  const registrations = features.flatMap(featureOrFunction => {
-    const feature =
-      typeof featureOrFunction === 'function'
-        ? featureOrFunction()
-        : featureOrFunction;
-
+  const registrations = features.flatMap(feature => {
     if (feature.$$type !== '@backstage/BackendFeature') {
       throw new Error(
         `Failed to add feature, invalid type '${feature.$$type}'`,
@@ -172,13 +172,39 @@ function createExtensionPointTestModules(
   return modules;
 }
 
+function isPromise<T>(value: unknown | Promise<T>): value is Promise<T> {
+  return (
+    typeof value === 'object' &&
+    value !== null &&
+    'then' in value &&
+    typeof value.then === 'function'
+  );
+}
+
+function unwrapFeature(
+  feature: BackendFeature | (() => BackendFeature),
+): BackendFeature {
+  return typeof feature === 'function' ? feature() : feature;
+}
+
 const backendInstancesToCleanUp = new Array<Backend>();
 
 /** @public */
 export async function startTestBackend<TExtensionPoints extends any[]>(
   options: TestBackendOptions<TExtensionPoints>,
 ): Promise<TestBackend> {
-  const { extensionPoints, features = [], ...otherOptions } = options;
+  const { extensionPoints, ...otherOptions } = options;
+
+  // Unpack input into awaited plain BackendFeatures
+  const features: BackendFeature[] = await Promise.all(
+    options.features?.map(async val => {
+      if (isPromise(val)) {
+        const { default: feature } = await val;
+        return unwrapFeature(feature);
+      }
+      return unwrapFeature(val);
+    }) ?? [],
+  );
 
   let server: ExtendedHttpServer;
 
