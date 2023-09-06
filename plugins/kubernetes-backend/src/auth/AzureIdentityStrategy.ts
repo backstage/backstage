@@ -15,7 +15,7 @@
  */
 
 import { Logger } from 'winston';
-import { KubernetesAuthTranslator } from './types';
+import { AuthenticationStrategy } from './types';
 import { ClusterDetails } from '../types/types';
 import {
   AccessToken,
@@ -29,9 +29,7 @@ const aksScope = '6dae42f8-4368-4678-94ff-3960e28e3630/.default'; // This scope 
  *
  * @public
  */
-export class AzureIdentityKubernetesAuthTranslator
-  implements KubernetesAuthTranslator
-{
+export class AzureIdentityStrategy implements AuthenticationStrategy {
   private accessToken: AccessToken = { token: '', expiresOnTimestamp: 0 };
   private newTokenPromise: Promise<string> | undefined;
 

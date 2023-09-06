@@ -29,7 +29,7 @@ import {
   KubernetesObjectsByEntity,
   ServiceLocatorRequestContext,
 } from '../types/types';
-import { KubernetesAuthTranslator } from '../kubernetes-auth-translator/types';
+import { AuthenticationStrategy } from '../auth/types';
 import {
   ClientContainerStatus,
   ClientCurrentResourceUsage,
@@ -137,7 +137,7 @@ export const DEFAULT_OBJECTS: ObjectToFetch[] = [
 
 export interface KubernetesFanOutHandlerOptions
   extends KubernetesObjectsProviderOptions {
-  authTranslator: KubernetesAuthTranslator;
+  authStrategy: AuthenticationStrategy;
 }
 
 export interface KubernetesRequestBody extends ObjectsByEntityRequest {}
@@ -196,7 +196,7 @@ export class KubernetesFanOutHandler {
   private readonly serviceLocator: KubernetesServiceLocator;
   private readonly customResources: CustomResource[];
   private readonly objectTypesToFetch: Set<ObjectToFetch>;
-  private readonly authTranslator: KubernetesAuthTranslator;
+  private readonly authStrategy: AuthenticationStrategy;
 
   constructor({
     logger,
@@ -204,14 +204,14 @@ export class KubernetesFanOutHandler {
     serviceLocator,
     customResources,
     objectTypesToFetch = DEFAULT_OBJECTS,
-    authTranslator,
+    authStrategy,
   }: KubernetesFanOutHandlerOptions) {
     this.logger = logger;
     this.fetcher = fetcher;
     this.serviceLocator = serviceLocator;
     this.customResources = customResources;
     this.objectTypesToFetch = new Set(objectTypesToFetch);
-    this.authTranslator = authTranslator;
+    this.authStrategy = authStrategy;
   }
 
   async getCustomResourcesByEntity({
@@ -317,7 +317,7 @@ export class KubernetesFanOutHandler {
     // Execute all of these async actions simultaneously/without blocking sequentially as no common object is modified by them
     const promiseResults = await Promise.allSettled(
       clusterDetails.map(cd => {
-        return this.authTranslator.decorateClusterDetailsWithAuth(cd, auth);
+        return this.authStrategy.decorateClusterDetailsWithAuth(cd, auth);
       }),
     );
 

@@ -25,16 +25,16 @@ import { Logger } from 'winston';
 
 import { getCombinedClusterSupplier } from '../cluster-locator';
 import {
-  KubernetesAuthTranslator,
-  DispatchingKubernetesAuthTranslator,
-  GoogleKubernetesAuthTranslator,
-  NoopKubernetesAuthTranslator,
-  AwsIamKubernetesAuthTranslator,
-  GoogleServiceAccountAuthTranslator,
-  AzureIdentityKubernetesAuthTranslator,
-  OidcKubernetesAuthTranslator,
-  AksKubernetesAuthTranslator,
-} from '../kubernetes-auth-translator';
+  AuthenticationStrategy,
+  DispatchStrategy,
+  GoogleStrategy,
+  NoopStrategy,
+  AwsIamStrategy,
+  GoogleServiceAccountStrategy,
+  AzureIdentityStrategy,
+  OidcStrategy,
+  AksStrategy,
+} from '../auth';
 
 import { addResourceRoutesToRouter } from '../routes/resourcesRoutes';
 import { MultiTenantServiceLocator } from '../service-locator/MultiTenantServiceLocator';
@@ -80,7 +80,7 @@ export type KubernetesBuilderReturn = Promise<{
   proxy: KubernetesProxy;
   objectsProvider: KubernetesObjectsProvider;
   serviceLocator: KubernetesServiceLocator;
-  authTranslatorMap: { [key: string]: KubernetesAuthTranslator };
+  authStrategyMap: { [key: string]: AuthenticationStrategy };
 }>;
 
 /**
@@ -96,7 +96,7 @@ export class KubernetesBuilder {
   private fetcher?: KubernetesFetcher;
   private serviceLocator?: KubernetesServiceLocator;
   private proxy?: KubernetesProxy;
-  private authTranslatorMap?: { [key: string]: KubernetesAuthTranslator };
+  private authStrategyMap?: { [key: string]: AuthenticationStrategy };
 
   static createBuilder(env: KubernetesEnvironment) {
     return new KubernetesBuilder(env);
@@ -128,7 +128,7 @@ export class KubernetesBuilder {
 
     const clusterSupplier = this.getClusterSupplier();
 
-    const authTranslatorMap = this.getAuthTranslatorMap();
+    const authStrategyMap = this.getAuthStrategyMap();
 
     const proxy = this.getProxy(logger, clusterSupplier);
 
@@ -159,7 +159,7 @@ export class KubernetesBuilder {
       objectsProvider,
       router,
       serviceLocator,
-      authTranslatorMap,
+      authStrategyMap,
     };
   }
 
@@ -193,10 +193,10 @@ export class KubernetesBuilder {
     return this;
   }
 
-  public setAuthTranslatorMap(authTranslatorMap: {
-    [key: string]: KubernetesAuthTranslator;
+  public setAuthStrategyMap(authStrategyMap: {
+    [key: string]: AuthenticationStrategy;
   }) {
-    this.authTranslatorMap = authTranslatorMap;
+    this.authStrategyMap = authStrategyMap;
   }
 
   protected buildCustomResources() {
@@ -234,11 +234,11 @@ export class KubernetesBuilder {
   protected buildObjectsProvider(
     options: KubernetesObjectsProviderOptions,
   ): KubernetesObjectsProvider {
-    const authTranslatorMap = this.getAuthTranslatorMap();
+    const authStrategyMap = this.getAuthStrategyMap();
     this.objectsProvider = new KubernetesFanOutHandler({
       ...options,
-      authTranslator: new DispatchingKubernetesAuthTranslator({
-        authTranslatorMap,
+      authStrategy: new DispatchStrategy({
+        authStrategyMap,
       }),
     });
 
@@ -290,14 +290,14 @@ export class KubernetesBuilder {
     logger: Logger,
     clusterSupplier: KubernetesClustersSupplier,
   ): KubernetesProxy {
-    const authTranslatorMap = this.getAuthTranslatorMap();
-    const authTranslator = new DispatchingKubernetesAuthTranslator({
-      authTranslatorMap,
+    const authStrategyMap = this.getAuthStrategyMap();
+    const authStrategy = new DispatchStrategy({
+      authStrategyMap,
     });
     this.proxy = new KubernetesProxy({
       logger,
       clusterSupplier,
-      authTranslator,
+      authStrategy,
     });
     return this.proxy;
   }
@@ -356,18 +356,18 @@ export class KubernetesBuilder {
     return router;
   }
 
-  protected buildAuthTranslatorMap() {
-    this.authTranslatorMap = {
-      google: new GoogleKubernetesAuthTranslator(),
-      aks: new AksKubernetesAuthTranslator(),
-      aws: new AwsIamKubernetesAuthTranslator({ config: this.env.config }),
-      azure: new AzureIdentityKubernetesAuthTranslator(this.env.logger),
-      serviceAccount: new NoopKubernetesAuthTranslator(),
-      googleServiceAccount: new GoogleServiceAccountAuthTranslator(),
-      oidc: new OidcKubernetesAuthTranslator(),
-      localKubectlProxy: new NoopKubernetesAuthTranslator(),
+  protected buildAuthStrategyMap() {
+    this.authStrategyMap = {
+      google: new GoogleStrategy(),
+      aks: new AksStrategy(),
+      aws: new AwsIamStrategy({ config: this.env.config }),
+      azure: new AzureIdentityStrategy(this.env.logger),
+      serviceAccount: new NoopStrategy(),
+      googleServiceAccount: new GoogleServiceAccountStrategy(),
+      oidc: new OidcStrategy(),
+      localKubectlProxy: new NoopStrategy(),
     };
-    return this.authTranslatorMap;
+    return this.authStrategyMap;
   }
 
   protected async fetchClusterDetails(
@@ -450,7 +450,7 @@ export class KubernetesBuilder {
     return this.proxy ?? this.buildProxy(logger, clusterSupplier);
   }
 
-  protected getAuthTranslatorMap() {
-    return this.authTranslatorMap ?? this.buildAuthTranslatorMap();
+  protected getAuthStrategyMap() {
+    return this.authStrategyMap ?? this.buildAuthStrategyMap();
   }
 }

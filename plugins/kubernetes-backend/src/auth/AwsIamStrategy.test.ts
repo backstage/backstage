@@ -18,7 +18,7 @@ import {
   ANNOTATION_KUBERNETES_AWS_ASSUME_ROLE,
   ANNOTATION_KUBERNETES_AWS_EXTERNAL_ID,
 } from '@backstage/plugin-kubernetes-common';
-import { AwsIamKubernetesAuthTranslator } from './AwsIamKubernetesAuthTranslator';
+import { AwsIamStrategy } from './AwsIamStrategy';
 
 let presign = jest.fn(async () => ({
   hostname: 'https://example.com',
@@ -55,12 +55,12 @@ jest.mock('@aws-sdk/credential-providers', () => ({
   },
 }));
 
-describe('AwsIamKubernetesAuthTranslator tests', () => {
+describe('AwsIamStrategy tests', () => {
   beforeEach(() => {});
   it('returns a signed url for AWS credentials without assume role', async () => {
-    const authTranslator = new AwsIamKubernetesAuthTranslator({ config });
+    const strategy = new AwsIamStrategy({ config });
 
-    const authPromise = authTranslator.decorateClusterDetailsWithAuth({
+    const authPromise = strategy.decorateClusterDetailsWithAuth({
       name: 'test-cluster',
       url: '',
       authProvider: 'aws',
@@ -71,9 +71,9 @@ describe('AwsIamKubernetesAuthTranslator tests', () => {
   });
 
   it('returns a signed url for AWS credentials with assume role', async () => {
-    const authTranslator = new AwsIamKubernetesAuthTranslator({ config });
+    const strategy = new AwsIamStrategy({ config });
 
-    const authPromise = authTranslator.decorateClusterDetailsWithAuth({
+    const authPromise = strategy.decorateClusterDetailsWithAuth({
       name: 'test-cluster',
       url: '',
       authProvider: 'aws',
@@ -97,9 +97,9 @@ describe('AwsIamKubernetesAuthTranslator tests', () => {
   });
 
   it('returns a signed url for AWS credentials and passes the external id', async () => {
-    const authTranslator = new AwsIamKubernetesAuthTranslator({ config });
+    const strategy = new AwsIamStrategy({ config });
 
-    const authPromise = authTranslator.decorateClusterDetailsWithAuth({
+    const authPromise = strategy.decorateClusterDetailsWithAuth({
       name: 'test-cluster',
       url: '',
       authProvider: 'aws',
@@ -132,9 +132,9 @@ describe('AwsIamKubernetesAuthTranslator tests', () => {
       });
     });
     it('throws the right error', async () => {
-      const authTranslator = new AwsIamKubernetesAuthTranslator({ config });
+      const strategy = new AwsIamStrategy({ config });
       await expect(
-        authTranslator.decorateClusterDetailsWithAuth({
+        strategy.decorateClusterDetailsWithAuth({
           name: 'test-cluster',
           url: '',
           authProvider: 'aws',

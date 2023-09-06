@@ -15,11 +15,11 @@
  */
 
 import { ANNOTATION_KUBERNETES_OIDC_TOKEN_PROVIDER } from '@backstage/plugin-kubernetes-common';
-import { OidcKubernetesAuthTranslator } from './OidcKubernetesAuthTranslator';
+import { OidcStrategy } from './OidcStrategy';
 import { ClusterDetails } from '../types/types';
 
-describe('OidcKubernetesAuthTranslator tests', () => {
-  const at = new OidcKubernetesAuthTranslator();
+describe('OidcStrategy tests', () => {
+  const strategy = new OidcStrategy();
   const baseClusterDetails: ClusterDetails = {
     name: 'test',
     authProvider: 'oidc',
@@ -27,7 +27,7 @@ describe('OidcKubernetesAuthTranslator tests', () => {
   };
 
   it('returns cluster details with auth token', async () => {
-    const details = await at.decorateClusterDetailsWithAuth(
+    const details = await strategy.decorateClusterDetailsWithAuth(
       {
         authMetadata: { [ANNOTATION_KUBERNETES_OIDC_TOKEN_PROVIDER]: 'okta' },
         ...baseClusterDetails,
@@ -42,7 +42,7 @@ describe('OidcKubernetesAuthTranslator tests', () => {
 
   it('returns error when oidcTokenProvider is not configured', async () => {
     await expect(
-      at.decorateClusterDetailsWithAuth(baseClusterDetails, {}),
+      strategy.decorateClusterDetailsWithAuth(baseClusterDetails, {}),
     ).rejects.toThrow(
       'oidc authProvider requires a configured oidcTokenProvider',
     );
@@ -50,7 +50,7 @@ describe('OidcKubernetesAuthTranslator tests', () => {
 
   it('returns error when token is not included in request body', async () => {
     await expect(
-      at.decorateClusterDetailsWithAuth(
+      strategy.decorateClusterDetailsWithAuth(
         {
           authMetadata: { [ANNOTATION_KUBERNETES_OIDC_TOKEN_PROVIDER]: 'okta' },
           ...baseClusterDetails,

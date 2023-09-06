@@ -17,14 +17,14 @@ import {
   ANNOTATION_KUBERNETES_OIDC_TOKEN_PROVIDER,
   KubernetesRequestAuth,
 } from '@backstage/plugin-kubernetes-common';
-import { KubernetesAuthTranslator } from './types';
+import { AuthenticationStrategy } from './types';
 import { ClusterDetails } from '../types/types';
 
 /**
  *
  * @public
  */
-export class OidcKubernetesAuthTranslator implements KubernetesAuthTranslator {
+export class OidcStrategy implements AuthenticationStrategy {
   async decorateClusterDetailsWithAuth(
     clusterDetails: ClusterDetails,
     authConfig: KubernetesRequestAuth,

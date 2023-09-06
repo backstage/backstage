@@ -1,5 +1,5 @@
 /*
- * Copyright 2022 The Backstage Authors
+ * Copyright 2020 The Backstage Authors
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -13,35 +13,34 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import { KubernetesAuthTranslator } from './types';
+
+import { AuthenticationStrategy } from './types';
 import { ClusterDetails } from '../types/types';
-import * as container from '@google-cloud/container';
+import { KubernetesRequestAuth } from '@backstage/plugin-kubernetes-common';
 
 /**
  *
  * @public
  */
-export class GoogleServiceAccountAuthTranslator
-  implements KubernetesAuthTranslator
-{
+export class GoogleStrategy implements AuthenticationStrategy {
   async decorateClusterDetailsWithAuth(
     clusterDetails: ClusterDetails,
+    authConfig: KubernetesRequestAuth,
   ): Promise<ClusterDetails> {
     const clusterDetailsWithAuthToken: ClusterDetails = Object.assign(
       {},
       clusterDetails,
     );
-    const client = new container.v1.ClusterManagerClient();
-    const accessToken = await client.auth.getAccessToken();
+    const authToken: string | undefined = authConfig.google;
 
-    if (accessToken) {
+    if (authToken) {
       clusterDetailsWithAuthToken.authMetadata = {
-        serviceAccountToken: accessToken,
+        serviceAccountToken: authToken,
         ...clusterDetailsWithAuthToken.authMetadata,
       };
     } else {
       throw new Error(
-        'Unable to obtain access token for the current Google Application Default Credentials',
+        'Google token not found under auth.google in request body',
       );
     }
     return clusterDetailsWithAuthToken;

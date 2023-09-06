@@ -16,7 +16,7 @@
 
 import { AccessToken, TokenCredential } from '@azure/identity';
 import { getVoidLogger } from '@backstage/backend-common';
-import { AzureIdentityKubernetesAuthTranslator } from './AzureIdentityKubernetesAuthTranslator';
+import { AzureIdentityStrategy } from './AzureIdentityStrategy';
 
 const logger = getVoidLogger();
 
@@ -39,7 +39,7 @@ class StaticTokenCredential implements TokenCredential {
   }
 }
 
-describe('AzureIdentityKubernetesAuthTranslator tests', () => {
+describe('AzureIdentityStrategy tests', () => {
   const cd = {
     authProvider: 'Azure',
     name: 'My Cluster',
@@ -51,90 +51,88 @@ describe('AzureIdentityKubernetesAuthTranslator tests', () => {
   });
 
   it('should decorate cluster with Azure token', async () => {
-    const authTranslator = new AzureIdentityKubernetesAuthTranslator(
+    const strategy = new AzureIdentityStrategy(
       logger,
       new StaticTokenCredential(5 * 60 * 1000),
     );
 
-    const response = await authTranslator.decorateClusterDetailsWithAuth(cd);
+    const response = await strategy.decorateClusterDetailsWithAuth(cd);
     expect(response.authMetadata!.serviceAccountToken).toEqual('MY_TOKEN_1');
   });
 
   it('should re-use token before expiry', async () => {
-    const authTranslator = new AzureIdentityKubernetesAuthTranslator(
+    const strategy = new AzureIdentityStrategy(
       logger,
       new StaticTokenCredential(20 * 60 * 1000),
     );
 
-    const response = await authTranslator.decorateClusterDetailsWithAuth(cd);
+    const response = await strategy.decorateClusterDetailsWithAuth(cd);
     expect(response.authMetadata!.serviceAccountToken).toEqual('MY_TOKEN_1');
 
-    const response2 = await authTranslator.decorateClusterDetailsWithAuth(cd);
+    const response2 = await strategy.decorateClusterDetailsWithAuth(cd);
     expect(response2.authMetadata!.serviceAccountToken).toEqual('MY_TOKEN_1');
   });
 
   it('should issue new token 15 minutes befory expiry', async () => {
     jest.useFakeTimers();
 
-    const authTranslator = new AzureIdentityKubernetesAuthTranslator(
+    const strategy = new AzureIdentityStrategy(
       logger,
       new StaticTokenCredential(16 * 60 * 1000), // token expires in 16min
     );
 
-    const response = await authTranslator.decorateClusterDetailsWithAuth(cd);
+    const response = await strategy.decorateClusterDetailsWithAuth(cd);
     expect(response.authMetadata!.serviceAccountToken).toEqual('MY_TOKEN_1');
 
     jest.setSystemTime(Date.now() + 2 * 60 * 1000); // advance time by 2mins
 
-    const response2 = await authTranslator.decorateClusterDetailsWithAuth(cd);
+    const response2 = await strategy.decorateClusterDetailsWithAuth(cd);
     expect(response2.authMetadata!.serviceAccountToken).toEqual('MY_TOKEN_2');
   });
 
   it('should re-use existing token if there is afailure', async () => {
     jest.useFakeTimers();
 
-    const authTranslator = new AzureIdentityKubernetesAuthTranslator(
+    const strategy = new AzureIdentityStrategy(
       logger,
       new StaticTokenCredential(16 * 60 * 1000), // new tokens expires in 16min
     );
 
-    const response = await authTranslator.decorateClusterDetailsWithAuth(cd);
+    const response = await strategy.decorateClusterDetailsWithAuth(cd);
     expect(response.authMetadata!.serviceAccountToken).toEqual('MY_TOKEN_1');
 
     jest.setSystemTime(Date.now() + 2 * 60 * 1000); // advance time by 2min
 
-    const response2 = await authTranslator.decorateClusterDetailsWithAuth(cd);
+    const response2 = await strategy.decorateClusterDetailsWithAuth(cd);
     expect(response2.authMetadata!.serviceAccountToken).toEqual('MY_TOKEN_2');
 
     jest.setSystemTime(Date.now() + 2 * 60 * 1000); // advance time by 2min
 
-    const response3 = await authTranslator.decorateClusterDetailsWithAuth(cd);
+    const response3 = await strategy.decorateClusterDetailsWithAuth(cd);
     expect(response3.authMetadata!.serviceAccountToken).toEqual('MY_TOKEN_2');
 
-    const response4 = await authTranslator.decorateClusterDetailsWithAuth(cd);
+    const response4 = await strategy.decorateClusterDetailsWithAuth(cd);
     expect(response4.authMetadata!.serviceAccountToken).toEqual('MY_TOKEN_4');
   });
 
   it('should throw if existing token expired and failed to fetch a new one', async () => {
     jest.useFakeTimers();
 
-    const authTranslator = new AzureIdentityKubernetesAuthTranslator(
+    const strategy = new AzureIdentityStrategy(
       logger,
       new StaticTokenCredential(16 * 60 * 1000), // new tokens expires in 16min
     );
 
-    const response = await authTranslator.decorateClusterDetailsWithAuth(cd);
+    const response = await strategy.decorateClusterDetailsWithAuth(cd);
     expect(response.authMetadata!.serviceAccountToken).toEqual('MY_TOKEN_1');
 
     jest.setSystemTime(Date.now() + 2 * 60 * 1000); // advance time by 2min
 
-    const response2 = await authTranslator.decorateClusterDetailsWithAuth(cd);
+    const response2 = await strategy.decorateClusterDetailsWithAuth(cd);
     expect(response2.authMetadata!.serviceAccountToken).toEqual('MY_TOKEN_2');
 
     jest.setSystemTime(Date.now() + 17 * 60 * 1000); // advance time by 17min
 
-    await expect(
-      authTranslator.decorateClusterDetailsWithAuth(cd),
-    ).rejects.toThrow();
+    await expect(strategy.decorateClusterDetailsWithAuth(cd)).rejects.toThrow();
   });
 });

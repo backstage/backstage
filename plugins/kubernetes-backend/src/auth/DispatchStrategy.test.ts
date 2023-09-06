@@ -14,50 +14,50 @@
  * limitations under the License.
  */
 
-import { DispatchingKubernetesAuthTranslator } from './DispatchingKubernetesAuthTranslator';
+import { DispatchStrategy } from './DispatchStrategy';
 import { ClusterDetails } from '../types';
 import { KubernetesRequestAuth } from '@backstage/plugin-kubernetes-common';
-import { KubernetesAuthTranslator } from './types';
+import { AuthenticationStrategy } from './types';
 
 describe('decorateClusterDetailsWithAuth', () => {
-  let authTranslator: DispatchingKubernetesAuthTranslator;
-  let mockTranslator: jest.Mocked<KubernetesAuthTranslator>;
+  let strategy: DispatchStrategy;
+  let mockStrategy: jest.Mocked<AuthenticationStrategy>;
   const authObject: KubernetesRequestAuth = {};
 
   beforeEach(() => {
-    mockTranslator = { decorateClusterDetailsWithAuth: jest.fn() };
-    authTranslator = new DispatchingKubernetesAuthTranslator({
-      authTranslatorMap: { google: mockTranslator },
+    mockStrategy = { decorateClusterDetailsWithAuth: jest.fn() };
+    strategy = new DispatchStrategy({
+      authStrategyMap: { google: mockStrategy },
     });
   });
 
-  it('can decorate cluster details if the auth provider is in the translator map', async () => {
+  it('can decorate cluster details if the auth provider is in the strategy map', async () => {
     const expectedClusterDetails: ClusterDetails = {
       url: 'notanything.com',
       name: 'randomName',
       authProvider: 'google',
-      authMetadata: { serviceAccountToken: 'added by mock translator' },
+      authMetadata: { serviceAccountToken: 'added by mock strategy' },
     };
 
-    mockTranslator.decorateClusterDetailsWithAuth.mockResolvedValue(
+    mockStrategy.decorateClusterDetailsWithAuth.mockResolvedValue(
       expectedClusterDetails,
     );
 
-    const returnedValue = await authTranslator.decorateClusterDetailsWithAuth(
+    const returnedValue = await strategy.decorateClusterDetailsWithAuth(
       { name: 'googleCluster', url: 'anything.com', authProvider: 'google' },
       authObject,
     );
 
-    expect(mockTranslator.decorateClusterDetailsWithAuth).toHaveBeenCalledWith(
+    expect(mockStrategy.decorateClusterDetailsWithAuth).toHaveBeenCalledWith(
       { name: 'googleCluster', url: 'anything.com', authProvider: 'google' },
       authObject,
     );
     expect(returnedValue).toBe(expectedClusterDetails);
   });
 
-  it('throws an error when asked for an auth translator for an unsupported auth type', () => {
+  it('throws an error when asked for a strategy for an unsupported auth type', () => {
     expect(() =>
-      authTranslator.decorateClusterDetailsWithAuth(
+      strategy.decorateClusterDetailsWithAuth(
         {
           name: 'test-cluster',
           url: 'anything.com',
@@ -66,7 +66,7 @@ describe('decorateClusterDetailsWithAuth', () => {
         authObject,
       ),
     ).toThrow(
-      'authProvider "linode" has no KubernetesAuthTranslator associated with it',
+      'authProvider "linode" has no AuthenticationStrategy associated with it',
     );
   });
 });

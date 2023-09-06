@@ -179,7 +179,7 @@ describe('KubernetesFanOutHandler', () => {
         getClustersByEntity,
       },
       customResources: customResources,
-      authTranslator: {
+      authStrategy: {
         decorateClusterDetailsWithAuth: async (clusterDetails, _) => {
           return clusterDetails;
         },
@@ -1100,7 +1100,7 @@ describe('KubernetesFanOutHandler', () => {
               objectType: 'services',
             },
           ],
-          authTranslator: {
+          authStrategy: {
             decorateClusterDetailsWithAuth: async (clusterDetails, _) => {
               return clusterDetails;
             },

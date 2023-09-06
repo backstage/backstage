@@ -33,10 +33,7 @@ import request from 'supertest';
 import { AddressInfo, WebSocket, WebSocketServer } from 'ws';
 
 import { LocalKubectlProxyClusterLocator } from '../cluster-locator/LocalKubectlProxyLocator';
-import {
-  KubernetesAuthTranslator,
-  NoopKubernetesAuthTranslator,
-} from '../kubernetes-auth-translator';
+import { AuthenticationStrategy, NoopStrategy } from '../auth';
 import { ClusterDetails, KubernetesClustersSupplier } from '../types/types';
 import {
   APPLICATION_JSON,
@@ -62,7 +59,7 @@ describe('KubernetesProxy', () => {
     authorizeConditional: jest.fn(),
   };
 
-  const authTranslator: jest.Mocked<KubernetesAuthTranslator> = {
+  const authStrategy: jest.Mocked<AuthenticationStrategy> = {
     decorateClusterDetailsWithAuth: jest.fn(),
   };
 
@@ -126,7 +123,7 @@ describe('KubernetesProxy', () => {
 
   beforeEach(() => {
     jest.resetAllMocks();
-    proxy = new KubernetesProxy({ logger, clusterSupplier, authTranslator });
+    proxy = new KubernetesProxy({ logger, clusterSupplier, authStrategy });
     permissionApi.authorize.mockResolvedValue([
       { result: AuthorizeResult.ALLOW },
     ]);
@@ -205,7 +202,7 @@ describe('KubernetesProxy', () => {
       },
     ] as ClusterDetails[]);
 
-    authTranslator.decorateClusterDetailsWithAuth.mockResolvedValue({
+    authStrategy.decorateClusterDetailsWithAuth.mockResolvedValue({
       name: 'cluster1',
       url: 'https://localhost:9999',
       authProvider: 'serviceAccount',
@@ -249,7 +246,7 @@ describe('KubernetesProxy', () => {
       },
     ] as ClusterDetails[]);
 
-    authTranslator.decorateClusterDetailsWithAuth.mockResolvedValue({
+    authStrategy.decorateClusterDetailsWithAuth.mockResolvedValue({
       name: 'cluster1',
       url: 'https://localhost:9999',
       authProvider: 'serviceAccount',
@@ -292,7 +289,7 @@ describe('KubernetesProxy', () => {
         authProvider: '',
       },
     ]);
-    authTranslator.decorateClusterDetailsWithAuth.mockImplementation(
+    authStrategy.decorateClusterDetailsWithAuth.mockImplementation(
       async x => x,
     );
 
@@ -308,7 +305,7 @@ describe('KubernetesProxy', () => {
     expect(response.status).toEqual(200);
   });
 
-  it('should default to using a authTranslator provided serviceAccountToken as authorization headers to kubeapi when backstage-kubernetes-auth field is not provided', async () => {
+  it('should default to using an authStrategy-provided serviceAccountToken as authorization headers to kubeapi when backstage-kubernetes-auth field is not provided', async () => {
     worker.use(
       rest.get(
         'https://localhost:9999/api/v1/namespaces',
@@ -319,7 +316,7 @@ describe('KubernetesProxy', () => {
 
           if (
             req.headers.get('Authorization') !==
-            'Bearer translator-provided-token'
+            'Bearer strategy-provided-token'
           ) {
             return res(ctx.status(403));
           }
@@ -344,11 +341,11 @@ describe('KubernetesProxy', () => {
       },
     ] as ClusterDetails[]);
 
-    authTranslator.decorateClusterDetailsWithAuth.mockResolvedValue({
+    authStrategy.decorateClusterDetailsWithAuth.mockResolvedValue({
       name: 'cluster1',
       url: 'https://localhost:9999',
       authProvider: 'serviceAccount',
-      authMetadata: { serviceAccountToken: 'translator-provided-token' },
+      authMetadata: { serviceAccountToken: 'strategy-provided-token' },
     } as ClusterDetails);
 
     const requestPromise = setupProxyPromise({
@@ -363,7 +360,7 @@ describe('KubernetesProxy', () => {
     expect(response.status).toEqual(200);
   });
 
-  it('should add a authTranslator provided serviceAccountToken as authorization headers to kubeapi if one isnt provided in request and one isnt set up in cluster details', async () => {
+  it('should add an authStrategy-provided serviceAccountToken as authorization headers to kubeapi if one isnt provided in request and one isnt set up in cluster details', async () => {
     worker.use(
       rest.get('https://localhost:9999/api/v1/namespaces', (req, res, ctx) => {
         if (!req.headers.get('Authorization')) {
@@ -393,7 +390,7 @@ describe('KubernetesProxy', () => {
       },
     ] as ClusterDetails[]);
 
-    authTranslator.decorateClusterDetailsWithAuth.mockResolvedValue({
+    authStrategy.decorateClusterDetailsWithAuth.mockResolvedValue({
       name: 'cluster1',
       url: 'https://localhost:9999',
       authProvider: 'googleServiceAccount',
@@ -447,7 +444,7 @@ describe('KubernetesProxy', () => {
       },
     ] as ClusterDetails[]);
 
-    authTranslator.decorateClusterDetailsWithAuth.mockResolvedValue({
+    authStrategy.decorateClusterDetailsWithAuth.mockResolvedValue({
       name: 'cluster1',
       url: 'https://localhost:9999',
       authProvider: 'googleServiceAccount',
@@ -474,7 +471,7 @@ describe('KubernetesProxy', () => {
     });
   });
 
-  it('should not invoke authTranslator if Backstage-Kubernetes-Authorization field is provided', async () => {
+  it('should not invoke authStrategy if Backstage-Kubernetes-Authorization field is provided', async () => {
     worker.use(
       rest.get('https://localhost:9999/api/v1/namespaces', (req, res, ctx) => {
         if (!req.headers.get('Authorization')) {
@@ -516,7 +513,7 @@ describe('KubernetesProxy', () => {
 
     const response = await requestPromise;
 
-    expect(authTranslator.decorateClusterDetailsWithAuth).toHaveBeenCalledTimes(
+    expect(authStrategy.decorateClusterDetailsWithAuth).toHaveBeenCalledTimes(
       0,
     );
     expect(response.status).toEqual(200);
@@ -531,7 +528,7 @@ describe('KubernetesProxy', () => {
     proxy = new KubernetesProxy({
       logger: getVoidLogger(),
       clusterSupplier: new LocalKubectlProxyClusterLocator(),
-      authTranslator: new NoopKubernetesAuthTranslator(),
+      authStrategy: new NoopStrategy(),
     });
 
     worker.use(
@@ -568,7 +565,7 @@ describe('KubernetesProxy', () => {
     });
   });
 
-  it('returns a 500 error if authTranslator errors out and Backstage-Kubernetes-Authorization field is not provided', async () => {
+  it('returns a 500 error if authStrategy errors out and Backstage-Kubernetes-Authorization field is not provided', async () => {
     worker.use(
       rest.get('https://localhost:9999/api/v1/namespaces', (req, res, ctx) => {
         if (!req.headers.get('Authorization')) {
@@ -599,7 +596,7 @@ describe('KubernetesProxy', () => {
       },
     ] as ClusterDetails[]);
 
-    authTranslator.decorateClusterDetailsWithAuth.mockRejectedValue(
+    authStrategy.decorateClusterDetailsWithAuth.mockRejectedValue(
       Error('some internal error'),
     );
 
@@ -642,7 +639,7 @@ describe('KubernetesProxy', () => {
       },
     ]);
 
-    authTranslator.decorateClusterDetailsWithAuth.mockImplementation(
+    authStrategy.decorateClusterDetailsWithAuth.mockImplementation(
       async x => x,
     );
 
@@ -787,7 +784,7 @@ describe('KubernetesProxy', () => {
         },
       ] as ClusterDetails[]);
 
-      authTranslator.decorateClusterDetailsWithAuth.mockResolvedValue({
+      authStrategy.decorateClusterDetailsWithAuth.mockResolvedValue({
         name: 'local',
         url: `http://localhost:${wsPort}`,
         authProvider: 'serviceAccount',

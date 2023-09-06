@@ -22,7 +22,7 @@ import type { RequestHandler } from 'express';
 import { TokenCredential } from '@azure/identity';
 
 // @public (undocumented)
-export class AksKubernetesAuthTranslator {
+export class AksStrategy implements AuthenticationStrategy {
   // (undocumented)
   decorateClusterDetailsWithAuth(
     clusterDetails: ClusterDetails,
@@ -31,9 +31,16 @@ export class AksKubernetesAuthTranslator {
 }
 
 // @public (undocumented)
-export class AwsIamKubernetesAuthTranslator
-  implements KubernetesAuthTranslator
-{
+export interface AuthenticationStrategy {
+  // (undocumented)
+  decorateClusterDetailsWithAuth(
+    clusterDetails: ClusterDetails,
+    authConfig: KubernetesRequestAuth,
+  ): Promise<ClusterDetails>;
+}
+
+// @public (undocumented)
+export class AwsIamStrategy implements AuthenticationStrategy {
   constructor(opts: { config: Config });
   // (undocumented)
   decorateClusterDetailsWithAuth(
@@ -42,9 +49,7 @@ export class AwsIamKubernetesAuthTranslator
 }
 
 // @public (undocumented)
-export class AzureIdentityKubernetesAuthTranslator
-  implements KubernetesAuthTranslator
-{
+export class AzureIdentityStrategy implements AuthenticationStrategy {
   constructor(logger: Logger, tokenCredential?: TokenCredential);
   // (undocumented)
   decorateClusterDetailsWithAuth(
@@ -92,10 +97,8 @@ export interface CustomResourcesByEntity extends KubernetesObjectsByEntity {
 export const DEFAULT_OBJECTS: ObjectToFetch[];
 
 // @public
-export class DispatchingKubernetesAuthTranslator
-  implements KubernetesAuthTranslator
-{
-  constructor(options: DispatchingKubernetesAuthTranslatorOptions);
+export class DispatchStrategy implements AuthenticationStrategy {
+  constructor(options: DispatchStrategyOptions);
   // (undocumented)
   decorateClusterDetailsWithAuth(
     clusterDetails: ClusterDetails,
@@ -104,9 +107,9 @@ export class DispatchingKubernetesAuthTranslator
 }
 
 // @public (undocumented)
-export type DispatchingKubernetesAuthTranslatorOptions = {
-  authTranslatorMap: {
-    [key: string]: KubernetesAuthTranslator;
+export type DispatchStrategyOptions = {
+  authStrategyMap: {
+    [key: string]: AuthenticationStrategy;
   };
 };
 
@@ -119,23 +122,19 @@ export interface FetchResponseWrapper {
 }
 
 // @public (undocumented)
-export class GoogleKubernetesAuthTranslator
-  implements KubernetesAuthTranslator
-{
+export class GoogleServiceAccountStrategy implements AuthenticationStrategy {
   // (undocumented)
   decorateClusterDetailsWithAuth(
     clusterDetails: ClusterDetails,
-    authConfig: KubernetesRequestAuth,
   ): Promise<ClusterDetails>;
 }
 
 // @public (undocumented)
-export class GoogleServiceAccountAuthTranslator
-  implements KubernetesAuthTranslator
-{
+export class GoogleStrategy implements AuthenticationStrategy {
   // (undocumented)
   decorateClusterDetailsWithAuth(
     clusterDetails: ClusterDetails,
+    authConfig: KubernetesRequestAuth,
   ): Promise<ClusterDetails>;
 }
 
@@ -146,22 +145,13 @@ export const HEADER_KUBERNETES_AUTH: string;
 export const HEADER_KUBERNETES_CLUSTER: string;
 
 // @public (undocumented)
-export interface KubernetesAuthTranslator {
-  // (undocumented)
-  decorateClusterDetailsWithAuth(
-    clusterDetails: ClusterDetails,
-    authConfig: KubernetesRequestAuth,
-  ): Promise<ClusterDetails>;
-}
-
-// @public (undocumented)
 export class KubernetesBuilder {
   constructor(env: KubernetesEnvironment);
   // (undocumented)
   build(): KubernetesBuilderReturn;
   // (undocumented)
-  protected buildAuthTranslatorMap(): {
-    [key: string]: KubernetesAuthTranslator;
+  protected buildAuthStrategyMap(): {
+    [key: string]: AuthenticationStrategy;
   };
   // (undocumented)
   protected buildClusterSupplier(
@@ -210,8 +200,8 @@ export class KubernetesBuilder {
     clusterSupplier: KubernetesClustersSupplier,
   ): Promise<ClusterDetails[]>;
   // (undocumented)
-  protected getAuthTranslatorMap(): {
-    [key: string]: KubernetesAuthTranslator;
+  protected getAuthStrategyMap(): {
+    [key: string]: AuthenticationStrategy;
   };
   // (undocumented)
   protected getClusterSupplier(): KubernetesClustersSupplier;
@@ -233,8 +223,8 @@ export class KubernetesBuilder {
   // (undocumented)
   protected getServiceLocatorMethod(): ServiceLocatorMethod;
   // (undocumented)
-  setAuthTranslatorMap(authTranslatorMap: {
-    [key: string]: KubernetesAuthTranslator;
+  setAuthStrategyMap(authStrategyMap: {
+    [key: string]: AuthenticationStrategy;
   }): void;
   // (undocumented)
   setClusterSupplier(clusterSupplier?: KubernetesClustersSupplier): this;
@@ -259,8 +249,8 @@ export type KubernetesBuilderReturn = Promise<{
   proxy: KubernetesProxy;
   objectsProvider: KubernetesObjectsProvider;
   serviceLocator: KubernetesServiceLocator;
-  authTranslatorMap: {
-    [key: string]: KubernetesAuthTranslator;
+  authStrategyMap: {
+    [key: string]: AuthenticationStrategy;
   };
 }>;
 
@@ -365,7 +355,7 @@ export type KubernetesProxyCreateRequestHandlerOptions = {
 export type KubernetesProxyOptions = {
   logger: Logger;
   clusterSupplier: KubernetesClustersSupplier;
-  authTranslator: KubernetesAuthTranslator;
+  authStrategy: AuthenticationStrategy;
 };
 
 // @public
@@ -380,7 +370,7 @@ export interface KubernetesServiceLocator {
 }
 
 // @public (undocumented)
-export class NoopKubernetesAuthTranslator implements KubernetesAuthTranslator {
+export class NoopStrategy implements AuthenticationStrategy {
   // (undocumented)
   decorateClusterDetailsWithAuth(
     clusterDetails: ClusterDetails,
@@ -419,7 +409,7 @@ export interface ObjectToFetch {
 }
 
 // @public (undocumented)
-export class OidcKubernetesAuthTranslator implements KubernetesAuthTranslator {
+export class OidcStrategy implements AuthenticationStrategy {
   // (undocumented)
   decorateClusterDetailsWithAuth(
     clusterDetails: ClusterDetails,

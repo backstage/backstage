@@ -1,5 +1,5 @@
 /*
- * Copyright 2020 The Backstage Authors
+ * Copyright 2023 The Backstage Authors
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -13,18 +13,17 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+import { AksStrategy } from './AksStrategy';
 
-import { KubernetesAuthTranslator } from './types';
-import { ClusterDetails } from '../types/types';
+describe('AksStrategy', () => {
+  it('uses auth.aks value as bearer token', async () => {
+    const strategy = new AksStrategy();
 
-/**
- *
- * @public
- */
-export class NoopKubernetesAuthTranslator implements KubernetesAuthTranslator {
-  async decorateClusterDetailsWithAuth(
-    clusterDetails: ClusterDetails,
-  ): Promise<ClusterDetails> {
-    return clusterDetails;
-  }
-}
+    const details = await strategy.decorateClusterDetailsWithAuth(
+      { name: '', authProvider: 'aks', url: '' },
+      { aks: 'aksToken' },
+    );
+
+    expect(details.authMetadata!.serviceAccountToken).toBe('aksToken');
+  });
+});

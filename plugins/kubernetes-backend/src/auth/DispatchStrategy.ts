@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { KubernetesAuthTranslator } from './types';
+import { AuthenticationStrategy } from './types';
 import { ClusterDetails } from '../types';
 import { KubernetesRequestAuth } from '@backstage/plugin-kubernetes-common';
 
@@ -22,35 +22,33 @@ import { KubernetesRequestAuth } from '@backstage/plugin-kubernetes-common';
  *
  * @public
  */
-export type DispatchingKubernetesAuthTranslatorOptions = {
-  authTranslatorMap: {
-    [key: string]: KubernetesAuthTranslator;
+export type DispatchStrategyOptions = {
+  authStrategyMap: {
+    [key: string]: AuthenticationStrategy;
   };
 };
 /**
- * used to direct a KubernetesAuthProvider to its corresponding KubernetesAuthTranslator
+ * used to direct a KubernetesAuthProvider to its corresponding AuthenticationStrategy
  * @public
  */
-export class DispatchingKubernetesAuthTranslator
-  implements KubernetesAuthTranslator
-{
-  private readonly translatorMap: { [key: string]: KubernetesAuthTranslator };
+export class DispatchStrategy implements AuthenticationStrategy {
+  private readonly strategyMap: { [key: string]: AuthenticationStrategy };
 
-  constructor(options: DispatchingKubernetesAuthTranslatorOptions) {
-    this.translatorMap = options.authTranslatorMap;
+  constructor(options: DispatchStrategyOptions) {
+    this.strategyMap = options.authStrategyMap;
   }
 
   public decorateClusterDetailsWithAuth(
     clusterDetails: ClusterDetails,
     auth: KubernetesRequestAuth,
   ) {
-    if (this.translatorMap[clusterDetails.authProvider]) {
-      return this.translatorMap[
+    if (this.strategyMap[clusterDetails.authProvider]) {
+      return this.strategyMap[
         clusterDetails.authProvider
       ].decorateClusterDetailsWithAuth(clusterDetails, auth);
     }
     throw new Error(
-      `authProvider "${clusterDetails.authProvider}" has no KubernetesAuthTranslator associated with it`,
+      `authProvider "${clusterDetails.authProvider}" has no AuthenticationStrategy associated with it`,
     );
   }
 }

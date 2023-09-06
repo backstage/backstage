@@ -26,7 +26,7 @@ import {
   ANNOTATION_KUBERNETES_AWS_EXTERNAL_ID,
 } from '@backstage/plugin-kubernetes-common';
 import { ClusterDetails } from '../types/types';
-import { KubernetesAuthTranslator } from './types';
+import { AuthenticationStrategy } from './types';
 
 /**
  *
@@ -44,9 +44,7 @@ const defaultRegion = 'us-east-1';
  *
  * @public
  */
-export class AwsIamKubernetesAuthTranslator
-  implements KubernetesAuthTranslator
-{
+export class AwsIamStrategy implements AuthenticationStrategy {
   private readonly credsManager: AwsCredentialsManager;
   constructor(opts: { config: Config }) {
     this.credsManager = DefaultAwsCredentialsManager.fromConfig(opts.config);

@@ -14,13 +14,14 @@
  * limitations under the License.
  */
 import { ClusterDetails } from '../types/types';
+import { AuthenticationStrategy } from './types';
 import { KubernetesRequestAuth } from '@backstage/plugin-kubernetes-common';
 
 /**
  *
  * @public
  */
-export class AksKubernetesAuthTranslator {
+export class AksStrategy implements AuthenticationStrategy {
   async decorateClusterDetailsWithAuth(
     clusterDetails: ClusterDetails,
     auth: KubernetesRequestAuth,
