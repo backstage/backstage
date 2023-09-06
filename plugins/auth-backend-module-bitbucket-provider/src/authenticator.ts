@@ -30,7 +30,7 @@ export const bitbucketAuthenticator = createOAuthAuthenticator({
     const clientId = config.getString('clientId');
     const clientSecret = config.getString('clientSecret');
     const baseUrl =
-      config.getOptionalString('audience') || 'https://bitbucket.com';
+      config.getOptionalString('audience') || 'https://bitbucket.org';
 
     return PassportOAuthAuthenticatorHelper.from(
       new BitbucketStrategy(

@@ -61,7 +61,7 @@ describe('authModuleBitbucketProvider', () => {
     expect(nonceCookie).toBeDefined();
 
     const startUrl = new URL(res.get('location'));
-    expect(startUrl.origin).toBe('https://bitbucket.com');
+    expect(startUrl.origin).toBe('https://bitbucket.org');
     expect(startUrl.pathname).toBe('/oauth/authorize');
     expect(Object.fromEntries(startUrl.searchParams)).toEqual({
       response_type: 'code',
