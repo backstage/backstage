@@ -87,7 +87,7 @@ async function detectPackages(
 
 async function writeDetectedPackagesModule(packageNames: string[]) {
   const requirePackageScript = packageNames
-    ?.map(pkg => `{name: '${pkg}', module: require('${pkg}')}`)
+    ?.map(pkg => `{ name: '${pkg}', default: require('${pkg}').default }`)
     .join(',');
 
   await fs.writeFile(

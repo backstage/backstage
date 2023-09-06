@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-export { examplePlugin } from './plugin';
+export { examplePlugin as default } from './plugin';
 
 // TODO: This should be an extension created & exported in the `plugin.tsx`
 export { ExampleSidebarItem } from './ExampleSidebarItem';
