@@ -15,3 +15,4 @@
  */
 
 export { createSentryCreateProjectAction } from './actions/createProject';
+export { createSentryClientAction } from './actions/createClientKey';

@@ -29,6 +29,7 @@
   },
   "dependencies": {
     "@backstage/config": "workspace:^",
+    "@backstage/backend-common": "workspace:^",
     "@backstage/errors": "workspace:^",
     "@backstage/plugin-scaffolder-node": "workspace:^"
   },

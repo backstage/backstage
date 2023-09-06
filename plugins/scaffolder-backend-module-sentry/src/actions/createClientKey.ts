@@ -19,45 +19,33 @@ import { InputError } from '@backstage/errors';
 import { Config } from '@backstage/config';
 
 /**
- * Creates the `sentry:craete-project` Scaffolder action.
+ * Creates the `sentry:client:create` Scaffolder action.
  *
  * @remarks
  *
  * See {@link https://backstage.io/docs/features/software-templates/writing-custom-actions}.
  *
- * @param options - Configuration of the Sentry API.
+ * @param config - Configuration of the Sentry API.
  * @public
  */
-export function createSentryCreateProjectAction(options: { config: Config }) {
-  const { config } = options;
-
+export function createSentryClientAction(config: Config) {
   return createTemplateAction<{
     organizationSlug: string;
-    teamSlug: string;
-    name: string;
-    slug?: string;
+    projectSlug?: string;
     authToken?: string;
     apiBaseUrl?: string;
   }>({
-    id: 'sentry:project:create',
+    id: 'sentry:client:create',
     schema: {
       input: {
-        required: ['organizationSlug', 'teamSlug', 'name'],
+        required: ['organizationSlug', 'projectSlug', 'authToken'],
         type: 'object',
         properties: {
           organizationSlug: {
             title: 'The slug of the organization the team belongs to',
             type: 'string',
           },
-          teamSlug: {
-            title: 'The slug of the team to create a new project for',
-            type: 'string',
-          },
-          name: {
-            title: 'The name for the new project',
-            type: 'string',
-          },
-          slug: {
+          projectSlug: {
             title:
               'Optional slug for the new project. If not provided a slug is generated from the name',
             type: 'string',
@@ -76,16 +64,8 @@ export function createSentryCreateProjectAction(options: { config: Config }) {
       },
     },
     async handler(ctx) {
-      const { organizationSlug, teamSlug, name, slug, authToken, apiBaseUrl } =
+      const { organizationSlug, projectSlug, authToken, apiBaseUrl } =
         ctx.input;
-
-      const body: any = {
-        name: name,
-      };
-
-      if (slug) {
-        body.slug = slug;
-      }
 
       const token = authToken
         ? authToken
@@ -98,14 +78,13 @@ export function createSentryCreateProjectAction(options: { config: Config }) {
       }
 
       const response = await fetch(
-        `${baseUrl}/teams/${organizationSlug}/${teamSlug}/projects/`,
+        `${baseUrl}/projects/${organizationSlug}/${projectSlug}/keys/`,
         {
           method: 'POST',
           headers: {
             Authorization: `Bearer ${token}`,
             'Content-Type': 'application/json',
           },
-          body: JSON.stringify(body),
         },
       );
 
@@ -124,8 +103,8 @@ export function createSentryCreateProjectAction(options: { config: Config }) {
         throw new InputError(`Sentry Response was: ${await result.detail}`);
       }
 
-      ctx.output('id', result.id);
-      ctx.output('result', result);
+      const keyResult = await response.json();
+      ctx.output('sentryKeys', keyResult.dsn);
     },
   });
 }
