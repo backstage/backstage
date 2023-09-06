@@ -17,66 +17,75 @@
 import React from 'react';
 
 import { render } from '@testing-library/react';
-import { wrapInTestApp } from '@backstage/test-utils';
+import { TestApiProvider, wrapInTestApp } from '@backstage/test-utils';
 import '@testing-library/jest-dom';
 
 import { PodDrawer } from '.';
+import { DiscoveryApi, discoveryApiRef } from '@backstage/core-plugin-api';
+
+jest.mock('../../../hooks/useIsPodExecTerminalSupported');
 
 describe('PodDrawer', () => {
   it('Should show title and container names', async () => {
+    const mockDiscoveryApi: Partial<DiscoveryApi> = {
+      getBaseUrl: () => Promise.resolve('http://localhost'),
+    };
+
     const { getAllByText, getByText } = render(
       wrapInTestApp(
-        <PodDrawer
-          {...({
-            open: true,
-            podAndErrors: {
-              clusterName: 'some-cluster-1',
-              pod: {
-                metadata: {
-                  name: 'some-pod',
-                },
-                spec: {
-                  containers: [
-                    {
-                      name: 'some-container',
-                    },
-                  ],
-                },
-                status: {
-                  podIP: '127.0.0.1',
-                  containerStatuses: [
-                    {
-                      name: 'some-container',
-                    },
-                  ],
-                },
-              },
-              errors: [
-                {
-                  type: 'some-error',
-                  severity: 10,
-                  message: 'some error message',
-                  occurrenceCount: 1,
-                  sourceRef: {
+        <TestApiProvider apis={[[discoveryApiRef, mockDiscoveryApi]]}>
+          <PodDrawer
+            {...({
+              open: true,
+              podAndErrors: {
+                clusterName: 'some-cluster-1',
+                pod: {
+                  metadata: {
                     name: 'some-pod',
-                    namespace: 'some-namespace',
-                    kind: 'Pod',
-                    apiGroup: 'v1',
                   },
-                  proposedFix: [
-                    {
-                      type: 'logs',
-                      container: 'some-container',
-                      errorType: 'some error type',
-                      rootCauseExplanation: 'some root cause',
-                      actions: ['fix1', 'fix2'],
-                    },
-                  ],
+                  spec: {
+                    containers: [
+                      {
+                        name: 'some-container',
+                      },
+                    ],
+                  },
+                  status: {
+                    podIP: '127.0.0.1',
+                    containerStatuses: [
+                      {
+                        name: 'some-container',
+                      },
+                    ],
+                  },
                 },
-              ],
-            },
-          } as any)}
-        />,
+                errors: [
+                  {
+                    type: 'some-error',
+                    severity: 10,
+                    message: 'some error message',
+                    occurrenceCount: 1,
+                    sourceRef: {
+                      name: 'some-pod',
+                      namespace: 'some-namespace',
+                      kind: 'Pod',
+                      apiGroup: 'v1',
+                    },
+                    proposedFix: [
+                      {
+                        type: 'logs',
+                        container: 'some-container',
+                        errorType: 'some error type',
+                        rootCauseExplanation: 'some root cause',
+                        actions: ['fix1', 'fix2'],
+                      },
+                    ],
+                  },
+                ],
+              },
+            } as any)}
+          />
+        </TestApiProvider>,
       ),
     );
 
