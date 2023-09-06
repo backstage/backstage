@@ -19,28 +19,20 @@ import { PassThrough } from 'stream';
 import { ConfigReader } from '@backstage/config';
 import { exampleResponseBody } from './test-fixutres';
 
-if (!global.fetch) {
-  global.fetch = fetch;
-  global.Headers = fetch.Headers;
-  global.Response = fetch.Response;
-  global.AbortController = AbortController;
-}
-
-global.Headers = global.fetch.Headers;
-
-global.fetch = jest.fn(() => {
-  const response = {
+global.fetch = jest.fn(() =>
+  Promise.resolve({
     json: () => Promise.resolve(exampleResponseBody),
-    headers: new global.Headers([['Content-Type', 'application/json']]),
+    headers: {
+      get: jest.fn(() => ({ 'Content-Type': 'application/json' })),
+    },
     ok: false,
     redirected: false,
     status: 201,
     statusText: 'string',
     type: 'basic',
     url: '',
-  } as Response;
-  return Promise.resolve(response);
-});
+  }),
+) as jest.Mock;
 
 describe('Create Sentry Client Key -', () => {
   it('should throw error for missing Tokens', async () => {
