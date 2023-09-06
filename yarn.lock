@@ -17170,11 +17170,11 @@ __metadata:
   linkType: hard
 
 "@types/cors@npm:^2.8.6":
-  version: 2.8.13
-  resolution: "@types/cors@npm:2.8.13"
+  version: 2.8.14
+  resolution: "@types/cors@npm:2.8.14"
   dependencies:
     "@types/node": "*"
-  checksum: 7ef197ea19d2e5bf1313b8416baa6f3fd6dd887fd70191da1f804f557395357dafd8bc8bed0ac60686923406489262a7c8a525b55748f7b2b8afa686700de907
+  checksum: 119b8ea5760db58542cc66635e8b98b9e859d615e9fc7bfd520c0e2c94063e87759033a4242360e2aa66df2d7d092a406838ac35e8ca7034debf1c69abc27811
   languageName: node
   linkType: hard
 
