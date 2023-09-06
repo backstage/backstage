@@ -22,6 +22,7 @@ import {
 import { OptionValues } from 'commander';
 import fs from 'fs-extra';
 import { resolve as resolvePath } from 'path';
+import { paths } from '../../lib/paths';
 
 /**
  * A mutable object representing a package.json file with potential fixes.
@@ -38,8 +39,13 @@ export async function readFixablePackages(): Promise<FixablePackage[]> {
 export function printPackageFixHint(packages: FixablePackage[]) {
   const changed = packages.filter(pkg => pkg.changed);
   if (changed.length > 0) {
+    const rootPkg = require(paths.resolveTargetRoot('package.json'));
+    const fixCmd =
+      rootPkg.scripts?.fix === 'backstage-cli repo fix'
+        ? 'fix'
+        : 'backstage-cli repo fix';
     console.log(
-      'The following packages are out of sync, run `yarn fix` to fix them:',
+      `The following packages are out of sync, run 'yarn ${fixCmd}' to fix them:`,
     );
     for (const pkg of changed) {
       console.log(`  ${pkg.packageJson.name}`);
