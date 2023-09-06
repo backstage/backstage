@@ -138,7 +138,7 @@ export function createServiceFactory<
   TService,
   TImpl extends TService,
   TDeps extends {
-    [name in string]: ServiceRef<unknown>;
+    [name in string]: ServiceRef<unknown, 'root'>;
   },
   TOpts extends object | undefined = undefined,
 >(
@@ -150,7 +150,7 @@ export function createServiceFactory<
   TService,
   TImpl extends TService,
   TDeps extends {
-    [name in string]: ServiceRef<unknown>;
+    [name in string]: ServiceRef<unknown, 'root'>;
   },
   TOpts extends object | undefined = undefined,
 >(
