@@ -1,5 +1,6 @@
 app:
-  packages: 'all' # ✨
+  experimental:
+    packages: 'all' # ✨
 
 
   # scmAuthExtension: >-

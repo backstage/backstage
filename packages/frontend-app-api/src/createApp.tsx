@@ -32,6 +32,7 @@ import {
 } from './wiring/parameters';
 import { RoutingProvider } from './routing/RoutingContext';
 import { RouteRef } from '@backstage/core-plugin-api';
+import { getAvailablePlugins } from './wiring/discovery';
 
 /** @public */
 export function createApp(options: { plugins: BackstagePlugin[] }): {
@@ -40,11 +41,12 @@ export function createApp(options: { plugins: BackstagePlugin[] }): {
   const appConfig = ConfigReader.fromConfigs(process.env.APP_CONFIG as any);
 
   const builtinExtensions = [CoreRouter];
+  const discoveredPlugins = getAvailablePlugins();
 
   // pull in default extension instance from discovered packages
   // apply config to adjust default extension instances and add more
   const extensionParams = mergeExtensionParameters({
-    sources: options.plugins,
+    sources: [...options.plugins, ...discoveredPlugins],
     builtinExtensions,
     parameters: readAppExtensionParameters(appConfig),
   });
