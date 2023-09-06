@@ -35,6 +35,7 @@ import {
   type EntityProviderMutation as _EntityProviderMutation,
 } from '@backstage/plugin-catalog-node';
 import { type LocationSpec as _LocationSpec } from '@backstage/plugin-catalog-common';
+import { SystemEntityModelProcessor } from '@backstage/plugin-catalog-backend-module-system-entity-model';
 
 /**
  * @public
@@ -141,3 +142,9 @@ export type EntityProviderMutation = _EntityProviderMutation;
  * @deprecated use the same type from `@backstage/plugin-catalog-common` instead
  */
 export type LocationSpec = _LocationSpec;
+
+/**
+ * @public
+ * @deprecated Import `SystemEntityModelProcessor` from `@backstage/plugin-catalog-backend-module-entity-model` instead
+ */
+export const BuiltinKindsEntityProcessor = SystemEntityModelProcessor;

@@ -13,6 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
 import {
   createBackendPlugin,
   coreServices,
@@ -25,9 +26,9 @@ import {
 import {
   CatalogProcessor,
   EntityProvider,
+  PlaceholderResolver,
 } from '@backstage/plugin-catalog-node';
 import { loggerToWinstonLogger } from '@backstage/backend-common';
-import { PlaceholderResolver } from '../modules';
 
 class CatalogExtensionPointImpl implements CatalogProcessingExtensionPoint {
   #processors = new Array<CatalogProcessor>();
@@ -75,7 +76,7 @@ export const catalogPlugin = createBackendPlugin({
   pluginId: 'catalog',
   register(env) {
     const processingExtensions = new CatalogExtensionPointImpl();
-    // plugins depending on this API will be initialized before this plugins init method is executed.
+
     env.registerExtensionPoint(
       catalogProcessingExtensionPoint,
       processingExtensions,
@@ -103,6 +104,7 @@ export const catalogPlugin = createBackendPlugin({
         scheduler,
       }) {
         const winstonLogger = loggerToWinstonLogger(logger);
+
         const builder = await CatalogBuilder.create({
           config,
           reader,
@@ -111,6 +113,8 @@ export const catalogPlugin = createBackendPlugin({
           scheduler,
           logger: winstonLogger,
         });
+
+        builder.disableDefault('entity-model');
         builder.addProcessor(...processingExtensions.processors);
         builder.addEntityProvider(...processingExtensions.entityProviders);
         Object.entries(processingExtensions.placeholderResolvers).forEach(
@@ -118,8 +122,8 @@ export const catalogPlugin = createBackendPlugin({
         );
 
         const { processingEngine, router } = await builder.build();
-
         await processingEngine.start();
+
         lifecycle.addShutdownHook(() => processingEngine.stop());
         httpRouter.use(router);
       },

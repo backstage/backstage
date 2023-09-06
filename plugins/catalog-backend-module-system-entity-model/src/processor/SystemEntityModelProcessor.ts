@@ -55,8 +55,15 @@ import {
   processingResult,
 } from '@backstage/plugin-catalog-node';
 
-/** @public */
-export class BuiltinKindsEntityProcessor implements CatalogProcessor {
+/**
+ * Implements the default System Entity Model (components, systems, etc.)
+ *
+ * @public
+ * @remarks
+ *
+ * See {@link https://backstage.io/docs/features/software-catalog/system-model}
+ */
+export class SystemEntityModelProcessor implements CatalogProcessor {
   private readonly validators = [
     apiEntityV1alpha1Validator,
     componentEntityV1alpha1Validator,
@@ -69,6 +76,7 @@ export class BuiltinKindsEntityProcessor implements CatalogProcessor {
   ];
 
   getProcessorName(): string {
+    // Retains the old processor name for compatibility reasons
     return 'BuiltinKindsEntityProcessor';
   }
 
@@ -109,20 +117,12 @@ export class BuiltinKindsEntityProcessor implements CatalogProcessor {
           processingResult.relation({
             source: selfRef,
             type: outgoingRelation,
-            target: {
-              kind: targetRef.kind,
-              namespace: targetRef.namespace,
-              name: targetRef.name,
-            },
+            target: targetRef,
           }),
         );
         emit(
           processingResult.relation({
-            source: {
-              kind: targetRef.kind,
-              namespace: targetRef.namespace,
-              name: targetRef.name,
-            },
+            source: targetRef,
             type: incomingRelation,
             target: selfRef,
           }),

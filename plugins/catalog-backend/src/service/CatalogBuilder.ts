@@ -41,7 +41,6 @@ import {
 } from '@backstage/plugin-catalog-node';
 import {
   AnnotateLocationEntityProcessor,
-  BuiltinKindsEntityProcessor,
   CodeOwnersProcessor,
   FileReaderProcessor,
   PlaceholderProcessor,
@@ -101,6 +100,7 @@ import { DefaultProviderDatabase } from '../database/DefaultProviderDatabase';
 import { DefaultCatalogDatabase } from '../database/DefaultCatalogDatabase';
 import { EventBroker } from '@backstage/plugin-events-node';
 import { durationToMilliseconds } from '@backstage/types';
+import { SystemEntityModelProcessor } from '@backstage/plugin-catalog-backend-module-system-entity-model';
 
 /**
  * This is a duplicate of the alpha `CatalogPermissionRule` type, for use in the stable API.
@@ -167,6 +167,7 @@ export class CatalogBuilder {
   private allowedLocationType: string[];
   private legacySingleProcessorValidation = false;
   private eventBroker?: EventBroker;
+  private disabledDefaults: Set<'entity-model'>;
 
   /**
    * Creates a catalog builder.
@@ -188,10 +189,16 @@ export class CatalogBuilder {
     this.parser = undefined;
     this.permissionRules = Object.values(catalogPermissionRules);
     this.allowedLocationType = ['url'];
+    this.disabledDefaults = new Set();
 
     this.processingInterval = CatalogBuilder.getDefaultProcessingInterval(
       env.config,
     );
+  }
+
+  disableDefault(def: 'entity-model'): CatalogBuilder {
+    this.disabledDefaults.add(def);
+    return this;
   }
 
   /**
@@ -638,17 +645,19 @@ export class CatalogBuilder {
       }),
     ];
 
-    const builtinKindsEntityProcessor = new BuiltinKindsEntityProcessor();
-    // If the user adds a processor named 'BuiltinKindsEntityProcessor',
-    //   skip inclusion of the catalog-backend version.
-    if (
-      !this.processors.some(
-        processor =>
-          processor.getProcessorName() ===
-          builtinKindsEntityProcessor.getProcessorName(),
-      )
-    ) {
-      processors.push(builtinKindsEntityProcessor);
+    if (!this.disabledDefaults.has('entity-model')) {
+      // If the user adds a processor named 'BuiltinKindsEntityProcessor',
+      //   skip inclusion of the default version.
+      if (
+        !this.processors.some(processor =>
+          [
+            'BuiltinKindsEntityProcessor',
+            'SystemEntityModelProcessor',
+          ].includes(processor.getProcessorName()),
+        )
+      ) {
+        processors.push(new SystemEntityModelProcessor());
+      }
     }
 
     // These are only added unless the user replaced them all
