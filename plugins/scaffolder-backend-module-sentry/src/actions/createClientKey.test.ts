@@ -25,6 +25,7 @@ global.fetch = jest.fn(() =>
     headers: {
       get: jest.fn(() => ({ 'Content-Type': 'application/json' })),
     },
+    text: () => Promise.resolve(''),
     ok: false,
     redirected: false,
     status: 201,
