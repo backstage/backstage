@@ -4979,14 +4979,27 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@backstage/plugin-auth-backend-module-pinniped-provider@^0.0.0, @backstage/plugin-auth-backend-module-pinniped-provider@workspace:plugins/auth-backend-module-pinniped-provider":
+"@backstage/plugin-auth-backend-module-pinniped-provider@workspace:^, @backstage/plugin-auth-backend-module-pinniped-provider@workspace:plugins/auth-backend-module-pinniped-provider":
   version: 0.0.0-use.local
   resolution: "@backstage/plugin-auth-backend-module-pinniped-provider@workspace:plugins/auth-backend-module-pinniped-provider"
   dependencies:
     "@backstage/backend-common": "workspace:^"
+    "@backstage/backend-defaults": "workspace:^"
     "@backstage/backend-plugin-api": "workspace:^"
     "@backstage/backend-test-utils": "workspace:^"
     "@backstage/cli": "workspace:^"
+    "@backstage/config": "workspace:^"
+    "@backstage/plugin-auth-backend": "workspace:^"
+    "@backstage/plugin-auth-node": "workspace:^"
+    cookie-parser: ^1.4.6
+    express: ^4.18.2
+    express-promise-router: ^4.1.1
+    express-session: ^1.17.3
+    jose: ^4.14.6
+    msw: ^1.3.0
+    openid-client: ^5.4.3
+    passport: ^0.6.0
+    supertest: ^6.3.3
   languageName: unknown
   linkType: soft
 
@@ -5010,6 +5023,7 @@ __metadata:
     "@backstage/plugin-auth-backend-module-google-provider": "workspace:^"
     "@backstage/plugin-auth-backend-module-microsoft-provider": "workspace:^"
     "@backstage/plugin-auth-backend-module-oauth2-provider": "workspace:^"
+    "@backstage/plugin-auth-backend-module-pinniped-provider": "workspace:^"
     "@backstage/plugin-auth-node": "workspace:^"
     "@backstage/plugin-catalog-node": "workspace:^"
     "@backstage/types": "workspace:^"
@@ -25908,7 +25922,6 @@ __metadata:
     "@backstage/plugin-adr-backend": "workspace:^"
     "@backstage/plugin-app-backend": "workspace:^"
     "@backstage/plugin-auth-backend": "workspace:^"
-    "@backstage/plugin-auth-backend-module-pinniped-provider": ^0.0.0
     "@backstage/plugin-auth-node": "workspace:^"
     "@backstage/plugin-azure-devops-backend": "workspace:^"
     "@backstage/plugin-azure-sites-backend": "workspace:^"
@@ -26117,7 +26130,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"express-session@npm:^1.17.1":
+"express-session@npm:^1.17.1, express-session@npm:^1.17.3":
   version: 1.17.3
   resolution: "express-session@npm:1.17.3"
   dependencies:
@@ -30330,6 +30343,13 @@ __metadata:
   languageName: node
   linkType: hard
 
+"jose@npm:^4.14.6":
+  version: 4.14.6
+  resolution: "jose@npm:4.14.6"
+  checksum: eae81a234e7bf1446b1bd80722b3462b014e3835b155c3a7799c1c5043163a53a0dc28d347004151b031e6b7b863403aabf8814d9cc217ce21f8c2f3ebd4b335
+  languageName: node
+  linkType: hard
+
 "jose@npm:^4.15.1, jose@npm:^4.6.0":
   version: 4.15.3
   resolution: "jose@npm:4.15.3"
@@ -33457,7 +33477,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"msw@npm:^1.0.0, msw@npm:^1.0.1, msw@npm:^1.2.1, msw@npm:^1.2.3, msw@npm:^1.3.1":
+"msw@npm:^1.0.0, msw@npm:^1.0.1, msw@npm:^1.2.1, msw@npm:^1.2.3, msw@npm:^1.3.0, msw@npm:^1.3.1":
   version: 1.3.2
   resolution: "msw@npm:1.3.2"
   dependencies:
@@ -34531,7 +34551,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"openid-client@npm:^5.2.1, openid-client@npm:^5.3.0":
+"openid-client@npm:^5.2.1, openid-client@npm:^5.3.0, openid-client@npm:^5.4.3":
   version: 5.6.1
   resolution: "openid-client@npm:5.6.1"
   dependencies:

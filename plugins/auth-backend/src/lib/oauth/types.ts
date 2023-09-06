@@ -92,18 +92,11 @@ export type OAuthProviderInfo = {
   scope: string;
 };
 
-/** @public */
-export type OAuthState = {
-  /* A type for the serialized value in the `state` parameter of the OAuth authorization flow
-   */
-  nonce: string;
-  env: string;
-  origin?: string;
-  scope?: string;
-  redirectUrl?: string;
-  flow?: string;
-  audience? : string;
-};
+/**
+ * @public
+ * @deprecated import from `@backstage/plugin-auth-node` instead
+ */
+export type OAuthState = _OAuthState;
 
 /**
  * @public

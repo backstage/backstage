@@ -1,24 +1,44 @@
-import { setupRequestMockHandlers } from "@backstage/backend-test-utils"
-import { authModulePinnipedProvider } from "./module"
+/*
+ * Copyright 2023 The Backstage Authors
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+import { setupRequestMockHandlers } from '@backstage/backend-test-utils';
 import request from 'supertest';
 import { setupServer } from 'msw/node';
 import { rest } from 'msw';
-import { Server } from "http";
+import { Server } from 'http';
 import express from 'express';
 import cookieParser from 'cookie-parser';
 import session from 'express-session';
 import passport from 'passport';
 import { AddressInfo } from 'net';
-import { AuthProviderRouteHandlers, createOAuthRouteHandlers } from "@backstage/plugin-auth-node";
+import {
+  AuthProviderRouteHandlers,
+  createOAuthRouteHandlers,
+} from '@backstage/plugin-auth-node';
 import Router from 'express-promise-router';
-import { pinnipedAuthenticator } from "./authenticator";
-import { ConfigReader } from "@backstage/config";
+import { pinnipedAuthenticator } from './authenticator';
+import { ConfigReader } from '@backstage/config';
+import { JWK, SignJWT, exportJWK, generateKeyPair } from 'jose';
 
 describe('authModulePinnipedProvider', () => {
   let app: express.Express;
   let backstageServer: Server;
   let appUrl: string;
-  let providerRouteHandler: AuthProviderRouteHandlers
+  let providerRouteHandler: AuthProviderRouteHandlers;
+  let idToken: string;
+  let publicKey: JWK;
 
   const mswServer = setupServer();
   setupRequestMockHandlers(mswServer);
@@ -49,8 +69,27 @@ describe('authModulePinnipedProvider', () => {
     request_object_signing_alg_values_supported: ['RS256', 'RS512', 'HS256'],
   };
 
+  const clusterScopedIdToken = 'dummy-token';
+
+  beforeAll(async () => {
+    const keyPair = await generateKeyPair('ES256');
+    const privateKey = await exportJWK(keyPair.privateKey);
+    publicKey = await exportJWK(keyPair.publicKey);
+    publicKey.alg = privateKey.alg = 'ES256';
+
+    idToken = await new SignJWT({
+      sub: 'test',
+      iss: 'https://pinniped.test',
+      iat: Date.now(),
+      aud: 'clientId',
+      exp: Date.now() + 10000,
+    })
+      .setProtectedHeader({ alg: privateKey.alg, kid: privateKey.kid })
+      .sign(keyPair.privateKey);
+  });
+
   beforeEach(async () => {
-    // jest.clearAllMocks();
+    jest.clearAllMocks();
 
     mswServer.use(
       rest.get(
@@ -62,7 +101,55 @@ describe('authModulePinnipedProvider', () => {
             ctx.json(issuerMetadata),
           ),
       ),
-    )
+      rest.get(
+        'https://pinniped.test/oauth2/authorize',
+        async (req, res, ctx) => {
+          const callbackUrl = new URL(
+            req.url.searchParams.get('redirect_uri')!,
+          );
+          callbackUrl.searchParams.set('code', 'authorization_code');
+          callbackUrl.searchParams.set(
+            'state',
+            req.url.searchParams.get('state')!,
+          );
+          callbackUrl.searchParams.set('scope', 'test-scope');
+          return res(
+            ctx.status(302),
+            ctx.set('Location', callbackUrl.toString()),
+          );
+        },
+      ),
+      rest.get('https://pinniped.test/jwks.json', async (_req, res, ctx) =>
+        res(ctx.status(200), ctx.json({ keys: [{ ...publicKey }] })),
+      ),
+      rest.post('https://pinniped.test/oauth2/token', async (req, res, ctx) => {
+        const formBody = new URLSearchParams(await req.text());
+        const isGrantTypeTokenExchange =
+          formBody.get('grant_type') ===
+          'urn:ietf:params:oauth:grant-type:token-exchange';
+        const hasValidTokenExchangeParams =
+          formBody.get('subject_token') === 'accessToken' &&
+          formBody.get('audience') === 'test_cluster' &&
+          formBody.get('subject_token_type') ===
+            'urn:ietf:params:oauth:token-type:access_token' &&
+          formBody.get('requested_token_type') ===
+            'urn:ietf:params:oauth:token-type:jwt';
+
+        return res(
+          req.headers.get('Authorization') &&
+            (!isGrantTypeTokenExchange || hasValidTokenExchangeParams)
+            ? ctx.json({
+                access_token: isGrantTypeTokenExchange
+                  ? clusterScopedIdToken
+                  : 'accessToken',
+                refresh_token: 'refreshToken',
+                ...(!isGrantTypeTokenExchange && { id_token: idToken }),
+                scope: 'testScope',
+              })
+            : ctx.status(401),
+        );
+      }),
+    );
 
     const secret = 'secret';
     app = express()
@@ -110,33 +197,64 @@ describe('authModulePinnipedProvider', () => {
         }),
         signInWithCatalogUser: async _ => ({ token: '' }),
       },
-    })
+    });
 
     const router = Router();
-      router
-        .use(
-          '/api/auth/pinniped/start',
-          providerRouteHandler.start.bind(providerRouteHandler),
-        )
-        .use(
-          '/api/auth/pinniped/handler/frame',
-          providerRouteHandler.frameHandler.bind(providerRouteHandler),
-        );
-      app.use(router);
-  })
+    router
+      .use(
+        '/api/auth/pinniped/start',
+        providerRouteHandler.start.bind(providerRouteHandler),
+      )
+      .use(
+        '/api/auth/pinniped/handler/frame',
+        providerRouteHandler.frameHandler.bind(providerRouteHandler),
+      );
+    app.use(router);
+  });
 
   afterEach(() => {
     backstageServer.close();
   });
-  //TODO: are we actually testing the auth module here since our setup makes use of creating the Oauthfactory directly and not through the module, how can we attach it using the module instead????
-
 
   it('should start', async () => {
+    const agent = request.agent(backstageServer);
+    const startResponse = await agent.get(
+      `/api/auth/pinniped/start?env=development&audience=test_cluster`,
+    );
 
-    const agent = request.agent(backstageServer)
+    expect(startResponse.status).toBe(302);
+  });
 
-    const startResponse = await agent.get(`/api/auth/pinniped/start?env=development&audience=test_cluster`);
+  it('/handler/frame exchanges authorization code from #start for Cluster Specific ID token', async () => {
+    const agent = request.agent('');
 
-    expect(startResponse.status).toBe(302)
-  }, 70000)
-})
+    // make /start request with audience parameter
+    const startResponse = await agent.get(
+      `${appUrl}/api/auth/pinniped/start?env=development&audience=test_cluster`,
+    );
+    // follow redirect to authorization endpoint
+    const authorizationResponse = await agent.get(
+      startResponse.header.location,
+    );
+    // follow redirect to token_endpoint
+    const handlerResponse = await agent.get(
+      authorizationResponse.header.location,
+    );
+
+    expect(handlerResponse.text).toContain(
+      encodeURIComponent(
+        JSON.stringify({
+          type: 'authorization_response',
+          response: {
+            profile: {},
+            providerInfo: {
+              idToken: clusterScopedIdToken,
+              accessToken: 'accessToken',
+              scope: 'testScope',
+            },
+          },
+        }),
+      ),
+    );
+  });
+});

@@ -1,5 +1,7 @@
-# @backstage/plugin-auth-backend-module-pinniped-provider
+# Auth Module: Pinniped Provider
 
-The pinniped-provider backend module for the auth plugin.
+This module provides an Pinniped auth provider implementation for `@backstage/plugin-auth-backend`.
 
-_This plugin was created through the Backstage CLI_
+## Links
+
+- [Backstage](https://backstage.io)
