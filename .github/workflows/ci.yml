@@ -79,6 +79,9 @@ jobs:
       - name: verify local dependency ranges
         run: node scripts/verify-local-dependencies.js
 
+      - name: type checking and declarations
+        run: yarn fix --check
+
       - name: validate config
         run: yarn backstage-cli config:check --lax
 
