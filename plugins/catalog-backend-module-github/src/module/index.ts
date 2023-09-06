@@ -15,3 +15,8 @@
  */
 
 export { catalogModuleGithubEntityProvider } from './catalogModuleGithubEntityProvider';
+export {
+  catalogModuleGithubOrgEntityProvider,
+  githubOrgEntityProviderTransformsExtensionPoint,
+  type GithubOrgEntityProviderTransformsExtensionPoint,
+} from './catalogModuleGithubOrgEntityProvider';
