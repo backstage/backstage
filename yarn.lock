@@ -103,8 +103,8 @@ __metadata:
   linkType: hard
 
 "@apollo/client@npm:^3.0.0":
-  version: 3.8.2
-  resolution: "@apollo/client@npm:3.8.2"
+  version: 3.8.3
+  resolution: "@apollo/client@npm:3.8.3"
   dependencies:
     "@graphql-typed-document-node/core": ^3.1.1
     "@wry/context": ^0.7.3
@@ -134,7 +134,7 @@ __metadata:
       optional: true
     subscriptions-transport-ws:
       optional: true
-  checksum: 70eb1730a279a3d90721d5a020ee9b2f4dfd03a290ff1b69aa0e8b9ebc7410aa7a5419db962f5c801e793af279aa39dd0c3af87a667d3538a5d2ac96d47e71bc
+  checksum: cdecd5d613c0f941d00fc1904b9ecdeb502fc157c10400430231adb47d8f67727c78eed1b7489aed91cce6e20e32fc44e16b6c2d5424a42d7c100dcef65b942b
   languageName: node
   linkType: hard
 
