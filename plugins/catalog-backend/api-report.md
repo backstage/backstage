@@ -173,6 +173,9 @@ export class CatalogBuilder {
     }) => Promise<void> | void;
   }): void;
   useLegacySingleProcessorValidation(): this;
+  withProcessingEngine(
+    processingEngine: CatalogProcessingEngine,
+  ): CatalogBuilder;
 }
 
 // @public @deprecated (undocumented)

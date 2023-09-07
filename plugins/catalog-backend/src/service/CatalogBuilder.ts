@@ -167,6 +167,7 @@ export class CatalogBuilder {
   private allowedLocationType: string[];
   private legacySingleProcessorValidation = false;
   private eventBroker?: EventBroker;
+  private processingEngine?: CatalogProcessingEngine;
 
   /**
    * Creates a catalog builder.
@@ -431,6 +432,16 @@ export class CatalogBuilder {
   }
 
   /**
+   * Use a custom CatalogProcessingEngine instead of the default.
+   */
+  withProcessingEngine(
+    processingEngine: CatalogProcessingEngine,
+  ): CatalogBuilder {
+    this.processingEngine = processingEngine;
+    return this;
+  }
+
+  /**
    * Wires up and returns all of the component parts of the catalog
    */
   async build(): Promise<{
@@ -531,19 +542,21 @@ export class CatalogBuilder {
       provider => provider.getProviderName(),
     );
 
-    const processingEngine = new DefaultCatalogProcessingEngine({
-      config,
-      scheduler,
-      logger,
-      processingDatabase,
-      orchestrator,
-      stitcher,
-      createHash: () => createHash('sha1'),
-      pollingIntervalMs: 1000,
-      onProcessingError: event => {
-        this.onProcessingError?.(event);
-      },
-    });
+    const processingEngine =
+      this.processingEngine ||
+      new DefaultCatalogProcessingEngine({
+        config,
+        scheduler,
+        logger,
+        processingDatabase,
+        orchestrator,
+        stitcher,
+        createHash: () => createHash('sha1'),
+        pollingIntervalMs: 1000,
+        onProcessingError: event => {
+          this.onProcessingError?.(event);
+        },
+      });
 
     const locationAnalyzer =
       this.locationAnalyzer ??
