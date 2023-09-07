@@ -15,8 +15,9 @@
  */
 
 import { Config, ConfigReader } from '@backstage/config';
-import { getCombinedClusterSupplier } from './index';
 import { CatalogApi } from '@backstage/catalog-client';
+import { ANNOTATION_KUBERNETES_AUTH_PROVIDER } from '@backstage/plugin-kubernetes-common';
+import { getCombinedClusterSupplier } from './index';
 import { ClusterDetails } from '../types/types';
 import { AuthenticationStrategy, DispatchStrategy } from '../auth';
 
@@ -57,12 +58,7 @@ describe('getCombinedClusterSupplier', () => {
     const clusterSupplier = getCombinedClusterSupplier(
       config,
       catalogApi,
-      new DispatchStrategy({
-        authStrategyMap: {
-          serviceAccount: mockStrategy,
-          google: mockStrategy,
-        },
-      }),
+      mockStrategy,
     );
     const result = await clusterSupplier.getClusters();
 
@@ -71,7 +67,7 @@ describe('getCombinedClusterSupplier', () => {
         name: 'cluster1',
         url: 'http://localhost:8080',
         authMetadata: {
-          authProvider: 'serviceAccount',
+          [ANNOTATION_KUBERNETES_AUTH_PROVIDER]: 'serviceAccount',
           serviceAccountToken: 'token',
         },
         skipMetricsLookup: false,
@@ -82,7 +78,7 @@ describe('getCombinedClusterSupplier', () => {
       {
         name: 'cluster2',
         url: 'http://localhost:8081',
-        authMetadata: { authProvider: 'google' },
+        authMetadata: { [ANNOTATION_KUBERNETES_AUTH_PROVIDER]: 'google' },
         skipMetricsLookup: false,
         skipTLSVerify: false,
         caData: undefined,

@@ -16,6 +16,7 @@
 
 import '@backstage/backend-common';
 import {
+  ANNOTATION_KUBERNETES_AUTH_PROVIDER,
   ANNOTATION_KUBERNETES_AWS_ASSUME_ROLE,
   ANNOTATION_KUBERNETES_AWS_EXTERNAL_ID,
   ANNOTATION_KUBERNETES_OIDC_TOKEN_PROVIDER,
@@ -35,7 +36,7 @@ const mockCatalogApi = {
           annotations: {
             'kubernetes.io/api-server': 'https://apiserver.com',
             'kubernetes.io/api-server-certificate-authority': 'caData',
-            'kubernetes.io/auth-provider': 'oidc',
+            [ANNOTATION_KUBERNETES_AUTH_PROVIDER]: 'oidc',
             [ANNOTATION_KUBERNETES_OIDC_TOKEN_PROVIDER]: 'google',
             'kubernetes.io/skip-metrics-lookup': 'true',
             'kubernetes.io/skip-tls-verify': 'true',
@@ -53,7 +54,7 @@ const mockCatalogApi = {
           annotations: {
             'kubernetes.io/api-server': 'https://apiserver.com',
             'kubernetes.io/api-server-certificate-authority': 'caData',
-            'kubernetes.io/auth-provider': 'aws',
+            [ANNOTATION_KUBERNETES_AUTH_PROVIDER]: 'aws',
             [ANNOTATION_KUBERNETES_AWS_ASSUME_ROLE]: 'my-role',
             [ANNOTATION_KUBERNETES_AWS_EXTERNAL_ID]: 'my-id',
             [ANNOTATION_KUBERNETES_OIDC_TOKEN_PROVIDER]: 'google',
@@ -97,10 +98,9 @@ describe('CatalogClusterLocator', () => {
       url: 'https://apiserver.com',
       caData: 'caData',
       authMetadata: {
-        authProvider: 'oidc',
         'kubernetes.io/api-server': 'https://apiserver.com',
         'kubernetes.io/api-server-certificate-authority': 'caData',
-        'kubernetes.io/auth-provider': 'oidc',
+        [ANNOTATION_KUBERNETES_AUTH_PROVIDER]: 'oidc',
         [ANNOTATION_KUBERNETES_OIDC_TOKEN_PROVIDER]: 'google',
         'kubernetes.io/skip-metrics-lookup': 'true',
         'kubernetes.io/skip-tls-verify': 'true',
@@ -125,10 +125,9 @@ describe('CatalogClusterLocator', () => {
       url: 'https://apiserver.com',
       caData: 'caData',
       authMetadata: {
-        authProvider: 'aws',
         'kubernetes.io/api-server': 'https://apiserver.com',
         'kubernetes.io/api-server-certificate-authority': 'caData',
-        'kubernetes.io/auth-provider': 'aws',
+        [ANNOTATION_KUBERNETES_AUTH_PROVIDER]: 'aws',
         [ANNOTATION_KUBERNETES_AWS_ASSUME_ROLE]: 'my-role',
         [ANNOTATION_KUBERNETES_AWS_EXTERNAL_ID]: 'my-id',
         [ANNOTATION_KUBERNETES_OIDC_TOKEN_PROVIDER]: 'google',

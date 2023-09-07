@@ -14,9 +14,12 @@
  * limitations under the License.
  */
 
+import {
+  ANNOTATION_KUBERNETES_AUTH_PROVIDER,
+  KubernetesRequestAuth,
+} from '@backstage/plugin-kubernetes-common';
 import { DispatchStrategy } from './DispatchStrategy';
 import { ClusterDetails } from '../types';
-import { KubernetesRequestAuth } from '@backstage/plugin-kubernetes-common';
 import { AuthenticationStrategy } from './types';
 
 describe('decorateClusterDetailsWithAuth', () => {
@@ -39,7 +42,7 @@ describe('decorateClusterDetailsWithAuth', () => {
       url: 'notanything.com',
       name: 'randomName',
       authMetadata: {
-        authProvider: 'google',
+        [ANNOTATION_KUBERNETES_AUTH_PROVIDER]: 'google',
         serviceAccountToken: 'added by mock strategy',
       },
     };
@@ -52,7 +55,7 @@ describe('decorateClusterDetailsWithAuth', () => {
       {
         name: 'googleCluster',
         url: 'anything.com',
-        authMetadata: { authProvider: 'google' },
+        authMetadata: { [ANNOTATION_KUBERNETES_AUTH_PROVIDER]: 'google' },
       },
       authObject,
     );
@@ -61,7 +64,7 @@ describe('decorateClusterDetailsWithAuth', () => {
       {
         name: 'googleCluster',
         url: 'anything.com',
-        authMetadata: { authProvider: 'google' },
+        authMetadata: { [ANNOTATION_KUBERNETES_AUTH_PROVIDER]: 'google' },
       },
       authObject,
     );
@@ -74,7 +77,7 @@ describe('decorateClusterDetailsWithAuth', () => {
         {
           name: 'test-cluster',
           url: 'anything.com',
-          authMetadata: { authProvider: 'linode' },
+          authMetadata: { [ANNOTATION_KUBERNETES_AUTH_PROVIDER]: 'linode' },
         },
         authObject,
       ),

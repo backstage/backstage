@@ -16,7 +16,10 @@
 
 import { AuthenticationStrategy } from './types';
 import { AuthMetadata, ClusterDetails } from '../types';
-import { KubernetesRequestAuth } from '@backstage/plugin-kubernetes-common';
+import {
+  ANNOTATION_KUBERNETES_AUTH_PROVIDER,
+  KubernetesRequestAuth,
+} from '@backstage/plugin-kubernetes-common';
 
 /**
  *
@@ -42,7 +45,8 @@ export class DispatchStrategy implements AuthenticationStrategy {
     clusterDetails: ClusterDetails,
     auth: KubernetesRequestAuth,
   ) {
-    const authProvider = clusterDetails.authMetadata.authProvider;
+    const authProvider =
+      clusterDetails.authMetadata[ANNOTATION_KUBERNETES_AUTH_PROVIDER];
     if (this.strategyMap[authProvider]) {
       return this.strategyMap[authProvider].decorateClusterDetailsWithAuth(
         clusterDetails,
@@ -55,10 +59,11 @@ export class DispatchStrategy implements AuthenticationStrategy {
   }
 
   public validate(authMetadata: AuthMetadata) {
-    const strategy = this.strategyMap[authMetadata.authProvider];
+    const authProvider = authMetadata[ANNOTATION_KUBERNETES_AUTH_PROVIDER];
+    const strategy = this.strategyMap[authProvider];
     if (!strategy) {
       throw new Error(
-        `authProvider "${authMetadata.authProvider}" has no config associated with it`,
+        `authProvider "${authProvider}" has no config associated with it`,
       );
     }
     strategy.validate(authMetadata);

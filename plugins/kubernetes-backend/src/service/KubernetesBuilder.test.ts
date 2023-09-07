@@ -17,7 +17,11 @@
 import { getVoidLogger } from '@backstage/backend-common';
 import { Entity } from '@backstage/catalog-model';
 import { Config, ConfigReader } from '@backstage/config';
-import { ObjectsByEntityResponse } from '@backstage/plugin-kubernetes-common';
+import {
+  ANNOTATION_KUBERNETES_AUTH_PROVIDER,
+  ANNOTATION_KUBERNETES_OIDC_TOKEN_PROVIDER,
+  ObjectsByEntityResponse,
+} from '@backstage/plugin-kubernetes-common';
 import express from 'express';
 import request from 'supertest';
 import {
@@ -63,12 +67,17 @@ describe('KubernetesBuilder', () => {
       {
         name: 'some-cluster',
         url: 'https://localhost:1234',
-        authMetadata: { authProvider: 'serviceAccount' },
+        authMetadata: {
+          [ANNOTATION_KUBERNETES_AUTH_PROVIDER]: 'serviceAccount',
+        },
       },
       {
         name: 'some-other-cluster',
         url: 'https://localhost:1235',
-        authMetadata: { authProvider: 'google' },
+        authMetadata: {
+          [ANNOTATION_KUBERNETES_AUTH_PROVIDER]: 'oidc',
+          [ANNOTATION_KUBERNETES_OIDC_TOKEN_PROVIDER]: 'google',
+        },
       },
     ];
     const clusterSupplier: KubernetesClustersSupplier = {
@@ -116,7 +125,8 @@ describe('KubernetesBuilder', () => {
           },
           {
             name: 'some-other-cluster',
-            authProvider: 'google',
+            authProvider: 'oidc',
+            oidcTokenProvider: 'google',
           },
         ],
       });
@@ -190,14 +200,16 @@ describe('KubernetesBuilder', () => {
       const someCluster: ClusterDetails = {
         name: 'some-cluster',
         url: 'https://localhost:1234',
-        authMetadata: { authProvider: 'serviceAccount' },
+        authMetadata: {
+          [ANNOTATION_KUBERNETES_AUTH_PROVIDER]: 'serviceAccount',
+        },
       };
       const clusters: ClusterDetails[] = [
         someCluster,
         {
           name: 'some-other-cluster',
           url: 'https://localhost:1235',
-          authMetadata: { authProvider: 'google' },
+          authMetadata: { [ANNOTATION_KUBERNETES_AUTH_PROVIDER]: 'google' },
         },
       ];
       const clusterSupplier: KubernetesClustersSupplier = {

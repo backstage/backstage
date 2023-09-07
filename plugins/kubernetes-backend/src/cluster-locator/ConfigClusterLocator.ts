@@ -16,6 +16,7 @@
 
 import { Config } from '@backstage/config';
 import {
+  ANNOTATION_KUBERNETES_AUTH_PROVIDER,
   ANNOTATION_KUBERNETES_AWS_ASSUME_ROLE,
   ANNOTATION_KUBERNETES_AWS_EXTERNAL_ID,
   ANNOTATION_KUBERNETES_OIDC_TOKEN_PROVIDER,
@@ -45,7 +46,7 @@ export class ConfigClusterLocator implements KubernetesClustersSupplier {
           caData: c.getOptionalString('caData'),
           caFile: c.getOptionalString('caFile'),
           authMetadata: {
-            authProvider,
+            [ANNOTATION_KUBERNETES_AUTH_PROVIDER]: authProvider,
             ...ConfigClusterLocator.parseAuthMetadata(c),
           },
         };

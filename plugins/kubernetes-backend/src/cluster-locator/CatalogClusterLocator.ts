@@ -57,17 +57,9 @@ export class CatalogClusterLocator implements KubernetesClustersSupplier {
       const clusterDetails: ClusterDetails = {
         name: entity.metadata.name,
         url: entity.metadata.annotations![ANNOTATION_KUBERNETES_API_SERVER]!,
+        authMetadata: entity.metadata.annotations!,
         caData:
           entity.metadata.annotations![ANNOTATION_KUBERNETES_API_SERVER_CA]!,
-        ...{
-          authMetadata: {
-            authProvider:
-              entity.metadata.annotations![
-                ANNOTATION_KUBERNETES_AUTH_PROVIDER
-              ]!,
-            ...entity.metadata.annotations,
-          },
-        },
         skipMetricsLookup:
           entity.metadata.annotations![
             ANNOTATION_KUBERNETES_SKIP_METRICS_LOOKUP

@@ -17,6 +17,7 @@
 import '@backstage/backend-common';
 import { ConfigReader, Config } from '@backstage/config';
 import {
+  ANNOTATION_KUBERNETES_AUTH_PROVIDER,
   ANNOTATION_KUBERNETES_AWS_ASSUME_ROLE,
   ANNOTATION_KUBERNETES_AWS_EXTERNAL_ID,
 } from '@backstage/plugin-kubernetes-common';
@@ -65,7 +66,9 @@ describe('ConfigClusterLocator', () => {
       {
         name: 'cluster1',
         url: 'http://localhost:8080',
-        authMetadata: { authProvider: 'serviceAccount' },
+        authMetadata: {
+          [ANNOTATION_KUBERNETES_AUTH_PROVIDER]: 'serviceAccount',
+        },
         skipMetricsLookup: false,
         skipTLSVerify: false,
         caData: undefined,
@@ -106,7 +109,7 @@ describe('ConfigClusterLocator', () => {
         dashboardUrl: 'https://k8s.foo.com',
         url: 'http://localhost:8080',
         authMetadata: {
-          authProvider: 'serviceAccount',
+          [ANNOTATION_KUBERNETES_AUTH_PROVIDER]: 'serviceAccount',
           serviceAccountToken: 'token',
         },
         skipTLSVerify: false,
@@ -117,7 +120,7 @@ describe('ConfigClusterLocator', () => {
       {
         name: 'cluster2',
         url: 'http://localhost:8081',
-        authMetadata: { authProvider: 'google' },
+        authMetadata: { [ANNOTATION_KUBERNETES_AUTH_PROVIDER]: 'google' },
         skipTLSVerify: true,
         skipMetricsLookup: false,
         caData: undefined,
@@ -199,7 +202,9 @@ describe('ConfigClusterLocator', () => {
       {
         name: 'cluster1',
         url: 'http://localhost:8080',
-        authMetadata: { authProvider: 'serviceAccount' },
+        authMetadata: {
+          [ANNOTATION_KUBERNETES_AUTH_PROVIDER]: 'serviceAccount',
+        },
         skipMetricsLookup: false,
         skipTLSVerify: false,
         caData: undefined,
@@ -235,7 +240,9 @@ describe('ConfigClusterLocator', () => {
       {
         name: 'cluster1',
         url: 'http://localhost:8080',
-        authMetadata: { authProvider: 'serviceAccount' },
+        authMetadata: {
+          [ANNOTATION_KUBERNETES_AUTH_PROVIDER]: 'serviceAccount',
+        },
         skipMetricsLookup: false,
         skipTLSVerify: false,
         caData: undefined,
@@ -272,7 +279,9 @@ describe('ConfigClusterLocator', () => {
       {
         name: 'cluster1',
         url: 'http://localhost:8080',
-        authMetadata: { authProvider: 'serviceAccount' },
+        authMetadata: {
+          [ANNOTATION_KUBERNETES_AUTH_PROVIDER]: 'serviceAccount',
+        },
         skipMetricsLookup: false,
         skipTLSVerify: false,
         caData: undefined,

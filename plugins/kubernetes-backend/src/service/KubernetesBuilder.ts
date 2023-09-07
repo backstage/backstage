@@ -15,7 +15,11 @@
  */
 import { CatalogApi } from '@backstage/catalog-client';
 import { Config } from '@backstage/config';
-import { kubernetesPermissions } from '@backstage/plugin-kubernetes-common';
+import {
+  ANNOTATION_KUBERNETES_AUTH_PROVIDER,
+  ANNOTATION_KUBERNETES_OIDC_TOKEN_PROVIDER,
+  kubernetesPermissions,
+} from '@backstage/plugin-kubernetes-common';
 import { PermissionEvaluator } from '@backstage/plugin-permission-common';
 import { createPermissionIntegrationRouter } from '@backstage/plugin-permission-node';
 import express from 'express';
@@ -341,11 +345,12 @@ export class KubernetesBuilder {
       const clusterDetails = await this.fetchClusterDetails(clusterSupplier);
       res.json({
         items: clusterDetails.map(cd => {
-          const oidcTokenProvider = cd.authMetadata.oidcTokenProvider;
+          const oidcTokenProvider =
+            cd.authMetadata[ANNOTATION_KUBERNETES_OIDC_TOKEN_PROVIDER];
           return {
             name: cd.name,
             dashboardUrl: cd.dashboardUrl,
-            authProvider: cd.authMetadata.authProvider,
+            authProvider: cd.authMetadata[ANNOTATION_KUBERNETES_AUTH_PROVIDER],
             ...(oidcTokenProvider && { oidcTokenProvider }),
           };
         }),
