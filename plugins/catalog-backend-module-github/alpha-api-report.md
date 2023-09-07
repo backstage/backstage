@@ -4,9 +4,24 @@
 
 ```ts
 import { BackendFeature } from '@backstage/backend-plugin-api';
+import { ExtensionPoint } from '@backstage/backend-plugin-api';
+import { TeamTransformer } from '@backstage/plugin-catalog-backend-module-github';
+import { UserTransformer } from '@backstage/plugin-catalog-backend-module-github';
 
 // @alpha
 export const catalogModuleGithubEntityProvider: () => BackendFeature;
+
+// @alpha
+export const catalogModuleGithubOrgEntityProvider: () => BackendFeature;
+
+// @alpha
+export interface GithubOrgEntityProviderTransformsExtensionPoint {
+  setTeamTransformer(transformer: TeamTransformer): void;
+  setUserTransformer(transformer: UserTransformer): void;
+}
+
+// @alpha
+export const githubOrgEntityProviderTransformsExtensionPoint: ExtensionPoint<GithubOrgEntityProviderTransformsExtensionPoint>;
 
 // (No @packageDocumentation comment for this package)
 ```

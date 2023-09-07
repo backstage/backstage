@@ -19,15 +19,15 @@ import { mockServices, startTestBackend } from '@backstage/backend-test-utils';
 import { EntityProvider } from '@backstage/plugin-catalog-node';
 import { catalogProcessingExtensionPoint } from '@backstage/plugin-catalog-node/alpha';
 import { Duration } from 'luxon';
-import { catalogModuleGithubEntityProvider } from './catalogModuleGithubEntityProvider';
+import { catalogModuleGithubOrgEntityProvider } from './catalogModuleGithubOrgEntityProvider';
 
-describe('catalogModuleGithubEntityProvider', () => {
+describe('catalogModuleGithubOrgEntityProvider', () => {
   it('should register provider at the catalog extension point', async () => {
     let addedProviders: Array<EntityProvider> | undefined;
     let usedSchedule: TaskScheduleDefinition | undefined;
 
     const extensionPoint = {
-      addEntityProvider: (providers: any) => {
+      addEntityProvider: (...providers: any) => {
         addedProviders = providers;
       },
     };
@@ -42,13 +42,17 @@ describe('catalogModuleGithubEntityProvider', () => {
     const config = {
       catalog: {
         providers: {
-          github: {
-            organization: 'module-test',
-            schedule: {
-              frequency: 'P1M',
-              timeout: 'PT3M',
+          githubOrg: [
+            {
+              id: 'default',
+              githubUrl: 'https://github.com',
+              orgs: ['backstage'],
+              schedule: {
+                frequency: 'P1M',
+                timeout: 'PT3M',
+              },
             },
-          },
+          ],
         },
       },
     };
@@ -56,7 +60,7 @@ describe('catalogModuleGithubEntityProvider', () => {
     await startTestBackend({
       extensionPoints: [[catalogProcessingExtensionPoint, extensionPoint]],
       features: [
-        catalogModuleGithubEntityProvider(),
+        catalogModuleGithubOrgEntityProvider(),
         mockServices.rootConfig.factory({ data: config }),
         scheduler.factory,
       ],
@@ -65,8 +69,8 @@ describe('catalogModuleGithubEntityProvider', () => {
     expect(usedSchedule?.frequency).toEqual(Duration.fromISO('P1M'));
     expect(usedSchedule?.timeout).toEqual(Duration.fromISO('PT3M'));
     expect(addedProviders?.length).toEqual(1);
-    expect(addedProviders?.pop()?.getProviderName()).toEqual(
-      'github-provider:default',
+    expect(addedProviders![0].getProviderName()).toEqual(
+      'GithubMultiOrgEntityProvider:default',
     );
     expect(runner).not.toHaveBeenCalled();
   });
