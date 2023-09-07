@@ -61,6 +61,7 @@ export function createRunYeomanAction() {
         },
       },
     },
+    supportsDryRun: true,
     async handler(ctx) {
       ctx.logger.info(
         `Templating using Yeoman generator: ${ctx.input.namespace}`,
