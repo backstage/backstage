@@ -22,14 +22,24 @@ import {
 } from '@backstage/plugin-kubernetes-common';
 import { ConfigClusterLocator } from './ConfigClusterLocator';
 import { ClusterDetails } from '../types/types';
+import { AuthenticationStrategy } from '../auth';
 
 describe('ConfigClusterLocator', () => {
+  let authStrategy: jest.Mocked<AuthenticationStrategy>;
+
+  beforeEach(() => {
+    authStrategy = {
+      decorateClusterDetailsWithAuth: jest.fn(),
+      validate: jest.fn(),
+    };
+  });
+
   it('empty clusters returns empty cluster details', async () => {
     const config: Config = new ConfigReader({
       clusters: [],
     });
 
-    const sut = ConfigClusterLocator.fromConfig(config);
+    const sut = ConfigClusterLocator.fromConfig(config, authStrategy);
 
     const result = await sut.getClusters();
 
@@ -47,7 +57,7 @@ describe('ConfigClusterLocator', () => {
       ],
     });
 
-    const sut = ConfigClusterLocator.fromConfig(config);
+    const sut = ConfigClusterLocator.fromConfig(config, authStrategy);
 
     const result = await sut.getClusters();
 
@@ -86,7 +96,7 @@ describe('ConfigClusterLocator', () => {
       ],
     });
 
-    const sut = ConfigClusterLocator.fromConfig(config);
+    const sut = ConfigClusterLocator.fromConfig(config, authStrategy);
 
     const result = await sut.getClusters();
 
@@ -116,75 +126,50 @@ describe('ConfigClusterLocator', () => {
     ]);
   });
 
-  it('one aws cluster with assumeRole and one without', async () => {
+  it('copies "assumeRole" config value into metadata', async () => {
     const config: Config = new ConfigReader({
       clusters: [
         {
           name: 'cluster1',
-          serviceAccountToken: 'token',
           url: 'http://localhost:8080',
           authProvider: 'aws',
-          skipTLSVerify: false,
-        },
-        {
           assumeRole: 'SomeRole',
-          name: 'cluster2',
-          url: 'http://localhost:8081',
-          authProvider: 'aws',
-          skipTLSVerify: true,
-        },
-        {
-          assumeRole: 'SomeRole',
-          name: 'cluster2',
-          externalId: 'SomeExternalId',
-          url: 'http://localhost:8081',
-          authProvider: 'aws',
-          skipTLSVerify: true,
         },
       ],
     });
 
-    const sut = ConfigClusterLocator.fromConfig(config);
-
+    const sut = ConfigClusterLocator.fromConfig(config, authStrategy);
     const result = await sut.getClusters();
 
-    expect(result).toStrictEqual<ClusterDetails[]>([
+    expect(result).toMatchObject([
       {
-        name: 'cluster1',
-        url: 'http://localhost:8080',
-        authMetadata: {
-          authProvider: 'aws',
-          serviceAccountToken: 'token',
-        },
-        skipTLSVerify: false,
-        skipMetricsLookup: false,
-        caData: undefined,
-        caFile: undefined,
-      },
-      {
-        name: 'cluster2',
-        url: 'http://localhost:8081',
-        authMetadata: {
-          authProvider: 'aws',
+        authMetadata: expect.objectContaining({
           [ANNOTATION_KUBERNETES_AWS_ASSUME_ROLE]: 'SomeRole',
-        },
-        skipTLSVerify: true,
-        skipMetricsLookup: false,
-        caData: undefined,
-        caFile: undefined,
+        }),
       },
-      {
-        name: 'cluster2',
-        url: 'http://localhost:8081',
-        authMetadata: {
+    ]);
+  });
+
+  it('copies "externalId" config value into metadata', async () => {
+    const config: Config = new ConfigReader({
+      clusters: [
+        {
+          name: 'cluster1',
+          url: 'http://localhost:8080',
           authProvider: 'aws',
-          [ANNOTATION_KUBERNETES_AWS_ASSUME_ROLE]: 'SomeRole',
+          externalId: 'SomeExternalId',
+        },
+      ],
+    });
+
+    const sut = ConfigClusterLocator.fromConfig(config, authStrategy);
+    const result = await sut.getClusters();
+
+    expect(result).toMatchObject([
+      {
+        authMetadata: expect.objectContaining({
           [ANNOTATION_KUBERNETES_AWS_EXTERNAL_ID]: 'SomeExternalId',
-        },
-        skipTLSVerify: true,
-        skipMetricsLookup: false,
-        caData: undefined,
-        caFile: undefined,
+        }),
       },
     ]);
   });
@@ -206,7 +191,7 @@ describe('ConfigClusterLocator', () => {
       ],
     });
 
-    const sut = ConfigClusterLocator.fromConfig(config);
+    const sut = ConfigClusterLocator.fromConfig(config, authStrategy);
 
     const result = await sut.getClusters();
 
@@ -242,7 +227,7 @@ describe('ConfigClusterLocator', () => {
       ],
     });
 
-    const sut = ConfigClusterLocator.fromConfig(config);
+    const sut = ConfigClusterLocator.fromConfig(config, authStrategy);
 
     const result = await sut.getClusters();
 
@@ -257,34 +242,6 @@ describe('ConfigClusterLocator', () => {
         caFile: undefined,
         dashboardApp: 'standard',
         dashboardUrl: 'http://someurl',
-      },
-    ]);
-  });
-
-  it('supports aks authProvider', async () => {
-    const sut = ConfigClusterLocator.fromConfig(
-      new ConfigReader({
-        clusters: [
-          {
-            name: 'aks-cluster',
-            url: 'https://aks.test',
-            authProvider: 'aks',
-          },
-        ],
-      }),
-    );
-
-    const result = await sut.getClusters();
-
-    expect(result).toStrictEqual([
-      {
-        name: 'aks-cluster',
-        url: 'https://aks.test',
-        authMetadata: { authProvider: 'aks' },
-        skipMetricsLookup: false,
-        skipTLSVerify: false,
-        caData: undefined,
-        caFile: undefined,
       },
     ]);
   });
@@ -307,7 +264,7 @@ describe('ConfigClusterLocator', () => {
       ],
     });
 
-    const sut = ConfigClusterLocator.fromConfig(config);
+    const sut = ConfigClusterLocator.fromConfig(config, authStrategy);
 
     const result = await sut.getClusters();
 
@@ -331,22 +288,22 @@ describe('ConfigClusterLocator', () => {
     ]);
   });
 
-  // TODO move this to a test on OidcStrategy#validate
-  it('errors when authProvider is oidc but oidcTokenProvider is missing', async () => {
-    expect(() =>
-      ConfigClusterLocator.fromConfig(
-        new ConfigReader({
-          clusters: [
-            {
-              name: 'oidc-cluster',
-              url: 'https://aks.test',
-              authProvider: 'oidc',
-            },
-          ],
-        }),
-      ),
-    ).toThrow(
-      `Invalid cluster 'oidc-cluster': Must specify a token provider for 'oidc' strategy`,
+  it('wraps validation errors from auth strategy', () => {
+    const config: Config = new ConfigReader({
+      clusters: [
+        {
+          name: 'cluster1',
+          url: 'http://localhost:8080',
+          authProvider: 'authProvider',
+        },
+      ],
+    });
+    authStrategy.validate.mockImplementation(_ => {
+      throw new Error('mock error');
+    });
+
+    expect(() => ConfigClusterLocator.fromConfig(config, authStrategy)).toThrow(
+      `Invalid cluster 'cluster1': mock error`,
     );
   });
 });

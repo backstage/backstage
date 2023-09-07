@@ -21,25 +21,7 @@ import {
   ANNOTATION_KUBERNETES_OIDC_TOKEN_PROVIDER,
 } from '@backstage/plugin-kubernetes-common';
 import { ClusterDetails, KubernetesClustersSupplier } from '../types/types';
-import {
-  AuthenticationStrategy,
-  AksStrategy,
-  DispatchStrategy,
-  GoogleStrategy,
-  GoogleServiceAccountStrategy,
-  NoopStrategy,
-  OidcStrategy,
-} from '../auth';
-
-const defaultAuthStrategies: Record<string, AuthenticationStrategy> = {
-  aks: new AksStrategy(),
-  aws: new NoopStrategy(),
-  google: new GoogleStrategy(),
-  googleServiceAccount: new GoogleServiceAccountStrategy(),
-  localKubectlProxy: new NoopStrategy(),
-  oidc: new OidcStrategy(),
-  serviceAccount: new NoopStrategy(),
-};
+import { AuthenticationStrategy } from '../auth';
 
 export class ConfigClusterLocator implements KubernetesClustersSupplier {
   private readonly clusterDetails: ClusterDetails[];
@@ -50,9 +32,7 @@ export class ConfigClusterLocator implements KubernetesClustersSupplier {
 
   static fromConfig(
     config: Config,
-    authStrategy: AuthenticationStrategy = new DispatchStrategy({
-      authStrategyMap: defaultAuthStrategies,
-    }),
+    authStrategy: AuthenticationStrategy,
   ): ConfigClusterLocator {
     return new ConfigClusterLocator(
       config.getConfigArray('clusters').map(c => {

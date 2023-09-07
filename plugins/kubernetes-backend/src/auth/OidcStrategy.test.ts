@@ -15,47 +15,18 @@
  */
 
 import { ANNOTATION_KUBERNETES_OIDC_TOKEN_PROVIDER } from '@backstage/plugin-kubernetes-common';
+import { AuthMetadata } from '../types/types';
 import { OidcStrategy } from './OidcStrategy';
 
-describe('OidcStrategy tests', () => {
-  const strategy = new OidcStrategy();
-
-  it('returns cluster details with auth token', async () => {
-    const details = await strategy.decorateClusterDetailsWithAuth(
-      {
-        name: 'test',
-        url: '',
-        authMetadata: {
-          authProvider: 'oidc',
-          [ANNOTATION_KUBERNETES_OIDC_TOKEN_PROVIDER]: 'okta',
-        },
-      },
-      {
-        oidc: { okta: 'fakeToken' },
-      },
-    );
-
-    expect(details.authMetadata.serviceAccountToken).toBe('fakeToken');
+describe('OidcStrategy', () => {
+  let strategy: OidcStrategy;
+  beforeEach(() => {
+    strategy = new OidcStrategy();
   });
 
-  it('returns error when oidcTokenProvider is not configured', async () => {
-    await expect(
-      strategy.decorateClusterDetailsWithAuth(
-        {
-          name: 'test',
-          url: '',
-          authMetadata: { authProvider: 'oidc' },
-        },
-        {},
-      ),
-    ).rejects.toThrow(
-      'oidc authProvider requires a configured oidcTokenProvider',
-    );
-  });
-
-  it('returns error when token is not included in request body', async () => {
-    await expect(
-      strategy.decorateClusterDetailsWithAuth(
+  describe('decorateClusterDetailsWithAuth', () => {
+    it('returns cluster details with auth token', async () => {
+      const details = await strategy.decorateClusterDetailsWithAuth(
         {
           name: 'test',
           url: '',
@@ -64,8 +35,54 @@ describe('OidcStrategy tests', () => {
             [ANNOTATION_KUBERNETES_OIDC_TOKEN_PROVIDER]: 'okta',
           },
         },
-        {},
-      ),
-    ).rejects.toThrow('Auth token not found under oidc.okta in request body');
+        {
+          oidc: { okta: 'fakeToken' },
+        },
+      );
+
+      expect(details.authMetadata.serviceAccountToken).toBe('fakeToken');
+    });
+
+    it('fails when oidcTokenProvider is not configured', async () => {
+      await expect(
+        strategy.decorateClusterDetailsWithAuth(
+          {
+            name: 'test',
+            url: '',
+            authMetadata: { authProvider: 'oidc' },
+          },
+          {},
+        ),
+      ).rejects.toThrow(
+        'oidc authProvider requires a configured oidcTokenProvider',
+      );
+    });
+
+    it('fails when token is not included in request body', async () => {
+      await expect(
+        strategy.decorateClusterDetailsWithAuth(
+          {
+            name: 'test',
+            url: '',
+            authMetadata: {
+              authProvider: 'oidc',
+              [ANNOTATION_KUBERNETES_OIDC_TOKEN_PROVIDER]: 'okta',
+            },
+          },
+          {},
+        ),
+      ).rejects.toThrow('Auth token not found under oidc.okta in request body');
+    });
+  });
+
+  describe('validate', () => {
+    it('fails when token provider is not specified', () => {
+      const authMetadata: AuthMetadata = {
+        authProvider: 'oidc',
+      };
+      expect(() => strategy.validate(authMetadata)).toThrow(
+        `Must specify a token provider for 'oidc' strategy`,
+      );
+    });
   });
 });
