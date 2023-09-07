@@ -166,7 +166,6 @@ describe('createServiceFactory', () => {
       service: createServiceRef({ id: 'foo', scope: 'root' }),
       deps: {
         root: rootDep,
-        plugin: pluginDep,
       },
       async factory({ root }) {
         const root1: number = root;
@@ -192,7 +191,6 @@ describe('createServiceFactory', () => {
       service: createServiceRef({ id: 'foo', scope: 'root' }),
       deps: {
         root: rootDep,
-        plugin: pluginDep,
       },
       async factory({ root }) {
         const root1: number = root;

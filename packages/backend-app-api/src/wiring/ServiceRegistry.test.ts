@@ -125,6 +125,7 @@ describe('ServiceRegistry', () => {
 
   it('should not be possible for root scoped services to depend on plugin scoped services', async () => {
     const factory = createServiceFactory({
+      // @ts-expect-error
       service: ref2,
       deps: { pluginDep: ref1 },
       async factory() {

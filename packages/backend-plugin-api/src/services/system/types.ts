@@ -172,7 +172,7 @@ export interface PluginServiceFactoryConfig<
 export function createServiceFactory<
   TService,
   TImpl extends TService,
-  TDeps extends { [name in string]: ServiceRef<unknown> },
+  TDeps extends { [name in string]: ServiceRef<unknown, 'root'> },
   TOpts extends object | undefined = undefined,
 >(
   config: RootServiceFactoryConfig<TService, TImpl, TDeps>,
@@ -186,7 +186,7 @@ export function createServiceFactory<
 export function createServiceFactory<
   TService,
   TImpl extends TService,
-  TDeps extends { [name in string]: ServiceRef<unknown> },
+  TDeps extends { [name in string]: ServiceRef<unknown, 'root'> },
   TOpts extends object | undefined = undefined,
 >(
   config: (options?: TOpts) => RootServiceFactoryConfig<TService, TImpl, TDeps>,
