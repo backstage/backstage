@@ -44,6 +44,7 @@ import {
   KubernetesProxy,
 } from './KubernetesProxy';
 import fetch from 'cross-fetch';
+import mockFs from 'mock-fs';
 
 import type { Request } from 'express';
 
@@ -662,6 +663,82 @@ describe('KubernetesProxy', () => {
     const response = await requestPromise;
 
     expect(response.status).toEqual(200);
+  });
+
+  describe('when server uses TLS', () => {
+    let httpsRequest: jest.SpyInstance;
+    beforeAll(() => {
+      httpsRequest = jest.spyOn(
+        // this is pretty egregious reverse engineering of msw.
+        // If the SetupServerApi constructor was exported, we wouldn't need
+        // to be quite so hacky here
+        (worker as any).interceptor.interceptors[0].modules.get('https'),
+        'request',
+      );
+    });
+    beforeEach(() => {
+      httpsRequest.mockClear();
+    });
+    describe('should pass the exact response from Kubernetes using the CA file', () => {
+      afterEach(() => {
+        mockFs.restore();
+      });
+
+      it('should trust contents of specified caFile', async () => {
+        mockFs({
+          '/path/to/ca.crt': 'MOCKCA',
+        });
+
+        const apiResponse = {
+          kind: 'APIVersions',
+          versions: ['v1'],
+          serverAddressByClientCIDRs: [
+            {
+              clientCIDR: '0.0.0.0/0',
+              serverAddress: '192.168.0.1:3333',
+            },
+          ],
+        };
+
+        clusterSupplier.getClusters.mockResolvedValue([
+          {
+            name: 'cluster1',
+            url: 'https://localhost:9999',
+            serviceAccountToken: '',
+            authProvider: 'serviceAccount',
+            caFile: '/path/to/ca.crt',
+          },
+        ] as ClusterDetails[]);
+
+        authTranslator.decorateClusterDetailsWithAuth.mockResolvedValue({
+          name: 'cluster1',
+          url: 'https://localhost:9999',
+          serviceAccountToken: '',
+          authProvider: 'serviceAccount',
+        } as ClusterDetails);
+
+        worker.use(
+          rest.get('https://localhost:9999/api', (_: any, res: any, ctx: any) =>
+            res(ctx.status(299), ctx.json(apiResponse)),
+          ),
+        );
+
+        const requestPromise = setupProxyPromise({
+          proxyPath: '/mountpath',
+          requestPath: '/api',
+          headers: { [HEADER_KUBERNETES_CLUSTER]: 'cluster1' },
+        });
+
+        const response = await requestPromise;
+
+        expect(response.status).toEqual(299);
+        expect(response.body).toStrictEqual(apiResponse);
+
+        expect(httpsRequest).toHaveBeenCalledTimes(1);
+        const [[{ ca }]] = httpsRequest.mock.calls;
+        expect(ca).toEqual('MOCKCA');
+      });
+    });
   });
 
   describe('WebSocket', () => {

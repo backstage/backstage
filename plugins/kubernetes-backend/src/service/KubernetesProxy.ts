@@ -158,7 +158,10 @@ export class KubernetesProxy {
             protocol: url.protocol,
             host: url.hostname,
             port: url.port,
-            ca: bufferFromFileOrString('', cluster.caData)?.toString(),
+            ca: bufferFromFileOrString(
+              cluster.caFile,
+              cluster.caData,
+            )?.toString(),
           };
         },
         onError: (error, req, res) => {
