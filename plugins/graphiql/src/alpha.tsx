@@ -16,23 +16,90 @@
 
 import React from 'react';
 import {
+  createApiExtension,
+  createExtension,
+  createExtensionDataRef,
   createPageExtension,
   createPlugin,
+  createSchemaFromZod,
+  PortableSchema,
 } from '@backstage/frontend-plugin-api';
+import {
+  graphQlBrowseApiRef,
+  GraphQLEndpoints,
+  GraphQLEndpoint,
+} from './lib/api';
+import { createApiFactory } from '@backstage/core-plugin-api';
 
-/**
- * @alpha
- */
+/** @alpha */
 export const GraphiqlPage = createPageExtension({
-  id: 'graphiql.page',
+  id: 'plugin.graphiql.page',
   defaultPath: '/graphiql',
   component: () => import('./components').then(m => <m.GraphiQLPage />),
 });
 
-/**
- * @alpha
- */
-export const graphiqlPlugin = createPlugin({
+/** @internal */
+const endpointDataRef = createExtensionDataRef<GraphQLEndpoint>(
+  'plugin.graphiql.endpoint',
+);
+
+/** @alpha */
+export const graphiqlBrowseApi = createApiExtension({
+  api: graphQlBrowseApiRef, // apis.plugin.graphiql.browse
+  inputs: {
+    endpoints: {
+      extensionData: {
+        endpoint: endpointDataRef,
+      },
+    },
+  },
+  factory({ inputs }) {
+    return createApiFactory(
+      graphQlBrowseApiRef,
+      GraphQLEndpoints.from(inputs.endpoints.map(i => i.endpoint)),
+    );
+  },
+});
+
+/** @alpha */
+export function createEndpointExtension<TConfig extends {}>(options: {
+  id: string;
+  configSchema?: PortableSchema<TConfig>;
+  factory: (options: { config: TConfig }) => { endpoint: GraphQLEndpoint };
+}) {
+  return createExtension({
+    id: `apis.plugin.graphiql.browse.${options.id}`,
+    at: 'apis.plugin.graphiql.browse/endpoints',
+    configSchema: options.configSchema,
+    disabled: true,
+    output: {
+      endpoint: endpointDataRef,
+    },
+    factory({ bind, config }) {
+      bind({
+        endpoint: options.factory({ config }).endpoint,
+      });
+    },
+  });
+}
+
+/** @alpha */
+const gitlabGraphiQLBrowseExtension = createEndpointExtension({
+  id: 'gitlab',
+  configSchema: createSchemaFromZod(z =>
+    z
+      .object({
+        id: z.string().default('gitlab'),
+        title: z.string().default('GitLab'),
+        url: z.string().default('https://gitlab.com/api/graphql'),
+      })
+      .default({}),
+  ),
+  factory: ({ config }) => ({ endpoint: GraphQLEndpoints.create(config) }),
+});
+
+/** @alpha */
+export default createPlugin({
   id: 'graphiql',
-  extensions: [GraphiqlPage],
+  extensions: [GraphiqlPage, graphiqlBrowseApi, gitlabGraphiQLBrowseExtension],
 });
