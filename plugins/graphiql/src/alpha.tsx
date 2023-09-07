@@ -28,7 +28,7 @@ import {
   graphQlBrowseApiRef,
   GraphQLEndpoints,
   GraphQLEndpoint,
-} from './lib/api';
+} from '@backstage/plugin-graphiql';
 import { createApiFactory } from '@backstage/core-plugin-api';
 
 /** @alpha */
