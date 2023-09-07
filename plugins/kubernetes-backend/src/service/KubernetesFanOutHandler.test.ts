@@ -22,6 +22,7 @@ import {
   KubernetesServiceLocator,
   ServiceLocatorRequestContext,
 } from '../types/types';
+import { KubernetesCredential } from '../auth/types';
 import { KubernetesFanOutHandler } from './KubernetesFanOutHandler';
 import { KubernetesClientBasedFetcher } from './KubernetesFetcher';
 import { rest } from 'msw';
@@ -77,7 +78,7 @@ describe('KubernetesFanOutHandler', () => {
   const cluster1 = {
     name: 'test-cluster',
     url: '',
-    authMetadata: { authProvider: 'serviceAccount' },
+    authMetadata: {},
     customResources: [
       {
         group: 'some-other-crd.example.com',
@@ -90,7 +91,7 @@ describe('KubernetesFanOutHandler', () => {
   const cluster2 = {
     name: 'cluster-two',
     url: '',
-    authMetadata: { authProvider: 'serviceAccount' },
+    authMetadata: {},
     customResources: [
       {
         group: 'crd-two.example.com',
@@ -185,9 +186,7 @@ describe('KubernetesFanOutHandler', () => {
       },
       customResources: customResources,
       authStrategy: {
-        decorateClusterDetailsWithAuth: async (clusterDetails, _) => {
-          return clusterDetails;
-        },
+        getCredential: jest.fn().mockResolvedValue(undefined),
         validate: jest.fn(),
       },
       config,
@@ -316,7 +315,11 @@ describe('KubernetesFanOutHandler', () => {
     );
 
     fetchPodMetricsByNamespaces.mockImplementation(
-      (_clusterDetails: ClusterDetails, namespaces: Set<string>) =>
+      (
+        _clusterDetails: ClusterDetails,
+        _: KubernetesCredential,
+        namespaces: Set<string>,
+      ) =>
         Promise.resolve({
           errors: [],
           responses: Array.from(namespaces).map(() => {
@@ -352,7 +355,7 @@ describe('KubernetesFanOutHandler', () => {
             {
               name: 'test-cluster',
               url: '',
-              authMetadata: { authProvider: 'serviceAccount' },
+              authMetadata: {},
             },
           ],
         }),
@@ -370,6 +373,7 @@ describe('KubernetesFanOutHandler', () => {
       expect(fetchPodMetricsByNamespaces).toHaveBeenCalledTimes(1);
       expect(fetchPodMetricsByNamespaces).toHaveBeenCalledWith(
         expect.anything(),
+        undefined,
         new Set(['ns-test-component-test-cluster']),
         expect.anything(),
       );
@@ -467,7 +471,7 @@ describe('KubernetesFanOutHandler', () => {
             {
               name: 'test-cluster',
               url: '',
-              authMetadata: { authProvider: 'serviceAccount' },
+              authMetadata: {},
             },
             cluster2,
           ],
@@ -522,7 +526,7 @@ describe('KubernetesFanOutHandler', () => {
             {
               name: 'profile-cluster-1',
               url: '',
-              authMetadata: { authProvider: 'serviceAccount' },
+              authMetadata: {},
               customResourceProfile: 'build',
               customResources: [
                 {
@@ -571,7 +575,7 @@ describe('KubernetesFanOutHandler', () => {
             {
               name: 'profile-cluster-1',
               url: '',
-              authMetadata: { authProvider: 'serviceAccount' },
+              authMetadata: {},
             },
           ],
         }),
@@ -612,7 +616,7 @@ describe('KubernetesFanOutHandler', () => {
             {
               name: 'test-cluster',
               url: '',
-              authMetadata: { authProvider: 'serviceAccount' },
+              authMetadata: {},
             },
           ],
         }),
@@ -661,6 +665,7 @@ describe('KubernetesFanOutHandler', () => {
       expect(fetchPodMetricsByNamespaces).toHaveBeenCalledTimes(1);
       expect(fetchPodMetricsByNamespaces).toHaveBeenCalledWith(
         expect.anything(),
+        undefined,
         new Set(['ns-a', 'ns-b']),
         expect.anything(),
       );
@@ -710,7 +715,7 @@ describe('KubernetesFanOutHandler', () => {
             {
               name: 'test-cluster',
               url: '',
-              authMetadata: { authProvider: 'serviceAccount' },
+              authMetadata: {},
             },
           ],
         }),
@@ -750,13 +755,13 @@ describe('KubernetesFanOutHandler', () => {
             {
               name: 'test-cluster',
               url: '',
-              authMetadata: { authProvider: 'serviceAccount' },
+              authMetadata: {},
               dashboardUrl: 'https://k8s.foo.coom',
             },
             {
               name: 'other-cluster',
               url: '',
-              authMetadata: { authProvider: 'google' },
+              authMetadata: {},
             },
           ],
         }),
@@ -803,17 +808,17 @@ describe('KubernetesFanOutHandler', () => {
             {
               name: 'test-cluster',
               url: '',
-              authMetadata: { authProvider: 'serviceAccount' },
+              authMetadata: {},
             },
             {
               name: 'other-cluster',
               url: '',
-              authMetadata: { authProvider: 'google' },
+              authMetadata: {},
             },
             {
               name: 'empty-cluster',
               url: '',
-              authMetadata: { authProvider: 'google' },
+              authMetadata: {},
             },
           ],
         }),
@@ -859,22 +864,22 @@ describe('KubernetesFanOutHandler', () => {
             {
               name: 'test-cluster',
               url: '',
-              authMetadata: { authProvider: 'serviceAccount' },
+              authMetadata: {},
             },
             {
               name: 'other-cluster',
               url: '',
-              authMetadata: { authProvider: 'google' },
+              authMetadata: {},
             },
             {
               name: 'empty-cluster',
               url: '',
-              authMetadata: { authProvider: 'google' },
+              authMetadata: {},
             },
             {
               name: 'error-cluster',
               url: '',
-              authMetadata: { authProvider: 'google' },
+              authMetadata: {},
             },
           ],
         }),
@@ -941,13 +946,13 @@ describe('KubernetesFanOutHandler', () => {
             {
               name: 'test-cluster',
               url: '',
-              authMetadata: { authProvider: 'serviceAccount' },
+              authMetadata: {},
               dashboardUrl: 'https://k8s.foo.coom',
             },
             {
               name: 'other-cluster',
               url: '',
-              authMetadata: { authProvider: 'google' },
+              authMetadata: {},
             },
           ],
         }),
@@ -957,7 +962,11 @@ describe('KubernetesFanOutHandler', () => {
       // and an error for the second call.
       fetchPodMetricsByNamespaces
         .mockImplementationOnce(
-          (_clusterDetails: ClusterDetails, namespaces: Set<string>) =>
+          (
+            _clusterDetails: ClusterDetails,
+            _: KubernetesCredential,
+            namespaces: Set<string>,
+          ) =>
             Promise.resolve({
               errors: [],
               responses: Array.from(namespaces).map(() => {
@@ -1041,7 +1050,7 @@ describe('KubernetesFanOutHandler', () => {
           {
             name: 'test-cluster',
             url: '',
-            authMetadata: { authProvider: 'serviceAccount' },
+            authMetadata: {},
             skipMetricsLookup: true,
           },
         ],
@@ -1090,19 +1099,13 @@ describe('KubernetesFanOutHandler', () => {
                 {
                   name: 'works',
                   url: 'https://works',
-                  authMetadata: {
-                    authProvider: 'serviceAccount',
-                    serviceAccountToken: 'token',
-                  },
+                  authMetadata: {},
                   skipMetricsLookup: true,
                 },
                 {
                   name: 'fails',
                   url: 'https://fails',
-                  authMetadata: {
-                    authProvider: 'serviceAccount',
-                    serviceAccountToken: 'token',
-                  },
+                  authMetadata: {},
                   skipMetricsLookup: true,
                 },
               ],
@@ -1129,9 +1132,7 @@ describe('KubernetesFanOutHandler', () => {
             },
           ],
           authStrategy: {
-            decorateClusterDetailsWithAuth: async (clusterDetails, _) => {
-              return clusterDetails;
-            },
+            getCredential: jest.fn().mockResolvedValue('token'),
             validate: jest.fn(),
           },
           config,
@@ -1229,7 +1230,7 @@ describe('KubernetesFanOutHandler', () => {
             {
               name: 'test-cluster',
               url: '',
-              authMetadata: { authProvider: 'serviceAccount' },
+              authMetadata: {},
             },
             cluster2,
           ],
@@ -1303,7 +1304,7 @@ describe('KubernetesFanOutHandler', () => {
             {
               name: 'profile-cluster-1',
               url: '',
-              authMetadata: { authProvider: 'serviceAccount' },
+              authMetadata: {},
               customResourceProfile: 'build',
             },
           ],

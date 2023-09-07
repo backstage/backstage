@@ -17,7 +17,7 @@ import {
   ANNOTATION_KUBERNETES_OIDC_TOKEN_PROVIDER,
   KubernetesRequestAuth,
 } from '@backstage/plugin-kubernetes-common';
-import { AuthenticationStrategy } from './types';
+import { AuthenticationStrategy, KubernetesCredential } from './types';
 import { AuthMetadata, ClusterDetails } from '../types/types';
 
 /**
@@ -25,15 +25,10 @@ import { AuthMetadata, ClusterDetails } from '../types/types';
  * @public
  */
 export class OidcStrategy implements AuthenticationStrategy {
-  public async decorateClusterDetailsWithAuth(
+  public async getCredential(
     clusterDetails: ClusterDetails,
     authConfig: KubernetesRequestAuth,
-  ): Promise<ClusterDetails> {
-    const clusterDetailsWithAuthToken: ClusterDetails = Object.assign(
-      {},
-      clusterDetails,
-    );
-
+  ): Promise<KubernetesCredential> {
     const oidcTokenProvider =
       clusterDetails.authMetadata[ANNOTATION_KUBERNETES_OIDC_TOKEN_PROVIDER];
 
@@ -43,19 +38,14 @@ export class OidcStrategy implements AuthenticationStrategy {
       );
     }
 
-    const authToken: string | undefined = authConfig.oidc?.[oidcTokenProvider];
+    const authToken = authConfig.oidc?.[oidcTokenProvider];
 
-    if (authToken) {
-      clusterDetailsWithAuthToken.authMetadata = {
-        serviceAccountToken: authToken,
-        ...clusterDetailsWithAuthToken.authMetadata,
-      };
-    } else {
+    if (!authToken) {
       throw new Error(
         `Auth token not found under oidc.${oidcTokenProvider} in request body`,
       );
     }
-    return clusterDetailsWithAuthToken;
+    return authToken;
   }
 
   public validate(authMetadata: AuthMetadata) {

@@ -27,9 +27,8 @@ import {
   CustomResource,
   CustomResourcesByEntity,
   KubernetesObjectsByEntity,
-  ServiceLocatorRequestContext,
 } from '../types/types';
-import { AuthenticationStrategy } from '../auth/types';
+import { AuthenticationStrategy, KubernetesCredential } from '../auth/types';
 import {
   ClientContainerStatus,
   ClientCurrentResourceUsage,
@@ -47,14 +46,6 @@ import {
   CurrentResourceUsage,
   PodStatus,
 } from '@kubernetes/client-node';
-
-const isRejected = (
-  input: PromiseSettledResult<unknown>,
-): input is PromiseRejectedResult => input.status === 'rejected';
-
-const isFulfilled = <T>(
-  input: PromiseSettledResult<T>,
-): input is PromiseFulfilledResult<T> => input.status === 'fulfilled';
 
 /**
  *
@@ -245,14 +236,13 @@ export class KubernetesFanOutHandler {
       entity.metadata?.annotations?.['backstage.io/kubernetes-id'] ||
       entity.metadata?.name;
 
-    const clusterDetailsDecoratedForAuth: ClusterDetails[] =
-      await this.decorateClusterDetailsWithAuth(entity, auth, {
-        objectTypesToFetch: objectTypesToFetch,
-        customResources: customResources ?? [],
-      });
+    const { clusters } = await this.serviceLocator.getClustersByEntity(entity, {
+      objectTypesToFetch: objectTypesToFetch,
+      customResources: customResources ?? [],
+    });
 
     this.logger.info(
-      `entity.metadata.name=${entityName} clusterDetails=[${clusterDetailsDecoratedForAuth
+      `entity.metadata.name=${entityName} clusterDetails=[${clusters
         .map(c => c.name)
         .join(', ')}]`,
     );
@@ -266,16 +256,21 @@ export class KubernetesFanOutHandler {
       entity.metadata?.annotations?.['backstage.io/kubernetes-namespace'];
 
     return Promise.all(
-      clusterDetailsDecoratedForAuth.map(clusterDetailsItem => {
+      clusters.map(async clusterDetails => {
+        const credential = await this.authStrategy.getCredential(
+          clusterDetails,
+          auth,
+        );
         return this.fetcher
           .fetchObjectsForService({
             serviceId: entityName,
-            clusterDetails: clusterDetailsItem,
-            objectTypesToFetch: objectTypesToFetch,
+            clusterDetails,
+            credential,
+            objectTypesToFetch,
             labelSelector,
             customResources: (
               customResources ||
-              clusterDetailsItem.customResources ||
+              clusterDetails.customResources ||
               this.customResources
             ).map(c => ({
               ...c,
@@ -284,7 +279,12 @@ export class KubernetesFanOutHandler {
             namespace,
           })
           .then(result =>
-            this.getMetricsForPods(clusterDetailsItem, labelSelector, result),
+            this.getMetricsForPods(
+              clusterDetails,
+              credential,
+              labelSelector,
+              result,
+            ),
           )
           .catch(
             (e): Promise<responseWithMetrics> =>
@@ -300,31 +300,9 @@ export class KubernetesFanOutHandler {
                   ])
                 : Promise.reject(e),
           )
-          .then(r => this.toClusterObjects(clusterDetailsItem, r));
+          .then(r => this.toClusterObjects(clusterDetails, r));
       }),
     ).then(this.toObjectsByEntityResponse);
-  }
-
-  private async decorateClusterDetailsWithAuth(
-    entity: Entity,
-    auth: KubernetesRequestAuth,
-    requestContext: ServiceLocatorRequestContext,
-  ) {
-    const clusterDetails: ClusterDetails[] = (
-      await this.serviceLocator.getClustersByEntity(entity, requestContext)
-    ).clusters;
-
-    // Execute all of these async actions simultaneously/without blocking sequentially as no common object is modified by them
-    const promiseResults = await Promise.allSettled(
-      clusterDetails.map(cd => {
-        return this.authStrategy.decorateClusterDetailsWithAuth(cd, auth);
-      }),
-    );
-
-    promiseResults.filter(isRejected).map(item => {
-      this.logger.info(`Failed to decorate cluster details: ${item.reason}`);
-    });
-    return promiseResults.filter(isFulfilled).map(item => item.value);
   }
 
   toObjectsByEntityResponse(
@@ -367,6 +345,7 @@ export class KubernetesFanOutHandler {
 
   async getMetricsForPods(
     clusterDetails: ClusterDetails,
+    credential: KubernetesCredential,
     labelSelector: string,
     result: FetchResponseWrapper,
   ): Promise<responseWithMetrics> {
@@ -387,6 +366,7 @@ export class KubernetesFanOutHandler {
 
     const podMetrics = await this.fetcher.fetchPodMetricsByNamespaces(
       clusterDetails,
+      credential,
       namespaces,
       labelSelector,
     );

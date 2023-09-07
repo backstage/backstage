@@ -51,7 +51,7 @@ describe('KubernetesProxy', () => {
   const logger = getVoidLogger();
 
   const clusterSupplier: jest.Mocked<KubernetesClustersSupplier> = {
-    getClusters: jest.fn(),
+    getClusters: jest.fn<Promise<ClusterDetails[]>, []>(),
   };
 
   const permissionApi: jest.Mocked<PermissionEvaluator> = {
@@ -60,7 +60,7 @@ describe('KubernetesProxy', () => {
   };
 
   const authStrategy: jest.Mocked<AuthenticationStrategy> = {
-    decorateClusterDetailsWithAuth: jest.fn(),
+    getCredential: jest.fn(),
     validate: jest.fn(),
   };
 
@@ -146,17 +146,14 @@ describe('KubernetesProxy', () => {
       {
         name: 'local',
         url: 'http:/localhost:8001',
-        authMetadata: { authProvider: 'localKubectlProxy' },
+        authMetadata: {},
         skipMetricsLookup: true,
-      } as ClusterDetails,
+      },
       {
         name: 'cluster1',
         url: 'https://localhost:9999',
-        authMetadata: {
-          authProvider: 'googleServiceAccount',
-          serviceAccountToken: 'tokenA',
-        },
-      } as ClusterDetails,
+        authMetadata: {},
+      },
     ]);
 
     const req = buildMockRequest(undefined, 'api');
@@ -172,11 +169,8 @@ describe('KubernetesProxy', () => {
       {
         name: 'cluster1',
         url: 'https://localhost:9999',
-        authMetadata: {
-          authProvider: 'googleServiceAccount',
-          serviceAccountToken: 'tokenA',
-        },
-      } as ClusterDetails,
+        authMetadata: {},
+      },
     ]);
 
     const req = buildMockRequest('test', 'api');
@@ -203,15 +197,9 @@ describe('KubernetesProxy', () => {
       {
         name: 'cluster1',
         url: 'https://localhost:9999',
-        authMetadata: { authProvider: 'serviceAccount' },
+        authMetadata: {},
       },
-    ] as ClusterDetails[]);
-
-    authStrategy.decorateClusterDetailsWithAuth.mockResolvedValue({
-      name: 'cluster1',
-      url: 'https://localhost:9999',
-      authMetadata: { authProvider: 'serviceAccount' },
-    } as ClusterDetails);
+    ]);
 
     worker.use(
       rest.get('https://localhost:9999/api', (_: any, res: any, ctx: any) =>
@@ -247,15 +235,9 @@ describe('KubernetesProxy', () => {
       {
         name: 'cluster1',
         url: 'https://localhost:9999',
-        authMetadata: { authProvider: 'serviceAccount' },
+        authMetadata: {},
       },
-    ] as ClusterDetails[]);
-
-    authStrategy.decorateClusterDetailsWithAuth.mockResolvedValue({
-      name: 'cluster1',
-      url: 'https://localhost:9999',
-      authMetadata: { authProvider: 'serviceAccount' },
-    } as ClusterDetails);
+    ]);
 
     worker.use(
       rest.get('https://localhost:9999/api', (_: any, res: any, ctx: any) =>
@@ -291,12 +273,9 @@ describe('KubernetesProxy', () => {
       {
         name: 'cluster1',
         url: 'http://localhost:9999',
-        authMetadata: { authProvider: '' },
+        authMetadata: {},
       },
     ]);
-    authStrategy.decorateClusterDetailsWithAuth.mockImplementation(
-      async x => x,
-    );
 
     const requestPromise = setupProxyPromise({
       proxyPath: '/mountpath',
@@ -310,7 +289,7 @@ describe('KubernetesProxy', () => {
     expect(response.status).toEqual(200);
   });
 
-  it('should default to using an authStrategy-provided serviceAccountToken as authorization headers to kubeapi when backstage-kubernetes-auth field is not provided', async () => {
+  it('should default to using a strategy-provided bearer token as authorization headers to kubeapi when backstage-kubernetes-auth field is not provided', async () => {
     worker.use(
       rest.get(
         'https://localhost:9999/api/v1/namespaces',
@@ -342,18 +321,11 @@ describe('KubernetesProxy', () => {
       {
         name: 'cluster1',
         url: 'https://localhost:9999',
-        authMetadata: { authProvider: 'serviceAccount' },
+        authMetadata: {},
       },
-    ] as ClusterDetails[]);
+    ]);
 
-    authStrategy.decorateClusterDetailsWithAuth.mockResolvedValue({
-      name: 'cluster1',
-      url: 'https://localhost:9999',
-      authMetadata: {
-        authProvider: 'serviceAccount',
-        serviceAccountToken: 'strategy-provided-token',
-      },
-    } as ClusterDetails);
+    authStrategy.getCredential.mockResolvedValue('strategy-provided-token');
 
     const requestPromise = setupProxyPromise({
       proxyPath: '/mountpath',
@@ -393,18 +365,11 @@ describe('KubernetesProxy', () => {
       {
         name: 'cluster1',
         url: 'https://localhost:9999',
-        authMetadata: { authProvider: 'googleServiceAccount' },
+        authMetadata: {},
       },
-    ] as ClusterDetails[]);
+    ]);
 
-    authStrategy.decorateClusterDetailsWithAuth.mockResolvedValue({
-      name: 'cluster1',
-      url: 'https://localhost:9999',
-      authMetadata: {
-        authProvider: 'googleServiceAccount',
-        serviceAccountToken: 'my-token',
-      },
-    } as ClusterDetails);
+    authStrategy.getCredential.mockResolvedValue('my-token');
 
     const requestPromise = setupProxyPromise({
       proxyPath: '/mountpath',
@@ -449,18 +414,11 @@ describe('KubernetesProxy', () => {
       {
         name: 'cluster1',
         url: 'https://localhost:9999',
-        authMetadata: { authProvider: 'googleServiceAccount' },
+        authMetadata: {},
       },
-    ] as ClusterDetails[]);
+    ]);
 
-    authStrategy.decorateClusterDetailsWithAuth.mockResolvedValue({
-      name: 'cluster1',
-      url: 'https://localhost:9999',
-      authMetadata: {
-        authProvider: 'googleServiceAccount',
-        serviceAccountToken: 'tokenA',
-      },
-    } as ClusterDetails);
+    authStrategy.getCredential.mockResolvedValue('tokenA');
 
     const requestPromise = setupProxyPromise({
       proxyPath: '/mountpath',
@@ -508,9 +466,9 @@ describe('KubernetesProxy', () => {
       {
         name: 'cluster1',
         url: 'https://localhost:9999',
-        authMetadata: { authProvider: 'googleServiceAccount' },
+        authMetadata: {},
       },
-    ] as ClusterDetails[]);
+    ]);
 
     const requestPromise = setupProxyPromise({
       proxyPath: '/mountpath',
@@ -524,9 +482,7 @@ describe('KubernetesProxy', () => {
 
     const response = await requestPromise;
 
-    expect(authStrategy.decorateClusterDetailsWithAuth).toHaveBeenCalledTimes(
-      0,
-    );
+    expect(authStrategy.getCredential).toHaveBeenCalledTimes(0);
     expect(response.status).toEqual(200);
     expect(response.body).toStrictEqual({
       kind: 'NamespaceList',
@@ -602,16 +558,11 @@ describe('KubernetesProxy', () => {
       {
         name: 'cluster1',
         url: 'https://localhost:9999',
-        authMetadata: {
-          authProvider: 'google',
-          serviceAccountToken: 'client-side-token',
-        },
+        authMetadata: {},
       },
-    ] as ClusterDetails[]);
+    ]);
 
-    authStrategy.decorateClusterDetailsWithAuth.mockRejectedValue(
-      Error('some internal error'),
-    );
+    authStrategy.getCredential.mockRejectedValue(Error('some internal error'));
 
     const requestPromise = setupProxyPromise({
       proxyPath: '/mountpath',
@@ -648,13 +599,9 @@ describe('KubernetesProxy', () => {
       {
         name: 'cluster1',
         url: 'http://localhost:9999/subpath',
-        authMetadata: { authProvider: '' },
+        authMetadata: {},
       },
     ]);
-
-    authStrategy.decorateClusterDetailsWithAuth.mockImplementation(
-      async x => x,
-    );
 
     const requestPromise = setupProxyPromise({
       proxyPath: '/mountpath',
@@ -701,18 +648,10 @@ describe('KubernetesProxy', () => {
           {
             name: 'cluster1',
             url: 'https://localhost:9999',
-            serviceAccountToken: '',
-            authProvider: 'serviceAccount',
+            authMetadata: {},
             caFile: resolvePath(__dirname, '__fixtures__/mock-ca.crt'),
           },
         ] as ClusterDetails[]);
-
-        authTranslator.decorateClusterDetailsWithAuth.mockResolvedValue({
-          name: 'cluster1',
-          url: 'https://localhost:9999',
-          serviceAccountToken: '',
-          authProvider: 'serviceAccount',
-        } as ClusterDetails);
 
         worker.use(
           rest.get('https://localhost:9999/api', (_: any, res: any, ctx: any) =>
@@ -793,15 +732,9 @@ describe('KubernetesProxy', () => {
         {
           name: 'local',
           url: `http://localhost:${wsPort}`,
-          authMetadata: { authProvider: 'serviceAccount' },
+          authMetadata: {},
         },
-      ] as ClusterDetails[]);
-
-      authStrategy.decorateClusterDetailsWithAuth.mockResolvedValue({
-        name: 'local',
-        url: `http://localhost:${wsPort}`,
-        authMetadata: { authProvider: 'serviceAccount' },
-      } as ClusterDetails);
+      ]);
 
       const wsProxyAddress = `ws://127.0.0.1:${proxyPort}${proxyPath}${wsPath}`;
       const wsAddress = `ws://localhost:${wsPort}${wsPath}`;

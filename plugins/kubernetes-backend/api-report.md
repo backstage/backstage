@@ -24,10 +24,10 @@ import { TokenCredential } from '@azure/identity';
 // @public (undocumented)
 export class AksStrategy implements AuthenticationStrategy {
   // (undocumented)
-  decorateClusterDetailsWithAuth(
-    clusterDetails: ClusterDetails,
-    auth: KubernetesRequestAuth,
-  ): Promise<ClusterDetails>;
+  getCredential(
+    _: ClusterDetails,
+    requestAuth: KubernetesRequestAuth,
+  ): Promise<KubernetesCredential>;
   // (undocumented)
   validate(_: AuthMetadata): void;
 }
@@ -35,10 +35,10 @@ export class AksStrategy implements AuthenticationStrategy {
 // @public (undocumented)
 export interface AuthenticationStrategy {
   // (undocumented)
-  decorateClusterDetailsWithAuth(
+  getCredential(
     clusterDetails: ClusterDetails,
     authConfig: KubernetesRequestAuth,
-  ): Promise<ClusterDetails>;
+  ): Promise<KubernetesCredential>;
   // (undocumented)
   validate(authMetadata: AuthMetadata): void;
 }
@@ -50,22 +50,18 @@ export type AuthMetadata = Record<string, string>;
 export class AwsIamStrategy implements AuthenticationStrategy {
   constructor(opts: { config: Config });
   // (undocumented)
-  decorateClusterDetailsWithAuth(
-    clusterDetails: ClusterDetails,
-  ): Promise<ClusterDetails>;
+  getCredential(clusterDetails: ClusterDetails): Promise<KubernetesCredential>;
   // (undocumented)
-  validate(_: AuthMetadata): void;
+  validate(): void;
 }
 
 // @public (undocumented)
 export class AzureIdentityStrategy implements AuthenticationStrategy {
   constructor(logger: Logger, tokenCredential?: TokenCredential);
   // (undocumented)
-  decorateClusterDetailsWithAuth(
-    clusterDetails: ClusterDetails,
-  ): Promise<ClusterDetails>;
+  getCredential(): Promise<KubernetesCredential>;
   // (undocumented)
-  validate(_: AuthMetadata): void;
+  validate(): void;
 }
 
 // @public (undocumented)
@@ -110,10 +106,10 @@ export const DEFAULT_OBJECTS: ObjectToFetch[];
 export class DispatchStrategy implements AuthenticationStrategy {
   constructor(options: DispatchStrategyOptions);
   // (undocumented)
-  decorateClusterDetailsWithAuth(
+  getCredential(
     clusterDetails: ClusterDetails,
     auth: KubernetesRequestAuth,
-  ): Promise<ClusterDetails>;
+  ): Promise<KubernetesCredential>;
   // (undocumented)
   validate(authMetadata: AuthMetadata): void;
 }
@@ -136,20 +132,18 @@ export interface FetchResponseWrapper {
 // @public (undocumented)
 export class GoogleServiceAccountStrategy implements AuthenticationStrategy {
   // (undocumented)
-  decorateClusterDetailsWithAuth(
-    clusterDetails: ClusterDetails,
-  ): Promise<ClusterDetails>;
+  getCredential(): Promise<KubernetesCredential>;
   // (undocumented)
-  validate(_: AuthMetadata): void;
+  validate(): void;
 }
 
 // @public (undocumented)
 export class GoogleStrategy implements AuthenticationStrategy {
   // (undocumented)
-  decorateClusterDetailsWithAuth(
-    clusterDetails: ClusterDetails,
-    authConfig: KubernetesRequestAuth,
-  ): Promise<ClusterDetails>;
+  getCredential(
+    _: ClusterDetails,
+    requestAuth: KubernetesRequestAuth,
+  ): Promise<KubernetesCredential>;
   // (undocumented)
   validate(_: AuthMetadata): void;
 }
@@ -275,6 +269,9 @@ export interface KubernetesClustersSupplier {
   getClusters(): Promise<ClusterDetails[]>;
 }
 
+// @public
+export type KubernetesCredential = string | undefined;
+
 // @public (undocumented)
 export interface KubernetesEnvironment {
   // (undocumented)
@@ -296,6 +293,7 @@ export interface KubernetesFetcher {
   // (undocumented)
   fetchPodMetricsByNamespaces(
     clusterDetails: ClusterDetails,
+    credential: KubernetesCredential,
     namespaces: Set<string>,
     labelSelector?: string,
   ): Promise<FetchResponseWrapper>;
@@ -388,17 +386,17 @@ export interface KubernetesServiceLocator {
 // @public (undocumented)
 export class NoopStrategy implements AuthenticationStrategy {
   // (undocumented)
-  decorateClusterDetailsWithAuth(
-    clusterDetails: ClusterDetails,
-  ): Promise<ClusterDetails>;
+  getCredential(): Promise<KubernetesCredential>;
   // (undocumented)
-  validate(_: AuthMetadata): void;
+  validate(): void;
 }
 
 // @public (undocumented)
 export interface ObjectFetchParams {
   // (undocumented)
   clusterDetails: ClusterDetails;
+  // (undocumented)
+  credential: KubernetesCredential;
   // (undocumented)
   customResources: CustomResource[];
   // (undocumented)
@@ -429,10 +427,10 @@ export interface ObjectToFetch {
 // @public (undocumented)
 export class OidcStrategy implements AuthenticationStrategy {
   // (undocumented)
-  decorateClusterDetailsWithAuth(
+  getCredential(
     clusterDetails: ClusterDetails,
     authConfig: KubernetesRequestAuth,
-  ): Promise<ClusterDetails>;
+  ): Promise<KubernetesCredential>;
   // (undocumented)
   validate(authMetadata: AuthMetadata): void;
 }

@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { AuthenticationStrategy } from './types';
+import { AuthenticationStrategy, KubernetesCredential } from './types';
 import { AuthMetadata, ClusterDetails } from '../types';
 import {
   ANNOTATION_KUBERNETES_AUTH_PROVIDER,
@@ -41,17 +41,14 @@ export class DispatchStrategy implements AuthenticationStrategy {
     this.strategyMap = options.authStrategyMap;
   }
 
-  public decorateClusterDetailsWithAuth(
+  public getCredential(
     clusterDetails: ClusterDetails,
     auth: KubernetesRequestAuth,
-  ) {
+  ): Promise<KubernetesCredential> {
     const authProvider =
       clusterDetails.authMetadata[ANNOTATION_KUBERNETES_AUTH_PROVIDER];
     if (this.strategyMap[authProvider]) {
-      return this.strategyMap[authProvider].decorateClusterDetailsWithAuth(
-        clusterDetails,
-        auth,
-      );
+      return this.strategyMap[authProvider].getCredential(clusterDetails, auth);
     }
     throw new Error(
       `authProvider "${authProvider}" has no AuthenticationStrategy associated with it`,

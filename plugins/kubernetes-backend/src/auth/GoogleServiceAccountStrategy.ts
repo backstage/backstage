@@ -13,8 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import { AuthenticationStrategy } from './types';
-import { AuthMetadata, ClusterDetails } from '../types/types';
+import { AuthenticationStrategy, KubernetesCredential } from './types';
 import * as container from '@google-cloud/container';
 
 /**
@@ -22,28 +21,17 @@ import * as container from '@google-cloud/container';
  * @public
  */
 export class GoogleServiceAccountStrategy implements AuthenticationStrategy {
-  public async decorateClusterDetailsWithAuth(
-    clusterDetails: ClusterDetails,
-  ): Promise<ClusterDetails> {
-    const clusterDetailsWithAuthToken: ClusterDetails = Object.assign(
-      {},
-      clusterDetails,
-    );
+  public async getCredential(): Promise<KubernetesCredential> {
     const client = new container.v1.ClusterManagerClient();
     const accessToken = await client.auth.getAccessToken();
 
-    if (accessToken) {
-      clusterDetailsWithAuthToken.authMetadata = {
-        serviceAccountToken: accessToken,
-        ...clusterDetailsWithAuthToken.authMetadata,
-      };
-    } else {
+    if (!accessToken) {
       throw new Error(
         'Unable to obtain access token for the current Google Application Default Credentials',
       );
     }
-    return clusterDetailsWithAuthToken;
+    return accessToken;
   }
 
-  public validate(_: AuthMetadata) {}
+  public validate() {}
 }

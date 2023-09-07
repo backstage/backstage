@@ -26,6 +26,7 @@ import type {
   ObjectsByEntityResponse,
 } from '@backstage/plugin-kubernetes-common';
 import { Config } from '@backstage/config';
+import { KubernetesCredential } from '../auth/types';
 
 /**
  *
@@ -34,6 +35,7 @@ import { Config } from '@backstage/config';
 export interface ObjectFetchParams {
   serviceId: string;
   clusterDetails: ClusterDetails;
+  credential: KubernetesCredential;
   objectTypesToFetch: Set<ObjectToFetch>;
   labelSelector: string;
   customResources: CustomResource[];
@@ -51,6 +53,7 @@ export interface KubernetesFetcher {
   ): Promise<FetchResponseWrapper>;
   fetchPodMetricsByNamespaces(
     clusterDetails: ClusterDetails,
+    credential: KubernetesCredential,
     namespaces: Set<string>,
     labelSelector?: string,
   ): Promise<FetchResponseWrapper>;

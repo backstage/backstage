@@ -18,13 +18,19 @@ import { AuthMetadata, ClusterDetails } from '../types/types';
 import { KubernetesRequestAuth } from '@backstage/plugin-kubernetes-common';
 
 /**
+ * Authentication data used to make a request to Kubernetes
+ * @public
+ */
+export type KubernetesCredential = string | undefined;
+
+/**
  *
  * @public
  */
 export interface AuthenticationStrategy {
-  decorateClusterDetailsWithAuth(
+  getCredential(
     clusterDetails: ClusterDetails,
     authConfig: KubernetesRequestAuth,
-  ): Promise<ClusterDetails>;
+  ): Promise<KubernetesCredential>;
   validate(authMetadata: AuthMetadata): void;
 }

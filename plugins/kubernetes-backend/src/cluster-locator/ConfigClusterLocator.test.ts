@@ -30,7 +30,7 @@ describe('ConfigClusterLocator', () => {
 
   beforeEach(() => {
     authStrategy = {
-      decorateClusterDetailsWithAuth: jest.fn(),
+      getCredential: jest.fn(),
       validate: jest.fn(),
     };
   });

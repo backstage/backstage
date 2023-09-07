@@ -40,24 +40,18 @@ class StaticTokenCredential implements TokenCredential {
 }
 
 describe('AzureIdentityStrategy tests', () => {
-  const cd = {
-    name: 'My Cluster',
-    url: 'mycluster.privatelink.westeurope.azmk8s.io',
-    authMetadata: { authProvider: 'azure' },
-  };
-
   afterEach(() => {
     jest.useRealTimers();
   });
 
-  it('should decorate cluster with Azure token', async () => {
+  it('should get Azure token', async () => {
     const strategy = new AzureIdentityStrategy(
       logger,
       new StaticTokenCredential(5 * 60 * 1000),
     );
 
-    const response = await strategy.decorateClusterDetailsWithAuth(cd);
-    expect(response.authMetadata.serviceAccountToken).toEqual('MY_TOKEN_1');
+    const credential = await strategy.getCredential();
+    expect(credential).toEqual('MY_TOKEN_1');
   });
 
   it('should re-use token before expiry', async () => {
@@ -66,11 +60,11 @@ describe('AzureIdentityStrategy tests', () => {
       new StaticTokenCredential(20 * 60 * 1000),
     );
 
-    const response = await strategy.decorateClusterDetailsWithAuth(cd);
-    expect(response.authMetadata.serviceAccountToken).toEqual('MY_TOKEN_1');
+    const credential = await strategy.getCredential();
+    expect(credential).toEqual('MY_TOKEN_1');
 
-    const response2 = await strategy.decorateClusterDetailsWithAuth(cd);
-    expect(response2.authMetadata.serviceAccountToken).toEqual('MY_TOKEN_1');
+    const credential2 = await strategy.getCredential();
+    expect(credential2).toEqual('MY_TOKEN_1');
   });
 
   it('should issue new token 15 minutes befory expiry', async () => {
@@ -81,13 +75,13 @@ describe('AzureIdentityStrategy tests', () => {
       new StaticTokenCredential(16 * 60 * 1000), // token expires in 16min
     );
 
-    const response = await strategy.decorateClusterDetailsWithAuth(cd);
-    expect(response.authMetadata.serviceAccountToken).toEqual('MY_TOKEN_1');
+    const credential = await strategy.getCredential();
+    expect(credential).toEqual('MY_TOKEN_1');
 
     jest.setSystemTime(Date.now() + 2 * 60 * 1000); // advance time by 2mins
 
-    const response2 = await strategy.decorateClusterDetailsWithAuth(cd);
-    expect(response2.authMetadata.serviceAccountToken).toEqual('MY_TOKEN_2');
+    const credential2 = await strategy.getCredential();
+    expect(credential2).toEqual('MY_TOKEN_2');
   });
 
   it('should re-use existing token if there is afailure', async () => {
@@ -98,21 +92,21 @@ describe('AzureIdentityStrategy tests', () => {
       new StaticTokenCredential(16 * 60 * 1000), // new tokens expires in 16min
     );
 
-    const response = await strategy.decorateClusterDetailsWithAuth(cd);
-    expect(response.authMetadata.serviceAccountToken).toEqual('MY_TOKEN_1');
+    const credential = await strategy.getCredential();
+    expect(credential).toEqual('MY_TOKEN_1');
 
     jest.setSystemTime(Date.now() + 2 * 60 * 1000); // advance time by 2min
 
-    const response2 = await strategy.decorateClusterDetailsWithAuth(cd);
-    expect(response2.authMetadata.serviceAccountToken).toEqual('MY_TOKEN_2');
+    const credential2 = await strategy.getCredential();
+    expect(credential2).toEqual('MY_TOKEN_2');
 
     jest.setSystemTime(Date.now() + 2 * 60 * 1000); // advance time by 2min
 
-    const response3 = await strategy.decorateClusterDetailsWithAuth(cd);
-    expect(response3.authMetadata.serviceAccountToken).toEqual('MY_TOKEN_2');
+    const credential3 = await strategy.getCredential();
+    expect(credential3).toEqual('MY_TOKEN_2');
 
-    const response4 = await strategy.decorateClusterDetailsWithAuth(cd);
-    expect(response4.authMetadata.serviceAccountToken).toEqual('MY_TOKEN_4');
+    const credential4 = await strategy.getCredential();
+    expect(credential4).toEqual('MY_TOKEN_4');
   });
 
   it('should throw if existing token expired and failed to fetch a new one', async () => {
@@ -123,16 +117,16 @@ describe('AzureIdentityStrategy tests', () => {
       new StaticTokenCredential(16 * 60 * 1000), // new tokens expires in 16min
     );
 
-    const response = await strategy.decorateClusterDetailsWithAuth(cd);
-    expect(response.authMetadata.serviceAccountToken).toEqual('MY_TOKEN_1');
+    const credential = await strategy.getCredential();
+    expect(credential).toEqual('MY_TOKEN_1');
 
     jest.setSystemTime(Date.now() + 2 * 60 * 1000); // advance time by 2min
 
-    const response2 = await strategy.decorateClusterDetailsWithAuth(cd);
-    expect(response2.authMetadata.serviceAccountToken).toEqual('MY_TOKEN_2');
+    const credential2 = await strategy.getCredential();
+    expect(credential2).toEqual('MY_TOKEN_2');
 
     jest.setSystemTime(Date.now() + 17 * 60 * 1000); // advance time by 17min
 
-    await expect(strategy.decorateClusterDetailsWithAuth(cd)).rejects.toThrow();
+    await expect(strategy.getCredential()).rejects.toThrow();
   });
 });

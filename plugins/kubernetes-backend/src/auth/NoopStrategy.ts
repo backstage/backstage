@@ -14,19 +14,19 @@
  * limitations under the License.
  */
 
-import { AuthenticationStrategy } from './types';
-import { AuthMetadata, ClusterDetails } from '../types/types';
+import { AuthenticationStrategy, KubernetesCredential } from './types';
+import { ClusterDetails } from '../types/types';
 
 /**
  *
  * @public
  */
 export class NoopStrategy implements AuthenticationStrategy {
-  public async decorateClusterDetailsWithAuth(
+  public async getCredential(
     clusterDetails: ClusterDetails,
-  ): Promise<ClusterDetails> {
-    return clusterDetails;
+  ): Promise<KubernetesCredential> {
+    return clusterDetails.authMetadata.serviceAccountToken;
   }
 
-  public validate(_: AuthMetadata) {}
+  public validate() {}
 }

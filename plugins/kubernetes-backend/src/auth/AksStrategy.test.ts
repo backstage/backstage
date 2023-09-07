@@ -19,11 +19,11 @@ describe('AksStrategy', () => {
   it('uses auth.aks value as bearer token', async () => {
     const strategy = new AksStrategy();
 
-    const details = await strategy.decorateClusterDetailsWithAuth(
-      { name: '', url: '', authMetadata: { authProvider: 'aks' } },
+    const credential = await strategy.getCredential(
+      { name: '', url: '', authMetadata: {} },
       { aks: 'aksToken' },
     );
 
-    expect(details.authMetadata.serviceAccountToken).toBe('aksToken');
+    expect(credential).toBe('aksToken');
   });
 });

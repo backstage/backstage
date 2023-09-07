@@ -22,14 +22,14 @@ import { DispatchStrategy } from './DispatchStrategy';
 import { ClusterDetails } from '../types';
 import { AuthenticationStrategy } from './types';
 
-describe('decorateClusterDetailsWithAuth', () => {
+describe('getCredential', () => {
   let strategy: DispatchStrategy;
   let mockStrategy: jest.Mocked<AuthenticationStrategy>;
   const authObject: KubernetesRequestAuth = {};
 
   beforeEach(() => {
     mockStrategy = {
-      decorateClusterDetailsWithAuth: jest.fn(),
+      getCredential: jest.fn(),
       validate: jest.fn(),
     };
     strategy = new DispatchStrategy({
@@ -37,43 +37,29 @@ describe('decorateClusterDetailsWithAuth', () => {
     });
   });
 
-  it('can decorate cluster details if the auth provider is in the strategy map', async () => {
-    const expectedClusterDetails: ClusterDetails = {
+  it('gets credential if specified auth provider is in the strategy map', async () => {
+    const clusterDetails: ClusterDetails = {
       url: 'notanything.com',
       name: 'randomName',
-      authMetadata: {
-        [ANNOTATION_KUBERNETES_AUTH_PROVIDER]: 'google',
-        serviceAccountToken: 'added by mock strategy',
-      },
+      authMetadata: { [ANNOTATION_KUBERNETES_AUTH_PROVIDER]: 'google' },
     };
+    mockStrategy.getCredential.mockResolvedValue('added by mock strategy');
 
-    mockStrategy.decorateClusterDetailsWithAuth.mockResolvedValue(
-      expectedClusterDetails,
-    );
-
-    const returnedValue = await strategy.decorateClusterDetailsWithAuth(
-      {
-        name: 'googleCluster',
-        url: 'anything.com',
-        authMetadata: { [ANNOTATION_KUBERNETES_AUTH_PROVIDER]: 'google' },
-      },
+    const returnedValue = await strategy.getCredential(
+      clusterDetails,
       authObject,
     );
 
-    expect(mockStrategy.decorateClusterDetailsWithAuth).toHaveBeenCalledWith(
-      {
-        name: 'googleCluster',
-        url: 'anything.com',
-        authMetadata: { [ANNOTATION_KUBERNETES_AUTH_PROVIDER]: 'google' },
-      },
+    expect(mockStrategy.getCredential).toHaveBeenCalledWith(
+      clusterDetails,
       authObject,
     );
-    expect(returnedValue).toBe(expectedClusterDetails);
+    expect(returnedValue).toBe('added by mock strategy');
   });
 
   it('throws an error when asked for a strategy for an unsupported auth type', () => {
     expect(() =>
-      strategy.decorateClusterDetailsWithAuth(
+      strategy.getCredential(
         {
           name: 'test-cluster',
           url: 'anything.com',

@@ -14,6 +14,7 @@
  * limitations under the License.
  */
 
+import { ANNOTATION_KUBERNETES_AUTH_PROVIDER } from '@backstage/plugin-kubernetes-common';
 import { Config } from '@backstage/config';
 import { ForwardedError } from '@backstage/errors';
 import * as container from '@google-cloud/container';
@@ -120,7 +121,7 @@ export class GkeClusterLocator implements KubernetesClustersSupplier {
           // TODO filter out clusters which don't have name or endpoint
           name: r.name ?? 'unknown',
           url: `https://${r.endpoint ?? ''}`,
-          authMetadata: { authProvider: 'google' },
+          authMetadata: { [ANNOTATION_KUBERNETES_AUTH_PROVIDER]: 'google' },
           skipTLSVerify,
           skipMetricsLookup,
           ...(exposeDashboard

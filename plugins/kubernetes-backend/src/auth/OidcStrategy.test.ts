@@ -15,7 +15,6 @@
  */
 
 import { ANNOTATION_KUBERNETES_OIDC_TOKEN_PROVIDER } from '@backstage/plugin-kubernetes-common';
-import { AuthMetadata } from '../types/types';
 import { OidcStrategy } from './OidcStrategy';
 
 describe('OidcStrategy', () => {
@@ -24,14 +23,13 @@ describe('OidcStrategy', () => {
     strategy = new OidcStrategy();
   });
 
-  describe('decorateClusterDetailsWithAuth', () => {
-    it('returns cluster details with auth token', async () => {
-      const details = await strategy.decorateClusterDetailsWithAuth(
+  describe('getCredential', () => {
+    it('returns auth token', async () => {
+      const credential = await strategy.getCredential(
         {
           name: 'test',
           url: '',
           authMetadata: {
-            authProvider: 'oidc',
             [ANNOTATION_KUBERNETES_OIDC_TOKEN_PROVIDER]: 'okta',
           },
         },
@@ -40,16 +38,16 @@ describe('OidcStrategy', () => {
         },
       );
 
-      expect(details.authMetadata.serviceAccountToken).toBe('fakeToken');
+      expect(credential).toBe('fakeToken');
     });
 
-    it('fails when oidcTokenProvider is not configured', async () => {
+    it('fails when token provider is not configured', async () => {
       await expect(
-        strategy.decorateClusterDetailsWithAuth(
+        strategy.getCredential(
           {
             name: 'test',
             url: '',
-            authMetadata: { authProvider: 'oidc' },
+            authMetadata: {},
           },
           {},
         ),
@@ -60,12 +58,11 @@ describe('OidcStrategy', () => {
 
     it('fails when token is not included in request body', async () => {
       await expect(
-        strategy.decorateClusterDetailsWithAuth(
+        strategy.getCredential(
           {
             name: 'test',
             url: '',
             authMetadata: {
-              authProvider: 'oidc',
               [ANNOTATION_KUBERNETES_OIDC_TOKEN_PROVIDER]: 'okta',
             },
           },
@@ -77,10 +74,7 @@ describe('OidcStrategy', () => {
 
   describe('validate', () => {
     it('fails when token provider is not specified', () => {
-      const authMetadata: AuthMetadata = {
-        authProvider: 'oidc',
-      };
-      expect(() => strategy.validate(authMetadata)).toThrow(
+      expect(() => strategy.validate({})).toThrow(
         `Must specify a token provider for 'oidc' strategy`,
       );
     });

@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 import { AuthMetadata, ClusterDetails } from '../types/types';
-import { AuthenticationStrategy } from './types';
+import { AuthenticationStrategy, KubernetesCredential } from './types';
 import { KubernetesRequestAuth } from '@backstage/plugin-kubernetes-common';
 
 /**
@@ -22,19 +22,11 @@ import { KubernetesRequestAuth } from '@backstage/plugin-kubernetes-common';
  * @public
  */
 export class AksStrategy implements AuthenticationStrategy {
-  public async decorateClusterDetailsWithAuth(
-    clusterDetails: ClusterDetails,
-    auth: KubernetesRequestAuth,
-  ): Promise<ClusterDetails> {
-    return {
-      ...clusterDetails,
-      ...(auth.aks && {
-        authMetadata: {
-          serviceAccountToken: auth.aks,
-          ...clusterDetails.authMetadata,
-        },
-      }),
-    };
+  public async getCredential(
+    _: ClusterDetails,
+    requestAuth: KubernetesRequestAuth,
+  ): Promise<KubernetesCredential> {
+    return requestAuth.aks;
   }
   public validate(_: AuthMetadata) {}
 }

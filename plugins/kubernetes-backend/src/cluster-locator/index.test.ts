@@ -51,7 +51,7 @@ describe('getCombinedClusterSupplier', () => {
       'ctx',
     );
     const mockStrategy: jest.Mocked<AuthenticationStrategy> = {
-      decorateClusterDetailsWithAuth: jest.fn(),
+      getCredential: jest.fn(),
       validate: jest.fn(),
     };
 

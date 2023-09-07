@@ -32,6 +32,7 @@ import {
   KubernetesServiceLocator,
   ObjectFetchParams,
 } from '../types/types';
+import { KubernetesCredential } from '../auth/types';
 import { KubernetesBuilder } from './KubernetesBuilder';
 import { KubernetesFanOutHandler } from './KubernetesFanOutHandler';
 import { CatalogApi } from '@backstage/catalog-client';
@@ -251,6 +252,7 @@ describe('KubernetesBuilder', () => {
       const fetcher: KubernetesFetcher = {
         fetchPodMetricsByNamespaces(
           _clusterDetails: ClusterDetails,
+          _credential: KubernetesCredential,
           _namespaces: Set<string>,
         ): Promise<FetchResponseWrapper> {
           return Promise.resolve({ errors: [], responses: [] });

@@ -25,8 +25,8 @@ import {
   ANNOTATION_KUBERNETES_AWS_ASSUME_ROLE,
   ANNOTATION_KUBERNETES_AWS_EXTERNAL_ID,
 } from '@backstage/plugin-kubernetes-common';
-import { AuthMetadata, ClusterDetails } from '../types/types';
-import { AuthenticationStrategy } from './types';
+import { ClusterDetails } from '../types/types';
+import { AuthenticationStrategy, KubernetesCredential } from './types';
 
 /**
  *
@@ -51,26 +51,17 @@ export class AwsIamStrategy implements AuthenticationStrategy {
     this.credsManager = DefaultAwsCredentialsManager.fromConfig(opts.config);
   }
 
-  public async decorateClusterDetailsWithAuth(
+  public getCredential(
     clusterDetails: ClusterDetails,
-  ): Promise<ClusterDetails> {
-    const clusterDetailsWithAuthToken: ClusterDetails = Object.assign(
-      {},
-      clusterDetails,
+  ): Promise<KubernetesCredential> {
+    return this.getBearerToken(
+      clusterDetails.name,
+      clusterDetails.authMetadata[ANNOTATION_KUBERNETES_AWS_ASSUME_ROLE],
+      clusterDetails.authMetadata[ANNOTATION_KUBERNETES_AWS_EXTERNAL_ID],
     );
-
-    clusterDetailsWithAuthToken.authMetadata = {
-      serviceAccountToken: await this.getBearerToken(
-        clusterDetails.name,
-        clusterDetails.authMetadata[ANNOTATION_KUBERNETES_AWS_ASSUME_ROLE],
-        clusterDetails.authMetadata[ANNOTATION_KUBERNETES_AWS_EXTERNAL_ID],
-      ),
-      ...clusterDetailsWithAuthToken.authMetadata,
-    };
-    return clusterDetailsWithAuthToken;
   }
 
-  public validate(_: AuthMetadata) {}
+  public validate() {}
 
   private async getBearerToken(
     clusterName: string,

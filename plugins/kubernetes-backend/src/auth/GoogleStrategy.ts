@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { AuthenticationStrategy } from './types';
+import { AuthenticationStrategy, KubernetesCredential } from './types';
 import { AuthMetadata, ClusterDetails } from '../types/types';
 import { KubernetesRequestAuth } from '@backstage/plugin-kubernetes-common';
 
@@ -23,27 +23,17 @@ import { KubernetesRequestAuth } from '@backstage/plugin-kubernetes-common';
  * @public
  */
 export class GoogleStrategy implements AuthenticationStrategy {
-  public async decorateClusterDetailsWithAuth(
-    clusterDetails: ClusterDetails,
-    authConfig: KubernetesRequestAuth,
-  ): Promise<ClusterDetails> {
-    const clusterDetailsWithAuthToken: ClusterDetails = Object.assign(
-      {},
-      clusterDetails,
-    );
-    const authToken: string | undefined = authConfig.google;
-
-    if (authToken) {
-      clusterDetailsWithAuthToken.authMetadata = {
-        serviceAccountToken: authToken,
-        ...clusterDetailsWithAuthToken.authMetadata,
-      };
-    } else {
+  public async getCredential(
+    _: ClusterDetails,
+    requestAuth: KubernetesRequestAuth,
+  ): Promise<KubernetesCredential> {
+    const authToken = requestAuth.google;
+    if (!authToken) {
       throw new Error(
         'Google token not found under auth.google in request body',
       );
     }
-    return clusterDetailsWithAuthToken;
+    return authToken;
   }
   public validate(_: AuthMetadata) {}
 }

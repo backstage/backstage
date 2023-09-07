@@ -32,7 +32,9 @@ import {
   KubernetesFetcher,
   ObjectFetchParams,
 } from '../types/types';
+import { KubernetesCredential } from '../auth/types';
 import {
+  ANNOTATION_KUBERNETES_AUTH_PROVIDER,
   FetchResponse,
   KubernetesFetchError,
   KubernetesErrorTypes,
@@ -95,6 +97,7 @@ export class KubernetesClientBasedFetcher implements KubernetesFetcher {
       .map(({ objectType, group, apiVersion, plural }) =>
         this.fetchResource(
           params.clusterDetails,
+          params.credential,
           group,
           apiVersion,
           plural,
@@ -125,6 +128,7 @@ export class KubernetesClientBasedFetcher implements KubernetesFetcher {
 
   fetchPodMetricsByNamespaces(
     clusterDetails: ClusterDetails,
+    credential: KubernetesCredential,
     namespaces: Set<string>,
     labelSelector?: string,
   ): Promise<FetchResponseWrapper> {
@@ -132,13 +136,22 @@ export class KubernetesClientBasedFetcher implements KubernetesFetcher {
       const [podMetrics, podList] = await Promise.all([
         this.fetchResource(
           clusterDetails,
+          credential,
           'metrics.k8s.io',
           'v1beta1',
           'pods',
           ns,
           labelSelector,
         ),
-        this.fetchResource(clusterDetails, '', 'v1', 'pods', ns, labelSelector),
+        this.fetchResource(
+          clusterDetails,
+          credential,
+          '',
+          'v1',
+          'pods',
+          ns,
+          labelSelector,
+        ),
       ]);
       if (podMetrics.ok && podList.ok) {
         return topPods(
@@ -183,6 +196,7 @@ export class KubernetesClientBasedFetcher implements KubernetesFetcher {
 
   private fetchResource(
     clusterDetails: ClusterDetails,
+    credential: KubernetesCredential,
     group: string,
     apiVersion: string,
     plural: string,
@@ -201,10 +215,11 @@ export class KubernetesClientBasedFetcher implements KubernetesFetcher {
     let url: URL;
     let requestInit: RequestInit;
     if (
-      clusterDetails.authMetadata.serviceAccountToken ||
-      clusterDetails.authMetadata.authProvider === 'localKubectlProxy'
+      credential ||
+      clusterDetails.authMetadata[ANNOTATION_KUBERNETES_AUTH_PROVIDER] ===
+        'localKubectlProxy'
     ) {
-      [url, requestInit] = this.fetchArgsFromClusterDetails(clusterDetails);
+      [url, requestInit] = this.fetchArgs(clusterDetails, credential);
     } else if (fs.pathExistsSync(Config.SERVICEACCOUNT_TOKEN_PATH)) {
       [url, requestInit] = this.fetchArgsInCluster();
     } else {
@@ -228,15 +243,16 @@ export class KubernetesClientBasedFetcher implements KubernetesFetcher {
     return fetch(url, requestInit);
   }
 
-  private fetchArgsFromClusterDetails(
+  private fetchArgs(
     clusterDetails: ClusterDetails,
+    credential: KubernetesCredential,
   ): [URL, RequestInit] {
     const requestInit: RequestInit = {
       method: 'GET',
       headers: {
         Accept: 'application/json',
         'Content-Type': 'application/json',
-        Authorization: `Bearer ${clusterDetails.authMetadata.serviceAccountToken}`,
+        ...(credential && { Authorization: `Bearer ${credential}` }),
       },
     };
 

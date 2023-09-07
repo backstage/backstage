@@ -60,12 +60,12 @@ describe('AwsIamStrategy tests', () => {
   it('returns a signed url for AWS credentials without assume role', async () => {
     const strategy = new AwsIamStrategy({ config });
 
-    const authPromise = strategy.decorateClusterDetailsWithAuth({
+    const credential = await strategy.getCredential({
       name: 'test-cluster',
       url: '',
-      authMetadata: { authProvider: 'aws' },
+      authMetadata: {},
     });
-    expect((await authPromise).authMetadata.serviceAccountToken).toEqual(
+    expect(credential).toEqual(
       'k8s-aws-v1.aHR0cHM6Ly9odHRwczovL2V4YW1wbGUuY29tL2FzZGY_',
     );
   });
@@ -73,15 +73,15 @@ describe('AwsIamStrategy tests', () => {
   it('returns a signed url for AWS credentials with assume role', async () => {
     const strategy = new AwsIamStrategy({ config });
 
-    const authPromise = strategy.decorateClusterDetailsWithAuth({
+    const credential = await strategy.getCredential({
       name: 'test-cluster',
       url: '',
       authMetadata: {
-        authProvider: 'aws',
         [ANNOTATION_KUBERNETES_AWS_ASSUME_ROLE]: 'SomeRole',
       },
     });
-    expect((await authPromise).authMetadata.serviceAccountToken).toEqual(
+
+    expect(credential).toEqual(
       'k8s-aws-v1.aHR0cHM6Ly9odHRwczovL2V4YW1wbGUuY29tL2FzZGY_',
     );
     expect(fromTemporaryCredentials).toHaveBeenCalledWith({
@@ -101,16 +101,15 @@ describe('AwsIamStrategy tests', () => {
   it('returns a signed url for AWS credentials and passes the external id', async () => {
     const strategy = new AwsIamStrategy({ config });
 
-    const authPromise = strategy.decorateClusterDetailsWithAuth({
+    const credential = await strategy.getCredential({
       name: 'test-cluster',
       url: '',
       authMetadata: {
-        authProvider: 'aws',
         [ANNOTATION_KUBERNETES_AWS_ASSUME_ROLE]: 'SomeRole',
         [ANNOTATION_KUBERNETES_AWS_EXTERNAL_ID]: 'external-id',
       },
     });
-    expect((await authPromise).authMetadata.serviceAccountToken).toEqual(
+    expect(credential).toEqual(
       'k8s-aws-v1.aHR0cHM6Ly9odHRwczovL2V4YW1wbGUuY29tL2FzZGY_',
     );
     expect(fromTemporaryCredentials).toHaveBeenCalledWith({
@@ -136,10 +135,10 @@ describe('AwsIamStrategy tests', () => {
     it('throws the right error', async () => {
       const strategy = new AwsIamStrategy({ config });
       await expect(
-        strategy.decorateClusterDetailsWithAuth({
+        strategy.getCredential({
           name: 'test-cluster',
           url: '',
-          authMetadata: { authProvider: 'aws' },
+          authMetadata: {},
         }),
       ).rejects.toThrow('no way');
     });

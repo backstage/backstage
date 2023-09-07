@@ -16,7 +16,7 @@
 
 import '@backstage/backend-common';
 import { Entity } from '@backstage/catalog-model';
-import { AuthMetadata, ServiceLocatorRequestContext } from '../types/types';
+import { ServiceLocatorRequestContext } from '../types/types';
 import { MultiTenantServiceLocator } from './MultiTenantServiceLocator';
 
 describe('MultiTenantConfigClusterLocator', () => {
@@ -40,10 +40,7 @@ describe('MultiTenantConfigClusterLocator', () => {
           {
             name: 'cluster1',
             url: 'http://localhost:8080',
-            authMetadata: {
-              authProvider: 'serviceAccount',
-              serviceAccountToken: '12345',
-            },
+            authMetadata: {},
           },
         ];
       },
@@ -59,10 +56,7 @@ describe('MultiTenantConfigClusterLocator', () => {
         {
           name: 'cluster1',
           url: 'http://localhost:8080',
-          authMetadata: {
-            authProvider: 'serviceAccount',
-            serviceAccountToken: '12345',
-          },
+          authMetadata: {},
         },
       ],
     });
@@ -75,15 +69,12 @@ describe('MultiTenantConfigClusterLocator', () => {
           {
             name: 'cluster1',
             url: 'http://localhost:8080',
-            authMetadata: {
-              authProvider: 'serviceAccount',
-              serviceAccountToken: 'token',
-            } as AuthMetadata,
+            authMetadata: {},
           },
           {
             name: 'cluster2',
             url: 'http://localhost:8081',
-            authMetadata: { authProvider: 'google' } as AuthMetadata,
+            authMetadata: {},
           },
         ];
       },
@@ -99,15 +90,12 @@ describe('MultiTenantConfigClusterLocator', () => {
         {
           name: 'cluster1',
           url: 'http://localhost:8080',
-          authMetadata: {
-            authProvider: 'serviceAccount',
-            serviceAccountToken: 'token',
-          },
+          authMetadata: {},
         },
         {
           name: 'cluster2',
           url: 'http://localhost:8081',
-          authMetadata: { authProvider: 'google' },
+          authMetadata: {},
         },
       ],
     });
