@@ -19,6 +19,7 @@
     "main": "dist/index.esm.js",
     "types": "dist/index.d.ts"
   },
+  "sideEffects": false,
   "scripts": {
     "build": "backstage-cli package build",
     "start": "backstage-cli package start",

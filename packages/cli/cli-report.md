@@ -405,6 +405,7 @@ Options:
 Commands:
   build [options]
   lint [options]
+  fix [options]
   clean
   list-deprecations [options]
   test [options]
@@ -428,6 +429,16 @@ Options:
 Usage: backstage-cli repo clean [options]
 
 Options:
+  -h, --help
+```
+
+### `backstage-cli repo fix`
+
+```
+Usage: backstage-cli repo fix [options]
+
+Options:
+  --check
   -h, --help
 ```
 

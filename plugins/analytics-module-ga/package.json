@@ -18,6 +18,7 @@
     "url": "https://github.com/backstage/backstage",
     "directory": "plugins/analytics-module-ga"
   },
+  "sideEffects": false,
   "scripts": {
     "build": "backstage-cli package build",
     "start": "backstage-cli package start",

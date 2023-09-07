@@ -20,6 +20,7 @@
     "url": "https://github.com/backstage/backstage",
     "directory": "plugins/playlist-common"
   },
+  "sideEffects": false,
   "scripts": {
     "build": "backstage-cli package build",
     "lint": "backstage-cli package lint",

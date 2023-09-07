@@ -22,6 +22,7 @@
   "keywords": [
     "backstage"
   ],
+  "sideEffects": false,
   "scripts": {
     "build": "backstage-cli package build",
     "lint": "backstage-cli package lint",

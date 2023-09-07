@@ -24,6 +24,7 @@
     "github",
     "pull requests"
   ],
+  "sideEffects": false,
   "scripts": {
     "build": "backstage-cli package build",
     "start": "backstage-cli package start",
