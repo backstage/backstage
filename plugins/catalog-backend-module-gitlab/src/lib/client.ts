@@ -205,7 +205,7 @@ export class GitLabClient {
                       user {
                         id
                         username
-                        publicEmail
+                        commitEmail
                         name
                         state
                         webUrl
