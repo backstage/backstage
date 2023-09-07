@@ -353,7 +353,7 @@ describe('pinnipedAuthenticator', () => {
       );
 
       expect(handlerResponse.session.idToken).toEqual(clusterScopedIdToken);
-    }, 70000);
+    });
 
     it('fails on network error during token exchange', async () => {
       mswServer.use(

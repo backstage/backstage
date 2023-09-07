@@ -21,6 +21,7 @@ import {
 } from '@backstage/plugin-auth-node';
 import { Issuer, TokenSet, Strategy as OidcStrategy } from 'openid-client';
 
+/** @public */
 export const pinnipedAuthenticator = createOAuthAuthenticator({
   defaultProfileTransform: async (_r, _c) => ({ profile: {} }),
   async initialize({ callbackUrl, config }) {
@@ -114,7 +115,7 @@ export const pinnipedAuthenticator = createOAuthAuthenticator({
           : Promise.resolve(user.tokenset.id_token)
         ).then(idToken => {
           resolve({
-            fullProfile: { provider: ' ', id: ' ', displayName: ' ' },
+            fullProfile: { provider: '', id: '', displayName: '' },
             session: {
               accessToken: user.tokenset.access_token!,
               tokenType: user.tokenset.token_type ?? 'bearer',
@@ -152,7 +153,7 @@ export const pinnipedAuthenticator = createOAuthAuthenticator({
       }
 
       resolve({
-        fullProfile: { provider: ' ', id: ' ', displayName: ' ' },
+        fullProfile: { provider: '', id: '', displayName: '' },
         session: {
           accessToken: tokenset.access_token!,
           tokenType: tokenset.token_type ?? 'bearer',

@@ -14,9 +14,14 @@
  * limitations under the License.
  */
 import { createBackendModule } from '@backstage/backend-plugin-api';
-import { authProvidersExtensionPoint, commonSignInResolvers, createOAuthProviderFactory } from '@backstage/plugin-auth-node';
+import {
+  authProvidersExtensionPoint,
+  commonSignInResolvers,
+  createOAuthProviderFactory,
+} from '@backstage/plugin-auth-node';
 import { pinnipedAuthenticator } from './authenticator';
 
+/** @public */
 export const authModulePinnipedProvider = createBackendModule({
   pluginId: 'auth',
   moduleId: 'pinniped-provider',
@@ -31,10 +36,10 @@ export const authModulePinnipedProvider = createBackendModule({
           factory: createOAuthProviderFactory({
             authenticator: pinnipedAuthenticator,
             signInResolverFactories: {
-              ...commonSignInResolvers
-            }
-          })
-        })
+              ...commonSignInResolvers,
+            },
+          }),
+        });
       },
     });
   },
