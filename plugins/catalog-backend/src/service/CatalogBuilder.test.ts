@@ -55,7 +55,7 @@ describe('CatalogBuilder', () => {
         permissions: jest.fn() as unknown as PermissionEvaluator,
         reader: jest.fn() as unknown as UrlReaderService,
       });
-      builder.withProcessingEngine(fakeEngine);
+      builder.setProcessingEngine(fakeEngine);
 
       const { processingEngine } = await builder.build();
 

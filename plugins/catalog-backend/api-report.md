@@ -161,6 +161,9 @@ export class CatalogBuilder {
     key: string,
     resolver: PlaceholderResolver,
   ): CatalogBuilder;
+  setProcessingEngine(
+    processingEngine: CatalogProcessingEngine,
+  ): CatalogBuilder;
   setProcessingInterval(
     processingInterval: ProcessingIntervalFunction,
   ): CatalogBuilder;
@@ -173,9 +176,6 @@ export class CatalogBuilder {
     }) => Promise<void> | void;
   }): void;
   useLegacySingleProcessorValidation(): this;
-  withProcessingEngine(
-    processingEngine: CatalogProcessingEngine,
-  ): CatalogBuilder;
 }
 
 // @public @deprecated (undocumented)

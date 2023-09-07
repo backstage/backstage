@@ -434,7 +434,7 @@ export class CatalogBuilder {
   /**
    * Use a custom CatalogProcessingEngine instead of the default.
    */
-  withProcessingEngine(
+  setProcessingEngine(
     processingEngine: CatalogProcessingEngine,
   ): CatalogBuilder {
     this.processingEngine = processingEngine;
