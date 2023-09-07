@@ -13,20 +13,18 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import './matchMedia.mock';
-import '@testing-library/jest-dom';
 
 import { DiscoveryApi, discoveryApiRef } from '@backstage/core-plugin-api';
 import {
-  renderWithEffects,
+  renderInTestApp,
   TestApiProvider,
   textContentMatcher,
-  wrapInTestApp,
 } from '@backstage/test-utils';
-import { waitFor } from '@testing-library/react';
+import '@testing-library/jest-dom';
+import { screen } from '@testing-library/react';
 import WS from 'jest-websocket-mock';
 import React from 'react';
-
+import './matchMedia.mock';
 import { PodExecTerminal } from './PodExecTerminal';
 
 const textEncoder = new TextEncoder();
@@ -42,22 +40,22 @@ describe('PodExecTerminal', () => {
   };
 
   it('Should render an XTerm web terminal', async () => {
-    const { getByText } = await renderWithEffects(
-      wrapInTestApp(
-        <TestApiProvider apis={[[discoveryApiRef, mockDiscoveryApi]]}>
-          <PodExecTerminal
-            clusterName={clusterName}
-            containerName={containerName}
-            podName={podName}
-            podNamespace={podNamespace}
-          />
-        </TestApiProvider>,
-      ),
+    await renderInTestApp(
+      <TestApiProvider apis={[[discoveryApiRef, mockDiscoveryApi]]}>
+        <PodExecTerminal
+          clusterName={clusterName}
+          containerName={containerName}
+          podName={podName}
+          podNamespace={podNamespace}
+        />
+      </TestApiProvider>,
     );
 
-    expect(
-      getByText(textContentMatcher('Starting terminal, please wait...')),
-    ).toBeInTheDocument();
+    await expect(
+      screen.findByText(
+        textContentMatcher('Starting terminal, please wait...'),
+      ),
+    ).resolves.toBeInTheDocument();
   });
 
   it('Should connect to WebSocket server & render response', async () => {
@@ -65,21 +63,21 @@ describe('PodExecTerminal', () => {
       'ws://localhost/proxy/api/v1/namespaces/podNamespace/pods/pod1/exec?container=container2&stdin=true&stdout=true&stderr=true&tty=true&command=%2Fbin%2Fsh',
     );
 
-    const { getByText } = await renderWithEffects(
-      wrapInTestApp(
-        <TestApiProvider apis={[[discoveryApiRef, mockDiscoveryApi]]}>
-          <PodExecTerminal
-            clusterName={clusterName}
-            containerName={containerName}
-            podName={podName}
-            podNamespace={podNamespace}
-          />
-        </TestApiProvider>,
-      ),
+    await renderInTestApp(
+      <TestApiProvider apis={[[discoveryApiRef, mockDiscoveryApi]]}>
+        <PodExecTerminal
+          clusterName={clusterName}
+          containerName={containerName}
+          podName={podName}
+          podNamespace={podNamespace}
+        />
+      </TestApiProvider>,
     );
 
     // xterm uses a "W" character as a "measure element" -- if it exists, the terminal rendered correctly
-    expect(getByText(textContentMatcher('W'))).toBeInTheDocument();
+    await expect(
+      screen.findByText(textContentMatcher('W')),
+    ).resolves.toBeInTheDocument();
 
     await server.connected;
 
@@ -90,8 +88,8 @@ describe('PodExecTerminal', () => {
 
     server.send(buffer);
 
-    await waitFor(() =>
-      expect(getByText(textContentMatcher('hello world'))).toBeInTheDocument(),
-    );
+    await expect(
+      screen.findByText(textContentMatcher('hello world')),
+    ).resolves.toBeInTheDocument();
   });
 });
