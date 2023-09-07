@@ -2,7 +2,7 @@
 '@backstage/create-app': patch
 ---
 
-Added the new `repo fix` command to the project too.
+Added a `fix` scripts that calls the new `backstage-cli repo fix` command.
 
 To apply this change to an existing app, make the following change to your root `package.json`:
 

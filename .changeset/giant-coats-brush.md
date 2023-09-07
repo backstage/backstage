@@ -8,8 +8,6 @@
 '@backstage/core-plugin-api': patch
 '@backstage/dev-utils': patch
 '@backstage/errors': patch
-'@backstage/frontend-app-api': patch
-'@backstage/frontend-plugin-api': patch
 '@backstage/integration': patch
 '@backstage/integration-react': patch
 '@backstage/plugin-adr': patch
