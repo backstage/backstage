@@ -95,8 +95,8 @@ export async function makeRollupConfigs(
     if (options.outputs.has(Output.esm)) {
       output.push({
         dir: distDir,
-        entryFileNames: `[name].esm.js`,
-        chunkFileNames: `esm/[name]-[hash].esm.js`,
+        entryFileNames: `[name].mjs`,
+        chunkFileNames: `esm/[name]-[hash].mjs`,
         format: 'module',
         sourcemap: true,
       });

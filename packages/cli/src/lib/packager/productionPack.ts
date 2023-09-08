@@ -167,7 +167,7 @@ async function writeReleaseStageEntrypoint(
 }
 
 const EXPORT_MAP = {
-  import: '.esm.js',
+  import: '.mjs',
   require: '.cjs.js',
   types: '.d.ts',
 };
