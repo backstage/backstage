@@ -37,7 +37,9 @@ export const useTranslationRef = <
 
   const internalRef = toInternalTranslationRef(translationRef);
 
-  const { t } = useTranslation(internalRef.id);
+  const { t } = useTranslation(internalRef.id, {
+    useSuspense: process.env.NODE_ENV !== 'test',
+  });
 
   const defaultMessages = internalRef.getDefaultMessages();
 
