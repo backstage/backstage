@@ -13,41 +13,31 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import React from 'react';
-import { Typography, Grid } from '@material-ui/core';
 import {
-  InfoCard,
-  Header,
-  Page,
   Content,
   ContentHeader,
-  HeaderLabel,
   SupportButton,
 } from '@backstage/core-components';
+import { Grid } from '@material-ui/core';
+import React from 'react';
 import { ExampleFetchComponent } from '../ExampleFetchComponent';
+import { JiraProjectCard } from '../JiraProjectCard';
+import exampleProject from '../../mockedProject.json';
 
-export const ExampleComponent = () => (
-  <Page themeId="tool">
-    <Header title="Welcome to jira-dashboard!" subtitle="Optional subtitle">
-      <HeaderLabel label="Owner" value="Team X" />
-      <HeaderLabel label="Lifecycle" value="Alpha" />
-    </Header>
+export const JiraDashboardContent = () => {
+  return (
     <Content>
-      <ContentHeader title="Plugin title">
+      <ContentHeader title="Jira Dashboard">
         <SupportButton>A description of your plugin goes here.</SupportButton>
       </ContentHeader>
       <Grid container spacing={3} direction="column">
-        <Grid item>
-          <InfoCard title="Information card">
-            <Typography variant="body1">
-              All content should be wrapped in a card like this.
-            </Typography>
-          </InfoCard>
+        <Grid item md={6} xs={12}>
+          <JiraProjectCard {...exampleProject} />
         </Grid>
         <Grid item>
           <ExampleFetchComponent />
         </Grid>
       </Grid>
     </Content>
-  </Page>
-);
+  );
+};

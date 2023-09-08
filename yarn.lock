@@ -7509,6 +7509,7 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "@backstage/plugin-jira-dashboard@workspace:plugins/jira-dashboard"
   dependencies:
+    "@backstage/catalog-model": "workspace:^"
     "@backstage/cli": "workspace:^"
     "@backstage/core-app-api": "workspace:^"
     "@backstage/core-components": "workspace:^"

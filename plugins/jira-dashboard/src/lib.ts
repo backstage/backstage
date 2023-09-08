@@ -13,8 +13,13 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-export {
-  jiraDashboardPlugin,
-  EntityJiraDashboardContent,
-  isJiraDashboardAvailable,
-} from './plugin';
+
+import { Project } from './types';
+
+/**
+ * Get the URL to a Jira project.
+ */
+export const getProjectUrl = (project: Project) => {
+  const url = new URL(project.self);
+  return `https://${url.host}/browse/${project.key}`;
+};

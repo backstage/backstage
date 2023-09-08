@@ -1,0 +1,15 @@
+{
+  "name": "Backstage",
+  "key": "BS",
+  "description": "This is our Backstage project",
+  "projectTypeKey": "Software",
+  "projectCategory": {
+    "name": "Software Portals"
+  },
+  "lead": {
+    "key": "fridaja",
+    "displayName": "Frida Jacobsson"
+  },
+  "avatarUrls": "https://api.dicebear.com/6.x/open-peeps/svg?seed=Duane",
+  "self": "Backstage"
+}

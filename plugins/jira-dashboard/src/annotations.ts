@@ -13,4 +13,6 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-export { ExampleComponent } from './ExampleComponent';
+export const PROJECT_KEY_ANNOTATION = 'jira/project-key';
+export const COMPONENT_ANNOTATION = 'jira/component';
+export const FILTER_ANNOTATION = 'jira/filter-ids';

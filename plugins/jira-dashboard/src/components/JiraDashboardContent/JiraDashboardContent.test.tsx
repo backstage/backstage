@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 import React from 'react';
-import { ExampleComponent } from './ExampleComponent';
+import { JiraDashboardContent } from './JiraDashboardContent';
 import { rest } from 'msw';
 import { setupServer } from 'msw/node';
 import { screen } from '@testing-library/react';
@@ -23,7 +23,7 @@ import {
   renderInTestApp,
 } from '@backstage/test-utils';
 
-describe('ExampleComponent', () => {
+describe('JiraDashboardContent', () => {
   const server = setupServer();
   // Enable sane handlers for network requests
   setupRequestMockHandlers(server);
@@ -36,7 +36,7 @@ describe('ExampleComponent', () => {
   });
 
   it('should render', async () => {
-    await renderInTestApp(<ExampleComponent />);
-    expect(screen.getByText('Welcome to jira-dashboard!')).toBeInTheDocument();
+    await renderInTestApp(<JiraDashboardContent />);
+    expect(screen.getByText('Jira Dashboard')).toBeInTheDocument();
   });
 });

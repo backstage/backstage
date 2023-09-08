@@ -17,8 +17,16 @@ import {
   createPlugin,
   createRoutableExtension,
 } from '@backstage/core-plugin-api';
-
 import { rootRouteRef } from './routes';
+import { Entity } from '@backstage/catalog-model';
+import { PROJECT_KEY_ANNOTATION } from './annotations';
+/**
+ * Checks if the entity has a jira dashboard annotation.
+ * @public
+ * @param entity - The entity to check for the jira dashboard annotation.
+ */
+export const isJiraDashboardAvailable = (entity: Entity) =>
+  Boolean(entity.metadata.annotations?.[PROJECT_KEY_ANNOTATION]);
 
 export const jiraDashboardPlugin = createPlugin({
   id: 'jira-dashboard',
@@ -27,11 +35,13 @@ export const jiraDashboardPlugin = createPlugin({
   },
 });
 
-export const JiraDashboardPage = jiraDashboardPlugin.provide(
+export const EntityJiraDashboardContent = jiraDashboardPlugin.provide(
   createRoutableExtension({
-    name: 'JiraDashboardPage',
+    name: 'EntityJiraDashboardContent',
     component: () =>
-      import('./components/ExampleComponent').then(m => m.ExampleComponent),
+      import('./components/JiraDashboardContent').then(
+        m => m.JiraDashboardContent,
+      ),
     mountPoint: rootRouteRef,
   }),
 );
