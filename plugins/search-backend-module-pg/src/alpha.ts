@@ -24,7 +24,7 @@ import { PgSearchEngine } from './PgSearchEngine';
  * @alpha
  * Search backend module for the Postgres engine.
  */
-export const searchModulePostgresEngine = createBackendModule({
+export default createBackendModule({
   moduleId: 'postgresEngine',
   pluginId: 'search',
   register(env) {

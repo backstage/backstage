@@ -15,81 +15,31 @@
  */
 
 import { createBackend } from '@backstage/backend-defaults';
-import { appPlugin } from '@backstage/plugin-app-backend/alpha';
-import { catalogPlugin } from '@backstage/plugin-catalog-backend/alpha';
-import { kubernetesPlugin } from '@backstage/plugin-kubernetes-backend/alpha';
-import { permissionPlugin } from '@backstage/plugin-permission-backend/alpha';
-import { permissionModuleAllowAllPolicy } from '@backstage/plugin-permission-backend-module-allow-all-policy';
-import { scaffolderPlugin } from '@backstage/plugin-scaffolder-backend/alpha';
-import { catalogModuleTemplateKind } from '@backstage/plugin-scaffolder-backend/alpha';
-import { searchModuleCatalogCollator } from '@backstage/plugin-search-backend-module-catalog/alpha';
-import { searchModuleExploreCollator } from '@backstage/plugin-search-backend-module-explore/alpha';
-import { searchModuleTechDocsCollator } from '@backstage/plugin-search-backend-module-techdocs/alpha';
-import { searchPlugin } from '@backstage/plugin-search-backend/alpha';
-import { techdocsPlugin } from '@backstage/plugin-techdocs-backend/alpha';
-import { todoPlugin } from '@backstage/plugin-todo-backend';
-import { entityFeedbackPlugin } from '@backstage/plugin-entity-feedback-backend';
-import { catalogModuleUnprocessedEntities } from '@backstage/plugin-catalog-backend-module-unprocessed';
-import { badgesPlugin } from '@backstage/plugin-badges-backend';
-import { azureDevOpsPlugin } from '@backstage/plugin-azure-devops-backend';
-import { linguistPlugin } from '@backstage/plugin-linguist-backend';
-import { devtoolsPlugin } from '@backstage/plugin-devtools-backend';
-import { adrPlugin } from '@backstage/plugin-adr-backend';
-import { lighthousePlugin } from '@backstage/plugin-lighthouse-backend';
-import { proxyPlugin } from '@backstage/plugin-proxy-backend';
 
 const backend = createBackend();
 
-backend.add(appPlugin());
-
-// Badges
-backend.add(badgesPlugin());
-
-// Azure DevOps
-backend.add(azureDevOpsPlugin());
-
-// DevTools
-backend.add(devtoolsPlugin());
-
-// Entity Feedback
-backend.add(entityFeedbackPlugin());
-
-// Linguist
-backend.add(linguistPlugin());
-
-// Todo
-backend.add(todoPlugin());
-
-backend.add(adrPlugin());
-
-// Techdocs
-backend.add(techdocsPlugin());
-
-// Catalog
-backend.add(catalogPlugin());
-backend.add(catalogModuleTemplateKind());
-
-backend.add(scaffolderPlugin());
-
-// Search
-backend.add(searchPlugin());
-backend.add(searchModuleCatalogCollator());
-backend.add(searchModuleTechDocsCollator());
-backend.add(searchModuleExploreCollator());
-
-// Kubernetes
-backend.add(kubernetesPlugin());
-
-// Lighthouse
-backend.add(lighthousePlugin());
-
-// Proxy
-backend.add(proxyPlugin());
-
-// Permissions
-backend.add(permissionPlugin());
-backend.add(permissionModuleAllowAllPolicy());
-
-backend.add(catalogModuleUnprocessedEntities());
+backend.add(import('@backstage/plugin-adr-backend'));
+backend.add(import('@backstage/plugin-app-backend/alpha'));
+backend.add(import('@backstage/plugin-azure-devops-backend'));
+backend.add(import('@backstage/plugin-badges-backend'));
+backend.add(import('@backstage/plugin-catalog-backend-module-unprocessed'));
+backend.add(import('@backstage/plugin-catalog-backend/alpha'));
+backend.add(import('@backstage/plugin-devtools-backend'));
+backend.add(import('@backstage/plugin-entity-feedback-backend'));
+backend.add(import('@backstage/plugin-kubernetes-backend/alpha'));
+backend.add(import('@backstage/plugin-lighthouse-backend'));
+backend.add(import('@backstage/plugin-linguist-backend'));
+backend.add(
+  import('@backstage/plugin-permission-backend-module-allow-all-policy'),
+);
+backend.add(import('@backstage/plugin-permission-backend/alpha'));
+backend.add(import('@backstage/plugin-proxy-backend'));
+backend.add(import('@backstage/plugin-scaffolder-backend/alpha'));
+backend.add(import('@backstage/plugin-search-backend-module-catalog/alpha'));
+backend.add(import('@backstage/plugin-search-backend-module-explore/alpha'));
+backend.add(import('@backstage/plugin-search-backend-module-techdocs/alpha'));
+backend.add(import('@backstage/plugin-search-backend/alpha'));
+backend.add(import('@backstage/plugin-techdocs-backend/alpha'));
+backend.add(import('@backstage/plugin-todo-backend'));
 
 backend.start();

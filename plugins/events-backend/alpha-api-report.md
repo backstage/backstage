@@ -6,7 +6,8 @@
 import { BackendFeature } from '@backstage/backend-plugin-api';
 
 // @alpha
-export const eventsPlugin: () => BackendFeature;
+const eventsPlugin: () => BackendFeature;
+export default eventsPlugin;
 
 // (No @packageDocumentation comment for this package)
 ```

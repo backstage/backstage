@@ -16,4 +16,4 @@
 
 export * from './modules';
 export * from './service';
-export { scaffolderPlugin } from './ScaffolderPlugin';
+export { scaffolderPlugin as default } from './ScaffolderPlugin';

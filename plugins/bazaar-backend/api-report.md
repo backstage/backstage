@@ -11,7 +11,8 @@ import { Logger } from 'winston';
 import { PluginDatabaseManager } from '@backstage/backend-common';
 
 // @alpha
-export const bazaarPlugin: () => BackendFeature;
+const bazaarPlugin: () => BackendFeature;
+export default bazaarPlugin;
 
 // @public (undocumented)
 export function createRouter(options: RouterOptions): Promise<express.Router>;

@@ -22,4 +22,4 @@
 
 export { DevToolsBackendApi } from './api';
 export * from './service/router';
-export { devtoolsPlugin } from './plugin';
+export { devtoolsPlugin as default } from './plugin';

@@ -20,4 +20,4 @@
  * @packageDocumentation
  */
 
-export { permissionModuleAllowAllPolicy } from './module';
+export { permissionModuleAllowAllPolicy as default } from './module';

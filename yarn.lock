@@ -3767,6 +3767,7 @@ __metadata:
     "@backstage/theme": "workspace:^"
     "@backstage/types": "workspace:^"
     "@esbuild-kit/cjs-loader": ^2.4.1
+    "@esbuild-kit/esm-loader": ^2.5.5
     "@manypkg/get-packages": ^1.1.3
     "@octokit/graphql": ^5.0.0
     "@octokit/graphql-schema": ^13.7.0
@@ -10755,6 +10756,16 @@ __metadata:
     esbuild: ~0.15.10
     source-map-support: ^0.5.21
   checksum: 0e89ec718e2211bf95c48a8085aaef88e8e416f42abd1c62d488d5458eecd3fbc144179a0c5570ad36fa7e2d3bbc411f8d3fb28802c37ced2154dc2c6ded9dfe
+  languageName: node
+  linkType: hard
+
+"@esbuild-kit/esm-loader@npm:^2.5.5":
+  version: 2.5.5
+  resolution: "@esbuild-kit/esm-loader@npm:2.5.5"
+  dependencies:
+    "@esbuild-kit/core-utils": ^3.0.0
+    get-tsconfig: ^4.4.0
+  checksum: 9d4a03ffc937fbec75a8456c3d45d7cdb1a65768416791a5720081753502bc9f485ba27942a46f564b12483b140a8a46c12433a4496430d93e4513e430484ec7
   languageName: node
   linkType: hard
 

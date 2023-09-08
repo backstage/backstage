@@ -9,7 +9,8 @@ import { TeamTransformer } from '@backstage/plugin-catalog-backend-module-github
 import { UserTransformer } from '@backstage/plugin-catalog-backend-module-github';
 
 // @alpha
-export const catalogModuleGithubEntityProvider: () => BackendFeature;
+const catalogModuleGithubEntityProvider: () => BackendFeature;
+export default catalogModuleGithubEntityProvider;
 
 // @alpha
 export const catalogModuleGithubOrgEntityProvider: () => BackendFeature;

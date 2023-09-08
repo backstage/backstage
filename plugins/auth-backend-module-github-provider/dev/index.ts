@@ -15,12 +15,10 @@
  */
 
 import { createBackend } from '@backstage/backend-defaults';
-import { authPlugin } from '@backstage/plugin-auth-backend';
-import { authModuleGithubProvider } from '../src';
 
 const backend = createBackend();
 
-backend.add(authPlugin);
-backend.add(authModuleGithubProvider);
+backend.add(import('@backstage/plugin-auth-backend'));
+backend.add(import('../src'));
 
 backend.start();
