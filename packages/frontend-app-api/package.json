@@ -34,6 +34,7 @@
   ],
   "dependencies": {
     "@backstage/config": "workspace:^",
+    "@backstage/core-app-api": "workspace:^",
     "@backstage/core-plugin-api": "workspace:^",
     "@backstage/frontend-plugin-api": "workspace:^",
     "@backstage/plugin-graphiql": "workspace:^",

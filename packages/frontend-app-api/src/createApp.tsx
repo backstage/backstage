@@ -21,6 +21,7 @@ import {
   coreExtensionData,
 } from '@backstage/frontend-plugin-api';
 import { CoreRouter } from './extensions/CoreRouter';
+import { Core } from './extensions/Core';
 import {
   createExtensionInstance,
   ExtensionInstance,
@@ -31,8 +32,13 @@ import {
   readAppExtensionParameters,
 } from './wiring/parameters';
 import { RoutingProvider } from './routing/RoutingContext';
-import { RouteRef } from '@backstage/core-plugin-api';
+import { ApiHolder, RouteRef } from '@backstage/core-plugin-api';
 import { getAvailablePlugins } from './wiring/discovery';
+import {
+  ApiFactoryRegistry,
+  ApiProvider,
+  ApiResolver,
+} from '@backstage/core-app-api';
 
 /** @public */
 export function createApp(options: { plugins: BackstagePlugin[] }): {
@@ -40,7 +46,7 @@ export function createApp(options: { plugins: BackstagePlugin[] }): {
 } {
   const appConfig = ConfigReader.fromConfigs(process.env.APP_CONFIG as any);
 
-  const builtinExtensions = [CoreRouter];
+  const builtinExtensions = [CoreRouter, Core];
   const discoveredPlugins = getAvailablePlugins();
 
   // pull in default extension instance from discovered packages
@@ -115,23 +121,57 @@ export function createApp(options: { plugins: BackstagePlugin[] }): {
 
   const routePaths = extractRouteInfoFromInstanceTree(rootInstances);
 
+  const coreInstance = rootInstances.find(({ id }) => id === 'core');
+  if (!coreInstance) {
+    throw Error('Unable to find core extension instance');
+  }
+
+  const apiHolder = createApiHolder(coreInstance);
+
   return {
     createRoot() {
-      const rootComponents = rootInstances.map(
-        e =>
-          e.data.get(
-            coreExtensionData.reactComponent.id,
-          ) as typeof coreExtensionData.reactComponent.T,
-      );
+      const rootComponents = rootInstances
+        .map(
+          e =>
+            e.data.get(
+              coreExtensionData.reactComponent.id,
+            ) as typeof coreExtensionData.reactComponent.T,
+        )
+        .filter(Boolean);
       return (
-        <RoutingProvider routePaths={routePaths}>
-          {rootComponents.map((Component, i) => (
-            <Component key={i} />
-          ))}
-        </RoutingProvider>
+        <ApiProvider apis={apiHolder}>
+          <RoutingProvider routePaths={routePaths}>
+            {rootComponents.map((Component, i) => (
+              <Component key={i} />
+            ))}
+          </RoutingProvider>
+        </ApiProvider>
       );
     },
   };
+}
+
+function createApiHolder(coreExtension: ExtensionInstance): ApiHolder {
+  const factoryRegistry = new ApiFactoryRegistry();
+
+  const apiFactories =
+    coreExtension.attachments
+      .get('apis')
+      ?.map(
+        e =>
+          e.data.get(
+            coreExtensionData.apiFactory.id,
+          ) as typeof coreExtensionData.apiFactory.T,
+      )
+      .filter(Boolean) ?? [];
+
+  for (const factory of apiFactories) {
+    factoryRegistry.register('default', factory);
+  }
+
+  ApiResolver.validateFactories(factoryRegistry, factoryRegistry.getAllApis());
+
+  return new ApiResolver(factoryRegistry);
 }
 
 /** @internal */
