@@ -33,11 +33,16 @@ import {
 } from './wiring/parameters';
 import { RoutingProvider } from './routing/RoutingContext';
 import {
+  AnyApiFactory,
   ApiHolder,
+  AppComponents,
+  AppContext,
   appThemeApiRef,
   ConfigApi,
   configApiRef,
+  IconComponent,
   RouteRef,
+  BackstagePlugin as LegacyBackstagePlugin,
 } from '@backstage/core-plugin-api';
 import { getAvailablePlugins } from './wiring/discovery';
 import {
@@ -51,11 +56,18 @@ import {
 // eslint-disable-next-line @backstage/no-relative-monorepo-imports
 import { AppThemeProvider } from '../../core-app-api/src/app/AppThemeProvider';
 // eslint-disable-next-line @backstage/no-relative-monorepo-imports
+import { AppContextProvider } from '../../core-app-api/src/app/AppContext';
+// eslint-disable-next-line @backstage/no-relative-monorepo-imports
 import { defaultConfigLoaderSync } from '../../core-app-api/src/app/defaultConfigLoader';
 // eslint-disable-next-line @backstage/no-relative-monorepo-imports
 import { overrideBaseUrlConfigs } from '../../core-app-api/src/app/overrideBaseUrlConfigs';
 // eslint-disable-next-line @backstage/no-relative-monorepo-imports
-import { themes } from '../../app-defaults/src/defaults/themes';
+import {
+  apis as defaultApis,
+  components as defaultComponents,
+  icons as defaultIcons,
+  themes as defaultThemes,
+} from '../../app-defaults/src/defaults';
 
 /** @public */
 export function createApp(options: {
@@ -70,11 +82,12 @@ export function createApp(options: {
 
   const builtinExtensions = [CoreRouter, Core];
   const discoveredPlugins = getAvailablePlugins();
+  const allPlugins = [...discoveredPlugins, ...options.plugins];
 
   // pull in default extension instance from discovered packages
   // apply config to adjust default extension instances and add more
   const extensionParams = mergeExtensionParameters({
-    sources: [...options.plugins, ...discoveredPlugins],
+    sources: allPlugins,
     builtinExtensions,
     parameters: readAppExtensionParameters(appConfig),
   });
@@ -150,6 +163,8 @@ export function createApp(options: {
 
   const apiHolder = createApiHolder(coreInstance, appConfig);
 
+  const appContext = createLegacyAppContext(allPlugins);
+
   return {
     createRoot() {
       const rootComponents = rootInstances
@@ -162,15 +177,61 @@ export function createApp(options: {
         .filter(Boolean);
       return (
         <ApiProvider apis={apiHolder}>
-          <AppThemeProvider>
-            <RoutingProvider routePaths={routePaths}>
-              {rootComponents.map((Component, i) => (
-                <Component key={i} />
-              ))}
-            </RoutingProvider>
-          </AppThemeProvider>
+          <AppContextProvider appContext={appContext}>
+            <AppThemeProvider>
+              <RoutingProvider routePaths={routePaths}>
+                {rootComponents.map((Component, i) => (
+                  <Component key={i} />
+                ))}
+              </RoutingProvider>
+            </AppThemeProvider>
+          </AppContextProvider>
         </ApiProvider>
       );
+    },
+  };
+}
+
+function toLegacyPlugin(plugin: BackstagePlugin): LegacyBackstagePlugin {
+  const errorMsg = 'Not implemented in legacy plugin compatibility layer';
+  const notImplemented = () => {
+    throw new Error(errorMsg);
+  };
+  return {
+    getId(): string {
+      return plugin.id;
+    },
+    get routes(): never {
+      throw new Error(errorMsg);
+    },
+    get externalRoutes(): never {
+      throw new Error(errorMsg);
+    },
+    getApis: notImplemented,
+    getFeatureFlags: notImplemented,
+    provide: notImplemented,
+    __experimentalReconfigure: notImplemented,
+  };
+}
+
+function createLegacyAppContext(plugins: BackstagePlugin[]): AppContext {
+  return {
+    getPlugins(): LegacyBackstagePlugin[] {
+      return plugins.map(toLegacyPlugin);
+    },
+
+    getSystemIcon(key: string): IconComponent | undefined {
+      return key in defaultIcons
+        ? defaultIcons[key as keyof typeof defaultIcons]
+        : undefined;
+    },
+
+    getSystemIcons(): Record<string, IconComponent> {
+      return defaultIcons;
+    },
+
+    getComponents(): AppComponents {
+      return defaultComponents;
     },
   };
 }
@@ -200,7 +261,7 @@ function createApiHolder(
     api: appThemeApiRef,
     deps: {},
     // TODO: add extension for registering themes
-    factory: () => AppThemeSelector.createWithStorage(themes),
+    factory: () => AppThemeSelector.createWithStorage(defaultThemes),
   });
 
   factoryRegistry.register('static', {
@@ -208,6 +269,15 @@ function createApiHolder(
     deps: {},
     factory: () => configApi,
   });
+
+  // TODO: ship these as default extensions instead
+  for (const factory of defaultApis as AnyApiFactory[]) {
+    if (!factoryRegistry.register('app', factory)) {
+      throw new Error(
+        `Duplicate or forbidden API factory for ${factory.api} in app`,
+      );
+    }
+  }
 
   ApiResolver.validateFactories(factoryRegistry, factoryRegistry.getAllApis());
 
