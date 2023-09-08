@@ -87,8 +87,8 @@ const visits: Array<Visit> = [
 ];
 
 const mockVisitsApi = {
-  saveVisit: async () => visits[0],
-  listUserVisits: async () => visits,
+  save: async () => visits[0],
+  list: async () => visits,
 };
 
 export default {

@@ -81,7 +81,7 @@ export const VisitListener = ({
     // Wait for the browser to finish with paint with the assumption react
     // has finished with dom reconciliation.
     const requestId = requestAnimationFrame(() => {
-      visitsApi.saveVisit({
+      visitsApi.save({
         visit: {
           name: visitNameImpl({ pathname }),
           pathname,

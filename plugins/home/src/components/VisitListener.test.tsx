@@ -45,8 +45,8 @@ const visits: Array<Visit> = [
 ];
 
 const mockVisitsApi = {
-  saveVisit: jest.fn(async () => visits[0]),
-  listVisits: jest.fn(async () => visits),
+  save: jest.fn(async () => visits[0]),
+  list: jest.fn(async () => visits),
 };
 
 describe('<VisitListener/>', () => {
@@ -63,10 +63,8 @@ describe('<VisitListener/>', () => {
       { routeEntries: [pathname] },
     );
 
-    await waitFor(() =>
-      expect(mockVisitsApi.saveVisit).toHaveBeenCalledTimes(1),
-    );
-    expect(mockVisitsApi.saveVisit).toHaveBeenCalledWith({
+    await waitFor(() => expect(mockVisitsApi.save).toHaveBeenCalledTimes(1));
+    expect(mockVisitsApi.save).toHaveBeenCalledWith({
       visit: {
         pathname,
         entityRef: 'component:default/playback-order',
@@ -102,7 +100,7 @@ describe('<VisitListener/>', () => {
     );
 
     await waitFor(() =>
-      expect(mockVisitsApi.saveVisit).toHaveBeenCalledWith({
+      expect(mockVisitsApi.save).toHaveBeenCalledWith({
         visit: {
           pathname,
           entityRef: 'component:default/playback-order',
@@ -127,7 +125,7 @@ describe('<VisitListener/>', () => {
     );
 
     await waitFor(() =>
-      expect(mockVisitsApi.saveVisit).toHaveBeenCalledWith({
+      expect(mockVisitsApi.save).toHaveBeenCalledWith({
         visit: {
           pathname,
           entityRef: pathname,
