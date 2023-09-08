@@ -30,9 +30,10 @@ import { Logger } from 'winston';
 import { getCombinedClusterSupplier } from '../cluster-locator';
 import {
   AuthenticationStrategy,
+  AnonymousStrategy,
   DispatchStrategy,
   GoogleStrategy,
-  NoopStrategy,
+  ServiceAccountStrategy,
   AwsIamStrategy,
   GoogleServiceAccountStrategy,
   AzureIdentityStrategy,
@@ -369,9 +370,9 @@ export class KubernetesBuilder {
       azure: new AzureIdentityStrategy(this.env.logger),
       google: new GoogleStrategy(),
       googleServiceAccount: new GoogleServiceAccountStrategy(),
-      localKubectlProxy: new NoopStrategy(),
+      localKubectlProxy: new AnonymousStrategy(),
       oidc: new OidcStrategy(),
-      serviceAccount: new NoopStrategy(),
+      serviceAccount: new ServiceAccountStrategy(),
     };
     return this.authStrategyMap;
   }

@@ -1,5 +1,5 @@
 /*
- * Copyright 2022 The Backstage Authors
+ * Copyright 2020 The Backstage Authors
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,13 +14,16 @@
  * limitations under the License.
  */
 
-export * from './AksStrategy';
-export * from './AnonymousStrategy';
-export * from './AwsIamStrategy';
-export * from './AzureIdentityStrategy';
-export * from './GoogleStrategy';
-export * from './GoogleServiceAccountStrategy';
-export * from './DispatchStrategy';
-export * from './ServiceAccountStrategy';
-export * from './OidcStrategy';
-export * from './types';
+import { AuthenticationStrategy, KubernetesCredential } from './types';
+
+/**
+ *
+ * @public
+ */
+export class AnonymousStrategy implements AuthenticationStrategy {
+  public async getCredential(): Promise<KubernetesCredential> {
+    return undefined;
+  }
+
+  public validate() {}
+}

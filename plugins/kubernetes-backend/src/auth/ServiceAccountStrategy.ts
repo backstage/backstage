@@ -21,7 +21,7 @@ import { ClusterDetails } from '../types/types';
  *
  * @public
  */
-export class NoopStrategy implements AuthenticationStrategy {
+export class ServiceAccountStrategy implements AuthenticationStrategy {
   public async getCredential(
     clusterDetails: ClusterDetails,
   ): Promise<KubernetesCredential> {

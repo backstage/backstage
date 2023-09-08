@@ -33,6 +33,14 @@ export class AksStrategy implements AuthenticationStrategy {
 }
 
 // @public (undocumented)
+export class AnonymousStrategy implements AuthenticationStrategy {
+  // (undocumented)
+  getCredential(): Promise<KubernetesCredential>;
+  // (undocumented)
+  validate(): void;
+}
+
+// @public (undocumented)
 export interface AuthenticationStrategy {
   // (undocumented)
   getCredential(
@@ -384,14 +392,6 @@ export interface KubernetesServiceLocator {
 }
 
 // @public (undocumented)
-export class NoopStrategy implements AuthenticationStrategy {
-  // (undocumented)
-  getCredential(): Promise<KubernetesCredential>;
-  // (undocumented)
-  validate(): void;
-}
-
-// @public (undocumented)
 export interface ObjectFetchParams {
   // (undocumented)
   clusterDetails: ClusterDetails;
@@ -449,6 +449,14 @@ export interface RouterOptions {
   logger: Logger;
   // (undocumented)
   permissions: PermissionEvaluator;
+}
+
+// @public (undocumented)
+export class ServiceAccountStrategy implements AuthenticationStrategy {
+  // (undocumented)
+  getCredential(clusterDetails: ClusterDetails): Promise<KubernetesCredential>;
+  // (undocumented)
+  validate(): void;
 }
 
 // @public (undocumented)

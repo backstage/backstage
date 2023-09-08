@@ -33,7 +33,7 @@ import request from 'supertest';
 import { AddressInfo, WebSocket, WebSocketServer } from 'ws';
 
 import { LocalKubectlProxyClusterLocator } from '../cluster-locator/LocalKubectlProxyLocator';
-import { AuthenticationStrategy, NoopStrategy } from '../auth';
+import { AuthenticationStrategy, AnonymousStrategy } from '../auth';
 import { ClusterDetails, KubernetesClustersSupplier } from '../types/types';
 import {
   APPLICATION_JSON,
@@ -495,7 +495,7 @@ describe('KubernetesProxy', () => {
     proxy = new KubernetesProxy({
       logger: getVoidLogger(),
       clusterSupplier: new LocalKubectlProxyClusterLocator(),
-      authStrategy: new NoopStrategy(),
+      authStrategy: new AnonymousStrategy(),
     });
 
     worker.use(
