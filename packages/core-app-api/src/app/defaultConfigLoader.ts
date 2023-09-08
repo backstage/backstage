@@ -16,6 +16,7 @@
 
 import { AppConfig } from '@backstage/config';
 import { JsonObject } from '@backstage/types';
+import { AppConfigLoader } from './types';
 
 /**
  * The default config loader, which expects that config is available at compile-time
@@ -29,9 +30,8 @@ import { JsonObject } from '@backstage/types';
  *
  * @public
  */
-export async function defaultConfigLoader(): Promise<AppConfig[]> {
-  return defaultConfigLoaderSync();
-}
+export const defaultConfigLoader: AppConfigLoader = async () =>
+  defaultConfigLoaderSync();
 
 /** @internal */
 export function defaultConfigLoaderSync(
