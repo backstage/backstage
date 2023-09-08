@@ -59,7 +59,7 @@ describe('CoreStorageVisitsApi.create({ storageApi: MockStorageApi.create() })',
       entityRef: 'component:default/playback-order',
       name: 'Playback Order',
     };
-    const returnedVisit = await api.saveVisit({ visit });
+    const returnedVisit = await api.save({ visit });
     expect(returnedVisit).toEqual(expect.objectContaining(visit));
     expect(returnedVisit.id).toBeTruthy();
     expect(returnedVisit.timestamp).toBeTruthy();
@@ -76,8 +76,8 @@ describe('CoreStorageVisitsApi.create({ storageApi: MockStorageApi.create() })',
       entityRef: 'component:default/playback-order',
       name: 'Playback Order',
     };
-    const returnedVisit = await api.saveVisit({ visit });
-    const visits = await api.listVisits();
+    const returnedVisit = await api.save({ visit });
+    const visits = await api.list();
     expect(visits).toHaveLength(1);
     expect(visits).toEqual([expect.objectContaining(visit)]);
     expect(visits).toEqual([returnedVisit]);
