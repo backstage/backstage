@@ -2,4 +2,4 @@
 '@backstage/plugin-kubernetes-backend': patch
 ---
 
-cluster.caFile configuration is used when the Middleware is created on KubernetesProxy
+Fixed a bug where requests to the proxy endpoint would fail for clusters with `caFile` configured
