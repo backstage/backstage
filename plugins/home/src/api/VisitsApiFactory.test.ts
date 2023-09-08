@@ -66,7 +66,7 @@ describe('new MemoryVisitsApi()', () => {
     expect(api).toBeTruthy();
   });
 
-  describe('.saveVisit()', () => {
+  describe('.save()', () => {
     it('saves a visit', async () => {
       const api = new MemoryVisitsApi();
       const visit = {
@@ -74,7 +74,7 @@ describe('new MemoryVisitsApi()', () => {
         entityRef: 'component:default/playback-order',
         name: 'Playback Order',
       };
-      const returnedVisit = await api.saveVisit({ visit });
+      const returnedVisit = await api.save({ visit });
       expect(returnedVisit).toEqual(expect.objectContaining(visit));
       expect(returnedVisit.id).toBeTruthy();
       expect(returnedVisit.timestamp).toBeTruthy();
@@ -90,22 +90,22 @@ describe('new MemoryVisitsApi()', () => {
         name: 'Playback Order',
       };
       jest.setSystemTime(baseDate);
-      await api.saveVisit({ visit: visit1 });
+      await api.save({ visit: visit1 });
       const visit2 = {
         pathname: '/catalog/default/component/playback-order-2',
         entityRef: 'component:default/playback-order',
         name: 'Playback Order',
       };
       jest.setSystemTime(baseDate + 360_000);
-      await api.saveVisit({ visit: visit2 });
+      await api.save({ visit: visit2 });
       const visit3 = {
         pathname: '/catalog/default/component/playback-order-3',
         entityRef: 'component:default/playback-order',
         name: 'Playback Order',
       };
       jest.setSystemTime(baseDate + 360_000 * 2);
-      await api.saveVisit({ visit: visit3 });
-      const visits = await api.listVisits();
+      await api.save({ visit: visit3 });
+      const visits = await api.list();
       expect(visits).toHaveLength(2);
       expect(visits).toContainEqual(expect.objectContaining(visit2));
       expect(visits).toContainEqual(expect.objectContaining(visit3));
@@ -118,9 +118,9 @@ describe('new MemoryVisitsApi()', () => {
         entityRef: 'component:default/playback-order',
         name: 'Playback Order',
       };
-      const visit1 = await api.saveVisit({ visit });
-      const visit2 = await api.saveVisit({ visit });
-      const visits = await api.listVisits();
+      const visit1 = await api.save({ visit });
+      const visit2 = await api.save({ visit });
+      const visits = await api.list();
       expect(visits).toHaveLength(1);
       expect(visits).toContainEqual(expect.objectContaining(visit));
       // keeps the original id created on the first visit
@@ -132,7 +132,7 @@ describe('new MemoryVisitsApi()', () => {
     });
   });
 
-  describe('.listVisits()', () => {
+  describe('.list()', () => {
     let api: MemoryVisitsApi;
     let visitsToSave: Array<Omit<Visit, 'id' | 'hits' | 'timestamp'>>;
     let baseDate: number;
@@ -161,14 +161,14 @@ describe('new MemoryVisitsApi()', () => {
         (acc, visit, index) =>
           acc.then(() => {
             jest.setSystemTime(baseDate + 360_000 * index);
-            return api.saveVisit({ visit });
+            return api.save({ visit });
           }),
         Promise.resolve({}),
       );
     });
 
     it('retrieves visits', async () => {
-      const visits = await api.listVisits();
+      const visits = await api.list();
       expect(visits).toHaveLength(3);
       expect(visits).toEqual([
         expect.objectContaining(visitsToSave[2]),
@@ -178,7 +178,7 @@ describe('new MemoryVisitsApi()', () => {
     });
 
     it('orders by timestamp asc', async () => {
-      const visits = await api.listVisits({
+      const visits = await api.list({
         orderBy: [{ field: 'timestamp', direction: 'asc' }],
       });
       expect(visits).toEqual([
@@ -189,7 +189,7 @@ describe('new MemoryVisitsApi()', () => {
     });
 
     it('orders by timestamp desc', async () => {
-      const visits = await api.listVisits({
+      const visits = await api.list({
         orderBy: [{ field: 'timestamp', direction: 'desc' }],
       });
       expect(visits).toEqual([
@@ -200,7 +200,7 @@ describe('new MemoryVisitsApi()', () => {
     });
 
     it('orders by entityRef asc', async () => {
-      const visits = await api.listVisits({
+      const visits = await api.list({
         orderBy: [{ field: 'entityRef', direction: 'asc' }],
       });
       expect(visits).toEqual([
@@ -211,7 +211,7 @@ describe('new MemoryVisitsApi()', () => {
     });
 
     it('orders by entityRef desc', async () => {
-      const visits = await api.listVisits({
+      const visits = await api.list({
         orderBy: [{ field: 'entityRef', direction: 'desc' }],
       });
       expect(visits).toEqual([
@@ -222,7 +222,7 @@ describe('new MemoryVisitsApi()', () => {
     });
 
     it('orders by name asc then by entityRef asc', async () => {
-      const visits = await api.listVisits({
+      const visits = await api.list({
         orderBy: [
           { field: 'name', direction: 'asc' },
           { field: 'entityRef', direction: 'asc' },
@@ -236,7 +236,7 @@ describe('new MemoryVisitsApi()', () => {
     });
 
     it('orders by name desc then by entityRef asc', async () => {
-      const visits = await api.listVisits({
+      const visits = await api.list({
         orderBy: [
           { field: 'name', direction: 'desc' },
           { field: 'entityRef', direction: 'asc' },
@@ -250,7 +250,7 @@ describe('new MemoryVisitsApi()', () => {
     });
 
     it('filters by timestamp with >', async () => {
-      const visits = await api.listVisits({
+      const visits = await api.list({
         filterBy: [{ field: 'timestamp', operator: '>', value: baseDate }],
       });
       expect(visits).toHaveLength(2);
@@ -261,7 +261,7 @@ describe('new MemoryVisitsApi()', () => {
     });
 
     it('filters by timestamp with >=', async () => {
-      const visits = await api.listVisits({
+      const visits = await api.list({
         filterBy: [
           { field: 'timestamp', operator: '>=', value: baseDate + 360_000 * 2 },
         ],
@@ -271,7 +271,7 @@ describe('new MemoryVisitsApi()', () => {
     });
 
     it('filters by timestamp with <', async () => {
-      const visits = await api.listVisits({
+      const visits = await api.list({
         filterBy: [{ field: 'timestamp', operator: '<', value: baseDate + 1 }],
       });
       expect(visits).toHaveLength(1);
@@ -279,7 +279,7 @@ describe('new MemoryVisitsApi()', () => {
     });
 
     it('filters by timestamp with <=', async () => {
-      const visits = await api.listVisits({
+      const visits = await api.list({
         filterBy: [
           { field: 'timestamp', operator: '<=', value: baseDate + 360_000 },
         ],
@@ -292,7 +292,7 @@ describe('new MemoryVisitsApi()', () => {
     });
 
     it('filters by timestamp with ==', async () => {
-      const visits = await api.listVisits({
+      const visits = await api.list({
         filterBy: [
           { field: 'timestamp', operator: '==', value: baseDate + 360_000 },
         ],
@@ -302,7 +302,7 @@ describe('new MemoryVisitsApi()', () => {
     });
 
     it('filters by entityRef with contains', async () => {
-      const visits = await api.listVisits({
+      const visits = await api.list({
         filterBy: [
           { field: 'entityRef', operator: 'contains', value: 'order-2' },
         ],
@@ -312,7 +312,7 @@ describe('new MemoryVisitsApi()', () => {
     });
 
     it('filters by timestamp with <= then by name with contains', async () => {
-      const visits = await api.listVisits({
+      const visits = await api.list({
         filterBy: [
           { field: 'timestamp', operator: '<=', value: baseDate + 360_000 },
           { field: 'name', operator: 'contains', value: 'Odd' },

@@ -294,8 +294,8 @@ export type VisitListenerContextValue = {
 
 // @public
 export interface VisitsApi {
-  listVisits(queryParams?: VisitsApiQueryParams): Promise<Visit[]>;
-  saveVisit(saveParams: VisitsApiSaveParams): Promise<Visit>;
+  list(queryParams?: VisitsApiQueryParams): Promise<Visit[]>;
+  save(saveParams: VisitsApiSaveParams): Promise<Visit>;
 }
 
 // @public
@@ -309,7 +309,7 @@ export class VisitsApiFactory implements VisitsApi {
   // (undocumented)
   protected readonly limit: number;
   // (undocumented)
-  listVisits(queryParams?: VisitsApiQueryParams): Promise<Visit[]>;
+  list(queryParams?: VisitsApiQueryParams): Promise<Visit[]>;
   // (undocumented)
   protected persistAll: (visits: Array<Visit>) => Promise<void>;
   // (undocumented)
@@ -317,7 +317,7 @@ export class VisitsApiFactory implements VisitsApi {
   // (undocumented)
   protected retrieveAll: () => Promise<Array<Visit>>;
   // (undocumented)
-  saveVisit(saveParams: VisitsApiSaveParams): Promise<Visit>;
+  save(saveParams: VisitsApiSaveParams): Promise<Visit>;
 }
 
 // @public (undocumented)

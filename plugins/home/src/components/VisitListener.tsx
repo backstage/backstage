@@ -110,7 +110,7 @@ export const VisitListener = ({
     // has finished with dom reconciliation and the doNotTrack state update.
     const requestId = requestAnimationFrame(() => {
       if (!doNotTrack)
-        visitsApi.saveVisit({
+        visitsApi.save({
           visit: {
             name: visitNameImpl({ pathname }),
             pathname,

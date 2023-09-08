@@ -13,7 +13,12 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import { Visit, VisitsApi, VisitsApiQueryParams, VisitsApiSaveParams } from './VisitsApi';
+import {
+  Visit,
+  VisitsApi,
+  VisitsApiQueryParams,
+  VisitsApiSaveParams,
+} from './VisitsApi';
 
 type ArrayElement<A> = A extends readonly (infer T)[] ? T : never;
 
@@ -50,7 +55,7 @@ export class VisitsApiFactory implements VisitsApi {
     this.persistAll = persistAll ?? (async () => {});
   }
 
-  async listVisits(queryParams?: VisitsApiQueryParams): Promise<Visit[]> {
+  async list(queryParams?: VisitsApiQueryParams): Promise<Visit[]> {
     let visits = await this.retrieveAll();
 
     // reversing order to guarantee orderBy priority
@@ -80,9 +85,7 @@ export class VisitsApiFactory implements VisitsApi {
     return visits;
   }
 
-  async saveVisit(
-    saveParams: VisitsApiSaveParams,
-  ): Promise<Visit> {
+  async save(saveParams: VisitsApiSaveParams): Promise<Visit> {
     const visits = await this.retrieveAll();
 
     const visit: Visit = {
