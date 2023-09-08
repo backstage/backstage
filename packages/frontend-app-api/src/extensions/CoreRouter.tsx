@@ -48,6 +48,7 @@ export const CoreRouter = createExtension({
       return element;
     };
     bind({
+      // TODO: set base path using the logic from AppRouter
       component: () => (
         <BrowserRouter>
           <Routes />
