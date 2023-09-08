@@ -38,7 +38,10 @@ describe('OidcStrategy', () => {
         },
       );
 
-      expect(credential).toBe('fakeToken');
+      expect(credential).toStrictEqual({
+        type: 'bearer token',
+        token: 'fakeToken',
+      });
     });
 
     it('fails when token provider is not configured', async () => {

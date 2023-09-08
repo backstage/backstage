@@ -65,9 +65,10 @@ describe('AwsIamStrategy tests', () => {
       url: '',
       authMetadata: {},
     });
-    expect(credential).toEqual(
-      'k8s-aws-v1.aHR0cHM6Ly9odHRwczovL2V4YW1wbGUuY29tL2FzZGY_',
-    );
+    expect(credential).toEqual({
+      type: 'bearer token',
+      token: 'k8s-aws-v1.aHR0cHM6Ly9odHRwczovL2V4YW1wbGUuY29tL2FzZGY_',
+    });
   });
 
   it('returns a signed url for AWS credentials with assume role', async () => {
@@ -81,9 +82,10 @@ describe('AwsIamStrategy tests', () => {
       },
     });
 
-    expect(credential).toEqual(
-      'k8s-aws-v1.aHR0cHM6Ly9odHRwczovL2V4YW1wbGUuY29tL2FzZGY_',
-    );
+    expect(credential).toEqual({
+      type: 'bearer token',
+      token: 'k8s-aws-v1.aHR0cHM6Ly9odHRwczovL2V4YW1wbGUuY29tL2FzZGY_',
+    });
     expect(fromTemporaryCredentials).toHaveBeenCalledWith({
       clientConfig: {
         region: 'us-east-1',
@@ -109,9 +111,10 @@ describe('AwsIamStrategy tests', () => {
         [ANNOTATION_KUBERNETES_AWS_EXTERNAL_ID]: 'external-id',
       },
     });
-    expect(credential).toEqual(
-      'k8s-aws-v1.aHR0cHM6Ly9odHRwczovL2V4YW1wbGUuY29tL2FzZGY_',
-    );
+    expect(credential).toEqual({
+      type: 'bearer token',
+      token: 'k8s-aws-v1.aHR0cHM6Ly9odHRwczovL2V4YW1wbGUuY29tL2FzZGY_',
+    });
     expect(fromTemporaryCredentials).toHaveBeenCalledWith({
       clientConfig: {
         region: 'us-east-1',

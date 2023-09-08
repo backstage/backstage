@@ -23,6 +23,7 @@ import {
   AuthorizeResult,
   PermissionEvaluator,
 } from '@backstage/plugin-permission-common';
+import { KubernetesRequestAuth } from '@backstage/plugin-kubernetes-common';
 import { getMockReq, getMockRes } from '@jest-mock/express';
 import express from 'express';
 import Router from 'express-promise-router';
@@ -33,7 +34,11 @@ import request from 'supertest';
 import { AddressInfo, WebSocket, WebSocketServer } from 'ws';
 
 import { LocalKubectlProxyClusterLocator } from '../cluster-locator/LocalKubectlProxyLocator';
-import { AuthenticationStrategy, AnonymousStrategy } from '../auth';
+import {
+  AuthenticationStrategy,
+  AnonymousStrategy,
+  KubernetesCredential,
+} from '../auth';
 import { ClusterDetails, KubernetesClustersSupplier } from '../types/types';
 import {
   APPLICATION_JSON,
@@ -47,6 +52,7 @@ import type { Request } from 'express';
 
 describe('KubernetesProxy', () => {
   let proxy: KubernetesProxy;
+  let authStrategy: jest.Mocked<AuthenticationStrategy>;
   const worker = setupServer();
   const logger = getVoidLogger();
 
@@ -57,11 +63,6 @@ describe('KubernetesProxy', () => {
   const permissionApi: jest.Mocked<PermissionEvaluator> = {
     authorize: jest.fn(),
     authorizeConditional: jest.fn(),
-  };
-
-  const authStrategy: jest.Mocked<AuthenticationStrategy> = {
-    getCredential: jest.fn(),
-    validate: jest.fn(),
   };
 
   setupRequestMockHandlers(worker);
@@ -124,6 +125,15 @@ describe('KubernetesProxy', () => {
 
   beforeEach(() => {
     jest.resetAllMocks();
+    authStrategy = {
+      getCredential: jest
+        .fn<
+          Promise<KubernetesCredential>,
+          [ClusterDetails, KubernetesRequestAuth]
+        >()
+        .mockResolvedValue({ type: 'anonymous' }),
+      validate: jest.fn(),
+    };
     proxy = new KubernetesProxy({ logger, clusterSupplier, authStrategy });
     permissionApi.authorize.mockResolvedValue([
       { result: AuthorizeResult.ALLOW },
@@ -325,7 +335,10 @@ describe('KubernetesProxy', () => {
       },
     ]);
 
-    authStrategy.getCredential.mockResolvedValue('strategy-provided-token');
+    authStrategy.getCredential.mockResolvedValue({
+      type: 'bearer token',
+      token: 'strategy-provided-token',
+    });
 
     const requestPromise = setupProxyPromise({
       proxyPath: '/mountpath',
@@ -369,7 +382,10 @@ describe('KubernetesProxy', () => {
       },
     ]);
 
-    authStrategy.getCredential.mockResolvedValue('my-token');
+    authStrategy.getCredential.mockResolvedValue({
+      type: 'bearer token',
+      token: 'my-token',
+    });
 
     const requestPromise = setupProxyPromise({
       proxyPath: '/mountpath',
@@ -418,7 +434,10 @@ describe('KubernetesProxy', () => {
       },
     ]);
 
-    authStrategy.getCredential.mockResolvedValue('tokenA');
+    authStrategy.getCredential.mockResolvedValue({
+      type: 'bearer token',
+      token: 'tokenA',
+    });
 
     const requestPromise = setupProxyPromise({
       proxyPath: '/mountpath',
@@ -691,7 +710,7 @@ describe('KubernetesProxy', () => {
       event: 'connection' | 'open' | 'close' | 'error' | 'message',
     ) => new Promise(resolve => ws.once(event, x => resolve(x?.toString())));
 
-    beforeAll(async () => {
+    beforeEach(async () => {
       await new Promise(resolve => {
         expressServer = express()
           .use(
@@ -722,7 +741,7 @@ describe('KubernetesProxy', () => {
       wsEchoServer.on('error', console.error);
     });
 
-    afterAll(() => {
+    afterEach(() => {
       wsEchoServer.close();
       expressServer.close();
     });

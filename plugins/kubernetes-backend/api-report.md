@@ -278,7 +278,14 @@ export interface KubernetesClustersSupplier {
 }
 
 // @public
-export type KubernetesCredential = string | undefined;
+export type KubernetesCredential =
+  | {
+      type: 'bearer token';
+      token: string;
+    }
+  | {
+      type: 'anonymous';
+    };
 
 // @public (undocumented)
 export interface KubernetesEnvironment {

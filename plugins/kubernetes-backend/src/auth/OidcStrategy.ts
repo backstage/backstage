@@ -38,14 +38,14 @@ export class OidcStrategy implements AuthenticationStrategy {
       );
     }
 
-    const authToken = authConfig.oidc?.[oidcTokenProvider];
+    const token = authConfig.oidc?.[oidcTokenProvider];
 
-    if (!authToken) {
+    if (!token) {
       throw new Error(
         `Auth token not found under oidc.${oidcTokenProvider} in request body`,
       );
     }
-    return authToken;
+    return { type: 'bearer token', token };
   }
 
   public validate(authMetadata: AuthMetadata) {

@@ -215,7 +215,7 @@ export class KubernetesClientBasedFetcher implements KubernetesFetcher {
     let url: URL;
     let requestInit: RequestInit;
     if (
-      credential ||
+      credential.type === 'bearer token' ||
       clusterDetails.authMetadata[ANNOTATION_KUBERNETES_AUTH_PROVIDER] ===
         'localKubectlProxy'
     ) {
@@ -252,7 +252,9 @@ export class KubernetesClientBasedFetcher implements KubernetesFetcher {
       headers: {
         Accept: 'application/json',
         'Content-Type': 'application/json',
-        ...(credential && { Authorization: `Bearer ${credential}` }),
+        ...(credential.type === 'bearer token' && {
+          Authorization: `Bearer ${credential.token}`,
+        }),
       },
     };
 

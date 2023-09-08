@@ -21,7 +21,9 @@ import { KubernetesRequestAuth } from '@backstage/plugin-kubernetes-common';
  * Authentication data used to make a request to Kubernetes
  * @public
  */
-export type KubernetesCredential = string | undefined;
+export type KubernetesCredential =
+  | { type: 'bearer token'; token: string }
+  | { type: 'anonymous' };
 
 /**
  *

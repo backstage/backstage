@@ -112,11 +112,11 @@ export class KubernetesProxy {
       if (authHeader) {
         req.headers.authorization = authHeader;
       } else {
-        const serviceAccountToken = await this.getClusterForRequest(req).then(
-          cd => this.authStrategy.getCredential(cd, {}),
-        );
-        if (serviceAccountToken) {
-          req.headers.authorization = `Bearer ${serviceAccountToken}`;
+        const credential = await this.getClusterForRequest(req).then(cd => {
+          return this.authStrategy.getCredential(cd, {});
+        });
+        if (credential.type === 'bearer token') {
+          req.headers.authorization = `Bearer ${credential.token}`;
         }
       }
 

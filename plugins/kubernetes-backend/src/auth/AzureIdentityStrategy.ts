@@ -39,14 +39,16 @@ export class AzureIdentityStrategy implements AuthenticationStrategy {
 
   public async getCredential(): Promise<KubernetesCredential> {
     if (!this.tokenRequiresRefresh()) {
-      return this.accessToken.token;
+      return { type: 'bearer token', token: this.accessToken.token };
     }
 
     if (!this.newTokenPromise) {
       this.newTokenPromise = this.fetchNewToken();
     }
 
-    return this.newTokenPromise;
+    return this.newTokenPromise
+      ? { type: 'bearer token', token: await this.newTokenPromise }
+      : { type: 'anonymous' };
   }
 
   public validate() {}

@@ -27,13 +27,13 @@ export class GoogleStrategy implements AuthenticationStrategy {
     _: ClusterDetails,
     requestAuth: KubernetesRequestAuth,
   ): Promise<KubernetesCredential> {
-    const authToken = requestAuth.google;
-    if (!authToken) {
+    const token = requestAuth.google;
+    if (!token) {
       throw new Error(
         'Google token not found under auth.google in request body',
       );
     }
-    return authToken;
+    return { type: 'bearer token', token };
   }
   public validate(_: AuthMetadata) {}
 }

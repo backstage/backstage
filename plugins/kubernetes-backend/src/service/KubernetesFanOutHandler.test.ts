@@ -28,7 +28,10 @@ import { KubernetesClientBasedFetcher } from './KubernetesFetcher';
 import { rest } from 'msw';
 import { setupServer } from 'msw/node';
 import { setupRequestMockHandlers } from '@backstage/backend-test-utils';
-import { ObjectsByEntityResponse } from '@backstage/plugin-kubernetes-common';
+import {
+  KubernetesRequestAuth,
+  ObjectsByEntityResponse,
+} from '@backstage/plugin-kubernetes-common';
 import { Config, ConfigReader } from '@backstage/config';
 import { Entity } from '@backstage/catalog-model';
 
@@ -186,7 +189,12 @@ describe('KubernetesFanOutHandler', () => {
       },
       customResources: customResources,
       authStrategy: {
-        getCredential: jest.fn().mockResolvedValue(undefined),
+        getCredential: jest
+          .fn<
+            Promise<KubernetesCredential>,
+            [ClusterDetails, KubernetesRequestAuth]
+          >()
+          .mockResolvedValue({ type: 'anonymous' }),
         validate: jest.fn(),
       },
       config,
@@ -373,7 +381,7 @@ describe('KubernetesFanOutHandler', () => {
       expect(fetchPodMetricsByNamespaces).toHaveBeenCalledTimes(1);
       expect(fetchPodMetricsByNamespaces).toHaveBeenCalledWith(
         expect.anything(),
-        undefined,
+        { type: 'anonymous' },
         new Set(['ns-test-component-test-cluster']),
         expect.anything(),
       );
@@ -665,7 +673,7 @@ describe('KubernetesFanOutHandler', () => {
       expect(fetchPodMetricsByNamespaces).toHaveBeenCalledTimes(1);
       expect(fetchPodMetricsByNamespaces).toHaveBeenCalledWith(
         expect.anything(),
-        undefined,
+        { type: 'anonymous' },
         new Set(['ns-a', 'ns-b']),
         expect.anything(),
       );
@@ -1132,7 +1140,12 @@ describe('KubernetesFanOutHandler', () => {
             },
           ],
           authStrategy: {
-            getCredential: jest.fn().mockResolvedValue('token'),
+            getCredential: jest
+              .fn<
+                Promise<KubernetesCredential>,
+                [ClusterDetails, KubernetesRequestAuth]
+              >()
+              .mockResolvedValue({ type: 'bearer token', token: 'token' }),
             validate: jest.fn(),
           },
           config,

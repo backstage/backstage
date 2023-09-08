@@ -25,7 +25,8 @@ export class ServiceAccountStrategy implements AuthenticationStrategy {
   public async getCredential(
     clusterDetails: ClusterDetails,
   ): Promise<KubernetesCredential> {
-    return clusterDetails.authMetadata.serviceAccountToken;
+    const token = clusterDetails.authMetadata.serviceAccountToken;
+    return token ? { type: 'bearer token', token } : { type: 'anonymous' };
   }
 
   public validate() {}

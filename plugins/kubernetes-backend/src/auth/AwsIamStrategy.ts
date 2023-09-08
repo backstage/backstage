@@ -51,14 +51,17 @@ export class AwsIamStrategy implements AuthenticationStrategy {
     this.credsManager = DefaultAwsCredentialsManager.fromConfig(opts.config);
   }
 
-  public getCredential(
+  public async getCredential(
     clusterDetails: ClusterDetails,
   ): Promise<KubernetesCredential> {
-    return this.getBearerToken(
-      clusterDetails.name,
-      clusterDetails.authMetadata[ANNOTATION_KUBERNETES_AWS_ASSUME_ROLE],
-      clusterDetails.authMetadata[ANNOTATION_KUBERNETES_AWS_EXTERNAL_ID],
-    );
+    return {
+      type: 'bearer token',
+      token: await this.getBearerToken(
+        clusterDetails.name,
+        clusterDetails.authMetadata[ANNOTATION_KUBERNETES_AWS_ASSUME_ROLE],
+        clusterDetails.authMetadata[ANNOTATION_KUBERNETES_AWS_EXTERNAL_ID],
+      ),
+    };
   }
 
   public validate() {}

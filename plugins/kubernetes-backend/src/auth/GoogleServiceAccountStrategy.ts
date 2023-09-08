@@ -23,14 +23,14 @@ import * as container from '@google-cloud/container';
 export class GoogleServiceAccountStrategy implements AuthenticationStrategy {
   public async getCredential(): Promise<KubernetesCredential> {
     const client = new container.v1.ClusterManagerClient();
-    const accessToken = await client.auth.getAccessToken();
+    const token = await client.auth.getAccessToken();
 
-    if (!accessToken) {
+    if (!token) {
       throw new Error(
         'Unable to obtain access token for the current Google Application Default Credentials',
       );
     }
-    return accessToken;
+    return { type: 'bearer token', token };
   }
 
   public validate() {}

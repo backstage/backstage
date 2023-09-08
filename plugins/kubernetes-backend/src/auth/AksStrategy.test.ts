@@ -24,6 +24,9 @@ describe('AksStrategy', () => {
       { aks: 'aksToken' },
     );
 
-    expect(credential).toBe('aksToken');
+    expect(credential).toStrictEqual({
+      type: 'bearer token',
+      token: 'aksToken',
+    });
   });
 });

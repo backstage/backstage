@@ -141,7 +141,7 @@ describe('KubernetesFetcher', () => {
           url: 'http://localhost:9999',
           authMetadata: {},
         },
-        credential: 'token',
+        credential: { type: 'bearer token', token: 'token' },
         objectTypesToFetch: OBJECTS_TO_FETCH,
         labelSelector: '',
         customResources: [],
@@ -202,7 +202,7 @@ describe('KubernetesFetcher', () => {
           url: 'http://localhost:9999/k8s/clusters/1234',
           authMetadata: {},
         },
-        credential: 'token',
+        credential: { type: 'bearer token', token: 'token' },
         objectTypesToFetch: OBJECTS_TO_FETCH,
         labelSelector: '',
         customResources: [],
@@ -258,7 +258,7 @@ describe('KubernetesFetcher', () => {
             [ANNOTATION_KUBERNETES_AUTH_PROVIDER]: 'localKubectlProxy',
           },
         },
-        credential: undefined,
+        credential: { type: 'anonymous' },
         objectTypesToFetch: new Set([
           {
             group: '',
@@ -315,7 +315,7 @@ describe('KubernetesFetcher', () => {
           url: 'http://localhost:9999',
           authMetadata: {},
         },
-        credential: 'token',
+        credential: { type: 'bearer token', token: 'token' },
         objectTypesToFetch: OBJECTS_TO_FETCH,
         labelSelector: '',
         customResources: [],
@@ -389,7 +389,7 @@ describe('KubernetesFetcher', () => {
           url: 'http://localhost:9999',
           authMetadata: {},
         },
-        credential: 'token',
+        credential: { type: 'bearer token', token: 'token' },
         objectTypesToFetch: OBJECTS_TO_FETCH,
         labelSelector: '',
         customResources: [
@@ -481,7 +481,7 @@ describe('KubernetesFetcher', () => {
           url: 'http://localhost:9999',
           authMetadata: {},
         },
-        credential: 'token',
+        credential: { type: 'bearer token', token: 'token' },
         objectTypesToFetch: OBJECTS_TO_FETCH,
         labelSelector: '',
         customResources: [],
@@ -569,7 +569,7 @@ describe('KubernetesFetcher', () => {
           url: 'http://badurl.does.not.exist',
           authMetadata: {},
         },
-        credential: 'token',
+        credential: { type: 'bearer token', token: 'token' },
         objectTypesToFetch: OBJECTS_TO_FETCH,
         labelSelector: '',
         customResources: [],
@@ -606,7 +606,7 @@ describe('KubernetesFetcher', () => {
           url: 'http://localhost:9999',
           authMetadata: {},
         },
-        credential: 'token',
+        credential: { type: 'bearer token', token: 'token' },
         objectTypesToFetch: OBJECTS_TO_FETCH,
         labelSelector: 'service-label=value',
         customResources: [],
@@ -674,7 +674,7 @@ describe('KubernetesFetcher', () => {
             authMetadata: {},
             caData: 'MOCKCA',
           },
-          credential: 'token',
+          credential: { type: 'bearer token', token: 'token' },
           objectTypesToFetch: new Set<ObjectToFetch>([
             {
               group: '',
@@ -710,7 +710,7 @@ describe('KubernetesFetcher', () => {
             url: 'https://localhost:9999',
             authMetadata: {},
           },
-          credential: 'token',
+          credential: { type: 'bearer token', token: 'token' },
           objectTypesToFetch: new Set<ObjectToFetch>([
             {
               group: '',
@@ -754,7 +754,7 @@ describe('KubernetesFetcher', () => {
               authMetadata: {},
               caFile: '/path/to/ca.crt',
             },
-            credential: 'token',
+            credential: { type: 'bearer token', token: 'token' },
             objectTypesToFetch: new Set<ObjectToFetch>([
               {
                 group: '',
@@ -792,7 +792,7 @@ describe('KubernetesFetcher', () => {
             authMetadata: {},
             skipTLSVerify: true,
           },
-          credential: 'token',
+          credential: { type: 'bearer token', token: 'token' },
           objectTypesToFetch: new Set<ObjectToFetch>([
             {
               group: '',
@@ -842,7 +842,7 @@ describe('KubernetesFetcher', () => {
           url: 'http://localhost:9999',
           authMetadata: {},
         },
-        credential: 'token',
+        credential: { type: 'bearer token', token: 'token' },
         objectTypesToFetch: OBJECTS_TO_FETCH,
         labelSelector: '',
         namespace: 'some-namespace',
@@ -886,7 +886,7 @@ describe('KubernetesFetcher', () => {
             url: 'http://ignored',
             authMetadata: {},
           },
-          credential: undefined, // no token
+          credential: { type: 'anonymous' },
           objectTypesToFetch: OBJECTS_TO_FETCH,
           labelSelector: '',
           customResources: [],
@@ -930,7 +930,7 @@ describe('KubernetesFetcher', () => {
             url: 'http://ignored',
             authMetadata: {},
           },
-          credential: undefined, // no token
+          credential: { type: 'anonymous' },
           objectTypesToFetch: new Set<ObjectToFetch>([
             {
               group: '',
@@ -1027,7 +1027,7 @@ describe('KubernetesFetcher', () => {
           url: 'http://localhost:9999',
           authMetadata: {},
         },
-        'token',
+        { type: 'bearer token', token: 'token' },
         new Set(['ns-a']),
       );
       expect(result).toMatchObject({
@@ -1114,7 +1114,7 @@ describe('KubernetesFetcher', () => {
           url: 'http://localhost:9999',
           authMetadata: {},
         },
-        'token',
+        { type: 'bearer token', token: 'token' },
         new Set(['ns-a', 'ns-b']),
       );
 

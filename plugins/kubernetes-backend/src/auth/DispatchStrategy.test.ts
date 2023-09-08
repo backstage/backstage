@@ -43,7 +43,10 @@ describe('getCredential', () => {
       name: 'randomName',
       authMetadata: { [ANNOTATION_KUBERNETES_AUTH_PROVIDER]: 'google' },
     };
-    mockStrategy.getCredential.mockResolvedValue('added by mock strategy');
+    mockStrategy.getCredential.mockResolvedValue({
+      type: 'bearer token',
+      token: 'added by mock strategy',
+    });
 
     const returnedValue = await strategy.getCredential(
       clusterDetails,
@@ -54,7 +57,10 @@ describe('getCredential', () => {
       clusterDetails,
       authObject,
     );
-    expect(returnedValue).toBe('added by mock strategy');
+    expect(returnedValue).toStrictEqual({
+      type: 'bearer token',
+      token: 'added by mock strategy',
+    });
   });
 
   it('throws an error when asked for a strategy for an unsupported auth type', () => {

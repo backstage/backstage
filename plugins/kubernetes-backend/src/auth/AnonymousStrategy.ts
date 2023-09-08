@@ -22,7 +22,7 @@ import { AuthenticationStrategy, KubernetesCredential } from './types';
  */
 export class AnonymousStrategy implements AuthenticationStrategy {
   public async getCredential(): Promise<KubernetesCredential> {
-    return undefined;
+    return { type: 'anonymous' };
   }
 
   public validate() {}
