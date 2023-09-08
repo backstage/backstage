@@ -23,6 +23,9 @@ import { initReactI18next } from 'react-i18next';
 import LanguageDetector from 'i18next-browser-languagedetector';
 
 import { TranslationMessages } from '../../../alpha';
+// Internal import to avoid code duplication, this will lead to duplication in build output
+// eslint-disable-next-line @backstage/no-relative-monorepo-imports
+import { toInternalTranslationRef } from '../../../../../core-plugin-api/src/translation/TranslationRef';
 
 /** @alpha */
 export type ExperimentalI18n = {
@@ -94,15 +97,16 @@ export class AppTranslationApiImpl implements AppTranslationApi {
       TranslationMessages<TranslationRef<Messages>>
     >,
   ) {
-    const resources = initResources || translationRef.getResources();
-    if (!resources || this.cache.has(translationRef)) {
+    const internalRef = toInternalTranslationRef(translationRef);
+    const resources = initResources || internalRef.getResources();
+    if (!resources || this.cache.has(internalRef)) {
       return;
     }
-    this.cache.add(translationRef);
+    this.cache.add(internalRef);
     Object.entries(resources).forEach(([language, messages]) => {
       this.i18n.addResourceBundle(
         language,
-        translationRef.getId(),
+        internalRef.id,
         messages,
         true,
         false,
@@ -136,8 +140,9 @@ export class AppTranslationApiImpl implements AppTranslationApi {
       return;
     }
 
-    const namespace = translationRef.getId();
-    const lazyResources = initResources || translationRef.getLazyResources();
+    const internalRef = toInternalTranslationRef(translationRef);
+    const namespace = internalRef.id;
+    const lazyResources = initResources || internalRef.getLazyResources();
 
     Promise.allSettled((options.supportedLngs || []).map(addLanguage)).then(
       results => {
