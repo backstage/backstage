@@ -53,6 +53,8 @@ import { AppThemeProvider } from '../../core-app-api/src/app/AppThemeProvider';
 // eslint-disable-next-line @backstage/no-relative-monorepo-imports
 import { defaultConfigLoaderSync } from '../../core-app-api/src/app/defaultConfigLoader';
 // eslint-disable-next-line @backstage/no-relative-monorepo-imports
+import { overrideBaseUrlConfigs } from '../../core-app-api/src/app/overrideBaseUrlConfigs';
+// eslint-disable-next-line @backstage/no-relative-monorepo-imports
 import { themes } from '../../app-defaults/src/defaults/themes';
 
 /** @public */
@@ -63,7 +65,8 @@ export function createApp(options: {
   createRoot(): JSX.Element;
 } {
   const appConfig =
-    options?.config ?? ConfigReader.fromConfigs(defaultConfigLoaderSync());
+    options?.config ??
+    ConfigReader.fromConfigs(overrideBaseUrlConfigs(defaultConfigLoaderSync()));
 
   const builtinExtensions = [CoreRouter, Core];
   const discoveredPlugins = getAvailablePlugins();
