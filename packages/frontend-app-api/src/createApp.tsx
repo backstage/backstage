@@ -32,13 +32,22 @@ import {
   readAppExtensionParameters,
 } from './wiring/parameters';
 import { RoutingProvider } from './routing/RoutingContext';
-import { ApiHolder, RouteRef } from '@backstage/core-plugin-api';
+import {
+  ApiHolder,
+  appThemeApiRef,
+  RouteRef,
+} from '@backstage/core-plugin-api';
 import { getAvailablePlugins } from './wiring/discovery';
 import {
   ApiFactoryRegistry,
   ApiProvider,
   ApiResolver,
+  AppThemeSelector,
 } from '@backstage/core-app-api';
+// eslint-disable-next-line @backstage/no-relative-monorepo-imports
+import { AppThemeProvider } from '../../core-app-api/src/app/AppThemeProvider';
+// eslint-disable-next-line @backstage/no-relative-monorepo-imports
+import { themes } from '../../app-defaults/src/defaults/themes';
 
 /** @public */
 export function createApp(options: { plugins: BackstagePlugin[] }): {
@@ -140,11 +149,13 @@ export function createApp(options: { plugins: BackstagePlugin[] }): {
         .filter(Boolean);
       return (
         <ApiProvider apis={apiHolder}>
-          <RoutingProvider routePaths={routePaths}>
-            {rootComponents.map((Component, i) => (
-              <Component key={i} />
-            ))}
-          </RoutingProvider>
+          <AppThemeProvider>
+            <RoutingProvider routePaths={routePaths}>
+              {rootComponents.map((Component, i) => (
+                <Component key={i} />
+              ))}
+            </RoutingProvider>
+          </AppThemeProvider>
         </ApiProvider>
       );
     },
@@ -168,6 +179,13 @@ function createApiHolder(coreExtension: ExtensionInstance): ApiHolder {
   for (const factory of apiFactories) {
     factoryRegistry.register('default', factory);
   }
+
+  factoryRegistry.register('static', {
+    api: appThemeApiRef,
+    deps: {},
+    // TODO: add extension for registering themes
+    factory: () => AppThemeSelector.createWithStorage(themes),
+  });
 
   ApiResolver.validateFactories(factoryRegistry, factoryRegistry.getAllApis());
 
