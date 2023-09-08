@@ -7505,6 +7505,30 @@ __metadata:
   languageName: unknown
   linkType: soft
 
+"@backstage/plugin-jira-dashboard@^0.0.0, @backstage/plugin-jira-dashboard@workspace:plugins/jira-dashboard":
+  version: 0.0.0-use.local
+  resolution: "@backstage/plugin-jira-dashboard@workspace:plugins/jira-dashboard"
+  dependencies:
+    "@backstage/cli": "workspace:^"
+    "@backstage/core-app-api": "workspace:^"
+    "@backstage/core-components": "workspace:^"
+    "@backstage/core-plugin-api": "workspace:^"
+    "@backstage/dev-utils": "workspace:^"
+    "@backstage/test-utils": "workspace:^"
+    "@backstage/theme": "workspace:^"
+    "@material-ui/core": ^4.9.13
+    "@material-ui/icons": ^4.9.1
+    "@material-ui/lab": ^4.0.0-alpha.60
+    "@testing-library/jest-dom": ^5.10.1
+    "@testing-library/react": ^12.1.3
+    "@testing-library/user-event": ^14.0.0
+    msw: ^1.0.0
+    react-use: ^17.2.4
+  peerDependencies:
+    react: ^16.13.1 || ^17.0.0
+  languageName: unknown
+  linkType: soft
+
 "@backstage/plugin-kafka-backend@workspace:^, @backstage/plugin-kafka-backend@workspace:plugins/kafka-backend":
   version: 0.0.0-use.local
   resolution: "@backstage/plugin-kafka-backend@workspace:plugins/kafka-backend"
@@ -25709,6 +25733,7 @@ __metadata:
     "@backstage/plugin-graphiql": "workspace:^"
     "@backstage/plugin-home": "workspace:^"
     "@backstage/plugin-jenkins": "workspace:^"
+    "@backstage/plugin-jira-dashboard": ^0.0.0
     "@backstage/plugin-kafka": "workspace:^"
     "@backstage/plugin-kubernetes": "workspace:^"
     "@backstage/plugin-lighthouse": "workspace:^"

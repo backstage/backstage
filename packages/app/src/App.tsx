@@ -112,6 +112,7 @@ import { PuppetDbPage } from '@backstage/plugin-puppetdb';
 import { DevToolsPage } from '@backstage/plugin-devtools';
 import { customDevToolsPage } from './components/devtools/CustomDevToolsPage';
 import { CatalogUnprocessedEntitiesPage } from '@backstage/plugin-catalog-unprocessed-entities';
+import { JiraDashboardPage } from '@backstage/plugin-jira-dashboard';
 
 const app = createApp({
   apis,
@@ -302,6 +303,7 @@ const routes = (
     <Route path="/devtools" element={<DevToolsPage />}>
       {customDevToolsPage}
     </Route>
+    <Route path="/jira-dashboard" element={<JiraDashboardPage />} />
   </FlatRoutes>
 );
 

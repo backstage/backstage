@@ -48,6 +48,7 @@
     "@backstage/plugin-graphiql": "workspace:^",
     "@backstage/plugin-home": "workspace:^",
     "@backstage/plugin-jenkins": "workspace:^",
+    "@backstage/plugin-jira-dashboard": "^0.0.0",
     "@backstage/plugin-kafka": "workspace:^",
     "@backstage/plugin-kubernetes": "workspace:^",
     "@backstage/plugin-lighthouse": "workspace:^",
