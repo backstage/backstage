@@ -17,7 +17,7 @@
 import React from 'react';
 import { Typography } from '@material-ui/core';
 import { Visit } from '../../api/VisitsApi';
-import { format, formatDistance, formatISO, isToday } from 'date-fns';
+import { DateTime } from 'luxon';
 
 const ItemDetailHits = ({ visit }: { visit: Visit }) => (
   <Typography component="span" variant="caption" color="textSecondary">
@@ -25,20 +25,22 @@ const ItemDetailHits = ({ visit }: { visit: Visit }) => (
   </Typography>
 );
 
-const ItemDetailTimeAgo = ({ visit }: { visit: Visit }) => (
-  <Typography
-    component="time"
-    variant="caption"
-    color="textSecondary"
-    dateTime={formatISO(visit.timestamp)}
-  >
-    {isToday(visit.timestamp)
-      ? format(visit.timestamp, 'HH:mm')
-      : formatDistance(visit.timestamp, Date.now(), {
-          addSuffix: true,
-        })}
-  </Typography>
-);
+const ItemDetailTimeAgo = ({ visit }: { visit: Visit }) => {
+  const visitDate = DateTime.fromMillis(visit.timestamp);
+
+  return (
+    <Typography
+      component="time"
+      variant="caption"
+      color="textSecondary"
+      dateTime={visitDate.toISO() ?? undefined}
+    >
+      {visitDate >= DateTime.now().startOf('day')
+        ? visitDate.toFormat('HH:mm')
+        : visitDate.toRelative()}
+    </Typography>
+  );
+};
 
 export type ItemDetailType = 'time-ago' | 'hits';
 
