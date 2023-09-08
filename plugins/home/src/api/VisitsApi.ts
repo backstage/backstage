@@ -106,12 +106,12 @@ export interface VisitsApi {
    * Persist a new visit.
    * @param pageVisit - a new visit data
    */
-  saveVisit(saveParams: VisitsApiSaveParams): Promise<Visit>;
+  save(saveParams: VisitsApiSaveParams): Promise<Visit>;
   /**
    * Get user visits.
    * @param queryParams - optional search query params.
    */
-  listVisits(queryParams?: VisitsApiQueryParams): Promise<Visit[]>;
+  list(queryParams?: VisitsApiQueryParams): Promise<Visit[]>;
 }
 
 /** @public */
