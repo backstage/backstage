@@ -35,7 +35,7 @@ describe('createPageExtension', () => {
     ).toEqual({
       $$type: 'extension',
       id: 'test',
-      at: 'core.router/routes',
+      at: 'core.routes/routes',
       configSchema: expect.anything(),
       disabled: false,
       inputs: {},
@@ -88,7 +88,7 @@ describe('createPageExtension', () => {
     ).toEqual({
       $$type: 'extension',
       id: 'test',
-      at: 'core.router/routes',
+      at: 'core.routes/routes',
       configSchema: expect.anything(),
       disabled: false,
       inputs: {},

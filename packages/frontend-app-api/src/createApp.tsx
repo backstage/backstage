@@ -20,8 +20,10 @@ import {
   BackstagePlugin,
   coreExtensionData,
 } from '@backstage/frontend-plugin-api';
-import { CoreRouter } from './extensions/CoreRouter';
 import { Core } from './extensions/Core';
+import { CoreRoutes } from './extensions/CoreRoutes';
+import { CoreLayout } from './extensions/CoreLayout';
+import { CoreNav } from './extensions/CoreNav';
 import {
   createExtensionInstance,
   ExtensionInstance,
@@ -43,6 +45,7 @@ import {
   IconComponent,
   RouteRef,
   BackstagePlugin as LegacyBackstagePlugin,
+  featureFlagsApiRef,
 } from '@backstage/core-plugin-api';
 import { getAvailablePlugins } from './wiring/discovery';
 import {
@@ -58,6 +61,8 @@ import { AppThemeProvider } from '../../core-app-api/src/app/AppThemeProvider';
 // eslint-disable-next-line @backstage/no-relative-monorepo-imports
 import { AppContextProvider } from '../../core-app-api/src/app/AppContext';
 // eslint-disable-next-line @backstage/no-relative-monorepo-imports
+import { LocalStorageFeatureFlags } from '../../core-app-api/src/apis/implementations/FeatureFlagsApi/LocalStorageFeatureFlags';
+// eslint-disable-next-line @backstage/no-relative-monorepo-imports
 import { defaultConfigLoaderSync } from '../../core-app-api/src/app/defaultConfigLoader';
 // eslint-disable-next-line @backstage/no-relative-monorepo-imports
 import { overrideBaseUrlConfigs } from '../../core-app-api/src/app/overrideBaseUrlConfigs';
@@ -68,6 +73,7 @@ import {
   icons as defaultIcons,
   themes as defaultThemes,
 } from '../../app-defaults/src/defaults';
+import { BrowserRouter } from 'react-router-dom';
 
 /** @public */
 export function createApp(options: {
@@ -80,7 +86,7 @@ export function createApp(options: {
     options?.config ??
     ConfigReader.fromConfigs(overrideBaseUrlConfigs(defaultConfigLoaderSync()));
 
-  const builtinExtensions = [CoreRouter, Core];
+  const builtinExtensions = [Core, CoreRoutes, CoreNav, CoreLayout];
   const discoveredPlugins = getAvailablePlugins();
   const allPlugins = [...discoveredPlugins, ...options.plugins];
 
@@ -180,9 +186,12 @@ export function createApp(options: {
           <AppContextProvider appContext={appContext}>
             <AppThemeProvider>
               <RoutingProvider routePaths={routePaths}>
-                {rootComponents.map((Component, i) => (
-                  <Component key={i} />
-                ))}
+                {/* TODO: set base path using the logic from AppRouter */}
+                <BrowserRouter>
+                  {rootComponents.map((Component, i) => (
+                    <Component key={i} />
+                  ))}
+                </BrowserRouter>
               </RoutingProvider>
             </AppThemeProvider>
           </AppContextProvider>
@@ -256,6 +265,13 @@ function createApiHolder(
   for (const factory of apiFactories) {
     factoryRegistry.register('default', factory);
   }
+
+  // TODO: properly discovery feature flags, maybe rework the whole thing
+  factoryRegistry.register('default', {
+    api: featureFlagsApiRef,
+    deps: {},
+    factory: () => new LocalStorageFeatureFlags(),
+  });
 
   factoryRegistry.register('static', {
     api: appThemeApiRef,

@@ -143,7 +143,7 @@ describe('createPlugin', () => {
     render(
       createTestAppRoot({
         plugins: [plugin],
-        config: { app: { extensions: [{ 'core.router': false }] } },
+        config: { app: { extensions: [{ 'core.routes': false }] } },
       }),
     );
 
@@ -169,7 +169,7 @@ describe('createPlugin', () => {
         config: {
           app: {
             extensions: [
-              { 'core.router': false },
+              { 'core.routes': false },
               {
                 'plugin.catalog.page': {
                   config: { name: 'CatalogRenamed' },
