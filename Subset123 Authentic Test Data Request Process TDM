@@ -1,0 +1,51 @@
+Subset123 Authentic Test Data Request Process
+
+PRODUCT ALIAD/ACRONYM - Subset123, TDM, TestData
+User Community = Telus Communications
+	
+PRODUCT DESCRIPTION = 	Subset123 is an authentic test data generating platform developed for the TELUS WLS, WLN, and FIFA domains that can quickly copy and append small and large subsets of data from sources, like Production and Staging, to targets, like Dev, Test/QA, and E2E.
+	
+URL
+Go/TDM  
+Go/TestData
+https://dmts-tdm.cloudapps.telus.com/
+	
+
+APPLICATION AND SERVER INFORMATION
+- CMDB CI Name = Subset123
+- CMDB CI Number = 21259
+- ApPlication Name: GCP Gateway for Subset123
+- Application ID: 21664
+- Server -GCP Subset123 service is available on Kong and can be embedded in CI/CD process
+	 
+ACCESS REQUESTS
+For Team Members - Access currently is for Telus Team members with access to VPN and Single Signon
+
+FAQ Frequently Asked Questions
+- How do I request Authentic Test Data
+	Visit Go/TDM or Go/TestData or URL https://dmts-tdm.cloudapps.telus.com/
+	You need to be connected to VPN and Single Sign-On is required
+
+- Instructions on How Do I request Test Data
+   1- Select [New Request]
+   2- Select [Subset123]
+   3- Provide Customer_IDs if you know the list of Customer IDs requested and follow instruction on source and target environments
+   4- If you need assistance with Data Mining and finding Customer_IDs to subset and append to target
+
+
+TYPES OF TEST DATA 
+- Subset test data has been used for Ordering, Billing, Data Migrations and to view a Unified View of Customer Across Wireline, FIFA and Wireless.
+- Self Serve Test Data
+- Self Serve is available for multiple standalone sources in the portal where you can copy data from sources like Production and Staging and direct to development environments.  This is mainly available for KB in Wireless, CES, OMS and CODS in Wireline.
+	
+
+TROUBLESHOOTING - Symptom and Solution
+	1- Unable to access the URL or the form - Please refresh the page and ensure that you are connected to VPN. Test other VPN clusters and perform browser troubleshooting.
+	2- Empty page and/or Bad Request message -  If the error is consistent, logout from SSO and login again. Test other VPN clusters and perform browser troubleshooting.
+	3- All other issues -  Advise the user to report the issue via email to DLTDM-Planning@telus.com
+
+	 
+ESCALATION PRIME CONTACTS FOR APPLICATION
+- 1st Level = (Team DL) DLTDM-Planning@telus.com
+- 2nd Level = (Manager)	Alexander Sheinin Alexander.sheinin@telus.com
+- Special Notes - 	Please contact the DLTDM-Planning@telus.com and observe SLAs for escalations. 
