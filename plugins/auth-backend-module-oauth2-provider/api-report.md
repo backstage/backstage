@@ -11,7 +11,8 @@ import { PassportProfile } from '@backstage/plugin-auth-node';
 import { SignInResolverFactory } from '@backstage/plugin-auth-node';
 
 // @public (undocumented)
-export const authModuleOauth2Provider: () => BackendFeature;
+const authModuleOauth2Provider: () => BackendFeature;
+export default authModuleOauth2Provider;
 
 // @public (undocumented)
 export const oauth2Authenticator: OAuthAuthenticator<
