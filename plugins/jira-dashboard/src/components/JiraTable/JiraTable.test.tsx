@@ -13,29 +13,3 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
-import type { Project } from './types';
-
-/**
- * Get the URL to a Jira project.
- */
-export const getProjectUrl = (project: Project) => {
-  const url = new URL(project.self);
-  return `https://${url.host}/browse/${project.key}`;
-};
-
-/**
- * Get the URL to a issue.
- */
-export const getIssueUrl = (issueUrl: string, issueKey: string) => {
-  const url = new URL(issueUrl);
-  return `https://${url.host}/browse/${issueKey}`;
-};
-
-/**
- * Get the URL to a user.
- */
-export const getAvatarUrl = (user: string) => {
-  const url = new URL(user);
-  return `https://${url}}`;
-};

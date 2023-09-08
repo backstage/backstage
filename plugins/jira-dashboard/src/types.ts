@@ -15,6 +15,7 @@
  */
 export type Issue = {
   key: string;
+  self: string;
   fields: {
     summary: string;
     status: {
@@ -22,6 +23,7 @@ export type Issue = {
     };
     assignee: {
       name: string;
+      self: string;
     };
     issuetype: {
       name: string;

@@ -20,23 +20,33 @@ import {
 } from '@backstage/core-components';
 import { Grid } from '@material-ui/core';
 import React from 'react';
-import { ExampleFetchComponent } from '../ExampleFetchComponent';
 import { JiraProjectCard } from '../JiraProjectCard';
-import exampleProject from '../../mockedProject.json';
+import exampleJiraResponse from '../../mockedJiraResponse.json';
+import { JiraTable } from '../JiraTable';
+import { JiraResponse } from '../../types';
 
 export const JiraDashboardContent = () => {
+  const jiraResponse = exampleJiraResponse as JiraResponse;
+
   return (
     <Content>
       <ContentHeader title="Jira Dashboard">
-        <SupportButton>A description of your plugin goes here.</SupportButton>
+        <SupportButton>
+          Jira Dashboard plugin lets you track Jira tickets
+        </SupportButton>
       </ContentHeader>
-      <Grid container spacing={3} direction="column">
+      <Grid container spacing={3}>
         <Grid item md={6} xs={12}>
-          <JiraProjectCard {...exampleProject} />
+          <JiraProjectCard {...jiraResponse.project} />
         </Grid>
-        <Grid item>
-          <ExampleFetchComponent />
-        </Grid>
+        {jiraResponse.data.map(
+          (value: any) =>
+            !!value.issues && (
+              <Grid item key={value.name} md={6} xs={12}>
+                <JiraTable value={value} />
+              </Grid>
+            ),
+        )}
       </Grid>
     </Content>
   );
