@@ -101,12 +101,6 @@ export default ({ theme, sidebar }: RuleOptions) => `
   background: rgb(125, 125, 125);
 }
 
-.md-content {
-  max-width: calc(100% - 16rem * 2);
-  margin-left: 16rem;
-  margin-bottom: 50px;
-}
-
 .md-footer {
   position: fixed;
   bottom: 0px;
@@ -194,11 +188,6 @@ export default ({ theme, sidebar }: RuleOptions) => `
   }
   .md-sidebar--secondary:not([hidden]) {
     display: none;
-  }
-
-  .md-content {
-    max-width: 100%;
-    margin-left: 0;
   }
 
   .md-header__button {

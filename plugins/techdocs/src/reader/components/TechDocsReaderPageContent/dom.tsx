@@ -50,6 +50,23 @@ import { useNavigateUrl } from './useNavigateUrl';
 
 const MOBILE_MEDIA_QUERY = 'screen and (max-width: 76.1875em)';
 
+const calculateDOMTop = (dom: HTMLElement) => {
+  const page = document?.querySelector('.techdocs-reader-page');
+  const pageTop = page?.getBoundingClientRect().top ?? 0;
+  let domTop = dom.getBoundingClientRect().top ?? 0;
+  // the sidebars and content should not scroll beyond the total height of the header and tabs
+  if (domTop < pageTop) {
+    domTop = pageTop;
+  }
+  return domTop;
+};
+
+const calculateTabsHeight = (dom: HTMLElement) => {
+  const tabs = dom.querySelector('.md-container > .md-tabs');
+  const tabsHeight = tabs?.getBoundingClientRect().height ?? 0;
+  return tabsHeight;
+};
+
 /**
  * Hook that encapsulates the behavior of getting raw HTML and applying
  * transforms to it in order to make it function at a basic level in the
@@ -73,6 +90,42 @@ export const useTechDocsReaderDom = (
   const [dom, setDom] = useState<HTMLElement | null>(null);
   const isStyleLoading = useShadowDomStylesLoading(dom);
 
+  const updateContentPosition = useCallback(() => {
+    if (!dom) return;
+    const content = dom.querySelector<HTMLElement>('.md-content');
+    const sidebarNav = dom.querySelector<HTMLElement>('.md-sidebar--primary');
+    const sidebarToc = dom.querySelector<HTMLElement>('.md-sidebar--secondary');
+    if (!content || !sidebarNav || !sidebarToc) {
+      return;
+    }
+
+    if (isMobileMedia) {
+      content.style.removeProperty('position');
+      content.style.removeProperty('top');
+      content.style.removeProperty('bottom');
+      content.style.maxWidth = '100%';
+      content.style.marginLeft = '0rem';
+      return;
+    }
+
+    if (sidebarNav.hidden || sidebarToc.hidden) {
+      if (!sidebarNav.hidden) {
+        content.style.marginLeft = '16rem';
+      }
+      const domTop = calculateDOMTop(dom);
+      const tabsHeight = calculateTabsHeight(dom);
+      content.style.top = `${Math.max(domTop, 0) + tabsHeight}px`;
+      content.style.position = 'fixed';
+      content.style.bottom = '75px';
+      content.style.overflowY = 'auto';
+      content.style.maxWidth =
+        sidebarToc.hidden && sidebarNav.hidden ? `100%` : `calc(100% - 32rem)`;
+    } else {
+      content.style.marginLeft = '16rem';
+      content.style.maxWidth = `calc(100% - 32rem)`;
+    }
+  }, [dom, isMobileMedia]);
+
   const updateSidebarPosition = useCallback(() => {
     if (!dom) return;
 
@@ -83,17 +136,8 @@ export const useTechDocsReaderDom = (
       if (isMobileMedia) {
         element.style.top = '0px';
       } else {
-        const page = document?.querySelector('.techdocs-reader-page');
-        const pageTop = page?.getBoundingClientRect().top ?? 0;
-        let domTop = dom.getBoundingClientRect().top ?? 0;
-
-        const tabs = dom.querySelector('.md-container > .md-tabs');
-        const tabsHeight = tabs?.getBoundingClientRect().height ?? 0;
-
-        // the sidebars should not scroll beyond the total height of the header and tabs
-        if (domTop < pageTop) {
-          domTop = pageTop;
-        }
+        const domTop = calculateDOMTop(dom);
+        const tabsHeight = calculateTabsHeight(dom);
         element.style.top = `${Math.max(domTop, 0) + tabsHeight}px`;
       }
 
@@ -110,6 +154,15 @@ export const useTechDocsReaderDom = (
       window.removeEventListener('scroll', updateSidebarPosition, true);
     };
   }, [dom, updateSidebarPosition]);
+
+  useEffect(() => {
+    window.addEventListener('resize', updateContentPosition);
+    window.addEventListener('scroll', updateContentPosition, true);
+    return () => {
+      window.removeEventListener('resize', updateContentPosition);
+      window.removeEventListener('scroll', updateContentPosition, true);
+    };
+  }, [dom, updateContentPosition]);
 
   // dynamically set width of footer to accommodate for pinning of the sidebar
   const updateFooterWidth = useCallback(() => {
@@ -132,9 +185,16 @@ export const useTechDocsReaderDom = (
     if (!isStyleLoading) {
       updateFooterWidth();
       updateSidebarPosition();
+      updateContentPosition();
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [state, isStyleLoading, updateFooterWidth, updateSidebarPosition]);
+  }, [
+    state,
+    isStyleLoading,
+    updateFooterWidth,
+    updateSidebarPosition,
+    updateContentPosition,
+  ]);
 
   // a function that performs transformations that are executed prior to adding it to the DOM
   const preRender = useCallback(
