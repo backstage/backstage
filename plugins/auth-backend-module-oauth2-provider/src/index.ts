@@ -21,5 +21,5 @@
  */
 
 export { oauth2Authenticator } from './authenticator';
-export { authModuleOauth2Provider } from './module';
+export { authModuleOauth2Provider as default } from './module';
 export { oauth2SignInResolvers } from './resolvers';
