@@ -17,7 +17,8 @@ import React from 'react';
 import { Card, Box, Divider, Typography, makeStyles } from '@material-ui/core';
 import { Avatar } from '@backstage/core-components';
 import { LinkButton } from '@backstage/core-components';
-import { Project } from '../../types';
+import type { Project } from '../../types';
+import { getProjectUrl } from '../../lib';
 
 const useStyles = makeStyles({
   root: {
@@ -84,7 +85,7 @@ export const JiraProjectCard = (project: Project) => {
             {project.lead.displayName}
           </Typography>
           <Avatar
-            picture={`https://avatars.rnd-tools.k8s.axis.com/avatars/${project.lead.key}.jpg`}
+            picture=""
             customStyles={{
               width: '25px',
               height: '25px',
@@ -97,8 +98,7 @@ export const JiraProjectCard = (project: Project) => {
           color="primary"
           variant="contained"
           className={classes.button}
-          to=""
-          //  to={getProjectUrl(project)}
+          to={getProjectUrl(project)}
         >
           Go to project
         </LinkButton>
