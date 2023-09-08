@@ -13,30 +13,23 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import { TranslationRefImpl, createTranslationRef } from './TranslationRef';
+import {
+  createTranslationRef,
+  toInternalTranslationRef,
+} from './TranslationRef';
 
 describe('TranslationRefImpl', () => {
-  it('should create a TranslationRef instance', () => {
-    const config = {
-      id: 'testId',
-      messages: { key: 'value' },
-    };
-
-    const translationRef = TranslationRefImpl.create(config);
-
-    expect(translationRef.getId()).toBe('testId');
-    expect(translationRef.getDefaultMessages()).toEqual({ key: 'value' });
-  });
-
   it('should create a TranslationRef instance using the factory function', () => {
     const config = {
       id: 'testId',
       messages: { key: 'value' },
     };
 
-    const translationRef = createTranslationRef(config);
+    const translationRef = toInternalTranslationRef(
+      createTranslationRef(config),
+    );
 
-    expect(translationRef.getId()).toBe('testId');
+    expect(translationRef.id).toBe('testId');
     expect(translationRef.getDefaultMessages()).toEqual({ key: 'value' });
   });
 
@@ -49,7 +42,9 @@ describe('TranslationRefImpl', () => {
       },
     };
 
-    const translationRef = TranslationRefImpl.create(config);
+    const translationRef = toInternalTranslationRef(
+      createTranslationRef(config),
+    );
 
     const lazyResources = translationRef.getLazyResources();
 

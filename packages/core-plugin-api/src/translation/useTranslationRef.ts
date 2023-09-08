@@ -16,26 +16,33 @@
 
 import { useTranslation } from 'react-i18next';
 
-import { TranslationOptions, TranslationRef } from './types';
 import { useApi } from '../apis';
 import { appTranslationApiRef } from '../apis/alpha';
+import { toInternalTranslationRef, TranslationRef } from './TranslationRef';
+
+/** @alpha */
+export interface TranslationOptions {
+  /* no options supported for now */
+}
 
 /** @alpha */
 export const useTranslationRef = <
-  Messages extends Record<keyof Messages, string>,
+  TMessages extends { [key in string]: string },
 >(
-  translationRef: TranslationRef<Messages>,
+  translationRef: TranslationRef<TMessages>,
 ) => {
   const appTranslationApi = useApi(appTranslationApiRef);
 
   appTranslationApi.addResourcesByRef(translationRef);
 
-  const { t } = useTranslation(translationRef.getId());
+  const internalRef = toInternalTranslationRef(translationRef);
 
-  const defaulteMessage = translationRef.getDefaultMessages();
+  const { t } = useTranslation(internalRef.id);
 
-  return <Tkey extends keyof Messages>(
-    key: Tkey,
+  const defaultMessages = internalRef.getDefaultMessages();
+
+  return <TKey extends keyof TMessages & string>(
+    key: TKey,
     options?: TranslationOptions,
-  ): Messages[Tkey] => t(key as string, defaulteMessage[key], options);
+  ): TMessages[TKey] => t(key, defaultMessages[key], options);
 };
