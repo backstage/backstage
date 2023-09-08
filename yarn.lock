@@ -7340,8 +7340,8 @@ __metadata:
     "@types/node": ^16.11.26
     "@types/react": ^16.13.1 || ^17.0.0
     "@types/react-grid-layout": ^1.3.2
-    date-fns: ^2.30.0
     lodash: ^4.17.21
+    luxon: ^3.4.3
     msw: ^1.0.0
     react-grid-layout: ^1.3.4
     react-resizable: ^3.0.4
@@ -32016,10 +32016,10 @@ __metadata:
   languageName: node
   linkType: hard
 
-"luxon@npm:^3.0.0, luxon@npm:^3.2.1, luxon@npm:^3.3.0":
-  version: 3.3.0
-  resolution: "luxon@npm:3.3.0"
-  checksum: 50cf17a0dc155c3dcacbeae8c0b7e80db425e0ba97b9cbdf12a7fc142d841ff1ab1560919f033af46240ed44e2f70c49f76e3422524c7fc8bb8d81ca47c66187
+"luxon@npm:^3.0.0, luxon@npm:^3.2.1, luxon@npm:^3.3.0, luxon@npm:^3.4.3":
+  version: 3.4.3
+  resolution: "luxon@npm:3.4.3"
+  checksum: 3eade81506224d038ed24035a0cd0dd4887848d7eba9361dce9ad8ef81380596a68153240be3988721f9690c624fb449fcf8fd8c3fc0681a6a8496faf48e92a3
   languageName: node
   linkType: hard
 
