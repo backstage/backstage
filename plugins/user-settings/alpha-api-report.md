@@ -6,21 +6,24 @@
 import { TranslationRef } from '@backstage/core-plugin-api/alpha';
 
 // @alpha (undocumented)
-export const userSettingsTranslationRef: TranslationRef<{
-  language: string;
-  change_the_language: string;
-  theme: string;
-  theme_light: string;
-  theme_dark: string;
-  theme_auto: string;
-  change_the_theme_mode: string;
-  select_theme_light: string;
-  select_theme_dark: string;
-  select_theme_auto: string;
-  select_theme_custom: string;
-  lng: string;
-  select_lng: string;
-}>;
+export const userSettingsTranslationRef: TranslationRef<
+  {
+    readonly language: 'Language';
+    readonly change_the_language: 'Change the language';
+    readonly theme: 'Theme';
+    readonly theme_light: 'Light';
+    readonly theme_dark: 'Dark';
+    readonly theme_auto: 'Auto';
+    readonly change_the_theme_mode: 'Change the theme mode';
+    readonly select_theme_light: 'Select light';
+    readonly select_theme_dark: 'Select dark';
+    readonly select_theme_auto: 'Select Auto Theme';
+    readonly select_theme_custom: 'Select {{custom}}';
+    readonly lng: '{{language}}';
+    readonly select_lng: 'Select language {{language}}';
+  },
+  'user-settings'
+>;
 
 // (No @packageDocumentation comment for this package)
 ```
