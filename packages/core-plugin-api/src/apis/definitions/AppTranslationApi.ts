@@ -22,8 +22,8 @@ import { ApiRef, createApiRef } from '@backstage/core-plugin-api';
 export type AppTranslationApi = {
   getI18n(): i18n;
 
-  addResourcesByRef<Messages extends Record<string, string>>(
-    translationRef: TranslationRef<Messages>,
+  addResourcesByRef<TMessages extends Record<string, string>>(
+    translationRef: TranslationRef<TMessages>,
   ): void;
 };
 
@@ -31,5 +31,5 @@ export type AppTranslationApi = {
  * @alpha
  */
 export const appTranslationApiRef: ApiRef<AppTranslationApi> = createApiRef({
-  id: 'core.apptranslation',
+  id: 'core.translation',
 });

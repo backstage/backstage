@@ -14,6 +14,12 @@
  * limitations under the License.
  */
 
-export * from './TranslationRef';
-export * from './types';
-export * from './useTranslationRef';
+export {
+  type TranslationRef,
+  type TranslationRefOptions,
+  createTranslationRef,
+} from './TranslationRef';
+export {
+  type TranslationOptions,
+  useTranslationRef,
+} from './useTranslationRef';
