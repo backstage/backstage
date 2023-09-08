@@ -87,6 +87,14 @@ export type VisitsApiQueryParams = {
 
 /**
  * @public
+ * This data structure represents the parameters associated with saving visits.
+ */
+export type VisitsApiSaveParams = {
+  visit: Omit<Visit, 'id' | 'hits' | 'timestamp'>;
+};
+
+/**
+ * @public
  * Visits API public contract.
  */
 export interface VisitsApi {
@@ -94,7 +102,7 @@ export interface VisitsApi {
    * Persist a new visit.
    * @param pageVisit - a new visit data
    */
-  saveVisit(pageVisit: Omit<Visit, 'id' | 'hits' | 'timestamp'>): Promise<void>;
+  saveVisit(saveParams: VisitsApiSaveParams): Promise<void>;
   /**
    * Get the logged user visits.
    * @param queryParams - optional search query params.

@@ -225,7 +225,7 @@ export type VisitFilter = {
 // @public
 export interface VisitsApi {
   listUserVisits(queryParams?: VisitsApiQueryParams): Promise<Visit[]>;
-  saveVisit(pageVisit: Omit<Visit, 'id' | 'hits' | 'timestamp'>): Promise<void>;
+  saveVisit(saveParams: VisitsApiSaveParams): Promise<void>;
 }
 
 // @public
@@ -237,6 +237,11 @@ export type VisitsApiQueryParams = {
 
 // @public (undocumented)
 export const visitsApiRef: ApiRef<VisitsApi>;
+
+// @public
+export type VisitsApiSaveParams = {
+  visit: Omit<Visit, 'id' | 'hits' | 'timestamp'>;
+};
 
 // @public
 export const WelcomeTitle: ({
