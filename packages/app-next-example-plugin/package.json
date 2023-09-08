@@ -33,7 +33,6 @@
     "postpack": "backstage-cli package postpack",
     "clean": "backstage-cli package clean"
   },
-  "sideEffects": false,
   "dependencies": {
     "@backstage/core-components": "workspace:^",
     "@backstage/frontend-plugin-api": "workspace:^",
