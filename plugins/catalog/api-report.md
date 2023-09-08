@@ -9,6 +9,7 @@ import { ApiHolder } from '@backstage/core-plugin-api';
 import { BackstagePlugin } from '@backstage/core-plugin-api';
 import { ComponentEntity } from '@backstage/catalog-model';
 import { CompoundEntityRef } from '@backstage/catalog-model';
+import { Dispatch } from 'react';
 import { Entity } from '@backstage/catalog-model';
 import { EntityOwnerPickerProps } from '@backstage/plugin-catalog-react';
 import { ExternalRouteRef } from '@backstage/core-plugin-api';
@@ -18,12 +19,14 @@ import { InfoCardVariants } from '@backstage/core-components';
 import { JSX as JSX_2 } from 'react';
 import { Observable } from '@backstage/types';
 import { Overrides } from '@material-ui/core/styles/overrides';
+import { PropsWithChildren } from 'react';
 import { default as React_2 } from 'react';
 import { ReactNode } from 'react';
 import { ResourceEntity } from '@backstage/catalog-model';
 import { ResultHighlight } from '@backstage/plugin-search-common';
 import { RouteRef } from '@backstage/core-plugin-api';
 import { SearchResultListItemExtensionProps } from '@backstage/plugin-search-react';
+import { SetStateAction } from 'react';
 import { StarredEntitiesApi } from '@backstage/plugin-catalog-react';
 import { StorageApi } from '@backstage/core-plugin-api';
 import { StyleRules } from '@material-ui/core/styles/withStyles';
@@ -549,4 +552,26 @@ export type SystemDiagramCardClassKey =
   | 'componentNode'
   | 'apiNode'
   | 'resourceNode';
+
+// @public (undocumented)
+export function useVisibileData(): readonly [
+  any[],
+  React_2.Dispatch<React_2.SetStateAction<any[]>>,
+];
+
+// @public (undocumented)
+export const VisibleDataContext: React_2.Context<
+  VisibleDataContextProps | undefined
+>;
+
+// @public (undocumented)
+export type VisibleDataContextProps = {
+  visibleData: any[];
+  setVisibleData: Dispatch<SetStateAction<any[]>>;
+};
+
+// @public (undocumented)
+export const VisibleDataProvider: ({
+  children,
+}: PropsWithChildren<{}>) => React_2.JSX.Element;
 ```

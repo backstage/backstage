@@ -21,15 +21,18 @@ import React, {
   PropsWithChildren,
 } from 'react';
 
+/** @public */
 export type VisibleDataContextProps = {
   visibleData: any[];
   setVisibleData: Dispatch<SetStateAction<any[]>>;
 };
 
+/** @public */
 export const VisibleDataContext = React.createContext<
   VisibleDataContextProps | undefined
 >(undefined);
 
+/** @public */
 export const VisibleDataProvider = ({ children }: PropsWithChildren<{}>) => {
   const [visibleData, setVisibleData] = useState<any[]>([]);
   return (
@@ -39,6 +42,7 @@ export const VisibleDataProvider = ({ children }: PropsWithChildren<{}>) => {
   );
 };
 
+/** @public */
 export function useVisibileData() {
   const context = useContext(VisibleDataContext);
 
