@@ -100,6 +100,7 @@ import {
   EntityJenkinsContent,
   EntityLatestJenkinsRunCard,
   isJenkinsAvailable,
+  EntityJobRunsTable
 } from '@backstage/plugin-jenkins';
 import { EntityKafkaContent } from '@backstage/plugin-kafka';
 import { EntityKubernetesContent } from '@backstage/plugin-kubernetes';
@@ -245,6 +246,9 @@ export const cicdContent = (
   <EntitySwitch>
     <EntitySwitch.Case if={isJenkinsAvailable}>
       <EntityJenkinsContent />
+      <hr/>
+      <hr/>
+      <EntityJobRunsTable />
     </EntitySwitch.Case>
 
     <EntitySwitch.Case if={isBuildkiteAvailable}>

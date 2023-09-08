@@ -56,12 +56,7 @@ proxy:
       target: https://circleci.com/api/v1.1
       headers:
         Circle-Token: ${CIRCLECI_AUTH_TOKEN}
-
-    '/jenkins/api':
-      target: http://localhost:8080
-      headers:
-        Authorization: ${JENKINS_BASIC_AUTH_HEADER}
-
+        
     '/travisci/api':
       target: https://api.travis-ci.com
       changeOrigin: true
@@ -322,7 +317,6 @@ auth:
       development:
         clientId: ${AUTH_GITHUB_CLIENT_ID}
         clientSecret: ${AUTH_GITHUB_CLIENT_SECRET}
-        enterpriseInstanceUrl: ${AUTH_GITHUB_ENTERPRISE_INSTANCE_URL}
     gitlab:
       development:
         clientId: ${AUTH_GITLAB_CLIENT_ID}
@@ -443,10 +437,14 @@ pagerDuty:
 
 jenkins:
   instances:
-    - name: default
-      baseUrl: https://jenkins.example.com
-      username: backstage-bot
-      apiKey: 123456789abcdef0123456789abcedf012
+    - name: goku
+      baseUrl: http://127.0.0.1:8080
+      username: raksha
+      apiKey: 1110b218c2c72798a047d6fc024e1090e4
+    - name: vegeta
+      baseUrl: http://127.0.0.1:5050
+      username: nishchay
+      apiKey: 11f12f5cf107d5f81ab9f26909bbc6bc53
 
 azureDevOps:
   host: dev.azure.com

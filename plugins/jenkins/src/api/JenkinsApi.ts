@@ -55,6 +55,32 @@ export interface Build {
     testUrl: string;
   };
   status: string; // == building ? 'running' : result,
+  inProgress: boolean;
+}
+
+export interface JobBuild {
+  timestamp: number;
+  building: boolean;
+  duration: number;
+  result?: string;
+  fullDisplayName: string;
+  displayName: string;
+  url: string;
+  number: number;
+  inProgress: boolean;
+  queueId: number
+  id: number
+}
+
+export interface Job  {
+  name: string;
+  displayName: string;
+  description: string;
+  fullDisplayName: string;
+  inQueue: boolean;
+  fullName: string;
+  url: string;
+  builds: JobBuild[]
 }
 
 export interface Project {
@@ -97,6 +123,11 @@ export interface JenkinsApi {
     jobFullName: string;
     buildNumber: string;
   }): Promise<Build>;
+
+  getJobBuilds (options: {
+    entity: CompoundEntityRef;
+    jobFullName: string;
+  }): Promise<Job>
 
   retry(options: {
     entity: CompoundEntityRef;
@@ -169,6 +200,30 @@ export class JenkinsClient implements JenkinsApi {
     )}/${encodeURIComponent(entity.name)}/job/${encodeURIComponent(
       jobFullName,
     )}/${encodeURIComponent(buildNumber)}`;
+
+    const idToken = await this.getToken();
+    const response = await fetch(url, {
+      method: 'GET',
+      headers: {
+        ...(idToken && { Authorization: `Bearer ${idToken}` }),
+      },
+    });
+
+    return (await response.json()).build;
+  }
+
+  async getJobBuilds (options: {
+    entity: CompoundEntityRef;
+    jobFullName: string;
+  }):Promise<Job> {
+    const { entity, jobFullName } = options;
+    const url = `${await this.discoveryApi.getBaseUrl(
+      'jenkins',
+    )}/v1/entity/${encodeURIComponent(entity.namespace)}/${encodeURIComponent(
+      entity.kind,
+    )}/${encodeURIComponent(entity.name)}/job/${encodeURIComponent(
+      jobFullName,
+    )}`;
 
     const idToken = await this.getToken();
     const response = await fetch(url, {
