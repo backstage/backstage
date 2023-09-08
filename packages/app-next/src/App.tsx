@@ -18,7 +18,7 @@ import { graphiqlPlugin as legacyGraphiqlPlugin } from '@backstage/plugin-graphi
 import { createApp as createLegacyApp } from '@backstage/app-defaults';
 import { createApp } from '@backstage/frontend-app-api';
 import { pagesPlugin } from './examples/pagesPlugin';
-import { graphiqlPlugin } from './examples/graphiqlPlugin';
+import graphiqlPlugin from '@backstage/plugin-graphiql/alpha';
 
 /*
 
