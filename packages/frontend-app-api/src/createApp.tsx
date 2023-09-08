@@ -35,6 +35,8 @@ import { RoutingProvider } from './routing/RoutingContext';
 import {
   ApiHolder,
   appThemeApiRef,
+  ConfigApi,
+  configApiRef,
   RouteRef,
 } from '@backstage/core-plugin-api';
 import { getAvailablePlugins } from './wiring/discovery';
@@ -44,16 +46,24 @@ import {
   ApiResolver,
   AppThemeSelector,
 } from '@backstage/core-app-api';
+
+// TODO: Get rid of all of these
 // eslint-disable-next-line @backstage/no-relative-monorepo-imports
 import { AppThemeProvider } from '../../core-app-api/src/app/AppThemeProvider';
+// eslint-disable-next-line @backstage/no-relative-monorepo-imports
+import { defaultConfigLoaderSync } from '../../core-app-api/src/app/defaultConfigLoader';
 // eslint-disable-next-line @backstage/no-relative-monorepo-imports
 import { themes } from '../../app-defaults/src/defaults/themes';
 
 /** @public */
-export function createApp(options: { plugins: BackstagePlugin[] }): {
+export function createApp(options: {
+  plugins: BackstagePlugin[];
+  config?: ConfigApi;
+}): {
   createRoot(): JSX.Element;
 } {
-  const appConfig = ConfigReader.fromConfigs(process.env.APP_CONFIG as any);
+  const appConfig =
+    options?.config ?? ConfigReader.fromConfigs(defaultConfigLoaderSync());
 
   const builtinExtensions = [CoreRouter, Core];
   const discoveredPlugins = getAvailablePlugins();
@@ -135,7 +145,7 @@ export function createApp(options: { plugins: BackstagePlugin[] }): {
     throw Error('Unable to find core extension instance');
   }
 
-  const apiHolder = createApiHolder(coreInstance);
+  const apiHolder = createApiHolder(coreInstance, appConfig);
 
   return {
     createRoot() {
@@ -162,7 +172,10 @@ export function createApp(options: { plugins: BackstagePlugin[] }): {
   };
 }
 
-function createApiHolder(coreExtension: ExtensionInstance): ApiHolder {
+function createApiHolder(
+  coreExtension: ExtensionInstance,
+  configApi: ConfigApi,
+): ApiHolder {
   const factoryRegistry = new ApiFactoryRegistry();
 
   const apiFactories =
@@ -185,6 +198,12 @@ function createApiHolder(coreExtension: ExtensionInstance): ApiHolder {
     deps: {},
     // TODO: add extension for registering themes
     factory: () => AppThemeSelector.createWithStorage(themes),
+  });
+
+  factoryRegistry.register('static', {
+    api: configApiRef,
+    deps: {},
+    factory: () => configApi,
   });
 
   ApiResolver.validateFactories(factoryRegistry, factoryRegistry.getAllApis());

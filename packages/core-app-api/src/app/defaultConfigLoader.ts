@@ -16,7 +16,6 @@
 
 import { AppConfig } from '@backstage/config';
 import { JsonObject } from '@backstage/types';
-import { AppConfigLoader } from './types';
 
 /**
  * The default config loader, which expects that config is available at compile-time
@@ -30,12 +29,17 @@ import { AppConfigLoader } from './types';
  *
  * @public
  */
-export const defaultConfigLoader: AppConfigLoader = async (
+export async function defaultConfigLoader(): Promise<AppConfig[]> {
+  return defaultConfigLoaderSync();
+}
+
+/** @internal */
+export function defaultConfigLoaderSync(
   // This string may be replaced at runtime to provide additional config.
   // It should be replaced by a JSON-serialized config object.
   // It's a param so we can test it, but at runtime this will always fall back to default.
   runtimeConfigJson: string = '__APP_INJECTED_RUNTIME_CONFIG__',
-) => {
+) {
   const appConfig = process.env.APP_CONFIG;
   if (!appConfig) {
     throw new Error('No static configuration provided');
@@ -70,4 +74,4 @@ export const defaultConfigLoader: AppConfigLoader = async (
     });
   }
   return configs;
-};
+}
