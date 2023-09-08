@@ -23,6 +23,7 @@ import { JsonObject } from '@backstage/types';
 import { createExtension } from './createExtension';
 import { createExtensionDataRef } from './createExtensionDataRef';
 import { coreExtensionData } from './coreExtensionData';
+import { MockConfigApi } from '@backstage/test-utils';
 
 const nameExtensionDataRef = createExtensionDataRef<string>('name');
 
@@ -113,17 +114,10 @@ function createTestAppRoot({
   plugins: BackstagePlugin[];
   config: JsonObject;
 }) {
-  Object.defineProperty(process.env, 'APP_CONFIG', {
-    value: [
-      {
-        data: config,
-        context: 'test',
-      },
-    ],
-    configurable: true,
-  });
-
-  return createApp({ plugins: plugins }).createRoot();
+  return createApp({
+    plugins: plugins,
+    config: new MockConfigApi(config),
+  }).createRoot();
 }
 
 describe('createPlugin', () => {
@@ -143,7 +137,7 @@ describe('createPlugin', () => {
     render(
       createTestAppRoot({
         plugins: [plugin],
-        config: { app: { extensions: [{ 'core.routes': false }] } },
+        config: { app: { extensions: [{ 'core.layout': false }] } },
       }),
     );
 
@@ -169,7 +163,7 @@ describe('createPlugin', () => {
         config: {
           app: {
             extensions: [
-              { 'core.routes': false },
+              { 'core.layout': false },
               {
                 'plugin.catalog.page': {
                   config: { name: 'CatalogRenamed' },
