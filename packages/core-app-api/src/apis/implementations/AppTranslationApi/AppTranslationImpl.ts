@@ -30,7 +30,7 @@ export type ExperimentalI18n = {
   fallbackLanguage?: string | string[];
   messages?: Array<{
     ref: TranslationRef;
-    messages?: TranslationMessages<TranslationRef>;
+    messages?: Record<string, TranslationMessages<TranslationRef>>;
     lazyMessages: Record<
       string,
       () => Promise<{ messages: TranslationMessages<TranslationRef> }>
@@ -89,7 +89,10 @@ export class AppTranslationApiImpl implements AppTranslationApi {
 
   addResources<Messages extends Record<string, string>>(
     translationRef: TranslationRef<Messages>,
-    initResources?: TranslationMessages<TranslationRef<Messages>>,
+    initResources?: Record<
+      string,
+      TranslationMessages<TranslationRef<Messages>>
+    >,
   ) {
     const resources = initResources || translationRef.getResources();
     if (!resources || this.cache.has(translationRef)) {
@@ -136,18 +139,13 @@ export class AppTranslationApiImpl implements AppTranslationApi {
     const namespace = translationRef.getId();
     const lazyResources = initResources || translationRef.getLazyResources();
 
-    const fallbackLanguages = services.languageUtils.getFallbackCodes(
-      options.fallbackLng,
-      currentLanguage,
-    ) as string[];
-
-    Promise.allSettled(
-      [...fallbackLanguages, currentLanguage].map(addLanguage),
-    ).then(results => {
-      if (results.some(result => result.status === 'fulfilled')) {
-        this.i18n.emit('loaded');
-      }
-    });
+    Promise.allSettled((options.supportedLngs || []).map(addLanguage)).then(
+      results => {
+        if (results.some(result => result.status === 'fulfilled')) {
+          this.i18n.emit('loaded');
+        }
+      },
+    );
 
     async function addLanguage(language: string) {
       if (cache!.has(language)) {
