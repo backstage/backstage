@@ -178,7 +178,7 @@ const routes = (
     {/* highlight-remove-next-line */}
     <Route path="/catalog" element={<CatalogIndexPage />} />
     {/* highlight-add-start */}
-    <Route path="/catalog" element={<CatalogIndexPage />}>
+    <Route path="/catalog" element={<CustomCatalogPage />}>
       <CustomCatalogPage />
     </Route>
     {/* highlight-add-end */}
