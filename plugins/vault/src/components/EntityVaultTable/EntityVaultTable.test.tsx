@@ -118,7 +118,9 @@ describe('EntityVaultTable', () => {
     expect(await rendered.findAllByText(/secret::two/)).toBeDefined();
 
     expect(listSecretsSpy).toHaveBeenCalledTimes(1);
-    expect(listSecretsSpy).toHaveBeenCalledWith('test/success', undefined);
+    expect(listSecretsSpy).toHaveBeenCalledWith('test/success', {
+      secretEngine: undefined,
+    });
   });
 
   it('should render secrets with custom engine', async () => {
@@ -133,7 +135,9 @@ describe('EntityVaultTable', () => {
     expect(await rendered.findAllByText(/secret::two/)).toBeDefined();
 
     expect(listSecretsSpy).toHaveBeenCalledTimes(1);
-    expect(listSecretsSpy).toHaveBeenCalledWith('test/success', 'kv');
+    expect(listSecretsSpy).toHaveBeenCalledWith('test/success', {
+      secretEngine: 'kv',
+    });
   });
 
   it('should render no secrets found', async () => {
