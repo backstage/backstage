@@ -27,7 +27,9 @@ export interface VaultApi {
   getFrontendSecretsUrl(): string;
   listSecrets(
     secretPath: string,
-    secretMount?: string | undefined,
+    options?: {
+      secretEngine?: string;
+    },
   ): Promise<VaultSecret[]>;
   renewToken?(): Promise<void>;
 }
@@ -54,7 +56,9 @@ export class VaultClient implements VaultApi {
   // (undocumented)
   listSecrets(
     secretPath: string,
-    secretEngine?: string | undefined,
+    options?: {
+      secretEngine?: string;
+    },
   ): Promise<VaultSecret[]>;
   // (undocumented)
   renewToken(): Promise<void>;
