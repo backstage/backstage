@@ -149,7 +149,9 @@ export class VaultBuilder {
         throw new InputError(`Invalid engine: ${engine}`);
       }
 
-      const secrets = await vaultApi.listSecrets(path, engine);
+      const secrets = await vaultApi.listSecrets(path, {
+        secretEngine: engine,
+      });
       res.json({ items: secrets });
     });
 

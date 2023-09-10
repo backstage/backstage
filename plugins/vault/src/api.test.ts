@@ -87,9 +87,9 @@ describe('api', () => {
   });
 
   it('should return secrets with custom engine', async () => {
-    expect(await api.listSecrets('test/success', 'kv')).toEqual(
-      mockSecretsResult.items,
-    );
+    expect(
+      await api.listSecrets('test/success', { secretEngine: 'kv' }),
+    ).toEqual(mockSecretsResult.items);
     expect(fetchApiSpy).toHaveBeenCalledWith(
       `${mockBaseUrl}/v1/secrets/test%2Fsuccess?engine=kv`,
       expect.anything(),

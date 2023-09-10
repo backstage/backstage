@@ -98,7 +98,9 @@ describe('VaultApi', () => {
   });
 
   it('should return secrets for custom engine', async () => {
-    const secrets = await api.listSecrets('test/success', 'kv');
+    const secrets = await api.listSecrets('test/success', {
+      secretEngine: 'kv',
+    });
     expect(secrets).toEqual(mockSecretsResult('kv'));
   });
 

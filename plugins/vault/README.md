@@ -67,7 +67,7 @@ metadata:
   # ...
   annotations:
     vault.io/secrets-path: path/to/secrets
-    vault.io/secret-engine: customSecretEngine # Optional. By default it uses 'secertEngine' value from configuration.
+    vault.io/secrets-engine: customSecretEngine # Optional. By default it uses the 'secretEngine' value from your app-config.
 ```
 
 The path is relative to your secrets engine folder. So if you want to get the secrets for backstage and you have the following directory structure:

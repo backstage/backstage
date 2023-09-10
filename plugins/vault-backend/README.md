@@ -115,7 +115,7 @@ In case you need to support different secret engines for entities of the catalog
    # ...
    annotations:
      vault.io/secrets-path: path/to/secrets
-+    vault.io/secrets-engine: customSecretEngine # Optional. By default it uses 'secertEngine' value from configuration.
++    vault.io/secrets-engine: customSecretEngine # Optional. By default it uses the 'secretEngine' value from your app-config.
 ```
 
 That will overwrite the default secret engine from the configuration.
@@ -152,7 +152,7 @@ export default async function createPlugin(
 ## Features
 
 - List the secrets present in a certain path
-- Use different secret engines for different components
+- Use different secret engines for different entities
 - Open a link to view the secret
 - Open a link to edit the secret
 - Renew the token automatically with a defined periodicity

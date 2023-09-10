@@ -46,11 +46,13 @@ export interface VaultApi {
   /**
    * Returns a list of secrets used to show in a table.
    * @param secretPath - The path where the secrets are stored in Vault
-   * @param secretMount - The mount point of the secrets engine, optional, overrides default secret engine
+   * @param options - Additional options to be passed to the Vault API, allows to override vault default settings in app config file
    */
   listSecrets(
     secretPath: string,
-    secretMount?: string | undefined,
+    options?: {
+      secretEngine?: string;
+    },
   ): Promise<VaultSecret[]>;
 }
 
@@ -96,11 +98,14 @@ export class VaultClient implements VaultApi {
 
   async listSecrets(
     secretPath: string,
-    secretMount?: string | undefined,
+    options?: {
+      secretEngine?: string;
+    },
   ): Promise<VaultSecret[]> {
     const query: { [key in string]: any } = {};
-    if (secretMount) {
-      query.engine = secretMount;
+    const { secretEngine } = options || {};
+    if (secretEngine) {
+      query.engine = secretEngine;
     }
 
     const result = await this.callApi<{ items: VaultSecret[] }>(

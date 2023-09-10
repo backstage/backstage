@@ -49,7 +49,7 @@ export const EntityVaultTable = ({ entity }: { entity: Entity }) => {
   const { value, loading, error } = useAsync(async (): Promise<
     VaultSecret[]
   > => {
-    return vaultApi.listSecrets(secretPath, secretEngine);
+    return vaultApi.listSecrets(secretPath, { secretEngine });
   }, []);
 
   const columns: TableColumn[] = [
