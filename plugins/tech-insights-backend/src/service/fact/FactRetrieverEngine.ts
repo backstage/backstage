@@ -74,10 +74,12 @@ export interface FactRetrieverEngine {
     kind,
     name,
     namespace,
+    factRetrieverIds,
   }: {
     kind: string;
     namespace: string;
     name: string;
+    factRetrieverIds: string[] | undefined;
   }): Promise<void>;
 }
 
@@ -176,15 +178,22 @@ export class DefaultFactRetrieverEngine implements FactRetrieverEngine {
     kind,
     name,
     namespace,
+    factRetrieverIds,
   }: {
     kind: string;
     namespace: string;
     name: string;
+    factRetrieverIds: string[] | undefined;
   }): Promise<void> {
     const registrations = await this.factRetrieverRegistry.listRegistrations();
+    const factRetrieversToRecalculate = factRetrieverIds
+      ? registrations.filter(registration =>
+          factRetrieverIds.includes(registration.factRetriever.id),
+        )
+      : registrations;
 
     const factRetrieverHandlers = await Promise.all(
-      registrations.map(registration => {
+      factRetrieversToRecalculate.map(registration => {
         const singleFactRetriever: FactRetriever = {
           ...registration.factRetriever,
           entityFilter: [

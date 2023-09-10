@@ -200,10 +200,12 @@ export async function createRouter<
 
   router.post('/facts/:namespace/:kind/:name', async (req, res) => {
     const { namespace, kind, name } = req.params;
+    const factRetrieverIds = req.body as string[] | undefined;
     await factRetrieverEngine.recalculateFactsForComponent?.({
       kind,
       name,
       namespace,
+      factRetrieverIds,
     });
     res.status(201).send();
   });
