@@ -14,4 +14,7 @@
  * limitations under the License.
  */
 
-export {};
+import { Settings } from 'luxon';
+
+// TS still thinks that methods can return null / placeholders, but we still want to throw as soon as possible when things go wrong
+Settings.throwOnInvalid = true;

@@ -425,6 +425,33 @@ describe('DatabaseManager', () => {
       );
     });
 
+    it('generates a database name override when prefix is not explicitly set for mysql', async () => {
+      const testManager = DatabaseManager.fromConfig(
+        new ConfigReader({
+          backend: {
+            database: {
+              client: 'mysql',
+              connection: {
+                host: 'localhost',
+                user: 'foo',
+                password: 'bar',
+                database: 'foodb',
+              },
+            },
+          },
+        }),
+      );
+
+      await testManager.forPlugin('testplugin').getClient();
+      const mockCalls = mocked(createDatabaseClient).mock.calls.splice(-1);
+      const [_baseConfig, overrides] = mockCalls[0];
+
+      expect(overrides).toHaveProperty(
+        'connection.database',
+        expect.stringContaining('backstage_plugin_'),
+      );
+    });
+
     it('uses values from plugin connection string if top level client should be used', async () => {
       const pluginId = 'stringoverride';
       await manager.forPlugin(pluginId).getClient();

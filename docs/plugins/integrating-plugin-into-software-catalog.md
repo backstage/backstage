@@ -37,7 +37,7 @@ You can access the currently selected entity using the backstage api
 import { useEntity } from '@backstage/plugin-catalog-react';
 
 export const MyPluginEntityContent = () => {
-  const { entity, loading, error, refresh } = useEntity();
+  const entity = useEntity();
 
   // Do something with the entity data...
 };

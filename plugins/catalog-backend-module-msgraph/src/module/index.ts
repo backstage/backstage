@@ -14,5 +14,8 @@
  * limitations under the License.
  */
 
-export { catalogModuleMicrosoftGraphOrgEntityProvider } from './catalogModuleMicrosoftGraphOrgEntityProvider';
-export type { CatalogModuleMicrosoftGraphOrgEntityProviderOptions } from './catalogModuleMicrosoftGraphOrgEntityProvider';
+export {
+  catalogModuleMicrosoftGraphOrgEntityProvider as default,
+  microsoftGraphOrgEntityProviderTransformExtensionPoint,
+  type MicrosoftGraphOrgEntityProviderTransformsExtensionPoint,
+} from './catalogModuleMicrosoftGraphOrgEntityProvider';

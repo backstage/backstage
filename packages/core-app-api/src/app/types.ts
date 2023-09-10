@@ -27,6 +27,7 @@ import {
   FeatureFlag,
 } from '@backstage/core-plugin-api';
 import { AppConfig } from '@backstage/config';
+import { TranslationRef } from '@backstage/core-plugin-api/alpha';
 
 /**
  * Props for the `BootErrorPage` component of {@link AppComponents}.
@@ -178,6 +179,16 @@ export type AppRouteBinder = <
 ) => void;
 
 /**
+ * TODO: To be remove when TranslationMessages in packages/core-app-api/src/app/TranslationResource.ts
+ * come to be public
+ *
+ * @ignore
+ * */
+type TranslationMessages<T> = T extends TranslationRef<infer R>
+  ? Partial<R>
+  : never;
+
+/**
  * The options accepted by {@link createSpecializedApp}.
  *
  * @public
@@ -278,6 +289,23 @@ export type AppOptions = {
    * ```
    */
   bindRoutes?(context: { bind: AppRouteBinder }): void;
+
+  /**
+   * TODO: Change to ExperimentalI18n type when packages/core-app-api/src/apis/implementations/AppTranslationApi/AppTranslationImpl.ts
+   * become to public
+   */
+  __experimentalI18n?: {
+    supportedLanguages: string[];
+    fallbackLanguage?: string | string[];
+    messages?: Array<{
+      ref: TranslationRef;
+      messages?: Record<string, TranslationMessages<TranslationRef>>;
+      lazyMessages: Record<
+        string,
+        () => Promise<{ messages: TranslationMessages<TranslationRef> }>
+      >;
+    }>;
+  };
 };
 
 /**

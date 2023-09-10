@@ -1,5 +1,75 @@
 # @backstage/plugin-adr
 
+## 0.6.7-next.2
+
+### Patch Changes
+
+- 8cec7664e146: Removed `@types/node` dependency
+- Updated dependencies
+  - @backstage/integration-react@1.1.19-next.2
+  - @backstage/core-components@0.13.5-next.2
+  - @backstage/core-plugin-api@1.6.0-next.2
+  - @backstage/plugin-catalog-react@1.8.4-next.2
+  - @backstage/plugin-search-react@1.7.0-next.2
+  - @backstage/catalog-model@1.4.2-next.1
+  - @backstage/theme@0.4.1
+  - @backstage/plugin-adr-common@0.2.15-next.2
+  - @backstage/plugin-search-common@1.2.6-next.1
+
+## 0.6.7-next.1
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/plugin-catalog-react@1.8.4-next.1
+  - @backstage/core-components@0.13.5-next.1
+  - @backstage/plugin-search-react@1.7.0-next.1
+  - @backstage/integration-react@1.1.19-next.1
+  - @backstage/catalog-model@1.4.2-next.0
+  - @backstage/core-plugin-api@1.6.0-next.1
+  - @backstage/plugin-adr-common@0.2.15-next.1
+  - @backstage/theme@0.4.1
+  - @backstage/plugin-search-common@1.2.6-next.0
+
+## 0.6.6-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/integration-react@1.1.18-next.0
+  - @backstage/core-plugin-api@1.6.0-next.0
+  - @backstage/core-components@0.13.5-next.0
+  - @backstage/catalog-model@1.4.1
+  - @backstage/theme@0.4.1
+  - @backstage/plugin-adr-common@0.2.14-next.0
+  - @backstage/plugin-catalog-react@1.8.3-next.0
+  - @backstage/plugin-search-common@1.2.5
+  - @backstage/plugin-search-react@1.6.5-next.0
+
+## 0.6.4
+
+### Patch Changes
+
+- 12a8c94eda8d: Add package repository and homepage metadata
+- Updated dependencies
+  - @backstage/integration-react@1.1.16
+  - @backstage/core-components@0.13.4
+  - @backstage/plugin-catalog-react@1.8.1
+  - @backstage/core-plugin-api@1.5.3
+  - @backstage/plugin-search-react@1.6.4
+  - @backstage/catalog-model@1.4.1
+  - @backstage/theme@0.4.1
+  - @backstage/plugin-adr-common@0.2.12
+  - @backstage/plugin-search-common@1.2.5
+
+## 0.6.4-next.2
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/plugin-catalog-react@1.8.1-next.1
+  - @backstage/integration-react@1.1.16-next.1
+
 ## 0.6.4-next.1
 
 ### Patch Changes

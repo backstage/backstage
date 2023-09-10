@@ -81,6 +81,7 @@ export const PlaylistHeader = ({ playlist, onUpdate }: PlaylistHeaderProps) => {
   const playlistApi = useApi(playlistApiRef);
   const navigate = useNavigate();
   const rootRoute = useRouteRef(rootRouteRef);
+
   const [openEditDialog, setOpenEditDialog] = useState(false);
   const [openDeleteDialog, setOpenDeleteDialog] = useState(false);
 
@@ -99,12 +100,17 @@ export const PlaylistHeader = ({ playlist, onUpdate }: PlaylistHeaderProps) => {
       try {
         await playlistApi.updatePlaylist({ ...update, id: playlist.id });
         setOpenEditDialog(false);
-        onUpdate();
+        let message = `Updated playlist '${playlist.name}'`;
+        if (update.name !== playlist.name) {
+          message = `Updated playlist name '${playlist.name}' to '${update.name}'`;
+        }
+
         alertApi.post({
-          message: `Updated playlist '${playlist.name}'`,
+          message,
           severity: 'success',
           display: 'transient',
         });
+        onUpdate();
       } catch (e) {
         errorApi.post(e);
       }
@@ -116,15 +122,16 @@ export const PlaylistHeader = ({ playlist, onUpdate }: PlaylistHeaderProps) => {
     try {
       await playlistApi.deletePlaylist(playlist.id);
       navigate(rootRoute());
+      const message = `Deleted playlist '${playlist.name}'`;
       alertApi.post({
-        message: `Deleted playlist '${playlist.name}'`,
+        message,
         severity: 'success',
         display: 'transient',
       });
     } catch (e) {
       errorApi.post(e);
     }
-  }, [playlistApi]);
+  }, [playlistApi, alertApi]);
 
   const singularTitle = useTitle({
     pluralize: false,
@@ -166,7 +173,7 @@ export const PlaylistHeader = ({ playlist, onUpdate }: PlaylistHeaderProps) => {
           },
           {
             label: `Delete ${singularTitle}`,
-            icon: <DeleteIcon />,
+            icon: <DeleteIcon color="secondary" />,
             disabled: !deleteAllowed,
             onClick: () => setOpenDeleteDialog(true),
           },

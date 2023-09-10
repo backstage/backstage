@@ -37,7 +37,7 @@ const hpaErrorMappers: ErrorMapper<HorizontalPodAutoscaler>[] = [
               kind: 'HorizontalPodAutoscaler',
               apiGroup: 'autoscaling/v1',
             },
-            occuranceCount: 1,
+            occurrenceCount: 1,
           },
         ];
       }

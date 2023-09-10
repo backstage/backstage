@@ -14,7 +14,6 @@
  * limitations under the License.
  */
 
-import { createBackendModule } from '@backstage/backend-plugin-api';
 import { Entity } from '@backstage/catalog-model';
 import { LocationSpec } from '@backstage/plugin-catalog-common';
 import {
@@ -26,7 +25,6 @@ import {
   EntityProviderConnection,
   processingResult,
 } from '@backstage/plugin-catalog-node';
-import { catalogProcessingExtensionPoint } from '@backstage/plugin-catalog-node/alpha';
 
 /**
  * Options for a fixed initial load of entities.
@@ -143,12 +141,15 @@ export const common = {
 
 /**
  * The entity provider that drives the initial base entity injection
+ * @internal
  */
-class SyntheticLoadEntitiesProvider implements EntityProvider {
+export class SyntheticLoadEntitiesProvider implements EntityProvider {
   constructor(
     private readonly load: SyntheticLoadOptions,
     private readonly events: SyntheticLoadEvents,
-  ) {}
+  ) {
+    validateSyntheticLoadOptions(load);
+  }
 
   getProviderName(): string {
     return 'SyntheticLoadEntitiesProvider';
@@ -180,9 +181,12 @@ class SyntheticLoadEntitiesProvider implements EntityProvider {
 
 /**
  * Supporting processor for emitting children and relations
+ * @internal
  */
-class SyntheticLoadEntitiesProcessor implements CatalogProcessor {
-  constructor(private readonly load: SyntheticLoadOptions) {}
+export class SyntheticLoadEntitiesProcessor implements CatalogProcessor {
+  constructor(private readonly load: SyntheticLoadOptions) {
+    validateSyntheticLoadOptions(load);
+  }
 
   getProcessorName(): string {
     return 'SyntheticLoadEntitiesProcessor';
@@ -231,27 +235,3 @@ class SyntheticLoadEntitiesProcessor implements CatalogProcessor {
     return entity;
   }
 }
-
-export const catalogModuleSyntheticLoadEntities = createBackendModule(
-  (options: { load: SyntheticLoadOptions; events?: SyntheticLoadEvents }) => ({
-    moduleId: 'syntheticLoadEntities',
-    pluginId: 'catalog',
-    register(reg) {
-      reg.registerInit({
-        deps: {
-          catalog: catalogProcessingExtensionPoint,
-        },
-        async init({ catalog }) {
-          const { load, events = {} } = options;
-
-          validateSyntheticLoadOptions(load);
-          const provider = new SyntheticLoadEntitiesProvider(load, events);
-          const processor = new SyntheticLoadEntitiesProcessor(load);
-
-          catalog.addEntityProvider(provider);
-          catalog.addProcessor(processor);
-        },
-      });
-    },
-  }),
-);

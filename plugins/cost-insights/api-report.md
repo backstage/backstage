@@ -16,6 +16,7 @@ import { Dispatch } from 'react';
 import { Entity as Entity_2 } from '@backstage/plugin-cost-insights-common';
 import { ForwardRefExoticComponent } from 'react';
 import { Group as Group_2 } from '@backstage/plugin-cost-insights-common';
+import { JSX as JSX_2 } from 'react';
 import { Maybe as Maybe_2 } from '@backstage/plugin-cost-insights-common';
 import { Metric as Metric_2 } from '@backstage/plugin-cost-insights-common';
 import { MetricData as MetricData_2 } from '@backstage/plugin-cost-insights-common';
@@ -23,6 +24,7 @@ import { PaletteOptions } from '@material-ui/core/styles/createPalette';
 import { Product as Product_2 } from '@backstage/plugin-cost-insights-common';
 import { Project as Project_2 } from '@backstage/plugin-cost-insights-common';
 import { PropsWithChildren } from 'react';
+import { default as React_2 } from 'react';
 import { ReactNode } from 'react';
 import { RefAttributes } from 'react';
 import { RouteRef } from '@backstage/core-plugin-api';
@@ -140,7 +142,7 @@ export enum AlertStatus {
 }
 
 // @public (undocumented)
-export const BarChart: (props: BarChartProps) => JSX.Element;
+export const BarChart: (props: BarChartProps) => React_2.JSX.Element;
 
 // @public @deprecated (undocumented)
 export interface BarChartData extends BarChartOptions {}
@@ -148,7 +150,7 @@ export interface BarChartData extends BarChartOptions {}
 // @public (undocumented)
 export const BarChartLegend: (
   props: PropsWithChildren<BarChartLegendProps>,
-) => JSX.Element;
+) => React_2.JSX.Element;
 
 // @public (undocumented)
 export type BarChartLegendOptions = {
@@ -192,12 +194,12 @@ export type BarChartProps = {
 // @public (undocumented)
 export const BarChartTooltip: (
   props: PropsWithChildren<BarChartTooltipProps>,
-) => JSX.Element;
+) => React_2.JSX.Element;
 
 // @public (undocumented)
 export const BarChartTooltipItem: (
   props: BarChartTooltipItemProps,
-) => JSX.Element;
+) => React_2.JSX.Element;
 
 // @public (undocumented)
 export type BarChartTooltipItemProps = {
@@ -247,12 +249,12 @@ export type ConfigContextProps = {
 export type Cost = common.Cost;
 
 // @public (undocumented)
-export const CostGrowth: (props: CostGrowthProps) => JSX.Element;
+export const CostGrowth: (props: CostGrowthProps) => React_2.JSX.Element;
 
 // @public (undocumented)
 export const CostGrowthIndicator: (
   props: CostGrowthIndicatorProps,
-) => JSX.Element;
+) => React_2.JSX.Element;
 
 // @public (undocumented)
 export type CostGrowthIndicatorProps = TypographyProps & {
@@ -291,10 +293,10 @@ export type CostInsightsApi = {
 export const costInsightsApiRef: ApiRef<CostInsightsApi>;
 
 // @public (undocumented)
-export const CostInsightsLabelDataflowInstructionsPage: () => JSX.Element;
+export const CostInsightsLabelDataflowInstructionsPage: () => JSX_2.Element;
 
 // @public (undocumented)
-export const CostInsightsPage: () => JSX.Element;
+export const CostInsightsPage: () => JSX_2.Element;
 
 // @public (undocumented)
 export type CostInsightsPalette = BackstagePalette &
@@ -331,7 +333,7 @@ export { costInsightsPlugin };
 export { costInsightsPlugin as plugin };
 
 // @public (undocumented)
-export const CostInsightsProjectGrowthInstructionsPage: () => JSX.Element;
+export const CostInsightsProjectGrowthInstructionsPage: () => JSX_2.Element;
 
 // @public (undocumented)
 export interface CostInsightsTheme extends BackstageTheme {
@@ -418,7 +420,7 @@ export const EngineerThreshold = 0.5;
 export type Entity = common.Entity;
 
 // @public
-export const EntityCostInsightsContent: () => JSX.Element;
+export const EntityCostInsightsContent: () => JSX_2.Element;
 
 // @public (undocumented)
 export class ExampleCostInsightsClient implements CostInsightsApi {
@@ -483,7 +485,7 @@ export enum IconType {
 // @public (undocumented)
 export const LegendItem: (
   props: PropsWithChildren<LegendItemProps>,
-) => JSX.Element;
+) => React_2.JSX.Element;
 
 // @public (undocumented)
 export type LegendItemProps = {
@@ -507,7 +509,7 @@ export type MetricData = common.MetricData;
 // @public (undocumented)
 export const MockConfigProvider: (
   props: MockConfigProviderProps,
-) => JSX.Element;
+) => React_2.JSX.Element;
 
 // @public (undocumented)
 export type MockConfigProviderProps = PropsWithChildren<
@@ -517,7 +519,7 @@ export type MockConfigProviderProps = PropsWithChildren<
 // @public (undocumented)
 export const MockCurrencyProvider: (
   props: MockCurrencyProviderProps,
-) => JSX.Element;
+) => React_2.JSX.Element;
 
 // @public (undocumented)
 export type MockCurrencyProviderProps = PropsWithChildren<
@@ -567,7 +569,7 @@ export class ProjectGrowthAlert implements Alert {
   // (undocumented)
   data: ProjectGrowthData;
   // (undocumented)
-  get element(): JSX.Element;
+  get element(): React_2.JSX.Element;
   // (undocumented)
   get subtitle(): string;
   // (undocumented)
@@ -623,7 +625,7 @@ export class UnlabeledDataflowAlert implements Alert {
   // (undocumented)
   data: UnlabeledDataflowData;
   // (undocumented)
-  get element(): JSX.Element;
+  get element(): React_2.JSX.Element;
   // (undocumented)
   status?: AlertStatus;
   // (undocumented)

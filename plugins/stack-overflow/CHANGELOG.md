@@ -1,5 +1,59 @@
 # @backstage/plugin-stack-overflow
 
+## 0.1.20-next.2
+
+### Patch Changes
+
+- 8cec7664e146: Removed `@types/node` dependency
+- Updated dependencies
+  - @backstage/core-components@0.13.5-next.2
+  - @backstage/core-plugin-api@1.6.0-next.2
+  - @backstage/plugin-home-react@0.1.3-next.2
+  - @backstage/config@1.1.0-next.1
+  - @backstage/plugin-search-react@1.7.0-next.2
+  - @backstage/theme@0.4.1
+  - @backstage/plugin-search-common@1.2.6-next.1
+
+## 0.1.20-next.1
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/core-components@0.13.5-next.1
+  - @backstage/config@1.1.0-next.0
+  - @backstage/plugin-search-react@1.7.0-next.1
+  - @backstage/plugin-home-react@0.1.3-next.1
+  - @backstage/core-plugin-api@1.6.0-next.1
+  - @backstage/theme@0.4.1
+  - @backstage/plugin-search-common@1.2.6-next.0
+
+## 0.1.20-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/plugin-home-react@0.1.3-next.0
+  - @backstage/core-plugin-api@1.6.0-next.0
+  - @backstage/core-components@0.13.5-next.0
+  - @backstage/config@1.0.8
+  - @backstage/theme@0.4.1
+  - @backstage/plugin-search-common@1.2.5
+  - @backstage/plugin-search-react@1.6.5-next.0
+
+## 0.1.19
+
+### Patch Changes
+
+- 12a8c94eda8d: Add package repository and homepage metadata
+- Updated dependencies
+  - @backstage/plugin-home-react@0.1.2
+  - @backstage/core-components@0.13.4
+  - @backstage/core-plugin-api@1.5.3
+  - @backstage/plugin-search-react@1.6.4
+  - @backstage/config@1.0.8
+  - @backstage/theme@0.4.1
+  - @backstage/plugin-search-common@1.2.5
+
 ## 0.1.19-next.1
 
 ### Patch Changes

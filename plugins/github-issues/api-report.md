@@ -6,6 +6,7 @@
 /// <reference types="react" />
 
 import { BackstagePlugin } from '@backstage/core-plugin-api';
+import { JSX as JSX_2 } from 'react';
 import { RouteRef } from '@backstage/core-plugin-api';
 
 // @public (undocumented)
@@ -17,7 +18,7 @@ export interface GithubIssuesByRepoOptions {
 }
 
 // @public (undocumented)
-export const GithubIssuesCard: (props: GithubIssuesProps) => JSX.Element;
+export const GithubIssuesCard: (props: GithubIssuesProps) => JSX_2.Element;
 
 // @public (undocumented)
 export interface GithubIssuesFilters {
@@ -44,7 +45,7 @@ export interface GithubIssuesOrdering {
 }
 
 // @public (undocumented)
-export const GithubIssuesPage: (props: GithubIssuesProps) => JSX.Element;
+export const GithubIssuesPage: (props: GithubIssuesProps) => JSX_2.Element;
 
 // @public (undocumented)
 export const githubIssuesPlugin: BackstagePlugin<

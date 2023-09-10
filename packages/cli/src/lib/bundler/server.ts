@@ -14,27 +14,31 @@
  * limitations under the License.
  */
 
+import { PackageGraph } from '@backstage/cli-node';
+import { AppConfig } from '@backstage/config';
+import chalk from 'chalk';
 import fs from 'fs-extra';
+import uniq from 'lodash/uniq';
+import openBrowser from 'react-dev-utils/openBrowser';
 import webpack from 'webpack';
 import WebpackDevServer from 'webpack-dev-server';
-import openBrowser from 'react-dev-utils/openBrowser';
-import uniq from 'lodash/uniq';
 
-import { createConfig, resolveBaseUrl } from './config';
-import { ServeOptions } from './types';
-import { resolveBundlingPaths } from './paths';
-import { paths as libPaths } from '../../lib/paths';
-import { loadCliConfig } from '../config';
-import chalk from 'chalk';
-import { AppConfig } from '@backstage/config';
-import { PackageGraph } from '@backstage/cli-node';
-import { Lockfile } from '../versioning';
 import {
   forbiddenDuplicatesFilter,
   includedFilter,
 } from '../../commands/versions/lint';
+import { paths as libPaths } from '../../lib/paths';
+import { loadCliConfig } from '../config';
+import { Lockfile } from '../versioning';
+import { createConfig, resolveBaseUrl } from './config';
+import { createDetectedModulesEntryPoint } from './packageDetection';
+import { resolveBundlingPaths } from './paths';
+import { ServeOptions } from './types';
 
 export async function serveBundle(options: ServeOptions) {
+  const paths = resolveBundlingPaths(options);
+  const targetPkg = await fs.readJson(paths.targetPackageJson);
+
   if (options.verifyVersions) {
     const lockfile = await Lockfile.load(
       libPaths.resolveTargetRoot('yarn.lock'),
@@ -115,10 +119,16 @@ export async function serveBundle(options: ServeOptions) {
     Number(url.port) ||
     (url.protocol === 'https:' ? 443 : 80);
 
-  const paths = resolveBundlingPaths(options);
-  const pkgPath = paths.targetPackageJson;
-  const pkg = await fs.readJson(pkgPath);
+  const detectedModulesEntryPoint = await createDetectedModulesEntryPoint({
+    config: fullConfig,
+    targetPath: paths.targetPath,
+    watch() {
+      server?.invalidate();
+    },
+  });
+
   const config = await createConfig(paths, {
+    ...options,
     checksEnabled: options.checksEnabled,
     isDev: true,
     baseUrl: url,
@@ -126,6 +136,7 @@ export async function serveBundle(options: ServeOptions) {
     getFrontendAppConfigs: () => {
       return latestFrontendAppConfigs;
     },
+    additionalEntryPoints: detectedModulesEntryPoint,
   });
 
   const compiler = webpack(config);
@@ -160,7 +171,7 @@ export async function serveBundle(options: ServeOptions) {
           : false,
       host,
       port,
-      proxy: pkg.proxy,
+      proxy: targetPkg.proxy,
       // When the dev server is behind a proxy, the host and public hostname differ
       allowedHosts: [url.hostname],
       client: {

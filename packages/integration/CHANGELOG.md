@@ -1,5 +1,66 @@
 # @backstage/integration
 
+## 1.7.0-next.2
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/config@1.1.0-next.1
+  - @backstage/errors@1.2.1
+
+## 1.7.0-next.1
+
+### Patch Changes
+
+- 2d2fc9d20ebb: Additional fix for Gitiles auth links
+- Updated dependencies
+  - @backstage/config@1.1.0-next.0
+  - @backstage/errors@1.2.1
+
+## 1.7.0-next.0
+
+### Minor Changes
+
+- 5f1a92b9f19f: Added `AzureDevOpsCredentialsProvider` to support multiple Azure DevOps organizations and **deprecated** `AzureIntegrationConfig.credential` and `AzureIntegrationConfig.token` in favour of `AzureIntegrationConfig.credentials`. You can now use specific credentials for different Azure DevOps (Server) organizations by specifying the `organizations` field on a credential:
+
+  ```yaml
+  integrations:
+    azure:
+      - host: dev.azure.com
+        credentials:
+          - organizations:
+              - my-org
+              - my-other-org
+            clientId: ${AZURE_CLIENT_ID}
+            clientSecret: ${AZURE_CLIENT_SECRET}
+            tenantId: ${AZURE_TENANT_ID}
+          - organizations:
+              - yet-another-org
+            personalAccessToken: ${PERSONAL_ACCESS_TOKEN}
+  ```
+
+  See the [Azure integration documentation](https://backstage.io/docs/integrations/azure/locations) for more information.
+
+### Patch Changes
+
+- cb2e19d82d95: Gitiles: Fixed auth prefix issue
+- Updated dependencies
+  - @backstage/config@1.0.8
+  - @backstage/errors@1.2.1
+
+## 1.6.0
+
+### Minor Changes
+
+- 443afcf7f567: Added `buildGerritGitilesArchiveUrl()` to construct a Gitiles URL to download an archive.
+  Gitiles URL that uses an authenticated prefix (`/a/`) can now be parsed by the integration.
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/config@1.0.8
+  - @backstage/errors@1.2.1
+
 ## 1.5.1
 
 ### Patch Changes

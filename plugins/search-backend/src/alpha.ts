@@ -75,7 +75,7 @@ class SearchEngineRegistry implements SearchEngineRegistryExtensionPoint {
  * The Search plugin is responsible for starting search indexing processes and return search results.
  * @alpha
  */
-export const searchPlugin = createBackendPlugin({
+export default createBackendPlugin({
   pluginId: 'search',
   register(env) {
     const searchIndexRegistry = new SearchIndexRegistry();

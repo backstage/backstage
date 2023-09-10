@@ -68,6 +68,15 @@ export function registerRepoCommand(program: Command) {
     .action(lazy(() => import('./repo/lint').then(m => m.command)));
 
   command
+    .command('fix')
+    .description('Automatically fix packages in the project')
+    .option(
+      '--check',
+      'Fail if any packages would have been changed by the command',
+    )
+    .action(lazy(() => import('./repo/fix').then(m => m.command)));
+
+  command
     .command('clean')
     .description('Delete cache and output directories')
     .action(lazy(() => import('./repo/clean').then(m => m.command)));

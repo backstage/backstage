@@ -14,4 +14,8 @@
  * limitations under the License.
  */
 
-export { catalogModuleIncrementalIngestionEntityProvider } from './catalogModuleIncrementalIngestionEntityProvider';
+export {
+  catalogModuleIncrementalIngestionEntityProvider as default,
+  incrementalIngestionProvidersExtensionPoint,
+  type IncrementalIngestionProviderExtensionPoint,
+} from './catalogModuleIncrementalIngestionEntityProvider';

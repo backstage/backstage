@@ -74,13 +74,13 @@ const secondSchema = {
   }),
 };
 
-const now = DateTime.now().toISO();
+const now = DateTime.now().toISO()!;
 const shortlyInTheFuture = DateTime.now()
   .plus(Duration.fromMillis(555))
-  .toISO();
+  .toISO()!;
 const farInTheFuture = DateTime.now()
   .plus(Duration.fromMillis(555666777))
-  .toISO();
+  .toISO()!;
 
 const facts = [
   {
@@ -127,13 +127,13 @@ const sameFactsDiffDateSchema = {
   }),
 };
 
-const sameFactsDiffDateNow = DateTime.now().toISO();
+const sameFactsDiffDateNow = DateTime.now().toISO()!;
 const sameFactsDiffDateNearFuture = DateTime.now()
   .plus(Duration.fromMillis(555))
-  .toISO();
+  .toISO()!;
 const sameFactsDiffDateFuture = DateTime.now()
   .plus(Duration.fromMillis(1000))
-  .toISO();
+  .toISO()!;
 
 const multipleSameFacts = [
   {

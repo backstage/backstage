@@ -15,7 +15,7 @@
  */
 
 import React from 'react';
-import { TestApiProvider } from '@backstage/test-utils';
+import { MockConfigApi, TestApiProvider } from '@backstage/test-utils';
 import { act, render } from '@testing-library/react';
 import user from '@testing-library/user-event';
 import {
@@ -23,6 +23,7 @@ import {
   searchApiRef,
 } from '@backstage/plugin-search-react';
 import { SearchType } from './SearchType';
+import { configApiRef } from '@backstage/core-plugin-api';
 
 const setTypesMock = jest.fn();
 const setPageCursorMock = jest.fn();
@@ -38,7 +39,14 @@ jest.mock('@backstage/plugin-search-react', () => ({
 }));
 
 describe('SearchType.Tabs', () => {
-  const query = jest.fn().mockResolvedValue({});
+  const searchApiMock = { query: jest.fn().mockResolvedValue({ results: [] }) };
+  const configApiMock = new MockConfigApi({
+    search: {
+      query: {
+        pageLimit: 100,
+      },
+    },
+  });
 
   const expectedType = {
     value: 'expected-type',
@@ -47,7 +55,12 @@ describe('SearchType.Tabs', () => {
 
   const Wrapper = ({ children }: { children: React.ReactNode }) => {
     return (
-      <TestApiProvider apis={[[searchApiRef, { query }]]}>
+      <TestApiProvider
+        apis={[
+          [searchApiRef, searchApiMock],
+          [configApiRef, configApiMock],
+        ]}
+      >
         <SearchContextProvider>{children}</SearchContextProvider>
       </TestApiProvider>
     );

@@ -373,7 +373,7 @@ createBackendPlugin({
         discovery: coreServices.discovery,
       },
       async init({ discovery }) {
-        const url = await discoverty.getBaseUrl('derp'); // can also use discovery.getBaseUrl to retrieve external URL
+        const url = await discovery.getBaseUrl('derp'); // can also use discovery.getExternalBaseUrl to retrieve external URL
         const response = await fetch(`${url}/hello`);
       },
     });

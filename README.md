@@ -13,8 +13,6 @@
 [![OpenSSF Best Practices](https://bestpractices.coreinfrastructure.org/projects/7678/badge)](https://bestpractices.coreinfrastructure.org/projects/7678)
 [![OpenSSF Scorecard](https://api.securityscorecards.dev/projects/github.com/backstage/backstage/badge)](https://securityscorecards.dev/viewer/?uri=github.com/backstage/backstage)
 
-> 🏖️ The week beginning the 26th of June, some of the maintainers will be taking a well earned Summer Holiday break. We will be slower to respond to issues and PRs during this time. Releases will continue to be shipped weekly. Normal service will resume on the 24th of July. 🏝️
-
 ## What is Backstage?
 
 [Backstage](https://backstage.io/) is an open platform for building developer portals. Powered by a centralized software catalog, Backstage restores order to your microservices and infrastructure and enables your product teams to ship high-quality code quickly without compromising autonomy.
@@ -67,7 +65,7 @@ To engage with our community, you can use the following resources:
 
 ## License
 
-Copyright 2020-2022 © The Backstage Authors. All rights reserved. The Linux Foundation has registered trademarks and uses trademarks. For a list of trademarks of The Linux Foundation, please see our Trademark Usage page: https://www.linuxfoundation.org/trademark-usage
+Copyright 2020-2023 © The Backstage Authors. All rights reserved. The Linux Foundation has registered trademarks and uses trademarks. For a list of trademarks of The Linux Foundation, please see our Trademark Usage page: https://www.linuxfoundation.org/trademark-usage
 
 Licensed under the Apache License, Version 2.0: http://www.apache.org/licenses/LICENSE-2.0
 

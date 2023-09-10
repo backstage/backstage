@@ -1,0 +1,10 @@
+apiVersion: backstage.io/v1alpha1
+kind: Component
+metadata:
+  name: backstage-plugin-newrelic
+  title: '@backstage/plugin-newrelic'
+  description: A Backstage plugin that integrates towards New Relic
+spec:
+  lifecycle: experimental
+  type: backstage-frontend-plugin
+  owner: maintainers

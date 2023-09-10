@@ -16,6 +16,10 @@
 
 import { Isolate } from 'isolated-vm';
 import { resolvePackagePath } from '@backstage/backend-common';
+import {
+  TemplateFilter as _TemplateFilter,
+  TemplateGlobal as _TemplateGlobal,
+} from '@backstage/plugin-scaffolder-node';
 import fs from 'fs-extra';
 import { JsonValue } from '@backstage/types';
 
@@ -86,13 +90,17 @@ const { render, renderCompat } = (() => {
 })();
 `;
 
-/** @public */
-export type TemplateFilter = (...args: JsonValue[]) => JsonValue | undefined;
+/**
+ * @public
+ * @deprecated Import from `@backstage/plugin-scaffolder-node` instead.
+ */
+export type TemplateFilter = _TemplateFilter;
 
-/** @public */
-export type TemplateGlobal =
-  | ((...args: JsonValue[]) => JsonValue | undefined)
-  | JsonValue;
+/**
+ * @public
+ * @deprecated Import from `@backstage/plugin-scaffolder-node` instead.
+ */
+export type TemplateGlobal = _TemplateGlobal;
 
 export interface SecureTemplaterOptions {
   /* Enables jinja compatibility and the "jsonify" filter */

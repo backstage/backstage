@@ -58,7 +58,8 @@ const useStyles = makeStyles((theme: Theme) =>
     searchBarContainer: {
       borderRadius: 30,
       display: 'flex',
-      height: '2.4em',
+      height: '100%',
+      boxShadow: 'none',
     },
     gridContainer: {
       height: '100%',

@@ -1,5 +1,146 @@
 # @backstage/plugin-catalog-backend
 
+## 1.13.0-next.2
+
+### Patch Changes
+
+- acffa17027b6: Added some examples to the catalog OpenAPI definition
+- 45947d3b2759: Fixes an issue where `order` was not a recognized parameter for the `/entities` endpoint.
+- 814feeed7343: Update to handle invalid luxon values
+- Updated dependencies
+  - @backstage/config@1.1.0-next.1
+  - @backstage/backend-tasks@0.5.8-next.2
+  - @backstage/backend-common@0.19.5-next.2
+  - @backstage/plugin-auth-node@0.3.0-next.2
+  - @backstage/plugin-catalog-node@1.4.4-next.2
+  - @backstage/plugin-permission-node@0.7.14-next.2
+  - @backstage/plugin-search-backend-module-catalog@0.1.7-next.2
+  - @backstage/integration@1.7.0-next.2
+  - @backstage/backend-plugin-api@0.6.3-next.2
+  - @backstage/catalog-model@1.4.2-next.1
+  - @backstage/plugin-permission-common@0.7.8-next.1
+  - @backstage/backend-openapi-utils@0.0.3
+  - @backstage/catalog-client@1.4.4-next.1
+  - @backstage/errors@1.2.1
+  - @backstage/types@1.1.0
+  - @backstage/plugin-catalog-common@1.0.16-next.1
+  - @backstage/plugin-events-node@0.2.12-next.2
+  - @backstage/plugin-scaffolder-common@1.4.1-next.1
+  - @backstage/plugin-search-common@1.2.6-next.1
+
+## 1.13.0-next.1
+
+### Minor Changes
+
+- 62f448edb0b5: Allow configuring the processing interval in your app-config, under the `catalog.processingInterval` key.
+
+### Patch Changes
+
+- 1fd2109739c1: Changed the processing loop task pipeline implementation from recursive to iterative
+- 0f8a97777489: Update OpenAPI schema to relax the encoding validation of all request parameters.
+- 2d32d8a611e3: Fixed validation of the `fullTextFilterFields` query parameter.
+- 618257f3e413: Fix issue with `catalogFileName` not being a required property for `/analyze-location`
+- Updated dependencies
+  - @backstage/config@1.1.0-next.0
+  - @backstage/integration@1.7.0-next.1
+  - @backstage/backend-tasks@0.5.8-next.1
+  - @backstage/backend-common@0.19.5-next.1
+  - @backstage/backend-plugin-api@0.6.3-next.1
+  - @backstage/catalog-model@1.4.2-next.0
+  - @backstage/plugin-auth-node@0.3.0-next.1
+  - @backstage/plugin-permission-common@0.7.8-next.0
+  - @backstage/plugin-permission-node@0.7.14-next.1
+  - @backstage/plugin-search-backend-module-catalog@0.1.7-next.1
+  - @backstage/plugin-catalog-node@1.4.4-next.1
+  - @backstage/plugin-events-node@0.2.12-next.1
+  - @backstage/catalog-client@1.4.4-next.0
+  - @backstage/plugin-catalog-common@1.0.16-next.0
+  - @backstage/plugin-scaffolder-common@1.4.1-next.0
+  - @backstage/backend-openapi-utils@0.0.3
+  - @backstage/errors@1.2.1
+  - @backstage/types@1.1.0
+  - @backstage/plugin-search-common@1.2.6-next.0
+
+## 1.12.2-next.0
+
+### Patch Changes
+
+- 149361e81622: Fix to the `limit` parameter on entity queries.
+- 0198aa596fd9: Fixed a link to the frontend Backstage plugin that had pointed to itself.
+- 41d1b2d628ea: Fix OpenAPI schema for the facets endpoint
+- cfc3ca6ce060: Changes needed to support MySQL
+- Updated dependencies
+  - @backstage/plugin-auth-node@0.3.0-next.0
+  - @backstage/backend-common@0.19.4-next.0
+  - @backstage/integration@1.7.0-next.0
+  - @backstage/backend-tasks@0.5.7-next.0
+  - @backstage/backend-openapi-utils@0.0.3
+  - @backstage/backend-plugin-api@0.6.2-next.0
+  - @backstage/catalog-client@1.4.3
+  - @backstage/catalog-model@1.4.1
+  - @backstage/config@1.0.8
+  - @backstage/errors@1.2.1
+  - @backstage/types@1.1.0
+  - @backstage/plugin-catalog-common@1.0.15
+  - @backstage/plugin-catalog-node@1.4.3-next.0
+  - @backstage/plugin-events-node@0.2.11-next.0
+  - @backstage/plugin-permission-common@0.7.7
+  - @backstage/plugin-permission-node@0.7.13-next.0
+  - @backstage/plugin-scaffolder-common@1.4.0
+  - @backstage/plugin-search-backend-module-catalog@0.1.6-next.0
+  - @backstage/plugin-search-common@1.2.5
+
+## 1.12.0
+
+### Minor Changes
+
+- b8cccd8ee858: Support configuring applicable kinds for `AnnotateScmSlugEntityProcessor`
+- f32252cdf631: Added OpenTelemetry spans for catalog processing
+- ebeb77586975: Now performs request validation based on OpenAPI schema through `@backstage/backend-openapi-utils`. Error responses for invalid input, like `"a"` instead of a number, may have changed.
+
+### Patch Changes
+
+- 629cbd194a87: Use `coreServices.rootConfig` instead of `coreService.config`
+- b8d6b22acd57: Internal refactor for load test
+- Updated dependencies
+  - @backstage/plugin-search-backend-module-catalog@0.1.4
+  - @backstage/backend-common@0.19.2
+  - @backstage/backend-plugin-api@0.6.0
+  - @backstage/backend-openapi-utils@0.0.3
+  - @backstage/plugin-catalog-node@1.4.1
+  - @backstage/plugin-events-node@0.2.9
+  - @backstage/plugin-auth-node@0.2.17
+  - @backstage/integration@1.6.0
+  - @backstage/backend-tasks@0.5.5
+  - @backstage/plugin-scaffolder-common@1.4.0
+  - @backstage/plugin-permission-node@0.7.11
+  - @backstage/catalog-client@1.4.3
+  - @backstage/catalog-model@1.4.1
+  - @backstage/config@1.0.8
+  - @backstage/errors@1.2.1
+  - @backstage/types@1.1.0
+  - @backstage/plugin-catalog-common@1.0.15
+  - @backstage/plugin-permission-common@0.7.7
+  - @backstage/plugin-search-common@1.2.5
+
+## 1.12.0-next.2
+
+### Minor Changes
+
+- b8cccd8ee858: Support configuring applicable kinds for `AnnotateScmSlugEntityProcessor`
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/plugin-search-backend-module-catalog@0.1.4-next.2
+  - @backstage/backend-plugin-api@0.6.0-next.2
+  - @backstage/backend-tasks@0.5.5-next.2
+  - @backstage/backend-common@0.19.2-next.2
+  - @backstage/plugin-catalog-node@1.4.1-next.2
+  - @backstage/plugin-events-node@0.2.9-next.2
+  - @backstage/plugin-permission-node@0.7.11-next.2
+  - @backstage/plugin-auth-node@0.2.17-next.2
+
 ## 1.12.0-next.1
 
 ### Minor Changes

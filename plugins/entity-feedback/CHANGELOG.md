@@ -1,5 +1,67 @@
 # @backstage/plugin-entity-feedback
 
+## 0.2.7-next.2
+
+### Patch Changes
+
+- 8cec7664e146: Removed `@types/node` dependency
+- Updated dependencies
+  - @backstage/core-components@0.13.5-next.2
+  - @backstage/core-plugin-api@1.6.0-next.2
+  - @backstage/plugin-catalog-react@1.8.4-next.2
+  - @backstage/catalog-model@1.4.2-next.1
+  - @backstage/errors@1.2.1
+  - @backstage/theme@0.4.1
+  - @backstage/plugin-entity-feedback-common@0.1.2
+
+## 0.2.7-next.1
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/plugin-catalog-react@1.8.4-next.1
+  - @backstage/core-components@0.13.5-next.1
+  - @backstage/catalog-model@1.4.2-next.0
+  - @backstage/core-plugin-api@1.6.0-next.1
+  - @backstage/errors@1.2.1
+  - @backstage/theme@0.4.1
+  - @backstage/plugin-entity-feedback-common@0.1.2
+
+## 0.2.6-next.0
+
+### Patch Changes
+
+- 5e2e06db747a: Improve README to note that Backstage identity is required to be configured
+- Updated dependencies
+  - @backstage/core-plugin-api@1.6.0-next.0
+  - @backstage/core-components@0.13.5-next.0
+  - @backstage/catalog-model@1.4.1
+  - @backstage/errors@1.2.1
+  - @backstage/theme@0.4.1
+  - @backstage/plugin-catalog-react@1.8.3-next.0
+  - @backstage/plugin-entity-feedback-common@0.1.2
+
+## 0.2.4
+
+### Patch Changes
+
+- 12a8c94eda8d: Add package repository and homepage metadata
+- Updated dependencies
+  - @backstage/plugin-entity-feedback-common@0.1.2
+  - @backstage/core-components@0.13.4
+  - @backstage/plugin-catalog-react@1.8.1
+  - @backstage/core-plugin-api@1.5.3
+  - @backstage/catalog-model@1.4.1
+  - @backstage/errors@1.2.1
+  - @backstage/theme@0.4.1
+
+## 0.2.4-next.2
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/plugin-catalog-react@1.8.1-next.1
+
 ## 0.2.4-next.1
 
 ### Patch Changes

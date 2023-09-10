@@ -1,0 +1,10 @@
+apiVersion: backstage.io/v1alpha1
+kind: Component
+metadata:
+  name: backstage-cli-node
+  title: '@backstage/cli-node'
+  description: Node.js library for Backstage CLIs
+spec:
+  lifecycle: experimental
+  type: backstage-node-library
+  owner: maintainers

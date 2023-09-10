@@ -14,58 +14,24 @@
  * limitations under the License.
  */
 
-import { JsonValue } from '@backstage/types';
-import { AuthResponse } from '../types';
-
-/**
- * The header name used by the IAP.
- */
-export const DEFAULT_IAP_JWT_HEADER = 'x-goog-iap-jwt-assertion';
+import {
+  GcpIapTokenInfo as _GcpIapTokenInfo,
+  GcpIapResult as _GcpIapResult,
+} from '@backstage/plugin-auth-backend-module-gcp-iap-provider';
 
 /**
  * The data extracted from an IAP token.
  *
  * @public
+ * @deprecated import from `@backstage/plugin-auth-backend-module-gcp-iap-provider` instead
  */
-export type GcpIapTokenInfo = {
-  /**
-   * The unique, stable identifier for the user.
-   */
-  sub: string;
-  /**
-   * User email address.
-   */
-  email: string;
-  /**
-   * Other fields.
-   */
-  [key: string]: JsonValue;
-};
+export type GcpIapTokenInfo = _GcpIapTokenInfo;
 
 /**
  * The result of the initial auth challenge. This is the input to the auth
  * callbacks.
  *
  * @public
+ * @deprecated import from `@backstage/plugin-auth-backend-module-gcp-iap-provider` instead
  */
-export type GcpIapResult = {
-  /**
-   * The data extracted from the IAP token header.
-   */
-  iapToken: GcpIapTokenInfo;
-};
-
-/**
- * The provider info to return to the frontend.
- */
-export type GcpIapProviderInfo = {
-  /**
-   * The data extracted from the IAP token header.
-   */
-  iapToken: GcpIapTokenInfo;
-};
-
-/**
- * The shape of the response to return to callers.
- */
-export type GcpIapResponse = AuthResponse<GcpIapProviderInfo>;
+export type GcpIapResult = _GcpIapResult;

@@ -58,10 +58,12 @@ interface WidgetSettingsOverlayProps {
   handleRemove: (id: string) => void;
   handleSettingsSave: (id: string, settings: Record<string, any>) => void;
   settings?: Record<string, any>;
+  deletable?: boolean;
 }
 
 export const WidgetSettingsOverlay = (props: WidgetSettingsOverlayProps) => {
-  const { id, widget, settings, handleRemove, handleSettingsSave } = props;
+  const { id, widget, settings, handleRemove, handleSettingsSave, deletable } =
+    props;
   const [settingsDialogOpen, setSettingsDialogOpen] = React.useState(false);
   const styles = useStyles();
 
@@ -110,13 +112,15 @@ export const WidgetSettingsOverlay = (props: WidgetSettingsOverlayProps) => {
             </Tooltip>
           </Grid>
         )}
-        <Grid item className="overlayGridItem">
-          <Tooltip title="Delete widget">
-            <IconButton color="secondary" onClick={() => handleRemove(id)}>
-              <DeleteIcon fontSize="large" />
-            </IconButton>
-          </Tooltip>
-        </Grid>
+        {deletable !== false && (
+          <Grid item className="overlayGridItem">
+            <Tooltip title="Delete widget">
+              <IconButton color="secondary" onClick={() => handleRemove(id)}>
+                <DeleteIcon fontSize="large" />
+              </IconButton>
+            </Tooltip>
+          </Grid>
+        )}
       </Grid>
     </div>
   );

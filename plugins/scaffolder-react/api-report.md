@@ -295,7 +295,7 @@ export interface ScaffolderUseTemplateSecrets {
 // @public
 export const SecretsContextProvider: (
   props: PropsWithChildren<{}>,
-) => JSX.Element;
+) => React_2.JSX.Element;
 
 // @public
 export type TaskStream = {

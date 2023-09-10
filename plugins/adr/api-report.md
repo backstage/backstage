@@ -12,6 +12,8 @@ import { BackstagePlugin } from '@backstage/core-plugin-api';
 import { DiscoveryApi } from '@backstage/core-plugin-api';
 import { FetchApi } from '@backstage/core-plugin-api';
 import { isAdrAvailable } from '@backstage/plugin-adr-common';
+import { JSX as JSX_2 } from 'react';
+import { default as React_2 } from 'react';
 import { ReactNode } from 'react';
 import { ResultHighlight } from '@backstage/plugin-search-common';
 import { RouteRef } from '@backstage/core-plugin-api';
@@ -76,7 +78,10 @@ export const adrPlugin: BackstagePlugin<
 
 // @public
 export const AdrReader: {
-  (props: { adr: string; decorators?: AdrContentDecorator[] }): JSX.Element;
+  (props: {
+    adr: string;
+    decorators?: AdrContentDecorator[];
+  }): React_2.JSX.Element;
   decorators: Readonly<{
     createRewriteRelativeLinksDecorator(): AdrContentDecorator;
     createRewriteRelativeEmbedsDecorator(): AdrContentDecorator;
@@ -107,7 +112,7 @@ export type AdrSearchResultListItemProps = {
 export const EntityAdrContent: (props: {
   contentDecorators?: AdrContentDecorator[] | undefined;
   filePathFilterFn?: AdrFilePathFilterFn | undefined;
-}) => JSX.Element;
+}) => JSX_2.Element;
 
 export { isAdrAvailable };
 ```

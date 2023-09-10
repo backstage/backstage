@@ -1,5 +1,51 @@
 # @backstage/plugin-graphql-voyager
 
+## 0.1.7-next.2
+
+### Patch Changes
+
+- 8cec7664e146: Removed `@types/node` dependency
+- Updated dependencies
+  - @backstage/core-components@0.13.5-next.2
+  - @backstage/core-plugin-api@1.6.0-next.2
+  - @backstage/theme@0.4.1
+
+## 0.1.7-next.1
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/core-components@0.13.5-next.1
+  - @backstage/core-plugin-api@1.6.0-next.1
+  - @backstage/theme@0.4.1
+
+## 0.1.7-next.0
+
+### Patch Changes
+
+- 482bb5c0bbf8: Moved `@types/react` to be a regular dependency
+- Updated dependencies
+  - @backstage/core-plugin-api@1.6.0-next.0
+  - @backstage/core-components@0.13.5-next.0
+  - @backstage/theme@0.4.1
+
+## 0.1.6
+
+### Patch Changes
+
+- bb1e1c2b26cc: Fix typo in install instructions.
+- 12a8c94eda8d: Add package repository and homepage metadata
+- Updated dependencies
+  - @backstage/core-components@0.13.4
+  - @backstage/core-plugin-api@1.5.3
+  - @backstage/theme@0.4.1
+
+## 0.1.6-next.2
+
+### Patch Changes
+
+- bb1e1c2b26cc: Fix typo in install instructions.
+
 ## 0.1.6-next.1
 
 ### Patch Changes

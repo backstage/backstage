@@ -18,64 +18,59 @@ import {
   coreServices,
   createServiceFactory,
 } from '@backstage/backend-plugin-api';
+import { mockServices } from '@backstage/backend-test-utils';
 import { createBackend } from './CreateBackend';
 
 describe('createBackend', () => {
-  it('should not throw when overriding a default service implementation', () => {
-    expect(() =>
-      createBackend({
-        services: [
-          createServiceFactory({
-            service: coreServices.rootLifecycle,
-            deps: {},
-            factory: async () => ({
-              addStartupHook: () => {},
-              addShutdownHook: () => {},
-            }),
-          }),
-        ],
-      }),
-    ).not.toThrow();
+  it('should not throw when overriding a default service implementation', async () => {
+    const backend = createBackend();
+
+    backend.add(mockServices.rootConfig.factory());
+
+    await expect(backend.start()).resolves.toBe(undefined);
   });
 
-  it('should throw on duplicate service implementations', () => {
-    expect(() =>
-      createBackend({
-        services: [
-          createServiceFactory({
-            service: coreServices.rootLifecycle,
-            deps: {},
-            factory: async () => ({
-              addStartupHook: () => {},
-              addShutdownHook: () => {},
-            }),
-          }),
-          createServiceFactory({
-            service: coreServices.rootLifecycle,
-            deps: {},
-            factory: async () => ({
-              addStartupHook: () => {},
-              addShutdownHook: () => {},
-            }),
-          }),
-        ],
+  it('should throw on duplicate service implementations', async () => {
+    const backend = createBackend();
+
+    backend.add(
+      createServiceFactory({
+        service: coreServices.rootLifecycle,
+        deps: {},
+        factory: async () => ({
+          addStartupHook: () => {},
+          addShutdownHook: () => {},
+        }),
       }),
-    ).toThrow(
+    );
+    backend.add(
+      createServiceFactory({
+        service: coreServices.rootLifecycle,
+        deps: {},
+        factory: async () => ({
+          addStartupHook: () => {},
+          addShutdownHook: () => {},
+        }),
+      }),
+    );
+
+    await expect(backend.start()).rejects.toThrow(
       'Duplicate service implementations provided for core.rootLifecycle',
     );
   });
 
-  it('should throw when providing a plugin metadata service implementation', () => {
-    expect(() =>
-      createBackend({
-        services: [
-          createServiceFactory({
-            service: coreServices.pluginMetadata,
-            deps: {},
-            factory: async () => ({ getId: () => 'test' }),
-          }),
-        ],
+  it('should throw when providing a plugin metadata service implementation', async () => {
+    const backend = createBackend();
+    backend.add(
+      createServiceFactory({
+        service: coreServices.pluginMetadata,
+        deps: {},
+        factory: () => ({ getId: () => 'test' }),
       }),
-    ).toThrow('The core.pluginMetadata service cannot be overridden');
+    );
+
+    await expect(backend.start()).rejects.toThrow(
+      'The core.pluginMetadata service cannot be overridden',
+    );
   });
 });

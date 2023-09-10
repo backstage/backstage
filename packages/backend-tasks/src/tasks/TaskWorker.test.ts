@@ -28,7 +28,7 @@ jest.setTimeout(60_000);
 describe('TaskWorker', () => {
   const logger = getVoidLogger();
   const databases = TestDatabases.create({
-    ids: ['POSTGRES_13', 'POSTGRES_9', 'SQLITE_3'],
+    ids: ['POSTGRES_13', 'POSTGRES_9', 'SQLITE_3', 'MYSQL_8'],
   });
 
   beforeEach(() => {
@@ -47,8 +47,8 @@ describe('TaskWorker', () => {
       const settings: TaskSettingsV2 = {
         version: 2,
         cadence: '*/2 * * * * *',
-        initialDelayDuration: Duration.fromObject({ seconds: 1 }).toISO(),
-        timeoutAfterDuration: Duration.fromObject({ minutes: 1 }).toISO(),
+        initialDelayDuration: Duration.fromObject({ seconds: 1 }).toISO()!,
+        timeoutAfterDuration: Duration.fromObject({ minutes: 1 }).toISO()!,
       };
 
       const worker = new TaskWorker('task1', fn, knex, logger);
@@ -131,7 +131,7 @@ describe('TaskWorker', () => {
         version: 2,
         initialDelayDuration: undefined,
         cadence: '* * * * * *',
-        timeoutAfterDuration: Duration.fromMillis(60000).toISO(),
+        timeoutAfterDuration: Duration.fromMillis(60000).toISO()!,
       };
       const checkFrequency = Duration.fromObject({ milliseconds: 100 });
       const worker = new TaskWorker('task1', fn, knex, logger, checkFrequency);
@@ -154,7 +154,7 @@ describe('TaskWorker', () => {
         version: 2,
         initialDelayDuration: undefined,
         cadence: '* * * * * *',
-        timeoutAfterDuration: Duration.fromMillis(60000).toISO(),
+        timeoutAfterDuration: Duration.fromMillis(60000).toISO()!,
       };
       const checkFrequency = Duration.fromObject({ milliseconds: 100 });
       const worker = new TaskWorker('task1', fn, knex, logger, checkFrequency);
@@ -179,7 +179,7 @@ describe('TaskWorker', () => {
         version: 2,
         initialDelayDuration: undefined,
         cadence: '* * * * * *',
-        timeoutAfterDuration: Duration.fromMillis(60000).toISO(),
+        timeoutAfterDuration: Duration.fromMillis(60000).toISO()!,
       };
 
       const worker = new TaskWorker('task1', fn, knex, logger);
@@ -235,7 +235,7 @@ describe('TaskWorker', () => {
         version: 2,
         initialDelayDuration: undefined,
         cadence: '* * * * * *',
-        timeoutAfterDuration: Duration.fromMillis(60000).toISO(),
+        timeoutAfterDuration: Duration.fromMillis(60000).toISO()!,
       };
 
       const worker1 = new TaskWorker('task1', fn, knex, logger);

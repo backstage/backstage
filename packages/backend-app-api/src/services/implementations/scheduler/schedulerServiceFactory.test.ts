@@ -14,55 +14,33 @@
  * limitations under the License.
  */
 
-import {
-  coreServices,
-  createBackendPlugin,
-} from '@backstage/backend-plugin-api';
-import { startTestBackend } from '@backstage/backend-test-utils';
+import { coreServices } from '@backstage/backend-plugin-api';
+import { ServiceFactoryTester } from '@backstage/backend-test-utils';
 import { schedulerServiceFactory } from './schedulerServiceFactory';
 
 describe('schedulerFactory', () => {
   it('creates sidecar database features', async () => {
-    expect.assertions(3);
+    const tester = ServiceFactoryTester.from(schedulerServiceFactory());
 
-    const subject = schedulerServiceFactory();
-
-    const plugin = createBackendPlugin({
-      pluginId: 'example',
-      register(reg) {
-        reg.registerInit({
-          deps: {
-            scheduler: subject.service,
-            database: coreServices.database,
-          },
-          init: async ({ scheduler, database }) => {
-            await scheduler.scheduleTask({
-              id: 'task1',
-              timeout: { seconds: 1 },
-              frequency: { seconds: 1 },
-              fn: async () => {},
-            });
-
-            const client = await database.getClient();
-            await expect(
-              client.from('backstage_backend_tasks__tasks').count(),
-            ).resolves.toEqual([{ 'count(*)': 1 }]);
-            await expect(
-              client.from('backstage_backend_tasks__knex_migrations').count(),
-            ).resolves.toEqual([{ 'count(*)': expect.any(Number) }]);
-            await expect(
-              client
-                .from('backstage_backend_tasks__knex_migrations_lock')
-                .count(),
-            ).resolves.toEqual([{ 'count(*)': expect.any(Number) }]);
-          },
-        });
-      },
+    const scheduler = await tester.get();
+    await scheduler.scheduleTask({
+      id: 'task1',
+      timeout: { seconds: 1 },
+      frequency: { seconds: 1 },
+      fn: async () => {},
     });
 
-    await startTestBackend({
-      features: [plugin()],
-      services: [subject],
-    });
+    const database = await tester.getService(coreServices.database);
+
+    const client = await database.getClient();
+    await expect(
+      client.from('backstage_backend_tasks__tasks').count(),
+    ).resolves.toEqual([{ 'count(*)': 1 }]);
+    await expect(
+      client.from('backstage_backend_tasks__knex_migrations').count(),
+    ).resolves.toEqual([{ 'count(*)': expect.any(Number) }]);
+    await expect(
+      client.from('backstage_backend_tasks__knex_migrations_lock').count(),
+    ).resolves.toEqual([{ 'count(*)': expect.any(Number) }]);
   });
 });

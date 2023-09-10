@@ -34,7 +34,7 @@ exports.up = async function up(knex) {
       .comment('An insert counter to ensure ordering');
     table.uuid('id').notNullable().comment('The ID of the code coverage');
     table
-      .text('entity')
+      .string('entity')
       .notNullable()
       .comment('The entity ref that this code coverage applies to');
     table

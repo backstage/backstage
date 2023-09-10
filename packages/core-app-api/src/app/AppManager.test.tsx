@@ -260,6 +260,46 @@ describe('Integration Test', () => {
     expect(screen.getByText('extLink4: <none>')).toBeInTheDocument();
   });
 
+  it('runs success with __experimentalI18n', async () => {
+    const app = new AppManager({
+      apis: [noOpAnalyticsApi],
+      defaultApis: [],
+      themes,
+      icons,
+      plugins: [],
+      components,
+      configLoader: async () => [],
+      bindRoutes: ({ bind }) => {
+        bind(plugin1.externalRoutes, {
+          extRouteRef1: plugin1RouteRef,
+          extRouteRef2: plugin2RouteRef,
+        });
+      },
+      __experimentalI18n: {
+        supportedLanguages: ['en'],
+      },
+    });
+
+    const Provider = app.getProvider();
+    const Router = app.getRouter();
+
+    await renderWithEffects(
+      <Provider>
+        <Router>
+          <Routes>
+            <Route path="/" element={<ExposedComponent />} />
+            <Route path="/foo" element={<HiddenComponent />} />
+          </Routes>
+        </Router>
+      </Provider>,
+    );
+
+    expect(screen.getByText('extLink1: /')).toBeInTheDocument();
+    expect(screen.getByText('extLink2: /foo')).toBeInTheDocument();
+    expect(screen.getByText('extLink3: <none>')).toBeInTheDocument();
+    expect(screen.getByText('extLink4: <none>')).toBeInTheDocument();
+  });
+
   it('should wait for the config to load before calling feature flags', async () => {
     const storageFlags = new LocalStorageFeatureFlags();
     jest.spyOn(storageFlags, 'registerFlag');

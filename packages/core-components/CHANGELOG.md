@@ -1,5 +1,54 @@
 # @backstage/core-components
 
+## 0.13.5-next.2
+
+### Patch Changes
+
+- 8cec7664e146: Removed `@types/node` dependency
+- db92d1244897: Updated dependency `rc-progress` to `3.5.1`.
+- Updated dependencies
+  - @backstage/core-plugin-api@1.6.0-next.2
+  - @backstage/config@1.1.0-next.1
+  - @backstage/errors@1.2.1
+  - @backstage/theme@0.4.1
+  - @backstage/version-bridge@1.0.4
+
+## 0.13.5-next.1
+
+### Patch Changes
+
+- 0c9907645aab: Fixed an issue causing `StructuredMetadataTable` to crash in case metadata contained `null` values.
+- Updated dependencies
+  - @backstage/config@1.1.0-next.0
+  - @backstage/core-plugin-api@1.6.0-next.1
+  - @backstage/errors@1.2.1
+  - @backstage/theme@0.4.1
+  - @backstage/version-bridge@1.0.4
+
+## 0.13.5-next.0
+
+### Patch Changes
+
+- 47782f4bfa5b: Add loading indicator to Table
+- Updated dependencies
+  - @backstage/core-plugin-api@1.6.0-next.0
+  - @backstage/config@1.0.8
+  - @backstage/errors@1.2.1
+  - @backstage/theme@0.4.1
+  - @backstage/version-bridge@1.0.4
+
+## 0.13.4
+
+### Patch Changes
+
+- 3d86be999fdf: Prefer simple `theme.spacing` without string interpolation
+- Updated dependencies
+  - @backstage/core-plugin-api@1.5.3
+  - @backstage/config@1.0.8
+  - @backstage/errors@1.2.1
+  - @backstage/theme@0.4.1
+  - @backstage/version-bridge@1.0.4
+
 ## 0.13.4-next.0
 
 ### Patch Changes

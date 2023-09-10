@@ -22,6 +22,7 @@
     "backstage",
     "tech-insights"
   ],
+  "sideEffects": false,
   "scripts": {
     "start": "backstage-cli backend:dev",
     "build": "backstage-cli package build",

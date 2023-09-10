@@ -46,11 +46,12 @@ const BasicCard = ({ children }: { children: ReactNode }) => (
 /** @public */
 export type PagerDutyCardProps = PagerDutyEntity & {
   readOnly?: boolean;
+  disableChangeEvents?: boolean;
 };
 
 /** @public */
 export const PagerDutyCard = (props: PagerDutyCardProps) => {
-  const { readOnly, integrationKey, name } = props;
+  const { readOnly, disableChangeEvents, integrationKey, name } = props;
   const api = useApi(pagerDutyApiRef);
   const [refreshIncidents, setRefreshIncidents] = useState<boolean>(false);
   const [refreshChangeEvents, setRefreshChangeEvents] =
@@ -169,12 +170,16 @@ export const PagerDutyCard = (props: PagerDutyCardProps) => {
                 refreshIncidents={refreshIncidents}
               />
             </CardTab>
-            <CardTab label="Change Events">
-              <ChangeEvents
-                serviceId={service!.id}
-                refreshEvents={refreshChangeEvents}
-              />
-            </CardTab>
+            <>
+              {disableChangeEvents !== true && (
+                <CardTab label="Change Events">
+                  <ChangeEvents
+                    serviceId={service!.id}
+                    refreshEvents={refreshChangeEvents}
+                  />
+                </CardTab>
+              )}
+            </>
           </TabbedCard>
           <EscalationPolicy policyId={service!.policyId} />
         </CardContent>

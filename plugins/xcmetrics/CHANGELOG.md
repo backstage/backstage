@@ -1,5 +1,50 @@
 # @backstage/plugin-xcmetrics
 
+## 0.2.42-next.2
+
+### Patch Changes
+
+- 8cec7664e146: Removed `@types/node` dependency
+- 814feeed7343: Update to handle invalid luxon values
+- Updated dependencies
+  - @backstage/core-components@0.13.5-next.2
+  - @backstage/core-plugin-api@1.6.0-next.2
+  - @backstage/errors@1.2.1
+  - @backstage/theme@0.4.1
+
+## 0.2.42-next.1
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/core-components@0.13.5-next.1
+  - @backstage/core-plugin-api@1.6.0-next.1
+  - @backstage/errors@1.2.1
+  - @backstage/theme@0.4.1
+
+## 0.2.42-next.0
+
+### Patch Changes
+
+- 482bb5c0bbf8: Moved `@types/react` to be a regular dependency
+- Updated dependencies
+  - @backstage/core-plugin-api@1.6.0-next.0
+  - @backstage/core-components@0.13.5-next.0
+  - @backstage/errors@1.2.1
+  - @backstage/theme@0.4.1
+
+## 0.2.41
+
+### Patch Changes
+
+- 12a8c94eda8d: Add package repository and homepage metadata
+- 3d86be999fdf: Prefer simple `theme.spacing` without string interpolation
+- Updated dependencies
+  - @backstage/core-components@0.13.4
+  - @backstage/core-plugin-api@1.5.3
+  - @backstage/errors@1.2.1
+  - @backstage/theme@0.4.1
+
 ## 0.2.41-next.1
 
 ### Patch Changes

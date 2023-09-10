@@ -4,19 +4,21 @@
 
 ```ts
 import { BackendFeature } from '@backstage/backend-plugin-api';
-import { ElasticSearchCustomIndexTemplate } from '@backstage/plugin-search-backend-module-elasticsearch';
 import { ElasticSearchQueryTranslator } from '@backstage/plugin-search-backend-module-elasticsearch';
+import { ExtensionPoint } from '@backstage/backend-plugin-api';
 
 // @alpha
-export const searchModuleElasticsearchEngine: (
-  options?: SearchModuleElasticsearchEngineOptions | undefined,
-) => BackendFeature;
+const _default: () => BackendFeature;
+export default _default;
+
+// @alpha (undocumented)
+export interface ElasticSearchQueryTranslatorExtensionPoint {
+  // (undocumented)
+  setTranslator(translator: ElasticSearchQueryTranslator): void;
+}
 
 // @alpha
-export type SearchModuleElasticsearchEngineOptions = {
-  translator?: ElasticSearchQueryTranslator;
-  indexTemplate?: ElasticSearchCustomIndexTemplate;
-};
+export const elasticsearchTranslatorExtensionPoint: ExtensionPoint<ElasticSearchQueryTranslatorExtensionPoint>;
 
 // (No @packageDocumentation comment for this package)
 ```

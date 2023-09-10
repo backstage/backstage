@@ -26,7 +26,7 @@ interface TestOptions {
 function unused(..._any: any[]) {}
 
 describe('createServiceFactory', () => {
-  it('should create a sync factory with no options', () => {
+  it('should create a sync factory', () => {
     const metaFactory = createServiceFactory({
       service: ref,
       deps: {},
@@ -51,7 +51,7 @@ describe('createServiceFactory', () => {
     metaFactory();
   });
 
-  it('should create a sync root factory with no options', () => {
+  it('should create a sync root factory', () => {
     const metaFactory = createServiceFactory({
       service: rootDep,
       deps: {},
@@ -75,7 +75,7 @@ describe('createServiceFactory', () => {
     metaFactory();
   });
 
-  it('should create a factory with no options', () => {
+  it('should create a factory', () => {
     const metaFactory = createServiceFactory({
       service: ref,
       deps: {},
@@ -100,7 +100,7 @@ describe('createServiceFactory', () => {
     metaFactory();
   });
 
-  it('should create a factory with optional options', () => {
+  it('should create a factory with options', () => {
     const metaFactory = createServiceFactory((_opts?: { x: number }) => ({
       service: ref,
       deps: {},
@@ -124,7 +124,8 @@ describe('createServiceFactory', () => {
     metaFactory();
   });
 
-  it('should create a factory with required options', () => {
+  it('should not be allowed to require options', () => {
+    // @ts-expect-error
     const metaFactory = createServiceFactory((_opts: { x: number }) => ({
       service: ref,
       deps: {},
@@ -134,23 +135,9 @@ describe('createServiceFactory', () => {
       },
     }));
     expect(metaFactory).toEqual(expect.any(Function));
-
-    // @ts-expect-error
-    metaFactory('string');
-    // @ts-expect-error
-    metaFactory({});
-    metaFactory({ x: 1 });
-    // @ts-expect-error
-    metaFactory({ x: 1, y: 2 });
-    // @ts-expect-error
-    metaFactory(null);
-    // @ts-expect-error
-    metaFactory(undefined);
-    // @ts-expect-error
-    metaFactory();
   });
 
-  it('should create a factory with optional options as interface', () => {
+  it('should create a factory with options as interface', () => {
     const metaFactory = createServiceFactory((_opts?: TestOptions) => ({
       service: ref,
       deps: {},
@@ -174,38 +161,11 @@ describe('createServiceFactory', () => {
     metaFactory();
   });
 
-  it('should create a factory with required options as interface', () => {
-    const metaFactory = createServiceFactory((_opts: TestOptions) => ({
-      service: ref,
-      deps: {},
-      async createRootContext() {},
-      async factory() {
-        return 'x';
-      },
-    }));
-    expect(metaFactory).toEqual(expect.any(Function));
-
-    // @ts-expect-error
-    metaFactory('string');
-    // @ts-expect-error
-    metaFactory({});
-    metaFactory({ x: 1 });
-    // @ts-expect-error
-    metaFactory({ x: 1, y: 2 });
-    // @ts-expect-error
-    metaFactory(null);
-    // @ts-expect-error
-    metaFactory(undefined);
-    // @ts-expect-error
-    metaFactory();
-  });
-
   it('should create root scoped factory with dependencies', () => {
     const metaFactory = createServiceFactory({
       service: createServiceRef({ id: 'foo', scope: 'root' }),
       deps: {
         root: rootDep,
-        plugin: pluginDep,
       },
       async factory({ root }) {
         const root1: number = root;
@@ -226,12 +186,11 @@ describe('createServiceFactory', () => {
     metaFactory();
   });
 
-  it('should create root scoped factory with dependencies and optional options', () => {
+  it('should create root scoped factory with dependencies and options', () => {
     const metaFactory = createServiceFactory((_options?: TestOptions) => ({
       service: createServiceRef({ id: 'foo', scope: 'root' }),
       deps: {
         root: rootDep,
-        plugin: pluginDep,
       },
       async factory({ root }) {
         const root1: number = root;
@@ -325,49 +284,7 @@ describe('createServiceFactory', () => {
     metaFactory();
   });
 
-  it('should create factory with required options and dependencies', () => {
-    const metaFactory = createServiceFactory((_opts: TestOptions) => ({
-      service: ref,
-      deps: {
-        root: rootDep,
-        plugin: pluginDep,
-      },
-      async createRootContext({ root }) {
-        const root1: number = root;
-        // @ts-expect-error
-        const root2: string = root;
-        unused(root1, root2);
-        return { root };
-      },
-      async factory({ plugin }, { root }) {
-        const root1: number = root;
-        // @ts-expect-error
-        const root2: string = root;
-        const plugin3: boolean = plugin;
-        // @ts-expect-error
-        const plugin4: number = plugin;
-        unused(root1, root2, plugin3, plugin4);
-        return 'x';
-      },
-    }));
-    expect(metaFactory).toEqual(expect.any(Function));
-
-    // @ts-expect-error
-    metaFactory('string');
-    // @ts-expect-error
-    metaFactory({});
-    metaFactory({ x: 1 });
-    // @ts-expect-error
-    metaFactory({ x: 1, y: 2 });
-    // @ts-expect-error
-    metaFactory(null);
-    // @ts-expect-error
-    metaFactory(undefined);
-    // @ts-expect-error
-    metaFactory();
-  });
-
-  it('should create factory with optional options and dependencies', () => {
+  it('should create factory with options and dependencies', () => {
     const metaFactory = createServiceFactory((_opts?: TestOptions) => ({
       service: ref,
       deps: {

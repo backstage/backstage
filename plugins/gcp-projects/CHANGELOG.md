@@ -1,5 +1,43 @@
 # @backstage/plugin-gcp-projects
 
+## 0.3.41-next.2
+
+### Patch Changes
+
+- 8cec7664e146: Removed `@types/node` dependency
+- Updated dependencies
+  - @backstage/core-components@0.13.5-next.2
+  - @backstage/core-plugin-api@1.6.0-next.2
+  - @backstage/theme@0.4.1
+
+## 0.3.41-next.1
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/core-components@0.13.5-next.1
+  - @backstage/core-plugin-api@1.6.0-next.1
+  - @backstage/theme@0.4.1
+
+## 0.3.41-next.0
+
+### Patch Changes
+
+- 482bb5c0bbf8: Moved `@types/react` to be a regular dependency
+- Updated dependencies
+  - @backstage/core-plugin-api@1.6.0-next.0
+  - @backstage/core-components@0.13.5-next.0
+  - @backstage/theme@0.4.1
+
+## 0.3.40
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/core-components@0.13.4
+  - @backstage/core-plugin-api@1.5.3
+  - @backstage/theme@0.4.1
+
 ## 0.3.40-next.0
 
 ### Patch Changes

@@ -4,7 +4,7 @@ author: Solo.io
 authorUrl: https://solo.io
 category: Infrastructure
 description: View, test, and manage your Gloo Platform Portal APIs through our Backstage plugin.
-documentation: https://github.com/solo-io/dev-portal-backstage-public#readme
+documentation: https://github.com/solo-io/backstage-plugins-overview#readme
 iconUrl: /img/solo-io-glooy-circle.png.webp
 npmPackageName: '@solo.io/dev-portal-backstage-plugin'
 addedDate: '2023-05-19'

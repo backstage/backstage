@@ -116,7 +116,13 @@ export type FromReadableArrayOptions = Array<{
  */
 export interface ReadTreeResponseFactory {
   fromTarArchive(
-    options: ReadTreeResponseFactoryOptions,
+    options: ReadTreeResponseFactoryOptions & {
+      /**
+       * Strip the first parent directory of a tar archive.
+       * Defaults to true.
+       */
+      stripFirstDirectory?: boolean;
+    },
   ): Promise<ReadTreeResponse>;
   fromZipArchive(
     options: ReadTreeResponseFactoryOptions,

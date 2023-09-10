@@ -4,16 +4,24 @@
 
 ```ts
 import { BackendFeature } from '@backstage/backend-plugin-api';
+import { ExtensionPoint } from '@backstage/backend-plugin-api';
 import { IncrementalEntityProvider } from '@backstage/plugin-catalog-backend-module-incremental-ingestion';
 import { IncrementalEntityProviderOptions } from '@backstage/plugin-catalog-backend-module-incremental-ingestion';
 
 // @alpha
-export const catalogModuleIncrementalIngestionEntityProvider: (options: {
-  providers: {
-    provider: IncrementalEntityProvider<unknown, unknown>;
+const catalogModuleIncrementalIngestionEntityProvider: () => BackendFeature;
+export default catalogModuleIncrementalIngestionEntityProvider;
+
+// @alpha
+export interface IncrementalIngestionProviderExtensionPoint {
+  addProvider<TCursor, TContext>(config: {
     options: IncrementalEntityProviderOptions;
-  }[];
-}) => BackendFeature;
+    provider: IncrementalEntityProvider<TCursor, TContext>;
+  }): void;
+}
+
+// @alpha
+export const incrementalIngestionProvidersExtensionPoint: ExtensionPoint<IncrementalIngestionProviderExtensionPoint>;
 
 // (No @packageDocumentation comment for this package)
 ```

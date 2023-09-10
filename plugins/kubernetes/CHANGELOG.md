@@ -1,5 +1,78 @@
 # @backstage/plugin-kubernetes
 
+## 0.10.3-next.2
+
+### Patch Changes
+
+- 8cec7664e146: Removed `@types/node` dependency
+- Updated dependencies
+  - @backstage/core-components@0.13.5-next.2
+  - @backstage/core-plugin-api@1.6.0-next.2
+  - @backstage/config@1.1.0-next.1
+  - @backstage/plugin-catalog-react@1.8.4-next.2
+  - @backstage/catalog-model@1.4.2-next.1
+  - @backstage/errors@1.2.1
+  - @backstage/theme@0.4.1
+  - @backstage/plugin-kubernetes-common@0.6.6-next.1
+
+## 0.10.3-next.1
+
+### Patch Changes
+
+- 6a5e04e20e6e: fix logs dialog min height
+- Updated dependencies
+  - @backstage/plugin-kubernetes-common@0.6.6-next.0
+  - @backstage/plugin-catalog-react@1.8.4-next.1
+  - @backstage/core-components@0.13.5-next.1
+  - @backstage/config@1.1.0-next.0
+  - @backstage/catalog-model@1.4.2-next.0
+  - @backstage/core-plugin-api@1.6.0-next.1
+  - @backstage/errors@1.2.1
+  - @backstage/theme@0.4.1
+
+## 0.10.2-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/core-plugin-api@1.6.0-next.0
+  - @backstage/core-components@0.13.5-next.0
+  - @backstage/catalog-model@1.4.1
+  - @backstage/config@1.0.8
+  - @backstage/errors@1.2.1
+  - @backstage/theme@0.4.1
+  - @backstage/plugin-catalog-react@1.8.3-next.0
+  - @backstage/plugin-kubernetes-common@0.6.5
+
+## 0.10.0
+
+### Minor Changes
+
+- 4b6d41737aad: **BREAKING**: Fixed typos in exported module attributes. Many users may see no changes, but if you have customized the plugin output, you may have to rename the following:
+
+  - Component attribute: `<ResourceUtilization totalFormated={} />` to `<ResourceUtilization totalFormatted={} />`
+  - Interface attribute: `DetectedError.occuranceCount` to `DetectedError.occurrenceCount`.
+
+### Patch Changes
+
+- 562e34d2693f: Fix container memory limits
+- Updated dependencies
+  - @backstage/core-components@0.13.4
+  - @backstage/plugin-catalog-react@1.8.1
+  - @backstage/core-plugin-api@1.5.3
+  - @backstage/catalog-model@1.4.1
+  - @backstage/config@1.0.8
+  - @backstage/errors@1.2.1
+  - @backstage/theme@0.4.1
+  - @backstage/plugin-kubernetes-common@0.6.5
+
+## 0.9.4-next.1
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/plugin-catalog-react@1.8.1-next.1
+
 ## 0.9.4-next.0
 
 ### Patch Changes

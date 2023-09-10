@@ -56,6 +56,7 @@ import { ProfileInfo } from '@backstage/core-plugin-api';
 import { ProfileInfoApi } from '@backstage/core-plugin-api';
 import { PropsWithChildren } from 'react';
 import PropTypes from 'prop-types';
+import { default as React_2 } from 'react';
 import { ReactNode } from 'react';
 import { RouteRef } from '@backstage/core-plugin-api';
 import { SessionApi } from '@backstage/core-plugin-api';
@@ -63,6 +64,7 @@ import { SessionState } from '@backstage/core-plugin-api';
 import { StorageApi } from '@backstage/core-plugin-api';
 import { StorageValueSnapshot } from '@backstage/core-plugin-api';
 import { SubRouteRef } from '@backstage/core-plugin-api';
+import { TranslationRef } from '@backstage/core-plugin-api/alpha';
 
 // @public
 export class AlertApiForwarder implements AlertApi {
@@ -113,7 +115,7 @@ export type ApiFactoryScope = 'default' | 'app' | 'static';
 
 // @public
 export const ApiProvider: {
-  (props: PropsWithChildren<ApiProviderProps>): JSX.Element;
+  (props: PropsWithChildren<ApiProviderProps>): React_2.JSX.Element;
   propTypes: {
     apis: PropTypes.Validator<
       NonNullable<
@@ -219,6 +221,20 @@ export type AppOptions = {
   themes: (Partial<AppTheme> & Omit<AppTheme, 'theme'>)[];
   configLoader?: AppConfigLoader;
   bindRoutes?(context: { bind: AppRouteBinder }): void;
+  __experimentalI18n?: {
+    supportedLanguages: string[];
+    fallbackLanguage?: string | string[];
+    messages?: Array<{
+      ref: TranslationRef;
+      messages?: Record<string, TranslationMessages<TranslationRef>>;
+      lazyMessages: Record<
+        string,
+        () => Promise<{
+          messages: TranslationMessages<TranslationRef>;
+        }>
+      >;
+    }>;
+  };
 };
 
 // @public
@@ -235,7 +251,7 @@ export type AppRouteBinder = <
 ) => void;
 
 // @public
-export function AppRouter(props: AppRouterProps): JSX.Element;
+export function AppRouter(props: AppRouterProps): React_2.JSX.Element;
 
 // @public
 export interface AppRouterProps {
@@ -368,7 +384,9 @@ export type ErrorBoundaryFallbackProps = PropsWithChildren<{
 }>;
 
 // @public
-export const FeatureFlagged: (props: FeatureFlaggedProps) => JSX.Element;
+export const FeatureFlagged: (
+  props: FeatureFlaggedProps,
+) => React_2.JSX.Element;
 
 // @public
 export type FeatureFlaggedProps = {
@@ -535,10 +553,10 @@ export type OAuth2Session = {
     idToken: string;
     accessToken: string;
     scopes: Set<string>;
-    expiresAt: Date;
+    expiresAt?: Date;
   };
   profile: ProfileInfo;
-  backstageIdentity: BackstageIdentityResponse;
+  backstageIdentity?: BackstageIdentityResponse;
 };
 
 // @public

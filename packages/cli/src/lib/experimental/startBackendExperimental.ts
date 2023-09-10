@@ -25,7 +25,12 @@ import debounce from 'lodash/debounce';
 import spawn from 'cross-spawn';
 import { paths } from '../paths';
 
-const loaderArgs = ['--require', require.resolve('@esbuild-kit/cjs-loader')];
+const loaderArgs = [
+  '--require',
+  require.resolve('@esbuild-kit/cjs-loader'),
+  '--loader',
+  require.resolve('@esbuild-kit/esm-loader'),
+];
 
 export async function startBackendExperimental(options: BackendServeOptions) {
   const envEnv = process.env as { NODE_ENV: string };

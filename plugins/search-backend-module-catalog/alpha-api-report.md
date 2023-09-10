@@ -4,21 +4,20 @@
 
 ```ts
 import { BackendFeature } from '@backstage/backend-plugin-api';
-import { DefaultCatalogCollatorFactoryOptions } from '@backstage/plugin-search-backend-module-catalog';
-import { TaskScheduleDefinition } from '@backstage/backend-tasks';
+import { CatalogCollatorEntityTransformer } from '@backstage/plugin-search-backend-module-catalog';
+import { ExtensionPoint } from '@backstage/backend-plugin-api';
 
 // @alpha
-export const searchModuleCatalogCollator: (
-  options?: SearchModuleCatalogCollatorOptions | undefined,
-) => BackendFeature;
-
-// @alpha
-export type SearchModuleCatalogCollatorOptions = Omit<
-  DefaultCatalogCollatorFactoryOptions,
-  'discovery' | 'tokenManager' | 'catalogClient'
-> & {
-  schedule?: TaskScheduleDefinition;
+export type CatalogCollatorExtensionPoint = {
+  setEntityTransformer(transformer: CatalogCollatorEntityTransformer): void;
 };
+
+// @alpha
+export const catalogCollatorExtensionPoint: ExtensionPoint<CatalogCollatorExtensionPoint>;
+
+// @alpha
+const _default: () => BackendFeature;
+export default _default;
 
 // (No @packageDocumentation comment for this package)
 ```

@@ -1,5 +1,22 @@
 # @backstage/plugin-kubernetes-common
 
+## 0.6.6-next.1
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/catalog-model@1.4.2-next.1
+  - @backstage/plugin-permission-common@0.7.8-next.1
+
+## 0.6.6-next.0
+
+### Patch Changes
+
+- ccf00accb408: Add AWS Annotations to Kubernetes Cluster Resource
+- Updated dependencies
+  - @backstage/catalog-model@1.4.2-next.0
+  - @backstage/plugin-permission-common@0.7.8-next.0
+
 ## 0.6.5
 
 ### Patch Changes
