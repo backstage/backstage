@@ -22,7 +22,10 @@ export class AppTranslationApiImpl implements AppTranslationApi {
   // (undocumented)
   addResources<Messages extends Record<string, string>>(
     translationRef: TranslationRef<Messages>,
-    initResources?: TranslationMessages<TranslationRef<Messages>>,
+    initResources?: Record<
+      string,
+      TranslationMessages<TranslationRef<Messages>>
+    >,
   ): void;
   // (undocumented)
   addResourcesByRef<Messages extends Record<string, string>>(
@@ -39,7 +42,7 @@ export class AppTranslationApiImpl implements AppTranslationApi {
 // @alpha (undocumented)
 export function createTranslationResource<T extends TranslationRef>(options: {
   ref: T;
-  messages?: TranslationMessages<T>;
+  messages?: Record<string, TranslationMessages<T>>;
   lazyMessages: Record<
     string,
     () => Promise<{
@@ -48,7 +51,7 @@ export function createTranslationResource<T extends TranslationRef>(options: {
   >;
 }): {
   ref: T;
-  messages?: TranslationMessages<T> | undefined;
+  messages?: Record<string, TranslationMessages<T>> | undefined;
   lazyMessages: Record<
     string,
     () => Promise<{
@@ -63,7 +66,7 @@ export type ExperimentalI18n = {
   fallbackLanguage?: string | string[];
   messages?: Array<{
     ref: TranslationRef;
-    messages?: TranslationMessages<TranslationRef>;
+    messages?: Record<string, TranslationMessages<TranslationRef>>;
     lazyMessages: Record<
       string,
       () => Promise<{
@@ -75,7 +78,7 @@ export type ExperimentalI18n = {
 
 // @alpha (undocumented)
 export type TranslationMessages<T> = T extends TranslationRef<infer R>
-  ? Record<string, Partial<R>>
+  ? Partial<R>
   : never;
 
 // (No @packageDocumentation comment for this package)

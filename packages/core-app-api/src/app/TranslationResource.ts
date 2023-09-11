@@ -18,13 +18,13 @@ import { TranslationRef } from '@backstage/core-plugin-api/alpha';
 
 /** @alpha */
 export type TranslationMessages<T> = T extends TranslationRef<infer R>
-  ? Record<string, Partial<R>>
+  ? Partial<R>
   : never;
 
 /** @alpha */
 export function createTranslationResource<T extends TranslationRef>(options: {
   ref: T;
-  messages?: TranslationMessages<T>;
+  messages?: Record<string, TranslationMessages<T>>;
   lazyMessages: Record<
     string,
     () => Promise<{ messages: TranslationMessages<T> }>
