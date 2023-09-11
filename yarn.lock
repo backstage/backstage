@@ -7510,8 +7510,11 @@ __metadata:
   resolution: "@backstage/plugin-jira-dashboard-backend@workspace:plugins/jira-dashboard-backend"
   dependencies:
     "@backstage/backend-common": "workspace:^"
+    "@backstage/catalog-client": "workspace:^"
     "@backstage/cli": "workspace:^"
     "@backstage/config": "workspace:^"
+    "@backstage/plugin-auth-node": "workspace:^"
+    "@backstage/plugin-permission-common": "workspace:^"
     "@types/express": "*"
     "@types/supertest": ^2.0.8
     express: ^4.17.1
@@ -7534,6 +7537,7 @@ __metadata:
     "@backstage/core-components": "workspace:^"
     "@backstage/core-plugin-api": "workspace:^"
     "@backstage/dev-utils": "workspace:^"
+    "@backstage/plugin-catalog-react": "workspace:^"
     "@backstage/test-utils": "workspace:^"
     "@backstage/theme": "workspace:^"
     "@material-ui/core": ^4.9.13

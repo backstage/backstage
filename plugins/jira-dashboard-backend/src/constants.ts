@@ -13,19 +13,5 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
-import { createRouter } from '@backstage/plugin-jira-dashboard-backend';
-import { Router } from 'express';
-import { PluginEnvironment } from '../types';
-
-export default async function createPlugin(
-  env: PluginEnvironment,
-): Promise<Router> {
-  return await createRouter({
-    logger: env.logger,
-    config: env.config,
-    discovery: env.discovery,
-    identity: env.identity,
-    tokenManager: env.tokenManager,
-  });
-}
+export const JIRA_BASE_URL_CONFIG_PATH = 'jira.baseUrl';
+export const JIRA_TOKEN_CONFIG_PATH = 'jira.token';
