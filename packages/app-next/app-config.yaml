@@ -2,6 +2,8 @@ app:
   experimental:
     packages: 'all' # ✨
 
+  extensions:
+    - apis.plugin.graphiql.browse.gitlab: true
 
   # scmAuthExtension: >-
   #   createScmAuthExtension({

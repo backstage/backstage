@@ -34,10 +34,13 @@
   ],
   "dependencies": {
     "@backstage/config": "workspace:^",
+    "@backstage/core-app-api": "workspace:^",
+    "@backstage/core-components": "workspace:^",
     "@backstage/core-plugin-api": "workspace:^",
     "@backstage/frontend-plugin-api": "workspace:^",
     "@backstage/plugin-graphiql": "workspace:^",
     "@backstage/types": "workspace:^",
+    "@material-ui/core": "^4.12.4",
     "lodash": "^4.17.21"
   },
   "peerDependencies": {
