@@ -17984,11 +17984,11 @@ __metadata:
   linkType: hard
 
 "@types/node-forge@npm:^1.3.0":
-  version: 1.3.4
-  resolution: "@types/node-forge@npm:1.3.4"
+  version: 1.3.5
+  resolution: "@types/node-forge@npm:1.3.5"
   dependencies:
     "@types/node": "*"
-  checksum: c3c53ee5039a10d724bfc64fe859106baf0e39c4cac90a5d0ddd3480bf044de6ce145f104d4fa0184c365dff59df7ab4b754172c9d87800f751d10ccd7dcd1ad
+  checksum: b93dae2639ab166d8703567285538f14a53fbe9199b02c1e3752d147260be4a8be5257246558a81fc3eee3c5880704039a6aa22c4415aeb06758aad0391ac39c
   languageName: node
   linkType: hard
 
