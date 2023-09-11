@@ -5667,6 +5667,21 @@ __metadata:
   languageName: unknown
   linkType: soft
 
+"@backstage/plugin-catalog-backend-module-scaffolder-entities@^0.0.0, @backstage/plugin-catalog-backend-module-scaffolder-entities@workspace:^, @backstage/plugin-catalog-backend-module-scaffolder-entities@workspace:plugins/catalog-backend-module-scaffolder-entities":
+  version: 0.0.0-use.local
+  resolution: "@backstage/plugin-catalog-backend-module-scaffolder-entities@workspace:plugins/catalog-backend-module-scaffolder-entities"
+  dependencies:
+    "@backstage/backend-common": "workspace:^"
+    "@backstage/backend-plugin-api": "workspace:^"
+    "@backstage/backend-test-utils": "workspace:^"
+    "@backstage/catalog-model": "workspace:^"
+    "@backstage/cli": "workspace:^"
+    "@backstage/plugin-catalog-common": "workspace:^"
+    "@backstage/plugin-catalog-node": "workspace:^"
+    "@backstage/plugin-scaffolder-common": "workspace:^"
+  languageName: unknown
+  linkType: soft
+
 "@backstage/plugin-catalog-backend-module-unprocessed@workspace:^, @backstage/plugin-catalog-backend-module-unprocessed@workspace:plugins/catalog-backend-module-unprocessed":
   version: 0.0.0-use.local
   resolution: "@backstage/plugin-catalog-backend-module-unprocessed@workspace:plugins/catalog-backend-module-unprocessed"
@@ -8637,6 +8652,7 @@ __metadata:
     "@backstage/integration": "workspace:^"
     "@backstage/plugin-auth-node": "workspace:^"
     "@backstage/plugin-catalog-backend": "workspace:^"
+    "@backstage/plugin-catalog-backend-module-scaffolder-entities": "workspace:^"
     "@backstage/plugin-catalog-common": "workspace:^"
     "@backstage/plugin-catalog-node": "workspace:^"
     "@backstage/plugin-permission-common": "workspace:^"
@@ -25809,6 +25825,7 @@ __metadata:
     "@backstage/plugin-azure-devops-backend": "workspace:^"
     "@backstage/plugin-badges-backend": "workspace:^"
     "@backstage/plugin-catalog-backend": "workspace:^"
+    "@backstage/plugin-catalog-backend-module-scaffolder-entities": ^0.0.0
     "@backstage/plugin-catalog-backend-module-unprocessed": "workspace:^"
     "@backstage/plugin-devtools-backend": "workspace:^"
     "@backstage/plugin-entity-feedback-backend": "workspace:^"
@@ -25850,6 +25867,7 @@ __metadata:
     "@backstage/plugin-azure-sites-backend": "workspace:^"
     "@backstage/plugin-badges-backend": "workspace:^"
     "@backstage/plugin-catalog-backend": "workspace:^"
+    "@backstage/plugin-catalog-backend-module-scaffolder-entities": ^0.0.0
     "@backstage/plugin-catalog-backend-module-unprocessed": "workspace:^"
     "@backstage/plugin-catalog-node": "workspace:^"
     "@backstage/plugin-code-coverage-backend": "workspace:^"

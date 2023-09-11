@@ -14,26 +14,21 @@
  * limitations under the License.
  */
 
-import { createBackendModule } from '@backstage/backend-plugin-api';
 import { catalogProcessingExtensionPoint } from '@backstage/plugin-catalog-node/alpha';
-import { ScaffolderEntitiesProcessor } from '../processor';
+import { ScaffolderEntitiesProcessor } from './processor';
+import { catalogModuleTemplateKind } from './module';
+import { startTestBackend } from '@backstage/backend-test-utils';
 
-/**
- * Registers support for the Template kind to the catalog backend plugin.
- *
- * @alpha
- */
-export const catalogModuleTemplateKind = createBackendModule({
-  moduleId: 'templateKind',
-  pluginId: 'catalog',
-  register(env) {
-    env.registerInit({
-      deps: {
-        catalog: catalogProcessingExtensionPoint,
-      },
-      async init({ catalog }) {
-        catalog.addProcessor(new ScaffolderEntitiesProcessor());
-      },
+describe('catalogModuleTemplateKind', () => {
+  it('should register the extension point', async () => {
+    const extensionPoint = { addProcessor: jest.fn() };
+    await startTestBackend({
+      extensionPoints: [[catalogProcessingExtensionPoint, extensionPoint]],
+      features: [catalogModuleTemplateKind()],
     });
-  },
+
+    expect(extensionPoint.addProcessor).toHaveBeenCalledWith(
+      new ScaffolderEntitiesProcessor(),
+    );
+  });
 });

@@ -15,11 +15,11 @@
  */
 
 import { CatalogBuilder } from '@backstage/plugin-catalog-backend';
-import { ScaffolderEntitiesProcessor } from '@backstage/plugin-scaffolder-backend';
+import { ScaffolderEntitiesProcessor } from '@backstage/plugin-catalog-backend-module-scaffolder-entities';
+import { UnprocessedEntitiesModule } from '@backstage/plugin-catalog-backend-module-unprocessed';
 import { Router } from 'express';
 import { PluginEnvironment } from '../types';
 import { DemoEventBasedEntityProvider } from './DemoEventBasedEntityProvider';
-import { UnprocessedEntitiesModule } from '@backstage/plugin-catalog-backend-module-unprocessed';
 
 export default async function createPlugin(
   env: PluginEnvironment,

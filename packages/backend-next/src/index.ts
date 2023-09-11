@@ -23,6 +23,9 @@ backend.add(import('@backstage/plugin-app-backend/alpha'));
 backend.add(import('@backstage/plugin-azure-devops-backend'));
 backend.add(import('@backstage/plugin-badges-backend'));
 backend.add(import('@backstage/plugin-catalog-backend-module-unprocessed'));
+backend.add(
+  import('@backstage/plugin-catalog-backend-module-scaffolder-entities'),
+);
 backend.add(import('@backstage/plugin-catalog-backend/alpha'));
 backend.add(import('@backstage/plugin-devtools-backend'));
 backend.add(import('@backstage/plugin-entity-feedback-backend'));

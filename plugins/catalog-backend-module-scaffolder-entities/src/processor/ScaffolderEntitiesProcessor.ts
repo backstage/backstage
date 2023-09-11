@@ -32,7 +32,11 @@ import {
   templateEntityV1beta3Validator,
 } from '@backstage/plugin-scaffolder-common';
 
-/** @public */
+/**
+ * Adds support for scaffolder specific entity kinds to the catalog.
+ *
+ * @public
+ */
 export class ScaffolderEntitiesProcessor implements CatalogProcessor {
   getProcessorName(): string {
     return 'ScaffolderEntitiesProcessor';
