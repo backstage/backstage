@@ -245,8 +245,7 @@ createApiFactory({
         req.url = "https://cors-anywhere.herokuapp.com/" + req.url;
         return req;
       };
-      const definitionWidgets = defaultDefinitionWidgets();
-      definitionWidgets.map(obj => {
+      const definitionWidgets = defaultDefinitionWidgets().map(obj => {
         if (obj.type === 'openapi') {
           return {
             ...obj,
