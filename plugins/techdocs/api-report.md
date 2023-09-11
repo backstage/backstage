@@ -79,6 +79,7 @@ export const DocsTable: {
   columns: {
     createNameColumn(): TableColumn<DocsTableRow>;
     createOwnerColumn(): TableColumn<DocsTableRow>;
+    createKindColumn(): TableColumn<DocsTableRow>;
     createTypeColumn(): TableColumn<DocsTableRow>;
   };
   actions: {
@@ -142,6 +143,7 @@ export const EntityListDocsTable: {
   columns: {
     createNameColumn(): TableColumn<DocsTableRow>;
     createOwnerColumn(): TableColumn<DocsTableRow>;
+    createKindColumn(): TableColumn<DocsTableRow>;
     createTypeColumn(): TableColumn<DocsTableRow>;
   };
   actions: {
