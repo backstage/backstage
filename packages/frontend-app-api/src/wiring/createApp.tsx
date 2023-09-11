@@ -174,13 +174,8 @@ export function createApp(options: {
   return {
     createRoot() {
       const rootComponents = rootInstances
-        .map(
-          e =>
-            e.data.get(
-              coreExtensionData.reactComponent.id,
-            ) as typeof coreExtensionData.reactComponent.T,
-        )
-        .filter(Boolean);
+        .map(e => e.getData(coreExtensionData.reactComponent))
+        .filter((x): x is React.ComponentType => !!x);
       return (
         <ApiProvider apis={apiHolder}>
           <AppContextProvider appContext={appContext}>
@@ -254,13 +249,8 @@ function createApiHolder(
   const apiFactories =
     coreExtension.attachments
       .get('apis')
-      ?.map(
-        e =>
-          e.data.get(
-            coreExtensionData.apiFactory.id,
-          ) as typeof coreExtensionData.apiFactory.T,
-      )
-      .filter(Boolean) ?? [];
+      ?.map(e => e.getData(coreExtensionData.apiFactory))
+      .filter((x): x is AnyApiFactory => !!x) ?? [];
 
   for (const factory of apiFactories) {
     factoryRegistry.register('default', factory);
@@ -307,10 +297,8 @@ export function extractRouteInfoFromInstanceTree(
   const results = new Map<RouteRef, string>();
 
   function visit(current: ExtensionInstance, basePath: string) {
-    const routePath = current.data.get(coreExtensionData.routePath.id) ?? '';
-    const routeRef = current.data.get(
-      coreExtensionData.routeRef.id,
-    ) as RouteRef;
+    const routePath = current.getData(coreExtensionData.routePath) ?? '';
+    const routeRef = current.getData(coreExtensionData.routeRef);
 
     // TODO: join paths in a more robust way
     const fullPath = basePath + routePath;
