@@ -16,17 +16,46 @@
 import {
   Content,
   ContentHeader,
+  Progress,
+  ResponseErrorPanel,
   SupportButton,
 } from '@backstage/core-components';
 import { Grid } from '@material-ui/core';
 import React from 'react';
 import { JiraProjectCard } from '../JiraProjectCard';
-import exampleJiraResponse from '../../mockedJiraResponse.json';
 import { JiraTable } from '../JiraTable';
-import { JiraResponse } from '../../types';
+import { useApi } from '@backstage/core-plugin-api';
+import { useEntity } from '@backstage/plugin-catalog-react';
+import { PROJECT_KEY_ANNOTATION } from '../../annotations';
+import { stringifyEntityRef } from '@backstage/catalog-model';
+import { jiraDashboardApiRef } from '../../api';
+import { useJira } from '../../hooks/useJira';
+import { JiraDataResponse } from '../../types';
 
 export const JiraDashboardContent = () => {
-  const jiraResponse = exampleJiraResponse as JiraResponse;
+  const { entity } = useEntity();
+  const projectKey = entity?.metadata.annotations?.[PROJECT_KEY_ANNOTATION]!;
+  const api = useApi(jiraDashboardApiRef);
+
+  const {
+    data: jiraResponse,
+    loading,
+    error,
+  } = useJira(stringifyEntityRef(entity), projectKey, api);
+
+  if (loading) {
+    return <Progress />;
+  } else if (error) {
+    return <ResponseErrorPanel error={error} />;
+  } else if (!jiraResponse || !jiraResponse.data || !jiraResponse.project) {
+    return (
+      <ResponseErrorPanel
+        error={Error(
+          `Could not fetch Jira Dashboard content for project key: ${projectKey}`,
+        )}
+      />
+    );
+  }
 
   return (
     <Content>
@@ -39,14 +68,11 @@ export const JiraDashboardContent = () => {
         <Grid item md={6} xs={12}>
           <JiraProjectCard {...jiraResponse.project} />
         </Grid>
-        {jiraResponse.data.map(
-          (value: any) =>
-            !!value.issues && (
-              <Grid item key={value.name} md={6} xs={12}>
-                <JiraTable value={value} />
-              </Grid>
-            ),
-        )}
+        {jiraResponse.data.map((value: JiraDataResponse) => (
+          <Grid item key={value.name} md={6} xs={12}>
+            <JiraTable value={value} />
+          </Grid>
+        ))}
       </Grid>
     </Content>
   );

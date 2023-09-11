@@ -16,10 +16,15 @@
 import {
   createPlugin,
   createRoutableExtension,
+  discoveryApiRef,
+  createApiFactory,
+  fetchApiRef,
 } from '@backstage/core-plugin-api';
 import { rootRouteRef } from './routes';
 import { Entity } from '@backstage/catalog-model';
 import { PROJECT_KEY_ANNOTATION } from './annotations';
+import { JiraDashboardClient, jiraDashboardApiRef } from './api';
+
 /**
  * Checks if the entity has a jira dashboard annotation.
  * @public
@@ -30,6 +35,14 @@ export const isJiraDashboardAvailable = (entity: Entity) =>
 
 export const jiraDashboardPlugin = createPlugin({
   id: 'jira-dashboard',
+  apis: [
+    createApiFactory({
+      api: jiraDashboardApiRef,
+      deps: { discoveryApi: discoveryApiRef, fetchApi: fetchApiRef },
+      factory: ({ discoveryApi, fetchApi }) =>
+        new JiraDashboardClient({ discoveryApi, fetchApi }),
+    }),
+  ],
   routes: {
     root: rootRouteRef,
   },
