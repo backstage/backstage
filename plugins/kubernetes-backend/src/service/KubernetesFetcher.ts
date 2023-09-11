@@ -20,7 +20,6 @@ import {
   CoreV1Api,
   KubeConfig,
   Metrics,
-  User,
   bufferFromFileOrString,
   topPods,
 } from '@kubernetes/client-node';
@@ -214,14 +213,19 @@ export class KubernetesClientBasedFetcher implements KubernetesFetcher {
 
     let url: URL;
     let requestInit: RequestInit;
+    const authProvider =
+      clusterDetails.authMetadata[ANNOTATION_KUBERNETES_AUTH_PROVIDER];
     if (
+      authProvider === 'serviceAccount' &&
+      !clusterDetails.authMetadata.serviceAccountToken &&
+      fs.pathExistsSync(Config.SERVICEACCOUNT_CA_PATH)
+    ) {
+      [url, requestInit] = this.fetchArgsInCluster(credential);
+    } else if (
       credential.type === 'bearer token' ||
-      clusterDetails.authMetadata[ANNOTATION_KUBERNETES_AUTH_PROVIDER] ===
-        'localKubectlProxy'
+      authProvider === 'localKubectlProxy'
     ) {
       [url, requestInit] = this.fetchArgs(clusterDetails, credential);
-    } else if (fs.pathExistsSync(Config.SERVICEACCOUNT_TOKEN_PATH)) {
-      [url, requestInit] = this.fetchArgsInCluster();
     } else {
       return Promise.reject(
         new Error(
@@ -271,23 +275,24 @@ export class KubernetesClientBasedFetcher implements KubernetesFetcher {
     }
     return [url, requestInit];
   }
-  private fetchArgsInCluster(): [URL, RequestInit] {
-    const kc = new KubeConfig();
-    kc.loadFromCluster();
-    // loadFromCluster is guaranteed to populate the cluster/user/context
-    const cluster = kc.getCurrentCluster() as Cluster;
-    const user = kc.getCurrentUser() as User;
-
-    const token = fs.readFileSync(user.authProvider.config.tokenFile);
-
+  private fetchArgsInCluster(
+    credential: KubernetesCredential,
+  ): [URL, RequestInit] {
     const requestInit: RequestInit = {
       method: 'GET',
       headers: {
         Accept: 'application/json',
         'Content-Type': 'application/json',
-        Authorization: `Bearer ${token}`,
+        ...(credential.type === 'bearer token' && {
+          Authorization: `Bearer ${credential.token}`,
+        }),
       },
     };
+
+    const kc = new KubeConfig();
+    kc.loadFromCluster();
+    // loadFromCluster is guaranteed to populate the cluster/user/context
+    const cluster = kc.getCurrentCluster() as Cluster;
 
     const url = new URL(cluster.server);
     if (url.protocol === 'https:') {

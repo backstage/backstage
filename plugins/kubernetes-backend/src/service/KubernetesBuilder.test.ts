@@ -203,6 +203,7 @@ describe('KubernetesBuilder', () => {
         url: 'https://localhost:1234',
         authMetadata: {
           [ANNOTATION_KUBERNETES_AUTH_PROVIDER]: 'serviceAccount',
+          serviceAccountToken: 'placeholder-token',
         },
       };
       const clusters: ClusterDetails[] = [

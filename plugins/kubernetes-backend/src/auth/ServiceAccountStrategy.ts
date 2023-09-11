@@ -14,6 +14,8 @@
  * limitations under the License.
  */
 
+import { KubeConfig, User } from '@kubernetes/client-node';
+import fs from 'fs-extra';
 import { AuthenticationStrategy, KubernetesCredential } from './types';
 import { ClusterDetails } from '../types/types';
 
@@ -26,7 +28,18 @@ export class ServiceAccountStrategy implements AuthenticationStrategy {
     clusterDetails: ClusterDetails,
   ): Promise<KubernetesCredential> {
     const token = clusterDetails.authMetadata.serviceAccountToken;
-    return token ? { type: 'bearer token', token } : { type: 'anonymous' };
+    if (token) {
+      return { type: 'bearer token', token };
+    }
+    const kc = new KubeConfig();
+    kc.loadFromCluster();
+    // loadFromCluster is guaranteed to populate the user
+    const user = kc.getCurrentUser() as User;
+
+    return {
+      type: 'bearer token',
+      token: fs.readFileSync(user.authProvider.config.tokenFile).toString(),
+    };
   }
 
   public validate() {}

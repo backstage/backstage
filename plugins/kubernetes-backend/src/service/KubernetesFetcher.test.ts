@@ -909,8 +909,6 @@ describe('KubernetesFetcher', () => {
         process.env.KUBERNETES_SERVICE_PORT = '443';
         mockFs({
           '/var/run/secrets/kubernetes.io/serviceaccount/ca.crt': '',
-          '/var/run/secrets/kubernetes.io/serviceaccount/token':
-            'allowed-token',
         });
         worker.use(
           rest.get('https://10.10.10.10/api/v1/pods', (req, res, ctx) =>
@@ -928,9 +926,11 @@ describe('KubernetesFetcher', () => {
           clusterDetails: {
             name: 'overridden-to-in-cluster',
             url: 'http://ignored',
-            authMetadata: {},
+            authMetadata: {
+              [ANNOTATION_KUBERNETES_AUTH_PROVIDER]: 'serviceAccount',
+            },
           },
-          credential: { type: 'anonymous' },
+          credential: { type: 'bearer token', token: 'allowed-token' },
           objectTypesToFetch: new Set<ObjectToFetch>([
             {
               group: '',
