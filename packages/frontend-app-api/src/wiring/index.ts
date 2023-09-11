@@ -14,10 +14,4 @@
  * limitations under the License.
  */
 
-/**
- * Core API used by Backstage frontend apps.
- *
- * @packageDocumentation
- */
-
-export * from './wiring';
+export { createApp } from './createApp';
