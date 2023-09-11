@@ -139,10 +139,6 @@ module.exports = {
             from: '/docs/getting-started/running-backstage-locally',
             to: '/docs/getting-started/',
           },
-          {
-            from: '/docs/getting-started/contributors',
-            to: 'https://github.com/backstage/backstage/blob/master/CONTRIBUTING.md',
-          },
         ],
       },
     ],
