@@ -27,7 +27,9 @@ export class AksStrategy implements AuthenticationStrategy {
     requestAuth: KubernetesRequestAuth,
   ): Promise<KubernetesCredential> {
     const token = requestAuth.aks;
-    return token ? { type: 'bearer token', token } : { type: 'anonymous' };
+    return token
+      ? { type: 'bearer token', token: token as string }
+      : { type: 'anonymous' };
   }
   public validate(_: AuthMetadata) {}
 }

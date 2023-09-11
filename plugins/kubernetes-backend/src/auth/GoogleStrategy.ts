@@ -33,7 +33,7 @@ export class GoogleStrategy implements AuthenticationStrategy {
         'Google token not found under auth.google in request body',
       );
     }
-    return { type: 'bearer token', token };
+    return { type: 'bearer token', token: token as string };
   }
   public validate(_: AuthMetadata) {}
 }

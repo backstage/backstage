@@ -21,6 +21,7 @@ import {
   ANNOTATION_KUBERNETES_AUTH_PROVIDER,
   ANNOTATION_KUBERNETES_OIDC_TOKEN_PROVIDER,
   ObjectsByEntityResponse,
+  KubernetesRequestAuth,
 } from '@backstage/plugin-kubernetes-common';
 import express from 'express';
 import request from 'supertest';
@@ -55,7 +56,8 @@ describe('KubernetesBuilder', () => {
   let catalogApi: CatalogApi;
   let permissions: jest.Mocked<PermissionEvaluator>;
 
-  beforeAll(async () => {
+  beforeEach(async () => {
+    jest.resetAllMocks();
     const logger = getVoidLogger();
     config = new ConfigReader({
       kubernetes: {
@@ -107,10 +109,6 @@ describe('KubernetesBuilder', () => {
       .build();
 
     app = express().use(router);
-  });
-
-  beforeEach(() => {
-    jest.resetAllMocks();
   });
 
   describe('get /clusters', () => {
@@ -298,8 +296,77 @@ describe('KubernetesBuilder', () => {
       expect(response.body).toEqual(result);
       expect(response.status).toEqual(200);
     });
+
+    it('reads auth data for custom strategy', async () => {
+      permissions.authorize.mockResolvedValue([
+        { result: AuthorizeResult.ALLOW },
+      ]);
+      const mockFetcher = {
+        fetchPodMetricsByNamespaces: jest
+          .fn()
+          .mockResolvedValue({ errors: [], responses: [] }),
+        fetchObjectsForService: jest.fn().mockResolvedValue({
+          errors: [],
+          responses: [
+            { type: 'pods', resources: [{ metadata: { name: 'pod1' } }] },
+          ],
+        }),
+      };
+      const { router } = await KubernetesBuilder.createBuilder({
+        logger: getVoidLogger(),
+        config,
+        catalogApi,
+        permissions,
+      })
+        .addAuthStrategy('custom', {
+          getCredential: jest
+            .fn<
+              Promise<KubernetesCredential>,
+              [ClusterDetails, KubernetesRequestAuth]
+            >()
+            .mockImplementation(async (_, requestAuth) => ({
+              type: 'bearer token',
+              token: requestAuth.custom as string,
+            })),
+          validate: jest.fn(),
+        })
+        .setClusterSupplier({
+          getClusters: jest
+            .fn<Promise<ClusterDetails[]>, []>()
+            .mockResolvedValue([
+              {
+                name: 'custom-cluster',
+                url: 'http://my.cluster.url',
+                authMetadata: {
+                  [ANNOTATION_KUBERNETES_AUTH_PROVIDER]: 'custom',
+                },
+              },
+            ]),
+        })
+        .setFetcher(mockFetcher)
+        .build();
+      app = express().use(router);
+
+      await request(app)
+        .post('/services/test-service')
+        .send({
+          entity: {
+            metadata: {
+              name: 'thing',
+            },
+          },
+          auth: { custom: 'custom-token' },
+        });
+
+      expect(mockFetcher.fetchObjectsForService).toHaveBeenCalledWith(
+        expect.objectContaining({
+          credential: { type: 'bearer token', token: 'custom-token' },
+        }),
+      );
+    });
   });
-  describe('post /proxy', () => {
+
+  describe('/proxy', () => {
     const worker = setupServer();
     setupRequestMockHandlers(worker);
 
@@ -399,6 +466,59 @@ metadata:
       const response = await proxyEndpointRequest;
 
       expect(response.status).toEqual(403);
+    });
+
+    it('permits custom client-side auth strategy', async () => {
+      worker.use(
+        rest.get('http://my.cluster.url/api/v1/namespaces', (req, res, ctx) => {
+          if (req.headers.get('Authorization') !== 'custom-token') {
+            return res(ctx.status(401));
+          }
+          return res(ctx.json({ items: [] }));
+        }),
+      );
+      permissions.authorize.mockResolvedValue([
+        { result: AuthorizeResult.ALLOW },
+      ]);
+      const { router } = await KubernetesBuilder.createBuilder({
+        logger: getVoidLogger(),
+        config,
+        catalogApi,
+        permissions,
+      })
+        .addAuthStrategy('custom', {
+          getCredential: jest
+            .fn<
+              Promise<KubernetesCredential>,
+              [ClusterDetails, KubernetesRequestAuth]
+            >()
+            .mockResolvedValue({ type: 'anonymous' }),
+          validate: jest.fn(),
+        })
+        .setClusterSupplier({
+          getClusters: jest
+            .fn<Promise<ClusterDetails[]>, []>()
+            .mockResolvedValue([
+              {
+                name: 'custom-cluster',
+                url: 'http://my.cluster.url',
+                authMetadata: {
+                  [ANNOTATION_KUBERNETES_AUTH_PROVIDER]: 'custom',
+                },
+              },
+            ]),
+        })
+        .build();
+      app = express().use(router);
+
+      const proxyEndpointRequest = request(app)
+        .get('/proxy/api/v1/namespaces')
+        .set(HEADER_KUBERNETES_CLUSTER, 'custom-cluster')
+        .set(HEADER_KUBERNETES_AUTH, 'custom-token');
+      worker.use(rest.all(proxyEndpointRequest.url, req => req.passthrough()));
+      const response = await proxyEndpointRequest;
+
+      expect(response.body).toStrictEqual({ items: [] });
     });
   });
   describe('get /.well-known/backstage/permissions/metadata', () => {

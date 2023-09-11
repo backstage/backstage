@@ -166,6 +166,8 @@ export const HEADER_KUBERNETES_CLUSTER: string;
 export class KubernetesBuilder {
   constructor(env: KubernetesEnvironment);
   // (undocumented)
+  addAuthStrategy(key: string, strategy: AuthenticationStrategy): this;
+  // (undocumented)
   build(): KubernetesBuilderReturn;
   // (undocumented)
   protected buildAuthStrategyMap(): {

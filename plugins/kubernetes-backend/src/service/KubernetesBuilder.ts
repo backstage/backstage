@@ -204,6 +204,11 @@ export class KubernetesBuilder {
     this.authStrategyMap = authStrategyMap;
   }
 
+  public addAuthStrategy(key: string, strategy: AuthenticationStrategy) {
+    this.getAuthStrategyMap()[key] = strategy;
+    return this;
+  }
+
   protected buildCustomResources() {
     const customResources: CustomResource[] = (
       this.env.config.getOptionalConfigArray('kubernetes.customResources') ?? []

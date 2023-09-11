@@ -13,6 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+import { JsonObject } from '@backstage/types';
 import {
   ANNOTATION_KUBERNETES_OIDC_TOKEN_PROVIDER,
   KubernetesRequestAuth,
@@ -38,14 +39,14 @@ export class OidcStrategy implements AuthenticationStrategy {
       );
     }
 
-    const token = authConfig.oidc?.[oidcTokenProvider];
+    const token = (authConfig.oidc as JsonObject | null)?.[oidcTokenProvider];
 
     if (!token) {
       throw new Error(
         `Auth token not found under oidc.${oidcTokenProvider} in request body`,
       );
     }
-    return { type: 'bearer token', token };
+    return { type: 'bearer token', token: token as string };
   }
 
   public validate(authMetadata: AuthMetadata) {
