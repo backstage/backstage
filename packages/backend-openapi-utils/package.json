@@ -34,8 +34,10 @@
     "supertest": "^6.1.3"
   },
   "files": [
-    "dist"
+    "dist",
+    "config.d.ts"
   ],
+  "configSchema": "config.d.ts",
   "dependencies": {
     "@backstage/backend-plugin-api": "workspace:^",
     "@backstage/config": "workspace:^",
