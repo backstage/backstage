@@ -126,6 +126,11 @@ export interface JenkinsApi {
     buildNumber: string;
   }): Promise<Build>;
 
+  getJobBuilds(options: {
+    entity: CompoundEntityRef;
+    jobFullName: string;
+  }): Promise<Job>;
+
   retry(options: {
     entity: CompoundEntityRef;
     jobFullName: string;
