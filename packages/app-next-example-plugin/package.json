@@ -36,7 +36,7 @@
   "dependencies": {
     "@backstage/core-components": "workspace:^",
     "@backstage/frontend-plugin-api": "workspace:^",
-    "@material-ui/icons": "^4.9.1"
+    "@mui/icons-material": "^5.0.0"
   },
   "peerDependencies": {
     "react": "^16.13.1 || ^17.0.0",

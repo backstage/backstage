@@ -42,7 +42,7 @@
     "@backstage/plugin-home-react": "workspace:^",
     "@backstage/theme": "workspace:^",
     "@material-ui/core": "^4.12.2",
-    "@material-ui/icons": "^4.9.1",
+    "@mui/icons-material": "^5.0.0",
     "@material-ui/lab": "4.0.0-alpha.61",
     "@rjsf/core-v5": "npm:@rjsf/core@5.7.3",
     "@rjsf/material-ui-v5": "npm:@rjsf/material-ui@5.7.3",
