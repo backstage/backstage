@@ -23,6 +23,8 @@ import mapValues from 'lodash/mapValues';
 
 /** @internal */
 export interface ExtensionInstance {
+  readonly $$type: '@backstage/ExtensionInstance';
+
   readonly id: string;
   /**
    * Get concrete value for the given extension data reference. Returns undefined if no value is available.
@@ -32,7 +34,6 @@ export interface ExtensionInstance {
    * Maps input names to the actual instances given to them.
    */
   readonly attachments: Map<string, ExtensionInstance[]>;
-  readonly $$type: 'extension-instance';
 }
 
 /** @internal */
@@ -86,12 +87,12 @@ export function createExtensionInstance(options: {
   }
 
   return {
+    $$type: '@backstage/ExtensionInstance',
     id: options.extension.id,
     getData<T>(ref: ExtensionDataRef<T>): T | undefined {
       return extensionData.get(ref.id) as T | undefined;
     },
 
     attachments,
-    $$type: 'extension-instance',
   };
 }

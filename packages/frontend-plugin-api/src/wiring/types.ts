@@ -26,7 +26,7 @@ export type AnyExtensionDataMap = {
 
 /** @public */
 export interface Extension<TConfig> {
-  $$type: 'extension';
+  $$type: '@backstage/Extension';
   id: string;
   at: string;
   disabled: boolean;
