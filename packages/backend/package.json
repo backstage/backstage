@@ -50,6 +50,7 @@
     "@backstage/plugin-explore-backend": "workspace:^",
     "@backstage/plugin-graphql-backend": "workspace:^",
     "@backstage/plugin-jenkins-backend": "workspace:^",
+    "@backstage/plugin-jira-dashboard-backend": "^0.0.0",
     "@backstage/plugin-kafka-backend": "workspace:^",
     "@backstage/plugin-kubernetes-backend": "workspace:^",
     "@backstage/plugin-lighthouse-backend": "workspace:^",

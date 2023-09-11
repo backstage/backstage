@@ -66,6 +66,7 @@ import lighthouse from './plugins/lighthouse';
 import linguist from './plugins/linguist';
 import devTools from './plugins/devtools';
 import nomad from './plugins/nomad';
+import jiraDashboard from './plugins/jiraDashboard';
 import { PluginEnvironment } from './types';
 import { ServerPermissionClient } from '@backstage/plugin-permission-node';
 import { DefaultIdentityClient } from '@backstage/plugin-auth-node';
@@ -174,6 +175,9 @@ async function main() {
   const linguistEnv = useHotMemoize(module, () => createEnv('linguist'));
   const devToolsEnv = useHotMemoize(module, () => createEnv('devtools'));
   const nomadEnv = useHotMemoize(module, () => createEnv('nomad'));
+  const jiraDashboardEnv = useHotMemoize(module, () =>
+    createEnv('jira-dashboard'),
+  );
 
   const apiRouter = Router();
   apiRouter.use('/catalog', await catalog(catalogEnv));
@@ -201,6 +205,7 @@ async function main() {
   apiRouter.use('/linguist', await linguist(linguistEnv));
   apiRouter.use('/devtools', await devTools(devToolsEnv));
   apiRouter.use('/nomad', await nomad(nomadEnv));
+  apiRouter.use('/jira-dashboard', await jiraDashboard(jiraDashboardEnv));
   apiRouter.use(notFoundHandler());
 
   await lighthouse(lighthouseEnv);
