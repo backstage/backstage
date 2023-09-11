@@ -140,6 +140,9 @@ const app = createApp({
 });
 ```
 
+> NOTE: You can configure sign-in to use a redirect flow with no pop-up by adding
+> `enableExperimentalRedirectFlow: true` to the root of your `app-config.yaml`
+
 ## Sign-In with Proxy Providers
 
 Some auth providers are so-called "proxy" providers, meaning they're meant to be used
