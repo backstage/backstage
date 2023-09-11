@@ -22,9 +22,12 @@ import { paths as cliPaths } from '../../lib/paths';
 export async function runner(
   paths: string[],
   command: (dir: string) => Promise<void>,
+  options?: {
+    concurrencyLimit: number;
+  },
 ) {
   const packages = await resolvePackagePaths({ paths });
-  const limit = pLimit(5);
+  const limit = pLimit(options?.concurrencyLimit ?? 5);
 
   const resultsList = await Promise.all(
     packages.map(pkg =>

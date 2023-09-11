@@ -22,6 +22,8 @@ import { SearchEngine } from '@backstage/plugin-search-common';
 import express from 'express';
 import request from 'supertest';
 import { createRouter } from './router';
+import { createSuperTestAgent } from '@backstage/backend-openapi-utils';
+import { Server } from 'http';
 
 const mockPermissionEvaluator: PermissionEvaluator = {
   authorize: () => {
@@ -33,7 +35,7 @@ const mockPermissionEvaluator: PermissionEvaluator = {
 };
 
 describe('createRouter', () => {
-  let app: express.Express;
+  let app: express.Express | Server;
   let mockSearchEngine: jest.Mocked<SearchEngine>;
 
   beforeAll(async () => {
@@ -65,15 +67,7 @@ describe('createRouter', () => {
       permissions: mockPermissionEvaluator,
       logger,
     });
-    app = express().use(router);
-
-    if (process.env.OPTIC_PROXY) {
-      app = app.listen(3000) as any;
-      app = {
-        ...app,
-        address: () => new URL(process.env.OPTIC_PROXY!),
-      } as any;
-    }
+    app = createSuperTestAgent(express().use(router));
   });
 
   beforeEach(() => {

@@ -38,12 +38,14 @@ import { RESOURCE_TYPE_CATALOG_ENTITY } from '@backstage/plugin-catalog-common/a
 import { CatalogProcessingOrchestrator } from '../processing/types';
 import { z } from 'zod';
 import { encodeCursor } from './util';
+import { createSuperTestAgent } from '@backstage/backend-openapi-utils';
+import { Server } from 'http';
 
 describe('createRouter readonly disabled', () => {
   let entitiesCatalog: jest.Mocked<EntitiesCatalog>;
   let locationService: jest.Mocked<LocationService>;
   let orchestrator: jest.Mocked<CatalogProcessingOrchestrator>;
-  let app: express.Express;
+  let app: express.Express | Server;
   let refreshService: RefreshService;
 
   beforeAll(async () => {
@@ -72,7 +74,7 @@ describe('createRouter readonly disabled', () => {
       config: new ConfigReader(undefined),
       permissionIntegrationRouter: express.Router(),
     });
-    app = express().use(router);
+    app = createSuperTestAgent(express().use(router));
   });
 
   beforeEach(() => {

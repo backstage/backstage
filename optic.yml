@@ -3,7 +3,7 @@ ruleset:
 capture:
   plugins/search-backend/src/schema/openapi.yaml:
     # 🔧 Runnable example with simple get requests.
-    # Run with "optic capture plugins/catalog-backend/src/schema/openapi.yaml --update interactive"
+    # Run with "optic capture plugins/search-backend/src/schema/openapi.yaml --update interactive"
     # You can change the server and the 'requests' section to experiment
     server:
       url: http://localhost:3000
@@ -13,3 +13,15 @@ capture:
         # 🔧 Specify a command that will generate traffic
         # We add the CI command here for the tests to run
         command: cd plugins/search-backend && CI=1 yarn backstage-cli package test
+  plugins/catalog-backend/src/schema/openapi.yaml:
+    server:
+      url: http://localhost:3000
+    requests:
+      run:
+        command: cd plugins/catalog-backend && CI=1 yarn backstage-cli package test
+  plugins/todo-backend/src/schema/openapi.yaml:
+    server:
+      url: http://localhost:3000
+    requests:
+      run:
+        command: cd plugins/todo-backend && CI=1 yarn backstage-cli package test

@@ -15,18 +15,12 @@
  */
 
 import fs from 'fs-extra';
-import YAML from 'js-yaml';
-import { isEqual, cloneDeep } from 'lodash';
 import { join } from 'path';
 import chalk from 'chalk';
-import { relative as relativePath, resolve as resolvePath } from 'path';
-import Parser from '@apidevtools/swagger-parser';
 import { runner } from './runner';
-import { paths as cliPaths } from '../../lib/paths';
-import { TS_MODULE, TS_SCHEMA_PATH, YAML_SCHEMA_PATH } from './constants';
+import { YAML_SCHEMA_PATH } from './constants';
 import { promisify } from 'util';
 import { exec as execCb } from 'child_process';
-import { getPortPromise } from 'portfinder';
 
 const exec = promisify(execCb);
 
@@ -35,37 +29,24 @@ async function test(directoryPath: string) {
   if (!(await fs.pathExists(openapiPath))) {
     return;
   }
+  await exec(`yarn optic diff ${openapiPath} --base origin/master`);
   try {
-    const port = await getPortPromise({
-      port: 20_000,
-      stopPort: 21_000,
-    });
-    const reverseProxyPort = await getPortPromise({
-      port: 21_001,
-      stopPort: 22_000,
-    });
-    await exec(
-      `yarn optic capture ${YAML_SCHEMA_PATH} https://localhost:${port} --proxy-port ${reverseProxyPort} --command "yarn test --ci --no-watch"`,
-      {
-        cwd: directoryPath,
-        env: {
-          NODE_ENV: 'test',
-          PORT: `${port}`,
-          REVERSE_PROXY_PORT: `${reverseProxyPort}`,
-        },
-      },
-    );
-    await exec(`yarn optic verify ${YAML_SCHEMA_PATH}`, {
-      cwd: directoryPath,
-    });
+    await exec(`yarn optic capture ${openapiPath}`);
   } catch (err) {
-    console.error(err);
+    err.message = err.stderr + err.stdout;
+    err.message = (err.message as string)
+      .split('\n')
+      .filter(e => !e.includes('Sending requests to serverPASS'))
+      .filter(e => e.trim())
+      .join('\n');
     throw err;
   }
 }
 
 export async function bulkCommand(paths: string[] = []): Promise<void> {
-  const resultsList = await runner(paths, dir => test(dir));
+  const resultsList = await runner(paths, dir => test(dir), {
+    concurrencyLimit: 1,
+  });
 
   let failed = false;
   for (const { relativeDir, resultText } of resultsList) {

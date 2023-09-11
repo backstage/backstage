@@ -13,15 +13,16 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+import { Express } from 'express';
+import { Server } from 'http';
 
-/**
- * Common functionalities for the openapi-router plugin.
- *
- * @packageDocumentation
- */
-import * as internal from './types';
-
-export { internal };
-export type { ApiRouter } from './router';
-export { createValidatedOpenApiRouter } from './stub';
-export { createSuperTestAgent } from './testUtils';
+export const createSuperTestAgent = (app: Express): Server | Express => {
+  if (process.env.OPTIC_PROXY) {
+    const server = app.listen(3000);
+    return {
+      ...server,
+      address: () => new URL(process.env.OPTIC_PROXY!),
+    } as any;
+  }
+  return app;
+};
