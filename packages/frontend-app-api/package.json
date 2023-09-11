@@ -40,7 +40,7 @@
     "@backstage/frontend-plugin-api": "workspace:^",
     "@backstage/plugin-graphiql": "workspace:^",
     "@backstage/types": "workspace:^",
-    "@material-ui/core": "^4.12.4",
+    "@mui/material": "^5.0.0",
     "lodash": "^4.17.21"
   },
   "peerDependencies": {
