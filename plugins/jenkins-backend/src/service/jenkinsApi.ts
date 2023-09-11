@@ -72,8 +72,7 @@ export class JenkinsApiImpl {
     displayName,
     fullDisplayName,
     inQueue,
-    builds[*]
-    {0,50}`;
+    builds[*]`;
 
   constructor(private readonly permissionApi?: PermissionEvaluator) {}
 
@@ -342,12 +341,11 @@ export class JenkinsApiImpl {
   }
 
   async getJobBuilds(jenkinsInfo: JenkinsInfo) {
-    
     const client = await JenkinsApiImpl.getClient(jenkinsInfo);
 
     const jobBuilds = await client.job.get({
       name: jenkinsInfo.jobFullName,
-      tree: JenkinsApiImpl.jobBuildsTreeSpec.replace(/\s/g, '')
+      tree: JenkinsApiImpl.jobBuildsTreeSpec.replace(/\s/g, ''),
     });
 
     return jobBuilds;

@@ -121,21 +121,27 @@ export const JobRunsTableView = ({
   onChangePageSize,
   total,
 }: Props) => {
-  const builds = jobRuns?.builds;
-  let sumOfAllSuccessfullJobDuration = 0
+  const builds = jobRuns?.builds.slice(
+    page * pageSize,
+    page * pageSize + pageSize,
+  );
+  let sumOfAllSuccessfullJobDuration = 0;
 
-  const successfullJobCount = builds?.reduce((count, build)=>{
-    if(build.result==="SUCCESS") {
-      sumOfAllSuccessfullJobDuration+=build.duration;
-      return count+1;
-    }
-    return count;
-  }, 0) || 0
+  const successfullJobCount =
+    builds?.reduce((count, build) => {
+      if (!build.inProgress && build.result === 'SUCCESS') {
+        sumOfAllSuccessfullJobDuration += build.duration;
+        return count + 1;
+      }
+      return count;
+    }, 0) || 0;
 
   let avgTime;
 
-  if(successfullJobCount>0) {
-    avgTime = ((sumOfAllSuccessfullJobDuration/successfullJobCount)/1000).toFixed(1).toString()
+  if (successfullJobCount > 0) {
+    avgTime = (sumOfAllSuccessfullJobDuration / successfullJobCount / 1000)
+      .toFixed(1)
+      .toString();
   }
 
   return (
@@ -149,15 +155,17 @@ export const JobRunsTableView = ({
       onRowsPerPageChange={onChangePageSize}
       title={
         <Box>
-        <Box display="flex" alignItems="center">
-          <img src={JenkinsLogo} alt="Jenkins logo" height="50px" />
-          <Box mr={2} />
-          <Typography variant="h6">Job Runs</Typography>
-
-        </Box>
-        <Box display="flex" alignItems="center" mt={2}>
-          <Typography variant="h6">Average Build Time For Last {successfullJobCount} Successfull jobs : {avgTime}</Typography>
-        </Box>
+          <Box display="flex" alignItems="center">
+            <img src={JenkinsLogo} alt="Jenkins logo" height="50px" />
+            <Box mr={2} />
+            <Typography variant="h6">Job Runs</Typography>
+          </Box>
+          <Box display="flex" alignItems="center" mt={2}>
+            <Typography variant="h6">
+              Average Build Time For Last {successfullJobCount} Successfull jobs
+              : {avgTime || 0}
+            </Typography>
+          </Box>
         </Box>
       }
       columns={generatedColumns}
