@@ -29,6 +29,7 @@ import { YarnInfoInspectData } from '../../lib/versioning/packages';
 import { setupServer } from 'msw/node';
 import { rest } from 'msw';
 import { NotFoundError } from '@backstage/errors';
+import { Lockfile } from '../../lib/versioning/Lockfile';
 
 // Remove log coloring to simplify log matching
 jest.mock('chalk', () => ({
@@ -795,6 +796,33 @@ describe('bump', () => {
   });
 
   it('should log duplicates', async () => {
+    jest.spyOn(Lockfile.prototype, 'analyze').mockReturnValue({
+      invalidRanges: [],
+      newVersions: [],
+      newRanges: [
+        {
+          name: 'first-duplicate',
+          oldRange: 'first-duplicate',
+          newRange: 'first-duplicate',
+          oldVersion: '1.0.0',
+          newVersion: '2.0.0',
+        },
+        {
+          name: 'second-duplicate',
+          oldRange: 'second-duplicate',
+          newRange: 'second-duplicate',
+          oldVersion: '1.0.0',
+          newVersion: '2.0.0',
+        },
+        {
+          name: 'third-duplicate',
+          oldRange: 'third-duplicate',
+          newRange: 'third-duplicate',
+          oldVersion: '1.0.0',
+          newVersion: '2.0.0',
+        },
+      ],
+    });
     mockFs({
       '/yarn.lock': lockfileMock,
       '/package.json': JSON.stringify({
@@ -854,6 +882,7 @@ describe('bump', () => {
       '    https://github.com/backstage/backstage/blob/master/packages/theme/CHANGELOG.md',
       'Version bump complete!',
       'The following packages have duplicates but have been allowed:',
+      'first-duplicate, second-duplicate, third-duplicate',
     ]);
   });
 });
