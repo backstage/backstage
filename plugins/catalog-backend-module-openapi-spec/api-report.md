@@ -6,7 +6,9 @@
 import { BackendFeature } from '@backstage/backend-plugin-api';
 
 // @public (undocumented)
-export const catalogModuleInternalOpenApiSpec: () => BackendFeature;
+const catalogModuleInternalOpenApiSpec: () => BackendFeature;
+export { catalogModuleInternalOpenApiSpec };
+export default catalogModuleInternalOpenApiSpec;
 
 // @public (undocumented)
 export type MetaApiDocsPluginOptions = {
