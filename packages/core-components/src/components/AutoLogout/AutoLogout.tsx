@@ -229,7 +229,7 @@ const parseConfig = (
  *
  * @public
  */
-export const AutoLogout = (props: AutoLogoutProps): JSX.Element => {
+export const AutoLogout = (props: AutoLogoutProps): JSX.Element | null => {
   const identityApi = useApi(identityApiRef);
   const configApi = useApi(configApiRef);
   const [isLogged, setIsLogged] = useState(false);
@@ -293,7 +293,7 @@ export const AutoLogout = (props: AutoLogoutProps): JSX.Element => {
   });
 
   if (!enabled || !isLogged) {
-    return <></>;
+    return null;
   }
 
   return (

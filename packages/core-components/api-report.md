@@ -69,23 +69,14 @@ export type AlertDisplayProps = {
 };
 
 // @public
-export const AutoLogoutProvider: ({
-  children,
-  enabled,
-  idleTimeoutMinutes,
-  promptBeforeIdleSeconds,
-  useWorkerTimers,
-  events,
-  logoutIfDisconnected,
-}: PropsWithChildren<AutoLogoutProviderProps>) => JSX.Element;
+export const AutoLogout: (props: AutoLogoutProps) => JSX.Element | null;
 
 // @public (undocumented)
-export type AutoLogoutProviderProps = {
+export type AutoLogoutProps = {
   enabled?: boolean;
   idleTimeoutMinutes?: number;
   promptBeforeIdleSeconds?: number;
   useWorkerTimers?: boolean;
-  events?: AutoLogoutTrackableEvent[];
   logoutIfDisconnected?: boolean;
 };
 
@@ -189,14 +180,6 @@ export interface CodeSnippetProps {
   showLineNumbers?: boolean;
   text: string;
 }
-
-// @public
-export const ConfigBasedAutoLogoutProvider: ({
-  children,
-}: PropsWithChildren<ConfigBasedAutoLogoutProviderProps>) => JSX.Element;
-
-// @public (undocumented)
-export type ConfigBasedAutoLogoutProviderProps = {};
 
 // Warning: (ae-forgotten-export) The symbol "Props_13" needs to be exported by the entry point index.d.ts
 //
