@@ -112,8 +112,7 @@ export const columns: TableColumn[] = [
       return (
         <>
           <Avatar
-            /*  picture={getUserAvatar(issue.fields.assignee.name)} */
-            picture=""
+            picture={issue.fields.assignee.avatarUrls['48x48']}
             customStyles={{ width: '25px', height: 'auto' }}
           />
         </>

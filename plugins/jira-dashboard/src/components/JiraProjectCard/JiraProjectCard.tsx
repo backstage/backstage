@@ -86,7 +86,7 @@ export const JiraProjectCard = (project: Project) => {
             {project.lead.displayName}
           </Typography>
           <Avatar
-            picture=""
+            picture={project.lead.avatarUrls['48x48']}
             customStyles={{
               width: '25px',
               height: '25px',
