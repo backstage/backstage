@@ -13,24 +13,36 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import { createServiceBuilder } from '@backstage/backend-common';
+import {
+  HostDiscovery,
+  ServerTokenManager,
+  createServiceBuilder,
+} from '@backstage/backend-common';
 import { Server } from 'http';
 import { Logger } from 'winston';
 import { createRouter } from './router';
+import { Config } from '@backstage/config';
+import { IdentityApi } from '@backstage/plugin-auth-node';
 
 export interface ServerOptions {
   port: number;
   enableCors: boolean;
   logger: Logger;
+  config: Config;
 }
 
 export async function startStandaloneServer(
   options: ServerOptions,
 ): Promise<Server> {
   const logger = options.logger.child({ service: 'jira-dashboard-backend' });
+  const tokenManager = ServerTokenManager.noop();
   logger.debug('Starting application server...');
   const router = await createRouter({
     logger,
+    config: options.config,
+    discovery: HostDiscovery.fromConfig(options.config),
+    identity: {} as IdentityApi,
+    tokenManager,
   });
 
   let service = createServiceBuilder(module)
