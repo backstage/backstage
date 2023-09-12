@@ -27,10 +27,7 @@ export class JiraDashboardClient implements JiraDashboardApi {
     this.fetchApi = options.fetchApi;
   }
 
-  async getJiraResponseByEntity(
-    entityRef: string,
-    projectKey: string,
-  ): Promise<JiraResponse> {
+  async getJiraResponseByEntity(entityRef: string): Promise<JiraResponse> {
     const apiUrl = await this.discoveryApi.getBaseUrl('jira-dashboard');
     const resp = await this.fetchApi.fetch(
       `${apiUrl}/${encodeURIComponent(entityRef)}`,

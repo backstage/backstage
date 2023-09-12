@@ -44,7 +44,11 @@ const useStyles = makeStyles({
   },
 });
 
-export const JiraProjectCard = (project: Project) => {
+type JiraProjectCardProps = {
+  project: Project;
+};
+
+export const JiraProjectCard = ({ project }: JiraProjectCardProps) => {
   const classes = useStyles();
   return (
     <Card className={classes.root}>

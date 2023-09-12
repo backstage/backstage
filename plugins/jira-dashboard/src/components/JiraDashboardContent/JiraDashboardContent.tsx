@@ -66,7 +66,7 @@ export const JiraDashboardContent = () => {
       </ContentHeader>
       <Grid container spacing={3}>
         <Grid item md={6} xs={12}>
-          <JiraProjectCard {...jiraResponse.project} />
+          <JiraProjectCard project={jiraResponse.project} />
         </Grid>
         {jiraResponse.data.map((value: JiraDataResponse) => (
           <Grid item key={value.name} md={6} xs={12}>
