@@ -133,8 +133,8 @@ export class VaultClient implements VaultApi {
 
     const listUrl =
       this.vaultConfig.kvVersion === 2
-        ? `v1/${mount}/metadata/${secretPath}`
-        : `v1/${mount}/${secretPath}`;
+        ? `v1/${encodeURIComponent(mount)}/metadata/${secretPath}`
+        : `v1/${encodeURIComponent(mount)}/${secretPath}`;
     const result = await this.limit(() =>
       this.callApi<VaultSecretList>(listUrl, { list: true }),
     );
@@ -157,8 +157,12 @@ export class VaultClient implements VaultApi {
           secrets.push({
             name: secret,
             path: secretPath,
-            editUrl: `${vaultUrl}/ui/vault/secrets/${mount}/edit/${secretPath}/${secret}`,
-            showUrl: `${vaultUrl}/ui/vault/secrets/${mount}/show/${secretPath}/${secret}`,
+            editUrl: `${vaultUrl}/ui/vault/secrets/${encodeURIComponent(
+              mount,
+            )}/edit/${secretPath}/${secret}`,
+            showUrl: `${vaultUrl}/ui/vault/secrets/${encodeURIComponent(
+              mount,
+            )}/show/${secretPath}/${secret}`,
           });
         }
       }),
