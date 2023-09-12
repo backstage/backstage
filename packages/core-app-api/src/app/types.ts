@@ -29,7 +29,6 @@ import {
 import { AppConfig } from '@backstage/config';
 import {
   TranslationMessages,
-  TranslationRef,
   TranslationResource,
 } from '@backstage/core-plugin-api/alpha';
 

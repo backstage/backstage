@@ -5,32 +5,18 @@
 ```ts
 import { AppTranslationApi } from '@backstage/core-plugin-api/alpha';
 import { i18n } from 'i18next';
+import { TranslationMessages } from '@backstage/core-plugin-api/alpha';
 import { TranslationRef } from '@backstage/core-plugin-api/alpha';
+import { TranslationResource } from '@backstage/core-plugin-api/alpha';
 
 // @alpha (undocumented)
 export class AppTranslationApiImpl implements AppTranslationApi {
   // (undocumented)
-  addLazyResources<Messages extends Record<string, string>>(
-    translationRef: TranslationRef<Messages>,
-    initResources?: Record<
-      string,
-      () => Promise<{
-        messages: TranslationMessages<TranslationRef>;
-      }>
-    >,
-  ): void;
+  addLazyResources(resource: TranslationResource): void;
   // (undocumented)
-  addResources<Messages extends Record<string, string>>(
-    translationRef: TranslationRef<Messages>,
-    initResources?: Record<
-      string,
-      TranslationMessages<TranslationRef<Messages>>
-    >,
-  ): void;
+  addMessages(messages: TranslationMessages): void;
   // (undocumented)
-  addResourcesByRef<Messages extends Record<string, string>>(
-    translationRef: TranslationRef<Messages>,
-  ): void;
+  addResource(translationRef: TranslationRef): void;
   // (undocumented)
   static create(options?: ExperimentalI18n): AppTranslationApiImpl;
   // (undocumented)
@@ -40,46 +26,11 @@ export class AppTranslationApiImpl implements AppTranslationApi {
 }
 
 // @alpha (undocumented)
-export function createTranslationResource<T extends TranslationRef>(options: {
-  ref: T;
-  messages?: Record<string, TranslationMessages<T>>;
-  lazyMessages: Record<
-    string,
-    () => Promise<{
-      messages: TranslationMessages<T>;
-    }>
-  >;
-}): {
-  ref: T;
-  messages?: Record<string, TranslationMessages<T>> | undefined;
-  lazyMessages: Record<
-    string,
-    () => Promise<{
-      messages: TranslationMessages<T>;
-    }>
-  >;
-};
-
-// @alpha (undocumented)
 export type ExperimentalI18n = {
-  supportedLanguages: string[];
   fallbackLanguage?: string | string[];
-  messages?: Array<{
-    ref: TranslationRef;
-    messages?: Record<string, TranslationMessages<TranslationRef>>;
-    lazyMessages: Record<
-      string,
-      () => Promise<{
-        messages: TranslationMessages<TranslationRef>;
-      }>
-    >;
-  }>;
+  supportedLanguages?: string[];
+  resources?: Array<TranslationMessages | TranslationResource>;
 };
-
-// @alpha (undocumented)
-export type TranslationMessages<T> = T extends TranslationRef<infer R>
-  ? Partial<R>
-  : never;
 
 // (No @packageDocumentation comment for this package)
 ```

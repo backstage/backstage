@@ -7,27 +7,64 @@ import { ApiRef } from '@backstage/core-plugin-api';
 import { BackstagePlugin } from '@backstage/core-plugin-api';
 import { i18n } from 'i18next';
 import { ReactNode } from 'react';
+import { TranslationMessages as TranslationMessages_2 } from '@backstage/core-plugin-api/alpha';
+import { TranslationRef as TranslationRef_2 } from '@backstage/core-plugin-api/alpha';
 
 // @alpha (undocumented)
 export type AppTranslationApi = {
   getI18n(): i18n;
-  addResourcesByRef<TMessages extends Record<string, string>>(
-    translationRef: TranslationRef<TMessages>,
-  ): void;
+  addResource(resource: TranslationRef): void;
 };
 
 // @alpha (undocumented)
 export const appTranslationApiRef: ApiRef<AppTranslationApi>;
 
-// @alpha (undocumented)
-export function createTranslationRef<
+// @alpha
+export function createTranslationMessages<
+  TId extends string,
   TMessages extends {
     [key in string]: string;
   },
-  TId extends string = string,
+  TFull extends boolean,
 >(
-  config: TranslationRefOptions<TMessages, TId>,
-): TranslationRef<TMessages, TId>;
+  options: TranslationMessagesOptions<TId, TMessages, TFull>,
+): TranslationMessages<TId, TMessages, TFull>;
+
+// @alpha (undocumented)
+export function createTranslationRef<
+  TId extends string,
+  TMessages extends {
+    [key in string]: string;
+  },
+  TTranslations extends {
+    [language in string]: () => Promise<{
+      default: {
+        [key in keyof TMessages]: string | null;
+      };
+    }>;
+  },
+>(
+  config: TranslationRefOptions<TId, TMessages, TTranslations>,
+): TranslationRef<TId, TMessages>;
+
+// @alpha (undocumented)
+export function createTranslationResource<
+  TId extends string,
+  TMessages extends {
+    [key in string]: string;
+  },
+  TTranslations extends {
+    [language in string]: () => Promise<{
+      default:
+        | TranslationMessages_2<TId>
+        | {
+            [key in keyof TMessages]: string | null;
+          };
+    }>;
+  },
+>(
+  options: TranslationResourceOptions<TId, TMessages, TTranslations>,
+): TranslationResource<TId>;
 
 // @alpha
 export interface PluginOptionsProviderProps {
@@ -40,17 +77,56 @@ export interface PluginOptionsProviderProps {
 // @alpha
 export const PluginProvider: (props: PluginOptionsProviderProps) => JSX.Element;
 
-// @alpha (undocumented)
-export interface TranslationOptions {}
-
-// @alpha (undocumented)
-export interface TranslationRef<
+// @alpha
+export interface TranslationMessages<
+  TId extends string = string,
   TMessages extends {
     [key in string]: string;
   } = {
     [key in string]: string;
   },
+  TFull extends boolean = boolean,
+> {
+  // (undocumented)
+  $$type: '@backstage/TranslationMessages';
+  full: TFull;
+  id: TId;
+  messages: TMessages;
+}
+
+// @alpha
+export interface TranslationMessagesOptions<
+  TId extends string,
+  TMessages extends {
+    [key in string]: string;
+  },
+  TFull extends boolean,
+> {
+  // (undocumented)
+  full?: TFull;
+  // (undocumented)
+  messages: false extends TFull
+    ? {
+        [key in keyof TMessages]?: string | null;
+      }
+    : {
+        [key in keyof TMessages]: string | null;
+      };
+  // (undocumented)
+  ref: TranslationRef_2<TId, TMessages>;
+}
+
+// @alpha (undocumented)
+export interface TranslationOptions {}
+
+// @alpha (undocumented)
+export interface TranslationRef<
   TId extends string = string,
+  TMessages extends {
+    [key in string]: string;
+  } = {
+    [key in string]: string;
+  },
 > {
   // (undocumented)
   $$type: '@backstage/TranslationRef';
@@ -62,24 +138,54 @@ export interface TranslationRef<
 
 // @alpha (undocumented)
 export interface TranslationRefOptions<
+  TId extends string,
   TMessages extends {
     [key in string]: string;
   },
-  TId extends string = string,
+  TTranslations extends {
+    [language in string]: () => Promise<{
+      default: {
+        [key in keyof TMessages]: string | null;
+      };
+    }>;
+  },
 > {
   // (undocumented)
   id: TId;
   // (undocumented)
-  lazyResources?: Record<
-    string,
-    () => Promise<{
-      messages: TMessages;
-    }>
-  >;
-  // (undocumented)
   messages: TMessages;
   // (undocumented)
-  resources?: Record<string, TMessages>;
+  translations?: TTranslations;
+}
+
+// @alpha (undocumented)
+export interface TranslationResource<TId extends string = string> {
+  // (undocumented)
+  $$type: '@backstage/TranslationResource';
+  // (undocumented)
+  id: TId;
+}
+
+// @alpha (undocumented)
+export interface TranslationResourceOptions<
+  TId extends string,
+  TMessages extends {
+    [key in string]: string;
+  },
+  TTranslations extends {
+    [language in string]: () => Promise<{
+      default:
+        | TranslationMessages_2<TId>
+        | {
+            [key in keyof TMessages]: string | null;
+          };
+    }>;
+  },
+> {
+  // (undocumented)
+  ref: TranslationRef_2<TId, TMessages>;
+  // (undocumented)
+  translations: TTranslations;
 }
 
 // @alpha
@@ -93,7 +199,7 @@ export const useTranslationRef: <
     [x: string]: string;
   },
 >(
-  translationRef: TranslationRef<TMessages, string>,
+  translationRef: TranslationRef<string, TMessages>,
 ) => <TKey extends keyof TMessages & string>(
   key: TKey,
   options?: TranslationOptions,
