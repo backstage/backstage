@@ -7,6 +7,7 @@ import { TranslationRef } from '@backstage/core-plugin-api/alpha';
 
 // @alpha (undocumented)
 export const userSettingsTranslationRef: TranslationRef<
+  'user-settings',
   {
     readonly language: 'Language';
     readonly change_the_language: 'Change the language';
@@ -21,8 +22,7 @@ export const userSettingsTranslationRef: TranslationRef<
     readonly select_theme_custom: 'Select {{custom}}';
     readonly lng: '{{language}}';
     readonly select_lng: 'Select language {{language}}';
-  },
-  'user-settings'
+  }
 >;
 
 // (No @packageDocumentation comment for this package)
