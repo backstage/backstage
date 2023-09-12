@@ -142,7 +142,7 @@ const backend = createBackend({
 });
 ```
 
-## Config
+## Root Config
 
 This service allows you to read configuration values out of your `app-config` YAML files.
 
@@ -162,7 +162,7 @@ createBackendPlugin({
     env.registerInit({
       deps: {
         log: coreServices.logger,
-        config: coreServices.config,
+        config: coreServices.rootConfig,
       },
       async init({ log, config }) {
         const baseUrl = config.getString('backend.baseUrl');
@@ -248,7 +248,7 @@ const backend = createBackend({
     createServiceFactory({
       service: coreServices.rootLogger,
       deps: {
-        config: coreServices.config,
+        config: coreServices.rootConfig,
       },
       async factory({ config }) {
         const logger = WinstonLogger.create({
