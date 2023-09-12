@@ -61,13 +61,13 @@ You can configure these additional options by adding an override for the core se
 ```ts
 import { httpRouterServiceFactory } from '@backstage/backend-app-api';
 
-const backend = createBackend({
-  services: [
-    httpRouterServiceFactory({
-      getPath: (pluginId: string) => `/plugins/${pluginId}`,
-    }),
-  ],
-});
+const backend = createBackend();
+
+backend.add(
+  httpRouterServiceFactory({
+    getPath: (pluginId: string) => `/plugins/${pluginId}`,
+  }),
+);
 ```
 
 ## Root HTTP Router
@@ -118,28 +118,28 @@ You can configure the root HTTP Router service by passing the options to the `cr
 ```ts
 import { rootHttpRouterServiceFactory } from '@backstage/backend-app-api';
 
-const backend = createBackend({
-  services: [
-    rootHttpRouterServiceFactory({
-      configure: ({ app, middleware, routes, config, logger, lifecycle }) => {
-        // the built in middleware is provided through an option in the configure function
-        app.use(middleware.helmet());
-        app.use(middleware.cors());
-        app.use(middleware.compression());
+const backend = createBackend();
 
-        // you can add you your own middleware in here
-        app.use(custom.logging());
+backend.add(
+  rootHttpRouterServiceFactory({
+    configure: ({ app, middleware, routes, config, logger, lifecycle }) => {
+      // the built in middleware is provided through an option in the configure function
+      app.use(middleware.helmet());
+      app.use(middleware.cors());
+      app.use(middleware.compression());
 
-        // here the routes that are registered by other plugins
-        app.use(routes);
+      // you can add you your own middleware in here
+      app.use(custom.logging());
 
-        // some other middleware that comes after the other routes
-        app.use(middleware.notFound());
-        app.use(middleware.error());
-      },
-    }),
-  ],
-});
+      // here the routes that are registered by other plugins
+      app.use(routes);
+
+      // some other middleware that comes after the other routes
+      app.use(middleware.notFound());
+      app.use(middleware.error());
+    },
+  }),
+);
 ```
 
 ## Root Config
@@ -185,19 +185,19 @@ You can configure these additional options by adding an override for the core se
 ```ts
 import { rootConfigServiceFactory } from '@backstage/backend-app-api';
 
-const backend = createBackend({
-  services: [
-    rootConfigServiceFactory({
-      argv: [
-        '--config',
-        '/backstage/app-config.development.yaml',
-        '--config',
-        '/backstage/app-config.yaml',
-      ],
-      remote: { reloadIntervalSeconds: 60 },
-    }),
-  ],
-});
+const backend = createBackend();
+
+backend.add(
+  rootConfigServiceFactory({
+    argv: [
+      '--config',
+      '/backstage/app-config.development.yaml',
+      '--config',
+      '/backstage/app-config.yaml',
+    ],
+    remote: { reloadIntervalSeconds: 60 },
+  }),
+);
 ```
 
 ## Logging
@@ -243,34 +243,34 @@ The following example is how you can override the root logger service to add add
 import { coreServices } from '@backstage/backend-plugin-api';
 import { WinstonLogger } from '@backstage/backend-app-api';
 
-const backend = createBackend({
-  services: [
-    createServiceFactory({
-      service: coreServices.rootLogger,
-      deps: {
-        config: coreServices.rootConfig,
-      },
-      async factory({ config }) {
-        const logger = WinstonLogger.create({
-          meta: {
-            service: 'backstage',
-            // here's some additional information that is not part of the
-            // original implementation
-            podName: 'myk8spod',
-          },
-          level: process.env.LOG_LEVEL || 'info',
-          format:
-            process.env.NODE_ENV === 'production'
-              ? format.json()
-              : WinstonLogger.colorFormat(),
-          transports: [new transports.Console()],
-        });
+const backend = createBackend();
 
-        return logger;
-      },
-    }),
-  ],
-});
+backend.add(
+  createServiceFactory({
+    service: coreServices.rootLogger,
+    deps: {
+      config: coreServices.rootConfig,
+    },
+    async factory({ config }) {
+      const logger = WinstonLogger.create({
+        meta: {
+          service: 'backstage',
+          // here's some additional information that is not part of the
+          // original implementation
+          podName: 'myk8spod',
+        },
+        level: process.env.LOG_LEVEL || 'info',
+        format:
+          process.env.NODE_ENV === 'production'
+            ? format.json()
+            : WinstonLogger.colorFormat(),
+        transports: [new transports.Console()],
+      });
+
+      return logger;
+    },
+  }),
+);
 ```
 
 ## Cache
@@ -440,14 +440,14 @@ You can configure these additional options by adding an override for the core se
 ```ts
 import { identityServiceFactory } from '@backstage/backend-app-api';
 
-const backend = createBackend({
-  services: [
-    identityServiceFactory({
-      issuer: 'backstage',
-      algorithms: ['ES256', 'RS256'],
-    }),
-  ],
-});
+const backend = createBackend();
+
+backend.add(
+  identityServiceFactory({
+    issuer: 'backstage',
+    algorithms: ['ES256', 'RS256'],
+  }),
+);
 ```
 
 ## Lifecycle
@@ -532,19 +532,19 @@ class MyCustomLifecycleService implements RootLifecycleService {
   }
 }
 
-const backend = createBackend({
-  services: [
-    createServiceFactory({
-      service: coreServices.rootLifecycle,
-      deps: {
-        logger: coreServices.rootLogger,
-      },
-      async factory({ logger }) {
-        return new MyCustomLifecycleService(logger);
-      },
-    }),
-  ],
-});
+const backend = createBackend();
+
+backend.add(
+  createServiceFactory({
+    service: coreServices.rootLifecycle,
+    deps: {
+      logger: coreServices.rootLogger,
+    },
+    async factory({ logger }) {
+      return new MyCustomLifecycleService(logger);
+    },
+  }),
+);
 ```
 
 ## Permissions

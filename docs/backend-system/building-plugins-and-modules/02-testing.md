@@ -36,8 +36,10 @@ describe('myPlugin', () => {
     const fakeConfig = { myPlugin: { value: 7 } };
 
     const { server } = await startTestBackend({
-      features: [myPlugin()],
-      services: [mockServices.rootConfig.factory({ data: fakeConfig })],
+      features: [
+        myPlugin(),
+        mockServices.rootConfig.factory({ data: fakeConfig }),
+      ],
     });
 
     const response = await request(server).get('/api/example/get-value');
@@ -150,8 +152,10 @@ your test database.
 ```ts
 const { knex, subject } = await createSubject(databaseId);
 const { server } = await startTestBackend({
-  features: [myPlugin()],
-  services: [[coreServices.database, { getClient: async () => knex }]],
+  features: [
+    myPlugin(),
+    mockServices.database.mock({ getClient: async () => knex }),
+  ],
 });
 ```
 
