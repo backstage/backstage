@@ -125,6 +125,7 @@ describe('ServiceRegistry', () => {
 
   it('should not be possible for root scoped services to depend on plugin scoped services', async () => {
     const factory = createServiceFactory({
+      // @ts-expect-error
       service: ref2,
       deps: { pluginDep: ref1 },
       async factory() {
@@ -186,6 +187,32 @@ describe('ServiceRegistry', () => {
     await expect(registry.get(ref2, 'catalog')).resolves.toEqual({
       x: 22,
     });
+  });
+
+  it('should use added service factories for each ref', async () => {
+    const registry = ServiceRegistry.create([sf2()]);
+    registry.add(sf2b());
+    await expect(registry.get(ref2, 'catalog')).resolves.toEqual({
+      x: 22,
+    });
+  });
+
+  it('should not allow factories to be added after instantiation', async () => {
+    const registry = ServiceRegistry.create([sf2()]);
+    await expect(registry.get(ref2, 'catalog')).resolves.toEqual({
+      x: 2,
+    });
+    expect(() => registry.add(sf2b())).toThrow(
+      'Unable to set service factory with id 2, service has already been instantiated',
+    );
+  });
+
+  it('should not allow the same factory to be added twice', async () => {
+    const registry = ServiceRegistry.create([sf2()]);
+    registry.add(sf2b());
+    expect(() => registry.add(sf2b())).toThrow(
+      'Duplicate service implementations provided for 2',
+    );
   });
 
   it('should use the defaultFactory from the ref if not provided to the registry', async () => {

@@ -6,7 +6,8 @@
 import { BackendFeature } from '@backstage/backend-plugin-api';
 
 // @alpha
-export const searchModuleTechDocsCollator: () => BackendFeature;
+const _default: () => BackendFeature;
+export default _default;
 
 // (No @packageDocumentation comment for this package)
 ```

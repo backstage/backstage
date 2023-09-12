@@ -11,7 +11,8 @@ import { PassportProfile } from '@backstage/plugin-auth-node';
 import { SignInResolverFactory } from '@backstage/plugin-auth-node';
 
 // @public (undocumented)
-export const authModuleGitlabProvider: () => BackendFeature;
+const authModuleGitlabProvider: () => BackendFeature;
+export default authModuleGitlabProvider;
 
 // @public (undocumented)
 export const gitlabAuthenticator: OAuthAuthenticator<

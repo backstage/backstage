@@ -40,7 +40,7 @@ interface DryRunOptions {
   files: Array<{ path: string; content: string }>;
 }
 
-interface DryRunResult extends ScaffolderDryRunResponse {
+export interface DryRunResult extends ScaffolderDryRunResponse {
   id: number;
 }
 

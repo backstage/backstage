@@ -21,7 +21,6 @@ import {
   createServiceFactory,
 } from '@backstage/backend-plugin-api';
 import { ConflictError, stringifyError } from '@backstage/errors';
-import { EnumerableServiceHolder } from './types';
 // Direct internal import to avoid duplication
 // eslint-disable-next-line @backstage/no-forbidden-package-imports
 import { InternalServiceFactory } from '@backstage/backend-plugin-api/src/services/system/types';
@@ -57,10 +56,10 @@ const pluginMetadataServiceFactory = createServiceFactory(
   }),
 );
 
-export class ServiceRegistry implements EnumerableServiceHolder {
+export class ServiceRegistry {
   static create(factories: Array<ServiceFactory>): ServiceRegistry {
     const registry = new ServiceRegistry(factories);
-    registry.#checkForCircularDeps();
+    registry.checkForCircularDeps();
     return registry;
   }
 
@@ -80,6 +79,8 @@ export class ServiceRegistry implements EnumerableServiceHolder {
     InternalServiceFactory,
     Promise<unknown>
   >();
+  readonly #addedFactoryIds = new Set<string>();
+  readonly #instantiatedFactories = new Set<string>();
 
   private constructor(factories: Array<ServiceFactory>) {
     this.#providedFactories = new Map(
@@ -153,7 +154,7 @@ export class ServiceRegistry implements EnumerableServiceHolder {
     }
   }
 
-  #checkForCircularDeps(): void {
+  checkForCircularDeps(): void {
     const graph = DependencyGraph.fromIterable(
       Array.from(this.#providedFactories).map(
         ([serviceId, serviceFactory]) => ({
@@ -174,11 +175,37 @@ export class ServiceRegistry implements EnumerableServiceHolder {
     }
   }
 
+  add(factory: ServiceFactory) {
+    const factoryId = factory.service.id;
+    if (factoryId === coreServices.pluginMetadata.id) {
+      throw new Error(
+        `The ${coreServices.pluginMetadata.id} service cannot be overridden`,
+      );
+    }
+
+    if (this.#addedFactoryIds.has(factoryId)) {
+      throw new Error(
+        `Duplicate service implementations provided for ${factoryId}`,
+      );
+    }
+
+    if (this.#instantiatedFactories.has(factoryId)) {
+      throw new Error(
+        `Unable to set service factory with id ${factoryId}, service has already been instantiated`,
+      );
+    }
+
+    this.#addedFactoryIds.add(factoryId);
+    this.#providedFactories.set(factoryId, toInternalServiceFactory(factory));
+  }
+
   getServiceRefs(): ServiceRef<unknown>[] {
     return Array.from(this.#providedFactories.values()).map(f => f.service);
   }
 
   get<T>(ref: ServiceRef<T>, pluginId: string): Promise<T> | undefined {
+    this.#instantiatedFactories.add(ref.id);
+
     return this.#resolveFactory(ref, pluginId)?.then(factory => {
       if (factory.service.scope === 'root') {
         let existing = this.#rootServiceImplementations.get(factory);

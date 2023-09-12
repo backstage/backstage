@@ -1,5 +1,14 @@
 # @backstage/plugin-sonarqube-react
 
+## 0.1.8-next.3
+
+### Patch Changes
+
+- 406b786a2a2c: Mark package as being free of side effects, allowing more optimized Webpack builds.
+- Updated dependencies
+  - @backstage/catalog-model@1.4.2-next.2
+  - @backstage/core-plugin-api@1.6.0-next.3
+
 ## 0.1.8-next.2
 
 ### Patch Changes

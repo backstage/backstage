@@ -1,5 +1,25 @@
 # @backstage/plugin-catalog
 
+## 1.13.0-next.3
+
+### Patch Changes
+
+- 406b786a2a2c: Mark package as being free of side effects, allowing more optimized Webpack builds.
+- Updated dependencies
+  - @backstage/catalog-client@1.4.4-next.2
+  - @backstage/catalog-model@1.4.2-next.2
+  - @backstage/core-components@0.13.5-next.3
+  - @backstage/core-plugin-api@1.6.0-next.3
+  - @backstage/errors@1.2.2-next.0
+  - @backstage/integration-react@1.1.19-next.3
+  - @backstage/plugin-catalog-common@1.0.16-next.2
+  - @backstage/plugin-catalog-react@1.8.4-next.3
+  - @backstage/plugin-scaffolder-common@1.4.1-next.2
+  - @backstage/plugin-search-common@1.2.6-next.2
+  - @backstage/plugin-search-react@1.7.0-next.3
+  - @backstage/theme@0.4.2-next.0
+  - @backstage/types@1.1.1-next.0
+
 ## 1.13.0-next.2
 
 ### Minor Changes

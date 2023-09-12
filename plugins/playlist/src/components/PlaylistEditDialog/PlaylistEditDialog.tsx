@@ -36,7 +36,7 @@ import {
   Select,
   TextField,
 } from '@material-ui/core';
-import React, { useRef } from 'react';
+import React, { useState } from 'react';
 import { useForm, Controller } from 'react-hook-form';
 import useAsync from 'react-use/lib/useAsync';
 import useAsyncFn from 'react-use/lib/useAsyncFn';
@@ -76,7 +76,13 @@ export const PlaylistEditDialog = ({
   const classes = useStyles();
   const identityApi = useApi(identityApiRef);
   const playlistApi = useApi(playlistApiRef);
-  const playlistPromise = useRef(playlistApi.getAllPlaylists({}));
+  const [playlistPromise] = useState(() =>
+    playlistApi.getAllPlaylists({}).catch(() => {
+      // We ensure that this promise never can throw, to make its usage simpler in the code below
+      return [];
+    }),
+  );
+
   const { loading: loadingOwnership, value: ownershipRefs } =
     useAsync(async () => {
       const { ownershipEntityRefs } = await identityApi.getBackstageIdentity();
@@ -84,13 +90,9 @@ export const PlaylistEditDialog = ({
     }, []);
 
   const nameIsUnique = async (name: string) => {
-    const playlists = await playlistPromise.current;
-
-    if (name !== playlist.name) {
-      return (
-        !playlists.some(p => p.name === name) ||
-        'A playlist with this name already exists'
-      );
+    const playlists = await playlistPromise;
+    if (name !== playlist.name && playlists.some(p => p.name === name)) {
+      return 'A playlist with this name already exists';
     }
 
     return true;

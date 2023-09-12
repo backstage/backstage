@@ -74,7 +74,8 @@ export type CatalogPermissionRule<
 > = PermissionRule<Entity, EntitiesSearchFilter, 'catalog-entity', TParams>;
 
 // @alpha
-export const catalogPlugin: () => BackendFeature;
+const catalogPlugin: () => BackendFeature;
+export default catalogPlugin;
 
 // @alpha
 export const createCatalogConditionalDecision: (

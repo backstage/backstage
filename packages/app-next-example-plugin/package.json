@@ -1,7 +1,7 @@
 {
   "name": "app-next-example-plugin",
   "description": "Backstage internal example plugin",
-  "version": "0.0.0",
+  "version": "0.0.1-next.0",
   "publishConfig": {
     "access": "public",
     "main": "dist/index.esm.js",
@@ -23,6 +23,7 @@
   "license": "Apache-2.0",
   "main": "src/index.ts",
   "types": "src/index.ts",
+  "sideEffects": false,
   "scripts": {
     "build": "backstage-cli package build",
     "start": "backstage-cli package start",

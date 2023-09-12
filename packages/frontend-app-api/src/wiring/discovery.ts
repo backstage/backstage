@@ -17,7 +17,7 @@
 import { BackstagePlugin } from '@backstage/frontend-plugin-api';
 
 interface DiscoveryGlobal {
-  modules: Array<{ name: string; module: object }>;
+  modules: Array<{ name: string; default: unknown }>;
 }
 
 /**
@@ -29,15 +29,13 @@ export function getAvailablePlugins(): BackstagePlugin[] {
   )['__@backstage/discovered__'];
 
   return (
-    discovered?.modules.flatMap(({ module: mod }) =>
-      Object.values(mod).filter(isBackstagePlugin),
-    ) ?? []
+    discovered?.modules.map(m => m.default).filter(isBackstagePlugin) ?? []
   );
 }
 
 function isBackstagePlugin(obj: unknown): obj is BackstagePlugin {
   if (obj !== null && typeof obj === 'object' && '$$type' in obj) {
-    return obj.$$type === 'backstage-plugin';
+    return obj.$$type === '@backstage/BackstagePlugin';
   }
   return false;
 }

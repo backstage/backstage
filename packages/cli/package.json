@@ -1,7 +1,7 @@
 {
   "name": "@backstage/cli",
   "description": "CLI for developing Backstage plugins and apps",
-  "version": "0.22.13-next.2",
+  "version": "0.22.13-next.3",
   "publishConfig": {
     "access": "public"
   },
@@ -41,6 +41,7 @@
     "@backstage/release-manifests": "workspace:^",
     "@backstage/types": "workspace:^",
     "@esbuild-kit/cjs-loader": "^2.4.1",
+    "@esbuild-kit/esm-loader": "^2.5.5",
     "@manypkg/get-packages": "^1.1.3",
     "@octokit/graphql": "^5.0.0",
     "@octokit/graphql-schema": "^13.7.0",

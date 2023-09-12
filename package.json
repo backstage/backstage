@@ -18,6 +18,7 @@
     "clean": "backstage-cli repo clean",
     "test": "backstage-cli repo test",
     "test:all": "backstage-cli repo test --coverage",
+    "fix": "backstage-cli repo fix",
     "lint": "backstage-cli repo lint --since origin/master",
     "lint:docs": "node ./scripts/check-docs-quality",
     "lint:all": "backstage-cli repo lint",
@@ -47,7 +48,7 @@
     "@types/react": "^17",
     "@types/react-dom": "^17"
   },
-  "version": "1.18.0-next.2",
+  "version": "1.18.0-next.3",
   "dependencies": {
     "@backstage/errors": "workspace:^",
     "@manypkg/get-packages": "^1.1.3"

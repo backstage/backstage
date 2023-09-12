@@ -185,7 +185,7 @@ export type AppRouteBinder = <
  * @ignore
  * */
 type TranslationMessages<T> = T extends TranslationRef<infer R>
-  ? Record<string, Partial<R>>
+  ? Partial<R>
   : never;
 
 /**
@@ -299,7 +299,7 @@ export type AppOptions = {
     fallbackLanguage?: string | string[];
     messages?: Array<{
       ref: TranslationRef;
-      messages?: TranslationMessages<TranslationRef>;
+      messages?: Record<string, TranslationMessages<TranslationRef>>;
       lazyMessages: Record<
         string,
         () => Promise<{ messages: TranslationMessages<TranslationRef> }>

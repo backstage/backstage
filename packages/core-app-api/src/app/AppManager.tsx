@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { AppConfig, Config } from '@backstage/config';
+import { Config } from '@backstage/config';
 import React, {
   ComponentType,
   PropsWithChildren,
@@ -81,23 +81,13 @@ import { InternalAppContext } from './InternalAppContext';
 import { AppRouter, getBasePath } from './AppRouter';
 import { AppTranslationProvider } from './AppTranslationProvider';
 import { AppTranslationApiImpl } from '../apis/implementations/AppTranslationApi';
+import { overrideBaseUrlConfigs } from './overrideBaseUrlConfigs';
 
 type CompatiblePlugin =
   | BackstagePlugin
   | (Omit<BackstagePlugin, 'getFeatureFlags'> & {
       output(): Array<{ type: 'feature-flag'; name: string }>;
     });
-
-/**
- * Creates a base URL that uses to the current document origin.
- */
-function createLocalBaseUrl(fullUrl: string): string {
-  const url = new URL(fullUrl);
-  url.protocol = document.location.protocol;
-  url.hostname = document.location.hostname;
-  url.port = document.location.port;
-  return url.toString().replace(/\/$/, '');
-}
 
 function useConfigLoader(
   configLoader: AppConfigLoader | undefined,
@@ -131,52 +121,9 @@ function useConfigLoader(
     };
   }
 
-  let configReader;
-  /**
-   * config.value can be undefined or empty. If it's either, don't bother overriding anything.
-   */
-  if (config.value?.length) {
-    const urlConfigReader = ConfigReader.fromConfigs(config.value);
-
-    /**
-     * Test configs may not define `app.baseUrl` or `backend.baseUrl` and we
-     *  don't want to enforce here.
-     */
-    const appBaseUrl = urlConfigReader.getOptionalString('app.baseUrl');
-    const backendBaseUrl = urlConfigReader.getOptionalString('backend.baseUrl');
-
-    let configs = config.value;
-    const relativeResolverConfig: AppConfig = {
-      data: {},
-      context: 'relative-resolver',
-    };
-    if (appBaseUrl && backendBaseUrl) {
-      const appOrigin = new URL(appBaseUrl).origin;
-      const backendOrigin = new URL(backendBaseUrl).origin;
-
-      if (appOrigin === backendOrigin) {
-        const newBackendBaseUrl = createLocalBaseUrl(backendBaseUrl);
-        if (backendBaseUrl !== newBackendBaseUrl) {
-          relativeResolverConfig.data.backend = { baseUrl: newBackendBaseUrl };
-        }
-      }
-    }
-    if (appBaseUrl) {
-      const newAppBaseUrl = createLocalBaseUrl(appBaseUrl);
-      if (appBaseUrl !== newAppBaseUrl) {
-        relativeResolverConfig.data.app = { baseUrl: newAppBaseUrl };
-      }
-    }
-    /**
-     * Only add the relative config if there is actually data to add.
-     */
-    if (Object.keys(relativeResolverConfig.data).length) {
-      configs = configs.concat([relativeResolverConfig]);
-    }
-    configReader = ConfigReader.fromConfigs(configs);
-  } else {
-    configReader = ConfigReader.fromConfigs([]);
-  }
+  const configReader = ConfigReader.fromConfigs(
+    config.value?.length ? overrideBaseUrlConfigs(config.value) : [],
+  );
 
   return { api: configReader };
 }

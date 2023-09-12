@@ -15,9 +15,6 @@ import { ResourcePermission } from '@backstage/plugin-permission-common';
 import { TemplateEntityStepV1beta3 } from '@backstage/plugin-scaffolder-common';
 import { TemplateParametersV1beta3 } from '@backstage/plugin-scaffolder-common';
 
-// @alpha
-export const catalogModuleTemplateKind: () => BackendFeature;
-
 // @alpha (undocumented)
 export const createScaffolderActionConditionalDecision: (
   permission: ResourcePermission<'scaffolder-action'>,
@@ -86,7 +83,8 @@ export const scaffolderActionConditions: Conditions<{
 }>;
 
 // @alpha
-export const scaffolderPlugin: () => BackendFeature;
+const scaffolderPlugin: () => BackendFeature;
+export default scaffolderPlugin;
 
 // @alpha
 export const scaffolderTemplateConditions: Conditions<{

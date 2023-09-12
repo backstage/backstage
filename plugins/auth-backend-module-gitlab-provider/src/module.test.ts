@@ -15,7 +15,6 @@
  */
 
 import { mockServices, startTestBackend } from '@backstage/backend-test-utils';
-import { authPlugin } from '@backstage/plugin-auth-backend';
 import { authModuleGitlabProvider } from './module';
 import request from 'supertest';
 import { decodeOAuthState } from '@backstage/plugin-auth-node';
@@ -24,7 +23,7 @@ describe('authModuleGitlabProvider', () => {
   it('should start', async () => {
     const { server } = await startTestBackend({
       features: [
-        authPlugin,
+        import('@backstage/plugin-auth-backend'),
         authModuleGitlabProvider,
         mockServices.rootConfig.factory({
           data: {

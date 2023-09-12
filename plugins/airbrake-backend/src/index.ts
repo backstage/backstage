@@ -22,4 +22,4 @@
 
 export * from './service/router';
 export * from './config';
-export { airbrakePlugin } from './plugin';
+export { airbrakePlugin as default } from './plugin';

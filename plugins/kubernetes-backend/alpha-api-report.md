@@ -6,7 +6,8 @@
 import { BackendFeature } from '@backstage/backend-plugin-api';
 
 // @alpha
-export const kubernetesPlugin: () => BackendFeature;
+const kubernetesPlugin: () => BackendFeature;
+export default kubernetesPlugin;
 
 // (No @packageDocumentation comment for this package)
 ```

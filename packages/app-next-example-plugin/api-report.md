@@ -7,7 +7,8 @@ import { BackstagePlugin } from '@backstage/frontend-plugin-api';
 import { default as React_2 } from 'react';
 
 // @public (undocumented)
-export const examplePlugin: BackstagePlugin;
+const examplePlugin: BackstagePlugin;
+export default examplePlugin;
 
 // @public (undocumented)
 export const ExampleSidebarItem: () => React_2.JSX.Element;

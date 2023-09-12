@@ -89,6 +89,12 @@ export class GitlabOrgDiscoveryEntityProvider implements EntityProvider {
         );
       }
 
+      if (!providerConfig.group && providerConfig.host === 'gitlab.com') {
+        throw new Error(
+          `Missing 'group' value for GitlabOrgDiscoveryEntityProvider:${providerConfig.id}.`,
+        );
+      }
+
       if (!options.schedule && !providerConfig.schedule) {
         throw new Error(
           `No schedule provided neither via code nor config for GitlabOrgDiscoveryEntityProvider:${providerConfig.id}.`,
@@ -168,19 +174,29 @@ export class GitlabOrgDiscoveryEntityProvider implements EntityProvider {
       logger: logger,
     });
 
-    const users = paginated<GitLabUser>(options => client.listUsers(options), {
-      page: 1,
-      per_page: 100,
-      active: true,
-    });
+    let groups;
+    let users;
 
-    const groups = paginated<GitLabGroup>(
-      options => client.listGroups(options),
-      {
+    if (client.isSelfManaged()) {
+      groups = paginated<GitLabGroup>(options => client.listGroups(options), {
         page: 1,
         per_page: 100,
-      },
-    );
+      });
+
+      users = paginated<GitLabUser>(options => client.listUsers(options), {
+        page: 1,
+        per_page: 100,
+        active: true,
+      });
+    } else {
+      groups = (await client.listDescendantGroups(this.config.group)).items;
+      users = (
+        await client.getGroupMembers(this.config.group.split('/')[0], [
+          'DIRECT',
+          'DESCENDANTS',
+        ])
+      ).items;
+    }
 
     const idMappedUser: { [userId: number]: GitLabUser } = {};
 
@@ -224,8 +240,12 @@ export class GitlabOrgDiscoveryEntityProvider implements EntityProvider {
       groupRes.scanned++;
       groupRes.matches.push(group);
 
-      for (const id of await client.getGroupMembers(group.full_path)) {
-        const user = idMappedUser[id];
+      const groupUsers = await client.getGroupMembers(group.full_path, [
+        'DIRECT',
+      ]);
+
+      for (const groupUser of groupUsers.items) {
+        const user = idMappedUser[groupUser.id];
         if (user) {
           user.groups = (user.groups ?? []).concat(group);
         }

@@ -6,7 +6,8 @@
 import { BackendFeature } from '@backstage/backend-plugin-api';
 
 // @alpha
-export const permissionPlugin: () => BackendFeature;
+const permissionPlugin: () => BackendFeature;
+export default permissionPlugin;
 
 // (No @packageDocumentation comment for this package)
 ```

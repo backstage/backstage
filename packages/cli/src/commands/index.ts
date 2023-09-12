@@ -68,6 +68,15 @@ export function registerRepoCommand(program: Command) {
     .action(lazy(() => import('./repo/lint').then(m => m.command)));
 
   command
+    .command('fix')
+    .description('Automatically fix packages in the project')
+    .option(
+      '--check',
+      'Fail if any packages would have been changed by the command',
+    )
+    .action(lazy(() => import('./repo/fix').then(m => m.command)));
+
+  command
     .command('clean')
     .description('Delete cache and output directories')
     .action(lazy(() => import('./repo/clean').then(m => m.command)));
@@ -158,12 +167,6 @@ export function registerScriptCommand(program: Command) {
     .helpOption(', --backstage-cli-help') // Let Jest handle help
     .description('Run tests, forwarding args to Jest, defaulting to watch mode')
     .action(lazy(() => import('./test').then(m => m.default)));
-
-  command
-    .command('fix', { hidden: true })
-    .description('Applies automated fixes to the package. [EXPERIMENTAL]')
-    .option('--deps', 'Only fix monorepo dependencies in package.json')
-    .action(lazy(() => import('./fix').then(m => m.command)));
 
   command
     .command('clean')
