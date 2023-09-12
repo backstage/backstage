@@ -87,7 +87,7 @@ export function createExtension<
   return {
     ...options,
     disabled: options.disabled ?? false,
-    $$type: 'extension',
+    $$type: '@backstage/Extension',
     inputs: options.inputs ?? {},
     factory({ bind, config, inputs }) {
       // TODO: Simplify this, but TS wouldn't infer the input type for some reason

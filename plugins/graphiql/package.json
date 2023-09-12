@@ -3,9 +3,7 @@
   "description": "Backstage plugin for browsing GraphQL APIs",
   "version": "0.2.54-next.2",
   "publishConfig": {
-    "access": "public",
-    "main": "dist/index.esm.js",
-    "types": "dist/index.d.ts"
+    "access": "public"
   },
   "backstage": {
     "role": "frontend-plugin"
@@ -19,6 +17,21 @@
   "keywords": [
     "backstage"
   ],
+  "exports": {
+    ".": "./src/index.ts",
+    "./alpha": "./src/alpha.tsx",
+    "./package.json": "./package.json"
+  },
+  "typesVersions": {
+    "*": {
+      "alpha": [
+        "src/alpha.tsx"
+      ],
+      "package.json": [
+        "package.json"
+      ]
+    }
+  },
   "license": "Apache-2.0",
   "main": "src/index.ts",
   "types": "src/index.ts",
@@ -35,6 +48,7 @@
   "dependencies": {
     "@backstage/core-components": "workspace:^",
     "@backstage/core-plugin-api": "workspace:^",
+    "@backstage/frontend-plugin-api": "workspace:^",
     "@backstage/theme": "workspace:^",
     "@material-ui/core": "^4.12.2",
     "@material-ui/icons": "^4.9.1",

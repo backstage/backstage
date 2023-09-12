@@ -33,6 +33,7 @@ jest.mock('i18next', () => ({
       },
       options: {
         fallbackLng: 'en',
+        supportedLngs: ['zh', 'en'],
       },
     })),
   })),

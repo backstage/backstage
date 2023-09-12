@@ -70,7 +70,12 @@ export interface Config {
      */
     publisher?:
       | {
-          type: 'local';
+          type:
+            | 'local'
+            | 'googleGcs'
+            | 'awsS3'
+            | 'azureBlobStorage'
+            | 'openStackSwift';
 
           local?: {
             /**

@@ -29,8 +29,6 @@ import { resolve as resolvePath, dirname } from 'path';
 import fs from 'fs-extra';
 import { BackstagePackageJson } from '@backstage/cli-node';
 
-const LOADED_PACKAGE_ROLES = ['backend-plugin', 'backend-plugin-module'];
-
 /** @internal */
 async function findClosestPackageDir(
   searchDir: string,
@@ -108,8 +106,8 @@ class PackageDiscoveryService implements FeatureDiscoveryService {
       const depPkg = require(require.resolve(`${name}/package.json`, {
         paths: [packageDir],
       })) as BackstagePackageJson;
-      if (!LOADED_PACKAGE_ROLES.includes(depPkg?.backstage?.role ?? '')) {
-        continue;
+      if (!depPkg?.backstage || depPkg?.backstage?.role === 'cli') {
+        continue; // Not a backstage package, ignore
       }
 
       const exportedModulePaths = [
@@ -128,16 +126,15 @@ class PackageDiscoveryService implements FeatureDiscoveryService {
       }
 
       for (const modulePath of exportedModulePaths) {
-        const module = require(modulePath);
-        for (const [exportName, exportValue] of Object.entries(module)) {
-          if (isBackendFeature(exportValue)) {
-            this.logger.info(`Detected: ${name}#${exportName}`);
-            features.push(exportValue);
-          }
-          if (isBackendFeatureFactory(exportValue)) {
-            this.logger.info(`Detected: ${name}#${exportName}`);
-            features.push(exportValue());
-          }
+        const mod = require(modulePath);
+
+        if (isBackendFeature(mod.default)) {
+          this.logger.info(`Detected: ${name}`);
+          features.push(mod.default);
+        }
+        if (isBackendFeatureFactory(mod.default)) {
+          this.logger.info(`Detected: ${name}`);
+          features.push(mod.default());
         }
       }
     }

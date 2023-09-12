@@ -16,7 +16,7 @@
 
 import { mockServices, startTestBackend } from '@backstage/backend-test-utils';
 import { searchIndexRegistryExtensionPoint } from '@backstage/plugin-search-backend-node/alpha';
-import { searchModuleCatalogCollator } from './alpha';
+import searchModuleCatalogCollator from './alpha';
 
 describe('searchModuleCatalogCollator', () => {
   it('should register the catalog collator to the search index registry extension point with factory and schedule', async () => {

@@ -226,7 +226,7 @@ export type AppOptions = {
     fallbackLanguage?: string | string[];
     messages?: Array<{
       ref: TranslationRef;
-      messages?: TranslationMessages<TranslationRef>;
+      messages?: Record<string, TranslationMessages<TranslationRef>>;
       lazyMessages: Record<
         string,
         () => Promise<{

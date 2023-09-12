@@ -29,23 +29,31 @@ import { VaultSecret, vaultApiRef, VaultClient } from '../../api';
 import { rest } from 'msw';
 
 describe('EntityVaultTable', () => {
+  let vaultClient: VaultClient;
+  let apis: TestApiRegistry;
+  let listSecretsSpy: jest.SpyInstance<Promise<VaultSecret[]>>;
+
   const server = setupServer();
   setupRequestMockHandlers(server);
-  let apis: TestApiRegistry;
   const mockBaseUrl = 'https://api-vault.com/api/vault';
   const discoveryApi = UrlPatternDiscovery.compile(mockBaseUrl);
   const fetchApi = new MockFetchApi();
 
-  const entity = (secretPath: string) => {
+  const entity = (secretPath: string, secretEngine?: string | undefined) => {
+    const annotations: Record<string, string> = {
+      'vault.io/secrets-path': secretPath,
+    };
+    if (secretEngine) {
+      annotations['vault.io/secrets-engine'] = secretEngine;
+    }
+
     return {
       apiVersion: 'backstage.io/v1alpha1',
       kind: 'Component',
       metadata: {
         name: 'test',
         description: 'This is the description',
-        annotations: {
-          'vault.io/secrets-path': secretPath,
-        },
+        annotations,
       },
       spec: {
         lifecycle: 'production',
@@ -56,6 +64,7 @@ describe('EntityVaultTable', () => {
   };
 
   const entityOk = entity('test/success');
+  const entityOkWithEngine = entity('test/success', 'kv');
   const entityEmpty = entity('test/empty');
   const entityNotOk = entity('test/error');
 
@@ -91,10 +100,10 @@ describe('EntityVaultTable', () => {
   };
 
   beforeEach(() => {
-    apis = TestApiRegistry.from([
-      vaultApiRef,
-      new VaultClient({ discoveryApi, fetchApi }),
-    ]);
+    jest.resetAllMocks();
+    vaultClient = new VaultClient({ discoveryApi, fetchApi });
+    apis = TestApiRegistry.from([vaultApiRef, vaultClient]);
+    listSecretsSpy = jest.spyOn(vaultClient, 'listSecrets');
   });
 
   it('should render secrets', async () => {
@@ -107,6 +116,28 @@ describe('EntityVaultTable', () => {
 
     expect(await rendered.findAllByText(/secret::one/)).toBeDefined();
     expect(await rendered.findAllByText(/secret::two/)).toBeDefined();
+
+    expect(listSecretsSpy).toHaveBeenCalledTimes(1);
+    expect(listSecretsSpy).toHaveBeenCalledWith('test/success', {
+      secretEngine: undefined,
+    });
+  });
+
+  it('should render secrets with custom engine', async () => {
+    setupHandlers();
+    const rendered = await renderInTestApp(
+      <ApiProvider apis={apis}>
+        <EntityVaultTable entity={entityOkWithEngine} />
+      </ApiProvider>,
+    );
+
+    expect(await rendered.findAllByText(/secret::one/)).toBeDefined();
+    expect(await rendered.findAllByText(/secret::two/)).toBeDefined();
+
+    expect(listSecretsSpy).toHaveBeenCalledTimes(1);
+    expect(listSecretsSpy).toHaveBeenCalledWith('test/success', {
+      secretEngine: 'kv',
+    });
   });
 
   it('should render no secrets found', async () => {

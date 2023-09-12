@@ -20,7 +20,8 @@ export interface RouterOptions {
 }
 
 // @alpha
-export const userSettingsPlugin: () => BackendFeature;
+const userSettingsPlugin: () => BackendFeature;
+export default userSettingsPlugin;
 
 // (No @packageDocumentation comment for this package)
 ```

@@ -12,7 +12,8 @@ import { Logger } from 'winston';
 import { SchedulerService } from '@backstage/backend-plugin-api';
 
 // @public
-export const catalogModuleGcpGkeEntityProvider: () => BackendFeature;
+const catalogModuleGcpGkeEntityProvider: () => BackendFeature;
+export default catalogModuleGcpGkeEntityProvider;
 
 // @public
 export class GkeEntityProvider implements EntityProvider {

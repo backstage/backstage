@@ -76,8 +76,11 @@ export function buildMiddleware(
     typeof config === 'string' ? { target: config } : { ...config };
 
   // Validate that target is a valid URL.
-  if (typeof fullConfig.target !== 'string') {
-    throw new Error(`Proxy target must be a string`);
+  const targetType = typeof fullConfig.target;
+  if (targetType !== 'string') {
+    throw new Error(
+      `Proxy target for route "${route}" must be a string, but is of type ${targetType}`,
+    );
   }
   try {
     // eslint-disable-next-line no-new

@@ -15,12 +15,10 @@
  */
 
 import { createBackend } from '@backstage/backend-defaults';
-import { authPlugin } from '../src';
-import { authModuleGoogleProvider } from '@backstage/plugin-auth-backend-module-google-provider';
 
 const backend = createBackend();
 
-backend.add(authPlugin);
-backend.add(authModuleGoogleProvider);
+backend.add(import('../src'));
+backend.add(import('@backstage/plugin-auth-backend-module-google-provider'));
 
 backend.start();

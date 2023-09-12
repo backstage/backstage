@@ -12,7 +12,8 @@ import { Logger } from 'winston';
 export function createRouter(options: RouterOptions): Promise<express.Router>;
 
 // @alpha
-export const periskopPlugin: () => BackendFeature;
+const periskopPlugin: () => BackendFeature;
+export default periskopPlugin;
 
 // @public (undocumented)
 export interface RouterOptions {

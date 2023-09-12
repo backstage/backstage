@@ -53,7 +53,8 @@ export type AuthHandlerResult = {
 };
 
 // @public
-export const authPlugin: () => BackendFeature;
+const authPlugin: () => BackendFeature;
+export default authPlugin;
 
 // @public @deprecated (undocumented)
 export type AuthProviderConfig = AuthProviderConfig_2;

@@ -6,9 +6,13 @@
 /// <reference types="react" />
 
 import { BackstagePlugin } from '@backstage/frontend-plugin-api';
+import { ConfigApi } from '@backstage/core-plugin-api';
 
 // @public (undocumented)
-export function createApp(options: { plugins: BackstagePlugin[] }): {
+export function createApp(options: {
+  plugins: BackstagePlugin[];
+  config?: ConfigApi;
+}): {
   createRoot(): JSX.Element;
 };
 ```

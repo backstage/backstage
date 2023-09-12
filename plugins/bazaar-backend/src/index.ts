@@ -15,4 +15,4 @@
  */
 
 export * from './service/router';
-export { bazaarPlugin } from './plugin';
+export { bazaarPlugin as default } from './plugin';

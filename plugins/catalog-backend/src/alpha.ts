@@ -21,4 +21,4 @@ import type { EntitiesSearchFilter } from './catalog/types';
 export type { /** @alpha */ EntitiesSearchFilter };
 
 export * from './permissions';
-export { catalogPlugin } from './service/CatalogPlugin';
+export { catalogPlugin as default } from './service/CatalogPlugin';

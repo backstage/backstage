@@ -5,12 +5,9 @@
 ```ts
 import { ActionContext as ActionContext_2 } from '@backstage/plugin-scaffolder-node';
 import { CatalogApi } from '@backstage/catalog-client';
-import { CatalogProcessor } from '@backstage/plugin-catalog-node';
-import { CatalogProcessorEmit } from '@backstage/plugin-catalog-node';
 import { Config } from '@backstage/config';
 import { createPullRequest } from 'octokit-plugin-create-pull-request';
 import { Duration } from 'luxon';
-import { Entity } from '@backstage/catalog-model';
 import { executeShellCommand as executeShellCommand_2 } from '@backstage/plugin-scaffolder-node';
 import { ExecuteShellCommandOptions } from '@backstage/plugin-scaffolder-node';
 import express from 'express';
@@ -20,7 +17,6 @@ import { HumanDuration } from '@backstage/types';
 import { IdentityApi } from '@backstage/plugin-auth-node';
 import { JsonObject } from '@backstage/types';
 import { Knex } from 'knex';
-import { LocationSpec } from '@backstage/plugin-catalog-common';
 import { Logger } from 'winston';
 import { Octokit } from 'octokit';
 import { PermissionEvaluator } from '@backstage/plugin-permission-common';
@@ -30,6 +26,7 @@ import { PluginDatabaseManager } from '@backstage/backend-common';
 import { PluginTaskScheduler } from '@backstage/backend-tasks';
 import { RESOURCE_TYPE_SCAFFOLDER_ACTION } from '@backstage/plugin-scaffolder-common/alpha';
 import { RESOURCE_TYPE_SCAFFOLDER_TEMPLATE } from '@backstage/plugin-scaffolder-common/alpha';
+import { ScaffolderEntitiesProcessor as ScaffolderEntitiesProcessor_2 } from '@backstage/plugin-catalog-backend-module-scaffolder-entity-model';
 import { Schema } from 'jsonschema';
 import { ScmIntegrationRegistry } from '@backstage/integration';
 import { ScmIntegrations } from '@backstage/integration';
@@ -881,19 +878,8 @@ export interface RouterOptions {
 // @public @deprecated
 export type RunCommandOptions = ExecuteShellCommandOptions;
 
-// @public (undocumented)
-export class ScaffolderEntitiesProcessor implements CatalogProcessor {
-  // (undocumented)
-  getProcessorName(): string;
-  // (undocumented)
-  postProcessEntity(
-    entity: Entity,
-    _location: LocationSpec,
-    emit: CatalogProcessorEmit,
-  ): Promise<Entity>;
-  // (undocumented)
-  validateEntityKind(entity: Entity): Promise<boolean>;
-}
+// @public @deprecated
+export const ScaffolderEntitiesProcessor: typeof ScaffolderEntitiesProcessor_2;
 
 // @public @deprecated
 export type SerializedTask = SerializedTask_2;

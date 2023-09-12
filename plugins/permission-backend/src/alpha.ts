@@ -14,4 +14,4 @@
  * limitations under the License.
  */
 
-export { permissionPlugin } from './plugin';
+export { permissionPlugin as default } from './plugin';
