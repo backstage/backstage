@@ -1,13 +1,91 @@
-# jira-dashboard
+# @backstage/plugin-jira-dashboard
 
-Welcome to the jira-dashboard plugin!
+Welcome to the Jira Dashboard plugin!
 
-_This plugin was created through the Backstage CLI_
+## Introduction
 
-## Getting started
+The **Jira Dashboard** plugin allows you to fetch and display Jira issues for your entity. You get quickly access summaries to issues in your project in order to acieve more efficient project management and visibility. The issue overview can be customized to display the information that is relevant for that entity by defining specific Jira filters or components.
 
-Your plugin has been added to the example app in this repository, meaning you'll be able to access it by running `yarn start` in the root directory, and then navigating to [/jira-dashboard](http://localhost:3000/jira-dashboard).
+By default, the issues that are provided are **incoming issues**, **open issues** and **assigned to you**.
 
-You can also serve the plugin in isolation by running `yarn start` in the plugin directory.
-This method of serving the plugin provides quicker iteration speed and a faster startup and hot reloads.
-It is only meant for local development, and the setup for it can be found inside the [/dev](./dev) directory.
+## Note
+
+You will **need** to also perform the installation instructions in [Jira Dashboard Backend](https://github.com/backstage/backstage/tree/master/plugins/jira-dashboard-backend) in order for this plugin to work.
+
+## Getting Started
+
+First install the plugin into your app:
+
+```bash
+# From your Backstage root directory
+yarn add --cwd packages/app @backstage/plugin-jira-dashboard
+```
+
+Modify your entity page in `EntityPage.tsx` to include the `EntityJiraDashboardContent` component and the `isJiraDashboardAvailable` function exported from the plugin.
+
+> NOTE: You can choose for which kind of entity you want to include the plugin by adding the plugin in that specific entity kind, for instance `serviceEntityPage` or `apiPage`.
+
+The example below show how you can add the plugin to the `defaultEntityPage`:
+
+```tsx
+// In packages/app/src/components/catalog/Entity.tsx
+import { EntityJiraDashboardContent } from '@backstage/plugin-jira-dashboard';
+import { isJiraDashboardAvailable } from '@backstage/plugin-jira-dashboard';
+
+const defaultEntityPage = (
+  <EntityLayout.Route
+    if={isJiraDashboardAvailable}
+    path="/jira-dashboard"
+    title="Jira Dashboard"
+  >
+    <EntityJiraDashboardContent />
+  </EntityLayout.Route>
+  ...
+;
+```
+
+### Integration with the Catalog
+
+To enable the Jira Dashboard plugin for your entity, the entity must have the following annotation:
+
+```yaml
+apiVersion: backstage.io/v1alpha1
+kind: Component
+metadata:
+  # ...
+  annotations:
+    jira/project-key: # The key of the Jira project to track for this entity
+```
+
+### Optional annotations
+
+If you want to track specific components or filters you can add the optional annotations `component` and `filters-ids`. You can specify an endless number of Jira components or filters for your entity.
+
+```yaml
+apiVersion: backstage.io/v1alpha1
+kind: Component
+metadata:
+  # ...
+  annotations:
+    jira/project-key: # The key of the Jira project to track for this entity
+    jira/component: component-name:component-name:component:name # Jira component name separated with :
+    jira/filter-ids: 12345:67890:68965 # Jira filter id separated with :
+```
+
+### Configuration
+
+The provided configuration must be added to your `app-config.yaml` in the root of the file:
+
+```yaml
+jira:
+  token: ${JIRA_TOKEN} # The API token to authenticate to jira.
+  baseUrl: ${JIRA_BASE_URL}' # The base url for Jira in your company, including the api version. For instance: https://jira.se.your-company.com/rest/api/2/'
+```
+
+> NOTE: To read more about how to get an API token from Jira, check our the following Atlassian page: https://developer.atlassian.com/cloud/jira/platform/basic-auth-for-rest-apis/
+
+## Layout
+
+The issue overview is located under the tab "Jira Dashboard" on the entity page. The overview displays information about the specific Jira project, and then renders one table for each type of issue. For instance, you can see the priority, assignee and status for the issues.
+
+![home](media/layout.png)
