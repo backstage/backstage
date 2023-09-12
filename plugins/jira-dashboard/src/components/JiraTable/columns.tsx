@@ -52,7 +52,7 @@ export const columns: TableColumn[] = [
     field: 'fields.summary',
     highlight: true,
     type: 'string',
-    width: '60%',
+    width: '50%',
     render: (issue: Partial<Issue>) => {
       if (!issue.self || !issue.key) {
         return null;
@@ -73,7 +73,7 @@ export const columns: TableColumn[] = [
     field: 'fields.status.name',
     highlight: true,
     type: 'string',
-    width: '10%',
+    width: '30%',
 
     render: (issue: Partial<Issue>) => {
       if (!issue.self || !issue.key) {
