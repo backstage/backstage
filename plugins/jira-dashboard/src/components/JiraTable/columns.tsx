@@ -15,7 +15,7 @@
  */
 
 import React from 'react';
-import { Avatar, Link, TableColumn } from '@backstage/core-components';
+import { Link, TableColumn } from '@backstage/core-components';
 import type { Issue } from '../../types';
 import { Typography } from '@material-ui/core';
 import { getIssueUrl } from '../../lib';
@@ -100,23 +100,6 @@ export const columns: TableColumn[] = [
       if (!issue.fields?.assignee)
         return <Typography style={{ color: 'grey' }}>Unassigned</Typography>;
       return <>{issue.fields?.assignee.name.split('@')[0]}</>;
-    },
-  },
-  {
-    field: 'avatar',
-    highlight: true,
-    type: 'string',
-    width: '30%',
-    render: (issue: Partial<Issue>) => {
-      if (!issue.fields?.assignee) return <></>;
-      return (
-        <>
-          <Avatar
-            picture={issue.fields.assignee.avatarUrls['48x48']}
-            customStyles={{ width: '25px', height: 'auto' }}
-          />
-        </>
-      );
     },
   },
 ];
