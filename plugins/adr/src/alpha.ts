@@ -13,14 +13,4 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import { createTranslationRef } from '@backstage/core-plugin-api/alpha';
-
-/** @alpha */
-export const adrTranslationRef = createTranslationRef({
-  id: 'adr',
-  messages: {
-    content_header_title: 'Architecture Decision Records',
-    failed_to_fetch: 'Failed to fetch ADRs',
-    no_adrs: 'No ADRs found',
-  } as const,
-});
+export * from './translations';
