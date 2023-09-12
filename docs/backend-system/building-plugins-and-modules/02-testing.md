@@ -166,3 +166,37 @@ it'll take into account when present.
 - `BACKSTAGE_TEST_DATABASE_POSTGRES13_CONNECTION_STRING`
 - `BACKSTAGE_TEST_DATABASE_POSTGRES9_CONNECTION_STRING`
 - `BACKSTAGE_TEST_DATABASE_MYSQL8_CONNECTION_STRING`
+
+## Testing Service Factories
+
+To facilitate testing of service factories, the `@backstage/backend-test-utils`
+package provides a `ServiceFactoryTester` helper that lets you instantiate services
+in a controlled context.
+
+The following example shows how to test a service factory where we also provide
+a mocked implementation of the `rootConfig` service.
+
+```ts
+import {
+  mockServices,
+  ServiceFactoryTester,
+} from '@backstage/backend-test-utils';
+import { myServiceFactory } from './myServiceFactory.ts';
+
+describe('myServiceFactory', () => {
+  it('should provide value', async () => {
+    const fakeConfig = { myConfiguredValue: 7 };
+
+    const tester = ServiceFactoryTester.from(myServiceFactory, {
+      dependencies: [mockServices.rootConfig.factory({ data: fakeConfig })],
+    });
+
+    const myService = await tester.get('test-plugin');
+
+    expect(myService.getValue()).toBe(7);
+  });
+});
+```
+
+The service factory tester also provides mocked implementations of the majority
+of all core services by default.
