@@ -238,11 +238,9 @@ createApiFactory({
     api: apiDocsConfigRef,
     deps: {},
     factory: () => {
-      // Overriding openapi definition widget to add cors-anywhere proxy
+      // Overriding openapi definition widget to add header
       const requestInterceptor = (req: any) => {
-        // Adding cors-anywhere proxy to the request url
-        console.log(req);
-        req.url = "https://cors-anywhere.herokuapp.com/" + req.url;
+        req.headers.append('myheader', 'wombats');
         return req;
       };
       const definitionWidgets = defaultDefinitionWidgets().map(obj => {
