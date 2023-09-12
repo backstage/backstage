@@ -15,6 +15,16 @@
  */
 
 export {
+  type TranslationMessages,
+  type TranslationMessagesOptions,
+  createTranslationMessages,
+} from './TranslationMessages';
+export {
+  type TranslationResource,
+  type TranslationResourceOptions,
+  createTranslationResource,
+} from './TranslationResource';
+export {
   type TranslationRef,
   type TranslationRefOptions,
   createTranslationRef,
