@@ -24,7 +24,6 @@ export type Issue = {
     assignee: {
       name: string;
       self: string;
-      avatarUrls: { '48x48': string };
     };
     issuetype: {
       name: string;
@@ -55,9 +54,7 @@ export type Project = {
   lead: {
     key: string;
     displayName: string;
-    avatarUrls: { '48x48': string };
   };
-  avatarUrls: string;
   self: string;
 };
 

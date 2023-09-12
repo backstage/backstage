@@ -86,17 +86,7 @@ export const JiraProjectCard = ({ project }: JiraProjectCardProps) => {
 
         <Typography className={classes.label}>Project lead</Typography>
         <Box style={{ display: 'flex' }}>
-          <Typography className={classes.value}>
-            {project.lead.displayName}
-          </Typography>
-          <Avatar
-            picture={project.lead.avatarUrls['48x48']}
-            customStyles={{
-              width: '25px',
-              height: '25px',
-              marginLeft: '10px',
-            }}
-          />
+          <Typography className={classes.value}>{project.lead.key}</Typography>
         </Box>
 
         <LinkButton
