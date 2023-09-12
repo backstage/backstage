@@ -181,6 +181,12 @@ async function buildDistWorkspace(workspaceName: string, rootDir: string) {
   print('Pinning yarn version in workspace');
   await pinYarnVersion(workspaceDir);
 
+  const yarnPatchesPath = paths.resolveOwnRoot('.yarn/patches');
+  if (await fs.pathExists(yarnPatchesPath)) {
+    print('Copying yarn patches');
+    await fs.copy(yarnPatchesPath, resolvePath(workspaceDir, '.yarn/patches'));
+  }
+
   print('Installing workspace dependencies');
   await runPlain(['yarn', 'workspaces', 'focus', '--all', '--production'], {
     cwd: workspaceDir,
