@@ -15,7 +15,7 @@
  */
 
 import { mockServices, startTestBackend } from '@backstage/backend-test-utils';
-import { authPlugin } from '@backstage/plugin-auth-backend';
+import authPlugin from '@backstage/plugin-auth-backend';
 import { authModuleBitbucketProvider } from './module';
 import request from 'supertest';
 import { decodeOAuthState } from '@backstage/plugin-auth-node';
