@@ -15,7 +15,7 @@
  */
 
 import React, { JSX } from 'react';
-import { ConfigReader } from '@backstage/config';
+import { ConfigReader, Config } from '@backstage/config';
 import {
   BackstagePlugin,
   coreExtensionData,
@@ -84,29 +84,29 @@ export interface ExtensionTreeNode {
 
 /** @public */
 export interface ExtensionTree {
-  getExtension(id: string): ExtensionInstance | undefined;
-  getExtensionAttachments(id: string, inputName: string): ExtensionInstance[];
+  getExtension(id: string): ExtensionTreeNode | undefined;
+  getExtensionAttachments(id: string, inputName: string): ExtensionTreeNode[];
 }
 
 /** @public */
-export function createExtensionTree(): ExtensionTree {
+export function createExtensionTree(options: {
+  config: Config;
+}): ExtensionTree {
   const plugins = getAvailablePlugins();
   const { instances } = createInstances({
     plugins,
-    config: ConfigReader.fromConfigs(
-      overrideBaseUrlConfigs(defaultConfigLoaderSync()),
-    ),
+    config: options.config,
   });
 
   return {
-    getExtension(id: string): ExtensionInstance | undefined {
+    getExtension(id: string): ExtensionTreeNode | undefined {
       return instances.get(id);
     },
     getExtensionAttachments(
       id: string,
       inputName: string,
-    ): ExtensionInstance[] {
-      return this.getExtension(id)?.attachments.get(inputName) ?? [];
+    ): ExtensionTreeNode[] {
+      return instances.get(id)?.attachments.get(inputName) ?? [];
     },
   };
 }
@@ -116,7 +116,7 @@ export function createExtensionTree(): ExtensionTree {
  */
 export function createInstances(options: {
   plugins: BackstagePlugin[];
-  config: ConfigApi;
+  config: Config;
 }) {
   const builtinExtensions = [Core, CoreRoutes, CoreNav, CoreLayout];
 

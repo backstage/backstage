@@ -4,6 +4,7 @@
 
 ```ts
 import { BackstagePlugin } from '@backstage/frontend-plugin-api';
+import { Config } from '@backstage/config';
 import { ConfigApi } from '@backstage/core-plugin-api';
 <<<<<<< HEAD
 import { JSX as JSX_2 } from 'react';
@@ -20,24 +21,14 @@ export function createApp(options: {
 };
 
 // @public (undocumented)
-export function createExtensionTree(): ExtensionTree;
-
-// @public (undocumented)
-export interface ExtensionInstance {
-  // (undocumented)
-  readonly $$type: '@backstage/ExtensionInstance';
-  readonly attachments: Map<string, ExtensionInstance[]>;
-  getData<T>(ref: ExtensionDataRef<T>): T | undefined;
-  // (undocumented)
-  readonly id: string;
-}
+export function createExtensionTree(options: { config: Config }): ExtensionTree;
 
 // @public (undocumented)
 export interface ExtensionTree {
   // (undocumented)
-  getExtension(id: string): ExtensionInstance | undefined;
+  getExtension(id: string): ExtensionTreeNode | undefined;
   // (undocumented)
-  getExtensionAttachments(id: string, inputName: string): ExtensionInstance[];
+  getExtensionAttachments(id: string, inputName: string): ExtensionTreeNode[];
 }
 
 // @public (undocumented)
