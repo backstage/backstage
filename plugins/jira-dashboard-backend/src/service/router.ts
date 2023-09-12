@@ -65,6 +65,10 @@ export async function createRouter(
   const router = Router();
   router.use(express.json());
 
+  router.get('/health', (_, response) => {
+    response.json({ status: 'ok' });
+  });
+
   router.get('/:entityRef', async (request, response) => {
     const entityRef = request.params.entityRef;
     const { token } = await tokenManager.getToken();
