@@ -5036,9 +5036,7 @@ __metadata:
     "@types/xml2js": ^0.4.7
     compression: ^1.7.4
     connect-session-knex: ^3.0.1
-    cookie: ^0.5.0
     cookie-parser: ^1.4.5
-    cookie-signature: ^1.2.1
     cors: ^2.8.5
     express: ^4.17.1
     express-promise-router: ^4.1.0
@@ -22775,13 +22773,6 @@ __metadata:
   languageName: node
   linkType: hard
 
-"cookie-signature@npm:^1.2.1":
-  version: 1.2.1
-  resolution: "cookie-signature@npm:1.2.1"
-  checksum: bb464aacac390b5d7d8ead2d6fff7c1c3b7378c7d0250921f48923fe889688e081ab33950448929db5f24d4f9f1506589a7ee1c685de8f12a3fdb30c49667ec5
-  languageName: node
-  linkType: hard
-
 "cookie@npm:0.4.1":
   version: 0.4.1
   resolution: "cookie@npm:0.4.1"
@@ -22796,7 +22787,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"cookie@npm:0.5.0, cookie@npm:^0.5.0, cookie@npm:~0.5.0":
+"cookie@npm:0.5.0, cookie@npm:~0.5.0":
   version: 0.5.0
   resolution: "cookie@npm:0.5.0"
   checksum: 1f4bd2ca5765f8c9689a7e8954183f5332139eb72b6ff783d8947032ec1fdf43109852c178e21a953a30c0dd42257828185be01b49d1eb1a67fd054ca588a180
@@ -30257,9 +30248,9 @@ __metadata:
   linkType: hard
 
 "jose@npm:^4.14.6":
-  version: 4.14.6
-  resolution: "jose@npm:4.14.6"
-  checksum: eae81a234e7bf1446b1bd80722b3462b014e3835b155c3a7799c1c5043163a53a0dc28d347004151b031e6b7b863403aabf8814d9cc217ce21f8c2f3ebd4b335
+  version: 4.15.2
+  resolution: "jose@npm:4.15.2"
+  checksum: 8f0cab1eef31243abe14a935b2b330cd95f10f9b69808fd642088ae5000e50e566664934537d2c6413ab2f6b54acd8265a5033da05157aa1260c5f1d7e57fab0
   languageName: node
   linkType: hard
 

@@ -15,7 +15,7 @@
  */
 
 import { createBackend } from '@backstage/backend-defaults';
-import { authPlugin } from '@backstage/plugin-auth-backend';
+import authPlugin from '@backstage/plugin-auth-backend';
 import { authModulePinnipedProvider } from '../src';
 
 const backend = createBackend();

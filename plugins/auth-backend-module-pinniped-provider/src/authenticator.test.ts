@@ -415,7 +415,7 @@ describe('pinnipedAuthenticator', () => {
       await expect(
         pinnipedAuthenticator.authenticate(handlerRequest, implementation),
       ).rejects.toThrow(
-        `Failed to get cluster specific ID token for "test_cluster", RFC8693 token exchange failed with error: NetworkError: Connection timed out`,
+        `Failed to get cluster specific ID token for "test_cluster": Error: RFC8693 token exchange failed with error: NetworkError: Connection timed out`,
       );
     });
 

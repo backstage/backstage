@@ -19,7 +19,39 @@ import {
   decodeOAuthState,
   encodeOAuthState,
 } from '@backstage/plugin-auth-node';
-import { Issuer, TokenSet, Strategy as OidcStrategy } from 'openid-client';
+import {
+  Client,
+  Issuer,
+  TokenSet,
+  Strategy as OidcStrategy,
+} from 'openid-client';
+
+const rfc8693TokenExchange = async ({
+  subject_token,
+  target_audience,
+  ctx,
+}: {
+  subject_token: string;
+  target_audience: string;
+  ctx: Promise<{
+    providerStrategy: OidcStrategy<{}>;
+    client: Client;
+  }>;
+}): Promise<string | undefined> => {
+  const { client } = await ctx;
+  return client
+    .grant({
+      grant_type: 'urn:ietf:params:oauth:grant-type:token-exchange',
+      subject_token,
+      audience: target_audience,
+      subject_token_type: 'urn:ietf:params:oauth:token-type:access_token',
+      requested_token_type: 'urn:ietf:params:oauth:token-type:jwt',
+    })
+    .then(tokenset => tokenset.access_token)
+    .catch(err => {
+      throw new Error(`RFC8693 token exchange failed with error: ${err}`);
+    });
+};
 
 /** @public */
 export const pinnipedAuthenticator = createOAuthAuthenticator({
@@ -39,7 +71,7 @@ export const pinnipedAuthenticator = createOAuthAuthenticator({
       scope: config.getOptionalString('scope') || '',
       id_token_signed_response_alg: 'ES256',
     });
-    const strategy = new OidcStrategy(
+    const providerStrategy = new OidcStrategy(
       {
         client,
         passReqToCallback: false,
@@ -57,11 +89,11 @@ export const pinnipedAuthenticator = createOAuthAuthenticator({
       },
     );
 
-    return { strategy, client };
+    return { providerStrategy, client };
   },
 
-  async start(input, implementation) {
-    const { strategy } = await implementation;
+  async start(input, ctx) {
+    const { providerStrategy } = await ctx;
     const stringifiedAudience = input.req.query?.audience as string;
     const decodedState = decodeOAuthState(input.state);
     const state = { ...decodedState, audience: stringifiedAudience };
@@ -73,6 +105,7 @@ export const pinnipedAuthenticator = createOAuthAuthenticator({
     };
 
     return new Promise((resolve, reject) => {
+      const strategy = Object.create(providerStrategy);
       strategy.redirect = (url: string) => {
         resolve({ url });
       };
@@ -83,8 +116,8 @@ export const pinnipedAuthenticator = createOAuthAuthenticator({
     });
   },
 
-  async authenticate(input, implementation) {
-    const { strategy, client } = await implementation;
+  async authenticate(input, ctx) {
+    const { providerStrategy } = await ctx;
     const { req } = input;
     const { searchParams } = new URL(req.url, 'https://pinniped.com');
     const stateParam = searchParams.get('state');
@@ -93,25 +126,20 @@ export const pinnipedAuthenticator = createOAuthAuthenticator({
       : undefined;
 
     return new Promise((resolve, reject) => {
-      strategy.success = user => {
+      const strategy = Object.create(providerStrategy);
+      strategy.success = (user: any) => {
         (audience
-          ? client
-              .grant({
-                grant_type: 'urn:ietf:params:oauth:grant-type:token-exchange',
-                subject_token: user.tokenset.access_token,
-                audience,
-                subject_token_type:
-                  'urn:ietf:params:oauth:token-type:access_token',
-                requested_token_type: 'urn:ietf:params:oauth:token-type:jwt',
-              })
-              .then(tokenset => tokenset.access_token)
-              .catch(err =>
-                reject(
-                  new Error(
-                    `Failed to get cluster specific ID token for "${audience}", RFC8693 token exchange failed with error: ${err}`,
-                  ),
+          ? rfc8693TokenExchange({
+              subject_token: user.tokenset.access_token,
+              target_audience: audience,
+              ctx,
+            }).catch(err =>
+              reject(
+                new Error(
+                  `Failed to get cluster specific ID token for "${audience}": ${err}`,
                 ),
-              )
+              ),
+            )
           : Promise.resolve(user.tokenset.id_token)
         ).then(idToken => {
           resolve({
@@ -127,7 +155,7 @@ export const pinnipedAuthenticator = createOAuthAuthenticator({
         });
       };
 
-      strategy.fail = info => {
+      strategy.fail = (info: any) => {
         reject(new Error(`Authentication rejected, ${info.message || ''}`));
       };
 
@@ -143,8 +171,8 @@ export const pinnipedAuthenticator = createOAuthAuthenticator({
     });
   },
 
-  async refresh(input, implementation) {
-    const { client } = await implementation;
+  async refresh(input, ctx) {
+    const { client } = await ctx;
     const tokenset = await client.refresh(input.refreshToken);
 
     return new Promise((resolve, reject) => {
