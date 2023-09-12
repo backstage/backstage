@@ -223,9 +223,9 @@ security:
 
 - [The Backstage homepage](https://backstage.io)
 
-### Adding requestInterceptor to Swagger UI
+### Adding `requestInterceptor` to Swagger UI
 
-To configure a [requestInterceptor for Swagger UI](https://github.com/swagger-api/swagger-ui/tree/master/flavors/swagger-ui-react#requestinterceptor-proptypesfunc) you'll need to add the following to your `api.tsx`:
+To configure a [`requestInterceptor` for Swagger UI](https://github.com/swagger-api/swagger-ui/tree/master/flavors/swagger-ui-react#requestinterceptor-proptypesfunc) you'll need to add the following to your `api.tsx`:
 
 ```tsx
 ...
