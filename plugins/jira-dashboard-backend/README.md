@@ -10,7 +10,7 @@ The following sections will help you get the Jira Dashboard Backend plugin setup
 
 ### Installation
 
-First, install the plugin by following the example below:
+Install the plugin by following the example below:
 
 ```bash
 # From your Backstage root directory
@@ -73,4 +73,4 @@ Here's how to get the backend plugin up and running:
 
 3. Now run `yarn start-backend` from the repo root.
 
-4. In another terminal, run the command: `http://localhost:7007/api/jira-dashboard-backend/health`. The request should return `{"status":"ok"}`.
+4. In another terminal, run the command: `curl localhost:7007/api/jira-dashboard/health`. The request should return `{"status":"ok"}`.
