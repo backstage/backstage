@@ -17,39 +17,57 @@ import {
   createTranslationRef,
   toInternalTranslationRef,
 } from './TranslationRef';
+import { toInternalTranslationResource } from './TranslationResource';
 
 describe('TranslationRefImpl', () => {
   it('should create a TranslationRef instance using the factory function', () => {
-    const config = {
-      id: 'testId',
+    const ref = createTranslationRef({
+      id: 'test',
       messages: { key: 'value' },
-    };
+    });
 
-    const translationRef = toInternalTranslationRef(
-      createTranslationRef(config),
-    );
+    const internalRef = toInternalTranslationRef(ref);
 
-    expect(translationRef.id).toBe('testId');
-    expect(translationRef.getDefaultMessages()).toEqual({ key: 'value' });
+    expect(internalRef.$$type).toBe('@backstage/TranslationRef');
+    expect(internalRef.version).toBe('v1');
+    expect(internalRef.id).toBe('test');
+    expect(internalRef.getDefaultMessages()).toEqual({ key: 'value' });
   });
 
-  it('should get lazy resources', async () => {
-    const config = {
-      id: 'testId',
+  it('should be created with lazy translations', async () => {
+    const ref = createTranslationRef({
+      id: 'test',
       messages: { key: 'value' },
-      lazyResources: {
-        en: () => Promise.resolve({ messages: { key: 'value' } }),
+      translations: {
+        de: () => Promise.resolve({ default: { key: 'other-value' } }),
       },
-    };
+    });
 
-    const translationRef = toInternalTranslationRef(
-      createTranslationRef(config),
+    const internalRef = toInternalTranslationRef(ref);
+
+    expect(internalRef.$$type).toBe('@backstage/TranslationRef');
+    expect(internalRef.version).toBe('v1');
+    expect(internalRef.id).toBe('test');
+    expect(internalRef.getDefaultMessages()).toEqual({ key: 'value' });
+
+    const internalResource = toInternalTranslationResource(
+      internalRef.getDefaultResource()!,
     );
-
-    const lazyResources = translationRef.getLazyResources();
-
-    const messages = await lazyResources?.en();
-
-    expect(messages).toEqual({ messages: { key: 'value' } });
+    expect(internalResource).toEqual({
+      $$type: '@backstage/TranslationResource',
+      version: 'v1',
+      id: 'test',
+      resources: [
+        {
+          language: 'de',
+          loader: expect.any(Function),
+        },
+      ],
+    });
+    await expect(internalResource.resources[0].loader()).resolves.toEqual({
+      messages: {
+        key: 'other-value',
+      },
+    });
   });
 });

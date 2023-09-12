@@ -14,10 +14,15 @@
  * limitations under the License.
  */
 
+import {
+  createTranslationResource,
+  TranslationResource,
+} from './TranslationResource';
+
 /** @alpha */
 export interface TranslationRef<
-  TMessages extends { [key in string]: string } = { [key in string]: string },
   TId extends string = string,
+  TMessages extends { [key in string]: string } = { [key in string]: string },
 > {
   $$type: '@backstage/TranslationRef';
 
@@ -31,47 +36,54 @@ type AnyMessages = { [key in string]: string };
 
 /** @internal */
 export interface InternalTranslationRef<
-  TMessages extends { [key in string]: string } = { [key in string]: string },
   TId extends string = string,
-> extends TranslationRef<TMessages, TId> {
+  TMessages extends { [key in string]: string } = { [key in string]: string },
+> extends TranslationRef<TId, TMessages> {
   version: 'v1';
 
   getDefaultMessages(): AnyMessages;
 
-  getResources(): Record<string, AnyMessages> | undefined;
-
-  getLazyResources():
-    | Record<string, () => Promise<{ messages: AnyMessages }>>
-    | undefined;
+  getDefaultResource(): TranslationResource | undefined;
 }
+
+export type NoInfer<T> = T extends infer S ? S : never;
 
 /** @alpha */
 export interface TranslationRefOptions<
+  TId extends string,
   TMessages extends { [key in string]: string },
-  TId extends string = string,
+  TTranslations extends {
+    [language in string]: () => Promise<{
+      default: { [key in keyof TMessages]: string | null };
+    }>;
+  },
 > {
   id: TId;
   messages: TMessages;
-  lazyResources?: Record<string, () => Promise<{ messages: TMessages }>>;
-  resources?: Record<string, TMessages>;
+  translations?: TTranslations;
 }
 
 /** @internal */
 class TranslationRefImpl<
+  TId extends string,
   TMessages extends { [key in string]: string },
-  TId extends string = string,
-> implements InternalTranslationRef<TMessages, TId>
+> implements InternalTranslationRef<TId, TMessages>
 {
-  constructor(
-    private readonly options: TranslationRefOptions<TMessages, TId>,
-  ) {}
+  #id: TId;
+  #messages: TMessages;
+  #resources: TranslationResource | undefined;
+
+  constructor(options: TranslationRefOptions<TId, TMessages, any>) {
+    this.#id = options.id;
+    this.#messages = options.messages;
+  }
 
   $$type = '@backstage/TranslationRef' as const;
 
   version = 'v1' as const;
 
   get id(): TId {
-    return this.options.id;
+    return this.#id;
   }
 
   get T(): never {
@@ -79,17 +91,15 @@ class TranslationRefImpl<
   }
 
   getDefaultMessages(): AnyMessages {
-    return this.options.messages;
+    return this.#messages;
   }
 
-  getLazyResources():
-    | Record<string, () => Promise<{ messages: AnyMessages }>>
-    | undefined {
-    return this.options.lazyResources;
+  setDefaultResource(resources: TranslationResource): void {
+    this.#resources = resources;
   }
 
-  getResources(): Record<string, AnyMessages> | undefined {
-    return this.options.resources;
+  getDefaultResource(): TranslationResource | undefined {
+    return this.#resources;
   }
 
   toString() {
@@ -99,12 +109,26 @@ class TranslationRefImpl<
 
 /** @alpha */
 export function createTranslationRef<
+  TId extends string,
   TMessages extends { [key in string]: string },
-  TId extends string = string,
+  TTranslations extends {
+    [language in string]: () => Promise<{
+      default: { [key in keyof TMessages]: string | null };
+    }>;
+  },
 >(
-  config: TranslationRefOptions<TMessages, TId>,
-): TranslationRef<TMessages, TId> {
-  return new TranslationRefImpl(config);
+  config: TranslationRefOptions<TId, TMessages, TTranslations>,
+): TranslationRef<TId, TMessages> {
+  const ref = new TranslationRefImpl(config);
+  if (config.translations) {
+    ref.setDefaultResource(
+      createTranslationResource({
+        ref,
+        translations: config.translations as any,
+      }),
+    );
+  }
+  return ref;
 }
 
 /** @internal */
