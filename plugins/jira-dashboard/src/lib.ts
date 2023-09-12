@@ -33,9 +33,9 @@ export const getIssueUrl = (issueUrl: string, issueKey: string) => {
 };
 
 /**
- * Get the URL to a user.
+ * Get the URL to a user avatar
  */
-export const getAvatarUrl = (user: string) => {
-  const url = new URL(user);
-  return `https://${url}}`;
+export const getUserAvatar = (userKey: string) => {
+  const url = new URL('avatars.rnd-tools.k8s.axis.com');
+  return `https://${url.host}/avatars/${userKey}`;
 };

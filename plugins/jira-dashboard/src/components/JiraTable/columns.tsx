@@ -18,7 +18,7 @@ import React from 'react';
 import { Avatar, Link, TableColumn } from '@backstage/core-components';
 import type { Issue } from '../../types';
 import { Typography } from '@material-ui/core';
-import { getAvatarUrl, getIssueUrl } from '../../lib';
+import { getIssueUrl } from '../../lib';
 
 export const columns: TableColumn[] = [
   {
@@ -112,7 +112,8 @@ export const columns: TableColumn[] = [
       return (
         <>
           <Avatar
-            picture={getAvatarUrl(issue.fields.assignee.self)}
+            /*  picture={getUserAvatar(issue.fields.assignee.name)} */
+            picture=""
             customStyles={{ width: '25px', height: 'auto' }}
           />
         </>

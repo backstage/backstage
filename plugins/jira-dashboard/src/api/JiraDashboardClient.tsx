@@ -16,6 +16,7 @@
 import { DiscoveryApi, FetchApi } from '@backstage/core-plugin-api';
 import { JiraResponse } from '../types';
 import { JiraDashboardApi } from './JiraDashboardApi';
+import { ResponseError } from '@backstage/errors';
 
 export class JiraDashboardClient implements JiraDashboardApi {
   private readonly discoveryApi: DiscoveryApi;
@@ -31,7 +32,7 @@ export class JiraDashboardClient implements JiraDashboardApi {
     projectKey: string,
   ): Promise<JiraResponse> {
     const apiUrl = await this.discoveryApi.getBaseUrl('jira-dashboard');
-    const response = await this.fetchApi.fetch(
+    const resp = await this.fetchApi.fetch(
       `${apiUrl}/${encodeURIComponent(entityRef)}`,
       {
         method: 'GET',
@@ -40,17 +41,12 @@ export class JiraDashboardClient implements JiraDashboardApi {
         },
       },
     );
-
-    if (response.ok) return response.json();
-    if (response.status === 404) {
-      throw Error(`No Jira project found for project key ${projectKey}`);
-    }
-    throw new Error(`Failed to get data from Jira`);
+    if (!resp.ok) throw await ResponseError.fromResponse(resp);
+    return resp.json();
   }
 
   async getProjectAvatar(entityRef: string): Promise<string> {
-    // const baseUrl = await this.discoveryApi.getBaseUrl('jira');
-    // return `${baseUrl}/avatar/${encodeURIComponent(entityRef)}`;
-    return 'https://api.dicebear.com/6.x/open-peeps/svg?seed=Duane';
+    const apiUrl = await this.discoveryApi.getBaseUrl('jira');
+    return `${apiUrl}/avatar/${encodeURIComponent(entityRef)}`;
   }
 }

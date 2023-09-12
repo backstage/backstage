@@ -50,6 +50,7 @@ export const JiraProjectCard = (project: Project) => {
     <Card className={classes.root}>
       <Box display="inline-flex" alignItems="center">
         <Avatar
+          picture={project.avatarUrls}
           customStyles={{
             width: '40px',
             height: '40px',
