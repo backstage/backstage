@@ -125,12 +125,12 @@ export const JobRunsTableView = ({
     page * pageSize,
     page * pageSize + pageSize,
   );
-  let sumOfAllSuccessfullJobDuration = 0;
+  let sumOfAllSuccessfulJobDuration = 0;
 
   const successfulJobCount =
     builds?.reduce((count, build) => {
       if (!build.inProgress && build.result === 'SUCCESS') {
-        sumOfAllSuccessfullJobDuration += build.duration;
+        sumOfAllSuccessfulJobDuration += build.duration;
         return count + 1;
       }
       return count;
@@ -139,7 +139,7 @@ export const JobRunsTableView = ({
   let avgTime;
 
   if (successfulJobCount > 0) {
-    avgTime = (sumOfAllSuccessfullJobDuration / successfulJobCount / 1000)
+    avgTime = (sumOfAllSuccessfulJobDuration / successfulJobCount / 1000)
       .toFixed(1)
       .toString();
   }
@@ -162,8 +162,8 @@ export const JobRunsTableView = ({
           </Box>
           <Box display="flex" alignItems="center" mt={2}>
             <Typography variant="h6">
-              Average Build Time For Last {successfulJobCount} Successfull jobs
-              : {avgTime || 0}
+              Average Build Time For Last {successfulJobCount} Successful jobs :{' '}
+              {avgTime || 0}
             </Typography>
           </Box>
         </Box>
