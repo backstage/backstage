@@ -16,16 +16,17 @@
 
 import { createBackendModule } from '@backstage/backend-plugin-api';
 import { catalogProcessingExtensionPoint } from '@backstage/plugin-catalog-node/alpha';
-import { ScaffolderEntitiesProcessor } from '@backstage/plugin-catalog-backend-module-scaffolder-entities';
+import { ScaffolderEntitiesProcessor } from '@backstage/plugin-catalog-backend-module-scaffolder-entity-model';
 
 /**
- * Registers support for the Template kind to the catalog backend plugin.
+ * Registers support for the scaffolder specific entity model (e.g. the Template
+ * kind) to the catalog backend plugin.
  *
  * @public
  */
-export const catalogModuleTemplateKind = createBackendModule({
+export const catalogModuleScaffolderEntityModel = createBackendModule({
   pluginId: 'catalog',
-  moduleId: 'templateKind',
+  moduleId: 'scaffolderEntityModel',
   register(env) {
     env.registerInit({
       deps: {

@@ -15,7 +15,7 @@
  */
 
 import { CatalogBuilder } from '@backstage/plugin-catalog-backend';
-import { ScaffolderEntitiesProcessor } from '@backstage/plugin-catalog-backend-module-scaffolder-entities';
+import { ScaffolderEntitiesProcessor } from '@backstage/plugin-catalog-backend-module-scaffolder-entity-model';
 import { UnprocessedEntitiesModule } from '@backstage/plugin-catalog-backend-module-unprocessed';
 import { Router } from 'express';
 import { PluginEnvironment } from '../types';

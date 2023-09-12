@@ -1,6 +1,6 @@
 {
-  "name": "@backstage/plugin-catalog-backend-module-scaffolder-entities",
-  "description": "The scaffolder-entities backend module for the catalog plugin",
+  "name": "@backstage/plugin-catalog-backend-module-scaffolder-entity-model",
+  "description": "Adds support for the scaffolder specific entity model (e.g. the Template kind) to the catalog backend plugin.",
   "version": "0.0.0",
   "main": "src/index.ts",
   "types": "src/index.ts",

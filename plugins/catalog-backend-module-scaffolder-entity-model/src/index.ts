@@ -15,10 +15,10 @@
  */
 
 /**
- * The scaffolder-entities backend module for the catalog plugin.
+ * Adds support for the scaffolder specific entity model (e.g. the Template kind) to the catalog backend plugin.
  *
  * @packageDocumentation
  */
 
 export * from './processor';
-export { catalogModuleTemplateKind as default } from './module';
+export { catalogModuleScaffolderEntityModel as default } from './module';
