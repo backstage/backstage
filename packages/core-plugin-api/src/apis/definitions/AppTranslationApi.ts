@@ -22,9 +22,7 @@ import { ApiRef, createApiRef } from '@backstage/core-plugin-api';
 export type AppTranslationApi = {
   getI18n(): i18n;
 
-  addResourcesByRef<TMessages extends Record<string, string>>(
-    translationRef: TranslationRef<TMessages>,
-  ): void;
+  addResource(resource: TranslationRef): void;
 };
 
 /**

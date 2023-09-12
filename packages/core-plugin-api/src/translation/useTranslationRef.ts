@@ -29,13 +29,12 @@ export interface TranslationOptions {
 export const useTranslationRef = <
   TMessages extends { [key in string]: string },
 >(
-  translationRef: TranslationRef<TMessages>,
+  translationRef: TranslationRef<string, TMessages>,
 ) => {
-  const appTranslationApi = useApi(appTranslationApiRef);
-
-  appTranslationApi.addResourcesByRef(translationRef);
+  const translationApi = useApi(appTranslationApiRef);
 
   const internalRef = toInternalTranslationRef(translationRef);
+  translationApi.addResource(translationRef);
 
   const { t } = useTranslation(internalRef.id, {
     useSuspense: process.env.NODE_ENV !== 'test',
