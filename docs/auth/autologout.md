@@ -47,7 +47,7 @@ export default app.createRoot(
 
 You can further adjust the Auto Logout settings by tweaking the available `<AutoLogout>` properties:
 
-```ts
+```tsx
 <AutoLogout
   idleTimeoutMinutes={30}
   useWorkerTimers={false}
