@@ -30,7 +30,7 @@ const mockIdentityApi = { signOut: mockSignOut };
 
 const apis = TestApiRegistry.from([identityApiRef, mockIdentityApi]);
 
-describe('AutoLogoutProvider', () => {
+describe('AutoLogout', () => {
   beforeAll(() => {
     createMocks();
     // @ts-ignore
