@@ -26,7 +26,7 @@ To enable and configure Auto Logout, you will need to add the `<AutoLogout>` com
 
 Here's how to add it:
 
-```ts
+```tsx
 import { AutoLogout } from '@backstage/core-components';
 
 // ... App.tsx contents
