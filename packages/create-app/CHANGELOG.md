@@ -1,5 +1,24 @@
 # @backstage/create-app
 
+## 0.5.5-next.3
+
+### Patch Changes
+
+- 4606e005df5d: Added a `fix` scripts that calls the new `backstage-cli repo fix` command.
+
+  To apply this change to an existing app, make the following change to your root `package.json`:
+
+  ```diff
+       "test": "backstage-cli repo test",
+       "test:all": "backstage-cli repo test --coverage",
+  +    "fix": "backstage-cli repo fix",
+       "lint": "backstage-cli repo lint --since origin/master",
+  ```
+
+- 612594022245: Add a notification when `yarn install` is taking a long time.
+- Updated dependencies
+  - @backstage/cli-common@0.1.12
+
 ## 0.5.5-next.2
 
 ### Patch Changes

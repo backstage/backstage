@@ -1,5 +1,15 @@
 # @backstage/plugin-opencost
 
+## 0.2.0-next.3
+
+### Patch Changes
+
+- 406b786a2a2c: Mark package as being free of side effects, allowing more optimized Webpack builds.
+- Updated dependencies
+  - @backstage/core-components@0.13.5-next.3
+  - @backstage/core-plugin-api@1.6.0-next.3
+  - @backstage/theme@0.4.2-next.0
+
 ## 0.2.0-next.2
 
 ### Patch Changes

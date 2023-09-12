@@ -1,5 +1,43 @@
 # @backstage/plugin-auth-backend
 
+## 0.19.0-next.3
+
+### Minor Changes
+
+- 71114ac50e02: **BREAKING**: The export for the new backend system has been moved to be the `default` export.
+
+  For example, if you are currently importing the plugin using the following pattern:
+
+  ```ts
+  import { examplePlugin } from '@backstage/plugin-example-backend';
+
+  backend.add(examplePlugin);
+  ```
+
+  It should be migrated to this:
+
+  ```ts
+  backend.add(import('@backstage/plugin-example-backend'));
+  ```
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/plugin-auth-backend-module-gcp-iap-provider@0.1.0-next.3
+  - @backstage/plugin-auth-backend-module-github-provider@0.1.0-next.3
+  - @backstage/plugin-auth-backend-module-gitlab-provider@0.1.0-next.2
+  - @backstage/plugin-auth-backend-module-google-provider@0.1.0-next.3
+  - @backstage/plugin-auth-backend-module-oauth2-provider@0.1.0-next.0
+  - @backstage/catalog-client@1.4.4-next.2
+  - @backstage/catalog-model@1.4.2-next.2
+  - @backstage/config@1.1.0-next.2
+  - @backstage/errors@1.2.2-next.0
+  - @backstage/types@1.1.1-next.0
+  - @backstage/backend-plugin-api@0.6.3-next.3
+  - @backstage/backend-common@0.19.5-next.3
+  - @backstage/plugin-auth-node@0.3.0-next.3
+  - @backstage/plugin-catalog-node@1.4.4-next.3
+
 ## 0.18.9-next.2
 
 ### Patch Changes
