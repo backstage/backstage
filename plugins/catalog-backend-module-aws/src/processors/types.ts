@@ -17,11 +17,11 @@ import type { Cluster } from '@aws-sdk/client-eks';
 import type { Entity } from '@backstage/catalog-model';
 
 /**
- * Options for the eks cluster entity callback function
+ * Options for the EKS cluster entity callback function
  *
  * @public
  */
-export type EKSClusterEntityTransformer = (
+export type EksClusterEntityTransformer = (
   cluster: Cluster,
   accountId: string,
 ) => Promise<Entity>;

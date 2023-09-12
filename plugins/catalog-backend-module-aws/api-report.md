@@ -32,16 +32,16 @@ export type AWSCredentialFactory = (
 
 // @public
 export class AwsEKSClusterProcessor implements CatalogProcessor {
-  constructor(options?: {
+  constructor(options: {
     credentialsFactory?: AWSCredentialFactory;
     credentialsManager?: AwsCredentialsManager;
-    clusterEntityTransformer?: EKSClusterEntityTransformer;
+    clusterEntityTransformer?: EksClusterEntityTransformer;
   });
   // (undocumented)
   static fromConfig(
     configRoot: Config,
     options?: {
-      clusterEntityTransformer?: EKSClusterEntityTransformer;
+      clusterEntityTransformer?: EksClusterEntityTransformer;
     },
   ): AwsEKSClusterProcessor;
   // (undocumented)
@@ -107,7 +107,7 @@ export class AwsS3EntityProvider implements EntityProvider {
 }
 
 // @public
-export type EKSClusterEntityTransformer = (
+export type EksClusterEntityTransformer = (
   cluster: Cluster,
   accountId: string,
 ) => Promise<Entity>;

@@ -28,8 +28,8 @@ import {
 } from '@backstage/integration-aws-node';
 import { Config } from '@backstage/config';
 
-import type { EKSClusterEntityTransformer } from './types';
-import { defaultEKSClusterTransformer } from '../lib';
+import type { EksClusterEntityTransformer } from './types';
+import { defaultEksClusterEntityTransformer } from '../lib';
 
 /**
  * A processor for automatic discovery of resources from EKS clusters. Handles the
@@ -41,12 +41,12 @@ import { defaultEKSClusterTransformer } from '../lib';
 export class AwsEKSClusterProcessor implements CatalogProcessor {
   private credentialsFactory?: AWSCredentialFactory;
   private credentialsManager?: AwsCredentialsManager;
-  private readonly clusterEntityTransformer: EKSClusterEntityTransformer;
+  private readonly clusterEntityTransformer: EksClusterEntityTransformer;
 
   static fromConfig(
     configRoot: Config,
     options?: {
-      clusterEntityTransformer?: EKSClusterEntityTransformer;
+      clusterEntityTransformer?: EksClusterEntityTransformer;
     },
   ): AwsEKSClusterProcessor {
     const awsCredentaislManager =
@@ -57,17 +57,17 @@ export class AwsEKSClusterProcessor implements CatalogProcessor {
     });
   }
 
-  constructor(options?: {
+  constructor(options: {
     credentialsFactory?: AWSCredentialFactory;
     credentialsManager?: AwsCredentialsManager;
-    clusterEntityTransformer?: EKSClusterEntityTransformer;
+    clusterEntityTransformer?: EksClusterEntityTransformer;
   }) {
-    this.credentialsFactory = options?.credentialsFactory;
-    this.credentialsManager = options?.credentialsManager;
+    this.credentialsFactory = options.credentialsFactory;
+    this.credentialsManager = options.credentialsManager;
 
     // If the callback function is not passed in, then default to the one upstream is using
     this.clusterEntityTransformer =
-      options?.clusterEntityTransformer || defaultEKSClusterTransformer;
+      options.clusterEntityTransformer || defaultEksClusterEntityTransformer;
   }
 
   getProcessorName(): string {

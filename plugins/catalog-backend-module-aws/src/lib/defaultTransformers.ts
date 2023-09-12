@@ -13,44 +13,43 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import type { EKSClusterEntityTransformer } from '../processors/types';
 import { type Cluster } from '@aws-sdk/client-eks';
 import {
   ANNOTATION_KUBERNETES_API_SERVER,
   ANNOTATION_KUBERNETES_API_SERVER_CA,
   ANNOTATION_KUBERNETES_AUTH_PROVIDER,
 } from '@backstage/plugin-kubernetes-common';
+import type { EksClusterEntityTransformer } from '../processors/types';
 import { ANNOTATION_AWS_ACCOUNT_ID, ANNOTATION_AWS_ARN } from '../constants';
 
 /**
  * Default transformer for EKS Cluster to Resource Entity
  * @public
  */
-export const defaultEKSClusterTransformer: EKSClusterEntityTransformer = async (
-  cluster: Cluster,
-  accountId: string,
-) => {
-  const { arn, endpoint, certificateAuthority, name } = cluster;
-  return {
-    apiVersion: 'backstage.io/v1alpha1',
-    kind: 'Resource',
-    metadata: {
-      annotations: {
-        [ANNOTATION_AWS_ACCOUNT_ID]: accountId,
-        [ANNOTATION_AWS_ARN]: arn || '',
-        [ANNOTATION_KUBERNETES_API_SERVER]: endpoint || '',
-        [ANNOTATION_KUBERNETES_API_SERVER_CA]: certificateAuthority?.data || '',
-        [ANNOTATION_KUBERNETES_AUTH_PROVIDER]: 'aws',
+export const defaultEksClusterEntityTransformer: EksClusterEntityTransformer =
+  async (cluster: Cluster, accountId: string) => {
+    const { arn, endpoint, certificateAuthority, name } = cluster;
+    return {
+      apiVersion: 'backstage.io/v1alpha1',
+      kind: 'Resource',
+      metadata: {
+        annotations: {
+          [ANNOTATION_AWS_ACCOUNT_ID]: accountId,
+          [ANNOTATION_AWS_ARN]: arn || '',
+          [ANNOTATION_KUBERNETES_API_SERVER]: endpoint || '',
+          [ANNOTATION_KUBERNETES_API_SERVER_CA]:
+            certificateAuthority?.data || '',
+          [ANNOTATION_KUBERNETES_AUTH_PROVIDER]: 'aws',
+        },
+        name: normalizeName(name as string),
+        namespace: 'default',
       },
-      name: normalizeName(name as string),
-      namespace: 'default',
-    },
-    spec: {
-      type: 'kubernetes-cluster',
-      owner: 'unknown',
-    },
+      spec: {
+        type: 'kubernetes-cluster',
+        owner: 'unknown',
+      },
+    };
   };
-};
 
 function normalizeName(name: string): string {
   return name
