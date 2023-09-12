@@ -20,7 +20,6 @@ import { default as CSS_2 } from 'csstype';
 import { CSSProperties } from 'react';
 import { ElementType } from 'react';
 import { ErrorInfo } from 'react';
-import { EventsType } from 'react-idle-timer';
 import { IconComponent } from '@backstage/core-plugin-api';
 import { Icons } from '@material-table/core';
 import { IdentityApi } from '@backstage/core-plugin-api';
@@ -79,9 +78,6 @@ export type AutoLogoutProps = {
   useWorkerTimers?: boolean;
   logoutIfDisconnected?: boolean;
 };
-
-// @public (undocumented)
-export type AutoLogoutTrackableEvent = EventsType;
 
 // @public
 export function Avatar(props: AvatarProps): React_2.JSX.Element;

@@ -16,6 +16,20 @@
 
 import { DefaultTimestampStore, TimestampStore } from './timestampStore';
 
+const mockLocalStorage: any = {
+  __STORE__: {},
+  getItem: jest.fn(key => mockLocalStorage.__STORE__[key] || null),
+  setItem: jest.fn((key, value) => {
+    mockLocalStorage.__STORE__[key] = value;
+  }),
+  removeItem: jest.fn(key => {
+    delete mockLocalStorage.__STORE__[key];
+  }),
+  clear: jest.fn(() => {
+    mockLocalStorage.__STORE__ = {};
+  }),
+};
+
 describe('DefaultTimestampStore', () => {
   let timestampStore: TimestampStore;
   const key = 'test-key';
@@ -23,6 +37,12 @@ describe('DefaultTimestampStore', () => {
 
   beforeEach(() => {
     timestampStore = new DefaultTimestampStore(key);
+
+    // Set up mock localStorage
+    Object.defineProperty(window, 'localStorage', {
+      value: mockLocalStorage,
+    });
+
     // Clear the mock storage before each test
     localStorage.clear();
   });

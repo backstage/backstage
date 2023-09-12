@@ -36,8 +36,7 @@ import {
 import { StillTherePrompt } from './StillTherePrompt';
 import { DefaultTimestampStore, TimestampStore } from './timestampStore';
 
-/** @public */
-export type AutoLogoutTrackableEvent = EventsType;
+type AutoLogoutTrackableEvent = EventsType;
 
 /** @public */
 export type AutoLogoutProps = {
