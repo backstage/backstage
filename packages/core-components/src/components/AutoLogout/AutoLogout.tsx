@@ -61,7 +61,7 @@ export type AutoLogoutProps = {
   promptBeforeIdleSeconds?: number;
   /**
    * Enable/disable the usage of Node's worker thread timers instead of main thread timers.
-   * This is helpful if you notice that the your browser is killing inactive tab's timers, like the one used by AutoLogoutProvider.
+   * This is helpful if you notice that the your browser is killing inactive tab's timers, like the one used by AutoLogout.
    * If you experience some browser incompatibility, you may try to set this to false.
    * defaults to true.
    */
