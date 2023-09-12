@@ -1,14 +1,76 @@
-# jira-dashboard
+# Jira Dashboard Backend
 
-Welcome to the jira-dashboard backend plugin!
+A plugin that makes requests to [Atlassian REST API](https://developer.atlassian.com/server/jira/platform/rest-apis/) to get issues and project information from Jira.
 
-_This plugin was created through the Backstage CLI_
+The frontend plugin that displays this information is [Jira Dashboard](https://github.com/backstage/backstage/tree/master/plugins/jira-dashboard).
 
-## Getting started
+## Setup
 
-Your plugin has been added to the example app in this repository, meaning you'll be able to access it by running `yarn
-start` in the root directory, and then navigating to [/jira-dashboard](http://localhost:3000/jira-dashboard).
+The following sections will help you get the Jira Dashboard Backend plugin setup and running.
 
-You can also serve the plugin in isolation by running `yarn start` in the plugin directory.
-This method of serving the plugin provides quicker iteration speed and a faster startup and hot reloads.
-It is only meant for local development, and the setup for it can be found inside the [/dev](/dev) directory.
+### Installation
+
+First, install the plugin by following the example below:
+
+```bash
+# From your Backstage root directory
+yarn add --cwd packages/backend @backstage/plugin-jira-dashboard-backend
+```
+
+### Configuration
+
+The Jira Dashboard plugin requires the following YAML to be added to your app-config.yaml:
+
+```yaml
+jira:
+  token: ${JIRA_TOKEN}
+  baseUrl: ${JIRA_BASE_URL}'
+```
+
+Configuration Details:
+
+- `JIRA_BASE_URL`: The base url for Jira in your company, including the API version. For instance: https://jira.se.your-company.com/rest/api/2/'
+- `JIRA_TOKEN`: The API token to authenticate to Jira. It can be found by visiting Atlassians page at https://developer.atlassian.com/cloud/jira/platform/basic-auth-for-rest-apis/
+
+### Integrating
+
+Here's how to get the backend plugin up and running:
+
+1. Create a new file named `packages/backend/src/plugins/jiraDashboard.ts`, and add the following to it:
+
+   ```ts
+   import { createRouter } from '@backstage/plugin-jira-dashboard-backend';
+   import { Router } from 'express';
+   import { PluginEnvironment } from '../types';
+
+   export default async function createPlugin(
+     env: PluginEnvironment,
+   ): Promise<Router> {
+     return await createRouter({
+       logger: env.logger,
+       config: env.config,
+       discovery: env.discovery,
+       identity: env.identity,
+       tokenManager: env.tokenManager,
+     });
+   }
+   ```
+
+2. Wire this into the overall backend router by adding the following to `packages/backend/src/index.ts`:
+
+   ```ts
+   import jiraDashboard from './plugins/jiraDashboard';
+   ...
+
+   async function main() {
+     // Add this line under the other lines that follow the useHotMemoize pattern
+    const jiraDashboardEnv = useHotMemoize(module, () => createEnv('jira-dashboard'),
+
+     // Add this under the lines that add their routers to apiRouter
+    apiRouter.use('/jira-dashboard', await jiraDashboard(jiraDashboardEnv));
+   }
+   ```
+
+3. Now run `yarn start-backend` from the repo root.
+
+4. In another terminal, run the command: `http://localhost:7007/api/jira-dashboard-backend/health`. The request should return `{"status":"ok"}`.
