@@ -467,7 +467,7 @@ The next step is to create a custom processor for your new entity kind. This
 will be used within the catalog to make sure that it's able to ingest and
 validate entities of our new kind. Just like with the definition package, you
 can find inspiration in for example the existing
-[ScaffolderEntitiesProcessor](https://github.com/backstage/backstage/tree/master/plugins/scaffolder-backend/src/processor/ScaffolderEntitiesProcessor.ts).
+[ScaffolderEntitiesProcessor](https://github.com/backstage/backstage/tree/master/plugins/catalog-backend-module-scaffolder-entities/src/processor/ScaffolderEntitiesProcessor.ts).
 We also provide a high-level example of what a catalog process for a custom
 entity might look like:
 
