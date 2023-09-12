@@ -33,7 +33,7 @@ describe('createPageExtension', () => {
         component: async () => <div />,
       }),
     ).toEqual({
-      $$type: 'extension',
+      $$type: '@backstage/Extension',
       id: 'test',
       at: 'core.routes/routes',
       configSchema: expect.anything(),
@@ -61,7 +61,7 @@ describe('createPageExtension', () => {
         component: async () => <div />,
       }),
     ).toEqual({
-      $$type: 'extension',
+      $$type: '@backstage/Extension',
       id: 'test',
       at: 'other/place',
       configSchema: expect.anything(),
@@ -86,7 +86,7 @@ describe('createPageExtension', () => {
         component: async () => <div />,
       }),
     ).toEqual({
-      $$type: 'extension',
+      $$type: '@backstage/Extension',
       id: 'test',
       at: 'core.routes/routes',
       configSchema: expect.anything(),
