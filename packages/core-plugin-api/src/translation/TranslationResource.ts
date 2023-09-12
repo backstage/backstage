@@ -31,7 +31,7 @@ export interface InternalTranslationResource<TId extends string = string>
   version: 'v1';
   resources: Array<{
     language: string;
-    loader(): Promise<{ messages: TranslationMessages<TId> }>;
+    loader(): Promise<{ messages: { [key in string]: string | null } }>;
   }>;
 }
 
