@@ -14,21 +14,14 @@
  * limitations under the License.
  */
 
-import { TranslationRef } from '@backstage/core-plugin-api/alpha';
+import { createTranslationMessages } from '../TranslationMessages';
+import { countingTranslationRef } from './refs';
 
-/** @alpha */
-export type TranslationMessages<T> = T extends TranslationRef<infer R>
-  ? Partial<R>
-  : never;
-
-/** @alpha */
-export function createTranslationResource<T extends TranslationRef>(options: {
-  ref: T;
-  messages?: Record<string, TranslationMessages<T>>;
-  lazyMessages: Record<
-    string,
-    () => Promise<{ messages: TranslationMessages<T> }>
-  >;
-}) {
-  return options;
-}
+export default createTranslationMessages({
+  ref: countingTranslationRef,
+  messages: {
+    one: 'eins',
+    two: 'zwei',
+    three: 'polizei',
+  },
+});

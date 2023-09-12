@@ -13,4 +13,14 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-export * from './apis/implementations/AppTranslationApi';
+
+import { createTranslationMessages } from '../TranslationMessages';
+import { fruitsTranslationRef } from './refs';
+
+export default createTranslationMessages({
+  ref: fruitsTranslationRef,
+  messages: {
+    apple: 'äpple',
+    orange: 'apelsin',
+  },
+});
