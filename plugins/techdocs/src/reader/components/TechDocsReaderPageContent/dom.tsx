@@ -108,20 +108,22 @@ export const useTechDocsReaderDom = (
       return;
     }
 
+    if (!sidebarNav.hidden) {
+      content.style.marginLeft = '16rem';
+    }
+
     if (sidebarNav.hidden || sidebarToc.hidden) {
-      if (!sidebarNav.hidden) {
-        content.style.marginLeft = '16rem';
-      }
       const domTop = calculateDOMTop(dom);
       const tabsHeight = calculateTabsHeight(dom);
       content.style.top = `${Math.max(domTop, 0) + tabsHeight}px`;
       content.style.position = 'fixed';
       content.style.bottom = '75px';
       content.style.overflowY = 'auto';
-      content.style.maxWidth =
-        sidebarToc.hidden && sidebarNav.hidden ? `100%` : `calc(100% - 32rem)`;
+      content.style.width =
+        sidebarToc.hidden && sidebarNav.hidden
+          ? `calc(100% - 16rem)`
+          : `calc(100% - 32rem)`;
     } else {
-      content.style.marginLeft = '16rem';
       content.style.maxWidth = `calc(100% - 32rem)`;
     }
   }, [dom, isMobileMedia]);
