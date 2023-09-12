@@ -124,7 +124,7 @@ import {
   EntityPagerDutyCard,
   isPagerDutyAvailable,
 } from '@backstage/plugin-pagerduty';
-/* import { EntityPlaylistDialog } from '@backstage/plugin-playlist'; */
+import { EntityPlaylistDialog } from '@backstage/plugin-playlist';
 import {
   EntityRollbarContent,
   isRollbarAvailable,
@@ -134,10 +134,9 @@ import { EntitySentryContent } from '@backstage/plugin-sentry';
 import { EntityTechdocsContent } from '@backstage/plugin-techdocs';
 import { EntityTechInsightsScorecardCard } from '@backstage/plugin-tech-insights';
 import { EntityTodoContent } from '@backstage/plugin-todo';
-import { EntityJiraDashboardContent } from '@backstage/plugin-jira-dashboard';
 import { Button, Grid } from '@material-ui/core';
 import BadgeIcon from '@material-ui/icons/CallToAction';
-/* import PlaylistAddIcon from '@material-ui/icons/PlaylistAdd'; */
+import PlaylistAddIcon from '@material-ui/icons/PlaylistAdd';
 
 import {
   EntityGithubInsightsContent,
@@ -181,7 +180,6 @@ import {
   isLinguistAvailable,
   EntityLinguistCard,
 } from '@backstage/plugin-linguist';
-import { isJiraDashboardAvailable } from '@backstage/plugin-jira-dashboard';
 
 const customEntityFilterKind = ['Component', 'API', 'System'];
 
@@ -196,11 +194,11 @@ const EntityLayoutWrapper = (props: { children?: ReactNode }) => {
         Icon: BadgeIcon,
         onClick: () => setBadgesDialogOpen(true),
       },
-      /*  {
+      {
         title: 'Add to playlist',
         Icon: PlaylistAddIcon,
         onClick: () => setPlaylistDialogOpen(true),
-      }, */
+      },
     ];
   }, []);
 
@@ -218,10 +216,10 @@ const EntityLayoutWrapper = (props: { children?: ReactNode }) => {
         open={badgesDialogOpen}
         onClose={() => setBadgesDialogOpen(false)}
       />
-      {/*  <EntityPlaylistDialog
+      <EntityPlaylistDialog
         open={playlistDialogOpen}
         onClose={() => setPlaylistDialogOpen(false)}
-      /> */}
+      />
     </>
   );
 };
@@ -573,14 +571,6 @@ const serviceEntityPage = (
       <EntityTodoContent />
     </EntityLayout.Route>
 
-    <EntityLayout.Route
-      if={isJiraDashboardAvailable}
-      path="/jira-dashboard"
-      title="Jira Dashboard"
-    >
-      <EntityJiraDashboardContent />
-    </EntityLayout.Route>
-
     <EntityLayout.Route path="/costs" title="Costs">
       <EntityCostInsightsContent />
     </EntityLayout.Route>
@@ -676,10 +666,6 @@ const websiteEntityPage = (
       <EntityTodoContent />
     </EntityLayout.Route>
 
-    <EntityLayout.Route path="/jira-dashboard" title="Jira Dashboard">
-      <EntityJiraDashboardContent />
-    </EntityLayout.Route>
-
     <EntityLayout.Route path="/feedback" title="Feedback">
       <EntityFeedbackResponseContent />
     </EntityLayout.Route>
@@ -698,10 +684,6 @@ const defaultEntityPage = (
 
     <EntityLayout.Route path="/todos" title="TODOs">
       <EntityTodoContent />
-    </EntityLayout.Route>
-
-    <EntityLayout.Route path="/jira-dashboard" title="Jira Dashboard">
-      <EntityJiraDashboardContent />
     </EntityLayout.Route>
 
     <EntityLayout.Route path="/feedback" title="Feedback">
