@@ -5,7 +5,11 @@
 ```ts
 import { BackstagePlugin } from '@backstage/frontend-plugin-api';
 import { ConfigApi } from '@backstage/core-plugin-api';
+<<<<<<< HEAD
 import { JSX as JSX_2 } from 'react';
+=======
+import { ExtensionDataRef } from '@backstage/frontend-plugin-api';
+>>>>>>> ed3fd70bda19 (frontend-app-api: Add Extension utilities)
 
 // @public (undocumented)
 export function createApp(options: {
@@ -14,4 +18,33 @@ export function createApp(options: {
 }): {
   createRoot(): JSX_2.Element;
 };
+
+// @public (undocumented)
+export function createExtensionTree(): ExtensionTree;
+
+// @public (undocumented)
+export interface ExtensionInstance {
+  // (undocumented)
+  readonly $$type: '@backstage/ExtensionInstance';
+  readonly attachments: Map<string, ExtensionInstance[]>;
+  getData<T>(ref: ExtensionDataRef<T>): T | undefined;
+  // (undocumented)
+  readonly id: string;
+}
+
+// @public (undocumented)
+export interface ExtensionTree {
+  // (undocumented)
+  getExtension(id: string): ExtensionInstance | undefined;
+  // (undocumented)
+  getExtensionAttachments(id: string, inputName: string): ExtensionInstance[];
+}
+
+// @public (undocumented)
+export interface ExtensionTreeNode {
+  // (undocumented)
+  getData<T>(ref: ExtensionDataRef<T>): T | undefined;
+  // (undocumented)
+  id: string;
+}
 ```

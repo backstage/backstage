@@ -14,4 +14,10 @@
  * limitations under the License.
  */
 
-export { createApp } from './createApp';
+export type { ExtensionInstance } from './createExtensionInstance';
+export {
+  createApp,
+  createExtensionTree,
+  type ExtensionTreeNode,
+  type ExtensionTree,
+} from './createApp';
