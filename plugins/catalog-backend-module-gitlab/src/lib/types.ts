@@ -60,10 +60,45 @@ export type GitLabGroupMembersResponse = {
   data: {
     group: {
       groupMembers: {
-        nodes: { user: { id: string } }[];
+        nodes: {
+          user: {
+            id: string;
+            username: string;
+            commitEmail: string;
+            name: string;
+            state: string;
+            webUrl: string;
+            avatarUrl: string;
+          };
+        }[];
         pageInfo: {
           endCursor: string;
           hasNextPage: boolean;
+        };
+      };
+    };
+  };
+};
+
+export type GitLabDescendantGroupsResponse = {
+  errors: { message: string }[];
+  data: {
+    group: {
+      descendantGroups: {
+        nodes: [
+          {
+            id: string;
+            name: string;
+            description: string;
+            fullPath: string;
+            parent: {
+              id: string;
+            };
+          },
+        ];
+        pageInfo: {
+          endCursor: string;
+          hasNextPage: false;
         };
       };
     };
