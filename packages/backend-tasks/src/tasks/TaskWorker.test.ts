@@ -332,4 +332,41 @@ describe('TaskWorker', () => {
       expect(fn1.mock.calls.length).toBeGreaterThan(before);
     },
   );
+
+  it.each(databases.eachSupportedId())(
+    'next_run_start_at is always the min between schedule changes, %p',
+    async databaseId => {
+      const knex = await databases.init(databaseId);
+      await migrateBackendTasks(knex);
+
+      const fn = jest.fn(
+        async () => new Promise<void>(resolve => setTimeout(resolve, 50)),
+      );
+      const settings: TaskSettingsV2 = {
+        version: 2,
+        cadence: '*/15 * * * *',
+        initialDelayDuration: 'PT2M',
+        timeoutAfterDuration: 'PT1M',
+      };
+
+      const worker = new TaskWorker('task99', fn, knex, logger);
+      await worker.persistTask(settings);
+
+      const settings2 = {
+        ...settings,
+        cadence: '*/2 * * * *',
+        initialDelayDuration: 'PT1M',
+      };
+      await worker.persistTask(settings2);
+
+      const row2 = (await knex<DbTasksRow>(DB_TASKS_TABLE))[0];
+
+      const settings3 = { ...settings };
+      await worker.persistTask(settings3);
+
+      const row3 = (await knex<DbTasksRow>(DB_TASKS_TABLE))[0];
+
+      expect(row3.next_run_start_at).toBe(row2.next_run_start_at);
+    },
+  );
 });

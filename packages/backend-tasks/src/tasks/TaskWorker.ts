@@ -190,6 +190,11 @@ export class TaskWorker {
 
     this.logger.debug(`task: ${this.taskId} configured to run at: ${startAt}`);
 
+    const start_at_previuos = this.knex(DB_TASKS_TABLE)
+      .where('id', '=', this.taskId)
+      .select('next_run_start_at')
+      .first();
+
     // It's OK if the task already exists; if it does, just replace its
     // settings with the new value and start the loop as usual.
     await this.knex<DbTasksRow>(DB_TASKS_TABLE)
@@ -199,7 +204,15 @@ export class TaskWorker {
         next_run_start_at: startAt,
       })
       .onConflict('id')
-      .merge(['settings_json', 'next_run_start_at']);
+      .merge({
+        settings_json: JSON.stringify(settings),
+        next_run_start_at: this.knex.raw('CASE WHEN ? < ? THEN ? ELSE ? END', [
+          start_at_previuos,
+          startAt,
+          start_at_previuos,
+          startAt,
+        ]),
+      });
   }
 
   /**
