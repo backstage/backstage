@@ -157,7 +157,11 @@ describe('createRouter', () => {
           logger,
           discovery,
         }),
-      ).rejects.toThrow(new Error('Proxy target must be a string'));
+      ).rejects.toThrow(
+        new Error(
+          'Proxy target for route "/test" must be a string, but is of type undefined',
+        ),
+      );
     });
 
     it('works if skip failures is set', async () => {
@@ -189,7 +193,7 @@ describe('createRouter', () => {
         skipInvalidProxies: true,
       });
       expect((logger.warn as jest.Mock).mock.calls[0][0]).toEqual(
-        'skipped configuring /test due to Proxy target must be a string',
+        'skipped configuring /test due to Proxy target for route "/test" must be a string, but is of type undefined',
       );
       expect(router).toBeDefined();
     });
