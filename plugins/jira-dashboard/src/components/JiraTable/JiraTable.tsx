@@ -55,7 +55,7 @@ export const JiraTable = (props: Props) => {
           <div className={classes.empty}>No issues found&nbsp;</div>
         }
         style={{
-          height: '412px',
+          height: '500px',
           padding: '20px',
           overflowY: 'scroll',
           width: '100%',
