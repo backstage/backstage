@@ -1,4 +1,4 @@
-# @backstage/plugin-jira-dashboard
+# Jira Dashboard plugin
 
 Welcome to the Jira Dashboard plugin!
 
@@ -14,7 +14,7 @@ You will **need** to also perform the installation instructions in [Jira Dashboa
 
 ## Getting Started
 
-First install the plugin into your app:
+First, install the plugin into your app:
 
 ```bash
 # From your Backstage root directory
@@ -71,18 +71,6 @@ metadata:
     jira/component: component-name:component-name:component:name # Jira component name separated with :
     jira/filter-ids: 12345:67890:68965 # Jira filter id separated with :
 ```
-
-### Configuration
-
-The provided configuration must be added to your `app-config.yaml` in the root of the file:
-
-```yaml
-jira:
-  token: ${JIRA_TOKEN} # The API token to authenticate to jira.
-  baseUrl: ${JIRA_BASE_URL}' # The base url for Jira in your company, including the api version. For instance: https://jira.se.your-company.com/rest/api/2/'
-```
-
-> NOTE: To read more about how to get an API token from Jira, check our the following Atlassian page: https://developer.atlassian.com/cloud/jira/platform/basic-auth-for-rest-apis/
 
 ## Layout
 
