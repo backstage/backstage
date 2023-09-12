@@ -20,4 +20,4 @@
  * @packageDocumentation
  */
 
-export { createApp } from './createApp';
+export * from './wiring';

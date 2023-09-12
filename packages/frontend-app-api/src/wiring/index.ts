@@ -14,26 +14,4 @@
  * limitations under the License.
  */
 
-import { Extension } from './types';
-
-/** @public */
-export interface PluginOptions {
-  id: string;
-  extensions?: Extension<unknown>[];
-}
-
-/** @public */
-export interface BackstagePlugin {
-  $$type: '@backstage/BackstagePlugin';
-  id: string;
-  extensions: Extension<unknown>[];
-}
-
-/** @public */
-export function createPlugin(options: PluginOptions): BackstagePlugin {
-  return {
-    ...options,
-    $$type: '@backstage/BackstagePlugin',
-    extensions: options.extensions ?? [],
-  };
-}
+export { createApp } from './createApp';

@@ -20,10 +20,10 @@ import {
   BackstagePlugin,
   coreExtensionData,
 } from '@backstage/frontend-plugin-api';
-import { Core } from './extensions/Core';
-import { CoreRoutes } from './extensions/CoreRoutes';
-import { CoreLayout } from './extensions/CoreLayout';
-import { CoreNav } from './extensions/CoreNav';
+import { Core } from '../extensions/Core';
+import { CoreRoutes } from '../extensions/CoreRoutes';
+import { CoreLayout } from '../extensions/CoreLayout';
+import { CoreNav } from '../extensions/CoreNav';
 import {
   createExtensionInstance,
   ExtensionInstance,
@@ -32,8 +32,8 @@ import {
   ExtensionInstanceParameters,
   mergeExtensionParameters,
   readAppExtensionParameters,
-} from './wiring/parameters';
-import { RoutingProvider } from './routing/RoutingContext';
+} from './parameters';
+import { RoutingProvider } from '../routing/RoutingContext';
 import {
   AnyApiFactory,
   ApiHolder,
@@ -47,7 +47,7 @@ import {
   BackstagePlugin as LegacyBackstagePlugin,
   featureFlagsApiRef,
 } from '@backstage/core-plugin-api';
-import { getAvailablePlugins } from './wiring/discovery';
+import { getAvailablePlugins } from './discovery';
 import {
   ApiFactoryRegistry,
   ApiProvider,
@@ -57,22 +57,22 @@ import {
 
 // TODO: Get rid of all of these
 // eslint-disable-next-line @backstage/no-relative-monorepo-imports
-import { AppThemeProvider } from '../../core-app-api/src/app/AppThemeProvider';
+import { AppThemeProvider } from '../../../core-app-api/src/app/AppThemeProvider';
 // eslint-disable-next-line @backstage/no-relative-monorepo-imports
-import { AppContextProvider } from '../../core-app-api/src/app/AppContext';
+import { AppContextProvider } from '../../../core-app-api/src/app/AppContext';
 // eslint-disable-next-line @backstage/no-relative-monorepo-imports
-import { LocalStorageFeatureFlags } from '../../core-app-api/src/apis/implementations/FeatureFlagsApi/LocalStorageFeatureFlags';
+import { LocalStorageFeatureFlags } from '../../../core-app-api/src/apis/implementations/FeatureFlagsApi/LocalStorageFeatureFlags';
 // eslint-disable-next-line @backstage/no-relative-monorepo-imports
-import { defaultConfigLoaderSync } from '../../core-app-api/src/app/defaultConfigLoader';
+import { defaultConfigLoaderSync } from '../../../core-app-api/src/app/defaultConfigLoader';
 // eslint-disable-next-line @backstage/no-relative-monorepo-imports
-import { overrideBaseUrlConfigs } from '../../core-app-api/src/app/overrideBaseUrlConfigs';
+import { overrideBaseUrlConfigs } from '../../../core-app-api/src/app/overrideBaseUrlConfigs';
 // eslint-disable-next-line @backstage/no-relative-monorepo-imports
 import {
   apis as defaultApis,
   components as defaultComponents,
   icons as defaultIcons,
   themes as defaultThemes,
-} from '../../app-defaults/src/defaults';
+} from '../../../app-defaults/src/defaults';
 import { BrowserRouter } from 'react-router-dom';
 
 /** @public */
@@ -174,13 +174,8 @@ export function createApp(options: {
   return {
     createRoot() {
       const rootComponents = rootInstances
-        .map(
-          e =>
-            e.data.get(
-              coreExtensionData.reactComponent.id,
-            ) as typeof coreExtensionData.reactComponent.T,
-        )
-        .filter(Boolean);
+        .map(e => e.getData(coreExtensionData.reactComponent))
+        .filter((x): x is React.ComponentType => !!x);
       return (
         <ApiProvider apis={apiHolder}>
           <AppContextProvider appContext={appContext}>
@@ -254,13 +249,8 @@ function createApiHolder(
   const apiFactories =
     coreExtension.attachments
       .get('apis')
-      ?.map(
-        e =>
-          e.data.get(
-            coreExtensionData.apiFactory.id,
-          ) as typeof coreExtensionData.apiFactory.T,
-      )
-      .filter(Boolean) ?? [];
+      ?.map(e => e.getData(coreExtensionData.apiFactory))
+      .filter((x): x is AnyApiFactory => !!x) ?? [];
 
   for (const factory of apiFactories) {
     factoryRegistry.register('default', factory);
@@ -307,10 +297,8 @@ export function extractRouteInfoFromInstanceTree(
   const results = new Map<RouteRef, string>();
 
   function visit(current: ExtensionInstance, basePath: string) {
-    const routePath = current.data.get(coreExtensionData.routePath.id) ?? '';
-    const routeRef = current.data.get(
-      coreExtensionData.routeRef.id,
-    ) as RouteRef;
+    const routePath = current.getData(coreExtensionData.routePath) ?? '';
+    const routeRef = current.getData(coreExtensionData.routeRef);
 
     // TODO: join paths in a more robust way
     const fullPath = basePath + routePath;

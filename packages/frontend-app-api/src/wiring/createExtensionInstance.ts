@@ -14,21 +14,26 @@
  * limitations under the License.
  */
 
-import { BackstagePlugin, Extension } from '@backstage/frontend-plugin-api';
+import {
+  BackstagePlugin,
+  Extension,
+  ExtensionDataRef,
+} from '@backstage/frontend-plugin-api';
 import mapValues from 'lodash/mapValues';
 
 /** @internal */
 export interface ExtensionInstance {
+  readonly $$type: '@backstage/ExtensionInstance';
+
   readonly id: string;
   /**
-   * Maps extension data ref IDs to extensions produced.
+   * Get concrete value for the given extension data reference. Returns undefined if no value is available.
    */
-  readonly data: Map<string, unknown>;
+  getData<T>(ref: ExtensionDataRef<T>): T | undefined;
   /**
    * Maps input names to the actual instances given to them.
    */
   readonly attachments: Map<string, ExtensionInstance[]>;
-  readonly $$type: 'extension-instance';
 }
 
 /** @internal */
@@ -70,7 +75,7 @@ export function createExtensionInstance(options: {
         ({ extensionData: pointData }, inputName) => {
           // TODO: validation
           return (attachments.get(inputName) ?? []).map(attachment =>
-            mapValues(pointData, ref => attachment.data.get(ref.id)),
+            mapValues(pointData, ref => attachment.getData(ref)),
           );
         },
       ),
@@ -82,9 +87,12 @@ export function createExtensionInstance(options: {
   }
 
   return {
+    $$type: '@backstage/ExtensionInstance',
     id: options.extension.id,
-    data: extensionData,
+    getData<T>(ref: ExtensionDataRef<T>): T | undefined {
+      return extensionData.get(ref.id) as T | undefined;
+    },
+
     attachments,
-    $$type: 'extension-instance',
   };
 }
