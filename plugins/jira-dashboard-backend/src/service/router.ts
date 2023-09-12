@@ -112,13 +112,12 @@ export async function createRouter(
     const customFilterAnnotations =
       entity.metadata.annotations?.[FILTER_ANNOTATION]?.split(':')!;
 
+    filters = getDefaultFilters(userIdentity?.identity?.userEntityRef);
+
     if (customFilterAnnotations) {
-      filters = await getFiltersFromAnnotations(
-        customFilterAnnotations,
-        config,
+      filters.push(
+        ...(await getFiltersFromAnnotations(customFilterAnnotations, config)),
       );
-    } else {
-      filters = getDefaultFilters(userIdentity?.identity?.userEntityRef);
     }
 
     let issues = await getIssuesFromFilters(projectKey, filters, config);
