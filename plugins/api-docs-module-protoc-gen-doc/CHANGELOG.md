@@ -1,5 +1,11 @@
 # @backstage/plugin-api-docs-module-protoc-gen-doc
 
+## 0.1.3-next.1
+
+### Patch Changes
+
+- 406b786a2a2c: Mark package as being free of side effects, allowing more optimized Webpack builds.
+
 ## 0.1.3-next.0
 
 ### Patch Changes

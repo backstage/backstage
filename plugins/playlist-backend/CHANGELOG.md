@@ -1,5 +1,20 @@
 # @backstage/plugin-playlist-backend
 
+## 0.3.7-next.3
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/catalog-client@1.4.4-next.2
+  - @backstage/catalog-model@1.4.2-next.2
+  - @backstage/config@1.1.0-next.2
+  - @backstage/errors@1.2.2-next.0
+  - @backstage/plugin-permission-common@0.7.8-next.2
+  - @backstage/plugin-playlist-common@0.1.10-next.2
+  - @backstage/plugin-permission-node@0.7.14-next.3
+  - @backstage/backend-common@0.19.5-next.3
+  - @backstage/plugin-auth-node@0.3.0-next.3
+
 ## 0.3.7-next.2
 
 ### Patch Changes

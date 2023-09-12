@@ -1,5 +1,18 @@
 # @backstage/plugin-config-schema
 
+## 0.1.45-next.3
+
+### Patch Changes
+
+- 406b786a2a2c: Mark package as being free of side effects, allowing more optimized Webpack builds.
+- Updated dependencies
+  - @backstage/config@1.1.0-next.2
+  - @backstage/core-components@0.13.5-next.3
+  - @backstage/core-plugin-api@1.6.0-next.3
+  - @backstage/errors@1.2.2-next.0
+  - @backstage/theme@0.4.2-next.0
+  - @backstage/types@1.1.1-next.0
+
 ## 0.1.45-next.2
 
 ### Patch Changes

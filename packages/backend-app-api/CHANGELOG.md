@@ -1,5 +1,25 @@
 # @backstage/backend-app-api
 
+## 0.5.3-next.3
+
+### Patch Changes
+
+- 154632d8753b: Add support for discovering additional service factories during startup.
+- cb7fc410ed99: The experimental backend feature discovery now only considers default exports from packages. It no longer filters packages to include based on the package role, except that `'cli'` packages are ignored. However, the `"backstage"` field is still required in `package.json`.
+- 3b30b179cb38: Add support for installing features as package imports, for example `backend.add(import('my-plugin'))`.
+- Updated dependencies
+  - @backstage/config@1.1.0-next.2
+  - @backstage/errors@1.2.2-next.0
+  - @backstage/types@1.1.1-next.0
+  - @backstage/plugin-permission-node@0.7.14-next.3
+  - @backstage/backend-plugin-api@0.6.3-next.3
+  - @backstage/backend-common@0.19.5-next.3
+  - @backstage/backend-tasks@0.5.8-next.3
+  - @backstage/cli-common@0.1.12
+  - @backstage/cli-node@0.1.4-next.0
+  - @backstage/config-loader@1.5.0-next.3
+  - @backstage/plugin-auth-node@0.3.0-next.3
+
 ## 0.5.3-next.2
 
 ### Patch Changes
