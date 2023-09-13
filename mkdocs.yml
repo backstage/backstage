@@ -28,7 +28,6 @@ nav:
           - Customize the look-and-feel of your App: 'getting-started/app-custom-theme.md'
       - Keeping Backstage Updated: 'getting-started/keeping-backstage-updated.md'
       - Key Concepts: 'getting-started/concepts.md'
-      - Contributors: 'getting-started/contributors.md'
       - Project Structure: 'getting-started/project-structure.md'
   - Local Development:
       - CLI:
