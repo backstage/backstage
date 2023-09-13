@@ -1,0 +1,9 @@
+---
+title: Entity Validation
+author: Iván González Acuña
+authorUrl: https://github.com/ivangonzalezacuna
+category: Quality
+description: Interface for validating entities.
+documentation: https://github.com/backstage/backstage/tree/master/plugins/entity-validation
+npmPackageName: '@backstage/plugin-entity-validation'
+addedDate: '2023-09-13'
