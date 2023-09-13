@@ -4,7 +4,9 @@
 
 ```ts
 import { BackstagePlugin } from '@backstage/frontend-plugin-api';
+import { Config } from '@backstage/config';
 import { ConfigApi } from '@backstage/core-plugin-api';
+import { ExtensionDataRef } from '@backstage/frontend-plugin-api';
 import { JSX as JSX_2 } from 'react';
 
 // @public (undocumented)
@@ -14,4 +16,23 @@ export function createApp(options: {
 }): {
   createRoot(): JSX_2.Element;
 };
+
+// @public (undocumented)
+export function createExtensionTree(options: { config: Config }): ExtensionTree;
+
+// @public (undocumented)
+export interface ExtensionTree {
+  // (undocumented)
+  getExtension(id: string): ExtensionTreeNode | undefined;
+  // (undocumented)
+  getExtensionAttachments(id: string, inputName: string): ExtensionTreeNode[];
+}
+
+// @public (undocumented)
+export interface ExtensionTreeNode {
+  // (undocumented)
+  getData<T>(ref: ExtensionDataRef<T>): T | undefined;
+  // (undocumented)
+  id: string;
+}
 ```
