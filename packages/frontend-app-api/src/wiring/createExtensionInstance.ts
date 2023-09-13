@@ -119,6 +119,11 @@ export function createExtensionInstance(options: {
               `Extension '${extension.id}' tried to bind unknown output '${name}'`,
             );
           }
+          if (extensionData.has(ref.id)) {
+            throw new Error(
+              `Extension '${extension.id}' received duplicate output of '${ref.id}' via '${name}'`,
+            );
+          }
           extensionData.set(ref.id, output);
         }
       },
