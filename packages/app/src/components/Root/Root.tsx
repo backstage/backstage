@@ -27,7 +27,6 @@ import MenuIcon from '@material-ui/icons/Menu';
 import MoneyIcon from '@material-ui/icons/MonetizationOn';
 import LogoFull from './LogoFull';
 import LogoIcon from './LogoIcon';
-import { GraphiQLIcon } from '@backstage/plugin-graphiql';
 import {
   Settings as SidebarSettings,
   UserSettingsSignInAvatar,
@@ -53,6 +52,7 @@ import { SearchModal } from '../search/SearchModal';
 import Score from '@material-ui/icons/Score';
 import { useApp } from '@backstage/core-plugin-api';
 import BuildIcon from '@material-ui/icons/Build';
+import { ExtensionTree } from '@backstage/frontend-app-api';
 
 const useSidebarLogoStyles = makeStyles({
   root: {
@@ -82,7 +82,10 @@ const SidebarLogo = () => {
   );
 };
 
-export const Root = ({ children }: PropsWithChildren<{}>) => (
+export const Root = ({
+  children,
+  extensionTree,
+}: PropsWithChildren<{ extensionTree: ExtensionTree }>) => (
   <SidebarPage>
     <Sidebar>
       <SidebarLogo />
@@ -163,7 +166,9 @@ export const Root = ({ children }: PropsWithChildren<{}>) => (
             to="cost-insights"
             text="Cost Insights"
           />
-          <SidebarItem icon={GraphiQLIcon} to="graphiql" text="GraphiQL" />
+          {
+            /* HIGHLY EXPERIMENTAL. DO NOT USE THIS IN YOUR APP */ extensionTree.getSidebarItems()
+          }
           <SidebarItem icon={Score} to="score-board" text="Score board" />
         </SidebarScrollWrapper>
         <SidebarDivider />

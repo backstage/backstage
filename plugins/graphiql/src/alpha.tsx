@@ -19,6 +19,7 @@ import {
   createApiExtension,
   createExtension,
   createExtensionDataRef,
+  createNavItemExtension,
   createPageExtension,
   createPlugin,
   createSchemaFromZod,
@@ -29,13 +30,28 @@ import {
   GraphQLEndpoints,
   GraphQLEndpoint,
 } from '@backstage/plugin-graphiql';
-import { createApiFactory } from '@backstage/core-plugin-api';
+import GraphiQLIcon from './assets/graphiql.icon.svg';
+import {
+  createApiFactory,
+  createRouteRef,
+  IconComponent,
+} from '@backstage/core-plugin-api';
+
+const graphiqlRouteRef = createRouteRef({ id: 'graphiql' });
 
 /** @alpha */
 export const GraphiqlPage = createPageExtension({
   id: 'plugin.graphiql.page',
   defaultPath: '/graphiql',
+  routeRef: graphiqlRouteRef,
   loader: () => import('./components').then(m => <m.GraphiQLPage />),
+});
+
+export const graphiqlPageSidebarItem = createNavItemExtension({
+  id: 'plugin.graphiql.nav.index',
+  title: 'GraphiQL',
+  icon: GraphiQLIcon as IconComponent,
+  routeRef: graphiqlRouteRef,
 });
 
 /** @internal */
@@ -103,5 +119,10 @@ const gitlabGraphiQLBrowseExtension = createEndpointExtension({
 /** @alpha */
 export default createPlugin({
   id: 'graphiql',
-  extensions: [GraphiqlPage, graphiqlBrowseApi, gitlabGraphiQLBrowseExtension],
+  extensions: [
+    GraphiqlPage,
+    graphiqlBrowseApi,
+    gitlabGraphiQLBrowseExtension,
+    graphiqlPageSidebarItem,
+  ],
 });
