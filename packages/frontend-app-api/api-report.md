@@ -6,11 +6,8 @@
 import { BackstagePlugin } from '@backstage/frontend-plugin-api';
 import { Config } from '@backstage/config';
 import { ConfigApi } from '@backstage/core-plugin-api';
-<<<<<<< HEAD
-import { JSX as JSX_2 } from 'react';
-=======
 import { ExtensionDataRef } from '@backstage/frontend-plugin-api';
->>>>>>> ed3fd70bda19 (frontend-app-api: Add Extension utilities)
+import { JSX as JSX_2 } from 'react';
 
 // @public (undocumented)
 export function createApp(options: {
