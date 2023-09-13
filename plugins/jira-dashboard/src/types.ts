@@ -47,6 +47,7 @@ export type Project = {
   name: string;
   key: string;
   description: string;
+  avatarUrls: string;
   projectTypeKey: string;
   projectCategory: {
     name: string;
