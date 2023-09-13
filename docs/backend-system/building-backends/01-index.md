@@ -36,7 +36,7 @@ backend.start();
 
 There will be a couple more plugins and modules in the initial setup, but the overall layout is the same.
 
-What we're doing in this file is creating a new backend using `createBackend`, and then installing a collection of different plugins, modules, and service that we want to be part of that backend. Plugins are standalone features, modules augment existing plugins, while services can be used to override behavior for deeper customizations. Each module can only target a single plugin, and that plugin must also be present in the same backend. Finally, we start up the backend by calling the `start` method.
+What we're doing in this file is creating a new backend using `createBackend`, and then installing a collection of different plugins, modules, and services that we want to be part of that backend. Plugins are standalone features, modules augment existing plugins or modules, while services can be used to override behavior for deeper customizations. Each module can only target a single plugin, and that plugin must also be present in the same backend. Finally, we start up the backend by calling the `start` method.
 
 ## Customization
 
