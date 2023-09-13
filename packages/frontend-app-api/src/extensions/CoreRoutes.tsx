@@ -18,6 +18,7 @@ import React from 'react';
 import {
   createExtension,
   coreExtensionData,
+  createExtensionInput,
 } from '@backstage/frontend-plugin-api';
 import { useRoutes } from 'react-router-dom';
 
@@ -25,13 +26,11 @@ export const CoreRoutes = createExtension({
   id: 'core.routes',
   at: 'core.layout/content',
   inputs: {
-    routes: {
-      extensionData: {
-        path: coreExtensionData.routePath,
-        ref: coreExtensionData.routeRef,
-        element: coreExtensionData.reactElement,
-      },
-    },
+    routes: createExtensionInput({
+      path: coreExtensionData.routePath,
+      ref: coreExtensionData.routeRef,
+      element: coreExtensionData.reactElement,
+    }),
   },
   output: {
     element: coreExtensionData.reactElement,

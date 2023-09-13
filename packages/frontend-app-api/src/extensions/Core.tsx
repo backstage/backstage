@@ -17,17 +17,16 @@
 import {
   coreExtensionData,
   createExtension,
+  createExtensionInput,
 } from '@backstage/frontend-plugin-api';
 
 export const Core = createExtension({
   id: 'core',
   at: 'root',
   inputs: {
-    apis: {
-      extensionData: {
-        api: coreExtensionData.apiFactory,
-      },
-    },
+    apis: createExtensionInput({
+      api: coreExtensionData.apiFactory,
+    }),
   },
   output: {},
   factory() {},
