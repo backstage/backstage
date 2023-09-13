@@ -14,7 +14,6 @@
  * limitations under the License.
  */
 
-import { Select } from '@backstage/core-components';
 import { alertApiRef, useApi } from '@backstage/core-plugin-api';
 import {
   Box,
@@ -33,7 +32,7 @@ import { EntityKindFilter } from '../../filters';
 import { useEntityList } from '../../hooks';
 import { filterKinds, useAllKinds } from './kindFilterUtils';
 
-function useEntityKindFilter(opts: { initialFilter: string }): {
+function useEntityKindFilter(opts: { initialFilter: string[] }): {
   loading: boolean;
   error?: Error;
   allKinds: string[];
@@ -52,13 +51,15 @@ function useEntityKindFilter(opts: { initialFilter: string }): {
   );
 
   const [selectedKinds, setSelectedKinds] = useState(
-    queryParamKind ?? filters.kind?.value ?? [opts.initialFilter],
+    queryParamKind.length > 0
+      ? queryParamKind
+      : filters.kind?.value ?? opts.initialFilter,
   );
 
   // Set selected kinds on query parameter updates; this happens at initial page load and from
   // external updates to the page location.
   useEffect(() => {
-    if (queryParamKind) {
+    if (queryParamKind && queryParamKind.length > 0) {
       setSelectedKinds(queryParamKind);
     }
   }, [queryParamKind]);
@@ -99,7 +100,7 @@ export interface EntityKindPickerProps {
    * displayed.
    */
   allowedKinds?: string[];
-  initialFilter?: string;
+  initialFilter?: string[];
   hidden?: boolean;
 }
 
@@ -119,9 +120,9 @@ const checkedIcon = <CheckBoxIcon fontSize="small" />;
 export const EntityKindPicker = (props: EntityKindPickerProps) => {
   const classes = useStyles();
 
-  const { allowedKinds, hidden, initialFilter = 'component' } = props;
+  const { allowedKinds, hidden, initialFilter = ['component'] } = props;
 
-  const [text, setText] = useState('');
+  const [, setText] = useState('');
 
   const alertApi = useApi(alertApiRef);
 
@@ -142,11 +143,6 @@ export const EntityKindPicker = (props: EntityKindPickerProps) => {
   if (error) return null;
 
   const options = filterKinds(allKinds, allowedKinds, selectedKinds);
-
-  const items = Object.keys(options).map(key => ({
-    value: key,
-    label: options[key],
-  }));
 
   return hidden ? null : (
     <Box pb={1} pt={1}>

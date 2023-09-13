@@ -52,7 +52,7 @@ export interface DefaultCatalogPageProps {
   initiallySelectedFilter?: UserListFilterKind;
   columns?: TableColumn<CatalogTableRow>[];
   actions?: TableProps<CatalogTableRow>['actions'];
-  initialKind?: string;
+  initialKind?: string | string[];
   tableOptions?: TableProps<CatalogTableRow>['options'];
   emptyContent?: ReactNode;
   ownerPickerMode?: EntityOwnerPickerProps['mode'];
@@ -87,7 +87,11 @@ export function DefaultCatalogPage(props: DefaultCatalogPageProps) {
         <EntityListProvider>
           <CatalogFilterLayout>
             <CatalogFilterLayout.Filters>
-              <EntityKindPicker initialFilter={initialKind} />
+              <EntityKindPicker
+                initialFilter={
+                  typeof initialKind === 'string' ? [initialKind] : initialKind
+                }
+              />
               <EntityTypePicker />
               <UserListPicker initialFilter={initiallySelectedFilter} />
               <EntityOwnerPicker mode={ownerPickerMode} />
