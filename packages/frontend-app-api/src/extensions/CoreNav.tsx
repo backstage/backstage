@@ -67,12 +67,12 @@ export const CoreNav = createExtension({
   at: 'core.layout/nav',
   inputs: {},
   output: {
-    component: coreExtensionData.reactComponent,
+    element: coreExtensionData.reactElement,
   },
   factory({ bind }) {
     bind({
       // TODO: set base path using the logic from AppRouter
-      component: () => (
+      element: (
         <Sidebar>
           <SidebarLogo />
           <SidebarDivider />
