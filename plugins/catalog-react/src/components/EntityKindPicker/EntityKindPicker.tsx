@@ -16,7 +16,18 @@
 
 import { Select } from '@backstage/core-components';
 import { alertApiRef, useApi } from '@backstage/core-plugin-api';
-import { Box } from '@material-ui/core';
+import {
+  Box,
+  Checkbox,
+  FormControlLabel,
+  TextField,
+  Typography,
+  makeStyles,
+} from '@material-ui/core';
+import CheckBoxIcon from '@material-ui/icons/CheckBox';
+import CheckBoxOutlineBlankIcon from '@material-ui/icons/CheckBoxOutlineBlank';
+import ExpandMoreIcon from '@material-ui/icons/ExpandMore';
+import { Autocomplete } from '@material-ui/lab';
 import React, { useEffect, useMemo, useState } from 'react';
 import { EntityKindFilter } from '../../filters';
 import { useEntityList } from '../../hooks';
@@ -26,8 +37,8 @@ function useEntityKindFilter(opts: { initialFilter: string }): {
   loading: boolean;
   error?: Error;
   allKinds: string[];
-  selectedKind: string;
-  setSelectedKind: (kind: string) => void;
+  selectedKinds: string[];
+  setSelectedKinds: (kind: string[]) => void;
 } {
   const {
     filters,
@@ -36,19 +47,19 @@ function useEntityKindFilter(opts: { initialFilter: string }): {
   } = useEntityList();
 
   const queryParamKind = useMemo(
-    () => [kindParameter].flat()[0],
+    () => [kindParameter].flat().filter(Boolean) as string[],
     [kindParameter],
   );
 
-  const [selectedKind, setSelectedKind] = useState(
-    queryParamKind ?? filters.kind?.value ?? opts.initialFilter,
+  const [selectedKinds, setSelectedKinds] = useState(
+    queryParamKind ?? filters.kind?.value ?? [opts.initialFilter],
   );
 
   // Set selected kinds on query parameter updates; this happens at initial page load and from
   // external updates to the page location.
   useEffect(() => {
     if (queryParamKind) {
-      setSelectedKind(queryParamKind);
+      setSelectedKinds(queryParamKind);
     }
   }, [queryParamKind]);
 
@@ -56,15 +67,15 @@ function useEntityKindFilter(opts: { initialFilter: string }): {
   // updated from another component
   useEffect(() => {
     if (filters.kind?.value) {
-      setSelectedKind(filters.kind?.value);
+      setSelectedKinds(filters.kind?.value);
     }
   }, [filters.kind]);
 
   useEffect(() => {
     updateFilters({
-      kind: selectedKind ? new EntityKindFilter(selectedKind) : undefined,
+      kind: selectedKinds ? new EntityKindFilter(selectedKinds) : undefined,
     });
-  }, [selectedKind, updateFilters]);
+  }, [selectedKinds, updateFilters]);
 
   const { allKinds, loading, error } = useAllKinds();
 
@@ -72,8 +83,8 @@ function useEntityKindFilter(opts: { initialFilter: string }): {
     loading,
     error,
     allKinds: allKinds ?? [],
-    selectedKind,
-    setSelectedKind,
+    selectedKinds,
+    setSelectedKinds,
   };
 }
 
@@ -92,13 +103,29 @@ export interface EntityKindPickerProps {
   hidden?: boolean;
 }
 
+const useStyles = makeStyles(
+  {
+    input: {},
+  },
+  {
+    name: 'CatalogReactEntityKindPicker',
+  },
+);
+
+const icon = <CheckBoxOutlineBlankIcon fontSize="small" />;
+const checkedIcon = <CheckBoxIcon fontSize="small" />;
+
 /** @public */
 export const EntityKindPicker = (props: EntityKindPickerProps) => {
+  const classes = useStyles();
+
   const { allowedKinds, hidden, initialFilter = 'component' } = props;
+
+  const [text, setText] = useState('');
 
   const alertApi = useApi(alertApiRef);
 
-  const { error, allKinds, selectedKind, setSelectedKind } =
+  const { loading, error, allKinds, selectedKinds, setSelectedKinds } =
     useEntityKindFilter({
       initialFilter: initialFilter,
     });
@@ -114,7 +141,7 @@ export const EntityKindPicker = (props: EntityKindPickerProps) => {
 
   if (error) return null;
 
-  const options = filterKinds(allKinds, allowedKinds, selectedKind);
+  const options = filterKinds(allKinds, allowedKinds, selectedKinds);
 
   const items = Object.keys(options).map(key => ({
     value: key,
@@ -123,12 +150,51 @@ export const EntityKindPicker = (props: EntityKindPickerProps) => {
 
   return hidden ? null : (
     <Box pb={1} pt={1}>
-      <Select
-        label="Kind"
-        items={items}
-        selected={selectedKind.toLocaleLowerCase('en-US')}
-        onChange={value => setSelectedKind(String(value))}
-      />
+      <Typography variant="button" component="label">
+        Kind
+        <Autocomplete
+          multiple
+          disableCloseOnSelect
+          loading={loading}
+          options={Object.keys(options)}
+          value={selectedKinds}
+          onChange={(_: object, kinds) => {
+            setText('');
+            setSelectedKinds(kinds);
+          }}
+          renderOption={(kind, { selected }) => {
+            return (
+              <FormControlLabel
+                control={
+                  <Checkbox
+                    icon={icon}
+                    checkedIcon={checkedIcon}
+                    checked={selected}
+                  />
+                }
+                onClick={event => event.preventDefault()}
+                label={
+                  <Box display="flex" flexWrap="wrap" alignItems="center">
+                    {options[kind]}
+                  </Box>
+                }
+              />
+            );
+          }}
+          size="small"
+          popupIcon={<ExpandMoreIcon data-testid="kind-picker-expand" />}
+          renderInput={params => (
+            <TextField
+              {...params}
+              className={classes.input}
+              onChange={e => {
+                setText(e.currentTarget.value);
+              }}
+              variant="outlined"
+            />
+          )}
+        />
+      </Typography>
     </Box>
   );
 };

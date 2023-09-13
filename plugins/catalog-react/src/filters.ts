@@ -29,13 +29,13 @@ import { getEntityRelations } from './utils';
  * @public
  */
 export class EntityKindFilter implements EntityFilter {
-  constructor(readonly value: string) {}
+  constructor(readonly value: string[]) {}
 
   getCatalogFilters(): Record<string, string | string[]> {
     return { kind: this.value };
   }
 
-  toQueryValue(): string {
+  toQueryValue(): string[] {
     return this.value;
   }
 }

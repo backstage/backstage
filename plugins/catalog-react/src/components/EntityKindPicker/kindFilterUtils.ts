@@ -48,7 +48,7 @@ export function useAllKinds(): {
 export function filterKinds(
   allKinds: string[],
   allowedKinds?: string[],
-  forcedKinds?: string,
+  forcedKinds?: string[],
 ): Record<string, string> {
   // Before allKinds is loaded, or when a kind is entered manually in the URL, selectedKind may not
   // be present in allKinds. It should still be shown in the dropdown, but may not have the nice
@@ -65,12 +65,13 @@ export function filterKinds(
   }
   if (
     forcedKinds &&
-    !allKinds.some(
-      a =>
-        a.toLocaleLowerCase('en-US') === forcedKinds.toLocaleLowerCase('en-US'),
+    !allKinds.some(a =>
+      forcedKinds
+        .map(k => k.toLocaleLowerCase('en-US'))
+        .includes(a.toLocaleLowerCase('en-US')),
     )
   ) {
-    availableKinds = availableKinds.concat([forcedKinds]);
+    availableKinds = availableKinds.concat(forcedKinds);
   }
 
   const kindsMap = availableKinds.sort().reduce((acc, kind) => {

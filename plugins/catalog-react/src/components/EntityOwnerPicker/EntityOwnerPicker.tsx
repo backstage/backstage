@@ -109,9 +109,8 @@ export const EntityOwnerPicker = (props?: EntityOwnerPickerProps) => {
   }, [selectedOwners, updateFilters]);
 
   if (
-    ['user', 'group'].includes(
-      filters.kind?.value.toLocaleLowerCase('en-US') || '',
-    )
+    filters.kind?.value &&
+    filters.kind?.value.filter(k => ['user', 'group'].includes(k))?.length > 0
   ) {
     return null;
   }

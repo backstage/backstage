@@ -83,7 +83,7 @@ export const CatalogTable = (props: CatalogTableProps) => {
   const defaultColumns: TableColumn<CatalogTableRow>[] = useMemo(() => {
     return [
       columnFactories.createTitleColumn({ hidden: true }),
-      columnFactories.createNameColumn({ defaultKind: filters.kind?.value }),
+      columnFactories.createNameColumn({ defaultKind: filters.kind?.value[0] }),
       ...createEntitySpecificColumns(),
       columnFactories.createMetadataDescriptionColumn(),
       columnFactories.createTagsColumn(),
@@ -96,27 +96,27 @@ export const CatalogTable = (props: CatalogTableProps) => {
         columnFactories.createSpecTypeColumn(),
         columnFactories.createSpecLifecycleColumn(),
       ];
-      switch (filters.kind?.value) {
-        case 'user':
-          return [];
-        case 'domain':
-        case 'system':
-          return [columnFactories.createOwnerColumn()];
-        case 'group':
-        case 'template':
-          return [columnFactories.createSpecTypeColumn()];
-        case 'location':
-          return [
-            columnFactories.createSpecTypeColumn(),
-            columnFactories.createSpecTargetsColumn(),
-          ];
-        default:
-          return entities.every(
-            entity => entity.metadata.namespace === 'default',
-          )
-            ? baseColumns
-            : [...baseColumns, columnFactories.createNamespaceColumn()];
+
+      if (filters.kind?.value.includes('system')) {
+        return [columnFactories.createOwnerColumn()];
+      } else if (filters.kind?.value.includes('template')) {
+        return [columnFactories.createSpecTypeColumn()];
+      } else if (filters.kind?.value.includes('location')) {
+        return [
+          columnFactories.createSpecTypeColumn(),
+          columnFactories.createSpecTargetsColumn(),
+        ];
+      } else if (
+        filters.kind?.value.includes('user') ||
+        filters.kind?.value.includes('domain') ||
+        filters.kind?.value.includes('group')
+      ) {
+        return [];
       }
+
+      return entities.every(entity => entity.metadata.namespace === 'default')
+        ? baseColumns
+        : [...baseColumns, columnFactories.createNamespaceColumn()];
     }
   }, [filters.kind?.value, entities]);
 
@@ -226,10 +226,23 @@ export const CatalogTable = (props: CatalogTableProps) => {
   if (typeColumn) {
     typeColumn.hidden = !showTypeColumn;
   }
+
+  let currentKind: string = '';
+
+  const kinds = filters.kind?.value ? [...filters.kind?.value] : [];
+  if (kinds.length > 1) {
+    const last = kinds.pop();
+    if (last)
+      currentKind = `${kinds.map(k => pluralize(k)).join(', ')} and ${pluralize(
+        last,
+      )}`;
+  } else {
+    currentKind = kinds.map(k => pluralize(k)).join('');
+  }
+
   const showPagination = rows.length > 20;
-  const currentKind = filters.kind?.value || '';
   const currentType = filters.type?.value || '';
-  const titleDisplay = [titlePreamble, currentType, pluralize(currentKind)]
+  const titleDisplay = [titlePreamble, currentType, currentKind]
     .filter(s => s)
     .join(' ');
 
