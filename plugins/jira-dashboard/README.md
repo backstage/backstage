@@ -6,7 +6,7 @@ Welcome to the Jira Dashboard plugin!
 
 ## Introduction
 
-The **Jira Dashboard** plugin allows you to fetch and display Jira issues for your entity. You get quickly access to issue summaries to acieve better visibility and more efficient project management. The issue overview that is provided can be customized to display the information that is relevant for your entity, by defining Jira filters and components.
+The **Jira Dashboard** plugin allows you to fetch and display Jira issues for your entity. You get quickly access to issue summaries to achieve better task visibility and more efficient project management. The issue overview that is provided can be customized to display the information that is relevant for your entity, by defining Jira filters and components.
 
 By default, the issue views that are provided are **incoming issues**, **open issues** and **assigned to you**.
 
@@ -48,7 +48,7 @@ const defaultEntityPage = (
 
 ### Integration with the Catalog
 
-To enable the Jira Dashboard plugin for your entity, the entity must have the following annotation:
+To enable the Jira Dashboard plugin for your entity, the entity yaml must have the following annotation:
 
 ```yaml
 apiVersion: backstage.io/v1alpha1
@@ -56,12 +56,12 @@ kind: Component
 metadata:
   # ...
   annotations:
-    jira/project-key: # The key of the Jira project to track for this entity
+    jira/project-key: value # value: The key of the Jira project to track for this entity
 ```
 
 ### Optional annotations
 
-If you want to track specific components or filters you can add the optional annotations `component` and `filters-ids`. You can specify an endless number of Jira components or filters for your entity.
+If you want to track specific components or filters for your entity, you can add the optional annotations `component` and `filters-ids`. You can specify an endless number of Jira components or filters.
 
 ```yaml
 apiVersion: backstage.io/v1alpha1
@@ -69,7 +69,7 @@ kind: Component
 metadata:
   # ...
   annotations:
-    jira/project-key: # The key of the Jira project to track for this entity
+    jira/project-key: value # value: The key of the Jira project to track for this entity
     jira/component: component-name:component-name:component:name # Jira component name separated with :
     jira/filter-ids: 12345:67890 # Jira filter id separated with :
 ```
