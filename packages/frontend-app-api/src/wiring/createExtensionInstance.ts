@@ -41,10 +41,15 @@ export interface ExtensionInstance {
 function resolveInputData(
   dataMap: AnyExtensionDataMap,
   attachment: ExtensionInstance,
+  inputName: string,
 ) {
   return mapValues(dataMap, ref => {
     const value = attachment.getData(ref);
-    // TODO: validate input data presence
+    if (value === undefined && !ref.config.optional) {
+      throw new Error(
+        `input '${inputName}' did not receive required extension data '${ref.id}' from extension '${attachment.id}'`,
+      );
+    }
     return value;
   });
 }
@@ -70,11 +75,15 @@ function resolveInputs(
         }
         throw Error(`input '${inputName}' is required but was not received`);
       }
-      return resolveInputData(input.extensionData, attachedInstances[0]);
+      return resolveInputData(
+        input.extensionData,
+        attachedInstances[0],
+        inputName,
+      );
     }
 
     return attachedInstances.map(attachment =>
-      resolveInputData(input.extensionData, attachment),
+      resolveInputData(input.extensionData, attachment, inputName),
     );
   });
 }
@@ -94,7 +103,7 @@ export function createExtensionInstance(options: {
     parsedConfig = extension.configSchema?.parse(config ?? {});
   } catch (e) {
     throw new Error(
-      `Invalid configuration for extension instance '${extension.id}', ${e}`,
+      `Invalid configuration for extension '${extension.id}', ${e}`,
     );
   }
 
@@ -107,7 +116,7 @@ export function createExtensionInstance(options: {
           const ref = extension.output[name];
           if (!ref) {
             throw new Error(
-              `Extension instance '${extension.id}' tried to bind unknown output '${name}'`,
+              `Extension '${extension.id}' tried to bind unknown output '${name}'`,
             );
           }
           extensionData.set(ref.id, output);
@@ -117,7 +126,7 @@ export function createExtensionInstance(options: {
     });
   } catch (e) {
     throw new Error(
-      `Failed to instantiate extension instance '${extension.id}', ${
+      `Failed to instantiate extension '${extension.id}', ${
         e.name === 'Error' ? e.message : e
       }`,
     );
