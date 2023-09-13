@@ -20,6 +20,8 @@ import { Command } from 'commander';
 import { resolve as resolvePath } from 'path';
 import { paths } from '../../lib/paths';
 import * as runObj from '../../lib/run';
+
+jest.mock('global-agent/bootstrap', () => {});
 import bump, { bumpBackstageJsonVersion, createVersionFinder } from './bump';
 import {
   setupRequestMockHandlers,
