@@ -98,6 +98,9 @@ jobs:
       - name: verify api reference
         run: node scripts/verify-api-reference.js
 
+      - name: verify catalog-info.yaml consistency
+        run: yarn backstage-repo-tools generate-catalog-info --ci
+
       - name: lint openapi yaml files
         run: yarn backstage-repo-tools schema openapi lint
 
