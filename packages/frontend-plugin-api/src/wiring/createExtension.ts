@@ -15,51 +15,68 @@
  */
 
 import { PortableSchema } from '../schema';
+import { ExtensionDataRef } from './createExtensionDataRef';
+import { ExtensionInput } from './createExtensionInput';
 import { BackstagePlugin } from './createPlugin';
-import { AnyExtensionDataMap, Extension } from './types';
 
 /** @public */
-export type ExtensionDataInputValues<
-  TInputs extends { [name in string]: { extensionData: AnyExtensionDataMap } },
-> = {
-  [InputName in keyof TInputs]: Array<
-    {
-      [DataName in keyof TInputs[InputName]['extensionData'] as TInputs[InputName]['extensionData'][DataName]['config'] extends {
-        optional: true;
-      }
-        ? never
-        : DataName]: TInputs[InputName]['extensionData'][DataName]['T'];
-    } & {
-      [DataName in keyof TInputs[InputName]['extensionData'] as TInputs[InputName]['extensionData'][DataName]['config'] extends {
-        optional: true;
-      }
-        ? DataName
-        : never]?: TInputs[InputName]['extensionData'][DataName]['T'];
-    }
-  >;
+export type AnyExtensionDataMap = {
+  [name in string]: ExtensionDataRef<any, any>;
 };
 
 /** @public */
-export type ExtensionDataBind<TMap extends AnyExtensionDataMap> = (
-  values: {
-    [DataName in keyof TMap as TMap[DataName]['config'] extends {
-      optional: true;
-    }
-      ? never
-      : DataName]: TMap[DataName]['T'];
-  } & {
-    [DataName in keyof TMap as TMap[DataName]['config'] extends {
-      optional: true;
-    }
-      ? DataName
-      : never]?: TMap[DataName]['T'];
-  },
-) => void;
+export type AnyExtensionInputMap = {
+  [inputName in string]: ExtensionInput<
+    AnyExtensionDataMap,
+    { optional: boolean; singleton: boolean }
+  >;
+};
+
+// TODO(Rugvip): This might be a quite useful utility type, maybe add to @backstage/types?
+/**
+ * Utility type to expand type aliases into their equivalent type.
+ * @ignore
+ */
+export type Expand<T> = T extends infer O ? { [K in keyof O]: O[K] } : never;
+
+/**
+ * Converts an extension data map into the matching concrete data values type.
+ * @public
+ */
+export type ExtensionDataValues<TExtensionData extends AnyExtensionDataMap> = {
+  [DataName in keyof TExtensionData as TExtensionData[DataName]['config'] extends {
+    optional: true;
+  }
+    ? never
+    : DataName]: TExtensionData[DataName]['T'];
+} & {
+  [DataName in keyof TExtensionData as TExtensionData[DataName]['config'] extends {
+    optional: true;
+  }
+    ? DataName
+    : never]?: TExtensionData[DataName]['T'];
+};
+
+/**
+ * Converts an extension input map into the matching concrete input values type.
+ * @public
+ */
+export type ExtensionInputValues<
+  TInputs extends { [name in string]: ExtensionInput<any, any> },
+> = {
+  [InputName in keyof TInputs]: false extends TInputs[InputName]['config']['singleton']
+    ? Array<Expand<ExtensionDataValues<TInputs[InputName]['extensionData']>>>
+    : false extends TInputs[InputName]['config']['optional']
+    ? Expand<ExtensionDataValues<TInputs[InputName]['extensionData']>>
+    : Expand<
+        ExtensionDataValues<TInputs[InputName]['extensionData']> | undefined
+      >;
+};
 
 /** @public */
 export interface CreateExtensionOptions<
   TOutput extends AnyExtensionDataMap,
-  TInputs extends Record<string, { extensionData: AnyExtensionDataMap }>,
+  TInputs extends AnyExtensionInputMap,
   TConfig,
 > {
   id: string;
@@ -70,16 +87,36 @@ export interface CreateExtensionOptions<
   configSchema?: PortableSchema<TConfig>;
   factory(options: {
     source?: BackstagePlugin;
-    bind: ExtensionDataBind<TOutput>;
+    bind(values: Expand<ExtensionDataValues<TOutput>>): void;
     config: TConfig;
-    inputs: ExtensionDataInputValues<TInputs>;
+    inputs: Expand<ExtensionInputValues<TInputs>>;
+  }): void;
+}
+
+/** @public */
+export interface Extension<TConfig> {
+  $$type: '@backstage/Extension';
+  id: string;
+  at: string;
+  disabled: boolean;
+  inputs: AnyExtensionInputMap;
+  output: AnyExtensionDataMap;
+  configSchema?: PortableSchema<TConfig>;
+  factory(options: {
+    source?: BackstagePlugin;
+    bind(values: ExtensionInputValues<any>): void;
+    config: TConfig;
+    inputs: Record<
+      string,
+      undefined | Record<string, unknown> | Array<Record<string, unknown>>
+    >;
   }): void;
 }
 
 /** @public */
 export function createExtension<
   TOutput extends AnyExtensionDataMap,
-  TInputs extends Record<string, { extensionData: AnyExtensionDataMap }>,
+  TInputs extends AnyExtensionInputMap,
   TConfig = never,
 >(
   options: CreateExtensionOptions<TOutput, TInputs, TConfig>,
@@ -94,7 +131,7 @@ export function createExtension<
       return options.factory({
         bind,
         config,
-        inputs: inputs as ExtensionDataInputValues<TInputs>,
+        inputs: inputs as Expand<ExtensionInputValues<TInputs>>,
       });
     },
   };

@@ -16,6 +16,7 @@
 
 import { createExtension } from './createExtension';
 import { createExtensionDataRef } from './createExtensionDataRef';
+import { createExtensionInput } from './createExtensionInput';
 
 const stringData = createExtensionDataRef<string>('string');
 
@@ -95,22 +96,16 @@ describe('createExtension', () => {
       id: 'test',
       at: 'root',
       inputs: {
-        mixed: {
-          extensionData: {
-            required: stringData,
-            optional: stringData.optional(),
-          },
-        },
-        onlyRequired: {
-          extensionData: {
-            required: stringData,
-          },
-        },
-        onlyOptional: {
-          extensionData: {
-            optional: stringData.optional(),
-          },
-        },
+        mixed: createExtensionInput({
+          required: stringData,
+          optional: stringData.optional(),
+        }),
+        onlyRequired: createExtensionInput({
+          required: stringData,
+        }),
+        onlyOptional: createExtensionInput({
+          optional: stringData.optional(),
+        }),
       },
       output: {
         foo: stringData,
