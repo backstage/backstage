@@ -179,6 +179,7 @@ jobs:
 
     env:
       CI: true
+      DEBUG: http:*
       NODE_OPTIONS: --max-old-space-size=4096
       INTEGRATION_TEST_GITHUB_TOKEN: ${{ secrets.INTEGRATION_TEST_GITHUB_TOKEN }}
       INTEGRATION_TEST_GITLAB_TOKEN: ${{ secrets.INTEGRATION_TEST_GITLAB_TOKEN }}
