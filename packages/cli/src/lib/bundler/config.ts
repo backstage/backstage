@@ -81,6 +81,25 @@ async function readBuildInfo() {
   };
 }
 
+function readConfigOverride(
+  config: webpack.Configuration,
+): webpack.Configuration {
+  const configFile = `${cliPaths.targetDir}/webpack.config.js`;
+  try {
+    if (!fs.existsSync(configFile)) {
+      return config;
+    }
+    const configOverrideFn = require(configFile);
+    const configOverride = configOverrideFn(config);
+    return { ...config, ...configOverride };
+  } catch (error) {
+    console.warn(
+      `WARNING: Failed to load webpack configuration ${configFile}, ${error}`,
+    );
+    return config;
+  }
+}
+
 export async function createConfig(
   paths: BundlingPaths,
   options: BundlingOptions,
@@ -152,7 +171,7 @@ export async function createConfig(
 
   const withCache = yn(process.env[BUILD_CACHE_ENV_VAR], { default: false });
 
-  return {
+  const config: webpack.Configuration = {
     mode: isDev ? 'development' : 'production',
     profile: false,
     optimization: optimization(options),
@@ -223,6 +242,7 @@ export async function createConfig(
         }
       : {}),
   };
+  return readConfigOverride(config);
 }
 
 export async function createBackendConfig(
@@ -258,7 +278,7 @@ export async function createBackendConfig(
     runScriptNodeArgs.push(inspect);
   }
 
-  return {
+  const config: webpack.Configuration = {
     mode: isDev ? 'development' : 'production',
     profile: false,
     ...(isDev
@@ -343,6 +363,7 @@ export async function createBackendConfig(
         : []),
     ],
   };
+  return readConfigOverride(config);
 }
 
 // This makes the module resolution happen from the context of each non-external module, rather
