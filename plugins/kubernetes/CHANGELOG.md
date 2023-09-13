@@ -4,7 +4,16 @@
 
 ### Patch Changes
 
-- 7032c214f3b4: Add pod exec terminal to Container Card
+- 7032c214f3b4: Add pod exec terminal to Container Card, as part of this change you will also want to add the following to your `/packages/app/src/setupTests.ts` to get your `App.test.tsx` test to pass:
+
+  ```ts
+  // Do not remove, patching jsdom environment to support TextEncoder, refer to https://github.com/jsdom/jsdom/issues/2524
+  // eslint-disable-next-line no-restricted-imports
+  import { TextEncoder } from 'util';
+
+  global.TextEncoder = TextEncoder;
+  ```
+
 - 406b786a2a2c: Mark package as being free of side effects, allowing more optimized Webpack builds.
 - Updated dependencies
   - @backstage/catalog-model@1.4.2-next.2
