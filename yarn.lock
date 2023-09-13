@@ -30394,12 +30394,12 @@ __metadata:
   linkType: hard
 
 "jest-websocket-mock@npm:^2.4.1":
-  version: 2.4.1
-  resolution: "jest-websocket-mock@npm:2.4.1"
+  version: 2.5.0
+  resolution: "jest-websocket-mock@npm:2.5.0"
   dependencies:
     jest-diff: ^29.2.0
-    mock-socket: ^9.1.0
-  checksum: 5091bfc1baef36146ea1d0f7e16c591d8f8cd9604b7daaeb3d61d98cb1034f4ea3825c122477eb15d55f7d7fe6ec93a8e7b58d54f39838238d7345675d0afb37
+    mock-socket: ^9.3.0
+  checksum: df52989d62f59aea3408d37089ab56490efdfa75d81c851dde65758474844e273a9a4ebd9c13db49d226b87d8272896cabd91173dd8cc56b96beec309d46554d
   languageName: node
   linkType: hard
 
@@ -33611,10 +33611,10 @@ __metadata:
   languageName: node
   linkType: hard
 
-"mock-socket@npm:^9.1.0":
-  version: 9.2.1
-  resolution: "mock-socket@npm:9.2.1"
-  checksum: daf07689563163dbcefbefe23b2a9784a75d0af31706f23ad535c6ab2abbcdefa2e91acddeb50a3c39009139e47a8f909cbb38e8137452193ccb9331637fee3e
+"mock-socket@npm:^9.3.0":
+  version: 9.3.1
+  resolution: "mock-socket@npm:9.3.1"
+  checksum: cb2dde4fc5dde280dd5ccb78eaaa223382ee16437f46b86558017655584ad08c22e733bde2dd5cc86927def506b6caeb0147e3167b9a62d70d5cf19d44103853
   languageName: node
   linkType: hard
 
