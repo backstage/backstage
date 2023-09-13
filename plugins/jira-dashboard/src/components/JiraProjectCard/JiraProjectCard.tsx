@@ -14,86 +14,50 @@
  * limitations under the License.
  */
 import React from 'react';
-import { Card, Box, Divider, Typography, makeStyles } from '@material-ui/core';
+import { Card, Box, Divider, Typography } from '@material-ui/core';
 import { Avatar } from '@backstage/core-components';
 import { LinkButton } from '@backstage/core-components';
 import type { Project } from '../../types';
 import { getProjectUrl } from '../../lib';
-
-const useStyles = makeStyles({
-  root: {
-    padding: '1rem',
-    fontSize: '18px',
-    height: '100%',
-  },
-  section: {
-    marginTop: '1rem',
-    marginBottom: '2rem',
-  },
-  label: {
-    marginTop: '1rem',
-    color: '#A9A9A9',
-  },
-  value: {
-    fontWeight: 800,
-    margin: '0.3rem 0 1rem 0 ',
-  },
-  button: {
-    textDecoration: 'none',
-    margin: '1rem 0',
-  },
-});
+import { ProjectInfoLabel } from './ProjectInfoLabel';
 
 type JiraProjectCardProps = {
   project: Project;
 };
 
 export const JiraProjectCard = ({ project }: JiraProjectCardProps) => {
-  const classes = useStyles();
   return (
-    <Card className={classes.root}>
-      <Box display="inline-flex" alignItems="center">
+    <Card style={{ padding: 20, height: '100%' }}>
+      <Box display="inline-flex" alignItems="center" mb={2}>
         <Avatar
           picture={project.avatarUrls}
           customStyles={{
-            width: '40px',
-            height: '40px',
+            width: 50,
+            height: 50,
           }}
         />
 
-        <Box ml={1}>
+        <Typography style={{ fontSize: 20, marginLeft: 3 }}>
           {project.name} | {project.projectTypeKey}
-        </Box>
-      </Box>
-      <Box ml={1} className={classes.section}>
-        <Divider />
-        <Typography className={classes.label}>Project key</Typography>
-        <Typography className={classes.value}>{project.key}</Typography>
-
-        <Typography className={classes.label}>Category</Typography>
-        <Typography className={classes.value}>
-          {project.projectCategory.name}
         </Typography>
-
+      </Box>
+      <Box ml={1}>
+        <Divider style={{ marginBottom: 10 }} />
+        <ProjectInfoLabel label="Project key" value={project.key} />
+        <ProjectInfoLabel
+          label="Category"
+          value={project.projectCategory.name}
+        />
         {project.description && (
-          <>
-            <Typography className={classes.label}>Description</Typography>
-            <Typography className={classes.value}>
-              {project.description}
-            </Typography>
-          </>
+          <ProjectInfoLabel label="Description" value={project.description} />
         )}
-
-        <Typography className={classes.label}>Project lead</Typography>
-        <Box style={{ display: 'flex' }}>
-          <Typography className={classes.value}>{project.lead.key}</Typography>
-        </Box>
+        <ProjectInfoLabel label="Project lead" value={project.lead.key} />
 
         <LinkButton
           color="primary"
           variant="contained"
-          className={classes.button}
           to={getProjectUrl(project)}
+          style={{ marginTop: 35 }}
         >
           Go to project
         </LinkButton>

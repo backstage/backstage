@@ -15,7 +15,7 @@
  */
 
 import React from 'react';
-import { makeStyles } from '@material-ui/core';
+import { Typography, makeStyles } from '@material-ui/core';
 import { JiraDataResponse } from '../../types';
 import { Table } from '@backstage/core-components';
 import { capitalize } from 'lodash';
@@ -28,11 +28,6 @@ type Props = {
 const useStyles = makeStyles(theme => ({
   root: {
     colorScheme: theme.palette.type,
-  },
-  empty: {
-    padding: theme.spacing(2),
-    display: 'flex',
-    justifyContent: 'center',
   },
 }));
 
@@ -52,7 +47,15 @@ export const JiraTable = (props: Props) => {
         data={issues}
         columns={columns}
         emptyContent={
-          <div className={classes.empty}>No issues found&nbsp;</div>
+          <Typography
+            style={{
+              display: 'flex',
+              justifyContent: 'center',
+              paddingTop: 30,
+            }}
+          >
+            No issues found&nbsp;
+          </Typography>
         }
         style={{
           height: '500px',
