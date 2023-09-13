@@ -180,6 +180,8 @@ import {
   isLinguistAvailable,
   EntityLinguistCard,
 } from '@backstage/plugin-linguist';
+import { EntityJiraDashboardContent } from '@backstage/plugin-jira-dashboard';
+import { isJiraDashboardAvailable } from '@backstage/plugin-jira-dashboard';
 
 const customEntityFilterKind = ['Component', 'API', 'System'];
 
@@ -586,6 +588,14 @@ const serviceEntityPage = (
     <EntityLayout.Route path="/feedback" title="Feedback">
       <EntityFeedbackResponseContent />
     </EntityLayout.Route>
+
+    <EntityLayout.Route
+      if={isJiraDashboardAvailable}
+      path="/jira-dashboard"
+      title="Jira Dashboard"
+    >
+      <EntityJiraDashboardContent />
+    </EntityLayout.Route>
   </EntityLayoutWrapper>
 );
 
@@ -669,6 +679,14 @@ const websiteEntityPage = (
     <EntityLayout.Route path="/feedback" title="Feedback">
       <EntityFeedbackResponseContent />
     </EntityLayout.Route>
+
+    <EntityLayout.Route
+      if={isJiraDashboardAvailable}
+      path="/jira-dashboard"
+      title="Jira Dashboard"
+    >
+      <EntityJiraDashboardContent />
+    </EntityLayout.Route>
   </EntityLayoutWrapper>
 );
 
@@ -688,6 +706,14 @@ const defaultEntityPage = (
 
     <EntityLayout.Route path="/feedback" title="Feedback">
       <EntityFeedbackResponseContent />
+    </EntityLayout.Route>
+
+    <EntityLayout.Route
+      if={isJiraDashboardAvailable}
+      path="/jira-dashboard"
+      title="Jira Dashboard"
+    >
+      <EntityJiraDashboardContent />
     </EntityLayout.Route>
   </EntityLayoutWrapper>
 );
@@ -852,6 +878,14 @@ const systemPage = (
     <EntityLayout.Route path="/feedback" title="Feedback">
       <EntityFeedbackResponseContent />
     </EntityLayout.Route>
+
+    <EntityLayout.Route
+      if={isJiraDashboardAvailable}
+      path="/jira-dashboard"
+      title="Jira Dashboard"
+    >
+      <EntityJiraDashboardContent />
+    </EntityLayout.Route>
   </EntityLayoutWrapper>
 );
 
@@ -920,6 +954,7 @@ export const entityPage = (
     <EntitySwitch.Case if={isKind('system')} children={systemPage} />
     <EntitySwitch.Case if={isKind('domain')} children={domainPage} />
     <EntitySwitch.Case if={isKind('resource')} children={resourcePage} />
+
     <EntitySwitch.Case>{defaultEntityPage}</EntitySwitch.Case>
   </EntitySwitch>
 );
