@@ -14,8 +14,6 @@
  * limitations under the License.
  */
 
-import { graphiqlPlugin as legacyGraphiqlPlugin } from '@backstage/plugin-graphiql';
-import { createApp as createLegacyApp } from '@backstage/app-defaults';
 import { createApp } from '@backstage/frontend-app-api';
 import { pagesPlugin } from './examples/pagesPlugin';
 import graphiqlPlugin from '@backstage/plugin-graphiql/alpha';
@@ -61,9 +59,9 @@ const app = createApp({
   // },
 });
 
-const legacyApp = createLegacyApp({ plugins: [legacyGraphiqlPlugin] });
+// const legacyApp = createLegacyApp({ plugins: [legacyGraphiqlPlugin] });
 
-export default legacyApp.createRoot(app.createRoot());
+export default app.createRoot();
 
 // const routes = (
 //   <FlatRoutes>

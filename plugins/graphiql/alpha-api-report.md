@@ -12,6 +12,7 @@ import { PortableSchema } from '@backstage/frontend-plugin-api';
 export function createEndpointExtension<TConfig extends {}>(options: {
   id: string;
   configSchema?: PortableSchema<TConfig>;
+  disabled?: boolean;
   factory: (options: { config: TConfig }) => {
     endpoint: GraphQLEndpoint;
   };

@@ -24,7 +24,7 @@ export type AnyExtensionDataMap = {
 // @public (undocumented)
 export interface BackstagePlugin {
   // (undocumented)
-  $$type: 'backstage-plugin';
+  $$type: '@backstage/BackstagePlugin';
   // (undocumented)
   extensions: Extension<unknown>[];
   // (undocumented)
@@ -176,7 +176,7 @@ export function createSchemaFromZod<TOutput, TInput>(
 // @public (undocumented)
 export interface Extension<TConfig> {
   // (undocumented)
-  $$type: 'extension';
+  $$type: '@backstage/Extension';
   // (undocumented)
   at: string;
   // (undocumented)
@@ -268,7 +268,7 @@ export type ExtensionDataRef<
   id: string;
   T: TData;
   config: TConfig;
-  $$type: 'extension-data';
+  $$type: '@backstage/ExtensionDataRef';
 };
 
 // @public (undocumented)

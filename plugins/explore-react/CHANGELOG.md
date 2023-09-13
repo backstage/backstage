@@ -1,5 +1,14 @@
 # @backstage/plugin-explore-react
 
+## 0.0.31-next.3
+
+### Patch Changes
+
+- 406b786a2a2c: Mark package as being free of side effects, allowing more optimized Webpack builds.
+- Updated dependencies
+  - @backstage/core-plugin-api@1.6.0-next.3
+  - @backstage/plugin-explore-common@0.0.2-next.0
+
 ## 0.0.31-next.2
 
 ### Patch Changes

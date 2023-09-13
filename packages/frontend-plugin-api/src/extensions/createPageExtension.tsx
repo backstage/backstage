@@ -63,7 +63,7 @@ export function createPageExtension<
 
   return createExtension({
     id: options.id,
-    at: options.at ?? 'core.router/routes',
+    at: options.at ?? 'core.routes/routes',
     disabled: options.disabled,
     output: {
       component: coreExtensionData.reactComponent,

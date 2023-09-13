@@ -14,8 +14,12 @@
  * limitations under the License.
  */
 
-import React from 'react';
 import { renderWithEffects } from '@backstage/test-utils';
+
+jest.mock('@backstage/plugin-graphiql', () => ({
+  ...jest.requireActual('@backstage/plugin-graphiql'),
+  GraphiQLIcon: () => null,
+}));
 
 describe('App', () => {
   it('should render', async () => {
@@ -41,8 +45,8 @@ describe('App', () => {
       ] as any,
     };
 
-    const { default: App } = await import('./App');
-    const rendered = await renderWithEffects(<App />);
+    const { default: app } = await import('./App');
+    const rendered = await renderWithEffects(app);
     expect(rendered.baseElement).toBeInTheDocument();
   });
 });

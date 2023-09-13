@@ -65,13 +65,14 @@ export const graphiqlBrowseApi = createApiExtension({
 export function createEndpointExtension<TConfig extends {}>(options: {
   id: string;
   configSchema?: PortableSchema<TConfig>;
+  disabled?: boolean;
   factory: (options: { config: TConfig }) => { endpoint: GraphQLEndpoint };
 }) {
   return createExtension({
     id: `apis.plugin.graphiql.browse.${options.id}`,
     at: 'apis.plugin.graphiql.browse/endpoints',
     configSchema: options.configSchema,
-    disabled: true,
+    disabled: options.disabled ?? false,
     output: {
       endpoint: endpointDataRef,
     },
@@ -86,6 +87,7 @@ export function createEndpointExtension<TConfig extends {}>(options: {
 /** @alpha */
 const gitlabGraphiQLBrowseExtension = createEndpointExtension({
   id: 'gitlab',
+  disabled: true,
   configSchema: createSchemaFromZod(z =>
     z
       .object({

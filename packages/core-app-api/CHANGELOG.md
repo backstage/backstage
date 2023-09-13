@@ -1,5 +1,17 @@
 # @backstage/core-app-api
 
+## 1.10.0-next.3
+
+### Patch Changes
+
+- 406b786a2a2c: Mark package as being free of side effects, allowing more optimized Webpack builds.
+- 9fe827b380e1: Internal refactor
+- Updated dependencies
+  - @backstage/config@1.1.0-next.2
+  - @backstage/core-plugin-api@1.6.0-next.3
+  - @backstage/types@1.1.1-next.0
+  - @backstage/version-bridge@1.0.5-next.0
+
 ## 1.10.0-next.2
 
 ### Minor Changes

@@ -24,7 +24,7 @@ export interface PluginOptions {
 
 /** @public */
 export interface BackstagePlugin {
-  $$type: 'backstage-plugin';
+  $$type: '@backstage/BackstagePlugin';
   id: string;
   extensions: Extension<unknown>[];
 }
@@ -33,7 +33,7 @@ export interface BackstagePlugin {
 export function createPlugin(options: PluginOptions): BackstagePlugin {
   return {
     ...options,
-    $$type: 'backstage-plugin',
+    $$type: '@backstage/BackstagePlugin',
     extensions: options.extensions ?? [],
   };
 }

@@ -1,5 +1,15 @@
 # @backstage/plugin-scaffolder-backend-module-yeoman
 
+## 0.2.24-next.3
+
+### Patch Changes
+
+- 4fa1c74cbadc: Enables dry-run functionality for the run:yeoman scaffolder action
+- Updated dependencies
+  - @backstage/config@1.1.0-next.2
+  - @backstage/types@1.1.1-next.0
+  - @backstage/plugin-scaffolder-node@0.2.3-next.3
+
 ## 0.2.24-next.2
 
 ### Patch Changes

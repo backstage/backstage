@@ -14,4 +14,4 @@
  * limitations under the License.
  */
 
-export { catalogModuleTemplateKind } from './catalogModuleTemplateKind';
+export { downloadBlob } from './helpers';
