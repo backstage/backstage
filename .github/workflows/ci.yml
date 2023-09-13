@@ -205,8 +205,8 @@ jobs:
       - name: lint changed packages
         run: yarn backstage-cli repo lint --since origin/master
 
-      - name: test packages with top-level MSW, and proxy
-        run: yarn backstage-cli repo test --maxWorkers=1 --workerIdleMemoryLimit=1300M 'plugins/catalog-backend-module-bitbucket/src/BitbucketDiscoveryProcessor.test.ts|plugins/catalog-backend-module-gitlab/src/lib/client.test.ts|plugins/catalog-backend-module-gitlab/src/providers/GitlabOrgDiscoveryEntityProvider.test.ts|plugins/kubernetes-backend/src/service/KubernetesProxy.test.ts'
+      - name: test packages with MSW from Ruben's PR
+        run: yarn backstage-cli repo test --maxWorkers=1 --workerIdleMemoryLimit=1300M 'plugins/kubernetes-backend/src/service/KubernetesFanOutHandler.test.ts|plugins/catalog-backend-module-bitbucket/src/BitbucketDiscoveryProcessor.test.ts|plugins/kubernetes-backend/src/service/KubernetesFetcher.test.ts|packages/cli/src/commands/versions/bump.test.ts|packages/backend-common/src/reading/GithubUrlReader.test.ts|plugins/catalog-backend-module-gitlab/src/lib/client.test.ts|plugins/catalog-backend-module-gitlab/src/providers/GitlabOrgDiscoveryEntityProvider.test.ts|packages/backend-common/src/reading/GitlabUrlReader.test.ts|plugins/kubernetes-backend/src/service/KubernetesProxy.test.ts'
         env:
           BACKSTAGE_TEST_DISABLE_DOCKER: 1
           BACKSTAGE_TEST_DATABASE_POSTGRES13_CONNECTION_STRING: postgresql://postgres:postgres@localhost:${{ job.services.postgres13.ports[5432] }}
