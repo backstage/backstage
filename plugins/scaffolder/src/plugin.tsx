@@ -46,10 +46,7 @@ import {
   fetchApiRef,
   identityApiRef,
 } from '@backstage/core-plugin-api';
-import {
-  OwnedEntityPicker,
-  OwnedEntityPickerSchema,
-} from './components/fields/OwnedEntityPicker/OwnedEntityPicker';
+import { OwnedEntityPicker } from './components/fields/OwnedEntityPicker/OwnedEntityPicker';
 import {
   EntityTagsPicker,
   EntityTagsPickerSchema,
@@ -197,7 +194,7 @@ export const OwnedEntityPickerFieldExtension = scaffolderPlugin.provide(
   createScaffolderFieldExtension({
     component: OwnedEntityPicker,
     name: 'OwnedEntityPicker',
-    schema: OwnedEntityPickerSchema,
+    schema: EntityPickerSchema,
   }),
 );
 

@@ -35,10 +35,7 @@ import {
   RepoUrlPickerSchema,
 } from '../components/fields/RepoUrlPicker/RepoUrlPicker';
 import { repoPickerValidation } from '../components/fields/RepoUrlPicker/validation';
-import {
-  OwnedEntityPicker,
-  OwnedEntityPickerSchema,
-} from '../components/fields/OwnedEntityPicker/OwnedEntityPicker';
+import { OwnedEntityPicker } from '../components/fields/OwnedEntityPicker/OwnedEntityPicker';
 import {
   MyGroupsPicker,
   MyGroupsPickerSchema,
@@ -75,7 +72,7 @@ export const DEFAULT_SCAFFOLDER_FIELD_EXTENSIONS = [
   {
     component: OwnedEntityPicker,
     name: 'OwnedEntityPicker',
-    schema: OwnedEntityPickerSchema,
+    schema: EntityPickerSchema,
   },
   {
     component: MyGroupsPicker,

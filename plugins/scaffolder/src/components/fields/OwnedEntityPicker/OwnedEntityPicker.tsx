@@ -20,11 +20,7 @@ import Autocomplete from '@material-ui/lab/Autocomplete';
 import React from 'react';
 import useAsync from 'react-use/lib/useAsync';
 import { EntityPicker } from '../EntityPicker/EntityPicker';
-
-import { OwnedEntityPickerProps } from './schema';
 import { EntityPickerProps } from '../EntityPicker/schema';
-
-export { OwnedEntityPickerSchema } from './schema';
 
 /**
  * The underlying component that is rendered in the form for the `OwnedEntityPicker`
@@ -32,7 +28,7 @@ export { OwnedEntityPickerSchema } from './schema';
  *
  * @public
  */
-export const OwnedEntityPicker = (props: OwnedEntityPickerProps) => {
+export const OwnedEntityPicker = (props: EntityPickerProps) => {
   const {
     schema: { title = 'Entity', description = 'An entity from the catalog' },
     uiSchema,
@@ -82,28 +78,22 @@ export const OwnedEntityPicker = (props: OwnedEntityPickerProps) => {
  * @returns The `uiSchema` for an `EntityPicker` component.
  */
 function buildEntityPickerUISchema(
-  uiSchema: OwnedEntityPickerProps['uiSchema'],
+  uiSchema: EntityPickerProps['uiSchema'],
   identityRefs: string[] | undefined,
 ): EntityPickerProps['uiSchema'] {
   // Note: This is typed to avoid es-lint rule TS2698
   const uiOptions: EntityPickerProps['uiSchema']['ui:options'] =
     uiSchema?.['ui:options'] || {};
-  const allowedKinds = uiOptions.allowedKinds;
 
   const catalogFilter = {
     ...uiOptions.catalogFilter,
-    ...(allowedKinds
-      ? {
-          kind: allowedKinds,
-          [`relations.${RELATION_OWNED_BY}`]: identityRefs || [],
-        }
-      : {
-          [`relations.${RELATION_OWNED_BY}`]: identityRefs || [],
-        }),
+    [`relations.${RELATION_OWNED_BY}`]: identityRefs || [],
   };
 
   return {
+    ...uiSchema,
     'ui:options': {
+      ...uiOptions,
       catalogFilter,
     },
   };

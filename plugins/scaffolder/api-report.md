@@ -262,39 +262,6 @@ export const OwnedEntityPickerFieldExtension: FieldExtensionComponent_2<
   }
 >;
 
-// @public (undocumented)
-export const OwnedEntityPickerFieldSchema: FieldSchema<
-  string,
-  {
-    allowedKinds?: string[] | undefined;
-    defaultKind?: string | undefined;
-    allowArbitraryValues?: boolean | undefined;
-    defaultNamespace?: string | false | undefined;
-    catalogFilter?:
-      | Record<
-          string,
-          | string
-          | string[]
-          | {
-              exists?: boolean | undefined;
-            }
-        >
-      | Record<
-          string,
-          | string
-          | string[]
-          | {
-              exists?: boolean | undefined;
-            }
-        >[]
-      | undefined;
-  }
->;
-
-// @public
-export type OwnedEntityPickerUiOptions =
-  typeof OwnedEntityPickerFieldSchema.uiOptionsType;
-
 // @public
 export const OwnerPickerFieldExtension: FieldExtensionComponent_2<
   string,
