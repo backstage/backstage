@@ -21,7 +21,7 @@ import {
 } from '@backstage/frontend-plugin-api';
 import mapValues from 'lodash/mapValues';
 
-/** @public */
+/** @internal */
 export interface ExtensionInstance {
   readonly $$type: '@backstage/ExtensionInstance';
 
