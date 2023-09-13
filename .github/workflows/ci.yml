@@ -205,8 +205,8 @@ jobs:
       - name: lint changed packages
         run: yarn backstage-cli repo lint --since origin/master
 
-      - name: test kubernetes plugin
-        run: yarn backstage-cli repo test --maxWorkers=2 --workerIdleMemoryLimit=1300M plugins/kubernetes-backend
+      - name: test all packages
+        run: yarn backstage-cli repo test --maxWorkers=2 --workerIdleMemoryLimit=1300M
         env:
           BACKSTAGE_TEST_DISABLE_DOCKER: 1
           BACKSTAGE_TEST_DATABASE_POSTGRES13_CONNECTION_STRING: postgresql://postgres:postgres@localhost:${{ job.services.postgres13.ports[5432] }}
