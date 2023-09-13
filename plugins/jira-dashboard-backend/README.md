@@ -29,8 +29,8 @@ jira:
 
 Configuration Details:
 
+- `JIRA_TOKEN`: The API token to authenticate towards Jira. It can be found by visiting Atlassians page at https://developer.atlassian.com/cloud/jira/platform/basic-auth-for-rest-apis/
 - `JIRA_BASE_URL`: The base url for Jira in your company, including the API version. For instance: https://jira.se.your-company.com/rest/api/2/'
-- `JIRA_TOKEN`: The API token to authenticate to Jira. It can be found by visiting Atlassians page at https://developer.atlassian.com/cloud/jira/platform/basic-auth-for-rest-apis/
 
 ### Integrating
 
