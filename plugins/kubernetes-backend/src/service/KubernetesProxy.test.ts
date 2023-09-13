@@ -14,6 +14,7 @@
  * limitations under the License.
  */
 import 'buffer';
+import 'global-agent';
 
 import { errorHandler, getVoidLogger } from '@backstage/backend-common';
 import { setupRequestMockHandlers } from '@backstage/backend-test-utils';
