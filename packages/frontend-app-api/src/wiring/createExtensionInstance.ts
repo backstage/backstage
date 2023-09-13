@@ -15,6 +15,8 @@
  */
 
 import {
+  AnyExtensionDataMap,
+  AnyExtensionInputMap,
   BackstagePlugin,
   Extension,
   ExtensionDataRef,
@@ -34,6 +36,47 @@ export interface ExtensionInstance {
    * Maps input names to the actual instances given to them.
    */
   readonly attachments: Map<string, ExtensionInstance[]>;
+}
+
+function resolveInputData(
+  dataMap: AnyExtensionDataMap,
+  attachment: ExtensionInstance,
+) {
+  return mapValues(dataMap, ref => {
+    const value = attachment.getData(ref);
+    // TODO: validate input data presence
+    return value;
+  });
+}
+
+function resolveInputs(
+  inputMap: AnyExtensionInputMap,
+  attachments: Map<string, ExtensionInstance[]>,
+) {
+  return mapValues(inputMap, (input, inputName) => {
+    const attachedInstances = attachments.get(inputName) ?? [];
+    if (input.config.singleton) {
+      if (attachedInstances.length > 1) {
+        throw Error(
+          `expected ${
+            input.config.optional ? 'at most' : 'exactly'
+          } one '${inputName}' input but received ${attachedInstances
+            .map(e => e.id)
+            .join(', ')}`,
+        );
+      } else if (attachedInstances.length === 0) {
+        if (input.config.optional) {
+          return undefined;
+        }
+        throw Error(`input '${inputName}' is required but was not received`);
+      }
+      return resolveInputData(input.extensionData, attachedInstances[0]);
+    }
+
+    return attachedInstances.map(attachment =>
+      resolveInputData(input.extensionData, attachment),
+    );
+  });
 }
 
 /** @internal */
@@ -70,19 +113,13 @@ export function createExtensionInstance(options: {
           extensionData.set(ref.id, output);
         }
       },
-      inputs: mapValues(
-        extension.inputs,
-        ({ extensionData: pointData }, inputName) => {
-          // TODO: validation
-          return (attachments.get(inputName) ?? []).map(attachment =>
-            mapValues(pointData, ref => attachment.getData(ref)),
-          );
-        },
-      ),
+      inputs: resolveInputs(extension.inputs, attachments),
     });
   } catch (e) {
     throw new Error(
-      `Failed to instantiate extension instance '${extension.id}', ${e}`,
+      `Failed to instantiate extension instance '${extension.id}', ${
+        e.name === 'Error' ? e.message : e
+      }`,
     );
   }
 
