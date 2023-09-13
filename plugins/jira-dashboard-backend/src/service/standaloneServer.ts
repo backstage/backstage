@@ -17,30 +17,30 @@ import {
   HostDiscovery,
   ServerTokenManager,
   createServiceBuilder,
+  loadBackendConfig,
 } from '@backstage/backend-common';
 import { Server } from 'http';
 import { Logger } from 'winston';
 import { createRouter } from './router';
-import { Config } from '@backstage/config';
 import { IdentityApi } from '@backstage/plugin-auth-node';
 
 export interface ServerOptions {
   port: number;
   enableCors: boolean;
   logger: Logger;
-  config: Config;
 }
 
 export async function startStandaloneServer(
   options: ServerOptions,
 ): Promise<Server> {
   const logger = options.logger.child({ service: 'jira-dashboard-backend' });
+  const config = await loadBackendConfig({ logger, argv: process.argv });
   const tokenManager = ServerTokenManager.noop();
   logger.debug('Starting application server...');
   const router = await createRouter({
     logger,
-    config: options.config,
-    discovery: HostDiscovery.fromConfig(options.config),
+    config: config,
+    discovery: HostDiscovery.fromConfig(config),
     identity: {} as IdentityApi,
     tokenManager,
   });
