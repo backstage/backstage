@@ -65,10 +65,6 @@ describe('KubernetesProxy', () => {
     decorateClusterDetailsWithAuth: jest.fn(),
   };
 
-  beforeAll(() => {
-    jest.resetAllMocks();
-  });
-
   setupRequestMockHandlers(worker);
 
   const buildMockRequest = (clusterName: any, path: string): Request => {
