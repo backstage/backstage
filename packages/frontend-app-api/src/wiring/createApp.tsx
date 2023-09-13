@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import React from 'react';
+import React, { JSX } from 'react';
 import { ConfigReader } from '@backstage/config';
 import {
   BackstagePlugin,
@@ -173,20 +173,16 @@ export function createApp(options: {
 
   return {
     createRoot() {
-      const rootComponents = rootInstances
-        .map(e => e.getData(coreExtensionData.reactComponent))
-        .filter((x): x is React.ComponentType => !!x);
+      const rootElements = rootInstances
+        .map(e => e.getData(coreExtensionData.reactElement))
+        .filter((x): x is JSX.Element => !!x);
       return (
         <ApiProvider apis={apiHolder}>
           <AppContextProvider appContext={appContext}>
             <AppThemeProvider>
               <RoutingProvider routePaths={routePaths}>
                 {/* TODO: set base path using the logic from AppRouter */}
-                <BrowserRouter>
-                  {rootComponents.map((Component, i) => (
-                    <Component key={i} />
-                  ))}
-                </BrowserRouter>
+                <BrowserRouter>{rootElements}</BrowserRouter>
               </RoutingProvider>
             </AppThemeProvider>
           </AppContextProvider>

@@ -30,7 +30,7 @@ describe('createPageExtension', () => {
       createPageExtension({
         id: 'test',
         configSchema,
-        component: async () => <div />,
+        loader: async () => <div />,
       }),
     ).toEqual({
       $$type: '@backstage/Extension',
@@ -40,7 +40,7 @@ describe('createPageExtension', () => {
       disabled: false,
       inputs: {},
       output: {
-        component: expect.anything(),
+        element: expect.anything(),
         path: expect.anything(),
         routeRef: expect.anything(),
       },
@@ -55,10 +55,10 @@ describe('createPageExtension', () => {
         configSchema,
         inputs: {
           first: {
-            extensionData: { component: coreExtensionData.reactComponent },
+            extensionData: { element: coreExtensionData.reactElement },
           },
         },
-        component: async () => <div />,
+        loader: async () => <div />,
       }),
     ).toEqual({
       $$type: '@backstage/Extension',
@@ -68,11 +68,11 @@ describe('createPageExtension', () => {
       disabled: true,
       inputs: {
         first: {
-          extensionData: { component: coreExtensionData.reactComponent },
+          extensionData: { element: coreExtensionData.reactElement },
         },
       },
       output: {
-        component: expect.anything(),
+        element: expect.anything(),
         path: expect.anything(),
         routeRef: expect.anything(),
       },
@@ -83,7 +83,7 @@ describe('createPageExtension', () => {
       createPageExtension({
         id: 'test',
         defaultPath: '/here',
-        component: async () => <div />,
+        loader: async () => <div />,
       }),
     ).toEqual({
       $$type: '@backstage/Extension',
@@ -93,7 +93,7 @@ describe('createPageExtension', () => {
       disabled: false,
       inputs: {},
       output: {
-        component: expect.anything(),
+        element: expect.anything(),
         path: expect.anything(),
         routeRef: expect.anything(),
       },

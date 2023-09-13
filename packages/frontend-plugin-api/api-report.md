@@ -7,8 +7,8 @@
 
 import { AnyApiFactory } from '@backstage/core-plugin-api';
 import { AnyApiRef } from '@backstage/core-plugin-api';
-import { ComponentType } from 'react';
 import { JsonObject } from '@backstage/types';
+import { JSX as JSX_2 } from 'react';
 import { default as React_2 } from 'react';
 import { ReactNode } from 'react';
 import { RouteRef } from '@backstage/core-plugin-api';
@@ -49,7 +49,7 @@ export interface ConfigurableExtensionDataRef<
 
 // @public (undocumented)
 export const coreExtensionData: {
-  reactComponent: ConfigurableExtensionDataRef<ComponentType<{}>, {}>;
+  reactElement: ConfigurableExtensionDataRef<JSX_2.Element, {}>;
   routePath: ConfigurableExtensionDataRef<string, {}>;
   apiFactory: ConfigurableExtensionDataRef<AnyApiFactory, {}>;
   routeRef: ConfigurableExtensionDataRef<RouteRef<any>, {}>;
@@ -158,7 +158,7 @@ export function createPageExtension<
     disabled?: boolean;
     inputs?: TInputs;
     routeRef?: RouteRef;
-    component: (props: {
+    loader: (options: {
       config: TConfig;
       inputs: ExtensionDataInputValues<TInputs>;
     }) => Promise<JSX.Element>;

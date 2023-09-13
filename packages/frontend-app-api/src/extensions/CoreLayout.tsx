@@ -27,17 +27,17 @@ export const CoreLayout = createExtension({
   inputs: {
     nav: {
       extensionData: {
-        component: coreExtensionData.reactComponent,
+        element: coreExtensionData.reactElement,
       },
     },
     content: {
       extensionData: {
-        component: coreExtensionData.reactComponent,
+        element: coreExtensionData.reactElement,
       },
     },
   },
   output: {
-    component: coreExtensionData.reactComponent,
+    element: coreExtensionData.reactElement,
   },
   factory({ bind, inputs }) {
     // TODO: Support this as part of the core system
@@ -46,21 +46,18 @@ export const CoreLayout = createExtension({
         `Extension 'core.layout' did not receive exactly one 'nav' input, got ${inputs.nav.length}`,
       );
     }
-    const Nav = inputs.nav[0].component;
-
     if (inputs.content.length !== 1) {
       throw Error(
         `Extension 'core.layout' did not receive exactly one 'content' input, got ${inputs.content.length}`,
       );
     }
-    const Content = inputs.content[0].component;
 
     bind({
       // TODO: set base path using the logic from AppRouter
-      component: () => (
+      element: (
         <SidebarPage>
-          <Nav />
-          <Content />
+          {inputs.nav[0].element}
+          {inputs.content[0].element}
         </SidebarPage>
       ),
     });
