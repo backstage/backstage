@@ -13444,19 +13444,19 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@mswjs/interceptors@npm:^0.17.5":
-  version: 0.17.5
-  resolution: "@mswjs/interceptors@npm:0.17.5"
+"@mswjs/interceptors@npm:^0.20.0":
+  version: 0.20.0
+  resolution: "@mswjs/interceptors@npm:0.20.0"
   dependencies:
     "@open-draft/until": ^1.0.3
+    "@remix-run/web-fetch": ^4.3.2
     "@types/debug": ^4.1.7
-    "@xmldom/xmldom": ^0.7.5
     debug: ^4.3.3
     headers-polyfill: ^3.1.0
     outvariant: ^1.2.1
-    strict-event-emitter: ^0.2.4
+    strict-event-emitter: ^0.4.6
     web-encoding: ^1.1.5
-  checksum: 0293ccc56c1c85fb7334cd5902574f7df20c26be74d633c83fde64ffd7620f81e08253fe7985c6b5ad3b64c04ad53c3610e9b9c07621518aabd977343026bb2b
+  checksum: e6f11d7c01ac83f54ed9012409d72d11dee75717d2988edc446861c465c4c0a946f4e663c687389ad7d5516f95e849c6eba909704d97f15f130739baa65a2934
   languageName: node
   linkType: hard
 
@@ -14712,6 +14712,49 @@ __metadata:
   version: 1.8.0
   resolution: "@remix-run/router@npm:1.8.0"
   checksum: f754f02d3b4fc86791b88acf16065000609e2324b9436027844a76831c7107c0994067cb83abdd6093c282bd518a5c89b5e02aead585782978586e3a04534428
+  languageName: node
+  linkType: hard
+
+"@remix-run/web-blob@npm:^3.0.5":
+  version: 3.0.5
+  resolution: "@remix-run/web-blob@npm:3.0.5"
+  dependencies:
+    "@remix-run/web-stream": ^1.0.4
+    web-encoding: 1.1.5
+  checksum: 4a9dc463a322ad43cd1ea0d603b3aa1dc7187af8da68d40165f9bdb60a3f20dbba08c3db1cc24e3b935395da822e4cadfeebd4b0fb8d2403b2401d832a644ec2
+  languageName: node
+  linkType: hard
+
+"@remix-run/web-fetch@npm:^4.3.2":
+  version: 4.3.8
+  resolution: "@remix-run/web-fetch@npm:4.3.8"
+  dependencies:
+    "@remix-run/web-blob": ^3.0.5
+    "@remix-run/web-form-data": ^3.0.5
+    "@remix-run/web-stream": ^1.0.4
+    "@web3-storage/multipart-parser": ^1.0.0
+    abort-controller: ^3.0.0
+    data-uri-to-buffer: ^3.0.1
+    mrmime: ^1.0.0
+  checksum: 27600848597e38be2f88fe5ac58bfeb6539d3ca0a37e8a54bf473286f0c8405eb1482c6bb585782e069319396463abf233b7f10647f54ea83e992ddb323e6669
+  languageName: node
+  linkType: hard
+
+"@remix-run/web-form-data@npm:^3.0.5":
+  version: 3.0.5
+  resolution: "@remix-run/web-form-data@npm:3.0.5"
+  dependencies:
+    web-encoding: 1.1.5
+  checksum: 194b0e5d3842cbbdf53ebb72336d4983e51cb2f151e49679daa43715e4ee77b780e54068b8936ab30399e4309405abe46c6452649d519723ee40688789b3ea20
+  languageName: node
+  linkType: hard
+
+"@remix-run/web-stream@npm:^1.0.4":
+  version: 1.0.4
+  resolution: "@remix-run/web-stream@npm:1.0.4"
+  dependencies:
+    web-streams-polyfill: ^3.1.1
+  checksum: 4d3336c38cc36aeb74d6ae34b2468ca225382f0599034c38f1965728e9a8e5d96829446f8de15a05203f7c6d29f03104a41a821aedaed11fe145283bd574ca42
   languageName: node
   linkType: hard
 
@@ -19224,6 +19267,13 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@web3-storage/multipart-parser@npm:^1.0.0":
+  version: 1.0.0
+  resolution: "@web3-storage/multipart-parser@npm:1.0.0"
+  checksum: d8bbb5b9b0a5c07b4119c33c64ef4b7cc8d74ca4de2dd783f608f2653f81ef298bf04136b7cdb7ce97306d5fe2217572b5655236b70e1b625ed18d4a21a81913
+  languageName: node
+  linkType: hard
+
 "@webassemblyjs/ast@npm:1.11.6, @webassemblyjs/ast@npm:^1.11.5":
   version: 1.11.6
   resolution: "@webassemblyjs/ast@npm:1.11.6"
@@ -19470,7 +19520,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@xmldom/xmldom@npm:^0.7.0, @xmldom/xmldom@npm:^0.7.5, @xmldom/xmldom@npm:^0.7.6, @xmldom/xmldom@npm:^0.7.9":
+"@xmldom/xmldom@npm:^0.7.0, @xmldom/xmldom@npm:^0.7.6, @xmldom/xmldom@npm:^0.7.9":
   version: 0.7.13
   resolution: "@xmldom/xmldom@npm:0.7.13"
   checksum: b4054078530e5fa8ede9677425deff0fce6d965f4c477ca73f8490d8a089e60b8498a15560425a1335f5ff99ecb851ed2c734b0a9a879299a5694302f212f37a
@@ -23535,6 +23585,13 @@ __metadata:
   dependencies:
     assert-plus: ^1.0.0
   checksum: 3634c249570f7f34e3d34f866c93f866c5b417f0dd616275decae08147dcdf8fccfaa5947380ccfb0473998ea3a8057c0b4cd90c875740ee685d0624b2983598
+  languageName: node
+  linkType: hard
+
+"data-uri-to-buffer@npm:^3.0.1":
+  version: 3.0.1
+  resolution: "data-uri-to-buffer@npm:3.0.1"
+  checksum: c59c3009686a78c071806b72f4810856ec28222f0f4e252aa495ec027ed9732298ceea99c50328cf59b151dd34cbc3ad6150bbb43e41fc56fa19f48c99e9fc30
   languageName: node
   linkType: hard
 
@@ -33668,6 +33725,13 @@ __metadata:
   languageName: node
   linkType: hard
 
+"mrmime@npm:^1.0.0":
+  version: 1.0.1
+  resolution: "mrmime@npm:1.0.1"
+  checksum: cc979da44bbbffebaa8eaf7a45117e851f2d4cb46a3ada6ceb78130466a04c15a0de9a9ce1c8b8ba6f6e1b8618866b1352992bf1757d241c0ddca558b9f28a77
+  languageName: node
+  linkType: hard
+
 "ms@npm:2.0.0":
   version: 2.0.0
   resolution: "ms@npm:2.0.0"
@@ -40298,19 +40362,10 @@ __metadata:
   languageName: node
   linkType: hard
 
-"strict-event-emitter@npm:^0.2.4":
-  version: 0.2.8
-  resolution: "strict-event-emitter@npm:0.2.8"
-  dependencies:
-    events: ^3.3.0
-  checksum: 6ac06fe72a6ee6ae64d20f1dd42838ea67342f1b5f32b03b3050d73ee6ecee44b4d5c4ed2965a7154b47991e215f373d4e789e2b2be2769cd80e356126c2ca53
-  languageName: node
-  linkType: hard
-
-"strict-event-emitter@npm:^0.4.3":
-  version: 0.4.3
-  resolution: "strict-event-emitter@npm:0.4.3"
-  checksum: ee335aba8a43bc6749d3337d78b9f6dbe8358d34b6eb38e7075dadf7f1cae621d96588663dda22dce17e6e7c7e281ddac79ca47421da8250bb4bf53b979508a5
+"strict-event-emitter@npm:^0.4.3, strict-event-emitter@npm:^0.4.6":
+  version: 0.4.6
+  resolution: "strict-event-emitter@npm:0.4.6"
+  checksum: 4f4f2909613e7811de789991c06bfb770d6d6987e2ec5c66fa7485d0f07cc4e7e32eba0dcf26cee6d86af6c92946d7f4acdfaff57d0c4114df2cfa1bf0e3c091
   languageName: node
   linkType: hard
 
@@ -42873,7 +42928,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"web-encoding@npm:^1.1.5":
+"web-encoding@npm:1.1.5, web-encoding@npm:^1.1.5":
   version: 1.1.5
   resolution: "web-encoding@npm:1.1.5"
   dependencies:
@@ -42893,7 +42948,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"web-streams-polyfill@npm:^3.2.0, web-streams-polyfill@npm:^3.2.1":
+"web-streams-polyfill@npm:^3.1.1, web-streams-polyfill@npm:^3.2.0, web-streams-polyfill@npm:^3.2.1":
   version: 3.2.1
   resolution: "web-streams-polyfill@npm:3.2.1"
   checksum: b119c78574b6d65935e35098c2afdcd752b84268e18746606af149e3c424e15621b6f1ff0b42b2676dc012fc4f0d313f964b41a4b5031e525faa03997457da02
