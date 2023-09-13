@@ -15,38 +15,37 @@
  */
 import 'buffer';
 
-import { errorHandler, getVoidLogger } from '@backstage/backend-common';
-import { setupRequestMockHandlers } from '@backstage/backend-test-utils';
-import { NotFoundError } from '@backstage/errors';
-import {
-  AuthorizeResult,
-  PermissionEvaluator,
-} from '@backstage/plugin-permission-common';
-import { getMockReq, getMockRes } from '@jest-mock/express';
-import express from 'express';
-import Router from 'express-promise-router';
-import { Server } from 'http';
-import { rest } from 'msw';
-import { setupServer } from 'msw/node';
-import request from 'supertest';
-import { AddressInfo, WebSocket, WebSocketServer } from 'ws';
-
-import { LocalKubectlProxyClusterLocator } from '../cluster-locator/LocalKubectlProxyLocator';
-import {
-  KubernetesAuthTranslator,
-  NoopKubernetesAuthTranslator,
-} from '../kubernetes-auth-translator';
-import { ClusterDetails, KubernetesClustersSupplier } from '../types/types';
 import {
   APPLICATION_JSON,
   HEADER_KUBERNETES_AUTH,
   HEADER_KUBERNETES_CLUSTER,
   KubernetesProxy,
 } from './KubernetesProxy';
+import { AddressInfo, WebSocket, WebSocketServer } from 'ws';
+import {
+  AuthorizeResult,
+  PermissionEvaluator,
+} from '@backstage/plugin-permission-common';
+import { ClusterDetails, KubernetesClustersSupplier } from '../types/types';
+import {
+  KubernetesAuthTranslator,
+  NoopKubernetesAuthTranslator,
+} from '../kubernetes-auth-translator';
+import { errorHandler, getVoidLogger } from '@backstage/backend-common';
+import { getMockReq, getMockRes } from '@jest-mock/express';
+
+import { LocalKubectlProxyClusterLocator } from '../cluster-locator/LocalKubectlProxyLocator';
+import { NotFoundError } from '@backstage/errors';
+import type { Request } from 'express';
+import Router from 'express-promise-router';
+import { Server } from 'http';
+import express from 'express';
 import fetch from 'cross-fetch';
 import mockFs from 'mock-fs';
-
-import type { Request } from 'express';
+import request from 'supertest';
+import { rest } from 'msw';
+import { setupRequestMockHandlers } from '@backstage/backend-test-utils';
+import { setupServer } from 'msw/node';
 
 describe('KubernetesProxy', () => {
   let proxy: KubernetesProxy;
@@ -65,6 +64,10 @@ describe('KubernetesProxy', () => {
   const authTranslator: jest.Mocked<KubernetesAuthTranslator> = {
     decorateClusterDetailsWithAuth: jest.fn(),
   };
+
+  beforeAll(() => {
+    jest.resetAllMocks();
+  });
 
   setupRequestMockHandlers(worker);
 
