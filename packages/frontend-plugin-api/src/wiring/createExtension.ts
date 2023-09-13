@@ -21,7 +21,7 @@ import { BackstagePlugin } from './createPlugin';
 
 /** @public */
 export type AnyExtensionDataMap = {
-  [name in string]: ExtensionDataRef<any, any>;
+  [name in string]: ExtensionDataRef<unknown, { optional?: true }>;
 };
 
 /** @public */

@@ -19,7 +19,12 @@ import { ZodTypeDef } from 'zod';
 
 // @public (undocumented)
 export type AnyExtensionDataMap = {
-  [name in string]: ExtensionDataRef<any, any>;
+  [name in string]: ExtensionDataRef<
+    unknown,
+    {
+      optional?: true;
+    }
+  >;
 };
 
 // @public (undocumented)
