@@ -117,7 +117,10 @@ import { PuppetDbPage } from '@backstage/plugin-puppetdb';
 import { DevToolsPage } from '@backstage/plugin-devtools';
 import { customDevToolsPage } from './components/devtools/CustomDevToolsPage';
 import { CatalogUnprocessedEntitiesPage } from '@backstage/plugin-catalog-unprocessed-entities';
-import { createExtensionTree } from '@backstage/frontend-app-api';
+import {
+  createExtensionTree,
+  ExtensionTree,
+} from '@backstage/frontend-app-api';
 
 const app = createApp({
   apis,
@@ -165,9 +168,12 @@ const app = createApp({
 });
 
 /* HIGHLY EXPERIMENTAL. DO NOT USE THIS IN YOUR APP */
-const extensionTree = createExtensionTree({
-  config: ConfigReader.fromConfigs(await defaultConfigLoader()),
-});
+let extensionTree: ExtensionTree | undefined;
+if (process.env.NODE_ENV === 'test') {
+  extensionTree = createExtensionTree({
+    config: ConfigReader.fromConfigs(await defaultConfigLoader()),
+  });
+}
 
 const routes = (
   <FlatRoutes>
@@ -283,7 +289,8 @@ const routes = (
       element={<TechRadarPage width={1500} height={800} />}
     />
     {
-      /* HIGHLY EXPERIMENTAL. DO NOT USE THIS IN YOUR APP */ extensionTree.getRootRoutes()
+      /* HIGHLY EXPERIMENTAL. DO NOT USE THIS IN YOUR APP */ extensionTree?.getRootRoutes() ??
+        null
     }
     <Route path="/lighthouse" element={<LighthousePage />} />
     <Route path="/api-docs" element={<ApiExplorerPage />} />
