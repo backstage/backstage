@@ -18,6 +18,10 @@ import { IconComponent, RouteRef } from '@backstage/core-plugin-api';
 import { createSchemaFromZod } from '../schema/createSchemaFromZod';
 import { coreExtensionData, createExtension } from '../wiring';
 
+/**
+ * Helper for creating extensions for a nav item.
+ * @public
+ */
 export function createNavItemExtension(options: {
   id: string;
   routeRef: RouteRef;

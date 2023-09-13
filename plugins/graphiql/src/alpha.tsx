@@ -47,6 +47,7 @@ export const GraphiqlPage = createPageExtension({
   loader: () => import('./components').then(m => <m.GraphiQLPage />),
 });
 
+/** @alpha */
 export const graphiqlPageSidebarItem = createNavItemExtension({
   id: 'plugin.graphiql.nav.index',
   title: 'GraphiQL',

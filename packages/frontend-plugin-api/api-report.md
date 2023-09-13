@@ -7,6 +7,7 @@
 
 import { AnyApiFactory } from '@backstage/core-plugin-api';
 import { AnyApiRef } from '@backstage/core-plugin-api';
+import { IconComponent } from '@backstage/core-plugin-api';
 import { JsonObject } from '@backstage/types';
 import { JSX as JSX_2 } from 'react';
 import { default as React_2 } from 'react';
@@ -53,6 +54,7 @@ export const coreExtensionData: {
   routePath: ConfigurableExtensionDataRef<string, {}>;
   apiFactory: ConfigurableExtensionDataRef<AnyApiFactory, {}>;
   routeRef: ConfigurableExtensionDataRef<RouteRef<any>, {}>;
+  navTarget: ConfigurableExtensionDataRef<NavTarget, {}>;
 };
 
 // @public (undocumented)
@@ -132,6 +134,16 @@ export interface CreateExtensionOptions<
   // (undocumented)
   output: TOutput;
 }
+
+// @public
+export function createNavItemExtension(options: {
+  id: string;
+  routeRef: RouteRef;
+  title: string;
+  icon: IconComponent;
+}): Extension<{
+  title: string;
+}>;
 
 // @public
 export function createPageExtension<
@@ -269,6 +281,13 @@ export type ExtensionDataRef<
   T: TData;
   config: TConfig;
   $$type: '@backstage/ExtensionDataRef';
+};
+
+// @public (undocumented)
+export type NavTarget = {
+  title: string;
+  icon: IconComponent;
+  routeRef: RouteRef<{}>;
 };
 
 // @public (undocumented)
