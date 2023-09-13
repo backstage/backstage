@@ -28,7 +28,7 @@ export const CoreRoutes = createExtension({
   inputs: {
     routes: createExtensionInput({
       path: coreExtensionData.routePath,
-      ref: coreExtensionData.routeRef,
+      ref: coreExtensionData.routeRef.optional(),
       element: coreExtensionData.reactElement,
     }),
   },
