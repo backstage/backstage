@@ -38,20 +38,24 @@ export const JiraProjectCard = ({ project }: JiraProjectCardProps) => {
         />
 
         <Typography style={{ fontSize: 20, marginLeft: 3 }}>
-          {project.name} | {project.projectTypeKey}
+          {project.name} | {project.projectTypeKey ?? ''}
         </Typography>
       </Box>
       <Box ml={1}>
         <Divider style={{ marginBottom: 10 }} />
         <ProjectInfoLabel label="Project key" value={project.key} />
-        <ProjectInfoLabel
-          label="Category"
-          value={project.projectCategory.name}
-        />
+        {project.projectCategory.name && (
+          <ProjectInfoLabel
+            label="Category"
+            value={project.projectCategory.name}
+          />
+        )}
         {project.description && (
           <ProjectInfoLabel label="Description" value={project.description} />
         )}
-        <ProjectInfoLabel label="Project lead" value={project.lead.key} />
+        {project.lead.key && (
+          <ProjectInfoLabel label="Project lead" value={project.lead.key} />
+        )}
 
         <LinkButton
           color="primary"
