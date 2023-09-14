@@ -46,8 +46,6 @@ export interface InternalTranslationRef<
   getDefaultResource(): TranslationResource | undefined;
 }
 
-export type NoInfer<T> = T extends infer S ? S : never;
-
 /** @alpha */
 export interface TranslationRefOptions<
   TId extends string,
