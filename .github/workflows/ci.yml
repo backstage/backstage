@@ -201,6 +201,11 @@ jobs:
       - name: lint changed packages
         run: yarn backstage-cli repo lint --since origin/master
 
+      - name: verify openapi specs against test cases
+        run: yarn backstage-repo-tools schema openapi test
+        env:
+          BACKSTAGE_TEST_DISABLE_DOCKER: 1
+
       - name: test changed packages
         run: yarn backstage-cli repo test --maxWorkers=2 --workerIdleMemoryLimit=1300M --since origin/master
         env:

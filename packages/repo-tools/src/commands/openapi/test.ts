@@ -42,11 +42,7 @@ async function test(directoryPath: string) {
   }
   try {
     await exec(`yarn optic capture ${openapiPath}`, {
-      env: {
-        ...process.env,
-        CI: '1',
-        BACKSTAGE_TEST_DISABLE_DOCKER: '1',
-      },
+      env: process.env,
     });
   } catch (err) {
     // Optic outputs the actual results to stdout, but that will not be added to the message by default.
