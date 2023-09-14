@@ -15,25 +15,19 @@
  */
 import { Config } from '@backstage/config';
 import fetch from 'node-fetch';
-import {
-  Project,
-  Filter,
-  Issue,
-  JiraIssue,
-  NewJiraIssueResponse,
-} from './types';
-import { JIRA_BASE_URL_CONFIG_PATH, JIRA_TOKEN_CONFIG_PATH } from './constants';
+import { Project, Filter, Issue } from './types';
+import { resolveJiraBaseUrl, resolveJiraToken } from './config';
 
 export const getProjectInfo = async (
   projectKey: string,
   config: Config,
 ): Promise<Project> => {
   const response = await fetch(
-    `${config.getString(JIRA_BASE_URL_CONFIG_PATH)}project/${projectKey}`,
+    `${resolveJiraBaseUrl(config)}project/${projectKey}`,
     {
       method: 'GET',
       headers: {
-        Authorization: `${config.getString(JIRA_TOKEN_CONFIG_PATH)}`,
+        Authorization: resolveJiraToken(config),
         Accept: 'application/json',
       },
     },
@@ -48,16 +42,13 @@ export const getFilterById = async (
   id: string,
   config: Config,
 ): Promise<Filter> => {
-  const response = await fetch(
-    `${config.getString(JIRA_BASE_URL_CONFIG_PATH)}filter/${id}`,
-    {
-      method: 'GET',
-      headers: {
-        Authorization: `${config.getString(JIRA_TOKEN_CONFIG_PATH)}`,
-        Accept: 'application/json',
-      },
+  const response = await fetch(`${resolveJiraBaseUrl(config)}filter/${id}`, {
+    method: 'GET',
+    headers: {
+      Authorization: resolveJiraToken(config),
+      Accept: 'application/json',
     },
-  );
+  });
   if (response.status !== 200) {
     throw Error(`${response.status}`);
   }
@@ -71,13 +62,13 @@ export const getIssuesByFilter = async (
   config: Config,
 ): Promise<Issue[]> => {
   const response = await fetch(
-    `${config.getString(
-      JIRA_BASE_URL_CONFIG_PATH,
+    `${resolveJiraBaseUrl(
+      config,
     )}search?jql=project=${projectKey} AND ${query}`,
     {
       method: 'GET',
       headers: {
-        Authorization: `${config.getString(JIRA_TOKEN_CONFIG_PATH)}`,
+        Authorization: resolveJiraToken(config),
         Accept: 'application/json',
       },
     },
@@ -91,13 +82,13 @@ export const getIssuesByComponent = async (
   config: Config,
 ): Promise<Issue[]> => {
   const response = await fetch(
-    `${config.getString(
-      JIRA_BASE_URL_CONFIG_PATH,
+    `${resolveJiraBaseUrl(
+      config,
     )}search?jql=project=${projectKey} AND component = "${componentKey}"`,
     {
       method: 'GET',
       headers: {
-        Authorization: `${config.getString(JIRA_TOKEN_CONFIG_PATH)}`,
+        Authorization: resolveJiraToken(config),
         Accept: 'application/json',
       },
     },
@@ -109,43 +100,8 @@ export async function getProjectAvatar(url: string, config: Config) {
   const response = await fetch(url, {
     method: 'GET',
     headers: {
-      Authorization: `${config.getString(JIRA_TOKEN_CONFIG_PATH)}`,
+      Authorization: resolveJiraToken(config),
     },
   });
   return response;
-}
-
-export async function postNewIssue(
-  jiraIssue: JiraIssue,
-  config: Config,
-): Promise<NewJiraIssueResponse> {
-  const body = JSON.stringify({ fields: jiraIssue });
-  return await fetch(`${config.getString(JIRA_BASE_URL_CONFIG_PATH)}issue`, {
-    method: 'POST',
-    headers: {
-      Authorization: `${config.getString(JIRA_TOKEN_CONFIG_PATH)}`,
-      Accept: 'application/json',
-      'Content-Type': 'application/json',
-    },
-    body,
-  }).then(response => response.json());
-}
-
-export async function addIssueWatcher(
-  jira_id: string,
-  user: string,
-  config: Config,
-): Promise<void> {
-  await fetch(
-    `${config.getString(JIRA_BASE_URL_CONFIG_PATH)}issue/${jira_id}/watchers`,
-    {
-      method: 'POST',
-      headers: {
-        Authorization: `${config.getString(JIRA_TOKEN_CONFIG_PATH)}`,
-        Accept: 'application/json',
-        'Content-Type': 'application/json',
-      },
-      body: `"${user}"`,
-    },
-  );
 }

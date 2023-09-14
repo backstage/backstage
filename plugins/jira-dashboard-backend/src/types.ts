@@ -62,30 +62,3 @@ export type JiraResponse = {
   project: Project;
   data: JiraDataResponse[];
 };
-
-export type PostIssueBodyType = {
-  formData: any;
-};
-
-export type JiraIssue = {
-  project: { key: string };
-  issuetype: {
-    name: string;
-  };
-  summary: string;
-  description: string;
-  priority: {
-    name: string;
-  };
-  labels: string[];
-  components?: { name: string }[];
-  reporter: {
-    name: string;
-  };
-};
-
-export type NewJiraIssueResponse = {
-  id: string;
-  key: string;
-  self: string;
-};

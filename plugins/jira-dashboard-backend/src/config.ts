@@ -13,5 +13,24 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-export const JIRA_BASE_URL_CONFIG_PATH = 'jira.baseUrl';
-export const JIRA_TOKEN_CONFIG_PATH = 'jira.token';
+
+import { Config } from '@backstage/config';
+
+const JIRA_BASE_URL_CONFIG_PATH = 'jira.baseUrl';
+const JIRA_TOKEN_CONFIG_PATH = 'jira.token';
+
+export function resolveJiraBaseUrl(config: Config): string {
+  try {
+    return config.getString(JIRA_BASE_URL_CONFIG_PATH);
+  } catch (error) {
+    throw new Error(`Invalid Jira baseUrl, ${error}`);
+  }
+}
+
+export function resolveJiraToken(config: Config): string {
+  try {
+    return config.getString(JIRA_TOKEN_CONFIG_PATH);
+  } catch (error) {
+    throw new Error(`Invalid Jira token, ${error}`);
+  }
+}
