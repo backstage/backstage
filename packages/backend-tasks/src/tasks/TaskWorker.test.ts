@@ -330,6 +330,8 @@ describe('TaskWorker', () => {
       const before = fn1.mock.calls.length;
       await promise2;
       expect(fn1.mock.calls.length).toBeGreaterThan(before);
+
+      await knex.destroy();
     },
   );
 
@@ -351,6 +353,7 @@ describe('TaskWorker', () => {
 
       const worker = new TaskWorker('task99', fn, knex, logger);
       await worker.persistTask(settings);
+      const row1 = (await knex<DbTasksRow>(DB_TASKS_TABLE))[0];
 
       const settings2 = {
         ...settings,
@@ -358,15 +361,17 @@ describe('TaskWorker', () => {
         initialDelayDuration: 'PT1M',
       };
       await worker.persistTask(settings2);
-
       const row2 = (await knex<DbTasksRow>(DB_TASKS_TABLE))[0];
+
+      expect(row2.next_run_start_at).not.toStrictEqual(row1.next_run_start_at);
 
       const settings3 = { ...settings };
       await worker.persistTask(settings3);
-
       const row3 = (await knex<DbTasksRow>(DB_TASKS_TABLE))[0];
 
-      expect(row3.next_run_start_at).toBe(row2.next_run_start_at);
+      expect(row3.next_run_start_at).toStrictEqual(row2.next_run_start_at);
+
+      await knex.destroy();
     },
   );
 });
