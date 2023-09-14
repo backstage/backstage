@@ -23,12 +23,14 @@ export interface TranslationOptions {
   /* no options supported for now */
 }
 
+/** @alpha */
 export type TranslationFunction<TMessages extends { [key in string]: string }> =
   <TKey extends keyof TMessages>(
     key: TKey,
     options?: TranslationOptions,
   ) => TMessages[TKey];
 
+/** @alpha */
 export type TranslationSnapshot<TMessages extends { [key in string]: string }> =
   { ready: false } | { ready: true; t: TranslationFunction<TMessages> };
 
