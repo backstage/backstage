@@ -159,6 +159,15 @@ export type DefaultEntityFilters = {
   namespace?: EntityNamespaceFilter;
 };
 
+// @public
+export function defaultEntityPresentation(
+  entityOrRef: Entity | CompoundEntityRef | string,
+  context?: {
+    defaultKind?: string;
+    defaultNamespace?: string;
+  },
+): EntityRefPresentationSnapshot;
+
 // @public (undocumented)
 export function EntityAutocompletePicker<
   T extends DefaultEntityFilters = DefaultEntityFilters,
@@ -180,15 +189,6 @@ export type EntityAutocompletePickerProps<
   InputProps?: TextFieldProps;
   initialSelectedOptions?: string[];
 };
-
-// @public
-export function defaultEntityPresentation(
-  entityOrRef: Entity | CompoundEntityRef | string,
-  context?: {
-    defaultKind?: string;
-    defaultNamespace?: string;
-  },
-): EntityRefPresentationSnapshot;
 
 // @public
 export const EntityDisplayName: (props: EntityDisplayNameProps) => JSX.Element;

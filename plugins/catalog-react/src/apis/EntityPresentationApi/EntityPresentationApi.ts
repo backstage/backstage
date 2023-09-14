@@ -29,7 +29,7 @@ import { Observable } from '@backstage/types';
  */
 export const entityPresentationApiRef: ApiRef<EntityPresentationApi> =
   createApiRef({
-    id: 'catalog-react.entity-presentation',
+    id: 'plugin.catalog.entity-presentation',
   });
 
 /**
