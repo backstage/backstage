@@ -13,7 +13,6 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
 import {
   ErrorResponseBody,
   ForwardedError,
@@ -24,15 +23,18 @@ import {
 import { getBearerTokenFromAuthorizationHeader } from '@backstage/plugin-auth-node';
 import { kubernetesProxyPermission } from '@backstage/plugin-kubernetes-common';
 import {
-  PermissionEvaluator,
   AuthorizeResult,
+  PermissionEvaluator,
 } from '@backstage/plugin-permission-common';
 import { bufferFromFileOrString } from '@kubernetes/client-node';
-import type { Request, RequestHandler } from 'express';
+import { IncomingMessage, ServerResponse } from 'http';
+import Server from 'http-proxy';
 import { createProxyMiddleware } from 'http-proxy-middleware';
 import { Logger } from 'winston';
 import { AuthenticationStrategy } from '../auth';
 import { ClusterDetails, KubernetesClustersSupplier } from '../types/types';
+
+import type { Request, RequestHandler } from 'express';
 
 export const APPLICATION_JSON: string = 'application/json';
 
@@ -121,7 +123,25 @@ export class KubernetesProxy {
       }
 
       const middleware = await this.getMiddleware(req);
-      middleware(req, res, next);
+      if (
+        req.header('connection')?.toLowerCase() === 'upgrade' &&
+        req.header('upgrade')?.toLowerCase() === 'websocket'
+      ) {
+        type IPartialUpgradeHandler = (
+          ...args: Partial<
+            Parameters<
+              Server<IncomingMessage, ServerResponse<IncomingMessage>>['ws']
+            >
+          >
+        ) => void;
+        (
+          middleware as unknown as {
+            upgrade: IPartialUpgradeHandler;
+          }
+        ).upgrade(req, req.socket);
+      } else {
+        middleware(req, res, next);
+      }
     };
   }
 

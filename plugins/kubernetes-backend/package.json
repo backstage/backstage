@@ -75,6 +75,7 @@
     "express-promise-router": "^4.1.0",
     "fs-extra": "10.1.0",
     "helmet": "^6.0.0",
+    "http-proxy": "^1.18.1",
     "http-proxy-middleware": "^2.0.6",
     "lodash": "^4.17.21",
     "luxon": "^3.0.0",

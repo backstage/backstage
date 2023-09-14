@@ -769,10 +769,6 @@ describe('KubernetesProxy', () => {
         ),
       );
 
-      // Prepopulate the proxy so the WebSocket upgrade can happen, result doesn't actually matter
-      const result = await fetch(wsProxyAddress.replace('ws', 'http'));
-      expect(result.ok).toBeFalsy();
-
       const webSocket = new WebSocket(wsProxyAddress);
 
       const connectMessagePromise = eventPromiseFactory(webSocket, 'message');
