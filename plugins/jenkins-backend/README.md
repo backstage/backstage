@@ -8,6 +8,20 @@ This is the backend half of the 2 Jenkins plugins and is responsible for:
 - finding the appropriate job(s) on that instance for an entity
 - connecting to Jenkins and gathering data to present to the frontend
 
+## New Backend System
+
+The jenkins backend plugin has support for the [new backend system](https://backstage.io/docs/backend-system/), here's how you can set that up:
+
+In your `packages/backend/src/index.ts` make the following changes:
+
+```diff
+  import { createBackend } from '@backstage/backend-defaults';
+  const backend = createBackend();
+  // ... other feature additions
+  backend.add(import('@backstage/plugin-jenkins-backend'));
+  backend.start();
+```
+
 ## Integrating into a backstage instance
 
 This plugin needs to be added to an existing backstage instance.
