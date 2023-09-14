@@ -169,7 +169,7 @@ const app = createApp({
 
 /* HIGHLY EXPERIMENTAL. DO NOT USE THIS IN YOUR APP */
 let extensionTree: ExtensionTree | undefined;
-if (process.env.NODE_ENV === 'test') {
+if (process.env.NODE_ENV !== 'test') {
   extensionTree = createExtensionTree({
     config: ConfigReader.fromConfigs(await defaultConfigLoader()),
   });
