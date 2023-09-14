@@ -14,48 +14,131 @@
  * limitations under the License.
  */
 
-import { TranslationRef, TranslationRefConfig } from './types';
+import {
+  createTranslationResource,
+  TranslationResource,
+} from './TranslationResource';
 
 /** @alpha */
-export class TranslationRefImpl<Messages extends Record<keyof Messages, string>>
-  implements TranslationRef<Messages>
-{
-  static create<Messages extends Record<keyof Messages, string>>(
-    config: TranslationRefConfig<Messages>,
-  ) {
-    return new TranslationRefImpl(config);
-  }
+export interface TranslationRef<
+  TId extends string = string,
+  TMessages extends { [key in string]: string } = { [key in string]: string },
+> {
+  $$type: '@backstage/TranslationRef';
 
-  getId() {
-    return this.config.id;
-  }
+  id: TId;
 
-  getDefaultMessages(): Messages {
-    return this.config.messages;
-  }
+  T: TMessages;
+}
 
-  getLazyResources():
-    | Record<string, () => Promise<{ messages: Messages }>>
-    | undefined {
-    return this.config.lazyResources;
-  }
+/** @internal */
+type AnyMessages = { [key in string]: string };
 
-  getResources(): Record<string, Messages> | undefined {
-    return this.config.resources;
-  }
+/** @internal */
+export interface InternalTranslationRef<
+  TId extends string = string,
+  TMessages extends { [key in string]: string } = { [key in string]: string },
+> extends TranslationRef<TId, TMessages> {
+  version: 'v1';
 
-  toString() {
-    return `TranslationRef(${this.getId()})`;
-  }
+  getDefaultMessages(): AnyMessages;
 
-  private constructor(
-    private readonly config: TranslationRefConfig<Messages>,
-  ) {}
+  getDefaultResource(): TranslationResource | undefined;
 }
 
 /** @alpha */
-export const createTranslationRef = <
-  Messages extends Record<keyof Messages, string> = {},
+export interface TranslationRefOptions<
+  TId extends string,
+  TMessages extends { [key in string]: string },
+  TTranslations extends {
+    [language in string]: () => Promise<{
+      default: { [key in keyof TMessages]: string | null };
+    }>;
+  },
+> {
+  id: TId;
+  messages: TMessages;
+  translations?: TTranslations;
+}
+
+/** @internal */
+class TranslationRefImpl<
+  TId extends string,
+  TMessages extends { [key in string]: string },
+> implements InternalTranslationRef<TId, TMessages>
+{
+  #id: TId;
+  #messages: TMessages;
+  #resources: TranslationResource | undefined;
+
+  constructor(options: TranslationRefOptions<TId, TMessages, any>) {
+    this.#id = options.id;
+    this.#messages = options.messages;
+  }
+
+  $$type = '@backstage/TranslationRef' as const;
+
+  version = 'v1' as const;
+
+  get id(): TId {
+    return this.#id;
+  }
+
+  get T(): never {
+    throw new Error('Not implemented');
+  }
+
+  getDefaultMessages(): AnyMessages {
+    return this.#messages;
+  }
+
+  setDefaultResource(resources: TranslationResource): void {
+    this.#resources = resources;
+  }
+
+  getDefaultResource(): TranslationResource | undefined {
+    return this.#resources;
+  }
+
+  toString() {
+    return `TranslationRef{id=${this.id}}`;
+  }
+}
+
+/** @alpha */
+export function createTranslationRef<
+  TId extends string,
+  TMessages extends { [key in string]: string },
+  TTranslations extends {
+    [language in string]: () => Promise<{
+      default: { [key in keyof TMessages]: string | null };
+    }>;
+  },
 >(
-  config: TranslationRefConfig<Messages>,
-): TranslationRef<Messages> => TranslationRefImpl.create(config);
+  config: TranslationRefOptions<TId, TMessages, TTranslations>,
+): TranslationRef<TId, TMessages> {
+  const ref = new TranslationRefImpl(config);
+  if (config.translations) {
+    ref.setDefaultResource(
+      createTranslationResource({
+        ref,
+        translations: config.translations as any,
+      }),
+    );
+  }
+  return ref;
+}
+
+/** @internal */
+export function toInternalTranslationRef(
+  ref: TranslationRef,
+): InternalTranslationRef {
+  const r = ref as InternalTranslationRef;
+  if (r.$$type !== '@backstage/TranslationRef') {
+    throw new Error(`Invalid translation ref, bad type '${r.$$type}'`);
+  }
+  if (r.version !== 'v1') {
+    throw new Error(`Invalid translation ref, bad version '${r.version}'`);
+  }
+  return r;
+}

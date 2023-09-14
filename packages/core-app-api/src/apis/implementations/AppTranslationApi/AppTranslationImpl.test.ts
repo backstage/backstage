@@ -14,7 +14,11 @@
  * limitations under the License.
  */
 
-import { createTranslationRef } from '@backstage/core-plugin-api/alpha';
+import {
+  createTranslationMessages,
+  createTranslationRef,
+  createTranslationResource,
+} from '@backstage/core-plugin-api/alpha';
 import { AppTranslationApiImpl } from './AppTranslationImpl';
 import i18next from 'i18next';
 
@@ -70,112 +74,68 @@ describe('AppTranslationApiImpl', () => {
   });
 
   it('should init messages correctly', () => {
-    const useResourcesMock = jest.spyOn(
+    const addMessagesMock = jest.spyOn(
       AppTranslationApiImpl.prototype,
-      'addResources',
+      'addMessages',
     );
-    const useLazyResourcesMock = jest.spyOn(
+    const addLazyResourcesMock = jest.spyOn(
       AppTranslationApiImpl.prototype,
       'addLazyResources',
     );
     const ref = createTranslationRef({
       id: 'ref-id',
       messages: {
-        key1: '',
+        key: '',
       },
     });
 
-    const options = {
-      supportedLanguages: ['en'],
-      messages: [
-        {
-          ref,
-          messages: {
-            en: { key1: 'value1' },
-          },
-          lazyMessages: {
-            en: () => Promise.resolve({ key2: 'value2' }),
-          } as any,
-        },
-      ],
-    };
-
-    const instance = AppTranslationApiImpl.create({
-      supportedLanguages: ['en'],
+    const overrides = createTranslationMessages({
+      ref,
+      messages: { key: 'value1' },
     });
-    instance.initMessages(options);
+    const resource = createTranslationResource({
+      ref,
+      translations: {
+        en: () =>
+          Promise.resolve({
+            default: {
+              key: 'value2',
+            },
+          }),
+      },
+    });
 
-    expect(useResourcesMock).toHaveBeenCalledWith(
-      options.messages[0].ref,
-      options.messages[0].messages,
-    );
-    expect(useLazyResourcesMock).toHaveBeenCalledWith(
-      options.messages[0].ref,
-      options.messages[0].lazyMessages,
-    );
+    AppTranslationApiImpl.create({
+      supportedLanguages: ['en'],
+      resources: [overrides, resource],
+    });
+
+    expect(addMessagesMock).toHaveBeenCalledWith(overrides);
+    expect(addLazyResourcesMock).toHaveBeenCalledWith(resource);
   });
 
   it('should useResources correctly', () => {
-    const i18nMock = i18next.createInstance() as any;
-    const useReturnMock = i18nMock.use();
-    jest.spyOn(i18nMock, 'use').mockReturnValue(useReturnMock);
-    jest.spyOn(i18next, 'createInstance').mockReturnValue(i18nMock);
-
-    const ref = createTranslationRef({
-      id: 'ref-id',
-      messages: {
-        key1: 'value1',
-      },
-      resources: {
-        en: {
-          key1: 'value2',
-        },
-      },
-    });
-
-    const instance = AppTranslationApiImpl.create({
-      supportedLanguages: ['en'],
-    });
-    instance.addResources(ref);
-
-    expect(useReturnMock.addResourceBundle).toHaveBeenCalledWith(
-      'en',
-      'ref-id',
-      { key1: 'value2' },
-      true,
-      false,
+    const addLazyResourcesMock = jest.spyOn(
+      AppTranslationApiImpl.prototype,
+      'addLazyResources',
     );
-  });
-
-  it('should useLazyResources correctly', () => {
-    const i18nMock = i18next.createInstance() as any;
-    const useReturnMock = i18nMock.use();
-
-    jest.spyOn(i18nMock, 'use').mockReturnValue(useReturnMock);
-    jest.spyOn(i18next, 'createInstance').mockReturnValue(i18nMock);
 
     const ref = createTranslationRef({
       id: 'ref-id',
       messages: {
         key1: 'value1',
       },
-      lazyResources: {
-        en: () => Promise.resolve({ messages: { key1: 'value2' } }),
+      translations: {
+        en: () => Promise.resolve({ default: { key1: 'value2' } }),
       },
     });
 
     const instance = AppTranslationApiImpl.create({
       supportedLanguages: ['en'],
     });
-    instance.addLazyResources(ref);
-    setTimeout(() => {
-      expect(useReturnMock.addResourceBundle).toHaveBeenCalledWith(
-        'en',
-        'ref-id',
-        { key1: 'value2' },
-        true,
-        false,
-      );
-    });
+    instance.addResource(ref);
+
+    expect(addLazyResourcesMock).toHaveBeenCalledTimes(1);
+    expect(addLazyResourcesMock.mock.calls[0][0].id).toBe('ref-id');
   });
 });

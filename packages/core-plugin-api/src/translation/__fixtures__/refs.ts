@@ -14,21 +14,24 @@
  * limitations under the License.
  */
 
-import { TranslationRef } from '@backstage/core-plugin-api/alpha';
+import { createTranslationRef } from '../TranslationRef';
 
-/** @alpha */
-export type TranslationMessages<T> = T extends TranslationRef<infer R>
-  ? Partial<R>
-  : never;
+export const countingTranslationRef = createTranslationRef({
+  id: 'counting',
+  messages: {
+    one: 'one',
+    two: 'two',
+    three: 'three',
+  },
+});
 
-/** @alpha */
-export function createTranslationResource<T extends TranslationRef>(options: {
-  ref: T;
-  messages?: Record<string, TranslationMessages<T>>;
-  lazyMessages: Record<
-    string,
-    () => Promise<{ messages: TranslationMessages<T> }>
-  >;
-}) {
-  return options;
-}
+export const fruitsTranslationRef = createTranslationRef({
+  id: 'fruits',
+  messages: {
+    apple: 'apple',
+    orange: 'orange',
+  },
+  translations: {
+    de: () => import('./fruits-de.json'),
+  },
+});
