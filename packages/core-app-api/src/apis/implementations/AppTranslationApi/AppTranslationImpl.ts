@@ -137,22 +137,6 @@ class ResourceLoader {
 }
 
 /** @alpha */
-export interface TranslationOptions {
-  /* no options supported for now */
-}
-
-export type TranslationSnapshot<TMessages extends { [key in string]: string }> =
-
-    | { ready: false }
-    | {
-        ready: true;
-        t<TKey extends keyof TMessages>(
-          key: TKey,
-          options?: TranslationOptions,
-        ): TMessages[TKey];
-      };
-
-/** @alpha */
 export class AppTranslationApiImpl implements AppTranslationApi {
   static create(options?: ExperimentalI18n) {
     const languages = options?.supportedLanguages || [DEFAULT_LANGUAGE];

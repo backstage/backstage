@@ -14,20 +14,23 @@
  * limitations under the License.
  */
 
-import { type i18n } from 'i18next';
-import { TranslationRef } from '../../translation';
 import { ApiRef, createApiRef } from '@backstage/core-plugin-api';
+import { Observable } from '@backstage/types';
 
 /** @alpha */
-export type AppTranslationApi = {
-  getI18n(): i18n;
+export type AppLanguageApi = {
+  getAvailableLanguages(): { languages: string[] };
 
-  addResource(resource: TranslationRef): void;
+  setLanguage(language?: string): void;
+
+  getLanguage(): { language: string };
+
+  language$(): Observable<{ language: string }>;
 };
 
 /**
  * @alpha
  */
-export const appTranslationApiRef: ApiRef<AppTranslationApi> = createApiRef({
-  id: 'core.translation',
+export const appLanguageApiRef: ApiRef<AppLanguageApi> = createApiRef({
+  id: 'core.applanguage',
 });
