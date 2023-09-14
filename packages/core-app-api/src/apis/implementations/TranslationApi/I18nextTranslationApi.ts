@@ -15,6 +15,7 @@
  */
 
 import {
+  AppLanguageApi,
   TranslationApi,
   TranslationMessages,
   TranslationRef,
@@ -36,14 +37,13 @@ import {
   InternalTranslationRef,
 } from '../../../../../core-plugin-api/src/translation/TranslationRef';
 import { Observable } from '@backstage/types';
-
-const DEFAULT_LANGUAGE = 'en';
+import { DEFAULT_LANGUAGE } from '../AppLanguageApi/AppLanguageSelector';
 
 /** @alpha */
-export type ExperimentalI18n = {
-  supportedLanguages?: string[];
+export interface I18nextTranslationApiOptions {
+  languageApi: AppLanguageApi;
   resources?: Array<TranslationMessages | TranslationResource>;
-};
+}
 
 function removeNulls(
   messages: Record<string, string | null>,
@@ -139,11 +139,9 @@ class ResourceLoader {
 
 /** @alpha */
 export class I18nextTranslationApi implements TranslationApi {
-  static create(options?: ExperimentalI18n) {
-    const languages = options?.supportedLanguages || [DEFAULT_LANGUAGE];
-    if (!languages.includes(DEFAULT_LANGUAGE)) {
-      throw new Error(`Supported languages must include '${DEFAULT_LANGUAGE}'`);
-    }
+  static create(options: I18nextTranslationApiOptions) {
+    const { languages } = options.languageApi.getAvailableLanguages();
+
     const i18n = createI18n({
       fallbackLng: DEFAULT_LANGUAGE,
       supportedLngs: languages,
@@ -185,36 +183,27 @@ export class I18nextTranslationApi implements TranslationApi {
       }
     }
 
-    return new I18nextTranslationApi(i18n, loader, languages);
+    const instance = new I18nextTranslationApi(
+      i18n,
+      loader,
+      options.languageApi.getLanguage().language,
+    );
+
+    options.languageApi.language$().subscribe(({ language }) => {
+      instance.#changeLanguage(language);
+    });
+
+    return instance;
   }
 
   #i18n: I18n;
   #loader: ResourceLoader;
   #language: string;
-  #languages: string[];
 
-  private constructor(i18n: I18n, loader: ResourceLoader, languages: string[]) {
+  private constructor(i18n: I18n, loader: ResourceLoader, language: string) {
     this.#i18n = i18n;
     this.#loader = loader;
-    this.#language = DEFAULT_LANGUAGE;
-    this.#languages = languages;
-  }
-
-  getAvailableLanguages(): string[] {
-    return this.#languages.slice();
-  }
-
-  async changeLanguage(language?: string): Promise<void> {
-    const lng = language ?? DEFAULT_LANGUAGE;
-    if (lng && !this.#languages.includes(lng)) {
-      throw new Error(
-        `Failed to change language to '${lng}', available languages are '${this.#languages.join(
-          "', '",
-        )}'`,
-      );
-    }
-    this.#language = lng;
-    await this.#i18n.changeLanguage(lng);
+    this.#language = language;
   }
 
   getTranslation<TMessages extends { [key in string]: string }>(
@@ -288,6 +277,13 @@ export class I18nextTranslationApi implements TranslationApi {
         this.#i18n.off('languageChanged', onChange);
       };
     });
+  }
+
+  #changeLanguage(language: string): void {
+    if (this.#language !== language) {
+      this.#language = language;
+      this.#i18n.changeLanguage(language);
+    }
   }
 
   #createSnapshot<TMessages extends { [key in string]: string }>(

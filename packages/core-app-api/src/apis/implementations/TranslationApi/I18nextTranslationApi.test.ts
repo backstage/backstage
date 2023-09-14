@@ -21,6 +21,7 @@ import {
   TranslationSnapshot,
 } from '@backstage/core-plugin-api/alpha';
 import { Observable } from '@backstage/types';
+import { AppLanguageSelector } from '../AppLanguageApi';
 import { I18nextTranslationApi } from './I18nextTranslationApi';
 
 const plainRef = createTranslationRef({
@@ -78,30 +79,34 @@ describe('I18nextTranslationApi', () => {
   });
 
   it('should get a translation snapshot', () => {
-    const translationApi = I18nextTranslationApi.create();
-    expect(translationApi.getAvailableLanguages()).toEqual(['en']);
+    const translationApi = I18nextTranslationApi.create({
+      languageApi: AppLanguageSelector.create(),
+    });
 
     const snapshot = assertReady(translationApi.getTranslation(plainRef));
     expect(snapshot.t('foo')).toBe('Foo');
   });
 
   it('should get a translation snapshot for ref with translations', async () => {
-    const translationApi = I18nextTranslationApi.create({
-      supportedLanguages: ['en', 'sv'],
+    const languageApi = AppLanguageSelector.create({
+      availableLanguages: ['en', 'sv'],
     });
-    expect(translationApi.getAvailableLanguages()).toEqual(['en', 'sv']);
+    const translationApi = I18nextTranslationApi.create({ languageApi });
 
     expect(translationApi.getTranslation(resourceRef).ready).toBe(true);
-    await translationApi.changeLanguage('sv');
+    languageApi.setLanguage('sv');
+    await 'a tick';
     expect(translationApi.getTranslation(resourceRef).ready).toBe(false);
   });
 
   it('should wait for translations to be loaded', async () => {
-    const translationApi = I18nextTranslationApi.create({
-      supportedLanguages: ['en', 'sv'],
+    const languageApi = AppLanguageSelector.create({
+      availableLanguages: ['en', 'sv'],
     });
+    const translationApi = I18nextTranslationApi.create({ languageApi });
     expect(translationApi.getTranslation(resourceRef).ready).toBe(true);
-    await translationApi.changeLanguage('sv');
+    languageApi.setLanguage('sv');
+    await 'a tick';
     expect(translationApi.getTranslation(resourceRef).ready).toBe(false);
 
     const snapshot = assertReady(
@@ -111,7 +116,9 @@ describe('I18nextTranslationApi', () => {
   });
 
   it('should create an instance with message overrides', () => {
+    const languageApi = AppLanguageSelector.create();
     const translationApi = I18nextTranslationApi.create({
+      languageApi,
       resources: [
         createTranslationMessages({
           ref: plainRef,
@@ -124,7 +131,9 @@ describe('I18nextTranslationApi', () => {
   });
 
   it('should create an instance and ignore null overrides', () => {
+    const languageApi = AppLanguageSelector.create();
     const translationApi = I18nextTranslationApi.create({
+      languageApi,
       resources: [
         createTranslationMessages({
           ref: plainRef,
@@ -138,8 +147,11 @@ describe('I18nextTranslationApi', () => {
   });
 
   it('should create an instance with translation resources', async () => {
+    const languageApi = AppLanguageSelector.create({
+      availableLanguages: ['en', 'sv'],
+    });
     const translationApi = I18nextTranslationApi.create({
-      supportedLanguages: ['en', 'sv'],
+      languageApi,
       resources: [
         createTranslationResource({
           ref: plainRef,
@@ -150,7 +162,8 @@ describe('I18nextTranslationApi', () => {
       ],
     });
 
-    await translationApi.changeLanguage('sv');
+    languageApi.setLanguage('sv');
+    await 'a tick';
 
     expect(translationApi.getTranslation(plainRef).ready).toBe(false);
 
@@ -161,7 +174,9 @@ describe('I18nextTranslationApi', () => {
   });
 
   it('should wait for default language translations to be loaded', async () => {
+    const languageApi = AppLanguageSelector.create();
     const translationApi = I18nextTranslationApi.create({
+      languageApi,
       resources: [
         createTranslationResource({
           ref: plainRef,
@@ -179,8 +194,11 @@ describe('I18nextTranslationApi', () => {
   });
 
   it('should prefer the last loaded resource', async () => {
+    const languageApi = AppLanguageSelector.create({
+      availableLanguages: ['en', 'sv'],
+    });
     const translationApi = I18nextTranslationApi.create({
-      supportedLanguages: ['en', 'sv'],
+      languageApi,
       resources: [
         createTranslationResource({
           ref: resourceRef,
@@ -204,7 +222,7 @@ describe('I18nextTranslationApi', () => {
       ],
     });
 
-    await translationApi.changeLanguage('sv');
+    languageApi.setLanguage('sv');
 
     const snapshot = assertReady(
       await waitForNext(translationApi.translation$(resourceRef), s => s.ready),
@@ -213,19 +231,10 @@ describe('I18nextTranslationApi', () => {
     expect(snapshot.t('bar')).toBe('Bär');
   });
 
-  it('should refuse switch on unsupported languages', async () => {
-    const translationApi = I18nextTranslationApi.create({
-      supportedLanguages: ['en', 'sv'],
-    });
-    expect(translationApi.getAvailableLanguages()).toEqual(['en', 'sv']);
-    await translationApi.changeLanguage('sv');
-    await expect(translationApi.changeLanguage('de')).rejects.toThrow(
-      "Failed to change language to 'de', available languages are 'en', 'sv",
-    );
-  });
-
   it('should forward loading errors', async () => {
+    const languageApi = AppLanguageSelector.create();
     const translationApi = I18nextTranslationApi.create({
+      languageApi,
       resources: [
         createTranslationResource({
           ref: plainRef,
@@ -240,10 +249,12 @@ describe('I18nextTranslationApi', () => {
   });
 
   it('should only call the loader once', async () => {
+    const languageApi = AppLanguageSelector.create();
     const loader = jest
       .fn()
       .mockResolvedValue({ default: { foo: 'OtherFoo' } });
     const translationApi = I18nextTranslationApi.create({
+      languageApi,
       resources: [
         createTranslationResource({
           ref: plainRef,
@@ -268,8 +279,11 @@ describe('I18nextTranslationApi', () => {
   });
 
   it('should handle interrupted loads gracefully', async () => {
+    const languageApi = AppLanguageSelector.create({
+      availableLanguages: ['en', 'sv', 'no'],
+    });
     const translationApi = I18nextTranslationApi.create({
-      supportedLanguages: ['en', 'sv', 'no'],
+      languageApi,
       resources: [
         createTranslationResource({
           ref: plainRef,
@@ -288,17 +302,20 @@ describe('I18nextTranslationApi', () => {
     );
     expect(enSnapshot.t('foo')).toBe('foo');
 
-    translationApi.changeLanguage('sv');
+    languageApi.setLanguage('sv');
     const nextPromise = waitForNext(translationApi.translation$(plainRef));
-    translationApi.changeLanguage('no');
+    languageApi.setLanguage('no');
 
     const snapshot = assertReady(await nextPromise);
     expect(snapshot.t('foo')).toBe('Føø');
   });
 
   it('should only emit changes', async () => {
+    const languageApi = AppLanguageSelector.create({
+      availableLanguages: ['en', 'dk', 'sv', 'no'],
+    });
     const translationApi = I18nextTranslationApi.create({
-      supportedLanguages: ['en', 'dk', 'sv', 'no'],
+      languageApi,
       resources: [
         createTranslationResource({
           ref: plainRef,
@@ -320,10 +337,10 @@ describe('I18nextTranslationApi', () => {
           translations.push(translation);
 
           if (translation === 'foo') {
-            translationApi.changeLanguage('dk'); // Not visible
-            translationApi.changeLanguage('sv');
+            languageApi.setLanguage('dk'); // Not visible
+            languageApi.setLanguage('sv');
           } else if (translation === 'Föö') {
-            translationApi.changeLanguage('no');
+            languageApi.setLanguage('no');
           } else if (translation === 'Føø') {
             resolve();
             subscription.unsubscribe();

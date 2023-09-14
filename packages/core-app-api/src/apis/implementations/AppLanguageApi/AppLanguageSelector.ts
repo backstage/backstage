@@ -21,7 +21,7 @@ import { Observable } from '@backstage/types';
 import { BehaviorSubject } from '../../../lib';
 
 const STORAGE_KEY = 'language';
-const DEFAULT_LANGUAGE = 'en';
+export const DEFAULT_LANGUAGE = 'en';
 
 /** @alpha */
 export interface AppLanguageSelectorOptions {
