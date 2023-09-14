@@ -48,7 +48,7 @@ export function createPageExtension<
     disabled?: boolean;
     inputs?: TInputs;
     routeRef?: RouteRef;
-    component: (props: {
+    loader: (options: {
       config: TConfig;
       inputs: ExtensionDataInputValues<TInputs>;
     }) => Promise<JSX.Element>;
@@ -66,7 +66,7 @@ export function createPageExtension<
     at: options.at ?? 'core.routes/routes',
     disabled: options.disabled,
     output: {
-      component: coreExtensionData.reactComponent,
+      element: coreExtensionData.reactElement,
       path: coreExtensionData.routePath,
       routeRef: coreExtensionData.routeRef.optional(),
     },
@@ -75,13 +75,13 @@ export function createPageExtension<
     factory({ bind, config, inputs, source }) {
       const LazyComponent = React.lazy(() =>
         options
-          .component({ config, inputs })
+          .loader({ config, inputs })
           .then(element => ({ default: () => element })),
       );
 
       bind({
         path: config.path,
-        component: () => (
+        element: (
           <ExtensionBoundary source={source}>
             <React.Suspense fallback="...">
               <LazyComponent />

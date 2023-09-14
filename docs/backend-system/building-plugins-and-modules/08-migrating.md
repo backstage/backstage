@@ -51,7 +51,7 @@ export const kubernetesPlugin = createBackendPlugin({
     env.registerInit({
       deps: {
         logger: coreServices.logger,
-        config: coreServices.config,
+        config: coreServices.rootConfig,
         catalogApi: catalogServiceRef,
         discovery: coreServices.discovery,
         // The http router service is used to register the router created by the KubernetesBuilder.

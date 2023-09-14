@@ -23,7 +23,7 @@ import {
 export const ExamplePage = createPageExtension({
   id: 'example.page',
   defaultPath: '/example',
-  component: () => import('./Component').then(m => <m.Component />),
+  loader: () => import('./Component').then(m => <m.Component />),
 });
 
 /** @public */

@@ -24,8 +24,7 @@
   },
   "devDependencies": {
     "@backstage/cli": "workspace:^",
-    "@testing-library/jest-dom": "^5.10.1",
-    "@types/react": "^16.13.1 || ^17.0.0"
+    "@testing-library/jest-dom": "^5.10.1"
   },
   "configSchema": "config.d.ts",
   "files": [
@@ -41,6 +40,7 @@
     "@backstage/plugin-graphiql": "workspace:^",
     "@backstage/types": "workspace:^",
     "@material-ui/core": "^4.12.4",
+    "@types/react": "^16.13.1 || ^17.0.0",
     "lodash": "^4.17.21"
   },
   "peerDependencies": {
