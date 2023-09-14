@@ -33,5 +33,5 @@ export const userSettingsTranslationRef = createTranslationRef({
     select_theme_custom: 'Select {{custom}}',
     lng: '{{language}}',
     select_lng: 'Select language {{language}}',
-  },
+  } as const,
 });

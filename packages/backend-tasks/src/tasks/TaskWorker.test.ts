@@ -330,6 +330,48 @@ describe('TaskWorker', () => {
       const before = fn1.mock.calls.length;
       await promise2;
       expect(fn1.mock.calls.length).toBeGreaterThan(before);
+
+      await knex.destroy();
+    },
+  );
+
+  it.each(databases.eachSupportedId())(
+    'next_run_start_at is always the min between schedule changes, %p',
+    async databaseId => {
+      const knex = await databases.init(databaseId);
+      await migrateBackendTasks(knex);
+
+      const fn = jest.fn(
+        async () => new Promise<void>(resolve => setTimeout(resolve, 50)),
+      );
+      const settings: TaskSettingsV2 = {
+        version: 2,
+        cadence: '*/15 * * * *',
+        initialDelayDuration: 'PT2M',
+        timeoutAfterDuration: 'PT1M',
+      };
+
+      const worker = new TaskWorker('task99', fn, knex, logger);
+      await worker.persistTask(settings);
+      const row1 = (await knex<DbTasksRow>(DB_TASKS_TABLE))[0];
+
+      const settings2 = {
+        ...settings,
+        cadence: '*/2 * * * *',
+        initialDelayDuration: 'PT1M',
+      };
+      await worker.persistTask(settings2);
+      const row2 = (await knex<DbTasksRow>(DB_TASKS_TABLE))[0];
+
+      expect(row2.next_run_start_at).not.toStrictEqual(row1.next_run_start_at);
+
+      const settings3 = { ...settings };
+      await worker.persistTask(settings3);
+      const row3 = (await knex<DbTasksRow>(DB_TASKS_TABLE))[0];
+
+      expect(row3.next_run_start_at).toStrictEqual(row2.next_run_start_at);
+
+      await knex.destroy();
     },
   );
 });

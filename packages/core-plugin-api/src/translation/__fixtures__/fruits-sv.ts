@@ -14,20 +14,13 @@
  * limitations under the License.
  */
 
-import { type i18n } from 'i18next';
-import { TranslationRef } from '../../translation';
-import { ApiRef, createApiRef } from '@backstage/core-plugin-api';
+import { createTranslationMessages } from '../TranslationMessages';
+import { fruitsTranslationRef } from './refs';
 
-/** @alpha */
-export type AppTranslationApi = {
-  getI18n(): i18n;
-
-  addResource(resource: TranslationRef): void;
-};
-
-/**
- * @alpha
- */
-export const appTranslationApiRef: ApiRef<AppTranslationApi> = createApiRef({
-  id: 'core.translation',
+export default createTranslationMessages({
+  ref: fruitsTranslationRef,
+  messages: {
+    apple: 'äpple',
+    orange: 'apelsin',
+  },
 });

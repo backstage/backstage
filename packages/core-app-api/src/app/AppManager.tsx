@@ -179,7 +179,7 @@ export class AppManager implements BackstageApp {
     this.bindRoutes = options.bindRoutes;
     this.apiFactoryRegistry = new ApiFactoryRegistry();
     this.appTranslationApi = AppTranslationApiImpl.create(
-      options.__experimentalI18n,
+      options.__experimentalTranslations,
     );
   }
 

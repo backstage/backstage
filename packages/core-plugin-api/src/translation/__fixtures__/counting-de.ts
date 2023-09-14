@@ -13,5 +13,15 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-export * from './apis/implementations/AppTranslationApi';
-export * from './app/TranslationResource';
+
+import { createTranslationMessages } from '../TranslationMessages';
+import { countingTranslationRef } from './refs';
+
+export default createTranslationMessages({
+  ref: countingTranslationRef,
+  messages: {
+    one: 'eins',
+    two: 'zwei',
+    three: 'polizei',
+  },
+});

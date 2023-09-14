@@ -16,27 +16,38 @@
 
 import {
   AppTranslationApi,
+  TranslationMessages,
   TranslationRef,
+  TranslationResource,
 } from '@backstage/core-plugin-api/alpha';
 import i18next, { type i18n } from 'i18next';
 import { initReactI18next } from 'react-i18next';
 import LanguageDetector from 'i18next-browser-languagedetector';
 
-import { TranslationMessages } from '../../../alpha';
+// Internal import to avoid code duplication, this will lead to duplication in build output
+// eslint-disable-next-line @backstage/no-relative-monorepo-imports
+import { toInternalTranslationResource } from '../../../../../core-plugin-api/src/translation/TranslationResource';
+// eslint-disable-next-line @backstage/no-relative-monorepo-imports
+import { toInternalTranslationRef } from '../../../../../core-plugin-api/src/translation/TranslationRef';
+
+const DEFAULT_LANGUAGE = 'en';
 
 /** @alpha */
 export type ExperimentalI18n = {
-  supportedLanguages: string[];
   fallbackLanguage?: string | string[];
-  messages?: Array<{
-    ref: TranslationRef;
-    messages?: Record<string, TranslationMessages<TranslationRef>>;
-    lazyMessages: Record<
-      string,
-      () => Promise<{ messages: TranslationMessages<TranslationRef> }>
-    >;
-  }>;
+  supportedLanguages?: string[];
+  resources?: Array<TranslationMessages | TranslationResource>;
 };
+
+function removeNulls(
+  messages: Record<string, string | null>,
+): Record<string, string> {
+  return Object.fromEntries(
+    Object.entries(messages).filter(
+      (e): e is [string, string] => e[1] !== null,
+    ),
+  );
+}
 
 /** @alpha */
 export class AppTranslationApiImpl implements AppTranslationApi {
@@ -46,8 +57,8 @@ export class AppTranslationApiImpl implements AppTranslationApi {
     i18n.use(LanguageDetector);
 
     i18n.init({
-      fallbackLng: options?.fallbackLanguage || 'en',
-      supportedLngs: options?.supportedLanguages || ['en'],
+      fallbackLng: options?.fallbackLanguage || DEFAULT_LANGUAGE,
+      supportedLngs: options?.supportedLanguages || [DEFAULT_LANGUAGE],
       interpolation: {
         escapeValue: false,
       },
@@ -59,69 +70,52 @@ export class AppTranslationApiImpl implements AppTranslationApi {
     return new AppTranslationApiImpl(i18n, options);
   }
 
-  private readonly cache = new WeakSet<TranslationRef>();
-  private readonly lazyCache = new WeakMap<TranslationRef, Set<string>>();
+  private readonly cache = new Set<string>();
+  private readonly lazyCache = new Map<string, Set<string>>();
 
   getI18n() {
     return this.i18n;
   }
 
   initMessages(options?: ExperimentalI18n) {
-    if (options?.messages?.length) {
-      options.messages.forEach(appMessage => {
-        if (appMessage.messages) {
-          this.addResources(appMessage.ref, appMessage.messages);
-        }
-
-        if (appMessage.lazyMessages) {
-          this.addLazyResources(appMessage.ref, appMessage.lazyMessages);
-        }
-      });
+    for (const resource of options?.resources || []) {
+      if (resource.$$type === '@backstage/TranslationResource') {
+        this.addLazyResources(resource);
+      } else if (resource.$$type === '@backstage/TranslationMessages') {
+        // Overrides for default messages, created with createTranslationMessages and installed via app
+        this.addMessages(resource);
+      }
     }
   }
 
-  addResourcesByRef<Messages extends Record<string, string>>(
-    translationRef: TranslationRef<Messages>,
-  ): void {
-    this.addResources(translationRef);
-    this.addLazyResources(translationRef);
+  addResource(translationRef: TranslationRef): void {
+    const internalRef = toInternalTranslationRef(translationRef);
+    const defaultResource = internalRef.getDefaultResource();
+    if (defaultResource) {
+      this.addLazyResources(defaultResource);
+    }
   }
 
-  addResources<Messages extends Record<string, string>>(
-    translationRef: TranslationRef<Messages>,
-    initResources?: Record<
-      string,
-      TranslationMessages<TranslationRef<Messages>>
-    >,
-  ) {
-    const resources = initResources || translationRef.getResources();
-    if (!resources || this.cache.has(translationRef)) {
+  addMessages(messages: TranslationMessages) {
+    if (this.cache.has(messages.id)) {
       return;
     }
-    this.cache.add(translationRef);
-    Object.entries(resources).forEach(([language, messages]) => {
-      this.i18n.addResourceBundle(
-        language,
-        translationRef.getId(),
-        messages,
-        true,
-        false,
-      );
-    });
+    this.cache.add(messages.id);
+    this.i18n.addResourceBundle(
+      DEFAULT_LANGUAGE,
+      messages.id,
+      removeNulls(messages.messages),
+      true,
+      false,
+    );
   }
 
-  addLazyResources<Messages extends Record<string, string>>(
-    translationRef: TranslationRef<Messages>,
-    initResources?: Record<
-      string,
-      () => Promise<{ messages: TranslationMessages<TranslationRef> }>
-    >,
-  ) {
-    let cache = this.lazyCache.get(translationRef);
+  addLazyResources(resource: TranslationResource) {
+    let cache = this.lazyCache.get(resource.id);
 
     if (!cache) {
       cache = new Set();
-      this.lazyCache.set(translationRef, cache);
+      this.lazyCache.set(resource.id, cache);
     }
 
     const {
@@ -136,8 +130,8 @@ export class AppTranslationApiImpl implements AppTranslationApi {
       return;
     }
 
-    const namespace = translationRef.getId();
-    const lazyResources = initResources || translationRef.getLazyResources();
+    const internalResource = toInternalTranslationResource(resource);
+    const namespace = internalResource.id;
 
     Promise.allSettled((options.supportedLngs || []).map(addLanguage)).then(
       results => {
@@ -160,7 +154,9 @@ export class AppTranslationApiImpl implements AppTranslationApi {
         loadBackend = reloadResources([language], [namespace]);
       }
 
-      const loadLazyResources = lazyResources?.[language];
+      const loadLazyResources = internalResource.resources.find(
+        entry => entry.language === language,
+      )?.loader;
 
       if (!loadLazyResources) {
         await loadBackend;
