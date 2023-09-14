@@ -46,7 +46,6 @@ import {
   HEADER_KUBERNETES_CLUSTER,
   KubernetesProxy,
 } from './KubernetesProxy';
-import fetch from 'cross-fetch';
 
 import type { Request } from 'express';
 

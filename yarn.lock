@@ -7646,7 +7646,6 @@ __metadata:
     "@types/luxon": ^3.0.0
     compression: ^1.7.4
     cors: ^2.8.5
-    cross-fetch: ^3.1.5
     express: ^4.17.1
     express-promise-router: ^4.1.0
     fs-extra: 10.1.0
