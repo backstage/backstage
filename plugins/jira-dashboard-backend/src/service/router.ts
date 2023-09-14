@@ -41,6 +41,9 @@ import {
   PROJECT_KEY_ANNOTATION,
 } from '../annotations';
 
+/**
+ * @public
+ */
 export interface RouterOptions {
   logger: Logger;
   config: Config;
@@ -51,6 +54,9 @@ export interface RouterOptions {
 
 const DEFAULT_TTL = 1000 * 60;
 
+/**
+ * @public
+ */
 export async function createRouter(
   options: RouterOptions,
 ): Promise<express.Router> {
