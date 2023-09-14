@@ -51,7 +51,9 @@ export class AzureIdentityStrategy implements AuthenticationStrategy {
       : { type: 'anonymous' };
   }
 
-  public validate() {}
+  public validateCluster(): Error[] {
+    return [];
+  }
 
   private async fetchNewToken(): Promise<string> {
     try {

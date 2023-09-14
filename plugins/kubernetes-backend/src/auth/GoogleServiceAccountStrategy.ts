@@ -33,5 +33,7 @@ export class GoogleServiceAccountStrategy implements AuthenticationStrategy {
     return { type: 'bearer token', token };
   }
 
-  public validate() {}
+  public validateCluster(): Error[] {
+    return [];
+  }
 }

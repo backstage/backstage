@@ -132,7 +132,7 @@ describe('KubernetesProxy', () => {
           [ClusterDetails, KubernetesRequestAuth]
         >()
         .mockResolvedValue({ type: 'anonymous' }),
-      validate: jest.fn(),
+      validateCluster: jest.fn(),
     };
     proxy = new KubernetesProxy({ logger, clusterSupplier, authStrategy });
     permissionApi.authorize.mockResolvedValue([

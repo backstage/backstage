@@ -49,11 +49,12 @@ export class OidcStrategy implements AuthenticationStrategy {
     return { type: 'bearer token', token: token as string };
   }
 
-  public validate(authMetadata: AuthMetadata) {
+  public validateCluster(authMetadata: AuthMetadata): Error[] {
     const oidcTokenProvider =
       authMetadata[ANNOTATION_KUBERNETES_OIDC_TOKEN_PROVIDER];
     if (!oidcTokenProvider || oidcTokenProvider === '') {
-      throw new Error(`Must specify a token provider for 'oidc' strategy`);
+      return [new Error(`Must specify a token provider for 'oidc' strategy`)];
     }
+    return [];
   }
 }

@@ -55,14 +55,16 @@ export class DispatchStrategy implements AuthenticationStrategy {
     );
   }
 
-  public validate(authMetadata: AuthMetadata) {
+  public validateCluster(authMetadata: AuthMetadata): Error[] {
     const authProvider = authMetadata[ANNOTATION_KUBERNETES_AUTH_PROVIDER];
     const strategy = this.strategyMap[authProvider];
     if (!strategy) {
-      throw new Error(
-        `authProvider "${authProvider}" has no config associated with it`,
-      );
+      return [
+        new Error(
+          `authProvider "${authProvider}" has no config associated with it`,
+        ),
+      ];
     }
-    strategy.validate(authMetadata);
+    return strategy.validateCluster(authMetadata);
   }
 }

@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import { AuthMetadata, ClusterDetails } from '../types/types';
+import { ClusterDetails } from '../types/types';
 import { AuthenticationStrategy, KubernetesCredential } from './types';
 import { KubernetesRequestAuth } from '@backstage/plugin-kubernetes-common';
 
@@ -31,5 +31,7 @@ export class AksStrategy implements AuthenticationStrategy {
       ? { type: 'bearer token', token: token as string }
       : { type: 'anonymous' };
   }
-  public validate(_: AuthMetadata) {}
+  public validateCluster(): Error[] {
+    return [];
+  }
 }

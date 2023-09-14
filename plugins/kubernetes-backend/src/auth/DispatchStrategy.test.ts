@@ -30,7 +30,7 @@ describe('getCredential', () => {
   beforeEach(() => {
     mockStrategy = {
       getCredential: jest.fn(),
-      validate: jest.fn(),
+      validateCluster: jest.fn(),
     };
     strategy = new DispatchStrategy({
       authStrategyMap: { google: mockStrategy },

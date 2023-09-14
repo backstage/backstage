@@ -64,7 +64,9 @@ export class AwsIamStrategy implements AuthenticationStrategy {
     };
   }
 
-  public validate() {}
+  public validateCluster(): Error[] {
+    return [];
+  }
 
   private async getBearerToken(
     clusterName: string,

@@ -29,7 +29,7 @@ export class AksStrategy implements AuthenticationStrategy {
     requestAuth: KubernetesRequestAuth,
   ): Promise<KubernetesCredential>;
   // (undocumented)
-  validate(_: AuthMetadata): void;
+  validateCluster(): Error[];
 }
 
 // @public (undocumented)
@@ -37,7 +37,7 @@ export class AnonymousStrategy implements AuthenticationStrategy {
   // (undocumented)
   getCredential(): Promise<KubernetesCredential>;
   // (undocumented)
-  validate(): void;
+  validateCluster(): Error[];
 }
 
 // @public (undocumented)
@@ -48,7 +48,7 @@ export interface AuthenticationStrategy {
     authConfig: KubernetesRequestAuth,
   ): Promise<KubernetesCredential>;
   // (undocumented)
-  validate(authMetadata: AuthMetadata): void;
+  validateCluster(authMetadata: AuthMetadata): Error[];
 }
 
 // @public
@@ -60,7 +60,7 @@ export class AwsIamStrategy implements AuthenticationStrategy {
   // (undocumented)
   getCredential(clusterDetails: ClusterDetails): Promise<KubernetesCredential>;
   // (undocumented)
-  validate(): void;
+  validateCluster(): Error[];
 }
 
 // @public (undocumented)
@@ -69,7 +69,7 @@ export class AzureIdentityStrategy implements AuthenticationStrategy {
   // (undocumented)
   getCredential(): Promise<KubernetesCredential>;
   // (undocumented)
-  validate(): void;
+  validateCluster(): Error[];
 }
 
 // @public (undocumented)
@@ -119,7 +119,7 @@ export class DispatchStrategy implements AuthenticationStrategy {
     auth: KubernetesRequestAuth,
   ): Promise<KubernetesCredential>;
   // (undocumented)
-  validate(authMetadata: AuthMetadata): void;
+  validateCluster(authMetadata: AuthMetadata): Error[];
 }
 
 // @public (undocumented)
@@ -142,7 +142,7 @@ export class GoogleServiceAccountStrategy implements AuthenticationStrategy {
   // (undocumented)
   getCredential(): Promise<KubernetesCredential>;
   // (undocumented)
-  validate(): void;
+  validateCluster(): Error[];
 }
 
 // @public (undocumented)
@@ -153,7 +153,7 @@ export class GoogleStrategy implements AuthenticationStrategy {
     requestAuth: KubernetesRequestAuth,
   ): Promise<KubernetesCredential>;
   // (undocumented)
-  validate(_: AuthMetadata): void;
+  validateCluster(): Error[];
 }
 
 // @public
@@ -441,7 +441,7 @@ export class OidcStrategy implements AuthenticationStrategy {
     authConfig: KubernetesRequestAuth,
   ): Promise<KubernetesCredential>;
   // (undocumented)
-  validate(authMetadata: AuthMetadata): void;
+  validateCluster(authMetadata: AuthMetadata): Error[];
 }
 
 // @public (undocumented)
@@ -465,7 +465,7 @@ export class ServiceAccountStrategy implements AuthenticationStrategy {
   // (undocumented)
   getCredential(clusterDetails: ClusterDetails): Promise<KubernetesCredential>;
   // (undocumented)
-  validate(): void;
+  validateCluster(): Error[];
 }
 
 // @public (undocumented)

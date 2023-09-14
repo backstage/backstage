@@ -25,5 +25,7 @@ export class AnonymousStrategy implements AuthenticationStrategy {
     return { type: 'anonymous' };
   }
 
-  public validate() {}
+  public validateCluster(): Error[] {
+    return [];
+  }
 }

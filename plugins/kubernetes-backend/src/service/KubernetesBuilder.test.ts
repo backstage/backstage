@@ -328,7 +328,7 @@ describe('KubernetesBuilder', () => {
               type: 'bearer token',
               token: requestAuth.custom as string,
             })),
-          validate: jest.fn(),
+          validateCluster: jest.fn().mockReturnValue([]),
         })
         .setClusterSupplier({
           getClusters: jest
@@ -493,7 +493,7 @@ metadata:
               [ClusterDetails, KubernetesRequestAuth]
             >()
             .mockResolvedValue({ type: 'anonymous' }),
-          validate: jest.fn(),
+          validateCluster: jest.fn().mockReturnValue([]),
         })
         .setClusterSupplier({
           getClusters: jest

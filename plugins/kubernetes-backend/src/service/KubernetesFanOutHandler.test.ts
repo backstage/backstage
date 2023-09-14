@@ -195,7 +195,7 @@ describe('KubernetesFanOutHandler', () => {
             [ClusterDetails, KubernetesRequestAuth]
           >()
           .mockResolvedValue({ type: 'anonymous' }),
-        validate: jest.fn(),
+        validateCluster: jest.fn().mockReturnValue([]),
       },
       config,
     });
@@ -1146,7 +1146,7 @@ describe('KubernetesFanOutHandler', () => {
                 [ClusterDetails, KubernetesRequestAuth]
               >()
               .mockResolvedValue({ type: 'bearer token', token: 'token' }),
-            validate: jest.fn(),
+            validateCluster: jest.fn().mockReturnValue([]),
           },
           config,
         });

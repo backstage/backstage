@@ -42,5 +42,7 @@ export class ServiceAccountStrategy implements AuthenticationStrategy {
     };
   }
 
-  public validate() {}
+  public validateCluster(): Error[] {
+    return [];
+  }
 }

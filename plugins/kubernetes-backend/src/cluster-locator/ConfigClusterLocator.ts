@@ -74,11 +74,14 @@ export class ConfigClusterLocator implements KubernetesClustersSupplier {
           clusterDetails.dashboardParameters = c.get('dashboardParameters');
         }
 
-        try {
-          authStrategy.validate(clusterDetails.authMetadata);
-        } catch (e) {
+        const validationErrors = authStrategy.validateCluster(
+          clusterDetails.authMetadata,
+        );
+        if (validationErrors.length !== 0) {
           throw new Error(
-            `Invalid cluster '${clusterDetails.name}': ${e.message}`,
+            `Invalid cluster '${clusterDetails.name}': ${validationErrors
+              .map(e => e.message)
+              .join(', ')}`,
           );
         }
         return clusterDetails;

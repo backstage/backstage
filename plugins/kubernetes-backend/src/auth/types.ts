@@ -34,5 +34,5 @@ export interface AuthenticationStrategy {
     clusterDetails: ClusterDetails,
     authConfig: KubernetesRequestAuth,
   ): Promise<KubernetesCredential>;
-  validate(authMetadata: AuthMetadata): void;
+  validateCluster(authMetadata: AuthMetadata): Error[];
 }

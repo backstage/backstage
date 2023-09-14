@@ -75,10 +75,10 @@ describe('OidcStrategy', () => {
     });
   });
 
-  describe('validate', () => {
+  describe('validateCluster', () => {
     it('fails when token provider is not specified', () => {
-      expect(() => strategy.validate({})).toThrow(
-        `Must specify a token provider for 'oidc' strategy`,
+      expect(strategy.validateCluster({})).toContainEqual(
+        new Error(`Must specify a token provider for 'oidc' strategy`),
       );
     });
   });

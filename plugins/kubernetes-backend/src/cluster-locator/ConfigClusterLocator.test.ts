@@ -31,7 +31,7 @@ describe('ConfigClusterLocator', () => {
   beforeEach(() => {
     authStrategy = {
       getCredential: jest.fn(),
-      validate: jest.fn(),
+      validateCluster: jest.fn().mockReturnValue([]),
     };
   });
 
@@ -307,9 +307,7 @@ describe('ConfigClusterLocator', () => {
         },
       ],
     });
-    authStrategy.validate.mockImplementation(_ => {
-      throw new Error('mock error');
-    });
+    authStrategy.validateCluster.mockReturnValue([new Error('mock error')]);
 
     expect(() => ConfigClusterLocator.fromConfig(config, authStrategy)).toThrow(
       `Invalid cluster 'cluster1': mock error`,
