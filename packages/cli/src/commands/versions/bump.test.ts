@@ -20,8 +20,6 @@ import { Command } from 'commander';
 import { resolve as resolvePath } from 'path';
 import { paths } from '../../lib/paths';
 import * as runObj from '../../lib/run';
-
-jest.mock('global-agent/bootstrap', () => {});
 import bump, { bumpBackstageJsonVersion, createVersionFinder } from './bump';
 import {
   setupRequestMockHandlers,
@@ -32,6 +30,9 @@ import { setupServer } from 'msw/node';
 import { rest } from 'msw';
 import { NotFoundError } from '@backstage/errors';
 import { Lockfile } from '../../lib/versioning/Lockfile';
+
+// Avoid mutating the global http(s) agent used in other tests
+jest.mock('global-agent/bootstrap', () => {});
 
 // Remove log coloring to simplify log matching
 jest.mock('chalk', () => ({
