@@ -37,7 +37,7 @@ import {
   IconComponent,
 } from '@backstage/core-plugin-api';
 
-const graphiqlRouteRef = createRouteRef({ id: 'graphiql' });
+const graphiqlRouteRef = createRouteRef({ id: 'plugin.graphiql.page' });
 
 /** @alpha */
 export const GraphiqlPage = createPageExtension({
