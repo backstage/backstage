@@ -25,6 +25,7 @@ export const DEFAULT_LANGUAGE = 'en';
 
 /** @alpha */
 export interface AppLanguageSelectorOptions {
+  defaultLanguage?: string;
   availableLanguages?: string[];
 }
 
@@ -47,7 +48,14 @@ export class AppLanguageSelector implements AppLanguageApi {
       throw new Error(`Supported languages must include '${DEFAULT_LANGUAGE}'`);
     }
 
-    return new AppLanguageSelector(languages);
+    const initialLanguage = options?.defaultLanguage ?? DEFAULT_LANGUAGE;
+    if (!languages.includes(initialLanguage)) {
+      throw new Error(
+        `Initial language must be one of the supported languages, got '${initialLanguage}'`,
+      );
+    }
+
+    return new AppLanguageSelector(languages, initialLanguage);
   }
 
   static createWithStorage(options?: AppLanguageSelectorOptions) {
@@ -85,9 +93,9 @@ export class AppLanguageSelector implements AppLanguageApi {
   #language: string;
   #subject: BehaviorSubject<{ language: string }>;
 
-  private constructor(languages: string[]) {
+  private constructor(languages: string[], initialLanguage: string) {
     this.#languages = languages;
-    this.#language = languages[0];
+    this.#language = initialLanguage;
     this.#subject = new BehaviorSubject<{ language: string }>({
       language: this.#language,
     });

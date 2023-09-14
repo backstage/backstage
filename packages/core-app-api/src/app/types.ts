@@ -284,6 +284,7 @@ export type AppOptions = {
   bindRoutes?(context: { bind: AppRouteBinder }): void;
 
   __experimentalTranslations?: {
+    defaultLanguage?: string;
     availableLanguages?: string[];
     resources?: Array<TranslationMessages | TranslationResource>;
   };

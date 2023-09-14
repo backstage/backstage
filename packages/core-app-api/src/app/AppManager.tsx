@@ -182,6 +182,7 @@ export class AppManager implements BackstageApp {
     this.bindRoutes = options.bindRoutes;
     this.apiFactoryRegistry = new ApiFactoryRegistry();
     this.appLanguageApi = AppLanguageSelector.createWithStorage({
+      defaultLanguage: options.__experimentalTranslations?.defaultLanguage,
       availableLanguages:
         options.__experimentalTranslations?.availableLanguages,
     });

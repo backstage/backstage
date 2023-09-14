@@ -155,6 +155,11 @@ export class I18nextTranslationApi implements TranslationApi {
 
     i18n.init();
 
+    const { language: initialLanguage } = options.languageApi.getLanguage();
+    if (initialLanguage !== DEFAULT_LANGUAGE) {
+      i18n.changeLanguage(initialLanguage);
+    }
+
     const loader = new ResourceLoader(loaded => {
       i18n.addResourceBundle(
         loaded.language,

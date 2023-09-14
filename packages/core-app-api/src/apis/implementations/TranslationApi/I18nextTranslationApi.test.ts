@@ -193,6 +193,29 @@ describe('I18nextTranslationApi', () => {
     expect(snapshot.t('foo')).toBe('OtherFoo');
   });
 
+  it('should allow initial language to not be the default one', async () => {
+    const languageApi = AppLanguageSelector.create({
+      defaultLanguage: 'sv',
+      availableLanguages: ['en', 'sv'],
+    });
+    const translationApi = I18nextTranslationApi.create({
+      languageApi,
+      resources: [
+        createTranslationResource({
+          ref: plainRef,
+          translations: {
+            sv: () => Promise.resolve({ default: { foo: 'Föö' } }),
+          },
+        }),
+      ],
+    });
+
+    const snapshot = assertReady(
+      await waitForNext(translationApi.translation$(plainRef), s => s.ready),
+    );
+    expect(snapshot.t('foo')).toBe('Föö');
+  });
+
   it('should prefer the last loaded resource', async () => {
     const languageApi = AppLanguageSelector.create({
       availableLanguages: ['en', 'sv'],
