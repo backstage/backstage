@@ -25,7 +25,6 @@ const DEFAULT_LANGUAGE = 'en';
 
 /** @alpha */
 export interface AppLanguageSelectorOptions {
-  defaultLanguage?: string;
   availableLanguages?: string[];
 }
 
@@ -35,8 +34,8 @@ export interface AppLanguageSelectorOptions {
  * @alpha
  */
 export class AppLanguageSelector implements AppLanguageApi {
-  static createWithStorage(options: AppLanguageSelectorOptions) {
-    const languages = options.availableLanguages ?? [DEFAULT_LANGUAGE];
+  static create(options?: AppLanguageSelectorOptions) {
+    const languages = options?.availableLanguages ?? [DEFAULT_LANGUAGE];
     if (languages.length !== new Set(languages).size) {
       throw new Error(
         `Supported languages may not contain duplicates, got '${languages.join(
@@ -48,19 +47,21 @@ export class AppLanguageSelector implements AppLanguageApi {
       throw new Error(`Supported languages must include '${DEFAULT_LANGUAGE}'`);
     }
 
-    let initialLanguage = languages[0];
+    return new AppLanguageSelector(languages);
+  }
+
+  static createWithStorage(options?: AppLanguageSelectorOptions) {
+    const selector = AppLanguageSelector.create(options);
 
     if (!window.localStorage) {
-      return new AppLanguageSelector(languages, initialLanguage);
+      return selector;
     }
 
-    const storedLanguage =
-      window.localStorage.getItem(STORAGE_KEY) ?? undefined;
+    const storedLanguage = window.localStorage.getItem(STORAGE_KEY);
+    const { languages } = selector.getAvailableLanguages();
     if (storedLanguage && languages.includes(storedLanguage)) {
-      initialLanguage = storedLanguage;
+      selector.setLanguage(storedLanguage);
     }
-
-    const selector = new AppLanguageSelector(languages, initialLanguage);
 
     selector.language$().subscribe(({ language }) => {
       if (language !== window.localStorage.getItem(STORAGE_KEY)) {
@@ -84,11 +85,11 @@ export class AppLanguageSelector implements AppLanguageApi {
   #language: string;
   #subject: BehaviorSubject<{ language: string }>;
 
-  private constructor(languages: string[], initialLanguage: string) {
+  private constructor(languages: string[]) {
     this.#languages = languages;
-    this.#language = initialLanguage;
+    this.#language = languages[0];
     this.#subject = new BehaviorSubject<{ language: string }>({
-      language: initialLanguage,
+      language: this.#language,
     });
   }
 

@@ -26,7 +26,7 @@ describe('AppLanguageSelector', () => {
   });
 
   it('should select language', async () => {
-    const selector = AppLanguageSelector.createWithStorage(baseOptions);
+    const selector = AppLanguageSelector.create(baseOptions);
 
     expect(selector.getAvailableLanguages()).toEqual({
       languages: ['en', 'de'],
@@ -49,7 +49,7 @@ describe('AppLanguageSelector', () => {
 
   it('should return a new array of languages', () => {
     const languages = ['en', 'de'];
-    const selector = AppLanguageSelector.createWithStorage({
+    const selector = AppLanguageSelector.create({
       availableLanguages: languages,
     });
 
@@ -65,7 +65,7 @@ describe('AppLanguageSelector', () => {
 
   it('should skip duplicates', async () => {
     const languages = ['en', 'de'];
-    const selector = AppLanguageSelector.createWithStorage({
+    const selector = AppLanguageSelector.create({
       availableLanguages: languages,
     });
 
