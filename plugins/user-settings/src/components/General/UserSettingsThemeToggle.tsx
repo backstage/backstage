@@ -110,7 +110,7 @@ export const UserSettingsThemeToggle = () => {
 
   const themeIds = appThemeApi.getInstalledThemes();
 
-  const t = useTranslationRef(userSettingsTranslationRef);
+  const { t } = useTranslationRef(userSettingsTranslationRef);
 
   const handleSetTheme = (
     _event: React.MouseEvent<HTMLElement>,
