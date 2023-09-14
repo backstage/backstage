@@ -74,3 +74,19 @@ Here's how to get the backend plugin up and running:
 3. Now run `yarn start-backend` from the repo root.
 
 4. In another terminal, run the command: `curl localhost:7007/api/jira-dashboard/health`. The request should return `{"status":"ok"}`.
+
+### New Backend System
+
+The Jira Dashboard backend plugin has support for the [new backend system](https://backstage.io/docs/backend-system/). Here is how you can set it up:
+
+In your `packages/backend/src/index.ts` make the following changes:
+
+```diff
++ import { jiraDashboardPlugin } from '@backstage/plugin-jira-dashboard-backend';
+
+const backend = createBackend();
++ backend.add(jiraDashboardPlugin());
+// ... other feature additions
+
+backend.start();
+```
