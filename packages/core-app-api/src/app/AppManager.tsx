@@ -81,7 +81,6 @@ import { resolveRouteBindings } from './resolveRouteBindings';
 import { isReactRouterBeta } from './isReactRouterBeta';
 import { InternalAppContext } from './InternalAppContext';
 import { AppRouter, getBasePath } from './AppRouter';
-import { AppTranslationProvider } from './AppTranslationProvider';
 import { AppLanguageSelector } from '../apis/implementations/AppLanguageApi';
 import { I18nextTranslationApi } from '../apis/implementations/TranslationApi';
 import { overrideBaseUrlConfigs } from './overrideBaseUrlConfigs';
@@ -345,26 +344,24 @@ export class AppManager implements BackstageApp {
       return (
         <ApiProvider apis={this.getApiHolder()}>
           <AppContextProvider appContext={appContext}>
-            <AppTranslationProvider>
-              <ThemeProvider>
-                <RoutingProvider
-                  routePaths={routing.paths}
-                  routeParents={routing.parents}
-                  routeObjects={routing.objects}
-                  routeBindings={routeBindings}
-                  basePath={getBasePath(loadedConfig.api)}
+            <ThemeProvider>
+              <RoutingProvider
+                routePaths={routing.paths}
+                routeParents={routing.parents}
+                routeObjects={routing.objects}
+                routeBindings={routeBindings}
+                basePath={getBasePath(loadedConfig.api)}
+              >
+                <InternalAppContext.Provider
+                  value={{
+                    routeObjects: routing.objects,
+                    appIdentityProxy: this.appIdentityProxy,
+                  }}
                 >
-                  <InternalAppContext.Provider
-                    value={{
-                      routeObjects: routing.objects,
-                      appIdentityProxy: this.appIdentityProxy,
-                    }}
-                  >
-                    {children}
-                  </InternalAppContext.Provider>
-                </RoutingProvider>
-              </ThemeProvider>
-            </AppTranslationProvider>
+                  {children}
+                </InternalAppContext.Provider>
+              </RoutingProvider>
+            </ThemeProvider>
           </AppContextProvider>
         </ApiProvider>
       );
