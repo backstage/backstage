@@ -43,8 +43,10 @@ import {
   FeatureFlag,
 } from '@backstage/core-plugin-api';
 import {
-  AppTranslationApi,
-  appTranslationApiRef,
+  AppLanguageApi,
+  appLanguageApiRef,
+  TranslationApi,
+  translationApiRef,
 } from '@backstage/core-plugin-api/alpha';
 import { ApiFactoryRegistry, ApiResolver } from '../apis/system';
 import {
@@ -80,7 +82,8 @@ import { isReactRouterBeta } from './isReactRouterBeta';
 import { InternalAppContext } from './InternalAppContext';
 import { AppRouter, getBasePath } from './AppRouter';
 import { AppTranslationProvider } from './AppTranslationProvider';
-import { AppTranslationApiImpl } from '../apis/implementations/AppTranslationApi';
+import { AppLanguageSelector } from '../apis/implementations/AppLanguageApi';
+import { I18nextTranslationApi } from '../apis/implementations/TranslationApi';
 import { overrideBaseUrlConfigs } from './overrideBaseUrlConfigs';
 
 type CompatiblePlugin =
@@ -162,7 +165,8 @@ export class AppManager implements BackstageApp {
   private readonly configLoader?: AppConfigLoader;
   private readonly defaultApis: Iterable<AnyApiFactory>;
   private readonly bindRoutes: AppOptions['bindRoutes'];
-  private readonly appTranslationApi: AppTranslationApi;
+  private readonly appLanguageApi: AppLanguageApi;
+  private readonly translationApi: TranslationApi;
 
   private readonly appIdentityProxy = new AppIdentityProxy();
   private readonly apiFactoryRegistry: ApiFactoryRegistry;
@@ -178,9 +182,14 @@ export class AppManager implements BackstageApp {
     this.defaultApis = options.defaultApis ?? [];
     this.bindRoutes = options.bindRoutes;
     this.apiFactoryRegistry = new ApiFactoryRegistry();
-    this.appTranslationApi = AppTranslationApiImpl.create(
-      options.__experimentalTranslations,
-    );
+    this.appLanguageApi = AppLanguageSelector.createWithStorage({
+      availableLanguages:
+        options.__experimentalTranslations?.availableLanguages,
+    });
+    this.translationApi = I18nextTranslationApi.create({
+      languageApi: this.appLanguageApi,
+      resources: options.__experimentalTranslations?.resources,
+    });
   }
 
   getPlugins(): BackstagePlugin[] {
@@ -407,9 +416,14 @@ export class AppManager implements BackstageApp {
       factory: () => this.appIdentityProxy,
     });
     this.apiFactoryRegistry.register('static', {
-      api: appTranslationApiRef,
+      api: appLanguageApiRef,
       deps: {},
-      factory: () => this.appTranslationApi,
+      factory: () => this.appLanguageApi,
+    });
+    this.apiFactoryRegistry.register('static', {
+      api: translationApiRef,
+      deps: {},
+      factory: () => this.translationApi,
     });
 
     // It's possible to replace the feature flag API, but since we must have at least

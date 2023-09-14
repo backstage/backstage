@@ -283,10 +283,8 @@ export type AppOptions = {
    */
   bindRoutes?(context: { bind: AppRouteBinder }): void;
 
-  // TODO: Change to ExperimentalI18n type when packages/core-app-api/src/apis/implementations/AppTranslationApi/AppTranslationImpl.ts
   __experimentalTranslations?: {
-    fallbackLanguage?: string | string[];
-    supportedLanguages?: string[];
+    availableLanguages?: string[];
     resources?: Array<TranslationMessages | TranslationResource>;
   };
 };
