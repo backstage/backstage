@@ -45,8 +45,9 @@ import {
 import {
   AppLanguageApi,
   appLanguageApiRef,
-  TranslationApi,
   translationApiRef,
+  TranslationMessages,
+  TranslationResource,
 } from '@backstage/core-plugin-api/alpha';
 import { ApiFactoryRegistry, ApiResolver } from '../apis/system';
 import {
@@ -165,7 +166,9 @@ export class AppManager implements BackstageApp {
   private readonly defaultApis: Iterable<AnyApiFactory>;
   private readonly bindRoutes: AppOptions['bindRoutes'];
   private readonly appLanguageApi: AppLanguageApi;
-  private readonly translationApi: TranslationApi;
+  private readonly translationResources: Array<
+    TranslationResource | TranslationMessages
+  >;
 
   private readonly appIdentityProxy = new AppIdentityProxy();
   private readonly apiFactoryRegistry: ApiFactoryRegistry;
@@ -186,10 +189,8 @@ export class AppManager implements BackstageApp {
       availableLanguages:
         options.__experimentalTranslations?.availableLanguages,
     });
-    this.translationApi = I18nextTranslationApi.create({
-      languageApi: this.appLanguageApi,
-      resources: options.__experimentalTranslations?.resources,
-    });
+    this.translationResources =
+      options.__experimentalTranslations?.resources ?? [];
   }
 
   getPlugins(): BackstagePlugin[] {
@@ -418,10 +419,17 @@ export class AppManager implements BackstageApp {
       deps: {},
       factory: () => this.appLanguageApi,
     });
-    this.apiFactoryRegistry.register('static', {
+
+    // The translation API is registered as a default API so that it can be overridden.
+    // It will be up to the implementer of the new API to register translation resources.
+    this.apiFactoryRegistry.register('default', {
       api: translationApiRef,
-      deps: {},
-      factory: () => this.translationApi,
+      deps: { languageApi: appLanguageApiRef },
+      factory: ({ languageApi }) =>
+        I18nextTranslationApi.create({
+          languageApi,
+          resources: this.translationResources,
+        }),
     });
 
     // It's possible to replace the feature flag API, but since we must have at least
