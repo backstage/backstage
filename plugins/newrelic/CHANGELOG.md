@@ -1,5 +1,16 @@
 # @backstage/plugin-newrelic
 
+## 0.3.40-next.3
+
+### Patch Changes
+
+- 406b786a2a2c: Mark package as being free of side effects, allowing more optimized Webpack builds.
+- 55cb7061e072: Fixed bug in NewRelicComponent component where table would not sort correctly for numerical values.
+- Updated dependencies
+  - @backstage/core-components@0.13.5-next.3
+  - @backstage/core-plugin-api@1.6.0-next.3
+  - @backstage/theme@0.4.2-next.0
+
 ## 0.3.40-next.2
 
 ### Patch Changes

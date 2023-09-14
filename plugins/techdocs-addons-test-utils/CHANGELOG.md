@@ -1,5 +1,22 @@
 # @backstage/plugin-techdocs-addons-test-utils
 
+## 1.0.21-next.3
+
+### Patch Changes
+
+- 406b786a2a2c: Mark package as being free of side effects, allowing more optimized Webpack builds.
+- Updated dependencies
+  - @backstage/test-utils@1.4.3-next.3
+  - @backstage/core-app-api@1.10.0-next.3
+  - @backstage/core-components@0.13.5-next.3
+  - @backstage/core-plugin-api@1.6.0-next.3
+  - @backstage/integration-react@1.1.19-next.3
+  - @backstage/plugin-catalog@1.13.0-next.3
+  - @backstage/plugin-search-react@1.7.0-next.3
+  - @backstage/plugin-techdocs@1.7.0-next.3
+  - @backstage/plugin-techdocs-react@1.1.10-next.3
+  - @backstage/theme@0.4.2-next.0
+
 ## 1.0.21-next.2
 
 ### Patch Changes

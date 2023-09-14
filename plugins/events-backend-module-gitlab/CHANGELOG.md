@@ -1,5 +1,14 @@
 # @backstage/plugin-events-backend-module-gitlab
 
+## 0.1.13-next.3
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/config@1.1.0-next.2
+  - @backstage/backend-plugin-api@0.6.3-next.3
+  - @backstage/plugin-events-node@0.2.12-next.3
+
 ## 0.1.13-next.2
 
 ### Patch Changes

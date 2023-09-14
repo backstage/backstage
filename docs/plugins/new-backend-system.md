@@ -266,12 +266,10 @@ class GoogleCloudLogger implements LoggerService {
 }
 
 // packages/backend/src/index.ts
-const backend = createBackend({
-  services: [
-    // supplies additional or replacement services to the backend
-    GoogleCloudLogger.factory(),
-  ],
-});
+const backend = createBackend();
+
+// supplies additional or replacement services to the backend
+backend.add(GoogleCloudLogger.factory());
 ```
 
 ## Testing

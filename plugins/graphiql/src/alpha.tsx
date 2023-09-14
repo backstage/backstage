@@ -35,7 +35,7 @@ import { createApiFactory } from '@backstage/core-plugin-api';
 export const GraphiqlPage = createPageExtension({
   id: 'plugin.graphiql.page',
   defaultPath: '/graphiql',
-  component: () => import('./components').then(m => <m.GraphiQLPage />),
+  loader: () => import('./components').then(m => <m.GraphiQLPage />),
 });
 
 /** @internal */

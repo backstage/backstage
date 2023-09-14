@@ -14,11 +14,12 @@
  * limitations under the License.
  */
 
-import React from 'react';
-import { ConfigReader } from '@backstage/config';
+import React, { JSX } from 'react';
+import { ConfigReader, Config } from '@backstage/config';
 import {
   BackstagePlugin,
   coreExtensionData,
+  ExtensionDataRef,
 } from '@backstage/frontend-plugin-api';
 import { Core } from '../extensions/Core';
 import { CoreRoutes } from '../extensions/CoreRoutes';
@@ -76,26 +77,55 @@ import {
 import { BrowserRouter } from 'react-router-dom';
 
 /** @public */
-export function createApp(options: {
-  plugins: BackstagePlugin[];
-  config?: ConfigApi;
-}): {
-  createRoot(): JSX.Element;
-} {
-  const appConfig =
-    options?.config ??
-    ConfigReader.fromConfigs(overrideBaseUrlConfigs(defaultConfigLoaderSync()));
+export interface ExtensionTreeNode {
+  id: string;
+  getData<T>(ref: ExtensionDataRef<T>): T | undefined;
+}
 
+/** @public */
+export interface ExtensionTree {
+  getExtension(id: string): ExtensionTreeNode | undefined;
+  getExtensionAttachments(id: string, inputName: string): ExtensionTreeNode[];
+}
+
+/** @public */
+export function createExtensionTree(options: {
+  config: Config;
+}): ExtensionTree {
+  const plugins = getAvailablePlugins();
+  const { instances } = createInstances({
+    plugins,
+    config: options.config,
+  });
+
+  return {
+    getExtension(id: string): ExtensionTreeNode | undefined {
+      return instances.get(id);
+    },
+    getExtensionAttachments(
+      id: string,
+      inputName: string,
+    ): ExtensionTreeNode[] {
+      return instances.get(id)?.attachments.get(inputName) ?? [];
+    },
+  };
+}
+
+/**
+ * @internal
+ */
+export function createInstances(options: {
+  plugins: BackstagePlugin[];
+  config: Config;
+}) {
   const builtinExtensions = [Core, CoreRoutes, CoreNav, CoreLayout];
-  const discoveredPlugins = getAvailablePlugins();
-  const allPlugins = [...discoveredPlugins, ...options.plugins];
 
   // pull in default extension instance from discovered packages
   // apply config to adjust default extension instances and add more
   const extensionParams = mergeExtensionParameters({
-    sources: allPlugins,
+    sources: options.plugins,
     builtinExtensions,
-    parameters: readAppExtensionParameters(appConfig),
+    parameters: readAppExtensionParameters(options.config),
   });
 
   // TODO: validate the config of all extension instances
@@ -156,9 +186,31 @@ export function createApp(options: {
   }
 
   const rootConfigs = attachmentMap.get('root')?.get('default') ?? [];
+
   const rootInstances = rootConfigs.map(instanceParams =>
     createInstance(instanceParams),
   );
+
+  return { instances, rootInstances };
+}
+
+/** @public */
+export function createApp(options: {
+  plugins: BackstagePlugin[];
+  config?: ConfigApi;
+}): {
+  createRoot(): JSX.Element;
+} {
+  const discoveredPlugins = getAvailablePlugins();
+  const allPlugins = [...discoveredPlugins, ...options.plugins];
+  const appConfig =
+    options?.config ??
+    ConfigReader.fromConfigs(overrideBaseUrlConfigs(defaultConfigLoaderSync()));
+
+  const { rootInstances } = createInstances({
+    plugins: allPlugins,
+    config: appConfig,
+  });
 
   const routePaths = extractRouteInfoFromInstanceTree(rootInstances);
 
@@ -173,20 +225,16 @@ export function createApp(options: {
 
   return {
     createRoot() {
-      const rootComponents = rootInstances
-        .map(e => e.getData(coreExtensionData.reactComponent))
-        .filter((x): x is React.ComponentType => !!x);
+      const rootElements = rootInstances
+        .map(e => e.getData(coreExtensionData.reactElement))
+        .filter((x): x is JSX.Element => !!x);
       return (
         <ApiProvider apis={apiHolder}>
           <AppContextProvider appContext={appContext}>
             <AppThemeProvider>
               <RoutingProvider routePaths={routePaths}>
                 {/* TODO: set base path using the logic from AppRouter */}
-                <BrowserRouter>
-                  {rootComponents.map((Component, i) => (
-                    <Component key={i} />
-                  ))}
-                </BrowserRouter>
+                <BrowserRouter>{rootElements}</BrowserRouter>
               </RoutingProvider>
             </AppThemeProvider>
           </AppContextProvider>
