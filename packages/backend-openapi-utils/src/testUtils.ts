@@ -16,6 +16,13 @@
 import { Express } from 'express';
 import { Server } from 'http';
 
+/**
+ * Running against supertest, we need some way to hit the optic proxy. This ensures that
+ *  that happens at runtime when in the context of a `yarn optic capture` command.
+ * @param app - Express router that would be passed to supertest's `request`.
+ * @returns A wrapper around the express router (or the router untouched) that still works with supertest.
+ * @public
+ */
 export const createSuperTestAgent = (app: Express): Server | Express => {
   if (process.env.OPTIC_PROXY) {
     const server = app.listen(3000);

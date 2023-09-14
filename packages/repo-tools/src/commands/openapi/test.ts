@@ -67,7 +67,11 @@ export async function bulkCommand(paths: string[] = []): Promise<void> {
   for (const { relativeDir, resultText } of resultsList) {
     if (resultText) {
       console.log();
-      console.log(chalk.red(`OpenAPI validation failed in ${relativeDir}:`));
+      console.log(
+        chalk.red(
+          `OpenAPI runtime validation against tests failed in ${relativeDir}:`,
+        ),
+      );
       console.log(resultText.trimStart());
 
       failed = true;
