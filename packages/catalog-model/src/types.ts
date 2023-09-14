@@ -26,5 +26,12 @@ export type CompoundEntityRef = {
   name: string;
 };
 
+/**
+ * Utility type to allow for selectively making fields partial,
+ * similar to Partial, except it accepts an additional union which
+ * specifies which fields to make partial.
+ *
+ * @public
+ */
 export type SelectPartial<T, K extends keyof T> = Omit<T, K> &
   Partial<Pick<T, K>>;

@@ -427,14 +427,12 @@ export class SchemaValidEntityPolicy implements EntityPolicy {
 }
 
 // @public
+export type SelectPartial<T, K extends keyof T> = Omit<T, K> &
+  Partial<Pick<T, K>>;
+
+// @public
 export function stringifyEntityRef(
-  ref:
-    | Entity
-    | {
-        kind: string;
-        namespace?: string;
-        name: string;
-      },
+  ref: Entity | SelectPartial<CompoundEntityRef, 'namespace'>,
 ): string;
 
 // @public

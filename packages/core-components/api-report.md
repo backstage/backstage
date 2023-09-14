@@ -333,7 +333,7 @@ export function EmailIcon(props: IconComponentProps): React_2.JSX.Element;
 // Warning: (ae-forgotten-export) The symbol "Props_2" needs to be exported by the entry point index.d.ts
 //
 // @public
-export function EmptyState(props: Props_2): React_2.JSX.Element;
+export function EmptyState(props: Props_2): JSX.Element;
 
 // @public (undocumented)
 export type EmptyStateClassKey = 'root' | 'action' | 'imageContainer';
