@@ -192,14 +192,36 @@ export class TaskWorker {
 
     // It's OK if the task already exists; if it does, just replace its
     // settings with the new value and start the loop as usual.
+    const settingsJson = JSON.stringify(settings);
     await this.knex<DbTasksRow>(DB_TASKS_TABLE)
       .insert({
         id: this.taskId,
-        settings_json: JSON.stringify(settings),
+        settings_json: settingsJson,
         next_run_start_at: startAt,
       })
       .onConflict('id')
-      .merge(['settings_json']);
+      .merge(
+        this.knex.client.config.client.includes('mysql')
+          ? {
+              settings_json: settingsJson,
+              next_run_start_at: this.knex.raw(
+                `CASE WHEN ?? < ?? THEN ?? ELSE ?? END`,
+                [startAt, 'next_run_start_at', startAt, 'next_run_start_at'],
+              ),
+            }
+          : {
+              settings_json: this.knex.ref('excluded.settings_json'),
+              next_run_start_at: this.knex.raw(
+                `CASE WHEN ?? < ?? THEN ?? ELSE ?? END`,
+                [
+                  'excluded.next_run_start_at',
+                  `${DB_TASKS_TABLE}.next_run_start_at`,
+                  'excluded.next_run_start_at',
+                  `${DB_TASKS_TABLE}.next_run_start_at`,
+                ],
+              ),
+            },
+      );
   }
 
   /**

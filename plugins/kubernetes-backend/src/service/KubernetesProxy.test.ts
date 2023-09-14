@@ -13,8 +13,9 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import 'buffer';
 
+import 'buffer';
+import { resolve as resolvePath } from 'path';
 import { errorHandler, getVoidLogger } from '@backstage/backend-common';
 import { setupRequestMockHandlers } from '@backstage/backend-test-utils';
 import { NotFoundError } from '@backstage/errors';
@@ -44,7 +45,6 @@ import {
   KubernetesProxy,
 } from './KubernetesProxy';
 import fetch from 'cross-fetch';
-import mockFs from 'mock-fs';
 
 import type { Request } from 'express';
 
@@ -680,15 +680,7 @@ describe('KubernetesProxy', () => {
       httpsRequest.mockClear();
     });
     describe('should pass the exact response from Kubernetes using the CA file', () => {
-      afterEach(() => {
-        mockFs.restore();
-      });
-
       it('should trust contents of specified caFile', async () => {
-        mockFs({
-          '/path/to/ca.crt': 'MOCKCA',
-        });
-
         const apiResponse = {
           kind: 'APIVersions',
           versions: ['v1'],
@@ -706,7 +698,7 @@ describe('KubernetesProxy', () => {
             url: 'https://localhost:9999',
             serviceAccountToken: '',
             authProvider: 'serviceAccount',
-            caFile: '/path/to/ca.crt',
+            caFile: resolvePath(__dirname, '__fixtures__/mock-ca.crt'),
           },
         ] as ClusterDetails[]);
 
@@ -736,7 +728,7 @@ describe('KubernetesProxy', () => {
 
         expect(httpsRequest).toHaveBeenCalledTimes(1);
         const [[{ ca }]] = httpsRequest.mock.calls;
-        expect(ca).toEqual('MOCKCA');
+        expect(ca).toMatch('MOCKCA');
       });
     });
   });

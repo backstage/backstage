@@ -51,7 +51,7 @@ describe('useTranslationRef', () => {
     };
 
     (useApi as jest.Mock).mockReturnValue({
-      addResourcesByRef: jest.fn(),
+      addResource: jest.fn(),
     });
 
     (useTranslation as jest.Mock).mockReturnValue(i18nMock);

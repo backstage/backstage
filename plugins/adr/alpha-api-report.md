@@ -6,11 +6,14 @@
 import { TranslationRef } from '@backstage/core-plugin-api/alpha';
 
 // @alpha (undocumented)
-export const adrTranslationRef: TranslationRef<{
-  readonly content_header_title: 'Architecture Decision Records';
-  readonly failed_to_fetch: 'Failed to fetch ADRs';
-  readonly no_adrs: 'No ADRs found';
-}>;
+export const adrTranslationRef: TranslationRef<
+  'adr',
+  {
+    readonly content_header_title: 'Architecture Decision Records';
+    readonly failed_to_fetch: 'Failed to fetch ADRs';
+    readonly no_adrs: 'No ADRs found';
+  }
+>;
 
 // (No @packageDocumentation comment for this package)
 ```
