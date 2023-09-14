@@ -239,6 +239,7 @@ type Props = {
   total: number;
   pageSize: number;
   onChangePageSize: (pageSize: number) => void;
+  columns: TableColumn[];
 };
 
 export const CITableView = ({
@@ -249,6 +250,7 @@ export const CITableView = ({
   projects,
   onChangePage,
   onChangePageSize,
+  columns,
   total,
 }: Props) => {
   const projectsInPage = projects?.slice(
@@ -279,17 +281,22 @@ export const CITableView = ({
           <Typography variant="h6">Projects</Typography>
         </Box>
       }
-      columns={generatedColumns}
+      columns={columns && columns.length !== 0 ? columns : generatedColumns}
     />
   );
 };
 
-export const CITable = () => {
+type CITableProps = {
+  columns?: TableColumn[];
+};
+
+export const CITable = ({ columns }: CITableProps) => {
   const [tableProps, { setPage, retry, setPageSize }] = useBuilds();
 
   return (
     <CITableView
       {...tableProps}
+      columns={columns || ([] as TableColumn[])}
       retry={retry}
       onChangePageSize={setPageSize}
       onChangePage={setPage}
