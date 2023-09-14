@@ -20,21 +20,30 @@ import {
   TranslationRef,
   TranslationResource,
 } from '@backstage/core-plugin-api/alpha';
-import i18next, { type i18n } from 'i18next';
-import { initReactI18next } from 'react-i18next';
-import LanguageDetector from 'i18next-browser-languagedetector';
+import {
+  BackendModule,
+  createInstance as createI18n,
+  type i18n,
+} from 'i18next';
+import ObservableImpl from 'zen-observable';
 
 // Internal import to avoid code duplication, this will lead to duplication in build output
 // eslint-disable-next-line @backstage/no-relative-monorepo-imports
-import { toInternalTranslationResource } from '../../../../../core-plugin-api/src/translation/TranslationResource';
+import {
+  toInternalTranslationResource,
+  InternalTranslationResourceLoader,
+} from '../../../../../core-plugin-api/src/translation/TranslationResource';
 // eslint-disable-next-line @backstage/no-relative-monorepo-imports
-import { toInternalTranslationRef } from '../../../../../core-plugin-api/src/translation/TranslationRef';
+import {
+  toInternalTranslationRef,
+  InternalTranslationRef,
+} from '../../../../../core-plugin-api/src/translation/TranslationRef';
+import { Observable } from '@backstage/types';
 
 const DEFAULT_LANGUAGE = 'en';
 
 /** @alpha */
 export type ExperimentalI18n = {
-  fallbackLanguage?: string | string[];
   supportedLanguages?: string[];
   resources?: Array<TranslationMessages | TranslationResource>;
 };
@@ -49,140 +58,248 @@ function removeNulls(
   );
 }
 
+/**
+ * A wrapper around a i18next plugin that helps us lazy load resources that have been
+ * registered in the app or provided through translation refs.
+ *
+ * Since all resources are registered before use it is safe to just look at the
+ * existing resources when loading a namespace + language tuple.
+ */
+class LazyResources {
+  #seen = new Set<TranslationResource>();
+  #loaders = new Map<string, InternalTranslationResourceLoader>();
+
+  addResource(resource: TranslationResource) {
+    if (this.#seen.has(resource)) {
+      return;
+    }
+    this.#seen.add(resource);
+    const internalResource = toInternalTranslationResource(resource);
+    for (const entry of internalResource.resources) {
+      const key = this.#getLoaderKey(entry.language, internalResource.id);
+
+      // First loader to register wins, this means that resources registered in the app
+      // have priority over default resource from translation refs
+      if (!this.#loaders.has(key)) {
+        this.#loaders.set(key, entry.loader);
+      }
+    }
+  }
+
+  hasResource(lng: string, ns: string) {
+    return this.#loaders.has(this.#getLoaderKey(lng, ns));
+  }
+
+  async #loadResource(lng: string, ns: string) {
+    const loader = this.#loaders.get(this.#getLoaderKey(lng, ns));
+    if (!loader) {
+      return undefined;
+    }
+
+    return loader().then(result => removeNulls(result.messages));
+  }
+
+  #getLoaderKey(lng: string, ns: string) {
+    return `${lng}/${ns}`;
+  }
+
+  plugin: BackendModule = {
+    type: 'backend',
+    init() {},
+    read: (lng, ns) => this.#loadResource(lng, ns),
+    save() {},
+    create() {},
+  };
+}
+
+/** @alpha */
+export interface TranslationOptions {
+  /* no options supported for now */
+}
+
+export type TranslationSnapshot<TMessages extends { [key in string]: string }> =
+
+    | { ready: false }
+    | {
+        ready: true;
+        t<TKey extends keyof TMessages>(
+          key: TKey,
+          options?: TranslationOptions,
+        ): TMessages[TKey];
+      };
+
 /** @alpha */
 export class AppTranslationApiImpl implements AppTranslationApi {
   static create(options?: ExperimentalI18n) {
-    const i18n = i18next.createInstance().use(initReactI18next);
-
-    i18n.use(LanguageDetector);
-
-    i18n.init({
-      fallbackLng: options?.fallbackLanguage || DEFAULT_LANGUAGE,
-      supportedLngs: options?.supportedLanguages || [DEFAULT_LANGUAGE],
+    const languages = options?.supportedLanguages || [DEFAULT_LANGUAGE];
+    if (!languages.includes(DEFAULT_LANGUAGE)) {
+      throw new Error(`Supported languages must include '${DEFAULT_LANGUAGE}'`);
+    }
+    const lazyResources = new LazyResources();
+    const i18n = createI18n({
+      fallbackLng: DEFAULT_LANGUAGE,
+      supportedLngs: languages,
       interpolation: {
         escapeValue: false,
       },
-      react: {
-        bindI18n: 'loaded languageChanged',
-      },
-    });
+      ns: [],
+      defaultNS: false,
+      fallbackNS: false,
+    }).use(lazyResources.plugin);
 
-    return new AppTranslationApiImpl(i18n, options);
-  }
+    i18n.init();
 
-  private readonly cache = new Set<string>();
-  private readonly lazyCache = new Map<string, Set<string>>();
-
-  getI18n() {
-    return this.i18n;
-  }
-
-  initMessages(options?: ExperimentalI18n) {
-    for (const resource of options?.resources || []) {
+    const resources = options?.resources || [];
+    // Iterate in reverse, giving higher priority to resources registered later
+    for (let i = resources.length - 1; i >= 0; i--) {
+      const resource = resources[i];
       if (resource.$$type === '@backstage/TranslationResource') {
-        this.addLazyResources(resource);
+        lazyResources.addResource(resource);
       } else if (resource.$$type === '@backstage/TranslationMessages') {
         // Overrides for default messages, created with createTranslationMessages and installed via app
-        this.addMessages(resource);
+        i18n.addResourceBundle(
+          DEFAULT_LANGUAGE,
+          resource.id,
+          removeNulls(resource.messages),
+          true,
+          false,
+        );
       }
     }
+
+    return new AppTranslationApiImpl(i18n, lazyResources, languages);
   }
 
-  addResource(translationRef: TranslationRef): void {
-    const internalRef = toInternalTranslationRef(translationRef);
-    const defaultResource = internalRef.getDefaultResource();
-    if (defaultResource) {
-      this.addLazyResources(defaultResource);
-    }
+  #i18n: i18n;
+  #lazyResources: LazyResources;
+  #language: string;
+  #languages: string[];
+
+  private constructor(
+    i18n: i18n,
+    lazyResources: LazyResources,
+    languages: string[],
+  ) {
+    this.#i18n = i18n;
+    this.#lazyResources = lazyResources;
+    this.#language = DEFAULT_LANGUAGE;
+    this.#languages = languages;
   }
 
-  addMessages(messages: TranslationMessages) {
-    if (this.cache.has(messages.id)) {
-      return;
-    }
-    this.cache.add(messages.id);
-    this.i18n.addResourceBundle(
-      DEFAULT_LANGUAGE,
-      messages.id,
-      removeNulls(messages.messages),
-      true,
-      false,
-    );
+  getAvailableLanguages(): string[] {
+    return this.#languages.slice();
   }
 
-  addLazyResources(resource: TranslationResource) {
-    let cache = this.lazyCache.get(resource.id);
-
-    if (!cache) {
-      cache = new Set();
-      this.lazyCache.set(resource.id, cache);
-    }
-
-    const {
-      language: currentLanguage,
-      services,
-      options,
-      addResourceBundle,
-      reloadResources,
-    } = this.i18n;
-
-    if (cache.has(currentLanguage)) {
-      return;
-    }
-
-    const internalResource = toInternalTranslationResource(resource);
-    const namespace = internalResource.id;
-
-    Promise.allSettled((options.supportedLngs || []).map(addLanguage)).then(
-      results => {
-        if (results.some(result => result.status === 'fulfilled')) {
-          this.i18n.emit('loaded');
-        }
-      },
-    );
-
-    async function addLanguage(language: string) {
-      if (cache!.has(language)) {
-        return;
-      }
-
-      cache!.add(language);
-
-      let loadBackend: Promise<void> | undefined;
-
-      if (services.backendConnector?.backend) {
-        loadBackend = reloadResources([language], [namespace]);
-      }
-
-      const loadLazyResources = internalResource.resources.find(
-        entry => entry.language === language,
-      )?.loader;
-
-      if (!loadLazyResources) {
-        await loadBackend;
-        return;
-      }
-
-      const [result] = await Promise.allSettled([
-        loadLazyResources(),
-        loadBackend,
-      ]);
-
-      if (result.status === 'rejected') {
-        throw result.reason;
-      }
-
-      addResourceBundle(
-        language,
-        namespace,
-        result.value.messages,
-        true,
-        false,
+  async changeLanguage(language?: string): Promise<void> {
+    const lng = language ?? DEFAULT_LANGUAGE;
+    if (lng && !this.#languages.includes(lng)) {
+      throw new Error(
+        `Failed to change language to '${lng}', available languages are '${this.#languages.join(
+          "', '",
+        )}'`,
       );
     }
+    this.#language = lng;
+    await this.#i18n.changeLanguage(lng);
   }
 
-  private constructor(private readonly i18n: i18n, options?: ExperimentalI18n) {
-    this.initMessages(options);
+  getTranslation<TMessages extends { [key in string]: string }>(
+    translationRef: TranslationRef<string, TMessages>,
+  ): TranslationSnapshot<TMessages> {
+    const internalRef = toInternalTranslationRef(translationRef);
+
+    this.#registerDefaultResource(internalRef);
+
+    return this.#createSnapshot(internalRef);
+  }
+
+  translation$<TMessages extends { [key in string]: string }>(
+    translationRef: TranslationRef<string, TMessages>,
+  ): Observable<TranslationSnapshot<TMessages>> {
+    const internalRef = toInternalTranslationRef(translationRef);
+
+    this.#registerDefaultResource(internalRef);
+
+    return new ObservableImpl<TranslationSnapshot<TMessages>>(subscriber => {
+      let loadTicket = {}; // To check for stale loads
+      let lastSnapshotWasReady = false;
+
+      const loadResource = () => {
+        loadTicket = {};
+        const ticket = loadTicket;
+        this.#i18n.loadNamespaces(internalRef.id, error => {
+          if (ticket !== loadTicket) {
+            return;
+          }
+          if (error) {
+            subscriber.error(Array.isArray(error) ? error[0] : error);
+          } else {
+            const snapshot = this.#createSnapshot(internalRef);
+            if (snapshot.ready || lastSnapshotWasReady) {
+              lastSnapshotWasReady = snapshot.ready;
+              subscriber.next(snapshot);
+            }
+          }
+        });
+      };
+
+      const onChange = () => {
+        const snapshot = this.#createSnapshot(internalRef);
+        if (lastSnapshotWasReady && !snapshot.ready) {
+          subscriber.next(snapshot);
+        }
+
+        if (!snapshot.ready) {
+          loadResource();
+        }
+      };
+
+      this.#i18n.on('initialized', onChange);
+      this.#i18n.on('languageChanged', onChange);
+
+      if (this.#needsToLoadResource(internalRef)) {
+        loadResource();
+      }
+
+      return () => {
+        this.#i18n.off('initialized', onChange);
+        this.#i18n.off('languageChanged', onChange);
+      };
+    });
+  }
+
+  #createSnapshot<TMessages extends { [key in string]: string }>(
+    internalRef: InternalTranslationRef<string, TMessages>,
+  ): TranslationSnapshot<TMessages> {
+    if (this.#needsToLoadResource(internalRef)) {
+      return { ready: false };
+    }
+
+    const t = this.#i18n.getFixedT(null, internalRef.id);
+    const defaultMessages = internalRef.getDefaultMessages() as TMessages;
+
+    return {
+      ready: true,
+      t: (key, options) => {
+        return t(key as string, {
+          ...options,
+          defaultValue: defaultMessages[key],
+        });
+      },
+    };
+  }
+
+  #needsToLoadResource({ id }: InternalTranslationRef): boolean {
+    if (!this.#lazyResources.hasResource(this.#language, id)) {
+      return false;
+    }
+    return !this.#i18n.hasResourceBundle(this.#language, id);
+  }
+
+  #registerDefaultResource(internalRef: InternalTranslationRef): void {
+    const defaultResource = internalRef.getDefaultResource();
+    if (defaultResource) {
+      this.#lazyResources.addResource(defaultResource);
+    }
   }
 }
