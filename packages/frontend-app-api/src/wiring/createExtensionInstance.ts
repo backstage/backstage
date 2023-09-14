@@ -65,9 +65,9 @@ function resolveInputs(
         throw Error(
           `expected ${
             input.config.optional ? 'at most' : 'exactly'
-          } one '${inputName}' input but received ${attachedInstances
+          } one '${inputName}' input but received multiple: '${attachedInstances
             .map(e => e.id)
-            .join(', ')}`,
+            .join("', '")}'`,
         );
       } else if (attachedInstances.length === 0) {
         if (input.config.optional) {
@@ -103,7 +103,7 @@ export function createExtensionInstance(options: {
     parsedConfig = extension.configSchema?.parse(config ?? {});
   } catch (e) {
     throw new Error(
-      `Invalid configuration for extension '${extension.id}', ${e}`,
+      `Invalid configuration for extension '${extension.id}'; caused by ${e}`,
     );
   }
 
@@ -115,13 +115,11 @@ export function createExtensionInstance(options: {
         for (const [name, output] of Object.entries(namedOutputs)) {
           const ref = extension.output[name];
           if (!ref) {
-            throw new Error(
-              `Extension '${extension.id}' tried to bind unknown output '${name}'`,
-            );
+            throw new Error(`unknown output provided via '${name}'`);
           }
           if (extensionData.has(ref.id)) {
             throw new Error(
-              `Extension '${extension.id}' received duplicate output of '${ref.id}' via '${name}'`,
+              `duplicate extension data '${ref.id}' received via output '${name}'`,
             );
           }
           extensionData.set(ref.id, output);
@@ -131,8 +129,8 @@ export function createExtensionInstance(options: {
     });
   } catch (e) {
     throw new Error(
-      `Failed to instantiate extension '${extension.id}', ${
-        e.name === 'Error' ? e.message : e
+      `Failed to instantiate extension '${extension.id}'${
+        e.name === 'Error' ? `, ${e.message}` : `; caused by ${e}`
       }`,
     );
   }
