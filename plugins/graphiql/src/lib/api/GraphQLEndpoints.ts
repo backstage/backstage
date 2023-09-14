@@ -15,7 +15,7 @@
  */
 
 import { GraphQLBrowseApi, GraphQLEndpoint } from './types';
-import { ErrorApi, OAuthApi } from '@backstage/core-plugin-api';
+import { ErrorApi, FetchApi, OAuthApi } from '@backstage/core-plugin-api';
 
 /**
  * Helper for generic http endpoints
@@ -31,6 +31,10 @@ export type EndpointConfig = {
   method?: 'POST';
   // Defaults to setting Content-Type to application/json
   headers?: { [name in string]: string };
+  /**
+   * Fetch API to use instead of browser fetch()
+   */
+  fetchApi?: FetchApi;
 };
 
 /** @public */
@@ -46,6 +50,10 @@ export type GithubEndpointConfig = {
    */
   errorApi?: ErrorApi;
   /**
+   * Fetch API to use instead of browser fetch()
+   */
+  fetchApi?: FetchApi;
+  /**
    * GitHub Auth API used to authenticate requests.
    */
   githubAuthApi: OAuthApi;
@@ -55,7 +63,7 @@ export type GithubEndpointConfig = {
 export class GraphQLEndpoints implements GraphQLBrowseApi {
   // Create a support
   static create(config: EndpointConfig): GraphQLEndpoint {
-    const { id, title, url, method = 'POST' } = config;
+    const { id, title, url, method = 'POST', fetchApi } = config;
     return {
       id,
       title,
@@ -66,7 +74,7 @@ export class GraphQLEndpoints implements GraphQLBrowseApi {
           ...config.headers,
           ...options.headers,
         };
-        const res = await fetch(await url, {
+        const res = await (fetchApi?.fetch ?? fetch)(await url, {
           method,
           headers,
           body,
@@ -88,6 +96,7 @@ export class GraphQLEndpoints implements GraphQLBrowseApi {
       title,
       url = 'https://api.github.com/graphql',
       errorApi,
+      fetchApi,
       githubAuthApi,
     } = config;
     type ResponseBody = {
@@ -101,7 +110,7 @@ export class GraphQLEndpoints implements GraphQLBrowseApi {
         let retried = false;
 
         const doRequest = async (): Promise<any> => {
-          const res = await fetch(url, {
+          const res = await (fetchApi?.fetch ?? fetch)(url, {
             method: 'POST',
             headers: {
               'Content-Type': 'application/json',
