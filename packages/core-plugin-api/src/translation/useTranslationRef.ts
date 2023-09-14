@@ -14,36 +14,61 @@
  * limitations under the License.
  */
 
-import { useTranslation } from 'react-i18next';
+import { useEffect, useState } from 'react';
 
 import { useApi } from '../apis';
-import { appTranslationApiRef } from '../apis/alpha';
-import { toInternalTranslationRef, TranslationRef } from './TranslationRef';
-
-/** @alpha */
-export interface TranslationOptions {
-  /* no options supported for now */
-}
+import {
+  translationApiRef,
+  TranslationFunction,
+  TranslationSnapshot,
+} from '../apis/alpha';
+import { TranslationRef } from './TranslationRef';
 
 /** @alpha */
 export const useTranslationRef = <
   TMessages extends { [key in string]: string },
 >(
   translationRef: TranslationRef<string, TMessages>,
-) => {
-  const translationApi = useApi(appTranslationApiRef);
+): { t: TranslationFunction<TMessages> } => {
+  const translationApi = useApi(translationApiRef);
 
-  const internalRef = toInternalTranslationRef(translationRef);
-  translationApi.addResource(translationRef);
+  const [error, setError] = useState<Error>();
+  const [snapshot, setSnapshot] = useState<TranslationSnapshot<TMessages>>(() =>
+    translationApi.getTranslation(translationRef),
+  );
+  const [observable] = useState(() =>
+    translationApi.translation$(translationRef),
+  );
 
-  const { t } = useTranslation(internalRef.id, {
-    useSuspense: process.env.NODE_ENV !== 'test',
-  });
+  useEffect(() => {
+    const subscription = observable.subscribe({
+      next(next) {
+        if (next.ready) {
+          setSnapshot(next);
+        }
+      },
+      error: setError,
+    });
 
-  const defaultMessages = internalRef.getDefaultMessages();
+    return () => {
+      subscription.unsubscribe();
+    };
+  }, [observable]);
 
-  return <TKey extends keyof TMessages & string>(
-    key: TKey,
-    options?: TranslationOptions,
-  ): TMessages[TKey] => t(key, defaultMessages[key], options);
+  if (error) {
+    throw error;
+  }
+
+  if (!snapshot.ready) {
+    throw new Promise<void>(resolve => {
+      const subscription = observable.subscribe(next => {
+        if (next.ready) {
+          subscription.unsubscribe();
+          resolve();
+        }
+      });
+    });
+  }
+
+  return { t: snapshot.t };
 };
