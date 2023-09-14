@@ -76,6 +76,34 @@ describe('<EntityNamespacePicker/>', () => {
     ]);
   });
 
+  it('renders unique namespaces in custom order', async () => {
+    render(
+      <TestApiProvider apis={[[catalogApiRef, mockCatalogApiRef]]}>
+        <MockEntityListContextProvider value={{}}>
+          <EntityNamespacePicker
+            optionsSortFn={(a: string, b: string) => {
+              if (a === b) return 0;
+              if (a === 'namespace-1') return 1;
+              if (b === 'namespace-1') return -1;
+              return a < b ? -1 : 1;
+            }}
+          />
+        </MockEntityListContextProvider>
+      </TestApiProvider>,
+    );
+    await waitFor(() =>
+      expect(screen.getByText('Namespace')).toBeInTheDocument(),
+    );
+
+    fireEvent.click(screen.getByTestId('namespace-picker-expand'));
+
+    expect(screen.getAllByRole('option').map(o => o.textContent)).toEqual([
+      'namespace-2',
+      'namespace-3',
+      'namespace-1',
+    ]);
+  });
+
   it('respects the query parameter filter value', async () => {
     const updateFilters = jest.fn();
     const queryParameters = { namespace: ['namespace-1'] };

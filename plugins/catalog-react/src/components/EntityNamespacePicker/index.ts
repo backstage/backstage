@@ -15,4 +15,7 @@
  */
 
 export { EntityNamespacePicker } from './EntityNamespacePicker';
-export type { CatalogReactEntityNamespacePickerClassKey } from './EntityNamespacePicker';
+export type {
+  CatalogReactEntityNamespacePickerClassKey,
+  EntityNamespacePickerProps,
+} from './EntityNamespacePicker';

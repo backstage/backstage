@@ -172,6 +172,7 @@ export type EntityAutocompletePickerProps<
   };
   InputProps?: TextFieldProps;
   initialSelectedOptions?: string[];
+  optionsSortFn?: (option1: string, option2: string) => number;
 };
 
 // @public
@@ -230,9 +231,15 @@ export class EntityLifecycleFilter implements EntityFilter {
 }
 
 // @public (undocumented)
-export const EntityLifecyclePicker: (props: {
+export const EntityLifecyclePicker: (
+  props: EntityLifecyclePickerProps,
+) => React_2.JSX.Element;
+
+// @public (undocumented)
+export type EntityLifecyclePickerProps = {
   initialFilter?: string[];
-}) => React_2.JSX.Element;
+  optionsSortFn?: (option1: string, option2: string) => number;
+};
 
 // @public
 export const EntityListContext: React_2.Context<
@@ -281,7 +288,14 @@ export class EntityNamespaceFilter implements EntityFilter {
 }
 
 // @public (undocumented)
-export const EntityNamespacePicker: () => React_2.JSX.Element;
+export const EntityNamespacePicker: (
+  props: EntityNamespacePickerProps,
+) => React_2.JSX.Element;
+
+// @public (undocumented)
+export type EntityNamespacePickerProps = {
+  optionsSortFn?: (option1: string, option2: string) => number;
+};
 
 // @public
 export class EntityOrphanFilter implements EntityFilter {
@@ -460,6 +474,7 @@ export const EntityTagPicker: (
 // @public (undocumented)
 export type EntityTagPickerProps = {
   showCounts?: boolean;
+  optionsSortFn?: (option1: string, option2: string) => number;
 };
 
 // @public

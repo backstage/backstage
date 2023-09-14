@@ -33,7 +33,13 @@ const useStyles = makeStyles(
 );
 
 /** @public */
-export const EntityNamespacePicker = () => {
+export type EntityNamespacePickerProps = {
+  optionsSortFn?: (option1: string, option2: string) => number;
+};
+
+/** @public */
+export const EntityNamespacePicker = (props: EntityNamespacePickerProps) => {
+  const { optionsSortFn } = props;
   const classes = useStyles();
   return (
     <EntityAutocompletePicker
@@ -42,6 +48,7 @@ export const EntityNamespacePicker = () => {
       path="metadata.namespace"
       Filter={EntityNamespaceFilter}
       InputProps={{ className: classes.input }}
+      optionsSortFn={optionsSortFn}
     />
   );
 };

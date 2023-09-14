@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { fireEvent, render, waitFor, screen } from '@testing-library/react';
+import { fireEvent, render, screen, waitFor } from '@testing-library/react';
 import React from 'react';
 import { MockEntityListContextProvider } from '../../testUtils/providers';
 import { EntityTagFilter } from '../../filters';
@@ -67,6 +67,33 @@ describe('<EntityTagPicker/>', () => {
       'tag2',
       'tag3',
       'tag4',
+    ]);
+  });
+
+  it('renders unique tags in custom order', async () => {
+    render(
+      <TestApiProvider apis={[[catalogApiRef, mockCatalogApiRef]]}>
+        <MockEntityListContextProvider value={{}}>
+          <EntityTagPicker
+            optionsSortFn={(a: string, b: string) => {
+              if (a === b) return 0;
+              if (a === 'tag1') return 1;
+              if (b === 'tag1') return -1;
+              return a < b ? -1 : 1;
+            }}
+          />
+        </MockEntityListContextProvider>
+      </TestApiProvider>,
+    );
+    await waitFor(() => expect(screen.getByText('Tags')).toBeInTheDocument());
+
+    fireEvent.click(screen.getByTestId('tags-picker-expand'));
+
+    expect(screen.getAllByRole('option').map(o => o.textContent)).toEqual([
+      'tag2',
+      'tag3',
+      'tag4',
+      'tag1',
     ]);
   });
 

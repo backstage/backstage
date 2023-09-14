@@ -50,6 +50,7 @@ export type EntityAutocompletePickerProps<
   Filter: { new (values: string[]): NonNullable<T[Name]> };
   InputProps?: TextFieldProps;
   initialSelectedOptions?: string[];
+  optionsSortFn?: (option1: string, option2: string) => number;
 };
 
 /** @public */
@@ -65,6 +66,7 @@ export function EntityAutocompletePicker<
     Filter,
     InputProps,
     initialSelectedOptions = [],
+    optionsSortFn,
   } = props;
 
   const {
@@ -106,7 +108,9 @@ export function EntityAutocompletePicker<
     }
   }, [queryParameters]);
 
-  const availableOptions = Object.keys(availableValues ?? {});
+  const availableOptions = Object.keys(availableValues ?? {}).sort(
+    optionsSortFn,
+  );
   const shouldAddFilter = selectedOptions.length && availableOptions.length;
 
   useEffect(() => {

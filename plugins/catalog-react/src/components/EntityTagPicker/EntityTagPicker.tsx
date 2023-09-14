@@ -25,6 +25,7 @@ export type CatalogReactEntityTagPickerClassKey = 'input';
 /** @public */
 export type EntityTagPickerProps = {
   showCounts?: boolean;
+  optionsSortFn?: (option1: string, option2: string) => number;
 };
 
 const useStyles = makeStyles(
@@ -34,6 +35,7 @@ const useStyles = makeStyles(
 
 /** @public */
 export const EntityTagPicker = (props: EntityTagPickerProps) => {
+  const { showCounts, optionsSortFn } = props;
   const classes = useStyles();
 
   return (
@@ -42,8 +44,9 @@ export const EntityTagPicker = (props: EntityTagPickerProps) => {
       name="tags"
       path="metadata.tags"
       Filter={EntityTagFilter}
-      showCounts={props.showCounts}
+      showCounts={showCounts}
       InputProps={{ className: classes.input }}
+      optionsSortFn={optionsSortFn}
     />
   );
 };

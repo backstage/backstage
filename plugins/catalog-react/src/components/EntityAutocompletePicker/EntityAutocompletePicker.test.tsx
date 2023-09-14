@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { fireEvent, render, waitFor, screen } from '@testing-library/react';
+import { fireEvent, render, screen, waitFor } from '@testing-library/react';
 import React from 'react';
 import { MockEntityListContextProvider } from '../../testUtils/providers';
 import { EntityAutocompletePicker } from './EntityAutocompletePicker';
@@ -101,6 +101,39 @@ describe('<EntityAutocompletePicker/>', () => {
       'option2',
       'option3',
       'option4',
+    ]);
+  });
+
+  it('renders unique options in custom order', async () => {
+    render(
+      <TestApiProvider apis={[[catalogApiRef, mockCatalogApi]]}>
+        <MockEntityListContextProvider value={{}}>
+          <EntityAutocompletePicker<EntityFilters>
+            label="Options"
+            path="spec.options"
+            name="options"
+            Filter={EntityOptionFilter}
+            optionsSortFn={(a: string, b: string) => {
+              if (a === b) return 0;
+              if (a === 'option1') return 1;
+              if (b === 'option1') return -1;
+              return a < b ? -1 : 1;
+            }}
+          />
+        </MockEntityListContextProvider>
+      </TestApiProvider>,
+    );
+    await waitFor(() =>
+      expect(screen.getByText('Options')).toBeInTheDocument(),
+    );
+
+    fireEvent.click(screen.getByTestId('options-picker-expand'));
+
+    expect(screen.getAllByRole('option').map(o => o.textContent)).toEqual([
+      'option2',
+      'option3',
+      'option4',
+      'option1',
     ]);
   });
 

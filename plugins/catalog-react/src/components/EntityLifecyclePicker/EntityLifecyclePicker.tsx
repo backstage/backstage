@@ -32,8 +32,14 @@ const useStyles = makeStyles(
 );
 
 /** @public */
-export const EntityLifecyclePicker = (props: { initialFilter?: string[] }) => {
-  const { initialFilter = [] } = props;
+export type EntityLifecyclePickerProps = {
+  initialFilter?: string[];
+  optionsSortFn?: (option1: string, option2: string) => number;
+};
+
+/** @public */
+export const EntityLifecyclePicker = (props: EntityLifecyclePickerProps) => {
+  const { initialFilter = [], optionsSortFn } = props;
   const classes = useStyles();
 
   return (
@@ -44,6 +50,7 @@ export const EntityLifecyclePicker = (props: { initialFilter?: string[] }) => {
       Filter={EntityLifecycleFilter}
       InputProps={{ className: classes.input }}
       initialSelectedOptions={initialFilter}
+      optionsSortFn={optionsSortFn}
     />
   );
 };
