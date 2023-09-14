@@ -22,6 +22,7 @@ import {
   ANNOTATION_LOCATION,
   ANNOTATION_ORIGIN_LOCATION,
   Entity,
+  stringifyEntityRef,
 } from '@backstage/catalog-model';
 import express from 'express';
 import request from 'supertest';
@@ -414,15 +415,27 @@ describe('createRouter readonly disabled', () => {
     });
 
     it('can fetch entities by refs', async () => {
-      const entity: Entity = {} as any;
+      const entity: Entity = {
+        apiVersion: 'a',
+        kind: 'component',
+        metadata: {
+          name: 'a',
+        },
+      };
+      const entityRef = stringifyEntityRef(entity);
       entitiesCatalog.entitiesBatch.mockResolvedValue({ items: [entity] });
       const response = await request(app)
         .post('/entities/by-refs')
         .set('Content-Type', 'application/json')
-        .send('{"entityRefs":["a"],"fields":["b"]}');
+        .send(
+          JSON.stringify({
+            entityRefs: [entityRef],
+            fields: ['metadata.name'],
+          }),
+        );
       expect(entitiesCatalog.entitiesBatch).toHaveBeenCalledTimes(1);
       expect(entitiesCatalog.entitiesBatch).toHaveBeenCalledWith({
-        entityRefs: ['a'],
+        entityRefs: [entityRef],
         fields: expect.any(Function),
       });
       expect(response.status).toEqual(200);

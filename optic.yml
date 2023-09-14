@@ -11,17 +11,10 @@ capture:
       # ℹ️ Requests should be sent to the Optic proxy, the address of which is injected into 'run.command's env as OPTIC_PROXY (or the value of 'run.proxy_variable').
       run:
         # 🔧 Specify a command that will generate traffic
-        # We add the CI command here for the tests to run
-        command: cd plugins/search-backend && CI=1 yarn backstage-cli package test
+        command: cd plugins/search-backend && yarn backstage-cli package test
   plugins/catalog-backend/src/schema/openapi.yaml:
     server:
       url: http://localhost:3000
     requests:
       run:
-        command: cd plugins/catalog-backend && CI=1 yarn backstage-cli package test
-  plugins/todo-backend/src/schema/openapi.yaml:
-    server:
-      url: http://localhost:3000
-    requests:
-      run:
-        command: cd plugins/todo-backend && CI=1 yarn backstage-cli package test
+        command: cd plugins/catalog-backend && yarn backstage-cli package test

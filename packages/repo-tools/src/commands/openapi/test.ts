@@ -21,6 +21,9 @@ import { runner } from './runner';
 import { YAML_SCHEMA_PATH } from './constants';
 import { promisify } from 'util';
 import { exec as execCb } from 'child_process';
+import YAML from 'js-yaml';
+import { relative as relativePath } from 'path';
+import { paths as cliPaths } from '../../lib/paths';
 
 const exec = promisify(execCb);
 
@@ -29,9 +32,22 @@ async function test(directoryPath: string) {
   if (!(await fs.pathExists(openapiPath))) {
     return;
   }
-  await exec(`yarn optic diff ${openapiPath} --base origin/master`);
+  const opticConfig = YAML.load(
+    await fs.readFile(join(cliPaths.targetRoot, 'optic.yml'), 'utf8'),
+  );
+  const relativeSpecPath = relativePath(cliPaths.targetRoot, openapiPath);
+  // Skip any specs that aren't set up for Optic testing.
+  if (!(opticConfig as any).capture[relativeSpecPath]) {
+    return;
+  }
   try {
-    await exec(`yarn optic capture ${openapiPath}`);
+    await exec(`yarn optic capture ${openapiPath}`, {
+      env: {
+        ...process.env,
+        CI: '1',
+        BACKSTAGE_TEST_DISABLE_DOCKER: '1',
+      },
+    });
   } catch (err) {
     err.message = err.stderr + err.stdout;
     err.message = (err.message as string)
@@ -45,6 +61,7 @@ async function test(directoryPath: string) {
 
 export async function bulkCommand(paths: string[] = []): Promise<void> {
   const resultsList = await runner(paths, dir => test(dir), {
+    // Because we're using 3000 as the default port, we can only have one test running at once.
     concurrencyLimit: 1,
   });
 

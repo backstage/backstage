@@ -1,24 +1,62 @@
 openapi: 3.0.3
-
 info:
-  title: '@backstage/plugin-search-backend'
-  version: '1'
+  title: "@backstage/plugin-search-backend"
+  version: "1"
   description: The Backstage backend plugin that provides search functionality.
   license:
     name: Apache-2.0
     url: http://www.apache.org/licenses/LICENSE-2.0.html
   contact: {}
-
 servers:
   - url: /
-
 components:
   examples: {}
   headers: {}
   parameters: {}
   requestBodies: {}
-  responses: {}
+  responses:
+    ErrorResponse:
+      description: An error response from the backend.
+      content:
+        application/json; charset=utf-8:
+          schema:
+            $ref: '#/components/schemas/Error'
   schemas:
+    Error:
+      type: object
+      properties:
+        error:
+          type: object
+          properties:
+            name:
+              type: string
+            message:
+              type: string
+          required:
+            - name
+            - message
+        request:
+          type: object
+          properties:
+            method:
+              type: string
+            url:
+              type: string
+          required:
+            - method
+            - url
+        response:
+          type: object
+          properties:
+            statusCode:
+              type: number
+          required:
+            - statusCode
+      required:
+        - error
+        - request
+        - response
+
     JsonObject:
       type: object
       properties: {}
@@ -35,7 +73,7 @@ paths:
       operationId: Query
       description: Query documents with a given filter.
       responses:
-        '200':
+        "200":
           description: Ok
           content:
             application/json:
@@ -85,18 +123,8 @@ paths:
                     type: integer
                 required:
                   - results
-        '400':
-          description: Bad request
-          content:
-            application/json:
-              schema:
-                type: object
-                properties:
-                  error:
-                    type: object
-                    properties:
-                      message:
-                        type: string
+        default:
+          $ref: '#/components/responses/ErrorResponse'
       security:
         - {}
         - JWT: []
@@ -106,7 +134,7 @@ paths:
           required: false
           schema:
             type: string
-            default: ''
+            default: ""
         - name: filters
           in: query
           required: false
@@ -116,7 +144,7 @@ paths:
             # JsonObject is used here instead of the full ZOD schema definition as
             #   resolution of recursive schemas isn't possible with the library we're using
             #   and it causes a performance hit when _trying_ to resolve them.
-            $ref: '#/components/schemas/JsonObject'
+            $ref: "#/components/schemas/JsonObject"
         - name: types
           in: query
           required: false
