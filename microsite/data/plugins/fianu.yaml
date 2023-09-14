@@ -1,0 +1,9 @@
+title: Fianu Reports
+author: Karan Adep
+authorUrl: https://github.com/karanadep
+category: Reporting
+description: View Fianu reports for your components in Backstage.
+documentation: https://github.com/backstage/backstage/tree/master/plugins/Fianu
+iconUrl: https://avatars.githubusercontent.com/u/111195052?s=200&v=4
+npmPackageName: '@backstage/plugin-fianu'
+addedDate: '2023-09-13'
