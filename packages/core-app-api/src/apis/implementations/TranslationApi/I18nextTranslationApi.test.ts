@@ -18,12 +18,10 @@ import {
   createTranslationMessages,
   createTranslationRef,
   createTranslationResource,
+  TranslationSnapshot,
 } from '@backstage/core-plugin-api/alpha';
 import { Observable } from '@backstage/types';
-import {
-  AppTranslationApiImpl,
-  TranslationSnapshot,
-} from './AppTranslationImpl';
+import { I18nextTranslationApi } from './I18nextTranslationApi';
 
 const plainRef = createTranslationRef({
   id: 'plain',
@@ -74,13 +72,13 @@ function assertReady<TMessages extends { [key in string]: string }>(
   return snapshot;
 }
 
-describe('AppTranslationApiImpl', () => {
+describe('I18nextTranslationApi', () => {
   afterEach(() => {
     jest.clearAllMocks();
   });
 
   it('should get a translation snapshot', () => {
-    const translationApi = AppTranslationApiImpl.create();
+    const translationApi = I18nextTranslationApi.create();
     expect(translationApi.getAvailableLanguages()).toEqual(['en']);
 
     const snapshot = assertReady(translationApi.getTranslation(plainRef));
@@ -88,7 +86,7 @@ describe('AppTranslationApiImpl', () => {
   });
 
   it('should get a translation snapshot for ref with translations', async () => {
-    const translationApi = AppTranslationApiImpl.create({
+    const translationApi = I18nextTranslationApi.create({
       supportedLanguages: ['en', 'sv'],
     });
     expect(translationApi.getAvailableLanguages()).toEqual(['en', 'sv']);
@@ -99,7 +97,7 @@ describe('AppTranslationApiImpl', () => {
   });
 
   it('should wait for translations to be loaded', async () => {
-    const translationApi = AppTranslationApiImpl.create({
+    const translationApi = I18nextTranslationApi.create({
       supportedLanguages: ['en', 'sv'],
     });
     expect(translationApi.getTranslation(resourceRef).ready).toBe(true);
@@ -113,7 +111,7 @@ describe('AppTranslationApiImpl', () => {
   });
 
   it('should create an instance with message overrides', () => {
-    const translationApi = AppTranslationApiImpl.create({
+    const translationApi = I18nextTranslationApi.create({
       resources: [
         createTranslationMessages({
           ref: plainRef,
@@ -126,7 +124,7 @@ describe('AppTranslationApiImpl', () => {
   });
 
   it('should create an instance and ignore null overrides', () => {
-    const translationApi = AppTranslationApiImpl.create({
+    const translationApi = I18nextTranslationApi.create({
       resources: [
         createTranslationMessages({
           ref: plainRef,
@@ -140,7 +138,7 @@ describe('AppTranslationApiImpl', () => {
   });
 
   it('should create an instance with translation resources', async () => {
-    const translationApi = AppTranslationApiImpl.create({
+    const translationApi = I18nextTranslationApi.create({
       supportedLanguages: ['en', 'sv'],
       resources: [
         createTranslationResource({
@@ -163,7 +161,7 @@ describe('AppTranslationApiImpl', () => {
   });
 
   it('should wait for default language translations to be loaded', async () => {
-    const translationApi = AppTranslationApiImpl.create({
+    const translationApi = I18nextTranslationApi.create({
       resources: [
         createTranslationResource({
           ref: plainRef,
@@ -181,7 +179,7 @@ describe('AppTranslationApiImpl', () => {
   });
 
   it('should prefer the last loaded resource', async () => {
-    const translationApi = AppTranslationApiImpl.create({
+    const translationApi = I18nextTranslationApi.create({
       supportedLanguages: ['en', 'sv'],
       resources: [
         createTranslationResource({
@@ -216,7 +214,7 @@ describe('AppTranslationApiImpl', () => {
   });
 
   it('should refuse switch on unsupported languages', async () => {
-    const translationApi = AppTranslationApiImpl.create({
+    const translationApi = I18nextTranslationApi.create({
       supportedLanguages: ['en', 'sv'],
     });
     expect(translationApi.getAvailableLanguages()).toEqual(['en', 'sv']);
@@ -227,7 +225,7 @@ describe('AppTranslationApiImpl', () => {
   });
 
   it('should forward loading errors', async () => {
-    const translationApi = AppTranslationApiImpl.create({
+    const translationApi = I18nextTranslationApi.create({
       resources: [
         createTranslationResource({
           ref: plainRef,
@@ -245,7 +243,7 @@ describe('AppTranslationApiImpl', () => {
     const loader = jest
       .fn()
       .mockResolvedValue({ default: { foo: 'OtherFoo' } });
-    const translationApi = AppTranslationApiImpl.create({
+    const translationApi = I18nextTranslationApi.create({
       resources: [
         createTranslationResource({
           ref: plainRef,
@@ -270,7 +268,7 @@ describe('AppTranslationApiImpl', () => {
   });
 
   it('should handle interrupted loads gracefully', async () => {
-    const translationApi = AppTranslationApiImpl.create({
+    const translationApi = I18nextTranslationApi.create({
       supportedLanguages: ['en', 'sv', 'no'],
       resources: [
         createTranslationResource({
@@ -299,7 +297,7 @@ describe('AppTranslationApiImpl', () => {
   });
 
   it('should only emit changes', async () => {
-    const translationApi = AppTranslationApiImpl.create({
+    const translationApi = I18nextTranslationApi.create({
       supportedLanguages: ['en', 'dk', 'sv', 'no'],
       resources: [
         createTranslationResource({

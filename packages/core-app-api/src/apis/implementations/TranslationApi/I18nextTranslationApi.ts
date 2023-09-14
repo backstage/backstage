@@ -15,10 +15,11 @@
  */
 
 import {
-  AppTranslationApi,
+  TranslationApi,
   TranslationMessages,
   TranslationRef,
   TranslationResource,
+  TranslationSnapshot,
 } from '@backstage/core-plugin-api/alpha';
 import { createInstance as createI18n, type i18n as I18n } from 'i18next';
 import ObservableImpl from 'zen-observable';
@@ -137,7 +138,7 @@ class ResourceLoader {
 }
 
 /** @alpha */
-export class AppTranslationApiImpl implements AppTranslationApi {
+export class I18nextTranslationApi implements TranslationApi {
   static create(options?: ExperimentalI18n) {
     const languages = options?.supportedLanguages || [DEFAULT_LANGUAGE];
     if (!languages.includes(DEFAULT_LANGUAGE)) {
@@ -184,7 +185,7 @@ export class AppTranslationApiImpl implements AppTranslationApi {
       }
     }
 
-    return new AppTranslationApiImpl(i18n, loader, languages);
+    return new I18nextTranslationApi(i18n, loader, languages);
   }
 
   #i18n: I18n;

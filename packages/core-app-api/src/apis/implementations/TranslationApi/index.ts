@@ -14,4 +14,4 @@
  * limitations under the License.
  */
 
-export * from './AppTranslationImpl';
+export * from './I18nextTranslationApi';
