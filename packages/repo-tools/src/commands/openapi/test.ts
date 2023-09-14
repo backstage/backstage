@@ -49,9 +49,11 @@ async function test(directoryPath: string) {
       },
     });
   } catch (err) {
+    // Optic outputs the actual results to stdout, but that will not be added to the message by default.
     err.message = err.stderr + err.stdout;
     err.message = (err.message as string)
       .split('\n')
+      // Remove any lines that are emitted during processing and only show output.
       .filter(e => !e.includes('Sending requests to serverPASS'))
       .filter(e => e.trim())
       .join('\n');
