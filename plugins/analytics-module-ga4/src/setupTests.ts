@@ -13,10 +13,8 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import '@testing-library/jest-dom';
 
-// eslint-disable-next-line no-restricted-imports
-import { TextEncoder } from 'util';
+import '@testing-library/jest-dom';
 
 // Mock browser crypto.subtle.digest method for sha-256 hashing.
 Object.defineProperty(global.self, 'crypto', {
@@ -25,9 +23,4 @@ Object.defineProperty(global.self, 'crypto', {
       digest: (_algo: string, data: Uint8Array): ArrayBuffer => data.buffer,
     },
   },
-});
-
-// Also used in browser-based APIs for hashing.
-Object.defineProperty(global.self, 'TextEncoder', {
-  value: TextEncoder,
 });

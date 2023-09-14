@@ -199,6 +199,9 @@ async function getProjectConfig(targetPath, extraConfig) {
   if (options.testEnvironment === require.resolve('jest-environment-jsdom')) {
     // FIXME https://github.com/jsdom/jsdom/issues/1724
     options.setupFilesAfterEnv.unshift(require.resolve('cross-fetch/polyfill'));
+    // https://github.com/jsdom/jsdom/issues/2524
+    // https://stackoverflow.com/questions/68468203/why-am-i-getting-textencoder-is-not-defined-in-jest
+    options.setupFilesAfterEnv.push(require.resolve('./textCodecPolyfill.js'));
   }
 
   // Use src/setupTests.ts as the default location for configuring test env
