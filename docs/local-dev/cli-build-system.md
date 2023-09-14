@@ -62,7 +62,7 @@ steps:
 - **Bundling** - Combines a package and all of its dependencies into a
   production-ready bundle
 
-These steps are generally kept isolated form each other, with each step focusing
+These steps are generally kept isolated from each other, with each step focusing
 on its specific task. For example, we do not do linting or type checking
 together with the building or bundling. This is so that we can provide more
 flexibility and avoid duplicate work, improving performance. It is strongly
