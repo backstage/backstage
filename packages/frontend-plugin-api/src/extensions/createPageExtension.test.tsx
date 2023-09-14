@@ -30,17 +30,17 @@ describe('createPageExtension', () => {
       createPageExtension({
         id: 'test',
         configSchema,
-        component: async () => <div />,
+        loader: async () => <div />,
       }),
     ).toEqual({
-      $$type: 'extension',
+      $$type: '@backstage/Extension',
       id: 'test',
       at: 'core.routes/routes',
       configSchema: expect.anything(),
       disabled: false,
       inputs: {},
       output: {
-        component: expect.anything(),
+        element: expect.anything(),
         path: expect.anything(),
         routeRef: expect.anything(),
       },
@@ -55,24 +55,24 @@ describe('createPageExtension', () => {
         configSchema,
         inputs: {
           first: {
-            extensionData: { component: coreExtensionData.reactComponent },
+            extensionData: { element: coreExtensionData.reactElement },
           },
         },
-        component: async () => <div />,
+        loader: async () => <div />,
       }),
     ).toEqual({
-      $$type: 'extension',
+      $$type: '@backstage/Extension',
       id: 'test',
       at: 'other/place',
       configSchema: expect.anything(),
       disabled: true,
       inputs: {
         first: {
-          extensionData: { component: coreExtensionData.reactComponent },
+          extensionData: { element: coreExtensionData.reactElement },
         },
       },
       output: {
-        component: expect.anything(),
+        element: expect.anything(),
         path: expect.anything(),
         routeRef: expect.anything(),
       },
@@ -83,17 +83,17 @@ describe('createPageExtension', () => {
       createPageExtension({
         id: 'test',
         defaultPath: '/here',
-        component: async () => <div />,
+        loader: async () => <div />,
       }),
     ).toEqual({
-      $$type: 'extension',
+      $$type: '@backstage/Extension',
       id: 'test',
       at: 'core.routes/routes',
       configSchema: expect.anything(),
       disabled: false,
       inputs: {},
       output: {
-        component: expect.anything(),
+        element: expect.anything(),
         path: expect.anything(),
         routeRef: expect.anything(),
       },

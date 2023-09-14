@@ -13,8 +13,9 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import 'buffer';
 
+import 'buffer';
+import { resolve as resolvePath } from 'path';
 import { errorHandler, getVoidLogger } from '@backstage/backend-common';
 import { setupRequestMockHandlers } from '@backstage/backend-test-utils';
 import { NotFoundError } from '@backstage/errors';
@@ -662,6 +663,74 @@ describe('KubernetesProxy', () => {
     const response = await requestPromise;
 
     expect(response.status).toEqual(200);
+  });
+
+  describe('when server uses TLS', () => {
+    let httpsRequest: jest.SpyInstance;
+    beforeAll(() => {
+      httpsRequest = jest.spyOn(
+        // this is pretty egregious reverse engineering of msw.
+        // If the SetupServerApi constructor was exported, we wouldn't need
+        // to be quite so hacky here
+        (worker as any).interceptor.interceptors[0].modules.get('https'),
+        'request',
+      );
+    });
+    beforeEach(() => {
+      httpsRequest.mockClear();
+    });
+    describe('should pass the exact response from Kubernetes using the CA file', () => {
+      it('should trust contents of specified caFile', async () => {
+        const apiResponse = {
+          kind: 'APIVersions',
+          versions: ['v1'],
+          serverAddressByClientCIDRs: [
+            {
+              clientCIDR: '0.0.0.0/0',
+              serverAddress: '192.168.0.1:3333',
+            },
+          ],
+        };
+
+        clusterSupplier.getClusters.mockResolvedValue([
+          {
+            name: 'cluster1',
+            url: 'https://localhost:9999',
+            serviceAccountToken: '',
+            authProvider: 'serviceAccount',
+            caFile: resolvePath(__dirname, '__fixtures__/mock-ca.crt'),
+          },
+        ] as ClusterDetails[]);
+
+        authTranslator.decorateClusterDetailsWithAuth.mockResolvedValue({
+          name: 'cluster1',
+          url: 'https://localhost:9999',
+          serviceAccountToken: '',
+          authProvider: 'serviceAccount',
+        } as ClusterDetails);
+
+        worker.use(
+          rest.get('https://localhost:9999/api', (_: any, res: any, ctx: any) =>
+            res(ctx.status(299), ctx.json(apiResponse)),
+          ),
+        );
+
+        const requestPromise = setupProxyPromise({
+          proxyPath: '/mountpath',
+          requestPath: '/api',
+          headers: { [HEADER_KUBERNETES_CLUSTER]: 'cluster1' },
+        });
+
+        const response = await requestPromise;
+
+        expect(response.status).toEqual(299);
+        expect(response.body).toStrictEqual(apiResponse);
+
+        expect(httpsRequest).toHaveBeenCalledTimes(1);
+        const [[{ ca }]] = httpsRequest.mock.calls;
+        expect(ca).toMatch('MOCKCA');
+      });
+    });
   });
 
   describe('WebSocket', () => {

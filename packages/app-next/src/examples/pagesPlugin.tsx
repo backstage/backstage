@@ -36,7 +36,7 @@ const IndexPage = createPageExtension({
   id: 'index',
   defaultPath: '/',
   routeRef: indexRouteRef,
-  component: async () => {
+  loader: async () => {
     const Component = () => {
       const page1Link = useRouteRef(page1RouteRef);
       return (
@@ -59,7 +59,7 @@ const Page1 = createPageExtension({
   id: 'page1',
   defaultPath: '/page1',
   routeRef: page1RouteRef,
-  component: async () => {
+  loader: async () => {
     const Component = () => {
       const indexLink = useRouteRef(indexRouteRef);
       // const page2Link = useRouteRef(page2RouteRef);

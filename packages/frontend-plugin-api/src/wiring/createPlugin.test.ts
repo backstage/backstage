@@ -95,14 +95,13 @@ const outputExtension = createExtension({
     },
   },
   output: {
-    component: coreExtensionData.reactComponent,
+    element: coreExtensionData.reactElement,
   },
   factory({ bind, inputs }) {
     bind({
-      component: () =>
-        React.createElement('span', {}, [
-          `Names: ${inputs.names.map(n => n.name).join(', ')}`,
-        ]),
+      element: React.createElement('span', {}, [
+        `Names: ${inputs.names.map(n => n.name).join(', ')}`,
+      ]),
     });
   },
 });

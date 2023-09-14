@@ -29,26 +29,26 @@ export const CoreRoutes = createExtension({
       extensionData: {
         path: coreExtensionData.routePath,
         ref: coreExtensionData.routeRef,
-        component: coreExtensionData.reactComponent,
+        element: coreExtensionData.reactElement,
       },
     },
   },
   output: {
-    component: coreExtensionData.reactComponent,
+    element: coreExtensionData.reactElement,
   },
   factory({ bind, inputs }) {
     const Routes = () => {
       const element = useRoutes(
         inputs.routes.map(route => ({
           path: route.path,
-          element: <route.component />,
+          element: route.element,
         })),
       );
 
       return element;
     };
     bind({
-      component: () => <Routes />,
+      element: <Routes />,
     });
   },
 });

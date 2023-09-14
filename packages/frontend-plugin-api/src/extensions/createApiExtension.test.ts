@@ -31,7 +31,7 @@ describe('createApiExtension', () => {
     });
 
     expect(extension).toEqual({
-      $$type: 'extension',
+      $$type: '@backstage/Extension',
       id: 'apis.test',
       at: 'core/apis',
       disabled: false,
@@ -39,7 +39,7 @@ describe('createApiExtension', () => {
       inputs: {},
       output: {
         api: expect.objectContaining({
-          $$type: 'extension-data',
+          $$type: '@backstage/ExtensionDataRef',
           id: 'core.api.factory',
           config: {},
         }),
@@ -63,9 +63,9 @@ describe('createApiExtension', () => {
         });
       },
     });
-
+    // boo
     expect(extension).toEqual({
-      $$type: 'extension',
+      $$type: '@backstage/Extension',
       id: 'apis.test',
       at: 'core/apis',
       disabled: false,
@@ -73,7 +73,7 @@ describe('createApiExtension', () => {
       inputs: {},
       output: {
         api: expect.objectContaining({
-          $$type: 'extension-data',
+          $$type: '@backstage/ExtensionDataRef',
           id: 'core.api.factory',
           config: {},
         }),
