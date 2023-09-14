@@ -18,6 +18,7 @@ import { Config } from '@backstage/config';
 
 const JIRA_BASE_URL_CONFIG_PATH = 'jira.baseUrl';
 const JIRA_TOKEN_CONFIG_PATH = 'jira.token';
+const JIRA_USER_CONFIG_EMAIL_SUFFIX = 'jira.userEmailSuffix';
 
 export function resolveJiraBaseUrl(config: Config): string {
   try {
@@ -32,5 +33,13 @@ export function resolveJiraToken(config: Config): string {
     return config.getString(JIRA_TOKEN_CONFIG_PATH);
   } catch (error) {
     throw new Error(`Invalid Jira token, ${error}`);
+  }
+}
+
+export function resolveUserEmailSuffix(config: Config): string {
+  try {
+    return config.getString(JIRA_USER_CONFIG_EMAIL_SUFFIX);
+  } catch (error) {
+    throw new Error(`Invalid Jira user path, ${error}`);
   }
 }

@@ -118,7 +118,7 @@ export async function createRouter(
     const customFilterAnnotations =
       entity.metadata.annotations?.[FILTER_ANNOTATION]?.split(':')!;
 
-    filters = getDefaultFilters(userIdentity?.identity?.userEntityRef);
+    filters = getDefaultFilters(config, userIdentity?.identity?.userEntityRef);
 
     if (customFilterAnnotations) {
       filters.push(

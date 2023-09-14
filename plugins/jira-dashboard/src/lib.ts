@@ -31,11 +31,3 @@ export const getIssueUrl = (issueUrl: string, issueKey: string) => {
   const url = new URL(issueUrl);
   return `https://${url.host}/browse/${issueKey}`;
 };
-
-/**
- * Get the URL to a user avatar
- */
-export const getUserAvatar = (userKey: string) => {
-  const url = new URL('avatars.rnd-tools.k8s.axis.com');
-  return `https://${url.host}/avatars/${userKey}`;
-};

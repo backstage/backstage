@@ -13,22 +13,34 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+import { Config } from '@backstage/config';
 import type { Filter } from './types';
+import { resolveUserEmailSuffix } from './config';
 
-export const getDefaultFilters = (userRef?: string): Filter[] => {
-  const openFilter: Filter = {
-    name: 'Open Issues',
-    shortName: 'OPEN',
-    query: 'resolution = Unresolved ORDER BY updated DESC',
-  };
+const getUsernameFromRef = (userRef: string) => {
+  return userRef?.split('/').slice(1)[0];
+};
 
-  const incomingFilter: Filter = {
-    name: 'Incoming Issues',
-    shortName: 'INCOMING',
-    query: 'status = New ORDER BY created ASC',
-  };
+const openFilter: Filter = {
+  name: 'Open Issues',
+  shortName: 'OPEN',
+  query: 'resolution = Unresolved ORDER BY updated DESC',
+};
 
-  const username = userRef?.split('/').slice(1);
+const incomingFilter: Filter = {
+  name: 'Incoming Issues',
+  shortName: 'INCOMING',
+  query: 'status = New ORDER BY created ASC',
+};
+
+export const getDefaultFilters = (
+  config: Config,
+  userRef?: string,
+): Filter[] => {
+  if (!userRef) {
+    return [openFilter, incomingFilter];
+  }
+  const username = getUsernameFromRef(userRef);
 
   if (!username) {
     return [openFilter, incomingFilter];
@@ -37,7 +49,9 @@ export const getDefaultFilters = (userRef?: string): Filter[] => {
   const assignedToMeFilter: Filter = {
     name: 'Assigned to me',
     shortName: 'ME',
-    query: `assignee = "${username}@axis.com" AND resolution = Unresolved ORDER BY updated DESC`,
+    query: `assignee = "${username}${resolveUserEmailSuffix(
+      config,
+    )}" AND resolution = Unresolved ORDER BY updated DESC`,
   };
 
   return [openFilter, incomingFilter, assignedToMeFilter];

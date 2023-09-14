@@ -17,12 +17,12 @@
 import React from 'react';
 import { Typography, makeStyles } from '@material-ui/core';
 import { JiraDataResponse } from '../../types';
-import { Table } from '@backstage/core-components';
+import { ErrorPanel, Table } from '@backstage/core-components';
 import { capitalize } from 'lodash';
 import { columns } from './columns';
 
 type Props = {
-  value: JiraDataResponse;
+  tableContent: JiraDataResponse;
 };
 
 const useStyles = makeStyles(theme => ({
@@ -31,20 +31,24 @@ const useStyles = makeStyles(theme => ({
   },
 }));
 
-export const JiraTable = (props: Props) => {
-  const { name, issues } = props.value;
+export const JiraTable = ({ tableContent }: Props) => {
   const classes = useStyles();
+
+  if (!tableContent) {
+    return <ErrorPanel error={Error('Table could not be rendered')} />;
+  }
+  const nbrOfIssues = tableContent?.issues?.length ?? 0;
 
   return (
     <div className={classes.root}>
       <Table
-        title={`${capitalize(name)} (${issues.length})`}
+        title={`${capitalize(tableContent.name)} (${nbrOfIssues})`}
         options={{
           paging: false,
           padding: 'dense',
           search: true,
         }}
-        data={issues}
+        data={tableContent.issues || []}
         columns={columns}
         emptyContent={
           <Typography

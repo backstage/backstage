@@ -25,5 +25,10 @@ export interface Config {
      * The base url for Jira in your company, including the API version. For instance: https://jira.se.your-company.com/rest/api/2/'
      */
     baseUrl: string;
+
+    /**
+     * The email suffix used for retreiving a specific Jira user in a company. For instance @your-company.com
+     */
+    userEmailSuffix: string;
   };
 }

@@ -70,7 +70,7 @@ export const JiraDashboardContent = () => {
         </Grid>
         {jiraResponse.data.map((value: JiraDataResponse) => (
           <Grid item key={value.name} md={6} xs={12}>
-            <JiraTable value={value} />
+            <JiraTable tableContent={value} />
           </Grid>
         ))}
       </Grid>
