@@ -15,13 +15,13 @@
  */
 
 import React from 'react';
-import { render, screen, fireEvent, waitFor } from '@testing-library/react';
+import { screen, fireEvent, waitFor } from '@testing-library/react';
 
 import { analyticsApiRef } from '@backstage/core-plugin-api';
 import {
   MockAnalyticsApi,
   TestApiProvider,
-  wrapInTestApp,
+  renderInTestApp,
 } from '@backstage/test-utils';
 
 import { IssueLink } from './IssueLink';
@@ -57,13 +57,11 @@ const defaultGitlabProps = {
 describe('FeedbackLink', () => {
   const apiSpy = new MockAnalyticsApi();
 
-  it('Should open new Github issue tab', () => {
-    render(
-      wrapInTestApp(
-        <TestApiProvider apis={[[analyticsApiRef, apiSpy]]}>
-          <IssueLink {...defaultGithubProps} />
-        </TestApiProvider>,
-      ),
+  it('Should open new Github issue tab', async () => {
+    await renderInTestApp(
+      <TestApiProvider apis={[[analyticsApiRef, apiSpy]]}>
+        <IssueLink {...defaultGithubProps} />
+      </TestApiProvider>,
     );
 
     const link = screen.getByText(/Open new Github issue/);
@@ -77,13 +75,11 @@ describe('FeedbackLink', () => {
     );
   });
 
-  it('Should open new Gitlab issue tab', () => {
-    render(
-      wrapInTestApp(
-        <TestApiProvider apis={[[analyticsApiRef, apiSpy]]}>
-          <IssueLink {...defaultGitlabProps} />
-        </TestApiProvider>,
-      ),
+  it('Should open new Gitlab issue tab', async () => {
+    await renderInTestApp(
+      <TestApiProvider apis={[[analyticsApiRef, apiSpy]]}>
+        <IssueLink {...defaultGitlabProps} />
+      </TestApiProvider>,
     );
 
     const link = screen.getByText(/Open new Gitlab issue/);
@@ -98,12 +94,10 @@ describe('FeedbackLink', () => {
   });
 
   it('Should track click events', async () => {
-    render(
-      wrapInTestApp(
-        <TestApiProvider apis={[[analyticsApiRef, apiSpy]]}>
-          <IssueLink {...defaultGithubProps} />
-        </TestApiProvider>,
-      ),
+    await renderInTestApp(
+      <TestApiProvider apis={[[analyticsApiRef, apiSpy]]}>
+        <IssueLink {...defaultGithubProps} />
+      </TestApiProvider>,
     );
 
     fireEvent.click(screen.getByText(/Open new Github issue/));

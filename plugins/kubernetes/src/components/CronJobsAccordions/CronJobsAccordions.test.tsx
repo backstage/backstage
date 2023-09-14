@@ -13,38 +13,35 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
 import React from 'react';
-import { render } from '@testing-library/react';
+import { screen } from '@testing-library/react';
 import { CronJobsAccordions } from './CronJobsAccordions';
 import * as oneCronJobsFixture from '../../__fixtures__/1-cronjobs.json';
 import * as twoCronJobsFixture from '../../__fixtures__/2-cronjobs.json';
-import { wrapInTestApp } from '@backstage/test-utils';
+import { renderInTestApp } from '@backstage/test-utils';
 import { kubernetesProviders } from '../../hooks/test-utils';
 
 describe('CronJobsAccordions', () => {
   it('should render 1 active cronjobs', async () => {
     const wrapper = kubernetesProviders(oneCronJobsFixture, new Set<string>());
 
-    const { getByText } = render(
-      wrapper(wrapInTestApp(<CronJobsAccordions />)),
-    );
+    await renderInTestApp(wrapper(<CronJobsAccordions />));
 
-    expect(getByText('dice-roller-cronjob')).toBeInTheDocument();
-    expect(getByText('CronJob')).toBeInTheDocument();
-    expect(getByText('namespace: default')).toBeInTheDocument();
-    expect(getByText('Active')).toBeInTheDocument();
+    expect(screen.getByText('dice-roller-cronjob')).toBeInTheDocument();
+    expect(screen.getByText('CronJob')).toBeInTheDocument();
+    expect(screen.getByText('namespace: default')).toBeInTheDocument();
+    expect(screen.getByText('Active')).toBeInTheDocument();
   });
 
   it('should render 1 suspended cronjobs', async () => {
     const wrapper = kubernetesProviders(twoCronJobsFixture, new Set<string>());
 
-    const { getByText } = render(
-      wrapper(wrapInTestApp(<CronJobsAccordions />)),
-    );
+    await renderInTestApp(wrapper(<CronJobsAccordions />));
 
-    expect(getByText('dice-roller-cronjob')).toBeInTheDocument();
-    expect(getByText('CronJob')).toBeInTheDocument();
-    expect(getByText('namespace: default')).toBeInTheDocument();
-    expect(getByText('Suspended')).toBeInTheDocument();
+    expect(screen.getByText('dice-roller-cronjob')).toBeInTheDocument();
+    expect(screen.getByText('CronJob')).toBeInTheDocument();
+    expect(screen.getByText('namespace: default')).toBeInTheDocument();
+    expect(screen.getByText('Suspended')).toBeInTheDocument();
   });
 });

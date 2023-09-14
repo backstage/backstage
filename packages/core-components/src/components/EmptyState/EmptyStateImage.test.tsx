@@ -15,35 +15,28 @@
  */
 
 import React from 'react';
-import { renderWithEffects, wrapInTestApp } from '@backstage/test-utils';
+import { renderInTestApp } from '@backstage/test-utils';
 import { EmptyStateImage } from './EmptyStateImage';
+import { screen } from '@testing-library/react';
 
 describe('<EmptyStateImage />', () => {
   it('render EmptyStateImage component with missing field', async () => {
-    const { getByAltText } = await renderWithEffects(
-      wrapInTestApp(<EmptyStateImage missing="field" />),
-    );
-    expect(getByAltText('annotation is missing')).toBeInTheDocument();
+    await renderInTestApp(<EmptyStateImage missing="field" />);
+    expect(screen.getByAltText('annotation is missing')).toBeInTheDocument();
   });
 
   it('render EmptyStateImage component with missing info', async () => {
-    const { getByAltText } = await renderWithEffects(
-      wrapInTestApp(<EmptyStateImage missing="info" />),
-    );
-    expect(getByAltText('no Information')).toBeInTheDocument();
+    await renderInTestApp(<EmptyStateImage missing="info" />);
+    expect(screen.getByAltText('no Information')).toBeInTheDocument();
   });
 
   it('render EmptyStateImage component with missing content', async () => {
-    const { getByAltText } = await renderWithEffects(
-      wrapInTestApp(<EmptyStateImage missing="content" />),
-    );
-    expect(getByAltText('create Component')).toBeInTheDocument();
+    await renderInTestApp(<EmptyStateImage missing="content" />);
+    expect(screen.getByAltText('create Component')).toBeInTheDocument();
   });
 
   it('render EmptyStateImage component with missing data', async () => {
-    const { getByAltText } = await renderWithEffects(
-      wrapInTestApp(<EmptyStateImage missing="data" />),
-    );
-    expect(getByAltText('no Build')).toBeInTheDocument();
+    await renderInTestApp(<EmptyStateImage missing="data" />);
+    expect(screen.getByAltText('no Build')).toBeInTheDocument();
   });
 });

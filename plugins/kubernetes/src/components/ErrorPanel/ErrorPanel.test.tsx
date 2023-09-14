@@ -15,106 +15,99 @@
  */
 
 import React from 'react';
-import { render } from '@testing-library/react';
-import { wrapInTestApp } from '@backstage/test-utils';
+import { screen } from '@testing-library/react';
+import { renderInTestApp } from '@backstage/test-utils';
 import { ErrorPanel } from './ErrorPanel';
 
 describe('ErrorPanel', () => {
   it('displays path and status code when a cluster has an HTTP error', async () => {
-    const { getByText } = render(
-      wrapInTestApp(
-        <ErrorPanel
-          entityName="THIS_ENTITY"
-          clustersWithErrors={[
-            {
-              cluster: { name: 'THIS_CLUSTER' },
-              resources: [],
-              podMetrics: [],
-              errors: [
-                {
-                  errorType: 'SYSTEM_ERROR',
-                  statusCode: 500,
-                  resourcePath: 'some/resource',
-                },
-              ],
-            },
-          ]}
-        />,
-      ),
+    await renderInTestApp(
+      <ErrorPanel
+        entityName="THIS_ENTITY"
+        clustersWithErrors={[
+          {
+            cluster: { name: 'THIS_CLUSTER' },
+            resources: [],
+            podMetrics: [],
+            errors: [
+              {
+                errorType: 'SYSTEM_ERROR',
+                statusCode: 500,
+                resourcePath: 'some/resource',
+              },
+            ],
+          },
+        ]}
+      />,
     );
 
     // title
     expect(
-      getByText(
+      screen.getByText(
         'There was a problem retrieving some Kubernetes resources for the entity: THIS_ENTITY. This could mean that the Error Reporting card is not completely accurate.',
       ),
     ).toBeInTheDocument();
 
     // message
-    expect(getByText('Errors:')).toBeInTheDocument();
-    expect(getByText('Cluster: THIS_CLUSTER')).toBeInTheDocument();
+    expect(screen.getByText('Errors:')).toBeInTheDocument();
+    expect(screen.getByText('Cluster: THIS_CLUSTER')).toBeInTheDocument();
     expect(
-      getByText(
+      screen.getByText(
         "Error fetching Kubernetes resource: 'some/resource', error: SYSTEM_ERROR, status code: 500",
       ),
     ).toBeInTheDocument();
   });
+
   it('displays message for non-HTTP-status-related fetch errors', async () => {
-    const { getByText } = render(
-      wrapInTestApp(
-        <ErrorPanel
-          entityName="THIS_ENTITY"
-          clustersWithErrors={[
-            {
-              cluster: { name: 'THIS_CLUSTER' },
-              resources: [],
-              podMetrics: [],
-              errors: [
-                {
-                  errorType: 'FETCH_ERROR',
-                  message: 'description of error',
-                },
-              ],
-            },
-          ]}
-        />,
-      ),
+    await renderInTestApp(
+      <ErrorPanel
+        entityName="THIS_ENTITY"
+        clustersWithErrors={[
+          {
+            cluster: { name: 'THIS_CLUSTER' },
+            resources: [],
+            podMetrics: [],
+            errors: [
+              {
+                errorType: 'FETCH_ERROR',
+                message: 'description of error',
+              },
+            ],
+          },
+        ]}
+      />,
     );
 
     // title
     expect(
-      getByText(
+      screen.getByText(
         'There was a problem retrieving some Kubernetes resources for the entity: THIS_ENTITY. This could mean that the Error Reporting card is not completely accurate.',
       ),
     ).toBeInTheDocument();
 
     // message
-    expect(getByText('Errors:')).toBeInTheDocument();
-    expect(getByText('Cluster: THIS_CLUSTER')).toBeInTheDocument();
+    expect(screen.getByText('Errors:')).toBeInTheDocument();
+    expect(screen.getByText('Cluster: THIS_CLUSTER')).toBeInTheDocument();
     expect(
-      getByText(
+      screen.getByText(
         'Error communicating with Kubernetes: FETCH_ERROR, message: description of error',
       ),
     ).toBeInTheDocument();
   });
+
   it('displays error message', async () => {
-    const { getByText } = render(
-      wrapInTestApp(
-        <ErrorPanel
-          entityName="THIS_ENTITY"
-          errorMessage="SOME_ERROR_MESSAGE"
-        />,
-      ),
+    await renderInTestApp(
+      <ErrorPanel entityName="THIS_ENTITY" errorMessage="SOME_ERROR_MESSAGE" />,
     );
 
     // title
     expect(
-      getByText(
+      screen.getByText(
         'There was a problem retrieving some Kubernetes resources for the entity: THIS_ENTITY. This could mean that the Error Reporting card is not completely accurate.',
       ),
     ).toBeInTheDocument();
 
     // message
-    expect(getByText('Errors: SOME_ERROR_MESSAGE')).toBeInTheDocument();
+    expect(screen.getByText('Errors: SOME_ERROR_MESSAGE')).toBeInTheDocument();
   });
 });

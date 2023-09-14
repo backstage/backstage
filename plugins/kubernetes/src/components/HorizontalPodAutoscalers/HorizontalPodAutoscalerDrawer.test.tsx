@@ -15,36 +15,38 @@
  */
 
 import React from 'react';
-import { render } from '@testing-library/react';
+import { screen } from '@testing-library/react';
 import * as hpas from './__fixtures__/horizontalpodautoscalers.json';
-import { wrapInTestApp } from '@backstage/test-utils';
+import { renderInTestApp } from '@backstage/test-utils';
 import { HorizontalPodAutoscalerDrawer } from './HorizontalPodAutoscalerDrawer';
 
 describe('HorizontalPodAutoscalersDrawer', () => {
   it('should render hpa drawer', async () => {
-    const { getByText } = render(
-      wrapInTestApp(
-        <HorizontalPodAutoscalerDrawer hpa={hpas[0] as any} expanded>
-          <h1>CHILD</h1>
-        </HorizontalPodAutoscalerDrawer>,
-      ),
+    await renderInTestApp(
+      <HorizontalPodAutoscalerDrawer hpa={hpas[0] as any} expanded>
+        <h1>CHILD</h1>
+      </HorizontalPodAutoscalerDrawer>,
     );
 
-    expect(getByText('dice-roller')).toBeInTheDocument();
-    expect(getByText('CHILD')).toBeInTheDocument();
-    expect(getByText('HorizontalPodAutoscaler')).toBeInTheDocument();
-    expect(getByText('YAML')).toBeInTheDocument();
-    expect(getByText('Target CPU Utilization Percentage')).toBeInTheDocument();
-    expect(getByText('50')).toBeInTheDocument();
-    expect(getByText('Current CPU Utilization Percentage')).toBeInTheDocument();
-    expect(getByText('30')).toBeInTheDocument();
-    expect(getByText('Min Replicas')).toBeInTheDocument();
-    expect(getByText('10')).toBeInTheDocument();
-    expect(getByText('Max Replicas')).toBeInTheDocument();
-    expect(getByText('15')).toBeInTheDocument();
-    expect(getByText('Current Replicas')).toBeInTheDocument();
-    expect(getByText('13')).toBeInTheDocument();
-    expect(getByText('Desired Replicas')).toBeInTheDocument();
-    expect(getByText('14')).toBeInTheDocument();
+    expect(screen.getByText('dice-roller')).toBeInTheDocument();
+    expect(screen.getByText('CHILD')).toBeInTheDocument();
+    expect(screen.getByText('HorizontalPodAutoscaler')).toBeInTheDocument();
+    expect(screen.getByText('YAML')).toBeInTheDocument();
+    expect(
+      screen.getByText('Target CPU Utilization Percentage'),
+    ).toBeInTheDocument();
+    expect(screen.getByText('50')).toBeInTheDocument();
+    expect(
+      screen.getByText('Current CPU Utilization Percentage'),
+    ).toBeInTheDocument();
+    expect(screen.getByText('30')).toBeInTheDocument();
+    expect(screen.getByText('Min Replicas')).toBeInTheDocument();
+    expect(screen.getByText('10')).toBeInTheDocument();
+    expect(screen.getByText('Max Replicas')).toBeInTheDocument();
+    expect(screen.getByText('15')).toBeInTheDocument();
+    expect(screen.getByText('Current Replicas')).toBeInTheDocument();
+    expect(screen.getByText('13')).toBeInTheDocument();
+    expect(screen.getByText('Desired Replicas')).toBeInTheDocument();
+    expect(screen.getByText('14')).toBeInTheDocument();
   });
 });

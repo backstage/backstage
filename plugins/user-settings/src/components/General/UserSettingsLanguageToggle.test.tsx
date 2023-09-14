@@ -13,11 +13,12 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
 import React from 'react';
-import { render, screen, fireEvent } from '@testing-library/react';
+import { screen, fireEvent } from '@testing-library/react';
 import { useTranslationRef } from '@backstage/core-plugin-api/alpha';
 import { UserSettingsLanguageToggle } from './UserSettingsLanguageToggle';
-import { wrapInTestApp } from '@backstage/test-utils';
+import { renderInTestApp } from '@backstage/test-utils';
 import { useTranslation } from 'react-i18next';
 
 jest.mock('@backstage/core-plugin-api/alpha', () => ({
@@ -35,7 +36,7 @@ describe('UserSettingsLanguageToggle', () => {
     jest.clearAllMocks();
   });
 
-  it('should render correctly with multiple supported languages', () => {
+  it('should render correctly with multiple supported languages', async () => {
     const messages: Record<string, string> = {
       en: 'English',
       fr: 'French',
@@ -61,7 +62,7 @@ describe('UserSettingsLanguageToggle', () => {
         messages[option?.language || key] || 'translatedValue',
     );
 
-    render(wrapInTestApp(<UserSettingsLanguageToggle />));
+    await renderInTestApp(<UserSettingsLanguageToggle />);
 
     expect(screen.getAllByText('Change the language')).toHaveLength(1);
     expect(screen.getAllByText('English')).toHaveLength(1);
@@ -69,7 +70,7 @@ describe('UserSettingsLanguageToggle', () => {
     expect(screen.getAllByText('German')).toHaveLength(1);
   });
 
-  it('should not render when only one supported language', () => {
+  it('should not render when only one supported language', async () => {
     const tMock = jest.fn().mockReturnValue('translatedValue');
     const i18nMock = {
       language: 'en',
@@ -85,13 +86,13 @@ describe('UserSettingsLanguageToggle', () => {
       i18n: i18nMock,
     });
 
-    render(wrapInTestApp(<UserSettingsLanguageToggle />));
+    await renderInTestApp(<UserSettingsLanguageToggle />);
 
     expect(screen.queryByText('translatedValue')).toBeNull();
     expect(screen.queryByText('English')).toBeNull();
   });
 
-  it('should handle language change', () => {
+  it('should handle language change', async () => {
     const messages: Record<string, string> = {
       en: 'English',
       fr: 'French',
@@ -116,7 +117,7 @@ describe('UserSettingsLanguageToggle', () => {
       i18n: i18nMock,
     });
 
-    render(wrapInTestApp(<UserSettingsLanguageToggle />));
+    await renderInTestApp(<UserSettingsLanguageToggle />);
 
     fireEvent.click(screen.getByText('French'));
 
