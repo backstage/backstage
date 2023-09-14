@@ -270,19 +270,15 @@ describe('AppTranslationApiImpl', () => {
   });
 
   it('should handle interrupted loads gracefully', async () => {
-    const delayedLoader = (msg: string) => () =>
-      new Promise<{ default: { foo: string } }>(resolve =>
-        setTimeout(() => resolve({ default: { foo: msg } }), 100),
-      );
     const translationApi = AppTranslationApiImpl.create({
       supportedLanguages: ['en', 'sv', 'no'],
       resources: [
         createTranslationResource({
           ref: plainRef,
           translations: {
-            en: delayedLoader('foo'),
-            sv: delayedLoader('Föö'),
-            no: delayedLoader('Føø'),
+            en: () => Promise.resolve({ default: { foo: 'foo' } }),
+            sv: () => Promise.resolve({ default: { foo: 'Föö' } }),
+            no: () => Promise.resolve({ default: { foo: 'Føø' } }),
           },
         }),
       ],
@@ -300,5 +296,44 @@ describe('AppTranslationApiImpl', () => {
 
     const snapshot = assertReady(await nextPromise);
     expect(snapshot.t('foo')).toBe('Føø');
+  });
+
+  it('should only emit changes', async () => {
+    const translationApi = AppTranslationApiImpl.create({
+      supportedLanguages: ['en', 'dk', 'sv', 'no'],
+      resources: [
+        createTranslationResource({
+          ref: plainRef,
+          translations: {
+            en: () => Promise.resolve({ default: { foo: 'foo' } }),
+            dk: () => Promise.resolve({ default: { foo: 'F🥔🥔' } }),
+            sv: () => Promise.resolve({ default: { foo: 'Föö' } }),
+            no: () => Promise.resolve({ default: { foo: 'Føø' } }),
+          },
+        }),
+      ],
+    });
+
+    const translations = new Array<string | null>();
+    await new Promise<void>(resolve => {
+      const subscription = translationApi.translation$(plainRef).subscribe({
+        next(snapshot) {
+          const translation = snapshot.ready ? snapshot.t('foo') : null;
+          translations.push(translation);
+
+          if (translation === 'foo') {
+            translationApi.changeLanguage('dk'); // Not visible
+            translationApi.changeLanguage('sv');
+          } else if (translation === 'Föö') {
+            translationApi.changeLanguage('no');
+          } else if (translation === 'Føø') {
+            resolve();
+            subscription.unsubscribe();
+          }
+        },
+      });
+    });
+
+    expect(translations).toEqual(['foo', null, 'Föö', null, 'Føø']);
   });
 });

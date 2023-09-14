@@ -20,11 +20,7 @@ import {
   TranslationRef,
   TranslationResource,
 } from '@backstage/core-plugin-api/alpha';
-import {
-  BackendModule,
-  createInstance as createI18n,
-  type i18n,
-} from 'i18next';
+import { createInstance as createI18n, type i18n as I18n } from 'i18next';
 import ObservableImpl from 'zen-observable';
 
 // Internal import to avoid code duplication, this will lead to duplication in build output
@@ -59,17 +55,30 @@ function removeNulls(
 }
 
 /**
- * A wrapper around a i18next plugin that helps us lazy load resources that have been
- * registered in the app or provided through translation refs.
- *
- * Since all resources are registered before use it is safe to just look at the
- * existing resources when loading a namespace + language tuple.
+ * The built-in i18next backend loading logic doesn't handle on the fly switches
+ * of language very well. It gets a bit confused about whether resources are actually
+ * loaded or not, so instead we implement our own resource loader.
  */
-class LazyResources {
+class ResourceLoader {
+  /** The resources that have been registered */
   #seen = new Set<TranslationResource>();
+
+  /** Loaded resources by loader key */
+  #loaded = new Set<string>();
+  /** Resource loading promises by loader key */
+  #loading = new Map<string, Promise<void>>();
+  /** Loaders for each resource language */
   #loaders = new Map<string, InternalTranslationResourceLoader>();
 
-  addResource(resource: TranslationResource) {
+  constructor(
+    private readonly onLoad: (loaded: {
+      language: string;
+      namespace: string;
+      messages: Record<string, string | null>;
+    }) => void,
+  ) {}
+
+  addTranslationResource(resource: TranslationResource) {
     if (this.#seen.has(resource)) {
       return;
     }
@@ -86,30 +95,45 @@ class LazyResources {
     }
   }
 
-  hasResource(lng: string, ns: string) {
-    return this.#loaders.has(this.#getLoaderKey(lng, ns));
+  #getLoaderKey(language: string, namespace: string) {
+    return `${language}/${namespace}`;
   }
 
-  async #loadResource(lng: string, ns: string) {
-    const loader = this.#loaders.get(this.#getLoaderKey(lng, ns));
+  needsLoading(language: string, namespace: string) {
+    const key = this.#getLoaderKey(language, namespace);
+    const loader = this.#loaders.get(key);
     if (!loader) {
-      return undefined;
+      return false;
     }
 
-    return loader().then(result => removeNulls(result.messages));
+    return !this.#loaded.has(key);
   }
 
-  #getLoaderKey(lng: string, ns: string) {
-    return `${lng}/${ns}`;
-  }
+  async load(language: string, namespace: string): Promise<void> {
+    const key = this.#getLoaderKey(language, namespace);
 
-  plugin: BackendModule = {
-    type: 'backend',
-    init() {},
-    read: (lng, ns) => this.#loadResource(lng, ns),
-    save() {},
-    create() {},
-  };
+    const loader = this.#loaders.get(key);
+    if (!loader) {
+      return;
+    }
+
+    if (this.#loaded.has(key)) {
+      return;
+    }
+
+    const loading = this.#loading.get(key);
+    if (loading) {
+      await loading;
+      return;
+    }
+
+    const load = loader().then(result => {
+      this.onLoad({ language, namespace, messages: result.messages });
+      this.#loaded.add(key);
+    });
+    this.#loading.set(key, load);
+    await load;
+  }
 }
 
 /** @alpha */
@@ -135,7 +159,6 @@ export class AppTranslationApiImpl implements AppTranslationApi {
     if (!languages.includes(DEFAULT_LANGUAGE)) {
       throw new Error(`Supported languages must include '${DEFAULT_LANGUAGE}'`);
     }
-    const lazyResources = new LazyResources();
     const i18n = createI18n({
       fallbackLng: DEFAULT_LANGUAGE,
       supportedLngs: languages,
@@ -145,43 +168,49 @@ export class AppTranslationApiImpl implements AppTranslationApi {
       ns: [],
       defaultNS: false,
       fallbackNS: false,
-    }).use(lazyResources.plugin);
+    });
 
     i18n.init();
+
+    const loader = new ResourceLoader(loaded => {
+      i18n.addResourceBundle(
+        loaded.language,
+        loaded.namespace,
+        removeNulls(loaded.messages),
+        false, // do not merge with existing translations
+        true, // overwrite translations
+      );
+    });
 
     const resources = options?.resources || [];
     // Iterate in reverse, giving higher priority to resources registered later
     for (let i = resources.length - 1; i >= 0; i--) {
       const resource = resources[i];
       if (resource.$$type === '@backstage/TranslationResource') {
-        lazyResources.addResource(resource);
+        loader.addTranslationResource(resource);
       } else if (resource.$$type === '@backstage/TranslationMessages') {
         // Overrides for default messages, created with createTranslationMessages and installed via app
         i18n.addResourceBundle(
           DEFAULT_LANGUAGE,
           resource.id,
           removeNulls(resource.messages),
-          true,
-          false,
+          true, // merge with existing translations
+          false, // do not overwrite translations
         );
       }
     }
 
-    return new AppTranslationApiImpl(i18n, lazyResources, languages);
+    return new AppTranslationApiImpl(i18n, loader, languages);
   }
 
-  #i18n: i18n;
-  #lazyResources: LazyResources;
+  #i18n: I18n;
+  #loader: ResourceLoader;
   #language: string;
   #languages: string[];
 
-  private constructor(
-    i18n: i18n,
-    lazyResources: LazyResources,
-    languages: string[],
-  ) {
+  private constructor(i18n: I18n, loader: ResourceLoader, languages: string[]) {
     this.#i18n = i18n;
-    this.#lazyResources = lazyResources;
+    this.#loader = loader;
     this.#language = DEFAULT_LANGUAGE;
     this.#languages = languages;
   }
@@ -227,25 +256,28 @@ export class AppTranslationApiImpl implements AppTranslationApi {
       const loadResource = () => {
         loadTicket = {};
         const ticket = loadTicket;
-        this.#i18n.loadNamespaces(internalRef.id, error => {
-          if (ticket !== loadTicket) {
-            return;
-          }
-          if (error) {
-            subscriber.error(Array.isArray(error) ? error[0] : error);
-          } else {
-            const snapshot = this.#createSnapshot(internalRef);
-            if (snapshot.ready || lastSnapshotWasReady) {
-              lastSnapshotWasReady = snapshot.ready;
-              subscriber.next(snapshot);
+        this.#loader.load(this.#language, internalRef.id).then(
+          () => {
+            if (ticket === loadTicket) {
+              const snapshot = this.#createSnapshot(internalRef);
+              if (snapshot.ready || lastSnapshotWasReady) {
+                lastSnapshotWasReady = snapshot.ready;
+                subscriber.next(snapshot);
+              }
             }
-          }
-        });
+          },
+          error => {
+            if (ticket === loadTicket) {
+              subscriber.error(Array.isArray(error) ? error[0] : error);
+            }
+          },
+        );
       };
 
       const onChange = () => {
         const snapshot = this.#createSnapshot(internalRef);
         if (lastSnapshotWasReady && !snapshot.ready) {
+          lastSnapshotWasReady = snapshot.ready;
           subscriber.next(snapshot);
         }
 
@@ -254,15 +286,20 @@ export class AppTranslationApiImpl implements AppTranslationApi {
         }
       };
 
-      this.#i18n.on('initialized', onChange);
+      const wasInitialized = this.#i18n.isInitialized;
+      if (!wasInitialized) {
+        this.#i18n.on('initialized', onChange);
+      }
       this.#i18n.on('languageChanged', onChange);
 
-      if (this.#needsToLoadResource(internalRef)) {
+      if (this.#loader.needsLoading(this.#language, internalRef.id)) {
         loadResource();
       }
 
       return () => {
-        this.#i18n.off('initialized', onChange);
+        if (!wasInitialized) {
+          this.#i18n.off('initialized', onChange);
+        }
         this.#i18n.off('languageChanged', onChange);
       };
     });
@@ -271,7 +308,7 @@ export class AppTranslationApiImpl implements AppTranslationApi {
   #createSnapshot<TMessages extends { [key in string]: string }>(
     internalRef: InternalTranslationRef<string, TMessages>,
   ): TranslationSnapshot<TMessages> {
-    if (this.#needsToLoadResource(internalRef)) {
+    if (this.#loader.needsLoading(this.#language, internalRef.id)) {
       return { ready: false };
     }
 
@@ -289,17 +326,10 @@ export class AppTranslationApiImpl implements AppTranslationApi {
     };
   }
 
-  #needsToLoadResource({ id }: InternalTranslationRef): boolean {
-    if (!this.#lazyResources.hasResource(this.#language, id)) {
-      return false;
-    }
-    return !this.#i18n.hasResourceBundle(this.#language, id);
-  }
-
   #registerDefaultResource(internalRef: InternalTranslationRef): void {
     const defaultResource = internalRef.getDefaultResource();
     if (defaultResource) {
-      this.#lazyResources.addResource(defaultResource);
+      this.#loader.addTranslationResource(defaultResource);
     }
   }
 }
