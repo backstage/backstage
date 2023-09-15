@@ -38,7 +38,7 @@ export function createPublishGitlabAction(options: {
   return createTemplateAction<{
     repoUrl: string;
     defaultBranch?: string;
-    /** @deprecated in favour of settings field */
+    /** @deprecated in favour of settings.visibility field */
     repoVisibility?: 'private' | 'internal' | 'public';
     sourcePath?: string;
     token?: string;
@@ -46,7 +46,7 @@ export function createPublishGitlabAction(options: {
     gitAuthorName?: string;
     gitAuthorEmail?: string;
     setUserAsOwner?: boolean;
-    /** @deprecated in favour of settings field */
+    /** @deprecated in favour of settings.topics field */
     topics?: string[];
     settings?: Record<string, any>;
     branches?: Array<{
@@ -82,7 +82,7 @@ export function createPublishGitlabAction(options: {
           },
           repoVisibility: {
             title: 'Repository Visibility',
-            description: `Sets the visibility of the repository. The default value is 'private'. (deprecated, use settings instead)`,
+            description: `Sets the visibility of the repository. The default value is 'private'. (deprecated, use settings.visibility instead)`,
             type: 'string',
             enum: ['private', 'public', 'internal'],
           },
@@ -126,7 +126,7 @@ export function createPublishGitlabAction(options: {
           topics: {
             title: 'Topic labels',
             description:
-              'Topic labels to apply on the repository. (deprecated, use settings instead)',
+              'Topic labels to apply on the repository. (deprecated, use settings.topics instead)',
             type: 'array',
             items: {
               type: 'string',
