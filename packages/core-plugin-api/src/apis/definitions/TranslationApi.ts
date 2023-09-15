@@ -165,15 +165,26 @@ type UnionToIntersection<U> = (U extends any ? (k: U) => void : never) extends (
  *
  * @internal
  */
-type MessageOptionsFromKeys<TKeys extends string> = UnionToIntersection<
+type ReplaceOptionsFromKeys<TKeys extends string> = UnionToIntersection<
   TKeys extends `${infer Prefix}.${infer Rest}`
     ? {
-        [key in Prefix]: MessageOptionsFromKeys<Rest>;
+        [key in Prefix]: ReplaceOptionsFromKeys<Rest>;
       }
     : {
         [key in TKeys & string]: string | number | string[];
       }
 >;
+
+/**
+ * Collects different types of options into a single object
+ *
+ * @internal
+ */
+type CollectOptions<
+  TCount extends { count?: number },
+  TReplaceOptions extends {},
+> = TCount &
+  (keyof TReplaceOptions extends never ? {} : { replace: TReplaceOptions });
 
 /**
  * Helper type to only require options argument if needed
@@ -191,10 +202,12 @@ type TranslationFunctionOptions<
   TMessages extends { [key in string]: string }, // Collapsed message map with normalized keys and union values
 > = OptionArgs<
   Expand<
-    (TKeys & TPluralKeys extends never ? {} : { count: number }) &
+    CollectOptions<
+      TKeys & TPluralKeys extends never ? {} : { count: number },
       ExpandRecursive<
-        MessageOptionsFromKeys<OptionKeysFromMessage<TMessages[TKeys]>>
+        ReplaceOptionsFromKeys<OptionKeysFromMessage<TMessages[TKeys]>>
       >
+    >
   >
 >;
 

@@ -60,30 +60,40 @@ describe('TranslationFunction', () => {
     expect(f).toBeDefined();
 
     // @ts-expect-error
-    f('none', { unknown: 1 });
-    f('simple', { bar: '' });
+    f('none', { replace: { unknown: 1 } });
+    f('simple', { replace: { bar: '' } });
     // @ts-expect-error
     f('simple');
     // @ts-expect-error
-    f('simple', { wrong: '' });
-    f('multiple', { bar: '', baz: '' });
+    f('simple', {});
     // @ts-expect-error
-    f('multiple', { bar: '' });
+    f('simple', { replace: {} });
     // @ts-expect-error
-    f('multiple', { baz: '' });
+    f('simple', { replace: { wrong: '' } });
+    f('multiple', { replace: { bar: '', baz: '' } });
+    // @ts-expect-error
+    f('multiple', { replace: { bar: '' } });
+    // @ts-expect-error
+    f('multiple', { replace: { baz: '' } });
     // @ts-expect-error
     f('multiple');
     // @ts-expect-error
     f('multiple', {});
-    f('deep', { x: { y: '', z: '' }, a: { b: { c: '' } } });
+    // @ts-expect-error
+    f('multiple', { replace: {} });
+    f('deep', { replace: { x: { y: '', z: '' }, a: { b: { c: '' } } } });
     // @ts-expect-error
     f('deep');
     // @ts-expect-error
-    f('deep', { x: { y: '', z: '' }, a: { b: '' } });
+    f('deep', {});
     // @ts-expect-error
-    f('deep', { x: { y: '', z: '' } });
+    f('deep', { replace: {} });
     // @ts-expect-error
-    f('deep', { a: { b: { c: '' } } });
+    f('deep', { replace: { x: { y: '', z: '' }, a: { b: '' } } });
+    // @ts-expect-error
+    f('deep', { replace: { x: { y: '', z: '' } } });
+    // @ts-expect-error
+    f('deep', { replace: { a: { b: { c: '' } } } });
   });
 
   it('should infer interpolation params with count', () => {
@@ -97,39 +107,42 @@ describe('TranslationFunction', () => {
     }>;
     expect(f).toBeDefined();
 
-    f('simple', { bar: '', count: 1 });
+    f('simple', { count: 1, replace: { bar: '' } });
     // @ts-expect-error
-    f('simple', { bar: '' });
+    f('simple', { replace: { bar: '' } });
     // @ts-expect-error
-    f('simple', { count: 1 });
+    f('simple', { count: 1, replace: {} });
     // @ts-expect-error
-    f('simple');
+    f('simple', { replace: {} });
     // @ts-expect-error
-    f('simple', { wrong: '' });
-    f('multiple', { count: 2, bar: '', baz: '' });
+    f('simple', { replace: { wrong: '' } });
+    f('multiple', { count: 2, replace: { bar: '', baz: '' } });
     // @ts-expect-error
-    f('multiple', { count: 2 });
+    f('multiple', { count: 2, replace: {} });
     // @ts-expect-error
-    f('multiple', { bar: '', baz: '' });
+    f('multiple', { replace: { bar: '', baz: '' } });
     // @ts-expect-error
-    f('multiple', { baz: '' });
+    f('multiple', { replace: { baz: '' } });
     // @ts-expect-error
-    f('multiple');
+    f('multiple', { replace: {} });
     // @ts-expect-error
     f('multiple', {});
-    f('deep', { count: 1, x: { y: '', z: '' }, a: { b: { c: '' } } });
+    f('deep', {
+      count: 1,
+      replace: { x: { y: '', z: '' }, a: { b: { c: '' } } },
+    });
     // @ts-expect-error
     f('deep', { count: 1 });
     // @ts-expect-error
-    f('deep', { x: { y: '', z: '' }, a: { b: { c: '' } } });
+    f('deep', { replace: { x: { y: '', z: '' }, a: { b: { c: '' } } } });
     // @ts-expect-error
-    f('deep');
+    f('deep', { replace: {} });
     // @ts-expect-error
-    f('deep', { x: { y: '', z: '' }, a: { b: '' } });
+    f('deep', { replace: { x: { y: '', z: '' }, a: { b: '' } } });
     // @ts-expect-error
-    f('deep', { x: { y: '', z: '' } });
+    f('deep', { replace: { x: { y: '', z: '' } } });
     // @ts-expect-error
-    f('deep', { a: { b: { c: '' } } });
+    f('deep', { replace: { a: { b: { c: '' } } } });
   });
 
   it('should ignore formatting', () => {
@@ -142,30 +155,34 @@ describe('TranslationFunction', () => {
     expect(f).toBeDefined();
 
     // @ts-expect-error
-    f('none', { unknown: 1 });
-    f('simple', { bar: '' });
+    f('none', { replace: { unknown: 1 } });
+    f('simple', { replace: { bar: '' } });
     // @ts-expect-error
     f('simple');
     // @ts-expect-error
-    f('simple', { wrong: '' });
-    f('multiple', { bar: '', baz: '' });
+    f('simple', { replace: {} });
     // @ts-expect-error
-    f('multiple', { bar: '' });
+    f('simple', { replace: { wrong: '' } });
+    f('multiple', { replace: { bar: '', baz: '' } });
     // @ts-expect-error
-    f('multiple', { baz: '' });
+    f('multiple', { replace: { bar: '' } });
+    // @ts-expect-error
+    f('multiple', { replace: { baz: '' } });
     // @ts-expect-error
     f('multiple');
     // @ts-expect-error
     f('multiple', {});
-    f('deep', { x: { y: '', z: '' }, a: { b: { c: '' } } });
+    // @ts-expect-error
+    f('multiple', { replace: {} });
+    f('deep', { replace: { x: { y: '', z: '' }, a: { b: { c: '' } } } });
     // @ts-expect-error
     f('deep');
     // @ts-expect-error
-    f('deep', { x: { y: '', z: '' }, a: { b: '' } });
+    f('deep', { replace: { x: { y: '', z: '' }, a: { b: '' } } });
     // @ts-expect-error
-    f('deep', { x: { y: '', z: '' } });
+    f('deep', { replace: { x: { y: '', z: '' } } });
     // @ts-expect-error
-    f('deep', { a: { b: { c: '' } } });
+    f('deep', { replace: { a: { b: { c: '' } } } });
   });
 
   it('should support nesting', () => {
@@ -183,17 +200,24 @@ describe('TranslationFunction', () => {
     expect(f).toBeDefined();
 
     f('simple');
-    f('nested', { bar: 'bar' });
-    f('nestedCount', { count: 1, qux1: 'qux', qux2: 'qux' });
-    f('deep', { count: 1, bar: 'bar', baz: 'baz', qux1: 'qux', qux2: 'qux' });
+    f('nested', { replace: { bar: 'bar' } });
+    f('nestedCount', { count: 1, replace: { qux1: 'qux', qux2: 'qux' } });
+    f('deep', {
+      count: 1,
+      replace: { bar: 'bar', baz: 'baz', qux1: 'qux', qux2: 'qux' },
+    });
     // @ts-expect-error
-    f('deep', { bar: 'bar', baz: 'baz', qux: 'qux' });
+    f('deep', { count: 1, replace: { baz: 'baz', qux1: 'qux', qux2: 'qux' } });
     // @ts-expect-error
-    f('deep', { bar: 'bar', baz: 'baz', count: 1 });
+    f('deep', { count: 1, replace: { bar: 'bar', qux1: 'qux', qux2: 'qux' } });
     // @ts-expect-error
-    f('deep', { bar: 'bar', qux: 'qux', count: 1 });
+    f('deep', { count: 1, replace: { bar: 'bar', baz: 'baz', qux2: 'qux' } });
     // @ts-expect-error
-    f('deep', { baz: 'baz', qux: 'qux', count: 1 });
+    f('deep', { count: 1, replace: { bar: 'bar', baz: 'baz', qux1: 'qux' } });
+    // @ts-expect-error
+    f('deep', {
+      replace: { bar: 'bar', baz: 'baz', qux1: 'qux', qux2: 'qux' },
+    });
   });
 
   it('should limit nesting depth', () => {
@@ -206,10 +230,10 @@ describe('TranslationFunction', () => {
     }>;
     expect(f).toBeDefined();
 
-    f('a', { a: '', b: '', c: '', d: '' });
+    f('a', { replace: { a: '', b: '', c: '', d: '' } });
     // @ts-expect-error
-    f('a', { a: '', b: '', c: '' });
+    f('a', { replace: { a: '', b: '', c: '' } });
     // @ts-expect-error
-    f('a', { a: '', b: '', c: '', d: '', e: '' });
+    f('a', { replace: { a: '', b: '', c: '', d: '', e: '' } });
   });
 });
