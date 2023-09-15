@@ -61,9 +61,6 @@ function removeNulls(
  * loaded or not, so instead we implement our own resource loader.
  */
 class ResourceLoader {
-  /** The resources that have been registered */
-  #seen = new Set<TranslationResource>();
-
   /** Loaded resources by loader key */
   #loaded = new Set<string>();
   /** Resource loading promises by loader key */
@@ -80,10 +77,6 @@ class ResourceLoader {
   ) {}
 
   addTranslationResource(resource: TranslationResource) {
-    if (this.#seen.has(resource)) {
-      return;
-    }
-    this.#seen.add(resource);
     const internalResource = toInternalTranslationResource(resource);
     for (const entry of internalResource.resources) {
       const key = this.#getLoaderKey(entry.language, internalResource.id);
@@ -205,6 +198,9 @@ export class I18nextTranslationApi implements TranslationApi {
   #loader: ResourceLoader;
   #language: string;
 
+  /** Keep track of which refs we have registered default resources for */
+  #registeredRefs = new Set<string>();
+
   private constructor(i18n: I18n, loader: ResourceLoader, language: string) {
     this.#i18n = i18n;
     this.#loader = loader;
@@ -216,7 +212,7 @@ export class I18nextTranslationApi implements TranslationApi {
   ): TranslationSnapshot<TMessages> {
     const internalRef = toInternalTranslationRef(translationRef);
 
-    this.#registerDefaultResource(internalRef);
+    this.#registerDefaults(internalRef);
 
     return this.#createSnapshot(internalRef);
   }
@@ -226,7 +222,7 @@ export class I18nextTranslationApi implements TranslationApi {
   ): Observable<TranslationSnapshot<TMessages>> {
     const internalRef = toInternalTranslationRef(translationRef);
 
-    this.#registerDefaultResource(internalRef);
+    this.#registerDefaults(internalRef);
 
     return new ObservableImpl<TranslationSnapshot<TMessages>>(subscriber => {
       let loadTicket = {}; // To check for stale loads
@@ -299,20 +295,30 @@ export class I18nextTranslationApi implements TranslationApi {
     }
 
     const t = this.#i18n.getFixedT(null, internalRef.id);
-    const defaultMessages = internalRef.getDefaultMessages() as TMessages;
 
     return {
       ready: true,
       t: (key, options) => {
-        return t(key as string, {
-          ...options,
-          defaultValue: defaultMessages[key],
-        });
+        return t(key as string, { ...options });
       },
     };
   }
 
-  #registerDefaultResource(internalRef: InternalTranslationRef): void {
+  #registerDefaults(internalRef: InternalTranslationRef): void {
+    if (this.#registeredRefs.has(internalRef.id)) {
+      return;
+    }
+    this.#registeredRefs.add(internalRef.id);
+
+    const defaultMessages = internalRef.getDefaultMessages();
+    this.#i18n.addResourceBundle(
+      DEFAULT_LANGUAGE,
+      internalRef.id,
+      defaultMessages,
+      true, // merge with existing translations
+      false, // do not overwrite translations
+    );
+
     const defaultResource = internalRef.getDefaultResource();
     if (defaultResource) {
       this.#loader.addTranslationResource(defaultResource);

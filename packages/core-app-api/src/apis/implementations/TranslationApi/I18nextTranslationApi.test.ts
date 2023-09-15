@@ -121,13 +121,14 @@ describe('I18nextTranslationApi', () => {
       languageApi,
       resources: [
         createTranslationMessages({
-          ref: plainRef,
-          messages: { foo: 'Bar' },
+          ref: resourceRef,
+          messages: { foo: 'Foo Override' },
         }),
       ],
     });
-    const snapshot = assertReady(translationApi.getTranslation(plainRef));
-    expect(snapshot.t('foo')).toBe('Bar');
+    const snapshot = assertReady(translationApi.getTranslation(resourceRef));
+    expect(snapshot.t('foo')).toBe('Foo Override');
+    expect(snapshot.t('bar')).toBe('Bar');
   });
 
   it('should create an instance and ignore null overrides', () => {
