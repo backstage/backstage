@@ -13,17 +13,20 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import { AksKubernetesAuthTranslator } from './AksKubernetesAuthTranslator';
+import { AksStrategy } from './AksStrategy';
 
-describe('AksKubernetesAuthTranslator', () => {
+describe('AksStrategy', () => {
   it('uses auth.aks value as bearer token', async () => {
-    const translator = new AksKubernetesAuthTranslator();
+    const strategy = new AksStrategy();
 
-    const details = await translator.decorateClusterDetailsWithAuth(
-      { name: '', authProvider: 'aks', url: '' },
+    const credential = await strategy.getCredential(
+      { name: '', url: '', authMetadata: {} },
       { aks: 'aksToken' },
     );
 
-    expect(details.serviceAccountToken).toBe('aksToken');
+    expect(credential).toStrictEqual({
+      type: 'bearer token',
+      token: 'aksToken',
+    });
   });
 });

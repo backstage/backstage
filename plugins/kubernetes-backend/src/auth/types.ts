@@ -14,16 +14,25 @@
  * limitations under the License.
  */
 
-import { ClusterDetails } from '../types/types';
+import { AuthMetadata, ClusterDetails } from '../types/types';
 import { KubernetesRequestAuth } from '@backstage/plugin-kubernetes-common';
+
+/**
+ * Authentication data used to make a request to Kubernetes
+ * @public
+ */
+export type KubernetesCredential =
+  | { type: 'bearer token'; token: string }
+  | { type: 'anonymous' };
 
 /**
  *
  * @public
  */
-export interface KubernetesAuthTranslator {
-  decorateClusterDetailsWithAuth(
+export interface AuthenticationStrategy {
+  getCredential(
     clusterDetails: ClusterDetails,
     authConfig: KubernetesRequestAuth,
-  ): Promise<ClusterDetails>;
+  ): Promise<KubernetesCredential>;
+  validateCluster(authMetadata: AuthMetadata): Error[];
 }

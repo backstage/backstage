@@ -14,34 +14,28 @@
  * limitations under the License.
  */
 
-import { KubernetesAuthTranslator } from './types';
-import { GKEClusterDetails } from '../types/types';
+import { AuthenticationStrategy, KubernetesCredential } from './types';
+import { ClusterDetails } from '../types/types';
 import { KubernetesRequestAuth } from '@backstage/plugin-kubernetes-common';
 
 /**
  *
  * @public
  */
-export class GoogleKubernetesAuthTranslator
-  implements KubernetesAuthTranslator
-{
-  async decorateClusterDetailsWithAuth(
-    clusterDetails: GKEClusterDetails,
-    authConfig: KubernetesRequestAuth,
-  ): Promise<GKEClusterDetails> {
-    const clusterDetailsWithAuthToken: GKEClusterDetails = Object.assign(
-      {},
-      clusterDetails,
-    );
-    const authToken: string | undefined = authConfig.google;
-
-    if (authToken) {
-      clusterDetailsWithAuthToken.serviceAccountToken = authToken;
-    } else {
+export class GoogleStrategy implements AuthenticationStrategy {
+  public async getCredential(
+    _: ClusterDetails,
+    requestAuth: KubernetesRequestAuth,
+  ): Promise<KubernetesCredential> {
+    const token = requestAuth.google;
+    if (!token) {
       throw new Error(
         'Google token not found under auth.google in request body',
       );
     }
-    return clusterDetailsWithAuthToken;
+    return { type: 'bearer token', token: token as string };
+  }
+  public validateCluster(): Error[] {
+    return [];
   }
 }

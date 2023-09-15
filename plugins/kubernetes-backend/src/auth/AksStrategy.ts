@@ -14,17 +14,24 @@
  * limitations under the License.
  */
 import { ClusterDetails } from '../types/types';
+import { AuthenticationStrategy, KubernetesCredential } from './types';
 import { KubernetesRequestAuth } from '@backstage/plugin-kubernetes-common';
 
 /**
  *
  * @public
  */
-export class AksKubernetesAuthTranslator {
-  async decorateClusterDetailsWithAuth(
-    clusterDetails: ClusterDetails,
-    auth: KubernetesRequestAuth,
-  ): Promise<ClusterDetails> {
-    return { ...clusterDetails, serviceAccountToken: auth.aks };
+export class AksStrategy implements AuthenticationStrategy {
+  public async getCredential(
+    _: ClusterDetails,
+    requestAuth: KubernetesRequestAuth,
+  ): Promise<KubernetesCredential> {
+    const token = requestAuth.aks;
+    return token
+      ? { type: 'bearer token', token: token as string }
+      : { type: 'anonymous' };
+  }
+  public validateCluster(): Error[] {
+    return [];
   }
 }

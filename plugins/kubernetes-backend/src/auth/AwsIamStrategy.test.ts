@@ -13,8 +13,12 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import { AwsIamKubernetesAuthTranslator } from './AwsIamKubernetesAuthTranslator';
 import { ConfigReader } from '@backstage/config';
+import {
+  ANNOTATION_KUBERNETES_AWS_ASSUME_ROLE,
+  ANNOTATION_KUBERNETES_AWS_EXTERNAL_ID,
+} from '@backstage/plugin-kubernetes-common';
+import { AwsIamStrategy } from './AwsIamStrategy';
 
 let presign = jest.fn(async () => ({
   hostname: 'https://example.com',
@@ -51,33 +55,37 @@ jest.mock('@aws-sdk/credential-providers', () => ({
   },
 }));
 
-describe('AwsIamKubernetesAuthTranslator tests', () => {
+describe('AwsIamStrategy tests', () => {
   beforeEach(() => {});
   it('returns a signed url for AWS credentials without assume role', async () => {
-    const authTranslator = new AwsIamKubernetesAuthTranslator({ config });
+    const strategy = new AwsIamStrategy({ config });
 
-    const authPromise = authTranslator.decorateClusterDetailsWithAuth({
+    const credential = await strategy.getCredential({
       name: 'test-cluster',
       url: '',
-      authProvider: 'aws',
+      authMetadata: {},
     });
-    expect((await authPromise).serviceAccountToken).toEqual(
-      'k8s-aws-v1.aHR0cHM6Ly9odHRwczovL2V4YW1wbGUuY29tL2FzZGY_',
-    );
+    expect(credential).toEqual({
+      type: 'bearer token',
+      token: 'k8s-aws-v1.aHR0cHM6Ly9odHRwczovL2V4YW1wbGUuY29tL2FzZGY_',
+    });
   });
 
   it('returns a signed url for AWS credentials with assume role', async () => {
-    const authTranslator = new AwsIamKubernetesAuthTranslator({ config });
+    const strategy = new AwsIamStrategy({ config });
 
-    const authPromise = authTranslator.decorateClusterDetailsWithAuth({
-      assumeRole: 'SomeRole',
+    const credential = await strategy.getCredential({
       name: 'test-cluster',
       url: '',
-      authProvider: 'aws',
+      authMetadata: {
+        [ANNOTATION_KUBERNETES_AWS_ASSUME_ROLE]: 'SomeRole',
+      },
     });
-    expect((await authPromise).serviceAccountToken).toEqual(
-      'k8s-aws-v1.aHR0cHM6Ly9odHRwczovL2V4YW1wbGUuY29tL2FzZGY_',
-    );
+
+    expect(credential).toEqual({
+      type: 'bearer token',
+      token: 'k8s-aws-v1.aHR0cHM6Ly9odHRwczovL2V4YW1wbGUuY29tL2FzZGY_',
+    });
     expect(fromTemporaryCredentials).toHaveBeenCalledWith({
       clientConfig: {
         region: 'us-east-1',
@@ -93,18 +101,20 @@ describe('AwsIamKubernetesAuthTranslator tests', () => {
   });
 
   it('returns a signed url for AWS credentials and passes the external id', async () => {
-    const authTranslator = new AwsIamKubernetesAuthTranslator({ config });
+    const strategy = new AwsIamStrategy({ config });
 
-    const authPromise = authTranslator.decorateClusterDetailsWithAuth({
-      assumeRole: 'SomeRole',
-      externalId: 'external-id',
+    const credential = await strategy.getCredential({
       name: 'test-cluster',
       url: '',
-      authProvider: 'aws',
+      authMetadata: {
+        [ANNOTATION_KUBERNETES_AWS_ASSUME_ROLE]: 'SomeRole',
+        [ANNOTATION_KUBERNETES_AWS_EXTERNAL_ID]: 'external-id',
+      },
     });
-    expect((await authPromise).serviceAccountToken).toEqual(
-      'k8s-aws-v1.aHR0cHM6Ly9odHRwczovL2V4YW1wbGUuY29tL2FzZGY_',
-    );
+    expect(credential).toEqual({
+      type: 'bearer token',
+      token: 'k8s-aws-v1.aHR0cHM6Ly9odHRwczovL2V4YW1wbGUuY29tL2FzZGY_',
+    });
     expect(fromTemporaryCredentials).toHaveBeenCalledWith({
       clientConfig: {
         region: 'us-east-1',
@@ -126,12 +136,12 @@ describe('AwsIamKubernetesAuthTranslator tests', () => {
       });
     });
     it('throws the right error', async () => {
-      const authTranslator = new AwsIamKubernetesAuthTranslator({ config });
+      const strategy = new AwsIamStrategy({ config });
       await expect(
-        authTranslator.decorateClusterDetailsWithAuth({
+        strategy.getCredential({
           name: 'test-cluster',
           url: '',
-          authProvider: 'aws',
+          authMetadata: {},
         }),
       ).rejects.toThrow('no way');
     });

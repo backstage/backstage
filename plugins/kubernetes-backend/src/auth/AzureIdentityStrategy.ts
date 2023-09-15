@@ -15,8 +15,7 @@
  */
 
 import { Logger } from 'winston';
-import { KubernetesAuthTranslator } from './types';
-import { AzureClusterDetails } from '../types/types';
+import { AuthenticationStrategy, KubernetesCredential } from './types';
 import {
   AccessToken,
   DefaultAzureCredential,
@@ -29,9 +28,7 @@ const aksScope = '6dae42f8-4368-4678-94ff-3960e28e3630/.default'; // This scope 
  *
  * @public
  */
-export class AzureIdentityKubernetesAuthTranslator
-  implements KubernetesAuthTranslator
-{
+export class AzureIdentityStrategy implements AuthenticationStrategy {
   private accessToken: AccessToken = { token: '', expiresOnTimestamp: 0 };
   private newTokenPromise: Promise<string> | undefined;
 
@@ -40,28 +37,22 @@ export class AzureIdentityKubernetesAuthTranslator
     private readonly tokenCredential: TokenCredential = new DefaultAzureCredential(),
   ) {}
 
-  async decorateClusterDetailsWithAuth(
-    clusterDetails: AzureClusterDetails,
-  ): Promise<AzureClusterDetails> {
-    const clusterDetailsWithAuthToken: AzureClusterDetails = Object.assign(
-      {},
-      clusterDetails,
-    );
-
-    clusterDetailsWithAuthToken.serviceAccountToken = await this.getToken();
-    return clusterDetailsWithAuthToken;
-  }
-
-  private async getToken(): Promise<string> {
+  public async getCredential(): Promise<KubernetesCredential> {
     if (!this.tokenRequiresRefresh()) {
-      return this.accessToken.token;
+      return { type: 'bearer token', token: this.accessToken.token };
     }
 
     if (!this.newTokenPromise) {
       this.newTokenPromise = this.fetchNewToken();
     }
 
-    return this.newTokenPromise;
+    return this.newTokenPromise
+      ? { type: 'bearer token', token: await this.newTokenPromise }
+      : { type: 'anonymous' };
+  }
+
+  public validateCluster(): Error[] {
+    return [];
   }
 
   private async fetchNewToken(): Promise<string> {

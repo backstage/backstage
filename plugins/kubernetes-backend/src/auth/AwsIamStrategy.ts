@@ -13,8 +13,6 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import { AWSClusterDetails } from '../types/types';
-import { KubernetesAuthTranslator } from './types';
 import { fromTemporaryCredentials } from '@aws-sdk/credential-providers';
 import { SignatureV4 } from '@aws-sdk/signature-v4';
 import { Sha256 } from '@aws-crypto/sha256-js';
@@ -23,6 +21,12 @@ import {
   DefaultAwsCredentialsManager,
 } from '@backstage/integration-aws-node';
 import { Config } from '@backstage/config';
+import {
+  ANNOTATION_KUBERNETES_AWS_ASSUME_ROLE,
+  ANNOTATION_KUBERNETES_AWS_EXTERNAL_ID,
+} from '@backstage/plugin-kubernetes-common';
+import { ClusterDetails } from '../types/types';
+import { AuthenticationStrategy, KubernetesCredential } from './types';
 
 /**
  *
@@ -40,12 +44,28 @@ const defaultRegion = 'us-east-1';
  *
  * @public
  */
-export class AwsIamKubernetesAuthTranslator
-  implements KubernetesAuthTranslator
-{
+export class AwsIamStrategy implements AuthenticationStrategy {
   private readonly credsManager: AwsCredentialsManager;
+
   constructor(opts: { config: Config }) {
     this.credsManager = DefaultAwsCredentialsManager.fromConfig(opts.config);
+  }
+
+  public async getCredential(
+    clusterDetails: ClusterDetails,
+  ): Promise<KubernetesCredential> {
+    return {
+      type: 'bearer token',
+      token: await this.getBearerToken(
+        clusterDetails.name,
+        clusterDetails.authMetadata[ANNOTATION_KUBERNETES_AWS_ASSUME_ROLE],
+        clusterDetails.authMetadata[ANNOTATION_KUBERNETES_AWS_EXTERNAL_ID],
+      ),
+    };
+  }
+
+  public validateCluster(): Error[] {
+    return [];
   }
 
   private async getBearerToken(
@@ -107,21 +127,5 @@ export class AwsIamKubernetesAuthTranslator
     const url = `https://${request.hostname}${request.path}?${query}`;
 
     return `k8s-aws-v1.${Buffer.from(url).toString('base64url')}`;
-  }
-
-  async decorateClusterDetailsWithAuth(
-    clusterDetails: AWSClusterDetails,
-  ): Promise<AWSClusterDetails> {
-    const clusterDetailsWithAuthToken: AWSClusterDetails = Object.assign(
-      {},
-      clusterDetails,
-    );
-
-    clusterDetailsWithAuthToken.serviceAccountToken = await this.getBearerToken(
-      clusterDetails.name,
-      clusterDetails.assumeRole,
-      clusterDetails.externalId,
-    );
-    return clusterDetailsWithAuthToken;
   }
 }

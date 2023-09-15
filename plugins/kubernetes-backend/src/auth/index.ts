@@ -14,12 +14,13 @@
  * limitations under the License.
  */
 
-export * from './AksKubernetesAuthTranslator';
-export * from './AwsIamKubernetesAuthTranslator';
-export * from './AzureIdentityKubernetesAuthTranslator';
-export * from './GoogleKubernetesAuthTranslator';
-export * from './GoogleServiceAccountAuthProvider';
-export * from './DispatchingKubernetesAuthTranslator';
-export * from './NoopKubernetesAuthTranslator';
-export * from './OidcKubernetesAuthTranslator';
+export * from './AksStrategy';
+export * from './AnonymousStrategy';
+export * from './AwsIamStrategy';
+export * from './AzureIdentityStrategy';
+export * from './GoogleStrategy';
+export * from './GoogleServiceAccountStrategy';
+export * from './DispatchStrategy';
+export * from './ServiceAccountStrategy';
+export * from './OidcStrategy';
 export * from './types';

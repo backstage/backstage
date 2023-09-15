@@ -13,34 +13,27 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import { KubernetesAuthTranslator } from './types';
-import { GKEClusterDetails } from '../types/types';
+import { AuthenticationStrategy, KubernetesCredential } from './types';
 import * as container from '@google-cloud/container';
 
 /**
  *
  * @public
  */
-export class GoogleServiceAccountAuthTranslator
-  implements KubernetesAuthTranslator
-{
-  async decorateClusterDetailsWithAuth(
-    clusterDetails: GKEClusterDetails,
-  ): Promise<GKEClusterDetails> {
-    const clusterDetailsWithAuthToken: GKEClusterDetails = Object.assign(
-      {},
-      clusterDetails,
-    );
+export class GoogleServiceAccountStrategy implements AuthenticationStrategy {
+  public async getCredential(): Promise<KubernetesCredential> {
     const client = new container.v1.ClusterManagerClient();
-    const accessToken = await client.auth.getAccessToken();
+    const token = await client.auth.getAccessToken();
 
-    if (accessToken) {
-      clusterDetailsWithAuthToken.serviceAccountToken = accessToken;
-    } else {
+    if (!token) {
       throw new Error(
         'Unable to obtain access token for the current Google Application Default Credentials',
       );
     }
-    return clusterDetailsWithAuthToken;
+    return { type: 'bearer token', token };
+  }
+
+  public validateCluster(): Error[] {
+    return [];
   }
 }

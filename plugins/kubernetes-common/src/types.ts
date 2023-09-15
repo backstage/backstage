@@ -33,13 +33,7 @@ import {
 import { Entity } from '@backstage/catalog-model';
 
 /** @public */
-export interface KubernetesRequestAuth {
-  google?: string;
-  aks?: string;
-  oidc?: {
-    [key: string]: string;
-  };
-}
+export type KubernetesRequestAuth = JsonObject;
 
 /** @public */
 export interface CustomResourceMatcher {

@@ -14,17 +14,18 @@
  * limitations under the License.
  */
 
-import { KubernetesAuthTranslator } from './types';
-import { ServiceAccountClusterDetails } from '../types/types';
+import { AuthenticationStrategy, KubernetesCredential } from './types';
 
 /**
  *
  * @public
  */
-export class NoopKubernetesAuthTranslator implements KubernetesAuthTranslator {
-  async decorateClusterDetailsWithAuth(
-    clusterDetails: ServiceAccountClusterDetails,
-  ): Promise<ServiceAccountClusterDetails> {
-    return clusterDetails;
+export class AnonymousStrategy implements AuthenticationStrategy {
+  public async getCredential(): Promise<KubernetesCredential> {
+    return { type: 'anonymous' };
+  }
+
+  public validateCluster(): Error[] {
+    return [];
   }
 }

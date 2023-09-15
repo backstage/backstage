@@ -14,6 +14,7 @@
  * limitations under the License.
  */
 
+import { ANNOTATION_KUBERNETES_AUTH_PROVIDER } from '@backstage/plugin-kubernetes-common';
 import { ClusterDetails, KubernetesClustersSupplier } from '../types/types';
 
 export class LocalKubectlProxyClusterLocator
@@ -26,7 +27,9 @@ export class LocalKubectlProxyClusterLocator
       {
         name: 'local',
         url: 'http:/localhost:8001',
-        authProvider: 'localKubectlProxy',
+        authMetadata: {
+          [ANNOTATION_KUBERNETES_AUTH_PROVIDER]: 'localKubectlProxy',
+        },
         skipMetricsLookup: true,
       },
     ];
