@@ -398,7 +398,7 @@ describe('I18nextTranslationApi', () => {
         foo: 'Foo',
         bar: 'Bar',
         baz: 'Baz',
-      });
+      } as const);
 
       expect(snapshot.t('foo')).toBe('Foo');
       expect(snapshot.t('bar')).toBe('Bar');
@@ -410,31 +410,43 @@ describe('I18nextTranslationApi', () => {
         shallow: 'Foo {{ bar }}',
         multiple: 'Foo {{ bar }} {{ baz }}',
         deep: 'Foo {{ bar.baz }}',
-      });
+      } as const);
 
+      // @ts-expect-error
       expect(snapshot.t('shallow')).toBe('Foo {{ bar }}');
-      expect(snapshot.t('shallow', { bar: 'Bar' })).toBe('Foo Bar');
-
-      expect(snapshot.t('multiple')).toBe('Foo {{ bar }} {{ baz }}');
-      expect(snapshot.t('multiple', { bar: 'Bar' })).toBe('Foo Bar {{ baz }}');
-      expect(snapshot.t('multiple', { bar: 'Bar', baz: 'Baz' })).toBe(
-        'Foo Bar Baz',
+      expect(snapshot.t('shallow', { replace: { bar: 'Bar' } })).toBe(
+        'Foo Bar',
       );
 
+      // @ts-expect-error
+      expect(snapshot.t('multiple')).toBe('Foo {{ bar }} {{ baz }}');
+      // @ts-expect-error
+      expect(snapshot.t('multiple', { replace: { bar: 'Bar' } })).toBe(
+        'Foo Bar {{ baz }}',
+      );
+      expect(
+        snapshot.t('multiple', { replace: { bar: 'Bar', baz: 'Baz' } }),
+      ).toBe('Foo Bar Baz');
+
+      // @ts-expect-error
       expect(snapshot.t('deep')).toBe('Foo {{ bar.baz }}');
-      expect(snapshot.t('deep', { bar: { baz: 'Baz' } })).toBe('Foo Baz');
+      expect(snapshot.t('deep', { replace: { bar: { baz: 'Baz' } } })).toBe(
+        'Foo Baz',
+      );
     });
 
     // Escaping isn't as useful in React, since we don't need to escape HTML in strings
     it('should not escape by default', () => {
       const snapshot = snapshotWithMessages({
         foo: 'Foo {{ foo }}',
-      });
+      } as const);
 
-      expect(snapshot.t('foo', { foo: '<div>' })).toBe('Foo <div>');
+      expect(snapshot.t('foo', { replace: { foo: '<div>' } })).toBe(
+        'Foo <div>',
+      );
       expect(
         snapshot.t('foo', {
-          foo: '<div>',
+          replace: { foo: '<div>' },
           interpolation: { escapeValue: true },
         }),
       ).toBe('Foo &lt;div&gt;');
@@ -445,7 +457,7 @@ describe('I18nextTranslationApi', () => {
         foo: 'Foo $t(bar) $t(baz)',
         bar: 'Nested',
         baz: 'Baz {{ qux }}',
-      });
+      } as const);
 
       expect(snapshot.t('foo', { qux: 'Deep' })).toBe('Foo Nested Baz Deep');
     });
@@ -460,24 +472,40 @@ describe('I18nextTranslationApi', () => {
         relativeSecondsShort:
           '= {{ x, relativeTime(range: second; style: short) }}',
         list: '= {{ x, list }}',
-      });
+      } as const);
 
-      expect(snapshot.t('plain', { x: 5 })).toBe('= 5');
-      expect(snapshot.t('number', { x: 5 })).toBe('= 5');
-      expect(snapshot.t('number', { x: 5, minimumFractionDigits: 1 })).toBe(
-        '= 5.0',
-      );
-      expect(snapshot.t('numberFixed', { x: 5 })).toBe('= 5.00');
+      expect(snapshot.t('plain', { replace: { x: '5' } })).toBe('= 5');
+      expect(snapshot.t('number', { replace: { x: 5 } })).toBe('= 5');
       expect(
-        snapshot.t('numberFixed', { x: 5, minimumFractionDigits: 3 }),
+        snapshot.t('number', {
+          replace: { x: 5 },
+          formatParams: { x: { minimumFractionDigits: 1 } },
+        }),
+      ).toBe('= 5.0');
+      expect(snapshot.t('numberFixed', { replace: { x: 5 } })).toBe('= 5.00');
+      expect(
+        snapshot.t('numberFixed', {
+          replace: { x: 5 },
+          formatParams: { x: { minimumFractionDigits: 3 } },
+        }),
       ).toBe('= 5.000');
-      expect(snapshot.t('relativeTime', { x: 3 })).toBe('= in 3 days');
-      expect(snapshot.t('relativeTime', { x: -3 })).toBe('= 3 days ago');
-      expect(snapshot.t('relativeTime', { x: 15, range: 'weeks' })).toBe(
-        '= in 15 weeks',
+      expect(snapshot.t('relativeTime', { replace: { x: 3 } })).toBe(
+        '= in 3 days',
+      );
+      expect(snapshot.t('relativeTime', { replace: { x: -3 } })).toBe(
+        '= 3 days ago',
       );
       expect(
-        snapshot.t('relativeTime', { x: 15, range: 'weeks', style: 'short' }),
+        snapshot.t('relativeTime', {
+          replace: { x: 15 },
+          formatParams: { x: { range: 'weeks' } },
+        }),
+      ).toBe('= in 15 weeks');
+      expect(
+        snapshot.t('relativeTime', {
+          replace: { x: 15 },
+          formatParams: { x: { range: 'weeks', style: 'short' } },
+        }),
       ).toBe('= in 15 wk.');
       expect(snapshot.t('relativeSeconds', { x: 1 })).toBe('= in 1 second');
       expect(snapshot.t('relativeSeconds', { x: 2 })).toBe('= in 2 seconds');
@@ -500,15 +528,14 @@ describe('I18nextTranslationApi', () => {
         derp_other: 'derps',
         derpWithCount_one: '{{ count }} derp',
         derpWithCount_other: '{{ count }} derps',
-      });
+      } as const);
 
-      // TODO(Rugvip): Support plural keys
-      expect(snapshot.t('derp' as any, { count: 1 })).toBe('derp');
-      expect(snapshot.t('derp' as any, { count: 2 })).toBe('derps');
-      expect(snapshot.t('derp' as any, { count: 0 })).toBe('derps');
-      expect(snapshot.t('derpWithCount' as any, { count: 1 })).toBe('1 derp');
-      expect(snapshot.t('derpWithCount' as any, { count: 2 })).toBe('2 derps');
-      expect(snapshot.t('derpWithCount' as any, { count: 0 })).toBe('0 derps');
+      expect(snapshot.t('derp', { count: 1 })).toBe('derp');
+      expect(snapshot.t('derp', { count: 2 })).toBe('derps');
+      expect(snapshot.t('derp', { count: 0 })).toBe('derps');
+      expect(snapshot.t('derpWithCount', { count: 1 })).toBe('1 derp');
+      expect(snapshot.t('derpWithCount', { count: 2 })).toBe('2 derps');
+      expect(snapshot.t('derpWithCount', { count: 0 })).toBe('0 derps');
     });
   });
 });
