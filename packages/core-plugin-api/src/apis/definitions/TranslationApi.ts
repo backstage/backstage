@@ -33,13 +33,13 @@ interface BaseOptions {
 /**
  * All pluralization suffixes supported by i18next
  *
- * @internal
+ * @ignore
  */
 type TranslationPlural = 'zero' | 'one' | 'two' | 'few' | 'many' | 'other';
 
 /**
  * A mapping of i18n formatting types to their corresponding types and options.
- * @internal
+ * @ignore
  */
 type I18nextFormatMap = {
   number: {
@@ -69,9 +69,12 @@ type I18nextFormatMap = {
 /**
  * Extracts all pluralized keys from the message map.
  *
- * e.g. { foo: 'foo', bar_one: 'bar', bar_other: 'bars' } -> 'bar'
+ * @example
+ * ```
+ * { foo: 'foo', bar_one: 'bar', bar_other: 'bars' } -> 'bar'
+ * ```
  *
- * @internal
+ * @ignore
  */
 type PluralKeys<TMessages extends { [key in string]: string }> = {
   [Key in keyof TMessages]: Key extends `${infer K}_${TranslationPlural}`
@@ -82,9 +85,12 @@ type PluralKeys<TMessages extends { [key in string]: string }> = {
 /**
  * Collapses a message map into normalized keys with union values.
  *
- * e.g. { foo_one: 'foo', foo_other: 'foos' } -> { foo: 'foo' | 'foos' }
+ * @example
+ * ```
+ * { foo_one: 'foo', foo_other: 'foos' } -> { foo: 'foo' | 'foos' }
+ * ```
  *
- * @internal
+ * @ignore
  */
 type CollapsedMessages<TMessages extends { [key in string]: string }> = {
   [key in keyof TMessages as key extends `${infer K}_${TranslationPlural}`
@@ -94,12 +100,14 @@ type CollapsedMessages<TMessages extends { [key in string]: string }> = {
 
 /**
  * Helper type that expands type hints
+ *
  * @ignore
  */
 type Expand<T> = T extends infer O ? { [K in keyof O]: O[K] } : never;
 
 /**
  * Helper type that expands type hints recursively
+ *
  * @ignore
  */
 type ExpandRecursive<T> = T extends infer O
@@ -109,7 +117,7 @@ type ExpandRecursive<T> = T extends infer O
 /**
  * Trim away whitespace
  *
- * @internal
+ * @ignore
  */
 type Trim<T> = T extends ` ${infer U}`
   ? Trim<U>
@@ -120,7 +128,10 @@ type Trim<T> = T extends ` ${infer U}`
 /**
  * Extracts the key and format from a replacement string.
  *
- * e.g. 'foo, number' -> { foo: number }, 'foo' -> { foo: undefined }
+ * @example
+ * ```
+ * 'foo, number' -> { foo: number }, 'foo' -> { foo: undefined }
+ * ```
  */
 type ExtractFormat<Replacement extends string> =
   Replacement extends `${infer Key},${infer FullFormat}`
@@ -138,9 +149,12 @@ type ExtractFormat<Replacement extends string> =
 /**
  * Expand the keys in a flat map to nested objects.
  *
- * e.g. { 'a.b': 'foo', 'a.c': 'bar' } -> { a: { b: 'foo', c: 'bar' }
+ * @example
+ * ```
+ * { 'a.b': 'foo', 'a.c': 'bar' } -> { a: { b: 'foo', c: 'bar' }
+ * ```
  *
- * @internal
+ * @ignore
  */
 type ExpandKeys<TMap extends {}> = {
   [Key in keyof TMap as Key extends `${infer Prefix}.${string}`
@@ -153,9 +167,12 @@ type ExpandKeys<TMap extends {}> = {
 /**
  * Extracts all option keys and their format from a message string.
  *
- * e.g. 'foo {{bar}} {{baz, number}}' -> { 'bar': undefined, 'baz': 'number' }
+ * @example
+ * ```
+ * 'foo {{bar}} {{baz, number}}' -> { 'bar': undefined, 'baz': 'number' }
+ * ```
  *
- * @internal
+ * @ignore
  */
 type ReplaceFormatsFromMessage<TMessage> =
   TMessage extends `${string}{{${infer Replacement}}}${infer Tail}` // no formatting, e.g. {{foo}}
@@ -165,7 +182,7 @@ type ReplaceFormatsFromMessage<TMessage> =
 /**
  * Generates the replace options structure
  *
- * @internal
+ * @ignore
  */
 type ReplaceOptionsFromFormats<TFormats extends {}> = {
   [Key in keyof TFormats]: TFormats[Key] extends keyof I18nextFormatMap
@@ -178,7 +195,7 @@ type ReplaceOptionsFromFormats<TFormats extends {}> = {
 /**
  * Generates the formatParams options structure
  *
- * @internal
+ * @ignore
  */
 type ReplaceFormatParamsFromFormats<TFormats extends {}> = {
   [Key in keyof TFormats]?: TFormats[Key] extends keyof I18nextFormatMap
@@ -191,9 +208,12 @@ type ReplaceFormatParamsFromFormats<TFormats extends {}> = {
 /**
  * Extracts all nesting keys from a message string.
  *
- * e.g. 'foo $t(bar) $t(baz)' -> 'bar' | 'baz'
+ * @example
+ * ```
+ * 'foo $t(bar) $t(baz)' -> 'bar' | 'baz'
+ * ```
  *
- * @internal
+ * @ignore
  */
 type NestingKeysFromMessage<TMessage extends string> =
   TMessage extends `${string}$t(${infer Key})${infer Tail}` // nesting options are not supported
@@ -205,9 +225,12 @@ type NestingKeysFromMessage<TMessage extends string> =
  *
  * This will only discover keys up to 3 levels deep.
  *
- * e.g. <'x', { x: '$t(y) $t(z)', y: 'y', z: '$t(w)', w: 'w', foo: 'foo' }> -> 'x' | 'y' | 'z' | 'w'
+ * @example
+ * ```
+ * <'x', { x: '$t(y) $t(z)', y: 'y', z: '$t(w)', w: 'w', foo: 'foo' }> -> 'x' | 'y' | 'z' | 'w'
+ * ```
  *
- * @internal
+ * @ignore
  */
 type NestedMessageKeys<
   TKey extends keyof TMessages,
@@ -231,9 +254,12 @@ type NestedMessageKeys3<
 /**
  * Converts a union type to an intersection type.
  *
- * e.g. { foo: 'foo' } | { bar: 'bar' } -> { foo: 'foo' } & { bar: 'bar' }
+ * @example
+ * ```
+ * { foo: 'foo' } | { bar: 'bar' } -> { foo: 'foo' } & { bar: 'bar' }
+ * ```
  *
- * @internal
+ * @ignore
  */
 type UnionToIntersection<U> = (U extends any ? (k: U) => void : never) extends (
   k: infer I,
@@ -244,7 +270,7 @@ type UnionToIntersection<U> = (U extends any ? (k: U) => void : never) extends (
 /**
  * Collects different types of options into a single object
  *
- * @internal
+ * @ignore
  */
 type CollectOptions<
   TCount extends { count?: number },
@@ -265,22 +291,26 @@ type CollectOptions<
 /**
  * Helper type to only require options argument if needed
  *
- * @internal
+ * @ignore
  */
 type OptionArgs<TOptions extends {}> = keyof TOptions extends never
   ? [options?: BaseOptions]
   : [options: BaseOptions & TOptions];
 
-/** @ignore */
+/**
+ * @ignore
+ */
 type TranslationFunctionOptions<
   TKeys extends keyof TMessages, // All normalized message keys to be considered, i.e. included nested ones
   TPluralKeys extends keyof TMessages, // All keys in the message map that are pluralized
   TMessages extends { [key in string]: string }, // Collapsed message map with normalized keys and union values
 > = OptionArgs<
-  CollectOptions<
-    TKeys & TPluralKeys extends never ? {} : { count: number },
-    ExpandRecursive<
-      UnionToIntersection<ReplaceFormatsFromMessage<TMessages[TKeys]>>
+  Expand<
+    CollectOptions<
+      TKeys & TPluralKeys extends never ? {} : { count: number },
+      ExpandRecursive<
+        UnionToIntersection<ReplaceFormatsFromMessage<TMessages[TKeys]>>
+      >
     >
   >
 >;
