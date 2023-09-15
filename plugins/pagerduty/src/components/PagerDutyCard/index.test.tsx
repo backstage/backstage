@@ -13,11 +13,12 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
 import React from 'react';
-import { render, waitFor, fireEvent, act } from '@testing-library/react';
+import { screen, waitFor, fireEvent, act } from '@testing-library/react';
 import { PagerDutyCard } from '../PagerDutyCard';
 import { NotFoundError } from '@backstage/errors';
-import { TestApiRegistry, wrapInTestApp } from '@backstage/test-utils';
+import { TestApiRegistry, renderInTestApp } from '@backstage/test-utils';
 import { pagerDutyApiRef, UnauthorizedError, PagerDutyClient } from '../../api';
 import { PagerDutyService, PagerDutyUser } from '../types';
 
@@ -61,18 +62,16 @@ describe('PagerDutyCard', () => {
       .fn()
       .mockImplementationOnce(async () => ({ service }));
 
-    const { getByText, queryByTestId } = render(
-      wrapInTestApp(
-        <ApiProvider apis={apis}>
-          <PagerDutyCard name="blah" integrationKey="abc123" />
-        </ApiProvider>,
-      ),
+    await renderInTestApp(
+      <ApiProvider apis={apis}>
+        <PagerDutyCard name="blah" integrationKey="abc123" />
+      </ApiProvider>,
     );
-    await waitFor(() => !queryByTestId('progress'));
-    expect(getByText('Service Directory')).toBeInTheDocument();
-    expect(getByText('Create Incident')).toBeInTheDocument();
-    expect(getByText('Nice! No incidents found!')).toBeInTheDocument();
-    expect(getByText('Empty escalation policy')).toBeInTheDocument();
+    await waitFor(() => !screen.queryByTestId('progress'));
+    expect(screen.getByText('Service Directory')).toBeInTheDocument();
+    expect(screen.getByText('Create Incident')).toBeInTheDocument();
+    expect(screen.getByText('Nice! No incidents found!')).toBeInTheDocument();
+    expect(screen.getByText('Empty escalation policy')).toBeInTheDocument();
   });
 
   it('Handles custom error for missing token', async () => {
@@ -80,15 +79,15 @@ describe('PagerDutyCard', () => {
       .fn()
       .mockRejectedValueOnce(new UnauthorizedError());
 
-    const { getByText, queryByTestId } = render(
-      wrapInTestApp(
-        <ApiProvider apis={apis}>
-          <PagerDutyCard name="blah" integrationKey="abc123" />
-        </ApiProvider>,
-      ),
+    await renderInTestApp(
+      <ApiProvider apis={apis}>
+        <PagerDutyCard name="blah" integrationKey="abc123" />
+      </ApiProvider>,
     );
-    await waitFor(() => !queryByTestId('progress'));
-    expect(getByText('Missing or invalid PagerDuty Token')).toBeInTheDocument();
+    await waitFor(() => !screen.queryByTestId('progress'));
+    expect(
+      screen.getByText('Missing or invalid PagerDuty Token'),
+    ).toBeInTheDocument();
   });
 
   it('Handles custom NotFoundError', async () => {
@@ -96,32 +95,28 @@ describe('PagerDutyCard', () => {
       .fn()
       .mockRejectedValueOnce(new NotFoundError());
 
-    const { getByText, queryByTestId } = render(
-      wrapInTestApp(
-        <ApiProvider apis={apis}>
-          <PagerDutyCard name="blah" integrationKey="abc123" />
-        </ApiProvider>,
-      ),
+    await renderInTestApp(
+      <ApiProvider apis={apis}>
+        <PagerDutyCard name="blah" integrationKey="abc123" />
+      </ApiProvider>,
     );
-    await waitFor(() => !queryByTestId('progress'));
-    expect(getByText('PagerDuty Service Not Found')).toBeInTheDocument();
+    await waitFor(() => !screen.queryByTestId('progress'));
+    expect(screen.getByText('PagerDuty Service Not Found')).toBeInTheDocument();
   });
 
   it('handles general error', async () => {
     mockPagerDutyApi.getServiceByPagerDutyEntity = jest
       .fn()
       .mockRejectedValueOnce(new Error('An error occurred'));
-    const { getByText, queryByTestId } = render(
-      wrapInTestApp(
-        <ApiProvider apis={apis}>
-          <PagerDutyCard name="blah" integrationKey="abc123" />
-        </ApiProvider>,
-      ),
+    await renderInTestApp(
+      <ApiProvider apis={apis}>
+        <PagerDutyCard name="blah" integrationKey="abc123" />
+      </ApiProvider>,
     );
-    await waitFor(() => !queryByTestId('progress'));
+    await waitFor(() => !screen.queryByTestId('progress'));
 
     expect(
-      getByText(
+      screen.getByText(
         'Error encountered while fetching information. An error occurred',
       ),
     ).toBeInTheDocument();
@@ -132,21 +127,19 @@ describe('PagerDutyCard', () => {
       .fn()
       .mockImplementationOnce(async () => ({ service }));
 
-    const { getByText, queryByTestId, getByRole } = render(
-      wrapInTestApp(
-        <ApiProvider apis={apis}>
-          <PagerDutyCard name="blah" integrationKey="abc123" />
-        </ApiProvider>,
-      ),
+    await renderInTestApp(
+      <ApiProvider apis={apis}>
+        <PagerDutyCard name="blah" integrationKey="abc123" />
+      </ApiProvider>,
     );
-    await waitFor(() => !queryByTestId('progress'));
-    expect(getByText('Service Directory')).toBeInTheDocument();
+    await waitFor(() => !screen.queryByTestId('progress'));
+    expect(screen.getByText('Service Directory')).toBeInTheDocument();
 
-    const triggerLink = getByText('Create Incident');
+    const triggerLink = screen.getByText('Create Incident');
     await act(async () => {
       fireEvent.click(triggerLink);
     });
-    expect(getByRole('dialog')).toBeInTheDocument();
+    expect(screen.getByRole('dialog')).toBeInTheDocument();
   });
 
   describe('when entity has the pagerduty.com/service-id annotation', () => {
@@ -155,18 +148,16 @@ describe('PagerDutyCard', () => {
         .fn()
         .mockImplementationOnce(async () => ({ service }));
 
-      const { getByText, queryByTestId } = render(
-        wrapInTestApp(
-          <ApiProvider apis={apis}>
-            <PagerDutyCard name="blah" integrationKey="abc123" />
-          </ApiProvider>,
-        ),
+      await renderInTestApp(
+        <ApiProvider apis={apis}>
+          <PagerDutyCard name="blah" integrationKey="abc123" />
+        </ApiProvider>,
       );
-      await waitFor(() => !queryByTestId('progress'));
-      expect(getByText('Service Directory')).toBeInTheDocument();
-      expect(getByText('Create Incident')).toBeInTheDocument();
-      expect(getByText('Nice! No incidents found!')).toBeInTheDocument();
-      expect(getByText('Empty escalation policy')).toBeInTheDocument();
+      await waitFor(() => !screen.queryByTestId('progress'));
+      expect(screen.getByText('Service Directory')).toBeInTheDocument();
+      expect(screen.getByText('Create Incident')).toBeInTheDocument();
+      expect(screen.getByText('Nice! No incidents found!')).toBeInTheDocument();
+      expect(screen.getByText('Empty escalation policy')).toBeInTheDocument();
     });
 
     it('Handles custom error for missing token', async () => {
@@ -174,20 +165,18 @@ describe('PagerDutyCard', () => {
         .fn()
         .mockRejectedValueOnce(new UnauthorizedError());
 
-      const { getByText, queryByTestId } = render(
-        wrapInTestApp(
-          <ApiProvider apis={apis}>
-            <PagerDutyCard
-              name="blah"
-              integrationKey="abc123"
-              serviceId="def123"
-            />
-          </ApiProvider>,
-        ),
+      await renderInTestApp(
+        <ApiProvider apis={apis}>
+          <PagerDutyCard
+            name="blah"
+            integrationKey="abc123"
+            serviceId="def123"
+          />
+        </ApiProvider>,
       );
-      await waitFor(() => !queryByTestId('progress'));
+      await waitFor(() => !screen.queryByTestId('progress'));
       expect(
-        getByText('Missing or invalid PagerDuty Token'),
+        screen.getByText('Missing or invalid PagerDuty Token'),
       ).toBeInTheDocument();
     });
 
@@ -196,40 +185,38 @@ describe('PagerDutyCard', () => {
         .fn()
         .mockRejectedValueOnce(new NotFoundError());
 
-      const { getByText, queryByTestId } = render(
-        wrapInTestApp(
-          <ApiProvider apis={apis}>
-            <PagerDutyCard
-              name="blah"
-              integrationKey="abc123"
-              serviceId="def123"
-            />
-          </ApiProvider>,
-        ),
+      await renderInTestApp(
+        <ApiProvider apis={apis}>
+          <PagerDutyCard
+            name="blah"
+            integrationKey="abc123"
+            serviceId="def123"
+          />
+        </ApiProvider>,
       );
-      await waitFor(() => !queryByTestId('progress'));
-      expect(getByText('PagerDuty Service Not Found')).toBeInTheDocument();
+      await waitFor(() => !screen.queryByTestId('progress'));
+      expect(
+        screen.getByText('PagerDuty Service Not Found'),
+      ).toBeInTheDocument();
     });
 
     it('handles general error', async () => {
       mockPagerDutyApi.getServiceByPagerDutyEntity = jest
         .fn()
         .mockRejectedValueOnce(new Error('An error occurred'));
-      const { getByText, queryByTestId } = render(
-        wrapInTestApp(
-          <ApiProvider apis={apis}>
-            <PagerDutyCard
-              name="blah"
-              integrationKey="abc123"
-              serviceId="def123"
-            />
-          </ApiProvider>,
-        ),
+      await renderInTestApp(
+        <ApiProvider apis={apis}>
+          <PagerDutyCard
+            name="blah"
+            integrationKey="abc123"
+            serviceId="def123"
+          />
+        </ApiProvider>,
       );
-      await waitFor(() => !queryByTestId('progress'));
+      await waitFor(() => !screen.queryByTestId('progress'));
 
       expect(
-        getByText(
+        screen.getByText(
           'Error encountered while fetching information. An error occurred',
         ),
       ).toBeInTheDocument();
@@ -240,16 +227,14 @@ describe('PagerDutyCard', () => {
         .fn()
         .mockImplementationOnce(async () => ({ service }));
 
-      const { queryByTestId, getByTitle } = render(
-        wrapInTestApp(
-          <ApiProvider apis={apis}>
-            <PagerDutyCard name="blah" serviceId="def123" />
-          </ApiProvider>,
-        ),
+      await renderInTestApp(
+        <ApiProvider apis={apis}>
+          <PagerDutyCard name="blah" serviceId="def123" />
+        </ApiProvider>,
       );
-      await waitFor(() => !queryByTestId('progress'));
+      await waitFor(() => !screen.queryByTestId('progress'));
       expect(
-        getByTitle('Must provide an integration-key to create incidents')
+        screen.getByTitle('Must provide an integration-key to create incidents')
           .className,
       ).toMatch('disabled');
     });
@@ -261,22 +246,20 @@ describe('PagerDutyCard', () => {
         .fn()
         .mockImplementationOnce(async () => ({ service }));
 
-      const { getByText, queryByTestId } = render(
-        wrapInTestApp(
-          <ApiProvider apis={apis}>
-            <PagerDutyCard
-              name="blah"
-              integrationKey="abc123"
-              serviceId="def123"
-            />
-          </ApiProvider>,
-        ),
+      await renderInTestApp(
+        <ApiProvider apis={apis}>
+          <PagerDutyCard
+            name="blah"
+            integrationKey="abc123"
+            serviceId="def123"
+          />
+        </ApiProvider>,
       );
-      await waitFor(() => !queryByTestId('progress'));
-      expect(getByText('Service Directory')).toBeInTheDocument();
-      expect(getByText('Create Incident')).toBeInTheDocument();
-      expect(getByText('Nice! No incidents found!')).toBeInTheDocument();
-      expect(getByText('Empty escalation policy')).toBeInTheDocument();
+      await waitFor(() => !screen.queryByTestId('progress'));
+      expect(screen.getByText('Service Directory')).toBeInTheDocument();
+      expect(screen.getByText('Create Incident')).toBeInTheDocument();
+      expect(screen.getByText('Nice! No incidents found!')).toBeInTheDocument();
+      expect(screen.getByText('Empty escalation policy')).toBeInTheDocument();
     });
   });
 
@@ -286,23 +269,21 @@ describe('PagerDutyCard', () => {
         .fn()
         .mockImplementationOnce(async () => ({ service }));
 
-      const { getByText, queryByTestId } = render(
-        wrapInTestApp(
-          <ApiProvider apis={apis}>
-            <PagerDutyCard
-              name="blah"
-              integrationKey="abc123"
-              serviceId="def123"
-              readOnly
-            />
-          </ApiProvider>,
-        ),
+      await renderInTestApp(
+        <ApiProvider apis={apis}>
+          <PagerDutyCard
+            name="blah"
+            integrationKey="abc123"
+            serviceId="def123"
+            readOnly
+          />
+        </ApiProvider>,
       );
-      await waitFor(() => !queryByTestId('progress'));
-      expect(getByText('Service Directory')).toBeInTheDocument();
-      expect(getByText('Nice! No incidents found!')).toBeInTheDocument();
-      expect(getByText('Empty escalation policy')).toBeInTheDocument();
-      expect(() => getByText('Create Incident')).toThrow();
+      await waitFor(() => !screen.queryByTestId('progress'));
+      expect(screen.getByText('Service Directory')).toBeInTheDocument();
+      expect(screen.getByText('Nice! No incidents found!')).toBeInTheDocument();
+      expect(screen.getByText('Empty escalation policy')).toBeInTheDocument();
+      expect(() => screen.getByText('Create Incident')).toThrow();
     });
   });
 });

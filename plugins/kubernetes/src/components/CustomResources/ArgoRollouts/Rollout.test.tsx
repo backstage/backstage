@@ -15,8 +15,8 @@
  */
 
 import React from 'react';
-import { render } from '@testing-library/react';
-import { wrapInTestApp } from '@backstage/test-utils';
+import { screen } from '@testing-library/react';
+import { renderInTestApp } from '@backstage/test-utils';
 import { kubernetesProviders } from '../../../hooks/test-utils';
 import * as rollout from './__fixtures__/rollout.json';
 import * as pausedRollout from './__fixtures__/paused-rollout.json';
@@ -29,32 +29,34 @@ describe('Rollout', () => {
   it('should render RolloutAccordion', async () => {
     const wrapper = kubernetesProviders(groupedResources, new Set([]));
 
-    const { getByText, queryByText } = render(
-      wrapper(wrapInTestApp(<RolloutAccordions rollouts={[rollout] as any} />)),
+    await renderInTestApp(
+      wrapper(<RolloutAccordions rollouts={[rollout] as any} />),
     );
 
-    expect(getByText('dice-roller')).toBeInTheDocument();
-    expect(getByText('Rollout')).toBeInTheDocument();
-    expect(getByText('2 pods')).toBeInTheDocument();
-    expect(getByText('No pods with errors')).toBeInTheDocument();
-    expect(queryByText('Paused')).toBeNull();
+    expect(screen.getByText('dice-roller')).toBeInTheDocument();
+    expect(screen.getByText('Rollout')).toBeInTheDocument();
+    expect(screen.getByText('2 pods')).toBeInTheDocument();
+    expect(screen.getByText('No pods with errors')).toBeInTheDocument();
+    expect(screen.queryByText('Paused')).toBeNull();
   });
+
   it('should render RolloutAccordion with error', async () => {
     const wrapper = kubernetesProviders(
       groupedResources,
       new Set(['dice-roller-6c8646bfd-2m5hv']),
     );
 
-    const { getByText, queryByText } = render(
-      wrapper(wrapInTestApp(<RolloutAccordions rollouts={[rollout] as any} />)),
+    await renderInTestApp(
+      wrapper(<RolloutAccordions rollouts={[rollout] as any} />),
     );
 
-    expect(getByText('dice-roller')).toBeInTheDocument();
-    expect(getByText('Rollout')).toBeInTheDocument();
-    expect(getByText('2 pods')).toBeInTheDocument();
-    expect(getByText('1 pod with errors')).toBeInTheDocument();
-    expect(queryByText('Paused')).toBeNull();
+    expect(screen.getByText('dice-roller')).toBeInTheDocument();
+    expect(screen.getByText('Rollout')).toBeInTheDocument();
+    expect(screen.getByText('2 pods')).toBeInTheDocument();
+    expect(screen.getByText('1 pod with errors')).toBeInTheDocument();
+    expect(screen.queryByText('Paused')).toBeNull();
   });
+
   it('should render Paused Rollout with pause text', async () => {
     const wrapper = kubernetesProviders(groupedResources, new Set([]));
 
@@ -63,41 +65,38 @@ describe('Rollout', () => {
         // millis * secs * mins = 45 mins
         .minus(Duration.fromMillis(1000 * 60 * 45));
 
-    const { getByText } = render(
-      wrapper(
-        wrapInTestApp(<RolloutAccordions rollouts={[pausedRollout] as any} />),
-      ),
+    await renderInTestApp(
+      wrapper(<RolloutAccordions rollouts={[pausedRollout] as any} />),
     );
 
-    expect(getByText('dice-roller')).toBeInTheDocument();
-    expect(getByText('Rollout')).toBeInTheDocument();
-    expect(getByText('2 pods')).toBeInTheDocument();
-    expect(getByText('No pods with errors')).toBeInTheDocument();
-    expect(getByText('Paused (45 minutes ago)')).toBeInTheDocument();
+    expect(screen.getByText('dice-roller')).toBeInTheDocument();
+    expect(screen.getByText('Rollout')).toBeInTheDocument();
+    expect(screen.getByText('2 pods')).toBeInTheDocument();
+    expect(screen.getByText('No pods with errors')).toBeInTheDocument();
+    expect(screen.getByText('Paused (45 minutes ago)')).toBeInTheDocument();
   });
+
   it('should render aborted Rollout with aborted text', async () => {
     const wrapper = kubernetesProviders(groupedResources, new Set([]));
 
-    const { getByText, getAllByText, queryByText } = render(
+    await renderInTestApp(
       wrapper(
-        wrapInTestApp(
-          <RolloutAccordions
-            defaultExpanded
-            rollouts={[abortedRollout] as any}
-          />,
-        ),
+        <RolloutAccordions
+          defaultExpanded
+          rollouts={[abortedRollout] as any}
+        />,
       ),
     );
 
-    expect(getByText('dice-roller')).toBeInTheDocument();
-    expect(getByText('Rollout')).toBeInTheDocument();
-    expect(getByText('2 pods')).toBeInTheDocument();
-    expect(getByText('No pods with errors')).toBeInTheDocument();
-    expect(queryByText('Paused')).toBeNull();
-    expect(getByText('Rollout status')).toBeInTheDocument();
-    expect(getAllByText('Aborted')).toHaveLength(2);
+    expect(screen.getByText('dice-roller')).toBeInTheDocument();
+    expect(screen.getByText('Rollout')).toBeInTheDocument();
+    expect(screen.getByText('2 pods')).toBeInTheDocument();
+    expect(screen.getByText('No pods with errors')).toBeInTheDocument();
+    expect(screen.queryByText('Paused')).toBeNull();
+    expect(screen.getByText('Rollout status')).toBeInTheDocument();
+    expect(screen.getAllByText('Aborted')).toHaveLength(2);
     expect(
-      getByText('some metric related failure message'),
+      screen.getByText('some metric related failure message'),
     ).toBeInTheDocument();
   });
 });

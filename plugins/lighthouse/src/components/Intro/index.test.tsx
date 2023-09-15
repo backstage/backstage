@@ -14,18 +14,16 @@
  * limitations under the License.
  */
 
-/* eslint-disable jest/no-disabled-tests */
-
-import { wrapInTestApp } from '@backstage/test-utils';
-import { fireEvent, render } from '@testing-library/react';
+import { renderInTestApp } from '@backstage/test-utils';
+import { fireEvent, screen } from '@testing-library/react';
 import React from 'react';
 import LighthouseIntro from './index';
 
 describe('LighthouseIntro', () => {
-  it('renders successfully', () => {
-    const rendered = render(wrapInTestApp(<LighthouseIntro />));
+  it('renders successfully', async () => {
+    await renderInTestApp(<LighthouseIntro />);
     expect(
-      rendered.getByText('Welcome to Lighthouse in Backstage!'),
+      screen.getByText('Welcome to Lighthouse in Backstage!'),
     ).toBeInTheDocument();
   });
 
@@ -33,28 +31,28 @@ describe('LighthouseIntro', () => {
     const firstTabRe = /This plugin allows you to/;
     const secondTabRe = /you will need a running instance of/;
 
-    it('selects the first text element', () => {
-      const rendered = render(wrapInTestApp(<LighthouseIntro />));
-      expect(rendered.getByText(firstTabRe)).toBeInTheDocument();
-      expect(rendered.queryByText(secondTabRe)).not.toBeInTheDocument();
+    it('selects the first text element', async () => {
+      await renderInTestApp(<LighthouseIntro />);
+      expect(screen.getByText(firstTabRe)).toBeInTheDocument();
+      expect(screen.queryByText(secondTabRe)).not.toBeInTheDocument();
     });
 
-    it('shows the other text when the tab is clicked', () => {
-      const rendered = render(wrapInTestApp(<LighthouseIntro />));
-      fireEvent.click(rendered.getByText('Setup'));
-      expect(rendered.queryByText(firstTabRe)).not.toBeInTheDocument();
-      expect(rendered.getByText(secondTabRe)).toBeInTheDocument();
+    it('shows the other text when the tab is clicked', async () => {
+      await renderInTestApp(<LighthouseIntro />);
+      fireEvent.click(screen.getByText('Setup'));
+      expect(screen.queryByText(firstTabRe)).not.toBeInTheDocument();
+      expect(screen.getByText(secondTabRe)).toBeInTheDocument();
     });
   });
 
   describe('closing', () => {
-    it('hides the content on click', () => {
-      const rendered = render(wrapInTestApp(<LighthouseIntro />));
-      const welcomeMessage = rendered.queryByText(
+    it('hides the content on click', async () => {
+      await renderInTestApp(<LighthouseIntro />);
+      const welcomeMessage = screen.queryByText(
         'Welcome to Lighthouse in Backstage!',
       );
       expect(welcomeMessage).toBeInTheDocument();
-      fireEvent.click(rendered.getByText('Hide intro'));
+      fireEvent.click(screen.getByText('Hide intro'));
 
       expect(welcomeMessage).not.toBeInTheDocument();
     });

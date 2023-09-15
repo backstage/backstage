@@ -13,11 +13,12 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
 import React from 'react';
-import { render } from '@testing-library/react';
+import { screen } from '@testing-library/react';
 import { JobsAccordions } from './JobsAccordions';
 import * as oneCronJobsFixture from '../../__fixtures__/1-cronjobs.json';
-import { wrapInTestApp } from '@backstage/test-utils';
+import { renderInTestApp } from '@backstage/test-utils';
 import { kubernetesProviders } from '../../hooks/test-utils';
 import { V1Job, ObjectSerializer } from '@kubernetes/client-node';
 
@@ -29,14 +30,16 @@ describe('JobsAccordions', () => {
       job => ObjectSerializer.deserialize(job, 'V1Job') as V1Job,
     );
 
-    const { getByText } = render(
-      wrapper(wrapInTestApp(<JobsAccordions jobs={jobs} />)),
-    );
+    await renderInTestApp(wrapper(<JobsAccordions jobs={jobs} />));
 
-    expect(getByText('dice-roller-cronjob-1637028600')).toBeInTheDocument();
-    expect(getByText('Running')).toBeInTheDocument();
+    expect(
+      screen.getByText('dice-roller-cronjob-1637028600'),
+    ).toBeInTheDocument();
+    expect(screen.getByText('Running')).toBeInTheDocument();
 
-    expect(getByText('dice-roller-cronjob-1637025000')).toBeInTheDocument();
-    expect(getByText('Succeeded')).toBeInTheDocument();
+    expect(
+      screen.getByText('dice-roller-cronjob-1637025000'),
+    ).toBeInTheDocument();
+    expect(screen.getByText('Succeeded')).toBeInTheDocument();
   });
 });
