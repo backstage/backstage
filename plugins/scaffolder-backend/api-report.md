@@ -679,6 +679,15 @@ export function createPublishGitlabAction(options: {
     gitAuthorEmail?: string | undefined;
     setUserAsOwner?: boolean | undefined;
     topics?: string[] | undefined;
+    settings?: Record<string, any> | undefined;
+    branches?:
+      | {
+          name: string;
+          protect?: boolean | undefined;
+          create?: boolean | undefined;
+          ref?: string | undefined;
+        }[]
+      | undefined;
   },
   JsonObject
 >;
