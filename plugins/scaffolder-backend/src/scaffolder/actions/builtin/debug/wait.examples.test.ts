@@ -56,6 +56,7 @@ describe('debug:wait examples', () => {
     const start = new Date().getTime();
     await action.handler(context);
     const end = new Date().getTime();
-    expect(end - start).toBeGreaterThanOrEqual(50);
+    expect(end - start).toBeGreaterThanOrEqual(45);
+    expect(end - start).toBeLessThanOrEqual(55);
   });
 });
