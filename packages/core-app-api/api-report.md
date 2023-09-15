@@ -223,8 +223,8 @@ export type AppOptions = {
   configLoader?: AppConfigLoader;
   bindRoutes?(context: { bind: AppRouteBinder }): void;
   __experimentalTranslations?: {
-    fallbackLanguage?: string | string[];
-    supportedLanguages?: string[];
+    defaultLanguage?: string;
+    availableLanguages?: string[];
     resources?: Array<TranslationMessages | TranslationResource>;
   };
 };
