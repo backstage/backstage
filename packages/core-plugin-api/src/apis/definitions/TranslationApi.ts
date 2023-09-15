@@ -56,7 +56,9 @@ type I18nextFormatMap = {
   };
   relativetime: {
     type: number;
-    options: Intl.RelativeTimeFormatOptions;
+    options: {
+      range?: Intl.RelativeTimeFormatUnit;
+    } & Intl.RelativeTimeFormatOptions;
   };
   list: {
     type: string[];
