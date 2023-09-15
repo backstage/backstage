@@ -20,4 +20,3 @@ export * from './ErrorApi';
 export * from './FetchApi';
 export * from './PermissionApi';
 export * from './StorageApi';
-export * from './TranslationApi';

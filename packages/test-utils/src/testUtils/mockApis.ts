@@ -21,12 +21,8 @@ import {
   storageApiRef,
 } from '@backstage/core-plugin-api';
 import { translationApiRef } from '@backstage/core-plugin-api/alpha';
-import {
-  MockErrorApi,
-  MockFetchApi,
-  MockStorageApi,
-  MockTranslationApi,
-} from './apis';
+import { MockErrorApi, MockFetchApi, MockStorageApi } from './apis';
+import { MockTranslationApi } from './apis/TranslationApi';
 
 export const mockApis = [
   createApiFactory(errorApiRef, new MockErrorApi()),
