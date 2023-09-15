@@ -49,6 +49,7 @@ export class MockTranslationApi implements TranslationApi {
   }
 
   #i18n: I18n;
+  #registeredRefs = new Set<string>();
 
   private constructor(i18n: I18n) {
     this.#i18n = i18n;
@@ -60,15 +61,22 @@ export class MockTranslationApi implements TranslationApi {
     const internalRef = toInternalTranslationRef(translationRef);
 
     const t = this.#i18n.getFixedT(null, internalRef.id);
-    const defaultMessages = internalRef.getDefaultMessages() as TMessages;
+
+    if (!this.#registeredRefs.has(internalRef.id)) {
+      this.#registeredRefs.add(internalRef.id);
+      this.#i18n.addResourceBundle(
+        DEFAULT_LANGUAGE,
+        internalRef.id,
+        internalRef.getDefaultMessages(),
+        false, // do not merge
+        true, // overwrite existing
+      );
+    }
 
     return {
       ready: true,
       t: (key, options) => {
-        return t(key as string, {
-          ...options,
-          defaultValue: defaultMessages[key],
-        });
+        return t(key as string, { ...options });
       },
     };
   }
