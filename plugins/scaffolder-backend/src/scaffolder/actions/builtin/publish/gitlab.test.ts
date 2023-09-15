@@ -51,6 +51,9 @@ const mockGitlabClient = {
   ProtectedBranches: {
     protect: jest.fn(),
   },
+  ProjectVariables: {
+    create: jest.fn(),
+  },
 };
 jest.mock('@gitbeaker/node', () => ({
   Gitlab: class {
@@ -128,6 +131,26 @@ describe('publish:gitlab', () => {
         {
           name: 'perf',
           protect: true,
+        },
+      ],
+    },
+    workspacePath: 'lol',
+    logger: getVoidLogger(),
+    logStream: new PassThrough(),
+    output: jest.fn(),
+    createTemporaryDirectory: jest.fn(),
+  };
+  const mockContextWithVariables = {
+    input: {
+      repoUrl: 'gitlab.com?repo=repo&owner=owner',
+      repoVisibility: 'private' as const,
+      variables: [
+        {
+          key: 'key',
+          value: 'value',
+          description: 'description',
+          protected: true,
+          masked: true,
         },
       ],
     },
@@ -301,6 +324,38 @@ describe('publish:gitlab', () => {
     expect(mockGitlabClient.ProtectedBranches.protect).toHaveBeenCalledWith(
       123456,
       'perf',
+    );
+  });
+
+  it('should call the correct Gitlab APIs for variables when their configuration is provided', async () => {
+    mockGitlabClient.Users.current.mockResolvedValue({ id: 12345 });
+    mockGitlabClient.Namespaces.show.mockResolvedValue({ id: 1234 });
+    mockGitlabClient.Projects.create.mockResolvedValue({
+      id: 123456,
+      http_url_to_repo: 'http://mockurl.git',
+    });
+
+    await action.handler(mockContextWithVariables);
+
+    expect(mockGitlabClient.Namespaces.show).toHaveBeenCalledWith('owner');
+    expect(mockGitlabClient.Projects.create).toHaveBeenCalledWith({
+      namespace_id: 1234,
+      name: 'repo',
+      visibility: 'private',
+    });
+
+    expect(mockGitlabClient.ProjectVariables.create).toHaveBeenCalledWith(
+      123456,
+      {
+        key: 'key',
+        value: 'value',
+        description: 'description',
+        variable_type: 'env_var',
+        protected: true,
+        masked: true,
+        raw: false,
+        environment_scope: '*',
+      },
     );
   });
 

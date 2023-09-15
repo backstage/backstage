@@ -55,6 +55,16 @@ export function createPublishGitlabAction(options: {
       create?: boolean;
       ref?: string;
     }>;
+    variables?: Array<{
+      key: string;
+      value: string;
+      description?: string;
+      variable_type?: string;
+      protected?: boolean;
+      masked?: boolean;
+      raw?: boolean;
+      environment_scope?: string;
+    }>;
   }>({
     id: 'publish:gitlab',
     description:
@@ -157,6 +167,55 @@ export function createPublishGitlabAction(options: {
               },
             },
           },
+          variables: {
+            title: 'Project variables',
+            description:
+              'Project variables settings based on Gitlab Project Environments API - https://docs.gitlab.com/ee/api/project_level_variables.html#create-a-variable',
+            type: 'array',
+            items: {
+              type: 'object',
+              required: ['key', 'value'],
+              properties: {
+                key: {
+                  title: 'Variable key',
+                  description:
+                    'The key of a variable; must have no more than 255 characters; only A-Z, a-z, 0-9, and _ are allowed',
+                  type: 'string',
+                },
+                value: {
+                  title: 'Variable value',
+                  description: 'The value of a variable',
+                  type: 'string',
+                },
+                description: {
+                  title: 'Variable description',
+                  description: `The description of the variable. The default value is 'null'`,
+                  type: 'string',
+                },
+                variable_type: {
+                  title: 'Variable type',
+                  description: `The type of a variable. The default value is 'env_var'`,
+                  type: 'string',
+                  enum: ['env_var', 'file'],
+                },
+                protected: {
+                  title: 'Variable protection',
+                  description: `Whether the variable is protected. The default value is 'false'`,
+                  type: 'boolean',
+                },
+                raw: {
+                  title: 'Variable raw',
+                  description: `Whether the variable is in raw format. The default value is 'false'`,
+                  type: 'boolean',
+                },
+                environment_scope: {
+                  title: 'Variable environment scope',
+                  description: `The environment_scope of the variable. The default value is '*'`,
+                  type: 'string',
+                },
+              },
+            },
+          },
         },
       },
       output: {
@@ -193,6 +252,7 @@ export function createPublishGitlabAction(options: {
         topics = [],
         settings = {},
         branches = [],
+        variables = [],
       } = ctx.input;
       const { owner, repo, host } = parseRepoUrl(repoUrl, integrations);
 
@@ -314,6 +374,31 @@ export function createPublishGitlabAction(options: {
               );
             }
             ctx.logger.info(`Branch ${name} protected for ${projectId}`);
+          }
+        }
+      }
+
+      if (variables) {
+        for (const variable of variables) {
+          const variableWithDefaults = Object.assign(variable, {
+            variable_type: variable.variable_type ?? 'env_var',
+            protected: variable.protected ?? false,
+            masked: variable.masked ?? false,
+            raw: variable.raw ?? false,
+            environment_scope: variable.environment_scope ?? '*',
+          });
+
+          try {
+            await client.ProjectVariables.create(
+              projectId,
+              variableWithDefaults,
+            );
+          } catch (e) {
+            throw new InputError(
+              `Environment variable creation failed for ${
+                variableWithDefaults.key
+              }. ${printGitlabError(e)}`,
+            );
           }
         }
       }

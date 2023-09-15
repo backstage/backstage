@@ -116,4 +116,33 @@ export const examples: TemplateExample[] = [
       ],
     }),
   },
+  {
+    description: 'Initializes a git repository with environment variables',
+    example: yaml.stringify({
+      steps: [
+        {
+          id: 'publish',
+          action: 'publish:gitlab',
+          name: 'Publish to GitLab',
+          input: {
+            repoUrl: 'gitlab.com?repo=project_name&owner=group_name',
+            variables: [
+              {
+                key: 'key1',
+                value: 'value1',
+                protected: true,
+                masked: false,
+              },
+              {
+                key: 'key2',
+                value: 'value2',
+                protected: true,
+                masked: false,
+              },
+            ],
+          },
+        },
+      ],
+    }),
+  },
 ];

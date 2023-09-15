@@ -688,6 +688,18 @@ export function createPublishGitlabAction(options: {
           ref?: string | undefined;
         }[]
       | undefined;
+    variables?:
+      | {
+          key: string;
+          value: string;
+          description?: string | undefined;
+          variable_type?: string | undefined;
+          protected?: boolean | undefined;
+          masked?: boolean | undefined;
+          raw?: boolean | undefined;
+          environment_scope?: string | undefined;
+        }[]
+      | undefined;
   },
   JsonObject
 >;
