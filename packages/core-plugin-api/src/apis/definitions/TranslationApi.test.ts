@@ -23,6 +23,8 @@ describe('TranslationFunction', () => {
     const f = (() => {}) as TranslationFunction<{
       key_one: 'one';
       key_other: 'other';
+      thingCount_one: '{{count}} thing';
+      thingCount_other: '{{count}} things';
       foo: 'foo';
     }>;
     expect(f).toBeDefined();
@@ -30,6 +32,7 @@ describe('TranslationFunction', () => {
     f('foo');
     // @ts-expect-error
     f('foo', { count: 1 });
+
     f('key', { count: 1 });
     // @ts-expect-error
     f('key');
@@ -43,6 +46,20 @@ describe('TranslationFunction', () => {
     f('key_other');
     // @ts-expect-error
     f('key_other', { count: 6 });
+
+    f('thingCount', { count: 1 });
+    // @ts-expect-error
+    f('thingCount');
+    // @ts-expect-error
+    f('thingCount', { notCount: 1 });
+    // @ts-expect-error
+    f('thingCount_one');
+    // @ts-expect-error
+    f('thingCount_one', { count: 1 });
+    // @ts-expect-error
+    f('thingCount_other');
+    // @ts-expect-error
+    f('thingCount_other', { count: 6 });
 
     const x1: 'one' | 'other' = f('key', { count: 6 });
     // @ts-expect-error

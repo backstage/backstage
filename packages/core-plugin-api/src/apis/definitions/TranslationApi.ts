@@ -248,11 +248,14 @@ type CollectOptions<
   TCount extends { count?: number },
   TFormats extends {},
 > = TCount &
-  (keyof TFormats extends never
+  // count is special, omit it from the replacements
+  (keyof Omit<TFormats, 'count'> extends never
     ? {}
     : (
-        | Expand<ReplaceOptionsFromFormats<TFormats>>
-        | { replace: Expand<ReplaceOptionsFromFormats<TFormats>> }
+        | Expand<Omit<ReplaceOptionsFromFormats<TFormats>, 'count'>>
+        | {
+            replace: Expand<Omit<ReplaceOptionsFromFormats<TFormats>, 'count'>>;
+          }
       ) & {
         formatParams?: Expand<ReplaceFormatParamsFromFormats<TFormats>>;
       });
