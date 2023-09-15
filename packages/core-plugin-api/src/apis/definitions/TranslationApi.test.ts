@@ -61,7 +61,7 @@ describe('TranslationFunction', () => {
 
     // @ts-expect-error
     f('none', { replace: { unknown: 1 } });
-    f('simple', { replace: { bar: '' } });
+    f('simple', { bar: '' });
     // @ts-expect-error
     f('simple');
     // @ts-expect-error
@@ -70,11 +70,11 @@ describe('TranslationFunction', () => {
     f('simple', { replace: {} });
     // @ts-expect-error
     f('simple', { replace: { wrong: '' } });
-    f('multiple', { replace: { bar: '', baz: '' } });
+    f('multiple', { bar: '', baz: '' });
     // @ts-expect-error
-    f('multiple', { replace: { bar: '' } });
+    f('multiple', { bar: '' });
     // @ts-expect-error
-    f('multiple', { replace: { baz: '' } });
+    f('multiple', { baz: '' });
     // @ts-expect-error
     f('multiple');
     // @ts-expect-error
@@ -89,9 +89,9 @@ describe('TranslationFunction', () => {
     // @ts-expect-error
     f('deep', { replace: {} });
     // @ts-expect-error
-    f('deep', { replace: { x: { y: '', z: '' }, a: { b: '' } } });
+    f('deep', { x: { y: '', z: '' }, a: { b: '' } });
     // @ts-expect-error
-    f('deep', { replace: { x: { y: '', z: '' } } });
+    f('deep', { x: { y: '', z: '' } });
     // @ts-expect-error
     f('deep', { replace: { a: { b: { c: '' } } } });
   });
@@ -107,9 +107,9 @@ describe('TranslationFunction', () => {
     }>;
     expect(f).toBeDefined();
 
-    f('simple', { count: 1, replace: { bar: '' } });
+    f('simple', { count: 1, bar: '' });
     // @ts-expect-error
-    f('simple', { replace: { bar: '' } });
+    f('simple', { bar: '' });
     // @ts-expect-error
     f('simple', { count: 1, replace: {} });
     // @ts-expect-error
@@ -134,13 +134,13 @@ describe('TranslationFunction', () => {
     // @ts-expect-error
     f('deep', { count: 1 });
     // @ts-expect-error
-    f('deep', { replace: { x: { y: '', z: '' }, a: { b: { c: '' } } } });
+    f('deep', { x: { y: '', z: '' }, a: { b: { c: '' } } });
     // @ts-expect-error
     f('deep', { replace: {} });
     // @ts-expect-error
-    f('deep', { replace: { x: { y: '', z: '' }, a: { b: '' } } });
+    f('deep', { x: { y: '', z: '' }, a: { b: '' } });
     // @ts-expect-error
-    f('deep', { replace: { x: { y: '', z: '' } } });
+    f('deep', { x: { y: '', z: '' } });
     // @ts-expect-error
     f('deep', { replace: { a: { b: { c: '' } } } });
   });
@@ -158,14 +158,14 @@ describe('TranslationFunction', () => {
     expect(f).toBeDefined();
 
     f('none', { replace: { x: 'x' } });
-    f('number', { replace: { x: 1 } });
+    f('number', { x: 1 });
     f('number', {
       replace: { x: 1 },
       formatParams: { x: { minimumFractionDigits: 2 } },
     });
-    f('numberOptions', { replace: { x: 1 } });
+    f('numberOptions', { x: 1 });
     f('currency', { replace: { x: 1 } });
-    f('datetime', { replace: { x: new Date() } });
+    f('datetime', { x: new Date() });
     f('relativeTimeOptions', { replace: { x: 1 } });
     f('relativeTimeOptions', {
       replace: { x: 1 },
@@ -173,24 +173,24 @@ describe('TranslationFunction', () => {
     });
     f('list', { replace: { x: ['a', 'b', 'c'] } });
     // @ts-expect-error
-    f('none', { replace: { x: 1 } });
+    f('none', { x: 1 });
     // @ts-expect-error
     f('number', { replace: { x: '1' } });
     // @ts-expect-error
-    f('numberOptions', { replace: { x: '1' } });
+    f('numberOptions', { x: '1' });
     // @ts-expect-error
-    f('currency', { replace: { x: '1' } });
+    f('currency', { x: '1' });
     // @ts-expect-error
     f('datetime', { replace: { x: '1' } });
     // @ts-expect-error
-    f('relativeTimeOptions', { replace: { x: '1' } });
+    f('relativeTimeOptions', { x: '1' });
     f('relativeTimeOptions', {
       replace: { x: 1 },
       // @ts-expect-error
       formatParams: { x: { minimumFractionDigits: 2 } },
     });
     // @ts-expect-error
-    f('list', { replace: { x: [1, 2, 3] } });
+    f('list', { x: [1, 2, 3] });
   });
 
   it('should support nesting', () => {
@@ -208,20 +208,20 @@ describe('TranslationFunction', () => {
     expect(f).toBeDefined();
 
     f('simple');
-    f('nested', { replace: { bar: 'bar' } });
+    f('nested', { bar: 'bar' });
     f('nestedCount', { count: 1, replace: { qux1: 'qux', qux2: 'qux' } });
     f('deep', {
       count: 1,
       replace: { bar: 'bar', baz: 'baz', qux1: 'qux', qux2: 'qux' },
     });
     // @ts-expect-error
-    f('deep', { count: 1, replace: { baz: 'baz', qux1: 'qux', qux2: 'qux' } });
+    f('deep', { count: 1, baz: 'baz', qux1: 'qux', qux2: 'qux' });
     // @ts-expect-error
     f('deep', { count: 1, replace: { bar: 'bar', qux1: 'qux', qux2: 'qux' } });
     // @ts-expect-error
-    f('deep', { count: 1, replace: { bar: 'bar', baz: 'baz', qux2: 'qux' } });
+    f('deep', { count: 1, bar: 'bar', baz: 'baz', qux2: 'qux' });
     // @ts-expect-error
-    f('deep', { count: 1, replace: { bar: 'bar', baz: 'baz', qux1: 'qux' } });
+    f('deep', { count: 1, bar: 'bar', baz: 'baz', qux1: 'qux' });
     // @ts-expect-error
     f('deep', {
       replace: { bar: 'bar', baz: 'baz', qux1: 'qux', qux2: 'qux' },
@@ -240,7 +240,7 @@ describe('TranslationFunction', () => {
 
     f('a', { replace: { a: '', b: '', c: '', d: '' } });
     // @ts-expect-error
-    f('a', { replace: { a: '', b: '', c: '' } });
+    f('a', { a: '', b: '', c: '' });
     // @ts-expect-error
     f('a', { replace: { a: '', b: '', c: '', d: '', e: '' } });
   });

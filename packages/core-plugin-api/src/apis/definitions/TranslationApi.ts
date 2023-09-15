@@ -250,8 +250,10 @@ type CollectOptions<
 > = TCount &
   (keyof TFormats extends never
     ? {}
-    : {
-        replace: Expand<ReplaceOptionsFromFormats<TFormats>>;
+    : (
+        | Expand<ReplaceOptionsFromFormats<TFormats>>
+        | { replace: Expand<ReplaceOptionsFromFormats<TFormats>> }
+      ) & {
         formatParams?: Expand<ReplaceFormatParamsFromFormats<TFormats>>;
       });
 
