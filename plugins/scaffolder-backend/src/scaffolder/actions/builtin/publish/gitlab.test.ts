@@ -45,6 +45,12 @@ const mockGitlabClient = {
   ProjectMembers: {
     add: jest.fn(),
   },
+  Branches: {
+    create: jest.fn(),
+  },
+  ProtectedBranches: {
+    protect: jest.fn(),
+  },
 };
 jest.mock('@gitbeaker/node', () => ({
   Gitlab: class {
@@ -87,7 +93,7 @@ describe('publish:gitlab', () => {
     output: jest.fn(),
     createTemporaryDirectory: jest.fn(),
   };
-  const mockContextWithOptions = {
+  const mockContextWithSettings = {
     input: {
       repoUrl: 'gitlab.com?repo=repo&owner=owner',
       repoVisibility: 'private' as const,
@@ -97,6 +103,33 @@ describe('publish:gitlab', () => {
         visibility: 'internal',
         topics: ['topic1', 'topic2'],
       },
+    },
+    workspacePath: 'lol',
+    logger: getVoidLogger(),
+    logStream: new PassThrough(),
+    output: jest.fn(),
+    createTemporaryDirectory: jest.fn(),
+  };
+  const mockContextWithBranches = {
+    input: {
+      repoUrl: 'gitlab.com?repo=repo&owner=owner',
+      repoVisibility: 'private' as const,
+      branches: [
+        {
+          name: 'dev',
+          create: true,
+          ref: 'master',
+          protect: true,
+        },
+        {
+          name: 'stage',
+          create: true,
+        },
+        {
+          name: 'perf',
+          protect: true,
+        },
+      ],
     },
     workspacePath: 'lol',
     logger: getVoidLogger(),
@@ -166,6 +199,8 @@ describe('publish:gitlab', () => {
       name: 'bob',
       visibility: 'private',
     });
+    expect(mockGitlabClient.Branches.create).not.toHaveBeenCalled();
+    expect(mockGitlabClient.ProtectedBranches.protect).not.toHaveBeenCalled();
   });
 
   it('should call the correct Gitlab APIs when the owner is an organization', async () => {
@@ -184,6 +219,8 @@ describe('publish:gitlab', () => {
       visibility: 'private',
       ci_config_path: '.gitlab-ci.yml',
     });
+    expect(mockGitlabClient.Branches.create).not.toHaveBeenCalled();
+    expect(mockGitlabClient.ProtectedBranches.protect).not.toHaveBeenCalled();
   });
 
   it('should call the correct Gitlab APIs when the owner is not an organization', async () => {
@@ -202,16 +239,18 @@ describe('publish:gitlab', () => {
       visibility: 'private',
       ci_config_path: '.gitlab-ci.yml',
     });
+    expect(mockGitlabClient.Branches.create).not.toHaveBeenCalled();
+    expect(mockGitlabClient.ProtectedBranches.protect).not.toHaveBeenCalled();
   });
 
-  it('should call the correct Gitlab APIs when using project options with override of visibility and topics', async () => {
+  it('should call the correct Gitlab APIs when using project settings with override of visibility and topics', async () => {
     mockGitlabClient.Users.current.mockResolvedValue({ id: 12345 });
     mockGitlabClient.Namespaces.show.mockResolvedValue({ id: 1234 });
     mockGitlabClient.Projects.create.mockResolvedValue({
       http_url_to_repo: 'http://mockurl.git',
     });
 
-    await action.handler(mockContextWithOptions);
+    await action.handler(mockContextWithSettings);
 
     expect(mockGitlabClient.Namespaces.show).toHaveBeenCalledWith('owner');
     expect(mockGitlabClient.Projects.create).toHaveBeenCalledWith({
@@ -221,6 +260,48 @@ describe('publish:gitlab', () => {
       topics: ['topic1', 'topic2'],
       ci_config_path: '.gitlab-ci.yml',
     });
+    expect(mockGitlabClient.Branches.create).not.toHaveBeenCalled();
+    expect(mockGitlabClient.ProtectedBranches.protect).not.toHaveBeenCalled();
+  });
+
+  it('should call the correct Gitlab APIs for branches and protectd branches when branch settings provided', async () => {
+    mockGitlabClient.Users.current.mockResolvedValue({ id: 12345 });
+    mockGitlabClient.Namespaces.show.mockResolvedValue({ id: 1234 });
+    mockGitlabClient.Projects.create.mockResolvedValue({
+      id: 123456,
+      http_url_to_repo: 'http://mockurl.git',
+    });
+
+    await action.handler(mockContextWithBranches);
+
+    expect(mockGitlabClient.Namespaces.show).toHaveBeenCalledWith('owner');
+    expect(mockGitlabClient.Projects.create).toHaveBeenCalledWith({
+      namespace_id: 1234,
+      name: 'repo',
+      visibility: 'private',
+    });
+    expect(mockGitlabClient.Branches.create).toHaveBeenCalledTimes(2);
+    expect(mockGitlabClient.ProtectedBranches.protect).toHaveBeenCalledTimes(2);
+
+    expect(mockGitlabClient.Branches.create).toHaveBeenCalledWith(
+      123456,
+      'dev',
+      'master',
+    );
+    expect(mockGitlabClient.Branches.create).toHaveBeenCalledWith(
+      123456,
+      'stage',
+      'master',
+    );
+
+    expect(mockGitlabClient.ProtectedBranches.protect).toHaveBeenCalledWith(
+      123456,
+      'dev',
+    );
+    expect(mockGitlabClient.ProtectedBranches.protect).toHaveBeenCalledWith(
+      123456,
+      'perf',
+    );
   });
 
   it('should call initRepoAndPush with the correct values', async () => {

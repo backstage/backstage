@@ -89,4 +89,31 @@ export const examples: TemplateExample[] = [
       ],
     }),
   },
+  {
+    description: 'Initializes a git repository with branches settings',
+    example: yaml.stringify({
+      steps: [
+        {
+          id: 'publish',
+          action: 'publish:gitlab',
+          name: 'Publish to GitLab',
+          input: {
+            repoUrl: 'gitlab.com?repo=project_name&owner=group_name',
+            branches: [
+              {
+                name: 'dev',
+                create: true,
+                protected: true,
+                ref: 'master',
+              },
+              {
+                name: 'master',
+                protected: true,
+              },
+            ],
+          },
+        },
+      ],
+    }),
+  },
 ];

@@ -18,7 +18,7 @@ import { InputError } from '@backstage/errors';
 import { ScmIntegrationRegistry } from '@backstage/integration';
 import { createTemplateAction } from '@backstage/plugin-scaffolder-node';
 import { Gitlab } from '@gitbeaker/node';
-import { initRepoAndPush } from '../helpers';
+import { initRepoAndPush, printGitlabError } from '../helpers';
 import { getRepoSourceDirectory, parseRepoUrl } from './util';
 import { Config } from '@backstage/config';
 import { examples } from './gitlab.examples';
@@ -49,6 +49,12 @@ export function createPublishGitlabAction(options: {
     /** @deprecated in favour of settings field */
     topics?: string[];
     settings?: Record<string, any>;
+    branches?: Array<{
+      name: string;
+      protect?: boolean;
+      create?: boolean;
+      ref?: string;
+    }>;
   }>({
     id: 'publish:gitlab',
     description:
@@ -122,6 +128,35 @@ export function createPublishGitlabAction(options: {
               'Additional project settings, based on https://docs.gitlab.com/ee/api/projects.html#create-project attributes',
             type: 'object',
           },
+          branches: {
+            title: 'Project branches settings',
+            type: 'array',
+            items: {
+              type: 'object',
+              required: ['name'],
+              properties: {
+                name: {
+                  title: 'Branch name',
+                  type: 'string',
+                },
+                protect: {
+                  title: 'Should branch be protected',
+                  description: `Will mark branch as protected. The default value is 'false'`,
+                  type: 'boolean',
+                },
+                create: {
+                  title: 'Should branch be created',
+                  description: `If branch does not exist, it will be created from provided ref. The default value is 'false'`,
+                  type: 'boolean',
+                },
+                ref: {
+                  title: 'Branch reference',
+                  description: `Branch reference to create branch from. The default value is 'master'`,
+                  type: 'string',
+                },
+              },
+            },
+          },
         },
       },
       output: {
@@ -157,6 +192,7 @@ export function createPublishGitlabAction(options: {
         setUserAsOwner = false,
         topics = [],
         settings = {},
+        branches = [],
       } = ctx.input;
       const { owner, repo, host } = parseRepoUrl(repoUrl, integrations);
 
@@ -246,6 +282,41 @@ export function createPublishGitlabAction(options: {
           : config.getOptionalString('scaffolder.defaultCommitMessage'),
         gitAuthorInfo,
       });
+
+      if (branches) {
+        for (const branch of branches) {
+          const {
+            name,
+            protect = false,
+            create = false,
+            ref = 'master',
+          } = branch;
+
+          if (create) {
+            try {
+              await client.Branches.create(projectId, name, ref);
+            } catch (e) {
+              throw new InputError(
+                `Branch creation failed for ${name}. ${printGitlabError(e)}`,
+              );
+            }
+            ctx.logger.info(
+              `Branch ${name} created for ${projectId} with ref ${ref}`,
+            );
+          }
+
+          if (protect) {
+            try {
+              await client.ProtectedBranches.protect(projectId, name);
+            } catch (e) {
+              throw new InputError(
+                `Branch protection failed for ${name}. ${printGitlabError(e)}`,
+              );
+            }
+            ctx.logger.info(`Branch ${name} protected for ${projectId}`);
+          }
+        }
+      }
 
       ctx.output('commitHash', commitResult?.commitHash);
       ctx.output('remoteUrl', remoteUrl);

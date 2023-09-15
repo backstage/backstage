@@ -251,3 +251,7 @@ export function getGitCommitMessage(
 export function entityRefToName(name: string): string {
   return name.replace(/^.*[:/]/g, '');
 }
+
+export function printGitlabError(error: any): string {
+  return JSON.stringify({ code: error.code, message: error.description });
+}
