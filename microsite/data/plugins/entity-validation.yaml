@@ -1,7 +1,7 @@
 ---
 title: Entity Validation
-author: Iván González Acuña
-authorUrl: https://github.com/ivangonzalezacuna
+author: Spreadgroup
+authorUrl: https://github.com/spreadshirt
 category: Quality
 description: Interface for validating entities.
 documentation: https://github.com/backstage/backstage/tree/master/plugins/entity-validation
