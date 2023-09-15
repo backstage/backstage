@@ -145,44 +145,52 @@ describe('TranslationFunction', () => {
     f('deep', { replace: { a: { b: { c: '' } } } });
   });
 
-  it('should ignore formatting', () => {
+  it('should support formatting', () => {
     const f = (() => {}) as TranslationFunction<{
-      none: '=';
-      simple: '= {{bar, number}}';
-      multiple: '= {{bar , whatever  }} {{   baz, someFormat(pretty: "yes")}}';
-      deep: '= {{x.y,derp}} {{   x.z,   derp}} {{      a.b.c,    derp }}';
+      none: '{{x}}';
+      number: '{{x, number}}';
+      numberOptions: '{{x, number(minimumFractionDigits: 2)}}';
+      currency: '{{x, currency}}';
+      datetime: '{{x, dateTime}}';
+      relativeTimeOptions: '{{x, relativeTime(quarter)}}';
+      list: '{{x, list}}';
     }>;
     expect(f).toBeDefined();
 
+    f('none', { replace: { x: 'x' } });
+    f('number', { replace: { x: 1 } });
+    f('number', {
+      replace: { x: 1 },
+      formatParams: { x: { minimumFractionDigits: 2 } },
+    });
+    f('numberOptions', { replace: { x: 1 } });
+    f('currency', { replace: { x: 1 } });
+    f('datetime', { replace: { x: new Date() } });
+    f('relativeTimeOptions', { replace: { x: 1 } });
+    f('relativeTimeOptions', {
+      replace: { x: 1 },
+      formatParams: { x: { style: 'short' } },
+    });
+    f('list', { replace: { x: ['a', 'b', 'c'] } });
     // @ts-expect-error
-    f('none', { replace: { unknown: 1 } });
-    f('simple', { replace: { bar: '' } });
+    f('none', { replace: { x: 1 } });
     // @ts-expect-error
-    f('simple');
+    f('number', { replace: { x: '1' } });
     // @ts-expect-error
-    f('simple', { replace: {} });
+    f('numberOptions', { replace: { x: '1' } });
     // @ts-expect-error
-    f('simple', { replace: { wrong: '' } });
-    f('multiple', { replace: { bar: '', baz: '' } });
+    f('currency', { replace: { x: '1' } });
     // @ts-expect-error
-    f('multiple', { replace: { bar: '' } });
+    f('datetime', { replace: { x: '1' } });
     // @ts-expect-error
-    f('multiple', { replace: { baz: '' } });
+    f('relativeTimeOptions', { replace: { x: '1' } });
+    f('relativeTimeOptions', {
+      replace: { x: 1 },
+      // @ts-expect-error
+      formatParams: { x: { minimumFractionDigits: 2 } },
+    });
     // @ts-expect-error
-    f('multiple');
-    // @ts-expect-error
-    f('multiple', {});
-    // @ts-expect-error
-    f('multiple', { replace: {} });
-    f('deep', { replace: { x: { y: '', z: '' }, a: { b: { c: '' } } } });
-    // @ts-expect-error
-    f('deep');
-    // @ts-expect-error
-    f('deep', { replace: { x: { y: '', z: '' }, a: { b: '' } } });
-    // @ts-expect-error
-    f('deep', { replace: { x: { y: '', z: '' } } });
-    // @ts-expect-error
-    f('deep', { replace: { a: { b: { c: '' } } } });
+    f('list', { replace: { x: [1, 2, 3] } });
   });
 
   it('should support nesting', () => {

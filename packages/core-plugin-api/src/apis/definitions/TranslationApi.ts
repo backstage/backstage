@@ -24,7 +24,10 @@ import { TranslationRef } from '../../translation';
  * @alpha
  */
 interface BaseOptions {
-  interpolation?: {};
+  interpolation?: {
+    /** Whether to HTML escape provided values, defaults to false  */
+    escapeValue?: boolean;
+  };
 }
 
 /**
@@ -32,13 +35,34 @@ interface BaseOptions {
  *
  * @internal
  */
-export type TranslationPlural =
-  | 'zero'
-  | 'one'
-  | 'two'
-  | 'few'
-  | 'many'
-  | 'other';
+type TranslationPlural = 'zero' | 'one' | 'two' | 'few' | 'many' | 'other';
+
+/**
+ * A mapping of i18n formatting types to their corresponding types and options.
+ * @internal
+ */
+type I18nextFormatMap = {
+  number: {
+    type: number;
+    options: Intl.NumberFormatOptions;
+  };
+  currency: {
+    type: number;
+    options: Intl.NumberFormatOptions;
+  };
+  datetime: {
+    type: Date;
+    options: Intl.DateTimeFormatOptions;
+  };
+  relativetime: {
+    type: number;
+    options: Intl.RelativeTimeFormatOptions;
+  };
+  list: {
+    type: string[];
+    options: Intl.ListFormatOptions;
+  };
+};
 
 /**
  * Extracts all pluralized keys from the message map.
@@ -92,18 +116,75 @@ type Trim<T> = T extends ` ${infer U}`
   : T;
 
 /**
- * Extracts all option keys from a message string.
+ * Extracts the key and format from a replacement string.
  *
- * e.g. 'foo {{bar}} {{baz, number}}' -> 'bar' | 'baz'
+ * e.g. 'foo, number' -> { foo: number }, 'foo' -> { foo: undefined }
+ */
+type ExtractFormat<Replacement extends string> =
+  Replacement extends `${infer Key},${infer FullFormat}`
+    ? {
+        [key in Trim<Key>]: Lowercase<
+          Trim<
+            FullFormat extends `${infer Format}(${string})${string}`
+              ? Format
+              : FullFormat
+          >
+        >;
+      }
+    : { [key in Trim<Replacement>]: undefined };
+
+/**
+ * Expand the keys in a flat map to nested objects.
+ *
+ * e.g. { 'a.b': 'foo', 'a.c': 'bar' } -> { a: { b: 'foo', c: 'bar' }
  *
  * @internal
  */
-type OptionKeysFromMessage<TMessage> =
-  TMessage extends `${string}{{${infer Key},${string}}}${infer Tail}` // ignore formatting, e.g. {{foo, number}}
-    ? Trim<Key> | OptionKeysFromMessage<Tail>
-    : TMessage extends `${string}{{${infer Key}}}${infer Tail}` // no formatting, e.g. {{foo}}
-    ? Trim<Key> | OptionKeysFromMessage<Tail>
-    : never;
+type ExpandKeys<TMap extends {}> = {
+  [Key in keyof TMap as Key extends `${infer Prefix}.${string}`
+    ? Prefix
+    : Key]: Key extends `${string}.${infer Rest}`
+    ? ExpandKeys<{ [key in Rest]: TMap[Key] }>
+    : TMap[Key];
+};
+
+/**
+ * Extracts all option keys and their format from a message string.
+ *
+ * e.g. 'foo {{bar}} {{baz, number}}' -> { 'bar': undefined, 'baz': 'number' }
+ *
+ * @internal
+ */
+type ReplaceFormatsFromMessage<TMessage> =
+  TMessage extends `${string}{{${infer Replacement}}}${infer Tail}` // no formatting, e.g. {{foo}}
+    ? ExpandKeys<ExtractFormat<Replacement>> & ReplaceFormatsFromMessage<Tail>
+    : {};
+
+/**
+ * Generates the replace options structure
+ *
+ * @internal
+ */
+type ReplaceOptionsFromFormats<TFormats extends {}> = {
+  [Key in keyof TFormats]: TFormats[Key] extends keyof I18nextFormatMap
+    ? I18nextFormatMap[TFormats[Key]]['type']
+    : TFormats[Key] extends {}
+    ? Expand<ReplaceOptionsFromFormats<TFormats[Key]>>
+    : string;
+};
+
+/**
+ * Generates the formatParams options structure
+ *
+ * @internal
+ */
+type ReplaceFormatParamsFromFormats<TFormats extends {}> = {
+  [Key in keyof TFormats]?: TFormats[Key] extends keyof I18nextFormatMap
+    ? I18nextFormatMap[TFormats[Key]]['options']
+    : TFormats[Key] extends {}
+    ? Expand<ReplaceFormatParamsFromFormats<TFormats[Key]>>
+    : undefined;
+};
 
 /**
  * Extracts all nesting keys from a message string.
@@ -159,32 +240,20 @@ type UnionToIntersection<U> = (U extends any ? (k: U) => void : never) extends (
   : never;
 
 /**
- * Extracts all options from a message string.
- *
- * e.g. 'foo {{bar}} {{x.y.z}}' -> { bar: <value>, x: { y: { z: <value> } } }
- *
- * @internal
- */
-type ReplaceOptionsFromKeys<TKeys extends string> = UnionToIntersection<
-  TKeys extends `${infer Prefix}.${infer Rest}`
-    ? {
-        [key in Prefix]: ReplaceOptionsFromKeys<Rest>;
-      }
-    : {
-        [key in TKeys & string]: string | number | string[];
-      }
->;
-
-/**
  * Collects different types of options into a single object
  *
  * @internal
  */
 type CollectOptions<
   TCount extends { count?: number },
-  TReplaceOptions extends {},
+  TFormats extends {},
 > = TCount &
-  (keyof TReplaceOptions extends never ? {} : { replace: TReplaceOptions });
+  (keyof TFormats extends never
+    ? {}
+    : {
+        replace: Expand<ReplaceOptionsFromFormats<TFormats>>;
+        formatParams?: Expand<ReplaceFormatParamsFromFormats<TFormats>>;
+      });
 
 /**
  * Helper type to only require options argument if needed
@@ -201,12 +270,10 @@ type TranslationFunctionOptions<
   TPluralKeys extends keyof TMessages, // All keys in the message map that are pluralized
   TMessages extends { [key in string]: string }, // Collapsed message map with normalized keys and union values
 > = OptionArgs<
-  Expand<
-    CollectOptions<
-      TKeys & TPluralKeys extends never ? {} : { count: number },
-      ExpandRecursive<
-        ReplaceOptionsFromKeys<OptionKeysFromMessage<TMessages[TKeys]>>
-      >
+  CollectOptions<
+    TKeys & TPluralKeys extends never ? {} : { count: number },
+    ExpandRecursive<
+      UnionToIntersection<ReplaceFormatsFromMessage<TMessages[TKeys]>>
     >
   >
 >;
