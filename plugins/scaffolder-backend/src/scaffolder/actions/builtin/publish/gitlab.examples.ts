@@ -68,4 +68,25 @@ export const examples: TemplateExample[] = [
       ],
     }),
   },
+  {
+    description: 'Initializes a git repository with additional settings.',
+    example: yaml.stringify({
+      steps: [
+        {
+          id: 'publish',
+          action: 'publish:gitlab',
+          name: 'Publish to GitLab',
+          input: {
+            repoUrl: 'gitlab.com?repo=project_name&owner=group_name',
+            settings: {
+              ci_config_path: '.gitlab-ci.yml',
+              visibility: 'public',
+              initialize_with_readme: true,
+              default_branch: 'main',
+            },
+          },
+        },
+      ],
+    }),
+  },
 ];

@@ -77,6 +77,26 @@ describe('publish:gitlab', () => {
     input: {
       repoUrl: 'gitlab.com?repo=repo&owner=owner',
       repoVisibility: 'private' as const,
+      settings: {
+        ci_config_path: '.gitlab-ci.yml',
+      },
+    },
+    workspacePath: 'lol',
+    logger: getVoidLogger(),
+    logStream: new PassThrough(),
+    output: jest.fn(),
+    createTemporaryDirectory: jest.fn(),
+  };
+  const mockContextWithOptions = {
+    input: {
+      repoUrl: 'gitlab.com?repo=repo&owner=owner',
+      repoVisibility: 'private' as const,
+      topics: ['topic'],
+      settings: {
+        ci_config_path: '.gitlab-ci.yml',
+        visibility: 'internal',
+        topics: ['topic1', 'topic2'],
+      },
     },
     workspacePath: 'lol',
     logger: getVoidLogger(),
@@ -162,6 +182,7 @@ describe('publish:gitlab', () => {
       namespace_id: 1234,
       name: 'repo',
       visibility: 'private',
+      ci_config_path: '.gitlab-ci.yml',
     });
   });
 
@@ -179,6 +200,26 @@ describe('publish:gitlab', () => {
       namespace_id: 12345,
       name: 'repo',
       visibility: 'private',
+      ci_config_path: '.gitlab-ci.yml',
+    });
+  });
+
+  it('should call the correct Gitlab APIs when using project options with override of visibility and topics', async () => {
+    mockGitlabClient.Users.current.mockResolvedValue({ id: 12345 });
+    mockGitlabClient.Namespaces.show.mockResolvedValue({ id: 1234 });
+    mockGitlabClient.Projects.create.mockResolvedValue({
+      http_url_to_repo: 'http://mockurl.git',
+    });
+
+    await action.handler(mockContextWithOptions);
+
+    expect(mockGitlabClient.Namespaces.show).toHaveBeenCalledWith('owner');
+    expect(mockGitlabClient.Projects.create).toHaveBeenCalledWith({
+      namespace_id: 1234,
+      name: 'repo',
+      visibility: 'internal',
+      topics: ['topic1', 'topic2'],
+      ci_config_path: '.gitlab-ci.yml',
     });
   });
 

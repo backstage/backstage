@@ -38,6 +38,7 @@ export function createPublishGitlabAction(options: {
   return createTemplateAction<{
     repoUrl: string;
     defaultBranch?: string;
+    /** @deprecated in favour of settings field */
     repoVisibility?: 'private' | 'internal' | 'public';
     sourcePath?: string;
     token?: string;
@@ -45,7 +46,9 @@ export function createPublishGitlabAction(options: {
     gitAuthorName?: string;
     gitAuthorEmail?: string;
     setUserAsOwner?: boolean;
+    /** @deprecated in favour of settings field */
     topics?: string[];
+    settings?: Record<string, any>;
   }>({
     id: 'publish:gitlab',
     description:
@@ -63,6 +66,7 @@ export function createPublishGitlabAction(options: {
           },
           repoVisibility: {
             title: 'Repository Visibility',
+            description: `Sets the visibility of the repository. The default value is 'private'. (deprecated, use settings instead)`,
             type: 'string',
             enum: ['private', 'public', 'internal'],
           },
@@ -105,11 +109,18 @@ export function createPublishGitlabAction(options: {
           },
           topics: {
             title: 'Topic labels',
-            description: 'Topic labels to apply on the repository.',
+            description:
+              'Topic labels to apply on the repository. (deprecated, use settings instead)',
             type: 'array',
             items: {
               type: 'string',
             },
+          },
+          settings: {
+            title: 'Project settings',
+            description:
+              'Additional project settings, based on https://docs.gitlab.com/ee/api/projects.html#create-project attributes',
+            type: 'object',
           },
         },
       },
@@ -145,6 +156,7 @@ export function createPublishGitlabAction(options: {
         gitAuthorEmail,
         setUserAsOwner = false,
         topics = [],
+        settings = {},
       } = ctx.input;
       const { owner, repo, host } = parseRepoUrl(repoUrl, integrations);
 
@@ -191,6 +203,7 @@ export function createPublishGitlabAction(options: {
         name: repo,
         visibility: repoVisibility,
         ...(topics.length ? { topics } : {}),
+        ...(Object.keys(settings).length ? { ...settings } : {}),
       });
 
       // When setUserAsOwner is true the input token is expected to come from an unprivileged user GitLab
