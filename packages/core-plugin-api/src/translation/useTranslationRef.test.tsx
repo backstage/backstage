@@ -15,7 +15,11 @@
  */
 
 import React, { ReactNode } from 'react';
-import { TestApiProvider, withLogCollector } from '@backstage/test-utils';
+import {
+  MockErrorApi,
+  TestApiProvider,
+  withLogCollector,
+} from '@backstage/test-utils';
 import { renderHook } from '@testing-library/react-hooks';
 import { createTranslationRef } from './TranslationRef';
 import { useTranslationRef } from './useTranslationRef';
@@ -28,6 +32,7 @@ import {
   TranslationApi,
   translationApiRef,
 } from '../alpha';
+import { ErrorApi, errorApiRef } from '../apis';
 
 const plainRef = createTranslationRef({
   id: 'plain',
@@ -37,10 +42,16 @@ const plainRef = createTranslationRef({
   },
 });
 
-function makeWrapper(translationApi: TranslationApi) {
+function makeWrapper(
+  translationApi: TranslationApi,
+  errorApi: ErrorApi = { error$: jest.fn(), post: jest.fn() },
+) {
   return ({ children }: { children: ReactNode }) => (
     <TestApiProvider
-      apis={[[translationApiRef, translationApi]]}
+      apis={[
+        [translationApiRef, translationApi],
+        [errorApiRef, errorApi],
+      ]}
       children={children}
     />
   );
@@ -177,6 +188,7 @@ describe('useTranslationRef', () => {
       },
     });
 
+    const errorApi = new MockErrorApi({ collect: true });
     const languageApi = AppLanguageSelector.create();
     const translationApi = I18nextTranslationApi.create({
       languageApi,
@@ -193,21 +205,83 @@ describe('useTranslationRef', () => {
     });
 
     const rendered1 = renderHook(() => useTranslationRef(ref), {
-      wrapper: makeWrapper(translationApi),
+      wrapper: makeWrapper(translationApi, errorApi),
     });
     const rendered2 = renderHook(() => useTranslationRef(ref), {
-      wrapper: makeWrapper(translationApi),
+      wrapper: makeWrapper(translationApi, errorApi),
     });
 
     const { error } = await withLogCollector(['error'], async () => {
       await rendered2.waitForNextUpdate();
     });
 
-    expect(error).toEqual([
-      "Failed to load translation resource 'test'; caused by Error: NOPE",
+    const msg =
+      "Failed to load translation resource 'test'; caused by Error: NOPE";
+    expect(error).toEqual([msg]);
+    expect(errorApi.getErrors()).toEqual([
+      {
+        error: new Error(msg),
+      },
     ]);
 
     expect(rendered1.result.current.t('key')).toBe('default');
     expect(rendered2.result.current.t('key')).toBe('default');
+  });
+
+  it('should log once and then ignore loading errors after initial load', async () => {
+    const ref = createTranslationRef({
+      id: 'test',
+      messages: {
+        key: 'default',
+      },
+    });
+
+    const errorApi = new MockErrorApi({ collect: true });
+    const languageApi = AppLanguageSelector.create({
+      availableLanguages: ['en', 'de'],
+    });
+    const translationApi = I18nextTranslationApi.create({
+      languageApi,
+      resources: [
+        createTranslationResource({
+          ref,
+          translations: {
+            de: async () => {
+              throw new Error('NOPE');
+            },
+          },
+        }),
+      ],
+    });
+
+    const { result } = renderHook(() => useTranslationRef(ref), {
+      wrapper: makeWrapper(translationApi, errorApi),
+    });
+
+    expect(result.current.t('key')).toBe('default');
+    languageApi.setLanguage('de');
+
+    const { error } = await withLogCollector(['error'], async () => {
+      const rendered1 = renderHook(() => useTranslationRef(ref), {
+        wrapper: makeWrapper(translationApi, errorApi),
+      });
+      const rendered2 = renderHook(() => useTranslationRef(ref), {
+        wrapper: makeWrapper(translationApi, errorApi),
+      });
+
+      await new Promise(resolve => setTimeout(resolve)); // Wait a long tick
+
+      expect(rendered1.result.current.t('key')).toBe('default');
+      expect(rendered2.result.current.t('key')).toBe('default');
+    });
+
+    const msg =
+      "Failed to load translation resource 'test'; caused by Error: NOPE";
+    expect(error).toEqual([msg]);
+    expect(errorApi.getErrors()).toEqual([
+      {
+        error: new Error(msg),
+      },
+    ]);
   });
 });

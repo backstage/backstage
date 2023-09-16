@@ -14,9 +14,8 @@
  * limitations under the License.
  */
 
-import { useEffect, useState } from 'react';
-
-import { useApi } from '../apis';
+import { useCallback, useEffect, useMemo, useState } from 'react';
+import { errorApiRef, useApi } from '../apis';
 import {
   translationApiRef,
   TranslationFunction,
@@ -33,14 +32,28 @@ export const useTranslationRef = <
 >(
   translationRef: TranslationRef<string, TMessages>,
 ): { t: TranslationFunction<TMessages> } => {
+  const errorApi = useApi(errorApiRef);
   const translationApi = useApi(translationApiRef);
 
-  const [error, setError] = useState<Error>();
   const [snapshot, setSnapshot] = useState<TranslationSnapshot<TMessages>>(() =>
     translationApi.getTranslation(translationRef),
   );
-  const [observable] = useState(() =>
-    translationApi.translation$(translationRef),
+  const observable = useMemo(
+    () => translationApi.translation$(translationRef),
+    [translationApi, translationRef],
+  );
+
+  const onError = useCallback(
+    (error: Error) => {
+      if (!loggedRefs.has(translationRef)) {
+        const errMsg = `Failed to load translation resource '${translationRef.id}'; caused by ${error}`;
+        // eslint-disable-next-line no-console
+        console.error(errMsg);
+        errorApi.post(new Error(errMsg));
+        loggedRefs.add(translationRef);
+      }
+    },
+    [errorApi, translationRef],
   );
 
   useEffect(() => {
@@ -50,17 +63,15 @@ export const useTranslationRef = <
           setSnapshot(next);
         }
       },
-      error: setError,
+      error(error) {
+        onError(error);
+      },
     });
 
     return () => {
       subscription.unsubscribe();
     };
-  }, [observable]);
-
-  if (error) {
-    throw error;
-  }
+  }, [observable, onError]);
 
   if (!snapshot.ready) {
     throw new Promise<void>(resolve => {
@@ -71,14 +82,9 @@ export const useTranslationRef = <
             resolve();
           }
         },
-        error(err) {
-          if (!loggedRefs.has(translationRef)) {
-            // eslint-disable-next-line no-console
-            console.error(
-              `Failed to load translation resource '${translationRef.id}'; caused by ${err}`,
-            );
-            loggedRefs.add(translationRef);
-          }
+        error(error) {
+          subscription.unsubscribe();
+          onError(error);
           resolve();
         },
       });
