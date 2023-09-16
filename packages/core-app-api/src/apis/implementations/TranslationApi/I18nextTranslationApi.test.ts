@@ -255,7 +255,7 @@ describe('I18nextTranslationApi', () => {
     expect(snapshot.t('bar')).toBe('Bär');
   });
 
-  it('should forward loading errors', async () => {
+  it('should forward loading errors and then ignore them', async () => {
     const languageApi = AppLanguageSelector.create();
     const translationApi = I18nextTranslationApi.create({
       languageApi,
@@ -270,6 +270,9 @@ describe('I18nextTranslationApi', () => {
     await expect(
       waitForNext(translationApi.translation$(plainRef), s => s.ready),
     ).rejects.toThrow('NOPE');
+
+    const snapshot = assertReady(translationApi.getTranslation(plainRef));
+    expect(snapshot.t('foo')).toBe('Foo');
   });
 
   it('should only call the loader once', async () => {

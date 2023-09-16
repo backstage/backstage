@@ -121,10 +121,16 @@ class ResourceLoader {
       return;
     }
 
-    const load = loader().then(result => {
-      this.onLoad({ language, namespace, messages: result.messages });
-      this.#loaded.add(key);
-    });
+    const load = loader().then(
+      result => {
+        this.onLoad({ language, namespace, messages: result.messages });
+        this.#loaded.add(key);
+      },
+      error => {
+        this.#loaded.add(key); // Do not try to load failed resources again
+        throw error;
+      },
+    );
     this.#loading.set(key, load);
     await load;
   }
