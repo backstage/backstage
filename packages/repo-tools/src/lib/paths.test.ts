@@ -27,31 +27,26 @@ describe('resolvePackages', () => {
 
   it('should filter by path', async () => {
     await expect(
-      resolvePackagePaths({ paths: [`packages${sep}repo-tools`] }),
+      resolvePackagePaths({ paths: ['packages/repo-tools'] }),
     ).resolves.toEqual([`packages${sep}repo-tools`]);
 
     await expect(
-      resolvePackagePaths({ paths: [resolvePath('packages', 'repo-tools')] }),
+      resolvePackagePaths({ paths: [resolvePath('packages/repo-tools')] }),
     ).resolves.toEqual([`packages${sep}repo-tools`]);
 
     await expect(
       resolvePackagePaths({
-        paths: [resolvePath('packages', 'repo-tools', 'package.json')],
+        paths: [resolvePath('packages/repo-tools/package.json')],
       }),
     ).resolves.toEqual([`packages${sep}repo-tools`]);
     await expect(
       resolvePackagePaths({
-        paths: [
-          `packages${sep}repo-tools${sep}src${sep}some${sep}made${sep}up${sep}file.ts`,
-        ],
+        paths: ['packages/repo-tools/src/some/made/up/file.ts'],
       }),
     ).resolves.toEqual([`packages${sep}repo-tools`]);
     await expect(
       resolvePackagePaths({
-        paths: [
-          `packages${sep}repo-tools${sep}src${sep}some${sep}made${sep}up${sep}file.ts`,
-          `packages${sep}cli`,
-        ],
+        paths: ['packages/repo-tools/src/some/made/up/file.ts', 'packages/cli'],
       }),
     ).resolves.toEqual([`packages${sep}cli`, `packages${sep}repo-tools`]);
   });
@@ -59,7 +54,7 @@ describe('resolvePackages', () => {
   it('should filter with include', async () => {
     const allPackages = await resolvePackagePaths();
     const pluginPackages = await resolvePackagePaths({
-      include: [`plugins${sep}*`],
+      include: ['plugins/*'],
     });
 
     expect(allPackages.length).toBeGreaterThan(10);
@@ -69,13 +64,13 @@ describe('resolvePackages', () => {
     expect(pluginPackages).toContain(`plugins${sep}catalog`);
 
     await expect(
-      resolvePackagePaths({ include: [`packages${sep}repo-t??ls`] }),
+      resolvePackagePaths({ include: ['packages/repo-t??ls'] }),
     ).resolves.toEqual([`packages${sep}repo-tools`]);
   });
 
   it('should filter with exclude', async () => {
     const nonPluginPackages = await resolvePackagePaths({
-      exclude: [`plugins${sep}*`],
+      exclude: ['plugins/*'],
     });
 
     expect(nonPluginPackages).toContain(`packages${sep}app`);
@@ -85,13 +80,9 @@ describe('resolvePackages', () => {
   it('should combine all options', async () => {
     await expect(
       resolvePackagePaths({
-        paths: [
-          `packages${sep}cli`,
-          `packages${sep}backend`,
-          `packages${sep}app`,
-        ],
-        include: [`packages${sep}app`],
-        exclude: [`packages${sep}back*`],
+        paths: ['packages/cli', 'packages/backend', 'packages/app'],
+        include: ['packages/app'],
+        exclude: ['packages/back*'],
       }),
     ).resolves.toEqual([`packages${sep}app`]);
   });
