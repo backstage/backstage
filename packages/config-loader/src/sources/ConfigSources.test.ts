@@ -93,7 +93,7 @@ describe('ConfigSources', () => {
           targets: [{ type: 'path', target: '/config.yaml' }],
         }),
       ),
-    ).toEqual([{ name: 'FileConfigSource', path: `${root}config.yaml` }]);
+    ).toEqual([{ name: 'FileConfigSource', path: '/config.yaml' }]);
 
     const subFunc = async () => undefined;
     expect(
@@ -193,9 +193,9 @@ describe('ConfigSources', () => {
         ]),
       ),
     ).toEqual([
-      { name: 'FileConfigSource', path: `${root}a.yaml` },
-      { name: 'FileConfigSource', path: `${root}b.yaml` },
-      { name: 'FileConfigSource', path: `${root}c.yaml` },
+      { name: 'FileConfigSource', path: '/a.yaml' },
+      { name: 'FileConfigSource', path: '/b.yaml' },
+      { name: 'FileConfigSource', path: '/c.yaml' },
     ]);
   });
 
