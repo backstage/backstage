@@ -14,76 +14,85 @@
  * limitations under the License.
  */
 
-import { resolve as resolvePath } from 'path';
+import { resolve as resolvePath, sep } from 'path';
 import { resolvePackagePaths } from './paths';
 
 describe('resolvePackages', () => {
   it('should return all packages', async () => {
     const paths = await resolvePackagePaths();
     expect(paths.length).toBeGreaterThan(10);
-    expect(paths).toContain('packages/cli');
-    expect(paths).toContain('packages/repo-tools');
+    expect(paths).toContain(`packages${sep}cli`);
+    expect(paths).toContain(`packages${sep}repo-tools`);
   });
 
   it('should filter by path', async () => {
     await expect(
-      resolvePackagePaths({ paths: ['packages/repo-tools'] }),
-    ).resolves.toEqual(['packages/repo-tools']);
+      resolvePackagePaths({ paths: [`packages${sep}repo-tools`] }),
+    ).resolves.toEqual([`packages${sep}repo-tools`]);
 
     await expect(
-      resolvePackagePaths({ paths: [resolvePath('packages/repo-tools')] }),
-    ).resolves.toEqual(['packages/repo-tools']);
+      resolvePackagePaths({ paths: [resolvePath('packages', 'repo-tools')] }),
+    ).resolves.toEqual([`packages${sep}repo-tools`]);
 
     await expect(
       resolvePackagePaths({
-        paths: [resolvePath('packages/repo-tools/package.json')],
+        paths: [resolvePath('packages', 'repo-tools', 'package.json')],
       }),
-    ).resolves.toEqual(['packages/repo-tools']);
+    ).resolves.toEqual([`packages${sep}repo-tools`]);
     await expect(
       resolvePackagePaths({
-        paths: ['packages/repo-tools/src/some/made/up/file.ts'],
+        paths: [
+          `packages${sep}repo-tools${sep}src${sep}some${sep}made${sep}up${sep}file.ts`,
+        ],
       }),
-    ).resolves.toEqual(['packages/repo-tools']);
+    ).resolves.toEqual([`packages${sep}repo-tools`]);
     await expect(
       resolvePackagePaths({
-        paths: ['packages/repo-tools/src/some/made/up/file.ts', 'packages/cli'],
+        paths: [
+          `packages${sep}repo-tools${sep}src${sep}some${sep}made${sep}up${sep}file.ts`,
+          `packages${sep}cli`,
+        ],
       }),
-    ).resolves.toEqual(['packages/cli', 'packages/repo-tools']);
+    ).resolves.toEqual([`packages${sep}cli`, `packages${sep}repo-tools`]);
   });
 
   it('should filter with include', async () => {
     const allPackages = await resolvePackagePaths();
     const pluginPackages = await resolvePackagePaths({
-      include: ['plugins/*'],
+      include: [`plugins${sep}*`],
     });
 
     expect(allPackages.length).toBeGreaterThan(10);
     expect(pluginPackages.length).toBeGreaterThan(10);
     expect(allPackages.length).toBeGreaterThan(pluginPackages.length);
 
-    expect(pluginPackages).toContain('plugins/catalog');
+    expect(pluginPackages).toContain(`plugins${sep}catalog`);
 
     await expect(
-      resolvePackagePaths({ include: ['packages/repo-t??ls'] }),
-    ).resolves.toEqual(['packages/repo-tools']);
+      resolvePackagePaths({ include: [`packages${sep}repo-t??ls`] }),
+    ).resolves.toEqual([`packages${sep}repo-tools`]);
   });
 
   it('should filter with exclude', async () => {
     const nonPluginPackages = await resolvePackagePaths({
-      exclude: ['plugins/*'],
+      exclude: [`plugins${sep}*`],
     });
 
-    expect(nonPluginPackages).toContain('packages/app');
-    expect(nonPluginPackages).not.toContain('plugins/catalog');
+    expect(nonPluginPackages).toContain(`packages${sep}app`);
+    expect(nonPluginPackages).not.toContain(`plugins${sep}catalog`);
   });
 
   it('should combine all options', async () => {
     await expect(
       resolvePackagePaths({
-        paths: ['packages/cli', 'packages/backend', 'packages/app'],
-        include: ['packages/app'],
-        exclude: ['packages/back*'],
+        paths: [
+          `packages${sep}cli`,
+          `packages${sep}backend`,
+          `packages${sep}app`,
+        ],
+        include: [`packages${sep}app`],
+        exclude: [`packages${sep}back*`],
       }),
-    ).resolves.toEqual(['packages/app']);
+    ).resolves.toEqual([`packages${sep}app`]);
   });
 });
