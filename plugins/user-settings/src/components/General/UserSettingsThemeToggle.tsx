@@ -142,24 +142,21 @@ export const UserSettingsThemeToggle = () => {
         >
           {themeIds.map(theme => {
             const themeIcon = themeIds.find(it => it.id === theme.id)?.icon;
-            const themeId = theme.id as 'light' | 'dark';
+            const themeId = theme.id;
+            const themeTitle =
+              theme.title ||
+              (themeId === 'light' || themeId === 'dark'
+                ? t(`theme_${themeId}`)
+                : themeId);
             return (
               <TooltipToggleButton
-                key={theme.id}
-                title={
-                  theme.title
-                    ? t('select_theme_custom', { custom: theme.title })
-                    : t(`select_theme_${themeId}`)
-                }
-                value={theme.id}
+                key={themeId}
+                title={t('select_theme', { theme: themeTitle })}
+                value={themeId}
               >
                 <>
-                  {theme.title || t(`theme_${themeId}`)}&nbsp;
-                  <ThemeIcon
-                    id={theme.id}
-                    icon={themeIcon}
-                    activeId={themeId}
-                  />
+                  {themeTitle}&nbsp;
+                  <ThemeIcon id={themeId} icon={themeIcon} activeId={themeId} />
                 </>
               </TooltipToggleButton>
             );

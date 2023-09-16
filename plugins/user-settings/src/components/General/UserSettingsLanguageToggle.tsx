@@ -135,7 +135,7 @@ export const UserSettingsLanguageToggle = () => {
                 title={t('select_lng', { language })}
                 value={language}
               >
-                <>{t('lng', { language })}</>
+                <>{language}</>
               </TooltipToggleButton>
             );
           })}
