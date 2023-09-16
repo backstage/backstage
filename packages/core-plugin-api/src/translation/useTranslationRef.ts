@@ -24,6 +24,9 @@ import {
 } from '../apis/alpha';
 import { TranslationRef } from './TranslationRef';
 
+// Make sure we don't fill the logs with loading errors for the same ref
+const loggedRefs = new WeakSet<TranslationRef<string, {}>>();
+
 /** @alpha */
 export const useTranslationRef = <
   TMessages extends { [key in string]: string },
@@ -61,11 +64,23 @@ export const useTranslationRef = <
 
   if (!snapshot.ready) {
     throw new Promise<void>(resolve => {
-      const subscription = observable.subscribe(next => {
-        if (next.ready) {
-          subscription.unsubscribe();
+      const subscription = observable.subscribe({
+        next(next) {
+          if (next.ready) {
+            subscription.unsubscribe();
+            resolve();
+          }
+        },
+        error(err) {
+          if (!loggedRefs.has(translationRef)) {
+            // eslint-disable-next-line no-console
+            console.error(
+              `Failed to load translation resource '${translationRef.id}'; caused by ${err}`,
+            );
+            loggedRefs.add(translationRef);
+          }
           resolve();
-        }
+        },
       });
     });
   }

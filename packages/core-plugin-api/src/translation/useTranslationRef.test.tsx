@@ -14,8 +14,8 @@
  * limitations under the License.
  */
 
-import React from 'react';
-import { TestApiProvider } from '@backstage/test-utils';
+import React, { ReactNode } from 'react';
+import { TestApiProvider, withLogCollector } from '@backstage/test-utils';
 import { renderHook } from '@testing-library/react-hooks';
 import { createTranslationRef } from './TranslationRef';
 import { useTranslationRef } from './useTranslationRef';
@@ -23,7 +23,11 @@ import { useTranslationRef } from './useTranslationRef';
 import { I18nextTranslationApi } from '../../../core-app-api/src/apis/implementations/TranslationApi';
 // eslint-disable-next-line @backstage/no-relative-monorepo-imports
 import { AppLanguageSelector } from '../../..//core-app-api/src/apis/implementations/AppLanguageApi';
-import { createTranslationResource, translationApiRef } from '../alpha';
+import {
+  createTranslationResource,
+  TranslationApi,
+  translationApiRef,
+} from '../alpha';
 
 const plainRef = createTranslationRef({
   id: 'plain',
@@ -32,6 +36,15 @@ const plainRef = createTranslationRef({
     key2: 'default2',
   },
 });
+
+function makeWrapper(translationApi: TranslationApi) {
+  return ({ children }: { children: ReactNode }) => (
+    <TestApiProvider
+      apis={[[translationApiRef, translationApi]]}
+      children={children}
+    />
+  );
+}
 
 describe('useTranslationRef', () => {
   beforeEach(() => {
@@ -43,12 +56,7 @@ describe('useTranslationRef', () => {
     const translationApi = I18nextTranslationApi.create({ languageApi });
 
     const { result } = renderHook(() => useTranslationRef(plainRef), {
-      wrapper: ({ children }) => (
-        <TestApiProvider
-          apis={[[translationApiRef, translationApi]]}
-          children={children}
-        />
-      ),
+      wrapper: makeWrapper(translationApi),
     });
 
     const { t } = result.current;
@@ -75,12 +83,7 @@ describe('useTranslationRef', () => {
     const { result, waitForNextUpdate } = renderHook(
       () => useTranslationRef(plainRef),
       {
-        wrapper: ({ children }) => (
-          <TestApiProvider
-            apis={[[translationApiRef, translationApi]]}
-            children={children}
-          />
-        ),
+        wrapper: makeWrapper(translationApi),
       },
     );
 
@@ -112,12 +115,7 @@ describe('useTranslationRef', () => {
     const { result, waitForNextUpdate } = renderHook(
       () => useTranslationRef(plainRef),
       {
-        wrapper: ({ children }) => (
-          <TestApiProvider
-            apis={[[translationApiRef, translationApi]]}
-            children={children}
-          />
-        ),
+        wrapper: makeWrapper(translationApi),
       },
     );
 
@@ -159,12 +157,7 @@ describe('useTranslationRef', () => {
     const { result, waitForNextUpdate } = renderHook(
       () => useTranslationRef(resourceRef),
       {
-        wrapper: ({ children }) => (
-          <TestApiProvider
-            apis={[[translationApiRef, translationApi]]}
-            children={children}
-          />
-        ),
+        wrapper: makeWrapper(translationApi),
       },
     );
 
@@ -174,5 +167,47 @@ describe('useTranslationRef', () => {
 
     expect(t('key1')).toBe('de1');
     expect(t('key2')).toBe('de2');
+  });
+
+  it('should log once and then ignore loading errors', async () => {
+    const ref = createTranslationRef({
+      id: 'test',
+      messages: {
+        key: 'default',
+      },
+    });
+
+    const languageApi = AppLanguageSelector.create();
+    const translationApi = I18nextTranslationApi.create({
+      languageApi,
+      resources: [
+        createTranslationResource({
+          ref,
+          translations: {
+            en: async () => {
+              throw new Error('NOPE');
+            },
+          },
+        }),
+      ],
+    });
+
+    const rendered1 = renderHook(() => useTranslationRef(ref), {
+      wrapper: makeWrapper(translationApi),
+    });
+    const rendered2 = renderHook(() => useTranslationRef(ref), {
+      wrapper: makeWrapper(translationApi),
+    });
+
+    const { error } = await withLogCollector(['error'], async () => {
+      await rendered2.waitForNextUpdate();
+    });
+
+    expect(error).toEqual([
+      "Failed to load translation resource 'test'; caused by Error: NOPE",
+    ]);
+
+    expect(rendered1.result.current.t('key')).toBe('default');
+    expect(rendered2.result.current.t('key')).toBe('default');
   });
 });
