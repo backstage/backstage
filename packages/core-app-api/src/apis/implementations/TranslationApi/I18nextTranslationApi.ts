@@ -144,9 +144,15 @@ export class I18nextTranslationApi implements TranslationApi {
       ns: [],
       defaultNS: false,
       fallbackNS: false,
+
+      // Disable resource loading on init, meaning i18n will be ready to use immediately
+      initImmediate: false,
     });
 
     i18n.init();
+    if (!i18n.isInitialized) {
+      throw new Error('i18next was unexpectedly not initialized');
+    }
 
     const { language: initialLanguage } = options.languageApi.getLanguage();
     if (initialLanguage !== DEFAULT_LANGUAGE) {
@@ -200,6 +206,8 @@ export class I18nextTranslationApi implements TranslationApi {
 
   /** Keep track of which refs we have registered default resources for */
   #registeredRefs = new Set<string>();
+  /** Notify observers when language changes */
+  #languageChangeListeners = new Set<() => void>();
 
   private constructor(i18n: I18n, loader: ResourceLoader, language: string) {
     this.#i18n = i18n;
@@ -261,21 +269,13 @@ export class I18nextTranslationApi implements TranslationApi {
         }
       };
 
-      const wasInitialized = this.#i18n.isInitialized;
-      if (!wasInitialized) {
-        this.#i18n.on('initialized', onChange);
-      }
-      this.#i18n.on('languageChanged', onChange);
-
       if (this.#loader.needsLoading(this.#language, internalRef.id)) {
         loadResource();
       }
 
+      this.#languageChangeListeners.add(onChange);
       return () => {
-        if (!wasInitialized) {
-          this.#i18n.off('initialized', onChange);
-        }
-        this.#i18n.off('languageChanged', onChange);
+        this.#languageChangeListeners.delete(onChange);
       };
     });
   }
@@ -284,6 +284,7 @@ export class I18nextTranslationApi implements TranslationApi {
     if (this.#language !== language) {
       this.#language = language;
       this.#i18n.changeLanguage(language);
+      this.#languageChangeListeners.forEach(listener => listener());
     }
   }
 

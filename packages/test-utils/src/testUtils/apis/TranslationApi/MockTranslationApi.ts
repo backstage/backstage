@@ -41,9 +41,15 @@ export class MockTranslationApi implements TranslationApi {
       ns: [],
       defaultNS: false,
       fallbackNS: false,
+
+      // Disable resource loading on init, meaning i18n will be ready to use immediately
+      initImmediate: false,
     });
 
     i18n.init();
+    if (!i18n.isInitialized) {
+      throw new Error('i18next was unexpectedly not initialized');
+    }
 
     return new MockTranslationApi(i18n);
   }
