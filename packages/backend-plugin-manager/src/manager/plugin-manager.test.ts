@@ -274,7 +274,7 @@ describe('backend-plugin-manager', () => {
               {
                 message: `an error occured while loading dynamic backend plugin 'backend-dynamic-plugin-test' from '${location}'`,
                 meta: {
-                  message: 'Unexpected identifier',
+                  message: expect.stringContaining('Unexpected identifier'),
                   name: 'SyntaxError',
                 },
               },
