@@ -1,6 +1,6 @@
 ---
-'@backstage/create-app': major
-'example-backend': major
+'@backstage/create-app': patch
+'example-backend': patch
 ---
 
-- [#19974](https://github.com/backstage/backstage/issues/19974) Bump Docker base images to "node:18-bullseye-slim" in order to resolve compatiblity issue raised when running `yarn build-image` with Node.JS 16.x. This update follows the Docker CI update to Node 18x [#19563](https://github.com/backstage/backstage/pull/19563).
+Bump Docker base images to `node:18-bullseye-slim` to fix compatibility issues raised during image build. This update aligns with the recent Github Actions update to Node 18x [#19563](https://github.com/backstage/backstage/pull/19563).
