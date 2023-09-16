@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { useCallback, useEffect, useMemo, useState } from 'react';
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { errorApiRef, useApi } from '../apis';
 import {
   translationApiRef,
@@ -72,6 +72,16 @@ export const useTranslationRef = <
       subscription.unsubscribe();
     };
   }, [observable, onError]);
+
+  // Keep track of if the provided translation ref changes, and in that case update the snapshot
+  const initialRenderRef = useRef(true);
+  useEffect(() => {
+    if (initialRenderRef.current) {
+      initialRenderRef.current = false;
+    } else {
+      setSnapshot(translationApi.getTranslation(translationRef));
+    }
+  }, [translationApi, translationRef]);
 
   if (!snapshot.ready) {
     throw new Promise<void>(resolve => {

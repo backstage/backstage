@@ -21,7 +21,7 @@ import {
   withLogCollector,
 } from '@backstage/test-utils';
 import { renderHook } from '@testing-library/react-hooks';
-import { createTranslationRef } from './TranslationRef';
+import { createTranslationRef, TranslationRef } from './TranslationRef';
 import { useTranslationRef } from './useTranslationRef';
 // eslint-disable-next-line @backstage/no-relative-monorepo-imports
 import { I18nextTranslationApi } from '../../../core-app-api/src/apis/implementations/TranslationApi';
@@ -283,5 +283,43 @@ describe('useTranslationRef', () => {
         error: new Error(msg),
       },
     ]);
+  });
+
+  it('should handle translationRef switches', async () => {
+    const ref1 = createTranslationRef({
+      id: 'test1',
+      messages: {
+        key: 'default1',
+      },
+    });
+    const ref2 = createTranslationRef({
+      id: 'test2',
+      messages: {
+        key: 'default2',
+      },
+    });
+
+    const languageApi = AppLanguageSelector.create();
+    const translationApi = I18nextTranslationApi.create({ languageApi });
+
+    const { result, rerender } = renderHook(
+      ({ translationRef }) => useTranslationRef(translationRef),
+      {
+        wrapper: ({ children }) => (
+          <TestApiProvider
+            apis={[
+              [translationApiRef, translationApi],
+              [errorApiRef, { post: jest.fn() }],
+            ]}
+            children={children}
+          />
+        ),
+        initialProps: { translationRef: ref1 as TranslationRef },
+      },
+    );
+
+    expect(result.current.t('key')).toBe('default1');
+    rerender({ translationRef: ref2 });
+    expect(result.current.t('key')).toBe('default2');
   });
 });
