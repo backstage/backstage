@@ -455,7 +455,7 @@ describe('I18nextTranslationApi', () => {
         relativeTime: '= {{ x, relativeTime }}',
         relativeSeconds: '= {{ x, relativeTime(second) }}',
         relativeSecondsShort:
-          '= {{ x, relativeTime(range: second; style: narrow) }}',
+          '= {{ x, relativeTime(range: second; style: short) }}',
         list: '= {{ x, list }}',
       });
 
@@ -480,10 +480,12 @@ describe('I18nextTranslationApi', () => {
       expect(snapshot.t('relativeSeconds', { x: 2 })).toBe('= in 2 seconds');
       expect(snapshot.t('relativeSeconds', { x: -3 })).toBe('= 3 seconds ago');
       expect(snapshot.t('relativeSeconds', { x: 0 })).toBe('= in 0 seconds');
-      expect(snapshot.t('relativeSecondsShort', { x: 1 })).toBe('= in 1s');
-      expect(snapshot.t('relativeSecondsShort', { x: 2 })).toBe('= in 2s');
-      expect(snapshot.t('relativeSecondsShort', { x: -3 })).toBe('= 3s ago');
-      expect(snapshot.t('relativeSecondsShort', { x: 0 })).toBe('= in 0s');
+      expect(snapshot.t('relativeSecondsShort', { x: 1 })).toBe('= in 1 sec.');
+      expect(snapshot.t('relativeSecondsShort', { x: 2 })).toBe('= in 2 sec.');
+      expect(snapshot.t('relativeSecondsShort', { x: -3 })).toBe(
+        '= 3 sec. ago',
+      );
+      expect(snapshot.t('relativeSecondsShort', { x: 0 })).toBe('= in 0 sec.');
       expect(snapshot.t('list', { x: ['a'] })).toBe('= a');
       expect(snapshot.t('list', { x: ['a', 'b'] })).toBe('= a and b');
       expect(snapshot.t('list', { x: ['a', 'b', 'c'] })).toBe('= a, b, and c');
