@@ -41,7 +41,7 @@ export function createTranslationMessages<
 // @alpha (undocumented)
 export function createTranslationRef<
   TId extends string,
-  TMessages extends {
+  const TMessages extends {
     [key in string]: string;
   },
   TTranslations extends {

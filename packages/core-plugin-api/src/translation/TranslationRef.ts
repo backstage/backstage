@@ -108,7 +108,7 @@ class TranslationRefImpl<
 /** @alpha */
 export function createTranslationRef<
   TId extends string,
-  TMessages extends { [key in string]: string },
+  const TMessages extends { [key in string]: string },
   TTranslations extends {
     [language in string]: () => Promise<{
       default: { [key in keyof TMessages]: string | null };

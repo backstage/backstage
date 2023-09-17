@@ -360,7 +360,9 @@ describe('I18nextTranslationApi', () => {
     await new Promise<void>(resolve => {
       const subscription = translationApi.translation$(plainRef).subscribe({
         next(snapshot) {
-          const translation = snapshot.ready ? snapshot.t('foo') : null;
+          const translation = snapshot.ready
+            ? (snapshot.t('foo') as string)
+            : null;
           translations.push(translation);
 
           if (translation === 'foo') {
