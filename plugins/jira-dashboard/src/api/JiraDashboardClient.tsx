@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 import { DiscoveryApi, FetchApi } from '@backstage/core-plugin-api';
-import { JiraResponse } from '../types';
+import { JiraResponse } from '@backstage/plugin-jira-dashboard-common';
 import { JiraDashboardApi } from './JiraDashboardApi';
 import { ResponseError } from '@backstage/errors';
 

@@ -7568,6 +7568,7 @@ __metadata:
     "@backstage/cli": "workspace:^"
     "@backstage/config": "workspace:^"
     "@backstage/plugin-auth-node": "workspace:^"
+    "@backstage/plugin-jira-dashboard-common": "workspace:^"
     "@backstage/plugin-permission-common": "workspace:^"
     "@types/express": "*"
     "@types/supertest": ^2.0.8
@@ -7578,6 +7579,14 @@ __metadata:
     supertest: ^6.2.4
     winston: ^3.2.1
     yn: ^4.0.0
+  languageName: unknown
+  linkType: soft
+
+"@backstage/plugin-jira-dashboard-common@workspace:^, @backstage/plugin-jira-dashboard-common@workspace:plugins/jira-dashboard-common":
+  version: 0.0.0-use.local
+  resolution: "@backstage/plugin-jira-dashboard-common@workspace:plugins/jira-dashboard-common"
+  dependencies:
+    "@backstage/cli": "workspace:^"
   languageName: unknown
   linkType: soft
 
@@ -7593,6 +7602,7 @@ __metadata:
     "@backstage/dev-utils": "workspace:^"
     "@backstage/errors": "workspace:^"
     "@backstage/plugin-catalog-react": "workspace:^"
+    "@backstage/plugin-jira-dashboard-common": "workspace:^"
     "@backstage/test-utils": "workspace:^"
     "@backstage/theme": "workspace:^"
     "@material-ui/core": ^4.9.13

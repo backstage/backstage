@@ -26,11 +26,13 @@ import { JiraProjectCard } from '../JiraProjectCard';
 import { JiraTable } from '../JiraTable';
 import { useApi } from '@backstage/core-plugin-api';
 import { useEntity } from '@backstage/plugin-catalog-react';
-import { PROJECT_KEY_ANNOTATION } from '../../annotations';
 import { stringifyEntityRef } from '@backstage/catalog-model';
 import { jiraDashboardApiRef } from '../../api';
 import { useJira } from '../../hooks/useJira';
-import { JiraDataResponse } from '../../types';
+import {
+  JiraDataResponse,
+  PROJECT_KEY_ANNOTATION,
+} from '@backstage/plugin-jira-dashboard-common';
 
 export const JiraDashboardContent = () => {
   const { entity } = useEntity();

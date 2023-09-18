@@ -22,7 +22,7 @@ import {
 } from '@backstage/core-plugin-api';
 import { rootRouteRef } from './routes';
 import { Entity } from '@backstage/catalog-model';
-import { PROJECT_KEY_ANNOTATION } from './annotations';
+import { PROJECT_KEY_ANNOTATION } from '@backstage/plugin-jira-dashboard-common';
 import { JiraDashboardClient, jiraDashboardApiRef } from './api';
 
 /**

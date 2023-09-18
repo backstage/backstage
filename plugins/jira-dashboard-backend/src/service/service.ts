@@ -21,7 +21,11 @@ import {
   getIssuesByFilter,
   getIssuesByComponent,
 } from '../api';
-import type { Project, Filter, JiraDataResponse } from '../types';
+import {
+  Filter,
+  JiraDataResponse,
+  Project,
+} from '@backstage/plugin-jira-dashboard-common';
 
 export const getProjectResponse = async (
   projectKey: string,

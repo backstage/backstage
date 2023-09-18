@@ -32,14 +32,16 @@ import {
   getProjectResponse,
 } from './service';
 import { getDefaultFilters } from '../filters';
-import { Filter, Project, JiraResponse } from '../types';
-import { getProjectAvatar } from '../api';
-import stream from 'stream';
 import {
   COMPONENT_ANNOTATION,
   FILTER_ANNOTATION,
+  Filter,
+  JiraResponse,
   PROJECT_KEY_ANNOTATION,
-} from '../annotations';
+  Project,
+} from '@backstage/plugin-jira-dashboard-common';
+import { getProjectAvatar } from '../api';
+import stream from 'stream';
 
 /**
  * @public

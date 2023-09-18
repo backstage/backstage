@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 import useAsync from 'react-use/lib/useAsync';
-import { JiraResponse } from '../types';
+import { JiraResponse } from '@backstage/plugin-jira-dashboard-common';
 import { JiraDashboardApi } from '../api';
 
 export function useJira(

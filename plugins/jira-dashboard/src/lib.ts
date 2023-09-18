@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import type { Project } from './types';
+import { Project } from '@backstage/plugin-jira-dashboard-common';
 
 /**
  * Get the URL to a Jira project.

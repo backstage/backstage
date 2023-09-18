@@ -17,7 +17,7 @@ import React from 'react';
 import { Card, Box, Divider, Typography } from '@material-ui/core';
 import { Avatar } from '@backstage/core-components';
 import { LinkButton } from '@backstage/core-components';
-import type { Project } from '../../types';
+import { Project } from '@backstage/plugin-jira-dashboard-common';
 import { getProjectUrl } from '../../lib';
 import { ProjectInfoLabel } from './ProjectInfoLabel';
 
@@ -30,7 +30,7 @@ export const JiraProjectCard = ({ project }: JiraProjectCardProps) => {
     <Card style={{ padding: 20, height: '100%' }}>
       <Box display="inline-flex" alignItems="center" mb={2}>
         <Avatar
-          picture={project.avatarUrls}
+          picture={project.avatarUrls['48x48']}
           customStyles={{
             width: 50,
             height: 50,
