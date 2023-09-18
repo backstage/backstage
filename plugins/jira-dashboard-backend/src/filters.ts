@@ -14,8 +14,8 @@
  * limitations under the License.
  */
 import { Config } from '@backstage/config';
-import type { Filter } from './types';
 import { resolveUserEmailSuffix } from './config';
+import { Filter } from '@backstage/plugin-jira-dashboard-common';
 
 const getUsernameFromRef = (userRef: string) => {
   return userRef?.split('/').slice(1)[0];
