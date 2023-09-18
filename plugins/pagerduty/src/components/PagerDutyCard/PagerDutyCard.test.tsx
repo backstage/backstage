@@ -16,7 +16,7 @@
 
 import React from 'react';
 import { screen, waitFor, fireEvent, act } from '@testing-library/react';
-import { PagerDutyCard } from '../PagerDutyCard';
+import { PagerDutyCard } from './PagerDutyCard';
 import { NotFoundError } from '@backstage/errors';
 import { TestApiRegistry, renderInTestApp } from '@backstage/test-utils';
 import { pagerDutyApiRef, UnauthorizedError, PagerDutyClient } from '../../api';
