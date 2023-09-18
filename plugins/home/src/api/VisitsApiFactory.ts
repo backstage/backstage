@@ -42,14 +42,10 @@ export class VisitsApiFactory implements VisitsApi {
   protected retrieveAll: () => Promise<Array<Visit>>;
   protected persistAll: (visits: Array<Visit>) => Promise<void>;
 
-  protected constructor({
-    limit = 100,
-    retrieveAll,
-    persistAll,
-  }: VisitsApiFactoryOptions) {
-    this.limit = Math.abs(limit);
-    this.retrieveAll = retrieveAll ?? (async () => []);
-    this.persistAll = persistAll ?? (async () => {});
+  protected constructor(options: VisitsApiFactoryOptions) {
+    this.limit = Math.abs(options.limit ?? 100);
+    this.retrieveAll = options.retrieveAll ?? (async () => []);
+    this.persistAll = options.persistAll ?? (async () => {});
   }
 
   async list(queryParams?: VisitsApiQueryParams): Promise<Visit[]> {

@@ -36,12 +36,9 @@ export class LocalStorageVisitsApi extends VisitsApiFactory {
     return new LocalStorageVisitsApi(options);
   }
 
-  private constructor({
-    limit = 100,
-    identityApi,
-  }: LocalStorageVisitsApiOptions) {
-    super({ limit });
-    this.identityApi = identityApi;
+  private constructor(options: LocalStorageVisitsApiOptions) {
+    super({ limit: options.limit ?? 100 });
+    this.identityApi = options.identityApi;
     this.retrieveAll = async (): Promise<Array<Visit>> => {
       let visits: Array<Visit>;
       const { userEntityRef } = await this.identityApi.getBackstageIdentity();
