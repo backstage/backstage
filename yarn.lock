@@ -4672,6 +4672,30 @@ __metadata:
   languageName: unknown
   linkType: soft
 
+"@backstage/plugin-auth-backend-module-oidc-provider@workspace:plugins/auth-backend-module-oidc-provider":
+  version: 0.0.0-use.local
+  resolution: "@backstage/plugin-auth-backend-module-oidc-provider@workspace:plugins/auth-backend-module-oidc-provider"
+  dependencies:
+    "@backstage/backend-common": "workspace:^"
+    "@backstage/backend-defaults": "workspace:^"
+    "@backstage/backend-plugin-api": "workspace:^"
+    "@backstage/backend-test-utils": "workspace:^"
+    "@backstage/cli": "workspace:^"
+    "@backstage/config": "workspace:^"
+    "@backstage/plugin-auth-backend": "workspace:^"
+    "@backstage/plugin-auth-node": "workspace:^"
+    cookie-parser: ^1.4.6
+    express: ^4.18.2
+    express-promise-router: ^4.1.1
+    express-session: ^1.17.3
+    jose: ^4.14.6
+    msw: ^1.3.1
+    openid-client: ^5.5.0
+    passport: ^0.6.0
+    supertest: ^6.3.3
+  languageName: unknown
+  linkType: soft
+
 "@backstage/plugin-auth-backend-module-okta-provider@workspace:^, @backstage/plugin-auth-backend-module-okta-provider@workspace:plugins/auth-backend-module-okta-provider":
   version: 0.0.0-use.local
   resolution: "@backstage/plugin-auth-backend-module-okta-provider@workspace:plugins/auth-backend-module-okta-provider"
@@ -31245,6 +31269,13 @@ __metadata:
   languageName: node
   linkType: hard
 
+"jose@npm:^4.14.4":
+  version: 4.14.6
+  resolution: "jose@npm:4.14.6"
+  checksum: eae81a234e7bf1446b1bd80722b3462b014e3835b155c3a7799c1c5043163a53a0dc28d347004151b031e6b7b863403aabf8814d9cc217ce21f8c2f3ebd4b335
+  languageName: node
+  linkType: hard
+
 "jose@npm:^4.14.6, jose@npm:^4.15.4, jose@npm:^4.6.0":
   version: 4.15.4
   resolution: "jose@npm:4.15.4"
@@ -35636,6 +35667,18 @@ __metadata:
   languageName: node
   linkType: hard
 
+"openid-client@npm:^5.5.0":
+  version: 5.5.0
+  resolution: "openid-client@npm:5.5.0"
+  dependencies:
+    jose: ^4.14.4
+    lru-cache: ^6.0.0
+    object-hash: ^2.2.0
+    oidc-token-hash: ^5.0.3
+  checksum: d2617b5bb0d9a0da338aeb7489bcbe3a79df9681189c7b61c2a3284289eee7110dfee2b04b49a9fdd4f064b7e2057ddb0becfedd9c19388e7788ae15b24c8e4c
+  languageName: node
+  linkType: hard
+
 "oppa@npm:^0.4.0":
   version: 0.4.0
   resolution: "oppa@npm:0.4.0"
@@ -36270,6 +36313,17 @@ __metadata:
   version: 1.0.0
   resolution: "passport-strategy@npm:1.0.0"
   checksum: 5086693f2508e538dffa55a338c89fe8192fb5f4478c71f80cd5890b8573419a098f4fec88b505374f60bbe9049f6f24b9f3992678612528a3370b4dc73354a2
+  languageName: node
+  linkType: hard
+
+"passport@npm:^0.6.0":
+  version: 0.6.0
+  resolution: "passport@npm:0.6.0"
+  dependencies:
+    passport-strategy: 1.x.x
+    pause: 0.0.1
+    utils-merge: ^1.0.1
+  checksum: ef932ad671d50de34765c7a53cd1e058d8331a82a6df09265a9c6c1168911aee4a7b5215803d0101110ab7f317e096b4954ca7e18fb2c33b9929f0bd17dbe159
   languageName: node
   linkType: hard
 

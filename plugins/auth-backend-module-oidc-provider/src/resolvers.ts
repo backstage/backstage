@@ -22,13 +22,13 @@ import {
 } from '@backstage/plugin-auth-node';
 
 /**
- * Available sign-in resolvers for the GitLab auth provider.
+ * Available sign-in resolvers for the Oidc auth provider.
  *
  * @public
  */
-export namespace gitlabSignInResolvers {
+export namespace oidcSignInResolvers {
   /**
-   * Looks up the user by matching their GitLab username to the entity name.
+   * Looks up the user by matching their Oidc username to the entity name.
    */
   export const usernameMatchingUserEntityName = createSignInResolverFactory({
     create() {
@@ -40,10 +40,31 @@ export namespace gitlabSignInResolvers {
 
         const id = result.fullProfile.username;
         if (!id) {
-          throw new Error(`GitLab user profile does not contain a username`);
+          throw new Error(`Oidc user profile does not contain a username`);
         }
 
         return ctx.signInWithCatalogUser({ entityRef: { name: id } });
+      };
+    },
+  });
+
+  /**
+   * Looks up the user by matching their email to the `google.com/email` annotation. Still working out this resolver.....
+   */
+  export const emailMatchingUserEntityAnnotation = createSignInResolverFactory({
+    create() {
+      return async (info: SignInInfo<GcpIapResult>, ctx) => {
+        const email = info.result.iapToken.email;
+
+        if (!email) {
+          throw new Error('Google IAP sign-in result is missing email');
+        }
+
+        return ctx.signInWithCatalogUser({
+          annotations: {
+            'google.com/email': email,
+          },
+        });
       };
     },
   });

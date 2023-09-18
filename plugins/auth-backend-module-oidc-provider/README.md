@@ -1,6 +1,6 @@
-# Auth Module: GitLab Provider
+# Auth Module: Oidc Provider
 
-This module provides an GitLab auth provider implementation for `@backstage/plugin-auth-backend`.
+This module provides an Oidc auth provider implementation for `@backstage/plugin-auth-backend`.
 
 ## Links
 

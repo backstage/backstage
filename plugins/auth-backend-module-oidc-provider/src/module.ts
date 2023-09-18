@@ -19,13 +19,13 @@ import {
   commonSignInResolvers,
   createOAuthProviderFactory,
 } from '@backstage/plugin-auth-node';
-import { gitlabAuthenticator } from './authenticator';
-import { gitlabSignInResolvers } from './resolvers';
+import { oidcAuthenticator } from './authenticator';
+import { oidcSignInResolvers } from './resolvers';
 
 /** @public */
-export const authModuleGitlabProvider = createBackendModule({
+export const authModuleOidcProvider = createBackendModule({
   pluginId: 'auth',
-  moduleId: 'gitlab-provider',
+  moduleId: 'oidc-provider',
   register(reg) {
     reg.registerInit({
       deps: {
@@ -33,11 +33,11 @@ export const authModuleGitlabProvider = createBackendModule({
       },
       async init({ providers }) {
         providers.registerProvider({
-          providerId: 'gitlab',
+          providerId: 'oidc',
           factory: createOAuthProviderFactory({
-            authenticator: gitlabAuthenticator,
+            authenticator: oidcAuthenticator,
             signInResolverFactories: {
-              ...gitlabSignInResolvers,
+              ...oidcSignInResolvers,
               ...commonSignInResolvers,
             },
           }),
