@@ -46,7 +46,6 @@ export const catalogModuleInternalOpenApiSpec = createBackendModule({
         logger: coreServices.logger,
       },
       async init({ catalog, config, discovery, scheduler, logger }) {
-        console.log('testing');
         catalog.addEntityProvider(
           InternalOpenApiDocumentationProvider.fromConfig(config, {
             discovery,
