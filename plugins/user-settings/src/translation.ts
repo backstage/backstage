@@ -27,11 +27,8 @@ export const userSettingsTranslationRef = createTranslationRef({
     theme_dark: 'Dark',
     theme_auto: 'Auto',
     change_the_theme_mode: 'Change the theme mode',
-    select_theme_light: 'Select light',
-    select_theme_dark: 'Select dark',
+    select_theme: 'Select {{theme}}',
     select_theme_auto: 'Select Auto Theme',
-    select_theme_custom: 'Select {{custom}}',
-    lng: '{{language}}',
     select_lng: 'Select language {{language}}',
   } as const,
 });
