@@ -31,7 +31,6 @@ import { commonProvider } from './commonProvider';
 import { guestProvider } from './guestProvider';
 import { customProvider } from './customProvider';
 import { IdentityApiSignOutProxy } from './IdentityApiSignOutProxy';
-import { LAST_SEEN_ONLINE_STORAGE_KEY } from '../../components/AutoLogout/disconnectedUsers';
 
 const PROVIDER_STORAGE_KEY = '@backstage/core:SignInPage:provider';
 
