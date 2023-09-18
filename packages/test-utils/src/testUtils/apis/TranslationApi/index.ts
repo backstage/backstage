@@ -14,20 +14,4 @@
  * limitations under the License.
  */
 
-import { type i18n } from 'i18next';
-import { TranslationRef } from '../../translation';
-import { ApiRef, createApiRef } from '@backstage/core-plugin-api';
-
-/** @alpha */
-export type AppTranslationApi = {
-  getI18n(): i18n;
-
-  addResource(resource: TranslationRef): void;
-};
-
-/**
- * @alpha
- */
-export const appTranslationApiRef: ApiRef<AppTranslationApi> = createApiRef({
-  id: 'core.translation',
-});
+export { MockTranslationApi } from './MockTranslationApi';

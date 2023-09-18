@@ -13,4 +13,11 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-export * from './AppTranslationApi';
+export {
+  translationApiRef,
+  type TranslationApi,
+  type TranslationFunction,
+  type TranslationOptions,
+  type TranslationSnapshot,
+} from './TranslationApi';
+export { appLanguageApiRef, type AppLanguageApi } from './AppLanguageApi';

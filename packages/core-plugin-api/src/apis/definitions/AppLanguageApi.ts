@@ -14,14 +14,23 @@
  * limitations under the License.
  */
 
-import React, { PropsWithChildren } from 'react';
-import { useApi } from '@backstage/core-plugin-api';
-import { appTranslationApiRef } from '@backstage/core-plugin-api/alpha';
-import { I18nextProvider } from 'react-i18next';
+import { ApiRef, createApiRef } from '@backstage/core-plugin-api';
+import { Observable } from '@backstage/types';
 
 /** @alpha */
-export function AppTranslationProvider({ children }: PropsWithChildren<{}>) {
-  const appTranslationAPi = useApi(appTranslationApiRef);
-  const i18n = appTranslationAPi.getI18n();
-  return <I18nextProvider i18n={i18n}>{children}</I18nextProvider>;
-}
+export type AppLanguageApi = {
+  getAvailableLanguages(): { languages: string[] };
+
+  setLanguage(language?: string): void;
+
+  getLanguage(): { language: string };
+
+  language$(): Observable<{ language: string }>;
+};
+
+/**
+ * @alpha
+ */
+export const appLanguageApiRef: ApiRef<AppLanguageApi> = createApiRef({
+  id: 'core.applanguage',
+});

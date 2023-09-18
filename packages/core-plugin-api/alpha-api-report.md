@@ -5,19 +5,27 @@
 ```ts
 import { ApiRef } from '@backstage/core-plugin-api';
 import { BackstagePlugin } from '@backstage/core-plugin-api';
-import { i18n } from 'i18next';
+import { Observable } from '@backstage/types';
 import { ReactNode } from 'react';
 import { TranslationMessages as TranslationMessages_2 } from '@backstage/core-plugin-api/alpha';
 import { TranslationRef as TranslationRef_2 } from '@backstage/core-plugin-api/alpha';
 
 // @alpha (undocumented)
-export type AppTranslationApi = {
-  getI18n(): i18n;
-  addResource(resource: TranslationRef): void;
+export type AppLanguageApi = {
+  getAvailableLanguages(): {
+    languages: string[];
+  };
+  setLanguage(language?: string): void;
+  getLanguage(): {
+    language: string;
+  };
+  language$(): Observable<{
+    language: string;
+  }>;
 };
 
 // @alpha (undocumented)
-export const appTranslationApiRef: ApiRef<AppTranslationApi>;
+export const appLanguageApiRef: ApiRef<AppLanguageApi>;
 
 // @alpha
 export function createTranslationMessages<
@@ -76,6 +84,37 @@ export interface PluginOptionsProviderProps {
 
 // @alpha
 export const PluginProvider: (props: PluginOptionsProviderProps) => JSX.Element;
+
+// @alpha (undocumented)
+export type TranslationApi = {
+  getTranslation<
+    TMessages extends {
+      [key in string]: string;
+    },
+  >(
+    translationRef: TranslationRef<string, TMessages>,
+  ): TranslationSnapshot<TMessages>;
+  translation$<
+    TMessages extends {
+      [key in string]: string;
+    },
+  >(
+    translationRef: TranslationRef<string, TMessages>,
+  ): Observable<TranslationSnapshot<TMessages>>;
+};
+
+// @alpha (undocumented)
+export const translationApiRef: ApiRef<TranslationApi>;
+
+// @alpha (undocumented)
+export type TranslationFunction<
+  TMessages extends {
+    [key in string]: string;
+  },
+> = <TKey extends keyof TMessages>(
+  key: TKey,
+  options?: TranslationOptions,
+) => TMessages[TKey];
 
 // @alpha
 export interface TranslationMessages<
@@ -188,6 +227,20 @@ export interface TranslationResourceOptions<
   translations: TTranslations;
 }
 
+// @alpha (undocumented)
+export type TranslationSnapshot<
+  TMessages extends {
+    [key in string]: string;
+  },
+> =
+  | {
+      ready: false;
+    }
+  | {
+      ready: true;
+      t: TranslationFunction<TMessages>;
+    };
+
 // @alpha
 export function usePluginOptions<
   TPluginOptions extends {} = {},
@@ -200,10 +253,9 @@ export const useTranslationRef: <
   },
 >(
   translationRef: TranslationRef<string, TMessages>,
-) => <TKey extends keyof TMessages & string>(
-  key: TKey,
-  options?: TranslationOptions,
-) => TMessages[TKey];
+) => {
+  t: TranslationFunction<TMessages>;
+};
 
 // (No @packageDocumentation comment for this package)
 ```

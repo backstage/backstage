@@ -26,12 +26,17 @@ export interface TranslationResource<TId extends string = string> {
 }
 
 /** @internal */
+export type InternalTranslationResourceLoader = () => Promise<{
+  messages: { [key in string]: string | null };
+}>;
+
+/** @internal */
 export interface InternalTranslationResource<TId extends string = string>
   extends TranslationResource<TId> {
   version: 'v1';
   resources: Array<{
     language: string;
-    loader(): Promise<{ messages: { [key in string]: string | null } }>;
+    loader: InternalTranslationResourceLoader;
   }>;
 }
 
