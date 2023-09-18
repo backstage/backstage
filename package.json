@@ -46,7 +46,10 @@
   },
   "resolutions": {
     "@types/react": "^17",
-    "@types/react-dom": "^17"
+    "@types/react-dom": "^17",
+    "knex@^2.4.2": "patch:knex@npm%3A2.4.2#./.yarn/patches/knex-npm-2.4.2-a7caf35691.patch",
+    "knex@^2.0.0": "patch:knex@npm%3A2.4.2#./.yarn/patches/knex-npm-2.4.2-a7caf35691.patch",
+    "knex@^2.3.0": "patch:knex@npm%3A2.4.2#./.yarn/patches/knex-npm-2.4.2-a7caf35691.patch"
   },
   "version": "1.18.0-next.3",
   "dependencies": {

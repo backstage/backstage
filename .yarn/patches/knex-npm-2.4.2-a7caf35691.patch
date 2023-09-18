@@ -1,0 +1,100 @@
+diff --git a/lib/client.js b/lib/client.js
+index 1a8ec2f5780fc3e17d3e258793d1365a5d4aae44..6bff5eb89a2109caf38e7f0614b845a786c2161c 100644
+--- a/lib/client.js
++++ b/lib/client.js
+@@ -250,12 +250,16 @@ class Client extends EventEmitter {
+ 
+     return Object.assign(poolConfig, {
+       create: async () => {
++        debug('creating connection for %s - update settings', this.__dbName);
+         await updatePoolConnectionSettingsFromProvider();
+-        const connection = await this.acquireRawConnection();
++        debug('creating connection for %s - acquire raw', this.__dbName);
++        const connection = await this.acquireRawConnection(this.__dbName);
+         connection.__knexUid = uniqueId('__knexUid');
+         if (poolConfig.afterCreate) {
++          debug('creating connection for %s - after create', this.__dbName);
+           await promisify(poolConfig.afterCreate)(connection);
+         }
++        debug('creating connection for %s - done', this.__dbName);
+         return connection;
+       },
+ 
+@@ -303,11 +307,13 @@ class Client extends EventEmitter {
+       throw new Error('Unable to acquire a connection');
+     }
+     try {
++      debug('acquiring connection for %s', this.__dbName);
+       const connection = await this.pool.acquire().promise;
+-      debug('acquired connection from pool: %s', connection.__knexUid);
++      debug('acquired connection for %s from pool: %s', this.__dbName, connection.__knexUid);
+       return connection;
+     } catch (error) {
+       let convertedError = error;
++      debug('failed to acquire connection for %s, %s', this.__dbName, String(error));
+       if (error instanceof TimeoutError) {
+         convertedError = new KnexTimeoutError(
+           'Knex: Timeout acquiring a connection. The pool is probably full. ' +
+diff --git a/lib/dialects/postgres/index.js b/lib/dialects/postgres/index.js
+index a45edc3ee163b1f3a911b4869b8563dc40bf0ccf..8ae039db033a358d50f226ee2729785d1d40defa 100644
+--- a/lib/dialects/postgres/index.js
++++ b/lib/dialects/postgres/index.js
+@@ -16,6 +16,8 @@ const SchemaCompiler = require('./schema/pg-compiler');
+ const { makeEscape } = require('../../util/string');
+ const { isString } = require('../../util/is');
+ 
++const debug = require('debug')('knex:pg');
++
+ class Client_PG extends Client {
+   constructor(config) {
+     super(config);
+@@ -77,18 +79,23 @@ class Client_PG extends Client {
+     return `"${value.replace(/"/g, '""')}"${arrayAccessor}`;
+   }
+ 
+-  _acquireOnlyConnection() {
++  _acquireOnlyConnection(dbName) {
+     const connection = new this.driver.Client(this.connectionSettings);
+ 
+-    return connection.connect().then(() => connection);
++    debug('creating connection for %s - connecting driver', dbName);
++    return connection.connect().then(() => {
++      debug('creating connection for %s - driver connected', dbName);
++      return connection
++    });
+   }
+ 
+   // Get a raw connection, called by the `pool` whenever a new
+   // connection needs to be added to the pool.
+-  acquireRawConnection() {
++  acquireRawConnection(dbName) {
+     const client = this;
+ 
+-    return this._acquireOnlyConnection()
++    debug('creating connection for %s - in acquire raw', dbName);
++    return this._acquireOnlyConnection(dbName)
+       .then(function (connection) {
+         connection.on('error', (err) => {
+           connection.__knex__disposed = err;
+@@ -99,16 +106,21 @@ class Client_PG extends Client {
+         });
+ 
+         if (!client.version) {
++          debug('creating connection for %s - no version', dbName);
+           return client.checkVersion(connection).then(function (version) {
++            debug('creating connection for %s - version found %s', dbName, version);
+             client.version = version;
+             return connection;
+           });
+         }
+ 
++        debug('creating connection for %s - version already known %s', dbName, client.version);
+         return connection;
+       })
+       .then(async function setSearchPath(connection) {
++        debug('creating connection for %s - set schema path', dbName);
+         await client.setSchemaSearchPath(connection);
++        debug('creating connection for %s - schema path set', dbName);
+         return connection;
+       });
+   }
