@@ -85,7 +85,6 @@ export class CoreStorageVisitsApi extends VisitsApiFactory {
 // @public (undocumented)
 export type CoreStorageVisitsApiOptions = {
   storageApi: StorageApi;
-  randomUUID?: Window['crypto']['randomUUID'];
   limit?: number;
   identityApi: IdentityApi;
 };
@@ -186,8 +185,6 @@ export class LocalStorageVisitsApi extends VisitsApiFactory {
 
 // @public (undocumented)
 export type LocalStorageVisitsApiOptions = {
-  localStorage?: Window['localStorage'];
-  randomUUID?: Window['crypto']['randomUUID'];
   limit?: number;
   identityApi: IdentityApi;
 };
@@ -270,7 +267,6 @@ export interface VisitsApi {
 // @public
 export class VisitsApiFactory implements VisitsApi {
   protected constructor({
-    randomUUID,
     limit,
     retrieveAll,
     persistAll,
@@ -282,7 +278,7 @@ export class VisitsApiFactory implements VisitsApi {
   // (undocumented)
   protected persistAll: (visits: Array<Visit>) => Promise<void>;
   // (undocumented)
-  protected readonly randomUUID: Window['crypto']['randomUUID'];
+  protected readonly randomUUID: () => string;
   // (undocumented)
   protected retrieveAll: () => Promise<Array<Visit>>;
   // (undocumented)
@@ -291,7 +287,6 @@ export class VisitsApiFactory implements VisitsApi {
 
 // @public (undocumented)
 export type VisitsApiFactoryOptions = {
-  randomUUID: Window['crypto']['randomUUID'];
   limit: number;
   retrieveAll?: () => Promise<Array<Visit>>;
   persistAll?: (visits: Array<Visit>) => Promise<void>;
