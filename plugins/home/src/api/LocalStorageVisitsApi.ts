@@ -19,8 +19,6 @@ import { VisitsApiFactory } from './VisitsApiFactory';
 
 /** @public */
 export type LocalStorageVisitsApiOptions = {
-  localStorage?: Window['localStorage'];
-  randomUUID?: Window['crypto']['randomUUID'];
   limit?: number;
   identityApi: IdentityApi;
 };
@@ -30,7 +28,7 @@ export type LocalStorageVisitsApiOptions = {
  * This is a reference implementation of VisitsApi using window.localStorage.
  */
 export class LocalStorageVisitsApi extends VisitsApiFactory {
-  private readonly localStorage: Window['localStorage'];
+  private readonly localStorage = window.localStorage;
   private readonly storageKeyPrefix = '@backstage/plugin-home:visits';
   private readonly identityApi: IdentityApi;
 
@@ -39,13 +37,10 @@ export class LocalStorageVisitsApi extends VisitsApiFactory {
   }
 
   private constructor({
-    localStorage = window?.localStorage,
-    randomUUID = window?.crypto?.randomUUID,
     limit = 100,
     identityApi,
   }: LocalStorageVisitsApiOptions) {
-    super({ randomUUID, limit });
-    this.localStorage = localStorage;
+    super({ limit });
     this.identityApi = identityApi;
     this.retrieveAll = async (): Promise<Array<Visit>> => {
       let visits: Array<Visit>;

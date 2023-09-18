@@ -20,7 +20,6 @@ import { VisitsApiFactory } from './VisitsApiFactory';
 /** @public */
 export type CoreStorageVisitsApiOptions = {
   storageApi: StorageApi;
-  randomUUID?: Window['crypto']['randomUUID'];
   limit?: number;
   identityApi: IdentityApi;
 };
@@ -41,10 +40,9 @@ export class CoreStorageVisitsApi extends VisitsApiFactory {
   private constructor({
     storageApi,
     identityApi,
-    randomUUID = window?.crypto?.randomUUID,
     limit = 100,
   }: CoreStorageVisitsApiOptions) {
-    super({ randomUUID, limit });
+    super({ limit });
     this.storageApi = storageApi;
     this.identityApi = identityApi;
     this.retrieveAll = async (): Promise<Array<Visit>> => {

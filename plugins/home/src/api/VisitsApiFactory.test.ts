@@ -21,13 +21,11 @@ class MemoryVisitsApi extends VisitsApiFactory {
   private visits: Array<Visit> = [];
 
   constructor({
-    randomUUID = window?.crypto?.randomUUID,
     limit = 100,
   }: {
-    randomUUID?: Window['crypto']['randomUUID'];
     limit?: number;
   } = {}) {
-    super({ randomUUID, limit });
+    super({ limit });
     this.retrieveAll = async (): Promise<Array<Visit>> => {
       let visits: Array<Visit>;
       try {

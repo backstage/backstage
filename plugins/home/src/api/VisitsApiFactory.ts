@@ -24,7 +24,6 @@ type ArrayElement<A> = A extends readonly (infer T)[] ? T : never;
 
 /** @public */
 export type VisitsApiFactoryOptions = {
-  randomUUID: Window['crypto']['randomUUID'];
   limit: number;
   retrieveAll?: () => Promise<Array<Visit>>;
   persistAll?: (visits: Array<Visit>) => Promise<void>;
@@ -38,18 +37,16 @@ export type VisitsApiFactoryOptions = {
  * See LocalStorageVisitsApi for an usage example.
  */
 export class VisitsApiFactory implements VisitsApi {
-  protected readonly randomUUID: Window['crypto']['randomUUID'];
+  protected readonly randomUUID = window.crypto.randomUUID;
   protected readonly limit: number;
   protected retrieveAll: () => Promise<Array<Visit>>;
   protected persistAll: (visits: Array<Visit>) => Promise<void>;
 
   protected constructor({
-    randomUUID = window?.crypto?.randomUUID,
     limit = 100,
     retrieveAll,
     persistAll,
   }: VisitsApiFactoryOptions) {
-    this.randomUUID = randomUUID;
     this.limit = Math.abs(limit);
     this.retrieveAll = retrieveAll ?? (async () => []);
     this.persistAll = persistAll ?? (async () => {});
@@ -90,7 +87,7 @@ export class VisitsApiFactory implements VisitsApi {
 
     const visit: Visit = {
       ...saveParams.visit,
-      id: this.randomUUID(),
+      id: window.crypto.randomUUID(),
       hits: 1,
       timestamp: Date.now(),
     };
