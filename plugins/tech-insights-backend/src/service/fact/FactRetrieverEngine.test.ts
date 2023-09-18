@@ -34,6 +34,7 @@ import {
 import { ConfigReader } from '@backstage/config';
 import { TestDatabaseId, TestDatabases } from '@backstage/backend-test-utils';
 import { TaskScheduler } from '@backstage/backend-tasks';
+import { Knex } from 'knex';
 
 jest.setTimeout(60_000);
 jest.useFakeTimers();
@@ -68,6 +69,10 @@ const testFactRetriever: FactRetriever = {
 const defaultCadence = '1 * * * *';
 describe('FactRetrieverEngine', () => {
   let engine: FactRetrieverEngine;
+  let knex: Knex;
+  afterEach(async () => {
+    await knex.destroy();
+  });
   type FactSchemaAssertionCallback = (
     factSchemaDefinition: FactSchemaDefinition,
   ) => void;
@@ -128,7 +133,7 @@ describe('FactRetrieverEngine', () => {
     cadence?: string,
     factRetriever?: FactRetriever,
   ): Promise<FactRetrieverEngine> {
-    const knex = await databases.init(databaseId);
+    knex = await databases.init(databaseId);
     const databaseManager: Partial<DatabaseManager> = {
       forPlugin: (_: string) => ({
         getClient: async () => knex,
