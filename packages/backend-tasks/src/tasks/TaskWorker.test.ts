@@ -26,16 +26,8 @@ import { createTestScopedSignal } from './__testUtils__/createTestScopedSignal';
 
 jest.setTimeout(60_000);
 
-const WAT: Record<string, string> = {
-  SQLITE_3: '1',
-  MYSQL_8: '2',
-  POSTGRES_9: '3',
-  POSTGRES_13: '4',
-};
-
 describe('TaskWorker', () => {
   const logger = getVoidLogger();
-  console.log(`DEBUG: TASK_WORKER_TEST INIT`);
   const databases = TestDatabases.create({
     ids: ['POSTGRES_13', 'POSTGRES_9', 'SQLITE_3', 'MYSQL_8'],
   });
@@ -48,18 +40,15 @@ describe('TaskWorker', () => {
   it.each(databases.eachSupportedId())(
     'goes through the expected states, %p',
     async databaseId => {
-      console.log(`DEBUG: TASK_WORKER_TEST INIT GET DB ${databaseId}`);
       const knex = await databases.init(databaseId);
-      console.log(`DEBUG: TASK_WORKER_TEST INIT GOT DB ${databaseId}`);
       await migrateBackendTasks(knex);
-      console.log(`DEBUG: TASK_WORKER_TEST INIT MIGRATED DB ${databaseId}`);
 
       const fn = jest.fn(
         async () => new Promise<void>(resolve => setTimeout(resolve, 50)),
       );
       const settings: TaskSettingsV2 = {
         version: 2,
-        cadence: `*/2 * * */${WAT[databaseId]} * */10`,
+        cadence: '*/2 * * * * *',
         initialDelayDuration: Duration.fromObject({ seconds: 1 }).toISO()!,
         timeoutAfterDuration: Duration.fromObject({ minutes: 1 }).toISO()!,
       };
@@ -78,7 +67,7 @@ describe('TaskWorker', () => {
       );
       expect(JSON.parse(row.settings_json)).toEqual({
         version: 2,
-        cadence: `*/2 * * */${WAT[databaseId]} * */10`,
+        cadence: '*/2 * * * * *',
         initialDelayDuration: 'PT1S',
         timeoutAfterDuration: 'PT1M',
       });
@@ -143,7 +132,7 @@ describe('TaskWorker', () => {
       const settings: TaskSettingsV2 = {
         version: 2,
         initialDelayDuration: undefined,
-        cadence: `* * * * * */${WAT[databaseId]}1`,
+        cadence: '* * * * * *',
         timeoutAfterDuration: Duration.fromMillis(60000).toISO()!,
       };
       const checkFrequency = Duration.fromObject({ milliseconds: 100 });
@@ -166,7 +155,7 @@ describe('TaskWorker', () => {
       const settings: TaskSettingsV2 = {
         version: 2,
         initialDelayDuration: undefined,
-        cadence: `* * * */${WAT[databaseId]} * */2`,
+        cadence: '* * * * * *',
         timeoutAfterDuration: Duration.fromMillis(60000).toISO()!,
       };
       const checkFrequency = Duration.fromObject({ milliseconds: 100 });
@@ -191,7 +180,7 @@ describe('TaskWorker', () => {
       const settings: TaskSettingsV2 = {
         version: 2,
         initialDelayDuration: undefined,
-        cadence: `* * * */${WAT[databaseId]} * */3`,
+        cadence: '* * * * * *',
         timeoutAfterDuration: Duration.fromMillis(60000).toISO()!,
       };
 
@@ -247,7 +236,7 @@ describe('TaskWorker', () => {
       const settings: TaskSettingsV2 = {
         version: 2,
         initialDelayDuration: undefined,
-        cadence: `* * * */${WAT[databaseId]} * */4`,
+        cadence: '* * * * * *',
         timeoutAfterDuration: Duration.fromMillis(60000).toISO()!,
       };
 
@@ -359,7 +348,7 @@ describe('TaskWorker', () => {
       );
       const settings: TaskSettingsV2 = {
         version: 2,
-        cadence: `*/15 * * */${WAT[databaseId]} */5`,
+        cadence: '*/15 * * * *',
         initialDelayDuration: 'PT2M',
         timeoutAfterDuration: 'PT1M',
       };
@@ -370,7 +359,7 @@ describe('TaskWorker', () => {
 
       const settings2 = {
         ...settings,
-        cadence: `*/2 * * */${WAT[databaseId]} */6`,
+        cadence: '*/2 * * * *',
         initialDelayDuration: 'PT1M',
       };
       await worker.persistTask(settings2);

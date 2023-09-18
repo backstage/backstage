@@ -126,7 +126,12 @@ export async function ensurePgDatabaseExists(
     connection: {
       database: 'postgres',
     },
+    pool: {
+      min: 0,
+      acquireTimeoutMillis: 10000,
+    },
   });
+  admin.client.__dbName = databases[0];
 
   try {
     const ensureDatabase = async (database: string) => {
