@@ -31,6 +31,7 @@ jiraDashboard:
 Configuration Details:
 
 - `JIRA_TOKEN`: The API token to authenticate towards Jira. It can be found by visiting Atlassians page at https://developer.atlassian.com/cloud/jira/platform/basic-auth-for-rest-apis/. In case you are using a Bearer or Basic token, you need to add it in the beginning of the token. For instance: `Bearer your-secret-token`
+  > Note: The JIRA_TOKEN variable from [Roadie's Backstage Jira plugin](https://roadie.io/backstage/plugins/jira) can not be reused here because of the added encoding in this token.
 - `JIRA_BASE_URL`: The base url for Jira in your company, including the API version. For instance: https://jira.se.your-company.com/rest/api/2/'
 - `JIRA_EMAIL_SUFFIX`: The email suffix used for retrieving a specific Jira user in a company. For instance: @your-company.com
 
