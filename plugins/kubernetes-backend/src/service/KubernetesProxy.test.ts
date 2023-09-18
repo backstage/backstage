@@ -756,7 +756,6 @@ describe('KubernetesProxy', () => {
 
       const wsProxyAddress = `ws://127.0.0.1:${proxyPort}${proxyPath}${wsPath}`;
       const wsAddress = `ws://localhost:${wsPort}${wsPath}`;
-      console.log('Ports: ', wsProxyAddress, wsAddress);
 
       // Let this request through so it reaches the express router above
       worker.use(
