@@ -14,8 +14,8 @@
  * limitations under the License.
  */
 
-import { assertError } from '@backstage/errors';
 import { Command } from 'commander';
+import { assertError } from '@backstage/errors';
 import { exitWithError } from '../lib/errors';
 
 const configOption = [
@@ -115,9 +115,9 @@ export function registerScriptCommand(program: Command) {
     .option(...configOption)
     .option('--role <name>', 'Run the command with an explicit package role')
     .option('--check', 'Enable type checking and linting if available')
-    .option('--inspect', 'Enable debugger in Node.js environments')
+    .option('--inspect [host]', 'Enable debugger in Node.js environments')
     .option(
-      '--inspect-brk',
+      '--inspect-brk [host]',
       'Enable debugger in Node.js environments, breaking before code starts',
     )
     .action(lazy(() => import('./start').then(m => m.command)));
