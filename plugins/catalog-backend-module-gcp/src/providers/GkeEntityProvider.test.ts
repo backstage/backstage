@@ -83,9 +83,9 @@ describe('GkeEntityProvider', () => {
             clusters: [
               {
                 name: 'some-cluster',
-                endpoint: 'http://127.0.0.1:1234',
+                endpoint: '127.0.0.1',
                 location: 'some-location',
-                selfLink: 'http://127.0.0.1/some-link',
+                selfLink: 'https://127.0.0.1/some-link',
                 masterAuth: {
                   clusterCaCertificate: 'abcdefg',
                 },
@@ -99,9 +99,9 @@ describe('GkeEntityProvider', () => {
             clusters: [
               {
                 name: 'some-other-cluster',
-                endpoint: 'http://127.0.0.1:5678',
+                endpoint: '127.0.0.1',
                 location: 'some-other-location',
-                selfLink: 'http://127.0.0.1/some-other-link',
+                selfLink: 'https://127.0.0.1/some-other-link',
                 masterAuth: {
                   // no CA cert is ok
                 },
@@ -124,7 +124,7 @@ describe('GkeEntityProvider', () => {
             kind: 'Resource',
             metadata: {
               annotations: {
-                [ANNOTATION_KUBERNETES_API_SERVER]: 'http://127.0.0.1:1234',
+                [ANNOTATION_KUBERNETES_API_SERVER]: 'https://127.0.0.1',
                 [ANNOTATION_KUBERNETES_API_SERVER_CA]: 'abcdefg',
                 [ANNOTATION_KUBERNETES_AUTH_PROVIDER]: 'google',
                 'backstage.io/managed-by-location': 'gcp-gke:some-location',
@@ -147,7 +147,7 @@ describe('GkeEntityProvider', () => {
             kind: 'Resource',
             metadata: {
               annotations: {
-                [ANNOTATION_KUBERNETES_API_SERVER]: 'http://127.0.0.1:5678',
+                [ANNOTATION_KUBERNETES_API_SERVER]: 'https://127.0.0.1',
                 [ANNOTATION_KUBERNETES_API_SERVER_CA]: '',
                 [ANNOTATION_KUBERNETES_AUTH_PROVIDER]: 'google',
                 'backstage.io/managed-by-location':
@@ -175,7 +175,7 @@ describe('GkeEntityProvider', () => {
     [
       'no-cluster-name',
       {
-        endpoint: 'http://127.0.0.1:1234',
+        endpoint: '127.0.0.1',
         location: 'some-location',
         selfLink: 'http://127.0.0.1/some-link',
         masterAuth: {
@@ -188,7 +188,7 @@ describe('GkeEntityProvider', () => {
       {
         // no selfLink
         name: 'some-name',
-        endpoint: 'http://127.0.0.1:1234',
+        endpoint: '127.0.0.1',
         location: 'some-location',
         masterAuth: {
           clusterCaCertificate: 'abcdefg',
@@ -210,7 +210,7 @@ describe('GkeEntityProvider', () => {
       'no-location',
       {
         name: 'some-name',
-        endpoint: 'http://127.0.0.1:1234',
+        endpoint: '127.0.0.1',
         selfLink: 'http://127.0.0.1/some-link',
         masterAuth: {
           clusterCaCertificate: 'abcdefg',
