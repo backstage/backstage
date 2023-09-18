@@ -35,7 +35,8 @@ import {
   PersonalListPicker,
   PlaylistOwnerPicker,
 } from '../components';
-import { PlaylistListProvider, usePlaylistList } from './usePlaylistList';
+import { PlaylistListProvider } from './PlaylistListProvider';
+import { usePlaylistList } from './usePlaylistList';
 
 const playlists: Playlist[] = [
   {
