@@ -17,6 +17,7 @@
 import {
   AppLanguageApi,
   TranslationApi,
+  TranslationFunction,
   TranslationMessages,
   TranslationRef,
   TranslationResource,
@@ -301,13 +302,14 @@ export class I18nextTranslationApi implements TranslationApi {
       return { ready: false };
     }
 
-    const t = this.#i18n.getFixedT(null, internalRef.id);
+    const t = this.#i18n.getFixedT(
+      null,
+      internalRef.id,
+    ) as TranslationFunction<TMessages>;
 
     return {
       ready: true,
-      t: (key, options) => {
-        return t(key as string, { ...options });
-      },
+      t,
     };
   }
 

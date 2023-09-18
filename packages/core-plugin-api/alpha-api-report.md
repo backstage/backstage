@@ -107,14 +107,21 @@ export type TranslationApi = {
 export const translationApiRef: ApiRef<TranslationApi>;
 
 // @alpha (undocumented)
-export type TranslationFunction<
+export interface TranslationFunction<
   TMessages extends {
     [key in string]: string;
   },
-> = <TKey extends keyof TMessages>(
-  key: TKey,
-  options?: TranslationOptions,
-) => TMessages[TKey];
+> {
+  // (undocumented)
+  <TKey extends keyof CollapsedMessages<TMessages>>(
+    key: TKey,
+    ...[args]: TranslationFunctionOptions<
+      NestedMessageKeys<TKey, CollapsedMessages<TMessages>>,
+      PluralKeys<TMessages>,
+      CollapsedMessages<TMessages>
+    >
+  ): CollapsedMessages<TMessages>[TKey];
+}
 
 // @alpha
 export interface TranslationMessages<
@@ -154,9 +161,6 @@ export interface TranslationMessagesOptions<
   // (undocumented)
   ref: TranslationRef_2<TId, TMessages>;
 }
-
-// @alpha (undocumented)
-export interface TranslationOptions {}
 
 // @alpha (undocumented)
 export interface TranslationRef<

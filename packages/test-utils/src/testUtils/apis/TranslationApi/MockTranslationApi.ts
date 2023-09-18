@@ -16,6 +16,7 @@
 
 import {
   TranslationApi,
+  TranslationFunction,
   TranslationRef,
   TranslationSnapshot,
 } from '@backstage/core-plugin-api/alpha';
@@ -66,8 +67,6 @@ export class MockTranslationApi implements TranslationApi {
   ): TranslationSnapshot<TMessages> {
     const internalRef = toInternalTranslationRef(translationRef);
 
-    const t = this.#i18n.getFixedT(null, internalRef.id);
-
     if (!this.#registeredRefs.has(internalRef.id)) {
       this.#registeredRefs.add(internalRef.id);
       this.#i18n.addResourceBundle(
@@ -79,11 +78,14 @@ export class MockTranslationApi implements TranslationApi {
       );
     }
 
+    const t = this.#i18n.getFixedT(
+      null,
+      internalRef.id,
+    ) as TranslationFunction<TMessages>;
+
     return {
       ready: true,
-      t: (key, options) => {
-        return t(key as string, { ...options });
-      },
+      t,
     };
   }
 

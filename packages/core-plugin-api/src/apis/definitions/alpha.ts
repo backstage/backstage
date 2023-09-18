@@ -17,7 +17,6 @@ export {
   translationApiRef,
   type TranslationApi,
   type TranslationFunction,
-  type TranslationOptions,
   type TranslationSnapshot,
 } from './TranslationApi';
 export { appLanguageApiRef, type AppLanguageApi } from './AppLanguageApi';
