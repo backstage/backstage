@@ -276,19 +276,28 @@ export class TestDatabases {
 
   private async shutdown() {
     const instances = [...this.instanceById.values()];
-    await Promise.all(
-      instances.map(async ({ stopContainer, connections }) => {
+    this.instanceById.clear();
+
+    for (const { stopContainer, connections, databaseManager } of instances) {
+      for (const connection of connections) {
         try {
-          await Promise.all(connections.map(c => c.destroy()));
-        } catch {
-          // ignore
+          await connection.destroy();
+        } catch (error) {
+          console.warn(`TestDatabases: Failed to destroy connection`, {
+            connection,
+            error,
+          });
         }
-        try {
-          await stopContainer?.();
-        } catch {
-          // ignore
-        }
-      }),
-    );
+      }
+
+      try {
+        await stopContainer?.();
+      } catch (error) {
+        console.warn(`TestDatabases: Failed to stop container`, {
+          databaseManager,
+          error,
+        });
+      }
+    }
   }
 }
