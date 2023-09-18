@@ -1,5 +1,5 @@
 /*
- * Copyright 2022 The Backstage Authors
+ * Copyright 2023 The Backstage Authors
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,6 +14,14 @@
  * limitations under the License.
  */
 
-export * from './KubernetesStructuredMetadataTableDrawer';
-export * from './KubernetesDrawer';
-export * from './ManifestYaml';
+/**
+ * A Backstage plugin that integrates towards Kubernetes
+ *
+ * @packageDocumentation
+ */
+
+export {
+  EntityKubernetesClusterContent,
+  type EntityKubernetesClusterContentProps,
+} from './plugin';
+export { Router, isKubernetesClusterAvailable } from './Router';
