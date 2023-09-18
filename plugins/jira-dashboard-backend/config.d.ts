@@ -15,7 +15,7 @@
  */
 export interface Config {
   /** Configuration options for the Jira Dashboard plugin */
-  jira: {
+  jiraDashboard: {
     /**
      * The API token to authenticate towards Jira. It can be found by visiting Atlassians page at https://developer.atlassian.com/cloud/jira/platform/basic-auth-for-rest-apis/
      */

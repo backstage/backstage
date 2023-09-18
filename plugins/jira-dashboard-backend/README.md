@@ -22,7 +22,7 @@ yarn add --cwd packages/backend @backstage/plugin-jira-dashboard-backend
 The Jira Dashboard plugin requires the following YAML to be added to your app-config.yaml:
 
 ```yaml
-jira:
+jiraDashboard:
   token: ${JIRA_TOKEN}
   baseUrl: ${JIRA_BASE_URL}'
   userEmailSuffix: ${JIRA_EMAIL_SUFFIX}'
