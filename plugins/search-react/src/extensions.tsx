@@ -35,7 +35,7 @@ import { SearchDocument, SearchResult } from '@backstage/plugin-search-common';
 
 import { ListItem, List, ListProps, ListItemProps } from '@material-ui/core';
 
-import { DefaultResultListItem } from './components';
+import { DefaultResultListItem } from './components/DefaultResultListItem';
 
 /**
  * @internal
