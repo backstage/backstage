@@ -13,8 +13,15 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
 import React, { ReactNode, useState, useCallback } from 'react';
-import { Card, CardHeader, Divider, CardContent } from '@material-ui/core';
+import {
+  Card,
+  CardHeader,
+  Divider,
+  CardContent,
+  TabProps,
+} from '@material-ui/core';
 import { Incidents } from '../Incident';
 import { EscalationPolicy } from '../Escalation';
 import useAsync from 'react-use/lib/useAsync';
@@ -146,6 +153,23 @@ export const PagerDutyCard = (props: PagerDutyCardProps) => {
     icon: <DateRangeIcon />,
   };
 
+  const tabs: React.ReactElement<TabProps>[] = [
+    <CardTab label="Incidents" key="incidents">
+      <Incidents serviceId={service!.id} refreshIncidents={refreshIncidents} />
+    </CardTab>,
+  ];
+
+  if (disableChangeEvents !== true) {
+    tabs.push(
+      <CardTab label="Change Events" key="change events">
+        <ChangeEvents
+          serviceId={service!.id}
+          refreshEvents={refreshChangeEvents}
+        />
+      </CardTab>,
+    );
+  }
+
   return (
     <>
       <Card data-testid="pagerduty-card">
@@ -163,24 +187,7 @@ export const PagerDutyCard = (props: PagerDutyCardProps) => {
         />
         <Divider />
         <CardContent>
-          <TabbedCard>
-            <CardTab label="Incidents">
-              <Incidents
-                serviceId={service!.id}
-                refreshIncidents={refreshIncidents}
-              />
-            </CardTab>
-            <>
-              {disableChangeEvents !== true && (
-                <CardTab label="Change Events">
-                  <ChangeEvents
-                    serviceId={service!.id}
-                    refreshEvents={refreshChangeEvents}
-                  />
-                </CardTab>
-              )}
-            </>
-          </TabbedCard>
+          <TabbedCard>{...tabs}</TabbedCard>
           <EscalationPolicy policyId={service!.policyId} />
         </CardContent>
       </Card>
