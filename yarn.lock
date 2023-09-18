@@ -4155,7 +4155,6 @@ __metadata:
     dagre: ^0.8.5
     history: ^5.0.0
     immer: ^9.0.1
-    jest-localstorage-mock: ^2.4.26
     linkify-react: 4.1.1
     linkifyjs: 4.1.1
     lodash: ^4.17.21
@@ -30115,13 +30114,6 @@ __metadata:
     jest-get-type: ^29.4.3
     pretty-format: ^29.4.3
   checksum: ec2b45e6f0abce81bd0dd0f6fd06b433c24d1ec865267af7640fae540ec868b93752598e407a9184d9c7419cbf32e8789007cc8c1be1a84f8f7321a0f8ad01f1
-  languageName: node
-  linkType: hard
-
-"jest-localstorage-mock@npm:^2.4.26":
-  version: 2.4.26
-  resolution: "jest-localstorage-mock@npm:2.4.26"
-  checksum: d6871dd030f04bb59c9ef71ce22e98e15e2bc0d77755f5ed466839b891a7a7aae64b6cfc8f942cbef515981c4ff2ae26ad2ccc2f9d1b426c198d0b812ab1831f
   languageName: node
   linkType: hard
 
