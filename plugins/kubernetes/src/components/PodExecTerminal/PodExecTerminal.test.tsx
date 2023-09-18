@@ -27,6 +27,8 @@ import React from 'react';
 import './matchMedia.mock';
 import { PodExecTerminal } from './PodExecTerminal';
 
+global.TextEncoder = require('util').TextEncoder;
+
 const textEncoder = new TextEncoder();
 
 describe('PodExecTerminal', () => {

@@ -14,9 +14,10 @@
  * limitations under the License.
  */
 
-import { KubernetesAuthProvider } from './types';
+import { JsonObject } from '@backstage/types';
 import { KubernetesRequestBody } from '@backstage/plugin-kubernetes-common';
 import { OpenIdConnectApi } from '@backstage/core-plugin-api';
+import { KubernetesAuthProvider } from './types';
 
 export class OidcKubernetesAuthProvider implements KubernetesAuthProvider {
   providerName: string;
@@ -31,9 +32,9 @@ export class OidcKubernetesAuthProvider implements KubernetesAuthProvider {
     requestBody: KubernetesRequestBody,
   ): Promise<KubernetesRequestBody> {
     const authToken: string = (await this.getCredentials()).token;
-    const auth = { ...requestBody.auth };
+    const auth = { ...(requestBody.auth as JsonObject) };
     if (auth.oidc) {
-      auth.oidc[this.providerName] = authToken;
+      (auth.oidc as JsonObject)[this.providerName] = authToken;
     } else {
       auth.oidc = { [this.providerName]: authToken };
     }

@@ -30,5 +30,10 @@ export const GraphiqlPage: Extension<{
   path: string;
 }>;
 
+// @alpha (undocumented)
+export const graphiqlPageSidebarItem: Extension<{
+  title: string;
+}>;
+
 // (No @packageDocumentation comment for this package)
 ```

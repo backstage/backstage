@@ -31,7 +31,7 @@ import { bufferFromFileOrString } from '@kubernetes/client-node';
 import type { Request, RequestHandler } from 'express';
 import { createProxyMiddleware } from 'http-proxy-middleware';
 import { Logger } from 'winston';
-import { KubernetesAuthTranslator } from '../kubernetes-auth-translator';
+import { AuthenticationStrategy } from '../auth';
 import { ClusterDetails, KubernetesClustersSupplier } from '../types/types';
 
 export const APPLICATION_JSON: string = 'application/json';
@@ -68,7 +68,7 @@ export type KubernetesProxyCreateRequestHandlerOptions = {
 export type KubernetesProxyOptions = {
   logger: Logger;
   clusterSupplier: KubernetesClustersSupplier;
-  authTranslator: KubernetesAuthTranslator;
+  authStrategy: AuthenticationStrategy;
 };
 
 /**
@@ -80,12 +80,12 @@ export class KubernetesProxy {
   private readonly middlewareForClusterName = new Map<string, RequestHandler>();
   private readonly logger: Logger;
   private readonly clusterSupplier: KubernetesClustersSupplier;
-  private readonly authTranslator: KubernetesAuthTranslator;
+  private readonly authStrategy: AuthenticationStrategy;
 
   constructor(options: KubernetesProxyOptions) {
     this.logger = options.logger;
     this.clusterSupplier = options.clusterSupplier;
-    this.authTranslator = options.authTranslator;
+    this.authStrategy = options.authStrategy;
   }
 
   public createRequestHandler(
@@ -112,13 +112,11 @@ export class KubernetesProxy {
       if (authHeader) {
         req.headers.authorization = authHeader;
       } else {
-        const { serviceAccountToken } = await this.getClusterForRequest(
-          req,
-        ).then(cd =>
-          this.authTranslator.decorateClusterDetailsWithAuth(cd, {}),
-        );
-        if (serviceAccountToken) {
-          req.headers.authorization = `Bearer ${serviceAccountToken}`;
+        const credential = await this.getClusterForRequest(req).then(cd => {
+          return this.authStrategy.getCredential(cd, {});
+        });
+        if (credential.type === 'bearer token') {
+          req.headers.authorization = `Bearer ${credential.token}`;
         }
       }
 

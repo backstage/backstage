@@ -65,7 +65,13 @@ const SidebarLogo = () => {
 export const CoreNav = createExtension({
   id: 'core.nav',
   at: 'core.layout/nav',
-  inputs: {},
+  inputs: {
+    targets: {
+      extensionData: {
+        path: coreExtensionData.navTarget,
+      },
+    },
+  },
   output: {
     element: coreExtensionData.reactElement,
   },

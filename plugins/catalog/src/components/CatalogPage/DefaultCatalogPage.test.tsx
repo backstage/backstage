@@ -33,9 +33,8 @@ import { MockPluginProvider } from '@backstage/test-utils/alpha';
 import {
   mockBreakpoint,
   MockStorageApi,
-  renderWithEffects,
   TestApiProvider,
-  wrapInTestApp,
+  renderInTestApp,
 } from '@backstage/test-utils';
 import DashboardIcon from '@material-ui/icons/Dashboard';
 import { fireEvent, screen } from '@testing-library/react';
@@ -125,25 +124,23 @@ describe('DefaultCatalogPage', () => {
   const storageApi = MockStorageApi.create();
 
   const renderWrapped = (children: React.ReactNode) =>
-    renderWithEffects(
-      wrapInTestApp(
-        <TestApiProvider
-          apis={[
-            [catalogApiRef, catalogApi],
-            [identityApiRef, identityApi],
-            [storageApiRef, storageApi],
-            [starredEntitiesApiRef, new MockStarredEntitiesApi()],
-          ]}
-        >
-          <MockPluginProvider>{children}</MockPluginProvider>
-        </TestApiProvider>,
-        {
-          mountedRoutes: {
-            '/create': createComponentRouteRef,
-            '/catalog/:namespace/:kind/:name': entityRouteRef,
-          },
+    renderInTestApp(
+      <TestApiProvider
+        apis={[
+          [catalogApiRef, catalogApi],
+          [identityApiRef, identityApi],
+          [storageApiRef, storageApi],
+          [starredEntitiesApiRef, new MockStarredEntitiesApi()],
+        ]}
+      >
+        <MockPluginProvider>{children}</MockPluginProvider>
+      </TestApiProvider>,
+      {
+        mountedRoutes: {
+          '/create': createComponentRouteRef,
+          '/catalog/:namespace/:kind/:name': entityRouteRef,
         },
-      ),
+      },
     );
 
   // TODO(freben): The test timeouts are bumped in this file, because it seems

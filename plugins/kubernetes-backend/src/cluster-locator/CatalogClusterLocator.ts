@@ -14,23 +14,16 @@
  * limitations under the License.
  */
 
-import {
-  AWSClusterDetails,
-  ClusterDetails,
-  KubernetesClustersSupplier,
-} from '../types/types';
+import { ClusterDetails, KubernetesClustersSupplier } from '../types/types';
 import { CATALOG_FILTER_EXISTS, CatalogApi } from '@backstage/catalog-client';
 import {
   ANNOTATION_KUBERNETES_API_SERVER,
   ANNOTATION_KUBERNETES_API_SERVER_CA,
   ANNOTATION_KUBERNETES_AUTH_PROVIDER,
-  ANNOTATION_KUBERNETES_OIDC_TOKEN_PROVIDER,
   ANNOTATION_KUBERNETES_SKIP_METRICS_LOOKUP,
   ANNOTATION_KUBERNETES_SKIP_TLS_VERIFY,
   ANNOTATION_KUBERNETES_DASHBOARD_URL,
   ANNOTATION_KUBERNETES_DASHBOARD_APP,
-  ANNOTATION_KUBERNETES_AWS_EXTERNAL_ID,
-  ANNOTATION_KUBERNETES_AWS_ASSUME_ROLE,
 } from '@backstage/plugin-kubernetes-common';
 
 export class CatalogClusterLocator implements KubernetesClustersSupplier {
@@ -64,14 +57,9 @@ export class CatalogClusterLocator implements KubernetesClustersSupplier {
       const clusterDetails: ClusterDetails = {
         name: entity.metadata.name,
         url: entity.metadata.annotations![ANNOTATION_KUBERNETES_API_SERVER]!,
+        authMetadata: entity.metadata.annotations!,
         caData:
           entity.metadata.annotations![ANNOTATION_KUBERNETES_API_SERVER_CA]!,
-        authProvider:
-          entity.metadata.annotations![ANNOTATION_KUBERNETES_AUTH_PROVIDER]!,
-        oidcTokenProvider:
-          entity.metadata.annotations![
-            ANNOTATION_KUBERNETES_OIDC_TOKEN_PROVIDER
-          ]!,
         skipMetricsLookup:
           entity.metadata.annotations![
             ANNOTATION_KUBERNETES_SKIP_METRICS_LOOKUP
@@ -85,20 +73,6 @@ export class CatalogClusterLocator implements KubernetesClustersSupplier {
         dashboardApp:
           entity.metadata.annotations![ANNOTATION_KUBERNETES_DASHBOARD_APP]!,
       };
-
-      if (clusterDetails.authProvider === 'aws') {
-        return {
-          ...clusterDetails,
-          assumeRole:
-            entity.metadata.annotations![
-              ANNOTATION_KUBERNETES_AWS_ASSUME_ROLE
-            ]!,
-          externalId:
-            entity.metadata.annotations![
-              ANNOTATION_KUBERNETES_AWS_EXTERNAL_ID
-            ]!,
-        } as AWSClusterDetails;
-      }
 
       return clusterDetails;
     });

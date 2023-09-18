@@ -14,28 +14,92 @@
  * limitations under the License.
  */
 
-import { useTranslation } from 'react-i18next';
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
+import { errorApiRef, useApi } from '../apis';
+import {
+  translationApiRef,
+  TranslationFunction,
+  TranslationSnapshot,
+} from '../apis/alpha';
+import { TranslationRef } from './TranslationRef';
 
-import { TranslationOptions, TranslationRef } from './types';
-import { useApi } from '../apis';
-import { appTranslationApiRef } from '../apis/alpha';
+// Make sure we don't fill the logs with loading errors for the same ref
+const loggedRefs = new WeakSet<TranslationRef<string, {}>>();
 
 /** @alpha */
 export const useTranslationRef = <
-  Messages extends Record<keyof Messages, string>,
+  TMessages extends { [key in string]: string },
 >(
-  translationRef: TranslationRef<Messages>,
-) => {
-  const appTranslationApi = useApi(appTranslationApiRef);
+  translationRef: TranslationRef<string, TMessages>,
+): { t: TranslationFunction<TMessages> } => {
+  const errorApi = useApi(errorApiRef);
+  const translationApi = useApi(translationApiRef);
 
-  appTranslationApi.addResourcesByRef(translationRef);
+  const [snapshot, setSnapshot] = useState<TranslationSnapshot<TMessages>>(() =>
+    translationApi.getTranslation(translationRef),
+  );
+  const observable = useMemo(
+    () => translationApi.translation$(translationRef),
+    [translationApi, translationRef],
+  );
 
-  const { t } = useTranslation(translationRef.getId());
+  const onError = useCallback(
+    (error: Error) => {
+      if (!loggedRefs.has(translationRef)) {
+        const errMsg = `Failed to load translation resource '${translationRef.id}'; caused by ${error}`;
+        // eslint-disable-next-line no-console
+        console.error(errMsg);
+        errorApi.post(new Error(errMsg));
+        loggedRefs.add(translationRef);
+      }
+    },
+    [errorApi, translationRef],
+  );
 
-  const defaulteMessage = translationRef.getDefaultMessages();
+  useEffect(() => {
+    const subscription = observable.subscribe({
+      next(next) {
+        if (next.ready) {
+          setSnapshot(next);
+        }
+      },
+      error(error) {
+        onError(error);
+      },
+    });
 
-  return <Tkey extends keyof Messages>(
-    key: Tkey,
-    options?: TranslationOptions,
-  ): Messages[Tkey] => t(key as string, defaulteMessage[key], options);
+    return () => {
+      subscription.unsubscribe();
+    };
+  }, [observable, onError]);
+
+  // Keep track of if the provided translation ref changes, and in that case update the snapshot
+  const initialRenderRef = useRef(true);
+  useEffect(() => {
+    if (initialRenderRef.current) {
+      initialRenderRef.current = false;
+    } else {
+      setSnapshot(translationApi.getTranslation(translationRef));
+    }
+  }, [translationApi, translationRef]);
+
+  if (!snapshot.ready) {
+    throw new Promise<void>(resolve => {
+      const subscription = observable.subscribe({
+        next(next) {
+          if (next.ready) {
+            subscription.unsubscribe();
+            resolve();
+          }
+        },
+        error(error) {
+          subscription.unsubscribe();
+          onError(error);
+          resolve();
+        },
+      });
+    });
+  }
+
+  return { t: snapshot.t };
 };

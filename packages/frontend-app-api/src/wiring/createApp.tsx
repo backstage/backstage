@@ -47,6 +47,8 @@ import {
   RouteRef,
   BackstagePlugin as LegacyBackstagePlugin,
   featureFlagsApiRef,
+  attachComponentData,
+  useRouteRef,
 } from '@backstage/core-plugin-api';
 import { getAvailablePlugins } from './discovery';
 import {
@@ -74,7 +76,8 @@ import {
   icons as defaultIcons,
   themes as defaultThemes,
 } from '../../../app-defaults/src/defaults';
-import { BrowserRouter } from 'react-router-dom';
+import { BrowserRouter, Route } from 'react-router-dom';
+import { SidebarItem } from '@backstage/core-components';
 
 /** @public */
 export interface ExtensionTreeNode {
@@ -86,6 +89,8 @@ export interface ExtensionTreeNode {
 export interface ExtensionTree {
   getExtension(id: string): ExtensionTreeNode | undefined;
   getExtensionAttachments(id: string, inputName: string): ExtensionTreeNode[];
+  getRootRoutes(): JSX.Element[];
+  getSidebarItems(): JSX.Element[];
 }
 
 /** @public */
@@ -107,6 +112,51 @@ export function createExtensionTree(options: {
       inputName: string,
     ): ExtensionTreeNode[] {
       return instances.get(id)?.attachments.get(inputName) ?? [];
+    },
+    getRootRoutes(): JSX.Element[] {
+      return this.getExtensionAttachments('core.routes', 'routes').map(node => {
+        const path = node.getData(coreExtensionData.routePath);
+        const element = node.getData(coreExtensionData.reactElement);
+        const routeRef = node.getData(coreExtensionData.routeRef);
+        if (!path || !element) {
+          throw new Error(`Invalid route extension: ${node.id}`);
+        }
+        const Component = () => {
+          return element;
+        };
+        attachComponentData(Component, 'core.mountPoint', routeRef);
+
+        return <Route path={path} element={<Component />} />;
+      });
+    },
+    getSidebarItems(): JSX.Element[] {
+      const RoutedSidebarItem = (props: {
+        title: string;
+        routeRef: RouteRef;
+        icon: IconComponent;
+      }): React.JSX.Element => {
+        const location = useRouteRef(props.routeRef);
+        return (
+          <SidebarItem icon={props.icon} to={location()} text={props.title} />
+        );
+      };
+
+      return this.getExtensionAttachments('core.nav', 'items')
+        .map((node, index) => {
+          const target = node.getData(coreExtensionData.navTarget);
+          if (!target) {
+            return null;
+          }
+          return (
+            <RoutedSidebarItem
+              key={index}
+              title={target.title}
+              icon={target.icon}
+              routeRef={target.routeRef}
+            />
+          );
+        })
+        .filter((x): x is JSX.Element => !!x);
     },
   };
 }

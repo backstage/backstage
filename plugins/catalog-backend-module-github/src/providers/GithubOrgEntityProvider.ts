@@ -15,12 +15,7 @@
  */
 
 import { TaskRunner } from '@backstage/backend-tasks';
-import {
-  ANNOTATION_LOCATION,
-  ANNOTATION_ORIGIN_LOCATION,
-  Entity,
-  isGroupEntity,
-} from '@backstage/catalog-model';
+import { Entity, isGroupEntity } from '@backstage/catalog-model';
 import { Config } from '@backstage/config';
 import {
   DefaultGithubCredentialsProvider,
@@ -43,13 +38,8 @@ import {
   TeamEditedEvent,
   TeamEvent,
 } from '@octokit/webhooks-types';
-import { merge } from 'lodash';
 import * as uuid from 'uuid';
 import { Logger } from 'winston';
-import {
-  ANNOTATION_GITHUB_TEAM_SLUG,
-  ANNOTATION_GITHUB_USER_LOGIN,
-} from '../lib/annotation';
 import {
   TeamTransformer,
   UserTransformer,
@@ -68,7 +58,8 @@ import {
   getOrganizationUsers,
 } from '../lib/github';
 import { assignGroupsToUsers, buildOrgHierarchy } from '../lib/org';
-import { parseGithubOrgUrl, splitTeamSlug } from '../lib/util';
+import { parseGithubOrgUrl } from '../lib/util';
+import { withLocations } from '../lib/withLocations';
 import { areGroupEntities, areUserEntities } from '../lib/guards';
 
 /**
@@ -622,38 +613,4 @@ function trackProgress(logger: Logger) {
   }
 
   return { markReadComplete };
-}
-
-// Makes sure that emitted entities have a proper location
-export function withLocations(
-  baseUrl: string,
-  org: string,
-  entity: Entity,
-): Entity {
-  const login =
-    entity.metadata.annotations?.[ANNOTATION_GITHUB_USER_LOGIN] ||
-    entity.metadata.name;
-
-  let team = entity.metadata.name;
-  const slug = entity.metadata.annotations?.[ANNOTATION_GITHUB_TEAM_SLUG];
-  if (slug) {
-    const [_, slugTeam] = splitTeamSlug(slug);
-    team = slugTeam;
-  }
-
-  const location =
-    entity.kind === 'Group'
-      ? `url:${baseUrl}/orgs/${org}/teams/${team}`
-      : `url:${baseUrl}/${login}`;
-  return merge(
-    {
-      metadata: {
-        annotations: {
-          [ANNOTATION_LOCATION]: location,
-          [ANNOTATION_ORIGIN_LOCATION]: location,
-        },
-      },
-    },
-    entity,
-  ) as Entity;
 }

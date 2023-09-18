@@ -12,50 +12,57 @@ The Backstage core function provides internationalization for plugins
 
 When you are creating your plugin, you have the possibility to use `createTranslationRef` to define all messages for your plugin. For example
 
-```typescript jsx
+```ts
 import { createTranslationRef } from '@backstage/core-plugin-api/alpha';
 
 /** @alpha */
-export const userSettingsTranslationRef = createTranslationRef({
-  id: 'user-settings',
+export const myPluginTranslationRef = createTranslationRef({
+  id: 'plugin.my-plugin',
   messages: {
-    language: 'Language',
-    change_the_language: 'Change the language',
+    index_page_title: 'All your components',
+    create_component_button_label: 'Create new component',
   },
 });
 ```
 
 And the using this messages in your components like:
 
-```typescript jsx
-const t = useTranslationRef(userSettingsTranslationRef);
+```tsx
+import { useTranslationRef } from '@backstage/core-plugin-api/alpha';
+
+const { t } = useTranslationRef(userSettingsTranslationRef);
 
 return (
-  <ListItemText
-    className={classes.listItemText}
-    primary={t('language')}
-    secondary={t('change_the_language')}
-  />
+  <PageHeader title={t('index_page_title')}>
+    <Button onClick={handleCreateComponent}>
+      {t('create_component_button_label')}
+    </Button>
+  </PageHeader>
 );
 ```
 
 ## For an application developer overwrite plugin messages
 
-```diff typescript jsx
-const app = createApp({
-+  __experimentalI18n: {
-+    supportedLanguages: ['zh', 'en'],
-+    messages: [
-+      createTranslationResource({
-+        ref: userSettingsTranslationRef,
+In an app you can both override the default messages, as well as register translations for additional languages:
+
+```diff
+ const app = createApp({
++  __experimentalTranslations: {
++    availableLanguages: ['en', 'zh'],
++    resources: [
++      createTranslationMessages({
++        ref: myPluginTranslationRef,
 +        messages: {
-+          zh: {
-+            select_lng: '选择中文-app',
-+          },
++          create_component_button_label: 'Create new entity',
++        },
++      }),
++      createTranslationResource({
++        ref: myPluginTranslationRef,
++        messages: {
++          zh: () => import('./translations/zh'),
 +        },
 +      }),
 +    ],
 +  },
-  ...
-})
+ })
 ```
