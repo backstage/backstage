@@ -31459,7 +31459,7 @@ __metadata:
 
 "knex@patch:knex@npm%3A2.4.2#./.yarn/patches/knex-npm-2.4.2-a7caf35691.patch::locator=root%40workspace%3A.":
   version: 2.4.2
-  resolution: "knex@patch:knex@npm%3A2.4.2#./.yarn/patches/knex-npm-2.4.2-a7caf35691.patch::version=2.4.2&hash=c15aa0&locator=root%40workspace%3A."
+  resolution: "knex@patch:knex@npm%3A2.4.2#./.yarn/patches/knex-npm-2.4.2-a7caf35691.patch::version=2.4.2&hash=e8a49e&locator=root%40workspace%3A."
   dependencies:
     colorette: 2.0.19
     commander: ^9.1.0
@@ -31492,7 +31492,7 @@ __metadata:
       optional: true
   bin:
     knex: bin/cli.js
-  checksum: 167eccea84deabd2b540222f2d3a8f7a3714a6c1a772e8bce280670b41ae05ed01a98871b864b02fdf6b64135601f41f55a047fcada3ab90a68458753f393d19
+  checksum: 6200ff909ba868564a090b692956744e5025725b8d1d85d50a0c75f38f236b1f4a09457b4843b0b7b2681aa617ab01d292cafce66ba7f3fe54c8e6f806f38fa9
   languageName: node
   linkType: hard
 
@@ -35695,7 +35695,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"pg@npm:^8.3.0, pg@npm:^8.9.0":
+"pg@npm:8.11.3":
   version: 8.11.3
   resolution: "pg@npm:8.11.3"
   dependencies:
@@ -35716,6 +35716,30 @@ __metadata:
     pg-native:
       optional: true
   checksum: 8af9468b8969fa0d73a6b349216c8cbc953d938fcae5594f2d24043060e9226a072c8085fc4230172b5576fcab4c39c8563c655f271dc2a9209b6ad5370cafe5
+  languageName: node
+  linkType: hard
+
+"pg@patch:pg@npm%3A8.11.3#./.yarn/patches/pg-npm-8.11.3-94865204fd.patch::locator=root%40workspace%3A.":
+  version: 8.11.3
+  resolution: "pg@patch:pg@npm%3A8.11.3#./.yarn/patches/pg-npm-8.11.3-94865204fd.patch::version=8.11.3&hash=b96337&locator=root%40workspace%3A."
+  dependencies:
+    buffer-writer: 2.0.0
+    packet-reader: 1.0.0
+    pg-cloudflare: ^1.1.1
+    pg-connection-string: ^2.6.2
+    pg-pool: ^3.6.1
+    pg-protocol: ^1.6.0
+    pg-types: ^2.1.0
+    pgpass: 1.x
+  peerDependencies:
+    pg-native: ">=3.0.1"
+  dependenciesMeta:
+    pg-cloudflare:
+      optional: true
+  peerDependenciesMeta:
+    pg-native:
+      optional: true
+  checksum: 3b05821fda53d60a4cf9f0f24261dabdceeba73a05186cd86245eedb7873538f3f29bb2b36f7e3a75502c84b9058feb03f952a43758d2ca5bba36aeb0778954e
   languageName: node
   linkType: hard
 

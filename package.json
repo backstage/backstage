@@ -49,7 +49,9 @@
     "@types/react-dom": "^17",
     "knex@^2.4.2": "patch:knex@npm%3A2.4.2#./.yarn/patches/knex-npm-2.4.2-a7caf35691.patch",
     "knex@^2.0.0": "patch:knex@npm%3A2.4.2#./.yarn/patches/knex-npm-2.4.2-a7caf35691.patch",
-    "knex@^2.3.0": "patch:knex@npm%3A2.4.2#./.yarn/patches/knex-npm-2.4.2-a7caf35691.patch"
+    "knex@^2.3.0": "patch:knex@npm%3A2.4.2#./.yarn/patches/knex-npm-2.4.2-a7caf35691.patch",
+    "pg@^8.3.0": "patch:pg@npm%3A8.11.3#./.yarn/patches/pg-npm-8.11.3-94865204fd.patch",
+    "pg@^8.9.0": "patch:pg@npm%3A8.11.3#./.yarn/patches/pg-npm-8.11.3-94865204fd.patch"
   },
   "version": "1.18.0-next.3",
   "dependencies": {

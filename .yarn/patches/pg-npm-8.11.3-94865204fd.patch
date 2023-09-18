@@ -1,0 +1,127 @@
+diff --git a/lib/client.js b/lib/client.js
+index a2b7c268634ba579d222d9dfd2adf38a29aed881..cd2001f89cdfecef42230b8cc927189db84472f5 100644
+--- a/lib/client.js
++++ b/lib/client.js
+@@ -11,6 +11,8 @@ var defaults = require('./defaults')
+ var Connection = require('./connection')
+ const crypto = require('./crypto/utils')
+ 
++const debug = require('debug')('knex:pg-driver');
++
+ class Client extends EventEmitter {
+   constructor(config) {
+     super()
+@@ -86,8 +88,10 @@ class Client extends EventEmitter {
+   }
+ 
+   _connect(callback) {
++    debug('PG[%s] connect', this.dbName)
+     var self = this
+     var con = this.connection
++    con.dbName = this.dbName
+     this._connectionCallback = callback
+ 
+     if (this._connecting || this._connected) {
+@@ -102,6 +106,7 @@ class Client extends EventEmitter {
+     this.connectionTimeoutHandle
+     if (this._connectionTimeoutMillis > 0) {
+       this.connectionTimeoutHandle = setTimeout(() => {
++        debug('PG[%s] TIMEOUT', this.dbName)
+         con._ending = true
+         con.stream.destroy(new Error('timeout expired'))
+       }, this._connectionTimeoutMillis)
+@@ -115,20 +120,25 @@ class Client extends EventEmitter {
+ 
+     // once connection is established send startup message
+     con.on('connect', function () {
++      debug('PG[%s] on connect', this.dbName)
+       if (self.ssl) {
++        debug('PG[%s] on connect request ssl', this.dbName)
+         con.requestSsl()
+       } else {
++        debug('PG[%s] on connect startup', this.dbName)
+         con.startup(self.getStartupConf())
+       }
+     })
+ 
+     con.on('sslconnect', function () {
++      debug('PG[%s] on ssl connect', this.dbName)
+       con.startup(self.getStartupConf())
+     })
+ 
+     this._attachListeners(con)
+ 
+     con.once('end', () => {
++      debug('PG[%s] on ssl connection terminated', this.dbName)
+       const error = this._ending ? new Error('Connection terminated') : new Error('Connection terminated unexpectedly')
+ 
+       clearTimeout(this.connectionTimeoutHandle)
+@@ -157,7 +167,8 @@ class Client extends EventEmitter {
+     })
+   }
+ 
+-  connect(callback) {
++  connect(callback, dbName) {
++    this.dbName = dbName
+     if (callback) {
+       this._connect(callback)
+       return
+@@ -291,6 +302,7 @@ class Client extends EventEmitter {
+   }
+ 
+   _handleReadyForQuery(msg) {
++    debug('PG[%s] ready for query!', this.dbName)
+     if (this._connecting) {
+       this._connecting = false
+       this._connected = true
+diff --git a/lib/connection.js b/lib/connection.js
+index af4b8f13bfff39d1811b4696cc0230e2e13276a8..e7a02d16e059fcccd510e3a5e901c30280d8bc4d 100644
+--- a/lib/connection.js
++++ b/lib/connection.js
+@@ -10,6 +10,8 @@ const flushBuffer = serialize.flush()
+ const syncBuffer = serialize.sync()
+ const endBuffer = serialize.end()
+ 
++const debug = require('debug')('knex:pg-driver-con');
++
+ // TODO(bmc) support binary mode at some point
+ class Connection extends EventEmitter {
+   constructor(config) {
+@@ -37,6 +39,7 @@ class Connection extends EventEmitter {
+   }
+ 
+   connect(port, host) {
++    debug('PG[%s] connection connect(%s, %s)', this.dbName, port, host)
+     var self = this
+ 
+     this._connecting = true
+@@ -44,6 +47,7 @@ class Connection extends EventEmitter {
+     this.stream.connect(port, host)
+ 
+     this.stream.once('connect', function () {
++      debug('PG[%s] connection connected', this.dbName)
+       if (self._keepAlive) {
+         self.stream.setKeepAlive(true, self._keepAliveInitialDelayMillis)
+       }
+@@ -51,6 +55,7 @@ class Connection extends EventEmitter {
+     })
+ 
+     const reportStreamError = function (error) {
++      debug('PG[%s] connection stream error %s', this.dbName, error)
+       // errors about disconnections should be ignored during disconnect
+       if (self._ending && (error.code === 'ECONNRESET' || error.code === 'EPIPE')) {
+         return
+@@ -64,11 +69,13 @@ class Connection extends EventEmitter {
+     })
+ 
+     if (!this.ssl) {
++      debug('PG[%s] connection connected without ssl', this.dbName)
+       return this.attachListeners(this.stream)
+     }
+ 
+     this.stream.once('data', function (buffer) {
+       var responseCode = buffer.toString('utf8')
++      debug('PG[%s] connection initial data = |%s|', this.dbName, responseCode)
+       switch (responseCode) {
+         case 'S': // Server supports SSL connections, continue with a secure connection
+           break

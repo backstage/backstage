@@ -58,7 +58,7 @@ index a45edc3ee163b1f3a911b4869b8563dc40bf0ccf..8ae039db033a358d50f226ee2729785d
  
 -    return connection.connect().then(() => connection);
 +    debug('creating connection for %s - connecting driver', dbName);
-+    return connection.connect().then(() => {
++    return connection.connect(undefined, dbName).then(() => {
 +      debug('creating connection for %s - driver connected', dbName);
 +      return connection
 +    });
