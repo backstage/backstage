@@ -18,7 +18,7 @@ import { KubernetesAuthProvidersApi } from '../kubernetes-auth-provider';
 import { KubernetesBackendClient } from './KubernetesBackendClient';
 import { rest } from 'msw';
 import { UrlPatternDiscovery } from '@backstage/core-app-api';
-import { setupServer } from 'msw';
+import { setupServer } from 'msw/node';
 import { setupRequestMockHandlers } from '@backstage/test-utils';
 import {
   CustomObjectsByEntityRequest,

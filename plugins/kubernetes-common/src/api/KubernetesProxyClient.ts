@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 import { KubernetesApi } from './types';
-import { Event } from 'kubernetes-models';
+import { Event } from 'kubernetes-models/v1';
 
 /**
  * A client for common requests through the proxy endpoint of the kubernetes backend plugin.

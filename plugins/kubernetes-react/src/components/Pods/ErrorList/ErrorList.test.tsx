@@ -18,7 +18,7 @@ import React from 'react';
 import { render } from '@testing-library/react';
 
 import { ErrorList } from './ErrorList';
-import { Pod } from 'kubernetes-models';
+import { Pod } from 'kubernetes-models/v1';
 
 describe('ErrorList', () => {
   it('error highlight should render', () => {
