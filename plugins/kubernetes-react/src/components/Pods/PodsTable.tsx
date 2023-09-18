@@ -31,11 +31,33 @@ import { V1Pod } from '@kubernetes/client-node';
 import { usePodMetrics } from '../../hooks/usePodMetrics';
 import { Typography } from '@material-ui/core';
 
+/**
+ *
+ *
+ * @public
+ */
 export const READY_COLUMNS: PodColumns = 'READY';
+
+/**
+ *
+ *
+ * @public
+ */
 export const RESOURCE_COLUMNS: PodColumns = 'RESOURCE';
+
+/**
+ *
+ *
+ * @public
+ */
 export type PodColumns = 'READY' | 'RESOURCE';
 
-type PodsTablesProps = {
+/**
+ *
+ *
+ * @public
+ */
+export type PodsTablesProps = {
   pods: Pod | V1Pod[];
   extraColumns?: PodColumns[];
   children?: React.ReactNode;
@@ -95,6 +117,11 @@ const Memory = ({ clusterName, pod }: { clusterName: string; pod: Pod }) => {
   return <>{podStatusToMemoryUtil(metrics)}</>;
 };
 
+/**
+ *
+ *
+ * @public
+ */
 export const PodsTable = ({ pods, extraColumns = [] }: PodsTablesProps) => {
   const cluster = useContext(ClusterContext);
   const defaultColumns: TableColumn<Pod>[] = [

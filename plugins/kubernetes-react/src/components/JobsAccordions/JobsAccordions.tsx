@@ -32,7 +32,12 @@ import {
   StatusPending,
 } from '@backstage/core-components';
 
-type JobsAccordionsProps = {
+/**
+ *
+ *
+ * @public
+ */
+export type JobsAccordionsProps = {
   jobs: V1Job[];
   children?: React.ReactNode;
 };
@@ -98,6 +103,11 @@ const JobAccordion = ({ job, ownedPods }: JobAccordionProps) => {
   );
 };
 
+/**
+ *
+ *
+ * @public
+ */
 export const JobsAccordions = ({ jobs }: JobsAccordionsProps) => {
   const groupedResponses = useContext(GroupedResponsesContext);
 

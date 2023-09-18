@@ -20,7 +20,12 @@ import {
 } from '@backstage/plugin-kubernetes-common';
 import { Table, TableColumn } from '@backstage/core-components';
 
-type ErrorReportingProps = {
+/**
+ *
+ *
+ * @public
+ */
+export type ErrorReportingProps = {
   detectedErrors: DetectedErrorsByCluster;
 };
 
@@ -68,6 +73,11 @@ const sortBySeverity = (a: Row, b: Row) => {
   return 0;
 };
 
+/**
+ *
+ *
+ * @public
+ */
 export const ErrorReporting = ({ detectedErrors }: ErrorReportingProps) => {
   const errors = Array.from(detectedErrors.entries())
     .flatMap(([clusterName, resourceErrors]) => {

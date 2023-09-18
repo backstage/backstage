@@ -263,6 +263,7 @@ export interface ClientPodStatus {
   containers: ClientContainerStatus[];
 }
 
+/** @public */
 export interface DeploymentResources {
   pods: V1Pod[];
   replicaSets: V1ReplicaSet[];
@@ -270,6 +271,7 @@ export interface DeploymentResources {
   horizontalPodAutoscalers: V1HorizontalPodAutoscaler[];
 }
 
+/** @public */
 export interface GroupedResponses extends DeploymentResources {
   services: V1Service[];
   configMaps: V1ConfigMap[];

@@ -22,6 +22,7 @@ import { OAuthApi, OpenIdConnectApi } from '@backstage/core-plugin-api';
 import { OidcKubernetesAuthProvider } from './OidcKubernetesAuthProvider';
 import { AksKubernetesAuthProvider } from './AksKubernetesAuthProvider';
 
+/** @public */
 export class KubernetesAuthProviders implements KubernetesAuthProvidersApi {
   private readonly kubernetesAuthProviderMap: Map<
     string,

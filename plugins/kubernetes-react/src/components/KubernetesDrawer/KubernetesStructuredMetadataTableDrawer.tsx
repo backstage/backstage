@@ -86,12 +86,26 @@ const PodDrawerButton = withStyles({
   },
 })(Button);
 
-type ErrorPanelProps = {
+/**
+ *
+ *
+ * @public
+ */
+export type LinkErrorPanelProps = {
   cluster: ClusterAttributes;
   errorMessage?: string;
   children?: React.ReactNode;
 };
-export const LinkErrorPanel = ({ cluster, errorMessage }: ErrorPanelProps) => (
+
+/**
+ *
+ *
+ * @public
+ */
+export const LinkErrorPanel = ({
+  cluster,
+  errorMessage,
+}: LinkErrorPanelProps) => (
   <WarningPanel
     title="There was a problem formatting the link to the Kubernetes dashboard"
     message={`Could not format the link to the dashboard of your cluster named '${
@@ -106,7 +120,12 @@ export const LinkErrorPanel = ({ cluster, errorMessage }: ErrorPanelProps) => (
   </WarningPanel>
 );
 
-interface KubernetesDrawerable {
+/**
+ *
+ *
+ * @public
+ */
+export interface KubernetesDrawerable {
   metadata?: V1ObjectMeta;
 }
 
@@ -233,7 +252,12 @@ const KubernetesStructuredMetadataTableDrawerContent = <
     </>
   );
 };
-interface KubernetesStructuredMetadataTableDrawerProps<
+
+/**
+ *
+ * @public
+ */
+export interface KubernetesStructuredMetadataTableDrawerProps<
   T extends KubernetesDrawerable,
 > {
   object: T;
@@ -246,7 +270,7 @@ interface KubernetesStructuredMetadataTableDrawerProps<
 
 /**
  *
- * @public @deprecated use import { KubernetesDrawer } from '@backstage/kubernetes-react'
+ * @public
  */
 export const KubernetesStructuredMetadataTableDrawer = <
   T extends KubernetesDrawerable,

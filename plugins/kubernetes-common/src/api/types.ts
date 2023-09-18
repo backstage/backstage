@@ -23,14 +23,17 @@ import {
 import { createApiRef } from '@backstage/core-plugin-api';
 import { Event } from 'kubernetes-models/v1';
 
+/** @public */
 export const kubernetesApiRef = createApiRef<KubernetesApi>({
   id: 'plugin.kubernetes.service',
 });
 
+/** @public */
 export const kubernetesProxyApiRef = createApiRef<KubernetesProxyApi>({
   id: 'plugin.kubernetes.proxy-service',
 });
 
+/** @public */
 export interface KubernetesApi {
   getObjectsByEntity(
     requestBody: KubernetesRequestBody,
@@ -55,6 +58,7 @@ export interface KubernetesApi {
   }): Promise<Response>;
 }
 
+/** @public */
 export interface KubernetesProxyApi {
   getPodLogs(request: {
     podName: string;

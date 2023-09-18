@@ -26,6 +26,7 @@ import { stringifyEntityRef } from '@backstage/catalog-model';
 import { KubernetesAuthProvidersApi } from '../kubernetes-auth-provider';
 import { NotFoundError } from '@backstage/errors';
 
+/** @public */
 export class KubernetesBackendClient implements KubernetesApi {
   private readonly discoveryApi: DiscoveryApi;
   private readonly identityApi: IdentityApi;

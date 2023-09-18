@@ -54,29 +54,35 @@ export interface DetectedError {
   occurrenceCount: number;
 }
 
+/** @public */
 export type ProposedFix = LogSolution | DocsSolution | EventsSolution;
 
-interface ProposedFixBase {
+/** @public */
+export interface ProposedFixBase {
   errorType: string;
   rootCauseExplanation: string;
   actions: string[];
 }
 
+/** @public */
 export interface LogSolution extends ProposedFixBase {
   type: 'logs';
   container: string;
 }
 
+/** @public */
 export interface DocsSolution extends ProposedFixBase {
   type: 'docs';
   docsLink: string;
 }
 
+/** @public */
 export interface EventsSolution extends ProposedFixBase {
   type: 'events';
   podName: string;
 }
 
+/** @public */
 export interface ErrorMapper<T> {
   detectErrors: (resource: T) => DetectedError[];
 }

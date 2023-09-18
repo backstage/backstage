@@ -67,7 +67,7 @@ function getContainerSpecByName(pod: Pod, containerName: string) {
  *
  * @public
  */
-interface PodDrawerProps {
+export interface PodDrawerProps {
   open?: boolean;
   podAndErrors: PodAndErrors;
 }

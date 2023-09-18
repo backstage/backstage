@@ -14,8 +14,9 @@
  * limitations under the License.
  */
 
-export { kubernetesAuthProvidersApiRef } from './types';
-export type { KubernetesAuthProvidersApi } from './types';
-export { KubernetesAuthProviders } from './KubernetesAuthProviders';
-export { GoogleKubernetesAuthProvider } from './GoogleKubernetesAuthProvider';
-export { ServerSideKubernetesAuthProvider } from './ServerSideAuthProvider';
+export * from './types';
+export * from './KubernetesAuthProviders';
+export * from './GoogleKubernetesAuthProvider';
+export * from './ServerSideAuthProvider';
+export * from './OidcKubernetesAuthProvider';
+export * from './AksKubernetesAuthProvider';

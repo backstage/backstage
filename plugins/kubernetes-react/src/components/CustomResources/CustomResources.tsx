@@ -20,7 +20,12 @@ import { RolloutAccordions } from './ArgoRollouts';
 import { DefaultCustomResourceAccordions } from './DefaultCustomResource';
 import { GroupedResponsesContext } from '../../hooks';
 
-interface CustomResourcesProps {
+/**
+ *
+ *
+ * @public
+ */
+export interface CustomResourcesProps {
   children?: React.ReactNode;
 }
 
@@ -30,6 +35,11 @@ const kindToResource = (customResources: any[]): Dictionary<any[]> => {
   });
 };
 
+/**
+ *
+ *
+ * @public
+ */
 export const CustomResources = ({}: CustomResourcesProps) => {
   const groupedResponses = useContext(GroupedResponsesContext);
   const kindToResourceMap = kindToResource(groupedResponses.customResources);

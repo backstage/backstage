@@ -27,7 +27,12 @@ import { IngressDrawer } from './IngressDrawer';
 import { GroupedResponsesContext } from '../../hooks';
 import { StructuredMetadataTable } from '@backstage/core-components';
 
-type IngressesAccordionsProps = {};
+/**
+ *
+ *
+ * @public
+ */
+export type IngressesAccordionsProps = {};
 
 type IngressAccordionProps = {
   ingress: V1Ingress;
@@ -78,6 +83,12 @@ const IngressAccordion = ({ ingress }: IngressAccordionProps) => {
     </Accordion>
   );
 };
+
+/**
+ *
+ *
+ * @public
+ */
 export const IngressesAccordions = ({}: IngressesAccordionsProps) => {
   const groupedResponses = useContext(GroupedResponsesContext);
   return (

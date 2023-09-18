@@ -30,7 +30,12 @@ import { GroupedResponsesContext } from '../../hooks';
 import { StatusError, StatusOK } from '@backstage/core-components';
 import { humanizeCron } from '../../utils/crons';
 
-type CronJobsAccordionsProps = {
+/**
+ *
+ *
+ * @public
+ */
+export type CronJobsAccordionsProps = {
   children?: React.ReactNode;
 };
 
@@ -101,6 +106,11 @@ const CronJobAccordion = ({ cronJob, ownedJobs }: CronJobAccordionProps) => {
   );
 };
 
+/**
+ *
+ *
+ * @public
+ */
 export const CronJobsAccordions = ({}: CronJobsAccordionsProps) => {
   const groupedResponses = useContext(GroupedResponsesContext);
 

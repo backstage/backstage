@@ -83,7 +83,12 @@ const ServiceCard = ({ service }: ServiceCardProps) => {
   );
 };
 
-type ServicesAccordionsProps = {};
+/**
+ *
+ *
+ * @public
+ */
+export type ServicesAccordionsProps = {};
 
 type ServiceAccordionProps = {
   service: V1Service;
@@ -102,6 +107,11 @@ const ServiceAccordion = ({ service }: ServiceAccordionProps) => {
   );
 };
 
+/**
+ *
+ *
+ * @public
+ */
 export const ServicesAccordions = ({}: ServicesAccordionsProps) => {
   const groupedResponses = useContext(GroupedResponsesContext);
   return (

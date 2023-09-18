@@ -18,5 +18,5 @@ export * from './PodLogs';
 export * from './FixDialog';
 export * from './Events';
 export * from './ErrorList';
-export { PodsTable } from './PodsTable';
+export * from './PodsTable';
 export * from './types';

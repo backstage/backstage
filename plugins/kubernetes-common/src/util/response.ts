@@ -17,10 +17,11 @@
 import { FetchResponse } from '@backstage/plugin-kubernetes-common';
 import { GroupedResponses } from '../types';
 
-// TODO this could probably be a lodash groupBy
+/** @public */
 export const groupResponses = (
   fetchResponse: FetchResponse[],
 ): GroupedResponses => {
+  // TODO this could probably be a lodash groupBy
   return fetchResponse.reduce(
     (prev, next) => {
       switch (next.type) {

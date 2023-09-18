@@ -17,6 +17,7 @@ import { OAuthApi } from '@backstage/core-plugin-api';
 import { KubernetesRequestBody } from '@backstage/plugin-kubernetes-common';
 import { KubernetesAuthProvider } from './types';
 
+/** @public */
 export class AksKubernetesAuthProvider implements KubernetesAuthProvider {
   constructor(private readonly microsoftAuthApi: OAuthApi) {}
 

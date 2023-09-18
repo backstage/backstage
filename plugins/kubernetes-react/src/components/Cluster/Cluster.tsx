@@ -103,12 +103,22 @@ const ClusterSummary = ({
   );
 };
 
-type ClusterProps = {
+/**
+ * Props for Cluster
+ *
+ * @public
+ */
+export type ClusterProps = {
   clusterObjects: ClusterObjects;
   podsWithErrors: Set<string>;
   children?: React.ReactNode;
 };
 
+/**
+ * Component for rendering Kubernetes resources in a cluster
+ *
+ * @public
+ */
 export const Cluster = ({ clusterObjects, podsWithErrors }: ClusterProps) => {
   const groupedResponses = groupResponses(clusterObjects.resources);
 

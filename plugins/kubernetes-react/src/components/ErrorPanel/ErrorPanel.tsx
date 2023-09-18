@@ -41,13 +41,23 @@ const clustersWithErrorsToErrorMessage = (
   });
 };
 
-type ErrorPanelProps = {
+/**
+ *
+ *
+ * @public
+ */
+export type ErrorPanelProps = {
   entityName: string;
   errorMessage?: string;
   clustersWithErrors?: ClusterObjects[];
   children?: React.ReactNode;
 };
 
+/**
+ *
+ *
+ * @public
+ */
 export const ErrorPanel = ({
   entityName,
   errorMessage,

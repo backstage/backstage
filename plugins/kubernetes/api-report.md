@@ -162,6 +162,11 @@ export const detectErrors: (
   objects: ObjectsByEntityResponse,
 ) => DetectedErrorsByCluster;
 
+// Warning: (ae-missing-release-tag) "EmptyState" is part of the package's API, but it is missing a release tag (@alpha, @beta, @public, or @internal)
+//
+// @public (undocumented)
+export const EmptyState: () => React_2.JSX.Element;
+
 // Warning: (ae-missing-release-tag) "EntityKubernetesContent" is part of the package's API, but it is missing a release tag (@alpha, @beta, @public, or @internal)
 //
 // @public (undocumented)
@@ -462,22 +467,7 @@ export class KubernetesBackendClient implements KubernetesApi {
   }): Promise<Response>;
 }
 
-// Warning: (ae-forgotten-export) The symbol "KubernetesContentProps" needs to be exported by the entry point index.d.ts
-// Warning: (ae-missing-release-tag) "KubernetesContent" is part of the package's API, but it is missing a release tag (@alpha, @beta, @public, or @internal)
-//
-// @public (undocumented)
-export const KubernetesContent: ({
-  entity,
-  refreshIntervalMs,
-}: KubernetesContentProps) => React_2.JSX.Element;
-
-// Warning: (tsdoc-at-sign-in-word) The "@" character looks like part of a TSDoc tag; use a backslash to escape it
-// Warning: (tsdoc-escape-right-brace) The "}" character should be escaped using a backslash to avoid confusion with a TSDoc inline tag
-// Warning: (tsdoc-malformed-inline-tag) Expecting a TSDoc tag starting with "{@"
-// Warning: (ae-forgotten-export) The symbol "KubernetesDrawerProps" needs to be exported by the entry point index.d.ts
-// Warning: (ae-missing-release-tag) "KubernetesDrawer" is part of the package's API, but it is missing a release tag (@alpha, @beta, @public, or @internal)
-//
-// @public @deprecated (undocumented)
+// @public
 export const KubernetesDrawer: ({
   open,
   label,
@@ -486,19 +476,27 @@ export const KubernetesDrawer: ({
   children,
 }: KubernetesDrawerProps) => React_2.JSX.Element;
 
-// Warning: (tsdoc-at-sign-in-word) The "@" character looks like part of a TSDoc tag; use a backslash to escape it
-// Warning: (tsdoc-escape-right-brace) The "}" character should be escaped using a backslash to avoid confusion with a TSDoc inline tag
-// Warning: (tsdoc-malformed-inline-tag) Expecting a TSDoc tag starting with "{@"
-// Warning: (ae-forgotten-export) The symbol "KubernetesDrawerContentProps" needs to be exported by the entry point index.d.ts
-// Warning: (ae-missing-release-tag) "KubernetesDrawerContent" is part of the package's API, but it is missing a release tag (@alpha, @beta, @public, or @internal)
-//
-// @public @deprecated (undocumented)
-export const KubernetesDrawerContent: ({
-  children,
-  header,
-  kubernetesObject,
-  close,
-}: KubernetesDrawerContentProps) => React_2.JSX.Element;
+// @public
+export interface KubernetesDrawerProps {
+  // (undocumented)
+  children?: React_2.ReactNode;
+  // (undocumented)
+  drawerContentsHeader?: React_2.ReactNode;
+  // (undocumented)
+  kubernetesObject: KubernetesObject;
+  // (undocumented)
+  label: React_2.ReactNode;
+  // (undocumented)
+  open?: boolean;
+}
+
+// @public
+export interface KubernetesObject {
+  // (undocumented)
+  kind: string;
+  // (undocumented)
+  metadata?: IObjectMeta;
+}
 
 // Warning: (ae-missing-release-tag) "KubernetesObjects" is part of the package's API, but it is missing a release tag (@alpha, @beta, @public, or @internal)
 //
@@ -587,7 +585,6 @@ export class KubernetesProxyClient {
 // Warning: (tsdoc-malformed-inline-tag) Expecting a TSDoc tag starting with "{@"
 // Warning: (ae-forgotten-export) The symbol "KubernetesDrawerable" needs to be exported by the entry point index.d.ts
 // Warning: (ae-forgotten-export) The symbol "KubernetesStructuredMetadataTableDrawerProps" needs to be exported by the entry point index.d.ts
-// Warning: (ae-missing-release-tag) "KubernetesStructuredMetadataTableDrawer" is part of the package's API, but it is missing a release tag (@alpha, @beta, @public, or @internal)
 //
 // @public @deprecated (undocumented)
 export const KubernetesStructuredMetadataTableDrawer: <
@@ -609,6 +606,17 @@ export const LinkErrorPanel: ({
   cluster,
   errorMessage,
 }: ErrorPanelProps_2) => React_2.JSX.Element;
+
+// @public
+export const ManifestYaml: ({
+  object,
+}: ManifestYamlProps) => React_2.JSX.Element;
+
+// @public
+export interface ManifestYamlProps {
+  // (undocumented)
+  object: object;
+}
 
 // @public
 export const PendingPodContent: ({

@@ -32,8 +32,7 @@ export interface ResourceUtilizationProps {
   totalFormatted: string;
 }
 
-// Visible for testing
-export const getProgressColor: GaugePropsGetColor = ({
+const getProgressColor: GaugePropsGetColor = ({
   palette,
   value,
   inverse,
