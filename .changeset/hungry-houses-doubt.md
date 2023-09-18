@@ -2,4 +2,4 @@
 '@backstage/plugin-jira-dashboard': minor
 ---
 
-Initialize Jira Dashboard plugin in frontend
+Introducing the new Jira Dashboard plugin, checkout the [README](https://github.com/backstage/backstage/tree/master/plugins/jira-dashboard/README.md) for more details.
