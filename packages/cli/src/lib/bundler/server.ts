@@ -22,6 +22,8 @@ import uniq from 'lodash/uniq';
 import openBrowser from 'react-dev-utils/openBrowser';
 import webpack from 'webpack';
 import WebpackDevServer from 'webpack-dev-server';
+import vite from 'vite';
+import react from '@vitejs/plugin-react';
 
 import {
   forbiddenDuplicatesFilter,
@@ -77,7 +79,7 @@ export async function serveBundle(options: ServeOptions) {
 
   const { name } = await fs.readJson(libPaths.resolveTarget('package.json'));
 
-  let server: WebpackDevServer | undefined = undefined;
+  let server: WebpackDevServer | vite.ViteDevServer | undefined = undefined;
   let latestFrontendAppConfigs: AppConfig[] = [];
 
   const cliConfig = await loadCliConfig({
@@ -86,7 +88,15 @@ export async function serveBundle(options: ServeOptions) {
     withFilteredKeys: true,
     watch(appConfigs) {
       latestFrontendAppConfigs = appConfigs;
-      server?.invalidate();
+      if (server) {
+        if ('invalidate' in server) {
+          server?.invalidate();
+        }
+
+        if ('restart' in server) {
+          server?.restart();
+        }
+      }
     },
   });
   latestFrontendAppConfigs = cliConfig.frontendAppConfigs;
@@ -123,7 +133,15 @@ export async function serveBundle(options: ServeOptions) {
     config: fullConfig,
     targetPath: paths.targetPath,
     watch() {
-      server?.invalidate();
+      if (server) {
+        if ('invalidate' in server) {
+          server?.invalidate();
+        }
+
+        if ('restart' in server) {
+          server?.restart();
+        }
+      }
     },
   });
 
@@ -139,58 +157,79 @@ export async function serveBundle(options: ServeOptions) {
     additionalEntryPoints: detectedModulesEntryPoint,
   });
 
-  const compiler = webpack(config);
-
-  server = new WebpackDevServer(
-    {
-      hot: !process.env.CI,
-      devMiddleware: {
-        publicPath: config.output?.publicPath as string,
-        stats: 'errors-warnings',
+  if (process.env.EXPERIMENTAL_VITE) {
+    server = await vite.createServer({
+      plugins: [react()],
+      server: {
+        host,
+        port,
       },
-      static: paths.targetPublic
-        ? {
-            publicPath: config.output?.publicPath as string,
-            directory: paths.targetPublic,
-          }
-        : undefined,
-      historyApiFallback: {
-        // Paths with dots should still use the history fallback.
-        // See https://github.com/facebookincubator/create-react-app/issues/387.
-        disableDotRule: true,
-
-        // The index needs to be rewritten relative to the new public path, including subroutes.
-        index: `${config.output?.publicPath}index.html`,
+      build: {
+        commonjsOptions: {
+          include: ['*'],
+          transformMixedEsModules: true,
+        },
       },
-      https:
-        url.protocol === 'https:'
-          ? {
-              cert: fullConfig.getString('app.https.certificate.cert'),
-              key: fullConfig.getString('app.https.certificate.key'),
-            }
-          : false,
-      host,
-      port,
-      proxy: targetPkg.proxy,
-      // When the dev server is behind a proxy, the host and public hostname differ
-      allowedHosts: [url.hostname],
-      client: {
-        webSocketURL: 'auto://0.0.0.0:0/ws',
-      },
-    } as any,
-    compiler as any,
-  );
-
-  await new Promise<void>((resolve, reject) => {
-    server?.startCallback((err?: Error) => {
-      if (err) {
-        reject(err);
-        return;
-      }
-
-      openBrowser(url.href);
-      resolve();
+      publicDir: paths.targetPublic,
     });
+  } else {
+    const compiler = webpack(config);
+
+    server = new WebpackDevServer(
+      {
+        hot: !process.env.CI,
+        devMiddleware: {
+          publicPath: config.output?.publicPath as string,
+          stats: 'errors-warnings',
+        },
+        static: paths.targetPublic
+          ? {
+              publicPath: config.output?.publicPath as string,
+              directory: paths.targetPublic,
+            }
+          : undefined,
+        historyApiFallback: {
+          // Paths with dots should still use the history fallback.
+          // See https://github.com/facebookincubator/create-react-app/issues/387.
+          disableDotRule: true,
+
+          // The index needs to be rewritten relative to the new public path, including subroutes.
+          index: `${config.output?.publicPath}index.html`,
+        },
+        https:
+          url.protocol === 'https:'
+            ? {
+                cert: fullConfig.getString('app.https.certificate.cert'),
+                key: fullConfig.getString('app.https.certificate.key'),
+              }
+            : false,
+        host,
+        port,
+        proxy: targetPkg.proxy,
+        // When the dev server is behind a proxy, the host and public hostname differ
+        allowedHosts: [url.hostname],
+        client: {
+          webSocketURL: 'auto://0.0.0.0:0/ws',
+        },
+      } as any,
+      compiler as any,
+    );
+  }
+
+  await new Promise<void>(async (resolve, reject) => {
+    if (process.env.EXPERIMENTAL_VITE) {
+      await (server as vite.ViteDevServer).listen();
+      resolve();
+    } else {
+      (server as WebpackDevServer).startCallback((err?: Error) => {
+        if (err) {
+          reject(err);
+          return;
+        }
+      });
+    }
+    openBrowser(url.href);
+    resolve();
   });
 
   const waitForExit = async () => {
