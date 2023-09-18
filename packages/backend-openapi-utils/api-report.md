@@ -77,9 +77,9 @@ interface CookieObject extends ParameterObject {
 // @public (undocumented)
 type CookieSchema<
   Doc extends RequiredDoc,
-  Path extends PathTemplate<Extract<keyof Doc['paths'], string>>,
+  Path extends DocPath<Doc>,
   Method extends DocPathMethod<Doc, Path>,
-> = ParametersSchema<Doc, DocPath<Doc, Path>, Method, ImmutableCookieObject>;
+> = ParametersSchema<Doc, Path, Method, ImmutableCookieObject>;
 
 // @public
 export function createValidatedOpenApiRouter<T extends RequiredDoc>(
@@ -99,16 +99,16 @@ type DiscriminateUnion<T, K extends keyof T, V extends T[K]> = Extract<
 // @public (undocumented)
 type DocOperation<
   Doc extends RequiredDoc,
-  Path extends keyof Doc['paths'],
+  Path extends DocPath<Doc>,
   Method extends keyof Doc['paths'][Path],
 > = Doc['paths'][Path][Method];
 
 // @public (undocumented)
 type DocParameter<
   Doc extends RequiredDoc,
-  Path extends Extract<keyof Doc['paths'], string>,
-  Method extends keyof Doc['paths'][Path],
-  Parameter extends keyof Doc['paths'][Path][Method]['parameters'],
+  Path extends DocPath<Doc>,
+  Method extends DocPathMethod<Doc, Path>,
+  Parameter extends keyof DocOperation<Doc, Path, Method>['parameters'],
 > = DocOperation<
   Doc,
   Path,
@@ -142,32 +142,28 @@ type DocParameters<
 };
 
 // @public
-type DocPath<
-  Doc extends PathDoc,
-  Path extends PathTemplate<Extract<keyof Doc['paths'], string>>,
-> = ValueOf<{
-  [Template in Extract<
-    keyof Doc['paths'],
-    string
-  >]: Path extends PathTemplate<Template> ? Template : never;
-}>;
+type DocPath<Doc extends PathDoc> = Extract<keyof Doc['paths'], string>;
 
 // @public (undocumented)
 type DocPathMethod<
   Doc extends Pick<RequiredDoc, 'paths'>,
-  Path extends DocPathTemplate<Doc>,
-> = keyof Doc['paths'][DocPath<Doc, Path>];
+  Path extends DocPath<Doc>,
+> = keyof Doc['paths'][Path];
 
 // @public (undocumented)
-type DocPathTemplate<Doc extends PathDoc> = PathTemplate<
-  Extract<keyof Doc['paths'], string>
->;
+type DocPathTemplate<Doc extends PathDoc> = PathTemplate<DocPath<Doc>>;
+
+// @public (undocumented)
+type DocPathTemplateMethod<
+  Doc extends Pick<RequiredDoc, 'paths'>,
+  Path extends DocPathTemplate<Doc>,
+> = keyof Doc['paths'][TemplateToDocPath<Doc, Path>];
 
 // @public
 type DocRequestHandler<
   Doc extends RequiredDoc,
-  Path extends DocPathTemplate<Doc>,
-  Method extends keyof Doc['paths'][Path],
+  Path extends DocPath<Doc>,
+  Method extends DocPathMethod<Doc, Path>,
 > = core.RequestHandler<
   PathSchema<Doc, Path, Method>,
   ResponseBodyToJsonSchema<Doc, Path, Method>,
@@ -179,8 +175,8 @@ type DocRequestHandler<
 // @public
 type DocRequestHandlerParams<
   Doc extends RequiredDoc,
-  Path extends DocPathTemplate<Doc>,
-  Method extends keyof Doc['paths'][Path],
+  Path extends DocPath<Doc>,
+  Method extends DocPathMethod<Doc, Path>,
 > = core.RequestHandlerParams<
   PathSchema<Doc, Path, Method>,
   ResponseBodyToJsonSchema<Doc, Path, Method>,
@@ -204,14 +200,30 @@ interface DocRequestMatcher<
     | 'head',
 > {
   // (undocumented)
-  <Path extends MethodAwareDocPath<Doc, DocPathTemplate<Doc>, Method>>(
+  <
+    Path extends MethodAwareDocPath<
+      Doc,
+      PathTemplate<Extract<keyof Doc['paths'], string>>,
+      Method
+    >,
+  >(
     path: Path,
-    ...handlers: Array<DocRequestHandler<Doc, Path, Method>>
+    ...handlers: Array<
+      DocRequestHandler<Doc, TemplateToDocPath<Doc, Path>, Method>
+    >
   ): T;
   // (undocumented)
-  <Path extends MethodAwareDocPath<Doc, DocPathTemplate<Doc>, Method>>(
+  <
+    Path extends MethodAwareDocPath<
+      Doc,
+      PathTemplate<Extract<keyof Doc['paths'], string>>,
+      Method
+    >,
+  >(
     path: Path,
-    ...handlers: Array<DocRequestHandlerParams<Doc, Path, Method>>
+    ...handlers: Array<
+      DocRequestHandlerParams<Doc, TemplateToDocPath<Doc, Path>, Method>
+    >
   ): T;
 }
 
@@ -240,9 +252,9 @@ interface HeaderObject extends ParameterObject {
 // @public (undocumented)
 type HeaderSchema<
   Doc extends RequiredDoc,
-  Path extends PathTemplate<Extract<keyof Doc['paths'], string>>,
+  Path extends DocPath<Doc>,
   Method extends DocPathMethod<Doc, Path>,
-> = ParametersSchema<Doc, DocPath<Doc, Path>, Method, ImmutableHeaderObject>;
+> = ParametersSchema<Doc, Path, Method, ImmutableHeaderObject>;
 
 // @public
 type Immutable<T> = T extends
@@ -304,10 +316,12 @@ declare namespace internal {
     RequiredDoc,
     PathDoc,
     ValueOf,
-    PathTemplate,
     DocPath,
+    PathTemplate,
+    TemplateToDocPath,
     DocPathTemplate,
     DocPathMethod,
+    DocPathTemplateMethod,
     MethodAwareDocPath,
     DocOperation,
     ComponentTypes,
@@ -394,14 +408,11 @@ type MapToSchema<
 // @public (undocumented)
 type MethodAwareDocPath<
   Doc extends PathDoc,
-  Path extends PathTemplate<Extract<keyof Doc['paths'], string>>,
-  Method extends keyof Doc['paths'][Path],
+  Path extends DocPathTemplate<Doc>,
+  Method extends DocPathTemplateMethod<Doc, Path>,
 > = ValueOf<{
-  [Template in Extract<
-    keyof Doc['paths'],
-    string
-  >]: Path extends PathTemplate<Template>
-    ? Method extends DocPathMethod<Doc, Path>
+  [Template in DocPath<Doc>]: Path extends PathTemplate<Template>
+    ? Method extends DocPathTemplateMethod<Doc, Path>
       ? PathTemplate<Template>
       : never
     : never;
@@ -468,9 +479,9 @@ interface PathObject extends ParameterObject {
 // @public (undocumented)
 type PathSchema<
   Doc extends RequiredDoc,
-  Path extends PathTemplate<Extract<keyof Doc['paths'], string>>,
+  Path extends DocPath<Doc>,
   Method extends DocPathMethod<Doc, Path>,
-> = ParametersSchema<Doc, DocPath<Doc, Path>, Method, ImmutablePathObject>;
+> = ParametersSchema<Doc, Path, Method, ImmutablePathObject>;
 
 // @public
 type PathTemplate<Path extends string> =
@@ -510,9 +521,9 @@ interface QueryObject extends ParameterObject {
 // @public (undocumented)
 type QuerySchema<
   Doc extends RequiredDoc,
-  Path extends PathTemplate<Extract<keyof Doc['paths'], string>>,
+  Path extends DocPath<Doc>,
   Method extends DocPathMethod<Doc, Path>,
-> = ParametersSchema<Doc, DocPath<Doc, Path>, Method, ImmutableQueryObject>;
+> = ParametersSchema<Doc, Path, Method, ImmutableQueryObject>;
 
 // @public (undocumented)
 type RequestBody<
@@ -536,20 +547,16 @@ type RequestBody<
 // @public (undocumented)
 type RequestBodySchema<
   Doc extends RequiredDoc,
-  Path extends DocPathTemplate<Doc>,
+  Path extends DocPath<Doc>,
   Method extends DocPathMethod<Doc, Path>,
-> = RequestBody<
-  Doc,
-  DocPath<Doc, Path>,
-  Method
-> extends ImmutableRequestBodyObject
-  ? ObjectWithContentSchema<Doc, RequestBody<Doc, DocPath<Doc, Path>, Method>>
+> = RequestBody<Doc, Path, Method> extends ImmutableRequestBodyObject
+  ? ObjectWithContentSchema<Doc, RequestBody<Doc, Path, Method>>
   : never;
 
 // @public
 type RequestBodyToJsonSchema<
   Doc extends RequiredDoc,
-  Path extends PathTemplate<Extract<keyof Doc['paths'], string>>,
+  Path extends DocPath<Doc>,
   Method extends DocPathMethod<Doc, Path>,
 > = ToTypeSafe<RequestBodySchema<Doc, Path, Method>>;
 
@@ -568,8 +575,8 @@ type RequiredMap<
 // @public (undocumented)
 type Response_2<
   Doc extends RequiredDoc,
-  Path extends keyof Doc['paths'],
-  Method extends keyof Doc['paths'][Path],
+  Path extends DocPath<Doc>,
+  Method extends DocPathMethod<Doc, Path>,
   StatusCode extends keyof DocOperation<Doc, Path, Method>['responses'],
 > = DocOperation<
   Doc,
@@ -588,14 +595,14 @@ type Response_2<
 // @public
 type ResponseBodyToJsonSchema<
   Doc extends RequiredDoc,
-  Path extends PathTemplate<Extract<keyof Doc['paths'], string>>,
+  Path extends DocPath<Doc>,
   Method extends DocPathMethod<Doc, Path>,
 > = ToTypeSafe<ValueOf<ResponseSchemas<Doc, Path, Method>>>;
 
 // @public (undocumented)
 type ResponseSchemas<
   Doc extends RequiredDoc,
-  Path extends DocPathTemplate<Doc>,
+  Path extends DocPath<Doc>,
   Method extends DocPathMethod<Doc, Path>,
 > = {
   [StatusCode in keyof DocOperation<
@@ -624,6 +631,16 @@ type SchemaRef<Doc extends RequiredDoc, Schema> = Schema extends {
   : {
       [Key in keyof Schema]: SchemaRef<Doc, Schema[Key]>;
     };
+
+// @public
+type TemplateToDocPath<
+  Doc extends PathDoc,
+  Path extends DocPathTemplate<Doc>,
+> = ValueOf<{
+  [Template in DocPath<Doc>]: Path extends PathTemplate<Template>
+    ? Template
+    : never;
+}>;
 
 // @public (undocumented)
 type ToTypeSafe<T> = UnknownIfNever<ConvertAll<TuplifyUnion<T>>[number]>;
