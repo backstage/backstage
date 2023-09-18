@@ -33,6 +33,7 @@ backend.add(import('@backstage/plugin-graphql-backend'));
 backend.add(import('@backstage/plugin-kubernetes-backend/alpha'));
 backend.add(import('@backstage/plugin-lighthouse-backend'));
 backend.add(import('@backstage/plugin-linguist-backend'));
+backend.add(import('@backstage/plugin-playlist-backend'));
 backend.add(
   import('@backstage/plugin-permission-backend-module-allow-all-policy'),
 );
