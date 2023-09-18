@@ -15,10 +15,20 @@
  */
 
 /**
- * Entity annotations
+ * The key of the Jira project to track for this entity
  *
  *  @public
  */
 export const PROJECT_KEY_ANNOTATION = 'jira-dashboard/project-key';
+
+/**
+ * Jira components to track for this entity
+ *  @public
+ */
 export const COMPONENT_ANNOTATION = 'jira-dashboard/component';
+
+/**
+ * Jira filter ids to track for this entity
+ *  @public
+ */
 export const FILTER_ANNOTATION = 'jira-dashboard/filter-ids';

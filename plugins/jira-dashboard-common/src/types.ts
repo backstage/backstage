@@ -15,8 +15,7 @@
  */
 
 /**
- *Common types between the jira-dashboard frontend and backend plugin packages.
- *
+ * Type for defining a Jira issue
  *  @public
  */
 export type Issue = {
@@ -38,18 +37,30 @@ export type Issue = {
   };
 };
 
+/**
+ * Type for defining a Jira filter
+ *  @public
+ */
 export type Filter = {
   name: string;
   query: string;
   shortName: string;
 };
 
+/**
+ * Type for defining JiraDataResponse
+ *  @public
+ */
 export type JiraDataResponse = {
   name: string;
   type: 'component' | 'filter';
   issues: Issue[];
 };
 
+/**
+ * Type for defining a Jira project
+ *  @public
+ */
 export type Project = {
   name: string;
   key: string;
@@ -66,6 +77,10 @@ export type Project = {
   self: string;
 };
 
+/**
+ * Type for defining JiraResponse
+ *  @public
+ */
 export type JiraResponse = {
   project: Project;
   data: JiraDataResponse[];
