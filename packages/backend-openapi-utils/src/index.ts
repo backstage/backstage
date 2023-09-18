@@ -22,5 +22,6 @@
 import * as internal from './types';
 
 export { internal };
+export * from './utility';
 export type { ApiRouter } from './router';
 export { createValidatedOpenApiRouter } from './stub';

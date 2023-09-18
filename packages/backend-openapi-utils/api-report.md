@@ -75,6 +75,13 @@ interface CookieObject extends ParameterObject {
 }
 
 // @public (undocumented)
+export type CookieParameters<
+  Doc extends RequiredDoc,
+  Path extends PathTemplate<Extract<keyof Doc['paths'], string>>,
+  Method extends DocPathTemplateMethod<Doc, Path>,
+> = CookieSchema<Doc, TemplateToDocPath<Doc, Path>, Method>;
+
+// @public (undocumented)
 type CookieSchema<
   Doc extends RequiredDoc,
   Path extends DocPath<Doc>,
@@ -250,6 +257,13 @@ interface HeaderObject extends ParameterObject {
 }
 
 // @public (undocumented)
+export type HeaderParameters<
+  Doc extends RequiredDoc,
+  Path extends PathTemplate<Extract<keyof Doc['paths'], string>>,
+  Method extends DocPathTemplateMethod<Doc, Path>,
+> = HeaderSchema<Doc, TemplateToDocPath<Doc, Path>, Method>;
+
+// @public (undocumented)
 type HeaderSchema<
   Doc extends RequiredDoc,
   Path extends DocPath<Doc>,
@@ -376,7 +390,7 @@ declare namespace internal {
     RequestBody,
     RequestBodySchema,
     RequestBodyToJsonSchema,
-    Response_2 as Response,
+    Response_3 as Response,
     ResponseSchemas,
     ResponseBodyToJsonSchema,
   };
@@ -477,6 +491,13 @@ interface PathObject extends ParameterObject {
 }
 
 // @public (undocumented)
+export type PathParameters<
+  Doc extends RequiredDoc,
+  Path extends PathTemplate<Extract<keyof Doc['paths'], string>>,
+  Method extends DocPathTemplateMethod<Doc, Path>,
+> = PathSchema<Doc, TemplateToDocPath<Doc, Path>, Method>;
+
+// @public (undocumented)
 type PathSchema<
   Doc extends RequiredDoc,
   Path extends DocPath<Doc>,
@@ -519,11 +540,26 @@ interface QueryObject extends ParameterObject {
 }
 
 // @public (undocumented)
+export type QueryParameters<
+  Doc extends RequiredDoc,
+  Path extends PathTemplate<Extract<keyof Doc['paths'], string>>,
+  Method extends DocPathTemplateMethod<Doc, Path>,
+> = QuerySchema<Doc, TemplateToDocPath<Doc, Path>, Method>;
+
+// @public (undocumented)
 type QuerySchema<
   Doc extends RequiredDoc,
   Path extends DocPath<Doc>,
   Method extends DocPathMethod<Doc, Path>,
 > = ParametersSchema<Doc, Path, Method, ImmutableQueryObject>;
+
+// @public (undocumented)
+type Request_2<
+  Doc extends RequiredDoc,
+  Path extends PathTemplate<Extract<keyof Doc['paths'], string>>,
+  Method extends DocPathTemplateMethod<Doc, Path>,
+> = RequestBodyToJsonSchema<Doc, TemplateToDocPath<Doc, Path>, Method>;
+export { Request_2 as Request };
 
 // @public (undocumented)
 type RequestBody<
@@ -575,6 +611,14 @@ type RequiredMap<
 // @public (undocumented)
 type Response_2<
   Doc extends RequiredDoc,
+  Path extends PathTemplate<Extract<keyof Doc['paths'], string>>,
+  Method extends DocPathTemplateMethod<Doc, Path>,
+> = ResponseBodyToJsonSchema<Doc, TemplateToDocPath<Doc, Path>, Method>;
+export { Response_2 as Response };
+
+// @public (undocumented)
+type Response_3<
+  Doc extends RequiredDoc,
   Path extends DocPath<Doc>,
   Method extends DocPathMethod<Doc, Path>,
   StatusCode extends keyof DocOperation<Doc, Path, Method>['responses'],
@@ -609,13 +653,13 @@ type ResponseSchemas<
     Doc,
     Path,
     Method
-  >['responses']]: Response_2<
+  >['responses']]: Response_3<
     Doc,
     Path,
     Method,
     StatusCode
   > extends ImmutableResponseObject
-    ? ObjectWithContentSchema<Doc, Response_2<Doc, Path, Method, StatusCode>>
+    ? ObjectWithContentSchema<Doc, Response_3<Doc, Path, Method, StatusCode>>
     : never;
 };
 
