@@ -46,7 +46,6 @@ import {
   HEADER_KUBERNETES_CLUSTER,
   KubernetesProxy,
 } from './KubernetesProxy';
-import fetch from 'cross-fetch';
 
 import type { Request } from 'express';
 
@@ -757,7 +756,6 @@ describe('KubernetesProxy', () => {
 
       const wsProxyAddress = `ws://127.0.0.1:${proxyPort}${proxyPath}${wsPath}`;
       const wsAddress = `ws://localhost:${wsPort}${wsPath}`;
-      console.log('Ports: ', wsProxyAddress, wsAddress);
 
       // Let this request through so it reaches the express router above
       worker.use(
@@ -768,10 +766,6 @@ describe('KubernetesProxy', () => {
           req.passthrough(),
         ),
       );
-
-      // Prepopulate the proxy so the WebSocket upgrade can happen, result doesn't actually matter
-      const result = await fetch(wsProxyAddress.replace('ws', 'http'));
-      expect(result.ok).toBeFalsy();
 
       const webSocket = new WebSocket(wsProxyAddress);
 

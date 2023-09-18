@@ -13,7 +13,6 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
 import {
   ErrorResponseBody,
   ForwardedError,
@@ -24,15 +23,17 @@ import {
 import { getBearerTokenFromAuthorizationHeader } from '@backstage/plugin-auth-node';
 import { kubernetesProxyPermission } from '@backstage/plugin-kubernetes-common';
 import {
-  PermissionEvaluator,
   AuthorizeResult,
+  PermissionEvaluator,
 } from '@backstage/plugin-permission-common';
 import { bufferFromFileOrString } from '@kubernetes/client-node';
-import type { Request, RequestHandler } from 'express';
-import { createProxyMiddleware } from 'http-proxy-middleware';
+import { createProxyMiddleware, RequestHandler } from 'http-proxy-middleware';
 import { Logger } from 'winston';
+
 import { AuthenticationStrategy } from '../auth';
 import { ClusterDetails, KubernetesClustersSupplier } from '../types/types';
+
+import type { Request } from 'express';
 
 export const APPLICATION_JSON: string = 'application/json';
 
@@ -121,7 +122,17 @@ export class KubernetesProxy {
       }
 
       const middleware = await this.getMiddleware(req);
-      middleware(req, res, next);
+
+      // If req is an upgrade handshake, use middleware upgrade instead of http request handler https://github.com/chimurai/http-proxy-middleware#external-websocket-upgrade
+      if (
+        req.header('connection')?.toLowerCase() === 'upgrade' &&
+        req.header('upgrade')?.toLowerCase() === 'websocket'
+      ) {
+        // Missing the `head`, since it's optional we pass undefined to avoid type issues
+        middleware.upgrade!(req, req.socket, undefined);
+      } else {
+        middleware(req, res, next);
+      }
     };
   }
 

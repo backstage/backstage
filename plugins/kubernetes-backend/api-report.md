@@ -18,7 +18,7 @@ import { Logger } from 'winston';
 import type { ObjectsByEntityResponse } from '@backstage/plugin-kubernetes-common';
 import { PermissionEvaluator } from '@backstage/plugin-permission-common';
 import { PluginEndpointDiscovery } from '@backstage/backend-common';
-import type { RequestHandler } from 'express';
+import { RequestHandler } from 'http-proxy-middleware';
 import { TokenCredential } from '@azure/identity';
 
 // @public (undocumented)
