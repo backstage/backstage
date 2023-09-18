@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-export { coreExtensionData } from './coreExtensionData';
+export { coreExtensionData, type NavTarget } from './coreExtensionData';
 export {
   createExtension,
   type CreateExtensionOptions,
