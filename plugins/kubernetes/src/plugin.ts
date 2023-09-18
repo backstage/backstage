@@ -13,10 +13,10 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import { KubernetesBackendClient } from './api/KubernetesBackendClient';
-import { kubernetesApiRef, kubernetesProxyApiRef } from './api/types';
-import { kubernetesAuthProvidersApiRef } from './kubernetes-auth-provider/types';
-import { KubernetesAuthProviders } from './kubernetes-auth-provider/KubernetesAuthProviders';
+import { KubernetesBackendClient } from './deprecated';
+import { kubernetesApiRef, kubernetesProxyApiRef } from './deprecated';
+import { kubernetesAuthProvidersApiRef } from './deprecated';
+import { KubernetesAuthProviders } from './deprecated';
 import {
   createApiFactory,
   createPlugin,
@@ -30,7 +30,7 @@ import {
   oneloginAuthApiRef,
   createRoutableExtension,
 } from '@backstage/core-plugin-api';
-import { KubernetesProxyClient } from './api';
+import { KubernetesProxyClient } from './deprecated';
 
 export const rootCatalogKubernetesRouteRef = createRouteRef({
   id: 'kubernetes',

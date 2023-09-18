@@ -17,11 +17,7 @@
 import type { JsonObject } from '@backstage/types';
 import { defaultFormatterName, clusterLinksFormatters } from './formatters';
 
-/**
- * Options to format a Kubernetes Dashboard Link
- *
- * @public
- */
+// @Deprecated use import { FormatClusterLinkOptions } from '@backstage/kubernetes-react'
 export type FormatClusterLinkOptions = {
   dashboardUrl?: string;
   dashboardApp?: string;
@@ -30,11 +26,7 @@ export type FormatClusterLinkOptions = {
   kind: string;
 };
 
-/**
- * Helper function to format Kubernetes Dashboard Links
- *
- * @public
- */
+// @Deprecated use import { formatClusterLink } from '@backstage/kubernetes-react'
 export function formatClusterLink(options: FormatClusterLinkOptions) {
   if (!options.dashboardUrl && !options.dashboardParameters) {
     return undefined;
