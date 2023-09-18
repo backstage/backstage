@@ -37,14 +37,10 @@ export class CoreStorageVisitsApi extends VisitsApiFactory {
     return new CoreStorageVisitsApi(options);
   }
 
-  private constructor({
-    storageApi,
-    identityApi,
-    limit = 100,
-  }: CoreStorageVisitsApiOptions) {
-    super({ limit });
-    this.storageApi = storageApi;
-    this.identityApi = identityApi;
+  private constructor(options: CoreStorageVisitsApiOptions) {
+    super({ limit: options.limit ?? 100 });
+    this.storageApi = options.storageApi;
+    this.identityApi = options.identityApi;
     this.retrieveAll = async (): Promise<Array<Visit>> => {
       let visits: Array<Visit>;
       const { userEntityRef } = await this.identityApi.getBackstageIdentity();
