@@ -20,7 +20,7 @@ import { renderInTestApp } from '@backstage/test-utils';
 import { KubernetesContent } from './KubernetesContent';
 import { useKubernetesObjects } from './deprecated';
 
-jest.mock('../hooks');
+jest.mock('./deprecated/hooks');
 import * as oneDeployment from './__fixtures__/1-deployments.json';
 import * as twoDeployments from './__fixtures__/2-deployments.json';
 

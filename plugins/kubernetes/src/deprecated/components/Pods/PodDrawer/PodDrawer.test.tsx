@@ -23,7 +23,7 @@ import '@testing-library/jest-dom';
 import { PodDrawer } from './PodDrawer';
 import { DiscoveryApi, discoveryApiRef } from '@backstage/core-plugin-api';
 
-jest.mock('../../hooks/useIsPodExecTerminalSupported');
+jest.mock('../../../hooks/useIsPodExecTerminalSupported');
 
 describe('PodDrawer', () => {
   it('Should show title and container names', async () => {
