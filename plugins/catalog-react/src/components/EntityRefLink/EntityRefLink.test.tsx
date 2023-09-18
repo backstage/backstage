@@ -177,8 +177,8 @@ describe('<EntityRefLink />', () => {
 
   it('renders link by encoding name as URI component', async () => {
     const entityName = {
-      kind: 'Component',
-      namespace: 'test',
+      kind: 'Compone&nt',
+      namespace: 'tes[t',
       name: 'softw#are',
     };
     await renderInTestApp(
@@ -193,7 +193,7 @@ describe('<EntityRefLink />', () => {
     );
     expect(screen.getByText('Custom Children')).toHaveAttribute(
       'href',
-      '/catalog/test/component/softw%23are',
+      '/catalog/tes%5Bt/compone%26nt/softw%23are',
     );
   });
 });
