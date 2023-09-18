@@ -53,7 +53,7 @@ export const coreExtensionData: {
   reactElement: ConfigurableExtensionDataRef<JSX_2.Element, {}>;
   routePath: ConfigurableExtensionDataRef<string, {}>;
   apiFactory: ConfigurableExtensionDataRef<AnyApiFactory, {}>;
-  routeRef: ConfigurableExtensionDataRef<RouteRef<any>, {}>;
+  routeRef: ConfigurableExtensionDataRef<RouteRef, {}>;
   navTarget: ConfigurableExtensionDataRef<NavTarget, {}>;
 };
 
