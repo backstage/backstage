@@ -265,11 +265,7 @@ export interface VisitsApi {
 
 // @public
 export class VisitsApiFactory implements VisitsApi {
-  protected constructor({
-    limit,
-    retrieveAll,
-    persistAll,
-  }: VisitsApiFactoryOptions);
+  protected constructor(options: VisitsApiFactoryOptions);
   // (undocumented)
   protected readonly limit: number;
   // (undocumented)
