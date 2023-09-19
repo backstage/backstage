@@ -17,7 +17,7 @@
 import React from 'react';
 import { Content } from './Content';
 import { TestApiProvider, renderInTestApp } from '@backstage/test-utils';
-import { visitsApiRef } from '../../api';
+import { pageVisitsApiRef } from '../../api';
 import { ContextProvider } from './Context';
 import { waitFor } from '@testing-library/react';
 
@@ -31,7 +31,7 @@ const visits = [
   },
 ];
 
-const mockVisitsApi = {
+const mockPageVisitsApi = {
   save: async () => visits[0],
   list: async () => visits,
 };
@@ -39,7 +39,7 @@ const mockVisitsApi = {
 describe('<Content kind="recent"/>', () => {
   it('renders', async () => {
     const { getByText } = await renderInTestApp(
-      <TestApiProvider apis={[[visitsApiRef, mockVisitsApi]]}>
+      <TestApiProvider apis={[[pageVisitsApiRef, mockPageVisitsApi]]}>
         <ContextProvider>
           <Content kind="recent" />
         </ContextProvider>
@@ -53,7 +53,7 @@ describe('<Content kind="recent"/>', () => {
 
   it('allows visits to be overridden', async () => {
     const { getByText } = await renderInTestApp(
-      <TestApiProvider apis={[[visitsApiRef, mockVisitsApi]]}>
+      <TestApiProvider apis={[[pageVisitsApiRef, mockPageVisitsApi]]}>
         <ContextProvider>
           <Content
             kind="recent"
@@ -76,7 +76,7 @@ describe('<Content kind="recent"/>', () => {
 
   it('allows loading to be overridden', async () => {
     const { container } = await renderInTestApp(
-      <TestApiProvider apis={[[visitsApiRef, mockVisitsApi]]}>
+      <TestApiProvider apis={[[pageVisitsApiRef, mockPageVisitsApi]]}>
         <ContextProvider>
           <Content kind="recent" loading />
         </ContextProvider>
@@ -87,7 +87,7 @@ describe('<Content kind="recent"/>', () => {
 
   it('allows number of items to be specified', async () => {
     const { container } = await renderInTestApp(
-      <TestApiProvider apis={[[visitsApiRef, mockVisitsApi]]}>
+      <TestApiProvider apis={[[pageVisitsApiRef, mockPageVisitsApi]]}>
         <ContextProvider>
           <Content
             kind="recent"
@@ -122,7 +122,7 @@ describe('<Content kind="recent"/>', () => {
 describe('<Content kind="top"/>', () => {
   it('renders', async () => {
     const { getByText } = await renderInTestApp(
-      <TestApiProvider apis={[[visitsApiRef, mockVisitsApi]]}>
+      <TestApiProvider apis={[[pageVisitsApiRef, mockPageVisitsApi]]}>
         <ContextProvider>
           <Content kind="top" />
         </ContextProvider>

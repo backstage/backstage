@@ -14,10 +14,10 @@
  * limitations under the License.
  */
 
-import { Visit } from './VisitsApi';
-import { VisitsApiFactory } from './VisitsApiFactory';
+import { Visit } from './PageVisitsApi';
+import { PageVisitsApiFactory } from './PageVisitsApiFactory';
 
-class MemoryVisitsApi extends VisitsApiFactory {
+class MemoryPageVisitsApi extends PageVisitsApiFactory {
   private visits: Array<Visit> = [];
 
   constructor({
@@ -41,7 +41,7 @@ class MemoryVisitsApi extends VisitsApiFactory {
   }
 }
 
-describe('new MemoryVisitsApi()', () => {
+describe('new MemoryPageVisitsApi()', () => {
   const mockRandomUUID = () =>
     '068f3129-7440-4e0e-8fd4-xxxxxxxxxxxx'.replace(
       /x/g,
@@ -60,13 +60,13 @@ describe('new MemoryVisitsApi()', () => {
   });
 
   it('instantiates with no configuration', () => {
-    const api = new MemoryVisitsApi();
+    const api = new MemoryPageVisitsApi();
     expect(api).toBeTruthy();
   });
 
   describe('.save()', () => {
     it('saves a visit', async () => {
-      const api = new MemoryVisitsApi();
+      const api = new MemoryPageVisitsApi();
       const visit = {
         pathname: '/catalog/default/component/playback-order',
         entityRef: 'component:default/playback-order',
@@ -80,7 +80,7 @@ describe('new MemoryVisitsApi()', () => {
     });
 
     it('can control the number of stored entities', async () => {
-      const api = new MemoryVisitsApi({ limit: 2 });
+      const api = new MemoryPageVisitsApi({ limit: 2 });
       const baseDate = Date.now();
       const visit1 = {
         pathname: '/catalog/default/component/playback-order-1',
@@ -110,7 +110,7 @@ describe('new MemoryVisitsApi()', () => {
     });
 
     it('correctly bumps the hits from a previous visit', async () => {
-      const api = new MemoryVisitsApi();
+      const api = new MemoryPageVisitsApi();
       const visit = {
         pathname: '/catalog/default/component/playback-order',
         entityRef: 'component:default/playback-order',
@@ -131,11 +131,11 @@ describe('new MemoryVisitsApi()', () => {
   });
 
   describe('.list()', () => {
-    let api: MemoryVisitsApi;
+    let api: MemoryPageVisitsApi;
     let visitsToSave: Array<Omit<Visit, 'id' | 'hits' | 'timestamp'>>;
     let baseDate: number;
     beforeEach(() => {
-      api = new MemoryVisitsApi();
+      api = new MemoryPageVisitsApi();
       visitsToSave = [
         {
           pathname: '/catalog/default/component/playback-order-1',

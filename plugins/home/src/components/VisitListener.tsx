@@ -25,7 +25,7 @@ import React, {
 
 import { useLocation } from 'react-router-dom';
 
-import { visitsApiRef } from '../api';
+import { pageVisitsApiRef } from '../api';
 import { useApi } from '@backstage/core-plugin-api';
 import { stringifyEntityRef } from '@backstage/catalog-model';
 
@@ -87,7 +87,7 @@ export const getVisitName = (document: Document) => () => document.title;
 /**
  * @public
  * Component responsible for listening to location changes and calling
- * the visitsApi to save visits.
+ * the pageVisitsApi to save visits.
  */
 export const VisitListener = ({
   children,
@@ -101,7 +101,7 @@ export const VisitListener = ({
   const [doNotTrack, setDoNotTrack] = useState<boolean>(
     defaultVisitListenerContext.doNotTrack,
   );
-  const visitsApi = useApi(visitsApiRef);
+  const pageVisitsApi = useApi(pageVisitsApiRef);
   const { pathname } = useLocation();
   const toEntityRefImpl = toEntityRef ?? getToEntityRef();
   const visitNameImpl = visitName ?? getVisitName(document);
@@ -110,7 +110,7 @@ export const VisitListener = ({
     // has finished with dom reconciliation and the doNotTrack state update.
     const requestId = requestAnimationFrame(() => {
       if (!doNotTrack)
-        visitsApi.save({
+        pageVisitsApi.save({
           visit: {
             name: visitNameImpl({ pathname }),
             pathname,
@@ -119,7 +119,7 @@ export const VisitListener = ({
         });
     });
     return () => cancelAnimationFrame(requestId);
-  }, [doNotTrack, visitsApi, pathname, toEntityRefImpl, visitNameImpl]);
+  }, [doNotTrack, pageVisitsApi, pathname, toEntityRefImpl, visitNameImpl]);
 
   return (
     <VisitListenerContext.Provider value={{ doNotTrack, setDoNotTrack }}>

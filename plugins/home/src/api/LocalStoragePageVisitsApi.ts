@@ -14,29 +14,29 @@
  * limitations under the License.
  */
 import { IdentityApi } from '@backstage/core-plugin-api';
-import { Visit } from './VisitsApi';
-import { VisitsApiFactory } from './VisitsApiFactory';
+import { Visit } from './PageVisitsApi';
+import { PageVisitsApiFactory } from './PageVisitsApiFactory';
 
 /** @public */
-export type LocalStorageVisitsApiOptions = {
+export type LocalStoragePageVisitsApiOptions = {
   limit?: number;
   identityApi: IdentityApi;
 };
 
 /**
  * @public
- * This is a reference implementation of VisitsApi using window.localStorage.
+ * This is a reference implementation of PageVisitsApi using window.localStorage.
  */
-export class LocalStorageVisitsApi extends VisitsApiFactory {
+export class LocalStoragePageVisitsApi extends PageVisitsApiFactory {
   private readonly localStorage = window.localStorage;
   private readonly storageKeyPrefix = '@backstage/plugin-home:visits';
   private readonly identityApi: IdentityApi;
 
-  static create(options: LocalStorageVisitsApiOptions) {
-    return new LocalStorageVisitsApi(options);
+  static create(options: LocalStoragePageVisitsApiOptions) {
+    return new LocalStoragePageVisitsApi(options);
   }
 
-  private constructor(options: LocalStorageVisitsApiOptions) {
+  private constructor(options: LocalStoragePageVisitsApiOptions) {
     super({ limit: options.limit ?? 100 });
     this.identityApi = options.identityApi;
     this.retrieveAll = async (): Promise<Array<Visit>> => {

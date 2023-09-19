@@ -15,15 +15,15 @@
  */
 import {
   Visit,
-  VisitsApi,
-  VisitsApiQueryParams,
-  VisitsApiSaveParams,
-} from './VisitsApi';
+  PageVisitsApi,
+  PageVisitsApiQueryParams,
+  PageVisitsApiSaveParams,
+} from './PageVisitsApi';
 
 type ArrayElement<A> = A extends readonly (infer T)[] ? T : never;
 
 /** @public */
-export type VisitsApiFactoryOptions = {
+export type PageVisitsApiFactoryOptions = {
   limit: number;
   retrieveAll?: () => Promise<Array<Visit>>;
   persistAll?: (visits: Array<Visit>) => Promise<void>;
@@ -34,21 +34,21 @@ export type VisitsApiFactoryOptions = {
  * This helps the creation of VisitApi implementations. Important to note
  * that it implements features like orderBy and filterBy on memory, therefore
  * is intended to handle few visits. The default is 100.
- * See LocalStorageVisitsApi for an usage example.
+ * See LocalStoragePageVisitsApi for an usage example.
  */
-export class VisitsApiFactory implements VisitsApi {
+export class PageVisitsApiFactory implements PageVisitsApi {
   protected readonly randomUUID = window.crypto.randomUUID;
   protected readonly limit: number;
   protected retrieveAll: () => Promise<Array<Visit>>;
   protected persistAll: (visits: Array<Visit>) => Promise<void>;
 
-  protected constructor(options: VisitsApiFactoryOptions) {
+  protected constructor(options: PageVisitsApiFactoryOptions) {
     this.limit = Math.abs(options.limit ?? 100);
     this.retrieveAll = options.retrieveAll ?? (async () => []);
     this.persistAll = options.persistAll ?? (async () => {});
   }
 
-  async list(queryParams?: VisitsApiQueryParams): Promise<Visit[]> {
+  async list(queryParams?: PageVisitsApiQueryParams): Promise<Visit[]> {
     let visits = await this.retrieveAll();
 
     // reversing order to guarantee orderBy priority
@@ -78,7 +78,7 @@ export class VisitsApiFactory implements VisitsApi {
     return visits;
   }
 
-  async save(saveParams: VisitsApiSaveParams): Promise<Visit> {
+  async save(saveParams: PageVisitsApiSaveParams): Promise<Visit> {
     const visits = await this.retrieveAll();
 
     const visit: Visit = {
@@ -107,7 +107,7 @@ export class VisitsApiFactory implements VisitsApi {
 
   // This assumes Visit fields are either numbers or strings
   private compare(
-    order: ArrayElement<VisitsApiQueryParams['orderBy']>,
+    order: ArrayElement<PageVisitsApiQueryParams['orderBy']>,
     a: Visit,
     b: Visit,
   ): number {

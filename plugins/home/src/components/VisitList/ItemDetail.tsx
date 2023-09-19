@@ -16,7 +16,7 @@
 
 import React from 'react';
 import { Typography } from '@material-ui/core';
-import { Visit } from '../../api/VisitsApi';
+import { Visit } from '../../api/PageVisitsApi';
 import { DateTime } from 'luxon';
 
 const ItemDetailHits = ({ visit }: { visit: Visit }) => (

@@ -15,9 +15,10 @@
  */
 
 import { BackstageUserIdentity, IdentityApi } from '@backstage/core-plugin-api';
-import { LocalStorageVisitsApi } from './LocalStorageVisitsApi';
+import { CoreStoragePageVisitsApi } from './CoreStoragePageVisitsApi';
+import { MockStorageApi } from '@backstage/test-utils';
 
-describe('LocalStorageVisitsApi.create()', () => {
+describe('CoreStoragePageVisitsApi.create({ storageApi: MockStorageApi.create() })', () => {
   const mockRandomUUID = () =>
     '068f3129-7440-4e0e-8fd4-xxxxxxxxxxxx'.replace(
       /x/g,
@@ -38,16 +39,21 @@ describe('LocalStorageVisitsApi.create()', () => {
 
   afterEach(() => {
     window.localStorage.clear();
-    jest.resetAllMocks();
   });
 
-  it('instantiates with only identitiyApi', () => {
-    const api = LocalStorageVisitsApi.create({ identityApi: mockIdentityApi });
+  it('instantiates', () => {
+    const api = CoreStoragePageVisitsApi.create({
+      storageApi: MockStorageApi.create(),
+      identityApi: mockIdentityApi,
+    });
     expect(api).toBeTruthy();
   });
 
   it('saves a visit', async () => {
-    const api = LocalStorageVisitsApi.create({ identityApi: mockIdentityApi });
+    const api = CoreStoragePageVisitsApi.create({
+      storageApi: MockStorageApi.create(),
+      identityApi: mockIdentityApi,
+    });
     const visit = {
       pathname: '/catalog/default/component/playback-order',
       entityRef: 'component:default/playback-order',
@@ -61,7 +67,10 @@ describe('LocalStorageVisitsApi.create()', () => {
   });
 
   it('retrieves visits', async () => {
-    const api = LocalStorageVisitsApi.create({ identityApi: mockIdentityApi });
+    const api = CoreStoragePageVisitsApi.create({
+      storageApi: MockStorageApi.create(),
+      identityApi: mockIdentityApi,
+    });
     const visit = {
       pathname: '/catalog/default/component/playback-order',
       entityRef: 'component:default/playback-order',

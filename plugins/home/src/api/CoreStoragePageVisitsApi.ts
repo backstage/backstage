@@ -14,11 +14,11 @@
  * limitations under the License.
  */
 import { IdentityApi, StorageApi } from '@backstage/core-plugin-api';
-import { Visit } from './VisitsApi';
-import { VisitsApiFactory } from './VisitsApiFactory';
+import { Visit } from './PageVisitsApi';
+import { PageVisitsApiFactory } from './PageVisitsApiFactory';
 
 /** @public */
-export type CoreStorageVisitsApiOptions = {
+export type CoreStoragePageVisitsApiOptions = {
   storageApi: StorageApi;
   limit?: number;
   identityApi: IdentityApi;
@@ -26,18 +26,18 @@ export type CoreStorageVisitsApiOptions = {
 
 /**
  * @public
- * This is an implementation of VisitsApi that relies on a StorageApi
+ * This is an implementation of PageVisitsApi that relies on a StorageApi
  */
-export class CoreStorageVisitsApi extends VisitsApiFactory {
+export class CoreStoragePageVisitsApi extends PageVisitsApiFactory {
   private readonly storageApi: StorageApi;
   private readonly storageKeyPrefix = '@backstage/plugin-home:visits';
   private readonly identityApi: IdentityApi;
 
-  static create(options: CoreStorageVisitsApiOptions) {
-    return new CoreStorageVisitsApi(options);
+  static create(options: CoreStoragePageVisitsApiOptions) {
+    return new CoreStoragePageVisitsApi(options);
   }
 
-  private constructor(options: CoreStorageVisitsApiOptions) {
+  private constructor(options: CoreStoragePageVisitsApiOptions) {
     super({ limit: options.limit ?? 100 });
     this.storageApi = options.storageApi;
     this.identityApi = options.identityApi;

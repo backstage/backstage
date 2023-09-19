@@ -15,10 +15,9 @@
  */
 
 import { BackstageUserIdentity, IdentityApi } from '@backstage/core-plugin-api';
-import { CoreStorageVisitsApi } from './CoreStorageVisitsApi';
-import { MockStorageApi } from '@backstage/test-utils';
+import { LocalStoragePageVisitsApi } from './LocalStoragePageVisitsApi';
 
-describe('CoreStorageVisitsApi.create({ storageApi: MockStorageApi.create() })', () => {
+describe('LocalStoragePageVisitsApi.create()', () => {
   const mockRandomUUID = () =>
     '068f3129-7440-4e0e-8fd4-xxxxxxxxxxxx'.replace(
       /x/g,
@@ -39,19 +38,18 @@ describe('CoreStorageVisitsApi.create({ storageApi: MockStorageApi.create() })',
 
   afterEach(() => {
     window.localStorage.clear();
+    jest.resetAllMocks();
   });
 
-  it('instantiates', () => {
-    const api = CoreStorageVisitsApi.create({
-      storageApi: MockStorageApi.create(),
+  it('instantiates with only identitiyApi', () => {
+    const api = LocalStoragePageVisitsApi.create({
       identityApi: mockIdentityApi,
     });
     expect(api).toBeTruthy();
   });
 
   it('saves a visit', async () => {
-    const api = CoreStorageVisitsApi.create({
-      storageApi: MockStorageApi.create(),
+    const api = LocalStoragePageVisitsApi.create({
       identityApi: mockIdentityApi,
     });
     const visit = {
@@ -67,8 +65,7 @@ describe('CoreStorageVisitsApi.create({ storageApi: MockStorageApi.create() })',
   });
 
   it('retrieves visits', async () => {
-    const api = CoreStorageVisitsApi.create({
-      storageApi: MockStorageApi.create(),
+    const api = LocalStoragePageVisitsApi.create({
       identityApi: mockIdentityApi,
     });
     const visit = {

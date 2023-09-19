@@ -15,7 +15,7 @@
  */
 
 import React, { Dispatch, SetStateAction, createContext, useMemo } from 'react';
-import { Visit } from '../../api/VisitsApi';
+import { Visit } from '../../api/PageVisitsApi';
 import { VisitedByTypeKind } from './Content';
 
 export type ContextValueOnly = {

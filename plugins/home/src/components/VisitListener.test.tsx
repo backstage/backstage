@@ -15,7 +15,7 @@
  */
 import React from 'react';
 import { TestApiProvider, renderInTestApp } from '@backstage/test-utils';
-import { Visit, visitsApiRef } from '../api';
+import { Visit, pageVisitsApiRef } from '../api';
 import { DoNotTrack, VisitListener, useVisitListener } from './VisitListener';
 import { waitFor } from '@testing-library/react';
 import { act, renderHook } from '@testing-library/react-hooks';
@@ -46,7 +46,7 @@ const visits: Array<Visit> = [
   },
 ];
 
-const mockVisitsApi = {
+const mockPageVisitsApi = {
   save: jest.fn(async () => visits[0]),
   list: jest.fn(async () => visits),
 };
@@ -59,14 +59,16 @@ describe('<VisitListener/>', () => {
     const pathname = '/catalog/default/component/playback-order';
 
     await renderInTestApp(
-      <TestApiProvider apis={[[visitsApiRef, mockVisitsApi]]}>
+      <TestApiProvider apis={[[pageVisitsApiRef, mockPageVisitsApi]]}>
         <VisitListener />
       </TestApiProvider>,
       { routeEntries: [pathname] },
     );
 
-    await waitFor(() => expect(mockVisitsApi.save).toHaveBeenCalledTimes(1));
-    expect(mockVisitsApi.save).toHaveBeenCalledWith({
+    await waitFor(() =>
+      expect(mockPageVisitsApi.save).toHaveBeenCalledTimes(1),
+    );
+    expect(mockPageVisitsApi.save).toHaveBeenCalledWith({
       visit: {
         pathname,
         entityRef: 'component:default/playback-order',
@@ -77,7 +79,7 @@ describe('<VisitListener/>', () => {
 
   it('renders its children', async () => {
     const { getByTestId } = await renderInTestApp(
-      <TestApiProvider apis={[[visitsApiRef, mockVisitsApi]]}>
+      <TestApiProvider apis={[[pageVisitsApiRef, mockPageVisitsApi]]}>
         <VisitListener>
           <div data-testid="child">child</div>
         </VisitListener>
@@ -95,14 +97,14 @@ describe('<VisitListener/>', () => {
       path;
 
     await renderInTestApp(
-      <TestApiProvider apis={[[visitsApiRef, mockVisitsApi]]}>
+      <TestApiProvider apis={[[pageVisitsApiRef, mockPageVisitsApi]]}>
         <VisitListener visitName={visitNameOverride} />
       </TestApiProvider>,
       { routeEntries: [pathname] },
     );
 
     await waitFor(() =>
-      expect(mockVisitsApi.save).toHaveBeenCalledWith({
+      expect(mockPageVisitsApi.save).toHaveBeenCalledWith({
         visit: {
           pathname,
           entityRef: 'component:default/playback-order',
@@ -120,14 +122,14 @@ describe('<VisitListener/>', () => {
       path;
 
     await renderInTestApp(
-      <TestApiProvider apis={[[visitsApiRef, mockVisitsApi]]}>
+      <TestApiProvider apis={[[pageVisitsApiRef, mockPageVisitsApi]]}>
         <VisitListener toEntityRef={toEntityRefOverride} />
       </TestApiProvider>,
       { routeEntries: [pathname] },
     );
 
     await waitFor(() =>
-      expect(mockVisitsApi.save).toHaveBeenCalledWith({
+      expect(mockPageVisitsApi.save).toHaveBeenCalledWith({
         visit: {
           pathname,
           entityRef: pathname,
@@ -147,14 +149,14 @@ describe('<DoNotTrack/>', () => {
       'requestAnimationFrame',
     );
     await renderInTestApp(
-      <TestApiProvider apis={[[visitsApiRef, mockVisitsApi]]}>
+      <TestApiProvider apis={[[pageVisitsApiRef, mockPageVisitsApi]]}>
         <VisitListener>
           <DoNotTrack />
         </VisitListener>
       </TestApiProvider>,
     );
     await waitFor(() => expect(requestAnimationFrameSpy).toHaveBeenCalled());
-    expect(mockVisitsApi.save).not.toHaveBeenCalled();
+    expect(mockPageVisitsApi.save).not.toHaveBeenCalled();
   });
 
   it('renders its children', async () => {
@@ -163,7 +165,7 @@ describe('<DoNotTrack/>', () => {
       'requestAnimationFrame',
     );
     const { getByTestId } = await renderInTestApp(
-      <TestApiProvider apis={[[visitsApiRef, mockVisitsApi]]}>
+      <TestApiProvider apis={[[pageVisitsApiRef, mockPageVisitsApi]]}>
         <VisitListener>
           <DoNotTrack>
             <div data-testid="child">child</div>
@@ -187,7 +189,7 @@ describe('useVisitListener()', () => {
     const { result } = renderHook(() => useVisitListener(), {
       wrapper: ({ children }) => (
         <MemoryRouter>
-          <TestApiProvider apis={[[visitsApiRef, mockVisitsApi]]}>
+          <TestApiProvider apis={[[pageVisitsApiRef, mockPageVisitsApi]]}>
             <VisitListener>{children}</VisitListener>
           </TestApiProvider>
         </MemoryRouter>

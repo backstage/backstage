@@ -80,13 +80,15 @@ export const ComponentTabs: (props: {
 }) => JSX_2.Element;
 
 // @public
-export class CoreStorageVisitsApi extends VisitsApiFactory {
+export class CoreStoragePageVisitsApi extends PageVisitsApiFactory {
   // (undocumented)
-  static create(options: CoreStorageVisitsApiOptions): CoreStorageVisitsApi;
+  static create(
+    options: CoreStoragePageVisitsApiOptions,
+  ): CoreStoragePageVisitsApi;
 }
 
 // @public (undocumented)
-export type CoreStorageVisitsApiOptions = {
+export type CoreStoragePageVisitsApiOptions = {
   storageApi: StorageApi;
   limit?: number;
   identityApi: IdentityApi;
@@ -197,15 +199,69 @@ export type LayoutConfiguration = {
 };
 
 // @public
-export class LocalStorageVisitsApi extends VisitsApiFactory {
+export class LocalStoragePageVisitsApi extends PageVisitsApiFactory {
   // (undocumented)
-  static create(options: LocalStorageVisitsApiOptions): LocalStorageVisitsApi;
+  static create(
+    options: LocalStoragePageVisitsApiOptions,
+  ): LocalStoragePageVisitsApi;
 }
 
 // @public (undocumented)
-export type LocalStorageVisitsApiOptions = {
+export type LocalStoragePageVisitsApiOptions = {
   limit?: number;
   identityApi: IdentityApi;
+};
+
+// @public
+export interface PageVisitsApi {
+  list(queryParams?: PageVisitsApiQueryParams): Promise<Visit[]>;
+  save(saveParams: PageVisitsApiSaveParams): Promise<Visit>;
+}
+
+// @public
+export class PageVisitsApiFactory implements PageVisitsApi {
+  protected constructor(options: PageVisitsApiFactoryOptions);
+  // (undocumented)
+  protected readonly limit: number;
+  // (undocumented)
+  list(queryParams?: PageVisitsApiQueryParams): Promise<Visit[]>;
+  // (undocumented)
+  protected persistAll: (visits: Array<Visit>) => Promise<void>;
+  // (undocumented)
+  protected readonly randomUUID: () => string;
+  // (undocumented)
+  protected retrieveAll: () => Promise<Array<Visit>>;
+  // (undocumented)
+  save(saveParams: PageVisitsApiSaveParams): Promise<Visit>;
+}
+
+// @public (undocumented)
+export type PageVisitsApiFactoryOptions = {
+  limit: number;
+  retrieveAll?: () => Promise<Array<Visit>>;
+  persistAll?: (visits: Array<Visit>) => Promise<void>;
+};
+
+// @public
+export type PageVisitsApiQueryParams = {
+  limit?: number;
+  orderBy?: Array<{
+    field: keyof Visit;
+    direction: 'asc' | 'desc';
+  }>;
+  filterBy?: Array<{
+    field: keyof Visit;
+    operator: '<' | '<=' | '==' | '>' | '>=' | 'contains';
+    value: string | number;
+  }>;
+};
+
+// @public (undocumented)
+export const pageVisitsApiRef: ApiRef<PageVisitsApi>;
+
+// @public
+export type PageVisitsApiSaveParams = {
+  visit: Omit<Visit, 'id' | 'hits' | 'timestamp'>;
 };
 
 // @public @deprecated (undocumented)
@@ -287,58 +343,6 @@ export const VisitListenerContext: React_2.Context<VisitListenerContextValue>;
 export type VisitListenerContextValue = {
   doNotTrack: boolean;
   setDoNotTrack: Dispatch<SetStateAction<boolean>>;
-};
-
-// @public
-export interface VisitsApi {
-  list(queryParams?: VisitsApiQueryParams): Promise<Visit[]>;
-  save(saveParams: VisitsApiSaveParams): Promise<Visit>;
-}
-
-// @public
-export class VisitsApiFactory implements VisitsApi {
-  protected constructor(options: VisitsApiFactoryOptions);
-  // (undocumented)
-  protected readonly limit: number;
-  // (undocumented)
-  list(queryParams?: VisitsApiQueryParams): Promise<Visit[]>;
-  // (undocumented)
-  protected persistAll: (visits: Array<Visit>) => Promise<void>;
-  // (undocumented)
-  protected readonly randomUUID: () => string;
-  // (undocumented)
-  protected retrieveAll: () => Promise<Array<Visit>>;
-  // (undocumented)
-  save(saveParams: VisitsApiSaveParams): Promise<Visit>;
-}
-
-// @public (undocumented)
-export type VisitsApiFactoryOptions = {
-  limit: number;
-  retrieveAll?: () => Promise<Array<Visit>>;
-  persistAll?: (visits: Array<Visit>) => Promise<void>;
-};
-
-// @public
-export type VisitsApiQueryParams = {
-  limit?: number;
-  orderBy?: Array<{
-    field: keyof Visit;
-    direction: 'asc' | 'desc';
-  }>;
-  filterBy?: Array<{
-    field: keyof Visit;
-    operator: '<' | '<=' | '==' | '>' | '>=' | 'contains';
-    value: string | number;
-  }>;
-};
-
-// @public (undocumented)
-export const visitsApiRef: ApiRef<VisitsApi>;
-
-// @public
-export type VisitsApiSaveParams = {
-  visit: Omit<Visit, 'id' | 'hits' | 'timestamp'>;
 };
 
 // @public

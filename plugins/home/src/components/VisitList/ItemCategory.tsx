@@ -17,7 +17,7 @@
 import React from 'react';
 import { Chip, makeStyles } from '@material-ui/core';
 import { colorVariants } from '@backstage/theme';
-import { Visit } from '../../api/VisitsApi';
+import { Visit } from '../../api/PageVisitsApi';
 import { CompoundEntityRef, parseEntityRef } from '@backstage/catalog-model';
 
 const useStyles = makeStyles(theme => ({

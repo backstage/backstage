@@ -16,7 +16,7 @@
 
 import React from 'react';
 import { Typography, makeStyles } from '@material-ui/core';
-import { Visit } from '../../api/VisitsApi';
+import { Visit } from '../../api/PageVisitsApi';
 import { Link } from '@backstage/core-components';
 
 const useStyles = makeStyles(_theme => ({

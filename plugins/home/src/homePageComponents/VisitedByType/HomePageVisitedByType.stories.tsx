@@ -19,7 +19,7 @@ import { TestApiProvider, wrapInTestApp } from '@backstage/test-utils';
 import { ComponentType, PropsWithChildren } from 'react';
 import { Grid } from '@material-ui/core';
 import { HomePageVisitedByType } from '../../plugin';
-import { Visit, visitsApiRef } from '../../api/VisitsApi';
+import { Visit, pageVisitsApiRef } from '../../api/PageVisitsApi';
 
 const visits: Array<Visit> = [
   {
@@ -86,7 +86,7 @@ const visits: Array<Visit> = [
   },
 ];
 
-const mockVisitsApi = {
+const mockPageVisitsApi = {
   save: async () => visits[0],
   listUserVisits: async () => visits,
 };
@@ -96,7 +96,7 @@ export default {
   decorators: [
     (Story: ComponentType<PropsWithChildren<{}>>) =>
       wrapInTestApp(
-        <TestApiProvider apis={[[visitsApiRef, mockVisitsApi]]}>
+        <TestApiProvider apis={[[pageVisitsApiRef, mockPageVisitsApi]]}>
           <Story />
         </TestApiProvider>,
       ),

@@ -21,7 +21,7 @@ import {
   ListItemText,
   makeStyles,
 } from '@material-ui/core';
-import { Visit } from '../../api/VisitsApi';
+import { Visit } from '../../api/PageVisitsApi';
 import { ItemName } from './ItemName';
 import { ItemDetail, ItemDetailType } from './ItemDetail';
 import { ItemCategory } from './ItemCategory';

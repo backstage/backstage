@@ -51,7 +51,7 @@ export type Visit = {
  * @public
  * This data structure represents the parameters associated with search queries for visits.
  */
-export type VisitsApiQueryParams = {
+export type PageVisitsApiQueryParams = {
   /**
    * Limits the number of results returned. The default is 8.
    */
@@ -93,7 +93,7 @@ export type VisitsApiQueryParams = {
  * @public
  * This data structure represents the parameters associated with saving visits.
  */
-export type VisitsApiSaveParams = {
+export type PageVisitsApiSaveParams = {
   visit: Omit<Visit, 'id' | 'hits' | 'timestamp'>;
 };
 
@@ -101,20 +101,20 @@ export type VisitsApiSaveParams = {
  * @public
  * Visits API public contract.
  */
-export interface VisitsApi {
+export interface PageVisitsApi {
   /**
    * Persist a new visit.
    * @param pageVisit - a new visit data
    */
-  save(saveParams: VisitsApiSaveParams): Promise<Visit>;
+  save(saveParams: PageVisitsApiSaveParams): Promise<Visit>;
   /**
    * Get user visits.
    * @param queryParams - optional search query params.
    */
-  list(queryParams?: VisitsApiQueryParams): Promise<Visit[]>;
+  list(queryParams?: PageVisitsApiQueryParams): Promise<Visit[]>;
 }
 
 /** @public */
-export const visitsApiRef = createApiRef<VisitsApi>({
+export const pageVisitsApiRef = createApiRef<PageVisitsApi>({
   id: 'homepage.visits',
 });

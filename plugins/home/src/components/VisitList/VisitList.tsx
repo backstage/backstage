@@ -16,7 +16,7 @@
 
 import React from 'react';
 import { Collapse, List, Typography, makeStyles } from '@material-ui/core';
-import { Visit } from '../../api/VisitsApi';
+import { Visit } from '../../api/PageVisitsApi';
 import { VisitListItem } from './VisitListItem';
 import { ItemDetailType } from './ItemDetail';
 import { VisitListEmpty } from './VisitListEmpty';

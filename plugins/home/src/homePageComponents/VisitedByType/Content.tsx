@@ -16,7 +16,7 @@
 
 import React, { useEffect } from 'react';
 import { VisitedByType } from './VisitedByType';
-import { Visit, visitsApiRef } from '../../api/VisitsApi';
+import { Visit, pageVisitsApiRef } from '../../api/PageVisitsApi';
 import { ContextValueOnly, useContext } from './Context';
 import { useApi } from '@backstage/core-plugin-api';
 import useAsync from 'react-use/lib/useAsync';
@@ -60,11 +60,11 @@ export const Content = ({
     setContext(state => ({ ...state, ...context }));
   }, [setContext, kind, visits, loading, numVisitsOpen, numVisitsTotal]);
 
-  // Fetches data from visitsApi in case visits and loading are not provided
-  const visitsApi = useApi(visitsApiRef);
+  // Fetches data from pageVisitsApi in case visits and loading are not provided
+  const pageVisitsApi = useApi(pageVisitsApiRef);
   const { loading: reqLoading } = useAsync(async () => {
     if (!visits && !loading && kind === 'recent') {
-      return await visitsApi
+      return await pageVisitsApi
         .list({
           limit: numVisitsTotal ?? 8,
           orderBy: [{ field: 'timestamp', direction: 'desc' }],
@@ -72,7 +72,7 @@ export const Content = ({
         .then(setVisits);
     }
     if (!visits && !loading && kind === 'top') {
-      return await visitsApi
+      return await pageVisitsApi
         .list({
           limit: numVisitsTotal ?? 8,
           orderBy: [{ field: 'hits', direction: 'desc' }],
@@ -80,7 +80,7 @@ export const Content = ({
         .then(setVisits);
     }
     return undefined;
-  }, [visitsApi, visits, loading, setVisits]);
+  }, [pageVisitsApi, visits, loading, setVisits]);
   useEffect(() => {
     if (!loading) {
       setLoading(reqLoading);
