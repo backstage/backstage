@@ -24,7 +24,7 @@ import {
   TransformerContext,
   UserTransformer,
 } from './defaultTransformers';
-import { withLocations } from '../providers/GithubOrgEntityProvider';
+import { withLocations } from './withLocations';
 
 import { DeferredEntity } from '@backstage/plugin-catalog-node';
 

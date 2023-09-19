@@ -24,6 +24,7 @@ import { createExtension } from './createExtension';
 import { createExtensionDataRef } from './createExtensionDataRef';
 import { coreExtensionData } from './coreExtensionData';
 import { MockConfigApi } from '@backstage/test-utils';
+import { createExtensionInput } from './createExtensionInput';
 
 const nameExtensionDataRef = createExtensionDataRef<string>('name');
 
@@ -70,11 +71,9 @@ const TechDocsPage = createExtension({
   id: 'plugin.techdocs.page',
   at: 'test.output/names',
   inputs: {
-    addons: {
-      extensionData: {
-        name: nameExtensionDataRef,
-      },
-    },
+    addons: createExtensionInput({
+      name: nameExtensionDataRef,
+    }),
   },
   output: {
     name: nameExtensionDataRef,
@@ -88,11 +87,9 @@ const outputExtension = createExtension({
   id: 'test.output',
   at: 'root',
   inputs: {
-    names: {
-      extensionData: {
-        name: nameExtensionDataRef,
-      },
-    },
+    names: createExtensionInput({
+      name: nameExtensionDataRef,
+    }),
   },
   output: {
     element: coreExtensionData.reactElement,

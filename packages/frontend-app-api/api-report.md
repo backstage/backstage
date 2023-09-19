@@ -26,6 +26,10 @@ export interface ExtensionTree {
   getExtension(id: string): ExtensionTreeNode | undefined;
   // (undocumented)
   getExtensionAttachments(id: string, inputName: string): ExtensionTreeNode[];
+  // (undocumented)
+  getRootRoutes(): JSX_2.Element[];
+  // (undocumented)
+  getSidebarItems(): JSX_2.Element[];
 }
 
 // @public (undocumented)

@@ -14,16 +14,17 @@
  * limitations under the License.
  */
 
+import { FSWatcher, watch } from 'chokidar';
+
 import { BackendServeOptions } from '../bundler/types';
 import type { ChildProcess } from 'child_process';
-import { fileURLToPath } from 'url';
-import { isAbsolute as isAbsolutePath } from 'path';
-import { FSWatcher, watch } from 'chokidar';
 import { IpcServer } from './IpcServer';
 import { ServerDataStore } from './ServerDataStore';
 import debounce from 'lodash/debounce';
-import spawn from 'cross-spawn';
+import { fileURLToPath } from 'url';
+import { isAbsolute as isAbsolutePath } from 'path';
 import { paths } from '../paths';
+import spawn from 'cross-spawn';
 
 const loaderArgs = [
   '--require',
@@ -68,9 +69,17 @@ export async function startBackendExperimental(options: BackendServeOptions) {
 
     const optionArgs = new Array<string>();
     if (options.inspectEnabled) {
-      optionArgs.push('--inspect');
+      const inspect =
+        typeof options.inspectEnabled === 'string'
+          ? `--inspect=${options.inspectEnabled}`
+          : '--inspect';
+      optionArgs.push(inspect);
     } else if (options.inspectBrkEnabled) {
-      optionArgs.push('--inspect-brk');
+      const inspect =
+        typeof options.inspectBrkEnabled === 'string'
+          ? `--inspect-brk=${options.inspectBrkEnabled}`
+          : '--inspect-brk';
+      optionArgs.push(inspect);
     }
 
     const userArgs = process.argv

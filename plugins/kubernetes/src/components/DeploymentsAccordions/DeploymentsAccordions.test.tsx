@@ -15,10 +15,10 @@
  */
 
 import React from 'react';
-import { render } from '@testing-library/react';
+import { screen } from '@testing-library/react';
 import { DeploymentsAccordions } from './DeploymentsAccordions';
 import * as twoDeployFixture from '../../__fixtures__/2-deployments.json';
-import { wrapInTestApp } from '@backstage/test-utils';
+import { renderInTestApp } from '@backstage/test-utils';
 import { kubernetesProviders } from '../../hooks/test-utils';
 
 describe('DeploymentsAccordions', () => {
@@ -28,19 +28,19 @@ describe('DeploymentsAccordions', () => {
       new Set(['dice-roller-canary-7d64cd756c-vtbdx']),
     );
 
-    const { getByText } = render(
-      wrapper(wrapInTestApp(<DeploymentsAccordions />)),
-    );
+    await renderInTestApp(wrapper(<DeploymentsAccordions />));
 
-    expect(getByText('dice-roller')).toBeInTheDocument();
-    expect(getByText('10 pods')).toBeInTheDocument();
-    expect(getByText('No pods with errors')).toBeInTheDocument();
-    expect(getByText('min replicas 10 / max replicas 15')).toBeInTheDocument();
-    expect(getByText('current CPU usage: 30%')).toBeInTheDocument();
-    expect(getByText('target CPU usage: 50%')).toBeInTheDocument();
+    expect(screen.getByText('dice-roller')).toBeInTheDocument();
+    expect(screen.getByText('10 pods')).toBeInTheDocument();
+    expect(screen.getByText('No pods with errors')).toBeInTheDocument();
+    expect(
+      screen.getByText('min replicas 10 / max replicas 15'),
+    ).toBeInTheDocument();
+    expect(screen.getByText('current CPU usage: 30%')).toBeInTheDocument();
+    expect(screen.getByText('target CPU usage: 50%')).toBeInTheDocument();
 
-    expect(getByText('dice-roller-canary')).toBeInTheDocument();
-    expect(getByText('2 pods')).toBeInTheDocument();
-    expect(getByText('1 pod with errors')).toBeInTheDocument();
+    expect(screen.getByText('dice-roller-canary')).toBeInTheDocument();
+    expect(screen.getByText('2 pods')).toBeInTheDocument();
+    expect(screen.getByText('1 pod with errors')).toBeInTheDocument();
   });
 });

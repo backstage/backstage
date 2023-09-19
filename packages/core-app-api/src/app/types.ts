@@ -27,10 +27,6 @@ import {
   FeatureFlag,
 } from '@backstage/core-plugin-api';
 import { AppConfig } from '@backstage/config';
-import {
-  TranslationMessages,
-  TranslationResource,
-} from '@backstage/core-plugin-api/alpha';
 
 /**
  * Props for the `BootErrorPage` component of {@link AppComponents}.
@@ -283,11 +279,19 @@ export type AppOptions = {
    */
   bindRoutes?(context: { bind: AppRouteBinder }): void;
 
-  // TODO: Change to ExperimentalI18n type when packages/core-app-api/src/apis/implementations/AppTranslationApi/AppTranslationImpl.ts
   __experimentalTranslations?: {
-    fallbackLanguage?: string | string[];
-    supportedLanguages?: string[];
-    resources?: Array<TranslationMessages | TranslationResource>;
+    defaultLanguage?: string;
+    availableLanguages?: string[];
+    resources?: Array<
+      // Separate declaration for now to avoid dependency on core-plugin-api/alpha and TS 5.0
+      | { $$type: '@backstage/TranslationResource'; id: string }
+      | {
+          $$type: '@backstage/TranslationMessages';
+          id: string;
+          full: boolean;
+          messages: Record<string, string>;
+        }
+    >;
   };
 };
 

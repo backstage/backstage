@@ -15,6 +15,7 @@
  */
 
 import React from 'react';
+import { CatalogEntityPage } from '@backstage/plugin-catalog';
 import { createDevApp } from '@backstage/dev-utils';
 import { userSettingsPlugin, UserSettingsPage } from '../src/plugin';
 
@@ -22,6 +23,8 @@ createDevApp()
   .registerPlugin(userSettingsPlugin)
   .addPage({
     title: 'Settings',
+    path: '/settings',
     element: <UserSettingsPage />,
   })
+  .addPage({ element: <CatalogEntityPage /> })
   .render();

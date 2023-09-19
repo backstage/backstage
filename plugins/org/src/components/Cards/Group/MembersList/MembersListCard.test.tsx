@@ -23,12 +23,7 @@ import {
   StarredEntitiesApi,
   starredEntitiesApiRef,
 } from '@backstage/plugin-catalog-react';
-import {
-  renderInTestApp,
-  renderWithEffects,
-  TestApiProvider,
-  wrapInTestApp,
-} from '@backstage/test-utils';
+import { renderInTestApp, TestApiProvider } from '@backstage/test-utils';
 import React from 'react';
 import { MembersListCard } from './MembersListCard';
 import {
@@ -117,56 +112,50 @@ describe('MemberTab Test', () => {
   };
 
   it('Display Profile Card', async () => {
-    const rendered = await renderWithEffects(
-      wrapInTestApp(
-        <TestApiProvider apis={[[catalogApiRef, catalogApi]]}>
-          <EntityProvider entity={groupEntity}>
-            <MembersListCard />
-          </EntityProvider>
-          ,
-        </TestApiProvider>,
-        {
-          mountedRoutes: {
-            '/catalog/:namespace/:kind/:name': entityRouteRef,
-          },
+    await renderInTestApp(
+      <TestApiProvider apis={[[catalogApiRef, catalogApi]]}>
+        <EntityProvider entity={groupEntity}>
+          <MembersListCard />
+        </EntityProvider>
+        ,
+      </TestApiProvider>,
+      {
+        mountedRoutes: {
+          '/catalog/:namespace/:kind/:name': entityRouteRef,
         },
-      ),
+      },
     );
 
-    expect(rendered.getByAltText('Tara MacGovern')).toHaveAttribute(
+    expect(screen.getByAltText('Tara MacGovern')).toHaveAttribute(
       'src',
       'https://example.com/staff/tara.jpeg',
     );
-    expect(
-      rendered.getByText('tara-macgovern@example.com'),
-    ).toBeInTheDocument();
-    expect(rendered.getByText('Tara MacGovern').closest('a')).toHaveAttribute(
+    expect(screen.getByText('tara-macgovern@example.com')).toBeInTheDocument();
+    expect(screen.getByText('Tara MacGovern').closest('a')).toHaveAttribute(
       'href',
       '/catalog/foo-bar/user/tara.macgovern',
     );
 
-    expect(rendered.getByText('Super Awesome Developer')).toBeInTheDocument();
+    expect(screen.getByText('Super Awesome Developer')).toBeInTheDocument();
 
-    expect(rendered.getByText('Members (1)')).toBeInTheDocument();
+    expect(screen.getByText('Members (1)')).toBeInTheDocument();
   });
 
   it('Can render different member display title', async () => {
-    const rendered = await renderWithEffects(
-      wrapInTestApp(
-        <TestApiProvider apis={[[catalogApiRef, catalogApi]]}>
-          <EntityProvider entity={groupEntity}>
-            <MembersListCard memberDisplayTitle="Testers" />
-          </EntityProvider>
-        </TestApiProvider>,
-        {
-          mountedRoutes: {
-            '/catalog/:namespace/:kind/:name': entityRouteRef,
-          },
+    await renderInTestApp(
+      <TestApiProvider apis={[[catalogApiRef, catalogApi]]}>
+        <EntityProvider entity={groupEntity}>
+          <MembersListCard memberDisplayTitle="Testers" />
+        </EntityProvider>
+      </TestApiProvider>,
+      {
+        mountedRoutes: {
+          '/catalog/:namespace/:kind/:name': entityRouteRef,
         },
-      ),
+      },
     );
 
-    expect(rendered.getByText('Testers (1)')).toBeInTheDocument();
+    expect(screen.getByText('Testers (1)')).toBeInTheDocument();
   });
 
   describe('Aggregate members toggle', () => {
@@ -196,6 +185,7 @@ describe('MemberTab Test', () => {
       const toggleSwitch = screen.queryByRole('checkbox');
       expect(toggleSwitch).toBeNull();
     });
+
     it('Shows the aggregate members toggle if the showAggregateMembersToggle prop is true', async () => {
       await renderInTestApp(
         <TestApiProvider
@@ -254,6 +244,7 @@ describe('MemberTab Test', () => {
         duplicatedUserText.compareDocumentPosition(groupAUserOneText),
       ).toBe(Node.DOCUMENT_POSITION_FOLLOWING);
     });
+
     it('Shows only direct members if the aggregate members switch is turned off', async () => {
       await renderInTestApp(
         <TestApiProvider
@@ -287,6 +278,7 @@ describe('MemberTab Test', () => {
         duplicatedUserText.compareDocumentPosition(groupAUserOneText),
       ).toBe(Node.DOCUMENT_POSITION_FOLLOWING);
     });
+
     it('Shows all descendant members of the group when the aggregate users switch is turned on, showing duplicated members only once', async () => {
       await renderInTestApp(
         <TestApiProvider

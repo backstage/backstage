@@ -15,9 +15,9 @@
  */
 
 import React from 'react';
-import { render } from '@testing-library/react';
+import { screen } from '@testing-library/react';
 import * as twoDeployFixture from './__fixtures__/2-services.json';
-import { wrapInTestApp } from '@backstage/test-utils';
+import { renderInTestApp } from '@backstage/test-utils';
 import { ServicesAccordions } from './ServicesAccordions';
 import { kubernetesProviders } from '../../hooks/test-utils';
 
@@ -25,14 +25,12 @@ describe('ServicesAccordions', () => {
   it('should render 2 services', async () => {
     const wrapper = kubernetesProviders(twoDeployFixture, new Set());
 
-    const { getByText } = render(
-      wrapper(wrapInTestApp(<ServicesAccordions />)),
-    );
+    await renderInTestApp(wrapper(<ServicesAccordions />));
 
-    expect(getByText('awesome-service-grpc')).toBeInTheDocument();
-    expect(getByText('Type: ClusterIP')).toBeInTheDocument();
+    expect(screen.getByText('awesome-service-grpc')).toBeInTheDocument();
+    expect(screen.getByText('Type: ClusterIP')).toBeInTheDocument();
 
-    expect(getByText('awesome-service-pg')).toBeInTheDocument();
-    expect(getByText('Type: ExternalName')).toBeInTheDocument();
+    expect(screen.getByText('awesome-service-pg')).toBeInTheDocument();
+    expect(screen.getByText('Type: ExternalName')).toBeInTheDocument();
   });
 });

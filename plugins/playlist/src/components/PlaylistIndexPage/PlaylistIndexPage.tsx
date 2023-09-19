@@ -23,13 +23,14 @@ import {
 } from '@backstage/core-components';
 import { CatalogFilterLayout } from '@backstage/plugin-catalog-react';
 
-import { PlaylistListProvider, useTitle } from '../../hooks';
 import { CreatePlaylistButton } from '../CreatePlaylistButton';
 import { PersonalListPicker } from '../PersonalListPicker';
 import { PlaylistList } from '../PlaylistList';
 import { PlaylistOwnerPicker } from '../PlaylistOwnerPicker';
 import { PlaylistSearchBar } from '../PlaylistSearchBar';
 import { PlaylistSortPicker } from '../PlaylistSortPicker';
+import { PlaylistListProvider } from '../../hooks/PlaylistListProvider';
+import { useTitle } from '../../hooks/useTitle';
 
 export const PlaylistIndexPage = () => {
   const pluralTitle = useTitle({

@@ -13,10 +13,11 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
 import React from 'react';
-import { render, waitFor } from '@testing-library/react';
+import { screen, waitFor } from '@testing-library/react';
 import { EscalationPolicy } from './EscalationPolicy';
-import { TestApiRegistry, wrapInTestApp } from '@backstage/test-utils';
+import { TestApiRegistry, renderInTestApp } from '@backstage/test-utils';
 import { PagerDutyUser } from '../types';
 import { pagerDutyApiRef } from '../../api';
 import { ApiProvider } from '@backstage/core-app-api';
@@ -32,16 +33,14 @@ describe('Escalation', () => {
       .fn()
       .mockImplementationOnce(async () => ({ oncalls: [] }));
 
-    const { getByText, queryByTestId } = render(
-      wrapInTestApp(
-        <ApiProvider apis={apis}>
-          <EscalationPolicy policyId="456" />
-        </ApiProvider>,
-      ),
+    await renderInTestApp(
+      <ApiProvider apis={apis}>
+        <EscalationPolicy policyId="456" />
+      </ApiProvider>,
     );
-    await waitFor(() => !queryByTestId('progress'));
+    await waitFor(() => !screen.queryByTestId('progress'));
 
-    expect(getByText('Empty escalation policy')).toBeInTheDocument();
+    expect(screen.getByText('Empty escalation policy')).toBeInTheDocument();
     expect(mockPagerDutyApi.getOnCallByPolicyId).toHaveBeenCalledWith('456');
   });
 
@@ -62,17 +61,15 @@ describe('Escalation', () => {
         ],
       }));
 
-    const { getByText, queryByTestId } = render(
-      wrapInTestApp(
-        <ApiProvider apis={apis}>
-          <EscalationPolicy policyId="abc" />
-        </ApiProvider>,
-      ),
+    await renderInTestApp(
+      <ApiProvider apis={apis}>
+        <EscalationPolicy policyId="abc" />
+      </ApiProvider>,
     );
-    await waitFor(() => !queryByTestId('progress'));
+    await waitFor(() => !screen.queryByTestId('progress'));
 
-    expect(getByText('person1')).toBeInTheDocument();
-    expect(getByText('person1@example.com')).toBeInTheDocument();
+    expect(screen.getByText('person1')).toBeInTheDocument();
+    expect(screen.getByText('person1@example.com')).toBeInTheDocument();
     expect(mockPagerDutyApi.getOnCallByPolicyId).toHaveBeenCalledWith('abc');
   });
 
@@ -81,17 +78,17 @@ describe('Escalation', () => {
       .fn()
       .mockRejectedValueOnce(new Error('Error message'));
 
-    const { getByText, queryByTestId } = render(
-      wrapInTestApp(
-        <ApiProvider apis={apis}>
-          <EscalationPolicy policyId="abc" />
-        </ApiProvider>,
-      ),
+    await renderInTestApp(
+      <ApiProvider apis={apis}>
+        <EscalationPolicy policyId="abc" />
+      </ApiProvider>,
     );
-    await waitFor(() => !queryByTestId('progress'));
+    await waitFor(() => !screen.queryByTestId('progress'));
 
     expect(
-      getByText('Error encountered while fetching information. Error message'),
+      screen.getByText(
+        'Error encountered while fetching information. Error message',
+      ),
     ).toBeInTheDocument();
   });
 });

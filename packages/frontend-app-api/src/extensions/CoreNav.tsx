@@ -18,6 +18,7 @@ import React from 'react';
 import {
   createExtension,
   coreExtensionData,
+  createExtensionInput,
 } from '@backstage/frontend-plugin-api';
 import { makeStyles } from '@material-ui/core';
 import {
@@ -65,7 +66,11 @@ const SidebarLogo = () => {
 export const CoreNav = createExtension({
   id: 'core.nav',
   at: 'core.layout/nav',
-  inputs: {},
+  inputs: {
+    items: createExtensionInput({
+      path: coreExtensionData.navTarget,
+    }),
+  },
   output: {
     element: coreExtensionData.reactElement,
   },
