@@ -1,5 +1,20 @@
 # @backstage/plugin-stack-overflow
 
+## 0.1.20
+
+### Patch Changes
+
+- 406b786a2a2c: Mark package as being free of side effects, allowing more optimized Webpack builds.
+- 8cec7664e146: Removed `@types/node` dependency
+- Updated dependencies
+  - @backstage/plugin-home-react@0.1.3
+  - @backstage/core-components@0.13.5
+  - @backstage/config@1.1.0
+  - @backstage/core-plugin-api@1.6.0
+  - @backstage/plugin-search-common@1.2.6
+  - @backstage/plugin-search-react@1.7.0
+  - @backstage/theme@0.4.2
+
 ## 0.1.20-next.3
 
 ### Patch Changes

@@ -1,5 +1,37 @@
 # @backstage/plugin-badges-backend
 
+## 0.3.0
+
+### Minor Changes
+
+- 71114ac50e02: **BREAKING**: The export for the new backend system has been moved to be the `default` export.
+
+  For example, if you are currently importing the plugin using the following pattern:
+
+  ```ts
+  import { examplePlugin } from '@backstage/plugin-example-backend';
+
+  backend.add(examplePlugin);
+  ```
+
+  It should be migrated to this:
+
+  ```ts
+  backend.add(import('@backstage/plugin-example-backend'));
+  ```
+
+### Patch Changes
+
+- 8cec7664e146: Removed `@types/node` dependency
+- Updated dependencies
+  - @backstage/backend-common@0.19.5
+  - @backstage/plugin-auth-node@0.3.0
+  - @backstage/config@1.1.0
+  - @backstage/catalog-client@1.4.4
+  - @backstage/catalog-model@1.4.2
+  - @backstage/errors@1.2.2
+  - @backstage/backend-plugin-api@0.6.3
+
 ## 0.3.0-next.3
 
 ### Minor Changes

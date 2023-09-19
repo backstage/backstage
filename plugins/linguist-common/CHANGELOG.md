@@ -1,5 +1,11 @@
 # @backstage/plugin-linguist-common
 
+## 0.1.2
+
+### Patch Changes
+
+- 406b786a2a2c: Mark package as being free of side effects, allowing more optimized Webpack builds.
+
 ## 0.1.2-next.0
 
 ### Patch Changes

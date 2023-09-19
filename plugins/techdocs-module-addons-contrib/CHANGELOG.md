@@ -1,5 +1,23 @@
 # @backstage/plugin-techdocs-module-addons-contrib
 
+## 1.1.0
+
+### Minor Changes
+
+- 86c19906fe4b: Enable zoom icon for techdocs images inside lightbox
+
+### Patch Changes
+
+- 406b786a2a2c: Mark package as being free of side effects, allowing more optimized Webpack builds.
+- 8cec7664e146: Removed `@types/node` dependency
+- Updated dependencies
+  - @backstage/integration-react@1.1.19
+  - @backstage/core-components@0.13.5
+  - @backstage/core-plugin-api@1.6.0
+  - @backstage/integration@1.7.0
+  - @backstage/plugin-techdocs-react@1.1.10
+  - @backstage/theme@0.4.2
+
 ## 1.1.0-next.3
 
 ### Patch Changes

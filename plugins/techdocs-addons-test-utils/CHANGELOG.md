@@ -1,5 +1,23 @@
 # @backstage/plugin-techdocs-addons-test-utils
 
+## 1.0.21
+
+### Patch Changes
+
+- 406b786a2a2c: Mark package as being free of side effects, allowing more optimized Webpack builds.
+- 8cec7664e146: Removed `@types/node` dependency
+- Updated dependencies
+  - @backstage/integration-react@1.1.19
+  - @backstage/plugin-catalog@1.13.0
+  - @backstage/plugin-techdocs@1.7.0
+  - @backstage/core-components@0.13.5
+  - @backstage/test-utils@1.4.3
+  - @backstage/core-app-api@1.10.0
+  - @backstage/core-plugin-api@1.6.0
+  - @backstage/plugin-search-react@1.7.0
+  - @backstage/plugin-techdocs-react@1.1.10
+  - @backstage/theme@0.4.2
+
 ## 1.0.21-next.3
 
 ### Patch Changes

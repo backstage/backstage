@@ -1,5 +1,11 @@
 # @backstage/types
 
+## 1.1.1
+
+### Patch Changes
+
+- 406b786a2a2c: Mark package as being free of side effects, allowing more optimized Webpack builds.
+
 ## 1.1.1-next.0
 
 ### Patch Changes
