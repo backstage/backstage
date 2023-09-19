@@ -46,7 +46,6 @@ export const VisitListenerContext = createContext<VisitListenerContextValue>(
 );
 
 /**
- * @public
  * This function returns an implementation of toEntityRef which is responsible
  * for receiving a pathname and maybe returning an entityRef compatible with the
  * catalog-model.
@@ -57,7 +56,7 @@ export const VisitListenerContext = createContext<VisitListenerContextValue>(
  *   toEntityRef(\{ pathname: "/catalog/default/component/playback-order" \})
  *   // returns "component:default/playback-order"
  */
-export const getToEntityRef =
+const getToEntityRef =
   ({
     rootPath = 'catalog',
     stringifyEntityRefImpl = stringifyEntityRef,
