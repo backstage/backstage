@@ -69,6 +69,7 @@ export class VisitsApiFactory implements VisitsApi {
         if (filter.operator === '<') return field < filter.value;
         if (filter.operator === '<=') return field <= filter.value;
         if (filter.operator === '==') return field === filter.value;
+        if (filter.operator === '!=') return field !== filter.value;
         if (filter.operator === 'contains')
           return `${field}`.includes(`${filter.value}`);
         return false;
