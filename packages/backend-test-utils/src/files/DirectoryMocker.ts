@@ -27,19 +27,33 @@ type DirectoryNode = {
 
 type MockDirectoryNode = DirectoryNode | FileNode;
 
+interface DirectoryMockerOptions {
+  /**
+   * The root path to create the directory in. Defaults to a temporary directory.
+   *
+   * If an existing directory is provided, it will not be cleaned up after the test.
+   */
+  root?: string;
+}
+
 export class DirectoryMocker {
-  static create() {
-    const root = fs.mkdtempSync(
-      joinPath(getTmpDir(), 'backstage-tmp-test-dir-'),
-    );
+  static create(options?: DirectoryMockerOptions) {
+    const root =
+      options?.root ??
+      fs.mkdtempSync(joinPath(getTmpDir(), 'backstage-tmp-test-dir-'));
 
     const mocker = new DirectoryMocker(root);
 
-    process.on('beforeExit', mocker.#cleanupSync);
+    const shouldCleanup = !options?.root || !fs.pathExistsSync(options.root);
+    if (shouldCleanup) {
+      process.on('beforeExit', mocker.#cleanupSync);
 
-    afterAll(async () => {
-      await mocker.cleanup();
-    });
+      try {
+        afterAll(mocker.cleanup);
+      } catch {
+        /* ignore */
+      }
+    }
 
     return mocker;
   }
@@ -73,11 +87,11 @@ export class DirectoryMocker {
     await createFiles(root, this.#root);
   }
 
-  async cleanup() {
+  cleanup = async () => {
     await fs.rm(this.#root, { recursive: true, force: true });
-  }
+  };
 
-  #cleanupSync() {
+  #cleanupSync = () => {
     fs.rmSync(this.#root, { recursive: true, force: true });
-  }
+  };
 }
