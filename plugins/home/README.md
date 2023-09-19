@@ -305,7 +305,7 @@ To monitor page visit activity and save it on behalf of the user a component is 
 See the example usage:
 
 ```ts
-// App.tsx
+// packages/app/src/App.tsx
 import { VisitsListener } from '@backstage/plugin-home';
 // ...
 export default app.createRoot(
