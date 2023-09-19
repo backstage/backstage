@@ -270,7 +270,7 @@ These components need an API to handle visit data, please refer to the [utility-
 documentation for more information. Bellow you can see an example for two options:
 
 ```ts
-// apis.ts
+// packages/app/src/apis.ts
 // ...
 import {
   CoreStorageVisitsApi,
