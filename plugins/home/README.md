@@ -248,6 +248,7 @@ This component shows the homepage user a view for "Recently visited" or "Top vis
 Being provided by the `<HomePageVisitedByType/>` component, see it in use on a homepage example below:
 
 ```tsx
+// packages/app/src/components/home/HomePage.tsx
 import React from 'react';
 import Grid from '@material-ui/core/Grid';
 import { HomePageVisitedByType } from '@backstage/plugin-home';
