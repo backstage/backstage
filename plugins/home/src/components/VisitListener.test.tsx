@@ -16,10 +16,8 @@
 import React from 'react';
 import { TestApiProvider, renderInTestApp } from '@backstage/test-utils';
 import { Visit, visitsApiRef } from '../api';
-import { DoNotTrack, VisitListener, useVisitListener } from './VisitListener';
+import { VisitListener } from './VisitListener';
 import { waitFor } from '@testing-library/react';
-import { act, renderHook } from '@testing-library/react-hooks';
-import { MemoryRouter } from 'react-router-dom';
 
 const visits: Array<Visit> = [
   {
@@ -137,67 +135,5 @@ describe('<VisitListener/>', () => {
         },
       }),
     );
-  });
-});
-
-describe('<DoNotTrack/>', () => {
-  afterEach(jest.resetAllMocks);
-
-  it("doesn't register a visit", async () => {
-    const requestAnimationFrameSpy = jest.spyOn(
-      window,
-      'requestAnimationFrame',
-    );
-    await renderInTestApp(
-      <TestApiProvider apis={[[visitsApiRef, mockVisitsApi]]}>
-        <VisitListener>
-          <DoNotTrack />
-        </VisitListener>
-      </TestApiProvider>,
-    );
-    await waitFor(() => expect(requestAnimationFrameSpy).toHaveBeenCalled());
-    expect(mockVisitsApi.saveVisit).not.toHaveBeenCalled();
-  });
-
-  it('renders its children', async () => {
-    const requestAnimationFrameSpy = jest.spyOn(
-      window,
-      'requestAnimationFrame',
-    );
-    const { getByTestId } = await renderInTestApp(
-      <TestApiProvider apis={[[visitsApiRef, mockVisitsApi]]}>
-        <VisitListener>
-          <DoNotTrack>
-            <div data-testid="child">child</div>
-          </DoNotTrack>
-        </VisitListener>
-      </TestApiProvider>,
-    );
-    await waitFor(() => expect(requestAnimationFrameSpy).toHaveBeenCalled());
-    expect(getByTestId('child')).toBeTruthy();
-  });
-});
-
-describe('useVisitListener()', () => {
-  it('returns the default context', () => {
-    const { result } = renderHook(() => useVisitListener());
-    expect(result.current.doNotTrack).toBeFalsy();
-    expect(result.current.setDoNotTrack).toBeInstanceOf(Function);
-  });
-
-  it('changes the doNotTrack flag', () => {
-    const { result } = renderHook(() => useVisitListener(), {
-      wrapper: ({ children }) => (
-        <MemoryRouter>
-          <TestApiProvider apis={[[visitsApiRef, mockVisitsApi]]}>
-            <VisitListener>{children}</VisitListener>
-          </TestApiProvider>
-        </MemoryRouter>
-      ),
-    });
-    act(() => {
-      result.current.setDoNotTrack(true);
-    });
-    expect(result.current.doNotTrack).toBeTruthy();
   });
 });

@@ -13,37 +13,13 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import React, {
-  createContext,
-  useState,
-  useEffect,
-  useContext,
-  Dispatch,
-  SetStateAction,
-  ReactNode,
-} from 'react';
+import React, { useEffect } from 'react';
 
 import { useLocation } from 'react-router-dom';
 
 import { visitsApiRef } from '../api';
 import { useApi } from '@backstage/core-plugin-api';
 import { stringifyEntityRef } from '@backstage/catalog-model';
-
-/** @public */
-export type VisitListenerContextValue = {
-  doNotTrack: boolean;
-  setDoNotTrack: Dispatch<SetStateAction<boolean>>;
-};
-
-const defaultVisitListenerContext: VisitListenerContextValue = {
-  doNotTrack: false,
-  setDoNotTrack: () => {},
-};
-
-/** @public */
-export const VisitListenerContext = createContext<VisitListenerContextValue>(
-  defaultVisitListenerContext,
-);
 
 /**
  * This function returns an implementation of toEntityRef which is responsible
@@ -97,66 +73,24 @@ export const VisitListener = ({
   toEntityRef?: ({ pathname }: { pathname: string }) => string | undefined;
   visitName?: ({ pathname }: { pathname: string }) => string;
 }): JSX.Element => {
-  const [doNotTrack, setDoNotTrack] = useState<boolean>(
-    defaultVisitListenerContext.doNotTrack,
-  );
   const visitsApi = useApi(visitsApiRef);
   const { pathname } = useLocation();
   const toEntityRefImpl = toEntityRef ?? getToEntityRef();
   const visitNameImpl = visitName ?? getVisitName(document);
   useEffect(() => {
     // Wait for the browser to finish with paint with the assumption react
-    // has finished with dom reconciliation and the doNotTrack state update.
+    // has finished with dom reconciliation.
     const requestId = requestAnimationFrame(() => {
-      if (!doNotTrack)
-        visitsApi.saveVisit({
-          visit: {
-            name: visitNameImpl({ pathname }),
-            pathname,
-            entityRef: toEntityRefImpl({ pathname }),
-          },
-        });
+      visitsApi.saveVisit({
+        visit: {
+          name: visitNameImpl({ pathname }),
+          pathname,
+          entityRef: toEntityRefImpl({ pathname }),
+        },
+      });
     });
     return () => cancelAnimationFrame(requestId);
-  }, [doNotTrack, visitsApi, pathname, toEntityRefImpl, visitNameImpl]);
-
-  return (
-    <VisitListenerContext.Provider value={{ doNotTrack, setDoNotTrack }}>
-      {children}
-    </VisitListenerContext.Provider>
-  );
-};
-
-/**
- * @public
- * Hook used to access visit listener context. Is able to control if tracking
- * should be disabled.
- */
-export const useVisitListener = () => {
-  const value = useContext(VisitListenerContext);
-
-  if (value === undefined)
-    throw new Error(
-      'useVisitListener found an undefined context, <VisitListener/> could be missing',
-    );
-
-  return value;
-};
-
-/**
- * @public
- * Use this component to warn VisitListener to disable tracking.
- */
-export const DoNotTrack = ({
-  children,
-}: {
-  children?: ReactNode;
-}): JSX.Element => {
-  const { setDoNotTrack } = useVisitListener();
-  useEffect(() => {
-    setDoNotTrack(true);
-    return () => setDoNotTrack(false);
-  }, [setDoNotTrack]);
+  }, [visitsApi, pathname, toEntityRefImpl, visitNameImpl]);
 
   return <>{children}</>;
 };

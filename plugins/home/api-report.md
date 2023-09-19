@@ -14,14 +14,12 @@ import { CardSettings as CardSettings_2 } from '@backstage/plugin-home-react';
 import { ComponentParts as ComponentParts_2 } from '@backstage/plugin-home-react';
 import { ComponentRenderer as ComponentRenderer_2 } from '@backstage/plugin-home-react';
 import { createCardExtension as createCardExtension_2 } from '@backstage/plugin-home-react';
-import { Dispatch } from 'react';
 import { JSX as JSX_2 } from 'react';
 import { default as React_2 } from 'react';
 import { ReactElement } from 'react';
 import { ReactNode } from 'react';
 import { RendererProps as RendererProps_2 } from '@backstage/plugin-home-react';
 import { RouteRef } from '@backstage/core-plugin-api';
-import { SetStateAction } from 'react';
 
 // @public
 export type Breakpoint = 'xxs' | 'xs' | 'sm' | 'md' | 'lg' | 'xl';
@@ -99,13 +97,6 @@ export type CustomHomepageGridProps = {
   allowOverlap?: boolean;
   preventCollision?: boolean;
 };
-
-// @public
-export const DoNotTrack: ({
-  children,
-}: {
-  children?: ReactNode;
-}) => JSX.Element;
 
 // @public
 export const getVisitName: (document: Document) => () => string;
@@ -205,9 +196,6 @@ export type ToolkitContentProps = {
 };
 
 // @public
-export const useVisitListener: () => VisitListenerContextValue;
-
-// @public
 export type Visit = {
   id: string;
   name: string;
@@ -241,15 +229,6 @@ export const VisitListener: ({
     | undefined;
   visitName?: (({ pathname }: { pathname: string }) => string) | undefined;
 }) => JSX.Element;
-
-// @public (undocumented)
-export const VisitListenerContext: React_2.Context<VisitListenerContextValue>;
-
-// @public (undocumented)
-export type VisitListenerContextValue = {
-  doNotTrack: boolean;
-  setDoNotTrack: Dispatch<SetStateAction<boolean>>;
-};
 
 // @public
 export interface VisitsApi {
