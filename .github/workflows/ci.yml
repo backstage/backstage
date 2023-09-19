@@ -79,7 +79,7 @@ jobs:
       - name: verify local dependency ranges
         run: node scripts/verify-local-dependencies.js
 
-      - name: type checking and declarations
+      - name: check for missing repo fixes
         run: yarn fix --check
 
       - name: validate config
@@ -97,6 +97,9 @@ jobs:
 
       - name: verify api reference
         run: node scripts/verify-api-reference.js
+
+      - name: verify catalog-info.yaml consistency
+        run: yarn backstage-repo-tools generate-catalog-info --ci
 
       - name: lint openapi yaml files
         run: yarn backstage-repo-tools schema openapi lint

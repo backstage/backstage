@@ -15,9 +15,9 @@
  */
 import { AttachAddon, IAttachOptions } from 'xterm-addon-attach';
 
-const textEncoder = new TextEncoder();
-
 export class PodExecTerminalAttachAddon extends AttachAddon {
+  #textEncoder = new TextEncoder();
+
   constructor(socket: WebSocket, options?: IAttachOptions) {
     super(socket, options);
 
@@ -30,7 +30,7 @@ export class PodExecTerminalAttachAddon extends AttachAddon {
         return;
       }
 
-      const buffer = Uint8Array.from([0, ...textEncoder.encode(data)]);
+      const buffer = Uint8Array.from([0, ...this.#textEncoder.encode(data)]);
 
       thisAddon._socket.send(buffer);
     };

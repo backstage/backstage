@@ -16,7 +16,7 @@
 
 import React from 'react';
 import { PortableSchema } from '../schema';
-import { coreExtensionData } from '../wiring';
+import { coreExtensionData, createExtensionInput } from '../wiring';
 import { createPageExtension } from './createPageExtension';
 
 describe('createPageExtension', () => {
@@ -30,7 +30,7 @@ describe('createPageExtension', () => {
       createPageExtension({
         id: 'test',
         configSchema,
-        component: async () => <div />,
+        loader: async () => <div />,
       }),
     ).toEqual({
       $$type: '@backstage/Extension',
@@ -40,7 +40,7 @@ describe('createPageExtension', () => {
       disabled: false,
       inputs: {},
       output: {
-        component: expect.anything(),
+        element: expect.anything(),
         path: expect.anything(),
         routeRef: expect.anything(),
       },
@@ -54,11 +54,11 @@ describe('createPageExtension', () => {
         disabled: true,
         configSchema,
         inputs: {
-          first: {
-            extensionData: { component: coreExtensionData.reactComponent },
-          },
+          first: createExtensionInput({
+            element: coreExtensionData.reactElement,
+          }),
         },
-        component: async () => <div />,
+        loader: async () => <div />,
       }),
     ).toEqual({
       $$type: '@backstage/Extension',
@@ -67,12 +67,12 @@ describe('createPageExtension', () => {
       configSchema: expect.anything(),
       disabled: true,
       inputs: {
-        first: {
-          extensionData: { component: coreExtensionData.reactComponent },
-        },
+        first: createExtensionInput({
+          element: coreExtensionData.reactElement,
+        }),
       },
       output: {
-        component: expect.anything(),
+        element: expect.anything(),
         path: expect.anything(),
         routeRef: expect.anything(),
       },
@@ -83,7 +83,7 @@ describe('createPageExtension', () => {
       createPageExtension({
         id: 'test',
         defaultPath: '/here',
-        component: async () => <div />,
+        loader: async () => <div />,
       }),
     ).toEqual({
       $$type: '@backstage/Extension',
@@ -93,7 +93,7 @@ describe('createPageExtension', () => {
       disabled: false,
       inputs: {},
       output: {
-        component: expect.anything(),
+        element: expect.anything(),
         path: expect.anything(),
         routeRef: expect.anything(),
       },

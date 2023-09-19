@@ -180,6 +180,7 @@ jsx
 JWTs
 Kaewkasi
 Kaswell
+keepalive
 Keyv
 Knex
 Koyeb
@@ -448,3 +449,5 @@ zoomable
 zsh
 Pulumi
 Lightsail
+PR
+rebasing

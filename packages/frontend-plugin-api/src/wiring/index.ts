@@ -14,13 +14,20 @@
  * limitations under the License.
  */
 
-export { coreExtensionData } from './coreExtensionData';
+export { coreExtensionData, type NavTarget } from './coreExtensionData';
 export {
   createExtension,
+  type Extension,
   type CreateExtensionOptions,
-  type ExtensionDataBind,
-  type ExtensionDataInputValues,
+  type ExtensionDataValues,
+  type ExtensionInputValues,
+  type AnyExtensionInputMap,
+  type AnyExtensionDataMap,
 } from './createExtension';
+export {
+  createExtensionInput,
+  type ExtensionInput,
+} from './createExtensionInput';
 export {
   createExtensionDataRef,
   type ExtensionDataRef,
@@ -31,4 +38,3 @@ export {
   type BackstagePlugin,
   type PluginOptions,
 } from './createPlugin';
-export type { AnyExtensionDataMap, Extension } from './types';

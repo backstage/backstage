@@ -1,5 +1,13 @@
 # @backstage/plugin-playlist-common
 
+## 0.1.10
+
+### Patch Changes
+
+- 406b786a2a2c: Mark package as being free of side effects, allowing more optimized Webpack builds.
+- Updated dependencies
+  - @backstage/plugin-permission-common@0.7.8
+
 ## 0.1.10-next.2
 
 ### Patch Changes

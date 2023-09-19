@@ -260,7 +260,7 @@ describe('Integration Test', () => {
     expect(screen.getByText('extLink4: <none>')).toBeInTheDocument();
   });
 
-  it('runs success with __experimentalI18n', async () => {
+  it('runs success with __experimentalTranslations', async () => {
     const app = new AppManager({
       apis: [noOpAnalyticsApi],
       defaultApis: [],
@@ -275,8 +275,8 @@ describe('Integration Test', () => {
           extRouteRef2: plugin2RouteRef,
         });
       },
-      __experimentalI18n: {
-        supportedLanguages: ['en'],
+      __experimentalTranslations: {
+        availableLanguages: ['en', 'de'],
       },
     });
 

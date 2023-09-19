@@ -18,6 +18,7 @@ import React from 'react';
 import {
   createExtension,
   coreExtensionData,
+  createExtensionInput,
 } from '@backstage/frontend-plugin-api';
 import { SidebarPage } from '@backstage/core-components';
 
@@ -25,42 +26,28 @@ export const CoreLayout = createExtension({
   id: 'core.layout',
   at: 'root',
   inputs: {
-    nav: {
-      extensionData: {
-        component: coreExtensionData.reactComponent,
+    nav: createExtensionInput(
+      {
+        element: coreExtensionData.reactElement,
       },
-    },
-    content: {
-      extensionData: {
-        component: coreExtensionData.reactComponent,
+      { singleton: true },
+    ),
+    content: createExtensionInput(
+      {
+        element: coreExtensionData.reactElement,
       },
-    },
+      { singleton: true },
+    ),
   },
   output: {
-    component: coreExtensionData.reactComponent,
+    element: coreExtensionData.reactElement,
   },
   factory({ bind, inputs }) {
-    // TODO: Support this as part of the core system
-    if (inputs.nav.length !== 1) {
-      throw Error(
-        `Extension 'core.layout' did not receive exactly one 'nav' input, got ${inputs.nav.length}`,
-      );
-    }
-    const Nav = inputs.nav[0].component;
-
-    if (inputs.content.length !== 1) {
-      throw Error(
-        `Extension 'core.layout' did not receive exactly one 'content' input, got ${inputs.content.length}`,
-      );
-    }
-    const Content = inputs.content[0].component;
-
     bind({
-      // TODO: set base path using the logic from AppRouter
-      component: () => (
+      element: (
         <SidebarPage>
-          <Nav />
-          <Content />
+          {inputs.nav.element}
+          {inputs.content.element}
         </SidebarPage>
       ),
     });

@@ -1,5 +1,15 @@
 # @backstage/plugin-adr-common
 
+## 0.2.15
+
+### Patch Changes
+
+- 406b786a2a2c: Mark package as being free of side effects, allowing more optimized Webpack builds.
+- Updated dependencies
+  - @backstage/catalog-model@1.4.2
+  - @backstage/integration@1.7.0
+  - @backstage/plugin-search-common@1.2.6
+
 ## 0.2.15-next.3
 
 ### Patch Changes

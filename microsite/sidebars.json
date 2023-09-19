@@ -243,6 +243,7 @@
       "plugins/integrating-search-into-plugins",
       "plugins/composability",
       "plugins/customization",
+      "plugins/internationalization",
       "plugins/analytics",
       "plugins/feature-flags",
       {
@@ -303,6 +304,7 @@
       "auth/oidc",
       "auth/add-auth-provider",
       "auth/service-to-service-auth",
+      "auth/autologout",
       "auth/troubleshooting",
       "auth/glossary"
     ],

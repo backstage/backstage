@@ -5,26 +5,74 @@
 ```ts
 import { ApiRef } from '@backstage/core-plugin-api';
 import { BackstagePlugin } from '@backstage/core-plugin-api';
-import { i18n } from 'i18next';
+import { Observable } from '@backstage/types';
 import { ReactNode } from 'react';
+import { TranslationMessages as TranslationMessages_2 } from '@backstage/core-plugin-api/alpha';
+import { TranslationRef as TranslationRef_2 } from '@backstage/core-plugin-api/alpha';
 
 // @alpha (undocumented)
-export type AppTranslationApi = {
-  getI18n(): i18n;
-  addResourcesByRef<Messages extends Record<string, string>>(
-    translationRef: TranslationRef<Messages>,
-  ): void;
+export type AppLanguageApi = {
+  getAvailableLanguages(): {
+    languages: string[];
+  };
+  setLanguage(language?: string): void;
+  getLanguage(): {
+    language: string;
+  };
+  language$(): Observable<{
+    language: string;
+  }>;
 };
 
 // @alpha (undocumented)
-export const appTranslationApiRef: ApiRef<AppTranslationApi>;
+export const appLanguageApiRef: ApiRef<AppLanguageApi>;
+
+// @alpha
+export function createTranslationMessages<
+  TId extends string,
+  TMessages extends {
+    [key in string]: string;
+  },
+  TFull extends boolean,
+>(
+  options: TranslationMessagesOptions<TId, TMessages, TFull>,
+): TranslationMessages<TId, TMessages, TFull>;
 
 // @alpha (undocumented)
-export const createTranslationRef: <
-  Messages extends Record<keyof Messages, string> = {},
+export function createTranslationRef<
+  TId extends string,
+  const TMessages extends {
+    [key in string]: string;
+  },
+  TTranslations extends {
+    [language in string]: () => Promise<{
+      default: {
+        [key in keyof TMessages]: string | null;
+      };
+    }>;
+  },
 >(
-  config: TranslationRefConfig<Messages>,
-) => TranslationRef<Messages>;
+  config: TranslationRefOptions<TId, TMessages, TTranslations>,
+): TranslationRef<TId, TMessages>;
+
+// @alpha (undocumented)
+export function createTranslationResource<
+  TId extends string,
+  TMessages extends {
+    [key in string]: string;
+  },
+  TTranslations extends {
+    [language in string]: () => Promise<{
+      default:
+        | TranslationMessages_2<TId>
+        | {
+            [key in keyof TMessages]: string | null;
+          };
+    }>;
+  },
+>(
+  options: TranslationResourceOptions<TId, TMessages, TTranslations>,
+): TranslationResource<TId>;
 
 // @alpha
 export interface PluginOptionsProviderProps {
@@ -38,76 +86,164 @@ export interface PluginOptionsProviderProps {
 export const PluginProvider: (props: PluginOptionsProviderProps) => JSX.Element;
 
 // @alpha (undocumented)
-export type TranslationOptions<
-  Messages extends Record<keyof Messages, string> = Record<string, string>,
-> = Messages;
+export type TranslationApi = {
+  getTranslation<
+    TMessages extends {
+      [key in string]: string;
+    },
+  >(
+    translationRef: TranslationRef<string, TMessages>,
+  ): TranslationSnapshot<TMessages>;
+  translation$<
+    TMessages extends {
+      [key in string]: string;
+    },
+  >(
+    translationRef: TranslationRef<string, TMessages>,
+  ): Observable<TranslationSnapshot<TMessages>>;
+};
+
+// @alpha (undocumented)
+export const translationApiRef: ApiRef<TranslationApi>;
+
+// @alpha (undocumented)
+export interface TranslationFunction<
+  TMessages extends {
+    [key in string]: string;
+  },
+> {
+  // (undocumented)
+  <TKey extends keyof CollapsedMessages<TMessages>>(
+    key: TKey,
+    ...[args]: TranslationFunctionOptions<
+      NestedMessageKeys<TKey, CollapsedMessages<TMessages>>,
+      PluralKeys<TMessages>,
+      CollapsedMessages<TMessages>
+    >
+  ): CollapsedMessages<TMessages>[TKey];
+}
+
+// @alpha
+export interface TranslationMessages<
+  TId extends string = string,
+  TMessages extends {
+    [key in string]: string;
+  } = {
+    [key in string]: string;
+  },
+  TFull extends boolean = boolean,
+> {
+  // (undocumented)
+  $$type: '@backstage/TranslationMessages';
+  full: TFull;
+  id: TId;
+  messages: TMessages;
+}
+
+// @alpha
+export interface TranslationMessagesOptions<
+  TId extends string,
+  TMessages extends {
+    [key in string]: string;
+  },
+  TFull extends boolean,
+> {
+  // (undocumented)
+  full?: TFull;
+  // (undocumented)
+  messages: false extends TFull
+    ? {
+        [key in keyof TMessages]?: string | null;
+      }
+    : {
+        [key in keyof TMessages]: string | null;
+      };
+  // (undocumented)
+  ref: TranslationRef_2<TId, TMessages>;
+}
 
 // @alpha (undocumented)
 export interface TranslationRef<
-  Messages extends Record<keyof Messages, string> = Record<string, string>,
+  TId extends string = string,
+  TMessages extends {
+    [key in string]: string;
+  } = {
+    [key in string]: string;
+  },
 > {
   // (undocumented)
-  getDefaultMessages(): Messages;
+  $$type: '@backstage/TranslationRef';
   // (undocumented)
-  getId(): string;
+  id: TId;
   // (undocumented)
-  getLazyResources():
-    | Record<
-        string,
-        () => Promise<{
-          messages: Messages;
-        }>
-      >
-    | undefined;
-  // (undocumented)
-  getResources(): Record<string, Messages> | undefined;
+  T: TMessages;
 }
 
 // @alpha (undocumented)
-export interface TranslationRefConfig<
-  Messages extends Record<keyof Messages, string>,
+export interface TranslationRefOptions<
+  TId extends string,
+  TMessages extends {
+    [key in string]: string;
+  },
+  TTranslations extends {
+    [language in string]: () => Promise<{
+      default: {
+        [key in keyof TMessages]: string | null;
+      };
+    }>;
+  },
 > {
   // (undocumented)
-  id: string;
+  id: TId;
   // (undocumented)
-  lazyResources?: Record<
-    string,
-    () => Promise<{
-      messages: Messages;
-    }>
-  >;
+  messages: TMessages;
   // (undocumented)
-  messages: Messages;
-  // (undocumented)
-  resources?: Record<string, Messages>;
+  translations?: TTranslations;
 }
 
 // @alpha (undocumented)
-export class TranslationRefImpl<Messages extends Record<keyof Messages, string>>
-  implements TranslationRef<Messages>
-{
+export interface TranslationResource<TId extends string = string> {
   // (undocumented)
-  static create<Messages extends Record<keyof Messages, string>>(
-    config: TranslationRefConfig<Messages>,
-  ): TranslationRefImpl<Messages>;
+  $$type: '@backstage/TranslationResource';
   // (undocumented)
-  getDefaultMessages(): Messages;
-  // (undocumented)
-  getId(): string;
-  // (undocumented)
-  getLazyResources():
-    | Record<
-        string,
-        () => Promise<{
-          messages: Messages;
-        }>
-      >
-    | undefined;
-  // (undocumented)
-  getResources(): Record<string, Messages> | undefined;
-  // (undocumented)
-  toString(): string;
+  id: TId;
 }
+
+// @alpha (undocumented)
+export interface TranslationResourceOptions<
+  TId extends string,
+  TMessages extends {
+    [key in string]: string;
+  },
+  TTranslations extends {
+    [language in string]: () => Promise<{
+      default:
+        | TranslationMessages_2<TId>
+        | {
+            [key in keyof TMessages]: string | null;
+          };
+    }>;
+  },
+> {
+  // (undocumented)
+  ref: TranslationRef_2<TId, TMessages>;
+  // (undocumented)
+  translations: TTranslations;
+}
+
+// @alpha (undocumented)
+export type TranslationSnapshot<
+  TMessages extends {
+    [key in string]: string;
+  },
+> =
+  | {
+      ready: false;
+    }
+  | {
+      ready: true;
+      t: TranslationFunction<TMessages>;
+    };
 
 // @alpha
 export function usePluginOptions<
@@ -116,13 +252,14 @@ export function usePluginOptions<
 
 // @alpha (undocumented)
 export const useTranslationRef: <
-  Messages extends Record<keyof Messages, string>,
+  TMessages extends {
+    [x: string]: string;
+  },
 >(
-  translationRef: TranslationRef<Messages>,
-) => <Tkey extends keyof Messages>(
-  key: Tkey,
-  options?: TranslationOptions,
-) => Messages[Tkey];
+  translationRef: TranslationRef<string, TMessages>,
+) => {
+  t: TranslationFunction<TMessages>;
+};
 
 // (No @packageDocumentation comment for this package)
 ```

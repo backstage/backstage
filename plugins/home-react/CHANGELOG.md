@@ -1,5 +1,20 @@
 # @backstage/plugin-home-react
 
+## 0.1.3
+
+### Patch Changes
+
+- 482bb5c0bbf8: Moved `@types/react` to be a regular dependency
+- 406b786a2a2c: Mark package as being free of side effects, allowing more optimized Webpack builds.
+- 8cec7664e146: Removed `@types/node` dependency
+- b16c341ced45: Updated dependency `@rjsf/utils` to `5.13.0`.
+  Updated dependency `@rjsf/core-v5` to `npm:@rjsf/core@5.13.0`.
+  Updated dependency `@rjsf/material-ui-v5` to `npm:@rjsf/material-ui@5.13.0`.
+  Updated dependency `@rjsf/validator-ajv8` to `5.13.0`.
+- Updated dependencies
+  - @backstage/core-components@0.13.5
+  - @backstage/core-plugin-api@1.6.0
+
 ## 0.1.3-next.3
 
 ### Patch Changes

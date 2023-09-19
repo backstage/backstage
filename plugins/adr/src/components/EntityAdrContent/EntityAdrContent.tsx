@@ -171,7 +171,7 @@ export const EntityAdrContent = (props: {
   const scmIntegrations = useApi(scmIntegrationsApiRef);
   const adrApi = useApi(adrApiRef);
   const entityHasAdrs = isAdrAvailable(entity);
-  const t = useTranslationRef(adrTranslationRef);
+  const { t } = useTranslationRef(adrTranslationRef);
 
   const config = useApi(configApiRef);
   const appSupportConfigured = config?.getOptionalConfig('app.support');

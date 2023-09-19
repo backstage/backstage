@@ -17,6 +17,7 @@
 import { Config } from '@backstage/config';
 import { Duration } from 'luxon';
 import { ClusterDetails, KubernetesClustersSupplier } from '../types/types';
+import { AuthenticationStrategy } from '../auth/types';
 import { ConfigClusterLocator } from './ConfigClusterLocator';
 import { GkeClusterLocator } from './GkeClusterLocator';
 import { CatalogClusterLocator } from './CatalogClusterLocator';
@@ -42,6 +43,7 @@ class CombinedClustersSupplier implements KubernetesClustersSupplier {
 export const getCombinedClusterSupplier = (
   rootConfig: Config,
   catalogClient: CatalogApi,
+  authStrategy: AuthenticationStrategy,
   refreshInterval: Duration | undefined = undefined,
 ): KubernetesClustersSupplier => {
   const clusterSuppliers = rootConfig
@@ -54,7 +56,10 @@ export const getCombinedClusterSupplier = (
         case 'localKubectlProxy':
           return new LocalKubectlProxyClusterLocator();
         case 'config':
-          return ConfigClusterLocator.fromConfig(clusterLocatorMethod);
+          return ConfigClusterLocator.fromConfig(
+            clusterLocatorMethod,
+            authStrategy,
+          );
         case 'gke':
           return GkeClusterLocator.fromConfig(
             clusterLocatorMethod,

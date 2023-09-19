@@ -19,12 +19,12 @@ import React from 'react';
 import { ExtensionBoundary } from '../components';
 import { createSchemaFromZod, PortableSchema } from '../schema';
 import {
-  AnyExtensionDataMap,
   coreExtensionData,
   createExtension,
   Extension,
-  ExtensionDataInputValues,
+  ExtensionInputValues,
 } from '../wiring';
+import { AnyExtensionInputMap, Expand } from '../wiring/createExtension';
 
 /**
  * Helper for creating extensions for a routable React page component.
@@ -33,7 +33,7 @@ import {
  */
 export function createPageExtension<
   TConfig extends { path: string },
-  TInputs extends Record<string, { extensionData: AnyExtensionDataMap }>,
+  TInputs extends AnyExtensionInputMap,
 >(
   options: (
     | {
@@ -48,9 +48,9 @@ export function createPageExtension<
     disabled?: boolean;
     inputs?: TInputs;
     routeRef?: RouteRef;
-    component: (props: {
+    loader: (options: {
       config: TConfig;
-      inputs: ExtensionDataInputValues<TInputs>;
+      inputs: Expand<ExtensionInputValues<TInputs>>;
     }) => Promise<JSX.Element>;
   },
 ): Extension<TConfig> {
@@ -66,7 +66,7 @@ export function createPageExtension<
     at: options.at ?? 'core.routes/routes',
     disabled: options.disabled,
     output: {
-      component: coreExtensionData.reactComponent,
+      element: coreExtensionData.reactElement,
       path: coreExtensionData.routePath,
       routeRef: coreExtensionData.routeRef.optional(),
     },
@@ -75,13 +75,13 @@ export function createPageExtension<
     factory({ bind, config, inputs, source }) {
       const LazyComponent = React.lazy(() =>
         options
-          .component({ config, inputs })
+          .loader({ config, inputs })
           .then(element => ({ default: () => element })),
       );
 
       bind({
         path: config.path,
-        component: () => (
+        element: (
           <ExtensionBoundary source={source}>
             <React.Suspense fallback="...">
               <LazyComponent />

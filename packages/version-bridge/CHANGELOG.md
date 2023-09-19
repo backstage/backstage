@@ -1,5 +1,11 @@
 # @backstage/version-bridge
 
+## 1.0.5
+
+### Patch Changes
+
+- 406b786a2a2c: Mark package as being free of side effects, allowing more optimized Webpack builds.
+
 ## 1.0.5-next.0
 
 ### Patch Changes

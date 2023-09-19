@@ -1,5 +1,27 @@
 # @backstage/plugin-home
 
+## 0.5.8
+
+### Patch Changes
+
+- 2bc96ce69eea: Fixed a bug where customizable home page cards would render missing their normal borders.
+- 406b786a2a2c: Mark package as being free of side effects, allowing more optimized Webpack builds.
+- 98bb77c1f0b8: Align zod dependency to align with other packages.
+- 8cec7664e146: Removed `@types/node` dependency
+- b16c341ced45: Updated dependency `@rjsf/utils` to `5.13.0`.
+  Updated dependency `@rjsf/core-v5` to `npm:@rjsf/core@5.13.0`.
+  Updated dependency `@rjsf/material-ui-v5` to `npm:@rjsf/material-ui@5.13.0`.
+  Updated dependency `@rjsf/validator-ajv8` to `5.13.0`.
+- 1853ffa09b50: Allow specifying static widgets to custom home page
+- Updated dependencies
+  - @backstage/plugin-home-react@0.1.3
+  - @backstage/plugin-catalog-react@1.8.4
+  - @backstage/core-components@0.13.5
+  - @backstage/config@1.1.0
+  - @backstage/catalog-model@1.4.2
+  - @backstage/core-plugin-api@1.6.0
+  - @backstage/theme@0.4.2
+
 ## 0.5.8-next.3
 
 ### Patch Changes

@@ -14,14 +14,26 @@
  * limitations under the License.
  */
 
-import { AnyApiFactory, RouteRef } from '@backstage/core-plugin-api';
-import { ComponentType } from 'react';
+import { JSX } from 'react';
+import {
+  AnyApiFactory,
+  IconComponent,
+  RouteRef,
+} from '@backstage/core-plugin-api';
 import { createExtensionDataRef } from './createExtensionDataRef';
 
 /** @public */
+export type NavTarget = {
+  title: string;
+  icon: IconComponent;
+  routeRef: RouteRef<{}>;
+};
+
+/** @public */
 export const coreExtensionData = {
-  reactComponent: createExtensionDataRef<ComponentType>('core.reactComponent'),
+  reactElement: createExtensionDataRef<JSX.Element>('core.reactElement'),
   routePath: createExtensionDataRef<string>('core.routing.path'),
   apiFactory: createExtensionDataRef<AnyApiFactory>('core.api.factory'),
   routeRef: createExtensionDataRef<RouteRef>('core.routing.ref'),
+  navTarget: createExtensionDataRef<NavTarget>('core.nav.target'),
 };

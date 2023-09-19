@@ -22,6 +22,7 @@ import { migrateBackendTasks } from '../database/migrateBackendTasks';
 import { DbTasksRow, DB_TASKS_TABLE } from '../database/tables';
 import { TaskWorker } from './TaskWorker';
 import { TaskSettingsV2 } from './types';
+import { createTestScopedSignal } from './__testUtils__/createTestScopedSignal';
 
 jest.setTimeout(60_000);
 
@@ -30,6 +31,7 @@ describe('TaskWorker', () => {
   const databases = TestDatabases.create({
     ids: ['POSTGRES_13', 'POSTGRES_9', 'SQLITE_3', 'MYSQL_8'],
   });
+  const testScopedSignal = createTestScopedSignal();
 
   beforeEach(() => {
     jest.resetAllMocks();
@@ -135,7 +137,7 @@ describe('TaskWorker', () => {
       };
       const checkFrequency = Duration.fromObject({ milliseconds: 100 });
       const worker = new TaskWorker('task1', fn, knex, logger, checkFrequency);
-      worker.start(settings);
+      worker.start(settings, { signal: testScopedSignal() });
 
       await waitForExpect(() => {
         expect(logger.error).toHaveBeenCalled();
@@ -158,7 +160,7 @@ describe('TaskWorker', () => {
       };
       const checkFrequency = Duration.fromObject({ milliseconds: 100 });
       const worker = new TaskWorker('task1', fn, knex, logger, checkFrequency);
-      worker.start(settings);
+      worker.start(settings, { signal: testScopedSignal() });
 
       await waitForExpect(() => {
         expect(fn).toHaveBeenCalledTimes(3);
@@ -321,7 +323,7 @@ describe('TaskWorker', () => {
         logger,
         Duration.fromMillis(10),
       );
-      await worker2.start(settings);
+      await worker2.start(settings, { signal: testScopedSignal() });
 
       // We eventually abort the first worker just to make sure that the second
       // one for sure will get a go at running the task
@@ -330,6 +332,48 @@ describe('TaskWorker', () => {
       const before = fn1.mock.calls.length;
       await promise2;
       expect(fn1.mock.calls.length).toBeGreaterThan(before);
+
+      await knex.destroy();
+    },
+  );
+
+  it.each(databases.eachSupportedId())(
+    'next_run_start_at is always the min between schedule changes, %p',
+    async databaseId => {
+      const knex = await databases.init(databaseId);
+      await migrateBackendTasks(knex);
+
+      const fn = jest.fn(
+        async () => new Promise<void>(resolve => setTimeout(resolve, 50)),
+      );
+      const settings: TaskSettingsV2 = {
+        version: 2,
+        cadence: '*/15 * * * *',
+        initialDelayDuration: 'PT2M',
+        timeoutAfterDuration: 'PT1M',
+      };
+
+      const worker = new TaskWorker('task99', fn, knex, logger);
+      await worker.persistTask(settings);
+      const row1 = (await knex<DbTasksRow>(DB_TASKS_TABLE))[0];
+
+      const settings2 = {
+        ...settings,
+        cadence: '*/2 * * * *',
+        initialDelayDuration: 'PT1M',
+      };
+      await worker.persistTask(settings2);
+      const row2 = (await knex<DbTasksRow>(DB_TASKS_TABLE))[0];
+
+      expect(row2.next_run_start_at).not.toStrictEqual(row1.next_run_start_at);
+
+      const settings3 = { ...settings };
+      await worker.persistTask(settings3);
+      const row3 = (await knex<DbTasksRow>(DB_TASKS_TABLE))[0];
+
+      expect(row3.next_run_start_at).toStrictEqual(row2.next_run_start_at);
+
+      await knex.destroy();
     },
   );
 });

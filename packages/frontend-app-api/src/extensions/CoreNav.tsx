@@ -18,6 +18,7 @@ import React from 'react';
 import {
   createExtension,
   coreExtensionData,
+  createExtensionInput,
 } from '@backstage/frontend-plugin-api';
 import { makeStyles } from '@material-ui/core';
 import {
@@ -65,14 +66,18 @@ const SidebarLogo = () => {
 export const CoreNav = createExtension({
   id: 'core.nav',
   at: 'core.layout/nav',
-  inputs: {},
+  inputs: {
+    items: createExtensionInput({
+      path: coreExtensionData.navTarget,
+    }),
+  },
   output: {
-    component: coreExtensionData.reactComponent,
+    element: coreExtensionData.reactElement,
   },
   factory({ bind }) {
     bind({
       // TODO: set base path using the logic from AppRouter
-      component: () => (
+      element: (
         <Sidebar>
           <SidebarLogo />
           <SidebarDivider />

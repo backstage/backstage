@@ -18,7 +18,6 @@ import React from 'react';
 import {
   FormProvider,
   SubmitHandler,
-  UnpackNestedValue,
   useForm,
   UseFormProps,
   UseFormReturn,
@@ -39,7 +38,7 @@ export type PreparePullRequestFormProps<
       UseFormReturn<TFieldValues>,
       'formState' | 'register' | 'control' | 'setValue'
     > & {
-      values: UnpackNestedValue<TFieldValues>;
+      values: TFieldValues;
     },
   ) => React.ReactNode;
 };

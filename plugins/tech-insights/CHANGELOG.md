@@ -1,5 +1,21 @@
 # @backstage/plugin-tech-insights
 
+## 0.3.16
+
+### Patch Changes
+
+- 406b786a2a2c: Mark package as being free of side effects, allowing more optimized Webpack builds.
+- 8cec7664e146: Removed `@types/node` dependency
+- Updated dependencies
+  - @backstage/plugin-catalog-react@1.8.4
+  - @backstage/core-components@0.13.5
+  - @backstage/catalog-model@1.4.2
+  - @backstage/core-plugin-api@1.6.0
+  - @backstage/errors@1.2.2
+  - @backstage/plugin-tech-insights-common@0.2.12
+  - @backstage/theme@0.4.2
+  - @backstage/types@1.1.1
+
 ## 0.3.16-next.3
 
 ### Patch Changes

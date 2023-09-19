@@ -27,7 +27,13 @@ import {
   RELATION_PROVIDES_API,
 } from '@backstage/catalog-model';
 import { createApp } from '@backstage/app-defaults';
-import { AppRouter, FeatureFlagged, FlatRoutes } from '@backstage/core-app-api';
+import {
+  AppRouter,
+  ConfigReader,
+  defaultConfigLoader,
+  FeatureFlagged,
+  FlatRoutes,
+} from '@backstage/core-app-api';
 import {
   AlertDisplay,
   OAuthRequestDialog,
@@ -55,7 +61,6 @@ import {
 import { orgPlugin } from '@backstage/plugin-org';
 import { ExplorePage } from '@backstage/plugin-explore';
 import { GcpProjectsPage } from '@backstage/plugin-gcp-projects';
-import { GraphiQLPage } from '@backstage/plugin-graphiql';
 import { HomepageCompositionRoot } from '@backstage/plugin-home';
 import { LighthousePage } from '@backstage/plugin-lighthouse';
 import { NewRelicPage } from '@backstage/plugin-newrelic';
@@ -112,6 +117,10 @@ import { PuppetDbPage } from '@backstage/plugin-puppetdb';
 import { DevToolsPage } from '@backstage/plugin-devtools';
 import { customDevToolsPage } from './components/devtools/CustomDevToolsPage';
 import { CatalogUnprocessedEntitiesPage } from '@backstage/plugin-catalog-unprocessed-entities';
+import {
+  createExtensionTree,
+  ExtensionTree,
+} from '@backstage/frontend-app-api';
 
 const app = createApp({
   apis,
@@ -157,6 +166,14 @@ const app = createApp({
     });
   },
 });
+
+/* HIGHLY EXPERIMENTAL. DO NOT USE THIS IN YOUR APP */
+let extensionTree: ExtensionTree | undefined;
+if (process.env.NODE_ENV !== 'test') {
+  extensionTree = createExtensionTree({
+    config: ConfigReader.fromConfigs(await defaultConfigLoader()),
+  });
+}
 
 const routes = (
   <FlatRoutes>
@@ -271,7 +288,10 @@ const routes = (
       path="/tech-radar"
       element={<TechRadarPage width={1500} height={800} />}
     />
-    <Route path="/graphiql" element={<GraphiQLPage />} />
+    {
+      /* HIGHLY EXPERIMENTAL. DO NOT USE THIS IN YOUR APP */ extensionTree?.getRootRoutes() ??
+        null
+    }
     <Route path="/lighthouse" element={<LighthousePage />} />
     <Route path="/api-docs" element={<ApiExplorerPage />} />
     <Route path="/gcp-projects" element={<GcpProjectsPage />} />
@@ -310,7 +330,7 @@ export default app.createRoot(
     <AlertDisplay transientTimeoutMs={2500} />
     <OAuthRequestDialog />
     <AppRouter>
-      <Root>{routes}</Root>
+      <Root extensionTree={extensionTree}>{routes}</Root>
     </AppRouter>
   </>,
 );

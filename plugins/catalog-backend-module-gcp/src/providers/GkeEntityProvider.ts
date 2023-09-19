@@ -138,7 +138,7 @@ export class GkeEntityProvider implements EntityProvider {
         kind: 'Resource',
         metadata: {
           annotations: {
-            [ANNOTATION_KUBERNETES_API_SERVER]: cluster.endpoint,
+            [ANNOTATION_KUBERNETES_API_SERVER]: `https://${cluster.endpoint}`,
             [ANNOTATION_KUBERNETES_API_SERVER_CA]:
               cluster.masterAuth?.clusterCaCertificate || '',
             [ANNOTATION_KUBERNETES_AUTH_PROVIDER]: 'google',

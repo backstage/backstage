@@ -15,6 +15,7 @@
  */
 
 import fs from 'fs-extra';
+import { resolve as resolvePath } from 'path';
 import { ConfigSources } from './ConfigSources';
 import { ConfigSource } from './types';
 import { MutableConfigSource } from './MutableConfigSource';
@@ -40,6 +41,8 @@ function mergeSources(source: ConfigSource): ConfigSource[] {
     Symbol.for('@backstage/config-loader#MergedConfigSource.sources')
   ] as ConfigSource[];
 }
+
+const root = resolvePath('/');
 
 describe('ConfigSources', () => {
   it('should parse args', () => {
@@ -70,7 +73,7 @@ describe('ConfigSources', () => {
       mergeSources(
         ConfigSources.defaultForTargets({ rootDir: '/', targets: [] }),
       ),
-    ).toEqual([{ name: 'FileConfigSource', path: '/app-config.yaml' }]);
+    ).toEqual([{ name: 'FileConfigSource', path: `${root}app-config.yaml` }]);
 
     const fsSpy = jest.spyOn(fs, 'pathExistsSync').mockReturnValue(true);
     expect(
@@ -78,8 +81,8 @@ describe('ConfigSources', () => {
         ConfigSources.defaultForTargets({ rootDir: '/', targets: [] }),
       ),
     ).toEqual([
-      { name: 'FileConfigSource', path: '/app-config.yaml' },
-      { name: 'FileConfigSource', path: '/app-config.local.yaml' },
+      { name: 'FileConfigSource', path: `${root}app-config.yaml` },
+      { name: 'FileConfigSource', path: `${root}app-config.local.yaml` },
     ]);
     fsSpy.mockRestore();
 
@@ -104,7 +107,7 @@ describe('ConfigSources', () => {
     ).toEqual([
       {
         name: 'FileConfigSource',
-        path: '/config.yaml',
+        path: `${root}config.yaml`,
         substitutionFunc: subFunc,
       },
     ]);
@@ -156,7 +159,7 @@ describe('ConfigSources', () => {
         }),
       ),
     ).toEqual([
-      { name: 'FileConfigSource', path: '/app-config.yaml' },
+      { name: 'FileConfigSource', path: `${root}app-config.yaml` },
       { name: 'EnvConfigSource', env: { HOME: '/' } },
     ]);
 
