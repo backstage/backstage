@@ -161,6 +161,38 @@ export function createExtensionTree(options: {
   };
 }
 
+function hasCyclicalExtensionDependency(
+  extensionId: string,
+  extensionAncestorIds: string[] = [],
+) {
+  return extensionAncestorIds.includes(extensionId);
+}
+
+function stringifyExtensionDependencyGraph(
+  extensionId: string,
+  extensionAncestorIds: string[] = [],
+) {
+  const [rootAncestorId, ...rest] = extensionAncestorIds.concat(extensionId);
+  return rest.reduce((graphString, ancestorId) => {
+    return `${graphString} → ${ancestorId}`;
+  }, rootAncestorId);
+}
+
+function preventCyclicalExtensionDependency(
+  extensionId: string,
+  extensionAncestorIds: string[],
+) {
+  if (hasCyclicalExtensionDependency(extensionId, extensionAncestorIds)) {
+    const extensionDependencyGraph = stringifyExtensionDependencyGraph(
+      extensionId,
+      extensionAncestorIds,
+    );
+    throw new Error(
+      `There is a cyclical dependency with the extension "${extensionId}": ${extensionDependencyGraph}`,
+    );
+  }
+}
+
 /**
  * @internal
  */
@@ -208,19 +240,30 @@ export function createInstances(options: {
 
   function createInstance(
     instanceParams: ExtensionInstanceParameters,
+    extensionAncestorIds: string[] = [],
   ): ExtensionInstance {
-    const existingInstance = instances.get(instanceParams.extension.id);
+    const extensionId = instanceParams.extension.id;
+    const existingInstance = instances.get(extensionId);
     if (existingInstance) {
       return existingInstance;
     }
 
+    preventCyclicalExtensionDependency(extensionId, extensionAncestorIds);
+
     const attachments = new Map(
-      Array.from(
-        attachmentMap.get(instanceParams.extension.id)?.entries() ?? [],
-      ).map(([inputName, attachmentConfigs]) => [
-        inputName,
-        attachmentConfigs.map(createInstance),
-      ]),
+      Array.from(attachmentMap.get(extensionId)?.entries() ?? []).map(
+        ([inputName, attachmentConfigs]) => {
+          return [
+            inputName,
+            attachmentConfigs.map(attachmentConfig =>
+              createInstance(
+                attachmentConfig,
+                extensionAncestorIds.concat(extensionId),
+              ),
+            ),
+          ];
+        },
+      ),
     );
 
     const newInstance = createExtensionInstance({
@@ -230,7 +273,7 @@ export function createInstances(options: {
       attachments,
     });
 
-    instances.set(instanceParams.extension.id, newInstance);
+    instances.set(extensionId, newInstance);
 
     return newInstance;
   }
