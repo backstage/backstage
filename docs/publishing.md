@@ -15,8 +15,8 @@ PR is merged. This is typically done every Tuesday around noon CET.
 
 ## Next Line Release Process
 
-- PR Checks: Ensure there are no outstanding PRs pending to be merged for this version. If there are any, reach out to maintainers and relevant owners of the affected code reminding them of the deadline for the release.
-- [optional] Lock main branch
+- PR Checks: Notify the teams & ensure there are no outstanding PRs pending to be merged for this version. This should be done in time to ensure a smoothe release day. If there are any, reach out to maintainers and relevant owners of the affected code reminding them of the deadline for the release.
+- [optional] Lock main branch 
   - Lock the main branch to prevent any new merges.
   - Note: Admin rights are required to lock the branch. If you lack the necessary permissions, contact a core maintainer to perform this action on your behalf.
 - Check [`Version Packages (next)` Pull Request](https://github.com/backstage/backstage/pulls?q=is%3Aopen+is%3Apr+in%3Atitle+%22Version+Packages+%28next%29%22)
@@ -31,6 +31,22 @@ PR is merged. This is typically done every Tuesday around noon CET.
   - Heads-up: The microsite building step can be skipped as long as the `prettier` task passes & everything else looks green
 
 Merging the `Version Packages (next)` Pull Request will trigger the deployment workflows. Follow along the [deployment workflow](https://github.com/backstage/backstage/actions/workflows/deploy_packages.yml). If you notice flakiness (e.g. if the build is flaky or if the release step runs into an error with releasing to npm) just restart the workflow.
+
+## Main Line Release Process
+
+Additional steps for the main line release
+
+- [Switch Release Mode](#switching-release-modes) to exit pre-release mode. This can be done at any time after the last Next Line Release.
+- Check [`Version Packages` Pull Request](https://github.com/backstage/backstage/pulls?q=is%3Aopen+is%3Apr+in%3Atitle+%22Version+Packages)
+  - Check for mentions of "major" & "breaking" and if they are expected in the current release
+  - Verify the version we are shipping is correct
+  - Check [`.changeset/pre.json`](https://github.com/backstage/backstage/blob/master/.changeset/pre.json) if the `mode` is set to `exit`. If you encounter `mode: "pre"` it indicates a next line release.
+- Create Release Notes
+  - There exists a "Backstage Release Notes" template for creating the release notes. It can already be created after the last main line release to keep track of major changes during the month.
+  - The content is picked by relevancy for the community showcasing the work of the community during the month before the release.
+  - @0.1.0
+ 
+- [Switch Release Mode](#switching-release-modes) to enter pre-release mode
 
 Congratulations on the release! There should be now a post in the [`#announcements` channel](https://discord.com/channels/687207715902193673/705123584468582400) in Discord linking to the release tag - check if links & tag look as expected. Finally unlock the main branch again. Merging PRs in master directly after release should be done with caution as it potential complicates fixing issues introduced in the release.
 
