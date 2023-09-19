@@ -1,5 +1,23 @@
 # @backstage/plugin-user-settings
 
+## 0.7.9
+
+### Patch Changes
+
+- 406b786a2a2c: Mark package as being free of side effects, allowing more optimized Webpack builds.
+- ce77b23423cb: conditionally rendering the user email in user profile card
+- e03f3ee2be94: changed auto theme tooltip title to camel case
+- 8cec7664e146: Removed `@types/node` dependency
+- 6e30769cc627: Introduced experimental support for internationalization.
+- Updated dependencies
+  - @backstage/plugin-catalog-react@1.8.4
+  - @backstage/core-components@0.13.5
+  - @backstage/core-app-api@1.10.0
+  - @backstage/core-plugin-api@1.6.0
+  - @backstage/errors@1.2.2
+  - @backstage/theme@0.4.2
+  - @backstage/types@1.1.1
+
 ## 0.7.9-next.3
 
 ### Patch Changes

@@ -1,5 +1,26 @@
 # @backstage/plugin-kubernetes
 
+## 0.10.3
+
+### Patch Changes
+
+- 0ad36158d980: Loosened the type of the `auth` field in the body of requests to the `retrieveObjectsByServiceId` endpoint. Now any JSON object is allowed, which should make it easier for integrators to write their own custom auth strategies for Kubernetes.
+- 7032c214f3b4: Add pod exec terminal to Container Card
+- 406b786a2a2c: Mark package as being free of side effects, allowing more optimized Webpack builds.
+- 6ddeade58b4c: Avoid eager use of `TextEncoder` in order not to break tests.
+- 6a5e04e20e6e: fix logs dialog min height
+- 8cec7664e146: Removed `@types/node` dependency
+- Updated dependencies
+  - @backstage/plugin-kubernetes-common@0.6.6
+  - @backstage/plugin-catalog-react@1.8.4
+  - @backstage/core-components@0.13.5
+  - @backstage/config@1.1.0
+  - @backstage/catalog-model@1.4.2
+  - @backstage/core-plugin-api@1.6.0
+  - @backstage/errors@1.2.2
+  - @backstage/theme@0.4.2
+  - @backstage/types@1.1.1
+
 ## 0.10.3-next.3
 
 ### Patch Changes

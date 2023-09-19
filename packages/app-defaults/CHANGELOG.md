@@ -1,5 +1,18 @@
 # @backstage/app-defaults
 
+## 1.4.3
+
+### Patch Changes
+
+- 406b786a2a2c: Mark package as being free of side effects, allowing more optimized Webpack builds.
+- 8cec7664e146: Removed `@types/node` dependency
+- Updated dependencies
+  - @backstage/core-components@0.13.5
+  - @backstage/core-app-api@1.10.0
+  - @backstage/core-plugin-api@1.6.0
+  - @backstage/plugin-permission-react@0.4.15
+  - @backstage/theme@0.4.2
+
 ## 1.4.3-next.3
 
 ### Patch Changes

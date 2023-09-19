@@ -1,5 +1,16 @@
 # @backstage/plugin-vault-backend
 
+## 0.3.7
+
+### Patch Changes
+
+- 858a18800870: Added ability to override vault secret engine value on catalog entity level using annotation `vault.io/secrets-engine`
+- Updated dependencies
+  - @backstage/backend-tasks@0.5.8
+  - @backstage/backend-common@0.19.5
+  - @backstage/config@1.1.0
+  - @backstage/errors@1.2.2
+
 ## 0.3.7-next.3
 
 ### Patch Changes

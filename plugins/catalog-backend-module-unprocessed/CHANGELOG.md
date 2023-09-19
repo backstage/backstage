@@ -1,5 +1,32 @@
 # @backstage/plugin-catalog-backend-module-unprocessed
 
+## 0.3.0
+
+### Minor Changes
+
+- 71114ac50e02: **BREAKING**: The export for the new backend system has been moved to be the `default` export.
+
+  For example, if you are currently importing the plugin using the following pattern:
+
+  ```ts
+  import { examplePlugin } from '@backstage/plugin-example-backend';
+
+  backend.add(examplePlugin);
+  ```
+
+  It should be migrated to this:
+
+  ```ts
+  backend.add(import('@backstage/plugin-example-backend'));
+  ```
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/plugin-auth-node@0.3.0
+  - @backstage/catalog-model@1.4.2
+  - @backstage/backend-plugin-api@0.6.3
+
 ## 0.3.0-next.3
 
 ### Minor Changes

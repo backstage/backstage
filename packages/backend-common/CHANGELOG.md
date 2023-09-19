@@ -1,5 +1,27 @@
 # @backstage/backend-common
 
+## 0.19.5
+
+### Patch Changes
+
+- 6847cd6225d6: Avoid starting database keepalive loop in tests.
+- fd3fdd0e3338: The root logger is now initialized lazily, fixing a circular dependency issue with `@backstage/backend-app-api` that would result in `Cannot read properties of undefined (reading 'redacter')`.
+- 5f1a92b9f19f: Use `DefaultAzureDevOpsCredentialsProvider` to retrieve credentials for Azure DevOps.
+- 19a140418cc8: Added retries for initial database creation, as well as set minimum connection pool size for the database creation client to 0 and lowered the connection acquisition timeout.
+- 05508a9757d2: Minor internal refactor
+- cfc3ca6ce060: Changes needed to support MySQL
+- Updated dependencies
+  - @backstage/backend-app-api@0.5.3
+  - @backstage/config@1.1.0
+  - @backstage/errors@1.2.2
+  - @backstage/integration@1.7.0
+  - @backstage/types@1.1.1
+  - @backstage/backend-plugin-api@0.6.3
+  - @backstage/config-loader@1.5.0
+  - @backstage/backend-dev-utils@0.1.1
+  - @backstage/cli-common@0.1.12
+  - @backstage/integration-aws-node@0.1.6
+
 ## 0.19.5-next.3
 
 ### Patch Changes
