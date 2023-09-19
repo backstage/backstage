@@ -57,6 +57,7 @@ export type WorkflowProps = {
   | 'onCreate'
   | 'initialState'
   | 'layouts'
+  | 'onFirstStepBack'
 >;
 
 /**
