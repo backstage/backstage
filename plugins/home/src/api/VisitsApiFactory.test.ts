@@ -299,6 +299,19 @@ describe('new MemoryVisitsApi()', () => {
       expect(visits).toEqual([expect.objectContaining(visitsToSave[1])]);
     });
 
+    it('filters by timestamp with !=', async () => {
+      const visits = await api.list({
+        filterBy: [
+          { field: 'timestamp', operator: '!=', value: baseDate + 360_000 },
+        ],
+      });
+      expect(visits).toHaveLength(2);
+      expect(visits).toEqual([
+        expect.objectContaining(visitsToSave[2]),
+        expect.objectContaining(visitsToSave[0]),
+      ]);
+    });
+
     it('filters by entityRef with contains', async () => {
       const visits = await api.list({
         filterBy: [

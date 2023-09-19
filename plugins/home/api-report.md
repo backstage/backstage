@@ -297,7 +297,7 @@ export type VisitsApiQueryParams = {
   }>;
   filterBy?: Array<{
     field: keyof Visit;
-    operator: '<' | '<=' | '==' | '>' | '>=' | 'contains';
+    operator: '<' | '<=' | '==' | '!=' | '>' | '>=' | 'contains';
     value: string | number;
   }>;
 };
