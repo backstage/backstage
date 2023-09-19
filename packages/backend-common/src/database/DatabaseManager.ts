@@ -377,7 +377,9 @@ export class DatabaseManager {
         databaseClientOverrides,
         deps,
       );
-      this.startKeepaliveLoop(pluginId, client);
+      if (process.env.NODE_ENV !== 'test') {
+        this.startKeepaliveLoop(pluginId, client);
+      }
       return client;
     });
 

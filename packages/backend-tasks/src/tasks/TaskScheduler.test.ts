@@ -19,6 +19,7 @@ import { TestDatabaseId, TestDatabases } from '@backstage/backend-test-utils';
 import { Duration } from 'luxon';
 import waitForExpect from 'wait-for-expect';
 import { TaskScheduler } from './TaskScheduler';
+import { createTestScopedSignal } from './__testUtils__/createTestScopedSignal';
 
 jest.setTimeout(60_000);
 
@@ -27,6 +28,7 @@ describe('TaskScheduler', () => {
   const databases = TestDatabases.create({
     ids: ['POSTGRES_13', 'POSTGRES_9', 'SQLITE_3', 'MYSQL_8'],
   });
+  const testScopedSignal = createTestScopedSignal();
 
   async function createDatabase(
     databaseId: TestDatabaseId,
@@ -51,6 +53,7 @@ describe('TaskScheduler', () => {
         id: 'task1',
         timeout: Duration.fromMillis(5000),
         frequency: Duration.fromMillis(5000),
+        signal: testScopedSignal(),
         fn,
       });
 
@@ -71,6 +74,7 @@ describe('TaskScheduler', () => {
         id: 'task2',
         timeout: Duration.fromMillis(5000),
         frequency: { cron: '* * * * * *' },
+        signal: testScopedSignal(),
         fn,
       });
 

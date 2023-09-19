@@ -180,6 +180,7 @@ jsx
 JWTs
 Kaewkasi
 Kaswell
+keepalive
 Keyv
 Knex
 Koyeb
