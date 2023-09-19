@@ -71,6 +71,7 @@ export type StepperProps = {
   FormProps?: FormProps;
   initialState?: Record<string, JsonValue>;
   onCreate: (values: Record<string, JsonValue>) => Promise<void>;
+  onFirstStepBack?: () => void;
   components?: {
     ReviewStateComponent?: (props: ReviewStateProps) => JSX.Element;
     createButtonText?: ReactNode;
@@ -118,9 +119,13 @@ export const Stepper = (stepperProps: StepperProps) => {
     });
   }, [steps, activeStep, validators, apiHolder]);
 
-  const handleBack = () => {
-    setActiveStep(prevActiveStep => prevActiveStep - 1);
-  };
+  const handleBack = useCallback(() => {
+    if (activeStep === 0 && props.onFirstStepBack) {
+      props.onFirstStepBack();
+    } else {
+      setActiveStep(activeStep - 1);
+    }
+  }, [activeStep, props]);
 
   const handleChange = useCallback(
     (e: IChangeEvent) =>
@@ -189,7 +194,9 @@ export const Stepper = (stepperProps: StepperProps) => {
               <Button
                 onClick={handleBack}
                 className={styles.backButton}
-                disabled={activeStep < 1 || isValidating}
+                disabled={
+                  (activeStep < 1 && !props.onFirstStepBack) || isValidating
+                }
               >
                 Back
               </Button>

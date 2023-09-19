@@ -55,6 +55,9 @@ describe('Stepper', () => {
       <Stepper manifest={manifest} extensions={[]} onCreate={jest.fn()} />,
     );
 
+    expect(getByRole('button', { name: 'Back' })).toBeInTheDocument();
+    expect(getByRole('button', { name: 'Back' })).toBeDisabled();
+
     expect(getByRole('button', { name: 'Next' })).toBeInTheDocument();
 
     await act(async () => {
@@ -110,6 +113,52 @@ describe('Stepper', () => {
     expect(getByRole('textbox', { name: 'name' })).toHaveValue(
       'im a test value',
     );
+  });
+
+  it('should handle onFirstStepBack prop', async () => {
+    const manifest: TemplateParameterSchema = {
+      steps: [
+        {
+          title: 'Step 1',
+          schema: {
+            properties: {
+              name: {
+                type: 'string',
+              },
+            },
+          },
+        },
+        {
+          title: 'Step 2',
+          schema: {
+            properties: {
+              description: {
+                type: 'string',
+              },
+            },
+          },
+        },
+      ],
+      title: 'React JSON Schema Form Test',
+    };
+
+    const handleFirstStepBack = jest.fn();
+
+    const { getByRole } = await renderInTestApp(
+      <Stepper
+        manifest={manifest}
+        extensions={[]}
+        onCreate={jest.fn()}
+        onFirstStepBack={handleFirstStepBack}
+      />,
+    );
+
+    await act(async () => {
+      await fireEvent.click(getByRole('button', { name: 'Back' }));
+    });
+
+    expect(getByRole('textbox', { name: 'name' })).toBeInTheDocument();
+    expect(handleFirstStepBack).toHaveBeenCalledTimes(1);
   });
 
   it('should merge nested formData correctly in multiple steps', async () => {
