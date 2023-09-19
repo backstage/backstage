@@ -242,6 +242,85 @@ const defaultConfig = [
 <CustomHomepageGrid config={defaultConfig}>
 ```
 
+## Page visit homepage component (HomePageVisitedByType)
+
+This component shows the homepage user a view for "Recently visited" or "Top visited".
+Being provided by the `<HomePageVisitedByType/>` component, see it in use on a homepage example below:
+
+```tsx
+// packages/app/src/components/home/HomePage.tsx
+import React from 'react';
+import Grid from '@material-ui/core/Grid';
+import { HomePageVisitedByType } from '@backstage/plugin-home';
+
+export const homePage = (
+  <Grid container spacing={3}>
+    <Grid item xs={12} md={4}>
+      <HomePageVisitedByType kind="top" />
+    </Grid>
+    <Grid item xs={12} md={4}>
+      <HomePageVisitedByType kind="recent" />
+    </Grid>
+  </Grid>
+);
+```
+
+There are some requirements to provide its functionality, so please ensure the following:
+
+These components need an API to handle visit data, please refer to the [utility-apis](../../docs/api/utility-apis.md)
+documentation for more information. Bellow you can see an example for two options:
+
+```ts
+// packages/app/src/apis.ts
+// ...
+import {
+  CoreStorageVisitsApi,
+  LocalStoreVisitsApi,
+  visitsApiRef,
+} from '@backstage/plugin-home';
+// ...
+export const apis: AnyApiFactory[] = [
+  // Implementation that relies on the integration with storageApi
+  createApiFactory({
+    api: visitsApiRef,
+    deps: {
+      storageApi: storageApiRef,
+      identityApi: identityApiRef,
+    },
+    factory: ({ storageApi, identityApi }) =>
+      CoreStorageVisitsApi.create({ storageApi, identityApi }),
+  }),
+
+  // Or a local data implementation, relies on the browser's window.localStorage
+  createApiFactory({
+    api: visitsApiRef,
+    deps: {
+      identityApi: identityApiRef,
+    },
+    factory: ({ identityApi }) => LocalStoreVisitsApi.create({ identityApi }),
+  }),
+  // ...
+```
+
+To monitor page visit activity and save it on behalf of the user a component is provided, please add it to your app.
+See the example usage:
+
+```ts
+// packages/app/src/App.tsx
+import { VisitsListener } from '@backstage/plugin-home';
+// ...
+export default app.createRoot(
+  <>
+    <AlertDisplay />
+    <OAuthRequestDialog />
+    <AppRouter>
+      <VisitsListener />
+      <Root>{routes}</Root>
+    </AppRouter>
+  </>,
+);
+```
+
 ## Contributing
 
 ### Homepage Components
