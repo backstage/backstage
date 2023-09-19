@@ -4148,6 +4148,7 @@ __metadata:
     "@types/zen-observable": ^0.8.0
     ansi-regex: ^6.0.1
     classnames: ^2.2.6
+    cross-fetch: ^3.1.5
     d3-selection: ^3.0.0
     d3-shape: ^3.0.0
     d3-zoom: ^3.0.0
@@ -4164,6 +4165,7 @@ __metadata:
     rc-progress: 3.5.1
     react-helmet: 6.1.0
     react-hook-form: ^7.12.2
+    react-idle-timer: 5.6.2
     react-markdown: ^8.0.0
     react-sparklines: ^1.7.0
     react-syntax-highlighter: ^15.4.5
@@ -37363,6 +37365,16 @@ __metadata:
   peerDependencies:
     react: ^16.8.0 || ^17 || ^18
   checksum: 9c11ba454ce5b2a16e7499f2ca710e0c0cff227f39689b8e7985902f27f99bfc7a2c49f145ef228528764cf8286bf6101fc8a0f5094ce652eb31cab1684518d1
+  languageName: node
+  linkType: hard
+
+"react-idle-timer@npm:5.6.2":
+  version: 5.6.2
+  resolution: "react-idle-timer@npm:5.6.2"
+  peerDependencies:
+    react: ">=16"
+    react-dom: ">=16"
+  checksum: 23c31be5490be8b22f21ba374e01b751eb845a0e37d077e6369d9a95cf45625ca43b7402f46c53dffaae9e55866920c30f2b1a316e0a9500f73ed91155dd0041
   languageName: node
   linkType: hard
 

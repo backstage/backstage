@@ -303,6 +303,7 @@
       "auth/oidc",
       "auth/add-auth-provider",
       "auth/service-to-service-auth",
+      "auth/autologout",
       "auth/troubleshooting",
       "auth/glossary"
     ],
