@@ -22,7 +22,6 @@ import { ReactNode } from 'react';
 import { RendererProps as RendererProps_2 } from '@backstage/plugin-home-react';
 import { RouteRef } from '@backstage/core-plugin-api';
 import { SetStateAction } from 'react';
-import { stringifyEntityRef } from '@backstage/catalog-model';
 
 // @public
 export type Breakpoint = 'xxs' | 'xs' | 'sm' | 'md' | 'lg' | 'xl';
@@ -107,15 +106,6 @@ export const DoNotTrack: ({
 }: {
   children?: ReactNode;
 }) => JSX.Element;
-
-// @public
-export const getToEntityRef: ({
-  rootPath,
-  stringifyEntityRefImpl,
-}?: {
-  rootPath?: string | undefined;
-  stringifyEntityRefImpl?: typeof stringifyEntityRef | undefined;
-}) => ({ pathname }: { pathname: string }) => string | undefined;
 
 // @public
 export const getVisitName: (document: Document) => () => string;
