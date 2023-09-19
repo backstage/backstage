@@ -1,5 +1,13 @@
 # @backstage/plugin-bitbucket-cloud-common
 
+## 0.2.12
+
+### Patch Changes
+
+- 406b786a2a2c: Mark package as being free of side effects, allowing more optimized Webpack builds.
+- Updated dependencies
+  - @backstage/integration@1.7.0
+
 ## 0.2.12-next.3
 
 ### Patch Changes

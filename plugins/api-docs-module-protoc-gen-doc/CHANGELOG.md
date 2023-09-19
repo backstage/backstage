@@ -1,5 +1,12 @@
 # @backstage/plugin-api-docs-module-protoc-gen-doc
 
+## 0.1.3
+
+### Patch Changes
+
+- 482bb5c0bbf8: Moved `@types/react` to be a regular dependency
+- 406b786a2a2c: Mark package as being free of side effects, allowing more optimized Webpack builds.
+
 ## 0.1.3-next.1
 
 ### Patch Changes

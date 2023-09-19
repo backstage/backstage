@@ -1,5 +1,13 @@
 # @backstage/plugin-tech-insights-common
 
+## 0.2.12
+
+### Patch Changes
+
+- 406b786a2a2c: Mark package as being free of side effects, allowing more optimized Webpack builds.
+- Updated dependencies
+  - @backstage/types@1.1.1
+
 ## 0.2.12-next.0
 
 ### Patch Changes

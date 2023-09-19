@@ -1,5 +1,20 @@
 # @backstage/plugin-github-pull-requests-board
 
+## 0.1.18
+
+### Patch Changes
+
+- 482bb5c0bbf8: Moved `@types/react` to be a regular dependency
+- 406b786a2a2c: Mark package as being free of side effects, allowing more optimized Webpack builds.
+- 8cec7664e146: Removed `@types/node` dependency
+- Updated dependencies
+  - @backstage/plugin-catalog-react@1.8.4
+  - @backstage/core-components@0.13.5
+  - @backstage/catalog-model@1.4.2
+  - @backstage/core-plugin-api@1.6.0
+  - @backstage/integration@1.7.0
+  - @backstage/theme@0.4.2
+
 ## 0.1.18-next.3
 
 ### Patch Changes

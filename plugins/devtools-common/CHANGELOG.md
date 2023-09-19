@@ -1,5 +1,15 @@
 # @backstage/plugin-devtools-common
 
+## 0.1.4
+
+### Patch Changes
+
+- 406b786a2a2c: Mark package as being free of side effects, allowing more optimized Webpack builds.
+- 12e644aa4eef: Show resource utilization in `DevTools` plugin
+- Updated dependencies
+  - @backstage/plugin-permission-common@0.7.8
+  - @backstage/types@1.1.1
+
 ## 0.1.4-next.2
 
 ### Patch Changes

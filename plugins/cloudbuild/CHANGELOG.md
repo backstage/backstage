@@ -1,5 +1,20 @@
 # @backstage/plugin-cloudbuild
 
+## 0.3.24
+
+### Patch Changes
+
+- 482bb5c0bbf8: Moved `@types/react` to be a regular dependency
+- 406b786a2a2c: Mark package as being free of side effects, allowing more optimized Webpack builds.
+- 8cec7664e146: Removed `@types/node` dependency
+- 814feeed7343: Update to handle invalid luxon values
+- Updated dependencies
+  - @backstage/plugin-catalog-react@1.8.4
+  - @backstage/core-components@0.13.5
+  - @backstage/catalog-model@1.4.2
+  - @backstage/core-plugin-api@1.6.0
+  - @backstage/theme@0.4.2
+
 ## 0.3.24-next.3
 
 ### Patch Changes

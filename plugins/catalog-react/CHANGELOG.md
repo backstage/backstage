@@ -1,5 +1,26 @@
 # @backstage/plugin-catalog-react
 
+## 1.8.4
+
+### Patch Changes
+
+- bd817209ddd7: Export the `EntityAutocompletePicker` component.
+- 406b786a2a2c: Mark package as being free of side effects, allowing more optimized Webpack builds.
+- 7029ba1ce0af: Added delete alert popup when user delete the entity
+- Updated dependencies
+  - @backstage/core-components@0.13.5
+  - @backstage/catalog-client@1.4.4
+  - @backstage/catalog-model@1.4.2
+  - @backstage/core-plugin-api@1.6.0
+  - @backstage/errors@1.2.2
+  - @backstage/integration@1.7.0
+  - @backstage/plugin-catalog-common@1.0.16
+  - @backstage/plugin-permission-common@0.7.8
+  - @backstage/plugin-permission-react@0.4.15
+  - @backstage/theme@0.4.2
+  - @backstage/types@1.1.1
+  - @backstage/version-bridge@1.0.5
+
 ## 1.8.4-next.3
 
 ### Patch Changes

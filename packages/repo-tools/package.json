@@ -1,7 +1,7 @@
 {
   "name": "@backstage/repo-tools",
   "description": "CLI for Backstage repo tooling ",
-  "version": "0.3.4-next.3",
+  "version": "0.3.4",
   "publishConfig": {
     "access": "public"
   },

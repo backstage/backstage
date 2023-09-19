@@ -1,5 +1,20 @@
 # @backstage/plugin-graphiql
 
+## 0.2.54
+
+### Patch Changes
+
+- 482bb5c0bbf8: Moved `@types/react` to be a regular dependency
+- b2fbeed5403b: Add support for using the FetchApi
+- cf950c3b6eab: Added experimental exports for the new frontend system under `/alpha`.
+- 406b786a2a2c: Mark package as being free of side effects, allowing more optimized Webpack builds.
+- 8cec7664e146: Removed `@types/node` dependency
+- Updated dependencies
+  - @backstage/frontend-plugin-api@0.1.0
+  - @backstage/core-components@0.13.5
+  - @backstage/core-plugin-api@1.6.0
+  - @backstage/theme@0.4.2
+
 ## 0.2.54-next.3
 
 ### Patch Changes
