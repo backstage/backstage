@@ -123,7 +123,10 @@ export function TemplateEditorForm(props: TemplateEditorFormProps) {
           setSteps(undefined);
           return;
         }
-        const parsed: JsonValue = yaml.parse(content);
+        const parsed: JsonValue = yaml
+          .parseAllDocuments(content)
+          .map(c => c.toJSON())
+          .filter(c => c)[0];
 
         if (!isJsonObject(parsed)) {
           setSteps(undefined);
