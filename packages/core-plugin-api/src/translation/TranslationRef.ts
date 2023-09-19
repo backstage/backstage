@@ -108,7 +108,7 @@ class TranslationRefImpl<
 /** @alpha */
 export function createTranslationRef<
   TId extends string,
-  TMessages extends { [key in string]: string },
+  const TMessages extends { [key in string]: string },
   TTranslations extends {
     [language in string]: () => Promise<{
       default: { [key in keyof TMessages]: string | null };
@@ -130,10 +130,11 @@ export function createTranslationRef<
 }
 
 /** @internal */
-export function toInternalTranslationRef(
-  ref: TranslationRef,
-): InternalTranslationRef {
-  const r = ref as InternalTranslationRef;
+export function toInternalTranslationRef<
+  TId extends string,
+  TMessages extends { [key in string]: string },
+>(ref: TranslationRef<TId, TMessages>): InternalTranslationRef<TId, TMessages> {
+  const r = ref as InternalTranslationRef<TId, TMessages>;
   if (r.$$type !== '@backstage/TranslationRef') {
     throw new Error(`Invalid translation ref, bad type '${r.$$type}'`);
   }

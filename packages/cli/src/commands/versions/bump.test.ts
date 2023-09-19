@@ -31,6 +31,9 @@ import { rest } from 'msw';
 import { NotFoundError } from '@backstage/errors';
 import { Lockfile } from '../../lib/versioning/Lockfile';
 
+// Avoid mutating the global http(s) agent used in other tests
+jest.mock('global-agent/bootstrap', () => {});
+
 // Remove log coloring to simplify log matching
 jest.mock('chalk', () => ({
   red: (str: string) => str,

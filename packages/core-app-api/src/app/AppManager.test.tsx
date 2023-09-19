@@ -276,7 +276,7 @@ describe('Integration Test', () => {
         });
       },
       __experimentalTranslations: {
-        supportedLanguages: ['en'],
+        availableLanguages: ['en', 'de'],
       },
     });
 

@@ -233,16 +233,7 @@ export const kubernetesPermissions: BasicPermission[];
 export const kubernetesProxyPermission: BasicPermission;
 
 // @public (undocumented)
-export interface KubernetesRequestAuth {
-  // (undocumented)
-  aks?: string;
-  // (undocumented)
-  google?: string;
-  // (undocumented)
-  oidc?: {
-    [key: string]: string;
-  };
-}
+export type KubernetesRequestAuth = JsonObject;
 
 // @public (undocumented)
 export interface KubernetesRequestBody {

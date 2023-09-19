@@ -278,8 +278,8 @@ Options:
   --config <path>
   --role <name>
   --check
-  --inspect
-  --inspect-brk
+  --inspect [host]
+  --inspect-brk [host]
   -h, --help
 ```
 

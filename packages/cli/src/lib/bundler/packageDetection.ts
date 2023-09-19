@@ -70,6 +70,11 @@ async function detectPackages(
           depPackageJson.backstage?.role ?? '',
         )
       ) {
+        // Include alpha entry point if available. If there's no default export it will be ignored
+        const exp = depPackageJson.exports;
+        if (exp && typeof exp === 'object' && './alpha' in exp) {
+          return [depName, `${depName}/alpha`];
+        }
         return [depName];
       }
       return [];

@@ -32,9 +32,9 @@ import {
   setupRequestMockHandlers,
   TestApiProvider,
   TestApiRegistry,
-  wrapInTestApp,
+  renderInTestApp,
 } from '@backstage/test-utils';
-import { render } from '@testing-library/react';
+import { screen } from '@testing-library/react';
 import { rest } from 'msw';
 import { setupServer } from 'msw/node';
 import React from 'react';
@@ -79,16 +79,14 @@ describe('AuditView', () => {
   });
 
   it('renders the iframe for the selected audit', async () => {
-    const rendered = render(
-      wrapInTestApp(
-        <ApiProvider apis={apis}>
-          <AuditView />
-        </ApiProvider>,
-        testAppOptions,
-      ),
+    await renderInTestApp(
+      <ApiProvider apis={apis}>
+        <AuditView />
+      </ApiProvider>,
+      testAppOptions,
     );
 
-    const iframe = await rendered.findByTitle(
+    const iframe = await screen.findByTitle(
       'Lighthouse audit for https://spotify.com',
     );
     expect(iframe).toBeInTheDocument();
@@ -97,38 +95,32 @@ describe('AuditView', () => {
 
   describe('sidebar', () => {
     it('renders a list of all audits for the website', async () => {
-      const rendered = render(
-        wrapInTestApp(
-          <ApiProvider apis={apis}>
-            <AuditView />
-          </ApiProvider>,
-          testAppOptions,
-        ),
+      await renderInTestApp(
+        <ApiProvider apis={apis}>
+          <AuditView />
+        </ApiProvider>,
+        testAppOptions,
       );
 
-      await rendered.findByTestId('audit-sidebar');
+      await screen.findByTestId('audit-sidebar');
 
       websiteResponse.audits.forEach(a => {
-        expect(
-          rendered.getByText(formatTime(a.timeCreated)),
-        ).toBeInTheDocument();
+        expect(screen.getByText(formatTime(a.timeCreated))).toBeInTheDocument();
       });
     });
 
     it('sets the current audit as active', async () => {
-      const rendered = render(
-        wrapInTestApp(
-          <ApiProvider apis={apis}>
-            <AuditView />
-          </ApiProvider>,
-          testAppOptions,
-        ),
+      await renderInTestApp(
+        <ApiProvider apis={apis}>
+          <AuditView />
+        </ApiProvider>,
+        testAppOptions,
       );
 
-      await rendered.findByTestId('audit-sidebar');
+      await screen.findByTestId('audit-sidebar');
 
       const audit = websiteResponse.audits.find(a => a.id === id) as Audit;
-      const auditElement = rendered.getByText(formatTime(audit.timeCreated));
+      const auditElement = screen.getByText(formatTime(audit.timeCreated));
       expect(auditElement.parentElement?.parentElement?.className).toContain(
         'selected',
       );
@@ -136,7 +128,7 @@ describe('AuditView', () => {
       const notSelectedAudit = websiteResponse.audits.find(
         a => a.id !== id,
       ) as Audit;
-      const notSelectedAuditElement = rendered.getByText(
+      const notSelectedAuditElement = screen.getByText(
         formatTime(notSelectedAudit.timeCreated),
       );
       expect(
@@ -145,20 +137,18 @@ describe('AuditView', () => {
     });
 
     it('navigates to the next report when an audit is clicked', async () => {
-      const rendered = render(
-        wrapInTestApp(
-          <ApiProvider apis={apis}>
-            <AuditView />
-          </ApiProvider>,
-          testAppOptions,
-        ),
+      await renderInTestApp(
+        <ApiProvider apis={apis}>
+          <AuditView />
+        </ApiProvider>,
+        testAppOptions,
       );
 
-      await rendered.findByTestId('audit-sidebar');
+      await screen.findByTestId('audit-sidebar');
 
       websiteResponse.audits.forEach(a => {
         expect(
-          rendered.getByText(formatTime(a.timeCreated)).parentElement
+          screen.getByText(formatTime(a.timeCreated)).parentElement
             ?.parentElement,
         ).toHaveAttribute('href', `/audit/${a.id}`);
       });
@@ -168,27 +158,25 @@ describe('AuditView', () => {
       const configApiMock = new ConfigReader({
         app: { baseUrl: `http://localhost:3000/example` },
       });
-      const rendered = render(
-        wrapInTestApp(
-          <TestApiProvider
-            apis={[
-              [lighthouseApiRef, lighthouseRestApiMock],
-              [configApiRef, configApiMock],
-            ]}
-          >
-            <AuditView />
-          </TestApiProvider>,
-          {
-            mountedRoutes: { [`/example/lighthouse`]: rootRouteRef },
-          },
-        ),
+      await renderInTestApp(
+        <TestApiProvider
+          apis={[
+            [lighthouseApiRef, lighthouseRestApiMock],
+            [configApiRef, configApiMock],
+          ]}
+        >
+          <AuditView />
+        </TestApiProvider>,
+        {
+          mountedRoutes: { [`/example/lighthouse`]: rootRouteRef },
+        },
       );
 
-      await rendered.findByTestId('audit-sidebar');
+      await screen.findByTestId('audit-sidebar');
 
       websiteResponse.audits.forEach(a => {
         expect(
-          rendered.getByText(formatTime(a.timeCreated)).parentElement
+          screen.getByText(formatTime(a.timeCreated)).parentElement
             ?.parentElement,
         ).toHaveAttribute('href', `/example/lighthouse/audit/${a.id}`);
       });
@@ -198,15 +186,13 @@ describe('AuditView', () => {
   describe('when the request for the website by id is pending', () => {
     it('shows the loading', async () => {
       server.use(rest.get('*', (_req, res, ctx) => res(ctx.delay(20000))));
-      const rendered = render(
-        wrapInTestApp(
-          <ApiProvider apis={apis}>
-            <AuditView />
-          </ApiProvider>,
-          testAppOptions,
-        ),
+      await renderInTestApp(
+        <ApiProvider apis={apis}>
+          <AuditView />
+        </ApiProvider>,
+        testAppOptions,
       );
-      expect(await rendered.findByTestId('progress')).toBeInTheDocument();
+      expect(await screen.findByTestId('progress')).toBeInTheDocument();
     });
   });
 
@@ -217,15 +203,13 @@ describe('AuditView', () => {
           res(ctx.status(500), ctx.body('failed to fetch')),
         ),
       );
-      const rendered = render(
-        wrapInTestApp(
-          <ApiProvider apis={apis}>
-            <AuditView />
-          </ApiProvider>,
-          testAppOptions,
-        ),
+      await renderInTestApp(
+        <ApiProvider apis={apis}>
+          <AuditView />
+        </ApiProvider>,
+        testAppOptions,
       );
-      expect(await rendered.findByText(/failed to fetch/)).toBeInTheDocument();
+      expect(await screen.findByText(/failed to fetch/)).toBeInTheDocument();
     });
   });
 
@@ -235,18 +219,16 @@ describe('AuditView', () => {
         ?.id as string;
       useParams.mockReturnValueOnce({ id });
 
-      const rendered = render(
-        wrapInTestApp(
-          <ApiProvider apis={apis}>
-            <AuditView />
-          </ApiProvider>,
-          testAppOptions,
-        ),
+      await renderInTestApp(
+        <ApiProvider apis={apis}>
+          <AuditView />
+        </ApiProvider>,
+        testAppOptions,
       );
 
-      await rendered.findByTestId('audit-sidebar');
+      await screen.findByTestId('audit-sidebar');
 
-      expect(rendered.getByTestId('progress')).toBeInTheDocument();
+      expect(screen.getByTestId('progress')).toBeInTheDocument();
     });
   });
 
@@ -256,18 +238,16 @@ describe('AuditView', () => {
         ?.id as string;
       useParams.mockReturnValueOnce({ id });
 
-      const rendered = render(
-        wrapInTestApp(
-          <ApiProvider apis={apis}>
-            <AuditView />
-          </ApiProvider>,
-          testAppOptions,
-        ),
+      await renderInTestApp(
+        <ApiProvider apis={apis}>
+          <AuditView />
+        </ApiProvider>,
+        testAppOptions,
       );
 
-      await rendered.findByTestId('audit-sidebar');
+      await screen.findByTestId('audit-sidebar');
 
-      expect(rendered.getByText(/This audit failed/)).toBeInTheDocument();
+      expect(screen.getByText(/This audit failed/)).toBeInTheDocument();
     });
   });
 });

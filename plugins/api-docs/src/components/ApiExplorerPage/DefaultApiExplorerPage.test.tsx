@@ -34,10 +34,10 @@ import {
 import {
   MockStorageApi,
   TestApiProvider,
-  wrapInTestApp,
+  renderInTestApp,
 } from '@backstage/test-utils';
 import DashboardIcon from '@material-ui/icons/Dashboard';
-import { render, waitFor } from '@testing-library/react';
+import { screen, waitFor } from '@testing-library/react';
 import React from 'react';
 import { apiDocsConfigRef } from '../../config';
 import { DefaultApiExplorerPage } from './DefaultApiExplorerPage';
@@ -78,44 +78,44 @@ describe('DefaultApiExplorerPage', () => {
   const storageApi = MockStorageApi.create();
 
   const renderWrapped = (children: React.ReactNode) =>
-    render(
-      wrapInTestApp(
-        <TestApiProvider
-          apis={[
-            [catalogApiRef, catalogApi],
-            [configApiRef, configApi],
-            [storageApiRef, storageApi],
-            [
-              starredEntitiesApiRef,
-              new DefaultStarredEntitiesApi({ storageApi }),
-            ],
-            [apiDocsConfigRef, apiDocsConfig],
-          ]}
-        >
-          {children}
-        </TestApiProvider>,
-        {
-          mountedRoutes: {
-            '/catalog/:namespace/:kind/:name': entityRouteRef,
-          },
+    renderInTestApp(
+      <TestApiProvider
+        apis={[
+          [catalogApiRef, catalogApi],
+          [configApiRef, configApi],
+          [storageApiRef, storageApi],
+          [
+            starredEntitiesApiRef,
+            new DefaultStarredEntitiesApi({ storageApi }),
+          ],
+          [apiDocsConfigRef, apiDocsConfig],
+        ]}
+      >
+        {children}
+      </TestApiProvider>,
+      {
+        mountedRoutes: {
+          '/catalog/:namespace/:kind/:name': entityRouteRef,
         },
-      ),
+      },
     );
 
   // this test right now causes some red lines in the log output when running tests
   // related to some theme issues in mui-table
   // https://github.com/mbrn/material-table/issues/1293
   it('should render', async () => {
-    const { findByText } = renderWrapped(<DefaultApiExplorerPage />);
-    expect(await findByText(/My Company API Explorer/)).toBeInTheDocument();
+    await renderWrapped(<DefaultApiExplorerPage />);
+    expect(
+      await screen.findByText(/My Company API Explorer/),
+    ).toBeInTheDocument();
   });
 
   it('should render the default column of the grid', async () => {
-    const { getAllByRole } = renderWrapped(<DefaultApiExplorerPage />);
+    await renderWrapped(<DefaultApiExplorerPage />);
 
-    const columnHeader = getAllByRole('button').filter(
-      c => c.tagName === 'SPAN',
-    );
+    const columnHeader = screen
+      .getAllByRole('button')
+      .filter(c => c.tagName === 'SPAN');
     const columnHeaderLabels = columnHeader.map(c => c.textContent);
 
     await waitFor(() =>
@@ -138,13 +138,11 @@ describe('DefaultApiExplorerPage', () => {
       { title: 'Bar', field: 'entity.bar' },
       { title: 'Baz', field: 'entity.spec.lifecycle' },
     ];
-    const { getAllByRole } = renderWrapped(
-      <DefaultApiExplorerPage columns={columns} />,
-    );
+    await renderWrapped(<DefaultApiExplorerPage columns={columns} />);
 
-    const columnHeader = getAllByRole('button').filter(
-      c => c.tagName === 'SPAN',
-    );
+    const columnHeader = screen
+      .getAllByRole('button')
+      .filter(c => c.tagName === 'SPAN');
     const columnHeaderLabels = columnHeader.map(c => c.textContent);
 
     await waitFor(() =>
@@ -153,14 +151,12 @@ describe('DefaultApiExplorerPage', () => {
   });
 
   it('should render the default actions of an item in the grid', async () => {
-    const { findByTitle, findByText } = await renderWrapped(
-      <DefaultApiExplorerPage />,
-    );
-    expect(await findByText(/All apis \(1\)/)).toBeInTheDocument();
-    expect(await findByTitle(/View/)).toBeInTheDocument();
-    expect(await findByTitle(/View/)).toBeInTheDocument();
-    expect(await findByTitle(/Edit/)).toBeInTheDocument();
-    expect(await findByTitle(/Add to favorites/)).toBeInTheDocument();
+    await renderWrapped(<DefaultApiExplorerPage />);
+    expect(await screen.findByText(/All apis \(1\)/)).toBeInTheDocument();
+    expect(await screen.findByTitle(/View/)).toBeInTheDocument();
+    expect(await screen.findByTitle(/View/)).toBeInTheDocument();
+    expect(await screen.findByTitle(/Edit/)).toBeInTheDocument();
+    expect(await screen.findByTitle(/Add to favorites/)).toBeInTheDocument();
   });
 
   it('should render the custom actions of an item passed as prop', async () => {
@@ -183,12 +179,10 @@ describe('DefaultApiExplorerPage', () => {
       },
     ];
 
-    const { findByTitle, findByText } = await renderWrapped(
-      <DefaultApiExplorerPage actions={actions} />,
-    );
-    expect(await findByText(/All apis \(1\)/)).toBeInTheDocument();
-    expect(await findByTitle(/Foo Action/)).toBeInTheDocument();
-    expect(await findByTitle(/Bar Action/)).toBeInTheDocument();
-    expect((await findByTitle(/Bar Action/)).firstChild).toBeDisabled();
+    await renderWrapped(<DefaultApiExplorerPage actions={actions} />);
+    expect(await screen.findByText(/All apis \(1\)/)).toBeInTheDocument();
+    expect(await screen.findByTitle(/Foo Action/)).toBeInTheDocument();
+    expect(await screen.findByTitle(/Bar Action/)).toBeInTheDocument();
+    expect((await screen.findByTitle(/Bar Action/)).firstChild).toBeDisabled();
   });
 });

@@ -35,6 +35,7 @@ import { getVoidLogger } from '@backstage/backend-common';
 import { PassThrough } from 'stream';
 import { initRepoAndPush } from '../helpers';
 import yaml from 'yaml';
+import { sep } from 'path';
 import { examples } from './bitbucket.examples';
 
 describe('publish:bitbucket', () => {
@@ -189,7 +190,7 @@ describe('publish:bitbucket', () => {
       input: yaml.parse(examples[4].example).steps[0].input,
     });
     expect(initRepoAndPush).toHaveBeenCalledWith({
-      dir: `${mockContext.workspacePath}/repoRoot`,
+      dir: `${mockContext.workspacePath}${sep}repoRoot`,
       remoteUrl: 'https://bitbucket.org/workspace/cloneurl',
       auth: { username: 'x-token-auth', password: 'tokenlols' },
       logger: mockContext.logger,

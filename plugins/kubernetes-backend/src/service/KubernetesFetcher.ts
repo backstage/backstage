@@ -20,7 +20,6 @@ import {
   CoreV1Api,
   KubeConfig,
   Metrics,
-  User,
   bufferFromFileOrString,
   topPods,
 } from '@kubernetes/client-node';
@@ -32,7 +31,9 @@ import {
   KubernetesFetcher,
   ObjectFetchParams,
 } from '../types/types';
+import { KubernetesCredential } from '../auth/types';
 import {
+  ANNOTATION_KUBERNETES_AUTH_PROVIDER,
   FetchResponse,
   KubernetesFetchError,
   KubernetesErrorTypes,
@@ -95,6 +96,7 @@ export class KubernetesClientBasedFetcher implements KubernetesFetcher {
       .map(({ objectType, group, apiVersion, plural }) =>
         this.fetchResource(
           params.clusterDetails,
+          params.credential,
           group,
           apiVersion,
           plural,
@@ -125,6 +127,7 @@ export class KubernetesClientBasedFetcher implements KubernetesFetcher {
 
   fetchPodMetricsByNamespaces(
     clusterDetails: ClusterDetails,
+    credential: KubernetesCredential,
     namespaces: Set<string>,
     labelSelector?: string,
   ): Promise<FetchResponseWrapper> {
@@ -132,13 +135,22 @@ export class KubernetesClientBasedFetcher implements KubernetesFetcher {
       const [podMetrics, podList] = await Promise.all([
         this.fetchResource(
           clusterDetails,
+          credential,
           'metrics.k8s.io',
           'v1beta1',
           'pods',
           ns,
           labelSelector,
         ),
-        this.fetchResource(clusterDetails, '', 'v1', 'pods', ns, labelSelector),
+        this.fetchResource(
+          clusterDetails,
+          credential,
+          '',
+          'v1',
+          'pods',
+          ns,
+          labelSelector,
+        ),
       ]);
       if (podMetrics.ok && podList.ok) {
         return topPods(
@@ -183,6 +195,7 @@ export class KubernetesClientBasedFetcher implements KubernetesFetcher {
 
   private fetchResource(
     clusterDetails: ClusterDetails,
+    credential: KubernetesCredential,
     group: string,
     apiVersion: string,
     plural: string,
@@ -200,13 +213,19 @@ export class KubernetesClientBasedFetcher implements KubernetesFetcher {
 
     let url: URL;
     let requestInit: RequestInit;
+    const authProvider =
+      clusterDetails.authMetadata[ANNOTATION_KUBERNETES_AUTH_PROVIDER];
     if (
-      clusterDetails.serviceAccountToken ||
-      clusterDetails.authProvider === 'localKubectlProxy'
+      authProvider === 'serviceAccount' &&
+      !clusterDetails.authMetadata.serviceAccountToken &&
+      fs.pathExistsSync(Config.SERVICEACCOUNT_CA_PATH)
     ) {
-      [url, requestInit] = this.fetchArgsFromClusterDetails(clusterDetails);
-    } else if (fs.pathExistsSync(Config.SERVICEACCOUNT_TOKEN_PATH)) {
-      [url, requestInit] = this.fetchArgsInCluster();
+      [url, requestInit] = this.fetchArgsInCluster(credential);
+    } else if (
+      credential.type === 'bearer token' ||
+      authProvider === 'localKubectlProxy'
+    ) {
+      [url, requestInit] = this.fetchArgs(clusterDetails, credential);
     } else {
       return Promise.reject(
         new Error(
@@ -228,15 +247,18 @@ export class KubernetesClientBasedFetcher implements KubernetesFetcher {
     return fetch(url, requestInit);
   }
 
-  private fetchArgsFromClusterDetails(
+  private fetchArgs(
     clusterDetails: ClusterDetails,
+    credential: KubernetesCredential,
   ): [URL, RequestInit] {
     const requestInit: RequestInit = {
       method: 'GET',
       headers: {
         Accept: 'application/json',
         'Content-Type': 'application/json',
-        Authorization: `Bearer ${clusterDetails.serviceAccountToken}`,
+        ...(credential.type === 'bearer token' && {
+          Authorization: `Bearer ${credential.token}`,
+        }),
       },
     };
 
@@ -253,23 +275,24 @@ export class KubernetesClientBasedFetcher implements KubernetesFetcher {
     }
     return [url, requestInit];
   }
-  private fetchArgsInCluster(): [URL, RequestInit] {
-    const kc = new KubeConfig();
-    kc.loadFromCluster();
-    // loadFromCluster is guaranteed to populate the cluster/user/context
-    const cluster = kc.getCurrentCluster() as Cluster;
-    const user = kc.getCurrentUser() as User;
-
-    const token = fs.readFileSync(user.authProvider.config.tokenFile);
-
+  private fetchArgsInCluster(
+    credential: KubernetesCredential,
+  ): [URL, RequestInit] {
     const requestInit: RequestInit = {
       method: 'GET',
       headers: {
         Accept: 'application/json',
         'Content-Type': 'application/json',
-        Authorization: `Bearer ${token}`,
+        ...(credential.type === 'bearer token' && {
+          Authorization: `Bearer ${credential.token}`,
+        }),
       },
     };
+
+    const kc = new KubeConfig();
+    kc.loadFromCluster();
+    // loadFromCluster is guaranteed to populate the cluster/user/context
+    const cluster = kc.getCurrentCluster() as Cluster;
 
     const url = new URL(cluster.server);
     if (url.protocol === 'https:') {

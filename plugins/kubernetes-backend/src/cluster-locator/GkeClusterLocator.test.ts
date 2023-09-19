@@ -14,6 +14,7 @@
  * limitations under the License.
  */
 
+import { ANNOTATION_KUBERNETES_AUTH_PROVIDER } from '@backstage/plugin-kubernetes-common';
 import '@backstage/backend-common';
 import { ConfigReader, Config } from '@backstage/config';
 import { GkeClusterLocator } from './GkeClusterLocator';
@@ -104,9 +105,9 @@ describe('GkeClusterLocator', () => {
 
       expect(result).toStrictEqual([
         {
-          authProvider: 'google',
           name: 'some-cluster',
           url: 'https://1.2.3.4',
+          authMetadata: { [ANNOTATION_KUBERNETES_AUTH_PROVIDER]: 'google' },
           skipTLSVerify: false,
           skipMetricsLookup: true,
         },
@@ -141,9 +142,9 @@ describe('GkeClusterLocator', () => {
 
       expect(result).toStrictEqual([
         {
-          authProvider: 'google',
           name: 'some-cluster',
           url: 'https://1.2.3.4',
+          authMetadata: { [ANNOTATION_KUBERNETES_AUTH_PROVIDER]: 'google' },
           skipTLSVerify: false,
           skipMetricsLookup: false,
         },
@@ -183,16 +184,16 @@ describe('GkeClusterLocator', () => {
 
       expect(result).toStrictEqual([
         {
-          authProvider: 'google',
           name: 'some-cluster',
           url: 'https://1.2.3.4',
+          authMetadata: { [ANNOTATION_KUBERNETES_AUTH_PROVIDER]: 'google' },
           skipTLSVerify: false,
           skipMetricsLookup: false,
         },
         {
-          authProvider: 'google',
           name: 'some-other-cluster',
           url: 'https://6.7.8.9',
+          authMetadata: { [ANNOTATION_KUBERNETES_AUTH_PROVIDER]: 'google' },
           skipTLSVerify: false,
           skipMetricsLookup: false,
         },
@@ -238,16 +239,16 @@ describe('GkeClusterLocator', () => {
 
       expect(result).toStrictEqual([
         {
-          authProvider: 'google',
           name: 'some-cluster',
           url: 'https://1.2.3.4',
+          authMetadata: { [ANNOTATION_KUBERNETES_AUTH_PROVIDER]: 'google' },
           skipTLSVerify: false,
           skipMetricsLookup: false,
         },
         {
-          authProvider: 'google',
           name: 'some-other-cluster',
           url: 'https://6.7.8.9',
+          authMetadata: { [ANNOTATION_KUBERNETES_AUTH_PROVIDER]: 'google' },
           skipTLSVerify: false,
           skipMetricsLookup: false,
         },
@@ -299,9 +300,9 @@ describe('GkeClusterLocator', () => {
 
       expect(result).toStrictEqual([
         {
-          authProvider: 'google',
           name: 'some-cluster',
           url: 'https://1.2.3.4',
+          authMetadata: { [ANNOTATION_KUBERNETES_AUTH_PROVIDER]: 'google' },
           skipTLSVerify: false,
           skipMetricsLookup: false,
         },
@@ -363,9 +364,9 @@ describe('GkeClusterLocator', () => {
 
       expect(result).toStrictEqual([
         {
-          authProvider: 'google',
           name: 'some-cluster',
           url: 'https://1.2.3.4',
+          authMetadata: { [ANNOTATION_KUBERNETES_AUTH_PROVIDER]: 'google' },
           skipTLSVerify: false,
           skipMetricsLookup: true,
           dashboardApp: 'gke',

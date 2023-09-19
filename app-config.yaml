@@ -1,6 +1,9 @@
 app:
   title: Backstage Example App
   baseUrl: http://localhost:3000
+  experimental:
+    packages: all # ✨
+
   #datadogRum:
   #  clientToken: '123456789'
   #  applicationId: qwerty

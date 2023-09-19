@@ -16,11 +16,8 @@ export const userSettingsTranslationRef: TranslationRef<
     readonly theme_dark: 'Dark';
     readonly theme_auto: 'Auto';
     readonly change_the_theme_mode: 'Change the theme mode';
-    readonly select_theme_light: 'Select light';
-    readonly select_theme_dark: 'Select dark';
+    readonly select_theme: 'Select {{theme}}';
     readonly select_theme_auto: 'Select Auto Theme';
-    readonly select_theme_custom: 'Select {{custom}}';
-    readonly lng: '{{language}}';
     readonly select_lng: 'Select language {{language}}';
   }
 >;

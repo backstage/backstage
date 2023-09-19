@@ -16,26 +16,22 @@
 
 import {
   MockErrorApi,
-  renderInTestApp,
   TestApiProvider,
-  renderWithEffects,
-  wrapInTestApp,
+  renderInTestApp,
 } from '@backstage/test-utils';
 import { errorApiRef, identityApiRef } from '@backstage/core-plugin-api';
-import { fireEvent, waitFor } from '@testing-library/react';
+import { fireEvent, waitFor, screen } from '@testing-library/react';
 import React from 'react';
 import { UserSettingsMenu } from './UserSettingsMenu';
 
 describe('<UserSettingsMenu />', () => {
   it('displays a menu button with a sign-out option', async () => {
-    const rendered = await renderWithEffects(
-      wrapInTestApp(<UserSettingsMenu />),
-    );
+    await renderInTestApp(<UserSettingsMenu />);
 
-    const menuButton = rendered.getByLabelText('more');
+    const menuButton = screen.getByLabelText('more');
     fireEvent.click(menuButton);
 
-    expect(rendered.getByText('Sign Out')).toBeInTheDocument();
+    expect(screen.getByText('Sign Out')).toBeInTheDocument();
   });
 
   it('handles errors that occur when signing out', async () => {
@@ -43,7 +39,7 @@ describe('<UserSettingsMenu />', () => {
       signOut: jest.fn().mockRejectedValue(new Error('Logout error')),
     };
     const mockErrorApi = new MockErrorApi({ collect: true });
-    const rendered = await renderInTestApp(
+    await renderInTestApp(
       <TestApiProvider
         apis={[
           [errorApiRef, mockErrorApi],
@@ -54,9 +50,9 @@ describe('<UserSettingsMenu />', () => {
       </TestApiProvider>,
     );
 
-    const menuButton = rendered.getByLabelText('more');
+    const menuButton = screen.getByLabelText('more');
     fireEvent.click(menuButton);
-    fireEvent.click(rendered.getByText('Sign Out'));
+    fireEvent.click(screen.getByText('Sign Out'));
 
     await waitFor(() => {
       expect(mockErrorApi.getErrors()).toHaveLength(1);
