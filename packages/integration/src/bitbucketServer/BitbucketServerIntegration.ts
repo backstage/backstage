@@ -75,10 +75,6 @@ export class BitbucketServerIntegration implements ScmIntegration {
 
   resolveEditUrl(url: string): string {
     // Bitbucket Server doesn't support deep linking to edit mode, therefore there's nothing to do here.
-    // We just remove query parameters since they cause issues with TechDocs edit button.
-    if (url.includes('?')) {
-      return url.substring(0, url.indexOf('?'));
-    }
     return url;
   }
 }
