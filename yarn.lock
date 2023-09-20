@@ -16747,15 +16747,15 @@ __metadata:
   linkType: hard
 
 "@types/body-parser-xml@npm:^2.0.2":
-  version: 2.0.2
-  resolution: "@types/body-parser-xml@npm:2.0.2"
+  version: 2.0.3
+  resolution: "@types/body-parser-xml@npm:2.0.3"
   dependencies:
     "@types/body-parser": "*"
     "@types/connect": "*"
     "@types/express-serve-static-core": "*"
     "@types/node": "*"
     "@types/xml2js": "*"
-  checksum: ddac93399bc85b7402193004954215b9152374cd3e0e54e6f500ea71e8bf962ff091300a265551832c863e63539af1a2d9483838073ff43362d0bdf867802a50
+  checksum: 96b8067706b5709b88a2fa20563742363c7b81bf17007bcbbd54536e83d29ca2cfe104a742bd14070a99a2772026b8d595e283cf6a4b87f7ca47390a5a95dc31
   languageName: node
   linkType: hard
 
