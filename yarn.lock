@@ -16738,11 +16738,11 @@ __metadata:
   linkType: hard
 
 "@types/base64-stream@npm:^1.0.2":
-  version: 1.0.2
-  resolution: "@types/base64-stream@npm:1.0.2"
+  version: 1.0.3
+  resolution: "@types/base64-stream@npm:1.0.3"
   dependencies:
     "@types/node": "*"
-  checksum: 4cba1a7dedfb8bef8517a8c9ba47672835342e075de50e9cd00ea52985cb882afa85170756a6983796326c026f62253bbcf4401a25c5ca461b4783194ace2bb5
+  checksum: 4c0328ad7540d57e0f7ddf0135941adc0d1902e6b0f5d6f93537b417d82ae8f996389e14269c67e7c29f9eb6fc717f2f47ffa3f7e35f9a8096e84c3ee7b9853f
   languageName: node
   linkType: hard
 
