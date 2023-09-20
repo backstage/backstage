@@ -13,4 +13,4 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-export { CITable } from './CITable';
+export { CITable, ciTableColumns } from './CITable';

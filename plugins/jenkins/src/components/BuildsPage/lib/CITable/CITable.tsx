@@ -82,7 +82,7 @@ const FailSkippedWidget = ({
   return null;
 };
 
-const generatedColumns: TableColumn[] = [
+export const ciTableColumns: TableColumn<Project>[] = [
   {
     title: 'Timestamp',
     defaultSort: 'desc',
@@ -239,7 +239,7 @@ type Props = {
   total: number;
   pageSize: number;
   onChangePageSize: (pageSize: number) => void;
-  columns: TableColumn[];
+  columns: TableColumn<Project>[];
 };
 
 export const CITableView = ({
@@ -281,13 +281,13 @@ export const CITableView = ({
           <Typography variant="h6">Projects</Typography>
         </Box>
       }
-      columns={columns && columns.length !== 0 ? columns : generatedColumns}
+      columns={columns && columns.length !== 0 ? columns : ciTableColumns}
     />
   );
 };
 
 type CITableProps = {
-  columns?: TableColumn[];
+  columns?: TableColumn<Project>[];
 };
 
 export const CITable = ({ columns }: CITableProps) => {
@@ -296,7 +296,7 @@ export const CITable = ({ columns }: CITableProps) => {
   return (
     <CITableView
       {...tableProps}
-      columns={columns || ([] as TableColumn[])}
+      columns={columns || ([] as TableColumn<Project>[])}
       retry={retry}
       onChangePageSize={setPageSize}
       onChangePage={setPage}

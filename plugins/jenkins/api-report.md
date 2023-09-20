@@ -17,9 +17,14 @@ import { default as React_2 } from 'react';
 import { RouteRef } from '@backstage/core-plugin-api';
 import { TableColumn } from '@backstage/core-components';
 
+// Warning: (ae-missing-release-tag) "ciTableColumns" is part of the package's API, but it is missing a release tag (@alpha, @beta, @public, or @internal)
+//
+// @public (undocumented)
+export const ciTableColumns: TableColumn<Project>[];
+
 // @public (undocumented)
 export const EntityJenkinsContent: (props: {
-  columns?: TableColumn<{}>[] | undefined;
+  columns?: TableColumn<Project>[] | undefined;
 }) => JSX_2.Element;
 
 // @public (undocumented)

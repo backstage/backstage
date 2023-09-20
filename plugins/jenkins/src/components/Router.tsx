@@ -26,6 +26,7 @@ import { JENKINS_ANNOTATION, LEGACY_JENKINS_ANNOTATION } from '../constants';
 import { buildRouteRef } from '../plugin';
 import { CITable } from './BuildsPage/lib/CITable';
 import { DetailedViewPage } from './BuildWithStepsPage/';
+import { Project } from '../api';
 
 /** @public */
 export const isJenkinsAvailable = (entity: Entity) =>
@@ -33,7 +34,7 @@ export const isJenkinsAvailable = (entity: Entity) =>
   Boolean(entity.metadata.annotations?.[LEGACY_JENKINS_ANNOTATION]);
 
 type Props = {
-  columns?: TableColumn[];
+  columns?: TableColumn<Project>[];
 };
 
 export const Router = (props: Props) => {
