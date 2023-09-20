@@ -237,7 +237,7 @@ export function mergeExtensionParameters(options: {
     // Prevent root parametrization
     if (extensionId === 'root') {
       throw new Error(
-        'A "root" extension was detected on the config file and root extensions are not configurable',
+        "A 'root' extension configuration was detected, but the root extension is not configurable",
       );
     }
 
