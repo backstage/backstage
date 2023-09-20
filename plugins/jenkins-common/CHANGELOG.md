@@ -1,5 +1,14 @@
 # @backstage/plugin-jenkins-common
 
+## 0.1.19
+
+### Patch Changes
+
+- 406b786a2a2c: Mark package as being free of side effects, allowing more optimized Webpack builds.
+- Updated dependencies
+  - @backstage/plugin-catalog-common@1.0.16
+  - @backstage/plugin-permission-common@0.7.8
+
 ## 0.1.19-next.2
 
 ### Patch Changes

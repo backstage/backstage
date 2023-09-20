@@ -1,5 +1,34 @@
 # @backstage/cli
 
+## 0.22.13
+
+### Patch Changes
+
+- 04eabd21bee4: Added the ability to specify the listen address for the `--inspect` and `--inspect-brk` command. You can now set the `ip` and port of the `inspect` and `inspectBrk` by adding for example `--inspect=0.0.0.0:9229`
+- 278d9326eb40: Added the ability to create a plain backend module with the `new` command.
+- 4d5eeec52d80: Add ESM loader for the experimental backend start command.
+- 3494c502aba7: Added a new `repo fix` command that fixes auto-fixable problems in all packages. Initially the command fixes package export declarations, as well as marks all non-bundled frontend packages as side-effect free. Marking packages as free of side-effects can drastically reduce the Webpack bundle size.
+- f36113ca2305: Add experimental support for frontend package discovery.
+- a23fce763c6a: Fixed a bug where package exports entry points could not be `.tsx` files.
+- 8cec7664e146: Removed `@types/node` dependency
+- ea779492ad88: Updated dependency `run-script-webpack-plugin` to `^0.2.0`.
+- 4af4defcc114: When running `version:bump` it will now log duplicates instead of throwing an error
+- 71d4368ae5cc: Added support for the `dev/index` entry point for backend plugins and modules.
+- 956d226eeeee: Add `"sideEffects": false` to `package.json` in frontend package templates. This can be added to existing packages using the new `yarn fix` command.
+- cd7331587eb3: Removed the experimental `package fix` command that was used to automatically add dependencies to `package.json`, but has since been replaced by the `no-undeclared-imports` rule from `@backstage/eslint-plugin`.
+- 219b46ae1a50: Include default alpha export during package detection
+- Updated dependencies
+  - @backstage/config@1.1.0
+  - @backstage/catalog-model@1.4.2
+  - @backstage/errors@1.2.2
+  - @backstage/integration@1.7.0
+  - @backstage/release-manifests@0.0.10
+  - @backstage/types@1.1.1
+  - @backstage/config-loader@1.5.0
+  - @backstage/cli-common@0.1.12
+  - @backstage/cli-node@0.1.4
+  - @backstage/eslint-plugin@0.1.3
+
 ## 0.22.13-next.3
 
 ### Patch Changes
