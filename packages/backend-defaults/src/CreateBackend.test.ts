@@ -18,16 +18,24 @@ import {
   coreServices,
   createServiceFactory,
 } from '@backstage/backend-plugin-api';
-import { mockServices } from '@backstage/backend-test-utils';
 import { createBackend } from './CreateBackend';
 
 describe('createBackend', () => {
   it('should not throw when overriding a default service implementation', async () => {
     const backend = createBackend();
 
-    backend.add(mockServices.rootConfig.factory());
+    backend.add(
+      createServiceFactory({
+        service: coreServices.rootConfig,
+        deps: {},
+        factory(): never {
+          throw new Error('NOPE');
+        },
+      }),
+    );
 
-    await expect(backend.start()).resolves.toBe(undefined);
+    // We expect the service factory error to be thrown, rather than any earlier validation
+    await expect(backend.start()).rejects.toThrow('NOPE');
   });
 
   it('should throw on duplicate service implementations', async () => {

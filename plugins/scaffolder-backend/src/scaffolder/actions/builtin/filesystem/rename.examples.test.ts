@@ -85,8 +85,8 @@ describe('fs:rename examples', () => {
     const sourceFilePath = resolvePath(workspacePath, sourceFile);
     const destFilePath = resolvePath(workspacePath, destFile);
 
-    const sourceBeforeContent = fs.readFileSync(sourceFilePath, 'utf-8');
-    const destBeforeContent = fs.readFileSync(destFilePath, 'utf-8');
+    const sourceBeforeContent = await fs.readFile(sourceFilePath, 'utf-8');
+    const destBeforeContent = await fs.readFile(destFilePath, 'utf-8');
 
     expect(sourceBeforeContent).not.toEqual(destBeforeContent);
 
@@ -97,7 +97,7 @@ describe('fs:rename examples', () => {
       },
     });
 
-    const destAfterContent = fs.readFileSync(destFilePath, 'utf-8');
+    const destAfterContent = await fs.readFile(destFilePath, 'utf-8');
 
     expect(sourceBeforeContent).toEqual(destAfterContent);
   });

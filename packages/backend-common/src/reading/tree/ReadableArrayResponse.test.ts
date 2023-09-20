@@ -72,11 +72,11 @@ describe('ReadableArrayResponse', () => {
     const res = new ReadableArrayResponse(arr, '/tmp', 'etag');
     const dir = await res.dir();
 
-    expect(fs.readFileSync(resolvePath(dir, 'file1.yaml'), 'utf8').trim()).toBe(
-      'site_name: Test',
-    );
-    expect(fs.readFileSync(resolvePath(dir, 'file2.yaml'), 'utf8').trim()).toBe(
-      'site_name: Test2',
-    );
+    await expect(
+      fs.readFile(resolvePath(dir, 'file1.yaml'), 'utf8'),
+    ).resolves.toBe('site_name: Test\n');
+    await expect(
+      fs.readFile(resolvePath(dir, 'file2.yaml'), 'utf8'),
+    ).resolves.toBe('site_name: Test2\n');
   });
 });

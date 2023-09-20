@@ -588,7 +588,7 @@ Please add '${path.resolve(
               )}'`,
               meta: {
                 name: 'SyntaxError',
-                message: 'Unexpected token i in JSON at position 0',
+                message: expect.stringContaining('Unexpected token'),
               },
             },
           ],
@@ -622,7 +622,7 @@ Please add '${path.resolve(
               )}'`,
               meta: {
                 name: 'SyntaxError',
-                message: 'Unexpected token i in JSON at position 0',
+                message: expect.stringContaining('Unexpected token'),
               },
             },
           ],

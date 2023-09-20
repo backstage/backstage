@@ -43,7 +43,7 @@
   "devDependencies": {
     "@backstage/cli": "workspace:^",
     "@types/fs-extra": "^9.0.1",
-    "@types/node": "^16.11.26",
+    "@types/node": "^18.17.8",
     "@types/puppeteer": "^5.4.4",
     "nodemon": "^3.0.1",
     "ts-node": "^10.0.0"
