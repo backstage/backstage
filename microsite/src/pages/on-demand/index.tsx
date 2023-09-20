@@ -36,8 +36,8 @@ const Plugins = () => (
     <div
       className={clsx('container', 'padding--lg', pluginsStyles.onDemandPage)}
     >
-      <div className="marketplaceBanner">
-        <div className="marketplaceContent">
+      <div className="communityBanner">
+        <div className="communityContent">
           <h2>Community sessions</h2>
 
           <p>

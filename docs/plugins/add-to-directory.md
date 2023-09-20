@@ -1,12 +1,12 @@
 ---
-id: add-to-marketplace
-title: Add to Marketplace
-description: Documentation on Adding Plugin to Marketplace
+id: add-to-directory
+title: Add to Directory
+description: Documentation on Adding Plugin to Plugin Directory
 ---
 
 ## Adding a Plugin to the Marketplace
 
-To add a new plugin to the [plugin marketplace](https://backstage.io/plugins)
+To add a new plugin to the [plugin directory](https://backstage.io/plugins)
 create a file in
 [`microsite/data/plugins`](https://github.com/backstage/backstage/tree/master/microsite/data/plugins)
 with your plugin's information. Example:
