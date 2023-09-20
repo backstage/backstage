@@ -60,6 +60,7 @@ export class PassportOAuthAuthenticatorHelper {
       input.fullProfile,
       input.session.idToken,
     ),
+    avatarUrl: input.fullProfile.avatarUrl,
   });
 
   static from(strategy: Strategy) {
