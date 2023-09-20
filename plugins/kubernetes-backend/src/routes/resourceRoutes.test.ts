@@ -14,23 +14,64 @@
  * limitations under the License.
  */
 
-import { errorHandler } from '@backstage/backend-common';
-import express from 'express';
 import request from 'supertest';
-import Router from 'express-promise-router';
-import { addResourceRoutesToRouter } from './resourcesRoutes';
+import { mockServices, startTestBackend } from '@backstage/backend-test-utils';
+import { ExtendedHttpServer } from '@backstage/backend-app-api';
+import { kubernetesObjectsProviderExtensionPoint } from '@backstage/plugin-kubernetes-node';
+import { createBackendModule } from '@backstage/backend-plugin-api';
 import { Entity } from '@backstage/catalog-model';
 
 describe('resourcesRoutes', () => {
-  let app: express.Express;
+  let app: ExtendedHttpServer;
 
-  beforeAll(() => {
-    app = express();
-    app.use(express.json());
-    const router = Router();
-    addResourceRoutesToRouter(
-      router,
-      {
+  beforeAll(async () => {
+    const objectsProviderMock = {
+      getKubernetesObjectsByEntity: jest.fn().mockImplementation(args => {
+        if (args.entity.metadata.name === 'inject500') {
+          return Promise.reject(new Error('some internal error'));
+        }
+
+        return Promise.resolve({
+          items: [
+            {
+              clusterOne: {
+                pods: [
+                  {
+                    metadata: {
+                      name: 'pod1',
+                    },
+                  },
+                ],
+              },
+            },
+          ],
+        });
+      }),
+      getCustomResourcesByEntity: jest.fn().mockImplementation(args => {
+        if (args.entity.metadata.name === 'inject500') {
+          return Promise.reject(new Error('some internal error'));
+        }
+
+        return Promise.resolve({
+          items: [
+            {
+              clusterOne: {
+                pods: [
+                  {
+                    metadata: {
+                      name: 'pod1',
+                    },
+                  },
+                ],
+              },
+            },
+          ],
+        });
+      }),
+    };
+
+    jest.mock('@backstage/catalog-client', () => ({
+      CatalogClient: jest.fn().mockImplementation(() => ({
         getEntityByRef: jest.fn().mockImplementation(entityRef => {
           if (entityRef.name === 'noentity') {
             return Promise.resolve(undefined);
@@ -43,61 +84,50 @@ describe('resourcesRoutes', () => {
             },
           } as Entity);
         }),
-      } as any,
-      {
-        getKubernetesObjectsByEntity: jest.fn().mockImplementation(args => {
-          if (args.entity.metadata.name === 'inject500') {
-            return Promise.reject(new Error('some internal error'));
-          }
+      })),
+    }));
 
-          return Promise.resolve({
-            items: [
-              {
-                clusterOne: {
-                  pods: [
-                    {
-                      metadata: {
-                        name: 'pod1',
-                      },
-                    },
-                  ],
-                },
+    const { server } = await startTestBackend({
+      features: [
+        mockServices.rootConfig.factory({
+          data: {
+            kubernetes: {
+              serviceLocatorMethod: {
+                type: 'multiTenant',
               },
-            ],
-          });
+              clusterLocatorMethods: [
+                {
+                  type: 'config',
+                  clusters: [],
+                },
+              ],
+            },
+          },
         }),
-        getCustomResourcesByEntity: jest.fn().mockImplementation(args => {
-          if (args.entity.metadata.name === 'inject500') {
-            return Promise.reject(new Error('some internal error'));
-          }
+        import('@backstage/plugin-kubernetes-backend/alpha'),
+        createBackendModule({
+          pluginId: 'kubernetes',
+          moduleId: 'testObjectsProvider',
+          register(env) {
+            env.registerInit({
+              deps: { extension: kubernetesObjectsProviderExtensionPoint },
+              async init({ extension }) {
+                extension.addObjectsProvider(objectsProviderMock);
+              },
+            });
+          },
+        }),
+      ],
+    });
 
-          return Promise.resolve({
-            items: [
-              {
-                clusterOne: {
-                  pods: [
-                    {
-                      metadata: {
-                        name: 'pod1',
-                      },
-                    },
-                  ],
-                },
-              },
-            ],
-          });
-        }),
-      } as any,
-    );
-    app.use('/', router);
-    app.use(errorHandler());
+    app = server;
   });
 
   describe('POST /resources/workloads/query', () => {
     // eslint-disable-next-line jest/expect-expect
     it('200 happy path', async () => {
       await request(app)
-        .post('/resources/workloads/query')
+        .post('/api/kubernetes/resources/workloads/query')
         .send({
           entityRef: 'kind:namespacec/someComponent',
           auth: {
@@ -125,7 +155,7 @@ describe('resourcesRoutes', () => {
     // eslint-disable-next-line jest/expect-expect
     it('400 when missing entity ref', async () => {
       await request(app)
-        .post('/resources/workloads/query')
+        .post('/api/kubernetes/resources/workloads/query')
         .send({
           auth: {
             google: 'something',
@@ -137,7 +167,7 @@ describe('resourcesRoutes', () => {
           error: { name: 'InputError', message: 'entity is a required field' },
           request: {
             method: 'POST',
-            url: '/resources/workloads/query',
+            url: '/api/kubernetes/resources/workloads/query',
           },
           response: { statusCode: 400 },
         });
@@ -145,7 +175,7 @@ describe('resourcesRoutes', () => {
     // eslint-disable-next-line jest/expect-expect
     it('400 when bad entity ref', async () => {
       await request(app)
-        .post('/resources/workloads/query')
+        .post('/api/kubernetes/resources/workloads/query')
         .send({
           entityRef: 'ffff',
           auth: {
@@ -162,7 +192,7 @@ describe('resourcesRoutes', () => {
           },
           request: {
             method: 'POST',
-            url: '/resources/workloads/query',
+            url: '/api/kubernetes/resources/workloads/query',
           },
           response: { statusCode: 400 },
         });
@@ -170,7 +200,7 @@ describe('resourcesRoutes', () => {
     // eslint-disable-next-line jest/expect-expect
     it('400 when no entity in catalog', async () => {
       await request(app)
-        .post('/resources/workloads/query')
+        .post('/api/kubernetes/resources/workloads/query')
         .send({
           entityRef: 'noentity:noentity',
           auth: {
@@ -186,7 +216,7 @@ describe('resourcesRoutes', () => {
           },
           request: {
             method: 'POST',
-            url: '/resources/workloads/query',
+            url: '/api/kubernetes/resources/workloads/query',
           },
           response: { statusCode: 400 },
         });
@@ -194,7 +224,7 @@ describe('resourcesRoutes', () => {
     // eslint-disable-next-line jest/expect-expect
     it('401 when no Auth header', async () => {
       await request(app)
-        .post('/resources/workloads/query')
+        .post('/api/kubernetes/resources/workloads/query')
         .send({
           entityRef: 'component:someComponent',
           auth: {
@@ -206,7 +236,7 @@ describe('resourcesRoutes', () => {
           error: { name: 'AuthenticationError', message: 'No Backstage token' },
           request: {
             method: 'POST',
-            url: '/resources/workloads/query',
+            url: '/api/kubernetes/resources/workloads/query',
           },
           response: { statusCode: 401 },
         });
@@ -214,7 +244,7 @@ describe('resourcesRoutes', () => {
     // eslint-disable-next-line jest/expect-expect
     it('401 when invalid Auth header', async () => {
       await request(app)
-        .post('/resources/workloads/query')
+        .post('/api/kubernetes/resources/workloads/query')
         .send({
           entityRef: 'component:someComponent',
           auth: {
@@ -227,7 +257,7 @@ describe('resourcesRoutes', () => {
           error: { name: 'AuthenticationError', message: 'No Backstage token' },
           request: {
             method: 'POST',
-            url: '/resources/workloads/query',
+            url: '/api/kubernetes/resources/workloads/query',
           },
           response: { statusCode: 401 },
         });
@@ -235,7 +265,7 @@ describe('resourcesRoutes', () => {
     // eslint-disable-next-line jest/expect-expect
     it('500 handle gracefully', async () => {
       await request(app)
-        .post('/resources/workloads/query')
+        .post('/api/kubernetes/resources/workloads/query')
         .send({
           entityRef: 'inject500:inject500/inject500',
           auth: {
@@ -249,7 +279,10 @@ describe('resourcesRoutes', () => {
             name: 'Error',
             message: 'some internal error',
           },
-          request: { method: 'POST', url: '/resources/workloads/query' },
+          request: {
+            method: 'POST',
+            url: '/api/kubernetes/resources/workloads/query',
+          },
           response: { statusCode: 500 },
         });
     });
@@ -258,7 +291,7 @@ describe('resourcesRoutes', () => {
     // eslint-disable-next-line jest/expect-expect
     it('200 happy path', async () => {
       await request(app)
-        .post('/resources/custom/query')
+        .post('/api/kubernetes/resources/custom/query')
         .send({
           entityRef: 'component:someComponent',
           auth: {
@@ -293,7 +326,7 @@ describe('resourcesRoutes', () => {
     // eslint-disable-next-line jest/expect-expect
     it('400 when missing custom resources', async () => {
       await request(app)
-        .post('/resources/custom/query')
+        .post('/api/kubernetes/resources/custom/query')
         .send({
           entityRef: 'component:someComponent',
           auth: {
@@ -309,7 +342,7 @@ describe('resourcesRoutes', () => {
           },
           request: {
             method: 'POST',
-            url: '/resources/custom/query',
+            url: '/api/kubernetes/resources/custom/query',
           },
           response: { statusCode: 400 },
         });
@@ -317,7 +350,7 @@ describe('resourcesRoutes', () => {
     // eslint-disable-next-line jest/expect-expect
     it('400 when custom resources not array', async () => {
       await request(app)
-        .post('/resources/custom/query')
+        .post('/api/kubernetes/resources/custom/query')
         .send({
           entityRef: 'component:someComponent',
           auth: {
@@ -334,7 +367,7 @@ describe('resourcesRoutes', () => {
           },
           request: {
             method: 'POST',
-            url: '/resources/custom/query',
+            url: '/api/kubernetes/resources/custom/query',
           },
           response: { statusCode: 400 },
         });
@@ -342,7 +375,7 @@ describe('resourcesRoutes', () => {
     // eslint-disable-next-line jest/expect-expect
     it('400 when custom resources empty', async () => {
       await request(app)
-        .post('/resources/custom/query')
+        .post('/api/kubernetes/resources/custom/query')
         .send({
           entityRef: 'component:someComponent',
           auth: {
@@ -359,7 +392,7 @@ describe('resourcesRoutes', () => {
           },
           request: {
             method: 'POST',
-            url: '/resources/custom/query',
+            url: '/api/kubernetes/resources/custom/query',
           },
           response: { statusCode: 400 },
         });
@@ -367,7 +400,7 @@ describe('resourcesRoutes', () => {
     // eslint-disable-next-line jest/expect-expect
     it('400 when missing entity ref', async () => {
       await request(app)
-        .post('/resources/custom/query')
+        .post('/api/kubernetes/resources/custom/query')
         .send({
           auth: {
             google: 'something',
@@ -386,7 +419,7 @@ describe('resourcesRoutes', () => {
           error: { name: 'InputError', message: 'entity is a required field' },
           request: {
             method: 'POST',
-            url: '/resources/custom/query',
+            url: '/api/kubernetes/resources/custom/query',
           },
           response: { statusCode: 400 },
         });
@@ -394,7 +427,7 @@ describe('resourcesRoutes', () => {
     // eslint-disable-next-line jest/expect-expect
     it('400 when bad entity ref', async () => {
       await request(app)
-        .post('/resources/custom/query')
+        .post('/api/kubernetes/resources/custom/query')
         .send({
           entityRef: 'ffff',
           auth: {
@@ -418,7 +451,7 @@ describe('resourcesRoutes', () => {
           },
           request: {
             method: 'POST',
-            url: '/resources/custom/query',
+            url: '/api/kubernetes/resources/custom/query',
           },
           response: { statusCode: 400 },
         });
@@ -426,7 +459,7 @@ describe('resourcesRoutes', () => {
     // eslint-disable-next-line jest/expect-expect
     it('400 when no entity in catalog', async () => {
       await request(app)
-        .post('/resources/custom/query')
+        .post('/api/kubernetes/resources/custom/query')
         .send({
           entityRef: 'noentity:noentity',
           auth: {
@@ -449,7 +482,7 @@ describe('resourcesRoutes', () => {
           },
           request: {
             method: 'POST',
-            url: '/resources/custom/query',
+            url: '/api/kubernetes/resources/custom/query',
           },
           response: { statusCode: 400 },
         });
@@ -457,7 +490,7 @@ describe('resourcesRoutes', () => {
     // eslint-disable-next-line jest/expect-expect
     it('401 when no Auth header', async () => {
       await request(app)
-        .post('/resources/custom/query')
+        .post('/api/kubernetes/resources/custom/query')
         .send({
           entityRef: 'component:someComponent',
           auth: {
@@ -476,7 +509,7 @@ describe('resourcesRoutes', () => {
           error: { name: 'AuthenticationError', message: 'No Backstage token' },
           request: {
             method: 'POST',
-            url: '/resources/custom/query',
+            url: '/api/kubernetes/resources/custom/query',
           },
           response: { statusCode: 401 },
         });
@@ -484,7 +517,7 @@ describe('resourcesRoutes', () => {
     // eslint-disable-next-line jest/expect-expect
     it('401 when invalid Auth header', async () => {
       await request(app)
-        .post('/resources/custom/query')
+        .post('/api/kubernetes/resources/custom/query')
         .send({
           entityRef: 'component:someComponent',
           auth: {
@@ -504,7 +537,7 @@ describe('resourcesRoutes', () => {
           error: { name: 'AuthenticationError', message: 'No Backstage token' },
           request: {
             method: 'POST',
-            url: '/resources/custom/query',
+            url: '/api/kubernetes/resources/custom/query',
           },
           response: { statusCode: 401 },
         });
@@ -512,7 +545,7 @@ describe('resourcesRoutes', () => {
     // eslint-disable-next-line jest/expect-expect
     it('500 handle gracefully', async () => {
       await request(app)
-        .post('/resources/custom/query')
+        .post('/api/kubernetes/resources/custom/query')
         .send({
           entityRef: 'inject500:inject500/inject500',
           auth: {
@@ -533,7 +566,10 @@ describe('resourcesRoutes', () => {
             name: 'Error',
             message: 'some internal error',
           },
-          request: { method: 'POST', url: '/resources/custom/query' },
+          request: {
+            method: 'POST',
+            url: '/api/kubernetes/resources/custom/query',
+          },
           response: { statusCode: 500 },
         });
     });
