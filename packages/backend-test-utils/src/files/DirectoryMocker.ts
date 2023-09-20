@@ -16,8 +16,14 @@
 
 import { resolveSafeChildPath } from '@backstage/backend-common';
 import fs from 'fs-extra';
+import textextensions from 'textextensions';
 import { tmpdir as getTmpDir } from 'os';
-import { dirname, join as joinPath, resolve as resolvePath } from 'path';
+import {
+  dirname,
+  extname,
+  join as joinPath,
+  resolve as resolvePath,
+} from 'path';
 
 type MockEntry = {
   path: string;
@@ -35,6 +41,15 @@ interface DirectoryMockerOptions {
    * If an existing directory is provided, it will not be cleaned up after the test.
    */
   root?: string;
+}
+
+interface DirectoryMockerGetContentOptions {
+  /**
+   * Whether or not to return files as text rather than buffers.
+   *
+   * Defaults to checking the file extension against a list of known text extensions.
+   */
+  shouldReadAsText?: boolean | ((path: string, buffer: Buffer) => boolean);
 }
 
 export class DirectoryMocker {
@@ -81,7 +96,14 @@ export class DirectoryMocker {
     }
   }
 
-  async getContent(): Promise<MockDirectory | undefined> {
+  async getContent(
+    options?: DirectoryMockerGetContentOptions,
+  ): Promise<MockDirectory | undefined> {
+    const shouldReadAsText =
+      (typeof options?.shouldReadAsText === 'boolean'
+        ? () => options?.shouldReadAsText
+        : options?.shouldReadAsText) ??
+      ((path: string) => textextensions.includes(extname(path).slice(1)));
     async function read(path: string): Promise<MockDirectory | undefined> {
       if (!(await fs.pathExists(path))) {
         return undefined;
@@ -98,7 +120,11 @@ export class DirectoryMocker {
               return [entry, await read(fullPath)];
             }
             const content = await fs.readFile(fullPath);
-            return [entry, content.toString('utf8')];
+
+            if (shouldReadAsText(fullPath, content)) {
+              return [entry, content.toString('utf8')];
+            }
+            return [entry, content];
           }),
         ),
       );
