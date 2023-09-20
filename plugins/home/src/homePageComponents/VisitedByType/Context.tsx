@@ -60,14 +60,15 @@ export const defaultContextValue: ContextValue = {
 export const Context = createContext<ContextValue>(defaultContextValue);
 
 const getFilteredSet =
-  (
+  <T,>(
     setContext: Dispatch<SetStateAction<ContextValueOnly>>,
     contextKey: keyof ContextValueOnly,
   ) =>
-  (e: SetStateAction<any>) =>
+  (e: SetStateAction<T>) =>
     setContext(state => ({
       ...state,
-      [contextKey]: typeof e === 'function' ? e(state[contextKey]) : e,
+      [contextKey]:
+        typeof e === 'function' ? (e as Function)(state[contextKey]) : e,
     }));
 
 export const ContextProvider = ({ children }: { children: JSX.Element }) => {
