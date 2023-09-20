@@ -25,10 +25,16 @@ import {
   resolve as resolvePath,
 } from 'path';
 
-type MockEntry = {
-  path: string;
-  content: Buffer;
-};
+type MockEntry =
+  | {
+      type: 'file';
+      path: string;
+      content: Buffer;
+    }
+  | {
+      type: 'dir';
+      path: string;
+    };
 
 export type MockDirectory = {
   [name in string]: MockDirectory | string | Buffer;
@@ -65,7 +71,7 @@ export class DirectoryMocker {
       process.on('beforeExit', mocker.#cleanupSync);
 
       try {
-        afterAll(mocker.cleanup);
+        afterAll(mocker.removeContent);
       } catch {
         /* ignore */
       }
@@ -85,14 +91,23 @@ export class DirectoryMocker {
   }
 
   async setContent(root: MockDirectory) {
+    await this.removeContent();
+
+    return this.addContent(root);
+  }
+
+  async addContent(root: MockDirectory) {
     const entries = this.#transformInput(root);
 
-    await this.cleanup();
+    for (const entry of entries) {
+      const fullPath = resolveSafeChildPath(this.#root, entry.path.slice(1)); // trim leading slash
 
-    for (const { path, content } of entries) {
-      const fullPath = resolveSafeChildPath(this.#root, path.slice(1)); // trim leading slash
-      await fs.ensureDir(dirname(fullPath));
-      await fs.writeFile(fullPath, content);
+      if (entry.type === 'dir') {
+        await fs.ensureDir(fullPath);
+      } else if (entry.type === 'file') {
+        await fs.ensureDir(dirname(fullPath));
+        await fs.writeFile(fullPath, entry.content);
+      }
     }
   }
 
@@ -104,27 +119,27 @@ export class DirectoryMocker {
         ? () => options?.shouldReadAsText
         : options?.shouldReadAsText) ??
       ((path: string) => textextensions.includes(extname(path).slice(1)));
+
     async function read(path: string): Promise<MockDirectory | undefined> {
       if (!(await fs.pathExists(path))) {
         return undefined;
       }
-      const entries = await fs.readdir(path);
 
+      const entries = await fs.readdir(path, { withFileTypes: true });
       return Object.fromEntries(
         await Promise.all(
           entries.map(async entry => {
-            const fullPath = resolvePath(path, entry);
-            const stat = await fs.stat(fullPath);
+            const fullPath = resolvePath(path, entry.name);
 
-            if (stat.isDirectory()) {
-              return [entry, await read(fullPath)];
+            if (entry.isDirectory()) {
+              return [entry.name, await read(fullPath)];
             }
             const content = await fs.readFile(fullPath);
 
             if (shouldReadAsText(fullPath, content)) {
-              return [entry, content.toString('utf8')];
+              return [entry.name, content.toString('utf8')];
             }
-            return [entry, content];
+            return [entry.name, content];
           }),
         ),
       );
@@ -133,15 +148,24 @@ export class DirectoryMocker {
     return read(this.#root);
   }
 
+  removeContent = async () => {
+    await fs.rm(this.#root, { recursive: true, force: true });
+  };
+
   #transformInput(input: MockDirectory[string]): MockEntry[] {
     const entries: MockEntry[] = [];
 
     function traverse(node: MockDirectory[string], path: string) {
       if (typeof node === 'string') {
-        entries.push({ path, content: Buffer.from(node, 'utf8') });
+        entries.push({
+          type: 'file',
+          path,
+          content: Buffer.from(node, 'utf8'),
+        });
       } else if (node instanceof Buffer) {
-        entries.push({ path, content: node });
+        entries.push({ type: 'file', path, content: node });
       } else {
+        entries.push({ type: 'dir', path });
         for (const [name, child] of Object.entries(node)) {
           traverse(child, `${path}/${name}`);
         }
@@ -152,10 +176,6 @@ export class DirectoryMocker {
 
     return entries;
   }
-
-  cleanup = async () => {
-    await fs.rm(this.#root, { recursive: true, force: true });
-  };
 
   #cleanupSync = () => {
     fs.rmSync(this.#root, { recursive: true, force: true });

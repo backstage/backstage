@@ -59,6 +59,66 @@ describe('DirectoryMocker', () => {
     });
   });
 
+  it('should be able to add content', async () => {
+    await mocker.setContent({
+      'a.txt': 'a',
+      b: {},
+    });
+
+    await expect(mocker.getContent()).resolves.toEqual({
+      'a.txt': 'a',
+      b: {},
+    });
+
+    await mocker.addContent({
+      'b.txt': 'b',
+      b: {
+        'c.txt': 'c',
+      },
+    });
+
+    await expect(mocker.getContent()).resolves.toEqual({
+      'a.txt': 'a',
+      'b.txt': 'b',
+      b: {
+        'c.txt': 'c',
+      },
+    });
+  });
+
+  it('should replace existing files', async () => {
+    await mocker.setContent({
+      'a.txt': 'a',
+    });
+
+    await mocker.addContent({
+      'a.txt': 'a2',
+    });
+
+    await expect(mocker.getContent()).resolves.toEqual({
+      'a.txt': 'a2',
+    });
+  });
+
+  it('should not override directories', async () => {
+    await mocker.setContent({
+      'a.txt': 'a',
+      b: {},
+    });
+
+    await expect(
+      mocker.addContent({
+        'a.txt': {},
+      }),
+    ).rejects.toThrow('EEXIST');
+
+    await expect(
+      mocker.addContent({
+        b: 'b',
+      }),
+    ).rejects.toThrow('EISDIR');
+  });
+
   describe('cleanup', () => {
     let cleanupMocker: DirectoryMocker;
 
