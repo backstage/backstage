@@ -19,10 +19,11 @@ import { useEntityPermission } from '@backstage/plugin-catalog-react/alpha';
 import { Box, IconButton, Tooltip, Typography } from '@material-ui/core';
 import RetryIcon from '@material-ui/icons/Replay';
 import VisibilityIcon from '@material-ui/icons/Visibility';
+import HistoryIcon from '@material-ui/icons/History';
 import { default as React, useState } from 'react';
 import { Project } from '../../../../api/JenkinsApi';
 import JenkinsLogo from '../../../../assets/JenkinsLogo.svg';
-import { buildRouteRef } from '../../../../plugin';
+import { buildRouteRef, jobRunsRouteRef } from '../../../../plugin';
 import { useBuilds } from '../../../useBuilds';
 import { JenkinsRunStatus } from '../Status';
 import { jenkinsExecutePermission } from '@backstage/plugin-jenkins-common';
@@ -182,6 +183,7 @@ const generatedColumns: TableColumn[] = [
         );
 
         const alertApi = useApi(alertApiRef);
+        const jobRunsLink = useRouteRef(jobRunsRouteRef);
 
         const onRebuild = async () => {
           if (row.onRestartClick) {
@@ -205,7 +207,7 @@ const generatedColumns: TableColumn[] = [
         };
 
         return (
-          <div style={{ width: '98px' }}>
+          <div style={{ width: '148px' }}>
             {row.lastBuild?.url && (
               <Tooltip title="View build">
                 <IconButton href={row.lastBuild.url} target="_blank">
@@ -221,6 +223,17 @@ const generatedColumns: TableColumn[] = [
                 </IconButton>
               </Tooltip>
             )}
+            <Link
+              to={jobRunsLink({
+                jobFullName: encodeURIComponent(row.fullName || ''),
+              })}
+            >
+              <Tooltip title="View Runs">
+                <IconButton>
+                  <HistoryIcon />
+                </IconButton>
+              </Tooltip>
+            </Link>
           </div>
         );
       };

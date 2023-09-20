@@ -19,14 +19,13 @@ import { jenkinsApiRef } from '../api';
 import { errorApiRef, useApi } from '@backstage/core-plugin-api';
 import { useEntity } from '@backstage/plugin-catalog-react';
 import { getCompoundEntityRef } from '@backstage/catalog-model';
-import { JENKINS_ANNOTATION, LEGACY_JENKINS_ANNOTATION } from '../constants';
 
 export enum ErrorType {
   CONNECTION_ERROR,
   NOT_FOUND,
 }
 
-export function useJobRuns() {
+export function useJobRuns(jobFullName: string) {
   const { entity } = useEntity();
   const api = useApi(jenkinsApiRef);
   const errorApi = useApi(errorApiRef);
@@ -39,11 +38,6 @@ export function useJobRuns() {
     message: string;
     errorType: ErrorType;
   }>();
-
-  const jobFullName =
-    entity.metadata.annotations?.[JENKINS_ANNOTATION] ||
-    entity.metadata.annotations?.[LEGACY_JENKINS_ANNOTATION] ||
-    '';
 
   const { loading, value: jobRuns } = useAsyncRetry(async () => {
     try {

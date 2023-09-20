@@ -23,7 +23,6 @@
 export {
   jenkinsPlugin,
   jenkinsPlugin as plugin,
-  EntityJobRunsTable,
   EntityJenkinsContent,
   EntityLatestJenkinsRunCard,
 } from './plugin';

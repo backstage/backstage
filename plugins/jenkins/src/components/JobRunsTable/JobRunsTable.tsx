@@ -21,6 +21,8 @@ import { useJobRuns } from './../useJobRuns';
 import { Job, JobBuild } from './../../api/JenkinsApi';
 import { JenkinsRunStatus } from './../BuildsPage/lib/Status';
 import VisibilityIcon from '@material-ui/icons/Visibility';
+import { jobRunsRouteRef } from '../../plugin';
+import { useRouteRefParams } from '@backstage/core-plugin-api';
 
 const generatedColumns: TableColumn[] = [
   {
@@ -174,7 +176,8 @@ export const JobRunsTableView = ({
 };
 
 export const JobRunsTable = () => {
-  const [tableProps, { setPage, setPageSize }] = useJobRuns();
+  const { jobFullName } = useRouteRefParams(jobRunsRouteRef);
+  const [tableProps, { setPage, setPageSize }] = useJobRuns(jobFullName);
 
   return (
     <JobRunsTableView

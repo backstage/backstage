@@ -39,6 +39,13 @@ export const buildRouteRef = createSubRouteRef({
 });
 
 /** @public */
+export const jobRunsRouteRef = createSubRouteRef({
+  id: 'jenkins/job/runs',
+  path: '/builds/:jobFullName/runs',
+  parent: rootRouteRef,
+});
+
+/** @public */
 export const jenkinsPlugin = createPlugin({
   id: 'jenkins',
   apis: [
@@ -69,16 +76,6 @@ export const EntityLatestJenkinsRunCard = jenkinsPlugin.provide(
     name: 'EntityLatestJenkinsRunCard',
     component: {
       lazy: () => import('./components/Cards').then(m => m.LatestRunCard),
-    },
-  }),
-);
-
-/** @public */
-export const EntityJobRunsTable = jenkinsPlugin.provide(
-  createComponentExtension({
-    name: 'EntityLatestJenkinsRunCard',
-    component: {
-      lazy: () => import('./components/JobRunsTable').then(m => m.JobRunsTable),
     },
   }),
 );

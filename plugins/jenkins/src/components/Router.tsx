@@ -20,9 +20,10 @@ import { useEntity } from '@backstage/plugin-catalog-react';
 import React from 'react';
 import { Route, Routes } from 'react-router-dom';
 import { JENKINS_ANNOTATION, LEGACY_JENKINS_ANNOTATION } from '../constants';
-import { buildRouteRef } from '../plugin';
+import { buildRouteRef, jobRunsRouteRef } from '../plugin';
 import { CITable } from './BuildsPage/lib/CITable';
 import { DetailedViewPage } from './BuildWithStepsPage/';
+import { JobRunsTable } from './JobRunsTable';
 
 /** @public */
 export const isJenkinsAvailable = (entity: Entity) =>
@@ -39,6 +40,7 @@ export const Router = () => {
   return (
     <Routes>
       <Route path="/" element={<CITable />} />
+      <Route path={`/${jobRunsRouteRef.path}`} element={<JobRunsTable />} />
       <Route path={`/${buildRouteRef.path}`} element={<DetailedViewPage />} />
     </Routes>
   );
