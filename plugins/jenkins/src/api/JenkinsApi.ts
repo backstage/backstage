@@ -91,10 +91,6 @@ export interface Project {
   // added by us
   status: string; // == inQueue ? 'queued' : lastBuild.building ? 'running' : lastBuild.result,
   onRestartClick: () => Promise<void>; // TODO rename to handle.* ? also, should this be on lastBuild?
-  getJobBuilds(options: {
-    entity: CompoundEntityRef;
-    jobFullName: string;
-  }): Promise<Job>;
 }
 
 export interface JenkinsApi {
