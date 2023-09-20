@@ -17,15 +17,16 @@
 import { resolveSafeChildPath } from '@backstage/backend-common';
 import fs from 'fs-extra';
 import { tmpdir as getTmpDir } from 'os';
-import { join as joinPath } from 'path';
+import { dirname, join as joinPath, resolve as resolvePath } from 'path';
 
-type FileNode = string | Buffer;
-
-type DirectoryNode = {
-  [name in string]: MockDirectoryNode;
+type MockEntry = {
+  path: string;
+  content: Buffer;
 };
 
-type MockDirectoryNode = DirectoryNode | FileNode;
+export type MockDirectory = {
+  [name in string]: MockDirectory | string | Buffer;
+};
 
 interface DirectoryMockerOptions {
   /**
@@ -68,23 +69,36 @@ export class DirectoryMocker {
     return this.#root;
   }
 
-  async setContent(root: MockDirectoryNode) {
+  async setContent(root: MockDirectory) {
+    const entries = this.#transformInput(root);
+
     await this.cleanup();
 
-    async function createFiles(node: MockDirectoryNode, path: string) {
-      if (typeof node === 'string' || node instanceof Buffer) {
-        await fs.writeFile(path, node, 'utf8');
-        return;
-      }
+    for (const { path, content } of entries) {
+      const fullPath = resolveSafeChildPath(this.#root, path.slice(1)); // trim leading slash
+      await fs.ensureDir(dirname(fullPath));
+      await fs.writeFile(fullPath, content);
+    }
+  }
 
-      await fs.ensureDir(path);
+  #transformInput(input: MockDirectory[string]): MockEntry[] {
+    const entries: MockEntry[] = [];
 
-      for (const [name, child] of Object.entries(node)) {
-        await createFiles(child, resolveSafeChildPath(path, name));
+    function traverse(node: MockDirectory[string], path: string) {
+      if (typeof node === 'string') {
+        entries.push({ path, content: Buffer.from(node, 'utf8') });
+      } else if (node instanceof Buffer) {
+        entries.push({ path, content: node });
+      } else {
+        for (const [name, child] of Object.entries(node)) {
+          traverse(child, `${path}/${name}`);
+        }
       }
     }
 
-    await createFiles(root, this.#root);
+    traverse(input, '');
+
+    return entries;
   }
 
   cleanup = async () => {
