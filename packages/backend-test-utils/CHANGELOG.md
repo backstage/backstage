@@ -1,5 +1,15 @@
 # @backstage/backend-test-utils
 
+## 0.2.4
+
+### Patch Changes
+
+- dbeb822f4c09: Remove third type parameter used for `MockInstance`, in order to be compatible with older versions of `@types/jest`.
+- Updated dependencies
+  - @backstage/backend-app-api@0.5.3
+  - @backstage/backend-common@0.19.5
+  - @backstage/plugin-auth-node@0.3.0
+
 ## 0.2.3
 
 ### Patch Changes
