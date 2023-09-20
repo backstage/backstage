@@ -20,9 +20,6 @@ import { RouteRef } from '@backstage/core-plugin-api';
 export const EntityJenkinsContent: () => JSX_2.Element;
 
 // @public (undocumented)
-export const EntityJobRunsTable: () => JSX_2.Element;
-
-// @public (undocumented)
 export const EntityLatestJenkinsRunCard: (props: {
   branch: string;
   variant?: InfoCardVariants | undefined;
