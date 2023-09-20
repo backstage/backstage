@@ -274,8 +274,8 @@ documentation for more information. Bellow you can see an example for two option
 // packages/app/src/apis.ts
 // ...
 import {
-  CoreStorageVisitsApi,
-  LocalStoreVisitsApi,
+  VisitsStorageApi,
+  VisitsWebStorageApi,
   visitsApiRef,
 } from '@backstage/plugin-home';
 // ...
@@ -288,17 +288,17 @@ export const apis: AnyApiFactory[] = [
       identityApi: identityApiRef,
     },
     factory: ({ storageApi, identityApi }) =>
-      CoreStorageVisitsApi.create({ storageApi, identityApi }),
+      VisitsStorageApi.create({ storageApi, identityApi }),
   }),
 
-  // Or a local data implementation, relies on WebStorage implementation of storageApi
+  // Or a localStorage data implementation, relies on WebStorage implementation of storageApi
   createApiFactory({
     api: visitsApiRef,
     deps: {
       identityApi: identityApiRef,
       errorApi: errorApiRef
     },
-    factory: ({ identityApi, errorApi }) => LocalStoreVisitsApi.create({ identityApi, errorApi }),
+    factory: ({ identityApi, errorApi }) => VisitsWebStorageApi.create({ identityApi, errorApi }),
   }),
   // ...
 ```
@@ -308,14 +308,14 @@ See the example usage:
 
 ```ts
 // packages/app/src/App.tsx
-import { VisitsListener } from '@backstage/plugin-home';
+import { VisitListener } from '@backstage/plugin-home';
 // ...
 export default app.createRoot(
   <>
     <AlertDisplay />
     <OAuthRequestDialog />
     <AppRouter>
-      <VisitsListener />
+      <VisitListener />
       <Root>{routes}</Root>
     </AppRouter>
   </>,

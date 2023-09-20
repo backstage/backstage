@@ -15,9 +15,9 @@
  */
 
 import { BackstageUserIdentity, IdentityApi } from '@backstage/core-plugin-api';
-import { LocalStorageVisitsApi } from './LocalStorageVisitsApi';
+import { VisitsWebStorageApi } from './VisitsWebStorageApi';
 
-describe('LocalStorageVisitsApi.create()', () => {
+describe('VisitsWebStorageApi.create()', () => {
   const mockRandomUUID = () =>
     '068f3129-7440-4e0e-8fd4-xxxxxxxxxxxx'.replace(
       /x/g,
@@ -44,7 +44,7 @@ describe('LocalStorageVisitsApi.create()', () => {
   });
 
   it('instantiates with only identitiyApi', () => {
-    const api = LocalStorageVisitsApi.create({
+    const api = VisitsWebStorageApi.create({
       identityApi: mockIdentityApi,
       errorApi: mockErrorApi,
     });
@@ -52,7 +52,7 @@ describe('LocalStorageVisitsApi.create()', () => {
   });
 
   it('saves a visit', async () => {
-    const api = LocalStorageVisitsApi.create({
+    const api = VisitsWebStorageApi.create({
       identityApi: mockIdentityApi,
       errorApi: mockErrorApi,
     });
@@ -69,7 +69,7 @@ describe('LocalStorageVisitsApi.create()', () => {
   });
 
   it('retrieves visits', async () => {
-    const api = LocalStorageVisitsApi.create({
+    const api = VisitsWebStorageApi.create({
       identityApi: mockIdentityApi,
       errorApi: mockErrorApi,
     });

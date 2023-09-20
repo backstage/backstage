@@ -15,11 +15,11 @@
  */
 
 import { BackstageUserIdentity, IdentityApi } from '@backstage/core-plugin-api';
-import { CoreStorageVisitsApi } from './CoreStorageVisitsApi';
+import { VisitsStorageApi } from './VisitsStorageApi';
 import { MockStorageApi } from '@backstage/test-utils';
 import { Visit, VisitsApi } from './VisitsApi';
 
-describe('CoreStorageVisitsApi.create', () => {
+describe('VisitsStorageApi.create', () => {
   const mockRandomUUID = () =>
     '068f3129-7440-4e0e-8fd4-xxxxxxxxxxxx'.replace(
       /x/g,
@@ -46,7 +46,7 @@ describe('CoreStorageVisitsApi.create', () => {
   });
 
   it('instantiates', () => {
-    const api = CoreStorageVisitsApi.create({
+    const api = VisitsStorageApi.create({
       storageApi: MockStorageApi.create(),
       identityApi: mockIdentityApi,
     });
@@ -55,7 +55,7 @@ describe('CoreStorageVisitsApi.create', () => {
 
   describe('.save()', () => {
     it('saves a visit', async () => {
-      const api = CoreStorageVisitsApi.create({
+      const api = VisitsStorageApi.create({
         storageApi: MockStorageApi.create(),
         identityApi: mockIdentityApi,
       });
@@ -72,7 +72,7 @@ describe('CoreStorageVisitsApi.create', () => {
     });
 
     it('can control the number of stored entities', async () => {
-      const api = CoreStorageVisitsApi.create({
+      const api = VisitsStorageApi.create({
         storageApi: MockStorageApi.create(),
         identityApi: mockIdentityApi,
         limit: 2,
@@ -106,7 +106,7 @@ describe('CoreStorageVisitsApi.create', () => {
     });
 
     it('correctly bumps the hits from a previous visit', async () => {
-      const api = CoreStorageVisitsApi.create({
+      const api = VisitsStorageApi.create({
         storageApi: MockStorageApi.create(),
         identityApi: mockIdentityApi,
       });
@@ -135,7 +135,7 @@ describe('CoreStorageVisitsApi.create', () => {
     let baseDate: number;
 
     beforeEach(() => {
-      api = CoreStorageVisitsApi.create({
+      api = VisitsStorageApi.create({
         storageApi: MockStorageApi.create(),
         identityApi: mockIdentityApi,
       });

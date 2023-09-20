@@ -77,21 +77,6 @@ export const ComponentTabs: (props: {
   }[];
 }) => JSX_2.Element;
 
-// @public
-export class CoreStorageVisitsApi implements VisitsApi {
-  // (undocumented)
-  static create(options: CoreStorageVisitsApiOptions): CoreStorageVisitsApi;
-  list(queryParams?: VisitsApiQueryParams): Promise<Visit[]>;
-  save(saveParams: VisitsApiSaveParams): Promise<Visit>;
-}
-
-// @public (undocumented)
-export type CoreStorageVisitsApiOptions = {
-  limit?: number;
-  storageApi: StorageApi;
-  identityApi: IdentityApi;
-};
-
 // @public @deprecated (undocumented)
 export const createCardExtension: typeof createCardExtension_2;
 
@@ -177,19 +162,6 @@ export type LayoutConfiguration = {
   movable?: boolean;
   deletable?: boolean;
   resizable?: boolean;
-};
-
-// @public
-export class LocalStorageVisitsApi {
-  // (undocumented)
-  static create(options: LocalStorageVisitsApiOptions): CoreStorageVisitsApi;
-}
-
-// @public (undocumented)
-export type LocalStorageVisitsApiOptions = {
-  limit?: number;
-  identityApi: IdentityApi;
-  errorApi: ErrorApi;
 };
 
 // @public @deprecated (undocumented)
@@ -287,6 +259,34 @@ export const visitsApiRef: ApiRef<VisitsApi>;
 // @public
 export type VisitsApiSaveParams = {
   visit: Omit<Visit, 'id' | 'hits' | 'timestamp'>;
+};
+
+// @public
+export class VisitsStorageApi implements VisitsApi {
+  // (undocumented)
+  static create(options: VisitsStorageApiOptions): VisitsStorageApi;
+  list(queryParams?: VisitsApiQueryParams): Promise<Visit[]>;
+  save(saveParams: VisitsApiSaveParams): Promise<Visit>;
+}
+
+// @public (undocumented)
+export type VisitsStorageApiOptions = {
+  limit?: number;
+  storageApi: StorageApi;
+  identityApi: IdentityApi;
+};
+
+// @public
+export class VisitsWebStorageApi {
+  // (undocumented)
+  static create(options: VisitsWebStorageApiOptions): VisitsStorageApi;
+}
+
+// @public (undocumented)
+export type VisitsWebStorageApiOptions = {
+  limit?: number;
+  identityApi: IdentityApi;
+  errorApi: ErrorApi;
 };
 
 // @public

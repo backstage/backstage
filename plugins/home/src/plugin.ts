@@ -25,7 +25,7 @@ import {
 import { createCardExtension } from '@backstage/plugin-home-react';
 import { ToolkitContentProps, VisitedByTypeProps } from './homePageComponents';
 import { rootRouteRef } from './routes';
-import { CoreStorageVisitsApi, visitsApiRef } from './api';
+import { VisitsStorageApi, visitsApiRef } from './api';
 
 /** @public */
 export const homePlugin = createPlugin({
@@ -38,7 +38,7 @@ export const homePlugin = createPlugin({
         identityApi: identityApiRef,
       },
       factory: ({ storageApi, identityApi }) =>
-        CoreStorageVisitsApi.create({ storageApi, identityApi }),
+        VisitsStorageApi.create({ storageApi, identityApi }),
     }),
   ],
   routes: {

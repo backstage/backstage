@@ -22,7 +22,7 @@ import {
 } from './VisitsApi';
 
 /** @public */
-export type CoreStorageVisitsApiOptions = {
+export type VisitsStorageApiOptions = {
   limit?: number;
   storageApi: StorageApi;
   identityApi: IdentityApi;
@@ -36,18 +36,17 @@ type ArrayElement<A> = A extends readonly (infer T)[] ? T : never;
  * Beware that filtering and ordering are done in memory therefore it is
  * prudent to keep limit to a reasonable size.
  */
-export class CoreStorageVisitsApi implements VisitsApi {
-  private readonly randomUUID = window.crypto.randomUUID;
+export class VisitsStorageApi implements VisitsApi {
   private readonly limit: number;
   private readonly storageApi: StorageApi;
   private readonly storageKeyPrefix = '@backstage/plugin-home:visits';
   private readonly identityApi: IdentityApi;
 
-  static create(options: CoreStorageVisitsApiOptions) {
-    return new CoreStorageVisitsApi(options);
+  static create(options: VisitsStorageApiOptions) {
+    return new VisitsStorageApi(options);
   }
 
-  private constructor(options: CoreStorageVisitsApiOptions) {
+  private constructor(options: VisitsStorageApiOptions) {
     this.limit = Math.abs(options.limit ?? 100);
     this.storageApi = options.storageApi;
     this.identityApi = options.identityApi;
@@ -95,7 +94,7 @@ export class CoreStorageVisitsApi implements VisitsApi {
 
     const visit: Visit = {
       ...saveParams.visit,
-      id: this.randomUUID(),
+      id: window.crypto.randomUUID(),
       hits: 1,
       timestamp: Date.now(),
     };

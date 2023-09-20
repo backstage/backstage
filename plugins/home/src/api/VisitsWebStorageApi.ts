@@ -14,11 +14,11 @@
  * limitations under the License.
  */
 import { ErrorApi, IdentityApi } from '@backstage/core-plugin-api';
-import { CoreStorageVisitsApi } from './CoreStorageVisitsApi';
+import { VisitsStorageApi } from './VisitsStorageApi';
 import { WebStorage } from '@backstage/core-app-api';
 
 /** @public */
-export type LocalStorageVisitsApiOptions = {
+export type VisitsWebStorageApiOptions = {
   limit?: number;
   identityApi: IdentityApi;
   errorApi: ErrorApi;
@@ -28,9 +28,9 @@ export type LocalStorageVisitsApiOptions = {
  * @public
  * This is a reference implementation of VisitsApi using WebStorage.
  */
-export class LocalStorageVisitsApi {
-  static create(options: LocalStorageVisitsApiOptions) {
-    return CoreStorageVisitsApi.create({
+export class VisitsWebStorageApi {
+  static create(options: VisitsWebStorageApiOptions) {
+    return VisitsStorageApi.create({
       limit: options.limit,
       identityApi: options.identityApi,
       storageApi: WebStorage.create({ errorApi: options.errorApi }),
