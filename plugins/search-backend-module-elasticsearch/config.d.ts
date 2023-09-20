@@ -192,6 +192,9 @@ export interface Config {
                   password: string;
                 }
               | {
+                  /**
+                   * @visibility secret
+                   */
                   apiKey: string;
                 };
           }
