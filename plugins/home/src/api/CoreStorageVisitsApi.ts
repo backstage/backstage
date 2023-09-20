@@ -14,21 +14,31 @@
  * limitations under the License.
  */
 import { IdentityApi, StorageApi } from '@backstage/core-plugin-api';
-import { Visit } from './VisitsApi';
-import { VisitsApiFactory } from './VisitsApiFactory';
+import {
+  Visit,
+  VisitsApi,
+  VisitsApiQueryParams,
+  VisitsApiSaveParams,
+} from './VisitsApi';
 
 /** @public */
 export type CoreStorageVisitsApiOptions = {
-  storageApi: StorageApi;
   limit?: number;
+  storageApi: StorageApi;
   identityApi: IdentityApi;
 };
 
+type ArrayElement<A> = A extends readonly (infer T)[] ? T : never;
+
 /**
  * @public
- * This is an implementation of VisitsApi that relies on a StorageApi
+ * This is an implementation of VisitsApi that relies on a StorageApi.
+ * Beware that filtering and ordering are done in memory therefore it is
+ * prudent to keep limit to a reasonable size.
  */
-export class CoreStorageVisitsApi extends VisitsApiFactory {
+export class CoreStorageVisitsApi implements VisitsApi {
+  private readonly randomUUID = window.crypto.randomUUID;
+  private readonly limit: number;
   private readonly storageApi: StorageApi;
   private readonly storageKeyPrefix = '@backstage/plugin-home:visits';
   private readonly identityApi: IdentityApi;
@@ -38,26 +48,104 @@ export class CoreStorageVisitsApi extends VisitsApiFactory {
   }
 
   private constructor(options: CoreStorageVisitsApiOptions) {
-    super({ limit: options.limit ?? 100 });
+    this.limit = Math.abs(options.limit ?? 100);
     this.storageApi = options.storageApi;
     this.identityApi = options.identityApi;
-    this.retrieveAll = async (): Promise<Array<Visit>> => {
-      let visits: Array<Visit>;
-      const { userEntityRef } = await this.identityApi.getBackstageIdentity();
-      const storageKey = `${this.storageKeyPrefix}:${userEntityRef}`;
+  }
 
-      try {
-        visits = this.storageApi.snapshot<Array<Visit>>(storageKey).value ?? [];
-      } catch {
-        visits = [];
+  /**
+   * Returns a list of visits through the visitsApi
+   */
+  async list(queryParams?: VisitsApiQueryParams): Promise<Visit[]> {
+    let visits = [...(await this.retrieveAll())];
+
+    // reversing order to guarantee orderBy priority
+    (queryParams?.orderBy ?? []).reverse().forEach(order => {
+      if (order.direction === 'asc') {
+        visits.sort((a, b) => this.compare(order, a, b));
+      } else {
+        visits.sort((a, b) => this.compare(order, b, a));
       }
-      return visits;
-    };
-    this.persistAll = async (visits: Array<Visit>) => {
-      const { userEntityRef } = await this.identityApi.getBackstageIdentity();
-      const storageKey = `${this.storageKeyPrefix}:${userEntityRef}`;
+    });
 
-      return this.storageApi.set<Array<Visit>>(storageKey, visits);
+    // reversing order to guarantee filterBy priority
+    (queryParams?.filterBy ?? []).reverse().forEach(filter => {
+      visits = visits.filter(visit => {
+        const field = visit[filter.field] as number | string;
+        if (filter.operator === '>') return field > filter.value;
+        if (filter.operator === '>=') return field >= filter.value;
+        if (filter.operator === '<') return field < filter.value;
+        if (filter.operator === '<=') return field <= filter.value;
+        if (filter.operator === '==') return field === filter.value;
+        if (filter.operator === '!=') return field !== filter.value;
+        if (filter.operator === 'contains')
+          return `${field}`.includes(`${filter.value}`);
+        return false;
+      });
+    });
+
+    return visits;
+  }
+
+  /**
+   * Saves a visit through the visitsApi
+   */
+  async save(saveParams: VisitsApiSaveParams): Promise<Visit> {
+    const visits: Visit[] = [...(await this.retrieveAll())];
+
+    const visit: Visit = {
+      ...saveParams.visit,
+      id: this.randomUUID(),
+      hits: 1,
+      timestamp: Date.now(),
     };
+
+    // Updates entry if pathname is already registered
+    const visitIndex = visits.findIndex(e => e.pathname === visit.pathname);
+    if (visitIndex >= 0) {
+      visit.id = visits[visitIndex].id;
+      visit.hits = visits[visitIndex].hits + 1;
+      visits[visitIndex] = visit;
+    } else {
+      visits.push(visit);
+    }
+
+    // Sort by time, most recent first
+    visits.sort((a, b) => b.timestamp - a.timestamp);
+    // Keep the most recent items up to limit
+    await this.persistAll(visits.splice(0, this.limit));
+    return visit;
+  }
+
+  private async persistAll(visits: Array<Visit>) {
+    const { userEntityRef } = await this.identityApi.getBackstageIdentity();
+    const storageKey = `${this.storageKeyPrefix}:${userEntityRef}`;
+
+    return this.storageApi.set<Array<Visit>>(storageKey, visits);
+  }
+
+  private async retrieveAll(): Promise<Array<Visit>> {
+    const { userEntityRef } = await this.identityApi.getBackstageIdentity();
+    const storageKey = `${this.storageKeyPrefix}:${userEntityRef}`;
+    let visits: Array<Visit>;
+
+    try {
+      visits = this.storageApi.snapshot<Array<Visit>>(storageKey).value ?? [];
+    } catch {
+      visits = [];
+    }
+    return visits;
+  }
+
+  // This assumes Visit fields are either numbers or strings
+  private compare(
+    order: ArrayElement<VisitsApiQueryParams['orderBy']>,
+    a: Visit,
+    b: Visit,
+  ): number {
+    const isNumber = typeof a[order.field] === 'number';
+    return isNumber
+      ? (a[order.field] as number) - (b[order.field] as number)
+      : `${a[order.field]}`.localeCompare(`${b[order.field]}`);
   }
 }

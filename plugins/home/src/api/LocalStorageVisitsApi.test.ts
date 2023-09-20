@@ -32,6 +32,8 @@ describe('LocalStorageVisitsApi.create()', () => {
     getCredentials: jest.fn(),
   };
 
+  const mockErrorApi = { post: jest.fn(), error$: jest.fn() };
+
   beforeEach(() => {
     window.crypto.randomUUID = mockRandomUUID;
   });
@@ -42,12 +44,18 @@ describe('LocalStorageVisitsApi.create()', () => {
   });
 
   it('instantiates with only identitiyApi', () => {
-    const api = LocalStorageVisitsApi.create({ identityApi: mockIdentityApi });
+    const api = LocalStorageVisitsApi.create({
+      identityApi: mockIdentityApi,
+      errorApi: mockErrorApi,
+    });
     expect(api).toBeTruthy();
   });
 
   it('saves a visit', async () => {
-    const api = LocalStorageVisitsApi.create({ identityApi: mockIdentityApi });
+    const api = LocalStorageVisitsApi.create({
+      identityApi: mockIdentityApi,
+      errorApi: mockErrorApi,
+    });
     const visit = {
       pathname: '/catalog/default/component/playback-order',
       entityRef: 'component:default/playback-order',
@@ -61,7 +69,10 @@ describe('LocalStorageVisitsApi.create()', () => {
   });
 
   it('retrieves visits', async () => {
-    const api = LocalStorageVisitsApi.create({ identityApi: mockIdentityApi });
+    const api = LocalStorageVisitsApi.create({
+      identityApi: mockIdentityApi,
+      errorApi: mockErrorApi,
+    });
     const visit = {
       pathname: '/catalog/default/component/playback-order',
       entityRef: 'component:default/playback-order',

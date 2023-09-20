@@ -13,52 +13,27 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import { IdentityApi } from '@backstage/core-plugin-api';
-import { Visit } from './VisitsApi';
-import { VisitsApiFactory } from './VisitsApiFactory';
+import { ErrorApi, IdentityApi } from '@backstage/core-plugin-api';
+import { CoreStorageVisitsApi } from './CoreStorageVisitsApi';
+import { WebStorage } from '@backstage/core-app-api';
 
 /** @public */
 export type LocalStorageVisitsApiOptions = {
   limit?: number;
   identityApi: IdentityApi;
+  errorApi: ErrorApi;
 };
 
 /**
  * @public
- * This is a reference implementation of VisitsApi using window.localStorage.
+ * This is a reference implementation of VisitsApi using WebStorage.
  */
-export class LocalStorageVisitsApi extends VisitsApiFactory {
-  private readonly localStorage = window.localStorage;
-  private readonly storageKeyPrefix = '@backstage/plugin-home:visits';
-  private readonly identityApi: IdentityApi;
-
+export class LocalStorageVisitsApi {
   static create(options: LocalStorageVisitsApiOptions) {
-    return new LocalStorageVisitsApi(options);
-  }
-
-  private constructor(options: LocalStorageVisitsApiOptions) {
-    super({ limit: options.limit ?? 100 });
-    this.identityApi = options.identityApi;
-    this.retrieveAll = async (): Promise<Array<Visit>> => {
-      let visits: Array<Visit>;
-      const { userEntityRef } = await this.identityApi.getBackstageIdentity();
-      const storageKey = `${this.storageKeyPrefix}:${userEntityRef}`;
-
-      try {
-        visits = JSON.parse(this.localStorage.getItem(storageKey) ?? '[]');
-      } catch {
-        visits = [];
-      }
-      return visits;
-    };
-    this.persistAll = async (visits: Array<Visit>) => {
-      const { userEntityRef } = await this.identityApi.getBackstageIdentity();
-      const storageKey = `${this.storageKeyPrefix}:${userEntityRef}`;
-
-      return this.localStorage.setItem(
-        storageKey,
-        JSON.stringify(visits.splice(0, this.limit)),
-      );
-    };
+    return CoreStorageVisitsApi.create({
+      limit: options.limit,
+      identityApi: options.identityApi,
+      storageApi: WebStorage.create({ errorApi: options.errorApi }),
+    });
   }
 }

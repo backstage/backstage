@@ -14,6 +14,7 @@ import { CardSettings as CardSettings_2 } from '@backstage/plugin-home-react';
 import { ComponentParts as ComponentParts_2 } from '@backstage/plugin-home-react';
 import { ComponentRenderer as ComponentRenderer_2 } from '@backstage/plugin-home-react';
 import { createCardExtension as createCardExtension_2 } from '@backstage/plugin-home-react';
+import { ErrorApi } from '@backstage/core-plugin-api';
 import { IdentityApi } from '@backstage/core-plugin-api';
 import { JSX as JSX_2 } from 'react';
 import { default as React_2 } from 'react';
@@ -77,15 +78,17 @@ export const ComponentTabs: (props: {
 }) => JSX_2.Element;
 
 // @public
-export class CoreStorageVisitsApi extends VisitsApiFactory {
+export class CoreStorageVisitsApi implements VisitsApi {
   // (undocumented)
   static create(options: CoreStorageVisitsApiOptions): CoreStorageVisitsApi;
+  list(queryParams?: VisitsApiQueryParams): Promise<Visit[]>;
+  save(saveParams: VisitsApiSaveParams): Promise<Visit>;
 }
 
 // @public (undocumented)
 export type CoreStorageVisitsApiOptions = {
-  storageApi: StorageApi;
   limit?: number;
+  storageApi: StorageApi;
   identityApi: IdentityApi;
 };
 
@@ -177,15 +180,16 @@ export type LayoutConfiguration = {
 };
 
 // @public
-export class LocalStorageVisitsApi extends VisitsApiFactory {
+export class LocalStorageVisitsApi {
   // (undocumented)
-  static create(options: LocalStorageVisitsApiOptions): LocalStorageVisitsApi;
+  static create(options: LocalStorageVisitsApiOptions): CoreStorageVisitsApi;
 }
 
 // @public (undocumented)
 export type LocalStorageVisitsApiOptions = {
   limit?: number;
   identityApi: IdentityApi;
+  errorApi: ErrorApi;
 };
 
 // @public @deprecated (undocumented)
@@ -262,30 +266,6 @@ export interface VisitsApi {
   list(queryParams?: VisitsApiQueryParams): Promise<Visit[]>;
   save(saveParams: VisitsApiSaveParams): Promise<Visit>;
 }
-
-// @public
-export class VisitsApiFactory implements VisitsApi {
-  protected constructor(options: VisitsApiFactoryOptions);
-  // (undocumented)
-  protected readonly limit: number;
-  // (undocumented)
-  list(queryParams?: VisitsApiQueryParams): Promise<Visit[]>;
-  // (undocumented)
-  protected persistAll: (visits: Array<Visit>) => Promise<void>;
-  // (undocumented)
-  protected readonly randomUUID: () => `${string}-${string}-${string}-${string}-${string}`;
-  // (undocumented)
-  protected retrieveAll: () => Promise<Array<Visit>>;
-  // (undocumented)
-  save(saveParams: VisitsApiSaveParams): Promise<Visit>;
-}
-
-// @public (undocumented)
-export type VisitsApiFactoryOptions = {
-  limit: number;
-  retrieveAll?: () => Promise<Array<Visit>>;
-  persistAll?: (visits: Array<Visit>) => Promise<void>;
-};
 
 // @public
 export type VisitsApiQueryParams = {

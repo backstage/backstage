@@ -280,7 +280,7 @@ import {
 } from '@backstage/plugin-home';
 // ...
 export const apis: AnyApiFactory[] = [
-  // Implementation that relies on the integration with storageApi
+  // Implementation that relies on a provided storageApi
   createApiFactory({
     api: visitsApiRef,
     deps: {
@@ -291,13 +291,14 @@ export const apis: AnyApiFactory[] = [
       CoreStorageVisitsApi.create({ storageApi, identityApi }),
   }),
 
-  // Or a local data implementation, relies on the browser's window.localStorage
+  // Or a local data implementation, relies on WebStorage implementation of storageApi
   createApiFactory({
     api: visitsApiRef,
     deps: {
       identityApi: identityApiRef,
+      errorApi: errorApiRef
     },
-    factory: ({ identityApi }) => LocalStoreVisitsApi.create({ identityApi }),
+    factory: ({ identityApi, errorApi }) => LocalStoreVisitsApi.create({ identityApi, errorApi }),
   }),
   // ...
 ```
