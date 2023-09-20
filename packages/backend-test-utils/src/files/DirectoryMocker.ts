@@ -81,6 +81,32 @@ export class DirectoryMocker {
     }
   }
 
+  async getContent(): Promise<MockDirectory | undefined> {
+    async function read(path: string): Promise<MockDirectory | undefined> {
+      if (!(await fs.pathExists(path))) {
+        return undefined;
+      }
+      const entries = await fs.readdir(path);
+
+      return Object.fromEntries(
+        await Promise.all(
+          entries.map(async entry => {
+            const fullPath = resolvePath(path, entry);
+            const stat = await fs.stat(fullPath);
+
+            if (stat.isDirectory()) {
+              return [entry, await read(fullPath)];
+            }
+            const content = await fs.readFile(fullPath);
+            return [entry, content.toString('utf8')];
+          }),
+        ),
+      );
+    }
+
+    return read(this.#root);
+  }
+
   #transformInput(input: MockDirectory[string]): MockEntry[] {
     const entries: MockEntry[] = [];
 
