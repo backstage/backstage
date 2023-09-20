@@ -20,6 +20,7 @@ import { JsonObject } from '@backstage/types';
 import { Logs, MockedLogger } from '../__testUtils__/testUtils';
 import { ConfigReader } from '@backstage/config';
 import path from 'path';
+import * as url from 'url';
 import { ScannedPluginPackage } from './types';
 
 describe('plugin-scanner', () => {
@@ -73,7 +74,7 @@ describe('plugin-scanner', () => {
             rootDirectory: 'dist-dynamic',
           },
         },
-        expectedRootDirectory: '/backstageRoot/dist-dynamic',
+        expectedRootDirectory: path.resolve('/backstageRoot/dist-dynamic'),
       },
       {
         name: 'valid config with absolute root directory path inside the backstage root',
@@ -90,7 +91,7 @@ describe('plugin-scanner', () => {
             rootDirectory: '/backstageRoot/dist-dynamic',
           },
         },
-        expectedRootDirectory: '/backstageRoot/dist-dynamic',
+        expectedRootDirectory: path.resolve('/backstageRoot/dist-dynamic'),
       },
       {
         name: 'valid config with absolute root directory path outside the backstage root',
@@ -107,8 +108,14 @@ describe('plugin-scanner', () => {
             rootDirectory: '/somewhere/dist-dynamic',
           },
         },
-        expectedError: `Dynamic plugins under '/somewhere/dist-dynamic' cannot access backstage modules in '/backstageRoot/node_modules'.
-Please add '/backstageRoot/node_modules' to the 'NODE_PATH' when running the backstage backend.`,
+        expectedError: `Dynamic plugins under '${path.resolve(
+          '/somewhere/dist-dynamic',
+        )}' cannot access backstage modules in '${path.resolve(
+          '/backstageRoot/node_modules',
+        )}'.
+Please add '${path.resolve(
+          '/backstageRoot/node_modules',
+        )}' to the 'NODE_PATH' when running the backstage backend.`,
       },
       {
         name: 'valid config with absolute root directory path outside the backstage root but with backstage root included in NODE_PATH',
@@ -126,9 +133,13 @@ Please add '/backstageRoot/node_modules' to the 'NODE_PATH' when running the bac
           },
         },
         environment: {
-          NODE_PATH: `/somewhere-else${path.delimiter}/backstageRoot/node_modules${path.delimiter}/anywhere-else`,
+          NODE_PATH: `${path.resolve('/somewhere-else')}${
+            path.delimiter
+          }${path.resolve('/backstageRoot', 'node_modules')}${
+            path.delimiter
+          }${path.resolve('anywhere-else')}`,
         },
-        expectedRootDirectory: '/somewhere/dist-dynamic',
+        expectedRootDirectory: path.resolve('/somewhere/dist-dynamic'),
       },
       {
         name: 'invalid config: dynamicPlugins not an object',
@@ -273,8 +284,8 @@ Please add '/backstageRoot/node_modules' to the 'NODE_PATH' when running the bac
         },
         expectedPluginPackages: [
           {
-            location: new URL(
-              'file:///backstageRoot/dist-dynamic/test-backend-plugin',
+            location: url.pathToFileURL(
+              path.resolve('/backstageRoot/dist-dynamic/test-backend-plugin'),
             ),
             manifest: {
               name: 'test-backend-plugin-dynamic',
@@ -318,8 +329,8 @@ Please add '/backstageRoot/node_modules' to the 'NODE_PATH' when running the bac
         },
         expectedPluginPackages: [
           {
-            location: new URL(
-              'file:///backstageRoot/dist-dynamic/test-backend-plugin',
+            location: url.pathToFileURL(
+              path.resolve('/backstageRoot/dist-dynamic/test-backend-plugin'),
             ),
             manifest: {
               name: 'test-backend-plugin-dynamic',
@@ -347,8 +358,9 @@ Please add '/backstageRoot/node_modules' to the 'NODE_PATH' when running the bac
         expectedLogs: {
           infos: [
             {
-              message:
-                "skipping '/backstageRoot/dist-dynamic/test-backend-plugin' since it is not a directory",
+              message: `skipping '${path.resolve(
+                '/backstageRoot/dist-dynamic/test-backend-plugin',
+              )}' since it is not a directory`,
             },
           ],
         },
@@ -377,8 +389,9 @@ Please add '/backstageRoot/node_modules' to the 'NODE_PATH' when running the bac
         expectedLogs: {
           infos: [
             {
-              message:
-                "skipping '/backstageRoot/dist-dynamic/test-backend-plugin' since it is not a directory",
+              message: `skipping '${path.resolve(
+                '/backstageRoot/dist-dynamic/test-backend-plugin',
+              )}' since it is not a directory`,
             },
           ],
         },
@@ -421,8 +434,8 @@ Please add '/backstageRoot/node_modules' to the 'NODE_PATH' when running the bac
         },
         expectedPluginPackages: [
           {
-            location: new URL(
-              'file:///backstageRoot/dist-dynamic/test-backend-plugin',
+            location: url.pathToFileURL(
+              path.resolve('/backstageRoot/dist-dynamic/test-backend-plugin'),
             ),
             manifest: {
               name: 'test-backend-plugin-dynamic',
@@ -471,8 +484,10 @@ Please add '/backstageRoot/node_modules' to the 'NODE_PATH' when running the bac
         },
         expectedPluginPackages: [
           {
-            location: new URL(
-              'file:///backstageRoot/dist-dynamic/test-backend-plugin/alpha',
+            location: url.pathToFileURL(
+              path.resolve(
+                '/backstageRoot/dist-dynamic/test-backend-plugin/alpha',
+              ),
             ),
             manifest: {
               name: 'test-backend-plugin-dynamic',
@@ -511,8 +526,8 @@ Please add '/backstageRoot/node_modules' to the 'NODE_PATH' when running the bac
         },
         expectedPluginPackages: [
           {
-            location: new URL(
-              'file:///backstageRoot/dist-dynamic/test-backend-plugin',
+            location: url.pathToFileURL(
+              path.resolve('/backstageRoot/dist-dynamic/test-backend-plugin'),
             ),
             manifest: {
               name: 'test-backend-plugin-dynamic',
@@ -525,8 +540,9 @@ Please add '/backstageRoot/node_modules' to the 'NODE_PATH' when running the bac
         expectedLogs: {
           warns: [
             {
-              message:
-                "skipping '/backstageRoot/dist-dynamic/test-backend-plugin/alpha' since it is not a directory",
+              message: `skipping '${path.resolve(
+                '/backstageRoot/dist-dynamic/test-backend-plugin/alpha',
+              )}' since it is not a directory`,
             },
           ],
         },
@@ -567,8 +583,9 @@ Please add '/backstageRoot/node_modules' to the 'NODE_PATH' when running the bac
         expectedLogs: {
           errors: [
             {
-              message:
-                "failed to load dynamic plugin manifest from '/backstageRoot/dist-dynamic/test-backend-plugin/alpha'",
+              message: `failed to load dynamic plugin manifest from '${path.resolve(
+                '/backstageRoot/dist-dynamic/test-backend-plugin/alpha',
+              )}'`,
               meta: {
                 name: 'SyntaxError',
                 message: 'Unexpected token i in JSON at position 0',
@@ -600,8 +617,9 @@ Please add '/backstageRoot/node_modules' to the 'NODE_PATH' when running the bac
         expectedLogs: {
           errors: [
             {
-              message:
-                "failed to load dynamic plugin manifest from '/backstageRoot/dist-dynamic/test-backend-plugin'",
+              message: `failed to load dynamic plugin manifest from '${path.resolve(
+                '/backstageRoot/dist-dynamic/test-backend-plugin',
+              )}'`,
               meta: {
                 name: 'SyntaxError',
                 message: 'Unexpected token i in JSON at position 0',
@@ -637,8 +655,9 @@ Please add '/backstageRoot/node_modules' to the 'NODE_PATH' when running the bac
         expectedLogs: {
           errors: [
             {
-              message:
-                "failed to load dynamic plugin manifest from '/backstageRoot/dist-dynamic/test-backend-plugin'",
+              message: `failed to load dynamic plugin manifest from '${path.resolve(
+                '/backstageRoot/dist-dynamic/test-backend-plugin',
+              )}'`,
               meta: {
                 name: 'Error',
                 message: "field 'backstage.role' not found in 'package.json'",
@@ -674,8 +693,9 @@ Please add '/backstageRoot/node_modules' to the 'NODE_PATH' when running the bac
         expectedLogs: {
           errors: [
             {
-              message:
-                "failed to load dynamic plugin manifest from '/backstageRoot/dist-dynamic/test-backend-plugin'",
+              message: `failed to load dynamic plugin manifest from '${path.resolve(
+                '/backstageRoot/dist-dynamic/test-backend-plugin',
+              )}'`,
               meta: {
                 name: 'Error',
                 message: "field 'main' not found in 'package.json'",

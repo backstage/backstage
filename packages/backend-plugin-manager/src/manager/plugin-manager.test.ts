@@ -174,20 +174,23 @@ describe('backend-plugin-manager', () => {
                 meta: {
                   name: 'Error',
                   message: expect.stringContaining(
-                    `Cannot find module '${url.fileURLToPath(
-                      location,
-                    )}/dist/index.cjs.js' from `,
+                    `Cannot find module '${path.resolve(
+                      url.fileURLToPath(location),
+                      'dist/index.cjs.js',
+                    )}' from `,
                   ),
                   _originalMessage: expect.stringContaining(
-                    `Cannot find module '${url.fileURLToPath(
-                      location,
-                    )}/dist/index.cjs.js' from `,
+                    `Cannot find module '${path.resolve(
+                      url.fileURLToPath(location),
+                      'dist/index.cjs.js',
+                    )}' from `,
                   ),
                   code: 'MODULE_NOT_FOUND',
                   hint: '',
-                  moduleName: `${url.fileURLToPath(
-                    location,
-                  )}/dist/index.cjs.js`,
+                  moduleName: `${path.resolve(
+                    url.fileURLToPath(location),
+                    'dist/index.cjs.js',
+                  )}`,
                   siblingWithSimilarExtensionFound: false,
                   requireStack: undefined,
                 },
@@ -351,7 +354,9 @@ describe('backend-plugin-manager', () => {
       },
     ])('$name', async (tc: TestCase): Promise<void> => {
       const plugin: ScannedPluginPackage = {
-        location: new URL(`file:///node_modules/jest-tests/${randomUUID()}`),
+        location: url.pathToFileURL(
+          path.resolve(`/node_modules/jest-tests/${randomUUID()}`),
+        ),
         manifest: tc.packageManifest,
       };
 
@@ -462,8 +467,8 @@ describe('backend-plugin-manager', () => {
         .spyOn(PluginScanner.prototype, 'scanRoot')
         .mockImplementation(async () => [
           {
-            location: new URL(
-              'file:///somewhere/dynamic-plugins-root/a-dynamic-plugin',
+            location: url.pathToFileURL(
+              path.resolve('/somewhere/dynamic-plugins-root/a-dynamic-plugin'),
             ),
             manifest: {
               name: 'test',
@@ -528,10 +533,12 @@ describe('backend-plugin-manager', () => {
       expect(scanRootSpier).toHaveBeenCalled();
       expect(mockedModuleLoader.bootstrap).toHaveBeenCalledWith(
         findPaths(__dirname).targetRoot,
-        ['/somewhere-else/a-dynamic-plugin'],
+        [path.resolve('/somewhere-else/a-dynamic-plugin')],
       );
       expect(mockedModuleLoader.load).toHaveBeenCalledWith(
-        '/somewhere/dynamic-plugins-root/a-dynamic-plugin/dist/index.cjs.js',
+        path.resolve(
+          '/somewhere/dynamic-plugins-root/a-dynamic-plugin/dist/index.cjs.js',
+        ),
       );
     });
   });
