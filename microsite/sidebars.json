@@ -1,6 +1,7 @@
 {
   "releases": {
     "Release Notes": [
+      "releases/v1.18.0",
       "releases/v1.17.0",
       "releases/v1.16.0",
       "releases/v1.15.0",
@@ -341,6 +342,43 @@
         "items": ["deployment/backstage-deploy/aws-lightsail"]
       }
     ],
+    "New Backend System": [
+      "backend-system/index",
+      {
+        "type": "category",
+        "label": "Architecture",
+        "items": [
+          "backend-system/architecture/index",
+          "backend-system/architecture/services",
+          "backend-system/architecture/plugins",
+          "backend-system/architecture/extension-points",
+          "backend-system/architecture/modules",
+          "backend-system/architecture/naming-patterns"
+        ]
+      },
+      {
+        "type": "category",
+        "label": "Building Backends",
+        "items": [
+          "backend-system/building-backends/index",
+          "backend-system/building-backends/migrating"
+        ]
+      },
+      {
+        "type": "category",
+        "label": "Building Plugins & Modules",
+        "items": [
+          "backend-system/building-plugins-and-modules/index",
+          "backend-system/building-plugins-and-modules/testing",
+          "backend-system/building-plugins-and-modules/migrating"
+        ]
+      },
+      {
+        "type": "category",
+        "label": "Core Services",
+        "items": ["backend-system/core-services/index"]
+      }
+    ],
     "Designing for Backstage": [
       "dls/design",
       "dls/component-design-guidelines",
@@ -388,43 +426,6 @@
       "architecture-decisions/adrs-adr013"
     ],
     "FAQ": ["FAQ"],
-    "Experimental Backend System": [
-      "backend-system/index",
-      {
-        "type": "category",
-        "label": "Architecture",
-        "items": [
-          "backend-system/architecture/index",
-          "backend-system/architecture/services",
-          "backend-system/architecture/plugins",
-          "backend-system/architecture/extension-points",
-          "backend-system/architecture/modules",
-          "backend-system/architecture/naming-patterns"
-        ]
-      },
-      {
-        "type": "category",
-        "label": "Building Backends",
-        "items": [
-          "backend-system/building-backends/index",
-          "backend-system/building-backends/migrating"
-        ]
-      },
-      {
-        "type": "category",
-        "label": "Building Plugins & Modules",
-        "items": [
-          "backend-system/building-plugins-and-modules/index",
-          "backend-system/building-plugins-and-modules/testing",
-          "backend-system/building-plugins-and-modules/migrating"
-        ]
-      },
-      {
-        "type": "category",
-        "label": "Core Services",
-        "items": ["backend-system/core-services/index"]
-      }
-    ],
     "Accessibility": ["accessibility/index"]
   }
 }
