@@ -28,7 +28,6 @@ import {
   EntityJenkinsContent,
   EntityLatestJenkinsRunCard,
   isJenkinsAvailable,
-  EntityJobRunsTable,
 } from '@backstage/plugin-jenkins';
 
 // You can add the tab to any number of pages, the service page is shown as an
@@ -54,7 +53,6 @@ const serviceEntityPage = (
       <EntitySwitch>
         <EntitySwitch.Case if={isJenkinsAvailable}>
           <EntityJenkinsContent />
-          <EntityJobRunsTable />
         </EntitySwitch.Case>
         {/* ... */}
       </EntitySwitch>
@@ -106,4 +104,4 @@ spec:
 ## EntityJobRunsTable
 
 - View all builds of a particular job
-- shows average build for successful builds
+- shows average build time for successful builds
