@@ -161,38 +161,6 @@ export function createExtensionTree(options: {
   };
 }
 
-function hasCyclicalExtensionDependency(
-  extensionId: string,
-  extensionAncestorIds: string[] = [],
-) {
-  return extensionAncestorIds.includes(extensionId);
-}
-
-function stringifyExtensionDependencyGraph(
-  extensionId: string,
-  extensionAncestorIds: string[] = [],
-) {
-  const [rootAncestorId, ...rest] = extensionAncestorIds.concat(extensionId);
-  return rest.reduce((graphString, ancestorId) => {
-    return `${graphString} → ${ancestorId}`;
-  }, rootAncestorId);
-}
-
-function preventCyclicalExtensionDependency(
-  extensionId: string,
-  extensionAncestorIds: string[],
-) {
-  if (hasCyclicalExtensionDependency(extensionId, extensionAncestorIds)) {
-    const extensionDependencyGraph = stringifyExtensionDependencyGraph(
-      extensionId,
-      extensionAncestorIds,
-    );
-    throw new Error(
-      `There is a cyclical dependency with the extension "${extensionId}": ${extensionDependencyGraph}`,
-    );
-  }
-}
-
 /**
  * @internal
  */
@@ -248,7 +216,15 @@ export function createInstances(options: {
       return existingInstance;
     }
 
-    preventCyclicalExtensionDependency(extensionId, extensionAncestorIds);
+    // Prevent cyclical dependencies
+    if (extensionAncestorIds.includes(extensionId)) {
+      const extensionDependencyGraph = extensionAncestorIds
+        .concat(extensionId)
+        .join(' → ');
+      throw new Error(
+        `There is a cyclical dependency with the extension "${extensionId}": ${extensionDependencyGraph}`,
+      );
+    }
 
     const attachments = new Map(
       Array.from(attachmentMap.get(extensionId)?.entries() ?? []).map(

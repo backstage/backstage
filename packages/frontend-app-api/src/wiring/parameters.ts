@@ -188,14 +188,6 @@ export interface ExtensionInstanceParameters {
   config?: unknown;
 }
 
-function preventRootExtensionOverride(id: string) {
-  if (id === 'root') {
-    throw new Error(
-      'There is a root extension in the app config file and root extensions are not configurable',
-    );
-  }
-}
-
 /** @internal */
 export function mergeExtensionParameters(options: {
   sources: BackstagePlugin[];
@@ -229,7 +221,14 @@ export function mergeExtensionParameters(options: {
 
   for (const overrideParam of parameters) {
     const extensionId = overrideParam.id;
-    preventRootExtensionOverride(extensionId);
+
+    // Prevent root parametrization
+    if (extensionId === 'root') {
+      throw new Error(
+        'There is a root extension in the app config file and root extensions are not configurable',
+      );
+    }
+
     const existingIndex = overrides.findIndex(
       e => e.extension.id === extensionId,
     );
