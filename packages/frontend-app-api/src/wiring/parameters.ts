@@ -196,18 +196,30 @@ export function mergeExtensionParameters(options: {
 }): ExtensionInstanceParameters[] {
   const { sources, builtinExtensions, parameters } = options;
 
+  const pluginExtensions = sources.flatMap(source =>
+    source.extensions.map(extension => ({ ...extension, source })),
+  );
+
+  // Prevent root override
+  if (pluginExtensions.some(({ id }) => id === 'root')) {
+    const rootPluginIds = pluginExtensions
+      .filter(({ id }) => id === 'root')
+      .map(({ source }) => source.id);
+    throw new Error(
+      `The following plugins are overriding root extensions and root extensions cannot be overridden: ${rootPluginIds}`,
+    );
+  }
+
   const overrides = [
-    ...sources.flatMap(plugin =>
-      plugin.extensions.map(extension => ({
-        extension,
-        params: {
-          source: plugin,
-          at: extension.at,
-          disabled: extension.disabled,
-          config: undefined as unknown,
-        },
-      })),
-    ),
+    ...pluginExtensions.map(({ source, ...extension }) => ({
+      extension,
+      params: {
+        source,
+        at: extension.at,
+        disabled: extension.disabled,
+        config: undefined as unknown,
+      },
+    })),
     ...builtinExtensions.map(extension => ({
       extension,
       params: {
@@ -225,7 +237,7 @@ export function mergeExtensionParameters(options: {
     // Prevent root parametrization
     if (extensionId === 'root') {
       throw new Error(
-        'There is a root extension in the app config file and root extensions are not configurable',
+        'A "root" extension was detected on the config file and root extensions are not configurable',
       );
     }
 

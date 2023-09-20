@@ -20,7 +20,7 @@ import { createInstances } from './createApp';
 import { MockConfigApi } from '@backstage/test-utils';
 
 describe('createInstances', () => {
-  it('throws an error when a root extension is overridden', () => {
+  it('throws an error when a root extension is parametrized', () => {
     const config = new MockConfigApi({
       app: {
         extensions: [
@@ -39,11 +39,11 @@ describe('createInstances', () => {
       }),
     ];
     expect(() => createInstances({ config, plugins })).toThrow(
-      'There is a root extension in the app config file and root extensions are not configurable',
+      'A "root" extension was detected on the config file and root extensions are not configurable',
     );
   });
 
-  it('throws an error when cyclical dependencies are found', () => {
+  it('throws an error when a root extension is overridden', () => {
     const config = new MockConfigApi({});
     const plugins = [
       createPlugin({
@@ -60,7 +60,7 @@ describe('createInstances', () => {
       }),
     ];
     expect(() => createInstances({ config, plugins })).toThrow(
-      'There is a cyclical dependency with the extension "core.layout": core.layout → core.routes → root → core.layout',
+      'The following plugins are overriding root extensions and root extensions cannot be overridden: plugin',
     );
   });
 });
