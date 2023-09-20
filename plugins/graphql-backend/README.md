@@ -29,14 +29,15 @@ This will launch the full example backend.
 
 ### New Backend System
 
-The Grahpql backend plugin has support for the [new backend system](https://backstage.io/docs/backend-system/), here's how you can set that up:
+The grahpql backend plugin has support for the [new backend system](https://backstage.io/docs/backend-system/), here's how you can set that up:
 In your `packages/backend/src/index.ts` make the following changes:
 
 ```diff
-+ import { graphqlPlugin } from '@backstage/plugin-graphql-backend';
+import { createBackend } from '@backstage/backend-defaults';
 
 const backend = createBackend();
-+ backend.add(graphqlPlugin());
+
+backend.add(import('@backstage/plugin-graphql-backend'));
 // ... other feature additions
 
 backend.start();

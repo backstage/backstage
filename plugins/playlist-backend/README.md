@@ -93,13 +93,12 @@ The Playlist backend plugin has support for the [new backend system](https://bac
 In your `packages/backend/src/index.ts` make the following changes:
 
 ```diff
-  import { createBackend } from '@backstage/backend-defaults';
-+ import { playlistPlugin } from '@backstage/plugin-playlist-backend';
-  const backend = createBackend();
+import { createBackend } from '@backstage/backend-defaults';
 
-  // ... other feature additions
+const backend = createBackend();
 
-+ backend.add(playlistPlugin());
+backend.add(import('@backstage/plugin-playlist-backend'));
+// ... other feature additions
 
-  backend.start();
+backend.start();
 ```
