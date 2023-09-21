@@ -138,10 +138,10 @@ export class MockDirectory {
 
     const shouldCleanup = !options?.root || !fs.pathExistsSync(options.root);
     if (shouldCleanup) {
-      process.on('beforeExit', mocker.#cleanupSync);
+      process.on('beforeExit', mocker.#removeSync);
 
       try {
-        afterAll(mocker.cleanup);
+        afterAll(mocker.remove);
       } catch {
         /* ignore */
       }
@@ -208,7 +208,7 @@ export class MockDirectory {
    * ```
    */
   async setContent(root: MockDirectoryContent): Promise<void> {
-    await this.cleanup();
+    await this.remove();
 
     return this.addContent(root);
   }
@@ -331,7 +331,7 @@ export class MockDirectory {
   /**
    * Removes the mock directory and all its contents.
    */
-  cleanup = async (): Promise<void> => {
+  remove = async (): Promise<void> => {
     await fs.rm(this.#root, { recursive: true, force: true });
   };
 
@@ -361,7 +361,7 @@ export class MockDirectory {
     return entries;
   }
 
-  #cleanupSync = () => {
+  #removeSync = () => {
     fs.rmSync(this.#root, { recursive: true, force: true });
   };
 }

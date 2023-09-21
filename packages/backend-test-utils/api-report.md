@@ -37,7 +37,6 @@ export function isDockerDisabledForTests(): boolean;
 // @public
 export class MockDirectory {
   addContent(root: MockDirectoryContent): Promise<void>;
-  cleanup: () => Promise<void>;
   clear: () => Promise<void>;
   content(
     options?: MockDirectoryContentOptions,
@@ -45,6 +44,7 @@ export class MockDirectory {
   static create(options?: MockDirectoryCreateOptions): MockDirectory;
   static mockOsTmpDir(): MockDirectory;
   get path(): string;
+  remove: () => Promise<void>;
   resolve(...paths: string[]): string;
   setContent(root: MockDirectoryContent): Promise<void>;
 }
