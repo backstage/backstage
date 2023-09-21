@@ -129,7 +129,7 @@ export class MockDirectory {
    * })
    * ```
    */
-  static create(options?: MockDirectoryCreateOptions) {
+  static create(options?: MockDirectoryCreateOptions): MockDirectory {
     const root =
       options?.root ??
       fs.mkdtempSync(joinPath(getTmpDir(), 'backstage-tmp-test-dir-'));
@@ -156,7 +156,7 @@ export class MockDirectory {
    *
    * @returns
    */
-  static mockOsTmpDir() {
+  static mockOsTmpDir(): MockDirectory {
     const mocker = MockDirectory.create();
     const origTmpdir = os.tmpdir;
     os.tmpdir = () => mocker.path;
@@ -180,14 +180,14 @@ export class MockDirectory {
   /**
    * The path to the root of the mock directory
    */
-  get path() {
+  get path(): string {
     return this.#root;
   }
 
   /**
    * Resolves a path relative to the root of the mock directory.
    */
-  resolve(...paths: string[]) {
+  resolve(...paths: string[]): string {
     return resolvePath(this.#root, ...paths);
   }
 
@@ -207,7 +207,7 @@ export class MockDirectory {
    * });
    * ```
    */
-  async setContent(root: MockDirectoryContent) {
+  async setContent(root: MockDirectoryContent): Promise<void> {
     await this.cleanup();
 
     return this.addContent(root);
@@ -229,7 +229,7 @@ export class MockDirectory {
    * });
    * ```
    */
-  async addContent(root: MockDirectoryContent) {
+  async addContent(root: MockDirectoryContent): Promise<void> {
     const entries = this.#transformInput(root);
 
     for (const entry of entries) {
@@ -324,14 +324,14 @@ export class MockDirectory {
   /**
    * Clears the content of the mock directory, ensuring that the directory itself exists.
    */
-  clear = async () => {
+  clear = async (): Promise<void> => {
     await this.setContent({});
   };
 
   /**
    * Removes the mock directory and all its contents.
    */
-  cleanup = async () => {
+  cleanup = async (): Promise<void> => {
     await fs.rm(this.#root, { recursive: true, force: true });
   };
 

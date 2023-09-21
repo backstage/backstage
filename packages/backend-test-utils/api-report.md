@@ -4,6 +4,7 @@
 
 ```ts
 /// <reference types="jest" />
+/// <reference types="node" />
 
 import { Backend } from '@backstage/backend-app-api';
 import { BackendFeature } from '@backstage/backend-plugin-api';
@@ -32,6 +33,37 @@ import { UrlReaderService } from '@backstage/backend-plugin-api';
 
 // @public (undocumented)
 export function isDockerDisabledForTests(): boolean;
+
+// @public
+export class MockDirectory {
+  addContent(root: MockDirectoryContent): Promise<void>;
+  cleanup: () => Promise<void>;
+  clear: () => Promise<void>;
+  content(
+    options?: MockDirectoryContentOptions,
+  ): Promise<MockDirectoryContent | undefined>;
+  static create(options?: MockDirectoryCreateOptions): MockDirectory;
+  static mockOsTmpDir(): MockDirectory;
+  get path(): string;
+  resolve(...paths: string[]): string;
+  setContent(root: MockDirectoryContent): Promise<void>;
+}
+
+// @public
+export type MockDirectoryContent = {
+  [name in string]: MockDirectoryContent | string | Buffer;
+};
+
+// @public
+export interface MockDirectoryContentOptions {
+  path?: string;
+  shouldReadAsText?: boolean | ((path: string, buffer: Buffer) => boolean);
+}
+
+// @public
+export interface MockDirectoryCreateOptions {
+  root?: string;
+}
 
 // @public (undocumented)
 export namespace mockServices {

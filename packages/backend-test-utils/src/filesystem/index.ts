@@ -14,4 +14,9 @@
  * limitations under the License.
  */
 
-export { MockDirectory } from './MockDirectory';
+export {
+  MockDirectory,
+  type MockDirectoryContent,
+  type MockDirectoryContentOptions,
+  type MockDirectoryCreateOptions,
+} from './MockDirectory';
