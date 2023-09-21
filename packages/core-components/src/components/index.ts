@@ -15,6 +15,7 @@
  */
 
 export * from './AlertDisplay';
+export * from './AutoLogout';
 export * from './Avatar';
 export * from './LinkButton';
 export * from './CodeSnippet';

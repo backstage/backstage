@@ -1,5 +1,16 @@
 # @backstage/plugin-kubernetes-common
 
+## 0.6.6
+
+### Patch Changes
+
+- 0ad36158d980: Loosened the type of the `auth` field in the body of requests to the `retrieveObjectsByServiceId` endpoint. Now any JSON object is allowed, which should make it easier for integrators to write their own custom auth strategies for Kubernetes.
+- ccf00accb408: Add AWS Annotations to Kubernetes Cluster Resource
+- 406b786a2a2c: Mark package as being free of side effects, allowing more optimized Webpack builds.
+- Updated dependencies
+  - @backstage/catalog-model@1.4.2
+  - @backstage/plugin-permission-common@0.7.8
+
 ## 0.6.6-next.2
 
 ### Patch Changes

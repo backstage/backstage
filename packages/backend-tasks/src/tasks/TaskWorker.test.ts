@@ -22,6 +22,7 @@ import { migrateBackendTasks } from '../database/migrateBackendTasks';
 import { DbTasksRow, DB_TASKS_TABLE } from '../database/tables';
 import { TaskWorker } from './TaskWorker';
 import { TaskSettingsV2 } from './types';
+import { createTestScopedSignal } from './__testUtils__/createTestScopedSignal';
 
 jest.setTimeout(60_000);
 
@@ -30,6 +31,7 @@ describe('TaskWorker', () => {
   const databases = TestDatabases.create({
     ids: ['POSTGRES_13', 'POSTGRES_9', 'SQLITE_3', 'MYSQL_8'],
   });
+  const testScopedSignal = createTestScopedSignal();
 
   beforeEach(() => {
     jest.resetAllMocks();
@@ -135,7 +137,7 @@ describe('TaskWorker', () => {
       };
       const checkFrequency = Duration.fromObject({ milliseconds: 100 });
       const worker = new TaskWorker('task1', fn, knex, logger, checkFrequency);
-      worker.start(settings);
+      worker.start(settings, { signal: testScopedSignal() });
 
       await waitForExpect(() => {
         expect(logger.error).toHaveBeenCalled();
@@ -158,7 +160,7 @@ describe('TaskWorker', () => {
       };
       const checkFrequency = Duration.fromObject({ milliseconds: 100 });
       const worker = new TaskWorker('task1', fn, knex, logger, checkFrequency);
-      worker.start(settings);
+      worker.start(settings, { signal: testScopedSignal() });
 
       await waitForExpect(() => {
         expect(fn).toHaveBeenCalledTimes(3);
@@ -321,7 +323,7 @@ describe('TaskWorker', () => {
         logger,
         Duration.fromMillis(10),
       );
-      await worker2.start(settings);
+      await worker2.start(settings, { signal: testScopedSignal() });
 
       // We eventually abort the first worker just to make sure that the second
       // one for sure will get a go at running the task

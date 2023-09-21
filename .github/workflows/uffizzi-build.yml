@@ -25,13 +25,13 @@ jobs:
       - name: setup-node
         uses: actions/setup-node@v3
         with:
-          node-version: 16.x
+          node-version: 18.x
           registry-url: https://registry.npmjs.org/
 
       - name: yarn install
         uses: backstage/actions/yarn-install@v0.6.4
         with:
-          cache-prefix: linux-v16
+          cache-prefix: linux-v18
 
       - name: Use Uffizzi's backstage app config
         run: |

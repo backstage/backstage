@@ -1,5 +1,17 @@
 # @backstage/plugin-gcp-projects
 
+## 0.3.41
+
+### Patch Changes
+
+- 482bb5c0bbf8: Moved `@types/react` to be a regular dependency
+- 406b786a2a2c: Mark package as being free of side effects, allowing more optimized Webpack builds.
+- 8cec7664e146: Removed `@types/node` dependency
+- Updated dependencies
+  - @backstage/core-components@0.13.5
+  - @backstage/core-plugin-api@1.6.0
+  - @backstage/theme@0.4.2
+
 ## 0.3.41-next.3
 
 ### Patch Changes

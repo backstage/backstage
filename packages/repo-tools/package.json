@@ -1,7 +1,7 @@
 {
   "name": "@backstage/repo-tools",
   "description": "CLI for Backstage repo tooling ",
-  "version": "0.3.4-next.3",
+  "version": "0.3.4",
   "publishConfig": {
     "access": "public"
   },
@@ -64,8 +64,8 @@
     "@backstage/types": "workspace:^",
     "@types/is-glob": "^4.0.2",
     "@types/mock-fs": "^4.13.0",
-    "@types/node": "^16.11.26",
-    "mock-fs": "^5.1.0"
+    "@types/node": "^18.17.8",
+    "mock-fs": "^5.2.0"
   },
   "peerDependencies": {
     "@microsoft/api-extractor-model": "*",

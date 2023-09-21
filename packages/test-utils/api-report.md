@@ -56,6 +56,11 @@ export type ErrorWithContext = {
 };
 
 // @public
+export type LegacyRootOption = {
+  legacyRoot?: boolean;
+};
+
+// @public
 export type LogCollector = AsyncLogCollector | SyncLogCollector;
 
 // @public
@@ -194,13 +199,13 @@ export type MockStorageBucket = {
 // @public
 export function renderInTestApp(
   Component: ComponentType<PropsWithChildren<{}>> | ReactNode,
-  options?: TestAppOptions,
+  options?: TestAppOptions & LegacyRootOption,
 ): Promise<RenderResult>;
 
 // @public
 export function renderWithEffects(
   nodes: ReactElement,
-  options?: Pick<RenderOptions, 'wrapper'>,
+  options?: Pick<RenderOptions, 'wrapper'> & LegacyRootOption,
 ): Promise<RenderResult>;
 
 // @public

@@ -21,7 +21,7 @@ PR is merged. This is typically done every Tuesday around noon CET.
   - Note: Admin rights are required to lock the branch. If you lack the necessary permissions, contact a core maintainer to perform this action on your behalf.
 - Check [`Version Packages (next)` Pull Request](https://github.com/backstage/backstage/pulls?q=is%3Aopen+is%3Apr+in%3Atitle+%22Version+Packages+%28next%29%22)
   - Verify the version we are shipping is correct, by looking at the version packages PR title. It should be "Version Packages (next)"
-  - Check [`.changeset/pre.json`](https://github.com/backstage/backstage/blob/master/.changeset/pre.json) if the `mode` is set to `pre`. If you encounter `mode: "exit"` or if it's not defined, it indicates a mainline release.
+  - Check `pre.json` in [the `.changeset` folder](https://github.com/backstage/backstage/blob/master/.changeset) - it should have `"mode": "pre"` near the top. If you encounter `"mode": "exit"` or if the file doesn't exist, it indicates a mainline release.
 - Verify that there are no active/unfinished `sync_version-packages` actions running (https://github.com/backstage/backstage/actions/workflows/sync_version-packages.yml)
   - Locking the main branch will prevent new ones to be created, but be sure to check for running actions again after unlocking, since it may cause pending auto-merge PRs to be merged.
 - Check [`Version Packages (next)` Pull Request](https://github.com/backstage/backstage/pulls?q=is%3Aopen+is%3Apr+in%3Atitle+%22Version+Packages+%28next%29%22) for sufficient approval to be merged

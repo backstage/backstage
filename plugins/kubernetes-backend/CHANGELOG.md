@@ -1,5 +1,53 @@
 # @backstage/plugin-kubernetes-backend
 
+## 0.12.0
+
+### Minor Changes
+
+- 0ad36158d980: Integrators can now bring their own auth strategies through the use of the `addAuthStrategy` method on `KubernetesBuilder`.
+
+  **BREAKING** the `ClusterDetails` interface has been refactored to add an `authMetadata` field, and the`authProvider`, `serviceAccountToken`, `assumeRole`, and `externalID` fields have all been removed -- they appear within `authMetadata` using the same keys as those read by the `catalog` cluster locator. This means that if you are using a custom cluster supplier, your code will need to be updated -- as an example, instead of returning a `ClusterDetails` like `{authProvider: 'aws'}`, you will need to return one like `{authMetadata: {['kubernetes.io/auth-provider']: 'aws'}`.
+
+  **BREAKING** on the slight chance you were using the `setAuthTranslatorMap` method on `KubernetesBuilder`, it has been removed along with the entire `KubernetesAuthTranslator` interface. This notion has been replaced with the more focused concept of an `AuthenticationStrategy`. Converting a translator to a strategy should not be especially difficult.
+
+### Patch Changes
+
+- ccf00accb408: Add AWS Annotations to Kubernetes Cluster Resource
+- 72390ab2670d: Handle Proxy WS upgrade manually for WS handshakes
+- 71114ac50e02: The export for the new backend system has been moved to be the `default` export.
+
+  For example, if you are currently importing the plugin using the following pattern:
+
+  ```ts
+  import { examplePlugin } from '@backstage/plugin-example-backend';
+
+  backend.add(examplePlugin);
+  ```
+
+  It should be migrated to this:
+
+  ```ts
+  backend.add(import('@backstage/plugin-example-backend'));
+  ```
+
+- 024b2b66a332: Fixed a bug where requests to the proxy endpoint would fail for clusters with `caFile` configured
+- a8a614ba0d07: Minor `package.json` update.
+- 47ea122590f5: fix "undefined" kind for custom resources
+- Updated dependencies
+  - @backstage/plugin-kubernetes-common@0.6.6
+  - @backstage/backend-common@0.19.5
+  - @backstage/plugin-auth-node@0.3.0
+  - @backstage/config@1.1.0
+  - @backstage/catalog-client@1.4.4
+  - @backstage/catalog-model@1.4.2
+  - @backstage/errors@1.2.2
+  - @backstage/plugin-permission-common@0.7.8
+  - @backstage/types@1.1.1
+  - @backstage/plugin-permission-node@0.7.14
+  - @backstage/backend-plugin-api@0.6.3
+  - @backstage/plugin-catalog-node@1.4.4
+  - @backstage/integration-aws-node@0.1.6
+
 ## 0.11.6-next.3
 
 ### Patch Changes

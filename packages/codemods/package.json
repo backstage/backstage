@@ -42,7 +42,7 @@
   "devDependencies": {
     "@backstage/cli": "workspace:^",
     "@types/jscodeshift": "^0.11.0",
-    "@types/node": "^16.11.26",
+    "@types/node": "^18.17.8",
     "ts-node": "^10.0.0"
   },
   "nodemonConfig": {
