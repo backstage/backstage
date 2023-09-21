@@ -210,10 +210,9 @@ export type ServiceMock<TService> = {
   factory: ServiceFactory<TService>;
 } & {
   [Key in keyof TService]: TService[Key] extends (
-    this: infer This,
     ...args: infer Args
   ) => infer Return
-    ? TService[Key] & jest.MockInstance<Return, Args, This>
+    ? TService[Key] & jest.MockInstance<Return, Args>
     : TService[Key];
 };
 

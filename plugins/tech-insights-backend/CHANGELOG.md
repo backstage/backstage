@@ -1,5 +1,22 @@
 # @backstage/plugin-tech-insights-backend
 
+## 0.5.17
+
+### Patch Changes
+
+- cfc3ca6ce060: Changes needed to support MySQL
+- 814feeed7343: Update to handle invalid luxon values
+- Updated dependencies
+  - @backstage/backend-tasks@0.5.8
+  - @backstage/backend-common@0.19.5
+  - @backstage/config@1.1.0
+  - @backstage/catalog-client@1.4.4
+  - @backstage/catalog-model@1.4.2
+  - @backstage/errors@1.2.2
+  - @backstage/plugin-tech-insights-common@0.2.12
+  - @backstage/types@1.1.1
+  - @backstage/plugin-tech-insights-node@0.4.9
+
 ## 0.5.17-next.3
 
 ### Patch Changes

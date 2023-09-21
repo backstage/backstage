@@ -1,5 +1,17 @@
 # @backstage/plugin-tech-insights-backend-module-jsonfc
 
+## 0.1.35
+
+### Patch Changes
+
+- 51b801f743b2: Handle extracting facts from 'not' conditions too
+- Updated dependencies
+  - @backstage/backend-common@0.19.5
+  - @backstage/config@1.1.0
+  - @backstage/errors@1.2.2
+  - @backstage/plugin-tech-insights-common@0.2.12
+  - @backstage/plugin-tech-insights-node@0.4.9
+
 ## 0.1.35-next.3
 
 ### Patch Changes

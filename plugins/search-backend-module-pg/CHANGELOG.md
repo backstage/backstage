@@ -1,5 +1,33 @@
 # @backstage/plugin-search-backend-module-pg
 
+## 0.5.12
+
+### Patch Changes
+
+- 4ccf9204bc95: Added `indexerBatchSize` option to be able to control the size of the batches being indexed. Also added a debug log entry to list out all the entities in the batch
+- 71114ac50e02: The export for the new backend system has been moved to be the `default` export.
+
+  For example, if you are currently importing the plugin using the following pattern:
+
+  ```ts
+  import { examplePlugin } from '@backstage/plugin-example-backend';
+
+  backend.add(examplePlugin);
+  ```
+
+  It should be migrated to this:
+
+  ```ts
+  backend.add(import('@backstage/plugin-example-backend'));
+  ```
+
+- Updated dependencies
+  - @backstage/backend-common@0.19.5
+  - @backstage/config@1.1.0
+  - @backstage/plugin-search-common@1.2.6
+  - @backstage/backend-plugin-api@0.6.3
+  - @backstage/plugin-search-backend-node@1.2.7
+
 ## 0.5.12-next.3
 
 ### Patch Changes

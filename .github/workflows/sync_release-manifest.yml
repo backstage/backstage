@@ -10,7 +10,7 @@ jobs:
       # Setup node & install deps before checkout, keeping install quick
       - uses: actions/setup-node@v3
         with:
-          node-version: 16
+          node-version: 18.x
       - name: Install dependencies
         # Just the deps for the assemble manifest script
         run: npm install semver@7.3.5 fs-extra@10.0.0 @manypkg/get-packages@1.1.1

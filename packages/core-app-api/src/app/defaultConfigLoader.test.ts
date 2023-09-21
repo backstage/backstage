@@ -70,7 +70,7 @@ describe('defaultConfigLoaderSync', () => {
     anyEnv.APP_CONFIG = [{ data: { my: 'config' }, context: 'a' }];
 
     expect(() => defaultConfigLoaderSync('}')).toThrow(
-      'Failed to load runtime configuration, SyntaxError: Unexpected token } in JSON at position 0',
+      'Failed to load runtime configuration, SyntaxError: Unexpected token',
     );
   });
 

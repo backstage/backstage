@@ -1,5 +1,33 @@
 # @backstage/plugin-code-coverage-backend
 
+## 0.2.17
+
+### Patch Changes
+
+- 3f1367b956c6: Added support for LCOV coverage reports
+- df005d9932fb: Add text body parser for LCOV reports
+- 91ccb56fb418: Replace `express-xml-bodyparser` with `body-parser-xml`.
+
+  `express-xml-bodyparser` was last updated 8 years ago
+  and currently depends on a version of `xml2js` which
+  contains a vulnerability.
+
+  This change will swap it out in favor of `body-parser-xml`
+  which is more maintained and depends on a more recent `xml2js`
+  version without the vulnerability.
+
+- 33e606a797ef: Include auth token when fetching entity
+- d409ed988aed: Correct the line hits calculation for Cobertura reports
+- cfc3ca6ce060: Changes needed to support MySQL
+- Updated dependencies
+  - @backstage/backend-common@0.19.5
+  - @backstage/plugin-auth-node@0.3.0
+  - @backstage/config@1.1.0
+  - @backstage/catalog-client@1.4.4
+  - @backstage/catalog-model@1.4.2
+  - @backstage/errors@1.2.2
+  - @backstage/integration@1.7.0
+
 ## 0.2.17-next.3
 
 ### Patch Changes

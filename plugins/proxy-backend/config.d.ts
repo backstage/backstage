@@ -73,5 +73,54 @@ export interface Config {
             allowedHeaders?: string[];
           };
     };
+  } & {
+    /**
+     * This was the legacy way of expressing proxies, and is now deprecated. We
+     * keep it around in the config schema, to ensure that legacy setups still
+     * have properly secret-marked values so that they get redacted.
+     *
+     * TODO(freben): Remove this in the future (suggestion: after 2024-03-01)
+     * when people likely have moved off of this format.
+     */
+    [key: string]:
+      | string
+      | {
+          /**
+           * Target of the proxy. Url string to be parsed with the url module.
+           */
+          target: string;
+          /**
+           * Object with extra headers to be added to target requests.
+           */
+          headers?: {
+            /** @visibility secret */
+            Authorization?: string;
+            /** @visibility secret */
+            authorization?: string;
+            /** @visibility secret */
+            'X-Api-Key'?: string;
+            /** @visibility secret */
+            'x-api-key'?: string;
+            [key: string]: string | undefined;
+          };
+          /**
+           * Changes the origin of the host header to the target URL. Default: true.
+           */
+          changeOrigin?: boolean;
+          /**
+           * Rewrite target's url path. Object-keys will be used as RegExp to match paths.
+           * If pathRewrite is not specified, it is set to a single rewrite that removes the entire prefix and route.
+           */
+          pathRewrite?: { [regexp: string]: string };
+          /**
+           * Limit the forwarded HTTP methods, for example allowedMethods: ['GET'] to enforce read-only access.
+           */
+          allowedMethods?: string[];
+          /**
+           * Limit the forwarded HTTP methods. By default, only the headers that are considered safe for CORS
+           * and headers that are set by the proxy will be forwarded.
+           */
+          allowedHeaders?: string[];
+        };
   };
 }
