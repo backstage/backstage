@@ -14,6 +14,7 @@
  * limitations under the License.
  */
 
+import os from 'os';
 import { isChildPath, resolveSafeChildPath } from '@backstage/backend-common';
 import fs from 'fs-extra';
 import textextensions from 'textextensions';
@@ -80,6 +81,21 @@ export class DirectoryMocker {
       }
     }
 
+    return mocker;
+  }
+
+  static mockOsTmpDir() {
+    const mocker = DirectoryMocker.create();
+    const origTmpdir = os.tmpdir;
+    os.tmpdir = () => mocker.path;
+
+    try {
+      afterAll(() => {
+        os.tmpdir = origTmpdir;
+      });
+    } catch {
+      /* ignore */
+    }
     return mocker;
   }
 
