@@ -1,5 +1,48 @@
 # @backstage/plugin-auth-backend
 
+## 0.19.0
+
+### Minor Changes
+
+- 71114ac50e02: **BREAKING**: The export for the new backend system has been moved to be the `default` export.
+
+  For example, if you are currently importing the plugin using the following pattern:
+
+  ```ts
+  import { examplePlugin } from '@backstage/plugin-example-backend';
+
+  backend.add(examplePlugin);
+  ```
+
+  It should be migrated to this:
+
+  ```ts
+  backend.add(import('@backstage/plugin-example-backend'));
+  ```
+
+### Patch Changes
+
+- 080cc7794700: Migrated the GitLab auth provider to be implemented using the new `@backstage/plugin-auth-backend-module-gitlab-provider` module.
+- 7944d43f4790: Added `authPlugin` export for the new backend system. The plugin does not include any built-in auth providers, they must instead be added by installing additional modules, for example `authModuleGoogleProvider` from `@backstage/plugin-auth-backend-module-google-provider`.
+- 8513cd7d00e3: Deprecated several exports that are now available from `@backstage/plugin-auth-node` instead.
+- 7944d43f4790: Added the ability to disable the built-in auth providers by passing `disableDefaultProviderFactories` to `createRouter`.
+- 7944d43f4790: The algorithm used when generating Backstage tokens can be configured via `auth.identityTokenAlgorithm`.
+- Updated dependencies
+  - @backstage/plugin-auth-backend-module-gcp-iap-provider@0.1.0
+  - @backstage/plugin-auth-backend-module-github-provider@0.1.0
+  - @backstage/plugin-auth-backend-module-gitlab-provider@0.1.0
+  - @backstage/plugin-auth-backend-module-google-provider@0.1.0
+  - @backstage/plugin-auth-backend-module-oauth2-provider@0.1.0
+  - @backstage/backend-common@0.19.5
+  - @backstage/plugin-auth-node@0.3.0
+  - @backstage/config@1.1.0
+  - @backstage/catalog-client@1.4.4
+  - @backstage/catalog-model@1.4.2
+  - @backstage/errors@1.2.2
+  - @backstage/types@1.1.1
+  - @backstage/backend-plugin-api@0.6.3
+  - @backstage/plugin-catalog-node@1.4.4
+
 ## 0.19.0-next.3
 
 ### Minor Changes

@@ -1,5 +1,38 @@
 # @backstage/plugin-catalog-backend-module-gcp
 
+## 0.1.3
+
+### Patch Changes
+
+- 71114ac50e02: The export for the new backend system has been moved to be the `default` export.
+
+  For example, if you are currently importing the plugin using the following pattern:
+
+  ```ts
+  import { examplePlugin } from '@backstage/plugin-example-backend';
+
+  backend.add(examplePlugin);
+  ```
+
+  It should be migrated to this:
+
+  ```ts
+  backend.add(import('@backstage/plugin-example-backend'));
+  ```
+
+- 201f07c27f1e: Fix GKE endpoint parsing
+
+  Endpoint is an IP, not url. It is always https on default (443) port
+  ref: https://cloud.google.com/kubernetes-engine/docs/reference/rest/v1/projects.locations.clusters#Cluster
+
+- Updated dependencies
+  - @backstage/plugin-kubernetes-common@0.6.6
+  - @backstage/backend-tasks@0.5.8
+  - @backstage/backend-common@0.19.5
+  - @backstage/config@1.1.0
+  - @backstage/backend-plugin-api@0.6.3
+  - @backstage/plugin-catalog-node@1.4.4
+
 ## 0.1.3-next.3
 
 ### Patch Changes

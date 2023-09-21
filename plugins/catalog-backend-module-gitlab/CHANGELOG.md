@@ -1,5 +1,52 @@
 # @backstage/plugin-catalog-backend-module-gitlab
 
+## 0.3.0
+
+### Minor Changes
+
+- 3d73bafd85c9: Fix Gitlab.com user ingestion by scoping GitlabOrgDiscoveryEntityProvider to a group.
+
+  **BREAKING** The `group` parameter is now required Gitlab.com Org Data integrations and the backend will fail to start without this option configured.
+
+  ```diff
+  catalog:
+    providers:
+      gitlab:
+        yourProviderId:
+          host: gitlab.com
+          orgEnabled: true
+  +       group: org/teams
+  ```
+
+### Patch Changes
+
+- 71114ac50e02: The export for the new backend system has been moved to be the `default` export.
+
+  For example, if you are currently importing the plugin using the following pattern:
+
+  ```ts
+  import { examplePlugin } from '@backstage/plugin-example-backend';
+
+  backend.add(examplePlugin);
+  ```
+
+  It should be migrated to this:
+
+  ```ts
+  backend.add(import('@backstage/plugin-example-backend'));
+  ```
+
+- Updated dependencies
+  - @backstage/backend-tasks@0.5.8
+  - @backstage/backend-common@0.19.5
+  - @backstage/config@1.1.0
+  - @backstage/catalog-model@1.4.2
+  - @backstage/errors@1.2.2
+  - @backstage/integration@1.7.0
+  - @backstage/types@1.1.1
+  - @backstage/backend-plugin-api@0.6.3
+  - @backstage/plugin-catalog-node@1.4.4
+
 ## 0.3.0-next.3
 
 ### Minor Changes

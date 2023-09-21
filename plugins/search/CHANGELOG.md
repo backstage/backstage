@@ -1,5 +1,36 @@
 # @backstage/plugin-search
 
+## 1.4.0
+
+### Minor Changes
+
+- b78f570f44d3: The SearchPage component can now be configured via app-config.yaml with default query parameters to define how it behaves when it is first loaded or reset. Check out the following example:
+
+  ```yaml
+  search:
+    query:
+      pageLimit: 50
+  ```
+
+  Acceptable values for `pageLimit` are `10`, `25`, `50` or `100`.
+
+### Patch Changes
+
+- 406b786a2a2c: Mark package as being free of side effects, allowing more optimized Webpack builds.
+- 8cec7664e146: Removed `@types/node` dependency
+- Updated dependencies
+  - @backstage/plugin-catalog-react@1.8.4
+  - @backstage/core-components@0.13.5
+  - @backstage/config@1.1.0
+  - @backstage/catalog-model@1.4.2
+  - @backstage/core-plugin-api@1.6.0
+  - @backstage/errors@1.2.2
+  - @backstage/plugin-search-common@1.2.6
+  - @backstage/plugin-search-react@1.7.0
+  - @backstage/theme@0.4.2
+  - @backstage/types@1.1.1
+  - @backstage/version-bridge@1.0.5
+
 ## 1.4.0-next.3
 
 ### Patch Changes

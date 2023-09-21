@@ -1,5 +1,15 @@
 # @backstage/catalog-model
 
+## 1.4.2
+
+### Patch Changes
+
+- 406b786a2a2c: Mark package as being free of side effects, allowing more optimized Webpack builds.
+- Updated dependencies
+  - @backstage/config@1.1.0
+  - @backstage/errors@1.2.2
+  - @backstage/types@1.1.1
+
 ## 1.4.2-next.2
 
 ### Patch Changes

@@ -68,6 +68,18 @@ export type AlertDisplayProps = {
 };
 
 // @public
+export const AutoLogout: (props: AutoLogoutProps) => JSX.Element | null;
+
+// @public (undocumented)
+export type AutoLogoutProps = {
+  enabled?: boolean;
+  idleTimeoutMinutes?: number;
+  promptBeforeIdleSeconds?: number;
+  useWorkerTimers?: boolean;
+  logoutIfDisconnected?: boolean;
+};
+
+// @public
 export function Avatar(props: AvatarProps): React_2.JSX.Element;
 
 // @public (undocumented)

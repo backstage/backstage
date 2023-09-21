@@ -1,5 +1,30 @@
 # @backstage/plugin-techdocs
 
+## 1.7.0
+
+### Minor Changes
+
+- e44f45ac4515: This change allows a new annotation of `backstage.io/techdocs-entity` this ref allows you to reference another entity for its TechDocs. This allows you have a single TechDoc for all items in a system, for example you might have a frontend and a backend in the same repo. This would allow you to have TechDocs build under a `System` entity while referencing the system e.g.: `backstage.io/techdocs-entity: system:default/example` that will show the systems docs in both the TechDocs button and the TechDocs tab without needing to do duplicate builds and filling the TechDocs page with garbage.
+
+### Patch Changes
+
+- 88c9525a36f3: Fixed bug in styles that caused next and previous links in footer to overlap page content.
+- 406b786a2a2c: Mark package as being free of side effects, allowing more optimized Webpack builds.
+- 8cec7664e146: Removed `@types/node` dependency
+- Updated dependencies
+  - @backstage/integration-react@1.1.19
+  - @backstage/plugin-catalog-react@1.8.4
+  - @backstage/core-components@0.13.5
+  - @backstage/config@1.1.0
+  - @backstage/catalog-model@1.4.2
+  - @backstage/core-plugin-api@1.6.0
+  - @backstage/errors@1.2.2
+  - @backstage/integration@1.7.0
+  - @backstage/plugin-search-common@1.2.6
+  - @backstage/plugin-search-react@1.7.0
+  - @backstage/plugin-techdocs-react@1.1.10
+  - @backstage/theme@0.4.2
+
 ## 1.7.0-next.3
 
 ### Patch Changes

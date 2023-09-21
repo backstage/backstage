@@ -16,7 +16,7 @@
 
 import React from 'react';
 import { PortableSchema } from '../schema';
-import { coreExtensionData } from '../wiring';
+import { coreExtensionData, createExtensionInput } from '../wiring';
 import { createPageExtension } from './createPageExtension';
 
 describe('createPageExtension', () => {
@@ -54,9 +54,9 @@ describe('createPageExtension', () => {
         disabled: true,
         configSchema,
         inputs: {
-          first: {
-            extensionData: { element: coreExtensionData.reactElement },
-          },
+          first: createExtensionInput({
+            element: coreExtensionData.reactElement,
+          }),
         },
         loader: async () => <div />,
       }),
@@ -67,9 +67,9 @@ describe('createPageExtension', () => {
       configSchema: expect.anything(),
       disabled: true,
       inputs: {
-        first: {
-          extensionData: { element: coreExtensionData.reactElement },
-        },
+        first: createExtensionInput({
+          element: coreExtensionData.reactElement,
+        }),
       },
       output: {
         element: expect.anything(),

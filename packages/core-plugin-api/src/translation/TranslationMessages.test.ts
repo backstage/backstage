@@ -23,7 +23,7 @@ const ref = createTranslationRef({
     one: 'one',
     two: 'two',
     three: 'three',
-  } as const,
+  },
 });
 
 describe('createTranslationMessages', () => {

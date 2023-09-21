@@ -17,23 +17,23 @@
 import { AnyApiFactory, AnyApiRef } from '@backstage/core-plugin-api';
 import { PortableSchema } from '../schema';
 import {
-  AnyExtensionDataMap,
-  ExtensionDataInputValues,
+  ExtensionInputValues,
   createExtension,
   coreExtensionData,
 } from '../wiring';
+import { AnyExtensionInputMap, Expand } from '../wiring/createExtension';
 
 /** @public */
 export function createApiExtension<
   TConfig extends {},
-  TInputs extends Record<string, { extensionData: AnyExtensionDataMap }>,
+  TInputs extends AnyExtensionInputMap,
 >(
   options: (
     | {
         api: AnyApiRef;
         factory: (options: {
           config: TConfig;
-          inputs: ExtensionDataInputValues<TInputs>;
+          inputs: Expand<ExtensionInputValues<TInputs>>;
         }) => AnyApiFactory;
       }
     | {

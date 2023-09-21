@@ -1,5 +1,15 @@
 # @backstage/plugin-explore-react
 
+## 0.0.31
+
+### Patch Changes
+
+- 406b786a2a2c: Mark package as being free of side effects, allowing more optimized Webpack builds.
+- 8cec7664e146: Removed `@types/node` dependency
+- Updated dependencies
+  - @backstage/core-plugin-api@1.6.0
+  - @backstage/plugin-explore-common@0.0.2
+
 ## 0.0.31-next.3
 
 ### Patch Changes
