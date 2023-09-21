@@ -115,7 +115,7 @@ export async function createRouter(
     )[0];
 
     if (decision.result === AuthorizeResult.DENY) {
-      throw new NotAllowedError('Unauthorized');
+      throw new NotAllowedError('Forbidden');
     }
     /* highlight-add-end */
 

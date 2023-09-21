@@ -87,7 +87,7 @@ export async function createRouter(
 
     const user = await identity.getIdentity({ request });
     if (!user) {
-      throw new NotAllowedError('Unauthorized');
+      throw new NotAllowedError('Forbidden');
     }
 
     const decision = conditional
@@ -105,7 +105,7 @@ export async function createRouter(
         )[0];
 
     if (decision.result === AuthorizeResult.DENY) {
-      throw new NotAllowedError('Unauthorized');
+      throw new NotAllowedError('Forbidden');
     }
 
     return { decision, user: user.identity };

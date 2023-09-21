@@ -105,7 +105,7 @@ export class KubernetesProxy {
       const auth = authorizeResponse[0];
 
       if (auth.result === AuthorizeResult.DENY) {
-        res.status(403).json({ error: new NotAllowedError('Unauthorized') });
+        res.status(403).json({ error: new NotAllowedError('Forbidden') });
         return;
       }
 

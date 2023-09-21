@@ -87,7 +87,7 @@ router.put('/todos', async (req, res) => {
   )[0];
 
   if (decision.result !== AuthorizeResult.ALLOW) {
-    throw new NotAllowedError('Unauthorized');
+    throw new NotAllowedError('Forbidden');
   }
   /* highlight-add-end */
 

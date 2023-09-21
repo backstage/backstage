@@ -135,7 +135,7 @@ router.get('/todos', async (req, res) => {
   )[0];
 
   if (decision.result === AuthorizeResult.DENY) {
-    throw new NotAllowedError('Unauthorized');
+    throw new NotAllowedError('Forbidden');
   }
 
   if (decision.result === AuthorizeResult.CONDITIONAL) {

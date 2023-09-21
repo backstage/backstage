@@ -78,7 +78,7 @@ export async function createRouter(
     )[0];
 
     if (decision.result === AuthorizeResult.DENY) {
-      throw new NotAllowedError('Unauthorized');
+      throw new NotAllowedError('Forbidden');
     }
 
     const info = await devToolsBackendApi.listInfo();
@@ -101,7 +101,7 @@ export async function createRouter(
     )[0];
 
     if (decision.result === AuthorizeResult.DENY) {
-      throw new NotAllowedError('Unauthorized');
+      throw new NotAllowedError('Forbidden');
     }
 
     const configList = await devToolsBackendApi.listConfig();
@@ -124,7 +124,7 @@ export async function createRouter(
     )[0];
 
     if (decision.result === AuthorizeResult.DENY) {
-      throw new NotAllowedError('Unauthorized');
+      throw new NotAllowedError('Forbidden');
     }
 
     const health = await devToolsBackendApi.listExternalDependencyDetails();
