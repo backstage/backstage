@@ -196,9 +196,20 @@ export function mergeExtensionParameters(options: {
 }): ExtensionInstanceParameters[] {
   const { sources, builtinExtensions, parameters } = options;
 
-  const pluginExtensions = sources.flatMap(source =>
-    source.extensions.map(extension => ({ ...extension, source })),
-  );
+  const pluginExtensionIds = new Set<string>();
+  const pluginExtensions = sources.flatMap(source => {
+    return source.extensions
+      .filter(extension => {
+        // Filter out duplicated extensions
+        const id = extension.id;
+        if (!pluginExtensionIds.has(id)) {
+          pluginExtensionIds.add(id);
+          return true;
+        }
+        return false;
+      })
+      .map(extension => ({ ...extension, source }));
+  });
 
   // Prevent root override
   if (pluginExtensions.some(({ id }) => id === 'root')) {

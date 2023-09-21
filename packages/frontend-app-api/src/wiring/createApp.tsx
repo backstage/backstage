@@ -208,7 +208,6 @@ export function createInstances(options: {
 
   function createInstance(
     instanceParams: ExtensionInstanceParameters,
-    extensionAncestorIds: string[] = [],
   ): ExtensionInstance {
     const extensionId = instanceParams.extension.id;
     const existingInstance = instances.get(extensionId);
@@ -216,28 +215,10 @@ export function createInstances(options: {
       return existingInstance;
     }
 
-    // Prevent cyclical dependencies
-    if (extensionAncestorIds.includes(extensionId)) {
-      const extensionDependencyGraph = extensionAncestorIds
-        .concat(extensionId)
-        .join(' → ');
-      throw new Error(
-        `There is a cyclical dependency with the extension "${extensionId}": ${extensionDependencyGraph}`,
-      );
-    }
-
     const attachments = new Map(
       Array.from(attachmentMap.get(extensionId)?.entries() ?? []).map(
         ([inputName, attachmentConfigs]) => {
-          return [
-            inputName,
-            attachmentConfigs.map(attachmentConfig =>
-              createInstance(
-                attachmentConfig,
-                extensionAncestorIds.concat(extensionId),
-              ),
-            ),
-          ];
+          return [inputName, attachmentConfigs.map(createInstance)];
         },
       ),
     );

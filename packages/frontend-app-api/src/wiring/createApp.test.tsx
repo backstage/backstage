@@ -72,8 +72,8 @@ describe('createInstances', () => {
     );
   });
 
-  describe('throws an error when immediate cyclical dependencies are found', () => {
-    it('in an immediate level (e.g., A -> A)', () => {
+  describe('should deduplicated plugins', () => {
+    it('in an immediate dependency level (e.g., A -> A)', () => {
       const config = new MockConfigApi({});
 
       const addonExtensionData =
@@ -114,8 +114,9 @@ describe('createInstances', () => {
         }),
       ];
 
-      expect(() => createInstances({ config, plugins })).toThrow(
-        /There is a cyclical dependency with the extension "A": (.*) → A → A/,
+      // It should not create an infinite loop
+      expect(() => createInstances({ config, plugins })).not.toThrow(
+        'Maximum call stack size exceeded',
       );
     });
 
@@ -182,8 +183,9 @@ describe('createInstances', () => {
         }),
       ];
 
-      expect(() => createInstances({ config, plugins })).toThrow(
-        /There is a cyclical dependency with the extension "A": (.*) → A → B → A/,
+      // It should not create an infinite loop
+      expect(() => createInstances({ config, plugins })).not.toThrow(
+        'Maximum call stack size exceeded',
       );
     });
 
@@ -288,8 +290,9 @@ describe('createInstances', () => {
         }),
       ];
 
-      expect(() => createInstances({ config, plugins })).toThrow(
-        /There is a cyclical dependency with the extension "B": (.*) → A → B → C → D → B/,
+      // It should not create an infinite loop
+      expect(() => createInstances({ config, plugins })).not.toThrow(
+        'Maximum call stack size exceeded',
       );
     });
   });
