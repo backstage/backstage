@@ -6,7 +6,7 @@ sidebar_label: Overview
 description: Core backend service APIs
 ---
 
-> **DISCLAIMER: The new backend system is in alpha, and still under active development. While we have reviewed the interfaces carefully, they may still be iterated on before the stable release.**
+> **NOTE: The new backend system is in alpha, and some plugins do not yet fully implement it.**
 
 The default backend provides several [core services](https://github.com/backstage/backstage/blob/master/packages/backend-plugin-api/src/services/definitions/coreServices.ts) out of the box which includes access to configuration, logging, URL Readers, databases and more.
 

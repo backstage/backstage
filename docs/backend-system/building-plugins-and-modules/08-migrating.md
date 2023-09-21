@@ -6,7 +6,7 @@ sidebar_label: Migration Guide
 description: How to migrate existing backend plugins to the new backend system
 ---
 
-> **DISCLAIMER: The new backend system is in alpha, and still under active development. While we have reviewed the interfaces carefully, they may still be iterated on before the stable release.**
+> **NOTE: The new backend system is in alpha, and some plugins do not yet fully implement it.**
 
 Migrating an existing backend plugin to the new backend system is fairly straightforward. The process is similar across the majority of plugins which just return a `Router` that is then wired up in the `index.ts` file of your backend. The primary thing that we need to do is to make sure that the dependencies that are required by the plugin are available, and then registering the router with the HTTP router service.
 
