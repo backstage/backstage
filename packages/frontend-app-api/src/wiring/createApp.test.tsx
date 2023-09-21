@@ -73,126 +73,182 @@ describe('createInstances', () => {
   });
 
   describe('throws an error when immediate cyclical dependencies are found', () => {
-    it('in an immediate level (e.g., A(plugin.page) -> A(plugin.page))', () => {
+    it('in an immediate level (e.g., A -> A)', () => {
       const config = new MockConfigApi({});
 
       const addonExtensionData =
         createExtensionDataRef<JSX.Element>('plugin.page.addon');
 
-      const addon = createExtension({
-        id: 'plugin.page', // cyclical
-        at: 'plugin.page/addons',
+      const CyclicalA = createExtension({
+        id: 'A', // Same id as ancestor A
+        at: 'A/addons',
         inputs: {},
         output: {
           element: addonExtensionData,
         },
         factory({ bind }) {
           bind({
-            element: <div key="addon">Addon</div>,
+            element: <div key="cyclical-a">Cyclical A</div>,
           });
         },
       });
 
-      const page = createPageExtension({
-        id: 'plugin.page',
+      const A = createPageExtension({
+        id: 'A',
         defaultPath: '/',
-        routeRef: createRouteRef({ id: 'plugins.page.addon' }),
+        routeRef: createRouteRef({ id: 'A.route' }),
         inputs: {
           addons: createExtensionInput({
             element: addonExtensionData,
           }),
         },
         loader: async ({ inputs }) => (
-          <div>Page {inputs.addons.map(({ element }) => element)}</div>
+          <div>A {inputs.addons.map(({ element }) => element)}</div>
         ),
       });
 
       const plugins = [
         createPlugin({
           id: 'plugin',
-          extensions: [page, addon],
+          extensions: [A, CyclicalA],
         }),
       ];
 
       expect(() => createInstances({ config, plugins })).toThrow(
-        'There is a cyclical dependency with the extension "plugin.page": core.layout → core.routes → plugin.page → plugin.page',
+        /There is a cyclical dependency with the extension "A": (.*) → A → A/,
       );
     });
 
-    it('in an intermediate level (e.g., A(core.routes) -> B(plugin.page) -> A(core.routes))', () => {
+    it('in an intermediate level (e.g., A -> B -> A)', () => {
       const config = new MockConfigApi({});
 
       const addonExtensionData =
         createExtensionDataRef<JSX.Element>('plugin.page.addon');
 
-      const addon = createExtension({
-        id: 'core.routes', // cyclical
-        at: 'plugin.page/addons',
-        inputs: {},
+      const CyclicalA = createExtension({
+        id: 'A', // Same id as ancestor A
+        at: 'B/addons',
+        inputs: {
+          addons: createExtensionInput({
+            element: addonExtensionData,
+          }),
+        },
         output: {
           element: addonExtensionData,
         },
         factory({ bind }) {
           bind({
-            element: <div key="addon">Addon</div>,
+            element: <div key="cyclical-a">Cyclical A</div>,
           });
         },
       });
 
-      const page = createPageExtension({
-        id: 'plugin.page',
+      const B = createExtension({
+        id: 'B',
+        at: 'A/addons',
+        inputs: {
+          addons: createExtensionInput({
+            element: addonExtensionData,
+          }),
+        },
+        output: {
+          element: addonExtensionData,
+        },
+        factory({ bind }) {
+          bind({
+            element: <div key="b">B</div>,
+          });
+        },
+      });
+
+      const A = createPageExtension({
+        id: 'A',
         defaultPath: '/',
-        routeRef: createRouteRef({ id: 'plugins.page.addon' }),
+        routeRef: createRouteRef({ id: 'A.route' }),
         inputs: {
           addons: createExtensionInput({
             element: addonExtensionData,
           }),
         },
         loader: async ({ inputs }) => (
-          <div>Page {inputs.addons.map(({ element }) => element)}</div>
+          <div>A {inputs.addons.map(({ element }) => element)}</div>
         ),
       });
 
       const plugins = [
         createPlugin({
           id: 'plugin',
-          extensions: [page, addon],
+          extensions: [A, B, CyclicalA],
         }),
       ];
 
       expect(() => createInstances({ config, plugins })).toThrow(
-        'There is a cyclical dependency with the extension "core.routes": core.layout → core.routes → plugin.page → core.routes',
+        /There is a cyclical dependency with the extension "A": (.*) → A → B → A/,
       );
     });
 
-    it('in an deep level (e.g., A(core.layout) -> B(core.routes) -> C(plugin.page) -> D(plugin.page.addon) -> B(core.routes))', () => {
+    it('in an deep level (e.g., A -> B -> C -> D -> B)', () => {
       const config = new MockConfigApi({});
 
-      const addonRendererInput = createExtensionDataRef<() => JSX.Element>(
-        'plugin.page.addon.renderer',
-      );
+      const addonRendererInput =
+        createExtensionDataRef<() => JSX.Element>('A.addon.renderer');
 
-      const renderer = createExtension({
-        id: 'core.routes', // cyclical
-        at: 'plugin.page.addon/renderer',
+      const addonElementInput =
+        createExtensionDataRef<JSX.Element>('A.addon.element');
+
+      const CyclicalB = createExtension({
+        id: 'B', // Same id as ancestor B
+        at: 'D/addons',
         inputs: {},
+        output: {
+          element: addonElementInput,
+        },
+        factory({ bind }) {
+          bind({
+            element: <div key="cyclical-b">Cyclical B</div>,
+          });
+        },
+      });
+
+      const D = createExtension({
+        id: 'D',
+        at: 'C/addons',
+        inputs: {
+          addons: createExtensionInput({
+            element: addonElementInput,
+          }),
+        },
+        output: {
+          element: addonElementInput,
+        },
+        factory({ bind }) {
+          bind({
+            element: <div key="d">D</div>,
+          });
+        },
+      });
+
+      const C = createExtension({
+        id: 'C',
+        at: 'B/renderer',
+        inputs: {
+          addons: createExtensionInput({
+            element: addonElementInput,
+          }),
+        },
         output: {
           renderer: addonRendererInput,
         },
         factory({ bind }) {
           bind({
-            renderer: () => <div key="addon">Addon</div>,
+            renderer: () => <div key="c">C</div>,
           });
         },
       });
 
-      const addonElementInput = createExtensionDataRef<JSX.Element>(
-        'plugin.page.addon.element',
-      );
-
-      const addon = createExtension({
-        id: 'plugin.page.addon',
-        at: 'plugin.page/addons',
+      const B = createExtension({
+        id: 'B',
+        at: 'A/addons',
         inputs: {
           renderer: createExtensionInput(
             {
@@ -206,34 +262,34 @@ describe('createInstances', () => {
         },
         factory({ bind, inputs }) {
           bind({
-            element: inputs.renderer?.element() ?? <div key="addon">Addon</div>,
+            element: inputs.renderer?.element() ?? <div key="b">B</div>,
           });
         },
       });
 
-      const page = createPageExtension({
-        id: 'plugin.page',
+      const A = createPageExtension({
+        id: 'A',
         defaultPath: '/',
-        routeRef: createRouteRef({ id: 'plugins.page.addon' }),
+        routeRef: createRouteRef({ id: 'A.route' }),
         inputs: {
           addons: createExtensionInput({
             element: addonElementInput,
           }),
         },
         loader: async ({ inputs }) => (
-          <div>Page {inputs.addons.map(({ element }) => element)}</div>
+          <div>A {inputs.addons.map(({ element }) => element)}</div>
         ),
       });
 
       const plugins = [
         createPlugin({
           id: 'plugin',
-          extensions: [page, addon, renderer],
+          extensions: [A, B, C, D, CyclicalB],
         }),
       ];
 
       expect(() => createInstances({ config, plugins })).toThrow(
-        'There is a cyclical dependency with the extension "core.routes": core.layout → core.routes → plugin.page → plugin.page.addon → core.routes',
+        /There is a cyclical dependency with the extension "B": (.*) → A → B → C → D → B/,
       );
     });
   });
