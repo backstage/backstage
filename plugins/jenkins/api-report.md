@@ -17,6 +17,23 @@ import { default as React_2 } from 'react';
 import { RouteRef } from '@backstage/core-plugin-api';
 import { TableColumn } from '@backstage/core-components';
 
+// Warning: (ae-missing-release-tag) "columnFactories" is part of the package's API, but it is missing a release tag (@alpha, @beta, @public, or @internal)
+//
+// @public (undocumented)
+export const ciTableColumnFactories: Readonly<{
+  createTimestampColumn(): TableColumn<Project>;
+  createBuildColumn(): TableColumn<Project>;
+  createSourceColumn(): TableColumn<Project>;
+  createStatusColumn(): TableColumn<Project>;
+  createTestColumn(): TableColumn<Project>;
+  createActionsColumn(): TableColumn<Project>;
+}>;
+
+// Warning: (ae-missing-release-tag) "defaultCITableColumns" is part of the package's API, but it is missing a release tag (@alpha, @beta, @public, or @internal)
+//
+// @public (undocumented)
+export const defaultCITableColumns: TableColumn<Project>[];
+
 // @public (undocumented)
 export const EntityJenkinsContent: (props: {
   columns?: TableColumn<Project>[] | undefined;
