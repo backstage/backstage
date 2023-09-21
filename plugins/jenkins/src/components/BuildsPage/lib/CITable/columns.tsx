@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import { Link, Progress, Table, TableColumn } from '@backstage/core-components';
+import { Link, Progress, TableColumn } from '@backstage/core-components';
 import { alertApiRef, useApi, useRouteRef } from '@backstage/core-plugin-api';
 import { useEntityPermission } from '@backstage/plugin-catalog-react/alpha';
 import { Box, IconButton, Tooltip, Typography } from '@material-ui/core';
