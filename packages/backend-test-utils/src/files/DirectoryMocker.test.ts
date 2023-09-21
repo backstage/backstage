@@ -27,7 +27,7 @@ describe('DirectoryMocker', () => {
       'a/b/d.txt': 'd',
     });
 
-    await expect(mocker.getContent()).resolves.toEqual({
+    await expect(mocker.content()).resolves.toEqual({
       'a.txt': 'a',
       a: {
         'b.txt': 'b',
@@ -47,7 +47,7 @@ describe('DirectoryMocker', () => {
       'a/b/d.bin': Buffer.from([0xd]),
     });
 
-    await expect(mocker.getContent()).resolves.toEqual({
+    await expect(mocker.content()).resolves.toEqual({
       'a.txt': 'a',
       a: {
         'b.txt': 'b',
@@ -65,7 +65,7 @@ describe('DirectoryMocker', () => {
       b: {},
     });
 
-    await expect(mocker.getContent()).resolves.toEqual({
+    await expect(mocker.content()).resolves.toEqual({
       'a.txt': 'a',
       b: {},
     });
@@ -77,7 +77,7 @@ describe('DirectoryMocker', () => {
       },
     });
 
-    await expect(mocker.getContent()).resolves.toEqual({
+    await expect(mocker.content()).resolves.toEqual({
       'a.txt': 'a',
       'b.txt': 'b',
       b: {
@@ -95,7 +95,7 @@ describe('DirectoryMocker', () => {
       'a.txt': 'a2',
     });
 
-    await expect(mocker.getContent()).resolves.toEqual({
+    await expect(mocker.content()).resolves.toEqual({
       'a.txt': 'a2',
     });
   });
@@ -130,14 +130,14 @@ describe('DirectoryMocker', () => {
           'a.txt': 'a',
         });
 
-        await expect(cleanupMocker.getContent()).resolves.toEqual({
+        await expect(cleanupMocker.content()).resolves.toEqual({
           'a.txt': 'a',
         });
       });
     });
 
     it('should clean up after itself automatically', async () => {
-      await expect(cleanupMocker.getContent()).resolves.toBeUndefined();
+      await expect(cleanupMocker.content()).resolves.toBeUndefined();
     });
   });
 });

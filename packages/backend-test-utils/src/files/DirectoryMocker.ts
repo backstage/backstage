@@ -51,7 +51,7 @@ interface DirectoryMockerOptions {
   root?: string;
 }
 
-interface DirectoryMockerGetContentOptions {
+interface DirectoryMockerContentOptions {
   path?: string;
 
   /**
@@ -139,8 +139,8 @@ export class DirectoryMocker {
     }
   }
 
-  async getContent(
-    options?: DirectoryMockerGetContentOptions,
+  async content(
+    options?: DirectoryMockerContentOptions,
   ): Promise<MockDirectory | undefined> {
     const shouldReadAsText =
       (typeof options?.shouldReadAsText === 'boolean'
