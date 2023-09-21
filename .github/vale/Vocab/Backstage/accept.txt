@@ -268,12 +268,14 @@ parseable
 Patrik
 pattison
 Peloton
+PEP
 performant
 Performant
 periskop
 Periskop
 permissioned
 permissioning
+pipx
 plantuml
 Platformize
 Podman
