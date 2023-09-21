@@ -57,7 +57,16 @@ const getToEntityRef =
  * for receiving a pathname and returning a string (name). The default
  * implementation ignores the pathname and uses the document.title .
  */
-export const getVisitName = (document: Document) => () => document.title;
+export const getVisitName =
+  ({ rootPath = 'catalog', document = global.document } = {}) =>
+  ({ pathname }: { pathname: string }) => {
+    const regex = new RegExp(
+      `^\/${rootPath}\/(?<namespace>[^\/]+)\/(?<kind>[^\/]+)\/(?<name>[^\/]+)`,
+    );
+    const result = regex.exec(pathname);
+    if (result && result?.groups) return result.groups.name;
+    return document.title;
+  };
 
 /**
  * @public
@@ -76,7 +85,7 @@ export const VisitListener = ({
   const visitsApi = useApi(visitsApiRef);
   const { pathname } = useLocation();
   const toEntityRefImpl = toEntityRef ?? getToEntityRef();
-  const visitNameImpl = visitName ?? getVisitName(document);
+  const visitNameImpl = visitName ?? getVisitName();
   useEffect(() => {
     // Wait for the browser to finish with paint with the assumption react
     // has finished with dom reconciliation.
