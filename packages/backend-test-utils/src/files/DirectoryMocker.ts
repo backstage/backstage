@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { resolveSafeChildPath } from '@backstage/backend-common';
+import { isChildPath, resolveSafeChildPath } from '@backstage/backend-common';
 import fs from 'fs-extra';
 import textextensions from 'textextensions';
 import { tmpdir as getTmpDir } from 'os';
@@ -23,6 +23,7 @@ import {
   extname,
   join as joinPath,
   resolve as resolvePath,
+  relative as relativePath,
 } from 'path';
 
 type MockEntry =
@@ -50,6 +51,8 @@ interface DirectoryMockerOptions {
 }
 
 interface DirectoryMockerGetContentOptions {
+  path?: string;
+
   /**
    * Whether or not to return files as text rather than buffers.
    *
@@ -100,7 +103,12 @@ export class DirectoryMocker {
     const entries = this.#transformInput(root);
 
     for (const entry of entries) {
-      const fullPath = resolveSafeChildPath(this.#root, entry.path.slice(1)); // trim leading slash
+      const fullPath = resolveSafeChildPath(this.#root, entry.path);
+      if (!isChildPath(this.#root, fullPath)) {
+        throw new Error(
+          `Provided path must resolve to a child path of the mock directory, got ${entry.path}`,
+        );
+      }
 
       if (entry.type === 'dir') {
         await fs.ensureDir(fullPath);
@@ -119,6 +127,16 @@ export class DirectoryMocker {
         ? () => options?.shouldReadAsText
         : options?.shouldReadAsText) ??
       ((path: string) => textextensions.includes(extname(path).slice(1)));
+
+    const root = resolvePath(this.#root, options?.path ?? '');
+    if (!isChildPath(this.#root, root)) {
+      throw new Error(
+        `Provided path must resolve to a child path of the mock directory, got ${relativePath(
+          this.#root,
+          root,
+        )}`,
+      );
+    }
 
     async function read(path: string): Promise<MockDirectory | undefined> {
       if (!(await fs.pathExists(path))) {
@@ -145,7 +163,7 @@ export class DirectoryMocker {
       );
     }
 
-    return read(this.#root);
+    return read(root);
   }
 
   removeContent = async () => {
@@ -156,18 +174,19 @@ export class DirectoryMocker {
     const entries: MockEntry[] = [];
 
     function traverse(node: MockDirectory[string], path: string) {
+      const trimmedPath = path.startsWith('/') ? path.slice(1) : path; // trim leading slash
       if (typeof node === 'string') {
         entries.push({
           type: 'file',
-          path,
+          path: trimmedPath,
           content: Buffer.from(node, 'utf8'),
         });
       } else if (node instanceof Buffer) {
-        entries.push({ type: 'file', path, content: node });
+        entries.push({ type: 'file', path: trimmedPath, content: node });
       } else {
-        entries.push({ type: 'dir', path });
+        entries.push({ type: 'dir', path: trimmedPath });
         for (const [name, child] of Object.entries(node)) {
-          traverse(child, `${path}/${name}`);
+          traverse(child, `${trimmedPath}/${name}`);
         }
       }
     }
