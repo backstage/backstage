@@ -68,7 +68,7 @@ describe('createInstances', () => {
       }),
     ];
     expect(() => createInstances({ config, plugins })).toThrow(
-      'The following plugins are overriding root extensions and root extensions cannot be overridden: plugin',
+      "The following plugin(s) are overriding the 'root' extension which is forbidden: plugin",
     );
   });
 

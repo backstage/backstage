@@ -206,7 +206,9 @@ export function mergeExtensionParameters(options: {
       .filter(({ id }) => id === 'root')
       .map(({ source }) => source.id);
     throw new Error(
-      `The following plugins are overriding root extensions and root extensions cannot be overridden: ${rootPluginIds}`,
+      `The following plugin(s) are overriding the 'root' extension which is forbidden: ${rootPluginIds.join(
+        ',',
+      )}`,
     );
   }
 
