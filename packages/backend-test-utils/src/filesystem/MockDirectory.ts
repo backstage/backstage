@@ -27,6 +27,69 @@ import {
   relative as relativePath,
 } from 'path';
 
+/**
+ * The content of a mock directory represented by a nested object structure.
+ *
+ * @remarks
+ *
+ * When used as input, the keys may contain forward slashes to indicate nested directories.
+ * Then returned as output, each directory will always be represented as a separate object.
+ *
+ * @example
+ * ```ts
+ * {
+ *   'test.txt': 'content',
+ *   'sub-dir': {
+ *     'file.txt': 'content',
+ *     'nested-dir/file.txt': 'content',
+ *   },
+ *   'empty-dir': {},
+ *   'binary-file': Buffer.from([0, 1, 2]),
+ * }
+ * ```
+ *
+ * @public
+ */
+export type MockDirectoryContent = {
+  [name in string]: MockDirectoryContent | string | Buffer;
+};
+
+/**
+ * Options for {@link MockDirectory.create}.
+ *
+ * @public
+ */
+export interface MockDirectoryCreateOptions {
+  /**
+   * The root path to create the directory in. Defaults to a temporary directory.
+   *
+   * If an existing directory is provided, it will not be cleaned up after the test.
+   */
+  root?: string;
+}
+
+/**
+ * Options for {@link MockDirectory.content}.
+ *
+ * @public
+ */
+export interface MockDirectoryContentOptions {
+  /**
+   * The path to read content from. Defaults to the root of the mock directory.
+   *
+   * An absolute path can also be provided, as long as it is a child path of the mock directory.
+   */
+  path?: string;
+
+  /**
+   * Whether or not to return files as text rather than buffers.
+   *
+   * Defaults to checking the file extension against a list of known text extensions.
+   */
+  shouldReadAsText?: boolean | ((path: string, buffer: Buffer) => boolean);
+}
+
+/** @internal */
 type MockEntry =
   | {
       type: 'file';
@@ -38,32 +101,35 @@ type MockEntry =
       path: string;
     };
 
-export type MockDirectoryContent = {
-  [name in string]: MockDirectoryContent | string | Buffer;
-};
-
-interface DirectoryMockerOptions {
-  /**
-   * The root path to create the directory in. Defaults to a temporary directory.
-   *
-   * If an existing directory is provided, it will not be cleaned up after the test.
-   */
-  root?: string;
-}
-
-interface DirectoryMockerContentOptions {
-  path?: string;
-
-  /**
-   * Whether or not to return files as text rather than buffers.
-   *
-   * Defaults to checking the file extension against a list of known text extensions.
-   */
-  shouldReadAsText?: boolean | ((path: string, buffer: Buffer) => boolean);
-}
-
+/**
+ * A utility for creating a mock directory that is automatically cleaned up.
+ *
+ * @public
+ */
 export class MockDirectory {
-  static create(options?: DirectoryMockerOptions) {
+  /**
+   * Creates a new temporary mock directory that will be removed after the tests have completed.
+   *
+   * @remarks
+   *
+   * This method is intended to be called outside of any test, either at top-level or
+   * within a `describe` block. It will call `afterAll` to make sure that the mock directory
+   * is removed after the tests have run.
+   *
+   * @example
+   * ```ts
+   * describe('MySubject', () => {
+   *   const mockDir = MockDirectory.create();
+   *
+   *   beforeEach(() => mockDir.clear());
+   *
+   *   it('should work', async () => {
+   *     // ... use mockDir
+   *   })
+   * })
+   * ```
+   */
+  static create(options?: MockDirectoryCreateOptions) {
     const root =
       options?.root ??
       fs.mkdtempSync(joinPath(getTmpDir(), 'backstage-tmp-test-dir-'));
@@ -84,6 +150,12 @@ export class MockDirectory {
     return mocker;
   }
 
+  /**
+   * Like {@link MockDirectory.create}, but also mocks `os.tmpdir()` to return the
+   * mock directory path until the end of the test suite.
+   *
+   * @returns
+   */
   static mockOsTmpDir() {
     const mocker = MockDirectory.create();
     const origTmpdir = os.tmpdir;
@@ -105,20 +177,58 @@ export class MockDirectory {
     this.#root = root;
   }
 
+  /**
+   * The path to the root of the mock directory
+   */
   get path() {
     return this.#root;
   }
 
+  /**
+   * Resolves a path relative to the root of the mock directory.
+   */
   resolve(...paths: string[]) {
     return resolvePath(this.#root, ...paths);
   }
 
+  /**
+   * Sets the content of the mock directory. This will remove any existing content.
+   *
+   * @example
+   * ```ts
+   * await mockDir.setContent({
+   *   'test.txt': 'content',
+   *   'sub-dir': {
+   *     'file.txt': 'content',
+   *     'nested-dir/file.txt': 'content',
+   *   },
+   *   'empty-dir': {},
+   *   'binary-file': Buffer.from([0, 1, 2]),
+   * });
+   * ```
+   */
   async setContent(root: MockDirectoryContent) {
     await this.cleanup();
 
     return this.addContent(root);
   }
 
+  /**
+   * Adds content of the mock directory. This will overwrite existing files.
+   *
+   * @example
+   * ```ts
+   * await mockDir.addContent({
+   *   'test.txt': 'content',
+   *   'sub-dir': {
+   *     'file.txt': 'content',
+   *     'nested-dir/file.txt': 'content',
+   *   },
+   *   'empty-dir': {},
+   *   'binary-file': Buffer.from([0, 1, 2]),
+   * });
+   * ```
+   */
   async addContent(root: MockDirectoryContent) {
     const entries = this.#transformInput(root);
 
@@ -139,8 +249,31 @@ export class MockDirectory {
     }
   }
 
+  /**
+   * Reads the content of the mock directory.
+   *
+   * @remarks
+   *
+   * Text files will be returned as strings, while binary files will be returned as buffers.
+   * By default the file extension is used to determine whether a file should be read as text.
+   *
+   * @example
+   * ```ts
+   * await expect(mockDir.content()).resolves.toEqual({
+   *   'test.txt': 'content',
+   *   'sub-dir': {
+   *     'file.txt': 'content',
+   *     'nested-dir': {
+   *       'file.txt': 'content',
+   *     },
+   *   },
+   *   'empty-dir': {},
+   *   'binary-file': Buffer.from([0, 1, 2]),
+   * });
+   * ```
+   */
   async content(
-    options?: DirectoryMockerContentOptions,
+    options?: MockDirectoryContentOptions,
   ): Promise<MockDirectoryContent | undefined> {
     const shouldReadAsText =
       (typeof options?.shouldReadAsText === 'boolean'
@@ -188,10 +321,16 @@ export class MockDirectory {
     return read(root);
   }
 
+  /**
+   * Clears the content of the mock directory, ensuring that the directory itself exists.
+   */
   clear = async () => {
     await this.setContent({});
   };
 
+  /**
+   * Removes the mock directory and all its contents.
+   */
   cleanup = async () => {
     await fs.rm(this.#root, { recursive: true, force: true });
   };
