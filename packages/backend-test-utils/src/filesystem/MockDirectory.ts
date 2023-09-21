@@ -15,7 +15,7 @@
  */
 
 import os from 'os';
-import { isChildPath, resolveSafeChildPath } from '@backstage/backend-common';
+import { isChildPath } from '@backstage/backend-common';
 import fs from 'fs-extra';
 import textextensions from 'textextensions';
 import { tmpdir as getTmpDir } from 'os';
@@ -25,6 +25,8 @@ import {
   join as joinPath,
   resolve as resolvePath,
   relative as relativePath,
+  win32,
+  posix,
 } from 'path';
 
 /**
@@ -233,10 +235,10 @@ export class MockDirectory {
     const entries = this.#transformInput(root);
 
     for (const entry of entries) {
-      const fullPath = resolveSafeChildPath(this.#root, entry.path);
+      const fullPath = resolvePath(this.#root, entry.path);
       if (!isChildPath(this.#root, fullPath)) {
         throw new Error(
-          `Provided path must resolve to a child path of the mock directory, got ${entry.path}`,
+          `Provided path must resolve to a child path of the mock directory, got '${entry.path}'`,
         );
       }
 
@@ -284,10 +286,7 @@ export class MockDirectory {
     const root = resolvePath(this.#root, options?.path ?? '');
     if (!isChildPath(this.#root, root)) {
       throw new Error(
-        `Provided path must resolve to a child path of the mock directory, got ${relativePath(
-          this.#root,
-          root,
-        )}`,
+        `Provided path must resolve to a child path of the mock directory, got '${root}'`,
       );
     }
 
@@ -308,8 +307,11 @@ export class MockDirectory {
               return [entry.name, await read(fullPath)];
             }
             const content = await fs.readFile(fullPath);
+            const relativePosixPath = relativePath(root, fullPath)
+              .split(win32.sep)
+              .join(posix.sep);
 
-            if (shouldReadAsText(fullPath, content)) {
+            if (shouldReadAsText(relativePosixPath, content)) {
               return [entry.name, content.toString('utf8')];
             }
             return [entry.name, content];

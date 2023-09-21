@@ -14,10 +14,27 @@
  * limitations under the License.
  */
 
+import fs from 'fs-extra';
+import os from 'os';
+import { relative as relativePath } from 'path';
 import { MockDirectory } from './MockDirectory';
 
 describe('MockDirectory', () => {
   const mockDir = MockDirectory.create();
+
+  beforeEach(mockDir.clear);
+
+  it('should resolve paths', () => {
+    expect(mockDir.path).toEqual(expect.any(String));
+    expect(relativePath(mockDir.path, mockDir.resolve('a'))).toBe('a');
+    expect(relativePath(mockDir.path, mockDir.resolve('a/b/c'))).toBe('a/b/c');
+  });
+
+  it('should remove itself', async () => {
+    await expect(fs.pathExists(mockDir.path)).resolves.toBe(true);
+    await mockDir.remove();
+    await expect(fs.pathExists(mockDir.path)).resolves.toBe(false);
+  });
 
   it('should populate a directory with text files', async () => {
     await mockDir.setContent({
@@ -100,6 +117,102 @@ describe('MockDirectory', () => {
     });
   });
 
+  it('should read content from sub dirs', async () => {
+    await mockDir.setContent({
+      'a.txt': 'a',
+      'b/b.txt': 'b',
+      'b/c/c.txt': 'c',
+    });
+
+    const expected = {
+      'a.txt': 'a',
+      b: {
+        'b.txt': 'b',
+        c: {
+          'c.txt': 'c',
+        },
+      },
+    };
+
+    await expect(mockDir.content()).resolves.toEqual(expected);
+    await expect(mockDir.content({ path: mockDir.path })).resolves.toEqual(
+      expected,
+    );
+    await expect(
+      mockDir.content({ path: mockDir.resolve('.') }),
+    ).resolves.toEqual(expected);
+    await expect(mockDir.content({ path: 'b' })).resolves.toEqual(expected.b);
+    await expect(mockDir.content({ path: './b' })).resolves.toEqual(expected.b);
+    await expect(
+      mockDir.content({ path: mockDir.resolve('b') }),
+    ).resolves.toEqual(expected.b);
+    await expect(mockDir.content({ path: 'b/c' })).resolves.toEqual(
+      expected.b.c,
+    );
+    await expect(mockDir.content({ path: './b/c' })).resolves.toEqual(
+      expected.b.c,
+    );
+    await expect(
+      mockDir.content({ path: mockDir.resolve('b/c') }),
+    ).resolves.toEqual(expected.b.c);
+    await expect(
+      mockDir.content({ path: mockDir.resolve('b', 'c') }),
+    ).resolves.toEqual(expected.b.c);
+  });
+
+  it('should allow text reading to be configured', async () => {
+    const text = 'a';
+    const binary = Buffer.from('a', 'utf8');
+
+    await mockDir.setContent({
+      a: binary,
+      'a.txt': text,
+      'a.bin': binary,
+    });
+
+    await expect(mockDir.content()).resolves.toEqual({
+      a: binary,
+      'a.txt': text,
+      'a.bin': binary,
+    });
+
+    await expect(mockDir.content({ shouldReadAsText: false })).resolves.toEqual(
+      {
+        a: binary,
+        'a.txt': binary,
+        'a.bin': binary,
+      },
+    );
+
+    await expect(mockDir.content({ shouldReadAsText: true })).resolves.toEqual({
+      a: text,
+      'a.txt': text,
+      'a.bin': text,
+    });
+
+    await expect(
+      mockDir.content({ shouldReadAsText: path => path.length > 3 }),
+    ).resolves.toEqual({
+      a: binary,
+      'a.txt': text,
+      'a.bin': text,
+    });
+  });
+
+  it('should provide a posix path to shouldReadAsText', async () => {
+    const shouldReadAsText = jest.fn().mockReturnValue(true);
+
+    await mockDir.setContent({ 'a/b/c': 'c' });
+
+    await expect(mockDir.content({ shouldReadAsText })).resolves.toEqual({
+      a: { b: { c: 'c' } },
+    });
+    expect(shouldReadAsText).toHaveBeenCalledWith(
+      'a/b/c',
+      Buffer.from('c', 'utf8'),
+    );
+  });
+
   it('should not override directories', async () => {
     await mockDir.setContent({
       'a.txt': 'a',
@@ -153,6 +266,18 @@ describe('MockDirectory', () => {
     });
   });
 
+  it('should reject non-child paths', async () => {
+    await expect(mockDir.setContent({ '/root/a.txt': 'a' })).rejects.toThrow(
+      "Provided path must resolve to a child path of the mock directory, got '/root/a.txt'",
+    );
+    await expect(mockDir.addContent({ '/root/a.txt': 'a' })).rejects.toThrow(
+      "Provided path must resolve to a child path of the mock directory, got '/root/a.txt'",
+    );
+    await expect(mockDir.content({ path: '/root/a.txt' })).rejects.toThrow(
+      "Provided path must resolve to a child path of the mock directory, got '/root/a.txt'",
+    );
+  });
+
   describe('cleanup', () => {
     let cleanupMockDir: MockDirectory;
 
@@ -172,6 +297,40 @@ describe('MockDirectory', () => {
 
     it('should clean up after itself automatically', async () => {
       await expect(cleanupMockDir.content()).resolves.toBeUndefined();
+    });
+  });
+
+  describe('tmpdir mock', () => {
+    let tmpDirMock: MockDirectory;
+
+    describe('inner', () => {
+      tmpDirMock = MockDirectory.mockOsTmpDir();
+
+      it('should mock os.tmpdir()', async () => {
+        expect(os.tmpdir()).toBe(tmpDirMock.path);
+      });
+    });
+
+    it('should restore os.tmpdir()', async () => {
+      expect(os.tmpdir()).not.toBe(tmpDirMock.path);
+    });
+  });
+
+  describe('existing directory', () => {
+    let existingMockDir: MockDirectory;
+
+    describe('inner', () => {
+      existingMockDir = MockDirectory.create({ root: __dirname }); // hardcore mode
+
+      it('should read existing directory', async () => {
+        await expect(existingMockDir.content()).resolves.toMatchObject({
+          'index.ts': expect.any(String),
+        });
+      });
+    });
+
+    it('should remove existing directory', async () => {
+      await expect(fs.pathExists(__dirname)).resolves.toBe(true);
     });
   });
 });
