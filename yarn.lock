@@ -17482,11 +17482,11 @@ __metadata:
   linkType: hard
 
 "@types/json-schema-merge-allof@npm:^0.6.0":
-  version: 0.6.1
-  resolution: "@types/json-schema-merge-allof@npm:0.6.1"
+  version: 0.6.2
+  resolution: "@types/json-schema-merge-allof@npm:0.6.2"
   dependencies:
     "@types/json-schema": "*"
-  checksum: 4d3648e9bf6f554f09c28955ea44b9d98c25e17e1aeb0fa3d62ea06729ec0ef16ca1b2bf1b7e12d86a6a3ea72a8eac50f34adca50984bcb9007a67b2fe9eb82b
+  checksum: 2be8f35eb47cb6f2344c15625010edd0983d258b0eba76e4193a1e80a3b3334bcb7efe1060594a8420cdcb092201e5ad3d78442f7af2edc548661c19c9a65440
   languageName: node
   linkType: hard
 
