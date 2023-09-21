@@ -252,7 +252,9 @@ export function createApp(options: {
   createRoot(): JSX.Element;
 } {
   const discoveredPlugins = getAvailablePlugins();
-  const allPlugins = [...discoveredPlugins, ...options.plugins];
+  const allPlugins = Array.from(
+    new Set([...discoveredPlugins, ...options.plugins]),
+  );
   const appConfig =
     options?.config ??
     ConfigReader.fromConfigs(overrideBaseUrlConfigs(defaultConfigLoaderSync()));
