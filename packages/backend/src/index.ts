@@ -66,7 +66,7 @@ import lighthouse from './plugins/lighthouse';
 import linguist from './plugins/linguist';
 import devTools from './plugins/devtools';
 import nomad from './plugins/nomad';
-import jiraDashboard from './plugins/jiraDashboard';
+import jiraDashboard from './plugins/jira-dashboard';
 import { PluginEnvironment } from './types';
 import { ServerPermissionClient } from '@backstage/plugin-permission-node';
 import { DefaultIdentityClient } from '@backstage/plugin-auth-node';
