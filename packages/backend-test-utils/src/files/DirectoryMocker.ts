@@ -75,7 +75,7 @@ export class DirectoryMocker {
       process.on('beforeExit', mocker.#cleanupSync);
 
       try {
-        afterAll(mocker.removeContent);
+        afterAll(mocker.cleanup);
       } catch {
         /* ignore */
       }
@@ -105,12 +105,16 @@ export class DirectoryMocker {
     this.#root = root;
   }
 
-  get dir() {
+  get path() {
     return this.#root;
   }
 
+  resolve(...paths: string[]) {
+    return resolvePath(this.#root, ...paths);
+  }
+
   async setContent(root: MockDirectory) {
-    await this.removeContent();
+    await this.cleanup();
 
     return this.addContent(root);
   }
@@ -182,7 +186,11 @@ export class DirectoryMocker {
     return read(root);
   }
 
-  removeContent = async () => {
+  clear = async () => {
+    await this.setContent({});
+  };
+
+  cleanup = async () => {
     await fs.rm(this.#root, { recursive: true, force: true });
   };
 
