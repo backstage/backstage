@@ -16,7 +16,11 @@
 
 import fs from 'fs-extra';
 import os from 'os';
-import { relative as relativePath } from 'path';
+import {
+  join as joinPath,
+  resolve as resolvePath,
+  relative as relativePath,
+} from 'path';
 import { MockDirectory } from './MockDirectory';
 
 describe('MockDirectory', () => {
@@ -27,7 +31,9 @@ describe('MockDirectory', () => {
   it('should resolve paths', () => {
     expect(mockDir.path).toEqual(expect.any(String));
     expect(relativePath(mockDir.path, mockDir.resolve('a'))).toBe('a');
-    expect(relativePath(mockDir.path, mockDir.resolve('a/b/c'))).toBe('a/b/c');
+    expect(relativePath(mockDir.path, mockDir.resolve('a/b/c'))).toBe(
+      joinPath('a', 'b', 'c'),
+    );
   });
 
   it('should remove itself', async () => {
@@ -267,14 +273,15 @@ describe('MockDirectory', () => {
   });
 
   it('should reject non-child paths', async () => {
+    const path = resolvePath('/root/a.txt');
     await expect(mockDir.setContent({ '/root/a.txt': 'a' })).rejects.toThrow(
-      "Provided path must resolve to a child path of the mock directory, got '/root/a.txt'",
+      `Provided path must resolve to a child path of the mock directory, got '${path}'`,
     );
     await expect(mockDir.addContent({ '/root/a.txt': 'a' })).rejects.toThrow(
-      "Provided path must resolve to a child path of the mock directory, got '/root/a.txt'",
+      `Provided path must resolve to a child path of the mock directory, got '${path}'`,
     );
     await expect(mockDir.content({ path: '/root/a.txt' })).rejects.toThrow(
-      "Provided path must resolve to a child path of the mock directory, got '/root/a.txt'",
+      `Provided path must resolve to a child path of the mock directory, got '${path}'`,
     );
   });
 
