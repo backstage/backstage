@@ -17402,11 +17402,11 @@ __metadata:
   linkType: hard
 
 "@types/jest-when@npm:^3.5.0":
-  version: 3.5.2
-  resolution: "@types/jest-when@npm:3.5.2"
+  version: 3.5.3
+  resolution: "@types/jest-when@npm:3.5.3"
   dependencies:
     "@types/jest": "*"
-  checksum: 106230dd71ee266bbd7620ab339a7305054e56ba7638f0eff9f222e67a959df0ad68a7f0108156c50f7005881bae59cd5c38b3760c101d060cdb3dac9cd77ee2
+  checksum: 5dc2661ad570b80b8f97d7dabc50a0229f21818eefc73024b88a70216c2666f56bd97769fef565263d7242878f8187531bb14427dcb06709e9b98a1671668e9d
   languageName: node
   linkType: hard
 
