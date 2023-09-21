@@ -31,9 +31,20 @@ export type NavTarget = {
 
 /** @public */
 export const coreExtensionData = {
-  reactElement: createExtensionDataRef<JSX.Element>('core.reactElement'),
-  routePath: createExtensionDataRef<string>('core.routing.path'),
-  apiFactory: createExtensionDataRef<AnyApiFactory>('core.api.factory'),
-  routeRef: createExtensionDataRef<RouteRef>('core.routing.ref'),
-  navTarget: createExtensionDataRef<NavTarget>('core.nav.target'),
+  // TODO: We'd want to figure out if we can better structure extension data ref declarations to avoid the ID duplication
+  reactElement: createExtensionDataRef<JSX.Element, 'core.reactElement'>(
+    'core.reactElement',
+  ),
+  routePath: createExtensionDataRef<string, 'core.routing.path'>(
+    'core.routing.path',
+  ),
+  apiFactory: createExtensionDataRef<AnyApiFactory, 'core.api.factory'>(
+    'core.api.factory',
+  ),
+  routeRef: createExtensionDataRef<RouteRef, 'core.routing.ref'>(
+    'core.routing.ref',
+  ),
+  navTarget: createExtensionDataRef<NavTarget, 'core.nav.target'>(
+    'core.nav.target',
+  ),
 };

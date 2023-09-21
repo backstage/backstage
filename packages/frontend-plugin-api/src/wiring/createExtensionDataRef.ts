@@ -17,9 +17,10 @@
 /** @public */
 export type ExtensionDataRef<
   TData,
+  TId extends string = string,
   TConfig extends { optional?: true } = {},
 > = {
-  id: string;
+  id: TId;
   T: TData;
   config: TConfig;
   $$type: '@backstage/ExtensionDataRef';
@@ -28,16 +29,21 @@ export type ExtensionDataRef<
 /** @public */
 export interface ConfigurableExtensionDataRef<
   TData,
+  TId extends string,
   TConfig extends { optional?: true } = {},
-> extends ExtensionDataRef<TData, TConfig> {
-  optional(): ConfigurableExtensionDataRef<TData, TData & { optional: true }>;
+> extends ExtensionDataRef<TData, TId, TConfig> {
+  optional(): ConfigurableExtensionDataRef<
+    TData,
+    TId,
+    TConfig & { optional: true }
+  >;
 }
 
 // TODO: change to options object with ID.
 /** @public */
-export function createExtensionDataRef<TData>(
-  id: string,
-): ConfigurableExtensionDataRef<TData> {
+export function createExtensionDataRef<TData, const TId extends string>(
+  id: TId,
+): ConfigurableExtensionDataRef<TData, TId> {
   return {
     id,
     $$type: '@backstage/ExtensionDataRef',
@@ -45,5 +51,5 @@ export function createExtensionDataRef<TData>(
     optional() {
       return { ...this, config: { ...this.config, optional: true } };
     },
-  } as ConfigurableExtensionDataRef<TData>;
+  } as ConfigurableExtensionDataRef<TData, TId>;
 }
