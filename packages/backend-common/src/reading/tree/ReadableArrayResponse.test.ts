@@ -74,9 +74,9 @@ describe('ReadableArrayResponse', () => {
 
     await expect(
       fs.readFile(resolvePath(dir, 'file1.yaml'), 'utf8'),
-    ).resolves.toBe('site_name: Test\n');
+    ).resolves.toMatch(/site_name: Test/);
     await expect(
       fs.readFile(resolvePath(dir, 'file2.yaml'), 'utf8'),
-    ).resolves.toBe('site_name: Test2\n');
+    ).resolves.toMatch(/site_name: Test2/);
   });
 });

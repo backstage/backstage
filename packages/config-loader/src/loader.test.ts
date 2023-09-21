@@ -339,7 +339,7 @@ describe('loadConfig', () => {
             title: 'New Title',
           },
         },
-        path: '/root/app-config.yaml',
+        path: `${root}root${sep}app-config.yaml`,
       },
     ]);
 
