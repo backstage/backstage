@@ -17393,11 +17393,11 @@ __metadata:
   linkType: hard
 
 "@types/jenkins@npm:^0.23.1":
-  version: 0.23.3
-  resolution: "@types/jenkins@npm:0.23.3"
+  version: 0.23.4
+  resolution: "@types/jenkins@npm:0.23.4"
   dependencies:
     "@types/node": "*"
-  checksum: bfe05038e2a170ebaf92b9dedef436450b2cfd107551bda8e02f1af69db14c2108d6da797c869305cf402dc174af4da0130c156a3812deb315b32e7eb9a50136
+  checksum: 378af85d2f7c3da13cb04098837224551d5d048e6a7b87e78aea8c5e4385f8a1b2cdabd592bb7a6eaa0d46a27eb840c3aa3baa35f1f0449f7f03b8eb527c8562
   languageName: node
   linkType: hard
 
