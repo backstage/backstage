@@ -22,6 +22,6 @@
 
 export * from './database';
 export * from './msw';
-export * from './files';
+export * from './filesystem';
 export * from './next';
 export * from './util';

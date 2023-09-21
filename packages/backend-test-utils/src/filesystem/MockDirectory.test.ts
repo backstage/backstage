@@ -14,10 +14,10 @@
  * limitations under the License.
  */
 
-import { DirectoryMocker } from './DirectoryMocker';
+import { MockDirectory } from './MockDirectory';
 
-describe('DirectoryMocker', () => {
-  const mocker = DirectoryMocker.create();
+describe('MockDirectory', () => {
+  const mocker = MockDirectory.create();
 
   it('should populate a directory with text files', async () => {
     await mocker.setContent({
@@ -120,10 +120,10 @@ describe('DirectoryMocker', () => {
   });
 
   describe('cleanup', () => {
-    let cleanupMocker: DirectoryMocker;
+    let cleanupMocker: MockDirectory;
 
     describe('inner', () => {
-      cleanupMocker = DirectoryMocker.create();
+      cleanupMocker = MockDirectory.create();
 
       it('should populate a directory', async () => {
         await cleanupMocker.setContent({

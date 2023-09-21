@@ -14,4 +14,4 @@
  * limitations under the License.
  */
 
-export { DirectoryMocker } from './DirectoryMocker';
+export { MockDirectory } from './MockDirectory';

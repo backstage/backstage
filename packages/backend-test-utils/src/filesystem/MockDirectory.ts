@@ -38,8 +38,8 @@ type MockEntry =
       path: string;
     };
 
-export type MockDirectory = {
-  [name in string]: MockDirectory | string | Buffer;
+export type MockDirectoryContent = {
+  [name in string]: MockDirectoryContent | string | Buffer;
 };
 
 interface DirectoryMockerOptions {
@@ -62,13 +62,13 @@ interface DirectoryMockerContentOptions {
   shouldReadAsText?: boolean | ((path: string, buffer: Buffer) => boolean);
 }
 
-export class DirectoryMocker {
+export class MockDirectory {
   static create(options?: DirectoryMockerOptions) {
     const root =
       options?.root ??
       fs.mkdtempSync(joinPath(getTmpDir(), 'backstage-tmp-test-dir-'));
 
-    const mocker = new DirectoryMocker(root);
+    const mocker = new MockDirectory(root);
 
     const shouldCleanup = !options?.root || !fs.pathExistsSync(options.root);
     if (shouldCleanup) {
@@ -85,7 +85,7 @@ export class DirectoryMocker {
   }
 
   static mockOsTmpDir() {
-    const mocker = DirectoryMocker.create();
+    const mocker = MockDirectory.create();
     const origTmpdir = os.tmpdir;
     os.tmpdir = () => mocker.path;
 
@@ -113,13 +113,13 @@ export class DirectoryMocker {
     return resolvePath(this.#root, ...paths);
   }
 
-  async setContent(root: MockDirectory) {
+  async setContent(root: MockDirectoryContent) {
     await this.cleanup();
 
     return this.addContent(root);
   }
 
-  async addContent(root: MockDirectory) {
+  async addContent(root: MockDirectoryContent) {
     const entries = this.#transformInput(root);
 
     for (const entry of entries) {
@@ -141,7 +141,7 @@ export class DirectoryMocker {
 
   async content(
     options?: DirectoryMockerContentOptions,
-  ): Promise<MockDirectory | undefined> {
+  ): Promise<MockDirectoryContent | undefined> {
     const shouldReadAsText =
       (typeof options?.shouldReadAsText === 'boolean'
         ? () => options?.shouldReadAsText
@@ -158,7 +158,9 @@ export class DirectoryMocker {
       );
     }
 
-    async function read(path: string): Promise<MockDirectory | undefined> {
+    async function read(
+      path: string,
+    ): Promise<MockDirectoryContent | undefined> {
       if (!(await fs.pathExists(path))) {
         return undefined;
       }
@@ -194,10 +196,10 @@ export class DirectoryMocker {
     await fs.rm(this.#root, { recursive: true, force: true });
   };
 
-  #transformInput(input: MockDirectory[string]): MockEntry[] {
+  #transformInput(input: MockDirectoryContent[string]): MockEntry[] {
     const entries: MockEntry[] = [];
 
-    function traverse(node: MockDirectory[string], path: string) {
+    function traverse(node: MockDirectoryContent[string], path: string) {
       const trimmedPath = path.startsWith('/') ? path.slice(1) : path; // trim leading slash
       if (typeof node === 'string') {
         entries.push({
