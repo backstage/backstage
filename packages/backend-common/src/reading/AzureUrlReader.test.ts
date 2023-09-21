@@ -23,12 +23,13 @@ import {
   AzureDevOpsCredentialLike,
   AzureIntegrationConfig,
 } from '@backstage/integration';
-import { setupRequestMockHandlers } from '@backstage/backend-test-utils';
+import {
+  MockDirectory,
+  setupRequestMockHandlers,
+} from '@backstage/backend-test-utils';
 import fs from 'fs-extra';
-import mockFs from 'mock-fs';
 import { rest } from 'msw';
 import { setupServer } from 'msw/node';
-import * as os from 'os';
 import path from 'path';
 import { NotModifiedError } from '@backstage/errors';
 import { getVoidLogger } from '../logging';
@@ -42,6 +43,8 @@ type AzureIntegrationConfigLike = Partial<
 };
 
 const logger = getVoidLogger();
+
+const mockDir = MockDirectory.mockOsTmpDir();
 
 const treeResponseFactory = DefaultReadTreeResponseFactory.create({
   config: new ConfigReader({}),
@@ -69,18 +72,8 @@ const urlReaderFactory = (azureIntegration: AzureIntegrationConfigLike) => {
   );
 };
 
-const tmpDir = os.platform() === 'win32' ? 'C:\\tmp' : '/tmp';
-
 describe('AzureUrlReader', () => {
-  beforeEach(() => {
-    mockFs({
-      [tmpDir]: mockFs.directory(),
-    });
-  });
-
-  afterEach(() => {
-    mockFs.restore();
-  });
+  beforeEach(() => mockDir.clear());
 
   const worker = setupServer();
   setupRequestMockHandlers(worker);
@@ -270,7 +263,7 @@ describe('AzureUrlReader', () => {
         'https://dev.azure.com/organization/project/_git/repository',
       );
 
-      const dir = await response.dir({ targetDir: tmpDir });
+      const dir = await response.dir({ targetDir: mockDir.path });
 
       await expect(
         fs.readFile(path.join(dir, 'mkdocs.yml'), 'utf8'),

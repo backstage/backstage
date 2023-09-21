@@ -14,7 +14,10 @@
  * limitations under the License.
  */
 
-import { setupRequestMockHandlers } from '@backstage/backend-test-utils';
+import {
+  MockDirectory,
+  setupRequestMockHandlers,
+} from '@backstage/backend-test-utils';
 import { ConfigReader } from '@backstage/config';
 import { NotModifiedError, NotFoundError } from '@backstage/errors';
 import {
@@ -24,7 +27,6 @@ import {
 import { JsonObject } from '@backstage/types';
 import { rest } from 'msw';
 import { setupServer } from 'msw/node';
-import mockFs from 'mock-fs';
 import fs from 'fs-extra';
 import path from 'path';
 import { getVoidLogger } from '../logging';
@@ -32,6 +34,8 @@ import { UrlReaderPredicateTuple } from './types';
 import { DefaultReadTreeResponseFactory } from './tree';
 import { GerritUrlReader } from './GerritUrlReader';
 import getRawBody from 'raw-body';
+
+const mockDir = MockDirectory.mockOsTmpDir();
 
 const treeResponseFactory = DefaultReadTreeResponseFactory.create({
   config: new ConfigReader({}),
@@ -82,12 +86,11 @@ const createReader = (config: JsonObject): UrlReaderPredicateTuple[] => {
   });
 };
 
-// TODO(Rugvip): These tests seem to be a direct or indirect cause of the TaskWorker test flakiness
-//               We're not sure why at this point, but while investigating these tests are disabled
-// eslint-disable-next-line jest/no-disabled-tests
-describe.skip('GerritUrlReader', () => {
+describe('GerritUrlReader', () => {
   const worker = setupServer();
   setupRequestMockHandlers(worker);
+
+  beforeEach(() => mockDir.clear());
 
   afterAll(() => {
     jest.clearAllMocks();
@@ -249,14 +252,13 @@ describe.skip('GerritUrlReader', () => {
       path.resolve(__dirname, '__fixtures__/gerrit/gerrit-master-docs.tar.gz'),
     );
 
-    beforeEach(() => {
-      mockFs({
-        '/tmp/': mockFs.directory(),
-        '/tmp/gerrit-clone-123abc/repo/mkdocs.yml': mkdocsContent,
-        '/tmp/gerrit-clone-123abc/repo/docs/first.md': mdContent,
+    beforeEach(async () => {
+      await mockDir.setContent({
+        'repo/mkdocs.yml': mkdocsContent,
+        'repo/docs/first.md': mdContent,
       });
       const spy = jest.spyOn(fs, 'mkdtemp');
-      spy.mockImplementation(() => '/tmp/gerrit-clone-123abc');
+      spy.mockImplementation(() => mockDir.path);
 
       worker.use(
         rest.get(
@@ -289,7 +291,6 @@ describe.skip('GerritUrlReader', () => {
     });
 
     afterEach(() => {
-      mockFs.restore();
       jest.clearAllMocks();
     });
 

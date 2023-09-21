@@ -15,30 +15,31 @@
  */
 
 import fs from 'fs-extra';
-import mockFs from 'mock-fs';
 import { resolve as resolvePath } from 'path';
 import { TarArchiveResponse } from './TarArchiveResponse';
+import { MockDirectory } from '@backstage/backend-test-utils';
 
 const archiveData = fs.readFileSync(
   resolvePath(__filename, '../../__fixtures__/mock-main.tar.gz'),
 );
 
 describe('TarArchiveResponse', () => {
-  beforeEach(() => {
-    mockFs({
-      '/test-archive.tar.gz': archiveData,
-      '/tmp': mockFs.directory(),
-    });
-  });
+  const sourceDir = MockDirectory.create();
+  const targetDir = MockDirectory.create();
 
-  afterEach(() => {
-    mockFs.restore();
+  beforeAll(async () => {
+    await sourceDir.setContent({ 'test-archive.tar.gz': archiveData });
+  });
+  beforeEach(async () => {
+    await targetDir.clear();
   });
 
   it('should read files', async () => {
-    const stream = fs.createReadStream('/test-archive.tar.gz');
+    const stream = fs.createReadStream(
+      sourceDir.resolve('test-archive.tar.gz'),
+    );
 
-    const res = new TarArchiveResponse(stream, '', '/tmp', 'etag');
+    const res = new TarArchiveResponse(stream, '', targetDir.path, 'etag');
     const files = await res.files();
 
     expect(files).toEqual([
@@ -61,10 +62,16 @@ describe('TarArchiveResponse', () => {
   });
 
   it('should read files with filter', async () => {
-    const stream = fs.createReadStream('/test-archive.tar.gz');
+    const stream = fs.createReadStream(
+      sourceDir.resolve('test-archive.tar.gz'),
+    );
 
-    const res = new TarArchiveResponse(stream, '', '/tmp', 'etag', path =>
-      path.endsWith('.yml'),
+    const res = new TarArchiveResponse(
+      stream,
+      '',
+      targetDir.path,
+      'etag',
+      path => path.endsWith('.yml'),
     );
     const files = await res.files();
 
@@ -80,16 +87,18 @@ describe('TarArchiveResponse', () => {
   });
 
   it('should read as archive and files', async () => {
-    const stream = fs.createReadStream('/test-archive.tar.gz');
+    const stream = fs.createReadStream(
+      sourceDir.resolve('test-archive.tar.gz'),
+    );
 
-    const res = new TarArchiveResponse(stream, '', '/tmp', 'etag');
+    const res = new TarArchiveResponse(stream, '', targetDir.path, 'etag');
     const buffer = await res.archive();
 
     await expect(res.archive()).rejects.toThrow(
       'Response has already been read',
     );
 
-    const res2 = new TarArchiveResponse(buffer, '', '/tmp', 'etag');
+    const res2 = new TarArchiveResponse(buffer, '', targetDir.path, 'etag');
     const files = await res2.files();
 
     expect(files).toEqual([
@@ -112,9 +121,11 @@ describe('TarArchiveResponse', () => {
   });
 
   it('should extract entire archive into directory', async () => {
-    const stream = fs.createReadStream('/test-archive.tar.gz');
+    const stream = fs.createReadStream(
+      sourceDir.resolve('test-archive.tar.gz'),
+    );
 
-    const res = new TarArchiveResponse(stream, '', '/tmp', 'etag');
+    const res = new TarArchiveResponse(stream, '', targetDir.path, 'etag');
     const dir = await res.dir();
     await expect(
       fs.readFile(resolvePath(dir, 'mkdocs.yml'), 'utf8'),
@@ -125,67 +136,91 @@ describe('TarArchiveResponse', () => {
   });
 
   it('should extract archive into directory with a subpath', async () => {
-    const stream = fs.createReadStream('/test-archive.tar.gz');
+    const stream = fs.createReadStream(
+      sourceDir.resolve('test-archive.tar.gz'),
+    );
 
-    const res = new TarArchiveResponse(stream, 'docs', '/tmp', 'etag');
+    const res = new TarArchiveResponse(stream, 'docs', targetDir.path, 'etag');
     const dir = await res.dir();
 
-    expect(dir).toMatch(/^[\/\\]tmp[\/\\].*$/);
-    await expect(
-      fs.readFile(resolvePath(dir, 'index.md'), 'utf8'),
-    ).resolves.toBe('# Test\n');
+    await expect(targetDir.content({ path: dir })).resolves.toEqual({
+      'index.md': '# Test\n',
+    });
   });
 
   it('should extract archive into directory with a subpath and filter', async () => {
-    const stream = fs.createReadStream('/test-archive.tar.gz');
-
-    const res = new TarArchiveResponse(stream, '', '/tmp', 'etag', path =>
-      path.endsWith('.yml'),
+    const stream = fs.createReadStream(
+      sourceDir.resolve('test-archive.tar.gz'),
     );
-    const dir = await res.dir({ targetDir: '/tmp' });
 
-    expect(dir).toBe('/tmp');
-    await expect(fs.pathExists(resolvePath(dir, 'mkdocs.yml'))).resolves.toBe(
-      true,
+    const res = new TarArchiveResponse(
+      stream,
+      '',
+      targetDir.path,
+      'etag',
+      path => path.endsWith('.yml'),
     );
-    await expect(
-      fs.pathExists(resolvePath(dir, 'docs/index.md')),
-    ).resolves.toBe(false);
+
+    await targetDir.addContent({ sub: {} });
+    const dir = await res.dir({ targetDir: targetDir.resolve('sub') });
+
+    expect(dir).toBe(targetDir.resolve('sub'));
+    await expect(targetDir.content()).resolves.toEqual({
+      sub: {
+        'mkdocs.yml': 'site_name: Test\n',
+      },
+    });
   });
 
-  it('should leave temporary directories in place in the case of an error', async () => {
-    const stream = fs.createReadStream('/test-archive.tar.gz');
+  it('should clean up temporary directories in place in the case of an error', async () => {
+    const stream = fs.createReadStream(
+      sourceDir.resolve('test-archive.tar.gz'),
+    );
 
-    const res = new TarArchiveResponse(stream, '', '/tmp', 'etag', () => {
-      throw new Error('NOPE');
-    });
+    const res = new TarArchiveResponse(
+      stream,
+      '',
+      targetDir.path,
+      'etag',
+      () => {
+        throw new Error('NOPE');
+      },
+    );
 
-    const tmpDir = await fs.mkdtemp('/tmp/test');
-    // selects the wrong overload by default
-    const mkdtemp = jest.spyOn(fs, 'mkdtemp') as unknown as jest.SpyInstance<
-      Promise<string>,
-      []
-    >;
-    mkdtemp.mockResolvedValue(tmpDir);
+    await targetDir.addContent({ sub: {} });
+    const sub = targetDir.resolve('sub');
 
-    await expect(fs.pathExists(tmpDir)).resolves.toBe(true);
+    const mkdtemp = jest
+      .spyOn(fs, 'mkdtemp')
+      .mockImplementation(async () => sub);
+
+    await expect(fs.pathExists(sub)).resolves.toBe(true);
     await expect(res.dir()).rejects.toThrow('NOPE');
-    await expect(fs.pathExists(tmpDir)).resolves.toBe(false);
+    await expect(fs.pathExists(sub)).resolves.toBe(false);
 
     mkdtemp.mockRestore();
   });
 
   it('should leave directory in place if provided in the case of an error', async () => {
-    const stream = fs.createReadStream('/test-archive.tar.gz');
+    const stream = fs.createReadStream(
+      sourceDir.resolve('test-archive.tar.gz'),
+    );
 
-    const res = new TarArchiveResponse(stream, '', '/tmp', 'etag', () => {
-      throw new Error('NOPE');
-    });
+    const res = new TarArchiveResponse(
+      stream,
+      '',
+      targetDir.path,
+      'etag',
+      () => {
+        throw new Error('NOPE');
+      },
+    );
 
-    const tmpDir = await fs.mkdtemp('/tmp/test');
+    await targetDir.addContent({ sub: {} });
+    const sub = targetDir.resolve('sub');
 
-    await expect(fs.pathExists(tmpDir)).resolves.toBe(true);
-    await expect(res.dir({ targetDir: tmpDir })).rejects.toThrow('NOPE');
-    await expect(fs.pathExists(tmpDir)).resolves.toBe(true);
+    await expect(fs.pathExists(sub)).resolves.toBe(true);
+    await expect(res.dir({ targetDir: sub })).rejects.toThrow('NOPE');
+    await expect(fs.pathExists(sub)).resolves.toBe(true);
   });
 });

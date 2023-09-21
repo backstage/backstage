@@ -94,7 +94,10 @@ export class ZipArchiveResponse implements ReadTreeResponse {
     return new Promise((resolve, reject) => {
       writeStream.on('error', reject);
       writeStream.on('finish', () =>
-        resolve({ fileName: tmpFile, cleanup: () => fs.remove(tmpFile) }),
+        resolve({
+          fileName: tmpFile,
+          cleanup: () => fs.rm(tmpDir, { recursive: true }),
+        }),
       );
       stream.pipe(writeStream);
     });
@@ -152,7 +155,7 @@ export class ZipArchiveResponse implements ReadTreeResponse {
       });
     });
 
-    temporary.cleanup();
+    await temporary.cleanup();
 
     return files;
   }
@@ -175,7 +178,7 @@ export class ZipArchiveResponse implements ReadTreeResponse {
 
     archive.finalize();
 
-    temporary.cleanup();
+    await temporary.cleanup();
 
     return archive;
   }
@@ -204,7 +207,7 @@ export class ZipArchiveResponse implements ReadTreeResponse {
       });
     });
 
-    temporary.cleanup();
+    await temporary.cleanup();
 
     return dir;
   }

@@ -19,12 +19,13 @@ import {
   BitbucketIntegration,
   readBitbucketIntegrationConfig,
 } from '@backstage/integration';
-import { setupRequestMockHandlers } from '@backstage/backend-test-utils';
+import {
+  MockDirectory,
+  setupRequestMockHandlers,
+} from '@backstage/backend-test-utils';
 import fs from 'fs-extra';
-import mockFs from 'mock-fs';
 import { rest } from 'msw';
 import { setupServer } from 'msw/node';
-import os from 'os';
 import path from 'path';
 import { NotModifiedError } from '@backstage/errors';
 import { BitbucketUrlReader } from './BitbucketUrlReader';
@@ -68,6 +69,10 @@ describe('BitbucketUrlReader.factory', () => {
 });
 
 describe('BitbucketUrlReader', () => {
+  const mockDir = MockDirectory.mockOsTmpDir();
+
+  beforeEach(() => mockDir.clear());
+
   const treeResponseFactory = DefaultReadTreeResponseFactory.create({
     config: new ConfigReader({}),
   });
@@ -97,18 +102,6 @@ describe('BitbucketUrlReader', () => {
     logger,
     { treeResponseFactory },
   );
-
-  const tmpDir = os.platform() === 'win32' ? 'C:\\tmp' : '/tmp';
-
-  beforeEach(() => {
-    mockFs({
-      [tmpDir]: mockFs.directory(),
-    });
-  });
-
-  afterEach(() => {
-    mockFs.restore();
-  });
 
   const worker = setupServer();
   setupRequestMockHandlers(worker);
@@ -391,7 +384,7 @@ describe('BitbucketUrlReader', () => {
         'https://bitbucket.org/backstage/mock',
       );
 
-      const dir = await response.dir({ targetDir: tmpDir });
+      const dir = await response.dir({ targetDir: mockDir.path });
 
       await expect(
         fs.readFile(path.join(dir, 'mkdocs.yml'), 'utf8'),
@@ -436,7 +429,7 @@ describe('BitbucketUrlReader', () => {
         'https://bitbucket.org/backstage/mock/src/master/docs',
       );
 
-      const dir = await response.dir({ targetDir: tmpDir });
+      const dir = await response.dir({ targetDir: mockDir.path });
 
       await expect(
         fs.readFile(path.join(dir, 'index.md'), 'utf8'),

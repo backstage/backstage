@@ -19,16 +19,19 @@ import {
   BitbucketServerIntegration,
   readBitbucketServerIntegrationConfig,
 } from '@backstage/integration';
-import { setupRequestMockHandlers } from '@backstage/backend-test-utils';
+import {
+  MockDirectory,
+  setupRequestMockHandlers,
+} from '@backstage/backend-test-utils';
 import fs from 'fs-extra';
-import mockFs from 'mock-fs';
 import { rest } from 'msw';
 import { setupServer } from 'msw/node';
-import os from 'os';
 import path from 'path';
 import { NotModifiedError } from '@backstage/errors';
 import { BitbucketServerUrlReader } from './BitbucketServerUrlReader';
 import { DefaultReadTreeResponseFactory } from './tree';
+
+MockDirectory.mockOsTmpDir();
 
 const treeResponseFactory = DefaultReadTreeResponseFactory.create({
   config: new ConfigReader({}),
@@ -46,19 +49,7 @@ const reader = new BitbucketServerUrlReader(
   { treeResponseFactory },
 );
 
-const tmpDir = os.platform() === 'win32' ? 'C:\\tmp' : '/tmp';
-
 describe('BitbucketServerUrlReader', () => {
-  beforeEach(() => {
-    mockFs({
-      [tmpDir]: mockFs.directory(),
-    });
-  });
-
-  afterEach(() => {
-    mockFs.restore();
-  });
-
   const worker = setupServer();
   setupRequestMockHandlers(worker);
 

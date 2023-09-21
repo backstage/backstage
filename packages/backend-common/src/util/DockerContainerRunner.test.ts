@@ -14,27 +14,24 @@
  * limitations under the License.
  */
 
+import fs from 'fs-extra';
 import Docker from 'dockerode';
-import mockFs from 'mock-fs';
-import os from 'os';
-import path from 'path';
 import Stream, { PassThrough } from 'stream';
 import { ContainerRunner } from './ContainerRunner';
 import { DockerContainerRunner, UserOptions } from './DockerContainerRunner';
+import { MockDirectory } from '@backstage/backend-test-utils';
 
 const mockDocker = new Docker() as jest.Mocked<Docker>;
-const rootDir = os.platform() === 'win32' ? 'C:\\rootDir' : '/rootDir';
 
 describe('DockerContainerRunner', () => {
   let containerTaskApi: ContainerRunner;
 
-  beforeEach(() => {
-    mockFs({
-      [rootDir]: {
-        input: mockFs.directory(),
-        output: mockFs.directory(),
-      },
-    });
+  const inputDir = MockDirectory.create();
+  const outputDir = MockDirectory.create();
+
+  beforeEach(async () => {
+    await inputDir.clear();
+    await outputDir.clear();
 
     jest.spyOn(mockDocker, 'pull').mockImplementation((async (
       _image: string,
@@ -59,16 +56,15 @@ describe('DockerContainerRunner', () => {
 
   afterEach(() => {
     jest.clearAllMocks();
-    mockFs.restore();
   });
 
   const imageName = 'dockerOrg/image';
   const args = ['bash', '-c', 'echo test'];
   const mountDirs = {
-    [path.join(rootDir, 'input')]: '/input',
-    [path.join(rootDir, 'output')]: '/output',
+    [inputDir.path]: '/input',
+    [outputDir.path]: '/output',
   };
-  const workingDir = path.join(rootDir, 'input');
+  const workingDir = inputDir.path;
   const envVars = { HOME: '/tmp', LOG_LEVEL: 'debug' };
   const envVarsArray = ['HOME=/tmp', 'LOG_LEVEL=debug'];
 
@@ -117,8 +113,8 @@ describe('DockerContainerRunner', () => {
         HostConfig: {
           AutoRemove: true,
           Binds: expect.arrayContaining([
-            `${path.join(rootDir, 'input')}:/input`,
-            `${path.join(rootDir, 'output')}:/output`,
+            `${await fs.realpath(inputDir.path)}:/input`,
+            `${await fs.realpath(outputDir.path)}:/output`,
           ]),
         },
         Volumes: {
