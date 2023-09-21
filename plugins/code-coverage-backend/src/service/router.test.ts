@@ -41,6 +41,7 @@ CodeCoverageDatabase.create = jest.fn(
         },
       }),
       getHistory: async () => ({}),
+      insertCodeCoverage: async () => undefined,
     } as any),
 );
 
@@ -50,7 +51,13 @@ jest.mock('@backstage/catalog-client', () => ({
   CatalogClient: jest.fn().mockImplementation(() => ({
     getEntityByRef: async (_: string, options: CatalogRequestOptions) => {
       catalogRequestOptions = options;
-      return {};
+      return {
+        metadata: {
+          annotations: {
+            'backstage.io/code-coverage': 'enabled',
+          },
+        },
+      };
     },
   })),
 }));
@@ -127,6 +134,43 @@ describe('createRouter', () => {
         expect(response.status).toEqual(200);
         expect(catalogRequestOptions.token).toEqual(token);
       });
+    });
+  });
+
+  describe('POST /report', () => {
+    it('returns created when body does not exceed limit', async () => {
+      const response = await request(app)
+        .post('/report?entity=component:default/mycomponent&coverageType=lcov')
+        .set('Content-Type', 'text/plain')
+        .send(
+          'TN:\nSF:/src/index.js\nFNF:0\nFNH:0\nLF:1\nLH:1\nBRF:0\nBRH:0\nend_of_record',
+        );
+
+      expect(response.status).toBe(201);
+    });
+
+    it('returns content too large when body exceeds limit', async () => {
+      const router = await createRouter({
+        config: new ConfigReader({
+          codeCoverage: {
+            bodySizeLimit: '1b',
+          },
+        }),
+        database: createDatabase(),
+        discovery: testDiscovery,
+        urlReader: mockUrlReader,
+        logger: getVoidLogger(),
+      });
+      app = express().use(router);
+
+      const response = await request(app)
+        .post('/report?entity=component:default/mycomponent&coverageType=lcov')
+        .set('Content-Type', 'text/plain')
+        .send(
+          'TN:\nSF:/src/index.js\nFNF:0\nFNH:0\nLF:1\nLH:1\nBRF:0\nBRH:0\nend_of_record',
+        );
+
+      expect(response.status).toBe(413);
     });
   });
 });
