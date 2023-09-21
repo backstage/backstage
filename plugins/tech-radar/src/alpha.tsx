@@ -35,7 +35,7 @@ export const TechRadarPage = createPageExtension({
   configSchema: createSchemaFromZod(z =>
     z.object({
       title: z.string().default('Tech Radar'),
-      subTitle: z
+      subtitle: z
         .string()
         .default('Pick the recommended technologies for your projects'),
       pageTitle: z.string().default('Company Radar'),
@@ -45,9 +45,7 @@ export const TechRadarPage = createPageExtension({
     }),
   ),
   loader: ({ config }) =>
-    import('./components').then(m => (
-      <m.RadarPage {...config} subtitle={config.subTitle} />
-    )),
+    import('./components').then(m => <m.RadarPage {...config} />),
 });
 
 const sampleTechRadarApi = createApiExtension({
