@@ -8,8 +8,8 @@ permissions:
 jobs:
   triage:
     permissions:
-      contents: read  # for actions/labeler to determine modified files
-      pull-requests: write  # for actions/labeler to add labels to PRs
+      contents: read # for actions/labeler to determine modified files
+      pull-requests: write # for actions/labeler to add labels to PRs
     runs-on: ubuntu-latest
     steps:
       - name: Harden Runner
@@ -17,7 +17,7 @@ jobs:
         with:
           egress-policy: audit
 
-      - uses: actions/labeler@ac9175f8a1f3625fd0d4fb234536d26811351594 # v4.3.0
+      - uses: actions/labeler@v4.3.0
         with:
           repo-token: '${{ secrets.GITHUB_TOKEN }}'
           sync-labels: true

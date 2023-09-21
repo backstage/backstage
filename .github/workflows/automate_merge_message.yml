@@ -28,7 +28,7 @@ jobs:
         with:
           egress-policy: audit
 
-      - uses: actions/checkout@f43a0e5ff2bd294095638e18286ca9a3d1956744 # v3.6.0
+      - uses: actions/checkout@v3.6.0
         with:
           ref: '${{ github.event.pull_request.merge_commit_sha }}'
 
@@ -44,7 +44,7 @@ jobs:
           node generate.js ${{ github.event.pull_request.base.sha }} ${{ github.event.pull_request.head.sha }} > message.txt
 
       - name: Post Message
-        uses: actions/github-script@d7906e4ad0b1822421a7e6a35d5ca353c962f410 # v6.4.1
+        uses: actions/github-script@v6.4.1
         env:
           ISSUE_NUMBER: ${{ github.event.pull_request.number }}
         with:

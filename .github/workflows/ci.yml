@@ -31,16 +31,16 @@ jobs:
         with:
           egress-policy: audit
 
-      - uses: actions/checkout@f43a0e5ff2bd294095638e18286ca9a3d1956744 # v3.6.0
+      - uses: actions/checkout@v3.6.0
 
       - name: use node.js ${{ matrix.node-version }}
-        uses: actions/setup-node@5e21ff4d9bc1a8cf6de233a3057d20ec6b3fb69d # v3.8.1
+        uses: actions/setup-node@v3.8.1
         with:
           node-version: ${{ matrix.node-version }}
           registry-url: https://registry.npmjs.org/ # Needed for auth
 
       - name: yarn install
-        uses: backstage/actions/yarn-install@497722d45fb5a35c14c721f63ed74e6ad5f629dd # v0.6.4
+        uses: backstage/actions/yarn-install@v0.6.4
         with:
           cache-prefix: ${{ runner.os }}-v${{ matrix.node-version }}
 
@@ -67,16 +67,16 @@ jobs:
         with:
           egress-policy: audit
 
-      - uses: actions/checkout@f43a0e5ff2bd294095638e18286ca9a3d1956744 # v3.6.0
+      - uses: actions/checkout@v3.6.0
 
       - name: use node.js ${{ matrix.node-version }}
-        uses: actions/setup-node@5e21ff4d9bc1a8cf6de233a3057d20ec6b3fb69d # v3.8.1
+        uses: actions/setup-node@v3.8.1
         with:
           node-version: ${{ matrix.node-version }}
           registry-url: https://registry.npmjs.org/ # Needed for auth
 
       - name: yarn install
-        uses: backstage/actions/yarn-install@497722d45fb5a35c14c721f63ed74e6ad5f629dd # v0.6.4
+        uses: backstage/actions/yarn-install@v0.6.4
         with:
           cache-prefix: ${{ runner.os }}-v${{ matrix.node-version }}
 
@@ -201,18 +201,18 @@ jobs:
         with:
           egress-policy: audit
 
-      - uses: actions/checkout@f43a0e5ff2bd294095638e18286ca9a3d1956744 # v3.6.0
+      - uses: actions/checkout@v3.6.0
       - name: fetch branch master
         run: git fetch origin master
 
       - name: use node.js ${{ matrix.node-version }}
-        uses: actions/setup-node@5e21ff4d9bc1a8cf6de233a3057d20ec6b3fb69d # v3.8.1
+        uses: actions/setup-node@v3.8.1
         with:
           node-version: ${{ matrix.node-version }}
           registry-url: https://registry.npmjs.org/ # Needed for auth
 
       - name: yarn install
-        uses: backstage/actions/yarn-install@497722d45fb5a35c14c721f63ed74e6ad5f629dd # v0.6.4
+        uses: backstage/actions/yarn-install@v0.6.4
         with:
           cache-prefix: ${{ runner.os }}-v${{ matrix.node-version }}
 

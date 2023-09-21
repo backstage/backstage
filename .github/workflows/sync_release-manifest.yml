@@ -13,7 +13,7 @@ jobs:
         with:
           egress-policy: audit
 
-      - uses: actions/setup-node@5e21ff4d9bc1a8cf6de233a3057d20ec6b3fb69d # v3.8.1
+      - uses: actions/setup-node@v3.8.1
         with:
           node-version: 18.x
       - name: Install dependencies
@@ -21,7 +21,7 @@ jobs:
         run: npm install semver@7.3.5 fs-extra@10.0.0 @manypkg/get-packages@1.1.1
 
       - name: Checkout
-        uses: actions/checkout@f43a0e5ff2bd294095638e18286ca9a3d1956744 # v3.6.0
+        uses: actions/checkout@v3.6.0
         with:
           path: backstage
           # 'v' prefix is added here for the tag, we keep it out of the manifest logic
@@ -29,7 +29,7 @@ jobs:
 
       # Checkout backstage/versions into /backstage/versions, which is where store the output
       - name: Checkout versions
-        uses: actions/checkout@f43a0e5ff2bd294095638e18286ca9a3d1956744 # v3.6.0
+        uses: actions/checkout@v3.6.0
         with:
           repository: backstage/versions
           path: backstage/versions
@@ -53,7 +53,7 @@ jobs:
           git push
 
       - name: Dispatch update-helper update
-        uses: actions/github-script@d7906e4ad0b1822421a7e6a35d5ca353c962f410 # v6.4.1
+        uses: actions/github-script@v6.4.1
         with:
           github-token: ${{ secrets.GH_SERVICE_ACCOUNT_TOKEN }}
           # TODO(Rugvip): Remove the create-app dispatch once we've been on the release version for a while

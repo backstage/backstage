@@ -27,14 +27,14 @@ jobs:
         with:
           egress-policy: audit
 
-      - uses: actions/checkout@f43a0e5ff2bd294095638e18286ca9a3d1956744 # v3.6.0
+      - uses: actions/checkout@v3.6.0
         with:
           # Fetch the commit that's merged into the base rather than the target ref
           # This will let us diff only the contents of the PR, without fetching more history
           ref: 'refs/pull/${{ github.event.pull_request.number }}/merge'
       - name: fetch base
         run: git fetch --depth 1 origin ${{ github.base_ref }}
-      - uses: backstage/actions/changeset-feedback@497722d45fb5a35c14c721f63ed74e6ad5f629dd # v0.6.4
+      - uses: backstage/actions/changeset-feedback@v0.6.4
         name: Generate feedback
         with:
           diff-ref: 'origin/master'
