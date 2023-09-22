@@ -17,6 +17,8 @@
 import React from 'react';
 import { Link } from '@backstage/core-components';
 import {
+  createExtensionDataRef,
+  createExtensionInput,
   createPageExtension,
   createPlugin,
   createRouteRef,
@@ -24,11 +26,17 @@ import {
   useRouteRef,
 } from '@backstage/frontend-plugin-api';
 import { Route, Routes } from 'react-router-dom';
+import {
+  ScalprumComponent,
+  ScalprumComponentProps,
+} from '@scalprum/react-core';
+import { CircularProgress } from '@material-ui/core';
 
 const indexRouteRef = createRouteRef();
 const page1RouteRef = createRouteRef();
 export const externalPageXRouteRef = createExternalRouteRef();
 export const pageXRouteRef = createRouteRef();
+const dynamicRouteRef = createRouteRef();
 // const page2RouteRef = createSubRouteRef({
 //   id: 'page2',
 //   parent: page1RouteRef,
@@ -42,6 +50,7 @@ const IndexPage = createPageExtension({
   loader: async () => {
     const Component = () => {
       const page1Link = useRouteRef(page1RouteRef);
+      const dynamicLink = useRouteRef(dynamicRouteRef);
       return (
         <div>
           op
@@ -59,6 +68,7 @@ const IndexPage = createPageExtension({
           </div>
           <div>
             <Link to="/settings">Settings</Link>
+            <Link to={dynamicLink()}>Scalprum component</Link>
           </div>
         </div>
       );
@@ -121,6 +131,46 @@ const ExternalPage = createPageExtension({
   },
 });
 
+const popoverRef = createExtensionDataRef<string>('popoverContent');
+const PageWithDynamicPlugin = createPageExtension({
+  id: 'dynamicComponent',
+  defaultPath: '/dynamic',
+  routeRef: dynamicRouteRef,
+  inputs: {
+    props: createExtensionInput(
+      {
+        popoverContent: popoverRef,
+      },
+      {
+        optional: true,
+        singleton: true,
+      },
+    ),
+  },
+  loader: async ({ inputs: { props } }) => {
+    const componentProps: ScalprumComponentProps<
+      {},
+      {
+        popoverContent?: string;
+      }
+    > = {
+      popoverContent: props?.popoverContent,
+      scope: 'backstage.dynamic-frontend-plugin-sample',
+      module: './SampleComponent',
+    };
+    /**
+     * Scalprum component is an abstraction over the webpack and scalprum API.
+     * It allows to render React components with minimal knowledge required.
+     * There are two required props
+     * - scope: The remote container name or id
+     * - module: The module that the component is supposed to use from the container. In this its a React.Component JS module. Only the `default` export will be used from module.
+     * There is additional API like `ErrorComponent` or `fallback` to customize the component. And additional scalprum options.
+     * Any non ScalprumComponentProps will be passed down to the loaded module.
+     */
+    return (
+      <ScalprumComponent fallback={<CircularProgress />} {...componentProps} />
+    );
+    }})
 export const pagesPlugin = createPlugin({
   id: 'pages',
   // routes: {
@@ -137,5 +187,5 @@ export const pagesPlugin = createPlugin({
   externalRoutes: {
     pageX: externalPageXRouteRef,
   },
-  extensions: [IndexPage, Page1, ExternalPage],
+  extensions: [IndexPage, Page1, ExternalPage, PageWithDynamicPlugin],
 });

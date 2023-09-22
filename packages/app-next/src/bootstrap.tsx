@@ -14,7 +14,8 @@
  * limitations under the License.
  */
 
-// Usually this is enough to remove the `eager` config requirement from shared modules
-// Does not work in this case, I assume there is some extra webpack wiring for local development as
-// the webpack rebuilds packages outside of the `app-next` package scope
-import('./bootstrap');
+import '@backstage/cli/asset-types';
+import ReactDOM from 'react-dom/client';
+import app from './App';
+
+ReactDOM.createRoot(document.getElementById('root')!).render(app);
