@@ -18,9 +18,11 @@ import { ConflictError, NotFoundError } from '@backstage/errors';
 import { CronTime } from 'cron';
 import { Knex } from 'knex';
 import { DateTime, Duration } from 'luxon';
+import { Counter, Summary } from 'prom-client';
 import { v4 as uuid } from 'uuid';
 import { Logger } from 'winston';
 import { DbTasksRow, DB_TASKS_TABLE } from '../database/tables';
+import { createCounterMetric, createSummaryMetric } from './metrics';
 import { TaskFunction, TaskSettingsV2, taskSettingsV2Schema } from './types';
 import { delegateAbortController, nowPlus, sleep } from './util';
 
@@ -32,13 +34,27 @@ const DEFAULT_WORK_CHECK_FREQUENCY = Duration.fromObject({ seconds: 5 });
  * @private
  */
 export class TaskWorker {
+  private readonly counter: Counter;
+  private readonly duration: Summary;
+
   constructor(
     private readonly taskId: string,
     private readonly fn: TaskFunction,
     private readonly knex: Knex,
     private readonly logger: Logger,
     private readonly workCheckFrequency: Duration = DEFAULT_WORK_CHECK_FREQUENCY,
-  ) {}
+  ) {
+    this.counter = createCounterMetric({
+      name: 'backstage_task_runs_total',
+      help: 'Total number of times a task has been run',
+      labelNames: ['task_id', 'result'],
+    });
+    this.duration = createSummaryMetric({
+      name: 'backstage_task_run_duration_seconds',
+      help: 'Duration of task runs in seconds',
+      labelNames: ['task_id', 'result'],
+    });
+  }
 
   async start(settings: TaskSettingsV2, options?: { signal?: AbortSignal }) {
     try {
@@ -50,9 +66,13 @@ export class TaskWorker {
     this.logger.info(
       `Task worker starting: ${this.taskId}, ${JSON.stringify(settings)}`,
     );
+    this.counter.inc({ task_id: this.taskId, result: 'started' }, 1);
+
     let attemptNum = 1;
     (async () => {
       for (;;) {
+        const endDuration = this.duration.startTimer();
+
         try {
           if (settings.initialDelayDuration) {
             await sleep(
@@ -71,6 +91,8 @@ export class TaskWorker {
           }
 
           this.logger.info(`Task worker finished: ${this.taskId}`);
+          this.counter.inc({ task_id: this.taskId, result: 'completed' }, 1);
+          endDuration({ task_id: this.taskId, result: 'completed' });
           attemptNum = 0;
           break;
         } catch (e) {
@@ -78,6 +100,8 @@ export class TaskWorker {
           this.logger.warn(
             `Task worker failed unexpectedly, attempt number ${attemptNum}, ${e}`,
           );
+          this.counter.inc({ task_id: this.taskId, result: 'failed' }, 1);
+          endDuration({ task_id: this.taskId, result: 'failed' });
           await sleep(Duration.fromObject({ seconds: 1 }));
         }
       }

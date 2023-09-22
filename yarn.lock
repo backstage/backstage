@@ -3628,6 +3628,7 @@ __metadata:
     knex: ^2.0.0
     lodash: ^4.17.21
     luxon: ^3.0.0
+    prom-client: ^14.0.1
     uuid: ^8.0.0
     wait-for-expect: ^3.0.2
     winston: ^3.2.1
