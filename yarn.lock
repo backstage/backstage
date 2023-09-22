@@ -16689,11 +16689,11 @@ __metadata:
   linkType: hard
 
 "@types/aws4@npm:^1.5.1":
-  version: 1.11.3
-  resolution: "@types/aws4@npm:1.11.3"
+  version: 1.11.4
+  resolution: "@types/aws4@npm:1.11.4"
   dependencies:
     "@types/node": "*"
-  checksum: 4c10ca4d7de26e031e81fd67387df51323ebea81c441330a5a733f4bace854d61b8e880ea8fbe3678f2e6e081d510cbc6b623864646519fbb4ab130a8b138a46
+  checksum: 8b2576843488b31fdb080369eaff6af539ded60feab4eeeb429481ec0c209c0a7a8d7011747eb71e1b2bc86a455b105dd91fe86add5c2aa1584b6f4821fbf0e7
   languageName: node
   linkType: hard
 
