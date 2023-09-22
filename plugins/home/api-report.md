@@ -102,7 +102,13 @@ export type CustomHomepageGridProps = {
 };
 
 // @public
-export const getVisitName: (document: Document) => () => string;
+export const getVisitName: ({
+  rootPath,
+  document,
+}?: {
+  rootPath?: string | undefined;
+  document?: Document | undefined;
+}) => ({ pathname }: { pathname: string }) => string;
 
 // @public
 export const HeaderWorldClock: (props: {
@@ -130,6 +136,11 @@ export const HomePageRandomJoke: (
 ) => JSX_2.Element;
 
 // @public
+export const HomePageRecentlyVisited: (
+  props: CardExtensionProps_2<Partial<VisitedByTypeProps>>,
+) => JSX_2.Element;
+
+// @public
 export const HomePageStarredEntities: (
   props: CardExtensionProps_2<unknown>,
 ) => JSX_2.Element;
@@ -140,8 +151,8 @@ export const HomePageToolkit: (
 ) => JSX_2.Element;
 
 // @public
-export const HomePageVisitedByType: (
-  props: CardExtensionProps_2<VisitedByTypeProps>,
+export const HomePageTopVisited: (
+  props: CardExtensionProps_2<Partial<VisitedByTypeProps>>,
 ) => JSX_2.Element;
 
 // @public (undocumented)

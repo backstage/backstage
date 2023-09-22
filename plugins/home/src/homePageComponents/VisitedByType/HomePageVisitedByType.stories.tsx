@@ -18,8 +18,10 @@ import React from 'react';
 import { TestApiProvider, wrapInTestApp } from '@backstage/test-utils';
 import { ComponentType, PropsWithChildren } from 'react';
 import { Grid } from '@material-ui/core';
-import { HomePageVisitedByType } from '../../plugin';
+import { homePlugin } from '../../plugin';
 import { Visit, visitsApiRef } from '../../api/VisitsApi';
+import { createCardExtension } from '@backstage/plugin-home-react';
+import { VisitedByTypeProps } from './Content';
 
 const visits: Array<Visit> = [
   {
@@ -85,6 +87,13 @@ const visits: Array<Visit> = [
     entityRef: 'API:default/hello-world',
   },
 ];
+
+const HomePageVisitedByType = homePlugin.provide(
+  createCardExtension<VisitedByTypeProps>({
+    name: 'HomePageTopVisited',
+    components: () => import('./'),
+  }),
+);
 
 const mockVisitsApi = {
   save: async () => visits[0],

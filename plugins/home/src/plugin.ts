@@ -189,12 +189,24 @@ export const HeaderWorldClock = homePlugin.provide(
 );
 
 /**
- * Display recently/top visited pages for the homepage
+ * Display top visited pages for the homepage
  * @public
  */
-export const HomePageVisitedByType = homePlugin.provide(
-  createCardExtension<VisitedByTypeProps>({
-    name: 'HomePageVisitedByType',
-    components: () => import('./homePageComponents/VisitedByType'),
+export const HomePageTopVisited = homePlugin.provide(
+  createCardExtension<Partial<VisitedByTypeProps>>({
+    name: 'HomePageTopVisited',
+    components: () => import('./homePageComponents/VisitedByType/TopVisited'),
+  }),
+);
+
+/**
+ * Display recently visited pages for the homepage
+ * @public
+ */
+export const HomePageRecentlyVisited = homePlugin.provide(
+  createCardExtension<Partial<VisitedByTypeProps>>({
+    name: 'HomePageRecentlyVisited',
+    components: () =>
+      import('./homePageComponents/VisitedByType/RecentlyVisited'),
   }),
 );

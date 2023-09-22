@@ -242,24 +242,27 @@ const defaultConfig = [
 <CustomHomepageGrid config={defaultConfig}>
 ```
 
-## Page visit homepage component (HomePageVisitedByType)
+## Page visit homepage component (HomePageTopVisited / HomePageRecentlyVisited)
 
 This component shows the homepage user a view for "Recently visited" or "Top visited".
-Being provided by the `<HomePageVisitedByType/>` component, see it in use on a homepage example below:
+Being provided by the `<HomePageTopVisited/>` and `<HomePageRecentlyVisited/>` component, see it in use on a homepage example below:
 
 ```tsx
 // packages/app/src/components/home/HomePage.tsx
 import React from 'react';
 import Grid from '@material-ui/core/Grid';
-import { HomePageVisitedByType } from '@backstage/plugin-home';
+import {
+  HomePageTopVisited,
+  HomePageRecentlyVisited,
+} from '@backstage/plugin-home';
 
 export const homePage = (
   <Grid container spacing={3}>
     <Grid item xs={12} md={4}>
-      <HomePageVisitedByType kind="top" />
+      <HomePageTopVisited />
     </Grid>
     <Grid item xs={12} md={4}>
-      <HomePageVisitedByType kind="recent" />
+      <HomePageRecentlyVisited />
     </Grid>
   </Grid>
 );
