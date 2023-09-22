@@ -14,9 +14,13 @@
  * limitations under the License.
  */
 
+import React from 'react';
 import { createApp } from '@backstage/frontend-app-api';
 import { pagesPlugin } from './examples/pagesPlugin';
 import graphiqlPlugin from '@backstage/plugin-graphiql/alpha';
+import { ScalprumProvider } from '@scalprum/react-core';
+import { AppsConfig } from '@scalprum/core';
+import { PluginLoaderOptions } from '@openshift/dynamic-plugin-sdk';
 
 /*
 
@@ -61,7 +65,53 @@ const app = createApp({
 
 // const legacyApp = createLegacyApp({ plugins: [legacyGraphiqlPlugin] });
 
-export default app.createRoot();
+const root = app.createRoot();
+
+type ExtendedScalprumConfig = AppsConfig<{ assetsHost: string }>;
+const scalprumConfig: ExtendedScalprumConfig = {
+  'backstage.dynamic-frontend-plugin-sample': {
+    name: 'backstage.dynamic-frontend-plugin-sample',
+    /**
+     * The assetsHost is not core scalprum requirement.
+     * Most likely the remote assets will come from the same origin in production environments or proxy will be used.
+     * It is used in this case to show the possibility of loading assets from different remote while using the
+     * `auto` Webpack public pat configuration option.
+     *  */
+    assetsHost: 'http://localhost:8004',
+    manifestLocation: 'http://localhost:8004/plugin-manifest.json',
+  },
+};
+
+const pluginLoaderOptions: PluginLoaderOptions = {
+  postProcessManifest(manifest) {
+    return {
+      ...manifest,
+      loadScripts: manifest.loadScripts.map(
+        // the entry script strings in manifest do not include origin/baseUrl and has to be added at runtime
+        script => `${scalprumConfig[manifest.name].assetsHost}/${script}`,
+      ),
+    };
+  },
+};
+
+const ScalprumRoot = () => {
+  /**
+   * Scalprum provider needs metadata about the dynamic plugins.
+   * Its API is accessed during runtime to load the remote containers into the browser.
+   */
+  return (
+    <ScalprumProvider
+      pluginSDKOptions={{
+        pluginLoaderOptions,
+      }}
+      config={scalprumConfig}
+    >
+      {root}
+    </ScalprumProvider>
+  );
+};
+
+export default <ScalprumRoot />;
 
 // const routes = (
 //   <FlatRoutes>
