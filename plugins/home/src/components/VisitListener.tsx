@@ -54,17 +54,23 @@ const getToEntityRef =
 /**
  * @public
  * This function returns an implementation of visitName which is responsible
- * for receiving a pathname and returning a string (name). The default
- * implementation ignores the pathname and uses the document.title .
+ * for receiving a pathname and returning a string (name).
  */
 export const getVisitName =
   ({ rootPath = 'catalog', document = global.document } = {}) =>
   ({ pathname }: { pathname: string }) => {
+    // If it is a catalog entity, get the name from the path
     const regex = new RegExp(
       `^\/${rootPath}\/(?<namespace>[^\/]+)\/(?<kind>[^\/]+)\/(?<name>[^\/]+)`,
     );
-    const result = regex.exec(pathname);
+    let result = regex.exec(pathname);
     if (result && result?.groups) return result.groups.name;
+
+    // If it is a root pathname, get the name from there
+    result = /^\/(?<name>[^\/]+)$/.exec(pathname);
+    if (result && result?.groups) return result.groups.name;
+
+    // Fallback to document title
     return document.title;
   };
 

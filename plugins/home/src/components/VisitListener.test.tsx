@@ -53,7 +53,6 @@ describe('<VisitListener/>', () => {
   afterEach(jest.resetAllMocks);
 
   it('registers a visit', async () => {
-    jest.spyOn(document, 'title', 'get').mockReturnValue('MockedTitle');
     const pathname = '/catalog/default/component/playback-order';
 
     await renderInTestApp(
@@ -68,7 +67,7 @@ describe('<VisitListener/>', () => {
       visit: {
         pathname,
         entityRef: 'component:default/playback-order',
-        name: 'MockedTitle',
+        name: 'playback-order',
       },
     });
   });
@@ -86,7 +85,6 @@ describe('<VisitListener/>', () => {
   });
 
   it('is able to override how visit names are defined', async () => {
-    jest.spyOn(document, 'title', 'get').mockReturnValue('MockedTitle');
     const pathname = '/catalog/default/component/playback-order';
 
     const visitNameOverride = ({ pathname: path }: { pathname: string }) =>
@@ -111,7 +109,6 @@ describe('<VisitListener/>', () => {
   });
 
   it('is able to override how entityRefs are defined', async () => {
-    jest.spyOn(document, 'title', 'get').mockReturnValue('MockedTitle');
     const pathname = '/catalog/default/component/playback-order';
 
     const toEntityRefOverride = ({ pathname: path }: { pathname: string }) =>
@@ -129,7 +126,7 @@ describe('<VisitListener/>', () => {
         visit: {
           pathname,
           entityRef: pathname,
-          name: 'MockedTitle',
+          name: 'playback-order',
         },
       }),
     );
