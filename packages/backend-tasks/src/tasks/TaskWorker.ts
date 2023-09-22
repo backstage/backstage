@@ -71,8 +71,6 @@ export class TaskWorker {
     let attemptNum = 1;
     (async () => {
       for (;;) {
-        const endDuration = this.duration.startTimer();
-
         try {
           if (settings.initialDelayDuration) {
             await sleep(
@@ -82,7 +80,12 @@ export class TaskWorker {
           }
 
           while (!options?.signal?.aborted) {
+            const endDuration = this.duration.startTimer();
             const runResult = await this.runOnce(options?.signal);
+            endDuration({ task_id: this.taskId, result: 'completed' });
+
+            this.counter.inc({ task_id: this.taskId, result: 'completed' }, 1);
+
             if (runResult.result === 'abort') {
               break;
             }
@@ -91,8 +94,7 @@ export class TaskWorker {
           }
 
           this.logger.info(`Task worker finished: ${this.taskId}`);
-          this.counter.inc({ task_id: this.taskId, result: 'completed' }, 1);
-          endDuration({ task_id: this.taskId, result: 'completed' });
+
           attemptNum = 0;
           break;
         } catch (e) {
@@ -101,7 +103,6 @@ export class TaskWorker {
             `Task worker failed unexpectedly, attempt number ${attemptNum}, ${e}`,
           );
           this.counter.inc({ task_id: this.taskId, result: 'failed' }, 1);
-          endDuration({ task_id: this.taskId, result: 'failed' });
           await sleep(Duration.fromObject({ seconds: 1 }));
         }
       }
