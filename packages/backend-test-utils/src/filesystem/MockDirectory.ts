@@ -28,7 +28,6 @@ import {
   win32,
   posix,
 } from 'path';
-import { isError } from '@backstage/errors';
 
 /**
  * The content of a mock directory represented by a nested object structure.
@@ -331,16 +330,7 @@ export class MockDirectory {
    * Removes the mock directory and all its contents.
    */
   remove = (): void => {
-    try {
-      fs.rmSync(this.#root, { recursive: true, force: true });
-    } catch (error: unknown) {
-      if (isError(error) && error.code === 'ENOTEMPTY') {
-        // Windows can be a bit flaky, give it another go
-        fs.rmSync(this.#root, { recursive: true, force: true });
-      } else {
-        throw error;
-      }
-    }
+    fs.rmSync(this.#root, { recursive: true, force: true, maxRetries: 3 });
   };
 
   #transformInput(input: MockDirectoryContent[string]): MockEntry[] {
