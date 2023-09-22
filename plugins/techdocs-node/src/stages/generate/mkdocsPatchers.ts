@@ -119,6 +119,16 @@ export const patchMkdocsYmlPreBuild = async (
       );
 
       if (result.repo_url || result.edit_uri) {
+        if (
+          result.edit_uri &&
+          scmIntegrations.byUrl(result.edit_uri)?.type === 'bitbucketServer' &&
+          result.edit_uri.includes('?')
+        ) {
+          result.edit_uri = result.edit_uri.substring(
+            0,
+            result.edit_uri.indexOf('?'),
+          );
+        }
         mkdocsYml.repo_url = result.repo_url;
         mkdocsYml.edit_uri = result.edit_uri;
 

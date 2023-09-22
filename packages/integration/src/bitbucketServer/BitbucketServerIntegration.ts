@@ -20,6 +20,7 @@ import {
   BitbucketServerIntegrationConfig,
   readBitbucketServerIntegrationConfigs,
 } from './config';
+import parseGitUrl from 'git-url-parse';
 
 /**
  * A Bitbucket Server based integration.
@@ -75,6 +76,13 @@ export class BitbucketServerIntegration implements ScmIntegration {
 
   resolveEditUrl(url: string): string {
     // Bitbucket Server doesn't support deep linking to edit mode, therefore there's nothing to do here.
-    return url;
+    const urlData = parseGitUrl(url);
+    const editUrl = new URL(url);
+
+    // TODO: Not sure what spa=0 does, at least bitbucket.org doesn't support it
+    // but this is taken over from the initial implementation.
+    editUrl.searchParams.set('spa', '0');
+    editUrl.searchParams.set('at', urlData.ref);
+    return editUrl.toString();
   }
 }
