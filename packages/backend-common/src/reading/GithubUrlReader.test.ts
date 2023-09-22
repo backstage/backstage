@@ -76,7 +76,7 @@ describe('GithubUrlReader', () => {
   const worker = setupServer();
   setupRequestMockHandlers(worker);
 
-  beforeEach(() => mockDir.clear());
+  beforeEach(mockDir.clear);
 
   beforeEach(() => {
     jest.clearAllMocks();

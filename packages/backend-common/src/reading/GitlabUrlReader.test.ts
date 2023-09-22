@@ -69,7 +69,7 @@ const hostedGitlabProcessor = new GitlabUrlReader(
 );
 
 describe('GitlabUrlReader', () => {
-  beforeEach(() => mockDir.clear());
+  beforeEach(mockDir.clear);
 
   const worker = setupServer();
   setupRequestMockHandlers(worker);

@@ -38,16 +38,16 @@ describe('ZipArchiveResponse', () => {
   const sourceDir = MockDirectory.create();
   const targetDir = MockDirectory.create();
 
-  beforeAll(async () => {
-    await sourceDir.setContent({
+  beforeAll(() => {
+    sourceDir.setContent({
       'test-archive.zip': archiveData,
       'test-archive-with-extra-root-dir.zip': archiveDataWithExtraDir,
       'test-archive-corrupted.zip': archiveDataCorrupted,
       'test-archive-malicious.zip': archiveWithMaliciousEntry,
     });
   });
-  beforeEach(async () => {
-    await targetDir.clear();
+  beforeEach(() => {
+    targetDir.clear();
   });
 
   it('should read files', async () => {
@@ -151,7 +151,7 @@ describe('ZipArchiveResponse', () => {
     const res = new ZipArchiveResponse(stream, 'docs/', targetDir.path, 'etag');
 
     const dir = await res.dir();
-    await expect(targetDir.content({ path: dir })).resolves.toEqual({
+    expect(targetDir.content({ path: dir })).toEqual({
       'index.md': '# Test\n',
     });
   });
@@ -167,13 +167,13 @@ describe('ZipArchiveResponse', () => {
       path => path.endsWith('.yml'),
     );
 
-    await targetDir.addContent({ sub: {} });
+    targetDir.addContent({ sub: {} });
     const sub = targetDir.resolve('sub');
     const dir = await res.dir({ targetDir: sub });
 
     expect(dir).toBe(sub);
 
-    await expect(targetDir.content()).resolves.toEqual({
+    expect(targetDir.content()).toEqual({
       sub: {
         'mkdocs.yml': 'site_name: Test\n',
       },
@@ -209,7 +209,7 @@ describe('ZipArchiveResponse', () => {
 
     const res = new ZipArchiveResponse(stream, '', targetDir.path, 'etag');
 
-    await targetDir.addContent({ sub: {} });
+    targetDir.addContent({ sub: {} });
     const sub = targetDir.resolve('sub');
     const dir = await res.dir({
       targetDir: sub,

@@ -53,7 +53,7 @@ const reader = new BitbucketCloudUrlReader(
 );
 
 describe('BitbucketCloudUrlReader', () => {
-  beforeEach(() => mockDir.clear());
+  beforeEach(mockDir.clear);
 
   const worker = setupServer();
   setupRequestMockHandlers(worker);

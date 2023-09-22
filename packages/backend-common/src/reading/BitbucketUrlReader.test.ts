@@ -71,7 +71,7 @@ describe('BitbucketUrlReader.factory', () => {
 describe('BitbucketUrlReader', () => {
   const mockDir = MockDirectory.mockOsTmpDir();
 
-  beforeEach(() => mockDir.clear());
+  beforeEach(mockDir.clear);
 
   const treeResponseFactory = DefaultReadTreeResponseFactory.create({
     config: new ConfigReader({}),

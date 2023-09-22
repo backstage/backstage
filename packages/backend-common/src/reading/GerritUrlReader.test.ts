@@ -93,7 +93,7 @@ describe.skip('GerritUrlReader', () => {
   const worker = setupServer();
   setupRequestMockHandlers(worker);
 
-  beforeEach(() => mockDir.clear());
+  beforeEach(mockDir.clear);
 
   afterAll(() => {
     jest.clearAllMocks();
@@ -256,7 +256,7 @@ describe.skip('GerritUrlReader', () => {
     );
 
     beforeEach(async () => {
-      await mockDir.setContent({
+      mockDir.setContent({
         'repo/mkdocs.yml': mkdocsContent,
         'repo/docs/first.md': mdContent,
       });

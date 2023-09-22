@@ -34,12 +34,12 @@ describe('ReadableArrayResponse', () => {
   const sourceDir = MockDirectory.create();
   const targetDir = MockDirectory.create();
 
-  beforeEach(async () => {
-    await sourceDir.setContent({
+  beforeEach(() => {
+    sourceDir.setContent({
       [name1]: file1,
       [name2]: file2,
     });
-    await targetDir.clear();
+    targetDir.clear();
   });
 
   const path1 = sourceDir.resolve(name1);
@@ -71,7 +71,7 @@ describe('ReadableArrayResponse', () => {
     const res = new ReadableArrayResponse(arr, targetDir.path, 'etag');
     const dir = await res.dir();
 
-    await expect(targetDir.content({ path: dir })).resolves.toEqual({
+    expect(targetDir.content({ path: dir })).toEqual({
       [name1]: file1.toString('utf8'),
       [name2]: file2.toString('utf8'),
     });

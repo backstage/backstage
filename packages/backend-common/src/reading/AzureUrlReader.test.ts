@@ -73,7 +73,7 @@ const urlReaderFactory = (azureIntegration: AzureIntegrationConfigLike) => {
 };
 
 describe('AzureUrlReader', () => {
-  beforeEach(() => mockDir.clear());
+  beforeEach(mockDir.clear);
 
   const worker = setupServer();
   setupRequestMockHandlers(worker);

@@ -27,11 +27,11 @@ describe('TarArchiveResponse', () => {
   const sourceDir = MockDirectory.create();
   const targetDir = MockDirectory.create();
 
-  beforeAll(async () => {
-    await sourceDir.setContent({ 'test-archive.tar.gz': archiveData });
+  beforeAll(() => {
+    sourceDir.setContent({ 'test-archive.tar.gz': archiveData });
   });
-  beforeEach(async () => {
-    await targetDir.clear();
+  beforeEach(() => {
+    targetDir.clear();
   });
 
   it('should read files', async () => {
@@ -143,7 +143,7 @@ describe('TarArchiveResponse', () => {
     const res = new TarArchiveResponse(stream, 'docs', targetDir.path, 'etag');
     const dir = await res.dir();
 
-    await expect(targetDir.content({ path: dir })).resolves.toEqual({
+    expect(targetDir.content({ path: dir })).toEqual({
       'index.md': '# Test\n',
     });
   });
@@ -161,11 +161,11 @@ describe('TarArchiveResponse', () => {
       path => path.endsWith('.yml'),
     );
 
-    await targetDir.addContent({ sub: {} });
+    targetDir.addContent({ sub: {} });
     const dir = await res.dir({ targetDir: targetDir.resolve('sub') });
 
     expect(dir).toBe(targetDir.resolve('sub'));
-    await expect(targetDir.content()).resolves.toEqual({
+    expect(targetDir.content()).toEqual({
       sub: {
         'mkdocs.yml': 'site_name: Test\n',
       },
@@ -187,7 +187,7 @@ describe('TarArchiveResponse', () => {
       },
     );
 
-    await targetDir.addContent({ sub: {} });
+    targetDir.addContent({ sub: {} });
     const sub = targetDir.resolve('sub');
 
     const mkdtemp = jest
@@ -216,7 +216,7 @@ describe('TarArchiveResponse', () => {
       },
     );
 
-    await targetDir.addContent({ sub: {} });
+    targetDir.addContent({ sub: {} });
     const sub = targetDir.resolve('sub');
 
     await expect(fs.pathExists(sub)).resolves.toBe(true);

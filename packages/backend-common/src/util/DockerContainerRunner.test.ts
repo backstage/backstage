@@ -29,9 +29,9 @@ describe('DockerContainerRunner', () => {
   const inputDir = MockDirectory.create();
   const outputDir = MockDirectory.create();
 
-  beforeEach(async () => {
-    await inputDir.clear();
-    await outputDir.clear();
+  beforeEach(() => {
+    inputDir.clear();
+    outputDir.clear();
 
     jest.spyOn(mockDocker, 'pull').mockImplementation((async (
       _image: string,
