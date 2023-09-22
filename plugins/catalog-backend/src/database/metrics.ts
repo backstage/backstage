@@ -18,6 +18,7 @@ import { Knex } from 'knex';
 import { createGaugeMetric } from '../util/metrics';
 import { DbRefreshStateRow, DbRelationsRow, DbLocationsRow } from './tables';
 import { metrics } from '@opentelemetry/api';
+import { parseEntityRef } from '@backstage/catalog-model';
 
 export function initDatabaseMetrics(knex: Knex) {
   const seenProm = new Set<string>();
@@ -79,7 +80,7 @@ export function initDatabaseMetrics(knex: Knex) {
           'entity_ref',
         );
         const results = result
-          .map(row => row.entity_ref.split(':')[0])
+          .map(row => parseEntityRef(row.entity_ref).kind)
           .reduce((acc, e) => acc.set(e, (acc.get(e) || 0) + 1), new Map());
 
         results.forEach((value, key) => {
