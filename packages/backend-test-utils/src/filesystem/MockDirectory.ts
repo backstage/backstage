@@ -124,9 +124,9 @@ export class MockDirectory {
    * describe('MySubject', () => {
    *   const mockDir = MockDirectory.create();
    *
-   *   beforeEach(() => mockDir.clear());
+   *   beforeEach(mockDir.clear);
    *
-   *   it('should work', async () => {
+   *   it('should work', () => {
    *     // ... use mockDir
    *   })
    * })
@@ -141,7 +141,7 @@ export class MockDirectory {
 
     const shouldCleanup = !options?.root || !fs.pathExistsSync(options.root);
     if (shouldCleanup) {
-      process.on('beforeExit', mocker.#removeSync);
+      process.on('beforeExit', mocker.remove);
 
       try {
         afterAll(mocker.remove);
@@ -199,7 +199,7 @@ export class MockDirectory {
    *
    * @example
    * ```ts
-   * await mockDir.setContent({
+   * mockDir.setContent({
    *   'test.txt': 'content',
    *   'sub-dir': {
    *     'file.txt': 'content',
@@ -210,8 +210,8 @@ export class MockDirectory {
    * });
    * ```
    */
-  async setContent(root: MockDirectoryContent): Promise<void> {
-    await this.remove();
+  setContent(root: MockDirectoryContent): void {
+    this.remove();
 
     return this.addContent(root);
   }
@@ -221,7 +221,7 @@ export class MockDirectory {
    *
    * @example
    * ```ts
-   * await mockDir.addContent({
+   * mockDir.addContent({
    *   'test.txt': 'content',
    *   'sub-dir': {
    *     'file.txt': 'content',
@@ -232,7 +232,7 @@ export class MockDirectory {
    * });
    * ```
    */
-  async addContent(root: MockDirectoryContent): Promise<void> {
+  addContent(root: MockDirectoryContent): void {
     const entries = this.#transformInput(root);
 
     for (const entry of entries) {
@@ -244,10 +244,10 @@ export class MockDirectory {
       }
 
       if (entry.type === 'dir') {
-        await fs.ensureDir(fullPath);
+        fs.ensureDirSync(fullPath);
       } else if (entry.type === 'file') {
-        await fs.ensureDir(dirname(fullPath));
-        await fs.writeFile(fullPath, entry.content);
+        fs.ensureDirSync(dirname(fullPath));
+        fs.writeFileSync(fullPath, entry.content);
       }
     }
   }
@@ -262,7 +262,7 @@ export class MockDirectory {
    *
    * @example
    * ```ts
-   * await expect(mockDir.content()).resolves.toEqual({
+   * expect(mockDir.content()).toEqual({
    *   'test.txt': 'content',
    *   'sub-dir': {
    *     'file.txt': 'content',
@@ -275,9 +275,9 @@ export class MockDirectory {
    * });
    * ```
    */
-  async content(
+  content(
     options?: MockDirectoryContentOptions,
-  ): Promise<MockDirectoryContent | undefined> {
+  ): MockDirectoryContent | undefined {
     const shouldReadAsText =
       (typeof options?.shouldReadAsText === 'boolean'
         ? () => options?.shouldReadAsText
@@ -291,33 +291,29 @@ export class MockDirectory {
       );
     }
 
-    async function read(
-      path: string,
-    ): Promise<MockDirectoryContent | undefined> {
-      if (!(await fs.pathExists(path))) {
+    function read(path: string): MockDirectoryContent | undefined {
+      if (!fs.pathExistsSync(path)) {
         return undefined;
       }
 
-      const entries = await fs.readdir(path, { withFileTypes: true });
+      const entries = fs.readdirSync(path, { withFileTypes: true });
       return Object.fromEntries(
-        await Promise.all(
-          entries.map(async entry => {
-            const fullPath = resolvePath(path, entry.name);
+        entries.map(entry => {
+          const fullPath = resolvePath(path, entry.name);
 
-            if (entry.isDirectory()) {
-              return [entry.name, await read(fullPath)];
-            }
-            const content = await fs.readFile(fullPath);
-            const relativePosixPath = relativePath(root, fullPath)
-              .split(win32.sep)
-              .join(posix.sep);
+          if (entry.isDirectory()) {
+            return [entry.name, read(fullPath)];
+          }
+          const content = fs.readFileSync(fullPath);
+          const relativePosixPath = relativePath(root, fullPath)
+            .split(win32.sep)
+            .join(posix.sep);
 
-            if (shouldReadAsText(relativePosixPath, content)) {
-              return [entry.name, content.toString('utf8')];
-            }
-            return [entry.name, content];
-          }),
-        ),
+          if (shouldReadAsText(relativePosixPath, content)) {
+            return [entry.name, content.toString('utf8')];
+          }
+          return [entry.name, content];
+        }),
       );
     }
 
@@ -327,20 +323,20 @@ export class MockDirectory {
   /**
    * Clears the content of the mock directory, ensuring that the directory itself exists.
    */
-  clear = async (): Promise<void> => {
-    await this.setContent({});
+  clear = (): void => {
+    this.setContent({});
   };
 
   /**
    * Removes the mock directory and all its contents.
    */
-  remove = async (): Promise<void> => {
+  remove = (): void => {
     try {
-      await fs.rm(this.#root, { recursive: true, force: true });
+      fs.rmSync(this.#root, { recursive: true, force: true });
     } catch (error: unknown) {
       if (isError(error) && error.code === 'ENOTEMPTY') {
         // Windows can be a bit flaky, give it another go
-        await fs.rm(this.#root, { recursive: true, force: true });
+        fs.rmSync(this.#root, { recursive: true, force: true });
       } else {
         throw error;
       }
@@ -372,8 +368,4 @@ export class MockDirectory {
 
     return entries;
   }
-
-  #removeSync = () => {
-    fs.rmSync(this.#root, { recursive: true, force: true });
-  };
 }

@@ -36,17 +36,17 @@ export function isDockerDisabledForTests(): boolean;
 
 // @public
 export class MockDirectory {
-  addContent(root: MockDirectoryContent): Promise<void>;
-  clear: () => Promise<void>;
+  addContent(root: MockDirectoryContent): void;
+  clear: () => void;
   content(
     options?: MockDirectoryContentOptions,
-  ): Promise<MockDirectoryContent | undefined>;
+  ): MockDirectoryContent | undefined;
   static create(options?: MockDirectoryCreateOptions): MockDirectory;
   static mockOsTmpDir(): MockDirectory;
   get path(): string;
-  remove: () => Promise<void>;
+  remove: () => void;
   resolve(...paths: string[]): string;
-  setContent(root: MockDirectoryContent): Promise<void>;
+  setContent(root: MockDirectoryContent): void;
 }
 
 // @public
