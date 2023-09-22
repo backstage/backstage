@@ -144,7 +144,15 @@ export class DatabaseDocumentStore implements DatabaseStore {
     tx: Knex.Transaction,
     searchQuery: PgSearchQuery,
   ): Promise<DocumentResultRow[]> {
-    const { types, pgTerm, fields, offset, limit, options } = searchQuery;
+    const {
+      types,
+      pgTerm,
+      fields,
+      offset,
+      limit,
+      fallbackSearchQuery,
+      options,
+    } = searchQuery;
     // TODO(awanlin): We should make the language a parameter so that we can support more then just english
     // Builds a query like:
     // SELECT ts_rank_cd(body, query) AS rank, type, document,
@@ -159,6 +167,10 @@ export class DatabaseDocumentStore implements DatabaseStore {
       query
         .from(tx.raw("documents, to_tsquery('english', ?) query", pgTerm))
         .whereRaw('query @@ body');
+
+      if (fallbackSearchQuery) {
+        query.or.whereRaw(fallbackSearchQuery);
+      }
     } else {
       query.from('documents');
     }

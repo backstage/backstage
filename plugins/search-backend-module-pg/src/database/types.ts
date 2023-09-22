@@ -22,6 +22,7 @@ export interface PgSearchQuery {
   fields?: Record<string, string | string[]>;
   types?: string[];
   pgTerm?: string;
+  fallbackSearchQuery?: string;
   offset: number;
   limit: number;
   options: PgSearchHighlightOptions;
