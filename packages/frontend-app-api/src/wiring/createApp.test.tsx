@@ -16,8 +16,6 @@
 
 import {
   createExtension,
-  createExtensionDataRef,
-  createExtensionInput,
   createPageExtension,
   createPlugin,
 } from '@backstage/frontend-plugin-api';
@@ -72,228 +70,37 @@ describe('createInstances', () => {
     );
   });
 
-  describe('should deduplicated plugins', () => {
-    it('in an immediate dependency level (e.g., A -> A)', () => {
-      const config = new MockConfigApi({});
+  it('throws an error when duplicated extensions are detected', () => {
+    const config = new MockConfigApi({});
 
-      const addonExtensionData =
-        createExtensionDataRef<JSX.Element>('plugin.page.addon');
-
-      const CyclicalA = createExtension({
-        id: 'A', // Same id as ancestor A
-        at: 'A/addons',
-        inputs: {},
-        output: {
-          element: addonExtensionData,
-        },
-        factory({ bind }) {
-          bind({
-            element: <div key="cyclical-a">Cyclical A</div>,
-          });
-        },
-      });
-
-      const A = createPageExtension({
-        id: 'A',
-        defaultPath: '/',
-        routeRef: createRouteRef({ id: 'A.route' }),
-        inputs: {
-          addons: createExtensionInput({
-            element: addonExtensionData,
-          }),
-        },
-        loader: async ({ inputs }) => (
-          <div>A {inputs.addons.map(({ element }) => element)}</div>
-        ),
-      });
-
-      const plugins = [
-        createPlugin({
-          id: 'plugin',
-          extensions: [A, CyclicalA],
-        }),
-      ];
-
-      // It should not create an infinite loop
-      expect(() => createInstances({ config, plugins })).not.toThrow(
-        'Maximum call stack size exceeded',
-      );
+    const ExtensionA = createPageExtension({
+      id: 'A',
+      defaultPath: '/',
+      routeRef: createRouteRef({ id: 'A.route' }),
+      loader: async () => <div>Extension A</div>,
     });
 
-    it('in an intermediate level (e.g., A -> B -> A)', () => {
-      const config = new MockConfigApi({});
-
-      const addonExtensionData =
-        createExtensionDataRef<JSX.Element>('plugin.page.addon');
-
-      const CyclicalA = createExtension({
-        id: 'A', // Same id as ancestor A
-        at: 'B/addons',
-        inputs: {
-          addons: createExtensionInput({
-            element: addonExtensionData,
-          }),
-        },
-        output: {
-          element: addonExtensionData,
-        },
-        factory({ bind }) {
-          bind({
-            element: <div key="cyclical-a">Cyclical A</div>,
-          });
-        },
-      });
-
-      const B = createExtension({
-        id: 'B',
-        at: 'A/addons',
-        inputs: {
-          addons: createExtensionInput({
-            element: addonExtensionData,
-          }),
-        },
-        output: {
-          element: addonExtensionData,
-        },
-        factory({ bind }) {
-          bind({
-            element: <div key="b">B</div>,
-          });
-        },
-      });
-
-      const A = createPageExtension({
-        id: 'A',
-        defaultPath: '/',
-        routeRef: createRouteRef({ id: 'A.route' }),
-        inputs: {
-          addons: createExtensionInput({
-            element: addonExtensionData,
-          }),
-        },
-        loader: async ({ inputs }) => (
-          <div>A {inputs.addons.map(({ element }) => element)}</div>
-        ),
-      });
-
-      const plugins = [
-        createPlugin({
-          id: 'plugin',
-          extensions: [A, B, CyclicalA],
-        }),
-      ];
-
-      // It should not create an infinite loop
-      expect(() => createInstances({ config, plugins })).not.toThrow(
-        'Maximum call stack size exceeded',
-      );
+    const ExtensionB = createPageExtension({
+      id: 'B',
+      defaultPath: '/',
+      routeRef: createRouteRef({ id: 'B.route' }),
+      loader: async () => <div>Extension B</div>,
     });
 
-    it('in an deep level (e.g., A -> B -> C -> D -> B)', () => {
-      const config = new MockConfigApi({});
-
-      const addonRendererInput =
-        createExtensionDataRef<() => JSX.Element>('A.addon.renderer');
-
-      const addonElementInput =
-        createExtensionDataRef<JSX.Element>('A.addon.element');
-
-      const CyclicalB = createExtension({
-        id: 'B', // Same id as ancestor B
-        at: 'D/addons',
-        inputs: {},
-        output: {
-          element: addonElementInput,
-        },
-        factory({ bind }) {
-          bind({
-            element: <div key="cyclical-b">Cyclical B</div>,
-          });
-        },
-      });
-
-      const D = createExtension({
-        id: 'D',
-        at: 'C/addons',
-        inputs: {
-          addons: createExtensionInput({
-            element: addonElementInput,
-          }),
-        },
-        output: {
-          element: addonElementInput,
-        },
-        factory({ bind }) {
-          bind({
-            element: <div key="d">D</div>,
-          });
-        },
-      });
-
-      const C = createExtension({
-        id: 'C',
-        at: 'B/renderer',
-        inputs: {
-          addons: createExtensionInput({
-            element: addonElementInput,
-          }),
-        },
-        output: {
-          renderer: addonRendererInput,
-        },
-        factory({ bind }) {
-          bind({
-            renderer: () => <div key="c">C</div>,
-          });
-        },
-      });
-
-      const B = createExtension({
-        id: 'B',
-        at: 'A/addons',
-        inputs: {
-          renderer: createExtensionInput(
-            {
-              element: addonRendererInput,
-            },
-            { singleton: true, required: false },
-          ),
-        },
-        output: {
-          element: addonElementInput,
-        },
-        factory({ bind, inputs }) {
-          bind({
-            element: inputs.renderer?.element() ?? <div key="b">B</div>,
-          });
-        },
-      });
-
-      const A = createPageExtension({
-        id: 'A',
-        defaultPath: '/',
-        routeRef: createRouteRef({ id: 'A.route' }),
-        inputs: {
-          addons: createExtensionInput({
-            element: addonElementInput,
-          }),
-        },
-        loader: async ({ inputs }) => (
-          <div>A {inputs.addons.map(({ element }) => element)}</div>
-        ),
-      });
-
-      const plugins = [
-        createPlugin({
-          id: 'plugin',
-          extensions: [A, B, C, D, CyclicalB],
-        }),
-      ];
-
-      // It should not create an infinite loop
-      expect(() => createInstances({ config, plugins })).not.toThrow(
-        'Maximum call stack size exceeded',
-      );
+    const PluginA = createPlugin({
+      id: 'A',
+      extensions: [ExtensionA, ExtensionA],
     });
+
+    const PluginB = createPlugin({
+      id: 'B',
+      extensions: [ExtensionA, ExtensionB, ExtensionB],
+    });
+
+    const plugins = [PluginA, PluginB];
+
+    expect(() => createInstances({ config, plugins })).toThrow(
+      "The following extensions are duplicated: The extension 'A' was provided 2 time(s) by the plugin 'A' and 1 time(s) by the plugin 'B', The extension 'B' was provided 2 time(s) by the plugin 'B'",
+    );
   });
 });
