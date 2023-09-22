@@ -16,7 +16,7 @@
 
 import { BackendBundlingOptions, BundlingOptions } from './types';
 import { posix as posixPath, resolve as resolvePath } from 'path';
-import webpack, { ProvidePlugin } from 'webpack';
+import webpack, { ProvidePlugin, container } from 'webpack';
 
 import { BackstagePackage } from '@backstage/cli-node';
 import { BundlingPaths } from './paths';
@@ -38,9 +38,36 @@ import { readEntryPoints } from '../entryPoints';
 import { runPlain } from '../run';
 import { transforms } from './transforms';
 import { version } from '../../lib/version';
+import { sharedModules } from './scalprumConfig';
+import { WebpackSharedObject } from '@openshift/dynamic-plugin-sdk-webpack';
 import yn from 'yn';
 
+const { ModuleFederationPlugin } = container;
+
 const BUILD_CACHE_ENV_VAR = 'BACKSTAGE_CLI_EXPERIMENTAL_BUILD_CACHE';
+
+const scalprumPlugin = new ModuleFederationPlugin({
+  name: 'backstageHost',
+  filename: 'backstageHost.[fullhash].js',
+  /**
+   * FIXME: Shared packages should not required to be eagerly loaded if the bundle entry is asynchronously loaded.
+   * `index.ts` -> import('./bootstrap)
+   * Seems like the initial sync import is ignored.
+   * Assume this has something to do with the development webpack config of this project.
+   */
+  shared: [
+    Object.entries(sharedModules).reduce<WebpackSharedObject>(
+      (acc, [name, config]) => {
+        acc[name] = {
+          ...config,
+          eager: true,
+        };
+        return acc;
+      },
+      {},
+    ),
+  ],
+});
 
 export function resolveBaseUrl(config: Config): URL {
   const baseUrl = config.getString('app.baseUrl');
@@ -127,6 +154,8 @@ export async function createConfig(
       },
     }),
   );
+
+  plugins.push(scalprumPlugin);
 
   const buildInfo = await readBuildInfo();
   plugins.push(

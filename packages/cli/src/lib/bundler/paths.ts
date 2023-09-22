@@ -61,6 +61,7 @@ export function resolveBundlingPaths(options: BundlingPathsOptions) {
     targetPath: resolvePath(targetDir, '.'),
     targetRunFile: runFileExists ? targetRunFile : undefined,
     targetDist: resolvePath(targetDir, 'dist'),
+    targetScalprumDist: resolvePath(targetDir, 'dist-scalprum'),
     targetAssets: resolvePath(targetDir, 'assets'),
     targetSrc: resolvePath(targetDir, 'src'),
     targetDev: resolvePath(targetDir, 'dev'),

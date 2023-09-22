@@ -17,6 +17,7 @@
 import { AppConfig, Config } from '@backstage/config';
 import { BundlingPathsOptions } from './paths';
 import { ConfigSchema } from '@backstage/config-loader';
+import { PluginBuildMetadata } from '@openshift/dynamic-plugin-sdk-webpack';
 
 export type BundlingOptions = {
   checksEnabled: boolean;
@@ -32,6 +33,7 @@ export type ServeOptions = BundlingPathsOptions & {
   checksEnabled: boolean;
   configPaths: string[];
   verifyVersions?: boolean;
+  pluginMetadata?: PluginBuildMetadata;
 };
 
 export type BuildOptions = BundlingPathsOptions & {
@@ -43,6 +45,7 @@ export type BuildOptions = BundlingPathsOptions & {
   frontendConfig: Config;
   frontendAppConfigs: AppConfig[];
   fullConfig: Config;
+  pluginMetadata?: PluginBuildMetadata;
 };
 
 export type BackendBundlingOptions = {
@@ -57,4 +60,14 @@ export type BackendServeOptions = BundlingPathsOptions & {
   checksEnabled: boolean;
   inspectEnabled: boolean;
   inspectBrkEnabled: boolean;
+};
+
+export type DynamicPluginOptions = {
+  checksEnabled?: boolean;
+  isDev?: boolean;
+  frontendConfig: Config;
+  frontendAppConfigs: AppConfig[];
+  baseUrl?: URL;
+  parallelism?: number;
+  pluginMetadata: PluginBuildMetadata;
 };

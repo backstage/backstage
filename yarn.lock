@@ -3747,6 +3747,7 @@ __metadata:
     "@octokit/graphql-schema": ^13.7.0
     "@octokit/oauth-app": ^4.2.0
     "@octokit/request": ^6.0.0
+    "@openshift/dynamic-plugin-sdk-webpack": ^3.0.1
     "@pmmmwh/react-refresh-webpack-plugin": ^0.5.7
     "@rollup/plugin-commonjs": ^23.0.0
     "@rollup/plugin-json": ^5.0.0
@@ -14065,6 +14066,18 @@ __metadata:
     ms: ^2.1.3
     secure-json-parse: ^2.4.0
   checksum: 70324153eb9d74c005d5517a997f7027b829387af482956593a23b80c24ba8c9f9cdff40fec3d72e7066f3f16070b543c2d6f59f578e1be898784b49f9f6720f
+  languageName: node
+  linkType: hard
+
+"@openshift/dynamic-plugin-sdk-webpack@npm:^3.0.1":
+  version: 3.0.1
+  resolution: "@openshift/dynamic-plugin-sdk-webpack@npm:3.0.1"
+  dependencies:
+    lodash: ^4.17.21
+    yup: ^0.32.11
+  peerDependencies:
+    webpack: ^5.75.0
+  checksum: 5c52a4528b7a30a12263e3c5c5a77a9edb97a151316d5db3472d1451104bd0f06cd7384e7168d3ee1b87b9b7dac5a9589beeb4e15c2f662c8523d8f487e1e032
   languageName: node
   linkType: hard
 
@@ -43404,7 +43417,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"yup@npm:^0.32.9":
+"yup@npm:^0.32.11, yup@npm:^0.32.9":
   version: 0.32.11
   resolution: "yup@npm:0.32.11"
   dependencies:
