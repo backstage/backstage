@@ -6303,6 +6303,30 @@ __metadata:
   languageName: unknown
   linkType: soft
 
+"@backstage/plugin-dynamic-frontend-plugin-sample@workspace:plugins/dynamic-frontend-plugin-sample":
+  version: 0.0.0-use.local
+  resolution: "@backstage/plugin-dynamic-frontend-plugin-sample@workspace:plugins/dynamic-frontend-plugin-sample"
+  dependencies:
+    "@backstage/cli": "workspace:^"
+    "@backstage/core-app-api": "workspace:^"
+    "@backstage/core-components": "workspace:^"
+    "@backstage/core-plugin-api": "workspace:^"
+    "@backstage/dev-utils": "workspace:^"
+    "@backstage/test-utils": "workspace:^"
+    "@backstage/theme": "workspace:^"
+    "@material-ui/core": ^4.9.13
+    "@material-ui/icons": ^4.9.1
+    "@material-ui/lab": ^4.0.0-alpha.60
+    "@testing-library/jest-dom": ^5.10.1
+    "@testing-library/react": ^12.1.3
+    "@testing-library/user-event": ^14.0.0
+    msw: ^1.0.0
+    react-use: ^17.2.4
+  peerDependencies:
+    react: ^16.13.1 || ^17.0.0
+  languageName: unknown
+  linkType: soft
+
 "@backstage/plugin-dynatrace@workspace:^, @backstage/plugin-dynatrace@workspace:plugins/dynatrace":
   version: 0.0.0-use.local
   resolution: "@backstage/plugin-dynatrace@workspace:plugins/dynatrace"
@@ -14081,6 +14105,34 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@openshift/dynamic-plugin-sdk@npm:^3.0.0":
+  version: 3.0.0
+  resolution: "@openshift/dynamic-plugin-sdk@npm:3.0.0"
+  dependencies:
+    lodash-es: ^4.17.21
+    semver: ^7.3.7
+    uuid: ^8.3.2
+    yup: ^0.32.11
+  peerDependencies:
+    react: ^17 || ^18
+  checksum: 7254e400db038897306c1187321dc06f42818820d68c64359861fc4ced5d67b25ee11586ef4ec83d1e8f11b9d54da1b7cae96fbeed89ef17fa5f63c5836dd6ef
+  languageName: node
+  linkType: hard
+
+"@openshift/dynamic-plugin-sdk@npm:^4.0.0":
+  version: 4.0.0
+  resolution: "@openshift/dynamic-plugin-sdk@npm:4.0.0"
+  dependencies:
+    lodash: ^4.17.21
+    semver: ^7.3.7
+    uuid: ^8.3.2
+    yup: ^0.32.11
+  peerDependencies:
+    react: ^17 || ^18
+  checksum: a8ca8b20bee9bdcff7747e60e09644d468e70aab670f63ec9f124caac05d781ce09023a9a850b542da7b2e293f0fad64d50da629804ec5949f02f855a4c8587b
+  languageName: node
+  linkType: hard
+
 "@opentelemetry/api@npm:^1.0.1, @opentelemetry/api@npm:^1.3.0, @opentelemetry/api@npm:^1.4.1":
   version: 1.4.1
   resolution: "@opentelemetry/api@npm:1.4.1"
@@ -14765,6 +14817,29 @@ __metadata:
     "@sagold/json-pointer": ^5.1.1
     ebnf: ^1.9.1
   checksum: bc9697ae45efce92600185491679379e44d494ed13fdb927984aaade40939e6ab2e6f982cf8b1b8b29ec80df560bab0052a86b349cc0071e0e5feb40c465ba54
+  languageName: node
+  linkType: hard
+
+"@scalprum/core@npm:^0.5.2":
+  version: 0.5.2
+  resolution: "@scalprum/core@npm:0.5.2"
+  dependencies:
+    "@openshift/dynamic-plugin-sdk": ^3.0.0
+  checksum: dfc19b8457ddd82fd0076b3b2f1ce7ce1bf28e28a7a01d7809297fbc3c9ee9ac991777723edee329e3bdfe2c314a2371a3266d0acc21114da2780426ff72bcc1
+  languageName: node
+  linkType: hard
+
+"@scalprum/react-core@npm:^0.5.2":
+  version: 0.5.2
+  resolution: "@scalprum/react-core@npm:0.5.2"
+  dependencies:
+    "@openshift/dynamic-plugin-sdk": ^3.0.0
+    "@scalprum/core": ^0.5.2
+    lodash: ^4.17.0
+  peerDependencies:
+    react: ">=16.8.0 || >=17.0.0"
+    react-dom: ">=16.8.0 || >=17.0.0"
+  checksum: 657df5e6898b9ccffd5e66151a0bfd67e5f13342e1c6fee9ab376043417d545dd327005389449c05b46389107a0a42496dee20289bc69b38608978d125d01ffe
   languageName: node
   linkType: hard
 
@@ -25425,11 +25500,14 @@ __metadata:
     "@material-ui/icons": ^4.9.1
     "@material-ui/lab": 4.0.0-alpha.61
     "@octokit/rest": ^19.0.3
+    "@openshift/dynamic-plugin-sdk": ^4.0.0
     "@oriflame/backstage-plugin-score-card": ^0.7.0
     "@roadiehq/backstage-plugin-buildkite": ^2.0.8
     "@roadiehq/backstage-plugin-github-insights": ^2.0.5
     "@roadiehq/backstage-plugin-github-pull-requests": ^2.2.7
     "@roadiehq/backstage-plugin-travis-ci": ^2.0.5
+    "@scalprum/core": ^0.5.2
+    "@scalprum/react-core": ^0.5.2
     "@testing-library/cypress": ^9.0.0
     "@testing-library/dom": ^8.0.0
     "@testing-library/jest-dom": ^5.10.1
@@ -31707,7 +31785,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"lodash@npm:4.17.21, lodash@npm:^4.15.0, lodash@npm:^4.17.10, lodash@npm:^4.17.11, lodash@npm:^4.17.14, lodash@npm:^4.17.15, lodash@npm:^4.17.19, lodash@npm:^4.17.20, lodash@npm:^4.17.21, lodash@npm:^4.17.4, lodash@npm:^4.7.0, lodash@npm:~4.17.0, lodash@npm:~4.17.15, lodash@npm:~4.17.21":
+"lodash@npm:4.17.21, lodash@npm:^4.15.0, lodash@npm:^4.17.0, lodash@npm:^4.17.10, lodash@npm:^4.17.11, lodash@npm:^4.17.14, lodash@npm:^4.17.15, lodash@npm:^4.17.19, lodash@npm:^4.17.20, lodash@npm:^4.17.21, lodash@npm:^4.17.4, lodash@npm:^4.7.0, lodash@npm:~4.17.0, lodash@npm:~4.17.15, lodash@npm:~4.17.21":
   version: 4.17.21
   resolution: "lodash@npm:4.17.21"
   checksum: eb835a2e51d381e561e508ce932ea50a8e5a68f4ebdd771ea240d3048244a8d13658acbd502cd4829768c56f2e16bdd4340b9ea141297d472517b83868e677f7
