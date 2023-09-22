@@ -209,18 +209,18 @@ export function createInstances(options: {
   function createInstance(
     instanceParams: ExtensionInstanceParameters,
   ): ExtensionInstance {
-    const existingInstance = instances.get(instanceParams.extension.id);
+    const extensionId = instanceParams.extension.id;
+    const existingInstance = instances.get(extensionId);
     if (existingInstance) {
       return existingInstance;
     }
 
     const attachments = new Map(
-      Array.from(
-        attachmentMap.get(instanceParams.extension.id)?.entries() ?? [],
-      ).map(([inputName, attachmentConfigs]) => [
-        inputName,
-        attachmentConfigs.map(createInstance),
-      ]),
+      Array.from(attachmentMap.get(extensionId)?.entries() ?? []).map(
+        ([inputName, attachmentConfigs]) => {
+          return [inputName, attachmentConfigs.map(createInstance)];
+        },
+      ),
     );
 
     const newInstance = createExtensionInstance({
@@ -230,7 +230,7 @@ export function createInstances(options: {
       attachments,
     });
 
-    instances.set(instanceParams.extension.id, newInstance);
+    instances.set(extensionId, newInstance);
 
     return newInstance;
   }
