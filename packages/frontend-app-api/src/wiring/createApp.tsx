@@ -282,7 +282,11 @@ export function createApp(options: {
     const appContext = createLegacyAppContext(allPlugins);
 
     const rootElements = rootInstances
-      .map(e => e.getData(coreExtensionData.reactElement))
+      .map(e => (
+        <React.Fragment key={e.id}>
+          {e.getData(coreExtensionData.reactElement)}
+        </React.Fragment>
+      ))
       .filter((x): x is JSX.Element => !!x);
 
     const App = () => (
