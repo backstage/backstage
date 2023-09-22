@@ -77,13 +77,7 @@ export class TaskWorker {
           }
 
           while (!options?.signal?.aborted) {
-            const startTime = process.hrtime();
             const runResult = await this.runOnce(options?.signal);
-            const delta = process.hrtime(startTime);
-            const endTime = delta[0] + delta[1] / 1e9;
-
-            this.duration.record(endTime, { task_id: this.taskId });
-            this.counter.add(1, { task_id: this.taskId, result: 'completed' });
 
             if (runResult.result === 'abort') {
               break;
@@ -100,7 +94,6 @@ export class TaskWorker {
           this.logger.warn(
             `Task worker failed unexpectedly, attempt number ${attemptNum}, ${e}`,
           );
-          this.counter.add(1, { task_id: this.taskId, result: 'failed' });
           await sleep(Duration.fromObject({ seconds: 1 }));
         }
       }
@@ -164,10 +157,17 @@ export class TaskWorker {
     }, Duration.fromISO(taskSettings.timeoutAfterDuration).as('milliseconds'));
 
     try {
+      const startTime = process.hrtime();
       await this.fn(taskAbortController.signal);
+      const delta = process.hrtime(startTime);
+      const endTime = delta[0] + delta[1] / 1e9;
+
+      this.duration.record(endTime, { task_id: this.taskId });
+      this.counter.add(1, { task_id: this.taskId, result: 'completed' });
       taskAbortController.abort(); // releases resources
     } catch (e) {
       this.logger.error(e);
+      this.counter.add(1, { task_id: this.taskId, result: 'failed' });
       await this.tryReleaseTask(ticket, taskSettings);
       return { result: 'failed' };
     } finally {
