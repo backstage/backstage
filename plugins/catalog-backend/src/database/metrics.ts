@@ -26,7 +26,7 @@ export function initDatabaseMetrics(knex: Knex) {
   return {
     entities_count_prom: createGaugeMetric({
       name: 'catalog_entities_count',
-      help: 'Total amount of entities in the catalog',
+      help: 'Total amount of entities in the catalog. DEPRECATED: Please use opentelemetry metrics instead.',
       labelNames: ['kind'],
       async collect() {
         const result = await knex<DbRefreshStateRow>('refresh_state').select(
@@ -52,7 +52,7 @@ export function initDatabaseMetrics(knex: Knex) {
     }),
     registered_locations_prom: createGaugeMetric({
       name: 'catalog_registered_locations_count',
-      help: 'Total amount of registered locations in the catalog',
+      help: 'Total amount of registered locations in the catalog. DEPRECATED: Please use opentelemetry metrics instead.',
       async collect() {
         const total = await knex<DbLocationsRow>('locations').count({
           count: '*',
@@ -62,7 +62,7 @@ export function initDatabaseMetrics(knex: Knex) {
     }),
     relations_prom: createGaugeMetric({
       name: 'catalog_relations_count',
-      help: 'Total amount of relations between entities',
+      help: 'Total amount of relations between entities. DEPRECATED: Please use opentelemetry metrics instead.',
       async collect() {
         const total = await knex<DbRelationsRow>('relations').count({
           count: '*',
