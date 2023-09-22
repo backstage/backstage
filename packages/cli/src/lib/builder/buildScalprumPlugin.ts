@@ -1,5 +1,5 @@
 /*
- * Copyright 2020 The Backstage Authors
+ * Copyright 2023 The Backstage Authors
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -13,33 +13,30 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
-import fs from 'fs-extra';
-import { resolve as resolvePath } from 'path';
 import { PluginBuildMetadata } from '@openshift/dynamic-plugin-sdk-webpack';
-import { buildBundle } from '../../lib/bundler';
-import { getEnvironmentParallelism } from '../../lib/parallel';
-import { loadCliConfig } from '../../lib/config';
 
-interface BuildAppOptions {
+import { buildScalprumBundle } from '../bundler/bundlePlugin';
+import { loadCliConfig } from '../config';
+import { getEnvironmentParallelism } from '../parallel';
+
+interface BuildScalprumPluginOptions {
   targetDir: string;
   writeStats: boolean;
   configPaths: string[];
-  pluginMetadata?: PluginBuildMetadata;
+  pluginMetadata: PluginBuildMetadata;
+  fromPackage: string;
 }
 
-export async function buildFrontend(options: BuildAppOptions) {
-  const { targetDir, writeStats, configPaths, pluginMetadata } = options;
-  const { name } = await fs.readJson(resolvePath(targetDir, 'package.json'));
-  await buildBundle({
+export async function buildScalprumPlugin(options: BuildScalprumPluginOptions) {
+  const { targetDir, pluginMetadata, fromPackage } = options;
+  await buildScalprumBundle({
     targetDir,
     entry: 'src/index',
     parallelism: getEnvironmentParallelism(),
-    statsJsonEnabled: writeStats,
     pluginMetadata,
     ...(await loadCliConfig({
-      args: configPaths,
-      fromPackage: name,
+      args: [],
+      fromPackage,
     })),
   });
 }
