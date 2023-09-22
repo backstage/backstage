@@ -244,10 +244,10 @@ export class MockDirectory {
       }
 
       if (entry.type === 'dir') {
-        fs.ensureDirSync(fullPath);
+        fs.ensureDirSync(fullPath, { mode: 0o777 });
       } else if (entry.type === 'file') {
-        fs.ensureDirSync(dirname(fullPath));
-        fs.writeFileSync(fullPath, entry.content);
+        fs.ensureDirSync(dirname(fullPath), { mode: 0o777 });
+        fs.writeFileSync(fullPath, entry.content, { mode: 0o666 });
       }
     }
   }
