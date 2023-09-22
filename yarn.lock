@@ -12,7 +12,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@adobe/css-tools@npm:^4.3.1":
+"@adobe/css-tools@npm:^4.0.1, @adobe/css-tools@npm:^4.3.1":
   version: 4.3.1
   resolution: "@adobe/css-tools@npm:4.3.1"
   checksum: ad43456379ff391132aff687ece190cb23ea69395e23c9b96690eeabe2468da89a4aaf266e4f8b6eaab53db3d1064107ce0f63c3a974e864f4a04affc768da3f
@@ -6619,6 +6619,30 @@ __metadata:
     react: ^16.13.1 || ^17.0.0 || ^18.0.0
     react-dom: ^16.13.1 || ^17.0.0 || ^18.0.0
     react-router-dom: 6.0.0-beta.0 || ^6.3.0
+  languageName: unknown
+  linkType: soft
+
+"@backstage/plugin-dynamic-frontend-plugin-sample@workspace:plugins/dynamic-frontend-plugin-sample":
+  version: 0.0.0-use.local
+  resolution: "@backstage/plugin-dynamic-frontend-plugin-sample@workspace:plugins/dynamic-frontend-plugin-sample"
+  dependencies:
+    "@backstage/cli": "workspace:^"
+    "@backstage/core-app-api": "workspace:^"
+    "@backstage/core-components": "workspace:^"
+    "@backstage/core-plugin-api": "workspace:^"
+    "@backstage/dev-utils": "workspace:^"
+    "@backstage/test-utils": "workspace:^"
+    "@backstage/theme": "workspace:^"
+    "@material-ui/core": ^4.9.13
+    "@material-ui/icons": ^4.9.1
+    "@material-ui/lab": ^4.0.0-alpha.60
+    "@testing-library/jest-dom": ^5.10.1
+    "@testing-library/react": ^12.1.3
+    "@testing-library/user-event": ^14.0.0
+    msw: ^1.0.0
+    react-use: ^17.2.4
+  peerDependencies:
+    react: ^16.13.1 || ^17.0.0
   languageName: unknown
   linkType: soft
 
@@ -17958,6 +17982,23 @@ __metadata:
     lz-string: ^1.5.0
     pretty-format: ^27.0.2
   checksum: 34e0a564da7beb92aa9cc44a9080221e2412b1a132eb37be3d513fe6c58027674868deb9f86195756d98d15ba969a30fe00632a4e26e25df2a5a4f6ac0686e37
+  languageName: node
+  linkType: hard
+
+"@testing-library/jest-dom@npm:^5.10.1":
+  version: 5.17.0
+  resolution: "@testing-library/jest-dom@npm:5.17.0"
+  dependencies:
+    "@adobe/css-tools": ^4.0.1
+    "@babel/runtime": ^7.9.2
+    "@types/testing-library__jest-dom": ^5.9.1
+    aria-query: ^5.0.0
+    chalk: ^3.0.0
+    css.escape: ^1.5.1
+    dom-accessibility-api: ^0.5.6
+    lodash: ^4.17.15
+    redent: ^3.0.0
+  checksum: 9f28dbca8b50d7c306aae40c3aa8e06f0e115f740360004bd87d57f95acf7ab4b4f4122a7399a76dbf2bdaaafb15c99cc137fdcb0ae457a92e2de0f3fbf9b03b
   languageName: node
   linkType: hard
 
