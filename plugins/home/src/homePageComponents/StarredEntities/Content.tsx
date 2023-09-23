@@ -20,7 +20,11 @@ import {
   entityRouteParams,
   entityRouteRef,
 } from '@backstage/plugin-catalog-react';
-import { parseEntityRef, stringifyEntityRef } from '@backstage/catalog-model';
+import {
+  Entity,
+  parseEntityRef,
+  stringifyEntityRef,
+} from '@backstage/catalog-model';
 import { useApi, useRouteRef } from '@backstage/core-plugin-api';
 import { Link, Progress, ResponseErrorPanel } from '@backstage/core-components';
 import {
@@ -87,37 +91,55 @@ export const Content = (props: {
   if (entities.loading) {
     return <Progress />;
   }
+  const groupedEntities: { [kind: string]: Entity[] } = {};
+
+  entities.value?.forEach(entity => {
+    const kind = entity.kind;
+    if (!groupedEntities[kind]) {
+      groupedEntities[kind] = [];
+    }
+    groupedEntities[kind].push(entity);
+  });
+
+  const entityEntries = Object.entries(groupedEntities);
 
   return entities.error ? (
     <ResponseErrorPanel error={entities.error} />
   ) : (
-    <List>
-      {entities.value
-        ?.sort((a, b) =>
-          (a.metadata.title ?? a.metadata.name).localeCompare(
-            b.metadata.title ?? b.metadata.name,
-          ),
-        )
-        .map(entity => (
-          <ListItem key={stringifyEntityRef(entity)}>
-            <Link to={catalogEntityRoute(entityRouteParams(entity))}>
-              <ListItemText
-                primary={entity.metadata.title ?? entity.metadata.name}
-              />
-            </Link>
-            <ListItemSecondaryAction>
-              <Tooltip title="Remove from starred">
-                <IconButton
-                  edge="end"
-                  aria-label="unstar"
-                  onClick={() => toggleStarredEntity(entity)}
-                >
-                  <StarIcon style={{ color: '#f3ba37' }} />
-                </IconButton>
-              </Tooltip>
-            </ListItemSecondaryAction>
-          </ListItem>
-        ))}
-    </List>
+    <div>
+      {entityEntries.map(([kind, entitiesByKind]) => (
+        <div key={kind}>
+          <Typography variant="h6">{kind}</Typography> {/* Kind as Title */}
+          <List>
+            {entitiesByKind
+              ?.sort((a, b) =>
+                (a.metadata.title ?? a.metadata.name).localeCompare(
+                  b.metadata.title ?? b.metadata.name,
+                ),
+              )
+              .map(entity => (
+                <ListItem key={stringifyEntityRef(entity)}>
+                  <Link to={catalogEntityRoute(entityRouteParams(entity))}>
+                    <ListItemText
+                      primary={entity.metadata.title ?? entity.metadata.name}
+                    />
+                  </Link>
+                  <ListItemSecondaryAction>
+                    <Tooltip title="Remove from starred">
+                      <IconButton
+                        edge="end"
+                        aria-label="unstar"
+                        onClick={() => toggleStarredEntity(entity)}
+                      >
+                        <StarIcon style={{ color: '#f3ba37' }} />
+                      </IconButton>
+                    </Tooltip>
+                  </ListItemSecondaryAction>
+                </ListItem>
+              ))}
+          </List>
+        </div>
+      ))}
+    </div>
   );
 };
