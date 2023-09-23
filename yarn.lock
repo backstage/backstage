@@ -3809,6 +3809,7 @@ __metadata:
     eslint-plugin-react: ^7.28.0
     eslint-plugin-react-hooks: ^4.3.0
     eslint-webpack-plugin: ^3.1.1
+    estree-walker: ^2.0.1
     express: ^4.17.1
     fork-ts-checker-webpack-plugin: ^7.0.0-alpha.8
     fs-extra: 10.1.0
@@ -3824,6 +3825,7 @@ __metadata:
     jest-runtime: ^29.0.2
     json-schema: ^0.4.0
     lodash: ^4.17.21
+    magic-string: ^0.27.0
     mini-css-extract-plugin: ^2.4.2
     minimatch: ^5.1.1
     mock-fs: ^5.2.0
@@ -3843,6 +3845,7 @@ __metadata:
     rollup-plugin-dts: ^4.0.1
     rollup-plugin-esbuild: ^4.7.2
     rollup-plugin-postcss: ^4.0.0
+    rollup-plugin-strip-exports: ^2.0.7
     rollup-pluginutils: ^2.8.2
     run-script-webpack-plugin: ^0.2.0
     semver: ^7.5.3
@@ -19895,7 +19898,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"astring@npm:^1.8.1":
+"astring@npm:^1.4.3, astring@npm:^1.8.1":
   version: 1.8.6
   resolution: "astring@npm:1.8.6"
   bin:
@@ -31904,12 +31907,12 @@ __metadata:
   languageName: node
   linkType: hard
 
-"magic-string@npm:^0.25.7":
-  version: 0.25.7
-  resolution: "magic-string@npm:0.25.7"
+"magic-string@npm:^0.25.4, magic-string@npm:^0.25.7":
+  version: 0.25.9
+  resolution: "magic-string@npm:0.25.9"
   dependencies:
-    sourcemap-codec: ^1.4.4
-  checksum: 727a1fb70f9610304fe384f1df0251eb7d1d9dd779c07ef1225690361b71b216f26f5d934bfb11c919b5b0e7ba50f6240c823a6f2e44cfd33d4a07d7747ca829
+    sourcemap-codec: ^1.4.8
+  checksum: 9a0e55a15c7303fc360f9572a71cffba1f61451bc92c5602b1206c9d17f492403bf96f946dfce7483e66822d6b74607262e24392e87b0ac27b786e69a40e9b1a
   languageName: node
   linkType: hard
 
@@ -38397,6 +38400,18 @@ __metadata:
   languageName: node
   linkType: hard
 
+"rollup-plugin-strip-exports@npm:^2.0.7":
+  version: 2.0.7
+  resolution: "rollup-plugin-strip-exports@npm:2.0.7"
+  dependencies:
+    astring: ^1.4.3
+    estree-walker: ^2.0.1
+    magic-string: ^0.25.4
+    rollup-pluginutils: ^2.8.2
+  checksum: 4cdb7399fdda7632563dd8bfb0b40c023421f282726dff99e096ddc3e1360044790ae91a11b57b94585a9f060e622ad092628d4f22942b809722772bd8227ae7
+  languageName: node
+  linkType: hard
+
 "rollup-pluginutils@npm:^2.8.2":
   version: 2.8.2
   resolution: "rollup-pluginutils@npm:2.8.2"
@@ -39444,7 +39459,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"sourcemap-codec@npm:^1.4.4, sourcemap-codec@npm:^1.4.8":
+"sourcemap-codec@npm:^1.4.8":
   version: 1.4.8
   resolution: "sourcemap-codec@npm:1.4.8"
   checksum: b57981c05611afef31605732b598ccf65124a9fcb03b833532659ac4d29ac0f7bfacbc0d6c5a28a03e84c7510e7e556d758d0bb57786e214660016fb94279316

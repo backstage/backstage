@@ -68,3 +68,5 @@ If all you need is a static list of endpoints, the plugin exports a `GraphQLEndp
 +       ]),
 +   }),
 ```
+
+<!-- @backstage-docgen -->
