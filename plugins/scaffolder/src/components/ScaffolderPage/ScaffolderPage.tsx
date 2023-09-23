@@ -40,6 +40,9 @@ import { usePermission } from '@backstage/plugin-permission-react';
 import { ScaffolderPageContextMenu } from './ScaffolderPageContextMenu';
 import { registerComponentRouteRef } from '../../routes';
 
+import { useTranslationRef } from '@backstage/core-plugin-api/alpha';
+import { scaffolderTranslationRef } from '../../translation';
+
 export type ScaffolderPageProps = {
   TemplateCardComponent?:
     | ComponentType<{ template: TemplateEntityV1beta3 }>
@@ -68,9 +71,11 @@ export const ScaffolderPageContents = ({
   contextMenu,
   headerOptions,
 }: ScaffolderPageProps) => {
+  const { t } = useTranslationRef(scaffolderTranslationRef);
+
   const registerComponentLink = useRouteRef(registerComponentRouteRef);
   const otherTemplatesGroup = {
-    title: groups ? 'Other Templates' : 'Templates',
+    title: groups ? t('other_templates') : t('templates'),
     filter: (entity: TemplateEntityV1beta3) => {
       const filtered = (groups ?? []).map(group => group.filter(entity));
       return !filtered.some(result => result === true);
@@ -84,26 +89,22 @@ export const ScaffolderPageContents = ({
   return (
     <Page themeId="home">
       <Header
-        pageTitleOverride="Create a New Component"
-        title="Create a New Component"
-        subtitle="Create new software components using standard templates"
+        pageTitleOverride={t('create_a_new_component')}
+        title={t('create_a_new_component')}
+        subtitle={t('create_new_software_components_using_standard_templates')}
         {...headerOptions}
       >
         <ScaffolderPageContextMenu {...contextMenu} />
       </Header>
       <Content>
-        <ContentHeader title="Available Templates">
+        <ContentHeader title={t('available_templates')}>
           {allowed && (
             <CreateButton
-              title="Register Existing Component"
+              title={t('register_existing_component')}
               to={registerComponentLink && registerComponentLink()}
             />
           )}
-          <SupportButton>
-            Create new software components using standard templates. Different
-            templates create different kinds of components (services, websites,
-            documentation, ...).
-          </SupportButton>
+          <SupportButton>{t('scaffolder_page_support_button')}</SupportButton>
         </ContentHeader>
 
         <CatalogFilterLayout>

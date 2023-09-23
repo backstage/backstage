@@ -20,12 +20,16 @@ import FormHelperText from '@material-ui/core/FormHelperText';
 import Input from '@material-ui/core/Input';
 import InputLabel from '@material-ui/core/InputLabel';
 
+import { useTranslationRef } from '@backstage/core-plugin-api/alpha';
+import { scaffolderTranslationRef } from '../../../translation';
+
 export const RepoUrlPickerRepoName = (props: {
   repoName?: string;
   allowedRepos?: string[];
   onChange: (host: string) => void;
   rawErrors: string[];
 }) => {
+  const { t } = useTranslationRef(scaffolderTranslationRef);
   const { repoName, allowedRepos, onChange, rawErrors } = props;
 
   useEffect(() => {
@@ -40,7 +44,7 @@ export const RepoUrlPickerRepoName = (props: {
 
   const repoItems: SelectItem[] = allowedRepos
     ? allowedRepos.map(i => ({ label: i, value: i }))
-    : [{ label: 'Loading...', value: 'loading' }];
+    : [{ label: t('loading'), value: 'loading' }];
 
   return (
     <>
@@ -52,7 +56,7 @@ export const RepoUrlPickerRepoName = (props: {
         {allowedRepos?.length ? (
           <Select
             native
-            label="Repositories Available"
+            label={t('repositories_available')}
             onChange={selected =>
               String(Array.isArray(selected) ? selected[0] : selected)
             }
@@ -62,7 +66,7 @@ export const RepoUrlPickerRepoName = (props: {
           />
         ) : (
           <>
-            <InputLabel htmlFor="repoNameInput">Repository</InputLabel>
+            <InputLabel htmlFor="repoNameInput">{t('repository')}</InputLabel>
             <Input
               id="repoNameInput"
               onChange={e => onChange(String(e.target.value))}
@@ -70,7 +74,7 @@ export const RepoUrlPickerRepoName = (props: {
             />
           </>
         )}
-        <FormHelperText>The name of the repository</FormHelperText>
+        <FormHelperText>{t('the_name_of_the_repository')}</FormHelperText>
       </FormControl>
     </>
   );

@@ -15,11 +15,11 @@
  */
 
 import React from 'react';
-import { render, waitFor } from '@testing-library/react';
+import { waitFor } from '@testing-library/react';
 import { CatalogApi } from '@backstage/catalog-client';
 import { FieldProps } from '@rjsf/core';
 import { MyGroupsPicker } from './MyGroupsPicker';
-import { TestApiProvider } from '@backstage/test-utils';
+import { TestApiProvider, renderInTestApp } from '@backstage/test-utils';
 import { catalogApiRef } from '@backstage/plugin-catalog-react';
 import { Entity } from '@backstage/catalog-model';
 import {
@@ -111,7 +111,7 @@ describe('<MyGroupsPicker />', () => {
       required,
     } as unknown as FieldProps<any>;
 
-    render(
+    renderInTestApp(
       <TestApiProvider
         apis={[
           [identityApiRef, mockIdentityApi],
@@ -183,7 +183,7 @@ describe('<MyGroupsPicker />', () => {
       required,
     } as unknown as FieldProps<any>;
 
-    const { queryByText, getByRole } = render(
+    const { queryByText, getByRole } = await renderInTestApp(
       <TestApiProvider
         apis={[
           [identityApiRef, mockIdentityApi],
@@ -212,7 +212,7 @@ describe('<MyGroupsPicker />', () => {
       expect(group2Element).toBeInTheDocument();
     });
 
-    // Assert that 'group3' is not rendered in the component
+    // Assert that 'group3' is not renderInTestApped in the component
     expect(queryByText('group3')).not.toBeInTheDocument();
   });
 
@@ -240,7 +240,7 @@ describe('<MyGroupsPicker />', () => {
       required,
     } as unknown as FieldProps<any>;
 
-    const { getByRole } = render(
+    const { getByRole } = await renderInTestApp(
       <TestApiProvider
         apis={[
           [identityApiRef, mockIdentityApi],

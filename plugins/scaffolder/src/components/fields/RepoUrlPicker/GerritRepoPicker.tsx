@@ -20,37 +20,43 @@ import Input from '@material-ui/core/Input';
 import InputLabel from '@material-ui/core/InputLabel';
 import { RepoUrlPickerState } from './types';
 
+import { useTranslationRef } from '@backstage/core-plugin-api/alpha';
+import { scaffolderTranslationRef } from '../../../translation';
+
 export const GerritRepoPicker = (props: {
   onChange: (state: RepoUrlPickerState) => void;
   state: RepoUrlPickerState;
   rawErrors: string[];
 }) => {
+  const { t } = useTranslationRef(scaffolderTranslationRef);
   const { onChange, rawErrors, state } = props;
   const { workspace, owner } = state;
   return (
     <>
       <FormControl margin="normal" error={rawErrors?.length > 0 && !workspace}>
-        <InputLabel htmlFor="ownerInput">Owner</InputLabel>
+        <InputLabel htmlFor="ownerInput">{t('owner')}</InputLabel>
         <Input
           id="ownerInput"
           onChange={e => onChange({ owner: e.target.value })}
           value={owner}
         />
-        <FormHelperText>The owner of the project (optional)</FormHelperText>
+        <FormHelperText>
+          {t('repo_picker_project_help_text_optional')}
+        </FormHelperText>
       </FormControl>
       <FormControl
         margin="normal"
         required
         error={rawErrors?.length > 0 && !workspace}
       >
-        <InputLabel htmlFor="parentInput">Parent</InputLabel>
+        <InputLabel htmlFor="parentInput">{t('parent')}</InputLabel>
         <Input
           id="parentInput"
           onChange={e => onChange({ workspace: e.target.value })}
           value={workspace}
         />
         <FormHelperText>
-          The project parent that the repo will belong to
+          {t('repo_picker_project_parent_help_text')}
         </FormHelperText>
       </FormControl>
     </>

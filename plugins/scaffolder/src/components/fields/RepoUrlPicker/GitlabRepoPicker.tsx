@@ -21,6 +21,9 @@ import InputLabel from '@material-ui/core/InputLabel';
 import { Select, SelectItem } from '@backstage/core-components';
 import { RepoUrlPickerState } from './types';
 
+import { useTranslationRef } from '@backstage/core-plugin-api/alpha';
+import { scaffolderTranslationRef } from '../../../translation';
+
 export const GitlabRepoPicker = (props: {
   allowedOwners?: string[];
   allowedRepos?: string[];
@@ -28,10 +31,11 @@ export const GitlabRepoPicker = (props: {
   onChange: (state: RepoUrlPickerState) => void;
   rawErrors: string[];
 }) => {
+  const { t } = useTranslationRef(scaffolderTranslationRef);
   const { allowedOwners = [], state, onChange, rawErrors } = props;
   const ownerItems: SelectItem[] = allowedOwners
     ? allowedOwners.map(i => ({ label: i, value: i }))
-    : [{ label: 'Loading...', value: 'loading' }];
+    : [{ label: t('loading'), value: 'loading' }];
 
   const { owner } = state;
 
@@ -45,7 +49,7 @@ export const GitlabRepoPicker = (props: {
         {allowedOwners?.length ? (
           <Select
             native
-            label="Owner Available"
+            label={t('owner_available')}
             onChange={selected =>
               onChange({
                 owner: String(Array.isArray(selected) ? selected[0] : selected),
@@ -57,7 +61,7 @@ export const GitlabRepoPicker = (props: {
           />
         ) : (
           <>
-            <InputLabel htmlFor="ownerInput">Owner</InputLabel>
+            <InputLabel htmlFor="ownerInput">{t('owner')}</InputLabel>
             <Input
               id="ownerInput"
               onChange={e => onChange({ owner: e.target.value })}
@@ -65,10 +69,7 @@ export const GitlabRepoPicker = (props: {
             />
           </>
         )}
-        <FormHelperText>
-          GitLab namespace where this repository will belong to. It can be the
-          name of organization, group, subgroup, user, or the project.
-        </FormHelperText>
+        <FormHelperText>{t('repo_picker_gitlab_help_text')}</FormHelperText>
       </FormControl>
     </>
   );

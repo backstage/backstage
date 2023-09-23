@@ -21,16 +21,20 @@ import InputLabel from '@material-ui/core/InputLabel';
 import { Select, SelectItem } from '@backstage/core-components';
 import { RepoUrlPickerState } from './types';
 
+import { useTranslationRef } from '@backstage/core-plugin-api/alpha';
+import { scaffolderTranslationRef } from '../../../translation';
+
 export const GithubRepoPicker = (props: {
   allowedOwners?: string[];
   rawErrors: string[];
   state: RepoUrlPickerState;
   onChange: (state: RepoUrlPickerState) => void;
 }) => {
+  const { t } = useTranslationRef(scaffolderTranslationRef);
   const { allowedOwners = [], rawErrors, state, onChange } = props;
   const ownerItems: SelectItem[] = allowedOwners
     ? allowedOwners.map(i => ({ label: i, value: i }))
-    : [{ label: 'Loading...', value: 'loading' }];
+    : [{ label: t('loading'), value: 'loading' }];
 
   const { owner } = state;
 
@@ -44,7 +48,7 @@ export const GithubRepoPicker = (props: {
         {allowedOwners?.length ? (
           <Select
             native
-            label="Owner Available"
+            label={t('owner_available')}
             onChange={s =>
               onChange({ owner: String(Array.isArray(s) ? s[0] : s) })
             }
@@ -54,7 +58,7 @@ export const GithubRepoPicker = (props: {
           />
         ) : (
           <>
-            <InputLabel htmlFor="ownerInput">Owner</InputLabel>
+            <InputLabel htmlFor="ownerInput">{t('owner')}</InputLabel>
             <Input
               id="ownerInput"
               onChange={e => onChange({ owner: e.target.value })}
@@ -62,9 +66,7 @@ export const GithubRepoPicker = (props: {
             />
           </>
         )}
-        <FormHelperText>
-          The organization, user or project that this repo will belong to
-        </FormHelperText>
+        <FormHelperText>{t('repo_picker_github_help_text')}</FormHelperText>
       </FormControl>
     </>
   );
