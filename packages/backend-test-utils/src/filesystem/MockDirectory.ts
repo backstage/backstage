@@ -330,7 +330,7 @@ export class MockDirectory {
    * Removes the mock directory and all its contents.
    */
   remove = (): void => {
-    fs.rmSync(this.#root, { recursive: true, force: true, maxRetries: 3 });
+    fs.removeSync(this.#root);
   };
 
   #transformInput(input: MockDirectoryContent[string]): MockEntry[] {
