@@ -21,3 +21,4 @@ export {
 } from './next';
 
 export * from './legacy';
+export * from './translation';

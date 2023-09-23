@@ -22,6 +22,7 @@ export const entityNamePickerValidation = (
   validation: FieldValidation,
 ) => {
   if (!KubernetesValidatorFunctions.isValidObjectName(value)) {
+    // TODO I need access to i18n object to translate this. Hooks can't be called outside a Component Lifecycle
     validation.addError(
       'Must start and end with an alphanumeric character, and contain only alphanumeric characters, hyphens, underscores, and periods. Maximum length is 63 characters.',
     );

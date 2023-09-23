@@ -21,6 +21,9 @@ import InputLabel from '@material-ui/core/InputLabel';
 import { Select, SelectItem } from '@backstage/core-components';
 import { RepoUrlPickerState } from './types';
 
+import { useTranslationRef } from '@backstage/core-plugin-api/alpha';
+import { scaffolderTranslationRef } from '../../../translation';
+
 /**
  * The underlying component that is rendered in the form for the `BitbucketRepoPicker`
  * field extension.
@@ -37,6 +40,8 @@ export const BitbucketRepoPicker = (props: {
   state: RepoUrlPickerState;
   rawErrors: string[];
 }) => {
+  const { t } = useTranslationRef(scaffolderTranslationRef);
+
   const {
     allowedOwners = [],
     allowedProjects = [],
@@ -69,7 +74,7 @@ export const BitbucketRepoPicker = (props: {
           {allowedOwners?.length ? (
             <Select
               native
-              label="Allowed Workspaces"
+              label={t('allowed_workspaces')}
               onChange={s =>
                 onChange({ workspace: String(Array.isArray(s) ? s[0] : s) })
               }
@@ -79,7 +84,7 @@ export const BitbucketRepoPicker = (props: {
             />
           ) : (
             <>
-              <InputLabel htmlFor="workspaceInput">Workspace</InputLabel>
+              <InputLabel htmlFor="workspaceInput">{t('workspace')}</InputLabel>
               <Input
                 id="workspaceInput"
                 onChange={e => onChange({ workspace: e.target.value })}
@@ -88,7 +93,7 @@ export const BitbucketRepoPicker = (props: {
             </>
           )}
           <FormHelperText>
-            The Workspace that this repo will belong to
+            {t('repo_picker_workspace_helper_text')}
           </FormHelperText>
         </FormControl>
       )}
@@ -100,7 +105,7 @@ export const BitbucketRepoPicker = (props: {
         {allowedProjects?.length ? (
           <Select
             native
-            label="Allowed Projects"
+            label={t('allowed_projects')}
             onChange={s =>
               onChange({ project: String(Array.isArray(s) ? s[0] : s) })
             }
@@ -110,7 +115,7 @@ export const BitbucketRepoPicker = (props: {
           />
         ) : (
           <>
-            <InputLabel htmlFor="projectInput">Project</InputLabel>
+            <InputLabel htmlFor="projectInput">{t('project')}</InputLabel>
             <Input
               id="projectInput"
               onChange={e => onChange({ project: e.target.value })}
@@ -118,9 +123,7 @@ export const BitbucketRepoPicker = (props: {
             />
           </>
         )}
-        <FormHelperText>
-          The Project that this repo will belong to
-        </FormHelperText>
+        <FormHelperText>{t('repo_picker_project_help_text')}</FormHelperText>
       </FormControl>
     </>
   );

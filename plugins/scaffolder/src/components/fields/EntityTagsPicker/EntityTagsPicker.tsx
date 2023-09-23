@@ -26,6 +26,9 @@ import { EntityTagsPickerProps } from './schema';
 
 export { EntityTagsPickerSchema } from './schema';
 
+import { useTranslationRef } from '@backstage/core-plugin-api/alpha';
+import { scaffolderTranslationRef } from '../../../translation';
+
 /**
  * The underlying component that is rendered in the form for the `EntityTagsPicker`
  * field extension.
@@ -33,6 +36,8 @@ export { EntityTagsPickerSchema } from './schema';
  * @public
  */
 export const EntityTagsPicker = (props: EntityTagsPickerProps) => {
+  const { t } = useTranslationRef(scaffolderTranslationRef);
+
   const { formData, onChange, uiSchema } = props;
   const catalogApi = useApi(catalogApiRef);
   const [tagOptions, setTagOptions] = useState<string[]>([]);
@@ -108,13 +113,10 @@ export const EntityTagsPicker = (props: EntityTagsPickerProps) => {
         renderInput={params => (
           <TextField
             {...params}
-            label="Tags"
+            label={t('tags')}
             onChange={e => setInputValue(e.target.value)}
             error={inputError}
-            helperText={
-              helperText ??
-              "Add any relevant tags, hit 'Enter' to add new tags. Valid format: [a-z0-9+#] separated by [-], at most 63 characters"
-            }
+            helperText={helperText ?? t('entity_tags_picker_helper_text')}
           />
         )}
       />

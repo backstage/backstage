@@ -26,6 +26,9 @@ import { EntityPickerProps } from '../EntityPicker/schema';
 
 export { OwnedEntityPickerSchema } from './schema';
 
+import { useTranslationRef } from '@backstage/core-plugin-api/alpha';
+import { scaffolderTranslationRef } from '../../../translation';
+
 /**
  * The underlying component that is rendered in the form for the `OwnedEntityPicker`
  * field extension.
@@ -33,8 +36,12 @@ export { OwnedEntityPickerSchema } from './schema';
  * @public
  */
 export const OwnedEntityPicker = (props: OwnedEntityPickerProps) => {
+  const { t } = useTranslationRef(scaffolderTranslationRef);
   const {
-    schema: { title = 'Entity', description = 'An entity from the catalog' },
+    schema: {
+      title = t('entity'),
+      description = t('an_entity_from_the_catalog'),
+    },
     uiSchema,
     required,
   } = props;

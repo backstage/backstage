@@ -58,8 +58,11 @@ In an app you can both override the default messages, as well as register transl
 +      }),
 +      createTranslationResource({
 +        ref: myPluginTranslationRef,
-+        messages: {
++        translations: {
 +          zh: () => import('./translations/zh'),
++          pt: () => Promise.resolve({ default:  {
++            create_component_button_label: 'Criar nova entidade',
++          }})
 +        },
 +      }),
 +    ],

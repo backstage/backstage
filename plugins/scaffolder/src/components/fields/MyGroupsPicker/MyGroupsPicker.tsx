@@ -30,7 +30,11 @@ import { Entity, stringifyEntityRef } from '@backstage/catalog-model';
 
 export { MyGroupsPickerSchema };
 
+import { useTranslationRef } from '@backstage/core-plugin-api/alpha';
+import { scaffolderTranslationRef } from '../../../translation';
+
 export const MyGroupsPicker = (props: MyGroupsPickerProps) => {
+  const { t } = useTranslationRef(scaffolderTranslationRef);
   const {
     schema: { title, description },
     required,
@@ -56,7 +60,7 @@ export const MyGroupsPicker = (props: MyGroupsPickerProps) => {
     const { userEntityRef } = await identityApi.getBackstageIdentity();
 
     if (!userEntityRef) {
-      errorApi.post(new NotFoundError('No user entity ref found'));
+      errorApi.post(new NotFoundError(t('no_user_entity_ref_found')));
       return;
     }
 
