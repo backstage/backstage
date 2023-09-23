@@ -17,12 +17,19 @@
 import { SignInResolver, AuthHandler } from '../types';
 import { OAuthResult } from '../../lib/oauth';
 import { createAuthProviderIntegration } from '../createAuthProviderIntegration';
-import { createOAuthProviderFactory } from '@backstage/plugin-auth-node';
+import {
+  commonSignInResolvers,
+  createOAuthProviderFactory,
+} from '@backstage/plugin-auth-node';
 import {
   adaptLegacyOAuthHandler,
   adaptLegacyOAuthSignInResolver,
+  adaptOAuthSignInResolverToLegacy,
 } from '../../lib/legacy';
-import { microsoftAuthenticator } from '@backstage/plugin-auth-backend-module-microsoft-provider';
+import {
+  microsoftAuthenticator,
+  microsoftSignInResolvers,
+} from '@backstage/plugin-auth-backend-module-microsoft-provider';
 
 /**
  * Auth provider integration for GitLab auth
@@ -50,4 +57,12 @@ export const microsoft = createAuthProviderIntegration({
       signInResolver: adaptLegacyOAuthSignInResolver(options?.signIn?.resolver),
     });
   },
+  resolvers: adaptOAuthSignInResolverToLegacy({
+    emailLocalPartMatchingUserEntityName:
+      commonSignInResolvers.emailLocalPartMatchingUserEntityName(),
+    emailMatchingUserEntityProfileEmail:
+      commonSignInResolvers.emailMatchingUserEntityProfileEmail(),
+    emailMatchingUserEntityAnnotation:
+      microsoftSignInResolvers.emailMatchingUserEntityAnnotation(),
+  }),
 });

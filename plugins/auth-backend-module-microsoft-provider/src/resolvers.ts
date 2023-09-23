@@ -15,8 +15,8 @@
  */
 
 import {
-  createSignInResolverFactory,
   OAuthAuthenticatorResult,
+  createSignInResolverFactory,
   PassportProfile,
   SignInInfo,
 } from '@backstage/plugin-auth-node';
@@ -30,7 +30,7 @@ export namespace microsoftSignInResolvers {
   /**
    * Looks up the user by matching their Microsoft username to the entity name.
    */
-  export const commonByEmailLocalPartResolver = createSignInResolverFactory({
+  export const emailMatchingUserEntityAnnotation = createSignInResolverFactory({
     create() {
       return async (
         info: SignInInfo<OAuthAuthenticatorResult<PassportProfile>>,
@@ -39,36 +39,12 @@ export namespace microsoftSignInResolvers {
         const { profile } = info;
 
         if (!profile.email) {
-          throw new Error(
-            'Login failed, user profile does not contain an email',
-          );
-        }
-        const [localPart] = profile.email.split('@');
-
-        return ctx.signInWithCatalogUser({
-          entityRef: { name: localPart },
-        });
-      };
-    },
-  });
-
-  export const commonByEmailResolver = createSignInResolverFactory({
-    create() {
-      return async (
-        info: SignInInfo<OAuthAuthenticatorResult<PassportProfile>>,
-        ctx,
-      ) => {
-        const { profile } = info;
-
-        if (!profile.email) {
-          throw new Error(
-            'Login failed, user profile does not contain an email',
-          );
+          throw new Error('Microsoft profile contained no email');
         }
 
         return ctx.signInWithCatalogUser({
-          filter: {
-            'spec.profile.email': profile.email,
+          annotations: {
+            'microsoft.com/email': profile.email,
           },
         });
       };
