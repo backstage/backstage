@@ -238,7 +238,7 @@ export class MockDirectory {
       const fullPath = resolvePath(this.#root, entry.path);
       if (!isChildPath(this.#root, fullPath)) {
         throw new Error(
-          `Provided path must resolve to a child path of the mock directory, got '${entry.path}'`,
+          `Provided path must resolve to a child path of the mock directory, got '${fullPath}'`,
         );
       }
 
