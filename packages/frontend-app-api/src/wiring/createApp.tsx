@@ -314,7 +314,6 @@ function toLegacyPlugin(plugin: BackstagePlugin): LegacyBackstagePlugin {
     getApis: notImplemented,
     getFeatureFlags: notImplemented,
     provide: notImplemented,
-    __experimentalReconfigure: notImplemented,
   };
 }
 
