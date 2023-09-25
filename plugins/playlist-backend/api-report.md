@@ -33,9 +33,6 @@ export const createPlaylistConditionalDecision: (
 export function createRouter(options: RouterOptions): Promise<express.Router>;
 
 // @public
-export const playlistPlugin: () => BackendFeature;
-
-// @public
 export class DefaultPlaylistPermissionPolicy implements PermissionPolicy {
   // (undocumented)
   handle(
@@ -83,6 +80,10 @@ export const playlistConditions: Conditions<{
     undefined
   >;
 }>;
+
+// @public
+const playlistPlugin: () => BackendFeature;
+export default playlistPlugin;
 
 // @public (undocumented)
 export interface RouterOptions {

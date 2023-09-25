@@ -20,6 +20,11 @@ import {
 import { createRouter } from './service';
 import { loggerToWinstonLogger } from '@backstage/backend-common';
 
+/**
+ * Playlist backend plugin
+ *
+ * @public
+ */
 export const playlistPlugin = createBackendPlugin({
   pluginId: 'playlist',
   register(env) {
