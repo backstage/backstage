@@ -8,7 +8,6 @@
 yarn.lock                                         @backstage/maintainers @backstage-service
 */yarn.lock                                       @backstage/maintainers @backstage-service
 /.changeset/*.md
-/cypress/src/integration/plugins/techdocs.spec.ts @backstage/techdocs-maintainers
 /docs/assets/search                               @backstage/discoverability-maintainers
 /docs/features/search                             @backstage/discoverability-maintainers
 /docs/features/techdocs                           @backstage/techdocs-maintainers
