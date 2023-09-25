@@ -4180,6 +4180,14 @@ __metadata:
   languageName: unknown
   linkType: soft
 
+"@backstage/e2e-test-utils@workspace:packages/e2e-test-utils":
+  version: 0.0.0-use.local
+  resolution: "@backstage/e2e-test-utils@workspace:packages/e2e-test-utils"
+  dependencies:
+    "@backstage/cli": "workspace:^"
+  languageName: unknown
+  linkType: soft
+
 "@backstage/errors@^1.1.5, @backstage/errors@workspace:^, @backstage/errors@workspace:packages/errors":
   version: 0.0.0-use.local
   resolution: "@backstage/errors@workspace:packages/errors"
