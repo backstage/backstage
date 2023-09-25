@@ -7280,7 +7280,6 @@ __metadata:
   dependencies:
     "@apollo/server": ^4.0.0
     "@backstage/backend-common": "workspace:^"
-    "@backstage/backend-plugin-api": "workspace:^"
     "@backstage/cli": "workspace:^"
     "@backstage/config": "workspace:^"
     "@backstage/plugin-catalog-graphql": "workspace:^"
@@ -25962,7 +25961,6 @@ __metadata:
     "@backstage/plugin-catalog-backend-module-unprocessed": "workspace:^"
     "@backstage/plugin-devtools-backend": "workspace:^"
     "@backstage/plugin-entity-feedback-backend": "workspace:^"
-    "@backstage/plugin-graphql-backend": "workspace:^"
     "@backstage/plugin-kubernetes-backend": "workspace:^"
     "@backstage/plugin-lighthouse-backend": "workspace:^"
     "@backstage/plugin-linguist-backend": "workspace:^"

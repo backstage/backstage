@@ -21,4 +21,3 @@
  */
 
 export * from './service/router';
-export { graphqlPlugin as default } from './plugin';
