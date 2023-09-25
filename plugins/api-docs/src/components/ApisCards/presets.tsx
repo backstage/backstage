@@ -36,7 +36,7 @@ const ApiDefinitionButton = ({ apiEntity }: { apiEntity: ApiEntity }) => {
   return (
     <>
       <ToggleButton
-        aria-label="Toggle API Defination Dialog"
+        aria-label="Toggle API Definition Dialog"
         onClick={() => setDialogOpen(!dialogOpen)}
       >
         <ExtensionIcon />
