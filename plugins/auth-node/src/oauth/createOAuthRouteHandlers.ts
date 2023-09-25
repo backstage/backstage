@@ -136,7 +136,7 @@ export function createOAuthRouteHandlers<TProfile>(
 
       // If scopes are persisted then we pass them through the state so that we
       // can set the cookie on successful auth
-      if (authenticator.shouldPersistScopes) {
+      if (authenticator.shouldPersistScopes && scope) {
         state.scope = scope;
       }
 
