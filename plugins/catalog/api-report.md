@@ -216,13 +216,27 @@ export interface DefaultCatalogPageProps {
   // (undocumented)
   emptyContent?: ReactNode;
   // (undocumented)
+  entityKindPickerAllowedKinds?: string[];
+  // (undocumented)
+  entityKindPickerHidden?: boolean;
+  // (undocumented)
+  entityLifecyclePickerInitialFilter?: string[];
+  // (undocumented)
+  entityTypePickerHidden?: boolean;
+  // (undocumented)
   initialKind?: string;
   // (undocumented)
   initiallySelectedFilter?: UserListFilterKind;
   // (undocumented)
+  initialType?: string;
+  // (undocumented)
   ownerPickerMode?: EntityOwnerPickerProps['mode'];
   // (undocumented)
+  showTagCounts?: boolean;
+  // (undocumented)
   tableOptions?: TableProps<CatalogTableRow>['options'];
+  // (undocumented)
+  userListFilters?: UserListFilterKind[];
 }
 
 // @public

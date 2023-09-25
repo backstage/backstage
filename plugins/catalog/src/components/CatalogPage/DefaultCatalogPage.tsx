@@ -15,6 +15,21 @@
  */
 
 import {
+  CatalogFilterLayout,
+  EntityKindPicker,
+  EntityLifecyclePicker,
+  EntityListProvider,
+  EntityNamespacePicker,
+  EntityOwnerPicker,
+  EntityOwnerPickerProps,
+  EntityProcessingStatusPicker,
+  EntityTagPicker,
+  EntityTypePicker,
+  UserListFilterKind,
+  UserListPicker,
+} from '@backstage/plugin-catalog-react';
+import { CatalogTable, CatalogTableRow } from '../CatalogTable';
+import {
   Content,
   ContentHeader,
   CreateButton,
@@ -23,24 +38,10 @@ import {
   TableColumn,
   TableProps,
 } from '@backstage/core-components';
-import { configApiRef, useApi, useRouteRef } from '@backstage/core-plugin-api';
-import {
-  CatalogFilterLayout,
-  EntityLifecyclePicker,
-  EntityListProvider,
-  EntityProcessingStatusPicker,
-  EntityOwnerPicker,
-  EntityTagPicker,
-  EntityTypePicker,
-  UserListFilterKind,
-  UserListPicker,
-  EntityKindPicker,
-  EntityNamespacePicker,
-  EntityOwnerPickerProps,
-} from '@backstage/plugin-catalog-react';
 import React, { ReactNode } from 'react';
+import { configApiRef, useApi, useRouteRef } from '@backstage/core-plugin-api';
+
 import { createComponentRouteRef } from '../../routes';
-import { CatalogTable, CatalogTableRow } from '../CatalogTable';
 import { useCatalogPluginOptions } from '../../options';
 
 /**
@@ -56,6 +57,13 @@ export interface DefaultCatalogPageProps {
   tableOptions?: TableProps<CatalogTableRow>['options'];
   emptyContent?: ReactNode;
   ownerPickerMode?: EntityOwnerPickerProps['mode'];
+  entityKindPickerAllowedKinds?: string[];
+  entityKindPickerHidden?: boolean;
+  entityTypePickerHidden?: boolean;
+  initialType?: string;
+  showTagCounts?: boolean;
+  entityLifecyclePickerInitialFilter?: string[];
+  userListFilters?: UserListFilterKind[];
 }
 
 export function DefaultCatalogPage(props: DefaultCatalogPageProps) {
@@ -67,6 +75,13 @@ export function DefaultCatalogPage(props: DefaultCatalogPageProps) {
     tableOptions = {},
     emptyContent,
     ownerPickerMode,
+    entityKindPickerAllowedKinds,
+    entityKindPickerHidden,
+    initialType,
+    entityTypePickerHidden,
+    showTagCounts,
+    entityLifecyclePickerInitialFilter,
+    userListFilters,
   } = props;
   const orgName =
     useApi(configApiRef).getOptionalString('organization.name') ?? 'Backstage';
@@ -87,12 +102,24 @@ export function DefaultCatalogPage(props: DefaultCatalogPageProps) {
         <EntityListProvider>
           <CatalogFilterLayout>
             <CatalogFilterLayout.Filters>
-              <EntityKindPicker initialFilter={initialKind} />
-              <EntityTypePicker />
-              <UserListPicker initialFilter={initiallySelectedFilter} />
+              <EntityKindPicker
+                initialFilter={initialKind}
+                allowedKinds={entityKindPickerAllowedKinds}
+                hidden={entityKindPickerHidden}
+              />
+              <EntityTypePicker
+                hidden={entityTypePickerHidden}
+                initialFilter={initialType}
+              />
+              <UserListPicker
+                initialFilter={initiallySelectedFilter}
+                availableFilters={userListFilters}
+              />
               <EntityOwnerPicker mode={ownerPickerMode} />
-              <EntityLifecyclePicker />
-              <EntityTagPicker />
+              <EntityLifecyclePicker
+                initialFilter={entityLifecyclePickerInitialFilter}
+              />
+              <EntityTagPicker showCounts={showTagCounts} />
               <EntityProcessingStatusPicker />
               <EntityNamespacePicker />
             </CatalogFilterLayout.Filters>
