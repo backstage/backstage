@@ -5,8 +5,8 @@
 # https://help.github.com/articles/about-codeowners/
 
 *                                                 @backstage/maintainers @backstage/reviewers
-yarn.lock                                         @backstage/maintainers @backstage/reviewers @backstage-service
-*/yarn.lock                                       @backstage/maintainers @backstage/reviewers @backstage-service
+yarn.lock                                         @backstage/maintainers @backstage-service
+*/yarn.lock                                       @backstage/maintainers @backstage-service
 /.changeset/*.md
 /cypress/src/integration/plugins/techdocs.spec.ts @backstage/techdocs-maintainers
 /docs/assets/search                               @backstage/discoverability-maintainers

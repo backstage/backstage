@@ -180,6 +180,7 @@ jsx
 JWTs
 Kaewkasi
 Kaswell
+keepalive
 Keyv
 Knex
 Koyeb
@@ -267,12 +268,14 @@ parseable
 Patrik
 pattison
 Peloton
+PEP
 performant
 Performant
 periskop
 Periskop
 permissioned
 permissioning
+pipx
 plantuml
 Platformize
 Podman

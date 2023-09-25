@@ -393,7 +393,7 @@ describe('helpers', () => {
 
       await patchIndexPreBuild({ inputDir: '/', logger: mockLogger });
 
-      expect(fs.readFileSync('/docs/index.md', 'utf-8')).toEqual(
+      await expect(fs.readFile('/docs/index.md', 'utf-8')).resolves.toEqual(
         'index.md content',
       );
       expect(warn).not.toHaveBeenCalledWith();
@@ -407,7 +407,7 @@ describe('helpers', () => {
 
       await patchIndexPreBuild({ inputDir: '/', logger: mockLogger });
 
-      expect(fs.readFileSync('/docs/index.md', 'utf-8')).toEqual(
+      await expect(fs.readFile('/docs/index.md', 'utf-8')).resolves.toEqual(
         'docs/README.md content',
       );
       expect(warn.mock.calls).toEqual([
@@ -422,7 +422,7 @@ describe('helpers', () => {
 
       await patchIndexPreBuild({ inputDir: '/', logger: mockLogger });
 
-      expect(fs.readFileSync('/docs/index.md', 'utf-8')).toEqual(
+      await expect(fs.readFile('/docs/index.md', 'utf-8')).resolves.toEqual(
         'main README.md content',
       );
       expect(warn.mock.calls).toEqual([
@@ -437,7 +437,7 @@ describe('helpers', () => {
 
       await patchIndexPreBuild({ inputDir: '/', logger: mockLogger });
 
-      expect(() => fs.readFileSync('/docs/index.md', 'utf-8')).toThrow();
+      await expect(fs.readFile('/docs/index.md', 'utf-8')).rejects.toThrow();
       const paths = [
         path.normalize('docs/index.md'),
         path.normalize('docs/README.md'),
@@ -483,7 +483,7 @@ describe('helpers', () => {
 
       await expect(
         createOrUpdateMetadata(filePath, mockLogger),
-      ).rejects.toThrow('Unexpected token d in JSON at position 0');
+      ).rejects.toThrow('Unexpected token');
     });
 
     it('should add build timestamp to the metadata json', async () => {
@@ -520,7 +520,7 @@ describe('helpers', () => {
       const filePath = path.join(rootDir, 'invalid_techdocs_metadata.json');
 
       await expect(storeEtagMetadata(filePath, 'etag123abc')).rejects.toThrow(
-        'Unexpected token d in JSON at position 0',
+        'Unexpected token',
       );
     });
 

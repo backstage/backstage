@@ -18,6 +18,7 @@ import React from 'react';
 import {
   createExtension,
   coreExtensionData,
+  createExtensionInput,
 } from '@backstage/frontend-plugin-api';
 import { makeStyles } from '@material-ui/core';
 import {
@@ -66,11 +67,9 @@ export const CoreNav = createExtension({
   id: 'core.nav',
   at: 'core.layout/nav',
   inputs: {
-    targets: {
-      extensionData: {
-        path: coreExtensionData.navTarget,
-      },
-    },
+    items: createExtensionInput({
+      path: coreExtensionData.navTarget,
+    }),
   },
   output: {
     element: coreExtensionData.reactElement,

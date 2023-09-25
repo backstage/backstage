@@ -1,5 +1,15 @@
 # @backstage/plugin-scaffolder-common
 
+## 1.4.1
+
+### Patch Changes
+
+- 406b786a2a2c: Mark package as being free of side effects, allowing more optimized Webpack builds.
+- Updated dependencies
+  - @backstage/catalog-model@1.4.2
+  - @backstage/plugin-permission-common@0.7.8
+  - @backstage/types@1.1.1
+
 ## 1.4.1-next.2
 
 ### Patch Changes

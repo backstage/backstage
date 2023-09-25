@@ -360,7 +360,9 @@ describe('I18nextTranslationApi', () => {
     await new Promise<void>(resolve => {
       const subscription = translationApi.translation$(plainRef).subscribe({
         next(snapshot) {
-          const translation = snapshot.ready ? snapshot.t('foo') : null;
+          const translation = snapshot.ready
+            ? (snapshot.t('foo') as string)
+            : null;
           translations.push(translation);
 
           if (translation === 'foo') {
@@ -381,7 +383,7 @@ describe('I18nextTranslationApi', () => {
 
   describe('formatting', () => {
     function snapshotWithMessages<
-      TMessages extends { [key in string]: string },
+      const TMessages extends { [key in string]: string },
     >(messages: TMessages) {
       const translationApi = I18nextTranslationApi.create({
         languageApi: AppLanguageSelector.create(),
@@ -398,7 +400,7 @@ describe('I18nextTranslationApi', () => {
         foo: 'Foo',
         bar: 'Bar',
         baz: 'Baz',
-      } as const);
+      });
 
       expect(snapshot.t('foo')).toBe('Foo');
       expect(snapshot.t('bar')).toBe('Bar');
@@ -410,7 +412,7 @@ describe('I18nextTranslationApi', () => {
         shallow: 'Foo {{ bar }}',
         multiple: 'Foo {{ bar }} {{ baz }}',
         deep: 'Foo {{ bar.baz }}',
-      } as const);
+      });
 
       // @ts-expect-error
       expect(snapshot.t('shallow')).toBe('Foo {{ bar }}');
@@ -439,7 +441,7 @@ describe('I18nextTranslationApi', () => {
     it('should not escape by default', () => {
       const snapshot = snapshotWithMessages({
         foo: 'Foo {{ foo }}',
-      } as const);
+      });
 
       expect(snapshot.t('foo', { replace: { foo: '<div>' } })).toBe(
         'Foo <div>',
@@ -457,7 +459,7 @@ describe('I18nextTranslationApi', () => {
         foo: 'Foo $t(bar) $t(baz)',
         bar: 'Nested',
         baz: 'Baz {{ qux }}',
-      } as const);
+      });
 
       expect(snapshot.t('foo', { qux: 'Deep' })).toBe('Foo Nested Baz Deep');
     });
@@ -472,7 +474,7 @@ describe('I18nextTranslationApi', () => {
         relativeSecondsShort:
           '= {{ x, relativeTime(range: second; style: short) }}',
         list: '= {{ x, list }}',
-      } as const);
+      });
 
       expect(snapshot.t('plain', { replace: { x: '5' } })).toBe('= 5');
       expect(snapshot.t('number', { replace: { x: 5 } })).toBe('= 5');
@@ -528,7 +530,7 @@ describe('I18nextTranslationApi', () => {
         derp_other: 'derps',
         derpWithCount_one: '{{ count }} derp',
         derpWithCount_other: '{{ count }} derps',
-      } as const);
+      });
 
       expect(snapshot.t('derp', { count: 1 })).toBe('derp');
       expect(snapshot.t('derp', { count: 2 })).toBe('derps');

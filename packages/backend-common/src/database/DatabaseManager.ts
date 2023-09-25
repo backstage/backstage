@@ -227,9 +227,7 @@ export class DatabaseManager {
    * all supported databases excluding SQLite unless `pluginDivisionMode` is set
    * to `schema`.
    */
-  private getConnectionConfig(
-    pluginId: string,
-  ): Partial<Knex.StaticConnectionConfig> {
+  private getConnectionConfig(pluginId: string): Knex.StaticConnectionConfig {
     const { client, overridden } = this.getClientType(pluginId);
 
     let baseConnection = normalizeConnection(
@@ -271,7 +269,7 @@ export class DatabaseManager {
       // include base connection if client type has not been overridden
       ...(overridden ? {} : baseConnection),
       ...connection,
-    } as Partial<Knex.StaticConnectionConfig>;
+    } as Knex.StaticConnectionConfig;
   }
 
   /**
@@ -377,7 +375,9 @@ export class DatabaseManager {
         databaseClientOverrides,
         deps,
       );
-      this.startKeepaliveLoop(pluginId, client);
+      if (process.env.NODE_ENV !== 'test') {
+        this.startKeepaliveLoop(pluginId, client);
+      }
       return client;
     });
 

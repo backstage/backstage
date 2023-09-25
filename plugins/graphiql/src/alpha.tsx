@@ -19,6 +19,7 @@ import {
   createApiExtension,
   createExtension,
   createExtensionDataRef,
+  createExtensionInput,
   createNavItemExtension,
   createPageExtension,
   createPlugin,
@@ -64,11 +65,9 @@ const endpointDataRef = createExtensionDataRef<GraphQLEndpoint>(
 export const graphiqlBrowseApi = createApiExtension({
   api: graphQlBrowseApiRef, // apis.plugin.graphiql.browse
   inputs: {
-    endpoints: {
-      extensionData: {
-        endpoint: endpointDataRef,
-      },
-    },
+    endpoints: createExtensionInput({
+      endpoint: endpointDataRef,
+    }),
   },
   factory({ inputs }) {
     return createApiFactory(

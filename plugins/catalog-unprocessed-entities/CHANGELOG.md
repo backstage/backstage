@@ -1,5 +1,19 @@
 # @backstage/plugin-catalog-unprocessed-entities
 
+## 0.1.3
+
+### Patch Changes
+
+- 482bb5c0bbf8: Moved `@types/react` to be a regular dependency
+- 406b786a2a2c: Mark package as being free of side effects, allowing more optimized Webpack builds.
+- 8cec7664e146: Removed `@types/node` dependency
+- Updated dependencies
+  - @backstage/core-components@0.13.5
+  - @backstage/catalog-model@1.4.2
+  - @backstage/core-plugin-api@1.6.0
+  - @backstage/errors@1.2.2
+  - @backstage/theme@0.4.2
+
 ## 0.1.3-next.3
 
 ### Patch Changes

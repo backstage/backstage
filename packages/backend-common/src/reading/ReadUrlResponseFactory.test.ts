@@ -78,7 +78,9 @@ describe('ReadUrlResponseFactory', () => {
     let readable: NodeJS.ReadableStream;
 
     beforeEach(() => {
-      readable = new Stream({ encoding: 'utf-8' }) as NodeJS.ReadableStream;
+      readable = new Stream({
+        encoding: 'utf-8',
+      }) as unknown as NodeJS.ReadableStream;
       readable.readable = true;
 
       // Write data asynchronously, as soon as possible.
