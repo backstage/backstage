@@ -26,8 +26,9 @@ kubernetes:
           name: minikube
           authProvider: 'serviceAccount'
           skipTLSVerify: false
-          skipMetricsLookup: true
-          serviceAccountToken: ${K8S_MINIKUBE_TOKEN}
+          skipMetricsLookup: false
+          serviceAccountToken:
+            $file: /var/run/secrets/kubernetes.io/serviceaccount/token
           dashboardUrl: http://127.0.0.1:64713 # url copied from running the command: minikube service kubernetes-dashboard -n kubernetes-dashboard
           dashboardApp: standard
           caData: ${K8S_CONFIG_CA_DATA}
