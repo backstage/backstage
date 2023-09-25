@@ -136,7 +136,7 @@ export function createOAuthRouteHandlers<TProfile>(
 
       // If scopes are persisted then we pass them through the state so that we
       // can set the cookie on successful auth
-      if (authenticator.shouldPersistScopes) {
+      if (authenticator.shouldPersistScopes && scope) {
         state.scope = scope;
       }
 
@@ -214,7 +214,7 @@ export function createOAuthRouteHandlers<TProfile>(
         // the provider does not return granted scopes on refresh or if they are normalized.
         if (authenticator.shouldPersistScopes && state.scope) {
           cookieManager.setGrantedScopes(res, state.scope, appOrigin);
-          result.session.scope = state.scope;
+          response.providerInfo.scope = state.scope;
         }
 
         if (result.session.refreshToken) {
