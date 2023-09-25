@@ -32,6 +32,14 @@ export const ANNOTATION_KUBERNETES_AUTH_PROVIDER =
   'kubernetes.io/auth-provider';
 
 // @public
+export const ANNOTATION_KUBERNETES_AWS_ASSUME_ROLE =
+  'kubernetes.io/aws-assume-role';
+
+// @public
+export const ANNOTATION_KUBERNETES_AWS_EXTERNAL_ID =
+  'kubernetes.io/aws-external-id';
+
+// @public
 export const ANNOTATION_KUBERNETES_DASHBOARD_APP =
   'kubernetes.io/dashboard-app';
 
@@ -225,16 +233,7 @@ export const kubernetesPermissions: BasicPermission[];
 export const kubernetesProxyPermission: BasicPermission;
 
 // @public (undocumented)
-export interface KubernetesRequestAuth {
-  // (undocumented)
-  aks?: string;
-  // (undocumented)
-  google?: string;
-  // (undocumented)
-  oidc?: {
-    [key: string]: string;
-  };
-}
+export type KubernetesRequestAuth = JsonObject;
 
 // @public (undocumented)
 export interface KubernetesRequestBody {

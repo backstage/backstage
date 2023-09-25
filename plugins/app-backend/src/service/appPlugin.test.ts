@@ -19,6 +19,10 @@ import { resolve as resolvePath } from 'path';
 import fetch from 'node-fetch';
 import { mockServices, startTestBackend } from '@backstage/backend-test-utils';
 import { appPlugin } from './appPlugin';
+import { createRootLogger } from '@backstage/backend-common';
+
+// Make sure root logger is initialized ahead of FS mock
+createRootLogger();
 
 describe('appPlugin', () => {
   beforeEach(() => {

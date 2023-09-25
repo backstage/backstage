@@ -15,8 +15,8 @@
  */
 
 import React from 'react';
-import { render } from '@testing-library/react';
-import { wrapInTestApp } from '@backstage/test-utils';
+import { screen } from '@testing-library/react';
+import { renderInTestApp } from '@backstage/test-utils';
 import { Cluster } from './Cluster';
 
 jest.mock('../../hooks');
@@ -24,38 +24,36 @@ import * as oneDeployment from '../../__fixtures__/1-deployments.json';
 
 describe('Cluster', () => {
   it('render 1 cluster', async () => {
-    const { getByText } = render(
-      wrapInTestApp(
-        <Cluster
-          {...({
-            clusterObjects: {
-              cluster: {
-                name: 'cluster-1',
-              },
-              resources: [
-                {
-                  type: 'deployments',
-                  resources: oneDeployment.deployments,
-                },
-                {
-                  type: 'replicasets',
-                  resources: oneDeployment.replicaSets,
-                },
-                {
-                  type: 'pods',
-                  resources: oneDeployment.pods,
-                },
-              ],
-              podMetrics: [],
-              errors: [],
+    await renderInTestApp(
+      <Cluster
+        {...({
+          clusterObjects: {
+            cluster: {
+              name: 'cluster-1',
             },
-            podsWithErrors: new Set<string>(),
-          } as any)}
-        />,
-      ),
+            resources: [
+              {
+                type: 'deployments',
+                resources: oneDeployment.deployments,
+              },
+              {
+                type: 'replicasets',
+                resources: oneDeployment.replicaSets,
+              },
+              {
+                type: 'pods',
+                resources: oneDeployment.pods,
+              },
+            ],
+            podMetrics: [],
+            errors: [],
+          },
+          podsWithErrors: new Set<string>(),
+        } as any)}
+      />,
     );
 
-    expect(getByText('cluster-1')).toBeInTheDocument();
-    expect(getByText('10 pods')).toBeInTheDocument();
+    expect(screen.getByText('cluster-1')).toBeInTheDocument();
+    expect(screen.getByText('10 pods')).toBeInTheDocument();
   });
 });

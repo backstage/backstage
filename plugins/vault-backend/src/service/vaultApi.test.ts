@@ -21,6 +21,8 @@ import { VaultSecret, VaultClient, VaultSecretList } from './vaultApi';
 import { ConfigReader } from '@backstage/config';
 
 describe('VaultApi', () => {
+  let api: VaultClient;
+
   const server = setupServer();
   setupRequestMockHandlers(server);
 
@@ -43,20 +45,24 @@ describe('VaultApi', () => {
     },
   };
 
-  const mockSecretsResult: VaultSecret[] = [
-    {
-      name: 'secret::one',
-      path: 'test/success',
-      editUrl: `${mockBaseUrl}/ui/vault/secrets/secrets/edit/test/success/secret::one`,
-      showUrl: `${mockBaseUrl}/ui/vault/secrets/secrets/show/test/success/secret::one`,
-    },
-    {
-      name: 'secret::two',
-      path: 'test/success',
-      editUrl: `${mockBaseUrl}/ui/vault/secrets/secrets/edit/test/success/secret::two`,
-      showUrl: `${mockBaseUrl}/ui/vault/secrets/secrets/show/test/success/secret::two`,
-    },
-  ];
+  const mockSecretsResult = (
+    secretEngine: string = 'secrets',
+  ): VaultSecret[] => {
+    return [
+      {
+        name: 'secret::one',
+        path: 'test/success',
+        editUrl: `${mockBaseUrl}/ui/vault/secrets/${secretEngine}/edit/test/success/secret::one`,
+        showUrl: `${mockBaseUrl}/ui/vault/secrets/${secretEngine}/show/test/success/secret::one`,
+      },
+      {
+        name: 'secret::two',
+        path: 'test/success',
+        editUrl: `${mockBaseUrl}/ui/vault/secrets/${secretEngine}/edit/test/success/secret::two`,
+        showUrl: `${mockBaseUrl}/ui/vault/secrets/${secretEngine}/show/test/success/secret::two`,
+      },
+    ];
+  };
 
   const setupHandlers = () => {
     server.use(
@@ -66,6 +72,9 @@ describe('VaultApi', () => {
           return res(ctx.json(mockListResult));
         },
       ),
+      rest.get(`${mockBaseUrl}/v1/kv/metadata/test/success`, (_, res, ctx) => {
+        return res(ctx.json(mockListResult));
+      }),
       rest.get(
         `${mockBaseUrl}/v1/secrets/metadata/test/error`,
         (_, res, ctx) => {
@@ -78,28 +87,33 @@ describe('VaultApi', () => {
     );
   };
 
-  it('should return secrets', async () => {
+  beforeEach(() => {
     setupHandlers();
-    const api = new VaultClient({ config });
+    api = new VaultClient({ config });
+  });
+
+  it('should return secrets', async () => {
     const secrets = await api.listSecrets('test/success');
-    expect(secrets).toEqual(mockSecretsResult);
+    expect(secrets).toEqual(mockSecretsResult());
+  });
+
+  it('should return secrets for custom engine', async () => {
+    const secrets = await api.listSecrets('test/success', {
+      secretEngine: 'kv',
+    });
+    expect(secrets).toEqual(mockSecretsResult('kv'));
   });
 
   it('should return empty secret list', async () => {
-    setupHandlers();
-    const api = new VaultClient({ config });
     const secrets = await api.listSecrets('test/error');
     expect(secrets).toEqual([]);
   });
 
   it('should return success token renew', async () => {
-    setupHandlers();
-    const api = new VaultClient({ config });
     expect(await api.renewToken()).toBe(undefined);
   });
 
   it('should render frontend url', () => {
-    const api = new VaultClient({ config });
     const url = api.getFrontendSecretsUrl();
     expect(url).toEqual(`${mockBaseUrl}/ui/vault/secrets/secrets`);
   });

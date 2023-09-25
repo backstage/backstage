@@ -154,6 +154,10 @@ playlist:
 
 ![Create New Playlist example](./docs/playlist-create-new.png)
 
+### Edit Existing Playlist
+
+![Edit Existing Playlist example](./docs/playlist-edit-existing.png)
+
 ### Add Entities to Playlist
 
 ![Add Entities to Playlist example](./docs/playlist-add-entities.png)

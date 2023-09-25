@@ -1,5 +1,89 @@
 # @backstage/plugin-techdocs-addons-test-utils
 
+## 1.0.21
+
+### Patch Changes
+
+- 406b786a2a2c: Mark package as being free of side effects, allowing more optimized Webpack builds.
+- 8cec7664e146: Removed `@types/node` dependency
+- Updated dependencies
+  - @backstage/integration-react@1.1.19
+  - @backstage/plugin-catalog@1.13.0
+  - @backstage/plugin-techdocs@1.7.0
+  - @backstage/core-components@0.13.5
+  - @backstage/test-utils@1.4.3
+  - @backstage/core-app-api@1.10.0
+  - @backstage/core-plugin-api@1.6.0
+  - @backstage/plugin-search-react@1.7.0
+  - @backstage/plugin-techdocs-react@1.1.10
+  - @backstage/theme@0.4.2
+
+## 1.0.21-next.3
+
+### Patch Changes
+
+- 406b786a2a2c: Mark package as being free of side effects, allowing more optimized Webpack builds.
+- Updated dependencies
+  - @backstage/test-utils@1.4.3-next.3
+  - @backstage/core-app-api@1.10.0-next.3
+  - @backstage/core-components@0.13.5-next.3
+  - @backstage/core-plugin-api@1.6.0-next.3
+  - @backstage/integration-react@1.1.19-next.3
+  - @backstage/plugin-catalog@1.13.0-next.3
+  - @backstage/plugin-search-react@1.7.0-next.3
+  - @backstage/plugin-techdocs@1.7.0-next.3
+  - @backstage/plugin-techdocs-react@1.1.10-next.3
+  - @backstage/theme@0.4.2-next.0
+
+## 1.0.21-next.2
+
+### Patch Changes
+
+- 8cec7664e146: Removed `@types/node` dependency
+- Updated dependencies
+  - @backstage/plugin-techdocs@1.7.0-next.2
+  - @backstage/plugin-catalog@1.13.0-next.2
+  - @backstage/integration-react@1.1.19-next.2
+  - @backstage/core-components@0.13.5-next.2
+  - @backstage/core-plugin-api@1.6.0-next.2
+  - @backstage/core-app-api@1.10.0-next.2
+  - @backstage/test-utils@1.4.3-next.2
+  - @backstage/plugin-search-react@1.7.0-next.2
+  - @backstage/plugin-techdocs-react@1.1.10-next.2
+  - @backstage/theme@0.4.1
+
+## 1.0.21-next.1
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/core-components@0.13.5-next.1
+  - @backstage/plugin-search-react@1.7.0-next.1
+  - @backstage/plugin-catalog@1.12.5-next.1
+  - @backstage/plugin-techdocs@1.6.9-next.1
+  - @backstage/integration-react@1.1.19-next.1
+  - @backstage/plugin-techdocs-react@1.1.10-next.1
+  - @backstage/core-app-api@1.10.0-next.1
+  - @backstage/core-plugin-api@1.6.0-next.1
+  - @backstage/test-utils@1.4.3-next.1
+  - @backstage/theme@0.4.1
+
+## 1.0.20-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/integration-react@1.1.18-next.0
+  - @backstage/plugin-catalog@1.12.4-next.0
+  - @backstage/plugin-techdocs@1.6.8-next.0
+  - @backstage/core-app-api@1.10.0-next.0
+  - @backstage/core-plugin-api@1.6.0-next.0
+  - @backstage/core-components@0.13.5-next.0
+  - @backstage/test-utils@1.4.3-next.0
+  - @backstage/theme@0.4.1
+  - @backstage/plugin-search-react@1.6.5-next.0
+  - @backstage/plugin-techdocs-react@1.1.10-next.0
+
 ## 1.0.17
 
 ### Patch Changes

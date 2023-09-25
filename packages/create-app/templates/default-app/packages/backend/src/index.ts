@@ -39,7 +39,7 @@ function makeCreateEnv(config: Config) {
   const cacheManager = CacheManager.fromConfig(config);
   const databaseManager = DatabaseManager.fromConfig(config, { logger: root });
   const tokenManager = ServerTokenManager.noop();
-  const taskScheduler = TaskScheduler.fromConfig(config);
+  const taskScheduler = TaskScheduler.fromConfig(config, { databaseManager });
 
   const identity = DefaultIdentityClient.create({
     discovery,

@@ -112,9 +112,15 @@ export function parseDuration(
     return frequency.cron;
   }
 
-  if (Duration.isDuration(frequency)) {
-    return frequency.toISO();
+  const parsed = Duration.isDuration(frequency)
+    ? frequency
+    : Duration.fromObject(frequency);
+
+  if (!parsed.isValid) {
+    throw new Error(
+      `Invalid duration, ${parsed.invalidReason}: ${parsed.invalidExplanation}`,
+    );
   }
 
-  return Duration.fromObject(frequency).toISO();
+  return parsed.toISO()!;
 }

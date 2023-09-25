@@ -44,6 +44,7 @@ Usage: backstage-repo-tools generate-catalog-info [options]
 
 Options:
   --dry-run
+  --ci
   -h, --help
 ```
 

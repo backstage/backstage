@@ -1,7 +1,7 @@
 {
   "name": "@backstage/plugin-splunk-on-call",
   "description": "A Backstage plugin that integrates towards Splunk On-Call",
-  "version": "0.4.10",
+  "version": "0.4.13",
   "main": "src/index.ts",
   "types": "src/index.ts",
   "license": "Apache-2.0",
@@ -23,6 +23,7 @@
     "backstage",
     "splunk-on-call"
   ],
+  "sideEffects": false,
   "scripts": {
     "build": "backstage-cli package build",
     "start": "backstage-cli package start",
@@ -61,7 +62,6 @@
     "@testing-library/react": "^12.1.3",
     "@testing-library/user-event": "^14.0.0",
     "@types/luxon": "^3.0.0",
-    "@types/node": "^16.11.26",
     "msw": "^1.0.0"
   },
   "configSchema": "config.d.ts",

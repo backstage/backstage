@@ -30,7 +30,7 @@ describe('VersionedContext', () => {
     const Context = createVersionedContext<ContextType>('test-context-1');
 
     const rendered = renderHook(() => useContext(Context), {
-      wrapper: ({ children }) => (
+      wrapper: ({ children }: React.PropsWithChildren<{}>) => (
         <Context.Provider
           value={createVersionedValueMap({ 1: '1v1', 2: '1v2' })}
         >
@@ -47,7 +47,7 @@ describe('VersionedContext', () => {
     const Context = createVersionedContext<ContextType>('test-context-2');
 
     const rendered = renderHook(() => useVersionedContext('test-context-2'), {
-      wrapper: ({ children }) => (
+      wrapper: ({ children }: React.PropsWithChildren<{}>) => (
         <Context.Provider
           value={createVersionedValueMap({ 1: '2v1', 2: '2v2' })}
         >

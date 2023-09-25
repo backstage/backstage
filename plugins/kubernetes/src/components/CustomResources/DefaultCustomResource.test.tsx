@@ -15,8 +15,8 @@
  */
 
 import React from 'react';
-import { render } from '@testing-library/react';
-import { wrapInTestApp } from '@backstage/test-utils';
+import { screen } from '@testing-library/react';
+import { renderInTestApp } from '@backstage/test-utils';
 import { kubernetesProviders } from '../../hooks/test-utils';
 import * as ar from './__fixtures__/analysis-run.json';
 import { DefaultCustomResourceAccordions } from './DefaultCustomResource';
@@ -25,17 +25,15 @@ describe('DefaultCustomResource', () => {
   it('should render DefaultCustomResource Accordion', async () => {
     const wrapper = kubernetesProviders({}, new Set([]));
 
-    const { getByText } = render(
+    await renderInTestApp(
       wrapper(
-        wrapInTestApp(
-          <DefaultCustomResourceAccordions
-            customResources={[ar] as any}
-            customResourceName="AnalysisRun"
-          />,
-        ),
+        <DefaultCustomResourceAccordions
+          customResources={[ar] as any}
+          customResourceName="AnalysisRun"
+        />,
       ),
     );
-    expect(getByText('dice-roller-546c476497-4-1')).toBeInTheDocument();
-    expect(getByText('AnalysisRun')).toBeInTheDocument();
+    expect(screen.getByText('dice-roller-546c476497-4-1')).toBeInTheDocument();
+    expect(screen.getByText('AnalysisRun')).toBeInTheDocument();
   });
 });

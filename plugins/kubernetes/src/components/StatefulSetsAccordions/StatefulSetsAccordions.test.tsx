@@ -15,10 +15,10 @@
  */
 
 import React from 'react';
-import { render } from '@testing-library/react';
+import { screen } from '@testing-library/react';
 import { StatefulSetsAccordions } from './StatefulSetsAccordions';
 import * as twoStatefulSetsFixture from '../../__fixtures__/2-statefulsets.json';
-import { wrapInTestApp } from '@backstage/test-utils';
+import { renderInTestApp } from '@backstage/test-utils';
 import { kubernetesProviders } from '../../hooks/test-utils';
 
 describe('StatefulSetsAccordions', () => {
@@ -28,18 +28,16 @@ describe('StatefulSetsAccordions', () => {
       new Set(['dice-roller-canary-7d64cd756c-vtbdx']),
     );
 
-    const { getByText, getAllByText } = render(
-      wrapper(wrapInTestApp(<StatefulSetsAccordions />)),
-    );
+    await renderInTestApp(wrapper(<StatefulSetsAccordions />));
 
-    expect(getByText('dice-roller')).toBeInTheDocument();
-    expect(getByText('10 pods')).toBeInTheDocument();
-    expect(getByText('No pods with errors')).toBeInTheDocument();
+    expect(screen.getByText('dice-roller')).toBeInTheDocument();
+    expect(screen.getByText('10 pods')).toBeInTheDocument();
+    expect(screen.getByText('No pods with errors')).toBeInTheDocument();
 
-    expect(getByText('dice-roller-canary')).toBeInTheDocument();
-    expect(getByText('2 pods')).toBeInTheDocument();
-    expect(getByText('1 pod with errors')).toBeInTheDocument();
+    expect(screen.getByText('dice-roller-canary')).toBeInTheDocument();
+    expect(screen.getByText('2 pods')).toBeInTheDocument();
+    expect(screen.getByText('1 pod with errors')).toBeInTheDocument();
 
-    expect(getAllByText('namespace: default')).toHaveLength(2);
+    expect(screen.getAllByText('namespace: default')).toHaveLength(2);
   });
 });

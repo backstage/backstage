@@ -9,3 +9,13 @@
 .pswp__img {
   cursor: pointer !important;
 }
+
+/* hide "-" icon path */
+.pswp--zoomed-allowed #photoswipe-zoom-icon-zoomout-path {
+  display: none;
+}
+
+/* hide "+" path and show "-" */
+.pswp--zoomed-in #photoswipe-zoom-icon-zoomin-path {
+  display: none;
+}

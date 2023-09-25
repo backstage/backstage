@@ -35,6 +35,7 @@ export type ExternalDependency = {
 /** @public */
 export type DevToolsInfo = {
   operatingSystem: string;
+  resourceUtilization: string;
   nodeJsVersion: string;
   backstageVersion: string;
   dependencies: PackageDependency[];

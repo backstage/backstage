@@ -32,7 +32,7 @@ exports.up = async function up(knex) {
       .comment('An insert counter to ensure ordering');
     table.uuid('id').notNullable().comment('The ID of the Linguist result');
     table
-      .text('entity_ref')
+      .string('entity_ref')
       .unique()
       .notNullable()
       .comment('The entity ref that this Linguist result applies to');

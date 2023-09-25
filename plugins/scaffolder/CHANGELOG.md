@@ -1,5 +1,132 @@
 # @backstage/plugin-scaffolder
 
+## 1.15.0
+
+### Minor Changes
+
+- 0119c326394a: adding a .zip download to dry run results page, including zip.js as dependency
+
+### Patch Changes
+
+- 406b786a2a2c: Mark package as being free of side effects, allowing more optimized Webpack builds.
+- 6e69c11a3535: Restored functionality to `OwnedEntityPicker` by converting deprecated `ui:options` input to `catalogFilter`.
+- 8cec7664e146: Removed `@types/node` dependency
+- b16c341ced45: Updated dependency `@rjsf/utils` to `5.13.0`.
+  Updated dependency `@rjsf/core-v5` to `npm:@rjsf/core@5.13.0`.
+  Updated dependency `@rjsf/material-ui-v5` to `npm:@rjsf/material-ui@5.13.0`.
+  Updated dependency `@rjsf/validator-ajv8` to `5.13.0`.
+- Updated dependencies
+  - @backstage/integration-react@1.1.19
+  - @backstage/plugin-catalog-react@1.8.4
+  - @backstage/core-components@0.13.5
+  - @backstage/config@1.1.0
+  - @backstage/catalog-client@1.4.4
+  - @backstage/catalog-model@1.4.2
+  - @backstage/core-plugin-api@1.6.0
+  - @backstage/errors@1.2.2
+  - @backstage/integration@1.7.0
+  - @backstage/plugin-catalog-common@1.0.16
+  - @backstage/plugin-permission-react@0.4.15
+  - @backstage/plugin-scaffolder-common@1.4.1
+  - @backstage/plugin-scaffolder-react@1.5.5
+  - @backstage/theme@0.4.2
+  - @backstage/types@1.1.1
+
+## 1.15.0-next.3
+
+### Minor Changes
+
+- 0119c326394a: adding a .zip download to dry run results page, including zip.js as dependency
+
+### Patch Changes
+
+- 406b786a2a2c: Mark package as being free of side effects, allowing more optimized Webpack builds.
+- 6e69c11a3535: Restored functionality to `OwnedEntityPicker` by converting deprecated `ui:options` input to `catalogFilter`.
+- b16c341ced45: Updated dependency `@rjsf/utils` to `5.13.0`.
+  Updated dependency `@rjsf/core-v5` to `npm:@rjsf/core@5.13.0`.
+  Updated dependency `@rjsf/material-ui-v5` to `npm:@rjsf/material-ui@5.13.0`.
+  Updated dependency `@rjsf/validator-ajv8` to `5.13.0`.
+- Updated dependencies
+  - @backstage/catalog-client@1.4.4-next.2
+  - @backstage/catalog-model@1.4.2-next.2
+  - @backstage/config@1.1.0-next.2
+  - @backstage/core-components@0.13.5-next.3
+  - @backstage/core-plugin-api@1.6.0-next.3
+  - @backstage/errors@1.2.2-next.0
+  - @backstage/integration@1.7.0-next.3
+  - @backstage/integration-react@1.1.19-next.3
+  - @backstage/plugin-catalog-common@1.0.16-next.2
+  - @backstage/plugin-catalog-react@1.8.4-next.3
+  - @backstage/plugin-permission-react@0.4.15-next.3
+  - @backstage/plugin-scaffolder-common@1.4.1-next.2
+  - @backstage/plugin-scaffolder-react@1.5.5-next.3
+  - @backstage/theme@0.4.2-next.0
+  - @backstage/types@1.1.1-next.0
+
+## 1.14.5-next.2
+
+### Patch Changes
+
+- 8cec7664e146: Removed `@types/node` dependency
+- Updated dependencies
+  - @backstage/integration-react@1.1.19-next.2
+  - @backstage/core-components@0.13.5-next.2
+  - @backstage/core-plugin-api@1.6.0-next.2
+  - @backstage/config@1.1.0-next.1
+  - @backstage/plugin-scaffolder-react@1.5.5-next.2
+  - @backstage/plugin-catalog-react@1.8.4-next.2
+  - @backstage/plugin-permission-react@0.4.15-next.2
+  - @backstage/integration@1.7.0-next.2
+  - @backstage/catalog-model@1.4.2-next.1
+  - @backstage/catalog-client@1.4.4-next.1
+  - @backstage/errors@1.2.1
+  - @backstage/theme@0.4.1
+  - @backstage/types@1.1.0
+  - @backstage/plugin-catalog-common@1.0.16-next.1
+  - @backstage/plugin-scaffolder-common@1.4.1-next.1
+
+## 1.14.5-next.1
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/plugin-catalog-react@1.8.4-next.1
+  - @backstage/core-components@0.13.5-next.1
+  - @backstage/config@1.1.0-next.0
+  - @backstage/integration@1.7.0-next.1
+  - @backstage/plugin-scaffolder-react@1.5.5-next.1
+  - @backstage/integration-react@1.1.19-next.1
+  - @backstage/catalog-model@1.4.2-next.0
+  - @backstage/core-plugin-api@1.6.0-next.1
+  - @backstage/plugin-permission-react@0.4.15-next.1
+  - @backstage/catalog-client@1.4.4-next.0
+  - @backstage/plugin-catalog-common@1.0.16-next.0
+  - @backstage/plugin-scaffolder-common@1.4.1-next.0
+  - @backstage/errors@1.2.1
+  - @backstage/theme@0.4.1
+  - @backstage/types@1.1.0
+
+## 1.14.4-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/integration-react@1.1.18-next.0
+  - @backstage/integration@1.7.0-next.0
+  - @backstage/core-plugin-api@1.6.0-next.0
+  - @backstage/core-components@0.13.5-next.0
+  - @backstage/plugin-scaffolder-react@1.5.4-next.0
+  - @backstage/catalog-client@1.4.3
+  - @backstage/catalog-model@1.4.1
+  - @backstage/config@1.0.8
+  - @backstage/errors@1.2.1
+  - @backstage/theme@0.4.1
+  - @backstage/types@1.1.0
+  - @backstage/plugin-catalog-common@1.0.15
+  - @backstage/plugin-catalog-react@1.8.3-next.0
+  - @backstage/plugin-permission-react@0.4.15-next.0
+  - @backstage/plugin-scaffolder-common@1.4.0
+
 ## 1.14.2
 
 ### Patch Changes

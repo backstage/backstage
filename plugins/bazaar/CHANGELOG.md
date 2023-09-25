@@ -1,5 +1,84 @@
 # @backstage/plugin-bazaar
 
+## 0.2.16
+
+### Patch Changes
+
+- 482bb5c0bbf8: Moved `@types/react` to be a regular dependency
+- 406b786a2a2c: Mark package as being free of side effects, allowing more optimized Webpack builds.
+- Updated dependencies
+  - @backstage/cli@0.22.13
+  - @backstage/plugin-catalog@1.13.0
+  - @backstage/plugin-catalog-react@1.8.4
+  - @backstage/core-components@0.13.5
+  - @backstage/catalog-client@1.4.4
+  - @backstage/catalog-model@1.4.2
+  - @backstage/core-plugin-api@1.6.0
+  - @backstage/errors@1.2.2
+  - @backstage/theme@0.4.2
+
+## 0.2.16-next.3
+
+### Patch Changes
+
+- 406b786a2a2c: Mark package as being free of side effects, allowing more optimized Webpack builds.
+- Updated dependencies
+  - @backstage/cli@0.22.13-next.3
+  - @backstage/catalog-client@1.4.4-next.2
+  - @backstage/catalog-model@1.4.2-next.2
+  - @backstage/core-components@0.13.5-next.3
+  - @backstage/core-plugin-api@1.6.0-next.3
+  - @backstage/errors@1.2.2-next.0
+  - @backstage/plugin-catalog@1.13.0-next.3
+  - @backstage/plugin-catalog-react@1.8.4-next.3
+  - @backstage/theme@0.4.2-next.0
+
+## 0.2.16-next.2
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/plugin-catalog@1.13.0-next.2
+  - @backstage/core-components@0.13.5-next.2
+  - @backstage/core-plugin-api@1.6.0-next.2
+  - @backstage/cli@0.22.13-next.2
+  - @backstage/plugin-catalog-react@1.8.4-next.2
+  - @backstage/catalog-model@1.4.2-next.1
+  - @backstage/catalog-client@1.4.4-next.1
+  - @backstage/errors@1.2.1
+  - @backstage/theme@0.4.1
+
+## 0.2.16-next.1
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/plugin-catalog-react@1.8.4-next.1
+  - @backstage/core-components@0.13.5-next.1
+  - @backstage/plugin-catalog@1.12.5-next.1
+  - @backstage/cli@0.22.13-next.1
+  - @backstage/catalog-model@1.4.2-next.0
+  - @backstage/core-plugin-api@1.6.0-next.1
+  - @backstage/catalog-client@1.4.4-next.0
+  - @backstage/errors@1.2.1
+  - @backstage/theme@0.4.1
+
+## 0.2.15-next.0
+
+### Patch Changes
+
+- 482bb5c0bbf8: Moved `@types/react` to be a regular dependency
+- Updated dependencies
+  - @backstage/plugin-catalog@1.12.4-next.0
+  - @backstage/cli@0.22.12-next.0
+  - @backstage/core-plugin-api@1.6.0-next.0
+  - @backstage/core-components@0.13.5-next.0
+  - @backstage/catalog-client@1.4.3
+  - @backstage/catalog-model@1.4.1
+  - @backstage/errors@1.2.1
+  - @backstage/theme@0.4.1
+  - @backstage/plugin-catalog-react@1.8.3-next.0
+
 ## 0.2.12
 
 ### Patch Changes

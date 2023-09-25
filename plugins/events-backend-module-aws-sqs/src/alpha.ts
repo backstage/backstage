@@ -14,4 +14,4 @@
  * limitations under the License.
  */
 
-export { eventsModuleAwsSqsConsumingEventPublisher } from './service/eventsModuleAwsSqsConsumingEventPublisher';
+export { eventsModuleAwsSqsConsumingEventPublisher as default } from './service/eventsModuleAwsSqsConsumingEventPublisher';

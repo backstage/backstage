@@ -679,7 +679,7 @@ export type TemplateParameterSchema = {
 
 // @public
 export const useCustomFieldExtensions: <
-  TComponentDataType = FieldExtensionOptions<unknown, unknown>,
+  TComponentDataType = FieldExtensionOptions,
 >(
   outlet: React.ReactNode,
 ) => TComponentDataType[];

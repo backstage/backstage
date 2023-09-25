@@ -1,5 +1,127 @@
 # @backstage/plugin-catalog-backend-module-aws
 
+## 0.2.6
+
+### Patch Changes
+
+- 71114ac50e02: The export for the new backend system has been moved to be the `default` export.
+
+  For example, if you are currently importing the plugin using the following pattern:
+
+  ```ts
+  import { examplePlugin } from '@backstage/plugin-example-backend';
+
+  backend.add(examplePlugin);
+  ```
+
+  It should be migrated to this:
+
+  ```ts
+  backend.add(import('@backstage/plugin-example-backend'));
+  ```
+
+- Updated dependencies
+  - @backstage/plugin-kubernetes-common@0.6.6
+  - @backstage/backend-tasks@0.5.8
+  - @backstage/backend-common@0.19.5
+  - @backstage/config@1.1.0
+  - @backstage/catalog-model@1.4.2
+  - @backstage/errors@1.2.2
+  - @backstage/integration@1.7.0
+  - @backstage/plugin-catalog-common@1.0.16
+  - @backstage/types@1.1.1
+  - @backstage/backend-plugin-api@0.6.3
+  - @backstage/plugin-catalog-node@1.4.4
+  - @backstage/integration-aws-node@0.1.6
+
+## 0.2.6-next.3
+
+### Patch Changes
+
+- 71114ac50e02: The export for the new backend system has been moved to be the `default` export.
+
+  For example, if you are currently importing the plugin using the following pattern:
+
+  ```ts
+  import { examplePlugin } from '@backstage/plugin-example-backend';
+
+  backend.add(examplePlugin);
+  ```
+
+  It should be migrated to this:
+
+  ```ts
+  backend.add(import('@backstage/plugin-example-backend'));
+  ```
+
+- Updated dependencies
+  - @backstage/catalog-model@1.4.2-next.2
+  - @backstage/config@1.1.0-next.2
+  - @backstage/errors@1.2.2-next.0
+  - @backstage/integration@1.7.0-next.3
+  - @backstage/plugin-catalog-common@1.0.16-next.2
+  - @backstage/plugin-kubernetes-common@0.6.6-next.2
+  - @backstage/types@1.1.1-next.0
+  - @backstage/backend-plugin-api@0.6.3-next.3
+  - @backstage/backend-common@0.19.5-next.3
+  - @backstage/backend-tasks@0.5.8-next.3
+  - @backstage/integration-aws-node@0.1.6-next.2
+  - @backstage/plugin-catalog-node@1.4.4-next.3
+
+## 0.2.6-next.2
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/config@1.1.0-next.1
+  - @backstage/backend-tasks@0.5.8-next.2
+  - @backstage/backend-common@0.19.5-next.2
+  - @backstage/plugin-catalog-node@1.4.4-next.2
+  - @backstage/integration@1.7.0-next.2
+  - @backstage/integration-aws-node@0.1.6-next.1
+  - @backstage/backend-plugin-api@0.6.3-next.2
+  - @backstage/catalog-model@1.4.2-next.1
+  - @backstage/errors@1.2.1
+  - @backstage/types@1.1.0
+  - @backstage/plugin-catalog-common@1.0.16-next.1
+  - @backstage/plugin-kubernetes-common@0.6.6-next.1
+
+## 0.2.6-next.1
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/plugin-kubernetes-common@0.6.6-next.0
+  - @backstage/config@1.1.0-next.0
+  - @backstage/integration@1.7.0-next.1
+  - @backstage/backend-tasks@0.5.8-next.1
+  - @backstage/backend-common@0.19.5-next.1
+  - @backstage/backend-plugin-api@0.6.3-next.1
+  - @backstage/catalog-model@1.4.2-next.0
+  - @backstage/integration-aws-node@0.1.6-next.0
+  - @backstage/plugin-catalog-node@1.4.4-next.1
+  - @backstage/plugin-catalog-common@1.0.16-next.0
+  - @backstage/errors@1.2.1
+  - @backstage/types@1.1.0
+
+## 0.2.5-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-common@0.19.4-next.0
+  - @backstage/integration@1.7.0-next.0
+  - @backstage/backend-tasks@0.5.7-next.0
+  - @backstage/backend-plugin-api@0.6.2-next.0
+  - @backstage/catalog-model@1.4.1
+  - @backstage/config@1.0.8
+  - @backstage/errors@1.2.1
+  - @backstage/integration-aws-node@0.1.5
+  - @backstage/types@1.1.0
+  - @backstage/plugin-catalog-common@1.0.15
+  - @backstage/plugin-catalog-node@1.4.3-next.0
+  - @backstage/plugin-kubernetes-common@0.6.5
+
 ## 0.2.3
 
 ### Patch Changes

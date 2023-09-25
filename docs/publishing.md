@@ -13,10 +13,54 @@ npm.
 Releases are handled by changesets and trigger whenever the "Version Packages"
 PR is merged. This is typically done every Tuesday around noon CET.
 
+## Next Line Release Process
+
+- PR Checks: Ensure there are no outstanding PRs pending to be merged for this version. If there are any, reach out to maintainers and relevant owners of the affected code reminding them of the deadline for the release.
+- [optional] Lock main branch
+  - Lock the main branch to prevent any new merges.
+  - Note: Admin rights are required to lock the branch. If you lack the necessary permissions, contact a core maintainer to perform this action on your behalf.
+- Check [`Version Packages (next)` Pull Request](https://github.com/backstage/backstage/pulls?q=is%3Aopen+is%3Apr+in%3Atitle+%22Version+Packages+%28next%29%22)
+  - Verify the version we are shipping is correct, by looking at the version packages PR title. It should be "Version Packages (next)"
+  - Check `pre.json` in [the `.changeset` folder](https://github.com/backstage/backstage/blob/master/.changeset) - it should have `"mode": "pre"` near the top. If you encounter `"mode": "exit"` or if the file doesn't exist, it indicates a mainline release.
+- Verify that there are no active/unfinished `sync_version-packages` actions running (https://github.com/backstage/backstage/actions/workflows/sync_version-packages.yml)
+  - Locking the main branch will prevent new ones to be created, but be sure to check for running actions again after unlocking, since it may cause pending auto-merge PRs to be merged.
+- Check [`Version Packages (next)` Pull Request](https://github.com/backstage/backstage/pulls?q=is%3Aopen+is%3Apr+in%3Atitle+%22Version+Packages+%28next%29%22) for sufficient approval to be merged
+  - Check generated `changelog` in the changed files of the pull request under `docs/releases` to see if there are any unexpected major bumps e.g. by searching the file
+  - Review & approve changes
+  - Reach out to core maintainer to merge the pull request
+  - Heads-up: The microsite building step can be skipped as long as the `prettier` task passes & everything else looks green
+
+Merging the `Version Packages (next)` Pull Request will trigger the deployment workflows. Follow along the [deployment workflow](https://github.com/backstage/backstage/actions/workflows/deploy_packages.yml). If you notice flakiness (e.g. if the build is flaky or if the release step runs into an error with releasing to npm) just restart the workflow.
+
+Congratulations on the release! There should be now a post in the [`#announcements` channel](https://discord.com/channels/687207715902193673/705123584468582400) in Discord linking to the release tag - check if links & tag look as expected. Finally unlock the main branch again. Merging PRs in master directly after release should be done with caution as it potential complicates fixing issues introduced in the release.
+
+## Switching Release Modes
+
+- To enter pre-release mode: `yarn changeset pre enter next` & create PR + merge changes
+- To exit pre-release mode: `yarn changeset pre exit` & create PR + merge changes
+  - Has to be done before the mainline release
+- It's not time critical; Affects the next release happening
+
 ## Emergency Release Process
 
 **This emergency release process is intended only for the Backstage
 maintainers.**
+
+Given one or more PRs towards master that we want to create a patch release for, run the following script from the repo root:
+
+```bash
+./scripts/patch-release-for-pr.js <pr-number> <pr-number-2> ...
+```
+
+Wait until the script has finished executing, at the end of the output you will find a link of the format `https://github.com/backstage/backstage/compare/patch/...`. Open this link in your browser to create a PR for the patch release. Finish the sentence "This release fixes an issue where..." and create the PR.
+
+Once the PR has been approved and merged, the patch release will be automatically created. The patch release is complete when a notification has been posted to Discord in the `#announcements` channel. Keep an eye on "Deploy Packages" workflow and re-trigger if it fails. It is safe to re-trigger any part of this workflow, including the release step.
+
+If the above process fails, you can fall back to the manual process documented below.
+
+### Old Process
+
+This is the old and manual process that we used before the patch script, provided here as a reference:
 
 For this example we will be using the `@backstage/plugin-foo` package as an
 example and assume that it is currently version `6.5.0` in the master branch.

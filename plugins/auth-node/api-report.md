@@ -384,6 +384,8 @@ export interface OAuthSession {
   // (undocumented)
   refreshToken?: string;
   // (undocumented)
+  refreshTokenExpiresInSeconds?: number;
+  // (undocumented)
   scope: string;
   // (undocumented)
   tokenType: string;

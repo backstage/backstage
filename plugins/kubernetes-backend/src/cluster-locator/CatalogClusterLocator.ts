@@ -20,7 +20,6 @@ import {
   ANNOTATION_KUBERNETES_API_SERVER,
   ANNOTATION_KUBERNETES_API_SERVER_CA,
   ANNOTATION_KUBERNETES_AUTH_PROVIDER,
-  ANNOTATION_KUBERNETES_OIDC_TOKEN_PROVIDER,
   ANNOTATION_KUBERNETES_SKIP_METRICS_LOOKUP,
   ANNOTATION_KUBERNETES_SKIP_TLS_VERIFY,
   ANNOTATION_KUBERNETES_DASHBOARD_URL,
@@ -58,26 +57,17 @@ export class CatalogClusterLocator implements KubernetesClustersSupplier {
       const clusterDetails: ClusterDetails = {
         name: entity.metadata.name,
         url: entity.metadata.annotations![ANNOTATION_KUBERNETES_API_SERVER]!,
+        authMetadata: entity.metadata.annotations!,
         caData:
           entity.metadata.annotations![ANNOTATION_KUBERNETES_API_SERVER_CA]!,
-        authProvider:
-          entity.metadata.annotations![ANNOTATION_KUBERNETES_AUTH_PROVIDER]!,
-        oidcTokenProvider:
-          entity.metadata.annotations![
-            ANNOTATION_KUBERNETES_OIDC_TOKEN_PROVIDER
-          ]!,
         skipMetricsLookup:
           entity.metadata.annotations![
             ANNOTATION_KUBERNETES_SKIP_METRICS_LOOKUP
-          ]! === 'true'
-            ? true
-            : false,
+          ]! === 'true',
         skipTLSVerify:
           entity.metadata.annotations![
             ANNOTATION_KUBERNETES_SKIP_TLS_VERIFY
-          ]! === 'true'
-            ? true
-            : false,
+          ]! === 'true',
         dashboardUrl:
           entity.metadata.annotations![ANNOTATION_KUBERNETES_DASHBOARD_URL]!,
         dashboardApp:

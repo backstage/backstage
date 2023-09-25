@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import { getRootLogger } from '@backstage/backend-common';
+import { createRootLogger, getRootLogger } from '@backstage/backend-common';
 import { ConfigReader } from '@backstage/config';
 import { ScmIntegrations } from '@backstage/integration';
 import { TemplateAction } from '@backstage/plugin-scaffolder-node';
@@ -22,6 +22,9 @@ import os from 'os';
 import { resolve as resolvePath } from 'path';
 import { Writable } from 'stream';
 import { createPublishGitlabMergeRequestAction } from './gitlabMergeRequest';
+
+// Make sure root logger is initialized ahead of FS mock
+createRootLogger();
 
 const root = os.platform() === 'win32' ? 'C:\\root' : '/root';
 const workspacePath = resolvePath(root, 'my-workspace');

@@ -1,5 +1,107 @@
 # @backstage/plugin-playlist
 
+## 0.1.16
+
+### Patch Changes
+
+- 79847cb73ed7: Updated latest playlist screen in readme document
+- ec4b0f8cd957: change color of delete icon to secondary in playlist table
+- 482bb5c0bbf8: Moved `@types/react` to be a regular dependency
+- 406b786a2a2c: Mark package as being free of side effects, allowing more optimized Webpack builds.
+- 2f3215bbbffe: Fix a bug that led to errors being thrown in guest mode
+- 8cec7664e146: Removed `@types/node` dependency
+- b5ba33a92750: Limit the use of the same playlist name when adding a playlist
+- 3d63e60f3c36: Internal restructure to avoid circular imports
+- fdbf215a8d8e: Fix the Ui style of the search bar
+- Updated dependencies
+  - @backstage/plugin-catalog-react@1.8.4
+  - @backstage/core-components@0.13.5
+  - @backstage/catalog-model@1.4.2
+  - @backstage/core-plugin-api@1.6.0
+  - @backstage/errors@1.2.2
+  - @backstage/plugin-catalog-common@1.0.16
+  - @backstage/plugin-permission-common@0.7.8
+  - @backstage/plugin-permission-react@0.4.15
+  - @backstage/plugin-playlist-common@0.1.10
+  - @backstage/plugin-search-react@1.7.0
+  - @backstage/theme@0.4.2
+
+## 0.1.16-next.3
+
+### Patch Changes
+
+- 406b786a2a2c: Mark package as being free of side effects, allowing more optimized Webpack builds.
+- 2f3215bbbffe: Fix a bug that led to errors being thrown in guest mode
+- fdbf215a8d8e: Fix the Ui style of the search bar
+- Updated dependencies
+  - @backstage/catalog-model@1.4.2-next.2
+  - @backstage/core-components@0.13.5-next.3
+  - @backstage/core-plugin-api@1.6.0-next.3
+  - @backstage/errors@1.2.2-next.0
+  - @backstage/plugin-catalog-common@1.0.16-next.2
+  - @backstage/plugin-catalog-react@1.8.4-next.3
+  - @backstage/plugin-permission-common@0.7.8-next.2
+  - @backstage/plugin-permission-react@0.4.15-next.3
+  - @backstage/plugin-playlist-common@0.1.10-next.2
+  - @backstage/plugin-search-react@1.7.0-next.3
+  - @backstage/theme@0.4.2-next.0
+
+## 0.1.16-next.2
+
+### Patch Changes
+
+- 79847cb73ed7: Updated latest playlist screen in readme document
+- 8cec7664e146: Removed `@types/node` dependency
+- Updated dependencies
+  - @backstage/core-components@0.13.5-next.2
+  - @backstage/core-plugin-api@1.6.0-next.2
+  - @backstage/plugin-catalog-react@1.8.4-next.2
+  - @backstage/plugin-search-react@1.7.0-next.2
+  - @backstage/plugin-permission-react@0.4.15-next.2
+  - @backstage/catalog-model@1.4.2-next.1
+  - @backstage/plugin-permission-common@0.7.8-next.1
+  - @backstage/errors@1.2.1
+  - @backstage/theme@0.4.1
+  - @backstage/plugin-catalog-common@1.0.16-next.1
+  - @backstage/plugin-playlist-common@0.1.10-next.1
+
+## 0.1.16-next.1
+
+### Patch Changes
+
+- ec4b0f8cd957: change color of delete icon to secondary in playlist table
+- b5ba33a92750: Limit the use of the same playlist name when adding a playlist
+- Updated dependencies
+  - @backstage/plugin-catalog-react@1.8.4-next.1
+  - @backstage/core-components@0.13.5-next.1
+  - @backstage/plugin-search-react@1.7.0-next.1
+  - @backstage/catalog-model@1.4.2-next.0
+  - @backstage/core-plugin-api@1.6.0-next.1
+  - @backstage/plugin-permission-common@0.7.8-next.0
+  - @backstage/plugin-permission-react@0.4.15-next.1
+  - @backstage/plugin-catalog-common@1.0.16-next.0
+  - @backstage/errors@1.2.1
+  - @backstage/theme@0.4.1
+  - @backstage/plugin-playlist-common@0.1.10-next.0
+
+## 0.1.15-next.0
+
+### Patch Changes
+
+- 482bb5c0bbf8: Moved `@types/react` to be a regular dependency
+- Updated dependencies
+  - @backstage/core-plugin-api@1.6.0-next.0
+  - @backstage/core-components@0.13.5-next.0
+  - @backstage/catalog-model@1.4.1
+  - @backstage/errors@1.2.1
+  - @backstage/theme@0.4.1
+  - @backstage/plugin-catalog-common@1.0.15
+  - @backstage/plugin-catalog-react@1.8.3-next.0
+  - @backstage/plugin-permission-common@0.7.7
+  - @backstage/plugin-permission-react@0.4.15-next.0
+  - @backstage/plugin-playlist-common@0.1.9
+  - @backstage/plugin-search-react@1.6.5-next.0
+
 ## 0.1.13
 
 ### Patch Changes

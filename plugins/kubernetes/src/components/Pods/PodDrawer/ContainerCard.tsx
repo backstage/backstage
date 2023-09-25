@@ -13,9 +13,8 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import React from 'react';
-
-import { IContainer, IContainerStatus } from 'kubernetes-models/v1';
+import { StructuredMetadataTable } from '@backstage/core-components';
+import { ClientContainerStatus } from '@backstage/plugin-kubernetes-common';
 import {
   Card,
   CardActions,
@@ -24,14 +23,14 @@ import {
   Grid,
   Typography,
 } from '@material-ui/core';
-
+import { IContainer, IContainerStatus } from 'kubernetes-models/v1';
 import { DateTime } from 'luxon';
+import React from 'react';
 
-import { PodScope, PodLogsDialog } from '../PodLogs';
-import { StructuredMetadataTable } from '@backstage/core-components';
-import { ClientContainerStatus } from '@backstage/plugin-kubernetes-common';
-import { ResourceUtilization } from '../../ResourceUtilization';
 import { bytesToMiB, formatMillicores } from '../../../utils/resources';
+import { PodExecTerminalDialog } from '../../PodExecTerminal/PodExecTerminalDialog';
+import { ResourceUtilization } from '../../ResourceUtilization';
+import { PodLogsDialog, PodScope } from '../PodLogs';
 
 const getContainerHealthChecks = (
   containerSpec: IContainer,
@@ -222,12 +221,18 @@ export const ContainerCard: React.FC<ContainerCardProps> = ({
           )}
         </Grid>
       </CardContent>
-      <CardActions disableSpacing>
+      <CardActions>
         <PodLogsDialog
           containerScope={{
             containerName: containerStatus.name,
             ...podScope,
           }}
+        />
+        <PodExecTerminalDialog
+          clusterName={podScope.clusterName}
+          containerName={containerStatus.name}
+          podName={podScope.podName}
+          podNamespace={podScope.podNamespace}
         />
       </CardActions>
     </Card>

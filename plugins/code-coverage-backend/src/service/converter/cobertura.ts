@@ -113,7 +113,13 @@ export class Cobertura implements Converter {
       .filter(Boolean)
       .flatMap(m => m.lines)
       .filter(Boolean)
-      .flatMap(l => l.line);
+      .flatMap(l => l.line)
+      .filter(
+        ({ $: methodLine }) =>
+          classLines.some(
+            ({ $: classLine }) => methodLine.number === classLine.number,
+          ) === false,
+      );
     const lines = [classLines, methodLines].flat().filter(Boolean);
     const lineHits = lines.map(l => {
       return {

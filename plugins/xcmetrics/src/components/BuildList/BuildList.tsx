@@ -39,8 +39,8 @@ export const BuildList = () => {
   const tableRef = useRef<any>();
 
   const initialFilters = {
-    from: DateTime.now().minus({ years: 1 }).toISODate(),
-    to: DateTime.now().toISODate(),
+    from: DateTime.now().minus({ years: 1 }).toISODate()!,
+    to: DateTime.now().toISODate()!,
   };
 
   const [filters, setFilters] = useState<BuildFilters>(initialFilters);

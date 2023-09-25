@@ -90,6 +90,7 @@ export async function makeRollupConfigs(
         chunkFileNames: `cjs/[name]-[hash].cjs.js`,
         format: 'commonjs',
         sourcemap: true,
+        exports: 'named',
       });
     }
     if (options.outputs.has(Output.esm)) {
@@ -157,7 +158,7 @@ export async function makeRollupConfigs(
         paths.resolveTargetRoot(
           'dist-types',
           relativePath(paths.targetRoot, targetDir),
-          e.path.replace(/\.ts$/, '.d.ts'),
+          e.path.replace(/\.(?:ts|tsx)$/, '.d.ts'),
         ),
       ]),
     );

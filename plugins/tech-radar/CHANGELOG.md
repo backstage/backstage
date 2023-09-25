@@ -1,5 +1,64 @@
 # @backstage/plugin-tech-radar
 
+## 0.6.8
+
+### Patch Changes
+
+- 482bb5c0bbf8: Moved `@types/react` to be a regular dependency
+- b45d0ac68191: Add names to blip entry links in the radar to improve accessibility
+- 80b4d0b34f14: Fixed the width of the tech radar dialog so that the content fits
+- 406b786a2a2c: Mark package as being free of side effects, allowing more optimized Webpack builds.
+- 6d35e9ea2afa: Add description property for Rings which will be shown in the footer.
+- 8cec7664e146: Removed `@types/node` dependency
+- c357f62052af: Fixed `RadarTimeline` text formatting.
+- Updated dependencies
+  - @backstage/core-components@0.13.5
+  - @backstage/core-plugin-api@1.6.0
+  - @backstage/theme@0.4.2
+
+## 0.6.8-next.3
+
+### Patch Changes
+
+- 406b786a2a2c: Mark package as being free of side effects, allowing more optimized Webpack builds.
+- c357f62052af: Fixed `RadarTimeline` text formatting.
+- Updated dependencies
+  - @backstage/core-components@0.13.5-next.3
+  - @backstage/core-plugin-api@1.6.0-next.3
+  - @backstage/theme@0.4.2-next.0
+
+## 0.6.8-next.2
+
+### Patch Changes
+
+- b45d0ac68191: Add names to blip entry links in the radar to improve accessibility
+- 6d35e9ea2afa: Add description property for Rings which will be shown in the footer.
+- 8cec7664e146: Removed `@types/node` dependency
+- Updated dependencies
+  - @backstage/core-components@0.13.5-next.2
+  - @backstage/core-plugin-api@1.6.0-next.2
+  - @backstage/theme@0.4.1
+
+## 0.6.8-next.1
+
+### Patch Changes
+
+- 80b4d0b34f14: Fixed the width of the tech radar dialog so that the content fits
+- Updated dependencies
+  - @backstage/core-components@0.13.5-next.1
+  - @backstage/core-plugin-api@1.6.0-next.1
+  - @backstage/theme@0.4.1
+
+## 0.6.8-next.0
+
+### Patch Changes
+
+- 482bb5c0bbf8: Moved `@types/react` to be a regular dependency
+- Updated dependencies
+  - @backstage/core-plugin-api@1.6.0-next.0
+  - @backstage/core-components@0.13.5-next.0
+  - @backstage/theme@0.4.1
+
 ## 0.6.7
 
 ### Patch Changes

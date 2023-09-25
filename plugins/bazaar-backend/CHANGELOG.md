@@ -1,5 +1,98 @@
 # @backstage/plugin-bazaar-backend
 
+## 0.3.0
+
+### Minor Changes
+
+- 71114ac50e02: **BREAKING**: The export for the new backend system has been moved to be the `default` export.
+
+  For example, if you are currently importing the plugin using the following pattern:
+
+  ```ts
+  import { examplePlugin } from '@backstage/plugin-example-backend';
+
+  backend.add(examplePlugin);
+  ```
+
+  It should be migrated to this:
+
+  ```ts
+  backend.add(import('@backstage/plugin-example-backend'));
+  ```
+
+### Patch Changes
+
+- cfc3ca6ce060: Changes needed to support MySQL
+- Updated dependencies
+  - @backstage/backend-common@0.19.5
+  - @backstage/plugin-auth-node@0.3.0
+  - @backstage/config@1.1.0
+  - @backstage/errors@1.2.2
+  - @backstage/backend-plugin-api@0.6.3
+
+## 0.3.0-next.3
+
+### Minor Changes
+
+- 71114ac50e02: **BREAKING**: The export for the new backend system has been moved to be the `default` export.
+
+  For example, if you are currently importing the plugin using the following pattern:
+
+  ```ts
+  import { examplePlugin } from '@backstage/plugin-example-backend';
+
+  backend.add(examplePlugin);
+  ```
+
+  It should be migrated to this:
+
+  ```ts
+  backend.add(import('@backstage/plugin-example-backend'));
+  ```
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/config@1.1.0-next.2
+  - @backstage/errors@1.2.2-next.0
+  - @backstage/backend-plugin-api@0.6.3-next.3
+  - @backstage/backend-common@0.19.5-next.3
+  - @backstage/plugin-auth-node@0.3.0-next.3
+
+## 0.2.14-next.2
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/config@1.1.0-next.1
+  - @backstage/backend-common@0.19.5-next.2
+  - @backstage/plugin-auth-node@0.3.0-next.2
+  - @backstage/backend-plugin-api@0.6.3-next.2
+  - @backstage/errors@1.2.1
+
+## 0.2.14-next.1
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/config@1.1.0-next.0
+  - @backstage/backend-common@0.19.5-next.1
+  - @backstage/backend-plugin-api@0.6.3-next.1
+  - @backstage/plugin-auth-node@0.3.0-next.1
+  - @backstage/errors@1.2.1
+
+## 0.2.13-next.0
+
+### Patch Changes
+
+- cfc3ca6ce060: Changes needed to support MySQL
+- Updated dependencies
+  - @backstage/plugin-auth-node@0.3.0-next.0
+  - @backstage/backend-common@0.19.4-next.0
+  - @backstage/backend-plugin-api@0.6.2-next.0
+  - @backstage/config@1.0.8
+  - @backstage/errors@1.2.1
+
 ## 0.2.11
 
 ### Patch Changes

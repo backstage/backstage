@@ -53,7 +53,8 @@ export type AuthHandlerResult = {
 };
 
 // @public
-export const authPlugin: () => BackendFeature;
+const authPlugin: () => BackendFeature;
+export default authPlugin;
 
 // @public @deprecated (undocumented)
 export type AuthProviderConfig = AuthProviderConfig_2;
@@ -478,7 +479,7 @@ export const providers: Readonly<{
             authHandler?: AuthHandler<GithubOAuthResult> | undefined;
             signIn?:
               | {
-                  resolver: SignInResolver<GithubOAuthResult>;
+                  resolver: SignInResolver_2<GithubOAuthResult>;
                 }
               | undefined;
             stateEncoder?: StateEncoder | undefined;
@@ -486,7 +487,7 @@ export const providers: Readonly<{
         | undefined,
     ) => AuthProviderFactory_2;
     resolvers: Readonly<{
-      usernameMatchingUserEntityName: () => SignInResolver<GithubOAuthResult>;
+      usernameMatchingUserEntityName: () => SignInResolver_2<GithubOAuthResult>;
     }>;
   }>;
   gitlab: Readonly<{

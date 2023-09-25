@@ -14,6 +14,7 @@
  * limitations under the License.
  */
 
+export * from './useIsPodExecTerminalSupported';
 export * from './useKubernetesObjects';
 export * from './useCustomResources';
 export * from './PodNamesWithErrors';

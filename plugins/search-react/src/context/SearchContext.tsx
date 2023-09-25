@@ -30,7 +30,11 @@ import {
   createVersionedValueMap,
 } from '@backstage/version-bridge';
 import { JsonObject } from '@backstage/types';
-import { AnalyticsContext, useApi } from '@backstage/core-plugin-api';
+import {
+  AnalyticsContext,
+  useApi,
+  configApiRef,
+} from '@backstage/core-plugin-api';
 import { SearchResultSet } from '@backstage/plugin-search-common';
 
 import { searchApiRef } from '../api';
@@ -98,7 +102,7 @@ export const useSearchContextCheck = () => {
  * The initial state of `SearchContextProvider`.
  *
  */
-const searchInitialState: SearchContextState = {
+const defaultInitialSearchState: SearchContextState = {
   term: '',
   types: [],
   filters: {},
@@ -107,7 +111,7 @@ const searchInitialState: SearchContextState = {
 };
 
 const useSearchContextValue = (
-  initialValue: SearchContextState = searchInitialState,
+  initialValue: SearchContextState = defaultInitialSearchState,
 ) => {
   const searchApi = useApi(searchApiRef);
 
@@ -239,10 +243,24 @@ export const SearchContextProvider = (props: SearchContextProviderProps) => {
   const { initialState, inheritParentContextIfAvailable, children } = props;
   const hasParentContext = useSearchContextCheck();
 
+  const configApi = useApi(configApiRef);
+
+  const propsInitialSearchState = initialState ?? {};
+
+  const configInitialSearchState = configApi.has('search.query.pageLimit')
+    ? { pageLimit: configApi.getNumber('search.query.pageLimit') }
+    : {};
+
+  const searchContextInitialState = {
+    ...defaultInitialSearchState,
+    ...propsInitialSearchState,
+    ...configInitialSearchState,
+  };
+
   return hasParentContext && inheritParentContextIfAvailable ? (
     <>{children}</>
   ) : (
-    <LocalSearchContext initialState={initialState}>
+    <LocalSearchContext initialState={searchContextInitialState}>
       {children}
     </LocalSearchContext>
   );

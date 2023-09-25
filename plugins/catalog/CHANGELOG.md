@@ -1,5 +1,114 @@
 # @backstage/plugin-catalog
 
+## 1.13.0
+
+### Minor Changes
+
+- e44f45ac4515: This change allows a new annotation of `backstage.io/techdocs-entity` this ref allows you to reference another entity for its TechDocs. This allows you have a single TechDoc for all items in a system, for example you might have a frontend and a backend in the same repo. This would allow you to have TechDocs build under a `System` entity while referencing the system e.g.: `backstage.io/techdocs-entity: system:default/example` that will show the systems docs in both the TechDocs button and the TechDocs tab without needing to do duplicate builds and filling the TechDocs page with garbage.
+
+### Patch Changes
+
+- 832eef72485b: Added title to props for `Has<kind>Cards`.
+- 163a41035e42: Fixed an issue where `EntitySwitch` was preventing the display of entity errors.
+- 406b786a2a2c: Mark package as being free of side effects, allowing more optimized Webpack builds.
+- Updated dependencies
+  - @backstage/integration-react@1.1.19
+  - @backstage/plugin-catalog-react@1.8.4
+  - @backstage/core-components@0.13.5
+  - @backstage/catalog-client@1.4.4
+  - @backstage/catalog-model@1.4.2
+  - @backstage/core-plugin-api@1.6.0
+  - @backstage/errors@1.2.2
+  - @backstage/plugin-catalog-common@1.0.16
+  - @backstage/plugin-scaffolder-common@1.4.1
+  - @backstage/plugin-search-common@1.2.6
+  - @backstage/plugin-search-react@1.7.0
+  - @backstage/theme@0.4.2
+  - @backstage/types@1.1.1
+
+## 1.13.0-next.3
+
+### Patch Changes
+
+- 406b786a2a2c: Mark package as being free of side effects, allowing more optimized Webpack builds.
+- Updated dependencies
+  - @backstage/catalog-client@1.4.4-next.2
+  - @backstage/catalog-model@1.4.2-next.2
+  - @backstage/core-components@0.13.5-next.3
+  - @backstage/core-plugin-api@1.6.0-next.3
+  - @backstage/errors@1.2.2-next.0
+  - @backstage/integration-react@1.1.19-next.3
+  - @backstage/plugin-catalog-common@1.0.16-next.2
+  - @backstage/plugin-catalog-react@1.8.4-next.3
+  - @backstage/plugin-scaffolder-common@1.4.1-next.2
+  - @backstage/plugin-search-common@1.2.6-next.2
+  - @backstage/plugin-search-react@1.7.0-next.3
+  - @backstage/theme@0.4.2-next.0
+  - @backstage/types@1.1.1-next.0
+
+## 1.13.0-next.2
+
+### Minor Changes
+
+- e44f45ac4515: This change allows a new annotation of `backstage.io/techdocs-entity` this ref allows you to reference another entity for its TechDocs. This allows you have a single TechDoc for all items in a system, for example you might have a frontend and a backend in the same repo. This would allow you to have TechDocs build under a `System` entity while referencing the system e.g.: `backstage.io/techdocs-entity: system:default/example` that will show the systems docs in both the TechDocs button and the TechDocs tab without needing to do duplicate builds and filling the TechDocs page with garbage.
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/integration-react@1.1.19-next.2
+  - @backstage/core-components@0.13.5-next.2
+  - @backstage/core-plugin-api@1.6.0-next.2
+  - @backstage/plugin-catalog-react@1.8.4-next.2
+  - @backstage/plugin-search-react@1.7.0-next.2
+  - @backstage/catalog-model@1.4.2-next.1
+  - @backstage/catalog-client@1.4.4-next.1
+  - @backstage/errors@1.2.1
+  - @backstage/theme@0.4.1
+  - @backstage/types@1.1.0
+  - @backstage/plugin-catalog-common@1.0.16-next.1
+  - @backstage/plugin-scaffolder-common@1.4.1-next.1
+  - @backstage/plugin-search-common@1.2.6-next.1
+
+## 1.12.5-next.1
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/plugin-catalog-react@1.8.4-next.1
+  - @backstage/core-components@0.13.5-next.1
+  - @backstage/plugin-search-react@1.7.0-next.1
+  - @backstage/integration-react@1.1.19-next.1
+  - @backstage/catalog-model@1.4.2-next.0
+  - @backstage/core-plugin-api@1.6.0-next.1
+  - @backstage/catalog-client@1.4.4-next.0
+  - @backstage/plugin-catalog-common@1.0.16-next.0
+  - @backstage/plugin-scaffolder-common@1.4.1-next.0
+  - @backstage/errors@1.2.1
+  - @backstage/theme@0.4.1
+  - @backstage/types@1.1.0
+  - @backstage/plugin-search-common@1.2.6-next.0
+
+## 1.12.4-next.0
+
+### Patch Changes
+
+- 832eef72485b: Added title to props for `Has<kind>Cards`.
+- 163a41035e42: Fixed an issue where `EntitySwitch` was preventing the display of entity errors.
+- Updated dependencies
+  - @backstage/integration-react@1.1.18-next.0
+  - @backstage/core-plugin-api@1.6.0-next.0
+  - @backstage/core-components@0.13.5-next.0
+  - @backstage/catalog-client@1.4.3
+  - @backstage/catalog-model@1.4.1
+  - @backstage/errors@1.2.1
+  - @backstage/theme@0.4.1
+  - @backstage/types@1.1.0
+  - @backstage/plugin-catalog-common@1.0.15
+  - @backstage/plugin-catalog-react@1.8.3-next.0
+  - @backstage/plugin-scaffolder-common@1.4.0
+  - @backstage/plugin-search-common@1.2.5
+  - @backstage/plugin-search-react@1.6.5-next.0
+
 ## 1.12.1
 
 ### Patch Changes

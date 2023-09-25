@@ -1,5 +1,76 @@
 # @backstage/plugin-code-coverage
 
+## 0.2.17
+
+### Patch Changes
+
+- 406b786a2a2c: Mark package as being free of side effects, allowing more optimized Webpack builds.
+- 1d8f4f0a7486: Use fetchApi to ensure authorization is used when fetching code-coverage data
+- 8cec7664e146: Removed `@types/node` dependency
+- Updated dependencies
+  - @backstage/plugin-catalog-react@1.8.4
+  - @backstage/core-components@0.13.5
+  - @backstage/config@1.1.0
+  - @backstage/catalog-model@1.4.2
+  - @backstage/core-plugin-api@1.6.0
+  - @backstage/errors@1.2.2
+  - @backstage/theme@0.4.2
+
+## 0.2.17-next.3
+
+### Patch Changes
+
+- 406b786a2a2c: Mark package as being free of side effects, allowing more optimized Webpack builds.
+- Updated dependencies
+  - @backstage/catalog-model@1.4.2-next.2
+  - @backstage/config@1.1.0-next.2
+  - @backstage/core-components@0.13.5-next.3
+  - @backstage/core-plugin-api@1.6.0-next.3
+  - @backstage/errors@1.2.2-next.0
+  - @backstage/plugin-catalog-react@1.8.4-next.3
+  - @backstage/theme@0.4.2-next.0
+
+## 0.2.17-next.2
+
+### Patch Changes
+
+- 8cec7664e146: Removed `@types/node` dependency
+- Updated dependencies
+  - @backstage/core-components@0.13.5-next.2
+  - @backstage/core-plugin-api@1.6.0-next.2
+  - @backstage/config@1.1.0-next.1
+  - @backstage/plugin-catalog-react@1.8.4-next.2
+  - @backstage/catalog-model@1.4.2-next.1
+  - @backstage/errors@1.2.1
+  - @backstage/theme@0.4.1
+
+## 0.2.17-next.1
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/plugin-catalog-react@1.8.4-next.1
+  - @backstage/core-components@0.13.5-next.1
+  - @backstage/config@1.1.0-next.0
+  - @backstage/catalog-model@1.4.2-next.0
+  - @backstage/core-plugin-api@1.6.0-next.1
+  - @backstage/errors@1.2.1
+  - @backstage/theme@0.4.1
+
+## 0.2.16-next.0
+
+### Patch Changes
+
+- 1d8f4f0a7486: Use fetchApi to ensure authorization is used when fetching code-coverage data
+- Updated dependencies
+  - @backstage/core-plugin-api@1.6.0-next.0
+  - @backstage/core-components@0.13.5-next.0
+  - @backstage/catalog-model@1.4.1
+  - @backstage/config@1.0.8
+  - @backstage/errors@1.2.1
+  - @backstage/theme@0.4.1
+  - @backstage/plugin-catalog-react@1.8.3-next.0
+
 ## 0.2.14
 
 ### Patch Changes

@@ -14,41 +14,41 @@
  * limitations under the License.
  */
 
-import { resolve as resolvePath } from 'path';
+import { resolve as resolvePath, sep } from 'path';
 import { resolvePackagePaths } from './paths';
 
 describe('resolvePackages', () => {
   it('should return all packages', async () => {
     const paths = await resolvePackagePaths();
     expect(paths.length).toBeGreaterThan(10);
-    expect(paths).toContain('packages/cli');
-    expect(paths).toContain('packages/repo-tools');
+    expect(paths).toContain(`packages${sep}cli`);
+    expect(paths).toContain(`packages${sep}repo-tools`);
   });
 
   it('should filter by path', async () => {
     await expect(
       resolvePackagePaths({ paths: ['packages/repo-tools'] }),
-    ).resolves.toEqual(['packages/repo-tools']);
+    ).resolves.toEqual([`packages${sep}repo-tools`]);
 
     await expect(
       resolvePackagePaths({ paths: [resolvePath('packages/repo-tools')] }),
-    ).resolves.toEqual(['packages/repo-tools']);
+    ).resolves.toEqual([`packages${sep}repo-tools`]);
 
     await expect(
       resolvePackagePaths({
         paths: [resolvePath('packages/repo-tools/package.json')],
       }),
-    ).resolves.toEqual(['packages/repo-tools']);
+    ).resolves.toEqual([`packages${sep}repo-tools`]);
     await expect(
       resolvePackagePaths({
         paths: ['packages/repo-tools/src/some/made/up/file.ts'],
       }),
-    ).resolves.toEqual(['packages/repo-tools']);
+    ).resolves.toEqual([`packages${sep}repo-tools`]);
     await expect(
       resolvePackagePaths({
         paths: ['packages/repo-tools/src/some/made/up/file.ts', 'packages/cli'],
       }),
-    ).resolves.toEqual(['packages/cli', 'packages/repo-tools']);
+    ).resolves.toEqual([`packages${sep}cli`, `packages${sep}repo-tools`]);
   });
 
   it('should filter with include', async () => {
@@ -61,11 +61,11 @@ describe('resolvePackages', () => {
     expect(pluginPackages.length).toBeGreaterThan(10);
     expect(allPackages.length).toBeGreaterThan(pluginPackages.length);
 
-    expect(pluginPackages).toContain('plugins/catalog');
+    expect(pluginPackages).toContain(`plugins${sep}catalog`);
 
     await expect(
       resolvePackagePaths({ include: ['packages/repo-t??ls'] }),
-    ).resolves.toEqual(['packages/repo-tools']);
+    ).resolves.toEqual([`packages${sep}repo-tools`]);
   });
 
   it('should filter with exclude', async () => {
@@ -73,8 +73,8 @@ describe('resolvePackages', () => {
       exclude: ['plugins/*'],
     });
 
-    expect(nonPluginPackages).toContain('packages/app');
-    expect(nonPluginPackages).not.toContain('plugins/catalog');
+    expect(nonPluginPackages).toContain(`packages${sep}app`);
+    expect(nonPluginPackages).not.toContain(`plugins${sep}catalog`);
   });
 
   it('should combine all options', async () => {
@@ -84,6 +84,6 @@ describe('resolvePackages', () => {
         include: ['packages/app'],
         exclude: ['packages/back*'],
       }),
-    ).resolves.toEqual(['packages/app']);
+    ).resolves.toEqual([`packages${sep}app`]);
   });
 });

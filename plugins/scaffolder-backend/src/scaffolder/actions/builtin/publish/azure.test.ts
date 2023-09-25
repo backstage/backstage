@@ -42,7 +42,10 @@ describe('publish:azure', () => {
   const config = new ConfigReader({
     integrations: {
       azure: [
-        { host: 'dev.azure.com', token: 'tokenlols' },
+        {
+          host: 'dev.azure.com',
+          credentials: [{ personalAccessToken: 'tokenlols' }],
+        },
         { host: 'myazurehostnotoken.com' },
       ],
     },
@@ -115,7 +118,9 @@ describe('publish:azure', () => {
             'myazurehostnotoken.com?repo=bob&owner=owner&organization=org',
         },
       }),
-    ).rejects.toThrow(/No token provided for Azure Integration/);
+    ).rejects.toThrow(
+      /No credentials provided https:\/\/myazurehostnotoken.com\/org, please check your integrations config/,
+    );
   });
 
   it('should throw when no repo is returned', async () => {
@@ -260,7 +265,10 @@ describe('publish:azure', () => {
     const customAuthorConfig = new ConfigReader({
       integrations: {
         azure: [
-          { host: 'dev.azure.com', token: 'tokenlols' },
+          {
+            host: 'dev.azure.com',
+            credentials: [{ personalAccessToken: 'tokenlols' }],
+          },
           { host: 'myazurehostnotoken.com' },
         ],
       },
@@ -301,7 +309,10 @@ describe('publish:azure', () => {
     const customAuthorConfig = new ConfigReader({
       integrations: {
         azure: [
-          { host: 'dev.azure.com', token: 'tokenlols' },
+          {
+            host: 'dev.azure.com',
+            credentials: [{ personalAccessToken: 'tokenlols' }],
+          },
           { host: 'myazurehostnotoken.com' },
         ],
       },

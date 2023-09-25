@@ -1,5 +1,64 @@
 # @backstage/backend-plugin-api
 
+## 0.6.3
+
+### Patch Changes
+
+- ba4506076e2d: Ensure that root scoped services cannot accept (at a type level) plugin scoped deps
+- 474b792d6a43: Service factory functions are now marked as feature factories that can be installed in the backend.
+- Updated dependencies
+  - @backstage/backend-tasks@0.5.8
+  - @backstage/plugin-auth-node@0.3.0
+  - @backstage/config@1.1.0
+  - @backstage/plugin-permission-common@0.7.8
+  - @backstage/types@1.1.1
+
+## 0.6.3-next.3
+
+### Patch Changes
+
+- ba4506076e2d: Ensure that root scoped services cannot accept (at a type level) plugin scoped deps
+- 474b792d6a43: Service factory functions are now marked as feature factories that can be installed in the backend.
+- Updated dependencies
+  - @backstage/config@1.1.0-next.2
+  - @backstage/plugin-permission-common@0.7.8-next.2
+  - @backstage/types@1.1.1-next.0
+  - @backstage/backend-tasks@0.5.8-next.3
+  - @backstage/plugin-auth-node@0.3.0-next.3
+
+## 0.6.3-next.2
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/config@1.1.0-next.1
+  - @backstage/backend-tasks@0.5.8-next.2
+  - @backstage/plugin-auth-node@0.3.0-next.2
+  - @backstage/plugin-permission-common@0.7.8-next.1
+  - @backstage/types@1.1.0
+
+## 0.6.3-next.1
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/config@1.1.0-next.0
+  - @backstage/backend-tasks@0.5.8-next.1
+  - @backstage/plugin-auth-node@0.3.0-next.1
+  - @backstage/plugin-permission-common@0.7.8-next.0
+  - @backstage/types@1.1.0
+
+## 0.6.2-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/plugin-auth-node@0.3.0-next.0
+  - @backstage/backend-tasks@0.5.7-next.0
+  - @backstage/config@1.0.8
+  - @backstage/types@1.1.0
+  - @backstage/plugin-permission-common@0.7.7
+
 ## 0.6.0
 
 ### Minor Changes

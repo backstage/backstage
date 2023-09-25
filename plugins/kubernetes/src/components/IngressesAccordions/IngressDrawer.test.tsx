@@ -14,31 +14,29 @@
  * limitations under the License.
  */
 
+import { renderInTestApp, textContentMatcher } from '@backstage/test-utils';
+import { screen } from '@testing-library/react';
 import React from 'react';
-import { render } from '@testing-library/react';
-import * as ingresses from './__fixtures__/2-ingresses.json';
-import { textContentMatcher, wrapInTestApp } from '@backstage/test-utils';
 import { IngressDrawer } from './IngressDrawer';
+import * as ingresses from './__fixtures__/2-ingresses.json';
 
 describe('IngressDrawer', () => {
   it('should render ingress drawer', async () => {
-    const { getByText, getAllByText } = render(
-      wrapInTestApp(
-        <IngressDrawer ingress={(ingresses as any).ingresses[0]} expanded />,
-      ),
+    await renderInTestApp(
+      <IngressDrawer ingress={(ingresses as any).ingresses[0]} expanded />,
     );
 
-    expect(getAllByText('awesome-service')).toHaveLength(4);
-    expect(getByText('YAML')).toBeInTheDocument();
-    expect(getByText('Rules')).toBeInTheDocument();
+    expect(screen.getAllByText('awesome-service')).toHaveLength(4);
+    expect(screen.getByText('YAML')).toBeInTheDocument();
+    expect(screen.getByText('Rules')).toBeInTheDocument();
     expect(
-      getByText(textContentMatcher('Host: api.awesome-host.io')),
+      screen.getByText(textContentMatcher('Host: api.awesome-host.io')),
     ).toBeInTheDocument();
-    expect(getAllByText(textContentMatcher('Service Port: 80'))).toHaveLength(
-      2,
-    );
     expect(
-      getAllByText(textContentMatcher('Service Name: awesome-service')),
+      screen.getAllByText(textContentMatcher('Service Port: 80')),
+    ).toHaveLength(2);
+    expect(
+      screen.getAllByText(textContentMatcher('Service Name: awesome-service')),
     ).toHaveLength(2);
   });
 });

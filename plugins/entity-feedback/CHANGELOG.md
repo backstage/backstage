@@ -1,5 +1,76 @@
 # @backstage/plugin-entity-feedback
 
+## 0.2.7
+
+### Patch Changes
+
+- 5e2e06db747a: Improve README to note that Backstage identity is required to be configured
+- 406b786a2a2c: Mark package as being free of side effects, allowing more optimized Webpack builds.
+- 8cec7664e146: Removed `@types/node` dependency
+- Updated dependencies
+  - @backstage/plugin-catalog-react@1.8.4
+  - @backstage/core-components@0.13.5
+  - @backstage/catalog-model@1.4.2
+  - @backstage/core-plugin-api@1.6.0
+  - @backstage/errors@1.2.2
+  - @backstage/plugin-entity-feedback-common@0.1.3
+  - @backstage/theme@0.4.2
+
+## 0.2.7-next.3
+
+### Patch Changes
+
+- 406b786a2a2c: Mark package as being free of side effects, allowing more optimized Webpack builds.
+- Updated dependencies
+  - @backstage/catalog-model@1.4.2-next.2
+  - @backstage/core-components@0.13.5-next.3
+  - @backstage/core-plugin-api@1.6.0-next.3
+  - @backstage/errors@1.2.2-next.0
+  - @backstage/plugin-catalog-react@1.8.4-next.3
+  - @backstage/plugin-entity-feedback-common@0.1.3-next.0
+  - @backstage/theme@0.4.2-next.0
+
+## 0.2.7-next.2
+
+### Patch Changes
+
+- 8cec7664e146: Removed `@types/node` dependency
+- Updated dependencies
+  - @backstage/core-components@0.13.5-next.2
+  - @backstage/core-plugin-api@1.6.0-next.2
+  - @backstage/plugin-catalog-react@1.8.4-next.2
+  - @backstage/catalog-model@1.4.2-next.1
+  - @backstage/errors@1.2.1
+  - @backstage/theme@0.4.1
+  - @backstage/plugin-entity-feedback-common@0.1.2
+
+## 0.2.7-next.1
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/plugin-catalog-react@1.8.4-next.1
+  - @backstage/core-components@0.13.5-next.1
+  - @backstage/catalog-model@1.4.2-next.0
+  - @backstage/core-plugin-api@1.6.0-next.1
+  - @backstage/errors@1.2.1
+  - @backstage/theme@0.4.1
+  - @backstage/plugin-entity-feedback-common@0.1.2
+
+## 0.2.6-next.0
+
+### Patch Changes
+
+- 5e2e06db747a: Improve README to note that Backstage identity is required to be configured
+- Updated dependencies
+  - @backstage/core-plugin-api@1.6.0-next.0
+  - @backstage/core-components@0.13.5-next.0
+  - @backstage/catalog-model@1.4.1
+  - @backstage/errors@1.2.1
+  - @backstage/theme@0.4.1
+  - @backstage/plugin-catalog-react@1.8.3-next.0
+  - @backstage/plugin-entity-feedback-common@0.1.2
+
 ## 0.2.4
 
 ### Patch Changes

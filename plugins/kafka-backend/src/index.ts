@@ -22,4 +22,4 @@
 
 export type { RouterOptions } from './service/router';
 export { createRouter } from './service/router';
-export { kafkaPlugin } from './plugin';
+export { kafkaPlugin as default } from './plugin';

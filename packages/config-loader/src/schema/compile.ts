@@ -28,6 +28,9 @@ import {
 import { SchemaObject } from 'json-schema-traverse';
 import { normalizeAjvPath } from './utils';
 
+// Used to keep track of the internal deepVisibility inherited through the schema.
+const inheritedVisibility = Symbol('inherited-visibility');
+
 /**
  * This takes a collection of Backstage configuration schemas from various
  * sources and compiles them down into a single schema validation function.
@@ -45,6 +48,7 @@ export function compileConfigSchemas(
   // output during validation. We work around this by having this extra piece
   // of state that we reset before each validation.
   const visibilityByDataPath = new Map<string, ConfigVisibility>();
+  const deepVisibilityByDataPath = new Map<string, ConfigVisibility>();
   const deprecationByDataPath = new Map<string, string>();
 
   const ajv = new Ajv({
@@ -87,6 +91,18 @@ export function compileConfigSchemas(
          */
         enum: ['frontend', 'secret'],
       },
+      compile(visibility: 'frontend' | 'secret') {
+        return (_data, context) => {
+          if (context?.instancePath === undefined) {
+            return false;
+          }
+          if (visibility) {
+            const normalizedPath = normalizeAjvPath(context.instancePath);
+            deepVisibilityByDataPath.set(normalizedPath, visibility);
+          }
+          return true;
+        };
+      },
     })
     .removeKeyword('deprecated') // remove `deprecated` keyword so that we can implement our own compiler
     .addKeyword({
@@ -118,37 +134,34 @@ export function compileConfigSchemas(
   traverse(
     merged,
     (
-      schema: SchemaObject,
+      schema: SchemaObject & { [inheritedVisibility]?: ConfigVisibility },
       jsonPtr: string,
       _1: any,
       _2: any,
       _3?: any,
-      parentSchema?: SchemaObject,
+      parentSchema?: SchemaObject & {
+        [inheritedVisibility]?: ConfigVisibility;
+      },
     ) => {
       // Inherit parent deepVisibility if we don't define one ourselves.
-      if (parentSchema?.deepVisibility) {
-        schema.deepVisibility ??= parentSchema?.deepVisibility;
-      }
+      // This is used to detect situations where conflicting deep visibilities are set.
+      schema[inheritedVisibility] ??=
+        schema?.deepVisibility ?? parentSchema?.[inheritedVisibility];
 
-      // Apply deep visibility to self.
-      if (schema?.deepVisibility) {
-        // This runs before we compile the AJV so visibilityByDataPath has the
-        //  correct data.
-        schema.visibility ??= schema.deepVisibility;
-
-        if (parentSchema) {
-          /**
-           * Validate that we're not trying to override a child's visibility
-           *  by setting the parent deep visibility.
-           */
-          const values = [schema.visibility, parentSchema.visibility];
-          const hasFrontend = values.some(e => e === 'frontend');
-          const hasSecret = values.some(e => e === 'secret');
-          if (hasFrontend && hasSecret) {
-            throw new Error(
-              `Config schema visibility is both 'frontend' and 'secret' for ${jsonPtr}`,
-            );
-          }
+      if (schema[inheritedVisibility]) {
+        // Validate that we're not trying to set a conflicting visibility. This can be done
+        // either by setting a conflicting visibility directly or deep visibility
+        const values = [
+          schema.visibility,
+          schema[inheritedVisibility],
+          parentSchema?.[inheritedVisibility],
+        ];
+        const hasFrontend = values.some(e => e === 'frontend');
+        const hasSecret = values.some(e => e === 'secret');
+        if (hasFrontend && hasSecret) {
+          throw new Error(
+            `Config schema visibility is both 'frontend' and 'secret' for ${jsonPtr}`,
+          );
         }
       }
 
@@ -171,12 +184,16 @@ export function compileConfigSchemas(
     if (schema.visibility && schema.visibility !== 'backend') {
       visibilityBySchemaPath.set(normalizeAjvPath(path), schema.visibility);
     }
+    if (schema.deepVisibility) {
+      visibilityBySchemaPath.set(normalizeAjvPath(path), schema.deepVisibility);
+    }
   });
 
   return configs => {
     const config = ConfigReader.fromConfigs(configs).get();
 
     visibilityByDataPath.clear();
+    deepVisibilityByDataPath.clear();
 
     const valid = validate(config);
 
@@ -184,6 +201,7 @@ export function compileConfigSchemas(
       return {
         errors: validate.errors ?? [],
         visibilityByDataPath: new Map(visibilityByDataPath),
+        deepVisibilityByDataPath: new Map(deepVisibilityByDataPath),
         visibilityBySchemaPath,
         deprecationByDataPath,
       };
@@ -191,6 +209,7 @@ export function compileConfigSchemas(
 
     return {
       visibilityByDataPath: new Map(visibilityByDataPath),
+      deepVisibilityByDataPath: new Map(deepVisibilityByDataPath),
       visibilityBySchemaPath,
       deprecationByDataPath,
     };

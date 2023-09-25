@@ -1,0 +1,12 @@
+apiVersion: backstage.io/v1alpha1
+kind: Component
+metadata:
+  name: backstage-plugin-puppetdb
+  title: '@backstage/plugin-puppetdb'
+  description: >-
+    Backstage plugin to visualize resource information and Puppet facts from
+    PuppetDB.
+spec:
+  lifecycle: experimental
+  type: backstage-frontend-plugin
+  owner: maintainers

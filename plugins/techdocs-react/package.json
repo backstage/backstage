@@ -1,7 +1,7 @@
 {
   "name": "@backstage/plugin-techdocs-react",
   "description": "Shared frontend utilities for TechDocs and Addons",
-  "version": "1.1.9",
+  "version": "1.1.11",
   "publishConfig": {
     "access": "public",
     "main": "dist/index.esm.js",
@@ -23,6 +23,7 @@
   "license": "Apache-2.0",
   "main": "src/index.ts",
   "types": "src/index.ts",
+  "sideEffects": false,
   "scripts": {
     "build": "backstage-cli package build",
     "lint": "backstage-cli package lint",

@@ -12,7 +12,8 @@ import { Logger } from 'winston';
 export function createRouter(options: RouterOptions): Promise<express.Router>;
 
 // @alpha
-export const kafkaPlugin: () => BackendFeature;
+const kafkaPlugin: () => BackendFeature;
+export default kafkaPlugin;
 
 // @public (undocumented)
 export interface RouterOptions {

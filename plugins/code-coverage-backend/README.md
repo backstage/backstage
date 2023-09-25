@@ -125,6 +125,24 @@ Example:
 }
 ```
 
+### Adding a LCOV report
+
+POST a LCOV INFO file to `/report`
+
+Example:
+
+```json
+// curl -X POST -H "Content-Type:text/plain" -d @coverage.info "localhost:7007/api/code-coverage/report?entity=component:default/entity-name&coverageType=lcov"
+{
+  "links": [
+    {
+      "href": "http://localhost:7007/api/code-coverage/report?entity=component:default/entity-name",
+      "rel": "coverage"
+    }
+  ]
+}
+```
+
 ### Reading json coverage
 
 GET `/report`
@@ -216,4 +234,13 @@ Example
     }
   ]
 }
+```
+
+### Configuration
+
+Configure the plugin in your `app-config.yaml`:
+
+```yaml
+codeCoverage:
+  bodySizeLimit: 100kb # Defaults to 100kb, see https://www.npmjs.com/package/body-parser#limit
 ```

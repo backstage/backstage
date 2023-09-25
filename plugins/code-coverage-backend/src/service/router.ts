@@ -17,7 +17,8 @@
 import express from 'express';
 import Router from 'express-promise-router';
 import { Logger } from 'winston';
-import xmlparser from 'express-xml-bodyparser';
+import BodyParser from 'body-parser';
+import bodyParserXml from 'body-parser-xml';
 import { CatalogApi, CatalogClient } from '@backstage/catalog-client';
 import {
   errorHandler,
@@ -30,10 +31,9 @@ import { Config } from '@backstage/config';
 import { ScmIntegrations } from '@backstage/integration';
 import { CodeCoverageDatabase } from './CodeCoverageDatabase';
 import { aggregateCoverage, CoverageUtils } from './CoverageUtils';
-import { Cobertura } from './converter/cobertura';
-import { Jacoco } from './converter/jacoco';
-import { Converter } from './converter';
+import { Converter, Jacoco, Cobertura, Lcov } from './converter';
 import { getEntitySourceLocation } from '@backstage/catalog-model';
+import { getBearerTokenFromAuthorizationHeader } from '@backstage/plugin-auth-node';
 
 /**
  * Options for {@link createRouter}.
@@ -64,8 +64,21 @@ export const makeRouter = async (
     options.catalogApi ?? new CatalogClient({ discoveryApi: discovery });
   const scm = ScmIntegrations.fromConfig(config);
 
+  const bodySizeLimit =
+    config.getOptionalString('codeCoverage.bodySizeLimit') ?? '100kb';
+
+  bodyParserXml(BodyParser);
   const router = Router();
-  router.use(xmlparser());
+  router.use(
+    BodyParser.xml({
+      limit: bodySizeLimit,
+    }),
+  );
+  router.use(
+    BodyParser.text({
+      limit: bodySizeLimit,
+    }),
+  );
   router.use(express.json());
 
   const utils = new CoverageUtils(scm, urlReader);
@@ -79,7 +92,9 @@ export const makeRouter = async (
    */
   router.get('/report', async (req, res) => {
     const { entity } = req.query;
-    const entityLookup = await catalogApi.getEntityByRef(entity as string);
+    const entityLookup = await catalogApi.getEntityByRef(entity as string, {
+      token: getBearerTokenFromAuthorizationHeader(req.headers.authorization),
+    });
     if (!entityLookup) {
       throw new NotFoundError(`No entity found matching ${entity}`);
     }
@@ -101,7 +116,9 @@ export const makeRouter = async (
    */
   router.get('/history', async (req, res) => {
     const { entity } = req.query;
-    const entityLookup = await catalogApi.getEntityByRef(entity as string);
+    const entityLookup = await catalogApi.getEntityByRef(entity as string, {
+      token: getBearerTokenFromAuthorizationHeader(req.headers.authorization),
+    });
     if (!entityLookup) {
       throw new NotFoundError(`No entity found matching ${entity}`);
     }
@@ -119,7 +136,9 @@ export const makeRouter = async (
    */
   router.get('/file-content', async (req, res) => {
     const { entity, path } = req.query;
-    const entityLookup = await catalogApi.getEntityByRef(entity as string);
+    const entityLookup = await catalogApi.getEntityByRef(entity as string, {
+      token: getBearerTokenFromAuthorizationHeader(req.headers.authorization),
+    });
     if (!entityLookup) {
       throw new NotFoundError(`No entity found matching ${entity}`);
     }
@@ -170,7 +189,9 @@ export const makeRouter = async (
    */
   router.post('/report', async (req, res) => {
     const { entity: entityRef, coverageType } = req.query;
-    const entity = await catalogApi.getEntityByRef(entityRef as string);
+    const entity = await catalogApi.getEntityByRef(entityRef as string, {
+      token: getBearerTokenFromAuthorizationHeader(req.headers.authorization),
+    });
     if (!entity) {
       throw new NotFoundError(`No entity found matching ${entityRef}`);
     }
@@ -182,6 +203,8 @@ export const makeRouter = async (
       converter = new Jacoco(logger);
     } else if (coverageType === 'cobertura') {
       converter = new Cobertura(logger);
+    } else if (coverageType === 'lcov') {
+      converter = new Lcov(logger);
     } else {
       throw new InputError(`Unsupported coverage type '${coverageType}`);
     }

@@ -1,5 +1,24 @@
 # @backstage/release-manifests
 
+## 0.0.10
+
+### Patch Changes
+
+- 406b786a2a2c: Mark package as being free of side effects, allowing more optimized Webpack builds.
+- 8cec7664e146: Removed `@types/node` dependency
+
+## 0.0.10-next.1
+
+### Patch Changes
+
+- 406b786a2a2c: Mark package as being free of side effects, allowing more optimized Webpack builds.
+
+## 0.0.10-next.0
+
+### Patch Changes
+
+- 8cec7664e146: Removed `@types/node` dependency
+
 ## 0.0.9
 
 ### Patch Changes

@@ -1,5 +1,65 @@
 # @backstage/plugin-explore-backend
 
+## 0.0.13
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/plugin-search-backend-module-explore@0.1.7
+  - @backstage/backend-common@0.19.5
+  - @backstage/config@1.1.0
+  - @backstage/plugin-explore-common@0.0.2
+  - @backstage/plugin-search-common@1.2.6
+  - @backstage/types@1.1.1
+
+## 0.0.13-next.3
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/plugin-search-backend-module-explore@0.1.7-next.3
+  - @backstage/config@1.1.0-next.2
+  - @backstage/plugin-explore-common@0.0.2-next.0
+  - @backstage/plugin-search-common@1.2.6-next.2
+  - @backstage/types@1.1.1-next.0
+  - @backstage/backend-common@0.19.5-next.3
+
+## 0.0.13-next.2
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/config@1.1.0-next.1
+  - @backstage/backend-common@0.19.5-next.2
+  - @backstage/plugin-search-backend-module-explore@0.1.7-next.2
+  - @backstage/types@1.1.0
+  - @backstage/plugin-explore-common@0.0.1
+  - @backstage/plugin-search-common@1.2.6-next.1
+
+## 0.0.13-next.1
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/config@1.1.0-next.0
+  - @backstage/backend-common@0.19.5-next.1
+  - @backstage/plugin-search-backend-module-explore@0.1.7-next.1
+  - @backstage/types@1.1.0
+  - @backstage/plugin-explore-common@0.0.1
+  - @backstage/plugin-search-common@1.2.6-next.0
+
+## 0.0.12-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-common@0.19.4-next.0
+  - @backstage/config@1.0.8
+  - @backstage/types@1.1.0
+  - @backstage/plugin-explore-common@0.0.1
+  - @backstage/plugin-search-backend-module-explore@0.1.6-next.0
+  - @backstage/plugin-search-common@1.2.5
+
 ## 0.0.10
 
 ### Patch Changes

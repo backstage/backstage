@@ -242,6 +242,24 @@ export const OwnedEntityPickerFieldExtension: FieldExtensionComponent_2<
     defaultKind?: string | undefined;
     allowArbitraryValues?: boolean | undefined;
     defaultNamespace?: string | false | undefined;
+    catalogFilter?:
+      | Record<
+          string,
+          | string
+          | string[]
+          | {
+              exists?: boolean | undefined;
+            }
+        >
+      | Record<
+          string,
+          | string
+          | string[]
+          | {
+              exists?: boolean | undefined;
+            }
+        >[]
+      | undefined;
   }
 >;
 
@@ -253,6 +271,24 @@ export const OwnedEntityPickerFieldSchema: FieldSchema<
     defaultKind?: string | undefined;
     allowArbitraryValues?: boolean | undefined;
     defaultNamespace?: string | false | undefined;
+    catalogFilter?:
+      | Record<
+          string,
+          | string
+          | string[]
+          | {
+              exists?: boolean | undefined;
+            }
+        >
+      | Record<
+          string,
+          | string
+          | string[]
+          | {
+              exists?: boolean | undefined;
+            }
+        >[]
+      | undefined;
   }
 >;
 

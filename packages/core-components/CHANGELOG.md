@@ -1,5 +1,73 @@
 # @backstage/core-components
 
+## 0.13.5
+
+### Patch Changes
+
+- 0c9907645aab: Fixed an issue causing `StructuredMetadataTable` to crash in case metadata contained `null` values.
+- 406b786a2a2c: Mark package as being free of side effects, allowing more optimized Webpack builds.
+- 9b74166d11a1: Added `<AutoLogout>` component which introduces an optional automatic logout mechanism on user inactivity
+- 117027636b10: Minor internal tweak to handle `classnames` update
+- 8cec7664e146: Removed `@types/node` dependency
+- db92d1244897: Updated dependency `rc-progress` to `3.5.1`.
+- 47782f4bfa5b: Add loading indicator to Table
+- 3d63e60f3c36: Internal restructure to avoid circular imports
+- Updated dependencies
+  - @backstage/config@1.1.0
+  - @backstage/core-plugin-api@1.6.0
+  - @backstage/errors@1.2.2
+  - @backstage/theme@0.4.2
+  - @backstage/version-bridge@1.0.5
+
+## 0.13.5-next.3
+
+### Patch Changes
+
+- 406b786a2a2c: Mark package as being free of side effects, allowing more optimized Webpack builds.
+- Updated dependencies
+  - @backstage/config@1.1.0-next.2
+  - @backstage/core-plugin-api@1.6.0-next.3
+  - @backstage/errors@1.2.2-next.0
+  - @backstage/theme@0.4.2-next.0
+  - @backstage/version-bridge@1.0.5-next.0
+
+## 0.13.5-next.2
+
+### Patch Changes
+
+- 8cec7664e146: Removed `@types/node` dependency
+- db92d1244897: Updated dependency `rc-progress` to `3.5.1`.
+- Updated dependencies
+  - @backstage/core-plugin-api@1.6.0-next.2
+  - @backstage/config@1.1.0-next.1
+  - @backstage/errors@1.2.1
+  - @backstage/theme@0.4.1
+  - @backstage/version-bridge@1.0.4
+
+## 0.13.5-next.1
+
+### Patch Changes
+
+- 0c9907645aab: Fixed an issue causing `StructuredMetadataTable` to crash in case metadata contained `null` values.
+- Updated dependencies
+  - @backstage/config@1.1.0-next.0
+  - @backstage/core-plugin-api@1.6.0-next.1
+  - @backstage/errors@1.2.1
+  - @backstage/theme@0.4.1
+  - @backstage/version-bridge@1.0.4
+
+## 0.13.5-next.0
+
+### Patch Changes
+
+- 47782f4bfa5b: Add loading indicator to Table
+- Updated dependencies
+  - @backstage/core-plugin-api@1.6.0-next.0
+  - @backstage/config@1.0.8
+  - @backstage/errors@1.2.1
+  - @backstage/theme@0.4.1
+  - @backstage/version-bridge@1.0.4
+
 ## 0.13.4
 
 ### Patch Changes
