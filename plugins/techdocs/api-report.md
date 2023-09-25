@@ -318,7 +318,6 @@ const techdocsPlugin: BackstagePlugin<
     }>;
     entityContent: RouteRef<undefined>;
   },
-  {},
   {}
 >;
 export { techdocsPlugin as plugin };

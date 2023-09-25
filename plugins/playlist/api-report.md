@@ -101,7 +101,6 @@ export const playlistPlugin: BackstagePlugin<
   {
     root: RouteRef<undefined>;
   },
-  {},
   {}
 >;
 ```

@@ -70,7 +70,6 @@ export const entityFeedbackPlugin: BackstagePlugin<
   {
     root: RouteRef<undefined>;
   },
-  {},
   {}
 >;
 
