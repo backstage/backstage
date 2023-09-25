@@ -1,5 +1,11 @@
 # @backstage/plugin-catalog-backend
 
+## 1.13.1
+
+### Patch Changes
+
+- e77bbde41b99: Fixes a bug where eagerly deleted entities did not properly trigger re-stitching of entities that they had relations to.
+
 ## 1.13.0
 
 ### Minor Changes
