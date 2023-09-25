@@ -33,10 +33,14 @@ export function createSpecApiTypeColumn(): TableColumn<ApiEntity> {
 
 const ApiDefinitionButton = ({ apiEntity }: { apiEntity: ApiEntity }) => {
   const [dialogOpen, setDialogOpen] = useState(false);
-
+  // eslint-disable-next-line no-console
+  console.log('this is the one');
   return (
     <>
-      <ToggleButton onClick={() => setDialogOpen(!dialogOpen)}>
+      <ToggleButton
+        aria-label="Toggle API Defination Dialog"
+        onClick={() => setDialogOpen(!dialogOpen)}
+      >
         <ExtensionIcon />
       </ToggleButton>
       <ApiDefinitionDialog
