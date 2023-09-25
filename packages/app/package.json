@@ -103,6 +103,7 @@
   },
   "devDependencies": {
     "@backstage/test-utils": "workspace:^",
+    "@playwright/test": "^1.32.3",
     "@testing-library/dom": "^8.0.0",
     "@testing-library/jest-dom": "^5.10.1",
     "@testing-library/react": "^12.1.3",
