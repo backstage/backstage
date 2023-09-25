@@ -37,7 +37,6 @@
     "handlebars": "^4.7.3",
     "mysql2": "^2.2.5",
     "pgtools": "^1.0.0",
-    "puppeteer": "^17.0.0",
     "tree-kill": "^1.2.2"
   },
   "devDependencies": {
