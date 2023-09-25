@@ -17,13 +17,17 @@
 import { Knex } from 'knex';
 import { createGaugeMetric } from '../util/metrics';
 import { DbRefreshStateRow, DbRelationsRow, DbLocationsRow } from './tables';
+import { metrics } from '@opentelemetry/api';
+import { parseEntityRef } from '@backstage/catalog-model';
 
 export function initDatabaseMetrics(knex: Knex) {
+  const seenProm = new Set<string>();
   const seen = new Set<string>();
+  const meter = metrics.getMeter('default');
   return {
-    entities_count: createGaugeMetric({
+    entities_count_prom: createGaugeMetric({
       name: 'catalog_entities_count',
-      help: 'Total amount of entities in the catalog',
+      help: 'Total amount of entities in the catalog. DEPRECATED: Please use opentelemetry metrics instead.',
       labelNames: ['kind'],
       async collect() {
         const result = await knex<DbRefreshStateRow>('refresh_state').select(
@@ -34,22 +38,22 @@ export function initDatabaseMetrics(knex: Knex) {
           .reduce((acc, e) => acc.set(e, (acc.get(e) || 0) + 1), new Map());
 
         results.forEach((value, key) => {
-          seen.add(key);
+          seenProm.add(key);
           this.set({ kind: key }, value);
         });
 
-        // Set all the entities that were not seen to 0 and delete them from the seen set.
-        seen.forEach(key => {
+        // Set all the entities that were not seenProm to 0 and delete them from the seenProm set.
+        seenProm.forEach(key => {
           if (!results.has(key)) {
             this.set({ kind: key }, 0);
-            seen.delete(key);
+            seenProm.delete(key);
           }
         });
       },
     }),
-    registered_locations: createGaugeMetric({
+    registered_locations_prom: createGaugeMetric({
       name: 'catalog_registered_locations_count',
-      help: 'Total amount of registered locations in the catalog',
+      help: 'Total amount of registered locations in the catalog. DEPRECATED: Please use opentelemetry metrics instead.',
       async collect() {
         const total = await knex<DbLocationsRow>('locations').count({
           count: '*',
@@ -57,9 +61,9 @@ export function initDatabaseMetrics(knex: Knex) {
         this.set(Number(total[0].count));
       },
     }),
-    relations: createGaugeMetric({
+    relations_prom: createGaugeMetric({
       name: 'catalog_relations_count',
-      help: 'Total amount of relations between entities',
+      help: 'Total amount of relations between entities. DEPRECATED: Please use opentelemetry metrics instead.',
       async collect() {
         const total = await knex<DbRelationsRow>('relations').count({
           count: '*',
@@ -67,5 +71,50 @@ export function initDatabaseMetrics(knex: Knex) {
         this.set(Number(total[0].count));
       },
     }),
+    entities_count: meter
+      .createObservableGauge('catalog_entities_count', {
+        description: 'Total amount of entities in the catalog',
+      })
+      .addCallback(async gauge => {
+        const result = await knex<DbRefreshStateRow>('refresh_state').select(
+          'entity_ref',
+        );
+        const results = result
+          .map(row => parseEntityRef(row.entity_ref).kind)
+          .reduce((acc, e) => acc.set(e, (acc.get(e) || 0) + 1), new Map());
+
+        results.forEach((value, key) => {
+          seen.add(key);
+          gauge.observe(value, { kind: key });
+        });
+
+        // Set all the entities that were not seen to 0 and delete them from the seen set.
+        seen.forEach(key => {
+          if (!results.has(key)) {
+            gauge.observe(0, { kind: key });
+            seen.delete(key);
+          }
+        });
+      }),
+    registered_locations: meter
+      .createObservableGauge('catalog_registered_locations_count', {
+        description: 'Total amount of registered locations in the catalog',
+      })
+      .addCallback(async gauge => {
+        const total = await knex<DbLocationsRow>('locations').count({
+          count: '*',
+        });
+        gauge.observe(Number(total[0].count));
+      }),
+    relations: meter
+      .createObservableGauge('catalog_relations_count', {
+        description: 'Total amount of relations between entities',
+      })
+      .addCallback(async gauge => {
+        const total = await knex<DbRelationsRow>('relations').count({
+          count: '*',
+        });
+        gauge.observe(Number(total[0].count));
+      }),
   };
 }
