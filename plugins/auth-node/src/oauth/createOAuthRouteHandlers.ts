@@ -214,7 +214,7 @@ export function createOAuthRouteHandlers<TProfile>(
         // the provider does not return granted scopes on refresh or if they are normalized.
         if (authenticator.shouldPersistScopes && state.scope) {
           cookieManager.setGrantedScopes(res, state.scope, appOrigin);
-          result.session.scope = state.scope;
+          response.providerInfo.scope = state.scope;
         }
 
         if (result.session.refreshToken) {
