@@ -25,8 +25,6 @@ import {
   FetchResponseWrapper,
   ObjectToFetch,
   CustomResource,
-  CustomResourcesByEntity,
-  KubernetesObjectsByEntity,
 } from '../types/types';
 import { AuthenticationStrategy, KubernetesCredential } from '../auth/types';
 import {
@@ -46,6 +44,10 @@ import {
   CurrentResourceUsage,
   PodStatus,
 } from '@kubernetes/client-node';
+import {
+  CustomResourcesByEntity,
+  KubernetesObjectsByEntity,
+} from '@backstage/plugin-kubernetes-node';
 
 /**
  *

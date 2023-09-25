@@ -21,7 +21,7 @@ import {
 import { CatalogApi } from '@backstage/catalog-client';
 import { InputError, AuthenticationError } from '@backstage/errors';
 import express, { Request } from 'express';
-import { KubernetesObjectsProvider } from '../types/types';
+import { KubernetesObjectsProvider } from '@backstage/plugin-kubernetes-node';
 import { getBearerTokenFromAuthorizationHeader } from '@backstage/plugin-auth-node';
 
 export const addResourceRoutesToRouter = (

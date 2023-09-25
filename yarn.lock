@@ -7665,6 +7665,17 @@ __metadata:
   languageName: unknown
   linkType: soft
 
+"@backstage/plugin-kubernetes-node@workspace:^, @backstage/plugin-kubernetes-node@workspace:plugins/kubernetes-node":
+  version: 0.0.0-use.local
+  resolution: "@backstage/plugin-kubernetes-node@workspace:plugins/kubernetes-node"
+  dependencies:
+    "@backstage/backend-plugin-api": "workspace:^"
+    "@backstage/catalog-model": "workspace:^"
+    "@backstage/cli": "workspace:^"
+    "@backstage/plugin-kubernetes-common": "workspace:^"
+  languageName: unknown
+  linkType: soft
+
 "@backstage/plugin-kubernetes-react@workspace:^, @backstage/plugin-kubernetes-react@workspace:plugins/kubernetes-react":
   version: 0.0.0-use.local
   resolution: "@backstage/plugin-kubernetes-react@workspace:plugins/kubernetes-react"
@@ -7701,16 +7712,6 @@ __metadata:
     xterm-addon-fit: ^0.8.0
   peerDependencies:
     react: ^16.13.1 || ^17.0.0
-  languageName: unknown
-  linkType: soft
-
-"@backstage/plugin-kubernetes-node@workspace:^, @backstage/plugin-kubernetes-node@workspace:plugins/kubernetes-node":
-  version: 0.0.0-use.local
-  resolution: "@backstage/plugin-kubernetes-node@workspace:plugins/kubernetes-node"
-  dependencies:
-    "@backstage/backend-plugin-api": "workspace:^"
-    "@backstage/cli": "workspace:^"
-    "@backstage/plugin-kubernetes-backend": "workspace:^"
   languageName: unknown
   linkType: soft
 

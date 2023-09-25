@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 import { createExtensionPoint } from '@backstage/backend-plugin-api';
-import { KubernetesObjectsProvider } from '@backstage/plugin-kubernetes-backend';
+import { KubernetesObjectsProvider } from '@backstage/plugin-kubernetes-node';
 
 /**
  * The interface for {@link kubernetesObjectsProviderExtensionPoint}.
