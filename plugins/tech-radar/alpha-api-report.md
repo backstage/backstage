@@ -16,8 +16,8 @@ export const TechRadarPage: Extension<{
   width: number;
   title: string;
   path: string;
+  subtitle: string;
   pageTitle: string;
-  subTitle: string;
 }>;
 
 // (No @packageDocumentation comment for this package)
