@@ -27,8 +27,8 @@
     "clean": "backstage-cli package clean",
     "lint": "backstage-cli package lint",
     "test": "backstage-cli package test",
-    "test:e2e": "backstage-cli test --config e2e-test.config.js",
-    "test:e2e:ci": "backstage-cli test --config e2e-test.config.js --watchAll=false --ci",
+    "test:e2e": "backstage-cli test --config cli-e2e-test.config.js",
+    "test:e2e:ci": "backstage-cli test --config cli-e2e-test.config.js --watchAll=false --ci",
     "prepack": "./scripts/prepack.sh"
   },
   "bin": {
