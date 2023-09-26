@@ -1,5 +1,19 @@
 # @backstage/plugin-api-docs
 
+## 0.9.12-next.0
+
+### Patch Changes
+
+- 0117a6b47e: Adding `requestInterceptor` option to `api-docs` and pass it to SwaggerUI. This will enable to configure a proxy or headers to be sent to all the request made through the `Try it out` button on SwaggerUI.
+- 18f1756908: added aria-label on api definition button for better a11y.
+- Updated dependencies
+  - @backstage/plugin-catalog-react@1.8.5-next.0
+  - @backstage/core-plugin-api@1.7.0-next.0
+  - @backstage/plugin-catalog@1.14.0-next.0
+  - @backstage/core-components@0.13.6-next.0
+  - @backstage/catalog-model@1.4.2
+  - @backstage/theme@0.4.2
+
 ## 0.9.11
 
 ### Patch Changes

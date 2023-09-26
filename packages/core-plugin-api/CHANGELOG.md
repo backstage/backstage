@@ -1,5 +1,18 @@
 # @backstage/core-plugin-api
 
+## 1.7.0-next.0
+
+### Minor Changes
+
+- 322bbcae24: Removed the exprimental plugin configuration API. The `__experimentalReconfigure()` from the plugin options as well as the `__experimentalConfigure()` method on plugin instances have both been removed.
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/config@1.1.0
+  - @backstage/types@1.1.1
+  - @backstage/version-bridge@1.0.5
+
 ## 1.6.0
 
 ### Minor Changes

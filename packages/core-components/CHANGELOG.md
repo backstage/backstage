@@ -1,5 +1,19 @@
 # @backstage/core-components
 
+## 0.13.6-next.0
+
+### Patch Changes
+
+- d19a827ef1: MissingAnnotationEmptyState component can now dynamically generate a YAML example based off the current entity being used.
+- Updated dependencies
+  - @backstage/plugin-catalog-react@1.8.5-next.0
+  - @backstage/core-plugin-api@1.7.0-next.0
+  - @backstage/config@1.1.0
+  - @backstage/catalog-model@1.4.2
+  - @backstage/errors@1.2.2
+  - @backstage/theme@0.4.2
+  - @backstage/version-bridge@1.0.5
+
 ## 0.13.5
 
 ### Patch Changes
