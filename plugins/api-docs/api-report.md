@@ -165,6 +165,7 @@ export const OpenApiDefinitionWidget: (
 // @public (undocumented)
 export type OpenApiDefinitionWidgetProps = {
   definition: string;
+  requestInterceptor?: (req: any) => any | Promise<any>;
 };
 
 // @public (undocumented)
