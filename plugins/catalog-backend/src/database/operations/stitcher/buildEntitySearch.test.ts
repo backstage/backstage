@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { Entity, DEFAULT_NAMESPACE } from '@backstage/catalog-model';
+import { DEFAULT_NAMESPACE, Entity } from '@backstage/catalog-model';
 import { buildEntitySearch, mapToRows, traverse } from './buildEntitySearch';
 
 describe('buildEntitySearch', () => {
