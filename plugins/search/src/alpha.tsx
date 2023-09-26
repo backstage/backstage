@@ -13,3 +13,31 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
+import {
+  DiscoveryApi,
+  IdentityApi,
+  discoveryApiRef,
+  identityApiRef,
+} from '@backstage/core-plugin-api';
+
+import { createApiExtension } from '@backstage/frontend-plugin-api';
+
+import { searchApiRef } from '@backstage/plugin-search-react';
+
+import { SearchClient } from './apis';
+
+/** @alpha */
+export const SearchApi = createApiExtension({
+  factory: {
+    api: searchApiRef,
+    deps: { discoveryApi: discoveryApiRef, identityApi: identityApiRef },
+    factory: ({
+      identityApi,
+      discoveryApi,
+    }: {
+      identityApi: IdentityApi;
+      discoveryApi: DiscoveryApi;
+    }) => new SearchClient({ discoveryApi, identityApi }),
+  },
+});
