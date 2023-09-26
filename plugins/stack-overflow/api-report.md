@@ -32,7 +32,7 @@ export const stackOverflowApiRef: ApiRef<StackOverflowApi>;
 export const StackOverflowIcon: () => React_2.JSX.Element;
 
 // @public
-export const stackOverflowPlugin: BackstagePlugin<{}, {}, {}>;
+export const stackOverflowPlugin: BackstagePlugin<{}, {}>;
 
 // @public
 export type StackOverflowQuestion = {

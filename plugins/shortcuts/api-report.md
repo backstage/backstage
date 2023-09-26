@@ -58,7 +58,7 @@ export const Shortcuts: (props: ShortcutsProps) => JSX_2.Element;
 export const shortcutsApiRef: ApiRef<ShortcutApi>;
 
 // @public (undocumented)
-export const shortcutsPlugin: BackstagePlugin<{}, {}, {}>;
+export const shortcutsPlugin: BackstagePlugin<{}, {}>;
 
 // @public
 export interface ShortcutsProps {

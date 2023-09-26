@@ -1,5 +1,5 @@
 /*
- * Copyright 2020 The Backstage Authors
+ * Copyright 2023 The Backstage Authors
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,16 +14,4 @@
  * limitations under the License.
  */
 
-import { usePluginOptions } from '@backstage/core-plugin-api/alpha';
-
-export type CatalogPluginOptions = {
-  createButtonTitle: string;
-};
-
-/** @ignore */
-export type CatalogInputPluginOptions = {
-  createButtonTitle: string;
-};
-
-export const useCatalogPluginOptions = () =>
-  usePluginOptions<CatalogPluginOptions>();
+export * from './translation';

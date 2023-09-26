@@ -34,7 +34,6 @@ export const catalogUnprocessedEntitiesPlugin: BackstagePlugin<
   {
     root: RouteRef<undefined>;
   },
-  {},
   {}
 >;
 

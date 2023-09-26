@@ -72,6 +72,7 @@ export type ConfigContextProps = {
   icons: Icon[];
   engineerCost: number;
   engineerThreshold: number;
+  hideTrendLine: boolean;
   currencies: Currency[];
 };
 
@@ -86,6 +87,7 @@ const defaultState: ConfigContextProps = {
   icons: [],
   engineerCost: 0,
   engineerThreshold: EngineerThreshold,
+  hideTrendLine: false,
   currencies: defaultCurrencies,
 };
 
@@ -193,12 +195,20 @@ export const ConfigProvider = ({ children }: PropsWithChildren<{}>) => {
       );
     }
 
+    function getHideTrendLine(): boolean {
+      return (
+        c.getOptionalBoolean('costInsights.hideTrendLine') ??
+        defaultState.hideTrendLine
+      );
+    }
+
     function getConfig() {
       const baseCurrency = getBaseCurrency();
       const products = getProducts();
       const metrics = getMetrics();
       const engineerCost = getEngineerCost();
       const engineerThreshold = getEngineerThreshold();
+      const hideTrendLine = getHideTrendLine();
       const icons = getIcons();
       const currencies = getCurrencies();
 
@@ -212,6 +222,7 @@ export const ConfigProvider = ({ children }: PropsWithChildren<{}>) => {
         products,
         engineerCost,
         engineerThreshold,
+        hideTrendLine,
         icons,
         currencies,
       }));

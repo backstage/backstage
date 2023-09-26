@@ -177,7 +177,7 @@ export type PagerDutyOnCallsResponse = {
 };
 
 // @public (undocumented)
-const pagerDutyPlugin: BackstagePlugin<{}, {}, {}>;
+const pagerDutyPlugin: BackstagePlugin<{}, {}>;
 export { pagerDutyPlugin };
 export { pagerDutyPlugin as plugin };
 
