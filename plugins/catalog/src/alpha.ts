@@ -15,3 +15,40 @@
  */
 
 export * from './translation';
+
+import {
+  DiscoveryApi,
+  FetchApi,
+  discoveryApiRef,
+  fetchApiRef,
+} from '@backstage/core-plugin-api';
+import { CatalogClient } from '@backstage/catalog-client';
+import {
+  createApiExtension,
+  createPlugin,
+} from '@backstage/frontend-plugin-api';
+import { catalogApiRef } from '@backstage/plugin-catalog-react';
+
+/** @alpha */
+export const CatalogApi = createApiExtension({
+  factory: {
+    api: catalogApiRef,
+    deps: {
+      discoveryApi: discoveryApiRef,
+      fetchApi: fetchApiRef,
+    },
+    factory: ({
+      discoveryApi,
+      fetchApi,
+    }: {
+      discoveryApi: DiscoveryApi;
+      fetchApi: FetchApi;
+    }) => new CatalogClient({ discoveryApi, fetchApi }),
+  },
+});
+
+/** @alpha */
+export default createPlugin({
+  id: 'plugin.catalog',
+  extensions: [CatalogApi],
+});
