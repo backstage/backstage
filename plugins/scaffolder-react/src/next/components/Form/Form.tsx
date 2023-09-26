@@ -19,6 +19,7 @@ import React from 'react';
 import { PropsWithChildren } from 'react';
 import { FieldTemplate } from './FieldTemplate';
 import { DescriptionFieldTemplate } from './DescriptionFieldTemplate';
+import { FieldProps } from '@rjsf/utils';
 
 // TODO(blam): We require here, as the types in this package depend on @rjsf/core explicitly
 // which is what we're using here as the default types, it needs to depend on @rjsf/core-v5 because
@@ -30,10 +31,31 @@ const WrappedForm = withTheme(require('@rjsf/material-ui-v5').Theme);
  * @alpha
  */
 export const Form = (props: PropsWithChildren<FormProps>) => {
+  // This is where we unbreak the changes from RJSF, and make it work with our custom fields so we don't pass on this
+  // breaking change to our users. We will look more into a better API for this in scaffolderv2.
+  const wrappedFields = Object.fromEntries(
+    Object.entries(props.fields ?? {}).map(([key, Component]) => [
+      key,
+      (wrapperProps: FieldProps) => {
+        return (
+          <Component
+            {...wrapperProps}
+            uiSchema={wrapperProps.uiSchema ?? {}}
+            formData={wrapperProps.formData ?? {}}
+            rawErrors={wrapperProps.rawErrors ?? []}
+          />
+        );
+      },
+    ]),
+  );
+
   const templates = {
     FieldTemplate,
     DescriptionFieldTemplate,
     ...props.templates,
   };
-  return <WrappedForm {...props} templates={templates} />;
+
+  return (
+    <WrappedForm {...props} templates={templates} fields={wrappedFields} />
+  );
 };

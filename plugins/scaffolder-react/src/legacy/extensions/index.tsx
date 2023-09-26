@@ -15,26 +15,24 @@
  */
 
 import {
-  NextCustomFieldValidator,
-  NextFieldExtensionOptions,
-  NextFieldExtensionComponentProps,
-  NextFieldExtensionUiSchema,
+  CustomFieldValidator,
+  FieldExtensionOptions,
+  FieldExtensionComponentProps,
 } from './types';
 import { Extension, attachComponentData } from '@backstage/core-plugin-api';
-import { UIOptionsType } from '@rjsf/utils';
 import { FIELD_EXTENSION_KEY } from '../../extensions/keys';
-import { FieldExtensionComponent } from '@backstage/plugin-scaffolder-react';
+import { FieldExtensionComponent } from '../../extensions';
 
 /**
  * Method for creating field extensions that can be used in the scaffolder
  * frontend form.
  * @alpha
  */
-export function createNextScaffolderFieldExtension<
+export function createLegacyScaffolderFieldExtension<
   TReturnValue = unknown,
-  TInputProps extends UIOptionsType = {},
+  TInputProps = unknown,
 >(
-  options: NextFieldExtensionOptions<TReturnValue, TInputProps>,
+  options: FieldExtensionOptions<TReturnValue, TInputProps>,
 ): Extension<FieldExtensionComponent<TReturnValue, TInputProps>> {
   return {
     expose() {
@@ -52,8 +50,7 @@ export function createNextScaffolderFieldExtension<
 }
 
 export type {
-  NextCustomFieldValidator,
-  NextFieldExtensionOptions,
-  NextFieldExtensionComponentProps,
-  NextFieldExtensionUiSchema,
+  CustomFieldValidator,
+  FieldExtensionOptions,
+  FieldExtensionComponentProps,
 };

@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 import { JsonObject } from '@backstage/types';
-import { NextCustomFieldValidator } from '../../extensions';
+import { NextCustomFieldValidator } from '../../../extensions';
 import { createAsyncValidators } from './createAsyncValidators';
 
 describe('createAsyncValidators', () => {

@@ -19,7 +19,7 @@ import type { JsonObject, JsonValue } from '@backstage/types';
 import { ApiHolder } from '@backstage/core-plugin-api';
 import { Draft07 as JSONSchema } from 'json-schema-library';
 import { createFieldValidation, extractSchemaFromStep } from '../../lib';
-import { NextCustomFieldValidator } from '../../extensions';
+import { NextCustomFieldValidator } from '../../../extensions';
 import { isObject } from './utils';
 import { NextFieldExtensionUiSchema } from '../../extensions/types';
 
