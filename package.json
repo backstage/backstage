@@ -50,7 +50,7 @@
     "@types/react-dom": "^17",
     "mock-fs@^5.2.0": "patch:mock-fs@npm%3A5.2.0#./.yarn/patches/mock-fs-npm-5.2.0-5103a7b507.patch"
   },
-  "version": "1.18.0",
+  "version": "1.19.0-next.0",
   "dependencies": {
     "@backstage/errors": "workspace:^",
     "@manypkg/get-packages": "^1.1.3"

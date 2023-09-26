@@ -1,5 +1,18 @@
 # @backstage/plugin-search-backend-module-elasticsearch
 
+## 1.3.8-next.0
+
+### Patch Changes
+
+- 3963d0b885: Ensure that all relevant config fields are properly marked as secret
+- Updated dependencies
+  - @backstage/backend-common@0.19.7-next.0
+  - @backstage/config@1.1.0
+  - @backstage/integration-aws-node@0.1.6
+  - @backstage/backend-plugin-api@0.6.5-next.0
+  - @backstage/plugin-search-backend-node@1.2.9-next.0
+  - @backstage/plugin-search-common@1.2.6
+
 ## 1.3.6
 
 ### Patch Changes

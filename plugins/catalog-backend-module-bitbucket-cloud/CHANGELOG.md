@@ -1,5 +1,23 @@
 # @backstage/plugin-catalog-backend-module-bitbucket-cloud
 
+## 0.1.20-next.0
+
+### Patch Changes
+
+- 890e3b5ad4: Make sure to include the error message when ingestion fails
+- Updated dependencies
+  - @backstage/integration@1.7.1-next.0
+  - @backstage/backend-common@0.19.7-next.0
+  - @backstage/plugin-bitbucket-cloud-common@0.2.13-next.0
+  - @backstage/config@1.1.0
+  - @backstage/backend-plugin-api@0.6.5-next.0
+  - @backstage/backend-tasks@0.5.10-next.0
+  - @backstage/catalog-client@1.4.4
+  - @backstage/catalog-model@1.4.2
+  - @backstage/plugin-catalog-common@1.0.16
+  - @backstage/plugin-catalog-node@1.4.6-next.0
+  - @backstage/plugin-events-node@0.2.14-next.0
+
 ## 0.1.18
 
 ### Patch Changes

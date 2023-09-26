@@ -1,5 +1,22 @@
 # @backstage/backend-common
 
+## 0.19.7-next.0
+
+### Patch Changes
+
+- 1c3d6fa2b2: The `useHotCleanup` and `useHotMemoize` helpers are now deprecated, since hot module reloads for backend are being phased out.
+- Updated dependencies
+  - @backstage/integration@1.7.1-next.0
+  - @backstage/config-loader@1.5.1-next.0
+  - @backstage/cli-common@0.1.13-next.0
+  - @backstage/config@1.1.0
+  - @backstage/integration-aws-node@0.1.6
+  - @backstage/backend-app-api@0.5.5-next.0
+  - @backstage/backend-dev-utils@0.1.1
+  - @backstage/backend-plugin-api@0.6.5-next.0
+  - @backstage/errors@1.2.2
+  - @backstage/types@1.1.1
+
 ## 0.19.5
 
 ### Patch Changes

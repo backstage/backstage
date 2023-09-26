@@ -1,5 +1,28 @@
 # @backstage/backend-plugin-manager
 
+## 0.0.2-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/plugin-catalog-backend@1.14.0-next.0
+  - @backstage/plugin-auth-node@0.3.2-next.0
+  - @backstage/cli-common@0.1.13-next.0
+  - @backstage/backend-common@0.19.7-next.0
+  - @backstage/plugin-scaffolder-node@0.2.5-next.0
+  - @backstage/config@1.1.0
+  - @backstage/backend-plugin-api@0.6.5-next.0
+  - @backstage/backend-tasks@0.5.10-next.0
+  - @backstage/cli-node@0.1.5-next.0
+  - @backstage/errors@1.2.2
+  - @backstage/types@1.1.1
+  - @backstage/plugin-events-backend@0.2.14-next.0
+  - @backstage/plugin-events-node@0.2.14-next.0
+  - @backstage/plugin-permission-common@0.7.8
+  - @backstage/plugin-permission-node@0.7.16-next.0
+  - @backstage/plugin-search-backend-node@1.2.9-next.0
+  - @backstage/plugin-search-common@1.2.6
+
 ## 0.0.1
 
 ### Patch Changes
