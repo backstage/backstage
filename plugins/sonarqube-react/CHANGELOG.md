@@ -1,5 +1,13 @@
 # @backstage/plugin-sonarqube-react
 
+## 0.1.9-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/core-plugin-api@1.7.0-next.0
+  - @backstage/catalog-model@1.4.2
+
 ## 0.1.8
 
 ### Patch Changes

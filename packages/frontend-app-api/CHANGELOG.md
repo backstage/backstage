@@ -1,5 +1,24 @@
 # @backstage/frontend-app-api
 
+## 0.2.0-next.0
+
+### Minor Changes
+
+- 9d03dfe5e3: The `createApp` config option has been replaced by a new `configLoader` option. There is now also a `pluginLoader` option that can be used to dynamically load plugins into the app.
+
+### Patch Changes
+
+- 322bbcae24: Internal update for removal of experimental plugin configuration API.
+- 66d51a4827: Prevents root extension override and duplicated plugin extensions.
+- Updated dependencies
+  - @backstage/core-plugin-api@1.7.0-next.0
+  - @backstage/core-components@0.13.6-next.0
+  - @backstage/frontend-plugin-api@0.1.1-next.0
+  - @backstage/config@1.1.0
+  - @backstage/core-app-api@1.10.1-next.0
+  - @backstage/plugin-graphiql@0.2.55-next.0
+  - @backstage/types@1.1.1
+
 ## 0.1.0
 
 ### Minor Changes
