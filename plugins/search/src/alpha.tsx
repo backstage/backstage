@@ -14,16 +14,55 @@
  * limitations under the License.
  */
 
+import React from 'react';
+
+import { Grid, makeStyles, Paper, Theme } from '@material-ui/core';
+
 import {
+  CatalogIcon,
+  Content,
+  DocsIcon,
+  Header,
+  Page,
+  useSidebarPinState,
+} from '@backstage/core-components';
+import {
+  createRouteRef,
+  useApi,
   DiscoveryApi,
   IdentityApi,
   discoveryApiRef,
   identityApiRef,
 } from '@backstage/core-plugin-api';
 
-import { createApiExtension } from '@backstage/frontend-plugin-api';
+import {
+  createApiExtension,
+  createPageExtension,
+  createExtensionInput,
+  createSchemaFromZod,
+} from '@backstage/frontend-plugin-api';
 
+import {
+  catalogApiRef,
+  CATALOG_FILTER_EXISTS,
+} from '@backstage/plugin-catalog-react';
+
+import { SearchType } from '@backstage/plugin-search';
+import {
+  DefaultResultListItem,
+  SearchBar,
+  SearchFilter,
+  SearchPagination,
+  SearchResult as SearchResults,
+  SearchResultPager,
+  useSearch,
+  SearchContextProvider,
+} from '@backstage/plugin-search-react';
+import { SearchResult } from '@backstage/plugin-search-common';
 import { searchApiRef } from '@backstage/plugin-search-react';
+import { searchResultItemExtensionData } from '@backstage/plugin-search-react/alpha';
+
+import { UrlUpdater } from './components/SearchPage/SearchPage';
 
 import { SearchClient } from './apis';
 
@@ -39,5 +78,152 @@ export const SearchApi = createApiExtension({
       identityApi: IdentityApi;
       discoveryApi: DiscoveryApi;
     }) => new SearchClient({ discoveryApi, identityApi }),
+  },
+});
+
+const useStyles = makeStyles((theme: Theme) => ({
+  filter: {
+    '& + &': {
+      marginTop: theme.spacing(2.5),
+    },
+  },
+  filters: {
+    padding: theme.spacing(2),
+    marginTop: theme.spacing(2),
+  },
+}));
+
+const searchRouteRef = createRouteRef({ id: 'plugin.search.page' });
+
+/** @alpha */
+export const SearchPage = createPageExtension({
+  id: 'plugin.search.page',
+  routeRef: searchRouteRef,
+  configSchema: createSchemaFromZod(z =>
+    z.object({
+      path: z.string().default('/search'),
+      noTrack: z.boolean().default(false),
+    }),
+  ),
+  inputs: {
+    items: createExtensionInput({
+      item: searchResultItemExtensionData,
+    }),
+  },
+  loader: async ({ config, inputs }) => {
+    const getResultItemComponent = (result: SearchResult) => {
+      const value = inputs.items.find(({ item }) => item?.predicate?.(result));
+      return value?.item.component ?? DefaultResultListItem;
+    };
+
+    const Component = () => {
+      const classes = useStyles();
+      const { isMobile } = useSidebarPinState();
+      const { types } = useSearch();
+      const catalogApi = useApi(catalogApiRef);
+
+      return (
+        <Page themeId="home">
+          {!isMobile && <Header title="Search" />}
+          <Content>
+            <Grid container direction="row">
+              <Grid item xs={12}>
+                <SearchBar debounceTime={100} />
+              </Grid>
+              {!isMobile && (
+                <Grid item xs={3}>
+                  <SearchType.Accordion
+                    name="Result Type"
+                    defaultValue="software-catalog"
+                    showCounts
+                    types={[
+                      {
+                        value: 'software-catalog',
+                        name: 'Software Catalog',
+                        icon: <CatalogIcon />,
+                      },
+                      {
+                        value: 'techdocs',
+                        name: 'Documentation',
+                        icon: <DocsIcon />,
+                      },
+                      {
+                        value: 'adr',
+                        name: 'Architecture Decision Records',
+                        icon: <DocsIcon />,
+                      },
+                    ]}
+                  />
+                  <Paper className={classes.filters}>
+                    {types.includes('techdocs') && (
+                      <SearchFilter.Select
+                        className={classes.filter}
+                        label="Entity"
+                        name="name"
+                        values={async () => {
+                          // Return a list of entities which are documented.
+                          const { items } = await catalogApi.getEntities({
+                            fields: ['metadata.name'],
+                            filter: {
+                              'metadata.annotations.backstage.io/techdocs-ref':
+                                CATALOG_FILTER_EXISTS,
+                            },
+                          });
+
+                          const names = items.map(
+                            entity => entity.metadata.name,
+                          );
+                          names.sort();
+                          return names;
+                        }}
+                      />
+                    )}
+                    <SearchFilter.Select
+                      className={classes.filter}
+                      label="Kind"
+                      name="kind"
+                      values={['Component', 'Template']}
+                    />
+                    <SearchFilter.Checkbox
+                      className={classes.filter}
+                      label="Lifecycle"
+                      name="lifecycle"
+                      values={['experimental', 'production']}
+                    />
+                  </Paper>
+                </Grid>
+              )}
+              <Grid item xs>
+                <SearchPagination />
+                <SearchResults>
+                  {({ results }) =>
+                    results.map((result, index) => {
+                      const SearchResultListItem =
+                        getResultItemComponent(result);
+                      return (
+                        <SearchResultListItem
+                          key={index}
+                          rank={result.rank}
+                          result={result.document}
+                          noTrack={config.noTrack}
+                        />
+                      );
+                    })
+                  }
+                </SearchResults>
+                <SearchResultPager />
+              </Grid>
+            </Grid>
+          </Content>
+        </Page>
+      );
+    };
+
+    return (
+      <SearchContextProvider>
+        <UrlUpdater />
+        <Component />
+      </SearchContextProvider>
+    );
   },
 });
