@@ -35,6 +35,9 @@ export type NextRouterProps = {
     TemplateListPageComponent?: React_2.ComponentType<TemplateListPageProps>;
     TemplateWizardPageComponent?: React_2.ComponentType<TemplateWizardPageProps>;
   };
+  logs?: {
+    autoOpen?: boolean;
+  };
   groups?: TemplateGroupFilter[];
   templateFilter?: (entity: TemplateEntityV1beta3) => boolean;
   FormProps?: FormProps_2;
