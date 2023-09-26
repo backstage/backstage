@@ -28,6 +28,7 @@ const ACCESS_TOKEN_PREFIX = 'access-token.';
 export const githubAuthenticator = createOAuthAuthenticator({
   defaultProfileTransform:
     PassportOAuthAuthenticatorHelper.defaultProfileTransform,
+  shouldPersistScopes: true,
   initialize({ callbackUrl, config }) {
     const clientId = config.getString('clientId');
     const clientSecret = config.getString('clientSecret');

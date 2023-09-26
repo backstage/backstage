@@ -1,5 +1,12 @@
 # @backstage/plugin-stack-overflow-backend
 
+## 0.2.8
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-common@0.19.6
+
 ## 0.2.7
 
 ### Patch Changes

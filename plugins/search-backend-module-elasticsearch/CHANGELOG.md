@@ -1,5 +1,14 @@
 # @backstage/plugin-search-backend-module-elasticsearch
 
+## 1.3.7
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-plugin-api@0.6.4
+  - @backstage/backend-common@0.19.6
+  - @backstage/plugin-search-backend-node@1.2.8
+
 ## 1.3.6
 
 ### Patch Changes

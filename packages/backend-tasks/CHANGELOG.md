@@ -1,5 +1,12 @@
 # @backstage/backend-tasks
 
+## 0.5.9
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-common@0.19.6
+
 ## 0.5.8
 
 ### Patch Changes

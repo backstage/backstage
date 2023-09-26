@@ -1,5 +1,15 @@
 # @backstage/plugin-auth-backend-module-github-provider
 
+## 0.1.1
+
+### Patch Changes
+
+- aa38f27c5f68: Fixed a bug where the GitHub authenticator did not properly persist granted OAuth scopes.
+- Updated dependencies
+  - @backstage/plugin-auth-node@0.3.1
+  - @backstage/backend-plugin-api@0.6.4
+  - @backstage/backend-common@0.19.6
+
 ## 0.1.0
 
 ### Minor Changes

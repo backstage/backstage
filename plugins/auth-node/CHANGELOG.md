@@ -1,5 +1,14 @@
 # @backstage/plugin-auth-node
 
+## 0.3.1
+
+### Patch Changes
+
+- aa38f27c5f68: Fix for persisted scopes not being properly restored on sign-in.
+- Updated dependencies
+  - @backstage/backend-plugin-api@0.6.4
+  - @backstage/backend-common@0.19.6
+
 ## 0.3.0
 
 ### Minor Changes
