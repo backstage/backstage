@@ -51,6 +51,7 @@ import {
 } from '@backstage/core-plugin-api';
 
 import {
+  createPlugin,
   createApiExtension,
   createPageExtension,
   createExtensionInput,
@@ -486,4 +487,10 @@ export const SearchNavItem = createNavItemExtension({
       },
     ),
   },
+});
+
+/** @alpha */
+export default createPlugin({
+  id: 'plugin.search',
+  extensions: [SearchApi, SearchPage, SearchModal, SearchNavItem],
 });
