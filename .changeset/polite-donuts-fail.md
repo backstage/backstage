@@ -2,4 +2,4 @@
 '@backstage/plugin-catalog-backend': patch
 ---
 
-Internal refactors as a path toward #18062
+Internal refactors, laying the foundation for later introducing deferred stitching (see #18062).
