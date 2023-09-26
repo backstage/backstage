@@ -8076,6 +8076,7 @@ __metadata:
   resolution: "@backstage/plugin-playlist-backend@workspace:plugins/playlist-backend"
   dependencies:
     "@backstage/backend-common": "workspace:^"
+    "@backstage/backend-plugin-api": "workspace:^"
     "@backstage/backend-test-utils": "workspace:^"
     "@backstage/catalog-client": "workspace:^"
     "@backstage/catalog-model": "workspace:^"
@@ -25636,6 +25637,7 @@ __metadata:
     "@backstage/plugin-permission-backend-module-allow-all-policy": "workspace:^"
     "@backstage/plugin-permission-common": "workspace:^"
     "@backstage/plugin-permission-node": "workspace:^"
+    "@backstage/plugin-playlist-backend": "workspace:^"
     "@backstage/plugin-proxy-backend": "workspace:^"
     "@backstage/plugin-scaffolder-backend": "workspace:^"
     "@backstage/plugin-search-backend": "workspace:^"
