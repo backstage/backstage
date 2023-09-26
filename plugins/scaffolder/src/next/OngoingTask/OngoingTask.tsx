@@ -72,7 +72,7 @@ export const OngoingTask = (props: {
     [taskStream],
   );
 
-  const [logsVisible, setLogVisibleState] = useState(props.logs?.autoOpen);
+  const [logsVisible, setLogVisibleState] = useState(props.logs?.autoOpen ?? false);
   const [buttonBarVisible, setButtonBarVisibleState] = useState(true);
 
   useEffect(() => {
