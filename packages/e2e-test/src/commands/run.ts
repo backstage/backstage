@@ -463,6 +463,10 @@ async function testBackendStart(appDir: string, ...args: string[]) {
           !l.includes('check the migration guide at https://a.co/7PzMCcy') &&
           !l.includes(
             '(Use `node --trace-warnings ...` to show where the warning was created)',
+          ) &&
+          !l.includes('Custom ESM Loaders is an experimental feature') &&
+          !l.includes(
+            'ExperimentalWarning: `globalPreload` is planned for removal',
           ),
       ).length !== 0
     );
