@@ -68,7 +68,7 @@ import {
   hasLabels,
   hasRelationWarnings,
   EntityRelationWarning,
-} from '@internal/plugin-catalog-customized';
+} from '@backstage/plugin-catalog';
 import {
   Direction,
   EntityCatalogGraphCard,

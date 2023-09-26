@@ -24,6 +24,7 @@
   },
   "devDependencies": {
     "@backstage/cli": "workspace:^",
+    "@backstage/test-utils": "workspace:^",
     "@testing-library/jest-dom": "^5.10.1"
   },
   "configSchema": "config.d.ts",

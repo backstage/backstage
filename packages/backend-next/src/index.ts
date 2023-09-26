@@ -32,6 +32,7 @@ backend.add(import('@backstage/plugin-entity-feedback-backend'));
 backend.add(import('@backstage/plugin-kubernetes-backend/alpha'));
 backend.add(import('@backstage/plugin-lighthouse-backend'));
 backend.add(import('@backstage/plugin-linguist-backend'));
+backend.add(import('@backstage/plugin-playlist-backend'));
 backend.add(
   import('@backstage/plugin-permission-backend-module-allow-all-policy'),
 );
@@ -45,5 +46,6 @@ backend.add(import('@backstage/plugin-search-backend/alpha'));
 backend.add(import('@backstage/plugin-techdocs-backend/alpha'));
 backend.add(import('@backstage/plugin-todo-backend'));
 backend.add(import('@backstage/plugin-jira-dashboard-backend'));
+backend.add(import('@backstage/plugin-sonarqube-backend'));
 
 backend.start();

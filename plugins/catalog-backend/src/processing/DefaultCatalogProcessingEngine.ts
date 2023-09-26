@@ -22,16 +22,13 @@ import {
 import { assertError, serializeError, stringifyError } from '@backstage/errors';
 import { Hash } from 'crypto';
 import stableStringify from 'fast-json-stable-stringify';
+import { Knex } from 'knex';
 import { Logger } from 'winston';
 import { metrics, trace } from '@opentelemetry/api';
 import { ProcessingDatabase, RefreshStateItem } from '../database/types';
 import { createCounterMetric, createSummaryMetric } from '../util/metrics';
-import {
-  CatalogProcessingEngine,
-  CatalogProcessingOrchestrator,
-  EntityProcessingResult,
-} from './types';
-import { Stitcher } from '../stitching/Stitcher';
+import { CatalogProcessingOrchestrator, EntityProcessingResult } from './types';
+import { Stitcher } from '../stitching/types';
 import { startTaskPipeline } from './TaskPipeline';
 import { PluginTaskScheduler } from '@backstage/backend-tasks';
 import { Config } from '@backstage/config';
@@ -40,6 +37,7 @@ import {
   TRACER_ID,
   withActiveSpan,
 } from '../util/opentelemetry';
+import { deleteOrphanedEntities } from '../database/operations/util/deleteOrphanedEntities';
 
 const CACHE_TTL = 5;
 
@@ -47,10 +45,17 @@ const tracer = trace.getTracer(TRACER_ID);
 
 export type ProgressTracker = ReturnType<typeof progressTracker>;
 
-export class DefaultCatalogProcessingEngine implements CatalogProcessingEngine {
+// NOTE(freben): Perhaps surprisingly, this class does not implement the
+// CatalogProcessingEngine type. That type is externally visible and its name is
+// the way it is for historic reasons. This class has no particular reason to
+// implement that precise interface; nowadays there are several different
+// engines "hiding" behind the CatalogProcessingEngine interface, of which this
+// is just one.
+export class DefaultCatalogProcessingEngine {
   private readonly config: Config;
   private readonly scheduler?: PluginTaskScheduler;
   private readonly logger: Logger;
+  private readonly knex: Knex;
   private readonly processingDatabase: ProcessingDatabase;
   private readonly orchestrator: CatalogProcessingOrchestrator;
   private readonly stitcher: Stitcher;
@@ -69,6 +74,7 @@ export class DefaultCatalogProcessingEngine implements CatalogProcessingEngine {
     config: Config;
     scheduler?: PluginTaskScheduler;
     logger: Logger;
+    knex: Knex;
     processingDatabase: ProcessingDatabase;
     orchestrator: CatalogProcessingOrchestrator;
     stitcher: Stitcher;
@@ -84,6 +90,7 @@ export class DefaultCatalogProcessingEngine implements CatalogProcessingEngine {
     this.config = options.config;
     this.scheduler = options.scheduler;
     this.logger = options.logger;
+    this.knex = options.knex;
     this.processingDatabase = options.processingDatabase;
     this.orchestrator = options.orchestrator;
     this.stitcher = options.stitcher;
@@ -255,9 +262,11 @@ export class DefaultCatalogProcessingEngine implements CatalogProcessingEngine {
                   resultHash,
                 });
               });
-              await this.stitcher.stitch(
-                new Set([stringifyEntityRef(unprocessedEntity)]),
-              );
+
+              await this.stitcher.stitch({
+                entityRefs: [stringifyEntityRef(unprocessedEntity)],
+              });
+
               track.markSuccessfulWithErrors();
               return;
             }
@@ -305,9 +314,11 @@ export class DefaultCatalogProcessingEngine implements CatalogProcessingEngine {
               }
             });
 
-            await this.stitcher.stitch(setOfThingsToStitch);
+            await this.stitcher.stitch({
+              entityRefs: setOfThingsToStitch,
+            });
 
-            track.markSuccessfulWithChanges(setOfThingsToStitch.size);
+            track.markSuccessfulWithChanges();
           } catch (error) {
             assertError(error);
             track.markFailed(error);
@@ -318,20 +329,21 @@ export class DefaultCatalogProcessingEngine implements CatalogProcessingEngine {
   }
 
   private startOrphanCleanup(): () => void {
-    const strategy =
+    const orphanStrategy =
       this.config.getOptionalString('catalog.orphanStrategy') ?? 'keep';
-    if (strategy !== 'delete') {
+    if (orphanStrategy !== 'delete') {
       return () => {};
     }
 
     const runOnce = async () => {
       try {
-        await this.processingDatabase.transaction(async tx => {
-          const n = await this.processingDatabase.deleteOrphanedEntities(tx);
-          if (n > 0) {
-            this.logger.info(`Deleted ${n} orphaned entities`);
-          }
+        const n = await deleteOrphanedEntities({
+          knex: this.knex,
+          strategy: { mode: 'immediate' },
         });
+        if (n > 0) {
+          this.logger.info(`Deleted ${n} orphaned entities`);
+        }
       } catch (error) {
         this.logger.warn(`Failed to delete orphaned entities`, error);
       }
@@ -363,10 +375,6 @@ export class DefaultCatalogProcessingEngine implements CatalogProcessingEngine {
 // Helps wrap the timing and logging behaviors
 function progressTracker() {
   // prom-client metrics are deprecated in favour of OpenTelemetry metrics.
-  const promStitchedEntities = createCounterMetric({
-    name: 'catalog_stitched_entities_count',
-    help: 'Amount of entities stitched. DEPRECATED, use OpenTelemetry metrics instead',
-  });
   const promProcessedEntities = createCounterMetric({
     name: 'catalog_processed_entities_count',
     help: 'Amount of entities processed, DEPRECATED, use OpenTelemetry metrics instead',
@@ -388,11 +396,6 @@ function progressTracker() {
   });
 
   const meter = metrics.getMeter('default');
-  const stitchedEntities = meter.createCounter(
-    'catalog.stitched.entities.count',
-    { description: 'Amount of entities stitched' },
-  );
-
   const processedEntities = meter.createCounter(
     'catalog.processed.entities.count',
     { description: 'Amount of entities processed' },
@@ -464,13 +467,11 @@ function progressTracker() {
       processedEntities.add(1, { result: 'errors' });
     }
 
-    function markSuccessfulWithChanges(stitchedCount: number) {
+    function markSuccessfulWithChanges() {
       endOverallTimer({ result: 'changed' });
-      promStitchedEntities.inc(stitchedCount);
       promProcessedEntities.inc({ result: 'changed' }, 1);
 
       processingDuration.record(endTime(), { result: 'changed' });
-      stitchedEntities.add(stitchedCount);
       processedEntities.add(1, { result: 'changed' });
     }
 

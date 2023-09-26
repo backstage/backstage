@@ -209,18 +209,18 @@ export function createInstances(options: {
   function createInstance(
     instanceParams: ExtensionInstanceParameters,
   ): ExtensionInstance {
-    const existingInstance = instances.get(instanceParams.extension.id);
+    const extensionId = instanceParams.extension.id;
+    const existingInstance = instances.get(extensionId);
     if (existingInstance) {
       return existingInstance;
     }
 
     const attachments = new Map(
-      Array.from(
-        attachmentMap.get(instanceParams.extension.id)?.entries() ?? [],
-      ).map(([inputName, attachmentConfigs]) => [
-        inputName,
-        attachmentConfigs.map(createInstance),
-      ]),
+      Array.from(attachmentMap.get(extensionId)?.entries() ?? []).map(
+        ([inputName, attachmentConfigs]) => {
+          return [inputName, attachmentConfigs.map(createInstance)];
+        },
+      ),
     );
 
     const newInstance = createExtensionInstance({
@@ -230,7 +230,7 @@ export function createInstances(options: {
       attachments,
     });
 
-    instances.set(instanceParams.extension.id, newInstance);
+    instances.set(extensionId, newInstance);
 
     return newInstance;
   }
@@ -247,50 +247,71 @@ export function createInstances(options: {
 /** @public */
 export function createApp(options: {
   plugins: BackstagePlugin[];
-  config?: ConfigApi;
+  configLoader?: () => Promise<ConfigApi>;
+  pluginLoader?: (ctx: { config: ConfigApi }) => Promise<BackstagePlugin[]>;
 }): {
   createRoot(): JSX.Element;
 } {
-  const discoveredPlugins = getAvailablePlugins();
-  const allPlugins = Array.from(
-    new Set([...discoveredPlugins, ...options.plugins]),
-  );
-  const appConfig =
-    options?.config ??
-    ConfigReader.fromConfigs(overrideBaseUrlConfigs(defaultConfigLoaderSync()));
+  async function appLoader() {
+    const config =
+      (await options?.configLoader?.()) ??
+      ConfigReader.fromConfigs(
+        overrideBaseUrlConfigs(defaultConfigLoaderSync()),
+      );
 
-  const { rootInstances } = createInstances({
-    plugins: allPlugins,
-    config: appConfig,
-  });
+    const discoveredPlugins = getAvailablePlugins();
+    const loadedPlugins = (await options.pluginLoader?.({ config })) ?? [];
+    const allPlugins = Array.from(
+      new Set([...discoveredPlugins, ...options.plugins, ...loadedPlugins]),
+    );
 
-  const routePaths = extractRouteInfoFromInstanceTree(rootInstances);
+    const { rootInstances } = createInstances({
+      plugins: allPlugins,
+      config,
+    });
 
-  const coreInstance = rootInstances.find(({ id }) => id === 'core');
-  if (!coreInstance) {
-    throw Error('Unable to find core extension instance');
+    const routePaths = extractRouteInfoFromInstanceTree(rootInstances);
+
+    const coreInstance = rootInstances.find(({ id }) => id === 'core');
+    if (!coreInstance) {
+      throw Error('Unable to find core extension instance');
+    }
+
+    const apiHolder = createApiHolder(coreInstance, config);
+
+    const appContext = createLegacyAppContext(allPlugins);
+
+    const rootElements = rootInstances
+      .map(e => (
+        <React.Fragment key={e.id}>
+          {e.getData(coreExtensionData.reactElement)}
+        </React.Fragment>
+      ))
+      .filter((x): x is JSX.Element => !!x);
+
+    const App = () => (
+      <ApiProvider apis={apiHolder}>
+        <AppContextProvider appContext={appContext}>
+          <AppThemeProvider>
+            <RoutingProvider routePaths={routePaths}>
+              {/* TODO: set base path using the logic from AppRouter */}
+              <BrowserRouter>{rootElements}</BrowserRouter>
+            </RoutingProvider>
+          </AppThemeProvider>
+        </AppContextProvider>
+      </ApiProvider>
+    );
+
+    return { default: App };
   }
-
-  const apiHolder = createApiHolder(coreInstance, appConfig);
-
-  const appContext = createLegacyAppContext(allPlugins);
 
   return {
     createRoot() {
-      const rootElements = rootInstances
-        .map(e => e.getData(coreExtensionData.reactElement))
-        .filter((x): x is JSX.Element => !!x);
+      const LazyApp = React.lazy(appLoader);
       return (
-        <ApiProvider apis={apiHolder}>
-          <AppContextProvider appContext={appContext}>
-            <AppThemeProvider>
-              <RoutingProvider routePaths={routePaths}>
-                {/* TODO: set base path using the logic from AppRouter */}
-                <BrowserRouter>{rootElements}</BrowserRouter>
-              </RoutingProvider>
-            </AppThemeProvider>
-          </AppContextProvider>
-        </ApiProvider>
+        <React.Suspense fallback="Loading...">
+          <LazyApp />
+        </React.Suspense>
       );
     },
   };
@@ -314,7 +335,6 @@ function toLegacyPlugin(plugin: BackstagePlugin): LegacyBackstagePlugin {
     getApis: notImplemented,
     getFeatureFlags: notImplemented,
     provide: notImplemented,
-    __experimentalReconfigure: notImplemented,
   };
 }
 
