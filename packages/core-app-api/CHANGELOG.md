@@ -194,7 +194,7 @@
 
 ### Minor Changes
 
-- 7908d72e033: Introduce a new global config parameter, `auth.enableExperimentalRedirectFlow`. When enabled, auth will happen with an in-window redirect flow rather than through a popup window.
+- 7908d72e033: Introduce a new global config parameter, `enableExperimentalRedirectFlow`. When enabled, auth will happen with an in-window redirect flow rather than through a popup window.
 - c15e0cedbe1: The `AuthConnector` interface now supports specifying a set of scopes when
   refreshing a session. The `DefaultAuthConnector` implementation passes the
   `scope` query parameter to the auth-backend plugin appropriately. The
@@ -255,7 +255,7 @@
 
 ### Minor Changes
 
-- 7908d72e033: Introduce a new global config parameter, `auth.enableExperimentalRedirectFlow`. When enabled, auth will happen with an in-window redirect flow rather than through a popup window.
+- 7908d72e033: Introduce a new global config parameter, `enableExperimentalRedirectFlow`. When enabled, auth will happen with an in-window redirect flow rather than through a popup window.
 
 ### Patch Changes
 
