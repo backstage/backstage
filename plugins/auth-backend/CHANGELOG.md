@@ -1,5 +1,20 @@
 # @backstage/plugin-auth-backend
 
+## 0.19.1
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/plugin-auth-backend-module-github-provider@0.1.1
+  - @backstage/plugin-auth-node@0.3.1
+  - @backstage/backend-plugin-api@0.6.4
+  - @backstage/plugin-auth-backend-module-gcp-iap-provider@0.1.1
+  - @backstage/plugin-auth-backend-module-gitlab-provider@0.1.1
+  - @backstage/plugin-auth-backend-module-google-provider@0.1.1
+  - @backstage/plugin-auth-backend-module-oauth2-provider@0.1.1
+  - @backstage/backend-common@0.19.6
+  - @backstage/plugin-catalog-node@1.4.5
+
 ## 0.19.0
 
 ### Minor Changes

@@ -1,5 +1,16 @@
 # @backstage/plugin-linguist-backend
 
+## 0.5.1
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/plugin-auth-node@0.3.1
+  - @backstage/backend-plugin-api@0.6.4
+  - @backstage/backend-common@0.19.6
+  - @backstage/plugin-catalog-node@1.4.5
+  - @backstage/backend-tasks@0.5.9
+
 ## 0.5.0
 
 ### Minor Changes
