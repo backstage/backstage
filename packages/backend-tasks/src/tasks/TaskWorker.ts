@@ -23,7 +23,6 @@ import { Logger } from 'winston';
 import { DbTasksRow, DB_TASKS_TABLE } from '../database/tables';
 import { TaskFunction, TaskSettingsV2, taskSettingsV2Schema } from './types';
 import { delegateAbortController, nowPlus, sleep } from './util';
-import { metrics, Counter, Histogram } from '@opentelemetry/api';
 
 const DEFAULT_WORK_CHECK_FREQUENCY = Duration.fromObject({ seconds: 5 });
 
@@ -33,25 +32,13 @@ const DEFAULT_WORK_CHECK_FREQUENCY = Duration.fromObject({ seconds: 5 });
  * @private
  */
 export class TaskWorker {
-  private readonly counter: Counter;
-  private readonly duration: Histogram;
-
   constructor(
     private readonly taskId: string,
     private readonly fn: TaskFunction,
     private readonly knex: Knex,
     private readonly logger: Logger,
     private readonly workCheckFrequency: Duration = DEFAULT_WORK_CHECK_FREQUENCY,
-  ) {
-    const meter = metrics.getMeter('default');
-    this.counter = meter.createCounter('backend_task_runs_total', {
-      description: 'Total number of times a task has been run',
-    });
-    this.duration = meter.createHistogram('backend_task_run_duration', {
-      description: 'Histogram of task run durations',
-      unit: 'seconds',
-    });
-  }
+  ) {}
 
   async start(settings: TaskSettingsV2, options?: { signal?: AbortSignal }) {
     try {
@@ -63,7 +50,6 @@ export class TaskWorker {
     this.logger.info(
       `Task worker starting: ${this.taskId}, ${JSON.stringify(settings)}`,
     );
-    this.counter.add(1, { task_id: this.taskId, result: 'started' });
 
     let attemptNum = 1;
     (async () => {
@@ -157,17 +143,10 @@ export class TaskWorker {
     }, Duration.fromISO(taskSettings.timeoutAfterDuration).as('milliseconds'));
 
     try {
-      const startTime = process.hrtime();
       await this.fn(taskAbortController.signal);
-      const delta = process.hrtime(startTime);
-      const endTime = delta[0] + delta[1] / 1e9;
-
-      this.duration.record(endTime, { task_id: this.taskId });
-      this.counter.add(1, { task_id: this.taskId, result: 'completed' });
       taskAbortController.abort(); // releases resources
     } catch (e) {
       this.logger.error(e);
-      this.counter.add(1, { task_id: this.taskId, result: 'failed' });
       await this.tryReleaseTask(ticket, taskSettings);
       return { result: 'failed' };
     } finally {
