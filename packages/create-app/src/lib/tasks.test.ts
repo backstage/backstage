@@ -24,7 +24,6 @@ import {
   buildAppTask,
   checkAppExistsTask,
   checkPathExistsTask,
-  createTemporaryAppFolderTask,
   moveAppTask,
   templatingTask,
   tryInitGitRepository,
@@ -160,30 +159,6 @@ describe('tasks', () => {
       await expect(
         checkPathExistsTask('projects/my-module.ts'),
       ).rejects.toThrow('already exists');
-    });
-  });
-
-  describe('createTemporaryAppFolderTask', () => {
-    it('should create a directory at a given path', async () => {
-      const tempDir = 'projects/tmpFolder';
-      await expect(
-        createTemporaryAppFolderTask(tempDir),
-      ).resolves.not.toThrow();
-      expect(fs.existsSync(tempDir)).toBe(true);
-    });
-
-    it('should fail if a directory of the same name exists', async () => {
-      const tempDir = 'projects/dir';
-      await expect(createTemporaryAppFolderTask(tempDir)).rejects.toThrow(
-        'file already exists',
-      );
-    });
-
-    it('should fail if a file of the same name exists', async () => {
-      const tempDir = 'projects/dir/my-file.txt';
-      await expect(createTemporaryAppFolderTask(tempDir)).rejects.toThrow(
-        'file already exists',
-      );
     });
   });
 
