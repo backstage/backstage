@@ -49,6 +49,7 @@ import {
   featureFlagsApiRef,
   attachComponentData,
   useRouteRef,
+  identityApiRef,
 } from '@backstage/core-plugin-api';
 import { getAvailablePlugins } from './discovery';
 import {
@@ -61,6 +62,8 @@ import {
 // TODO: Get rid of all of these
 // eslint-disable-next-line @backstage/no-relative-monorepo-imports
 import { AppThemeProvider } from '../../../core-app-api/src/app/AppThemeProvider';
+// eslint-disable-next-line @backstage/no-relative-monorepo-imports
+import { AppIdentityProxy } from '../../../core-app-api/src/apis/implementations/IdentityApi/AppIdentityProxy';
 // eslint-disable-next-line @backstage/no-relative-monorepo-imports
 import { AppContextProvider } from '../../../core-app-api/src/app/AppContext';
 // eslint-disable-next-line @backstage/no-relative-monorepo-imports
@@ -366,13 +369,13 @@ function createApiHolder(
 ): ApiHolder {
   const factoryRegistry = new ApiFactoryRegistry();
 
-  const apiFactories =
+  const pluginApis =
     coreExtension.attachments
       .get('apis')
       ?.map(e => e.getData(coreExtensionData.apiFactory))
       .filter((x): x is AnyApiFactory => !!x) ?? [];
 
-  for (const factory of apiFactories) {
+  for (const factory of [...defaultApis, ...pluginApis]) {
     factoryRegistry.register('default', factory);
   }
 
@@ -381,6 +384,38 @@ function createApiHolder(
     api: featureFlagsApiRef,
     deps: {},
     factory: () => new LocalStorageFeatureFlags(),
+  });
+
+  factoryRegistry.register('static', {
+    api: identityApiRef,
+    deps: {},
+    factory: () => {
+      const appIdentityProxy = new AppIdentityProxy();
+      // TODO: Remove this when sign-in page is migrated
+      appIdentityProxy.setTarget(
+        {
+          getUserId: () => 'guest',
+          getIdToken: async () => undefined,
+          getProfile: () => ({
+            email: 'guest@example.com',
+            displayName: 'Guest',
+          }),
+          getProfileInfo: async () => ({
+            email: 'guest@example.com',
+            displayName: 'Guest',
+          }),
+          getBackstageIdentity: async () => ({
+            type: 'user',
+            userEntityRef: 'user:default/guest',
+            ownershipEntityRefs: ['user:default/guest'],
+          }),
+          getCredentials: async () => ({}),
+          signOut: async () => {},
+        },
+        { signOutTargetUrl: '/' },
+      );
+      return appIdentityProxy;
+    },
   });
 
   factoryRegistry.register('static', {
