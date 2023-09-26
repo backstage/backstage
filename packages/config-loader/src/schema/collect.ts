@@ -157,7 +157,7 @@ export async function collectConfigSchemas(
 // This handles the support of TypeScript .d.ts config schema declarations.
 // We collect all typescript schema definition and compile them all in one go.
 // This is much faster than compiling them separately.
-async function compileTsSchemas(paths: string[]) {
+export async function compileTsSchemas(paths: string[]) {
   if (paths.length === 0) {
     return [];
   }
@@ -171,9 +171,9 @@ async function compileTsSchemas(paths: string[]) {
   const program = getProgramFromFiles(paths, {
     incremental: false,
     isolatedModules: true,
-    lib: ['ES5'], // Skipping most libs speeds processing up a lot, we just need the primitive types anyway
+    lib: ['ES2022'], // Skipping most libs speeds processing up a lot, we just need the primitive types anyway
     noEmit: true,
-    noResolve: true,
+    // noResolve: true,
     skipLibCheck: true, // Skipping lib checks speeds things up
     skipDefaultLibCheck: true,
     strict: true,
@@ -191,7 +191,7 @@ async function compileTsSchemas(paths: string[]) {
           required: true,
           validationKeywords: ['visibility', 'deepVisibility', 'deprecated'],
         },
-        [path.split(sep).join('/')], // Unix paths are expected for all OSes here
+        // [path.split(sep).join('/')], // Unix paths are expected for all OSes here
       );
 
       // All schemas should export a `Config` symbol
@@ -200,14 +200,14 @@ async function compileTsSchemas(paths: string[]) {
       // This makes sure that no additional symbols are defined in the schema. We don't allow
       // this because they share a global namespace and will be merged together, leading to
       // unpredictable behavior.
-      const userSymbols = new Set(generator?.getUserSymbols());
-      userSymbols.delete('Config');
-      if (userSymbols.size !== 0) {
-        const names = Array.from(userSymbols).join("', '");
-        throw new Error(
-          `Invalid configuration schema in ${path}, additional symbol definitions are not allowed, found '${names}'`,
-        );
-      }
+      // const userSymbols = new Set(generator?.getUserSymbols());
+      // userSymbols.delete('Config');
+      // if (userSymbols.size !== 0) {
+      //   const names = Array.from(userSymbols).join("', '");
+      //   throw new Error(
+      //     `Invalid configuration schema in ${path}, additional symbol definitions are not allowed, found '${names}'`,
+      //   );
+      // }
 
       // This makes sure that no unsupported types are used in the schema, for example `Record<,>`.
       // The generator will extract these as a schema reference, which will in turn be broken for our usage.

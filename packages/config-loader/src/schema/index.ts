@@ -23,3 +23,4 @@ export type {
   ConfigSchemaProcessingOptions,
   TransformFunc,
 } from './types';
+export { compileTsSchemas } from './collect';
