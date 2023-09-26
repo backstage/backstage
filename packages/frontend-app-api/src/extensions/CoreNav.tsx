@@ -19,6 +19,8 @@ import {
   createExtension,
   coreExtensionData,
   createExtensionInput,
+  useRouteRef,
+  NavTarget,
 } from '@backstage/frontend-plugin-api';
 import { makeStyles } from '@material-ui/core';
 import {
@@ -29,7 +31,6 @@ import {
   SidebarDivider,
   SidebarItem,
 } from '@backstage/core-components';
-import { GraphiQLIcon } from '@backstage/plugin-graphiql';
 // eslint-disable-next-line @backstage/no-relative-monorepo-imports
 import LogoIcon from '../../../app/src/components/Root/LogoIcon';
 // eslint-disable-next-line @backstage/no-relative-monorepo-imports
@@ -68,20 +69,26 @@ export const CoreNav = createExtension({
   at: 'core.layout/nav',
   inputs: {
     items: createExtensionInput({
-      path: coreExtensionData.navTarget,
+      target: coreExtensionData.navTarget,
     }),
   },
   output: {
     element: coreExtensionData.reactElement,
   },
-  factory({ bind }) {
+  factory({ bind, inputs }) {
+    const SidebarNavItem = (props: NavTarget) => {
+      const { icon, title, routeRef } = props;
+      const to = useRouteRef(routeRef)();
+      return <SidebarItem icon={icon} to={to} text={title} />;
+    };
     bind({
-      // TODO: set base path using the logic from AppRouter
       element: (
         <Sidebar>
           <SidebarLogo />
           <SidebarDivider />
-          <SidebarItem icon={GraphiQLIcon} to="graphiql" text="GraphiQL" />
+          {inputs.items.map((item, index) => (
+            <SidebarNavItem {...item.target} key={index} />
+          ))}
         </Sidebar>
       ),
     });
