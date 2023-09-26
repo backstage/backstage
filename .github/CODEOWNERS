@@ -56,9 +56,6 @@ yarn.lock                                         @backstage/maintainers @backst
 /plugins/git-release-manager                      @backstage/maintainers @backstage/reviewers @erikengervall
 /plugins/home                                     @backstage/discoverability-maintainers
 /plugins/home-*                                   @backstage/discoverability-maintainers
-/plugins/jira-dashboard                           @backstage/maintainers @backstage/reviewers @anicke @fridajac
-/plugins/jira-dashboard-backend                   @backstage/maintainers @backstage/reviewers @anicke @fridajac
-/plugins/jira-dashboard-common                    @backstage/maintainers @backstage/reviewers @anicke @fridajac
 /plugins/kafka                                    @backstage/maintainers @backstage/reviewers @andrewthauer
 /plugins/kafka-backend                            @backstage/maintainers @backstage/reviewers @andrewthauer
 /plugins/kubernetes                               @backstage/kubernetes-maintainers
