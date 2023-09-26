@@ -66,6 +66,7 @@ jest.mock('./versions', () => ({
     '@backstage/core-app-api': '1.0.0',
     '@backstage/core-components': '1.0.0',
     '@backstage/core-plugin-api': '1.0.0',
+    '@backstage/e2e-test-utils': '1.0.0',
     '@backstage/integration-react': '1.0.0',
     '@backstage/plugin-api-docs': '1.0.0',
     '@backstage/plugin-catalog': '1.0.0',
