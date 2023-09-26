@@ -21,7 +21,7 @@ import type { ChildProcess } from 'child_process';
 import { IpcServer } from './IpcServer';
 import { ServerDataStore } from './ServerDataStore';
 import debounce from 'lodash/debounce';
-import { fileURLToPath } from 'url';
+import { fileURLToPath, pathToFileURL } from 'url';
 import { isAbsolute as isAbsolutePath } from 'path';
 import { paths } from '../paths';
 import spawn from 'cross-spawn';
@@ -30,7 +30,7 @@ const loaderArgs = [
   '--require',
   require.resolve('@esbuild-kit/cjs-loader'),
   '--loader',
-  require.resolve('@esbuild-kit/esm-loader'),
+  pathToFileURL(require.resolve('@esbuild-kit/esm-loader')).toString(), // Windows prefers a URL here
 ];
 
 export async function startBackendExperimental(options: BackendServeOptions) {
