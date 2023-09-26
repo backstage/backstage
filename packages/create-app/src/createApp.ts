@@ -98,9 +98,7 @@ export default async (opts: OptionValues): Promise<void> => {
       await checkAppExistsTask(paths.targetDir, answers.name);
 
       Task.section('Creating a temporary app directory');
-      const tempDir = await fs.mkdtemp(
-        resolvePath(resolvePath(os.tmpdir(), answers.name)),
-      );
+      const tempDir = await fs.mkdtemp(resolvePath(os.tmpdir(), answers.name));
 
       Task.section('Preparing files');
       await templatingTask(templateDir, tempDir, {
