@@ -65,6 +65,9 @@ export type NextRouterProps = {
     TemplateListPageComponent?: React.ComponentType<TemplateListPageProps>;
     TemplateWizardPageComponent?: React.ComponentType<TemplateWizardPageProps>;
   };
+  logs?: {
+    autoOpen?: boolean;
+  };
   groups?: TemplateGroupFilter[];
   templateFilter?: (entity: TemplateEntityV1beta3) => boolean;
   // todo(blam): rename this to formProps
@@ -139,6 +142,7 @@ export const Router = (props: PropsWithChildren<NextRouterProps>) => {
         path={scaffolderTaskRouteRef.path}
         element={
           <TaskPageComponent
+            logs={props.logs}
             TemplateOutputsComponent={TemplateOutputsComponent}
           />
         }

@@ -52,6 +52,9 @@ export const OngoingTask = (props: {
   TemplateOutputsComponent?: React.ComponentType<{
     output?: ScaffolderTaskOutput;
   }>;
+  logs?: {
+    autoOpen?: boolean;
+  };
 }) => {
   // todo(blam): check that task Id actually exists, and that it's valid. otherwise redirect to something more useful.
   const { taskId } = useParams();
@@ -69,7 +72,7 @@ export const OngoingTask = (props: {
     [taskStream],
   );
 
-  const [logsVisible, setLogVisibleState] = useState(false);
+  const [logsVisible, setLogVisibleState] = useState(props.logs?.autoOpen);
   const [buttonBarVisible, setButtonBarVisibleState] = useState(true);
 
   useEffect(() => {
