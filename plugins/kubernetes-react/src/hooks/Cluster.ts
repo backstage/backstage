@@ -16,6 +16,9 @@
 import React from 'react';
 import { ClusterAttributes } from '@backstage/plugin-kubernetes-common';
 
+/**
+ * @public
+ */
 export const ClusterContext = React.createContext<ClusterAttributes>({
   name: '',
 });

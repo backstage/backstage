@@ -16,8 +16,8 @@
 import React from 'react';
 import { ClientPodStatus } from '@backstage/plugin-kubernetes-common';
 
-/*
- * @deprecated
+/**
+ * @public
  */
 export const PodNamesWithMetricsContext = React.createContext<
   Map<string, ClientPodStatus>

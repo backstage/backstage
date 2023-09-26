@@ -15,11 +15,9 @@
  */
 
 import { Entity } from '@backstage/catalog-model';
-import {
-  KubernetesRequestBody,
-  KubernetesAuthProvidersApi,
-  KubernetesApi,
-} from '@backstage/plugin-kubernetes-common';
+import { KubernetesRequestBody } from '@backstage/plugin-kubernetes-common';
+import { KubernetesAuthProvidersApi } from '../kubernetes-auth-provider';
+import { KubernetesApi } from '../api/types';
 
 export const generateAuth = async (
   entity: Entity,

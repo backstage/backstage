@@ -13,10 +13,14 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import { KubernetesBackendClient } from './deprecated';
-import { kubernetesApiRef, kubernetesProxyApiRef } from './deprecated';
-import { kubernetesAuthProvidersApiRef } from './deprecated';
-import { KubernetesAuthProviders } from './deprecated';
+import {
+  KubernetesBackendClient,
+  kubernetesApiRef,
+  kubernetesProxyApiRef,
+  kubernetesAuthProvidersApiRef,
+  KubernetesAuthProviders,
+  KubernetesProxyClient,
+} from '@backstage/plugin-kubernetes-react';
 import {
   createApiFactory,
   createPlugin,
@@ -30,7 +34,6 @@ import {
   oneloginAuthApiRef,
   createRoutableExtension,
 } from '@backstage/core-plugin-api';
-import { KubernetesProxyClient } from './deprecated';
 
 export const rootCatalogKubernetesRouteRef = createRouteRef({
   id: 'kubernetes',

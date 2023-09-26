@@ -20,14 +20,20 @@ import { Entity } from '@backstage/catalog-model';
 import {
   ErrorPanel,
   ErrorReporting,
-  DetectedError,
-  detectErrors,
   Cluster,
-  EmptyState,
   useKubernetesObjects,
   DetectedErrorsContext,
-} from './deprecated';
-import { Content, Page, Progress } from '@backstage/core-components';
+} from '@backstage/plugin-kubernetes-react';
+import {
+  DetectedError,
+  detectErrors,
+} from '@backstage/plugin-kubernetes-common';
+import {
+  Content,
+  EmptyState,
+  Page,
+  Progress,
+} from '@backstage/core-components';
 
 type KubernetesContentProps = {
   entity: Entity;
@@ -101,14 +107,12 @@ export const KubernetesContent = ({
                     alignItems="center"
                     spacing={2}
                   >
-                    <Grid item xs={4}>
-                      <Typography variant="h5">
-                        No resources on any known clusters for{' '}
-                        {entity.metadata.name}
-                      </Typography>
-                    </Grid>
-                    <Grid item xs={4}>
-                      <EmptyState />
+                    <Grid item xs={8}>
+                      <EmptyState
+                        missing="data"
+                        title="No Kubernetes resources"
+                        description={`No resources on any known clusters for ${entity.metadata.name}`}
+                      />
                     </Grid>
                   </Grid>
                 )}

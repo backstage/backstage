@@ -18,7 +18,7 @@ import React from 'react';
 import { screen } from '@testing-library/react';
 import { renderInTestApp } from '@backstage/test-utils';
 import { KubernetesContent } from './KubernetesContent';
-import { useKubernetesObjects } from './deprecated';
+import { useKubernetesObjects } from '@backstage/plugin-kubernetes-react';
 
 jest.mock('./deprecated/hooks');
 import * as oneDeployment from './__fixtures__/1-deployments.json';

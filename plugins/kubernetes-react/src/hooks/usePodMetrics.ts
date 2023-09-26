@@ -26,8 +26,8 @@ export const PodMetricsContext = React.createContext<
   Map<string, ClientPodStatus[]>
 >(new Map());
 
-/*
- * @alpha
+/**
+ * @public
  */
 export type PodMetricsMatcher = {
   metadata?: IObjectMeta;

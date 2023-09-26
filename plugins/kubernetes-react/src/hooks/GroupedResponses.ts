@@ -16,6 +16,11 @@
 import React from 'react';
 import { GroupedResponses } from '@backstage/plugin-kubernetes-common';
 
+/**
+ *
+ *
+ * @public
+ */
 export const GroupedResponsesContext = React.createContext<GroupedResponses>({
   pods: [],
   replicaSets: [],

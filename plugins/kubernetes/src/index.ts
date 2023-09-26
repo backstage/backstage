@@ -27,4 +27,5 @@ export {
 } from './plugin';
 export type { EntityKubernetesContentProps } from './plugin';
 export { Router, isKubernetesAvailable } from './Router';
-export * from './deprecated';
+// TODO remove this re-export as a breaking change after a couple of releases
+export * from '@backstage/plugin-kubernetes-react';

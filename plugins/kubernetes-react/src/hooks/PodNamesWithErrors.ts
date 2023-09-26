@@ -15,6 +15,9 @@
  */
 import React from 'react';
 
+/**
+ * @public
+ */
 export const PodNamesWithErrorsContext = React.createContext<Set<string>>(
   new Set<string>(),
 );

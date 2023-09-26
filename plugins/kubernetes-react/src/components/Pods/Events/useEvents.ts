@@ -15,7 +15,7 @@
  */
 import { useApi } from '@backstage/core-plugin-api';
 import useAsync from 'react-use/lib/useAsync';
-import { kubernetesProxyApiRef } from '@backstage/plugin-kubernetes-common';
+import { kubernetesProxyApiRef } from '../../../api/types';
 
 /**
  * Arguments for useEvents

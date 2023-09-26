@@ -15,8 +15,7 @@
  */
 import { useApi } from '@backstage/core-plugin-api';
 import useAsync, { AsyncState } from 'react-use/lib/useAsync';
-
-import { kubernetesApiRef } from '@backstage/plugin-kubernetes-common';
+import { kubernetesApiRef } from '../api/types';
 
 /**
  * Check if conditions for a pod exec call through the proxy endpoint are met

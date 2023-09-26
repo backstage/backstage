@@ -26,7 +26,5 @@ export {
   kubernetesProxyPermission,
   kubernetesPermissions,
 } from './permissions';
-export * from './api';
 export * from './error-detection';
-export * from './kubernetes-auth-provider';
 export * from './util';
