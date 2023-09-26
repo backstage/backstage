@@ -18,6 +18,7 @@ export interface Config {
   jiraDashboard: {
     /**
      * The API token to authenticate towards Jira. It can be found by visiting Atlassians page at https://developer.atlassian.com/cloud/jira/platform/basic-auth-for-rest-apis/
+     * @visibility secret
      */
     token: string;
 
