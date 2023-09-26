@@ -1,0 +1,10 @@
+apiVersion: backstage.io/v1alpha1
+kind: Component
+metadata:
+  name: backstage-errors
+  title: '@backstage/errors'
+  description: Common utilities for error handling within Backstage
+spec:
+  lifecycle: production
+  type: backstage-common-library
+  owner: maintainers

@@ -5,10 +5,9 @@
 # https://help.github.com/articles/about-codeowners/
 
 *                                                 @backstage/maintainers @backstage/reviewers
-yarn.lock                                         @backstage/maintainers @backstage/reviewers @backstage-service
-*/yarn.lock                                       @backstage/maintainers @backstage/reviewers @backstage-service
+yarn.lock                                         @backstage/maintainers @backstage-service
+*/yarn.lock                                       @backstage/maintainers @backstage-service
 /.changeset/*.md
-/cypress/src/integration/plugins/techdocs.spec.ts @backstage/techdocs-maintainers
 /docs/assets/search                               @backstage/discoverability-maintainers
 /docs/features/search                             @backstage/discoverability-maintainers
 /docs/features/techdocs                           @backstage/techdocs-maintainers
@@ -58,8 +57,8 @@ yarn.lock                                         @backstage/maintainers @backst
 /plugins/home-*                                   @backstage/discoverability-maintainers
 /plugins/kafka                                    @backstage/maintainers @backstage/reviewers @andrewthauer
 /plugins/kafka-backend                            @backstage/maintainers @backstage/reviewers @andrewthauer
-/plugins/kubernetes                               @backstage/maintainers @backstage/reviewers @backstage/kubernetes-maintainers
-/plugins/kubernetes-*                             @backstage/maintainers @backstage/reviewers @backstage/kubernetes-maintainers
+/plugins/kubernetes                               @backstage/kubernetes-maintainers
+/plugins/kubernetes-*                             @backstage/kubernetes-maintainers
 /plugins/linguist                                 @backstage/maintainers @backstage/reviewers @awanlin
 /plugins/linguist-backend                         @backstage/maintainers @backstage/reviewers @awanlin
 /plugins/linguist-common                          @backstage/maintainers @backstage/reviewers @awanlin

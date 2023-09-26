@@ -65,7 +65,7 @@ import { DefaultCatalogProcessingEngine } from '../processing/DefaultCatalogProc
 import { DefaultLocationService } from './DefaultLocationService';
 import { DefaultEntitiesCatalog } from './DefaultEntitiesCatalog';
 import { DefaultCatalogProcessingOrchestrator } from '../processing/DefaultCatalogProcessingOrchestrator';
-import { Stitcher } from '../stitching/Stitcher';
+import { DefaultStitcher } from '../stitching/DefaultStitcher';
 import {
   createRandomProcessingInterval,
   ProcessingIntervalFunction,
@@ -74,7 +74,7 @@ import { createRouter } from './createRouter';
 import { DefaultRefreshService } from './DefaultRefreshService';
 import { AuthorizedRefreshService } from './AuthorizedRefreshService';
 import { DefaultCatalogRulesEnforcer } from '../ingestion/CatalogRules';
-import { Config } from '@backstage/config';
+import { Config, readDurationFromConfig } from '@backstage/config';
 import { Logger } from 'winston';
 import { connectEntityProviders } from '../processing/connectEntityProviders';
 import { PermissionRuleParams } from '@backstage/plugin-permission-common';
@@ -100,6 +100,7 @@ import { AuthorizedLocationService } from './AuthorizedLocationService';
 import { DefaultProviderDatabase } from '../database/DefaultProviderDatabase';
 import { DefaultCatalogDatabase } from '../database/DefaultCatalogDatabase';
 import { EventBroker } from '@backstage/plugin-events-node';
+import { durationToMilliseconds } from '@backstage/types';
 
 /**
  * This is a duplicate of the alpha `CatalogPermissionRule` type, for use in the stable API.
@@ -160,11 +161,7 @@ export class CatalogBuilder {
     unprocessedEntity: Entity;
     errors: Error[];
   }) => Promise<void> | void;
-  private processingInterval: ProcessingIntervalFunction =
-    createRandomProcessingInterval({
-      minSeconds: 100,
-      maxSeconds: 150,
-    });
+  private processingInterval: ProcessingIntervalFunction;
   private locationAnalyzer: LocationAnalyzer | undefined = undefined;
   private readonly permissionRules: CatalogPermissionRuleInput[];
   private allowedLocationType: string[];
@@ -191,6 +188,10 @@ export class CatalogBuilder {
     this.parser = undefined;
     this.permissionRules = Object.values(catalogPermissionRules);
     this.allowedLocationType = ['url'];
+
+    this.processingInterval = CatalogBuilder.getDefaultProcessingInterval(
+      env.config,
+    );
   }
 
   /**
@@ -422,7 +423,7 @@ export class CatalogBuilder {
   }
 
   /**
-   * Enables the publishing of events for cloflicts in the DefaultProcessingDatabase
+   * Enables the publishing of events for conflicts in the DefaultProcessingDatabase
    */
   setEventBroker(broker: EventBroker): CatalogBuilder {
     this.eventBroker = broker;
@@ -447,6 +448,11 @@ export class CatalogBuilder {
       logger.info('Performing database migration');
       await applyDatabaseMigrations(dbClient);
     }
+
+    const stitcher = DefaultStitcher.fromConfig(config, {
+      knex: dbClient,
+      logger,
+    });
 
     const processingDatabase = new DefaultProcessingDatabase({
       database: dbClient,
@@ -473,7 +479,6 @@ export class CatalogBuilder {
       policy,
       legacySingleProcessorValidation: this.legacySingleProcessorValidation,
     });
-    const stitcher = new Stitcher(dbClient, logger);
     const unauthorizedEntitiesCatalog = new DefaultEntitiesCatalog({
       database: dbClient,
       logger,
@@ -534,6 +539,7 @@ export class CatalogBuilder {
       config,
       scheduler,
       logger,
+      knex: dbClient,
       processingDatabase,
       orchestrator,
       stitcher,
@@ -571,7 +577,16 @@ export class CatalogBuilder {
     await connectEntityProviders(providerDatabase, entityProviders);
 
     return {
-      processingEngine,
+      processingEngine: {
+        async start() {
+          await processingEngine.start();
+          await stitcher.start();
+        },
+        async stop() {
+          await processingEngine.stop();
+          await stitcher.stop();
+        },
+      },
       router,
     };
   }
@@ -757,5 +772,31 @@ export class CatalogBuilder {
       'MicrosoftGraphOrgReaderProcessor',
       'https://backstage.io/docs/integrations/azure/org',
     );
+  }
+
+  private static getDefaultProcessingInterval(
+    config: Config,
+  ): ProcessingIntervalFunction {
+    const processingIntervalKey = 'catalog.processingInterval';
+
+    if (!config.has(processingIntervalKey)) {
+      return createRandomProcessingInterval({
+        minSeconds: 100,
+        maxSeconds: 150,
+      });
+    }
+
+    const duration = readDurationFromConfig(config, {
+      key: processingIntervalKey,
+    });
+    const seconds = Math.max(
+      1,
+      Math.round(durationToMilliseconds(duration) / 1000),
+    );
+
+    return createRandomProcessingInterval({
+      minSeconds: seconds,
+      maxSeconds: seconds * 1.5,
+    });
   }
 }

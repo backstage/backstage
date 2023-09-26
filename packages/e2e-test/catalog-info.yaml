@@ -1,0 +1,10 @@
+apiVersion: backstage.io/v1alpha1
+kind: Component
+metadata:
+  name: e2e-test
+  title: e2e-test
+  description: E2E test for verifying Backstage packages
+spec:
+  lifecycle: experimental
+  type: backstage-cli
+  owner: maintainers

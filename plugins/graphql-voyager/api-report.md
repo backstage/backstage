@@ -59,7 +59,6 @@ export const graphqlVoyagerPlugin: BackstagePlugin<
   {
     root: RouteRef<undefined>;
   },
-  {},
   {}
 >;
 

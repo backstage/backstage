@@ -15,7 +15,7 @@
  */
 
 export {
-  catalogModuleIncrementalIngestionEntityProvider,
+  catalogModuleIncrementalIngestionEntityProvider as default,
   incrementalIngestionProvidersExtensionPoint,
   type IncrementalIngestionProviderExtensionPoint,
 } from './catalogModuleIncrementalIngestionEntityProvider';

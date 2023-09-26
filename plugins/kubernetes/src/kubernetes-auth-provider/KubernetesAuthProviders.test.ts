@@ -74,7 +74,7 @@ describe('KubernetesAuthProviders tests', () => {
       requestBody,
     );
 
-    expect(details.auth?.oidc?.okta).toBe('oktaToken');
+    expect(details).toMatchObject({ auth: { oidc: { okta: 'oktaToken' } } });
   });
 
   it('returns error for unknown authProvider', async () => {

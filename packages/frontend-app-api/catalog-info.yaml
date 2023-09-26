@@ -1,0 +1,9 @@
+apiVersion: backstage.io/v1alpha1
+kind: Component
+metadata:
+  name: backstage-frontend-app-api
+  title: '@backstage/frontend-app-api'
+spec:
+  lifecycle: experimental
+  type: backstage-web-library
+  owner: maintainers

@@ -1,0 +1,10 @@
+apiVersion: backstage.io/v1alpha1
+kind: Component
+metadata:
+  name: backstage-plugin-graphql-voyager
+  title: '@backstage/plugin-graphql-voyager'
+  description: Backstage plugin for GraphQL Voyager
+spec:
+  lifecycle: experimental
+  type: backstage-frontend-plugin
+  owner: maintainers

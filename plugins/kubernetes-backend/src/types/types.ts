@@ -26,6 +26,7 @@ import type {
   ObjectsByEntityResponse,
 } from '@backstage/plugin-kubernetes-common';
 import { Config } from '@backstage/config';
+import { KubernetesCredential } from '../auth/types';
 
 /**
  *
@@ -33,11 +34,8 @@ import { Config } from '@backstage/config';
  */
 export interface ObjectFetchParams {
   serviceId: string;
-  clusterDetails:
-    | AWSClusterDetails
-    | GKEClusterDetails
-    | ServiceAccountClusterDetails
-    | ClusterDetails;
+  clusterDetails: ClusterDetails;
+  credential: KubernetesCredential;
   objectTypesToFetch: Set<ObjectToFetch>;
   labelSelector: string;
   customResources: CustomResource[];
@@ -55,6 +53,7 @@ export interface KubernetesFetcher {
   ): Promise<FetchResponseWrapper>;
   fetchPodMetricsByNamespaces(
     clusterDetails: ClusterDetails,
+    credential: KubernetesCredential,
     namespaces: Set<string>,
     labelSelector?: string,
   ): Promise<FetchResponseWrapper>;
@@ -149,6 +148,12 @@ export interface KubernetesServiceLocator {
 export type ServiceLocatorMethod = 'multiTenant' | 'http'; // TODO implement http
 
 /**
+ * Provider-specific authentication configuration
+ * @public
+ */
+export type AuthMetadata = Record<string, string>;
+
+/**
  *
  * @public
  */
@@ -158,12 +163,7 @@ export interface ClusterDetails {
    */
   name: string;
   url: string;
-  authProvider: string;
-  serviceAccountToken?: string | undefined;
-  /**
-   * oidc provider used to get id tokens to authenticate against kubernetes
-   */
-  oidcTokenProvider?: string | undefined;
+  authMetadata: AuthMetadata;
   skipTLSVerify?: boolean;
   /**
    * Whether to skip the lookup to the metrics server to retrieve pod resource usage.
@@ -209,33 +209,6 @@ export interface ClusterDetails {
    * Kubernetes resources.
    */
   customResources?: CustomResourceMatcher[];
-}
-
-/**
- *
- * @public
- */
-export interface GKEClusterDetails extends ClusterDetails {}
-
-/**
- *
- * @public
- */
-export interface AzureClusterDetails extends ClusterDetails {}
-
-/**
- *
- * @public
- */
-export interface ServiceAccountClusterDetails extends ClusterDetails {}
-
-/**
- *
- * @public
- */
-export interface AWSClusterDetails extends ClusterDetails {
-  assumeRole?: string;
-  externalId?: string;
 }
 
 /**

@@ -20,24 +20,28 @@ components:
       name: kind
       in: path
       required: true
+      allowReserved: true
       schema:
         type: string
     namespace:
       name: namespace
       in: path
       required: true
+      allowReserved: true
       schema:
         type: string
     name:
       name: name
       in: path
       required: true
+      allowReserved: true
       schema:
         type: string
     uid:
       name: uid
       in: path
       required: true
+      allowReserved: true
       schema:
         type: string
     cursor:
@@ -45,6 +49,7 @@ components:
       in: query
       description: Cursor to a set page of results.
       required: false
+      allowReserved: true
       schema:
         type: string
         minLength: 1
@@ -53,6 +58,7 @@ components:
       in: query
       description: Pointer to the previous page of results.
       required: false
+      allowReserved: true
       schema:
         type: string
         minLength: 1
@@ -66,20 +72,33 @@ components:
         type: array
         items:
           type: string
+      examples:
+        'Get name and the entire relations collection':
+          value: ['metadata.name', 'relations']
+        'Get kind, name and namespace':
+          value: ['kind', 'metadata.name', 'metadata.namespace']
     filter:
       name: filter
       in: query
       description: Filter for just the entities defined by this filter.
       required: false
+      allowReserved: true
       schema:
         type: array
         items:
           type: string
+      examples:
+        'Get groups':
+          value: ['kind=group']
+        'Get orphaned components':
+          value:
+            ['kind=component,metadata.annotations.backstage.io/orphan=true']
     offset:
       name: offset
       in: query
       description: Number of records to skip in the query page.
       required: false
+      allowReserved: true
       schema:
         type: integer
         minimum: 0
@@ -88,6 +107,7 @@ components:
       in: query
       description: Number of records to return in the response.
       required: false
+      allowReserved: true
       schema:
         type: integer
         minimum: 0
@@ -104,6 +124,11 @@ components:
           description: A two-item tuple of [field, order].
       explode: true
       style: form
+      examples:
+        'Order ascending by name':
+          value: ['metadata.name,asc']
+        'Order descending by owner':
+          value: ['spec.owner,desc']
   requestBodies: {}
   responses: {}
   schemas:
@@ -668,6 +693,14 @@ paths:
         - $ref: '#/components/parameters/filter'
         - $ref: '#/components/parameters/offset'
         - $ref: '#/components/parameters/after'
+        - name: order
+          in: query
+          allowReserved: true
+          required: false
+          schema:
+            type: array
+            items:
+              type: string
   /entities/by-uid/{uid}:
     get:
       operationId: GetEntityByUid
@@ -764,6 +797,15 @@ paths:
                   type: array
                   items:
                     type: string
+            examples:
+              'Fetch Backstage entities':
+                value:
+                  entityRefs:
+                    ['component:default/backstage', 'api:default/backstage']
+              'Fetch annotations for backstage entity':
+                value:
+                  entityRefs: ['component:default/backstage']
+                  fields: ['metadata.annotations']
   /entities/by-query:
     get:
       operationId: GetEntitiesByQuery
@@ -788,12 +830,14 @@ paths:
           in: query
           description: Text search term.
           required: false
+          allowReserved: true
           schema:
             type: string
         - name: fullTextFilterFields
           in: query
           description: A comma separated list of fields to sort returned results by.
           required: false
+          allowReserved: true
           schema:
             type: array
             items:
@@ -818,10 +862,16 @@ paths:
         - in: query
           name: facet
           required: true
+          allowReserved: true
           schema:
             type: array
             items:
               type: string
+          examples:
+            'Entities by kind':
+              value: ['kind']
+            'Entities by spec type':
+              value: ['spec.type']
         - $ref: '#/components/parameters/filter'
   /locations:
     post:
@@ -853,6 +903,7 @@ paths:
         - in: query
           name: dryRun
           required: false
+          allowReserved: true
           schema:
             type: string
       requestBody:
@@ -908,6 +959,7 @@ paths:
         - in: path
           name: id
           required: true
+          allowReserved: true
           schema:
             type: string
     delete:
@@ -923,6 +975,7 @@ paths:
         - in: path
           name: id
           required: true
+          allowReserved: true
           schema:
             type: string
   /analyze-location:
@@ -952,7 +1005,6 @@ paths:
                 location:
                   $ref: '#/components/schemas/LocationInput'
               required:
-                - catalogFileName
                 - location
   /validate-entity:
     post:

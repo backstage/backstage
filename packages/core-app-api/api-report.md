@@ -220,6 +220,22 @@ export type AppOptions = {
   themes: (Partial<AppTheme> & Omit<AppTheme, 'theme'>)[];
   configLoader?: AppConfigLoader;
   bindRoutes?(context: { bind: AppRouteBinder }): void;
+  __experimentalTranslations?: {
+    defaultLanguage?: string;
+    availableLanguages?: string[];
+    resources?: Array<
+      | {
+          $$type: '@backstage/TranslationResource';
+          id: string;
+        }
+      | {
+          $$type: '@backstage/TranslationMessages';
+          id: string;
+          full: boolean;
+          messages: Record<string, string>;
+        }
+    >;
+  };
 };
 
 // @public

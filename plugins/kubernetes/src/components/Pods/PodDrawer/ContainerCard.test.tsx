@@ -15,12 +15,14 @@
  */
 import React from 'react';
 
-import { render } from '@testing-library/react';
+import { screen } from '@testing-library/react';
 
 import '@testing-library/jest-dom';
-import { wrapInTestApp } from '@backstage/test-utils';
+import { renderInTestApp } from '@backstage/test-utils';
 import { ContainerCard } from './ContainerCard';
 import { DateTime } from 'luxon';
+
+jest.mock('../../../hooks/useIsPodExecTerminalSupported');
 
 const now = DateTime.now();
 const oneHourAgo = now.minus({ hours: 1 }).toISO();
@@ -28,110 +30,106 @@ const twoHoursAgo = now.minus({ hours: 2 }).toISO();
 
 describe('ContainerCard', () => {
   it('show healthy when all checks pass', async () => {
-    const { getByText, queryByText, getAllByText } = render(
-      wrapInTestApp(
-        <ContainerCard
-          {...({
-            podScope: {
-              name: 'some-name',
-              namespace: 'some-namespace',
-              clusterName: 'some-cluster',
-            },
-            containerSpec: {
-              readinessProbe: {},
-            },
-            containerStatus: {
-              name: 'some-name',
-              image: 'gcr.io/some-proj/some-image',
-              started: true,
-              ready: true,
-              restartCount: 0,
-              state: {
-                running: {
-                  startedAt: oneHourAgo,
-                },
+    await renderInTestApp(
+      <ContainerCard
+        {...({
+          podScope: {
+            name: 'some-name',
+            namespace: 'some-namespace',
+            clusterName: 'some-cluster',
+          },
+          containerSpec: {
+            readinessProbe: {},
+          },
+          containerStatus: {
+            name: 'some-name',
+            image: 'gcr.io/some-proj/some-image',
+            started: true,
+            ready: true,
+            restartCount: 0,
+            state: {
+              running: {
+                startedAt: oneHourAgo,
               },
             },
-          } as any)}
-        />,
-      ),
+          },
+        } as any)}
+      />,
     );
-    expect(getByText('Started: 1 hour ago')).toBeInTheDocument();
-    expect(getByText('Status: Running')).toBeInTheDocument();
-    expect(getByText('some-name')).toBeInTheDocument();
-    expect(getByText('gcr.io/some-proj/some-image')).toBeInTheDocument();
-    expect(getAllByText('✅')).toHaveLength(5);
-    expect(queryByText('❌')).toBeNull();
+    expect(screen.getByText('Started: 1 hour ago')).toBeInTheDocument();
+    expect(screen.getByText('Status: Running')).toBeInTheDocument();
+    expect(screen.getByText('some-name')).toBeInTheDocument();
+    expect(screen.getByText('gcr.io/some-proj/some-image')).toBeInTheDocument();
+    expect(screen.getAllByText('✅')).toHaveLength(5);
+    expect(screen.queryByText('❌')).toBeNull();
   });
+
   it('show unhealthy when all checks fail', async () => {
-    const { getByText, queryByText, getAllByText } = render(
-      wrapInTestApp(
-        <ContainerCard
-          {...({
-            podScope: {
-              podName: 'some-name',
-              podNamespace: 'some-namespace',
-              clusterName: 'some-cluster',
+    await renderInTestApp(
+      <ContainerCard
+        {...({
+          podScope: {
+            podName: 'some-name',
+            podNamespace: 'some-namespace',
+            clusterName: 'some-cluster',
+          },
+          containerSpec: {},
+          containerStatus: {
+            name: 'some-name',
+            image: 'gcr.io/some-proj/some-image',
+            started: false,
+            ready: false,
+            restartCount: 12,
+            state: {
+              waiting: {},
             },
-            containerSpec: {},
-            containerStatus: {
-              name: 'some-name',
-              image: 'gcr.io/some-proj/some-image',
-              started: false,
-              ready: false,
-              restartCount: 12,
-              state: {
-                waiting: {},
-              },
-            },
-          } as any)}
-        />,
-      ),
+          },
+        } as any)}
+      />,
     );
-    expect(getByText('some-name')).toBeInTheDocument();
-    expect(getByText('gcr.io/some-proj/some-image')).toBeInTheDocument();
-    expect(getAllByText('❌')).toHaveLength(5);
-    expect(queryByText('✅')).toBeNull();
+    expect(screen.getByText('some-name')).toBeInTheDocument();
+    expect(screen.getByText('gcr.io/some-proj/some-image')).toBeInTheDocument();
+    expect(screen.getAllByText('❌')).toHaveLength(5);
+    expect(screen.queryByText('✅')).toBeNull();
   });
+
   it('show correct checks for completed container', async () => {
-    const { getByText, queryByText, getAllByText } = render(
-      wrapInTestApp(
-        <ContainerCard
-          {...({
-            podScope: {
-              podName: 'some-name',
-              podNamespace: 'some-namespace',
-              clusterName: 'some-cluster',
-            },
-            containerSpec: {},
-            containerStatus: {
-              name: 'some-name',
-              image: 'gcr.io/some-proj/some-image',
-              started: false,
-              ready: false,
-              restartCount: 0,
-              state: {
-                terminated: {
-                  exitCode: 0,
-                  reason: 'Completed',
-                  startedAt: twoHoursAgo,
-                  finishedAt: oneHourAgo,
-                },
+    await renderInTestApp(
+      <ContainerCard
+        {...({
+          podScope: {
+            podName: 'some-name',
+            podNamespace: 'some-namespace',
+            clusterName: 'some-cluster',
+          },
+          containerSpec: {},
+          containerStatus: {
+            name: 'some-name',
+            image: 'gcr.io/some-proj/some-image',
+            started: false,
+            ready: false,
+            restartCount: 0,
+            state: {
+              terminated: {
+                exitCode: 0,
+                reason: 'Completed',
+                startedAt: twoHoursAgo,
+                finishedAt: oneHourAgo,
               },
             },
-          } as any)}
-        />,
-      ),
+          },
+        } as any)}
+      />,
     );
-    expect(getByText('some-name')).toBeInTheDocument();
-    expect(getByText('gcr.io/some-proj/some-image')).toBeInTheDocument();
-    expect(getByText('Started: 2 hours ago')).toBeInTheDocument();
-    expect(getByText('Completed: 1 hour ago')).toBeInTheDocument();
+    expect(screen.getByText('some-name')).toBeInTheDocument();
+    expect(screen.getByText('gcr.io/some-proj/some-image')).toBeInTheDocument();
+    expect(screen.getByText('Started: 2 hours ago')).toBeInTheDocument();
+    expect(screen.getByText('Completed: 1 hour ago')).toBeInTheDocument();
     expect(
-      getByText('Execution time: 1 hour, 0 minutes, 0 seconds'),
+      screen.getByText('Execution time: 1 hour, 0 minutes, 0 seconds'),
     ).toBeInTheDocument();
-    expect(getByText('Status: Completed')).toBeInTheDocument();
-    expect(getAllByText('✅')).toHaveLength(2);
-    expect(queryByText('❌')).toBeNull();
+    expect(screen.getByText('Status: Completed')).toBeInTheDocument();
+    expect(screen.getAllByText('✅')).toHaveLength(2);
+    expect(screen.queryByText('❌')).toBeNull();
   });
 });

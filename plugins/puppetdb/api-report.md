@@ -20,7 +20,7 @@ export const isPuppetDbAvailable: (entity: Entity) => boolean;
 export const PuppetDbPage: () => JSX_2.Element;
 
 // @public
-const puppetdbPlugin: BackstagePlugin<{}, {}, {}>;
+const puppetdbPlugin: BackstagePlugin<{}, {}>;
 export { puppetdbPlugin as plugin };
 export { puppetdbPlugin };
 

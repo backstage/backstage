@@ -8,6 +8,7 @@
 import { ApiRef } from '@backstage/core-plugin-api';
 import { BackstagePlugin } from '@backstage/core-plugin-api';
 import { ErrorApi } from '@backstage/core-plugin-api';
+import { FetchApi } from '@backstage/core-plugin-api';
 import { IconComponent } from '@backstage/core-plugin-api';
 import { JSX as JSX_2 } from 'react';
 import { OAuthApi } from '@backstage/core-plugin-api';
@@ -23,6 +24,7 @@ export type EndpointConfig = {
   headers?: {
     [name in string]: string;
   };
+  fetchApi?: FetchApi;
 };
 
 // @public (undocumented)
@@ -31,6 +33,7 @@ export type GithubEndpointConfig = {
   title: string;
   url?: string;
   errorApi?: ErrorApi;
+  fetchApi?: FetchApi;
   githubAuthApi: OAuthApi;
 };
 
@@ -41,7 +44,7 @@ export const GraphiQLIcon: IconComponent;
 export const GraphiQLPage: () => JSX_2.Element;
 
 // @public (undocumented)
-const graphiqlPlugin: BackstagePlugin<{}, {}, {}>;
+const graphiqlPlugin: BackstagePlugin<{}, {}>;
 export { graphiqlPlugin };
 export { graphiqlPlugin as plugin };
 

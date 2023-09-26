@@ -33,7 +33,7 @@ import {
 } from './helpers';
 import {
   patchMkdocsYmlPreBuild,
-  pathMkdocsYmlWithTechdocsPlugin,
+  patchMkdocsYmlWithPlugins,
 } from './mkdocsPatchers';
 import yaml from 'js-yaml';
 
@@ -310,7 +310,7 @@ describe('helpers', () => {
     });
   });
 
-  describe('pathMkdocsYmlWithTechdocsPlugin', () => {
+  describe('patchMkdocsYmlWithPlugins', () => {
     beforeEach(() => {
       mockFs({
         '/mkdocs_with_techdocs_plugin.yml': mkdocsYmlWithTechdocsPlugins,
@@ -319,7 +319,7 @@ describe('helpers', () => {
       });
     });
     it('should not add additional plugins if techdocs exists already in mkdocs file', async () => {
-      await pathMkdocsYmlWithTechdocsPlugin(
+      await patchMkdocsYmlWithPlugins(
         '/mkdocs_with_techdocs_plugin.yml',
         mockLogger,
       );
@@ -334,7 +334,7 @@ describe('helpers', () => {
       expect(parsedYml.plugins).toContain('techdocs-core');
     });
     it("should add the needed plugin if it doesn't exist in mkdocs file", async () => {
-      await pathMkdocsYmlWithTechdocsPlugin(
+      await patchMkdocsYmlWithPlugins(
         '/mkdocs_without_plugins.yml',
         mockLogger,
       );
@@ -347,7 +347,7 @@ describe('helpers', () => {
       expect(parsedYml.plugins).toContain('techdocs-core');
     });
     it('should not override existing plugins', async () => {
-      await pathMkdocsYmlWithTechdocsPlugin(
+      await patchMkdocsYmlWithPlugins(
         '/mkdocs_with_additional_plugins.yml',
         mockLogger,
       );
@@ -361,6 +361,23 @@ describe('helpers', () => {
       expect(parsedYml.plugins).toContain('techdocs-core');
       expect(parsedYml.plugins).toContain('not-techdocs-core');
       expect(parsedYml.plugins).toContain('also-not-techdocs-core');
+    });
+    it('should add all provided default plugins', async () => {
+      await patchMkdocsYmlWithPlugins(
+        '/mkdocs_with_additional_plugins.yml',
+        mockLogger,
+        ['techdocs-core', 'custom-plugin'],
+      );
+
+      const updatedMkdocsYml = await fs.readFile(
+        '/mkdocs_with_additional_plugins.yml',
+      );
+      const parsedYml = yaml.load(updatedMkdocsYml.toString()) as {
+        plugins: string[];
+      };
+      expect(parsedYml.plugins).toHaveLength(4);
+      expect(parsedYml.plugins).toContain('techdocs-core');
+      expect(parsedYml.plugins).toContain('custom-plugin');
     });
   });
 
@@ -376,7 +393,7 @@ describe('helpers', () => {
 
       await patchIndexPreBuild({ inputDir: '/', logger: mockLogger });
 
-      expect(fs.readFileSync('/docs/index.md', 'utf-8')).toEqual(
+      await expect(fs.readFile('/docs/index.md', 'utf-8')).resolves.toEqual(
         'index.md content',
       );
       expect(warn).not.toHaveBeenCalledWith();
@@ -390,7 +407,7 @@ describe('helpers', () => {
 
       await patchIndexPreBuild({ inputDir: '/', logger: mockLogger });
 
-      expect(fs.readFileSync('/docs/index.md', 'utf-8')).toEqual(
+      await expect(fs.readFile('/docs/index.md', 'utf-8')).resolves.toEqual(
         'docs/README.md content',
       );
       expect(warn.mock.calls).toEqual([
@@ -405,7 +422,7 @@ describe('helpers', () => {
 
       await patchIndexPreBuild({ inputDir: '/', logger: mockLogger });
 
-      expect(fs.readFileSync('/docs/index.md', 'utf-8')).toEqual(
+      await expect(fs.readFile('/docs/index.md', 'utf-8')).resolves.toEqual(
         'main README.md content',
       );
       expect(warn.mock.calls).toEqual([
@@ -420,7 +437,7 @@ describe('helpers', () => {
 
       await patchIndexPreBuild({ inputDir: '/', logger: mockLogger });
 
-      expect(() => fs.readFileSync('/docs/index.md', 'utf-8')).toThrow();
+      await expect(fs.readFile('/docs/index.md', 'utf-8')).rejects.toThrow();
       const paths = [
         path.normalize('docs/index.md'),
         path.normalize('docs/README.md'),
@@ -466,7 +483,7 @@ describe('helpers', () => {
 
       await expect(
         createOrUpdateMetadata(filePath, mockLogger),
-      ).rejects.toThrow('Unexpected token d in JSON at position 0');
+      ).rejects.toThrow('Unexpected token');
     });
 
     it('should add build timestamp to the metadata json', async () => {
@@ -503,7 +520,7 @@ describe('helpers', () => {
       const filePath = path.join(rootDir, 'invalid_techdocs_metadata.json');
 
       await expect(storeEtagMetadata(filePath, 'etag123abc')).rejects.toThrow(
-        'Unexpected token d in JSON at position 0',
+        'Unexpected token',
       );
     });
 

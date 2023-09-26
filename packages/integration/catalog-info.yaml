@@ -1,0 +1,10 @@
+apiVersion: backstage.io/v1alpha1
+kind: Component
+metadata:
+  name: backstage-integration
+  title: '@backstage/integration'
+  description: Helpers for managing integrations towards external systems
+spec:
+  lifecycle: production
+  type: backstage-common-library
+  owner: maintainers

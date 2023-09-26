@@ -1,7 +1,7 @@
 {
   "name": "@backstage/plugin-scaffolder",
   "description": "The Backstage plugin that helps you create new things",
-  "version": "1.14.4-next.0",
+  "version": "1.15.0",
   "main": "src/index.ts",
   "types": "src/index.ts",
   "license": "Apache-2.0",
@@ -35,6 +35,7 @@
   "keywords": [
     "backstage"
   ],
+  "sideEffects": false,
   "scripts": {
     "build": "backstage-cli package build",
     "start": "backstage-cli package start",
@@ -69,8 +70,8 @@
     "@react-hookz/web": "^20.0.0",
     "@rjsf/core": "^3.2.1",
     "@rjsf/material-ui": "^3.2.1",
-    "@rjsf/utils": "5.7.3",
-    "@rjsf/validator-ajv8": "5.7.3",
+    "@rjsf/utils": "5.13.0",
+    "@rjsf/validator-ajv8": "5.13.0",
     "@types/react": "^16.13.1 || ^17.0.0",
     "@uiw/react-codemirror": "^4.9.3",
     "classnames": "^2.2.6",
@@ -80,6 +81,7 @@
     "immer": "^9.0.1",
     "json-schema": "^0.4.0",
     "json-schema-library": "^7.3.9",
+    "jszip": "^3.10.1",
     "lodash": "^4.17.21",
     "luxon": "^3.0.0",
     "qs": "^6.9.4",
@@ -107,7 +109,6 @@
     "@testing-library/user-event": "^14.0.0",
     "@types/humanize-duration": "^3.18.1",
     "@types/json-schema": "^7.0.9",
-    "@types/node": "^16.11.26",
     "msw": "^1.0.0"
   },
   "files": [

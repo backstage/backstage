@@ -15,4 +15,7 @@
  */
 
 export { EntityAutocompletePicker } from './EntityAutocompletePicker';
-export type { EntityAutocompletePickerProps } from './EntityAutocompletePicker';
+export type {
+  EntityAutocompletePickerProps,
+  AllowedEntityFilters,
+} from './EntityAutocompletePicker';

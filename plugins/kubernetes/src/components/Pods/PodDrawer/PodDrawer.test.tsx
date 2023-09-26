@@ -16,16 +16,23 @@
 
 import React from 'react';
 
-import { render } from '@testing-library/react';
-import { wrapInTestApp } from '@backstage/test-utils';
+import { screen } from '@testing-library/react';
+import { TestApiProvider, renderInTestApp } from '@backstage/test-utils';
 import '@testing-library/jest-dom';
 
-import { PodDrawer } from '.';
+import { PodDrawer } from './PodDrawer';
+import { DiscoveryApi, discoveryApiRef } from '@backstage/core-plugin-api';
+
+jest.mock('../../../hooks/useIsPodExecTerminalSupported');
 
 describe('PodDrawer', () => {
   it('Should show title and container names', async () => {
-    const { getAllByText, getByText } = render(
-      wrapInTestApp(
+    const mockDiscoveryApi: Partial<DiscoveryApi> = {
+      getBaseUrl: () => Promise.resolve('http://localhost'),
+    };
+
+    await renderInTestApp(
+      <TestApiProvider apis={[[discoveryApiRef, mockDiscoveryApi]]}>
         <PodDrawer
           {...({
             open: true,
@@ -76,15 +83,15 @@ describe('PodDrawer', () => {
               ],
             },
           } as any)}
-        />,
-      ),
+        />
+      </TestApiProvider>,
     );
 
-    expect(getAllByText('some-pod')).toHaveLength(3);
-    expect(getByText('Pod (127.0.0.1)')).toBeInTheDocument();
-    expect(getByText('YAML')).toBeInTheDocument();
-    expect(getByText('Containers')).toBeInTheDocument();
-    expect(getByText('some-container')).toBeInTheDocument();
-    expect(getByText('some error message')).toBeInTheDocument();
+    expect(screen.getAllByText('some-pod')).toHaveLength(3);
+    expect(screen.getByText('Pod (127.0.0.1)')).toBeInTheDocument();
+    expect(screen.getByText('YAML')).toBeInTheDocument();
+    expect(screen.getByText('Containers')).toBeInTheDocument();
+    expect(screen.getByText('some-container')).toBeInTheDocument();
+    expect(screen.getByText('some error message')).toBeInTheDocument();
   });
 });

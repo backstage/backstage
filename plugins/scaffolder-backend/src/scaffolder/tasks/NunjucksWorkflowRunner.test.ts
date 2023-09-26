@@ -808,31 +808,174 @@ describe('DefaultWorkflowRunner', () => {
       });
     });
 
-    it('provides the parseEntityRef filter', async () => {
-      const task = createMockTaskWithSpec({
-        apiVersion: 'scaffolder.backstage.io/v1beta3',
-        steps: [
-          {
-            id: 'test',
-            name: 'name',
-            action: 'output-action',
-            input: {},
+    describe('parseEntityRef', () => {
+      it('parses entity ref', async () => {
+        const task = createMockTaskWithSpec({
+          apiVersion: 'scaffolder.backstage.io/v1beta3',
+          steps: [
+            {
+              id: 'test',
+              name: 'name',
+              action: 'output-action',
+              input: {},
+            },
+          ],
+          output: {
+            foo: '${{ parameters.entity | parseEntityRef }}',
           },
-        ],
-        output: {
-          foo: '${{ parameters.entity | parseEntityRef }}',
-        },
-        parameters: {
-          entity: 'component:default/ben',
-        },
+          parameters: {
+            entity: 'component:default/ben',
+          },
+        });
+
+        const { output } = await runner.execute(task);
+
+        expect(output.foo).toEqual({
+          kind: 'component',
+          namespace: 'default',
+          name: 'ben',
+        });
       });
 
-      const { output } = await runner.execute(task);
+      it('provides default kind for parsing entity ref', async () => {
+        const task = createMockTaskWithSpec({
+          apiVersion: 'scaffolder.backstage.io/v1beta3',
+          steps: [
+            {
+              id: 'test',
+              name: 'name',
+              action: 'output-action',
+              input: {},
+            },
+          ],
+          output: {
+            foo: `\${{ parameters.entity | parseEntityRef({ defaultKind:"user" }) }}`,
+          },
+          parameters: {
+            entity: 'ben',
+          },
+        });
 
-      expect(output.foo).toEqual({
-        kind: 'component',
-        namespace: 'default',
-        name: 'ben',
+        const { output } = await runner.execute(task);
+
+        expect(output.foo).toEqual({
+          kind: 'user',
+          namespace: 'default',
+          name: 'ben',
+        });
+      });
+
+      it('provides default namespace for parsing entity ref', async () => {
+        const task = createMockTaskWithSpec({
+          apiVersion: 'scaffolder.backstage.io/v1beta3',
+          steps: [
+            {
+              id: 'test',
+              name: 'name',
+              action: 'output-action',
+              input: {},
+            },
+          ],
+          output: {
+            foo: `\${{ parameters.entity | parseEntityRef({ defaultNamespace:"namespace-b" }) }}`,
+          },
+          parameters: {
+            entity: 'user:ben',
+          },
+        });
+
+        const { output } = await runner.execute(task);
+
+        expect(output.foo).toEqual({
+          kind: 'user',
+          namespace: 'namespace-b',
+          name: 'ben',
+        });
+      });
+
+      it('provides default kind and namespace for parsing entity ref', async () => {
+        const task = createMockTaskWithSpec({
+          apiVersion: 'scaffolder.backstage.io/v1beta3',
+          steps: [
+            {
+              id: 'test',
+              name: 'name',
+              action: 'output-action',
+              input: {},
+            },
+          ],
+          output: {
+            foo: `\${{ parameters.entity | parseEntityRef({ defaultKind:"user", defaultNamespace:"namespace-b" }) }}`,
+          },
+          parameters: {
+            entity: 'ben',
+          },
+        });
+
+        const { output } = await runner.execute(task);
+
+        expect(output.foo).toEqual({
+          kind: 'user',
+          namespace: 'namespace-b',
+          name: 'ben',
+        });
+      });
+
+      it.each(['undefined', 'null', 'None', 'group', 0, '{}', '[]'])(
+        'ignores invalid context "%s" for parsing entity refF',
+        async kind => {
+          const task = createMockTaskWithSpec({
+            apiVersion: 'scaffolder.backstage.io/v1beta3',
+            steps: [
+              {
+                id: 'test',
+                name: 'name',
+                action: 'output-action',
+                input: {},
+              },
+            ],
+            output: {
+              foo: `\${{ parameters.entity | parseEntityRef(${kind}) }}`,
+            },
+            parameters: {
+              entity: 'user:default/ben',
+            },
+          });
+
+          const { output } = await runner.execute(task);
+
+          expect(output.foo).toEqual({
+            kind: 'user',
+            namespace: 'default',
+            name: 'ben',
+          });
+        },
+      );
+
+      it('fails when unable to parse entity ref', async () => {
+        const task = createMockTaskWithSpec({
+          apiVersion: 'scaffolder.backstage.io/v1beta3',
+          steps: [
+            {
+              id: 'test',
+              name: 'name',
+              action: 'output-action',
+              input: {},
+            },
+          ],
+          output: {
+            foo: `\${{ parameters.entity | parseEntityRef({ defaultNamespace:"namespace-b" }) }}`,
+          },
+          parameters: {
+            entity: 'ben',
+          },
+        });
+
+        const { output } = await runner.execute(task);
+
+        expect(output.foo).toEqual(
+          `\${{ parameters.entity | parseEntityRef({ defaultNamespace:"namespace-b" }) }}`,
+        );
       });
     });
 

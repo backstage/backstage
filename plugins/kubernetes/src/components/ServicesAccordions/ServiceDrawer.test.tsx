@@ -15,29 +15,27 @@
  */
 
 import React from 'react';
-import { render } from '@testing-library/react';
+import { screen } from '@testing-library/react';
 import * as services from './__fixtures__/2-services.json';
-import { textContentMatcher, wrapInTestApp } from '@backstage/test-utils';
+import { textContentMatcher, renderInTestApp } from '@backstage/test-utils';
 import { ServiceDrawer } from './ServiceDrawer';
 
 describe('ServiceDrawer', () => {
   it('should render deployment drawer', async () => {
-    const { getByText, getAllByText } = render(
-      wrapInTestApp(
-        <ServiceDrawer service={(services as any).services[0]} expanded />,
-      ),
+    await renderInTestApp(
+      <ServiceDrawer service={(services as any).services[0]} expanded />,
     );
 
-    expect(getAllByText('awesome-service-grpc')).toHaveLength(2);
-    expect(getAllByText('Service')).toHaveLength(2);
-    expect(getByText('YAML')).toBeInTheDocument();
-    expect(getByText('Cluster IP')).toBeInTheDocument();
-    expect(getByText('Ports')).toBeInTheDocument();
+    expect(screen.getAllByText('awesome-service-grpc')).toHaveLength(2);
+    expect(screen.getAllByText('Service')).toHaveLength(2);
+    expect(screen.getByText('YAML')).toBeInTheDocument();
+    expect(screen.getByText('Cluster IP')).toBeInTheDocument();
+    expect(screen.getByText('Ports')).toBeInTheDocument();
     expect(
-      getByText(textContentMatcher('Target Port: 1997')),
+      screen.getByText(textContentMatcher('Target Port: 1997')),
     ).toBeInTheDocument();
     expect(
-      getByText(textContentMatcher('App: awesome-service')),
+      screen.getByText(textContentMatcher('App: awesome-service')),
     ).toBeInTheDocument();
   });
 });

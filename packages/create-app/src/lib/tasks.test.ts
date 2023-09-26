@@ -66,6 +66,7 @@ jest.mock('./versions', () => ({
     '@backstage/core-app-api': '1.0.0',
     '@backstage/core-components': '1.0.0',
     '@backstage/core-plugin-api': '1.0.0',
+    '@backstage/e2e-test-utils': '1.0.0',
     '@backstage/integration-react': '1.0.0',
     '@backstage/plugin-api-docs': '1.0.0',
     '@backstage/plugin-catalog': '1.0.0',
@@ -304,13 +305,13 @@ describe('tasks', () => {
         },
       );
       // catalog was populated with `context.name`
-      expect(
-        fs.readFileSync('templatedApp/catalog-info.yaml', 'utf-8'),
-      ).toContain('name: SuperCoolBackstageInstance');
+      await expect(
+        fs.readFile('templatedApp/catalog-info.yaml', 'utf-8'),
+      ).resolves.toContain('name: SuperCoolBackstageInstance');
       // backend dependencies include `sqlite3` from `context.SQLite`
-      expect(
-        fs.readFileSync('templatedApp/packages/backend/package.json', 'utf-8'),
-      ).toContain('sqlite3"');
+      await expect(
+        fs.readFile('templatedApp/packages/backend/package.json', 'utf-8'),
+      ).resolves.toContain('sqlite3"');
     });
   });
 

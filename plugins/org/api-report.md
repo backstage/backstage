@@ -30,9 +30,12 @@ export const EntityOwnershipCard: (props: {
   variant?: InfoCardVariants | undefined;
   entityFilterKind?: string[] | undefined;
   hideRelationsToggle?: boolean | undefined;
-  relationsType?: string | undefined;
+  relationsType?: EntityRelationAggregation | undefined;
   entityLimit?: number | undefined;
 }) => JSX_2.Element;
+
+// @public (undocumented)
+export type EntityRelationAggregation = 'direct' | 'aggregated';
 
 // @public (undocumented)
 export const EntityUserProfileCard: (props: {
@@ -66,8 +69,7 @@ const orgPlugin: BackstagePlugin<
   {},
   {
     catalogIndex: ExternalRouteRef<undefined, false>;
-  },
-  {}
+  }
 >;
 export { orgPlugin };
 export { orgPlugin as plugin };
@@ -77,7 +79,7 @@ export const OwnershipCard: (props: {
   variant?: InfoCardVariants;
   entityFilterKind?: string[];
   hideRelationsToggle?: boolean;
-  relationsType?: string;
+  relationsType?: EntityRelationAggregation;
   entityLimit?: number;
 }) => React_2.JSX.Element;
 

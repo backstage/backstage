@@ -13,7 +13,8 @@ import { PluginEndpointDiscovery } from '@backstage/backend-common';
 export function createRouter(options: RouterOptions): Promise<express.Router>;
 
 // @alpha
-export const proxyPlugin: () => BackendFeature;
+const proxyPlugin: () => BackendFeature;
+export default proxyPlugin;
 
 // @public (undocumented)
 export interface RouterOptions {

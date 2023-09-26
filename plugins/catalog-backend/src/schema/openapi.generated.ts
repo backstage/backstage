@@ -45,6 +45,7 @@ export const spec = {
         name: 'kind',
         in: 'path',
         required: true,
+        allowReserved: true,
         schema: {
           type: 'string',
         },
@@ -53,6 +54,7 @@ export const spec = {
         name: 'namespace',
         in: 'path',
         required: true,
+        allowReserved: true,
         schema: {
           type: 'string',
         },
@@ -61,6 +63,7 @@ export const spec = {
         name: 'name',
         in: 'path',
         required: true,
+        allowReserved: true,
         schema: {
           type: 'string',
         },
@@ -69,6 +72,7 @@ export const spec = {
         name: 'uid',
         in: 'path',
         required: true,
+        allowReserved: true,
         schema: {
           type: 'string',
         },
@@ -78,6 +82,7 @@ export const spec = {
         in: 'query',
         description: 'Cursor to a set page of results.',
         required: false,
+        allowReserved: true,
         schema: {
           type: 'string',
           minLength: 1,
@@ -88,6 +93,7 @@ export const spec = {
         in: 'query',
         description: 'Pointer to the previous page of results.',
         required: false,
+        allowReserved: true,
         schema: {
           type: 'string',
           minLength: 1,
@@ -105,16 +111,35 @@ export const spec = {
             type: 'string',
           },
         },
+        examples: {
+          'Get name and the entire relations collection': {
+            value: ['metadata.name', 'relations'],
+          },
+          'Get kind, name and namespace': {
+            value: ['kind', 'metadata.name', 'metadata.namespace'],
+          },
+        },
       },
       filter: {
         name: 'filter',
         in: 'query',
         description: 'Filter for just the entities defined by this filter.',
         required: false,
+        allowReserved: true,
         schema: {
           type: 'array',
           items: {
             type: 'string',
+          },
+        },
+        examples: {
+          'Get groups': {
+            value: ['kind=group'],
+          },
+          'Get orphaned components': {
+            value: [
+              'kind=component,metadata.annotations.backstage.io/orphan=true',
+            ],
           },
         },
       },
@@ -123,6 +148,7 @@ export const spec = {
         in: 'query',
         description: 'Number of records to skip in the query page.',
         required: false,
+        allowReserved: true,
         schema: {
           type: 'integer',
           minimum: 0,
@@ -133,6 +159,7 @@ export const spec = {
         in: 'query',
         description: 'Number of records to return in the response.',
         required: false,
+        allowReserved: true,
         schema: {
           type: 'integer',
           minimum: 0,
@@ -153,6 +180,14 @@ export const spec = {
         },
         explode: true,
         style: 'form',
+        examples: {
+          'Order ascending by name': {
+            value: ['metadata.name,asc'],
+          },
+          'Order descending by owner': {
+            value: ['spec.owner,desc'],
+          },
+        },
       },
     },
     requestBodies: {},
@@ -817,6 +852,18 @@ export const spec = {
           {
             $ref: '#/components/parameters/after',
           },
+          {
+            name: 'order',
+            in: 'query',
+            allowReserved: true,
+            required: false,
+            schema: {
+              type: 'array',
+              items: {
+                type: 'string',
+              },
+            },
+          },
         ],
       },
     },
@@ -989,6 +1036,22 @@ export const spec = {
                   },
                 },
               },
+              examples: {
+                'Fetch Backstage entities': {
+                  value: {
+                    entityRefs: [
+                      'component:default/backstage',
+                      'api:default/backstage',
+                    ],
+                  },
+                },
+                'Fetch annotations for backstage entity': {
+                  value: {
+                    entityRefs: ['component:default/backstage'],
+                    fields: ['metadata.annotations'],
+                  },
+                },
+              },
             },
           },
         },
@@ -1037,6 +1100,7 @@ export const spec = {
             in: 'query',
             description: 'Text search term.',
             required: false,
+            allowReserved: true,
             schema: {
               type: 'string',
             },
@@ -1047,6 +1111,7 @@ export const spec = {
             description:
               'A comma separated list of fields to sort returned results by.',
             required: false,
+            allowReserved: true,
             schema: {
               type: 'array',
               items: {
@@ -1086,10 +1151,19 @@ export const spec = {
             in: 'query',
             name: 'facet',
             required: true,
+            allowReserved: true,
             schema: {
               type: 'array',
               items: {
                 type: 'string',
+              },
+            },
+            examples: {
+              'Entities by kind': {
+                value: ['kind'],
+              },
+              'Entities by spec type': {
+                value: ['spec.type'],
               },
             },
           },
@@ -1141,6 +1215,7 @@ export const spec = {
             in: 'query',
             name: 'dryRun',
             required: false,
+            allowReserved: true,
             schema: {
               type: 'string',
             },
@@ -1226,6 +1301,7 @@ export const spec = {
             in: 'path',
             name: 'id',
             required: true,
+            allowReserved: true,
             schema: {
               type: 'string',
             },
@@ -1251,6 +1327,7 @@ export const spec = {
             in: 'path',
             name: 'id',
             required: true,
+            allowReserved: true,
             schema: {
               type: 'string',
             },
@@ -1295,7 +1372,7 @@ export const spec = {
                     $ref: '#/components/schemas/LocationInput',
                   },
                 },
-                required: ['catalogFileName', 'location'],
+                required: ['location'],
               },
             },
           },

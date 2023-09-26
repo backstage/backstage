@@ -28,7 +28,6 @@ export const nomadPlugin: BackstagePlugin<
     root: RouteRef<undefined>;
     entityContent: RouteRef<undefined>;
   },
-  {},
   {}
 >;
 

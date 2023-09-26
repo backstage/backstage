@@ -62,7 +62,7 @@ export interface MicrosoftGraphOrgEntityProviderTransformsExtensionPoint {
 }
 
 /**
- * Extension point used to customize the transforms used by the {@link catalogModuleMicrosoftGraphOrgEntityProvider}.
+ * Extension point used to customize the transforms used by the module.
  *
  * @alpha
  */

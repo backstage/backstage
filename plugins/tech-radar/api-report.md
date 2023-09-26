@@ -54,6 +54,7 @@ export interface RadarQuadrant {
 // @public
 export interface RadarRing {
   color: string;
+  description?: string;
   id: string;
   name: string;
 }
@@ -105,7 +106,6 @@ const techRadarPlugin: BackstagePlugin<
   {
     root: RouteRef<undefined>;
   },
-  {},
   {}
 >;
 export { techRadarPlugin as plugin };

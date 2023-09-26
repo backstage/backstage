@@ -20,14 +20,14 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v3
-      - name: Use Node.js 16.x
+      - name: Use Node.js 18.x
         uses: actions/setup-node@v3
         with:
-          node-version: 16.x
+          node-version: 18.x
       - name: yarn install
         uses: backstage/actions/yarn-install@v0.6.4
         with:
-          cache-prefix: ${{ runner.os }}-v16.x
+          cache-prefix: ${{ runner.os }}-v18.x
       - name: run Lighthouse CI
         run: |
           yarn dlx @lhci/cli@0.11.x autorun

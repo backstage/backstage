@@ -513,7 +513,6 @@ const kubernetesPlugin: BackstagePlugin<
   {
     entityContent: RouteRef<undefined>;
   },
-  {},
   {}
 >;
 export { kubernetesPlugin };
@@ -630,6 +629,28 @@ export const PodDrawer: ({
   podAndErrors,
   open,
 }: PodDrawerProps) => React_2.JSX.Element;
+
+// @public
+export const PodExecTerminal: (
+  props: PodExecTerminalProps,
+) => React_2.JSX.Element;
+
+// @public
+export const PodExecTerminalDialog: (
+  props: PodExecTerminalProps,
+) => React_2.JSX.Element;
+
+// @public
+export interface PodExecTerminalProps {
+  // (undocumented)
+  clusterName: string;
+  // (undocumented)
+  containerName: string;
+  // (undocumented)
+  podName: string;
+  // (undocumented)
+  podNamespace: string;
+}
 
 // @public
 export const PodLogs: React_2.FC<PodLogsProps>;

@@ -263,22 +263,42 @@ Setting `generator.runIn` to `local` means you will have to make sure your
 environment is compatible with techdocs.
 
 You will have to install the `mkdocs` and `mkdocs-techdocs-core` package from
-pip, as well as `graphviz` and `plantuml` from your OS package manager (e.g.
+pip, optionally also `graphviz` and `plantuml` from your OS package manager (e.g.
 apt).
 
 You can do so by including the following lines right above `USER node` of your
 `Dockerfile`:
 
 ```Dockerfile
-RUN apt-get update && apt-get install -y python3 python3-pip
-RUN pip3 install mkdocs-techdocs-core==1.1.7
+RUN apt-get update && apt-get install -y python3 python3-pip python3-venv
+
+ENV VIRTUAL_ENV=/opt/venv
+RUN python3 -m venv $VIRTUAL_ENV
+ENV PATH="$VIRTUAL_ENV/bin:$PATH"
+
+RUN pip3 install mkdocs-techdocs-core
 ```
 
 Please be aware that the version requirement could change, you need to check our
 [`Dockerfile`](https://github.com/backstage/techdocs-container/blob/main/Dockerfile)
 and make sure to match with it.
 
-Note: We recommend Python version 3.7 or higher.
+On a Debian-based Docker container, Python packages must be either installed using
+the OS package manager or within a virtual environment (see the
+[related PEP](https://peps.python.org/pep-0668/)). Alternative is to use e.g.
+[pipx](https://pypa.github.io/pipx/) for installing Python packages in an isolated
+environment.
+
+The above Dockerfile snippet installs the latest `mkdocs-techdoc-core` package.
+Version numbers can be found in the corresponding
+[changelog](https://github.com/backstage/mkdocs-techdocs-core#changelog). In
+case you want to pin the version, use the example below:
+
+```Dockerfile
+RUN pip3 install mkdocs-techdocs-core==1.2.3
+```
+
+Note: We recommend Python version 3.11 or higher.
 
 > Caveat: Please install the `mkdocs-techdocs-core` package after all other
 > Python packages. The order is important to make sure we get correct version of

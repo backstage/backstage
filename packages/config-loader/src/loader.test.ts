@@ -20,6 +20,9 @@ import mockFs from 'mock-fs';
 import fs from 'fs-extra';
 import { rest } from 'msw';
 import { setupServer } from 'msw/node';
+import { resolve as resolvePath, sep } from 'path';
+
+const root = resolvePath('/');
 
 describe('loadConfig', () => {
   const server = setupServer();
@@ -132,7 +135,7 @@ describe('loadConfig', () => {
               escaped: '${Escaped}',
             },
           },
-          path: '/root/app-config.yaml',
+          path: `${root}root${sep}app-config.yaml`,
         },
       ],
     });
@@ -318,7 +321,7 @@ describe('loadConfig', () => {
               escaped: '${Escaped}',
             },
           },
-          path: '/root/app-config.yaml',
+          path: `${root}root${sep}app-config.yaml`,
         },
       ],
     });
@@ -336,7 +339,7 @@ describe('loadConfig', () => {
             title: 'New Title',
           },
         },
-        path: '/root/app-config.yaml',
+        path: `${root}root${sep}app-config.yaml`,
       },
     ]);
 
