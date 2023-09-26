@@ -15,125 +15,113 @@
  */
 
 import React from 'react';
-import { render } from '@testing-library/react';
+import { screen } from '@testing-library/react';
 import pauseSteps from './__fixtures__/pause-steps';
 import setWeightSteps from './__fixtures__/setweight-steps';
 import analysisSteps from './__fixtures__/analysis-steps';
-import { wrapInTestApp } from '@backstage/test-utils';
+import { renderInTestApp } from '@backstage/test-utils';
 import { StepsProgress } from './StepsProgress';
 
 describe('StepsProgress', () => {
   it('should render Pause step text', async () => {
-    const { getByText } = render(
-      wrapInTestApp(
-        <StepsProgress
-          currentStepIndex={0}
-          aborted={false}
-          steps={pauseSteps}
-        />,
-      ),
+    await renderInTestApp(
+      <StepsProgress currentStepIndex={0} aborted={false} steps={pauseSteps} />,
     );
 
-    expect(getByText('pause for 1h')).toBeInTheDocument();
-    expect(getByText('infinite pause')).toBeInTheDocument();
+    expect(screen.getByText('pause for 1h')).toBeInTheDocument();
+    expect(screen.getByText('infinite pause')).toBeInTheDocument();
   });
+
   it('should render SetWeight step text', async () => {
-    const { getByText } = render(
-      wrapInTestApp(
-        <StepsProgress
-          currentStepIndex={0}
-          aborted={false}
-          steps={setWeightSteps}
-        />,
-      ),
+    await renderInTestApp(
+      <StepsProgress
+        currentStepIndex={0}
+        aborted={false}
+        steps={setWeightSteps}
+      />,
     );
 
-    expect(getByText('setWeight 10%')).toBeInTheDocument();
-    expect(getByText('setWeight 95%')).toBeInTheDocument();
+    expect(screen.getByText('setWeight 10%')).toBeInTheDocument();
+    expect(screen.getByText('setWeight 95%')).toBeInTheDocument();
   });
+
   it('should render Analysis step text', async () => {
-    const { getAllByText, getByText } = render(
-      wrapInTestApp(
-        <StepsProgress
-          currentStepIndex={0}
-          aborted={false}
-          steps={analysisSteps}
-        />,
-      ),
+    await renderInTestApp(
+      <StepsProgress
+        currentStepIndex={0}
+        aborted={false}
+        steps={analysisSteps}
+      />,
     );
 
-    expect(getAllByText('analysis templates:')).toHaveLength(2);
-    expect(getByText('always-pass')).toBeInTheDocument();
-    expect(getByText('always-fail')).toBeInTheDocument();
-    expect(getByText('req-rate (cluster scoped)')).toBeInTheDocument();
+    expect(screen.getAllByText('analysis templates:')).toHaveLength(2);
+    expect(screen.getByText('always-pass')).toBeInTheDocument();
+    expect(screen.getByText('always-fail')).toBeInTheDocument();
+    expect(screen.getByText('req-rate (cluster scoped)')).toBeInTheDocument();
   });
+
   it('should render 3 different steps', async () => {
-    const { getByText } = render(
-      wrapInTestApp(
-        <StepsProgress
-          currentStepIndex={0}
-          aborted={false}
-          steps={[setWeightSteps[0], pauseSteps[0], analysisSteps[0]]}
-        />,
-      ),
+    await renderInTestApp(
+      <StepsProgress
+        currentStepIndex={0}
+        aborted={false}
+        steps={[setWeightSteps[0], pauseSteps[0], analysisSteps[0]]}
+      />,
     );
 
-    expect(getByText('setWeight 10%')).toBeInTheDocument();
-    expect(getByText('pause for 1h')).toBeInTheDocument();
-    expect(getByText('analysis templates:')).toBeInTheDocument();
-    expect(getByText('always-pass')).toBeInTheDocument();
-    expect(getByText('Canary promoted')).toBeInTheDocument();
+    expect(screen.getByText('setWeight 10%')).toBeInTheDocument();
+    expect(screen.getByText('pause for 1h')).toBeInTheDocument();
+    expect(screen.getByText('analysis templates:')).toBeInTheDocument();
+    expect(screen.getByText('always-pass')).toBeInTheDocument();
+    expect(screen.getByText('Canary promoted')).toBeInTheDocument();
   });
+
   it('current step is highlighted, previous steps are ticked', async () => {
-    const { getByText, queryByText } = render(
-      wrapInTestApp(
-        <StepsProgress
-          currentStepIndex={1}
-          aborted={false}
-          steps={[setWeightSteps[0], pauseSteps[0], analysisSteps[0]]}
-        />,
-      ),
+    await renderInTestApp(
+      <StepsProgress
+        currentStepIndex={1}
+        aborted={false}
+        steps={[setWeightSteps[0], pauseSteps[0], analysisSteps[0]]}
+      />,
     );
 
     // It is ticked, so it's not visible
-    expect(queryByText('1')).toBeNull();
+    expect(screen.queryByText('1')).toBeNull();
     // The current step
-    expect(getByText('2')).toBeInTheDocument();
+    expect(screen.getByText('2')).toBeInTheDocument();
     // The future step
-    expect(getByText('3')).toBeInTheDocument();
+    expect(screen.getByText('3')).toBeInTheDocument();
     // The canary promoted step should always be added at the end
-    expect(getByText('4')).toBeInTheDocument();
+    expect(screen.getByText('4')).toBeInTheDocument();
   });
+
   it('aborted canary has all steps grey', async () => {
-    const { getByText } = render(
-      wrapInTestApp(
-        <StepsProgress
-          currentStepIndex={2}
-          aborted
-          steps={[setWeightSteps[0], pauseSteps[0], analysisSteps[0]]}
-        />,
-      ),
+    await renderInTestApp(
+      <StepsProgress
+        currentStepIndex={2}
+        aborted
+        steps={[setWeightSteps[0], pauseSteps[0], analysisSteps[0]]}
+      />,
     );
 
-    expect(getByText('1')).toBeInTheDocument();
-    expect(getByText('2')).toBeInTheDocument();
-    expect(getByText('3')).toBeInTheDocument();
-    expect(getByText('4')).toBeInTheDocument();
+    expect(screen.getByText('1')).toBeInTheDocument();
+    expect(screen.getByText('2')).toBeInTheDocument();
+    expect(screen.getByText('3')).toBeInTheDocument();
+    expect(screen.getByText('4')).toBeInTheDocument();
   });
+
   it('promoted canary has all steps ticked', async () => {
-    const { queryByText } = render(
-      wrapInTestApp(
-        <StepsProgress
-          currentStepIndex={3}
-          aborted={false}
-          steps={[setWeightSteps[0], pauseSteps[0], analysisSteps[0]]}
-        />,
-      ),
+    await renderInTestApp(
+      <StepsProgress
+        currentStepIndex={3}
+        aborted={false}
+        steps={[setWeightSteps[0], pauseSteps[0], analysisSteps[0]]}
+      />,
     );
 
-    expect(queryByText('1')).toBeNull();
-    expect(queryByText('2')).toBeNull();
-    expect(queryByText('3')).toBeNull();
-    expect(queryByText('4')).toBeNull();
+    expect(screen.queryByText('1')).toBeNull();
+    expect(screen.queryByText('2')).toBeNull();
+    expect(screen.queryByText('3')).toBeNull();
+    expect(screen.queryByText('4')).toBeNull();
   });
 });

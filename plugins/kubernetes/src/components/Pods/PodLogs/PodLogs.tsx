@@ -64,7 +64,7 @@ export const PodLogs: React.FC<PodLogsProps> = ({
       )}
       <Paper
         elevation={1}
-        style={{ height: '100%', width: '100%', minHeight: '15rem' }}
+        style={{ height: '100%', width: '100%', minHeight: '55rem' }}
       >
         {loading && <Skeleton variant="rect" width="100%" height="100%" />}
         {!loading &&

@@ -15,6 +15,7 @@
  */
 
 import * as winston from 'winston';
+import { createRootLogger } from './createRootLogger';
 
 /**
  * A logger that just throws away all messages.
@@ -35,6 +36,9 @@ let rootLogger: winston.Logger;
  * @public
  */
 export function getRootLogger(): winston.Logger {
+  if (!rootLogger) {
+    rootLogger = createRootLogger();
+  }
   return rootLogger;
 }
 

@@ -68,6 +68,18 @@ export type AlertDisplayProps = {
 };
 
 // @public
+export const AutoLogout: (props: AutoLogoutProps) => JSX.Element | null;
+
+// @public (undocumented)
+export type AutoLogoutProps = {
+  enabled?: boolean;
+  idleTimeoutMinutes?: number;
+  promptBeforeIdleSeconds?: number;
+  useWorkerTimers?: boolean;
+  logoutIfDisconnected?: boolean;
+};
+
+// @public
 export function Avatar(props: AvatarProps): React_2.JSX.Element;
 
 // @public (undocumented)
@@ -347,10 +359,10 @@ export type EmptyStateImageClassKey = 'generalImg';
 export const ErrorBoundary: ComponentClass<ErrorBoundaryProps, State>;
 
 // @public (undocumented)
-export type ErrorBoundaryProps = {
+export type ErrorBoundaryProps = React_2.PropsWithChildren<{
   slackChannel?: string | SlackChannel;
   onError?: (error: Error, errorInfo: string) => null;
-};
+}>;
 
 // Warning: (ae-forgotten-export) The symbol "IErrorPageProps" needs to be exported by the entry point index.d.ts
 //

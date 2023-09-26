@@ -14,10 +14,10 @@
  * limitations under the License.
  */
 
-import { graphiqlPlugin as legacyGraphiqlPlugin } from '@backstage/plugin-graphiql';
-import { createApp as createLegacyApp } from '@backstage/app-defaults';
 import { createApp } from '@backstage/frontend-app-api';
-import { graphiqlPlugin } from './examples/graphiqlPlugin';
+import { pagesPlugin } from './examples/pagesPlugin';
+import graphiqlPlugin from '@backstage/plugin-graphiql/alpha';
+import techRadarPlugin from '@backstage/plugin-tech-radar/alpha';
 
 /*
 
@@ -49,7 +49,7 @@ TODO:
 /* app.tsx */
 
 const app = createApp({
-  plugins: [graphiqlPlugin],
+  plugins: [graphiqlPlugin, pagesPlugin, techRadarPlugin],
   // bindRoutes({ bind }) {
   //   bind(catalogPlugin.externalRoutes, {
   //     createComponent: scaffolderPlugin.routes.root,
@@ -60,9 +60,9 @@ const app = createApp({
   // },
 });
 
-const legacyApp = createLegacyApp({ plugins: [legacyGraphiqlPlugin] });
+// const legacyApp = createLegacyApp({ plugins: [legacyGraphiqlPlugin] });
 
-export default legacyApp.createRoot(app.createRoot());
+export default app.createRoot();
 
 // const routes = (
 //   <FlatRoutes>

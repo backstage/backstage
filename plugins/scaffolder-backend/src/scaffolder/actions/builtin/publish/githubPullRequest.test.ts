@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { getRootLogger } from '@backstage/backend-common';
+import { createRootLogger, getRootLogger } from '@backstage/backend-common';
 import { ConfigReader } from '@backstage/config';
 import {
   GithubCredentialsProvider,
@@ -32,6 +32,9 @@ import {
   createPublishGithubPullRequestAction,
   OctokitWithPullRequestPluginClient,
 } from './githubPullRequest';
+
+// Make sure root logger is initialized ahead of FS mock
+createRootLogger();
 
 const root = os.platform() === 'win32' ? 'C:\\root' : '/root';
 const workspacePath = resolvePath(root, 'my-workspace');

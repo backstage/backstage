@@ -31,6 +31,7 @@ import {
   lifecycleServiceFactory,
   loggerServiceFactory,
   permissionsServiceFactory,
+  rootHttpRouterServiceFactory,
   rootLifecycleServiceFactory,
   schedulerServiceFactory,
   urlReaderServiceFactory,
@@ -63,10 +64,9 @@ export type ServiceMock<TService> = {
   factory: ServiceFactory<TService>;
 } & {
   [Key in keyof TService]: TService[Key] extends (
-    this: infer This,
     ...args: infer Args
   ) => infer Return
-    ? TService[Key] & jest.MockInstance<Return, Args, This>
+    ? TService[Key] & jest.MockInstance<Return, Args>
     : TService[Key];
 };
 
@@ -181,6 +181,12 @@ export namespace mockServices {
   export namespace httpRouter {
     export const factory = httpRouterServiceFactory;
     export const mock = simpleMock(coreServices.httpRouter, () => ({
+      use: jest.fn(),
+    }));
+  }
+  export namespace rootHttpRouter {
+    export const factory = rootHttpRouterServiceFactory;
+    export const mock = simpleMock(coreServices.rootHttpRouter, () => ({
       use: jest.fn(),
     }));
   }

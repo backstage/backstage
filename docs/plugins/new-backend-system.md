@@ -1,14 +1,12 @@
 ---
 id: new-backend-system
 title: New Backend System
-description: Details of the upcoming backend system
+description: Details of the new backend system
 ---
-
-> **DISCLAIMER: The new backend system is in alpha, and still under active development. While we have reviewed the interfaces carefully, they may still be iterated on before the stable release.**
 
 ## Status
 
-The new backend system is in alpha, and only a small number of plugins have been migrated so far. It is possible to try it out, but it is not recommended to use this new system in production yet.
+The new backend system is in alpha, and some plugins do not yet fully implement it. But do feel free to try it out! We would love to hear back about your impressions.
 
 You can find an example backend setup in [the backend-next package](https://github.com/backstage/backstage/tree/master/packages/backend-next).
 
@@ -266,12 +264,10 @@ class GoogleCloudLogger implements LoggerService {
 }
 
 // packages/backend/src/index.ts
-const backend = createBackend({
-  services: [
-    // supplies additional or replacement services to the backend
-    GoogleCloudLogger.factory(),
-  ],
-});
+const backend = createBackend();
+
+// supplies additional or replacement services to the backend
+backend.add(GoogleCloudLogger.factory());
 ```
 
 ## Testing

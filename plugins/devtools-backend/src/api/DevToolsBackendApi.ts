@@ -17,12 +17,12 @@
 import { Config, ConfigReader } from '@backstage/config';
 import { loadConfigSchema } from '@backstage/config-loader';
 import {
-  PackageDependency,
-  DevToolsInfo,
-  ExternalDependency,
-  Endpoint,
-  ExternalDependencyStatus,
   ConfigInfo,
+  DevToolsInfo,
+  Endpoint,
+  ExternalDependency,
+  ExternalDependencyStatus,
+  PackageDependency,
 } from '@backstage/plugin-devtools-common';
 
 import { JsonObject } from '@backstage/types';
@@ -204,7 +204,16 @@ export class DevToolsBackendApi {
   }
 
   public async listInfo(): Promise<DevToolsInfo> {
-    const operatingSystem = `${os.type} ${os.release} - ${os.platform}/${os.arch}`;
+    const operatingSystem = `${os.hostname()}: ${os.type} ${os.release} - ${
+      os.platform
+    }/${os.arch}`;
+    const usedMem = Math.floor((os.totalmem() - os.freemem()) / (1024 * 1024));
+    const resources = `Memory: ${usedMem}/${Math.floor(
+      os.totalmem() / (1024 * 1024),
+    )}MB - Load: ${os
+      .loadavg()
+      .map(v => v.toFixed(2))
+      .join('/')}`;
     const nodeJsVersion = process.version;
 
     /* eslint-disable-next-line no-restricted-syntax */
@@ -238,6 +247,7 @@ export class DevToolsBackendApi {
 
     const info: DevToolsInfo = {
       operatingSystem: operatingSystem ?? 'N/A',
+      resourceUtilization: resources ?? 'N/A',
       nodeJsVersion: nodeJsVersion ?? 'N/A',
       backstageVersion:
         backstageJson && backstageJson.version ? backstageJson.version : 'N/A',

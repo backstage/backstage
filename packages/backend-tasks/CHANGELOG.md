@@ -1,5 +1,55 @@
 # @backstage/backend-tasks
 
+## 0.5.8
+
+### Patch Changes
+
+- 8fd91547cd0b: When starting a task that existed before, with a faster schedule than it
+  previously had, the task will now correctly obey the faster schedule
+  immediately. Before this fix, the new schedule was only obeyed after the next
+  pending (according to the old schedule) run had completed.
+- 62f448edb0b5: Use `readDurationFromConfig` from the config package
+- 74604806aae8: Avoid starting task janitor in tests.
+- cfc3ca6ce060: Changes needed to support MySQL
+- 814feeed7343: Update to handle invalid luxon values
+- Updated dependencies
+  - @backstage/backend-common@0.19.5
+  - @backstage/config@1.1.0
+  - @backstage/errors@1.2.2
+  - @backstage/types@1.1.1
+
+## 0.5.8-next.3
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/config@1.1.0-next.2
+  - @backstage/errors@1.2.2-next.0
+  - @backstage/types@1.1.1-next.0
+  - @backstage/backend-common@0.19.5-next.3
+
+## 0.5.8-next.2
+
+### Patch Changes
+
+- 814feeed7343: Update to handle invalid luxon values
+- Updated dependencies
+  - @backstage/config@1.1.0-next.1
+  - @backstage/backend-common@0.19.5-next.2
+  - @backstage/errors@1.2.1
+  - @backstage/types@1.1.0
+
+## 0.5.8-next.1
+
+### Patch Changes
+
+- 62f448edb0b5: Use `readDurationFromConfig` from the config package
+- Updated dependencies
+  - @backstage/config@1.1.0-next.0
+  - @backstage/backend-common@0.19.5-next.1
+  - @backstage/errors@1.2.1
+  - @backstage/types@1.1.0
+
 ## 0.5.7-next.0
 
 ### Patch Changes

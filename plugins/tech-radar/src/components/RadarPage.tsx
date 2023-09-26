@@ -25,7 +25,7 @@ import {
 import { Grid, Input, makeStyles } from '@material-ui/core';
 import Typography from '@material-ui/core/Typography';
 import React from 'react';
-import { RadarComponent, TechRadarComponentProps } from './RadarComponent';
+import { RadarComponent, type TechRadarComponentProps } from './RadarComponent';
 
 const useStyles = makeStyles(() => ({
   overflowXScroll: {

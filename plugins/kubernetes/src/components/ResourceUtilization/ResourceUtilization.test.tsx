@@ -15,40 +15,37 @@
  */
 
 import React from 'react';
-import { render } from '@testing-library/react';
+import { screen } from '@testing-library/react';
 import { ResourceUtilization } from './ResourceUtilization';
-import { wrapInTestApp } from '@backstage/test-utils';
+import { renderInTestApp } from '@backstage/test-utils';
 
 describe('ResourceUtilization', () => {
   it('should render utilization', async () => {
-    const { getByText } = render(
-      wrapInTestApp(
-        <ResourceUtilization
-          title="some-title"
-          usage="1000"
-          total="10000"
-          totalFormatted="15%"
-        />,
-      ),
+    await renderInTestApp(
+      <ResourceUtilization
+        title="some-title"
+        usage="1000"
+        total="10000"
+        totalFormatted="15%"
+      />,
     );
 
-    expect(getByText('some-title: 15%')).toBeInTheDocument();
-    expect(getByText('usage: 10%')).toBeInTheDocument();
+    expect(screen.getByText('some-title: 15%')).toBeInTheDocument();
+    expect(screen.getByText('usage: 10%')).toBeInTheDocument();
   });
+
   it('no usage when compressed', async () => {
-    const { getByText, queryByText } = render(
-      wrapInTestApp(
-        <ResourceUtilization
-          compressed
-          title="some-title"
-          usage="1000"
-          total="10000"
-          totalFormatted="15%"
-        />,
-      ),
+    await renderInTestApp(
+      <ResourceUtilization
+        compressed
+        title="some-title"
+        usage="1000"
+        total="10000"
+        totalFormatted="15%"
+      />,
     );
 
-    expect(getByText('some-title: 15%')).toBeInTheDocument();
-    expect(queryByText('usage: 10%')).toBeNull();
+    expect(screen.getByText('some-title: 15%')).toBeInTheDocument();
+    expect(screen.queryByText('usage: 10%')).toBeNull();
   });
 });

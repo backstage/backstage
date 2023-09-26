@@ -22,3 +22,4 @@
 
 export * from './providers';
 export * from './module';
+export { default } from './module';

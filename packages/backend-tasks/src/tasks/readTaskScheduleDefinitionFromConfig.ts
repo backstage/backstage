@@ -14,53 +14,10 @@
  * limitations under the License.
  */
 
-import { Config } from '@backstage/config';
+import { Config, readDurationFromConfig } from '@backstage/config';
 import { HumanDuration } from '@backstage/types';
 import { TaskScheduleDefinition } from './types';
 import { Duration } from 'luxon';
-
-const propsOfHumanDuration = [
-  'years',
-  'months',
-  'weeks',
-  'days',
-  'hours',
-  'minutes',
-  'seconds',
-  'milliseconds',
-];
-
-function convertToHumanDuration(config: Config, key: string): HumanDuration {
-  // Ensures that the root is an object
-  const root = config.getConfig(key);
-
-  const result: Record<string, number> = {};
-  let found = false;
-  for (const prop of propsOfHumanDuration) {
-    const value = root.getOptionalNumber(prop);
-    if (value !== undefined) {
-      result[prop] = value;
-      found = true;
-    }
-  }
-
-  if (!found) {
-    throw new Error(
-      `HumanDuration needs at least one of: ${propsOfHumanDuration}`,
-    );
-  }
-
-  const invalidProps = root
-    .keys()
-    .filter(prop => !propsOfHumanDuration.includes(prop));
-  if (invalidProps.length > 0) {
-    throw new Error(
-      `HumanDuration does not contain properties: ${invalidProps}`,
-    );
-  }
-
-  return result as HumanDuration;
-}
 
 function readDuration(config: Config, key: string): Duration | HumanDuration {
   if (typeof config.get(key) === 'string') {
@@ -72,7 +29,7 @@ function readDuration(config: Config, key: string): Duration | HumanDuration {
     return duration;
   }
 
-  return convertToHumanDuration(config, key);
+  return readDurationFromConfig(config, { key });
 }
 
 function readCronOrDuration(

@@ -14,17 +14,16 @@
  * limitations under the License.
  */
 
-import { wrapInTestApp } from '@backstage/test-utils';
-import { render } from '@testing-library/react';
+import { renderInTestApp } from '@backstage/test-utils';
 import React from 'react';
 import { TrendGraph } from './TrendGraph';
 
 describe('TrendGraph component', () => {
   it('should render a trend graph sparkline', async () => {
     const mockCounts = [1, 2, 3, 4];
-    const rendered = render(
-      wrapInTestApp(<TrendGraph counts={mockCounts} data-testid="graph" />),
+    await renderInTestApp(
+      <TrendGraph counts={mockCounts} data-testid="graph" />,
     );
-    expect(rendered).toBeTruthy();
+    expect(true).toBeTruthy();
   });
 });

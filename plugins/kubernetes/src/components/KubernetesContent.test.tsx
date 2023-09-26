@@ -15,8 +15,8 @@
  */
 
 import React from 'react';
-import { render } from '@testing-library/react';
-import { wrapInTestApp } from '@backstage/test-utils';
+import { screen } from '@testing-library/react';
+import { renderInTestApp } from '@backstage/test-utils';
 import { KubernetesContent } from './KubernetesContent';
 import { useKubernetesObjects } from '../hooks';
 
@@ -32,22 +32,21 @@ describe('KubernetesContent', () => {
       },
       error: undefined,
     });
-    const { getByText } = render(
-      wrapInTestApp(
-        <KubernetesContent
-          entity={
-            {
-              metadata: {
-                name: 'some-entity',
-              },
-            } as any
-          }
-        />,
-      ),
+    await renderInTestApp(
+      <KubernetesContent
+        entity={
+          {
+            metadata: {
+              name: 'some-entity',
+            },
+          } as any
+        }
+      />,
     );
-    expect(getByText('Your Clusters')).toBeInTheDocument();
+    expect(screen.getByText('Your Clusters')).toBeInTheDocument();
     // TODO add a prompt for the user to configure their clusters
   });
+
   it('render 1 cluster happy path', async () => {
     (useKubernetesObjects as any).mockReturnValue({
       kubernetesObjects: {
@@ -75,25 +74,24 @@ describe('KubernetesContent', () => {
       },
       error: undefined,
     });
-    const { getByText } = render(
-      wrapInTestApp(
-        <KubernetesContent
-          entity={
-            {
-              metadata: {
-                name: 'some-entity',
-              },
-            } as any
-          }
-        />,
-      ),
+    await renderInTestApp(
+      <KubernetesContent
+        entity={
+          {
+            metadata: {
+              name: 'some-entity',
+            },
+          } as any
+        }
+      />,
     );
 
-    expect(getByText('cluster-1')).toBeInTheDocument();
-    expect(getByText('Cluster')).toBeInTheDocument();
-    expect(getByText('10 pods')).toBeInTheDocument();
-    expect(getByText('No pods with errors')).toBeInTheDocument();
+    expect(screen.getByText('cluster-1')).toBeInTheDocument();
+    expect(screen.getByText('Cluster')).toBeInTheDocument();
+    expect(screen.getByText('10 pods')).toBeInTheDocument();
+    expect(screen.getByText('No pods with errors')).toBeInTheDocument();
   });
+
   it('render 2 clusters happy path, one with errors', async () => {
     (useKubernetesObjects as any).mockReturnValue({
       kubernetesObjects: {
@@ -140,26 +138,24 @@ describe('KubernetesContent', () => {
       },
       error: undefined,
     });
-    const { getByText, getAllByText } = render(
-      wrapInTestApp(
-        <KubernetesContent
-          entity={
-            {
-              metadata: {
-                name: 'some-entity',
-              },
-            } as any
-          }
-        />,
-      ),
+    await renderInTestApp(
+      <KubernetesContent
+        entity={
+          {
+            metadata: {
+              name: 'some-entity',
+            },
+          } as any
+        }
+      />,
     );
-    expect(getAllByText('Cluster')).toHaveLength(2);
-    expect(getByText('cluster-a')).toBeInTheDocument();
-    expect(getByText('10 pods')).toBeInTheDocument();
-    expect(getByText('No pods with errors')).toBeInTheDocument();
+    expect(screen.getAllByText('Cluster')).toHaveLength(2);
+    expect(screen.getByText('cluster-a')).toBeInTheDocument();
+    expect(screen.getByText('10 pods')).toBeInTheDocument();
+    expect(screen.getByText('No pods with errors')).toBeInTheDocument();
 
-    expect(getAllByText('cluster-1')).toHaveLength(6);
-    expect(getByText('12 pods')).toBeInTheDocument();
-    expect(getByText('2 pods with errors')).toBeInTheDocument();
+    expect(screen.getAllByText('cluster-1')).toHaveLength(6);
+    expect(screen.getByText('12 pods')).toBeInTheDocument();
+    expect(screen.getByText('2 pods with errors')).toBeInTheDocument();
   });
 });

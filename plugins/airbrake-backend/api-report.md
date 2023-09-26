@@ -14,7 +14,8 @@ export interface AirbrakeConfig {
 }
 
 // @public
-export const airbrakePlugin: () => BackendFeature;
+const airbrakePlugin: () => BackendFeature;
+export default airbrakePlugin;
 
 // @public
 export function createRouter(options: RouterOptions): Promise<express.Router>;

@@ -15,9 +15,9 @@
  */
 
 /**
- * TODO
+ * Core API used by Backstage frontend apps.
  *
  * @packageDocumentation
  */
 
-export { createApp } from './createApp';
+export * from './wiring';

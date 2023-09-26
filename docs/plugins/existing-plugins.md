@@ -4,7 +4,7 @@ title: Existing plugins
 description: Lists of existing open source plugins
 ---
 
-## The Plugin Marketplace
+## The Plugin Directory
 
 Open source plugins that you can add to your Backstage deployment can be found
 at:
@@ -15,4 +15,4 @@ https://backstage.io/plugins
 
 ## Links
 
-- [[blog] The Plugin Marketplace is open](https://backstage.io/blog/2020/09/30/plugin-marketplace)
+- [[blog] The Plugin Directory is open](https://backstage.io/blog/2020/09/30/plugin-marketplace)

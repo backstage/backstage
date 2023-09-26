@@ -1,7 +1,7 @@
 {
   "name": "@techdocs/cli",
   "description": "Utility CLI for managing TechDocs sites in Backstage.",
-  "version": "1.4.7-next.0",
+  "version": "1.5.0",
   "publishConfig": {
     "access": "public"
   },
@@ -41,7 +41,7 @@
     "@types/commander": "^2.12.2",
     "@types/fs-extra": "^9.0.6",
     "@types/http-proxy": "^1.17.4",
-    "@types/node": "^16.11.26",
+    "@types/node": "^18.17.8",
     "@types/serve-handler": "^6.1.0",
     "@types/webpack-env": "^1.15.3",
     "cypress": "^10.0.0",

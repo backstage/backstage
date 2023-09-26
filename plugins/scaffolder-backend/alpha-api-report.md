@@ -10,28 +10,20 @@ import { JsonObject } from '@backstage/types';
 import { PermissionCondition } from '@backstage/plugin-permission-common';
 import { PermissionCriteria } from '@backstage/plugin-permission-common';
 import { PermissionRule } from '@backstage/plugin-permission-node';
-import { PermissionRuleParams } from '@backstage/plugin-permission-common';
 import { ResourcePermission } from '@backstage/plugin-permission-common';
 import { TemplateEntityStepV1beta3 } from '@backstage/plugin-scaffolder-common';
 import { TemplateParametersV1beta3 } from '@backstage/plugin-scaffolder-common';
 
-// @alpha
-export const catalogModuleTemplateKind: () => BackendFeature;
-
 // @alpha (undocumented)
 export const createScaffolderActionConditionalDecision: (
   permission: ResourcePermission<'scaffolder-action'>,
-  conditions: PermissionCriteria<
-    PermissionCondition<'scaffolder-action', PermissionRuleParams>
-  >,
+  conditions: PermissionCriteria<PermissionCondition<'scaffolder-action'>>,
 ) => ConditionalPolicyDecision;
 
 // @alpha
 export const createScaffolderTemplateConditionalDecision: (
   permission: ResourcePermission<'scaffolder-template'>,
-  conditions: PermissionCriteria<
-    PermissionCondition<'scaffolder-template', PermissionRuleParams>
-  >,
+  conditions: PermissionCriteria<PermissionCondition<'scaffolder-template'>>,
 ) => ConditionalPolicyDecision;
 
 // @alpha
@@ -86,7 +78,8 @@ export const scaffolderActionConditions: Conditions<{
 }>;
 
 // @alpha
-export const scaffolderPlugin: () => BackendFeature;
+const scaffolderPlugin: () => BackendFeature;
+export default scaffolderPlugin;
 
 // @alpha
 export const scaffolderTemplateConditions: Conditions<{

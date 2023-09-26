@@ -1,0 +1,12 @@
+apiVersion: backstage.io/v1alpha1
+kind: Component
+metadata:
+  name: backstage-version-bridge
+  title: '@backstage/version-bridge'
+  description: >-
+    Utilities used by @backstage packages to support multiple concurrent
+    versions
+spec:
+  lifecycle: production
+  type: backstage-web-library
+  owner: maintainers

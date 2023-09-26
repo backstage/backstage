@@ -25,9 +25,9 @@ import { useApi } from '@backstage/core-plugin-api';
 export const NewRelicAPMTable = ({ applications }: NewRelicApplications) => {
   const columns: TableColumn[] = [
     { title: 'Application', field: 'name' },
-    { title: 'Response Time', field: 'responseTime' },
-    { title: 'Throughput', field: 'throughput' },
-    { title: 'Error Rate', field: 'errorRate' },
+    { title: 'Response Time (ms)', field: 'responseTime' },
+    { title: 'Throughput (rpm)', field: 'throughput' },
+    { title: 'Error Rate (%)', field: 'errorRate' },
     { title: 'Instance Count', field: 'instanceCount' },
     { title: 'Apdex', field: 'apdexScore' },
   ];
@@ -43,9 +43,9 @@ export const NewRelicAPMTable = ({ applications }: NewRelicApplications) => {
 
     return {
       name,
-      responseTime: `${responseTime} ms`,
-      throughput: `${throughput} rpm`,
-      errorRate: `${errorRate}%`,
+      responseTime,
+      throughput,
+      errorRate,
       instanceCount,
       apdexScore,
     };

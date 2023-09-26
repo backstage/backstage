@@ -33,7 +33,7 @@ import { searchIndexRegistryExtensionPoint } from '@backstage/plugin-search-back
  * @alpha
  * Search backend module for the TechDocs index.
  */
-export const searchModuleTechDocsCollator = createBackendModule({
+export default createBackendModule({
   moduleId: 'techDocsCollator',
   pluginId: 'search',
   register(env) {

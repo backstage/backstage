@@ -235,3 +235,12 @@ Example
   ]
 }
 ```
+
+### Configuration
+
+Configure the plugin in your `app-config.yaml`:
+
+```yaml
+codeCoverage:
+  bodySizeLimit: 100kb # Defaults to 100kb, see https://www.npmjs.com/package/body-parser#limit
+```

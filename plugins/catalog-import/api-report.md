@@ -238,7 +238,7 @@ export type PreparePullRequestFormProps<
       UseFormReturn<TFieldValues>,
       'formState' | 'register' | 'control' | 'setValue'
     > & {
-      values: UnpackNestedValue<TFieldValues>;
+      values: TFieldValues;
     },
   ) => React_2.ReactNode;
 };

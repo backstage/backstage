@@ -111,6 +111,14 @@ export const spec = {
             type: 'string',
           },
         },
+        examples: {
+          'Get name and the entire relations collection': {
+            value: ['metadata.name', 'relations'],
+          },
+          'Get kind, name and namespace': {
+            value: ['kind', 'metadata.name', 'metadata.namespace'],
+          },
+        },
       },
       filter: {
         name: 'filter',
@@ -122,6 +130,16 @@ export const spec = {
           type: 'array',
           items: {
             type: 'string',
+          },
+        },
+        examples: {
+          'Get groups': {
+            value: ['kind=group'],
+          },
+          'Get orphaned components': {
+            value: [
+              'kind=component,metadata.annotations.backstage.io/orphan=true',
+            ],
           },
         },
       },
@@ -162,6 +180,14 @@ export const spec = {
         },
         explode: true,
         style: 'form',
+        examples: {
+          'Order ascending by name': {
+            value: ['metadata.name,asc'],
+          },
+          'Order descending by owner': {
+            value: ['spec.owner,desc'],
+          },
+        },
       },
     },
     requestBodies: {},
@@ -826,6 +852,18 @@ export const spec = {
           {
             $ref: '#/components/parameters/after',
           },
+          {
+            name: 'order',
+            in: 'query',
+            allowReserved: true,
+            required: false,
+            schema: {
+              type: 'array',
+              items: {
+                type: 'string',
+              },
+            },
+          },
         ],
       },
     },
@@ -998,6 +1036,22 @@ export const spec = {
                   },
                 },
               },
+              examples: {
+                'Fetch Backstage entities': {
+                  value: {
+                    entityRefs: [
+                      'component:default/backstage',
+                      'api:default/backstage',
+                    ],
+                  },
+                },
+                'Fetch annotations for backstage entity': {
+                  value: {
+                    entityRefs: ['component:default/backstage'],
+                    fields: ['metadata.annotations'],
+                  },
+                },
+              },
             },
           },
         },
@@ -1102,6 +1156,14 @@ export const spec = {
               type: 'array',
               items: {
                 type: 'string',
+              },
+            },
+            examples: {
+              'Entities by kind': {
+                value: ['kind'],
+              },
+              'Entities by spec type': {
+                value: ['spec.type'],
               },
             },
           },
@@ -1310,7 +1372,7 @@ export const spec = {
                     $ref: '#/components/schemas/LocationInput',
                   },
                 },
-                required: ['catalogFileName', 'location'],
+                required: ['location'],
               },
             },
           },

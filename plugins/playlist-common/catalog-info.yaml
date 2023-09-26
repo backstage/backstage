@@ -1,0 +1,10 @@
+apiVersion: backstage.io/v1alpha1
+kind: Component
+metadata:
+  name: backstage-plugin-playlist-common
+  title: '@backstage/plugin-playlist-common'
+  description: Common functionalities for the playlist plugin
+spec:
+  lifecycle: experimental
+  type: backstage-common-library
+  owner: kuangp

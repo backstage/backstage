@@ -14,30 +14,31 @@
  * limitations under the License.
  */
 
-import fs from 'fs-extra';
-import { resolve as resolvePath, posix as posixPath } from 'path';
+import { BackendBundlingOptions, BundlingOptions } from './types';
+import { posix as posixPath, resolve as resolvePath } from 'path';
+import webpack, { ProvidePlugin } from 'webpack';
+
+import { BackstagePackage } from '@backstage/cli-node';
+import { BundlingPaths } from './paths';
+import { Config } from '@backstage/config';
+import ESLintPlugin from 'eslint-webpack-plugin';
 import ForkTsCheckerWebpackPlugin from 'fork-ts-checker-webpack-plugin';
 import HtmlWebpackPlugin from 'html-webpack-plugin';
+import { LinkedPackageResolvePlugin } from './LinkedPackageResolvePlugin';
 import ModuleScopePlugin from 'react-dev-utils/ModuleScopePlugin';
 import { RunScriptWebpackPlugin } from 'run-script-webpack-plugin';
-import webpack, { ProvidePlugin } from 'webpack';
-import nodeExternals from 'webpack-node-externals';
-import { isChildPath } from '@backstage/cli-common';
-import { getPackages } from '@manypkg/get-packages';
-import { optimization } from './optimization';
-import { Config } from '@backstage/config';
-import { BundlingPaths } from './paths';
-import { transforms } from './transforms';
-import { LinkedPackageResolvePlugin } from './LinkedPackageResolvePlugin';
-import { BundlingOptions, BackendBundlingOptions } from './types';
-import { version } from '../../lib/version';
 import { paths as cliPaths } from '../../lib/paths';
-import { BackstagePackage } from '@backstage/cli-node';
-import { runPlain } from '../run';
-import ESLintPlugin from 'eslint-webpack-plugin';
+import fs from 'fs-extra';
+import { getPackages } from '@manypkg/get-packages';
+import { isChildPath } from '@backstage/cli-common';
+import nodeExternals from 'webpack-node-externals';
+import { optimization } from './optimization';
 import pickBy from 'lodash/pickBy';
-import yn from 'yn';
 import { readEntryPoints } from '../entryPoints';
+import { runPlain } from '../run';
+import { transforms } from './transforms';
+import { version } from '../../lib/version';
+import yn from 'yn';
 
 const BUILD_CACHE_ENV_VAR = 'BACKSTAGE_CLI_EXPERIMENTAL_BUILD_CACHE';
 
@@ -161,7 +162,7 @@ export async function createConfig(
     },
     devtool: isDev ? 'eval-cheap-module-source-map' : 'source-map',
     context: paths.targetPath,
-    entry: [paths.targetEntry],
+    entry: [...(options.additionalEntryPoints ?? []), paths.targetEntry],
     resolve: {
       extensions: ['.ts', '.tsx', '.mjs', '.js', '.jsx', '.json', '.wasm'],
       mainFields: ['browser', 'module', 'main'],
@@ -244,9 +245,17 @@ export async function createBackendConfig(
 
   const runScriptNodeArgs = new Array<string>();
   if (options.inspectEnabled) {
-    runScriptNodeArgs.push('--inspect');
+    const inspect =
+      typeof options.inspectEnabled === 'string'
+        ? `--inspect=${options.inspectEnabled}`
+        : '--inspect';
+    runScriptNodeArgs.push(inspect);
   } else if (options.inspectBrkEnabled) {
-    runScriptNodeArgs.push('--inspect-brk');
+    const inspect =
+      typeof options.inspectBrkEnabled === 'string'
+        ? `--inspect-brk=${options.inspectBrkEnabled}`
+        : '--inspect-brk';
+    runScriptNodeArgs.push(inspect);
   }
 
   return {
