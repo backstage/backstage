@@ -14,22 +14,15 @@
  * limitations under the License.
  */
 
-import React from 'react';
 import {
-  CustomFieldExtensionSchema,
   CustomFieldValidator,
   FieldExtensionOptions,
   FieldExtensionComponentProps,
+  FieldExtensionUiSchema,
 } from './types';
 import { Extension, attachComponentData } from '@backstage/core-plugin-api';
+import { UIOptionsType } from '@rjsf/utils';
 import { FIELD_EXTENSION_KEY, FIELD_EXTENSION_WRAPPER_KEY } from './keys';
-
-/**
- * The type used to wrap up the Layout and embed the input props
- *
- * @public
- */
-export type FieldExtensionComponent<_TReturnValue, _TInputProps> = () => null;
 
 /**
  * Method for creating field extensions that can be used in the scaffolder
@@ -38,7 +31,7 @@ export type FieldExtensionComponent<_TReturnValue, _TInputProps> = () => null;
  */
 export function createScaffolderFieldExtension<
   TReturnValue = unknown,
-  TInputProps = unknown,
+  TInputProps extends UIOptionsType = {},
 >(
   options: FieldExtensionOptions<TReturnValue, TInputProps>,
 ): Extension<FieldExtensionComponent<TReturnValue, TInputProps>> {
@@ -72,9 +65,16 @@ attachComponentData(
   true,
 );
 
+/**
+ * The type used to wrap up the Layout and embed the input props
+ *
+ * @public
+ */
+export type FieldExtensionComponent<_TReturnValue, _TInputProps> = () => null;
+
 export type {
-  CustomFieldExtensionSchema,
   CustomFieldValidator,
   FieldExtensionOptions,
   FieldExtensionComponentProps,
+  FieldExtensionUiSchema,
 };

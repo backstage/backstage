@@ -20,7 +20,7 @@ import { renderInTestApp } from '@backstage/test-utils';
 import { act, fireEvent } from '@testing-library/react';
 import type { RJSFValidationError } from '@rjsf/utils';
 import { JsonValue } from '@backstage/types';
-import { NextFieldExtensionComponentProps } from '../../extensions';
+import { NextFieldExtensionComponentProps } from '../../../extensions';
 import { LayoutTemplate } from '../../../layouts';
 
 describe('Stepper', () => {

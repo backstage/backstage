@@ -26,7 +26,7 @@ import {
 import { type IChangeEvent } from '@rjsf/core-v5';
 import { ErrorSchema } from '@rjsf/utils';
 import React, { useCallback, useMemo, useState, type ReactNode } from 'react';
-import { NextFieldExtensionOptions } from '../../extensions';
+import { NextFieldExtensionOptions } from '../../../extensions';
 import {
   createAsyncValidators,
   type FormValidation,

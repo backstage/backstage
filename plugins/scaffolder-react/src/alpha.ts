@@ -16,3 +16,5 @@
 
 export * from './next';
 export type { FormProps } from './next';
+
+export * from './legacy';
