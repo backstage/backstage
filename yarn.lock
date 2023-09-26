@@ -17153,9 +17153,9 @@ __metadata:
   linkType: hard
 
 "@types/d3-selection@npm:*, @types/d3-selection@npm:^3.0.1":
-  version: 3.0.6
-  resolution: "@types/d3-selection@npm:3.0.6"
-  checksum: 01f9f3a41b98280947109911bcc6ebffff5c8c3e617695979c04ef9beef445a8cdc48a9fbdb3c9cff45a7345e83e8a5d6b346d7ceedca6ebc11dfd9717dbff6b
+  version: 3.0.7
+  resolution: "@types/d3-selection@npm:3.0.7"
+  checksum: 715a0c7a78732650ae70b3487b3b6432b063482c1937bcd52c8b7a201563103170fdaa1f8c0ace882062521ac009f07fefb41198c8c43c5d3c518f8368c459d6
   languageName: node
   linkType: hard
 
