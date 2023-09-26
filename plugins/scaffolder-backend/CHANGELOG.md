@@ -1,5 +1,12 @@
 # @backstage/plugin-scaffolder-backend
 
+## 1.17.1
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/plugin-catalog-backend@1.13.1
+
 ## 1.17.0
 
 ### Minor Changes
