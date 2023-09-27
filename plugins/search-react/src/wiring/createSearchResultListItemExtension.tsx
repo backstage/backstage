@@ -20,8 +20,10 @@ import { ListItemProps } from '@material-ui/core';
 
 import {
   ExtensionBoundary,
+  PortableSchema,
   createExtension,
   createExtensionDataRef,
+  createSchemaFromZod,
 } from '@backstage/frontend-plugin-api';
 import { Progress } from '@backstage/core-components';
 import { SearchDocument, SearchResult } from '@backstage/plugin-search-common';
@@ -47,7 +49,9 @@ export const searchResultItemExtensionData = createExtensionDataRef<{
 }>('plugin.search.result.item.data');
 
 /** @alpha */
-export type SearchResultItemExtensionOptions = {
+export type SearchResultItemExtensionOptions<
+  TConfig extends { noTrack?: boolean },
+> = {
   /**
    * The extension id.
    */
@@ -57,9 +61,15 @@ export type SearchResultItemExtensionOptions = {
    */
   at: string;
   /**
+   * Optional extension config schema.
+   */
+  configSchema?: PortableSchema<TConfig>;
+  /**
    * The extension component.
    */
-  component: () => Promise<SearchResultItemExtensionComponent>;
+  component: (options: {
+    config: TConfig;
+  }) => Promise<SearchResultItemExtensionComponent>;
   /**
    * When an extension defines a predicate, it returns true if the result should be rendered by that extension.
    * Defaults to a predicate that returns true, which means it renders all sorts of results.
@@ -68,25 +78,35 @@ export type SearchResultItemExtensionOptions = {
 };
 
 /** @alpha */
-export type BaseSearchResultListItemProps = {
+export type BaseSearchResultListItemProps<T = {}> = T & {
   rank?: number;
   result?: SearchDocument;
-  noTrack?: boolean;
 } & Omit<ListItemProps, 'button'>;
 
 /** @alpha */
-export const createSearchResultListItemExtension = (
-  options: SearchResultItemExtensionOptions,
-) =>
-  createExtension({
+export function createSearchResultListItemExtension<
+  TConfig extends { noTrack?: boolean },
+>(options: SearchResultItemExtensionOptions<TConfig>) {
+  const configSchema =
+    'configSchema' in options
+      ? options.configSchema
+      : (createSchemaFromZod(z =>
+          z.object({
+            noTrack: z.boolean().default(true),
+          }),
+        ) as PortableSchema<TConfig>);
+  return createExtension({
     id: `plugin.search.result.item.${options.id}`,
     at: options.at,
+    configSchema,
     output: {
       item: searchResultItemExtensionData,
     },
-    factory({ bind, source }) {
+    factory({ bind, config, source }) {
       const LazyComponent = lazy(() =>
-        options.component().then(component => ({ default: component })),
+        options
+          .component({ config })
+          .then(component => ({ default: component })),
       ) as unknown as SearchResultItemExtensionComponent;
 
       bind({
@@ -98,7 +118,7 @@ export const createSearchResultListItemExtension = (
                 <SearchResultListItemExtension
                   rank={props.rank}
                   result={props.result}
-                  noTrack={props.noTrack}
+                  noTrack={config.noTrack}
                 >
                   <LazyComponent {...props} />
                 </SearchResultListItemExtension>
@@ -109,3 +129,4 @@ export const createSearchResultListItemExtension = (
       });
     },
   });
+}

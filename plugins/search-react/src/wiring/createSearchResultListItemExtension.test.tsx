@@ -22,6 +22,7 @@ import {
   createExtensionInput,
   createPageExtension,
   createPlugin,
+  createSchemaFromZod,
 } from '@backstage/frontend-plugin-api';
 import { SearchResult } from '@backstage/plugin-search-common';
 import { createApp } from '@backstage/frontend-app-api';
@@ -43,16 +44,32 @@ jest.mock('@backstage/plugin-graphiql', () => ({
 
 describe('createSearchResultListItemExtension', () => {
   it('Should use the correct result component', async () => {
+    type TechDocsSearchReasulListItemProps = BaseSearchResultListItemProps<{
+      lineClamp: number;
+    }>;
     const TechDocsSearchResultItemComponent = (
-      props: BaseSearchResultListItemProps,
-    ) => <div>TechDocs - Rank: {props.rank}</div>;
+      props: TechDocsSearchReasulListItemProps,
+    ) => (
+      <div>
+        TechDocs - Rank: {props.rank} - Line clamp: {props.lineClamp}
+      </div>
+    );
 
     const TechDocsSearchResultItemExtension =
       createSearchResultListItemExtension({
         id: 'techdocs',
         at: 'plugin.search.page/items',
+        configSchema: createSchemaFromZod(z =>
+          z.object({
+            noTrack: z.boolean().default(true),
+            lineClamp: z.number().default(5),
+          }),
+        ),
         predicate: result => result.type === 'techdocs',
-        component: async () => TechDocsSearchResultItemComponent,
+        component:
+          async ({ config }) =>
+          props =>
+            <TechDocsSearchResultItemComponent {...props} {...config} />,
       });
 
     const ExploreSearchResultItemComponent = (
@@ -129,7 +146,6 @@ describe('createSearchResultListItemExtension', () => {
                       key={index}
                       rank={result.rank}
                       result={result.document}
-                      noTrack
                     />
                   );
                 })}
@@ -153,7 +169,20 @@ describe('createSearchResultListItemExtension', () => {
 
     const app = createApp({
       plugins: [SearchPlugin],
-      configLoader: async () => new MockConfigApi({}),
+      configLoader: async () =>
+        new MockConfigApi({
+          app: {
+            extensions: [
+              {
+                'plugin.search.result.item.techdocs': {
+                  config: {
+                    lineClamp: 3,
+                  },
+                },
+              },
+            ],
+          },
+        }),
     });
 
     render(app.createRoot());
@@ -161,7 +190,9 @@ describe('createSearchResultListItemExtension', () => {
     expect(await screen.findByText(/Search Page/)).toBeInTheDocument();
 
     expect(
-      await screen.findByText(/TechDocs - Rank: 1/, { exact: false }),
+      await screen.findByText(/TechDocs - Rank: 1 - Line clamp: 3/, {
+        exact: false,
+      }),
     ).toBeInTheDocument();
 
     expect(

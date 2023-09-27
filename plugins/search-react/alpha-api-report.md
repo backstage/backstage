@@ -8,20 +8,22 @@
 import { ConfigurableExtensionDataRef } from '@backstage/frontend-plugin-api';
 import { Extension } from '@backstage/frontend-plugin-api';
 import { ListItemProps } from '@material-ui/core';
+import { PortableSchema } from '@backstage/frontend-plugin-api';
 import { SearchDocument } from '@backstage/plugin-search-common';
 import { SearchResult } from '@backstage/plugin-search-common';
 
 // @alpha (undocumented)
-export type BaseSearchResultListItemProps = {
+export type BaseSearchResultListItemProps<T = {}> = T & {
   rank?: number;
   result?: SearchDocument;
-  noTrack?: boolean;
 } & Omit<ListItemProps, 'button'>;
 
 // @alpha (undocumented)
-export const createSearchResultListItemExtension: (
-  options: SearchResultItemExtensionOptions,
-) => Extension<never>;
+export function createSearchResultListItemExtension<
+  TConfig extends {
+    noTrack?: boolean;
+  },
+>(options: SearchResultItemExtensionOptions<TConfig>): Extension<TConfig>;
 
 // @alpha (undocumented)
 export type SearchResultItemExtensionComponent = <
@@ -40,10 +42,17 @@ export const searchResultItemExtensionData: ConfigurableExtensionDataRef<
 >;
 
 // @alpha (undocumented)
-export type SearchResultItemExtensionOptions = {
+export type SearchResultItemExtensionOptions<
+  TConfig extends {
+    noTrack?: boolean;
+  },
+> = {
   id: string;
   at: string;
-  component: () => Promise<SearchResultItemExtensionComponent>;
+  configSchema?: PortableSchema<TConfig>;
+  component: (options: {
+    config: TConfig;
+  }) => Promise<SearchResultItemExtensionComponent>;
   predicate?: SearchResultItemExtensionPredicate;
 };
 

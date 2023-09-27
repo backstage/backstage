@@ -392,11 +392,6 @@ export const SearchResultList: (
 ) => React_2.JSX.Element;
 
 // @public
-export const SearchResultListItemExtension: (
-  props: SearchResultListItemExtensionProps,
-) => React_2.JSX.Element;
-
-// @public
 export type SearchResultListItemExtensionOptions<
   Component extends (props: any) => JSX.Element | null,
 > = {
