@@ -17844,9 +17844,9 @@ __metadata:
   linkType: hard
 
 "@types/mime-types@npm:^2.1.0":
-  version: 2.1.1
-  resolution: "@types/mime-types@npm:2.1.1"
-  checksum: 106b5d556add46446a579ad25ff15d6b421851790d887edcad558c90c1e64b1defc72bfbaf4b08f208916e21d9cc45cdb951d77be51268b18221544cfe054a3c
+  version: 2.1.2
+  resolution: "@types/mime-types@npm:2.1.2"
+  checksum: 9e3c78f1c63211e0450901212566a046da68d4438a5e543333ec9b0be3259bd5d01532734dc51ead40104889b98d12c7663b65212a318aafad3e34c98204e9e1
   languageName: node
   linkType: hard
 
