@@ -127,6 +127,9 @@ exports.up = async function up(knex) {
   await knex.schema.createTable('relations', table => {
     table.comment('All relations between entities');
     table
+      .increments('id', { primaryKey: true })
+      .comment('Primary key to distinguish unique lines from each other');
+    table
       .string('originating_entity_id')
       .references('entity_id')
       .inTable('refresh_state')

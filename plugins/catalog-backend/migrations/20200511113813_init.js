@@ -104,6 +104,9 @@ exports.up = async function up(knex) {
           'Flattened key-values from the entities, used for quick filtering',
         );
         table
+          .increments('id', { primaryKey: true })
+          .comment('Primary key to distinguish unique lines from each other');
+        table
           .uuid('entity_id')
           .references('id')
           .inTable('entities')

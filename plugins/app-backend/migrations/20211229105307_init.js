@@ -32,6 +32,9 @@ exports.up = async function up(knex) {
         .notNullable()
         .comment('The path of the file');
     } else {
+      table
+        .increments('id', { primaryKey: true })
+        .comment('Primary key to distinguish unique lines from each other');
       table.text('path').notNullable().comment('The path of the file');
     }
     table

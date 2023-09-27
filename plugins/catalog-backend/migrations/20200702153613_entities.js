@@ -105,11 +105,23 @@ exports.up = async function up(knex) {
       'Flattened key-values from the entities, used for quick filtering',
     );
     table
-      .uuid('entity_id')
-      .references('id')
-      .inTable('entities')
-      .onDelete('CASCADE')
-      .comment('The entity that matches this key/value');
+      .increments('id', { primaryKey: true })
+      .comment('Primary key to distinguish unique lines from each other');
+    if (knex.client.config.client.includes('sqlite3')) {
+      table
+        .uuid('entity_id')
+        .references('id')
+        .inTable('entities')
+        .onDelete('CASCADE')
+        .comment('The entity that matches this key/value');
+    } else {
+      table.uuid('entity_id').comment('The entity that matches this key/value');
+      table
+        .foreign('entity_id')
+        .references('id')
+        .inTable('entities')
+        .onDelete('CASCADE');
+    }
     table
       .string('key')
       .notNullable()
