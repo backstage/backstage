@@ -18083,12 +18083,12 @@ __metadata:
   linkType: hard
 
 "@types/passport-strategy@npm:^0.2.35":
-  version: 0.2.35
-  resolution: "@types/passport-strategy@npm:0.2.35"
+  version: 0.2.36
+  resolution: "@types/passport-strategy@npm:0.2.36"
   dependencies:
     "@types/express": "*"
     "@types/passport": "*"
-  checksum: e5949063ad8977ce1f7cf2a5df6bc379c4d43a959c9946bfed6570ef379c6c12d1713212a29b3b5aafc631c5ebe9bfe082116f3e75ca1bf45d79dd889671532d
+  checksum: 7f626eb6a12110c1ce64dd5d5181fc0795e77d60123872e33f6fa1c02a2a19451207eaf03543232241a1d70bfe0318f2ffeef88f6309d7cbaa43d2bf6ec1d1e8
   languageName: node
   linkType: hard
 
