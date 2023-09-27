@@ -18042,13 +18042,13 @@ __metadata:
   linkType: hard
 
 "@types/passport-google-oauth20@npm:^2.0.3":
-  version: 2.0.11
-  resolution: "@types/passport-google-oauth20@npm:2.0.11"
+  version: 2.0.12
+  resolution: "@types/passport-google-oauth20@npm:2.0.12"
   dependencies:
     "@types/express": "*"
     "@types/passport": "*"
     "@types/passport-oauth2": "*"
-  checksum: 5e87a0bf40d77ce863dbcea4ae1cd6bccc663282593c9b6ce83b0e2d5d6c56ed9dc0275a04f5d81832f03b3a477fd47d17fd9b3ee22ceb69ca445ab0b0d326d7
+  checksum: e73fff5b7e3191ab1a3633b05b4463d656ef658fe0612bc33517a1df81c8a1f019c91dcbd244233320f9eb133892b589dcb6a6348082e85e45aa5c6ed034d191
   languageName: node
   linkType: hard
 
