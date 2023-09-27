@@ -18021,12 +18021,12 @@ __metadata:
   linkType: hard
 
 "@types/passport-auth0@npm:^1.0.5":
-  version: 1.0.5
-  resolution: "@types/passport-auth0@npm:1.0.5"
+  version: 1.0.7
+  resolution: "@types/passport-auth0@npm:1.0.7"
   dependencies:
     "@types/express": "*"
     "@types/passport": "*"
-  checksum: b86b69a182864cae6877c0f16a1d62e24a394dc9cde8e7285a29aef89d52fbb555b899e061157bfd52420dcbccd6fd9b189155e5367a22763b0b2813cbb28354
+  checksum: 75b17c3424054a8b0238905088a7c34efab771a0bccc5ce0270d5c6f238ba859fb7354531c0df4f39e7b2c28f10090f9c260ffc42773211fc216a9acbf11170a
   languageName: node
   linkType: hard
 
