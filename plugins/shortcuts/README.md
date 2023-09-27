@@ -93,3 +93,23 @@ const app = createApp({
   },
 });
 ```
+
+## Features
+
+### Adding Shortcut
+
+![Adding shortcut example](./docs/add-shorcuts.png)
+
+![Shortcut added success example](./docs/add-shortcut-success.png)
+
+![Duplicate shortcut error](./docs/duplicate-shortcut-error.png)
+
+### Editing Shortcut
+
+![Editing shortcut example](./docs/edit-shortcut.png)
+
+![Updating shortcut success example](./docs/update-shortcut-example.png)
+
+### Deleting Shortcut
+
+![Deleting shortcut example](./docs/deleting-shortcut.png)
