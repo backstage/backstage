@@ -45,6 +45,7 @@
     "@backstage/plugin-auth-backend-module-google-provider": "workspace:^",
     "@backstage/plugin-auth-backend-module-oauth2-provider": "workspace:^",
     "@backstage/plugin-auth-backend-module-oauth2-proxy-provider": "workspace:^",
+    "@backstage/plugin-auth-backend-module-oidc-provider": "workspace:^",
     "@backstage/plugin-auth-backend-module-okta-provider": "workspace:^",
     "@backstage/plugin-auth-node": "workspace:^",
     "@backstage/plugin-catalog-node": "workspace:^",

@@ -25,8 +25,11 @@ export interface Config {
            * @visibility secret
            */
           clientSecret: string;
-          audience?: string;
+          metadataUrl: string;
           callbackUrl?: string;
+          tokenSignedResponseAlg?: string;
+          scope?: string;
+          prompt?: string;
         };
       };
     };

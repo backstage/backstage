@@ -67,10 +67,10 @@ describe('authModuleOidcProvider', () => {
   };
 
   beforeAll(async () => {
-    const keyPair = await generateKeyPair('ES256');
+    const keyPair = await generateKeyPair('RS256');
     const privateKey = await exportJWK(keyPair.privateKey);
     publicKey = await exportJWK(keyPair.publicKey);
-    publicKey.alg = privateKey.alg = 'ES256';
+    publicKey.alg = privateKey.alg = 'RS256';
 
     idToken = await new SignJWT({
       sub: 'test',
@@ -109,6 +109,36 @@ describe('authModuleOidcProvider', () => {
           ctx.set('Location', callbackUrl.toString()),
         );
       }),
+      rest.get('https://oidc.test/jwks.json', async (_req, res, ctx) =>
+        res(ctx.status(200), ctx.json({ keys: [{ ...publicKey }] })),
+      ),
+      rest.post('https://oidc.test/oauth2/token', async (req, res, ctx) => {
+        return res(
+          req.headers.get('Authorization')
+            ? ctx.json({
+                access_token: 'accessToken',
+                id_token: idToken,
+                refresh_token: 'refreshToken',
+                scope: 'testScope',
+                token_type: '',
+              })
+            : ctx.status(401),
+        );
+      }),
+      rest.get(
+        'https://oidc.test/idp/userinfo.openid',
+        async (_req, res, ctx) =>
+          res(
+            ctx.status(200),
+            ctx.json({
+              sub: 'test',
+              name: 'Alice Adams',
+              given_name: 'Alice',
+              family_name: 'Adams',
+              email: 'alice@test.com',
+            }),
+          ),
+      ),
     );
 
     const secret = 'secret';
@@ -212,5 +242,38 @@ describe('authModuleOidcProvider', () => {
     });
   });
 
-  // TODO: This seems to be the place for integration testing, so far only have test that hit metadata endpoints along with /start but might be missing responses for handler?
+  it('#authenticate exchanges authorization code for a access_token', async () => {
+    const agent = request.agent('');
+
+    // make /start request with audience parameter
+    const startResponse = await agent.get(
+      `${appUrl}/api/auth/oidc/start?env=development`,
+    );
+    // follow redirect to authorization endpoint
+    const authorizationResponse = await agent.get(
+      startResponse.header.location,
+    );
+    // follow redirect to token_endpoint
+    const handlerResponse = await agent.get(
+      authorizationResponse.header.location,
+    );
+
+    expect(handlerResponse.text).toContain(
+      encodeURIComponent(
+        JSON.stringify({
+          type: 'authorization_response',
+          response: {
+            profile: {
+              displayName: 'Alice Adams',
+            },
+            providerInfo: {
+              accessToken: 'accessToken',
+              scope: 'testScope',
+              expiresInSeconds: 3600,
+            },
+          },
+        }),
+      ),
+    );
+  });
 });

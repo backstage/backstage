@@ -14,278 +14,282 @@
  * limitations under the License.
  */
 
-import express from 'express';
-import {
-  Client,
-  ClientAuthMethod,
-  Issuer,
-  Strategy as OidcStrategy,
-  TokenSet,
-  UserinfoResponse,
-} from 'openid-client';
-import {
-  encodeState,
-  OAuthAdapter,
-  OAuthEnvironmentHandler,
-  OAuthHandlers,
-  OAuthProviderOptions,
-  OAuthRefreshRequest,
-  OAuthResponse,
-  OAuthStartRequest,
-} from '../../lib/oauth';
-import {
-  executeFrameHandlerStrategy,
-  executeRedirectStrategy,
-  PassportDoneCallback,
-} from '../../lib/passport';
-import {
-  AuthHandler,
-  AuthResolverContext,
-  OAuthStartResponse,
-  SignInResolver,
-} from '../types';
+import { AuthHandler, SignInResolver } from '../types';
+import { OAuthResult } from '../../lib/oauth';
 import { createAuthProviderIntegration } from '../createAuthProviderIntegration';
+import { createOAuthProviderFactory } from '@backstage/plugin-auth-node';
 import {
-  commonByEmailLocalPartResolver,
-  commonByEmailResolver,
-} from '../resolvers';
-import { BACKSTAGE_SESSION_EXPIRATION } from '../../lib/session';
+  adaptLegacyOAuthHandler,
+  adaptLegacyOAuthSignInResolver,
+} from '../../lib/legacy';
 
-type PrivateInfo = {
-  refreshToken?: string;
-};
+import { oidcAuthenticator } from '@backstage/plugin-auth-backend-module-oidc-provider';
 
-type OidcImpl = {
-  strategy: OidcStrategy<UserinfoResponse, Client>;
-  client: Client;
-};
+// type PrivateInfo = {
+//   refreshToken?: string;
+// };
 
-/**
- * authentication result for the OIDC which includes the token set and user information (a profile response sent by OIDC server)
- * @public
- */
-export type OidcAuthResult = {
-  tokenset: TokenSet;
-  userinfo: UserinfoResponse;
-};
+// type OidcImpl = {
+//   strategy: OidcStrategy<UserinfoResponse, Client>;
+//   client: Client;
+// };
 
-export type Options = OAuthProviderOptions & {
-  metadataUrl: string;
-  scope?: string;
-  prompt?: string;
-  tokenEndpointAuthMethod?: ClientAuthMethod;
-  tokenSignedResponseAlg?: string;
-  signInResolver?: SignInResolver<OidcAuthResult>;
-  authHandler: AuthHandler<OidcAuthResult>;
-  resolverContext: AuthResolverContext;
-};
+// /**
+//  * authentication result for the OIDC which includes the token set and user information (a profile response sent by OIDC server)
+//  * @public
+//  */
+// export type OidcAuthResult = {
+//   tokenset: TokenSet;
+//   userinfo: UserinfoResponse;
+// };
 
-export class OidcAuthProvider implements OAuthHandlers {
-  private readonly implementation: Promise<OidcImpl>;
-  private readonly scope?: string;
-  private readonly prompt?: string;
+// export type Options = OAuthProviderOptions & {
+//   metadataUrl: string;
+//   scope?: string;
+//   prompt?: string;
+//   tokenEndpointAuthMethod?: ClientAuthMethod;
+//   tokenSignedResponseAlg?: string;
+//   signInResolver?: SignInResolver<OidcAuthResult>;
+//   authHandler: AuthHandler<OidcAuthResult>;
+//   resolverContext: AuthResolverContext;
+// };
 
-  private readonly signInResolver?: SignInResolver<OidcAuthResult>;
-  private readonly authHandler: AuthHandler<OidcAuthResult>;
-  private readonly resolverContext: AuthResolverContext;
+// export class OidcAuthProvider implements OAuthHandlers {
+//   private readonly implementation: Promise<OidcImpl>;
+//   private readonly scope?: string;
+//   private readonly prompt?: string;
 
-  constructor(options: Options) {
-    this.implementation = this.setupStrategy(options);
-    this.scope = options.scope;
-    this.prompt = options.prompt;
-    this.signInResolver = options.signInResolver;
-    this.authHandler = options.authHandler;
-    this.resolverContext = options.resolverContext;
-  }
+//   private readonly signInResolver?: SignInResolver<OidcAuthResult>;
+//   private readonly authHandler: AuthHandler<OidcAuthResult>;
+//   private readonly resolverContext: AuthResolverContext;
 
-  async start(req: OAuthStartRequest): Promise<OAuthStartResponse> {
-    const { strategy } = await this.implementation;
-    const options: Record<string, string> = {
-      scope: req.scope || this.scope || 'openid profile email',
-      state: encodeState(req.state),
-    };
-    const prompt = this.prompt || 'none';
-    if (prompt !== 'auto') {
-      options.prompt = prompt;
-    }
-    return await executeRedirectStrategy(req, strategy, options);
-  }
+//   constructor(options: Options) {
+//     this.implementation = this.setupStrategy(options);
+//     this.scope = options.scope;
+//     this.prompt = options.prompt;
+//     this.signInResolver = options.signInResolver;
+//     this.authHandler = options.authHandler;
+//     this.resolverContext = options.resolverContext;
+//   }
 
-  async handler(req: express.Request) {
-    const { strategy } = await this.implementation;
-    const { result, privateInfo } = await executeFrameHandlerStrategy<
-      OidcAuthResult,
-      PrivateInfo
-    >(req, strategy);
+//   async start(req: OAuthStartRequest): Promise<OAuthStartResponse> {
+//     const { strategy } = await this.implementation;
+//     const options: Record<string, string> = {
+//       scope: req.scope || this.scope || 'openid profile email',
+//       state: encodeState(req.state),
+//     };
+//     const prompt = this.prompt || 'none';
+//     if (prompt !== 'auto') {
+//       options.prompt = prompt;
+//     }
+//     return await executeRedirectStrategy(req, strategy, options);
+//   }
 
-    return {
-      response: await this.handleResult(result),
-      refreshToken: privateInfo.refreshToken,
-    };
-  }
+//   async handler(req: express.Request) {
+//     const { strategy } = await this.implementation;
+//     const { result, privateInfo } = await executeFrameHandlerStrategy<
+//       OidcAuthResult,
+//       PrivateInfo
+//     >(req, strategy);
 
-  async refresh(req: OAuthRefreshRequest) {
-    const { client } = await this.implementation;
-    const tokenset = await client.refresh(req.refreshToken);
-    if (!tokenset.access_token) {
-      throw new Error('Refresh failed');
-    }
-    if (!tokenset.scope) {
-      tokenset.scope = req.scope;
-    }
-    const userinfo = await client.userinfo(tokenset.access_token);
+  // async refresh(req: OAuthRefreshRequest) {
+  //   const { client } = await this.implementation;
+  //   const tokenset = await client.refresh(req.refreshToken);
+  //   if (!tokenset.access_token) {
+  //     throw new Error('Refresh failed');
+  //   }
+  //   if (!tokenset.scope) {
+  //     tokenset.scope = req.scope;
+  //   }
+  //   const userinfo = await client.userinfo(tokenset.access_token);
+//     return {
+//       response: await this.handleResult(result),
+//       refreshToken: privateInfo.refreshToken,
+//     };
+//   }
 
-    return {
-      response: await this.handleResult({ tokenset, userinfo }),
-      refreshToken: tokenset.refresh_token,
-    };
-  }
+//   async refresh(req: OAuthRefreshRequest) {
+//     const { client } = await this.implementation;
+//     const tokenset = await client.refresh(req.refreshToken);
+//     if (!tokenset.access_token) {
+//       throw new Error('Refresh failed');
+//     }
+//     const userinfo = await client.userinfo(tokenset.access_token);
 
-  private async setupStrategy(options: Options): Promise<OidcImpl> {
-    const issuer = await Issuer.discover(options.metadataUrl);
-    const client = new issuer.Client({
-      access_type: 'offline', // this option must be passed to provider to receive a refresh token
-      client_id: options.clientId,
-      client_secret: options.clientSecret,
-      redirect_uris: [options.callbackUrl],
-      response_types: ['code'],
-      token_endpoint_auth_method:
-        options.tokenEndpointAuthMethod || 'client_secret_basic',
-      id_token_signed_response_alg: options.tokenSignedResponseAlg || 'RS256',
-      scope: options.scope || '',
-    });
+//     return {
+//       response: await this.handleResult({ tokenset, userinfo }),
+//       refreshToken: tokenset.refresh_token,
+//     };
+//   }
 
-    const strategy = new OidcStrategy(
-      {
-        client,
-        passReqToCallback: false,
-      },
-      (
-        tokenset: TokenSet,
-        userinfo: UserinfoResponse,
-        done: PassportDoneCallback<OidcAuthResult, PrivateInfo>,
-      ) => {
-        if (typeof done !== 'function') {
-          throw new Error(
-            'OIDC IdP must provide a userinfo_endpoint in the metadata response',
-          );
-        }
-        done(
-          undefined,
-          { tokenset, userinfo },
-          {
-            refreshToken: tokenset.refresh_token,
-          },
-        );
-      },
-    );
-    strategy.error = console.error;
-    return { strategy, client };
-  }
+//   private async setupStrategy(options: Options): Promise<OidcImpl> {
+//     const issuer = await Issuer.discover(options.metadataUrl);
+//     const client = new issuer.Client({
+//       access_type: 'offline', // this option must be passed to provider to receive a refresh token
+//       client_id: options.clientId,
+//       client_secret: options.clientSecret,
+//       redirect_uris: [options.callbackUrl],
+//       response_types: ['code'],
+//       token_endpoint_auth_method:
+//         options.tokenEndpointAuthMethod || 'client_secret_basic',
+//       id_token_signed_response_alg: options.tokenSignedResponseAlg || 'RS256',
+//       scope: options.scope || '',
+//     });
 
-  // Use this function to grab the user profile info from the token
-  // Then populate the profile with it
-  private async handleResult(result: OidcAuthResult): Promise<OAuthResponse> {
-    const { profile } = await this.authHandler(result, this.resolverContext);
+//     const strategy = new OidcStrategy(
+//       {
+//         client,
+//         passReqToCallback: false,
+//       },
+//       (
+//         tokenset: TokenSet,
+//         userinfo: UserinfoResponse,
+//         done: PassportDoneCallback<OidcAuthResult, PrivateInfo>,
+//       ) => {
+//         if (typeof done !== 'function') {
+//           throw new Error(
+//             'OIDC IdP must provide a userinfo_endpoint in the metadata response',
+//           );
+//         }
+//         done(
+//           undefined,
+//           { tokenset, userinfo },
+//           {
+//             refreshToken: tokenset.refresh_token,
+//           },
+//         );
+//       },
+//     );
+//     strategy.error = console.error;
+//     return { strategy, client };
+//   }
 
-    const expiresInSeconds =
-      result.tokenset.expires_in === undefined
-        ? BACKSTAGE_SESSION_EXPIRATION
-        : Math.min(result.tokenset.expires_in, BACKSTAGE_SESSION_EXPIRATION);
+// Use this function to grab the user profile info from the token
+// Then populate the profile with it
+//   private async handleResult(result: OidcAuthResult): Promise<OAuthResponse> {
+//     const { profile } = await this.authHandler(result, this.resolverContext);
 
-    let backstageIdentity = undefined;
-    if (this.signInResolver) {
-      backstageIdentity = await this.signInResolver(
-        {
-          result,
-          profile,
-        },
-        this.resolverContext,
-      );
-    }
+//     const expiresInSeconds =
+//       result.tokenset.expires_in === undefined
+//         ? BACKSTAGE_SESSION_EXPIRATION
+//         : Math.min(result.tokenset.expires_in, BACKSTAGE_SESSION_EXPIRATION);
 
-    return {
-      backstageIdentity,
-      providerInfo: {
-        idToken: result.tokenset.id_token,
-        accessToken: result.tokenset.access_token!,
-        scope: result.tokenset.scope!,
-        expiresInSeconds,
-      },
-      profile,
-    };
-  }
-}
+//     let backstageIdentity = undefined;
+//     if (this.signInResolver) {
+//       backstageIdentity = await this.signInResolver(
+//         {
+//           result,
+//           profile,
+//         },
+//         this.resolverContext,
+//       );
+//     }
+
+//     return {
+//       backstageIdentity,
+//       providerInfo: {
+//         idToken: result.tokenset.id_token,
+//         accessToken: result.tokenset.access_token!,
+//         scope: result.tokenset.scope!,
+//         expiresInSeconds,
+//       },
+//       profile,
+//     };
+//   }
+// }
 
 /**
  * Auth provider integration for generic OpenID Connect auth
  *
  * @public
  */
+// export const oidc = createAuthProviderIntegration({
+//   create(options?: {
+//     authHandler?: AuthHandler<OidcAuthResult>;
+
+//     signIn?: {
+//       resolver: SignInResolver<OidcAuthResult>;
+//     };
+//   }) {
+//     return ({ providerId, globalConfig, config, resolverContext }) =>
+//       OAuthEnvironmentHandler.mapConfig(config, envConfig => {
+//         const clientId = envConfig.getString('clientId');
+//         const clientSecret = envConfig.getString('clientSecret');
+//         const customCallbackUrl = envConfig.getOptionalString('callbackUrl');
+//         const callbackUrl =
+//           customCallbackUrl ||
+//           `${globalConfig.baseUrl}/${providerId}/handler/frame`;
+//         const metadataUrl = envConfig.getString('metadataUrl');
+//         const tokenEndpointAuthMethod = envConfig.getOptionalString(
+//           'tokenEndpointAuthMethod',
+//         ) as ClientAuthMethod;
+//         const tokenSignedResponseAlg = envConfig.getOptionalString(
+//           'tokenSignedResponseAlg',
+//         );
+//         const scope = envConfig.getOptionalString('scope');
+//         const prompt = envConfig.getOptionalString('prompt');
+
+//         const authHandler: AuthHandler<OidcAuthResult> = options?.authHandler
+//           ? options.authHandler
+//           : async ({ userinfo }) => ({
+//               profile: {
+//                 displayName: userinfo.name,
+//                 email: userinfo.email,
+//                 picture: userinfo.picture,
+//               },
+//             });
+
+//         const provider = new OidcAuthProvider({
+//           clientId,
+//           clientSecret,
+//           callbackUrl,
+//           tokenEndpointAuthMethod,
+//           tokenSignedResponseAlg,
+//           metadataUrl,
+//           scope,
+//           prompt,
+//           signInResolver: options?.signIn?.resolver,
+//           authHandler,
+//           resolverContext,
+//         });
+
+//         return OAuthAdapter.fromConfig(globalConfig, provider, {
+//           providerId,
+//           callbackUrl,
+//         });
+//       });
+//   },
+//   resolvers: {
+//     /**
+//      * Looks up the user by matching their email local part to the entity name.
+//      */
+//     emailLocalPartMatchingUserEntityName: () => commonByEmailLocalPartResolver,
+//     /**
+//      * Looks up the user by matching their email to the entity email.
+//      */
+//     emailMatchingUserEntityProfileEmail: () => commonByEmailResolver,
+//   },
+// });
+
 export const oidc = createAuthProviderIntegration({
   create(options?: {
-    authHandler?: AuthHandler<OidcAuthResult>;
+    /**
+     * The profile transformation function used to verify and convert the auth response
+     * into the profile that will be presented to the user.
+     */
+    authHandler?: AuthHandler<OAuthResult>;
 
+    /**
+     * Configure sign-in for this provider, without it the provider can not be used to sign users in.
+     */
     signIn?: {
-      resolver: SignInResolver<OidcAuthResult>;
+      resolver: SignInResolver<OAuthResult>;
     };
   }) {
-    return ({ providerId, globalConfig, config, resolverContext }) =>
-      OAuthEnvironmentHandler.mapConfig(config, envConfig => {
-        const clientId = envConfig.getString('clientId');
-        const clientSecret = envConfig.getString('clientSecret');
-        const customCallbackUrl = envConfig.getOptionalString('callbackUrl');
-        const callbackUrl =
-          customCallbackUrl ||
-          `${globalConfig.baseUrl}/${providerId}/handler/frame`;
-        const metadataUrl = envConfig.getString('metadataUrl');
-        const tokenEndpointAuthMethod = envConfig.getOptionalString(
-          'tokenEndpointAuthMethod',
-        ) as ClientAuthMethod;
-        const tokenSignedResponseAlg = envConfig.getOptionalString(
-          'tokenSignedResponseAlg',
-        );
-        const scope = envConfig.getOptionalString('scope');
-        const prompt = envConfig.getOptionalString('prompt');
-
-        const authHandler: AuthHandler<OidcAuthResult> = options?.authHandler
-          ? options.authHandler
-          : async ({ userinfo }) => ({
-              profile: {
-                displayName: userinfo.name,
-                email: userinfo.email,
-                picture: userinfo.picture,
-              },
-            });
-
-        const provider = new OidcAuthProvider({
-          clientId,
-          clientSecret,
-          callbackUrl,
-          tokenEndpointAuthMethod,
-          tokenSignedResponseAlg,
-          metadataUrl,
-          scope,
-          prompt,
-          signInResolver: options?.signIn?.resolver,
-          authHandler,
-          resolverContext,
-        });
-
-        return OAuthAdapter.fromConfig(globalConfig, provider, {
-          providerId,
-          callbackUrl,
-        });
-      });
-  },
-  resolvers: {
-    /**
-     * Looks up the user by matching their email local part to the entity name.
-     */
-    emailLocalPartMatchingUserEntityName: () => commonByEmailLocalPartResolver,
-    /**
-     * Looks up the user by matching their email to the entity email.
-     */
-    emailMatchingUserEntityProfileEmail: () => commonByEmailResolver,
+    return createOAuthProviderFactory({
+      authenticator: oidcAuthenticator,
+      profileTransform: adaptLegacyOAuthHandler(options?.authHandler),
+      signInResolver: adaptLegacyOAuthSignInResolver(options?.signIn?.resolver),
+    });
   },
 });

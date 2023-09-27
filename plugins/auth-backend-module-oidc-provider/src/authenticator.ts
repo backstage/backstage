@@ -23,15 +23,10 @@ import {
 } from 'openid-client';
 import {
   createOAuthAuthenticator,
-  decodeOAuthState,
-  encodeOAuthState,
-  PassportDoneCallback,
   PassportOAuthAuthenticatorHelper,
   PassportOAuthDoneCallback,
-  PassportOAuthPrivateInfo,
-  PassportProfile,
 } from '@backstage/plugin-auth-node';
-import { OidcAuthResult } from '@backstage/plugin-auth-backend';
+// import { BACKSTAGE_SESSION_EXPIRATION } from '@backstage/plugin-auth-backend/src/lib/session';
 
 /** @public */
 export const oidcAuthenticator = createOAuthAuthenticator({
@@ -40,9 +35,9 @@ export const oidcAuthenticator = createOAuthAuthenticator({
   async initialize({ callbackUrl, config }) {
     const clientId = config.getString('clientId');
     const clientSecret = config.getString('clientSecret');
+    const metadataUrl = config.getString('metadataUrl');
     const customCallbackUrl = config.getOptionalString('callbackUrl');
     const callbackUrl2 = customCallbackUrl || callbackUrl;
-    const metadataUrl = config.getString('metadataUrl');
     const tokenEndpointAuthMethod = config.getOptionalString(
       'tokenEndpointAuthMethod',
     ) as ClientAuthMethod;
@@ -66,39 +61,54 @@ export const oidcAuthenticator = createOAuthAuthenticator({
       scope: initializedScope || '',
     });
 
-    const helper = PassportOAuthAuthenticatorHelper.from(
-      new OidcStrategy(
-        {
-          client,
-          passReqToCallback: false,
-        },
-        (
-          tokenset: TokenSet,
-          userinfo: UserinfoResponse,
-          done: PassportDoneCallback<OidcAuthResult, PassportOAuthPrivateInfo>,
-        ) => {
-          if (typeof done !== 'function') {
-            throw new Error(
-              'OIDC IdP must provide a userinfo_endpoint in the metadata response',
-            );
-          }
-          done(
-            undefined,
-            { tokenset, userinfo },
-            {
-              refreshToken: tokenset.refresh_token,
-            },
+    const strategy = new OidcStrategy(
+      {
+        client,
+        passReqToCallback: false,
+      },
+      (
+        tokenset: TokenSet,
+        userinfo: UserinfoResponse,
+        done: PassportOAuthDoneCallback,
+      ) => {
+        if (typeof done !== 'function') {
+          throw new Error(
+            'OIDC IdP must provide a userinfo_endpoint in the metadata response',
           );
-        },
-      ),
+        }
+
+        const expiresInSeconds = !tokenset.expires_in
+          ? 3600
+          : Math.min(tokenset.expires_in!, 3600);
+
+        done(
+          undefined,
+          {
+            fullProfile: {
+              provider: 'oidc',
+              id: userinfo.sub,
+              displayName: userinfo.name!,
+            },
+            accessToken: tokenset.access_token!,
+            params: {
+              scope: tokenset.scope!,
+              expires_in: expiresInSeconds,
+            },
+          },
+          {
+            refreshToken: tokenset.refresh_token,
+          },
+        );
+      },
     );
 
-    return { helper, client, initializedScope, initializedPrompt };
+    const helper = PassportOAuthAuthenticatorHelper.from(strategy);
+
+    return { helper, client, initializedScope, initializedPrompt, strategy };
   },
 
-  async start(input, implementation) {
-    const { initializedScope, initializedPrompt, helper } =
-      await implementation;
+  async start(input, ctx) {
+    const { initializedScope, initializedPrompt, helper, strategy } = await ctx;
     const options: Record<string, string> = {
       scope: input.scope || initializedScope || 'openid profile email',
       state: input.state,
@@ -108,16 +118,48 @@ export const oidcAuthenticator = createOAuthAuthenticator({
       options.prompt = prompt;
     }
 
-    return helper.start(input, {
-      ...options,
+    return new Promise((resolve, reject) => {
+      strategy.error = reject;
+
+      return helper
+        .start(input, {
+          ...options,
+        })
+        .then(resolve);
     });
   },
 
-  async authenticate(input, implementation) {
-    return (await implementation).helper.authenticate(input);
+  async authenticate(input, ctx) {
+    return (await ctx).helper.authenticate(input);
   },
 
-  async refresh(input, implementation) {
-    return (await implementation).helper.refresh(input);
+  async refresh(input, ctx) {
+    const { client } = await ctx;
+    const tokenset = await client.refresh(input.refreshToken);
+    if (!tokenset.access_token) {
+      throw new Error('Refresh failed');
+    }
+    const userinfo = await client.userinfo(tokenset.access_token);
+
+    return new Promise((resolve, reject) => {
+      if (!tokenset.access_token) {
+        reject(new Error('Refresh Failed'));
+      }
+      resolve({
+        fullProfile: {
+          provider: 'oidc',
+          id: userinfo.sub,
+          displayName: userinfo.name!,
+        },
+        session: {
+          accessToken: tokenset.access_token!,
+          tokenType: tokenset.token_type ?? 'bearer',
+          scope: tokenset.scope!,
+          expiresInSeconds: tokenset.expires_in,
+          idToken: tokenset.id_token,
+          refreshToken: tokenset.refresh_token,
+        },
+      });
+    });
   },
 });
