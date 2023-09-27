@@ -118,7 +118,7 @@ export async function createRouter(
     let filters: Filter[] = [];
 
     const customFilterAnnotations =
-      entity.metadata.annotations?.[FILTER_ANNOTATION]?.split(':')!;
+      entity.metadata.annotations?.[FILTER_ANNOTATION]?.split(',')!;
 
     filters = getDefaultFilters(config, userIdentity?.identity?.userEntityRef);
 
@@ -131,7 +131,7 @@ export async function createRouter(
     let issues = await getIssuesFromFilters(projectKey, filters, config);
 
     const componentAnnotations =
-      entity.metadata.annotations?.[COMPONENT_ANNOTATION]?.split(':')!;
+      entity.metadata.annotations?.[COMPONENT_ANNOTATION]?.split(',')!;
 
     if (componentAnnotations) {
       const componentIssues = await getIssuesFromComponents(
