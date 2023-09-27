@@ -18266,11 +18266,11 @@ __metadata:
   linkType: hard
 
 "@types/react-window@npm:^1.8.5":
-  version: 1.8.5
-  resolution: "@types/react-window@npm:1.8.5"
+  version: 1.8.6
+  resolution: "@types/react-window@npm:1.8.6"
   dependencies:
     "@types/react": "*"
-  checksum: 5f519e1402300d11b6e6595223feb6499f3227e38da166cbc565773cd7f71862abcf855b7835d391b5119fcfacdfba79d73a965b45f60a293fc1ff25986319ed
+  checksum: 3084190ab50a84d8499a6df574ad67474566cd7aeeb8fc6ce82a7a13421fd39e21a059c51f9d12f38e5ac52eb9d65f6184e3fb6cb62841e93b197b7401b36e35
   languageName: node
   linkType: hard
 
