@@ -25,7 +25,7 @@ export const PROJECT_KEY_ANNOTATION = 'jira-dashboard/project-key';
  * Jira components to track for this entity
  *  @public
  */
-export const COMPONENT_ANNOTATION = 'jira-dashboard/component';
+export const COMPONENT_ANNOTATION = 'jira-dashboard/components';
 
 /**
  * Jira filter ids to track for this entity

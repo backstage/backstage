@@ -61,7 +61,7 @@ metadata:
 
 ### Optional annotations
 
-If you want to track specific components or filters for your entity, you can add the optional annotations `component` and `filters-ids`. You can specify an endless number of Jira components or filters.
+If you want to track specific components or filters for your entity, you can add the optional annotations `components` and `filters-ids`. You can specify an endless number of Jira components or filters.
 
 ```yaml
 apiVersion: backstage.io/v1alpha1
@@ -70,7 +70,7 @@ metadata:
   # ...
   annotations:
     jira-dashboard/project-key: value # The key of the Jira project to track for this entity
-    jira-dashboard/component: component,component,component # Jira component name separated with a comma
+    jira-dashboard/components: component,component,component # Jira component name separated with a comma
     jira-dashboard/filter-ids: 12345,67890 # Jira filter id separated with a comma
 ```
 

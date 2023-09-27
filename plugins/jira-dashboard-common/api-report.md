@@ -4,7 +4,7 @@
 
 ```ts
 // @public
-export const COMPONENT_ANNOTATION = 'jira-dashboard/component';
+export const COMPONENT_ANNOTATION = 'jira-dashboard/components';
 
 // @public
 export type Filter = {
