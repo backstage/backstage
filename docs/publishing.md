@@ -15,7 +15,7 @@ PR is merged. This is typically done every Tuesday around noon CET.
 
 ## Next Line Release Process
 
-- PR Checks: Notify the teams & ensure there are no outstanding PRs pending to be merged for this version. This should be done in time to ensure a smoothe release day. If there are any, reach out to maintainers and relevant owners of the affected code reminding them of the deadline for the release.
+- PR Checks: Notify the teams & ensure there are no outstanding PRs pending to be merged for this version. This should be done in time to ensure a smooth release day. If there are any, reach out to maintainers and relevant owners of the affected code reminding them of the deadline for the release.
 - [optional] Lock main branch 
   - Lock the main branch to prevent any new merges.
   - Note: Admin rights are required to lock the branch. If you lack the necessary permissions, contact a core maintainer to perform this action on your behalf.
