@@ -77,79 +77,87 @@ export async function createRouter(
     response.json({ status: 'ok' });
   });
 
-  router.get('/:entityRef', async (request, response) => {
-    const entityRef = request.params.entityRef;
-    const { token } = await tokenManager.getToken();
-    const entity = await catalogClient.getEntityByRef(entityRef, { token });
+  router.get(
+    '/dashboards/by-entity-ref/:entityRef',
+    async (request, response) => {
+      const entityRef = request.params.entityRef;
+      const { token } = await tokenManager.getToken();
+      const entity = await catalogClient.getEntityByRef(entityRef, { token });
 
-    if (!entity) {
-      logger.info(`No entity found for ${entityRef}`);
-      response.status(500).json({ error: `No entity found for ${entityRef}` });
-      return;
-    }
+      if (!entity) {
+        logger.info(`No entity found for ${entityRef}`);
+        response
+          .status(500)
+          .json({ error: `No entity found for ${entityRef}` });
+        return;
+      }
 
-    const projectKey = entity.metadata.annotations?.[PROJECT_KEY_ANNOTATION]!;
+      const projectKey = entity.metadata.annotations?.[PROJECT_KEY_ANNOTATION]!;
 
-    if (!projectKey) {
-      const error = `No jira.com/project-key annotation found for ${entityRef}`;
-      logger.info(error);
-      response.status(404).json(error);
-      return;
-    }
+      if (!projectKey) {
+        const error = `No jira.com/project-key annotation found for ${entityRef}`;
+        logger.info(error);
+        response.status(404).json(error);
+        return;
+      }
 
-    let projectResponse;
+      let projectResponse;
 
-    try {
-      projectResponse = await getProjectResponse(projectKey, config, cache);
-    } catch (err) {
-      logger.error(`Could not find Jira project ${projectKey}`);
-      response.status(404).json({
-        error: `No Jira project found with key ${projectKey}`,
-      });
-      return;
-    }
+      try {
+        projectResponse = await getProjectResponse(projectKey, config, cache);
+      } catch (err) {
+        logger.error(`Could not find Jira project ${projectKey}`);
+        response.status(404).json({
+          error: `No Jira project found with key ${projectKey}`,
+        });
+        return;
+      }
 
-    const userIdentity = await identity.getIdentity({ request: request });
+      const userIdentity = await identity.getIdentity({ request: request });
 
-    if (!userIdentity) {
-      logger.warn(`Could not find user identity`);
-    }
+      if (!userIdentity) {
+        logger.warn(`Could not find user identity`);
+      }
 
-    let filters: Filter[] = [];
+      let filters: Filter[] = [];
 
-    const customFilterAnnotations =
-      entity.metadata.annotations?.[FILTER_ANNOTATION]?.split(',')!;
+      const customFilterAnnotations =
+        entity.metadata.annotations?.[FILTER_ANNOTATION]?.split(',')!;
 
-    filters = getDefaultFilters(config, userIdentity?.identity?.userEntityRef);
-
-    if (customFilterAnnotations) {
-      filters.push(
-        ...(await getFiltersFromAnnotations(customFilterAnnotations, config)),
-      );
-    }
-
-    let issues = await getIssuesFromFilters(projectKey, filters, config);
-
-    const componentAnnotations =
-      entity.metadata.annotations?.[COMPONENT_ANNOTATION]?.split(',')!;
-
-    if (componentAnnotations) {
-      const componentIssues = await getIssuesFromComponents(
-        projectKey,
-        componentAnnotations,
+      filters = getDefaultFilters(
         config,
+        userIdentity?.identity?.userEntityRef,
       );
-      issues = issues.concat(componentIssues);
-    }
 
-    const jiraResponse: JiraResponse = {
-      project: projectResponse as Project,
-      data: issues,
-    };
-    response.json(jiraResponse);
-  });
+      if (customFilterAnnotations) {
+        filters.push(
+          ...(await getFiltersFromAnnotations(customFilterAnnotations, config)),
+        );
+      }
 
-  router.get('/avatar/:entityRef', async (request, response) => {
+      let issues = await getIssuesFromFilters(projectKey, filters, config);
+
+      const componentAnnotations =
+        entity.metadata.annotations?.[COMPONENT_ANNOTATION]?.split(',')!;
+
+      if (componentAnnotations) {
+        const componentIssues = await getIssuesFromComponents(
+          projectKey,
+          componentAnnotations,
+          config,
+        );
+        issues = issues.concat(componentIssues);
+      }
+
+      const jiraResponse: JiraResponse = {
+        project: projectResponse as Project,
+        data: issues,
+      };
+      response.json(jiraResponse);
+    },
+  );
+
+  router.get('/avatar/by-entity-ref/:entityRef', async (request, response) => {
     const { entityRef } = request.params;
     const { token } = await tokenManager.getToken();
     const entity = await catalogClient.getEntityByRef(entityRef, { token });

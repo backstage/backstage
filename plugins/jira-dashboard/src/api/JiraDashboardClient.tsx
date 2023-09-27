@@ -30,7 +30,7 @@ export class JiraDashboardClient implements JiraDashboardApi {
   async getJiraResponseByEntity(entityRef: string): Promise<JiraResponse> {
     const apiUrl = await this.discoveryApi.getBaseUrl('jira-dashboard');
     const resp = await this.fetchApi.fetch(
-      `${apiUrl}/${encodeURIComponent(entityRef)}`,
+      `${apiUrl}/dashboards/by-entity-ref/${encodeURIComponent(entityRef)}`,
       {
         method: 'GET',
         headers: {
@@ -44,6 +44,6 @@ export class JiraDashboardClient implements JiraDashboardApi {
 
   async getProjectAvatar(entityRef: string): Promise<string> {
     const apiUrl = await this.discoveryApi.getBaseUrl('jira-dashboard');
-    return `${apiUrl}/avatar/${encodeURIComponent(entityRef)}`;
+    return `${apiUrl}/avatar/by-entity-ref/${encodeURIComponent(entityRef)}`;
   }
 }
