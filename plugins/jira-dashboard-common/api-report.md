@@ -4,7 +4,7 @@
 
 ```ts
 // @public
-export const COMPONENT_ANNOTATION = 'jira-dashboard/components';
+export const COMPONENT_ANNOTATION = 'jira.com/components';
 
 // @public
 export type Filter = {
@@ -14,7 +14,7 @@ export type Filter = {
 };
 
 // @public
-export const FILTER_ANNOTATION = 'jira-dashboard/filter-ids';
+export const FILTER_ANNOTATION = 'jira.com/filter-ids';
 
 // @public
 export type Issue = {
@@ -69,5 +69,5 @@ export type Project = {
 };
 
 // @public
-export const PROJECT_KEY_ANNOTATION = 'jira-dashboard/project-key';
+export const PROJECT_KEY_ANNOTATION = 'jira.com/project-key';
 ```

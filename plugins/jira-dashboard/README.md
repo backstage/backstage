@@ -56,7 +56,7 @@ kind: Component
 metadata:
   # ...
   annotations:
-    jira-dashboard/project-key: value # The key of the Jira project to track for this entity
+    jira.com/project-key: value # The key of the Jira project to track for this entity
 ```
 
 ### Optional annotations
@@ -69,9 +69,9 @@ kind: Component
 metadata:
   # ...
   annotations:
-    jira-dashboard/project-key: value # The key of the Jira project to track for this entity
-    jira-dashboard/components: component,component,component # Jira component name separated with a comma
-    jira-dashboard/filter-ids: 12345,67890 # Jira filter id separated with a comma
+    jira.com/project-key: value # The key of the Jira project to track for this entity
+    jira.com/components: component,component,component # Jira component name separated with a comma
+    jira.com/filter-ids: 12345,67890 # Jira filter id separated with a comma
 ```
 
 ## Layout

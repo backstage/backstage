@@ -91,7 +91,7 @@ export async function createRouter(
     const projectKey = entity.metadata.annotations?.[PROJECT_KEY_ANNOTATION]!;
 
     if (!projectKey) {
-      const error = `No jira-dashboard/project-key annotation found for ${entityRef}`;
+      const error = `No jira.com/project-key annotation found for ${entityRef}`;
       logger.info(error);
       response.status(404).json(error);
       return;

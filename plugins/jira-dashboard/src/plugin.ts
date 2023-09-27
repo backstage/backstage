@@ -26,9 +26,9 @@ import { PROJECT_KEY_ANNOTATION } from '@backstage/plugin-jira-dashboard-common'
 import { JiraDashboardClient, jiraDashboardApiRef } from './api';
 
 /**
- * Checks if the entity has a jira dashboard annotation.
+ * Checks if the entity has a jira.com project-key annotation.
  * @public
- * @param entity - The entity to check for the jira dashboard annotation.
+ * @param entity - The entity to check for the jira.com project-key annotation.
  */
 export const isJiraDashboardAvailable = (entity: Entity) =>
   Boolean(entity.metadata.annotations?.[PROJECT_KEY_ANNOTATION]);
