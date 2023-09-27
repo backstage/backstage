@@ -27,6 +27,7 @@ export type NavTarget = {
   title: string;
   icon: IconComponent;
   routeRef: RouteRef<{}>;
+  group?: JSX.Element;
 };
 
 /** @public */
