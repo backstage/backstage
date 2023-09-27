@@ -16860,11 +16860,11 @@ __metadata:
   linkType: hard
 
 "@types/archiver@npm:^5.1.0, @types/archiver@npm:^5.3.1":
-  version: 5.3.2
-  resolution: "@types/archiver@npm:5.3.2"
+  version: 5.3.3
+  resolution: "@types/archiver@npm:5.3.3"
   dependencies:
     "@types/readdir-glob": "*"
-  checksum: 9db5b4fdc1740fa07d08340ed827598cc6eda97406ac18a06a158670c7124d4120650a3b9cd660e9e39b42f033cf8f052566da32681e8ad91163473df88a3c4c
+  checksum: e660465ac9a622570ddbad86a306c7234c3272cb28eafe9c3ad7229f06e499dfadae9f0cb0caf41443318eea559b75ef662ea276ae64f19695e72018dae37ee7
   languageName: node
   linkType: hard
 
