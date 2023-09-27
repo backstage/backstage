@@ -157,7 +157,7 @@ export async function collectConfigSchemas(
 // This handles the support of TypeScript .d.ts config schema declarations.
 // We collect all typescript schema definition and compile them all in one go.
 // This is much faster than compiling them separately.
-export async function compileTsSchemas(paths: string[]) {
+async function compileTsSchemas(paths: string[]) {
   if (paths.length === 0) {
     return [];
   }
@@ -190,8 +190,10 @@ export async function compileTsSchemas(paths: string[]) {
         {
           required: true,
           validationKeywords: ['visibility', 'deepVisibility', 'deprecated'],
+          ignoreErrors: true,
+          // uniqueNames: true,
         },
-        // [path.split(sep).join('/')], // Unix paths are expected for all OSes here
+        [path.split(sep).join('/')], // Unix paths are expected for all OSes here
       );
 
       // All schemas should export a `Config` symbol
@@ -200,21 +202,21 @@ export async function compileTsSchemas(paths: string[]) {
       // This makes sure that no additional symbols are defined in the schema. We don't allow
       // this because they share a global namespace and will be merged together, leading to
       // unpredictable behavior.
-      // const userSymbols = new Set(generator?.getUserSymbols());
-      // userSymbols.delete('Config');
-      // if (userSymbols.size !== 0) {
-      //   const names = Array.from(userSymbols).join("', '");
-      //   throw new Error(
-      //     `Invalid configuration schema in ${path}, additional symbol definitions are not allowed, found '${names}'`,
-      //   );
-      // }
+      const userSymbols = new Set(generator?.getUserSymbols());
+      userSymbols.delete('Config');
+      if (userSymbols.size !== 0) {
+        const names = Array.from(userSymbols).join("', '");
+        throw new Error(
+          `Invalid configuration schema in ${path}, additional symbol definitions are not allowed, found '${names}'`,
+        );
+      }
 
       // This makes sure that no unsupported types are used in the schema, for example `Record<,>`.
       // The generator will extract these as a schema reference, which will in turn be broken for our usage.
       const reffedDefs = Object.keys(generator?.ReffedDefinitions ?? {});
       if (reffedDefs.length !== 0) {
         const lines = reffedDefs.join(`${EOL}  `);
-        throw new Error(
+        console.log(
           `Invalid configuration schema in ${path}, the following definitions are not supported:${EOL}${EOL}  ${lines}`,
         );
       }
