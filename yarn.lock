@@ -18372,12 +18372,12 @@ __metadata:
   linkType: hard
 
 "@types/rollup-plugin-peer-deps-external@npm:^2.2.0":
-  version: 2.2.1
-  resolution: "@types/rollup-plugin-peer-deps-external@npm:2.2.1"
+  version: 2.2.2
+  resolution: "@types/rollup-plugin-peer-deps-external@npm:2.2.2"
   dependencies:
     "@types/node": "*"
     rollup: ^0.63.4
-  checksum: d6bf4ca92e8b09ca35c0397b89a8b8368bb3d1448a5b82a39ab18886f4b4a3d73f197ed49470e10350b2b5ddc892d4050c5e01ac6247fc63321a5ac9fc6f7363
+  checksum: a821911276d1882cf30c9650abc3c1cf7b29490ecacfdd537663a4de32b42ff7171bcd69568ce1b256191ad1d2937b1de839d1db85538769787986a5877273e2
   languageName: node
   linkType: hard
 
