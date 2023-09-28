@@ -49,6 +49,6 @@ export const CatalogApi = createApiExtension({
 
 /** @alpha */
 export default createPlugin({
-  id: 'plugin.catalog',
+  id: 'catalog',
   extensions: [CatalogApi],
 });
