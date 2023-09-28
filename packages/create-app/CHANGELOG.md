@@ -12,9 +12,9 @@
 
 - deed089a3d: Bump `cypress` to fix the end-to-end tests
 - de42eebaaf: Bumped dev dependencies `@types/node` and `mock-fs`.
-- 04a3f65e15: Bump Docker base images to `node:18-bullseye-slim` to fix compatibility issues raised during image build.
+- 04a3f65e15: Bump Docker base images to `node:18-bookworm-slim` to fix node compatibility issues raised during image build.
 
-  You can apply these change to your own `Dockerfile` by replacing `node:16-bullseye-slim` with `node:18-bullseye-slim`
+  You can apply these change to your own `Dockerfile` by replacing `node:16-bullseye-slim` with `node:18-bookworm-slim`
 
 - 5eacd5d213: The E2E test setup based on Cypress has been replaced with one based on [Playwright](https://playwright.dev/). Migrating existing apps is not required as this is a standalone setup, only do so if you also want to switch from Cypress to Playwright.
 
