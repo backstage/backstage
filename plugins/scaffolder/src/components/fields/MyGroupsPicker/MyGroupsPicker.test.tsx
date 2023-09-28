@@ -238,7 +238,7 @@ describe('<MyGroupsPicker />', () => {
       onChange,
       schema,
       required,
-    } as unknown as FieldProps<any>;
+    } as unknown as FieldProps<string>;
 
     const { getByRole } = render(
       <TestApiProvider

@@ -73,6 +73,12 @@ export type RouterProps = {
   };
   groups?: TemplateGroupFilter[];
   templateFilter?: (entity: TemplateEntityV1beta3) => boolean;
+  headerOptions?: {
+    pageTitleOverride?: string;
+    title?: string;
+    subtitle?: string;
+  };
+  defaultPreviewTemplate?: string;
   formProps?: FormProps;
   contextMenu?: {
     /** Whether to show a link to the template editor */
