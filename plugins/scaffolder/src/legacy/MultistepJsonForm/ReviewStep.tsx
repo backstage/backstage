@@ -18,7 +18,7 @@ import React from 'react';
 import { Content, StructuredMetadataTable } from '@backstage/core-components';
 import { UiSchema } from '@rjsf/core';
 import { JsonObject } from '@backstage/types';
-import { ReviewStepProps } from '../types';
+import { ReviewStepProps } from '@backstage/plugin-scaffolder-react';
 
 export function getReviewData(
   formData: Record<string, any>,

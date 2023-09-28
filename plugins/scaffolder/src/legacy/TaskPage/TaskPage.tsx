@@ -237,7 +237,7 @@ const hasLinks = ({ links = [] }: ScaffolderTaskOutput): boolean =>
  * TaskPageProps for constructing a TaskPage
  * @param loadingText - Optional loading text shown before a task begins executing.
  *
- * @public
+ * @deprecated - this is a useless type that is no longer used.
  */
 export type TaskPageProps = {
   loadingText?: string;
@@ -246,7 +246,7 @@ export type TaskPageProps = {
 /**
  * TaskPage for showing the status of the taskId provided as a param
  *
- * @public
+ * @alpha
  */
 export const TaskPage = (props: TaskPageProps) => {
   const { loadingText } = props;

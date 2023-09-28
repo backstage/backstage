@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { CustomFieldValidator } from '@backstage/plugin-scaffolder-react';
+import { LegacyCustomFieldValidator } from '@backstage/plugin-scaffolder-react/alpha';
 import { FormValidation } from '@rjsf/core';
 import { JsonObject, JsonValue } from '@backstage/types';
 import { ApiHolder } from '@backstage/core-plugin-api';
@@ -29,7 +29,7 @@ function isArray(obj: unknown): obj is JsonObject {
 
 export const createValidator = (
   rootSchema: JsonObject,
-  validators: Record<string, undefined | CustomFieldValidator<unknown>>,
+  validators: Record<string, undefined | LegacyCustomFieldValidator<unknown>>,
   context: {
     apiHolder: ApiHolder;
   },

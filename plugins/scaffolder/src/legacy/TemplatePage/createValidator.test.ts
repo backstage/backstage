@@ -15,7 +15,7 @@
  */
 
 import { createValidator } from './createValidator';
-import { CustomFieldValidator } from '@backstage/plugin-scaffolder-react';
+import { LegacyCustomFieldValidator } from '@backstage/plugin-scaffolder-react/alpha';
 import { ApiHolder } from '@backstage/core-plugin-api';
 import { FieldValidation, FormValidation } from '@rjsf/core';
 
@@ -26,49 +26,51 @@ type CustomLinkType = {
 };
 
 describe('createValidator', () => {
-  const validators: Record<string, undefined | CustomFieldValidator<unknown>> =
-    {
-      CustomPicker: (
-        value: unknown,
-        fieldValidation: FieldValidation,
-        _context: { apiHolder: ApiHolder },
-      ) => {
-        if (!value || !(value as { value?: unknown }).value) {
-          fieldValidation.addError('Error !');
-        }
-      },
-      CustomLink: (
-        values: unknown,
-        fieldValidation: FieldValidation,
-        _context: { apiHolder: ApiHolder },
-      ) => {
-        const input = values as CustomLinkType[];
-        for (const item of input) {
-          const validGitlabUrlRegex =
-            /gitlab\.(?:stg\.)?spotify\.com\?owner=.*&repo=.*/;
+  const validators: Record<
+    string,
+    undefined | LegacyCustomFieldValidator<unknown>
+  > = {
+    CustomPicker: (
+      value: unknown,
+      fieldValidation: FieldValidation,
+      _context: { apiHolder: ApiHolder },
+    ) => {
+      if (!value || !(value as { value?: unknown }).value) {
+        fieldValidation.addError('Error !');
+      }
+    },
+    CustomLink: (
+      values: unknown,
+      fieldValidation: FieldValidation,
+      _context: { apiHolder: ApiHolder },
+    ) => {
+      const input = values as CustomLinkType[];
+      for (const item of input) {
+        const validGitlabUrlRegex =
+          /gitlab\.(?:stg\.)?spotify\.com\?owner=.*&repo=.*/;
 
-          if (!item || !validGitlabUrlRegex.test(item.url)) {
-            fieldValidation.addError(
-              `Make sure to put in a valid gitlab clone url.`,
-            );
-          }
+        if (!item || !validGitlabUrlRegex.test(item.url)) {
+          fieldValidation.addError(
+            `Make sure to put in a valid gitlab clone url.`,
+          );
         }
-      },
-      TagPicker: (
-        values: unknown,
-        fieldValidation: FieldValidation,
-        _context: { apiHolder: ApiHolder },
-      ) => {
-        const input = values as string[];
-        for (const item of input) {
-          if (!/^[a-z0-9-]+$/.test(item)) {
-            fieldValidation.addError(
-              'A tag name can only contain lowercase letters, numeric characters or dashes',
-            );
-          }
+      }
+    },
+    TagPicker: (
+      values: unknown,
+      fieldValidation: FieldValidation,
+      _context: { apiHolder: ApiHolder },
+    ) => {
+      const input = values as string[];
+      for (const item of input) {
+        if (!/^[a-z0-9-]+$/.test(item)) {
+          fieldValidation.addError(
+            'A tag name can only contain lowercase letters, numeric characters or dashes',
+          );
         }
-      },
-    };
+      }
+    },
+  };
 
   const apiHolderMock: jest.Mocked<ApiHolder> = {
     get: jest.fn().mockImplementation(() => {

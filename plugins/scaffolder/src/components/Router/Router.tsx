@@ -15,16 +15,13 @@
  */
 import React, { PropsWithChildren } from 'react';
 import { Routes, Route, useOutlet } from 'react-router-dom';
-import { TemplateListPage, TemplateListPageProps } from '../TemplateListPage';
+
 import {
-  TemplateWizardPage,
-  TemplateWizardPageProps,
-} from '../TemplateWizardPage';
-import {
-  NextFieldExtensionOptions,
+  FieldExtensionOptions,
   FormProps,
+  ReviewStepProps,
   TemplateGroupFilter,
-} from '@backstage/plugin-scaffolder-react/alpha';
+} from '@backstage/plugin-scaffolder-react';
 import {
   ScaffolderTaskOutput,
   SecretsContextProvider,
@@ -43,32 +40,40 @@ import {
   selectedTemplateRouteRef,
 } from '../../routes';
 import { ErrorPage } from '@backstage/core-components';
-import { OngoingTask } from '../OngoingTask';
+
 import { ActionsPage } from '../../components/ActionsPage';
 import { ListTasksPage } from '../../components/ListTasksPage';
-import { TemplateEditorPage } from '../TemplateEditorPage';
+
+import {
+  TemplateListPage,
+  TemplateListPageProps,
+  TemplateWizardPage,
+  TemplateWizardPageProps,
+} from '../../next';
+import { OngoingTask } from '../OngoingTask';
+import { TemplateEditorPage } from '../../next/TemplateEditorPage';
 
 /**
  * The Props for the Scaffolder Router
  *
- * @alpha
+ * @public
  */
-export type NextRouterProps = {
+export type RouterProps = {
   components?: {
+    ReviewStepComponent?: React.ComponentType<ReviewStepProps>;
     TemplateCardComponent?: React.ComponentType<{
       template: TemplateEntityV1beta3;
     }>;
     TaskPageComponent?: React.ComponentType<PropsWithChildren<{}>>;
-    TemplateOutputsComponent?: React.ComponentType<{
+    EXPERIMENTAL_TemplateOutputsComponent?: React.ComponentType<{
       output?: ScaffolderTaskOutput;
     }>;
-    TemplateListPageComponent?: React.ComponentType<TemplateListPageProps>;
-    TemplateWizardPageComponent?: React.ComponentType<TemplateWizardPageProps>;
+    EXPERIMENTAL_TemplateListPageComponent?: React.ComponentType<TemplateListPageProps>;
+    EXPERIMENTAL_TemplateWizardPageComponent?: React.ComponentType<TemplateWizardPageProps>;
   };
   groups?: TemplateGroupFilter[];
   templateFilter?: (entity: TemplateEntityV1beta3) => boolean;
-  // todo(blam): rename this to formProps
-  FormProps?: FormProps;
+  formProps?: FormProps;
   contextMenu?: {
     /** Whether to show a link to the template editor */
     editor?: boolean;
@@ -82,21 +87,24 @@ export type NextRouterProps = {
 /**
  * The Scaffolder Router
  *
- * @alpha
+ * @public
  */
-export const Router = (props: PropsWithChildren<NextRouterProps>) => {
+export const Router = (props: PropsWithChildren<RouterProps>) => {
   const {
     components: {
       TemplateCardComponent,
-      TemplateOutputsComponent,
       TaskPageComponent = OngoingTask,
-      TemplateListPageComponent = TemplateListPage,
-      TemplateWizardPageComponent = TemplateWizardPage,
+      ReviewStepComponent,
+      EXPERIMENTAL_TemplateOutputsComponent: TemplateOutputsComponent,
+      EXPERIMENTAL_TemplateListPageComponent:
+        TemplateListPageComponent = TemplateListPage,
+      EXPERIMENTAL_TemplateWizardPageComponent:
+        TemplateWizardPageComponent = TemplateWizardPage,
     } = {},
   } = props;
   const outlet = useOutlet() || props.children;
   const customFieldExtensions =
-    useCustomFieldExtensions<NextFieldExtensionOptions>(outlet);
+    useCustomFieldExtensions<FieldExtensionOptions>(outlet);
 
   const fieldExtensions = [
     ...customFieldExtensions,
@@ -106,7 +114,7 @@ export const Router = (props: PropsWithChildren<NextRouterProps>) => {
           customFieldExtension => customFieldExtension.name === name,
         ),
     ),
-  ] as NextFieldExtensionOptions[];
+  ] as FieldExtensionOptions[];
 
   const customLayouts = useCustomLayouts(outlet);
 
@@ -130,7 +138,8 @@ export const Router = (props: PropsWithChildren<NextRouterProps>) => {
             <TemplateWizardPageComponent
               customFieldExtensions={fieldExtensions}
               layouts={customLayouts}
-              FormProps={props.FormProps}
+              components={{ ReviewStepComponent }}
+              formProps={props.formProps}
             />
           </SecretsContextProvider>
         }

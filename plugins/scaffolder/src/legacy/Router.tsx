@@ -21,18 +21,17 @@ import { TemplateEntityV1beta3 } from '@backstage/plugin-scaffolder-common';
 import { ScaffolderPage } from './ScaffolderPage';
 import { TemplatePage } from './TemplatePage';
 import { TaskPage } from './TaskPage';
-import { ActionsPage } from './ActionsPage';
-import { TemplateEditorPage } from './TemplateEditorPage';
+import { ActionsPage } from '../components/ActionsPage';
 import { DEFAULT_SCAFFOLDER_FIELD_EXTENSIONS } from '../extensions/default';
 import { useRouteRef, useRouteRefParams } from '@backstage/core-plugin-api';
+import { LegacyFieldExtensionOptions } from '@backstage/plugin-scaffolder-react/alpha';
 import {
-  FieldExtensionOptions,
+  ReviewStepProps,
   SecretsContextProvider,
   useCustomFieldExtensions,
   useCustomLayouts,
 } from '@backstage/plugin-scaffolder-react';
-import { ListTasksPage } from './ListTasksPage';
-import { ReviewStepProps } from './types';
+import { ListTasksPage } from '../components/ListTasksPage';
 import {
   actionsRouteRef,
   editRouteRef,
@@ -41,12 +40,13 @@ import {
   scaffolderTaskRouteRef,
   selectedTemplateRouteRef,
 } from '../routes';
+import { TemplateEditorPage } from './TemplateEditorPage';
 
 /**
  * The props for the entrypoint `ScaffolderPage` component the plugin.
- * @public
+ * @alpha
  */
-export type RouterProps = {
+export type LegacyRouterProps = {
   components?: {
     ReviewStepComponent?: ComponentType<ReviewStepProps>;
     TemplateCardComponent?:
@@ -77,11 +77,11 @@ export type RouterProps = {
 };
 
 /**
- * The main entrypoint `Router` for the `ScaffolderPlugin`.
+ * The legacy router
  *
- * @public
+ * @alpha
  */
-export const Router = (props: RouterProps) => {
+export const LegacyRouter = (props: LegacyRouterProps) => {
   const {
     groups,
     templateFilter,
@@ -95,7 +95,9 @@ export const Router = (props: RouterProps) => {
   const outlet = useOutlet();
   const TaskPageElement = TaskPageComponent ?? TaskPage;
 
-  const customFieldExtensions = useCustomFieldExtensions(outlet);
+  const customFieldExtensions =
+    useCustomFieldExtensions<LegacyFieldExtensionOptions>(outlet);
+
   const fieldExtensions = [
     ...customFieldExtensions,
     ...DEFAULT_SCAFFOLDER_FIELD_EXTENSIONS.filter(
@@ -104,7 +106,7 @@ export const Router = (props: RouterProps) => {
           customFieldExtension => customFieldExtension.name === name,
         ),
     ),
-  ] as FieldExtensionOptions[];
+  ] as LegacyFieldExtensionOptions[];
 
   const customLayouts = useCustomLayouts(outlet);
 

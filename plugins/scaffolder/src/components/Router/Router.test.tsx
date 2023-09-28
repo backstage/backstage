@@ -14,8 +14,6 @@
  * limitations under the License.
  */
 import React from 'react';
-import { TemplateListPage } from '../TemplateListPage';
-import { TemplateWizardPage } from '../TemplateWizardPage';
 import { Router } from './Router';
 import { renderInTestApp } from '@backstage/test-utils';
 import {
@@ -27,6 +25,7 @@ import {
   createScaffolderLayout,
   ScaffolderLayouts,
 } from '@backstage/plugin-scaffolder-react';
+import { TemplateListPage, TemplateWizardPage } from '../../next';
 
 jest.mock('../TemplateListPage', () => ({
   TemplateListPage: jest.fn(() => null),
@@ -52,7 +51,7 @@ describe('Router', () => {
       const { getByText } = await renderInTestApp(
         <Router
           components={{
-            TemplateListPageComponent: () => <>foobar</>,
+            EXPERIMENTAL_TemplateListPageComponent: () => <>foobar</>,
           }}
         />,
         {
@@ -77,7 +76,7 @@ describe('Router', () => {
       const { getByText } = await renderInTestApp(
         <Router
           components={{
-            TemplateWizardPageComponent: () => <>foobar</>,
+            EXPERIMENTAL_TemplateWizardPageComponent: () => <>foobar</>,
           }}
         />,
         {
@@ -93,7 +92,7 @@ describe('Router', () => {
 
       await renderInTestApp(
         <Router
-          FormProps={{
+          formProps={{
             transformErrors: transformErrorsMock,
             noHtml5Validate: true,
           }}

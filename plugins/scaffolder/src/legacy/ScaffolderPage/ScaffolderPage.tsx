@@ -34,11 +34,11 @@ import {
 } from '@backstage/plugin-catalog-react';
 import React, { ComponentType } from 'react';
 import { TemplateList } from '../TemplateList';
-import { TemplateTypePicker } from '../TemplateTypePicker';
 import { catalogEntityCreatePermission } from '@backstage/plugin-catalog-common/alpha';
 import { usePermission } from '@backstage/plugin-permission-react';
 import { ScaffolderPageContextMenu } from './ScaffolderPageContextMenu';
 import { registerComponentRouteRef } from '../../routes';
+import { TemplateTypePicker } from '../../components';
 
 export type ScaffolderPageProps = {
   TemplateCardComponent?:
