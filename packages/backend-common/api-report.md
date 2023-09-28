@@ -414,13 +414,18 @@ export class Git {
 
 // @public
 export class GiteaUrlReader implements UrlReader {
-  constructor(integration: GiteaIntegration);
+  constructor(
+    integration: GiteaIntegration,
+    deps: {
+      treeResponseFactory: ReadTreeResponseFactory;
+    },
+  );
   // (undocumented)
   static factory: ReaderFactory;
   // (undocumented)
   read(url: string): Promise<Buffer>;
   // (undocumented)
-  readTree(): Promise<ReadTreeResponse>;
+  readTree(url: string, options?: ReadTreeOptions): Promise<ReadTreeResponse>;
   // (undocumented)
   readUrl(url: string, options?: ReadUrlOptions): Promise<ReadUrlResponse>;
   // (undocumented)
