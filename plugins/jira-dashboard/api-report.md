@@ -21,7 +21,6 @@ export const jiraDashboardPlugin: BackstagePlugin<
   {
     root: RouteRef<undefined>;
   },
-  {},
   {}
 >;
 
