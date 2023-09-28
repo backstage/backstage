@@ -21,6 +21,7 @@ yarn.lock                                         @backstage/maintainers @backst
 /plugins/azure-devops                             @backstage/maintainers @backstage/reviewers @awanlin
 /plugins/azure-devops-backend                     @backstage/maintainers @backstage/reviewers @awanlin
 /plugins/azure-devops-common                      @backstage/maintainers @backstage/reviewers @awanlin
+/plugins/analytics-module-newrelic-browser        @backstage/maintainers @backstage/reviewers @jmezach
 /plugins/bitbucket-cloud-common                   @backstage/maintainers @backstage/reviewers @pjungermann
 /plugins/bitrise                                  @backstage/maintainers @backstage/reviewers @backstage/sda-se-reviewers
 /plugins/catalog                                  @backstage/maintainers @backstage/reviewers @backstage/catalog-maintainers
@@ -62,6 +63,7 @@ yarn.lock                                         @backstage/maintainers @backst
 /plugins/linguist                                 @backstage/maintainers @backstage/reviewers @awanlin
 /plugins/linguist-backend                         @backstage/maintainers @backstage/reviewers @awanlin
 /plugins/linguist-common                          @backstage/maintainers @backstage/reviewers @awanlin
+/plugins/octopus-deploy                           @backstage/maintainers @backstage/reviewers @jmezach
 /plugins/permission-*                             @backstage/permission-maintainers
 /plugins/playlist                                 @backstage/maintainers @backstage/reviewers @kuangp
 /plugins/playlist-*                               @backstage/maintainers @backstage/reviewers @kuangp
