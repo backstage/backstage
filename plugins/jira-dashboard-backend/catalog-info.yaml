@@ -7,4 +7,4 @@ metadata:
 spec:
   lifecycle: experimental
   type: backstage-backend-plugin
-  owner: fridajac
+  owner: maintainers
