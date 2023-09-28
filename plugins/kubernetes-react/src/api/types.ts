@@ -45,12 +45,15 @@ export interface KubernetesApi {
       oidcTokenProvider?: string;
     }[]
   >;
-  getCluster(clusterName: string): Promise<{
-    name: string;
-    authProvider: string;
-    oidcTokenProvider?: string;
-    dashboardUrl?: string;
-  }>;
+  getCluster(clusterName: string): Promise<
+    | {
+        name: string;
+        authProvider: string;
+        oidcTokenProvider?: string;
+        dashboardUrl?: string;
+      }
+    | undefined
+  >;
   getWorkloadsByEntity(
     request: WorkloadsByEntityRequest,
   ): Promise<ObjectsByEntityResponse>;

@@ -16,7 +16,7 @@
 import useAsync from 'react-use/lib/useAsync';
 
 import { useApi } from '@backstage/core-plugin-api';
-import { kubernetesApiRef } from '@backstage/plugin-kubernetes-common';
+import { kubernetesApiRef } from '@backstage/plugin-kubernetes-react';
 import { IAPIGroupList } from '@kubernetes-models/apimachinery/apis/meta/v1';
 
 /**
