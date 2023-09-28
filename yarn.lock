@@ -18424,11 +18424,11 @@ __metadata:
   linkType: hard
 
 "@types/serve-handler@npm:^6.1.0":
-  version: 6.1.1
-  resolution: "@types/serve-handler@npm:6.1.1"
+  version: 6.1.2
+  resolution: "@types/serve-handler@npm:6.1.2"
   dependencies:
     "@types/node": "*"
-  checksum: f519f83b18d7dea80f188f387a56dfe30fe944196849c470902fabf9db344c083c470f67e3362ad3f2294512950bc55924282c5c7a911ec8d507c37c6861d8ce
+  checksum: 6b206cba18bf77b938e340e1015c631d92b492918ba78dfdff57590a25da8c4bc63fba90f43d763f854c5aa523b243c283ba84d14cfeb1841795337c8b978bd6
   languageName: node
   linkType: hard
 
