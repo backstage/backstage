@@ -38,7 +38,7 @@ yarn.lock                                         @backstage/maintainers @backst
 /plugins/devtools                                 @backstage/maintainers @backstage/reviewers @awanlin
 /plugins/devtools-backend                         @backstage/maintainers @backstage/reviewers @awanlin
 /plugins/devtools-common                          @backstage/maintainers @backstage/reviewers @awanlin
-/plugins/dynatrace                                @backstage/maintainers @backstage/reviewers @dynatrace
+/plugins/dynatrace                                @backstage/maintainers @backstage/reviewers @Dynatrace
 /plugins/entity-feedback                          @backstage/maintainers @backstage/reviewers @kuangp
 /plugins/entity-feedback-*                        @backstage/maintainers @backstage/reviewers @kuangp
 /plugins/events-backend                           @backstage/maintainers @backstage/reviewers @pjungermann
