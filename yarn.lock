@@ -18756,9 +18756,9 @@ __metadata:
   linkType: hard
 
 "@types/yarnpkg__lockfile@npm:^1.1.4":
-  version: 1.1.6
-  resolution: "@types/yarnpkg__lockfile@npm:1.1.6"
-  checksum: c0983d88c479f7b00a66d927fda9f8972e072745d5d16922cf381807aa6e88553319bb9f2b21b58f9e1ebea1a198a22d4da3111d93c81288589371ebb00d65f5
+  version: 1.1.7
+  resolution: "@types/yarnpkg__lockfile@npm:1.1.7"
+  checksum: f7d898bfa7a75440ecc57a72d5297c9ce1566d10996004a61765bc79fa82f0c6c82df892442343e983602956f04f0943249902b9e4c09af472873382d0029b21
   languageName: node
   linkType: hard
 
