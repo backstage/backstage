@@ -18305,11 +18305,11 @@ __metadata:
   linkType: hard
 
 "@types/recursive-readdir@npm:^2.2.0":
-  version: 2.2.1
-  resolution: "@types/recursive-readdir@npm:2.2.1"
+  version: 2.2.2
+  resolution: "@types/recursive-readdir@npm:2.2.2"
   dependencies:
     "@types/node": "*"
-  checksum: 9e8d5ecb98c009016bf65f1b7cc1f997847dc64634e1c4209fae10718a1fcecd3c3a72c4bae66cbc9973165da5e4e7f5b4cda8793b3a5cefca8c05963f6dbf82
+  checksum: ed7f73d11354c7df7c5296a73500ace0b9874083c9f9cce4c5a294bb6c9b11f92d25c08a23bdc991f0537358d31e2ae3943169d42fe739ff54ecfddf9ff6b420
   languageName: node
   linkType: hard
 
