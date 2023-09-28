@@ -18,9 +18,12 @@ import { setupServer } from 'msw/node';
 import { setupRequestMockHandlers } from '../helpers';
 import { GiteaIntegrationConfig } from './config';
 import {
+  getGiteaArchiveUrl,
   getGiteaEditContentsUrl,
   getGiteaFileContentsUrl,
+  getGiteaLatestCommitUrl,
   getGiteaRequestOptions,
+  parseGiteaUrl,
 } from './core';
 
 describe('gitea core', () => {
@@ -59,6 +62,38 @@ describe('gitea core', () => {
     });
   });
 
+  describe('getGiteaArchiveUrl', () => {
+    it('can create an url from arguments', () => {
+      const config: GiteaIntegrationConfig = {
+        host: 'gitea.example.com',
+      };
+      expect(
+        getGiteaArchiveUrl(
+          config,
+          'https://gitea.example.com/owner/repo/src/branch/branch_name',
+        ),
+      ).toEqual(
+        'https://gitea.example.com/api/v1/repos/owner/repo/archive/branch_name.tar.gz',
+      );
+    });
+  });
+
+  describe('getGiteaLatestCommitUrl', () => {
+    it('can create an url from arguments', () => {
+      const config: GiteaIntegrationConfig = {
+        host: 'gitea.example.com',
+      };
+      expect(
+        getGiteaLatestCommitUrl(
+          config,
+          'https://gitea.example.com/owner/repo/src/branch/branch_name/',
+        ),
+      ).toEqual(
+        'https://gitea.example.com/api/v1/repos/owner/repo/git/commits/branch_name',
+      );
+    });
+  });
+
   describe('getGerritRequestOptions', () => {
     it('adds token header when only a password is specified', () => {
       const authRequest: GiteaIntegrationConfig = {
@@ -88,6 +123,63 @@ describe('gitea core', () => {
       expect(
         (getGiteaRequestOptions(authRequest).headers as any).Authorization,
       ).toEqual(basicAuthentication);
+    });
+  });
+
+  describe('parseGiteaUrl', () => {
+    it('can fetch gitea url', () => {
+      const config: GiteaIntegrationConfig = {
+        host: 'gitea.example.com',
+      };
+      expect(
+        parseGiteaUrl(
+          config,
+          'https://gitea.example.com/owner/repo/src/branch/branch_name/',
+        ),
+      ).toEqual({
+        url: 'https://gitea.example.com',
+        owner: 'owner',
+        name: 'repo',
+        ref: 'branch_name',
+        path: '',
+      });
+    });
+
+    it('provide path without starting slash', () => {
+      const config: GiteaIntegrationConfig = {
+        host: 'gitea.example.com',
+      };
+      expect(
+        parseGiteaUrl(
+          config,
+          'https://gitea.example.com/owner/repo/src/branch/branch_name/simple/path',
+        ),
+      ).toEqual({
+        url: 'https://gitea.example.com',
+        owner: 'owner',
+        name: 'repo',
+        ref: 'branch_name',
+        path: 'simple/path',
+      });
+    });
+
+    it('use base url if provided', () => {
+      const config: GiteaIntegrationConfig = {
+        host: 'gitea.example.com',
+        baseUrl: 'https://base-gitea.example.com',
+      };
+      expect(
+        parseGiteaUrl(
+          config,
+          'https://base-gitea.example.com/owner/repo/src/branch/branch_name/',
+        ),
+      ).toEqual({
+        url: 'https://base-gitea.example.com',
+        owner: 'owner',
+        name: 'repo',
+        ref: 'branch_name',
+        path: '',
+      });
     });
   });
 });

@@ -68,6 +68,7 @@ See [TechDocs Architecture](architecture.md) to get an overview of where the bel
 | Gerrit                       | Yes ✅         |
 | GitLab                       | Yes ✅         |
 | GitLab Enterprise            | Yes ✅         |
+| Gitea                        | Yes ✅         |
 
 ### File storage providers
 

@@ -14,6 +14,13 @@
  * limitations under the License.
  */
 export { GiteaIntegration } from './GiteaIntegration';
-export { getGiteaRequestOptions, getGiteaFileContentsUrl } from './core';
+export {
+  getGiteaEditContentsUrl,
+  getGiteaFileContentsUrl,
+  getGiteaArchiveUrl,
+  getGiteaLatestCommitUrl,
+  getGiteaRequestOptions,
+  parseGiteaUrl,
+} from './core';
 export { readGiteaConfig } from './config';
 export type { GiteaIntegrationConfig } from './config';
