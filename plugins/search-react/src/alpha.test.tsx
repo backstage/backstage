@@ -31,8 +31,8 @@ import { MockConfigApi } from '@backstage/test-utils';
 import {
   BaseSearchResultListItemProps,
   createSearchResultListItemExtension,
-  searchResultItemExtensionData,
-} from './createSearchResultListItemExtension';
+  searchResultItemExtensionData as searchResultListItemExtensionData,
+} from './alpha';
 
 // TODO: Remove this mock when we have a permanent solution for nav items extensions
 // The `GraphiQLIcon` used in "packages/frontend-app-api/src/extensions/CoreNav.tsx" file
@@ -89,7 +89,7 @@ describe('createSearchResultListItemExtension', () => {
       defaultPath: '/',
       inputs: {
         items: createExtensionInput({
-          item: searchResultItemExtensionData,
+          item: searchResultListItemExtensionData,
         }),
       },
       loader: async ({ inputs }) => {

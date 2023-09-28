@@ -28,7 +28,13 @@ import {
 import { Progress } from '@backstage/core-components';
 import { SearchDocument, SearchResult } from '@backstage/plugin-search-common';
 
-import { SearchResultListItemExtension } from '../extensions';
+import { SearchResultListItemExtension } from './extensions';
+
+/** @alpha */
+export type BaseSearchResultListItemProps<T = {}> = T & {
+  rank?: number;
+  result?: SearchDocument;
+} & Omit<ListItemProps, 'button'>;
 
 /** @alpha */
 export type SearchResultItemExtensionComponent = <
@@ -78,12 +84,6 @@ export type SearchResultItemExtensionOptions<
 };
 
 /** @alpha */
-export type BaseSearchResultListItemProps<T = {}> = T & {
-  rank?: number;
-  result?: SearchDocument;
-} & Omit<ListItemProps, 'button'>;
-
-/** @alpha */
 export function createSearchResultListItemExtension<
   TConfig extends { noTrack?: boolean },
 >(options: SearchResultItemExtensionOptions<TConfig>) {
@@ -92,7 +92,7 @@ export function createSearchResultListItemExtension<
       ? options.configSchema
       : (createSchemaFromZod(z =>
           z.object({
-            noTrack: z.boolean().default(true),
+            noTrack: z.boolean().default(false),
           }),
         ) as PortableSchema<TConfig>);
   return createExtension({
