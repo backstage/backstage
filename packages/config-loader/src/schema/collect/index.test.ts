@@ -15,7 +15,7 @@
  */
 
 import mockFs from 'mock-fs';
-import { collectConfigSchemas } from './collect';
+import { collectConfigSchemas } from '../collect';
 import path from 'path';
 
 const mockSchema = {
@@ -29,16 +29,21 @@ const mockSchema = {
 };
 
 // Gotta make sure this is in the compiler cache before we start mocking the filesystem
-require('typescript-json-schema');
+require('ts-json-schema-generator');
 
 // We need to load in actual TS libraries when using mock-fs.
 // This lookup is to allow the `typescript` dependency to exist either
-// at top level or inside node_modules of typescript-json-schema
+// at top level or inside node_modules of ts-json-schema-generator
 const typescriptModuleDir = path.dirname(
   require.resolve('typescript/package.json', {
-    paths: [require.resolve('typescript-json-schema')],
+    paths: [require.resolve('ts-json-schema-generator')],
   }),
 );
+const compilerOptions = {
+  [require.resolve('./compilerOptions.json')]: JSON.stringify(
+    require('./compilerOptions.json'),
+  ),
+};
 
 describe('collectConfigSchemas', () => {
   afterEach(() => {
@@ -179,6 +184,7 @@ describe('collectConfigSchemas', () => {
 
   it('should schema of different types', async () => {
     mockFs({
+      ...compilerOptions,
       node_modules: {
         a: {
           'package.json': JSON.stringify({
@@ -221,6 +227,7 @@ describe('collectConfigSchemas', () => {
         path: path.join('node_modules', 'c', 'schema.d.ts'),
         value: {
           $schema: 'http://json-schema.org/draft-07/schema#',
+          definitions: {},
           type: 'object',
           properties: {
             tsKey: {
@@ -322,6 +329,7 @@ describe('collectConfigSchemas', () => {
 
   it('should reject typescript config declaration without a Config type', async () => {
     mockFs({
+      ...compilerOptions,
       node_modules: {
         a: {
           'package.json': JSON.stringify({

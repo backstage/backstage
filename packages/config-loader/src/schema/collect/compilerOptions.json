@@ -1,0 +1,14 @@
+{
+  "compilerOptions": {
+    "incremental": false,
+    "isolatedModules": true,
+    "lib": ["ES2022"],
+    "noEmit": true,
+    "noResolve": false,
+    "skipLibCheck": true,
+    "skipDefaultLibCheck": true,
+    "strict": true,
+    "typeRoots": [],
+    "types": []
+  }
+}

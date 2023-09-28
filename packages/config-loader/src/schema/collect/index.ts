@@ -13,17 +13,14 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
 import fs from 'fs-extra';
-import { EOL } from 'os';
 import {
   resolve as resolvePath,
   relative as relativePath,
   dirname,
   sep,
 } from 'path';
-import { ConfigSchemaPackageEntry } from './types';
-import { JsonObject } from '@backstage/types';
+import { ConfigSchemaPackageEntry } from '../types';
 import { assertError } from '@backstage/errors';
 
 type Item = {
@@ -164,65 +161,24 @@ async function compileTsSchemas(paths: string[]) {
 
   // Lazy loaded, because this brings up all of TypeScript and we don't
   // want that eagerly loaded in tests
-  const { getProgramFromFiles, buildGenerator } = await import(
-    'typescript-json-schema'
-  );
-
-  const program = getProgramFromFiles(paths, {
-    incremental: false,
-    isolatedModules: true,
-    lib: ['ES2022'], // Skipping most libs speeds processing up a lot, we just need the primitive types anyway
-    noEmit: true,
-    // noResolve: true,
-    skipLibCheck: true, // Skipping lib checks speeds things up
-    skipDefaultLibCheck: true,
-    strict: true,
-    typeRoots: [], // Do not include any additional types
-    types: [],
-  });
+  const { createGenerator } = await import('ts-json-schema-generator');
 
   const tsSchemas = paths.map(path => {
     let value;
     try {
-      const generator = buildGenerator(
-        program,
-        // This enables the use of these tags in TSDoc comments
-        {
-          required: true,
-          validationKeywords: ['visibility', 'deepVisibility', 'deprecated'],
-          ignoreErrors: true,
-          // uniqueNames: true,
-        },
-        [path.split(sep).join('/')], // Unix paths are expected for all OSes here
-      );
-
-      // All schemas should export a `Config` symbol
-      value = generator?.getSchemaForSymbol('Config') as JsonObject | null;
-
-      // This makes sure that no additional symbols are defined in the schema. We don't allow
-      // this because they share a global namespace and will be merged together, leading to
-      // unpredictable behavior.
-      const userSymbols = new Set(generator?.getUserSymbols());
-      userSymbols.delete('Config');
-      if (userSymbols.size !== 0) {
-        const names = Array.from(userSymbols).join("', '");
-        throw new Error(
-          `Invalid configuration schema in ${path}, additional symbol definitions are not allowed, found '${names}'`,
-        );
-      }
-
-      // This makes sure that no unsupported types are used in the schema, for example `Record<,>`.
-      // The generator will extract these as a schema reference, which will in turn be broken for our usage.
-      const reffedDefs = Object.keys(generator?.ReffedDefinitions ?? {});
-      if (reffedDefs.length !== 0) {
-        const lines = reffedDefs.join(`${EOL}  `);
-        console.log(
-          `Invalid configuration schema in ${path}, the following definitions are not supported:${EOL}${EOL}  ${lines}`,
-        );
-      }
+      value = createGenerator({
+        path: path.split(sep).join('/'), // Unix paths are expected for all OSes here
+        tsconfig: resolvePath(__dirname, './compilerOptions.json'),
+        expose: 'none',
+        skipTypeCheck: true,
+        topRef: false,
+        additionalProperties: true,
+        extraTags: ['visibility', 'deepVisibility', 'deprecated'],
+        type: 'Config',
+      }).createSchema('Config');
     } catch (error) {
       assertError(error);
-      if (error.message !== 'type Config not found') {
+      if (error.message !== 'No root type "Config" found') {
         throw error;
       }
     }

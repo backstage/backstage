@@ -231,6 +231,7 @@ export function mergeConfigSchemas(schemas: JSONSchema[]): JSONSchema {
       // rather than subtractive.
       ignoreAdditionalProperties: true,
       resolvers: {
+        $comment: (values: string[]) => values,
         // This ensures that the visibilities across different schemas are sound, and
         // selects the most specific visibility for each path.
         visibility(values: string[], path: string[]) {
