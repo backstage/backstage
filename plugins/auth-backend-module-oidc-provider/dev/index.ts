@@ -15,12 +15,10 @@
  */
 
 import { createBackend } from '@backstage/backend-defaults';
-import { authPlugin } from '@backstage/plugin-auth-backend';
-import { authModuleOidcProvider } from '../src';
 
 const backend = createBackend();
 
-backend.add(authPlugin);
-backend.add(authModuleOidcProvider);
+backend.add(import('@backstage/plugin-auth-backend'));
+backend.add(import('../src'));
 
 backend.start();

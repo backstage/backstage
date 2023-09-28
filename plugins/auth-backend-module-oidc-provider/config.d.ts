@@ -27,6 +27,7 @@ export interface Config {
           clientSecret: string;
           metadataUrl: string;
           callbackUrl?: string;
+          tokenEndpointAuthMethod?: string;
           tokenSignedResponseAlg?: string;
           scope?: string;
           prompt?: string;

@@ -103,7 +103,7 @@ describe('oidcAuthenticator', () => {
                 id_token: idToken,
                 refresh_token: 'refreshToken',
                 scope: 'testScope',
-                token_type: '',
+                expires_in: 3600,
               })
             : ctx.status(401),
         );
@@ -119,6 +119,7 @@ describe('oidcAuthenticator', () => {
               given_name: 'Alice',
               family_name: 'Adams',
               email: 'alice@test.com',
+              picture: 'http://testPictureUrl/photo.jpg',
             }),
           ),
       ),
@@ -127,7 +128,7 @@ describe('oidcAuthenticator', () => {
     implementation = oidcAuthenticator.initialize({
       callbackUrl: 'https://backstage.test/callback',
       config: new ConfigReader({
-        metadataUrl: 'https://oidc.test',
+        metadataUrl: 'https://oidc.test/.well-known/openid-configuration',
         clientId: 'clientId',
         clientSecret: 'clientSecret',
       }),
@@ -219,7 +220,6 @@ describe('oidcAuthenticator', () => {
       expect(fakeSession['oidc:oidc.test'].code_verifier).toBeDefined();
     });
 
-    // without the offline_access scope refresh should not work should we add in the test that is a required scope to test for? curently dont see that by defualt in the provider implementation.
     it('requests default scopes if none are provided in config', async () => {
       const startResponse = await oidcAuthenticator.start(
         startRequest,
@@ -308,6 +308,53 @@ describe('oidcAuthenticator', () => {
       const responseScope = handlerResponse.session.scope;
 
       expect(responseScope).toEqual('testScope');
+    });
+
+    it('returns a default session.tokentype field', async () => {
+      const handlerResponse = await oidcAuthenticator.authenticate(
+        handlerRequest,
+        implementation,
+      );
+      const tokenType = handlerResponse.session.tokenType;
+
+      expect(tokenType).toEqual('bearer');
+    });
+
+    it('returns defined fullProfile with picture and email', async () => {
+      const handlerResponse = await oidcAuthenticator.authenticate(
+        handlerRequest,
+        implementation,
+      );
+      const displayName = handlerResponse.fullProfile.displayName;
+      const email = handlerResponse.fullProfile.emails![0].value;
+      const picture = handlerResponse.fullProfile.photos![0].value;
+
+      expect(displayName).toEqual('Alice Adams');
+      expect(email).toEqual('alice@test.com');
+      expect(picture).toEqual('http://testPictureUrl/photo.jpg');
+    });
+
+    it('returns defined response with an idToken', async () => {
+      const handlerResponse = await oidcAuthenticator.authenticate(
+        handlerRequest,
+        implementation,
+      );
+
+      expect(handlerResponse).toMatchObject({
+        fullProfile: {
+          displayName: 'Alice Adams',
+          id: 'test',
+          provider: 'oidc',
+        },
+        session: {
+          accessToken: 'accessToken',
+          expiresInSeconds: 3600,
+          idToken,
+          refreshToken: 'refreshToken',
+          scope: 'testScope',
+          tokenType: 'bearer',
+        },
+      });
     });
 
     it('fails without authorization code', async () => {

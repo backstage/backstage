@@ -21,5 +21,5 @@
  */
 
 export { oidcAuthenticator } from './authenticator';
-export { authModuleOidcProvider } from './module';
+export { authModuleOidcProvider as default } from './module';
 export { oidcSignInResolvers } from './resolvers';

@@ -17,7 +17,6 @@
 import request from 'supertest';
 import {
   AuthProviderRouteHandlers,
-  AuthResolverContext,
   createOAuthRouteHandlers,
   decodeOAuthState,
 } from '@backstage/plugin-auth-node';
@@ -121,6 +120,7 @@ describe('authModuleOidcProvider', () => {
                 refresh_token: 'refreshToken',
                 scope: 'testScope',
                 token_type: '',
+                expires_in: 3600,
               })
             : ctx.status(401),
         );
@@ -136,6 +136,7 @@ describe('authModuleOidcProvider', () => {
               given_name: 'Alice',
               family_name: 'Adams',
               email: 'alice@test.com',
+              picture: 'http://testPictureUrl/photo.jpg',
             }),
           ),
       ),
@@ -172,7 +173,7 @@ describe('authModuleOidcProvider', () => {
       isOriginAllowed: _ => true,
       providerId: 'oidc',
       config: new ConfigReader({
-        metadataUrl: 'https://oidc.test',
+        metadataUrl: 'https://oidc.test/.well-known/openid-configuration',
         clientId: 'clientId',
         clientSecret: 'clientSecret',
       }),
@@ -264,9 +265,12 @@ describe('authModuleOidcProvider', () => {
           type: 'authorization_response',
           response: {
             profile: {
+              email: 'alice@test.com',
+              picture: 'http://testPictureUrl/photo.jpg',
               displayName: 'Alice Adams',
             },
             providerInfo: {
+              idToken,
               accessToken: 'accessToken',
               scope: 'testScope',
               expiresInSeconds: 3600,

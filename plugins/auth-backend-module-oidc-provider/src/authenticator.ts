@@ -26,7 +26,6 @@ import {
   PassportOAuthAuthenticatorHelper,
   PassportOAuthDoneCallback,
 } from '@backstage/plugin-auth-node';
-// import { BACKSTAGE_SESSION_EXPIRATION } from '@backstage/plugin-auth-backend/src/lib/session';
 
 /** @public */
 export const oidcAuthenticator = createOAuthAuthenticator({
@@ -46,9 +45,8 @@ export const oidcAuthenticator = createOAuthAuthenticator({
     );
     const initializedScope = config.getOptionalString('scope');
     const initializedPrompt = config.getOptionalString('prompt');
-    const issuer = await Issuer.discover(
-      `${metadataUrl}/.well-known/openid-configuration`,
-    );
+
+    const issuer = await Issuer.discover(metadataUrl);
     const client = new issuer.Client({
       access_type: 'offline', // this option must be passed to provider to receive a refresh token
       client_id: clientId,
@@ -77,9 +75,18 @@ export const oidcAuthenticator = createOAuthAuthenticator({
           );
         }
 
-        const expiresInSeconds = !tokenset.expires_in
-          ? 3600
-          : Math.min(tokenset.expires_in!, 3600);
+        const emails = userinfo.email ? [{ value: userinfo.email }] : undefined;
+        const photos = userinfo.picture
+          ? [{ value: userinfo.picture }]
+          : undefined;
+        const name =
+          userinfo.family_name && userinfo.given_name
+            ? {
+                familyName: userinfo.family_name,
+                givenName: userinfo.given_name,
+                middleName: userinfo.middle_name,
+              }
+            : undefined;
 
         done(
           undefined,
@@ -88,11 +95,17 @@ export const oidcAuthenticator = createOAuthAuthenticator({
               provider: 'oidc',
               id: userinfo.sub,
               displayName: userinfo.name!,
+              username: userinfo.preferred_username,
+              name,
+              emails,
+              photos,
             },
             accessToken: tokenset.access_token!,
             params: {
+              id_token: tokenset.id_token,
               scope: tokenset.scope!,
-              expires_in: expiresInSeconds,
+              expires_in: tokenset.expires_in!,
+              token_type: tokenset.token_type,
             },
           },
           {
@@ -138,6 +151,9 @@ export const oidcAuthenticator = createOAuthAuthenticator({
     const tokenset = await client.refresh(input.refreshToken);
     if (!tokenset.access_token) {
       throw new Error('Refresh failed');
+    }
+    if (!tokenset.scope) {
+      tokenset.scope = input.scope;
     }
     const userinfo = await client.userinfo(tokenset.access_token);
 
