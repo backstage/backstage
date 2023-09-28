@@ -4501,6 +4501,7 @@ __metadata:
     "@backstage/core-components": "workspace:^"
     "@backstage/core-plugin-api": "workspace:^"
     "@backstage/dev-utils": "workspace:^"
+    "@backstage/frontend-plugin-api": "workspace:^"
     "@backstage/integration-react": "workspace:^"
     "@backstage/plugin-adr-common": "workspace:^"
     "@backstage/plugin-catalog-react": "workspace:^"
