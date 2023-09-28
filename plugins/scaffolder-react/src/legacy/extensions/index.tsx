@@ -15,9 +15,9 @@
  */
 
 import {
-  CustomFieldValidator,
-  FieldExtensionOptions,
-  FieldExtensionComponentProps,
+  LegacyCustomFieldValidator,
+  LegacyFieldExtensionOptions,
+  LegacyFieldExtensionComponentProps,
 } from './types';
 import { Extension, attachComponentData } from '@backstage/core-plugin-api';
 import { FIELD_EXTENSION_KEY } from '../../extensions/keys';
@@ -32,7 +32,7 @@ export function createLegacyScaffolderFieldExtension<
   TReturnValue = unknown,
   TInputProps = unknown,
 >(
-  options: FieldExtensionOptions<TReturnValue, TInputProps>,
+  options: LegacyFieldExtensionOptions<TReturnValue, TInputProps>,
 ): Extension<FieldExtensionComponent<TReturnValue, TInputProps>> {
   return {
     expose() {
@@ -50,7 +50,7 @@ export function createLegacyScaffolderFieldExtension<
 }
 
 export type {
-  CustomFieldValidator,
-  FieldExtensionOptions,
-  FieldExtensionComponentProps,
+  LegacyCustomFieldValidator,
+  LegacyFieldExtensionOptions,
+  LegacyFieldExtensionComponentProps,
 };

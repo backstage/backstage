@@ -19,6 +19,7 @@ import {
   FieldExtensionOptions,
   FieldExtensionComponentProps,
   FieldExtensionUiSchema,
+  CustomFieldExtensionSchema,
 } from './types';
 import { Extension, attachComponentData } from '@backstage/core-plugin-api';
 import { UIOptionsType } from '@rjsf/utils';
@@ -77,4 +78,7 @@ export type {
   FieldExtensionOptions,
   FieldExtensionComponentProps,
   FieldExtensionUiSchema,
+  CustomFieldExtensionSchema,
 };
+
+export * from './rjsf';

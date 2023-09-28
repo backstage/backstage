@@ -24,11 +24,11 @@ import Tab from '@material-ui/core/Tab';
 import Tabs from '@material-ui/core/Tabs';
 import CodeMirror from '@uiw/react-codemirror';
 import React, { useEffect, useMemo, useState } from 'react';
-import { TaskStatusStepper } from '../../TaskPage/TaskPage';
-import { TaskPageLinks } from '../../TaskPage/TaskPageLinks';
 import { useDryRun } from '../DryRunContext';
-import { FileBrowser } from '../../FileBrowser';
 import { DryRunResultsSplitView } from './DryRunResultsSplitView';
+import { FileBrowser } from '../../../components/FileBrowser';
+import { TaskPageLinks } from '../../../legacy/TaskPage/TaskPageLinks';
+import { TaskStatusStepper } from '../../../legacy/TaskPage/TaskPage';
 
 const useStyles = makeStyles({
   root: {

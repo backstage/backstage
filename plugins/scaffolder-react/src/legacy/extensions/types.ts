@@ -22,7 +22,7 @@ import { CustomFieldExtensionSchema } from '../../extensions/types';
  *
  * @alpha
  */
-export type CustomFieldValidator<TFieldReturnValue> = (
+export type LegacyCustomFieldValidator<TFieldReturnValue> = (
   data: TFieldReturnValue,
   field: FieldValidation,
   context: { apiHolder: ApiHolder },
@@ -34,15 +34,15 @@ export type CustomFieldValidator<TFieldReturnValue> = (
  *
  * @alpha
  */
-export type FieldExtensionOptions<
+export type LegacyFieldExtensionOptions<
   TFieldReturnValue = unknown,
   TInputProps = unknown,
 > = {
   name: string;
   component: (
-    props: FieldExtensionComponentProps<TFieldReturnValue, TInputProps>,
+    props: LegacyFieldExtensionComponentProps<TFieldReturnValue, TInputProps>,
   ) => JSX.Element | null;
-  validation?: CustomFieldValidator<TFieldReturnValue>;
+  validation?: LegacyCustomFieldValidator<TFieldReturnValue>;
   schema?: CustomFieldExtensionSchema;
 };
 
@@ -52,7 +52,7 @@ export type FieldExtensionOptions<
  *
  * @alpha
  */
-export interface FieldExtensionComponentProps<
+export interface LegacyFieldExtensionComponentProps<
   TFieldReturnValue,
   TUiOptions = unknown,
 > extends FieldProps<TFieldReturnValue> {

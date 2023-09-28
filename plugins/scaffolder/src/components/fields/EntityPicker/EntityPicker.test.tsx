@@ -18,11 +18,12 @@ import { CATALOG_FILTER_EXISTS } from '@backstage/catalog-client';
 import { Entity } from '@backstage/catalog-model';
 import { CatalogApi, catalogApiRef } from '@backstage/plugin-catalog-react';
 import { renderInTestApp, TestApiProvider } from '@backstage/test-utils';
-import { FieldProps } from '@rjsf/core';
+
 import { fireEvent, screen } from '@testing-library/react';
 import React from 'react';
 import { EntityPicker } from './EntityPicker';
 import { EntityPickerProps } from './schema';
+import { FieldProps } from '@rjsf/utils';
 
 const makeEntity = (kind: string, namespace: string, name: string): Entity => ({
   apiVersion: 'scaffolder.backstage.io/v1beta3',
