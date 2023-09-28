@@ -118,11 +118,12 @@ Scope: Tooling for frontend and backend schema-first OpenAPI development.
 
 ## Sponsors
 
-| Name              | Organization | GitHub                                      | Email             |
-| ----------------- | ------------ | ------------------------------------------- | ----------------- |
-| Niklas Gustavsson | Spotify      | [protocol7](https://github.com/protocol7)   | ngn@spotify.com   |
-| Dave Zolotusky    | Spotify      | [dzolotusky](https://github.com/dzolotusky) | dzolo@spotify.com |
-| Lee Mills         | Spotify      | [leemills83](https://github.com/leemills83) | leem@spotify.com  |
+| Name              | Organization | GitHub                                      | Email              |
+| ----------------- | ------------ | ------------------------------------------- | ------------------ |
+| Niklas Gustavsson | Spotify      | [protocol7](https://github.com/protocol7)   | ngn@spotify.com    |
+| Dave Zolotusky    | Spotify      | [dzolotusky](https://github.com/dzolotusky) | dzolo@spotify.com  |
+| Helen Gruel       | Spotify      | [helengruel](https://github.com/dzolotusky) | heleng@spotify.com |
+| Lee Mills         | Spotify      | [leemills83](https://github.com/leemills83) | leem@spotify.com   |
 
 ## Organization Members
 
