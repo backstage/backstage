@@ -122,7 +122,7 @@ Scope: Tooling for frontend and backend schema-first OpenAPI development.
 | ----------------- | ------------ | ------------------------------------------- | ------------------ |
 | Niklas Gustavsson | Spotify      | [protocol7](https://github.com/protocol7)   | ngn@spotify.com    |
 | Dave Zolotusky    | Spotify      | [dzolotusky](https://github.com/dzolotusky) | dzolo@spotify.com  |
-| Helen Gruel       | Spotify      | [helengruel](https://github.com/dzolotusky) | heleng@spotify.com |
+| Helen Greul       | Spotify      | [helengreul](https://github.com/helengreul) | heleng@spotify.com |
 
 ## Organization Members
 
