@@ -30,7 +30,6 @@ import {
   sidebarConfig,
   SidebarDivider,
   SidebarItem,
-  SidebarGroup,
 } from '@backstage/core-components';
 // eslint-disable-next-line @backstage/no-relative-monorepo-imports
 import LogoIcon from '../../../app/src/components/Root/LogoIcon';
@@ -66,15 +65,10 @@ const SidebarLogo = () => {
 };
 
 const SidebarNavItem = (props: NavTarget) => {
-  const { icon: Icon, title, group, routeRef } = props;
+  const { icon: Icon, title, routeRef } = props;
   const to = useRouteRef(routeRef)();
-  return group ? (
-    <SidebarGroup to={to} icon={<Icon />} label={title}>
-      {group}
-    </SidebarGroup>
-  ) : (
-    <SidebarItem to={to} icon={Icon} text={title} />
-  );
+  // TODO: Support opening modal, for example, the search one
+  return <SidebarItem to={to} icon={Icon} text={title} />;
 };
 
 export const CoreNav = createExtension({

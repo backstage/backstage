@@ -14,9 +14,6 @@ export default _default;
 export const SearchApi: Extension<{}>;
 
 // @alpha (undocumented)
-export const SearchModal: Extension<never>;
-
-// @alpha (undocumented)
 export const SearchNavItem: Extension<{
   title: string;
 }>;
@@ -24,6 +21,7 @@ export const SearchNavItem: Extension<{
 // @alpha (undocumented)
 export const SearchPage: Extension<{
   path: string;
+  noTrack: boolean;
 }>;
 
 // (No @packageDocumentation comment for this package)

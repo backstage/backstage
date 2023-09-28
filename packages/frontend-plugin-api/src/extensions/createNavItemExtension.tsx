@@ -16,33 +16,19 @@
 
 import { IconComponent, RouteRef } from '@backstage/core-plugin-api';
 import { createSchemaFromZod } from '../schema/createSchemaFromZod';
-import {
-  AnyExtensionInputMap,
-  ExtensionInputValues,
-  coreExtensionData,
-  createExtension,
-} from '../wiring';
-import { Expand } from '../wiring/createExtension';
-import { Suspense, lazy } from 'react';
-import React from 'react';
+import { coreExtensionData, createExtension } from '../wiring';
 
 /**
  * Helper for creating extensions for a nav item.
  * @public
  */
-export function createNavItemExtension<
-  TInputs extends AnyExtensionInputMap,
->(options: {
+export function createNavItemExtension(options: {
   id: string;
   routeRef: RouteRef;
   title: string;
   icon: IconComponent;
-  inputs?: TInputs;
-  group?: (options: {
-    inputs: Expand<ExtensionInputValues<TInputs>>;
-  }) => Promise<JSX.Element>;
 }) {
-  const { id, routeRef, title, icon, group } = options;
+  const { id, routeRef, title, icon } = options;
   return createExtension({
     id,
     at: 'core.nav/items',
@@ -51,28 +37,15 @@ export function createNavItemExtension<
         title: z.string().default(title),
       }),
     ),
-    inputs: options.inputs,
     output: {
       navTarget: coreExtensionData.navTarget,
     },
-    factory: ({ bind, config, inputs }) => {
-      const Group = group
-        ? (lazy(() =>
-            group({ inputs }).then(element => ({
-              default: () => element,
-            })),
-          ) as unknown as () => JSX.Element)
-        : undefined;
+    factory: ({ bind, config }) => {
       bind({
         navTarget: {
           title: config.title,
           icon,
           routeRef,
-          group: Group ? (
-            <Suspense fallback="...">
-              <Group />
-            </Suspense>
-          ) : undefined,
         },
       });
     },
