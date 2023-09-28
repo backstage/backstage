@@ -117,8 +117,7 @@ export const catalogPlugin: BackstagePlugin<
       },
       true
     >;
-  },
-  CatalogInputPluginOptions
+  }
 >;
 
 // @public (undocumented)

@@ -42,7 +42,6 @@ import {
 import { checkLocationKeyConflict } from './operations/refreshState/checkLocationKeyConflict';
 import { insertUnprocessedEntity } from './operations/refreshState/insertUnprocessedEntity';
 import { updateUnprocessedEntity } from './operations/refreshState/updateUnprocessedEntity';
-import { deleteOrphanedEntities } from './operations/util/deleteOrphanedEntities';
 import { generateStableHash } from './util';
 import { EventBroker, EventParams } from '@backstage/plugin-events-node';
 import { DateTime } from 'luxon';
@@ -273,11 +272,6 @@ export class DefaultProcessingDatabase implements ProcessingDatabase {
     const entityRefs = rows.map(r => r.source_entity_ref!).filter(Boolean);
 
     return { entityRefs };
-  }
-
-  async deleteOrphanedEntities(txOpaque: Transaction): Promise<number> {
-    const tx = txOpaque as Knex.Transaction;
-    return await deleteOrphanedEntities({ tx });
   }
 
   async transaction<T>(fn: (tx: Transaction) => Promise<T>): Promise<T> {

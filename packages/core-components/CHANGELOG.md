@@ -1,5 +1,19 @@
 # @backstage/core-components
 
+## 0.13.6-next.0
+
+### Patch Changes
+
+- d19a827ef1: MissingAnnotationEmptyState component can now dynamically generate a YAML example based off the current entity being used.
+- Updated dependencies
+  - @backstage/plugin-catalog-react@1.8.5-next.0
+  - @backstage/core-plugin-api@1.7.0-next.0
+  - @backstage/config@1.1.0
+  - @backstage/catalog-model@1.4.2
+  - @backstage/errors@1.2.2
+  - @backstage/theme@0.4.2
+  - @backstage/version-bridge@1.0.5
+
 ## 0.13.5
 
 ### Patch Changes
@@ -273,7 +287,7 @@
 - 67140d9f96f: Upgrade `react-virtualized-auto-sizer´ to version `^1.0.11`
 - 6e0b71493df: Switched internal declaration of `DependencyGraphTypes` to use `namespace`.
 - c8779cc1d09: Updated `LogLine` component, which is used by the `LogViewer`, to turn URLs into clickable links. This feature is on by default
-- 7908d72e033: Introduce a new global config parameter, `auth.enableExperimentalRedirectFlow`. When enabled, auth will happen with an in-window redirect flow rather than through a popup window.
+- 7908d72e033: Introduce a new global config parameter, `enableExperimentalRedirectFlow`. When enabled, auth will happen with an in-window redirect flow rather than through a popup window.
 - 1e4f5e91b8e: Bump `zod` and `zod-to-json-schema` dependencies.
 - 29ba8267d69: Updated dependency `@material-ui/lab` to `4.0.0-alpha.61`.
 - 8e00acb28db: Small tweaks to remove warnings in the console during development (mainly focusing on techdocs)
@@ -351,7 +365,7 @@
 
 ### Patch Changes
 
-- 7908d72e033: Introduce a new global config parameter, `auth.enableExperimentalRedirectFlow`. When enabled, auth will happen with an in-window redirect flow rather than through a popup window.
+- 7908d72e033: Introduce a new global config parameter, `enableExperimentalRedirectFlow`. When enabled, auth will happen with an in-window redirect flow rather than through a popup window.
 - 8e00acb28db: Small tweaks to remove warnings in the console during development (mainly focusing on techdocs)
 - 7245e744ab1: Fixed the font color on `BackstageHeaderLabel` to respect the active page theme.
 - Updated dependencies

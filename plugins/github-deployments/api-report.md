@@ -43,7 +43,7 @@ export type GithubDeployment = {
 };
 
 // @public (undocumented)
-export const githubDeploymentsPlugin: BackstagePlugin<{}, {}, {}>;
+export const githubDeploymentsPlugin: BackstagePlugin<{}, {}>;
 
 // @public (undocumented)
 export const GithubDeploymentsTable: {

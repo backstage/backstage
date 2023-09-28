@@ -5,7 +5,9 @@
 ```ts
 import { BasicPermission } from '@backstage/plugin-permission-common';
 import { Entity } from '@backstage/catalog-model';
+import { FetchResponse as FetchResponse_2 } from '@backstage/plugin-kubernetes-common';
 import type { JsonObject } from '@backstage/types';
+import { ObjectsByEntityResponse as ObjectsByEntityResponse_2 } from '@backstage/plugin-kubernetes-common';
 import { PodStatus } from '@kubernetes/client-node';
 import { V1ConfigMap } from '@kubernetes/client-node';
 import { V1CronJob } from '@kubernetes/client-node';
@@ -175,6 +177,67 @@ export interface DeploymentFetchResponse {
 }
 
 // @public (undocumented)
+export interface DeploymentResources {
+  // (undocumented)
+  deployments: V1Deployment[];
+  // (undocumented)
+  horizontalPodAutoscalers: V1HorizontalPodAutoscaler[];
+  // (undocumented)
+  pods: V1Pod[];
+  // (undocumented)
+  replicaSets: V1ReplicaSet[];
+}
+
+// @public
+export interface DetectedError {
+  // (undocumented)
+  message: string;
+  // (undocumented)
+  occurrenceCount: number;
+  // (undocumented)
+  proposedFix?: ProposedFix;
+  // (undocumented)
+  severity: ErrorSeverity;
+  // (undocumented)
+  sourceRef: ResourceRef;
+  // (undocumented)
+  type: string;
+}
+
+// @public
+export type DetectedErrorsByCluster = Map<string, DetectedError[]>;
+
+// @public
+export const detectErrors: (
+  objects: ObjectsByEntityResponse_2,
+) => DetectedErrorsByCluster;
+
+// @public (undocumented)
+export interface DocsSolution extends ProposedFixBase {
+  // (undocumented)
+  docsLink: string;
+  // (undocumented)
+  type: 'docs';
+}
+
+// @public (undocumented)
+export interface ErrorMapper<T> {
+  // (undocumented)
+  detectErrors: (resource: T) => DetectedError[];
+}
+
+// @public
+export type ErrorSeverity = 0 | 1 | 2 | 3 | 4 | 5 | 6 | 7 | 8 | 9 | 10;
+
+// @public (undocumented)
+export interface EventsSolution extends ProposedFixBase {
+  // (undocumented)
+  podName: string;
+  // (undocumented)
+  type: 'events';
+}
+
+// @public (undocumented)
 export type FetchResponse =
   | PodFetchResponse
   | ServiceFetchResponse
@@ -190,6 +253,29 @@ export type FetchResponse =
   | StatefulSetsFetchResponse
   | DaemonSetsFetchResponse
   | PodStatusFetchResponse;
+
+// @public (undocumented)
+export interface GroupedResponses extends DeploymentResources {
+  // (undocumented)
+  configMaps: V1ConfigMap[];
+  // (undocumented)
+  cronJobs: V1CronJob[];
+  // (undocumented)
+  customResources: any[];
+  // (undocumented)
+  ingresses: V1Ingress[];
+  // (undocumented)
+  jobs: V1Job[];
+  // (undocumented)
+  services: V1Service[];
+  // (undocumented)
+  statefulsets: V1StatefulSet[];
+}
+
+// @public (undocumented)
+export const groupResponses: (
+  fetchResponse: FetchResponse_2[],
+) => GroupedResponses;
 
 // @public (undocumented)
 export interface HorizontalPodAutoscalersFetchResponse {
@@ -252,6 +338,14 @@ export interface LimitRangeFetchResponse {
 }
 
 // @public (undocumented)
+export interface LogSolution extends ProposedFixBase {
+  // (undocumented)
+  container: string;
+  // (undocumented)
+  type: 'logs';
+}
+
+// @public (undocumented)
 export interface ObjectsByEntityResponse {
   // (undocumented)
   items: ClusterObjects[];
@@ -274,6 +368,19 @@ export interface PodStatusFetchResponse {
 }
 
 // @public (undocumented)
+export type ProposedFix = LogSolution | DocsSolution | EventsSolution;
+
+// @public (undocumented)
+export interface ProposedFixBase {
+  // (undocumented)
+  actions: string[];
+  // (undocumented)
+  errorType: string;
+  // (undocumented)
+  rootCauseExplanation: string;
+}
+
+// @public (undocumented)
 export interface RawFetchError {
   // (undocumented)
   errorType: 'FETCH_ERROR';
@@ -287,6 +394,18 @@ export interface ReplicaSetsFetchResponse {
   resources: Array<V1ReplicaSet>;
   // (undocumented)
   type: 'replicasets';
+}
+
+// @public
+export interface ResourceRef {
+  // (undocumented)
+  apiGroup: string;
+  // (undocumented)
+  kind: string;
+  // (undocumented)
+  name: string;
+  // (undocumented)
+  namespace: string;
 }
 
 // @public (undocumented)

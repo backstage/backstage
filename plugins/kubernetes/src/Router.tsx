@@ -18,7 +18,7 @@ import React from 'react';
 import { Entity } from '@backstage/catalog-model';
 import { useEntity } from '@backstage/plugin-catalog-react';
 import { Route, Routes } from 'react-router-dom';
-import { KubernetesContent } from './components/KubernetesContent';
+import { KubernetesContent } from './KubernetesContent';
 import { Button } from '@material-ui/core';
 import { MissingAnnotationEmptyState } from '@backstage/core-components';
 

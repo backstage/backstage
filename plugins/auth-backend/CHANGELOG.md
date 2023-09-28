@@ -1,5 +1,25 @@
 # @backstage/plugin-auth-backend
 
+## 0.19.2-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/plugin-auth-backend-module-github-provider@0.1.2-next.0
+  - @backstage/plugin-auth-node@0.3.2-next.0
+  - @backstage/backend-common@0.19.7-next.0
+  - @backstage/config@1.1.0
+  - @backstage/backend-plugin-api@0.6.5-next.0
+  - @backstage/catalog-client@1.4.4
+  - @backstage/catalog-model@1.4.2
+  - @backstage/errors@1.2.2
+  - @backstage/types@1.1.1
+  - @backstage/plugin-auth-backend-module-gcp-iap-provider@0.1.2-next.0
+  - @backstage/plugin-auth-backend-module-gitlab-provider@0.1.2-next.0
+  - @backstage/plugin-auth-backend-module-google-provider@0.1.2-next.0
+  - @backstage/plugin-auth-backend-module-oauth2-provider@0.1.2-next.0
+  - @backstage/plugin-catalog-node@1.4.6-next.0
+
 ## 0.19.0
 
 ### Minor Changes
@@ -342,7 +362,7 @@
 ### Patch Changes
 
 - d8f774c30df: Enforce the secret visibility of certificates and client secrets in the auth backend. Also, document all known options for each auth plugin.
-- 7908d72e033: Introduce a new global config parameter, `auth.enableExperimentalRedirectFlow`. When enabled, auth will happen with an in-window redirect flow rather than through a popup window.
+- 7908d72e033: Introduce a new global config parameter, `enableExperimentalRedirectFlow`. When enabled, auth will happen with an in-window redirect flow rather than through a popup window.
 - 475abd1dc3f: The `microsoft` (i.e. Azure) auth provider now supports negotiating tokens for
   Azure resources besides Microsoft Graph (e.g. AKS, Virtual Machines, Machine
   Learning Services, etc.). When the `/frame/handler` endpoint is called with an
@@ -428,7 +448,7 @@
 ### Patch Changes
 
 - d8f774c30df: Enforce the secret visibility of certificates and client secrets in the auth backend. Also, document all known options for each auth plugin.
-- 7908d72e033: Introduce a new global config parameter, `auth.enableExperimentalRedirectFlow`. When enabled, auth will happen with an in-window redirect flow rather than through a popup window.
+- 7908d72e033: Introduce a new global config parameter, `enableExperimentalRedirectFlow`. When enabled, auth will happen with an in-window redirect flow rather than through a popup window.
 - Updated dependencies
   - @backstage/backend-common@0.18.4-next.0
   - @backstage/config@1.0.7

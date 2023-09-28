@@ -20,6 +20,7 @@ import {
   createBackendPlugin,
 } from '@backstage/backend-plugin-api';
 import { createRouter } from './service/router';
+import { createDefaultBadgeFactories } from './badges';
 
 /**
  * Badges backend plugin
@@ -50,6 +51,7 @@ export const badgesPlugin = createBackendPlugin({
           await createRouter({
             config,
             logger: loggerToWinstonLogger(logger),
+            badgeFactories: createDefaultBadgeFactories(),
             discovery,
             tokenManager,
             identity,

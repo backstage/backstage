@@ -1,5 +1,45 @@
 # @backstage/plugin-catalog
 
+## 1.14.0-next.0
+
+### Minor Changes
+
+- 28f1ab2e1a: The catalog plugin no longer implements the experimental reconfiguration API. The create button title can now instead be configured using the new experimental internationalization API, via the `catalogTranslationRef` exported at `/alpha`. For example:
+
+  ```ts
+  import { catalogTranslationRef } from '@backstage/plugin-catalog/alpha';
+
+  const app = createApp({
+    __experimentalTranslations: {
+      resources: [
+        createTranslationMessages({
+          ref: catalogTranslationRef,
+          catalog_page_create_button_title: 'Create Software',
+        }),
+      ],
+    },
+  });
+  ```
+
+- f3561a2935: include owner chip in catalog search result item
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/plugin-catalog-react@1.8.5-next.0
+  - @backstage/core-plugin-api@1.7.0-next.0
+  - @backstage/core-components@0.13.6-next.0
+  - @backstage/integration-react@1.1.20-next.0
+  - @backstage/plugin-search-react@1.7.1-next.0
+  - @backstage/catalog-client@1.4.4
+  - @backstage/catalog-model@1.4.2
+  - @backstage/errors@1.2.2
+  - @backstage/theme@0.4.2
+  - @backstage/types@1.1.1
+  - @backstage/plugin-catalog-common@1.0.16
+  - @backstage/plugin-scaffolder-common@1.4.1
+  - @backstage/plugin-search-common@1.2.6
+
 ## 1.13.0
 
 ### Minor Changes

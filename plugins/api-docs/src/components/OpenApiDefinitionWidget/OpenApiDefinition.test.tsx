@@ -38,8 +38,14 @@ paths:
         "200": 
           description: Success
     `;
+
+    const requestInterceptor = (req: any) => req;
+
     const { getByText } = await renderInTestApp(
-      <OpenApiDefinition definition={definition} />,
+      <OpenApiDefinition
+        definition={definition}
+        requestInterceptor={requestInterceptor}
+      />,
     );
 
     // swagger-ui loads the documentation asynchronously
