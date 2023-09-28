@@ -37,7 +37,14 @@ export const ContentBlock = ({
     {children && React.isValidElement(children) ? children : <p>{children}</p>}
 
     {actionButtons && (
-      <div className="actionButtons">
+      <div
+        className="actionButtons"
+        style={{
+          display: 'grid',
+          gridTemplateColumns: 'repeat(auto-fill, minmax(200px, 1fr))',
+          gap: '15px',
+        }}
+      >
         {actionButtons.map(({ link, label }, index) => (
           <Link
             key={index}
