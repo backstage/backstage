@@ -17,9 +17,11 @@ To support Material UI v5 in addition to v4, we have introduced a `UnifiedThemeP
      ),
 ```
 
-It is worth noting that we are still using `@mui/styles` & `jss`. You may stumble upon documentation for migrating to `emotion` when using `makeStyles` or `withStyles`. It is not necessary to switch to `emotion` yet.
+It is worth noting that we are still using `@mui/styles` & `jss`. You may stumble upon documentation for migrating to `emotion` when using `makeStyles` or `withStyles`. It is not necessary to switch to `emotion`.
 
 To comply with MUI recommendations, we are enforcing a new linting rules that favours standard imports over named imports and also restricting 3rd level imports as they are considered private ([Guide: Minimizing Bundle Size](https://mui.com/material-ui/guides/minimizing-bundle-size)).
+
+Important to keep in mind is, that Material UI v5 is meant to be used with React Version 17 or higher. This means if you intend to use the Material UI v5 components in your plugins you have to enforce React Version to be at least 17.
 
 For current known issues with the MUI v5 migration, follow our [Milestone on GitHub](https://github.com/backstage/backstage/milestone/40). Please open a new issue if you run into different problems.
 
@@ -31,5 +33,6 @@ To migrate your plugin to MUI v5, you can build on the resources available.
 2. Run the migration `codemod` for the path of the specific plugin: `npx @mui/codemod v5.0.0/preset-safe plugins/<path>`.
 3. Take a look at possible `TODO:` items the `codemod` could not fix.
 4. Remove types & methods from `@backstage/theme` which are marked as `@deprecated`.
+5. Ensure you are using `"react": "^17.0.0"` (or newer) as a peer dependency
 
 You can follow the [migration of the GraphiQL plugin](https://github.com/backstage/backstage/pull/17696) as an example plugin migration.
