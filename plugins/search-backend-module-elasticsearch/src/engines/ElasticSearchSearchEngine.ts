@@ -165,7 +165,6 @@ export class ElasticSearchSearchEngine implements SearchEngine {
       logger.info('Initializing Elastic.co ElasticSearch search engine.');
     } else if (clientOptions.provider === 'aws') {
       logger.info('Initializing AWS OpenSearch search engine.');
-      logger.info(JSON.stringify(clientOptions));
     } else if (clientOptions.provider === 'opensearch') {
       logger.info('Initializing OpenSearch search engine.');
     } else {
