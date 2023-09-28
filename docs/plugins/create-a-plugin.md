@@ -40,10 +40,10 @@ This method of serving the plugin provides quicker iteration speed and a faster
 startup and hot reloads. It is only meant for local development, and the setup
 for it can be found inside the plugin's `dev/` directory.
 
-### Other Plugin Types
+### Other Plugin Library Package Types
 
-There are other plugin types that you can chose from. To be able to select the type
-when you create a new plugin just run: `yarn new`. You'll then be asked what type of
-plugin you wish to create like this:
+There are other plugin library package types that you can chose from. To be able to
+select the type when you create a new plugin just run: `yarn new`. You'll then be asked
+what type of plugin you wish to create like this:
 
 ![List of available plugin types to pick from](../assets/plugins/create-plugin_types.png)

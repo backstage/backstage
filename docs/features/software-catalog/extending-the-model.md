@@ -447,7 +447,7 @@ want to have an isomorphic package that houses these types. Within the Backstage
 main repo the package naming pattern of `<plugin>-common` is used for isomorphic
 packages, and you may choose to adopt this pattern as well.
 
-You can generate an isomorphic plugin by running:`yarn new --select plugin-common`
+You can generate an isomorphic plugin package by running:`yarn new --select plugin-common`
 or you can run `yarn new` and then select "plugin-common" from the list of options
 
 There's at this point no existing templates for generating isomorphic plugins
