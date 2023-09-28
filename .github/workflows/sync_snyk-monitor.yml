@@ -24,12 +24,12 @@ jobs:
       security-events: write # for github/codeql-action/upload-sarif to upload SARIF results
     runs-on: ubuntu-latest
     steps:
-      - name: Harden Runner
-        uses: step-security/harden-runner@8ca2b8b2ece13480cda6dacd3511b49857a23c09 # v2.5.1
-        with:
-          egress-policy: audit
+      # - name: Harden Runner
+      #   uses: step-security/harden-runner@8ca2b8b2ece13480cda6dacd3511b49857a23c09 # v2.5.1
+      #   with:
+      #     egress-policy: audit
 
-      - uses: actions/checkout@ v3.6.0
+      - uses: actions/checkout@v3.6.0
       - name: Monitor and Synchronize Snyk Policies
         uses: snyk/actions/node@299cde98a08ff8b1c2bfde1e5a067bce67a6d2b8 # master
         with:

@@ -17,10 +17,10 @@ jobs:
       git-ref: ${{ env.GIT_REF }}
       pr-number: ${{ env.PR_NUMBER }}
     steps:
-      - name: Harden Runner
-        uses: step-security/harden-runner@8ca2b8b2ece13480cda6dacd3511b49857a23c09 # v2.5.1
-        with:
-          egress-policy: audit
+      # - name: Harden Runner
+      #   uses: step-security/harden-runner@8ca2b8b2ece13480cda6dacd3511b49857a23c09 # v2.5.1
+      #   with:
+      #     egress-policy: audit
 
       - name: 'Download artifacts'
         # Fetch output (zip archive) from the workflow run that triggered this workflow.

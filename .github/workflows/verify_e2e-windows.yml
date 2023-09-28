@@ -32,10 +32,10 @@ jobs:
     steps:
       # In order to have the create-app template function as if it was downloaded from NPM
       # we need to make sure we checkout files with LF line endings only
-      - name: Harden Runner
-        uses: step-security/harden-runner@8ca2b8b2ece13480cda6dacd3511b49857a23c09 # v2.5.1
-        with:
-          egress-policy: audit
+      # - name: Harden Runner
+      #   uses: step-security/harden-runner@8ca2b8b2ece13480cda6dacd3511b49857a23c09 # v2.5.1
+      #   with:
+      #     egress-policy: audit
 
       - name: Set git to use LF
         run: |
