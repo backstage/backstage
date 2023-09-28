@@ -79,5 +79,5 @@ This extension can then be imported and used in the app as follow, typically
 placed within the top-level `<FlatRoutes>`:
 
 ```tsx
-<Route route="/any-path" element={<ExamplePage />} />
+<Route path="/any-path" element={<ExamplePage />} />
 ```
