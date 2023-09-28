@@ -26,7 +26,10 @@ import { isEmpty, isNumber, isNaN as nan } from 'lodash';
 import { AwsSigv4Signer } from '@opensearch-project/opensearch/aws';
 import { RequestSigner } from 'aws4';
 import { Config } from '@backstage/config';
-import { ElasticSearchClientOptions } from './ElasticSearchClientOptions';
+import {
+  ElasticSearchClientOptions,
+  OpenSearchElasticSearchClientOptions,
+} from './ElasticSearchClientOptions';
 import { ElasticSearchClientWrapper } from './ElasticSearchClientWrapper';
 import { ElasticSearchCustomIndexTemplate } from './types';
 import { ElasticSearchSearchEngineIndexer } from './ElasticSearchSearchEngineIndexer';
@@ -162,6 +165,7 @@ export class ElasticSearchSearchEngine implements SearchEngine {
       logger.info('Initializing Elastic.co ElasticSearch search engine.');
     } else if (clientOptions.provider === 'aws') {
       logger.info('Initializing AWS OpenSearch search engine.');
+      logger.info(JSON.stringify(clientOptions));
     } else if (clientOptions.provider === 'opensearch') {
       logger.info('Initializing OpenSearch search engine.');
     } else {
@@ -302,6 +306,11 @@ export class ElasticSearchSearchEngine implements SearchEngine {
       elasticSearchClientWrapper: this.elasticSearchClientWrapper,
       logger: indexerLogger,
       batchSize: this.batchSize,
+      skipRefresh:
+        (
+          this
+            .elasticSearchClientOptions as OpenSearchElasticSearchClientOptions
+        )?.service === 'aoss',
     });
 
     // Attempt cleanup upon failure.
@@ -473,6 +482,8 @@ export class ElasticSearchSearchEngine implements SearchEngine {
       return {
         provider: 'aws',
         node: config.getString('node'),
+        region: config.getOptionalString('region'),
+        service,
         ...(sslConfig
           ? {
               ssl: {
