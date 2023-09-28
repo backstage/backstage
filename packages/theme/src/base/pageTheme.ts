@@ -97,6 +97,7 @@ export const pageTheme: Record<string, PageTheme> = {
     colors: colorVariants.pinkSea,
     shape: shapes.wave2,
   }),
+  dataset: genPageTheme({ colors: colorVariants.purpleSky, shape: shapes.wave }),
   tool: genPageTheme({ colors: colorVariants.purpleSky, shape: shapes.round }),
   service: genPageTheme({
     colors: colorVariants.marineBlue,
