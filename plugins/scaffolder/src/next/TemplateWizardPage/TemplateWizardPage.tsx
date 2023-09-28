@@ -26,10 +26,11 @@ import {
   scaffolderApiRef,
   useTemplateSecrets,
   type LayoutOptions,
+  FormProps,
   FieldExtensionOptions,
   ReviewStepProps,
 } from '@backstage/plugin-scaffolder-react';
-import { FormProps, Workflow } from '@backstage/plugin-scaffolder-react/alpha';
+import { Workflow } from '@backstage/plugin-scaffolder-react/alpha';
 import { JsonValue } from '@backstage/types';
 import { Header, Page } from '@backstage/core-components';
 

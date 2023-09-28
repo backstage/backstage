@@ -21,10 +21,10 @@ import {
 } from '../../lib/filesystem';
 import { type LayoutOptions } from '@backstage/plugin-scaffolder-react';
 import { LegacyFieldExtensionOptions } from '@backstage/plugin-scaffolder-react/alpha';
-import { CustomFieldExplorer } from '../../next/TemplateEditorPage/CustomFieldExplorer';
-import { TemplateFormPreviewer } from '../../next/TemplateEditorPage/TemplateFormPreviewer';
-import { TemplateEditor } from '../../next/TemplateEditorPage/TemplateEditor';
 import { TemplateEditorIntro } from '../../next/TemplateEditorPage/TemplateEditorIntro';
+import { TemplateEditor } from './TemplateEditor';
+import { TemplateFormPreviewer } from './TemplateFormPreviewer';
+import { CustomFieldExplorer } from './CustomFieldExplorer';
 
 type Selection =
   | {

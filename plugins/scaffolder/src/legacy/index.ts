@@ -14,3 +14,4 @@
  * limitations under the License.
  */
 export { LegacyRouter, type LegacyRouterProps } from './Router';
+export { LegacyScaffolderPage } from '../plugin';
