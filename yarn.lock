@@ -18763,11 +18763,11 @@ __metadata:
   linkType: hard
 
 "@types/yauzl@npm:^2.10.0":
-  version: 2.10.0
-  resolution: "@types/yauzl@npm:2.10.0"
+  version: 2.10.1
+  resolution: "@types/yauzl@npm:2.10.1"
   dependencies:
     "@types/node": "*"
-  checksum: 55d27ae5d346ea260e40121675c24e112ef0247649073848e5d4e03182713ae4ec8142b98f61a1c6cbe7d3b72fa99bbadb65d8b01873e5e605cdc30f1ff70ef2
+  checksum: 3377916a2d493cb2422b167fb7dfff8cb3ea045a9489dab4955858719bf7fe6808e5f6a51ee819904fb7f623f7ac092b87f9d6a857ea1214a45070d19c8b3d7e
   languageName: node
   linkType: hard
 
