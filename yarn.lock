@@ -18318,9 +18318,9 @@ __metadata:
   linkType: hard
 
 "@types/regression@npm:^2.0.0":
-  version: 2.0.2
-  resolution: "@types/regression@npm:2.0.2"
-  checksum: 28ae464c5ffda1698cecf1b1c2e21ed016ae1d71623c7f40bc5404aa55569cca03ac33d29737805059851cc734946027b006858d13a642e12240267c96d49299
+  version: 2.0.3
+  resolution: "@types/regression@npm:2.0.3"
+  checksum: 774ef76911225b61c44946573b54ab710401d0e65b9433aa7014c701272167c47e818d4c9809284514881837c2159cd47aad6b290f00f8581920f2c7a146a512
   languageName: node
   linkType: hard
 
