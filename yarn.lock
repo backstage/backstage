@@ -18547,11 +18547,11 @@ __metadata:
   linkType: hard
 
 "@types/supertest@npm:^2.0.12, @types/supertest@npm:^2.0.8":
-  version: 2.0.12
-  resolution: "@types/supertest@npm:2.0.12"
+  version: 2.0.13
+  resolution: "@types/supertest@npm:2.0.13"
   dependencies:
     "@types/superagent": "*"
-  checksum: f0e2b44f86bec2f708d6a3d0cb209055b487922040773049b0f8c6b557af52d4b5fa904e17dfaa4ce6e610172206bbec7b62420d158fa57b6ffc2de37b1730d3
+  checksum: fe66be8e16626f254dc9d9691706942689f47a84edf7d3baaeadd6d4d576dbf915ee70cebdd7034015e83fa91fcd2dcff1cd0252514e4c510619817a183b5b4f
   languageName: node
   linkType: hard
 
