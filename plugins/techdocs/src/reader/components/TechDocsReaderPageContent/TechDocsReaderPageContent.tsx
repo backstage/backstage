@@ -14,12 +14,14 @@
  * limitations under the License.
  */
 
-import React, { useCallback } from 'react';
+import React, { useCallback, useEffect } from 'react';
 
 import { makeStyles, Grid } from '@material-ui/core';
 
 import {
   TechDocsShadowDom,
+  useShadowDomStylesLoading,
+  useShadowRootElements,
   useTechDocsReaderPage,
 } from '@backstage/plugin-techdocs-react';
 import { CompoundEntityRef } from '@backstage/catalog-model';
@@ -78,8 +80,20 @@ export const TechDocsReaderPageContent = withTechDocsReaderProvider(
       entityRef,
       setShadowRoot,
     } = useTechDocsReaderPage();
-
     const dom = useTechDocsReaderDom(entityRef);
+    const hash = window.location.hash;
+    const isStyleLoading = useShadowDomStylesLoading(dom);
+    const [hashElement] = useShadowRootElements([`[id="${hash.slice(1)}"]`]);
+
+    useEffect(() => {
+      if (hashElement) {
+        if (!isStyleLoading) {
+          hashElement.scrollIntoView();
+        }
+      } else {
+        document?.querySelector('header')?.scrollIntoView();
+      }
+    }, [hashElement, isStyleLoading, dom]);
 
     const handleAppend = useCallback(
       (newShadowRoot: ShadowRoot) => {
