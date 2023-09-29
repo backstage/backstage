@@ -110,6 +110,14 @@ describe('useGetEntities', () => {
       );
     });
 
+    it('given group entity should retrieve child with their relations', async () => {
+      await whenHookIsCalledWith(givenParentGroupEntity);
+      expect(catalogApiMock.getEntitiesByRefs).toHaveBeenCalledWith({
+        entityRefs: [`group:default/${givenLeafGroup}`],
+        fields: ['kind', 'metadata.namespace', 'metadata.name', 'relations'],
+      });
+    });
+
     it('given user entity should aggregate parent ownership and direct', async () => {
       await whenHookIsCalledWith(givenUserEntity);
       expect(catalogApiMock.getEntities).toHaveBeenCalledWith(
