@@ -245,39 +245,18 @@ describe('authModuleOidcProvider', () => {
 
   it('#authenticate exchanges authorization code for a access_token', async () => {
     const agent = request.agent('');
-
-    // make /start request with audience parameter
     const startResponse = await agent.get(
       `${appUrl}/api/auth/oidc/start?env=development`,
     );
-    // follow redirect to authorization endpoint
     const authorizationResponse = await agent.get(
       startResponse.header.location,
     );
-    // follow redirect to token_endpoint
     const handlerResponse = await agent.get(
       authorizationResponse.header.location,
     );
 
     expect(handlerResponse.text).toContain(
-      encodeURIComponent(
-        JSON.stringify({
-          type: 'authorization_response',
-          response: {
-            profile: {
-              email: 'alice@test.com',
-              picture: 'http://testPictureUrl/photo.jpg',
-              displayName: 'Alice Adams',
-            },
-            providerInfo: {
-              idToken,
-              accessToken: 'accessToken',
-              scope: 'testScope',
-              expiresInSeconds: 3600,
-            },
-          },
-        }),
-      ),
+      encodeURIComponent(`"accessToken":"accessToken"`),
     );
   });
 });

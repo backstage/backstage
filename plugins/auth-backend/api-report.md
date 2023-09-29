@@ -340,7 +340,7 @@ export type OAuthStartResponse = {
 // @public @deprecated (undocumented)
 export type OAuthState = OAuthState_2;
 
-// @public
+// @public @deprecated
 export type OidcAuthResult = {
   tokenset: TokenSet;
   userinfo: UserinfoResponse;
@@ -564,10 +564,10 @@ export const providers: Readonly<{
     create: (
       options?:
         | {
-            authHandler?: AuthHandler<OidcAuthResult> | undefined;
+            authHandler?: AuthHandler<OAuthResult> | undefined;
             signIn?:
               | {
-                  resolver: SignInResolver<OidcAuthResult>;
+                  resolver: SignInResolver<OAuthResult>;
                 }
               | undefined;
           }

@@ -23,6 +23,21 @@ import {
   adaptLegacyOAuthSignInResolver,
 } from '../../lib/legacy';
 import { oidcAuthenticator } from '@backstage/plugin-auth-backend-module-oidc-provider';
+import { TokenSet, UserinfoResponse } from 'openid-client';
+import {
+  commonByEmailLocalPartResolver,
+  commonByEmailResolver,
+} from '../resolvers';
+
+/**
+ * authentication result for the OIDC which includes the token set and user information (a profile response sent by OIDC server)
+ * @public
+ * @deprecated No longer used
+ */
+export type OidcAuthResult = {
+  tokenset: TokenSet;
+  userinfo: UserinfoResponse;
+};
 
 /**
  * Auth provider integration for generic OpenID Connect auth
@@ -49,5 +64,15 @@ export const oidc = createAuthProviderIntegration({
       profileTransform: adaptLegacyOAuthHandler(options?.authHandler),
       signInResolver: adaptLegacyOAuthSignInResolver(options?.signIn?.resolver),
     });
+  },
+  resolvers: {
+    /**
+     * Looks up the user by matching their email local part to the entity name.
+     */
+    emailLocalPartMatchingUserEntityName: () => commonByEmailLocalPartResolver,
+    /**
+     * Looks up the user by matching their email to the entity email.
+     */
+    emailMatchingUserEntityProfileEmail: () => commonByEmailResolver,
   },
 });

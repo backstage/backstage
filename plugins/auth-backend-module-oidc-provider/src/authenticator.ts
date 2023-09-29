@@ -36,7 +36,6 @@ export const oidcAuthenticator = createOAuthAuthenticator({
     const clientSecret = config.getString('clientSecret');
     const metadataUrl = config.getString('metadataUrl');
     const customCallbackUrl = config.getOptionalString('callbackUrl');
-    const callbackUrl2 = customCallbackUrl || callbackUrl;
     const tokenEndpointAuthMethod = config.getOptionalString(
       'tokenEndpointAuthMethod',
     ) as ClientAuthMethod;
@@ -51,7 +50,7 @@ export const oidcAuthenticator = createOAuthAuthenticator({
       access_type: 'offline', // this option must be passed to provider to receive a refresh token
       client_id: clientId,
       client_secret: clientSecret,
-      redirect_uris: [callbackUrl2],
+      redirect_uris: [customCallbackUrl || callbackUrl],
       response_types: ['code'],
       token_endpoint_auth_method:
         tokenEndpointAuthMethod || 'client_secret_basic',
@@ -84,7 +83,6 @@ export const oidcAuthenticator = createOAuthAuthenticator({
             ? {
                 familyName: userinfo.family_name,
                 givenName: userinfo.given_name,
-                middleName: userinfo.middle_name,
               }
             : undefined;
 

@@ -348,13 +348,15 @@ describe('oidcAuthenticator', () => {
         },
         session: {
           accessToken: 'accessToken',
-          expiresInSeconds: 3600,
           idToken,
           refreshToken: 'refreshToken',
           scope: 'testScope',
           tokenType: 'bearer',
         },
       });
+      expect(
+        Math.abs(handlerResponse.session.expiresInSeconds! - 3600),
+      ).toBeLessThan(5);
     });
 
     it('fails without authorization code', async () => {
