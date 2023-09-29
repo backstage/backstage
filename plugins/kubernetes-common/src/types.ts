@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import type { JsonObject } from '@backstage/types';
+import type { JsonObject, JsonValue } from '@backstage/types';
 import {
   PodStatus,
   V1ConfigMap,
@@ -33,7 +33,9 @@ import {
 import { Entity } from '@backstage/catalog-model';
 
 /** @public */
-export type KubernetesRequestAuth = JsonObject;
+export type KubernetesRequestAuth = {
+  [providerKey: string]: JsonValue | undefined;
+};
 
 /** @public */
 export interface CustomResourceMatcher {
