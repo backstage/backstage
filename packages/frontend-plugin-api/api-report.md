@@ -7,6 +7,7 @@
 
 import { AnyApiFactory } from '@backstage/core-plugin-api';
 import { AnyApiRef } from '@backstage/core-plugin-api';
+import { AppTheme } from '@backstage/core-plugin-api';
 import { IconComponent } from '@backstage/core-plugin-api';
 import { JsonObject } from '@backstage/types';
 import { JSX as JSX_2 } from 'react';
@@ -71,6 +72,7 @@ export const coreExtensionData: {
   apiFactory: ConfigurableExtensionDataRef<AnyApiFactory, {}>;
   routeRef: ConfigurableExtensionDataRef<RouteRef, {}>;
   navTarget: ConfigurableExtensionDataRef<NavTarget, {}>;
+  theme: ConfigurableExtensionDataRef<AppTheme, {}>;
 };
 
 // @public (undocumented)
@@ -198,6 +200,9 @@ export function createPlugin(options: PluginOptions): BackstagePlugin;
 export function createSchemaFromZod<TOutput, TInput>(
   schemaCreator: (zImpl: typeof z) => ZodSchema<TOutput, ZodTypeDef, TInput>,
 ): PortableSchema<TOutput>;
+
+// @public (undocumented)
+export function createThemeExtension(theme: AppTheme): Extension<never>;
 
 // @public (undocumented)
 export interface Extension<TConfig> {
