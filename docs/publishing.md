@@ -45,12 +45,12 @@ Additional steps for the main line release
   - Check for mentions of "major" & "breaking" and if they are expected in the current release
   - Verify the version we are shipping is correct
 - Create Release Notes
-  - There exists a [release notes template](https://github.com/backstage/backstage/blob/master/docs/release-notes-template.md) for creating the release notes. It can already be created after the last main line release to keep track of major changes during the month
+  - There exists a [release notes template](./release-notes-template.md) for creating the release notes. It can already be created after the last main line release to keep track of major changes during the month
   - The content is picked by relevancy showcasing the work of the community during the month of the release
   - Mention newly added packages or features
   - Mention any security fixes
 - Create Release Notes PR
-  - Add the release note file as [`/docs/releases/vx.y.0.md`](https://github.com/backstage/backstage/tree/master/docs/releases)
+  - Add the release note file as [`/docs/releases/vx.y.0.md`](./releases)
   - Add an entry to [`/microsite/sidebar.json`](https://github.com/backstage/backstage/blob/master/microsite/sidebars.json) for the release note
   - Update the navigation bar item in [`/microsite/docusaurus.config.js`](https://github.com/backstage/backstage/blob/master/microsite/docusaurus.config.js) to point to the new release note
 
