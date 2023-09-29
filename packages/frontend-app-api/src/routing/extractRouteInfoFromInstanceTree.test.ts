@@ -15,7 +15,11 @@
  */
 
 import React from 'react';
-import { RouteRef, createRouteRef } from '@backstage/core-plugin-api';
+import {
+  BackstagePlugin,
+  RouteRef,
+  createRouteRef,
+} from '@backstage/core-plugin-api';
 import { extractRouteInfoFromInstanceTree } from './extractRouteInfoFromInstanceTree';
 import {
   coreExtensionData,
@@ -23,7 +27,7 @@ import {
   createPageExtension,
   createPlugin,
 } from '@backstage/frontend-plugin-api';
-import { createInstances } from '../wiring/createApp';
+import { createInstances, toLegacyPlugin } from '../wiring/createApp';
 import { MockConfigApi } from '@backstage/test-utils';
 
 const ref1 = createRouteRef({ id: 'page1' });
@@ -39,31 +43,31 @@ function sortedEntries<T>(map: Map<RouteRef, T>): [RouteRef, T][] {
   );
 }
 
-// async function routeObj(
-//   path: string,
-//   refs: RouteRef[],
-//   children: any[] = [],
-//   type: 'mounted' | 'gathered' = 'mounted',
-//   backstagePlugin?: BackstagePlugin,
-// ) {
-//   return {
-//     path: path,
-//     caseSensitive: false,
-//     element: type,
-//     routeRefs: new Set(refs),
-//     children: [
-//       {
-//         path: '*',
-//         caseSensitive: false,
-//         element: 'match-all',
-//         routeRefs: new Set(),
-//         plugins: new Set(),
-//       },
-//       ...children,
-//     ],
-//     plugins: backstagePlugin ? new Set([backstagePlugin]) : new Set(),
-//   };
-// }
+function routeObj(
+  path: string,
+  refs: RouteRef[],
+  children: any[] = [],
+  type: 'mounted' | 'gathered' = 'mounted',
+  backstagePlugin?: BackstagePlugin,
+) {
+  return {
+    path: path,
+    caseSensitive: false,
+    element: type,
+    routeRefs: new Set(refs),
+    children: [
+      {
+        path: '*',
+        caseSensitive: false,
+        element: 'match-all',
+        routeRefs: new Set(),
+        plugins: new Set(),
+      },
+      ...children,
+    ],
+    plugins: backstagePlugin ? new Set([backstagePlugin]) : new Set(),
+  };
+}
 
 const emptyLoader = () => Promise.resolve(React.createElement('div'));
 
@@ -120,14 +124,13 @@ describe('discovery', () => {
       }),
     ];
 
+    const plugin = createPlugin({
+      id: 'test',
+      extensions,
+    });
     const { rootInstances } = createInstances({
       config: new MockConfigApi({}),
-      plugins: [
-        createPlugin({
-          id: 'test',
-          extensions,
-        }),
-      ],
+      plugins: [plugin],
     });
 
     const info = extractRouteInfoFromInstanceTree(rootInstances);
@@ -146,25 +149,26 @@ describe('discovery', () => {
       [ref4, undefined],
       [ref5, ref1],
     ]);
-    // expect(routing.objects).toEqual([
-    //   routeObj(
-    //     'foo',
-    //     [ref1],
-    //     [
-    //       routeObj(
-    //         'bar/:id',
-    //         [ref2],
-    //         [routeObj('baz', [ref3], undefined, undefined, plugin)],
-    //         undefined,
-    //         plugin,
-    //       ),
-    //       routeObj('blop', [ref5], undefined, undefined, plugin),
-    //     ],
-    //     undefined,
-    //     plugin,
-    //   ),
-    //   routeObj('divsoup', [ref4], undefined, undefined, plugin),
-    // ]);
+    expect(info.routeObjects).toEqual([
+      routeObj('nothing', []),
+      routeObj(
+        'foo',
+        [ref1],
+        [
+          routeObj(
+            'bar/:id',
+            [ref2],
+            [routeObj('baz', [ref3], undefined, undefined, expect.any(Object))],
+            undefined,
+            expect.any(Object),
+          ),
+          routeObj('blop', [ref5], undefined, undefined, expect.any(Object)),
+        ],
+        undefined,
+        expect.any(Object),
+      ),
+      routeObj('divsoup', [ref4], undefined, undefined, expect.any(Object)),
+    ]);
   });
 
   // it('should handle all react router Route patterns', () => {

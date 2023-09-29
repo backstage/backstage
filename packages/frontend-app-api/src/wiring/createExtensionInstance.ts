@@ -36,6 +36,8 @@ export interface ExtensionInstance {
    * Maps input names to the actual instances given to them.
    */
   readonly attachments: Map<string, ExtensionInstance[]>;
+
+  readonly source?: BackstagePlugin;
 }
 
 function resolveInputData(
@@ -141,7 +143,7 @@ export function createExtensionInstance(options: {
     getData<T>(ref: ExtensionDataRef<T>): T | undefined {
       return extensionData.get(ref.id) as T | undefined;
     },
-
+    source,
     attachments,
   };
 }

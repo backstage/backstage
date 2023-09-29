@@ -19,6 +19,19 @@ import { coreExtensionData } from '@backstage/frontend-plugin-api';
 import { ExtensionInstance } from '../wiring/createExtensionInstance';
 // eslint-disable-next-line @backstage/no-relative-monorepo-imports
 import { BackstageRouteObject } from '../../../core-app-api/src/routing/types';
+import { toLegacyPlugin } from '../wiring/createApp';
+
+// We always add a child that matches all subroutes but without any route refs. This makes
+// sure that we're always able to match each route no matter how deep the navigation goes.
+// The route resolver then takes care of selecting the most specific match in order to find
+// mount points that are as deep in the routing tree as possible.
+export const MATCH_ALL_ROUTE: BackstageRouteObject = {
+  caseSensitive: false,
+  path: '*',
+  element: 'match-all', // These elements aren't used, so we add in a bit of debug information
+  routeRefs: new Set(),
+  plugins: new Set(),
+};
 
 // Joins a list of paths together, avoiding trailing and duplicate slashes
 export function joinPaths(...paths: string[]): string {
@@ -36,10 +49,30 @@ export function extractRouteInfoFromInstanceTree(roots: ExtensionInstance[]): {
 } {
   const routePaths = new Map<RouteRef, string>();
   const routeParents = new Map<RouteRef, RouteRef | undefined>();
+  const routeObjects = new Array<BackstageRouteObject>();
 
-  function visit(current: ExtensionInstance, parent?: RouteRef) {
-    const routePath = current.getData(coreExtensionData.routePath) ?? '';
+  function visit(
+    current: ExtensionInstance,
+    parentRef?: RouteRef,
+    parentObj?: BackstageRouteObject,
+  ) {
+    const routePath = current.getData(coreExtensionData.routePath) ?? ''; // TODO: need to gather routes instead
     const routeRef = current.getData(coreExtensionData.routeRef);
+    const parentChildren = parentObj?.children ?? routeObjects;
+    let currentObj = parentObj;
+
+    if (routePath) {
+      currentObj = {
+        path: routePath,
+        element: 'mounted',
+        routeRefs: new Set<RouteRef>(),
+        caseSensitive: false,
+        children: [MATCH_ALL_ROUTE],
+        plugins: new Set(),
+      };
+
+      parentChildren.push(currentObj);
+    }
 
     if (routeRef) {
       const routeRefId = (routeRef as any).id; // TODO: properly
@@ -49,12 +82,16 @@ export function extractRouteInfoFromInstanceTree(roots: ExtensionInstance[]): {
         );
       }
       routePaths.set(routeRef, routePath);
-      routeParents.set(routeRef, parent);
+      routeParents.set(routeRef, parentRef);
+      currentObj?.routeRefs.add(routeRef);
+      if (current.source) {
+        currentObj?.plugins.add(toLegacyPlugin(current.source));
+      }
     }
 
     for (const children of current.attachments.values()) {
       for (const child of children) {
-        visit(child, routeRef ?? parent);
+        visit(child, routeRef ?? parentRef, currentObj);
       }
     }
   }
@@ -63,5 +100,5 @@ export function extractRouteInfoFromInstanceTree(roots: ExtensionInstance[]): {
     visit(root);
   }
 
-  return { routePaths, routeParents, routeObjects: [] };
+  return { routePaths, routeParents, routeObjects };
 }
