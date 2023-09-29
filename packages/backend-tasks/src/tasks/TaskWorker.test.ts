@@ -16,7 +16,7 @@
 
 import { getVoidLogger } from '@backstage/backend-common';
 import { TestDatabases } from '@backstage/backend-test-utils';
-import { Duration } from 'luxon';
+import { Duration, DateTime } from 'luxon';
 import waitForExpect from 'wait-for-expect';
 import { migrateBackendTasks } from '../database/migrateBackendTasks';
 import { DbTasksRow, DB_TASKS_TABLE } from '../database/tables';
@@ -338,7 +338,7 @@ describe('TaskWorker', () => {
   );
 
   it.each(databases.eachSupportedId())(
-    'next_run_start_at is always the min between schedule changes, %p',
+    'next_run_start_at is always the min between schedule changes from cron frequency, %p',
     async databaseId => {
       const knex = await databases.init(databaseId);
       await migrateBackendTasks(knex);
@@ -372,6 +372,110 @@ describe('TaskWorker', () => {
       const row3 = (await knex<DbTasksRow>(DB_TASKS_TABLE))[0];
 
       expect(row3.next_run_start_at).toStrictEqual(row2.next_run_start_at);
+
+      await knex.destroy();
+    },
+  );
+
+  it.each(databases.eachSupportedId())(
+    'next_run_start_at is always the min between schedule changes when using human duration frequency, %p',
+    async databaseId => {
+      const knex = await databases.init(databaseId);
+      await migrateBackendTasks(knex);
+
+      const fn = jest.fn(
+        async () => new Promise<void>(resolve => setTimeout(resolve, 50)),
+      );
+
+      const initialSettings: TaskSettingsV2 = {
+        version: 2,
+        cadence: 'PT120M',
+        timeoutAfterDuration: 'PT1M',
+      };
+
+      const worker = new TaskWorker('task99', fn, knex, logger);
+      await worker.persistTask(initialSettings);
+      // replicate task running, sets next_run_start_at based on cadence
+      await worker.tryClaimTask('ticket', initialSettings);
+      await worker.tryReleaseTask('ticket', initialSettings);
+
+      // grab initial row for comparisons later
+      const initialRow = (await knex<DbTasksRow>(DB_TASKS_TABLE))[0];
+
+      const settings: TaskSettingsV2 = {
+        ...initialSettings,
+        cadence: 'PT60M',
+      };
+      await worker.persistTask(settings);
+      const row1 = (await knex<DbTasksRow>(DB_TASKS_TABLE))[0];
+
+      expect(
+        new Date(row1.next_run_start_at) <
+          new Date(initialRow.next_run_start_at),
+      ).toBeTruthy(); // ensure that next start at is sooner than initial
+      expect(new Date(row1.next_run_start_at) > new Date()).toBeTruthy(); // ensure that next start at is later than now
+
+      const settings2 = {
+        ...settings,
+      };
+      await worker.persistTask(settings2);
+      const row2 = (await knex<DbTasksRow>(DB_TASKS_TABLE))[0];
+
+      expect(row2.next_run_start_at).toStrictEqual(row1.next_run_start_at);
+
+      await knex.destroy();
+    },
+  );
+
+  it.each(databases.eachSupportedId())(
+    'next_run_start_at is always the min between schedule changes when using human duration frequency with initial start delay, %p',
+    async databaseId => {
+      const knex = await databases.init(databaseId);
+      await migrateBackendTasks(knex);
+
+      const fn = jest.fn(
+        async () => new Promise<void>(resolve => setTimeout(resolve, 50)),
+      );
+
+      const initialSettings: TaskSettingsV2 = {
+        version: 2,
+        cadence: 'PT120M',
+        initialDelayDuration: 'PT2M',
+        timeoutAfterDuration: 'PT1M',
+      };
+
+      const worker = new TaskWorker('task99', fn, knex, logger);
+      await worker.persistTask(initialSettings);
+      // replicate task running, sets next_run_start_at based on cadence
+      await worker.tryClaimTask('ticket', initialSettings);
+      await worker.tryReleaseTask('ticket', initialSettings);
+
+      // grab initial row for comparisons later
+      const initialRow = (await knex<DbTasksRow>(DB_TASKS_TABLE))[0];
+
+      const settings: TaskSettingsV2 = {
+        ...initialSettings,
+        cadence: 'PT60M',
+      };
+      await worker.persistTask(settings);
+      const row1 = (await knex<DbTasksRow>(DB_TASKS_TABLE))[0];
+
+      expect(
+        new Date(row1.next_run_start_at) <
+          new Date(initialRow.next_run_start_at),
+      ).toBeTruthy(); // ensure that next start at is sooner than initial
+      expect(
+        new Date(row1.next_run_start_at) >
+          DateTime.now().plus({ minutes: 3 }).toJSDate(),
+      ).toBeTruthy(); // ensure that next start at is later than initial delay start time since next run at should be an hour from now
+
+      const settings2 = {
+        ...settings,
+      };
+      await worker.persistTask(settings2);
+      const row2 = (await knex<DbTasksRow>(DB_TASKS_TABLE))[0];
+
+      expect(row2.next_run_start_at).toStrictEqual(row1.next_run_start_at);
 
       await knex.destroy();
     },
