@@ -65,7 +65,7 @@ export type SearchResultItemExtensionOptions<
   /**
    * The extension attachment point (e.g., search modal or page).
    */
-  at: string;
+  at?: string;
   /**
    * Optional extension config schema.
    */
@@ -97,7 +97,7 @@ export function createSearchResultListItemExtension<
         ) as PortableSchema<TConfig>);
   return createExtension({
     id: `plugin.search.result.item.${options.id}`,
-    at: options.at,
+    at: options.at ?? 'plugin.search.page/items',
     configSchema,
     output: {
       item: searchResultItemExtensionData,

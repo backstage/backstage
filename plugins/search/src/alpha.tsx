@@ -200,14 +200,16 @@ export const SearchPage = createPageExtension({
                 <SearchResults>
                   {({ results }) =>
                     results.map((result, index) => {
+                      const { noTrack } = config;
+                      const { document, ...rest } = result;
                       const SearchResultListItem =
                         getResultItemComponent(result);
                       return (
                         <SearchResultListItem
+                          {...rest}
                           key={index}
-                          rank={result.rank}
-                          result={result.document}
-                          noTrack={config.noTrack}
+                          result={document}
+                          noTrack={noTrack}
                         />
                       );
                     })
