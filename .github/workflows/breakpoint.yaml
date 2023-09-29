@@ -1,10 +1,11 @@
 name: Pull Request
 on:
-  - pull_request
+  workflow_dispatch:
+  pull_request:
 
 jobs:
   test:
-    name: Test
+    name: Breakpoint
     runs-on: ubuntu-latest
 
     steps:
@@ -15,6 +16,6 @@ jobs:
         uses: trunk-io/breakpoint@v1
         with:
           breakpoint-id: run-tests
-          run: ./run_tests.sh
+          run: exit 1
           trunk-token: ${{ secrets.TRUNK_DEBUGGER_TOKEN }}
-          org: trunk
+          org: matts_org
