@@ -29,9 +29,10 @@ import {
   useRouteRefParams,
   useApi,
 } from '@backstage/core-plugin-api';
-import { FormProps, IChangeEvent, withTheme } from '@rjsf/core';
+import { FormProps, IChangeEvent, withTheme } from '@rjsf/core-v5';
 import { Theme as MuiTheme } from '@rjsf/material-ui';
 import React, { ComponentType, useState } from 'react';
+import validator from '@rjsf/validator-ajv8';
 import { transformSchemaToProps } from './schema';
 import cloneDeep from 'lodash/cloneDeep';
 import * as fieldOverrides from './FieldOverrides';
@@ -182,6 +183,7 @@ export const MultistepJsonForm = (props: MultistepJsonFormProps) => {
                   fields={{ ...fieldOverrides, ...fields }}
                   widgets={widgets}
                   noHtml5Validate
+                  validator={validator}
                   formData={formData}
                   formContext={{ formData }}
                   onChange={onChange}
