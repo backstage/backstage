@@ -8,6 +8,20 @@ Vault is an identity-based secrets and encryption management system. A secret is
 
 This plugins allows you to view all the available secrets at a certain location, and redirect you to the official UI so backstage can rely on LIST permissions, which is safer.
 
+## New Backend System
+
+The Vault backend plugin has support for the [new backend system](https://backstage.io/docs/backend-system/), here's how you can set that up:
+
+In your `packages/backend/src/index.ts` make the following changes:
+
+```diff
+  import { createBackend } from '@backstage/backend-defaults';
+  const backend = createBackend();
+  // ... other feature additions
+  backend.add(import('@backstage/plugin-vault-backend'));
+  backend.start();
+```
+
 ## Getting started
 
 To get started, first you need a running instance of Vault. You can follow [this tutorial](https://learn.hashicorp.com/tutorials/vault/getting-started-intro?in=vault/getting-started) to install vault and start your server locally.

@@ -46,5 +46,6 @@ backend.add(import('@backstage/plugin-search-backend/alpha'));
 backend.add(import('@backstage/plugin-techdocs-backend/alpha'));
 backend.add(import('@backstage/plugin-todo-backend'));
 backend.add(import('@backstage/plugin-sonarqube-backend'));
+backend.add(import('@backstage/plugin-vault-backend'));
 
 backend.start();
