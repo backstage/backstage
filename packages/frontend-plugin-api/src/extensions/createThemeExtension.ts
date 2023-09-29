@@ -14,7 +14,19 @@
  * limitations under the License.
  */
 
-export { createApiExtension } from './createApiExtension';
-export { createPageExtension } from './createPageExtension';
-export { createNavItemExtension } from './createNavItemExtension';
-export { createThemeExtension } from './createThemeExtension';
+import { createExtension, coreExtensionData } from '../wiring';
+import { AppTheme } from '@backstage/core-plugin-api';
+
+/** @public */
+export function createThemeExtension(theme: AppTheme) {
+  return createExtension({
+    id: `themes.${theme.id}`,
+    at: 'core/themes',
+    output: {
+      theme: coreExtensionData.theme,
+    },
+    factory({ bind }) {
+      bind({ theme });
+    },
+  });
+}

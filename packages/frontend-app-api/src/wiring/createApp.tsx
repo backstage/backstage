@@ -50,6 +50,7 @@ import {
   attachComponentData,
   useRouteRef,
   identityApiRef,
+  AppTheme,
 } from '@backstage/core-plugin-api';
 import { getAvailablePlugins } from './discovery';
 import {
@@ -77,10 +78,10 @@ import {
   apis as defaultApis,
   components as defaultComponents,
   icons as defaultIcons,
-  themes as defaultThemes,
 } from '../../../app-defaults/src/defaults';
 import { BrowserRouter, Route } from 'react-router-dom';
 import { SidebarItem } from '@backstage/core-components';
+import { DarkTheme, LightTheme } from '../extensions/themes';
 
 /** @public */
 export interface ExtensionTreeNode {
@@ -171,7 +172,14 @@ export function createInstances(options: {
   plugins: BackstagePlugin[];
   config: Config;
 }) {
-  const builtinExtensions = [Core, CoreRoutes, CoreNav, CoreLayout];
+  const builtinExtensions = [
+    Core,
+    CoreRoutes,
+    CoreNav,
+    CoreLayout,
+    LightTheme,
+    DarkTheme,
+  ];
 
   // pull in default extension instance from discovered packages
   // apply config to adjust default extension instances and add more
@@ -375,6 +383,12 @@ function createApiHolder(
       ?.map(e => e.getData(coreExtensionData.apiFactory))
       .filter((x): x is AnyApiFactory => !!x) ?? [];
 
+  const themeExtensions =
+    coreExtension.attachments
+      .get('themes')
+      ?.map(e => e.getData(coreExtensionData.theme))
+      .filter((x): x is AppTheme => !!x) ?? [];
+
   for (const factory of [...defaultApis, ...pluginApis]) {
     factoryRegistry.register('default', factory);
   }
@@ -422,7 +436,7 @@ function createApiHolder(
     api: appThemeApiRef,
     deps: {},
     // TODO: add extension for registering themes
-    factory: () => AppThemeSelector.createWithStorage(defaultThemes),
+    factory: () => AppThemeSelector.createWithStorage(themeExtensions),
   });
 
   factoryRegistry.register('static', {
