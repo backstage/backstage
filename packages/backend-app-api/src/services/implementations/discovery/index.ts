@@ -15,3 +15,4 @@
  */
 
 export { discoveryServiceFactory } from './discoveryServiceFactory';
+export { HostDiscovery } from './HostDiscovery';

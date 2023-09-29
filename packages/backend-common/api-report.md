@@ -28,6 +28,7 @@ import { GiteaIntegration } from '@backstage/integration';
 import { GithubCredentialsProvider } from '@backstage/integration';
 import { GithubIntegration } from '@backstage/integration';
 import { GitLabIntegration } from '@backstage/integration';
+import { HostDiscovery as HostDiscovery_2 } from '@backstage/backend-app-api';
 import { IdentityService } from '@backstage/backend-plugin-api';
 import { isChildPath } from '@backstage/cli-common';
 import { Knex } from 'knex';
@@ -475,18 +476,7 @@ export class GitlabUrlReader implements UrlReader {
 }
 
 // @public
-export class HostDiscovery implements PluginEndpointDiscovery {
-  static fromConfig(
-    config: Config,
-    options?: {
-      basePath?: string;
-    },
-  ): HostDiscovery;
-  // (undocumented)
-  getBaseUrl(pluginId: string): Promise<string>;
-  // (undocumented)
-  getExternalBaseUrl(pluginId: string): Promise<string>;
-}
+export const HostDiscovery: typeof HostDiscovery_2;
 
 export { isChildPath };
 
@@ -747,7 +737,7 @@ export type ServiceBuilder = {
 export function setRootLogger(newLogger: winston.Logger): void;
 
 // @public @deprecated
-export const SingleHostDiscovery: typeof HostDiscovery;
+export const SingleHostDiscovery: typeof HostDiscovery_2;
 
 // @public
 export type StatusCheck = () => Promise<any>;
