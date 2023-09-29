@@ -16,7 +16,7 @@ PR is merged. This is typically done every Tuesday around noon CET.
 ## Next Line Release Process
 
 - PR Checks: Notify the teams & ensure there are no outstanding PRs pending to be merged for this version. This should be done in time to ensure a smooth release day. If there are any, reach out to maintainers and relevant owners of the affected code reminding them of the deadline for the release.
-- Lock main branch 
+- Lock main branch
   - Lock the main branch to prevent any new merges by other maintainers. Do not unlock the main branch until the release was published successfully
   - Core maintainers can still merge last PRs using their admin override including the Version Packages PR
   - Note: Admin rights are required to lock the branch. If you lack the necessary permissions, contact a core maintainer to perform this action on your behalf.
@@ -45,7 +45,7 @@ Additional steps for the main line release
   - Check for mentions of "major" & "breaking" and if they are expected in the current release
   - Verify the version we are shipping is correct
 - Create Release Notes
-  - There exists a "Backstage Release Notes" template for creating the release notes. It can already be created after the last main line release to keep track of major changes during the month
+  - There exists a [release notes template](https://github.com/backstage/backstage/blob/master/docs/release-notes-template.md) for creating the release notes. It can already be created after the last main line release to keep track of major changes during the month
   - The content is picked by relevancy showcasing the work of the community during the month of the release
   - Mention newly added packages or features
   - Mention any security fixes
