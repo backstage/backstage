@@ -3673,7 +3673,7 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@backstage/catalog-model@^1.1.5, @backstage/catalog-model@^1.4.1, @backstage/catalog-model@^1.4.2, @backstage/catalog-model@workspace:^, @backstage/catalog-model@workspace:packages/catalog-model":
+"@backstage/catalog-model@^1.1.5, @backstage/catalog-model@^1.4.2, @backstage/catalog-model@workspace:^, @backstage/catalog-model@workspace:packages/catalog-model":
   version: 0.0.0-use.local
   resolution: "@backstage/catalog-model@workspace:packages/catalog-model"
   dependencies:
@@ -4019,7 +4019,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@backstage/core-components@npm:^0.13.4, @backstage/core-components@npm:^0.13.5":
+"@backstage/core-components@npm:^0.13.5":
   version: 0.13.5
   resolution: "@backstage/core-components@npm:0.13.5"
   dependencies:
@@ -4150,7 +4150,7 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@backstage/core-plugin-api@npm:^1.3.0, @backstage/core-plugin-api@npm:^1.5.0, @backstage/core-plugin-api@npm:^1.5.3, @backstage/core-plugin-api@npm:^1.6.0":
+"@backstage/core-plugin-api@npm:^1.3.0, @backstage/core-plugin-api@npm:^1.5.0, @backstage/core-plugin-api@npm:^1.6.0":
   version: 1.6.0
   resolution: "@backstage/core-plugin-api@npm:1.6.0"
   dependencies:
@@ -5900,7 +5900,7 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@backstage/plugin-catalog-react@npm:^1.2.4, @backstage/plugin-catalog-react@npm:^1.8.3, @backstage/plugin-catalog-react@npm:^1.8.4":
+"@backstage/plugin-catalog-react@npm:^1.2.4, @backstage/plugin-catalog-react@npm:^1.8.4":
   version: 1.8.4
   resolution: "@backstage/plugin-catalog-react@npm:1.8.4"
   dependencies:
@@ -10073,7 +10073,7 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@backstage/theme@^0.4.1, @backstage/theme@^0.4.2, @backstage/theme@workspace:^, @backstage/theme@workspace:packages/theme":
+"@backstage/theme@^0.4.2, @backstage/theme@workspace:^, @backstage/theme@workspace:packages/theme":
   version: 0.0.0-use.local
   resolution: "@backstage/theme@workspace:packages/theme"
   dependencies:
@@ -18227,11 +18227,11 @@ __metadata:
   linkType: hard
 
 "@types/react-sparklines@npm:^1.7.0":
-  version: 1.7.2
-  resolution: "@types/react-sparklines@npm:1.7.2"
+  version: 1.7.3
+  resolution: "@types/react-sparklines@npm:1.7.3"
   dependencies:
     "@types/react": "*"
-  checksum: e0e8479c256731c3fe9405a5d3061f81838f8708bc585203afa89ff81f266f06f5b497b1db77e6a488d6073de623c4093afd9cbf3626bb7c89f996632749c281
+  checksum: 4bcdc526ba2bab1354c8add8a01e10c42203950edfeda70d304a50b51f299c27432a8c8a7bbfce1a860a2b72bbfaf867bafe1b01f877cdaaae54e4ed209554f0
   languageName: node
   linkType: hard
 
