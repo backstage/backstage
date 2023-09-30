@@ -43,6 +43,7 @@ export interface BackendRegisterInit {
 
 export class BackendInitializer {
   #startPromise?: Promise<void>;
+  #stopPromise?: Promise<void>;
   #features = new Array<InternalBackendFeature>();
   #extensionPoints = new Map<string, { impl: unknown; pluginId: string }>();
   #serviceRegistry: ServiceRegistry;
@@ -127,10 +128,6 @@ export class BackendInitializer {
     }
 
     const exitHandler = async () => {
-      process.removeListener('SIGTERM', exitHandler);
-      process.removeListener('SIGINT', exitHandler);
-      process.removeListener('beforeExit', exitHandler);
-
       try {
         await this.stop();
         process.exit(0);
@@ -143,6 +140,23 @@ export class BackendInitializer {
     process.addListener('SIGTERM', exitHandler);
     process.addListener('SIGINT', exitHandler);
     process.addListener('beforeExit', exitHandler);
+
+    // During development we use an IPC signal for more reliable shutdown
+    // Especially on Windows this allows for a more graceful async shutdown
+    if (process.send && process.env.BACKSTAGE_CLI_CHANNEL) {
+      process.addListener('message', (data: unknown) => {
+        if (
+          data &&
+          typeof data === 'object' &&
+          'type' in data &&
+          data.type === '@backstage/cli/backend/stop'
+        ) {
+          exitHandler();
+        }
+      });
+      // Signal to the parent process that the backend begun starting up
+      process.send({ type: '@backstage/cli/backend/starting' });
+    }
 
     this.#startPromise = this.#doStart();
     await this.#startPromise;
@@ -322,6 +336,16 @@ export class BackendInitializer {
       return;
     }
 
+    if (this.#stopPromise) {
+      await this.#stopPromise;
+      return;
+    }
+
+    this.#stopPromise = this.#doStop();
+    await this.#stopPromise;
+  }
+
+  async #doStop(): Promise<void> {
     try {
       await this.#startPromise;
     } catch (error) {

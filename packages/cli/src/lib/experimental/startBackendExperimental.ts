@@ -47,6 +47,7 @@ export async function startBackendExperimental(options: BackendServeOptions) {
   let child: ChildProcess | undefined;
   let watcher: FSWatcher | undefined = undefined;
   let shutdownPromise: Promise<void> | undefined = undefined;
+  let childCanShutdownWithMessage = false;
 
   const restart = debounce(async () => {
     // If a re-trigger happens during an existing shutdown, we just ignore it
@@ -56,8 +57,22 @@ export async function startBackendExperimental(options: BackendServeOptions) {
 
     if (child && !child.killed && child.exitCode === null) {
       // We always wait for the existing process to exit, to make sure we don't get IPC conflicts
-      shutdownPromise = new Promise(resolve => child!.once('exit', resolve));
-      child.kill();
+      shutdownPromise = new Promise((resolve, reject) => {
+        child!.once('exit', resolve);
+
+        // Shutting down the child with a IPC message is preferred, but only done if the child has
+        // signalled that it is ready to receive the message.
+        // This enabled better cross-platform support and a more graceful shutdown.
+        if (childCanShutdownWithMessage) {
+          child!.send({ type: '@backstage/cli/backend/stop' }, err => {
+            if (err) {
+              reject(err);
+            }
+          });
+        } else {
+          child!.kill();
+        }
+      });
       await shutdownPromise;
       shutdownPromise = undefined;
     }
@@ -86,6 +101,7 @@ export async function startBackendExperimental(options: BackendServeOptions) {
       .slice(['node', 'backstage-cli', 'package', 'start'].length)
       .filter(arg => !optionArgs.includes(arg));
 
+    childCanShutdownWithMessage = false;
     child = spawn(
       process.execPath,
       [...loaderArgs, ...optionArgs, options.entry, ...userArgs],
@@ -104,14 +120,18 @@ export async function startBackendExperimental(options: BackendServeOptions) {
 
     // This captures messages sent by @esbuild-kit/cjs-loader
     child.on('message', (data: { type?: string } | null) => {
-      if (typeof data === 'object' && data?.type === 'dependency') {
-        let path = (data as { path: string }).path;
-        if (path.startsWith('file:')) {
-          path = fileURLToPath(path);
-        }
+      if (typeof data === 'object') {
+        if (data?.type === 'dependency') {
+          let path = (data as { path: string }).path;
+          if (path.startsWith('file:')) {
+            path = fileURLToPath(path);
+          }
 
-        if (isAbsolutePath(path)) {
-          watcher?.add(path);
+          if (isAbsolutePath(path)) {
+            watcher?.add(path);
+          }
+        } else if (data?.type === '@backstage/cli/backend/starting') {
+          childCanShutdownWithMessage = true;
         }
       }
     });
