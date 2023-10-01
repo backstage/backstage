@@ -22,6 +22,7 @@ import {
 } from '@backstage/core-plugin-api';
 import { extractRouteInfoFromInstanceTree } from './extractRouteInfoFromInstanceTree';
 import {
+  Extension,
   coreExtensionData,
   createExtensionInput,
   createPageExtension,
@@ -59,6 +60,19 @@ function createTestExtension(options: {
   });
 }
 
+function routeInfoFromExtensions(extensions: Extension<unknown>[]) {
+  const plugin = createPlugin({
+    id: 'test',
+    extensions,
+  });
+  const { rootInstances } = createInstances({
+    config: new MockConfigApi({}),
+    plugins: [plugin],
+  });
+
+  return extractRouteInfoFromInstanceTree(rootInstances);
+}
+
 function sortedEntries<T>(map: Map<RouteRef, T>): [RouteRef, T][] {
   return Array.from(map).sort(
     ([a], [b]) => refOrder.indexOf(a) - refOrder.indexOf(b),
@@ -93,7 +107,7 @@ function routeObj(
 
 describe('discovery', () => {
   it('should collect routes', () => {
-    const extensions = [
+    const info = routeInfoFromExtensions([
       createTestExtension({
         id: 'nothing',
         path: 'nothing',
@@ -126,18 +140,7 @@ describe('discovery', () => {
         path: 'blop',
         routeRef: ref5,
       }),
-    ];
-
-    const plugin = createPlugin({
-      id: 'test',
-      extensions,
-    });
-    const { rootInstances } = createInstances({
-      config: new MockConfigApi({}),
-      plugins: [plugin],
-    });
-
-    const info = extractRouteInfoFromInstanceTree(rootInstances);
+    ]);
 
     expect(sortedEntries(info.routePaths)).toEqual([
       [ref1, 'foo'],
@@ -175,45 +178,53 @@ describe('discovery', () => {
     ]);
   });
 
-  // it('should handle all react router Route patterns', () => {
-  //   const root = (
-  //     <MemoryRouter>
-  //       <Routes>
-  //         <Route path="foo" element={<Extension1 />}>
-  //           <Routes>
-  //             <Route path="bar/:id" element={<Extension2 />} />
-  //           </Routes>
-  //         </Route>
-  //         <Route path="baz" element={<Extension3 />}>
-  //           <Route path="divsoup" element={<Extension4 />} />
-  //           <Route path="blop" element={<Extension5 />} />
-  //         </Route>
-  //       </Routes>
-  //     </MemoryRouter>
-  //   );
+  it('should handle all react router Route patterns', () => {
+    const info = routeInfoFromExtensions([
+      createTestExtension({
+        id: 'page1',
+        path: 'foo',
+        routeRef: ref1,
+      }),
+      createTestExtension({
+        id: 'page2',
+        at: 'page1/routes',
+        path: 'bar/:id',
+        routeRef: ref2,
+      }),
+      createTestExtension({
+        id: 'page3',
+        path: 'baz',
+        routeRef: ref3,
+      }),
+      createTestExtension({
+        id: 'page4',
+        at: 'page3/routes',
+        path: 'divsoup',
+        routeRef: ref4,
+      }),
+      createTestExtension({
+        id: 'page5',
+        at: 'page3/routes',
+        path: 'blop',
+        routeRef: ref5,
+      }),
+    ]);
 
-  //   const { routing } = traverseElementTree({
-  //     root,
-  //     discoverers: [childDiscoverer, routeElementDiscoverer],
-  //     collectors: {
-  //       routing: routingV2Collector,
-  //     },
-  //   });
-  //   expect(sortedEntries(routing.paths)).toEqual([
-  //     [ref1, 'foo'],
-  //     [ref2, 'bar/:id'],
-  //     [ref3, 'baz'],
-  //     [ref4, 'divsoup'],
-  //     [ref5, 'blop'],
-  //   ]);
-  //   expect(sortedEntries(routing.parents)).toEqual([
-  //     [ref1, undefined],
-  //     [ref2, ref1],
-  //     [ref3, undefined],
-  //     [ref4, ref3],
-  //     [ref5, ref3],
-  //   ]);
-  // });
+    expect(sortedEntries(info.routePaths)).toEqual([
+      [ref1, 'foo'],
+      [ref2, 'bar/:id'],
+      [ref3, 'baz'],
+      [ref4, 'divsoup'],
+      [ref5, 'blop'],
+    ]);
+    expect(sortedEntries(info.routeParents)).toEqual([
+      [ref1, undefined],
+      [ref2, ref1],
+      [ref3, undefined],
+      [ref4, ref3],
+      [ref5, ref3],
+    ]);
+  });
 
   // it('should handle absolute route paths', () => {
   //   const root = (
