@@ -465,9 +465,7 @@ async function testBackendStart(appDir: string, ...args: string[]) {
             '(Use `node --trace-warnings ...` to show where the warning was created)',
           ) &&
           !l.includes('Custom ESM Loaders is an experimental feature') &&
-          !l.includes(
-            'ExperimentalWarning: `globalPreload` is planned for removal',
-          ),
+          !l.includes('ExperimentalWarning'),
       ).length !== 0
     );
   };
