@@ -11,11 +11,21 @@ import { JSX as JSX_2 } from 'react';
 import { RouteRef } from '@backstage/core-plugin-api';
 
 // @public
+export const DashboardSnapshot: (props: {
+  guid: string;
+  name: string;
+  permalink: string;
+}) => JSX_2.Element;
+
+// @public @deprecated
 export const DashboardSnapshotComponent: (props: {
   guid: string;
   name: string;
   permalink: string;
 }) => JSX_2.Element;
+
+// @public
+export const DashboardSnapshotList: (props: { guid: string }) => JSX_2.Element;
 
 // @public (undocumented)
 export const EntityNewRelicDashboardCard: () => JSX_2.Element;
