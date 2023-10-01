@@ -18,6 +18,7 @@ import { FSWatcher, watch } from 'chokidar';
 
 import { BackendServeOptions } from '../bundler/types';
 import type { ChildProcess } from 'child_process';
+import { ctrlc } from 'ctrlc-windows';
 import { IpcServer } from './IpcServer';
 import { ServerDataStore } from './ServerDataStore';
 import debounce from 'lodash/debounce';
@@ -57,7 +58,11 @@ export async function startBackendExperimental(options: BackendServeOptions) {
     if (child && !child.killed && child.exitCode === null) {
       // We always wait for the existing process to exit, to make sure we don't get IPC conflicts
       shutdownPromise = new Promise(resolve => child!.once('exit', resolve));
-      child.kill();
+      if (process.platform === 'win32' && child.pid) {
+        ctrlc(child.pid);
+      } else {
+        child.kill();
+      }
       await shutdownPromise;
       shutdownPromise = undefined;
     }
