@@ -27,7 +27,7 @@ import {
   createPageExtension,
   createPlugin,
 } from '@backstage/frontend-plugin-api';
-import { createInstances, toLegacyPlugin } from '../wiring/createApp';
+import { createInstances } from '../wiring/createApp';
 import { MockConfigApi } from '@backstage/test-utils';
 
 const ref1 = createRouteRef({ id: 'page1' });
@@ -36,6 +36,28 @@ const ref3 = createRouteRef({ id: 'page3' });
 const ref4 = createRouteRef({ id: 'page4' });
 const ref5 = createRouteRef({ id: 'page5' });
 const refOrder = [ref1, ref2, ref3, ref4, ref5];
+
+const emptyLoader = () => Promise.resolve(React.createElement('div'));
+
+function createTestExtension(options: {
+  id: string;
+  at?: string;
+  path: string;
+  routeRef?: RouteRef;
+}) {
+  return createPageExtension({
+    id: options.id,
+    at: options.at,
+    defaultPath: options.path,
+    routeRef: options.routeRef,
+    inputs: {
+      routes: createExtensionInput({
+        element: coreExtensionData.reactElement,
+      }),
+    },
+    loader: emptyLoader,
+  });
+}
 
 function sortedEntries<T>(map: Map<RouteRef, T>): [RouteRef, T][] {
   return Array.from(map).sort(
@@ -69,58 +91,40 @@ function routeObj(
   };
 }
 
-const emptyLoader = () => Promise.resolve(React.createElement('div'));
-
 describe('discovery', () => {
   it('should collect routes', () => {
     const extensions = [
-      createPageExtension({
+      createTestExtension({
         id: 'nothing',
-        defaultPath: 'nothing',
-        loader: emptyLoader,
+        path: 'nothing',
       }),
-      createPageExtension({
+      createTestExtension({
         id: 'page1',
-        defaultPath: 'foo',
+        path: 'foo',
         routeRef: ref1,
-        inputs: {
-          routes: createExtensionInput({
-            element: coreExtensionData.reactElement,
-          }),
-        },
-        loader: emptyLoader,
       }),
-      createPageExtension({
+      createTestExtension({
         id: 'page2',
         at: 'page1/routes',
-        defaultPath: 'bar/:id',
+        path: 'bar/:id',
         routeRef: ref2,
-        inputs: {
-          routes: createExtensionInput({
-            element: coreExtensionData.reactElement,
-          }),
-        },
-        loader: emptyLoader,
       }),
-      createPageExtension({
+      createTestExtension({
         id: 'page3',
         at: 'page2/routes',
-        defaultPath: 'baz',
+        path: 'baz',
         routeRef: ref3,
-        loader: emptyLoader,
       }),
-      createPageExtension({
+      createTestExtension({
         id: 'page4',
-        defaultPath: 'divsoup',
+        path: 'divsoup',
         routeRef: ref4,
-        loader: emptyLoader,
       }),
-      createPageExtension({
+      createTestExtension({
         id: 'page5',
         at: 'page1/routes',
-        defaultPath: 'blop',
+        path: 'blop',
         routeRef: ref5,
-        loader: emptyLoader,
       }),
     ];
 
