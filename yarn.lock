@@ -29626,7 +29626,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"jest-haste-map@npm:^29.4.3":
+"jest-haste-map@npm:29.4.3":
   version: 29.4.3
   resolution: "jest-haste-map@npm:29.4.3"
   dependencies:
@@ -29646,6 +29646,29 @@ __metadata:
     fsevents:
       optional: true
   checksum: c7a83ebe6008b3fe96a96235e8153092e54b14df68e0f4205faedec57450df26b658578495a71c6d82494c01fbb44bca98c1506a6b2b9c920696dcc5d2e2bc59
+  languageName: node
+  linkType: hard
+
+"jest-haste-map@patch:jest-haste-map@npm%3A29.4.3#./.yarn/patches/jest-haste-map-npm-29.4.3-19b03fcef3.patch::locator=root%40workspace%3A.":
+  version: 29.4.3
+  resolution: "jest-haste-map@patch:jest-haste-map@npm%3A29.4.3#./.yarn/patches/jest-haste-map-npm-29.4.3-19b03fcef3.patch::version=29.4.3&hash=1e431f&locator=root%40workspace%3A."
+  dependencies:
+    "@jest/types": ^29.4.3
+    "@types/graceful-fs": ^4.1.3
+    "@types/node": "*"
+    anymatch: ^3.0.3
+    fb-watchman: ^2.0.0
+    fsevents: ^2.3.2
+    graceful-fs: ^4.2.9
+    jest-regex-util: ^29.4.3
+    jest-util: ^29.4.3
+    jest-worker: ^29.4.3
+    micromatch: ^4.0.4
+    walker: ^1.0.8
+  dependenciesMeta:
+    fsevents:
+      optional: true
+  checksum: a25fd71cc650acac4295172b2b84212872c4100a0b8e627e1f4b70a7e74d895a20274a4b0449aafdcb8273da055013fdc8765e55cbcf6dc46ae0351e974ed0c2
   languageName: node
   linkType: hard
 
