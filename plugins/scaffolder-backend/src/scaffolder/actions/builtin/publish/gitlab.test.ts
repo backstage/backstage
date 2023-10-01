@@ -396,7 +396,9 @@ describe('publish:gitlab', () => {
 
   it('should show proper error message when token has insufficient permissions or namespace not found', async () => {
     mockGitlabClient.Namespaces.show.mockRejectedValue({
-      message: '404 Namespace Not Found',
+      response: {
+        statusCode: 404,
+      },
     });
     const owner = 'infrastructure/devex';
     const repoName = 'backstage';

@@ -183,9 +183,11 @@ export function createPublishGitlabAction(options: {
 
         targetNamespaceId = namespaceResponse.id;
       } catch (e) {
-        throw new InputError(
-          `The namespace ${owner} is not found or the user doesn't have permissions to access it`,
-        );
+        if (e.response && e.response.statusCode === 404) {
+          throw new InputError(
+            `The namespace ${owner} is not found or the user doesn't have permissions to access it`,
+          );
+        }
       }
 
       const { id: userId } = (await client.Users.current()) as {
