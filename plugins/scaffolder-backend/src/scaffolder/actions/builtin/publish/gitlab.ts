@@ -188,6 +188,7 @@ export function createPublishGitlabAction(options: {
             `The namespace ${owner} is not found or the user doesn't have permissions to access it`,
           );
         }
+        throw e;
       }
 
       const { id: userId } = (await client.Users.current()) as {
