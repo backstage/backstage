@@ -443,41 +443,35 @@ async function testBackendStart(appDir: string, ...args: string[]) {
   });
   let successful = false;
 
-  const stdErrorHasErrors = (input: string) => {
+  const filterStderr = (input: string) => {
     const lines = input.split('\n').filter(Boolean);
-    return (
-      lines.filter(
-        l =>
-          !l.includes('Use of deprecated folder mapping') &&
-          !l.includes('Update this package.json to use a subpath') &&
-          !l.includes(
-            '(Use `node --trace-deprecation ...` to show where the warning was created)',
-          ) &&
-          // These 4 are all for the AWS SDK v2 deprecation
-          !l.includes(
-            'The AWS SDK for JavaScript (v2) will be put into maintenance mode',
-          ) &&
-          !l.includes(
-            'Please migrate your code to use AWS SDK for JavaScript',
-          ) &&
-          !l.includes('check the migration guide at https://a.co/7PzMCcy') &&
-          !l.includes(
-            '(Use `node --trace-warnings ...` to show where the warning was created)',
-          ) &&
-          !l.includes('Custom ESM Loaders is an experimental feature') &&
-          !l.includes(
-            'ExperimentalWarning: `globalPreload` is planned for removal',
-          ),
-      ).length !== 0
+    return lines.filter(
+      l =>
+        !l.includes(
+          'ExperimentalWarning: Custom ESM Loaders is an experimental feature', // Node 16
+        ) &&
+        !l.includes(
+          'ExperimentalWarning: `--experimental-loader` may be removed in the future;', // Node 18
+        ) &&
+        !l.includes("--import 'data:text/javascript,import") && // the new --experimental-loader replacement warning, printed after the above, Node 18
+        !l.includes(
+          'ExperimentalWarning: `globalPreload` is planned for removal in favor of `initialize`.', // Node 18
+        ) &&
+        !l.includes('node --trace-warnings ...'),
     );
   };
 
   try {
     await waitFor(
-      () => stdout.includes('Listening on ') || stdErrorHasErrors(stderr),
+      () => stdout.includes('Listening on ') || filterStderr(stderr).length > 0,
     );
-    if (stdErrorHasErrors(stderr)) {
-      print(`Expected stderr to be clean, got ${stderr}`);
+    const stderrLines = filterStderr(stderr);
+    if (stderrLines.length > 0) {
+      print(
+        `Expected stderr to be clean, got ${stderr} \n\nThe following lines were unexpected:\n${stderrLines.join(
+          '\n',
+        )}`,
+      );
       // Skipping the whole block
       throw new Error(stderr);
     }
