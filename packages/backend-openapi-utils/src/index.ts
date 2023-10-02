@@ -22,6 +22,13 @@
 import * as internal from './types';
 
 export { internal };
-export * from './utility';
+export type {
+  Request,
+  Response,
+  QueryParameters,
+  HeaderParameters,
+  CookieParameters,
+  PathParameters,
+} from './utility';
 export type { ApiRouter } from './router';
 export { createValidatedOpenApiRouter } from './stub';
