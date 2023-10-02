@@ -163,6 +163,7 @@ export async function serveBundle(options: ServeOptions) {
 
   if (process.env.EXPERIMENTAL_VITE) {
     server = await vite.createServer({
+      mode: 'development',
       define: {
         global: 'globalThis',
         APP_CONFIG: JSON.stringify(cliConfig.frontendAppConfigs),
@@ -177,7 +178,12 @@ export async function serveBundle(options: ServeOptions) {
         vitePluginSvgr(),
         viteCommonjs(),
         viteNodePolyfills(),
-        htmlTemplate(),
+        htmlTemplate({
+          data: {
+            publicPath: config.output?.publicPath,
+            config: frontendConfig,
+          },
+        }),
       ],
       server: {
         host,
