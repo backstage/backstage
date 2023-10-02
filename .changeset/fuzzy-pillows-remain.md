@@ -2,4 +2,4 @@
 '@backstage/plugin-techdocs': patch
 ---
 
-Only show pagination controls when necessary
+Improved `DocsTable` to display pagination controls dynamically, appearing only when needed.
