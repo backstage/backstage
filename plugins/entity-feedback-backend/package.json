@@ -47,6 +47,7 @@
     "@backstage/backend-test-utils": "workspace:^",
     "@backstage/cli": "workspace:^",
     "@types/supertest": "^2.0.12",
+    "jest-when": "^3.6.0",
     "msw": "^1.0.0",
     "supertest": "^6.2.4"
   },

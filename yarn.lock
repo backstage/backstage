@@ -6524,6 +6524,7 @@ __metadata:
     "@types/supertest": ^2.0.12
     express: ^4.18.1
     express-promise-router: ^4.1.0
+    jest-when: ^3.6.0
     knex: ^2.0.0
     msw: ^1.0.0
     node-fetch: ^2.6.7
@@ -29925,7 +29926,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"jest-when@npm:^3.1.0":
+"jest-when@npm:^3.1.0, jest-when@npm:^3.6.0":
   version: 3.6.0
   resolution: "jest-when@npm:3.6.0"
   peerDependencies:

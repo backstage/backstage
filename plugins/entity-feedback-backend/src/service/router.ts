@@ -151,11 +151,22 @@ export async function createRouter(
   });
 
   router.get('/ratings/:entityRef', async (req, res) => {
+    const user = await identity.getIdentity({ request: req });
     const ratings = await dbHandler.getRatings(req.params.entityRef);
 
     const token = getBearerTokenFromAuthorizationHeader(
       req.header('authorization'),
     );
+
+    const entity = (
+      await catalogClient.getEntitiesByRefs(
+        {
+          entityRefs: [req.params.entityRef],
+          fields: ['spec.ownerRef'],
+        },
+        { token },
+      )
+    ).items[0];
 
     // Filter ratings via user refs to only expose entity refs accessible by current user
     const accessibleEntityRefs = (
@@ -170,7 +181,16 @@ export async function createRouter(
       .filter(Boolean)
       .map(ent => stringifyEntityRef(ent!));
 
-    res.json(ratings.filter(r => accessibleEntityRefs.includes(r.userRef)));
+    res.json(
+      ratings.filter(
+        r =>
+          accessibleEntityRefs.includes(r.userRef) ||
+          user?.identity.userEntityRef === r.userRef ||
+          user?.identity.ownershipEntityRefs.includes(
+            entity?.spec!.ownerRef as string,
+          ),
+      ),
+    );
   });
 
   router.get('/ratings/:entityRef/aggregate', async (req, res) => {
@@ -208,11 +228,22 @@ export async function createRouter(
   });
 
   router.get('/responses/:entityRef', async (req, res) => {
+    const user = await identity.getIdentity({ request: req });
     const responses = await dbHandler.getResponses(req.params.entityRef);
 
     const token = getBearerTokenFromAuthorizationHeader(
       req.header('authorization'),
     );
+
+    const entity = (
+      await catalogClient.getEntitiesByRefs(
+        {
+          entityRefs: [req.params.entityRef],
+          fields: ['spec.ownerRef'],
+        },
+        { token },
+      )
+    ).items[0];
 
     // Filter responses via user refs to only expose entity refs accessible by current user
     const accessibleEntityRefs = (
@@ -227,7 +258,16 @@ export async function createRouter(
       .filter(Boolean)
       .map(ent => stringifyEntityRef(ent!));
 
-    res.json(responses.filter(r => accessibleEntityRefs.includes(r.userRef)));
+    res.json(
+      responses.filter(
+        r =>
+          accessibleEntityRefs.includes(r.userRef) ||
+          user?.identity.userEntityRef === r.userRef ||
+          user?.identity.ownershipEntityRefs.includes(
+            entity?.spec!.ownerRef as string,
+          ),
+      ),
+    );
   });
 
   router.use(errorHandler());
