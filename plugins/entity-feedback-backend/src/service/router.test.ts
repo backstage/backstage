@@ -25,7 +25,21 @@ import { IdentityApi } from '@backstage/plugin-auth-node';
 import express from 'express';
 import request from 'supertest';
 
+import { when } from 'jest-when';
 import { createRouter } from './router';
+import { GetEntitiesByRefsRequest } from '@backstage/catalog-client';
+
+const sampleSelfOwnedEntity = {
+  kind: 'component',
+  metadata: {
+    namespace: 'default',
+    name: 'service',
+    title: 'Service Component',
+  },
+  spec: {
+    ownerRef: 'group:default/mine',
+  },
+};
 
 const sampleOwnedEntities = [
   {
@@ -35,6 +49,9 @@ const sampleOwnedEntities = [
       name: 'foo',
       title: 'Foo Component',
     },
+    spec: {
+      ownerRef: 'group:default/yours',
+    },
   },
   {
     kind: 'component',
@@ -42,6 +59,9 @@ const sampleOwnedEntities = [
       namespace: 'default',
       name: 'bar',
       title: 'Bar Component',
+    },
+    spec: {
+      ownerRef: 'group:default/yours',
     },
   },
 ];
@@ -69,9 +89,17 @@ const mockGetEntties = jest
   .fn()
   .mockImplementation(async () => ({ items: sampleOwnedEntities }));
 
-const mockGetEnttiesByRefs = jest
-  .fn()
-  .mockImplementation(async () => ({ items: sampleEntities }));
+const mockGetEnttiesByRefs = jest.fn();
+when(mockGetEnttiesByRefs)
+  .mockImplementation(async () => ({ items: sampleEntities }))
+  .calledWith(
+    {
+      entityRefs: ['component:default/service'],
+      fields: expect.anything(),
+    } as GetEntitiesByRefsRequest,
+    expect.anything(),
+  )
+  .mockImplementation(async () => ({ items: [sampleSelfOwnedEntity] }));
 
 jest.mock('@backstage/catalog-client', () => ({
   CatalogClient: jest.fn().mockImplementation(() => ({
@@ -87,6 +115,7 @@ jest.mock('@backstage/plugin-auth-node', () => ({
 const mockRatings = [
   { userRef: 'user:default/foo', rating: 'LIKE' },
   { userRef: 'user:default/bar', rating: 'LIKE' },
+  { userRef: 'user:default/me', rating: 'LIKE' },
   { userRef: 'user:default/test', rating: 'DISLIKE' },
 ];
 
@@ -102,6 +131,12 @@ const mockResponses = [
     response: 'noop',
     comments: 'here is different feedback',
     consent: true,
+  },
+  {
+    userRef: 'user:default/me',
+    response: 'meow',
+    comments: 'some more feedback',
+    consent: false,
   },
   {
     userRef: 'user:default/test',
@@ -151,7 +186,10 @@ describe('createRouter', () => {
 
   const mockIdentityClient = {
     getIdentity: jest.fn().mockImplementation(async () => ({
-      identity: { userEntityRef: 'user:default/me' },
+      identity: {
+        userEntityRef: 'user:default/me',
+        ownershipEntityRefs: ['user:default/me', 'group:default/mine'],
+      },
     })),
   } as unknown as IdentityApi;
 
@@ -244,12 +282,23 @@ describe('createRouter', () => {
   });
 
   describe('GET /ratings/:entityRef', () => {
-    it('should get ratings for an entity correctly', async () => {
+    it('should get ratings for own entity correctly', async () => {
       const response = await request(app)
         .get('/ratings/component%3Adefault%2Fservice')
         .send();
       expect(mockDbHandler.getRatings).toHaveBeenCalledWith(
         'component:default/service',
+      );
+      expect(response.status).toEqual(200);
+      expect(response.body).toEqual(mockRatings);
+    });
+
+    it("should get ratings for other's entity correctly", async () => {
+      const response = await request(app)
+        .get('/ratings/component%3Adefault%2Fbar')
+        .send();
+      expect(mockDbHandler.getRatings).toHaveBeenCalledWith(
+        'component:default/bar',
       );
       expect(response.status).toEqual(200);
       expect(response.body).toEqual(
@@ -269,7 +318,7 @@ describe('createRouter', () => {
       expect(response.status).toEqual(200);
       expect(response.body).toEqual({
         DISLIKE: 1,
-        LIKE: 2,
+        LIKE: 3,
       });
     });
   });
@@ -290,12 +339,23 @@ describe('createRouter', () => {
   });
 
   describe('GET /responses/:entityRef', () => {
-    it('should get responses for an entity correctly', async () => {
+    it('should get responses for own entity correctly', async () => {
       const response = await request(app)
         .get('/responses/component%3Adefault%2Fservice')
         .send();
       expect(mockDbHandler.getResponses).toHaveBeenCalledWith(
         'component:default/service',
+      );
+      expect(response.status).toEqual(200);
+      expect(response.body).toEqual(mockResponses);
+    });
+
+    it("should get responses for other's entity correctly", async () => {
+      const response = await request(app)
+        .get('/responses/component%3Adefault%2Fbar')
+        .send();
+      expect(mockDbHandler.getResponses).toHaveBeenCalledWith(
+        'component:default/bar',
       );
       expect(response.status).toEqual(200);
       expect(response.body).toEqual(
