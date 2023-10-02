@@ -1,5 +1,48 @@
 # @backstage/plugin-playlist
 
+## 0.1.17-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/plugin-catalog-react@1.8.5-next.0
+  - @backstage/core-plugin-api@1.7.0-next.0
+  - @backstage/core-components@0.13.6-next.0
+  - @backstage/plugin-permission-react@0.4.16-next.0
+  - @backstage/plugin-search-react@1.7.1-next.0
+  - @backstage/catalog-model@1.4.2
+  - @backstage/errors@1.2.2
+  - @backstage/theme@0.4.2
+  - @backstage/plugin-catalog-common@1.0.16
+  - @backstage/plugin-permission-common@0.7.8
+  - @backstage/plugin-playlist-common@0.1.10
+
+## 0.1.16
+
+### Patch Changes
+
+- 79847cb73ed7: Updated latest playlist screen in readme document
+- ec4b0f8cd957: change color of delete icon to secondary in playlist table
+- 482bb5c0bbf8: Moved `@types/react` to be a regular dependency
+- 406b786a2a2c: Mark package as being free of side effects, allowing more optimized Webpack builds.
+- 2f3215bbbffe: Fix a bug that led to errors being thrown in guest mode
+- 8cec7664e146: Removed `@types/node` dependency
+- b5ba33a92750: Limit the use of the same playlist name when adding a playlist
+- 3d63e60f3c36: Internal restructure to avoid circular imports
+- fdbf215a8d8e: Fix the Ui style of the search bar
+- Updated dependencies
+  - @backstage/plugin-catalog-react@1.8.4
+  - @backstage/core-components@0.13.5
+  - @backstage/catalog-model@1.4.2
+  - @backstage/core-plugin-api@1.6.0
+  - @backstage/errors@1.2.2
+  - @backstage/plugin-catalog-common@1.0.16
+  - @backstage/plugin-permission-common@0.7.8
+  - @backstage/plugin-permission-react@0.4.15
+  - @backstage/plugin-playlist-common@0.1.10
+  - @backstage/plugin-search-react@1.7.0
+  - @backstage/theme@0.4.2
+
 ## 0.1.16-next.3
 
 ### Patch Changes

@@ -22,6 +22,7 @@ import waitForExpect from 'wait-for-expect';
 import { migrateBackendTasks } from '../database/migrateBackendTasks';
 import { DbTasksRow, DB_TASKS_TABLE } from '../database/tables';
 import { PluginTaskSchedulerJanitor } from './PluginTaskSchedulerJanitor';
+import { createTestScopedSignal } from './__testUtils__/createTestScopedSignal';
 
 const insertTask = async (knex: Knex, task: DbTasksRow) => {
   return knex<DbTasksRow>(DB_TASKS_TABLE)
@@ -45,6 +46,7 @@ describe('PluginTaskSchedulerJanitor', () => {
       'MYSQL_8',
     ],
   });
+  const testScopedSignal = createTestScopedSignal();
 
   jest.setTimeout(60_000);
 
@@ -77,8 +79,7 @@ describe('PluginTaskSchedulerJanitor', () => {
         logger,
       });
 
-      const abortController = new AbortController();
-      worker.start(abortController.signal);
+      worker.start(testScopedSignal());
 
       await waitForExpect(async () => {
         await expect(getTask(knex)).resolves.toEqual(
@@ -90,8 +91,6 @@ describe('PluginTaskSchedulerJanitor', () => {
           }),
         );
       });
-
-      abortController.abort();
     },
   );
 });

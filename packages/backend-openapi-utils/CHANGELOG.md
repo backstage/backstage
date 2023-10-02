@@ -1,5 +1,12 @@
 # @backstage/backend-openapi-utils
 
+## 0.0.4
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/errors@1.2.2
+
 ## 0.0.4-next.0
 
 ### Patch Changes

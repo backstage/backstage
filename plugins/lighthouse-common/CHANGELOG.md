@@ -1,5 +1,13 @@
 # @backstage/plugin-lighthouse-common
 
+## 0.1.3
+
+### Patch Changes
+
+- 406b786a2a2c: Mark package as being free of side effects, allowing more optimized Webpack builds.
+- Updated dependencies
+  - @backstage/config@1.1.0
+
 ## 0.1.3-next.2
 
 ### Patch Changes

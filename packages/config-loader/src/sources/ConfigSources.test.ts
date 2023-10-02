@@ -107,7 +107,7 @@ describe('ConfigSources', () => {
     ).toEqual([
       {
         name: 'FileConfigSource',
-        path: `${root}config.yaml`,
+        path: '/config.yaml',
         substitutionFunc: subFunc,
       },
     ]);

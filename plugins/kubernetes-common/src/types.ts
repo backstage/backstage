@@ -262,3 +262,22 @@ export interface ClientPodStatus {
   memory: ClientCurrentResourceUsage;
   containers: ClientContainerStatus[];
 }
+
+/** @public */
+export interface DeploymentResources {
+  pods: V1Pod[];
+  replicaSets: V1ReplicaSet[];
+  deployments: V1Deployment[];
+  horizontalPodAutoscalers: V1HorizontalPodAutoscaler[];
+}
+
+/** @public */
+export interface GroupedResponses extends DeploymentResources {
+  services: V1Service[];
+  configMaps: V1ConfigMap[];
+  ingresses: V1Ingress[];
+  jobs: V1Job[];
+  cronJobs: V1CronJob[];
+  customResources: any[];
+  statefulsets: V1StatefulSet[];
+}

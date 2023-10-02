@@ -46,6 +46,9 @@ const useStyles = makeStyles(
       minWidth: 260,
       maxWidth: 400,
     },
+    menuItem: {
+      whiteSpace: 'normal',
+    },
   },
   { name: 'BackstageSupportButton' },
 );
@@ -145,12 +148,16 @@ export function SupportButton(props: SupportButtonProps) {
           autoFocusItem={Boolean(anchorEl)}
         >
           {title && (
-            <MenuItem alignItems="flex-start">
+            <MenuItem alignItems="flex-start" className={classes.menuItem}>
               <Typography variant="subtitle1">{title}</Typography>
             </MenuItem>
           )}
           {React.Children.map(children, (child, i) => (
-            <MenuItem alignItems="flex-start" key={`child-${i}`}>
+            <MenuItem
+              alignItems="flex-start"
+              key={`child-${i}`}
+              className={classes.menuItem}
+            >
               {child}
             </MenuItem>
           ))}

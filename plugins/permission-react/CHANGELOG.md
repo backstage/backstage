@@ -1,5 +1,24 @@
 # @backstage/plugin-permission-react
 
+## 0.4.16-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/core-plugin-api@1.7.0-next.0
+  - @backstage/config@1.1.0
+  - @backstage/plugin-permission-common@0.7.8
+
+## 0.4.15
+
+### Patch Changes
+
+- 406b786a2a2c: Mark package as being free of side effects, allowing more optimized Webpack builds.
+- Updated dependencies
+  - @backstage/config@1.1.0
+  - @backstage/core-plugin-api@1.6.0
+  - @backstage/plugin-permission-common@0.7.8
+
 ## 0.4.15-next.3
 
 ### Patch Changes

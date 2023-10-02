@@ -1,5 +1,84 @@
 # @backstage/plugin-scaffolder-backend
 
+## 1.17.3-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/integration@1.7.1-next.0
+  - @backstage/plugin-catalog-backend@1.14.0-next.0
+  - @backstage/plugin-auth-node@0.3.2-next.0
+  - @backstage/backend-common@0.19.7-next.0
+  - @backstage/plugin-scaffolder-node@0.2.5-next.0
+  - @backstage/config@1.1.0
+  - @backstage/backend-plugin-api@0.6.5-next.0
+  - @backstage/backend-tasks@0.5.10-next.0
+  - @backstage/catalog-client@1.4.4
+  - @backstage/catalog-model@1.4.2
+  - @backstage/errors@1.2.2
+  - @backstage/types@1.1.1
+  - @backstage/plugin-catalog-backend-module-scaffolder-entity-model@0.1.2-next.0
+  - @backstage/plugin-catalog-common@1.0.16
+  - @backstage/plugin-catalog-node@1.4.6-next.0
+  - @backstage/plugin-permission-common@0.7.8
+  - @backstage/plugin-permission-node@0.7.16-next.0
+  - @backstage/plugin-scaffolder-common@1.4.1
+
+## 1.17.0
+
+### Minor Changes
+
+- b5f239b50bcf: Improved the `parseEntityRef` Scaffolder filter by introducing the ability for users to provide default kind and/or namespace values. The filter now takes
+  2 arguments, similarly to the original [parseEntityRef](https://github.com/backstage/backstage/blob/v1.17.2/packages/catalog-model/src/entity/ref.ts#L77).
+- d5313ede3529: **DEPRECATION**: Deprecated `ScaffolderEntitiesProcessor`, which should now instead be imported from `@backstage/plugin-catalog-backend-module-scaffolder-entity-model`.
+
+  `catalogModuleTemplateKind` was also moved to that package and renamed to `catalogModuleScaffolderEntityModel`, without any deprecation since it was an alpha export.
+
+### Patch Changes
+
+- 71114ac50e02: The export for the new backend system has been moved to be the `default` export.
+
+  For example, if you are currently importing the plugin using the following pattern:
+
+  ```ts
+  import { examplePlugin } from '@backstage/plugin-example-backend';
+
+  backend.add(examplePlugin);
+  ```
+
+  It should be migrated to this:
+
+  ```ts
+  backend.add(import('@backstage/plugin-example-backend'));
+  ```
+
+- a4989552d828: Add examples for `publish:github` and `publish:gitlab` scaffolder actions.
+- ded27b83ead2: Add examples for `publish:bitbucket` scaffolder actions.
+- 5f1a92b9f19f: Use `DefaultAzureDevOpsCredentialsProvider` to retrieve credentials for Azure DevOps.
+- fb57a4694fc6: Fixed the plugin and module ID of the alpha `catalogModuleTemplateKind` export.
+- f3c0b95e3ef1: Add examples for `github:actions:dispatch` scaffolder actions.
+- cfc3ca6ce060: Changes needed to support MySQL
+- 814feeed7343: Update to handle invalid luxon values
+- Updated dependencies
+  - @backstage/plugin-catalog-backend@1.13.0
+  - @backstage/backend-tasks@0.5.8
+  - @backstage/backend-common@0.19.5
+  - @backstage/plugin-auth-node@0.3.0
+  - @backstage/config@1.1.0
+  - @backstage/catalog-client@1.4.4
+  - @backstage/catalog-model@1.4.2
+  - @backstage/errors@1.2.2
+  - @backstage/integration@1.7.0
+  - @backstage/plugin-catalog-common@1.0.16
+  - @backstage/plugin-permission-common@0.7.8
+  - @backstage/plugin-scaffolder-common@1.4.1
+  - @backstage/types@1.1.1
+  - @backstage/plugin-permission-node@0.7.14
+  - @backstage/backend-plugin-api@0.6.3
+  - @backstage/plugin-catalog-backend-module-scaffolder-entity-model@0.1.0
+  - @backstage/plugin-catalog-node@1.4.4
+  - @backstage/plugin-scaffolder-node@0.2.3
+
 ## 1.17.0-next.3
 
 ### Minor Changes

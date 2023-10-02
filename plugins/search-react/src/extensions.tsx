@@ -90,7 +90,7 @@ export type SearchResultListItemExtensionProps<Props extends {} = {}> = Props &
  * Extends children with extension capabilities.
  * @param props - see {@link SearchResultListItemExtensionProps}.
  */
-const SearchResultListItemExtension = (
+export const SearchResultListItemExtension = (
   props: SearchResultListItemExtensionProps,
 ) => {
   const {

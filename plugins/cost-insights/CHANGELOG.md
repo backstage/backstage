@@ -1,5 +1,35 @@
 # @backstage/plugin-cost-insights
 
+## 0.12.14-next.0
+
+### Patch Changes
+
+- 959aa2a09f: The experimental plugin configuration has been removed. The trend line can now instead be hidden by setting `costInsights.hideTrendLine` to `true` in the configuration.
+- Updated dependencies
+  - @backstage/plugin-catalog-react@1.8.5-next.0
+  - @backstage/core-plugin-api@1.7.0-next.0
+  - @backstage/core-components@0.13.6-next.0
+  - @backstage/config@1.1.0
+  - @backstage/catalog-model@1.4.2
+  - @backstage/theme@0.4.2
+  - @backstage/plugin-cost-insights-common@0.1.2
+
+## 0.12.13
+
+### Patch Changes
+
+- 406b786a2a2c: Mark package as being free of side effects, allowing more optimized Webpack builds.
+- 8cec7664e146: Removed `@types/node` dependency
+- a54cd411639e: Updated dependency `@types/pluralize` to `^0.0.30`.
+- Updated dependencies
+  - @backstage/plugin-catalog-react@1.8.4
+  - @backstage/core-components@0.13.5
+  - @backstage/config@1.1.0
+  - @backstage/catalog-model@1.4.2
+  - @backstage/core-plugin-api@1.6.0
+  - @backstage/plugin-cost-insights-common@0.1.2
+  - @backstage/theme@0.4.2
+
 ## 0.12.13-next.3
 
 ### Patch Changes

@@ -15,7 +15,7 @@
  */
 
 import { PluginScanner } from './plugin-scanner';
-import { Logs, MockedLogger } from '../__testUtils__/testUtils';
+import { LogContent, Logs, MockedLogger } from '../__testUtils__/testUtils';
 import { Config, ConfigReader } from '@backstage/config';
 import path, { join } from 'path';
 import { ScannedPluginPackage } from './types';
@@ -126,10 +126,16 @@ describe('plugin-scanner', () => {
       expect(logger.logs).toEqual<Logs>({
         infos: [
           {
-            message: `rootDirectory changed (addDir - ${backstageRootDirectory}/first-dir/test-backend-plugin): scanning plugins again`,
+            message: `rootDirectory changed (addDir - ${path.resolve(
+              backstageRootDirectory,
+              'first-dir/test-backend-plugin',
+            )}): scanning plugins again`,
           },
           {
-            message: `rootDirectory changed (add - ${backstageRootDirectory}/first-dir/test-backend-plugin/package.json): scanning plugins again`,
+            message: `rootDirectory changed (add - ${path.resolve(
+              backstageRootDirectory,
+              'first-dir/test-backend-plugin/package.json',
+            )}): scanning plugins again`,
           },
         ],
       });
@@ -151,7 +157,10 @@ describe('plugin-scanner', () => {
       expect(logger.logs).toEqual<Logs>({
         infos: [
           {
-            message: `rootDirectory changed in Config from '${backstageRootDirectory}/first-dir' to '${backstageRootDirectory}/second-dir'`,
+            message: `rootDirectory changed in Config from '${path.resolve(
+              backstageRootDirectory,
+              'first-dir',
+            )}' to '${path.resolve(backstageRootDirectory, 'second-dir')}'`,
           },
         ],
       });
@@ -204,10 +213,16 @@ describe('plugin-scanner', () => {
       expect(logger.logs).toEqual<Logs>({
         infos: [
           {
-            message: `rootDirectory changed (addDir - ${backstageRootDirectory}/second-dir/second-test-backend-plugin): scanning plugins again`,
+            message: `rootDirectory changed (addDir - ${path.resolve(
+              backstageRootDirectory,
+              'second-dir/second-test-backend-plugin',
+            )}): scanning plugins again`,
           },
           {
-            message: `rootDirectory changed (add - ${backstageRootDirectory}/second-dir/second-test-backend-plugin/package.json): scanning plugins again`,
+            message: `rootDirectory changed (add - ${path.resolve(
+              backstageRootDirectory,
+              'second-dir/second-test-backend-plugin/package.json',
+            )}): scanning plugins again`,
           },
         ],
       });
@@ -263,22 +278,41 @@ describe('plugin-scanner', () => {
         expect(debug).toHaveBeenCalledTimes(4);
       });
 
-      expect(logger.logs).toEqual<Logs>({
-        debugs: [
-          {
-            message: `rootDirectory changed (addDir - ${backstageRootDirectory}/second-dir/second-test-backend-plugin/sub-directory): no need to scan plugins again`,
-          },
-          {
-            message: `rootDirectory changed (add - ${backstageRootDirectory}/second-dir/second-test-backend-plugin/not-package.json): no need to scan plugins again`,
-          },
-          {
-            message: `rootDirectory changed (unlink - ${backstageRootDirectory}/second-dir/second-test-backend-plugin/not-package.json): no need to scan plugins again`,
-          },
-          {
-            message: `rootDirectory changed (unlinkDir - ${backstageRootDirectory}/second-dir/second-test-backend-plugin/sub-directory): no need to scan plugins again`,
-          },
-        ],
-      });
+      const onWindows = path.sep === '\\';
+      // Order of events is not fixed on Windows.
+      // Windows sometimes even adds a 'change' event when a file is unlinked.
+      // So let's not try to tes the detail of received events on Windows
+      if (!onWindows) {
+        // eslint-disable-next-line
+        expect(logger.logs).toEqual<Logs>({
+          debugs: [
+            {
+              message: `rootDirectory changed (addDir - ${path.resolve(
+                backstageRootDirectory,
+                'second-dir/second-test-backend-plugin/sub-directory',
+              )}): no need to scan plugins again`,
+            },
+            {
+              message: `rootDirectory changed (add - ${path.resolve(
+                backstageRootDirectory,
+                'second-dir/second-test-backend-plugin/not-package.json',
+              )}): no need to scan plugins again`,
+            },
+            {
+              message: `rootDirectory changed (unlink - ${path.resolve(
+                backstageRootDirectory,
+                'second-dir/second-test-backend-plugin/not-package.json',
+              )}): no need to scan plugins again`,
+            },
+            {
+              message: `rootDirectory changed (unlinkDir - ${path.resolve(
+                backstageRootDirectory,
+                'second-dir/second-test-backend-plugin/sub-directory',
+              )}): no need to scan plugins again`,
+            },
+          ],
+        });
+      }
       logger.logs = {};
 
       // Now check that removal of some plugin home directory triggers a new scan of plugins
@@ -299,26 +333,39 @@ describe('plugin-scanner', () => {
         expect(scannedPlugins).toEqual([]);
       });
 
-      expect(logger.logs).toEqual<Logs>({
-        infos: [
+      if (!onWindows) {
+        // eslint-disable-next-line
+        expect(logger.logs.infos).toEqual<LogContent[] | undefined>([
           {
-            message: `rootDirectory changed (unlink - ${backstageRootDirectory}/second-dir/second-test-backend-plugin/package.json): scanning plugins again`,
+            message: `rootDirectory changed (unlink - ${path.resolve(
+              backstageRootDirectory,
+              'second-dir/second-test-backend-plugin/package.json',
+            )}): scanning plugins again`,
           },
-        ],
-        errors: [
-          {
-            message: `failed to load dynamic plugin manifest from '${backstageRootDirectory}/second-dir/second-test-backend-plugin'`,
-            meta: {
-              code: 'ENOENT',
-              errno: -2,
-              message: `ENOENT: no such file or directory, open '${backstageRootDirectory}/second-dir/second-test-backend-plugin/package.json'`,
-              name: 'Error',
-              path: `${backstageRootDirectory}/second-dir/second-test-backend-plugin/package.json`,
-              syscall: 'open',
-            },
+        ]);
+      }
+      expect(logger.logs.errors).toEqual<LogContent[] | undefined>([
+        {
+          message: `failed to load dynamic plugin manifest from '${path.resolve(
+            backstageRootDirectory,
+            'second-dir/second-test-backend-plugin',
+          )}'`,
+          meta: {
+            code: 'ENOENT',
+            errno: path.sep === '\\' ? -4058 : -2,
+            message: `ENOENT: no such file or directory, open '${path.resolve(
+              backstageRootDirectory,
+              'second-dir/second-test-backend-plugin/package.json',
+            )}'`,
+            name: 'Error',
+            path: `${path.resolve(
+              backstageRootDirectory,
+              'second-dir/second-test-backend-plugin/package.json',
+            )}`,
+            syscall: 'open',
           },
-        ],
-      });
+        },
+      ]);
       logger.logs = {};
 
       await rm(
@@ -334,13 +381,19 @@ describe('plugin-scanner', () => {
       });
       rootDirectorySubscriber.mockClear();
 
-      expect(logger.logs).toEqual<Logs>({
-        infos: [
-          {
-            message: `rootDirectory changed (unlinkDir - ${backstageRootDirectory}/second-dir/second-test-backend-plugin): scanning plugins again`,
-          },
-        ],
-      });
+      if (!onWindows) {
+        // eslint-disable-next-line
+        expect(logger.logs).toEqual<Logs>({
+          infos: [
+            {
+              message: `rootDirectory changed (unlinkDir - ${path.resolve(
+                backstageRootDirectory,
+                'second-dir/second-test-backend-plugin',
+              )}): scanning plugins again`,
+            },
+          ],
+        });
+      }
       logger.logs = {};
 
       getOptional.mockReturnValue({
@@ -353,8 +406,16 @@ describe('plugin-scanner', () => {
           {
             message: 'failed to apply new config for dynamic plugins',
             meta: {
-              message: `Dynamic plugins under '/somewhere-else/second-dir' cannot access backstage modules in '${backstageRootDirectory}/node_modules'.
-Please add '${backstageRootDirectory}/node_modules' to the 'NODE_PATH' when running the backstage backend.`,
+              message: `Dynamic plugins under '${path.resolve(
+                '/somewhere-else/second-dir',
+              )}' cannot access backstage modules in '${path.resolve(
+                backstageRootDirectory,
+                'node_modules',
+              )}'.
+Please add '${path.resolve(
+                backstageRootDirectory,
+                'node_modules',
+              )}' to the 'NODE_PATH' when running the backstage backend.`,
               name: 'Error',
             },
           },

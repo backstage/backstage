@@ -6,7 +6,7 @@ sidebar_label: Modules
 description: Modules for backend plugins
 ---
 
-> **DISCLAIMER: The new backend system is in alpha, and still under active development. While we have reviewed the interfaces carefully, they may still be iterated on before the stable release.**
+> **NOTE: The new backend system is in alpha, and some plugins do not yet fully implement it.**
 
 Backend modules are used to extend [plugins](./04-plugins.md) or sometimes other modules with additional features or change existing behavior. They must always be installed in the same backend instance as the plugin that they extend, and may only extend a single plugin. Modules interact with their target plugin using the [extension points](./05-extension-points.md) registered by the plugin, while also being able to depend on the [services](./03-services.md) of that plugin.
 

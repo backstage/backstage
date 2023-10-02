@@ -46,7 +46,7 @@ import {
   CatalogEntityPage,
   CatalogIndexPage,
   catalogPlugin,
-} from '@internal/plugin-catalog-customized';
+} from '@backstage/plugin-catalog';
 
 import { CatalogGraphPage } from '@backstage/plugin-catalog-graph';
 import {

@@ -418,7 +418,7 @@ The following is an example of a `Dockerfile` that can be used to package the
 output of building a package with role `'backend'` into an image:
 
 ```Dockerfile
-FROM node:16-bullseye-slim
+FROM node:18-bookworm-slim
 WORKDIR /app
 
 COPY yarn.lock package.json packages/backend/dist/skeleton.tar.gz ./

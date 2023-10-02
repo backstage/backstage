@@ -1,5 +1,93 @@
 # @backstage/plugin-catalog-backend
 
+## 1.14.0-next.0
+
+### Minor Changes
+
+- 78af9433c8: Instrumenting some missing metrics with `OpenTelemetry`
+
+### Patch Changes
+
+- 348e8c1cdb: Fixes a bug where eagerly deleted entities did not properly trigger re-stitching of entities that they had relations to.
+- b97e9790f0: Internal refactors, laying the foundation for later introducing deferred stitching (see #18062).
+- Updated dependencies
+  - @backstage/integration@1.7.1-next.0
+  - @backstage/plugin-auth-node@0.3.2-next.0
+  - @backstage/backend-common@0.19.7-next.0
+  - @backstage/config@1.1.0
+  - @backstage/backend-openapi-utils@0.0.4
+  - @backstage/backend-plugin-api@0.6.5-next.0
+  - @backstage/backend-tasks@0.5.10-next.0
+  - @backstage/catalog-client@1.4.4
+  - @backstage/catalog-model@1.4.2
+  - @backstage/errors@1.2.2
+  - @backstage/types@1.1.1
+  - @backstage/plugin-catalog-common@1.0.16
+  - @backstage/plugin-catalog-node@1.4.6-next.0
+  - @backstage/plugin-events-node@0.2.14-next.0
+  - @backstage/plugin-permission-common@0.7.8
+  - @backstage/plugin-permission-node@0.7.16-next.0
+  - @backstage/plugin-scaffolder-common@1.4.1
+  - @backstage/plugin-search-backend-module-catalog@0.1.9-next.0
+  - @backstage/plugin-search-common@1.2.6
+
+## 1.13.0
+
+### Minor Changes
+
+- 62f448edb0b5: Allow configuring the processing interval in your app-config, under the `catalog.processingInterval` key.
+- 09cfc3cf467d: set azure annotation `dev.azure.com/project-repo` in `AnnotateScmSlugEntityProcessor` to find the project and repo information for the repos that contains `dev.azure.com` in the url
+
+### Patch Changes
+
+- 149361e81622: Fix to the `limit` parameter on entity queries.
+- 1fd2109739c1: Changed the processing loop task pipeline implementation from recursive to iterative
+- 71114ac50e02: The export for the new backend system has been moved to be the `default` export.
+
+  For example, if you are currently importing the plugin using the following pattern:
+
+  ```ts
+  import { examplePlugin } from '@backstage/plugin-example-backend';
+
+  backend.add(examplePlugin);
+  ```
+
+  It should be migrated to this:
+
+  ```ts
+  backend.add(import('@backstage/plugin-example-backend'));
+  ```
+
+- 0f8a97777489: Update OpenAPI schema to relax the encoding validation of all request parameters.
+- 0198aa596fd9: Fixed a link to the frontend Backstage plugin that had pointed to itself.
+- 2d32d8a611e3: Fixed validation of the `fullTextFilterFields` query parameter.
+- acffa17027b6: Added some examples to the catalog OpenAPI definition
+- 45947d3b2759: Fixes an issue where `order` was not a recognized parameter for the `/entities` endpoint.
+- 41d1b2d628ea: Fix OpenAPI schema for the facets endpoint
+- 618257f3e413: Fix issue with `catalogFileName` not being a required property for `/analyze-location`
+- cfc3ca6ce060: Changes needed to support MySQL
+- 814feeed7343: Update to handle invalid luxon values
+- Updated dependencies
+  - @backstage/plugin-search-backend-module-catalog@0.1.7
+  - @backstage/backend-tasks@0.5.8
+  - @backstage/backend-common@0.19.5
+  - @backstage/plugin-auth-node@0.3.0
+  - @backstage/config@1.1.0
+  - @backstage/catalog-client@1.4.4
+  - @backstage/catalog-model@1.4.2
+  - @backstage/errors@1.2.2
+  - @backstage/integration@1.7.0
+  - @backstage/plugin-catalog-common@1.0.16
+  - @backstage/plugin-permission-common@0.7.8
+  - @backstage/plugin-scaffolder-common@1.4.1
+  - @backstage/plugin-search-common@1.2.6
+  - @backstage/types@1.1.1
+  - @backstage/plugin-permission-node@0.7.14
+  - @backstage/backend-plugin-api@0.6.3
+  - @backstage/plugin-catalog-node@1.4.4
+  - @backstage/backend-openapi-utils@0.0.4
+  - @backstage/plugin-events-node@0.2.12
+
 ## 1.13.0-next.3
 
 ### Patch Changes

@@ -785,12 +785,12 @@ export type UrlReadersOptions = {
   factories?: ReaderFactory[];
 };
 
-// @public
+// @public @deprecated
 export function useHotCleanup(
   _module: NodeModule,
   cancelEffect: () => void,
 ): void;
 
-// @public
+// @public @deprecated
 export function useHotMemoize<T>(_module: NodeModule, valueFactory: () => T): T;
 ```

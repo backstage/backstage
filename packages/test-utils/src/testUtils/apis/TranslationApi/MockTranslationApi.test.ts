@@ -18,9 +18,9 @@ import { createTranslationRef } from '@backstage/core-plugin-api/alpha';
 import { MockTranslationApi } from './MockTranslationApi';
 
 describe('MockTranslationApi', () => {
-  function snapshotWithMessages<TMessages extends { [key in string]: string }>(
-    messages: TMessages,
-  ) {
+  function snapshotWithMessages<
+    const TMessages extends { [key in string]: string },
+  >(messages: TMessages) {
     const translationApi = MockTranslationApi.create();
     const ref = createTranslationRef({
       id: 'test',
@@ -50,7 +50,7 @@ describe('MockTranslationApi', () => {
       shallow: 'Foo {{ bar }}',
       multiple: 'Foo {{ bar }} {{ baz }}',
       deep: 'Foo {{ bar.baz }}',
-    } as const);
+    });
 
     // @ts-expect-error
     expect(snapshot.t('shallow')).toBe('Foo {{ bar }}');
@@ -73,7 +73,7 @@ describe('MockTranslationApi', () => {
   it('should not escape by default', () => {
     const snapshot = snapshotWithMessages({
       foo: 'Foo {{ foo }}',
-    } as const);
+    });
 
     expect(snapshot.t('foo', { foo: '<div>' })).toBe('Foo <div>');
     expect(
@@ -89,7 +89,7 @@ describe('MockTranslationApi', () => {
       foo: 'Foo $t(bar) $t(baz)',
       bar: 'Nested',
       baz: 'Baz {{ qux }}',
-    } as const);
+    });
 
     expect(snapshot.t('foo', { qux: 'Deep' })).toBe('Foo Nested Baz Deep');
   });
@@ -104,7 +104,7 @@ describe('MockTranslationApi', () => {
       relativeSecondsShort:
         '= {{ x, relativeTime(range: second; style: short) }}',
       list: '= {{ x, list }}',
-    } as const);
+    });
 
     expect(snapshot.t('plain', { x: '5' })).toBe('= 5');
     expect(snapshot.t('number', { x: 5 })).toBe('= 5');
@@ -154,7 +154,7 @@ describe('MockTranslationApi', () => {
       derp_other: 'derps',
       derpWithCount_one: '{{ count }} derp',
       derpWithCount_other: '{{ count }} derps',
-    } as const);
+    });
 
     expect(snapshot.t('derp', { count: 1 })).toBe('derp');
     expect(snapshot.t('derp', { count: 2 })).toBe('derps');

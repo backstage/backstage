@@ -1,5 +1,68 @@
 # @backstage/plugin-auth-backend
 
+## 0.19.2-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/plugin-auth-backend-module-github-provider@0.1.2-next.0
+  - @backstage/plugin-auth-node@0.3.2-next.0
+  - @backstage/backend-common@0.19.7-next.0
+  - @backstage/config@1.1.0
+  - @backstage/backend-plugin-api@0.6.5-next.0
+  - @backstage/catalog-client@1.4.4
+  - @backstage/catalog-model@1.4.2
+  - @backstage/errors@1.2.2
+  - @backstage/types@1.1.1
+  - @backstage/plugin-auth-backend-module-gcp-iap-provider@0.1.2-next.0
+  - @backstage/plugin-auth-backend-module-gitlab-provider@0.1.2-next.0
+  - @backstage/plugin-auth-backend-module-google-provider@0.1.2-next.0
+  - @backstage/plugin-auth-backend-module-oauth2-provider@0.1.2-next.0
+  - @backstage/plugin-catalog-node@1.4.6-next.0
+
+## 0.19.0
+
+### Minor Changes
+
+- 71114ac50e02: **BREAKING**: The export for the new backend system has been moved to be the `default` export.
+
+  For example, if you are currently importing the plugin using the following pattern:
+
+  ```ts
+  import { examplePlugin } from '@backstage/plugin-example-backend';
+
+  backend.add(examplePlugin);
+  ```
+
+  It should be migrated to this:
+
+  ```ts
+  backend.add(import('@backstage/plugin-example-backend'));
+  ```
+
+### Patch Changes
+
+- 080cc7794700: Migrated the GitLab auth provider to be implemented using the new `@backstage/plugin-auth-backend-module-gitlab-provider` module.
+- 7944d43f4790: Added `authPlugin` export for the new backend system. The plugin does not include any built-in auth providers, they must instead be added by installing additional modules, for example `authModuleGoogleProvider` from `@backstage/plugin-auth-backend-module-google-provider`.
+- 8513cd7d00e3: Deprecated several exports that are now available from `@backstage/plugin-auth-node` instead.
+- 7944d43f4790: Added the ability to disable the built-in auth providers by passing `disableDefaultProviderFactories` to `createRouter`.
+- 7944d43f4790: The algorithm used when generating Backstage tokens can be configured via `auth.identityTokenAlgorithm`.
+- Updated dependencies
+  - @backstage/plugin-auth-backend-module-gcp-iap-provider@0.1.0
+  - @backstage/plugin-auth-backend-module-github-provider@0.1.0
+  - @backstage/plugin-auth-backend-module-gitlab-provider@0.1.0
+  - @backstage/plugin-auth-backend-module-google-provider@0.1.0
+  - @backstage/plugin-auth-backend-module-oauth2-provider@0.1.0
+  - @backstage/backend-common@0.19.5
+  - @backstage/plugin-auth-node@0.3.0
+  - @backstage/config@1.1.0
+  - @backstage/catalog-client@1.4.4
+  - @backstage/catalog-model@1.4.2
+  - @backstage/errors@1.2.2
+  - @backstage/types@1.1.1
+  - @backstage/backend-plugin-api@0.6.3
+  - @backstage/plugin-catalog-node@1.4.4
+
 ## 0.19.0-next.3
 
 ### Minor Changes
@@ -299,7 +362,7 @@
 ### Patch Changes
 
 - d8f774c30df: Enforce the secret visibility of certificates and client secrets in the auth backend. Also, document all known options for each auth plugin.
-- 7908d72e033: Introduce a new global config parameter, `auth.enableExperimentalRedirectFlow`. When enabled, auth will happen with an in-window redirect flow rather than through a popup window.
+- 7908d72e033: Introduce a new global config parameter, `enableExperimentalRedirectFlow`. When enabled, auth will happen with an in-window redirect flow rather than through a popup window.
 - 475abd1dc3f: The `microsoft` (i.e. Azure) auth provider now supports negotiating tokens for
   Azure resources besides Microsoft Graph (e.g. AKS, Virtual Machines, Machine
   Learning Services, etc.). When the `/frame/handler` endpoint is called with an
@@ -385,7 +448,7 @@
 ### Patch Changes
 
 - d8f774c30df: Enforce the secret visibility of certificates and client secrets in the auth backend. Also, document all known options for each auth plugin.
-- 7908d72e033: Introduce a new global config parameter, `auth.enableExperimentalRedirectFlow`. When enabled, auth will happen with an in-window redirect flow rather than through a popup window.
+- 7908d72e033: Introduce a new global config parameter, `enableExperimentalRedirectFlow`. When enabled, auth will happen with an in-window redirect flow rather than through a popup window.
 - Updated dependencies
   - @backstage/backend-common@0.18.4-next.0
   - @backstage/config@1.0.7

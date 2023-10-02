@@ -1,7 +1,7 @@
 {
   "name": "@backstage/backend-common",
   "description": "Common functionality library for Backstage backends",
-  "version": "0.19.5-next.3",
+  "version": "0.19.7-next.0",
   "main": "src/index.ts",
   "types": "src/index.ts",
   "publishConfig": {
@@ -138,7 +138,7 @@
     "aws-sdk-client-mock": "^2.0.0",
     "better-sqlite3": "^8.0.0",
     "http-errors": "^2.0.0",
-    "mock-fs": "^5.1.0",
+    "mock-fs": "^5.2.0",
     "msw": "^1.0.0",
     "mysql2": "^2.2.5",
     "recursive-readdir": "^2.2.2",

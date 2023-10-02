@@ -1,5 +1,34 @@
 # @backstage/backend-test-utils
 
+## 0.2.6-next.0
+
+### Patch Changes
+
+- 5ddc03813e: Remove third type parameter used for `MockInstance`, in order to be compatible with older versions of `@types/jest`.
+- Updated dependencies
+  - @backstage/plugin-auth-node@0.3.2-next.0
+  - @backstage/backend-common@0.19.7-next.0
+  - @backstage/config@1.1.0
+  - @backstage/backend-app-api@0.5.5-next.0
+  - @backstage/backend-plugin-api@0.6.5-next.0
+  - @backstage/types@1.1.1
+
+## 0.2.3
+
+### Patch Changes
+
+- 58cb5e5cea7b: Introduced a new utility for testing service factories, `ServiceFactoryTester`.
+- 202e52c5e361: Add support for installing backend features via module imports, for example `startTestBackend({ features: [import('my-plugin')] })`.
+- 9fb3b5373c45: Extended `mockService` to also include mocked variants, for example `mockServices.lifecycle.mock()`. The returned mocked implementation will have a `factory` property which is a service factory for itself. You can also pass a partial implementation of the service to the mock function to use a mock implementation of specific methods.
+- eb1594da5812: Serialize test database shutdown, and add logging
+- Updated dependencies
+  - @backstage/backend-app-api@0.5.3
+  - @backstage/backend-common@0.19.5
+  - @backstage/plugin-auth-node@0.3.0
+  - @backstage/config@1.1.0
+  - @backstage/types@1.1.1
+  - @backstage/backend-plugin-api@0.6.3
+
 ## 0.2.3-next.3
 
 ### Patch Changes

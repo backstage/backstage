@@ -4,9 +4,7 @@
 
 ```ts
 import { ApiRef } from '@backstage/core-plugin-api';
-import { BackstagePlugin } from '@backstage/core-plugin-api';
 import { Observable } from '@backstage/types';
-import { ReactNode } from 'react';
 import { TranslationMessages as TranslationMessages_2 } from '@backstage/core-plugin-api/alpha';
 import { TranslationRef as TranslationRef_2 } from '@backstage/core-plugin-api/alpha';
 
@@ -41,7 +39,7 @@ export function createTranslationMessages<
 // @alpha (undocumented)
 export function createTranslationRef<
   TId extends string,
-  TMessages extends {
+  const TMessages extends {
     [key in string]: string;
   },
   TTranslations extends {
@@ -73,17 +71,6 @@ export function createTranslationResource<
 >(
   options: TranslationResourceOptions<TId, TMessages, TTranslations>,
 ): TranslationResource<TId>;
-
-// @alpha
-export interface PluginOptionsProviderProps {
-  // (undocumented)
-  children: ReactNode;
-  // (undocumented)
-  plugin?: BackstagePlugin;
-}
-
-// @alpha
-export const PluginProvider: (props: PluginOptionsProviderProps) => JSX.Element;
 
 // @alpha (undocumented)
 export type TranslationApi = {
@@ -244,11 +231,6 @@ export type TranslationSnapshot<
       ready: true;
       t: TranslationFunction<TMessages>;
     };
-
-// @alpha
-export function usePluginOptions<
-  TPluginOptions extends {} = {},
->(): TPluginOptions;
 
 // @alpha (undocumented)
 export const useTranslationRef: <

@@ -15,6 +15,8 @@
  */
 
 import {
+  AnyExtensionDataMap,
+  AnyExtensionInputMap,
   BackstagePlugin,
   Extension,
   ExtensionDataRef,
@@ -36,6 +38,56 @@ export interface ExtensionInstance {
   readonly attachments: Map<string, ExtensionInstance[]>;
 }
 
+function resolveInputData(
+  dataMap: AnyExtensionDataMap,
+  attachment: ExtensionInstance,
+  inputName: string,
+) {
+  return mapValues(dataMap, ref => {
+    const value = attachment.getData(ref);
+    if (value === undefined && !ref.config.optional) {
+      throw new Error(
+        `input '${inputName}' did not receive required extension data '${ref.id}' from extension '${attachment.id}'`,
+      );
+    }
+    return value;
+  });
+}
+
+function resolveInputs(
+  inputMap: AnyExtensionInputMap,
+  attachments: Map<string, ExtensionInstance[]>,
+) {
+  return mapValues(inputMap, (input, inputName) => {
+    const attachedInstances = attachments.get(inputName) ?? [];
+    if (input.config.singleton) {
+      if (attachedInstances.length > 1) {
+        throw Error(
+          `expected ${
+            input.config.optional ? 'at most' : 'exactly'
+          } one '${inputName}' input but received multiple: '${attachedInstances
+            .map(e => e.id)
+            .join("', '")}'`,
+        );
+      } else if (attachedInstances.length === 0) {
+        if (input.config.optional) {
+          return undefined;
+        }
+        throw Error(`input '${inputName}' is required but was not received`);
+      }
+      return resolveInputData(
+        input.extensionData,
+        attachedInstances[0],
+        inputName,
+      );
+    }
+
+    return attachedInstances.map(attachment =>
+      resolveInputData(input.extensionData, attachment, inputName),
+    );
+  });
+}
+
 /** @internal */
 export function createExtensionInstance(options: {
   extension: Extension<unknown>;
@@ -51,7 +103,7 @@ export function createExtensionInstance(options: {
     parsedConfig = extension.configSchema?.parse(config ?? {});
   } catch (e) {
     throw new Error(
-      `Invalid configuration for extension instance '${extension.id}', ${e}`,
+      `Invalid configuration for extension '${extension.id}'; caused by ${e}`,
     );
   }
 
@@ -63,26 +115,23 @@ export function createExtensionInstance(options: {
         for (const [name, output] of Object.entries(namedOutputs)) {
           const ref = extension.output[name];
           if (!ref) {
+            throw new Error(`unknown output provided via '${name}'`);
+          }
+          if (extensionData.has(ref.id)) {
             throw new Error(
-              `Extension instance '${extension.id}' tried to bind unknown output '${name}'`,
+              `duplicate extension data '${ref.id}' received via output '${name}'`,
             );
           }
           extensionData.set(ref.id, output);
         }
       },
-      inputs: mapValues(
-        extension.inputs,
-        ({ extensionData: pointData }, inputName) => {
-          // TODO: validation
-          return (attachments.get(inputName) ?? []).map(attachment =>
-            mapValues(pointData, ref => attachment.getData(ref)),
-          );
-        },
-      ),
+      inputs: resolveInputs(extension.inputs, attachments),
     });
   } catch (e) {
     throw new Error(
-      `Failed to instantiate extension instance '${extension.id}', ${e}`,
+      `Failed to instantiate extension '${extension.id}'${
+        e.name === 'Error' ? `, ${e.message}` : `; caused by ${e}`
+      }`,
     );
   }
 

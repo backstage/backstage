@@ -1,0 +1,13 @@
+diff --git a/lib/binding.js b/lib/binding.js
+index a4a3e6cdc197bd0f12fe2d060640e91ac58ab457..ab04ce3115fe93073a3e25008730272b6fa21bd7 100644
+--- a/lib/binding.js
++++ b/lib/binding.js
+@@ -165,6 +165,8 @@ function Binding(system) {
+   this.trackDescriptor(stderr);
+ }
+ 
++Binding.prototype.readFileSync = path => require('fs').readFileSync(path).toString('utf8');
++
+ /**
+  * Get the file system underlying this binding.
+  * @return {FileSystem} The underlying file system.

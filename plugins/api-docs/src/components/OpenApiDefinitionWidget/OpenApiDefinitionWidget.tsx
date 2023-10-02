@@ -28,6 +28,7 @@ const LazyOpenApiDefinition = React.lazy(() =>
 /** @public */
 export type OpenApiDefinitionWidgetProps = {
   definition: string;
+  requestInterceptor?: (req: any) => any | Promise<any>;
 };
 
 /** @public */

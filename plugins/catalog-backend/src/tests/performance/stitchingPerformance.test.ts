@@ -181,6 +181,7 @@ describePerformanceTest('stitchingPerformance', () => {
       const backend = await startTestBackend({
         features: [
           import('@backstage/plugin-catalog-backend/alpha'),
+          staticDatabase(knex),
           createBackendModule({
             moduleId: 'syntheticLoadEntities',
             pluginId: 'catalog',
@@ -200,7 +201,6 @@ describePerformanceTest('stitchingPerformance', () => {
               });
             },
           }),
-          staticDatabase(knex),
         ],
       });
 

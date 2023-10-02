@@ -162,7 +162,7 @@ export class AzureDevOpsClient implements AzureDevOpsApi {
 }
 
 // @public (undocumented)
-export const azureDevOpsPlugin: BackstagePlugin<{}, {}, {}>;
+export const azureDevOpsPlugin: BackstagePlugin<{}, {}>;
 
 // @public (undocumented)
 export const AzurePullRequestsIcon: (

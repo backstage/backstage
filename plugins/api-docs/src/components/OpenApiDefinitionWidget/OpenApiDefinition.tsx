@@ -136,9 +136,13 @@ const useStyles = makeStyles(theme => ({
 
 export type OpenApiDefinitionProps = {
   definition: string;
+  requestInterceptor?: (req: any) => any | Promise<any>;
 };
 
-export const OpenApiDefinition = ({ definition }: OpenApiDefinitionProps) => {
+export const OpenApiDefinition = ({
+  definition,
+  requestInterceptor,
+}: OpenApiDefinitionProps) => {
   const classes = useStyles();
 
   // Due to a bug in the swagger-ui-react component, the component needs
@@ -152,7 +156,12 @@ export const OpenApiDefinition = ({ definition }: OpenApiDefinitionProps) => {
 
   return (
     <div className={classes.root}>
-      <SwaggerUI spec={def} url="" deepLinking />
+      <SwaggerUI
+        spec={def}
+        url=""
+        requestInterceptor={requestInterceptor}
+        deepLinking
+      />
     </div>
   );
 };

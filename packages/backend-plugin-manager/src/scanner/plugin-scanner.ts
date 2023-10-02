@@ -84,13 +84,13 @@ export class PluginScanner {
     }
 
     const dynamicPluginsRootPath = path.isAbsolute(dynamicPlugins.rootDirectory)
-      ? dynamicPlugins.rootDirectory
+      ? path.resolve(dynamicPlugins.rootDirectory)
       : path.resolve(this.backstageRoot, dynamicPlugins.rootDirectory);
 
     if (
       !path
-        .dirname(path.normalize(dynamicPluginsRootPath))
-        .startsWith(path.normalize(this.backstageRoot))
+        .dirname(dynamicPluginsRootPath)
+        .startsWith(path.resolve(this.backstageRoot))
     ) {
       const nodePath = process.env.NODE_PATH;
       const backstageNodeModules = path.resolve(

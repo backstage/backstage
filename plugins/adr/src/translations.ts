@@ -22,5 +22,5 @@ export const adrTranslationRef = createTranslationRef({
     content_header_title: 'Architecture Decision Records',
     failed_to_fetch: 'Failed to fetch ADRs',
     no_adrs: 'No ADRs found',
-  } as const,
+  },
 });
