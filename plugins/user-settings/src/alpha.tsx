@@ -1,3 +1,9 @@
+import { createRouteRef } from '@backstage/core-plugin-api';
+import {
+  createPageExtension,
+  createPlugin,
+} from '@backstage/frontend-plugin-api';
+
 /*
  * Copyright 2023 The Backstage Authors
  *
@@ -13,4 +19,23 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+import React from 'react';
+
 export * from './translation';
+
+export const userSettingsRouteRef = createRouteRef({
+  id: 'plugin.user-settings.page',
+});
+
+export const UserSettingsPage = createPageExtension({
+  id: 'plugin.user-settings.page',
+  defaultPath: '/settings',
+  routeRef: userSettingsRouteRef,
+  loader: () =>
+    import('./components/SettingsPage').then(m => <m.SettingsPage />),
+});
+
+export default createPlugin({
+  id: 'user-settings',
+  extensions: [UserSettingsPage],
+});
