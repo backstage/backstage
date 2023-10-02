@@ -22651,12 +22651,12 @@ __metadata:
   linkType: hard
 
 "cron@npm:^2.0.0":
-  version: 2.4.3
-  resolution: "cron@npm:2.4.3"
+  version: 2.4.4
+  resolution: "cron@npm:2.4.4"
   dependencies:
     "@types/luxon": ~3.3.0
     luxon: ~3.3.0
-  checksum: cb0ad49653b37ba125f8670ca92150ce515493512b1b8a5e08086d22bec9c54dc6d8926fcdb49ea5783f6699862ca5fdc532a440ce33c3228f9b3d565010db2f
+  checksum: e7dbc39c7c747b4fb198c3e62737bcc049ec8edb2b150eee17d39256982c6688f48b50b72e9b869b18feb186ab5081bcd8b82ad1ef79d9b7a13df499aaa77084
   languageName: node
   linkType: hard
 
