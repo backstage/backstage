@@ -196,7 +196,7 @@ export function TemplateEditorForm(props: TemplateEditorFormProps) {
             formData={data}
             onChange={e => onUpdate(e.formData)}
             onReset={() => onUpdate({})}
-            finishButtonLabel={onDryRun && 'Try It'}
+            finishButtonLabel={onDryRun && 'Try iIt'}
             onFinish={onDryRun && (() => onDryRun(data))}
             layouts={layouts}
           />
