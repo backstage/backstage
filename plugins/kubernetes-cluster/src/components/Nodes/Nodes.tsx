@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 import { useNodes } from './useNodes';
-import React from 'react';
+import React, { useCallback, useEffect } from 'react';
 import { useEntity } from '@backstage/plugin-catalog-react';
 import {
   StructuredMetadataTable,
@@ -116,10 +116,13 @@ export const Nodes = () => {
     clusterName: entity.metadata.name,
   });
   const { setError } = useKubernetesClusterError();
-
-  if (error) {
-    setError(error.message);
-  }
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  const setErrorCallback = useCallback(setError, []);
+  useEffect(() => {
+    if (error) {
+      setErrorCallback(error.message);
+    }
+  }, [error, setErrorCallback]);
 
   return (
     <Table

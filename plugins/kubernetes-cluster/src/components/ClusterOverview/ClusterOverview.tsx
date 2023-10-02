@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import React from 'react';
+import React, { useCallback, useEffect } from 'react';
 import { InfoCard, StructuredMetadataTable } from '@backstage/core-components';
 import { useEntity } from '@backstage/plugin-catalog-react';
 import { useCluster } from './useCluster';
@@ -36,10 +36,13 @@ export const ClusterOverview = () => {
     clusterName: entity.metadata.name,
   });
   const { setError } = useKubernetesClusterError();
-
-  if (error) {
-    setError(error.message);
-  }
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  const setErrorCallback = useCallback(setError, []);
+  useEffect(() => {
+    if (error) {
+      setErrorCallback(error.message);
+    }
+  }, [error, setErrorCallback]);
 
   return (
     <InfoCard title="Cluster Overview" className={classes.root}>

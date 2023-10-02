@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 import { useApiResources } from './useApiResources';
-import React from 'react';
+import React, { useCallback, useEffect } from 'react';
 import { useEntity } from '@backstage/plugin-catalog-react';
 import { Table, TableColumn } from '@backstage/core-components';
 import { IAPIGroup } from '@kubernetes-models/apimachinery/apis/meta/v1';
@@ -49,14 +49,18 @@ const defaultColumns: TableColumn<IAPIGroup>[] = [
 export const ApiResources = () => {
   const classes = useStyles();
   const { entity } = useEntity();
+  const { setError } = useKubernetesClusterError();
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  const setErrorCallback = useCallback(setError, []);
   const { value, error, loading } = useApiResources({
     clusterName: entity.metadata.name,
   });
-  const { setError } = useKubernetesClusterError();
 
-  if (error) {
-    setError(error.message);
-  }
+  useEffect(() => {
+    if (error) {
+      setErrorCallback(error.message);
+    }
+  }, [error, setErrorCallback]);
 
   return (
     <Table
