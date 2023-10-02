@@ -41,7 +41,8 @@ import {
 import React, { ReactNode } from 'react';
 import { createComponentRouteRef } from '../../routes';
 import { CatalogTable, CatalogTableRow } from '../CatalogTable';
-import { useCatalogPluginOptions } from '../../options';
+import { catalogTranslationRef } from '../../translation';
+import { useTranslationRef } from '@backstage/core-plugin-api/alpha';
 
 /**
  * Props for root catalog pages.
@@ -71,15 +72,14 @@ export function DefaultCatalogPage(props: DefaultCatalogPageProps) {
   const orgName =
     useApi(configApiRef).getOptionalString('organization.name') ?? 'Backstage';
   const createComponentLink = useRouteRef(createComponentRouteRef);
-
-  const { createButtonTitle } = useCatalogPluginOptions();
+  const { t } = useTranslationRef(catalogTranslationRef);
 
   return (
-    <PageWithHeader title={`${orgName} Catalog`} themeId="home">
+    <PageWithHeader title={t('catalog_page_title', { orgName })} themeId="home">
       <Content>
         <ContentHeader title="">
           <CreateButton
-            title={createButtonTitle}
+            title={t('catalog_page_create_button_title')}
             to={createComponentLink && createComponentLink()}
           />
           <SupportButton>All your software catalog entities</SupportButton>

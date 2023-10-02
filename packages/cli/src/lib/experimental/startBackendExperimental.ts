@@ -14,22 +14,24 @@
  * limitations under the License.
  */
 
+import { FSWatcher, watch } from 'chokidar';
+
 import { BackendServeOptions } from '../bundler/types';
 import type { ChildProcess } from 'child_process';
-import { fileURLToPath } from 'url';
-import { isAbsolute as isAbsolutePath } from 'path';
-import { FSWatcher, watch } from 'chokidar';
+import { ctrlc } from 'ctrlc-windows';
 import { IpcServer } from './IpcServer';
 import { ServerDataStore } from './ServerDataStore';
 import debounce from 'lodash/debounce';
-import spawn from 'cross-spawn';
+import { fileURLToPath, pathToFileURL } from 'url';
+import { isAbsolute as isAbsolutePath } from 'path';
 import { paths } from '../paths';
+import spawn from 'cross-spawn';
 
 const loaderArgs = [
   '--require',
   require.resolve('@esbuild-kit/cjs-loader'),
   '--loader',
-  require.resolve('@esbuild-kit/esm-loader'),
+  pathToFileURL(require.resolve('@esbuild-kit/esm-loader')).toString(), // Windows prefers a URL here
 ];
 
 export async function startBackendExperimental(options: BackendServeOptions) {
@@ -56,7 +58,11 @@ export async function startBackendExperimental(options: BackendServeOptions) {
     if (child && !child.killed && child.exitCode === null) {
       // We always wait for the existing process to exit, to make sure we don't get IPC conflicts
       shutdownPromise = new Promise(resolve => child!.once('exit', resolve));
-      child.kill();
+      if (process.platform === 'win32' && child.pid) {
+        ctrlc(child.pid);
+      } else {
+        child.kill();
+      }
       await shutdownPromise;
       shutdownPromise = undefined;
     }
@@ -68,9 +74,17 @@ export async function startBackendExperimental(options: BackendServeOptions) {
 
     const optionArgs = new Array<string>();
     if (options.inspectEnabled) {
-      optionArgs.push('--inspect');
+      const inspect =
+        typeof options.inspectEnabled === 'string'
+          ? `--inspect=${options.inspectEnabled}`
+          : '--inspect';
+      optionArgs.push(inspect);
     } else if (options.inspectBrkEnabled) {
-      optionArgs.push('--inspect-brk');
+      const inspect =
+        typeof options.inspectBrkEnabled === 'string'
+          ? `--inspect-brk=${options.inspectBrkEnabled}`
+          : '--inspect-brk';
+      optionArgs.push(inspect);
     }
 
     const userArgs = process.argv

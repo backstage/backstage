@@ -23,7 +23,7 @@ jobs:
     strategy:
       matrix:
         os: [ubuntu-latest]
-        node-version: [16.x]
+        node-version: [18.x]
 
     name: Storybook
     steps:

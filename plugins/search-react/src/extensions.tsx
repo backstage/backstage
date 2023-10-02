@@ -35,7 +35,7 @@ import { SearchDocument, SearchResult } from '@backstage/plugin-search-common';
 
 import { ListItem, List, ListProps, ListItemProps } from '@material-ui/core';
 
-import { DefaultResultListItem } from './components';
+import { DefaultResultListItem } from './components/DefaultResultListItem';
 
 /**
  * @internal
@@ -90,7 +90,7 @@ export type SearchResultListItemExtensionProps<Props extends {} = {}> = Props &
  * Extends children with extension capabilities.
  * @param props - see {@link SearchResultListItemExtensionProps}.
  */
-const SearchResultListItemExtension = (
+export const SearchResultListItemExtension = (
   props: SearchResultListItemExtensionProps,
 ) => {
   const {

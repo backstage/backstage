@@ -138,7 +138,6 @@ const sentryPlugin: BackstagePlugin<
   {
     root: RouteRef<undefined>;
   },
-  {},
   {}
 >;
 export { sentryPlugin as plugin };

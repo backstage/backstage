@@ -29,7 +29,4 @@ export {
   type TranslationRefOptions,
   createTranslationRef,
 } from './TranslationRef';
-export {
-  type TranslationOptions,
-  useTranslationRef,
-} from './useTranslationRef';
+export { useTranslationRef } from './useTranslationRef';

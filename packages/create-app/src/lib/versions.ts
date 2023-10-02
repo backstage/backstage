@@ -41,6 +41,7 @@ import { version as config } from '../../../config/package.json';
 import { version as coreAppApi } from '../../../core-app-api/package.json';
 import { version as coreComponents } from '../../../core-components/package.json';
 import { version as corePluginApi } from '../../../core-plugin-api/package.json';
+import { version as e2eTestUtils } from '../../../e2e-test-utils/package.json';
 import { version as errors } from '../../../errors/package.json';
 import { version as integrationReact } from '../../../integration-react/package.json';
 import { version as testUtils } from '../../../test-utils/package.json';
@@ -92,6 +93,7 @@ export const packageVersions = {
   '@backstage/core-app-api': coreAppApi,
   '@backstage/core-components': coreComponents,
   '@backstage/core-plugin-api': corePluginApi,
+  '@backstage/e2e-test-utils': e2eTestUtils,
   '@backstage/errors': errors,
   '@backstage/integration-react': integrationReact,
   '@backstage/plugin-api-docs': pluginApiDocs,

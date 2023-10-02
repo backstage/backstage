@@ -1,5 +1,30 @@
 # @backstage/plugin-permission-node
 
+## 0.7.16-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/plugin-auth-node@0.3.2-next.0
+  - @backstage/backend-common@0.19.7-next.0
+  - @backstage/config@1.1.0
+  - @backstage/backend-plugin-api@0.6.5-next.0
+  - @backstage/errors@1.2.2
+  - @backstage/plugin-permission-common@0.7.8
+
+## 0.7.14
+
+### Patch Changes
+
+- a8a614ba0d07: Minor `package.json` update.
+- Updated dependencies
+  - @backstage/backend-common@0.19.5
+  - @backstage/plugin-auth-node@0.3.0
+  - @backstage/config@1.1.0
+  - @backstage/errors@1.2.2
+  - @backstage/plugin-permission-common@0.7.8
+  - @backstage/backend-plugin-api@0.6.3
+
 ## 0.7.14-next.3
 
 ### Patch Changes

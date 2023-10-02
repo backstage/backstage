@@ -4,20 +4,26 @@
 
 ```ts
 import { ApiRef } from '@backstage/core-plugin-api';
-import { BackstagePlugin } from '@backstage/core-plugin-api';
-import { i18n } from 'i18next';
-import { ReactNode } from 'react';
+import { Observable } from '@backstage/types';
 import { TranslationMessages as TranslationMessages_2 } from '@backstage/core-plugin-api/alpha';
 import { TranslationRef as TranslationRef_2 } from '@backstage/core-plugin-api/alpha';
 
 // @alpha (undocumented)
-export type AppTranslationApi = {
-  getI18n(): i18n;
-  addResource(resource: TranslationRef): void;
+export type AppLanguageApi = {
+  getAvailableLanguages(): {
+    languages: string[];
+  };
+  setLanguage(language?: string): void;
+  getLanguage(): {
+    language: string;
+  };
+  language$(): Observable<{
+    language: string;
+  }>;
 };
 
 // @alpha (undocumented)
-export const appTranslationApiRef: ApiRef<AppTranslationApi>;
+export const appLanguageApiRef: ApiRef<AppLanguageApi>;
 
 // @alpha
 export function createTranslationMessages<
@@ -33,7 +39,7 @@ export function createTranslationMessages<
 // @alpha (undocumented)
 export function createTranslationRef<
   TId extends string,
-  TMessages extends {
+  const TMessages extends {
     [key in string]: string;
   },
   TTranslations extends {
@@ -66,16 +72,43 @@ export function createTranslationResource<
   options: TranslationResourceOptions<TId, TMessages, TTranslations>,
 ): TranslationResource<TId>;
 
-// @alpha
-export interface PluginOptionsProviderProps {
-  // (undocumented)
-  children: ReactNode;
-  // (undocumented)
-  plugin?: BackstagePlugin;
-}
+// @alpha (undocumented)
+export type TranslationApi = {
+  getTranslation<
+    TMessages extends {
+      [key in string]: string;
+    },
+  >(
+    translationRef: TranslationRef<string, TMessages>,
+  ): TranslationSnapshot<TMessages>;
+  translation$<
+    TMessages extends {
+      [key in string]: string;
+    },
+  >(
+    translationRef: TranslationRef<string, TMessages>,
+  ): Observable<TranslationSnapshot<TMessages>>;
+};
 
-// @alpha
-export const PluginProvider: (props: PluginOptionsProviderProps) => JSX.Element;
+// @alpha (undocumented)
+export const translationApiRef: ApiRef<TranslationApi>;
+
+// @alpha (undocumented)
+export interface TranslationFunction<
+  TMessages extends {
+    [key in string]: string;
+  },
+> {
+  // (undocumented)
+  <TKey extends keyof CollapsedMessages<TMessages>>(
+    key: TKey,
+    ...[args]: TranslationFunctionOptions<
+      NestedMessageKeys<TKey, CollapsedMessages<TMessages>>,
+      PluralKeys<TMessages>,
+      CollapsedMessages<TMessages>
+    >
+  ): CollapsedMessages<TMessages>[TKey];
+}
 
 // @alpha
 export interface TranslationMessages<
@@ -115,9 +148,6 @@ export interface TranslationMessagesOptions<
   // (undocumented)
   ref: TranslationRef_2<TId, TMessages>;
 }
-
-// @alpha (undocumented)
-export interface TranslationOptions {}
 
 // @alpha (undocumented)
 export interface TranslationRef<
@@ -188,10 +218,19 @@ export interface TranslationResourceOptions<
   translations: TTranslations;
 }
 
-// @alpha
-export function usePluginOptions<
-  TPluginOptions extends {} = {},
->(): TPluginOptions;
+// @alpha (undocumented)
+export type TranslationSnapshot<
+  TMessages extends {
+    [key in string]: string;
+  },
+> =
+  | {
+      ready: false;
+    }
+  | {
+      ready: true;
+      t: TranslationFunction<TMessages>;
+    };
 
 // @alpha (undocumented)
 export const useTranslationRef: <
@@ -200,10 +239,9 @@ export const useTranslationRef: <
   },
 >(
   translationRef: TranslationRef<string, TMessages>,
-) => <TKey extends keyof TMessages & string>(
-  key: TKey,
-  options?: TranslationOptions,
-) => TMessages[TKey];
+) => {
+  t: TranslationFunction<TMessages>;
+};
 
 // (No @packageDocumentation comment for this package)
 ```

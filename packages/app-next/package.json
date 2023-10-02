@@ -1,6 +1,6 @@
 {
   "name": "example-app-next",
-  "version": "0.0.1-next.2",
+  "version": "0.0.2-next.0",
   "private": true,
   "backstage": {
     "role": "frontend"
@@ -24,6 +24,7 @@
     "@backstage/plugin-azure-devops": "workspace:^",
     "@backstage/plugin-azure-sites": "workspace:^",
     "@backstage/plugin-badges": "workspace:^",
+    "@backstage/plugin-catalog": "workspace:^",
     "@backstage/plugin-catalog-common": "workspace:^",
     "@backstage/plugin-catalog-graph": "workspace:^",
     "@backstage/plugin-catalog-import": "workspace:^",
@@ -76,7 +77,6 @@
     "@backstage/plugin-todo": "workspace:^",
     "@backstage/plugin-user-settings": "workspace:^",
     "@backstage/theme": "workspace:^",
-    "@internal/plugin-catalog-customized": "workspace:^",
     "@material-ui/core": "^4.12.2",
     "@material-ui/icons": "^4.9.1",
     "@material-ui/lab": "4.0.0-alpha.61",
@@ -99,7 +99,6 @@
   },
   "devDependencies": {
     "@backstage/test-utils": "workspace:^",
-    "@testing-library/cypress": "^9.0.0",
     "@testing-library/dom": "^8.0.0",
     "@testing-library/jest-dom": "^5.10.1",
     "@testing-library/react": "^12.1.3",
@@ -108,21 +107,14 @@
     "@types/react": "*",
     "@types/react-dom": "*",
     "@types/zen-observable": "^0.8.0",
-    "cross-env": "^7.0.0",
-    "cypress": "^10.0.0",
-    "eslint-plugin-cypress": "^2.10.3",
-    "start-server-and-test": "^1.10.11"
+    "cross-env": "^7.0.0"
   },
   "scripts": {
     "start": "backstage-cli package start --config ../../app-config.yaml --config app-config.yaml",
     "build": "backstage-cli package build",
     "clean": "backstage-cli package clean",
     "test": "backstage-cli package test",
-    "lint": "backstage-cli package lint",
-    "test:e2e": "start-server-and-test start http://localhost:3000 cy:dev",
-    "test:e2e:ci": "start-server-and-test start http://localhost:3000 cy:run",
-    "cy:dev": "cypress open",
-    "cy:run": "cypress run"
+    "lint": "backstage-cli package lint"
   },
   "browserslist": {
     "production": [

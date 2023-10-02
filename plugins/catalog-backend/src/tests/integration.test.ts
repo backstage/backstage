@@ -53,7 +53,7 @@ import { CatalogProcessingEngine } from '../processing/types';
 import { DefaultEntitiesCatalog } from '../service/DefaultEntitiesCatalog';
 import { DefaultRefreshService } from '../service/DefaultRefreshService';
 import { RefreshOptions, RefreshService } from '../service/types';
-import { Stitcher } from '../stitching/Stitcher';
+import { DefaultStitcher } from '../stitching/DefaultStitcher';
 
 const voidLogger = getVoidLogger();
 
@@ -268,7 +268,7 @@ class TestHarness {
       policy: EntityPolicies.allOf([]),
       legacySingleProcessorValidation: false,
     });
-    const stitcher = new Stitcher(db, logger);
+    const stitcher = DefaultStitcher.fromConfig(config, { knex: db, logger });
     const catalog = new DefaultEntitiesCatalog({
       database: db,
       logger,
@@ -282,6 +282,7 @@ class TestHarness {
       config: new ConfigReader({}),
       logger,
       processingDatabase,
+      knex: db,
       orchestrator,
       stitcher,
       createHash: () => createHash('sha1'),
@@ -300,7 +301,16 @@ class TestHarness {
 
     return new TestHarness(
       catalog,
-      engine,
+      {
+        async start() {
+          await engine.start();
+          await stitcher.start();
+        },
+        async stop() {
+          await engine.stop();
+          await stitcher.stop();
+        },
+      },
       refresh,
       provider,
       proxyProgressTracker,

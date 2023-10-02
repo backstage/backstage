@@ -1,6 +1,6 @@
 {
   "name": "example-backend-next",
-  "version": "0.0.15-next.3",
+  "version": "0.0.16-next.0",
   "main": "dist/index.cjs.js",
   "types": "src/index.ts",
   "license": "Apache-2.0",
@@ -18,7 +18,7 @@
     "backstage"
   ],
   "scripts": {
-    "start": "EXPERIMENTAL_BACKEND_START=1 backstage-cli package start",
+    "start": "backstage-cli package start",
     "build": "backstage-cli package build",
     "lint": "backstage-cli package lint",
     "test": "backstage-cli package test",
@@ -45,6 +45,7 @@
     "@backstage/plugin-permission-backend-module-allow-all-policy": "workspace:^",
     "@backstage/plugin-permission-common": "workspace:^",
     "@backstage/plugin-permission-node": "workspace:^",
+    "@backstage/plugin-playlist-backend": "workspace:^",
     "@backstage/plugin-proxy-backend": "workspace:^",
     "@backstage/plugin-scaffolder-backend": "workspace:^",
     "@backstage/plugin-search-backend": "workspace:^",
@@ -52,6 +53,7 @@
     "@backstage/plugin-search-backend-module-explore": "workspace:^",
     "@backstage/plugin-search-backend-module-techdocs": "workspace:^",
     "@backstage/plugin-search-backend-node": "workspace:^",
+    "@backstage/plugin-sonarqube-backend": "workspace:^",
     "@backstage/plugin-techdocs-backend": "workspace:^",
     "@backstage/plugin-todo-backend": "workspace:^"
   },

@@ -33,13 +33,7 @@ import {
 import { Entity } from '@backstage/catalog-model';
 
 /** @public */
-export interface KubernetesRequestAuth {
-  google?: string;
-  aks?: string;
-  oidc?: {
-    [key: string]: string;
-  };
-}
+export type KubernetesRequestAuth = JsonObject;
 
 /** @public */
 export interface CustomResourceMatcher {
@@ -267,4 +261,23 @@ export interface ClientPodStatus {
   cpu: ClientCurrentResourceUsage;
   memory: ClientCurrentResourceUsage;
   containers: ClientContainerStatus[];
+}
+
+/** @public */
+export interface DeploymentResources {
+  pods: V1Pod[];
+  replicaSets: V1ReplicaSet[];
+  deployments: V1Deployment[];
+  horizontalPodAutoscalers: V1HorizontalPodAutoscaler[];
+}
+
+/** @public */
+export interface GroupedResponses extends DeploymentResources {
+  services: V1Service[];
+  configMaps: V1ConfigMap[];
+  ingresses: V1Ingress[];
+  jobs: V1Job[];
+  cronJobs: V1CronJob[];
+  customResources: any[];
+  statefulsets: V1StatefulSet[];
 }

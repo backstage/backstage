@@ -49,8 +49,7 @@ import {
   DbRelationsRow,
   DbSearchRow,
 } from '../database/tables';
-
-import { Stitcher } from '../stitching/Stitcher';
+import { Stitcher } from '../stitching/types';
 
 import {
   isQueryEntitiesCursorRequest,
@@ -606,7 +605,9 @@ export class DefaultEntitiesCatalog implements EntitiesCatalog {
       .where('entity_id', uid)
       .delete();
 
-    await this.stitcher.stitch(new Set(relationPeers.map(p => p.ref)));
+    await this.stitcher.stitch({
+      entityRefs: new Set(relationPeers.map(p => p.ref)),
+    });
   }
 
   async entityAncestry(rootRef: string): Promise<EntityAncestryResponse> {

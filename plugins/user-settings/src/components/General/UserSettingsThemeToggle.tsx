@@ -110,7 +110,7 @@ export const UserSettingsThemeToggle = () => {
 
   const themeIds = appThemeApi.getInstalledThemes();
 
-  const t = useTranslationRef(userSettingsTranslationRef);
+  const { t } = useTranslationRef(userSettingsTranslationRef);
 
   const handleSetTheme = (
     _event: React.MouseEvent<HTMLElement>,
@@ -141,24 +141,25 @@ export const UserSettingsThemeToggle = () => {
           onChange={handleSetTheme}
         >
           {themeIds.map(theme => {
-            const themeIcon = themeIds.find(it => it.id === theme.id)?.icon;
-            const themeId = theme.id as 'light' | 'dark';
+            const themeId = theme.id;
+            const themeIcon = theme.icon;
+            const themeTitle =
+              theme.title ||
+              (themeId === 'light' || themeId === 'dark'
+                ? t(`theme_${themeId}`)
+                : themeId);
             return (
               <TooltipToggleButton
-                key={theme.id}
-                title={
-                  theme.title
-                    ? t('select_theme_custom', { custom: theme.title })
-                    : t(`select_theme_${themeId}`)
-                }
-                value={theme.id}
+                key={themeId}
+                title={t('select_theme', { theme: themeTitle })}
+                value={themeId}
               >
                 <>
-                  {theme.title || t(`theme_${themeId}`)}&nbsp;
+                  {themeTitle}&nbsp;
                   <ThemeIcon
-                    id={theme.id}
+                    id={themeId}
                     icon={themeIcon}
-                    activeId={themeId}
+                    activeId={activeThemeId}
                   />
                 </>
               </TooltipToggleButton>

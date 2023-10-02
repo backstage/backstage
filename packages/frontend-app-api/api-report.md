@@ -12,7 +12,8 @@ import { JSX as JSX_2 } from 'react';
 // @public (undocumented)
 export function createApp(options: {
   plugins: BackstagePlugin[];
-  config?: ConfigApi;
+  configLoader?: () => Promise<ConfigApi>;
+  pluginLoader?: (ctx: { config: ConfigApi }) => Promise<BackstagePlugin[]>;
 }): {
   createRoot(): JSX_2.Element;
 };
@@ -26,6 +27,10 @@ export interface ExtensionTree {
   getExtension(id: string): ExtensionTreeNode | undefined;
   // (undocumented)
   getExtensionAttachments(id: string, inputName: string): ExtensionTreeNode[];
+  // (undocumented)
+  getRootRoutes(): JSX_2.Element[];
+  // (undocumented)
+  getSidebarItems(): JSX_2.Element[];
 }
 
 // @public (undocumented)

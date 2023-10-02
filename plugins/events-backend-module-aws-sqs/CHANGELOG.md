@@ -1,5 +1,45 @@
 # @backstage/plugin-events-backend-module-aws-sqs
 
+## 0.2.8-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-common@0.19.7-next.0
+  - @backstage/config@1.1.0
+  - @backstage/backend-plugin-api@0.6.5-next.0
+  - @backstage/backend-tasks@0.5.10-next.0
+  - @backstage/types@1.1.1
+  - @backstage/plugin-events-node@0.2.14-next.0
+
+## 0.2.6
+
+### Patch Changes
+
+- 71114ac50e02: The export for the new backend system has been moved to be the `default` export.
+
+  For example, if you are currently importing the plugin using the following pattern:
+
+  ```ts
+  import { examplePlugin } from '@backstage/plugin-example-backend';
+
+  backend.add(examplePlugin);
+  ```
+
+  It should be migrated to this:
+
+  ```ts
+  backend.add(import('@backstage/plugin-example-backend'));
+  ```
+
+- Updated dependencies
+  - @backstage/backend-tasks@0.5.8
+  - @backstage/backend-common@0.19.5
+  - @backstage/config@1.1.0
+  - @backstage/types@1.1.1
+  - @backstage/backend-plugin-api@0.6.3
+  - @backstage/plugin-events-node@0.2.12
+
 ## 0.2.6-next.3
 
 ### Patch Changes

@@ -222,7 +222,7 @@ export type BackstageIdentityResponse = {
 export type BackstagePlugin<
   Routes extends AnyRoutes = {},
   ExternalRoutes extends AnyExternalRoutes = {},
-  PluginInputOptions extends {} = {},
+  _Ignored extends {} = {},
 > = {
   getId(): string;
   getApis(): Iterable<AnyApiFactory>;
@@ -230,7 +230,6 @@ export type BackstagePlugin<
   provide<T>(extension: Extension<T>): T;
   routes: Routes;
   externalRoutes: ExternalRoutes;
-  __experimentalReconfigure(options: PluginInputOptions): void;
 };
 
 // @public
@@ -318,10 +317,9 @@ export function createExternalRouteRef<
 export function createPlugin<
   Routes extends AnyRoutes = {},
   ExternalRoutes extends AnyExternalRoutes = {},
-  PluginInputOptions extends {} = {},
 >(
-  config: PluginConfig<Routes, ExternalRoutes, PluginInputOptions>,
-): BackstagePlugin<Routes, ExternalRoutes, PluginInputOptions>;
+  config: PluginConfig<Routes, ExternalRoutes>,
+): BackstagePlugin<Routes, ExternalRoutes>;
 
 // @public
 export function createReactExtension<
@@ -647,14 +645,12 @@ export type PendingOAuthRequest = {
 export type PluginConfig<
   Routes extends AnyRoutes,
   ExternalRoutes extends AnyExternalRoutes,
-  PluginInputOptions extends {},
 > = {
   id: string;
   apis?: Iterable<AnyApiFactory>;
   routes?: Routes;
   externalRoutes?: ExternalRoutes;
   featureFlags?: PluginFeatureFlagConfig[];
-  __experimentalConfigure?(options?: PluginInputOptions): {};
 };
 
 // @public

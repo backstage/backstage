@@ -47,7 +47,6 @@ import { groupByDate, trendFrom } from '../../utils/charts';
 import { aggregationSort } from '../../utils/sort';
 import { CostOverviewLegend } from './CostOverviewLegend';
 import { TooltipRenderer } from '../../types';
-import { useCostInsightsOptions } from '../../options';
 import { useConfig } from '../../hooks';
 
 type CostOverviewChartProps = {
@@ -65,7 +64,7 @@ export const CostOverviewChart = ({
 }: CostOverviewChartProps) => {
   const theme = useTheme<CostInsightsTheme>();
   const styles = useStyles(theme);
-  const { baseCurrency } = useConfig();
+  const { baseCurrency, hideTrendLine } = useConfig();
 
   const data = {
     dailyCost: {
@@ -134,7 +133,6 @@ export const CostOverviewChart = ({
     );
   };
 
-  const { hideTrendLine } = useCostInsightsOptions();
   const localizedTickFormatter = formatGraphValue(baseCurrency);
 
   return (

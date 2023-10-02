@@ -6,7 +6,7 @@ sidebar_label: Extension Points
 description: Extension points of backend plugins
 ---
 
-> **DISCLAIMER: The new backend system is in alpha, and still under active development. While we have reviewed the interfaces carefully, they may still be iterated on before the stable release.**
+> **NOTE: The new backend system is in alpha, and some plugins do not yet fully implement it.**
 
 While plugins are able to use static configuration for lightweight forms of customization, you can quickly hit a limit where you need something more powerful to allow users to extend your plugin. For this purpose, the backend system provides a mechanism for plugins to provide extension points, which can be used to expose deeper customizations for your plugin. Extension points are used by modules, which are installed in the backend adjacent to plugins. Modules are covered more in-depth in the [next section](./06-modules.md).
 

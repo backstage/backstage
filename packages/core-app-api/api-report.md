@@ -64,8 +64,6 @@ import { SessionState } from '@backstage/core-plugin-api';
 import { StorageApi } from '@backstage/core-plugin-api';
 import { StorageValueSnapshot } from '@backstage/core-plugin-api';
 import { SubRouteRef } from '@backstage/core-plugin-api';
-import { TranslationMessages } from '@backstage/core-plugin-api/alpha';
-import { TranslationResource } from '@backstage/core-plugin-api/alpha';
 
 // @public
 export class AlertApiForwarder implements AlertApi {
@@ -223,9 +221,20 @@ export type AppOptions = {
   configLoader?: AppConfigLoader;
   bindRoutes?(context: { bind: AppRouteBinder }): void;
   __experimentalTranslations?: {
-    fallbackLanguage?: string | string[];
-    supportedLanguages?: string[];
-    resources?: Array<TranslationMessages | TranslationResource>;
+    defaultLanguage?: string;
+    availableLanguages?: string[];
+    resources?: Array<
+      | {
+          $$type: '@backstage/TranslationResource';
+          id: string;
+        }
+      | {
+          $$type: '@backstage/TranslationMessages';
+          id: string;
+          full: boolean;
+          messages: Record<string, string>;
+        }
+    >;
   };
 };
 

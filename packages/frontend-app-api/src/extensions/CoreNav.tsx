@@ -18,6 +18,9 @@ import React from 'react';
 import {
   createExtension,
   coreExtensionData,
+  createExtensionInput,
+  useRouteRef,
+  NavTarget,
 } from '@backstage/frontend-plugin-api';
 import { makeStyles } from '@material-ui/core';
 import {
@@ -28,7 +31,6 @@ import {
   SidebarDivider,
   SidebarItem,
 } from '@backstage/core-components';
-import { GraphiQLIcon } from '@backstage/plugin-graphiql';
 // eslint-disable-next-line @backstage/no-relative-monorepo-imports
 import LogoIcon from '../../../app/src/components/Root/LogoIcon';
 // eslint-disable-next-line @backstage/no-relative-monorepo-imports
@@ -62,21 +64,33 @@ const SidebarLogo = () => {
   );
 };
 
+const SidebarNavItem = (props: NavTarget) => {
+  const { icon: Icon, title, routeRef } = props;
+  const to = useRouteRef(routeRef)();
+  // TODO: Support opening modal, for example, the search one
+  return <SidebarItem to={to} icon={Icon} text={title} />;
+};
+
 export const CoreNav = createExtension({
   id: 'core.nav',
   at: 'core.layout/nav',
-  inputs: {},
+  inputs: {
+    items: createExtensionInput({
+      target: coreExtensionData.navTarget,
+    }),
+  },
   output: {
     element: coreExtensionData.reactElement,
   },
-  factory({ bind }) {
+  factory({ bind, inputs }) {
     bind({
-      // TODO: set base path using the logic from AppRouter
       element: (
         <Sidebar>
           <SidebarLogo />
           <SidebarDivider />
-          <SidebarItem icon={GraphiQLIcon} to="graphiql" text="GraphiQL" />
+          {inputs.items.map((item, index) => (
+            <SidebarNavItem {...item.target} key={index} />
+          ))}
         </Sidebar>
       ),
     });

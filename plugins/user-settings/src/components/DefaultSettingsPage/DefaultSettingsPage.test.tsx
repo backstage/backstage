@@ -15,7 +15,7 @@
  */
 
 import React from 'react';
-import { renderWithEffects, wrapInTestApp } from '@backstage/test-utils';
+import { renderInTestApp } from '@backstage/test-utils';
 import { DefaultSettingsPage } from './DefaultSettingsPage';
 import { UserSettingsTab } from '../UserSettingsTab';
 import { useOutlet } from 'react-router-dom';
@@ -32,9 +32,7 @@ describe('<DefaultSettingsPage />', () => {
   });
 
   it('should render the settings page with 3 tabs', async () => {
-    const { container } = await renderWithEffects(
-      wrapInTestApp(<DefaultSettingsPage />),
-    );
+    const { container } = await renderInTestApp(<DefaultSettingsPage />);
 
     const tabs = container.querySelectorAll('[class*=MuiTabs-root] button');
     expect(tabs).toHaveLength(3);
@@ -46,8 +44,8 @@ describe('<DefaultSettingsPage />', () => {
         <div>Advanced settings</div>
       </UserSettingsTab>
     );
-    const { container } = await renderWithEffects(
-      wrapInTestApp(<DefaultSettingsPage tabs={[advancedTabRoute]} />),
+    const { container } = await renderInTestApp(
+      <DefaultSettingsPage tabs={[advancedTabRoute]} />,
     );
 
     const tabs = container.querySelectorAll('[class*=MuiTabs-root] button');
@@ -61,8 +59,8 @@ describe('<DefaultSettingsPage />', () => {
         <div>Advanced settings</div>
       </SettingsLayout.Route>
     );
-    const { container } = await renderWithEffects(
-      wrapInTestApp(<DefaultSettingsPage tabs={[advancedTabRoute]} />),
+    const { container } = await renderInTestApp(
+      <DefaultSettingsPage tabs={[advancedTabRoute]} />,
     );
 
     const tabs = container.querySelectorAll('[class*=MuiTabs-root] button');

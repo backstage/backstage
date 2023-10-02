@@ -561,8 +561,7 @@ export const scaffolderPlugin: BackstagePlugin<
       },
       true
     >;
-  },
-  {}
+  }
 >;
 
 // @public @deprecated (undocumented)

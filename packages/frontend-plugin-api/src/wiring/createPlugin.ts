@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { Extension } from './types';
+import { Extension } from './createExtension';
 
 /** @public */
 export interface PluginOptions {

@@ -1,5 +1,34 @@
 # @backstage/plugin-azure-devops
 
+## 0.3.7-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/plugin-catalog-react@1.8.5-next.0
+  - @backstage/core-plugin-api@1.7.0-next.0
+  - @backstage/core-components@0.13.6-next.0
+  - @backstage/catalog-model@1.4.2
+  - @backstage/errors@1.2.2
+  - @backstage/theme@0.4.2
+  - @backstage/plugin-azure-devops-common@0.3.1
+
+## 0.3.6
+
+### Patch Changes
+
+- 482bb5c0bbf8: Moved `@types/react` to be a regular dependency
+- 406b786a2a2c: Mark package as being free of side effects, allowing more optimized Webpack builds.
+- 8cec7664e146: Removed `@types/node` dependency
+- Updated dependencies
+  - @backstage/plugin-catalog-react@1.8.4
+  - @backstage/core-components@0.13.5
+  - @backstage/catalog-model@1.4.2
+  - @backstage/core-plugin-api@1.6.0
+  - @backstage/errors@1.2.2
+  - @backstage/plugin-azure-devops-common@0.3.1
+  - @backstage/theme@0.4.2
+
 ## 0.3.6-next.3
 
 ### Patch Changes

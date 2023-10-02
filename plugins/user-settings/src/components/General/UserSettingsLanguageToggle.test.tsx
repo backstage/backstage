@@ -13,113 +13,69 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
 import React from 'react';
-import { render, screen, fireEvent } from '@testing-library/react';
-import { useTranslationRef } from '@backstage/core-plugin-api/alpha';
+import { screen, fireEvent } from '@testing-library/react';
 import { UserSettingsLanguageToggle } from './UserSettingsLanguageToggle';
-import { wrapInTestApp } from '@backstage/test-utils';
-import { useTranslation } from 'react-i18next';
-
-jest.mock('@backstage/core-plugin-api/alpha', () => ({
-  ...jest.requireActual('@backstage/core-plugin-api/alpha'),
-  useTranslationRef: jest.fn(),
-}));
-
-jest.mock('react-i18next', () => ({
-  ...jest.requireActual('react-i18next'),
-  useTranslation: jest.fn(),
-}));
+import { TestApiProvider, renderInTestApp } from '@backstage/test-utils';
+import { appLanguageApiRef } from '@backstage/core-plugin-api/alpha';
 
 describe('UserSettingsLanguageToggle', () => {
   beforeEach(() => {
     jest.clearAllMocks();
   });
 
-  it('should render correctly with multiple supported languages', () => {
-    const messages: Record<string, string> = {
-      en: 'English',
-      fr: 'French',
-      de: 'German',
-      language: 'language',
-      change_the_language: 'Change the language',
-    };
+  it('should not render with only one available language', async () => {
+    const rendered = await renderInTestApp(<UserSettingsLanguageToggle />);
 
-    const i18nMock = {
-      language: 'en',
-      options: {
-        supportedLngs: ['en', 'fr', 'de'],
-      },
-      changeLanguage: jest.fn(),
-    };
-
-    (useTranslation as jest.Mock).mockReturnValue({
-      i18n: i18nMock,
-    });
-
-    (useTranslationRef as jest.Mock).mockReturnValue(
-      (key: string, option: any) =>
-        messages[option?.language || key] || 'translatedValue',
-    );
-
-    render(wrapInTestApp(<UserSettingsLanguageToggle />));
-
-    expect(screen.getAllByText('Change the language')).toHaveLength(1);
-    expect(screen.getAllByText('English')).toHaveLength(1);
-    expect(screen.getAllByText('French')).toHaveLength(1);
-    expect(screen.getAllByText('German')).toHaveLength(1);
+    expect(rendered.container).toBeEmptyDOMElement();
   });
 
-  it('should not render when only one supported language', () => {
-    const tMock = jest.fn().mockReturnValue('translatedValue');
-    const i18nMock = {
-      language: 'en',
-      options: {
-        supportedLngs: ['en'],
-      },
-      changeLanguage: jest.fn(),
+  it('should render correctly with multiple available languages', async () => {
+    const mockLanguageApi: typeof appLanguageApiRef.T = {
+      getAvailableLanguages: jest
+        .fn()
+        .mockReturnValue({ languages: ['en', 'de'] }),
+      getLanguage: jest.fn().mockReturnValue({ language: 'en' }),
+      language$: jest.fn().mockReturnValue({
+        subscribe: jest.fn().mockReturnValue({ unsubscribe: jest.fn() }),
+      }),
+      setLanguage: jest.fn(),
     };
 
-    (useTranslationRef as jest.Mock).mockReturnValue(tMock);
-
-    (useTranslation as jest.Mock).mockReturnValue({
-      i18n: i18nMock,
-    });
-
-    render(wrapInTestApp(<UserSettingsLanguageToggle />));
-
-    expect(screen.queryByText('translatedValue')).toBeNull();
-    expect(screen.queryByText('English')).toBeNull();
-  });
-
-  it('should handle language change', () => {
-    const messages: Record<string, string> = {
-      en: 'English',
-      fr: 'French',
-      language: 'language',
-      change_the_language: 'Change the language',
-    };
-
-    const i18nMock = {
-      language: 'en',
-      options: {
-        supportedLngs: ['en', 'fr'],
-      },
-      changeLanguage: jest.fn(),
-    };
-
-    (useTranslationRef as jest.Mock).mockReturnValue(
-      (key: string, option: any) =>
-        messages[option?.language || key] || 'translatedValue',
+    await renderInTestApp(
+      <TestApiProvider apis={[[appLanguageApiRef, mockLanguageApi]]}>
+        <UserSettingsLanguageToggle />
+      </TestApiProvider>,
     );
 
-    (useTranslation as jest.Mock).mockReturnValue({
-      i18n: i18nMock,
-    });
+    expect(screen.getByText('Change the language')).toBeInTheDocument();
+  });
 
-    render(wrapInTestApp(<UserSettingsLanguageToggle />));
+  it('should handle language change', async () => {
+    const mockLanguageApi: typeof appLanguageApiRef.T = {
+      getAvailableLanguages: jest
+        .fn()
+        .mockReturnValue({ languages: ['en', 'de'] }),
+      getLanguage: jest.fn().mockReturnValue({ language: 'en' }),
+      language$: jest.fn().mockReturnValue({
+        subscribe: jest.fn().mockReturnValue({ unsubscribe: jest.fn() }),
+      }),
+      setLanguage: jest.fn(),
+    };
 
-    fireEvent.click(screen.getByText('French'));
+    await renderInTestApp(
+      <TestApiProvider apis={[[appLanguageApiRef, mockLanguageApi]]}>
+        <UserSettingsLanguageToggle />
+      </TestApiProvider>,
+    );
 
-    expect(i18nMock.changeLanguage).toHaveBeenCalledWith('fr');
+    expect(screen.getByText('Change the language')).toBeInTheDocument();
+
+    await renderInTestApp(<UserSettingsLanguageToggle />);
+
+    fireEvent.click(screen.getByText('de'));
+
+    expect(mockLanguageApi.setLanguage).toHaveBeenCalledWith('de');
   });
 });
