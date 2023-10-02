@@ -269,28 +269,6 @@ describe('createMockDirectory', () => {
     );
   });
 
-  describe('cleanup', () => {
-    let cleanupMockDir: MockDirectory;
-
-    describe('inner', () => {
-      cleanupMockDir = createMockDirectory();
-
-      it('should populate a directory', () => {
-        cleanupMockDir.setContent({
-          'a.txt': 'a',
-        });
-
-        expect(cleanupMockDir.content()).toEqual({
-          'a.txt': 'a',
-        });
-      });
-    });
-
-    it('should clean up after itself automatically', () => {
-      expect(cleanupMockDir.content()).toBeUndefined();
-    });
-  });
-
   describe('tmpdir mock', () => {
     let tmpDirMock: MockDirectory;
 

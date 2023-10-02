@@ -351,14 +351,20 @@ export function createMockDirectory(
     os.tmpdir = () => mocker.path;
   }
 
-  process.on('beforeExit', mocker.remove);
+  // In CI we expect there to be no need to clean up temporary directories
+  const needsCleanup = !process.env.CI;
+  if (needsCleanup) {
+    process.on('beforeExit', mocker.remove);
+  }
 
   try {
     afterAll(() => {
       if (origTmpdir) {
         os.tmpdir = origTmpdir;
       }
-      mocker.remove();
+      if (needsCleanup) {
+        mocker.remove();
+      }
     });
   } catch {
     /* ignore */
