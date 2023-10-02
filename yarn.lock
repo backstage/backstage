@@ -27438,11 +27438,11 @@ __metadata:
   linkType: hard
 
 "graphql-ws@npm:^5.4.1, graphql-ws@npm:^5.9.0":
-  version: 5.14.0
-  resolution: "graphql-ws@npm:5.14.0"
+  version: 5.14.1
+  resolution: "graphql-ws@npm:5.14.1"
   peerDependencies:
     graphql: ">=0.11 <=16"
-  checksum: 7b622944823fa12a77ea490656121a77e1a1daf08114a6a0b027922113f4481d95f4fe380a5de369a51657ef777d35757dc31f63e41071c21f3e97ca47e4205a
+  checksum: bf6aa9446496f11e74d5fea17672050fb02f0303c6a7bf1e2692b7ea88059a18837f437e2ec8ba3cf7bb5bc2a18dddeebe9a8c6e6036914c3776297c48c1a398
   languageName: node
   linkType: hard
 
