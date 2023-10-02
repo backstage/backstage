@@ -30,6 +30,7 @@ import {
 import { validateId } from './util';
 import { TaskFunction } from './types';
 import { metrics, Counter, Histogram } from '@opentelemetry/api';
+
 /**
  * Implements the actual task management.
  */
@@ -122,20 +123,24 @@ export class PluginTaskSchedulerImpl implements PluginTaskScheduler {
     opts: { labels: Record<string, string> },
   ): TaskFunction {
     return async abort => {
-      this.counter.add(1, { ...opts.labels, result: 'started' });
+      const labels = {
+        ...opts.labels,
+      };
+      this.counter.add(1, { ...labels, result: 'started' });
 
       const startTime = process.hrtime();
 
       try {
         await fn(abort);
-        this.counter.add(1, { ...opts.labels, result: 'completed' });
+        labels.result = 'completed';
       } catch (ex) {
-        this.counter.add(1, { ...opts.labels, result: 'failed' });
+        labels.result = 'failed';
         throw ex;
       } finally {
         const delta = process.hrtime(startTime);
         const endTime = delta[0] + delta[1] / 1e9;
-        this.duration.record(endTime, { ...opts.labels });
+        this.counter.add(1, labels);
+        this.duration.record(endTime, labels);
       }
     };
   }
