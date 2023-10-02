@@ -45,11 +45,10 @@ import { ActionsPage } from '../../components/ActionsPage';
 import { ListTasksPage } from '../../components/ListTasksPage';
 
 import {
-  TemplateListPage,
   TemplateListPageProps,
-  TemplateWizardPage,
   TemplateWizardPageProps,
-} from '../../next';
+} from '@backstage/plugin-scaffolder/alpha';
+import { TemplateListPage, TemplateWizardPage } from '../../next';
 import { OngoingTask } from '../OngoingTask';
 import { TemplateEditorPage } from '../../next/TemplateEditorPage';
 

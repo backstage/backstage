@@ -15,7 +15,7 @@
  */
 import { ApiHolder } from '@backstage/core-plugin-api';
 import { FieldValidation, FieldProps } from '@rjsf/core';
-import { CustomFieldExtensionSchema } from '../../extensions/types';
+import { CustomFieldExtensionSchema } from '@backstage/plugin-scaffolder-react';
 
 /**
  * Field validation type for Custom Field Extensions.

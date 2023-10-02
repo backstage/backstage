@@ -7,56 +7,50 @@
 
 import { ApiHolder } from '@backstage/core-plugin-api';
 import { ComponentType } from 'react';
-import { CustomValidator } from '@rjsf/utils';
+import { CustomFieldExtensionSchema } from '@backstage/plugin-scaffolder-react';
+import { CustomFieldValidator } from '@backstage/plugin-scaffolder-react';
 import { Dispatch } from 'react';
-import { ElementType } from 'react';
-import { ErrorSchema } from '@rjsf/utils';
-import { ErrorTransformer } from '@rjsf/utils';
-import { Experimental_DefaultFormStateBehavior } from '@rjsf/utils';
 import { Extension } from '@backstage/core-plugin-api';
+import { FieldExtensionComponent } from '@backstage/plugin-scaffolder-react';
 import { FieldExtensionOptions } from '@backstage/plugin-scaffolder-react';
 import { FieldProps } from '@rjsf/core';
 import { FieldValidation } from '@rjsf/utils';
 import { FieldValidation as FieldValidation_2 } from '@rjsf/core';
-import { default as Form_2 } from '@rjsf/core-v5';
-import { FormContextType } from '@rjsf/utils';
-import { FormEvent } from 'react';
 import { FormProps } from '@backstage/plugin-scaffolder-react';
-import { GenericObjectType } from '@rjsf/utils';
-import { HTMLAttributes } from 'react';
-import { IChangeEvent } from '@rjsf/core-v5';
 import { IconComponent } from '@backstage/core-plugin-api';
-import { IdSchema } from '@rjsf/utils';
 import { JsonObject } from '@backstage/types';
-import { JSONSchema7 } from 'json-schema';
 import { JsonValue } from '@backstage/types';
 import { LayoutOptions } from '@backstage/plugin-scaffolder-react';
 import { PropsWithChildren } from 'react';
 import { default as React_2 } from 'react';
 import { ReactElement } from 'react';
 import { ReactNode } from 'react';
-import { Ref } from 'react';
-import { Registry } from '@rjsf/utils';
-import { RegistryWidgetsType } from '@rjsf/utils';
 import { ReviewStepProps } from '@backstage/plugin-scaffolder-react';
-import { RJSFSchema } from '@rjsf/utils';
-import { RJSFValidationError } from '@rjsf/utils';
+import { ScaffolderRJSFFormProps } from '@backstage/plugin-scaffolder-react';
 import { ScaffolderStep } from '@backstage/plugin-scaffolder-react';
 import { ScaffolderTaskOutput } from '@backstage/plugin-scaffolder-react';
 import { SetStateAction } from 'react';
-import { StrictRJSFSchema } from '@rjsf/utils';
 import { TaskStep } from '@backstage/plugin-scaffolder-common';
 import { TemplateEntityV1beta3 } from '@backstage/plugin-scaffolder-common';
+import { TemplateGroupFilter } from '@backstage/plugin-scaffolder-react';
 import { TemplateParameterSchema } from '@backstage/plugin-scaffolder-react';
-import { TemplatesType } from '@rjsf/utils';
 import { UiSchema } from '@rjsf/utils';
-import { ValidatorType } from '@rjsf/utils';
+
+// @alpha (undocumented)
+export const createAsyncValidators: (
+  rootSchema: JsonObject,
+  validators: Record<
+    string,
+    undefined | CustomFieldValidator<unknown, unknown>
+  >,
+  context: {
+    apiHolder: ApiHolder;
+  },
+) => (formData: JsonObject) => Promise<FormValidation>;
 
 // @alpha
 export const createFieldValidation: () => FieldValidation;
 
-// Warning: (ae-forgotten-export) The symbol "FieldExtensionComponent" needs to be exported by the entry point alpha.d.ts
-//
 // @alpha
 export function createLegacyScaffolderFieldExtension<
   TReturnValue = unknown,
@@ -79,12 +73,15 @@ export const extractSchemaFromStep: (inputStep: JsonObject) => {
   schema: JsonObject;
 };
 
-// Warning: (ae-forgotten-export) The symbol "ScaffolderRJSFFormProps" needs to be exported by the entry point alpha.d.ts
-//
 // @alpha
 export const Form: (
   props: PropsWithChildren<ScaffolderRJSFFormProps>,
 ) => React_2.JSX.Element;
+
+// @alpha (undocumented)
+export type FormValidation = {
+  [name: string]: FieldValidation | FormValidation;
+};
 
 // @alpha
 export type LegacyCustomFieldValidator<TFieldReturnValue> = (
@@ -280,8 +277,6 @@ export interface TemplateGroupsProps {
     text: string;
     url: string;
   }[];
-  // Warning: (ae-forgotten-export) The symbol "TemplateGroupFilter" needs to be exported by the entry point alpha.d.ts
-  //
   // (undocumented)
   groups: TemplateGroupFilter[];
   // (undocumented)
@@ -321,7 +316,7 @@ export type WorkflowProps = {
   namespace: string;
   templateName: string;
   components?: {
-    ReviewStepComponent?: React_2.ComponentType<ReviewStepProps_2>;
+    ReviewStepComponent?: React_2.ComponentType<ReviewStepProps>;
   };
   onError(error: Error | undefined): JSX.Element | null;
 } & Pick<
@@ -333,11 +328,6 @@ export type WorkflowProps = {
   | 'initialState'
   | 'layouts'
 >;
-
-// Warnings were encountered during analysis:
-//
-// src/legacy/extensions/types.d.ts:23:5 - (ae-forgotten-export) The symbol "CustomFieldExtensionSchema" needs to be exported by the entry point alpha.d.ts
-// src/next/components/Workflow/Workflow.d.ts:13:9 - (ae-forgotten-export) The symbol "ReviewStepProps_2" needs to be exported by the entry point alpha.d.ts
 
 // (No @packageDocumentation comment for this package)
 ```

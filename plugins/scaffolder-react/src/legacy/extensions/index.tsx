@@ -21,7 +21,7 @@ import {
 } from './types';
 import { Extension, attachComponentData } from '@backstage/core-plugin-api';
 import { FIELD_EXTENSION_KEY } from '../../extensions/keys';
-import { FieldExtensionComponent } from '../../extensions';
+import { FieldExtensionComponent } from '@backstage/plugin-scaffolder-react';
 
 /**
  * Method for creating field extensions that can be used in the scaffolder
