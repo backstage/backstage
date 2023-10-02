@@ -44,7 +44,7 @@ export function createProxyAuthRouteHandlers<TResult>(
 
   const profileTransform =
     options.profileTransform ?? authenticator.defaultProfileTransform;
-  const authenticatorCtx = authenticator.initialize({ config });
+  const authenticatorCtxPromise = authenticator.initialize({ config });
 
   return {
     async start(): Promise<void> {
@@ -56,6 +56,7 @@ export function createProxyAuthRouteHandlers<TResult>(
     },
 
     async refresh(this: never, req: Request, res: Response): Promise<void> {
+      const authenticatorCtx = await authenticatorCtxPromise;
       const { result } = await authenticator.authenticate(
         { req },
         authenticatorCtx,
