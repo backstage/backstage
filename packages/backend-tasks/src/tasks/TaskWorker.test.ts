@@ -400,7 +400,9 @@ describe('TaskWorker', () => {
       await worker.tryReleaseTask('ticket', initialSettings);
 
       // grab initial row for comparisons later
-      const initialRow = (await knex<DbTasksRow>(DB_TASKS_TABLE))[0];
+      const rowAfterClaimAndRelease = (
+        await knex<DbTasksRow>(DB_TASKS_TABLE)
+      )[0];
 
       const settings: TaskSettingsV2 = {
         ...initialSettings,
@@ -409,11 +411,20 @@ describe('TaskWorker', () => {
       await worker.persistTask(settings);
       const row1 = (await knex<DbTasksRow>(DB_TASKS_TABLE))[0];
 
+      const rowAfterClaimAndReleaseNextStartAt = DateTime.fromJSDate(
+        new Date(rowAfterClaimAndRelease.next_run_start_at),
+      );
+      const row1NextStartAt = DateTime.fromJSDate(
+        new Date(row1.next_run_start_at),
+      );
+      const now = DateTime.now();
       expect(
-        new Date(row1.next_run_start_at) <
-          new Date(initialRow.next_run_start_at),
-      ).toBeTruthy(); // ensure that next start at is sooner than initial
-      expect(new Date(row1.next_run_start_at) > new Date()).toBeTruthy(); // ensure that next start at is later than now
+        rowAfterClaimAndReleaseNextStartAt.diff(row1NextStartAt).as('minutes'),
+      ).toBeCloseTo(60, 1); // ensure that next start at is sooner than initial by one hour
+      expect(row1NextStartAt.diff(now).as('minutes')).toBeCloseTo(60, 1); // ensure that next start at is later than now by one hour
+      expect(
+        rowAfterClaimAndReleaseNextStartAt.diff(now).as('minutes'),
+      ).toBeCloseTo(120, 1);
 
       const settings2 = {
         ...settings,
@@ -451,7 +462,9 @@ describe('TaskWorker', () => {
       await worker.tryReleaseTask('ticket', initialSettings);
 
       // grab initial row for comparisons later
-      const initialRow = (await knex<DbTasksRow>(DB_TASKS_TABLE))[0];
+      const rowAfterClaimAndRelease = (
+        await knex<DbTasksRow>(DB_TASKS_TABLE)
+      )[0];
 
       const settings: TaskSettingsV2 = {
         ...initialSettings,
@@ -460,14 +473,20 @@ describe('TaskWorker', () => {
       await worker.persistTask(settings);
       const row1 = (await knex<DbTasksRow>(DB_TASKS_TABLE))[0];
 
+      const rowAfterClaimAndReleaseNextStartAt = DateTime.fromJSDate(
+        new Date(rowAfterClaimAndRelease.next_run_start_at),
+      );
+      const row1NextStartAt = DateTime.fromJSDate(
+        new Date(row1.next_run_start_at),
+      );
+      const now = DateTime.now();
       expect(
-        new Date(row1.next_run_start_at) <
-          new Date(initialRow.next_run_start_at),
-      ).toBeTruthy(); // ensure that next start at is sooner than initial
+        rowAfterClaimAndReleaseNextStartAt.diff(row1NextStartAt).as('minutes'),
+      ).toBeCloseTo(62, 1); // ensure that next start at is sooner than initial by one hour, plus the 2 minute delay (set my tryReleaseTask)
+      expect(row1NextStartAt.diff(now).as('minutes')).toBeCloseTo(60, 1); // ensure that next start at is later than now by one hour (2 minute delay doesn't take effect here)
       expect(
-        new Date(row1.next_run_start_at) >
-          DateTime.now().plus({ minutes: 3 }).toJSDate(),
-      ).toBeTruthy(); // ensure that next start at is later than initial delay start time since next run at should be an hour from now
+        rowAfterClaimAndReleaseNextStartAt.diff(now).as('minutes'),
+      ).toBeCloseTo(122, 1); // includes 2 minute start delay (which is persisted from tryReleaseTask)
 
       const settings2 = {
         ...settings,
