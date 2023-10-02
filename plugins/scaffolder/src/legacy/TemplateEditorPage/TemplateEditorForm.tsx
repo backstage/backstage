@@ -16,20 +16,19 @@
 import { useApiHolder } from '@backstage/core-plugin-api';
 import { JsonObject, JsonValue } from '@backstage/types';
 import { makeStyles } from '@material-ui/core/styles';
-import React, { Component, ReactNode, useState } from 'react';
+import React, { Component, ReactNode, useMemo, useState } from 'react';
 import useDebounce from 'react-use/lib/useDebounce';
 import yaml from 'yaml';
 import {
-  FieldExtensionOptions,
   LayoutOptions,
   TemplateParameterSchema,
 } from '@backstage/plugin-scaffolder-react';
-import {
-  Stepper,
-  LegacyFieldExtensionOptions,
-} from '@backstage/plugin-scaffolder-react/alpha';
+
 import { useDryRun } from '../../next/TemplateEditorPage/DryRunContext';
 import { useDirectoryEditor } from '../../next/TemplateEditorPage/DirectoryEditorContext';
+import { MultistepJsonForm } from '../MultistepJsonForm';
+import { createValidator } from '../TemplatePage';
+import { LegacyFieldExtensionOptions } from '@backstage/plugin-scaffolder-react/alpha';
 
 const useStyles = makeStyles({
   containerWrapper: {
@@ -82,7 +81,10 @@ interface TemplateEditorFormProps {
   content?: string;
   /** Setting this to true will cause the content to be parsed as if it is the template entity spec */
   contentIsSpec?: boolean;
+  data: JsonObject;
+  onUpdate: (data: JsonObject) => void;
   setErrorText: (errorText?: string) => void;
+
   onDryRun?: (data: JsonObject) => Promise<void>;
   fieldExtensions?: LegacyFieldExtensionOptions<any, any>[];
   layouts?: LayoutOptions[];
@@ -97,6 +99,8 @@ export function TemplateEditorForm(props: TemplateEditorFormProps) {
   const {
     content,
     contentIsSpec,
+    data,
+    onUpdate,
     onDryRun,
     setErrorText,
     fieldExtensions = [],
@@ -107,6 +111,12 @@ export function TemplateEditorForm(props: TemplateEditorFormProps) {
 
   const [steps, setSteps] = useState<TemplateParameterSchema['steps']>();
 
+  const fields = useMemo(() => {
+    return Object.fromEntries(
+      fieldExtensions.map(({ name, component }) => [name, component]),
+    );
+  }, [fieldExtensions]);
+
   useDebounce(
     () => {
       try {
@@ -114,7 +124,10 @@ export function TemplateEditorForm(props: TemplateEditorFormProps) {
           setSteps(undefined);
           return;
         }
-        const parsed: JsonValue = yaml.parse(content);
+        const parsed: JsonValue = yaml
+          .parseAllDocuments(content)
+          .filter(c => c)
+          .map(c => c.toJSON())[0];
 
         if (!isJsonObject(parsed)) {
           setSteps(undefined);
@@ -141,6 +154,10 @@ export function TemplateEditorForm(props: TemplateEditorFormProps) {
           return;
         }
 
+        const fieldValidators = Object.fromEntries(
+          fieldExtensions.map(({ name, validation }) => [name, validation]),
+        );
+
         setErrorText();
         setSteps(
           parameters.flatMap(param =>
@@ -149,6 +166,9 @@ export function TemplateEditorForm(props: TemplateEditorFormProps) {
                   {
                     title: String(param.title),
                     schema: param,
+                    validate: createValidator(param, fieldValidators, {
+                      apiHolder,
+                    }),
                   },
                 ]
               : [],
@@ -170,14 +190,15 @@ export function TemplateEditorForm(props: TemplateEditorFormProps) {
     <div className={classes.containerWrapper}>
       <div className={classes.container}>
         <ErrorBoundary invalidator={steps} setErrorText={setErrorText}>
-          <Stepper
-            manifest={{ steps, title: 'Template Editor' }}
-            extensions={fieldExtensions as unknown as FieldExtensionOptions[]}
-            onCreate={async data => {
-              await onDryRun?.(data);
-            }}
+          <MultistepJsonForm
+            steps={steps}
+            fields={fields}
+            formData={data}
+            onChange={e => onUpdate(e.formData)}
+            onReset={() => onUpdate({})}
+            finishButtonLabel={onDryRun && 'Try It'}
+            onFinish={onDryRun && (() => onDryRun(data))}
             layouts={layouts}
-            components={{ createButtonText: onDryRun && 'Try It' }}
           />
         </ErrorBoundary>
       </div>
@@ -198,7 +219,9 @@ export function TemplateEditorFormDirectoryEditorDryRun(
   const directoryEditor = useDirectoryEditor();
   const { selectedFile } = directoryEditor;
 
-  const handleDryRun = async (values: JsonObject) => {
+  const [data, setData] = useState<JsonObject>({});
+
+  const handleDryRun = async () => {
     if (!selectedFile) {
       return;
     }
@@ -206,7 +229,7 @@ export function TemplateEditorFormDirectoryEditorDryRun(
     try {
       await dryRun.execute({
         templateContent: selectedFile.content,
-        values,
+        values: data,
         files: directoryEditor.files,
       });
       setErrorText();
@@ -227,6 +250,8 @@ export function TemplateEditorFormDirectoryEditorDryRun(
       fieldExtensions={fieldExtensions}
       setErrorText={setErrorText}
       content={content}
+      data={data}
+      onUpdate={setData}
       layouts={layouts}
     />
   );
