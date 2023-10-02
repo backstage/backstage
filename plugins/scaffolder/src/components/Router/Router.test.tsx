@@ -27,12 +27,9 @@ import {
 } from '@backstage/plugin-scaffolder-react';
 import { TemplateListPage, TemplateWizardPage } from '../../next';
 
-jest.mock('../TemplateListPage', () => ({
-  TemplateListPage: jest.fn(() => null),
-}));
-
-jest.mock('../TemplateWizardPage', () => ({
+jest.mock('../../next', () => ({
   TemplateWizardPage: jest.fn(() => null),
+  TemplateListPage: jest.fn(() => null),
 }));
 
 describe('Router', () => {
@@ -104,9 +101,9 @@ describe('Router', () => {
 
       const mock = TemplateWizardPage as jest.Mock;
 
-      const [{ FormProps }] = mock.mock.calls[0];
+      const [{ formProps }] = mock.mock.calls[0];
 
-      expect(FormProps).toEqual({
+      expect(formProps).toEqual({
         transformErrors: transformErrorsMock,
         noHtml5Validate: true,
       });
