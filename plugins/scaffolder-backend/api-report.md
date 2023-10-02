@@ -688,7 +688,7 @@ export function createPublishGitlabAction(options: {
           ref?: string | undefined;
         }[]
       | undefined;
-    variables?:
+    projectVariables?:
       | {
           key: string;
           value: string;
