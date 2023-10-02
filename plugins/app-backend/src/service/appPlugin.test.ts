@@ -14,31 +14,44 @@
  * limitations under the License.
  */
 
-import mockFs from 'mock-fs';
-import { resolve as resolvePath } from 'path';
 import fetch from 'node-fetch';
-import { mockServices, startTestBackend } from '@backstage/backend-test-utils';
+import {
+  createMockDirectory,
+  mockServices,
+  startTestBackend,
+} from '@backstage/backend-test-utils';
 import { appPlugin } from './appPlugin';
 import { createRootLogger } from '@backstage/backend-common';
+
+const mockDir = createMockDirectory();
+
+jest.mock('../../../../packages/backend-common/src/paths', () => {
+  const actual = jest.requireActual(
+    '../../../../packages/backend-common/src/paths',
+  );
+  return {
+    ...actual,
+    resolvePackagePath: (pkg: string, ...args: string[]) => {
+      if (pkg === 'app') {
+        return mockDir.resolve(...args);
+      }
+      return actual.resolvePackagePath(pkg, ...args);
+    },
+  };
+});
 
 // Make sure root logger is initialized ahead of FS mock
 createRootLogger();
 
 describe('appPlugin', () => {
   beforeEach(() => {
-    mockFs({
-      [resolvePath(process.cwd(), 'node_modules/app')]: {
-        'package.json': '{}',
-        dist: {
-          static: {},
-          'index.html': 'winning',
-        },
+    mockDir.setContent({
+      'package.json': '{}',
+      dist: {
+        static: {},
+        'index.html': 'winning',
       },
     });
-  });
-
-  afterEach(() => {
-    mockFs.restore();
   });
 
   it('boots', async () => {
