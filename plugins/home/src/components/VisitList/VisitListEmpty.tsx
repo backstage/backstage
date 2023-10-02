@@ -1,5 +1,5 @@
 /*
- * Copyright 2020 The Backstage Authors
+ * Copyright 2023 The Backstage Authors
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,8 +14,17 @@
  * limitations under the License.
  */
 
-// TODO(Rugvip): This plugin is currently not part of the app element tree,
-//               ideally we have an API for the context menu that permits that.
-export { badgesPlugin } from '@backstage/plugin-badges';
-export { shortcutsPlugin } from '@backstage/plugin-shortcuts';
-export { homePlugin } from '@backstage/plugin-home';
+import React from 'react';
+import { Typography } from '@material-ui/core';
+
+export const VisitListEmpty = () => (
+  <>
+    <Typography variant="body2" color="textSecondary">
+      There are no visits to show yet.
+    </Typography>
+    <Typography variant="body2" color="textSecondary">
+      Once you start using Backstage, your visits will appear here as a quick
+      link to carry on where you left off.
+    </Typography>
+  </>
+);

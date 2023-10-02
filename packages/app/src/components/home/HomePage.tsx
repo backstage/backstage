@@ -22,6 +22,8 @@ import {
   HomePageRandomJoke,
   HomePageStarredEntities,
   HomePageToolkit,
+  HomePageTopVisited,
+  HomePageRecentlyVisited,
   WelcomeTitle,
 } from '@backstage/plugin-home';
 import { Content, Header, Page } from '@backstage/core-components';
@@ -111,6 +113,8 @@ export const homePage = (
             },
           ]}
         />
+        <HomePageTopVisited />
+        <HomePageRecentlyVisited />
       </CustomHomepageGrid>
     </Content>
   </Page>
