@@ -22,18 +22,8 @@ import { getEntityRelations } from '@backstage/plugin-catalog-react';
 const givenParentGroup = 'team.squad1';
 const givenLeafGroup = 'team.squad2';
 const givenUser = 'user.john';
-const givenParentGroupEntity = {
-  kind: 'Group',
-  metadata: {
-    name: givenParentGroup,
-  },
-} as Partial<Entity> as Entity;
-const givenLeafGroupEntity = {
-  kind: 'Group',
-  metadata: {
-    name: givenLeafGroup,
-  },
-} as Partial<Entity> as Entity;
+const givenParentGroupEntity = createGroupEntityFromName(givenParentGroup);
+const givenLeafGroupEntity = createGroupEntityFromName(givenLeafGroup);
 const givenUserEntity = {
   kind: 'User',
   metadata: {
@@ -41,13 +31,10 @@ const givenUserEntity = {
   },
 } as Partial<Entity> as Entity;
 
+const getEntitiesByRefsMock = jest.fn();
 const catalogApiMock: Pick<CatalogApi, 'getEntities' | 'getEntitiesByRefs'> = {
   getEntities: jest.fn(async () => Promise.resolve({ items: [] })),
-  getEntitiesByRefs: jest.fn(async ({ entityRefs: [ref] }) =>
-    ref.includes(givenParentGroup)
-      ? { items: [givenParentGroupEntity] }
-      : { items: [givenLeafGroupEntity] },
-  ),
+  getEntitiesByRefs: getEntitiesByRefsMock,
 };
 
 jest.mock('@backstage/core-plugin-api', () => ({
@@ -72,7 +59,7 @@ describe('useGetEntities', () => {
     expect.objectContaining({
       filter: expect.arrayContaining([
         expect.objectContaining({
-          'relations.ownedBy': owners,
+          'relations.ownedBy': expect.arrayContaining(owners),
         }),
       ]),
     });
@@ -89,8 +76,17 @@ describe('useGetEntities', () => {
       await hook.waitForNextUpdate();
     };
 
+    beforeEach(() => {
+      getEntitiesByRefsMock.mockImplementation(async ({ entityRefs: [ref] }) =>
+        ref.includes(givenParentGroup)
+          ? { items: [givenParentGroupEntity] }
+          : { items: [givenLeafGroupEntity] },
+      );
+    });
+
     afterEach(() => {
       getEntityRelationsMock.mockRestore();
+      getEntitiesByRefsMock.mockRestore();
     });
 
     describe('when given entity is a group', () => {
@@ -122,6 +118,62 @@ describe('useGetEntities', () => {
           entityRefs: [`group:default/${givenLeafGroup}`],
           fields: ['kind', 'metadata.namespace', 'metadata.name', 'relations'],
         });
+      });
+
+      it('should retrieve entities owned by any children', async () => {
+        const givenIntermediateGroup = 'intermediate-group';
+        const givenIntermediateGroupEntity = createGroupEntityFromName(
+          givenIntermediateGroup,
+        );
+
+        getEntitiesByRefsMock.mockRestore();
+        getEntitiesByRefsMock.mockImplementation(
+          async ({ entityRefs: [ref] }) => {
+            if (ref.includes(givenParentGroup)) {
+              return { items: [givenParentGroupEntity] };
+            }
+
+            if (ref.includes(givenIntermediateGroup)) {
+              return { items: [givenIntermediateGroupEntity] };
+            }
+
+            return { items: [givenLeafGroupEntity] };
+          },
+        );
+
+        getEntityRelationsMock.mockRestore();
+        getEntityRelationsMock.mockImplementation(entity => {
+          if (entity?.metadata.name === givenParentGroup) {
+            return [
+              {
+                kind: 'Group',
+                namespace: 'default',
+                name: givenIntermediateGroup,
+              },
+            ];
+          }
+
+          if (entity?.metadata.name === givenIntermediateGroup) {
+            return [
+              {
+                kind: 'Group',
+                namespace: 'default',
+                name: givenLeafGroup,
+              },
+            ];
+          }
+
+          return [];
+        });
+
+        await whenHookIsCalledWith(givenParentGroupEntity);
+        expect(catalogApiMock.getEntities).toHaveBeenCalledWith(
+          ownersFilter(
+            `group:default/${givenParentGroup}`,
+            `group:default/${givenIntermediateGroup}`,
+            `group:default/${givenLeafGroup}`,
+          ),
+        );
       });
     });
 
@@ -173,3 +225,12 @@ describe('useGetEntities', () => {
     });
   });
 });
+
+function createGroupEntityFromName(name: String): Entity {
+  return {
+    kind: 'Group',
+    metadata: {
+      name: name,
+    },
+  } as Partial<Entity> as Entity;
+}
