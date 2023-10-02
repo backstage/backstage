@@ -102,15 +102,6 @@ export type CustomHomepageGridProps = {
 };
 
 // @public
-export const getVisitName: ({
-  rootPath,
-  document,
-}?: {
-  rootPath?: string | undefined;
-  document?: Document | undefined;
-}) => ({ pathname }: { pathname: string }) => string;
-
-// @public
 export const HeaderWorldClock: (props: {
   clockConfigs: ClockConfig[];
   customTimeFormat?: Intl.DateTimeFormatOptions | undefined;

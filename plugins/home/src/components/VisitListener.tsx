@@ -52,11 +52,11 @@ const getToEntityRef =
   };
 
 /**
- * @public
+ * @internal
  * This function returns an implementation of visitName which is responsible
  * for receiving a pathname and returning a string (name).
  */
-export const getVisitName =
+const getVisitName =
   ({ rootPath = 'catalog', document = global.document } = {}) =>
   ({ pathname }: { pathname: string }) => {
     // If it is a catalog entity, get the name from the path
