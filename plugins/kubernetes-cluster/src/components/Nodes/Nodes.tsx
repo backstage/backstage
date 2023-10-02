@@ -53,19 +53,23 @@ const defaultColumns: TableColumn<INode>[] = [
             <Grid item xs={12}>
               <Typography variant="h5">Addresses</Typography>
               <StructuredMetadataTable
-                metadata={node.status?.addresses?.reduce((accum, next) => {
-                  accum[next.type] = next.address;
-                  return accum;
-                }, {} as any)}
+                metadata={
+                  node.status?.addresses?.reduce((accum, next) => {
+                    accum[next.type] = next.address;
+                    return accum;
+                  }, {} as any) ?? {}
+                }
               />
             </Grid>
             <Grid item xs={12}>
               <Typography variant="h5">Taints</Typography>
               <StructuredMetadataTable
-                metadata={node.spec?.taints?.reduce((accum, next) => {
-                  accum[`${next.effect}`] = `${next.key} (${next.value})`;
-                  return accum;
-                }, {} as any)}
+                metadata={
+                  node.spec?.taints?.reduce((accum, next) => {
+                    accum[`${next.effect}`] = `${next.key} (${next.value})`;
+                    return accum;
+                  }, {} as any) ?? {}
+                }
               />
             </Grid>
           </Grid>
