@@ -21,13 +21,21 @@ jest.mock('octokit', () => ({
 
 import { ConfigApi, ErrorApi } from '@backstage/core-plugin-api';
 import { ForwardedError } from '@backstage/errors';
-import { createFilterByClause, githubIssuesApi, Repository, GithubIssuesFilters } from './githubIssuesApi';
+import {
+  createFilterByClause,
+  githubIssuesApi,
+  Repository,
+  GithubIssuesFilters,
+} from './githubIssuesApi';
 
-function entityRepository(name: string, locationHostname: string = "github.com"): Repository {
+function entityRepository(
+  name: string,
+  locationHostname: string = 'github.com',
+): Repository {
   return {
     locationHostname,
-    name
-  }
+    name,
+  };
 }
 function getFragment(
   filterBy = '',
@@ -133,7 +141,7 @@ describe('githubIssuesApi', () => {
           entityRepository('mrwolny/yo-yo'),
           entityRepository('mrwolny/yoyo'),
           entityRepository('mrwolny/yo.yo'),
-          entityRepository('mrwolny/another-repo', "enterprise.github.com"), // This one should be filtered out
+          entityRepository('mrwolny/another-repo', 'enterprise.github.com'), // This one should be filtered out
         ],
         10,
       );
@@ -147,7 +155,7 @@ describe('githubIssuesApi', () => {
         [
           entityRepository('mrwolny/yo-yo'),
           entityRepository('mrwolny/yoyo'),
-          entityRepository('mrwolny/yo.yo')
+          entityRepository('mrwolny/yo.yo'),
         ],
         10,
         {
@@ -369,7 +377,10 @@ describe('githubIssuesApi', () => {
       mockErrorApi as unknown as ErrorApi,
     );
 
-    await api.fetchIssuesByRepoFromGithub([entityRepository('mrwolny/notfound')], 10);
+    await api.fetchIssuesByRepoFromGithub(
+      [entityRepository('mrwolny/notfound')],
+      10,
+    );
 
     expect(mockErrorApi.post).toHaveBeenCalledTimes(1);
     expect(mockErrorApi.post).toHaveBeenCalledWith(

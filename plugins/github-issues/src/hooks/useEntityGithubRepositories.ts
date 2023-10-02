@@ -14,7 +14,11 @@
  * limitations under the License.
  */
 
-import { Entity, stringifyEntityRef, getEntitySourceLocation } from '@backstage/catalog-model';
+import {
+  Entity,
+  stringifyEntityRef,
+  getEntitySourceLocation,
+} from '@backstage/catalog-model';
 import { useApi } from '@backstage/core-plugin-api';
 import { catalogApiRef, useEntity } from '@backstage/plugin-catalog-react';
 import { useCallback, useEffect, useState } from 'react';
@@ -27,9 +31,9 @@ export const getProjectNameFromEntity = (entity: Entity): string => {
 };
 
 export const getHostnameFromEntity = (entity: Entity): string => {
-  const { target } = getEntitySourceLocation(entity)
-  return new URL(target).hostname
-}
+  const { target } = getEntitySourceLocation(entity);
+  return new URL(target).hostname;
+};
 
 export function useEntityGithubRepositories() {
   const { entity } = useEntity();
@@ -40,12 +44,14 @@ export function useEntityGithubRepositories() {
   const getRepositoriesNames = useCallback(async () => {
     if (entity.kind === 'Component' || entity.kind === 'API') {
       const entityName = getProjectNameFromEntity(entity);
-      const locationHostname = getHostnameFromEntity(entity)
+      const locationHostname = getHostnameFromEntity(entity);
       if (entityName) {
-        setRepositories([{
-          name: entityName,
-          locationHostname
-        }]);
+        setRepositories([
+          {
+            name: entityName,
+            locationHostname,
+          },
+        ]);
       }
 
       return;
@@ -58,14 +64,24 @@ export function useEntityGithubRepositories() {
       },
     });
 
-    const repositoryEntities: Repository[] = entitiesList.items.reduce((acc: Repository[], componentEntity: Entity) => {
-      const entityName = getProjectNameFromEntity(componentEntity);
-      const entityLocationHostname = getHostnameFromEntity(componentEntity);
-      if (entityName && !acc.some((it: Repository) => it.name === entityName) && entityName.length) {
-        acc.push({ name: entityName, locationHostname: entityLocationHostname });
-      }
-      return acc;
-    }, []);
+    const repositoryEntities: Repository[] = entitiesList.items.reduce(
+      (acc: Repository[], componentEntity: Entity) => {
+        const entityName = getProjectNameFromEntity(componentEntity);
+        const entityLocationHostname = getHostnameFromEntity(componentEntity);
+        if (
+          entityName &&
+          !acc.some((it: Repository) => it.name === entityName) &&
+          entityName.length
+        ) {
+          acc.push({
+            name: entityName,
+            locationHostname: entityLocationHostname,
+          });
+        }
+        return acc;
+      },
+      [],
+    );
 
     setRepositories(repositoryEntities);
   }, [catalogApi, entity]);

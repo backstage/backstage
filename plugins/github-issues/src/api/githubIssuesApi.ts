@@ -28,7 +28,7 @@ import { ForwardedError } from '@backstage/errors';
 export type Repository = {
   name: string;
   locationHostname: string;
-}
+};
 /** @internal */
 export type Assignee = {
   avatarUrl: string;
@@ -123,7 +123,7 @@ export const githubIssuesApi = (
   const getOctokit = async () => {
     const githubConfig = readGithubIntegrationConfigs(
       configApi.getOptionalConfigArray('integrations.github') ?? [],
-    )[0]
+    )[0];
     const baseUrl = githubConfig.apiBaseUrl;
 
     const token = await githubAuthApi.getAccessToken(['repo']);
@@ -172,8 +172,8 @@ export const githubIssuesApi = (
 
     let issuesByRepo: IssuesByRepo = {};
     try {
-      if(repositories.length === 0) {
-        throw new Error(`No repositories found for ${hostname}`)
+      if (repositories.length === 0) {
+        throw new Error(`No repositories found for ${hostname}`);
       }
       issuesByRepo = await graphql(
         createIssueByRepoQuery(repositories, itemsPerRepo, {
@@ -284,12 +284,12 @@ function createIssueByRepoQuery(
 
     query {
       ${repositories.map(
-    ({ safeName, name, owner }) => `
+        ({ safeName, name, owner }) => `
         ${safeName}: repository(name: "${name}", owner: "${owner}") {
           ...issues
         }
       `,
-  )}
+      )}
     }
   `;
 
