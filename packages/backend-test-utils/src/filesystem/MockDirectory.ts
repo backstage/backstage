@@ -57,20 +57,6 @@ export type MockDirectoryContent = {
 };
 
 /**
- * Options for {@link MockDirectory.create}.
- *
- * @public
- */
-export interface MockDirectoryCreateOptions {
-  /**
-   * The root path to create the directory in. Defaults to a temporary directory.
-   *
-   * If an existing directory is provided, it will not be cleaned up after the test.
-   */
-  root?: string;
-}
-
-/**
  * Options for {@link MockDirectory.content}.
  *
  * @public
@@ -91,107 +77,21 @@ export interface MockDirectoryContentOptions {
   shouldReadAsText?: boolean | ((path: string, buffer: Buffer) => boolean);
 }
 
-/** @internal */
-type MockEntry =
-  | {
-      type: 'file';
-      path: string;
-      content: Buffer;
-    }
-  | {
-      type: 'dir';
-      path: string;
-    };
-
 /**
  * A utility for creating a mock directory that is automatically cleaned up.
  *
  * @public
  */
-export class MockDirectory {
-  /**
-   * Creates a new temporary mock directory that will be removed after the tests have completed.
-   *
-   * @remarks
-   *
-   * This method is intended to be called outside of any test, either at top-level or
-   * within a `describe` block. It will call `afterAll` to make sure that the mock directory
-   * is removed after the tests have run.
-   *
-   * @example
-   * ```ts
-   * describe('MySubject', () => {
-   *   const mockDir = MockDirectory.create();
-   *
-   *   beforeEach(mockDir.clear);
-   *
-   *   it('should work', () => {
-   *     // ... use mockDir
-   *   })
-   * })
-   * ```
-   */
-  static create(options?: MockDirectoryCreateOptions): MockDirectory {
-    const root =
-      options?.root ??
-      fs.mkdtempSync(joinPath(getTmpDir(), 'backstage-tmp-test-dir-'));
-
-    const mocker = new MockDirectory(root);
-
-    const shouldCleanup = !options?.root || !fs.pathExistsSync(options.root);
-    if (shouldCleanup) {
-      process.on('beforeExit', mocker.remove);
-
-      try {
-        afterAll(mocker.remove);
-      } catch {
-        /* ignore */
-      }
-    }
-
-    return mocker;
-  }
-
-  /**
-   * Like {@link MockDirectory.create}, but also mocks `os.tmpdir()` to return the
-   * mock directory path until the end of the test suite.
-   *
-   * @returns
-   */
-  static mockOsTmpDir(): MockDirectory {
-    const mocker = MockDirectory.create();
-    const origTmpdir = os.tmpdir;
-    os.tmpdir = () => mocker.path;
-
-    try {
-      afterAll(() => {
-        os.tmpdir = origTmpdir;
-      });
-    } catch {
-      /* ignore */
-    }
-    return mocker;
-  }
-
-  readonly #root: string;
-
-  private constructor(root: string) {
-    this.#root = root;
-  }
-
+export interface MockDirectory {
   /**
    * The path to the root of the mock directory
    */
-  get path(): string {
-    return this.#root;
-  }
+  readonly path: string;
 
   /**
    * Resolves a path relative to the root of the mock directory.
    */
-  resolve(...paths: string[]): string {
-    return resolvePath(this.#root, ...paths);
-  }
+  resolve(...paths: string[]): string;
 
   /**
    * Sets the content of the mock directory. This will remove any existing content.
@@ -209,11 +109,7 @@ export class MockDirectory {
    * });
    * ```
    */
-  setContent(root: MockDirectoryContent): void {
-    this.remove();
-
-    return this.addContent(root);
-  }
+  setContent(root: MockDirectoryContent): void;
 
   /**
    * Adds content of the mock directory. This will overwrite existing files.
@@ -231,25 +127,7 @@ export class MockDirectory {
    * });
    * ```
    */
-  addContent(root: MockDirectoryContent): void {
-    const entries = this.#transformInput(root);
-
-    for (const entry of entries) {
-      const fullPath = resolvePath(this.#root, entry.path);
-      if (!isChildPath(this.#root, fullPath)) {
-        throw new Error(
-          `Provided path must resolve to a child path of the mock directory, got '${fullPath}'`,
-        );
-      }
-
-      if (entry.type === 'dir') {
-        fs.ensureDirSync(fullPath, { mode: 0o777 });
-      } else if (entry.type === 'file') {
-        fs.ensureDirSync(dirname(fullPath), { mode: 0o777 });
-        fs.writeFileSync(fullPath, entry.content, { mode: 0o666 });
-      }
-    }
-  }
+  addContent(root: MockDirectoryContent): void;
 
   /**
    * Reads the content of the mock directory.
@@ -274,6 +152,75 @@ export class MockDirectory {
    * });
    * ```
    */
+  content(
+    options?: MockDirectoryContentOptions,
+  ): MockDirectoryContent | undefined;
+
+  /**
+   * Clears the content of the mock directory, ensuring that the directory itself exists.
+   */
+  clear(): void;
+
+  /**
+   * Removes the mock directory and all its contents.
+   */
+  remove(): void;
+}
+
+/** @internal */
+type MockEntry =
+  | {
+      type: 'file';
+      path: string;
+      content: Buffer;
+    }
+  | {
+      type: 'dir';
+      path: string;
+    };
+
+/** @internal */
+class MockDirectoryImpl {
+  readonly #root: string;
+
+  constructor(root: string) {
+    this.#root = root;
+  }
+
+  get path(): string {
+    return this.#root;
+  }
+
+  resolve(...paths: string[]): string {
+    return resolvePath(this.#root, ...paths);
+  }
+
+  setContent(root: MockDirectoryContent): void {
+    this.remove();
+
+    return this.addContent(root);
+  }
+
+  addContent(root: MockDirectoryContent): void {
+    const entries = this.#transformInput(root);
+
+    for (const entry of entries) {
+      const fullPath = resolvePath(this.#root, entry.path);
+      if (!isChildPath(this.#root, fullPath)) {
+        throw new Error(
+          `Provided path must resolve to a child path of the mock directory, got '${fullPath}'`,
+        );
+      }
+
+      if (entry.type === 'dir') {
+        fs.ensureDirSync(fullPath, { mode: 0o777 });
+      } else if (entry.type === 'file') {
+        fs.ensureDirSync(dirname(fullPath), { mode: 0o777 });
+        fs.writeFileSync(fullPath, entry.content, { mode: 0o666 });
+      }
+    }
+  }
+
   content(
     options?: MockDirectoryContentOptions,
   ): MockDirectoryContent | undefined {
@@ -319,16 +266,10 @@ export class MockDirectory {
     return read(root);
   }
 
-  /**
-   * Clears the content of the mock directory, ensuring that the directory itself exists.
-   */
   clear = (): void => {
     this.setContent({});
   };
 
-  /**
-   * Removes the mock directory and all its contents.
-   */
   remove = (): void => {
     fs.removeSync(this.#root);
   };
@@ -358,4 +299,70 @@ export class MockDirectory {
 
     return entries;
   }
+}
+
+/**
+ * Options for {@link createMockDirectory}.
+ *
+ * @public
+ */
+export interface MockDirectoryOptions {
+  /**
+   * In addition to creating a temporary directory, also mock `os.tmpdir()` to return the
+   * mock directory path until the end of the test suite.
+   *
+   * @returns
+   */
+  mockOsTmpDir?: boolean;
+}
+
+/**
+ * Creates a new temporary mock directory that will be removed after the tests have completed.
+ *
+ * @public
+ * @remarks
+ *
+ * This method is intended to be called outside of any test, either at top-level or
+ * within a `describe` block. It will call `afterAll` to make sure that the mock directory
+ * is removed after the tests have run.
+ *
+ * @example
+ * ```ts
+ * describe('MySubject', () => {
+ *   const mockDir = createMockDirectory();
+ *
+ *   beforeEach(mockDir.clear);
+ *
+ *   it('should work', () => {
+ *     // ... use mockDir
+ *   })
+ * })
+ * ```
+ */
+export function createMockDirectory(
+  options?: MockDirectoryOptions,
+): MockDirectory {
+  const root = fs.mkdtempSync(joinPath(getTmpDir(), 'backstage-tmp-test-dir-'));
+
+  const mocker = new MockDirectoryImpl(root);
+
+  const origTmpdir = options?.mockOsTmpDir ? os.tmpdir : undefined;
+  if (origTmpdir) {
+    os.tmpdir = () => mocker.path;
+  }
+
+  process.on('beforeExit', mocker.remove);
+
+  try {
+    afterAll(() => {
+      if (origTmpdir) {
+        os.tmpdir = origTmpdir;
+      }
+      mocker.remove();
+    });
+  } catch {
+    /* ignore */
+  }
+
+  return mocker;
 }

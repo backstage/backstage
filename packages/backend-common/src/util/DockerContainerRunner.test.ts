@@ -19,15 +19,15 @@ import Docker from 'dockerode';
 import Stream, { PassThrough } from 'stream';
 import { ContainerRunner } from './ContainerRunner';
 import { DockerContainerRunner, UserOptions } from './DockerContainerRunner';
-import { MockDirectory } from '@backstage/backend-test-utils';
+import { createMockDirectory } from '@backstage/backend-test-utils';
 
 const mockDocker = new Docker() as jest.Mocked<Docker>;
 
 describe('DockerContainerRunner', () => {
   let containerTaskApi: ContainerRunner;
 
-  const inputDir = MockDirectory.create();
-  const outputDir = MockDirectory.create();
+  const inputDir = createMockDirectory();
+  const outputDir = createMockDirectory();
 
   beforeEach(() => {
     inputDir.clear();

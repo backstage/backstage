@@ -15,7 +15,7 @@
  */
 
 import {
-  MockDirectory,
+  createMockDirectory,
   setupRequestMockHandlers,
 } from '@backstage/backend-test-utils';
 import { ConfigReader } from '@backstage/config';
@@ -35,7 +35,7 @@ import { DefaultReadTreeResponseFactory } from './tree';
 import { GerritUrlReader } from './GerritUrlReader';
 import getRawBody from 'raw-body';
 
-const mockDir = MockDirectory.mockOsTmpDir();
+const mockDir = createMockDirectory({ mockOsTmpDir: true });
 
 const treeResponseFactory = DefaultReadTreeResponseFactory.create({
   config: new ConfigReader({}),

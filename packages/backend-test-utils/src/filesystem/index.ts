@@ -15,8 +15,9 @@
  */
 
 export {
-  MockDirectory,
+  createMockDirectory,
+  type MockDirectory,
+  type MockDirectoryOptions,
   type MockDirectoryContent,
   type MockDirectoryContentOptions,
-  type MockDirectoryCreateOptions,
 } from './MockDirectory';

@@ -20,7 +20,7 @@ import {
   readBitbucketIntegrationConfig,
 } from '@backstage/integration';
 import {
-  MockDirectory,
+  createMockDirectory,
   setupRequestMockHandlers,
 } from '@backstage/backend-test-utils';
 import fs from 'fs-extra';
@@ -69,7 +69,7 @@ describe('BitbucketUrlReader.factory', () => {
 });
 
 describe('BitbucketUrlReader', () => {
-  const mockDir = MockDirectory.mockOsTmpDir();
+  const mockDir = createMockDirectory({ mockOsTmpDir: true });
 
   beforeEach(mockDir.clear);
 

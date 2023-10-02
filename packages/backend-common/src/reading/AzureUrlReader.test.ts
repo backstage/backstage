@@ -24,7 +24,7 @@ import {
   AzureIntegrationConfig,
 } from '@backstage/integration';
 import {
-  MockDirectory,
+  createMockDirectory,
   setupRequestMockHandlers,
 } from '@backstage/backend-test-utils';
 import fs from 'fs-extra';
@@ -44,7 +44,7 @@ type AzureIntegrationConfigLike = Partial<
 
 const logger = getVoidLogger();
 
-const mockDir = MockDirectory.mockOsTmpDir();
+const mockDir = createMockDirectory({ mockOsTmpDir: true });
 
 const treeResponseFactory = DefaultReadTreeResponseFactory.create({
   config: new ConfigReader({}),

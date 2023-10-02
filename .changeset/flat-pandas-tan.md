@@ -2,4 +2,4 @@
 '@backstage/backend-test-utils': patch
 ---
 
-Added `MockDirectory` to help out with file system mocking in tests.
+Added `createMockDirectory()` to help out with file system mocking in tests.

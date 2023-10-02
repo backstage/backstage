@@ -31,20 +31,23 @@ import { ServiceRef } from '@backstage/backend-plugin-api';
 import { TokenManagerService } from '@backstage/backend-plugin-api';
 import { UrlReaderService } from '@backstage/backend-plugin-api';
 
+// @public
+export function createMockDirectory(
+  options?: MockDirectoryOptions,
+): MockDirectory;
+
 // @public (undocumented)
 export function isDockerDisabledForTests(): boolean;
 
 // @public
-export class MockDirectory {
+export interface MockDirectory {
   addContent(root: MockDirectoryContent): void;
-  clear: () => void;
+  clear(): void;
   content(
     options?: MockDirectoryContentOptions,
   ): MockDirectoryContent | undefined;
-  static create(options?: MockDirectoryCreateOptions): MockDirectory;
-  static mockOsTmpDir(): MockDirectory;
-  get path(): string;
-  remove: () => void;
+  readonly path: string;
+  remove(): void;
   resolve(...paths: string[]): string;
   setContent(root: MockDirectoryContent): void;
 }
@@ -61,8 +64,8 @@ export interface MockDirectoryContentOptions {
 }
 
 // @public
-export interface MockDirectoryCreateOptions {
-  root?: string;
+export interface MockDirectoryOptions {
+  mockOsTmpDir?: boolean;
 }
 
 // @public (undocumented)

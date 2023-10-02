@@ -18,7 +18,7 @@ import fs from 'fs-extra';
 import path from 'path';
 import { FromReadableArrayOptions } from '../types';
 import { ReadableArrayResponse } from './ReadableArrayResponse';
-import { MockDirectory } from '@backstage/backend-test-utils';
+import { createMockDirectory } from '@backstage/backend-test-utils';
 
 const name1 = 'file1.yaml';
 const file1 = fs.readFileSync(
@@ -31,8 +31,8 @@ const file2 = fs.readFileSync(
 );
 
 describe('ReadableArrayResponse', () => {
-  const sourceDir = MockDirectory.create();
-  const targetDir = MockDirectory.create();
+  const sourceDir = createMockDirectory();
+  const targetDir = createMockDirectory();
 
   beforeEach(() => {
     sourceDir.setContent({

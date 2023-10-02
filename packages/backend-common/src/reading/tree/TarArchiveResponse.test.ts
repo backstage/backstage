@@ -17,15 +17,15 @@
 import fs from 'fs-extra';
 import { resolve as resolvePath } from 'path';
 import { TarArchiveResponse } from './TarArchiveResponse';
-import { MockDirectory } from '@backstage/backend-test-utils';
+import { createMockDirectory } from '@backstage/backend-test-utils';
 
 const archiveData = fs.readFileSync(
   resolvePath(__filename, '../../__fixtures__/mock-main.tar.gz'),
 );
 
 describe('TarArchiveResponse', () => {
-  const sourceDir = MockDirectory.create();
-  const targetDir = MockDirectory.create();
+  const sourceDir = createMockDirectory();
+  const targetDir = createMockDirectory();
 
   beforeAll(() => {
     sourceDir.setContent({ 'test-archive.tar.gz': archiveData });

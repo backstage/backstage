@@ -19,7 +19,7 @@ import { Readable } from 'stream';
 import { create as createArchive } from 'archiver';
 import { resolve as resolvePath } from 'path';
 import { ZipArchiveResponse } from './ZipArchiveResponse';
-import { MockDirectory } from '@backstage/backend-test-utils';
+import { createMockDirectory } from '@backstage/backend-test-utils';
 
 const archiveData = fs.readFileSync(
   resolvePath(__filename, '../../__fixtures__/mock-main.zip'),
@@ -35,8 +35,8 @@ const archiveWithMaliciousEntry = fs.readFileSync(
 );
 
 describe('ZipArchiveResponse', () => {
-  const sourceDir = MockDirectory.create();
-  const targetDir = MockDirectory.create();
+  const sourceDir = createMockDirectory();
+  const targetDir = createMockDirectory();
 
   beforeAll(() => {
     sourceDir.setContent({

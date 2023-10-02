@@ -21,10 +21,10 @@ import {
   resolve as resolvePath,
   relative as relativePath,
 } from 'path';
-import { MockDirectory } from './MockDirectory';
+import { createMockDirectory, MockDirectory } from './MockDirectory';
 
-describe('MockDirectory', () => {
-  const mockDir = MockDirectory.create();
+describe('createMockDirectory', () => {
+  const mockDir = createMockDirectory();
 
   beforeEach(mockDir.clear);
 
@@ -277,7 +277,7 @@ describe('MockDirectory', () => {
     let cleanupMockDir: MockDirectory;
 
     describe('inner', () => {
-      cleanupMockDir = MockDirectory.create();
+      cleanupMockDir = createMockDirectory();
 
       it('should populate a directory', () => {
         cleanupMockDir.setContent({
@@ -299,7 +299,7 @@ describe('MockDirectory', () => {
     let tmpDirMock: MockDirectory;
 
     describe('inner', () => {
-      tmpDirMock = MockDirectory.mockOsTmpDir();
+      tmpDirMock = createMockDirectory({ mockOsTmpDir: true });
 
       it('should mock os.tmpdir()', () => {
         expect(os.tmpdir()).toBe(tmpDirMock.path);
@@ -308,24 +308,6 @@ describe('MockDirectory', () => {
 
     it('should restore os.tmpdir()', () => {
       expect(os.tmpdir()).not.toBe(tmpDirMock.path);
-    });
-  });
-
-  describe('existing directory', () => {
-    let existingMockDir: MockDirectory;
-
-    describe('inner', () => {
-      existingMockDir = MockDirectory.create({ root: __dirname }); // hardcore mode
-
-      it('should read existing directory', () => {
-        expect(existingMockDir.content()).toMatchObject({
-          'index.ts': expect.any(String),
-        });
-      });
-    });
-
-    it('should remove existing directory', () => {
-      expect(fs.pathExistsSync(__dirname)).toBe(true);
     });
   });
 });

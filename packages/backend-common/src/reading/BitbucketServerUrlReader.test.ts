@@ -20,7 +20,7 @@ import {
   readBitbucketServerIntegrationConfig,
 } from '@backstage/integration';
 import {
-  MockDirectory,
+  createMockDirectory,
   setupRequestMockHandlers,
 } from '@backstage/backend-test-utils';
 import fs from 'fs-extra';
@@ -31,7 +31,7 @@ import { NotModifiedError } from '@backstage/errors';
 import { BitbucketServerUrlReader } from './BitbucketServerUrlReader';
 import { DefaultReadTreeResponseFactory } from './tree';
 
-MockDirectory.mockOsTmpDir();
+createMockDirectory({ mockOsTmpDir: true });
 
 const treeResponseFactory = DefaultReadTreeResponseFactory.create({
   config: new ConfigReader({}),
