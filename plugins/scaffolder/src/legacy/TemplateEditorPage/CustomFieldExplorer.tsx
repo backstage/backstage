@@ -74,6 +74,7 @@ export const CustomFieldExplorer = ({
   const [selectedField, setSelectedField] = useState(fieldOptions[0]);
   const [fieldFormState, setFieldFormState] = useState({});
   const [refreshKey, setRefreshKey] = useState(Date.now());
+  const [formState, setFormState] = useState({});
   const sampleFieldTemplate = useMemo(
     () =>
       yaml.stringify({
@@ -103,8 +104,9 @@ export const CustomFieldExplorer = ({
     selection => {
       setSelectedField(selection);
       setFieldFormState({});
+      setFormState({});
     },
-    [setFieldFormState, setSelectedField],
+    [setFieldFormState, setSelectedField, setFormState],
   );
 
   const handleFieldConfigChange = useCallback(
@@ -149,7 +151,7 @@ export const CustomFieldExplorer = ({
             <Form
               showErrorList={false}
               // @ts-ignore
-              fields={{ ...fieldComponents }}
+              fields={{ ...fieldOverrides, ...fieldComponents }}
               noHtml5Validate
               formData={fieldFormState}
               formContext={{ fieldFormState }}
@@ -183,6 +185,8 @@ export const CustomFieldExplorer = ({
           </CardContent>
         </Card>
         <TemplateEditorForm
+          data={formState}
+          onUpdate={setFormState}
           key={refreshKey}
           content={sampleFieldTemplate}
           contentIsSpec
