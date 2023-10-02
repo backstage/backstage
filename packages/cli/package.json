@@ -78,6 +78,7 @@
     "cross-fetch": "^3.1.5",
     "cross-spawn": "^7.0.3",
     "css-loader": "^6.5.1",
+    "ctrlc-windows": "^2.1.0",
     "diff": "^5.0.0",
     "esbuild": "^0.19.0",
     "esbuild-loader": "^2.18.0",
