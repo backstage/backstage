@@ -50,8 +50,7 @@ export const ApiResources = () => {
   const classes = useStyles();
   const { entity } = useEntity();
   const { setError } = useKubernetesClusterError();
-  // eslint-disable-next-line react-hooks/exhaustive-deps
-  const setErrorCallback = useCallback(setError, []);
+  const setErrorCallback = useCallback(setError, [setError]);
   const { value, error, loading } = useApiResources({
     clusterName: entity.metadata.name,
   });

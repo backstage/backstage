@@ -116,8 +116,7 @@ export const Nodes = () => {
     clusterName: entity.metadata.name,
   });
   const { setError } = useKubernetesClusterError();
-  // eslint-disable-next-line react-hooks/exhaustive-deps
-  const setErrorCallback = useCallback(setError, []);
+  const setErrorCallback = useCallback(setError, [setError]);
   useEffect(() => {
     if (error) {
       setErrorCallback(error.message);
