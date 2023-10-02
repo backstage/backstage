@@ -92,13 +92,7 @@ describe('useGetEntities', () => {
     describe('when given entity is a group', () => {
       beforeEach(() => {
         getEntityRelationsMock
-          .mockReturnValueOnce([
-            {
-              kind: 'Group',
-              namespace: 'default',
-              name: givenLeafGroup,
-            } as CompoundEntityRef,
-          ])
+          .mockReturnValueOnce([createGroupRefFromName(givenLeafGroup)])
           .mockReturnValue([]);
       });
 
@@ -120,71 +114,84 @@ describe('useGetEntities', () => {
         });
       });
 
-      it('should retrieve entities owned by any children', async () => {
+      describe('when relations are deep (children of children)', () => {
         const givenIntermediateGroup = 'intermediate-group';
         const givenIntermediateGroupEntity = createGroupEntityFromName(
           givenIntermediateGroup,
         );
 
-        getEntitiesByRefsMock.mockRestore();
-        getEntitiesByRefsMock.mockImplementation(
-          async ({ entityRefs: [ref] }) => {
-            if (ref.includes(givenParentGroup)) {
-              return { items: [givenParentGroupEntity] };
-            }
+        beforeEach(() => {
+          getEntitiesByRefsMock.mockRestore();
+          getEntitiesByRefsMock.mockImplementation(
+            async ({ entityRefs: [ref] }) => {
+              if (ref.includes(givenParentGroup)) {
+                return { items: [givenParentGroupEntity] };
+              }
 
-            if (ref.includes(givenIntermediateGroup)) {
-              return { items: [givenIntermediateGroupEntity] };
-            }
+              if (ref.includes(givenIntermediateGroup)) {
+                return { items: [givenIntermediateGroupEntity] };
+              }
 
-            return { items: [givenLeafGroupEntity] };
-          },
-        );
-
-        getEntityRelationsMock.mockRestore();
-        getEntityRelationsMock.mockImplementation(entity => {
-          if (entity?.metadata.name === givenParentGroup) {
-            return [
-              {
-                kind: 'Group',
-                namespace: 'default',
-                name: givenIntermediateGroup,
-              },
-            ];
-          }
-
-          if (entity?.metadata.name === givenIntermediateGroup) {
-            return [
-              {
-                kind: 'Group',
-                namespace: 'default',
-                name: givenLeafGroup,
-              },
-            ];
-          }
-
-          return [];
+              return { items: [givenLeafGroupEntity] };
+            },
+          );
         });
 
-        await whenHookIsCalledWith(givenParentGroupEntity);
-        expect(catalogApiMock.getEntities).toHaveBeenCalledWith(
-          ownersFilter(
-            `group:default/${givenParentGroup}`,
-            `group:default/${givenIntermediateGroup}`,
-            `group:default/${givenLeafGroup}`,
-          ),
-        );
+        it('should retrieve entities owned by any children', async () => {
+          getEntityRelationsMock.mockRestore();
+          getEntityRelationsMock.mockImplementation(entity => {
+            if (entity?.metadata.name === givenParentGroup) {
+              return [createGroupRefFromName(givenIntermediateGroup)];
+            }
+
+            if (entity?.metadata.name === givenIntermediateGroup) {
+              return [createGroupRefFromName(givenLeafGroup)];
+            }
+
+            return [];
+          });
+
+          await whenHookIsCalledWith(givenParentGroupEntity);
+          expect(catalogApiMock.getEntities).toHaveBeenCalledWith(
+            ownersFilter(
+              `group:default/${givenParentGroup}`,
+              `group:default/${givenIntermediateGroup}`,
+              `group:default/${givenLeafGroup}`,
+            ),
+          );
+        });
+
+        it('should retrieve entities owned by any children when circular relation', async () => {
+          getEntityRelationsMock.mockRestore();
+          getEntityRelationsMock.mockImplementation(entity => {
+            if (entity?.metadata.name === givenParentGroup) {
+              return [createGroupRefFromName(givenIntermediateGroup)];
+            }
+
+            if (entity?.metadata.name === givenIntermediateGroup) {
+              return [createGroupRefFromName(givenLeafGroup)];
+            }
+
+            // returns parent by default so givenLeafGroup will have the givenParentGroup as child
+            return [createGroupRefFromName(givenParentGroup)];
+          });
+
+          await whenHookIsCalledWith(givenParentGroupEntity);
+          expect(catalogApiMock.getEntities).toHaveBeenCalledWith(
+            ownersFilter(
+              `group:default/${givenParentGroup}`,
+              `group:default/${givenIntermediateGroup}`,
+              `group:default/${givenLeafGroup}`,
+            ),
+          );
+        });
       });
     });
 
     describe('when given entity is a user', () => {
       it('should aggregate parent ownership and direct', async () => {
         getEntityRelationsMock.mockReturnValue([
-          {
-            kind: 'Group',
-            namespace: 'default',
-            name: givenLeafGroup,
-          } as CompoundEntityRef,
+          createGroupRefFromName(givenLeafGroup),
         ]);
 
         await whenHookIsCalledWith(givenUserEntity);
@@ -226,11 +233,19 @@ describe('useGetEntities', () => {
   });
 });
 
-function createGroupEntityFromName(name: String): Entity {
+function createGroupEntityFromName(name: string): Entity {
   return {
     kind: 'Group',
     metadata: {
       name: name,
     },
   } as Partial<Entity> as Entity;
+}
+
+function createGroupRefFromName(name: string): CompoundEntityRef {
+  return {
+    kind: 'Group',
+    namespace: 'default',
+    name: name,
+  };
 }

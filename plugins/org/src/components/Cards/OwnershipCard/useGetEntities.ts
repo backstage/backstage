@@ -81,6 +81,7 @@ const isEntity = (entity: Entity | undefined): entity is Entity =>
 const getChildOwnershipEntityRefs = async (
   entity: Entity,
   catalogApi: CatalogApi,
+  alreadyRetrievedParentRefs: string[] = [],
 ): Promise<string[]> => {
   const childGroups = getEntityRelations(entity, RELATION_PARENT_OF, {
     kind: 'Group',
@@ -88,6 +89,7 @@ const getChildOwnershipEntityRefs = async (
 
   const hasChildGroups = childGroups.length > 0;
 
+  const entityRef = stringifyEntityRef(entity);
   if (hasChildGroups) {
     const entityRefs = childGroups.map(r => stringifyEntityRef(r));
     const childGroupResponse = await catalogApi.getEntitiesByRefs({
@@ -96,20 +98,29 @@ const getChildOwnershipEntityRefs = async (
     });
     const childGroupEntities = childGroupResponse.items.filter(isEntity);
 
+    const unknownChildren = childGroupEntities.filter(
+      childGroupEntity =>
+        !alreadyRetrievedParentRefs.includes(
+          stringifyEntityRef(childGroupEntity),
+        ),
+    );
     const childrenRefs = (
       await Promise.all(
-        childGroupEntities.map(childGroupEntity =>
+        unknownChildren.map(childGroupEntity =>
           limiter(() =>
-            getChildOwnershipEntityRefs(childGroupEntity, catalogApi),
+            getChildOwnershipEntityRefs(childGroupEntity, catalogApi, [
+              ...alreadyRetrievedParentRefs,
+              entityRef,
+            ]),
           ),
         ),
       )
     ).flatMap(aggregated => aggregated);
 
-    return uniq([...childrenRefs, stringifyEntityRef(entity)]);
+    return uniq([...childrenRefs, entityRef]);
   }
 
-  return [stringifyEntityRef(entity)];
+  return [entityRef];
 };
 
 const getOwners = async (
