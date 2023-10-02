@@ -18245,11 +18245,11 @@ __metadata:
   linkType: hard
 
 "@types/react-text-truncate@npm:^0.14.0":
-  version: 0.14.1
-  resolution: "@types/react-text-truncate@npm:0.14.1"
+  version: 0.14.2
+  resolution: "@types/react-text-truncate@npm:0.14.2"
   dependencies:
     "@types/react": "*"
-  checksum: 6b5ffb04b41fbe88c63ff7e8ff815fa7e3e52d128a5ccbc134fc412da6b6904dc55a34891aa4769cb5f9b958f48288475f500281cc1f3d74450610a3ec657491
+  checksum: 714b8dade2cd149b3a353c6914065f8aaf2e8d01c21fc1e92afe9e9cf19b037c6a9c34c9100a8009848a6d8747fbd0f4c3b2fe4676b0afa35e347b2fecc92811
   languageName: node
   linkType: hard
 
