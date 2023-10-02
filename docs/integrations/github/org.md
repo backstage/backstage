@@ -270,12 +270,7 @@ const githubOrgProvider = GithubOrgEntityProvider.fromConfig(env.config, {
   /* highlight-add-start */
   userTransformer: async (user, ctx) => {
     const entity = await defaultUserTransformer(user, ctx);
-    if (
-      entity &&
-      isUserEntity(entity) &&
-      entity.spec.profile &&
-      user.organizationVerifiedDomainEmails?.length
-    ) {
+    if (entity && user.organizationVerifiedDomainEmails?.length) {
       entity.spec.profile!.email = user.organizationVerifiedDomainEmails[0];
     }
     return entity;
