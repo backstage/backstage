@@ -22,12 +22,10 @@ import { createFieldValidation, extractSchemaFromStep } from '../../lib';
 import {
   CustomFieldValidator,
   FieldExtensionUiSchema,
-} from '../../../extensions';
+} from '@backstage/plugin-scaffolder-react';
 import { isObject } from './utils';
 
-/**
- * @internal
- */
+/** @alpha */
 export type FormValidation = {
   [name: string]: FieldValidation | FormValidation;
 };

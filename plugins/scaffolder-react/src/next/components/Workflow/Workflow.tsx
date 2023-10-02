@@ -27,7 +27,7 @@ import { errorApiRef, useApi } from '@backstage/core-plugin-api';
 import { useTemplateParameterSchema } from '../../hooks/useTemplateParameterSchema';
 import { Stepper, type StepperProps } from '../Stepper/Stepper';
 import { SecretsContextProvider } from '../../../secrets/SecretsContext';
-import { ReviewStepProps } from '../../../components';
+import { ReviewStepProps } from '@backstage/plugin-scaffolder-react';
 
 const useStyles = makeStyles<BackstageTheme>(() => ({
   markdown: {

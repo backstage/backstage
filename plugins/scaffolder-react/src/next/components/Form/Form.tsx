@@ -20,7 +20,7 @@ import { PropsWithChildren } from 'react';
 import { FieldTemplate } from './FieldTemplate';
 import { DescriptionFieldTemplate } from './DescriptionFieldTemplate';
 import { FieldProps } from '@rjsf/utils';
-import { ScaffolderRJSFFormProps } from '../../../extensions';
+import { ScaffolderRJSFFormProps } from '@backstage/plugin-scaffolder-react';
 
 // TODO(blam): We require here, as the types in this package depend on @rjsf/core explicitly
 // which is what we're using here as the default types, it needs to depend on @rjsf/core-v5 because
