@@ -65,6 +65,7 @@ export interface MockDirectoryContentOptions {
 
 // @public
 export interface MockDirectoryOptions {
+  content?: MockDirectoryContent;
   mockOsTmpDir?: boolean;
 }
 

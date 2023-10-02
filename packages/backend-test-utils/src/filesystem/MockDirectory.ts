@@ -314,6 +314,11 @@ export interface MockDirectoryOptions {
    * @returns
    */
   mockOsTmpDir?: boolean;
+
+  /**
+   * Initializes the directory with the given content, see {@link MockDirectory.setContent}.
+   */
+  content?: MockDirectoryContent;
 }
 
 /**
@@ -368,6 +373,10 @@ export function createMockDirectory(
     });
   } catch {
     /* ignore */
+  }
+
+  if (options?.content) {
+    mocker.setContent(options.content);
   }
 
   return mocker;
