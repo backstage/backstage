@@ -87,7 +87,7 @@ export default async function createPlugin(
       google: providers.google.create({
         signIn: {
           resolver:
-            providers.google.resolvers.emailLocalPartMatchingUserEntityName(),
+            providers.google.resolvers.emailMatchingUserEntityProfileEmail(),
         },
       }),
       okta: providers.okta.create({
@@ -143,4 +143,7 @@ export default async function createPlugin(
       }),
     },
   });
+}
+function myEmailValidator(_email: string) {
+  throw new Error('Function not implemented.');
 }

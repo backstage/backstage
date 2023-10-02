@@ -88,7 +88,7 @@ export class CatalogAuthResolverContext implements AuthResolverContext {
   async findCatalogUser(query: AuthResolverCatalogUserQuery) {
     let result: Entity[] | Entity | undefined = undefined;
     const { token } = await this.tokenManager.getToken();
-
+    console.log('token', token);
     if ('entityRef' in query) {
       const entityRef = parseEntityRef(query.entityRef, {
         defaultKind: 'User',
@@ -130,7 +130,7 @@ export class CatalogAuthResolverContext implements AuthResolverContext {
   async signInWithCatalogUser(query: AuthResolverCatalogUserQuery) {
     const { entity } = await this.findCatalogUser(query);
     const ownershipRefs = getDefaultOwnershipEntityRefs(entity);
-
+    console.log('entity', entity);
     const token = await this.tokenIssuer.issueToken({
       claims: {
         sub: stringifyEntityRef(entity),

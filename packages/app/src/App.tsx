@@ -31,6 +31,7 @@ import { AppRouter, FeatureFlagged, FlatRoutes } from '@backstage/core-app-api';
 import {
   AlertDisplay,
   OAuthRequestDialog,
+  ProxiedSignInPage,
   SignInPage,
 } from '@backstage/core-components';
 import { apiDocsPlugin, ApiExplorerPage } from '@backstage/plugin-api-docs';
@@ -97,7 +98,6 @@ import {
 } from './components/scaffolder/customScaffolderExtensions';
 import { defaultPreviewTemplate } from './components/scaffolder/defaultPreviewTemplate';
 import { searchPage } from './components/search/SearchPage';
-import { providers } from './identityProviders';
 import * as plugins from './plugins';
 
 import { techDocsPage } from './components/techdocs/TechDocsPage';
@@ -112,6 +112,9 @@ import { PuppetDbPage } from '@backstage/plugin-puppetdb';
 import { DevToolsPage } from '@backstage/plugin-devtools';
 import { customDevToolsPage } from './components/devtools/CustomDevToolsPage';
 import { CatalogUnprocessedEntitiesPage } from '@backstage/plugin-catalog-unprocessed-entities';
+import { MyPluginPage } from '@backstage/plugin-my-plugin';
+import { headersproviders } from './identityProviders';
+import { configApiRef, useApi } from '@backstage/core-plugin-api';
 
 const app = createApp({
   apis,
@@ -129,14 +132,20 @@ const app = createApp({
   ],
   components: {
     SignInPage: props => {
-      return (
-        <SignInPage
-          {...props}
-          providers={['guest', 'custom', ...providers]}
-          title="Select a sign-in method"
-          align="center"
-        />
-      );
+      const configApi = useApi(configApiRef);
+
+      if (configApi.getString('auth.environment') === 'development') {
+        return (
+          <SignInPage
+            auto
+            {...props}
+            providers={['guest', ...headersproviders]}
+            title="Select a sign-in method"
+            align="center"
+          />
+        );
+      }
+      return <ProxiedSignInPage {...props} provider="gcp-iap" />;
     },
   },
   bindRoutes({ bind }) {
@@ -302,6 +311,7 @@ const routes = (
     <Route path="/devtools" element={<DevToolsPage />}>
       {customDevToolsPage}
     </Route>
+    <Route path="/my-plugin" element={<MyPluginPage />} />
   </FlatRoutes>
 );
 

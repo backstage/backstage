@@ -57,7 +57,8 @@ export class CatalogIdentityClient {
 
     const { token } = await this.tokenManager.getToken();
     const { items } = await this.catalogApi.getEntities({ filter }, { token });
-
+    console.log('tokens', token);
+    console.log('items', items);
     if (items.length !== 1) {
       if (items.length > 1) {
         throw new ConflictError('User lookup resulted in multiple matches');

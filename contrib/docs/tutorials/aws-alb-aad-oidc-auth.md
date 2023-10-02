@@ -85,7 +85,7 @@ const SampleSignInComponent: any = (props: SignInPageProps) => {
           UserIdentity.fromLegacy({
             userId: 'guest',
             profile: {
-              email: 'guest@example.com',
+              email: 'mba@gmail.com',
               displayName: 'Guest',
               picture: '',
             },

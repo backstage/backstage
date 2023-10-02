@@ -40,13 +40,7 @@ const Component: ProviderComponent = ({ onSignInStarted, onSignInSuccess }) => (
         </Button>
       }
     >
-      <Typography variant="body1">
-        Enter as a Guest User.
-        <br />
-        You will not have a verified identity,
-        <br />
-        meaning some features might be unavailable.
-      </Typography>
+      <Typography variant="body1">Enter as a Guest User.</Typography>
     </InfoCard>
   </GridItem>
 );

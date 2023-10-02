@@ -44,7 +44,7 @@ const defaultEntity: UserEntity = {
   spec: {
     profile: {
       displayName: 'Guest User',
-      email: 'guest@example.com',
+      email: 'mba@gmail.com',
       picture:
         'https://avatars.dicebear.com/api/avataaars/guest@example.com.svg?background=%23fff',
     },
@@ -73,7 +73,7 @@ const noImageEntity: UserEntity = {
   spec: {
     profile: {
       displayName: 'Guest User',
-      email: 'guest@example.com',
+      email: 'mba@gmail.com',
     },
     memberOf: ['team-a'],
   },
@@ -124,7 +124,7 @@ const extraDetailsEntity: UserEntity = {
   spec: {
     profile: {
       displayName: 'Guest User',
-      email: 'guest@example.com',
+      email: 'mba@gmail.com',
       picture:
         'https://avatars.dicebear.com/api/avataaars/guest@example.com.svg?background=%23fff',
     },

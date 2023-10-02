@@ -17,7 +17,7 @@
 /**
  * A Backstage backend plugin that handles authentication
  *
- * @packageDocumentation
+ * @packageDocumentationcors
  */
 
 export * from './service/router';

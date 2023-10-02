@@ -96,7 +96,8 @@ export function showLoginPopup(options: LoginPopupOptions): Promise<any> {
         return;
       }
       const { data } = event;
-
+      // eslint-disable-next-line no-console
+      console.log('data', data);
       if (data.type === 'config_info') {
         targetOrigin = data.targetOrigin;
         return;
@@ -106,6 +107,8 @@ export function showLoginPopup(options: LoginPopupOptions): Promise<any> {
         return;
       }
       const authResult = data as AuthResult;
+      // eslint-disable-next-line no-console
+      console.log('authResult', authResult);
 
       if ('error' in authResult) {
         const error = new Error(authResult.error.message);

@@ -121,11 +121,11 @@ export function AppRouter(props: AppRouterProps) {
         getUserId: () => 'guest',
         getIdToken: async () => undefined,
         getProfile: () => ({
-          email: 'guest@example.com',
+          email: 'mba@gmail.com',
           displayName: 'Guest',
         }),
         getProfileInfo: async () => ({
-          email: 'guest@example.com',
+          email: 'mba@gmail.com',
           displayName: 'Guest',
         }),
         getBackstageIdentity: async () => ({

@@ -63,6 +63,8 @@ export const UserProfileCard = (props: {
   showLinks?: boolean;
 }) => {
   const { entity: user } = useEntity<UserEntity>();
+  // eslint-disable-next-line no-console
+  console.log('USERRRRRRRRR', user);
   if (!user) {
     return <Alert severity="error">User not found</Alert>;
   }

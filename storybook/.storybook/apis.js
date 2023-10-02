@@ -30,7 +30,7 @@ const alertApi = new AlertApiForwarder();
 const errorApi = new ErrorAlerter(alertApi, new ErrorApiForwarder());
 const identityApi = {
   getUserId: () => 'guest',
-  getProfile: () => ({ email: 'guest@example.com' }),
+  getProfile: () => ({ email: 'mba@gmail.com' }),
   getIdToken: () => undefined,
   signOut: async () => {},
 };

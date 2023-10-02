@@ -26,19 +26,26 @@ backend:
   # Used for enabling authentication, secret is shared by all backend plugins
   # See https://backstage.io/docs/auth/service-to-service-auth for
   # information on the format
-  # auth:
-  #   keys:
-  #     - secret: ${BACKEND_SECRET}
+  auth:
+    keys:
+      - secret: J3YExu2RhWlUxWCNfmhQ/JmKlzVFhAiZ
   baseUrl: http://localhost:7007
   listen:
     port: 7007
   database:
-    client: better-sqlite3
-    connection: ':memory:'
+    # client: better-sqlite3
+    # connection: ':memory:'
+    client: pg
+    connection:
+      host: 127.0.0.1
+      port: 5432
+      user: postgres
+      password: maria.234
   cors:
     origin: http://localhost:3000
     methods: [GET, HEAD, PATCH, POST, PUT, DELETE]
     credentials: true
+    headers: X-Requested-With
   csp:
     connect-src: ["'self'", 'http:', 'https:']
     # Content-Security-Policy directives follow the Helmet format: https://helmetjs.github.io/#reference
@@ -47,6 +54,7 @@ backend:
     allow:
       - host: example.com
       - host: '*.mozilla.org'
+      - host: '*.swagger.io'
   # workingDirectory: /tmp # Use this to configure a working directory for the scaffolder, defaults to the OS temp-dir
 
 # See README.md in the proxy-backend plugin for information on the configuration format
@@ -82,7 +90,8 @@ proxy:
     '/pagerduty':
       target: https://api.pagerduty.com
       headers:
-        Authorization: Token token=${PAGERDUTY_TOKEN}
+        Authorization: Token token=e+kZJQ1NSL1tXjCdhvuA
+        allowedMethods: ['GET']
 
     '/buildkite/api':
       target: https://api.buildkite.com/v2/
@@ -186,7 +195,7 @@ allure:
 integrations:
   github:
     - host: github.com
-      token: ${GITHUB_TOKEN}
+      token: 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
   ### Example for how to add your GitHub Enterprise instance using the API:
   # - host: ghe.example.net
   #   apiBaseUrl: https://ghe.example.net/api/v3
@@ -199,9 +208,9 @@ integrations:
     - host: gitlab.com
       token: ${GITLAB_TOKEN}
   ### Example for how to add a bitbucket cloud integration
-  # bitbucketCloud:
-  #   - username: ${BITBUCKET_USERNAME}
-  #     appPassword: ${BITBUCKET_APP_PASSWORD}
+  bitbucketCloudd:
+    - username: MariaBouAoun99
+      appPassword: ATBBD4DvJQk2LRkRKGexEfrbdVcJ7C860815
   ### Example for how to add your bitbucket server instance using the API:
   # - host: server.bitbucket.com
   #   apiBaseUrl: server.bitbucket.com
@@ -214,10 +223,23 @@ integrations:
   #    clientEmail: 'example@example.com'
   #    privateKey: ${GCS_PRIVATE_KEY}
   awsS3:
-    - endpoint: ${AWS_S3_ENDPOINT}
-      accessKeyId: ${AWS_ACCESS_KEY_ID}
-      secretAccessKey: ${AWS_SECRET_ACCESS_KEY}
-
+    - endpoint: http://localhost:4566
+      s3ForcePathStyle: true
+      accessKeyId: AKIA2H5Y4A6V5TR7CA4D
+      secretAccessKey: buB7OfEN4R7a9O/vwSUbV8duT+KZghHFYPjTstCx
+   # uses "default" as provider ID
+      bucketName: aws s3 cp pet-store-api.yaml s3://sample-bucket/backstage-api-blog/pet-store-api.yaml
+      prefix: aws s3 cp pet-store-api.yaml s3://sample-bucket/backstage-api-blog/pet-store-api.yaml # optional
+      region: us-east-2 # optional, uses the default region otherwise
+      schedule: # optional; same options as in TaskScheduleDefinition
+        # supports cron, ISO duration, "human duration" as used in code
+        frequency: { minutes: 30 }
+        # supports ISO duration, "human duration" as used in code
+        timeout: { minutes: 3 }
+  bitbucketServer:
+    - host: bitbucket.toters.com
+      apiBaseUrl: https://bitbucket.toters.com/rest/api/1.0
+      token: ATCTT3xFfGN0ZHX1d3bqbd5YDNmBAznY2GVnv0pHbI-2N8m1knF4D5HSUD_mdtVhOt1XkJDiRSAP2n7fBr2xehK3ilH7jPm54r5RPhzClobd5e8bTgVbicKGPXEjGWfvBecxNNLsWD0drgNGjPnzDVIZyV4oVmIPW4ovWHGxEX6LbJOQQe1ME4E=5D53FB9D
 catalog:
   import:
     entityFilename: catalog-info.yaml
@@ -289,6 +311,9 @@ catalog:
     # Backstage end-to-end tests of TechDocs
     - type: file
       target: ../../cypress/e2e-fixture.catalog.info.yaml
+      
+    - type: url
+      target: https://seant-splunk.s3.us-east-2.amazonaws.com/workshop-component.yaml
 scaffolder:
   # Use to customize default commit author info used when new components are created
   # defaultAuthor:
@@ -314,12 +339,17 @@ auth:
   providers:
     google:
       development:
-        clientId: ${AUTH_GOOGLE_CLIENT_ID}
-        clientSecret: ${AUTH_GOOGLE_CLIENT_SECRET}
+        clientId: 118441686846-482suv32pubs2i1itvnllk1ob9onnqoq.apps.googleusercontent.com
+        clientSecret: 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
+
+    gcp-iap:
+      audience: '/projects/<project number>/global/backendServices/<backend service id>'
+      jwtHeader: x-custom-header # Optional: Only if you are using a custom header for the IAP JWT
+
     github:
       development:
-        clientId: ${AUTH_GITHUB_CLIENT_ID}
-        clientSecret: ${AUTH_GITHUB_CLIENT_SECRET}
+        clientId: 4cad1eabdc64f948019e
+        clientSecret: 4fb94a0eee0fd677c7cc064f286ba109057acca1
         enterpriseInstanceUrl: ${AUTH_GITHUB_ENTERPRISE_INSTANCE_URL}
     gitlab:
       development:
@@ -332,15 +362,20 @@ auth:
       cert: 'fake-cert-base64'
     okta:
       development:
-        clientId: ${AUTH_OKTA_CLIENT_ID}
-        clientSecret: ${AUTH_OKTA_CLIENT_SECRET}
-        audience: ${AUTH_OKTA_AUDIENCE}
+        clientId: 0oa77mr2gnA3SDcVo697
+        clientSecret: Dd1SxD0CuRmmiozltHbBUrajhsCCCc26M633G11ttDYHpms6EDt7OSTALfbAlX1u
+        audience: 0oa77mr2gnA3SDcVo697
     oauth2:
       development:
-        clientId: ${AUTH_OAUTH2_CLIENT_ID}
-        clientSecret: ${AUTH_OAUTH2_CLIENT_SECRET}
-        authorizationUrl: ${AUTH_OAUTH2_AUTH_URL}
-        tokenUrl: ${AUTH_OAUTH2_TOKEN_URL}
+        clientId: kiali-backstage
+        clientSecret: kiali-backstage
+        callbackUrl: http://localhost:7007/api/auth/oauth2/handler/frame
+        authorizationUrl: https://oauth-openshift.apps-crc.testing/oauth/authorize
+        domain: oauth-openshift.apps-crc.testing
+        tokenUrl: https://oauth-openshift.apps-crc.testing/oauth/token
+  session:
+    secret: 
+      'authsessionsecret'   
         ###
         # provide a list of scopes as needed for your OAuth2 Server:
         #
@@ -376,8 +411,8 @@ auth:
         issuer: ${AUTH_ONELOGIN_ISSUER}
     bitbucket:
       development:
-        clientId: ${AUTH_BITBUCKET_CLIENT_ID}
-        clientSecret: ${AUTH_BITBUCKET_CLIENT_SECRET}
+        clientId: RrPVTyE34fHSPypGpZ
+        clientSecret: meBYDuKUDBB3pCPtQN3p4xTftf479gVY
     atlassian:
       development:
         clientId: ${AUTH_ATLASSIAN_CLIENT_ID}
@@ -462,3 +497,5 @@ stackstorm:
 
 permission:
   enabled: true
+
+cloud.google.com/function-ids: projects/project-name/locations/region-name/functions/function-name

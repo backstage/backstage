@@ -31,14 +31,14 @@ export class GuestUserIdentity implements IdentityApi {
 
   getProfile(): ProfileInfo {
     return {
-      email: 'guest@example.com',
+      email: 'mba@gmail.com',
       displayName: 'Guest',
     };
   }
 
   async getProfileInfo(): Promise<ProfileInfo> {
     return {
-      email: 'guest@example.com',
+      email: 'mba@gmail.com',
       displayName: 'Guest',
     };
   }

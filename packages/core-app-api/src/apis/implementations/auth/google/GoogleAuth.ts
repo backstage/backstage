@@ -55,6 +55,8 @@ export default class GoogleAuth {
       defaultScopes,
       scopeTransform(scopes: string[]) {
         return scopes.map(scope => {
+          // eslint-disable-next-line no-console
+          console.log('scope', scope);
           if (scope === 'openid') {
             return scope;
           }

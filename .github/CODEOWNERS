@@ -70,6 +70,7 @@
 /plugins/linguist-backend                         @backstage/maintainers @awanlin
 /plugins/linguist-common                          @backstage/maintainers @awanlin
 /plugins/microsoft-calendar                       @backstage/maintainers @abhay-soni-developer @NishkarshRaj
+/plugins/my-plugin                                @internal/plugin-my-plugin
 /plugins/newrelic-dashboard                       @backstage/maintainers @mufaddal7
 /plugins/permission-*                             @backstage/permission-maintainers
 /plugins/playlist                                 @backstage/maintainers @kuangp

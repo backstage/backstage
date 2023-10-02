@@ -87,6 +87,8 @@ export async function createRouter(
     logger: logger.child({ component: 'token-factory' }),
     algorithm: tokenFactoryAlgorithm,
   });
+  const { token } = await tokenManager.getToken();
+  console.log('token', token);
 
   const secret = config.getOptionalString('auth.session.secret');
   if (secret) {

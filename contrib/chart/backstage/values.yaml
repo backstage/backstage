@@ -131,8 +131,8 @@ appConfig:
         development:
           appOrigin: 'http://localhost:3000/'
           secure: false
-          clientId: ${AUTH_GOOGLE_CLIENT_ID}
-          clientSecret: ${AUTH_GOOGLE_CLIENT_SECRET}
+          clientId: 118441686846-34901j6m8maece1svcio4o9dl0ci7r41.apps.googleusercontent.com
+          clientSecret: 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
       github:
         development:
           appOrigin: 'http://localhost:3000/'
@@ -151,8 +151,8 @@ appConfig:
         development:
           appOrigin: 'http://localhost:3000/'
           secure: false
-          clientId: ${AUTH_OKTA_CLIENT_ID}
-          clientSecret: ${AUTH_OKTA_CLIENT_SECRET}
+          clientId: 0oa77mr2gnA3SDcVo697
+          clientSecret: Dd1SxD0CuRmmiozltHbBUrajhsCCCc26M633G11ttDYHpms6EDt7OSTALfbAlX1u
           audience: ${AUTH_OKTA_AUDIENCE}
       oauth2:
         development:

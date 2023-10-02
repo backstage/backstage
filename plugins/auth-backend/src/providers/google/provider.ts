@@ -160,7 +160,7 @@ export class GoogleAuthProvider implements OAuthHandlers {
       },
       profile,
     };
-
+    console.log('RESPONSEEEEEEE', response);
     if (this.signInResolver) {
       response.backstageIdentity = await this.signInResolver(
         {
@@ -221,7 +221,7 @@ export const google = createAuthProviderIntegration({
           authHandler,
           resolverContext,
         });
-
+        console.log('provider', provider);
         return OAuthAdapter.fromConfig(globalConfig, provider, {
           providerId,
           callbackUrl,
@@ -243,11 +243,10 @@ export const google = createAuthProviderIntegration({
     emailMatchingUserEntityAnnotation(): SignInResolver<OAuthResult> {
       return async (info, ctx) => {
         const { profile } = info;
-
+        console.log('profile', profile);
         if (!profile.email) {
           throw new Error('Google profile contained no email');
         }
-
         return ctx.signInWithCatalogUser({
           annotations: {
             'google.com/email': profile.email,

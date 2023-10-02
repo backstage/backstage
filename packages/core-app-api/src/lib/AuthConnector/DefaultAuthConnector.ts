@@ -148,7 +148,8 @@ export class DefaultAuthConnector<AuthSession>
     ).catch(error => {
       throw new Error(`Auth refresh request failed, ${error}`);
     });
-
+    // eslint-disable-next-line no-console
+    console.log('res', res);
     if (!res.ok) {
       const error: any = new Error(
         `Auth refresh request failed, ${res.statusText}`,

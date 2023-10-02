@@ -46,8 +46,8 @@ const clockConfigs: ClockConfig[] = [
     timeZone: 'Europe/Stockholm',
   },
   {
-    label: 'TYO',
-    timeZone: 'Asia/Tokyo',
+    label: 'LEB',
+    timeZone: 'Asia/Beirut',
   },
 ];
 
@@ -80,10 +80,11 @@ const defaultConfig = [
     height: 1,
   },
 ];
-
+const statictitle = 'MBA';
+const dynamictitle = <WelcomeTitle />;
 export const homePage = (
   <Page themeId="home">
-    <Header title={<WelcomeTitle />} pageTitleOverride="Home">
+    <Header title={statictitle} pageTitleOverride="Home">
       <HeaderWorldClock
         clockConfigs={clockConfigs}
         customTimeFormat={timeFormat}
@@ -94,7 +95,12 @@ export const homePage = (
         <HomePageSearchBar />
         <HomePageRandomJoke />
         <HomePageCalendar />
-        <HomePagePagerDutyCard name="Rota" />
+        <HomePagePagerDutyCard
+          name="toters-api"
+          serviceId="PY4S74Q"
+          integrationKey="R03DW39A3KF0DFHS1PV3S8X1L3MVUVHU"
+          readOnly={false}
+        />
         <MicrosoftCalendarCard />
         <HomePageStarredEntities />
         <HomePageCompanyLogo />
