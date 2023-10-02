@@ -114,7 +114,7 @@ Scope: Tooling for frontend and backend schema-first OpenAPI development.
 
 | Name           | Organization | GitHub                                  | Discord       |
 | -------------- | ------------ | --------------------------------------- | ------------- |
-| Aramis Sennyey |              | [sennyeya](https://github.com/sennyeya) | `Aramis#7984` |
+| Aramis Sennyey | Spotify      | [sennyeya](https://github.com/sennyeya) | `Aramis#7984` |
 
 ## Sponsors
 
@@ -132,7 +132,7 @@ Scope: Tooling for frontend and backend schema-first OpenAPI development.
 | Alex Crome                     |                           | [afscrome](https://github.com/afscrome)               | `afscrome`                     |
 | Andre Wanlin                   | Keyloop                   | [awanlin](https://github.com/awanlin)                 | `ahhhndre`                     |
 | Andrew Thauer                  | Wealthsimple              | [andrewthauer](https://github.com/andrewthauer)       | `andrewthauer#3060`            |
-| Aramis Sennyey                 |                           | [sennyeya](https://github.com/sennyeya)               | `Aramis#7984`                  |
+| Aramis Sennyey                 | Spotify                   | [sennyeya](https://github.com/sennyeya)               | `Aramis#7984`                  |
 | Brian Fletcher                 | Roadie.io                 | [punkle](https://github.com/punkle)                   | `Brian Fletcher#7051`          |
 | Carlos Esteban Lopez Jaramillo | VMWare                    | [luchillo17](https://github.com/luchillo17)           | `luchillo17#8777`              |
 | David Tuite                    | Roadie.io                 | [dtuite](https://github.com/dtuite)                   | `David Tuite (roadie.io)#1010` |
