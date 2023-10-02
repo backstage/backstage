@@ -53,30 +53,19 @@ const catalogApiMock: Pick<CatalogApi, 'getEntities' | 'getEntitiesByRefs'> = {
 jest.mock('@backstage/core-plugin-api', () => ({
   useApi: jest.fn(() => catalogApiMock),
 }));
-jest.mock('@backstage/plugin-catalog-react', () => ({
-  catalogApiRef: {},
-  getEntityRelations: jest.fn(entity => {
-    if (entity?.metadata.name === givenParentGroup) {
-      return [
-        {
-          kind: 'Group',
-          namespace: 'default',
-          name: givenLeafGroup,
-        } as CompoundEntityRef,
-      ];
-    } else if (entity?.kind === 'User') {
-      return [
-        {
-          kind: 'Group',
-          namespace: 'default',
-          name: givenLeafGroup,
-        } as CompoundEntityRef,
-      ];
-    }
 
-    return [];
-  }) as typeof getEntityRelations,
-}));
+const getEntityRelationsMock: jest.Mock<
+  CompoundEntityRef[],
+  [Entity | undefined]
+> = jest.fn();
+jest.mock('@backstage/plugin-catalog-react', () => {
+  return {
+    catalogApiRef: {},
+    getEntityRelations: jest.fn(entity => {
+      return getEntityRelationsMock(entity);
+    }) as typeof getEntityRelations,
+  };
+});
 
 describe('useGetEntities', () => {
   const ownersFilter = (...owners: string[]) =>
@@ -100,32 +89,60 @@ describe('useGetEntities', () => {
       await hook.waitForNextUpdate();
     };
 
-    it('given group entity should aggregate child ownership', async () => {
-      await whenHookIsCalledWith(givenParentGroupEntity);
-      expect(catalogApiMock.getEntities).toHaveBeenCalledWith(
-        ownersFilter(
-          `group:default/${givenParentGroup}`,
-          `group:default/${givenLeafGroup}`,
-        ),
-      );
+    afterEach(() => {
+      getEntityRelationsMock.mockRestore();
     });
 
-    it('given group entity should retrieve child with their relations', async () => {
-      await whenHookIsCalledWith(givenParentGroupEntity);
-      expect(catalogApiMock.getEntitiesByRefs).toHaveBeenCalledWith({
-        entityRefs: [`group:default/${givenLeafGroup}`],
-        fields: ['kind', 'metadata.namespace', 'metadata.name', 'relations'],
+    describe('when given entity is a group', () => {
+      beforeEach(() => {
+        getEntityRelationsMock
+          .mockReturnValueOnce([
+            {
+              kind: 'Group',
+              namespace: 'default',
+              name: givenLeafGroup,
+            } as CompoundEntityRef,
+          ])
+          .mockReturnValue([]);
+      });
+
+      it('should aggregate child ownership', async () => {
+        await whenHookIsCalledWith(givenParentGroupEntity);
+        expect(catalogApiMock.getEntities).toHaveBeenCalledWith(
+          ownersFilter(
+            `group:default/${givenParentGroup}`,
+            `group:default/${givenLeafGroup}`,
+          ),
+        );
+      });
+
+      it('should retrieve child with their relations', async () => {
+        await whenHookIsCalledWith(givenParentGroupEntity);
+        expect(catalogApiMock.getEntitiesByRefs).toHaveBeenCalledWith({
+          entityRefs: [`group:default/${givenLeafGroup}`],
+          fields: ['kind', 'metadata.namespace', 'metadata.name', 'relations'],
+        });
       });
     });
 
-    it('given user entity should aggregate parent ownership and direct', async () => {
-      await whenHookIsCalledWith(givenUserEntity);
-      expect(catalogApiMock.getEntities).toHaveBeenCalledWith(
-        ownersFilter(
-          `group:default/${givenLeafGroup}`,
-          `user:default/${givenUser}`,
-        ),
-      );
+    describe('when given entity is a user', () => {
+      it('should aggregate parent ownership and direct', async () => {
+        getEntityRelationsMock.mockReturnValue([
+          {
+            kind: 'Group',
+            namespace: 'default',
+            name: givenLeafGroup,
+          } as CompoundEntityRef,
+        ]);
+
+        await whenHookIsCalledWith(givenUserEntity);
+        expect(catalogApiMock.getEntities).toHaveBeenCalledWith(
+          ownersFilter(
+            `group:default/${givenLeafGroup}`,
+            `user:default/${givenUser}`,
+          ),
+        );
+      });
     });
   });
 
