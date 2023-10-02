@@ -23,5 +23,8 @@ export const catalogTranslationRef: TranslationRef<
 const _default: BackstagePlugin;
 export default _default;
 
+// @alpha (undocumented)
+export const StarredEntitiesApi: Extension<{}>;
+
 // (No @packageDocumentation comment for this package)
 ```
