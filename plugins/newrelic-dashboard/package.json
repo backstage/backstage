@@ -48,6 +48,7 @@
   "devDependencies": {
     "@backstage/cli": "workspace:^",
     "@backstage/dev-utils": "workspace:^",
+    "@backstage/test-utils": "workspace:^",
     "@testing-library/jest-dom": "^5.10.1"
   },
   "files": [
