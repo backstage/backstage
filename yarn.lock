@@ -18108,11 +18108,11 @@ __metadata:
   linkType: hard
 
 "@types/passport@npm:*, @types/passport@npm:^1.0.3":
-  version: 1.0.12
-  resolution: "@types/passport@npm:1.0.12"
+  version: 1.0.13
+  resolution: "@types/passport@npm:1.0.13"
   dependencies:
     "@types/express": "*"
-  checksum: 2bce41b248566d8c2aeafcb38f105e3521d42a572e92da9edc5eb669f1b3cb02e5911c9d124191f67d432b677562a885b6ad7f56320c712df1e87ba7619eb8a4
+  checksum: 84330bedb330302ffd92b009b9b88eb20d3c66b659b383badb9aa3035612b40b47052153858b2498a95d9979d668443bdee3182345819cb18635dfb7f24c109c
   languageName: node
   linkType: hard
 
