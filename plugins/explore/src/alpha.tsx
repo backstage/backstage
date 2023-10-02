@@ -13,4 +13,23 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-export * from './translations';
+
+import { createPlugin } from '@backstage/frontend-plugin-api';
+import { createSearchResultListItemExtension } from '@backstage/plugin-search-react/alpha';
+
+/** @alpha */
+export const ExploreSearchResultListItemExtension =
+  createSearchResultListItemExtension({
+    id: 'explore',
+    predicate: result => result.type === 'tools',
+    component: () =>
+      import('./components/ToolSearchResultListItem').then(
+        m => m.ToolSearchResultListItem,
+      ),
+  });
+
+/** @alpha */
+export default createPlugin({
+  id: 'explore',
+  extensions: [ExploreSearchResultListItemExtension],
+});

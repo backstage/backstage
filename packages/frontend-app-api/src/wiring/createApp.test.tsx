@@ -18,10 +18,11 @@ import {
   createExtension,
   createPageExtension,
   createPlugin,
+  createThemeExtension,
 } from '@backstage/frontend-plugin-api';
-import { createInstances } from './createApp';
-
-import { MockConfigApi } from '@backstage/test-utils';
+import { createApp, createInstances } from './createApp';
+import { screen } from '@testing-library/react';
+import { MockConfigApi, renderWithEffects } from '@backstage/test-utils';
 import React from 'react';
 import { createRouteRef } from '@backstage/core-plugin-api';
 
@@ -102,5 +103,35 @@ describe('createInstances', () => {
     expect(() => createInstances({ config, plugins })).toThrow(
       "The following extensions are duplicated: The extension 'A' was provided 2 time(s) by the plugin 'A' and 1 time(s) by the plugin 'B', The extension 'B' was provided 2 time(s) by the plugin 'B'",
     );
+  });
+});
+
+describe('createApp', () => {
+  it('should allow themes to be installed', async () => {
+    const app = createApp({
+      configLoader: async () =>
+        new MockConfigApi({
+          app: {
+            extensions: [{ 'themes.light': false }, { 'themes.dark': false }],
+          },
+        }),
+      plugins: [
+        createPlugin({
+          id: 'test',
+          extensions: [
+            createThemeExtension({
+              id: 'derp',
+              title: 'Derp',
+              variant: 'dark',
+              Provider: () => <div>Derp</div>,
+            }),
+          ],
+        }),
+      ],
+    });
+
+    await renderWithEffects(app.createRoot());
+
+    await expect(screen.findByText('Derp')).resolves.toBeInTheDocument();
   });
 });

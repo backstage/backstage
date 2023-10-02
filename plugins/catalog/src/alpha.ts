@@ -15,3 +15,48 @@
  */
 
 export * from './translation';
+
+import {
+  createApiFactory,
+  discoveryApiRef,
+  fetchApiRef,
+  storageApiRef,
+} from '@backstage/core-plugin-api';
+import { CatalogClient } from '@backstage/catalog-client';
+import {
+  createApiExtension,
+  createPlugin,
+} from '@backstage/frontend-plugin-api';
+import {
+  catalogApiRef,
+  starredEntitiesApiRef,
+} from '@backstage/plugin-catalog-react';
+import { DefaultStarredEntitiesApi } from './apis';
+
+/** @alpha */
+export const CatalogApi = createApiExtension({
+  factory: createApiFactory({
+    api: catalogApiRef,
+    deps: {
+      discoveryApi: discoveryApiRef,
+      fetchApi: fetchApiRef,
+    },
+    factory: ({ discoveryApi, fetchApi }) =>
+      new CatalogClient({ discoveryApi, fetchApi }),
+  }),
+});
+
+/** @alpha */
+export const StarredEntitiesApi = createApiExtension({
+  factory: createApiFactory({
+    api: starredEntitiesApiRef,
+    deps: { storageApi: storageApiRef },
+    factory: ({ storageApi }) => new DefaultStarredEntitiesApi({ storageApi }),
+  }),
+});
+
+/** @alpha */
+export default createPlugin({
+  id: 'catalog',
+  extensions: [CatalogApi, StarredEntitiesApi],
+});
