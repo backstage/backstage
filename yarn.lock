@@ -9904,6 +9904,7 @@ __metadata:
   resolution: "@backstage/plugin-vault-backend@workspace:plugins/vault-backend"
   dependencies:
     "@backstage/backend-common": "workspace:^"
+    "@backstage/backend-plugin-api": "workspace:^"
     "@backstage/backend-tasks": "workspace:^"
     "@backstage/backend-test-utils": "workspace:^"
     "@backstage/cli": "workspace:^"
