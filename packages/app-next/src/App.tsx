@@ -18,6 +18,7 @@ import { createApp } from '@backstage/frontend-app-api';
 import { pagesPlugin } from './examples/pagesPlugin';
 import graphiqlPlugin from '@backstage/plugin-graphiql/alpha';
 import techRadarPlugin from '@backstage/plugin-tech-radar/alpha';
+import userSettingsPlugin from '@backstage/plugin-user-settings/alpha';
 
 /*
 
@@ -49,7 +50,7 @@ TODO:
 /* app.tsx */
 
 const app = createApp({
-  features: [graphiqlPlugin, pagesPlugin, techRadarPlugin],
+  features: [graphiqlPlugin, pagesPlugin, techRadarPlugin, userSettingsPlugin],
   // bindRoutes({ bind }) {
   //   bind(catalogPlugin.externalRoutes, {
   //     createComponent: scaffolderPlugin.routes.root,
