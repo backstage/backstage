@@ -41,43 +41,6 @@
       href="<%= publicPath %>/safari-pinned-tab.svg"
       color="#5bbad5"
     />
-    <title><%= config.getString('app.title') %></title>
-
-    <% if (config.has('app.datadogRum')) { %>
-    <script>
-      (function (h, o, u, n, d) {
-        h = h[d] = h[d] || {
-          q: [],
-          onReady: function (c) {
-            h.q.push(c);
-          },
-        };
-        d = o.createElement(u);
-        d.async = 1;
-        d.src = n;
-        n = o.getElementsByTagName(u)[0];
-        n.parentNode.insertBefore(d, n);
-      })(
-        window,
-        document,
-        'script',
-        'https://www.datadoghq-browser-agent.com/datadog-rum-v3.js',
-        'DD_RUM',
-      );
-      DD_RUM.onReady(function () {
-        DD_RUM.init({
-          clientToken: '<%= config.getString("app.datadogRum.clientToken") %>',
-          applicationId:
-            '<%= config.getString("app.datadogRum.applicationId") %>',
-          site: '<%= config.getOptionalString("app.datadogRum.site") || "datadoghq.com" %>',
-          service: 'backstage',
-          env: '<%= config.getString("app.datadogRum.env") %>',
-          sampleRate: 100,
-          trackInteractions: true,
-        });
-      });
-    </script>
-    <% } %>
   </head>
 
   <body>
@@ -93,5 +56,12 @@
       To begin the development, run `yarn start`.
       To create a production bundle, use `yarn build`.
     -->
+    <script type="module">
+      import process from 'process';
+      window.process = process;
+      window.process.env.APP_CONFIG = window.APP_CONFIG;
+    </script>
+
+    <script type="module" src="../src/index.tsx" />
   </body>
 </html>
