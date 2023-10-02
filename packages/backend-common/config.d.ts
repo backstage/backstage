@@ -43,7 +43,7 @@ export interface Config {
           /** Address of the interface that the backend should bind to. */
           host?: string;
           /** Port that the backend should listen to. */
-          port?: string | number;
+          port?: number;
         };
 
     /**

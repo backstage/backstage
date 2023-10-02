@@ -14,16 +14,17 @@
  * limitations under the License.
  */
 
+import os from 'os';
 import fs from 'fs-extra';
-import { EOL } from 'os';
 import {
   resolve as resolvePath,
   relative as relativePath,
   dirname,
-  sep,
 } from 'path';
+import { Worker } from 'worker_threads';
+import { chunk } from 'lodash';
+import { mergeConfigSchemas } from './compile';
 import { ConfigSchemaPackageEntry } from './types';
-import { JsonObject } from '@backstage/types';
 import { assertError } from '@backstage/errors';
 
 type Item = {
@@ -154,6 +155,20 @@ export async function collectConfigSchemas(
   return schemas.concat(tsSchemas);
 }
 
+const createGetSchemaWorker = (paths: string[]) =>
+  new Promise(function (resolve) {
+    const worker = new Worker(resolvePath(__dirname, './getSchemas.js'), {
+      workerData: { paths },
+    });
+    worker.on('message', resolve);
+    worker.on('error', error => {
+      assertError(error);
+      if (error.message !== 'type Config not found') {
+        throw error;
+      }
+    });
+  });
+
 // This handles the support of TypeScript .d.ts config schema declarations.
 // We collect all typescript schema definition and compile them all in one go.
 // This is much faster than compiling them separately.
@@ -162,74 +177,11 @@ async function compileTsSchemas(paths: string[]) {
     return [];
   }
 
-  // Lazy loaded, because this brings up all of TypeScript and we don't
-  // want that eagerly loaded in tests
-  const { getProgramFromFiles, buildGenerator } = await import(
-    'typescript-json-schema'
-  );
+  const pathsChunks = chunk(paths, Math.ceil(paths.length / os.cpus().length));
+  const tsSchemas = await Promise.all(pathsChunks.map(createGetSchemaWorker));
 
-  const program = getProgramFromFiles(paths, {
-    incremental: false,
-    isolatedModules: true,
-    lib: ['ES5'], // Skipping most libs speeds processing up a lot, we just need the primitive types anyway
-    noEmit: true,
-    noResolve: true,
-    skipLibCheck: true, // Skipping lib checks speeds things up
-    skipDefaultLibCheck: true,
-    strict: true,
-    typeRoots: [], // Do not include any additional types
-    types: [],
-  });
-
-  const tsSchemas = paths.map(path => {
-    let value;
-    try {
-      const generator = buildGenerator(
-        program,
-        // This enables the use of these tags in TSDoc comments
-        {
-          required: true,
-          validationKeywords: ['visibility', 'deepVisibility', 'deprecated'],
-        },
-        [path.split(sep).join('/')], // Unix paths are expected for all OSes here
-      );
-
-      // All schemas should export a `Config` symbol
-      value = generator?.getSchemaForSymbol('Config') as JsonObject | null;
-
-      // This makes sure that no additional symbols are defined in the schema. We don't allow
-      // this because they share a global namespace and will be merged together, leading to
-      // unpredictable behavior.
-      const userSymbols = new Set(generator?.getUserSymbols());
-      userSymbols.delete('Config');
-      if (userSymbols.size !== 0) {
-        const names = Array.from(userSymbols).join("', '");
-        throw new Error(
-          `Invalid configuration schema in ${path}, additional symbol definitions are not allowed, found '${names}'`,
-        );
-      }
-
-      // This makes sure that no unsupported types are used in the schema, for example `Record<,>`.
-      // The generator will extract these as a schema reference, which will in turn be broken for our usage.
-      const reffedDefs = Object.keys(generator?.ReffedDefinitions ?? {});
-      if (reffedDefs.length !== 0) {
-        const lines = reffedDefs.join(`${EOL}  `);
-        throw new Error(
-          `Invalid configuration schema in ${path}, the following definitions are not supported:${EOL}${EOL}  ${lines}`,
-        );
-      }
-    } catch (error) {
-      assertError(error);
-      if (error.message !== 'type Config not found') {
-        throw error;
-      }
-    }
-
-    if (!value) {
-      throw new Error(`Invalid schema in ${path}, missing Config export`);
-    }
-    return { path, value };
-  });
-
-  return tsSchemas;
+  return tsSchemas.flat().map(({ path, value }) => ({
+    path,
+    value: mergeConfigSchemas(value),
+  }));
 }
