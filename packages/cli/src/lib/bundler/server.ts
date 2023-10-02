@@ -38,7 +38,7 @@ import { resolveBundlingPaths } from './paths';
 import { ServeOptions } from './types';
 import { nodePolyfills as viteNodePolyfills } from 'vite-plugin-node-polyfills';
 import { esbuildCommonjs, viteCommonjs } from '@originjs/vite-plugin-commonjs';
-import pluginSvgr from 'vite-plugin-svgr';
+import htmlTemplate from 'vite-plugin-html-template';
 import vitePluginSvgr from 'vite-plugin-svgr';
 
 export async function serveBundle(options: ServeOptions) {
@@ -177,23 +177,7 @@ export async function serveBundle(options: ServeOptions) {
         vitePluginSvgr(),
         viteCommonjs(),
         viteNodePolyfills(),
-        {
-          name: 'transform-index-html',
-          configureServer(s) {
-            s.middlewares.use(async (req, res, next) => {
-              if (req.url === '/') {
-                res.end(
-                  await s.transformIndexHtml(
-                    req.url,
-                    await fs.readFile(paths.targetHtml, 'utf-8'),
-                  ),
-                );
-              } else {
-                next();
-              }
-            });
-          },
-        },
+        htmlTemplate(),
       ],
       server: {
         host,
