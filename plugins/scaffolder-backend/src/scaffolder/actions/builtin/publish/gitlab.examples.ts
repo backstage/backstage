@@ -126,7 +126,7 @@ export const examples: TemplateExample[] = [
           name: 'Publish to GitLab',
           input: {
             repoUrl: 'gitlab.com?repo=project_name&owner=group_name',
-            variables: [
+            projectVariables: [
               {
                 key: 'key1',
                 value: 'value1',

@@ -144,7 +144,7 @@ describe('publish:gitlab', () => {
     input: {
       repoUrl: 'gitlab.com?repo=repo&owner=owner',
       repoVisibility: 'private' as const,
-      variables: [
+      projectVariables: [
         {
           key: 'key',
           value: 'value',

@@ -55,7 +55,7 @@ export function createPublishGitlabAction(options: {
       create?: boolean;
       ref?: string;
     }>;
-    variables?: Array<{
+    projectVariables?: Array<{
       key: string;
       value: string;
       description?: string;
@@ -167,7 +167,7 @@ export function createPublishGitlabAction(options: {
               },
             },
           },
-          variables: {
+          projectVariables: {
             title: 'Project variables',
             description:
               'Project variables settings based on Gitlab Project Environments API - https://docs.gitlab.com/ee/api/project_level_variables.html#create-a-variable',
@@ -252,7 +252,7 @@ export function createPublishGitlabAction(options: {
         topics = [],
         settings = {},
         branches = [],
-        variables = [],
+        projectVariables = [],
       } = ctx.input;
       const { owner, repo, host } = parseRepoUrl(repoUrl, integrations);
 
@@ -378,8 +378,8 @@ export function createPublishGitlabAction(options: {
         }
       }
 
-      if (variables) {
-        for (const variable of variables) {
+      if (projectVariables) {
+        for (const variable of projectVariables) {
           const variableWithDefaults = Object.assign(variable, {
             variable_type: variable.variable_type ?? 'env_var',
             protected: variable.protected ?? false,
