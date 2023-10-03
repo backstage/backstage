@@ -1,5 +1,15 @@
 # @backstage/plugin-vault-backend
 
+## 0.3.10-next.1
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-tasks@0.5.10-next.1
+  - @backstage/backend-common@0.19.7-next.1
+  - @backstage/config@1.1.0
+  - @backstage/errors@1.2.2
+
 ## 0.3.10-next.0
 
 ### Patch Changes

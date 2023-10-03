@@ -1,5 +1,20 @@
 # @backstage/create-app
 
+## 0.5.6-next.1
+
+### Patch Changes
+
+- 8d2e640af4: Added missing `.eslintignore` file
+
+  To apply this change to an existing app, create a new `.eslintignore` file at the root of your project with the following content:
+
+  ```diff
+  + playwright.config.ts
+  ```
+
+- Updated dependencies
+  - @backstage/cli-common@0.1.13-next.0
+
 ## 0.5.6-next.0
 
 ### Patch Changes

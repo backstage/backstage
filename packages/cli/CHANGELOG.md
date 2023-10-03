@@ -1,5 +1,22 @@
 # @backstage/cli
 
+## 0.23.0-next.1
+
+### Patch Changes
+
+- d0f26cfa4f: Fixed an issue where the new backend start command would not gracefully shut down the backend process on Windows.
+- Updated dependencies
+  - @backstage/config@1.1.0
+  - @backstage/release-manifests@0.0.10
+  - @backstage/catalog-model@1.4.2
+  - @backstage/cli-common@0.1.13-next.0
+  - @backstage/cli-node@0.1.5-next.0
+  - @backstage/config-loader@1.5.1-next.0
+  - @backstage/errors@1.2.2
+  - @backstage/eslint-plugin@0.1.3
+  - @backstage/integration@1.7.1-next.0
+  - @backstage/types@1.1.1
+
 ## 0.23.0-next.0
 
 ### Minor Changes

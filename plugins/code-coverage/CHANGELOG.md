@@ -1,5 +1,19 @@
 # @backstage/plugin-code-coverage
 
+## 0.2.18-next.1
+
+### Patch Changes
+
+- 88b0b32547: Fixed the coverage history statistics to compare newest with oldest record
+- Updated dependencies
+  - @backstage/core-components@0.13.6-next.1
+  - @backstage/plugin-catalog-react@1.8.5-next.1
+  - @backstage/core-plugin-api@1.7.0-next.0
+  - @backstage/config@1.1.0
+  - @backstage/catalog-model@1.4.2
+  - @backstage/errors@1.2.2
+  - @backstage/theme@0.4.2
+
 ## 0.2.18-next.0
 
 ### Patch Changes
