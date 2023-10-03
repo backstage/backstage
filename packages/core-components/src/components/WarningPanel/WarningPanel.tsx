@@ -70,6 +70,9 @@ export type WarningPanelClassKey =
 
 const useStyles = makeStyles<BackstageTheme>(
   theme => ({
+    content: {
+      // overflow: 'hidden',
+    },
     panel: {
       backgroundColor: ({ severity }: WarningProps) =>
         getWarningBackgroundColor(
@@ -176,6 +179,7 @@ export function WarningPanel(props: WarningProps) {
     >
       <AccordionSummary
         expandIcon={<ExpandMoreIconStyled severity={severity} />}
+        classes={{ content: classes.content }}
         className={classes.summary}
       >
         <ErrorOutlineStyled severity={severity} />
