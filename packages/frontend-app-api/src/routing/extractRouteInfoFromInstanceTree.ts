@@ -47,8 +47,13 @@ export function extractRouteInfoFromInstanceTree(roots: ExtensionInstance[]): {
   routeParents: Map<RouteRef, RouteRef | undefined>;
   routeObjects: BackstageRouteObject[];
 } {
+  // This tracks the route path for each route ref, the value is the route path relative to the parent ref
   const routePaths = new Map<RouteRef, string>();
+  // This tracks the parents of each route ref. To find the full path of any route ref you traverse
+  // upwards in this tree and substitute each route ref for its route path along then way.
   const routeParents = new Map<RouteRef, RouteRef | undefined>();
+  // This route object tree is passed to react-router in order to be able to look up the current route
+  // ref or extension/source based on our current location.
   const routeObjects = new Array<BackstageRouteObject>();
 
   function visit(
@@ -65,11 +70,14 @@ export function extractRouteInfoFromInstanceTree(roots: ExtensionInstance[]): {
     const routeRef = current.getData(coreExtensionData.routeRef);
     const parentChildren = parentObj?.children ?? routeObjects;
     let currentObj = parentObj;
+
     let newCollectedPath = collectedPath;
     let newFoundRefForCollectedPath = foundRefForCollectedPath;
+
     let newParentRef = parentRef;
     let newCandidateParentRef = candidateParentRef;
 
+    // Whenever a route path is encountered, a new node is created in the routing tree.
     if (routePath !== undefined) {
       currentObj = {
         path: routePath,
@@ -79,9 +87,16 @@ export function extractRouteInfoFromInstanceTree(roots: ExtensionInstance[]): {
         children: [MATCH_ALL_ROUTE],
         plugins: new Set(),
       };
-
       parentChildren.push(currentObj);
 
+      // Each route path that we discover creates a new node in the routing tree, at that point
+      // we also switch out our candidate parent ref to be the active one.
+      newParentRef = candidateParentRef;
+      newCandidateParentRef = undefined;
+
+      // We need to collect and concatenate route paths until the path has been assigned a route ref:
+      // Once we find a route ref the collection starts over from an empty path, that way each route
+      // path assignment only contains the diff from the parent ref.
       if (newFoundRefForCollectedPath) {
         newCollectedPath = routePath;
         newFoundRefForCollectedPath = false;
@@ -90,11 +105,9 @@ export function extractRouteInfoFromInstanceTree(roots: ExtensionInstance[]): {
           ? joinPaths(collectedPath, routePath)
           : routePath;
       }
-
-      newParentRef = candidateParentRef;
-      newCandidateParentRef = undefined;
     }
 
+    // Whenever a route ref is encountered, we need to give it a route path and position in the ref tree.
     if (routeRef) {
       const routeRefId = (routeRef as any).id; // TODO: properly
       if (routeRefId !== current.id) {
@@ -103,10 +116,15 @@ export function extractRouteInfoFromInstanceTree(roots: ExtensionInstance[]): {
         );
       }
 
+      // The first route ref we find after encountering a route path is selected to be used as the
+      // parent ref further down the tree. We don't start using this candidate ref until we encounter
+      // another route path though, at which point we repeat the process and select another candidate.
       if (!newCandidateParentRef) {
         newCandidateParentRef = routeRef;
       }
 
+      // Check if we've encountered any route paths since the closest route ref, in that case we assign
+      // that path to this and following route refs until we encounter another route path.
       if (newCollectedPath !== undefined) {
         routePaths.set(routeRef, newCollectedPath);
         newFoundRefForCollectedPath = true;
