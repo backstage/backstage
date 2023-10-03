@@ -27462,7 +27462,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"graphql@npm:^15.0.0 || ^16.0.0, graphql@npm:^16.0.0":
+"graphql@npm:^16.0.0, graphql@npm:^16.8.1":
   version: 16.8.1
   resolution: "graphql@npm:16.8.1"
   checksum: 8d304b7b6f708c8c5cc164b06e92467dfe36aff6d4f2cf31dd19c4c2905a0e7b89edac4b7e225871131fd24e21460836b369de0c06532644d15b461d55b1ccc0
@@ -33183,8 +33183,8 @@ __metadata:
   linkType: hard
 
 "msw@npm:^1.0.0, msw@npm:^1.0.1, msw@npm:^1.2.1, msw@npm:^1.2.3, msw@npm:^1.3.1":
-  version: 1.3.1
-  resolution: "msw@npm:1.3.1"
+  version: 1.3.2
+  resolution: "msw@npm:1.3.2"
   dependencies:
     "@mswjs/cookies": ^0.2.2
     "@mswjs/interceptors": ^0.17.10
@@ -33194,7 +33194,7 @@ __metadata:
     chalk: ^4.1.1
     chokidar: ^3.4.2
     cookie: ^0.4.2
-    graphql: ^15.0.0 || ^16.0.0
+    graphql: ^16.8.1
     headers-polyfill: 3.2.5
     inquirer: ^8.2.0
     is-node-process: ^1.2.0
@@ -33212,7 +33212,7 @@ __metadata:
       optional: true
   bin:
     msw: cli/index.js
-  checksum: 5e3c9d2efff025ecaa55c48b0392179fb07253f26212fe884cca7cc4b5d62cebbfa937dc7249a91d432b1f64ebcce2a1e4938056264f277da62d62d072dfb883
+  checksum: c2d4f7747f5806f0fd8d8cc3ca250ee1c2a7a6cd608de43f95bd072ba1fb13cdce0b52932ce9bf8f4a21b194d2815db535501e224ec8f7052593447fe1c0cb70
   languageName: node
   linkType: hard
 
