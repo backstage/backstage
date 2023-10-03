@@ -56,7 +56,7 @@ import { Filter, Filters, SelectedFilters, Without } from './Filters';
 import CircularProgress from '@material-ui/core/CircularProgress';
 
 // Material-table is not using the standard icons available in in material-ui. https://github.com/mbrn/material-table/issues/51
-const tableIcons: Icons = {
+export const tableIcons: Icons = {
   Add: forwardRef((props, ref) => <AddBox {...props} ref={ref} />),
   Check: forwardRef((props, ref) => <Check {...props} ref={ref} />),
   Clear: forwardRef((props, ref) => <Clear {...props} ref={ref} />),
