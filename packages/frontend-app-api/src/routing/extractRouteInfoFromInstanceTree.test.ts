@@ -24,8 +24,8 @@ import { extractRouteInfoFromInstanceTree } from './extractRouteInfoFromInstance
 import {
   Extension,
   coreExtensionData,
+  createExtension,
   createExtensionInput,
-  createPageExtension,
   createPlugin,
 } from '@backstage/frontend-plugin-api';
 import { createInstances } from '../wiring/createApp';
@@ -38,25 +38,32 @@ const ref4 = createRouteRef({ id: 'page4' });
 const ref5 = createRouteRef({ id: 'page5' });
 const refOrder = [ref1, ref2, ref3, ref4, ref5];
 
-const emptyLoader = () => Promise.resolve(React.createElement('div'));
-
 function createTestExtension(options: {
   id: string;
   at?: string;
-  path: string;
+  path?: string;
   routeRef?: RouteRef;
 }) {
-  return createPageExtension({
+  return createExtension({
     id: options.id,
-    at: options.at,
-    defaultPath: options.path,
-    routeRef: options.routeRef,
+    at: options.at ?? 'core.routes/children',
+    output: {
+      element: coreExtensionData.reactElement,
+      path: coreExtensionData.routePath.optional(),
+      routeRef: coreExtensionData.routeRef.optional(),
+    },
     inputs: {
-      routes: createExtensionInput({
+      children: createExtensionInput({
         element: coreExtensionData.reactElement,
       }),
     },
-    loader: emptyLoader,
+    factory({ bind }) {
+      bind({
+        path: options.path,
+        routeRef: options.routeRef,
+        element: React.createElement('div'),
+      });
+    },
   });
 }
 
@@ -119,13 +126,13 @@ describe('discovery', () => {
       }),
       createTestExtension({
         id: 'page2',
-        at: 'page1/routes',
+        at: 'page1/children',
         path: 'bar/:id',
         routeRef: ref2,
       }),
       createTestExtension({
         id: 'page3',
-        at: 'page2/routes',
+        at: 'page2/children',
         path: 'baz',
         routeRef: ref3,
       }),
@@ -136,7 +143,7 @@ describe('discovery', () => {
       }),
       createTestExtension({
         id: 'page5',
-        at: 'page1/routes',
+        at: 'page1/children',
         path: 'blop',
         routeRef: ref5,
       }),
@@ -187,7 +194,7 @@ describe('discovery', () => {
       }),
       createTestExtension({
         id: 'page2',
-        at: 'page1/routes',
+        at: 'page1/children',
         path: 'bar/:id',
         routeRef: ref2,
       }),
@@ -198,13 +205,13 @@ describe('discovery', () => {
       }),
       createTestExtension({
         id: 'page4',
-        at: 'page3/routes',
+        at: 'page3/children',
         path: 'divsoup',
         routeRef: ref4,
       }),
       createTestExtension({
         id: 'page5',
-        at: 'page3/routes',
+        at: 'page3/children',
         path: 'blop',
         routeRef: ref5,
       }),
@@ -227,37 +234,45 @@ describe('discovery', () => {
   });
 
   // it('should handle absolute route paths', () => {
-  //   const root = (
-  //     <MemoryRouter>
-  //       <Routes>
-  //         <Route path="/foo" element={<Extension1 />}>
-  //           <Routes>
-  //             <Route path="/bar/:id" element={<Extension2 />} />
-  //           </Routes>
-  //         </Route>
-  //         <Route path="/baz" element={<Extension3 />}>
-  //           <Route path="/divsoup" element={<Extension4 />} />
-  //           <Route path="/blop" element={<Extension5 />} />
-  //         </Route>
-  //       </Routes>
-  //     </MemoryRouter>
-  //   );
+  //   const info = routeInfoFromExtensions([
+  //     createTestExtension({
+  //       id: 'page1',
+  //       path: '/foo',
+  //       routeRef: ref1,
+  //     }),
+  //     createTestExtension({
+  //       id: 'page2',
+  //       at: 'page1/children',
+  //       path: '/bar/:id',
+  //       routeRef: ref2,
+  //     }),
+  //     createTestExtension({
+  //       id: 'page3',
+  //       path: '/baz',
+  //       routeRef: ref3,
+  //     }),
+  //     createTestExtension({
+  //       id: 'page4',
+  //       at: 'page3/children',
+  //       path: '/divsoup',
+  //       routeRef: ref4,
+  //     }),
+  //     createTestExtension({
+  //       id: 'page5',
+  //       at: 'page3/children',
+  //       path: '/blop',
+  //       routeRef: ref5,
+  //     }),
+  //   ]);
 
-  //   const { routing } = traverseElementTree({
-  //     root,
-  //     discoverers: [childDiscoverer, routeElementDiscoverer],
-  //     collectors: {
-  //       routing: routingV2Collector,
-  //     },
-  //   });
-  //   expect(sortedEntries(routing.paths)).toEqual([
+  //   expect(sortedEntries(info.routePaths)).toEqual([
   //     [ref1, 'foo'],
   //     [ref2, 'bar/:id'],
   //     [ref3, 'baz'],
   //     [ref4, 'divsoup'],
   //     [ref5, 'blop'],
   //   ]);
-  //   expect(sortedEntries(routing.parents)).toEqual([
+  //   expect(sortedEntries(info.routeParents)).toEqual([
   //     [ref1, undefined],
   //     [ref2, ref1],
   //     [ref3, undefined],
@@ -266,60 +281,76 @@ describe('discovery', () => {
   //   ]);
   // });
 
-  // it('should use the route aggregator key to bind child routes to the same path', () => {
-  //   const root = (
-  //     <MemoryRouter>
-  //       <Routes>
-  //         <AggregationComponent path="foo">
-  //           <Extension1 />
-  //           <div>
-  //             <Extension2 />
-  //           </div>
-  //           HELLO
-  //         </AggregationComponent>
-  //         <Route path="bar" element={<Extension3 />}>
-  //           <AggregationComponent path="">
-  //             <Extension4>
-  //               <Extension5 />
-  //             </Extension4>
-  //           </AggregationComponent>
-  //         </Route>
-  //       </Routes>
-  //     </MemoryRouter>
-  //   );
+  it('should use the route aggregator key to bind child routes to the same path', () => {
+    const info = routeInfoFromExtensions([
+      createTestExtension({
+        id: 'foo',
+        path: 'foo',
+      }),
+      createTestExtension({
+        id: 'page1',
+        at: 'foo/children',
+        routeRef: ref1,
+      }),
+      createTestExtension({
+        id: 'fooChild',
+        at: 'foo/children',
+      }),
+      createTestExtension({
+        id: 'page2',
+        at: 'fooChild/children',
+        routeRef: ref2,
+      }),
+      createTestExtension({
+        id: 'fooEmpty',
+      }),
+      createTestExtension({
+        id: 'page3',
+        path: 'bar',
+        routeRef: ref3,
+      }),
+      createTestExtension({
+        id: 'page3Child',
+        at: 'page3/children',
+        path: '',
+      }),
+      createTestExtension({
+        id: 'page4',
+        at: 'page3Child/children',
+        routeRef: ref4,
+      }),
+      createTestExtension({
+        id: 'page5',
+        at: 'page4/children',
+        routeRef: ref5,
+      }),
+    ]);
 
-  //   const { routing } = traverseElementTree({
-  //     root,
-  //     discoverers: [childDiscoverer, routeElementDiscoverer],
-  //     collectors: {
-  //       routing: routingV2Collector,
-  //     },
-  //   });
-  //   expect(sortedEntries(routing.paths)).toEqual([
-  //     [ref1, 'foo'],
-  //     [ref2, 'foo'],
-  //     [ref3, 'bar'],
-  //     [ref4, ''],
-  //     [ref5, ''],
-  //   ]);
-  //   expect(sortedEntries(routing.parents)).toEqual([
-  //     [ref1, undefined],
-  //     [ref2, undefined],
-  //     [ref3, undefined],
-  //     [ref4, ref3],
-  //     [ref5, ref3],
-  //   ]);
-  //   expect(routing.objects).toEqual([
-  //     routeObj('foo', [ref1, ref2], [], 'gathered', plugin),
-  //     routeObj(
-  //       'bar',
-  //       [ref3],
-  //       [routeObj('', [ref4, ref5], [], 'gathered', plugin)],
-  //       undefined,
-  //       plugin,
-  //     ),
-  //   ]);
-  // });
+    expect(sortedEntries(info.routePaths)).toEqual([
+      [ref1, 'foo'],
+      [ref2, 'foo'],
+      [ref3, 'bar'],
+      [ref4, ''],
+      [ref5, ''],
+    ]);
+    expect(sortedEntries(info.routeParents)).toEqual([
+      [ref1, undefined],
+      [ref2, undefined],
+      [ref3, undefined],
+      [ref4, ref3],
+      [ref5, ref4],
+    ]);
+    expect(info.routeObjects).toEqual([
+      routeObj('foo', [ref1, ref2], [], 'mounted', expect.any(Object)),
+      routeObj(
+        'bar',
+        [ref3],
+        [routeObj('', [ref4, ref5], [], 'mounted', expect.any(Object))],
+        'mounted',
+        expect.any(Object),
+      ),
+    ]);
+  });
 
   // it('should use the route aggregator but stop when encountering explicit path', () => {
   //   const root = (

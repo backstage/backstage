@@ -53,15 +53,19 @@ export function extractRouteInfoFromInstanceTree(roots: ExtensionInstance[]): {
 
   function visit(
     current: ExtensionInstance,
+    collectedPath?: string,
+    foundRefForCollectedPath: boolean = false,
     parentRef?: RouteRef,
     parentObj?: BackstageRouteObject,
   ) {
-    const routePath = current.getData(coreExtensionData.routePath) ?? ''; // TODO: need to gather routes instead
+    const routePath = current.getData(coreExtensionData.routePath);
     const routeRef = current.getData(coreExtensionData.routeRef);
     const parentChildren = parentObj?.children ?? routeObjects;
     let currentObj = parentObj;
+    let newCollectedPath = collectedPath;
+    let newFoundRefForCollectedPath = foundRefForCollectedPath;
 
-    if (routePath) {
+    if (routePath !== undefined) {
       currentObj = {
         path: routePath,
         element: 'mounted',
@@ -72,6 +76,15 @@ export function extractRouteInfoFromInstanceTree(roots: ExtensionInstance[]): {
       };
 
       parentChildren.push(currentObj);
+
+      if (newFoundRefForCollectedPath) {
+        newCollectedPath = routePath;
+        newFoundRefForCollectedPath = false;
+      } else {
+        newCollectedPath = collectedPath
+          ? joinPaths(collectedPath, routePath)
+          : routePath;
+      }
     }
 
     if (routeRef) {
@@ -81,7 +94,12 @@ export function extractRouteInfoFromInstanceTree(roots: ExtensionInstance[]): {
           `Route ref '${routeRefId}' must have the same ID as extension '${current.id}'`,
         );
       }
-      routePaths.set(routeRef, routePath);
+
+      if (newCollectedPath !== undefined) {
+        routePaths.set(routeRef, newCollectedPath);
+        newFoundRefForCollectedPath = true;
+      }
+
       routeParents.set(routeRef, parentRef);
       currentObj?.routeRefs.add(routeRef);
       if (current.source) {
@@ -91,7 +109,13 @@ export function extractRouteInfoFromInstanceTree(roots: ExtensionInstance[]): {
 
     for (const children of current.attachments.values()) {
       for (const child of children) {
-        visit(child, routeRef ?? parentRef, currentObj);
+        visit(
+          child,
+          newCollectedPath,
+          newFoundRefForCollectedPath,
+          routeRef ?? parentRef,
+          currentObj,
+        );
       }
     }
   }
