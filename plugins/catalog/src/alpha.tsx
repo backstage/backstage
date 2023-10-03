@@ -14,8 +14,6 @@
  * limitations under the License.
  */
 
-export * from './translation';
-
 import {
   createApiFactory,
   discoveryApiRef,
@@ -31,6 +29,7 @@ import {
   catalogApiRef,
   starredEntitiesApiRef,
 } from '@backstage/plugin-catalog-react';
+import { createSearchResultListItemExtension } from '@backstage/plugin-search-react/alpha';
 import { DefaultStarredEntitiesApi } from './apis';
 
 /** @alpha */
@@ -56,7 +55,22 @@ export const StarredEntitiesApi = createApiExtension({
 });
 
 /** @alpha */
+export const CatalogSearchResultListItemExtension =
+  createSearchResultListItemExtension({
+    id: 'catalog',
+    predicate: result => result.type === 'software-catalog',
+    component: () =>
+      import('./components/CatalogSearchResultListItem').then(
+        m => m.CatalogSearchResultListItem,
+      ),
+  });
+
+/** @alpha */
 export default createPlugin({
   id: 'catalog',
-  extensions: [CatalogApi, StarredEntitiesApi],
+  extensions: [
+    CatalogApi,
+    StarredEntitiesApi,
+    CatalogSearchResultListItemExtension,
+  ],
 });
