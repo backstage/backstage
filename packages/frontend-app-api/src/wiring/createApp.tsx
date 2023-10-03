@@ -85,6 +85,7 @@ import { BrowserRouter, Route } from 'react-router-dom';
 import { SidebarItem } from '@backstage/core-components';
 import { DarkTheme, LightTheme } from '../extensions/themes';
 import { extractRouteInfoFromInstanceTree } from '../routing/extractRouteInfoFromInstanceTree';
+import { getOrCreateGlobalSingleton } from '@backstage/version-bridge';
 
 /** @public */
 export interface ExtensionTreeNode {
@@ -336,25 +337,40 @@ export function createApp(options: {
   };
 }
 
+// Make sure that we only convert each new plugin instance to its legacy equivalent once
+const legacyPluginStore = getOrCreateGlobalSingleton(
+  'legacy-plugin-compatibility-store',
+  () => new WeakMap<BackstagePlugin, LegacyBackstagePlugin>(),
+);
+
 export function toLegacyPlugin(plugin: BackstagePlugin): LegacyBackstagePlugin {
+  let legacy = legacyPluginStore.get(plugin);
+  if (legacy) {
+    return legacy;
+  }
+
   const errorMsg = 'Not implemented in legacy plugin compatibility layer';
   const notImplemented = () => {
     throw new Error(errorMsg);
   };
-  return {
+
+  legacy = {
     getId(): string {
       return plugin.id;
     },
-    get routes(): never {
-      throw new Error(errorMsg);
+    get routes() {
+      return {};
     },
-    get externalRoutes(): never {
-      throw new Error(errorMsg);
+    get externalRoutes() {
+      return {};
     },
     getApis: notImplemented,
     getFeatureFlags: notImplemented,
     provide: notImplemented,
   };
+
+  legacyPluginStore.set(plugin, legacy);
+  return legacy;
 }
 
 function createLegacyAppContext(plugins: BackstagePlugin[]): AppContext {
