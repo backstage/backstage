@@ -16,7 +16,6 @@
 import React, { PropsWithChildren } from 'react';
 import { CatalogApi } from '@backstage/catalog-client';
 import { useAllEntitiesCount } from './useAllEntitiesCount';
-import { waitFor } from '@testing-library/react';
 import { renderHook } from '@testing-library/react-hooks';
 import { EntityListProvider, useEntityList } from '../../hooks';
 import { catalogApiRef } from '../../api';
@@ -62,7 +61,7 @@ describe('useAllEntitiesCount', () => {
       return <>{props.children}</>;
     }
 
-    const { result } = renderHook(() => useAllEntitiesCount(), {
+    const { result, waitFor } = renderHook(() => useAllEntitiesCount(), {
       wrapper: ({ children }) => (
         <MemoryRouter>
           <EntityListProvider>
@@ -90,7 +89,7 @@ describe('useAllEntitiesCount', () => {
       pageInfo: {},
     });
 
-    const { result } = renderHook(() => useAllEntitiesCount(), {
+    const { result, waitFor } = renderHook(() => useAllEntitiesCount(), {
       wrapper: ({ children }) => (
         <MemoryRouter>
           <EntityListProvider>{children}</EntityListProvider>
