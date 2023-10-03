@@ -1,5 +1,16 @@
 # @backstage/core-app-api
 
+## 1.10.1-next.1
+
+### Patch Changes
+
+- 1a0616fa10: Add missing resource and template app icons
+- Updated dependencies
+  - @backstage/core-plugin-api@1.7.0-next.0
+  - @backstage/config@1.1.0
+  - @backstage/types@1.1.1
+  - @backstage/version-bridge@1.0.5
+
 ## 1.10.1-next.0
 
 ### Patch Changes

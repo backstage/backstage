@@ -49,6 +49,8 @@ import {
   featureFlagsApiRef,
   attachComponentData,
   useRouteRef,
+  identityApiRef,
+  AppTheme,
 } from '@backstage/core-plugin-api';
 import { getAvailablePlugins } from './discovery';
 import {
@@ -62,6 +64,8 @@ import {
 // eslint-disable-next-line @backstage/no-relative-monorepo-imports
 import { AppThemeProvider } from '../../../core-app-api/src/app/AppThemeProvider';
 // eslint-disable-next-line @backstage/no-relative-monorepo-imports
+import { AppIdentityProxy } from '../../../core-app-api/src/apis/implementations/IdentityApi/AppIdentityProxy';
+// eslint-disable-next-line @backstage/no-relative-monorepo-imports
 import { AppContextProvider } from '../../../core-app-api/src/app/AppContext';
 // eslint-disable-next-line @backstage/no-relative-monorepo-imports
 import { LocalStorageFeatureFlags } from '../../../core-app-api/src/apis/implementations/FeatureFlagsApi/LocalStorageFeatureFlags';
@@ -74,10 +78,10 @@ import {
   apis as defaultApis,
   components as defaultComponents,
   icons as defaultIcons,
-  themes as defaultThemes,
 } from '../../../app-defaults/src/defaults';
 import { BrowserRouter, Route } from 'react-router-dom';
 import { SidebarItem } from '@backstage/core-components';
+import { DarkTheme, LightTheme } from '../extensions/themes';
 
 /** @public */
 export interface ExtensionTreeNode {
@@ -168,7 +172,14 @@ export function createInstances(options: {
   plugins: BackstagePlugin[];
   config: Config;
 }) {
-  const builtinExtensions = [Core, CoreRoutes, CoreNav, CoreLayout];
+  const builtinExtensions = [
+    Core,
+    CoreRoutes,
+    CoreNav,
+    CoreLayout,
+    LightTheme,
+    DarkTheme,
+  ];
 
   // pull in default extension instance from discovered packages
   // apply config to adjust default extension instances and add more
@@ -366,13 +377,19 @@ function createApiHolder(
 ): ApiHolder {
   const factoryRegistry = new ApiFactoryRegistry();
 
-  const apiFactories =
+  const pluginApis =
     coreExtension.attachments
       .get('apis')
       ?.map(e => e.getData(coreExtensionData.apiFactory))
       .filter((x): x is AnyApiFactory => !!x) ?? [];
 
-  for (const factory of apiFactories) {
+  const themeExtensions =
+    coreExtension.attachments
+      .get('themes')
+      ?.map(e => e.getData(coreExtensionData.theme))
+      .filter((x): x is AppTheme => !!x) ?? [];
+
+  for (const factory of [...defaultApis, ...pluginApis]) {
     factoryRegistry.register('default', factory);
   }
 
@@ -384,10 +401,42 @@ function createApiHolder(
   });
 
   factoryRegistry.register('static', {
+    api: identityApiRef,
+    deps: {},
+    factory: () => {
+      const appIdentityProxy = new AppIdentityProxy();
+      // TODO: Remove this when sign-in page is migrated
+      appIdentityProxy.setTarget(
+        {
+          getUserId: () => 'guest',
+          getIdToken: async () => undefined,
+          getProfile: () => ({
+            email: 'guest@example.com',
+            displayName: 'Guest',
+          }),
+          getProfileInfo: async () => ({
+            email: 'guest@example.com',
+            displayName: 'Guest',
+          }),
+          getBackstageIdentity: async () => ({
+            type: 'user',
+            userEntityRef: 'user:default/guest',
+            ownershipEntityRefs: ['user:default/guest'],
+          }),
+          getCredentials: async () => ({}),
+          signOut: async () => {},
+        },
+        { signOutTargetUrl: '/' },
+      );
+      return appIdentityProxy;
+    },
+  });
+
+  factoryRegistry.register('static', {
     api: appThemeApiRef,
     deps: {},
     // TODO: add extension for registering themes
-    factory: () => AppThemeSelector.createWithStorage(defaultThemes),
+    factory: () => AppThemeSelector.createWithStorage(themeExtensions),
   });
 
   factoryRegistry.register('static', {

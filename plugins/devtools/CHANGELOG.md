@@ -1,5 +1,18 @@
 # @backstage/plugin-devtools
 
+## 0.1.5-next.1
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/core-components@0.13.6-next.1
+  - @backstage/core-plugin-api@1.7.0-next.0
+  - @backstage/plugin-permission-react@0.4.16-next.0
+  - @backstage/errors@1.2.2
+  - @backstage/theme@0.4.2
+  - @backstage/types@1.1.1
+  - @backstage/plugin-devtools-common@0.1.4
+
 ## 0.1.5-next.0
 
 ### Patch Changes

@@ -17,6 +17,7 @@
 import { JSX } from 'react';
 import {
   AnyApiFactory,
+  AppTheme,
   IconComponent,
   RouteRef,
 } from '@backstage/core-plugin-api';
@@ -36,4 +37,5 @@ export const coreExtensionData = {
   apiFactory: createExtensionDataRef<AnyApiFactory>('core.api.factory'),
   routeRef: createExtensionDataRef<RouteRef>('core.routing.ref'),
   navTarget: createExtensionDataRef<NavTarget>('core.nav.target'),
+  theme: createExtensionDataRef<AppTheme>('core.theme'),
 };

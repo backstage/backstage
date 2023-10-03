@@ -1,5 +1,19 @@
 # @backstage/test-utils
 
+## 1.4.4-next.1
+
+### Patch Changes
+
+- 1a0616fa10: Add missing resource and template app icons
+- Updated dependencies
+  - @backstage/core-app-api@1.10.1-next.1
+  - @backstage/core-plugin-api@1.7.0-next.0
+  - @backstage/config@1.1.0
+  - @backstage/plugin-permission-react@0.4.16-next.0
+  - @backstage/theme@0.4.2
+  - @backstage/types@1.1.1
+  - @backstage/plugin-permission-common@0.7.8
+
 ## 1.4.4-next.0
 
 ### Patch Changes

@@ -17,16 +17,16 @@
 import React from 'react';
 import useCopyToClipboard from 'react-use/lib/useCopyToClipboard';
 
-import { useRouteRef, useApi, configApiRef } from '@backstage/core-plugin-api';
+import { configApiRef, useApi, useRouteRef } from '@backstage/core-plugin-api';
 import { Entity, RELATION_OWNED_BY } from '@backstage/catalog-model';
 import {
-  humanizeEntityRef,
   getEntityRelations,
+  humanizeEntityRef,
 } from '@backstage/plugin-catalog-react';
 import { rootDocsRouteRef } from '../../../routes';
 import {
-  LinkButton,
   EmptyState,
+  LinkButton,
   Table,
   TableColumn,
   TableOptions,
@@ -87,6 +87,7 @@ export const DocsTable = (props: DocsTableProps) => {
   const defaultColumns: TableColumn<DocsTableRow>[] = [
     columnFactories.createNameColumn(),
     columnFactories.createOwnerColumn(),
+    columnFactories.createKindColumn(),
     columnFactories.createTypeColumn(),
   ];
 
