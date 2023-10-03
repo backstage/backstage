@@ -2,4 +2,4 @@
 '@backstage/plugin-playlist': patch
 ---
 
-Updated Playlist Screens
+Updated Playlist read me with additional screenshots
