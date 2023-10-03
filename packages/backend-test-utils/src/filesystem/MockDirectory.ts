@@ -347,7 +347,10 @@ export interface MockDirectoryOptions {
 export function createMockDirectory(
   options?: MockDirectoryOptions,
 ): MockDirectory {
-  const root = fs.mkdtempSync(joinPath(getTmpDir(), 'backstage-tmp-test-dir-'));
+  const tmpDir = process.env.RUNNER_TEMP; // GitHub Actions
+  const root = fs.mkdtempSync(
+    joinPath(tmpDir || getTmpDir(), 'backstage-tmp-test-dir-'),
+  );
 
   const mocker = new MockDirectoryImpl(root);
 
