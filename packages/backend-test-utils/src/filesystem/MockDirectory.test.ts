@@ -278,6 +278,12 @@ describe('createMockDirectory', () => {
       it('should mock os.tmpdir()', () => {
         expect(os.tmpdir()).toBe(tmpDirMock.path);
       });
+
+      it('should refuce to mock os.tmpdir() again', () => {
+        expect(() => createMockDirectory({ mockOsTmpDir: true })).toThrow(
+          'Cannot mock os.tmpdir() when it has already been mocked',
+        );
+      });
     });
 
     it('should restore os.tmpdir()', () => {

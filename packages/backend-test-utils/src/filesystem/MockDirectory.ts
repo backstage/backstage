@@ -18,7 +18,6 @@ import os from 'os';
 import { isChildPath } from '@backstage/backend-common';
 import fs from 'fs-extra';
 import textextensions from 'textextensions';
-import { tmpdir as getTmpDir } from 'os';
 import {
   dirname,
   extname,
@@ -28,6 +27,8 @@ import {
   win32,
   posix,
 } from 'path';
+
+const tmpdirMarker = Symbol('os-tmpdir-mock');
 
 /**
  * The content of a mock directory represented by a nested object structure.
@@ -347,16 +348,20 @@ export interface MockDirectoryOptions {
 export function createMockDirectory(
   options?: MockDirectoryOptions,
 ): MockDirectory {
-  const tmpDir = process.env.RUNNER_TEMP; // GitHub Actions
-  const root = fs.mkdtempSync(
-    joinPath(tmpDir || getTmpDir(), 'backstage-tmp-test-dir-'),
-  );
+  const tmpDir = process.env.RUNNER_TEMP || os.tmpdir(); // GitHub Actions
+  const root = fs.mkdtempSync(joinPath(tmpDir, 'backstage-tmp-test-dir-'));
 
   const mocker = new MockDirectoryImpl(root);
 
   const origTmpdir = options?.mockOsTmpDir ? os.tmpdir : undefined;
   if (origTmpdir) {
-    os.tmpdir = () => mocker.path;
+    if (Object.hasOwn(origTmpdir, tmpdirMarker)) {
+      throw new Error(
+        'Cannot mock os.tmpdir() when it has already been mocked',
+      );
+    }
+    const mock = Object.assign(() => mocker.path, { [tmpdirMarker]: true });
+    os.tmpdir = mock;
   }
 
   // In CI we expect there to be no need to clean up temporary directories
