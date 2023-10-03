@@ -1,5 +1,18 @@
 # @backstage/plugin-org
 
+## 0.6.15-next.1
+
+### Patch Changes
+
+- dc5b6b971b: Fixed the display of OwnershipCard with aggregated relations by loading relations when getting children of entity.
+  This allows the already existing recursive method to work properly when children of entity have children themselves.
+- Updated dependencies
+  - @backstage/core-components@0.13.6-next.1
+  - @backstage/plugin-catalog-react@1.8.5-next.1
+  - @backstage/core-plugin-api@1.7.0-next.0
+  - @backstage/catalog-model@1.4.2
+  - @backstage/theme@0.4.2
+
 ## 0.6.15-next.0
 
 ### Patch Changes
