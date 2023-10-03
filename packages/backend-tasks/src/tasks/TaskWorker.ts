@@ -50,6 +50,7 @@ export class TaskWorker {
     this.logger.info(
       `Task worker starting: ${this.taskId}, ${JSON.stringify(settings)}`,
     );
+
     let attemptNum = 1;
     (async () => {
       for (;;) {
@@ -63,6 +64,7 @@ export class TaskWorker {
 
           while (!options?.signal?.aborted) {
             const runResult = await this.runOnce(options?.signal);
+
             if (runResult.result === 'abort') {
               break;
             }
