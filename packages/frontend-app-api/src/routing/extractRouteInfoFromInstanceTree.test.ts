@@ -233,53 +233,53 @@ describe('discovery', () => {
     ]);
   });
 
-  // it('should handle absolute route paths', () => {
-  //   const info = routeInfoFromExtensions([
-  //     createTestExtension({
-  //       id: 'page1',
-  //       path: '/foo',
-  //       routeRef: ref1,
-  //     }),
-  //     createTestExtension({
-  //       id: 'page2',
-  //       at: 'page1/children',
-  //       path: '/bar/:id',
-  //       routeRef: ref2,
-  //     }),
-  //     createTestExtension({
-  //       id: 'page3',
-  //       path: '/baz',
-  //       routeRef: ref3,
-  //     }),
-  //     createTestExtension({
-  //       id: 'page4',
-  //       at: 'page3/children',
-  //       path: '/divsoup',
-  //       routeRef: ref4,
-  //     }),
-  //     createTestExtension({
-  //       id: 'page5',
-  //       at: 'page3/children',
-  //       path: '/blop',
-  //       routeRef: ref5,
-  //     }),
-  //   ]);
+  it('should strip leading slashes in route paths', () => {
+    const info = routeInfoFromExtensions([
+      createTestExtension({
+        id: 'page1',
+        path: '/foo',
+        routeRef: ref1,
+      }),
+      createTestExtension({
+        id: 'page2',
+        at: 'page1/children',
+        path: '/bar/:id',
+        routeRef: ref2,
+      }),
+      createTestExtension({
+        id: 'page3',
+        path: '/baz',
+        routeRef: ref3,
+      }),
+      createTestExtension({
+        id: 'page4',
+        at: 'page3/children',
+        path: '/divsoup',
+        routeRef: ref4,
+      }),
+      createTestExtension({
+        id: 'page5',
+        at: 'page3/children',
+        path: '/blop',
+        routeRef: ref5,
+      }),
+    ]);
 
-  //   expect(sortedEntries(info.routePaths)).toEqual([
-  //     [ref1, 'foo'],
-  //     [ref2, 'bar/:id'],
-  //     [ref3, 'baz'],
-  //     [ref4, 'divsoup'],
-  //     [ref5, 'blop'],
-  //   ]);
-  //   expect(sortedEntries(info.routeParents)).toEqual([
-  //     [ref1, undefined],
-  //     [ref2, ref1],
-  //     [ref3, undefined],
-  //     [ref4, ref3],
-  //     [ref5, ref3],
-  //   ]);
-  // });
+    expect(sortedEntries(info.routePaths)).toEqual([
+      [ref1, 'foo'],
+      [ref2, 'bar/:id'],
+      [ref3, 'baz'],
+      [ref4, 'divsoup'],
+      [ref5, 'blop'],
+    ]);
+    expect(sortedEntries(info.routeParents)).toEqual([
+      [ref1, undefined],
+      [ref2, ref1],
+      [ref3, undefined],
+      [ref4, ref3],
+      [ref5, ref3],
+    ]);
+  });
 
   it('should use the route aggregator key to bind child routes to the same path', () => {
     const info = routeInfoFromExtensions([
@@ -338,7 +338,7 @@ describe('discovery', () => {
       [ref2, undefined],
       [ref3, undefined],
       [ref4, ref3],
-      [ref5, ref4],
+      [ref5, ref3],
     ]);
     expect(info.routeObjects).toEqual([
       routeObj('foo', [ref1, ref2], [], 'mounted', expect.any(Object)),
@@ -352,166 +352,177 @@ describe('discovery', () => {
     ]);
   });
 
-  // it('should use the route aggregator but stop when encountering explicit path', () => {
-  //   const root = (
-  //     <MemoryRouter>
-  //       <Routes>
-  //         <Route path="foo" element={<Extension1 />}>
-  //           <AggregationComponent path="/bar">
-  //             <Extension2>
-  //               <Routes>
-  //                 <Route path="baz" element={<Extension3 />}>
-  //                   <Route path="/blop" element={<Extension4 />} />
-  //                 </Route>
-  //               </Routes>
-  //               <Extension5 />
-  //             </Extension2>
-  //           </AggregationComponent>
-  //         </Route>
-  //       </Routes>
-  //     </MemoryRouter>
-  //   );
+  it('should use the route aggregator but stop when encountering explicit path', () => {
+    const info = routeInfoFromExtensions([
+      createTestExtension({
+        id: 'page1',
+        path: 'foo',
+        routeRef: ref1,
+      }),
+      createTestExtension({
+        id: 'page1Child',
+        at: 'page1/children',
+        path: 'bar',
+      }),
+      createTestExtension({
+        id: 'page2',
+        at: 'page1Child/children',
+        routeRef: ref2,
+      }),
+      createTestExtension({
+        id: 'page3',
+        at: 'page2/children',
+        path: 'baz',
+        routeRef: ref3,
+      }),
+      createTestExtension({
+        id: 'page4',
+        at: 'page3/children',
+        path: '/blop',
+        routeRef: ref4,
+      }),
+      createTestExtension({
+        id: 'page5',
+        at: 'page2/children',
+        routeRef: ref5,
+      }),
+    ]);
 
-  //   const { routing } = traverseElementTree({
-  //     root,
-  //     discoverers: [childDiscoverer, routeElementDiscoverer],
-  //     collectors: {
-  //       routing: routingV2Collector,
-  //     },
-  //   });
-  //   expect(sortedEntries(routing.paths)).toEqual([
-  //     [ref1, 'foo'],
-  //     [ref2, 'bar'],
-  //     [ref3, 'baz'],
-  //     [ref4, 'blop'],
-  //     [ref5, 'bar'],
-  //   ]);
-  //   expect(sortedEntries(routing.parents)).toEqual([
-  //     [ref1, undefined],
-  //     [ref2, ref1],
-  //     [ref3, ref2],
-  //     [ref4, ref3],
-  //     [ref5, ref1],
-  //   ]);
-  //   expect(routing.objects).toEqual([
-  //     routeObj(
-  //       'foo',
-  //       [ref1],
-  //       [
-  //         routeObj(
-  //           'bar',
-  //           [ref2, ref5],
-  //           [
-  //             routeObj(
-  //               'baz',
-  //               [ref3],
-  //               [routeObj('blop', [ref4], undefined, undefined, plugin)],
-  //               undefined,
-  //               plugin,
-  //             ),
-  //           ],
-  //           'gathered',
-  //           plugin,
-  //         ),
-  //       ],
-  //       undefined,
-  //       plugin,
-  //     ),
-  //   ]);
-  // });
+    expect(sortedEntries(info.routePaths)).toEqual([
+      [ref1, 'foo'],
+      [ref2, 'bar'],
+      [ref3, 'baz'],
+      [ref4, 'blop'],
+      [ref5, 'bar'],
+    ]);
+    expect(sortedEntries(info.routeParents)).toEqual([
+      [ref1, undefined],
+      [ref2, ref1],
+      [ref3, ref2],
+      [ref4, ref3],
+      [ref5, ref1],
+    ]);
+    expect(info.routeObjects).toEqual([
+      routeObj(
+        'foo',
+        [ref1],
+        [
+          routeObj(
+            'bar',
+            [ref2, ref5],
+            [
+              routeObj(
+                'baz',
+                [ref3],
+                [
+                  routeObj(
+                    'blop',
+                    [ref4],
+                    undefined,
+                    undefined,
+                    expect.any(Object),
+                  ),
+                ],
+                undefined,
+                expect.any(Object),
+              ),
+            ],
+            'mounted',
+            expect.any(Object),
+          ),
+        ],
+        undefined,
+        expect.any(Object),
+      ),
+    ]);
+  });
 
-  // it('should throw when you provide path property on an extension', () => {
-  //   expect(() => {
-  //     traverseElementTree({
-  //       root: <Extension1 path="/foo" />,
-  //       discoverers: [childDiscoverer, routeElementDiscoverer],
-  //       collectors: {
-  //         routing: routingV2Collector,
-  //       },
-  //     });
-  //   }).toThrow(
-  //     'Path property may not be set directly on a routable extension "Extension(Extension1)"',
-  //   );
-  // });
+  it('should account for loose route paths', () => {
+    const info = routeInfoFromExtensions([
+      createTestExtension({
+        id: 'r',
+        path: 'r',
+      }),
+      createTestExtension({
+        id: 'page1',
+        at: 'r/children',
+        path: 'x',
+        routeRef: ref1,
+      }),
+      createTestExtension({
+        id: 'y',
+        path: 'y',
+        at: 'r/children',
+      }),
+      createTestExtension({
+        id: 'page2',
+        at: 'y/children',
+        path: '1',
+        routeRef: ref2,
+      }),
+      createTestExtension({
+        id: 'page3',
+        at: 'page2/children',
+        path: 'a',
+        routeRef: ref3,
+      }),
+      createTestExtension({
+        id: 'page4',
+        at: 'page2/children',
+        path: 'b',
+        routeRef: ref4,
+      }),
+    ]);
 
-  // it('should throw when element prop is not a string', () => {
-  //   const Div = 'div' as unknown as ComponentType<{ path: boolean }>;
-  //   expect(() => {
-  //     traverseElementTree({
-  //       root: <Div path />,
-  //       discoverers: [childDiscoverer, routeElementDiscoverer],
-  //       collectors: {
-  //         routing: routingV2Collector,
-  //       },
-  //     });
-  //   }).toThrow('Element path must be a string at "div"');
-  // });
-
-  // it('should throw when the mount point gatherers have an element prop', () => {
-  //   const AnyAggregationComponent = AggregationComponent as any;
-  //   expect(() => {
-  //     traverseElementTree({
-  //       root: <AnyAggregationComponent path="test" element={<Extension3 />} />,
-  //       discoverers: [childDiscoverer, routeElementDiscoverer],
-  //       collectors: {
-  //         routing: routingV2Collector,
-  //       },
-  //     });
-  //   }).toThrow(
-  //     'Mount point gatherers may not have an element prop "AggregationComponent"',
-  //   );
-  // });
-
-  // it('should ignore path props within route elements', () => {
-  //   const { routing } = traverseElementTree({
-  //     root: <Route path="foo" element={<Extension1 path="bar" />} />,
-  //     discoverers: [childDiscoverer, routeElementDiscoverer],
-  //     collectors: {
-  //       routing: routingV2Collector,
-  //     },
-  //   });
-  //   expect(sortedEntries(routing.paths)).toEqual([[ref1, 'foo']]);
-  //   expect(sortedEntries(routing.parents)).toEqual([[ref1, undefined]]);
-  //   expect(routing.objects).toEqual([
-  //     routeObj('foo', [ref1], [], undefined, plugin),
-  //   ]);
-  // });
-
-  // it('should throw when a routable extension does not have a path set', () => {
-  //   expect(() => {
-  //     traverseElementTree({
-  //       root: <Extension3 />,
-  //       discoverers: [childDiscoverer, routeElementDiscoverer],
-  //       collectors: {
-  //         routing: routingV2Collector,
-  //       },
-  //     });
-  //   }).toThrow(
-  //     'Routable extension "Extension(Extension3)" with mount point "routeRef{type=absolute,id=ref3}" must be assigned a path',
-  //   );
-  // });
-
-  // it('should throw when Route elements contain multiple routable extensions', () => {
-  //   expect(() => {
-  //     traverseElementTree({
-  //       root: (
-  //         <Route
-  //           path="foo"
-  //           element={
-  //             <>
-  //               <Extension1 />
-  //               <Extension2 />
-  //             </>
-  //           }
-  //         />
-  //       ),
-  //       discoverers: [childDiscoverer, routeElementDiscoverer],
-  //       collectors: {
-  //         routing: routingV2Collector,
-  //       },
-  //     });
-  //   }).toThrow(
-  //     'Route element with path "foo" may not contain multiple routable extensions',
-  //   );
-  // });
+    expect(sortedEntries(info.routePaths)).toEqual([
+      [ref1, 'r/x'],
+      [ref2, 'r/y/1'],
+      [ref3, 'a'],
+      [ref4, 'b'],
+    ]);
+    expect(sortedEntries(info.routeParents)).toEqual([
+      [ref1, undefined],
+      [ref2, undefined],
+      [ref3, ref2],
+      [ref4, ref2],
+    ]);
+    expect(info.routeObjects).toEqual([
+      routeObj(
+        'r',
+        [],
+        [
+          routeObj('x', [ref1], [], 'mounted', expect.any(Object)),
+          routeObj(
+            'y',
+            [],
+            [
+              routeObj(
+                '1',
+                [ref2],
+                [
+                  routeObj(
+                    'a',
+                    [ref3],
+                    undefined,
+                    'mounted',
+                    expect.any(Object),
+                  ),
+                  routeObj(
+                    'b',
+                    [ref4],
+                    undefined,
+                    'mounted',
+                    expect.any(Object),
+                  ),
+                ],
+                'mounted',
+                expect.any(Object),
+              ),
+            ],
+            'mounted',
+          ),
+        ],
+      ),
+    ]);
+  });
 });

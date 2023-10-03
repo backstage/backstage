@@ -56,14 +56,19 @@ export function extractRouteInfoFromInstanceTree(roots: ExtensionInstance[]): {
     collectedPath?: string,
     foundRefForCollectedPath: boolean = false,
     parentRef?: RouteRef,
+    candidateParentRef?: RouteRef,
     parentObj?: BackstageRouteObject,
   ) {
-    const routePath = current.getData(coreExtensionData.routePath);
+    const routePath = current
+      .getData(coreExtensionData.routePath)
+      ?.replace(/^\//, '');
     const routeRef = current.getData(coreExtensionData.routeRef);
     const parentChildren = parentObj?.children ?? routeObjects;
     let currentObj = parentObj;
     let newCollectedPath = collectedPath;
     let newFoundRefForCollectedPath = foundRefForCollectedPath;
+    let newParentRef = parentRef;
+    let newCandidateParentRef = candidateParentRef;
 
     if (routePath !== undefined) {
       currentObj = {
@@ -85,6 +90,9 @@ export function extractRouteInfoFromInstanceTree(roots: ExtensionInstance[]): {
           ? joinPaths(collectedPath, routePath)
           : routePath;
       }
+
+      newParentRef = candidateParentRef;
+      newCandidateParentRef = undefined;
     }
 
     if (routeRef) {
@@ -95,12 +103,16 @@ export function extractRouteInfoFromInstanceTree(roots: ExtensionInstance[]): {
         );
       }
 
+      if (!newCandidateParentRef) {
+        newCandidateParentRef = routeRef;
+      }
+
       if (newCollectedPath !== undefined) {
         routePaths.set(routeRef, newCollectedPath);
         newFoundRefForCollectedPath = true;
       }
 
-      routeParents.set(routeRef, parentRef);
+      routeParents.set(routeRef, newParentRef);
       currentObj?.routeRefs.add(routeRef);
       if (current.source) {
         currentObj?.plugins.add(toLegacyPlugin(current.source));
@@ -113,7 +125,8 @@ export function extractRouteInfoFromInstanceTree(roots: ExtensionInstance[]): {
           child,
           newCollectedPath,
           newFoundRefForCollectedPath,
-          routeRef ?? parentRef,
+          newParentRef,
+          newCandidateParentRef,
           currentObj,
         );
       }
