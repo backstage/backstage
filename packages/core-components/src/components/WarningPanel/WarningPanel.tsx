@@ -70,7 +70,7 @@ export type WarningPanelClassKey =
 const useStyles = makeStyles<BackstageTheme>(
   theme => ({
     content: {
-      overflow: 'hidden',
+      lineBreak: 'anywhere',
     },
     panel: {
       backgroundColor: ({ severity }: WarningProps) =>
