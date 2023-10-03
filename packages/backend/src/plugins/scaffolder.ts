@@ -23,6 +23,7 @@ import { Router } from 'express';
 import type { PluginEnvironment } from '../types';
 import { ScmIntegrations } from '@backstage/integration';
 import { createConfluenceToMarkdownAction } from '@backstage/plugin-scaffolder-backend-module-confluence-to-markdown';
+import { createCopierFetchAction } from '@backstage/plugin-scaffolder-backend-module-copier';
 
 export default async function createPlugin(
   env: PluginEnvironment,
@@ -42,6 +43,7 @@ export default async function createPlugin(
 
   const actions = [
     ...builtInActions,
+    createCopierFetchAction({ config: env.config }),
     createConfluenceToMarkdownAction({
       integrations,
       config: env.config,

@@ -479,6 +479,37 @@ export class GitlabUrlReader implements UrlReader {
   toString(): string;
 }
 
+// @public (undocumented)
+export interface GitProvider {
+  // (undocumented)
+  getGit(url: string): Promise<Git>;
+}
+
+// @public (undocumented)
+export type GitProviderFactory = (options: {
+  config: Config;
+}) => GitProviderPredicateTuple[];
+
+// @public (undocumented)
+export type GitProviderOptions = {
+  config: Config;
+  factories?: GitProviderFactory[];
+};
+
+// @public (undocumented)
+export type GitProviderPredicateTuple = {
+  predicate: (url: URL) => boolean;
+  gitProvider: GitProvider;
+};
+
+// @public
+export class GitProviders {
+  // (undocumented)
+  static create(options: GitProviderOptions): GitProvider;
+  // (undocumented)
+  static default(options: GitProviderOptions): GitProvider;
+}
+
 // @public
 export const HostDiscovery: typeof HostDiscovery_2;
 
