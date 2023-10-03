@@ -38,7 +38,7 @@ import { resolveBundlingPaths } from './paths';
 import { ServeOptions } from './types';
 import { nodePolyfills as viteNodePolyfills } from 'vite-plugin-node-polyfills';
 import { esbuildCommonjs, viteCommonjs } from '@originjs/vite-plugin-commonjs';
-import htmlTemplate from 'vite-plugin-html-template';
+import { viteTransformHtml } from './viteTransformHtml';
 import vitePluginSvgr from 'vite-plugin-svgr';
 
 export async function serveBundle(options: ServeOptions) {
@@ -163,10 +163,10 @@ export async function serveBundle(options: ServeOptions) {
 
   if (process.env.EXPERIMENTAL_VITE) {
     server = await vite.createServer({
-      mode: 'development',
       define: {
         global: 'globalThis',
-        APP_CONFIG: JSON.stringify(cliConfig.frontendAppConfigs),
+        'process.argv': JSON.stringify(process.argv),
+        'process.env.APP_CONFIG': JSON.stringify(cliConfig.frontendAppConfigs),
       },
       resolve: {
         alias: {
@@ -178,10 +178,12 @@ export async function serveBundle(options: ServeOptions) {
         vitePluginSvgr(),
         viteCommonjs(),
         viteNodePolyfills(),
-        htmlTemplate({
+        viteTransformHtml({
+          entryPath: paths.targetEntry,
+          targetHtml: paths.targetHtml,
           data: {
-            publicPath: config.output?.publicPath,
             config: frontendConfig,
+            publicPath: config.output?.publicPath,
           },
         }),
       ],
