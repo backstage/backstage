@@ -90,8 +90,10 @@
     "mock-fs": "^5.2.0",
     "supertest": "^6.1.3"
   },
+  "configSchema": "config.d.ts",
   "files": [
     "dist",
+    "config.d.ts",
     "alpha"
   ]
 }
