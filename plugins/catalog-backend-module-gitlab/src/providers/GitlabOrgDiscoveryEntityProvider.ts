@@ -331,6 +331,10 @@ export class GitlabOrgDiscoveryEntityProvider implements EntityProvider {
     const annotations: { [annotationName: string]: string } = {};
 
     annotations[`${host}/user-login`] = user.web_url;
+    if (user?.group_saml_identity?.extern_uid) {
+      annotations[`${host}/saml-external-uid`] =
+        user.group_saml_identity.extern_uid;
+    }
 
     const entity: UserEntity = {
       apiVersion: 'backstage.io/v1alpha1',
