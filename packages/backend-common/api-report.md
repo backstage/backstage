@@ -377,7 +377,11 @@ export class Git {
   }): Promise<string | undefined>;
   // (undocumented)
   deleteRemote(options: { dir: string; remote: string }): Promise<void>;
-  fetch(options: { dir: string; remote?: string }): Promise<void>;
+  fetch(options: {
+    dir: string;
+    remote?: string;
+    tags?: boolean;
+  }): Promise<void>;
   // (undocumented)
   static fromAuth: (options: {
     username?: string;

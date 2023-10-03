@@ -1,5 +1,22 @@
 # @backstage/plugin-adr
 
+## 0.6.8-next.1
+
+### Patch Changes
+
+- 1204e7628e: Create an experimental `AdrSearchResultItemExtension` for declarative integration with Backstage; it can be accessed via the `/alpha` import.
+- Updated dependencies
+  - @backstage/frontend-plugin-api@0.1.1-next.1
+  - @backstage/core-components@0.13.6-next.1
+  - @backstage/plugin-search-react@1.7.1-next.1
+  - @backstage/integration-react@1.1.20-next.1
+  - @backstage/plugin-catalog-react@1.8.5-next.1
+  - @backstage/core-plugin-api@1.7.0-next.0
+  - @backstage/catalog-model@1.4.2
+  - @backstage/theme@0.4.2
+  - @backstage/plugin-adr-common@0.2.16-next.0
+  - @backstage/plugin-search-common@1.2.6
+
 ## 0.6.8-next.0
 
 ### Patch Changes

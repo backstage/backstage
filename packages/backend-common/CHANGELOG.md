@@ -1,5 +1,22 @@
 # @backstage/backend-common
 
+## 0.19.7-next.1
+
+### Patch Changes
+
+- b94f32271e: Added the ability to fetch git tags through the `Git` class. This is useful for scaffolder actions that want to take action based on tag versions in a cloned repository
+- Updated dependencies
+  - @backstage/backend-dev-utils@0.1.2-next.0
+  - @backstage/backend-app-api@0.5.5-next.1
+  - @backstage/backend-plugin-api@0.6.5-next.1
+  - @backstage/config@1.1.0
+  - @backstage/integration-aws-node@0.1.6
+  - @backstage/cli-common@0.1.13-next.0
+  - @backstage/config-loader@1.5.1-next.0
+  - @backstage/errors@1.2.2
+  - @backstage/integration@1.7.1-next.0
+  - @backstage/types@1.1.1
+
 ## 0.19.7-next.0
 
 ### Patch Changes

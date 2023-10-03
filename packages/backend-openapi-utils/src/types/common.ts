@@ -43,6 +43,13 @@ export type PathDoc = Pick<ImmutableOpenAPIObject, 'paths'>;
 export type ValueOf<T> = T[keyof T];
 
 /**
+ * All paths for a given doc,
+ * @example `/pet/{petId}` | `/pet`
+ * @public
+ */
+export type DocPath<Doc extends PathDoc> = Extract<keyof Doc['paths'], string>;
+
+/**
  * Validate a string against OpenAPI path template, {@link https://spec.openapis.org/oas/v3.1.0#path-templating-matching}.
  *
  * @example
@@ -74,44 +81,46 @@ export type PathTemplate<Path extends string> =
  *
  * @public
  */
-export type DocPath<
+export type TemplateToDocPath<
   Doc extends PathDoc,
-  Path extends PathTemplate<Extract<keyof Doc['paths'], string>>,
+  Path extends DocPathTemplate<Doc>,
 > = ValueOf<{
-  [Template in Extract<
-    keyof Doc['paths'],
-    string
-  >]: Path extends PathTemplate<Template> ? Template : never;
+  [Template in DocPath<Doc>]: Path extends PathTemplate<Template>
+    ? Template
+    : never;
 }>;
 
 /**
  * @public
  */
-export type DocPathTemplate<Doc extends PathDoc> = PathTemplate<
-  Extract<keyof Doc['paths'], string>
->;
+export type DocPathTemplate<Doc extends PathDoc> = PathTemplate<DocPath<Doc>>;
 
 /**
  * @public
  */
 export type DocPathMethod<
   Doc extends Pick<RequiredDoc, 'paths'>,
+  Path extends DocPath<Doc>,
+> = keyof Doc['paths'][Path];
+
+/**
+ * @public
+ */
+export type DocPathTemplateMethod<
+  Doc extends Pick<RequiredDoc, 'paths'>,
   Path extends DocPathTemplate<Doc>,
-> = keyof Doc['paths'][DocPath<Doc, Path>];
+> = keyof Doc['paths'][TemplateToDocPath<Doc, Path>];
 
 /**
  * @public
  */
 export type MethodAwareDocPath<
   Doc extends PathDoc,
-  Path extends PathTemplate<Extract<keyof Doc['paths'], string>>,
-  Method extends keyof Doc['paths'][Path],
+  Path extends DocPathTemplate<Doc>,
+  Method extends DocPathTemplateMethod<Doc, Path>,
 > = ValueOf<{
-  [Template in Extract<
-    keyof Doc['paths'],
-    string
-  >]: Path extends PathTemplate<Template>
-    ? Method extends DocPathMethod<Doc, Path>
+  [Template in DocPath<Doc>]: Path extends PathTemplate<Template>
+    ? Method extends DocPathTemplateMethod<Doc, Path>
       ? PathTemplate<Template>
       : never
     : never;
@@ -122,7 +131,7 @@ export type MethodAwareDocPath<
  */
 export type DocOperation<
   Doc extends RequiredDoc,
-  Path extends keyof Doc['paths'],
+  Path extends DocPath<Doc>,
   Method extends keyof Doc['paths'][Path],
 > = Doc['paths'][Path][Method];
 
