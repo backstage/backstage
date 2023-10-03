@@ -46,10 +46,10 @@ export class PluginTaskSchedulerImpl implements PluginTaskScheduler {
     private readonly logger: Logger,
   ) {
     const meter = metrics.getMeter('default');
-    this.counter = meter.createCounter('backend_task_runs_total', {
+    this.counter = meter.createCounter('backend_tasks.task.runs.count', {
       description: 'Total number of times a task has been run',
     });
-    this.duration = meter.createHistogram('backend_task_run_duration', {
+    this.duration = meter.createHistogram('backend_tasks.task.runs.duration', {
       description: 'Histogram of task run durations',
       unit: 'seconds',
     });
