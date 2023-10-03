@@ -42,7 +42,6 @@
     "@backstage/types": "workspace:^",
     "@esbuild-kit/cjs-loader": "^2.4.1",
     "@esbuild-kit/esm-loader": "^2.5.5",
-    "@esbuild-plugins/node-globals-polyfill": "^0.2.3",
     "@manypkg/get-packages": "^1.1.3",
     "@octokit/graphql": "^5.0.0",
     "@octokit/graphql-schema": "^13.7.0",
