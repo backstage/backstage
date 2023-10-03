@@ -127,9 +127,6 @@ exports.up = async function up(knex) {
   await knex.schema.createTable('relations', table => {
     table.comment('All relations between entities');
     table
-      .increments('id', { primaryKey: true })
-      .comment('Primary key to distinguish unique lines from each other');
-    table
       .string('originating_entity_id')
       .references('entity_id')
       .inTable('refresh_state')
@@ -154,6 +151,7 @@ exports.up = async function up(knex) {
 
   await knex.schema.createTable('search', table => {
     table.comment('Flattened key-values from the entities, for filtering');
+    table.uuid('id').primary().notNullable().comment('Auto-generated ID');
     table
       .string('entity_id')
       .references('entity_id')
