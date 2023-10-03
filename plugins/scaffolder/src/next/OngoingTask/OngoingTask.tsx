@@ -46,15 +46,15 @@ const useStyles = makeStyles(theme => ({
   cancelButton: {
     marginRight: theme.spacing(1),
   },
+  logsVisibilityButton: {
+    marginRight: theme.spacing(1),
+  },
 }));
 
 export const OngoingTask = (props: {
   TemplateOutputsComponent?: React.ComponentType<{
     output?: ScaffolderTaskOutput;
   }>;
-  logs?: {
-    autoOpen?: boolean;
-  };
 }) => {
   // todo(blam): check that task Id actually exists, and that it's valid. otherwise redirect to something more useful.
   const { taskId } = useParams();
@@ -72,7 +72,7 @@ export const OngoingTask = (props: {
     [taskStream],
   );
 
-  const [logsVisible, setLogVisibleState] = useState(props.logs?.autoOpen ?? false);
+  const [logsVisible, setLogVisibleState] = useState(false);
   const [buttonBarVisible, setButtonBarVisibleState] = useState(true);
 
   useEffect(() => {
@@ -190,6 +190,14 @@ export const OngoingTask = (props: {
                     data-testid="cancel-button"
                   >
                     Cancel
+                  </Button>
+                  <Button
+                    className={classes.logsVisibilityButton}
+                    color="primary"
+                    variant="outlined"
+                    onClick={() => setLogVisibleState(!logsVisible)}
+                  >
+                    {logsVisible ? 'Hide Logs' : 'Show Logs'}
                   </Button>
                   <Button
                     variant="contained"

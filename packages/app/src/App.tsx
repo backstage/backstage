@@ -241,7 +241,6 @@ const routes = (
         path="/create"
         element={
           <NextScaffolderPage
-            logs={{ autoOpen: true }}
             groups={[
               {
                 title: 'Recommended',
