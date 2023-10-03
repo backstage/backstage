@@ -2,4 +2,4 @@
 '@backstage/theme': patch
 ---
 
-Fixed a bug to support string fontSize values (`"2.5rem"`) instead of forcing numeric-only values & requiring casts. In addition, added an optional fontFamily prop for h1-h6 BackstageTypography variants to allow further customization.
+Added support for string `fontSize` values (e.g. `"2.5rem"`) in themes in addition to numbers. Also added an optional `fontFamily` prop for header typography variants to allow further customization.
