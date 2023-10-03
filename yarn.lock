@@ -8148,6 +8148,7 @@ __metadata:
     "@testing-library/react-hooks": ^8.0.1
     "@testing-library/user-event": ^14.0.0
     "@types/react": ^16.13.1 || ^17.0.0
+    lodash: ^4.17.21
     msw: ^1.0.0
     p-limit: ^3.1.0
     pluralize: ^8.0.0
