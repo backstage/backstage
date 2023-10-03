@@ -3807,7 +3807,6 @@ __metadata:
     "@backstage/types": "workspace:^"
     "@esbuild-kit/cjs-loader": ^2.4.1
     "@esbuild-kit/esm-loader": ^2.5.5
-    "@esbuild-plugins/node-globals-polyfill": ^0.2.3
     "@manypkg/get-packages": ^1.1.3
     "@octokit/graphql": ^5.0.0
     "@octokit/graphql-schema": ^13.7.0
@@ -10774,15 +10773,6 @@ __metadata:
     "@esbuild-kit/core-utils": ^3.3.2
     get-tsconfig: ^4.7.0
   checksum: 88a27203898f14bd69f03244ae2b3bae727e00243d7801292c4da8caba69813b0978fb8245a55b83bc9b907f475ed634f094a1f44cc590c0754993f4a924cc22
-  languageName: node
-  linkType: hard
-
-"@esbuild-plugins/node-globals-polyfill@npm:^0.2.3":
-  version: 0.2.3
-  resolution: "@esbuild-plugins/node-globals-polyfill@npm:0.2.3"
-  peerDependencies:
-    esbuild: "*"
-  checksum: f83eeaa382680b26a3b1cf6c396450332c41d2dc0f9fd935d3f4bacf5412bef7383d2aeb4246a858781435b7c005a570dadc81051f8a038f1ef2111f17d3d8b0
   languageName: node
   linkType: hard
 
