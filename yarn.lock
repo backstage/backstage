@@ -18158,9 +18158,9 @@ __metadata:
   linkType: hard
 
 "@types/prop-types@npm:*, @types/prop-types@npm:^15.0.0, @types/prop-types@npm:^15.7.3, @types/prop-types@npm:^15.7.5":
-  version: 15.7.7
-  resolution: "@types/prop-types@npm:15.7.7"
-  checksum: 023b95f7dd82e1c594f51dcb93ec4c382600cef6eeee29a2ac7b782b92c0882eab8da16d4cbd6e18b39e85ac8d94ebf4ca02c6e248ce5b5fb4b16dbab5d82861
+  version: 15.7.8
+  resolution: "@types/prop-types@npm:15.7.8"
+  checksum: 61dfad79da8b1081c450bab83b77935df487ae1cdd4660ec7df6be8e74725c15fa45cf486ce057addc956ca4ae78300b97091e2a25061133d1b9a1440bc896ae
   languageName: node
   linkType: hard
 
