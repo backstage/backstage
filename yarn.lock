@@ -5497,7 +5497,30 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@backstage/plugin-catalog-backend-module-github@workspace:plugins/catalog-backend-module-github":
+"@backstage/plugin-catalog-backend-module-github-org@workspace:plugins/catalog-backend-module-github-org":
+  version: 0.0.0-use.local
+  resolution: "@backstage/plugin-catalog-backend-module-github-org@workspace:plugins/catalog-backend-module-github-org"
+  dependencies:
+    "@backstage/backend-common": "workspace:^"
+    "@backstage/backend-plugin-api": "workspace:^"
+    "@backstage/backend-tasks": "workspace:^"
+    "@backstage/backend-test-utils": "workspace:^"
+    "@backstage/catalog-model": "workspace:^"
+    "@backstage/cli": "workspace:^"
+    "@backstage/config": "workspace:^"
+    "@backstage/integration": "workspace:^"
+    "@backstage/plugin-catalog-backend-module-github": "workspace:^"
+    "@backstage/plugin-catalog-node": "workspace:^"
+    "@backstage/plugin-events-node": "workspace:^"
+    "@octokit/graphql": ^7.0.2
+    lodash: ^4.17.21
+    luxon: ^3.0.0
+    uuid: ^9.0.1
+    winston: ^3.10.0
+  languageName: unknown
+  linkType: soft
+
+"@backstage/plugin-catalog-backend-module-github@workspace:^, @backstage/plugin-catalog-backend-module-github@workspace:plugins/catalog-backend-module-github":
   version: 0.0.0-use.local
   resolution: "@backstage/plugin-catalog-backend-module-github@workspace:plugins/catalog-backend-module-github"
   dependencies:
@@ -14024,6 +14047,17 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@octokit/endpoint@npm:^9.0.0":
+  version: 9.0.1
+  resolution: "@octokit/endpoint@npm:9.0.1"
+  dependencies:
+    "@octokit/types": ^12.0.0
+    is-plain-object: ^5.0.0
+    universal-user-agent: ^6.0.0
+  checksum: 4f700c66829ed0b5ced3c0d018d63de1ecf1a267064095e450b6cfeb6abddecc704947d3f04e4921ac0d4d73595d81d52802d3306945ba7a642f1386fd8db68b
+  languageName: node
+  linkType: hard
+
 "@octokit/graphql-schema@npm:^13.7.0":
   version: 13.10.0
   resolution: "@octokit/graphql-schema@npm:13.10.0"
@@ -14042,6 +14076,17 @@ __metadata:
     "@octokit/types": ^9.0.0
     universal-user-agent: ^6.0.0
   checksum: 7be545d348ef31dcab0a2478dd64d5746419a2f82f61459c774602bcf8a9b577989c18001f50b03f5f61a3d9e34203bdc021a4e4d75ff2d981e8c9c09cf8a65c
+  languageName: node
+  linkType: hard
+
+"@octokit/graphql@npm:^7.0.2":
+  version: 7.0.2
+  resolution: "@octokit/graphql@npm:7.0.2"
+  dependencies:
+    "@octokit/request": ^8.0.1
+    "@octokit/types": ^12.0.0
+    universal-user-agent: ^6.0.0
+  checksum: 05a752c4c2d84fc2900d8e32e1c2d1ee98a5a14349e651cb1109d0741e821e7417a048b1bb40918534ed90a472314aabbda35688868016f248098925f82a3bfa
   languageName: node
   linkType: hard
 
@@ -14120,6 +14165,13 @@ __metadata:
   version: 17.2.0
   resolution: "@octokit/openapi-types@npm:17.2.0"
   checksum: 29995e34f98d9d64ba234d64a7ae9486c66d2bb6ac0d30d9a42decdbb4b03b13e811769b1e1505a1748ff20c22d35724985e6c128cd11a3f14f8322201520093
+  languageName: node
+  linkType: hard
+
+"@octokit/openapi-types@npm:^19.0.0":
+  version: 19.0.0
+  resolution: "@octokit/openapi-types@npm:19.0.0"
+  checksum: 9a8125ab4e1651ca4b2f734cfa15ca52fe9fa0edd87696e4f57dfa2bcd472767f0f8a99b9324be21f863e6cd91afee423982189f97ac018f3c78a83560e616f5
   languageName: node
   linkType: hard
 
@@ -14202,6 +14254,17 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@octokit/request-error@npm:^5.0.0":
+  version: 5.0.1
+  resolution: "@octokit/request-error@npm:5.0.1"
+  dependencies:
+    "@octokit/types": ^12.0.0
+    deprecation: ^2.0.0
+    once: ^1.4.0
+  checksum: a681341e43b4da7a8acb19e1a6ba0355b1af146fa0191f2554a98950cf85f898af6ae3ab0b0287d6c871f5465ec57cb38363b96b5019f9f77ba6f30eca39ede5
+  languageName: node
+  linkType: hard
+
 "@octokit/request@npm:^5.4.14, @octokit/request@npm:^5.6.3":
   version: 5.6.3
   resolution: "@octokit/request@npm:5.6.3"
@@ -14230,6 +14293,19 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@octokit/request@npm:^8.0.1":
+  version: 8.1.2
+  resolution: "@octokit/request@npm:8.1.2"
+  dependencies:
+    "@octokit/endpoint": ^9.0.0
+    "@octokit/request-error": ^5.0.0
+    "@octokit/types": ^12.0.0
+    is-plain-object: ^5.0.0
+    universal-user-agent: ^6.0.0
+  checksum: 77b9221916f557bba633293ee0d1418766ae59fdfd7ccd626bbcbf0748c6d5dec80fead29f62d8eb427b32e4d8fc4de61c3f9d23999563580890b80b52ccc8e6
+  languageName: node
+  linkType: hard
+
 "@octokit/rest@npm:^19.0.3":
   version: 19.0.13
   resolution: "@octokit/rest@npm:19.0.13"
@@ -14246,6 +14322,15 @@ __metadata:
   version: 1.0.2
   resolution: "@octokit/tsconfig@npm:1.0.2"
   checksum: 74d56f3e9f326a8dd63700e9a51a7c75487180629c7a68bbafee97c612fbf57af8347369bfa6610b9268a3e8b833c19c1e4beb03f26db9a9dce31f6f7a19b5b1
+  languageName: node
+  linkType: hard
+
+"@octokit/types@npm:^12.0.0":
+  version: 12.0.0
+  resolution: "@octokit/types@npm:12.0.0"
+  dependencies:
+    "@octokit/openapi-types": ^19.0.0
+  checksum: ad55e13cbeef96a63d0088df2ed0a8f3ca764db3f877aa2ecb1693de40b03c1f8e392603bd7fddaaaa74138970ea39f46e4b830d15eeeba74be1671f36440129
   languageName: node
   linkType: hard
 
@@ -41842,7 +41927,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"uuid@npm:^9.0.0":
+"uuid@npm:^9.0.0, uuid@npm:^9.0.1":
   version: 9.0.1
   resolution: "uuid@npm:9.0.1"
   bin:
@@ -42602,7 +42687,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"winston@npm:^3.2.1":
+"winston@npm:^3.10.0, winston@npm:^3.2.1":
   version: 3.10.0
   resolution: "winston@npm:3.10.0"
   dependencies:

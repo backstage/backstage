@@ -14,4 +14,10 @@
  * limitations under the License.
  */
 
-export { catalogModuleGithubEntityProvider as default } from './catalogModuleGithubEntityProvider';
+/**
+ * The github-org backend module for the catalog plugin.
+ *
+ * @packageDocumentation
+ */
+
+export { catalogModuleGithubOrgEntityProvider as default } from './module';
