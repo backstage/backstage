@@ -81,7 +81,7 @@ Scope: The Permission Framework and plugins integrating with the permission fram
 | Eric Peterson        | Spotify      | Imaginary Goats | [iamEAP](http://github.com/iamEAP)              | iamEAP#3058      |
 | Harry Hogg           | Spotify      | Imaginary Goats | [HHogg](http://github.com/HHogg)                | simplex#3451     |
 | Joon Park            | Spotify      | Imaginary Goats | [Joonpark13](http://github.com/Joonpark13)      | Sixpool#5060     |
-| Lynette Lopez        | Spotify      | Imaginary Goats | [lynettelopez](https://github.com/lynettelopez) | -                |
+| Lynette Lopez        | Spotify      | Imaginary Goats | [lynettelopez](https://github.com/lynettelopez) | lynettelopez     |
 | Mike Lewis           | Spotify      | Imaginary Goats | [mtlewis](http://github.com/mtlewis)            | mtlewis#3658     |
 | Tim Hansen           | Spotify      | Imaginary Goats | [timbonicus](http://github.com/timbonicus)      | timbonicus#6871  |
 | Vincenzo Scamporlino | Spotify      | Imaginary Goats | [vinzscam](http://github.com/vinzscam)          | vinzscam#6944    |
