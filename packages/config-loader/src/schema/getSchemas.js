@@ -38,24 +38,34 @@ const getSchemas = paths => {
     console.time(path);
 
     // All schemas should export a `Config` symbol
-    const symbolList = generator?.getSymbols('Config');
-    const schemas = symbolList
-      ?.map(({ name }) => {
-        try {
-          return generator?.getSchemaForSymbol(name);
-        } catch (error) {
-          return undefined;
-        }
-      })
-      .filter(Boolean);
+    const unixPath = path.split(sep).join('/'); // Unix paths are expected for all OSes here
 
-    if (!schemas) {
+    const generator = buildGenerator(
+      program,
+      // This enables the use of these tags in TSDoc comments
+      {
+        required: true,
+        validationKeywords: ['visibility', 'deepVisibility', 'deprecated'],
+        ignoreErrors: true,
+        uniqueNames: true,
+      },
+      [unixPath],
+    );
+
+    // All schemas should export a `Config` symbol
+    const configSymbol = generator
+      ?.getMainFileSymbols(program, [unixPath])
+      .find(symbolName => symbolName.startsWith('Config'));
+
+    if (!configSymbol) {
       throw new Error(`Invalid schema in ${path}, missing Config export`);
     }
 
+    const schema = generator?.getSchemaForSymbol(configSymbol);
+
     console.timeEnd(path);
 
-    return { path, value: schemas };
+    return { path, value: schema };
   });
 
   return tsSchemas;

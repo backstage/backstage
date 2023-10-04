@@ -180,8 +180,5 @@ async function compileTsSchemas(paths: string[]) {
   const pathsChunks = chunk(paths, Math.ceil(paths.length / os.cpus().length));
   const tsSchemas = await Promise.all(pathsChunks.map(createGetSchemaWorker));
 
-  return tsSchemas.flat().map(({ path, value }) => ({
-    path,
-    value: mergeConfigSchemas(value),
-  }));
+  return tsSchemas.flat();
 }
