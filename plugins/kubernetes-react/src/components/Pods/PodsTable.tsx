@@ -125,9 +125,12 @@ const Memory = ({ clusterName, pod }: { clusterName: string; pod: Pod }) => {
 export const PodsTable = ({ pods, extraColumns = [] }: PodsTablesProps) => {
   const cluster = useContext(ClusterContext);
   const defaultColumns: TableColumn<Pod>[] = [
+    // It was observed in some instances that the pod "sideboard" closes randomly, likely due to table reloads.
+    // This ID field should hopefully fix this, however the problem e.g. was not observed in the example app.
+    // So worst case the issues resides elsewhere.
     {
       title: 'ID',
-      field: 'id',
+      field: 'metadata.uid',
       hidden: true,
     },
     {
@@ -183,10 +186,7 @@ export const PodsTable = ({ pods, extraColumns = [] }: PodsTablesProps) => {
         options={{ paging: true, search: false, emptyRowsWhenPaging: false }}
         // Unique ID is added to avoid the table refreshing on every render and closing e.g. open sidebars
         // This does not get rid of the error in the browser console though, which must be investigated separetley
-        data={(pods as Pod[])?.map((pod: Pod) => ({
-          ...pod,
-          id: pod?.metadata?.uid,
-        }))}
+        data={pods as Pod[]}
         columns={columns}
       />
     </div>
