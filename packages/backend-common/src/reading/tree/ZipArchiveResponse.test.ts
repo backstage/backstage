@@ -50,8 +50,19 @@ describe('ZipArchiveResponse', () => {
     targetDir.clear();
   });
 
+  const openStreams = new Array<fs.ReadStream>();
+  function createReadStream(filePath: string) {
+    const stream = fs.createReadStream(filePath);
+    openStreams.push(stream);
+    return stream;
+  }
+  afterEach(() => {
+    openStreams.forEach(stream => stream.destroy());
+    openStreams.length = 0;
+  });
+
   it('should read files', async () => {
-    const stream = fs.createReadStream(sourceDir.resolve('test-archive.zip'));
+    const stream = createReadStream(sourceDir.resolve('test-archive.zip'));
 
     const res = new ZipArchiveResponse(stream, '', targetDir.path, 'etag');
     const files = await res.files();
@@ -77,7 +88,7 @@ describe('ZipArchiveResponse', () => {
   });
 
   it('should read files with filter', async () => {
-    const stream = fs.createReadStream(sourceDir.resolve('test-archive.zip'));
+    const stream = createReadStream(sourceDir.resolve('test-archive.zip'));
 
     const res = new ZipArchiveResponse(
       stream,
@@ -100,7 +111,7 @@ describe('ZipArchiveResponse', () => {
   });
 
   it('should read as archive and files', async () => {
-    const stream = fs.createReadStream(sourceDir.resolve('test-archive.zip'));
+    const stream = createReadStream(sourceDir.resolve('test-archive.zip'));
 
     const res = new ZipArchiveResponse(stream, '', targetDir.path, 'etag');
     const buffer = await res.archive();
@@ -132,7 +143,7 @@ describe('ZipArchiveResponse', () => {
   });
 
   it('should extract entire archive into directory', async () => {
-    const stream = fs.createReadStream(sourceDir.resolve('test-archive.zip'));
+    const stream = createReadStream(sourceDir.resolve('test-archive.zip'));
 
     const res = new ZipArchiveResponse(stream, '', targetDir.path, 'etag');
     const dir = await res.dir();
@@ -146,7 +157,7 @@ describe('ZipArchiveResponse', () => {
   });
 
   it('should extract archive into directory with a subpath', async () => {
-    const stream = fs.createReadStream(sourceDir.resolve('test-archive.zip'));
+    const stream = createReadStream(sourceDir.resolve('test-archive.zip'));
 
     const res = new ZipArchiveResponse(stream, 'docs/', targetDir.path, 'etag');
 
@@ -157,7 +168,7 @@ describe('ZipArchiveResponse', () => {
   });
 
   it('should extract archive into directory with a subpath and filter', async () => {
-    const stream = fs.createReadStream(sourceDir.resolve('test-archive.zip'));
+    const stream = createReadStream(sourceDir.resolve('test-archive.zip'));
 
     const res = new ZipArchiveResponse(
       stream,
@@ -205,7 +216,7 @@ describe('ZipArchiveResponse', () => {
       archive.finalize();
     });
 
-    const stream = fs.createReadStream(filePath);
+    const stream = createReadStream(filePath);
 
     const res = new ZipArchiveResponse(stream, '', targetDir.path, 'etag');
 
@@ -225,7 +236,7 @@ describe('ZipArchiveResponse', () => {
   });
 
   it('should throw on invalid archive', async () => {
-    const stream = fs.createReadStream(
+    const stream = createReadStream(
       sourceDir.resolve('test-archive-corrupted.zip'),
     );
 
@@ -238,7 +249,7 @@ describe('ZipArchiveResponse', () => {
   });
 
   it('should throw on entries with a path outside the destination dir', async () => {
-    const stream = fs.createReadStream(
+    const stream = createReadStream(
       sourceDir.resolve('test-archive-malicious.zip'),
     );
 
@@ -249,7 +260,7 @@ describe('ZipArchiveResponse', () => {
   });
 
   it('should throw on entries that attempt to write outside destination dir', async () => {
-    const stream = fs.createReadStream(
+    const stream = createReadStream(
       sourceDir.resolve('test-archive-malicious.zip'),
     );
 

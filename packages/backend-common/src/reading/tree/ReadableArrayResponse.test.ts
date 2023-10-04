@@ -42,13 +42,24 @@ describe('ReadableArrayResponse', () => {
     targetDir.clear();
   });
 
+  const openStreams = new Array<fs.ReadStream>();
+  function createReadStream(filePath: string) {
+    const stream = fs.createReadStream(filePath);
+    openStreams.push(stream);
+    return stream;
+  }
+  afterEach(() => {
+    openStreams.forEach(stream => stream.destroy());
+    openStreams.length = 0;
+  });
+
   const path1 = sourceDir.resolve(name1);
   const path2 = sourceDir.resolve(name2);
 
   it('should read files', async () => {
     const arr: FromReadableArrayOptions = [
-      { data: fs.createReadStream(path1), path: path1 },
-      { data: fs.createReadStream(path2), path: path2 },
+      { data: createReadStream(path1), path: path1 },
+      { data: createReadStream(path2), path: path2 },
     ];
 
     const res = new ReadableArrayResponse(arr, targetDir.path, 'etag');
@@ -64,8 +75,8 @@ describe('ReadableArrayResponse', () => {
 
   it('should extract entire archive into directory', async () => {
     const arr: FromReadableArrayOptions = [
-      { data: fs.createReadStream(path1), path: path1 },
-      { data: fs.createReadStream(path2), path: path2 },
+      { data: createReadStream(path1), path: path1 },
+      { data: createReadStream(path2), path: path2 },
     ];
 
     const res = new ReadableArrayResponse(arr, targetDir.path, 'etag');
