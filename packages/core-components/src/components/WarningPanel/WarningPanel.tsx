@@ -69,6 +69,9 @@ export type WarningPanelClassKey =
 
 const useStyles = makeStyles<BackstageTheme>(
   theme => ({
+    content: {
+      lineBreak: 'anywhere',
+    },
     panel: {
       backgroundColor: ({ severity }: WarningProps) =>
         getWarningBackgroundColor(
