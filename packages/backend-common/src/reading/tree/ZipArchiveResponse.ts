@@ -93,12 +93,13 @@ export class ZipArchiveResponse implements ReadTreeResponse {
 
     return new Promise((resolve, reject) => {
       writeStream.on('error', reject);
-      writeStream.on('finish', () =>
+      writeStream.on('finish', () => {
+        writeStream.end();
         resolve({
           fileName: tmpFile,
           cleanup: () => fs.rm(tmpDir, { recursive: true }),
-        }),
-      );
+        });
+      });
       stream.pipe(writeStream);
     });
   }
