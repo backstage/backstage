@@ -54,7 +54,7 @@ describe('ClusterOverview', () => {
     expect(getByText('Backstage Auth Provider')).toBeInTheDocument();
     expect(getByText('google')).toBeInTheDocument();
     expect(getByText('OIDC Token Provider')).toBeInTheDocument();
-    expect(getByText('Provider Link')).toBeInTheDocument();
+    expect(getByText('Dashboard Link')).toBeInTheDocument();
     expect(queryAllByText('N/A')).toHaveLength(2);
   });
 });
