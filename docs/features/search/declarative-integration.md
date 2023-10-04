@@ -13,7 +13,7 @@ In the new frontend system, everything that extends Backstage's core features is
 
 Extensions produces output artifacts and these artifacts are inputs consumed by other extensions:
 
-![search extensions example](../../assets/search/search-extensions-example.svg)
+![search extensions example](../../assets/search/search-extensions-example.drawio.svg)
 
 In the image above, a `SearchResultItem` extension outputs a component and this component is injected as input to the `SearchPage` "items" attachment point. The `SearchPage` in turn uses the search result items to compose a search page element and outputs a route path and the page element so they are used as inputs attached to the `CoreRoutes` extension. Finally, the `CoreRoutes` renders the page element when the location matches the search page path.
 
@@ -50,8 +50,6 @@ _Example disabling the search page extension_
 ```yaml
 # app-config.yaml
 app:
-  experimental:
-    packages: 'all' # enable packages auto discovery
   extensions:
     - plugin.search.page: false # ✨
 ```
@@ -61,8 +59,6 @@ _Example setting the search sidebar item label_
 ```yaml
 # app-config.yaml
 app:
-  experimental:
-    packages: 'all' # enable packages auto discovery
   extensions:
     - plugin.search.nav.index: # ✨
         config:
@@ -109,8 +105,6 @@ When a Backstage adopter doesn't want to use the custom `TechDocs` search result
 ```yaml
 # app-config.yaml
 app:
-  experimental:
-    packages: 'all'
   extensions:
     - plugin.search.result.item.techdocs: false # ✨
 ```
@@ -120,8 +114,6 @@ Because a configuration schema was provided to the extension factory, Backstage 
 ```yaml
 # app-config.yaml
 app:
-  experimental:
-    packages: 'all' # enable packages auto discovery
   extensions:
     - plugin.search.result.item.techdocs:
         config: # ✨
@@ -129,6 +121,7 @@ app:
           lineClamp: 3
 ```
 
+[comment]: <> (TODO: Extract this explanation to a more central place in the future)
 The `createSearchResultItemExtension` function returns a Backstage's extension representation as follows:
 
 ```ts
@@ -222,7 +215,7 @@ export default createPlugin({
 });
 ```
 
-### Future enhancement opportunities
+### Future Enhancement Opportunities
 
 Backstage maintainers are currently working on the extension replacement feature, and with this release, adopters will also be able to replace extensions provided by plugins, so stay tuned for future updates to this documentation.
 
