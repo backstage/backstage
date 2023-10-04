@@ -13,5 +13,10 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-export * from './service/router';
-export { nomadPlugin as default } from './plugin';
+import { nomadPlugin } from './plugin';
+
+describe('nomad', () => {
+  it('should export the nomad plugin', () => {
+    expect(nomadPlugin).toBeDefined();
+  });
+});
