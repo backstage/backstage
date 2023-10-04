@@ -69,9 +69,9 @@ export const DashboardEntityList = () => {
           <>No Dashboard Pages found with the specified Dashboard GUID</>
         )}
       {value?.getDashboardEntity?.data.actor.entitySearch.results.entities?.map(
-        (entityResult: ResultEntity) => {
+        (entityResult: ResultEntity, index: number) => {
           return (
-            <Box style={{ margin: '10px' }} display="flex">
+            <Box style={{ margin: '10px' }} display="flex" key={index}>
               <Box mr={1} className={classes.svgIcon}>
                 <Typography component="div">
                   <DesktopMac />
