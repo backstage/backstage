@@ -15,7 +15,6 @@
  */
 
 import fs from 'fs-extra';
-import { EOL } from 'os';
 import {
   resolve as resolvePath,
   relative as relativePath,
@@ -23,7 +22,6 @@ import {
   sep,
 } from 'path';
 import { ConfigSchemaPackageEntry } from './types';
-import { JsonObject } from '@backstage/types';
 import { assertError } from '@backstage/errors';
 
 type Item = {
@@ -171,9 +169,8 @@ async function compileTsSchemas(paths: string[]) {
   const program = getProgramFromFiles(paths, {
     incremental: false,
     isolatedModules: true,
-    lib: ['ES5'], // Skipping most libs speeds processing up a lot, we just need the primitive types anyway
+    lib: ['ES2022'], // Skipping most libs speeds processing up a lot, we just need the primitive types anyway
     noEmit: true,
-    noResolve: true,
     skipLibCheck: true, // Skipping lib checks speeds things up
     skipDefaultLibCheck: true,
     strict: true,
@@ -184,40 +181,30 @@ async function compileTsSchemas(paths: string[]) {
   const tsSchemas = paths.map(path => {
     let value;
     try {
+      const unixPath = path.split(sep).join('/'); // Unix paths are expected for all OSes here
+
       const generator = buildGenerator(
         program,
         // This enables the use of these tags in TSDoc comments
         {
           required: true,
           validationKeywords: ['visibility', 'deepVisibility', 'deprecated'],
+          ignoreErrors: true,
+          uniqueNames: true,
         },
-        [path.split(sep).join('/')], // Unix paths are expected for all OSes here
+        [unixPath],
       );
 
       // All schemas should export a `Config` symbol
-      value = generator?.getSchemaForSymbol('Config') as JsonObject | null;
+      const configSymbol = generator
+        ?.getMainFileSymbols(program, [unixPath])
+        .find(symbolName => symbolName.startsWith('Config'));
 
-      // This makes sure that no additional symbols are defined in the schema. We don't allow
-      // this because they share a global namespace and will be merged together, leading to
-      // unpredictable behavior.
-      const userSymbols = new Set(generator?.getUserSymbols());
-      userSymbols.delete('Config');
-      if (userSymbols.size !== 0) {
-        const names = Array.from(userSymbols).join("', '");
-        throw new Error(
-          `Invalid configuration schema in ${path}, additional symbol definitions are not allowed, found '${names}'`,
-        );
+      if (!configSymbol) {
+        throw new Error(`Invalid schema in ${path}, missing Config export`);
       }
 
-      // This makes sure that no unsupported types are used in the schema, for example `Record<,>`.
-      // The generator will extract these as a schema reference, which will in turn be broken for our usage.
-      const reffedDefs = Object.keys(generator?.ReffedDefinitions ?? {});
-      if (reffedDefs.length !== 0) {
-        const lines = reffedDefs.join(`${EOL}  `);
-        throw new Error(
-          `Invalid configuration schema in ${path}, the following definitions are not supported:${EOL}${EOL}  ${lines}`,
-        );
-      }
+      value = generator?.getSchemaForSymbol(configSymbol);
     } catch (error) {
       assertError(error);
       if (error.message !== 'type Config not found') {
@@ -226,8 +213,9 @@ async function compileTsSchemas(paths: string[]) {
     }
 
     if (!value) {
-      throw new Error(`Invalid schema in ${path}, missing Config export`);
+      throw new Error(`Invalid schema in ${path}`);
     }
+
     return { path, value };
   });
 
