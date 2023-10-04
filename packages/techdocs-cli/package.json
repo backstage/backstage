@@ -40,6 +40,7 @@
     "@types/fs-extra": "^9.0.6",
     "@types/http-proxy": "^1.17.4",
     "@types/node": "^18.17.8",
+    "@types/react-dev-utils": "^9.0.12",
     "@types/serve-handler": "^6.1.0",
     "@types/webpack-env": "^1.15.3",
     "find-process": "^1.4.5",
