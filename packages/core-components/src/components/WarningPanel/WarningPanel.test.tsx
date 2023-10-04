@@ -75,21 +75,4 @@ describe('<WarningPanel />', () => {
     await renderInTestApp(<WarningPanel {...propsErrorMessage} />);
     expect(screen.getByText('Error: Mock title')).toBeInTheDocument();
   });
-  it('renders a title formatted by markdown', async () => {
-    await renderInTestApp(
-      <WarningPanel
-        {...propsErrorMessage}
-        formatTitle="markdown"
-        title="Step has been failed. [Help](https://commonmark.org/help)"
-      />,
-    );
-    expect(
-      screen.getByText('Error: Step has been failed.'),
-    ).toBeInTheDocument();
-
-    expect(screen.getByText('Help')).toHaveAttribute(
-      'href',
-      'https://commonmark.org/help',
-    );
-  });
 });

@@ -384,7 +384,6 @@ export type ErrorPanelClassKey = 'text' | 'divider';
 export type ErrorPanelProps = {
   error: Error;
   defaultExpanded?: boolean;
-  formatTitle?: string;
   title?: string;
 };
 
