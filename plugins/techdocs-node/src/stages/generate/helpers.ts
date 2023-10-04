@@ -190,11 +190,8 @@ export const generateMkdocsYml = async (
  * @public
  *
  * @param inputDir - base dir to be searched for either an mkdocs.yml or mkdocs.yaml file.
- * @param options - ```
- * {
- * name: default mkdocs site_name to be used with a ad hoc file default value is "Documentation Site"
- * mkdocsConfigFileName (optional): a non-default file name to be used as the config
- * }```
+ * @param options - name: default mkdocs site_name to be used with a ad hoc file default value is "Documentation Site"
+ *                  mkdocsConfigFileName (optional): a non-default file name to be used as the config
  */
 export const getMkdocsYml = async (
   inputDir: string,
