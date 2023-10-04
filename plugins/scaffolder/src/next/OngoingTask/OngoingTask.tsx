@@ -162,6 +162,7 @@ export const OngoingTask = (props: {
           <Box paddingBottom={2}>
             <ErrorPanel
               error={taskStream.error}
+              formatTitle="markdown"
               title={taskStream.error.message}
             />
           </Box>

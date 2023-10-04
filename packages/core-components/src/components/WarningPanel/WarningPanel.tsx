@@ -23,6 +23,7 @@ import Typography from '@material-ui/core/Typography';
 import ErrorOutline from '@material-ui/icons/ErrorOutline';
 import ExpandMoreIcon from '@material-ui/icons/ExpandMore';
 import React from 'react';
+import { MarkdownContent } from '../MarkdownContent';
 
 const getWarningTextColor = (
   severity: NonNullable<WarningProps['severity']>,
@@ -94,6 +95,11 @@ const useStyles = makeStyles<BackstageTheme>(
         ),
       fontWeight: theme.typography.fontWeightBold,
     },
+    markdownContent: {
+      '& p': {
+        display: 'inline',
+      },
+    },
     message: {
       width: '100%',
       display: 'block',
@@ -124,6 +130,7 @@ const useStyles = makeStyles<BackstageTheme>(
 export type WarningProps = {
   title?: string;
   severity?: 'warning' | 'error' | 'info';
+  formatTitle?: string;
   message?: React.ReactNode;
   defaultExpanded?: boolean;
   children?: React.ReactNode;
@@ -151,6 +158,7 @@ export function WarningPanel(props: WarningProps) {
   const {
     severity = 'warning',
     title,
+    formatTitle,
     message,
     children,
     defaultExpanded,
@@ -172,7 +180,14 @@ export function WarningPanel(props: WarningProps) {
       >
         <ErrorOutlineStyled severity={severity} />
         <Typography className={classes.summaryText} variant="subtitle1">
-          {subTitle}
+          {formatTitle === 'markdown' ? (
+            <MarkdownContent
+              content={subTitle}
+              className={classes.markdownContent}
+            />
+          ) : (
+            subTitle
+          )}
         </Typography>
       </AccordionSummary>
       {(message || children) && (

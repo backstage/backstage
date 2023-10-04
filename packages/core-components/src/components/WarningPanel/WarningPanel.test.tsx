@@ -15,7 +15,7 @@
  */
 
 import React from 'react';
-import { fireEvent, screen } from '@testing-library/react';
+import { fireEvent, screen, waitFor } from '@testing-library/react';
 import { renderInTestApp } from '@backstage/test-utils';
 import Typography from '@material-ui/core/Typography';
 import { WarningPanel, WarningProps } from './WarningPanel';
@@ -74,5 +74,22 @@ describe('<WarningPanel />', () => {
   it('renders message using severity', async () => {
     await renderInTestApp(<WarningPanel {...propsErrorMessage} />);
     expect(screen.getByText('Error: Mock title')).toBeInTheDocument();
+  });
+  it('renders a title formatted by markdown', async () => {
+    await renderInTestApp(
+      <WarningPanel
+        {...propsErrorMessage}
+        formatTitle="markdown"
+        title="Step has been failed. [Help](https://commonmark.org/help)"
+      />,
+    );
+    expect(
+      screen.getByText('Error: Step has been failed.'),
+    ).toBeInTheDocument();
+
+    expect(screen.getByText('Help')).toHaveAttribute(
+      'href',
+      'https://commonmark.org/help',
+    );
   });
 });
