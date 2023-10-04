@@ -69,6 +69,7 @@
     "winston": "^3.2.1"
   },
   "devDependencies": {
+    "@backstage/backend-test-utils": "workspace:^",
     "@backstage/cli": "workspace:^",
     "@types/fs-extra": "^9.0.5",
     "@types/js-yaml": "^4.0.0",
