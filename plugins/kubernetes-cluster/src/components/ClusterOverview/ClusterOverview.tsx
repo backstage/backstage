@@ -55,7 +55,7 @@ export const ClusterOverview = () => {
           metadata={{
             name: value.name,
             'Backstage auth provider': value.authProvider,
-            'OIDC token provider': value.oidcTokenProvider ?? 'N/A',
+            'OIDC Token Provider': value.oidcTokenProvider ?? 'N/A',
             'Dashboard Link': value.dashboardUrl ?? 'N/A',
           }}
         />
