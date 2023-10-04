@@ -184,8 +184,6 @@ export const PodsTable = ({ pods, extraColumns = [] }: PodsTablesProps) => {
     <div style={tableStyle}>
       <Table
         options={{ paging: true, search: false, emptyRowsWhenPaging: false }}
-        // Unique ID is added to avoid the table refreshing on every render and closing e.g. open sidebars
-        // This does not get rid of the error in the browser console though, which must be investigated separetley
         data={pods as Pod[]}
         columns={columns}
       />
