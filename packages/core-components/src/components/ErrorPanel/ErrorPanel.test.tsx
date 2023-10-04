@@ -32,12 +32,10 @@ describe('<ErrorPanel />', () => {
       <WarningPanel
         {...propsErrorMessage}
         formatTitle="markdown"
-        title="Step has been failed. [Help](https://commonmark.org/help)"
+        title="Step has failed. [Help](https://commonmark.org/help)"
       />,
     );
-    expect(
-      screen.getByText('Error: Step has been failed.'),
-    ).toBeInTheDocument();
+    expect(screen.getByText('Error: Step has failed.')).toBeInTheDocument();
 
     expect(screen.getByText('Help')).toHaveAttribute(
       'href',
