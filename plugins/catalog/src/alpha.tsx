@@ -14,6 +14,8 @@
  * limitations under the License.
  */
 
+import React from 'react';
+import HomeIcon from '@material-ui/icons/Home';
 import {
   createApiFactory,
   discoveryApiRef,
@@ -22,8 +24,11 @@ import {
 } from '@backstage/core-plugin-api';
 import { CatalogClient } from '@backstage/catalog-client';
 import {
+  createSchemaFromZod,
   createApiExtension,
+  createPageExtension,
   createPlugin,
+  createNavItemExtension,
 } from '@backstage/frontend-plugin-api';
 import {
   catalogApiRef,
@@ -31,6 +36,7 @@ import {
 } from '@backstage/plugin-catalog-react';
 import { createSearchResultListItemExtension } from '@backstage/plugin-search-react/alpha';
 import { DefaultStarredEntitiesApi } from './apis';
+import { rootRouteRef } from './routes';
 
 /** @alpha */
 export const CatalogApi = createApiExtension({
@@ -66,11 +72,48 @@ export const CatalogSearchResultListItemExtension =
   });
 
 /** @alpha */
+export const CatalogIndexPage = createPageExtension({
+  id: 'catalog',
+  routeRef: rootRouteRef,
+  configSchema: createSchemaFromZod(z =>
+    z.object({
+      path: z.string().default('/catalog'),
+      initialKind: z.string().default('component'),
+      initiallySelectedFilter: z
+        .enum(['owned', 'starred', 'all'])
+        .default('owned'),
+      ownerPickerMode: z.enum(['owners-only', 'all']).optional(),
+    }),
+  ),
+  loader: async ({ config }) => {
+    const { CatalogPage } = await import('./components/CatalogPage');
+    const { ownerPickerMode, initialKind, initiallySelectedFilter } = config;
+
+    return (
+      <CatalogPage
+        ownerPickerMode={ownerPickerMode}
+        initialKind={initialKind}
+        initiallySelectedFilter={initiallySelectedFilter}
+      />
+    );
+  },
+});
+
+const CatalogNavItem = createNavItemExtension({
+  id: 'catalog.nav.index',
+  routeRef: rootRouteRef,
+  title: 'Catalog',
+  icon: HomeIcon,
+});
+
+/** @alpha */
 export default createPlugin({
   id: 'catalog',
   extensions: [
     CatalogApi,
     StarredEntitiesApi,
     CatalogSearchResultListItemExtension,
+    CatalogNavItem,
+    CatalogIndexPage,
   ],
 });
