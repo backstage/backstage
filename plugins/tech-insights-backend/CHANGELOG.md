@@ -1,5 +1,14 @@
 # @backstage/plugin-tech-insights-backend
 
+## 0.5.19
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-common@0.19.7
+  - @backstage/backend-tasks@0.5.10
+  - @backstage/plugin-tech-insights-node@0.4.11
+
 ## 0.5.18
 
 ### Patch Changes
