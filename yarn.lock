@@ -18158,9 +18158,9 @@ __metadata:
   linkType: hard
 
 "@types/prop-types@npm:*, @types/prop-types@npm:^15.0.0, @types/prop-types@npm:^15.7.3, @types/prop-types@npm:^15.7.5":
-  version: 15.7.7
-  resolution: "@types/prop-types@npm:15.7.7"
-  checksum: 023b95f7dd82e1c594f51dcb93ec4c382600cef6eeee29a2ac7b782b92c0882eab8da16d4cbd6e18b39e85ac8d94ebf4ca02c6e248ce5b5fb4b16dbab5d82861
+  version: 15.7.8
+  resolution: "@types/prop-types@npm:15.7.8"
+  checksum: 61dfad79da8b1081c450bab83b77935df487ae1cdd4660ec7df6be8e74725c15fa45cf486ce057addc956ca4ae78300b97091e2a25061133d1b9a1440bc896ae
   languageName: node
   linkType: hard
 
@@ -18299,13 +18299,13 @@ __metadata:
   linkType: hard
 
 "@types/react@npm:^17":
-  version: 17.0.66
-  resolution: "@types/react@npm:17.0.66"
+  version: 17.0.67
+  resolution: "@types/react@npm:17.0.67"
   dependencies:
     "@types/prop-types": "*"
     "@types/scheduler": "*"
     csstype: ^3.0.2
-  checksum: b364a98670ccee222dbd21ddd6cd1be78ad22bca40c7e1c073fff908121fd51fe1de0e9afc3d4ef8dfb6ceedfa28c5257dde9f23af0096f4d350e60c4b2f8858
+  checksum: eb4915fc7d24e19fe6e98dfe98ade377423b1263e7dc001beda41b0298152fb5a410a55dde5def5ec0838156239a48e778d522da03d319ae5ecea80d455da604
   languageName: node
   linkType: hard
 
@@ -18989,9 +18989,9 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@uiw/codemirror-extensions-basic-setup@npm:4.21.13":
-  version: 4.21.13
-  resolution: "@uiw/codemirror-extensions-basic-setup@npm:4.21.13"
+"@uiw/codemirror-extensions-basic-setup@npm:4.21.18":
+  version: 4.21.18
+  resolution: "@uiw/codemirror-extensions-basic-setup@npm:4.21.18"
   dependencies:
     "@codemirror/autocomplete": ^6.0.0
     "@codemirror/commands": ^6.0.0
@@ -19008,19 +19008,19 @@ __metadata:
     "@codemirror/search": ">=6.0.0"
     "@codemirror/state": ">=6.0.0"
     "@codemirror/view": ">=6.0.0"
-  checksum: 94a1ef335ed12fd1eb201e3d94892824d16a01d5a531c1962ed3b9a2d379dc3261abb4647208254a5a69763467b8a4f677ae0201fc8e67e5b60b1da9b12bae34
+  checksum: c643eebc45e2067080c46e28fdb4ac40043e5890f4862bd45fe5bf816894b6c118ea901ca9ba1dce8862877622ebd793db6ec220491506355ed562a0dc0c4507
   languageName: node
   linkType: hard
 
 "@uiw/react-codemirror@npm:^4.9.3":
-  version: 4.21.13
-  resolution: "@uiw/react-codemirror@npm:4.21.13"
+  version: 4.21.18
+  resolution: "@uiw/react-codemirror@npm:4.21.18"
   dependencies:
     "@babel/runtime": ^7.18.6
     "@codemirror/commands": ^6.1.0
     "@codemirror/state": ^6.1.1
     "@codemirror/theme-one-dark": ^6.0.0
-    "@uiw/codemirror-extensions-basic-setup": 4.21.13
+    "@uiw/codemirror-extensions-basic-setup": 4.21.18
     codemirror: ^6.0.0
   peerDependencies:
     "@babel/runtime": ">=7.11.0"
@@ -19030,7 +19030,7 @@ __metadata:
     codemirror: ">=6.0.0"
     react: ">=16.8.0"
     react-dom: ">=16.8.0"
-  checksum: 5e8dafa3837eeb4a6909f463f92ac2dd4143a5db79bf03b3d1782759940e7de6fc459ac60d9f01c9ce2e37771e83d4894e236810a788b38eebf1f312659f2764
+  checksum: ef3897e9901b98fd981d4b9db2ae8702aa7ffda4cf5cab3286963580606a6dde38e77a4314c12574b6f5f251d62b62e59f0a1a445009b5927b8500f4b5fd795c
   languageName: node
   linkType: hard
 
@@ -27462,7 +27462,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"graphql@npm:^15.0.0 || ^16.0.0, graphql@npm:^16.0.0":
+"graphql@npm:^16.0.0, graphql@npm:^16.8.1":
   version: 16.8.1
   resolution: "graphql@npm:16.8.1"
   checksum: 8d304b7b6f708c8c5cc164b06e92467dfe36aff6d4f2cf31dd19c4c2905a0e7b89edac4b7e225871131fd24e21460836b369de0c06532644d15b461d55b1ccc0
@@ -33183,8 +33183,8 @@ __metadata:
   linkType: hard
 
 "msw@npm:^1.0.0, msw@npm:^1.0.1, msw@npm:^1.2.1, msw@npm:^1.2.3, msw@npm:^1.3.1":
-  version: 1.3.1
-  resolution: "msw@npm:1.3.1"
+  version: 1.3.2
+  resolution: "msw@npm:1.3.2"
   dependencies:
     "@mswjs/cookies": ^0.2.2
     "@mswjs/interceptors": ^0.17.10
@@ -33194,7 +33194,7 @@ __metadata:
     chalk: ^4.1.1
     chokidar: ^3.4.2
     cookie: ^0.4.2
-    graphql: ^15.0.0 || ^16.0.0
+    graphql: ^16.8.1
     headers-polyfill: 3.2.5
     inquirer: ^8.2.0
     is-node-process: ^1.2.0
@@ -33212,7 +33212,7 @@ __metadata:
       optional: true
   bin:
     msw: cli/index.js
-  checksum: 5e3c9d2efff025ecaa55c48b0392179fb07253f26212fe884cca7cc4b5d62cebbfa937dc7249a91d432b1f64ebcce2a1e4938056264f277da62d62d072dfb883
+  checksum: c2d4f7747f5806f0fd8d8cc3ca250ee1c2a7a6cd608de43f95bd072ba1fb13cdce0b52932ce9bf8f4a21b194d2815db535501e224ec8f7052593447fe1c0cb70
   languageName: node
   linkType: hard
 
