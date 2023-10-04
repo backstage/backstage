@@ -351,6 +351,7 @@ export class KubernetesBackendClient implements KubernetesApi {
   getCluster(clusterName: string): Promise<{
     name: string;
     authProvider: string;
+    oidcTokenProvider?: string;
   }>;
   // (undocumented)
   getClusters(): Promise<
