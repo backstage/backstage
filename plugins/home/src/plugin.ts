@@ -210,3 +210,18 @@ export const HomePageRecentlyVisited = homePlugin.provide(
       import('./homePageComponents/VisitedByType/RecentlyVisited'),
   }),
 );
+
+/**
+ * A component to display specific Featured Docs.
+ *
+ * @public
+ */
+export const FeaturedDocs = homePlugin.provide(
+  createComponentExtension({
+    name: 'FeaturedDocs',
+    component: {
+      lazy: () =>
+        import('./homePageComponents/FeaturedDocs').then(m => m.FeaturedDocs),
+    },
+  }),
+);

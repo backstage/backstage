@@ -47,6 +47,7 @@
     "clean": "backstage-cli package clean"
   },
   "dependencies": {
+    "@backstage/catalog-client": "workspace:^",
     "@backstage/catalog-model": "workspace:^",
     "@backstage/config": "workspace:^",
     "@backstage/core-app-api": "workspace:^",
@@ -60,6 +61,7 @@
     "@material-ui/core": "^4.12.2",
     "@material-ui/icons": "^4.9.1",
     "@material-ui/lab": "4.0.0-alpha.61",
+    "@material-ui/styles": "^4.11.5",
     "@rjsf/core": "5.13.0",
     "@rjsf/material-ui": "5.13.0",
     "@rjsf/utils": "5.13.0",
