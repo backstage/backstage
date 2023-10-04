@@ -185,21 +185,38 @@ export const generateMkdocsYml = async (
 };
 
 /**
- * Finds and loads the contents of either an mkdocs.yml or mkdocs.yaml file,
- * depending on which is present (MkDocs supports both as of v1.2.2).
+ * Finds and loads the contents of an mkdocs.yml, mkdocs.yaml file, a file
+ * with a specified name or an ad-hoc created file with minimal config.
  * @public
  *
  * @param inputDir - base dir to be searched for either an mkdocs.yml or mkdocs.yaml file.
- * @param siteOptions - options for the site: `name` property will be used in mkdocs.yml for the
- * required `site_name` property, default value is "Documentation Site"
+ * @param options - ```
+ * {
+ * name: default mkdocs site_name to be used with a ad hoc file default value is "Documentation Site"
+ * mkdocsConfigFileName (optional): a non-default file name to be used as the config
+ * }```
  */
 export const getMkdocsYml = async (
   inputDir: string,
-  siteOptions?: { name?: string },
+  options?: { name?: string; mkdocsConfigFileName?: string },
 ): Promise<{ path: string; content: string; configIsTemporary: boolean }> => {
   let mkdocsYmlPath: string;
   let mkdocsYmlFileString: string;
   try {
+    if (options?.mkdocsConfigFileName) {
+      mkdocsYmlPath = path.join(inputDir, options.mkdocsConfigFileName);
+      if (!(await fs.pathExists(mkdocsYmlPath))) {
+        throw new Error(`The specified file ${mkdocsYmlPath} does not exist`);
+      }
+
+      mkdocsYmlFileString = await fs.readFile(mkdocsYmlPath, 'utf8');
+      return {
+        path: mkdocsYmlPath,
+        content: mkdocsYmlFileString,
+        configIsTemporary: false,
+      };
+    }
+
     mkdocsYmlPath = path.join(inputDir, 'mkdocs.yaml');
     if (await fs.pathExists(mkdocsYmlPath)) {
       mkdocsYmlFileString = await fs.readFile(mkdocsYmlPath, 'utf8');
@@ -221,7 +238,7 @@ export const getMkdocsYml = async (
     }
 
     // No mkdocs file, generate it
-    await generateMkdocsYml(inputDir, siteOptions);
+    await generateMkdocsYml(inputDir, options);
     mkdocsYmlFileString = await fs.readFile(mkdocsYmlPath, 'utf8');
   } catch (error) {
     throw new ForwardedError(
