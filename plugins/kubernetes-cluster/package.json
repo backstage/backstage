@@ -1,6 +1,6 @@
 {
   "name": "@backstage/plugin-kubernetes-cluster",
-  "description": "A Backstage plugin shows details of Kubernetes Clusters",
+  "description": "A Backstage plugin that shows details of Kubernetes clusters",
   "version": "0.0.0",
   "main": "src/index.ts",
   "types": "src/index.ts",
