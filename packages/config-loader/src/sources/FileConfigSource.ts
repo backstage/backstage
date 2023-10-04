@@ -40,7 +40,7 @@ export interface FileConfigSourceOptions {
   path: string;
 
   /**
-   * Enable watching file
+   * Set to `false` to disable file watching, defaults to `true`.
    */
   watch?: boolean;
 
