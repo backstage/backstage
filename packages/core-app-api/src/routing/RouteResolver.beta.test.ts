@@ -364,4 +364,31 @@ describe('RouteResolver', () => {
       /^Cannot route.*with parent.*as it has parameters$/,
     );
   });
+
+  it('should encode some characters in params', () => {
+    const r = new RouteResolver(
+      new Map<RouteRef, string>([
+        [ref2, 'my-parent/:x'],
+        [ref1, 'my-route'],
+      ]),
+      new Map<RouteRef, RouteRef>([[ref1, ref2]]),
+      [
+        {
+          routeRefs: new Set([ref2]),
+          path: 'my-parent/:x',
+          ...rest,
+          children: [
+            MATCH_ALL_ROUTE,
+            { routeRefs: new Set([ref1]), path: 'my-route', ...rest },
+          ],
+        },
+      ],
+      new Map(),
+      '/base',
+    );
+
+    expect(r.resolve(ref2, '/')?.({ x: 'a/#&?b' })).toBe(
+      '/base/my-parent/a%2F%23%26%3Fb',
+    );
+  });
 });

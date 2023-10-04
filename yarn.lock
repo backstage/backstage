@@ -3955,6 +3955,7 @@ __metadata:
     "@types/zen-observable": ^0.8.0
     history: ^5.0.0
     i18next: ^22.4.15
+    lodash: ^4.17.21
     msw: ^1.0.0
     prop-types: ^15.7.2
     react-router-beta: "npm:react-router@6.0.0-beta.0"
@@ -7981,6 +7982,7 @@ __metadata:
   resolution: "@backstage/plugin-nomad-backend@workspace:plugins/nomad-backend"
   dependencies:
     "@backstage/backend-common": "workspace:^"
+    "@backstage/backend-plugin-api": "workspace:^"
     "@backstage/cli": "workspace:^"
     "@backstage/config": "workspace:^"
     "@backstage/errors": "workspace:^"
@@ -25624,6 +25626,7 @@ __metadata:
     "@backstage/plugin-kubernetes-backend": "workspace:^"
     "@backstage/plugin-lighthouse-backend": "workspace:^"
     "@backstage/plugin-linguist-backend": "workspace:^"
+    "@backstage/plugin-nomad-backend": "workspace:^"
     "@backstage/plugin-permission-backend": "workspace:^"
     "@backstage/plugin-permission-backend-module-allow-all-policy": "workspace:^"
     "@backstage/plugin-permission-common": "workspace:^"
@@ -43202,9 +43205,9 @@ __metadata:
   linkType: hard
 
 "zod@npm:^3.21.4":
-  version: 3.22.2
-  resolution: "zod@npm:3.22.2"
-  checksum: 231e2180c8eabb56e88680d80baff5cf6cbe6d64df3c44c50ebe52f73081ecd0229b1c7215b9552537f537a36d9e36afac2737ddd86dc14e3519bdbc777e82b9
+  version: 3.22.3
+  resolution: "zod@npm:3.22.3"
+  checksum: 65b05139be337078a70700b05942ab7f2ef5f11abe194df14ef257fac4e5c383476a4dc290731842996bd57fc8d5bf38e5a4c907fe8cdf8b15477f8da5bfcc00
   languageName: node
   linkType: hard
 

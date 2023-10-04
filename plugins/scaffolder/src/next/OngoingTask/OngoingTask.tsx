@@ -46,6 +46,9 @@ const useStyles = makeStyles(theme => ({
   cancelButton: {
     marginRight: theme.spacing(1),
   },
+  logsVisibilityButton: {
+    marginRight: theme.spacing(1),
+  },
 }));
 
 export const OngoingTask = (props: {
@@ -187,6 +190,14 @@ export const OngoingTask = (props: {
                     data-testid="cancel-button"
                   >
                     Cancel
+                  </Button>
+                  <Button
+                    className={classes.logsVisibilityButton}
+                    color="primary"
+                    variant="outlined"
+                    onClick={() => setLogVisibleState(!logsVisible)}
+                  >
+                    {logsVisible ? 'Hide Logs' : 'Show Logs'}
                   </Button>
                   <Button
                     variant="contained"

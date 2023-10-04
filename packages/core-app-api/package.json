@@ -50,6 +50,7 @@
     "@types/react": "^16.13.1 || ^17.0.0",
     "history": "^5.0.0",
     "i18next": "^22.4.15",
+    "lodash": "^4.17.21",
     "prop-types": "^15.7.2",
     "react-use": "^17.2.4",
     "zen-observable": "^0.10.0",
