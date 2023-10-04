@@ -91,7 +91,7 @@ describe('createMockDirectory', () => {
 
     mockDir.addContent({
       'b.txt': 'b',
-      b: {
+      [mockDir.resolve('b')]: {
         'c.txt': 'c',
       },
     });

@@ -279,19 +279,18 @@ class MockDirectoryImpl {
     const entries: MockEntry[] = [];
 
     function traverse(node: MockDirectoryContent[string], path: string) {
-      const trimmedPath = path.startsWith('/') ? path.slice(1) : path; // trim leading slash
       if (typeof node === 'string') {
         entries.push({
           type: 'file',
-          path: trimmedPath,
+          path,
           content: Buffer.from(node, 'utf8'),
         });
       } else if (node instanceof Buffer) {
-        entries.push({ type: 'file', path: trimmedPath, content: node });
+        entries.push({ type: 'file', path, content: node });
       } else {
-        entries.push({ type: 'dir', path: trimmedPath });
+        entries.push({ type: 'dir', path });
         for (const [name, child] of Object.entries(node)) {
-          traverse(child, `${trimmedPath}/${name}`);
+          traverse(child, path ? `${path}/${name}` : name);
         }
       }
     }
