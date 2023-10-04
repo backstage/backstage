@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import { JsonObject } from '@backstage/types';
+
 import { PluginOption } from 'vite';
 import fs from 'fs/promises';
 import { render } from 'ejs';
@@ -26,7 +26,7 @@ export const viteTransformHtml = ({
 }: {
   targetHtml: string;
   entryPath: string;
-  data: JsonObject;
+  data: any;
 }): PluginOption => ({
   name: 'backstage:transform:html',
   configureServer(s) {
