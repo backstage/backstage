@@ -15,7 +15,7 @@
  */
 
 import React from 'react';
-import { fireEvent, screen, waitFor } from '@testing-library/react';
+import { fireEvent, screen } from '@testing-library/react';
 import { renderInTestApp } from '@backstage/test-utils';
 import Typography from '@material-ui/core/Typography';
 import { WarningPanel, WarningProps } from './WarningPanel';
