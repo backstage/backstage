@@ -20,9 +20,9 @@ import {
   MiddlewareFactory,
   createHttpServer,
   ExtendedHttpServer,
+  HostDiscovery,
   DefaultRootHttpRouter,
 } from '@backstage/backend-app-api';
-import { HostDiscovery } from '@backstage/backend-common';
 import {
   createServiceFactory,
   BackendFeature,

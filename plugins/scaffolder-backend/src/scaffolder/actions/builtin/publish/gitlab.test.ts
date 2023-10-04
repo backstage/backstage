@@ -393,4 +393,23 @@ describe('publish:gitlab', () => {
       visibility: 'private',
     });
   });
+
+  it('should show proper error message when token has insufficient permissions or namespace not found', async () => {
+    mockGitlabClient.Namespaces.show.mockRejectedValue({
+      response: {
+        statusCode: 404,
+      },
+    });
+    const owner = 'infrastructure/devex';
+    const repoName = 'backstage';
+
+    await expect(
+      action.handler({
+        ...mockContext,
+        input: { repoUrl: `gitlab.com?owner=${owner}&repo=${repoName}` },
+      }),
+    ).rejects.toThrow(
+      `The namespace ${owner} is not found or the user doesn't have permissions to access it`,
+    );
+  });
 });

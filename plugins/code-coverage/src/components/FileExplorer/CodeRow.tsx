@@ -41,9 +41,11 @@ const useStyles = makeStyles(theme => ({
   },
   hitCountRoundedRectangle: {
     backgroundColor: `${theme.palette.success.main}`,
+    color: `${theme.palette.success.contrastText}`,
   },
   notHitCountRoundedRectangle: {
     backgroundColor: `${theme.palette.error.main}`,
+    color: `${theme.palette.error.contrastText}`,
   },
   codeLine: {
     paddingLeft: `${theme.spacing(1)}`,
@@ -52,9 +54,11 @@ const useStyles = makeStyles(theme => ({
   },
   hitCodeLine: {
     backgroundColor: `${theme.palette.success.main}`,
+    color: `${theme.palette.success.contrastText}`,
   },
   notHitCodeLine: {
     backgroundColor: `${theme.palette.error.main}`,
+    color: `${theme.palette.error.contrastText}`,
   },
 }));
 

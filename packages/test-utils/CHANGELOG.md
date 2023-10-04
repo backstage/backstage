@@ -1,5 +1,33 @@
 # @backstage/test-utils
 
+## 1.4.4-next.1
+
+### Patch Changes
+
+- 1a0616fa10: Add missing resource and template app icons
+- Updated dependencies
+  - @backstage/core-app-api@1.10.1-next.1
+  - @backstage/core-plugin-api@1.7.0-next.0
+  - @backstage/config@1.1.0
+  - @backstage/plugin-permission-react@0.4.16-next.0
+  - @backstage/theme@0.4.2
+  - @backstage/types@1.1.1
+  - @backstage/plugin-permission-common@0.7.8
+
+## 1.4.4-next.0
+
+### Patch Changes
+
+- 322bbcae24: Removed the alpha `MockPluginProvider` export since the plugin configuration API has been removed.
+- Updated dependencies
+  - @backstage/core-plugin-api@1.7.0-next.0
+  - @backstage/config@1.1.0
+  - @backstage/core-app-api@1.10.1-next.0
+  - @backstage/plugin-permission-react@0.4.16-next.0
+  - @backstage/theme@0.4.2
+  - @backstage/types@1.1.1
+  - @backstage/plugin-permission-common@0.7.8
+
 ## 1.4.3
 
 ### Patch Changes
@@ -264,7 +292,7 @@
 
 ### Minor Changes
 
-- 7908d72e033: Introduce a new global config parameter, `auth.enableExperimentalRedirectFlow`. When enabled, auth will happen with an in-window redirect flow rather than through a popup window.
+- 7908d72e033: Introduce a new global config parameter, `enableExperimentalRedirectFlow`. When enabled, auth will happen with an in-window redirect flow rather than through a popup window.
 
 ### Patch Changes
 
@@ -322,7 +350,7 @@
 
 ### Minor Changes
 
-- 7908d72e033: Introduce a new global config parameter, `auth.enableExperimentalRedirectFlow`. When enabled, auth will happen with an in-window redirect flow rather than through a popup window.
+- 7908d72e033: Introduce a new global config parameter, `enableExperimentalRedirectFlow`. When enabled, auth will happen with an in-window redirect flow rather than through a popup window.
 
 ### Patch Changes
 

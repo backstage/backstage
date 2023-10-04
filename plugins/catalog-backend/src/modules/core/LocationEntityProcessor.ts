@@ -42,12 +42,26 @@ export function toAbsoluteUrl(
   }
 }
 
-/** @public */
+/**
+ * @public
+ * @deprecated This processor should no longer be used
+ */
 export type LocationEntityProcessorOptions = {
   integrations: ScmIntegrationRegistry;
 };
 
-/** @public */
+/**
+ * Legacy processor, should not be used.
+ *
+ * @remarks
+ *
+ * In the old catalog architecture, this processor translated Location entities
+ * into URLs that should be fetched. This is no longer needed since the engine
+ * handles this internally.
+ *
+ * @public
+ * @deprecated This processor should no longer be used
+ */
 export class LocationEntityProcessor implements CatalogProcessor {
   constructor(private readonly options: LocationEntityProcessorOptions) {}
 

@@ -1,5 +1,11 @@
 # @backstage/backend-dev-utils
 
+## 0.1.2-next.0
+
+### Patch Changes
+
+- afa48341fb: Fix an issue where early IPC responses would be lost.
+
 ## 0.1.1
 
 ### Patch Changes

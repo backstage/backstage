@@ -17,7 +17,6 @@ export const todoListPlugin: BackstagePlugin<
   {
     root: RouteRef<undefined>;
   },
-  {},
   {}
 >;
 

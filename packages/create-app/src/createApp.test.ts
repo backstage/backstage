@@ -36,10 +36,6 @@ const templatingMock = jest.spyOn(tasks, 'templatingTask');
 const checkAppExistsMock = jest.spyOn(tasks, 'checkAppExistsTask');
 const tryInitGitRepositoryMock = jest.spyOn(tasks, 'tryInitGitRepository');
 const readGitConfig = jest.spyOn(tasks, 'readGitConfig');
-const createTemporaryAppFolderMock = jest.spyOn(
-  tasks,
-  'createTemporaryAppFolderTask',
-);
 const moveAppMock = jest.spyOn(tasks, 'moveAppTask');
 const buildAppMock = jest.spyOn(tasks, 'buildAppTask');
 
@@ -73,7 +69,6 @@ describe('command entrypoint', () => {
     const cmd = {} as unknown as Command;
     await createApp(cmd);
     expect(checkAppExistsMock).toHaveBeenCalled();
-    expect(createTemporaryAppFolderMock).toHaveBeenCalled();
     expect(tryInitGitRepositoryMock).toHaveBeenCalled();
     expect(templatingMock).toHaveBeenCalled();
     expect(templatingMock.mock.lastCall?.[0]).toEqual(
@@ -85,7 +80,7 @@ describe('command entrypoint', () => {
         'default-app',
       ),
     );
-    expect(templatingMock.mock.lastCall?.[1]).toEqual(
+    expect(templatingMock.mock.lastCall?.[1]).toContain(
       path.join(tmpdir(), 'MyApp'),
     );
     expect(moveAppMock).toHaveBeenCalled();

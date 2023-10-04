@@ -1,5 +1,34 @@
 # @backstage/plugin-catalog-backend-module-puppetdb
 
+## 0.1.10-next.1
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-tasks@0.5.10-next.1
+  - @backstage/plugin-catalog-node@1.4.6-next.1
+  - @backstage/backend-common@0.19.7-next.1
+  - @backstage/backend-plugin-api@0.6.5-next.1
+  - @backstage/config@1.1.0
+  - @backstage/catalog-model@1.4.2
+  - @backstage/errors@1.2.2
+  - @backstage/types@1.1.1
+
+## 0.1.10-next.0
+
+### Patch Changes
+
+- 890e3b5ad4: Make sure to include the error message when ingestion fails
+- Updated dependencies
+  - @backstage/backend-common@0.19.7-next.0
+  - @backstage/config@1.1.0
+  - @backstage/backend-plugin-api@0.6.5-next.0
+  - @backstage/backend-tasks@0.5.10-next.0
+  - @backstage/catalog-model@1.4.2
+  - @backstage/errors@1.2.2
+  - @backstage/types@1.1.1
+  - @backstage/plugin-catalog-node@1.4.6-next.0
+
 ## 0.1.8
 
 ### Patch Changes
