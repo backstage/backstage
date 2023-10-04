@@ -398,9 +398,26 @@ describe('KubernetesBackendClient', () => {
       identityApi.getCredentials.mockResolvedValue({ token: 'idToken' });
     });
 
-    it('hits the /proxy API', async () => {
+    it('hits the /proxy API with oidc as protocol and okta as auth provider', async () => {
+      worker.use(
+        rest.get(
+          'http://localhost:1234/api/kubernetes/clusters',
+          (_, res, ctx) =>
+            res(
+              ctx.json({
+                items: [
+                  {
+                    name: 'cluster-a',
+                    authProvider: 'oidc',
+                    oidcTokenProvider: 'okta',
+                  },
+                ],
+              }),
+            ),
+        ),
+      );
       kubernetesAuthProvidersApi.getCredentials.mockResolvedValue({
-        token: 'k8-token',
+        token: 'k8-token3',
       });
       const nsResponse = {
         kind: 'Namespace',
@@ -414,8 +431,56 @@ describe('KubernetesBackendClient', () => {
           'http://localhost:1234/api/kubernetes/proxy/api/v1/namespaces',
           (req, res, ctx) =>
             res(
-              req.headers.get('Backstage-Kubernetes-Authorization') ===
-                'Bearer k8-token'
+              req.headers.get(
+                'Backstage-Kubernetes-Authorization-oidc-okta',
+              ) === 'k8-token3'
+                ? ctx.json(nsResponse)
+                : ctx.status(403),
+            ),
+        ),
+      );
+
+      const request = {
+        clusterName: 'cluster-a',
+        path: '/api/v1/namespaces',
+      };
+
+      const response = await backendClient.proxy(request);
+
+      await expect(response.json()).resolves.toStrictEqual(nsResponse);
+    });
+
+    it('hits the /proxy API with serviceAccount as auth provider', async () => {
+      worker.use(
+        rest.get(
+          'http://localhost:1234/api/kubernetes/clusters',
+          (_, res, ctx) =>
+            res(
+              ctx.json({
+                items: [
+                  {
+                    name: 'cluster-a',
+                    authProvider: 'serviceAccount',
+                  },
+                ],
+              }),
+            ),
+        ),
+      );
+
+      const nsResponse = {
+        kind: 'Namespace',
+        apiVersion: 'v1',
+        metadata: {
+          name: 'new-ns',
+        },
+      };
+      worker.use(
+        rest.get(
+          'http://localhost:1234/api/kubernetes/proxy/api/v1/namespaces',
+          (req, res, ctx) =>
+            res(
+              req.headers.get('Authorization') === 'Bearer idToken'
                 ? ctx.json(nsResponse)
                 : ctx.status(403),
             ),
@@ -450,8 +515,8 @@ describe('KubernetesBackendClient', () => {
           'http://localhost:1234/api/kubernetes/proxy/api/v1/namespaces',
           (req, res, ctx) =>
             res(
-              req.headers.get('Backstage-Kubernetes-Authorization') ===
-                'Bearer k8-token'
+              req.headers.get('Backstage-Kubernetes-Authorization-aws') ===
+                'k8-token'
                 ? ctx.json(nsResponse)
                 : ctx.status(403),
             ),

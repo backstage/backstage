@@ -320,7 +320,9 @@ export function createOAuthRouteHandlers<TProfile>(
           providerInfo: {
             idToken: result.session.idToken,
             accessToken: result.session.accessToken,
-            scope: result.session.scope,
+            scope: authenticator.shouldPersistScopes
+              ? scope
+              : result.session.scope,
             expiresInSeconds: result.session.expiresInSeconds,
           },
         };
