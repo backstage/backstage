@@ -75,7 +75,7 @@ export class KubernetesBackendClient implements KubernetesApi {
     return this.handleResponse(response);
   }
 
-  private async getCluster(clusterName: string): Promise<{
+  public async getCluster(clusterName: string): Promise<{
     name: string;
     authProvider: string;
     oidcTokenProvider?: string;
