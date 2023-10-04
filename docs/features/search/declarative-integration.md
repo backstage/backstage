@@ -9,13 +9,13 @@ This is a guide for experimenting with `Search` in a declarative integrated Back
 
 Using declarative integration, you can customize your Backstage instance without writing code, see this [RFC](https://github.com/backstage/backstage/issues/18372) for more information.
 
-In this new system architecture, everything that extends the core Backstage features is called a extension, so a extension could be since an api to a page component, which means all plugins can provide are extensions.
+In the new frontend system, everything that extends Backstage's core features is called an extension, so an extension can be anything from an API to a page component.
 
-Extensions produces outputs artifacts and these artifacts are inputs consumed by other extensions:
+Extensions produces output artifacts and these artifacts are inputs consumed by other extensions:
 
 ![search extensions example](../../assets/search/search-extensions-example.svg)
 
-In the image above, a `SearchResultItem` extension outputs a component and this component is injected as input to the `SearchPage` "items" attachment point. The `SearchPage` in turn outputs a route path and element which are inputs attached to the `CoreRoutes` extension. Finally, the `CoreRoutes` renders the page element when the location matches the search path.
+In the image above, a `SearchResultItem` extension outputs a component and this component is injected as input to the `SearchPage` "items" attachment point. The `SearchPage` in turn uses the search result items to compose a search page element and outputs a route path and the page element so they are used as inputs attached to the `CoreRoutes` extension. Finally, the `CoreRoutes` renders the page element when the location matches the search page path.
 
 The basic concepts briefly mentioned are crucial to understanding how the declarative version of the `Search` plugin works.
 
@@ -31,7 +31,7 @@ Only one step is required to start using the `Search` plugin within declarative 
 yarn add @backstage/plugin-catalog @backstage/plugin-search
 ```
 
-The `Search` plugin depends on the `Catalog API`, that's is the reason we have to install the ` @backstage/plugin-catalog` package too.
+The `Search` plugin depends on the `Catalog API`, that's the reason we have to install the ` @backstage/plugin-catalog` package too.
 
 ### Extensions
 
@@ -102,7 +102,7 @@ export const TechDocsSearchResultListItemExtension =
   });
 ```
 
-In snippet above, a plugin developer is providing a custom component for rendering search results of type "techdocs". The custom result item extension will be enabled by default once the `@backstage/plugin-techdocs` package is installed, that means adopters don't have to enable the extension manually via configuration file.
+In the snippet above, a plugin developer is providing a custom component for rendering search results of type "techdocs". The custom result item extension will be enabled by default once the `@backstage/plugin-techdocs` package is installed, that means adopters don't have to enable the extension manually via configuration file.
 
 When a Backstage adopter doesn't want to use the custom `TechDocs` search result item after installing the `TechDocs` plugin, they could disable it via Backstage configuration file:
 
@@ -115,7 +115,7 @@ app:
     - plugin.search.result.item.techdocs: false # ✨
 ```
 
-Because a configuration schema was provided to the extension factory, Backstage adopters will be able to customize `TechDocs` search results **line clamp** that defaults to 3 and also **disable automatic analytic events tracking**:
+Because a configuration schema was provided to the extension factory, Backstage adopters will be able to customize `TechDocs` search results **line clamp** that defaults to 3 and also **disable automatic analytics events tracking**:
 
 ```yaml
 # app-config.yaml
@@ -129,7 +129,7 @@ app:
           lineClamp: 3
 ```
 
-The `createSearchResultItemExtension` function return an Backstage's extension representation as follows:
+The `createSearchResultItemExtension` function returns a Backstage's extension representation as follows:
 
 ```ts
 {
@@ -168,12 +168,12 @@ The `createSearchResultItemExtension` function return an Backstage's extension r
 In this object, you can see exactly what will happen once the custom extension is installed:
 
 - **[1] $$type**: declares that the object represents an extension;
-- **[2] id**: Is an unique identification for the extension, the `plugin.search.result.item.techdocs` is the key used to configure the extension in the `app-config.yaml` file;
+- **[2] id**: Is a unique identification for the extension, the `plugin.search.result.item.techdocs` is the key used to configure the extension in the `app-config.yaml` file;
 - **[3] at**: It represents the extension attachment point, so the value `plugin.search.page/items` says that the `TechDocs`'s search result item output will be injected as input on the "items" attachment expected by the search page extension;
-- configSchema: represents the `TechDocs` search result item configuration definition, this is the same schema that adopters will use for customizing the extension via `app-config.yaml` file;
 - **[4] inputs**: in this case is an empty object because this extension doesn't expect inputs;
-- **[5] output**: Is an abject that represents the artifact produced by the TechDocs result item extension, on the example, it is a react component reference;
-- **[6] disable**: Says that the result item extension will be enable by default when the `TechDocs` plugin is installed in the app.
+- **[5] output**: Object representing the artifact produced by the `TechDocs` result item extension, on the example, it is a react component reference;
+- **[6] configSchema**: represents the `TechDocs` search result item configuration definition, this is the same schema that adopters will use for customizing the extension via `app-config.yaml` file;
+- **[7] disable**: Says that the result item extension will be enable by default when the `TechDocs` plugin is installed in the app.
 
 To complete the development cycle for creating a custom search result item extension, we should provide the extension via `TechDocs` plugin:
 
@@ -188,7 +188,7 @@ export default createPlugin({
 })
 ```
 
-Here is `plugins/techdocs/alpha.tsx` final version, and you can also take a look at the [actual implementation](https://github.com/backstage/backstage/blob/master/plugins/techdocs/src/alpha.tsx) of a custom `TechDocs` search result item:
+Here is the `plugins/techdocs/alpha.tsx` final version, and you can also take a look at the [actual implementation](https://github.com/backstage/backstage/blob/master/plugins/techdocs/src/alpha.tsx) of a custom `TechDocs` search result item:
 
 ```tsx
 // plugins/techdocs/alpha.tsx
