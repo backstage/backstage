@@ -1,5 +1,14 @@
 # @backstage/plugin-auth-node
 
+## 0.3.2
+
+### Patch Changes
+
+- 68da803e6ee6: Fixed cookie persisted scope not returned in OAuth refresh handler response.
+- Updated dependencies
+  - @backstage/backend-plugin-api@0.6.5
+  - @backstage/backend-common@0.19.7
+
 ## 0.3.1
 
 ### Patch Changes

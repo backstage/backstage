@@ -1,5 +1,13 @@
 # @techdocs/cli
 
+## 1.5.2
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-common@0.19.7
+  - @backstage/plugin-techdocs-node@1.8.2
+
 ## 1.5.1
 
 ### Patch Changes

@@ -1,5 +1,14 @@
 # @backstage/plugin-playlist-backend
 
+## 0.3.9
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/plugin-auth-node@0.3.2
+  - @backstage/plugin-permission-node@0.7.16
+  - @backstage/backend-common@0.19.7
+
 ## 0.3.8
 
 ### Patch Changes

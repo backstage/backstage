@@ -1,5 +1,12 @@
 # @backstage/plugin-nomad-backend
 
+## 0.1.7
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-common@0.19.7
+
 ## 0.1.6
 
 ### Patch Changes
