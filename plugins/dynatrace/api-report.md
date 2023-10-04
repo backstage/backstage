@@ -10,7 +10,7 @@ import { Entity } from '@backstage/catalog-model';
 import { JSX as JSX_2 } from 'react';
 
 // @public
-export const dynatracePlugin: BackstagePlugin<{}, {}, {}>;
+export const dynatracePlugin: BackstagePlugin<{}, {}>;
 
 // @public
 export const DynatraceTab: () => JSX_2.Element;

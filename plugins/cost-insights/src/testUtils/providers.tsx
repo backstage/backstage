@@ -96,6 +96,7 @@ export const MockConfigProvider = (props: MockConfigProviderProps) => {
     icons: [],
     engineerCost: 0,
     engineerThreshold: EngineerThreshold,
+    hideTrendLine: false,
     currencies: [],
   };
 

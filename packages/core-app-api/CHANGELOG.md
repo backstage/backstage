@@ -1,5 +1,26 @@
 # @backstage/core-app-api
 
+## 1.10.1-next.1
+
+### Patch Changes
+
+- 1a0616fa10: Add missing resource and template app icons
+- Updated dependencies
+  - @backstage/core-plugin-api@1.7.0-next.0
+  - @backstage/config@1.1.0
+  - @backstage/types@1.1.1
+  - @backstage/version-bridge@1.0.5
+
+## 1.10.1-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/core-plugin-api@1.7.0-next.0
+  - @backstage/config@1.1.0
+  - @backstage/types@1.1.1
+  - @backstage/version-bridge@1.0.5
+
 ## 1.10.0
 
 ### Minor Changes
@@ -194,7 +215,7 @@
 
 ### Minor Changes
 
-- 7908d72e033: Introduce a new global config parameter, `auth.enableExperimentalRedirectFlow`. When enabled, auth will happen with an in-window redirect flow rather than through a popup window.
+- 7908d72e033: Introduce a new global config parameter, `enableExperimentalRedirectFlow`. When enabled, auth will happen with an in-window redirect flow rather than through a popup window.
 - c15e0cedbe1: The `AuthConnector` interface now supports specifying a set of scopes when
   refreshing a session. The `DefaultAuthConnector` implementation passes the
   `scope` query parameter to the auth-backend plugin appropriately. The
@@ -255,7 +276,7 @@
 
 ### Minor Changes
 
-- 7908d72e033: Introduce a new global config parameter, `auth.enableExperimentalRedirectFlow`. When enabled, auth will happen with an in-window redirect flow rather than through a popup window.
+- 7908d72e033: Introduce a new global config parameter, `enableExperimentalRedirectFlow`. When enabled, auth will happen with an in-window redirect flow rather than through a popup window.
 
 ### Patch Changes
 

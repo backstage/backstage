@@ -14,7 +14,14 @@
  * limitations under the License.
  */
 import type core from 'express-serve-static-core';
-import { DocPathTemplate, MethodAwareDocPath, RequiredDoc } from './common';
+import {
+  DocPath,
+  DocPathMethod,
+  MethodAwareDocPath,
+  PathTemplate,
+  RequiredDoc,
+  TemplateToDocPath,
+} from './common';
 import { PathSchema, QuerySchema } from './params';
 import { RequestBodyToJsonSchema } from './requests';
 import { ResponseBodyToJsonSchema } from './responses';
@@ -25,8 +32,8 @@ import { ResponseBodyToJsonSchema } from './responses';
  */
 export type DocRequestHandler<
   Doc extends RequiredDoc,
-  Path extends DocPathTemplate<Doc>,
-  Method extends keyof Doc['paths'][Path],
+  Path extends DocPath<Doc>,
+  Method extends DocPathMethod<Doc, Path>,
 > = core.RequestHandler<
   PathSchema<Doc, Path, Method>,
   ResponseBodyToJsonSchema<Doc, Path, Method>,
@@ -41,8 +48,8 @@ export type DocRequestHandler<
  */
 export type DocRequestHandlerParams<
   Doc extends RequiredDoc,
-  Path extends DocPathTemplate<Doc>,
-  Method extends keyof Doc['paths'][Path],
+  Path extends DocPath<Doc>,
+  Method extends DocPathMethod<Doc, Path>,
 > = core.RequestHandlerParams<
   PathSchema<Doc, Path, Method>,
   ResponseBodyToJsonSchema<Doc, Path, Method>,
@@ -68,12 +75,28 @@ export interface DocRequestMatcher<
     | 'options'
     | 'head',
 > {
-  <Path extends MethodAwareDocPath<Doc, DocPathTemplate<Doc>, Method>>(
+  <
+    Path extends MethodAwareDocPath<
+      Doc,
+      PathTemplate<Extract<keyof Doc['paths'], string>>,
+      Method
+    >,
+  >(
     path: Path,
-    ...handlers: Array<DocRequestHandler<Doc, Path, Method>>
+    ...handlers: Array<
+      DocRequestHandler<Doc, TemplateToDocPath<Doc, Path>, Method>
+    >
   ): T;
-  <Path extends MethodAwareDocPath<Doc, DocPathTemplate<Doc>, Method>>(
+  <
+    Path extends MethodAwareDocPath<
+      Doc,
+      PathTemplate<Extract<keyof Doc['paths'], string>>,
+      Method
+    >,
+  >(
     path: Path,
-    ...handlers: Array<DocRequestHandlerParams<Doc, Path, Method>>
+    ...handlers: Array<
+      DocRequestHandlerParams<Doc, TemplateToDocPath<Doc, Path>, Method>
+    >
   ): T;
 }

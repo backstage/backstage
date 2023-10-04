@@ -53,8 +53,7 @@ export const catalogGraphPlugin: BackstagePlugin<
       },
       true
     >;
-  },
-  {}
+  }
 >;
 
 // @public

@@ -47,7 +47,15 @@ export interface FileConfigSourceOptions {
 
 async function readFile(path: string): Promise<string | undefined> {
   try {
-    return await fs.readFile(path, 'utf8');
+    const content = await fs.readFile(path, 'utf8');
+    // During watching we may sometimes read files too early before the file content has been written.
+    // We never expect the writing to take a long time, but if we encounter an empty file then check
+    // again after a short delay for safety.
+    if (content === '') {
+      await new Promise(resolve => setTimeout(resolve, 10));
+      return await fs.readFile(path, 'utf8');
+    }
+    return content;
   } catch (error) {
     if (error.code === 'ENOENT') {
       return undefined;

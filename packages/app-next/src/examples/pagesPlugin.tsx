@@ -48,6 +48,9 @@ const IndexPage = createPageExtension({
           <div>
             <Link to="/graphiql">GraphiQL</Link>
           </div>
+          <div>
+            <Link to="/search">Search</Link>
+          </div>
         </div>
       );
     };

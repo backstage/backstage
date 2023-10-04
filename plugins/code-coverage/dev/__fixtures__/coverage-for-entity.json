@@ -1,0 +1,174 @@
+{
+  "metadata": {
+    "vcs": {
+      "type": "github",
+      "location": "https://github.com/backstage/backstage/tree/main/"
+    },
+    "generationTime": 1694413579498
+  },
+  "entity": {
+    "name": "backstage",
+    "namespace": "default",
+    "kind": "Component"
+  },
+  "files": [
+    {
+      "filename": "src/index.js",
+      "lineHits": {
+        "1": 1,
+        "2": 1,
+        "3": 1,
+        "4": 13,
+        "5": 13,
+        "6": 3,
+        "7": 13,
+        "8": 3,
+        "9": 13,
+        "10": 3,
+        "11": 13,
+        "12": 3,
+        "13": 13,
+        "14": 1,
+        "15": 13,
+        "16": 13
+      },
+      "branchHits": {
+        "3": {
+          "covered": 1,
+          "available": 1,
+          "missed": 0
+        },
+        "5": {
+          "covered": 1,
+          "available": 1,
+          "missed": 0
+        },
+        "7": {
+          "covered": 1,
+          "available": 1,
+          "missed": 0
+        },
+        "9": {
+          "covered": 1,
+          "available": 1,
+          "missed": 0
+        },
+        "11": {
+          "covered": 1,
+          "available": 1,
+          "missed": 0
+        },
+        "13": {
+          "covered": 1,
+          "available": 1,
+          "missed": 0
+        }
+      }
+    },
+    {
+      "filename": "src/math.js",
+      "lineHits": {
+        "1": 1,
+        "2": 3,
+        "3": 2,
+        "4": 2,
+        "5": 1,
+        "6": 1,
+        "7": 1,
+        "8": 1,
+        "9": 3,
+        "10": 2,
+        "11": 2,
+        "12": 1,
+        "13": 1,
+        "14": 1,
+        "15": 1,
+        "16": 3,
+        "17": 2,
+        "18": 2,
+        "19": 1,
+        "20": 1,
+        "21": 1,
+        "22": 1,
+        "23": 3,
+        "24": 2,
+        "25": 3,
+        "26": 0,
+        "27": 0,
+        "28": 1,
+        "29": 1
+      },
+      "branchHits": {
+        "2": {
+          "covered": 3,
+          "available": 3,
+          "missed": 0
+        },
+        "5": {
+          "covered": 1,
+          "available": 1,
+          "missed": 0
+        },
+        "8": {
+          "covered": 1,
+          "available": 1,
+          "missed": 0
+        },
+        "9": {
+          "covered": 2,
+          "available": 2,
+          "missed": 0
+        },
+        "12": {
+          "covered": 1,
+          "available": 1,
+          "missed": 0
+        },
+        "15": {
+          "covered": 1,
+          "available": 1,
+          "missed": 0
+        },
+        "16": {
+          "covered": 2,
+          "available": 2,
+          "missed": 0
+        },
+        "19": {
+          "covered": 1,
+          "available": 1,
+          "missed": 0
+        },
+        "22": {
+          "covered": 1,
+          "available": 1,
+          "missed": 0
+        },
+        "23": {
+          "covered": 2,
+          "available": 2,
+          "missed": 0
+        },
+        "25": {
+          "covered": 1,
+          "available": 2,
+          "missed": 1
+        }
+      }
+    }
+  ],
+  "aggregate": {
+    "line": {
+      "available": 45,
+      "covered": 43,
+      "missed": 2,
+      "percentage": 95.56
+    },
+    "branch": {
+      "available": 23,
+      "covered": 22,
+      "missed": 1,
+      "percentage": 95.65
+    }
+  }
+}

@@ -52,7 +52,6 @@ import { HasSystemsCardProps } from './components/HasSystemsCard';
 import { RelatedEntitiesCardProps } from './components/RelatedEntitiesCard';
 import { CatalogSearchResultListItemProps } from './components/CatalogSearchResultListItem';
 import { rootRouteRef } from './routes';
-import { CatalogInputPluginOptions, CatalogPluginOptions } from './options';
 
 /** @public */
 export const catalogPlugin = createPlugin({
@@ -82,14 +81,6 @@ export const catalogPlugin = createPlugin({
     createComponent: createComponentRouteRef,
     viewTechDoc: viewTechDocRouteRef,
     createFromTemplate: createFromTemplateRouteRef,
-  },
-  __experimentalConfigure(
-    options?: CatalogInputPluginOptions,
-  ): CatalogPluginOptions {
-    const defaultOptions = {
-      createButtonTitle: 'Create',
-    };
-    return { ...defaultOptions, ...options };
   },
 });
 

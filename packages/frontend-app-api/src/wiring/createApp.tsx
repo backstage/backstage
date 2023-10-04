@@ -49,6 +49,8 @@ import {
   featureFlagsApiRef,
   attachComponentData,
   useRouteRef,
+  identityApiRef,
+  AppTheme,
 } from '@backstage/core-plugin-api';
 import { getAvailablePlugins } from './discovery';
 import {
@@ -62,6 +64,8 @@ import {
 // eslint-disable-next-line @backstage/no-relative-monorepo-imports
 import { AppThemeProvider } from '../../../core-app-api/src/app/AppThemeProvider';
 // eslint-disable-next-line @backstage/no-relative-monorepo-imports
+import { AppIdentityProxy } from '../../../core-app-api/src/apis/implementations/IdentityApi/AppIdentityProxy';
+// eslint-disable-next-line @backstage/no-relative-monorepo-imports
 import { AppContextProvider } from '../../../core-app-api/src/app/AppContext';
 // eslint-disable-next-line @backstage/no-relative-monorepo-imports
 import { LocalStorageFeatureFlags } from '../../../core-app-api/src/apis/implementations/FeatureFlagsApi/LocalStorageFeatureFlags';
@@ -74,10 +78,10 @@ import {
   apis as defaultApis,
   components as defaultComponents,
   icons as defaultIcons,
-  themes as defaultThemes,
 } from '../../../app-defaults/src/defaults';
 import { BrowserRouter, Route } from 'react-router-dom';
 import { SidebarItem } from '@backstage/core-components';
+import { DarkTheme, LightTheme } from '../extensions/themes';
 
 /** @public */
 export interface ExtensionTreeNode {
@@ -168,7 +172,14 @@ export function createInstances(options: {
   plugins: BackstagePlugin[];
   config: Config;
 }) {
-  const builtinExtensions = [Core, CoreRoutes, CoreNav, CoreLayout];
+  const builtinExtensions = [
+    Core,
+    CoreRoutes,
+    CoreNav,
+    CoreLayout,
+    LightTheme,
+    DarkTheme,
+  ];
 
   // pull in default extension instance from discovered packages
   // apply config to adjust default extension instances and add more
@@ -247,50 +258,71 @@ export function createInstances(options: {
 /** @public */
 export function createApp(options: {
   plugins: BackstagePlugin[];
-  config?: ConfigApi;
+  configLoader?: () => Promise<ConfigApi>;
+  pluginLoader?: (ctx: { config: ConfigApi }) => Promise<BackstagePlugin[]>;
 }): {
   createRoot(): JSX.Element;
 } {
-  const discoveredPlugins = getAvailablePlugins();
-  const allPlugins = Array.from(
-    new Set([...discoveredPlugins, ...options.plugins]),
-  );
-  const appConfig =
-    options?.config ??
-    ConfigReader.fromConfigs(overrideBaseUrlConfigs(defaultConfigLoaderSync()));
+  async function appLoader() {
+    const config =
+      (await options?.configLoader?.()) ??
+      ConfigReader.fromConfigs(
+        overrideBaseUrlConfigs(defaultConfigLoaderSync()),
+      );
 
-  const { rootInstances } = createInstances({
-    plugins: allPlugins,
-    config: appConfig,
-  });
+    const discoveredPlugins = getAvailablePlugins();
+    const loadedPlugins = (await options.pluginLoader?.({ config })) ?? [];
+    const allPlugins = Array.from(
+      new Set([...discoveredPlugins, ...options.plugins, ...loadedPlugins]),
+    );
 
-  const routePaths = extractRouteInfoFromInstanceTree(rootInstances);
+    const { rootInstances } = createInstances({
+      plugins: allPlugins,
+      config,
+    });
 
-  const coreInstance = rootInstances.find(({ id }) => id === 'core');
-  if (!coreInstance) {
-    throw Error('Unable to find core extension instance');
+    const routePaths = extractRouteInfoFromInstanceTree(rootInstances);
+
+    const coreInstance = rootInstances.find(({ id }) => id === 'core');
+    if (!coreInstance) {
+      throw Error('Unable to find core extension instance');
+    }
+
+    const apiHolder = createApiHolder(coreInstance, config);
+
+    const appContext = createLegacyAppContext(allPlugins);
+
+    const rootElements = rootInstances
+      .map(e => (
+        <React.Fragment key={e.id}>
+          {e.getData(coreExtensionData.reactElement)}
+        </React.Fragment>
+      ))
+      .filter((x): x is JSX.Element => !!x);
+
+    const App = () => (
+      <ApiProvider apis={apiHolder}>
+        <AppContextProvider appContext={appContext}>
+          <AppThemeProvider>
+            <RoutingProvider routePaths={routePaths}>
+              {/* TODO: set base path using the logic from AppRouter */}
+              <BrowserRouter>{rootElements}</BrowserRouter>
+            </RoutingProvider>
+          </AppThemeProvider>
+        </AppContextProvider>
+      </ApiProvider>
+    );
+
+    return { default: App };
   }
-
-  const apiHolder = createApiHolder(coreInstance, appConfig);
-
-  const appContext = createLegacyAppContext(allPlugins);
 
   return {
     createRoot() {
-      const rootElements = rootInstances
-        .map(e => e.getData(coreExtensionData.reactElement))
-        .filter((x): x is JSX.Element => !!x);
+      const LazyApp = React.lazy(appLoader);
       return (
-        <ApiProvider apis={apiHolder}>
-          <AppContextProvider appContext={appContext}>
-            <AppThemeProvider>
-              <RoutingProvider routePaths={routePaths}>
-                {/* TODO: set base path using the logic from AppRouter */}
-                <BrowserRouter>{rootElements}</BrowserRouter>
-              </RoutingProvider>
-            </AppThemeProvider>
-          </AppContextProvider>
-        </ApiProvider>
+        <React.Suspense fallback="Loading...">
+          <LazyApp />
+        </React.Suspense>
       );
     },
   };
@@ -314,7 +346,6 @@ function toLegacyPlugin(plugin: BackstagePlugin): LegacyBackstagePlugin {
     getApis: notImplemented,
     getFeatureFlags: notImplemented,
     provide: notImplemented,
-    __experimentalReconfigure: notImplemented,
   };
 }
 
@@ -346,13 +377,19 @@ function createApiHolder(
 ): ApiHolder {
   const factoryRegistry = new ApiFactoryRegistry();
 
-  const apiFactories =
+  const pluginApis =
     coreExtension.attachments
       .get('apis')
       ?.map(e => e.getData(coreExtensionData.apiFactory))
       .filter((x): x is AnyApiFactory => !!x) ?? [];
 
-  for (const factory of apiFactories) {
+  const themeExtensions =
+    coreExtension.attachments
+      .get('themes')
+      ?.map(e => e.getData(coreExtensionData.theme))
+      .filter((x): x is AppTheme => !!x) ?? [];
+
+  for (const factory of [...defaultApis, ...pluginApis]) {
     factoryRegistry.register('default', factory);
   }
 
@@ -364,10 +401,42 @@ function createApiHolder(
   });
 
   factoryRegistry.register('static', {
+    api: identityApiRef,
+    deps: {},
+    factory: () => {
+      const appIdentityProxy = new AppIdentityProxy();
+      // TODO: Remove this when sign-in page is migrated
+      appIdentityProxy.setTarget(
+        {
+          getUserId: () => 'guest',
+          getIdToken: async () => undefined,
+          getProfile: () => ({
+            email: 'guest@example.com',
+            displayName: 'Guest',
+          }),
+          getProfileInfo: async () => ({
+            email: 'guest@example.com',
+            displayName: 'Guest',
+          }),
+          getBackstageIdentity: async () => ({
+            type: 'user',
+            userEntityRef: 'user:default/guest',
+            ownershipEntityRefs: ['user:default/guest'],
+          }),
+          getCredentials: async () => ({}),
+          signOut: async () => {},
+        },
+        { signOutTargetUrl: '/' },
+      );
+      return appIdentityProxy;
+    },
+  });
+
+  factoryRegistry.register('static', {
     api: appThemeApiRef,
     deps: {},
     // TODO: add extension for registering themes
-    factory: () => AppThemeSelector.createWithStorage(defaultThemes),
+    factory: () => AppThemeSelector.createWithStorage(themeExtensions),
   });
 
   factoryRegistry.register('static', {
