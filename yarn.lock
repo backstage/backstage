@@ -16807,6 +16807,7 @@ __metadata:
     "@types/fs-extra": ^9.0.6
     "@types/http-proxy": ^1.17.4
     "@types/node": ^18.17.8
+    "@types/react-dev-utils": ^9.0.12
     "@types/serve-handler": ^6.1.0
     "@types/webpack-env": ^1.15.3
     commander: ^9.1.0
@@ -17149,6 +17150,16 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@types/clean-css@npm:*":
+  version: 4.2.7
+  resolution: "@types/clean-css@npm:4.2.7"
+  dependencies:
+    "@types/node": "*"
+    source-map: ^0.6.0
+  checksum: c6f5fb7bd700d5fa488f0d2a4e7e6f5220c305d186976093b5bace2361590659dcd355c2bf54315840e9bf4423e41d90f303dd0762719b42d04af2089e1d7e49
+  languageName: node
+  linkType: hard
+
 "@types/codemirror@npm:^5.0.0":
   version: 5.60.10
   resolution: "@types/codemirror@npm:5.60.10"
@@ -17217,13 +17228,13 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@types/connect-history-api-fallback@npm:^1.3.5":
-  version: 1.3.5
-  resolution: "@types/connect-history-api-fallback@npm:1.3.5"
+"@types/connect-history-api-fallback@npm:*, @types/connect-history-api-fallback@npm:^1.3.5":
+  version: 1.5.1
+  resolution: "@types/connect-history-api-fallback@npm:1.5.1"
   dependencies:
     "@types/express-serve-static-core": "*"
     "@types/node": "*"
-  checksum: 464d06e5ab00f113fa89978633d5eb00d225aeb4ebbadc07f6f3bc337aa7cbfcd74957b2a539d6d47f2e128e956a17819973ec7ae62ade2e16e367a6c38b8d3a
+  checksum: bc5e46663300eba56eaf8ef242156256e2bdadc52bb7d6543f4b37f2945b6a810901c245711f8321fce7d94c7b588b308a86519f3e1f87a80eb87841d808dbdc
   languageName: node
   linkType: hard
 
@@ -17636,6 +17647,28 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@types/html-minifier@npm:*":
+  version: 4.0.3
+  resolution: "@types/html-minifier@npm:4.0.3"
+  dependencies:
+    "@types/clean-css": "*"
+    "@types/relateurl": "*"
+    "@types/uglify-js": "*"
+  checksum: f56c58e7e8dafeed00ee0817911f79c87fefd377fdd4802e5fb8ae32a7711b7a8e588ba7cf0b3a54918f4d8b4f962ff9c0ffb864ec35c71665ea135bfce53892
+  languageName: node
+  linkType: hard
+
+"@types/html-webpack-plugin@npm:*":
+  version: 3.2.7
+  resolution: "@types/html-webpack-plugin@npm:3.2.7"
+  dependencies:
+    "@types/html-minifier": "*"
+    "@types/tapable": ^1
+    "@types/webpack": ^4
+  checksum: 6a09dad5f4c9841fb6b1071a7a0f4ed0d1341c63ccd9ba975a9d3bd58ad601ec79993e5cbb09503a2bb5563fe4a95b5fdf82f48fed000b9516a34e8300b25b47
+  languageName: node
+  linkType: hard
+
 "@types/http-cache-semantics@npm:*":
   version: 4.0.0
   resolution: "@types/http-cache-semantics@npm:4.0.0"
@@ -17661,7 +17694,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@types/http-proxy@npm:*, @types/http-proxy@npm:^1.17.4, @types/http-proxy@npm:^1.17.8":
+"@types/http-proxy@npm:*, @types/http-proxy@npm:^1.17.4, @types/http-proxy@npm:^1.17.5, @types/http-proxy@npm:^1.17.8":
   version: 1.17.12
   resolution: "@types/http-proxy@npm:1.17.12"
   dependencies:
@@ -18306,6 +18339,19 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@types/react-dev-utils@npm:^9.0.12":
+  version: 9.0.12
+  resolution: "@types/react-dev-utils@npm:9.0.12"
+  dependencies:
+    "@types/eslint": "*"
+    "@types/express": "*"
+    "@types/html-webpack-plugin": "*"
+    "@types/webpack": ^4
+    "@types/webpack-dev-server": 3
+  checksum: aef510f48d71823802477043d4899b6d831da36bda8d8a6c51f008032c0be47bb9b7f1b8443b9df816cbcd6eca3f02fe96d586e51bbeaec0288115089c384544
+  languageName: node
+  linkType: hard
+
 "@types/react-dom@npm:^17":
   version: 17.0.21
   resolution: "@types/react-dom@npm:17.0.21"
@@ -18451,6 +18497,13 @@ __metadata:
   version: 2.0.3
   resolution: "@types/regression@npm:2.0.3"
   checksum: 774ef76911225b61c44946573b54ab710401d0e65b9433aa7014c701272167c47e818d4c9809284514881837c2159cd47aad6b290f00f8581920f2c7a146a512
+  languageName: node
+  linkType: hard
+
+"@types/relateurl@npm:*":
+  version: 0.2.30
+  resolution: "@types/relateurl@npm:0.2.30"
+  checksum: 5d114cdd32963813cf2d5e3146f026124aa53d406cd4711596a1f0823b8a86c319dcb2e23510cd4a4adc5bd20daa00786369f0d7b611072d80ed638fa32d631b
   languageName: node
   linkType: hard
 
@@ -18629,6 +18682,13 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@types/source-list-map@npm:*":
+  version: 0.1.3
+  resolution: "@types/source-list-map@npm:0.1.3"
+  checksum: a001098786d75b82eef00a6e4f1f7bb73f9f2fdf3e97333f8b741183c3fbf92db91af8bcfc410c7e6c23c4497523a3210f3eee2077b1be93595206f9baf3d909
+  languageName: node
+  linkType: hard
+
 "@types/ssh2-streams@npm:*":
   version: 0.1.8
   resolution: "@types/ssh2-streams@npm:0.1.8"
@@ -18710,6 +18770,13 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@types/tapable@npm:^1":
+  version: 1.0.9
+  resolution: "@types/tapable@npm:1.0.9"
+  checksum: 12bc0a0a949334777bd58e6467447004b8f921b38e5d18d0f7fb84f7fe978c6e8df0b8ae2e4519ab10b1e038c24f3f89807c13ef5caa932095dbeace8d3938c6
+  languageName: node
+  linkType: hard
+
 "@types/tar@npm:^6.1.1":
   version: 6.1.6
   resolution: "@types/tar@npm:6.1.6"
@@ -18786,6 +18853,15 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@types/uglify-js@npm:*":
+  version: 3.17.2
+  resolution: "@types/uglify-js@npm:3.17.2"
+  dependencies:
+    source-map: ^0.6.1
+  checksum: 6cd3ae5befd2bf147c6a37e94b1454dc85d9102ec1a6ab242268f37fe84ba8373904db2ed56fa418233fd93366bde8e0bb4f49c137b92f165b45c957296ac28a
+  languageName: node
+  linkType: hard
+
 "@types/unist@npm:*, @types/unist@npm:^2.0.0":
   version: 2.0.6
   resolution: "@types/unist@npm:2.0.6"
@@ -18824,10 +18900,48 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@types/webpack-dev-server@npm:3":
+  version: 3.11.6
+  resolution: "@types/webpack-dev-server@npm:3.11.6"
+  dependencies:
+    "@types/connect-history-api-fallback": "*"
+    "@types/express": "*"
+    "@types/serve-static": "*"
+    "@types/webpack": ^4
+    http-proxy-middleware: ^1.0.0
+  checksum: ce801b43593aa84d228d170ec6c2397d40754f138635c5a792d4f85647a59d07250d533299af8c6ea4e83ca7f8ac5feaf7ec03f11ad886faac43f3460b5d3c6e
+  languageName: node
+  linkType: hard
+
 "@types/webpack-env@npm:^1.15.2, @types/webpack-env@npm:^1.15.3":
   version: 1.18.2
   resolution: "@types/webpack-env@npm:1.18.2"
   checksum: 883908ade827d35a10efc574fb6f2728a7c520d4296cf1507633ac7457204ccd697bc6c8cadac99bc5d96074a6109c658ebfde59f42ba5ba0fdfffc538892b0f
+  languageName: node
+  linkType: hard
+
+"@types/webpack-sources@npm:*":
+  version: 3.2.1
+  resolution: "@types/webpack-sources@npm:3.2.1"
+  dependencies:
+    "@types/node": "*"
+    "@types/source-list-map": "*"
+    source-map: ^0.7.3
+  checksum: c347c91ac4d3244c3c47519a797d0e73569fbabadfd95ff4ece5b731a2790276b4b484c7038b4a561e025f508d292395f7a072db849120626d7f64040bd1127a
+  languageName: node
+  linkType: hard
+
+"@types/webpack@npm:^4":
+  version: 4.41.34
+  resolution: "@types/webpack@npm:4.41.34"
+  dependencies:
+    "@types/node": "*"
+    "@types/tapable": ^1
+    "@types/uglify-js": "*"
+    "@types/webpack-sources": "*"
+    anymatch: ^3.0.0
+    source-map: ^0.6.0
+  checksum: 10bdbd6cabafa58b7d4263bbf23134196c606034f84886ee9906c9951a62ffe9d52f0b74b084cd59ad0ef7521742e958ce9e0794fd7ed04e7ca6bc475455e04d
   languageName: node
   linkType: hard
 
@@ -19827,13 +19941,13 @@ __metadata:
   languageName: node
   linkType: hard
 
-"anymatch@npm:^3.0.3, anymatch@npm:~3.1.2":
-  version: 3.1.2
-  resolution: "anymatch@npm:3.1.2"
+"anymatch@npm:^3.0.0, anymatch@npm:^3.0.3, anymatch@npm:~3.1.2":
+  version: 3.1.3
+  resolution: "anymatch@npm:3.1.3"
   dependencies:
     normalize-path: ^3.0.0
     picomatch: ^2.0.4
-  checksum: 985163db2292fac9e5a1e072bf99f1b5baccf196e4de25a0b0b81865ebddeb3b3eb4480734ef0a2ac8c002845396b91aa89121f5b84f93981a4658164a9ec6e9
+  checksum: 3e044fd6d1d26545f235a9fe4d7a534e2029d8e59fa7fd9f2a6eb21230f6b5380ea1eaf55136e60cbf8e613544b3b766e7a6fa2102e2a3a117505466e3025dc2
   languageName: node
   linkType: hard
 
@@ -27974,6 +28088,19 @@ __metadata:
     agent-base: 6
     debug: 4
   checksum: e2ee1ff1656a131953839b2a19cd1f3a52d97c25ba87bd2559af6ae87114abf60971e498021f9b73f9fd78aea8876d1fb0d4656aac8a03c6caa9fc175f22b786
+  languageName: node
+  linkType: hard
+
+"http-proxy-middleware@npm:^1.0.0":
+  version: 1.3.1
+  resolution: "http-proxy-middleware@npm:1.3.1"
+  dependencies:
+    "@types/http-proxy": ^1.17.5
+    http-proxy: ^1.18.1
+    is-glob: ^4.0.1
+    is-plain-obj: ^3.0.0
+    micromatch: ^4.0.2
+  checksum: c6f0fe6d5aa58f3757084f1fad8109e7384fdea1b0a5c62f58ac767c42f367a18d3819bed8cbf8b5183f17e3e14fad04322f179c569629004da5fbec9b81a88a
   languageName: node
   linkType: hard
 
