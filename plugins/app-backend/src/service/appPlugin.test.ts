@@ -22,22 +22,12 @@ import {
 } from '@backstage/backend-test-utils';
 import { appPlugin } from './appPlugin';
 import { createRootLogger } from '@backstage/backend-common';
+import { overridePackagePathResolution } from '@backstage/backend-common/testUtils';
 
 const mockDir = createMockDirectory();
-
-jest.mock('../../../../packages/backend-common/src/paths', () => {
-  const actual = jest.requireActual(
-    '../../../../packages/backend-common/src/paths',
-  );
-  return {
-    ...actual,
-    resolvePackagePath: (pkg: string, ...args: string[]) => {
-      if (pkg === 'app') {
-        return mockDir.resolve(...args);
-      }
-      return actual.resolvePackagePath(pkg, ...args);
-    },
-  };
+overridePackagePathResolution({
+  packageName: 'app',
+  path: mockDir.path,
 });
 
 // Make sure root logger is initialized ahead of FS mock

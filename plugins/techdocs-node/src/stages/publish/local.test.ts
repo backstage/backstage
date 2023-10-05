@@ -17,7 +17,7 @@ import {
   getVoidLogger,
   PluginEndpointDiscovery,
 } from '@backstage/backend-common';
-import { createPackagePathMock } from '@backstage/backend-common/testUtils';
+import { overridePackagePathResolution } from '@backstage/backend-common/testUtils';
 import { ConfigReader } from '@backstage/config';
 import express from 'express';
 import request from 'supertest';
@@ -46,8 +46,8 @@ const testDiscovery: jest.Mocked<PluginEndpointDiscovery> = {
 
 const mockPublishDir = createMockDirectory();
 
-createPackagePathMock({
-  name: '@backstage/plugin-techdocs-backend',
+overridePackagePathResolution({
+  packageName: '@backstage/plugin-techdocs-backend',
   paths: {
     'static/docs': mockPublishDir.path,
   },

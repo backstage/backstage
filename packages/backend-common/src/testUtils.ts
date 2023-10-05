@@ -18,38 +18,44 @@ import { packagePathMocks } from './paths';
 import { posix as posixPath, resolve as resolvePath } from 'path';
 
 /** @public */
-export interface PackagePathMock {
+export interface PackagePathResolutionOverride {
   /** Restored the normal behavior of resolvePackagePath */
   restore(): void;
 }
 
 /** @public */
-export interface PackagePathMockOptions {
+export interface OverridePackagePathResolutionOptions {
   /** The name of the package to mock the resolved path of */
-  name: string;
+  packageName: string;
+
   /** A replacement for the root package path */
   path?: string;
+
   /**
    * Replacements for package sub-paths, each key must be an exact match of the posix-style path
    * that is being resolved within the package.
    *
    * For example, code calling `resolvePackagePath('x', 'foo', 'bar')` would match only the following
-   * configuration: `createPackagePathMock({name: 'x', paths: {'foo/bar': baz}})`
+   * configuration: `overridePackagePathResolution({ packageNAme: 'x', paths: { 'foo/bar': baz } })`
    */
   paths?: { [path in string]: string | (() => string) };
 }
 
-/** @public */
-export function createPackagePathMock(
-  options: PackagePathMockOptions,
-): PackagePathMock {
-  if (packagePathMocks.has(options.name)) {
-    throw new Error(
-      `Duplicate package path mock for package '${options.name}'`,
-    );
+/**
+ * This utility helps you override the paths returned by `resolvePackagePath` for a given package.
+ *
+ * @public
+ */
+export function overridePackagePathResolution(
+  options: OverridePackagePathResolutionOptions,
+): PackagePathResolutionOverride {
+  const name = options.packageName;
+
+  if (packagePathMocks.has(name)) {
+    throw new Error(`Duplicate package path mock for package '${name}'`);
   }
 
-  packagePathMocks.set(options.name, paths => {
+  packagePathMocks.set(name, paths => {
     const joinedPath = posixPath.join(...paths);
     const localResolver = options.paths?.[joinedPath];
     if (localResolver) {
@@ -65,7 +71,7 @@ export function createPackagePathMock(
 
   return {
     restore() {
-      packagePathMocks.delete(options.name);
+      packagePathMocks.delete(name);
     },
   };
 }
