@@ -4,8 +4,17 @@
 
 ```ts
 import { BackendFeature } from '@backstage/backend-plugin-api';
+import { GithubMultiOrgEntityProvider } from '@backstage/plugin-catalog-backend-module-github';
+import { TeamTransformer } from '@backstage/plugin-catalog-backend-module-github';
+import { UserTransformer } from '@backstage/plugin-catalog-backend-module-github';
 
 // @public
 const catalogModuleGithubOrgEntityProvider: () => BackendFeature;
 export default catalogModuleGithubOrgEntityProvider;
+
+export { GithubMultiOrgEntityProvider };
+
+export { TeamTransformer };
+
+export { UserTransformer };
 ```
