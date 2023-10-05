@@ -61,6 +61,9 @@ const mkdocsYmlWithRepoUrl = fs.readFileSync(
 const mkdocsYmlWithEditUri = fs.readFileSync(
   resolvePath(__filename, '../__fixtures__/mkdocs_with_edit_uri.yml'),
 );
+const mkdocsYmlWithEditUriTemplate = fs.readFileSync(
+  resolvePath(__filename, '../__fixtures__/mkdocs_with_edit_uri_template.yml'),
+);
 const mkdocsYmlWithValidDocDir = fs.readFileSync(
   resolvePath(__filename, '../__fixtures__/mkdocs_valid_doc_dir.yml'),
 );
@@ -106,14 +109,18 @@ describe('helpers', () => {
 
   describe('getRepoUrlFromLocationAnnotation', () => {
     it.each`
-      url                                                                        | repo_url                                                                   | edit_uri
-      ${'https://github.com/backstage/backstage'}                                | ${'https://github.com/backstage/backstage'}                                | ${undefined}
-      ${'https://github.com/backstage/backstage/tree/main/examples/techdocs/'}   | ${'https://github.com/backstage/backstage/tree/main/examples/techdocs/'}   | ${'https://github.com/backstage/backstage/edit/main/examples/techdocs/docs'}
-      ${'https://github.com/backstage/backstage/tree/main/'}                     | ${'https://github.com/backstage/backstage/tree/main/'}                     | ${'https://github.com/backstage/backstage/edit/main/docs'}
-      ${'https://gitlab.com/backstage/backstage'}                                | ${'https://gitlab.com/backstage/backstage'}                                | ${undefined}
-      ${'https://gitlab.com/backstage/backstage/-/blob/main/examples/techdocs/'} | ${'https://gitlab.com/backstage/backstage/-/blob/main/examples/techdocs/'} | ${'https://gitlab.com/backstage/backstage/-/edit/main/examples/techdocs/docs'}
-      ${'https://gitlab.com/backstage/backstage/-/blob/main/'}                   | ${'https://gitlab.com/backstage/backstage/-/blob/main/'}                   | ${'https://gitlab.com/backstage/backstage/-/edit/main/docs'}
-    `('should convert $url', ({ url: target, repo_url, edit_uri }) => {
+      url                                                                                         | repo_url                                                                                    | edit_uri_template
+      ${'https://bitbucket.org/backstage/backstage/src/master/'}                                  | ${'https://bitbucket.org/backstage/backstage/src/master/'}                                  | ${'https://bitbucket.org/backstage/backstage/src/master/docs/{path}?mode=edit&at=master'}
+      ${'https://bitbucket.org/backstage/backstage/src/master/examples/techdocs/'}                | ${'https://bitbucket.org/backstage/backstage/src/master/examples/techdocs/'}                | ${'https://bitbucket.org/backstage/backstage/src/master/examples/techdocs/docs/{path}?mode=edit&at=master'}
+      ${'https://dev.azure.com/organization/project/_git/repository?path=%2F'}                    | ${'https://dev.azure.com/organization/project/_git/repository?path=%2F'}                    | ${undefined}
+      ${'https://dev.azure.com/organization/project/_git/repository?path=%2Fexamples%2Ftechdocs'} | ${'https://dev.azure.com/organization/project/_git/repository?path=%2Fexamples%2Ftechdocs'} | ${undefined}
+      ${'https://github.com/backstage/backstage'}                                                 | ${'https://github.com/backstage/backstage'}                                                 | ${undefined}
+      ${'https://github.com/backstage/backstage/tree/main/'}                                      | ${'https://github.com/backstage/backstage/tree/main/'}                                      | ${'https://github.com/backstage/backstage/edit/main/docs/{path}'}
+      ${'https://github.com/backstage/backstage/tree/main/examples/techdocs/'}                    | ${'https://github.com/backstage/backstage/tree/main/examples/techdocs/'}                    | ${'https://github.com/backstage/backstage/edit/main/examples/techdocs/docs/{path}'}
+      ${'https://gitlab.com/backstage/backstage'}                                                 | ${'https://gitlab.com/backstage/backstage'}                                                 | ${undefined}
+      ${'https://gitlab.com/backstage/backstage/-/blob/main/'}                                    | ${'https://gitlab.com/backstage/backstage/-/blob/main/'}                                    | ${'https://gitlab.com/backstage/backstage/-/edit/main/docs/{path}'}
+      ${'https://gitlab.com/backstage/backstage/-/blob/main/examples/techdocs/'}                  | ${'https://gitlab.com/backstage/backstage/-/blob/main/examples/techdocs/'}                  | ${'https://gitlab.com/backstage/backstage/-/edit/main/examples/techdocs/docs/{path}'}
+    `('should convert $url', ({ url: target, repo_url, edit_uri_template }) => {
       const parsedLocationAnnotation: ParsedLocationAnnotation = {
         type: 'url',
         target,
@@ -124,18 +131,18 @@ describe('helpers', () => {
           parsedLocationAnnotation,
           scmIntegrations,
         ),
-      ).toEqual({ repo_url, edit_uri });
+      ).toEqual({ repo_url, edit_uri_template });
     });
 
     it.each`
-      url                                                                        | repo_url                                                                   | edit_uri
-      ${'https://github.com/backstage/backstage/tree/main/examples/techdocs/'}   | ${'https://github.com/backstage/backstage/tree/main/examples/techdocs/'}   | ${'https://github.com/backstage/backstage/edit/main/examples/techdocs/custom/folder'}
-      ${'https://github.com/backstage/backstage/tree/main/'}                     | ${'https://github.com/backstage/backstage/tree/main/'}                     | ${'https://github.com/backstage/backstage/edit/main/custom/folder'}
-      ${'https://gitlab.com/backstage/backstage/-/blob/main/examples/techdocs/'} | ${'https://gitlab.com/backstage/backstage/-/blob/main/examples/techdocs/'} | ${'https://gitlab.com/backstage/backstage/-/edit/main/examples/techdocs/custom/folder'}
-      ${'https://gitlab.com/backstage/backstage/-/blob/main/'}                   | ${'https://gitlab.com/backstage/backstage/-/blob/main/'}                   | ${'https://gitlab.com/backstage/backstage/-/edit/main/custom/folder'}
+      url                                                                        | repo_url                                                                   | edit_uri_template
+      ${'https://github.com/backstage/backstage/tree/main/examples/techdocs/'}   | ${'https://github.com/backstage/backstage/tree/main/examples/techdocs/'}   | ${'https://github.com/backstage/backstage/edit/main/examples/techdocs/custom/folder/{path}'}
+      ${'https://github.com/backstage/backstage/tree/main/'}                     | ${'https://github.com/backstage/backstage/tree/main/'}                     | ${'https://github.com/backstage/backstage/edit/main/custom/folder/{path}'}
+      ${'https://gitlab.com/backstage/backstage/-/blob/main/examples/techdocs/'} | ${'https://gitlab.com/backstage/backstage/-/blob/main/examples/techdocs/'} | ${'https://gitlab.com/backstage/backstage/-/edit/main/examples/techdocs/custom/folder/{path}'}
+      ${'https://gitlab.com/backstage/backstage/-/blob/main/'}                   | ${'https://gitlab.com/backstage/backstage/-/blob/main/'}                   | ${'https://gitlab.com/backstage/backstage/-/edit/main/custom/folder/{path}'}
     `(
       'should convert $url with custom docsFolder',
-      ({ url: target, repo_url, edit_uri }) => {
+      ({ url: target, repo_url, edit_uri_template }) => {
         const parsedLocationAnnotation: ParsedLocationAnnotation = {
           type: 'url',
           target,
@@ -147,29 +154,9 @@ describe('helpers', () => {
             scmIntegrations,
             './custom/folder',
           ),
-        ).toEqual({ repo_url, edit_uri });
+        ).toEqual({ repo_url, edit_uri_template });
       },
     );
-
-    it.each`
-      url
-      ${'https://bitbucket.org/backstage/backstage/src/master/examples/techdocs/'}
-      ${'https://bitbucket.org/backstage/backstage/src/master/'}
-      ${'https://dev.azure.com/organization/project/_git/repository?path=%2Fexamples%2Ftechdocs'}
-      ${'https://dev.azure.com/organization/project/_git/repository?path=%2F'}
-    `('should ignore $url', ({ url: target }) => {
-      const parsedLocationAnnotation: ParsedLocationAnnotation = {
-        type: 'url',
-        target,
-      };
-
-      expect(
-        getRepoUrlFromLocationAnnotation(
-          parsedLocationAnnotation,
-          scmIntegrations,
-        ),
-      ).toEqual({});
-    });
 
     it('should ignore unsupported location type', () => {
       const parsedLocationAnnotation: ParsedLocationAnnotation = {
@@ -193,6 +180,7 @@ describe('helpers', () => {
         '/mkdocs_default.yml': mkdocsDefaultYml,
         '/mkdocs_with_repo_url.yml': mkdocsYmlWithRepoUrl,
         '/mkdocs_with_edit_uri.yml': mkdocsYmlWithEditUri,
+        '/mkdocs_with_edit_uri_template.yml': mkdocsYmlWithEditUriTemplate,
         '/mkdocs_with_extensions.yml': mkdocsYmlWithExtensions,
         '/mkdocs_with_comments.yml': mkdocsYmlWithComments,
       });
