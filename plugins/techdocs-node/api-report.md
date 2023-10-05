@@ -21,6 +21,7 @@ import { Writable } from 'stream';
 export class DirectoryPreparer implements PreparerBase {
   static fromConfig(config: Config, options: PreparerConfig): DirectoryPreparer;
   prepare(entity: Entity, options?: PreparerOptions): Promise<PreparerResponse>;
+  shouldCleanPreparedDirectory(): boolean;
 }
 
 // @public
@@ -132,6 +133,7 @@ export const parseReferenceAnnotation: (
 // @public
 export type PreparerBase = {
   prepare(entity: Entity, options?: PreparerOptions): Promise<PreparerResponse>;
+  shouldCleanPreparedDirectory(): boolean;
 };
 
 // @public
@@ -274,5 +276,6 @@ export const transformDirLocation: (
 export class UrlPreparer implements PreparerBase {
   static fromConfig(options: PreparerConfig): UrlPreparer;
   prepare(entity: Entity, options?: PreparerOptions): Promise<PreparerResponse>;
+  shouldCleanPreparedDirectory(): boolean;
 }
 ```
