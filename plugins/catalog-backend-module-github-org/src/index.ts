@@ -19,5 +19,14 @@
  *
  * @packageDocumentation
  */
-
 export { catalogModuleGithubOrgEntityProvider as default } from './module';
+/**
+ *
+ * TODO(djamaile): GithubMultiOrgEntityProvider should be mirgated over to this module.
+ * Afterwards, mark it as deprecated in catalog-backend-module-github and export them there from this module.
+ */
+export {
+  GithubMultiOrgEntityProvider,
+  type TeamTransformer,
+  type UserTransformer,
+} from '@backstage/plugin-catalog-backend-module-github';
