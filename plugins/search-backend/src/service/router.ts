@@ -82,7 +82,15 @@ export async function createRouter(
     config.getOptionalNumber('search.maxTermLength') ?? defaultMaxTermLength;
 
   const requestSchema = z.object({
-    term: z.string().max(maxTermLength).default(''),
+    term: z
+      .string()
+      .refine(
+        term => term.length <= maxTermLength,
+        term => ({
+          message: `The term length "${term.length}" is greater than "${maxTermLength}"`,
+        }),
+      )
+      .default(''),
     filters: jsonObjectSchema.optional(),
     types: z
       .array(z.string().refine(type => Object.keys(types).includes(type)))
