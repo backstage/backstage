@@ -34,7 +34,3 @@ export {
 } from './components/Router';
 export { JENKINS_ANNOTATION, LEGACY_JENKINS_ANNOTATION } from './constants';
 export * from './api';
-export {
-  ciTableColumnFactories,
-  defaultCITableColumns,
-} from './components/BuildsPage/lib/CITable';

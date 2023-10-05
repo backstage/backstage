@@ -14,5 +14,3 @@
  * limitations under the License.
  */
 export { CITable } from './CITable';
-export { columnFactories as ciTableColumnFactories } from './columns';
-export { defaultCITableColumns } from './presets';

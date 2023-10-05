@@ -57,6 +57,7 @@ export interface Build {
   status: string; // == building ? 'running' : result,
 }
 
+/** @public */
 export interface Project {
   // standard Jenkins
   lastBuild: Build;

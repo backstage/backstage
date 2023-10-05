@@ -33,11 +33,7 @@ export const isJenkinsAvailable = (entity: Entity) =>
   Boolean(entity.metadata.annotations?.[JENKINS_ANNOTATION]) ||
   Boolean(entity.metadata.annotations?.[LEGACY_JENKINS_ANNOTATION]);
 
-type Props = {
-  columns?: TableColumn<Project>[];
-};
-
-export const Router = (props: Props) => {
+export const Router = (props: { columns?: TableColumn<Project>[] }) => {
   const { entity } = useEntity();
 
   if (!isJenkinsAvailable(entity)) {
