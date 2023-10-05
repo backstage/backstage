@@ -26,16 +26,9 @@
     "@backstage/backend-common": "workspace:^",
     "@backstage/backend-plugin-api": "workspace:^",
     "@backstage/backend-tasks": "workspace:^",
-    "@backstage/catalog-model": "workspace:^",
     "@backstage/config": "workspace:^",
-    "@backstage/integration": "workspace:^",
     "@backstage/plugin-catalog-backend-module-github": "workspace:^",
-    "@backstage/plugin-catalog-node": "workspace:^",
-    "@backstage/plugin-events-node": "workspace:^",
-    "@octokit/graphql": "^7.0.2",
-    "lodash": "^4.17.21",
-    "uuid": "^9.0.1",
-    "winston": "^3.10.0"
+    "@backstage/plugin-catalog-node": "workspace:^"
   },
   "devDependencies": {
     "@backstage/backend-test-utils": "workspace:^",
