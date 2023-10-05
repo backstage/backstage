@@ -19,6 +19,7 @@ import {
   createComponentExtension,
   createPlugin,
   createRoutableExtension,
+  createReactExtension,
   identityApiRef,
   storageApiRef,
 } from '@backstage/core-plugin-api';
@@ -217,7 +218,7 @@ export const HomePageRecentlyVisited = homePlugin.provide(
  * @public
  */
 export const FeaturedDocs = homePlugin.provide(
-  createComponentExtension({
+  createReactExtension({
     name: 'FeaturedDocs',
     component: {
       lazy: () =>
