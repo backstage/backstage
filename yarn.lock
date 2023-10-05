@@ -4206,6 +4206,7 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "@backstage/create-app@workspace:packages/create-app"
   dependencies:
+    "@backstage/backend-test-utils": "workspace:^"
     "@backstage/cli": "workspace:^"
     "@backstage/cli-common": "workspace:^"
     "@types/command-exists": ^1.2.0
