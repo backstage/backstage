@@ -17,23 +17,6 @@ import { default as React_2 } from 'react';
 import { RouteRef } from '@backstage/core-plugin-api';
 import { TableColumn } from '@backstage/core-components';
 
-// Warning: (ae-missing-release-tag) "columnFactories" is part of the package's API, but it is missing a release tag (@alpha, @beta, @public, or @internal)
-//
-// @public (undocumented)
-export const ciTableColumnFactories: Readonly<{
-  createTimestampColumn(): TableColumn<Project>;
-  createBuildColumn(): TableColumn<Project>;
-  createSourceColumn(): TableColumn<Project>;
-  createStatusColumn(): TableColumn<Project>;
-  createTestColumn(): TableColumn<Project>;
-  createActionsColumn(): TableColumn<Project>;
-}>;
-
-// Warning: (ae-missing-release-tag) "defaultCITableColumns" is part of the package's API, but it is missing a release tag (@alpha, @beta, @public, or @internal)
-//
-// @public (undocumented)
-export const defaultCITableColumns: TableColumn<Project>[];
-
 // @public (undocumented)
 export const EntityJenkinsContent: (props: {
   columns?: TableColumn<Project>[] | undefined;
@@ -137,8 +120,6 @@ export const LatestRunCard: (props: {
 // @public (undocumented)
 export const LEGACY_JENKINS_ANNOTATION = 'jenkins.io/github-folder';
 
-// Warning: (ae-missing-release-tag) "Project" is part of the package's API, but it is missing a release tag (@alpha, @beta, @public, or @internal)
-//
 // @public (undocumented)
 export interface Project {
   // (undocumented)
@@ -157,9 +138,10 @@ export interface Project {
   status: string;
 }
 
-// Warning: (ae-forgotten-export) The symbol "Props" needs to be exported by the entry point index.d.ts
 // Warning: (ae-missing-release-tag) "Router" is part of the package's API, but it is missing a release tag (@alpha, @beta, @public, or @internal)
 //
 // @public (undocumented)
-export const Router: (props: Props) => React_2.JSX.Element;
+export const Router: (props: {
+  columns?: TableColumn<Project>[];
+}) => React_2.JSX.Element;
 ```
