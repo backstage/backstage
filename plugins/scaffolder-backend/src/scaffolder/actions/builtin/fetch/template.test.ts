@@ -19,7 +19,7 @@ jest.mock('@backstage/plugin-scaffolder-node', () => {
   return { ...actual, fetchContents: jest.fn() };
 });
 
-import { join as joinPath, resolve as resolvePath, sep as pathSep } from 'path';
+import { join as joinPath, sep as pathSep } from 'path';
 import fs from 'fs-extra';
 import {
   getVoidLogger,
@@ -272,26 +272,15 @@ describe('fetch:template', () => {
               },
               '.${{ values.name }}': '${{ values.itemList | dump }}',
               'a-binary-file.png': aBinaryFile,
+              'an-executable.sh': ctx =>
+                fs.writeFileSync(ctx.path, '#!/usr/bin/env bash', {
+                  encoding: 'utf-8',
+                  mode: parseInt('100755', 8),
+                }),
+              symlink: ctx => ctx.symlink('a-binary-file.png'),
+              brokenSymlink: ctx => ctx.symlink('./not-a-real-file.txt'),
             },
           });
-
-          fs.writeFileSync(
-            resolvePath(outputPath, 'an-executable.sh'),
-            '#!/usr/bin/env bash',
-            {
-              encoding: 'utf-8',
-              mode: parseInt('100755', 8),
-            },
-          );
-
-          fs.symlinkSync(
-            'a-binary-file.png',
-            resolvePath(outputPath, 'symlink'),
-          );
-          fs.symlinkSync(
-            './not-a-real-file.txt',
-            resolvePath(outputPath, 'brokenSymlink'),
-          );
 
           return Promise.resolve();
         });
