@@ -11337,14 +11337,14 @@ __metadata:
   linkType: hard
 
 "@google-cloud/firestore@npm:^6.0.0":
-  version: 6.7.0
-  resolution: "@google-cloud/firestore@npm:6.7.0"
+  version: 6.8.0
+  resolution: "@google-cloud/firestore@npm:6.8.0"
   dependencies:
     fast-deep-equal: ^3.1.1
     functional-red-black-tree: ^1.0.1
     google-gax: ^3.5.7
-    protobufjs: ^7.0.0
-  checksum: 8464d4d866adcbd80cd528230408f7161a402df7b74d4036b2f81c1f9b83051057364e1c8264477b7a46ce03c2b8fa0d28799f6ccd77d905274a71ca93b2593f
+    protobufjs: ^7.2.5
+  checksum: e8e1fd7cc6fd688e771c3d2f62c2f33d23357e11ee03f6d2f2aeb0ea29378f8e62f2511936011b515bbeedf304b5e831e4f4a46b8905dbc421fe2fa521d2e43f
   languageName: node
   linkType: hard
 
@@ -36168,7 +36168,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"protobufjs@npm:7.2.4, protobufjs@npm:^7.0.0":
+"protobufjs@npm:7.2.4":
   version: 7.2.4
   resolution: "protobufjs@npm:7.2.4"
   dependencies:
@@ -36185,6 +36185,26 @@ __metadata:
     "@types/node": ">=13.7.0"
     long: ^5.0.0
   checksum: a952cdf2a5e5250c16ae651b570849b6f5b20a5475c3eef63ffb290ad239aa2916adfc1cc676f7fc93c69f48113df268761c0c246f7f023118c85bdd1a170044
+  languageName: node
+  linkType: hard
+
+"protobufjs@npm:^7.0.0, protobufjs@npm:^7.2.5":
+  version: 7.2.5
+  resolution: "protobufjs@npm:7.2.5"
+  dependencies:
+    "@protobufjs/aspromise": ^1.1.2
+    "@protobufjs/base64": ^1.1.2
+    "@protobufjs/codegen": ^2.0.4
+    "@protobufjs/eventemitter": ^1.1.0
+    "@protobufjs/fetch": ^1.1.0
+    "@protobufjs/float": ^1.0.2
+    "@protobufjs/inquire": ^1.1.0
+    "@protobufjs/path": ^1.1.2
+    "@protobufjs/pool": ^1.1.0
+    "@protobufjs/utf8": ^1.1.0
+    "@types/node": ">=13.7.0"
+    long: ^5.0.0
+  checksum: 3770a072114061faebbb17cfd135bc4e187b66bc6f40cd8bac624368b0270871ec0cfb43a02b9fb4f029c8335808a840f1afba3c2e7ede7063b98ae6b98a703f
   languageName: node
   linkType: hard
 
