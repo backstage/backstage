@@ -5,6 +5,7 @@
 ```ts
 /// <reference types="react" />
 
+import { ApiRef } from '@backstage/core-plugin-api';
 import { BackstagePlugin } from '@backstage/core-plugin-api';
 import { CardConfig as CardConfig_2 } from '@backstage/plugin-home-react';
 import { CardExtensionProps as CardExtensionProps_2 } from '@backstage/plugin-home-react';
@@ -13,12 +14,15 @@ import { CardSettings as CardSettings_2 } from '@backstage/plugin-home-react';
 import { ComponentParts as ComponentParts_2 } from '@backstage/plugin-home-react';
 import { ComponentRenderer as ComponentRenderer_2 } from '@backstage/plugin-home-react';
 import { createCardExtension as createCardExtension_2 } from '@backstage/plugin-home-react';
+import { ErrorApi } from '@backstage/core-plugin-api';
+import { IdentityApi } from '@backstage/core-plugin-api';
 import { JSX as JSX_2 } from 'react';
 import { default as React_2 } from 'react';
 import { ReactElement } from 'react';
 import { ReactNode } from 'react';
 import { RendererProps as RendererProps_2 } from '@backstage/plugin-home-react';
 import { RouteRef } from '@backstage/core-plugin-api';
+import { StorageApi } from '@backstage/core-plugin-api';
 
 // @public
 export type Breakpoint = 'xxs' | 'xs' | 'sm' | 'md' | 'lg' | 'xl';
@@ -123,6 +127,11 @@ export const HomePageRandomJoke: (
 ) => JSX_2.Element;
 
 // @public
+export const HomePageRecentlyVisited: (
+  props: CardExtensionProps_2<Partial<VisitedByTypeProps>>,
+) => JSX_2.Element;
+
+// @public
 export const HomePageStarredEntities: (
   props: CardExtensionProps_2<unknown>,
 ) => JSX_2.Element;
@@ -132,12 +141,16 @@ export const HomePageToolkit: (
   props: CardExtensionProps_2<ToolkitContentProps>,
 ) => JSX_2.Element;
 
+// @public
+export const HomePageTopVisited: (
+  props: CardExtensionProps_2<Partial<VisitedByTypeProps>>,
+) => JSX_2.Element;
+
 // @public (undocumented)
 export const homePlugin: BackstagePlugin<
   {
     root: RouteRef<undefined>;
   },
-  {},
   {}
 >;
 
@@ -185,6 +198,97 @@ export type Tool = {
 // @public
 export type ToolkitContentProps = {
   tools: Tool[];
+};
+
+// @public
+export type Visit = {
+  id: string;
+  name: string;
+  pathname: string;
+  hits: number;
+  timestamp: number;
+  entityRef?: string;
+};
+
+// @public (undocumented)
+export type VisitedByTypeKind = 'recent' | 'top';
+
+// @public (undocumented)
+export type VisitedByTypeProps = {
+  visits?: Array<Visit>;
+  numVisitsOpen?: number;
+  numVisitsTotal?: number;
+  loading?: boolean;
+  kind: VisitedByTypeKind;
+};
+
+// @public
+export const VisitListener: ({
+  children,
+  toEntityRef,
+  visitName,
+}: {
+  children?: React_2.ReactNode;
+  toEntityRef?:
+    | (({ pathname }: { pathname: string }) => string | undefined)
+    | undefined;
+  visitName?: (({ pathname }: { pathname: string }) => string) | undefined;
+}) => JSX.Element;
+
+// @public
+export interface VisitsApi {
+  list(queryParams?: VisitsApiQueryParams): Promise<Visit[]>;
+  save(saveParams: VisitsApiSaveParams): Promise<Visit>;
+}
+
+// @public
+export type VisitsApiQueryParams = {
+  limit?: number;
+  orderBy?: Array<{
+    field: keyof Visit;
+    direction: 'asc' | 'desc';
+  }>;
+  filterBy?: Array<{
+    field: keyof Visit;
+    operator: '<' | '<=' | '==' | '!=' | '>' | '>=' | 'contains';
+    value: string | number;
+  }>;
+};
+
+// @public (undocumented)
+export const visitsApiRef: ApiRef<VisitsApi>;
+
+// @public
+export type VisitsApiSaveParams = {
+  visit: Omit<Visit, 'id' | 'hits' | 'timestamp'>;
+};
+
+// @public
+export class VisitsStorageApi implements VisitsApi {
+  // (undocumented)
+  static create(options: VisitsStorageApiOptions): VisitsStorageApi;
+  list(queryParams?: VisitsApiQueryParams): Promise<Visit[]>;
+  save(saveParams: VisitsApiSaveParams): Promise<Visit>;
+}
+
+// @public (undocumented)
+export type VisitsStorageApiOptions = {
+  limit?: number;
+  storageApi: StorageApi;
+  identityApi: IdentityApi;
+};
+
+// @public
+export class VisitsWebStorageApi {
+  // (undocumented)
+  static create(options: VisitsWebStorageApiOptions): VisitsStorageApi;
+}
+
+// @public (undocumented)
+export type VisitsWebStorageApiOptions = {
+  limit?: number;
+  identityApi: IdentityApi;
+  errorApi: ErrorApi;
 };
 
 // @public

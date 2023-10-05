@@ -309,7 +309,7 @@ export class GitLabClient {
   ): Promise<PagedResponse<T>> {
     const request = new URL(`${this.config.apiBaseUrl}${endpoint}`);
     for (const key in options) {
-      if (options[key]) {
+      if (options[key] !== undefined && options[key] !== '') {
         request.searchParams.append(key, options[key]!.toString());
       }
     }

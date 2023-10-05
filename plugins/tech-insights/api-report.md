@@ -125,7 +125,6 @@ export const techInsightsPlugin: BackstagePlugin<
   {
     root: RouteRef<undefined>;
   },
-  {},
   {}
 >;
 

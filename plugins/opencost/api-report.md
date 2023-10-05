@@ -17,7 +17,6 @@ export const openCostPlugin: BackstagePlugin<
   {
     root: RouteRef<undefined>;
   },
-  {},
   {}
 >;
 ```

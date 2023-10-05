@@ -205,6 +205,9 @@ export class KubernetesBuilder {
   }
 
   public addAuthStrategy(key: string, strategy: AuthenticationStrategy) {
+    if (key.includes('-')) {
+      throw new Error('Strategy name can not include dashes');
+    }
     this.getAuthStrategyMap()[key] = strategy;
     return this;
   }

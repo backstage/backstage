@@ -243,7 +243,6 @@
       "plugins/integrating-plugin-into-software-catalog",
       "plugins/integrating-search-into-plugins",
       "plugins/composability",
-      "plugins/customization",
       "plugins/internationalization",
       "plugins/analytics",
       "plugins/feature-flags",

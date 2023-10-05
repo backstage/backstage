@@ -46,7 +46,7 @@ describe('EntityVaultCard', () => {
       </EntityProvider>,
     );
     expect(
-      rendered.getByText(/Add the annotation to your component YAML/),
+      rendered.getByText(/Add the annotation to your Component YAML/),
     ).toBeInTheDocument();
   });
 });

@@ -64,10 +64,21 @@ export const makeRouter = async (
     options.catalogApi ?? new CatalogClient({ discoveryApi: discovery });
   const scm = ScmIntegrations.fromConfig(config);
 
+  const bodySizeLimit =
+    config.getOptionalString('codeCoverage.bodySizeLimit') ?? '100kb';
+
   bodyParserXml(BodyParser);
   const router = Router();
-  router.use(BodyParser.xml());
-  router.use(BodyParser.text());
+  router.use(
+    BodyParser.xml({
+      limit: bodySizeLimit,
+    }),
+  );
+  router.use(
+    BodyParser.text({
+      limit: bodySizeLimit,
+    }),
+  );
   router.use(express.json());
 
   const utils = new CoverageUtils(scm, urlReader);

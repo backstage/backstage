@@ -6,7 +6,7 @@ sidebar_label: Migration Guide
 description: How to migrate existing backends to the new backend system
 ---
 
-> **DISCLAIMER: The new backend system is in alpha, and still under active development. As such, it is not considered stable, and it is not recommended to migrate production backends to the new backend system until it has a stable release.**
+> **NOTE: The new backend system is in alpha, and some plugins do not yet fully implement it.**
 
 ## Overview
 
@@ -212,8 +212,7 @@ place it in the legacy plugin environment.
 
 ## Cleaning Up the Plugins Folder
 
-For plugins that are private and your own, you can follow a [dedicated migration
-guide](../building-plugins-and-modules/08-migrating.md) as you see fit, at a
+For plugins that are private and your own, you can follow a [dedicated migration guide](../building-plugins-and-modules/08-migrating.md) as you see fit, at a
 later time.
 
 For third party backend plugins, in particular the larger core plugins that are

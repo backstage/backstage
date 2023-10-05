@@ -1,5 +1,29 @@
 # @backstage/plugin-catalog-backend-module-gcp
 
+## 0.1.5-next.1
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-tasks@0.5.10-next.1
+  - @backstage/plugin-catalog-node@1.4.6-next.1
+  - @backstage/backend-common@0.19.7-next.1
+  - @backstage/plugin-kubernetes-common@0.7.0-next.0
+  - @backstage/backend-plugin-api@0.6.5-next.1
+  - @backstage/config@1.1.0
+
+## 0.1.5-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-common@0.19.7-next.0
+  - @backstage/config@1.1.0
+  - @backstage/backend-plugin-api@0.6.5-next.0
+  - @backstage/backend-tasks@0.5.10-next.0
+  - @backstage/plugin-catalog-node@1.4.6-next.0
+  - @backstage/plugin-kubernetes-common@0.6.6
+
 ## 0.1.3
 
 ### Patch Changes

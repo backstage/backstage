@@ -71,7 +71,6 @@ const searchPlugin: BackstagePlugin<
   {
     root: RouteRef<undefined>;
   },
-  {},
   {}
 >;
 export { searchPlugin as plugin };

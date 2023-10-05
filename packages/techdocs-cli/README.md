@@ -75,38 +75,3 @@ pip install mkdocs-techdocs-core
 ```
 
 Then run `yarn test`.
-
-#### Cypress (Integration and Visual regression) tests
-
-Running cypress tests requires you to run the CLI locally against our example docs.
-
-Run the local version of techdocs-cli against the example docs:
-
-```sh
-# From the root of this repository run
-# NOTE: This will build the techdocs-cli-embedded-app and copy the output into the cli dist directory
-yarn build --scope @techdocs/cli
-
-# Navigate to the example project
-cd packages/techdocs-cli/src/example-docs
-
-# Now execute the techdocs-cli serve command
-../../bin/techdocs-cli serve
-```
-
-In another shell, run the cypress tests:
-
-```sh
-# From the root of the project, navigate to the techdocs-cli package
-cd packages/techdocs-cli
-
-# Run tests
-yarn test:cypress
-```
-
-This will launch a cypress app where you can run the two different tests:
-
-- `backstage_serve` - will run against the backstage server
-- `mkdocs_serve` - will run test against the mkdocs server
-
-> If its the first time you run Cypress, it will run a "Verifying Cypress can run" step. This step can result in a "Cypress verification timed out" error. If that is the case, let the verification step run and then run the command again and it should succeed.

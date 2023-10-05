@@ -120,6 +120,14 @@ function setupFakeHasFileEndpoint(srv: SetupServer, apiBaseUrl: string) {
   );
 }
 
+function setupFakeURLReturnEndpoint(srv: SetupServer, url: string) {
+  srv.use(
+    rest.get(url, (req, res, ctx) => {
+      return res(ctx.json([{ endpoint: req.url.toString() }]));
+    }),
+  );
+}
+
 describe('GitLabClient', () => {
   describe('isSelfManaged', () => {
     it('returns true if self managed instance', () => {
@@ -931,5 +939,86 @@ describe('hasFile', () => {
       'catalog-info.yaml',
     );
     expect(hasFile).toBe(false);
+  });
+});
+
+describe('pagedRequest search params', () => {
+  beforeEach(() => {
+    // setup fake paginated endpoint with 4 pages each returning one item
+    setupFakeURLReturnEndpoint(server, FAKE_PAGED_URL);
+  });
+
+  it('no search params provided', async () => {
+    const client = new GitLabClient({
+      config: MOCK_CONFIG,
+      logger: getVoidLogger(),
+    });
+
+    const { items } = await client.pagedRequest<{ endpoint: string }>(
+      FAKE_PAGED_ENDPOINT,
+    );
+    // fake page contains exactly one item
+    expect(items).toHaveLength(1);
+    expect(items).toEqual([
+      { endpoint: 'https://example.com/api/v4/some-endpoint' },
+    ]);
+  });
+
+  it('defined numeric search params', async () => {
+    const client = new GitLabClient({
+      config: MOCK_CONFIG,
+      logger: getVoidLogger(),
+    });
+
+    const { items } = await client.pagedRequest<{ endpoint: string }>(
+      FAKE_PAGED_ENDPOINT,
+      { page: 1, per_page: 50 },
+    );
+    // fake page contains exactly one item
+    expect(items).toHaveLength(1);
+    expect(items).toEqual([
+      {
+        endpoint: 'https://example.com/api/v4/some-endpoint?page=1&per_page=50',
+      },
+    ]);
+  });
+
+  it('defined string search params', async () => {
+    const client = new GitLabClient({
+      config: MOCK_CONFIG,
+      logger: getVoidLogger(),
+    });
+
+    const { items } = await client.pagedRequest<{ endpoint: string }>(
+      FAKE_PAGED_ENDPOINT,
+      { test: 'value', empty: '' },
+    );
+    // fake page contains exactly one item
+    expect(items).toHaveLength(1);
+    expect(items).toEqual([
+      {
+        endpoint: 'https://example.com/api/v4/some-endpoint?test=value',
+      },
+    ]);
+  });
+
+  it('defined boolean search params', async () => {
+    const client = new GitLabClient({
+      config: MOCK_CONFIG,
+      logger: getVoidLogger(),
+    });
+
+    const { items } = await client.pagedRequest<{ endpoint: string }>(
+      FAKE_PAGED_ENDPOINT,
+      { active: true, archived: false },
+    );
+    // fake page contains exactly one item
+    expect(items).toHaveLength(1);
+    expect(items).toEqual([
+      {
+        endpoint:
+          'https://example.com/api/v4/some-endpoint?active=true&archived=false',
+      },
+    ]);
   });
 });

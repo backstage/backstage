@@ -35,16 +35,34 @@ import {
   createRoutableExtension,
   analyticsApiRef,
   useApi,
+  errorApiRef,
 } from '@backstage/core-plugin-api';
 import { AppManager } from './AppManager';
 import { AppComponents, AppIcons } from './types';
 import { FeatureFlagged } from '../routing/FeatureFlagged';
+import {
+  createTranslationRef,
+  useTranslationRef,
+} from '@backstage/core-plugin-api/alpha';
 
 describe('Integration Test', () => {
   const noOpAnalyticsApi = createApiFactory(
     analyticsApiRef,
     new NoOpAnalyticsApi(),
   );
+  const noopErrorApi = createApiFactory(errorApiRef, {
+    error$() {
+      return {
+        subscribe() {
+          return { unsubscribe() {}, closed: true };
+        },
+        [Symbol.observable]() {
+          return this;
+        },
+      };
+    },
+    post() {},
+  });
   const plugin1RouteRef = createRouteRef({ id: 'ref-1' });
   const plugin1RouteRef2 = createRouteRef({ id: 'ref-1-2' });
   const plugin2RouteRef = createRouteRef({ id: 'ref-2', params: ['x'] });
@@ -175,6 +193,10 @@ describe('Integration Test', () => {
     },
   ];
 
+  afterEach(() => {
+    localStorage.clear();
+  });
+
   it('runs happy paths', async () => {
     const app = new AppManager({
       apis: [noOpAnalyticsApi],
@@ -262,7 +284,7 @@ describe('Integration Test', () => {
 
   it('runs success with __experimentalTranslations', async () => {
     const app = new AppManager({
-      apis: [noOpAnalyticsApi],
+      apis: [noOpAnalyticsApi, noopErrorApi],
       defaultApis: [],
       themes,
       icons,
@@ -277,27 +299,41 @@ describe('Integration Test', () => {
       },
       __experimentalTranslations: {
         availableLanguages: ['en', 'de'],
+        defaultLanguage: 'de',
       },
     });
 
     const Provider = app.getProvider();
     const Router = app.getRouter();
 
+    const translationRef = createTranslationRef({
+      id: 'test',
+      messages: {
+        foo: 'Foo',
+      },
+      translations: {
+        de: () => Promise.resolve({ default: { foo: 'Bar' } }),
+      },
+    });
+
+    const TranslatedComponent = () => {
+      const { t } = useTranslationRef(translationRef);
+      return <div>translation: {t('foo')}</div>;
+    };
+
     await renderWithEffects(
       <Provider>
         <Router>
           <Routes>
-            <Route path="/" element={<ExposedComponent />} />
-            <Route path="/foo" element={<HiddenComponent />} />
+            <Route path="/" element={<TranslatedComponent />} />
           </Routes>
         </Router>
       </Provider>,
     );
 
-    expect(screen.getByText('extLink1: /')).toBeInTheDocument();
-    expect(screen.getByText('extLink2: /foo')).toBeInTheDocument();
-    expect(screen.getByText('extLink3: <none>')).toBeInTheDocument();
-    expect(screen.getByText('extLink4: <none>')).toBeInTheDocument();
+    await expect(
+      screen.findByText('translation: Bar'),
+    ).resolves.toBeInTheDocument();
   });
 
   it('should wait for the config to load before calling feature flags', async () => {
