@@ -33,6 +33,9 @@ import { ResultHighlight } from '@backstage/plugin-search-common';
 import { HighlightedSearchResultText } from '@backstage/plugin-search-react';
 
 const useStyles = makeStyles({
+  item: {
+    display: 'flex',
+  },
   flexContainer: {
     flexWrap: 'wrap',
   },
@@ -66,59 +69,63 @@ export function AdrSearchResultListItem(props: AdrSearchResultListItemProps) {
 
   return (
     <>
-      <ListItem alignItems="flex-start" className={classes.flexContainer}>
+      <ListItem alignItems="flex-start" className={classes.item}>
         {icon && <ListItemIcon>{icon}</ListItemIcon>}
-        <ListItemText
-          className={classes.itemText}
-          primaryTypographyProps={{ variant: 'h6' }}
-          primary={
-            <Link noTrack to={result.location}>
-              {highlight?.fields.title ? (
-                <HighlightedSearchResultText
-                  text={highlight?.fields.title || ''}
-                  preTag={highlight?.preTag || ''}
-                  postTag={highlight?.postTag || ''}
-                />
-              ) : (
-                result.title
-              )}
-            </Link>
-          }
-          secondary={
-            <Typography
-              component="span"
-              style={{
-                display: '-webkit-box',
-                WebkitBoxOrient: 'vertical',
-                WebkitLineClamp: lineClamp,
-                overflow: 'hidden',
-              }}
-            >
-              {highlight?.fields.text ? (
-                <HighlightedSearchResultText
-                  text={highlight.fields.text}
-                  preTag={highlight.preTag}
-                  postTag={highlight.postTag}
-                />
-              ) : (
-                result.text
-              )}
-            </Typography>
-          }
-        />
-        <Box>
-          <Chip
-            label={`Entity: ${
-              result.entityTitle ??
-              humanizeEntityRef(parseEntityRef(result.entityRef))
-            }`}
-            size="small"
+        <div className={classes.flexContainer}>
+          <ListItemText
+            className={classes.itemText}
+            primaryTypographyProps={{ variant: 'h6' }}
+            primary={
+              <Link noTrack to={result.location}>
+                {highlight?.fields.title ? (
+                  <HighlightedSearchResultText
+                    text={highlight?.fields.title || ''}
+                    preTag={highlight?.preTag || ''}
+                    postTag={highlight?.postTag || ''}
+                  />
+                ) : (
+                  result.title
+                )}
+              </Link>
+            }
+            secondary={
+              <Typography
+                component="span"
+                style={{
+                  display: '-webkit-box',
+                  WebkitBoxOrient: 'vertical',
+                  WebkitLineClamp: lineClamp,
+                  overflow: 'hidden',
+                }}
+              >
+                {highlight?.fields.text ? (
+                  <HighlightedSearchResultText
+                    text={highlight.fields.text}
+                    preTag={highlight.preTag}
+                    postTag={highlight.postTag}
+                  />
+                ) : (
+                  result.text
+                )}
+              </Typography>
+            }
           />
-          {result.status && (
-            <Chip label={`Status: ${result.status}`} size="small" />
-          )}
-          {result.date && <Chip label={`Date: ${result.date}`} size="small" />}
-        </Box>
+          <Box>
+            <Chip
+              label={`Entity: ${
+                result.entityTitle ??
+                humanizeEntityRef(parseEntityRef(result.entityRef))
+              }`}
+              size="small"
+            />
+            {result.status && (
+              <Chip label={`Status: ${result.status}`} size="small" />
+            )}
+            {result.date && (
+              <Chip label={`Date: ${result.date}`} size="small" />
+            )}
+          </Box>
+        </div>
       </ListItem>
       <Divider component="li" />
     </>
