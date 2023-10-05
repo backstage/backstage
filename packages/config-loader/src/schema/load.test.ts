@@ -14,16 +14,18 @@
  * limitations under the License.
  */
 
-import mockFs from 'mock-fs';
+import { createMockDirectory } from '@backstage/backend-test-utils';
 import { loadConfigSchema } from './load';
 
 describe('loadConfigSchema', () => {
+  const mockDir = createMockDirectory();
+
   afterEach(() => {
-    mockFs.restore();
+    mockDir.clear();
   });
 
   it('should load schema from packages or data', async () => {
-    mockFs({
+    mockDir.setContent({
       node_modules: {
         a: {
           'package.json': JSON.stringify({
@@ -53,6 +55,7 @@ describe('loadConfigSchema', () => {
         },
       },
     });
+    process.chdir(mockDir.path);
 
     const schema = await loadConfigSchema({
       dependencies: ['a'],
@@ -119,7 +122,7 @@ describe('loadConfigSchema', () => {
 
   describe('should consider schema', () => {
     it('when filtering simple config', async () => {
-      mockFs({
+      mockDir.setContent({
         'package.json': JSON.stringify({
           name: 'a',
           configSchema: {
@@ -131,6 +134,7 @@ describe('loadConfigSchema', () => {
           },
         }),
       });
+      process.chdir(mockDir.path);
 
       const schema = await loadConfigSchema({
         packagePaths: ['package.json'],
@@ -156,7 +160,7 @@ describe('loadConfigSchema', () => {
     });
 
     it('when filtering nested config', async () => {
-      mockFs({
+      mockDir.setContent({
         'package.json': JSON.stringify({
           name: 'a',
           configSchema: {
@@ -185,6 +189,7 @@ describe('loadConfigSchema', () => {
           },
         }),
       });
+      process.chdir(mockDir.path);
 
       const schema = await loadConfigSchema({
         packagePaths: ['package.json'],
@@ -244,7 +249,7 @@ describe('loadConfigSchema', () => {
   });
 
   it('when filtering config with required values', async () => {
-    mockFs({
+    mockDir.setContent({
       'package.json': JSON.stringify({
         name: 'a',
         configSchema: {
@@ -261,6 +266,7 @@ describe('loadConfigSchema', () => {
         },
       }),
     });
+    process.chdir(mockDir.path);
 
     const schema = await loadConfigSchema({
       packagePaths: ['package.json'],
