@@ -19,7 +19,7 @@ import { posix as posixPath, resolve as resolvePath } from 'path';
 
 /** @public */
 export interface PackagePathResolutionOverride {
-  /** Restored the normal behavior of resolvePackagePath */
+  /** Restores the normal behavior of resolvePackagePath */
   restore(): void;
 }
 
@@ -36,7 +36,7 @@ export interface OverridePackagePathResolutionOptions {
    * that is being resolved within the package.
    *
    * For example, code calling `resolvePackagePath('x', 'foo', 'bar')` would match only the following
-   * configuration: `overridePackagePathResolution({ packageNAme: 'x', paths: { 'foo/bar': baz } })`
+   * configuration: `overridePackagePathResolution({ packageName: 'x', paths: { 'foo/bar': baz } })`
    */
   paths?: { [path in string]: string | (() => string) };
 }
@@ -52,7 +52,9 @@ export function overridePackagePathResolution(
   const name = options.packageName;
 
   if (packagePathMocks.has(name)) {
-    throw new Error(`Duplicate package path mock for package '${name}'`);
+    throw new Error(
+      `Tried to override resolution for '${name}' more than once for package '${name}'`,
+    );
   }
 
   packagePathMocks.set(name, paths => {
