@@ -6,8 +6,7 @@ This module installs an entity provider that exports a single entity, your Backs
 
 ## Notes
 
-- This only works with the new backend system.
-- This requires populating a new config value `openapi.plugins` with an array of plugin IDs. The entity processor expo
+- **This only works with the new backend system.**
 
 ## Installation
 
