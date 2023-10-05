@@ -14,40 +14,40 @@
  * limitations under the License.
  */
 
-import mockFs from 'mock-fs';
+import { createMockDirectory } from '@backstage/backend-test-utils';
 import { findStaticAssets } from './findStaticAssets';
 
 describe('findStaticAssets', () => {
+  const mockDir = createMockDirectory();
+
   afterEach(() => {
-    mockFs.restore();
+    mockDir.clear();
   });
 
   it('should find assets', async () => {
-    mockFs({
-      '/test': {
-        'a.js': 'alert("hello")',
-        'a.js.map': '',
-        'b.js': 'b',
-        'b.js.map': '',
-        js: {
-          'd.js': 'd',
-          'd.js.map': '',
-          x: {
+    mockDir.setContent({
+      'a.js': 'alert("hello")',
+      'a.js.map': '',
+      'b.js': 'b',
+      'b.js.map': '',
+      js: {
+        'd.js': 'd',
+        'd.js.map': '',
+        x: {
+          'e.map': '',
+          y: {
             'e.map': '',
-            y: {
+            z: {
+              'e.js': 'e',
               'e.map': '',
-              z: {
-                'e.js': 'e',
-                'e.map': '',
-              },
             },
           },
         },
-        styles: { 'c.css': 'body { color: red; }' },
       },
+      styles: { 'c.css': 'body { color: red; }' },
     });
 
-    const assets = await findStaticAssets('/test');
+    const assets = await findStaticAssets(mockDir.path);
     expect(assets.length).toBe(5);
     expect(assets.map(a => a.path)).toEqual(
       expect.arrayContaining([

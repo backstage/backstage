@@ -13,8 +13,37 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+import { createMockDirectory } from '@backstage/backend-test-utils';
 import { ServiceAccountStrategy } from './ServiceAccountStrategy';
-import mockFs from 'mock-fs';
+
+const mockDir = createMockDirectory({
+  content: {
+    'token.txt': 'in-cluster-token',
+  },
+});
+
+jest.mock('@kubernetes/client-node', () => ({
+  KubeConfig: class {
+    #loaded = false;
+    loadFromCluster() {
+      this.#loaded = true;
+    }
+    getCurrentUser() {
+      if (!this.#loaded) {
+        throw new Error('loadFromCluster not called');
+      }
+      return {
+        authProvider: {
+          config: {
+            get tokenFile() {
+              return mockDir.resolve('token.txt');
+            },
+          },
+        },
+      };
+    }
+  },
+}));
 
 describe('ServiceAccountStrategy', () => {
   describe('#getCredential', () => {
@@ -32,16 +61,9 @@ describe('ServiceAccountStrategy', () => {
         token: 'from config',
       });
     });
-    describe('when serviceAccountToken is absent from config', () => {
-      afterEach(() => {
-        mockFs.restore();
-      });
 
+    describe('when serviceAccountToken is absent from config', () => {
       it('reads in-cluster token', async () => {
-        mockFs({
-          '/var/run/secrets/kubernetes.io/serviceaccount/token':
-            'in-cluster-token',
-        });
         const strategy = new ServiceAccountStrategy();
 
         const credential = await strategy.getCredential({
