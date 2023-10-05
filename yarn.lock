@@ -1776,8 +1776,8 @@ __metadata:
   linkType: hard
 
 "@azure/storage-blob@npm:^12.5.0":
-  version: 12.15.0
-  resolution: "@azure/storage-blob@npm:12.15.0"
+  version: 12.16.0
+  resolution: "@azure/storage-blob@npm:12.16.0"
   dependencies:
     "@azure/abort-controller": ^1.0.0
     "@azure/core-http": ^3.0.0
@@ -1787,7 +1787,7 @@ __metadata:
     "@azure/logger": ^1.0.0
     events: ^3.0.0
     tslib: ^2.2.0
-  checksum: fe5399e7107685f1e81bd782fbd10e11c6aec01141c63f24f138a985aa709da96e83fc5dd3295408b0609981b2fb71d2304935056692e4cf3833635157799769
+  checksum: c69a726afc7fa647e6bc6eb2b2863ed94088246a959f5e8f2b3fdd0f613846cb5eec7e991f2b50dd3ba88cd0b32e60da1e3d87eeeb5dbc692df4f61a3c507491
   languageName: node
   linkType: hard
 
