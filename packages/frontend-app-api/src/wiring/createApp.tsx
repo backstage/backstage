@@ -493,6 +493,21 @@ function createApiHolder(
   });
 
   factoryRegistry.register('static', {
+    api: appLanguageApiRef,
+    deps: {},
+    factory: () => AppLanguageSelector.createWithStorage(),
+  });
+
+  factoryRegistry.register('default', {
+    api: translationApiRef,
+    deps: { languageApi: appLanguageApiRef },
+    factory: ({ languageApi }) =>
+      I18nextTranslationApi.create({
+        languageApi,
+      }),
+  });
+
+  factoryRegistry.register('static', {
     api: configApiRef,
     deps: {},
     factory: () => configApi,
