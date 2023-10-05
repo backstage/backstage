@@ -15810,8 +15810,8 @@ __metadata:
   linkType: hard
 
 "@stoplight/spectral-formatters@npm:^1.1.0":
-  version: 1.2.0
-  resolution: "@stoplight/spectral-formatters@npm:1.2.0"
+  version: 1.3.0
+  resolution: "@stoplight/spectral-formatters@npm:1.3.0"
   dependencies:
     "@stoplight/path": ^1.3.2
     "@stoplight/spectral-core": ^1.15.1
@@ -15820,10 +15820,11 @@ __metadata:
     chalk: 4.1.2
     cliui: 7.0.4
     lodash: ^4.17.21
+    node-sarif-builder: ^2.0.3
     strip-ansi: 6.0
     text-table: ^0.2.0
     tslib: ^2.5.0
-  checksum: e84cc06ed33348f532f513b64d7179e2e261d6b87e45be66169088bf8d4c0fbc8fcda92adcde0d3f88f03eb5f31fbf9b2c853cdd49d4d1ae809d9a76920adb16
+  checksum: d56757f5204571c5d86551bb8ea56183236c9dab69d95104abcf639a4ff3a465efa5e393f68fd9032c852e0078c514b343a9eaa3aea3ecb8e465f4eeb92bd29f
   languageName: node
   linkType: hard
 
@@ -18428,6 +18429,13 @@ __metadata:
   dependencies:
     htmlparser2: ^8.0.0
   checksum: 381db8e3f22876e8f6aa8f0997af73c71220c8398545d809ebd4e25d33480e73642b8c143a87d87bba504a43ab58d70a724c60eb3fd8fde31a813b682730c98f
+  languageName: node
+  linkType: hard
+
+"@types/sarif@npm:^2.1.4":
+  version: 2.1.5
+  resolution: "@types/sarif@npm:2.1.5"
+  checksum: 6fb813f6988b3416dfd38388dd6af07eedf7d62b288b8cd576f0eb9bd2b26523d7905cee78f4f6316eb3181472bb028caac282e4eb1b2d0042dc7ee2cbbf37c5
   languageName: node
   linkType: hard
 
@@ -33660,6 +33668,16 @@ __metadata:
   version: 2.0.13
   resolution: "node-releases@npm:2.0.13"
   checksum: 17ec8f315dba62710cae71a8dad3cd0288ba943d2ece43504b3b1aa8625bf138637798ab470b1d9035b0545996f63000a8a926e0f6d35d0996424f8b6d36dda3
+  languageName: node
+  linkType: hard
+
+"node-sarif-builder@npm:^2.0.3":
+  version: 2.0.3
+  resolution: "node-sarif-builder@npm:2.0.3"
+  dependencies:
+    "@types/sarif": ^2.1.4
+    fs-extra: ^10.0.0
+  checksum: 397dd9bfb0780c6753fb47d1fd0465f3c8a935082cb1bbd7ad6232d18b6343d9d499c6bc572ad0415db282efd6058fe8b7a6657020434adef4fbf93a8b95306e
   languageName: node
   linkType: hard
 
