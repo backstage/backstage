@@ -29,14 +29,24 @@ import {
   createPageExtension,
   createPlugin,
   createNavItemExtension,
+  createExtension,
+  coreExtensionData,
+  AnyExtensionInputMap,
+  PortableSchema,
+  ExtensionBoundary,
+  createExtensionInput,
 } from '@backstage/frontend-plugin-api';
 import {
+  AsyncEntityProvider,
   catalogApiRef,
+  entityRouteRef,
   starredEntitiesApiRef,
 } from '@backstage/plugin-catalog-react';
 import { createSearchResultListItemExtension } from '@backstage/plugin-search-react/alpha';
 import { DefaultStarredEntitiesApi } from './apis';
 import { rootRouteRef } from './routes';
+import { Progress } from '@backstage/core-components';
+import { useEntityFromUrl } from './components/CatalogEntityPage/useEntityFromUrl';
 
 /** @alpha */
 export const CatalogApi = createApiExtension({
@@ -72,30 +82,175 @@ export const CatalogSearchResultListItemExtension =
   });
 
 /** @alpha */
-export const CatalogIndexPage = createPageExtension({
-  id: 'catalog',
-  routeRef: rootRouteRef,
+export function createCatalogFilterExtension<
+  TInputs extends AnyExtensionInputMap,
+  TConfig = never,
+>(options: {
+  id: string;
+  inputs?: TInputs;
+  configSchema?: PortableSchema<TConfig>;
+  loader: (options: { config: TConfig }) => Promise<JSX.Element>;
+}) {
+  return createExtension({
+    id: `catalog.filter.${options.id}`,
+    attachTo: { id: 'catalog', input: 'filters' },
+    inputs: options.inputs ?? {},
+    configSchema: options.configSchema,
+    output: {
+      element: coreExtensionData.reactElement,
+    },
+    factory({ bind, config, source }) {
+      const LazyComponent = React.lazy(() =>
+        options
+          .loader({ config })
+          .then(element => ({ default: () => element })),
+      );
+
+      bind({
+        element: (
+          <ExtensionBoundary source={source}>
+            <React.Suspense fallback={<Progress />}>
+              <LazyComponent />
+            </React.Suspense>
+          </ExtensionBoundary>
+        ),
+      });
+    },
+  });
+}
+
+/** @alpha */
+export const CatalogEntityTagFilter = createCatalogFilterExtension({
+  id: 'entity.tag',
+  loader: async () => {
+    const { EntityTagPicker } = await import('@backstage/plugin-catalog-react');
+    return <EntityTagPicker />;
+  },
+});
+
+/** @alpha */
+export const CatalogEntityKindFilter = createCatalogFilterExtension({
+  id: 'entity.kind',
   configSchema: createSchemaFromZod(z =>
     z.object({
-      path: z.string().default('/catalog'),
-      initialKind: z.string().default('component'),
-      initiallySelectedFilter: z
-        .enum(['owned', 'starred', 'all'])
-        .default('owned'),
-      ownerPickerMode: z.enum(['owners-only', 'all']).optional(),
+      initialFilter: z.string().default('component'),
     }),
   ),
   loader: async ({ config }) => {
-    const { CatalogPage } = await import('./components/CatalogPage');
-    const { ownerPickerMode, initialKind, initiallySelectedFilter } = config;
-
-    return (
-      <CatalogPage
-        ownerPickerMode={ownerPickerMode}
-        initialKind={initialKind}
-        initiallySelectedFilter={initiallySelectedFilter}
-      />
+    const { EntityKindPicker } = await import(
+      '@backstage/plugin-catalog-react'
     );
+    return <EntityKindPicker initialFilter={config.initialFilter} />;
+  },
+});
+
+/** @alpha */
+export const CatalogEntityTypeFilter = createCatalogFilterExtension({
+  id: 'entity.type',
+  loader: async () => {
+    const { EntityTypePicker } = await import(
+      '@backstage/plugin-catalog-react'
+    );
+    return <EntityTypePicker />;
+  },
+});
+
+/** @alpha */
+export const CatalogEntityOwnerFilter = createCatalogFilterExtension({
+  id: 'entity.mode',
+  configSchema: createSchemaFromZod(z =>
+    z.object({
+      mode: z.enum(['owners-only', 'all']).optional(),
+    }),
+  ),
+  loader: async ({ config }) => {
+    const { EntityOwnerPicker } = await import(
+      '@backstage/plugin-catalog-react'
+    );
+    return <EntityOwnerPicker mode={config.mode} />;
+  },
+});
+
+/** @alpha */
+export const CatalogEntityNamespaceFilter = createCatalogFilterExtension({
+  id: 'entity.namespace',
+  loader: async () => {
+    const { EntityNamespacePicker } = await import(
+      '@backstage/plugin-catalog-react'
+    );
+    return <EntityNamespacePicker />;
+  },
+});
+
+/** @alpha */
+export const CatalogEntityLifecycleFilter = createCatalogFilterExtension({
+  id: 'entity.lifecycle',
+  loader: async () => {
+    const { EntityLifecyclePicker } = await import(
+      '@backstage/plugin-catalog-react'
+    );
+    return <EntityLifecyclePicker />;
+  },
+});
+
+/** @alpha */
+export const CatalogEntityProcessingStatusFilter = createCatalogFilterExtension(
+  {
+    id: 'entity.processing.status',
+    loader: async () => {
+      const { EntityProcessingStatusPicker } = await import(
+        '@backstage/plugin-catalog-react'
+      );
+      return <EntityProcessingStatusPicker />;
+    },
+  },
+);
+
+/** @alpha */
+export const CatalogUserListFilter = createCatalogFilterExtension({
+  id: 'user.list',
+  configSchema: createSchemaFromZod(z =>
+    z.object({
+      initialFilter: z.enum(['owned', 'starred', 'all']).default('owned'),
+    }),
+  ),
+  loader: async ({ config }) => {
+    const { UserListPicker } = await import('@backstage/plugin-catalog-react');
+    return <UserListPicker initialFilter={config.initialFilter} />;
+  },
+});
+
+/** @alpha */
+export const CatalogIndexPage = createPageExtension({
+  id: 'catalog',
+  defaultPath: '/catalog',
+  routeRef: rootRouteRef,
+  inputs: {
+    filters: createExtensionInput({
+      element: coreExtensionData.reactElement,
+    }),
+  },
+  loader: async ({ inputs }) => {
+    const { DefaultCatalogPage } = await import('./components/CatalogPage');
+    const filters = inputs.filters.map(filter => filter.element);
+    return <DefaultCatalogPage filters={filters} />;
+  },
+});
+
+/** @alpha */
+export const CatalogEntityPage = createPageExtension({
+  id: 'catalog:entity',
+  defaultPath: '/catalog/:namespace/:kind/:name',
+  routeRef: entityRouteRef,
+  loader: async () => {
+    const Component = () => {
+      return (
+        <AsyncEntityProvider {...useEntityFromUrl()}>
+          <div>🚧 Work In Progress</div>
+        </AsyncEntityProvider>
+      );
+    };
+    return <Component />;
   },
 });
 
@@ -113,7 +268,16 @@ export default createPlugin({
     CatalogApi,
     StarredEntitiesApi,
     CatalogSearchResultListItemExtension,
-    CatalogNavItem,
+    CatalogEntityKindFilter,
+    CatalogEntityTypeFilter,
+    CatalogUserListFilter,
+    CatalogEntityOwnerFilter,
+    CatalogEntityLifecycleFilter,
+    CatalogEntityTagFilter,
+    CatalogEntityProcessingStatusFilter,
+    CatalogEntityNamespaceFilter,
     CatalogIndexPage,
+    CatalogEntityPage,
+    CatalogNavItem,
   ],
 });

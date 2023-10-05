@@ -57,6 +57,7 @@ export interface DefaultCatalogPageProps {
   tableOptions?: TableProps<CatalogTableRow>['options'];
   emptyContent?: ReactNode;
   ownerPickerMode?: EntityOwnerPickerProps['mode'];
+  filters?: ReactNode;
 }
 
 export function DefaultCatalogPage(props: DefaultCatalogPageProps) {
@@ -68,6 +69,7 @@ export function DefaultCatalogPage(props: DefaultCatalogPageProps) {
     tableOptions = {},
     emptyContent,
     ownerPickerMode,
+    filters,
   } = props;
   const orgName =
     useApi(configApiRef).getOptionalString('organization.name') ?? 'Backstage';
@@ -87,14 +89,18 @@ export function DefaultCatalogPage(props: DefaultCatalogPageProps) {
         <EntityListProvider>
           <CatalogFilterLayout>
             <CatalogFilterLayout.Filters>
-              <EntityKindPicker initialFilter={initialKind} />
-              <EntityTypePicker />
-              <UserListPicker initialFilter={initiallySelectedFilter} />
-              <EntityOwnerPicker mode={ownerPickerMode} />
-              <EntityLifecyclePicker />
-              <EntityTagPicker />
-              <EntityProcessingStatusPicker />
-              <EntityNamespacePicker />
+              {filters ?? (
+                <>
+                  <EntityKindPicker initialFilter={initialKind} />
+                  <EntityTypePicker />
+                  <UserListPicker initialFilter={initiallySelectedFilter} />
+                  <EntityOwnerPicker mode={ownerPickerMode} />
+                  <EntityLifecyclePicker />
+                  <EntityTagPicker />
+                  <EntityProcessingStatusPicker />
+                  <EntityNamespacePicker />
+                </>
+              )}
             </CatalogFilterLayout.Filters>
             <CatalogFilterLayout.Content>
               <CatalogTable
