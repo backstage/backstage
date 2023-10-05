@@ -51,7 +51,7 @@ const IndexPage = createPageExtension({
             <Link to="/search">Search</Link>
           </div>
           <div>
-            <Link to="/Settings">Settings</Link>
+            <Link to="/settings">Settings</Link>
           </div>
         </div>
       );
