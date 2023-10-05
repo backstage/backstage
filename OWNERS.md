@@ -22,12 +22,13 @@ Team: @backstage/catalog-maintainers
 
 Scope: The catalog plugin and catalog model
 
-| Name           | Organization | Team      | GitHub                                   | Discord          |
-| -------------- | ------------ | --------- | ---------------------------------------- | ---------------- |
-| Rickard Dybeck | Spotify      | Chipmunks | [alde](http://github.com/alde)           | rdybeck#8083     |
-| Mike Blockley  | Spotify      | Chipmunks | [mikeyhc](http://github.com/mikeyhc)     | mikey-spot#5363  |
-| Elon Jefferson | Spotify      | Chipmunks | [Edje-C](http://github.com/Edje-C)       | elon-spotty#6086 |
-| Nurit Izrailov | Spotify      | Chipmunks | [nuritizra](http://github.com/nuritizra) | -                |
+| Name            | Organization | Team      | GitHub                                   | Discord             |
+| --------------- | ------------ | --------- | ---------------------------------------- | ------------------- |
+| Rickard Dybeck  | Spotify      | Chipmunks | [alde](http://github.com/alde)           | `rdybeck#8083`      |
+| Mike Blockley   | Spotify      | Chipmunks | [mikeyhc](http://github.com/mikeyhc)     | `mikey-spot#5363`   |
+| Elon Jefferson  | Spotify      | Chipmunks | [Edje-C](http://github.com/Edje-C)       | `elon-spotty#6086 ` |
+| Nurit Izrailov  | Spotify      | Chipmunks | [nuritizra](http://github.com/nuritizra) | -                   |
+| Hunter Dougless | Spotify      | Chipmunks | [hntrdglss](http://github.com/hntrdglss) | `hntrdglss#1849`    |
 
 ### Discoverability
 
