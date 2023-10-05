@@ -14,8 +14,6 @@
  * limitations under the License.
  */
 
-import * as os from 'os';
-import mockFs from 'mock-fs';
 import { resolve as resolvePath } from 'path';
 import { createFilesystemRenameAction } from './rename';
 import { getVoidLogger } from '@backstage/backend-common';
@@ -23,14 +21,15 @@ import { PassThrough } from 'stream';
 import fs from 'fs-extra';
 import yaml from 'yaml';
 import { examples } from './rename.examples';
-
-const root = os.platform() === 'win32' ? 'C:\\rootDir' : '/rootDir';
-const workspacePath = resolvePath(root, 'my-workspace');
+import { createMockDirectory } from '@backstage/backend-test-utils';
 
 describe('fs:rename examples', () => {
   const action = createFilesystemRenameAction();
   const files: { from: string; to: string }[] = yaml.parse(examples[0].example)
     .steps[0].input.files;
+
+  const mockDir = createMockDirectory();
+  const workspacePath = resolvePath(mockDir.path, 'workspace');
 
   const mockContext = {
     input: {
@@ -46,7 +45,7 @@ describe('fs:rename examples', () => {
   beforeEach(() => {
     jest.restoreAllMocks();
 
-    mockFs({
+    mockDir.setContent({
       [workspacePath]: {
         [files[0].from]: 'hello',
         [files[1].from]: 'world',
@@ -57,10 +56,6 @@ describe('fs:rename examples', () => {
         },
       },
     });
-  });
-
-  afterEach(() => {
-    mockFs.restore();
   });
 
   it('should call fs.move with the correct values', async () => {
