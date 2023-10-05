@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import mockFs from 'mock-fs';
+import { createMockDirectory } from '@backstage/backend-test-utils';
 import { collectConfigSchemas } from './collect';
 import path from 'path';
 
@@ -28,25 +28,15 @@ const mockSchema = {
   },
 };
 
-// Gotta make sure this is in the compiler cache before we start mocking the filesystem
-require('typescript-json-schema');
-
-// We need to load in actual TS libraries when using mock-fs.
-// This lookup is to allow the `typescript` dependency to exist either
-// at top level or inside node_modules of typescript-json-schema
-const typescriptModuleDir = path.dirname(
-  require.resolve('typescript/package.json', {
-    paths: [require.resolve('typescript-json-schema')],
-  }),
-);
-
 describe('collectConfigSchemas', () => {
+  const mockDir = createMockDirectory();
+
   afterEach(() => {
-    mockFs.restore();
+    mockDir.clear();
   });
 
   it('should not find any schemas without packages', async () => {
-    mockFs({
+    mockDir.setContent({
       'lerna.json': JSON.stringify({
         packages: ['packages/*'],
       }),
@@ -56,7 +46,7 @@ describe('collectConfigSchemas', () => {
   });
 
   it('should find schema in a local package', async () => {
-    mockFs({
+    mockDir.setContent({
       node_modules: {
         a: {
           'package.json': JSON.stringify({
@@ -66,6 +56,7 @@ describe('collectConfigSchemas', () => {
         },
       },
     });
+    process.chdir(mockDir.path);
 
     await expect(collectConfigSchemas(['a'], [])).resolves.toEqual([
       {
@@ -76,7 +67,7 @@ describe('collectConfigSchemas', () => {
   });
 
   it('should find schema at explicit package path', async () => {
-    mockFs({
+    mockDir.setContent({
       root: {
         'package.json': JSON.stringify({
           name: 'root',
@@ -84,6 +75,7 @@ describe('collectConfigSchemas', () => {
         }),
       },
     });
+    process.chdir(mockDir.path);
 
     await expect(
       collectConfigSchemas([], [path.join('root', 'package.json')]),
@@ -96,7 +88,7 @@ describe('collectConfigSchemas', () => {
   });
 
   it('should find schema in transitive dependencies and explicit path', async () => {
-    mockFs({
+    mockDir.setContent({
       root: {
         'package.json': JSON.stringify({
           name: 'root',
@@ -152,6 +144,7 @@ describe('collectConfigSchemas', () => {
         },
       },
     });
+    process.chdir(mockDir.path);
 
     await expect(
       collectConfigSchemas(['a'], [path.join('root', 'package.json')]),
@@ -178,7 +171,7 @@ describe('collectConfigSchemas', () => {
   });
 
   it('should schema of different types', async () => {
-    mockFs({
+    mockDir.setContent({
       node_modules: {
         a: {
           'package.json': JSON.stringify({
@@ -198,15 +191,16 @@ describe('collectConfigSchemas', () => {
             name: 'c',
             configSchema: 'schema.d.ts',
           }),
-          'schema.d.ts': `export interface Config {
+          'schema.d.ts': `
+            export interface Config {
               /** @visibility secret */
               tsKey: string
-            }`,
+            }
+          `,
         },
       },
-      // TypeScript compilation needs to load some real files inside the typescript dir
-      [typescriptModuleDir]: (mockFs as any).load(typescriptModuleDir),
     });
+    process.chdir(mockDir.path);
 
     await expect(collectConfigSchemas(['a', 'b', 'c'], [])).resolves.toEqual([
       {
@@ -235,7 +229,7 @@ describe('collectConfigSchemas', () => {
   });
 
   it('should load schema from different package versions', async () => {
-    mockFs({
+    mockDir.setContent({
       node_modules: {
         a: {
           'package.json': JSON.stringify({
@@ -275,6 +269,7 @@ describe('collectConfigSchemas', () => {
         },
       },
     });
+    process.chdir(mockDir.path);
 
     await expect(collectConfigSchemas(['a'], [])).resolves.toEqual([
       {
@@ -303,7 +298,7 @@ describe('collectConfigSchemas', () => {
   });
 
   it('should not allow unknown schema file types', async () => {
-    mockFs({
+    mockDir.setContent({
       node_modules: {
         a: {
           'package.json': JSON.stringify({
@@ -314,6 +309,7 @@ describe('collectConfigSchemas', () => {
         },
       },
     });
+    process.chdir(mockDir.path);
 
     await expect(collectConfigSchemas(['a'], [])).rejects.toThrow(
       'Config schema files must be .json or .d.ts, got schema.yaml',
@@ -321,7 +317,7 @@ describe('collectConfigSchemas', () => {
   });
 
   it('should reject typescript config declaration without a Config type', async () => {
-    mockFs({
+    mockDir.setContent({
       node_modules: {
         a: {
           'package.json': JSON.stringify({
@@ -331,9 +327,8 @@ describe('collectConfigSchemas', () => {
           'schema.d.ts': `export interface NotConfig {}`,
         },
       },
-      // TypeScript compilation needs to load some real files inside the typescript dir
-      [typescriptModuleDir]: (mockFs as any).load(typescriptModuleDir),
     });
+    process.chdir(mockDir.path);
 
     await expect(collectConfigSchemas(['a'], [])).rejects.toThrow(
       `Invalid schema in ${path.join(
