@@ -149,6 +149,22 @@ const generatedColumns: TableColumn[] = [
     },
   },
   {
+    title: 'Last Run Duration',
+    align: 'center',
+    render: (row: Partial<Project>) => (
+      <>
+        <Typography>
+          {row?.lastBuild?.duration
+            ? (row?.lastBuild?.duration / 1000)
+                .toFixed(1)
+                .toString()
+                .concat(' s')
+            : ''}{' '}
+        </Typography>
+      </>
+    ),
+  },
+  {
     title: 'Tests',
     sorting: false,
     render: (row: Partial<Project>) => {

@@ -79,3 +79,13 @@ export const EntityLatestJenkinsRunCard = jenkinsPlugin.provide(
     },
   }),
 );
+
+/** @public */
+export const EntityJobRunsTable = jenkinsPlugin.provide(
+  createComponentExtension({
+    name: 'EntityJobRunsTable',
+    component: {
+      lazy: () => import('./components/JobRunsTable').then(m => m.JobRunsTable),
+    },
+  }),
+);

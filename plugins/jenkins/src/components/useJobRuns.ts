@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import useAsyncRetry from 'react-use/lib/useAsyncRetry';
 import { jenkinsApiRef } from '../api';
 import { errorApiRef, useApi } from '@backstage/core-plugin-api';
@@ -45,9 +45,6 @@ export function useJobRuns(jobFullName: string) {
         entity: getCompoundEntityRef(entity),
         jobFullName,
       });
-
-      setTotal(jobBuilds.builds.length);
-
       return jobBuilds;
     } catch (e) {
       const errorType = e.notFound
@@ -57,6 +54,10 @@ export function useJobRuns(jobFullName: string) {
       throw e;
     }
   }, [api, errorApi, entity]);
+
+  useEffect(() => {
+    if (jobRuns) setTotal(jobRuns.builds.length);
+  }, [jobRuns]);
 
   return [
     {

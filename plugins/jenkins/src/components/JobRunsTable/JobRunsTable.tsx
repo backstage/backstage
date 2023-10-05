@@ -160,7 +160,7 @@ export const JobRunsTableView = ({
           <Box display="flex" alignItems="center">
             <img src={JenkinsLogo} alt="Jenkins logo" height="50px" />
             <Box mr={2} />
-            <Typography variant="h6">Job Runs</Typography>
+            <Typography variant="h6">{`${jobRuns?.displayName} Runs`}</Typography>
           </Box>
           <Box display="flex" alignItems="center" mt={2}>
             <Typography variant="h6">
