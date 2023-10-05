@@ -14,19 +14,18 @@
  * limitations under the License.
  */
 
-import * as os from 'os';
-import mockFs from 'mock-fs';
 import { resolve as resolvePath } from 'path';
 import { createFilesystemRenameAction } from './rename';
 import { getVoidLogger } from '@backstage/backend-common';
 import { PassThrough } from 'stream';
 import fs from 'fs-extra';
-
-const root = os.platform() === 'win32' ? 'C:\\rootDir' : '/rootDir';
-const workspacePath = resolvePath(root, 'my-workspace');
+import { createMockDirectory } from '@backstage/backend-test-utils';
 
 describe('fs:rename', () => {
   const action = createFilesystemRenameAction();
+
+  const mockDir = createMockDirectory();
+  const workspacePath = resolvePath(mockDir.path, 'workspace');
 
   const mockInputFiles = [
     {
@@ -56,7 +55,7 @@ describe('fs:rename', () => {
   beforeEach(() => {
     jest.restoreAllMocks();
 
-    mockFs({
+    mockDir.setContent({
       [workspacePath]: {
         'unit-test-a.js': 'hello',
         'unit-test-b.js': 'world',
@@ -66,10 +65,6 @@ describe('fs:rename', () => {
         },
       },
     });
-  });
-
-  afterEach(() => {
-    mockFs.restore();
   });
 
   it('should throw an error when files is not an array', async () => {
