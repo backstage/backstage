@@ -112,7 +112,6 @@ const userSettingsPlugin: BackstagePlugin<
   {
     settingsPage: RouteRef<undefined>;
   },
-  {},
   {}
 >;
 export { userSettingsPlugin as plugin };

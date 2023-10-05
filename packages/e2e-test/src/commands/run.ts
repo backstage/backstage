@@ -20,13 +20,11 @@ import fetch from 'cross-fetch';
 import handlebars from 'handlebars';
 import killTree from 'tree-kill';
 import { resolve as resolvePath, join as joinPath } from 'path';
-import puppeteer from 'puppeteer';
 import path from 'path';
 
 import {
   spawnPiped,
   runPlain,
-  waitForPageWithText,
   waitFor,
   waitForExit,
   print,
@@ -42,6 +40,7 @@ const paths = findPaths(__dirname);
 
 const templatePackagePaths = [
   'packages/cli/templates/default-plugin/package.json.hbs',
+  'packages/create-app/templates/default-app/package.json.hbs',
   'packages/create-app/templates/default-app/packages/app/package.json.hbs',
   'packages/create-app/templates/default-app/packages/backend/package.json.hbs',
 ];
@@ -66,8 +65,11 @@ export async function run() {
   print('Creating a Backstage Backend Plugin');
   await createPlugin({ appDir, pluginId, select: 'backend-plugin' });
 
-  print('Starting the app');
-  await testAppServe(pluginId, appDir);
+  print(`Running 'yarn test:e2e' in newly created app with new plugin`);
+  await runPlain(['yarn', 'test:e2e'], {
+    cwd: appDir,
+    env: { ...process.env, CI: undefined },
+  });
 
   if (
     Boolean(process.env.POSTGRES_USER) ||
@@ -297,15 +299,6 @@ async function createApp(
       await runPlain(['yarn', cmd], { cwd: appDir });
     }
 
-    print(`Running 'yarn test:e2e:ci' in newly created app`);
-    await runPlain(['yarn', 'test:e2e:ci'], {
-      cwd: resolvePath(appDir, 'packages', 'app'),
-      env: {
-        ...process.env,
-        APP_CONFIG_app_baseUrl: '"http://localhost:3001"',
-      },
-    });
-
     return appDir;
   } finally {
     child.kill();
@@ -381,63 +374,6 @@ async function createPlugin(options: {
   }
 }
 
-/**
- * Start serving the newly created app and make sure that the create plugin is rendering correctly
- */
-async function testAppServe(pluginId: string, appDir: string) {
-  const startApp = spawnPiped(['yarn', 'start'], {
-    cwd: appDir,
-    env: {
-      ...process.env,
-      GITHUB_TOKEN: 'abc',
-    },
-  });
-
-  let successful = false;
-
-  let browser;
-  try {
-    for (let attempts = 1; ; attempts++) {
-      try {
-        browser = await puppeteer.launch();
-        const page = await browser.newPage();
-
-        await page.goto('http://localhost:3000', { waitUntil: 'networkidle0' });
-
-        await waitForPageWithText(page, '/', 'My Company Catalog');
-        await waitForPageWithText(
-          page,
-          `/${pluginId}`,
-          `Welcome to ${pluginId}!`,
-        );
-
-        print('Both App and Plugin loaded correctly');
-        successful = true;
-        break;
-      } catch (error) {
-        if (attempts >= 20) {
-          throw new Error(`App serve test failed, ${error}`);
-        }
-        print(`App serve failed, trying again, ${error}`);
-        await new Promise(resolve => setTimeout(resolve, 1000));
-      }
-    }
-  } finally {
-    // Kill entire process group, otherwise we'll end up with hanging serve processes
-    await new Promise<void>((res, rej) => {
-      killTree(startApp.pid!, err => (err ? rej(err) : res()));
-    });
-  }
-
-  try {
-    await waitForExit(startApp);
-  } catch (error) {
-    if (!successful) {
-      throw error;
-    }
-  }
-}
-
 /** Drops PG databases */
 async function dropDB(database: string, client: string) {
   try {
@@ -507,37 +443,35 @@ async function testBackendStart(appDir: string, ...args: string[]) {
   });
   let successful = false;
 
-  const stdErrorHasErrors = (input: string) => {
+  const filterStderr = (input: string) => {
     const lines = input.split('\n').filter(Boolean);
-    return (
-      lines.filter(
-        l =>
-          !l.includes('Use of deprecated folder mapping') &&
-          !l.includes('Update this package.json to use a subpath') &&
-          !l.includes(
-            '(Use `node --trace-deprecation ...` to show where the warning was created)',
-          ) &&
-          // These 4 are all for the AWS SDK v2 deprecation
-          !l.includes(
-            'The AWS SDK for JavaScript (v2) will be put into maintenance mode',
-          ) &&
-          !l.includes(
-            'Please migrate your code to use AWS SDK for JavaScript',
-          ) &&
-          !l.includes('check the migration guide at https://a.co/7PzMCcy') &&
-          !l.includes(
-            '(Use `node --trace-warnings ...` to show where the warning was created)',
-          ),
-      ).length !== 0
+    return lines.filter(
+      l =>
+        !l.includes(
+          'ExperimentalWarning: Custom ESM Loaders is an experimental feature', // Node 16
+        ) &&
+        !l.includes(
+          'ExperimentalWarning: `--experimental-loader` may be removed in the future;', // Node 18
+        ) &&
+        !l.includes("--import 'data:text/javascript,import") && // the new --experimental-loader replacement warning, printed after the above, Node 18
+        !l.includes(
+          'ExperimentalWarning: `globalPreload` is planned for removal in favor of `initialize`.', // Node 18
+        ) &&
+        !l.includes('node --trace-warnings ...'),
     );
   };
 
   try {
     await waitFor(
-      () => stdout.includes('Listening on ') || stdErrorHasErrors(stderr),
+      () => stdout.includes('Listening on ') || filterStderr(stderr).length > 0,
     );
-    if (stdErrorHasErrors(stderr)) {
-      print(`Expected stderr to be clean, got ${stderr}`);
+    const stderrLines = filterStderr(stderr);
+    if (stderrLines.length > 0) {
+      print(
+        `Expected stderr to be clean, got ${stderr} \n\nThe following lines were unexpected:\n${stderrLines.join(
+          '\n',
+        )}`,
+      );
       // Skipping the whole block
       throw new Error(stderr);
     }

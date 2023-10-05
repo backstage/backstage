@@ -68,7 +68,7 @@ import {
   hasLabels,
   hasRelationWarnings,
   EntityRelationWarning,
-} from '@internal/plugin-catalog-customized';
+} from '@backstage/plugin-catalog';
 import {
   Direction,
   EntityCatalogGraphCard,
@@ -103,6 +103,10 @@ import {
 } from '@backstage/plugin-jenkins';
 import { EntityKafkaContent } from '@backstage/plugin-kafka';
 import { EntityKubernetesContent } from '@backstage/plugin-kubernetes';
+import {
+  isKubernetesClusterAvailable,
+  EntityKubernetesClusterContent,
+} from '@backstage/plugin-kubernetes-cluster';
 import {
   EntityLastLighthouseAuditCard,
   EntityLighthouseContent,
@@ -897,6 +901,13 @@ const resourcePage = (
           <EntityHasSystemsCard variant="gridItem" />
         </Grid>
       </Grid>
+    </EntityLayout.Route>
+    <EntityLayout.Route
+      path="/kubernetes-cluster"
+      title="Kubernetes Cluster"
+      if={isKubernetesClusterAvailable}
+    >
+      <EntityKubernetesClusterContent />
     </EntityLayout.Route>
     <EntityLayout.Route
       path="/puppetdb"

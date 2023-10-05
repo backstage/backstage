@@ -14,8 +14,8 @@
  * limitations under the License.
  */
 
-import 'highlight.js/styles/atom-one-dark.css';
-import highlight from 'highlight.js';
+import 'highlight.js/styles/mono-blue.css';
+import { highlight } from 'highlight.js';
 
 /*
  * Given a file extension, repo name, and array of code lines, return a Promise resolving
@@ -30,7 +30,6 @@ import highlight from 'highlight.js';
  */
 export const highlightLines = (fileExtension: string, lines: Array<string>) => {
   const formattedLines: Array<string> = [];
-  let state: CompiledMode | Language | undefined;
   let fileformat = fileExtension;
   if (fileExtension === 'm') {
     fileformat = 'objectivec';
@@ -46,8 +45,10 @@ export const highlightLines = (fileExtension: string, lines: Array<string>) => {
   }
 
   lines.forEach(line => {
-    const result = highlight.highlight(fileformat, line, true, state);
-    state = result.top;
+    const result = highlight(line, {
+      language: fileformat,
+      ignoreIllegals: true,
+    });
     formattedLines.push(result.value);
   });
   return formattedLines;

@@ -196,18 +196,32 @@ export function mergeExtensionParameters(options: {
 }): ExtensionInstanceParameters[] {
   const { sources, builtinExtensions, parameters } = options;
 
+  const pluginExtensions = sources.flatMap(source => {
+    return source.extensions.map(extension => ({ ...extension, source }));
+  });
+
+  // Prevent root override
+  if (pluginExtensions.some(({ id }) => id === 'root')) {
+    const rootPluginIds = pluginExtensions
+      .filter(({ id }) => id === 'root')
+      .map(({ source }) => source.id);
+    throw new Error(
+      `The following plugin(s) are overriding the 'root' extension which is forbidden: ${rootPluginIds.join(
+        ',',
+      )}`,
+    );
+  }
+
   const overrides = [
-    ...sources.flatMap(plugin =>
-      plugin.extensions.map(extension => ({
-        extension,
-        params: {
-          source: plugin,
-          at: extension.at,
-          disabled: extension.disabled,
-          config: undefined as unknown,
-        },
-      })),
-    ),
+    ...pluginExtensions.map(({ source, ...extension }) => ({
+      extension,
+      params: {
+        source,
+        at: extension.at,
+        disabled: extension.disabled,
+        config: undefined as unknown,
+      },
+    })),
     ...builtinExtensions.map(extension => ({
       extension,
       params: {
@@ -219,9 +233,53 @@ export function mergeExtensionParameters(options: {
     })),
   ];
 
+  const duplicatedExtensionIds = new Set<string>();
+  const duplicatedExtensionData = overrides.reduce<
+    Record<string, Record<string, number>>
+  >((data, { extension, params }) => {
+    const extensionId = extension.id;
+    const extensionData = data?.[extensionId];
+    if (extensionData) duplicatedExtensionIds.add(extensionId);
+    const pluginId = params.source?.id ?? 'internal';
+    const pluginCount = extensionData?.[pluginId] ?? 0;
+    return {
+      ...data,
+      [extensionId]: { ...extensionData, [pluginId]: pluginCount + 1 },
+    };
+  }, {});
+
+  if (duplicatedExtensionIds.size > 0) {
+    throw new Error(
+      `The following extensions are duplicated: ${Array.from(
+        duplicatedExtensionIds,
+      )
+        .map(
+          extensionId =>
+            `The extension '${extensionId}' was provided ${Object.keys(
+              duplicatedExtensionData[extensionId],
+            )
+              .map(
+                pluginId =>
+                  `${duplicatedExtensionData[extensionId][pluginId]} time(s) by the plugin '${pluginId}'`,
+              )
+              .join(' and ')}`,
+        )
+        .join(', ')}`,
+    );
+  }
+
   for (const overrideParam of parameters) {
+    const extensionId = overrideParam.id;
+
+    // Prevent root parametrization
+    if (extensionId === 'root') {
+      throw new Error(
+        "A 'root' extension configuration was detected, but the root extension is not configurable",
+      );
+    }
+
     const existingIndex = overrides.findIndex(
-      e => e.extension.id === overrideParam.id,
+      e => e.extension.id === extensionId,
     );
     if (existingIndex !== -1) {
       const existing = overrides[existingIndex];
@@ -243,7 +301,7 @@ export function mergeExtensionParameters(options: {
         }
       }
     } else {
-      throw new Error(`Extension ${overrideParam.id} does not exist`);
+      throw new Error(`Extension ${extensionId} does not exist`);
     }
   }
 

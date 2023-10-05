@@ -112,4 +112,29 @@ describe('OngoingTask', () => {
       expect(getByTestId('cancel-button')).toHaveClass('Mui-disabled');
     });
   });
+
+  it('should initially do not display logs', async () => {
+    const rendered = await renderInTestApp(
+      <TestApiProvider apis={[[scaffolderApiRef, mockScaffolderApi]]}>
+        <OngoingTask />
+      </TestApiProvider>,
+      { mountedRoutes: { '/': rootRouteRef } },
+    );
+    await expect(rendered.findByText('Show Logs')).resolves.toBeInTheDocument();
+  });
+
+  it('should toggle logs visibility', async () => {
+    const rendered = await renderInTestApp(
+      <TestApiProvider apis={[[scaffolderApiRef, mockScaffolderApi]]}>
+        <OngoingTask />
+      </TestApiProvider>,
+      { mountedRoutes: { '/': rootRouteRef } },
+    );
+    await act(async () => {
+      const element = await rendered.findByText('Show Logs');
+      fireEvent.click(element);
+    });
+
+    await expect(rendered.findByText('Hide Logs')).resolves.toBeInTheDocument();
+  });
 });

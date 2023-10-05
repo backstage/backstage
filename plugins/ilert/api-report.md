@@ -539,7 +539,6 @@ const ilertPlugin: BackstagePlugin<
   {
     root: RouteRef<undefined>;
   },
-  {},
   {}
 >;
 export { ilertPlugin };

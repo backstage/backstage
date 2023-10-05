@@ -54,8 +54,7 @@ const apiDocsPlugin: BackstagePlugin<
   },
   {
     registerApi: ExternalRouteRef<undefined, true>;
-  },
-  {}
+  }
 >;
 export { apiDocsPlugin };
 export { apiDocsPlugin as plugin };
@@ -166,6 +165,7 @@ export const OpenApiDefinitionWidget: (
 // @public (undocumented)
 export type OpenApiDefinitionWidgetProps = {
   definition: string;
+  requestInterceptor?: (req: any) => any | Promise<any>;
 };
 
 // @public (undocumented)

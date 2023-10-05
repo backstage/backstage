@@ -48,6 +48,7 @@ jobs:
         uses: actions/setup-node@v3
         with:
           node-version: ${{ matrix.node-version }}
+          registry-url: https://registry.npmjs.org/ # Needed for auth
 
       - name: setup python
         uses: actions/setup-python@v4
@@ -72,7 +73,9 @@ jobs:
         uses: browser-actions/setup-chrome@latest
 
       - name: yarn install
-        run: yarn install --immutable
+        uses: backstage/actions/yarn-install@v0.6.4
+        with:
+          cache-prefix: ${{ runner.os }}-v${{ matrix.node-version }}
 
       - run: yarn tsc
       - run: yarn backstage-cli repo build
