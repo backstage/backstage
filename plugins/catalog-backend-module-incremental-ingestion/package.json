@@ -60,13 +60,11 @@
     "express": "^4.17.1",
     "express-promise-router": "^4.1.0",
     "knex": "^2.0.0",
-    "lodash": "^4.17.21",
     "luxon": "^3.0.0",
     "uuid": "^8.3.2",
     "winston": "^3.2.1"
   },
   "devDependencies": {
-    "@backstage/backend-app-api": "workspace:^",
     "@backstage/backend-defaults": "workspace:^",
     "@backstage/backend-test-utils": "workspace:^",
     "@backstage/cli": "workspace:^"
