@@ -63,6 +63,7 @@ export type RouterOptions = {
 };
 
 const defaultMaxPageLimit = 100;
+const defaultMaxTermLength = 100;
 const allowedLocationProtocols = ['http:', 'https:'];
 
 /**
@@ -77,8 +78,11 @@ export async function createRouter(
   const maxPageLimit =
     config.getOptionalNumber('search.maxPageLimit') ?? defaultMaxPageLimit;
 
+  const maxTermLength =
+    config.getOptionalNumber('search.maxTermLength') ?? defaultMaxTermLength;
+
   const requestSchema = z.object({
-    term: z.string().default(''),
+    term: z.string().max(maxTermLength).default(''),
     filters: jsonObjectSchema.optional(),
     types: z
       .array(z.string().refine(type => Object.keys(types).includes(type)))
