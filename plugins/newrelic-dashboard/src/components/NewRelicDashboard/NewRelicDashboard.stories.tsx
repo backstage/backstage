@@ -21,6 +21,7 @@ import { EntityProvider } from '@backstage/plugin-catalog-react';
 import { newRelicDashboardApiRef } from '../../api';
 import { NEWRELIC_GUID_ANNOTATION } from '../../constants';
 import { storageApiRef } from '@backstage/core-plugin-api';
+import { Entity } from '@backstage/catalog-model';
 
 function createImage(
   width: number,
@@ -44,13 +45,15 @@ function createImage(
   return canvas;
 }
 
-const entity: any = {
+const entity: Entity = {
   apiVersion: '1',
   kind: 'Component',
   metadata: {
     name: 'mocked entity with newrelic service',
     title: 'app with newrelic',
-    [NEWRELIC_GUID_ANNOTATION]: 'some-cool-guid',
+    annotations: {
+      [NEWRELIC_GUID_ANNOTATION]: 'some-cool-guid',
+    },
   },
 };
 
@@ -58,21 +61,13 @@ const newRelicApiMockEmpty = {
   getDashboardEntity: () => Promise.resolve(undefined),
 };
 
-const mockedNewRelicDashboard = (apis: any[]) => {
-  return (
-    <TestApiProvider apis={apis}>
-      <EntityProvider entity={entity}>
-        <NewRelicDashboard />
-      </EntityProvider>
-    </TestApiProvider>
-  );
-};
-
-export const EmptyNewRelicDashboard = () => {
-  return mockedNewRelicDashboard([
-    [newRelicDashboardApiRef, newRelicApiMockEmpty],
-  ]);
-};
+export const EmptyNewRelicDashboard = () => (
+  <TestApiProvider apis={[[newRelicDashboardApiRef, newRelicApiMockEmpty]]}>
+    <EntityProvider entity={entity}>
+      <NewRelicDashboard />
+    </EntityProvider>
+  </TestApiProvider>
+);
 
 const resultEntities = [
   {
@@ -117,12 +112,18 @@ const newRelicApiMockFull = {
   getDashboardSnapshot: () => Promise.resolve(dashboardSnapshot),
 };
 
-export const NewRelicDashboardWithSnapshots = () => {
-  return mockedNewRelicDashboard([
-    [newRelicDashboardApiRef, newRelicApiMockFull],
-    [storageApiRef, MockStorageApi.create()],
-  ]);
-};
+export const NewRelicDashboardWithSnapshots = () => (
+  <TestApiProvider
+    apis={[
+      [newRelicDashboardApiRef, newRelicApiMockFull],
+      [storageApiRef, MockStorageApi.create()],
+    ]}
+  >
+    <EntityProvider entity={entity}>
+      <NewRelicDashboard />
+    </EntityProvider>
+  </TestApiProvider>
+);
 
 export default {
   title: 'NewRelic Dashboard',
