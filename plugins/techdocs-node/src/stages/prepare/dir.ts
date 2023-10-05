@@ -60,6 +60,11 @@ export class DirectoryPreparer implements PreparerBase {
     this.scmIntegrations = ScmIntegrations.fromConfig(config);
   }
 
+  /** {@inheritDoc PreparerBase.shouldCleanPreparedDirectory} */
+  shouldCleanPreparedDirectory() {
+    return false;
+  }
+
   /** {@inheritDoc PreparerBase.prepare} */
   async prepare(
     entity: Entity,
