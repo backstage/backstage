@@ -47,13 +47,7 @@ export type EntityRefLinkProps = {
 export const EntityRefLink = forwardRef<any, EntityRefLinkProps>(
   (props, ref) => {
     const { entityRef, defaultKind, title, children, ...linkProps } = props;
-    let entityRoute = () => '';
-    try {
-      // eslint-disable-next-line react-hooks/rules-of-hooks
-      entityRoute = useRouteRef(entityRouteRef);
-    } catch (e) {
-      /* */
-    }
+    const entityRoute = useRouteRef(entityRouteRef);
 
     let kind;
     let namespace;
