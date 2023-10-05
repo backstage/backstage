@@ -74,6 +74,8 @@ import { defaultConfigLoaderSync } from '../../../core-app-api/src/app/defaultCo
 // eslint-disable-next-line @backstage/no-relative-monorepo-imports
 import { overrideBaseUrlConfigs } from '../../../core-app-api/src/app/overrideBaseUrlConfigs';
 // eslint-disable-next-line @backstage/no-relative-monorepo-imports
+import { RoutingProvider as LegacyRoutingProvider } from '../../../core-app-api/src/routing/RoutingProvider';
+// eslint-disable-next-line @backstage/no-relative-monorepo-imports
 import {
   apis as defaultApis,
   components as defaultComponents,
@@ -82,6 +84,8 @@ import {
 import { BrowserRouter, Route } from 'react-router-dom';
 import { SidebarItem } from '@backstage/core-components';
 import { DarkTheme, LightTheme } from '../extensions/themes';
+import { extractRouteInfoFromInstanceTree } from '../routing/extractRouteInfoFromInstanceTree';
+import { getOrCreateGlobalSingleton } from '@backstage/version-bridge';
 
 /** @public */
 export interface ExtensionTreeNode {
@@ -281,7 +285,7 @@ export function createApp(options: {
       config,
     });
 
-    const routePaths = extractRouteInfoFromInstanceTree(rootInstances);
+    const routeInfo = extractRouteInfoFromInstanceTree(rootInstances);
 
     const coreInstance = rootInstances.find(({ id }) => id === 'core');
     if (!coreInstance) {
@@ -304,10 +308,15 @@ export function createApp(options: {
       <ApiProvider apis={apiHolder}>
         <AppContextProvider appContext={appContext}>
           <AppThemeProvider>
-            <RoutingProvider routePaths={routePaths}>
-              {/* TODO: set base path using the logic from AppRouter */}
-              <BrowserRouter>{rootElements}</BrowserRouter>
-            </RoutingProvider>
+            <LegacyRoutingProvider
+              {...routeInfo}
+              routeBindings={new Map(/* TODO */)}
+            >
+              <RoutingProvider routePaths={routeInfo.routePaths}>
+                {/* TODO: set base path using the logic from AppRouter */}
+                <BrowserRouter>{rootElements}</BrowserRouter>
+              </RoutingProvider>
+            </LegacyRoutingProvider>
           </AppThemeProvider>
         </AppContextProvider>
       </ApiProvider>
@@ -328,25 +337,40 @@ export function createApp(options: {
   };
 }
 
-function toLegacyPlugin(plugin: BackstagePlugin): LegacyBackstagePlugin {
+// Make sure that we only convert each new plugin instance to its legacy equivalent once
+const legacyPluginStore = getOrCreateGlobalSingleton(
+  'legacy-plugin-compatibility-store',
+  () => new WeakMap<BackstagePlugin, LegacyBackstagePlugin>(),
+);
+
+export function toLegacyPlugin(plugin: BackstagePlugin): LegacyBackstagePlugin {
+  let legacy = legacyPluginStore.get(plugin);
+  if (legacy) {
+    return legacy;
+  }
+
   const errorMsg = 'Not implemented in legacy plugin compatibility layer';
   const notImplemented = () => {
     throw new Error(errorMsg);
   };
-  return {
+
+  legacy = {
     getId(): string {
       return plugin.id;
     },
-    get routes(): never {
-      throw new Error(errorMsg);
+    get routes() {
+      return {};
     },
-    get externalRoutes(): never {
-      throw new Error(errorMsg);
+    get externalRoutes() {
+      return {};
     },
     getApis: notImplemented,
     getFeatureFlags: notImplemented,
     provide: notImplemented,
   };
+
+  legacyPluginStore.set(plugin, legacy);
+  return legacy;
 }
 
 function createLegacyAppContext(plugins: BackstagePlugin[]): AppContext {
@@ -457,39 +481,4 @@ function createApiHolder(
   ApiResolver.validateFactories(factoryRegistry, factoryRegistry.getAllApis());
 
   return new ApiResolver(factoryRegistry);
-}
-
-/** @internal */
-export function extractRouteInfoFromInstanceTree(
-  roots: ExtensionInstance[],
-): Map<RouteRef, string> {
-  const results = new Map<RouteRef, string>();
-
-  function visit(current: ExtensionInstance, basePath: string) {
-    const routePath = current.getData(coreExtensionData.routePath) ?? '';
-    const routeRef = current.getData(coreExtensionData.routeRef);
-
-    // TODO: join paths in a more robust way
-    const fullPath = basePath + routePath;
-    if (routeRef) {
-      const routeRefId = (routeRef as any).id; // TODO: properly
-      if (routeRefId !== current.id) {
-        throw new Error(
-          `Route ref '${routeRefId}' must have the same ID as extension '${current.id}'`,
-        );
-      }
-      results.set(routeRef, fullPath);
-    }
-
-    for (const children of current.attachments.values()) {
-      for (const child of children) {
-        visit(child, fullPath);
-      }
-    }
-  }
-
-  for (const root of roots) {
-    visit(root, '');
-  }
-  return results;
 }

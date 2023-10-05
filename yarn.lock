@@ -4313,6 +4313,7 @@ __metadata:
     "@backstage/test-utils": "workspace:^"
     "@backstage/theme": "workspace:^"
     "@backstage/types": "workspace:^"
+    "@backstage/version-bridge": "workspace:^"
     "@material-ui/core": ^4.12.4
     "@material-ui/icons": ^4.11.3
     "@testing-library/jest-dom": ^5.10.1
