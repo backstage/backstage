@@ -28,7 +28,7 @@ and
     </FlatRoutes>
     ```
 
-3.  Add link to OpenCost to your sidebar
+3.  Import the `MoneyIcon` and add link to OpenCost to your sidebar
 
     ```typescript
     // packages/app/src/components/Root/Root.tsx
@@ -58,7 +58,7 @@ If you haven't set up an ingress rule, you can port-forward the API with
 kubectl -n opencost port-forward deployment/opencost 9003
 ```
 
-Add the following to your `app-config.yaml`:
+Add the following to your `app-config.local.yaml`:
 
 ```yaml
 opencost:
