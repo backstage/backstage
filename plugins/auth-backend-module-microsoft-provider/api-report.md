@@ -11,8 +11,7 @@ import { PassportProfile } from '@backstage/plugin-auth-node';
 import { SignInResolverFactory } from '@backstage/plugin-auth-node';
 
 // @public (undocumented)
-const authModuleMicrosoftProvider: () => BackendFeature;
-export default authModuleMicrosoftProvider;
+export const authModuleMicrosoftProvider: () => BackendFeature;
 
 // @public (undocumented)
 export const microsoftAuthenticator: OAuthAuthenticator<
@@ -22,7 +21,7 @@ export const microsoftAuthenticator: OAuthAuthenticator<
 
 // @public
 export namespace microsoftSignInResolvers {
-  const usernameMatchingUserEntityName: SignInResolverFactory<
+  const emailMatchingUserEntityAnnotation: SignInResolverFactory<
     OAuthAuthenticatorResult<PassportProfile>,
     unknown
   >;
