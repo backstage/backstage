@@ -1,5 +1,7 @@
 import { createRouteRef } from '@backstage/core-plugin-api';
 import {
+  createExtensionDataRef,
+  createExtensionInput,
   createPageExtension,
   createPlugin,
 } from '@backstage/frontend-plugin-api';
@@ -27,12 +29,27 @@ export const userSettingsRouteRef = createRouteRef({
   id: 'plugin.user-settings.page',
 });
 
+export const userSettingsProviderSettingsExtensionData =
+  createExtensionDataRef<JSX.Element>(
+    'plugin.user-settings.page.providerSettings',
+  );
+
 export const UserSettingsPage = createPageExtension({
   id: 'plugin.user-settings.page',
   defaultPath: '/settings/*',
   routeRef: userSettingsRouteRef,
-  loader: () =>
-    import('./components/SettingsPage').then(m => <m.SettingsPage />),
+  inputs: {
+    providerSettings: createExtensionInput(
+      {
+        component: userSettingsProviderSettingsExtensionData,
+      },
+      { singleton: true },
+    ),
+  },
+  loader: ({ inputs }) =>
+    import('./components/SettingsPage').then(m => (
+      <m.SettingsPage providerSettings={inputs.providerSettings.component} />
+    )),
 });
 
 export default createPlugin({
