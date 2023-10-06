@@ -1,6 +1,6 @@
 import { createRouteRef } from '@backstage/core-plugin-api';
 import {
-  createExtensionDataRef,
+  coreExtensionData,
   createExtensionInput,
   createPageExtension,
   createPlugin,
@@ -35,14 +35,6 @@ export const userSettingsRouteRef = createRouteRef({
 /**
  * @alpha
  */
-export const userSettingsProviderSettingsExtensionData =
-  createExtensionDataRef<JSX.Element>(
-    'plugin.user-settings.page.providerSettings',
-  );
-
-/**
- * @alpha
- */
 export const UserSettingsPage = createPageExtension({
   id: 'plugin.user-settings.page',
   defaultPath: '/settings/*',
@@ -50,14 +42,14 @@ export const UserSettingsPage = createPageExtension({
   inputs: {
     providerSettings: createExtensionInput(
       {
-        component: userSettingsProviderSettingsExtensionData,
+        element: coreExtensionData.reactElement,
       },
-      { singleton: true },
+      { singleton: true, optional: true },
     ),
   },
   loader: ({ inputs }) =>
     import('./components/SettingsPage').then(m => (
-      <m.SettingsPage providerSettings={inputs.providerSettings.component} />
+      <m.SettingsPage providerSettings={inputs.providerSettings?.element} />
     )),
 });
 
