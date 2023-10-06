@@ -333,7 +333,4 @@ export type PortableSchema<TOutput> = {
   parse: (input: unknown) => TOutput;
   schema: JsonObject;
 };
-
-// @public (undocumented)
-export function useRouteRef(routeRef: RouteRef<any>): () => string;
 ```
