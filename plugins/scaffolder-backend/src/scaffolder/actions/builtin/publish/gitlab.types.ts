@@ -14,13 +14,14 @@
  * limitations under the License.
  */
 
-export type GitlabProjectSettings = ({ name: string } | { path: string }) & {
+export type GitlabProjectSettings = {
+  path?: string;
   auto_devops_enabled?: boolean;
   ci_config_path?: string;
   description?: string;
   namespace_id?: number;
   topics?: string[];
-  visibility: 'private' | 'internal' | 'public';
+  visibility?: 'private' | 'internal' | 'public';
   group_runners_enabled?: boolean;
   emails_enabled?: boolean;
   container_registry_access_level?: 'disabled' | 'private' | 'enabled';

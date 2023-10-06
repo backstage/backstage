@@ -103,7 +103,7 @@ describe('publish:gitlab', () => {
       topics: ['topic'],
       settings: {
         ci_config_path: '.gitlab-ci.yml',
-        visibility: 'internal',
+        visibility: 'internal' as const,
         topics: ['topic1', 'topic2'],
       },
     },
