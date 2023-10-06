@@ -19,14 +19,8 @@ export type GitlabProjectSettings = {
   auto_devops_enabled?: boolean;
   ci_config_path?: string;
   description?: string;
-  namespace_id?: number;
   topics?: string[];
   visibility?: 'private' | 'internal' | 'public';
-  group_runners_enabled?: boolean;
-  emails_enabled?: boolean;
-  container_registry_access_level?: 'disabled' | 'private' | 'enabled';
-  builds_access_level?: 'disabled' | 'private' | 'enabled';
-  auto_cancel_pending_pipelines?: 'disabled' | 'enabled';
 };
 
 export type GitlabBranchSettings = {
