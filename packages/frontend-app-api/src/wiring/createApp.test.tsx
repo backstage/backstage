@@ -32,9 +32,7 @@ describe('createInstances', () => {
       app: {
         extensions: [
           {
-            root: {
-              at: '',
-            },
+            root: {},
           },
         ],
       },
@@ -58,7 +56,7 @@ describe('createInstances', () => {
         extensions: [
           createExtension({
             id: 'root',
-            at: 'core.routes/route',
+            attachTo: { id: 'core.routes', input: 'route' },
             inputs: {},
             output: {},
             factory() {},
