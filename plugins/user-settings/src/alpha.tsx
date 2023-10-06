@@ -25,15 +25,24 @@ import React from 'react';
 
 export * from './translation';
 
+/**
+ * @alpha
+ */
 export const userSettingsRouteRef = createRouteRef({
   id: 'plugin.user-settings.page',
 });
 
+/**
+ * @alpha
+ */
 export const userSettingsProviderSettingsExtensionData =
   createExtensionDataRef<JSX.Element>(
     'plugin.user-settings.page.providerSettings',
   );
 
+/**
+ * @alpha
+ */
 export const UserSettingsPage = createPageExtension({
   id: 'plugin.user-settings.page',
   defaultPath: '/settings/*',
@@ -52,6 +61,9 @@ export const UserSettingsPage = createPageExtension({
     )),
 });
 
+/**
+ * @alpha
+ */
 export default createPlugin({
   id: 'user-settings',
   extensions: [UserSettingsPage],
