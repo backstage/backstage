@@ -601,15 +601,16 @@ describe('helpers', () => {
 
     it('returns expected content when custom file is specified', async () => {
       const options = { mkdocsConfigFileName: 'another-name.yaml' };
-      mockDIr.setContent({'mkdocs.yml': mkdocsYml})
+      mockDir.setContent({ 'another-name.yaml': mkdocsYml });
 
       const {
         path: mkdocsPath,
         content,
         configIsTemporary,
-      } = await getMkdocsYml(inputDir, options);
+      } = await getMkdocsYml(mockDir.path, options);
 
-      expect(mkdocsPath).toBe(key);
+      expect(mkdocsPath).toBe(mockDir.resolve('another-name.yaml'));
+
       expect(content).toBe(mkdocsYml.toString());
       expect(configIsTemporary).toBe(false);
     });
@@ -618,8 +619,7 @@ describe('helpers', () => {
       const options = { mkdocsConfigFileName: 'another-name.yaml' };
       mockDir.setContent({ 'mkdocs.yml': mkdocsDefaultYml });
 
-
-      await expect(getMkdocsYml(inputDir, options)).rejects.toThrow(
+      await expect(getMkdocsYml(mockDir.path, options)).rejects.toThrow(
         /The specified file .* does not exist/,
       );
     });
