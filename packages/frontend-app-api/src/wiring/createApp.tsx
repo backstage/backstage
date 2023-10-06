@@ -202,8 +202,8 @@ export function createInstances(options: {
     Map<string, ExtensionInstanceParameters[]>
   >();
   for (const instanceParams of extensionParams) {
-    const [extensionId, pointId = 'default'] = instanceParams.at.split('/');
-
+    const extensionId = instanceParams.attachTo.id;
+    const pointId = instanceParams.attachTo.input;
     let pointMap = attachmentMap.get(extensionId);
     if (!pointMap) {
       pointMap = new Map();

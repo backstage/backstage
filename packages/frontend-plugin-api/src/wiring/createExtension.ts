@@ -80,7 +80,7 @@ export interface CreateExtensionOptions<
   TConfig,
 > {
   id: string;
-  at: string;
+  attachTo: { id: string; input: string };
   disabled?: boolean;
   inputs?: TInputs;
   output: TOutput;
@@ -97,7 +97,7 @@ export interface CreateExtensionOptions<
 export interface Extension<TConfig> {
   $$type: '@backstage/Extension';
   id: string;
-  at: string;
+  attachTo: { id: string; input: string };
   disabled: boolean;
   inputs: AnyExtensionInputMap;
   output: AnyExtensionDataMap;

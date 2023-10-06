@@ -26,7 +26,7 @@ import {
 function makeExt(id: string, status: 'disabled' | 'enabled' = 'enabled') {
   return {
     id,
-    at: 'root',
+    attachTo: { id: 'root', input: 'default' },
     disabled: status === 'disabled',
   } as Extension<unknown>;
 }
@@ -52,8 +52,8 @@ describe('mergeExtensionParameters', () => {
         parameters: [],
       }),
     ).toEqual([
-      { extension: a, at: 'root' },
-      { extension: b, at: 'root' },
+      { extension: a, attachTo: { id: 'root', input: 'default' } },
+      { extension: b, attachTo: { id: 'root', input: 'default' } },
     ]);
   });
 
@@ -68,13 +68,17 @@ describe('mergeExtensionParameters', () => {
         parameters: [
           {
             id: 'b',
-            at: 'derp',
+            attachTo: { id: 'derp', input: 'default' },
           },
         ],
       }),
     ).toEqual([
-      { extension: a, at: 'root', source: pluginA },
-      { extension: b, at: 'derp' },
+      {
+        extension: a,
+        attachTo: { id: 'root', input: 'default' },
+        source: pluginA,
+      },
+      { extension: b, attachTo: { id: 'derp', input: 'default' } },
     ]);
   });
 
@@ -102,8 +106,18 @@ describe('mergeExtensionParameters', () => {
         ],
       }),
     ).toEqual([
-      { extension: a, at: 'root', source: plugin, config: { foo: { bar: 1 } } },
-      { extension: b, at: 'root', source: plugin, config: { foo: { qux: 3 } } },
+      {
+        extension: a,
+        attachTo: { id: 'root', input: 'default' },
+        source: plugin,
+        config: { foo: { bar: 1 } },
+      },
+      {
+        extension: b,
+        attachTo: { id: 'root', input: 'default' },
+        source: plugin,
+        config: { foo: { qux: 3 } },
+      },
     ]);
   });
 
@@ -126,8 +140,8 @@ describe('mergeExtensionParameters', () => {
         ],
       }),
     ).toEqual([
-      { extension: b, at: 'root' },
-      { extension: a, at: 'root' },
+      { extension: b, attachTo: { id: 'root', input: 'default' } },
+      { extension: a, attachTo: { id: 'root', input: 'default' } },
     ]);
   });
 });
@@ -315,14 +329,18 @@ describe('expandShorthandExtensionParameters', () => {
     expect(() =>
       run({ 'core.router': { id: 'some.id' } }),
     ).toThrowErrorMatchingInlineSnapshot(
-      `"Invalid extension configuration at app.extensions[1][core.router].id, unknown parameter; expected one of 'at', 'disabled', 'config'"`,
+      `"Invalid extension configuration at app.extensions[1][core.router].id, unknown parameter; expected one of 'attachTo', 'disabled', 'config'"`,
     );
   });
 
-  it('supports object at', () => {
-    expect(run({ 'core.router': { at: 'other.root/inputs' } })).toEqual({
+  it('supports object attachTo', () => {
+    expect(
+      run({
+        'core.router': { attachTo: { id: 'other.root', input: 'inputs' } },
+      }),
+    ).toEqual({
       id: 'core.router',
-      at: 'other.root/inputs',
+      attachTo: { id: 'other.root', input: 'inputs' },
     });
     expect(() =>
       run({
@@ -331,7 +349,7 @@ describe('expandShorthandExtensionParameters', () => {
         },
       }),
     ).toThrowErrorMatchingInlineSnapshot(
-      `"Invalid extension configuration at app.extensions[1][core.router].id, unknown parameter; expected one of 'at', 'disabled', 'config'"`,
+      `"Invalid extension configuration at app.extensions[1][core.router].id, unknown parameter; expected one of 'attachTo', 'disabled', 'config'"`,
     );
   });
 
@@ -369,7 +387,7 @@ describe('expandShorthandExtensionParameters', () => {
     expect(() =>
       run({ 'core.router': { foo: { settings: true } } }),
     ).toThrowErrorMatchingInlineSnapshot(
-      `"Invalid extension configuration at app.extensions[1][core.router].foo, unknown parameter; expected one of 'at', 'disabled', 'config'"`,
+      `"Invalid extension configuration at app.extensions[1][core.router].foo, unknown parameter; expected one of 'attachTo', 'disabled', 'config'"`,
     );
   });
 });
