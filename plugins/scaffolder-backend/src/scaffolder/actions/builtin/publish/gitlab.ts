@@ -22,6 +22,11 @@ import { initRepoAndPush, printGitlabError } from '../helpers';
 import { getRepoSourceDirectory, parseRepoUrl } from './util';
 import { Config } from '@backstage/config';
 import { examples } from './gitlab.examples';
+import {
+  GitlabBranchSettings,
+  GitlabProjectSettings,
+  GitlabProjectVariableSettings,
+} from './gitlab.types';
 
 /**
  * Creates a new action that initializes a git repository of the content in the workspace
@@ -48,23 +53,9 @@ export function createPublishGitlabAction(options: {
     setUserAsOwner?: boolean;
     /** @deprecated in favour of settings.topics field */
     topics?: string[];
-    settings?: Record<string, any>;
-    branches?: Array<{
-      name: string;
-      protect?: boolean;
-      create?: boolean;
-      ref?: string;
-    }>;
-    projectVariables?: Array<{
-      key: string;
-      value: string;
-      description?: string;
-      variable_type?: string;
-      protected?: boolean;
-      masked?: boolean;
-      raw?: boolean;
-      environment_scope?: string;
-    }>;
+    settings?: GitlabProjectSettings;
+    branches?: Array<GitlabBranchSettings>;
+    projectVariables?: Array<GitlabProjectVariableSettings>;
   }>({
     id: 'publish:gitlab',
     description:
@@ -137,6 +128,86 @@ export function createPublishGitlabAction(options: {
             description:
               'Additional project settings, based on https://docs.gitlab.com/ee/api/projects.html#create-project attributes',
             type: 'object',
+            properties: {
+              name: {
+                title: 'Project name',
+                description:
+                  'The name of the new project. Equals path if not provided.',
+                type: 'string',
+              },
+              path: {
+                title: 'Project path',
+                description:
+                  'Repository name for new project. Generated based on name if not provided (generated as lowercase with dashes).',
+                type: 'string',
+              },
+              auto_devops_enabled: {
+                title: 'Auto DevOps enabled',
+                description: 'Enable Auto DevOps for this project',
+                type: 'boolean',
+              },
+              ci_config_path: {
+                title: 'CI config path',
+                description: 'Custom CI config path for this project',
+                type: 'string',
+              },
+              description: {
+                title: 'Project description',
+                description: 'Short project description',
+                type: 'string',
+              },
+              namespace_id: {
+                title: 'Namespace ID',
+                description:
+                  'Namespace for the new project (defaults to the current user’s namespace)',
+                type: 'number',
+              },
+              topics: {
+                title: 'Topic labels',
+                description: 'Topic labels to apply on the repository',
+                type: 'array',
+                items: {
+                  type: 'string',
+                },
+              },
+              visibility: {
+                title: 'Project visibility',
+                description:
+                  'The visibility of the project. Can be private, internal, or public. The default value is private.',
+                type: 'string',
+                enum: ['private', 'public', 'internal'],
+              },
+              group_runners_enabled: {
+                title: 'Group runners enabled',
+                description: 'Enable group runners for this project',
+                type: 'boolean',
+              },
+              emails_enabled: {
+                title: 'Emails enabled',
+                description: 'Send email notifications',
+                type: 'boolean',
+              },
+              container_registry_access_level: {
+                title: 'Container registry access level',
+                description:
+                  'Configure the container registry to be enabled or disabled',
+                type: 'string',
+                enum: ['disabled', 'private', 'enabled'],
+              },
+              builds_access_level: {
+                title: 'Builds access level',
+                description: 'Configure the builds to be enabled or disabled',
+                type: 'string',
+                enum: ['disabled', 'private', 'enabled'],
+              },
+              auto_cancel_pending_pipelines: {
+                title: 'Auto cancel pending pipelines',
+                description:
+                  'Enable auto-cancel of pipelines for branches that have newer commits',
+                type: 'string',
+                enum: ['disabled', 'enabled'],
+              },
+            },
           },
           branches: {
             title: 'Project branches settings',
