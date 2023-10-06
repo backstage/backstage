@@ -1,0 +1,10 @@
+---
+title: Litmus
+author: litmuschaos.io
+authorUrl: https://github.com/litmuschaos/backstage-plugin
+category: Chaos Engineering
+description: This plugin lets you view the status of Litmus resources and launch Chaos Experiments directly inside Backstage.
+documentation: https://github.com/litmuschaos/backstage-plugin/blob/master/README.md
+iconUrl: https://raw.githubusercontent.com/cncf/artwork/master/projects/litmus/icon/color/litmus-icon-color.svg
+npmPackageName: 'backstage-plugin-litmus'
+addedDate: '2023-10-06'
