@@ -90,6 +90,68 @@ function resolveInputs(
   });
 }
 
+function indent(str: string) {
+  return str.replace(/^/gm, '  ');
+}
+
+class ExtensionInstanceImpl implements ExtensionInstance {
+  readonly $$type = '@backstage/ExtensionInstance';
+
+  readonly id: string;
+  readonly #extensionData: Map<string, unknown>;
+  readonly attachments: Map<string, ExtensionInstance[]>;
+  readonly source?: BackstagePlugin;
+
+  constructor(
+    id: string,
+    extensionData: Map<string, unknown>,
+    attachments: Map<string, ExtensionInstance[]>,
+    source: BackstagePlugin | undefined,
+  ) {
+    this.id = id;
+    this.#extensionData = extensionData;
+    this.attachments = attachments;
+    this.source = source;
+  }
+
+  getData<T>(ref: ExtensionDataRef<T>): T | undefined {
+    return this.#extensionData.get(ref.id) as T | undefined;
+  }
+
+  toJSON() {
+    return {
+      id: this.id,
+      output:
+        this.#extensionData.size > 0
+          ? [...this.#extensionData.keys()]
+          : undefined,
+      attachments:
+        this.attachments.size > 0
+          ? Object.fromEntries(this.attachments)
+          : undefined,
+    };
+  }
+
+  toString() {
+    const out =
+      this.#extensionData.size > 0
+        ? ` out=[${[...this.#extensionData.keys()].join(', ')}]`
+        : '';
+
+    if (this.attachments.size === 0) {
+      return `<${this.id}${out} />`;
+    }
+
+    return [
+      `<${this.id}${out}>`,
+      ...[...this.attachments.entries()].map(([k, v]) =>
+        indent([`${k} [`, ...v.map(e => indent(e.toString())), `]`].join('\n')),
+      ),
+      `</${this.id}>`,
+    ].join('\n');
+  }
+}
+
 /** @internal */
 export function createExtensionInstance(options: {
   extension: Extension<unknown>;
@@ -137,13 +199,10 @@ export function createExtensionInstance(options: {
     );
   }
 
-  return {
-    $$type: '@backstage/ExtensionInstance',
-    id: options.extension.id,
-    getData<T>(ref: ExtensionDataRef<T>): T | undefined {
-      return extensionData.get(ref.id) as T | undefined;
-    },
-    source,
+  return new ExtensionInstanceImpl(
+    options.extension.id,
+    extensionData,
     attachments,
-  };
+    source,
+  );
 }
