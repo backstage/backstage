@@ -48,7 +48,10 @@ export type SearchResultItemExtensionOptions<
   },
 > = {
   id: string;
-  at?: string;
+  attachTo?: {
+    id: string;
+    input: string;
+  };
   configSchema?: PortableSchema<TConfig>;
   component: (options: {
     config: TConfig;

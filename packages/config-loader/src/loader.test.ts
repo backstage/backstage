@@ -16,15 +16,62 @@
 
 import { AppConfig } from '@backstage/config';
 import { loadConfig } from './loader';
-import mockFs from 'mock-fs';
 import fs from 'fs-extra';
 import { rest } from 'msw';
 import { setupServer } from 'msw/node';
-import { resolve as resolvePath, sep } from 'path';
-
-const root = resolvePath('/');
+import { createMockDirectory } from '@backstage/backend-test-utils';
 
 describe('loadConfig', () => {
+  const mockDir = createMockDirectory({
+    content: {
+      'app-config.yaml': `
+            app:
+              title: Example App
+              sessionKey:
+                $file: secrets/session-key.txt
+              escaped: \$\${Escaped}
+          `,
+      'app-config2.yaml': `
+            app:
+              title: Example App 2
+              sessionKey:
+                $file: secrets/session-key.txt
+              escaped: \$\${Escaped}
+          `,
+      'app-config.development.yaml': `
+            app:
+              sessionKey: development-key
+            backend:
+              $include: ./included.yaml
+            other:
+              $include: secrets/included.yaml
+          `,
+      'secrets/session-key.txt': 'abc123',
+      'secrets/included.yaml': `
+            secret:
+              $file: session-key.txt
+          `,
+      'included.yaml': `
+            foo:
+              bar: token \${MY_SECRET}
+          `,
+      'app-config.substitute.yaml': `
+            app:
+              someConfig:
+                $include: \${SUBSTITUTE_ME}.yaml
+              noSubstitute:
+                $file: \$\${ESCAPE_ME}.txt
+          `,
+      'substituted.yaml': `
+            secret:
+              $file: secrets/\${SUBSTITUTE_ME}.txt
+          `,
+      'secrets/substituted.txt': '123abc',
+      '${ESCAPE_ME}.txt': 'notSubstituted',
+      'empty.yaml': '# just a comment',
+    },
+  });
+
   const server = setupServer();
   const initialLoaderHandler = rest.get(
     `https://some.domain.io/app-config.yaml`,
@@ -61,58 +108,9 @@ describe('loadConfig', () => {
   beforeEach(() => {
     process.env.MY_SECRET = 'is-secret';
     process.env.SUBSTITUTE_ME = 'substituted';
-
-    mockFs({
-      '/root/app-config.yaml': `
-        app:
-          title: Example App
-          sessionKey:
-            $file: secrets/session-key.txt
-          escaped: \$\${Escaped}
-      `,
-      '/root/app-config2.yaml': `
-        app:
-          title: Example App 2
-          sessionKey:
-            $file: secrets/session-key.txt
-          escaped: \$\${Escaped}
-      `,
-      '/root/app-config.development.yaml': `
-        app:
-          sessionKey: development-key
-        backend:
-          $include: ./included.yaml
-        other:
-          $include: secrets/included.yaml
-      `,
-      '/root/secrets/session-key.txt': 'abc123',
-      '/root/secrets/included.yaml': `
-        secret:
-          $file: session-key.txt
-      `,
-      '/root/included.yaml': `
-        foo:
-          bar: token \${MY_SECRET}
-      `,
-      '/root/app-config.substitute.yaml': `
-        app:
-          someConfig:
-            $include: \${SUBSTITUTE_ME}.yaml
-          noSubstitute:
-            $file: \$\${ESCAPE_ME}.txt
-      `,
-      '/root/substituted.yaml': `
-        secret:
-          $file: secrets/\${SUBSTITUTE_ME}.txt
-      `,
-      '/root/secrets/substituted.txt': '123abc',
-      '/root/${ESCAPE_ME}.txt': 'notSubstituted',
-      '/root/empty.yaml': '# just a comment',
-    });
   });
 
   afterEach(() => {
-    mockFs.restore();
     server.resetHandlers();
   });
 
@@ -121,7 +119,7 @@ describe('loadConfig', () => {
   it('load config from default path', async () => {
     await expect(
       loadConfig({
-        configRoot: '/root',
+        configRoot: mockDir.path,
         configTargets: [],
       }),
     ).resolves.toEqual({
@@ -135,7 +133,7 @@ describe('loadConfig', () => {
               escaped: '${Escaped}',
             },
           },
-          path: `${root}root${sep}app-config.yaml`,
+          path: mockDir.resolve('app-config.yaml'),
         },
       ],
     });
@@ -148,7 +146,7 @@ describe('loadConfig', () => {
 
     await expect(
       loadConfig({
-        configRoot: '/root',
+        configRoot: mockDir.path,
         configTargets: [{ url: configUrl }],
         remote: {
           reloadIntervalSeconds: 30,
@@ -173,10 +171,10 @@ describe('loadConfig', () => {
   it('loads config with secrets from two different files', async () => {
     await expect(
       loadConfig({
-        configRoot: '/root',
+        configRoot: mockDir.path,
         configTargets: [
-          { path: '/root/app-config.yaml' },
-          { path: '/root/app-config2.yaml' },
+          { path: mockDir.resolve('app-config.yaml') },
+          { path: mockDir.resolve('app-config2.yaml') },
         ],
       }),
     ).resolves.toEqual({
@@ -190,7 +188,7 @@ describe('loadConfig', () => {
               escaped: '${Escaped}',
             },
           },
-          path: '/root/app-config.yaml',
+          path: mockDir.resolve('app-config.yaml'),
         },
         {
           context: 'app-config2.yaml',
@@ -201,7 +199,7 @@ describe('loadConfig', () => {
               escaped: '${Escaped}',
             },
           },
-          path: '/root/app-config2.yaml',
+          path: mockDir.resolve('app-config2.yaml'),
         },
       ],
     });
@@ -210,8 +208,8 @@ describe('loadConfig', () => {
   it('loads config with secrets from single file', async () => {
     await expect(
       loadConfig({
-        configRoot: '/root',
-        configTargets: [{ path: '/root/app-config.yaml' }],
+        configRoot: mockDir.path,
+        configTargets: [{ path: mockDir.resolve('app-config.yaml') }],
       }),
     ).resolves.toEqual({
       appConfigs: [
@@ -224,7 +222,7 @@ describe('loadConfig', () => {
               escaped: '${Escaped}',
             },
           },
-          path: '/root/app-config.yaml',
+          path: mockDir.resolve('app-config.yaml'),
         },
       ],
     });
@@ -233,10 +231,10 @@ describe('loadConfig', () => {
   it('loads development config with secrets', async () => {
     await expect(
       loadConfig({
-        configRoot: '/root',
+        configRoot: mockDir.path,
         configTargets: [
-          { path: '/root/app-config.yaml' },
-          { path: '/root/app-config.development.yaml' },
+          { path: mockDir.resolve('app-config.yaml') },
+          { path: mockDir.resolve('app-config.development.yaml') },
         ],
       }),
     ).resolves.toEqual({
@@ -250,7 +248,7 @@ describe('loadConfig', () => {
               escaped: '${Escaped}',
             },
           },
-          path: '/root/app-config.yaml',
+          path: mockDir.resolve('app-config.yaml'),
         },
         {
           context: 'app-config.development.yaml',
@@ -267,7 +265,7 @@ describe('loadConfig', () => {
               secret: 'abc123',
             },
           },
-          path: '/root/app-config.development.yaml',
+          path: mockDir.resolve('app-config.development.yaml'),
         },
       ],
     });
@@ -276,8 +274,10 @@ describe('loadConfig', () => {
   it('loads deep substituted config', async () => {
     await expect(
       loadConfig({
-        configRoot: '/root',
-        configTargets: [{ path: '/root/app-config.substitute.yaml' }],
+        configRoot: mockDir.path,
+        configTargets: [
+          { path: mockDir.resolve('app-config.substitute.yaml') },
+        ],
       }),
     ).resolves.toEqual({
       appConfigs: [
@@ -291,7 +291,7 @@ describe('loadConfig', () => {
               noSubstitute: 'notSubstituted',
             },
           },
-          path: '/root/app-config.substitute.yaml',
+          path: mockDir.resolve('app-config.substitute.yaml'),
         },
       ],
     });
@@ -303,7 +303,7 @@ describe('loadConfig', () => {
 
     await expect(
       loadConfig({
-        configRoot: '/root',
+        configRoot: mockDir.path,
         configTargets: [],
         watch: {
           onChange: onChange.resolve,
@@ -321,12 +321,12 @@ describe('loadConfig', () => {
               escaped: '${Escaped}',
             },
           },
-          path: `${root}root${sep}app-config.yaml`,
+          path: mockDir.resolve('app-config.yaml'),
         },
       ],
     });
 
-    await fs.writeJson('/root/app-config.yaml', {
+    await fs.writeJson(mockDir.resolve('app-config.yaml'), {
       app: {
         title: 'New Title',
       },
@@ -339,7 +339,7 @@ describe('loadConfig', () => {
             title: 'New Title',
           },
         },
-        path: `${root}root${sep}app-config.yaml`,
+        path: mockDir.resolve('app-config.yaml'),
       },
     ]);
 
@@ -352,8 +352,10 @@ describe('loadConfig', () => {
 
     await expect(
       loadConfig({
-        configRoot: '/root',
-        configTargets: [{ path: '/root/app-config.development.yaml' }],
+        configRoot: mockDir.path,
+        configTargets: [
+          { path: mockDir.resolve('app-config.development.yaml') },
+        ],
         watch: {
           onChange: onChange.resolve,
           stopSignal: stopSignal.promise,
@@ -376,14 +378,14 @@ describe('loadConfig', () => {
               secret: 'abc123',
             },
           },
-          path: '/root/app-config.development.yaml',
+          path: mockDir.resolve('app-config.development.yaml'),
         },
       ],
     });
 
     // session-key is indirectly included in app-config.development.yaml
     // via included.yaml
-    await fs.writeFile('/root/secrets/session-key.txt', 'abc234');
+    await fs.writeFile(mockDir.resolve('secrets/session-key.txt'), 'abc234');
 
     await expect(onChange.promise).resolves.toEqual([
       {
@@ -401,7 +403,7 @@ describe('loadConfig', () => {
             secret: 'abc234',
           },
         },
-        path: '/root/app-config.development.yaml',
+        path: mockDir.resolve('app-config.development.yaml'),
       },
     ]);
 
@@ -417,7 +419,7 @@ describe('loadConfig', () => {
     const configUrl = 'https://some.domain.io/app-config.yaml';
     await expect(
       loadConfig({
-        configRoot: '/root',
+        configRoot: mockDir.path,
         configTargets: [{ url: configUrl }],
         watch: {
           onChange: onChange.resolve,
@@ -464,7 +466,7 @@ describe('loadConfig', () => {
     const stopSignal = defer<void>();
 
     await loadConfig({
-      configRoot: '/root',
+      configRoot: mockDir.path,
       configTargets: [],
       watch: {
         onChange: () => {
@@ -476,7 +478,7 @@ describe('loadConfig', () => {
 
     stopSignal.resolve();
 
-    await fs.writeJson('/root/app-config.yaml', {
+    await fs.writeJson(mockDir.resolve('app-config.yaml'), {
       app: {
         title: 'New Title',
       },
@@ -487,8 +489,8 @@ describe('loadConfig', () => {
   it('handles empty files gracefully', async () => {
     await expect(
       loadConfig({
-        configRoot: '/root',
-        configTargets: [{ path: '/root/empty.yaml' }],
+        configRoot: mockDir.path,
+        configTargets: [{ path: mockDir.resolve('empty.yaml') }],
       }),
     ).resolves.toEqual({
       appConfigs: [],

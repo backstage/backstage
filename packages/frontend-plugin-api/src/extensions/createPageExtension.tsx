@@ -44,7 +44,7 @@ export function createPageExtension<
       }
   ) & {
     id: string;
-    at?: string;
+    attachTo?: { id: string; input: string };
     disabled?: boolean;
     inputs?: TInputs;
     routeRef?: RouteRef;
@@ -63,7 +63,7 @@ export function createPageExtension<
 
   return createExtension({
     id: options.id,
-    at: options.at ?? 'core.routes/routes',
+    attachTo: options.attachTo ?? { id: 'core.routes', input: 'routes' },
     disabled: options.disabled,
     output: {
       element: coreExtensionData.reactElement,

@@ -21,7 +21,7 @@ import { AppTheme } from '@backstage/core-plugin-api';
 export function createThemeExtension(theme: AppTheme) {
   return createExtension({
     id: `themes.${theme.id}`,
-    at: 'core/themes',
+    attachTo: { id: 'core', input: 'themes' },
     output: {
       theme: coreExtensionData.theme,
     },

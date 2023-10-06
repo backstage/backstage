@@ -28,7 +28,7 @@ const inputMirrorDataRef = createExtensionDataRef<unknown>('mirror');
 
 const simpleExtension = createExtension({
   id: 'core.test',
-  at: 'ignored',
+  attachTo: { id: 'ignored', input: 'ignored' },
   output: {
     test: testDataRef,
     other: otherDataRef.optional(),
@@ -101,7 +101,7 @@ describe('createExtensionInstance', () => {
       config: undefined,
       extension: createExtension({
         id: 'core.test',
-        at: 'ignored',
+        attachTo: { id: 'ignored', input: 'ignored' },
         inputs: {
           optionalSingletonPresent: createExtensionInput(
             {
@@ -166,7 +166,7 @@ describe('createExtensionInstance', () => {
         config: { other: 'not-a-number' },
         extension: createExtension({
           id: 'core.test',
-          at: 'ignored',
+          attachTo: { id: 'ignored', input: 'ignored' },
           output: {},
           factory() {
             const error = new Error('NOPE');
@@ -188,7 +188,7 @@ describe('createExtensionInstance', () => {
         config: undefined,
         extension: createExtension({
           id: 'core.test',
-          at: 'ignored',
+          attachTo: { id: 'ignored', input: 'ignored' },
           output: {
             test1: testDataRef,
             test2: testDataRef,
@@ -211,7 +211,7 @@ describe('createExtensionInstance', () => {
         config: undefined,
         extension: createExtension({
           id: 'core.test',
-          at: 'ignored',
+          attachTo: { id: 'ignored', input: 'ignored' },
           output: {
             test: testDataRef,
           },
@@ -232,7 +232,7 @@ describe('createExtensionInstance', () => {
         config: undefined,
         extension: createExtension({
           id: 'core.test',
-          at: 'ignored',
+          attachTo: { id: 'ignored', input: 'ignored' },
           inputs: {
             singleton: createExtensionInput(
               {
@@ -273,7 +273,7 @@ describe('createExtensionInstance', () => {
         config: undefined,
         extension: createExtension({
           id: 'core.test',
-          at: 'ignored',
+          attachTo: { id: 'ignored', input: 'ignored' },
           inputs: {
             singleton: createExtensionInput(
               {
@@ -314,7 +314,7 @@ describe('createExtensionInstance', () => {
         config: undefined,
         extension: createExtension({
           id: 'core.test',
-          at: 'ignored',
+          attachTo: { id: 'ignored', input: 'ignored' },
           inputs: {
             singleton: createExtensionInput(
               {
@@ -350,7 +350,7 @@ describe('createExtensionInstance', () => {
         config: undefined,
         extension: createExtension({
           id: 'core.test',
-          at: 'ignored',
+          attachTo: { id: 'ignored', input: 'ignored' },
           inputs: {
             singleton: createExtensionInput(
               {

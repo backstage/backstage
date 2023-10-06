@@ -136,7 +136,10 @@ export interface CreateExtensionOptions<
   TConfig,
 > {
   // (undocumented)
-  at: string;
+  attachTo: {
+    id: string;
+    input: string;
+  };
   // (undocumented)
   configSchema?: PortableSchema<TConfig>;
   // (undocumented)
@@ -182,7 +185,10 @@ export function createPageExtension<
       }
   ) & {
     id: string;
-    at?: string;
+    attachTo?: {
+      id: string;
+      input: string;
+    };
     disabled?: boolean;
     inputs?: TInputs;
     routeRef?: RouteRef;
@@ -209,7 +215,10 @@ export interface Extension<TConfig> {
   // (undocumented)
   $$type: '@backstage/Extension';
   // (undocumented)
-  at: string;
+  attachTo: {
+    id: string;
+    input: string;
+  };
   // (undocumented)
   configSchema?: PortableSchema<TConfig>;
   // (undocumented)
@@ -324,7 +333,4 @@ export type PortableSchema<TOutput> = {
   parse: (input: unknown) => TOutput;
   schema: JsonObject;
 };
-
-// @public (undocumented)
-export function useRouteRef(routeRef: RouteRef<any>): () => string;
 ```

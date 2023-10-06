@@ -34,7 +34,6 @@ import {
   mergeExtensionParameters,
   readAppExtensionParameters,
 } from './parameters';
-import { RoutingProvider } from '../routing/RoutingContext';
 import {
   AnyApiFactory,
   ApiHolder,
@@ -74,7 +73,7 @@ import { defaultConfigLoaderSync } from '../../../core-app-api/src/app/defaultCo
 // eslint-disable-next-line @backstage/no-relative-monorepo-imports
 import { overrideBaseUrlConfigs } from '../../../core-app-api/src/app/overrideBaseUrlConfigs';
 // eslint-disable-next-line @backstage/no-relative-monorepo-imports
-import { RoutingProvider as LegacyRoutingProvider } from '../../../core-app-api/src/routing/RoutingProvider';
+import { RoutingProvider } from '../../../core-app-api/src/routing/RoutingProvider';
 // eslint-disable-next-line @backstage/no-relative-monorepo-imports
 import {
   apis as defaultApis,
@@ -202,8 +201,8 @@ export function createInstances(options: {
     Map<string, ExtensionInstanceParameters[]>
   >();
   for (const instanceParams of extensionParams) {
-    const [extensionId, pointId = 'default'] = instanceParams.at.split('/');
-
+    const extensionId = instanceParams.attachTo.id;
+    const pointId = instanceParams.attachTo.input;
     let pointMap = attachmentMap.get(extensionId);
     if (!pointMap) {
       pointMap = new Map();
@@ -308,15 +307,10 @@ export function createApp(options: {
       <ApiProvider apis={apiHolder}>
         <AppContextProvider appContext={appContext}>
           <AppThemeProvider>
-            <LegacyRoutingProvider
-              {...routeInfo}
-              routeBindings={new Map(/* TODO */)}
-            >
-              <RoutingProvider routePaths={routeInfo.routePaths}>
-                {/* TODO: set base path using the logic from AppRouter */}
-                <BrowserRouter>{rootElements}</BrowserRouter>
-              </RoutingProvider>
-            </LegacyRoutingProvider>
+            <RoutingProvider {...routeInfo} routeBindings={new Map(/* TODO */)}>
+              {/* TODO: set base path using the logic from AppRouter */}
+              <BrowserRouter>{rootElements}</BrowserRouter>
+            </RoutingProvider>
           </AppThemeProvider>
         </AppContextProvider>
       </ApiProvider>

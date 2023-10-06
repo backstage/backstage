@@ -25,6 +25,7 @@ import { screen } from '@testing-library/react';
 import { MockConfigApi, renderWithEffects } from '@backstage/test-utils';
 import React from 'react';
 import { createRouteRef } from '@backstage/core-plugin-api';
+import { createExtensionInstance } from './createExtensionInstance';
 
 describe('createInstances', () => {
   it('throws an error when a root extension is parametrized', () => {
@@ -32,9 +33,7 @@ describe('createInstances', () => {
       app: {
         extensions: [
           {
-            root: {
-              at: '',
-            },
+            root: {},
           },
         ],
       },
@@ -58,7 +57,7 @@ describe('createInstances', () => {
         extensions: [
           createExtension({
             id: 'root',
-            at: 'core.routes/route',
+            attachTo: { id: 'core.routes', input: 'route' },
             inputs: {},
             output: {},
             factory() {},
@@ -133,5 +132,113 @@ describe('createApp', () => {
     await renderWithEffects(app.createRoot());
 
     await expect(screen.findByText('Derp')).resolves.toBeInTheDocument();
+  });
+
+  it('should log an app', () => {
+    const { rootInstances } = createInstances({
+      config: new MockConfigApi({}),
+      plugins: [],
+    });
+    const root = createExtensionInstance({
+      extension: createExtension({
+        id: 'root',
+        attachTo: { id: '', input: '' },
+        output: {},
+        factory() {},
+      }),
+      config: undefined,
+      attachments: new Map([['children', rootInstances]]),
+    });
+
+    expect(String(root)).toMatchInlineSnapshot(`
+      "<root>
+        children [
+          <core>
+            themes [
+              <themes.light out=[core.theme] />
+              <themes.dark out=[core.theme] />
+            ]
+          </core>
+          <core.layout out=[core.reactElement]>
+            content [
+              <core.routes out=[core.reactElement] />
+            ]
+            nav [
+              <core.nav out=[core.reactElement] />
+            ]
+          </core.layout>
+        ]
+      </root>"
+    `);
+  });
+
+  it('should serialize an app as JSON', () => {
+    const { rootInstances } = createInstances({
+      config: new MockConfigApi({}),
+      plugins: [],
+    });
+    const root = createExtensionInstance({
+      extension: createExtension({
+        id: 'root',
+        attachTo: { id: '', input: '' },
+        output: {},
+        factory() {},
+      }),
+      config: undefined,
+      attachments: new Map([['children', rootInstances]]),
+    });
+
+    expect(JSON.parse(JSON.stringify(root))).toMatchInlineSnapshot(`
+      {
+        "attachments": {
+          "children": [
+            {
+              "attachments": {
+                "themes": [
+                  {
+                    "id": "themes.light",
+                    "output": [
+                      "core.theme",
+                    ],
+                  },
+                  {
+                    "id": "themes.dark",
+                    "output": [
+                      "core.theme",
+                    ],
+                  },
+                ],
+              },
+              "id": "core",
+            },
+            {
+              "attachments": {
+                "content": [
+                  {
+                    "id": "core.routes",
+                    "output": [
+                      "core.reactElement",
+                    ],
+                  },
+                ],
+                "nav": [
+                  {
+                    "id": "core.nav",
+                    "output": [
+                      "core.reactElement",
+                    ],
+                  },
+                ],
+              },
+              "id": "core.layout",
+              "output": [
+                "core.reactElement",
+              ],
+            },
+          ],
+        },
+        "id": "root",
+      }
+    `);
   });
 });

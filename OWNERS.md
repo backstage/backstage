@@ -22,12 +22,14 @@ Team: @backstage/catalog-maintainers
 
 Scope: The catalog plugin and catalog model
 
-| Name           | Organization | Team      | GitHub                                   | Discord          |
-| -------------- | ------------ | --------- | ---------------------------------------- | ---------------- |
-| Rickard Dybeck | Spotify      | Chipmunks | [alde](http://github.com/alde)           | rdybeck#8083     |
-| Mike Blockley  | Spotify      | Chipmunks | [mikeyhc](http://github.com/mikeyhc)     | mikey-spot#5363  |
-| Elon Jefferson | Spotify      | Chipmunks | [Edje-C](http://github.com/Edje-C)       | elon-spotty#6086 |
-| Nurit Izrailov | Spotify      | Chipmunks | [nuritizra](http://github.com/nuritizra) | -                |
+| Name            | Organization | Team      | GitHub                                    | Discord             |
+| --------------- | ------------ | --------- | ----------------------------------------- | ------------------- |
+| Rickard Dybeck  | Spotify      | Chipmunks | [alde](https://github.com/alde)           | `rdybeck#8083`      |
+| Mike Blockley   | Spotify      | Chipmunks | [mikeyhc](https://github.com/mikeyhc)     | `mikey-spot#5363`   |
+| Elon Jefferson  | Spotify      | Chipmunks | [Edje-C](https://github.com/Edje-C)       | `elon-spotty#6086 ` |
+| Nurit Izrailov  | Spotify      | Chipmunks | [nuritizra](https://github.com/nuritizra) | -                   |
+| Hunter Dougless | Spotify      | Chipmunks | [hntrdglss](https://github.com/hntrdglss) | `hntrdglss#1849`    |
+| Seve Kim        | Spotify      | Chipmunks | [sevedkim](https://github.com/sevedkim)   | `seve#9951`         |
 
 ### Discoverability
 
@@ -117,6 +119,17 @@ Scope: Tooling for frontend and backend schema-first OpenAPI development.
 | Name           | Organization | GitHub                                  | Discord       |
 | -------------- | ------------ | --------------------------------------- | ------------- |
 | Aramis Sennyey | Spotify      | [sennyeya](https://github.com/sennyeya) | `Aramis#7984` |
+
+### Scaffolder
+
+Team: @backstage/scaffolder-maintainers
+
+Scope: The Scaffolder frontend and backend plugins, and related tooling.
+
+| Name                | Organization   | GitHub                                | Discord          |
+| ------------------- | -------------- | ------------------------------------- | ---------------- |
+| Bogdan Nechyporenko | Bol.com        | [acierto](https://github.com/acierto) | `bogdan_haarlem` |
+| Paul Cowan          | frontendrescue | [dagda1](https://github.com/dadga1)   | `dagda1`         |
 
 ## Sponsors
 

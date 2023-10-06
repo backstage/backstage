@@ -372,7 +372,7 @@ describe('PlaceholderProcessor', () => {
         () => {},
       ),
     ).rejects.toThrow(
-      /^Placeholder \$text could not form a URL out of \.\/a\/b\/catalog-info\.yaml and \.\.\/c\/catalog-info\.yaml, TypeError \[ERR_INVALID_URL\]/,
+      /^Placeholder \$text could not form a URL out of \.\/a\/b\/catalog-info\.yaml and \.\.\/c\/catalog-info\.yaml, TypeError/,
     );
 
     expect(reader.readUrl).not.toHaveBeenCalled();

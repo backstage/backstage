@@ -20,10 +20,9 @@ import {
   coreServices,
   createServiceFactory,
 } from '@backstage/backend-plugin-api';
-import mockFs, { directory, symlink } from 'mock-fs';
 import * as path from 'path';
 import * as url from 'url';
-
+import fs from 'fs';
 import {
   BackendDynamicPlugin,
   BaseDynamicPlugin,
@@ -43,11 +42,13 @@ import { ConfigSources } from '@backstage/config-loader';
 import { Logs, MockedLogger, LogContent } from '../__testUtils__/testUtils';
 import { PluginScanner } from '../scanner/plugin-scanner';
 import { findPaths } from '@backstage/cli-common';
+import { createMockDirectory } from '@backstage/backend-test-utils';
 
 describe('backend-plugin-manager', () => {
+  const mockDir = createMockDirectory();
+
   describe('loadPlugins', () => {
     afterEach(() => {
-      mockFs.restore();
       jest.resetModules();
     });
 
@@ -56,7 +57,7 @@ describe('backend-plugin-manager', () => {
       packageManifest: ScannedPluginManifest;
       indexFile?: {
         retativePath: string[];
-        content?: string;
+        content: string;
       };
       expectedLogs?(location: URL): {
         errors?: LogContent[];
@@ -354,17 +355,13 @@ describe('backend-plugin-manager', () => {
       },
     ])('$name', async (tc: TestCase): Promise<void> => {
       const plugin: ScannedPluginPackage = {
-        location: url.pathToFileURL(
-          path.resolve(`/node_modules/jest-tests/${randomUUID()}`),
-        ),
+        location: url.pathToFileURL(mockDir.resolve(randomUUID())),
         manifest: tc.packageManifest,
       };
 
       const mockedFiles = {
         [path.join(url.fileURLToPath(plugin.location), 'package.json')]:
-          mockFs.file({
-            content: JSON.stringify(plugin),
-          }),
+          JSON.stringify(plugin),
       };
       if (tc.indexFile) {
         mockedFiles[
@@ -372,11 +369,9 @@ describe('backend-plugin-manager', () => {
             url.fileURLToPath(plugin.location),
             ...tc.indexFile.retativePath,
           )
-        ] = mockFs.file({
-          content: tc.indexFile.content,
-        });
+        ] = tc.indexFile.content;
       }
-      mockFs(mockedFiles);
+      mockDir.setContent(mockedFiles);
 
       const logger = new MockedLogger();
       const pluginManager = new (PluginManager as any)(logger, [plugin], {
@@ -440,8 +435,11 @@ describe('backend-plugin-manager', () => {
   });
 
   describe('dynamicPluginsServiceFactory', () => {
+    const otherMockDir = createMockDirectory();
+
     afterEach(() => {
-      mockFs.restore();
+      mockDir.clear();
+      otherMockDir.clear();
       jest.resetModules();
     });
 
@@ -449,14 +447,16 @@ describe('backend-plugin-manager', () => {
       const logger = new MockedLogger();
       const rootLogger = new MockedLogger();
 
-      mockFs({
-        [findPaths(__dirname).resolveTargetRoot('package.json')]: mockFs.load(
+      mockDir.setContent({
+        'package.json': fs.readFileSync(
           findPaths(__dirname).resolveTargetRoot('package.json'),
         ),
-        '/somewhere/dynamic-plugins-root/a-dynamic-plugin': symlink({
-          path: '/somewhere-else/a-dynamic-plugin',
-        }),
-        '/somewhere-else/a-dynamic-plugin': directory({}),
+        'dynamic-plugins-root': {},
+        'dynamic-plugins-root/a-dynamic-plugin': ctx =>
+          ctx.symlink(otherMockDir.resolve('a-dynamic-plugin')),
+      });
+      otherMockDir.setContent({
+        'a-dynamic-plugin': {},
       });
 
       const fromConfigSpier = jest.spyOn(PluginManager, 'fromConfig');
@@ -468,7 +468,7 @@ describe('backend-plugin-manager', () => {
         .mockImplementation(async () => [
           {
             location: url.pathToFileURL(
-              path.resolve('/somewhere/dynamic-plugins-root/a-dynamic-plugin'),
+              mockDir.resolve('dynamic-plugins-root/a-dynamic-plugin'),
             ),
             manifest: {
               name: 'test',
@@ -533,11 +533,11 @@ describe('backend-plugin-manager', () => {
       expect(scanRootSpier).toHaveBeenCalled();
       expect(mockedModuleLoader.bootstrap).toHaveBeenCalledWith(
         findPaths(__dirname).targetRoot,
-        [path.resolve('/somewhere-else/a-dynamic-plugin')],
+        [fs.realpathSync(otherMockDir.resolve('a-dynamic-plugin'))],
       );
       expect(mockedModuleLoader.load).toHaveBeenCalledWith(
-        path.resolve(
-          '/somewhere/dynamic-plugins-root/a-dynamic-plugin/dist/index.cjs.js',
+        mockDir.resolve(
+          'dynamic-plugins-root/a-dynamic-plugin/dist/index.cjs.js',
         ),
       );
     });

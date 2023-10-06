@@ -20,12 +20,12 @@ import { JsonValue } from '@backstage/types';
 
 export interface ExtensionParameters {
   id: string;
-  at?: string;
+  attachTo?: { id: string; input: string };
   disabled?: boolean;
   config?: unknown;
 }
 
-const knownExtensionParameters = ['at', 'disabled', 'config'];
+const knownExtensionParameters = ['attachTo', 'disabled', 'config'];
 
 // Since we'll never merge arrays in config the config reader context
 // isn't too much of a help. Fall back to manual config reading logic
@@ -143,15 +143,33 @@ export function expandShorthandExtensionParameters(
     throw new Error(errorMsg('value must be a boolean or object', id));
   }
 
-  const at = value.at;
+  const attachTo = value.attachTo as { id: string; input: string } | undefined;
   const disabled = value.disabled;
   const config = value.config;
 
-  if (at !== undefined && typeof at !== 'string') {
-    throw new Error(errorMsg('must be a string', id, 'at'));
-  } else if (disabled !== undefined && typeof disabled !== 'boolean') {
+  if (attachTo !== undefined) {
+    if (
+      attachTo === null ||
+      typeof attachTo !== 'object' ||
+      Array.isArray(attachTo)
+    ) {
+      throw new Error(errorMsg('must be an object', id, 'attachTo'));
+    }
+    if (typeof attachTo.id !== 'string' || attachTo.id === '') {
+      throw new Error(
+        errorMsg('must be a non-empty string', id, 'attachTo.id'),
+      );
+    }
+    if (typeof attachTo.input !== 'string' || attachTo.input === '') {
+      throw new Error(
+        errorMsg('must be a non-empty string', id, 'attachTo.input'),
+      );
+    }
+  }
+  if (disabled !== undefined && typeof disabled !== 'boolean') {
     throw new Error(errorMsg('must be a boolean', id, 'disabled'));
-  } else if (
+  }
+  if (
     config !== undefined &&
     (typeof config !== 'object' || config === null || Array.isArray(config))
   ) {
@@ -175,7 +193,7 @@ export function expandShorthandExtensionParameters(
 
   return {
     id,
-    at,
+    attachTo,
     disabled,
     config,
   };
@@ -184,7 +202,7 @@ export function expandShorthandExtensionParameters(
 export interface ExtensionInstanceParameters {
   extension: Extension<unknown>;
   source?: BackstagePlugin;
-  at: string;
+  attachTo: { id: string; input: string };
   config?: unknown;
 }
 
@@ -217,7 +235,7 @@ export function mergeExtensionParameters(options: {
       extension,
       params: {
         source,
-        at: extension.at,
+        attachTo: extension.attachTo,
         disabled: extension.disabled,
         config: undefined as unknown,
       },
@@ -226,7 +244,7 @@ export function mergeExtensionParameters(options: {
       extension,
       params: {
         source: undefined,
-        at: extension.at,
+        attachTo: extension.attachTo,
         disabled: extension.disabled,
         config: undefined as unknown,
       },
@@ -283,8 +301,8 @@ export function mergeExtensionParameters(options: {
     );
     if (existingIndex !== -1) {
       const existing = overrides[existingIndex];
-      if (overrideParam.at) {
-        existing.params.at = overrideParam.at;
+      if (overrideParam.attachTo) {
+        existing.params.attachTo = overrideParam.attachTo;
       }
       if (overrideParam.config) {
         // TODO: merge config?
@@ -309,7 +327,7 @@ export function mergeExtensionParameters(options: {
     .filter(override => !override.params.disabled)
     .map(param => ({
       extension: param.extension,
-      at: param.params.at,
+      attachTo: param.params.attachTo,
       source: param.params.source,
       config: param.params.config,
     }));

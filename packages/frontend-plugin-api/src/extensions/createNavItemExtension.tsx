@@ -31,7 +31,7 @@ export function createNavItemExtension(options: {
   const { id, routeRef, title, icon } = options;
   return createExtension({
     id,
-    at: 'core.nav/items',
+    attachTo: { id: 'core.nav', input: 'items' },
     configSchema: createSchemaFromZod(z =>
       z.object({
         title: z.string().default(title),

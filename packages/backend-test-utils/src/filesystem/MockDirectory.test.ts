@@ -91,7 +91,7 @@ describe('createMockDirectory', () => {
 
     mockDir.addContent({
       'b.txt': 'b',
-      b: {
+      [mockDir.resolve('b')]: {
         'c.txt': 'c',
       },
     });
@@ -116,6 +116,20 @@ describe('createMockDirectory', () => {
 
     expect(mockDir.content()).toEqual({
       'a.txt': 'a2',
+    });
+  });
+
+  it('should be able to use callback for more detailed file system operations', () => {
+    mockDir.setContent({
+      'a.txt': 'a',
+      'b.txt': ctx => ctx.symlink('./a.txt'),
+      'c.txt': ctx => fs.copyFileSync(mockDir.resolve('a.txt'), ctx.path),
+    });
+
+    expect(mockDir.content()).toEqual({
+      'a.txt': 'a',
+      'b.txt': 'a',
+      'c.txt': 'a',
     });
   });
 

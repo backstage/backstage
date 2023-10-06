@@ -40,13 +40,15 @@ const refOrder = [ref1, ref2, ref3, ref4, ref5];
 
 function createTestExtension(options: {
   id: string;
-  at?: string;
+  parent?: string;
   path?: string;
   routeRef?: RouteRef;
 }) {
   return createExtension({
     id: options.id,
-    at: options.at ?? 'core.routes/children',
+    attachTo: options.parent
+      ? { id: options.parent, input: 'children' }
+      : { id: 'core.routes', input: 'children' },
     output: {
       element: coreExtensionData.reactElement,
       path: coreExtensionData.routePath.optional(),
@@ -126,13 +128,13 @@ describe('discovery', () => {
       }),
       createTestExtension({
         id: 'page2',
-        at: 'page1/children',
+        parent: 'page1',
         path: 'bar/:id',
         routeRef: ref2,
       }),
       createTestExtension({
         id: 'page3',
-        at: 'page2/children',
+        parent: 'page2',
         path: 'baz',
         routeRef: ref3,
       }),
@@ -143,7 +145,7 @@ describe('discovery', () => {
       }),
       createTestExtension({
         id: 'page5',
-        at: 'page1/children',
+        parent: 'page1',
         path: 'blop',
         routeRef: ref5,
       }),
@@ -194,7 +196,7 @@ describe('discovery', () => {
       }),
       createTestExtension({
         id: 'page2',
-        at: 'page1/children',
+        parent: 'page1',
         path: 'bar/:id',
         routeRef: ref2,
       }),
@@ -205,13 +207,13 @@ describe('discovery', () => {
       }),
       createTestExtension({
         id: 'page4',
-        at: 'page3/children',
+        parent: 'page3',
         path: 'divsoup',
         routeRef: ref4,
       }),
       createTestExtension({
         id: 'page5',
-        at: 'page3/children',
+        parent: 'page3',
         path: 'blop',
         routeRef: ref5,
       }),
@@ -242,7 +244,7 @@ describe('discovery', () => {
       }),
       createTestExtension({
         id: 'page2',
-        at: 'page1/children',
+        parent: 'page1',
         path: '/bar/:id',
         routeRef: ref2,
       }),
@@ -253,13 +255,13 @@ describe('discovery', () => {
       }),
       createTestExtension({
         id: 'page4',
-        at: 'page3/children',
+        parent: 'page3',
         path: '/divsoup',
         routeRef: ref4,
       }),
       createTestExtension({
         id: 'page5',
-        at: 'page3/children',
+        parent: 'page3',
         path: '/blop',
         routeRef: ref5,
       }),
@@ -289,16 +291,16 @@ describe('discovery', () => {
       }),
       createTestExtension({
         id: 'page1',
-        at: 'foo/children',
+        parent: 'foo',
         routeRef: ref1,
       }),
       createTestExtension({
         id: 'fooChild',
-        at: 'foo/children',
+        parent: 'foo',
       }),
       createTestExtension({
         id: 'page2',
-        at: 'fooChild/children',
+        parent: 'fooChild',
         routeRef: ref2,
       }),
       createTestExtension({
@@ -311,17 +313,17 @@ describe('discovery', () => {
       }),
       createTestExtension({
         id: 'page3Child',
-        at: 'page3/children',
+        parent: 'page3',
         path: '',
       }),
       createTestExtension({
         id: 'page4',
-        at: 'page3Child/children',
+        parent: 'page3Child',
         routeRef: ref4,
       }),
       createTestExtension({
         id: 'page5',
-        at: 'page4/children',
+        parent: 'page4',
         routeRef: ref5,
       }),
     ]);
@@ -361,29 +363,29 @@ describe('discovery', () => {
       }),
       createTestExtension({
         id: 'page1Child',
-        at: 'page1/children',
+        parent: 'page1',
         path: 'bar',
       }),
       createTestExtension({
         id: 'page2',
-        at: 'page1Child/children',
+        parent: 'page1Child',
         routeRef: ref2,
       }),
       createTestExtension({
         id: 'page3',
-        at: 'page2/children',
+        parent: 'page2',
         path: 'baz',
         routeRef: ref3,
       }),
       createTestExtension({
         id: 'page4',
-        at: 'page3/children',
+        parent: 'page3',
         path: '/blop',
         routeRef: ref4,
       }),
       createTestExtension({
         id: 'page5',
-        at: 'page2/children',
+        parent: 'page2',
         routeRef: ref5,
       }),
     ]);
@@ -445,30 +447,30 @@ describe('discovery', () => {
       }),
       createTestExtension({
         id: 'page1',
-        at: 'r/children',
+        parent: 'r',
         path: 'x',
         routeRef: ref1,
       }),
       createTestExtension({
         id: 'y',
         path: 'y',
-        at: 'r/children',
+        parent: 'r',
       }),
       createTestExtension({
         id: 'page2',
-        at: 'y/children',
+        parent: 'y',
         path: '1',
         routeRef: ref2,
       }),
       createTestExtension({
         id: 'page3',
-        at: 'page2/children',
+        parent: 'page2',
         path: 'a',
         routeRef: ref3,
       }),
       createTestExtension({
         id: 'page4',
-        at: 'page2/children',
+        parent: 'page2',
         path: 'b',
         routeRef: ref4,
       }),

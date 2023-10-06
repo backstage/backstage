@@ -18,6 +18,12 @@ import { isChildPath } from '@backstage/cli-common';
 import { NotAllowedError } from '@backstage/errors';
 import { resolve as resolvePath } from 'path';
 
+/** @internal */
+export const packagePathMocks = new Map<
+  string,
+  (paths: string[]) => string | undefined
+>();
+
 /**
  * Resolve a path relative to the root of a package directory.
  * Additional path arguments are resolved relative to the package dir.
@@ -29,6 +35,14 @@ import { resolve as resolvePath } from 'path';
  * @public
  */
 export function resolvePackagePath(name: string, ...paths: string[]) {
+  const mockedResolve = packagePathMocks.get(name);
+  if (mockedResolve) {
+    const resolved = mockedResolve(paths);
+    if (resolved) {
+      return resolved;
+    }
+  }
+
   const req =
     typeof __non_webpack_require__ === 'undefined'
       ? require

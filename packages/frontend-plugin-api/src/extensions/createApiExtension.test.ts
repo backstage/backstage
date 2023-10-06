@@ -33,7 +33,7 @@ describe('createApiExtension', () => {
     expect(extension).toEqual({
       $$type: '@backstage/Extension',
       id: 'apis.test',
-      at: 'core/apis',
+      attachTo: { id: 'core', input: 'apis' },
       disabled: false,
       configSchema: undefined,
       inputs: {},
@@ -67,7 +67,7 @@ describe('createApiExtension', () => {
     expect(extension).toEqual({
       $$type: '@backstage/Extension',
       id: 'apis.test',
-      at: 'core/apis',
+      attachTo: { id: 'core', input: 'apis' },
       disabled: false,
       configSchema: undefined,
       inputs: {},
