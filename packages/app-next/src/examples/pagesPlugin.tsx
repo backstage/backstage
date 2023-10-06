@@ -19,9 +19,8 @@ import { Link } from '@backstage/core-components';
 import {
   createPageExtension,
   createPlugin,
-  useRouteRef,
 } from '@backstage/frontend-plugin-api';
-import { createRouteRef } from '@backstage/core-plugin-api';
+import { useRouteRef, createRouteRef } from '@backstage/core-plugin-api';
 import { Route, Routes } from 'react-router-dom';
 
 const indexRouteRef = createRouteRef({ id: 'index' });
