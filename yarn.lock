@@ -8722,7 +8722,6 @@ __metadata:
     "@types/git-url-parse": ^9.0.0
     "@types/libsodium-wrappers": ^0.7.10
     "@types/luxon": ^3.0.0
-    "@types/mock-fs": ^4.13.0
     "@types/nunjucks": ^3.1.4
     "@types/supertest": ^2.0.8
     "@types/zen-observable": ^0.8.0
@@ -8745,7 +8744,6 @@ __metadata:
     libsodium-wrappers: ^0.7.11
     lodash: ^4.17.21
     luxon: ^3.0.0
-    mock-fs: ^5.2.0
     morgan: ^1.10.0
     msw: ^1.0.0
     node-fetch: ^2.6.7

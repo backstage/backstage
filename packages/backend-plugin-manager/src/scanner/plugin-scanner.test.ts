@@ -19,10 +19,12 @@ import { JsonObject } from '@backstage/types';
 import { Logs, MockedLogger } from '../__testUtils__/testUtils';
 import { ConfigReader } from '@backstage/config';
 import path from 'path';
-import fs from 'fs';
 import * as url from 'url';
 import { ScannedPluginPackage } from './types';
-import { createMockDirectory } from '@backstage/backend-test-utils';
+import {
+  MockDirectoryContent,
+  createMockDirectory,
+} from '@backstage/backend-test-utils';
 
 const mockDir = createMockDirectory();
 
@@ -233,8 +235,7 @@ Please add '${mockDir.resolve(
     type TestCase = {
       name: string;
       preferAlpha?: boolean;
-      fileSystem?: any;
-      symlinks?: { source: string; target: string }[];
+      fileSystem?: MockDirectoryContent;
       expectedLogs?: Logs;
       expectedPluginPackages?: ScannedPluginPackage[];
       expectedError?: string;
@@ -286,7 +287,12 @@ Please add '${mockDir.resolve(
         name: 'backend plugin found in symlink',
         fileSystem: {
           backstageRoot: {
-            'dist-dynamic': {},
+            'dist-dynamic': {
+              'test-backend-plugin': ctx =>
+                ctx.symlink(
+                  mockDir.resolve('somewhere-else/test-backend-plugin-target'),
+                ),
+            },
           },
           'somewhere-else': {
             'test-backend-plugin-target': {
@@ -299,16 +305,6 @@ Please add '${mockDir.resolve(
             },
           },
         },
-        symlinks: [
-          {
-            source: mockDir.resolve(
-              'backstageRoot/dist-dynamic/test-backend-plugin',
-            ),
-            target: mockDir.resolve(
-              'somewhere-else/test-backend-plugin-target',
-            ),
-          },
-        ],
         expectedPluginPackages: [
           {
             location: url.pathToFileURL(
@@ -347,22 +343,17 @@ Please add '${mockDir.resolve(
         name: 'ignored folder child symlink: target is not a directory',
         fileSystem: {
           backstageRoot: {
-            'dist-dynamic': {},
+            'dist-dynamic': {
+              'test-backend-plugin': ctx =>
+                ctx.symlink(
+                  mockDir.resolve('somewhere-else/test-backend-plugin-target'),
+                ),
+            },
           },
           'somewhere-else': {
             'test-backend-plugin-target': '',
           },
         },
-        symlinks: [
-          {
-            source: mockDir.resolve(
-              'backstageRoot/dist-dynamic/test-backend-plugin',
-            ),
-            target: mockDir.resolve(
-              'somewhere-else/test-backend-plugin-target',
-            ),
-          },
-        ],
         expectedPluginPackages: [],
         expectedLogs: {
           infos: [
@@ -636,11 +627,6 @@ Please add '${mockDir.resolve(
       }
       if (tc.fileSystem) {
         mockDir.setContent(tc.fileSystem);
-      }
-      if (tc.symlinks) {
-        for (const { source, target } of tc.symlinks) {
-          fs.symlinkSync(target, source);
-        }
       }
       if (tc.expectedError) {
         /* eslint-disable-next-line jest/no-conditional-expect */

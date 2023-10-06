@@ -54,8 +54,23 @@ export interface MockDirectory {
 
 // @public
 export type MockDirectoryContent = {
-  [name in string]: MockDirectoryContent | string | Buffer;
+  [name in string]:
+    | MockDirectoryContent
+    | string
+    | Buffer
+    | MockDirectoryContentCallback;
 };
+
+// @public
+export type MockDirectoryContentCallback = (
+  ctx: MockDirectoryContentCallbackContext,
+) => void;
+
+// @public
+export interface MockDirectoryContentCallbackContext {
+  path: string;
+  symlink(target: string): void;
+}
 
 // @public
 export interface MockDirectoryContentOptions {
