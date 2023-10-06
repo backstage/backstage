@@ -17,6 +17,12 @@
 import { createMockDirectory } from '@backstage/backend-test-utils';
 import { loadConfigSchema } from './load';
 
+// cwd must be restored
+const origDir = process.cwd();
+afterAll(() => {
+  process.chdir(origDir);
+});
+
 describe('loadConfigSchema', () => {
   const mockDir = createMockDirectory();
 

@@ -18,6 +18,12 @@ import { createMockDirectory } from '@backstage/backend-test-utils';
 import { collectConfigSchemas } from './collect';
 import path from 'path';
 
+// cwd must be restored
+const origDir = process.cwd();
+afterAll(() => {
+  process.chdir(origDir);
+});
+
 const mockSchema = {
   type: 'object',
   properties: {
