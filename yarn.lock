@@ -30099,7 +30099,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"jose@npm:^4.14.4, jose@npm:^4.6.0":
+"jose@npm:^4.15.1, jose@npm:^4.6.0":
   version: 4.15.2
   resolution: "jose@npm:4.15.2"
   checksum: 8f0cab1eef31243abe14a935b2b330cd95f10f9b69808fd642088ae5000e50e566664934537d2c6413ab2f6b54acd8265a5033da05157aa1260c5f1d7e57fab0
@@ -34271,14 +34271,14 @@ __metadata:
   linkType: hard
 
 "openid-client@npm:^5.2.1, openid-client@npm:^5.3.0":
-  version: 5.4.3
-  resolution: "openid-client@npm:5.4.3"
+  version: 5.6.0
+  resolution: "openid-client@npm:5.6.0"
   dependencies:
-    jose: ^4.14.4
+    jose: ^4.15.1
     lru-cache: ^6.0.0
     object-hash: ^2.2.0
     oidc-token-hash: ^5.0.3
-  checksum: 0e5a126b77dad0320e8f7023ac7ad7f5f1f82ad5f985f7ab0b42a7cf36700dfb78f0bef9b59c1fae915dce0148ef191b49921cd0a01443b64c04f862d9dc03e0
+  checksum: 414fe43c5aac07d8b8f5ea52ef1812374ff28140910977a1360781284b09d4a03c916d910017bf15003d602d859b3dcf9857d1dfe6f61508c8f5c52de334e6ea
   languageName: node
   linkType: hard
 
