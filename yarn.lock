@@ -3415,7 +3415,6 @@ __metadata:
     logform: ^2.3.2
     minimatch: ^5.0.0
     minimist: ^1.2.5
-    mock-fs: ^5.2.0
     morgan: ^1.10.0
     node-forge: ^1.3.1
     selfsigned: ^2.0.0
@@ -3913,7 +3912,6 @@ __metadata:
     json-schema-traverse: ^1.0.0
     lodash: ^4.17.21
     minimist: ^1.2.5
-    mock-fs: ^5.2.0
     msw: ^1.0.0
     node-fetch: ^2.6.7
     typescript-json-schema: ^0.55.0
@@ -4207,6 +4205,7 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "@backstage/create-app@workspace:packages/create-app"
   dependencies:
+    "@backstage/backend-test-utils": "workspace:^"
     "@backstage/cli": "workspace:^"
     "@backstage/cli-common": "workspace:^"
     "@types/command-exists": ^1.2.0

@@ -42,6 +42,7 @@
     "recursive-readdir": "^2.2.2"
   },
   "devDependencies": {
+    "@backstage/backend-test-utils": "workspace:^",
     "@backstage/cli": "workspace:^",
     "@types/command-exists": "^1.2.0",
     "@types/fs-extra": "^9.0.1",
