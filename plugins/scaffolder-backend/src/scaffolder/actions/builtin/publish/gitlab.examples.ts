@@ -81,8 +81,6 @@ export const examples: TemplateExample[] = [
             settings: {
               ci_config_path: '.gitlab-ci.yml',
               visibility: 'public',
-              initialize_with_readme: true,
-              default_branch: 'main',
             },
           },
         },
