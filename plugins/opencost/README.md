@@ -58,7 +58,7 @@ If you haven't set up an ingress rule, you can port-forward the API with
 kubectl -n opencost port-forward deployment/opencost 9003
 ```
 
-Add the following to your `app-config.local.yaml`:
+Add the following to your `app-config.yaml`:
 
 ```yaml
 opencost:
