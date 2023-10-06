@@ -679,7 +679,16 @@ export function createPublishGitlabAction(options: {
     gitAuthorEmail?: string | undefined;
     setUserAsOwner?: boolean | undefined;
     topics?: string[] | undefined;
-    settings?: Record<string, any> | undefined;
+    settings?:
+      | {
+          path?: string | undefined;
+          auto_devops_enabled?: boolean | undefined;
+          ci_config_path?: string | undefined;
+          description?: string | undefined;
+          topics?: string[] | undefined;
+          visibility?: 'internal' | 'private' | 'public' | undefined;
+        }
+      | undefined;
     branches?:
       | {
           name: string;

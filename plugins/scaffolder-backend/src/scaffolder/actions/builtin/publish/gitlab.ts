@@ -22,11 +22,6 @@ import { initRepoAndPush, printGitlabError } from '../helpers';
 import { getRepoSourceDirectory, parseRepoUrl } from './util';
 import { Config } from '@backstage/config';
 import { examples } from './gitlab.examples';
-import {
-  GitlabBranchSettings,
-  GitlabProjectSettings,
-  GitlabProjectVariableSettings,
-} from './gitlab.types';
 
 /**
  * Creates a new action that initializes a git repository of the content in the workspace
@@ -53,9 +48,30 @@ export function createPublishGitlabAction(options: {
     setUserAsOwner?: boolean;
     /** @deprecated in favour of settings.topics field */
     topics?: string[];
-    settings?: GitlabProjectSettings;
-    branches?: Array<GitlabBranchSettings>;
-    projectVariables?: Array<GitlabProjectVariableSettings>;
+    settings?: {
+      path?: string;
+      auto_devops_enabled?: boolean;
+      ci_config_path?: string;
+      description?: string;
+      topics?: string[];
+      visibility?: 'private' | 'internal' | 'public';
+    };
+    branches?: Array<{
+      name: string;
+      protect?: boolean;
+      create?: boolean;
+      ref?: string;
+    }>;
+    projectVariables?: Array<{
+      key: string;
+      value: string;
+      description?: string;
+      variable_type?: string;
+      protected?: boolean;
+      masked?: boolean;
+      raw?: boolean;
+      environment_scope?: string;
+    }>;
   }>({
     id: 'publish:gitlab',
     description:
