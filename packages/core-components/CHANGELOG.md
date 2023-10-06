@@ -1,5 +1,21 @@
 # @backstage/core-components
 
+## 0.13.6-next.1
+
+### Patch Changes
+
+- 4eab5cf901: The `TabbedLayout` component will now also navigate when clicking the active tab, which allows for navigation back from any sub routes.
+- 997a71850c: Changed SupportButton menuitems to support text wrap
+- 16126dbe6a: Change overlay header colors in the mobile menu to use navigation color from the theme
+- Updated dependencies
+  - @backstage/plugin-catalog-react@1.8.5-next.1
+  - @backstage/core-plugin-api@1.7.0-next.0
+  - @backstage/config@1.1.0
+  - @backstage/catalog-model@1.4.2
+  - @backstage/errors@1.2.2
+  - @backstage/theme@0.4.2
+  - @backstage/version-bridge@1.0.5
+
 ## 0.13.6-next.0
 
 ### Patch Changes

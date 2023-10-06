@@ -509,6 +509,134 @@ describe('KubernetesProxy', () => {
     });
   });
 
+  it('should invoke AuthStrategy if Backstage-Kubernetes-Authorization-X-X are provided', async () => {
+    const strategy: jest.Mocked<AuthenticationStrategy> = {
+      getCredential: jest
+        .fn()
+        .mockReturnValue({ type: 'bearer token', token: 'MY_TOKEN3' }),
+      validateCluster: jest.fn(),
+    };
+
+    proxy = new KubernetesProxy({
+      logger: getVoidLogger(),
+      clusterSupplier: clusterSupplier,
+      authStrategy: strategy,
+    });
+
+    worker.use(
+      rest.get('https://localhost:9999/api/v1/namespaces', (req, res, ctx) => {
+        if (!req.headers.get('Authorization')) {
+          return res(ctx.status(401));
+        }
+
+        if (req.headers.get('Authorization') !== 'Bearer MY_TOKEN3') {
+          return res(ctx.status(403));
+        }
+
+        return res(
+          ctx.status(200),
+          ctx.json({
+            kind: 'NamespaceList',
+            apiVersion: 'v1',
+            items: [],
+          }),
+        );
+      }),
+    );
+
+    clusterSupplier.getClusters.mockResolvedValue([
+      {
+        name: 'cluster1',
+        url: 'https://localhost:9999',
+        authMetadata: {},
+      },
+    ]);
+
+    const requestPromise = setupProxyPromise({
+      proxyPath: '/mountpath',
+      requestPath: '/api/v1/namespaces',
+
+      headers: {
+        [HEADER_KUBERNETES_CLUSTER]: 'cluster1',
+        'Backstage-Kubernetes-Authorization-google': 'MY_TOKEN1',
+        'Backstage-Kubernetes-Authorization-aks': 'MY_TOKEN2',
+        'Backstage-Kubernetes-Authorization-oidc-okta': 'MY_TOKEN3',
+        'Backstage-Kubernetes-Authorization-oidc-gitlab': 'MY_TOKEN4',
+        'Backstage-Kubernetes-Authorization-pinniped-audience1': 'MY_TOKEN5',
+        'Backstage-Kubernetes-Authorization-pinniped-au-b-c-d-e': 'MY_TOKEN6',
+      },
+    });
+
+    const response = await requestPromise;
+
+    const authObj = {
+      google: 'MY_TOKEN1',
+      aks: 'MY_TOKEN2',
+      oidc: { okta: 'MY_TOKEN3', gitlab: 'MY_TOKEN4' },
+      pinniped: { audience1: 'MY_TOKEN5', 'au-b-c-d-e': 'MY_TOKEN6' },
+    };
+
+    expect(strategy.getCredential).toHaveBeenCalledTimes(1);
+    expect(strategy.getCredential).toHaveBeenCalledWith(
+      expect.anything(),
+      authObj,
+    );
+    expect(response.status).toEqual(200);
+    expect(response.body).toStrictEqual({
+      kind: 'NamespaceList',
+      apiVersion: 'v1',
+      items: [],
+    });
+  });
+
+  it('should invoke the Auth strategy with an empty auth object when no Backstage-Kubernetes-Authorization-X-X are provided', async () => {
+    worker.use(
+      rest.get('https://localhost:9999/api/v1/namespaces', (_, res, ctx) => {
+        return res(
+          ctx.status(200),
+          ctx.json({
+            kind: 'NamespaceList',
+            apiVersion: 'v1',
+            items: [],
+          }),
+        );
+      }),
+    );
+
+    clusterSupplier.getClusters.mockResolvedValue([
+      {
+        name: 'cluster1',
+        url: 'https://localhost:9999',
+        authMetadata: {},
+      },
+    ]);
+
+    const requestPromise = setupProxyPromise({
+      proxyPath: '/mountpath',
+      requestPath: '/api/v1/namespaces',
+
+      headers: {
+        [HEADER_KUBERNETES_CLUSTER]: 'cluster1',
+      },
+    });
+
+    const response = await requestPromise;
+
+    const authObj = {};
+
+    expect(authStrategy.getCredential).toHaveBeenCalledTimes(1);
+    expect(authStrategy.getCredential).toHaveBeenCalledWith(
+      expect.anything(),
+      authObj,
+    );
+    expect(response.status).toEqual(200);
+    expect(response.body).toStrictEqual({
+      kind: 'NamespaceList',
+      apiVersion: 'v1',
+      items: [],
+    });
+  });
+
   it('returns a response with a localKubectlProxy auth provider configuration', async () => {
     proxy = new KubernetesProxy({
       logger: getVoidLogger(),

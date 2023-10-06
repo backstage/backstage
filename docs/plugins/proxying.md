@@ -36,13 +36,14 @@ Example:
 ```yaml
 # in app-config.yaml
 proxy:
-  /simple-example: http://simple.example.com:8080
-  '/larger-example/v1':
-    target: http://larger.example.com:8080/svc.v1
-    headers:
-      Authorization: ${EXAMPLE_AUTH_HEADER}
-      # ...or interpolating a value into part of a string,
-      # Authorization: Bearer ${EXAMPLE_AUTH_TOKEN}
+  endpoints:
+    /simple-example: http://simple.example.com:8080
+    '/larger-example/v1':
+      target: http://larger.example.com:8080/svc.v1
+      headers:
+        Authorization: ${EXAMPLE_AUTH_HEADER}
+        # ...or interpolating a value into part of a string,
+        # Authorization: Bearer ${EXAMPLE_AUTH_TOKEN}
 ```
 
 Each key under the proxy configuration entry is a route to match, below the

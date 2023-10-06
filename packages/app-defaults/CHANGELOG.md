@@ -1,5 +1,17 @@
 # @backstage/app-defaults
 
+## 1.4.4-next.1
+
+### Patch Changes
+
+- 1a0616fa10: Add missing resource and template app icons
+- Updated dependencies
+  - @backstage/core-components@0.13.6-next.1
+  - @backstage/core-app-api@1.10.1-next.1
+  - @backstage/core-plugin-api@1.7.0-next.0
+  - @backstage/plugin-permission-react@0.4.16-next.0
+  - @backstage/theme@0.4.2
+
 ## 1.4.4-next.0
 
 ### Patch Changes

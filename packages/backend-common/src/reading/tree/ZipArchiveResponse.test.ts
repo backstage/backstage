@@ -15,11 +15,11 @@
  */
 
 import fs from 'fs-extra';
-import mockFs from 'mock-fs';
 import { Readable } from 'stream';
 import { create as createArchive } from 'archiver';
 import { resolve as resolvePath } from 'path';
 import { ZipArchiveResponse } from './ZipArchiveResponse';
+import { createMockDirectory } from '@backstage/backend-test-utils';
 
 const archiveData = fs.readFileSync(
   resolvePath(__filename, '../../__fixtures__/mock-main.zip'),
@@ -35,24 +35,36 @@ const archiveWithMaliciousEntry = fs.readFileSync(
 );
 
 describe('ZipArchiveResponse', () => {
-  beforeEach(() => {
-    mockFs({
-      '/test-archive.zip': archiveData,
-      '/test-archive-with-extra-root-dir.zip': archiveDataWithExtraDir,
-      '/test-archive-corrupted.zip': archiveDataCorrupted,
-      '/test-archive-malicious.zip': archiveWithMaliciousEntry,
-      '/tmp': mockFs.directory(),
+  const sourceDir = createMockDirectory();
+  const targetDir = createMockDirectory();
+
+  beforeAll(() => {
+    sourceDir.setContent({
+      'test-archive.zip': archiveData,
+      'test-archive-with-extra-root-dir.zip': archiveDataWithExtraDir,
+      'test-archive-corrupted.zip': archiveDataCorrupted,
+      'test-archive-malicious.zip': archiveWithMaliciousEntry,
     });
   });
+  beforeEach(() => {
+    targetDir.clear();
+  });
 
+  const openStreams = new Array<fs.ReadStream>();
+  function createReadStream(filePath: string) {
+    const stream = fs.createReadStream(filePath);
+    openStreams.push(stream);
+    return stream;
+  }
   afterEach(() => {
-    mockFs.restore();
+    openStreams.forEach(stream => stream.destroy());
+    openStreams.length = 0;
   });
 
   it('should read files', async () => {
-    const stream = fs.createReadStream('/test-archive.zip');
+    const stream = createReadStream(sourceDir.resolve('test-archive.zip'));
 
-    const res = new ZipArchiveResponse(stream, '', '/tmp', 'etag');
+    const res = new ZipArchiveResponse(stream, '', targetDir.path, 'etag');
     const files = await res.files();
 
     expect(files).toEqual([
@@ -76,10 +88,14 @@ describe('ZipArchiveResponse', () => {
   });
 
   it('should read files with filter', async () => {
-    const stream = fs.createReadStream('/test-archive.zip');
+    const stream = createReadStream(sourceDir.resolve('test-archive.zip'));
 
-    const res = new ZipArchiveResponse(stream, '', '/tmp', 'etag', path =>
-      path.endsWith('.yml'),
+    const res = new ZipArchiveResponse(
+      stream,
+      '',
+      targetDir.path,
+      'etag',
+      path => path.endsWith('.yml'),
     );
     const files = await res.files();
 
@@ -95,16 +111,16 @@ describe('ZipArchiveResponse', () => {
   });
 
   it('should read as archive and files', async () => {
-    const stream = fs.createReadStream('/test-archive.zip');
+    const stream = createReadStream(sourceDir.resolve('test-archive.zip'));
 
-    const res = new ZipArchiveResponse(stream, '', '/tmp', 'etag');
+    const res = new ZipArchiveResponse(stream, '', targetDir.path, 'etag');
     const buffer = await res.archive();
 
     await expect(res.archive()).rejects.toThrow(
       'Response has already been read',
     );
 
-    const res2 = new ZipArchiveResponse(buffer, '', '/tmp', 'etag');
+    const res2 = new ZipArchiveResponse(buffer, '', targetDir.path, 'etag');
     const files = await res2.files();
 
     expect(files).toEqual([
@@ -127,9 +143,9 @@ describe('ZipArchiveResponse', () => {
   });
 
   it('should extract entire archive into directory', async () => {
-    const stream = fs.createReadStream('/test-archive.zip');
+    const stream = createReadStream(sourceDir.resolve('test-archive.zip'));
 
-    const res = new ZipArchiveResponse(stream, '', '/tmp', 'etag');
+    const res = new ZipArchiveResponse(stream, '', targetDir.path, 'etag');
     const dir = await res.dir();
 
     await expect(
@@ -141,38 +157,45 @@ describe('ZipArchiveResponse', () => {
   });
 
   it('should extract archive into directory with a subpath', async () => {
-    const stream = fs.createReadStream('/test-archive.zip');
+    const stream = createReadStream(sourceDir.resolve('test-archive.zip'));
 
-    const res = new ZipArchiveResponse(stream, 'docs/', '/tmp', 'etag');
+    const res = new ZipArchiveResponse(stream, 'docs/', targetDir.path, 'etag');
+
     const dir = await res.dir();
-    expect(dir).toMatch(/^[\/\\]tmp[\/\\].*$/);
-    await expect(
-      fs.readFile(resolvePath(dir, 'index.md'), 'utf8'),
-    ).resolves.toBe('# Test\n');
+    expect(targetDir.content({ path: dir })).toEqual({
+      'index.md': '# Test\n',
+    });
   });
 
   it('should extract archive into directory with a subpath and filter', async () => {
-    const stream = fs.createReadStream('/test-archive.zip');
+    const stream = createReadStream(sourceDir.resolve('test-archive.zip'));
 
-    const res = new ZipArchiveResponse(stream, '', '/tmp', 'etag', path =>
-      path.endsWith('.yml'),
+    const res = new ZipArchiveResponse(
+      stream,
+      '',
+      targetDir.path,
+      'etag',
+      path => path.endsWith('.yml'),
     );
-    const dir = await res.dir({ targetDir: '/tmp' });
 
-    expect(dir).toBe('/tmp');
-    await expect(fs.pathExists(resolvePath(dir, 'mkdocs.yml'))).resolves.toBe(
-      true,
-    );
-    await expect(
-      fs.pathExists(resolvePath(dir, 'docs/index.md')),
-    ).resolves.toBe(false);
+    targetDir.addContent({ sub: {} });
+    const sub = targetDir.resolve('sub');
+    const dir = await res.dir({ targetDir: sub });
+
+    expect(dir).toBe(sub);
+
+    expect(targetDir.content()).toEqual({
+      sub: {
+        'mkdocs.yml': 'site_name: Test\n',
+      },
+    });
   });
 
   it('should extract a large archive', async () => {
     const fileCount = 10;
     const fileSize = 1000 * 1000;
     const filePath = await new Promise<string>((resolve, reject) => {
-      const outFile = '/large-archive.zip';
+      const outFile = targetDir.resolve('large-archive.zip');
       const archive = createArchive('zip');
 
       archive.on('error', reject);
@@ -193,14 +216,16 @@ describe('ZipArchiveResponse', () => {
       archive.finalize();
     });
 
-    const stream = fs.createReadStream(filePath);
+    const stream = createReadStream(filePath);
 
-    const res = new ZipArchiveResponse(stream, '', '/tmp', 'etag');
+    const res = new ZipArchiveResponse(stream, '', targetDir.path, 'etag');
+
+    targetDir.addContent({ sub: {} });
+    const sub = targetDir.resolve('sub');
     const dir = await res.dir({
-      targetDir: '/out',
+      targetDir: sub,
     });
 
-    expect(dir).toBe('/out');
     const files = await fs.readdir(dir);
     expect(files).toHaveLength(fileCount);
 
@@ -211,9 +236,11 @@ describe('ZipArchiveResponse', () => {
   });
 
   it('should throw on invalid archive', async () => {
-    const stream = fs.createReadStream('/test-archive-corrupted.zip');
+    const stream = createReadStream(
+      sourceDir.resolve('test-archive-corrupted.zip'),
+    );
 
-    const res = new ZipArchiveResponse(stream, '', '/tmp', 'etag');
+    const res = new ZipArchiveResponse(stream, '', targetDir.path, 'etag');
     const filesPromise = res.files();
 
     await expect(filesPromise).rejects.toThrow(
@@ -222,18 +249,22 @@ describe('ZipArchiveResponse', () => {
   });
 
   it('should throw on entries with a path outside the destination dir', async () => {
-    const stream = fs.createReadStream('/test-archive-malicious.zip');
+    const stream = createReadStream(
+      sourceDir.resolve('test-archive-malicious.zip'),
+    );
 
-    const res = new ZipArchiveResponse(stream, '', '/tmp', 'etag');
+    const res = new ZipArchiveResponse(stream, '', targetDir.path, 'etag');
     await expect(res.files()).rejects.toThrow(
       'invalid relative path: ../side.txt',
     );
   });
 
   it('should throw on entries that attempt to write outside destination dir', async () => {
-    const stream = fs.createReadStream('/test-archive-malicious.zip');
+    const stream = createReadStream(
+      sourceDir.resolve('test-archive-malicious.zip'),
+    );
 
-    const res = new ZipArchiveResponse(stream, '', '/tmp', 'etag');
+    const res = new ZipArchiveResponse(stream, '', targetDir.path, 'etag');
     await expect(res.dir()).rejects.toThrow(
       'invalid relative path: ../side.txt',
     );

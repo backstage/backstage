@@ -10,6 +10,7 @@ import { BackendFeature } from '@backstage/backend-plugin-api';
 import { CacheClient } from '@backstage/backend-common';
 import { Config } from '@backstage/config';
 import { CorsOptions } from 'cors';
+import { DiscoveryService } from '@backstage/backend-plugin-api';
 import { ErrorRequestHandler } from 'express';
 import { Express as Express_2 } from 'express';
 import { Format } from 'logform';
@@ -25,7 +26,6 @@ import { LoadConfigOptionsRemote } from '@backstage/config-loader';
 import { LoggerService } from '@backstage/backend-plugin-api';
 import { PermissionsService } from '@backstage/backend-plugin-api';
 import { PluginDatabaseManager } from '@backstage/backend-common';
-import { PluginEndpointDiscovery } from '@backstage/backend-common';
 import { RemoteConfigSourceOptions } from '@backstage/config-loader';
 import { RequestHandler } from 'express';
 import { RequestListener } from 'http';
@@ -114,7 +114,7 @@ export interface DefaultRootHttpRouterOptions {
 
 // @public (undocumented)
 export const discoveryServiceFactory: () => ServiceFactory<
-  PluginEndpointDiscovery,
+  DiscoveryService,
   'plugin'
 >;
 
@@ -126,6 +126,20 @@ export interface ExtendedHttpServer extends http.Server {
   start(): Promise<void>;
   // (undocumented)
   stop(): Promise<void>;
+}
+
+// @public
+export class HostDiscovery implements DiscoveryService {
+  static fromConfig(
+    config: Config,
+    options?: {
+      basePath?: string;
+    },
+  ): HostDiscovery;
+  // (undocumented)
+  getBaseUrl(pluginId: string): Promise<string>;
+  // (undocumented)
+  getExternalBaseUrl(pluginId: string): Promise<string>;
 }
 
 // @public (undocumented)

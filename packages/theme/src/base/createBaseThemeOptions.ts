@@ -57,7 +57,7 @@ export function createBaseThemeOptions<PaletteOptions>(
     throw new Error(`${defaultPageTheme} is not defined in pageTheme.`);
   }
 
-  const defaultTypography = {
+  const defaultTypography: BackstageTypography = {
     htmlFontSize,
     fontFamily,
     h1: {

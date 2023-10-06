@@ -353,20 +353,33 @@ export function createPublishGitlabAction(options: {
         [tokenType]: token,
       });
 
-      let { id: targetNamespace } = (await client.Namespaces.show(owner)) as {
-        id: number;
-      };
+      let targetNamespaceId;
+
+      try {
+        const namespaceResponse = (await client.Namespaces.show(owner)) as {
+          id: number;
+        };
+
+        targetNamespaceId = namespaceResponse.id;
+      } catch (e) {
+        if (e.response && e.response.statusCode === 404) {
+          throw new InputError(
+            `The namespace ${owner} is not found or the user doesn't have permissions to access it`,
+          );
+        }
+        throw e;
+      }
 
       const { id: userId } = (await client.Users.current()) as {
         id: number;
       };
 
-      if (!targetNamespace) {
-        targetNamespace = userId;
+      if (!targetNamespaceId) {
+        targetNamespaceId = userId;
       }
 
       const { id: projectId, http_url_to_repo } = await client.Projects.create({
-        namespace_id: targetNamespace,
+        namespace_id: targetNamespaceId,
         name: repo,
         visibility: repoVisibility,
         ...(topics.length ? { topics } : {}),

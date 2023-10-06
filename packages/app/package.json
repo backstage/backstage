@@ -1,6 +1,6 @@
 {
   "name": "example-app",
-  "version": "0.2.88-next.0",
+  "version": "0.2.88-next.1",
   "private": true,
   "backstage": {
     "role": "frontend"
@@ -52,6 +52,7 @@
     "@backstage/plugin-jenkins": "workspace:^",
     "@backstage/plugin-kafka": "workspace:^",
     "@backstage/plugin-kubernetes": "workspace:^",
+    "@backstage/plugin-kubernetes-cluster": "workspace:^",
     "@backstage/plugin-lighthouse": "workspace:^",
     "@backstage/plugin-linguist": "workspace:^",
     "@backstage/plugin-linguist-common": "workspace:^",
