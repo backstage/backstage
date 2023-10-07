@@ -23,6 +23,7 @@ import { assertError, InputError } from '@backstage/errors';
 import { Octokit } from 'octokit';
 import { getOctokitOptions } from './helpers';
 import { parseRepoUrl } from '../publish/util';
+import { examples } from './githubIssuesLabel.examples';
 
 /**
  * Adds labels to a pull request or issue on GitHub
@@ -42,6 +43,7 @@ export function createGithubIssuesLabelAction(options: {
   }>({
     id: 'github:issues:label',
     description: 'Adds labels to a pull request or issue on GitHub.',
+    examples,
     schema: {
       input: {
         type: 'object',

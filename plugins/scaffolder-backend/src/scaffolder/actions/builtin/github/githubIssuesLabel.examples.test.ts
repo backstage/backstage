@@ -1,5 +1,5 @@
 /*
- * Copyright 2021 The Backstage Authors
+ * Copyright 2023 The Backstage Authors
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,16 +14,18 @@
  * limitations under the License.
  */
 
-import { createGithubIssuesLabelAction } from './githubIssuesLabel';
+import { TemplateAction } from '@backstage/plugin-scaffolder-node';
+import { getVoidLogger } from '@backstage/backend-common';
+import { ConfigReader } from '@backstage/config';
 import {
-  ScmIntegrations,
   DefaultGithubCredentialsProvider,
   GithubCredentialsProvider,
+  ScmIntegrations,
 } from '@backstage/integration';
-import { ConfigReader } from '@backstage/config';
-import { getVoidLogger } from '@backstage/backend-common';
-import { TemplateAction } from '@backstage/plugin-scaffolder-node';
 import { PassThrough } from 'stream';
+import { createGithubIssuesLabelAction } from './githubIssuesLabel';
+import yaml from 'yaml';
+import { examples } from './githubIssuesLabel.examples';
 import { getOctokitOptions } from './helpers';
 
 jest.mock('./helpers', () => {
@@ -47,7 +49,7 @@ jest.mock('octokit', () => ({
   },
 }));
 
-describe('github:issues:label', () => {
+describe('github:issues:label examples', () => {
   const config = new ConfigReader({
     integrations: {
       github: [
@@ -63,11 +65,6 @@ describe('github:issues:label', () => {
   let action: TemplateAction<any>;
 
   const mockContext = {
-    input: {
-      repoUrl: 'github.com?repo=repo&owner=owner',
-      number: '1',
-      labels: ['label1', 'label2'],
-    },
     workspacePath: 'lol',
     logger: getVoidLogger(),
     logStream: new PassThrough(),
@@ -85,28 +82,37 @@ describe('github:issues:label', () => {
     });
   });
 
-  it('should call the githubApi for adding labels', async () => {
-    await action.handler(mockContext);
+  afterEach(jest.resetAllMocks);
+
+  it('should call the githubApi for adding labels without token', async () => {
+    await action.handler({
+      ...mockContext,
+      input: yaml.parse(examples[0].example).steps[0].input,
+    });
+
     expect(mockOctokit.rest.issues.addLabels).toHaveBeenCalledWith({
       owner: 'owner',
       repo: 'repo',
       issue_number: '1',
-      labels: ['label1', 'label2'],
+      labels: ['bug'],
     });
+
     expect(getOctokitOptionsMock.mock.calls[0][0].token).toBeUndefined();
   });
 
   it('should call the githubApi for adding labels with token', async () => {
     await action.handler({
       ...mockContext,
-      input: { ...mockContext.input, token: 'gph_YourGitHubToken' },
+      input: yaml.parse(examples[1].example).steps[0].input,
     });
+
     expect(mockOctokit.rest.issues.addLabels).toHaveBeenCalledWith({
       owner: 'owner',
       repo: 'repo',
       issue_number: '1',
-      labels: ['label1', 'label2'],
+      labels: ['bug', 'documentation'],
     });
+
     expect(getOctokitOptionsMock.mock.calls[0][0].token).toEqual(
       'gph_YourGitHubToken',
     );
