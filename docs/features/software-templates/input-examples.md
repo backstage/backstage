@@ -110,10 +110,11 @@ parameters:
       arrayObjects:
         title: Array with custom objects
         type: array
+        minItems: 0
         ui:options:
-          addable: false
-          orderable: false
-          removable: false
+          addable: true
+          orderable: true
+          removable: true
         items:
           type: object
           properties:
