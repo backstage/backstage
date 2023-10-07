@@ -36,8 +36,9 @@ export async function markForStitching(options: {
   const entityRefs = split(options.entityRefs);
   const entityIds = split(options.entityIds);
   const knex = options.knex;
+  const mode = options.strategy.mode;
 
-  if (options.strategy.mode === 'immediate') {
+  if (mode === 'immediate') {
     for (const chunk of entityRefs) {
       await knex
         .table<DbFinalEntitiesRow>('final_entities')
@@ -74,7 +75,7 @@ export async function markForStitching(options: {
         })
         .whereIn('entity_id', chunk);
     }
-  } else {
+  } else if (mode === 'deferred') {
     // It's OK that this is shared across refresh state rows; it just needs to
     // be uniquely generated for every new stitch request.
     const ticket = uuid();
@@ -96,6 +97,8 @@ export async function markForStitching(options: {
         })
         .whereIn('entity_id', chunk);
     }
+  } else {
+    throw new Error(`Unknown stitching strategy mode ${mode}`);
   }
 }
 
