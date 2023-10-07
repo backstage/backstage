@@ -3449,7 +3449,7 @@ __metadata:
     "@google-cloud/storage": ^6.0.0
     "@keyv/memcache": ^1.3.5
     "@keyv/redis": ^2.5.3
-    "@kubernetes/client-node": 0.18.1
+    "@kubernetes/client-node": 0.19.0
     "@manypkg/get-packages": ^1.1.3
     "@octokit/rest": ^19.0.3
     "@types/archiver": ^5.1.0
@@ -7583,7 +7583,7 @@ __metadata:
     "@backstage/types": "workspace:^"
     "@google-cloud/container": ^4.0.0
     "@jest-mock/express": ^2.0.1
-    "@kubernetes/client-node": 0.18.1
+    "@kubernetes/client-node": 0.19.0
     "@types/aws4": ^1.5.1
     "@types/express": ^4.17.6
     "@types/http-proxy-middleware": ^0.19.3
@@ -7663,7 +7663,7 @@ __metadata:
     "@backstage/plugin-permission-common": "workspace:^"
     "@backstage/test-utils": "workspace:^"
     "@backstage/types": "workspace:^"
-    "@kubernetes/client-node": 0.18.1
+    "@kubernetes/client-node": 0.19.0
     kubernetes-models: ^4.3.1
     lodash: ^4.17.21
     luxon: ^3.0.0
@@ -7730,7 +7730,7 @@ __metadata:
     "@backstage/types": "workspace:^"
     "@kubernetes-models/apimachinery": ^1.1.0
     "@kubernetes-models/base": ^4.0.1
-    "@kubernetes/client-node": 0.18.1
+    "@kubernetes/client-node": 0.19.0
     "@material-ui/core": ^4.12.2
     "@material-ui/icons": ^4.9.1
     "@material-ui/lab": 4.0.0-alpha.61
@@ -12821,35 +12821,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@kubernetes/client-node@npm:0.18.1":
-  version: 0.18.1
-  resolution: "@kubernetes/client-node@npm:0.18.1"
-  dependencies:
-    "@types/js-yaml": ^4.0.1
-    "@types/node": ^18.11.17
-    "@types/request": ^2.47.1
-    "@types/ws": ^8.5.3
-    byline: ^5.0.0
-    isomorphic-ws: ^5.0.0
-    js-yaml: ^4.1.0
-    jsonpath-plus: ^7.2.0
-    openid-client: ^5.3.0
-    request: ^2.88.0
-    rfc4648: ^1.3.0
-    stream-buffers: ^3.0.2
-    tar: ^6.1.11
-    tmp-promise: ^3.0.2
-    tslib: ^2.4.1
-    underscore: ^1.13.6
-    ws: ^8.11.0
-  dependenciesMeta:
-    openid-client:
-      optional: true
-  checksum: 7205f10256f182a0292d483195fab7f4d9b500b3a47e6861dcf2fa8851c0bfd554e4f9a9f832ff76500efefb0422df2ecf2e378c5c3a4290e86abd8bc69ef11d
-  languageName: node
-  linkType: hard
-
-"@kubernetes/client-node@npm:^0.19.0":
+"@kubernetes/client-node@npm:0.19.0, @kubernetes/client-node@npm:^0.19.0":
   version: 0.19.0
   resolution: "@kubernetes/client-node@npm:0.19.0"
   dependencies:
@@ -18002,7 +17974,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@types/node@npm:^18.11.17, @types/node@npm:^18.17.8":
+"@types/node@npm:^18.17.8":
   version: 18.18.4
   resolution: "@types/node@npm:18.18.4"
   checksum: 4901e91c4cc479bb58acbcd79236a97a0ad6db4a53cb1f4ba4cf32af15324c61b16faa6e31c1b09bf538a20feb5f5274239157ce5237f5741db0b9ab71e69c52
@@ -40657,15 +40629,6 @@ __metadata:
   languageName: node
   linkType: hard
 
-"tmp-promise@npm:^3.0.2":
-  version: 3.0.2
-  resolution: "tmp-promise@npm:3.0.2"
-  dependencies:
-    tmp: ^0.2.0
-  checksum: 2d8457c9512e896633f64fab33e5e3fd273c4d8fca33cfc74a04a104a0b921d15ed3e832c4f2a50108635ac88264afef85abddbe5ad8480e15f55fc7f8e76969
-  languageName: node
-  linkType: hard
-
 "tmp@npm:^0.0.33":
   version: 0.0.33
   resolution: "tmp@npm:0.0.33"
@@ -40675,7 +40638,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"tmp@npm:^0.2.0, tmp@npm:^0.2.1":
+"tmp@npm:^0.2.1":
   version: 0.2.1
   resolution: "tmp@npm:0.2.1"
   dependencies:
@@ -41386,7 +41349,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"underscore@npm:^1.12.1, underscore@npm:^1.13.6, underscore@npm:~1.13.2":
+"underscore@npm:^1.12.1, underscore@npm:~1.13.2":
   version: 1.13.6
   resolution: "underscore@npm:1.13.6"
   checksum: d5cedd14a9d0d91dd38c1ce6169e4455bb931f0aaf354108e47bd46d3f2da7464d49b2171a5cf786d61963204a42d01ea1332a903b7342ad428deaafaf70ec36
