@@ -17666,11 +17666,11 @@ __metadata:
   linkType: hard
 
 "@types/jquery@npm:^3.3.34":
-  version: 3.5.21
-  resolution: "@types/jquery@npm:3.5.21"
+  version: 3.5.22
+  resolution: "@types/jquery@npm:3.5.22"
   dependencies:
     "@types/sizzle": "*"
-  checksum: 48cce8892f0292ac68853677d408195436a460ed45445a2da13deddcf21b407b3f896bbf5714f320c8f44666fdff5ceba5c59e873a316486098040404dcf56f4
+  checksum: b81c95e27bb30686c1ad5d3f414781243d0cbb468b91d5584dedd3d3ca07ac99796d876e257a7246d6d9b69916bbb0cd0508142ab9f88848605c6d431144d729
   languageName: node
   linkType: hard
 
