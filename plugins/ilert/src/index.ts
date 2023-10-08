@@ -20,9 +20,6 @@
  * @packageDocumentation
  */
 
-import ILertIconComponent from './assets/ilert.icon.svg';
-import { IconComponent } from '@backstage/core-plugin-api';
-
 export {
   ilertPlugin,
   ilertPlugin as plugin,
@@ -35,9 +32,7 @@ export {
   isPluginApplicableToEntity as isILertAvailable,
   ILertCard,
 } from './components';
+export { ILertIcon } from './ILertIcon';
 export * from './api';
 export * from './route-refs';
 export * from './types';
-
-/** @public */
-export const ILertIcon: IconComponent = ILertIconComponent as IconComponent;

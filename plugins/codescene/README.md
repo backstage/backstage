@@ -2,8 +2,6 @@
 
 [CodeScene](https://codescene.com/) is a multi-purpose tool bridging code, business and people. See hidden risks and social patterns in your code. Prioritize and reduce technical debt.
 
-![codescene-logo](./src/assets/codescene.icon.svg)
-
 The CodeScene Backstage Plugin exposes a page component that will list the existing projects and their analysis data on your CodeScene instance.
 
 ![screenshot](./docs/codescene-plugin-screenshot.png)
