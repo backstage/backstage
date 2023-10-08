@@ -45,13 +45,10 @@
     "clean": "backstage-cli package clean"
   },
   "dependencies": {
-    "@backstage/config": "workspace:^",
     "@backstage/errors": "workspace:^",
     "@backstage/types": "workspace:^",
     "ajv": "^8.10.0",
-    "json-schema": "^0.4.0",
-    "lodash": "^4.17.21",
-    "uuid": "^8.0.0"
+    "lodash": "^4.17.21"
   },
   "devDependencies": {
     "@backstage/cli": "workspace:^",

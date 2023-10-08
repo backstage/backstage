@@ -50,7 +50,6 @@
     "humanize-duration": "^3.27.0",
     "lodash": "^4.17.21",
     "luxon": "^3.0.0",
-    "prop-types": "^15.7.2",
     "react-use": "^17.3.1",
     "recharts": "^2.5.0"
   },
