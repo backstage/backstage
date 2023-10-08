@@ -18050,12 +18050,12 @@ __metadata:
   linkType: hard
 
 "@types/node-fetch@npm:^2.5.0, @types/node-fetch@npm:^2.5.12, @types/node-fetch@npm:^2.5.7, @types/node-fetch@npm:^2.6.1":
-  version: 2.6.5
-  resolution: "@types/node-fetch@npm:2.6.5"
+  version: 2.6.6
+  resolution: "@types/node-fetch@npm:2.6.6"
   dependencies:
     "@types/node": "*"
     form-data: ^4.0.0
-  checksum: 686ee0d52bb82d73f82c0da0bb025d4af1ba7bd8df4edd09336f6179eb838b6d4b5f0a524677a8faec2b00918d1b08a1690d50fa592c9741a5df6a8041a52495
+  checksum: ac66389d9d597ab91f5e5d3724e594965b9f80ae5841ab5da9f0c3bd54ceac084591cfe69b1c413f18bb7efdd97002d05bd7651d58ba0c6c10f804f4fd85e598
   languageName: node
   linkType: hard
 
