@@ -2,4 +2,4 @@
 '@backstage/plugin-newrelic-dashboard': patch
 ---
 
-fixed required react propery "key" looping the dashboards
+Fixed React Warning: "Each child in a list should have a unique 'key' prop" during the rendering of `EntityNewRelicDashboardCard`
