@@ -54,7 +54,7 @@ export type StackOverflowQuestionsCollatorFactoryOptions = {
   apiKey?: string;
   apiAccessToken?: string;
   teamName?: string;
-  requestParams: StackOverflowQuestionsRequestParams;
+  requestParams?: StackOverflowQuestionsRequestParams;
   logger: Logger;
 };
 
@@ -81,7 +81,11 @@ export class StackOverflowQuestionsCollatorFactory
     this.apiAccessToken = options.apiAccessToken;
     this.teamName = options.teamName;
     this.maxPage = options.maxPage;
-    this.requestParams = options.requestParams;
+    this.requestParams = options.requestParams ?? {
+      tagged: ['backstage'],
+      site: 'stackoverflow',
+      pagesize: 100,
+    };
     this.logger = options.logger.child({ documentType: this.type });
   }
 
@@ -98,12 +102,17 @@ export class StackOverflowQuestionsCollatorFactory
       config.getOptionalString('stackoverflow.baseUrl') ||
       'https://api.stackexchange.com/2.3';
     const maxPage = options.maxPage || 100;
+    const requestParams =
+      config.getOptional<StackOverflowQuestionsRequestParams>(
+        'stackoverflow.requestParams',
+      );
     return new StackOverflowQuestionsCollatorFactory({
       baseUrl,
       maxPage,
       apiKey,
       apiAccessToken,
       teamName,
+      requestParams,
       ...options,
     });
   }
