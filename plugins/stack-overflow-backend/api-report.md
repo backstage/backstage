@@ -45,7 +45,7 @@ export type StackOverflowQuestionsCollatorFactoryOptions = {
   apiKey?: string;
   apiAccessToken?: string;
   teamName?: string;
-  requestParams: StackOverflowQuestionsRequestParams;
+  requestParams?: StackOverflowQuestionsRequestParams;
   logger: Logger;
 };
 
