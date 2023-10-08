@@ -329,11 +329,11 @@ export function parseHighlightFields({
 
       const highlightedField = positions.reduce((content, pos) => {
         return (
-          `${content.substring(0, pos[0])}${preTag}` +
-          `${content.substring(pos[0], pos[0] + pos[1])}` +
-          `${postTag}${content.substring(pos[0] + pos[1])}`
+          `${content.toString().substring(0, pos[0])}${preTag}` +
+          `${content.toString().substring(pos[0], pos[0] + pos[1])}` +
+          `${postTag}${content.toString().substring(pos[0] + pos[1])}`
         );
-      }, doc[field]);
+      }, doc[field] ?? '');
 
       return [field, highlightedField];
     }),
