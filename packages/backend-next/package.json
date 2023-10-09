@@ -56,7 +56,6 @@
     "@backstage/plugin-search-backend-module-techdocs": "workspace:^",
     "@backstage/plugin-search-backend-node": "workspace:^",
     "@backstage/plugin-sonarqube-backend": "workspace:^",
-    "@backstage/plugin-stack-overflow-backend": "workspace:^",
     "@backstage/plugin-techdocs-backend": "workspace:^",
     "@backstage/plugin-todo-backend": "workspace:^"
   },
