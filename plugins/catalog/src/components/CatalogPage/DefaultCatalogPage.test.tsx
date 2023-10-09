@@ -117,43 +117,31 @@ describe('DefaultCatalogPage', () => {
         ],
       },
     })),
-    queryEntities: jest.fn().mockImplementation(async request => {
-      if (
-        (
-          (request as QueryEntitiesInitialRequest).filter as Record<
-            string,
-            string
-          >
-        )['relations.ownedBy']
-      ) {
-        // owned entities
-        return { items: [], totalItems: 3, pageInfo: {} };
-      }
+    queryEntities: jest
+      .fn()
+      .mockImplementation(async (request: QueryEntitiesInitialRequest) => {
+        if ((request.filter as any)['relations.ownedBy']) {
+          // owned entities
+          return { items: [], totalItems: 3, pageInfo: {} };
+        }
 
-      if (
-        (
-          (request as QueryEntitiesInitialRequest).filter as Record<
-            string,
-            string
-          >
-        )['metadata.name']
-      ) {
-        // starred entities
-        return {
-          items: [
-            {
-              apiVersion: '1',
-              kind: 'component',
-              metadata: { name: 'Entity1', namespace: 'default' },
-            },
-          ],
-          totalItems: 1,
-          pageInfo: {},
-        };
-      }
-      // all items
-      return { items: [], totalItems: 2, pageInfo: {} };
-    }),
+        if ((request.filter as any)['metadata.name']) {
+          // starred entities
+          return {
+            items: [
+              {
+                apiVersion: '1',
+                kind: 'component',
+                metadata: { name: 'Entity1', namespace: 'default' },
+              },
+            ],
+            totalItems: 1,
+            pageInfo: {},
+          };
+        }
+        // all items
+        return { items: [], totalItems: 2, pageInfo: {} };
+      }),
   };
 
   const testProfile: Partial<ProfileInfo> = {
