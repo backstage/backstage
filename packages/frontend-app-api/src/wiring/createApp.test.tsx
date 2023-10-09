@@ -16,6 +16,7 @@
 
 import {
   createExtension,
+  createExtensionOverrides,
   createPageExtension,
   createPlugin,
   createThemeExtension,
@@ -26,6 +27,13 @@ import { MockConfigApi, renderWithEffects } from '@backstage/test-utils';
 import React from 'react';
 import { createRouteRef } from '@backstage/core-plugin-api';
 import { createExtensionInstance } from './createExtensionInstance';
+
+const extBaseConfig = {
+  id: 'test',
+  attachTo: { id: 'root', input: 'default' },
+  output: {},
+  factory() {},
+};
 
 describe('createInstances', () => {
   it('throws an error when a root extension is parametrized', () => {
@@ -102,6 +110,26 @@ describe('createInstances', () => {
     expect(() => createInstances({ config, features })).toThrow(
       "The following extensions are duplicated: The extension 'A' was provided 2 time(s) by the plugin 'A' and 1 time(s) by the plugin 'B', The extension 'B' was provided 2 time(s) by the plugin 'B'",
     );
+  });
+
+  it('throws an error when duplicated extension overrides are detected', () => {
+    expect(() =>
+      createInstances({
+        config: new MockConfigApi({}),
+        features: [
+          createExtensionOverrides({
+            extensions: [
+              createExtension({ ...extBaseConfig, id: 'a' }),
+              createExtension({ ...extBaseConfig, id: 'a' }),
+              createExtension({ ...extBaseConfig, id: 'b' }),
+            ],
+          }),
+          createExtensionOverrides({
+            extensions: [createExtension({ ...extBaseConfig, id: 'b' })],
+          }),
+        ],
+      }),
+    ).toThrow('The following extensions had duplicate overrides: a, b');
   });
 });
 
