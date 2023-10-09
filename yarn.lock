@@ -17678,12 +17678,12 @@ __metadata:
   linkType: hard
 
 "@types/inquirer@npm:^8.1.3":
-  version: 8.2.6
-  resolution: "@types/inquirer@npm:8.2.6"
+  version: 8.2.7
+  resolution: "@types/inquirer@npm:8.2.7"
   dependencies:
     "@types/through": "*"
     rxjs: ^7.2.0
-  checksum: d09c3b6bbfb1aff8bdb8fc938d43536be55dfb51af0c91d0105e3f7c5e3950c12618ac00e2e91f10b5abeba38f4b903289be1df5aa31f213b58c3cc675a19f81
+  checksum: 8f021bc2ad0cdcccbd55abd11a8ecc73f716ea108f2ffb5f8f605d23519b47acb46fdcac032d8c81e7c05f183c0f2300a0a394c449ad8980bc11f333708d4387
   languageName: node
   linkType: hard
 
