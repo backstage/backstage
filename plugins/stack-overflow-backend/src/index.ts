@@ -20,4 +20,40 @@
  * @packageDocumentation
  */
 
-export * from './search';
+import {
+  StackOverflowDocument as _StackOverflowDocument,
+  StackOverflowQuestionsRequestParams as _StackOverflowQuestionsRequestParams,
+  StackOverflowQuestionsCollatorFactory as _StackOverflowQuestionsCollatorFactory,
+  StackOverflowQuestionsCollatorFactoryOptions as _StackOverflowQuestionsCollatorFactoryOptions,
+} from '@backstage/plugin-search-backend-module-stack-overflow';
+
+/**
+ * @public
+ * @deprecated
+ * Import from `@backstage/plugin-search-backend-module-stack-overflow` instead.
+ */
+export type StackOverflowDocument = _StackOverflowDocument;
+
+/**
+ * @public
+ * @deprecated
+ * Import from `@backstage/plugin-search-backend-module-stack-overflow` instead.
+ */
+export type StackOverflowQuestionsRequestParams =
+  _StackOverflowQuestionsRequestParams;
+
+/**
+ * @public
+ * @deprecated
+ * Import from `@backstage/plugin-search-backend-module-stack-overflow` instead.
+ */
+export type StackOverflowQuestionsCollatorFactoryOptions =
+  _StackOverflowQuestionsCollatorFactory;
+
+/**
+ * @public
+ * @deprecated
+ * Import from `@backstage/plugin-search-backend-module-stack-overflow` instead.
+ */
+export const StackOverflowQuestionsCollatorFactory =
+  _StackOverflowQuestionsCollatorFactory;

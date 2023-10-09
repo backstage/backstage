@@ -21,7 +21,7 @@ import {
   createBackendModule,
 } from '@backstage/backend-plugin-api';
 import { searchIndexRegistryExtensionPoint } from '@backstage/plugin-search-backend-node/alpha';
-import { StackOverflowQuestionsCollatorFactory } from './search';
+import { StackOverflowQuestionsCollatorFactory } from './collators';
 
 /**
  * @packageDocumentation
@@ -52,9 +52,9 @@ export default createBackendModule({
           initialDelay: { seconds: 3 },
         };
 
-        const schedule = config.has('search.collators.stackoverflow.schedule')
+        const schedule = config.has('stackoverflow.schedule')
           ? readTaskScheduleDefinitionFromConfig(
-              config.getConfig('search.collators.stackoverflow.schedule'),
+              config.getConfig('stackoverflow.schedule'),
             )
           : defaultSchedule;
 

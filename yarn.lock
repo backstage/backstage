@@ -8847,6 +8847,25 @@ __metadata:
   languageName: unknown
   linkType: soft
 
+"@backstage/plugin-search-backend-module-stack-overflow@workspace:^, @backstage/plugin-search-backend-module-stack-overflow@workspace:plugins/search-backend-module-stack-overflow":
+  version: 0.0.0-use.local
+  resolution: "@backstage/plugin-search-backend-module-stack-overflow@workspace:plugins/search-backend-module-stack-overflow"
+  dependencies:
+    "@backstage/backend-common": "workspace:^"
+    "@backstage/backend-plugin-api": "workspace:^"
+    "@backstage/backend-tasks": "workspace:^"
+    "@backstage/backend-test-utils": "workspace:^"
+    "@backstage/cli": "workspace:^"
+    "@backstage/config": "workspace:^"
+    "@backstage/plugin-search-backend-node": "workspace:^"
+    "@backstage/plugin-search-common": "workspace:^"
+    msw: ^1.2.1
+    node-fetch: ^2.6.7
+    qs: ^6.9.4
+    winston: ^3.2.1
+  languageName: unknown
+  linkType: soft
+
 "@backstage/plugin-search-backend-module-techdocs@workspace:^, @backstage/plugin-search-backend-module-techdocs@workspace:plugins/search-backend-module-techdocs":
   version: 0.0.0-use.local
   resolution: "@backstage/plugin-search-backend-module-techdocs@workspace:plugins/search-backend-module-techdocs"
@@ -9182,16 +9201,15 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@backstage/plugin-stack-overflow-backend@workspace:^, @backstage/plugin-stack-overflow-backend@workspace:plugins/stack-overflow-backend":
+"@backstage/plugin-stack-overflow-backend@workspace:plugins/stack-overflow-backend":
   version: 0.0.0-use.local
   resolution: "@backstage/plugin-stack-overflow-backend@workspace:plugins/stack-overflow-backend"
   dependencies:
     "@backstage/backend-common": "workspace:^"
-    "@backstage/backend-plugin-api": "workspace:^"
-    "@backstage/backend-tasks": "workspace:^"
     "@backstage/backend-test-utils": "workspace:^"
     "@backstage/cli": "workspace:^"
     "@backstage/config": "workspace:^"
+    "@backstage/plugin-search-backend-module-stack-overflow": "workspace:^"
     "@backstage/plugin-search-backend-node": "workspace:^"
     "@backstage/plugin-search-common": "workspace:^"
     msw: ^1.0.0
@@ -25317,7 +25335,6 @@ __metadata:
     "@backstage/plugin-search-react": "workspace:^"
     "@backstage/plugin-sentry": "workspace:^"
     "@backstage/plugin-shortcuts": "workspace:^"
-    "@backstage/plugin-stack-overflow": "workspace:^"
     "@backstage/plugin-stackstorm": "workspace:^"
     "@backstage/plugin-tech-insights": "workspace:^"
     "@backstage/plugin-tech-radar": "workspace:^"
@@ -25505,7 +25522,6 @@ __metadata:
     "@backstage/plugin-search-backend-module-techdocs": "workspace:^"
     "@backstage/plugin-search-backend-node": "workspace:^"
     "@backstage/plugin-sonarqube-backend": "workspace:^"
-    "@backstage/plugin-stack-overflow-backend": "workspace:^"
     "@backstage/plugin-techdocs-backend": "workspace:^"
     "@backstage/plugin-todo-backend": "workspace:^"
   languageName: unknown
