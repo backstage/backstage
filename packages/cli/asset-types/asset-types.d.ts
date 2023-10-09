@@ -60,10 +60,40 @@ declare module '*.yaml' {
   export default src;
 }
 
+/**
+ * @deprecated support for .icon.svg extensions are being removed, inline the SVG elements in a MUI SvgIcon instead.
+ * @example
+ * ```tsx
+ * import SvgIcon from '@material-ui/core/SvgIcon';
+ *
+ * const MyIcon = () => (
+ *   <SvgIcon>
+ *     <g>
+ *        <path d="..." />
+ *      </g>
+ *   </SvgIcon>
+ * )
+ * ```
+ */
 declare module '*.icon.svg' {
   import { ComponentType } from 'react';
   import { SvgIconProps } from '@material-ui/core';
 
+  /**
+   * @deprecated support for .icon.svg extensions are being removed, inline the SVG elements in a MUI SvgIcon instead.
+   * @example
+   * ```tsx
+   * import SvgIcon from '@material-ui/core/SvgIcon';
+   *
+   * const MyIcon = () => (
+   *   <SvgIcon>
+   *     <g>
+   *        <path d="..." />
+   *      </g>
+   *   </SvgIcon>
+   * )
+   * ```
+   */
   const Icon: ComponentType<SvgIconProps>;
   export default Icon;
 }

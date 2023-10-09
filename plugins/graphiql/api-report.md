@@ -79,6 +79,4 @@ export class GraphQLEndpoints implements GraphQLBrowseApi {
 
 // @public (undocumented)
 export const Router: () => React_2.JSX.Element;
-
-// (No @packageDocumentation comment for this package)
 ```

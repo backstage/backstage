@@ -30,8 +30,8 @@ import {
   graphQlBrowseApiRef,
   GraphQLEndpoints,
   GraphQLEndpoint,
+  GraphiQLIcon,
 } from '@backstage/plugin-graphiql';
-import GraphiQLIcon from './assets/graphiql.icon.svg';
 import {
   createApiFactory,
   createRouteRef,
