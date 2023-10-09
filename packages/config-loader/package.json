@@ -48,15 +48,13 @@
     "minimist": "^1.2.5",
     "node-fetch": "^2.6.7",
     "typescript-json-schema": "^0.55.0",
-    "yaml": "^2.0.0",
-    "yup": "^0.32.9"
+    "yaml": "^2.0.0"
   },
   "devDependencies": {
     "@backstage/backend-test-utils": "workspace:^",
     "@backstage/cli": "workspace:^",
     "@types/json-schema-merge-allof": "^0.6.0",
     "@types/mock-fs": "^4.10.0",
-    "@types/yup": "^0.29.13",
     "msw": "^1.0.0",
     "zen-observable": "^0.10.0"
   },

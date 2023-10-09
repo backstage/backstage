@@ -61,7 +61,6 @@
     "linkifyjs": "4.1.1",
     "lodash": "^4.17.21",
     "pluralize": "^8.0.0",
-    "prop-types": "^15.7.2",
     "qs": "^6.9.4",
     "rc-progress": "3.5.1",
     "react-helmet": "6.1.0",
