@@ -100,7 +100,7 @@ export const Stepper = (stepperProps: StepperProps) => {
     reviewButtonText = 'Review',
   } = components;
   const analytics = useAnalytics();
-  const { steps } = useTemplateSchema(props.manifest);
+  const { configurations, steps } = useTemplateSchema(props.manifest);
   const apiHolder = useApiHolder();
   const [activeStep, setActiveStep] = useState(0);
   const [isValidating, setIsValidating] = useState(false);
@@ -251,7 +251,7 @@ export const Stepper = (stepperProps: StepperProps) => {
                 color="primary"
                 onClick={handleCreate}
               >
-                {createButtonText}
+                {configurations.kickOffButtonText ?? createButtonText}
               </Button>
             </div>
           </>
