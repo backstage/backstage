@@ -241,11 +241,11 @@ export class EntityUserListFilter implements EntityFilter {
     // This is supposed to return always true for paginated
     // owned entities, since the filters are applied server side.
     if (this.value === 'owned') {
+      const relations = getEntityRelations(entity, RELATION_OWNED_BY);
+
       return (
         this.refs?.some(v =>
-          getEntityRelations(entity, RELATION_OWNED_BY).some(
-            o => stringifyEntityRef(o) === v,
-          ),
+          relations.some(o => stringifyEntityRef(o) === v),
         ) ?? false
       );
     }
@@ -308,9 +308,6 @@ export class EntityOrphanFilter implements EntityFilter {
  */
 export class EntityErrorFilter implements EntityFilter {
   constructor(readonly value: boolean) {}
-
-  // TODO(vinzscam): is it possible to implement
-  // getCatalogFilters? ask mammals
 
   filterEntity(entity: Entity): boolean {
     const error =

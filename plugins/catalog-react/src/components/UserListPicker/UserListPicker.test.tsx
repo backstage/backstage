@@ -523,9 +523,7 @@ describe('<UserListPicker />', () => {
           return mockQueryEntitiesImplementation(request);
         });
 
-        render(
-          <Picker initialFilter="owned" />,
-        ); /*  picker({ loading: true })*/
+        render(<Picker initialFilter="owned" />);
 
         await waitFor(() =>
           expect(mockCatalogApi.queryEntities).toHaveBeenCalledTimes(3),
@@ -566,9 +564,7 @@ describe('<UserListPicker />', () => {
           return mockQueryEntitiesImplementation(request);
         });
 
-        render(
-          <Picker initialFilter="starred" />,
-        ); /*  picker({ loading: true })*/
+        render(<Picker initialFilter="starred" />);
 
         await waitFor(() =>
           expect(mockCatalogApi.queryEntities).toHaveBeenCalledTimes(3),
@@ -587,7 +583,10 @@ describe('<UserListPicker />', () => {
 
         await waitFor(() =>
           expect(updateFilters).toHaveBeenLastCalledWith({
-            user: EntityUserListFilter.starred(expect.any(Array)),
+            user: EntityUserListFilter.starred([
+              'component:default/e-1',
+              'component:default/e-2',
+            ]),
           }),
         );
       });
