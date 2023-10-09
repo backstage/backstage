@@ -285,6 +285,10 @@ export function registerCommands(program: Command) {
       'Port for the preview app to be served on',
       defaultPreviewAppPort,
     )
+    .option(
+      '-c, --mkdocs-config-file-name <FILENAME>',
+      'Mkdocs config file name',
+    )
     .hook('preAction', command => {
       if (
         command.opts().previewAppPort !== defaultPreviewAppPort &&
