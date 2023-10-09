@@ -17,14 +17,8 @@
 // This file makes it possible to run "yarn knex migrate:make some_file_name"
 // to assist in making new migrations
 module.exports = {
-  client: 'mysql2',
-  connection: {
-    host: 'localhost',
-    user: 'root',
-    password: 'secret',
-    port: '3307',
-    database: 'backstage_plugin_tech-insights',
-  },
+  client: 'better-sqlite3',
+  connection: ':memory:',
   useNullAsDefault: true,
   migrations: {
     directory: './migrations',
