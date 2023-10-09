@@ -45,6 +45,9 @@ export interface TemplateEntityV1beta3 extends Entity {
      * The type that the Template will create. For example service, website or library.
      */
     type: string;
+
+    configurations?: TemplateConfigurationsV1beta3;
+
     /**
      * This is a JSONSchema or an array of JSONSchema's which is used to render a form in the frontend
      * to collect user input and validate it against that schema. This can then be used in the `steps` part below to template
@@ -65,6 +68,11 @@ export interface TemplateEntityV1beta3 extends Entity {
      */
     owner?: string;
   };
+}
+
+export interface TemplateConfigurationsV1beta3 {
+  kickOffButtonText?: string;
+  reviewButtonText?: string;
 }
 
 /**
