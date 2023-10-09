@@ -8,10 +8,10 @@ jobs:
   cron:
     runs-on: ubuntu-latest
     steps:
-      # - name: Harden Runner
-      #   uses: step-security/harden-runner@8ca2b8b2ece13480cda6dacd3511b49857a23c09 # v2.5.1
-      #   with:
-      #     egress-policy: audit
+      - name: Harden Runner
+        uses: step-security/harden-runner@8ca2b8b2ece13480cda6dacd3511b49857a23c09 # v2.5.1
+        with:
+          egress-policy: audit
 
       - uses: backstage/actions/cron@v0.6.4
         with:
