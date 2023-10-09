@@ -14,7 +14,19 @@
  * limitations under the License.
  */
 import { AppThemeSelector } from './apis';
-import { AppLanguageSelector } from './apis/implementations/AppLanguageApi';
-import { I18nextTranslationApi } from './apis/implementations/TranslationApi';
+import {
+  AppLanguageSelector,
+  AppLanguageSelectorOptions,
+} from './apis/implementations/AppLanguageApi';
+import {
+  I18nextTranslationApi,
+  I18nextTranslationApiOptions,
+} from './apis/implementations/TranslationApi';
 
-export { AppLanguageSelector, AppThemeSelector, I18nextTranslationApi };
+export {
+  type AppLanguageSelectorOptions,
+  type I18nextTranslationApiOptions,
+  AppLanguageSelector,
+  AppThemeSelector,
+  I18nextTranslationApi,
+};
