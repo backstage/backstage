@@ -35,7 +35,7 @@ describe('mergeExtensionParameters', () => {
   it('should filter out disabled extension instances', () => {
     expect(
       mergeExtensionParameters({
-        sources: [],
+        features: [],
         builtinExtensions: [makeExt('a', 'disabled')],
         parameters: [],
       }),
@@ -47,7 +47,7 @@ describe('mergeExtensionParameters', () => {
     const b = makeExt('b');
     expect(
       mergeExtensionParameters({
-        sources: [],
+        features: [],
         builtinExtensions: [a, b],
         parameters: [],
       }),
@@ -63,7 +63,7 @@ describe('mergeExtensionParameters', () => {
     const pluginA = createPlugin({ id: 'test', extensions: [a] });
     expect(
       mergeExtensionParameters({
-        sources: [pluginA],
+        features: [pluginA],
         builtinExtensions: [b],
         parameters: [
           {
@@ -88,7 +88,7 @@ describe('mergeExtensionParameters', () => {
     const plugin = createPlugin({ id: 'test', extensions: [a, b] });
     expect(
       mergeExtensionParameters({
-        sources: [plugin],
+        features: [plugin],
         builtinExtensions: [],
         parameters: [
           {
@@ -126,7 +126,7 @@ describe('mergeExtensionParameters', () => {
     const b = makeExt('b', 'disabled');
     expect(
       mergeExtensionParameters({
-        sources: [createPlugin({ id: 'empty', extensions: [] })],
+        features: [createPlugin({ id: 'empty', extensions: [] })],
         builtinExtensions: [a, b],
         parameters: [
           {

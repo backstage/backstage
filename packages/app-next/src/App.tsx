@@ -49,7 +49,7 @@ TODO:
 /* app.tsx */
 
 const app = createApp({
-  plugins: [graphiqlPlugin, pagesPlugin, techRadarPlugin],
+  features: [graphiqlPlugin, pagesPlugin, techRadarPlugin],
   // bindRoutes({ bind }) {
   //   bind(catalogPlugin.externalRoutes, {
   //     createComponent: scaffolderPlugin.routes.root,

@@ -104,14 +104,14 @@ const outputExtension = createExtension({
 });
 
 function createTestAppRoot({
-  plugins,
+  features,
   config = {},
 }: {
-  plugins: BackstagePlugin[];
+  features: BackstagePlugin[];
   config: JsonObject;
 }) {
   return createApp({
-    plugins: plugins,
+    features,
     configLoader: async () => new MockConfigApi(config),
   }).createRoot();
 }
@@ -132,7 +132,7 @@ describe('createPlugin', () => {
 
     await renderWithEffects(
       createTestAppRoot({
-        plugins: [plugin],
+        features: [plugin],
         config: { app: { extensions: [{ 'core.layout': false }] } },
       }),
     );
@@ -157,7 +157,7 @@ describe('createPlugin', () => {
 
     await renderWithEffects(
       createTestAppRoot({
-        plugins: [plugin],
+        features: [plugin],
         config: {
           app: {
             extensions: [

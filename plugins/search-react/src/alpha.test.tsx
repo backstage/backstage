@@ -168,7 +168,7 @@ describe('createSearchResultListItemExtension', () => {
     });
 
     const app = createApp({
-      plugins: [SearchPlugin],
+      features: [SearchPlugin],
       configLoader: async () =>
         new MockConfigApi({
           app: {

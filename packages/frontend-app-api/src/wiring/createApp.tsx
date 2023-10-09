@@ -20,6 +20,7 @@ import {
   BackstagePlugin,
   coreExtensionData,
   ExtensionDataRef,
+  ExtensionOverrides,
 } from '@backstage/frontend-plugin-api';
 import { Core } from '../extensions/Core';
 import { CoreRoutes } from '../extensions/CoreRoutes';
@@ -51,7 +52,7 @@ import {
   identityApiRef,
   AppTheme,
 } from '@backstage/core-plugin-api';
-import { getAvailablePlugins } from './discovery';
+import { getAvailableFeatures } from './discovery';
 import {
   ApiFactoryRegistry,
   ApiProvider,
@@ -104,9 +105,9 @@ export interface ExtensionTree {
 export function createExtensionTree(options: {
   config: Config;
 }): ExtensionTree {
-  const plugins = getAvailablePlugins();
+  const features = getAvailableFeatures();
   const { instances } = createInstances({
-    plugins,
+    features,
     config: options.config,
   });
 
@@ -172,7 +173,7 @@ export function createExtensionTree(options: {
  * @internal
  */
 export function createInstances(options: {
-  plugins: BackstagePlugin[];
+  features: (BackstagePlugin | ExtensionOverrides)[];
   config: Config;
 }) {
   const builtinExtensions = [
@@ -187,7 +188,7 @@ export function createInstances(options: {
   // pull in default extension instance from discovered packages
   // apply config to adjust default extension instances and add more
   const extensionParams = mergeExtensionParameters({
-    sources: options.plugins,
+    features: options.features,
     builtinExtensions,
     parameters: readAppExtensionParameters(options.config),
   });
@@ -260,9 +261,11 @@ export function createInstances(options: {
 
 /** @public */
 export function createApp(options: {
-  plugins: BackstagePlugin[];
+  features?: (BackstagePlugin | ExtensionOverrides)[];
   configLoader?: () => Promise<ConfigApi>;
-  pluginLoader?: (ctx: { config: ConfigApi }) => Promise<BackstagePlugin[]>;
+  featureLoader?: (ctx: {
+    config: ConfigApi;
+  }) => Promise<(BackstagePlugin | ExtensionOverrides)[]>;
 }): {
   createRoot(): JSX.Element;
 } {
@@ -273,14 +276,18 @@ export function createApp(options: {
         overrideBaseUrlConfigs(defaultConfigLoaderSync()),
       );
 
-    const discoveredPlugins = getAvailablePlugins();
-    const loadedPlugins = (await options.pluginLoader?.({ config })) ?? [];
-    const allPlugins = Array.from(
-      new Set([...discoveredPlugins, ...options.plugins, ...loadedPlugins]),
+    const discoveredFeatures = getAvailableFeatures();
+    const loadedFeatures = (await options.featureLoader?.({ config })) ?? [];
+    const allFeatures = Array.from(
+      new Set([
+        ...discoveredFeatures,
+        ...(options.features ?? []),
+        ...loadedFeatures,
+      ]),
     );
 
     const { rootInstances } = createInstances({
-      plugins: allPlugins,
+      features: allFeatures,
       config,
     });
 
@@ -293,7 +300,11 @@ export function createApp(options: {
 
     const apiHolder = createApiHolder(coreInstance, config);
 
-    const appContext = createLegacyAppContext(allPlugins);
+    const appContext = createLegacyAppContext(
+      allFeatures.filter(
+        (f): f is BackstagePlugin => f.$$type === '@backstage/BackstagePlugin',
+      ),
+    );
 
     const rootElements = rootInstances
       .map(e => (
