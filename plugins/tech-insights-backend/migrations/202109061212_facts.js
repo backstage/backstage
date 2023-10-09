@@ -25,6 +25,9 @@ exports.up = async function up(knex) {
       'The table for tech insight fact collections. Contains facts for individual fact retriever namespace/ref.',
     );
     table
+      .increments('uid', { primaryKey: true })
+      .comment('Primary key to distinguish unique lines from each other');
+    table
       .string('id')
       .notNullable()
       .comment('Unique identifier of the fact retriever plugin/package');

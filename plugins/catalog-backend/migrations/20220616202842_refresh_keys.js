@@ -25,6 +25,9 @@ exports.up = async function up(knex) {
       'This table contains relations between entities and keys to trigger refreshes with',
     );
     table
+      .increments('id', { primaryKey: true })
+      .comment('Primary key to distinguish unique lines from each other');
+    table
       .string('entity_id')
       .notNullable()
       .references('entity_id')

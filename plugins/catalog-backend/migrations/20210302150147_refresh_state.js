@@ -154,7 +154,9 @@ exports.up = async function up(knex) {
 
   await knex.schema.createTable('search', table => {
     table.comment('Flattened key-values from the entities, for filtering');
-    table.uuid('id').primary().notNullable().comment('Auto-generated ID');
+    table
+      .increments('id', { primaryKey: true })
+      .comment('Primary key to distinguish unique lines from each other');
     table
       .string('entity_id')
       .references('entity_id')
