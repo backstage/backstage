@@ -550,46 +550,6 @@ describe('GitlabOrgDiscoveryEntityProvider', () => {
         ),
       graphql
         .link('https://gitlab.com/api/graphql')
-        .query('getGroupMembers', async (_, res, ctx) =>
-          res(
-            ctx.data({
-              group: {
-                groupMembers: {
-                  nodes: [
-                    {
-                      user: {
-                        id: 'gid://gitlab/User/12',
-                        username: 'testuser1',
-                        commitEmail: 'testuser1@example.com',
-                        state: 'active',
-                        name: 'Test User 1',
-                        webUrl: 'https://gitlab.com/testuser1',
-                        avatarUrl: 'https://secure.gravatar.com/',
-                      },
-                    },
-                    {
-                      user: {
-                        id: 'gid://gitlab/User/34',
-                        username: 'testuser2',
-                        commitEmail: 'testuser2@example.com',
-                        state: 'active',
-                        name: 'Test User 2',
-                        webUrl: 'https://gitlab.com/testuser2',
-                        avatarUrl: 'https://secure.gravatar.com/',
-                      },
-                    },
-                  ],
-                  pageInfo: {
-                    endCursor: 'end',
-                    hasNextPage: false,
-                  },
-                },
-              },
-            }),
-          ),
-        ),
-      graphql
-        .link('https://gitlab.com/api/graphql')
         .query('getGroupMembers', async (req, res, ctx) =>
           res(
             ctx.data({
@@ -608,6 +568,67 @@ describe('GitlabOrgDiscoveryEntityProvider', () => {
             }),
           ),
         ),
+      rest.get(
+        `https://gitlab.com/api/v4/groups/group1/members`,
+        (_req, res, ctx) => {
+          const response = [
+            {
+              access_level: 30,
+              created_at: '2023-07-17T08:58:34.984Z',
+              expires_at: null,
+              id: 12,
+              username: 'testuser1',
+              name: 'Test User 1',
+              state: 'active',
+              avatar_url: 'https://secure.gravatar.com/',
+              web_url: 'https://gitlab.com/testuser1',
+              email: 'testuser1@example.com',
+              group_saml_identity: {
+                provider: 'group_saml',
+                extern_uid: '51',
+                saml_provider_id: 1,
+              },
+              is_using_seat: true,
+              membership_state: 'active',
+            },
+            {
+              access_level: 30,
+              created_at: '2023-07-19T08:58:34.984Z',
+              expires_at: null,
+              id: 34,
+              username: 'testuser2',
+              name: 'Test User 2',
+              state: 'active',
+              avatar_url: 'https://secure.gravatar.com/',
+              web_url: 'https://gitlab.com/testuser2',
+              email: 'testuser2@example.com',
+              group_saml_identity: {
+                provider: 'group_saml',
+                extern_uid: '52',
+                saml_provider_id: 1,
+              },
+              is_using_seat: true,
+              membership_state: 'active',
+            },
+            {
+              access_level: 50,
+              created_at: '2023-07-15T08:58:34.984Z',
+              expires_at: '2023-10-26',
+              id: 54,
+              username: 'group_100_bot_23dc8057bef66e05181f39be4652577c',
+              name: 'Token Bot',
+              state: 'active',
+              avatar_url: 'https://secure.gravatar.com/',
+              web_url:
+                'https://gitlab.com/group_100_bot_23dc8057bef66e05181f39be4652577c',
+              group_saml_identity: null,
+              is_using_seat: false,
+              membership_state: 'active',
+            },
+          ];
+          return res(ctx.json(response));
+        },
+      ),
     );
 
     await provider.connect(entityProviderConnection);
@@ -630,11 +651,12 @@ describe('GitlabOrgDiscoveryEntityProvider', () => {
               'backstage.io/managed-by-origin-location':
                 'url:https://gitlab.com/testuser1',
               'gitlab.com/user-login': 'https://gitlab.com/testuser1',
+              'gitlab.com/saml-external-uid': '51',
             },
             name: 'testuser1',
           },
           spec: {
-            memberOf: ['group2', 'group3'],
+            memberOf: ['group2'],
             profile: {
               displayName: 'Test User 1',
               email: 'testuser1@example.com',
@@ -655,11 +677,12 @@ describe('GitlabOrgDiscoveryEntityProvider', () => {
               'backstage.io/managed-by-origin-location':
                 'url:https://gitlab.com/testuser2',
               'gitlab.com/user-login': 'https://gitlab.com/testuser2',
+              'gitlab.com/saml-external-uid': '52',
             },
             name: 'testuser2',
           },
           spec: {
-            memberOf: ['group2', 'group3'],
+            memberOf: ['group3'],
             profile: {
               displayName: 'Test User 2',
               email: 'testuser2@example.com',

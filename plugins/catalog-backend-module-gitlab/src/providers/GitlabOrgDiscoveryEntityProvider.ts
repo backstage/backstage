@@ -193,12 +193,14 @@ export class GitlabOrgDiscoveryEntityProvider implements EntityProvider {
       });
     } else {
       groups = (await client.listDescendantGroups(this.config.group)).items;
-      users = (
-        await client.getGroupMembers(this.config.group.split('/')[0], [
-          'DIRECT',
-          'DESCENDANTS',
-        ])
-      ).items;
+      const rootGroup = this.config.group.split('/')[0];
+      users = paginated<GitLabUser>(
+        options => client.listSaaSUsers(rootGroup, options),
+        {
+          page: 1,
+          per_page: 100,
+        },
+      );
     }
 
     const idMappedUser: { [userId: number]: GitLabUser } = {};
@@ -332,6 +334,10 @@ export class GitlabOrgDiscoveryEntityProvider implements EntityProvider {
     const annotations: { [annotationName: string]: string } = {};
 
     annotations[`${host}/user-login`] = user.web_url;
+    if (user?.group_saml_identity?.extern_uid) {
+      annotations[`${host}/saml-external-uid`] =
+        user.group_saml_identity.extern_uid;
+    }
 
     const entity: UserEntity = {
       apiVersion: 'backstage.io/v1alpha1',
