@@ -18355,11 +18355,11 @@ __metadata:
   linkType: hard
 
 "@types/react-syntax-highlighter@npm:^15.0.0":
-  version: 15.5.7
-  resolution: "@types/react-syntax-highlighter@npm:15.5.7"
+  version: 15.5.8
+  resolution: "@types/react-syntax-highlighter@npm:15.5.8"
   dependencies:
     "@types/react": "*"
-  checksum: 1918d01baaa9bf485093fb04167d0dc87131be708bd68d32d3f614c0e7dba05de765fc62df139fa1972836b13e27983a2d89552eda5b5a38691a4ec300949648
+  checksum: 3bee4fe5901abc57c06b70aee528a7a2aa9617f8347fbe960f6b7ba14a231aa6fab892e1f6cd9b1e1321078183a9773fcf55488df63cfc7dfa8a307aa48040b3
   languageName: node
   linkType: hard
 
