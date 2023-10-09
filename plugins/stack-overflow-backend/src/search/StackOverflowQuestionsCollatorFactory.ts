@@ -81,10 +81,13 @@ export class StackOverflowQuestionsCollatorFactory
     this.apiAccessToken = options.apiAccessToken;
     this.teamName = options.teamName;
     this.maxPage = options.maxPage;
+    // Sets the same default request parameters as the official API documentation
+    // See https://api.stackexchange.com/docs/questions
     this.requestParams = options.requestParams ?? {
-      tagged: ['backstage'],
+      order: 'desc',
+      sort: 'activity',
       site: 'stackoverflow',
-      pagesize: 100,
+      ...(options.requestParams ?? {}),
     };
     this.logger = options.logger.child({ documentType: this.type });
   }
@@ -102,10 +105,9 @@ export class StackOverflowQuestionsCollatorFactory
       config.getOptionalString('stackoverflow.baseUrl') ||
       'https://api.stackexchange.com/2.3';
     const maxPage = options.maxPage || 100;
-    const requestParams =
-      config.getOptional<StackOverflowQuestionsRequestParams>(
-        'stackoverflow.requestParams',
-      );
+    const requestParams = config
+      .getOptionalConfig('stackoverflow.requestParams')
+      ?.get<StackOverflowQuestionsRequestParams>();
     return new StackOverflowQuestionsCollatorFactory({
       baseUrl,
       maxPage,
@@ -184,7 +186,7 @@ export class StackOverflowQuestionsCollatorFactory
       );
 
       const data = await res.json();
-      for (const question of data.items) {
+      for (const question of data.items ?? []) {
         yield {
           title: question.title,
           location: question.link,

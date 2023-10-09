@@ -45,7 +45,7 @@ This stack overflow backend plugin is primarily responsible for the following:
 
 Before you are able to start index stack overflow questions to search, you need to go through the [search getting started guide](https://backstage.io/docs/features/search/getting-started).
 
-When you have your `packages/backend/src/plugins/search.ts` file ready to make modifications, add the following code snippet to add the `StackOverflowQuestionsCollatorFactory`. Note that you can modify the `requestParams`.
+When you have your `packages/backend/src/plugins/search.ts` file ready to make modifications, add the following code snippet to add the `StackOverflowQuestionsCollatorFactory`. Note that you can optionally modify the `requestParams`, otherwise it will defaults to `{ order: 'desc', sort: 'activity', site: 'stackoverflow' }` as done in the `Try It` section on the [official Stack Overflow API documentation](https://api.stackexchange.com/docs/questions).
 
 > Note: if your `baseUrl` is set to the external stack overflow api `https://api.stackexchange.com/2.2`, you can find optional and required parameters under the official API documentation under [`Usage of /questions GET`](https://api.stackexchange.com/docs/questions)
 
