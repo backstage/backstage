@@ -18097,11 +18097,11 @@ __metadata:
   linkType: hard
 
 "@types/node-forge@npm:^1.3.0":
-  version: 1.3.6
-  resolution: "@types/node-forge@npm:1.3.6"
+  version: 1.3.7
+  resolution: "@types/node-forge@npm:1.3.7"
   dependencies:
     "@types/node": "*"
-  checksum: 5fe97ce83937c51215a52eb8c9d5c4458abbca2b3cfd91a65142f20fd4a2830ed10ab1a8c860efc55ff36553f939a75c4a6d5c243ed6e24e55a005c9bddeaf43
+  checksum: e604e0e09e0ffdcf7babdf2415f7d2de14a7718ddc9c5916a693f81597dc80865d525dfb7fc876a787c25bf1164518cd8ecf1667598bee00c9ba1349f93ba4eb
   languageName: node
   linkType: hard
 
