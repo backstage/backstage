@@ -44,6 +44,16 @@ When multiple `catalog-info.yaml` files with the same `metadata.name` property
 are discovered, one will be processed and all others will be skipped. This
 action is logged for further investigation.
 
+Locations in the root of your backstage repository, e.g. [catalog examples](https://github.com/backstage/backstage/tree/master/packages/catalog-model/examples), 
+assume the location of the backend instance and must walk the tree upwards two times.
+
+```yaml
+catalog:
+  locations:
+    - type: file
+      target: ../../examples/all.yaml
+```
+
 ### Integration Processors
 
 Integrations may simply provide a mechanism to handle `url` location type for an
