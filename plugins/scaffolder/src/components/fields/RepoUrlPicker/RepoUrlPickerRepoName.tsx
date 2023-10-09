@@ -54,7 +54,7 @@ export const RepoUrlPickerRepoName = (props: {
             native
             label="Repositories Available"
             onChange={selected =>
-              String(Array.isArray(selected) ? selected[0] : selected)
+              onChange(String(Array.isArray(selected) ? selected[0] : selected))
             }
             disabled={allowedRepos.length === 1}
             selected={repoName}
