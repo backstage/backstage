@@ -15,7 +15,13 @@
  */
 
 import { Config } from '@backstage/config';
-import { BackstagePlugin, Extension } from '@backstage/frontend-plugin-api';
+import {
+  BackstagePlugin,
+  Extension,
+  ExtensionOverrides,
+} from '@backstage/frontend-plugin-api';
+// eslint-disable-next-line @backstage/no-relative-monorepo-imports
+import { toInternalExtensionOverrides } from '../../../frontend-plugin-api/src/wiring/createExtensionOverrides';
 import { JsonValue } from '@backstage/types';
 
 export interface ExtensionParameters {
@@ -208,15 +214,26 @@ export interface ExtensionInstanceParameters {
 
 /** @internal */
 export function mergeExtensionParameters(options: {
-  sources: BackstagePlugin[];
+  features: (BackstagePlugin | ExtensionOverrides)[];
   builtinExtensions: Extension<unknown>[];
   parameters: Array<ExtensionParameters>;
 }): ExtensionInstanceParameters[] {
-  const { sources, builtinExtensions, parameters } = options;
+  const { builtinExtensions, parameters } = options;
 
-  const pluginExtensions = sources.flatMap(source => {
+  const plugins = options.features.filter(
+    (f): f is BackstagePlugin => f.$$type === '@backstage/BackstagePlugin',
+  );
+  const overrides = options.features.filter(
+    (f): f is ExtensionOverrides =>
+      f.$$type === '@backstage/ExtensionOverrides',
+  );
+
+  const pluginExtensions = plugins.flatMap(source => {
     return source.extensions.map(extension => ({ ...extension, source }));
   });
+  const overrideExtensions = overrides.flatMap(
+    override => toInternalExtensionOverrides(override).extensions,
+  );
 
   // Prevent root override
   if (pluginExtensions.some(({ id }) => id === 'root')) {
@@ -230,7 +247,28 @@ export function mergeExtensionParameters(options: {
     );
   }
 
-  const overrides = [
+  if (overrideExtensions.some(({ id }) => id === 'root')) {
+    throw new Error(
+      `An extension override is overriding the 'root' extension which is forbidden`,
+    );
+  }
+  const overrideExtensionIds = overrideExtensions.map(({ id }) => id);
+  if (overrideExtensionIds.length !== new Set(overrideExtensionIds).size) {
+    const counts = new Map<string, number>();
+    for (const id of overrideExtensionIds) {
+      counts.set(id, (counts.get(id) ?? 0) + 1);
+    }
+    const duplicated = Array.from(counts.entries())
+      .filter(([, count]) => count > 1)
+      .map(([id]) => id);
+    throw new Error(
+      `The following extensions had duplicate overrides: ${duplicated.join(
+        ', ',
+      )}`,
+    );
+  }
+
+  const configuredExtensions = [
     ...pluginExtensions.map(({ source, ...extension }) => ({
       extension,
       params: {
@@ -251,8 +289,33 @@ export function mergeExtensionParameters(options: {
     })),
   ];
 
+  // Install all extension overrides
+  for (const extension of overrideExtensions) {
+    // Check if our override is overriding an extension that already exists
+    const index = configuredExtensions.findIndex(
+      e => e.extension.id === extension.id,
+    );
+    if (index !== -1) {
+      // Only implementation, attachment point and default disabled status are overridden, the source is kept
+      configuredExtensions[index].extension = extension;
+      configuredExtensions[index].params.attachTo = extension.attachTo;
+      configuredExtensions[index].params.disabled = extension.disabled;
+    } else {
+      // Add the extension as a new one when not overriding an existing one
+      configuredExtensions.push({
+        extension,
+        params: {
+          source: undefined,
+          attachTo: extension.attachTo,
+          disabled: extension.disabled,
+          config: undefined,
+        },
+      });
+    }
+  }
+
   const duplicatedExtensionIds = new Set<string>();
-  const duplicatedExtensionData = overrides.reduce<
+  const duplicatedExtensionData = configuredExtensions.reduce<
     Record<string, Record<string, number>>
   >((data, { extension, params }) => {
     const extensionId = extension.id;
@@ -296,11 +359,11 @@ export function mergeExtensionParameters(options: {
       );
     }
 
-    const existingIndex = overrides.findIndex(
+    const existingIndex = configuredExtensions.findIndex(
       e => e.extension.id === extensionId,
     );
     if (existingIndex !== -1) {
-      const existing = overrides[existingIndex];
+      const existing = configuredExtensions[existingIndex];
       if (overrideParam.attachTo) {
         existing.params.attachTo = overrideParam.attachTo;
       }
@@ -314,8 +377,8 @@ export function mergeExtensionParameters(options: {
         existing.params.disabled = Boolean(overrideParam.disabled);
         if (!existing.params.disabled) {
           // bump
-          overrides.splice(existingIndex, 1);
-          overrides.push(existing);
+          configuredExtensions.splice(existingIndex, 1);
+          configuredExtensions.push(existing);
         }
       }
     } else {
@@ -323,7 +386,7 @@ export function mergeExtensionParameters(options: {
     }
   }
 
-  return overrides
+  return configuredExtensions
     .filter(override => !override.params.disabled)
     .map(param => ({
       extension: param.extension,

@@ -76,7 +76,7 @@ function routeInfoFromExtensions(extensions: Extension<unknown>[]) {
   });
   const { rootInstances } = createInstances({
     config: new MockConfigApi({}),
-    plugins: [plugin],
+    features: [plugin],
   });
 
   return extractRouteInfoFromInstanceTree(rootInstances);

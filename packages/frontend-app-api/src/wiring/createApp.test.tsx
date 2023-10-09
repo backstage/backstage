@@ -38,20 +38,20 @@ describe('createInstances', () => {
         ],
       },
     });
-    const plugins = [
+    const features = [
       createPlugin({
         id: 'plugin',
         extensions: [],
       }),
     ];
-    expect(() => createInstances({ config, plugins })).toThrow(
+    expect(() => createInstances({ config, features })).toThrow(
       "A 'root' extension configuration was detected, but the root extension is not configurable",
     );
   });
 
   it('throws an error when a root extension is overridden', () => {
     const config = new MockConfigApi({});
-    const plugins = [
+    const features = [
       createPlugin({
         id: 'plugin',
         extensions: [
@@ -65,7 +65,7 @@ describe('createInstances', () => {
         ],
       }),
     ];
-    expect(() => createInstances({ config, plugins })).toThrow(
+    expect(() => createInstances({ config, features })).toThrow(
       "The following plugin(s) are overriding the 'root' extension which is forbidden: plugin",
     );
   });
@@ -97,9 +97,9 @@ describe('createInstances', () => {
       extensions: [ExtensionA, ExtensionB, ExtensionB],
     });
 
-    const plugins = [PluginA, PluginB];
+    const features = [PluginA, PluginB];
 
-    expect(() => createInstances({ config, plugins })).toThrow(
+    expect(() => createInstances({ config, features })).toThrow(
       "The following extensions are duplicated: The extension 'A' was provided 2 time(s) by the plugin 'A' and 1 time(s) by the plugin 'B', The extension 'B' was provided 2 time(s) by the plugin 'B'",
     );
   });
@@ -114,7 +114,7 @@ describe('createApp', () => {
             extensions: [{ 'themes.light': false }, { 'themes.dark': false }],
           },
         }),
-      plugins: [
+      features: [
         createPlugin({
           id: 'test',
           extensions: [
@@ -137,7 +137,7 @@ describe('createApp', () => {
   it('should log an app', () => {
     const { rootInstances } = createInstances({
       config: new MockConfigApi({}),
-      plugins: [],
+      features: [],
     });
     const root = createExtensionInstance({
       extension: createExtension({
@@ -175,7 +175,7 @@ describe('createApp', () => {
   it('should serialize an app as JSON', () => {
     const { rootInstances } = createInstances({
       config: new MockConfigApi({}),
-      plugins: [],
+      features: [],
     });
     const root = createExtensionInstance({
       extension: createExtension({
