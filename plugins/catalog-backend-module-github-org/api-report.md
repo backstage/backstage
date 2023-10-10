@@ -4,6 +4,7 @@
 
 ```ts
 import { BackendFeature } from '@backstage/backend-plugin-api';
+import { ExtensionPoint } from '@backstage/backend-plugin-api';
 import { GithubMultiOrgEntityProvider } from '@backstage/plugin-catalog-backend-module-github';
 import { TeamTransformer } from '@backstage/plugin-catalog-backend-module-github';
 import { UserTransformer } from '@backstage/plugin-catalog-backend-module-github';
@@ -13,6 +14,15 @@ const catalogModuleGithubOrgEntityProvider: () => BackendFeature;
 export default catalogModuleGithubOrgEntityProvider;
 
 export { GithubMultiOrgEntityProvider };
+
+// @public
+export interface GithubOrgEntityProviderTransformsExtensionPoint {
+  setTeamTransformer(transformer: TeamTransformer): void;
+  setUserTransformer(transformer: UserTransformer): void;
+}
+
+// @public
+export const githubOrgEntityProviderTransformsExtensionPoint: ExtensionPoint<GithubOrgEntityProviderTransformsExtensionPoint>;
 
 export { TeamTransformer };
 

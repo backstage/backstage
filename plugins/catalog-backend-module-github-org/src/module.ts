@@ -35,7 +35,7 @@ import { catalogProcessingExtensionPoint } from '@backstage/plugin-catalog-node/
 /**
  * Interface for {@link githubOrgEntityProviderTransformsExtensionPoint}.
  *
- * @alpha
+ * @public
  */
 export interface GithubOrgEntityProviderTransformsExtensionPoint {
   /**
@@ -52,9 +52,9 @@ export interface GithubOrgEntityProviderTransformsExtensionPoint {
 }
 
 /**
- * Extension point for runtime configuration of {@link catalogModuleGithubOrgEntityProvider}.
+ * Extension point for runtime configuration of catalogModuleGithubOrgEntityProvider.
  *
- * @alpha
+ * @public
  */
 export const githubOrgEntityProviderTransformsExtensionPoint =
   createExtensionPoint<GithubOrgEntityProviderTransformsExtensionPoint>({

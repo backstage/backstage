@@ -19,7 +19,11 @@
  *
  * @packageDocumentation
  */
-export { catalogModuleGithubOrgEntityProvider as default } from './module';
+export {
+  catalogModuleGithubOrgEntityProvider as default,
+  type GithubOrgEntityProviderTransformsExtensionPoint,
+  githubOrgEntityProviderTransformsExtensionPoint,
+} from './module';
 /**
  *
  * TODO(djamaile): GithubMultiOrgEntityProvider should be mirgated over to this module.
