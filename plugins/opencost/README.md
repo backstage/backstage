@@ -28,7 +28,7 @@ and
     </FlatRoutes>
     ```
 
-3.  Add link to OpenCost to your sidebar
+3.  Import the `MoneyIcon` and add link to OpenCost to your sidebar
 
     ```typescript
     // packages/app/src/components/Root/Root.tsx
