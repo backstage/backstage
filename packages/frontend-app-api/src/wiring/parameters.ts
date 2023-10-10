@@ -235,13 +235,13 @@ export function mergeExtensionParameters(options: {
     override => toInternalExtensionOverrides(override).extensions,
   );
 
-  // Prevent root override
-  if (pluginExtensions.some(({ id }) => id === 'root')) {
-    const rootPluginIds = pluginExtensions
-      .filter(({ id }) => id === 'root')
+  // Prevent core override
+  if (pluginExtensions.some(({ id }) => id === 'core')) {
+    const pluginIds = pluginExtensions
+      .filter(({ id }) => id === 'core')
       .map(({ source }) => source.id);
     throw new Error(
-      `The following plugin(s) are overriding the 'root' extension which is forbidden: ${rootPluginIds.join(
+      `The following plugin(s) are overriding the 'core' extension which is forbidden: ${pluginIds.join(
         ',',
       )}`,
     );
@@ -352,10 +352,10 @@ export function mergeExtensionParameters(options: {
   for (const overrideParam of parameters) {
     const extensionId = overrideParam.id;
 
-    // Prevent root parametrization
-    if (extensionId === 'root') {
+    // Prevent core parametrization
+    if (extensionId === 'core') {
       throw new Error(
-        "A 'root' extension configuration was detected, but the root extension is not configurable",
+        "A 'core' extension configuration was detected, but the core extension is not configurable",
       );
     }
 

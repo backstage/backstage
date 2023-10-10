@@ -85,7 +85,7 @@ const TechDocsPage = createExtension({
 
 const outputExtension = createExtension({
   id: 'test.output',
-  attachTo: { id: 'root', input: 'default' },
+  attachTo: { id: 'core', input: 'root' },
   inputs: {
     names: createExtensionInput({
       name: nameExtensionDataRef,

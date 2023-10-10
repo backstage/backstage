@@ -74,12 +74,12 @@ function routeInfoFromExtensions(extensions: Extension<unknown>[]) {
     id: 'test',
     extensions,
   });
-  const { rootInstances } = createInstances({
+  const { coreInstance } = createInstances({
     config: new MockConfigApi({}),
     features: [plugin],
   });
 
-  return extractRouteInfoFromInstanceTree(rootInstances);
+  return extractRouteInfoFromInstanceTree(coreInstance);
 }
 
 function sortedEntries<T>(map: Map<RouteRef, T>): [RouteRef, T][] {
