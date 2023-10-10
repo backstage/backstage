@@ -1,5 +1,11 @@
 # @backstage/theme
 
+## 0.4.3-next.0
+
+### Patch Changes
+
+- 5ad5344756: Added support for string `fontSize` values (e.g. `"2.5rem"`) in themes in addition to numbers. Also added an optional `fontFamily` prop for header typography variants to allow further customization.
+
 ## 0.4.2
 
 ### Patch Changes

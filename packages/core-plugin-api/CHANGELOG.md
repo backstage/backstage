@@ -1,5 +1,15 @@
 # @backstage/core-plugin-api
 
+## 1.7.0-next.1
+
+### Patch Changes
+
+- 0b55f773a7: Removed some unused dependencies
+- Updated dependencies
+  - @backstage/config@1.1.1-next.0
+  - @backstage/types@1.1.1
+  - @backstage/version-bridge@1.0.5
+
 ## 1.7.0-next.0
 
 ### Minor Changes
