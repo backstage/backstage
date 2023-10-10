@@ -57,13 +57,8 @@ import {
   ApiFactoryRegistry,
   ApiProvider,
   ApiResolver,
-} from '@backstage/core-app-api';
-
-import {
-  AppLanguageSelector,
   AppThemeSelector,
-  I18nextTranslationApi,
-} from '@backstage/core-app-api/alpha';
+} from '@backstage/core-app-api';
 
 // TODO: Get rid of all of these
 // eslint-disable-next-line @backstage/no-relative-monorepo-imports
@@ -80,6 +75,10 @@ import { defaultConfigLoaderSync } from '../../../core-app-api/src/app/defaultCo
 import { overrideBaseUrlConfigs } from '../../../core-app-api/src/app/overrideBaseUrlConfigs';
 // eslint-disable-next-line @backstage/no-relative-monorepo-imports
 import { RoutingProvider } from '../../../core-app-api/src/routing/RoutingProvider';
+// eslint-disable-next-line @backstage/no-relative-monorepo-imports
+import { AppLanguageSelector } from '../../../core-app-api/src/apis/implementations/AppLanguageApi/AppLanguageSelector';
+// eslint-disable-next-line @backstage/no-relative-monorepo-imports
+import { I18nextTranslationApi } from '../../../core-app-api/src/apis/implementations/TranslationApi/I18nextTranslationApi';
 // eslint-disable-next-line @backstage/no-relative-monorepo-imports
 import {
   apis as defaultApis,
