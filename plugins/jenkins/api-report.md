@@ -15,9 +15,12 @@ import { InfoCardVariants } from '@backstage/core-components';
 import { JSX as JSX_2 } from 'react';
 import { default as React_2 } from 'react';
 import { RouteRef } from '@backstage/core-plugin-api';
+import { TableColumn } from '@backstage/core-components';
 
 // @public (undocumented)
-export const EntityJenkinsContent: () => JSX_2.Element;
+export const EntityJenkinsContent: (props: {
+  columns?: TableColumn<Project>[] | undefined;
+}) => JSX_2.Element;
 
 // @public (undocumented)
 export const EntityLatestJenkinsRunCard: (props: {
@@ -45,7 +48,6 @@ export interface JenkinsApi {
     jobFullName: string;
     buildNumber: string;
   }): Promise<Build>;
-  // Warning: (ae-forgotten-export) The symbol "Project" needs to be exported by the entry point index.d.ts
   getProjects(options: {
     entity: CompoundEntityRef;
     filter: {
@@ -117,8 +119,28 @@ export const LatestRunCard: (props: {
 // @public (undocumented)
 export const LEGACY_JENKINS_ANNOTATION = 'jenkins.io/github-folder';
 
+// @public (undocumented)
+export interface Project {
+  // (undocumented)
+  displayName: string;
+  // (undocumented)
+  fullDisplayName: string;
+  // (undocumented)
+  fullName: string;
+  // (undocumented)
+  inQueue: string;
+  // (undocumented)
+  lastBuild: Build;
+  // (undocumented)
+  onRestartClick: () => Promise<void>;
+  // (undocumented)
+  status: string;
+}
+
 // Warning: (ae-missing-release-tag) "Router" is part of the package's API, but it is missing a release tag (@alpha, @beta, @public, or @internal)
 //
 // @public (undocumented)
-export const Router: () => React_2.JSX.Element;
+export const Router: (props: {
+  columns?: TableColumn<Project>[];
+}) => React_2.JSX.Element;
 ```

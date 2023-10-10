@@ -1,5 +1,5 @@
 /*
- * Copyright 2020 The Backstage Authors
+ * Copyright 2021 The Backstage Authors
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,6 +14,15 @@
  * limitations under the License.
  */
 
-export { JenkinsClient, jenkinsApiRef } from './JenkinsApi';
+import { Project } from '../../../../api';
+import { columnFactories } from './columns';
+import { TableColumn } from '@backstage/core-components';
 
-export type { JenkinsApi, Project } from './JenkinsApi';
+export const defaultCITableColumns: TableColumn<Project>[] = [
+  columnFactories.createTimestampColumn(),
+  columnFactories.createSourceColumn(),
+  columnFactories.createBuildColumn(),
+  columnFactories.createTestColumn(),
+  columnFactories.createStatusColumn(),
+  columnFactories.createActionsColumn(),
+];

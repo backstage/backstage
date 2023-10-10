@@ -15,7 +15,10 @@
  */
 
 import { Entity } from '@backstage/catalog-model';
-import { MissingAnnotationEmptyState } from '@backstage/core-components';
+import {
+  MissingAnnotationEmptyState,
+  TableColumn,
+} from '@backstage/core-components';
 import { useEntity } from '@backstage/plugin-catalog-react';
 import React from 'react';
 import { Route, Routes } from 'react-router-dom';
@@ -23,22 +26,25 @@ import { JENKINS_ANNOTATION, LEGACY_JENKINS_ANNOTATION } from '../constants';
 import { buildRouteRef } from '../plugin';
 import { CITable } from './BuildsPage/lib/CITable';
 import { DetailedViewPage } from './BuildWithStepsPage/';
+import { Project } from '../api';
 
 /** @public */
 export const isJenkinsAvailable = (entity: Entity) =>
   Boolean(entity.metadata.annotations?.[JENKINS_ANNOTATION]) ||
   Boolean(entity.metadata.annotations?.[LEGACY_JENKINS_ANNOTATION]);
 
-export const Router = () => {
+export const Router = (props: { columns?: TableColumn<Project>[] }) => {
   const { entity } = useEntity();
 
   if (!isJenkinsAvailable(entity)) {
     return <MissingAnnotationEmptyState annotation={JENKINS_ANNOTATION} />;
   }
 
+  const columns = props.columns;
+
   return (
     <Routes>
-      <Route path="/" element={<CITable />} />
+      <Route path="/" element={<CITable columns={columns} />} />
       <Route path={`/${buildRouteRef.path}`} element={<DetailedViewPage />} />
     </Routes>
   );
