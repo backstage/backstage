@@ -2,7 +2,7 @@
 '@backstage/plugin-scaffolder-backend': minor
 ---
 
-Updated `publish:gitlab`` action properties to support additional Gitlab project settings:
+Updated `publish:gitlab` action properties to support additional Gitlab project settings:
 
 - general project settings provided by gitlab project create API (new `settings` property)
 - branch level settings to create additional branches and make them protected (new `branches` property)

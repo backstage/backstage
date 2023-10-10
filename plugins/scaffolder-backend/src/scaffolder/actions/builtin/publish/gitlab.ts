@@ -18,7 +18,7 @@ import { InputError } from '@backstage/errors';
 import { ScmIntegrationRegistry } from '@backstage/integration';
 import { createTemplateAction } from '@backstage/plugin-scaffolder-node';
 import { Gitlab } from '@gitbeaker/node';
-import { initRepoAndPush, printGitlabError } from '../helpers';
+import { initRepoAndPush } from '../helpers';
 import { getRepoSourceDirectory, parseRepoUrl } from './util';
 import { Config } from '@backstage/config';
 import { examples } from './gitlab.examples';
@@ -467,4 +467,8 @@ export function createPublishGitlabAction(options: {
       ctx.output('projectId', projectId);
     },
   });
+}
+
+function printGitlabError(error: any): string {
+  return JSON.stringify({ code: error.code, message: error.description });
 }
