@@ -1,5 +1,18 @@
 # @backstage/frontend-plugin-api
 
+## 0.2.0-next.2
+
+### Minor Changes
+
+- 06432f900c: Extension attachment point is now configured via `attachTo: { id, input }` instead of `at: 'id/input'`.
+- 4461d87d5a: Removed support for the new `useRouteRef`.
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/core-plugin-api@1.7.0-next.1
+  - @backstage/types@1.1.1
+
 ## 0.1.1-next.1
 
 ### Patch Changes

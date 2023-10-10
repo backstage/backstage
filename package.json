@@ -51,7 +51,7 @@
     "jest-haste-map@^29.4.3": "patch:jest-haste-map@npm%3A29.4.3#./.yarn/patches/jest-haste-map-npm-29.4.3-19b03fcef3.patch",
     "mock-fs@^5.2.0": "patch:mock-fs@npm%3A5.2.0#./.yarn/patches/mock-fs-npm-5.2.0-5103a7b507.patch"
   },
-  "version": "1.19.0-next.1",
+  "version": "1.19.0-next.2",
   "dependencies": {
     "@backstage/errors": "workspace:^",
     "@manypkg/get-packages": "^1.1.3"

@@ -1,6 +1,6 @@
 {
   "name": "techdocs-cli-embedded-app",
-  "version": "0.2.87-next.1",
+  "version": "0.2.87-next.2",
   "private": true,
   "backstage": {
     "role": "frontend"

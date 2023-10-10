@@ -1,5 +1,18 @@
 # @backstage/config-loader
 
+## 1.5.1-next.1
+
+### Patch Changes
+
+- 0b55f773a7: Removed some unused dependencies
+- 30c553c1d2: Updated dependency `typescript-json-schema` to `^0.61.0`.
+- a4617c422a: Added `watch` option to configuration loaders that can be used to disable file watching by setting it to `false`.
+- Updated dependencies
+  - @backstage/errors@1.2.3-next.0
+  - @backstage/cli-common@0.1.13-next.0
+  - @backstage/config@1.1.1-next.0
+  - @backstage/types@1.1.1
+
 ## 1.5.1-next.0
 
 ### Patch Changes
