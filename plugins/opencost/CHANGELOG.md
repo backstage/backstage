@@ -1,5 +1,15 @@
 # @backstage/plugin-opencost
 
+## 0.2.1-next.2
+
+### Patch Changes
+
+- 777b9a16a4: Fix for broken image reference.
+- Updated dependencies
+  - @backstage/core-components@0.13.6-next.2
+  - @backstage/core-plugin-api@1.7.0-next.1
+  - @backstage/theme@0.4.3-next.0
+
 ## 0.2.1-next.1
 
 ### Patch Changes

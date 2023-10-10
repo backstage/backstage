@@ -3650,7 +3650,18 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@backstage/catalog-client@^1.4.4, @backstage/catalog-client@workspace:^, @backstage/catalog-client@workspace:packages/catalog-client":
+"@backstage/catalog-client@npm:^1.4.4":
+  version: 1.4.4
+  resolution: "@backstage/catalog-client@npm:1.4.4"
+  dependencies:
+    "@backstage/catalog-model": ^1.4.2
+    "@backstage/errors": ^1.2.2
+    cross-fetch: ^3.1.5
+  checksum: 3f821ee7450b192bf750a0275d095a96f7ce137283cecd0353cef817a43fd7f55141d828268cf839b3cfbfc41cea0d6519c4c4411b297b7423728dc7018f68ed
+  languageName: node
+  linkType: hard
+
+"@backstage/catalog-client@workspace:^, @backstage/catalog-client@workspace:packages/catalog-client":
   version: 0.0.0-use.local
   resolution: "@backstage/catalog-client@workspace:packages/catalog-client"
   dependencies:
@@ -3662,7 +3673,22 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@backstage/catalog-model@^1.1.5, @backstage/catalog-model@^1.4.2, @backstage/catalog-model@workspace:^, @backstage/catalog-model@workspace:packages/catalog-model":
+"@backstage/catalog-model@npm:^1.1.5, @backstage/catalog-model@npm:^1.4.2":
+  version: 1.4.2
+  resolution: "@backstage/catalog-model@npm:1.4.2"
+  dependencies:
+    "@backstage/config": ^1.1.0
+    "@backstage/errors": ^1.2.2
+    "@backstage/types": ^1.1.1
+    ajv: ^8.10.0
+    json-schema: ^0.4.0
+    lodash: ^4.17.21
+    uuid: ^8.0.0
+  checksum: 7e0d8cfb7fc6bab02803201552a24b73a3d7b502f7ba22e3408e86400e2a4f8937e0e91dea9a063d1f8bc128064400e93d05301611772502811feea10e8ad4e9
+  languageName: node
+  linkType: hard
+
+"@backstage/catalog-model@workspace:^, @backstage/catalog-model@workspace:packages/catalog-model":
   version: 0.0.0-use.local
   resolution: "@backstage/catalog-model@workspace:packages/catalog-model"
   dependencies:
@@ -3905,7 +3931,18 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@backstage/config@^1.0.6, @backstage/config@^1.0.7, @backstage/config@^1.1.0, @backstage/config@workspace:^, @backstage/config@workspace:packages/config":
+"@backstage/config@npm:^1.0.6, @backstage/config@npm:^1.0.7, @backstage/config@npm:^1.1.0":
+  version: 1.1.0
+  resolution: "@backstage/config@npm:1.1.0"
+  dependencies:
+    "@backstage/errors": ^1.2.2
+    "@backstage/types": ^1.1.1
+    lodash: ^4.17.21
+  checksum: 9c17ab41b3e4bd6a0ad75caaf46ed3fad198aa8d190cb9a85415140bc9d6506022a4d5450ea5810004fc2d7a3f7a0a00583b468af4a0fa1655ce444606283010
+  languageName: node
+  linkType: hard
+
+"@backstage/config@workspace:^, @backstage/config@workspace:packages/config":
   version: 0.0.0-use.local
   resolution: "@backstage/config@workspace:packages/config"
   dependencies:
@@ -4253,7 +4290,18 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@backstage/errors@^1.1.5, @backstage/errors@^1.2.2, @backstage/errors@workspace:^, @backstage/errors@workspace:packages/errors":
+"@backstage/errors@npm:^1.1.5, @backstage/errors@npm:^1.2.2":
+  version: 1.2.2
+  resolution: "@backstage/errors@npm:1.2.2"
+  dependencies:
+    "@backstage/types": ^1.1.1
+    cross-fetch: ^3.1.5
+    serialize-error: ^8.0.1
+  checksum: 2fd323d528023654ac0910a5bd8ea703fa97a4bd62ee34b6c75e1c992d1a78cae661f0929c1ffd72df5465a1bda69c1bcad2682f017e5e52daa73154e6284234
+  languageName: node
+  linkType: hard
+
+"@backstage/errors@workspace:^, @backstage/errors@workspace:packages/errors":
   version: 0.0.0-use.local
   resolution: "@backstage/errors@workspace:packages/errors"
   dependencies:
@@ -5761,7 +5809,18 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@backstage/plugin-catalog-common@^1.0.10, @backstage/plugin-catalog-common@^1.0.16, @backstage/plugin-catalog-common@workspace:^, @backstage/plugin-catalog-common@workspace:plugins/catalog-common":
+"@backstage/plugin-catalog-common@npm:^1.0.10, @backstage/plugin-catalog-common@npm:^1.0.16":
+  version: 1.0.16
+  resolution: "@backstage/plugin-catalog-common@npm:1.0.16"
+  dependencies:
+    "@backstage/catalog-model": ^1.4.2
+    "@backstage/plugin-permission-common": ^0.7.8
+    "@backstage/plugin-search-common": ^1.2.6
+  checksum: 0dd21c3b704abff78fb091c4c35b0217e557d9a7298fe4227c3a58aa7b2a906ba2d7b7aefce9534ad03d152502dec465d30c07873409f8f803929d62acef9594
+  languageName: node
+  linkType: hard
+
+"@backstage/plugin-catalog-common@workspace:^, @backstage/plugin-catalog-common@workspace:plugins/catalog-common":
   version: 0.0.0-use.local
   resolution: "@backstage/plugin-catalog-common@workspace:plugins/catalog-common"
   dependencies:
@@ -8307,7 +8366,21 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@backstage/plugin-permission-common@^0.7.8, @backstage/plugin-permission-common@workspace:^, @backstage/plugin-permission-common@workspace:plugins/permission-common":
+"@backstage/plugin-permission-common@npm:^0.7.8":
+  version: 0.7.8
+  resolution: "@backstage/plugin-permission-common@npm:0.7.8"
+  dependencies:
+    "@backstage/config": ^1.1.0
+    "@backstage/errors": ^1.2.2
+    "@backstage/types": ^1.1.1
+    cross-fetch: ^3.1.5
+    uuid: ^8.0.0
+    zod: ^3.21.4
+  checksum: 495f92d0360ab36bb707b0de527e31f42d699b177875c2ed4e8519c9721745ec1b67be547cd5862162e5d48e240ed07d9ab179c022adaf8367f03ef7ded6459e
+  languageName: node
+  linkType: hard
+
+"@backstage/plugin-permission-common@workspace:^, @backstage/plugin-permission-common@workspace:plugins/permission-common":
   version: 0.0.0-use.local
   resolution: "@backstage/plugin-permission-common@workspace:plugins/permission-common"
   dependencies:
@@ -9086,6 +9159,16 @@ __metadata:
     zod: ^3.21.4
   languageName: unknown
   linkType: soft
+
+"@backstage/plugin-search-common@npm:^1.2.6":
+  version: 1.2.6
+  resolution: "@backstage/plugin-search-common@npm:1.2.6"
+  dependencies:
+    "@backstage/plugin-permission-common": ^0.7.8
+    "@backstage/types": ^1.1.1
+  checksum: 19ee6ef72ce75fce6c0e3da5e978419fd01f795db3e701460da652e8581e3eb53fba800c56d518147d03bd4e1e3889fa18e1d11a82a38c26a304fdc3bc5438bc
+  languageName: node
+  linkType: hard
 
 "@backstage/plugin-search-common@workspace:^, @backstage/plugin-search-common@workspace:plugins/search-common":
   version: 0.0.0-use.local
@@ -10094,7 +10177,35 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@backstage/theme@^0.4.2, @backstage/theme@workspace:^, @backstage/theme@workspace:packages/theme":
+"@backstage/theme@npm:^0.2.16, @backstage/theme@npm:^0.2.18":
+  version: 0.2.19
+  resolution: "@backstage/theme@npm:0.2.19"
+  dependencies:
+    "@material-ui/core": ^4.12.2
+  peerDependencies:
+    react: ^16.13.1 || ^17.0.0
+    react-dom: ^16.13.1 || ^17.0.0
+  checksum: 93ca110a3f953d6d98b4a5f2163beaa1bd1f95adb66a593e85eb523a7012acf654b6148db54008a6434805a4bd9016d67e5c6a317bc56940ee6800aecbb97d6f
+  languageName: node
+  linkType: hard
+
+"@backstage/theme@npm:^0.4.2":
+  version: 0.4.2
+  resolution: "@backstage/theme@npm:0.4.2"
+  dependencies:
+    "@emotion/react": ^11.10.5
+    "@emotion/styled": ^11.10.5
+    "@mui/material": ^5.12.2
+  peerDependencies:
+    "@material-ui/core": ^4.12.2
+    "@types/react": ^16.13.1 || ^17.0.0
+    react: ^16.13.1 || ^17.0.0
+    react-dom: ^16.13.1 || ^17.0.0
+  checksum: 22371c3159ed4d2f6d53925d48318d5f8f66ac9d6df6ff32f34b4b52e070e88ada25031b2a8fc3264cb352a24f4128fa1295b1302d1d3f12df3bcb76c785f605
+  languageName: node
+  linkType: hard
+
+"@backstage/theme@workspace:^, @backstage/theme@workspace:packages/theme":
   version: 0.0.0-use.local
   resolution: "@backstage/theme@workspace:packages/theme"
   dependencies:
@@ -10110,18 +10221,6 @@ __metadata:
     react-dom: ^16.13.1 || ^17.0.0
   languageName: unknown
   linkType: soft
-
-"@backstage/theme@npm:^0.2.16, @backstage/theme@npm:^0.2.18":
-  version: 0.2.19
-  resolution: "@backstage/theme@npm:0.2.19"
-  dependencies:
-    "@material-ui/core": ^4.12.2
-  peerDependencies:
-    react: ^16.13.1 || ^17.0.0
-    react-dom: ^16.13.1 || ^17.0.0
-  checksum: 93ca110a3f953d6d98b4a5f2163beaa1bd1f95adb66a593e85eb523a7012acf654b6148db54008a6434805a4bd9016d67e5c6a317bc56940ee6800aecbb97d6f
-  languageName: node
-  linkType: hard
 
 "@backstage/types@^1.0.2, @backstage/types@^1.1.1, @backstage/types@workspace:^, @backstage/types@workspace:packages/types":
   version: 0.0.0-use.local

@@ -1,5 +1,45 @@
 # @backstage/cli
 
+## 0.23.0-next.2
+
+### Minor Changes
+
+- 8defbd5434: Update typescript-eslint to 6.7.x, adding compatibility with TypeScript 5.2.
+
+  This includes a major update on typescript-eslint, you can see the details in the [release notes](https://typescript-eslint.io/blog/announcing-typescript-eslint-v6/).
+
+### Patch Changes
+
+- 2ef6522552: Support for the `.icon.svg` extension has been deprecated and will be removed in the future. The implementation of this extension is too tied to a particular version of MUI and the SVGO, and it makes it harder to evolve the build system. We may introduce the ability to reintroduce this kind of functionality in the future through configuration for use in internal plugins, but for now we're forced to remove it.
+
+  To migrate existing code, rename the `.icon.svg` file to `.tsx` and replace the `<svg>` element with `<SvgIcon>` from MUI and add necessary imports. For example:
+
+  ```tsx
+  import React from 'react';
+  import SvgIcon from '@material-ui/core/SvgIcon';
+  import { IconComponent } from '@backstage/core-plugin-api';
+
+  export const CodeSceneIcon = (props: SvgIconProps) => (
+    <SvgIcon {...props}>
+      <g>
+        <path d="..." />
+      </g>
+    </SvgIcon>
+  );
+  ```
+
+- Updated dependencies
+  - @backstage/catalog-model@1.4.3-next.0
+  - @backstage/config-loader@1.5.1-next.1
+  - @backstage/integration@1.7.1-next.1
+  - @backstage/errors@1.2.3-next.0
+  - @backstage/cli-common@0.1.13-next.0
+  - @backstage/cli-node@0.1.5-next.1
+  - @backstage/config@1.1.1-next.0
+  - @backstage/eslint-plugin@0.1.3
+  - @backstage/release-manifests@0.0.10
+  - @backstage/types@1.1.1
+
 ## 0.23.0-next.1
 
 ### Patch Changes

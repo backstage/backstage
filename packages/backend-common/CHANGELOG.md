@@ -1,5 +1,26 @@
 # @backstage/backend-common
 
+## 0.19.8-next.2
+
+### Patch Changes
+
+- 74491c9602: The `HostDiscovery` export has been deprecated, import it from `@backstage/backend-app-api` instead.
+- b95d66d4ea: Properly close write stream when writing temporary archive for processing zip-based `.readTree()` responses.
+- 0b55f773a7: Removed some unused dependencies
+- 4c39e38f1e: Added `/testUtils` entry point, with a utility for mocking resolve package paths as returned by `resolvePackagePath`.
+- a250ad775f: Removed `mock-fs` dev dependency.
+- Updated dependencies
+  - @backstage/config-loader@1.5.1-next.1
+  - @backstage/integration@1.7.1-next.1
+  - @backstage/errors@1.2.3-next.0
+  - @backstage/backend-app-api@0.5.6-next.2
+  - @backstage/backend-dev-utils@0.1.2-next.0
+  - @backstage/backend-plugin-api@0.6.6-next.2
+  - @backstage/cli-common@0.1.13-next.0
+  - @backstage/config@1.1.1-next.0
+  - @backstage/integration-aws-node@0.1.7-next.0
+  - @backstage/types@1.1.1
+
 ## 0.19.7-next.1
 
 ### Patch Changes
