@@ -204,6 +204,7 @@ export function loadBackendConfig(options: {
   remote?: LoadConfigOptionsRemote;
   argv: string[];
   additionalConfigs?: AppConfig[];
+  watch?: boolean;
 }): Promise<{
   config: Config;
 }>;

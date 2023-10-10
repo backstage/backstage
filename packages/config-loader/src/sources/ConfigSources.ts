@@ -71,6 +71,7 @@ export interface ClosableConfig extends Config {
  * @public
  */
 export interface BaseConfigSourcesOptions {
+  watch?: boolean;
   rootDir?: string;
   remote?: Pick<RemoteConfigSourceOptions, 'reloadInterval'>;
   substitutionFunc?: SubstitutionFunc;
@@ -159,6 +160,7 @@ export class ConfigSources {
         });
       }
       return FileConfigSource.create({
+        watch: options.watch,
         path: arg.target,
         substitutionFunc: options.substitutionFunc,
       });
@@ -170,6 +172,7 @@ export class ConfigSources {
 
       argSources.push(
         FileConfigSource.create({
+          watch: options.watch,
           path: defaultPath,
           substitutionFunc: options.substitutionFunc,
         }),
@@ -177,6 +180,7 @@ export class ConfigSources {
       if (fs.pathExistsSync(localPath)) {
         argSources.push(
           FileConfigSource.create({
+            watch: options.watch,
             path: localPath,
             substitutionFunc: options.substitutionFunc,
           }),
