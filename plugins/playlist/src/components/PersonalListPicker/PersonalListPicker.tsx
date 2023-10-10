@@ -34,6 +34,8 @@ import {
 } from '@material-ui/core';
 import PlaylistPlayIcon from '@material-ui/icons/PlaylistPlay';
 import SettingsIcon from '@material-ui/icons/Settings';
+import LockIcon from '@material-ui/icons/Lock';
+import LockOpen from '@material-ui/icons/LockOpen';
 import { compact } from 'lodash';
 import React, { Fragment, useEffect, useMemo, useState } from 'react';
 import useAsync from 'react-use/lib/useAsync';
@@ -44,6 +46,8 @@ import { PlaylistFilter } from '../../types';
 export const enum PersonalListFilterValue {
   owned = 'owned',
   following = 'following',
+  public = 'public',
+  private = 'private',
   all = 'all',
 }
 
@@ -59,6 +63,10 @@ export class PersonalListFilter implements PlaylistFilter {
         return this.isOwnedPlaylist(playlist);
       case PersonalListFilterValue.following:
         return playlist.isFollowing;
+      case PersonalListFilterValue.public:
+        return playlist.public;
+      case PersonalListFilterValue.private:
+        return !playlist.public;
       default:
         return true;
     }
@@ -117,6 +125,16 @@ function getFilterGroups(orgName: string | undefined): ButtonGroup[] {
           label: 'Following',
           icon: PlaylistPlayIcon,
         },
+        {
+          id: PersonalListFilterValue.public,
+          label: 'Public',
+          icon: LockOpen,
+        },
+        {
+          id: PersonalListFilterValue.private,
+          label: 'Private',
+          icon: LockIcon,
+        },
       ],
     },
     {
@@ -173,6 +191,16 @@ export const PersonalListPicker = () => {
       ),
     [isOwnedPlaylist],
   );
+  const publicFilter = useMemo(
+    () =>
+      new PersonalListFilter(PersonalListFilterValue.public, isOwnedPlaylist),
+    [isOwnedPlaylist],
+  );
+  const privateFilter = useMemo(
+    () =>
+      new PersonalListFilter(PersonalListFilterValue.private, isOwnedPlaylist),
+    [isOwnedPlaylist],
+  );
 
   const queryParamPersonalFilter = useMemo(
     () => [personalParameter].flat()[0],
@@ -202,11 +230,23 @@ export const PersonalListPicker = () => {
       following: playlistsWithoutPersonalFilter.filter(playlist =>
         followingFilter.filterPlaylist(playlist),
       ).length,
+      public: playlistsWithoutPersonalFilter.filter(playlist =>
+        publicFilter.filterPlaylist(playlist),
+      ).length,
+      private: playlistsWithoutPersonalFilter.filter(playlist =>
+        privateFilter.filterPlaylist(playlist),
+      ).length,
       owned: playlistsWithoutPersonalFilter.filter(playlist =>
         ownedFilter.filterPlaylist(playlist),
       ).length,
     }),
-    [playlistsWithoutPersonalFilter, followingFilter, ownedFilter],
+    [
+      playlistsWithoutPersonalFilter,
+      followingFilter,
+      ownedFilter,
+      publicFilter,
+      privateFilter,
+    ],
   );
 
   // Set selected personal filter on query parameter updates; this happens at initial page load and from

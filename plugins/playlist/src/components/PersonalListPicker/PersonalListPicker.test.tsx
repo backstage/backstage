@@ -120,7 +120,7 @@ describe('<PersonalListPicker />', () => {
     await waitFor(() => {
       expect(
         getAllByRole('menuitem').map(({ textContent }) => textContent),
-      ).toEqual(['Owned 2', 'Following 3', 'All 4']);
+      ).toEqual(['Owned 2', 'Following 3', 'Public 4', 'Private -', 'All 4']);
     });
   });
 
@@ -143,7 +143,7 @@ describe('<PersonalListPicker />', () => {
     await waitFor(() => {
       expect(
         getAllByRole('menuitem').map(({ textContent }) => textContent),
-      ).toEqual(['Owned -', 'Following 2', 'All 2']);
+      ).toEqual(['Owned -', 'Following 2', 'Public 2', 'Private -', 'All 2']);
     });
   });
 
