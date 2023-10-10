@@ -48,7 +48,7 @@ function createTestExtension(options: {
     id: options.id,
     attachTo: options.parent
       ? { id: options.parent, input: 'children' }
-      : { id: 'core.routes', input: 'children' },
+      : { id: 'core.routes', input: 'routes' },
     output: {
       element: coreExtensionData.reactElement,
       path: coreExtensionData.routePath.optional(),
@@ -305,6 +305,7 @@ describe('discovery', () => {
       }),
       createTestExtension({
         id: 'fooEmpty',
+        parent: 'foo',
       }),
       createTestExtension({
         id: 'page3',
