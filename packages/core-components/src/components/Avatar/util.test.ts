@@ -36,6 +36,6 @@ describe('extractInitials', () => {
   });
 
   it('limit the initials to two letters', async () => {
-    expect(extractInitials('John Jonathan Doe')).toEqual('JJ');
+    expect(extractInitials('John Jonathan Doe')).toEqual('JD');
   });
 });
