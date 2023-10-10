@@ -4,18 +4,12 @@
 
 ```ts
 import { BackstagePlugin } from '@backstage/frontend-plugin-api';
-import { Extension } from '@backstage/frontend-plugin-api';
 import { RouteRef } from '@backstage/core-plugin-api';
 import { TranslationRef } from '@backstage/core-plugin-api/alpha';
 
 // @alpha (undocumented)
 const _default: BackstagePlugin;
 export default _default;
-
-// @alpha (undocumented)
-export const UserSettingsPage: Extension<{
-  path: string;
-}>;
 
 // @alpha (undocumented)
 export const userSettingsRouteRef: RouteRef<undefined>;

@@ -32,10 +32,7 @@ export const userSettingsRouteRef = createRouteRef({
   id: 'plugin.user-settings.page',
 });
 
-/**
- * @alpha
- */
-export const UserSettingsPage = createPageExtension({
+const UserSettingsPage = createPageExtension({
   id: 'plugin.user-settings.page',
   defaultPath: '/settings/*',
   routeRef: userSettingsRouteRef,
