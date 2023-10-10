@@ -44,8 +44,12 @@ When multiple `catalog-info.yaml` files with the same `metadata.name` property
 are discovered, one will be processed and all others will be skipped. This
 action is logged for further investigation.
 
-Locations in the root of your backstage repository, e.g. [catalog examples](https://github.com/backstage/backstage/tree/master/packages/catalog-model/examples), 
-assume the location of the backend instance and must walk the tree upwards two times.
+### Local File (`type: file`) Configurations
+
+In addition to url locations, you can use the `file` location type to bring in content from the local file system. You should only use this for local development, test setups and example data, not for production data.
+You are also not able to use placeholders in them like `$text`. You can however reference other files relative to the current file. See the full [catalog example data set here](https://github.com/backstage/backstage/tree/master/packages/catalog-model/examples) for an extensive example.
+
+Here is an example pulling in the `all.yaml` file from the examples folder. Note the use of `../../` to go up two levels from the current execution path of the backend. This is typically `packages/backend/`.
 
 ```yaml
 catalog:
