@@ -16,6 +16,7 @@
 
 import {
   createExtension,
+  createExtensionInput,
   createExtensionOverrides,
   createPageExtension,
   createPlugin,
@@ -171,6 +172,9 @@ describe('createApp', () => {
       extension: createExtension({
         id: 'root',
         attachTo: { id: '', input: '' },
+        inputs: {
+          children: createExtensionInput({}),
+        },
         output: {},
         factory() {},
       }),
@@ -209,6 +213,9 @@ describe('createApp', () => {
       extension: createExtension({
         id: 'root',
         attachTo: { id: '', input: '' },
+        inputs: {
+          children: createExtensionInput({}),
+        },
         output: {},
         factory() {},
       }),
