@@ -34,7 +34,7 @@ export const userSettingsRouteRef = createRouteRef({
 
 const UserSettingsPage = createPageExtension({
   id: 'plugin.user-settings.page',
-  defaultPath: '/settings/*',
+  defaultPath: '/settings',
   routeRef: userSettingsRouteRef,
   inputs: {
     providerSettings: createExtensionInput(
