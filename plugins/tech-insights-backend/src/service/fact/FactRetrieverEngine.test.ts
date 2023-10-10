@@ -64,14 +64,14 @@ const testFactRetriever: FactRetriever = {
     ];
   }),
 };
+
 const defaultCadence = '1 * * * *';
+
 describe('FactRetrieverEngine', () => {
   let engine: FactRetrieverEngine;
   type FactSchemaAssertionCallback = (
     factSchemaDefinition: FactSchemaDefinition,
   ) => void;
-
-  jest.setTimeout(15000);
 
   type FactInsertionAssertionCallback = ({
     facts,
