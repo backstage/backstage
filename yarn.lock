@@ -5484,7 +5484,23 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@backstage/plugin-catalog-backend-module-github@workspace:plugins/catalog-backend-module-github":
+"@backstage/plugin-catalog-backend-module-github-org@workspace:plugins/catalog-backend-module-github-org":
+  version: 0.0.0-use.local
+  resolution: "@backstage/plugin-catalog-backend-module-github-org@workspace:plugins/catalog-backend-module-github-org"
+  dependencies:
+    "@backstage/backend-common": "workspace:^"
+    "@backstage/backend-plugin-api": "workspace:^"
+    "@backstage/backend-tasks": "workspace:^"
+    "@backstage/backend-test-utils": "workspace:^"
+    "@backstage/cli": "workspace:^"
+    "@backstage/config": "workspace:^"
+    "@backstage/plugin-catalog-backend-module-github": "workspace:^"
+    "@backstage/plugin-catalog-node": "workspace:^"
+    luxon: ^3.0.0
+  languageName: unknown
+  linkType: soft
+
+"@backstage/plugin-catalog-backend-module-github@workspace:^, @backstage/plugin-catalog-backend-module-github@workspace:plugins/catalog-backend-module-github":
   version: 0.0.0-use.local
   resolution: "@backstage/plugin-catalog-backend-module-github@workspace:plugins/catalog-backend-module-github"
   dependencies:

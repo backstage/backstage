@@ -1,0 +1,10 @@
+apiVersion: backstage.io/v1alpha1
+kind: Component
+metadata:
+  name: backstage-plugin-catalog-backend-module-github-org
+  title: '@backstage/plugin-catalog-backend-module-github-org'
+  description: A Backstage catalog backend module that ingests users and teams from multiple Github organizations
+spec:
+  lifecycle: experimental
+  type: backstage-backend-plugin-module
+  owner: catalog-maintainers
