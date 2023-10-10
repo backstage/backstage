@@ -15,25 +15,25 @@
  */
 
 import { createPlugin } from '@backstage/frontend-plugin-api';
-import { getAvailablePlugins } from './discovery';
+import { getAvailableFeatures } from './discovery';
 
 const globalSpy = jest.fn();
 Object.defineProperty(global, '__@backstage/discovered__', {
   get: globalSpy,
 });
 
-describe('getAvailablePlugins', () => {
+describe('getAvailableFeatures', () => {
   afterEach(jest.resetAllMocks);
 
   it('should discover nothing with undefined global', () => {
-    expect(getAvailablePlugins()).toEqual([]);
+    expect(getAvailableFeatures()).toEqual([]);
   });
 
   it('should discover nothing with empty global', () => {
     globalSpy.mockReturnValue({
       modules: [],
     });
-    expect(getAvailablePlugins()).toEqual([]);
+    expect(getAvailableFeatures()).toEqual([]);
   });
 
   it('should discover a plugin', () => {
@@ -41,24 +41,24 @@ describe('getAvailablePlugins', () => {
     globalSpy.mockReturnValue({
       modules: [{ default: testPlugin }],
     });
-    expect(getAvailablePlugins()).toEqual([testPlugin]);
+    expect(getAvailableFeatures()).toEqual([testPlugin]);
   });
 
   it('should ignore garbage', () => {
     globalSpy.mockReturnValueOnce({ modules: [{ default: null }] });
-    expect(getAvailablePlugins()).toEqual([]);
+    expect(getAvailableFeatures()).toEqual([]);
     globalSpy.mockReturnValueOnce({ modules: [{ default: undefined }] });
-    expect(getAvailablePlugins()).toEqual([]);
+    expect(getAvailableFeatures()).toEqual([]);
     globalSpy.mockReturnValueOnce({ modules: [{ default: Symbol() }] });
-    expect(getAvailablePlugins()).toEqual([]);
+    expect(getAvailableFeatures()).toEqual([]);
     globalSpy.mockReturnValueOnce({ modules: [{ default: () => {} }] });
-    expect(getAvailablePlugins()).toEqual([]);
+    expect(getAvailableFeatures()).toEqual([]);
     globalSpy.mockReturnValueOnce({ modules: [{ default: 0 }] });
-    expect(getAvailablePlugins()).toEqual([]);
+    expect(getAvailableFeatures()).toEqual([]);
     globalSpy.mockReturnValueOnce({ modules: [{ default: false }] });
-    expect(getAvailablePlugins()).toEqual([]);
+    expect(getAvailableFeatures()).toEqual([]);
     globalSpy.mockReturnValueOnce({ modules: [{ default: true }] });
-    expect(getAvailablePlugins()).toEqual([]);
+    expect(getAvailableFeatures()).toEqual([]);
   });
 
   it('should discover multiple plugins', () => {
@@ -72,7 +72,7 @@ describe('getAvailablePlugins', () => {
         { default: test3Plugin },
       ],
     });
-    expect(getAvailablePlugins()).toEqual([
+    expect(getAvailableFeatures()).toEqual([
       test1Plugin,
       test2Plugin,
       test3Plugin,

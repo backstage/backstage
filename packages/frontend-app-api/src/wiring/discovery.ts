@@ -14,7 +14,10 @@
  * limitations under the License.
  */
 
-import { BackstagePlugin } from '@backstage/frontend-plugin-api';
+import {
+  BackstagePlugin,
+  ExtensionOverrides,
+} from '@backstage/frontend-plugin-api';
 
 interface DiscoveryGlobal {
   modules: Array<{ name: string; default: unknown }>;
@@ -23,19 +26,27 @@ interface DiscoveryGlobal {
 /**
  * @public
  */
-export function getAvailablePlugins(): BackstagePlugin[] {
+export function getAvailableFeatures(): (
+  | BackstagePlugin
+  | ExtensionOverrides
+)[] {
   const discovered = (
     window as { '__@backstage/discovered__'?: DiscoveryGlobal }
   )['__@backstage/discovered__'];
 
   return (
-    discovered?.modules.map(m => m.default).filter(isBackstagePlugin) ?? []
+    discovered?.modules.map(m => m.default).filter(isBackstageFeature) ?? []
   );
 }
 
-function isBackstagePlugin(obj: unknown): obj is BackstagePlugin {
+function isBackstageFeature(
+  obj: unknown,
+): obj is BackstagePlugin | ExtensionOverrides {
   if (obj !== null && typeof obj === 'object' && '$$type' in obj) {
-    return obj.$$type === '@backstage/BackstagePlugin';
+    return (
+      obj.$$type === '@backstage/BackstagePlugin' ||
+      obj.$$type === '@backstage/ExtensionOverrides'
+    );
   }
   return false;
 }

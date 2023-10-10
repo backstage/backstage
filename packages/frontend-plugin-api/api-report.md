@@ -159,6 +159,11 @@ export interface CreateExtensionOptions<
   output: TOutput;
 }
 
+// @public (undocumented)
+export function createExtensionOverrides(
+  options: ExtensionOverridesOptions,
+): ExtensionOverrides;
+
 // @public
 export function createNavItemExtension(options: {
   id: string;
@@ -312,6 +317,18 @@ export type ExtensionInputValues<
         ExtensionDataValues<TInputs[InputName]['extensionData']> | undefined
       >;
 };
+
+// @public (undocumented)
+export interface ExtensionOverrides {
+  // (undocumented)
+  $$type: '@backstage/ExtensionOverrides';
+}
+
+// @public (undocumented)
+export interface ExtensionOverridesOptions {
+  // (undocumented)
+  extensions: Extension<unknown>[];
+}
 
 // @public (undocumented)
 export type NavTarget = {

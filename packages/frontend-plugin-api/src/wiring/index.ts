@@ -38,3 +38,8 @@ export {
   type BackstagePlugin,
   type PluginOptions,
 } from './createPlugin';
+export {
+  createExtensionOverrides,
+  type ExtensionOverrides,
+  type ExtensionOverridesOptions,
+} from './createExtensionOverrides';
