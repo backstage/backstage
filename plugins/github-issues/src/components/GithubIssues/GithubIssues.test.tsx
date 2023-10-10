@@ -68,6 +68,8 @@ const entityComponent = {
   metadata: {
     annotations: {
       'github.com/project-slug': 'backstage/backstage',
+      'backstage.io/source-location':
+        'url:https://github.com/backstage/backstage',
     },
     name: 'backstage',
   },

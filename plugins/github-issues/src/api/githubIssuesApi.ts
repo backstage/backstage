@@ -25,6 +25,11 @@ import { readGithubIntegrationConfigs } from '@backstage/integration';
 import { ForwardedError } from '@backstage/errors';
 
 /** @internal */
+export type Repository = {
+  name: string;
+  locationHostname: string;
+};
+/** @internal */
 export type Assignee = {
   avatarUrl: string;
   login: string;
@@ -116,9 +121,10 @@ export const githubIssuesApi = (
   let octokit: Octokit;
 
   const getOctokit = async () => {
-    const baseUrl = readGithubIntegrationConfigs(
+    const githubConfig = readGithubIntegrationConfigs(
       configApi.getOptionalConfigArray('integrations.github') ?? [],
-    )[0].apiBaseUrl;
+    )[0];
+    const baseUrl = githubConfig.apiBaseUrl;
 
     const token = await githubAuthApi.getAccessToken(['repo']);
 
@@ -126,11 +132,11 @@ export const githubIssuesApi = (
       octokit = new Octokit({ auth: token, ...(baseUrl && { baseUrl }) });
     }
 
-    return octokit.graphql;
+    return { graphql: octokit.graphql, hostname: githubConfig.host };
   };
 
   const fetchIssuesByRepoFromGithub = async (
-    repos: Array<string>,
+    repos: Array<Repository>,
     itemsPerRepo: number,
     {
       filterBy,
@@ -140,30 +146,35 @@ export const githubIssuesApi = (
       },
     }: GithubIssuesByRepoOptions = {},
   ): Promise<IssuesByRepo> => {
-    const graphql = await getOctokit();
+    const { graphql, hostname } = await getOctokit();
     const safeNames: Array<string> = [];
+    const repositories = repos
+      // only tries to fetch issues from repositories that are hosted on the same GitHub instance as the octokit
+      .filter(repo => repo.locationHostname === hostname)
+      .map(repo => {
+        const [owner, name] = repo.name.split('/');
 
-    const repositories = repos.map(repo => {
-      const [owner, name] = repo.split('/');
+        const safeNameRegex = /-|\./gi;
+        let safeName = name.replace(safeNameRegex, '');
 
-      const safeNameRegex = /-|\./gi;
-      let safeName = name.replace(safeNameRegex, '');
+        while (safeNames.includes(safeName)) {
+          safeName += 'x';
+        }
 
-      while (safeNames.includes(safeName)) {
-        safeName += 'x';
-      }
+        safeNames.push(safeName);
 
-      safeNames.push(safeName);
-
-      return {
-        safeName,
-        name,
-        owner,
-      };
-    });
+        return {
+          safeName,
+          name,
+          owner,
+        };
+      });
 
     let issuesByRepo: IssuesByRepo = {};
     try {
+      if (repositories.length === 0) {
+        throw new Error(`No repositories found for ${hostname}`);
+      }
       issuesByRepo = await graphql(
         createIssueByRepoQuery(repositories, itemsPerRepo, {
           filterBy,
