@@ -1,5 +1,20 @@
 # @backstage/core-app-api
 
+## 1.11.0-next.2
+
+### Minor Changes
+
+- c9d9bfeca2: URL encode some well known unsafe characters in `RouteResolver` (and therefore `useRouteRef`)
+
+### Patch Changes
+
+- acca17e91a: Wrap entire app in `<Suspense>`, enabling support for using translations outside plugins.
+- Updated dependencies
+  - @backstage/core-plugin-api@1.7.0-next.1
+  - @backstage/config@1.1.1-next.0
+  - @backstage/types@1.1.1
+  - @backstage/version-bridge@1.0.5
+
 ## 1.10.1-next.1
 
 ### Patch Changes

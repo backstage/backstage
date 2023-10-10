@@ -29,6 +29,7 @@ backend.add(
 backend.add(import('@backstage/plugin-catalog-backend/alpha'));
 backend.add(import('@backstage/plugin-devtools-backend'));
 backend.add(import('@backstage/plugin-entity-feedback-backend'));
+backend.add(import('@backstage/plugin-jenkins-backend'));
 backend.add(import('@backstage/plugin-kubernetes-backend/alpha'));
 backend.add(import('@backstage/plugin-lighthouse-backend'));
 backend.add(import('@backstage/plugin-linguist-backend'));

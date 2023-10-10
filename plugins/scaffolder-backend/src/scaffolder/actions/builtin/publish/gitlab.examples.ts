@@ -68,4 +68,79 @@ export const examples: TemplateExample[] = [
       ],
     }),
   },
+  {
+    description: 'Initializes a git repository with additional settings.',
+    example: yaml.stringify({
+      steps: [
+        {
+          id: 'publish',
+          action: 'publish:gitlab',
+          name: 'Publish to GitLab',
+          input: {
+            repoUrl: 'gitlab.com?repo=project_name&owner=group_name',
+            settings: {
+              ci_config_path: '.gitlab-ci.yml',
+              visibility: 'public',
+            },
+          },
+        },
+      ],
+    }),
+  },
+  {
+    description: 'Initializes a git repository with branches settings',
+    example: yaml.stringify({
+      steps: [
+        {
+          id: 'publish',
+          action: 'publish:gitlab',
+          name: 'Publish to GitLab',
+          input: {
+            repoUrl: 'gitlab.com?repo=project_name&owner=group_name',
+            branches: [
+              {
+                name: 'dev',
+                create: true,
+                protected: true,
+                ref: 'master',
+              },
+              {
+                name: 'master',
+                protected: true,
+              },
+            ],
+          },
+        },
+      ],
+    }),
+  },
+  {
+    description: 'Initializes a git repository with environment variables',
+    example: yaml.stringify({
+      steps: [
+        {
+          id: 'publish',
+          action: 'publish:gitlab',
+          name: 'Publish to GitLab',
+          input: {
+            repoUrl: 'gitlab.com?repo=project_name&owner=group_name',
+            projectVariables: [
+              {
+                key: 'key1',
+                value: 'value1',
+                protected: true,
+                masked: false,
+              },
+              {
+                key: 'key2',
+                value: 'value2',
+                protected: true,
+                masked: false,
+              },
+            ],
+          },
+        },
+      ],
+    }),
+  },
 ];

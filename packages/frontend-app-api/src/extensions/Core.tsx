@@ -27,6 +27,9 @@ export const Core = createExtension({
     apis: createExtensionInput({
       api: coreExtensionData.apiFactory,
     }),
+    themes: createExtensionInput({
+      theme: coreExtensionData.theme,
+    }),
   },
   output: {},
   factory() {},
