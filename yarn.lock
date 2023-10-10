@@ -7725,8 +7725,8 @@ __metadata:
     msw: ^1.0.0
     react-use: ^17.2.4
     xterm: ^5.2.1
-    xterm-addon-attach: ^0.8.0
-    xterm-addon-fit: ^0.7.0
+    xterm-addon-attach: ^0.9.0
+    xterm-addon-fit: ^0.8.0
   peerDependencies:
     react: ^16.13.1 || ^17.0.0
     react-dom: ^16.13.1 || ^17.0.0
@@ -42961,30 +42961,12 @@ __metadata:
   languageName: node
   linkType: hard
 
-"xterm-addon-attach@npm:^0.8.0":
-  version: 0.8.0
-  resolution: "xterm-addon-attach@npm:0.8.0"
-  peerDependencies:
-    xterm: ^5.0.0
-  checksum: 2ac70bdd1c97eb05b83b4573132ed9d3686c07ed14212e273800a5693bb0f3ea41c570b49ac90cb95a1e593d5a2764a28c13b649c596054bf5aa87c8489069eb
-  languageName: node
-  linkType: hard
-
 "xterm-addon-attach@npm:^0.9.0":
   version: 0.9.0
   resolution: "xterm-addon-attach@npm:0.9.0"
   peerDependencies:
     xterm: ^5.0.0
   checksum: 70e5d3ecf139c04fae13c644b79c33858ef1a6e28dfe78f91dad3e34f5a155579029b87e91d1d016575acaf17f74e6c59402bde4bcff03461595bea0870f1ec1
-  languageName: node
-  linkType: hard
-
-"xterm-addon-fit@npm:^0.7.0":
-  version: 0.7.0
-  resolution: "xterm-addon-fit@npm:0.7.0"
-  peerDependencies:
-    xterm: ^5.0.0
-  checksum: 512d41f80d6f9427ba02dab4e6fd642e94775a9cf7ef72ae4b55eab2a36856b5c67069bfc66b4af412fdce29a0842f9c6382af3672f0b514c4352dfd47defe8f
   languageName: node
   linkType: hard
 
