@@ -38,6 +38,7 @@
     "zod": "^3.21.4"
   },
   "devDependencies": {
+    "@backstage/backend-test-utils": "workspace:^",
     "@backstage/cli": "workspace:^",
     "mock-fs": "^5.2.0"
   },

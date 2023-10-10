@@ -15,15 +15,13 @@
  */
 
 import { isMonoRepo } from './isMonoRepo';
-import mockFs from 'mock-fs';
+import { createMockDirectory } from '@backstage/backend-test-utils';
 
 describe('isMonoRepo', () => {
-  afterEach(() => {
-    mockFs.restore();
-  });
+  const mockDir = createMockDirectory();
 
   it('should detect a monorepo', async () => {
-    mockFs({
+    mockDir.setContent({
       'package.json': JSON.stringify({
         name: 'foo',
         workspaces: {
@@ -35,7 +33,7 @@ describe('isMonoRepo', () => {
   });
 
   it('should detect a non- monorepo', async () => {
-    mockFs({
+    mockDir.setContent({
       'package.json': JSON.stringify({
         name: 'foo',
       }),
@@ -44,7 +42,7 @@ describe('isMonoRepo', () => {
   });
 
   it('should return false if package.json is missing', async () => {
-    mockFs({});
+    mockDir.setContent({});
     await expect(isMonoRepo()).resolves.toBe(false);
   });
 });
