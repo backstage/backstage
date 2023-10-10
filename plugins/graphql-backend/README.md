@@ -26,3 +26,22 @@ yarn workspace example-backend start
 ```
 
 This will launch the full example backend.
+
+### New Backend System
+
+The DevTools backend plugin has support for the [new backend system](https://backstage.io/docs/backend-system/), here's how you can set that up:
+
+In your `packages/backend/src/index.ts` make the following changes:
+
+```diff
+  import { createBackend } from '@backstage/backend-defaults';
++ import { graphqlPlugin } from '@backstage/plugin-graphql-backend';
+
+  const backend = createBackend();
+
+  // ... other feature additions
+
++ backend.add(graphqlPlugin());
+
+  backend.start();
+```
