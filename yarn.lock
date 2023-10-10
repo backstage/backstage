@@ -7558,6 +7558,7 @@ __metadata:
     "@aws-sdk/credential-providers": ^3.350.0
     "@aws-sdk/signature-v4": ^3.347.0
     "@azure/identity": ^3.2.1
+    "@backstage/backend-app-api": "workspace:^"
     "@backstage/backend-common": "workspace:^"
     "@backstage/backend-plugin-api": "workspace:^"
     "@backstage/backend-test-utils": "workspace:^"
@@ -7570,6 +7571,7 @@ __metadata:
     "@backstage/plugin-auth-node": "workspace:^"
     "@backstage/plugin-catalog-node": "workspace:^"
     "@backstage/plugin-kubernetes-common": "workspace:^"
+    "@backstage/plugin-kubernetes-node": "workspace:^"
     "@backstage/plugin-permission-common": "workspace:^"
     "@backstage/plugin-permission-node": "workspace:^"
     "@backstage/types": "workspace:^"
@@ -7660,6 +7662,17 @@ __metadata:
     lodash: ^4.17.21
     luxon: ^3.0.0
     msw: ^1.3.1
+  languageName: unknown
+  linkType: soft
+
+"@backstage/plugin-kubernetes-node@workspace:^, @backstage/plugin-kubernetes-node@workspace:plugins/kubernetes-node":
+  version: 0.0.0-use.local
+  resolution: "@backstage/plugin-kubernetes-node@workspace:plugins/kubernetes-node"
+  dependencies:
+    "@backstage/backend-plugin-api": "workspace:^"
+    "@backstage/catalog-model": "workspace:^"
+    "@backstage/cli": "workspace:^"
+    "@backstage/plugin-kubernetes-common": "workspace:^"
   languageName: unknown
   linkType: soft
 

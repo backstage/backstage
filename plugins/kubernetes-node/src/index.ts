@@ -1,5 +1,5 @@
 /*
- * Copyright 2022 The Backstage Authors
+ * Copyright 2023 The Backstage Authors
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,10 +14,24 @@
  * limitations under the License.
  */
 
-export * from './types';
+/**
+ * Node.js library for the kubernetes plugin.
+ *
+ * @packageDocumentation
+ */
 
-export type {
-  CustomResourcesByEntity,
-  KubernetesObjectsByEntity,
-  KubernetesObjectsProvider,
-} from '@backstage/plugin-kubernetes-node';
+// In this package you might for example export functions that
+// help other plugins or modules interact with your plugin.
+
+/**
+ * Node.js library for the kubernetes plugin.
+ *
+ * @packageDocumentation
+ */
+
+export {
+  kubernetesObjectsProviderExtensionPoint,
+  type KubernetesObjectsProviderExtensionPoint,
+} from './extensions';
+
+export * from './types';
