@@ -47,7 +47,7 @@
     "@backstage/core-components": "workspace:^",
     "@backstage/dev-utils": "workspace:^",
     "@backstage/test-utils": "workspace:^",
-    "@testing-library/dom": "^8.0.0",
+    "@testing-library/dom": "^9.0.0",
     "@testing-library/jest-dom": "^5.10.1",
     "msw": "^1.0.0"
   },
