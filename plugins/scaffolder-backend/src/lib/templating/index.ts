@@ -15,3 +15,5 @@
  */
 
 export type { TemplateFilter, TemplateGlobal } from './SecureTemplater';
+export { SecureTemplater } from './SecureTemplater';
+export { createDefaultFilters } from './filters';
