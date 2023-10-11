@@ -30,11 +30,11 @@ interface TabPanelProps {
 }
 
 const tabPanelStyles = makeStyles(
-  {
+  theme => ({
     tabPanel: {
-      marginTop: '4px',
+      marginTop: theme.spacing(0.5),
     },
-  },
+  }),
   { name: 'BackstageNewRelicDashboardTabPanel' },
 );
 

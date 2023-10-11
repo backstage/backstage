@@ -31,7 +31,7 @@ import useObservable from 'react-use/lib/useObservable';
 const useStyles = makeStyles(
   theme => ({
     cardSelect: {
-      margin: '15px 10px 0 0',
+      margin: theme.spacing(2, 1, 0, 0),
     },
     img: {
       width: '100%',
