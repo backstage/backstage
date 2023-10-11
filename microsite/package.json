@@ -19,7 +19,7 @@
   "devDependencies": {
     "@docusaurus/module-type-aliases": "0.0.0-5703",
     "@spotify/prettier-config": "^14.0.0",
-    "@tsconfig/docusaurus": "^1.0.6",
+    "@tsconfig/docusaurus": "^2.0.0",
     "@types/luxon": "^3.0.0",
     "@types/webpack-env": "^1.18.0",
     "js-yaml": "^4.1.0",

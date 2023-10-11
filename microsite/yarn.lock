@@ -2854,10 +2854,10 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@tsconfig/docusaurus@npm:^1.0.6":
-  version: 1.0.7
-  resolution: "@tsconfig/docusaurus@npm:1.0.7"
-  checksum: 8f5b14005d90b2008f10daf03a5edec86d2a7603e5641c579ea936a5c2d165a8c3007a72254fc4c2adb0554d73062f52bb97b30ff818f01c9215957822f3c4db
+"@tsconfig/docusaurus@npm:^2.0.0":
+  version: 2.0.1
+  resolution: "@tsconfig/docusaurus@npm:2.0.1"
+  checksum: 63bebda70d83c56f95a90176d2e188e1ea9c08c23b499e5e7b292ebfae0ce7117f712809828ed21ae3b8440daf22191d6bf71bf2575f9bd474a51b1770ca30cc
   languageName: node
   linkType: hard
 
@@ -3894,7 +3894,7 @@ __metadata:
     "@docusaurus/preset-classic": 0.0.0-5703
     "@spotify/prettier-config": ^14.0.0
     "@swc/core": ^1.3.46
-    "@tsconfig/docusaurus": ^1.0.6
+    "@tsconfig/docusaurus": ^2.0.0
     "@types/luxon": ^3.0.0
     "@types/webpack-env": ^1.18.0
     clsx: ^1.1.1
