@@ -249,7 +249,7 @@ export class GitlabOrgDiscoveryEntityProvider implements EntityProvider {
       try {
         groupUsers = await client.getGroupMembers(group.full_path, ['DIRECT']);
       } catch {
-        logger.error(`Failed fetching user for group: ${group.full_path}`);
+        logger.error(`Failed fetching users for group: ${group.full_path}`);
       }
 
       for (const groupUser of groupUsers.items) {
