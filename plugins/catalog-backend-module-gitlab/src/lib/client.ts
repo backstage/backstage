@@ -236,11 +236,7 @@ export class GitLabClient {
         },
       ).then(r => r.json());
       if (response.errors) {
-        throw new Error(
-          `GraphQL errors: ${JSON.stringify(
-            response.errors,
-          )}, for group: ${groupPath}`,
-        );
+        throw new Error(`GraphQL errors: ${JSON.stringify(response.errors)}`);
       }
 
       if (!response.data.group?.groupMembers?.nodes) {
