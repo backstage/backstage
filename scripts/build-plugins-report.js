@@ -43,6 +43,13 @@ const PLUGIN_AND_MODULE_ROLES = [
   'frontend-plugin-module',
 ];
 
+const CORE_MAINTAINER_EMAILS = [
+  'ben@blam.sh',
+  'freben@gmail.com',
+  'poldsberg@gmail.com',
+  'johan.haals@gmail.com',
+];
+
 async function main() {
   const pluginsDirectory = path.resolve(rootDirectory, 'plugins');
 
@@ -109,14 +116,7 @@ async function main() {
           }
 
           // exclude core maintainers' commits
-          if (
-            [
-              'Johan Haals <johan.haals@gmail.com>',
-              'Patrik Oldsberg <poldsberg@gmail.com>',
-              'Fredrik Adelöw <freben@gmail.com>',
-              'blam <ben@blam.sh>',
-            ].includes(author)
-          ) {
+          if (CORE_MAINTAINER_EMAILS.some(email => author.includes(email))) {
             return false;
           }
 
