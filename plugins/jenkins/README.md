@@ -6,8 +6,8 @@ Website: [https://jenkins.io/](https://jenkins.io/)
 <img src="./src/assets/folder-results.png"  alt="Folder results"/>
 <img src="./src/assets/build-details.png"  alt="Build details"/>
 <img src="./src/assets/jobrun-table.png"  alt="Job builds records"/>
-
 <img src="./src/assets/dynamic-columns.png"  alt="Modify Table Columns"/>
+
 ## Setup
 
 1. If you have a standalone app (you didn't clone this repo), then do
@@ -106,6 +106,7 @@ spec:
 
 - View all builds of a particular job
 - shows average build time for successful builds
+
 ## Modify Columns of EntityJenkinsContent
 
 - now you can pass down column props to show the columns/metadata as per your use case.
