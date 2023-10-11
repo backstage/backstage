@@ -33,7 +33,6 @@ import { saml } from './saml';
 import { AuthProviderFactory } from './types';
 import { bitbucketServer } from './bitbucketServer';
 import { easyAuth } from './azure-easyauth';
-import { pinniped } from './pinniped';
 
 /**
  * All built-in auth provider integrations.
@@ -57,7 +56,6 @@ export const providers = Object.freeze({
   oidc,
   okta,
   onelogin,
-  pinniped,
   saml,
   easyAuth,
 });
@@ -85,5 +83,4 @@ export const defaultAuthProviderFactories: {
   bitbucket: bitbucket.create(),
   bitbucketServer: bitbucketServer.create(),
   atlassian: atlassian.create(),
-  pinniped: pinniped.create(),
 };

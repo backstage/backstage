@@ -619,10 +619,6 @@ export const providers: Readonly<{
     ) => AuthProviderFactory_2;
     resolvers: never;
   }>;
-  pinniped: Readonly<{
-    create: () => AuthProviderFactory_2;
-    resolvers: never;
-  }>;
   saml: Readonly<{
     create: (
       options?:

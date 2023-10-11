@@ -4972,7 +4972,7 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@backstage/plugin-auth-backend-module-pinniped-provider@workspace:^, @backstage/plugin-auth-backend-module-pinniped-provider@workspace:plugins/auth-backend-module-pinniped-provider":
+"@backstage/plugin-auth-backend-module-pinniped-provider@workspace:plugins/auth-backend-module-pinniped-provider":
   version: 0.0.0-use.local
   resolution: "@backstage/plugin-auth-backend-module-pinniped-provider@workspace:plugins/auth-backend-module-pinniped-provider"
   dependencies:
@@ -5015,7 +5015,6 @@ __metadata:
     "@backstage/plugin-auth-backend-module-google-provider": "workspace:^"
     "@backstage/plugin-auth-backend-module-microsoft-provider": "workspace:^"
     "@backstage/plugin-auth-backend-module-oauth2-provider": "workspace:^"
-    "@backstage/plugin-auth-backend-module-pinniped-provider": "workspace:^"
     "@backstage/plugin-auth-node": "workspace:^"
     "@backstage/plugin-catalog-node": "workspace:^"
     "@backstage/types": "workspace:^"
@@ -30247,14 +30246,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"jose@npm:^4.14.6":
-  version: 4.15.2
-  resolution: "jose@npm:4.15.2"
-  checksum: 8f0cab1eef31243abe14a935b2b330cd95f10f9b69808fd642088ae5000e50e566664934537d2c6413ab2f6b54acd8265a5033da05157aa1260c5f1d7e57fab0
-  languageName: node
-  linkType: hard
-
-"jose@npm:^4.15.1, jose@npm:^4.6.0":
+"jose@npm:^4.14.6, jose@npm:^4.15.1, jose@npm:^4.6.0":
   version: 4.15.3
   resolution: "jose@npm:4.15.3"
   checksum: b76eeccc1d40d0eaf26dfaadc0f88fc15802c9105ab66a24ee223bd84369f7cb217f4a2cb852f5080ff6996170b3a73db2b2d26878b8905d99c36ca432628134
