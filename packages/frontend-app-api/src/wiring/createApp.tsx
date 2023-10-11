@@ -250,13 +250,11 @@ export function createInstances(options: {
     return newInstance;
   }
 
-  const rootConfigs = attachmentMap.get('root')?.get('default') ?? [];
-
-  const rootInstances = rootConfigs.map(instanceParams =>
-    createInstance(instanceParams),
+  const coreInstance = createInstance(
+    extensionParams.find(p => p.extension.id === 'core')!,
   );
 
-  return { instances, rootInstances };
+  return { coreInstance, instances };
 }
 
 /** @public */
@@ -286,19 +284,10 @@ export function createApp(options: {
       ]),
     );
 
-    const { rootInstances } = createInstances({
+    const { coreInstance } = createInstances({
       features: allFeatures,
       config,
     });
-
-    const routeInfo = extractRouteInfoFromInstanceTree(rootInstances);
-
-    const coreInstance = rootInstances.find(({ id }) => id === 'core');
-    if (!coreInstance) {
-      throw Error('Unable to find core extension instance');
-    }
-
-    const apiHolder = createApiHolder(coreInstance, config);
 
     const appContext = createLegacyAppContext(
       allFeatures.filter(
@@ -306,21 +295,18 @@ export function createApp(options: {
       ),
     );
 
-    const rootElements = rootInstances
-      .map(e => (
-        <React.Fragment key={e.id}>
-          {e.getData(coreExtensionData.reactElement)}
-        </React.Fragment>
-      ))
-      .filter((x): x is JSX.Element => !!x);
-
     const App = () => (
-      <ApiProvider apis={apiHolder}>
+      <ApiProvider apis={createApiHolder(coreInstance, config)}>
         <AppContextProvider appContext={appContext}>
           <AppThemeProvider>
-            <RoutingProvider {...routeInfo} routeBindings={new Map(/* TODO */)}>
+            <RoutingProvider
+              {...extractRouteInfoFromInstanceTree(coreInstance)}
+              routeBindings={new Map(/* TODO */)}
+            >
               {/* TODO: set base path using the logic from AppRouter */}
-              <BrowserRouter>{rootElements}</BrowserRouter>
+              <BrowserRouter>
+                {coreInstance.getData(coreExtensionData.reactElement)}
+              </BrowserRouter>
             </RoutingProvider>
           </AppThemeProvider>
         </AppContextProvider>

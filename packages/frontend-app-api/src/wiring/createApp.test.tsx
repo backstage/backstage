@@ -16,7 +16,6 @@
 
 import {
   createExtension,
-  createExtensionInput,
   createExtensionOverrides,
   createPageExtension,
   createPlugin,
@@ -27,7 +26,6 @@ import { screen } from '@testing-library/react';
 import { MockConfigApi, renderWithEffects } from '@backstage/test-utils';
 import React from 'react';
 import { createRouteRef } from '@backstage/core-plugin-api';
-import { createExtensionInstance } from './createExtensionInstance';
 
 const extBaseConfig = {
   id: 'test',
@@ -37,12 +35,12 @@ const extBaseConfig = {
 };
 
 describe('createInstances', () => {
-  it('throws an error when a root extension is parametrized', () => {
+  it('throws an error when a core extension is parametrized', () => {
     const config = new MockConfigApi({
       app: {
         extensions: [
           {
-            root: {},
+            core: {},
           },
         ],
       },
@@ -54,18 +52,18 @@ describe('createInstances', () => {
       }),
     ];
     expect(() => createInstances({ config, features })).toThrow(
-      "A 'root' extension configuration was detected, but the root extension is not configurable",
+      "A 'core' extension configuration was detected, but the core extension is not configurable",
     );
   });
 
-  it('throws an error when a root extension is overridden', () => {
+  it('throws an error when a core extension is overridden', () => {
     const config = new MockConfigApi({});
     const features = [
       createPlugin({
         id: 'plugin',
         extensions: [
           createExtension({
-            id: 'root',
+            id: 'core',
             attachTo: { id: 'core.routes', input: 'route' },
             inputs: {},
             output: {},
@@ -75,7 +73,7 @@ describe('createInstances', () => {
       }),
     ];
     expect(() => createInstances({ config, features })).toThrow(
-      "The following plugin(s) are overriding the 'root' extension which is forbidden: plugin",
+      "The following plugin(s) are overriding the 'core' extension which is forbidden: plugin",
     );
   });
 
@@ -164,33 +162,14 @@ describe('createApp', () => {
   });
 
   it('should log an app', () => {
-    const { rootInstances } = createInstances({
+    const { coreInstance } = createInstances({
       config: new MockConfigApi({}),
       features: [],
     });
-    const root = createExtensionInstance({
-      extension: createExtension({
-        id: 'root',
-        attachTo: { id: '', input: '' },
-        inputs: {
-          children: createExtensionInput({}),
-        },
-        output: {},
-        factory() {},
-      }),
-      config: undefined,
-      attachments: new Map([['children', rootInstances]]),
-    });
 
-    expect(String(root)).toMatchInlineSnapshot(`
-      "<root>
-        children [
-          <core>
-            themes [
-              <themes.light out=[core.theme] />
-              <themes.dark out=[core.theme] />
-            ]
-          </core>
+    expect(String(coreInstance)).toMatchInlineSnapshot(`
+      "<core out=[core.reactElement]>
+        root [
           <core.layout out=[core.reactElement]>
             content [
               <core.routes out=[core.reactElement] />
@@ -200,52 +179,24 @@ describe('createApp', () => {
             ]
           </core.layout>
         ]
-      </root>"
+        themes [
+          <themes.light out=[core.theme] />
+          <themes.dark out=[core.theme] />
+        ]
+      </core>"
     `);
   });
 
   it('should serialize an app as JSON', () => {
-    const { rootInstances } = createInstances({
+    const { coreInstance } = createInstances({
       config: new MockConfigApi({}),
       features: [],
     });
-    const root = createExtensionInstance({
-      extension: createExtension({
-        id: 'root',
-        attachTo: { id: '', input: '' },
-        inputs: {
-          children: createExtensionInput({}),
-        },
-        output: {},
-        factory() {},
-      }),
-      config: undefined,
-      attachments: new Map([['children', rootInstances]]),
-    });
 
-    expect(JSON.parse(JSON.stringify(root))).toMatchInlineSnapshot(`
+    expect(JSON.parse(JSON.stringify(coreInstance))).toMatchInlineSnapshot(`
       {
         "attachments": {
-          "children": [
-            {
-              "attachments": {
-                "themes": [
-                  {
-                    "id": "themes.light",
-                    "output": [
-                      "core.theme",
-                    ],
-                  },
-                  {
-                    "id": "themes.dark",
-                    "output": [
-                      "core.theme",
-                    ],
-                  },
-                ],
-              },
-              "id": "core",
-            },
+          "root": [
             {
               "attachments": {
                 "content": [
@@ -271,8 +222,25 @@ describe('createApp', () => {
               ],
             },
           ],
+          "themes": [
+            {
+              "id": "themes.light",
+              "output": [
+                "core.theme",
+              ],
+            },
+            {
+              "id": "themes.dark",
+              "output": [
+                "core.theme",
+              ],
+            },
+          ],
         },
-        "id": "root",
+        "id": "core",
+        "output": [
+          "core.reactElement",
+        ],
       }
     `);
   });
