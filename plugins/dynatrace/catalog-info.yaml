@@ -6,4 +6,4 @@ metadata:
 spec:
   lifecycle: production
   type: backstage-frontend-plugin
-  owner: Dynatrace
+  owner: maintainers
