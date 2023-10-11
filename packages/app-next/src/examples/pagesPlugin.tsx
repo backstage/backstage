@@ -49,6 +49,9 @@ const IndexPage = createPageExtension({
             <Link to={page1Link()}>Page 1</Link>
           </div>
           <div>
+            <Link to="/home">Home</Link>
+          </div>
+          <div>
             <Link to="/graphiql">GraphiQL</Link>
           </div>
           <div>

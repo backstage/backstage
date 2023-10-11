@@ -20,13 +20,18 @@ import { pagesPlugin } from './examples/pagesPlugin';
 import graphiqlPlugin from '@backstage/plugin-graphiql/alpha';
 import techRadarPlugin from '@backstage/plugin-tech-radar/alpha';
 import userSettingsPlugin from '@backstage/plugin-user-settings/alpha';
+import homePlugin from '@backstage/plugin-home/alpha';
+
 import {
+  coreExtensionData,
+  createExtension,
   createExtensionOverrides,
   createPageExtension,
 } from '@backstage/frontend-plugin-api';
 import { entityRouteRef } from '@backstage/plugin-catalog-react';
 import techdocsPlugin from '@backstage/plugin-techdocs/alpha';
 import { convertLegacyRouteRef } from '@backstage/core-plugin-api/alpha';
+import { homePage } from './HomePage';
 
 /*
 
@@ -64,6 +69,17 @@ const entityPageExtension = createPageExtension({
   loader: async () => <div>Just a temporary mocked entity page</div>,
 });
 
+const homePageExtension = createExtension({
+  id: 'myhomepage',
+  attachTo: { id: 'home', input: 'props' },
+  output: {
+    children: coreExtensionData.reactElement,
+  },
+  factory({ bind }) {
+    bind({ children: homePage });
+  },
+});
+
 const app = createApp({
   features: [
     graphiqlPlugin,
@@ -71,8 +87,9 @@ const app = createApp({
     techRadarPlugin,
     techdocsPlugin,
     userSettingsPlugin,
+    homePlugin,
     createExtensionOverrides({
-      extensions: [entityPageExtension],
+      extensions: [entityPageExtension, homePageExtension],
     }),
   ],
   /* Handled through config instead */
