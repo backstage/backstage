@@ -19,15 +19,15 @@ import yaml from 'yaml';
 
 export const examples: TemplateExample[] = [
   {
-    description: 'Waiting for 500 milliseconds',
+    description: 'Waiting for 50 milliseconds',
     example: yaml.stringify({
       steps: [
         {
           action: 'debug:wait',
           id: 'wait-milliseconds',
-          name: 'Waiting for 500 milliseconds',
+          name: 'Waiting for 50 milliseconds',
           input: {
-            milliseconds: 500,
+            milliseconds: 50,
           },
         },
       ],

@@ -53,7 +53,7 @@ describe('debug:wait examples', () => {
     const start = new Date().getTime();
     await action.handler(context);
     const end = new Date().getTime();
-    expect(end - start).toBeGreaterThanOrEqual(500 - 10); // should rarely by markedly less
-    expect(end - start).toBeLessThanOrEqual(500 + 500); // can get delayed a bit in CI
+    expect(end - start).toBeGreaterThanOrEqual(45); // should rarely by markedly less
+    expect(end - start).toBeLessThanOrEqual(500); // can get delayed a bit in CI
   });
 });
