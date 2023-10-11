@@ -129,5 +129,12 @@ export const pagesPlugin = createPlugin({
   //   //     OR
   //   //   'page1'
   // },
+  routes: {
+    page1: page1RouteRef,
+    pageX: pageXRouteRef,
+  },
+  externalRoutes: {
+    pageX: externalPageXRouteRef,
+  },
   extensions: [IndexPage, Page1, ExternalPage],
 });

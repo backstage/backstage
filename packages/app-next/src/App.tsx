@@ -16,11 +16,7 @@
 
 import React from 'react';
 import { createApp } from '@backstage/frontend-app-api';
-import {
-  externalPageXRouteRef,
-  pageXRouteRef,
-  pagesPlugin,
-} from './examples/pagesPlugin';
+import { pagesPlugin } from './examples/pagesPlugin';
 import graphiqlPlugin from '@backstage/plugin-graphiql/alpha';
 import techRadarPlugin from '@backstage/plugin-tech-radar/alpha';
 import userSettingsPlugin from '@backstage/plugin-user-settings/alpha';
@@ -77,7 +73,7 @@ const app = createApp({
     }),
   ],
   bindRoutes({ bind }) {
-    bind({ x: externalPageXRouteRef }, { x: pageXRouteRef });
+    bind(pagesPlugin.externalRoutes, { pageX: pagesPlugin.routes.pageX });
   },
 });
 

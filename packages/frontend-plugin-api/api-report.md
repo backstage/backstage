@@ -7,6 +7,8 @@
 
 import { AnyApiFactory } from '@backstage/core-plugin-api';
 import { AnyApiRef } from '@backstage/core-plugin-api';
+import { AnyExternalRoutes } from '@backstage/core-plugin-api';
+import { AnyRoutes } from '@backstage/core-plugin-api';
 import { AppTheme } from '@backstage/core-plugin-api';
 import { IconComponent } from '@backstage/core-plugin-api';
 import { JsonObject } from '@backstage/types';
@@ -40,13 +42,20 @@ export type AnyExtensionInputMap = {
 };
 
 // @public (undocumented)
-export interface BackstagePlugin {
+export interface BackstagePlugin<
+  Routes extends AnyRoutes = AnyRoutes,
+  ExternalRoutes extends AnyExternalRoutes = AnyExternalRoutes,
+> {
   // (undocumented)
   $$type: '@backstage/BackstagePlugin';
   // (undocumented)
   extensions: Extension<unknown>[];
   // (undocumented)
+  externalRoutes: ExternalRoutes;
+  // (undocumented)
   id: string;
+  // (undocumented)
+  routes: Routes;
 }
 
 // @public (undocumented)
@@ -205,7 +214,12 @@ export function createPageExtension<
 ): Extension<TConfig>;
 
 // @public (undocumented)
-export function createPlugin(options: PluginOptions): BackstagePlugin;
+export function createPlugin<
+  Routes extends AnyRoutes = AnyRoutes,
+  ExternalRoutes extends AnyExternalRoutes = AnyExternalRoutes,
+>(
+  options: PluginOptions<Routes, ExternalRoutes>,
+): BackstagePlugin<Routes, ExternalRoutes>;
 
 // @public (undocumented)
 export function createSchemaFromZod<TOutput, TInput>(
@@ -338,11 +352,18 @@ export type NavTarget = {
 };
 
 // @public (undocumented)
-export interface PluginOptions {
+export interface PluginOptions<
+  Routes extends AnyRoutes,
+  ExternalRoutes extends AnyExternalRoutes,
+> {
   // (undocumented)
   extensions?: Extension<unknown>[];
   // (undocumented)
+  externalRoutes?: ExternalRoutes;
+  // (undocumented)
   id: string;
+  // (undocumented)
+  routes?: Routes;
 }
 
 // @public (undocumented)
