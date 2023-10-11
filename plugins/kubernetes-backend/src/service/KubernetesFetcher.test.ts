@@ -26,8 +26,17 @@ import {
   rest,
 } from 'msw';
 import { setupServer } from 'msw/node';
-import { setupRequestMockHandlers } from '@backstage/backend-test-utils';
-import mockFs from 'mock-fs';
+import {
+  createMockDirectory,
+  setupRequestMockHandlers,
+} from '@backstage/backend-test-utils';
+import { Config } from '@kubernetes/client-node';
+
+const mockCertDir = createMockDirectory({
+  content: {
+    'ca.crt': 'MOCKCA',
+  },
+});
 
 const OBJECTS_TO_FETCH = new Set<ObjectToFetch>([
   {
@@ -728,13 +737,7 @@ describe('KubernetesFetcher', () => {
         expect(agent.options.ca).toBeUndefined();
       });
       describe('with a CA file on disk', () => {
-        afterEach(() => {
-          mockFs.restore();
-        });
         it('should trust contents of specified caFile', async () => {
-          mockFs({
-            '/path/to/ca.crt': 'MOCKCA',
-          });
           worker.use(
             rest.get('https://localhost:9999/api/v1/pods', (req, res, ctx) =>
               res(
@@ -752,7 +755,7 @@ describe('KubernetesFetcher', () => {
               name: 'cluster1',
               url: 'https://localhost:9999',
               authMetadata: {},
-              caFile: '/path/to/ca.crt',
+              caFile: mockCertDir.resolve('ca.crt'),
             },
             credential: { type: 'bearer token', token: 'token' },
             objectTypesToFetch: new Set<ObjectToFetch>([
@@ -899,17 +902,18 @@ describe('KubernetesFetcher', () => {
     describe('Backstage running on k8s', () => {
       const initialHost = process.env.KUBERNETES_SERVICE_HOST;
       const initialPort = process.env.KUBERNETES_SERVICE_PORT;
+      const initialCaPath = Config.SERVICEACCOUNT_CA_PATH;
+
       afterEach(() => {
         process.env.KUBERNETES_SERVICE_HOST = initialHost;
         process.env.KUBERNETES_SERVICE_PORT = initialPort;
-        mockFs.restore();
+        Config.SERVICEACCOUNT_CA_PATH = initialCaPath;
       });
+
       it('makes in-cluster requests when cluster details has no token', async () => {
         process.env.KUBERNETES_SERVICE_HOST = '10.10.10.10';
         process.env.KUBERNETES_SERVICE_PORT = '443';
-        mockFs({
-          '/var/run/secrets/kubernetes.io/serviceaccount/ca.crt': '',
-        });
+        Config.SERVICEACCOUNT_CA_PATH = mockCertDir.resolve('ca.crt');
         worker.use(
           rest.get('https://10.10.10.10/api/v1/pods', (req, res, ctx) =>
             res(

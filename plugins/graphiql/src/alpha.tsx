@@ -30,8 +30,8 @@ import {
   graphQlBrowseApiRef,
   GraphQLEndpoints,
   GraphQLEndpoint,
+  GraphiQLIcon,
 } from '@backstage/plugin-graphiql';
-import GraphiQLIcon from './assets/graphiql.icon.svg';
 import {
   createApiFactory,
   createRouteRef,
@@ -86,7 +86,7 @@ export function createEndpointExtension<TConfig extends {}>(options: {
 }) {
   return createExtension({
     id: `apis.plugin.graphiql.browse.${options.id}`,
-    at: 'apis.plugin.graphiql.browse/endpoints',
+    attachTo: { id: 'apis.plugin.graphiql.browse', input: 'endpoints' },
     configSchema: options.configSchema,
     disabled: options.disabled ?? false,
     output: {

@@ -546,6 +546,7 @@ export function loadBackendConfig(options: {
   remote?: LoadConfigOptionsRemote;
   additionalConfigs?: AppConfig[];
   argv: string[];
+  watch?: boolean;
 }): Promise<Config>;
 
 // @public (undocumented)

@@ -35,7 +35,7 @@ describe('createPageExtension', () => {
     ).toEqual({
       $$type: '@backstage/Extension',
       id: 'test',
-      at: 'core.routes/routes',
+      attachTo: { id: 'core.routes', input: 'routes' },
       configSchema: expect.anything(),
       disabled: false,
       inputs: {},
@@ -50,7 +50,7 @@ describe('createPageExtension', () => {
     expect(
       createPageExtension({
         id: 'test',
-        at: 'other/place',
+        attachTo: { id: 'other', input: 'place' },
         disabled: true,
         configSchema,
         inputs: {
@@ -63,7 +63,7 @@ describe('createPageExtension', () => {
     ).toEqual({
       $$type: '@backstage/Extension',
       id: 'test',
-      at: 'other/place',
+      attachTo: { id: 'other', input: 'place' },
       configSchema: expect.anything(),
       disabled: true,
       inputs: {
@@ -88,7 +88,7 @@ describe('createPageExtension', () => {
     ).toEqual({
       $$type: '@backstage/Extension',
       id: 'test',
-      at: 'core.routes/routes',
+      attachTo: { id: 'core.routes', input: 'routes' },
       configSchema: expect.anything(),
       disabled: false,
       inputs: {},

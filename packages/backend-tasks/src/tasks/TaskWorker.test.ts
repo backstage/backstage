@@ -371,7 +371,14 @@ describe('TaskWorker', () => {
       await worker.persistTask(settings3);
       const row3 = (await knex<DbTasksRow>(DB_TASKS_TABLE))[0];
 
-      expect(row3.next_run_start_at).toStrictEqual(row2.next_run_start_at);
+      // The new timestamp can basically be 0 or a minute depending on how the
+      // initialDelayDuration falls right on a cron boundary. This kinda
+      // contrived check removes a test flakiness based on wall clock time.
+      expect(
+        Math.abs(
+          +new Date(row3.next_run_start_at) - +new Date(row2.next_run_start_at),
+        ),
+      ).toBeLessThanOrEqual(60_000);
 
       await knex.destroy();
     },

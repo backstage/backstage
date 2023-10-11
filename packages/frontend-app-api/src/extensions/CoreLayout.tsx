@@ -24,7 +24,7 @@ import { SidebarPage } from '@backstage/core-components';
 
 export const CoreLayout = createExtension({
   id: 'core.layout',
-  at: 'root',
+  attachTo: { id: 'root', input: 'default' },
   inputs: {
     nav: createExtensionInput(
       {

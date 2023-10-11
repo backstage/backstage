@@ -20,6 +20,7 @@ import {
   BackstagePlugin,
   coreExtensionData,
   ExtensionDataRef,
+  ExtensionOverrides,
 } from '@backstage/frontend-plugin-api';
 import { Core } from '../extensions/Core';
 import { CoreRoutes } from '../extensions/CoreRoutes';
@@ -34,7 +35,6 @@ import {
   mergeExtensionParameters,
   readAppExtensionParameters,
 } from './parameters';
-import { RoutingProvider } from '../routing/RoutingContext';
 import {
   AnyApiFactory,
   ApiHolder,
@@ -52,7 +52,7 @@ import {
   identityApiRef,
   AppTheme,
 } from '@backstage/core-plugin-api';
-import { getAvailablePlugins } from './discovery';
+import { getAvailableFeatures } from './discovery';
 import {
   ApiFactoryRegistry,
   ApiProvider,
@@ -74,6 +74,8 @@ import { defaultConfigLoaderSync } from '../../../core-app-api/src/app/defaultCo
 // eslint-disable-next-line @backstage/no-relative-monorepo-imports
 import { overrideBaseUrlConfigs } from '../../../core-app-api/src/app/overrideBaseUrlConfigs';
 // eslint-disable-next-line @backstage/no-relative-monorepo-imports
+import { RoutingProvider } from '../../../core-app-api/src/routing/RoutingProvider';
+// eslint-disable-next-line @backstage/no-relative-monorepo-imports
 import {
   apis as defaultApis,
   components as defaultComponents,
@@ -82,6 +84,8 @@ import {
 import { BrowserRouter, Route } from 'react-router-dom';
 import { SidebarItem } from '@backstage/core-components';
 import { DarkTheme, LightTheme } from '../extensions/themes';
+import { extractRouteInfoFromInstanceTree } from '../routing/extractRouteInfoFromInstanceTree';
+import { getOrCreateGlobalSingleton } from '@backstage/version-bridge';
 
 /** @public */
 export interface ExtensionTreeNode {
@@ -101,9 +105,9 @@ export interface ExtensionTree {
 export function createExtensionTree(options: {
   config: Config;
 }): ExtensionTree {
-  const plugins = getAvailablePlugins();
+  const features = getAvailableFeatures();
   const { instances } = createInstances({
-    plugins,
+    features,
     config: options.config,
   });
 
@@ -169,7 +173,7 @@ export function createExtensionTree(options: {
  * @internal
  */
 export function createInstances(options: {
-  plugins: BackstagePlugin[];
+  features: (BackstagePlugin | ExtensionOverrides)[];
   config: Config;
 }) {
   const builtinExtensions = [
@@ -184,7 +188,7 @@ export function createInstances(options: {
   // pull in default extension instance from discovered packages
   // apply config to adjust default extension instances and add more
   const extensionParams = mergeExtensionParameters({
-    sources: options.plugins,
+    features: options.features,
     builtinExtensions,
     parameters: readAppExtensionParameters(options.config),
   });
@@ -198,8 +202,8 @@ export function createInstances(options: {
     Map<string, ExtensionInstanceParameters[]>
   >();
   for (const instanceParams of extensionParams) {
-    const [extensionId, pointId = 'default'] = instanceParams.at.split('/');
-
+    const extensionId = instanceParams.attachTo.id;
+    const pointId = instanceParams.attachTo.input;
     let pointMap = attachmentMap.get(extensionId);
     if (!pointMap) {
       pointMap = new Map();
@@ -257,9 +261,11 @@ export function createInstances(options: {
 
 /** @public */
 export function createApp(options: {
-  plugins: BackstagePlugin[];
+  features?: (BackstagePlugin | ExtensionOverrides)[];
   configLoader?: () => Promise<ConfigApi>;
-  pluginLoader?: (ctx: { config: ConfigApi }) => Promise<BackstagePlugin[]>;
+  featureLoader?: (ctx: {
+    config: ConfigApi;
+  }) => Promise<(BackstagePlugin | ExtensionOverrides)[]>;
 }): {
   createRoot(): JSX.Element;
 } {
@@ -270,18 +276,22 @@ export function createApp(options: {
         overrideBaseUrlConfigs(defaultConfigLoaderSync()),
       );
 
-    const discoveredPlugins = getAvailablePlugins();
-    const loadedPlugins = (await options.pluginLoader?.({ config })) ?? [];
-    const allPlugins = Array.from(
-      new Set([...discoveredPlugins, ...options.plugins, ...loadedPlugins]),
+    const discoveredFeatures = getAvailableFeatures();
+    const loadedFeatures = (await options.featureLoader?.({ config })) ?? [];
+    const allFeatures = Array.from(
+      new Set([
+        ...discoveredFeatures,
+        ...(options.features ?? []),
+        ...loadedFeatures,
+      ]),
     );
 
     const { rootInstances } = createInstances({
-      plugins: allPlugins,
+      features: allFeatures,
       config,
     });
 
-    const routePaths = extractRouteInfoFromInstanceTree(rootInstances);
+    const routeInfo = extractRouteInfoFromInstanceTree(rootInstances);
 
     const coreInstance = rootInstances.find(({ id }) => id === 'core');
     if (!coreInstance) {
@@ -290,7 +300,11 @@ export function createApp(options: {
 
     const apiHolder = createApiHolder(coreInstance, config);
 
-    const appContext = createLegacyAppContext(allPlugins);
+    const appContext = createLegacyAppContext(
+      allFeatures.filter(
+        (f): f is BackstagePlugin => f.$$type === '@backstage/BackstagePlugin',
+      ),
+    );
 
     const rootElements = rootInstances
       .map(e => (
@@ -304,7 +318,7 @@ export function createApp(options: {
       <ApiProvider apis={apiHolder}>
         <AppContextProvider appContext={appContext}>
           <AppThemeProvider>
-            <RoutingProvider routePaths={routePaths}>
+            <RoutingProvider {...routeInfo} routeBindings={new Map(/* TODO */)}>
               {/* TODO: set base path using the logic from AppRouter */}
               <BrowserRouter>{rootElements}</BrowserRouter>
             </RoutingProvider>
@@ -328,25 +342,40 @@ export function createApp(options: {
   };
 }
 
-function toLegacyPlugin(plugin: BackstagePlugin): LegacyBackstagePlugin {
+// Make sure that we only convert each new plugin instance to its legacy equivalent once
+const legacyPluginStore = getOrCreateGlobalSingleton(
+  'legacy-plugin-compatibility-store',
+  () => new WeakMap<BackstagePlugin, LegacyBackstagePlugin>(),
+);
+
+export function toLegacyPlugin(plugin: BackstagePlugin): LegacyBackstagePlugin {
+  let legacy = legacyPluginStore.get(plugin);
+  if (legacy) {
+    return legacy;
+  }
+
   const errorMsg = 'Not implemented in legacy plugin compatibility layer';
   const notImplemented = () => {
     throw new Error(errorMsg);
   };
-  return {
+
+  legacy = {
     getId(): string {
       return plugin.id;
     },
-    get routes(): never {
-      throw new Error(errorMsg);
+    get routes() {
+      return {};
     },
-    get externalRoutes(): never {
-      throw new Error(errorMsg);
+    get externalRoutes() {
+      return {};
     },
     getApis: notImplemented,
     getFeatureFlags: notImplemented,
     provide: notImplemented,
   };
+
+  legacyPluginStore.set(plugin, legacy);
+  return legacy;
 }
 
 function createLegacyAppContext(plugins: BackstagePlugin[]): AppContext {
@@ -457,39 +486,4 @@ function createApiHolder(
   ApiResolver.validateFactories(factoryRegistry, factoryRegistry.getAllApis());
 
   return new ApiResolver(factoryRegistry);
-}
-
-/** @internal */
-export function extractRouteInfoFromInstanceTree(
-  roots: ExtensionInstance[],
-): Map<RouteRef, string> {
-  const results = new Map<RouteRef, string>();
-
-  function visit(current: ExtensionInstance, basePath: string) {
-    const routePath = current.getData(coreExtensionData.routePath) ?? '';
-    const routeRef = current.getData(coreExtensionData.routeRef);
-
-    // TODO: join paths in a more robust way
-    const fullPath = basePath + routePath;
-    if (routeRef) {
-      const routeRefId = (routeRef as any).id; // TODO: properly
-      if (routeRefId !== current.id) {
-        throw new Error(
-          `Route ref '${routeRefId}' must have the same ID as extension '${current.id}'`,
-        );
-      }
-      results.set(routeRef, fullPath);
-    }
-
-    for (const children of current.attachments.values()) {
-      for (const child of children) {
-        visit(child, fullPath);
-      }
-    }
-  }
-
-  for (const root of roots) {
-    visit(root, '');
-  }
-  return results;
 }

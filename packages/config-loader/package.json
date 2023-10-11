@@ -1,7 +1,7 @@
 {
   "name": "@backstage/config-loader",
   "description": "Config loading functionality used by Backstage backend, and CLI",
-  "version": "1.5.1-next.0",
+  "version": "1.5.1-next.1",
   "publishConfig": {
     "access": "public",
     "main": "dist/index.cjs.js",
@@ -47,17 +47,14 @@
     "lodash": "^4.17.21",
     "minimist": "^1.2.5",
     "node-fetch": "^2.6.7",
-    "typescript-json-schema": "^0.55.0",
-    "yaml": "^2.0.0",
-    "yup": "^0.32.9"
+    "typescript-json-schema": "^0.61.0",
+    "yaml": "^2.0.0"
   },
   "devDependencies": {
     "@backstage/backend-test-utils": "workspace:^",
     "@backstage/cli": "workspace:^",
     "@types/json-schema-merge-allof": "^0.6.0",
     "@types/mock-fs": "^4.10.0",
-    "@types/yup": "^0.29.13",
-    "mock-fs": "^5.2.0",
     "msw": "^1.0.0",
     "zen-observable": "^0.10.0"
   },

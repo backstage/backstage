@@ -73,6 +73,7 @@ module.exports = {
       // Replace all HTML comments with emtpy strings as these are not supported by MDXv2.
       return fileContent.replace(/<!--.*?-->/gs, '');
     },
+    format: 'md',
   },
   webpack: {
     jsLoader: isServer => ({

@@ -81,6 +81,7 @@ export interface Job {
   builds: JobBuild[];
 }
 
+/** @public */
 export interface Project {
   // standard Jenkins
   lastBuild: Build;

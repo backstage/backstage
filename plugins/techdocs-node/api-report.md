@@ -21,6 +21,7 @@ import { Writable } from 'stream';
 export class DirectoryPreparer implements PreparerBase {
   static fromConfig(config: Config, options: PreparerConfig): DirectoryPreparer;
   prepare(entity: Entity, options?: PreparerOptions): Promise<PreparerResponse>;
+  shouldCleanPreparedDirectory(): boolean;
 }
 
 // @public
@@ -88,9 +89,10 @@ export const getLocationForEntity: (
 // @public @deprecated (undocumented)
 export const getMkDocsYml: (
   inputDir: string,
-  siteOptions?:
+  options?:
     | {
         name?: string | undefined;
+        mkdocsConfigFileName?: string | undefined;
       }
     | undefined,
 ) => Promise<{
@@ -102,8 +104,9 @@ export const getMkDocsYml: (
 // @public
 export const getMkdocsYml: (
   inputDir: string,
-  siteOptions?: {
+  options?: {
     name?: string;
+    mkdocsConfigFileName?: string;
   },
 ) => Promise<{
   path: string;
@@ -132,6 +135,7 @@ export const parseReferenceAnnotation: (
 // @public
 export type PreparerBase = {
   prepare(entity: Entity, options?: PreparerOptions): Promise<PreparerResponse>;
+  shouldCleanPreparedDirectory(): boolean;
 };
 
 // @public
@@ -274,5 +278,6 @@ export const transformDirLocation: (
 export class UrlPreparer implements PreparerBase {
   static fromConfig(options: PreparerConfig): UrlPreparer;
   prepare(entity: Entity, options?: PreparerOptions): Promise<PreparerResponse>;
+  shouldCleanPreparedDirectory(): boolean;
 }
 ```

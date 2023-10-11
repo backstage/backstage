@@ -136,7 +136,10 @@ export interface CreateExtensionOptions<
   TConfig,
 > {
   // (undocumented)
-  at: string;
+  attachTo: {
+    id: string;
+    input: string;
+  };
   // (undocumented)
   configSchema?: PortableSchema<TConfig>;
   // (undocumented)
@@ -155,6 +158,11 @@ export interface CreateExtensionOptions<
   // (undocumented)
   output: TOutput;
 }
+
+// @public (undocumented)
+export function createExtensionOverrides(
+  options: ExtensionOverridesOptions,
+): ExtensionOverrides;
 
 // @public
 export function createNavItemExtension(options: {
@@ -182,7 +190,10 @@ export function createPageExtension<
       }
   ) & {
     id: string;
-    at?: string;
+    attachTo?: {
+      id: string;
+      input: string;
+    };
     disabled?: boolean;
     inputs?: TInputs;
     routeRef?: RouteRef;
@@ -209,7 +220,10 @@ export interface Extension<TConfig> {
   // (undocumented)
   $$type: '@backstage/Extension';
   // (undocumented)
-  at: string;
+  attachTo: {
+    id: string;
+    input: string;
+  };
   // (undocumented)
   configSchema?: PortableSchema<TConfig>;
   // (undocumented)
@@ -305,6 +319,18 @@ export type ExtensionInputValues<
 };
 
 // @public (undocumented)
+export interface ExtensionOverrides {
+  // (undocumented)
+  $$type: '@backstage/ExtensionOverrides';
+}
+
+// @public (undocumented)
+export interface ExtensionOverridesOptions {
+  // (undocumented)
+  extensions: Extension<unknown>[];
+}
+
+// @public (undocumented)
 export type NavTarget = {
   title: string;
   icon: IconComponent;
@@ -324,7 +350,4 @@ export type PortableSchema<TOutput> = {
   parse: (input: unknown) => TOutput;
   schema: JsonObject;
 };
-
-// @public (undocumented)
-export function useRouteRef(routeRef: RouteRef<any>): () => string;
 ```

@@ -1,5 +1,14 @@
 # @backstage/plugin-permission-common
 
+## 0.7.9-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/errors@1.2.3-next.0
+  - @backstage/config@1.1.1-next.0
+  - @backstage/types@1.1.1
+
 ## 0.7.8
 
 ### Patch Changes

@@ -51,7 +51,7 @@ export function createApiExtension<
 
   return createExtension({
     id: `apis.${apiRef.id}`,
-    at: 'core/apis',
+    attachTo: { id: 'core', input: 'apis' },
     inputs: extensionInputs,
     configSchema,
     output: {

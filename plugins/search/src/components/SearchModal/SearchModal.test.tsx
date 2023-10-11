@@ -205,6 +205,7 @@ describe('SearchModal', () => {
 
     const input = screen.getByLabelText('Search');
     await userEvent.clear(input);
+    await 'a tick';
     await userEvent.type(input, 'new term{enter}');
 
     expect(navigate).toHaveBeenCalledWith('/search?query=new term');

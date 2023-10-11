@@ -40,6 +40,11 @@ export interface FileConfigSourceOptions {
   path: string;
 
   /**
+   * Set to `false` to disable file watching, defaults to `true`.
+   */
+  watch?: boolean;
+
+  /**
    * A substitution function to use instead of the default environment substitution.
    */
   substitutionFunc?: SubstitutionFunc;
@@ -89,10 +94,12 @@ export class FileConfigSource implements ConfigSource {
 
   readonly #path: string;
   readonly #substitutionFunc?: SubstitutionFunc;
+  readonly #watch?: boolean;
 
   private constructor(options: FileConfigSourceOptions) {
     this.#path = options.path;
     this.#substitutionFunc = options.substitutionFunc;
+    this.#watch = options.watch ?? true;
   }
 
   // Work is duplicated across each read, in practice that should not
@@ -104,20 +111,27 @@ export class FileConfigSource implements ConfigSource {
     const signal = options?.signal;
     const configFileName = basename(this.#path);
 
-    // Keep track of watched paths, since this is simpler than resetting the watcher
-    const watchedPaths = new Array<string>();
-    const watcher = chokidar.watch(this.#path, {
-      usePolling: process.env.NODE_ENV === 'test',
-    });
+    let watchedPaths: Array<string> | null = null;
+    let watcher: FSWatcher | null = null;
+
+    if (this.#watch) {
+      // Keep track of watched paths, since this is simpler than resetting the watcher
+      watchedPaths = new Array<string>();
+      watcher = chokidar.watch(this.#path, {
+        usePolling: process.env.NODE_ENV === 'test',
+      });
+    }
 
     const dir = dirname(this.#path);
     const transformer = createConfigTransformer({
       substitutionFunc: this.#substitutionFunc,
       readFile: async path => {
         const fullPath = resolvePath(dir, path);
-        // Any files discovered while reading this config should be watched too
-        watcher.add(fullPath);
-        watchedPaths.push(fullPath);
+        if (watcher && watchedPaths) {
+          // Any files discovered while reading this config should be watched too
+          watcher.add(fullPath);
+          watchedPaths.push(fullPath);
+        }
 
         const data = await readFile(fullPath);
         if (data === undefined) {
@@ -131,12 +145,15 @@ export class FileConfigSource implements ConfigSource {
 
     // This is the entry point for reading the file, called initially and on change
     const readConfigFile = async (): Promise<ConfigSourceData[]> => {
-      // We clear the watched files every time we initiate a new read
-      watcher.unwatch(watchedPaths);
-      watchedPaths.length = 0;
+      if (watcher && watchedPaths) {
+        // We clear the watched files every time we initiate a new read
+        watcher.unwatch(watchedPaths);
+        watchedPaths.length = 0;
 
-      watcher.add(this.#path);
-      watchedPaths.push(this.#path);
+        watcher.add(this.#path);
+        watchedPaths.push(this.#path);
+      }
+
       const content = await readFile(this.#path);
       if (content === undefined) {
         throw new NotFoundError(`Config file "${this.#path}" does not exist`);
@@ -157,18 +174,20 @@ export class FileConfigSource implements ConfigSource {
 
     const onAbort = () => {
       signal?.removeEventListener('abort', onAbort);
-      watcher.close();
+      if (watcher) watcher.close();
     };
     signal?.addEventListener('abort', onAbort);
 
     yield { configs: await readConfigFile() };
 
-    for (;;) {
-      const event = await this.#waitForEvent(watcher, signal);
-      if (event === 'abort') {
-        return;
+    if (watcher) {
+      for (;;) {
+        const event = await this.#waitForEvent(watcher, signal);
+        if (event === 'abort') {
+          return;
+        }
+        yield { configs: await readConfigFile() };
       }
-      yield { configs: await readConfigFile() };
     }
   }
 

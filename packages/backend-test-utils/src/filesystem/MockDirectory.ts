@@ -31,6 +31,28 @@ import {
 const tmpdirMarker = Symbol('os-tmpdir-mock');
 
 /**
+ * A context that allows for more advanced file system operations when writing mock directory content.
+ *
+ * @public
+ */
+export interface MockDirectoryContentCallbackContext {
+  /** Absolute path to the location of this piece of content on the filesystem */
+  path: string;
+
+  /** Creates a symbolic link at the current location */
+  symlink(target: string): void;
+}
+
+/**
+ * A callback that allows for more advanced file system operations when writing mock directory content.
+ *
+ * @public
+ */
+export type MockDirectoryContentCallback = (
+  ctx: MockDirectoryContentCallbackContext,
+) => void;
+
+/**
  * The content of a mock directory represented by a nested object structure.
  *
  * @remarks
@@ -54,7 +76,11 @@ const tmpdirMarker = Symbol('os-tmpdir-mock');
  * @public
  */
 export type MockDirectoryContent = {
-  [name in string]: MockDirectoryContent | string | Buffer;
+  [name in string]:
+    | MockDirectoryContent
+    | string
+    | Buffer
+    | MockDirectoryContentCallback;
 };
 
 /**
@@ -178,6 +204,11 @@ type MockEntry =
   | {
       type: 'dir';
       path: string;
+    }
+  | {
+      type: 'callback';
+      path: string;
+      callback: MockDirectoryContentCallback;
     };
 
 /** @internal */
@@ -214,10 +245,18 @@ class MockDirectoryImpl {
       }
 
       if (entry.type === 'dir') {
-        fs.ensureDirSync(fullPath, { mode: 0o777 });
+        fs.ensureDirSync(fullPath);
       } else if (entry.type === 'file') {
-        fs.ensureDirSync(dirname(fullPath), { mode: 0o777 });
-        fs.writeFileSync(fullPath, entry.content, { mode: 0o666 });
+        fs.ensureDirSync(dirname(fullPath));
+        fs.writeFileSync(fullPath, entry.content);
+      } else if (entry.type === 'callback') {
+        fs.ensureDirSync(dirname(fullPath));
+        entry.callback({
+          path: fullPath,
+          symlink(target: string) {
+            fs.symlinkSync(target, fullPath);
+          },
+        });
       }
     }
   }
@@ -279,19 +318,20 @@ class MockDirectoryImpl {
     const entries: MockEntry[] = [];
 
     function traverse(node: MockDirectoryContent[string], path: string) {
-      const trimmedPath = path.startsWith('/') ? path.slice(1) : path; // trim leading slash
       if (typeof node === 'string') {
         entries.push({
           type: 'file',
-          path: trimmedPath,
+          path,
           content: Buffer.from(node, 'utf8'),
         });
       } else if (node instanceof Buffer) {
-        entries.push({ type: 'file', path: trimmedPath, content: node });
+        entries.push({ type: 'file', path, content: node });
+      } else if (typeof node === 'function') {
+        entries.push({ type: 'callback', path, callback: node });
       } else {
-        entries.push({ type: 'dir', path: trimmedPath });
+        entries.push({ type: 'dir', path });
         for (const [name, child] of Object.entries(node)) {
-          traverse(child, `${trimmedPath}/${name}`);
+          traverse(child, path ? `${path}/${name}` : name);
         }
       }
     }
