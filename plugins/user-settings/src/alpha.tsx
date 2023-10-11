@@ -1,11 +1,3 @@
-import { createRouteRef } from '@backstage/core-plugin-api';
-import {
-  coreExtensionData,
-  createExtensionInput,
-  createPageExtension,
-  createPlugin,
-} from '@backstage/frontend-plugin-api';
-
 /*
  * Copyright 2023 The Backstage Authors
  *
@@ -21,6 +13,14 @@ import {
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+import { createRouteRef } from '@backstage/core-plugin-api';
+import {
+  coreExtensionData,
+  createExtensionInput,
+  createPageExtension,
+  createPlugin,
+} from '@backstage/frontend-plugin-api';
+
 import React from 'react';
 
 export * from './translation';
