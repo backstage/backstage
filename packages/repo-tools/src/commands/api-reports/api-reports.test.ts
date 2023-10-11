@@ -14,7 +14,6 @@
  * limitations under the License.
  */
 
-import mockFs from 'mock-fs';
 import { normalize, resolve as resolvePath } from 'path';
 import * as pathsLib from '../../lib/paths';
 
@@ -28,6 +27,7 @@ import {
 import { buildApiReports } from './api-reports';
 import { generateTypeDeclarations } from './generateTypeDeclarations';
 import { PackageGraph } from '@backstage/cli-node';
+import { createMockDirectory } from '@backstage/backend-test-utils';
 
 jest.mock('./generateTypeDeclarations');
 // create mocks for the dependencies of the `buildApiReports` function
@@ -77,8 +77,10 @@ jest.spyOn(PackageGraph, 'listTargetPackages').mockResolvedValue([
 ]);
 
 describe('buildApiReports', () => {
+  const mockDir = createMockDirectory();
+
   beforeEach(() => {
-    mockFs({
+    mockDir.setContent({
       [projectPaths.targetRoot]: {
         'package.json': JSON.stringify({
           workspaces: { packages: ['packages/*', 'plugins/*'] },
@@ -106,11 +108,6 @@ describe('buildApiReports', () => {
         },
       },
     });
-  });
-
-  afterEach(() => {
-    mockFs.restore();
-    jest.clearAllMocks();
   });
 
   jest.spyOn(console, 'log').mockImplementation(() => {});
