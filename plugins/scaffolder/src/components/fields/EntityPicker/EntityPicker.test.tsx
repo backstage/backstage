@@ -38,6 +38,7 @@ describe('<EntityPicker />', () => {
   let uiSchema: EntityPickerProps['uiSchema'];
   const rawErrors: string[] = [];
   const formData = undefined;
+  const formContext = { formData: {} };
 
   let props: FieldProps;
 
@@ -76,6 +77,7 @@ describe('<EntityPicker />', () => {
         uiSchema,
         rawErrors,
         formData,
+        formContext,
       } as unknown as FieldProps<any>;
 
       catalogApi.getEntities.mockResolvedValue({ items: entities });
@@ -117,6 +119,7 @@ describe('<EntityPicker />', () => {
         uiSchema,
         rawErrors,
         formData,
+        formContext,
       } as unknown as FieldProps<any>;
 
       catalogApi.getEntities.mockResolvedValue({ items: entities });
@@ -160,6 +163,7 @@ describe('<EntityPicker />', () => {
         uiSchema,
         rawErrors,
         formData,
+        formContext,
       } as unknown as FieldProps<any>;
 
       catalogApi.getEntities.mockResolvedValue({ items: entities });
@@ -240,6 +244,62 @@ describe('<EntityPicker />', () => {
     });
   });
 
+  describe('with catalogFilter dependency on formContext', () => {
+    beforeEach(() => {
+      uiSchema = {
+        'ui:options': {
+          catalogFilter: [
+            {
+              kind: ['Group'],
+              'metadata.name': '{{ parameters.group }}',
+            },
+            {
+              kind: ['User'],
+              'metadata.name': '{{ parameters.user }}',
+            },
+          ],
+        },
+      };
+      props = {
+        onChange,
+        schema,
+        required,
+        uiSchema,
+        rawErrors,
+        formData,
+        formContext: {
+          formData: {
+            group: 'test-group',
+            user: 'user-group',
+          },
+        },
+      } as unknown as FieldProps<any>;
+
+      catalogApi.getEntities.mockResolvedValue({ items: entities });
+    });
+
+    it('searches for a specific group based on form context data', async () => {
+      await renderInTestApp(
+        <Wrapper>
+          <EntityPicker {...props} />
+        </Wrapper>,
+      );
+
+      expect(catalogApi.getEntities).toHaveBeenCalledWith({
+        filter: [
+          {
+            kind: ['Group'],
+            'metadata.name': 'test-group',
+          },
+          {
+            kind: ['User'],
+            'metadata.name': 'user-group',
+          },
+        ],
+      });
+    });
+  });
+
   describe('catalogFilter should take precedence over allowedKinds', () => {
     beforeEach(() => {
       uiSchema = {
@@ -260,6 +320,7 @@ describe('<EntityPicker />', () => {
         uiSchema,
         rawErrors,
         formData,
+        formContext,
       } as unknown as FieldProps<any>;
 
       catalogApi.getEntities.mockResolvedValue({ items: entities });
@@ -297,6 +358,7 @@ describe('<EntityPicker />', () => {
         uiSchema,
         rawErrors,
         formData,
+        formContext,
       } as unknown as FieldProps<any>;
 
       catalogApi.getEntities.mockResolvedValue({ items: entities });
@@ -356,6 +418,7 @@ describe('<EntityPicker />', () => {
         uiSchema,
         rawErrors,
         formData,
+        formContext,
       } as unknown as FieldProps<any>;
 
       catalogApi.getEntities.mockResolvedValue({ items: entities });
@@ -453,6 +516,7 @@ describe('<EntityPicker />', () => {
         uiSchema,
         rawErrors,
         formData,
+        formContext,
       } as unknown as FieldProps<any>;
 
       catalogApi.getEntities.mockResolvedValue({ items: entities });
@@ -551,6 +615,7 @@ describe('<EntityPicker />', () => {
         uiSchema,
         rawErrors,
         formData,
+        formContext,
       } as unknown as FieldProps<any>;
 
       catalogApi.getEntities.mockResolvedValue({ items: entities });
@@ -649,6 +714,7 @@ describe('<EntityPicker />', () => {
         uiSchema,
         rawErrors,
         formData,
+        formContext,
       } as unknown as FieldProps<any>;
 
       catalogApi.getEntities.mockResolvedValue({ items: entities });

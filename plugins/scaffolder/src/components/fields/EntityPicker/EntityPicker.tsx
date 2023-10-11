@@ -32,7 +32,7 @@ import FormControl from '@material-ui/core/FormControl';
 import Autocomplete, {
   AutocompleteChangeReason,
 } from '@material-ui/lab/Autocomplete';
-import React, { useCallback, useEffect } from 'react';
+import React, { useCallback, useEffect, useState } from 'react';
 import useAsync from 'react-use/lib/useAsync';
 import {
   EntityPickerFilterQueryValue,
@@ -40,6 +40,7 @@ import {
   EntityPickerUiOptions,
   EntityPickerFilterQuery,
 } from './schema';
+import { renderString } from 'nunjucks';
 
 export { EntityPickerSchema } from './schema';
 
@@ -58,8 +59,10 @@ export const EntityPicker = (props: EntityPickerProps) => {
     rawErrors,
     formData,
     idSchema,
+    formContext,
   } = props;
-  const catalogFilter = buildCatalogFilter(uiSchema);
+  const [catalogFilter, setCatalogFilter] = useState<EntityFilterQuery>();
+
   const defaultKind = uiSchema['ui:options']?.defaultKind;
   const defaultNamespace =
     uiSchema['ui:options']?.defaultNamespace || undefined;
@@ -71,7 +74,7 @@ export const EntityPicker = (props: EntityPickerProps) => {
       catalogFilter ? { filter: catalogFilter } : undefined,
     );
     return items;
-  });
+  }, [catalogFilter]);
   const allowArbitraryValues =
     uiSchema['ui:options']?.allowArbitraryValues ?? true;
 
@@ -124,10 +127,27 @@ export const EntityPicker = (props: EntityPickerProps) => {
   );
 
   useEffect(() => {
+    setCatalogFilter(
+      buildCatalogFilter(uiSchema, {
+        parameters: formContext.formData,
+      }),
+    );
+  }, [formContext.formData, uiSchema]);
+
+  useEffect(() => {
+    if (
+      formData &&
+      entities &&
+      !entities.find(e => stringifyEntityRef(e) === formData)
+    ) {
+      onChange(undefined);
+      return;
+    }
+
     if (entities?.length === 1) {
       onChange(stringifyEntityRef(entities[0]));
     }
-  }, [entities, onChange]);
+  }, [entities, onChange, formData]);
 
   return (
     <FormControl
@@ -198,11 +218,14 @@ function convertOpsValues(
  */
 function convertSchemaFiltersToQuery(
   schemaFilters: EntityPickerFilterQuery,
+  context: object,
 ): Exclude<EntityFilterQuery, Array<any>> {
   const query: EntityFilterQuery = {};
 
   for (const [key, value] of Object.entries(schemaFilters)) {
-    if (Array.isArray(value)) {
+    if (typeof value === 'string') {
+      query[key] = renderString(value, context);
+    } else if (Array.isArray(value)) {
       query[key] = value;
     } else {
       query[key] = convertOpsValues(value);
@@ -222,6 +245,7 @@ function convertSchemaFiltersToQuery(
  */
 function buildCatalogFilter(
   uiSchema: EntityPickerProps['uiSchema'],
+  context: object,
 ): EntityFilterQuery | undefined {
   const allowedKinds = uiSchema['ui:options']?.allowedKinds;
 
@@ -234,8 +258,10 @@ function buildCatalogFilter(
   }
 
   if (Array.isArray(catalogFilter)) {
-    return catalogFilter.map(convertSchemaFiltersToQuery);
+    return catalogFilter.map(schemaFilter =>
+      convertSchemaFiltersToQuery(schemaFilter, context),
+    );
   }
 
-  return convertSchemaFiltersToQuery(catalogFilter);
+  return convertSchemaFiltersToQuery(catalogFilter, context);
 }

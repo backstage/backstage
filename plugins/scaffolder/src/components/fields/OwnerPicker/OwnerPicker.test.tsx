@@ -44,6 +44,7 @@ describe('<OwnerPicker />', () => {
   };
   const rawErrors: string[] = [];
   const formData = undefined;
+  const formContext = { formData: {} };
 
   let props: FieldProps;
 
@@ -82,6 +83,7 @@ describe('<OwnerPicker />', () => {
         uiSchema,
         rawErrors,
         formData,
+        formContext,
       } as unknown as FieldProps<any>;
 
       catalogApi.getEntities.mockResolvedValue({ items: entities });
@@ -112,6 +114,7 @@ describe('<OwnerPicker />', () => {
         uiSchema,
         rawErrors,
         formData,
+        formContext,
       } as unknown as FieldProps<any>;
 
       catalogApi.getEntities.mockResolvedValue({ items: entities });
@@ -151,6 +154,7 @@ describe('<OwnerPicker />', () => {
         uiSchema,
         rawErrors,
         formData,
+        formContext,
       } as unknown as FieldProps<any>;
 
       catalogApi.getEntities.mockResolvedValue({ items: entities });
@@ -196,6 +200,7 @@ describe('<OwnerPicker />', () => {
         uiSchema,
         rawErrors,
         formData,
+        formContext,
       } as unknown as FieldProps<any>;
 
       catalogApi.getEntities.mockResolvedValue({ items: entities });
