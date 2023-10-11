@@ -34349,7 +34349,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"open@npm:^7.2.1, open@npm:^7.4.2":
+"open@npm:^7.4.2":
   version: 7.4.2
   resolution: "open@npm:7.4.2"
   dependencies:
@@ -38468,7 +38468,6 @@ __metadata:
     lint-staged: ^13.0.0
     minimist: ^1.2.5
     node-gyp: ^9.4.0
-    open: ^7.2.1
     prettier: ^2.2.1
     semver: ^7.5.3
     shx: ^0.3.2

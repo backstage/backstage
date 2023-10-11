@@ -17,7 +17,6 @@
 
 const fs = require('fs-extra');
 const path = require('path');
-const open = require('open');
 const { execFile: execFileCb } = require('child_process');
 const { promisify } = require('util');
 
@@ -137,9 +136,7 @@ async function main() {
     if (err) throw err;
   });
 
-  console.log(`📄 Opening ${file} file...`);
-
-  open(file);
+  console.log(`📄 Report generated at ${file}`);
 }
 
 main(process.argv.slice(2)).catch(error => {
