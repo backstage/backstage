@@ -291,6 +291,19 @@ export interface TemplateGroupsProps {
 }
 
 // @alpha
+export const useFeatureFlaggedProperties: (
+  manifest: TemplateParameterSchema | undefined,
+) => {
+  steps: {
+    title: string;
+    description?: string | undefined;
+    schema: JsonObject;
+  }[];
+  title: string;
+  description?: string | undefined;
+} | null;
+
+// @alpha
 export const useFormDataFromQuery: (
   initialState?: Record<string, JsonValue>,
 ) => [Record<string, any>, Dispatch<SetStateAction<Record<string, any>>>];
