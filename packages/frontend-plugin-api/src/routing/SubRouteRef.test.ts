@@ -14,24 +14,29 @@
  * limitations under the License.
  */
 
-import { AnyParams, SubRouteRef } from './types';
-import { createSubRouteRef } from './SubRouteRef';
+import { AnyRouteParams } from './types';
+import {
+  SubRouteRef,
+  createSubRouteRef,
+  toInternalSubRouteRef,
+} from './SubRouteRef';
 import { createRouteRef } from './RouteRef';
 
-const parent = createRouteRef({ id: 'parent' });
-const parentX = createRouteRef({ id: 'parent-x', params: ['x'] });
+const parent = createRouteRef();
+const parentX = createRouteRef({ params: ['x'] });
 
 describe('SubRouteRef', () => {
   it('should be created', () => {
-    const routeRef: SubRouteRef<undefined> = createSubRouteRef({
+    const routeRef: SubRouteRef = createSubRouteRef({
       parent,
       id: 'my-route-ref',
       path: '/foo',
     });
-    expect(routeRef.path).toBe('/foo');
-    expect(routeRef.parent).toBe(parent);
-    expect(routeRef.params).toEqual([]);
-    expect(String(routeRef)).toBe('routeRef{type=sub,id=my-route-ref}');
+    const internal = toInternalSubRouteRef(routeRef);
+    expect(internal.path).toBe('/foo');
+    expect(internal.getParent()).toBe(parent);
+    expect(internal.getParams()).toEqual([]);
+    expect(String(internal)).toBe('SubRouteRef{}');
   });
 
   it('should be created with params', () => {
@@ -40,9 +45,10 @@ describe('SubRouteRef', () => {
       id: 'my-other-route-ref',
       path: '/foo/:bar',
     });
-    expect(routeRef.path).toBe('/foo/:bar');
-    expect(routeRef.parent).toBe(parent);
-    expect(routeRef.params).toEqual(['bar']);
+    const internal = toInternalSubRouteRef(routeRef);
+    expect(internal.path).toBe('/foo/:bar');
+    expect(internal.getParent()).toBe(parent);
+    expect(internal.getParams()).toEqual(['bar']);
   });
 
   it('should be created with merged params', () => {
@@ -55,9 +61,10 @@ describe('SubRouteRef', () => {
       id: 'my-other-route-ref',
       path: '/foo/:y/:z',
     });
-    expect(routeRef.path).toBe('/foo/:y/:z');
-    expect(routeRef.parent).toBe(parentX);
-    expect(routeRef.params).toEqual(['x', 'y', 'z']);
+    const internal = toInternalSubRouteRef(routeRef);
+    expect(internal.path).toBe('/foo/:y/:z');
+    expect(internal.getParent()).toBe(parentX);
+    expect(internal.getParams()).toEqual(['x', 'y', 'z']);
   });
 
   it('should be created with params from parent', () => {
@@ -66,9 +73,10 @@ describe('SubRouteRef', () => {
       id: 'my-other-route-ref',
       path: '/foo/bar',
     });
-    expect(routeRef.path).toBe('/foo/bar');
-    expect(routeRef.parent).toBe(parentX);
-    expect(routeRef.params).toEqual(['x']);
+    const internal = toInternalSubRouteRef(routeRef);
+    expect(internal.path).toBe('/foo/bar');
+    expect(internal.getParent()).toBe(parentX);
+    expect(internal.getParams()).toEqual(['x']);
   });
 
   it.each([
@@ -88,39 +96,42 @@ describe('SubRouteRef', () => {
   });
 
   it('should properly infer and parse path parameters', () => {
-    function validateType<T extends AnyParams>(_ref: SubRouteRef<T>) {}
+    function checkSubRouteRef<T extends AnyRouteParams>(
+      _ref: SubRouteRef<T>,
+      _params: T extends undefined ? undefined : T,
+    ) {}
 
     const _1 = createSubRouteRef({ id: '1', parent, path: '/foo/bar' });
     // @ts-expect-error
-    validateType<{ x: string }>(_1);
-    validateType<undefined>(_1);
+    checkSubRouteRef(_1, { x: '' });
+    checkSubRouteRef(_1, undefined);
 
     const _2 = createSubRouteRef({ id: '2', parent, path: '/foo/:x/:y' });
     // @ts-expect-error
-    validateType<undefined>(_2);
+    checkSubRouteRef(_2, undefined);
     // @ts-expect-error
-    validateType<{ x: string; z: string }>(_2);
+    checkSubRouteRef(_2, { x: '', z: '' });
     // @ts-expect-error
-    validateType<{ y: string }>(_2);
-    // extra z, we validate this at runtime instead
-    validateType<{ x: string; y: string; z: string }>(_2);
-    validateType<{ x: string; y: string }>(_2);
+    checkSubRouteRef(_2, { y: '' });
+    // @ts-expect-error
+    checkSubRouteRef(_2, { x: '', y: '', z: '' });
+    checkSubRouteRef(_2, { x: '', y: '' });
 
     const _3 = createSubRouteRef({ id: '3', parent: parentX, path: '/foo' });
     // @ts-expect-error
-    validateType<undefined>(_3);
+    checkSubRouteRef(_3, undefined);
     // @ts-expect-error
-    validateType<{ y: string }>(_3);
-    validateType<{ x: string }>(_3);
+    checkSubRouteRef(_3, { y: '' });
+    checkSubRouteRef(_3, { x: '' });
 
     const _4 = createSubRouteRef({ id: '4', parent: parentX, path: '/foo/:y' });
     // @ts-expect-error
-    validateType<undefined>(_4);
+    checkSubRouteRef(_4, undefined);
     // @ts-expect-error
-    validateType<{ x: string; z: string }>(_4);
+    checkSubRouteRef(_4, { x: '', z: '' });
     // @ts-expect-error
-    validateType<{ y: string }>(_4);
-    validateType<{ x: string; y: string }>(_4);
+    checkSubRouteRef(_4, { y: '' });
+    checkSubRouteRef(_4, { x: '', y: '' });
 
     // To avoid complains about missing expectations and unused vars
     expect([_1, _2, _3, _4].join('')).toEqual(expect.any(String));

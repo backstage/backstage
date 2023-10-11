@@ -14,43 +14,93 @@
  * limitations under the License.
  */
 
-import {
-  AnyParams,
-  OptionalParams,
-  ParamKeys,
-  RouteRef,
-  routeRefType,
-  SubRouteRef,
-} from './types';
+import { RouteRef, toInternalRouteRef } from './RouteRef';
+import { AnyRouteParams } from './types';
 
 // Should match the pattern in react-router
 const PARAM_PATTERN = /^\w+$/;
 
 /**
- * @internal
+ * Descriptor of a route relative to an absolute {@link RouteRef}.
+ *
+ * @remarks
+ *
+ * See {@link https://backstage.io/docs/plugins/composability#routing-system}.
+ *
+ * @public
  */
-export class SubRouteRefImpl<Params extends AnyParams>
-  implements SubRouteRef<Params>
-{
-  // The marker is used for type checking while the symbol is used at runtime.
-  declare $$routeRefType: 'sub';
-  readonly [routeRefType] = 'sub';
+export interface SubRouteRef<TParams extends AnyRouteParams = AnyRouteParams> {
+  readonly $$type: '@backstage/SubRouteRef';
 
-  constructor(
-    private readonly id: string,
-    readonly path: string,
-    readonly parent: RouteRef,
-    readonly params: ParamKeys<Params>,
-  ) {}
+  readonly T: TParams;
+
+  readonly path: string;
+}
+
+/** @internal */
+export interface InternalSubRouteRef<
+  TParams extends AnyRouteParams = AnyRouteParams,
+> extends SubRouteRef<TParams> {
+  readonly version: 'v1';
+
+  getParams(): string[];
+  getParent(): RouteRef;
+}
+
+/** @internal */
+export function toInternalSubRouteRef<
+  TParams extends AnyRouteParams = AnyRouteParams,
+>(resource: SubRouteRef<TParams>): InternalSubRouteRef<TParams> {
+  const r = resource as InternalSubRouteRef<TParams>;
+  if (r.$$type !== '@backstage/SubRouteRef') {
+    throw new Error(`Invalid SubRouteRef, bad type '${r.$$type}'`);
+  }
+
+  return r;
+}
+
+/** @internal */
+export function isSubRouteRef(opaque: {
+  $$type: string;
+}): opaque is SubRouteRef {
+  return opaque.$$type === '@backstage/SubRouteRef';
+}
+
+/** @internal */
+export class SubRouteRefImpl<TParams extends AnyRouteParams>
+  implements SubRouteRef<TParams>
+{
+  readonly $$type = '@backstage/SubRouteRef';
+  readonly version = 'v1';
+
+  #params: string[];
+  #parent: RouteRef;
+
+  constructor(readonly path: string, params: string[], parent: RouteRef) {
+    this.#params = params;
+    this.#parent = parent;
+  }
+
+  get T(): never {
+    throw new Error(`tried to read RouteRef.T of ${this}`);
+  }
+
+  getParams(): string[] {
+    return this.#params;
+  }
+
+  getParent(): RouteRef {
+    return this.#parent;
+  }
 
   toString() {
-    return `routeRef{type=sub,id=${this.id}}`;
+    return `SubRouteRef{}`;
   }
 }
 
 /**
  * Used in {@link PathParams} type declaration.
- * @public
+ * @ignore
  */
 export type ParamPart<S extends string> = S extends `:${infer Param}`
   ? Param
@@ -58,7 +108,7 @@ export type ParamPart<S extends string> = S extends `:${infer Param}`
 
 /**
  * Used in {@link PathParams} type declaration.
- * @public
+ * @ignore
  */
 export type ParamNames<S extends string> =
   S extends `${infer Part}/${infer Rest}`
@@ -67,30 +117,37 @@ export type ParamNames<S extends string> =
 /**
  * This utility type helps us infer a Param object type from a string path
  * For example, `/foo/:bar/:baz` inferred to `{ bar: string, baz: string }`
- * @public
+ * @ignore
  */
 export type PathParams<S extends string> = { [name in ParamNames<S>]: string };
 
 /**
  * Merges a param object type with an optional params type into a params object.
- * @public
+ * @ignore
  */
 export type MergeParams<
   P1 extends { [param in string]: string },
-  P2 extends AnyParams,
+  P2 extends AnyRouteParams,
 > = (P1[keyof P1] extends never ? {} : P1) & (P2 extends undefined ? {} : P2);
+
+/**
+ * Convert empty params to undefined.
+ * @ignore
+ */
+export type TrimEmptyParams<Params extends { [param in string]: string }> =
+  keyof Params extends never ? undefined : Params;
 
 /**
  * Creates a SubRouteRef type given the desired parameters and parent route parameters.
  * The parameters types are merged together while ensuring that there is no overlap between the two.
  *
- * @public
+ * @ignore
  */
 export type MakeSubRouteRef<
   Params extends { [param in string]: string },
-  ParentParams extends AnyParams,
+  ParentParams extends AnyRouteParams,
 > = keyof Params & keyof ParentParams extends never
-  ? SubRouteRef<OptionalParams<MergeParams<Params, ParentParams>>>
+  ? SubRouteRef<TrimEmptyParams<MergeParams<Params, ParentParams>>>
   : never;
 
 /**
@@ -101,23 +158,26 @@ export type MakeSubRouteRef<
  */
 export function createSubRouteRef<
   Path extends string,
-  ParentParams extends AnyParams = never,
+  ParentParams extends AnyRouteParams = never,
 >(config: {
   id: string;
   path: Path;
   parent: RouteRef<ParentParams>;
 }): MakeSubRouteRef<PathParams<Path>, ParentParams> {
-  const { id, path, parent } = config;
+  const { path, parent } = config;
   type Params = PathParams<Path>;
+
+  const internalParent = toInternalRouteRef(parent);
+  const parentParams = internalParent.getParams();
 
   // Collect runtime parameters from the path, e.g. ['bar', 'baz'] from '/foo/:bar/:baz'
   const pathParams = path
     .split('/')
     .filter(p => p.startsWith(':'))
     .map(p => p.substring(1));
-  const params = [...parent.params, ...pathParams];
+  const params = [...parentParams, ...pathParams];
 
-  if (parent.params.some(p => pathParams.includes(p as string))) {
+  if (parentParams.some(p => pathParams.includes(p as string))) {
     throw new Error(
       'SubRouteRef may not have params that overlap with its parent',
     );
@@ -136,11 +196,10 @@ export function createSubRouteRef<
 
   // We ensure that the type of the return type is sane here
   const subRouteRef = new SubRouteRefImpl(
-    id,
     path,
+    params as string[],
     parent,
-    params as ParamKeys<MergeParams<Params, ParentParams>>,
-  ) as SubRouteRef<OptionalParams<MergeParams<Params, ParentParams>>>;
+  ) as SubRouteRef<TrimEmptyParams<MergeParams<Params, ParentParams>>>;
 
   // But skip type checking of the return value itself, because the conditional
   // type checking of the parent parameter overlap is tricky to express.

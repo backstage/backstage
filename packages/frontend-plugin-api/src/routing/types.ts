@@ -71,25 +71,6 @@ export type ParamKeys<TParams extends AnyRouteParams> =
   keyof TParams extends never ? [] : (keyof TParams)[];
 
 /**
- * Descriptor of a route relative to an absolute {@link RouteRef}.
- *
- * @remarks
- *
- * See {@link https://backstage.io/docs/plugins/composability#routing-system}.
- *
- * @public
- */
-export type SubRouteRef<Params extends AnyParams = any> = {
-  $$routeRefType: 'sub'; // See routeRefType above
-
-  parent: RouteRef;
-
-  path: string;
-
-  params: ParamKeys<Params>;
-};
-
-/**
  * Route descriptor, to be later bound to a concrete route by the app. Used to implement cross-plugin route references.
  *
  * @remarks
