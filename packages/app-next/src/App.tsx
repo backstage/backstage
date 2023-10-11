@@ -14,10 +14,17 @@
  * limitations under the License.
  */
 
+import React from 'react';
 import { createApp } from '@backstage/frontend-app-api';
 import { pagesPlugin } from './examples/pagesPlugin';
 import graphiqlPlugin from '@backstage/plugin-graphiql/alpha';
 import techRadarPlugin from '@backstage/plugin-tech-radar/alpha';
+import userSettingsPlugin from '@backstage/plugin-user-settings/alpha';
+import {
+  createExtensionOverrides,
+  createPageExtension,
+} from '@backstage/frontend-plugin-api';
+import { entityRouteRef } from '@backstage/plugin-catalog-react';
 
 /*
 
@@ -48,8 +55,23 @@ TODO:
 
 /* app.tsx */
 
+const entityPageExtension = createPageExtension({
+  id: 'catalog:entity',
+  defaultPath: '/catalog/:namespace/:kind/:name',
+  routeRef: entityRouteRef,
+  loader: async () => <div>Just a temporary mocked entity page</div>,
+});
+
 const app = createApp({
-  features: [graphiqlPlugin, pagesPlugin, techRadarPlugin],
+  features: [
+    graphiqlPlugin,
+    pagesPlugin,
+    techRadarPlugin,
+    userSettingsPlugin,
+    createExtensionOverrides({
+      extensions: [entityPageExtension],
+    }),
+  ],
   // bindRoutes({ bind }) {
   //   bind(catalogPlugin.externalRoutes, {
   //     createComponent: scaffolderPlugin.routes.root,

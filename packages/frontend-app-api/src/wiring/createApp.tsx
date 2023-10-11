@@ -76,6 +76,10 @@ import { overrideBaseUrlConfigs } from '../../../core-app-api/src/app/overrideBa
 // eslint-disable-next-line @backstage/no-relative-monorepo-imports
 import { RoutingProvider } from '../../../core-app-api/src/routing/RoutingProvider';
 // eslint-disable-next-line @backstage/no-relative-monorepo-imports
+import { AppLanguageSelector } from '../../../core-app-api/src/apis/implementations/AppLanguageApi/AppLanguageSelector';
+// eslint-disable-next-line @backstage/no-relative-monorepo-imports
+import { I18nextTranslationApi } from '../../../core-app-api/src/apis/implementations/TranslationApi/I18nextTranslationApi';
+// eslint-disable-next-line @backstage/no-relative-monorepo-imports
 import {
   apis as defaultApis,
   components as defaultComponents,
@@ -86,6 +90,10 @@ import { SidebarItem } from '@backstage/core-components';
 import { DarkTheme, LightTheme } from '../extensions/themes';
 import { extractRouteInfoFromInstanceTree } from '../routing/extractRouteInfoFromInstanceTree';
 import { getOrCreateGlobalSingleton } from '@backstage/version-bridge';
+import {
+  appLanguageApiRef,
+  translationApiRef,
+} from '@backstage/core-plugin-api/alpha';
 
 /** @public */
 export interface ExtensionTreeNode {
@@ -458,6 +466,21 @@ function createApiHolder(
     api: configApiRef,
     deps: {},
     factory: () => configApi,
+  });
+
+  factoryRegistry.register('static', {
+    api: appLanguageApiRef,
+    deps: {},
+    factory: () => AppLanguageSelector.createWithStorage(),
+  });
+
+  factoryRegistry.register('default', {
+    api: translationApiRef,
+    deps: { languageApi: appLanguageApiRef },
+    factory: ({ languageApi }) =>
+      I18nextTranslationApi.create({
+        languageApi,
+      }),
   });
 
   // TODO: ship these as default extensions instead
