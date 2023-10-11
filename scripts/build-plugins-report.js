@@ -81,8 +81,13 @@ async function main() {
         '--format=%an <%ae>;%s;%h;%as',
         '--',
         // ignore changes on README and package.json files
-        path.resolve(directoryPath, 'src', '**', '*.ts'),
-        path.resolve(directoryPath, 'src', '**', '*.tsx'),
+        path.posix.resolve(directoryPath, 'src'),
+        `:(exclude)${path.posix.resolve(
+          directoryPath,
+          'src',
+          '**',
+          '*.test.*',
+        )}`,
       );
 
       data = output
