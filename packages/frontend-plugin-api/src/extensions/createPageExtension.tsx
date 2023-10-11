@@ -24,7 +24,8 @@ import {
   Extension,
   ExtensionInputValues,
 } from '../wiring';
-import { AnyExtensionInputMap, Expand } from '../wiring/createExtension';
+import { AnyExtensionInputMap } from '../wiring/createExtension';
+import { Expand } from '../types';
 
 /**
  * Helper for creating extensions for a routable React page component.
