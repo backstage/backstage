@@ -35,7 +35,7 @@ export interface ObjectFetchParams {
   clusterDetails: ClusterDetails;
   credential: KubernetesCredential;
   objectTypesToFetch: Set<ObjectToFetch>;
-  labelSelector: string;
+  labelSelector?: string;
   customResources: CustomResource[];
   namespace?: string;
 }
