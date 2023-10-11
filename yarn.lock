@@ -18700,11 +18700,11 @@ __metadata:
   linkType: hard
 
 "@types/sanitize-html@npm:^2.6.2":
-  version: 2.9.1
-  resolution: "@types/sanitize-html@npm:2.9.1"
+  version: 2.9.2
+  resolution: "@types/sanitize-html@npm:2.9.2"
   dependencies:
     htmlparser2: ^8.0.0
-  checksum: 381db8e3f22876e8f6aa8f0997af73c71220c8398545d809ebd4e25d33480e73642b8c143a87d87bba504a43ab58d70a724c60eb3fd8fde31a813b682730c98f
+  checksum: bdd0db4a39125b8836573ede5ec5cc2f7b0dff5ecfbeae68aefb40163c916429cfb500d581ad3a18613e8d6a53f707abb279350e0811122e84e21b0223b8d560
   languageName: node
   linkType: hard
 
