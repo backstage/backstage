@@ -116,6 +116,15 @@ export function createDebugLogAction(): TemplateAction_2<
   JsonObject
 >;
 
+// Warning: (ae-missing-release-tag) "createDefaultFilters" is part of the package's API, but it is missing a release tag (@alpha, @beta, @public, or @internal)
+//
+// @public (undocumented)
+export const createDefaultFilters: ({
+  integrations,
+}: {
+  integrations: ScmIntegrations;
+}) => Record<string, TemplateFilter>;
+
 // @public
 export function createFetchCatalogEntityAction(options: {
   catalogClient: CatalogApi;
@@ -161,8 +170,8 @@ export function createFetchPlainFileAction(options: {
 export function createFetchTemplateAction(options: {
   reader: UrlReader;
   integrations: ScmIntegrations;
-  additionalTemplateFilters?: Record<string, TemplateFilter>;
-  additionalTemplateGlobals?: Record<string, TemplateGlobal>;
+  additionalTemplateFilters?: Record<string, TemplateFilter_2>;
+  additionalTemplateGlobals?: Record<string, TemplateGlobal_2>;
 }): TemplateAction_2<
   {
     url: string;
@@ -910,6 +919,19 @@ export type RunCommandOptions = ExecuteShellCommandOptions;
 
 // @public @deprecated
 export const ScaffolderEntitiesProcessor: typeof ScaffolderEntitiesProcessor_2;
+
+// Warning: (ae-missing-release-tag) "SecureTemplater" is part of the package's API, but it is missing a release tag (@alpha, @beta, @public, or @internal)
+//
+// @public (undocumented)
+export class SecureTemplater {
+  // Warning: (ae-forgotten-export) The symbol "SecureTemplaterOptions" needs to be exported by the entry point index.d.ts
+  // Warning: (ae-forgotten-export) The symbol "SecureTemplateRenderer" needs to be exported by the entry point index.d.ts
+  //
+  // (undocumented)
+  static loadRenderer(
+    options?: SecureTemplaterOptions,
+  ): Promise<SecureTemplateRenderer>;
+}
 
 // @public @deprecated
 export type SerializedTask = SerializedTask_2;
