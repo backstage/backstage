@@ -248,8 +248,10 @@ export class GitlabOrgDiscoveryEntityProvider implements EntityProvider {
       let groupUsers: PagedResponse<GitLabUser> = { items: [] };
       try {
         groupUsers = await client.getGroupMembers(group.full_path, ['DIRECT']);
-      } catch {
-        logger.error(`Failed fetching users for group: ${group.full_path}`);
+      } catch (e) {
+        logger.error(
+          `Failed fetching users for group '${group.full_path}': ${e}`,
+        );
       }
 
       for (const groupUser of groupUsers.items) {
