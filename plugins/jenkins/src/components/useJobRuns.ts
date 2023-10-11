@@ -30,7 +30,6 @@ export function useJobRuns(jobFullName: string) {
   const api = useApi(jenkinsApiRef);
   const errorApi = useApi(errorApiRef);
 
-  const [total, setTotal] = useState(0);
   const [page, setPage] = useState(0);
   const [pageSize, setPageSize] = useState(5);
 
@@ -55,17 +54,12 @@ export function useJobRuns(jobFullName: string) {
     }
   }, [api, errorApi, entity]);
 
-  useEffect(() => {
-    if (jobRuns) setTotal(jobRuns.builds.length);
-  }, [jobRuns]);
-
   return [
     {
       page,
       pageSize,
       loading,
       jobRuns,
-      total,
       error,
     },
     {

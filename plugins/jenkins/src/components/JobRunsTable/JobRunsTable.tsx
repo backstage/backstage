@@ -90,9 +90,9 @@ const generatedColumns: TableColumn[] = [
           <div style={{ width: '98px' }}>
             {row?.url && (
               <Tooltip title="View build">
-                <IconButton href={row.url} target="_blank">
+                <Link component={IconButton} to={row.url}>
                   <VisibilityIcon />
-                </IconButton>
+                </Link>
               </Tooltip>
             )}
           </div>
@@ -109,7 +109,6 @@ type Props = {
   jobRuns?: Job;
   page: number;
   onChangePage: (page: number) => void;
-  total: number;
   pageSize: number;
   onChangePageSize: (pageSize: number) => void;
 };
@@ -121,7 +120,6 @@ export const JobRunsTableView = ({
   jobRuns,
   onChangePage,
   onChangePageSize,
-  total,
 }: Props) => {
   const builds = jobRuns?.builds.slice(
     page * pageSize,
@@ -150,7 +148,7 @@ export const JobRunsTableView = ({
     <Table
       isLoading={loading}
       options={{ paging: true, pageSize, padding: 'dense' }}
-      totalCount={total}
+      totalCount={jobRuns?.builds.length || 0}
       page={page}
       data={builds ?? []}
       onPageChange={onChangePage}
