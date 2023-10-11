@@ -15,14 +15,11 @@
  */
 
 import fs from 'fs-extra';
-import mockFs from 'mock-fs';
-import { resolve as resolvePath } from 'path';
 import { templatingTask } from './tasks';
+import { createMockDirectory } from '@backstage/backend-test-utils';
 
 describe('templatingTask', () => {
-  afterEach(() => {
-    mockFs.restore();
-  });
+  const mockDir = createMockDirectory();
 
   it('should template a directory with mix of regular files and templates', async () => {
     // Testing template directory
@@ -36,7 +33,7 @@ describe('templatingTask', () => {
     const testVersionFileContent =
       "version: {{pluginVersion}} {{versionQuery 'mock-pkg'}}";
 
-    mockFs({
+    mockDir.setContent({
       [tmplDir]: {
         sub: {
           'version.txt.hbs': testVersionFileContent,
@@ -47,8 +44,8 @@ describe('templatingTask', () => {
     });
 
     await templatingTask(
-      tmplDir,
-      destDir,
+      mockDir.resolve(tmplDir),
+      mockDir.resolve(destDir),
       {
         pluginVersion: '0.0.0',
       },
@@ -57,10 +54,10 @@ describe('templatingTask', () => {
     );
 
     await expect(
-      fs.readFile(resolvePath(destDir, 'test.txt'), 'utf8'),
+      fs.readFile(mockDir.resolve(destDir, 'test.txt'), 'utf8'),
     ).resolves.toBe(testFileContent);
     await expect(
-      fs.readFile(resolvePath(destDir, 'sub/version.txt'), 'utf8'),
+      fs.readFile(mockDir.resolve(destDir, 'sub/version.txt'), 'utf8'),
     ).resolves.toBe('version: 0.0.0 ^0.1.2');
   });
 });
