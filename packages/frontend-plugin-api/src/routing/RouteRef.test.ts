@@ -14,16 +14,14 @@
  * limitations under the License.
  */
 
-import { AnyParams, RouteRef } from './types';
-import { createRouteRef } from './RouteRef';
+import { AnyRouteParams } from './types';
+import { RouteRef, createRouteRef } from './RouteRef';
 
 describe('RouteRef', () => {
   it('should be created', () => {
-    const routeRef: RouteRef<undefined> = createRouteRef({
-      id: 'my-route-ref',
-    });
-    expect(routeRef.params).toEqual([]);
-    expect(String(routeRef)).toBe('routeRef{type=absolute,id=my-route-ref}');
+    const routeRef: RouteRef<undefined> = createRouteRef();
+    expect(() => routeRef.T).toThrow();
+    expect(String(routeRef)).toBe('RouteRef{}');
   });
 
   it('should be created with params', () => {
@@ -31,42 +29,44 @@ describe('RouteRef', () => {
       x: string;
       y: string;
     }> = createRouteRef({
-      id: 'my-other-route-ref',
       params: ['x', 'y'],
     });
-    expect(routeRef.params).toEqual(['x', 'y']);
+    expect(() => routeRef.T).toThrow();
   });
 
   it('should properly infer and validate parameter types and assignments', () => {
-    function validateType<T extends AnyParams>(_ref: RouteRef<T>) {}
+    function checkRouteRef<T extends AnyRouteParams>(
+      _ref: RouteRef<T>,
+      _params: T extends undefined ? undefined : T,
+    ) {}
 
-    const _1 = createRouteRef({ id: '1', params: ['x'] });
+    const _1 = createRouteRef({ params: ['x'] });
+    checkRouteRef(_1, { x: '' });
     // @ts-expect-error
-    validateType<{ y: string }>(_1);
+    checkRouteRef(_1, { y: '' });
     // @ts-expect-error
-    validateType<undefined>(_1);
-    validateType<{ x: string }>(_1);
+    checkRouteRef(_1, undefined);
 
-    const _2 = createRouteRef({ id: '2', params: ['x', 'y'] });
+    const _2 = createRouteRef({ params: ['x', 'y'] });
+    checkRouteRef(_2, { x: '', y: '' });
     // @ts-expect-error
-    validateType<{ x: string }>(_2);
+    checkRouteRef(_2, { x: '' });
     // @ts-expect-error
-    validateType<undefined>(_2);
+    checkRouteRef(_2, undefined);
     // @ts-expect-error
-    validateType<{ x: string; z: string }>(_2);
-    // extra z, we validate this at runtime instead
-    validateType<{ x: string; y: string; z: string }>(_2);
-    validateType<{ x: string; y: string }>(_2);
+    checkRouteRef(_2, { x: '', z: '' });
+    // @ts-expect-error
+    checkRouteRef(_2, { x: '', y: '', z: '' });
 
-    const _3 = createRouteRef({ id: '3', params: [] });
+    const _3 = createRouteRef({ params: [] });
+    checkRouteRef(_3, undefined);
     // @ts-expect-error
-    validateType<{ x: string }>(_3);
-    validateType<undefined>(_3);
+    checkRouteRef(_3, { x: '' });
 
-    const _4 = createRouteRef({ id: '4' });
+    const _4 = createRouteRef();
+    checkRouteRef(_4, undefined);
     // @ts-expect-error
-    validateType<{ x: string }>(_4);
-    validateType<undefined>(_4);
+    checkRouteRef(_4, { x: '' });
 
     // To avoid complains about missing expectations and unused vars
     expect([_1, _2, _3, _4].join('')).toEqual(expect.any(String));

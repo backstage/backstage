@@ -14,35 +14,68 @@
  * limitations under the License.
  */
 
-import {
-  RouteRef,
-  routeRefType,
-  AnyParams,
-  ParamKeys,
-  OptionalParams,
-} from './types';
+import { AnyRouteParams } from './types';
 
 /**
- * @internal
+ * Absolute route reference.
+ *
+ * @remarks
+ *
+ * See {@link https://backstage.io/docs/plugins/composability#routing-system}.
+ *
+ * @public
  */
-export class RouteRefImpl<Params extends AnyParams>
-  implements RouteRef<Params>
-{
-  // The marker is used for type checking while the symbol is used at runtime.
-  declare $$routeRefType: 'absolute';
-  readonly [routeRefType] = 'absolute';
+export interface RouteRef<TParams extends AnyRouteParams = AnyRouteParams> {
+  readonly $$type: '@backstage/RouteRef';
+  readonly T: TParams;
+}
 
-  constructor(
-    private readonly id: string,
-    readonly params: ParamKeys<Params>,
-  ) {}
+/** @internal */
+export interface InternalRouteRef<
+  TParams extends AnyRouteParams = AnyRouteParams,
+> extends RouteRef<TParams> {
+  readonly version: 'v1';
+  getParams(): string[];
+}
 
-  get title() {
-    return this.id;
+/** @internal */
+export function toInternalRouteRef<
+  TParams extends AnyRouteParams = AnyRouteParams,
+>(resource: RouteRef<TParams>): InternalRouteRef<TParams> {
+  const r = resource as InternalRouteRef<TParams>;
+  if (r.$$type !== '@backstage/RouteRef') {
+    throw new Error(`Invalid RouteRef, bad type '${r.$$type}'`);
   }
 
-  toString() {
-    return `routeRef{type=absolute,id=${this.id}}`;
+  return r;
+}
+
+/** @internal */
+export function isRouteRef(opaque: { $$type: string }): opaque is RouteRef {
+  return opaque.$$type === '@backstage/RouteRef';
+}
+
+/** @internal */
+export class RouteRefImpl implements InternalRouteRef {
+  readonly $$type = '@backstage/RouteRef';
+  readonly version = 'v1';
+
+  #params: string[];
+
+  constructor(readonly params: string[] = []) {
+    this.#params = params;
+  }
+
+  get T(): never {
+    throw new Error(`tried to read RouteRef.T of ${this}`);
+  }
+
+  getParams(): string[] {
+    return this.#params;
+  }
+
+  toString(): string {
+    return `RouteRef{}`;
   }
 }
 
@@ -55,19 +88,19 @@ export class RouteRefImpl<Params extends AnyParams>
 export function createRouteRef<
   // Params is the type that we care about and the one to be embedded in the route ref.
   // For example, given the params ['name', 'kind'], Params will be {name: string, kind: string}
-  Params extends { [param in ParamKey]: string },
-  // ParamKey is here to make sure the Params type properly has its keys narrowed down
-  // to only the elements of params. Defaulting to never makes sure we end up with
-  // Param = {} if the params array is empty.
-  ParamKey extends string = never,
->(config: {
-  /** The id of the route ref, used to identify it when printed */
-  id: string;
+  TParams extends { [param in TParamKeys]: string } | undefined = undefined,
+  TParamKeys extends string = string,
+>(config?: {
   /** A list of parameter names that the path that this route ref is bound to must contain */
-  params?: ParamKey[];
-}): RouteRef<OptionalParams<Params>> {
+  readonly params: string extends TParamKeys ? (keyof TParams)[] : TParamKeys[];
+}): RouteRef<
+  keyof TParams extends never
+    ? undefined
+    : string extends TParamKeys
+    ? TParams
+    : { [param in TParamKeys]: string }
+> {
   return new RouteRefImpl(
-    config.id,
-    (config.params ?? []) as ParamKeys<OptionalParams<Params>>,
-  );
+    config?.params as string[] | undefined,
+  ) as RouteRef<any>;
 }

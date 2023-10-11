@@ -21,24 +21,7 @@ import { getOrCreateGlobalSingleton } from '@backstage/version-bridge';
  *
  * @public
  */
-export type AnyParams = { [param in string]: string } | undefined;
-
-/**
- * Type describing the key type of a route parameter mapping.
- *
- * @public
- */
-export type ParamKeys<Params extends AnyParams> = keyof Params extends never
-  ? []
-  : (keyof Params)[];
-
-/**
- * Optional route params.
- *
- * @public
- */
-export type OptionalParams<Params extends { [param in string]: string }> =
-  Params[keyof Params] extends never ? undefined : Params;
+export type AnyRouteParams = { [param in string]: string } | undefined;
 
 /**
  * TS magic for handling route parameters.
@@ -72,19 +55,20 @@ export const routeRefType: unique symbol = getOrCreateGlobalSingleton<any>(
 );
 
 /**
- * Absolute route reference.
+ * Optional route params.
  *
- * @remarks
- *
- * See {@link https://backstage.io/docs/plugins/composability#routing-system}.
- *
- * @public
+ * @internal
  */
-export type RouteRef<Params extends AnyParams = any> = {
-  $$routeRefType: 'absolute'; // See routeRefType above
+export type OptionalParams<Params extends { [param in string]: string }> =
+  Params[keyof Params] extends never ? undefined : Params;
 
-  params: ParamKeys<Params>;
-};
+/**
+ * Type describing the key type of a route parameter mapping.
+ *
+ * @ignore
+ */
+export type ParamKeys<TParams extends AnyRouteParams> =
+  keyof TParams extends never ? [] : (keyof TParams)[];
 
 /**
  * Descriptor of a route relative to an absolute {@link RouteRef}.
@@ -124,14 +108,6 @@ export type ExternalRouteRef<
 
   optional?: Optional;
 };
-
-/**
- * @internal
- */
-export type AnyRouteRef =
-  | RouteRef<any>
-  | SubRouteRef<any>
-  | ExternalRouteRef<any, any>;
 
 /**
  * A duplicate of the react-router RouteObject, but with routeRef added
