@@ -1,6 +1,6 @@
 ---
-'@backstage/repo-tools': minor
-'@backstage/cli-node': minor
+'@backstage/repo-tools': patch
+'@backstage/cli-node': patch
 ---
 
-Replace mock-fs in test from `cli-node`, `repo-tools` packages
+Replace `mock-fs` with internal mock utility in tests
