@@ -32,7 +32,7 @@ import FormControl from '@material-ui/core/FormControl';
 import Autocomplete, {
   AutocompleteChangeReason,
 } from '@material-ui/lab/Autocomplete';
-import React, { useCallback, useEffect } from 'react';
+import React, { useCallback, useEffect, useState } from 'react';
 import useAsync from 'react-use/lib/useAsync';
 import {
   EntityPickerFilterQueryValue,
@@ -40,6 +40,7 @@ import {
   EntityPickerUiOptions,
   EntityPickerFilterQuery,
 } from './schema';
+import { renderString } from 'nunjucks';
 
 export { EntityPickerSchema } from './schema';
 
@@ -58,8 +59,10 @@ export const EntityPicker = (props: EntityPickerProps) => {
     rawErrors,
     formData,
     idSchema,
+    formContext,
   } = props;
-  const catalogFilter = buildCatalogFilter(uiSchema);
+  const [catalogFilter, setCatalogFilter] = useState<EntityFilterQuery>();
+
   const defaultKind = uiSchema['ui:options']?.defaultKind;
   const defaultNamespace =
     uiSchema['ui:options']?.defaultNamespace || undefined;
@@ -71,7 +74,7 @@ export const EntityPicker = (props: EntityPickerProps) => {
       catalogFilter ? { filter: catalogFilter } : undefined,
     );
     return items;
-  });
+  }, [catalogFilter]);
   const allowArbitraryValues =
     uiSchema['ui:options']?.allowArbitraryValues ?? true;
 
@@ -130,10 +133,27 @@ export const EntityPicker = (props: EntityPickerProps) => {
     (allowArbitraryValues && formData ? getLabel(formData) : '');
 
   useEffect(() => {
+    setCatalogFilter(
+      buildCatalogFilter(uiSchema, {
+        parameters: formContext.formData,
+      }),
+    );
+  }, [formContext.formData, uiSchema]);
+
+  useEffect(() => {
+    if (
+      formData &&
+      entities &&
+      !entities.find(e => stringifyEntityRef(e) === formData)
+    ) {
+      onChange(undefined);
+      return;
+    }
+
     if (entities?.length === 1 && selectedEntity === '') {
       onChange(stringifyEntityRef(entities[0]));
     }
-  }, [entities, onChange, selectedEntity]);
+  }, [entities, onChange, selectedEntity, formData]);
 
   return (
     <FormControl
@@ -194,17 +214,21 @@ function convertOpsValues(
  *
  * @param schemaFilters - An object containing schema filters with keys as filter names
  * and values as filter values.
+ * @param context The context of the template parameters, used to render the `catalogFilter` values.
  * @returns An object with the same keys as the input object, but with `{exists:true}` values
  * transformed to `CATALOG_FILTER_EXISTS` symbol.
  */
 function convertSchemaFiltersToQuery(
   schemaFilters: EntityPickerFilterQuery,
+  context: object,
 ): Exclude<EntityFilterQuery, Array<any>> {
   const query: EntityFilterQuery = {};
 
   for (const [key, value] of Object.entries(schemaFilters)) {
-    if (Array.isArray(value)) {
-      query[key] = value;
+    if (typeof value === 'string') {
+      query[key] = renderString(value, context);
+    } else if (Array.isArray(value)) {
+      query[key] = value.map(v => renderString(v, context));
     } else {
       query[key] = convertOpsValues(value);
     }
@@ -219,10 +243,12 @@ function convertSchemaFiltersToQuery(
  * If `allowedKinds` is specified in the `uiSchema` will support the legacy `allowedKinds` option.
  *
  * @param uiSchema The `uiSchema` of an `EntityPicker` component.
+ * @param context The context of the template parameters, used to render the `catalogFilter` values.
  * @returns An `EntityFilterQuery` based on the `uiSchema`, or `undefined` if `catalogFilter` is not specified in the `uiSchema`.
  */
 function buildCatalogFilter(
   uiSchema: EntityPickerProps['uiSchema'],
+  context: object,
 ): EntityFilterQuery | undefined {
   const allowedKinds = uiSchema['ui:options']?.allowedKinds;
 
@@ -235,8 +261,10 @@ function buildCatalogFilter(
   }
 
   if (Array.isArray(catalogFilter)) {
-    return catalogFilter.map(convertSchemaFiltersToQuery);
+    return catalogFilter.map(schemaFilter =>
+      convertSchemaFiltersToQuery(schemaFilter, context),
+    );
   }
 
-  return convertSchemaFiltersToQuery(catalogFilter);
+  return convertSchemaFiltersToQuery(catalogFilter, context);
 }

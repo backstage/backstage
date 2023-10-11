@@ -8987,6 +8987,7 @@ __metadata:
     lodash: ^4.17.21
     luxon: ^3.0.0
     msw: ^1.0.0
+    nunjucks: ^3.2.4
     qs: ^6.9.4
     react-use: ^17.2.4
     yaml: ^2.0.0
@@ -34102,7 +34103,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"nunjucks@npm:^3.2.3":
+"nunjucks@npm:^3.2.3, nunjucks@npm:^3.2.4":
   version: 3.2.4
   resolution: "nunjucks@npm:3.2.4"
   dependencies:
