@@ -37,35 +37,12 @@ async function run(command, ...args) {
   return stdout.trim();
 }
 
-function generateHtmlReport(rows) {
-  const thead = `<tr>${rows[0].map(cell => `<th>${cell}</th>`).join('')}</tr>`;
-
-  const tbody = rows
-    .slice(1)
-    .map(row => `<tr>${row.map(cell => `<td>${cell}</td>`).join('')}</tr>`)
-    .join('');
-
-  return `
-    <html lang="en">
-      <head>
-        <title>Backstage Plugins Report</title>
-        <style>
-          * {font-family:sans-serif;}
-          table {width:100%; border-collapse: collapse;}
-          table,td,th {border:1px solid;}
-        </style>
-      </head>
-      <body>
-        <table>
-          <thead>${thead}</thead>
-          <tbody>${tbody}</tbody>
-        </table>
-      </body>
-    </html>
-  `;
-}
-
-const PLUGIN_ROLES = ['frontend-plugin', 'backend-plugin'];
+const PLUGIN_AND_MODULE_ROLES = [
+  'frontend-plugin',
+  'backend-plugin',
+  'frontend-plugin-module',
+  'frontend-plugin-module',
+];
 
 async function main() {
   const pluginsDirectory = path.resolve(rootDirectory, 'plugins');
@@ -75,7 +52,7 @@ async function main() {
     .filter(dirent => dirent.isDirectory())
     .map(dirent => dirent.name);
 
-  const tableRows = [['Plugin', 'Author', 'Message', 'Date']];
+  const content = ['Plugin;Author;Message;Hash;Date'];
 
   for (const directoryName of directoryNames) {
     console.log(`🔎 Reading data for ${directoryName}`);
@@ -86,9 +63,11 @@ async function main() {
       path.resolve(directoryPath, 'package.json'),
     );
 
-    const plugin = PLUGIN_ROLES.includes(packageJson?.backstage?.role ?? '');
+    const isPluginOrModule = PLUGIN_AND_MODULE_ROLES.includes(
+      packageJson?.backstage?.role ?? '',
+    );
 
-    if (!plugin) continue;
+    if (!isPluginOrModule) continue;
 
     let data;
     let skip = 0;
@@ -100,42 +79,61 @@ async function main() {
         'origin/master',
         `--skip=${skip}`,
         `--max-count=${maxCount}`,
-        '--format=%an;%s;%as',
-        directoryPath,
+        '--format=%an <%ae>;%s;%h;%as',
+        '--',
+        // ignore changes on README and package.json files
+        path.resolve(directoryPath, 'src', '**', '*.ts'),
+        path.resolve(directoryPath, 'src', '**', '*.tsx'),
       );
 
-      data = output.split('\n').find(commit => {
-        // exclude merge commits
-        if (commit.includes('Merge pull request #')) {
-          return false;
-        }
+      data = output
+        .trim()
+        .split('\n')
+        .find(commit => {
+          if (!commit) return false;
 
-        // exclude commits authored by a bot
-        if (
-          commit.startsWith('renovate[bot]') ||
-          commit.startsWith('github-actions[bot]')
-        ) {
-          return false;
-        }
+          const [author, message] = commit.split(';');
 
-        return true;
-      });
+          // exclude merge commits
+          if (message.startsWith('Merge pull request #')) {
+            return false;
+          }
 
-      skip += 10;
+          // exclude commits authored by a bot
+          if (author.includes('[bot]')) {
+            return false;
+          }
+
+          // exclude core maintainers' commits
+          if (
+            [
+              'Johan Haals <johan.haals@gmail.com>',
+              'Patrik Oldsberg <poldsberg@gmail.com>',
+              'Fredrik Adelöw <freben@gmail.com>',
+              'blam <ben@blam.sh>',
+            ].includes(author)
+          ) {
+            return false;
+          }
+
+          return true;
+        });
+
+      skip += maxCount;
     }
 
     if (data) {
-      tableRows.push([directoryName, ...data.split(';')]);
+      content.push(`${directoryName};${data}`);
     } else {
-      console.log(`⚠️ No data found for ${directoryName}`);
+      console.log(` 🚩 No data found for ${directoryName}`);
     }
   }
 
-  const file = 'plugins-report.html';
+  const file = 'plugins-report.csv';
 
   console.log(`📊 Generating plugins report...`);
 
-  fs.writeFile(file, generateHtmlReport(tableRows), err => {
+  fs.writeFile(file, content.join('\n'), err => {
     if (err) throw err;
   });
 
