@@ -31,6 +31,7 @@ import { RepoUrlPickerProps } from './schema';
 import { RepoUrlPickerState } from './types';
 import useDebounce from 'react-use/lib/useDebounce';
 import { useTemplateSecrets } from '@backstage/plugin-scaffolder-react';
+import { Box, Divider, Typography } from '@material-ui/core';
 
 export { RepoUrlPickerSchema } from './schema';
 
@@ -41,7 +42,7 @@ export { RepoUrlPickerSchema } from './schema';
  * @public
  */
 export const RepoUrlPicker = (props: RepoUrlPickerProps) => {
-  const { uiSchema, onChange, rawErrors, formData } = props;
+  const { uiSchema, onChange, rawErrors, formData, schema } = props;
   const [state, setState] = useState<RepoUrlPickerState>(
     parseRepoPickerUrl(formData),
   );
@@ -157,9 +158,15 @@ export const RepoUrlPicker = (props: RepoUrlPickerProps) => {
 
   const hostType =
     (state.host && integrationApi.byHost(state.host)?.type) ?? null;
-
   return (
     <>
+      {schema.title && (
+        <Box my="8px">
+          <Typography variant="h5">{schema.title}</Typography>
+          <Divider />
+        </Box>
+      )}
+      {schema.description && <p>{schema.description}</p>}
       <RepoUrlPickerHost
         host={state.host}
         hosts={allowedHosts}
