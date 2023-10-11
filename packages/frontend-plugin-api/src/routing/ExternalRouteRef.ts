@@ -14,34 +14,78 @@
  * limitations under the License.
  */
 
-import {
-  ExternalRouteRef,
-  routeRefType,
-  AnyParams,
-  ParamKeys,
-  OptionalParams,
-} from './types';
+import { AnyRouteParams } from './types';
 
 /**
- * @internal
+ * Route descriptor, to be later bound to a concrete route by the app. Used to implement cross-plugin route references.
+ *
+ * @remarks
+ *
+ * See {@link https://backstage.io/docs/plugins/composability#routing-system}.
+ *
+ * @public
  */
-export class ExternalRouteRefImpl<
-  Params extends AnyParams,
-  Optional extends boolean,
-> implements ExternalRouteRef<Params, Optional>
-{
-  // The marker is used for type checking while the symbol is used at runtime.
-  declare $$routeRefType: 'external';
-  readonly [routeRefType] = 'external';
+export interface ExternalRouteRef<
+  TParams extends AnyRouteParams = AnyRouteParams,
+  TOptional extends boolean = boolean,
+> {
+  readonly $$type: '@backstage/ExternalRouteRef';
+  readonly T: TParams;
+  readonly optional: TOptional;
+}
 
-  constructor(
-    private readonly id: string,
-    readonly params: ParamKeys<Params>,
-    readonly optional: Optional,
-  ) {}
+/** @internal */
+export interface InternalExternalRouteRef<
+  TParams extends AnyRouteParams = AnyRouteParams,
+  TOptional extends boolean = boolean,
+> extends ExternalRouteRef<TParams, TOptional> {
+  readonly version: 'v1';
+  getParams(): string[];
+}
 
-  toString() {
-    return `routeRef{type=external,id=${this.id}}`;
+/** @internal */
+export function toInternalExternalRouteRef<
+  TParams extends AnyRouteParams = AnyRouteParams,
+  TOptional extends boolean = boolean,
+>(
+  resource: ExternalRouteRef<TParams, TOptional>,
+): InternalExternalRouteRef<TParams, TOptional> {
+  const r = resource as InternalExternalRouteRef<TParams, TOptional>;
+  if (r.$$type !== '@backstage/ExternalRouteRef') {
+    throw new Error(`Invalid ExternalRouteRef, bad type '${r.$$type}'`);
+  }
+
+  return r;
+}
+
+/** @internal */
+export function isExternalRouteRef(opaque: {
+  $$type: string;
+}): opaque is ExternalRouteRef {
+  return opaque.$$type === '@backstage/ExternalRouteRef';
+}
+
+/** @internal */
+export class ExternalRouteRefImpl implements InternalExternalRouteRef {
+  readonly $$type = '@backstage/ExternalRouteRef';
+  readonly version = 'v1';
+
+  #params: string[];
+
+  constructor(readonly optional: boolean, readonly params: string[] = []) {
+    this.#params = params;
+  }
+
+  get T(): never {
+    throw new Error(`tried to read ExternalRouteRef.T of ${this}`);
+  }
+
+  getParams(): string[] {
+    return this.#params;
+  }
+
+  toString(): string {
+    return `ExternalRouteRef{}`;
   }
 }
 
@@ -56,31 +100,34 @@ export class ExternalRouteRefImpl<
  * @public
  */
 export function createExternalRouteRef<
-  Params extends { [param in ParamKey]: string },
-  Optional extends boolean = false,
-  ParamKey extends string = never,
->(options: {
-  /**
-   * An identifier for this route, used to identify it in error messages
-   */
-  id: string;
-
+  TParams extends { [param in TParamKeys]: string } | undefined = undefined,
+  TOptional extends boolean = false,
+  TParamKeys extends string = string,
+>(options?: {
   /**
    * The parameters that will be provided to the external route reference.
    */
-  params?: ParamKey[];
+  readonly params?: string extends TParamKeys
+    ? (keyof TParams)[]
+    : TParamKeys[];
 
   /**
    * Whether or not this route is optional, defaults to false.
    *
    * Optional external routes are not required to be bound in the app, and
-   * if they aren't, `useRouteRef` will return `undefined`.
+   * if they aren't, `useExternalRouteRef` will return `undefined`.
    */
-  optional?: Optional;
-}): ExternalRouteRef<OptionalParams<Params>, Optional> {
+  optional?: TOptional;
+}): ExternalRouteRef<
+  keyof TParams extends never
+    ? undefined
+    : string extends TParamKeys
+    ? TParams
+    : { [param in TParamKeys]: string },
+  TOptional
+> {
   return new ExternalRouteRefImpl(
-    options.id,
-    (options.params ?? []) as ParamKeys<OptionalParams<Params>>,
-    Boolean(options.optional) as Optional,
-  );
+    Boolean(options?.optional),
+    options?.params as string[] | undefined,
+  ) as ExternalRouteRef<any, any>;
 }

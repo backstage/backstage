@@ -71,26 +71,6 @@ export type ParamKeys<TParams extends AnyRouteParams> =
   keyof TParams extends never ? [] : (keyof TParams)[];
 
 /**
- * Route descriptor, to be later bound to a concrete route by the app. Used to implement cross-plugin route references.
- *
- * @remarks
- *
- * See {@link https://backstage.io/docs/plugins/composability#routing-system}.
- *
- * @public
- */
-export type ExternalRouteRef<
-  Params extends AnyParams = any,
-  Optional extends boolean = any,
-> = {
-  $$routeRefType: 'external'; // See routeRefType above
-
-  params: ParamKeys<Params>;
-
-  optional?: Optional;
-};
-
-/**
  * A duplicate of the react-router RouteObject, but with routeRef added
  * @internal
  */
