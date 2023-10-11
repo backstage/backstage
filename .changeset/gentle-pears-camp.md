@@ -1,5 +1,5 @@
 ---
-'@backstage/plugin-catalog-backend-module-openapi-spec': patch
+'@backstage/plugin-catalog-backend-module-openapi-spec': minor
 ---
 
 Adds a new catalog module for ingesting Backstage plugin OpenAPI specs into the catalog for display as an API entity.
