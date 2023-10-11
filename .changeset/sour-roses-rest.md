@@ -2,4 +2,4 @@
 '@backstage/plugin-scaffolder-backend': patch
 ---
 
-Exported `SecureTemplater` and `createDefaultFilters` in the `index.ts`
+Exported `SecureTemplater`, `SecureTemplaterOptions`, `SecureTemplateRenderer` and `createDefaultFilters` in the `index.ts`

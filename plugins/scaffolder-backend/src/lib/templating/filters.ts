@@ -20,6 +20,9 @@ import { TemplateFilter } from '..';
 import { parseRepoUrl } from '../../scaffolder/actions/builtin/publish/util';
 import get from 'lodash/get';
 
+/**
+ * @public
+ */
 export const createDefaultFilters = ({
   integrations,
 }: {

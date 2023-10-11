@@ -14,6 +14,11 @@
  * limitations under the License.
  */
 
-export type { TemplateFilter, TemplateGlobal } from './SecureTemplater';
+export type {
+  TemplateFilter,
+  TemplateGlobal,
+  SecureTemplaterOptions,
+  SecureTemplateRenderer,
+} from './SecureTemplater';
 export { SecureTemplater } from './SecureTemplater';
 export { createDefaultFilters } from './filters';

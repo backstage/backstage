@@ -116,8 +116,6 @@ export function createDebugLogAction(): TemplateAction_2<
   JsonObject
 >;
 
-// Warning: (ae-missing-release-tag) "createDefaultFilters" is part of the package's API, but it is missing a release tag (@alpha, @beta, @public, or @internal)
-//
 // @public (undocumented)
 export const createDefaultFilters: ({
   integrations,
@@ -920,17 +918,28 @@ export type RunCommandOptions = ExecuteShellCommandOptions;
 // @public @deprecated
 export const ScaffolderEntitiesProcessor: typeof ScaffolderEntitiesProcessor_2;
 
-// Warning: (ae-missing-release-tag) "SecureTemplater" is part of the package's API, but it is missing a release tag (@alpha, @beta, @public, or @internal)
-//
 // @public (undocumented)
 export class SecureTemplater {
-  // Warning: (ae-forgotten-export) The symbol "SecureTemplaterOptions" needs to be exported by the entry point index.d.ts
-  // Warning: (ae-forgotten-export) The symbol "SecureTemplateRenderer" needs to be exported by the entry point index.d.ts
-  //
   // (undocumented)
   static loadRenderer(
     options?: SecureTemplaterOptions,
   ): Promise<SecureTemplateRenderer>;
+}
+
+// @public (undocumented)
+export type SecureTemplateRenderer = (
+  template: string,
+  values: unknown,
+) => string;
+
+// @public (undocumented)
+export interface SecureTemplaterOptions {
+  // (undocumented)
+  cookiecutterCompat?: boolean;
+  // (undocumented)
+  templateFilters?: Record<string, TemplateFilter>;
+  // (undocumented)
+  templateGlobals?: Record<string, TemplateGlobal>;
 }
 
 // @public @deprecated

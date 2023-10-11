@@ -102,6 +102,9 @@ export type TemplateFilter = _TemplateFilter;
  */
 export type TemplateGlobal = _TemplateGlobal;
 
+/**
+ * @public
+ */
 export interface SecureTemplaterOptions {
   /* Enables jinja compatibility and the "jsonify" filter */
   cookiecutterCompat?: boolean;
@@ -111,11 +114,17 @@ export interface SecureTemplaterOptions {
   templateGlobals?: Record<string, TemplateGlobal>;
 }
 
+/**
+ * @public
+ */
 export type SecureTemplateRenderer = (
   template: string,
   values: unknown,
 ) => string;
 
+/**
+ * @public
+ */
 export class SecureTemplater {
   static async loadRenderer(options: SecureTemplaterOptions = {}) {
     const {
