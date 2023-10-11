@@ -34,6 +34,7 @@ import type {
   ToolDocumentCollatorFactoryOptions as _ToolDocumentCollatorFactoryOptions,
 } from '@backstage/plugin-search-backend-module-explore';
 
+export { explorePlugin } from './plugin';
 /**
  * @public
  * @deprecated import from `@backstage/plugin-search-backend-module-explore` instead

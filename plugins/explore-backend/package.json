@@ -29,6 +29,7 @@
   },
   "dependencies": {
     "@backstage/backend-common": "workspace:^",
+    "@backstage/backend-plugin-api": "workspace:^",
     "@backstage/config": "workspace:^",
     "@backstage/plugin-explore-common": "workspace:^",
     "@backstage/plugin-search-backend-module-explore": "workspace:^",

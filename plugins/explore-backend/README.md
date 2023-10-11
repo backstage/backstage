@@ -139,6 +139,21 @@ To index explore tools you will need to register the search collator in the
 ...
 ```
 
+### New Backend System
+
+The explore backend plugin has support for the [new backend system](https://backstage.io/docs/backend-system/), here's how you can set that up:
+
+In your `packages/backend/src/index.ts` make the following changes:
+
+```diff
+  import { createBackend } from '@backstage/backend-defaults';
++ import { explorePlugin } from '@backstage/plugin-explore-backend';
+  const backend = createBackend();
+  // ... other feature additions
++ backend.add(explorePlugin());
+  backend.start();
+```
+
 ### Wire up the Frontend
 
 See [the explore plugin README](../explore/README.md) for more information.
