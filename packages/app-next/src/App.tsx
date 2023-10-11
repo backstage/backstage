@@ -72,14 +72,9 @@ const app = createApp({
       extensions: [entityPageExtension],
     }),
   ],
-  // bindRoutes({ bind }) {
-  //   bind(catalogPlugin.externalRoutes, {
-  //     createComponent: scaffolderPlugin.routes.root,
-  //   });
-  //   bind(scaffolderPlugin.externalRoutes, {
-  //     registerComponent: catalogImportPlugin.routes.importPage,
-  //   });
-  // },
+  bindRoutes({ bind }) {
+    bind(pagesPlugin.externalRoutes, { pageX: pagesPlugin.routes.pageX });
+  },
 });
 
 // const legacyApp = createLegacyApp({ plugins: [legacyGraphiqlPlugin] });
