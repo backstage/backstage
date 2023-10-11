@@ -21,8 +21,8 @@ import graphiqlPlugin from '@backstage/plugin-graphiql/alpha';
 import techRadarPlugin from '@backstage/plugin-tech-radar/alpha';
 import userSettingsPlugin from '@backstage/plugin-user-settings/alpha';
 import {
+  createExtensionOverrides,
   createPageExtension,
-  createPlugin,
 } from '@backstage/frontend-plugin-api';
 import { entityRouteRef } from '@backstage/plugin-catalog-react';
 
@@ -55,16 +55,11 @@ TODO:
 
 /* app.tsx */
 
-const fakePlugin = createPlugin({
-  id: 'fake',
-  extensions: [
-    createPageExtension({
-      id: 'catalog:entity',
-      defaultPath: '/fakeentity',
-      routeRef: entityRouteRef,
-      loader: async () => <div>hello 😅</div>,
-    }),
-  ],
+const entityPageExtension = createPageExtension({
+  id: 'catalog:entity',
+  defaultPath: '/catalog/:namespace/:kind/:name',
+  routeRef: entityRouteRef,
+  loader: async () => <div>Just a temporary mocked entity page</div>,
 });
 
 const app = createApp({
@@ -73,7 +68,9 @@ const app = createApp({
     pagesPlugin,
     techRadarPlugin,
     userSettingsPlugin,
-    fakePlugin,
+    createExtensionOverrides({
+      extensions: [entityPageExtension],
+    }),
   ],
   // bindRoutes({ bind }) {
   //   bind(catalogPlugin.externalRoutes, {
