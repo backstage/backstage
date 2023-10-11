@@ -2,9 +2,9 @@
 '@backstage/plugin-scaffolder': patch
 ---
 
-Added nunjucks templates support for EntityPicker catalogFilter ui:options property.
+Added nunjucks templates support for `EntityPicker` `catalogFilter` `ui:options` property.
 
-This change will allow to use values of another parameters to restrict results of EntityPicker dropdowns, for example
+This change will allow to use values of another parameters to restrict results of `EntityPicker` dropdowns, for example
 
 ```
 parameters:
