@@ -57,6 +57,7 @@ import {
   ApiFactoryRegistry,
   ApiProvider,
   ApiResolver,
+  AppRouteBinder,
   AppThemeSelector,
 } from '@backstage/core-app-api';
 
@@ -75,6 +76,8 @@ import { defaultConfigLoaderSync } from '../../../core-app-api/src/app/defaultCo
 import { overrideBaseUrlConfigs } from '../../../core-app-api/src/app/overrideBaseUrlConfigs';
 // eslint-disable-next-line @backstage/no-relative-monorepo-imports
 import { RoutingProvider } from '../../../core-app-api/src/routing/RoutingProvider';
+// eslint-disable-next-line @backstage/no-relative-monorepo-imports
+import { resolveRouteBindings } from '../../../core-app-api/src/app/resolveRouteBindings';
 // eslint-disable-next-line @backstage/no-relative-monorepo-imports
 import { AppLanguageSelector } from '../../../core-app-api/src/apis/implementations/AppLanguageApi/AppLanguageSelector';
 // eslint-disable-next-line @backstage/no-relative-monorepo-imports
@@ -269,6 +272,7 @@ export function createInstances(options: {
 export function createApp(options: {
   features?: (BackstagePlugin | ExtensionOverrides)[];
   configLoader?: () => Promise<ConfigApi>;
+  bindRoutes?(context: { bind: AppRouteBinder }): void;
   featureLoader?: (ctx: {
     config: ConfigApi;
   }) => Promise<(BackstagePlugin | ExtensionOverrides)[]>;
@@ -309,7 +313,7 @@ export function createApp(options: {
           <AppThemeProvider>
             <RoutingProvider
               {...extractRouteInfoFromInstanceTree(coreInstance)}
-              routeBindings={new Map(/* TODO */)}
+              routeBindings={resolveRouteBindings(options.bindRoutes)}
             >
               {/* TODO: set base path using the logic from AppRouter */}
               <BrowserRouter>

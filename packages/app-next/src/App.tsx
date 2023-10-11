@@ -16,7 +16,11 @@
 
 import React from 'react';
 import { createApp } from '@backstage/frontend-app-api';
-import { pagesPlugin } from './examples/pagesPlugin';
+import {
+  externalPageXRouteRef,
+  pageXRouteRef,
+  pagesPlugin,
+} from './examples/pagesPlugin';
 import graphiqlPlugin from '@backstage/plugin-graphiql/alpha';
 import techRadarPlugin from '@backstage/plugin-tech-radar/alpha';
 import userSettingsPlugin from '@backstage/plugin-user-settings/alpha';
@@ -72,14 +76,9 @@ const app = createApp({
       extensions: [entityPageExtension],
     }),
   ],
-  // bindRoutes({ bind }) {
-  //   bind(catalogPlugin.externalRoutes, {
-  //     createComponent: scaffolderPlugin.routes.root,
-  //   });
-  //   bind(scaffolderPlugin.externalRoutes, {
-  //     registerComponent: catalogImportPlugin.routes.importPage,
-  //   });
-  // },
+  bindRoutes({ bind }) {
+    bind({ x: externalPageXRouteRef }, { x: pageXRouteRef });
+  },
 });
 
 // const legacyApp = createLegacyApp({ plugins: [legacyGraphiqlPlugin] });
