@@ -166,7 +166,9 @@ export const RepoUrlPicker = (props: RepoUrlPickerProps) => {
           <Divider />
         </Box>
       )}
-      {schema.description && <p>{schema.description}</p>}
+      {schema.description && (
+        <Typography variant="body1">{schema.description}</Typography>
+      )}
       <RepoUrlPickerHost
         host={state.host}
         hosts={allowedHosts}
