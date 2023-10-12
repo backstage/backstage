@@ -45,6 +45,7 @@ export interface InternalSubRouteRef<
 
   getParams(): string[];
   getParent(): RouteRef;
+  getDescription(): string;
 }
 
 /** @internal */
@@ -93,8 +94,13 @@ export class SubRouteRefImpl<TParams extends AnyRouteParams>
     return this.#parent;
   }
 
-  toString() {
-    return `SubRouteRef{}`;
+  getDescription(): string {
+    const parent = toInternalRouteRef(this.#parent);
+    return `at ${this.path} with parent ${parent.getDescription()}`;
+  }
+
+  toString(): string {
+    return `SubRouteRef{${this.getDescription()}}`;
   }
 }
 

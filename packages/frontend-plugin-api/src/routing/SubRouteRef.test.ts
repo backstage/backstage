@@ -20,23 +20,28 @@ import {
   createSubRouteRef,
   toInternalSubRouteRef,
 } from './SubRouteRef';
-import { createRouteRef } from './RouteRef';
+import { createRouteRef, toInternalRouteRef } from './RouteRef';
 
 const parent = createRouteRef();
 const parentX = createRouteRef({ params: ['x'] });
 
 describe('SubRouteRef', () => {
   it('should be created', () => {
+    const internalParent = toInternalRouteRef(createRouteRef());
     const routeRef: SubRouteRef = createSubRouteRef({
-      parent,
+      parent: internalParent,
       id: 'my-route-ref',
       path: '/foo',
     });
     const internal = toInternalSubRouteRef(routeRef);
     expect(internal.path).toBe('/foo');
-    expect(internal.getParent()).toBe(parent);
+    expect(internal.getParent()).toBe(internalParent);
     expect(internal.getParams()).toEqual([]);
-    expect(String(internal)).toBe('SubRouteRef{}');
+    expect(String(internal)).toMatch(
+      /SubRouteRef\{at \/foo with parent created at '.*SubRouteRef\.test\.ts.*'\}/,
+    );
+    internalParent.setId('some-id');
+    expect(String(internal)).toBe('SubRouteRef{at /foo with parent some-id}');
   });
 
   it('should be created with params', () => {
