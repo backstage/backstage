@@ -15,13 +15,30 @@
  */
 
 import { AnyRouteParams } from './types';
-import { RouteRef, createRouteRef } from './RouteRef';
+import { RouteRef, createRouteRef, toInternalRouteRef } from './RouteRef';
 
 describe('RouteRef', () => {
-  it('should be created', () => {
+  it('should be created and have a mutable ID', () => {
     const routeRef: RouteRef<undefined> = createRouteRef();
-    expect(() => routeRef.T).toThrow();
-    expect(String(routeRef)).toBe('RouteRef{}');
+    const internal = toInternalRouteRef(routeRef);
+    expect(() => internal.T).toThrow();
+    expect(internal.getParams()).toEqual([]);
+    expect(internal.getDescription()).toMatch(/RouteRef\.test\.ts/);
+
+    expect(String(internal)).toMatch(
+      /^RouteRef\{created at .*RouteRef\.test\.ts.*\}$/,
+    );
+
+    expect(() => internal.setId('')).toThrow(
+      'RouteRef id must be a non-empty string',
+    );
+
+    internal.setId('some-id');
+    expect(String(internal)).toBe('RouteRef{some-id}');
+
+    expect(() => internal.setId('some-other-id')).toThrow(
+      "RouteRef was referenced twice as both 'some-id' and 'some-other-id'",
+    );
   });
 
   it('should be created with params', () => {
@@ -31,7 +48,10 @@ describe('RouteRef', () => {
     }> = createRouteRef({
       params: ['x', 'y'],
     });
-    expect(() => routeRef.T).toThrow();
+    const internal = toInternalRouteRef(routeRef);
+    expect(internal.getParams()).toEqual(['x', 'y']);
+    expect(internal.getDescription()).toMatch(/RouteRef\.test\.ts/);
+    expect(() => internal.T).toThrow();
   });
 
   it('should properly infer and validate parameter types and assignments', () => {

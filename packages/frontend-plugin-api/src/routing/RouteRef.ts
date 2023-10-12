@@ -14,6 +14,7 @@
  * limitations under the License.
  */
 
+import { describeParentCallSite } from './describeParentCallSite';
 import { AnyRouteParams } from './types';
 
 /**
@@ -36,6 +37,9 @@ export interface InternalRouteRef<
 > extends RouteRef<TParams> {
   readonly version: 'v1';
   getParams(): string[];
+  getDescription(): string;
+
+  setId(id: string): void;
 }
 
 /** @internal */
@@ -60,10 +64,13 @@ export class RouteRefImpl implements InternalRouteRef {
   readonly $$type = '@backstage/RouteRef';
   readonly version = 'v1';
 
+  #id?: string;
   #params: string[];
+  #creationSite: string;
 
-  constructor(readonly params: string[] = []) {
+  constructor(readonly params: string[] = [], creationSite: string) {
     this.#params = params;
+    this.#creationSite = creationSite;
   }
 
   get T(): never {
@@ -74,8 +81,27 @@ export class RouteRefImpl implements InternalRouteRef {
     return this.#params;
   }
 
+  getDescription(): string {
+    if (this.#id) {
+      return this.#id;
+    }
+    return `created at '${this.#creationSite}'`;
+  }
+
+  setId(id: string): void {
+    if (!id) {
+      throw new Error('RouteRef id must be a non-empty string');
+    }
+    if (this.#id) {
+      throw new Error(
+        `RouteRef was referenced twice as both '${this.#id}' and '${id}'`,
+      );
+    }
+    this.#id = id;
+  }
+
   toString(): string {
-    return `RouteRef{}`;
+    return `RouteRef{${this.getDescription()}}`;
   }
 }
 
@@ -100,7 +126,9 @@ export function createRouteRef<
     ? TParams
     : { [param in TParamKeys]: string }
 > {
+  const creationSite = describeParentCallSite();
   return new RouteRefImpl(
     config?.params as string[] | undefined,
+    creationSite,
   ) as RouteRef<any>;
 }
