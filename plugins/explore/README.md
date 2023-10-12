@@ -146,3 +146,17 @@ const routes = (
   </FlatRoutes>
 );
 ```
+
+## Features
+
+### Explore Domains
+
+![Explore domains example](./docs/explore-domains.png)
+
+### Explore Groups
+
+![Explore groups example](./docs/explore-groups.png)
+
+### Explore Tools
+
+![Explore tools example](./docs/explore-tools.png)
