@@ -13,11 +13,17 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import React from 'react';
+import {
+  analyticsApiRef,
+  configApiRef,
+  createPlugin,
+  identityApiRef,
+} from '@backstage/core-plugin-api';
 import { createDevApp } from '@backstage/dev-utils';
-import { Playground } from './Playground';
+import React from 'react';
 
-import { createPlugin } from '@backstage/core-plugin-api';
+import { GoogleAnalytics4 } from '../src';
+import { Playground } from './Playground';
 
 /**
  * @deprecated Importing and including this plugin in an app has no effect.
@@ -29,7 +35,14 @@ export const analyticsModuleGA4 = createPlugin({
   id: 'analytics-provider-ga4',
 });
 createDevApp()
-  .registerPlugin(analyticsModuleGA4)
+  .registerApi({
+    api: analyticsApiRef,
+    deps: { configApi: configApiRef, identityApi: identityApiRef },
+    factory: ({ configApi, identityApi }) =>
+      GoogleAnalytics4.fromConfig(configApi, {
+        identityApi,
+      }),
+  })
   .addPage({
     path: '/ga4',
     title: 'GA4 Playground',
