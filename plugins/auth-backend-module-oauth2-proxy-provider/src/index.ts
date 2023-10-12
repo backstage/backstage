@@ -14,23 +14,9 @@
  * limitations under the License.
  */
 
-import { Config } from '@backstage/config';
-import { Request } from 'express';
-import { ProfileTransform } from '../types';
-
-/** @public */
-export interface ProxyAuthenticator<TContext, TResult> {
-  defaultProfileTransform: ProfileTransform<TResult>;
-  initialize?(ctx: { config: Config }): TContext;
-  authenticate(
-    options: { req: Request },
-    ctx: TContext,
-  ): Promise<{ result: TResult }>;
-}
-
-/** @public */
-export function createProxyAuthenticator<TContext, TResult>(
-  authenticator: ProxyAuthenticator<TContext, TResult>,
-): ProxyAuthenticator<TContext, TResult> {
-  return authenticator;
-}
+/**
+ * The oauth2-proxy-provider backend module for the auth plugin.
+ *
+ * @packageDocumentation
+ */
+export { authModuleOauth2ProxyProvider } from './module';
