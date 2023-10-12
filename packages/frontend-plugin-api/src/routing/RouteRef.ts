@@ -63,6 +63,7 @@ export function isRouteRef(opaque: { $$type: string }): opaque is RouteRef {
 export class RouteRefImpl implements InternalRouteRef {
   readonly $$type = '@backstage/RouteRef';
   readonly version = 'v1';
+  declare readonly T: never;
 
   #id?: string;
   #params: string[];
@@ -71,10 +72,6 @@ export class RouteRefImpl implements InternalRouteRef {
   constructor(readonly params: string[] = [], creationSite: string) {
     this.#params = params;
     this.#creationSite = creationSite;
-  }
-
-  get T(): never {
-    throw new Error(`tried to read RouteRef.T of ${this}`);
   }
 
   getParams(): string[] {

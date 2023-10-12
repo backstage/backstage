@@ -21,7 +21,7 @@ describe('RouteRef', () => {
   it('should be created and have a mutable ID', () => {
     const routeRef: RouteRef<undefined> = createRouteRef();
     const internal = toInternalRouteRef(routeRef);
-    expect(() => internal.T).toThrow();
+    expect(internal.T).toBe(undefined);
     expect(internal.getParams()).toEqual([]);
     expect(internal.getDescription()).toMatch(/RouteRef\.test\.ts/);
 
@@ -51,7 +51,6 @@ describe('RouteRef', () => {
     const internal = toInternalRouteRef(routeRef);
     expect(internal.getParams()).toEqual(['x', 'y']);
     expect(internal.getDescription()).toMatch(/RouteRef\.test\.ts/);
-    expect(() => internal.T).toThrow();
   });
 
   it('should properly infer and validate parameter types and assignments', () => {

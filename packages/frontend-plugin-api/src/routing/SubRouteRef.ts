@@ -73,6 +73,7 @@ export class SubRouteRefImpl<TParams extends AnyRouteParams>
 {
   readonly $$type = '@backstage/SubRouteRef';
   readonly version = 'v1';
+  declare readonly T: never;
 
   #params: string[];
   #parent: RouteRef;
@@ -80,10 +81,6 @@ export class SubRouteRefImpl<TParams extends AnyRouteParams>
   constructor(readonly path: string, params: string[], parent: RouteRef) {
     this.#params = params;
     this.#parent = parent;
-  }
-
-  get T(): never {
-    throw new Error(`tried to read RouteRef.T of ${this}`);
   }
 
   getParams(): string[] {

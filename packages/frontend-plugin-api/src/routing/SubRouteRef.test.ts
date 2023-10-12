@@ -34,6 +34,7 @@ describe('SubRouteRef', () => {
     });
     const internal = toInternalSubRouteRef(routeRef);
     expect(internal.path).toBe('/foo');
+    expect(internal.T).toBe(undefined);
     expect(internal.getParent()).toBe(internalParent);
     expect(internal.getParams()).toEqual([]);
     expect(String(internal)).toMatch(
