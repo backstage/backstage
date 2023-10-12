@@ -75,9 +75,10 @@ const app = createApp({
       extensions: [entityPageExtension],
     }),
   ],
-  bindRoutes({ bind }) {
-    bind(pagesPlugin.externalRoutes, { pageX: pagesPlugin.routes.pageX });
-  },
+  /* Handled through config instead */
+  // bindRoutes({ bind }) {
+  //   bind(pagesPlugin.externalRoutes, { pageX: pagesPlugin.routes.pageX });
+  // },
 });
 
 // const legacyApp = createLegacyApp({ plugins: [legacyGraphiqlPlugin] });

@@ -1,6 +1,9 @@
 app:
   experimental:
     packages: 'all' # ✨
+  routes:
+    bindings:
+      plugin.pages.externalRoutes.pageX: plugin.pages.routes.pageX
 
   extensions:
     - apis.plugin.graphiql.browse.gitlab: true
