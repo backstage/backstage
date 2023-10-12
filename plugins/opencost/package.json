@@ -40,7 +40,7 @@
     "recharts": "^2.5.0"
   },
   "peerDependencies": {
-    "react": "^16.13.1 || ^17.0.0",
+    "react": "^16.13.1 || ^17 || ^18",
     "react-router-dom": "*"
   },
   "devDependencies": {
