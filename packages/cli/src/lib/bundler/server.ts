@@ -26,7 +26,6 @@ import vite from 'vite';
 import react from '@vitejs/plugin-react';
 import { nodePolyfills as viteNodePolyfills } from 'vite-plugin-node-polyfills';
 import { createHtmlPlugin } from 'vite-plugin-html';
-import { viteCommonjs } from '@originjs/vite-plugin-commonjs';
 
 import {
   forbiddenDuplicatesFilter,
@@ -160,26 +159,19 @@ export async function serveBundle(options: ServeOptions) {
     additionalEntryPoints: detectedModulesEntryPoint,
   });
 
-  console.log(paths.targetHtml);
   if (process.env.EXPERIMENTAL_VITE) {
     server = await vite.createServer({
       define: {
-        global: 'globalThis',
+        global: 'window',
         'process.argv': JSON.stringify(process.argv),
         'process.env.APP_CONFIG': JSON.stringify(cliConfig.frontendAppConfigs),
       },
-      resolve: {
-        alias: {
-          'node-fetch': 'cross-fetch',
-        },
-      },
       plugins: [
         react(),
-        viteCommonjs(),
         viteNodePolyfills(),
         createHtmlPlugin({
           entry: paths.targetEntry,
-          // todo(blam): we should look at contributing to the plugin here
+          // todo(blam): we should look at contributing to thPe plugin here
           // to support absolute paths, but works in the interim at least.
           template: 'public/index.html',
           inject: {
