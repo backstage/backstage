@@ -82,7 +82,7 @@ export function DryRunResultsList() {
               {failed ? <CancelIcon /> : <CheckIcon />}
             </ListItemIcon>
             <ListItemText
-              primary={t('dry_run_result', { resultId: result.id })}
+              primary={t('dry_run_result', { resultId: result.id.toString() })}
             />
             <ListItemSecondaryAction>
               <IconButton
