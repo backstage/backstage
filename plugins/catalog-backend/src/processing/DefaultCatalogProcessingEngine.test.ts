@@ -501,12 +501,14 @@ describe('DefaultCatalogProcessingEngine', () => {
       previous: {
         relations: [
           {
+            id: '',
             originating_entity_id: '',
             type: 't',
             source_entity_ref: 'k:ns/other1',
             target_entity_ref: 'k:ns/me',
           },
           {
+            id: '',
             originating_entity_id: '',
             type: 't',
             source_entity_ref: 'k:ns/other2',
@@ -584,12 +586,14 @@ describe('DefaultCatalogProcessingEngine', () => {
       previous: {
         relations: [
           {
+            id: '',
             originating_entity_id: '',
             type: 't',
             source_entity_ref: 'k:ns/other1',
             target_entity_ref: 'k:ns/me',
           },
           {
+            id: '',
             originating_entity_id: '',
             type: 't',
             source_entity_ref: 'k:ns/other2',
@@ -672,12 +676,14 @@ describe('DefaultCatalogProcessingEngine', () => {
       previous: {
         relations: [
           {
+            id: '',
             originating_entity_id: '',
             type: 't',
             source_entity_ref: 'k:ns/other1',
             target_entity_ref: 'k:ns/me',
           },
           {
+            id: '',
             originating_entity_id: '',
             type: 't',
             source_entity_ref: 'k:ns/other2',

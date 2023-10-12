@@ -241,6 +241,7 @@ describe('DefaultProcessingDatabase', () => {
           .select();
         expect(savedRelations.length).toBe(1);
         expect(savedRelations[0]).toEqual({
+          id: savedRelations[0].id,
           originating_entity_id: id,
           source_entity_ref: 'component:default/foo',
           type: 'memberOf',
@@ -264,6 +265,7 @@ describe('DefaultProcessingDatabase', () => {
           .select();
         expect(savedRelations.length).toBe(1);
         expect(savedRelations[0]).toEqual({
+          id: savedRelations[0].id,
           originating_entity_id: id,
           source_entity_ref: 'component:default/foo',
           type: 'memberOf',
@@ -271,6 +273,7 @@ describe('DefaultProcessingDatabase', () => {
         });
         expect(updateResult.previous.relations).toEqual([
           {
+            id: expect.anything(),
             originating_entity_id: expect.any(String),
             source_entity_ref: 'component:default/foo',
             type: 'memberOf',
@@ -529,6 +532,7 @@ describe('DefaultProcessingDatabase', () => {
 
         expect(refreshKeys[0]).toEqual({
           entity_id: id,
+          id: refreshKeys[0].id,
           key: 'protocol:foo-bar.com',
         });
       },

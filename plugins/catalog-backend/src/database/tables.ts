@@ -115,6 +115,7 @@ export type DbRefreshStateRow = {
 };
 
 export type DbRefreshKeysRow = {
+  id?: string;
   entity_id: string;
   key: string;
 };
@@ -126,6 +127,7 @@ export type DbRefreshStateReferencesRow = {
 };
 
 export type DbRelationsRow = {
+  id?: string;
   originating_entity_id: string;
   source_entity_ref: string;
   target_entity_ref: string;
