@@ -24,6 +24,7 @@
   },
   "devDependencies": {
     "@backstage/cli": "workspace:^",
+    "@backstage/frontend-app-api": "workspace:^",
     "@backstage/test-utils": "workspace:^",
     "@testing-library/jest-dom": "^6.0.0",
     "@testing-library/react": "^14.0.0",
@@ -37,10 +38,11 @@
     "react-router-dom": "6.0.0-beta.0 || ^6.3.0"
   },
   "dependencies": {
+    "@backstage/core-components": "workspace:^",
     "@backstage/core-plugin-api": "workspace:^",
-    "@backstage/frontend-app-api": "workspace:^",
     "@backstage/types": "workspace:^",
     "@backstage/version-bridge": "workspace:^",
+    "@material-ui/core": "^4.12.4",
     "@types/react": "^16.13.1 || ^17.0.0",
     "lodash": "^4.17.21",
     "zod": "^3.21.4",

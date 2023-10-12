@@ -15,15 +15,35 @@
  */
 
 import React, { ReactNode } from 'react';
+import { AnalyticsContext } from '@backstage/core-plugin-api';
 import { BackstagePlugin } from '../wiring';
+import { RouteRef } from '../routing';
+import { ErrorBoundary } from './ErrorBoundary';
+import { toInternalRouteRef } from '../routing/RouteRef';
 
 /** @public */
 export interface ExtensionBoundaryProps {
-  children: ReactNode;
+  id: string;
   source?: BackstagePlugin;
+  routeRef?: RouteRef;
+  children: ReactNode;
 }
 
 /** @public */
 export function ExtensionBoundary(props: ExtensionBoundaryProps) {
-  return <>{props.children}</>;
+  const { id, source, routeRef, children } = props;
+
+  const attributes = {
+    extension: id,
+    pluginId: source?.id,
+    routeRef: routeRef
+      ? toInternalRouteRef(routeRef).getDescription()
+      : undefined,
+  };
+
+  return (
+    <ErrorBoundary plugin={source}>
+      <AnalyticsContext attributes={attributes}>{children}</AnalyticsContext>
+    </ErrorBoundary>
+  );
 }
