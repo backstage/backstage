@@ -12,7 +12,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@adobe/css-tools@npm:^4.3.0":
+"@adobe/css-tools@npm:^4.3.1":
   version: 4.3.1
   resolution: "@adobe/css-tools@npm:4.3.1"
   checksum: ad43456379ff391132aff687ece190cb23ea69395e23c9b96690eeabe2468da89a4aaf266e4f8b6eaab53db3d1064107ce0f63c3a974e864f4a04affc768da3f
@@ -17012,10 +17012,10 @@ __metadata:
   linkType: hard
 
 "@testing-library/jest-dom@npm:^6.0.0":
-  version: 6.1.3
-  resolution: "@testing-library/jest-dom@npm:6.1.3"
+  version: 6.1.4
+  resolution: "@testing-library/jest-dom@npm:6.1.4"
   dependencies:
-    "@adobe/css-tools": ^4.3.0
+    "@adobe/css-tools": ^4.3.1
     "@babel/runtime": ^7.9.2
     aria-query: ^5.0.0
     chalk: ^3.0.0
@@ -17037,7 +17037,7 @@ __metadata:
       optional: true
     vitest:
       optional: true
-  checksum: 5bd14ba31fd3d64cff8ca55cccd335bedadf1db1119643954ca8cd30af835defe6f3a21e7d7617d20205b07abba1b2e668be1b9d6743504800f17fdc4344db75
+  checksum: c6bd9469554136a25d94b55ea16736d56b8c5d200526023774dbf35ca35551a721257e6734f1b404bbd07ae0a1950f1912b5be60e113db2ff2ff50af14f7085c
   languageName: node
   linkType: hard
 
