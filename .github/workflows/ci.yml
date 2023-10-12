@@ -1,7 +1,7 @@
 name: CI
 on:
   # NOTE: If you change these you must update ci-noop.yml as well
-  pull_request:
+  workflow_dispatch:
     paths-ignore:
       - 'microsite/**'
 
