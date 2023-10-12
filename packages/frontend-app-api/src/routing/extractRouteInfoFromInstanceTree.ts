@@ -18,20 +18,7 @@ import { RouteRef, coreExtensionData } from '@backstage/frontend-plugin-api';
 import { ExtensionInstance } from '../wiring/createExtensionInstance';
 // eslint-disable-next-line @backstage/no-relative-monorepo-imports
 import { toLegacyPlugin } from '../wiring/createApp';
-import { BackstagePlugin as LegacyBackstagePlugin } from '@backstage/core-plugin-api';
-
-/**
- * A duplicate of the react-router RouteObject, but with routeRef added
- * @internal
- */
-export interface BackstageRouteObject {
-  caseSensitive: boolean;
-  children?: BackstageRouteObject[];
-  element: React.ReactNode;
-  path: string;
-  routeRefs: Set<RouteRef>;
-  plugins: Set<LegacyBackstagePlugin>;
-}
+import { BackstageRouteObject } from './types';
 
 // We always add a child that matches all subroutes but without any route refs. This makes
 // sure that we're always able to match each route no matter how deep the navigation goes.
