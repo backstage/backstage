@@ -121,13 +121,6 @@ export function extractRouteInfoFromInstanceTree(core: ExtensionInstance): {
 
     // Whenever a route ref is encountered, we need to give it a route path and position in the ref tree.
     if (routeRef) {
-      const routeRefId = (routeRef as any).id; // TODO: properly
-      if (routeRefId !== current.id) {
-        throw new Error(
-          `Route ref '${routeRefId}' must have the same ID as extension '${current.id}'`,
-        );
-      }
-
       // The first route ref we find after encountering a route path is selected to be used as the
       // parent ref further down the tree. We don't start using this candidate ref until we encounter
       // another route path though, at which point we repeat the process and select another candidate.
