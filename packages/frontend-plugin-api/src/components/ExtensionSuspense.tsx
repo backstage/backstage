@@ -14,12 +14,20 @@
  * limitations under the License.
  */
 
-export {
-  ExtensionBoundary,
-  type ExtensionBoundaryProps,
-} from './ExtensionBoundary';
+import React, { ReactNode, Suspense } from 'react';
+import { useApp } from '@backstage/core-plugin-api';
 
-export {
-  ExtensionSuspense,
-  type ExtensionSuspenseProps,
-} from './ExtensionSuspense';
+/** @public */
+export interface ExtensionSuspenseProps {
+  children: ReactNode;
+}
+
+/** @public */
+export function ExtensionSuspense(props: ExtensionSuspenseProps) {
+  const { children } = props;
+
+  const app = useApp();
+  const { Progress } = app.getComponents();
+
+  return <Suspense fallback={<Progress />}>{children}</Suspense>;
+}
