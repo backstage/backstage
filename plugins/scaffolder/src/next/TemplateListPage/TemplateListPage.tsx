@@ -52,6 +52,8 @@ import {
 } from '../../routes';
 import { parseEntityRef, stringifyEntityRef } from '@backstage/catalog-model';
 import { TemplateGroupFilter } from '@backstage/plugin-scaffolder-react';
+import { useTranslationRef } from '@backstage/core-plugin-api/alpha';
+import { scaffolderTranslationRef } from '../../translation';
 
 /**
  * @alpha
@@ -94,6 +96,8 @@ export const TemplateListPage = (props: TemplateListPageProps) => {
     groups: givenGroups = [],
     templateFilter,
   } = props;
+  const { t } = useTranslationRef(scaffolderTranslationRef);
+
   const navigate = useNavigate();
   const editorLink = useRouteRef(editRouteRef);
   const actionsLink = useRouteRef(actionsRouteRef);
@@ -131,13 +135,13 @@ export const TemplateListPage = (props: TemplateListPageProps) => {
         ? [
             {
               icon: app.getSystemIcon('docs') ?? DocsIcon,
-              text: 'View TechDocs',
+              text: t('view_techdocs'),
               url: viewTechDocsLink({ kind, namespace, name }),
             },
           ]
         : [];
     },
-    [app, viewTechDocsLink],
+    [app, viewTechDocsLink, t],
   );
 
   const onTemplateSelected = useCallback(
@@ -153,22 +157,20 @@ export const TemplateListPage = (props: TemplateListPageProps) => {
     <EntityListProvider>
       <Page themeId="website">
         <Header
-          pageTitleOverride="Create a new component"
-          title="Create a new component"
-          subtitle="Create new software components using standard templates in your organization"
+          pageTitleOverride={t('create_a_new_component')}
+          title={t('create_a_new_component')}
+          subtitle={t('template_list_page_subtitle')}
         >
           <ScaffolderPageContextMenu {...scaffolderPageContextMenuProps} />
         </Header>
         <Content>
-          <ContentHeader title="Available Templates">
+          <ContentHeader title={t('available_templates')}>
             <RegisterExistingButton
-              title="Register Existing Component"
+              title={t('register_existing_component')}
               to={registerComponentLink && registerComponentLink()}
             />
             <SupportButton>
-              Create new software components using standard templates. Different
-              templates create different kinds of components (services,
-              websites, documentation, ...).
+              {t('template_list_page_support_button')}
             </SupportButton>
           </ContentHeader>
 

@@ -32,6 +32,8 @@ import {
   TaskSteps,
 } from '@backstage/plugin-scaffolder-react/alpha';
 import { useAsync } from '@react-hookz/web';
+import { scaffolderTranslationRef } from '../../translation';
+import { useTranslationRef } from '@backstage/core-plugin-api/alpha';
 
 const useStyles = makeStyles(theme => ({
   contentWrapper: {
@@ -59,6 +61,7 @@ export const OngoingTask = (props: {
     output?: ScaffolderTaskOutput;
   }>;
 }) => {
+  const { t } = useTranslationRef(scaffolderTranslationRef);
   // todo(blam): check that task Id actually exists, and that it's valid. otherwise redirect to something more useful.
   const { taskId } = useParams();
   const templateRouteRef = useRouteRef(selectedTemplateRouteRef);
@@ -142,13 +145,11 @@ export const OngoingTask = (props: {
   return (
     <Page themeId="website">
       <Header
-        pageTitleOverride={`Run of ${templateName}`}
-        title={
-          <div>
-            Run of <code>{templateName}</code>
-          </div>
-        }
-        subtitle={`Task ${taskId}`}
+        pageTitleOverride={t('run_of_template_name', {
+          templateName: templateName ?? '',
+        })}
+        title={t('run_of_template_name', { templateName: templateName ?? '' })}
+        subtitle={t('task_taskid', { taskId: taskId ?? '' })}
       >
         <ContextMenu
           cancelEnabled={cancelEnabled}

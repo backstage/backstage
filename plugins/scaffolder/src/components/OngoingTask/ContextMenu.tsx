@@ -33,6 +33,8 @@ import MoreVert from '@material-ui/icons/MoreVert';
 import React, { useState } from 'react';
 import { useApi } from '@backstage/core-plugin-api';
 import { scaffolderApiRef } from '@backstage/plugin-scaffolder-react';
+import { scaffolderTranslationRef } from '../../translation';
+import { useTranslationRef } from '@backstage/core-plugin-api/alpha';
 
 type ContextMenuProps = {
   cancelEnabled?: boolean;
@@ -60,6 +62,8 @@ export const ContextMenu = (props: ContextMenuProps) => {
     onToggleButtonBar,
     taskId,
   } = props;
+
+  const { t } = useTranslationRef(scaffolderTranslationRef);
   const { getPageTheme } = useTheme<BackstageTheme>();
   const pageTheme = getPageTheme({ themeId: 'website' });
   const classes = useStyles({ fontColor: pageTheme.fontColor });
@@ -98,14 +102,18 @@ export const ContextMenu = (props: ContextMenuProps) => {
             <ListItemIcon>
               <Toc fontSize="small" />
             </ListItemIcon>
-            <ListItemText primary={logsVisible ? 'Hide Logs' : 'Show Logs'} />
+            <ListItemText
+              primary={logsVisible ? t('hide_logs') : t('show_logs')}
+            />
           </MenuItem>
           <MenuItem onClick={() => onToggleButtonBar?.(!buttonBarVisible)}>
             <ListItemIcon>
               <ControlPointIcon fontSize="small" />
             </ListItemIcon>
             <ListItemText
-              primary={buttonBarVisible ? 'Hide Button Bar' : 'Show Button Bar'}
+              primary={
+                buttonBarVisible ? t('hide_button_bar') : t('show_button_bar')
+              }
             />
           </MenuItem>
           <MenuItem onClick={onStartOver}>

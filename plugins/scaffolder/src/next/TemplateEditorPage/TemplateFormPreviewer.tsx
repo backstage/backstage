@@ -38,6 +38,8 @@ import {
 } from '@backstage/plugin-scaffolder-react';
 import { TemplateEditorForm } from './TemplateEditorForm';
 import { TemplateEditorTextArea } from './TemplateEditorTextArea';
+import { useTranslationRef } from '@backstage/core-plugin-api/alpha';
+import { scaffolderTranslationRef } from '../../translation';
 
 const EXAMPLE_TEMPLATE_PARAMS_YAML = `# Edit the template parameters below to see how they will render in the scaffolder form UI
 parameters:
@@ -120,6 +122,8 @@ export const TemplateFormPreviewer = ({
   onClose?: () => void;
   layouts?: LayoutOptions[];
 }) => {
+  const { t } = useTranslationRef(scaffolderTranslationRef);
+
   const classes = useStyles();
   const alertApi = useApi(alertApiRef);
   const catalogApi = useApi(catalogApiRef);
@@ -155,7 +159,9 @@ export const TemplateFormPreviewer = ({
         )
         .catch(e =>
           alertApi.post({
-            message: `Error loading exisiting templates: ${e.message}`,
+            message: t('error_loading_exisiting_templates', {
+              errorMessage: e.message,
+            }),
             severity: 'error',
           }),
         ),
@@ -178,11 +184,11 @@ export const TemplateFormPreviewer = ({
         <div className={classes.controls}>
           <FormControl variant="outlined" size="small" fullWidth>
             <InputLabel id="select-template-label">
-              Load Existing Template
+              {t('load_existing_template')}
             </InputLabel>
             <Select
               value={selectedTemplate}
-              label="Load Existing Template"
+              label={t('load_existing_template')}
               labelId="select-template-label"
               onChange={e => handleSelectChange(e.target.value)}
             >

@@ -19,6 +19,8 @@ import { Content, StructuredMetadataTable } from '@backstage/core-components';
 import { UiSchema } from '@rjsf/utils';
 import { JsonObject } from '@backstage/types';
 import { ReviewStepProps } from '@backstage/plugin-scaffolder-react';
+import { useTranslationRef } from '@backstage/core-plugin-api/alpha';
+import { scaffolderTranslationRef } from '../../translation';
 
 export function getReviewData(
   formData: Record<string, any>,
@@ -94,6 +96,8 @@ export const ReviewStep = (props: ReviewStepProps) => {
     handleReset,
     steps,
   } = props;
+  const { t } = useTranslationRef(scaffolderTranslationRef);
+
   return (
     <Content>
       <Paper square elevation={0}>
@@ -109,10 +113,10 @@ export const ReviewStep = (props: ReviewStepProps) => {
         />
         <Box mb={4} />
         <Button onClick={handleBack} disabled={disableButtons}>
-          Back
+          {t('back')}
         </Button>
         <Button onClick={handleReset} disabled={disableButtons}>
-          Reset
+          {t('reset')}
         </Button>
         <Button
           variant="contained"
@@ -120,7 +124,7 @@ export const ReviewStep = (props: ReviewStepProps) => {
           onClick={handleCreate}
           disabled={disableButtons}
         >
-          Create
+          {t('create')}
         </Button>
       </Paper>
     </Content>

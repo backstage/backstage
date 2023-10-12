@@ -65,6 +65,8 @@ import {
 } from '../../routes';
 import { scaffolderApiRef } from '@backstage/plugin-scaffolder-react';
 import humanizeDuration from 'humanize-duration';
+import { scaffolderTranslationRef } from '../../translation';
+import { useTranslationRef } from '@backstage/core-plugin-api/alpha';
 
 const useStyles = makeStyles((theme: Theme) =>
   createStyles({
@@ -180,6 +182,7 @@ export const TaskStatusStepper = memo(
       root?: string;
     };
   }) => {
+    const { t } = useTranslationRef(scaffolderTranslationRef);
     const { steps, currentStepId, onUserStepChange } = props;
     const classes = useStyles(props);
 
@@ -212,7 +215,9 @@ export const TaskStatusStepper = memo(
                     <div className={classes.labelWrapper}>
                       <Typography variant="subtitle2">{step.name}</Typography>
                       {isSkipped ? (
-                        <Typography variant="caption">Skipped</Typography>
+                        <Typography variant="caption">
+                          {t('skipped')}
+                        </Typography>
                       ) : (
                         <StepTimeTicker step={step} />
                       )}
@@ -247,6 +252,9 @@ export type TaskPageProps = {
  * @alpha
  */
 export const TaskPage = (props: TaskPageProps) => {
+  const { t } = useTranslationRef(scaffolderTranslationRef);
+
+  // TODO this prop could be removed after i18n become stable
   const { loadingText } = props;
   const classes = useStyles();
   const navigate = useNavigate();
@@ -289,15 +297,15 @@ export const TaskPage = (props: TaskPageProps) => {
 
   const logAsString = useMemo(() => {
     if (!currentStepId) {
-      return loadingText ? loadingText : 'Loading...';
+      return loadingText ? loadingText : t('loading');
     }
     const log = taskStream.stepLogs[currentStepId];
 
     if (!log?.length) {
-      return 'Waiting for logs...';
+      return t('waiting_for_logs');
     }
     return log.join('\n');
-  }, [taskStream.stepLogs, currentStepId, loadingText]);
+  }, [taskStream.stepLogs, currentStepId, loadingText, t]);
 
   const taskNotFound =
     taskStream.completed && !taskStream.loading && !taskStream.task;
@@ -331,16 +339,16 @@ export const TaskPage = (props: TaskPageProps) => {
   return (
     <Page themeId="home">
       <Header
-        pageTitleOverride={`Task ${taskId}`}
-        title="Task Activity"
-        subtitle={`Activity for task: ${taskId}`}
+        pageTitleOverride={t('task_taskid', { taskId: taskId ?? '' })}
+        title={t('task_activity')}
+        subtitle={t('activity_for_task', { taskId: taskId ?? '' })}
       />
       <Content>
         {taskNotFound ? (
           <ErrorPage
             status="404"
-            statusMessage="Task not found"
-            additionalInfo="No task found with this ID"
+            statusMessage={t('task_not_found')}
+            additionalInfo={t('no_task_found_with_this_id')}
           />
         ) : (
           <div>
@@ -362,7 +370,7 @@ export const TaskPage = (props: TaskPageProps) => {
                     variant="contained"
                     color="primary"
                   >
-                    Start Over
+                    {t('start_over')}
                   </Button>
                   <Button
                     className={classes.button}
@@ -372,8 +380,8 @@ export const TaskPage = (props: TaskPageProps) => {
                     color="secondary"
                   >
                     {(taskCancelled || clickedToCancel) && !completed
-                      ? 'Cancelling...'
-                      : 'Cancel'}
+                      ? t('cancelling')
+                      : t('cancel')}
                   </Button>
                 </Paper>
               </Grid>

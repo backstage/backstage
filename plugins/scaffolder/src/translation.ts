@@ -15,6 +15,7 @@
  */
 import { createTranslationRef } from '@backstage/core-plugin-api/alpha';
 
+/** @alpha */
 export const scaffolderTranslationRef = createTranslationRef({
   id: 'scaffolder',
   messages: {
@@ -26,7 +27,7 @@ export const scaffolderTranslationRef = createTranslationRef({
     type: 'Type',
     unknown: 'unknown',
     create_a_new_component: 'Create a New Component',
-    installed_actions: 'Installed actions',
+    installed_actions: 'Installed Actions',
     this_is_the_collection_of_all_installed_actions:
       'This is the collection of all installed actions',
     examples: 'Examples',
@@ -78,5 +79,88 @@ export const scaffolderTranslationRef = createTranslationRef({
     register_existing_component: 'Register Existing Component',
     scaffolder_page_support_button:
       'Create new software components using standard templates. Different templates create different kinds of components (services, websites, documentation, ...).',
+    hide_logs: 'Hide Logs',
+    show_logs: 'Show Logs',
+    hide_button_bar: 'Hide Button Bar',
+    show_button_bar: 'Show Button Bar',
+    run_of_template_name: 'Run of {{templateName}}',
+    task_taskid: 'Task {{taskId}}',
+    page_not_found: 'Page not found',
+    custom_field_title_example: '{{customFieldName}} Example',
+    choose_custom_field_extension: 'Choose Custom Field Extension',
+    field_options: 'Field Options',
+    apply: 'Apply',
+    example_template_spec: 'Example Template Spec',
+    template_parameters_must_be_an_array:
+      'Template parameters must be an array',
+    template_editor: 'Template Editor',
+    try_it: 'Try It',
+    template_editor_subtitle:
+      'Edit, preview, and try out templates and template forms',
+    error_loading_exisiting_templates:
+      'Error loading exisiting templates: {{errorMessage}}',
+    load_existing_template: 'Load Existing Template',
+    view_techdocs: 'View TechDocs',
+    template_list_page_subtitle:
+      'Create new software components using standard templates in your organization',
+    template_list_page_support_button:
+      'Create new software components using standard templates. Different templates create different kinds of components (services, websites, documentation, ...).',
+    template_wizard_page_subtitle:
+      'Create new software components using standard templates in your organization',
+    no_information_to_display: 'No information to display',
+    list_task_page_empty_state_description:
+      'There is no Tasks or there was an issue communicating with backend.',
+    task_id: 'Task ID',
+    template: 'Template',
+    created: 'Created',
+    status: 'Status',
+    templates_tasks: 'Templates Tasks',
+    list_template_tasks: 'List template tasks',
+    all_tasks_that_have_been_started: 'All tasks that have been started',
+    back: 'Back',
+    reset: 'Reset',
+    create: 'Create',
+    task_list: 'Task List',
+    skipped: 'Skipped',
+    waiting_for_logs: 'Waiting for logs...',
+    task_activity: 'Task Activity',
+    activity_for_task: 'Activity for task: {{taskId}}',
+    task_not_found: 'Task not found',
+    no_task_found_with_this_id: 'No task found with this ID',
+    start_over: 'Start Over',
+    cancelling: 'Cancelling...',
+    cancel: 'Cancel',
+    template_card_warning_deprecated:
+      'This template uses a syntax that has been deprecated, and should be migrated to a newer syntax. Click for more info.',
+    links: 'Links',
+    choose: 'Choose',
+    dry_run_result: 'Result {{resultId}}',
+    download_as_zip: 'Download as .zip',
+    delete_result: 'Delete result',
+    files: 'Files',
+    log: 'Log',
+    are_you_sure_unsaved_changes_will_be_lost:
+      'Are you sure? Unsaved changes will be lost',
+    save_all_files: 'Save all files',
+    reload_directory: 'Reload directory',
+    close_directory: 'Close directory',
+    load_template_directory: 'Load Template Directory',
+    template_editor_intro_subtitle:
+      'Load a local template directory, allowing you to both edit and try executing your own template.',
+    only_supported_in_some_chromium_based_browsers:
+      'Only supported in some Chromium-based browsers',
+    edit_template_form: 'Edit Template Form',
+    template_editor_intro_edit_help:
+      'Preview and edit a template form, either using a sample template or by loading a template from the catalog.',
+    custom_field_explorer: 'Custom Field Explorer',
+    template_editor_intro_custom_field_help:
+      'View and play around with available installed custom field extensions.',
+    get_started_by_choosing_one_of_the_options_below:
+      'Get started by choosing one of the options below',
+    template_list_error_loading_template:
+      'Oops! Something went wrong loading the templates',
+    template_list_empty_templates_state:
+      'No templates found that match your filter. Learn more about',
+    adding_templates: 'adding templates',
   },
 });

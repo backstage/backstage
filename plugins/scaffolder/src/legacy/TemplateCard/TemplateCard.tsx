@@ -63,6 +63,8 @@ import LanguageIcon from '@material-ui/icons/Language';
 import WarningIcon from '@material-ui/icons/Warning';
 import React from 'react';
 import { selectedTemplateRouteRef, viewTechDocRouteRef } from '../../routes';
+import { useTranslationRef } from '@backstage/core-plugin-api/alpha';
+import { scaffolderTranslationRef } from '../../translation';
 
 const useStyles = makeStyles<
   BackstageTheme,
@@ -154,12 +156,13 @@ const getTemplateCardProps = (
 };
 
 const DeprecationWarning = () => {
+  const { t } = useTranslationRef(scaffolderTranslationRef);
+
   const styles = useDeprecationStyles();
 
   const Title = (
     <Typography style={{ padding: 10, maxWidth: 300 }}>
-      This template uses a syntax that has been deprecated, and should be
-      migrated to a newer syntax. Click for more info.
+      {t('template_card_warning_deprecated')}
     </Typography>
   );
 
@@ -178,6 +181,7 @@ const DeprecationWarning = () => {
 };
 
 export const TemplateCard = ({ template, deprecated }: TemplateCardProps) => {
+  const { t } = useTranslationRef(scaffolderTranslationRef);
   const app = useApp();
   const backstageTheme = useTheme<BackstageTheme>();
   const templateRoute = useRouteRef(selectedTemplateRouteRef);
@@ -232,7 +236,7 @@ export const TemplateCard = ({ template, deprecated }: TemplateCardProps) => {
       >
         <Box className={classes.box}>
           <Typography variant="body2" className={classes.label}>
-            Description
+            {t('description')}
           </Typography>
           <MarkdownContent
             className={classes.description}
@@ -241,7 +245,7 @@ export const TemplateCard = ({ template, deprecated }: TemplateCardProps) => {
         </Box>
         <Box className={classes.box}>
           <Typography variant="body2" className={classes.label}>
-            Owner
+            {t('owner')}
           </Typography>
           <EntityRefLinks entityRefs={ownedByRelations} defaultKind="Group" />
         </Box>
@@ -251,7 +255,7 @@ export const TemplateCard = ({ template, deprecated }: TemplateCardProps) => {
             variant="body2"
             className={classes.label}
           >
-            Tags
+            {t('tags')}
           </Typography>
           {templateProps.tags?.map(tag => (
             <Chip size="small" label={tag} key={tag} />
@@ -262,7 +266,7 @@ export const TemplateCard = ({ template, deprecated }: TemplateCardProps) => {
         variant="body2"
         className={[classes.label, classes.linksLabel].join(' ')}
       >
-        Links
+        {t('links')}
       </Typography>
       <CardActions>
         <div className={classes.leftButton}>
@@ -282,7 +286,7 @@ export const TemplateCard = ({ template, deprecated }: TemplateCardProps) => {
             </Tooltip>
           )}
           {viewTechDocsLink && (
-            <Tooltip title="View TechDocs">
+            <Tooltip title={t('view_techdocs')}>
               <IconButton
                 className={classes.leftButton}
                 href={viewTechDocsLink}
@@ -304,7 +308,7 @@ export const TemplateCard = ({ template, deprecated }: TemplateCardProps) => {
           to={href}
           aria-label={`Choose ${templateProps.title}`}
         >
-          Choose
+          {t('choose')}
         </LinkButton>
       </CardActions>
     </Card>

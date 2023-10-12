@@ -29,6 +29,8 @@ import DownloadIcon from '@material-ui/icons/GetApp';
 import React from 'react';
 import { useDryRun } from '../DryRunContext';
 import { downloadBlob } from '../../../lib/download';
+import { scaffolderTranslationRef } from '../../../translation';
+import { useTranslationRef } from '@backstage/core-plugin-api/alpha';
 
 const useStyles = makeStyles((theme: BackstageTheme) => ({
   root: {
@@ -48,6 +50,7 @@ const useStyles = makeStyles((theme: BackstageTheme) => ({
 }));
 
 export function DryRunResultsList() {
+  const { t } = useTranslationRef(scaffolderTranslationRef);
   const classes = useStyles();
   const dryRun = useDryRun();
 
@@ -78,12 +81,14 @@ export function DryRunResultsList() {
             >
               {failed ? <CancelIcon /> : <CheckIcon />}
             </ListItemIcon>
-            <ListItemText primary={`Result ${result.id}`} />
+            <ListItemText
+              primary={t('dry_run_result', { resultId: result.id })}
+            />
             <ListItemSecondaryAction>
               <IconButton
                 edge="end"
                 aria-label="download"
-                title="Download as .zip"
+                title={t('download_as_zip')}
                 disabled={isLoading}
                 onClick={() => downloadResult()}
               >
@@ -92,7 +97,7 @@ export function DryRunResultsList() {
               <IconButton
                 edge="end"
                 aria-label="delete"
-                title="Delete result"
+                title={t('delete_result')}
                 onClick={() => dryRun.deleteResult(result.id)}
               >
                 <DeleteIcon />

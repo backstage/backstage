@@ -30,6 +30,8 @@ import {
 } from '@backstage/plugin-scaffolder-react/alpha';
 import { useDryRun } from './DryRunContext';
 import { useDirectoryEditor } from './DirectoryEditorContext';
+import { useTranslationRef } from '@backstage/core-plugin-api/alpha';
+import { scaffolderTranslationRef } from '../../translation';
 
 const useStyles = makeStyles({
   containerWrapper: {
@@ -103,6 +105,7 @@ export function TemplateEditorForm(props: TemplateEditorFormProps) {
     fieldExtensions = [],
     layouts = [],
   } = props;
+  const { t } = useTranslationRef(scaffolderTranslationRef);
   const classes = useStyles();
   const apiHolder = useApiHolder();
 
@@ -146,7 +149,7 @@ export function TemplateEditorForm(props: TemplateEditorFormProps) {
         const { parameters } = rootObj;
 
         if (!Array.isArray(parameters)) {
-          setErrorText('Template parameters must be an array');
+          setErrorText(t('template_parameters_must_be_an_array'));
           setSteps(undefined);
           return;
         }
@@ -188,7 +191,7 @@ export function TemplateEditorForm(props: TemplateEditorFormProps) {
       <div className={classes.container}>
         <ErrorBoundary invalidator={steps} setErrorText={setErrorText}>
           <Stepper
-            manifest={{ steps, title: 'Template Editor' }}
+            manifest={{ steps, title: t('template_editor') }}
             extensions={fieldExtensions}
             components={fields}
             onCreate={async options => {

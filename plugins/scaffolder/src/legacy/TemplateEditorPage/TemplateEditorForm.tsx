@@ -29,6 +29,8 @@ import { useDirectoryEditor } from '../../next/TemplateEditorPage/DirectoryEdito
 import { MultistepJsonForm } from '../MultistepJsonForm';
 import { createValidator } from '../TemplatePage';
 import { LegacyFieldExtensionOptions } from '@backstage/plugin-scaffolder-react/alpha';
+import { useTranslationRef } from '@backstage/core-plugin-api/alpha';
+import { scaffolderTranslationRef } from '../../translation';
 
 const useStyles = makeStyles({
   containerWrapper: {
@@ -106,6 +108,7 @@ export function TemplateEditorForm(props: TemplateEditorFormProps) {
     fieldExtensions = [],
     layouts = [],
   } = props;
+  const { t } = useTranslationRef(scaffolderTranslationRef);
   const classes = useStyles();
   const apiHolder = useApiHolder();
 
@@ -149,7 +152,7 @@ export function TemplateEditorForm(props: TemplateEditorFormProps) {
         const { parameters } = rootObj;
 
         if (!Array.isArray(parameters)) {
-          setErrorText('Template parameters must be an array');
+          setErrorText(t('template_parameters_must_be_an_array'));
           setSteps(undefined);
           return;
         }
@@ -196,7 +199,7 @@ export function TemplateEditorForm(props: TemplateEditorFormProps) {
             formData={data}
             onChange={e => onUpdate(e.formData)}
             onReset={() => onUpdate({})}
-            finishButtonLabel={onDryRun && 'Try It'}
+            finishButtonLabel={onDryRun && t('try_it')}
             onFinish={onDryRun && (() => onDryRun(data))}
             layouts={layouts}
           />

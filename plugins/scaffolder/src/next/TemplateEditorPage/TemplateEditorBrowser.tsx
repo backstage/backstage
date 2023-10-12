@@ -20,6 +20,8 @@ import SaveIcon from '@material-ui/icons/Save';
 import React from 'react';
 import { useDirectoryEditor } from './DirectoryEditorContext';
 import { FileBrowser } from '../../components/FileBrowser';
+import { scaffolderTranslationRef } from '../../translation';
+import { useTranslationRef } from '@backstage/core-plugin-api/alpha';
 
 const useStyles = makeStyles(theme => ({
   button: {
@@ -41,6 +43,7 @@ const useStyles = makeStyles(theme => ({
 
 /** The local file browser for the template editor */
 export function TemplateEditorBrowser(props: { onClose?: () => void }) {
+  const { t } = useTranslationRef(scaffolderTranslationRef);
   const classes = useStyles();
   const directoryEditor = useDirectoryEditor();
   const changedFiles = directoryEditor.files.filter(file => file.dirty);
@@ -52,7 +55,7 @@ export function TemplateEditorBrowser(props: { onClose?: () => void }) {
     if (changedFiles.length > 0) {
       // eslint-disable-next-line no-alert
       const accepted = window.confirm(
-        'Are you sure? Unsaved changes will be lost',
+        t('are_you_sure_unsaved_changes_will_be_lost'),
       );
       if (!accepted) {
         return;
@@ -64,7 +67,7 @@ export function TemplateEditorBrowser(props: { onClose?: () => void }) {
   return (
     <>
       <div className={classes.buttons}>
-        <Tooltip title="Save all files">
+        <Tooltip title={t('save_all_files')}>
           <IconButton
             className={classes.button}
             disabled={directoryEditor.files.every(file => !file.dirty)}
@@ -73,7 +76,7 @@ export function TemplateEditorBrowser(props: { onClose?: () => void }) {
             <SaveIcon />
           </IconButton>
         </Tooltip>
-        <Tooltip title="Reload directory">
+        <Tooltip title={t('reload_directory')}>
           <IconButton
             className={classes.button}
             onClick={() => directoryEditor.reload()}
@@ -82,7 +85,7 @@ export function TemplateEditorBrowser(props: { onClose?: () => void }) {
           </IconButton>
         </Tooltip>
         <div className={classes.buttonsGap} />
-        <Tooltip title="Close directory">
+        <Tooltip title={t('close_directory')}>
           <IconButton className={classes.button} onClick={handleClose}>
             <CloseIcon />
           </IconButton>

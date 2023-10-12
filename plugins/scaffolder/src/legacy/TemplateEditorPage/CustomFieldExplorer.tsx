@@ -35,6 +35,8 @@ import { Form } from '@backstage/plugin-scaffolder-react/alpha';
 import { TemplateEditorForm } from './TemplateEditorForm';
 import validator from '@rjsf/validator-ajv8';
 import { LegacyFieldExtensionOptions } from '@backstage/plugin-scaffolder-react/alpha';
+import { useTranslationRef } from '@backstage/core-plugin-api/alpha';
+import { scaffolderTranslationRef } from '../../translation';
 
 const useStyles = makeStyles(theme => ({
   root: {
@@ -69,6 +71,7 @@ export const CustomFieldExplorer = ({
   customFieldExtensions?: LegacyFieldExtensionOptions<any, any>[];
   onClose?: () => void;
 }) => {
+  const { t } = useTranslationRef(scaffolderTranslationRef);
   const classes = useStyles();
   const fieldOptions = customFieldExtensions.filter(field => !!field.schema);
   const [selectedField, setSelectedField] = useState(fieldOptions[0]);
@@ -80,7 +83,9 @@ export const CustomFieldExplorer = ({
       yaml.stringify({
         parameters: [
           {
-            title: `${selectedField.name} Example`,
+            title: t('custom_field_title_example', {
+              customFieldName: selectedField.name,
+            }),
             properties: {
               [selectedField.name]: {
                 type: selectedField.schema?.returnValue?.type,
@@ -91,7 +96,7 @@ export const CustomFieldExplorer = ({
           },
         ],
       }),
-    [fieldFormState, selectedField],
+    [fieldFormState, selectedField, t],
   );
 
   const fieldComponents = useMemo(() => {
@@ -124,11 +129,11 @@ export const CustomFieldExplorer = ({
       <div className={classes.controls}>
         <FormControl variant="outlined" size="small" fullWidth>
           <InputLabel id="select-field-label">
-            Choose Custom Field Extension
+            {t('choose_custom_field_extension')}
           </InputLabel>
           <Select
             value={selectedField}
-            label="Choose Custom Field Extension"
+            label={t('choose_custom_field_extension')}
             labelId="select-field-label"
             onChange={e =>
               handleSelectionChange(
@@ -150,7 +155,7 @@ export const CustomFieldExplorer = ({
       </div>
       <div className={classes.fieldForm}>
         <Card>
-          <CardHeader title="Field Options" />
+          <CardHeader title={t('field_options')} />
           <CardContent>
             <Form
               showErrorList={false}
@@ -176,7 +181,7 @@ export const CustomFieldExplorer = ({
       </div>
       <div className={classes.preview}>
         <Card>
-          <CardHeader title="Example Template Spec" />
+          <CardHeader title={t('example_template_spec')} />
           <CardContent>
             <CodeMirror
               readOnly
