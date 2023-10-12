@@ -169,7 +169,7 @@ export async function createRouter(
         backstageToken: token,
       });
 
-      const build = await jenkinsApi.getJobBuilds(jenkinsInfo);
+      const build = await jenkinsApi.getJobBuilds(jenkinsInfo, jobFullName);
 
       response.json({
         build: build,

@@ -54,6 +54,7 @@ export class JenkinsApiImpl {
   private static readonly jobTreeSpec = `actions[*],
                    ${JenkinsApiImpl.lastBuildTreeSpec}
                    jobs{0,1},
+                   url,
                    name,
                    fullName,
                    displayName,
@@ -340,13 +341,33 @@ export class JenkinsApiImpl {
     return `${jenkinsInfo.baseUrl}/job/${jobs.join('/job/')}/${buildId}`;
   }
 
-  async getJobBuilds(jenkinsInfo: JenkinsInfo) {
-    const client = await JenkinsApiImpl.getClient(jenkinsInfo);
+  async getJobBuilds(jenkinsInfo: JenkinsInfo, jobFullName: string) {
+    let jobName = jobFullName;
 
-    const jobBuilds = await client.job.get({
-      name: jenkinsInfo.jobFullName,
-      tree: JenkinsApiImpl.jobBuildsTreeSpec.replace(/\s/g, ''),
-    });
+    if (jobFullName.includes('/')) {
+      const arr = jobFullName.split('/');
+      const multibranchJobName = arr.shift();
+      jobName = [
+        multibranchJobName,
+        'job',
+        encodeURIComponent(arr.join('/')),
+      ].join('/');
+    }
+
+    const response = await fetch(
+      `${
+        jenkinsInfo.baseUrl
+      }/job/${jobName}/api/json?tree=${JenkinsApiImpl.jobBuildsTreeSpec.replace(
+        /\s/g,
+        '',
+      )}`,
+      {
+        method: 'get',
+        headers: jenkinsInfo.headers as HeaderInit,
+      },
+    );
+
+    const jobBuilds = await response.json();
 
     return jobBuilds;
   }
