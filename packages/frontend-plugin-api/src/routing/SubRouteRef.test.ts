@@ -30,7 +30,6 @@ describe('SubRouteRef', () => {
     const internalParent = toInternalRouteRef(createRouteRef());
     const routeRef: SubRouteRef = createSubRouteRef({
       parent: internalParent,
-      id: 'my-route-ref',
       path: '/foo',
     });
     const internal = toInternalSubRouteRef(routeRef);
@@ -47,7 +46,6 @@ describe('SubRouteRef', () => {
   it('should be created with params', () => {
     const routeRef: SubRouteRef<{ bar: string }> = createSubRouteRef({
       parent,
-      id: 'my-other-route-ref',
       path: '/foo/:bar',
     });
     const internal = toInternalSubRouteRef(routeRef);
@@ -63,7 +61,6 @@ describe('SubRouteRef', () => {
       z: string;
     }> = createSubRouteRef({
       parent: parentX,
-      id: 'my-other-route-ref',
       path: '/foo/:y/:z',
     });
     const internal = toInternalSubRouteRef(routeRef);
@@ -75,7 +72,6 @@ describe('SubRouteRef', () => {
   it('should be created with params from parent', () => {
     const routeRef: SubRouteRef<{ x: string }> = createSubRouteRef({
       parent: parentX,
-      id: 'my-other-route-ref',
       path: '/foo/bar',
     });
     const internal = toInternalSubRouteRef(routeRef);
@@ -95,9 +91,7 @@ describe('SubRouteRef', () => {
     ['/:inva:lid/foo', "SubRouteRef path has invalid param, got 'inva:lid'"],
     ['/:inva=lid/foo', "SubRouteRef path has invalid param, got 'inva=lid'"],
   ])('should throw if path is invalid, %s', (path, message) => {
-    expect(() =>
-      createSubRouteRef({ path, parent: parentX, id: path }),
-    ).toThrow(message);
+    expect(() => createSubRouteRef({ path, parent: parentX })).toThrow(message);
   });
 
   it('should properly infer and parse path parameters', () => {
@@ -106,12 +100,12 @@ describe('SubRouteRef', () => {
       _params: T extends undefined ? undefined : T,
     ) {}
 
-    const _1 = createSubRouteRef({ id: '1', parent, path: '/foo/bar' });
+    const _1 = createSubRouteRef({ parent, path: '/foo/bar' });
     // @ts-expect-error
     checkSubRouteRef(_1, { x: '' });
     checkSubRouteRef(_1, undefined);
 
-    const _2 = createSubRouteRef({ id: '2', parent, path: '/foo/:x/:y' });
+    const _2 = createSubRouteRef({ parent, path: '/foo/:x/:y' });
     // @ts-expect-error
     checkSubRouteRef(_2, undefined);
     // @ts-expect-error
@@ -122,14 +116,14 @@ describe('SubRouteRef', () => {
     checkSubRouteRef(_2, { x: '', y: '', z: '' });
     checkSubRouteRef(_2, { x: '', y: '' });
 
-    const _3 = createSubRouteRef({ id: '3', parent: parentX, path: '/foo' });
+    const _3 = createSubRouteRef({ parent: parentX, path: '/foo' });
     // @ts-expect-error
     checkSubRouteRef(_3, undefined);
     // @ts-expect-error
     checkSubRouteRef(_3, { y: '' });
     checkSubRouteRef(_3, { x: '' });
 
-    const _4 = createSubRouteRef({ id: '4', parent: parentX, path: '/foo/:y' });
+    const _4 = createSubRouteRef({ parent: parentX, path: '/foo/:y' });
     // @ts-expect-error
     checkSubRouteRef(_4, undefined);
     // @ts-expect-error

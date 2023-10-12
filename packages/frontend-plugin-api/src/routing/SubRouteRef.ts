@@ -166,7 +166,6 @@ export function createSubRouteRef<
   Path extends string,
   ParentParams extends AnyRouteParams = never,
 >(config: {
-  id: string;
   path: Path;
   parent: RouteRef<ParentParams>;
 }): MakeSubRouteRef<PathParams<Path>, ParentParams> {
