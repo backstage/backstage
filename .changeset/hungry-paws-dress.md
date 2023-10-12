@@ -1,5 +1,6 @@
 ---
 '@backstage/plugin-user-settings': patch
+'@backstage/plugin-techdocs': patch
 '@backstage/plugin-tech-radar': patch
 '@backstage/plugin-graphiql': patch
 '@backstage/plugin-search': patch

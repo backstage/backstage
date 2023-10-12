@@ -4,12 +4,22 @@
 
 ```ts
 import { AnyExternalRoutes } from '@backstage/frontend-plugin-api';
-import { AnyRoutes } from '@backstage/frontend-plugin-api';
 import { BackstagePlugin } from '@backstage/frontend-plugin-api';
 import { Extension } from '@backstage/frontend-plugin-api';
+import { RouteRef } from '@backstage/frontend-plugin-api';
 
 // @alpha (undocumented)
-const _default: BackstagePlugin<AnyRoutes, AnyExternalRoutes>;
+const _default: BackstagePlugin<
+  {
+    root: RouteRef<undefined>;
+    docRoot: RouteRef<{
+      name: string;
+      kind: string;
+      namespace: string;
+    }>;
+  },
+  AnyExternalRoutes
+>;
 export default _default;
 
 // @alpha (undocumented)
