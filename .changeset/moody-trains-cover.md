@@ -2,4 +2,4 @@
 '@backstage/plugin-code-coverage-backend': patch
 ---
 
-Added support for new backend system(code-coverage)
+Added support for new backend system
