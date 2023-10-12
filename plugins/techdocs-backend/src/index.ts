@@ -25,8 +25,6 @@ export type {
   RouterOptions,
   RecommendedDeploymentOptions,
   OutOfTheBoxDeploymentOptions,
-  DocsBuildStrategy,
-  ShouldBuildParameters,
 } from './service';
 
 export {
@@ -41,6 +39,10 @@ export type {
 /**
  * @deprecated Use directly from @backstage/plugin-techdocs-node
  */
-export type { TechDocsDocument } from '@backstage/plugin-techdocs-node';
+export type {
+  DocsBuildStrategy,
+  ShouldBuildParameters,
+  TechDocsDocument,
+} from '@backstage/plugin-techdocs-node';
 
 export * from '@backstage/plugin-techdocs-node';
