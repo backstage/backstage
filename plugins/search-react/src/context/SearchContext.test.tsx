@@ -16,7 +16,7 @@
 
 import { configApiRef } from '@backstage/core-plugin-api';
 import { render, screen, waitFor } from '@testing-library/react';
-import { act, renderHook } from '@testing-library/react-hooks';
+import { act, renderHook } from '@testing-library/react';
 import { MockConfigApi, TestApiProvider } from '@backstage/test-utils';
 import React from 'react';
 import {

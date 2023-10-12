@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import { renderHook } from '@testing-library/react-hooks';
+import { renderHook } from '@testing-library/react';
 import { CatalogApi } from '@backstage/catalog-client';
 import { useQueryEntities } from './useQueryEntities';
 

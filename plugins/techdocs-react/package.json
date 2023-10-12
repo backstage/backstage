@@ -58,8 +58,7 @@
     "@backstage/test-utils": "workspace:^",
     "@backstage/theme": "workspace:^",
     "@testing-library/jest-dom": "^6.0.0",
-    "@testing-library/react": "^13.4.0",
-    "@testing-library/react-hooks": "^8.0.0"
+    "@testing-library/react": "^13.4.0"
   },
   "files": [
     "alpha",

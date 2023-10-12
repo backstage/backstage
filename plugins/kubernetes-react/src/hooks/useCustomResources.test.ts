@@ -16,7 +16,7 @@
 
 import { useCustomResources } from './useCustomResources';
 import { Entity } from '@backstage/catalog-model';
-import { renderHook } from '@testing-library/react-hooks';
+import { renderHook } from '@testing-library/react';
 import { useApi } from '@backstage/core-plugin-api';
 import { CustomResourceMatcher } from '@backstage/plugin-kubernetes-common';
 import { generateAuth } from './auth';

@@ -16,7 +16,7 @@
 
 import { Entity } from '@backstage/catalog-model';
 import { TestApiProvider } from '@backstage/test-utils';
-import { WrapperComponent, renderHook } from '@testing-library/react-hooks';
+import { WrapperComponent, renderHook } from '@testing-library/react';
 import React, { PropsWithChildren } from 'react';
 import { catalogApiRef } from '../api';
 import { useRelatedEntities } from './useRelatedEntities';

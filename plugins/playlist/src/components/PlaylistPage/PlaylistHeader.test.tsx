@@ -27,8 +27,7 @@ import {
 import { permissions, Playlist } from '@backstage/plugin-playlist-common';
 import { renderInTestApp, TestApiProvider } from '@backstage/test-utils';
 import { Button } from '@material-ui/core';
-import { fireEvent, waitFor } from '@testing-library/react';
-import { act } from '@testing-library/react-hooks';
+import { fireEvent, waitFor, act } from '@testing-library/react';
 import React from 'react';
 import { SWRConfig } from 'swr';
 import { PlaylistApi, playlistApiRef } from '../../api';

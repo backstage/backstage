@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 import React from 'react';
-import { renderHook, act } from '@testing-library/react-hooks';
+import { renderHook, act } from '@testing-library/react';
 
 import { ThemeProvider } from '@material-ui/core';
 

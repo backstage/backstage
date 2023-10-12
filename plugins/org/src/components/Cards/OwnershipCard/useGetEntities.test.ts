@@ -16,7 +16,7 @@
 import { CompoundEntityRef, Entity } from '@backstage/catalog-model';
 import { useGetEntities } from './useGetEntities';
 import { CatalogApi } from '@backstage/catalog-client';
-import { renderHook } from '@testing-library/react-hooks';
+import { renderHook } from '@testing-library/react';
 import { getEntityRelations } from '@backstage/plugin-catalog-react';
 
 const givenParentGroup = 'team.squad1';

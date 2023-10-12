@@ -21,7 +21,7 @@ import {
   RELATION_PART_OF,
   stringifyEntityRef,
 } from '@backstage/catalog-model';
-import { renderHook } from '@testing-library/react-hooks';
+import { renderHook } from '@testing-library/react';
 import { filter, keyBy } from 'lodash';
 import { useEntityRelationGraph as useEntityRelationGraphMocked } from './useEntityRelationGraph';
 import { useEntityRelationNodesAndEdges } from './useEntityRelationNodesAndEdges';

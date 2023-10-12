@@ -20,7 +20,7 @@ import {
   TestApiProvider,
   withLogCollector,
 } from '@backstage/test-utils';
-import { renderHook } from '@testing-library/react-hooks';
+import { renderHook } from '@testing-library/react';
 import { createTranslationRef, TranslationRef } from './TranslationRef';
 import { useTranslationRef } from './useTranslationRef';
 // eslint-disable-next-line @backstage/no-relative-monorepo-imports

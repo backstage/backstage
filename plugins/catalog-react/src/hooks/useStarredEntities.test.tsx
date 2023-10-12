@@ -16,7 +16,7 @@
 
 import { Entity } from '@backstage/catalog-model';
 import { TestApiProvider } from '@backstage/test-utils';
-import { act, renderHook } from '@testing-library/react-hooks';
+import { act, renderHook } from '@testing-library/react';
 import React, { PropsWithChildren } from 'react';
 import {
   starredEntitiesApiRef,

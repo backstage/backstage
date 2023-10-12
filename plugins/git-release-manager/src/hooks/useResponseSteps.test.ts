@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { renderHook, act } from '@testing-library/react-hooks';
+import { renderHook, act } from '@testing-library/react';
 
 import { useResponseSteps } from './useResponseSteps';
 
@@ -74,7 +74,7 @@ describe('useResponseSteps', () => {
             "icon": "failure",
             "message": <b>
               Something went wrong
-               
+
               <WithStyles(ForwardRef(Typography))
                 aria-label="fire"
                 component="span"
@@ -108,7 +108,7 @@ describe('useResponseSteps', () => {
             "icon": "failure",
             "message": <b>
               Something went wrong
-               
+
               <WithStyles(ForwardRef(Typography))
                 aria-label="fire"
                 component="span"

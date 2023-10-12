@@ -15,7 +15,7 @@
  */
 import { Entity } from '@backstage/catalog-model';
 import { EntityProvider } from '@backstage/plugin-catalog-react';
-import { renderHook } from '@testing-library/react-hooks';
+import { renderHook } from '@testing-library/react';
 import { when } from 'jest-when';
 import React, { PropsWithChildren } from 'react';
 import {

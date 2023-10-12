@@ -15,7 +15,7 @@
  */
 import React, { ReactNode } from 'react';
 import { useElementFilter } from './useElementFilter';
-import { renderHook } from '@testing-library/react-hooks';
+import { renderHook } from '@testing-library/react';
 import { attachComponentData } from './componentData';
 import { featureFlagsApiRef } from '../apis';
 import { LocalStorageFeatureFlags } from '@backstage/core-app-api';
