@@ -3538,7 +3538,7 @@ __metadata:
     archiver: ^5.0.2
     aws-sdk-client-mock: ^2.0.0
     base64-stream: ^1.0.0
-    better-sqlite3: ^8.0.0
+    better-sqlite3: ^9.0.0
     compression: ^1.7.4
     concat-stream: ^2.0.0
     cors: ^2.8.5
@@ -3552,7 +3552,7 @@ __metadata:
     isomorphic-git: ^1.23.0
     jose: ^4.6.0
     keyv: ^4.5.2
-    knex: ^2.0.0
+    knex: ^3.0.0
     lodash: ^4.17.21
     logform: ^2.3.2
     luxon: ^3.0.0
@@ -3560,7 +3560,7 @@ __metadata:
     msw: ^1.0.0
     mysql2: ^2.2.5
     node-fetch: ^2.6.7
-    pg: ^8.3.0
+    pg: ^8.11.3
     raw-body: ^2.4.1
     supertest: ^6.1.3
     tar: ^6.1.12
@@ -3630,7 +3630,7 @@ __metadata:
     "@backstage/types": "workspace:^"
     "@types/express": ^4.17.6
     express: ^4.17.1
-    knex: ^2.0.0
+    knex: ^3.0.0
   languageName: unknown
   linkType: soft
 
@@ -3682,7 +3682,7 @@ __metadata:
     "@types/cron": ^2.0.0
     "@types/luxon": ^3.0.0
     cron: ^2.0.0
-    knex: ^2.0.0
+    knex: ^3.0.0
     lodash: ^4.17.21
     luxon: ^3.0.0
     uuid: ^8.0.0
@@ -3705,13 +3705,13 @@ __metadata:
     "@backstage/plugin-auth-node": "workspace:^"
     "@backstage/types": "workspace:^"
     "@types/supertest": ^2.0.8
-    better-sqlite3: ^8.0.0
+    better-sqlite3: ^9.0.0
     express: ^4.17.1
     fs-extra: ^10.0.1
-    knex: ^2.0.0
+    knex: ^3.0.0
     msw: ^1.0.0
     mysql2: ^2.2.5
-    pg: ^8.3.0
+    pg: ^8.11.3
     supertest: ^6.1.3
     testcontainers: ^8.1.2
     textextensions: ^5.16.0
@@ -4889,7 +4889,7 @@ __metadata:
     fs-extra: 10.1.0
     globby: ^11.0.0
     helmet: ^6.0.0
-    knex: ^2.0.0
+    knex: ^3.0.0
     lodash: ^4.17.21
     luxon: ^3.0.0
     msw: ^1.0.0
@@ -5105,7 +5105,7 @@ __metadata:
     google-auth-library: ^8.0.0
     jose: ^4.6.0
     jwt-decode: ^3.1.0
-    knex: ^2.0.0
+    knex: ^3.0.0
     lodash: ^4.17.21
     luxon: ^3.0.0
     minimatch: ^5.0.0
@@ -5308,7 +5308,7 @@ __metadata:
     cross-fetch: ^3.1.5
     express: ^4.17.1
     express-promise-router: ^4.1.0
-    knex: ^2.4.2
+    knex: ^3.0.0
     lodash: ^4.17.21
     supertest: ^6.3.3
     uuid: ^9.0.0
@@ -5358,7 +5358,7 @@ __metadata:
     "@types/express": ^4.17.6
     express: ^4.17.1
     express-promise-router: ^4.1.0
-    knex: ^2.0.0
+    knex: ^3.0.0
     winston: ^3.2.1
     yn: ^4.0.0
   languageName: unknown
@@ -5739,7 +5739,7 @@ __metadata:
     "@types/luxon": ^3.0.0
     express: ^4.17.1
     express-promise-router: ^4.1.0
-    knex: ^2.0.0
+    knex: ^3.0.0
     luxon: ^3.0.0
     uuid: ^8.3.2
     winston: ^3.2.1
@@ -5864,7 +5864,7 @@ __metadata:
     "@backstage/cli": "workspace:^"
     "@backstage/plugin-auth-node": "workspace:^"
     express-promise-router: ^4.1.1
-    knex: ^2.4.2
+    knex: ^3.0.0
   languageName: unknown
   linkType: soft
 
@@ -5898,7 +5898,7 @@ __metadata:
     "@types/lodash": ^4.14.151
     "@types/supertest": ^2.0.8
     "@types/uuid": ^8.0.0
-    better-sqlite3: ^8.0.0
+    better-sqlite3: ^9.0.0
     codeowners-utils: ^1.0.2
     core-js: ^3.6.5
     express: ^4.17.1
@@ -5906,7 +5906,7 @@ __metadata:
     fs-extra: 10.1.0
     git-url-parse: ^13.0.0
     glob: ^7.1.6
-    knex: ^2.0.0
+    knex: ^3.0.0
     lodash: ^4.17.21
     luxon: ^3.0.0
     minimatch: ^5.0.0
@@ -6386,7 +6386,7 @@ __metadata:
     body-parser-xml: ^2.0.5
     express: ^4.17.1
     express-promise-router: ^4.1.0
-    knex: ^2.0.0
+    knex: ^3.0.0
     msw: ^1.0.0
     supertest: ^6.1.6
     uuid: ^8.3.2
@@ -6682,7 +6682,7 @@ __metadata:
     "@types/supertest": ^2.0.12
     express: ^4.18.1
     express-promise-router: ^4.1.0
-    knex: ^2.0.0
+    knex: ^3.0.0
     msw: ^1.0.0
     node-fetch: ^2.6.7
     supertest: ^6.2.4
@@ -8003,7 +8003,7 @@ __metadata:
     express-promise-router: ^4.1.0
     fs-extra: ^10.0.0
     js-yaml: ^4.1.0
-    knex: ^2.0.0
+    knex: ^3.0.0
     linguist-js: ^2.5.3
     luxon: ^2.0.2
     msw: ^1.0.0
@@ -8563,7 +8563,7 @@ __metadata:
     "@types/supertest": ^2.0.8
     express: ^4.17.1
     express-promise-router: ^4.1.0
-    knex: ^2.0.0
+    knex: ^3.0.0
     msw: ^1.0.0
     node-fetch: ^2.6.7
     supertest: ^6.1.3
@@ -8900,7 +8900,7 @@ __metadata:
     isomorphic-git: ^1.23.0
     jest-when: ^3.1.0
     jsonschema: ^1.2.6
-    knex: ^2.0.0
+    knex: ^3.0.0
     libsodium-wrappers: ^0.7.11
     lodash: ^4.17.21
     luxon: ^3.0.0
@@ -9152,7 +9152,7 @@ __metadata:
     "@backstage/config": "workspace:^"
     "@backstage/plugin-search-backend-node": "workspace:^"
     "@backstage/plugin-search-common": "workspace:^"
-    knex: ^2.0.0
+    knex: ^3.0.0
     lodash: ^4.17.21
     uuid: ^8.3.2
     winston: ^3.2.1
@@ -9633,7 +9633,7 @@ __metadata:
     "@types/supertest": ^2.0.8
     express: ^4.17.1
     express-promise-router: ^4.1.0
-    knex: ^2.0.0
+    knex: ^3.0.0
     lodash: ^4.17.21
     luxon: ^3.0.0
     semver: ^7.5.3
@@ -9799,7 +9799,7 @@ __metadata:
     express: ^4.17.1
     express-promise-router: ^4.1.0
     fs-extra: 10.1.0
-    knex: ^2.0.0
+    knex: ^3.0.0
     lodash: ^4.17.21
     msw: ^1.0.0
     node-fetch: ^2.6.7
@@ -10041,7 +10041,7 @@ __metadata:
     "@types/supertest": ^2.0.8
     express: ^4.17.1
     express-promise-router: ^4.1.0
-    knex: ^2.0.0
+    knex: ^3.0.0
     supertest: ^6.1.3
     winston: ^3.2.1
     yn: ^4.0.0
@@ -22191,14 +22191,14 @@ __metadata:
   languageName: node
   linkType: hard
 
-"better-sqlite3@npm:^8.0.0":
-  version: 8.7.0
-  resolution: "better-sqlite3@npm:8.7.0"
+"better-sqlite3@npm:^9.0.0":
+  version: 9.0.0
+  resolution: "better-sqlite3@npm:9.0.0"
   dependencies:
     bindings: ^1.5.0
     node-gyp: latest
     prebuild-install: ^7.1.1
-  checksum: f1fa38a9a0e4fcd59ececb67c60371b9638d29c19ce9af034421e8a56c9a77e799bb1411b1c3cb08bb9678e15dfb8985553a9ef4098cf5558e7207a3e019f211
+  checksum: 53cf439f50768bbcb7adb4894adf6c5134f3479f04084e3009dbe92a00a84e7dd850e4b69262337d807578f3d76e26a40ccebc465e8574e807e27033fab0381a
   languageName: node
   linkType: hard
 
@@ -27562,7 +27562,7 @@ __metadata:
     "@types/express-serve-static-core": ^4.17.5
     "@types/luxon": ^3.0.0
     azure-devops-node-api: ^11.0.1
-    better-sqlite3: ^8.0.0
+    better-sqlite3: ^9.0.0
     dockerode: ^3.3.1
     example-app: "link:../app"
     express: ^4.17.1
@@ -27570,7 +27570,7 @@ __metadata:
     express-promise-router: ^4.1.0
     luxon: ^3.0.0
     mysql2: ^2.2.5
-    pg: ^8.3.0
+    pg: ^8.11.3
     pg-connection-string: ^2.3.0
     prom-client: ^14.0.1
     winston: ^3.2.1
@@ -33257,7 +33257,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"knex@npm:^2.0.0, knex@npm:^2.3.0, knex@npm:^2.4.2":
+"knex@npm:^2.3.0":
   version: 2.5.1
   resolution: "knex@npm:2.5.1"
   dependencies:
@@ -33293,6 +33293,45 @@ __metadata:
   bin:
     knex: bin/cli.js
   checksum: 4f2da7fda51a450de25274eb76034c869de0427c17831dc8472b8116e879d23aae0592c2ce4e9b2a473417867063ac6e7b29021b39b4a4d502335017a5a09278
+  languageName: node
+  linkType: hard
+
+"knex@npm:^3.0.0":
+  version: 3.0.1
+  resolution: "knex@npm:3.0.1"
+  dependencies:
+    colorette: 2.0.19
+    commander: ^10.0.0
+    debug: 4.3.4
+    escalade: ^3.1.1
+    esm: ^3.2.25
+    get-package-type: ^0.1.0
+    getopts: 2.3.0
+    interpret: ^2.2.0
+    lodash: ^4.17.21
+    pg-connection-string: 2.6.1
+    rechoir: ^0.8.0
+    resolve-from: ^5.0.0
+    tarn: ^3.0.2
+    tildify: 2.0.0
+  peerDependenciesMeta:
+    better-sqlite3:
+      optional: true
+    mysql:
+      optional: true
+    mysql2:
+      optional: true
+    pg:
+      optional: true
+    pg-native:
+      optional: true
+    sqlite3:
+      optional: true
+    tedious:
+      optional: true
+  bin:
+    knex: bin/cli.js
+  checksum: bcfc3f8da9a7e898a873d2a122856ac9355f5ee1c0ab39534d6cac9ea69388da2fe0fa607b20d65298e191a4377af72f8ff7f4430f8b8c4abc144010b7e9796c
   languageName: node
   linkType: hard
 
@@ -37826,7 +37865,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"pg@npm:^8.3.0, pg@npm:^8.9.0":
+"pg@npm:^8.11.3, pg@npm:^8.9.0":
   version: 8.11.3
   resolution: "pg@npm:8.11.3"
   dependencies:
