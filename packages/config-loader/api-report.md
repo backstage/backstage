@@ -27,6 +27,8 @@ export interface BaseConfigSourcesOptions {
   rootDir?: string;
   // (undocumented)
   substitutionFunc?: EnvFunc;
+  // (undocumented)
+  watch?: boolean;
 }
 
 // @public
@@ -142,6 +144,7 @@ export class FileConfigSource implements ConfigSource {
 export interface FileConfigSourceOptions {
   path: string;
   substitutionFunc?: EnvFunc;
+  watch?: boolean;
 }
 
 // @public @deprecated

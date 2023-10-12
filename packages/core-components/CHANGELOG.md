@@ -1,5 +1,20 @@
 # @backstage/core-components
 
+## 0.13.6-next.2
+
+### Patch Changes
+
+- 0b55f773a7: Removed some unused dependencies
+- 8a15360bb4: Fixed overflowing messages in `WarningPanel`.
+- Updated dependencies
+  - @backstage/core-plugin-api@1.7.0-next.1
+  - @backstage/catalog-model@1.4.3-next.0
+  - @backstage/plugin-catalog-react@1.8.5-next.2
+  - @backstage/errors@1.2.3-next.0
+  - @backstage/theme@0.4.3-next.0
+  - @backstage/config@1.1.1-next.0
+  - @backstage/version-bridge@1.0.5
+
 ## 0.13.6-next.1
 
 ### Patch Changes

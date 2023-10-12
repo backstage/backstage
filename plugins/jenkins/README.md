@@ -5,7 +5,7 @@ Website: [https://jenkins.io/](https://jenkins.io/)
 <img src="./src/assets/last-master-build.png"  alt="Last master build"/>
 <img src="./src/assets/folder-results.png"  alt="Folder results"/>
 <img src="./src/assets/build-details.png"  alt="Build details"/>
-
+<img src="./src/assets/dynamic-columns.png"  alt="Modify Table Columns"/>
 ## Setup
 
 1. If you have a standalone app (you didn't clone this repo), then do
@@ -97,3 +97,30 @@ spec:
 - Only works with organization folder projects backed by GitHub
 - No pagination support currently, limited to 50 projects - don't run this on a
   Jenkins instance with lots of builds
+
+## Modify Columns of EntityJenkinsContent
+
+- now you can pass down column props to show the columns/metadata as per your use case.
+
+```tsx
+export const generatedColumns: TableColumn[] = [
+  {
+    title: 'Timestamp',
+    field: 'lastBuild.timestamp',
+    render: (row: Partial<Project>) => (
+      <>
+        <Typography paragraph>
+          {`
+            ${new Date(row.lastBuild?.timestamp).toLocaleDateString()}
+            ${new Date(row.lastBuild?.timestamp).toLocaleTimeString()}
+            `}
+        </Typography>
+      </>
+    ),
+  },
+]
+
+// ...
+<EntityJenkinsContent columns={generatedColumns}/>
+// ...
+```

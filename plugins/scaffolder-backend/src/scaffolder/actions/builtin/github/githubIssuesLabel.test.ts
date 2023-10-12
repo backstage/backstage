@@ -24,6 +24,13 @@ import { ConfigReader } from '@backstage/config';
 import { getVoidLogger } from '@backstage/backend-common';
 import { TemplateAction } from '@backstage/plugin-scaffolder-node';
 import { PassThrough } from 'stream';
+import { getOctokitOptions } from './helpers';
+
+jest.mock('./helpers', () => {
+  return {
+    getOctokitOptions: jest.fn(),
+  };
+});
 
 const mockOctokit = {
   rest: {
@@ -50,6 +57,7 @@ describe('github:issues:label', () => {
     },
   });
 
+  const getOctokitOptionsMock = getOctokitOptions as jest.Mock;
   const integrations = ScmIntegrations.fromConfig(config);
   let githubCredentialsProvider: GithubCredentialsProvider;
   let action: TemplateAction<any>;
@@ -85,5 +93,22 @@ describe('github:issues:label', () => {
       issue_number: '1',
       labels: ['label1', 'label2'],
     });
+    expect(getOctokitOptionsMock.mock.calls[0][0].token).toBeUndefined();
+  });
+
+  it('should call the githubApi for adding labels with token', async () => {
+    await action.handler({
+      ...mockContext,
+      input: { ...mockContext.input, token: 'gph_YourGitHubToken' },
+    });
+    expect(mockOctokit.rest.issues.addLabels).toHaveBeenCalledWith({
+      owner: 'owner',
+      repo: 'repo',
+      issue_number: '1',
+      labels: ['label1', 'label2'],
+    });
+    expect(getOctokitOptionsMock.mock.calls[0][0].token).toEqual(
+      'gph_YourGitHubToken',
+    );
   });
 });

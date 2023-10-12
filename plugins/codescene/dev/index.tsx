@@ -20,11 +20,13 @@ import {
   CodeScenePage,
   CodeSceneProjectDetailsPage,
 } from '../src/plugin';
+import { CodeSceneIcon } from '../src';
 
 createDevApp()
   .registerPlugin(codescenePlugin)
   .addPage({
     element: <CodeScenePage />,
+    icon: CodeSceneIcon,
     title: 'Root Page',
     path: '/codescene',
   })
