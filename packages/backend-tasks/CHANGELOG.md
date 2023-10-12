@@ -1,5 +1,15 @@
 # @backstage/backend-tasks
 
+## 0.5.11-next.2
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-common@0.19.8-next.2
+  - @backstage/errors@1.2.3-next.0
+  - @backstage/config@1.1.1-next.0
+  - @backstage/types@1.1.1
+
 ## 0.5.10-next.1
 
 ### Patch Changes

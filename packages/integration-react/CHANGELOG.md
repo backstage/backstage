@@ -1,5 +1,15 @@
 # @backstage/integration-react
 
+## 1.1.20-next.2
+
+### Patch Changes
+
+- 0b55f773a7: Removed some unused dependencies
+- Updated dependencies
+  - @backstage/core-plugin-api@1.7.0-next.1
+  - @backstage/integration@1.7.1-next.1
+  - @backstage/config@1.1.1-next.0
+
 ## 1.1.20-next.1
 
 ### Patch Changes

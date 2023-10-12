@@ -391,7 +391,7 @@ export interface ObjectFetchParams {
   // (undocumented)
   customResources: CustomResource[];
   // (undocumented)
-  labelSelector: string;
+  labelSelector?: string;
   // (undocumented)
   namespace?: string;
   // (undocumented)

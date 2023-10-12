@@ -27,7 +27,22 @@ export const Core = createExtension({
     apis: createExtensionInput({
       api: coreExtensionData.apiFactory,
     }),
+    themes: createExtensionInput({
+      theme: coreExtensionData.theme,
+    }),
+    root: createExtensionInput(
+      {
+        element: coreExtensionData.reactElement,
+      },
+      { singleton: true },
+    ),
   },
-  output: {},
-  factory() {},
+  output: {
+    root: coreExtensionData.reactElement,
+  },
+  factory({ bind, inputs }) {
+    bind({
+      root: inputs.root.element,
+    });
+  },
 });
