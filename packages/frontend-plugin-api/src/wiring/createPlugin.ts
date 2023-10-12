@@ -17,10 +17,10 @@
 import { Extension } from './createExtension';
 import { ExternalRouteRef, RouteRef } from '../routing';
 
-/** @internal */
+/** @public */
 export type AnyRoutes = { [name in string]: RouteRef };
 
-/** @internal */
+/** @public */
 export type AnyExternalRoutes = { [name in string]: ExternalRouteRef };
 
 /** @public */

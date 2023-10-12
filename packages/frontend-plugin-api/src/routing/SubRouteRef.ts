@@ -105,30 +105,27 @@ export class SubRouteRefImpl<TParams extends AnyRouteParams>
  * Used in {@link PathParams} type declaration.
  * @ignore
  */
-export type ParamPart<S extends string> = S extends `:${infer Param}`
-  ? Param
-  : never;
+type ParamPart<S extends string> = S extends `:${infer Param}` ? Param : never;
 
 /**
  * Used in {@link PathParams} type declaration.
  * @ignore
  */
-export type ParamNames<S extends string> =
-  S extends `${infer Part}/${infer Rest}`
-    ? ParamPart<Part> | ParamNames<Rest>
-    : ParamPart<S>;
+type ParamNames<S extends string> = S extends `${infer Part}/${infer Rest}`
+  ? ParamPart<Part> | ParamNames<Rest>
+  : ParamPart<S>;
 /**
  * This utility type helps us infer a Param object type from a string path
  * For example, `/foo/:bar/:baz` inferred to `{ bar: string, baz: string }`
  * @ignore
  */
-export type PathParams<S extends string> = { [name in ParamNames<S>]: string };
+type PathParams<S extends string> = { [name in ParamNames<S>]: string };
 
 /**
  * Merges a param object type with an optional params type into a params object.
  * @ignore
  */
-export type MergeParams<
+type MergeParams<
   P1 extends { [param in string]: string },
   P2 extends AnyRouteParams,
 > = (P1[keyof P1] extends never ? {} : P1) & (P2 extends undefined ? {} : P2);
@@ -137,7 +134,7 @@ export type MergeParams<
  * Convert empty params to undefined.
  * @ignore
  */
-export type TrimEmptyParams<Params extends { [param in string]: string }> =
+type TrimEmptyParams<Params extends { [param in string]: string }> =
   keyof Params extends never ? undefined : Params;
 
 /**
@@ -146,7 +143,7 @@ export type TrimEmptyParams<Params extends { [param in string]: string }> =
  *
  * @ignore
  */
-export type MakeSubRouteRef<
+type MakeSubRouteRef<
   Params extends { [param in string]: string },
   ParentParams extends AnyRouteParams,
 > = keyof Params & keyof ParentParams extends never
