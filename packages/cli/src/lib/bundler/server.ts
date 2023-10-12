@@ -93,11 +93,11 @@ export async function serveBundle(options: ServeOptions) {
       latestFrontendAppConfigs = appConfigs;
       if (server) {
         if ('invalidate' in server) {
-          server?.invalidate();
+          server.invalidate();
         }
 
         if ('restart' in server) {
-          server?.restart();
+          server.restart();
         }
       }
     },
@@ -138,11 +138,11 @@ export async function serveBundle(options: ServeOptions) {
     watch() {
       if (server) {
         if ('invalidate' in server) {
-          server?.invalidate();
+          server.invalidate();
         }
 
         if ('restart' in server) {
-          server?.restart();
+          server.restart();
         }
       }
     },
