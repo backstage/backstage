@@ -293,7 +293,10 @@ export class EntityOrphanFilter implements EntityFilter {
   constructor(readonly value: boolean) {}
 
   getCatalogFilters(): Record<string, string | string[]> {
-    return { 'metadata.annotations.backstage.io/orphan': String(this.value) };
+    if (this.value) {
+      return { 'metadata.annotations.backstage.io/orphan': String(this.value) };
+    }
+    return {};
   }
 
   filterEntity(entity: Entity): boolean {
