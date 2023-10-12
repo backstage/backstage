@@ -23,6 +23,7 @@ const { promisify } = require('util');
 const execFile = promisify(execFileCb);
 
 const rootDirectory = path.resolve(__dirname, '..');
+const pluginsDirectory = path.resolve(rootDirectory, 'plugins');
 
 async function run(command, ...args) {
   const { stdout, stderr } = await execFile(command, args, {
@@ -36,112 +37,144 @@ async function run(command, ...args) {
   return stdout.trim();
 }
 
-const PLUGIN_AND_MODULE_ROLES = [
-  'frontend-plugin',
-  'backend-plugin',
-  'frontend-plugin-module',
-  'frontend-plugin-module',
-];
+function findLatestValidCommit(commits, directoryPath) {
+  return commits.find(commit => {
+    const { author, message, files } = commit;
 
-const CORE_MAINTAINER_EMAILS = [
-  'ben@blam.sh',
-  'freben@gmail.com',
-  'poldsberg@gmail.com',
-  'johan.haals@gmail.com',
-];
+    // exclude merge commits
+    if (message.startsWith('Merge pull request #')) {
+      return false;
+    }
+
+    // exclude commits authored by a bot
+    if (author.includes('[bot]')) {
+      return false;
+    }
+
+    // exclude core maintainers' commits
+    if (
+      [
+        'ben@blam.sh',
+        'freben@gmail.com',
+        'poldsberg@gmail.com',
+        'johan.haals@gmail.com',
+      ].some(email => author.includes(email))
+    ) {
+      return false;
+    }
+
+    // ignore multiple plugins changes
+    if (
+      files.some(file => {
+        const fileFullPath = path.resolve(rootDirectory, file);
+        if (!fileFullPath.startsWith(pluginsDirectory)) {
+          return false;
+        }
+        const pluginBasePath = directoryPath.replace(
+          /-(backend|common|react|node).*$/,
+          '',
+        );
+        return !fileFullPath.startsWith(pluginBasePath);
+      })
+    ) {
+      return false;
+    }
+
+    return true;
+  });
+}
+
+async function getPluginDirectory(directoryName) {
+  const directoryPath = path.resolve(pluginsDirectory, directoryName);
+  const packageJson = await fs.readJson(
+    path.resolve(directoryPath, 'package.json'),
+  );
+  return { directoryName, directoryPath, packageJson };
+}
+
+function parseCommitsLog(log) {
+  const lines = log.split('\n');
+  return lines.reduce((commits, line) => {
+    if (!line) return commits;
+    if (line.includes(';')) {
+      const [author, message, date] = line.split(';');
+      return [...commits, { author, message, date, files: [] }];
+    }
+    const { files, ...commit } = commits.pop();
+    return [...commits, { ...commit, files: [...files, line] }];
+  }, []);
+}
+
+async function readDirectoryCommits(directoryName) {
+  const maxCount = 100;
+  const directoryPath = path.resolve(pluginsDirectory, directoryName);
+
+  const logOutput = await run(
+    'git',
+    'log',
+    'origin/master',
+    '--name-only',
+    `--max-count=${maxCount}`,
+    '--pretty=format:%an <%ae>;%s;%as',
+    '--',
+    // ignore changes on README and package.json files
+    path.posix.resolve(directoryPath, 'src'),
+    `:(exclude)${path.posix.resolve(directoryPath, 'src', '**', '*.test.*')}`,
+  );
+
+  return parseCommitsLog(logOutput);
+}
+
+async function getLatestDirectoryCommit({ directoryName, directoryPath }) {
+  console.log(`🔎 Reading data for ${directoryName}`);
+
+  const commits = await readDirectoryCommits(directoryName);
+
+  const commit = findLatestValidCommit(commits, directoryPath) ?? {
+    author: '-',
+    message: '-',
+    date: '-',
+  };
+
+  return { plugin: directoryName, ...commit };
+}
+
+function isValidDirectory({ packageJson }) {
+  const roles = [
+    'frontend-plugin',
+    'frontend-plugin-module',
+    'backend-plugin',
+    'backend-plugin-module',
+  ];
+  return roles.includes(packageJson?.backstage?.role ?? '');
+}
 
 async function main() {
-  const pluginsDirectory = path.resolve(rootDirectory, 'plugins');
-
   const directoryNames = fs
     .readdirSync(pluginsDirectory, { withFileTypes: true })
     .filter(dirent => dirent.isDirectory())
     .map(dirent => dirent.name);
 
-  const content = ['Plugin;Author;Message;Hash;Date'];
+  const directories = await Promise.all(directoryNames.map(getPluginDirectory));
 
-  for (const directoryName of directoryNames) {
-    console.log(`🔎 Reading data for ${directoryName}`);
+  const commits = await Promise.all(
+    directories.filter(isValidDirectory).map(getLatestDirectoryCommit),
+  );
 
-    const directoryPath = path.resolve(pluginsDirectory, directoryName);
+  const fileName = 'plugins-report.csv';
 
-    const packageJson = await fs.readJson(
-      path.resolve(directoryPath, 'package.json'),
-    );
-
-    const isPluginOrModule = PLUGIN_AND_MODULE_ROLES.includes(
-      packageJson?.backstage?.role ?? '',
-    );
-
-    if (!isPluginOrModule) continue;
-
-    let data;
-    let skip = 0;
-    const maxCount = 10;
-    while (!data && skip <= 100) {
-      const output = await run(
-        'git',
-        'log',
-        'origin/master',
-        `--skip=${skip}`,
-        `--max-count=${maxCount}`,
-        '--format=%an <%ae>;%s;%h;%as',
-        '--',
-        // ignore changes on README and package.json files
-        path.posix.resolve(directoryPath, 'src'),
-        `:(exclude)${path.posix.resolve(
-          directoryPath,
-          'src',
-          '**',
-          '*.test.*',
-        )}`,
-      );
-
-      data = output
-        .trim()
-        .split('\n')
-        .find(commit => {
-          if (!commit) return false;
-
-          const [author, message] = commit.split(';');
-
-          // exclude merge commits
-          if (message.startsWith('Merge pull request #')) {
-            return false;
-          }
-
-          // exclude commits authored by a bot
-          if (author.includes('[bot]')) {
-            return false;
-          }
-
-          // exclude core maintainers' commits
-          if (CORE_MAINTAINER_EMAILS.some(email => author.includes(email))) {
-            return false;
-          }
-
-          return true;
-        });
-
-      skip += maxCount;
-    }
-
-    if (data) {
-      content.push(`${directoryName};${data}`);
-    } else {
-      console.log(` 🚩 No data found for ${directoryName}`);
-    }
-  }
-
-  const file = 'plugins-report.csv';
+  const fileContent = [
+    'Plugin;Author;Message;Date',
+    ...commits.map(c => `${c.plugin};${c.author};${c.message};${c.date}`),
+  ];
 
   console.log(`📊 Generating plugins report...`);
 
-  fs.writeFile(file, content.join('\n'), err => {
+  fs.writeFile(fileName, fileContent.join('\n'), err => {
     if (err) throw err;
   });
 
-  console.log(`📄 Report generated at ${file}`);
+  console.log(`📄 Report generated at ${fileName}`);
 }
 
 main(process.argv.slice(2)).catch(error => {
