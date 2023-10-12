@@ -8,6 +8,7 @@ import { CatalogProcessor } from '@backstage/plugin-catalog-node';
 import { EntityProvider } from '@backstage/plugin-catalog-node';
 import { ExtensionPoint } from '@backstage/backend-plugin-api';
 import { PlaceholderResolver } from '@backstage/plugin-catalog-node';
+import { ScmLocationAnalyzer } from '@backstage/plugin-catalog-node';
 import { ServiceRef } from '@backstage/backend-plugin-api';
 
 // @alpha (undocumented)
@@ -15,6 +16,10 @@ export interface CatalogProcessingExtensionPoint {
   // (undocumented)
   addEntityProvider(
     ...providers: Array<EntityProvider | Array<EntityProvider>>
+  ): void;
+  // (undocumented)
+  addLocationAnalyzers(
+    ...analyzers: Array<ScmLocationAnalyzer | Array<ScmLocationAnalyzer>>
   ): void;
   // (undocumented)
   addPlaceholderResolver(key: string, resolver: PlaceholderResolver): void;

@@ -18,6 +18,7 @@ import {
   EntityProvider,
   CatalogProcessor,
   PlaceholderResolver,
+  ScmLocationAnalyzer,
 } from '@backstage/plugin-catalog-node';
 
 /**
@@ -31,6 +32,9 @@ export interface CatalogProcessingExtensionPoint {
     ...providers: Array<EntityProvider | Array<EntityProvider>>
   ): void;
   addPlaceholderResolver(key: string, resolver: PlaceholderResolver): void;
+  addLocationAnalyzers(
+    ...analyzers: Array<ScmLocationAnalyzer | Array<ScmLocationAnalyzer>>
+  ): void;
 }
 
 /**
