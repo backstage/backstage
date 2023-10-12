@@ -244,6 +244,7 @@ export async function serveBundle(options: ServeOptions) {
   await new Promise<void>(async (resolve, reject) => {
     if (process.env.EXPERIMENTAL_VITE) {
       await (server as vite.ViteDevServer).listen();
+      (server as vite.ViteDevServer).openBrowser();
       resolve();
     } else {
       (server as WebpackDevServer).startCallback((err?: Error) => {
@@ -251,10 +252,10 @@ export async function serveBundle(options: ServeOptions) {
           reject(err);
           return;
         }
+        openBrowser(url.href);
+        resolve();
       });
     }
-    openBrowser(url.href);
-    resolve();
   });
 
   const waitForExit = async () => {
