@@ -95,6 +95,7 @@ import {
 import { AppRouteBinder } from '../routing';
 import { RoutingProvider } from '../routing/RoutingProvider';
 import { resolveRouteBindings } from '../routing/resolveRouteBindings';
+import { collectRouteIds } from '../routing/collectRouteIds';
 
 /** @public */
 export interface ExtensionTreeNode {
@@ -305,14 +306,19 @@ export function createApp(options: {
       ),
     );
 
+    const routeIds = collectRouteIds(allFeatures);
+
     const App = () => (
       <ApiProvider apis={createApiHolder(coreInstance, config)}>
         <AppContextProvider appContext={appContext}>
           <AppThemeProvider>
             <RoutingProvider
-              // TODO(Rugvip): Move over routing app API to new system to avoid these casts
               {...extractRouteInfoFromInstanceTree(coreInstance)}
-              routeBindings={resolveRouteBindings(options.bindRoutes)}
+              routeBindings={resolveRouteBindings(
+                options.bindRoutes,
+                config,
+                routeIds,
+              )}
             >
               {/* TODO: set base path using the logic from AppRouter */}
               <BrowserRouter>

@@ -19,14 +19,21 @@ import {
   createRouteRef,
 } from '@backstage/frontend-plugin-api';
 import { resolveRouteBindings } from './resolveRouteBindings';
+import { ConfigReader } from '@backstage/config';
+
+const emptyIds = { routes: new Map(), externalRoutes: new Map() };
 
 describe('resolveRouteBindings', () => {
   it('runs happy path', () => {
     const external = { myRoute: createExternalRouteRef() };
     const ref = createRouteRef();
-    const result = resolveRouteBindings(({ bind }) => {
-      bind(external, { myRoute: ref });
-    });
+    const result = resolveRouteBindings(
+      ({ bind }) => {
+        bind(external, { myRoute: ref });
+      },
+      new ConfigReader({}),
+      emptyIds,
+    );
 
     expect(result.get(external.myRoute)).toBe(ref);
   });
@@ -35,9 +42,79 @@ describe('resolveRouteBindings', () => {
     const external = { myRoute: createExternalRouteRef() };
     const ref = createRouteRef();
     expect(() =>
-      resolveRouteBindings(({ bind }) => {
-        bind(external, { someOtherRoute: ref } as any);
-      }),
+      resolveRouteBindings(
+        ({ bind }) => {
+          bind(external, { someOtherRoute: ref } as any);
+        },
+        new ConfigReader({}),
+        emptyIds,
+      ),
     ).toThrow('Key someOtherRoute is not an existing external route');
+  });
+
+  it('reads bindings from config', () => {
+    const mySource = createExternalRouteRef();
+    const myTarget = createRouteRef();
+    const result = resolveRouteBindings(
+      () => {},
+      new ConfigReader({
+        app: { routes: { bindings: { mySource: 'myTarget' } } },
+      }),
+      {
+        routes: new Map([['myTarget', myTarget]]),
+        externalRoutes: new Map([['mySource', mySource]]),
+      },
+    );
+
+    expect(result.get(mySource)).toBe(myTarget);
+  });
+
+  it('throws on invalid config', () => {
+    expect(() =>
+      resolveRouteBindings(
+        () => {},
+        new ConfigReader({ app: { routes: { bindings: 'derp' } } }),
+        emptyIds,
+      ),
+    ).toThrow(
+      "Invalid type in config for key 'app.routes.bindings' in 'mock-config', got string, wanted object",
+    );
+
+    expect(() =>
+      resolveRouteBindings(
+        () => {},
+        new ConfigReader({ app: { routes: { bindings: { mySource: true } } } }),
+        emptyIds,
+      ),
+    ).toThrow(
+      "Invalid config at app.routes.bindings['mySource'], value must be a non-empty string",
+    );
+
+    expect(() =>
+      resolveRouteBindings(
+        () => {},
+        new ConfigReader({
+          app: { routes: { bindings: { mySource: 'myTarget' } } },
+        }),
+        emptyIds,
+      ),
+    ).toThrow(
+      "Invalid config at app.routes.bindings, 'mySource' is not a valid external route",
+    );
+
+    expect(() =>
+      resolveRouteBindings(
+        () => {},
+        new ConfigReader({
+          app: { routes: { bindings: { mySource: 'myTarget' } } },
+        }),
+        {
+          ...emptyIds,
+          externalRoutes: new Map([['mySource', createExternalRouteRef()]]),
+        },
+      ),
+    ).toThrow(
+      "Invalid config at app.routes.bindings['mySource'], 'myTarget' is not a valid route",
+    );
   });
 });

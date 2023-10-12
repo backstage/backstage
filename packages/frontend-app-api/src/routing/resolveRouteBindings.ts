@@ -19,6 +19,8 @@ import {
   SubRouteRef,
   ExternalRouteRef,
 } from '@backstage/frontend-plugin-api';
+import { RouteRefsById } from './collectRouteIds';
+import { Config } from '@backstage/config';
 
 /**
  * Extracts a union of the keys in a map whose value extends the given type
@@ -73,7 +75,9 @@ export type AppRouteBinder = <
 
 /** @internal */
 export function resolveRouteBindings(
-  bindRoutes?: (context: { bind: AppRouteBinder }) => void,
+  bindRoutes: ((context: { bind: AppRouteBinder }) => void) | undefined,
+  config: Config,
+  routesById: RouteRefsById,
 ): Map<ExternalRouteRef, RouteRef | SubRouteRef> {
   const result = new Map<ExternalRouteRef, RouteRef | SubRouteRef>();
 
@@ -98,6 +102,43 @@ export function resolveRouteBindings(
       }
     };
     bindRoutes({ bind });
+  }
+
+  const bindingsConfig = config.getOptionalConfig('app.routes.bindings');
+  if (!bindingsConfig) {
+    return result;
+  }
+
+  const bindings = bindingsConfig.get();
+  if (bindings === null || typeof bindings !== 'object') {
+    throw new Error('Invalid config at app.routes.bindings, must be an object');
+  }
+
+  for (const [externalRefId, targetRefId] of Object.entries(bindings)) {
+    if (typeof targetRefId !== 'string' || targetRefId === '') {
+      throw new Error(
+        `Invalid config at app.routes.bindings['${externalRefId}'], value must be a non-empty string`,
+      );
+    }
+
+    const externalRef = routesById.externalRoutes.get(externalRefId);
+    if (!externalRef) {
+      throw new Error(
+        `Invalid config at app.routes.bindings, '${externalRefId}' is not a valid external route`,
+      );
+    }
+    // Route bindings defined in config have lower priority than those defined in code
+    if (result.has(externalRef)) {
+      continue;
+    }
+    const targetRef = routesById.routes.get(targetRefId);
+    if (!targetRef) {
+      throw new Error(
+        `Invalid config at app.routes.bindings['${externalRefId}'], '${targetRefId}' is not a valid route`,
+      );
+    }
+
+    result.set(externalRef, targetRef);
   }
 
   return result;
