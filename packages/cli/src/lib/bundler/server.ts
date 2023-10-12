@@ -179,6 +179,8 @@ export async function serveBundle(options: ServeOptions) {
         viteNodePolyfills(),
         createHtmlPlugin({
           entry: paths.targetEntry,
+          // todo(blam): we should look at contributing to the plugin here
+          // to support absolute paths, but works in the interim at least.
           template: 'public/index.html',
           inject: {
             data: {
