@@ -27,7 +27,6 @@ import react from '@vitejs/plugin-react';
 import { nodePolyfills as viteNodePolyfills } from 'vite-plugin-node-polyfills';
 import { createHtmlPlugin } from 'vite-plugin-html';
 import { viteCommonjs } from '@originjs/vite-plugin-commonjs';
-import vitePluginSvgr from 'vite-plugin-svgr';
 
 import {
   forbiddenDuplicatesFilter,
@@ -161,6 +160,7 @@ export async function serveBundle(options: ServeOptions) {
     additionalEntryPoints: detectedModulesEntryPoint,
   });
 
+  console.log(paths.targetHtml);
   if (process.env.EXPERIMENTAL_VITE) {
     server = await vite.createServer({
       define: {
@@ -175,12 +175,11 @@ export async function serveBundle(options: ServeOptions) {
       },
       plugins: [
         react(),
-        vitePluginSvgr(),
         viteCommonjs(),
         viteNodePolyfills(),
         createHtmlPlugin({
           entry: paths.targetEntry,
-          template: 'public/index.html',
+          template: `public/index.html`,
           inject: {
             data: {
               config: frontendConfig,
