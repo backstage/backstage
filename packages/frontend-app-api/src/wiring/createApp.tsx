@@ -21,9 +21,7 @@ import {
   coreExtensionData,
   ExtensionDataRef,
   ExtensionOverrides,
-  ExternalRouteRef,
   RouteRef,
-  SubRouteRef,
   useRouteRef,
 } from '@backstage/frontend-plugin-api';
 import { Core } from '../extensions/Core';
@@ -76,10 +74,6 @@ import { defaultConfigLoaderSync } from '../../../core-app-api/src/app/defaultCo
 // eslint-disable-next-line @backstage/no-relative-monorepo-imports
 import { overrideBaseUrlConfigs } from '../../../core-app-api/src/app/overrideBaseUrlConfigs';
 // eslint-disable-next-line @backstage/no-relative-monorepo-imports
-import { RoutingProvider } from '../../../core-app-api/src/routing/RoutingProvider';
-// eslint-disable-next-line @backstage/no-relative-monorepo-imports
-import { resolveRouteBindings } from '../../../core-app-api/src/app/resolveRouteBindings';
-// eslint-disable-next-line @backstage/no-relative-monorepo-imports
 import { AppLanguageSelector } from '../../../core-app-api/src/apis/implementations/AppLanguageApi/AppLanguageSelector';
 // eslint-disable-next-line @backstage/no-relative-monorepo-imports
 import { I18nextTranslationApi } from '../../../core-app-api/src/apis/implementations/TranslationApi/I18nextTranslationApi';
@@ -98,57 +92,9 @@ import {
   appLanguageApiRef,
   translationApiRef,
 } from '@backstage/core-plugin-api/alpha';
-
-/**
- * Extracts a union of the keys in a map whose value extends the given type
- *
- * @ignore
- */
-type KeysWithType<Obj extends { [key in string]: any }, Type> = {
-  [key in keyof Obj]: Obj[key] extends Type ? key : never;
-}[keyof Obj];
-
-/**
- * Takes a map Map required values and makes all keys matching Keys optional
- *
- * @ignore
- */
-type PartialKeys<
-  Map extends { [name in string]: any },
-  Keys extends keyof Map,
-> = Partial<Pick<Map, Keys>> & Required<Omit<Map, Keys>>;
-
-/**
- * Creates a map of target routes with matching parameters based on a map of external routes.
- *
- * @ignore
- */
-type TargetRouteMap<
-  ExternalRoutes extends { [name: string]: ExternalRouteRef },
-> = {
-  [name in keyof ExternalRoutes]: ExternalRoutes[name] extends ExternalRouteRef<
-    infer Params,
-    any
-  >
-    ? RouteRef<Params> | SubRouteRef<Params>
-    : never;
-};
-
-/**
- * A function that can bind from external routes of a given plugin, to concrete
- * routes of other plugins. See {@link createApp}.
- *
- * @public
- */
-export type AppRouteBinder = <
-  TExternalRoutes extends { [name: string]: ExternalRouteRef },
->(
-  externalRoutes: TExternalRoutes,
-  targetRoutes: PartialKeys<
-    TargetRouteMap<TExternalRoutes>,
-    KeysWithType<TExternalRoutes, ExternalRouteRef<any, true>>
-  >,
-) => void;
+import { AppRouteBinder } from '../routing';
+import { RoutingProvider } from '../routing/RoutingProvider';
+import { resolveRouteBindings } from '../routing/resolveRouteBindings';
 
 /** @public */
 export interface ExtensionTreeNode {
@@ -365,8 +311,8 @@ export function createApp(options: {
           <AppThemeProvider>
             <RoutingProvider
               // TODO(Rugvip): Move over routing app API to new system to avoid these casts
-              {...(extractRouteInfoFromInstanceTree(coreInstance) as any)}
-              routeBindings={resolveRouteBindings(options.bindRoutes as any)}
+              {...extractRouteInfoFromInstanceTree(coreInstance)}
+              routeBindings={resolveRouteBindings(options.bindRoutes)}
             >
               {/* TODO: set base path using the logic from AppRouter */}
               <BrowserRouter>
