@@ -16,7 +16,6 @@
 import {
   analyticsApiRef,
   configApiRef,
-  createPlugin,
   identityApiRef,
 } from '@backstage/core-plugin-api';
 import { createDevApp } from '@backstage/dev-utils';
@@ -25,15 +24,6 @@ import React from 'react';
 import { GoogleAnalytics4 } from '../src';
 import { Playground } from './Playground';
 
-/**
- * @deprecated Importing and including this plugin in an app has no effect.
- * This will be removed in a future release.
- *
- * @public
- */
-export const analyticsModuleGA4 = createPlugin({
-  id: 'analytics-provider-ga4',
-});
 createDevApp()
   .registerApi({
     api: analyticsApiRef,
