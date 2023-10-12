@@ -25,6 +25,7 @@ import {
 import {
   CatalogProcessor,
   EntityProvider,
+  ScmLocationAnalyzer,
 } from '@backstage/plugin-catalog-node';
 import { loggerToWinstonLogger } from '@backstage/backend-common';
 import { PlaceholderResolver } from '../modules';
@@ -33,6 +34,7 @@ class CatalogExtensionPointImpl implements CatalogProcessingExtensionPoint {
   #processors = new Array<CatalogProcessor>();
   #entityProviders = new Array<EntityProvider>();
   #placeholderResolvers: Record<string, PlaceholderResolver> = {};
+  #locationAnalyzers = new Array<ScmLocationAnalyzer>();
 
   addProcessor(
     ...processors: Array<CatalogProcessor | Array<CatalogProcessor>>
@@ -54,6 +56,12 @@ class CatalogExtensionPointImpl implements CatalogProcessingExtensionPoint {
     this.#placeholderResolvers[key] = resolver;
   }
 
+  addLocationAnalyzers(
+    ...analyzers: Array<ScmLocationAnalyzer | Array<ScmLocationAnalyzer>>
+  ): void {
+    this.#locationAnalyzers.push(...analyzers.flat());
+  }
+
   get processors() {
     return this.#processors;
   }
@@ -64,6 +72,10 @@ class CatalogExtensionPointImpl implements CatalogProcessingExtensionPoint {
 
   get placeholderResolvers() {
     return this.#placeholderResolvers;
+  }
+
+  get locationAnalyzers() {
+    return this.#locationAnalyzers;
   }
 }
 
@@ -116,6 +128,7 @@ export const catalogPlugin = createBackendPlugin({
         Object.entries(processingExtensions.placeholderResolvers).forEach(
           ([key, resolver]) => builder.setPlaceholderResolver(key, resolver),
         );
+        builder.addLocationAnalyzers(...processingExtensions.locationAnalyzers);
 
         const { processingEngine, router } = await builder.build();
 
