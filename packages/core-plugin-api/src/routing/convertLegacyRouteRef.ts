@@ -14,12 +14,13 @@
  * limitations under the License.
  */
 
+import { routeRefType } from './types';
 import {
-  routeRefType,
   RouteRef as LegacyRouteRef,
   SubRouteRef as LegacySubRouteRef,
   ExternalRouteRef as LegacyExternalRouteRef,
-} from './types';
+  AnyRouteRefParams,
+} from '@backstage/core-plugin-api';
 
 // Relative imports to avoid dependency, at least for now
 
@@ -28,7 +29,6 @@ import {
   RouteRef,
   SubRouteRef,
   ExternalRouteRef,
-  AnyRouteParams,
   createRouteRef,
   createSubRouteRef,
   createExternalRouteRef,
@@ -40,6 +40,22 @@ import { toInternalSubRouteRef } from '../../../frontend-plugin-api/src/routing/
 // eslint-disable-next-line @backstage/no-relative-monorepo-imports
 import { toInternalExternalRouteRef } from '../../../frontend-plugin-api/src/routing/ExternalRouteRef';
 
+// TODO(Rugvip): Once this is moved to a compat package these aliases can be removed and imported from frontend- instead
+
+/** @ignore */
+type NewRouteRef<TParams extends AnyRouteRefParams = AnyRouteRefParams> =
+  RouteRef<TParams>;
+
+/** @ignore */
+type NewSubRouteRef<TParams extends AnyRouteRefParams = AnyRouteRefParams> =
+  SubRouteRef<TParams>;
+
+/** @ignore */
+type NewExternalRouteRef<
+  TParams extends AnyRouteRefParams = AnyRouteRefParams,
+  TOptional extends boolean = boolean,
+> = ExternalRouteRef<TParams, TOptional>;
+
 /**
  * A temporary helper to convert a legacy route ref to the new system.
  *
@@ -48,9 +64,9 @@ import { toInternalExternalRouteRef } from '../../../frontend-plugin-api/src/rou
  *
  * In the future the legacy createRouteRef will instead create refs compatible with both systems.
  */
-export function convertLegacyRouteRef<TParams extends AnyRouteParams>(
+export function convertLegacyRouteRef<TParams extends AnyRouteRefParams>(
   ref: LegacyRouteRef<TParams>,
-): RouteRef<TParams>;
+): NewRouteRef<TParams>;
 
 /**
  * A temporary helper to convert a legacy sub route ref to the new system.
@@ -60,9 +76,9 @@ export function convertLegacyRouteRef<TParams extends AnyRouteParams>(
  *
  * In the future the legacy createSubRouteRef will instead create refs compatible with both systems.
  */
-export function convertLegacyRouteRef<TParams extends AnyRouteParams>(
+export function convertLegacyRouteRef<TParams extends AnyRouteRefParams>(
   ref: LegacySubRouteRef<TParams>,
-): SubRouteRef<TParams>;
+): NewSubRouteRef<TParams>;
 
 /**
  * A temporary helper to convert a legacy external route ref to the new system.
@@ -73,17 +89,18 @@ export function convertLegacyRouteRef<TParams extends AnyRouteParams>(
  * In the future the legacy createExternalRouteRef will instead create refs compatible with both systems.
  */
 export function convertLegacyRouteRef<
-  TParams extends AnyRouteParams,
+  TParams extends AnyRouteRefParams,
   TOptional extends boolean,
 >(
   ref: LegacyExternalRouteRef<TParams, TOptional>,
-): ExternalRouteRef<TParams, TOptional>;
+): NewExternalRouteRef<TParams, TOptional>;
+
 export function convertLegacyRouteRef(
   ref: LegacyRouteRef | LegacySubRouteRef | LegacyExternalRouteRef,
-): RouteRef | SubRouteRef | ExternalRouteRef {
+): NewRouteRef | NewSubRouteRef | NewExternalRouteRef {
   // Ref has already been converted
   if ('$$type' in ref) {
-    return ref as unknown as RouteRef | SubRouteRef | ExternalRouteRef;
+    return ref as unknown as NewRouteRef | NewSubRouteRef | NewExternalRouteRef;
   }
 
   const type = (ref as unknown as { [routeRefType]: unknown })[routeRefType];
