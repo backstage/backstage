@@ -24,6 +24,10 @@ import webpack from 'webpack';
 import WebpackDevServer from 'webpack-dev-server';
 import vite from 'vite';
 import react from '@vitejs/plugin-react';
+import { nodePolyfills as viteNodePolyfills } from 'vite-plugin-node-polyfills';
+import { createHtmlPlugin } from 'vite-plugin-html';
+import { viteCommonjs } from '@originjs/vite-plugin-commonjs';
+import vitePluginSvgr from 'vite-plugin-svgr';
 
 import {
   forbiddenDuplicatesFilter,
@@ -36,10 +40,6 @@ import { createConfig, resolveBaseUrl } from './config';
 import { createDetectedModulesEntryPoint } from './packageDetection';
 import { resolveBundlingPaths } from './paths';
 import { ServeOptions } from './types';
-import { nodePolyfills as viteNodePolyfills } from 'vite-plugin-node-polyfills';
-import { esbuildCommonjs, viteCommonjs } from '@originjs/vite-plugin-commonjs';
-import { viteTransformHtml } from './viteTransformHtml';
-import vitePluginSvgr from 'vite-plugin-svgr';
 
 export async function serveBundle(options: ServeOptions) {
   const paths = resolveBundlingPaths(options);
@@ -178,29 +178,20 @@ export async function serveBundle(options: ServeOptions) {
         vitePluginSvgr(),
         viteCommonjs(),
         viteNodePolyfills(),
-        viteTransformHtml({
-          entryPath: paths.targetEntry,
-          targetHtml: paths.targetHtml,
-          data: {
-            config: frontendConfig,
-            publicPath: config.output?.publicPath,
+        createHtmlPlugin({
+          entry: paths.targetEntry,
+          template: 'public/index.html',
+          inject: {
+            data: {
+              config: frontendConfig,
+              publicPath: config.output?.publicPath,
+            },
           },
         }),
       ],
       server: {
         host,
         port,
-      },
-      optimizeDeps: {
-        esbuildOptions: {
-          plugins: [esbuildCommonjs(['!nano-css'])],
-        },
-      },
-      build: {
-        commonjsOptions: {
-          include: ['*'],
-          transformMixedEsModules: true,
-        },
       },
       publicDir: paths.targetPublic,
       root: paths.targetPath,
