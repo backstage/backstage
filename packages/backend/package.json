@@ -84,7 +84,7 @@
     "@opentelemetry/exporter-prometheus": "^0.44.0",
     "@opentelemetry/sdk-metrics": "^1.13.0",
     "azure-devops-node-api": "^11.0.1",
-    "better-sqlite3": "^8.0.0",
+    "better-sqlite3": "^9.0.0",
     "dockerode": "^3.3.1",
     "example-app": "link:../app",
     "express": "^4.17.1",
@@ -92,7 +92,7 @@
     "express-promise-router": "^4.1.0",
     "luxon": "^3.0.0",
     "mysql2": "^2.2.5",
-    "pg": "^8.3.0",
+    "pg": "^8.11.3",
     "pg-connection-string": "^2.3.0",
     "prom-client": "^14.0.1",
     "winston": "^3.2.1"
