@@ -17,7 +17,7 @@
 import { useMemo } from 'react';
 import { matchRoutes, useLocation } from 'react-router-dom';
 import { useVersionedContext } from '@backstage/version-bridge';
-import { AnyRouteParams } from './types';
+import { AnyRouteRefParams } from './types';
 import { RouteRef } from './RouteRef';
 import { SubRouteRef } from './SubRouteRef';
 import { ExternalRouteRef } from './ExternalRouteRef';
@@ -35,7 +35,7 @@ import { ExternalRouteRef } from './ExternalRouteRef';
  *
  * @public
  */
-export type RouteFunc<TParams extends AnyRouteParams> = (
+export type RouteFunc<TParams extends AnyRouteRefParams> = (
   ...[params]: TParams extends undefined
     ? readonly []
     : readonly [params: TParams]
@@ -45,7 +45,7 @@ export type RouteFunc<TParams extends AnyRouteParams> = (
  * @internal
  */
 export interface RouteResolver {
-  resolve<TParams extends AnyRouteParams>(
+  resolve<TParams extends AnyRouteRefParams>(
     anyRouteRef:
       | RouteRef<TParams>
       | SubRouteRef<TParams>
@@ -67,7 +67,7 @@ export interface RouteResolver {
  */
 export function useRouteRef<
   TOptional extends boolean,
-  TParams extends AnyRouteParams,
+  TParams extends AnyRouteRefParams,
 >(
   routeRef: ExternalRouteRef<TParams, TOptional>,
 ): TParams extends true ? RouteFunc<TParams> | undefined : RouteFunc<TParams>;
@@ -83,7 +83,7 @@ export function useRouteRef<
  * @returns A function that will in turn return the concrete URL of the `routeRef`.
  * @public
  */
-export function useRouteRef<TParams extends AnyRouteParams>(
+export function useRouteRef<TParams extends AnyRouteRefParams>(
   routeRef: RouteRef<TParams> | SubRouteRef<TParams>,
 ): RouteFunc<TParams>;
 
@@ -98,7 +98,7 @@ export function useRouteRef<TParams extends AnyRouteParams>(
  * @returns A function that will in turn return the concrete URL of the `routeRef`.
  * @public
  */
-export function useRouteRef<TParams extends AnyRouteParams>(
+export function useRouteRef<TParams extends AnyRouteRefParams>(
   routeRef:
     | RouteRef<TParams>
     | SubRouteRef<TParams>

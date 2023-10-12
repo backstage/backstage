@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { AnyRouteParams } from './types';
+import { AnyRouteRefParams } from './types';
 import { RouteRef, createRouteRef, toInternalRouteRef } from './RouteRef';
 
 describe('RouteRef', () => {
@@ -54,7 +54,7 @@ describe('RouteRef', () => {
   });
 
   it('should properly infer and validate parameter types and assignments', () => {
-    function checkRouteRef<T extends AnyRouteParams>(
+    function checkRouteRef<T extends AnyRouteRefParams>(
       _ref: RouteRef<T>,
       _params: T extends undefined ? undefined : T,
     ) {}

@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-export type { AnyRouteParams } from './types';
+export type { AnyRouteRefParams } from './types';
 export { createRouteRef, type RouteRef } from './RouteRef';
 export { createSubRouteRef, type SubRouteRef } from './SubRouteRef';
 export {

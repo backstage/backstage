@@ -19,7 +19,7 @@ import {
   createExternalRouteRef,
   toInternalExternalRouteRef,
 } from './ExternalRouteRef';
-import { AnyRouteParams } from './types';
+import { AnyRouteRefParams } from './types';
 
 describe('ExternalRouteRef', () => {
   it('should be created', () => {
@@ -67,7 +67,7 @@ describe('ExternalRouteRef', () => {
 
   it('should properly infer and validate parameter types and assignments', () => {
     function checkRouteRef<
-      T extends AnyRouteParams,
+      T extends AnyRouteRefParams,
       TOptional extends boolean,
       TCheck extends TOptional,
     >(

@@ -15,7 +15,7 @@
  */
 
 import { useParams } from 'react-router-dom';
-import { AnyRouteParams } from './types';
+import { AnyRouteRefParams } from './types';
 import { RouteRef } from './RouteRef';
 import { SubRouteRef } from './SubRouteRef';
 
@@ -24,7 +24,7 @@ import { SubRouteRef } from './SubRouteRef';
  * @param _routeRef - Ref of the current route.
  * @public
  */
-export function useRouteRefParams<Params extends AnyRouteParams>(
+export function useRouteRefParams<Params extends AnyRouteRefParams>(
   _routeRef: RouteRef<Params> | SubRouteRef<Params>,
 ): Params {
   return useParams() as Params;

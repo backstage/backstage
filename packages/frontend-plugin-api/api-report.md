@@ -44,7 +44,7 @@ export type AnyExternalRoutes = {
 };
 
 // @public
-export type AnyRouteParams =
+export type AnyRouteRefParams =
   | {
       [param in string]: string;
     }
@@ -93,7 +93,7 @@ export const coreExtensionData: {
   reactElement: ConfigurableExtensionDataRef<JSX_2.Element, {}>;
   routePath: ConfigurableExtensionDataRef<string, {}>;
   apiFactory: ConfigurableExtensionDataRef<AnyApiFactory, {}>;
-  routeRef: ConfigurableExtensionDataRef<RouteRef<AnyRouteParams>, {}>;
+  routeRef: ConfigurableExtensionDataRef<RouteRef<AnyRouteRefParams>, {}>;
   navTarget: ConfigurableExtensionDataRef<NavTarget, {}>;
   theme: ConfigurableExtensionDataRef<AppTheme, {}>;
 };
@@ -288,7 +288,7 @@ export function createSchemaFromZod<TOutput, TInput>(
 // @public
 export function createSubRouteRef<
   Path extends string,
-  ParentParams extends AnyRouteParams = never,
+  ParentParams extends AnyRouteRefParams = never,
 >(config: {
   path: Path;
   parent: RouteRef<ParentParams>;
@@ -414,7 +414,7 @@ export interface ExtensionOverridesOptions {
 
 // @public
 export interface ExternalRouteRef<
-  TParams extends AnyRouteParams = AnyRouteParams,
+  TParams extends AnyRouteRefParams = AnyRouteRefParams,
   TOptional extends boolean = boolean,
 > {
   // (undocumented)
@@ -454,14 +454,16 @@ export type PortableSchema<TOutput> = {
 };
 
 // @public
-export type RouteFunc<TParams extends AnyRouteParams> = (
+export type RouteFunc<TParams extends AnyRouteRefParams> = (
   ...[params]: TParams extends undefined
     ? readonly []
     : readonly [params: TParams]
 ) => string;
 
 // @public
-export interface RouteRef<TParams extends AnyRouteParams = AnyRouteParams> {
+export interface RouteRef<
+  TParams extends AnyRouteRefParams = AnyRouteRefParams,
+> {
   // (undocumented)
   readonly $$type: '@backstage/RouteRef';
   // (undocumented)
@@ -469,7 +471,9 @@ export interface RouteRef<TParams extends AnyRouteParams = AnyRouteParams> {
 }
 
 // @public
-export interface SubRouteRef<TParams extends AnyRouteParams = AnyRouteParams> {
+export interface SubRouteRef<
+  TParams extends AnyRouteRefParams = AnyRouteRefParams,
+> {
   // (undocumented)
   readonly $$type: '@backstage/SubRouteRef';
   // (undocumented)
@@ -481,18 +485,18 @@ export interface SubRouteRef<TParams extends AnyRouteParams = AnyRouteParams> {
 // @public
 export function useRouteRef<
   TOptional extends boolean,
-  TParams extends AnyRouteParams,
+  TParams extends AnyRouteRefParams,
 >(
   routeRef: ExternalRouteRef<TParams, TOptional>,
 ): TParams extends true ? RouteFunc<TParams> | undefined : RouteFunc<TParams>;
 
 // @public
-export function useRouteRef<TParams extends AnyRouteParams>(
+export function useRouteRef<TParams extends AnyRouteRefParams>(
   routeRef: RouteRef<TParams> | SubRouteRef<TParams>,
 ): RouteFunc<TParams>;
 
 // @public
-export function useRouteRefParams<Params extends AnyRouteParams>(
+export function useRouteRefParams<Params extends AnyRouteRefParams>(
   _routeRef: RouteRef<Params> | SubRouteRef<Params>,
 ): Params;
 ```

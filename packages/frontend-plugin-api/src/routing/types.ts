@@ -19,4 +19,4 @@
  *
  * @public
  */
-export type AnyRouteParams = { [param in string]: string } | undefined;
+export type AnyRouteRefParams = { [param in string]: string } | undefined;

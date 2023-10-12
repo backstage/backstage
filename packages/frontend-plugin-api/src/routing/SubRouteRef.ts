@@ -15,7 +15,7 @@
  */
 
 import { RouteRef, toInternalRouteRef } from './RouteRef';
-import { AnyRouteParams } from './types';
+import { AnyRouteRefParams } from './types';
 
 // Should match the pattern in react-router
 const PARAM_PATTERN = /^\w+$/;
@@ -29,7 +29,9 @@ const PARAM_PATTERN = /^\w+$/;
  *
  * @public
  */
-export interface SubRouteRef<TParams extends AnyRouteParams = AnyRouteParams> {
+export interface SubRouteRef<
+  TParams extends AnyRouteRefParams = AnyRouteRefParams,
+> {
   readonly $$type: '@backstage/SubRouteRef';
 
   readonly T: TParams;
@@ -39,7 +41,7 @@ export interface SubRouteRef<TParams extends AnyRouteParams = AnyRouteParams> {
 
 /** @internal */
 export interface InternalSubRouteRef<
-  TParams extends AnyRouteParams = AnyRouteParams,
+  TParams extends AnyRouteRefParams = AnyRouteRefParams,
 > extends SubRouteRef<TParams> {
   readonly version: 'v1';
 
@@ -50,7 +52,7 @@ export interface InternalSubRouteRef<
 
 /** @internal */
 export function toInternalSubRouteRef<
-  TParams extends AnyRouteParams = AnyRouteParams,
+  TParams extends AnyRouteRefParams = AnyRouteRefParams,
 >(resource: SubRouteRef<TParams>): InternalSubRouteRef<TParams> {
   const r = resource as InternalSubRouteRef<TParams>;
   if (r.$$type !== '@backstage/SubRouteRef') {
@@ -68,7 +70,7 @@ export function isSubRouteRef(opaque: {
 }
 
 /** @internal */
-export class SubRouteRefImpl<TParams extends AnyRouteParams>
+export class SubRouteRefImpl<TParams extends AnyRouteRefParams>
   implements SubRouteRef<TParams>
 {
   readonly $$type = '@backstage/SubRouteRef';
@@ -127,7 +129,7 @@ type PathParams<S extends string> = { [name in ParamNames<S>]: string };
  */
 type MergeParams<
   P1 extends { [param in string]: string },
-  P2 extends AnyRouteParams,
+  P2 extends AnyRouteRefParams,
 > = (P1[keyof P1] extends never ? {} : P1) & (P2 extends undefined ? {} : P2);
 
 /**
@@ -145,7 +147,7 @@ type TrimEmptyParams<Params extends { [param in string]: string }> =
  */
 type MakeSubRouteRef<
   Params extends { [param in string]: string },
-  ParentParams extends AnyRouteParams,
+  ParentParams extends AnyRouteRefParams,
 > = keyof Params & keyof ParentParams extends never
   ? SubRouteRef<TrimEmptyParams<MergeParams<Params, ParentParams>>>
   : never;
@@ -158,7 +160,7 @@ type MakeSubRouteRef<
  */
 export function createSubRouteRef<
   Path extends string,
-  ParentParams extends AnyRouteParams = never,
+  ParentParams extends AnyRouteRefParams = never,
 >(config: {
   path: Path;
   parent: RouteRef<ParentParams>;

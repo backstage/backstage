@@ -16,7 +16,7 @@
 
 import { RouteRefImpl } from './RouteRef';
 import { describeParentCallSite } from './describeParentCallSite';
-import { AnyRouteParams } from './types';
+import { AnyRouteRefParams } from './types';
 
 /**
  * Route descriptor, to be later bound to a concrete route by the app. Used to implement cross-plugin route references.
@@ -28,7 +28,7 @@ import { AnyRouteParams } from './types';
  * @public
  */
 export interface ExternalRouteRef<
-  TParams extends AnyRouteParams = AnyRouteParams,
+  TParams extends AnyRouteRefParams = AnyRouteRefParams,
   TOptional extends boolean = boolean,
 > {
   readonly $$type: '@backstage/ExternalRouteRef';
@@ -38,7 +38,7 @@ export interface ExternalRouteRef<
 
 /** @internal */
 export interface InternalExternalRouteRef<
-  TParams extends AnyRouteParams = AnyRouteParams,
+  TParams extends AnyRouteRefParams = AnyRouteRefParams,
   TOptional extends boolean = boolean,
 > extends ExternalRouteRef<TParams, TOptional> {
   readonly version: 'v1';
@@ -50,7 +50,7 @@ export interface InternalExternalRouteRef<
 
 /** @internal */
 export function toInternalExternalRouteRef<
-  TParams extends AnyRouteParams = AnyRouteParams,
+  TParams extends AnyRouteRefParams = AnyRouteRefParams,
   TOptional extends boolean = boolean,
 >(
   resource: ExternalRouteRef<TParams, TOptional>,

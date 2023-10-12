@@ -15,7 +15,7 @@
  */
 
 import { describeParentCallSite } from './describeParentCallSite';
-import { AnyRouteParams } from './types';
+import { AnyRouteRefParams } from './types';
 
 /**
  * Absolute route reference.
@@ -26,14 +26,16 @@ import { AnyRouteParams } from './types';
  *
  * @public
  */
-export interface RouteRef<TParams extends AnyRouteParams = AnyRouteParams> {
+export interface RouteRef<
+  TParams extends AnyRouteRefParams = AnyRouteRefParams,
+> {
   readonly $$type: '@backstage/RouteRef';
   readonly T: TParams;
 }
 
 /** @internal */
 export interface InternalRouteRef<
-  TParams extends AnyRouteParams = AnyRouteParams,
+  TParams extends AnyRouteRefParams = AnyRouteRefParams,
 > extends RouteRef<TParams> {
   readonly version: 'v1';
   getParams(): string[];
@@ -44,7 +46,7 @@ export interface InternalRouteRef<
 
 /** @internal */
 export function toInternalRouteRef<
-  TParams extends AnyRouteParams = AnyRouteParams,
+  TParams extends AnyRouteRefParams = AnyRouteRefParams,
 >(resource: RouteRef<TParams>): InternalRouteRef<TParams> {
   const r = resource as InternalRouteRef<TParams>;
   if (r.$$type !== '@backstage/RouteRef') {

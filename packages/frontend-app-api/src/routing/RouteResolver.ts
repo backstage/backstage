@@ -19,7 +19,7 @@ import {
   RouteRef,
   ExternalRouteRef,
   SubRouteRef,
-  AnyRouteParams,
+  AnyRouteRefParams,
   RouteFunc,
 } from '@backstage/frontend-plugin-api';
 import mapValues from 'lodash/mapValues';
@@ -189,7 +189,7 @@ export class RouteResolver {
     private readonly appBasePath: string, // base path without a trailing slash
   ) {}
 
-  resolve<Params extends AnyRouteParams>(
+  resolve<Params extends AnyRouteRefParams>(
     anyRouteRef:
       | RouteRef<Params>
       | SubRouteRef<Params>

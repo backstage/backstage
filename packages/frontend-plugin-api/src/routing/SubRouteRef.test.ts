@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { AnyRouteParams } from './types';
+import { AnyRouteRefParams } from './types';
 import {
   SubRouteRef,
   createSubRouteRef,
@@ -96,7 +96,7 @@ describe('SubRouteRef', () => {
   });
 
   it('should properly infer and parse path parameters', () => {
-    function checkSubRouteRef<T extends AnyRouteParams>(
+    function checkSubRouteRef<T extends AnyRouteRefParams>(
       _ref: SubRouteRef<T>,
       _params: T extends undefined ? undefined : T,
     ) {}

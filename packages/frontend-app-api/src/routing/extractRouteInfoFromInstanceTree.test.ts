@@ -18,7 +18,7 @@ import React from 'react';
 import { BackstagePlugin } from '@backstage/core-plugin-api';
 import { extractRouteInfoFromInstanceTree } from './extractRouteInfoFromInstanceTree';
 import {
-  AnyRouteParams,
+  AnyRouteRefParams,
   Extension,
   RouteRef,
   coreExtensionData,
@@ -35,7 +35,7 @@ const ref2 = createRouteRef();
 const ref3 = createRouteRef();
 const ref4 = createRouteRef();
 const ref5 = createRouteRef();
-const refOrder: RouteRef<AnyRouteParams>[] = [ref1, ref2, ref3, ref4, ref5];
+const refOrder: RouteRef<AnyRouteRefParams>[] = [ref1, ref2, ref3, ref4, ref5];
 
 function createTestExtension(options: {
   id: string;
