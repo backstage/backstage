@@ -17,7 +17,7 @@
 import {
   createServiceBuilder,
   loadBackendConfig,
-  SingleHostDiscovery,
+  HostDiscovery,
   UrlReaders,
   useHotMemoize,
   ServerTokenManager,
@@ -64,7 +64,7 @@ export async function startStandaloneServer(
     { schedule: schedule, age: { days: 30 }, useSourceLocation: false },
     {
       database: { getClient: async () => db },
-      discovery: SingleHostDiscovery.fromConfig(config),
+      discovery: HostDiscovery.fromConfig(config),
       reader: UrlReaders.default({ logger, config }),
       logger,
       tokenManager: ServerTokenManager.noop(),
