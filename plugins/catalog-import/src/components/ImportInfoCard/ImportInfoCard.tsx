@@ -43,7 +43,7 @@ export const ImportInfoCard = (props: ImportInfoCardProps) => {
   } = props;
 
   const configApi = useApi(configApiRef);
-  const appTitle = configApi.getOptional('app.title') || 'Backstage';
+  const appTitle = configApi.getOptionalString('app.title') || 'Backstage';
   const catalogImportApi = useApi(catalogImportApiRef);
 
   const hasGithubIntegration = configApi.has('integrations.github');

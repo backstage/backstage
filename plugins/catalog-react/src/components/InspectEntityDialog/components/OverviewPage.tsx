@@ -74,7 +74,10 @@ export function OverviewPage(props: { entity: AlphaEntity }) {
             </ListItem>
             {spec?.type && (
               <ListItem>
-                <ListItemText primary="spec.type" secondary={spec.type} />
+                <ListItemText
+                  primary="spec.type"
+                  secondary={spec.type?.toString()}
+                />
               </ListItem>
             )}
             {metadata.uid && (

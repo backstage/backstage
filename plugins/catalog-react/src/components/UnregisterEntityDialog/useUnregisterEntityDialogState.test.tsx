@@ -22,7 +22,7 @@ import {
   renderHook,
   RenderHookResult,
 } from '@testing-library/react-hooks';
-import React from 'react';
+import React, { ReactNode } from 'react';
 import {
   UseUnregisterEntityDialogState,
   useUnregisterEntityDialogState,
@@ -85,7 +85,10 @@ describe('useUnregisterEntityDialogState', () => {
   });
 
   it('goes through the happy unregister path', async () => {
-    let rendered: RenderHookResult<unknown, UseUnregisterEntityDialogState>;
+    let rendered: RenderHookResult<
+      { children?: ReactNode },
+      UseUnregisterEntityDialogState
+    >;
     act(() => {
       rendered = renderHook(() => useUnregisterEntityDialogState(entity), {
         wrapper: Wrapper,
@@ -114,7 +117,10 @@ describe('useUnregisterEntityDialogState', () => {
     entity.metadata.annotations![ANNOTATION_ORIGIN_LOCATION] =
       'bootstrap:bootstrap';
 
-    let rendered: RenderHookResult<unknown, UseUnregisterEntityDialogState>;
+    let rendered: RenderHookResult<
+      { children?: ReactNode },
+      UseUnregisterEntityDialogState
+    >;
     act(() => {
       rendered = renderHook(() => useUnregisterEntityDialogState(entity), {
         wrapper: Wrapper,
@@ -137,7 +143,10 @@ describe('useUnregisterEntityDialogState', () => {
   it('chooses only-delete when there was no location annotation', async () => {
     delete entity.metadata.annotations![ANNOTATION_ORIGIN_LOCATION];
 
-    let rendered: RenderHookResult<unknown, UseUnregisterEntityDialogState>;
+    let rendered: RenderHookResult<
+      { children?: ReactNode },
+      UseUnregisterEntityDialogState
+    >;
     act(() => {
       rendered = renderHook(() => useUnregisterEntityDialogState(entity), {
         wrapper: Wrapper,
@@ -157,7 +166,10 @@ describe('useUnregisterEntityDialogState', () => {
   });
 
   it('chooses only-delete when the location could not be found', async () => {
-    let rendered: RenderHookResult<unknown, UseUnregisterEntityDialogState>;
+    let rendered: RenderHookResult<
+      { children?: ReactNode },
+      UseUnregisterEntityDialogState
+    >;
     act(() => {
       rendered = renderHook(() => useUnregisterEntityDialogState(entity), {
         wrapper: Wrapper,

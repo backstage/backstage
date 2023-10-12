@@ -198,22 +198,24 @@ export const SearchPage = createPageExtension({
               <Grid item xs>
                 <SearchPagination />
                 <SearchResults>
-                  {({ results }) =>
-                    results.map((result, index) => {
-                      const { noTrack } = config;
-                      const { document, ...rest } = result;
-                      const SearchResultListItem =
-                        getResultItemComponent(result);
-                      return (
-                        <SearchResultListItem
-                          {...rest}
-                          key={index}
-                          result={document}
-                          noTrack={noTrack}
-                        />
-                      );
-                    })
-                  }
+                  {({ results }) => (
+                    <>
+                      {results.map((result, index) => {
+                        const { noTrack } = config;
+                        const { document, ...rest } = result;
+                        const SearchResultListItem =
+                          getResultItemComponent(result);
+                        return (
+                          <SearchResultListItem
+                            {...rest}
+                            key={index}
+                            result={document}
+                            noTrack={noTrack}
+                          />
+                        );
+                      })}
+                    </>
+                  )}
                 </SearchResults>
                 <SearchResultPager />
               </Grid>
