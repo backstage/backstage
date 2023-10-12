@@ -40,12 +40,38 @@ import { toInternalSubRouteRef } from '../../../frontend-plugin-api/src/routing/
 // eslint-disable-next-line @backstage/no-relative-monorepo-imports
 import { toInternalExternalRouteRef } from '../../../frontend-plugin-api/src/routing/ExternalRouteRef';
 
+/**
+ * A temporary helper to convert a legacy route ref to the new system.
+ *
+ * @public
+ * @remarks
+ *
+ * In the future the legacy createRouteRef will instead create refs compatible with both systems.
+ */
 export function convertLegacyRouteRef<TParams extends AnyRouteParams>(
   ref: LegacyRouteRef<TParams>,
 ): RouteRef<TParams>;
+
+/**
+ * A temporary helper to convert a legacy sub route ref to the new system.
+ *
+ * @public
+ * @remarks
+ *
+ * In the future the legacy createSubRouteRef will instead create refs compatible with both systems.
+ */
 export function convertLegacyRouteRef<TParams extends AnyRouteParams>(
   ref: LegacySubRouteRef<TParams>,
 ): SubRouteRef<TParams>;
+
+/**
+ * A temporary helper to convert a legacy external route ref to the new system.
+ *
+ * @public
+ * @remarks
+ *
+ * In the future the legacy createExternalRouteRef will instead create refs compatible with both systems.
+ */
 export function convertLegacyRouteRef<
   TParams extends AnyRouteParams,
   TOptional extends boolean,
