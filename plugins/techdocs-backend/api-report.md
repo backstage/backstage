@@ -7,7 +7,7 @@ import { CatalogApi } from '@backstage/catalog-client';
 import { CatalogClient } from '@backstage/catalog-client';
 import { Config } from '@backstage/config';
 import { DefaultTechDocsCollatorFactory as DefaultTechDocsCollatorFactory_2 } from '@backstage/plugin-search-backend-module-techdocs';
-import { Entity } from '@backstage/catalog-model';
+import { DocsBuildStrategy } from '@backstage/plugin-techdocs-node';
 import express from 'express';
 import { GeneratorBuilder } from '@backstage/plugin-techdocs-node';
 import { Knex } from 'knex';
@@ -17,6 +17,7 @@ import { PluginCacheManager } from '@backstage/backend-common';
 import { PluginEndpointDiscovery } from '@backstage/backend-common';
 import { PreparerBuilder } from '@backstage/plugin-techdocs-node';
 import { PublisherBase } from '@backstage/plugin-techdocs-node';
+import { ShouldBuildParameters } from '@backstage/plugin-techdocs-node';
 import type { TechDocsCollatorFactoryOptions as TechDocsCollatorFactoryOptions_2 } from '@backstage/plugin-search-backend-module-techdocs';
 import { TechDocsDocument } from '@backstage/plugin-techdocs-node';
 import { TokenManager } from '@backstage/backend-common';
@@ -48,11 +49,7 @@ export class DefaultTechDocsCollator {
 // @public @deprecated (undocumented)
 export const DefaultTechDocsCollatorFactory: typeof DefaultTechDocsCollatorFactory_2;
 
-// @public
-export interface DocsBuildStrategy {
-  // (undocumented)
-  shouldBuild(params: ShouldBuildParameters): Promise<boolean>;
-}
+export { DocsBuildStrategy };
 
 // @public
 export type OutOfTheBoxDeploymentOptions = {
@@ -86,10 +83,7 @@ export type RouterOptions =
   | RecommendedDeploymentOptions
   | OutOfTheBoxDeploymentOptions;
 
-// @public
-export type ShouldBuildParameters = {
-  entity: Entity;
-};
+export { ShouldBuildParameters };
 
 // @public @deprecated (undocumented)
 export type TechDocsCollatorFactoryOptions = TechDocsCollatorFactoryOptions_2;
