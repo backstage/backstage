@@ -15,28 +15,27 @@
  */
 
 import React from 'react';
-import {
-  BackstagePlugin,
-  RouteRef,
-  createRouteRef,
-} from '@backstage/core-plugin-api';
+import { BackstagePlugin } from '@backstage/core-plugin-api';
 import { extractRouteInfoFromInstanceTree } from './extractRouteInfoFromInstanceTree';
 import {
+  AnyRouteParams,
   Extension,
+  RouteRef,
   coreExtensionData,
   createExtension,
   createExtensionInput,
   createPlugin,
+  createRouteRef,
 } from '@backstage/frontend-plugin-api';
 import { createInstances } from '../wiring/createApp';
 import { MockConfigApi } from '@backstage/test-utils';
 
-const ref1 = createRouteRef({ id: 'page1' });
-const ref2 = createRouteRef({ id: 'page2' });
-const ref3 = createRouteRef({ id: 'page3' });
-const ref4 = createRouteRef({ id: 'page4' });
-const ref5 = createRouteRef({ id: 'page5' });
-const refOrder = [ref1, ref2, ref3, ref4, ref5];
+const ref1 = createRouteRef();
+const ref2 = createRouteRef();
+const ref3 = createRouteRef();
+const ref4 = createRouteRef();
+const ref5 = createRouteRef();
+const refOrder: RouteRef<AnyRouteParams>[] = [ref1, ref2, ref3, ref4, ref5];
 
 function createTestExtension(options: {
   id: string;

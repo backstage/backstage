@@ -21,6 +21,10 @@ import {
   coreExtensionData,
   ExtensionDataRef,
   ExtensionOverrides,
+  ExternalRouteRef,
+  RouteRef,
+  SubRouteRef,
+  useRouteRef,
 } from '@backstage/frontend-plugin-api';
 import { Core } from '../extensions/Core';
 import { CoreRoutes } from '../extensions/CoreRoutes';
@@ -44,11 +48,9 @@ import {
   ConfigApi,
   configApiRef,
   IconComponent,
-  RouteRef,
   BackstagePlugin as LegacyBackstagePlugin,
   featureFlagsApiRef,
   attachComponentData,
-  useRouteRef,
   identityApiRef,
   AppTheme,
 } from '@backstage/core-plugin-api';
@@ -57,7 +59,6 @@ import {
   ApiFactoryRegistry,
   ApiProvider,
   ApiResolver,
-  AppRouteBinder,
   AppThemeSelector,
 } from '@backstage/core-app-api';
 
@@ -97,6 +98,57 @@ import {
   appLanguageApiRef,
   translationApiRef,
 } from '@backstage/core-plugin-api/alpha';
+
+/**
+ * Extracts a union of the keys in a map whose value extends the given type
+ *
+ * @ignore
+ */
+type KeysWithType<Obj extends { [key in string]: any }, Type> = {
+  [key in keyof Obj]: Obj[key] extends Type ? key : never;
+}[keyof Obj];
+
+/**
+ * Takes a map Map required values and makes all keys matching Keys optional
+ *
+ * @ignore
+ */
+type PartialKeys<
+  Map extends { [name in string]: any },
+  Keys extends keyof Map,
+> = Partial<Pick<Map, Keys>> & Required<Omit<Map, Keys>>;
+
+/**
+ * Creates a map of target routes with matching parameters based on a map of external routes.
+ *
+ * @ignore
+ */
+type TargetRouteMap<
+  ExternalRoutes extends { [name: string]: ExternalRouteRef },
+> = {
+  [name in keyof ExternalRoutes]: ExternalRoutes[name] extends ExternalRouteRef<
+    infer Params,
+    any
+  >
+    ? RouteRef<Params> | SubRouteRef<Params>
+    : never;
+};
+
+/**
+ * A function that can bind from external routes of a given plugin, to concrete
+ * routes of other plugins. See {@link createApp}.
+ *
+ * @public
+ */
+export type AppRouteBinder = <
+  TExternalRoutes extends { [name: string]: ExternalRouteRef },
+>(
+  externalRoutes: TExternalRoutes,
+  targetRoutes: PartialKeys<
+    TargetRouteMap<TExternalRoutes>,
+    KeysWithType<TExternalRoutes, ExternalRouteRef<any, true>>
+  >,
+) => void;
 
 /** @public */
 export interface ExtensionTreeNode {
@@ -312,8 +364,9 @@ export function createApp(options: {
         <AppContextProvider appContext={appContext}>
           <AppThemeProvider>
             <RoutingProvider
-              {...extractRouteInfoFromInstanceTree(coreInstance)}
-              routeBindings={resolveRouteBindings(options.bindRoutes)}
+              // TODO(Rugvip): Move over routing app API to new system to avoid these casts
+              {...(extractRouteInfoFromInstanceTree(coreInstance) as any)}
+              routeBindings={resolveRouteBindings(options.bindRoutes as any)}
             >
               {/* TODO: set base path using the logic from AppRouter */}
               <BrowserRouter>
