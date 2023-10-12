@@ -3,4 +3,4 @@
 '@backstage/plugin-analytics-module-ga': patch
 ---
 
-Updated dev playground to make use of registerApi instead of deprecated registerPlugin
+Updated dev playground to make use of registerApi instead of registering the deprecated plugins.
