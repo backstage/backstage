@@ -17,25 +17,41 @@
 import { useMemo } from 'react';
 import { matchRoutes, useLocation } from 'react-router-dom';
 import { useVersionedContext } from '@backstage/version-bridge';
-import {
-  AnyParams,
-  ExternalRouteRef,
-  RouteFunc,
-  RouteRef,
-  SubRouteRef,
-} from './types';
+import { AnyRouteParams } from './types';
+import { RouteRef } from './RouteRef';
+import { SubRouteRef } from './SubRouteRef';
+import { ExternalRouteRef } from './ExternalRouteRef';
+
+/**
+ * TS magic for handling route parameters.
+ *
+ * @remarks
+ *
+ * The extra TS magic here is to require a single params argument if the RouteRef
+ * had at least one param defined, but require 0 arguments if there are no params defined.
+ * Without this we'd have to pass in empty object to all parameter-less RouteRefs
+ * just to make TypeScript happy, or we would have to make the argument optional in
+ * which case you might forget to pass it in when it is actually required.
+ *
+ * @public
+ */
+export type RouteFunc<TParams extends AnyRouteParams> = (
+  ...[params]: TParams extends undefined
+    ? readonly []
+    : readonly [params: TParams]
+) => string;
 
 /**
  * @internal
  */
 export interface RouteResolver {
-  resolve<Params extends AnyParams>(
+  resolve<TParams extends AnyRouteParams>(
     anyRouteRef:
-      | RouteRef<Params>
-      | SubRouteRef<Params>
-      | ExternalRouteRef<Params, any>,
+      | RouteRef<TParams>
+      | SubRouteRef<TParams>
+      | ExternalRouteRef<TParams, any>,
     sourceLocation: Parameters<typeof matchRoutes>[1],
-  ): RouteFunc<Params> | undefined;
+  ): RouteFunc<TParams> | undefined;
 }
 
 /**
@@ -49,9 +65,12 @@ export interface RouteResolver {
  * @returns A function that will in turn return the concrete URL of the `routeRef`.
  * @public
  */
-export function useRouteRef<Optional extends boolean, Params extends AnyParams>(
-  routeRef: ExternalRouteRef<Params, Optional>,
-): Optional extends true ? RouteFunc<Params> | undefined : RouteFunc<Params>;
+export function useRouteRef<
+  TOptional extends boolean,
+  TParams extends AnyRouteParams,
+>(
+  routeRef: ExternalRouteRef<TParams, TOptional>,
+): TParams extends true ? RouteFunc<TParams> | undefined : RouteFunc<TParams>;
 
 /**
  * React hook for constructing URLs to routes.
@@ -64,9 +83,9 @@ export function useRouteRef<Optional extends boolean, Params extends AnyParams>(
  * @returns A function that will in turn return the concrete URL of the `routeRef`.
  * @public
  */
-export function useRouteRef<Params extends AnyParams>(
-  routeRef: RouteRef<Params> | SubRouteRef<Params>,
-): RouteFunc<Params>;
+export function useRouteRef<TParams extends AnyRouteParams>(
+  routeRef: RouteRef<TParams> | SubRouteRef<TParams>,
+): RouteFunc<TParams>;
 
 /**
  * React hook for constructing URLs to routes.
@@ -79,12 +98,12 @@ export function useRouteRef<Params extends AnyParams>(
  * @returns A function that will in turn return the concrete URL of the `routeRef`.
  * @public
  */
-export function useRouteRef<Params extends AnyParams>(
+export function useRouteRef<TParams extends AnyRouteParams>(
   routeRef:
-    | RouteRef<Params>
-    | SubRouteRef<Params>
-    | ExternalRouteRef<Params, any>,
-): RouteFunc<Params> | undefined {
+    | RouteRef<TParams>
+    | SubRouteRef<TParams>
+    | ExternalRouteRef<TParams, any>,
+): RouteFunc<TParams> | undefined {
   const { pathname } = useLocation();
   const versionedContext = useVersionedContext<{ 1: RouteResolver }>(
     'routing-context',

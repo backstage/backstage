@@ -14,61 +14,12 @@
  * limitations under the License.
  */
 
-import { getOrCreateGlobalSingleton } from '@backstage/version-bridge';
-
 /**
  * Catch-all type for route params.
  *
  * @public
  */
 export type AnyRouteParams = { [param in string]: string } | undefined;
-
-/**
- * TS magic for handling route parameters.
- *
- * @remarks
- *
- * The extra TS magic here is to require a single params argument if the RouteRef
- * had at least one param defined, but require 0 arguments if there are no params defined.
- * Without this we'd have to pass in empty object to all parameter-less RouteRefs
- * just to make TypeScript happy, or we would have to make the argument optional in
- * which case you might forget to pass it in when it is actually required.
- *
- * @public
- */
-export type RouteFunc<Params extends AnyParams> = (
-  ...[params]: Params extends undefined ? readonly [] : readonly [Params]
-) => string;
-
-/**
- * This symbol is what we use at runtime to determine whether a given object
- * is a type of RouteRef or not. It doesn't work well in TypeScript though since
- * the `unique symbol` will refer to different values between package versions.
- * For that reason we use the marker $$routeRefType to represent the symbol at
- * compile-time instead of using the symbol directly.
- *
- * @internal
- */
-export const routeRefType: unique symbol = getOrCreateGlobalSingleton<any>(
-  'route-ref-type',
-  () => Symbol('route-ref-type'),
-);
-
-/**
- * Optional route params.
- *
- * @internal
- */
-export type OptionalParams<Params extends { [param in string]: string }> =
-  Params[keyof Params] extends never ? undefined : Params;
-
-/**
- * Type describing the key type of a route parameter mapping.
- *
- * @ignore
- */
-export type ParamKeys<TParams extends AnyRouteParams> =
-  keyof TParams extends never ? [] : (keyof TParams)[];
 
 /**
  * A duplicate of the react-router RouteObject, but with routeRef added
