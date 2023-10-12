@@ -26,6 +26,7 @@ import {
 } from '@backstage/frontend-plugin-api';
 import { entityRouteRef } from '@backstage/plugin-catalog-react';
 import techdocsPlugin from '@backstage/plugin-techdocs/alpha';
+import { convertLegacyRouteRef } from '@backstage/core-plugin-api/alpha';
 
 /*
 
@@ -59,7 +60,7 @@ TODO:
 const entityPageExtension = createPageExtension({
   id: 'catalog:entity',
   defaultPath: '/catalog/:namespace/:kind/:name',
-  routeRef: entityRouteRef,
+  routeRef: convertLegacyRouteRef(entityRouteRef),
   loader: async () => <div>Just a temporary mocked entity page</div>,
 });
 
