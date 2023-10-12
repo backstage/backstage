@@ -179,7 +179,7 @@ export async function serveBundle(options: ServeOptions) {
         viteNodePolyfills(),
         createHtmlPlugin({
           entry: paths.targetEntry,
-          template: `public/index.html`,
+          template: 'public/index.html',
           inject: {
             data: {
               config: frontendConfig,
