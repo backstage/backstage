@@ -15,11 +15,23 @@
  */
 import React from 'react';
 import { createDevApp } from '@backstage/dev-utils';
-import { analyticsModuleGA } from '../src/plugin';
 import { Playground } from './Playground';
+import {
+  analyticsApiRef,
+  configApiRef,
+  identityApiRef,
+} from '@backstage/core-plugin-api';
+import { GoogleAnalytics } from '../src';
 
 createDevApp()
-  .registerPlugin(analyticsModuleGA)
+  .registerApi({
+    api: analyticsApiRef,
+    deps: { configApi: configApiRef, identityApi: identityApiRef },
+    factory: ({ configApi, identityApi }) =>
+      GoogleAnalytics.fromConfig(configApi, {
+        identityApi,
+      }),
+  })
   .addPage({
     path: '/ga',
     title: 'GA Playground',
