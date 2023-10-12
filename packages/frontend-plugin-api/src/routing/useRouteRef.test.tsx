@@ -33,7 +33,7 @@ describe('v1 consumer', () => {
     const resolve = jest.fn(() => () => '/hello');
     context.set({ 1: { resolve } });
 
-    const routeRef = createRouteRef({ id: 'ref1' });
+    const routeRef = createRouteRef();
 
     const renderedHook = renderHook(() => useRouteRef(routeRef), {
       wrapper: ({ children }: React.PropsWithChildren<{}>) => (
@@ -55,7 +55,7 @@ describe('v1 consumer', () => {
     const resolve = jest.fn(() => () => '/hello');
     context.set({ 1: { resolve } });
 
-    const routeRef = createRouteRef({ id: 'ref1' });
+    const routeRef = createRouteRef();
     const history = createBrowserHistory();
     history.push('/my-page');
 
@@ -81,7 +81,7 @@ describe('v1 consumer', () => {
     const resolve = jest.fn(() => () => '/hello');
     context.set({ 1: { resolve } });
 
-    const routeRef = createRouteRef({ id: 'ref1' });
+    const routeRef = createRouteRef();
     const history = createBrowserHistory();
     history.push('/my-page');
 
@@ -107,7 +107,7 @@ describe('v1 consumer', () => {
     const resolve = jest.fn(() => () => '/hello');
     context.set({ 1: { resolve } });
 
-    const routeRef = createRouteRef({ id: 'ref1' });
+    const routeRef = createRouteRef();
     const history = createBrowserHistory();
     history.push('/my-page');
 
@@ -133,7 +133,7 @@ describe('v1 consumer', () => {
     const resolve = jest.fn(() => () => '/hello');
     context.set({ 1: { resolve } });
 
-    const routeRef = createRouteRef({ id: 'ref1' });
+    const routeRef = createRouteRef();
     const history = createBrowserHistory();
     history.push('/my-page');
 

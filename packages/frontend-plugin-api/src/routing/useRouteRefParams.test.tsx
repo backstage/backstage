@@ -23,7 +23,6 @@ import { createRouteRef } from './RouteRef';
 describe('useRouteRefParams', () => {
   it('should provide types params', () => {
     const routeRef = createRouteRef({
-      id: 'ref1',
       params: ['a', 'b'],
     });
 

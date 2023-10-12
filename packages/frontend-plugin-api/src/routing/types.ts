@@ -20,15 +20,3 @@
  * @public
  */
 export type AnyRouteParams = { [param in string]: string } | undefined;
-
-/**
- * A duplicate of the react-router RouteObject, but with routeRef added
- * @internal
- */
-export interface BackstageRouteObject {
-  caseSensitive: boolean;
-  children?: BackstageRouteObject[];
-  element: React.ReactNode;
-  path: string;
-  routeRefs: Set<RouteRef>;
-}
