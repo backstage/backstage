@@ -38,6 +38,7 @@ import {
   CatalogProcessor,
   CatalogProcessorParser,
   EntityProvider,
+  ScmLocationAnalyzer,
 } from '@backstage/plugin-catalog-node';
 import {
   AnnotateLocationEntityProcessor,
@@ -57,7 +58,7 @@ import {
   yamlPlaceholderResolver,
 } from '../modules/core/PlaceholderProcessor';
 import { defaultEntityDataParser } from '../modules/util/parse';
-import { LocationAnalyzer, ScmLocationAnalyzer } from '../ingestion/types';
+import { LocationAnalyzer } from '../ingestion/types';
 import { CatalogProcessingEngine } from '../processing';
 import { DefaultProcessingDatabase } from '../database/DefaultProcessingDatabase';
 import { applyDatabaseMigrations } from '../database/migrations';

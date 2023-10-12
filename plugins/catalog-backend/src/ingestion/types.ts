@@ -78,19 +78,3 @@ export type LocationAnalyzer = {
     location: AnalyzeLocationRequest,
   ): Promise<AnalyzeLocationResponse>;
 };
-/** @public */
-export type AnalyzeOptions = {
-  url: string;
-  catalogFilename?: string;
-};
-
-/** @public */
-export type ScmLocationAnalyzer = {
-  /** The method that decides if this analyzer can work with the provided url */
-  supports(url: string): boolean;
-  /** This function can return an array of already existing entities */
-  analyze(options: AnalyzeOptions): Promise<{
-    /** Existing entities in the analyzed location */
-    existing: AnalyzeLocationExistingEntity[];
-  }>;
-};
