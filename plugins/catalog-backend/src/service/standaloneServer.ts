@@ -19,7 +19,7 @@ import {
   DatabaseManager,
   loadBackendConfig,
   ServerTokenManager,
-  SingleHostDiscovery,
+  HostDiscovery,
   UrlReaders,
   useHotMemoize,
 } from '@backstage/backend-common';
@@ -53,7 +53,7 @@ export async function startStandaloneServer(
     );
     return manager.forPlugin('catalog');
   });
-  const discovery = SingleHostDiscovery.fromConfig(config);
+  const discovery = HostDiscovery.fromConfig(config);
   const tokenManager = ServerTokenManager.fromConfig(config, {
     logger,
   });

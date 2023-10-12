@@ -20,11 +20,17 @@ import {
   createPageExtension,
   createPlugin,
 } from '@backstage/frontend-plugin-api';
-import { useRouteRef, createRouteRef } from '@backstage/core-plugin-api';
+import {
+  useRouteRef,
+  createRouteRef,
+  createExternalRouteRef,
+} from '@backstage/core-plugin-api';
 import { Route, Routes } from 'react-router-dom';
 
 const indexRouteRef = createRouteRef({ id: 'index' });
 const page1RouteRef = createRouteRef({ id: 'page1' });
+export const externalPageXRouteRef = createExternalRouteRef({ id: 'pageX' });
+export const pageXRouteRef = createRouteRef({ id: 'pageX' });
 // const page2RouteRef = createSubRouteRef({
 //   id: 'page2',
 //   parent: page1RouteRef,
@@ -50,6 +56,9 @@ const IndexPage = createPageExtension({
           <div>
             <Link to="/search">Search</Link>
           </div>
+          <div>
+            <Link to="/settings">Settings</Link>
+          </div>
         </div>
       );
     };
@@ -64,6 +73,7 @@ const Page1 = createPageExtension({
   loader: async () => {
     const Component = () => {
       const indexLink = useRouteRef(indexRouteRef);
+      const xLink = useRouteRef(externalPageXRouteRef);
       // const page2Link = useRouteRef(page2RouteRef);
 
       return (
@@ -72,6 +82,7 @@ const Page1 = createPageExtension({
           <Link to={indexLink()}>Go back</Link>
           <Link to="./page2">Page 2</Link>
           {/* <Link to={page2Link()}>Page 2</Link> */}
+          <Link to={xLink()}>Page X</Link>
 
           <div>
             Sub-page content:
@@ -89,6 +100,26 @@ const Page1 = createPageExtension({
   },
 });
 
+const ExternalPage = createPageExtension({
+  id: 'pageX',
+  defaultPath: '/pageX',
+  routeRef: pageXRouteRef,
+  loader: async () => {
+    const Component = () => {
+      const indexLink = useRouteRef(indexRouteRef);
+      // const pageXLink = useRouteRef(pageXRouteRef);
+
+      return (
+        <div>
+          <h1>This is page X</h1>
+          <Link to={indexLink()}>Go back</Link>
+        </div>
+      );
+    };
+    return <Component />;
+  },
+});
+
 export const pagesPlugin = createPlugin({
   id: 'pages',
   // routes: {
@@ -98,5 +129,12 @@ export const pagesPlugin = createPlugin({
   //   //     OR
   //   //   'page1'
   // },
-  extensions: [IndexPage, Page1],
+  routes: {
+    page1: page1RouteRef,
+    pageX: pageXRouteRef,
+  },
+  externalRoutes: {
+    pageX: externalPageXRouteRef,
+  },
+  extensions: [IndexPage, Page1, ExternalPage],
 });

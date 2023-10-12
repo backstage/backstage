@@ -15,8 +15,7 @@
  */
 
 import React from 'react';
-import { Box, Grid, MenuItem, Select } from '@material-ui/core';
-import { useTheme } from '@material-ui/core/styles';
+import { Box, makeStyles, MenuItem, Select } from '@material-ui/core';
 import { useApi, storageApiRef } from '@backstage/core-plugin-api';
 import useAsync from 'react-use/lib/useAsync';
 import {
@@ -29,6 +28,20 @@ import { newRelicDashboardApiRef } from '../../../api';
 import { DashboardSnapshotSummary } from '../../../api/NewRelicDashboardApi';
 import useObservable from 'react-use/lib/useObservable';
 
+const useStyles = makeStyles(
+  theme => ({
+    cardSelect: {
+      margin: theme.spacing(2, 1, 0, 0),
+    },
+    img: {
+      width: '100%',
+      height: 'auto',
+      border: `solid 1px ${theme.palette.common.black}`,
+    },
+  }),
+  { name: 'BackstageNewRelicDashboardSnapshot' },
+);
+
 /**
  * @public
  */
@@ -37,11 +50,7 @@ export const DashboardSnapshot = (props: {
   name: string;
   permalink: string;
 }) => {
-  const {
-    palette: {
-      common: { black },
-    },
-  } = useTheme();
+  const classes = useStyles();
   const { guid, name, permalink } = props;
   const newRelicDashboardAPI = useApi(newRelicDashboardApiRef);
   const storageApi = useApi(storageApiRef).forBucket('newrelic-dashboard');
@@ -76,14 +85,15 @@ export const DashboardSnapshot = (props: {
       /\pdf$/i,
       'png',
     );
+
   return (
-    <Grid container>
-      <InfoCard
-        variant="gridItem"
-        title={name}
-        action={
+    <InfoCard
+      variant="gridItem"
+      title={name}
+      action={
+        <div>
           <Select
-            style={{ margin: '15px 10px 0 0' }}
+            className={classes.cardSelect}
             defaultValue={2592000000}
             value={storageSnapshot.value}
             onChange={event => {
@@ -97,24 +107,24 @@ export const DashboardSnapshot = (props: {
             <MenuItem value={604800000}>1 Week</MenuItem>
             <MenuItem value={2592000000}>1 Month</MenuItem>
           </Select>
-        }
-      >
-        <Box display="flex">
-          <Box flexGrow="1">
-            <Link to={permalink}>
-              {url ? (
-                <img
-                  alt={`${name} Dashbord`}
-                  style={{ border: `solid 1px ${black}` }}
-                  src={url}
-                />
-              ) : (
-                'Dashboard loading... , click here to open if it did not render correctly'
-              )}
-            </Link>
-          </Box>
+        </div>
+      }
+    >
+      <Box display="flex">
+        <Box flexGrow="1">
+          <Link to={permalink}>
+            {url ? (
+              <img
+                alt={`${name} Dashboard`}
+                className={classes.img}
+                src={url}
+              />
+            ) : (
+              'Dashboard loading... , click here to open if it did not render correctly'
+            )}
+          </Link>
         </Box>
-      </InfoCard>
-    </Grid>
+      </Box>
+    </InfoCard>
   );
 };

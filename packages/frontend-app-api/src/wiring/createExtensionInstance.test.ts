@@ -250,6 +250,92 @@ describe('createExtensionInstance', () => {
     );
   });
 
+  it('should refuse to create an instance with undeclared inputs', () => {
+    expect(() =>
+      createExtensionInstance({
+        attachments: new Map([
+          [
+            'declared',
+            [
+              createExtensionInstance({
+                attachments: new Map(),
+                config: { output: 'many1' },
+                extension: simpleExtension,
+              }),
+            ],
+          ],
+          [
+            'undeclared',
+            [
+              createExtensionInstance({
+                attachments: new Map(),
+                config: { output: 'many1' },
+                extension: simpleExtension,
+              }),
+            ],
+          ],
+        ]),
+        config: undefined,
+        extension: createExtension({
+          id: 'core.test',
+          attachTo: { id: 'ignored', input: 'ignored' },
+          inputs: {
+            declared: createExtensionInput({
+              test: testDataRef,
+            }),
+          },
+          output: {},
+          factory() {},
+        }),
+      }),
+    ).toThrow(
+      "Failed to instantiate extension 'core.test', received undeclared input 'undeclared' from extension 'core.test'",
+    );
+  });
+
+  it('should refuse to create an instance with multiple undeclared inputs', () => {
+    expect(() =>
+      createExtensionInstance({
+        attachments: new Map([
+          [
+            'undeclared1',
+            [
+              createExtensionInstance({
+                attachments: new Map(),
+                config: { output: 'many1' },
+                extension: simpleExtension,
+              }),
+            ],
+          ],
+          [
+            'undeclared2',
+            [
+              createExtensionInstance({
+                attachments: new Map(),
+                config: { output: 'many1' },
+                extension: simpleExtension,
+              }),
+              createExtensionInstance({
+                attachments: new Map(),
+                config: { output: 'many1' },
+                extension: simpleExtension,
+              }),
+            ],
+          ],
+        ]),
+        config: undefined,
+        extension: createExtension({
+          id: 'core.test',
+          attachTo: { id: 'ignored', input: 'ignored' },
+          output: {},
+          factory() {},
+        }),
+      }),
+    ).toThrow(
+      "Failed to instantiate extension 'core.test', received undeclared inputs 'undeclared1' from extension 'core.test' and 'undeclared2' from extensions 'core.test', 'core.test'",
+    );
+  });
+
   it('should refuse to create an instance with multiple inputs for required singleton', () => {
     expect(() =>
       createExtensionInstance({

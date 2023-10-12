@@ -1,5 +1,17 @@
 # @backstage/plugin-graphiql
 
+## 0.2.55-next.2
+
+### Patch Changes
+
+- 9c9a9100b0: Internal refactor to avoid using the deprecated `.icon.svg` extension.
+- 06432f900c: Updated `/alpha` exports to use new `attachTo` option.
+- Updated dependencies
+  - @backstage/frontend-plugin-api@0.2.0-next.2
+  - @backstage/core-components@0.13.6-next.2
+  - @backstage/core-plugin-api@1.7.0-next.1
+  - @backstage/theme@0.4.3-next.0
+
 ## 0.2.55-next.1
 
 ### Patch Changes
