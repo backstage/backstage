@@ -27,7 +27,12 @@ describe('ExternalRouteRef', () => {
     const internal = toInternalExternalRouteRef(routeRef);
     expect(internal.getParams()).toEqual([]);
     expect(internal.optional).toBe(false);
-    expect(String(internal)).toBe('routeRef{type=external,id=my-route-ref}');
+
+    expect(String(internal)).toMatch(
+      /^ExternalRouteRef\{created at '.*ExternalRouteRef\.test\.ts.*'\}$/,
+    );
+    internal.setId('some-id');
+    expect(String(internal)).toBe('ExternalRouteRef{some-id}');
   });
 
   it('should be created as optional', () => {

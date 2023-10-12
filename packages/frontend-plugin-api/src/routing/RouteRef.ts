@@ -88,20 +88,24 @@ export class RouteRefImpl implements InternalRouteRef {
     return `created at '${this.#creationSite}'`;
   }
 
+  get #name() {
+    return this.$$type.slice('@backstage/'.length);
+  }
+
   setId(id: string): void {
     if (!id) {
-      throw new Error('RouteRef id must be a non-empty string');
+      throw new Error(`${this.#name} id must be a non-empty string`);
     }
     if (this.#id) {
       throw new Error(
-        `RouteRef was referenced twice as both '${this.#id}' and '${id}'`,
+        `${this.#name} was referenced twice as both '${this.#id}' and '${id}'`,
       );
     }
     this.#id = id;
   }
 
   toString(): string {
-    return `RouteRef{${this.getDescription()}}`;
+    return `${this.#name}{${this.getDescription()}}`;
   }
 }
 
@@ -126,9 +130,8 @@ export function createRouteRef<
     ? TParams
     : { [param in TParamKeys]: string }
 > {
-  const creationSite = describeParentCallSite();
   return new RouteRefImpl(
     config?.params as string[] | undefined,
-    creationSite,
+    describeParentCallSite(),
   ) as RouteRef<any>;
 }

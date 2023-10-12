@@ -14,6 +14,8 @@
  * limitations under the License.
  */
 
+import { RouteRefImpl } from './RouteRef';
+import { describeParentCallSite } from './describeParentCallSite';
 import { AnyRouteParams } from './types';
 
 /**
@@ -41,6 +43,9 @@ export interface InternalExternalRouteRef<
 > extends ExternalRouteRef<TParams, TOptional> {
   readonly version: 'v1';
   getParams(): string[];
+  getDescription(): string;
+
+  setId(id: string): void;
 }
 
 /** @internal */
@@ -66,26 +71,18 @@ export function isExternalRouteRef(opaque: {
 }
 
 /** @internal */
-export class ExternalRouteRefImpl implements InternalExternalRouteRef {
-  readonly $$type = '@backstage/ExternalRouteRef';
-  readonly version = 'v1';
+class ExternalRouteRefImpl
+  extends RouteRefImpl
+  implements InternalExternalRouteRef
+{
+  readonly $$type = '@backstage/ExternalRouteRef' as any;
 
-  #params: string[];
-
-  constructor(readonly optional: boolean, readonly params: string[] = []) {
-    this.#params = params;
-  }
-
-  get T(): never {
-    throw new Error(`tried to read ExternalRouteRef.T of ${this}`);
-  }
-
-  getParams(): string[] {
-    return this.#params;
-  }
-
-  toString(): string {
-    return `ExternalRouteRef{}`;
+  constructor(
+    readonly optional: boolean,
+    readonly params: string[] = [],
+    creationSite: string,
+  ) {
+    super(params, creationSite);
   }
 }
 
@@ -129,5 +126,6 @@ export function createExternalRouteRef<
   return new ExternalRouteRefImpl(
     Boolean(options?.optional),
     options?.params as string[] | undefined,
+    describeParentCallSite(),
   ) as ExternalRouteRef<any, any>;
 }
