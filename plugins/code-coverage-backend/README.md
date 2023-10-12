@@ -67,7 +67,7 @@ diff --git a/packages/backend/src/index.ts b/packages/backend/src/index.ts
    apiRouter.use(notFoundHandler());
 ```
 
-## New Backend System
+### New Backend System
 
 The code coverage backend plugin has support for the [new backend system](https://backstage.io/docs/backend-system/), here's how you can set that up:
 
