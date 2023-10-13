@@ -136,8 +136,8 @@ describe('migrations', () => {
 
       await expect(knex('search')).resolves.toEqual(
         expect.arrayContaining([
-          { entity_id: 'i', key: 'k1', value: 'v1' },
-          { entity_id: 'i', key: 'k2', value: null },
+          { entity_id: 'i', id: expect.anything(), key: 'k1', value: 'v1' },
+          { entity_id: 'i', id: expect.anything(), key: 'k2', value: null },
         ]),
       );
 
