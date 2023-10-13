@@ -17,13 +17,14 @@
 import { OktaAuthProvider } from './provider';
 import * as helpers from '../../lib/passport/PassportStrategyHelper';
 import { OAuthResult } from '../../lib/oauth';
-import { AuthResolverContext } from '../types';
+import { AuthResolverContext, OAuthStartResponse } from '../types';
 
 jest.mock('../../lib/passport/PassportStrategyHelper', () => {
   return {
     executeFrameHandlerStrategy: jest.fn(),
     executeRefreshTokenStrategy: jest.fn(),
     executeFetchUserProfileStrategy: jest.fn(),
+    executeRedirectStrategy: jest.fn(),
   };
 });
 
@@ -33,6 +34,11 @@ const mockFrameHandler = jest.spyOn(
 ) as unknown as jest.MockedFunction<
   () => Promise<{ result: OAuthResult; privateInfo: any }>
 >;
+
+const mockRedirectStrategy = jest.spyOn(
+  helpers,
+  'executeRedirectStrategy',
+) as unknown as jest.MockedFunction<() => Promise<OAuthStartResponse>>;
 
 describe('createOktaProvider', () => {
   it('should auth', async () => {
@@ -96,5 +102,41 @@ describe('createOktaProvider', () => {
         displayName: 'Conrad',
       },
     });
+  });
+
+  it('should pass a custom scope to start and refresh requests', async () => {
+    const mockScope = 'openid profile email offline_access groups';
+    const reqScope = 'openid profile email offline_access';
+    const provider = new OktaAuthProvider({
+      resolverContext: {} as AuthResolverContext,
+      authHandler: async ({ fullProfile }) => ({
+        profile: {
+          email: fullProfile.emails![0]!.value,
+          displayName: fullProfile.displayName,
+        },
+      }),
+      audience: 'http://example.com',
+      clientId: 'mock',
+      clientSecret: 'mock',
+      callbackUrl: 'mock',
+      scope: mockScope,
+    });
+
+    mockRedirectStrategy.mockResolvedValueOnce({
+      url: 'http://example.com/',
+    });
+
+    const req: any = {
+      state: {
+        nonce: 'nonce',
+        env: 'development',
+      },
+      scope: reqScope,
+    };
+
+    await provider.start(req);
+    const mockCallScope = (mockRedirectStrategy.mock.calls[0] as any)?.[2]
+      ?.scope;
+    expect(mockCallScope).toBe(mockScope);
   });
 });
