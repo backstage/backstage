@@ -13,9 +13,7 @@ import { Dispatch } from 'react';
 import { Extension } from '@backstage/core-plugin-api';
 import { FieldExtensionComponent } from '@backstage/plugin-scaffolder-react';
 import { FieldExtensionOptions } from '@backstage/plugin-scaffolder-react';
-import { FieldProps } from '@rjsf/core';
 import { FieldValidation } from '@rjsf/utils';
-import { FieldValidation as FieldValidation_2 } from '@rjsf/core';
 import { FormProps } from '@backstage/plugin-scaffolder-react';
 import { IconComponent } from '@backstage/core-plugin-api';
 import { JsonObject } from '@backstage/types';
@@ -26,6 +24,7 @@ import { default as React_2 } from 'react';
 import { ReactElement } from 'react';
 import { ReactNode } from 'react';
 import { ReviewStepProps } from '@backstage/plugin-scaffolder-react';
+import { ScaffolderRJSFFieldProps } from '@backstage/plugin-scaffolder-react';
 import { ScaffolderRJSFFormProps } from '@backstage/plugin-scaffolder-react';
 import { ScaffolderStep } from '@backstage/plugin-scaffolder-react';
 import { ScaffolderTaskOutput } from '@backstage/plugin-scaffolder-react';
@@ -86,7 +85,7 @@ export type FormValidation = {
 // @alpha
 export type LegacyCustomFieldValidator<TFieldReturnValue> = (
   data: TFieldReturnValue,
-  field: FieldValidation_2,
+  field: FieldValidation,
   context: {
     apiHolder: ApiHolder;
   },
@@ -96,9 +95,9 @@ export type LegacyCustomFieldValidator<TFieldReturnValue> = (
 export interface LegacyFieldExtensionComponentProps<
   TFieldReturnValue,
   TUiOptions = unknown,
-> extends FieldProps<TFieldReturnValue> {
+> extends ScaffolderRJSFFieldProps<TFieldReturnValue> {
   // (undocumented)
-  uiSchema: FieldProps['uiSchema'] & {
+  uiSchema: ScaffolderRJSFFieldProps['uiSchema'] & {
     'ui:options'?: TUiOptions;
   };
 }

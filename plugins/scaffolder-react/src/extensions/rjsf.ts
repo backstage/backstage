@@ -33,7 +33,7 @@ import {
   ErrorTransformer,
 } from '@rjsf/utils';
 import { HTMLAttributes } from 'react';
-import Form, { IChangeEvent } from '@rjsf/core-v5';
+import Form, { IChangeEvent } from '@rjsf/core';
 
 /**
  * The props for the `Field` components

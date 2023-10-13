@@ -8,7 +8,7 @@
 import { ComponentType } from 'react';
 import { Entity } from '@backstage/catalog-model';
 import { FieldExtensionOptions } from '@backstage/plugin-scaffolder-react';
-import type { FormProps as FormProps_2 } from '@rjsf/core-v5';
+import type { FormProps as FormProps_2 } from '@rjsf/core';
 import { FormProps as FormProps_3 } from '@backstage/plugin-scaffolder-react';
 import { JSX as JSX_2 } from 'react';
 import { LayoutOptions } from '@backstage/plugin-scaffolder-react';

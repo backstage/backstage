@@ -36,6 +36,7 @@ import { transformSchemaToProps } from './schema';
 import cloneDeep from 'lodash/cloneDeep';
 import * as fieldOverrides from './FieldOverrides';
 import { ReviewStep } from './ReviewStep';
+import validator from '@rjsf/validator-ajv8';
 import { extractSchemaFromStep } from '@backstage/plugin-scaffolder-react/alpha';
 import { selectedTemplateRouteRef } from '../../routes';
 import {
@@ -180,6 +181,7 @@ export const MultistepJsonForm = (props: MultistepJsonFormProps) => {
               </StepLabel>
               <StepContent key={title}>
                 <Form
+                  validator={validator}
                   showErrorList={false}
                   fields={{ ...fieldOverrides, ...fields }}
                   widgets={widgets}

@@ -162,7 +162,7 @@ export const TemplatePage = ({
               <MultistepJsonForm
                 ReviewStepComponent={ReviewStepComponent}
                 formData={formState}
-                fields={customFieldComponents}
+                fields={customFieldComponents as any}
                 onChange={handleChange}
                 onReset={handleFormReset}
                 onFinish={handleCreate}

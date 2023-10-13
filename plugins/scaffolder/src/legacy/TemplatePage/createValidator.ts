@@ -15,7 +15,7 @@
  */
 
 import { LegacyCustomFieldValidator } from '@backstage/plugin-scaffolder-react/alpha';
-import { FormValidation } from '@rjsf/core';
+import { FieldValidation, FormValidation } from '@rjsf/utils';
 import { JsonObject, JsonValue } from '@backstage/types';
 import { ApiHolder } from '@backstage/core-plugin-api';
 
@@ -56,7 +56,7 @@ export const createValidator = (
             if (fieldName && typeof validators[fieldName] === 'function') {
               validators[fieldName]!(
                 propData as JsonObject[],
-                propValidation,
+                propValidation as FieldValidation,
                 context,
               );
             }
