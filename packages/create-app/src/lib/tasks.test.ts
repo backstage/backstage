@@ -103,6 +103,7 @@ describe('tasks', () => {
 
   const mockDir = createMockDirectory();
 
+  const origCwd = process.cwd();
   const realChdir = process.chdir;
   // If anyone calls chdir then make it resolve within the tmpdir
   const mockChdir = jest.spyOn(process, 'chdir');
@@ -128,6 +129,10 @@ describe('tasks', () => {
   afterEach(() => {
     mockExec.mockRestore();
     mockChdir.mockReset();
+  });
+
+  afterAll(() => {
+    realChdir(origCwd);
   });
 
   describe('checkAppExistsTask', () => {

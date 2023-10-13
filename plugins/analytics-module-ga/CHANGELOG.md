@@ -1,5 +1,16 @@
 # @backstage/plugin-analytics-module-ga
 
+## 0.1.34-next.2
+
+### Patch Changes
+
+- 0b55f773a7: Removed some unused dependencies
+- Updated dependencies
+  - @backstage/core-components@0.13.6-next.2
+  - @backstage/core-plugin-api@1.7.0-next.1
+  - @backstage/theme@0.4.3-next.0
+  - @backstage/config@1.1.1-next.0
+
 ## 0.1.34-next.1
 
 ### Patch Changes

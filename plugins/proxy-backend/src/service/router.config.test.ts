@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { getVoidLogger, SingleHostDiscovery } from '@backstage/backend-common';
+import { getVoidLogger, HostDiscovery } from '@backstage/backend-common';
 import {
   ConfigSources,
   MutableConfigSource,
@@ -87,7 +87,7 @@ describe('createRouter reloadable configuration', () => {
       ]),
     );
 
-    const discovery = SingleHostDiscovery.fromConfig(config);
+    const discovery = HostDiscovery.fromConfig(config);
     const router = await createRouter({
       config,
       logger,
