@@ -774,14 +774,14 @@ export function createWaitAction(options?: {
 
 // @public
 export type CreateWorkerOptions = {
-  taskBroker: TaskBroker;
+  taskBroker: TaskBroker_2;
   actionRegistry: TemplateActionRegistry;
   integrations: ScmIntegrations;
   workingDirectory: string;
   logger: Logger;
-  additionalTemplateFilters?: Record<string, TemplateFilter>;
+  additionalTemplateFilters?: Record<string, TemplateFilter_2>;
   concurrentTasksLimit?: number;
-  additionalTemplateGlobals?: Record<string, TemplateGlobal>;
+  additionalTemplateGlobals?: Record<string, TemplateGlobal_2>;
   permissions?: PermissionEvaluator;
 };
 
@@ -876,9 +876,9 @@ export interface RouterOptions {
   // (undocumented)
   actions?: TemplateAction_2<any, any>[];
   // (undocumented)
-  additionalTemplateFilters?: Record<string, TemplateFilter>;
+  additionalTemplateFilters?: Record<string, TemplateFilter_2>;
   // (undocumented)
-  additionalTemplateGlobals?: Record<string, TemplateGlobal>;
+  additionalTemplateGlobals?: Record<string, TemplateGlobal_2>;
   // (undocumented)
   catalogClient: CatalogApi;
   concurrentTasksLimit?: number;
@@ -901,7 +901,7 @@ export interface RouterOptions {
   // (undocumented)
   scheduler?: PluginTaskScheduler;
   // (undocumented)
-  taskBroker?: TaskBroker;
+  taskBroker?: TaskBroker_2;
   // @deprecated (undocumented)
   taskWorkers?: number;
 }
@@ -1045,7 +1045,7 @@ export class TaskWorker {
   // (undocumented)
   protected onReadyToClaimTask(): Promise<void>;
   // (undocumented)
-  runOneTask(task: TaskContext): Promise<void>;
+  runOneTask(task: TaskContext_2): Promise<void>;
   // (undocumented)
   start(): void;
 }
