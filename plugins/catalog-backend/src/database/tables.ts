@@ -143,6 +143,7 @@ export type DbFinalEntitiesRow = {
 };
 
 export type DbSearchRow = {
+  id?: string;
   entity_id: string;
   key: string;
   original_value: string | null;
