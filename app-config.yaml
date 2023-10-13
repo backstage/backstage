@@ -304,6 +304,14 @@ scaffolder:
   #   email: scaffolder@backstage.io
   # Use to customize the default commit message when new components are created
   # defaultCommitMessage: 'Initial commit'
+  #
+  # Use to run check on stale tasks every minute. By default, it is '*/5 * * * *', what means to run every 5 minutes.
+  # staleTasks:
+  #   cron: * * * * *
+  #
+  # Use to consider the task stale when no task heartbeat during 2 minutes. By default, it is 24 hours.
+  # staleTasks:
+  #   timeout: 120 # seconds
 
 auth:
   ### Add auth.keyStore.provider to more granularly control how to store JWK data when running

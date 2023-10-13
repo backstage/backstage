@@ -48,11 +48,14 @@ import Router from 'express-promise-router';
 import { validate } from 'jsonschema';
 import { Logger } from 'winston';
 import { z } from 'zod';
-import { TemplateFilter, TemplateGlobal } from '../lib';
+import {
+  TaskBroker,
+  TemplateFilter,
+  TemplateGlobal,
+} from '@backstage/plugin-scaffolder-node';
 import {
   createBuiltinActions,
   DatabaseTaskStore,
-  TaskBroker,
   TaskWorker,
   TemplateActionRegistry,
 } from '../scaffolder';
@@ -256,11 +259,18 @@ export async function createRouter(
     if (scheduler && databaseTaskStore.listStaleTasks) {
       await scheduler.scheduleTask({
         id: 'close_stale_tasks',
-        frequency: { cron: '*/5 * * * *' }, // every 5 minutes, also supports Duration
+        frequency: {
+          cron:
+            options.config.getOptionalString('scaffolder.staleTasks.cron') ??
+            '*/5 * * * *',
+        }, // every 5 minutes, also supports Duration
         timeout: { minutes: 15 },
         fn: async () => {
           const { tasks } = await databaseTaskStore.listStaleTasks({
-            timeoutS: 86400,
+            timeoutS:
+              options.config.getOptionalNumber(
+                'scaffolder.staleTasks.timeout',
+              ) ?? 86400,
           });
 
           for (const task of tasks) {
