@@ -60,6 +60,7 @@ export type OktaAuthProviderOptions = OAuthProviderOptions & {
   signInResolver?: SignInResolver<OAuthResult>;
   authHandler: AuthHandler<OAuthResult>;
   resolverContext: AuthResolverContext;
+  scope?: string;
 };
 
 export class OktaAuthProvider implements OAuthHandlers {
@@ -67,6 +68,7 @@ export class OktaAuthProvider implements OAuthHandlers {
   private readonly signInResolver?: SignInResolver<OAuthResult>;
   private readonly authHandler: AuthHandler<OAuthResult>;
   private readonly resolverContext: AuthResolverContext;
+  private readonly scope: string;
 
   /**
    * Due to passport-okta-oauth forcing options.state = true,
@@ -89,6 +91,7 @@ export class OktaAuthProvider implements OAuthHandlers {
     this.signInResolver = options.signInResolver;
     this.authHandler = options.authHandler;
     this.resolverContext = options.resolverContext;
+    this.scope = options.scope || 'openid email profile offline_access';
 
     this.strategy = new OktaStrategy(
       {
@@ -129,7 +132,7 @@ export class OktaAuthProvider implements OAuthHandlers {
     return await executeRedirectStrategy(req, this.strategy, {
       accessType: 'offline',
       prompt: 'consent',
-      scope: req.scope,
+      scope: this.scope,
       state: encodeState(req.state),
     });
   }
@@ -151,7 +154,7 @@ export class OktaAuthProvider implements OAuthHandlers {
       await executeRefreshTokenStrategy(
         this.strategy,
         req.refreshToken,
-        req.scope,
+        this.scope,
       );
 
     const fullProfile = await executeFetchUserProfileStrategy(
@@ -230,6 +233,7 @@ export const okta = createAuthProviderIntegration({
         const callbackUrl =
           customCallbackUrl ||
           `${globalConfig.baseUrl}/${providerId}/handler/frame`;
+        const scope = envConfig.getOptionalString('scope');
 
         // This is a safe assumption as `passport-okta-oauth` uses the audience
         // as the base for building the authorization, token, and user info URLs.
@@ -254,6 +258,7 @@ export const okta = createAuthProviderIntegration({
           authHandler,
           signInResolver: options?.signIn?.resolver,
           resolverContext,
+          scope,
         });
 
         return OAuthAdapter.fromConfig(globalConfig, provider, {
