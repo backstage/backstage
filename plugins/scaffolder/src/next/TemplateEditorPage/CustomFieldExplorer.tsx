@@ -148,7 +148,6 @@ export const CustomFieldExplorer = ({
           <CardContent>
             <Form
               showErrorList={false}
-              // @ts-ignore
               fields={{ ...fieldComponents }}
               noHtml5Validate
               formData={fieldFormState}
