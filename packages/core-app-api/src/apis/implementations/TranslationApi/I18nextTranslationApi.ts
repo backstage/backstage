@@ -241,7 +241,6 @@ export class I18nextTranslationApi implements TranslationApi {
 
     return new ObservableImpl<TranslationSnapshot<TMessages>>(subscriber => {
       let loadTicket = {}; // To check for stale loads
-      let lastSnapshotWasReady = false;
 
       const loadResource = () => {
         loadTicket = {};
@@ -250,8 +249,7 @@ export class I18nextTranslationApi implements TranslationApi {
           () => {
             if (ticket === loadTicket) {
               const snapshot = this.#createSnapshot(internalRef);
-              if (snapshot.ready || lastSnapshotWasReady) {
-                lastSnapshotWasReady = snapshot.ready;
+              if (snapshot.ready) {
                 subscriber.next(snapshot);
               }
             }
@@ -266,12 +264,9 @@ export class I18nextTranslationApi implements TranslationApi {
 
       const onChange = () => {
         const snapshot = this.#createSnapshot(internalRef);
-        if (lastSnapshotWasReady && !snapshot.ready) {
-          lastSnapshotWasReady = snapshot.ready;
+        if (snapshot.ready) {
           subscriber.next(snapshot);
-        }
-
-        if (!snapshot.ready) {
+        } else {
           loadResource();
         }
       };

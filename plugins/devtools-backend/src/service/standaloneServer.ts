@@ -16,7 +16,7 @@
 
 import {
   ServerTokenManager,
-  SingleHostDiscovery,
+  HostDiscovery,
   createServiceBuilder,
   loadBackendConfig,
 } from '@backstage/backend-common';
@@ -37,7 +37,7 @@ export async function startStandaloneServer(
 ): Promise<Server> {
   const logger = options.logger.child({ service: 'devtools-backend-backend' });
   const config = await loadBackendConfig({ logger, argv: process.argv });
-  const discovery = SingleHostDiscovery.fromConfig(config);
+  const discovery = HostDiscovery.fromConfig(config);
   const tokenManager = ServerTokenManager.fromConfig(config, {
     logger,
   });

@@ -525,6 +525,39 @@ techdocs:
 This way, all iframes where the host in the src attribute is in the
 `sanitizer.allowedIframeHosts` list will be displayed.
 
+## How to render PlantUML diagram in TechDocs
+
+PlantUML allows you to create diagrams from plain text language. Each diagram description begins with the keyword - (@startXYZ and @endXYZ, depending on the kind of diagram). For UML Diagrams, Keywords @startuml & @enduml should be used. Further details for all types of diagrams can be found at [PlantUML Language Reference Guide](https://plantuml.com/guide).
+
+### UML Diagram Details:-
+
+#### Embedded PlantUML Diagram Example
+
+Here, the markdown file itself contains the diagram description.
+
+````md
+```plantuml
+@startuml
+title Login Sequence
+    ComponentA->ComponentB: Login Request
+    note right of ComponentB: ComponentB logs message
+    ComponentB->ComponentA: Login Response
+@enduml
+```
+````
+
+#### Referenced PlantUML Diagram Example
+
+Here, the markdown file refers to another file (_.puml or _.pu) which contains the diagram description.
+
+````md
+```plantuml
+!include umldiagram.puml
+```
+````
+
+Note: To refer external diagram files, we need to include the diagrams directory in the path. Please refer [`Dockerfile`](https://github.com/backstage/techdocs-container/blob/main/Dockerfile) for details.
+
 ## How to add Mermaid support in TechDocs
 
 To add `Mermaid` support in TechDocs, you can use [`kroki`](https://kroki.io)

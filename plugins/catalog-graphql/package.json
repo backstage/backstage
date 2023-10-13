@@ -1,6 +1,6 @@
 {
   "name": "@backstage/plugin-catalog-graphql",
-  "description": "An experimental Backstage catalog GraphQL module",
+  "description": "Deprecated, consider using @frontside/backstage-plugin-graphql-backend instead",
   "version": "0.3.24-next.0",
   "main": "src/index.ts",
   "types": "src/index.ts",
