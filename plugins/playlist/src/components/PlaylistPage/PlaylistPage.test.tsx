@@ -109,8 +109,8 @@ describe('PlaylistPage', () => {
 
     act(() => {
       fireEvent.click(rendered.getByTestId('playlist-page-follow-button'));
-      testPlaylist.isFollowing = true;
     });
+    testPlaylist.isFollowing = true;
 
     await waitFor(() => {
       expect(playlistApi.followPlaylist).toHaveBeenCalledWith('id1');
@@ -124,8 +124,8 @@ describe('PlaylistPage', () => {
 
     act(() => {
       fireEvent.click(rendered.getByTestId('playlist-page-follow-button'));
-      testPlaylist.isFollowing = false;
     });
+    testPlaylist.isFollowing = false;
 
     await waitFor(() => {
       expect(playlistApi.unfollowPlaylist).toHaveBeenCalledWith('id1');

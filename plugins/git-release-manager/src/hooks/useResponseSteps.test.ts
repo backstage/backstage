@@ -74,7 +74,7 @@ describe('useResponseSteps', () => {
             "icon": "failure",
             "message": <b>
               Something went wrong
-
+               
               <WithStyles(ForwardRef(Typography))
                 aria-label="fire"
                 component="span"
@@ -108,7 +108,7 @@ describe('useResponseSteps', () => {
             "icon": "failure",
             "message": <b>
               Something went wrong
-
+               
               <WithStyles(ForwardRef(Typography))
                 aria-label="fire"
                 component="span"

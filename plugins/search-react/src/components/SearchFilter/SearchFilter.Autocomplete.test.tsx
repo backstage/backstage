@@ -15,7 +15,7 @@
  */
 
 import { MockConfigApi, TestApiProvider } from '@backstage/test-utils';
-import { screen, render, waitFor, within } from '@testing-library/react';
+import { screen, render, waitFor, within, act } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import React from 'react';
 
@@ -364,7 +364,7 @@ describe('SearchFilter.Autocomplete', () => {
       });
 
       // Blur the field and only one tag should be shown with a +1.
-      input.blur();
+      await act(() => userEvent.tab());
       expect(
         screen.queryByRole('button', { name: values[0] }),
       ).not.toBeInTheDocument();

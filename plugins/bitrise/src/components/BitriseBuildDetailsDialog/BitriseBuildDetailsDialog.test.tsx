@@ -15,9 +15,10 @@
  */
 
 import React from 'react';
-import { render } from '@testing-library/react';
+import { act, render } from '@testing-library/react';
 import { BitriseBuildDetailsDialog } from './BitriseBuildDetailsDialog';
 import { BitriseBuildResult } from '../../api/bitriseApi.model';
+import userEvent from '@testing-library/user-event';
 
 jest.mock('../BitriseArtifactsComponent', () => ({
   BitriseArtifactsComponent: (_props: { build: string }) => <>VISIBLE</>,
@@ -48,7 +49,7 @@ describe('BitriseArtifactsComponent', () => {
 
     expect(rendered.queryByText('VISIBLE')).not.toBeInTheDocument();
 
-    btn.click();
+    await act(() => userEvent.click(btn));
 
     expect(rendered.getByText('VISIBLE')).toBeInTheDocument();
   });

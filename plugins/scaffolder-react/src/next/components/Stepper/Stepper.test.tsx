@@ -273,12 +273,12 @@ describe('Stepper', () => {
       />,
     );
 
-    await act(async () => {
-      await fireEvent.click(getByRole('button', { name: 'Review' }));
-
-      expect(getByRole('progressbar')).toBeInTheDocument();
-      expect(getByRole('button', { name: 'Review' })).toBeDisabled();
+    act(() => {
+      fireEvent.click(getByRole('button', { name: 'Review' }));
     });
+
+    expect(getByRole('progressbar')).toBeInTheDocument();
+    expect(getByRole('button', { name: 'Review' })).toBeDisabled();
   });
 
   it('should transform default error message', async () => {

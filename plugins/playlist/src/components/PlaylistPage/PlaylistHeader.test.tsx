@@ -192,6 +192,8 @@ describe('PlaylistHeader', () => {
 
     act(() => {
       fireEvent.click(rendered.getByTestId('header-action-menu'));
+    });
+    act(() => {
       fireEvent.click(
         rendered
           .getAllByTestId('header-action-item')
@@ -224,11 +226,15 @@ describe('PlaylistHeader', () => {
 
     act(() => {
       fireEvent.click(rendered.getByTestId('header-action-menu'));
+    });
+    act(() => {
       fireEvent.click(
         rendered
           .getAllByTestId('header-action-item')
           .find(e => e.innerHTML.includes('Delete Playlist'))!,
       );
+    });
+    act(() => {
       fireEvent.click(rendered.getByTestId('delete-playlist-dialog-button'));
     });
 

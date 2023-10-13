@@ -110,6 +110,8 @@ describe('<CreatePlaylistButton/>', () => {
 
     act(() => {
       fireEvent.click(rendered.getByRole('button'));
+    });
+    act(() => {
       fireEvent.click(rendered.getByTestId('mock-playlist-edit-dialog'));
     });
 
@@ -128,6 +130,8 @@ describe('<CreatePlaylistButton/>', () => {
 
     act(() => {
       fireEvent.click(rendered.getByRole('button'));
+    });
+    act(() => {
       fireEvent.click(rendered.getByTestId('mock-playlist-edit-dialog'));
     });
 
