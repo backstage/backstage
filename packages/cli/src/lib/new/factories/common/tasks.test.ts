@@ -15,32 +15,37 @@
  */
 
 import fs from 'fs-extra';
-import mockFs from 'mock-fs';
 import { sep } from 'path';
-import { createMockOutputStream, mockPaths } from './testUtils';
+import {
+  createMockOutputStream,
+  expectLogsToMatch,
+  mockPaths,
+} from './testUtils';
 import { CreateContext } from '../../types';
 import { executePluginPackageTemplate } from './tasks';
+import { createMockDirectory } from '@backstage/backend-test-utils';
+
+const mockDir = createMockDirectory();
 
 mockPaths({
-  ownDir: '/own',
-  targetRoot: '/root',
+  ownDir: mockDir.resolve('own'),
+  targetRoot: mockDir.resolve('root'),
 });
 
 describe('executePluginPackageTemplate', () => {
   afterEach(() => {
-    mockFs.restore();
     jest.resetAllMocks();
   });
 
   it('should execute template', async () => {
-    mockFs({
-      '/root': {
+    mockDir.setContent({
+      root: {
         'yarn.lock': `
 some-package@^1.1.0:
   version "1.5.0"
 `,
       },
-      '/own': {
+      own: {
         templates: {
           'test-template': {
             'package.json.hbs': `
@@ -78,7 +83,7 @@ some-package@^1.1.0:
       } as CreateContext,
       {
         templateName: 'test-template',
-        targetDir: '/target',
+        targetDir: mockDir.resolve('target'),
         values: {
           id: 'testing',
           makePrivate: true,
@@ -87,7 +92,7 @@ some-package@^1.1.0:
     );
 
     expect(modified).toBe(true);
-    expect(output).toEqual([
+    expectLogsToMatch(output, [
       'Checking Prerequisites:',
       `availability  ..${sep}target`,
       'creating      temp dir',
@@ -98,7 +103,8 @@ some-package@^1.1.0:
       'Installing:',
       `moving        ..${sep}target`,
     ]);
-    await expect(fs.readFile('/target/package.json', 'utf8')).resolves.toBe(`{
+    await expect(fs.readFile(mockDir.resolve('target/package.json'), 'utf8'))
+      .resolves.toBe(`{
   "name": "my-testing-plugin",
   "private": true,
   "description": "testing",
@@ -109,10 +115,10 @@ some-package@^1.1.0:
 }
 `);
     await expect(
-      fs.readFile('/target/subdir/templated.txt', 'utf8'),
+      fs.readFile(mockDir.resolve('target/subdir/templated.txt'), 'utf8'),
     ).resolves.toBe('Hello testing!');
     await expect(
-      fs.readFile('/target/subdir/not-templated.txt', 'utf8'),
+      fs.readFile(mockDir.resolve('target/subdir/not-templated.txt'), 'utf8'),
     ).resolves.toBe('Hello {{id}}!');
   });
 });
