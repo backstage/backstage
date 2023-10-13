@@ -48,7 +48,7 @@
     "xterm-addon-fit": "^0.8.0"
   },
   "peerDependencies": {
-    "react": "^16.13.1 || ^17 || ^18"
+    "react": "^16.13.1 || ^17.0.0 || ^18.0.0"
   },
   "devDependencies": {
     "@backstage/cli": "workspace:^",
