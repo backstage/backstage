@@ -14,10 +14,7 @@
  * limitations under the License.
  */
 
-let ReactDOM:
-  | typeof import('react-dom')
-  // TODO: replace with import('react-dom/client') when repo is migrated to 18
-  | { createRoot(el: HTMLElement): { render(el: JSX.Element): void } };
+let ReactDOM: typeof import('react-dom') | typeof import('react-dom/client');
 if (process.env.HAS_REACT_DOM_CLIENT) {
   ReactDOM = require('react-dom/client');
 } else {
