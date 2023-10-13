@@ -15,7 +15,7 @@
  */
 
 import { TemplateEntityV1beta3 } from '@backstage/plugin-scaffolder-common';
-import type { FormProps as SchemaFormProps } from '@rjsf/core-v5';
+import type { FormProps as SchemaFormProps } from '@rjsf/core';
 import { UiSchema } from '@rjsf/utils';
 import { JsonObject } from '@backstage/types';
 

@@ -15,7 +15,7 @@
  */
 
 import { repoPickerValidation } from './validation';
-import { FieldValidation } from '@rjsf/core';
+import { FieldValidation } from '@rjsf/utils';
 import { ScmIntegrations } from '@backstage/integration';
 import { ConfigReader } from '@backstage/core-app-api';
 import { ApiHolder } from '@backstage/core-plugin-api';

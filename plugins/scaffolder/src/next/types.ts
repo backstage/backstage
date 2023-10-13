@@ -20,7 +20,7 @@
  * It exists already in the `scaffolder-react` plugin, so you may have to update both files.
  */
 
-import type { FormProps as SchemaFormProps } from '@rjsf/core-v5';
+import type { FormProps as SchemaFormProps } from '@rjsf/core';
 
 /**
  * Any `@rjsf/core` form properties that are publicly exposed to the `NextScaffolderPage`

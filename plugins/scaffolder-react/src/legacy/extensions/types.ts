@@ -14,8 +14,11 @@
  * limitations under the License.
  */
 import { ApiHolder } from '@backstage/core-plugin-api';
-import { FieldValidation, FieldProps } from '@rjsf/core';
-import { CustomFieldExtensionSchema } from '@backstage/plugin-scaffolder-react';
+import { FieldValidation } from '@rjsf/utils';
+import {
+  CustomFieldExtensionSchema,
+  ScaffolderRJSFFieldProps,
+} from '@backstage/plugin-scaffolder-react';
 
 /**
  * Field validation type for Custom Field Extensions.
@@ -55,8 +58,8 @@ export type LegacyFieldExtensionOptions<
 export interface LegacyFieldExtensionComponentProps<
   TFieldReturnValue,
   TUiOptions = unknown,
-> extends FieldProps<TFieldReturnValue> {
-  uiSchema: FieldProps['uiSchema'] & {
+> extends ScaffolderRJSFFieldProps<TFieldReturnValue> {
+  uiSchema: ScaffolderRJSFFieldProps['uiSchema'] & {
     'ui:options'?: TUiOptions;
   };
 }
