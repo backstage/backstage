@@ -79,8 +79,7 @@ describe('RepoUrlPicker', () => {
               schema={{ type: 'string' }}
               uiSchema={{ 'ui:field': 'RepoUrlPicker' }}
               fields={{
-                RepoUrlPicker:
-                  RepoUrlPicker as ScaffolderRJSFField<string> as ScaffolderRJSFField<string>,
+                RepoUrlPicker: RepoUrlPicker as ScaffolderRJSFField<string>,
               }}
               onSubmit={onSubmit}
             />
