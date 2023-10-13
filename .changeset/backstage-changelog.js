@@ -16,7 +16,7 @@
 
 const {
   default: defaultChangelogFunctions,
-} = require('@changesets/cli/changelog');
+} = require('@changesets/changelog-github');
 
 // Custom CHANGELOG generation for changesets, stolen from here with one minor change:
 // https://github.com/atlassian/changesets/blob/main/packages/cli/src/changelog/index.ts
