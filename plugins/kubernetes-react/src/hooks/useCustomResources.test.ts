@@ -16,7 +16,7 @@
 
 import { useCustomResources } from './useCustomResources';
 import { Entity } from '@backstage/catalog-model';
-import { renderHook } from '@testing-library/react';
+import { act, renderHook, waitFor } from '@testing-library/react';
 import { useApi } from '@backstage/core-plugin-api';
 import { CustomResourceMatcher } from '@backstage/plugin-kubernetes-common';
 import { generateAuth } from './auth';
@@ -97,13 +97,13 @@ describe('useCustomResources', () => {
       getCustomObjectsByEntity:
         mockGetCustomObjectsByEntity.mockResolvedValue(mockResponse),
     });
-    const { result, waitForNextUpdate } = renderHook(() =>
+    const { result } = renderHook(() =>
       useCustomResources(entity, customResourceMatchers),
     );
 
     expect(result.current.loading).toEqual(true);
 
-    await waitForNextUpdate();
+    await act(async () => {});
 
     expect(result.current.error).toBeUndefined();
     expect(result.current.loading).toEqual(false);
@@ -117,20 +117,20 @@ describe('useCustomResources', () => {
       getCustomObjectsByEntity:
         mockGetCustomObjectsByEntity.mockResolvedValue(mockResponse),
     });
-    const { result, waitForNextUpdate } = renderHook(() =>
+    const { result } = renderHook(() =>
       useCustomResources(entity, customResourceMatchers, 100),
     );
 
-    await waitForNextUpdate();
+    await act(async () => {});
     expect(result.current.error).toBeUndefined();
 
-    await waitForNextUpdate();
+    await waitFor(() => {
+      expectMocksCalledCorrectly(2);
+    });
 
     expect(result.current.error).toBeUndefined();
     expect(result.current.loading).toEqual(false);
     expect(result.current.kubernetesObjects).toStrictEqual(mockResponse);
-
-    expectMocksCalledCorrectly(2);
   });
   it('should return error when getObjectsByEntity throws', async () => {
     mockGenerateAuth.mockResolvedValue(entityWithAuthToken.auth);
@@ -139,11 +139,11 @@ describe('useCustomResources', () => {
         message: 'some error',
       }),
     });
-    const { result, waitForNextUpdate } = renderHook(() =>
+    const { result } = renderHook(() =>
       useCustomResources(entity, customResourceMatchers),
     );
 
-    await waitForNextUpdate();
+    await act(async () => {});
 
     expect(result.current.error).toBe('some error');
     expect(result.current.loading).toEqual(false);
@@ -162,17 +162,19 @@ describe('useCustomResources', () => {
           mockGetCustomObjectsByEntity.mockResolvedValue(mockResponse),
       });
 
-      const { result, waitForNextUpdate } = renderHook(() =>
+      const { result } = renderHook(() =>
         useCustomResources(entity, customResourceMatchers, 100),
       );
 
-      await waitForNextUpdate();
+      await act(async () => {});
 
       expect(result.current.error).toBe('generateAuth failed');
       expect(result.current.loading).toEqual(false);
       expect(result.current.kubernetesObjects).toBeUndefined();
 
-      await waitForNextUpdate();
+      await waitFor(() => {
+        expect(result.current.error).toBeUndefined();
+      });
 
       expect(result.current.error).toBeUndefined();
       expect(result.current.loading).toEqual(false);
@@ -186,17 +188,19 @@ describe('useCustomResources', () => {
           .mockResolvedValue(mockResponse),
       });
 
-      const { result, waitForNextUpdate } = renderHook(() =>
+      const { result } = renderHook(() =>
         useCustomResources(entity, customResourceMatchers, 100),
       );
 
-      await waitForNextUpdate();
+      await act(async () => {});
 
       expect(result.current.error).toBe('failed to fetch');
       expect(result.current.loading).toEqual(false);
       expect(result.current.kubernetesObjects).toBeUndefined();
 
-      await waitForNextUpdate();
+      await waitFor(() => {
+        expect(result.current.error).toBeUndefined();
+      });
 
       expect(result.current.error).toBeUndefined();
       expect(result.current.loading).toEqual(false);
@@ -212,17 +216,19 @@ describe('useCustomResources', () => {
           mockGetCustomObjectsByEntity.mockResolvedValue(mockResponse),
       });
 
-      const { result, waitForNextUpdate } = renderHook(() =>
+      const { result } = renderHook(() =>
         useCustomResources(entity, customResourceMatchers, 100),
       );
 
-      await waitForNextUpdate();
+      await act(async () => {});
 
       expect(result.current.error).toBeUndefined();
       expect(result.current.loading).toEqual(false);
       expect(result.current.kubernetesObjects).not.toBeUndefined();
 
-      await waitForNextUpdate();
+      await waitFor(() => {
+        expect(result.current.error).toBeDefined();
+      });
 
       expect(result.current.error).toBe('generateAuth failed');
       expect(result.current.loading).toEqual(false);
@@ -236,17 +242,19 @@ describe('useCustomResources', () => {
           .mockRejectedValue({ message: 'failed to fetch' }),
       });
 
-      const { result, waitForNextUpdate } = renderHook(() =>
+      const { result } = renderHook(() =>
         useCustomResources(entity, customResourceMatchers, 100),
       );
 
-      await waitForNextUpdate();
+      await act(async () => {});
 
       expect(result.current.error).toBeUndefined();
       expect(result.current.loading).toEqual(false);
       expect(result.current.kubernetesObjects).not.toBeUndefined();
 
-      await waitForNextUpdate();
+      await waitFor(() => {
+        expect(result.current.error).toBeDefined();
+      });
 
       expect(result.current.error).toBe('failed to fetch');
       expect(result.current.loading).toEqual(false);

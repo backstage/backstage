@@ -31,13 +31,13 @@ const entity = { metadata: { name: 'my-entity' }, kind: 'MyKind' } as Entity;
 
 describe('useEntity', () => {
   it('should throw if no entity is provided', async () => {
-    const { result } = renderHook(() => useEntity(), {
-      wrapper: ({ children }: React.PropsWithChildren<{}>) => (
-        <EntityProvider children={children} />
-      ),
-    });
-
-    expect(result.error?.message).toMatch(/entity has not been loaded/);
+    expect(() =>
+      renderHook(() => useEntity(), {
+        wrapper: ({ children }: React.PropsWithChildren<{}>) => (
+          <EntityProvider children={children} />
+        ),
+      }),
+    ).toThrow(/entity has not been loaded/);
   });
 
   it('should provide an entity', async () => {

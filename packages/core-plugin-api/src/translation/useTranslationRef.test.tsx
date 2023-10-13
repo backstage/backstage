@@ -20,7 +20,7 @@ import {
   TestApiProvider,
   withLogCollector,
 } from '@backstage/test-utils';
-import { renderHook } from '@testing-library/react';
+import { act, renderHook } from '@testing-library/react';
 import { createTranslationRef, TranslationRef } from './TranslationRef';
 import { useTranslationRef } from './useTranslationRef';
 // eslint-disable-next-line @backstage/no-relative-monorepo-imports
@@ -91,14 +91,11 @@ describe('useTranslationRef', () => {
       ],
     });
 
-    const { result, waitForNextUpdate } = renderHook(
-      () => useTranslationRef(plainRef),
-      {
-        wrapper: makeWrapper(translationApi),
-      },
-    );
+    const { result } = renderHook(() => useTranslationRef(plainRef), {
+      wrapper: makeWrapper(translationApi),
+    });
 
-    await waitForNextUpdate();
+    await act(async () => {});
 
     const { t } = result.current;
 
@@ -123,12 +120,9 @@ describe('useTranslationRef', () => {
       ],
     });
 
-    const { result, waitForNextUpdate } = renderHook(
-      () => useTranslationRef(plainRef),
-      {
-        wrapper: makeWrapper(translationApi),
-      },
-    );
+    const { result } = renderHook(() => useTranslationRef(plainRef), {
+      wrapper: makeWrapper(translationApi),
+    });
 
     const { t } = result.current;
 
@@ -137,7 +131,7 @@ describe('useTranslationRef', () => {
 
     languageApi.setLanguage('de');
 
-    await waitForNextUpdate();
+    await act(async () => {});
 
     const { t: t2 } = result.current;
 
@@ -165,14 +159,11 @@ describe('useTranslationRef', () => {
       languageApi,
     });
 
-    const { result, waitForNextUpdate } = renderHook(
-      () => useTranslationRef(resourceRef),
-      {
-        wrapper: makeWrapper(translationApi),
-      },
-    );
+    const { result } = renderHook(() => useTranslationRef(resourceRef), {
+      wrapper: makeWrapper(translationApi),
+    });
 
-    await waitForNextUpdate();
+    await act(async () => {});
 
     const { t } = result.current;
 
@@ -212,7 +203,7 @@ describe('useTranslationRef', () => {
     });
 
     const { error } = await withLogCollector(['error'], async () => {
-      await rendered2.waitForNextUpdate();
+      await act(rendered2.rerender);
     });
 
     const msg =

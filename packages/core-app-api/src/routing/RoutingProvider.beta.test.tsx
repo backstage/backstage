@@ -353,9 +353,7 @@ describe('v1 consumer', () => {
         initialProps: {
           routeRef: routeRef1 as AnyRouteRef,
         },
-        wrapper: ({
-          children,
-        }: React.PropsWithChildren<{ routeRef: AnyRouteRef }>) => (
+        wrapper: ({ children }) => (
           <RoutingProvider
             routePaths={
               new Map<RouteRef<any>, string>([
