@@ -150,8 +150,7 @@ export const CustomFieldExplorer = ({
           <CardContent>
             <Form
               showErrorList={false}
-              // @ts-ignore
-              fields={{ ...fieldOverrides, ...fieldComponents }}
+              fields={{ ...fieldComponents }}
               noHtml5Validate
               formData={fieldFormState}
               formContext={{ fieldFormState }}
