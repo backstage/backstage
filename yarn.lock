@@ -13098,7 +13098,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@material-ui/pickers@npm:^3.2.10, @material-ui/pickers@npm:^3.3.10":
+"@material-ui/pickers@npm:3.3.11":
   version: 3.3.11
   resolution: "@material-ui/pickers@npm:3.3.11"
   dependencies:
@@ -13115,6 +13115,26 @@ __metadata:
     react: ^16.8.0 || ^17.0.0
     react-dom: ^16.8.0 || ^17.0.0
   checksum: c97822ae407877d1aa9ab7b14c335511d6879ca2546455ac7a3b156d70966b5678372a6d4d3470c2dced84e59857e2c1e1b2be61d26ab43f7f29806666f33064
+  languageName: node
+  linkType: hard
+
+"@material-ui/pickers@patch:@material-ui/pickers@npm%3A3.3.11#./.yarn/patches/@material-ui-pickers-npm-3.3.11-1c8f68ea20.patch::locator=root%40workspace%3A.":
+  version: 3.3.11
+  resolution: "@material-ui/pickers@patch:@material-ui/pickers@npm%3A3.3.11#./.yarn/patches/@material-ui-pickers-npm-3.3.11-1c8f68ea20.patch::version=3.3.11&hash=c18f79&locator=root%40workspace%3A."
+  dependencies:
+    "@babel/runtime": ^7.6.0
+    "@date-io/core": 1.x
+    "@types/styled-jsx": ^2.2.8
+    clsx: ^1.0.2
+    react-transition-group: ^4.0.0
+    rifm: ^0.7.0
+  peerDependencies:
+    "@date-io/core": ^1.3.6
+    "@material-ui/core": ^4.0.0
+    prop-types: ^15.6.0
+    react: ^16.8.0 || ^17.0.0
+    react-dom: ^16.8.0 || ^17.0.0
+  checksum: e736e4d53f1b660f4a338e8ca3537dc86638ed41ed988f42baebb18d35d5eab19e4b35952217a46032128639a9af59b354f78dbccc02d90971b844bc5a8cdcf0
   languageName: node
   linkType: hard
 
