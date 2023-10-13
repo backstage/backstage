@@ -25,6 +25,7 @@ import {
   createPageExtension,
 } from '@backstage/frontend-plugin-api';
 import { entityRouteRef } from '@backstage/plugin-catalog-react';
+import techdocsPlugin from '@backstage/plugin-techdocs/alpha';
 
 /*
 
@@ -67,6 +68,7 @@ const app = createApp({
     graphiqlPlugin,
     pagesPlugin,
     techRadarPlugin,
+    techdocsPlugin,
     userSettingsPlugin,
     createExtensionOverrides({
       extensions: [entityPageExtension],
