@@ -25,9 +25,8 @@ import {
 } from '@backstage/core-plugin-api';
 import { MATCH_ALL_ROUTE } from './collectors';
 
-const element = () => null;
 const rest = {
-  element,
+  element: null,
   caseSensitive: false,
   children: [MATCH_ALL_ROUTE],
   plugins: new Set<BackstagePlugin>(),

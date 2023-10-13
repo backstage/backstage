@@ -28,7 +28,7 @@ import {
   Select,
 } from '@material-ui/core';
 import CloseIcon from '@material-ui/icons/Close';
-import { withTheme } from '@rjsf/core';
+import { ISubmitEvent, withTheme } from '@rjsf/core';
 import { Theme as MuiTheme } from '@rjsf/material-ui';
 import CodeMirror from '@uiw/react-codemirror';
 import React, { useCallback, useMemo, useState } from 'react';
@@ -104,7 +104,7 @@ export const CustomFieldExplorer = ({
   }, [customFieldExtensions]);
 
   const handleSelectionChange = useCallback(
-    selection => {
+    (selection: FieldExtensionOptions) => {
       setSelectedField(selection);
       setFieldFormState({});
       setFormState({});
@@ -113,7 +113,7 @@ export const CustomFieldExplorer = ({
   );
 
   const handleFieldConfigChange = useCallback(
-    state => {
+    (state: {}) => {
       setFieldFormState(state);
       setFormState({});
       // Force TemplateEditorForm to re-render since some fields
@@ -134,7 +134,9 @@ export const CustomFieldExplorer = ({
             value={selectedField}
             label="Choose Custom Field Extension"
             labelId="select-field-label"
-            onChange={e => handleSelectionChange(e.target.value)}
+            onChange={e =>
+              handleSelectionChange(e.target.value as FieldExtensionOptions)
+            }
           >
             {fieldOptions.map((option, idx) => (
               <MenuItem key={idx} value={option as any}>
@@ -158,7 +160,9 @@ export const CustomFieldExplorer = ({
               noHtml5Validate
               formData={fieldFormState}
               formContext={{ fieldFormState }}
-              onSubmit={e => handleFieldConfigChange(e.formData)}
+              onSubmit={(e: ISubmitEvent<any>) =>
+                handleFieldConfigChange(e.formData)
+              }
               schema={selectedField.schema?.uiOptions || {}}
             >
               <Button

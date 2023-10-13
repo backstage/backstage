@@ -144,7 +144,7 @@ export interface DependencyGraphProps<NodeData, EdgeData>
    * {@link https://developer.mozilla.org/en-US/docs/Web/SVG/Element/defs | Defs} shared by rendered SVG to be used by
    * {@link DependencyGraphProps.renderNode} and/or {@link DependencyGraphProps.renderLabel}
    */
-  defs?: SVGDefsElement | SVGDefsElement[];
+  defs?: JSX.Element | JSX.Element[];
   /**
    * Controls zoom behavior of graph
    *

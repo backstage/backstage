@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { useEntity } from '@backstage/plugin-catalog-react';
+import { humanizeEntityRef, useEntity } from '@backstage/plugin-catalog-react';
 import { Box, Modal, makeStyles } from '@material-ui/core';
 import FolderIcon from '@material-ui/icons/Folder';
 import FileOutlinedIcon from '@material-ui/icons/InsertDriveFileOutlined';
@@ -181,7 +181,9 @@ export const FileExplorer = () => {
   }
   if (!value) {
     return (
-      <Alert severity="warning">No code coverage found for ${entity}</Alert>
+      <Alert severity="warning">
+        No code coverage found for {humanizeEntityRef(entity)}
+      </Alert>
     );
   }
 
