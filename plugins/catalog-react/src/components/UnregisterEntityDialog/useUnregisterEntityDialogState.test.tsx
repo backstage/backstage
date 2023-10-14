@@ -17,7 +17,7 @@
 import { CatalogApi, Location } from '@backstage/catalog-client';
 import { Entity, ANNOTATION_ORIGIN_LOCATION } from '@backstage/catalog-model';
 import { catalogApiRef } from '../../api';
-import { act, renderHook } from '@testing-library/react';
+import { renderHook, waitFor } from '@testing-library/react';
 import React from 'react';
 import { useUnregisterEntityDialogState } from './useUnregisterEntityDialogState';
 import { TestApiProvider } from '@backstage/test-utils';
@@ -87,16 +87,14 @@ describe('useUnregisterEntityDialogState', () => {
     resolveLocation({ type: 'url', target: 'https://example.com', id: 'x' });
     resolveColocatedEntities([entity]);
 
-    await act(async () => {
-      await rendered.rerender();
-    });
-
-    expect(rendered.result.current).toEqual({
-      type: 'unregister',
-      location: 'url:https://example.com',
-      colocatedEntities: [{ kind: 'Component', namespace: 'ns', name: 'n' }],
-      unregisterLocation: expect.any(Function),
-      deleteEntity: expect.any(Function),
+    await waitFor(() => {
+      expect(rendered.result.current).toEqual({
+        type: 'unregister',
+        location: 'url:https://example.com',
+        colocatedEntities: [{ kind: 'Component', namespace: 'ns', name: 'n' }],
+        unregisterLocation: expect.any(Function),
+        deleteEntity: expect.any(Function),
+      });
     });
   });
 
@@ -110,14 +108,13 @@ describe('useUnregisterEntityDialogState', () => {
 
     resolveLocation({ type: 'bootstrap', target: 'bootstrap', id: 'x' });
     resolveColocatedEntities([]);
-    await act(async () => {
-      await rendered.rerender();
-    });
 
-    expect(rendered.result.current).toEqual({
-      type: 'bootstrap',
-      location: 'bootstrap:bootstrap',
-      deleteEntity: expect.any(Function),
+    await waitFor(() => {
+      expect(rendered.result.current).toEqual({
+        type: 'bootstrap',
+        location: 'bootstrap:bootstrap',
+        deleteEntity: expect.any(Function),
+      });
     });
   });
 
@@ -130,13 +127,12 @@ describe('useUnregisterEntityDialogState', () => {
 
     resolveLocation(undefined);
     resolveColocatedEntities([]);
-    await act(async () => {
-      await rendered.rerender();
-    });
 
-    expect(rendered.result.current).toEqual({
-      type: 'only-delete',
-      deleteEntity: expect.any(Function),
+    await waitFor(() => {
+      expect(rendered.result.current).toEqual({
+        type: 'only-delete',
+        deleteEntity: expect.any(Function),
+      });
     });
   });
 
@@ -147,13 +143,12 @@ describe('useUnregisterEntityDialogState', () => {
 
     resolveLocation(undefined);
     resolveColocatedEntities([]);
-    await act(async () => {
-      await rendered.rerender();
-    });
 
-    expect(rendered.result.current).toEqual({
-      type: 'only-delete',
-      deleteEntity: expect.any(Function),
+    await waitFor(() => {
+      expect(rendered.result.current).toEqual({
+        type: 'only-delete',
+        deleteEntity: expect.any(Function),
+      });
     });
   });
 });
