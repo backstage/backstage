@@ -21,6 +21,7 @@ import {
 } from '@backstage/frontend-plugin-api';
 import { RouteRefsById } from './collectRouteIds';
 import { Config } from '@backstage/config';
+import { JsonObject } from '@backstage/types';
 
 /**
  * Extracts a union of the keys in a map whose value extends the given type
@@ -109,11 +110,7 @@ export function resolveRouteBindings(
     return result;
   }
 
-  const bindings = bindingsConfig.get();
-  if (bindings === null || typeof bindings !== 'object') {
-    throw new Error('Invalid config at app.routes.bindings, must be an object');
-  }
-
+  const bindings = bindingsConfig.get<JsonObject>();
   for (const [externalRefId, targetRefId] of Object.entries(bindings)) {
     if (typeof targetRefId !== 'string' || targetRefId === '') {
       throw new Error(
