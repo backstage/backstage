@@ -16,7 +16,7 @@
 import { CompoundEntityRef, Entity } from '@backstage/catalog-model';
 import { useGetEntities } from './useGetEntities';
 import { CatalogApi } from '@backstage/catalog-client';
-import { act, renderHook } from '@testing-library/react';
+import { renderHook, waitFor } from '@testing-library/react';
 import { getEntityRelations } from '@backstage/plugin-catalog-react';
 
 const givenParentGroup = 'team.squad1';
@@ -66,11 +66,14 @@ describe('useGetEntities', () => {
 
   describe('given aggregated relationsType', () => {
     const whenHookIsCalledWith = async (_entity: Entity) => {
-      renderHook(({ entity }) => useGetEntities(entity, 'aggregated'), {
-        initialProps: { entity: _entity },
-      });
+      const { result } = renderHook(
+        ({ entity }) => useGetEntities(entity, 'aggregated'),
+        {
+          initialProps: { entity: _entity },
+        },
+      );
 
-      await act(async () => {});
+      await waitFor(() => expect(result.current.loading).toBe(false));
     };
 
     beforeEach(() => {
@@ -204,11 +207,14 @@ describe('useGetEntities', () => {
 
   describe('given direct relationsType', () => {
     const whenHookIsCalledWith = async (_entity: Entity) => {
-      renderHook(({ entity }) => useGetEntities(entity, 'direct'), {
-        initialProps: { entity: _entity },
-      });
+      const { result } = renderHook(
+        ({ entity }) => useGetEntities(entity, 'direct'),
+        {
+          initialProps: { entity: _entity },
+        },
+      );
 
-      await act(async () => {});
+      await waitFor(() => expect(result.current.loading).toBe(false));
     };
 
     it('given group entity should return directly owned entities', async () => {

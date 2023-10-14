@@ -60,9 +60,9 @@ describe('useStarredEntities', () => {
       wrapper,
     });
 
-    await act(async () => {});
-
-    expect(result.current.starredEntities.size).toBe(0);
+    await waitFor(() => {
+      expect(result.current.starredEntities.size).toBe(0);
+    });
   });
 
   it('should return a set with the current items', async () => {
@@ -75,19 +75,17 @@ describe('useStarredEntities', () => {
       wrapper,
     });
 
-    await act(async () => {});
-
-    for (const item of expectedIds) {
-      expect(result.current.starredEntities.has(item)).toBeTruthy();
-    }
+    await waitFor(() => {
+      for (const item of expectedIds) {
+        expect(result.current.starredEntities.has(item)).toBeTruthy();
+      }
+    });
   });
 
   it('should listen to changes when the storage is set elsewhere', async () => {
     const { result } = renderHook(() => useStarredEntities(), {
       wrapper,
     });
-
-    await act(async () => {});
 
     expect(result.current.starredEntities.size).toBe(0);
     expect(result.current.isStarredEntity(mockEntity)).toBeFalsy();

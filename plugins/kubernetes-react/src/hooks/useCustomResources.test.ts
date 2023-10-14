@@ -16,7 +16,7 @@
 
 import { useCustomResources } from './useCustomResources';
 import { Entity } from '@backstage/catalog-model';
-import { act, renderHook, waitFor } from '@testing-library/react';
+import { renderHook, waitFor } from '@testing-library/react';
 import { useApi } from '@backstage/core-plugin-api';
 import { CustomResourceMatcher } from '@backstage/plugin-kubernetes-common';
 import { generateAuth } from './auth';
@@ -103,11 +103,11 @@ describe('useCustomResources', () => {
 
     expect(result.current.loading).toEqual(true);
 
-    await act(async () => {});
-
-    expect(result.current.error).toBeUndefined();
-    expect(result.current.loading).toEqual(false);
-    expect(result.current.kubernetesObjects).toStrictEqual(mockResponse);
+    await waitFor(() => {
+      expect(result.current.error).toBeUndefined();
+      expect(result.current.loading).toEqual(false);
+      expect(result.current.kubernetesObjects).toStrictEqual(mockResponse);
+    });
 
     expectMocksCalledCorrectly();
   });
@@ -121,16 +121,13 @@ describe('useCustomResources', () => {
       useCustomResources(entity, customResourceMatchers, 100),
     );
 
-    await act(async () => {});
-    expect(result.current.error).toBeUndefined();
-
     await waitFor(() => {
+      expect(result.current.error).toBeUndefined();
+      expect(result.current.loading).toEqual(false);
+      expect(result.current.kubernetesObjects).toStrictEqual(mockResponse);
+
       expectMocksCalledCorrectly(2);
     });
-
-    expect(result.current.error).toBeUndefined();
-    expect(result.current.loading).toEqual(false);
-    expect(result.current.kubernetesObjects).toStrictEqual(mockResponse);
   });
   it('should return error when getObjectsByEntity throws', async () => {
     mockGenerateAuth.mockResolvedValue(entityWithAuthToken.auth);
@@ -143,13 +140,13 @@ describe('useCustomResources', () => {
       useCustomResources(entity, customResourceMatchers),
     );
 
-    await act(async () => {});
+    await waitFor(() => {
+      expect(result.current.error).toBe('some error');
+      expect(result.current.loading).toEqual(false);
+      expect(result.current.kubernetesObjects).toBeUndefined();
 
-    expect(result.current.error).toBe('some error');
-    expect(result.current.loading).toEqual(false);
-    expect(result.current.kubernetesObjects).toBeUndefined();
-
-    expectMocksCalledCorrectly();
+      expectMocksCalledCorrectly();
+    });
   });
 
   describe('when retrying', () => {
@@ -166,19 +163,17 @@ describe('useCustomResources', () => {
         useCustomResources(entity, customResourceMatchers, 100),
       );
 
-      await act(async () => {});
-
-      expect(result.current.error).toBe('generateAuth failed');
-      expect(result.current.loading).toEqual(false);
-      expect(result.current.kubernetesObjects).toBeUndefined();
+      await waitFor(() => {
+        expect(result.current.error).toBe('generateAuth failed');
+        expect(result.current.loading).toEqual(false);
+        expect(result.current.kubernetesObjects).toBeUndefined();
+      });
 
       await waitFor(() => {
         expect(result.current.error).toBeUndefined();
+        expect(result.current.loading).toEqual(false);
+        expect(result.current.kubernetesObjects).not.toBeUndefined();
       });
-
-      expect(result.current.error).toBeUndefined();
-      expect(result.current.loading).toEqual(false);
-      expect(result.current.kubernetesObjects).not.toBeUndefined();
     });
 
     it('should reset error after getCustomObjectsByEntity has failed and then succeeded', async () => {
@@ -192,19 +187,17 @@ describe('useCustomResources', () => {
         useCustomResources(entity, customResourceMatchers, 100),
       );
 
-      await act(async () => {});
-
-      expect(result.current.error).toBe('failed to fetch');
-      expect(result.current.loading).toEqual(false);
-      expect(result.current.kubernetesObjects).toBeUndefined();
+      await waitFor(() => {
+        expect(result.current.error).toBe('failed to fetch');
+        expect(result.current.loading).toEqual(false);
+        expect(result.current.kubernetesObjects).toBeUndefined();
+      });
 
       await waitFor(() => {
         expect(result.current.error).toBeUndefined();
+        expect(result.current.loading).toEqual(false);
+        expect(result.current.kubernetesObjects).not.toBeUndefined();
       });
-
-      expect(result.current.error).toBeUndefined();
-      expect(result.current.loading).toEqual(false);
-      expect(result.current.kubernetesObjects).not.toBeUndefined();
     });
 
     it('should reset data after generateAuth succeeded then failed', async () => {
@@ -220,19 +213,17 @@ describe('useCustomResources', () => {
         useCustomResources(entity, customResourceMatchers, 100),
       );
 
-      await act(async () => {});
-
-      expect(result.current.error).toBeUndefined();
-      expect(result.current.loading).toEqual(false);
-      expect(result.current.kubernetesObjects).not.toBeUndefined();
-
       await waitFor(() => {
-        expect(result.current.error).toBeDefined();
+        expect(result.current.error).toBeUndefined();
+        expect(result.current.loading).toEqual(false);
+        expect(result.current.kubernetesObjects).not.toBeUndefined();
       });
 
-      expect(result.current.error).toBe('generateAuth failed');
-      expect(result.current.loading).toEqual(false);
-      expect(result.current.kubernetesObjects).toBeUndefined();
+      await waitFor(() => {
+        expect(result.current.error).toBe('generateAuth failed');
+        expect(result.current.loading).toEqual(false);
+        expect(result.current.kubernetesObjects).toBeUndefined();
+      });
     });
 
     it('should reset data after getCustomObjectsByEntity succeeded then failed', async () => {
@@ -246,19 +237,17 @@ describe('useCustomResources', () => {
         useCustomResources(entity, customResourceMatchers, 100),
       );
 
-      await act(async () => {});
-
-      expect(result.current.error).toBeUndefined();
-      expect(result.current.loading).toEqual(false);
-      expect(result.current.kubernetesObjects).not.toBeUndefined();
-
       await waitFor(() => {
-        expect(result.current.error).toBeDefined();
+        expect(result.current.error).toBeUndefined();
+        expect(result.current.loading).toEqual(false);
+        expect(result.current.kubernetesObjects).not.toBeUndefined();
       });
 
-      expect(result.current.error).toBe('failed to fetch');
-      expect(result.current.loading).toEqual(false);
-      expect(result.current.kubernetesObjects).toBeUndefined();
+      await waitFor(() => {
+        expect(result.current.error).toBe('failed to fetch');
+        expect(result.current.loading).toEqual(false);
+        expect(result.current.kubernetesObjects).toBeUndefined();
+      });
     });
   });
 });

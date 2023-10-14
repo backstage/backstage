@@ -299,16 +299,16 @@ describe('useReaderState', () => {
         contentReload: expect.any(Function),
       });
 
-      await act(async () => {});
-
-      expect(result.current).toEqual({
-        state: 'CONTENT_FRESH',
-        path: '/example',
-        content: 'my content',
-        contentErrorMessage: undefined,
-        syncErrorMessage: undefined,
-        buildLog: [],
-        contentReload: expect.any(Function),
+      await waitFor(() => {
+        expect(result.current).toEqual({
+          state: 'CONTENT_FRESH',
+          path: '/example',
+          content: 'my content',
+          contentErrorMessage: undefined,
+          syncErrorMessage: undefined,
+          buildLog: [],
+          contentReload: expect.any(Function),
+        });
       });
 
       expect(techdocsStorageApi.getEntityDocs).toHaveBeenCalledWith(
@@ -357,42 +357,45 @@ describe('useReaderState', () => {
         contentReload: expect.any(Function),
       });
 
-      await waitFor(() => expect(result.current.state).toBe('INITIAL_BUILD'), {
-        timeout: 2000,
+      await waitFor(
+        () => {
+          expect(result.current).toEqual({
+            state: 'INITIAL_BUILD',
+            path: '/example',
+            content: undefined,
+            contentErrorMessage: 'NotFoundError: Page Not Found',
+            syncErrorMessage: undefined,
+            buildLog: ['Line 1', 'Line 2'],
+            contentReload: expect.any(Function),
+          });
+        },
+        {
+          timeout: 2000,
+        },
+      );
+
+      await waitFor(() => {
+        expect(result.current).toEqual({
+          state: 'CHECKING',
+          path: '/example',
+          content: undefined,
+          contentErrorMessage: undefined,
+          syncErrorMessage: undefined,
+          buildLog: [],
+          contentReload: expect.any(Function),
+        });
       });
 
-      expect(result.current).toEqual({
-        state: 'INITIAL_BUILD',
-        path: '/example',
-        content: undefined,
-        contentErrorMessage: 'NotFoundError: Page Not Found',
-        syncErrorMessage: undefined,
-        buildLog: ['Line 1', 'Line 2'],
-        contentReload: expect.any(Function),
-      });
-
-      await waitFor(() => expect(result.current.state).toBe('CHECKING'));
-
-      expect(result.current).toEqual({
-        state: 'CHECKING',
-        path: '/example',
-        content: undefined,
-        contentErrorMessage: undefined,
-        syncErrorMessage: undefined,
-        buildLog: [],
-        contentReload: expect.any(Function),
-      });
-
-      await waitFor(() => expect(result.current.state).toBe('CONTENT_FRESH'));
-
-      expect(result.current).toEqual({
-        state: 'CONTENT_FRESH',
-        path: '/example',
-        content: 'my content',
-        contentErrorMessage: undefined,
-        syncErrorMessage: undefined,
-        buildLog: [],
-        contentReload: expect.any(Function),
+      await waitFor(() => {
+        expect(result.current).toEqual({
+          state: 'CONTENT_FRESH',
+          path: '/example',
+          content: 'my content',
+          contentErrorMessage: undefined,
+          syncErrorMessage: undefined,
+          buildLog: [],
+          contentReload: expect.any(Function),
+        });
       });
 
       expect(techdocsStorageApi.getEntityDocs).toHaveBeenCalledTimes(2);
@@ -444,43 +447,42 @@ describe('useReaderState', () => {
       });
 
       // the content is returned but the sync is in progress
-      await waitFor(() => expect(result.current.state).toBe('CONTENT_FRESH'));
-      expect(result.current).toEqual({
-        state: 'CONTENT_FRESH',
-        path: '/example',
-        content: 'my content',
-        contentErrorMessage: undefined,
-        syncErrorMessage: undefined,
-        buildLog: ['Line 1', 'Line 2'],
-        contentReload: expect.any(Function),
+      await waitFor(() => {
+        expect(result.current).toEqual({
+          state: 'CONTENT_FRESH',
+          path: '/example',
+          content: 'my content',
+          contentErrorMessage: undefined,
+          syncErrorMessage: undefined,
+          buildLog: ['Line 1', 'Line 2'],
+          contentReload: expect.any(Function),
+        });
       });
 
       // the sync takes longer than 1 seconds so the refreshing state starts
-      await waitFor(() =>
-        expect(result.current.state).toBe('CONTENT_STALE_REFRESHING'),
-      );
-      expect(result.current).toEqual({
-        state: 'CONTENT_STALE_REFRESHING',
-        path: '/example',
-        content: 'my content',
-        contentErrorMessage: undefined,
-        syncErrorMessage: undefined,
-        buildLog: ['Line 1', 'Line 2'],
-        contentReload: expect.any(Function),
+      await waitFor(() => {
+        expect(result.current).toEqual({
+          state: 'CONTENT_STALE_REFRESHING',
+          path: '/example',
+          content: 'my content',
+          contentErrorMessage: undefined,
+          syncErrorMessage: undefined,
+          buildLog: ['Line 1', 'Line 2'],
+          contentReload: expect.any(Function),
+        });
       });
 
       // the content is updated but not yet displayed
-      await waitFor(() =>
-        expect(result.current.state).toBe('CONTENT_STALE_READY'),
-      );
-      expect(result.current).toEqual({
-        state: 'CONTENT_STALE_READY',
-        path: '/example',
-        content: 'my content',
-        contentErrorMessage: undefined,
-        syncErrorMessage: undefined,
-        buildLog: ['Line 1', 'Line 2'],
-        contentReload: expect.any(Function),
+      await waitFor(() => {
+        expect(result.current).toEqual({
+          state: 'CONTENT_STALE_READY',
+          path: '/example',
+          content: 'my content',
+          contentErrorMessage: undefined,
+          syncErrorMessage: undefined,
+          buildLog: ['Line 1', 'Line 2'],
+          contentReload: expect.any(Function),
+        });
       });
 
       // reload the content
@@ -489,30 +491,35 @@ describe('useReaderState', () => {
       });
 
       // the new content refresh is triggered
-      await waitFor(() => expect(result.current.state).toBe('CHECKING'));
-      expect(result.current).toEqual({
-        state: 'CHECKING',
-        path: '/example',
-        content: 'my content',
-        contentErrorMessage: undefined,
-        syncErrorMessage: undefined,
-        buildLog: [],
-        contentReload: expect.any(Function),
+      await waitFor(() => {
+        expect(result.current).toEqual({
+          state: 'CHECKING',
+          path: '/example',
+          content: 'my content',
+          contentErrorMessage: undefined,
+          syncErrorMessage: undefined,
+          buildLog: [],
+          contentReload: expect.any(Function),
+        });
       });
 
       // the new content is loaded
-      await waitFor(() => expect(result.current.state).toBe('CONTENT_FRESH'), {
-        timeout: 2000,
-      });
-      expect(result.current).toEqual({
-        state: 'CONTENT_FRESH',
-        path: '/example',
-        content: 'my new content',
-        contentErrorMessage: undefined,
-        syncErrorMessage: undefined,
-        buildLog: [],
-        contentReload: expect.any(Function),
-      });
+      await waitFor(
+        () => {
+          expect(result.current).toEqual({
+            state: 'CONTENT_FRESH',
+            path: '/example',
+            content: 'my new content',
+            contentErrorMessage: undefined,
+            syncErrorMessage: undefined,
+            buildLog: [],
+            contentReload: expect.any(Function),
+          });
+        },
+        {
+          timeout: 2000,
+        },
+      );
 
       expect(techdocsStorageApi.getEntityDocs).toHaveBeenCalledTimes(2);
       expect(techdocsStorageApi.getEntityDocs).toHaveBeenCalledWith(
@@ -556,58 +563,63 @@ describe('useReaderState', () => {
       });
 
       // show the content
-      await waitFor(() => expect(result.current.state).toBe('CONTENT_FRESH'));
-      expect(result.current).toEqual({
-        state: 'CONTENT_FRESH',
-        path: '/example',
-        content: 'my content',
-        contentErrorMessage: undefined,
-        syncErrorMessage: undefined,
-        buildLog: [],
-        contentReload: expect.any(Function),
+      await waitFor(() => {
+        expect(result.current).toEqual({
+          state: 'CONTENT_FRESH',
+          path: '/example',
+          content: 'my content',
+          contentErrorMessage: undefined,
+          syncErrorMessage: undefined,
+          buildLog: [],
+          contentReload: expect.any(Function),
+        });
       });
 
       // navigate
       rerender({ path: '/new' });
 
-      await waitFor(() => expect(result.current.state).toBe('CHECKING'));
-      expect(result.current).toEqual({
-        state: 'CHECKING',
-        path: '/example',
-        content: 'my content',
-        contentErrorMessage: undefined,
-        syncErrorMessage: undefined,
-        buildLog: [],
-        contentReload: expect.any(Function),
+      await waitFor(() => {
+        expect(result.current).toEqual({
+          state: 'CHECKING',
+          path: '/example',
+          content: 'my content',
+          contentErrorMessage: undefined,
+          syncErrorMessage: undefined,
+          buildLog: [],
+          contentReload: expect.any(Function),
+        });
       });
 
-      await waitFor(() => expect(result.current.state).toBe('CONTENT_FRESH'), {
-        timeout: 2000,
-      });
-      expect(result.current).toEqual({
-        state: 'CONTENT_FRESH',
-        path: '/new',
-        content: 'my new content',
-        contentErrorMessage: undefined,
-        syncErrorMessage: undefined,
-        buildLog: [],
-        contentReload: expect.any(Function),
-      });
+      await waitFor(
+        () => {
+          expect(result.current).toEqual({
+            state: 'CONTENT_FRESH',
+            path: '/new',
+            content: 'my new content',
+            contentErrorMessage: undefined,
+            syncErrorMessage: undefined,
+            buildLog: [],
+            contentReload: expect.any(Function),
+          });
+        },
+        {
+          timeout: 2000,
+        },
+      );
 
       // navigate
       rerender({ path: '/missing' });
 
-      await waitFor(() =>
-        expect(result.current.state).toBe('CONTENT_NOT_FOUND'),
-      );
-      expect(result.current).toEqual({
-        state: 'CONTENT_NOT_FOUND',
-        path: '/missing',
-        content: undefined,
-        contentErrorMessage: 'NotFoundError: Some error description',
-        syncErrorMessage: undefined,
-        buildLog: [],
-        contentReload: expect.any(Function),
+      await waitFor(() => {
+        expect(result.current).toEqual({
+          state: 'CONTENT_NOT_FOUND',
+          path: '/missing',
+          content: undefined,
+          contentErrorMessage: 'NotFoundError: Some error description',
+          syncErrorMessage: undefined,
+          buildLog: [],
+          contentReload: expect.any(Function),
+        });
       });
 
       expect(techdocsStorageApi.getEntityDocs).toHaveBeenCalledWith(
@@ -650,17 +662,16 @@ describe('useReaderState', () => {
       });
 
       // the content loading threw an error
-      await waitFor(() =>
-        expect(result.current.state).toBe('CONTENT_NOT_FOUND'),
-      );
-      expect(result.current).toEqual({
-        state: 'CONTENT_NOT_FOUND',
-        path: '/example',
-        content: undefined,
-        contentErrorMessage: 'NotFoundError: Some error description',
-        syncErrorMessage: undefined,
-        buildLog: [],
-        contentReload: expect.any(Function),
+      await waitFor(() => {
+        expect(result.current).toEqual({
+          state: 'CONTENT_NOT_FOUND',
+          path: '/example',
+          content: undefined,
+          contentErrorMessage: 'NotFoundError: Some error description',
+          syncErrorMessage: undefined,
+          buildLog: [],
+          contentReload: expect.any(Function),
+        });
       });
 
       expect(techdocsStorageApi.getEntityDocs).toHaveBeenCalledWith(

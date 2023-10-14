@@ -18,7 +18,7 @@ import { configApiRef, errorApiRef } from '@backstage/core-plugin-api';
 import { catalogApiRef } from '@backstage/plugin-catalog-react';
 import { TestApiProvider, MockConfigApi } from '@backstage/test-utils';
 import { TextField } from '@material-ui/core';
-import { act, render, screen, waitFor } from '@testing-library/react';
+import { render, screen, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import React from 'react';
 import { AnalyzeResult, catalogImportApiRef } from '../../api';
@@ -121,8 +121,6 @@ describe('<StepPrepareCreatePullRequest />', () => {
       },
     );
 
-    await act(async () => {});
-
     const title = await screen.findByText('My title');
     const description = await screen.findByText('body', {
       selector: 'strong',
@@ -169,7 +167,6 @@ describe('<StepPrepareCreatePullRequest />', () => {
         wrapper: Wrapper,
       },
     );
-    await act(async () => {});
 
     await userEvent.type(await screen.findByLabelText('name'), '-changed');
     await userEvent.type(await screen.findByLabelText('owner'), '-changed');
@@ -244,7 +241,6 @@ spec:
         wrapper: Wrapper,
       },
     );
-    await act(async () => {});
 
     await userEvent.click(
       await screen.findByRole('button', { name: /Create PR/i }),
@@ -281,7 +277,6 @@ spec:
         wrapper: Wrapper,
       },
     );
-    await act(async () => {});
 
     await waitFor(() => {
       expect(catalogApi.getEntities).toHaveBeenCalledTimes(1);

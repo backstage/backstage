@@ -20,7 +20,7 @@ import {
   TestApiProvider,
   withLogCollector,
 } from '@backstage/test-utils';
-import { act, renderHook } from '@testing-library/react';
+import { act, renderHook, waitFor } from '@testing-library/react';
 import { createTranslationRef, TranslationRef } from './TranslationRef';
 import { useTranslationRef } from './useTranslationRef';
 // eslint-disable-next-line @backstage/no-relative-monorepo-imports
@@ -95,12 +95,11 @@ describe('useTranslationRef', () => {
       wrapper: makeWrapper(translationApi),
     });
 
-    await act(async () => {});
-
-    const { t } = result.current;
-
-    expect(t('key1')).toBe('en1');
-    expect(t('key2')).toBe('en2');
+    await waitFor(() => {
+      const { t } = result.current;
+      expect(t('key1')).toBe('en1');
+      expect(t('key2')).toBe('en2');
+    });
   });
 
   it('should switch between languages', async () => {
@@ -124,19 +123,21 @@ describe('useTranslationRef', () => {
       wrapper: makeWrapper(translationApi),
     });
 
-    const { t } = result.current;
+    await waitFor(() => {
+      const { t } = result.current;
 
-    expect(t('key1')).toBe('default1');
-    expect(t('key2')).toBe('default2');
+      expect(t('key1')).toBe('default1');
+      expect(t('key2')).toBe('default2');
+    });
 
     languageApi.setLanguage('de');
 
-    await act(async () => {});
+    await waitFor(() => {
+      const { t: t2 } = result.current;
 
-    const { t: t2 } = result.current;
-
-    expect(t2('key1')).toBe('de1');
-    expect(t2('key2')).toBe('de2');
+      expect(t2('key1')).toBe('de1');
+      expect(t2('key2')).toBe('de2');
+    });
   });
 
   it('should load default resource', async () => {
@@ -163,12 +164,12 @@ describe('useTranslationRef', () => {
       wrapper: makeWrapper(translationApi),
     });
 
-    await act(async () => {});
+    await waitFor(() => {
+      const { t } = result.current;
 
-    const { t } = result.current;
-
-    expect(t('key1')).toBe('de1');
-    expect(t('key2')).toBe('de2');
+      expect(t('key1')).toBe('de1');
+      expect(t('key2')).toBe('de2');
+    });
   });
 
   it('should log once and then ignore loading errors', async () => {

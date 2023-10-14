@@ -171,7 +171,6 @@ describe('<EntityListProvider />', () => {
       wrapper: ({ children }) =>
         wrapper({ location: `/catalog?${query}`, children }),
     });
-    await act(async () => {});
 
     await waitFor(() => {
       expect(result.current.queryParameters).toBeTruthy();

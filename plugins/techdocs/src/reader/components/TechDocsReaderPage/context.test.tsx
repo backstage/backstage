@@ -15,7 +15,7 @@
  */
 
 import React from 'react';
-import { act, renderHook } from '@testing-library/react';
+import { renderHook, waitFor } from '@testing-library/react';
 
 import { ThemeProvider } from '@material-ui/core';
 
@@ -97,11 +97,11 @@ describe('context', () => {
     it('should return expected entity values', async () => {
       const { result } = renderHook(() => useEntityMetadata(), { wrapper });
 
-      await act(async () => {});
-
-      expect(result.current.value).toBeDefined();
-      expect(result.current.error).toBeUndefined();
-      expect(result.current.value).toMatchObject(mockEntityMetadata);
+      await waitFor(() => {
+        expect(result.current.value).toBeDefined();
+        expect(result.current.error).toBeUndefined();
+        expect(result.current.value).toMatchObject(mockEntityMetadata);
+      });
     });
   });
 
@@ -115,11 +115,11 @@ describe('context', () => {
     it('should return expected techdocs metadata values', async () => {
       const { result } = renderHook(() => useTechDocsMetadata(), { wrapper });
 
-      await act(async () => {});
-
-      expect(result.current.value).toBeDefined();
-      expect(result.current.error).toBeUndefined();
-      expect(result.current.value).toMatchObject(mockTechDocsMetadata);
+      await waitFor(() => {
+        expect(result.current.value).toBeDefined();
+        expect(result.current.error).toBeUndefined();
+        expect(result.current.value).toMatchObject(mockTechDocsMetadata);
+      });
     });
   });
 });

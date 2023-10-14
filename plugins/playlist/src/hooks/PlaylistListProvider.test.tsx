@@ -119,8 +119,8 @@ describe('<PlaylistListProvider />', () => {
     });
     await waitFor(() => {
       expect(result.current.backendPlaylists.length).toBe(2);
+      expect(mockPlaylistApi.getAllPlaylists).toHaveBeenCalled();
     });
-    expect(mockPlaylistApi.getAllPlaylists).toHaveBeenCalled();
   });
 
   it('resolves frontend filters', async () => {
@@ -155,14 +155,12 @@ describe('<PlaylistListProvider />', () => {
       wrapper: ({ children }) =>
         wrapper({ location: `/playlist?${query}`, children }),
     });
-    await act(async () => {});
 
     await waitFor(() => {
-      expect(result.current.queryParameters).toBeTruthy();
-    });
-    expect(result.current.queryParameters).toEqual({
-      personal: 'all',
-      owners: ['user:default/guest'],
+      expect(result.current.queryParameters).toEqual({
+        personal: 'all',
+        owners: ['user:default/guest'],
+      });
     });
   });
 

@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 import React from 'react';
-import { renderHook, act } from '@testing-library/react';
+import { renderHook, act, waitFor } from '@testing-library/react';
 
 import { ThemeProvider } from '@material-ui/core';
 
@@ -140,9 +140,9 @@ describe('useTechDocsReaderPage', () => {
       namespace: mockEntityMetadata.metadata.namespace?.toLocaleLowerCase(),
     };
     const { result } = renderHook(() => useTechDocsReaderPage(), { wrapper });
-    await act(async () => {});
-
-    expect(result.current.entityRef).toStrictEqual(lowercaseEntityRef);
+    await waitFor(() => {
+      expect(result.current.entityRef).toStrictEqual(lowercaseEntityRef);
+    });
   });
 
   it('entityRef is not modified when legacyUseCaseSensitiveTripletPaths is true', async () => {
@@ -159,23 +159,23 @@ describe('useTechDocsReaderPage', () => {
           config: { techdocs: { legacyUseCaseSensitiveTripletPaths: true } },
         }),
     });
-    await act(async () => {});
-
-    expect(result.current.entityRef).toStrictEqual(caseSensitiveEntityRef);
+    await waitFor(() => {
+      expect(result.current.entityRef).toStrictEqual(caseSensitiveEntityRef);
+    });
   });
 
   it('entityRef provided as analytics context', async () => {
     renderHook(() => useAnalytics().captureEvent('action', 'subject'), {
       wrapper,
     });
-    await act(async () => {});
-
-    expect(analyticsApiMock.getEvents()[0]).toMatchObject({
-      action: 'action',
-      subject: 'subject',
-      context: {
-        entityRef: 'component:default/test',
-      },
+    await waitFor(() => {
+      expect(analyticsApiMock.getEvents()[0]).toMatchObject({
+        action: 'action',
+        subject: 'subject',
+        context: {
+          entityRef: 'component:default/test',
+        },
+      });
     });
   });
 });

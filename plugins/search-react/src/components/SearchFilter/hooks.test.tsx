@@ -16,7 +16,7 @@
 import React from 'react';
 import { ApiProvider } from '@backstage/core-app-api';
 import { MockConfigApi, TestApiRegistry } from '@backstage/test-utils';
-import { act, renderHook } from '@testing-library/react';
+import { act, renderHook, waitFor } from '@testing-library/react';
 
 import { searchApiRef } from '../../api';
 import { SearchContextProvider, useSearch } from '../../context';
@@ -77,9 +77,9 @@ describe('SearchFilter.hooks', () => {
         },
       );
 
-      await act(async () => {});
-
-      expect(result.current.filters[expectedFilter]).toEqual(expectedValue);
+      await waitFor(() => {
+        expect(result.current.filters[expectedFilter]).toEqual(expectedValue);
+      });
     });
 
     it('should set non-empty array value', async () => {
@@ -95,9 +95,9 @@ describe('SearchFilter.hooks', () => {
         },
       );
 
-      await act(async () => {});
-
-      expect(result.current.filters[expectedFilter]).toEqual(expectedValue);
+      await waitFor(() => {
+        expect(result.current.filters[expectedFilter]).toEqual(expectedValue);
+      });
     });
 
     it('should not set undefined value', async () => {
@@ -121,9 +121,9 @@ describe('SearchFilter.hooks', () => {
         },
       );
 
-      await act(async () => {});
-
-      expect(result.current.filters[expectedFilter]).toEqual(expectedValue);
+      await waitFor(() => {
+        expect(result.current.filters[expectedFilter]).toEqual(expectedValue);
+      });
     });
 
     it('should not set null value', async () => {
@@ -147,9 +147,9 @@ describe('SearchFilter.hooks', () => {
         },
       );
 
-      await act(async () => {});
-
-      expect(result.current.filters[expectedFilter]).toEqual(expectedValue);
+      await waitFor(() => {
+        expect(result.current.filters[expectedFilter]).toEqual(expectedValue);
+      });
     });
 
     it('should not set empty string value', async () => {
@@ -173,9 +173,9 @@ describe('SearchFilter.hooks', () => {
         },
       );
 
-      await act(async () => {});
-
-      expect(result.current.filters[expectedFilter]).toEqual(expectedValue);
+      await waitFor(() => {
+        expect(result.current.filters[expectedFilter]).toEqual(expectedValue);
+      });
     });
 
     it('should not set empty array value', async () => {
@@ -199,9 +199,9 @@ describe('SearchFilter.hooks', () => {
         },
       );
 
-      await act(async () => {});
-
-      expect(result.current.filters[expectedFilter]).toEqual(expectedValue);
+      await waitFor(() => {
+        expect(result.current.filters[expectedFilter]).toEqual(expectedValue);
+      });
     });
 
     it('should not affect unrelated filters', async () => {
@@ -225,9 +225,9 @@ describe('SearchFilter.hooks', () => {
         },
       );
 
-      await act(async () => {});
-
-      expect(result.current.filters.unrelatedField).toEqual('unrelatedValue');
+      await waitFor(() => {
+        expect(result.current.filters.unrelatedField).toEqual('unrelatedValue');
+      });
     });
   });
 

@@ -89,9 +89,9 @@ describe('SearchContext', () => {
       wrapper: ({ children }) => wrapper({ children, initialState }),
     });
 
-    await act(async () => {});
-
-    expect(result.current).toEqual(true);
+    await waitFor(() => {
+      expect(result.current).toEqual(true);
+    });
   });
 
   describe('Uses initial state values', () => {
@@ -100,17 +100,17 @@ describe('SearchContext', () => {
         wrapper,
       });
 
-      await act(async () => {});
-
-      expect(result.current).toEqual(
-        expect.objectContaining({
-          term: '',
-          types: [],
-          filters: {},
-          pageLimit: undefined,
-          pageCursor: undefined,
-        }),
-      );
+      await waitFor(() => {
+        expect(result.current).toEqual(
+          expect.objectContaining({
+            term: '',
+            types: [],
+            filters: {},
+            pageLimit: undefined,
+            pageCursor: undefined,
+          }),
+        );
+      });
     });
 
     it('Uses provided initial state values', async () => {
@@ -118,9 +118,9 @@ describe('SearchContext', () => {
         wrapper: ({ children }) => wrapper({ children, initialState }),
       });
 
-      await act(async () => {});
-
-      expect(result.current).toEqual(expect.objectContaining(initialState));
+      await waitFor(() => {
+        expect(result.current).toEqual(expect.objectContaining(initialState));
+      });
     });
 
     it('Uses page limit provided via config api', async () => {
@@ -139,11 +139,11 @@ describe('SearchContext', () => {
           }),
       });
 
-      await act(async () => {});
-
-      expect(result.current).toEqual(
-        expect.objectContaining({ ...initialState, pageLimit: 100 }),
-      );
+      await waitFor(() => {
+        expect(result.current).toEqual(
+          expect.objectContaining({ ...initialState, pageLimit: 100 }),
+        );
+      });
     });
   });
 
@@ -161,10 +161,10 @@ describe('SearchContext', () => {
           }),
       });
 
-      await act(async () => {});
-
-      expect(result.current.term).toEqual('first term');
-      expect(result.current.pageCursor).toEqual('SOMEPAGE');
+      await waitFor(() => {
+        expect(result.current.term).toEqual('first term');
+        expect(result.current.pageCursor).toEqual('SOMEPAGE');
+      });
 
       await act(async () => {
         result.current.setTerm('');
@@ -186,10 +186,10 @@ describe('SearchContext', () => {
           }),
       });
 
-      await act(async () => {});
-
-      expect(result.current.term).toEqual('first term');
-      expect(result.current.pageCursor).toEqual('SOMEPAGE');
+      await waitFor(() => {
+        expect(result.current.term).toEqual('first term');
+        expect(result.current.pageCursor).toEqual('SOMEPAGE');
+      });
 
       await act(async () => {
         result.current.setTerm('second term');
@@ -212,10 +212,10 @@ describe('SearchContext', () => {
           }),
       });
 
-      await act(async () => {});
-
-      expect(result.current.filters).toEqual({ foo: 'bar' });
-      expect(result.current.pageCursor).toEqual('SOMEPAGE');
+      await waitFor(() => {
+        expect(result.current.filters).toEqual({ foo: 'bar' });
+        expect(result.current.pageCursor).toEqual('SOMEPAGE');
+      });
 
       await act(async () => {
         result.current.setFilters({});
@@ -238,10 +238,10 @@ describe('SearchContext', () => {
           }),
       });
 
-      await act(async () => {});
-
-      expect(result.current.filters).toEqual({ foo: 'bar' });
-      expect(result.current.pageCursor).toEqual('SOMEPAGE');
+      await waitFor(() => {
+        expect(result.current.filters).toEqual({ foo: 'bar' });
+        expect(result.current.pageCursor).toEqual('SOMEPAGE');
+      });
 
       await act(async () => {
         result.current.setFilters({ foo: 'test' });
@@ -257,7 +257,9 @@ describe('SearchContext', () => {
         wrapper: ({ children }) => wrapper({ children, initialState }),
       });
 
-      await act(async () => {});
+      await waitFor(() => {
+        expect(result.current).toEqual(expect.objectContaining(initialState));
+      });
 
       const term = 'term';
 
@@ -277,7 +279,9 @@ describe('SearchContext', () => {
         wrapper: ({ children }) => wrapper({ children, initialState }),
       });
 
-      await act(async () => {});
+      await waitFor(() => {
+        expect(result.current).toEqual(expect.objectContaining(initialState));
+      });
 
       const types = ['type'];
 
@@ -297,7 +301,9 @@ describe('SearchContext', () => {
         wrapper: ({ children }) => wrapper({ children, initialState }),
       });
 
-      await act(async () => {});
+      await waitFor(() => {
+        expect(result.current).toEqual(expect.objectContaining(initialState));
+      });
 
       const filters = { filter: 'filter' };
 
@@ -317,7 +323,9 @@ describe('SearchContext', () => {
         wrapper: ({ children }) => wrapper({ children, initialState }),
       });
 
-      await act(async () => {});
+      await waitFor(() => {
+        expect(result.current).toEqual(expect.objectContaining(initialState));
+      });
 
       const pageLimit = 30;
 
@@ -338,7 +346,9 @@ describe('SearchContext', () => {
         wrapper: ({ children }) => wrapper({ children, initialState }),
       });
 
-      await act(async () => {});
+      await waitFor(() => {
+        expect(result.current).toEqual(expect.objectContaining(initialState));
+      });
 
       const pageCursor = 'SOMEPAGE';
 
@@ -364,7 +374,9 @@ describe('SearchContext', () => {
         wrapper: ({ children }) => wrapper({ children, initialState }),
       });
 
-      await act(async () => {});
+      await waitFor(() => {
+        expect(result.current).toEqual(expect.objectContaining(initialState));
+      });
 
       expect(result.current.fetchNextPage).toBeDefined();
       expect(result.current.fetchPreviousPage).toBeUndefined();
@@ -391,7 +403,9 @@ describe('SearchContext', () => {
         wrapper: ({ children }) => wrapper({ children, initialState }),
       });
 
-      await act(async () => {});
+      await waitFor(() => {
+        expect(result.current).toEqual(expect.objectContaining(initialState));
+      });
 
       expect(result.current.fetchNextPage).toBeUndefined();
       expect(result.current.fetchPreviousPage).toBeDefined();
