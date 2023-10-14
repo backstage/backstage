@@ -14,6 +14,8 @@
  * limitations under the License.
  */
 
+import { HumanDuration } from '@backstage/types';
+
 export interface Config {
   /** Configuration options for the scaffolder plugin */
   scaffolder?: {
@@ -37,5 +39,23 @@ export interface Config {
      * Set to 0 to disable task workers altogether.
      */
     concurrentTasksLimit?: number;
+
+    /**
+     * Sets the processing interval for staled tasks.
+     *
+     * Staled tasks are marked as failed, once task's timeout has exceeded.
+     *
+     * By default, processing interval is every 5 minutes.
+     */
+    processingInterval: HumanDuration;
+
+    /**
+     * Sets the task's heartbeat timeout, when to consider a task to be staled.
+     *
+     * Once task is considered to be staled, the scheduler will shut it down on the next cycle.
+     *
+     * Default value is 24 hours.
+     */
+    taskTimeout?: HumanDuration;
   };
 }
