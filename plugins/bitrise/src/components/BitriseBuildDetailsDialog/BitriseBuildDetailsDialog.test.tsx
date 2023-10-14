@@ -15,7 +15,7 @@
  */
 
 import React from 'react';
-import { act, render } from '@testing-library/react';
+import { render } from '@testing-library/react';
 import { BitriseBuildDetailsDialog } from './BitriseBuildDetailsDialog';
 import { BitriseBuildResult } from '../../api/bitriseApi.model';
 import userEvent from '@testing-library/user-event';
@@ -49,7 +49,7 @@ describe('BitriseArtifactsComponent', () => {
 
     expect(rendered.queryByText('VISIBLE')).not.toBeInTheDocument();
 
-    await act(() => userEvent.click(btn));
+    await userEvent.click(btn);
 
     expect(rendered.getByText('VISIBLE')).toBeInTheDocument();
   });

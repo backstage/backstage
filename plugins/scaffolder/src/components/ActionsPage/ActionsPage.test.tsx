@@ -23,7 +23,6 @@ import { renderInTestApp, TestApiRegistry } from '@backstage/test-utils';
 import { ApiProvider } from '@backstage/core-app-api';
 import { rootRouteRef } from '../../routes';
 import { userEvent } from '@testing-library/user-event';
-import { act } from 'react-dom/test-utils';
 
 const scaffolderApiMock: jest.Mocked<ScaffolderApi> = {
   scaffold: jest.fn(),
@@ -263,7 +262,7 @@ describe('TemplatePage', () => {
     expect(rendered.queryByText('nested prop b')).not.toBeInTheDocument();
     expect(rendered.queryByText('number')).not.toBeInTheDocument();
 
-    await act(() => userEvent.click(objectChip));
+    await userEvent.click(objectChip);
 
     expect(rendered.queryByText('nested prop a')).toBeInTheDocument();
     expect(rendered.queryByText('string')).toBeInTheDocument();
@@ -325,7 +324,7 @@ describe('TemplatePage', () => {
     expect(rendered.queryByText('nested prop b')).not.toBeInTheDocument();
     expect(rendered.queryByText('nested object c')).not.toBeInTheDocument();
 
-    await act(() => userEvent.click(objectChip));
+    await userEvent.click(objectChip);
 
     expect(rendered.queryByText('nested object a')).toBeInTheDocument();
     expect(rendered.queryByText('nested prop b')).toBeInTheDocument();
@@ -333,7 +332,7 @@ describe('TemplatePage', () => {
 
     const allObjectChips = rendered.getAllByText('object');
     expect(allObjectChips.length).toBe(2);
-    await act(() => userEvent.click(allObjectChips[1]));
+    await userEvent.click(allObjectChips[1]);
 
     expect(rendered.queryByText('nested object a')).toBeInTheDocument();
     expect(rendered.queryByText('nested prop b')).toBeInTheDocument();
@@ -376,7 +375,7 @@ describe('TemplatePage', () => {
 
     expect(rendered.queryByText('No schema defined')).not.toBeInTheDocument();
 
-    await act(() => userEvent.click(objectChip));
+    await userEvent.click(objectChip);
 
     expect(rendered.queryByText('No schema defined')).toBeInTheDocument();
   });
@@ -473,7 +472,7 @@ describe('TemplatePage', () => {
     expect(rendered.queryByText('nested object a')).not.toBeInTheDocument();
     expect(rendered.queryByText('nested prop b')).not.toBeInTheDocument();
 
-    await act(() => userEvent.click(objectChip));
+    await userEvent.click(objectChip);
 
     expect(rendered.queryByText('nested object a')).toBeInTheDocument();
     expect(rendered.queryByText('nested prop b')).toBeInTheDocument();
