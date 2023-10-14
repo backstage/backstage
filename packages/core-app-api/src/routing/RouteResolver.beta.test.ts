@@ -31,9 +31,8 @@ jest.mock('react-router-dom', () =>
   jest.requireActual('react-router-dom-beta'),
 );
 
-const element = () => null;
 const rest = {
-  element,
+  element: null,
   caseSensitive: false,
   children: [MATCH_ALL_ROUTE],
   plugins: new Set<BackstagePlugin>(),

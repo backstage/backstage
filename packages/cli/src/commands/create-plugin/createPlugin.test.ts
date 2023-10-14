@@ -16,23 +16,21 @@
 
 import fs from 'fs-extra';
 import path from 'path';
-import mockFs from 'mock-fs';
 import { movePlugin } from './createPlugin';
+import { createMockDirectory } from '@backstage/backend-test-utils';
 
 const id = 'testPluginMock';
 
 describe('createPlugin', () => {
-  afterEach(() => {
-    mockFs.restore();
-  });
+  const mockDir = createMockDirectory();
 
   describe('movePlugin', () => {
     it('should move the temporary plugin directory to its final place', async () => {
-      mockFs({
+      mockDir.setContent({
         [id]: {},
       });
-      const tempDir = id;
-      const pluginDir = path.join('test-temp', 'plugins', id);
+      const tempDir = mockDir.resolve(id);
+      const pluginDir = mockDir.resolve('test-temp/plugins', id);
 
       await movePlugin(tempDir, pluginDir, id);
       await expect(fs.pathExists(pluginDir)).resolves.toBe(true);

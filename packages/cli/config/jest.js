@@ -24,6 +24,13 @@ const envOptions = {
   oldTests: Boolean(process.env.BACKSTAGE_OLD_TESTS),
 };
 
+try {
+  require.resolve('react-dom/client');
+  process.env.HAS_REACT_DOM_CLIENT = true;
+} catch {
+  /* ignored */
+}
+
 const transformIgnorePattern = [
   '@material-ui',
   'ajv',

@@ -81,6 +81,15 @@ async function readBuildInfo() {
   };
 }
 
+function hasReactDomClient() {
+  try {
+    require.resolve('react-dom/client');
+    return true;
+  } catch {
+    return false;
+  }
+}
+
 export async function createConfig(
   paths: BundlingPaths,
   options: BundlingOptions,
@@ -136,6 +145,9 @@ export async function createConfig(
         () => JSON.stringify(options.getFrontendAppConfigs()),
         true,
       ),
+      // This allows for conditional imports of react-dom/client, since there's no way
+      // to check for presence of it in source code without module resolution errors.
+      'process.env.HAS_REACT_DOM_CLIENT': JSON.stringify(hasReactDomClient()),
     }),
   );
 

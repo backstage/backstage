@@ -41,7 +41,12 @@ const FeatureFlagComponent = (_props: {
 }) => null;
 attachComponentData(FeatureFlagComponent, 'core.featureFlagged', true);
 const mockFeatureFlagsApi = new LocalStorageFeatureFlags();
-const Wrapper = ({ children }: { children?: React.ReactNode }) => (
+const Wrapper = ({
+  children,
+}: {
+  children?: React.ReactNode;
+  tree?: ReactNode;
+}) => (
   <TestApiProvider apis={[[featureFlagsApiRef, mockFeatureFlagsApi]]}>
     {children}
   </TestApiProvider>
