@@ -804,11 +804,11 @@ export class DatabaseTaskStore implements TaskStore {
     >,
   ): Promise<void>;
   // (undocumented)
-  claimTask(): Promise<SerializedTask | undefined>;
+  claimTask(): Promise<SerializedTask_2 | undefined>;
   // (undocumented)
   completeTask(options: {
     taskId: string;
-    status: TaskStatus;
+    status: TaskStatus_2;
     eventBody: JsonObject;
   }): Promise<void>;
   // (undocumented)
@@ -826,16 +826,16 @@ export class DatabaseTaskStore implements TaskStore {
     >,
   ): Promise<void>;
   // (undocumented)
-  getTask(taskId: string): Promise<SerializedTask>;
+  getTask(taskId: string): Promise<SerializedTask_2>;
   // (undocumented)
   heartbeatTask(taskId: string): Promise<void>;
   // (undocumented)
-  list(options: { createdBy?: string }): Promise<{
-    tasks: SerializedTask[];
+  list(options: { createdBy?: string; status?: TaskStatus_2 }): Promise<{
+    tasks: SerializedTask_2[];
   }>;
   // (undocumented)
   listEvents(options: TaskStoreListEventsOptions): Promise<{
-    events: SerializedTaskEvent[];
+    events: SerializedTaskEvent_2[];
   }>;
   // (undocumented)
   listStaleTasks(options: { timeoutS: number }): Promise<{
