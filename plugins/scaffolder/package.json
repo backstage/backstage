@@ -104,7 +104,7 @@
     "@backstage/test-utils": "workspace:^",
     "@testing-library/dom": "^9.0.0",
     "@testing-library/jest-dom": "^6.0.0",
-    "@testing-library/react": "^13.4.0",
+    "@testing-library/react": "^14.0.0",
     "@testing-library/user-event": "^14.0.0",
     "@types/humanize-duration": "^3.18.1",
     "@types/json-schema": "^7.0.9",

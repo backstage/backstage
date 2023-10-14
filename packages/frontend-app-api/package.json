@@ -26,7 +26,7 @@
     "@backstage/cli": "workspace:^",
     "@backstage/test-utils": "workspace:^",
     "@testing-library/jest-dom": "^6.0.0",
-    "@testing-library/react": "^13.4.0"
+    "@testing-library/react": "^14.0.0"
   },
   "configSchema": "config.d.ts",
   "files": [

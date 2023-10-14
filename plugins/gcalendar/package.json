@@ -59,7 +59,7 @@
     "@backstage/test-utils": "workspace:^",
     "@testing-library/dom": "^9.0.0",
     "@testing-library/jest-dom": "^6.0.0",
-    "@testing-library/react": "^13.4.0",
+    "@testing-library/react": "^14.0.0",
     "@testing-library/user-event": "^14.0.0",
     "@types/dompurify": "^2.3.3",
     "@types/sanitize-html": "^2.6.2",
