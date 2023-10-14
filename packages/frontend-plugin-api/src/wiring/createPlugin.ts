@@ -48,8 +48,8 @@ export interface BackstagePlugin<
 
 /** @public */
 export function createPlugin<
-  Routes extends AnyRoutes,
-  ExternalRoutes extends AnyExternalRoutes,
+  Routes extends AnyRoutes = {},
+  ExternalRoutes extends AnyExternalRoutes = {},
 >(
   options: PluginOptions<Routes, ExternalRoutes>,
 ): BackstagePlugin<Routes, ExternalRoutes> {
