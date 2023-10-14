@@ -1,5 +1,5 @@
 {
-  "name": "@backstage/plugin-search-backend-module-stack-overflow",
+  "name": "@backstage/plugin-search-backend-module-stack-overflow-collator",
   "description": "A module for the search backend that exports stack overflow modules",
   "version": "0.0.0",
   "main": "src/index.ts",

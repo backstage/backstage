@@ -8847,9 +8847,9 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@backstage/plugin-search-backend-module-stack-overflow@workspace:^, @backstage/plugin-search-backend-module-stack-overflow@workspace:plugins/search-backend-module-stack-overflow":
+"@backstage/plugin-search-backend-module-stack-overflow-collator@workspace:^, @backstage/plugin-search-backend-module-stack-overflow-collator@workspace:plugins/search-backend-module-stack-overflow-collator":
   version: 0.0.0-use.local
-  resolution: "@backstage/plugin-search-backend-module-stack-overflow@workspace:plugins/search-backend-module-stack-overflow"
+  resolution: "@backstage/plugin-search-backend-module-stack-overflow-collator@workspace:plugins/search-backend-module-stack-overflow-collator"
   dependencies:
     "@backstage/backend-common": "workspace:^"
     "@backstage/backend-plugin-api": "workspace:^"
@@ -9209,7 +9209,7 @@ __metadata:
     "@backstage/backend-test-utils": "workspace:^"
     "@backstage/cli": "workspace:^"
     "@backstage/config": "workspace:^"
-    "@backstage/plugin-search-backend-module-stack-overflow": "workspace:^"
+    "@backstage/plugin-search-backend-module-stack-overflow-collator": "workspace:^"
     "@backstage/plugin-search-backend-node": "workspace:^"
     "@backstage/plugin-search-common": "workspace:^"
     msw: ^1.0.0

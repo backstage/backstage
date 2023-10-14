@@ -25,19 +25,19 @@ import {
   StackOverflowQuestionsRequestParams as _StackOverflowQuestionsRequestParams,
   StackOverflowQuestionsCollatorFactory as _StackOverflowQuestionsCollatorFactory,
   StackOverflowQuestionsCollatorFactoryOptions as _StackOverflowQuestionsCollatorFactoryOptions,
-} from '@backstage/plugin-search-backend-module-stack-overflow';
+} from '@backstage/plugin-search-backend-module-stack-overflow-collator';
 
 /**
  * @public
  * @deprecated
- * Import from `@backstage/plugin-search-backend-module-stack-overflow` instead.
+ * Import from `@backstage/plugin-search-backend-module-stack-overflow-collator` instead.
  */
 export type StackOverflowDocument = _StackOverflowDocument;
 
 /**
  * @public
  * @deprecated
- * Import from `@backstage/plugin-search-backend-module-stack-overflow` instead.
+ * Import from `@backstage/plugin-search-backend-module-stack-overflow-collator` instead.
  */
 export type StackOverflowQuestionsRequestParams =
   _StackOverflowQuestionsRequestParams;
@@ -45,7 +45,7 @@ export type StackOverflowQuestionsRequestParams =
 /**
  * @public
  * @deprecated
- * Import from `@backstage/plugin-search-backend-module-stack-overflow` instead.
+ * Import from `@backstage/plugin-search-backend-module-stack-overflow-collator` instead.
  */
 export type StackOverflowQuestionsCollatorFactoryOptions =
   _StackOverflowQuestionsCollatorFactory;
@@ -53,7 +53,7 @@ export type StackOverflowQuestionsCollatorFactoryOptions =
 /**
  * @public
  * @deprecated
- * Import from `@backstage/plugin-search-backend-module-stack-overflow` instead.
+ * Import from `@backstage/plugin-search-backend-module-stack-overflow-collator` instead.
  */
 export const StackOverflowQuestionsCollatorFactory =
   _StackOverflowQuestionsCollatorFactory;

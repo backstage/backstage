@@ -34,7 +34,7 @@
   "dependencies": {
     "@backstage/backend-common": "workspace:^",
     "@backstage/config": "workspace:^",
-    "@backstage/plugin-search-backend-module-stack-overflow": "workspace:^",
+    "@backstage/plugin-search-backend-module-stack-overflow-collator": "workspace:^",
     "@backstage/plugin-search-common": "workspace:^",
     "node-fetch": "^2.6.7",
     "qs": "^6.9.4",
