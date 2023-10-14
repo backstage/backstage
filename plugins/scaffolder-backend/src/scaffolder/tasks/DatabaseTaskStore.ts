@@ -23,10 +23,6 @@ import { ConflictError, NotFoundError } from '@backstage/errors';
 import { Knex } from 'knex';
 import { v4 as uuid } from 'uuid';
 import {
-  SerializedTaskEvent,
-  SerializedTask,
-  TaskStatus,
-  TaskEventType,
   TaskStore,
   TaskStoreEmitOptions,
   TaskStoreListEventsOptions,
@@ -34,6 +30,12 @@ import {
   TaskStoreCreateTaskResult,
   TaskStoreShutDownTaskOptions,
 } from './types';
+import {
+  SerializedTaskEvent,
+  SerializedTask,
+  TaskStatus,
+  TaskEventType,
+} from '@backstage/plugin-scaffolder-node';
 import { DateTime } from 'luxon';
 
 const migrationsDir = resolvePackagePath(
@@ -147,12 +149,19 @@ export class DatabaseTaskStore implements TaskStore {
 
   async list(options: {
     createdBy?: string;
+    status?: TaskStatus;
   }): Promise<{ tasks: SerializedTask[] }> {
     const queryBuilder = this.db<RawDbTaskRow>('tasks');
 
     if (options.createdBy) {
       queryBuilder.where({
         created_by: options.createdBy,
+      });
+    }
+
+    if (options.status) {
+      queryBuilder.where({
+        status: options.status,
       });
     }
 

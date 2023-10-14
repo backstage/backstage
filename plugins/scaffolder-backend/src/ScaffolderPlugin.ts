@@ -32,7 +32,7 @@ import {
   scaffolderTaskBrokerExtensionPoint,
   scaffolderTemplatingExtensionPoint,
 } from '@backstage/plugin-scaffolder-node/alpha';
-import { createBuiltinActions } from './scaffolder';
+import { createBuiltinActions, DatabaseTaskStore } from './scaffolder';
 import { createRouter } from './service/router';
 
 /**
@@ -75,6 +75,7 @@ export const scaffolderPlugin = createBackendPlugin({
       deps: {
         logger: coreServices.logger,
         config: coreServices.rootConfig,
+        lifecycle: coreServices.lifecycle,
         reader: coreServices.urlReader,
         permissions: coreServices.permissions,
         database: coreServices.database,
@@ -84,6 +85,7 @@ export const scaffolderPlugin = createBackendPlugin({
       async init({
         logger,
         config,
+        lifecycle,
         reader,
         database,
         httpRouter,
@@ -103,6 +105,26 @@ export const scaffolderPlugin = createBackendPlugin({
             additionalTemplateGlobals,
           }),
         ];
+
+        lifecycle.addShutdownHook(async () => {
+          const databaseTaskStore = await DatabaseTaskStore.create({
+            database,
+          });
+          const { tasks: pendingTasks } = await databaseTaskStore.list({
+            status: 'processing',
+          });
+
+          if (pendingTasks.length > 0) {
+            await Promise.all(
+              pendingTasks.map(task =>
+                databaseTaskStore.shutdownTask({ taskId: task.id }),
+              ),
+            );
+            logger.info(
+              `Successfully shut ${pendingTasks.length} processing tasks down.`,
+            );
+          }
+        });
 
         const actionIds = actions.map(action => action.id).join(', ');
         log.info(
