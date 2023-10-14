@@ -110,18 +110,18 @@ export const scaffolderPlugin = createBackendPlugin({
           const databaseTaskStore = await DatabaseTaskStore.create({
             database,
           });
-          const { tasks: pendingTasks } = await databaseTaskStore.list({
+          const { tasks: processingTasks } = await databaseTaskStore.list({
             status: 'processing',
           });
 
-          if (pendingTasks.length > 0) {
+          if (processingTasks.length > 0) {
             await Promise.all(
-              pendingTasks.map(task =>
+              processingTasks.map(task =>
                 databaseTaskStore.shutdownTask({ taskId: task.id }),
               ),
             );
             logger.info(
-              `Successfully shut ${pendingTasks.length} processing tasks down.`,
+              `Successfully shut ${processingTasks.length} processing tasks down.`,
             );
           }
         });
