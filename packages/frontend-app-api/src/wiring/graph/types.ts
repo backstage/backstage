@@ -25,12 +25,12 @@ import {
  * @public
  */
 export interface AppNodeSpec {
-  id: string;
-  attachTo: { id: string; input: string };
-  extension: Extension<unknown>;
-  disabled: boolean;
-  config?: unknown;
-  source?: BackstagePlugin;
+  readonly id: string;
+  readonly attachTo?: { id: string; input: string };
+  readonly extension: Extension<unknown>;
+  readonly disabled: boolean;
+  readonly config?: unknown;
+  readonly source?: BackstagePlugin;
 }
 
 /**
@@ -38,8 +38,8 @@ export interface AppNodeSpec {
  * @public
  */
 export interface AppNodeEdges {
-  attachedTo: { node: AppNode; input: string };
-  attachments: Map<string, AppNode[]>;
+  readonly attachedTo?: { node: AppNode; input: string };
+  readonly attachments: Map<string, AppNode[]>;
 }
 
 /**
@@ -57,9 +57,13 @@ export interface AppNodeInstance {
  */
 export interface AppNode {
   /** The specification for how this node should be instantiated */
-  spec: AppNodeSpec;
+  readonly spec: AppNodeSpec;
   /** The edges from this node to other nodes in the app graph */
-  edges: AppNodeEdges;
+  readonly edges: AppNodeEdges;
   /** The instance of this node, if it was instantiated */
-  instance?: AppNodeInstance;
+  readonly instance?: AppNodeInstance;
+}
+
+export interface AppGraph {
+  rootNodes: Map<string, AppNode>;
 }
