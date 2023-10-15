@@ -32,10 +32,7 @@ import {
   createExtensionInstance,
   ExtensionInstance,
 } from './createExtensionInstance';
-import {
-  ExtensionInstanceParameters,
-  mergeExtensionParameters,
-} from './parameters';
+import { resolveAppNodeSpecs } from './graph/resolveAppNodeSpecs';
 import {
   AnyApiFactory,
   ApiHolder,
@@ -96,6 +93,7 @@ import { RoutingProvider } from '../routing/RoutingProvider';
 import { resolveRouteBindings } from '../routing/resolveRouteBindings';
 import { collectRouteIds } from '../routing/collectRouteIds';
 import { readAppExtensionsConfig } from './graph/readAppExtensionsConfig';
+import { AppNodeSpec } from './graph';
 
 /** @public */
 export interface ExtensionTreeNode {
@@ -197,7 +195,7 @@ export function createInstances(options: {
 
   // pull in default extension instance from discovered packages
   // apply config to adjust default extension instances and add more
-  const extensionParams = mergeExtensionParameters({
+  const appNodeSpecs = resolveAppNodeSpecs({
     features: options.features,
     builtinExtensions,
     parameters: readAppExtensionsConfig(options.config),
@@ -207,11 +205,8 @@ export function createInstances(options: {
   // We do it at this point to ensure that merging (if any) of config has already happened
 
   // Create attachment map so that we can look attachments up during instance creation
-  const attachmentMap = new Map<
-    string,
-    Map<string, ExtensionInstanceParameters[]>
-  >();
-  for (const instanceParams of extensionParams) {
+  const attachmentMap = new Map<string, Map<string, AppNodeSpec[]>>();
+  for (const instanceParams of appNodeSpecs) {
     const extensionId = instanceParams.attachTo.id;
     const pointId = instanceParams.attachTo.input;
     let pointMap = attachmentMap.get(extensionId);
@@ -231,9 +226,7 @@ export function createInstances(options: {
 
   const instances = new Map<string, ExtensionInstance>();
 
-  function createInstance(
-    instanceParams: ExtensionInstanceParameters,
-  ): ExtensionInstance {
+  function createInstance(instanceParams: AppNodeSpec): ExtensionInstance {
     const extensionId = instanceParams.extension.id;
     const existingInstance = instances.get(extensionId);
     if (existingInstance) {
@@ -261,7 +254,7 @@ export function createInstances(options: {
   }
 
   const coreInstance = createInstance(
-    extensionParams.find(p => p.extension.id === 'core')!,
+    appNodeSpecs.find(p => p.extension.id === 'core')!,
   );
 
   return { coreInstance, instances };
