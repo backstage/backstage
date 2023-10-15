@@ -22,6 +22,7 @@ import {
   fetchApiRef,
   storageApiRef,
 } from '@backstage/core-plugin-api';
+import { convertLegacyRouteRef } from '@backstage/core-plugin-api/alpha';
 import { CatalogClient } from '@backstage/catalog-client';
 import {
   createSchemaFromZod,
@@ -44,7 +45,12 @@ import {
 } from '@backstage/plugin-catalog-react';
 import { createSearchResultListItemExtension } from '@backstage/plugin-search-react/alpha';
 import { DefaultStarredEntitiesApi } from './apis';
-import { rootRouteRef } from './routes';
+import {
+  createComponentRouteRef,
+  createFromTemplateRouteRef,
+  rootRouteRef,
+  viewTechDocRouteRef,
+} from './routes';
 import { Progress } from '@backstage/core-components';
 import { useEntityFromUrl } from './components/CatalogEntityPage/useEntityFromUrl';
 
@@ -213,7 +219,7 @@ const CatalogUserListFilter = createCatalogFilterExtension({
 const CatalogIndexPage = createPageExtension({
   id: 'catalog',
   defaultPath: '/catalog',
-  routeRef: rootRouteRef,
+  routeRef: convertLegacyRouteRef(rootRouteRef),
   inputs: {
     filters: createExtensionInput({
       element: coreExtensionData.reactElement,
@@ -229,7 +235,7 @@ const CatalogIndexPage = createPageExtension({
 const CatalogEntityPage = createPageExtension({
   id: 'catalog:entity',
   defaultPath: '/catalog/:namespace/:kind/:name',
-  routeRef: entityRouteRef,
+  routeRef: convertLegacyRouteRef(entityRouteRef),
   loader: async () => {
     const Component = () => {
       return (
@@ -244,7 +250,7 @@ const CatalogEntityPage = createPageExtension({
 
 const CatalogNavItem = createNavItemExtension({
   id: 'catalog.nav.index',
-  routeRef: rootRouteRef,
+  routeRef: convertLegacyRouteRef(rootRouteRef),
   title: 'Catalog',
   icon: HomeIcon,
 });
@@ -252,6 +258,15 @@ const CatalogNavItem = createNavItemExtension({
 /** @alpha */
 export default createPlugin({
   id: 'catalog',
+  routes: {
+    catalogIndex: convertLegacyRouteRef(rootRouteRef),
+    catalogEntity: convertLegacyRouteRef(entityRouteRef),
+  },
+  externalRoutes: {
+    viewTechDoc: convertLegacyRouteRef(viewTechDocRouteRef),
+    createComponent: convertLegacyRouteRef(createComponentRouteRef),
+    createFromTemplate: convertLegacyRouteRef(createFromTemplateRouteRef),
+  },
   extensions: [
     CatalogApi,
     StarredEntitiesApi,
