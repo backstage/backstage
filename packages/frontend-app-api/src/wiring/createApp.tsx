@@ -35,7 +35,6 @@ import {
 import {
   ExtensionInstanceParameters,
   mergeExtensionParameters,
-  readAppExtensionParameters,
 } from './parameters';
 import {
   AnyApiFactory,
@@ -96,6 +95,7 @@ import { AppRouteBinder } from '../routing';
 import { RoutingProvider } from '../routing/RoutingProvider';
 import { resolveRouteBindings } from '../routing/resolveRouteBindings';
 import { collectRouteIds } from '../routing/collectRouteIds';
+import { readAppExtensionsConfig } from './graph/readAppExtensionsConfig';
 
 /** @public */
 export interface ExtensionTreeNode {
@@ -200,7 +200,7 @@ export function createInstances(options: {
   const extensionParams = mergeExtensionParameters({
     features: options.features,
     builtinExtensions,
-    parameters: readAppExtensionParameters(options.config),
+    parameters: readAppExtensionsConfig(options.config),
   });
 
   // TODO: validate the config of all extension instances
