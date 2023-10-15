@@ -19,7 +19,7 @@ import {
   createPlugin,
   Extension,
 } from '@backstage/frontend-plugin-api';
-import { mergeExtensionParameters } from './parameters';
+import { resolveAppNodeSpecs } from './resolveAppNodeSpecs';
 
 function makeExt(
   id: string,
@@ -33,10 +33,10 @@ function makeExt(
   } as Extension<unknown>;
 }
 
-describe('mergeExtensionParameters', () => {
+describe('resolveAppNodeSpecs', () => {
   it('should filter out disabled extension instances', () => {
     expect(
-      mergeExtensionParameters({
+      resolveAppNodeSpecs({
         features: [],
         builtinExtensions: [makeExt('a', 'disabled')],
         parameters: [],
@@ -48,7 +48,7 @@ describe('mergeExtensionParameters', () => {
     const a = makeExt('a');
     const b = makeExt('b');
     expect(
-      mergeExtensionParameters({
+      resolveAppNodeSpecs({
         features: [],
         builtinExtensions: [a, b],
         parameters: [],
@@ -64,7 +64,7 @@ describe('mergeExtensionParameters', () => {
     const b = makeExt('b');
     const pluginA = createPlugin({ id: 'test', extensions: [a] });
     expect(
-      mergeExtensionParameters({
+      resolveAppNodeSpecs({
         features: [pluginA],
         builtinExtensions: [b],
         parameters: [
@@ -89,7 +89,7 @@ describe('mergeExtensionParameters', () => {
     const b = makeExt('b');
     const plugin = createPlugin({ id: 'test', extensions: [a, b] });
     expect(
-      mergeExtensionParameters({
+      resolveAppNodeSpecs({
         features: [plugin],
         builtinExtensions: [],
         parameters: [
@@ -127,7 +127,7 @@ describe('mergeExtensionParameters', () => {
     const a = makeExt('a', 'disabled');
     const b = makeExt('b', 'disabled');
     expect(
-      mergeExtensionParameters({
+      resolveAppNodeSpecs({
         features: [createPlugin({ id: 'empty', extensions: [] })],
         builtinExtensions: [a, b],
         parameters: [
@@ -155,7 +155,7 @@ describe('mergeExtensionParameters', () => {
     const bOverride = makeExt('b', 'disabled', 'other');
     const cOverride = makeExt('c');
 
-    const result = mergeExtensionParameters({
+    const result = resolveAppNodeSpecs({
       features: [
         plugin,
         createExtensionOverrides({
@@ -188,7 +188,7 @@ describe('mergeExtensionParameters', () => {
     const bOverride = makeExt('b', 'disabled');
     const cOverride = makeExt('a', 'disabled');
 
-    const result = mergeExtensionParameters({
+    const result = resolveAppNodeSpecs({
       features: [
         createPlugin({ id: 'test', extensions: [a, b, c] }),
         createExtensionOverrides({

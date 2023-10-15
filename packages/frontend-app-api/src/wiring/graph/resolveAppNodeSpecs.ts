@@ -20,22 +20,16 @@ import {
   ExtensionOverrides,
 } from '@backstage/frontend-plugin-api';
 // eslint-disable-next-line @backstage/no-relative-monorepo-imports
-import { toInternalExtensionOverrides } from '../../../frontend-plugin-api/src/wiring/createExtensionOverrides';
-import { ExtensionParameters } from './graph/readAppExtensionsConfig';
-
-export interface ExtensionInstanceParameters {
-  extension: Extension<unknown>;
-  source?: BackstagePlugin;
-  attachTo: { id: string; input: string };
-  config?: unknown;
-}
+import { toInternalExtensionOverrides } from '../../../../frontend-plugin-api/src/wiring/createExtensionOverrides';
+import { ExtensionParameters } from './readAppExtensionsConfig';
+import { AppNodeSpec } from './types';
 
 /** @internal */
-export function mergeExtensionParameters(options: {
+export function resolveAppNodeSpecs(options: {
   features: (BackstagePlugin | ExtensionOverrides)[];
   builtinExtensions: Extension<unknown>[];
   parameters: Array<ExtensionParameters>;
-}): ExtensionInstanceParameters[] {
+}): AppNodeSpec[] {
   const { builtinExtensions, parameters } = options;
 
   const plugins = options.features.filter(
@@ -207,8 +201,10 @@ export function mergeExtensionParameters(options: {
   return configuredExtensions
     .filter(override => !override.params.disabled)
     .map(param => ({
-      extension: param.extension,
+      id: param.extension.id,
       attachTo: param.params.attachTo,
+      extension: param.extension,
+      disabled: param.params.disabled,
       source: param.params.source,
       config: param.params.config,
     }));
