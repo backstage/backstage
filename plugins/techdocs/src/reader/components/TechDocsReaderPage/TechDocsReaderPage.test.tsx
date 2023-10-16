@@ -90,6 +90,8 @@ const configApi = new MockConfigApi({
   },
 });
 
+Element.prototype.scrollIntoView = jest.fn();
+
 const Wrapper = ({ children }: { children: React.ReactNode }) => {
   return (
     <TestApiProvider
