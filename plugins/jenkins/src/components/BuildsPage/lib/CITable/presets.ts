@@ -24,5 +24,6 @@ export const defaultCITableColumns: TableColumn<Project>[] = [
   columnFactories.createBuildColumn(),
   columnFactories.createTestColumn(),
   columnFactories.createStatusColumn(),
+  columnFactories.createLastRunDuration(),
   columnFactories.createActionsColumn(),
 ];

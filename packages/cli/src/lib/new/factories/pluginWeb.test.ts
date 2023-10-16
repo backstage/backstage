@@ -15,34 +15,33 @@
  */
 
 import fs from 'fs-extra';
-import mockFs from 'mock-fs';
-import { sep, resolve as resolvePath } from 'path';
-import { paths } from '../../paths';
+import { sep } from 'path';
 import { Task } from '../../tasks';
 import { FactoryRegistry } from '../FactoryRegistry';
-import { createMockOutputStream, mockPaths } from './common/testUtils';
+import {
+  createMockOutputStream,
+  expectLogsToMatch,
+  mockPaths,
+} from './common/testUtils';
 import { pluginWeb } from './pluginWeb';
+import { createMockDirectory } from '@backstage/backend-test-utils';
 
 describe('pluginWeb factory', () => {
+  const mockDir = createMockDirectory();
+
   beforeEach(() => {
     mockPaths({
-      targetRoot: '/root',
+      targetRoot: mockDir.path,
     });
   });
 
   afterEach(() => {
-    mockFs.restore();
     jest.resetAllMocks();
   });
 
   it('should create a react plugin package', async () => {
-    mockFs({
-      '/root': {
-        plugins: mockFs.directory(),
-      },
-      [paths.resolveOwn('templates')]: mockFs.load(
-        paths.resolveOwn('templates'),
-      ),
+    mockDir.setContent({
+      plugins: {},
     });
 
     const options = await FactoryRegistry.populateOptions(pluginWeb, {
@@ -67,8 +66,7 @@ describe('pluginWeb factory', () => {
 
     expect(modified).toBe(true);
 
-    expect(output).toEqual([
-      '',
+    expectLogsToMatch(output, [
       'Creating web plugin library backstage-plugin-test-react',
       'Checking Prerequisites:',
       `availability  plugins${sep}test-react`,
@@ -91,7 +89,7 @@ describe('pluginWeb factory', () => {
     ]);
 
     await expect(
-      fs.readJson('/root/plugins/test-react/package.json'),
+      fs.readJson(mockDir.resolve('plugins/test-react/package.json')),
     ).resolves.toEqual(
       expect.objectContaining({
         name: 'backstage-plugin-test-react',
@@ -103,11 +101,11 @@ describe('pluginWeb factory', () => {
 
     expect(Task.forCommand).toHaveBeenCalledTimes(2);
     expect(Task.forCommand).toHaveBeenCalledWith('yarn install', {
-      cwd: resolvePath('/root/plugins/test-react'),
+      cwd: mockDir.resolve('plugins/test-react'),
       optional: true,
     });
     expect(Task.forCommand).toHaveBeenCalledWith('yarn lint --fix', {
-      cwd: resolvePath('/root/plugins/test-react'),
+      cwd: mockDir.resolve('plugins/test-react'),
       optional: true,
     });
   });

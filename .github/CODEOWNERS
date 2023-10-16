@@ -70,6 +70,8 @@ yarn.lock                                         @backstage/maintainers @backst
 /plugins/playlist-*                               @backstage/maintainers @backstage/reviewers @kuangp
 /plugins/rollbar                                  @backstage/maintainers @backstage/reviewers @andrewthauer
 /plugins/rollbar-backend                          @backstage/maintainers @backstage/reviewers @andrewthauer
+/plugins/scaffolder                               @backstage/maintainers @backstage/reviewers @backstage/scaffolder-maintainers
+/plugins/scaffolder-*                             @backstage/maintainers @backstage/reviewers @backstage/scaffolder-maintainers
 /plugins/search                                   @backstage/discoverability-maintainers
 /plugins/search-*                                 @backstage/discoverability-maintainers
 /plugins/sonarqube                                @backstage/maintainers @backstage/reviewers @backstage/sda-se-reviewers

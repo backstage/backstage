@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { getVoidLogger, SingleHostDiscovery } from '@backstage/backend-common';
+import { getVoidLogger, HostDiscovery } from '@backstage/backend-common';
 import { mockServices } from '@backstage/backend-test-utils';
 import { ConfigReader } from '@backstage/config';
 import { Request, Response } from 'express';
@@ -56,7 +56,7 @@ describe('createRouter', () => {
         },
       },
     });
-    const discovery = SingleHostDiscovery.fromConfig(config);
+    const discovery = HostDiscovery.fromConfig(config);
 
     beforeEach(() => {
       mockCreateProxyMiddleware.mockClear();
@@ -150,7 +150,7 @@ describe('createRouter', () => {
           },
         },
       });
-      const discovery = SingleHostDiscovery.fromConfig(config);
+      const discovery = HostDiscovery.fromConfig(config);
       await expect(
         createRouter({
           config,
@@ -185,7 +185,7 @@ describe('createRouter', () => {
           },
         },
       });
-      const discovery = SingleHostDiscovery.fromConfig(config);
+      const discovery = HostDiscovery.fromConfig(config);
       const router = await createRouter({
         config,
         logger,

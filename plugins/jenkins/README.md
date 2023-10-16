@@ -5,7 +5,9 @@ Website: [https://jenkins.io/](https://jenkins.io/)
 <img src="./src/assets/last-master-build.png"  alt="Last master build"/>
 <img src="./src/assets/folder-results.png"  alt="Folder results"/>
 <img src="./src/assets/build-details.png"  alt="Build details"/>
+<img src="./src/assets/jobrun-table.png"  alt="Job builds records"/>
 <img src="./src/assets/dynamic-columns.png"  alt="Modify Table Columns"/>
+
 ## Setup
 
 1. If you have a standalone app (you didn't clone this repo), then do
@@ -74,7 +76,9 @@ metadata:
   name: 'your-component'
   description: 'a description'
   annotations:
-    jenkins.io/github-folder: 'folder-name/project-name'
+    jenkins.io/github-folder: 'folder-name/project-name' # deprecated
+    jenkins.io/job-full-name: 'folder-name/project-name' # use this instead
+
 spec:
   type: service
   lifecycle: experimental
@@ -97,6 +101,11 @@ spec:
 - Only works with organization folder projects backed by GitHub
 - No pagination support currently, limited to 50 projects - don't run this on a
   Jenkins instance with lots of builds
+
+## EntityJobRunsTable
+
+- View all builds of a particular job
+- shows average build time for successful builds
 
 ## Modify Columns of EntityJenkinsContent
 
