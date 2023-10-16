@@ -48,7 +48,7 @@ function createTestExtension(options: {
     id: options.id,
     attachTo: options.parent
       ? { id: options.parent, input: 'children' }
-      : { id: 'core.routes', input: 'children' },
+      : { id: 'core.routes', input: 'routes' },
     output: {
       element: coreExtensionData.reactElement,
       path: coreExtensionData.routePath.optional(),
@@ -74,12 +74,12 @@ function routeInfoFromExtensions(extensions: Extension<unknown>[]) {
     id: 'test',
     extensions,
   });
-  const { rootInstances } = createInstances({
+  const { coreInstance } = createInstances({
     config: new MockConfigApi({}),
-    plugins: [plugin],
+    features: [plugin],
   });
 
-  return extractRouteInfoFromInstanceTree(rootInstances);
+  return extractRouteInfoFromInstanceTree(coreInstance);
 }
 
 function sortedEntries<T>(map: Map<RouteRef, T>): [RouteRef, T][] {
@@ -305,6 +305,7 @@ describe('discovery', () => {
       }),
       createTestExtension({
         id: 'fooEmpty',
+        parent: 'foo',
       }),
       createTestExtension({
         id: 'page3',

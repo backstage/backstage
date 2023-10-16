@@ -377,8 +377,7 @@ describe('I18nextTranslationApi', () => {
         },
       });
     });
-
-    expect(translations).toEqual(['foo', null, 'Föö', null, 'Føø']);
+    expect(translations).toEqual(['foo', 'Föö', 'Føø']);
   });
 
   describe('formatting', () => {

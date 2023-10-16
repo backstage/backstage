@@ -19,7 +19,7 @@ import {
   DatabaseManager,
   loadBackendConfig,
   ServerTokenManager,
-  SingleHostDiscovery,
+  HostDiscovery,
   useHotMemoize,
 } from '@backstage/backend-common';
 import { ConfigReader } from '@backstage/config';
@@ -40,7 +40,7 @@ export async function startStandaloneServer(
 ): Promise<Server> {
   const logger = options.logger.child({ service: 'playlist-backend' });
   const config = await loadBackendConfig({ logger, argv: process.argv });
-  const discovery = SingleHostDiscovery.fromConfig(config);
+  const discovery = HostDiscovery.fromConfig(config);
 
   const database = useHotMemoize(module, () => {
     const manager = DatabaseManager.fromConfig(

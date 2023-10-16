@@ -15,36 +15,35 @@
  */
 
 import fs from 'fs-extra';
-import mockFs from 'mock-fs';
-import { resolve as resolvePath, join as joinPath } from 'path';
-import { paths } from '../../paths';
+import { join as joinPath } from 'path';
 import { Task } from '../../tasks';
 import { FactoryRegistry } from '../FactoryRegistry';
-import { createMockOutputStream, mockPaths } from './common/testUtils';
+import {
+  createMockOutputStream,
+  expectLogsToMatch,
+  mockPaths,
+} from './common/testUtils';
 import { webLibraryPackage } from './webLibraryPackage';
+import { createMockDirectory } from '@backstage/backend-test-utils';
 
 describe('webLibraryPackage factory', () => {
+  const mockDir = createMockDirectory();
+
   beforeEach(() => {
     mockPaths({
-      targetRoot: '/root',
+      targetRoot: mockDir.path,
     });
   });
 
   afterEach(() => {
-    mockFs.restore();
     jest.resetAllMocks();
   });
 
   it('should create a web library package', async () => {
     const expectedwebLibraryPackageName = 'test';
 
-    mockFs({
-      '/root': {
-        packages: mockFs.directory(),
-      },
-      [paths.resolveOwn('templates')]: mockFs.load(
-        paths.resolveOwn('templates'),
-      ),
+    mockDir.setContent({
+      packages: {},
     });
 
     const options = await FactoryRegistry.populateOptions(webLibraryPackage, {
@@ -69,8 +68,7 @@ describe('webLibraryPackage factory', () => {
 
     expect(modified).toBe(true);
 
-    expect(output).toEqual([
-      '',
+    expectLogsToMatch(output, [
       `Creating web-library package ${expectedwebLibraryPackageName}`,
       'Checking Prerequisites:',
       `availability  ${joinPath('packages', expectedwebLibraryPackageName)}`,
@@ -87,7 +85,11 @@ describe('webLibraryPackage factory', () => {
 
     await expect(
       fs.readJson(
-        `/root/packages/${expectedwebLibraryPackageName}/package.json`,
+        mockDir.resolve(
+          'packages',
+          expectedwebLibraryPackageName,
+          'package.json',
+        ),
       ),
     ).resolves.toEqual(
       expect.objectContaining({
@@ -99,11 +101,11 @@ describe('webLibraryPackage factory', () => {
 
     expect(Task.forCommand).toHaveBeenCalledTimes(2);
     expect(Task.forCommand).toHaveBeenCalledWith('yarn install', {
-      cwd: resolvePath(`/root/packages/${expectedwebLibraryPackageName}`),
+      cwd: mockDir.resolve('packages', expectedwebLibraryPackageName),
       optional: true,
     });
     expect(Task.forCommand).toHaveBeenCalledWith('yarn lint --fix', {
-      cwd: resolvePath(`/root/packages/${expectedwebLibraryPackageName}`),
+      cwd: mockDir.resolve('packages', expectedwebLibraryPackageName),
       optional: true,
     });
   });
@@ -111,14 +113,9 @@ describe('webLibraryPackage factory', () => {
   it('should create a web library plugin with options and codeowners', async () => {
     const expectedwebLibraryPackageName = 'test';
 
-    mockFs({
-      '/root': {
-        CODEOWNERS: '',
-        packages: mockFs.directory(),
-      },
-      [paths.resolveOwn('templates')]: mockFs.load(
-        paths.resolveOwn('templates'),
-      ),
+    mockDir.setContent({
+      CODEOWNERS: '',
+      packages: {},
     });
 
     const options = await FactoryRegistry.populateOptions(webLibraryPackage, {
@@ -141,11 +138,11 @@ describe('webLibraryPackage factory', () => {
 
     expect(Task.forCommand).toHaveBeenCalledTimes(2);
     expect(Task.forCommand).toHaveBeenCalledWith('yarn install', {
-      cwd: resolvePath(`/root/${expectedwebLibraryPackageName}`),
+      cwd: mockDir.resolve(expectedwebLibraryPackageName),
       optional: true,
     });
     expect(Task.forCommand).toHaveBeenCalledWith('yarn lint --fix', {
-      cwd: resolvePath(`/root/${expectedwebLibraryPackageName}`),
+      cwd: mockDir.resolve(expectedwebLibraryPackageName),
       optional: true,
     });
   });

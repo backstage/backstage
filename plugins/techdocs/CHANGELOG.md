@@ -1,5 +1,25 @@
 # @backstage/plugin-techdocs
 
+## 1.7.1-next.2
+
+### Patch Changes
+
+- 3605370af6: Improved `DocsTable` to display pagination controls dynamically, appearing only when needed.
+- Updated dependencies
+  - @backstage/frontend-plugin-api@0.2.0-next.2
+  - @backstage/integration-react@1.1.20-next.2
+  - @backstage/core-components@0.13.6-next.2
+  - @backstage/core-plugin-api@1.7.0-next.1
+  - @backstage/catalog-model@1.4.3-next.0
+  - @backstage/plugin-catalog-react@1.8.5-next.2
+  - @backstage/integration@1.7.1-next.1
+  - @backstage/errors@1.2.3-next.0
+  - @backstage/plugin-search-react@1.7.1-next.2
+  - @backstage/theme@0.4.3-next.0
+  - @backstage/config@1.1.1-next.0
+  - @backstage/plugin-search-common@1.2.7-next.0
+  - @backstage/plugin-techdocs-react@1.1.12-next.2
+
 ## 1.7.1-next.1
 
 ### Patch Changes

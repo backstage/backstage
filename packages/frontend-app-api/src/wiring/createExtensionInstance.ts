@@ -60,6 +60,24 @@ function resolveInputs(
   inputMap: AnyExtensionInputMap,
   attachments: Map<string, ExtensionInstance[]>,
 ) {
+  const undeclaredAttachments = Array.from(attachments.entries()).filter(
+    ([inputName]) => inputMap[inputName] === undefined,
+  );
+  if (undeclaredAttachments.length > 0) {
+    throw new Error(
+      `received undeclared input${
+        undeclaredAttachments.length > 1 ? 's' : ''
+      } ${undeclaredAttachments
+        .map(
+          ([k, exts]) =>
+            `'${k}' from extension${exts.length > 1 ? 's' : ''} '${exts
+              .map(e => e.id)
+              .join("', '")}'`,
+        )
+        .join(' and ')}`,
+    );
+  }
+
   return mapValues(inputMap, (input, inputName) => {
     const attachedInstances = attachments.get(inputName) ?? [];
     if (input.config.singleton) {

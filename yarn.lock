@@ -12,7 +12,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@adobe/css-tools@npm:^4.0.1":
+"@adobe/css-tools@npm:^4.3.1":
   version: 4.3.1
   resolution: "@adobe/css-tools@npm:4.3.1"
   checksum: ad43456379ff391132aff687ece190cb23ea69395e23c9b96690eeabe2468da89a4aaf266e4f8b6eaab53db3d1064107ce0f63c3a974e864f4a04affc768da3f
@@ -1689,8 +1689,8 @@ __metadata:
   linkType: hard
 
 "@azure/identity@npm:^3.2.1":
-  version: 3.3.0
-  resolution: "@azure/identity@npm:3.3.0"
+  version: 3.3.1
+  resolution: "@azure/identity@npm:3.3.1"
   dependencies:
     "@azure/abort-controller": ^1.0.0
     "@azure/core-auth": ^1.5.0
@@ -1708,7 +1708,7 @@ __metadata:
     stoppable: ^1.1.0
     tslib: ^2.2.0
     uuid: ^8.3.0
-  checksum: 95c6f8761ad6bbfd3fbf8a88d1a4af17199fb6b61134a761d51a2df096cb175a5841f02ca5ae3285378c64676e72ce6cddc58143306eef5086a63459c2cef914
+  checksum: ba58ce8d6178566757c0554b9b5d6ca3d4e934eb6831c9a7d57ada185ec57bd9a9de1ce9500a547e35f4d11cfb362c312afaad019d1ed6bf7b6ebf908bfea362
   languageName: node
   linkType: hard
 
@@ -3367,7 +3367,7 @@ __metadata:
     "@backstage/theme": "workspace:^"
     "@material-ui/core": ^4.12.2
     "@material-ui/icons": ^4.9.1
-    "@testing-library/jest-dom": ^5.10.1
+    "@testing-library/jest-dom": ^6.0.0
     "@testing-library/react": ^12.1.3
     "@types/react": ^16.13.1 || ^17.0.0
   peerDependencies:
@@ -3449,7 +3449,7 @@ __metadata:
     "@google-cloud/storage": ^6.0.0
     "@keyv/memcache": ^1.3.5
     "@keyv/redis": ^2.5.3
-    "@kubernetes/client-node": 0.18.1
+    "@kubernetes/client-node": 0.19.0
     "@manypkg/get-packages": ^1.1.3
     "@octokit/rest": ^19.0.3
     "@types/archiver": ^5.1.0
@@ -3650,7 +3650,18 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@backstage/catalog-client@^1.4.4, @backstage/catalog-client@workspace:^, @backstage/catalog-client@workspace:packages/catalog-client":
+"@backstage/catalog-client@npm:^1.4.4":
+  version: 1.4.4
+  resolution: "@backstage/catalog-client@npm:1.4.4"
+  dependencies:
+    "@backstage/catalog-model": ^1.4.2
+    "@backstage/errors": ^1.2.2
+    cross-fetch: ^3.1.5
+  checksum: 3f821ee7450b192bf750a0275d095a96f7ce137283cecd0353cef817a43fd7f55141d828268cf839b3cfbfc41cea0d6519c4c4411b297b7423728dc7018f68ed
+  languageName: node
+  linkType: hard
+
+"@backstage/catalog-client@workspace:^, @backstage/catalog-client@workspace:packages/catalog-client":
   version: 0.0.0-use.local
   resolution: "@backstage/catalog-client@workspace:packages/catalog-client"
   dependencies:
@@ -3662,7 +3673,22 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@backstage/catalog-model@^1.1.5, @backstage/catalog-model@^1.4.2, @backstage/catalog-model@workspace:^, @backstage/catalog-model@workspace:packages/catalog-model":
+"@backstage/catalog-model@npm:^1.1.5, @backstage/catalog-model@npm:^1.4.2":
+  version: 1.4.2
+  resolution: "@backstage/catalog-model@npm:1.4.2"
+  dependencies:
+    "@backstage/config": ^1.1.0
+    "@backstage/errors": ^1.2.2
+    "@backstage/types": ^1.1.1
+    ajv: ^8.10.0
+    json-schema: ^0.4.0
+    lodash: ^4.17.21
+    uuid: ^8.0.0
+  checksum: 7e0d8cfb7fc6bab02803201552a24b73a3d7b502f7ba22e3408e86400e2a4f8937e0e91dea9a063d1f8bc128064400e93d05301611772502811feea10e8ad4e9
+  languageName: node
+  linkType: hard
+
+"@backstage/catalog-model@workspace:^, @backstage/catalog-model@workspace:packages/catalog-model":
   version: 0.0.0-use.local
   resolution: "@backstage/catalog-model@workspace:packages/catalog-model"
   dependencies:
@@ -3758,7 +3784,6 @@ __metadata:
     "@types/inquirer": ^8.1.3
     "@types/jest": ^29.0.0
     "@types/minimatch": ^5.0.0
-    "@types/mock-fs": ^4.13.0
     "@types/node": ^18.17.8
     "@types/npm-packlist": ^3.0.0
     "@types/recursive-readdir": ^2.2.0
@@ -3769,7 +3794,7 @@ __metadata:
     "@types/terser-webpack-plugin": ^5.0.4
     "@types/webpack-env": ^1.15.2
     "@types/yarnpkg__lockfile": ^1.1.4
-    "@typescript-eslint/eslint-plugin": 6.7.2
+    "@typescript-eslint/eslint-plugin": 6.7.5
     "@typescript-eslint/parser": ^6.7.2
     "@yarnpkg/lockfile": ^1.1.0
     "@yarnpkg/parsers": ^3.0.0-rc.4
@@ -3813,7 +3838,6 @@ __metadata:
     lodash: ^4.17.21
     mini-css-extract-plugin: ^2.4.2
     minimatch: ^5.1.1
-    mock-fs: ^5.2.0
     msw: ^1.0.0
     node-fetch: ^2.6.7
     node-libs-browser: ^2.2.1
@@ -3899,13 +3923,24 @@ __metadata:
     minimist: ^1.2.5
     msw: ^1.0.0
     node-fetch: ^2.6.7
-    typescript-json-schema: ^0.55.0
+    typescript-json-schema: ^0.61.0
     yaml: ^2.0.0
     zen-observable: ^0.10.0
   languageName: unknown
   linkType: soft
 
-"@backstage/config@^1.0.6, @backstage/config@^1.0.7, @backstage/config@^1.1.0, @backstage/config@workspace:^, @backstage/config@workspace:packages/config":
+"@backstage/config@npm:^1.0.6, @backstage/config@npm:^1.0.7, @backstage/config@npm:^1.1.0":
+  version: 1.1.0
+  resolution: "@backstage/config@npm:1.1.0"
+  dependencies:
+    "@backstage/errors": ^1.2.2
+    "@backstage/types": ^1.1.1
+    lodash: ^4.17.21
+  checksum: 9c17ab41b3e4bd6a0ad75caaf46ed3fad198aa8d190cb9a85415140bc9d6506022a4d5450ea5810004fc2d7a3f7a0a00583b468af4a0fa1655ce444606283010
+  languageName: node
+  linkType: hard
+
+"@backstage/config@workspace:^, @backstage/config@workspace:packages/config":
   version: 0.0.0-use.local
   resolution: "@backstage/config@workspace:packages/config"
   dependencies:
@@ -3927,8 +3962,8 @@ __metadata:
     "@backstage/test-utils": "workspace:^"
     "@backstage/types": "workspace:^"
     "@backstage/version-bridge": "workspace:^"
-    "@testing-library/dom": ^8.0.0
-    "@testing-library/jest-dom": ^5.10.1
+    "@testing-library/dom": ^9.0.0
+    "@testing-library/jest-dom": ^6.0.0
     "@testing-library/react": ^12.1.3
     "@testing-library/react-hooks": ^8.0.0
     "@testing-library/user-event": ^14.0.0
@@ -4078,8 +4113,8 @@ __metadata:
     "@material-ui/icons": ^4.9.1
     "@material-ui/lab": 4.0.0-alpha.61
     "@react-hookz/web": ^20.0.0
-    "@testing-library/dom": ^8.0.0
-    "@testing-library/jest-dom": ^5.10.1
+    "@testing-library/dom": ^9.0.0
+    "@testing-library/jest-dom": ^6.0.0
     "@testing-library/react": ^12.1.3
     "@testing-library/react-hooks": ^8.0.0
     "@testing-library/user-event": ^14.0.0
@@ -4164,8 +4199,8 @@ __metadata:
     "@backstage/test-utils": "workspace:^"
     "@backstage/types": "workspace:^"
     "@backstage/version-bridge": "workspace:^"
-    "@testing-library/dom": ^8.0.0
-    "@testing-library/jest-dom": ^5.10.1
+    "@testing-library/dom": ^9.0.0
+    "@testing-library/jest-dom": ^6.0.0
     "@testing-library/react": ^12.1.3
     "@testing-library/react-hooks": ^8.0.0
     "@testing-library/user-event": ^14.0.0
@@ -4222,16 +4257,16 @@ __metadata:
     "@backstage/theme": "workspace:^"
     "@material-ui/core": ^4.12.2
     "@material-ui/icons": ^4.9.1
-    "@testing-library/dom": ^8.0.0
-    "@testing-library/jest-dom": ^5.10.1
+    "@testing-library/dom": ^9.0.0
+    "@testing-library/jest-dom": ^6.0.0
     "@testing-library/react": ^12.1.3
     "@testing-library/user-event": ^14.0.0
     "@types/react": ^16.13.1 || ^17.0.0
     react-use: ^17.2.4
     zen-observable: ^0.10.0
   peerDependencies:
-    react: ^16.13.1 || ^17.0.0
-    react-dom: ^16.13.1 || ^17.0.0
+    react: ^16.13.1 || ^17.0.0 || ^18.0.0
+    react-dom: ^16.13.1 || ^17.0.0 || ^18.0.0
     react-router-dom: 6.0.0-beta.0 || ^6.3.0
   languageName: unknown
   linkType: soft
@@ -4253,7 +4288,18 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@backstage/errors@^1.1.5, @backstage/errors@^1.2.2, @backstage/errors@workspace:^, @backstage/errors@workspace:packages/errors":
+"@backstage/errors@npm:^1.1.5, @backstage/errors@npm:^1.2.2":
+  version: 1.2.2
+  resolution: "@backstage/errors@npm:1.2.2"
+  dependencies:
+    "@backstage/types": ^1.1.1
+    cross-fetch: ^3.1.5
+    serialize-error: ^8.0.1
+  checksum: 2fd323d528023654ac0910a5bd8ea703fa97a4bd62ee34b6c75e1c992d1a78cae661f0929c1ffd72df5465a1bda69c1bcad2682f017e5e52daa73154e6284234
+  languageName: node
+  linkType: hard
+
+"@backstage/errors@workspace:^, @backstage/errors@workspace:packages/errors":
   version: 0.0.0-use.local
   resolution: "@backstage/errors@workspace:packages/errors"
   dependencies:
@@ -4291,7 +4337,7 @@ __metadata:
     "@backstage/version-bridge": "workspace:^"
     "@material-ui/core": ^4.12.4
     "@material-ui/icons": ^4.11.3
-    "@testing-library/jest-dom": ^5.10.1
+    "@testing-library/jest-dom": ^6.0.0
     "@testing-library/react": ^12.1.3
     "@types/react": ^16.13.1 || ^17.0.0
     lodash: ^4.17.21
@@ -4310,7 +4356,7 @@ __metadata:
     "@backstage/frontend-app-api": "workspace:^"
     "@backstage/test-utils": "workspace:^"
     "@backstage/types": "workspace:^"
-    "@testing-library/jest-dom": ^5.10.1
+    "@testing-library/jest-dom": ^6.0.0
     "@testing-library/react": ^12.1.3
     "@types/react": ^16.13.1 || ^17.0.0
     lodash: ^4.17.21
@@ -4376,8 +4422,8 @@ __metadata:
     "@backstage/test-utils": "workspace:^"
     "@material-ui/core": ^4.12.2
     "@material-ui/icons": ^4.9.1
-    "@testing-library/dom": ^8.0.0
-    "@testing-library/jest-dom": ^5.10.1
+    "@testing-library/dom": ^9.0.0
+    "@testing-library/jest-dom": ^6.0.0
     "@types/react": ^16.13.1 || ^17.0.0
     msw: ^1.0.0
   peerDependencies:
@@ -4486,8 +4532,8 @@ __metadata:
     "@material-ui/core": ^4.12.2
     "@material-ui/icons": ^4.9.1
     "@material-ui/lab": 4.0.0-alpha.61
-    "@testing-library/dom": ^8.0.0
-    "@testing-library/jest-dom": ^5.10.1
+    "@testing-library/dom": ^9.0.0
+    "@testing-library/jest-dom": ^6.0.0
     "@testing-library/react": ^12.1.3
     "@testing-library/user-event": ^14.0.0
     "@types/git-url-parse": ^9.0.0
@@ -4542,8 +4588,8 @@ __metadata:
     "@material-ui/core": ^4.12.2
     "@material-ui/icons": ^4.9.1
     "@material-ui/lab": 4.0.0-alpha.61
-    "@testing-library/dom": ^8.0.0
-    "@testing-library/jest-dom": ^5.10.1
+    "@testing-library/dom": ^9.0.0
+    "@testing-library/jest-dom": ^6.0.0
     "@testing-library/react": ^12.1.3
     "@testing-library/user-event": ^14.0.0
     "@types/react": ^16.13.1 || ^17.0.0
@@ -4572,8 +4618,8 @@ __metadata:
     "@material-ui/core": ^4.12.2
     "@material-ui/icons": ^4.9.1
     "@material-ui/lab": 4.0.0-alpha.61
-    "@testing-library/dom": ^8.0.0
-    "@testing-library/jest-dom": ^5.10.1
+    "@testing-library/dom": ^9.0.0
+    "@testing-library/jest-dom": ^6.0.0
     "@testing-library/react": ^12.1.3
     "@testing-library/user-event": ^14.0.0
     "@types/react": ^16.13.1 || ^17.0.0
@@ -4598,8 +4644,8 @@ __metadata:
     "@backstage/dev-utils": "workspace:^"
     "@backstage/test-utils": "workspace:^"
     "@backstage/theme": "workspace:^"
-    "@testing-library/dom": ^8.0.0
-    "@testing-library/jest-dom": ^5.10.1
+    "@testing-library/dom": ^9.0.0
+    "@testing-library/jest-dom": ^6.0.0
     "@testing-library/react": ^12.1.3
     "@testing-library/user-event": ^14.0.0
     "@types/jest": ^28.1.3
@@ -4629,8 +4675,8 @@ __metadata:
     "@material-ui/core": ^4.12.2
     "@material-ui/icons": ^4.9.1
     "@material-ui/lab": 4.0.0-alpha.61
-    "@testing-library/dom": ^8.0.0
-    "@testing-library/jest-dom": ^5.10.1
+    "@testing-library/dom": ^9.0.0
+    "@testing-library/jest-dom": ^6.0.0
     "@testing-library/react": ^12.1.3
     "@testing-library/user-event": ^14.0.0
     "@types/react": ^16.13.1 || ^17.0.0
@@ -4656,7 +4702,7 @@ __metadata:
     "@backstage/dev-utils": "workspace:^"
     "@backstage/test-utils": "workspace:^"
     "@newrelic/browser-agent": ^1.236.0
-    "@testing-library/jest-dom": ^5.10.1
+    "@testing-library/jest-dom": ^6.0.0
     "@testing-library/react": ^12.1.3
     "@testing-library/user-event": ^14.0.0
     msw: ^1.0.0
@@ -4679,8 +4725,8 @@ __metadata:
     "@material-ui/core": ^4.12.2
     "@material-ui/icons": ^4.9.1
     "@material-ui/lab": 4.0.0-alpha.61
-    "@testing-library/dom": ^8.0.0
-    "@testing-library/jest-dom": ^5.10.1
+    "@testing-library/dom": ^9.0.0
+    "@testing-library/jest-dom": ^6.0.0
     "@testing-library/react": ^12.1.3
     "@testing-library/user-event": ^14.0.0
     "@types/react": ^16.13.1 || ^17.0.0
@@ -4700,7 +4746,7 @@ __metadata:
   resolution: "@backstage/plugin-api-docs-module-protoc-gen-doc@workspace:plugins/api-docs-module-protoc-gen-doc"
   dependencies:
     "@backstage/cli": "workspace:^"
-    "@testing-library/jest-dom": ^5.16.4
+    "@testing-library/jest-dom": ^6.0.0
     "@types/react": ^16.13.1 || ^17.0.0
     grpc-docs: ^1.1.2
   peerDependencies:
@@ -4728,8 +4774,8 @@ __metadata:
     "@material-ui/core": ^4.12.2
     "@material-ui/icons": ^4.9.1
     "@material-ui/lab": 4.0.0-alpha.61
-    "@testing-library/dom": ^8.0.0
-    "@testing-library/jest-dom": ^5.10.1
+    "@testing-library/dom": ^9.0.0
+    "@testing-library/jest-dom": ^6.0.0
     "@testing-library/react": ^12.1.3
     "@testing-library/user-event": ^14.0.0
     "@types/react": ^16.13.1 || ^17.0.0
@@ -4763,8 +4809,8 @@ __metadata:
     "@backstage/theme": "workspace:^"
     "@material-ui/core": ^4.12.2
     "@material-ui/icons": ^4.9.1
-    "@testing-library/dom": ^8.0.0
-    "@testing-library/jest-dom": ^5.10.1
+    "@testing-library/dom": ^9.0.0
+    "@testing-library/jest-dom": ^6.0.0
     "@testing-library/react": ^12.1.3
     "@testing-library/user-event": ^14.0.0
     "@types/react": ^16.13.1 || ^17.0.0
@@ -4888,6 +4934,24 @@ __metadata:
   languageName: unknown
   linkType: soft
 
+"@backstage/plugin-auth-backend-module-microsoft-provider@workspace:^, @backstage/plugin-auth-backend-module-microsoft-provider@workspace:plugins/auth-backend-module-microsoft-provider":
+  version: 0.0.0-use.local
+  resolution: "@backstage/plugin-auth-backend-module-microsoft-provider@workspace:plugins/auth-backend-module-microsoft-provider"
+  dependencies:
+    "@backstage/backend-common": "workspace:^"
+    "@backstage/backend-defaults": "workspace:^"
+    "@backstage/backend-plugin-api": "workspace:^"
+    "@backstage/backend-test-utils": "workspace:^"
+    "@backstage/cli": "workspace:^"
+    "@backstage/plugin-auth-backend": "workspace:^"
+    "@backstage/plugin-auth-node": "workspace:^"
+    express: ^4.18.2
+    passport: ^0.6.0
+    passport-microsoft: ^1.0.0
+    supertest: ^6.3.3
+  languageName: unknown
+  linkType: soft
+
 "@backstage/plugin-auth-backend-module-oauth2-provider@workspace:^, @backstage/plugin-auth-backend-module-oauth2-provider@workspace:plugins/auth-backend-module-oauth2-provider":
   version: 0.0.0-use.local
   resolution: "@backstage/plugin-auth-backend-module-oauth2-provider@workspace:plugins/auth-backend-module-oauth2-provider"
@@ -4902,6 +4966,30 @@ __metadata:
     express: ^4.18.2
     passport: ^0.6.0
     passport-oauth2: ^1.6.1
+    supertest: ^6.3.3
+  languageName: unknown
+  linkType: soft
+
+"@backstage/plugin-auth-backend-module-pinniped-provider@workspace:plugins/auth-backend-module-pinniped-provider":
+  version: 0.0.0-use.local
+  resolution: "@backstage/plugin-auth-backend-module-pinniped-provider@workspace:plugins/auth-backend-module-pinniped-provider"
+  dependencies:
+    "@backstage/backend-common": "workspace:^"
+    "@backstage/backend-defaults": "workspace:^"
+    "@backstage/backend-plugin-api": "workspace:^"
+    "@backstage/backend-test-utils": "workspace:^"
+    "@backstage/cli": "workspace:^"
+    "@backstage/config": "workspace:^"
+    "@backstage/plugin-auth-backend": "workspace:^"
+    "@backstage/plugin-auth-node": "workspace:^"
+    cookie-parser: ^1.4.6
+    express: ^4.18.2
+    express-promise-router: ^4.1.1
+    express-session: ^1.17.3
+    jose: ^4.14.6
+    msw: ^1.3.0
+    openid-client: ^5.4.3
+    passport: ^0.6.0
     supertest: ^6.3.3
   languageName: unknown
   linkType: soft
@@ -4923,6 +5011,7 @@ __metadata:
     "@backstage/plugin-auth-backend-module-github-provider": "workspace:^"
     "@backstage/plugin-auth-backend-module-gitlab-provider": "workspace:^"
     "@backstage/plugin-auth-backend-module-google-provider": "workspace:^"
+    "@backstage/plugin-auth-backend-module-microsoft-provider": "workspace:^"
     "@backstage/plugin-auth-backend-module-oauth2-provider": "workspace:^"
     "@backstage/plugin-auth-node": "workspace:^"
     "@backstage/plugin-catalog-node": "workspace:^"
@@ -5059,8 +5148,8 @@ __metadata:
     "@material-ui/core": ^4.12.2
     "@material-ui/icons": ^4.9.1
     "@material-ui/lab": 4.0.0-alpha.61
-    "@testing-library/dom": ^8.0.0
-    "@testing-library/jest-dom": ^5.10.1
+    "@testing-library/dom": ^9.0.0
+    "@testing-library/jest-dom": ^6.0.0
     "@testing-library/react": ^12.1.3
     "@testing-library/user-event": ^14.0.0
     "@types/react": ^16.13.1 || ^17.0.0
@@ -5122,8 +5211,8 @@ __metadata:
     "@material-ui/core": ^4.12.2
     "@material-ui/icons": ^4.9.1
     "@material-ui/lab": 4.0.0-alpha.61
-    "@testing-library/dom": ^8.0.0
-    "@testing-library/jest-dom": ^5.10.1
+    "@testing-library/dom": ^9.0.0
+    "@testing-library/jest-dom": ^6.0.0
     "@testing-library/react": ^12.1.3
     "@testing-library/user-event": ^14.0.0
     "@types/react": ^16.13.1 || ^17.0.0
@@ -5182,7 +5271,7 @@ __metadata:
     "@material-ui/core": ^4.12.2
     "@material-ui/icons": ^4.9.1
     "@material-ui/lab": 4.0.0-alpha.61
-    "@testing-library/jest-dom": ^5.16.5
+    "@testing-library/jest-dom": ^6.0.0
     "@types/react": ^16.13.1 || ^17.0.0
     react-use: ^17.2.4
   peerDependencies:
@@ -5231,7 +5320,7 @@ __metadata:
     "@material-ui/icons": ^4.9.1
     "@material-ui/lab": 4.0.0-alpha.61
     "@material-ui/pickers": ^3.3.10
-    "@testing-library/jest-dom": ^5.10.1
+    "@testing-library/jest-dom": ^6.0.0
     "@types/react": ^16.13.1 || ^17.0.0
     luxon: ^3.0.0
     material-ui-search-bar: ^1.0.0
@@ -5273,8 +5362,8 @@ __metadata:
     "@material-ui/core": ^4.12.2
     "@material-ui/icons": ^4.9.1
     "@material-ui/lab": 4.0.0-alpha.61
-    "@testing-library/dom": ^8.0.0
-    "@testing-library/jest-dom": ^5.10.1
+    "@testing-library/dom": ^9.0.0
+    "@testing-library/jest-dom": ^6.0.0
     "@testing-library/react": ^12.1.3
     "@testing-library/user-event": ^14.0.0
     "@types/react": ^16.13.1 || ^17.0.0
@@ -5465,7 +5554,23 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@backstage/plugin-catalog-backend-module-github@workspace:plugins/catalog-backend-module-github":
+"@backstage/plugin-catalog-backend-module-github-org@workspace:plugins/catalog-backend-module-github-org":
+  version: 0.0.0-use.local
+  resolution: "@backstage/plugin-catalog-backend-module-github-org@workspace:plugins/catalog-backend-module-github-org"
+  dependencies:
+    "@backstage/backend-common": "workspace:^"
+    "@backstage/backend-plugin-api": "workspace:^"
+    "@backstage/backend-tasks": "workspace:^"
+    "@backstage/backend-test-utils": "workspace:^"
+    "@backstage/cli": "workspace:^"
+    "@backstage/config": "workspace:^"
+    "@backstage/plugin-catalog-backend-module-github": "workspace:^"
+    "@backstage/plugin-catalog-node": "workspace:^"
+    luxon: ^3.0.0
+  languageName: unknown
+  linkType: soft
+
+"@backstage/plugin-catalog-backend-module-github@workspace:^, @backstage/plugin-catalog-backend-module-github@workspace:plugins/catalog-backend-module-github":
   version: 0.0.0-use.local
   resolution: "@backstage/plugin-catalog-backend-module-github@workspace:plugins/catalog-backend-module-github"
   dependencies:
@@ -5726,7 +5831,18 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@backstage/plugin-catalog-common@^1.0.10, @backstage/plugin-catalog-common@^1.0.16, @backstage/plugin-catalog-common@workspace:^, @backstage/plugin-catalog-common@workspace:plugins/catalog-common":
+"@backstage/plugin-catalog-common@npm:^1.0.10, @backstage/plugin-catalog-common@npm:^1.0.16":
+  version: 1.0.16
+  resolution: "@backstage/plugin-catalog-common@npm:1.0.16"
+  dependencies:
+    "@backstage/catalog-model": ^1.4.2
+    "@backstage/plugin-permission-common": ^0.7.8
+    "@backstage/plugin-search-common": ^1.2.6
+  checksum: 0dd21c3b704abff78fb091c4c35b0217e557d9a7298fe4227c3a58aa7b2a906ba2d7b7aefce9534ad03d152502dec465d30c07873409f8f803929d62acef9594
+  languageName: node
+  linkType: hard
+
+"@backstage/plugin-catalog-common@workspace:^, @backstage/plugin-catalog-common@workspace:plugins/catalog-common":
   version: 0.0.0-use.local
   resolution: "@backstage/plugin-catalog-common@workspace:plugins/catalog-common"
   dependencies:
@@ -5756,8 +5872,8 @@ __metadata:
     "@material-ui/core": ^4.12.2
     "@material-ui/icons": ^4.9.1
     "@material-ui/lab": 4.0.0-alpha.61
-    "@testing-library/dom": ^8.0.0
-    "@testing-library/jest-dom": ^5.10.1
+    "@testing-library/dom": ^9.0.0
+    "@testing-library/jest-dom": ^6.0.0
     "@testing-library/react": ^12.1.3
     "@testing-library/react-hooks": ^8.0.0
     "@testing-library/user-event": ^14.0.0
@@ -5827,8 +5943,8 @@ __metadata:
     "@material-ui/icons": ^4.9.1
     "@material-ui/lab": 4.0.0-alpha.61
     "@octokit/rest": ^19.0.3
-    "@testing-library/dom": ^8.0.0
-    "@testing-library/jest-dom": ^5.10.1
+    "@testing-library/dom": ^9.0.0
+    "@testing-library/jest-dom": ^6.0.0
     "@testing-library/react": ^12.1.3
     "@testing-library/react-hooks": ^8.0.0
     "@testing-library/user-event": ^14.0.0
@@ -5924,8 +6040,8 @@ __metadata:
     "@material-ui/icons": ^4.9.1
     "@material-ui/lab": 4.0.0-alpha.61
     "@react-hookz/web": ^23.0.0
-    "@testing-library/dom": ^8.0.0
-    "@testing-library/jest-dom": ^5.10.1
+    "@testing-library/dom": ^9.0.0
+    "@testing-library/jest-dom": ^6.0.0
     "@testing-library/react": ^12.1.3
     "@testing-library/react-hooks": ^8.0.0
     "@testing-library/user-event": ^14.0.0
@@ -5962,7 +6078,7 @@ __metadata:
     "@material-ui/core": ^4.9.13
     "@material-ui/icons": ^4.9.1
     "@material-ui/lab": ^4.0.0-alpha.60
-    "@testing-library/jest-dom": ^5.10.1
+    "@testing-library/jest-dom": ^6.0.0
     "@testing-library/react": ^12.1.3
     "@testing-library/user-event": ^14.0.0
     "@types/react": ^16.13.1 || ^17.0.0
@@ -6001,8 +6117,8 @@ __metadata:
     "@material-ui/core": ^4.12.2
     "@material-ui/icons": ^4.9.1
     "@material-ui/lab": 4.0.0-alpha.61
-    "@testing-library/dom": ^8.0.0
-    "@testing-library/jest-dom": ^5.10.1
+    "@testing-library/dom": ^9.0.0
+    "@testing-library/jest-dom": ^6.0.0
     "@testing-library/react": ^12.1.3
     "@testing-library/user-event": ^14.0.0
     "@types/react": ^16.13.1 || ^17.0.0
@@ -6082,8 +6198,8 @@ __metadata:
     "@material-ui/core": ^4.12.2
     "@material-ui/icons": ^4.9.1
     "@material-ui/lab": 4.0.0-alpha.61
-    "@testing-library/dom": ^8.0.0
-    "@testing-library/jest-dom": ^5.10.1
+    "@testing-library/dom": ^9.0.0
+    "@testing-library/jest-dom": ^6.0.0
     "@testing-library/react": ^12.1.3
     "@testing-library/user-event": ^14.0.0
     "@types/humanize-duration": ^3.25.1
@@ -6118,8 +6234,8 @@ __metadata:
     "@material-ui/core": ^4.12.2
     "@material-ui/icons": ^4.9.1
     "@material-ui/lab": 4.0.0-alpha.61
-    "@testing-library/dom": ^8.0.0
-    "@testing-library/jest-dom": ^5.10.1
+    "@testing-library/dom": ^9.0.0
+    "@testing-library/jest-dom": ^6.0.0
     "@testing-library/react": ^12.1.3
     "@testing-library/user-event": ^14.0.0
     "@types/react": ^16.13.1 || ^17.0.0
@@ -6150,8 +6266,8 @@ __metadata:
     "@material-ui/core": ^4.12.2
     "@material-ui/icons": ^4.9.1
     "@material-ui/lab": 4.0.0-alpha.61
-    "@testing-library/dom": ^8.0.0
-    "@testing-library/jest-dom": ^5.10.1
+    "@testing-library/dom": ^9.0.0
+    "@testing-library/jest-dom": ^6.0.0
     "@testing-library/react": ^12.1.3
     "@testing-library/user-event": ^14.0.0
     "@types/humanize-duration": ^3.27.1
@@ -6216,8 +6332,8 @@ __metadata:
     "@material-ui/icons": ^4.9.1
     "@material-ui/lab": 4.0.0-alpha.61
     "@material-ui/styles": ^4.11.0
-    "@testing-library/dom": ^8.0.0
-    "@testing-library/jest-dom": ^5.10.1
+    "@testing-library/dom": ^9.0.0
+    "@testing-library/jest-dom": ^6.0.0
     "@testing-library/react": ^12.1.3
     "@testing-library/user-event": ^14.0.0
     "@types/highlightjs": ^10.1.0
@@ -6251,8 +6367,8 @@ __metadata:
     "@material-ui/core": ^4.12.2
     "@material-ui/icons": ^4.9.1
     "@material-ui/lab": 4.0.0-alpha.61
-    "@testing-library/dom": ^8.0.0
-    "@testing-library/jest-dom": ^5.10.1
+    "@testing-library/dom": ^9.0.0
+    "@testing-library/jest-dom": ^6.0.0
     "@testing-library/react": ^12.1.3
     "@testing-library/user-event": ^14.0.0
     "@types/react": ^16.13.1 || ^17.0.0
@@ -6283,8 +6399,8 @@ __metadata:
     "@material-ui/core": ^4.12.2
     "@material-ui/icons": ^4.9.1
     "@material-ui/lab": 4.0.0-alpha.61
-    "@testing-library/dom": ^8.0.0
-    "@testing-library/jest-dom": ^5.10.1
+    "@testing-library/dom": ^9.0.0
+    "@testing-library/jest-dom": ^6.0.0
     "@testing-library/react": ^12.1.3
     "@testing-library/user-event": ^14.0.0
     "@types/react": ^16.13.1 || ^17.0.0
@@ -6326,8 +6442,8 @@ __metadata:
     "@material-ui/icons": ^4.9.1
     "@material-ui/lab": 4.0.0-alpha.61
     "@material-ui/styles": ^4.9.6
-    "@testing-library/dom": ^8.0.0
-    "@testing-library/jest-dom": ^5.10.1
+    "@testing-library/dom": ^9.0.0
+    "@testing-library/jest-dom": ^6.0.0
     "@testing-library/react": ^12.1.3
     "@testing-library/user-event": ^14.0.0
     "@types/pluralize": ^0.0.31
@@ -6420,7 +6536,7 @@ __metadata:
     "@material-ui/core": ^4.9.13
     "@material-ui/icons": ^4.9.1
     "@material-ui/lab": ^4.0.0-alpha.57
-    "@testing-library/jest-dom": ^5.10.1
+    "@testing-library/jest-dom": ^6.0.0
     "@testing-library/react": ^12.1.3
     "@testing-library/user-event": ^14.0.0
     cross-fetch: ^3.1.5
@@ -6450,8 +6566,8 @@ __metadata:
     "@material-ui/core": ^4.12.2
     "@material-ui/icons": ^4.9.1
     "@material-ui/lab": 4.0.0-alpha.61
-    "@testing-library/dom": ^8.0.0
-    "@testing-library/jest-dom": ^5.10.1
+    "@testing-library/dom": ^9.0.0
+    "@testing-library/jest-dom": ^6.0.0
     "@testing-library/react": ^12.1.3
     "@testing-library/user-event": ^14.0.0
     "@types/react": ^16.13.1 || ^17.0.0
@@ -6518,8 +6634,8 @@ __metadata:
     "@material-ui/core": ^4.9.13
     "@material-ui/icons": ^4.9.1
     "@material-ui/lab": 4.0.0-alpha.61
-    "@testing-library/dom": ^8.0.0
-    "@testing-library/jest-dom": ^5.10.1
+    "@testing-library/dom": ^9.0.0
+    "@testing-library/jest-dom": ^6.0.0
     "@testing-library/react": ^12.1.3
     "@testing-library/react-hooks": ^8.0.1
     "@testing-library/user-event": ^14.0.0
@@ -6556,8 +6672,8 @@ __metadata:
     "@material-ui/icons": ^4.9.1
     "@material-ui/lab": 4.0.0-alpha.61
     "@react-hookz/web": ^20.0.0
-    "@testing-library/dom": ^8.0.0
-    "@testing-library/jest-dom": ^5.10.1
+    "@testing-library/dom": ^9.0.0
+    "@testing-library/jest-dom": ^6.0.0
     "@testing-library/react": ^12.1.3
     "@testing-library/user-event": ^14.0.0
     "@types/react": ^16.13.1 || ^17.0.0
@@ -6745,8 +6861,8 @@ __metadata:
     "@backstage/dev-utils": "workspace:^"
     "@backstage/plugin-explore-common": "workspace:^"
     "@backstage/test-utils": "workspace:^"
-    "@testing-library/dom": ^8.0.0
-    "@testing-library/jest-dom": ^5.10.1
+    "@testing-library/dom": ^9.0.0
+    "@testing-library/jest-dom": ^6.0.0
     "@testing-library/react": ^12.1.3
     "@testing-library/user-event": ^14.0.0
     "@types/react": ^16.13.1 || ^17.0.0
@@ -6782,8 +6898,8 @@ __metadata:
     "@material-ui/core": ^4.12.2
     "@material-ui/icons": ^4.9.1
     "@material-ui/lab": 4.0.0-alpha.61
-    "@testing-library/dom": ^8.0.0
-    "@testing-library/jest-dom": ^5.10.1
+    "@testing-library/dom": ^9.0.0
+    "@testing-library/jest-dom": ^6.0.0
     "@testing-library/react": ^12.1.3
     "@testing-library/user-event": ^14.0.0
     "@types/react": ^16.13.1 || ^17.0.0
@@ -6815,8 +6931,8 @@ __metadata:
     "@material-ui/core": ^4.12.2
     "@material-ui/icons": ^4.9.1
     "@material-ui/lab": 4.0.0-alpha.61
-    "@testing-library/dom": ^8.0.0
-    "@testing-library/jest-dom": ^5.10.1
+    "@testing-library/dom": ^9.0.0
+    "@testing-library/jest-dom": ^6.0.0
     "@testing-library/react": ^12.1.3
     "@testing-library/user-event": ^14.0.0
     "@types/react": ^16.13.1 || ^17.0.0
@@ -6847,8 +6963,8 @@ __metadata:
     "@material-ui/core": ^4.12.2
     "@material-ui/icons": ^4.9.1
     "@material-ui/lab": 4.0.0-alpha.61
-    "@testing-library/dom": ^8.0.0
-    "@testing-library/jest-dom": ^5.10.1
+    "@testing-library/dom": ^9.0.0
+    "@testing-library/jest-dom": ^6.0.0
     "@testing-library/react": ^12.1.3
     "@testing-library/user-event": ^14.0.0
     "@types/react": ^16.13.1 || ^17.0.0
@@ -6881,8 +6997,8 @@ __metadata:
     "@material-ui/lab": 4.0.0-alpha.61
     "@maxim_mazurok/gapi.client.calendar": ^3.0.20220408
     "@tanstack/react-query": ^4.1.3
-    "@testing-library/dom": ^8.0.0
-    "@testing-library/jest-dom": ^5.10.1
+    "@testing-library/dom": ^9.0.0
+    "@testing-library/jest-dom": ^6.0.0
     "@testing-library/react": ^12.1.3
     "@testing-library/user-event": ^14.0.0
     "@types/dompurify": ^2.3.3
@@ -6918,8 +7034,8 @@ __metadata:
     "@material-ui/icons": ^4.9.1
     "@material-ui/lab": 4.0.0-alpha.61
     "@react-hookz/web": ^20.0.0
-    "@testing-library/dom": ^8.0.0
-    "@testing-library/jest-dom": ^5.10.1
+    "@testing-library/dom": ^9.0.0
+    "@testing-library/jest-dom": ^6.0.0
     "@testing-library/react": ^12.1.3
     "@testing-library/user-event": ^14.0.0
     "@types/react": ^16.13.1 || ^17.0.0
@@ -6948,8 +7064,8 @@ __metadata:
     "@material-ui/icons": ^4.9.1
     "@material-ui/lab": 4.0.0-alpha.61
     "@octokit/rest": ^19.0.3
-    "@testing-library/dom": ^8.0.0
-    "@testing-library/jest-dom": ^5.10.1
+    "@testing-library/dom": ^9.0.0
+    "@testing-library/jest-dom": ^6.0.0
     "@testing-library/react": ^12.1.3
     "@testing-library/react-hooks": ^8.0.0
     "@testing-library/user-event": ^14.0.0
@@ -6986,8 +7102,8 @@ __metadata:
     "@material-ui/icons": ^4.9.1
     "@material-ui/lab": 4.0.0-alpha.61
     "@octokit/rest": ^19.0.3
-    "@testing-library/dom": ^8.0.0
-    "@testing-library/jest-dom": ^5.10.1
+    "@testing-library/dom": ^9.0.0
+    "@testing-library/jest-dom": ^6.0.0
     "@testing-library/react": ^12.1.3
     "@testing-library/user-event": ^14.0.0
     "@types/react": ^16.13.1 || ^17.0.0
@@ -7023,8 +7139,8 @@ __metadata:
     "@material-ui/icons": ^4.9.1
     "@material-ui/lab": 4.0.0-alpha.61
     "@octokit/graphql": ^5.0.0
-    "@testing-library/dom": ^8.0.0
-    "@testing-library/jest-dom": ^5.10.1
+    "@testing-library/dom": ^9.0.0
+    "@testing-library/jest-dom": ^6.0.0
     "@testing-library/react": ^12.1.3
     "@testing-library/user-event": ^14.0.0
     "@types/react": ^16.13.1 || ^17.0.0
@@ -7056,8 +7172,8 @@ __metadata:
     "@material-ui/core": ^4.12.4
     "@material-ui/icons": ^4.9.1
     "@material-ui/lab": 4.0.0-alpha.61
-    "@testing-library/dom": ^8.0.0
-    "@testing-library/jest-dom": ^5.10.1
+    "@testing-library/dom": ^9.0.0
+    "@testing-library/jest-dom": ^6.0.0
     "@testing-library/react": ^12.1.3
     "@testing-library/user-event": ^14.0.0
     "@types/react": ^16.13.1 || ^17.0.0
@@ -7089,8 +7205,8 @@ __metadata:
     "@material-ui/icons": ^4.9.1
     "@material-ui/lab": 4.0.0-alpha.61
     "@octokit/rest": ^19.0.3
-    "@testing-library/dom": ^8.0.0
-    "@testing-library/jest-dom": ^5.10.1
+    "@testing-library/dom": ^9.0.0
+    "@testing-library/jest-dom": ^6.0.0
     "@testing-library/react": ^12.1.3
     "@testing-library/user-event": ^14.0.0
     "@types/react": ^16.13.1 || ^17.0.0
@@ -7120,8 +7236,8 @@ __metadata:
     "@material-ui/core": ^4.12.2
     "@material-ui/icons": ^4.9.1
     "@material-ui/lab": 4.0.0-alpha.61
-    "@testing-library/dom": ^8.0.0
-    "@testing-library/jest-dom": ^5.10.1
+    "@testing-library/dom": ^9.0.0
+    "@testing-library/jest-dom": ^6.0.0
     "@testing-library/react": ^12.1.3
     "@testing-library/user-event": ^14.0.0
     "@types/react": ^16.13.1 || ^17.0.0
@@ -7152,8 +7268,8 @@ __metadata:
     "@material-ui/core": ^4.12.2
     "@material-ui/icons": ^4.9.1
     "@material-ui/lab": 4.0.0-alpha.61
-    "@testing-library/dom": ^8.0.0
-    "@testing-library/jest-dom": ^5.10.1
+    "@testing-library/dom": ^9.0.0
+    "@testing-library/jest-dom": ^6.0.0
     "@testing-library/react": ^12.1.3
     "@testing-library/user-event": ^14.0.0
     "@types/lodash": ^4.14.173
@@ -7186,8 +7302,8 @@ __metadata:
     "@material-ui/core": ^4.12.2
     "@material-ui/icons": ^4.9.1
     "@material-ui/lab": 4.0.0-alpha.61
-    "@testing-library/dom": ^8.0.0
-    "@testing-library/jest-dom": ^5.10.1
+    "@testing-library/dom": ^9.0.0
+    "@testing-library/jest-dom": ^6.0.0
     "@testing-library/react": ^12.1.3
     "@testing-library/user-event": ^14.0.0
     "@types/codemirror": ^5.0.0
@@ -7244,8 +7360,8 @@ __metadata:
     "@material-ui/core": ^4.12.2
     "@material-ui/icons": ^4.9.1
     "@material-ui/lab": 4.0.0-alpha.61
-    "@testing-library/dom": ^8.0.0
-    "@testing-library/jest-dom": ^5.10.1
+    "@testing-library/dom": ^9.0.0
+    "@testing-library/jest-dom": ^6.0.0
     "@testing-library/react": ^12.1.3
     "@testing-library/user-event": ^14.0.0
     "@types/react": ^16.13.1 || ^17.0.0
@@ -7290,8 +7406,8 @@ __metadata:
     "@material-ui/core": ^4.12.2
     "@material-ui/icons": ^4.9.1
     "@rjsf/utils": 5.13.0
-    "@testing-library/dom": ^8.0.0
-    "@testing-library/jest-dom": ^5.10.1
+    "@testing-library/dom": ^9.0.0
+    "@testing-library/jest-dom": ^6.0.0
     "@testing-library/react": ^12.1.3
     "@testing-library/user-event": ^14.0.0
     "@types/react": ^16.13.1 || ^17.0.0
@@ -7328,8 +7444,8 @@ __metadata:
     "@rjsf/material-ui-v5": "npm:@rjsf/material-ui@5.13.0"
     "@rjsf/utils": 5.13.0
     "@rjsf/validator-ajv8": 5.13.0
-    "@testing-library/dom": ^8.0.0
-    "@testing-library/jest-dom": ^5.10.1
+    "@testing-library/dom": ^9.0.0
+    "@testing-library/jest-dom": ^6.0.0
     "@testing-library/react": ^12.1.3
     "@testing-library/react-hooks": ^8.0.1
     "@testing-library/user-event": ^14.0.0
@@ -7368,8 +7484,8 @@ __metadata:
     "@material-ui/icons": ^4.9.1
     "@material-ui/lab": 4.0.0-alpha.61
     "@material-ui/pickers": ^3.3.10
-    "@testing-library/dom": ^8.0.0
-    "@testing-library/jest-dom": ^5.10.1
+    "@testing-library/dom": ^9.0.0
+    "@testing-library/jest-dom": ^6.0.0
     "@testing-library/react": ^12.1.3
     "@testing-library/user-event": ^14.0.0
     "@types/react": ^16.13.1 || ^17.0.0
@@ -7389,12 +7505,14 @@ __metadata:
   resolution: "@backstage/plugin-jenkins-backend@workspace:plugins/jenkins-backend"
   dependencies:
     "@backstage/backend-common": "workspace:^"
+    "@backstage/backend-plugin-api": "workspace:^"
     "@backstage/catalog-client": "workspace:^"
     "@backstage/catalog-model": "workspace:^"
     "@backstage/cli": "workspace:^"
     "@backstage/config": "workspace:^"
     "@backstage/errors": "workspace:^"
     "@backstage/plugin-auth-node": "workspace:^"
+    "@backstage/plugin-catalog-node": "workspace:^"
     "@backstage/plugin-jenkins-common": "workspace:^"
     "@backstage/plugin-permission-common": "workspace:^"
     "@backstage/plugin-permission-node": "workspace:^"
@@ -7440,8 +7558,8 @@ __metadata:
     "@material-ui/core": ^4.12.2
     "@material-ui/icons": ^4.9.1
     "@material-ui/lab": 4.0.0-alpha.61
-    "@testing-library/dom": ^8.0.0
-    "@testing-library/jest-dom": ^5.10.1
+    "@testing-library/dom": ^9.0.0
+    "@testing-library/jest-dom": ^6.0.0
     "@testing-library/react": ^12.1.3
     "@testing-library/user-event": ^14.0.0
     "@types/react": ^16.13.1 || ^17.0.0
@@ -7497,8 +7615,8 @@ __metadata:
     "@material-ui/core": ^4.12.2
     "@material-ui/icons": ^4.9.1
     "@material-ui/lab": 4.0.0-alpha.61
-    "@testing-library/dom": ^8.0.0
-    "@testing-library/jest-dom": ^5.10.1
+    "@testing-library/dom": ^9.0.0
+    "@testing-library/jest-dom": ^6.0.0
     "@testing-library/react": ^12.1.3
     "@testing-library/react-hooks": ^8.0.0
     "@testing-library/user-event": ^14.0.0
@@ -7521,6 +7639,7 @@ __metadata:
     "@aws-sdk/credential-providers": ^3.350.0
     "@aws-sdk/signature-v4": ^3.347.0
     "@azure/identity": ^3.2.1
+    "@backstage/backend-app-api": "workspace:^"
     "@backstage/backend-common": "workspace:^"
     "@backstage/backend-plugin-api": "workspace:^"
     "@backstage/backend-test-utils": "workspace:^"
@@ -7533,12 +7652,13 @@ __metadata:
     "@backstage/plugin-auth-node": "workspace:^"
     "@backstage/plugin-catalog-node": "workspace:^"
     "@backstage/plugin-kubernetes-common": "workspace:^"
+    "@backstage/plugin-kubernetes-node": "workspace:^"
     "@backstage/plugin-permission-common": "workspace:^"
     "@backstage/plugin-permission-node": "workspace:^"
     "@backstage/types": "workspace:^"
     "@google-cloud/container": ^4.0.0
     "@jest-mock/express": ^2.0.1
-    "@kubernetes/client-node": 0.18.1
+    "@kubernetes/client-node": 0.19.0
     "@types/aws4": ^1.5.1
     "@types/express": ^4.17.6
     "@types/http-proxy-middleware": ^0.19.3
@@ -7585,8 +7705,8 @@ __metadata:
     "@material-ui/core": ^4.12.2
     "@material-ui/icons": ^4.9.1
     "@material-ui/lab": 4.0.0-alpha.61
-    "@testing-library/dom": ^8.0.0
-    "@testing-library/jest-dom": ^5.10.1
+    "@testing-library/dom": ^9.0.0
+    "@testing-library/jest-dom": ^6.0.0
     "@testing-library/react": ^12.1.3
     "@testing-library/react-hooks": ^8.0.0
     "@testing-library/user-event": ^14.0.0
@@ -7618,11 +7738,22 @@ __metadata:
     "@backstage/plugin-permission-common": "workspace:^"
     "@backstage/test-utils": "workspace:^"
     "@backstage/types": "workspace:^"
-    "@kubernetes/client-node": 0.18.1
+    "@kubernetes/client-node": 0.19.0
     kubernetes-models: ^4.3.1
     lodash: ^4.17.21
     luxon: ^3.0.0
     msw: ^1.3.1
+  languageName: unknown
+  linkType: soft
+
+"@backstage/plugin-kubernetes-node@workspace:^, @backstage/plugin-kubernetes-node@workspace:plugins/kubernetes-node":
+  version: 0.0.0-use.local
+  resolution: "@backstage/plugin-kubernetes-node@workspace:plugins/kubernetes-node"
+  dependencies:
+    "@backstage/backend-plugin-api": "workspace:^"
+    "@backstage/catalog-model": "workspace:^"
+    "@backstage/cli": "workspace:^"
+    "@backstage/plugin-kubernetes-common": "workspace:^"
   languageName: unknown
   linkType: soft
 
@@ -7645,7 +7776,7 @@ __metadata:
     "@material-ui/core": ^4.9.13
     "@material-ui/icons": ^4.11.3
     "@material-ui/lab": ^4.0.0-alpha.61
-    "@testing-library/jest-dom": ^5.10.1
+    "@testing-library/jest-dom": ^6.0.0
     "@testing-library/react": ^12.1.3
     "@testing-library/react-hooks": ^8.0.1
     "@types/react": ^16.13.1 || ^17.0.0
@@ -7685,12 +7816,12 @@ __metadata:
     "@backstage/types": "workspace:^"
     "@kubernetes-models/apimachinery": ^1.1.0
     "@kubernetes-models/base": ^4.0.1
-    "@kubernetes/client-node": 0.18.1
+    "@kubernetes/client-node": 0.19.0
     "@material-ui/core": ^4.12.2
     "@material-ui/icons": ^4.9.1
     "@material-ui/lab": 4.0.0-alpha.61
-    "@testing-library/dom": ^8.0.0
-    "@testing-library/jest-dom": ^5.10.1
+    "@testing-library/dom": ^9.0.0
+    "@testing-library/jest-dom": ^6.0.0
     "@testing-library/react": ^12.1.3
     "@testing-library/react-hooks": ^8.0.0
     "@testing-library/user-event": ^14.0.0
@@ -7704,8 +7835,8 @@ __metadata:
     msw: ^1.0.0
     react-use: ^17.2.4
     xterm: ^5.2.1
-    xterm-addon-attach: ^0.8.0
-    xterm-addon-fit: ^0.7.0
+    xterm-addon-attach: ^0.9.0
+    xterm-addon-fit: ^0.8.0
   peerDependencies:
     react: ^16.13.1 || ^17.0.0
     react-dom: ^16.13.1 || ^17.0.0
@@ -7758,8 +7889,8 @@ __metadata:
     "@material-ui/core": ^4.12.2
     "@material-ui/icons": ^4.9.1
     "@material-ui/lab": 4.0.0-alpha.61
-    "@testing-library/dom": ^8.0.0
-    "@testing-library/jest-dom": ^5.10.1
+    "@testing-library/dom": ^9.0.0
+    "@testing-library/jest-dom": ^6.0.0
     "@testing-library/react": ^12.1.3
     "@testing-library/react-hooks": ^8.0.0
     "@testing-library/user-event": ^14.0.0
@@ -7834,8 +7965,8 @@ __metadata:
     "@material-ui/core": ^4.9.13
     "@material-ui/icons": ^4.9.1
     "@material-ui/lab": 4.0.0-alpha.61
-    "@testing-library/dom": ^8.0.0
-    "@testing-library/jest-dom": ^5.10.1
+    "@testing-library/dom": ^9.0.0
+    "@testing-library/jest-dom": ^6.0.0
     "@testing-library/react": ^12.1.3
     "@testing-library/user-event": ^14.0.0
     "@types/react": ^16.13.1 || ^17.0.0
@@ -7866,8 +7997,8 @@ __metadata:
     "@material-ui/icons": ^4.9.1
     "@microsoft/microsoft-graph-types": ^2.25.0
     "@tanstack/react-query": ^4.1.3
-    "@testing-library/dom": ^8.0.0
-    "@testing-library/jest-dom": ^5.10.1
+    "@testing-library/dom": ^9.0.0
+    "@testing-library/jest-dom": ^6.0.0
     "@testing-library/react": ^12.1.3
     "@testing-library/user-event": ^14.0.0
     "@types/react": ^16.13.1 || ^17.0.0
@@ -7896,10 +8027,11 @@ __metadata:
     "@backstage/dev-utils": "workspace:^"
     "@backstage/errors": "workspace:^"
     "@backstage/plugin-catalog-react": "workspace:^"
+    "@backstage/test-utils": "workspace:^"
     "@material-ui/core": ^4.12.2
     "@material-ui/icons": ^4.9.1
     "@material-ui/lab": 4.0.0-alpha.61
-    "@testing-library/jest-dom": ^5.10.1
+    "@testing-library/jest-dom": ^6.0.0
     "@types/react": ^16.13.1 || ^17.0.0
     react-use: ^17.2.4
   peerDependencies:
@@ -7924,8 +8056,8 @@ __metadata:
     "@material-ui/core": ^4.12.2
     "@material-ui/icons": ^4.9.1
     "@material-ui/lab": 4.0.0-alpha.61
-    "@testing-library/dom": ^8.0.0
-    "@testing-library/jest-dom": ^5.10.1
+    "@testing-library/dom": ^9.0.0
+    "@testing-library/jest-dom": ^6.0.0
     "@testing-library/react": ^12.1.3
     "@testing-library/user-event": ^14.0.0
     "@types/parse-link-header": ^2.0.1
@@ -7979,7 +8111,7 @@ __metadata:
     "@material-ui/core": ^4.9.13
     "@material-ui/icons": ^4.9.1
     "@material-ui/lab": ^4.0.0-alpha.60
-    "@testing-library/jest-dom": ^5.10.1
+    "@testing-library/jest-dom": ^6.0.0
     "@testing-library/react": ^12.1.3
     "@testing-library/user-event": ^14.0.0
     "@types/react": ^16.13.1 || ^17.0.0
@@ -8010,8 +8142,8 @@ __metadata:
     "@material-ui/core": ^4.9.13
     "@material-ui/icons": ^4.9.1
     "@material-ui/lab": 4.0.0-alpha.61
-    "@testing-library/dom": ^8.0.0
-    "@testing-library/jest-dom": ^5.10.1
+    "@testing-library/dom": ^9.0.0
+    "@testing-library/jest-dom": ^6.0.0
     "@testing-library/react": ^12.1.3
     "@testing-library/user-event": ^14.0.0
     "@types/react": ^16.13.1 || ^17.0.0
@@ -8041,7 +8173,7 @@ __metadata:
     "@material-ui/lab": ^4.0.0-alpha.60
     "@material-ui/pickers": ^3.3.10
     "@material-ui/styles": ^4.11.5
-    "@testing-library/jest-dom": ^5.10.1
+    "@testing-library/jest-dom": ^6.0.0
     "@testing-library/react": ^12.1.3
     "@testing-library/user-event": ^14.0.0
     "@types/react": ^16.13.1 || ^17.0.0
@@ -8075,8 +8207,8 @@ __metadata:
     "@material-ui/core": ^4.12.2
     "@material-ui/icons": ^4.9.1
     "@material-ui/lab": 4.0.0-alpha.61
-    "@testing-library/dom": ^8.0.0
-    "@testing-library/jest-dom": ^5.10.1
+    "@testing-library/dom": ^9.0.0
+    "@testing-library/jest-dom": ^6.0.0
     "@testing-library/react": ^12.1.3
     "@testing-library/user-event": ^14.0.0
     "@types/react": ^16.13.1 || ^17.0.0
@@ -8109,8 +8241,8 @@ __metadata:
     "@material-ui/core": ^4.12.2
     "@material-ui/icons": ^4.9.1
     "@material-ui/lab": 4.0.0-alpha.61
-    "@testing-library/dom": ^8.0.0
-    "@testing-library/jest-dom": ^5.10.1
+    "@testing-library/dom": ^9.0.0
+    "@testing-library/jest-dom": ^6.0.0
     "@testing-library/react": ^12.1.3
     "@testing-library/react-hooks": ^8.0.1
     "@testing-library/user-event": ^14.0.0
@@ -8146,8 +8278,8 @@ __metadata:
     "@material-ui/core": ^4.12.2
     "@material-ui/icons": ^4.9.1
     "@material-ui/lab": 4.0.0-alpha.61
-    "@testing-library/dom": ^8.0.0
-    "@testing-library/jest-dom": ^5.10.1
+    "@testing-library/dom": ^9.0.0
+    "@testing-library/jest-dom": ^6.0.0
     "@testing-library/react": ^12.1.3
     "@testing-library/user-event": ^14.0.0
     "@types/react": ^16.13.1 || ^17.0.0
@@ -8199,8 +8331,8 @@ __metadata:
     "@material-ui/core": ^4.12.2
     "@material-ui/icons": ^4.9.1
     "@material-ui/lab": 4.0.0-alpha.61
-    "@testing-library/dom": ^8.0.0
-    "@testing-library/jest-dom": ^5.10.1
+    "@testing-library/dom": ^9.0.0
+    "@testing-library/jest-dom": ^6.0.0
     "@testing-library/react": ^12.1.3
     "@testing-library/user-event": ^14.0.0
     "@types/luxon": ^3.0.0
@@ -8257,7 +8389,21 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@backstage/plugin-permission-common@^0.7.8, @backstage/plugin-permission-common@workspace:^, @backstage/plugin-permission-common@workspace:plugins/permission-common":
+"@backstage/plugin-permission-common@npm:^0.7.8":
+  version: 0.7.8
+  resolution: "@backstage/plugin-permission-common@npm:0.7.8"
+  dependencies:
+    "@backstage/config": ^1.1.0
+    "@backstage/errors": ^1.2.2
+    "@backstage/types": ^1.1.1
+    cross-fetch: ^3.1.5
+    uuid: ^8.0.0
+    zod: ^3.21.4
+  checksum: 495f92d0360ab36bb707b0de527e31f42d699b177875c2ed4e8519c9721745ec1b67be547cd5862162e5d48e240ed07d9ab179c022adaf8367f03ef7ded6459e
+  languageName: node
+  linkType: hard
+
+"@backstage/plugin-permission-common@workspace:^, @backstage/plugin-permission-common@workspace:plugins/permission-common":
   version: 0.0.0-use.local
   resolution: "@backstage/plugin-permission-common@workspace:plugins/permission-common"
   dependencies:
@@ -8323,7 +8469,7 @@ __metadata:
     "@backstage/core-plugin-api": "workspace:^"
     "@backstage/plugin-permission-common": "workspace:^"
     "@backstage/test-utils": "workspace:^"
-    "@testing-library/jest-dom": ^5.10.1
+    "@testing-library/jest-dom": ^6.0.0
     "@testing-library/react": ^12.1.3
     "@types/react": ^16.13.1 || ^17.0.0
     cross-fetch: ^3.1.5
@@ -8392,14 +8538,15 @@ __metadata:
     "@backstage/plugin-permission-common": "workspace:^"
     "@backstage/plugin-permission-react": "workspace:^"
     "@backstage/plugin-playlist-common": "workspace:^"
+    "@backstage/plugin-search-common": "workspace:^"
     "@backstage/plugin-search-react": "workspace:^"
     "@backstage/test-utils": "workspace:^"
     "@backstage/theme": "workspace:^"
     "@material-ui/core": ^4.12.2
     "@material-ui/icons": ^4.9.1
     "@material-ui/lab": 4.0.0-alpha.61
-    "@testing-library/dom": ^8.0.0
-    "@testing-library/jest-dom": ^5.10.1
+    "@testing-library/dom": ^9.0.0
+    "@testing-library/jest-dom": ^6.0.0
     "@testing-library/react": ^12.1.3
     "@testing-library/react-hooks": ^8.0.0
     "@testing-library/user-event": ^14.0.0
@@ -8464,7 +8611,7 @@ __metadata:
     "@material-ui/core": ^4.12.2
     "@material-ui/icons": ^4.9.1
     "@material-ui/lab": ^4.0.0-alpha.57
-    "@testing-library/jest-dom": ^5.10.1
+    "@testing-library/jest-dom": ^6.0.0
     "@testing-library/react": ^12.1.3
     "@testing-library/user-event": ^14.0.0
     "@types/react": ^16.13.1 || ^17.0.0
@@ -8518,8 +8665,8 @@ __metadata:
     "@material-ui/core": ^4.12.2
     "@material-ui/icons": ^4.9.1
     "@material-ui/lab": 4.0.0-alpha.61
-    "@testing-library/dom": ^8.0.0
-    "@testing-library/jest-dom": ^5.10.1
+    "@testing-library/dom": ^9.0.0
+    "@testing-library/jest-dom": ^6.0.0
     "@testing-library/react": ^12.1.3
     "@testing-library/react-hooks": ^8.0.0
     "@testing-library/user-event": ^14.0.0
@@ -8779,8 +8926,8 @@ __metadata:
     "@rjsf/material-ui-v5": "npm:@rjsf/material-ui@5.13.0"
     "@rjsf/utils": 5.13.0
     "@rjsf/validator-ajv8": 5.13.0
-    "@testing-library/dom": ^8.0.0
-    "@testing-library/jest-dom": ^5.10.1
+    "@testing-library/dom": ^9.0.0
+    "@testing-library/jest-dom": ^6.0.0
     "@testing-library/react": ^12.1.3
     "@testing-library/react-hooks": ^8.0.0
     "@testing-library/user-event": ^14.0.0
@@ -8828,6 +8975,7 @@ __metadata:
     "@backstage/plugin-catalog-react": "workspace:^"
     "@backstage/plugin-permission-react": "workspace:^"
     "@backstage/plugin-scaffolder-common": "workspace:^"
+    "@backstage/plugin-scaffolder-node": "workspace:^"
     "@backstage/plugin-scaffolder-react": "workspace:^"
     "@backstage/test-utils": "workspace:^"
     "@backstage/theme": "workspace:^"
@@ -8843,8 +8991,8 @@ __metadata:
     "@rjsf/material-ui": ^3.2.1
     "@rjsf/utils": 5.13.0
     "@rjsf/validator-ajv8": 5.13.0
-    "@testing-library/dom": ^8.0.0
-    "@testing-library/jest-dom": ^5.10.1
+    "@testing-library/dom": ^9.0.0
+    "@testing-library/jest-dom": ^6.0.0
     "@testing-library/react": ^12.1.3
     "@testing-library/react-hooks": ^8.0.0
     "@testing-library/user-event": ^14.0.0
@@ -9037,6 +9185,16 @@ __metadata:
   languageName: unknown
   linkType: soft
 
+"@backstage/plugin-search-common@npm:^1.2.6":
+  version: 1.2.6
+  resolution: "@backstage/plugin-search-common@npm:1.2.6"
+  dependencies:
+    "@backstage/plugin-permission-common": ^0.7.8
+    "@backstage/types": ^1.1.1
+  checksum: 19ee6ef72ce75fce6c0e3da5e978419fd01f795db3e701460da652e8581e3eb53fba800c56d518147d03bd4e1e3889fa18e1d11a82a38c26a304fdc3bc5438bc
+  languageName: node
+  linkType: hard
+
 "@backstage/plugin-search-common@workspace:^, @backstage/plugin-search-common@workspace:plugins/search-common":
   version: 0.0.0-use.local
   resolution: "@backstage/plugin-search-common@workspace:plugins/search-common"
@@ -9065,8 +9223,8 @@ __metadata:
     "@material-ui/core": ^4.12.2
     "@material-ui/icons": ^4.9.1
     "@material-ui/lab": 4.0.0-alpha.61
-    "@testing-library/dom": ^8.0.0
-    "@testing-library/jest-dom": ^5.10.1
+    "@testing-library/dom": ^9.0.0
+    "@testing-library/jest-dom": ^6.0.0
     "@testing-library/react": ^12.1.3
     "@testing-library/react-hooks": ^8.0.0
     "@testing-library/user-event": ^14.0.0
@@ -9104,8 +9262,8 @@ __metadata:
     "@material-ui/core": ^4.12.2
     "@material-ui/icons": ^4.9.1
     "@material-ui/lab": 4.0.0-alpha.61
-    "@testing-library/dom": ^8.0.0
-    "@testing-library/jest-dom": ^5.10.1
+    "@testing-library/dom": ^9.0.0
+    "@testing-library/jest-dom": ^6.0.0
     "@testing-library/react": ^12.1.3
     "@testing-library/react-hooks": ^8.0.0
     "@testing-library/user-event": ^14.0.0
@@ -9139,8 +9297,8 @@ __metadata:
     "@material-ui/core": ^4.12.2
     "@material-ui/icons": ^4.9.1
     "@material-ui/lab": 4.0.0-alpha.61
-    "@testing-library/dom": ^8.0.0
-    "@testing-library/jest-dom": ^5.10.1
+    "@testing-library/dom": ^9.0.0
+    "@testing-library/jest-dom": ^6.0.0
     "@testing-library/react": ^12.1.3
     "@testing-library/user-event": ^14.0.0
     "@types/luxon": ^3.0.0
@@ -9172,8 +9330,8 @@ __metadata:
     "@material-ui/core": ^4.12.2
     "@material-ui/icons": ^4.9.1
     "@material-ui/lab": 4.0.0-alpha.61
-    "@testing-library/dom": ^8.0.0
-    "@testing-library/jest-dom": ^5.10.1
+    "@testing-library/dom": ^9.0.0
+    "@testing-library/jest-dom": ^6.0.0
     "@testing-library/react": ^12.1.3
     "@testing-library/user-event": ^14.0.0
     "@types/react": ^16.13.1 || ^17.0.0
@@ -9245,8 +9403,8 @@ __metadata:
     "@material-ui/icons": ^4.9.1
     "@material-ui/lab": 4.0.0-alpha.61
     "@material-ui/styles": ^4.10.0
-    "@testing-library/dom": ^8.0.0
-    "@testing-library/jest-dom": ^5.10.1
+    "@testing-library/dom": ^9.0.0
+    "@testing-library/jest-dom": ^6.0.0
     "@testing-library/react": ^12.1.3
     "@testing-library/user-event": ^14.0.0
     "@types/react": ^16.13.1 || ^17.0.0
@@ -9278,8 +9436,8 @@ __metadata:
     "@material-ui/core": ^4.12.2
     "@material-ui/icons": ^4.9.1
     "@material-ui/lab": 4.0.0-alpha.61
-    "@testing-library/dom": ^8.0.0
-    "@testing-library/jest-dom": ^5.10.1
+    "@testing-library/dom": ^9.0.0
+    "@testing-library/jest-dom": ^6.0.0
     "@testing-library/react": ^12.1.3
     "@testing-library/user-event": ^14.0.0
     "@types/luxon": ^3.0.0
@@ -9329,8 +9487,8 @@ __metadata:
     "@backstage/theme": "workspace:^"
     "@material-ui/core": ^4.12.2
     "@material-ui/icons": ^4.9.1
-    "@testing-library/dom": ^8.0.0
-    "@testing-library/jest-dom": ^5.10.1
+    "@testing-library/dom": ^9.0.0
+    "@testing-library/jest-dom": ^6.0.0
     "@testing-library/react": ^12.1.3
     "@testing-library/user-event": ^14.0.0
     "@types/react": ^16.13.1 || ^17.0.0
@@ -9360,8 +9518,8 @@ __metadata:
     "@backstage/theme": "workspace:^"
     "@material-ui/core": ^4.12.2
     "@material-ui/icons": ^4.9.1
-    "@testing-library/dom": ^8.0.0
-    "@testing-library/jest-dom": ^5.10.1
+    "@testing-library/dom": ^9.0.0
+    "@testing-library/jest-dom": ^6.0.0
     "@testing-library/react": ^12.1.3
     "@testing-library/user-event": ^14.0.0
     "@types/react": ^16.13.1 || ^17.0.0
@@ -9471,8 +9629,8 @@ __metadata:
     "@material-ui/core": ^4.12.2
     "@material-ui/icons": ^4.9.1
     "@material-ui/lab": 4.0.0-alpha.61
-    "@testing-library/dom": ^8.0.0
-    "@testing-library/jest-dom": ^5.10.1
+    "@testing-library/dom": ^9.0.0
+    "@testing-library/jest-dom": ^6.0.0
     "@testing-library/react": ^12.1.3
     "@testing-library/user-event": ^14.0.0
     "@types/react": ^16.13.1 || ^17.0.0
@@ -9501,8 +9659,8 @@ __metadata:
     "@material-ui/core": ^4.12.2
     "@material-ui/icons": ^4.9.1
     "@material-ui/lab": 4.0.0-alpha.61
-    "@testing-library/dom": ^8.0.0
-    "@testing-library/jest-dom": ^5.10.1
+    "@testing-library/dom": ^9.0.0
+    "@testing-library/jest-dom": ^6.0.0
     "@testing-library/react": ^12.1.3
     "@testing-library/user-event": ^14.0.0
     "@types/color": ^3.0.1
@@ -9539,8 +9697,8 @@ __metadata:
     "@material-ui/core": ^4.12.2
     "@material-ui/icons": ^4.9.1
     "@material-ui/lab": 4.0.0-alpha.61
-    "@testing-library/dom": ^8.0.0
-    "@testing-library/jest-dom": ^5.10.1
+    "@testing-library/dom": ^9.0.0
+    "@testing-library/jest-dom": ^6.0.0
     "@testing-library/react": ^12.1.3
     "@testing-library/user-event": ^14.0.0
     "@types/react": ^16.13.1 || ^17.0.0
@@ -9608,8 +9766,8 @@ __metadata:
     "@material-ui/icons": ^4.9.1
     "@material-ui/lab": 4.0.0-alpha.61
     "@react-hookz/web": ^20.0.0
-    "@testing-library/dom": ^8.0.0
-    "@testing-library/jest-dom": ^5.10.1
+    "@testing-library/dom": ^9.0.0
+    "@testing-library/jest-dom": ^6.0.0
     "@testing-library/react": ^12.1.3
     "@testing-library/user-event": ^14.0.0
     "@types/react": ^16.13.1 || ^17.0.0
@@ -9682,7 +9840,7 @@ __metadata:
     "@material-ui/core": ^4.12.2
     "@material-ui/lab": 4.0.0-alpha.61
     "@material-ui/styles": ^4.11.0
-    "@testing-library/jest-dom": ^5.10.1
+    "@testing-library/jest-dom": ^6.0.0
     "@testing-library/react": ^12.1.3
     "@testing-library/react-hooks": ^8.0.0
     "@types/react": ^16.13.1 || ^17.0.0
@@ -9723,8 +9881,8 @@ __metadata:
     "@material-ui/icons": ^4.9.1
     "@material-ui/lab": 4.0.0-alpha.61
     "@material-ui/styles": ^4.10.0
-    "@testing-library/dom": ^8.0.0
-    "@testing-library/jest-dom": ^5.10.1
+    "@testing-library/dom": ^9.0.0
+    "@testing-library/jest-dom": ^6.0.0
     "@testing-library/react": ^12.1.3
     "@testing-library/react-hooks": ^8.0.0
     "@testing-library/user-event": ^14.0.0
@@ -9742,8 +9900,8 @@ __metadata:
     react-helmet: 6.1.0
     react-use: ^17.2.4
   peerDependencies:
-    react: ^16.13.1 || ^17.0.0
-    react-dom: ^16.13.1 || ^17.0.0
+    react: ^16.13.1 || ^17.0.0 || ^18.0.0
+    react-dom: ^16.13.1 || ^17.0.0 || ^18.0.0
     react-router-dom: 6.0.0-beta.0 || ^6.3.0
   languageName: unknown
   linkType: soft
@@ -9791,8 +9949,8 @@ __metadata:
     "@material-ui/core": ^4.12.2
     "@material-ui/icons": ^4.9.1
     "@material-ui/lab": 4.0.0-alpha.61
-    "@testing-library/dom": ^8.0.0
-    "@testing-library/jest-dom": ^5.10.1
+    "@testing-library/dom": ^9.0.0
+    "@testing-library/jest-dom": ^6.0.0
     "@testing-library/react": ^12.1.3
     "@testing-library/user-event": ^14.0.0
     "@types/react": ^16.13.1 || ^17.0.0
@@ -9838,6 +9996,7 @@ __metadata:
     "@backstage/core-plugin-api": "workspace:^"
     "@backstage/dev-utils": "workspace:^"
     "@backstage/errors": "workspace:^"
+    "@backstage/frontend-plugin-api": "workspace:^"
     "@backstage/plugin-catalog": "workspace:^"
     "@backstage/plugin-catalog-react": "workspace:^"
     "@backstage/test-utils": "workspace:^"
@@ -9846,8 +10005,8 @@ __metadata:
     "@material-ui/core": ^4.12.2
     "@material-ui/icons": ^4.9.1
     "@material-ui/lab": 4.0.0-alpha.61
-    "@testing-library/dom": ^8.0.0
-    "@testing-library/jest-dom": ^5.10.1
+    "@testing-library/dom": ^9.0.0
+    "@testing-library/jest-dom": ^6.0.0
     "@testing-library/react": ^12.1.3
     "@testing-library/user-event": ^14.0.0
     "@types/react": ^16.13.1 || ^17.0.0
@@ -9906,8 +10065,8 @@ __metadata:
     "@material-ui/core": ^4.12.2
     "@material-ui/icons": ^4.9.1
     "@material-ui/lab": 4.0.0-alpha.61
-    "@testing-library/dom": ^8.0.0
-    "@testing-library/jest-dom": ^5.10.1
+    "@testing-library/dom": ^9.0.0
+    "@testing-library/jest-dom": ^6.0.0
     "@testing-library/react": ^12.1.3
     "@testing-library/user-event": ^14.0.0
     "@types/react": ^16.13.1 || ^17.0.0
@@ -9935,8 +10094,8 @@ __metadata:
     "@material-ui/core": ^4.12.2
     "@material-ui/icons": ^4.9.1
     "@material-ui/lab": 4.0.0-alpha.61
-    "@testing-library/dom": ^8.0.0
-    "@testing-library/jest-dom": ^5.10.1
+    "@testing-library/dom": ^9.0.0
+    "@testing-library/jest-dom": ^6.0.0
     "@testing-library/react": ^12.1.3
     "@testing-library/user-event": ^14.0.0
     "@types/luxon": ^3.0.0
@@ -10030,7 +10189,7 @@ __metadata:
     "@backstage/types": "workspace:^"
     "@material-ui/core": ^4.12.2
     "@material-ui/icons": ^4.9.1
-    "@testing-library/jest-dom": ^5.10.1
+    "@testing-library/jest-dom": ^6.0.0
     "@types/react": ^16.13.1 || ^17.0.0
     cross-fetch: ^3.1.5
     i18next: ^22.4.15
@@ -10044,7 +10203,35 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@backstage/theme@^0.4.2, @backstage/theme@workspace:^, @backstage/theme@workspace:packages/theme":
+"@backstage/theme@npm:^0.2.16, @backstage/theme@npm:^0.2.18":
+  version: 0.2.19
+  resolution: "@backstage/theme@npm:0.2.19"
+  dependencies:
+    "@material-ui/core": ^4.12.2
+  peerDependencies:
+    react: ^16.13.1 || ^17.0.0
+    react-dom: ^16.13.1 || ^17.0.0
+  checksum: 93ca110a3f953d6d98b4a5f2163beaa1bd1f95adb66a593e85eb523a7012acf654b6148db54008a6434805a4bd9016d67e5c6a317bc56940ee6800aecbb97d6f
+  languageName: node
+  linkType: hard
+
+"@backstage/theme@npm:^0.4.2":
+  version: 0.4.2
+  resolution: "@backstage/theme@npm:0.4.2"
+  dependencies:
+    "@emotion/react": ^11.10.5
+    "@emotion/styled": ^11.10.5
+    "@mui/material": ^5.12.2
+  peerDependencies:
+    "@material-ui/core": ^4.12.2
+    "@types/react": ^16.13.1 || ^17.0.0
+    react: ^16.13.1 || ^17.0.0
+    react-dom: ^16.13.1 || ^17.0.0
+  checksum: 22371c3159ed4d2f6d53925d48318d5f8f66ac9d6df6ff32f34b4b52e070e88ada25031b2a8fc3264cb352a24f4128fa1295b1302d1d3f12df3bcb76c785f605
+  languageName: node
+  linkType: hard
+
+"@backstage/theme@workspace:^, @backstage/theme@workspace:packages/theme":
   version: 0.0.0-use.local
   resolution: "@backstage/theme@workspace:packages/theme"
   dependencies:
@@ -10060,18 +10247,6 @@ __metadata:
     react-dom: ^16.13.1 || ^17.0.0
   languageName: unknown
   linkType: soft
-
-"@backstage/theme@npm:^0.2.16, @backstage/theme@npm:^0.2.18":
-  version: 0.2.19
-  resolution: "@backstage/theme@npm:0.2.19"
-  dependencies:
-    "@material-ui/core": ^4.12.2
-  peerDependencies:
-    react: ^16.13.1 || ^17.0.0
-    react-dom: ^16.13.1 || ^17.0.0
-  checksum: 93ca110a3f953d6d98b4a5f2163beaa1bd1f95adb66a593e85eb523a7012acf654b6148db54008a6434805a4bd9016d67e5c6a317bc56940ee6800aecbb97d6f
-  languageName: node
-  linkType: hard
 
 "@backstage/types@^1.0.2, @backstage/types@^1.1.1, @backstage/types@workspace:^, @backstage/types@workspace:packages/types":
   version: 0.0.0-use.local
@@ -10089,7 +10264,7 @@ __metadata:
   resolution: "@backstage/version-bridge@workspace:packages/version-bridge"
   dependencies:
     "@backstage/cli": "workspace:^"
-    "@testing-library/jest-dom": ^5.10.1
+    "@testing-library/jest-dom": ^6.0.0
     "@testing-library/react": ^12.1.3
     "@testing-library/react-hooks": ^8.0.0
     "@types/react": ^16.13.1 || ^17.0.0
@@ -12412,8 +12587,8 @@ __metadata:
     "@material-ui/core": ^4.12.2
     "@material-ui/icons": ^4.9.1
     "@material-ui/lab": 4.0.0-alpha.61
-    "@testing-library/dom": ^8.0.0
-    "@testing-library/jest-dom": ^5.10.1
+    "@testing-library/dom": ^9.0.0
+    "@testing-library/jest-dom": ^6.0.0
     "@testing-library/react": ^12.1.3
     "@testing-library/user-event": ^14.0.0
     "@types/react": ^16.13.1 || ^17.0.0
@@ -12929,35 +13104,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@kubernetes/client-node@npm:0.18.1":
-  version: 0.18.1
-  resolution: "@kubernetes/client-node@npm:0.18.1"
-  dependencies:
-    "@types/js-yaml": ^4.0.1
-    "@types/node": ^18.11.17
-    "@types/request": ^2.47.1
-    "@types/ws": ^8.5.3
-    byline: ^5.0.0
-    isomorphic-ws: ^5.0.0
-    js-yaml: ^4.1.0
-    jsonpath-plus: ^7.2.0
-    openid-client: ^5.3.0
-    request: ^2.88.0
-    rfc4648: ^1.3.0
-    stream-buffers: ^3.0.2
-    tar: ^6.1.11
-    tmp-promise: ^3.0.2
-    tslib: ^2.4.1
-    underscore: ^1.13.6
-    ws: ^8.11.0
-  dependenciesMeta:
-    openid-client:
-      optional: true
-  checksum: 7205f10256f182a0292d483195fab7f4d9b500b3a47e6861dcf2fa8851c0bfd554e4f9a9f832ff76500efefb0422df2ecf2e378c5c3a4290e86abd8bc69ef11d
-  languageName: node
-  linkType: hard
-
-"@kubernetes/client-node@npm:^0.19.0":
+"@kubernetes/client-node@npm:0.19.0, @kubernetes/client-node@npm:^0.19.0":
   version: 0.19.0
   resolution: "@kubernetes/client-node@npm:0.19.0"
   dependencies:
@@ -13484,14 +13631,14 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@mui/base@npm:5.0.0-beta.18":
-  version: 5.0.0-beta.18
-  resolution: "@mui/base@npm:5.0.0-beta.18"
+"@mui/base@npm:5.0.0-beta.19":
+  version: 5.0.0-beta.19
+  resolution: "@mui/base@npm:5.0.0-beta.19"
   dependencies:
     "@babel/runtime": ^7.23.1
     "@floating-ui/react-dom": ^2.0.2
-    "@mui/types": ^7.2.5
-    "@mui/utils": ^5.14.12
+    "@mui/types": ^7.2.6
+    "@mui/utils": ^5.14.13
     "@popperjs/core": ^2.11.8
     clsx: ^2.0.0
     prop-types: ^15.8.1
@@ -13502,28 +13649,28 @@ __metadata:
   peerDependenciesMeta:
     "@types/react":
       optional: true
-  checksum: 7d4ca1e9d537b7b5850567f1adecd1caa47b8613b43a587cf2f399cfda0a8c17dfda06b030c0bea554b76abe7ac25bb9b1af3c996574def5f860cda0c6ea4a3c
+  checksum: 7503d5609ba242e270cbcaea69f6c7d4935763a34a8ce8de2695078eae12ffcc1d7a57b5d735200de08f2314b2482aa7279631ffd92af240af24f6c31b633d8f
   languageName: node
   linkType: hard
 
-"@mui/core-downloads-tracker@npm:^5.14.12":
-  version: 5.14.12
-  resolution: "@mui/core-downloads-tracker@npm:5.14.12"
-  checksum: 1c1576ceecf7cade9e0d7a531632f5f9db24853d9ebbd47bb9ed943a3af7de734ad4f3374bab79880e9591db3ea55ea84cc10df72177f9ca5e32cc7662e04405
+"@mui/core-downloads-tracker@npm:^5.14.13":
+  version: 5.14.13
+  resolution: "@mui/core-downloads-tracker@npm:5.14.13"
+  checksum: 3094f8c289d53eb2189ce3f9e4c71e735f91cfefeadda4cf37b0f3c3de47d9261fdbd49485f74267e2fe93d8c0cb289d38e9c802a404489017e9f1cee9e56488
   languageName: node
   linkType: hard
 
 "@mui/material@npm:^5.12.2":
-  version: 5.14.12
-  resolution: "@mui/material@npm:5.14.12"
+  version: 5.14.13
+  resolution: "@mui/material@npm:5.14.13"
   dependencies:
     "@babel/runtime": ^7.23.1
-    "@mui/base": 5.0.0-beta.18
-    "@mui/core-downloads-tracker": ^5.14.12
-    "@mui/system": ^5.14.12
-    "@mui/types": ^7.2.5
-    "@mui/utils": ^5.14.12
-    "@types/react-transition-group": ^4.4.6
+    "@mui/base": 5.0.0-beta.19
+    "@mui/core-downloads-tracker": ^5.14.13
+    "@mui/system": ^5.14.13
+    "@mui/types": ^7.2.6
+    "@mui/utils": ^5.14.13
+    "@types/react-transition-group": ^4.4.7
     clsx: ^2.0.0
     csstype: ^3.1.2
     prop-types: ^15.8.1
@@ -13542,16 +13689,16 @@ __metadata:
       optional: true
     "@types/react":
       optional: true
-  checksum: a0d3b52ce3cc282da04036db0805f95f27b35a9c899f132f962fe96f05d3eb112e99ccbf6bd9d05cae617b24beda95470aedaff129d6e39d1b52e1ddf80a9e12
+  checksum: 07d73cb5f770743e080494684fd087770893232415c681a25bff2e791414b702d76d02100996a850e89ced81f986c1dc378cc6fb35fcd0724d19b3b0a4a34bed
   languageName: node
   linkType: hard
 
-"@mui/private-theming@npm:^5.14.12":
-  version: 5.14.12
-  resolution: "@mui/private-theming@npm:5.14.12"
+"@mui/private-theming@npm:^5.14.13":
+  version: 5.14.13
+  resolution: "@mui/private-theming@npm:5.14.13"
   dependencies:
     "@babel/runtime": ^7.23.1
-    "@mui/utils": ^5.14.12
+    "@mui/utils": ^5.14.13
     prop-types: ^15.8.1
   peerDependencies:
     "@types/react": ^17.0.0 || ^18.0.0
@@ -13559,13 +13706,13 @@ __metadata:
   peerDependenciesMeta:
     "@types/react":
       optional: true
-  checksum: f8127347dc29126fece3b530cb156f6ababf747b64bb1c712874375e6efae6c738c014304d9553001d67a59b24ca6a665f2d03bb5ae137f03bdba90815f0ecc1
+  checksum: fb2f3644c332a454897f83b98b6fda7344ce30f9382715194442b7d954fdff4e0b96ef017a631259b2f0e44706737eecda7c5306d4833bf5bd834d59b059a6f9
   languageName: node
   linkType: hard
 
-"@mui/styled-engine@npm:^5.14.12":
-  version: 5.14.12
-  resolution: "@mui/styled-engine@npm:5.14.12"
+"@mui/styled-engine@npm:^5.14.13":
+  version: 5.14.13
+  resolution: "@mui/styled-engine@npm:5.14.13"
   dependencies:
     "@babel/runtime": ^7.23.1
     "@emotion/cache": ^11.11.0
@@ -13580,19 +13727,19 @@ __metadata:
       optional: true
     "@emotion/styled":
       optional: true
-  checksum: c689ccad59e7fd54cd8367838612daa4f132c64d8c6b99ccb7c8f9697b5c940a6bf7edcccd686ce437b565dbcf3bfc12bb0dea47cbd5fbd750ea1553017f9c0d
+  checksum: b927fffbfb3a2c8d09f10b3770da610c94826312c2aa3e17791bd0355ef64056a842ede32f9d22225b952e3055aa2364c06f17620ae5203a0d4bb782ec90388f
   languageName: node
   linkType: hard
 
-"@mui/system@npm:^5.14.12":
-  version: 5.14.12
-  resolution: "@mui/system@npm:5.14.12"
+"@mui/system@npm:^5.14.13":
+  version: 5.14.13
+  resolution: "@mui/system@npm:5.14.13"
   dependencies:
     "@babel/runtime": ^7.23.1
-    "@mui/private-theming": ^5.14.12
-    "@mui/styled-engine": ^5.14.12
-    "@mui/types": ^7.2.5
-    "@mui/utils": ^5.14.12
+    "@mui/private-theming": ^5.14.13
+    "@mui/styled-engine": ^5.14.13
+    "@mui/types": ^7.2.6
+    "@mui/utils": ^5.14.13
     clsx: ^2.0.0
     csstype: ^3.1.2
     prop-types: ^15.8.1
@@ -13608,25 +13755,25 @@ __metadata:
       optional: true
     "@types/react":
       optional: true
-  checksum: 70c3920eadc593395a2d258ddea0f3b28689c7f02fdaf97fc205e16efaeebe462b2ab01c69a20a3bcb011e0d07ea47fa66a433e70d0a1ce15d7b694fb3c52135
+  checksum: 1dfcd19737792d36e87b83623f1bf836f1e1282faf44646f9788cec9e5fb6502e6082872ab839dcebd0ae3d72c5771aa12bad9d3ee4b7e039582970acda13a8d
   languageName: node
   linkType: hard
 
-"@mui/types@npm:^7.2.5":
-  version: 7.2.5
-  resolution: "@mui/types@npm:7.2.5"
+"@mui/types@npm:^7.2.6":
+  version: 7.2.6
+  resolution: "@mui/types@npm:7.2.6"
   peerDependencies:
     "@types/react": ^17.0.0 || ^18.0.0
   peerDependenciesMeta:
     "@types/react":
       optional: true
-  checksum: 2807e9a8eb251294eee6384a4d68b2159f7660466625f1781e9efea282aa7c6ff35b42bc7039c2d43e7a5ac80291dcb85c4110022b0b6de4e12b6406b62f3dc1
+  checksum: eb92f9c2fa5df048bcf182a611131bee2799ce1de64acfca12855f349d0b69f5f92c953b7e6c4e341e1df48f0e86f1329ed0251be4835ed194f53342827bd576
   languageName: node
   linkType: hard
 
-"@mui/utils@npm:^5.14.12":
-  version: 5.14.12
-  resolution: "@mui/utils@npm:5.14.12"
+"@mui/utils@npm:^5.14.13":
+  version: 5.14.13
+  resolution: "@mui/utils@npm:5.14.13"
   dependencies:
     "@babel/runtime": ^7.23.1
     "@types/prop-types": ^15.7.7
@@ -13638,7 +13785,7 @@ __metadata:
   peerDependenciesMeta:
     "@types/react":
       optional: true
-  checksum: 41470b6292b7a46c71fb0a0acc6a5f05a5e080648106b8805555de920e8f748669c7e8d39cbbcf0f52be9053927bb8439a748e24bd02bc1a220c9bded4435f42
+  checksum: 5f04382d7761d35c5f53bcc0ce91c29aba0b3c0afb731f01d2ff078b05afe8098dee412538d846ab3a4b00eec934d46d730f9ef2ef493c3db885e2672480b6f0
   languageName: node
   linkType: hard
 
@@ -14429,65 +14576,65 @@ __metadata:
   linkType: hard
 
 "@opentelemetry/api@npm:^1.0.1, @opentelemetry/api@npm:^1.3.0, @opentelemetry/api@npm:^1.4.1":
-  version: 1.4.1
-  resolution: "@opentelemetry/api@npm:1.4.1"
-  checksum: e783c40d1a518abf9c4c5d65223237c1392cd9a6c53ac6e2c3ef0c05ff7266e3dfc4fd9874316dae0dcb7a97950878deb513bcbadfaad653d48f0215f2a0911b
+  version: 1.6.0
+  resolution: "@opentelemetry/api@npm:1.6.0"
+  checksum: 3283b78b62a39f6568eaa050ac7045fcca747679e255874f6d2107cb8e1a3b2e10bfbf553c3e82a72500fb5fdca49dc07a5fe27fd6980debac24506cca638859
   languageName: node
   linkType: hard
 
-"@opentelemetry/core@npm:1.13.0":
-  version: 1.13.0
-  resolution: "@opentelemetry/core@npm:1.13.0"
+"@opentelemetry/core@npm:1.17.1":
+  version: 1.17.1
+  resolution: "@opentelemetry/core@npm:1.17.1"
   dependencies:
-    "@opentelemetry/semantic-conventions": 1.13.0
+    "@opentelemetry/semantic-conventions": 1.17.1
   peerDependencies:
-    "@opentelemetry/api": ">=1.0.0 <1.5.0"
-  checksum: a69916bcb710f1241e98a58ac5f5dfbc3372fdcd6cb2a4b2d33cdeb941765ecbdeea029f60f650a5743a56f583b0f06b672566467b89db84a24f1304bf2e5205
+    "@opentelemetry/api": ">=1.0.0 <1.7.0"
+  checksum: 06157f4a51dd1b3c98487c0d29a927a5a0fbbc997a81b04ccc4923968424582f517969b91c4f4f19dc1718f27a97f43b0b07af1310a5c240a96c5ff14c4b5cec
   languageName: node
   linkType: hard
 
-"@opentelemetry/exporter-prometheus@npm:^0.39.1":
-  version: 0.39.1
-  resolution: "@opentelemetry/exporter-prometheus@npm:0.39.1"
+"@opentelemetry/exporter-prometheus@npm:^0.44.0":
+  version: 0.44.0
+  resolution: "@opentelemetry/exporter-prometheus@npm:0.44.0"
   dependencies:
-    "@opentelemetry/core": 1.13.0
-    "@opentelemetry/resources": 1.13.0
-    "@opentelemetry/sdk-metrics": 1.13.0
+    "@opentelemetry/core": 1.17.1
+    "@opentelemetry/resources": 1.17.1
+    "@opentelemetry/sdk-metrics": 1.17.1
   peerDependencies:
     "@opentelemetry/api": ^1.3.0
-  checksum: 97697926ef26e3dca9654b6ea8d2ab8e7fc7fc33ce617d25a6eb70c0ef2e2fe47192fcede15cbe45179d0ade67e55769bbed11c691d34f9e59ebd50aab22add7
+  checksum: f0c093ba8b70c23f16fb08e7f2ca59986dff853ae006fd42864b952e4dc9ceac97fcb423586288828f1a35271589a6676eed46f2017369d59e8ed3315e6ac79d
   languageName: node
   linkType: hard
 
-"@opentelemetry/resources@npm:1.13.0":
-  version: 1.13.0
-  resolution: "@opentelemetry/resources@npm:1.13.0"
+"@opentelemetry/resources@npm:1.17.1":
+  version: 1.17.1
+  resolution: "@opentelemetry/resources@npm:1.17.1"
   dependencies:
-    "@opentelemetry/core": 1.13.0
-    "@opentelemetry/semantic-conventions": 1.13.0
+    "@opentelemetry/core": 1.17.1
+    "@opentelemetry/semantic-conventions": 1.17.1
   peerDependencies:
-    "@opentelemetry/api": ">=1.0.0 <1.5.0"
-  checksum: ef0a11596f27b5e1c13b74357da06c5c2725a1056df0a583562dbcc739927ad85bb8bdec4e01f4b43f348b448c0146c033b135840a7d388b75cc751a33a6364e
+    "@opentelemetry/api": ">=1.0.0 <1.7.0"
+  checksum: ea4ec5568f5b67626be6eb2b975614d140dab4f6eb7ca73ee30d0f1957ef9779953956d1d44c35bb124c75e311b34a05e2036b32fcf31cf50ae983154df9ee3d
   languageName: node
   linkType: hard
 
-"@opentelemetry/sdk-metrics@npm:1.13.0, @opentelemetry/sdk-metrics@npm:^1.13.0":
-  version: 1.13.0
-  resolution: "@opentelemetry/sdk-metrics@npm:1.13.0"
+"@opentelemetry/sdk-metrics@npm:1.17.1, @opentelemetry/sdk-metrics@npm:^1.13.0":
+  version: 1.17.1
+  resolution: "@opentelemetry/sdk-metrics@npm:1.17.1"
   dependencies:
-    "@opentelemetry/core": 1.13.0
-    "@opentelemetry/resources": 1.13.0
-    lodash.merge: 4.6.2
+    "@opentelemetry/core": 1.17.1
+    "@opentelemetry/resources": 1.17.1
+    lodash.merge: ^4.6.2
   peerDependencies:
-    "@opentelemetry/api": ">=1.3.0 <1.5.0"
-  checksum: 2f87444b6c789acdde3465383b4255b072e201cf9bed642e82970540bfe913d76d4c4ebf8cc1ff3da383d3235dd8399cd6407fac86085a9ac9ff5b5b3afc9f38
+    "@opentelemetry/api": ">=1.3.0 <1.7.0"
+  checksum: 6f6a59c5f594ebfc75da7ba203cb35a9271f4536ed4c2499c83f5953b3a2486d306d7aa17f0d7c2fde0efb8cbe9ac4346988adab0e039d082ec95d8d32703509
   languageName: node
   linkType: hard
 
-"@opentelemetry/semantic-conventions@npm:1.13.0":
-  version: 1.13.0
-  resolution: "@opentelemetry/semantic-conventions@npm:1.13.0"
-  checksum: 9cccf1d73315fed3920bb2201c0e82f66e58dddfa475314b6613780c2804570d6f657be3894eb8b84a2a543c9b8cd520587f5d6cd4b62bc6731d7299b4c5ee69
+"@opentelemetry/semantic-conventions@npm:1.17.1":
+  version: 1.17.1
+  resolution: "@opentelemetry/semantic-conventions@npm:1.17.1"
+  checksum: 16161f70526d2abcd37a39771229ffe01a25d569f76c86e97200dc20399e7fa87b231c557a9654629b4789e945350e4fc55f88df979a502911f1dde4643ad416
   languageName: node
   linkType: hard
 
@@ -16872,20 +17019,49 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@testing-library/jest-dom@npm:^5.10.1, @testing-library/jest-dom@npm:^5.16.4, @testing-library/jest-dom@npm:^5.16.5":
-  version: 5.17.0
-  resolution: "@testing-library/jest-dom@npm:5.17.0"
+"@testing-library/dom@npm:^9.0.0":
+  version: 9.3.3
+  resolution: "@testing-library/dom@npm:9.3.3"
   dependencies:
-    "@adobe/css-tools": ^4.0.1
+    "@babel/code-frame": ^7.10.4
+    "@babel/runtime": ^7.12.5
+    "@types/aria-query": ^5.0.1
+    aria-query: 5.1.3
+    chalk: ^4.1.0
+    dom-accessibility-api: ^0.5.9
+    lz-string: ^1.5.0
+    pretty-format: ^27.0.2
+  checksum: 34e0a564da7beb92aa9cc44a9080221e2412b1a132eb37be3d513fe6c58027674868deb9f86195756d98d15ba969a30fe00632a4e26e25df2a5a4f6ac0686e37
+  languageName: node
+  linkType: hard
+
+"@testing-library/jest-dom@npm:^6.0.0":
+  version: 6.1.4
+  resolution: "@testing-library/jest-dom@npm:6.1.4"
+  dependencies:
+    "@adobe/css-tools": ^4.3.1
     "@babel/runtime": ^7.9.2
-    "@types/testing-library__jest-dom": ^5.9.1
     aria-query: ^5.0.0
     chalk: ^3.0.0
     css.escape: ^1.5.1
     dom-accessibility-api: ^0.5.6
     lodash: ^4.17.15
     redent: ^3.0.0
-  checksum: 9f28dbca8b50d7c306aae40c3aa8e06f0e115f740360004bd87d57f95acf7ab4b4f4122a7399a76dbf2bdaaafb15c99cc137fdcb0ae457a92e2de0f3fbf9b03b
+  peerDependencies:
+    "@jest/globals": ">= 28"
+    "@types/jest": ">= 28"
+    jest: ">= 28"
+    vitest: ">= 0.32"
+  peerDependenciesMeta:
+    "@jest/globals":
+      optional: true
+    "@types/jest":
+      optional: true
+    jest:
+      optional: true
+    vitest:
+      optional: true
+  checksum: c6bd9469554136a25d94b55ea16736d56b8c5d200526023774dbf35ca35551a721257e6734f1b404bbd07ae0a1950f1912b5be60e113db2ff2ff50af14f7085c
   languageName: node
   linkType: hard
 
@@ -17571,14 +17747,14 @@ __metadata:
   linkType: hard
 
 "@types/express@npm:*, @types/express@npm:^4.17.13, @types/express@npm:^4.17.17, @types/express@npm:^4.17.6":
-  version: 4.17.18
-  resolution: "@types/express@npm:4.17.18"
+  version: 4.17.19
+  resolution: "@types/express@npm:4.17.19"
   dependencies:
     "@types/body-parser": "*"
     "@types/express-serve-static-core": ^4.17.33
     "@types/qs": "*"
     "@types/serve-static": "*"
-  checksum: 8c178da4f0edff1f006d871fbdc3f849620986ff10bad252f3dfd45b57554e26aaa28c602285df028930d5216e257a06fbaf795070f8bb42f7d87e3b689cba50
+  checksum: 3d39d0655eb0825d96fec100985a38737767ddd6da2dbda1e330a3adf36c98a9b7cd8d9539db32876d1fbb47a09343cad7b38c30c8dd7c291271fcb9b85cb21b
   languageName: node
   linkType: hard
 
@@ -17820,9 +17996,9 @@ __metadata:
   linkType: hard
 
 "@types/js-yaml@npm:^4.0.0, @types/js-yaml@npm:^4.0.1":
-  version: 4.0.6
-  resolution: "@types/js-yaml@npm:4.0.6"
-  checksum: d4439ec2cc830d355c2a1d7508f49888931b2cfe59d786d27621edd530bf06314b1dceeaa759e21f9b035a0ff623a0ca306752ebb73df9485c02abe045bd962c
+  version: 4.0.7
+  resolution: "@types/js-yaml@npm:4.0.7"
+  checksum: e02eca876f3f19dbba62a26a18e59ec5df4e29300b99808fb0b4ca980cbfbb60e4a2c7d75d521728f5b2a3b92a0da5b9343497b2acf621b8ea019d48b40bbd78
   languageName: node
   linkType: hard
 
@@ -18097,11 +18273,11 @@ __metadata:
   linkType: hard
 
 "@types/node-forge@npm:^1.3.0":
-  version: 1.3.6
-  resolution: "@types/node-forge@npm:1.3.6"
+  version: 1.3.7
+  resolution: "@types/node-forge@npm:1.3.7"
   dependencies:
     "@types/node": "*"
-  checksum: 5fe97ce83937c51215a52eb8c9d5c4458abbca2b3cfd91a65142f20fd4a2830ed10ab1a8c860efc55ff36553f939a75c4a6d5c243ed6e24e55a005c9bddeaf43
+  checksum: e604e0e09e0ffdcf7babdf2415f7d2de14a7718ddc9c5916a693f81597dc80865d525dfb7fc876a787c25bf1164518cd8ecf1667598bee00c9ba1349f93ba4eb
   languageName: node
   linkType: hard
 
@@ -18133,7 +18309,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@types/node@npm:^18.11.17, @types/node@npm:^18.17.8":
+"@types/node@npm:^18.17.8":
   version: 18.18.4
   resolution: "@types/node@npm:18.18.4"
   checksum: 4901e91c4cc479bb58acbcd79236a97a0ad6db4a53cb1f4ba4cf32af15324c61b16faa6e31c1b09bf538a20feb5f5274239157ce5237f5741db0b9ab71e69c52
@@ -18266,13 +18442,13 @@ __metadata:
   linkType: hard
 
 "@types/pg@npm:^8.6.6":
-  version: 8.10.3
-  resolution: "@types/pg@npm:8.10.3"
+  version: 8.10.5
+  resolution: "@types/pg@npm:8.10.5"
   dependencies:
     "@types/node": "*"
     pg-protocol: "*"
     pg-types: ^4.0.1
-  checksum: 05a12be3f18cc67728e3aee5a7426f065351ca991e351d2e7a0562c5d9063425d67fe88fd35108834e0fa1f5624032fefbf371cf8f3cc47230a666aa953425b9
+  checksum: 532a3104ed7898e3c7806e00cbde486dcfc803d2e99e236066f1b675ff0546a1cb232fe6f2ffc60dac81d3df209b69dbe62a597b565bff0965dd622fef957afe
   languageName: node
   linkType: hard
 
@@ -18411,12 +18587,12 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@types/react-transition-group@npm:^4.2.0, @types/react-transition-group@npm:^4.4.6":
-  version: 4.4.6
-  resolution: "@types/react-transition-group@npm:4.4.6"
+"@types/react-transition-group@npm:^4.2.0, @types/react-transition-group@npm:^4.4.7":
+  version: 4.4.7
+  resolution: "@types/react-transition-group@npm:4.4.7"
   dependencies:
     "@types/react": "*"
-  checksum: 0872143821d7ee20a1d81e965f8b1e837837f11cd2206973f1f98655751992d9390304d58bac192c9cd923eca95bff107d8c9e3364a180240d5c2a6fd70fd7c3
+  checksum: 3b91486e7aa777a3787e773efce79a0fa9be4ec9e02d51ccda8c7532c5c5d84fbcefe248dacb4007293d85bf0794ac51603bb9cec360db81cf3657d2b7123fb9
   languageName: node
   linkType: hard
 
@@ -18439,13 +18615,13 @@ __metadata:
   linkType: hard
 
 "@types/react@npm:^17":
-  version: 17.0.67
-  resolution: "@types/react@npm:17.0.67"
+  version: 17.0.68
+  resolution: "@types/react@npm:17.0.68"
   dependencies:
     "@types/prop-types": "*"
     "@types/scheduler": "*"
     csstype: ^3.0.2
-  checksum: eb4915fc7d24e19fe6e98dfe98ade377423b1263e7dc001beda41b0298152fb5a410a55dde5def5ec0838156239a48e778d522da03d319ae5ecea80d455da604
+  checksum: c6ca4415b53b1abe91162b29af541a1797a56a6f462ef796e8ebda3eaa4d0609205f4f17b3fce8d9a12235d4ffd8a67c47b5e018ed85c2f3bee0fba8f54638c1
   languageName: node
   linkType: hard
 
@@ -18551,11 +18727,11 @@ __metadata:
   linkType: hard
 
 "@types/sanitize-html@npm:^2.6.2":
-  version: 2.9.1
-  resolution: "@types/sanitize-html@npm:2.9.1"
+  version: 2.9.2
+  resolution: "@types/sanitize-html@npm:2.9.2"
   dependencies:
     htmlparser2: ^8.0.0
-  checksum: 381db8e3f22876e8f6aa8f0997af73c71220c8398545d809ebd4e25d33480e73642b8c143a87d87bba504a43ab58d70a724c60eb3fd8fde31a813b682730c98f
+  checksum: bdd0db4a39125b8836573ede5ec5cc2f7b0dff5ecfbeae68aefb40163c916429cfb500d581ad3a18613e8d6a53f707abb279350e0811122e84e21b0223b8d560
   languageName: node
   linkType: hard
 
@@ -18952,15 +19128,15 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@typescript-eslint/eslint-plugin@npm:6.7.2":
-  version: 6.7.2
-  resolution: "@typescript-eslint/eslint-plugin@npm:6.7.2"
+"@typescript-eslint/eslint-plugin@npm:6.7.5":
+  version: 6.7.5
+  resolution: "@typescript-eslint/eslint-plugin@npm:6.7.5"
   dependencies:
     "@eslint-community/regexpp": ^4.5.1
-    "@typescript-eslint/scope-manager": 6.7.2
-    "@typescript-eslint/type-utils": 6.7.2
-    "@typescript-eslint/utils": 6.7.2
-    "@typescript-eslint/visitor-keys": 6.7.2
+    "@typescript-eslint/scope-manager": 6.7.5
+    "@typescript-eslint/type-utils": 6.7.5
+    "@typescript-eslint/utils": 6.7.5
+    "@typescript-eslint/visitor-keys": 6.7.5
     debug: ^4.3.4
     graphemer: ^1.4.0
     ignore: ^5.2.4
@@ -18973,25 +19149,25 @@ __metadata:
   peerDependenciesMeta:
     typescript:
       optional: true
-  checksum: 4d6f612619282a20518cd6581bce16cd7c50ac4e49f5eeca2ab916a923049379aa382817568c929216381fb2c1bfbc1c4e6fde16ac8bfdd63862a9126f0ab797
+  checksum: c37edf5a703db4ff9227d67c2d2cf817e65c9afc94cc0e650fa3d2b05ac55201ef887ce9dadb9ca13779f4025bf4367e132b013e3559e777006a2332079bb180
   languageName: node
   linkType: hard
 
 "@typescript-eslint/parser@npm:^6.7.2":
-  version: 6.7.2
-  resolution: "@typescript-eslint/parser@npm:6.7.2"
+  version: 6.7.5
+  resolution: "@typescript-eslint/parser@npm:6.7.5"
   dependencies:
-    "@typescript-eslint/scope-manager": 6.7.2
-    "@typescript-eslint/types": 6.7.2
-    "@typescript-eslint/typescript-estree": 6.7.2
-    "@typescript-eslint/visitor-keys": 6.7.2
+    "@typescript-eslint/scope-manager": 6.7.5
+    "@typescript-eslint/types": 6.7.5
+    "@typescript-eslint/typescript-estree": 6.7.5
+    "@typescript-eslint/visitor-keys": 6.7.5
     debug: ^4.3.4
   peerDependencies:
     eslint: ^7.0.0 || ^8.0.0
   peerDependenciesMeta:
     typescript:
       optional: true
-  checksum: 9e93d3eb432ed5457a852e25a31782d07518f728966cd477620175ae64db9be04f5d8e605f3561dbfe9a365f209a83b2a3788efb9b3cf33669c8bca17f1bcf6f
+  checksum: 63f988c1c87697bd20487933be952b97f7a5f2a9977f505af671c7d49367fc01ca508817576646caa937c15cc0a0ef1e86adff9111eb19df8b489e7436d10620
   languageName: node
   linkType: hard
 
@@ -19005,22 +19181,22 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@typescript-eslint/scope-manager@npm:6.7.2":
-  version: 6.7.2
-  resolution: "@typescript-eslint/scope-manager@npm:6.7.2"
+"@typescript-eslint/scope-manager@npm:6.7.5":
+  version: 6.7.5
+  resolution: "@typescript-eslint/scope-manager@npm:6.7.5"
   dependencies:
-    "@typescript-eslint/types": 6.7.2
-    "@typescript-eslint/visitor-keys": 6.7.2
-  checksum: e35fa23ecb16252c3ad00b5f1ec05d9b8d33ee30d4c57543892f900443ed77926be9bd2836f06463c31b483f5f0f79070273bc51c4a606f55ac3cd1d9c9cd542
+    "@typescript-eslint/types": 6.7.5
+    "@typescript-eslint/visitor-keys": 6.7.5
+  checksum: f21858ed78f81ab2d9879139f69657fda2a7b901078f79df64d1262d80f84ef66c56525ed0bb5e393fa5ca5474ad97f2225b7f713977c2d0f79cda31b2744af9
   languageName: node
   linkType: hard
 
-"@typescript-eslint/type-utils@npm:6.7.2":
-  version: 6.7.2
-  resolution: "@typescript-eslint/type-utils@npm:6.7.2"
+"@typescript-eslint/type-utils@npm:6.7.5":
+  version: 6.7.5
+  resolution: "@typescript-eslint/type-utils@npm:6.7.5"
   dependencies:
-    "@typescript-eslint/typescript-estree": 6.7.2
-    "@typescript-eslint/utils": 6.7.2
+    "@typescript-eslint/typescript-estree": 6.7.5
+    "@typescript-eslint/utils": 6.7.5
     debug: ^4.3.4
     ts-api-utils: ^1.0.1
   peerDependencies:
@@ -19028,7 +19204,7 @@ __metadata:
   peerDependenciesMeta:
     typescript:
       optional: true
-  checksum: 67743f8e4b77d0ab3d82907eda0411ffd221357b60ac9cbd29683d5b8c77127369ebfafcf0bfc30a1f1828927ccd5635fab5b2eaf2b2f1d12a9361549cab3e62
+  checksum: 8023d8ddcfbf4a0411b192016711068e9e6787c5811aee3a25ac40025ade0d063a1a3d7b38469e1a534bb31fa9dbeec08ab53b7a6d7b3128358294ac5b219d9a
   languageName: node
   linkType: hard
 
@@ -19039,10 +19215,10 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@typescript-eslint/types@npm:6.7.2":
-  version: 6.7.2
-  resolution: "@typescript-eslint/types@npm:6.7.2"
-  checksum: 5a7c4cd456f721649757d2edb4cae71d1405c1c2c35672031f012b27007b9d49b7118297eec746dc3351370e6aa414e5d2c493fb658c7b910154b7998c0278e1
+"@typescript-eslint/types@npm:6.7.5":
+  version: 6.7.5
+  resolution: "@typescript-eslint/types@npm:6.7.5"
+  checksum: f21e5726b60f13feb3a920c92515fbc1205ba0e9bba9959b2e42c02c282a0ab4fb0e5ae84f3807b9b1cf95036027e9033d92a911fa88e6c243a87621d8dd7a01
   languageName: node
   linkType: hard
 
@@ -19064,12 +19240,12 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@typescript-eslint/typescript-estree@npm:6.7.2":
-  version: 6.7.2
-  resolution: "@typescript-eslint/typescript-estree@npm:6.7.2"
+"@typescript-eslint/typescript-estree@npm:6.7.5":
+  version: 6.7.5
+  resolution: "@typescript-eslint/typescript-estree@npm:6.7.5"
   dependencies:
-    "@typescript-eslint/types": 6.7.2
-    "@typescript-eslint/visitor-keys": 6.7.2
+    "@typescript-eslint/types": 6.7.5
+    "@typescript-eslint/visitor-keys": 6.7.5
     debug: ^4.3.4
     globby: ^11.1.0
     is-glob: ^4.0.3
@@ -19078,24 +19254,24 @@ __metadata:
   peerDependenciesMeta:
     typescript:
       optional: true
-  checksum: c30b9803567c37527e2806badd98f3083ae125db9a430d8a28647b153e446e6a4b830833f229cca27d5aa0ff5497c149aaa524aa3a6dbf932b557c60d0bfd4f9
+  checksum: 17685e8321edce1d1ec4278d84e63c0f41ccb19e9308f21c37450943ad0c33328755ac52b966e7855af17e01d22bc83d1fcda79c279fabe7d3460c8f315a7265
   languageName: node
   linkType: hard
 
-"@typescript-eslint/utils@npm:6.7.2":
-  version: 6.7.2
-  resolution: "@typescript-eslint/utils@npm:6.7.2"
+"@typescript-eslint/utils@npm:6.7.5":
+  version: 6.7.5
+  resolution: "@typescript-eslint/utils@npm:6.7.5"
   dependencies:
     "@eslint-community/eslint-utils": ^4.4.0
     "@types/json-schema": ^7.0.12
     "@types/semver": ^7.5.0
-    "@typescript-eslint/scope-manager": 6.7.2
-    "@typescript-eslint/types": 6.7.2
-    "@typescript-eslint/typescript-estree": 6.7.2
+    "@typescript-eslint/scope-manager": 6.7.5
+    "@typescript-eslint/types": 6.7.5
+    "@typescript-eslint/typescript-estree": 6.7.5
     semver: ^7.5.4
   peerDependencies:
     eslint: ^7.0.0 || ^8.0.0
-  checksum: 97f950562dba2bda63ffe64672f643ef940123cf74007bc878afcf31c75f905c99934a3ad77da3d5a4fe7807d5d69c791b20c429712ad5a5525e331ebc313756
+  checksum: f365c654241f927e7784640079627d60a296aa3d575552b07594a69cfc419832eb5fa4adc87acb1988bea9741ae9cc4a5277dab168990310caef5de125255752
   languageName: node
   linkType: hard
 
@@ -19127,13 +19303,13 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@typescript-eslint/visitor-keys@npm:6.7.2":
-  version: 6.7.2
-  resolution: "@typescript-eslint/visitor-keys@npm:6.7.2"
+"@typescript-eslint/visitor-keys@npm:6.7.5":
+  version: 6.7.5
+  resolution: "@typescript-eslint/visitor-keys@npm:6.7.5"
   dependencies:
-    "@typescript-eslint/types": 6.7.2
+    "@typescript-eslint/types": 6.7.5
     eslint-visitor-keys: ^3.4.1
-  checksum: b4915fbc0f3d44c81b92b7151830b698e8b6ed2dee8587bb65540c888c7a84300d3fd6b0c159e2131c7c6df1bebe49fb0d21c347ecdbf7f3e4aec05acebbb0bc
+  checksum: 2df996742f63d89fa339b0e8ff3a3a289d36b3f584f7538a7626bed3869e9ae27f8f56ab31748519d25a63de2ae22a43dd8413610b00436ff342b0a17eb85289
   languageName: node
   linkType: hard
 
@@ -25471,8 +25647,8 @@ __metadata:
     "@roadiehq/backstage-plugin-github-insights": ^2.0.5
     "@roadiehq/backstage-plugin-github-pull-requests": ^2.2.7
     "@roadiehq/backstage-plugin-travis-ci": ^2.0.5
-    "@testing-library/dom": ^8.0.0
-    "@testing-library/jest-dom": ^5.10.1
+    "@testing-library/dom": ^9.0.0
+    "@testing-library/jest-dom": ^6.0.0
     "@testing-library/react": ^12.1.3
     "@testing-library/user-event": ^14.0.0
     "@types/jquery": ^3.3.34
@@ -25584,8 +25760,8 @@ __metadata:
     "@roadiehq/backstage-plugin-github-insights": ^2.0.5
     "@roadiehq/backstage-plugin-github-pull-requests": ^2.2.7
     "@roadiehq/backstage-plugin-travis-ci": ^2.0.5
-    "@testing-library/dom": ^8.0.0
-    "@testing-library/jest-dom": ^5.10.1
+    "@testing-library/dom": ^9.0.0
+    "@testing-library/jest-dom": ^6.0.0
     "@testing-library/react": ^12.1.3
     "@testing-library/user-event": ^14.0.0
     "@types/jquery": ^3.3.34
@@ -25621,6 +25797,7 @@ __metadata:
     "@backstage/plugin-catalog-backend-module-unprocessed": "workspace:^"
     "@backstage/plugin-devtools-backend": "workspace:^"
     "@backstage/plugin-entity-feedback-backend": "workspace:^"
+    "@backstage/plugin-jenkins-backend": "workspace:^"
     "@backstage/plugin-kubernetes-backend": "workspace:^"
     "@backstage/plugin-lighthouse-backend": "workspace:^"
     "@backstage/plugin-linguist-backend": "workspace:^"
@@ -25703,7 +25880,7 @@ __metadata:
     "@gitbeaker/node": ^35.1.0
     "@octokit/rest": ^19.0.3
     "@opentelemetry/api": ^1.4.1
-    "@opentelemetry/exporter-prometheus": ^0.39.1
+    "@opentelemetry/exporter-prometheus": ^0.44.0
     "@opentelemetry/sdk-metrics": ^1.13.0
     "@types/dockerode": ^3.3.0
     "@types/express": ^4.17.6
@@ -25865,7 +26042,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"express-session@npm:^1.17.1":
+"express-session@npm:^1.17.1, express-session@npm:^1.17.3":
   version: 1.17.3
   resolution: "express-session@npm:1.17.3"
   dependencies:
@@ -30069,10 +30246,10 @@ __metadata:
   languageName: node
   linkType: hard
 
-"jose@npm:^4.15.1, jose@npm:^4.6.0":
-  version: 4.15.2
-  resolution: "jose@npm:4.15.2"
-  checksum: 8f0cab1eef31243abe14a935b2b330cd95f10f9b69808fd642088ae5000e50e566664934537d2c6413ab2f6b54acd8265a5033da05157aa1260c5f1d7e57fab0
+"jose@npm:^4.14.6, jose@npm:^4.15.1, jose@npm:^4.6.0":
+  version: 4.15.3
+  resolution: "jose@npm:4.15.3"
+  checksum: b76eeccc1d40d0eaf26dfaadc0f88fc15802c9105ab66a24ee223bd84369f7cb217f4a2cb852f5080ff6996170b3a73db2b2d26878b8905d99c36ca432628134
   languageName: node
   linkType: hard
 
@@ -31560,7 +31737,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"lodash.merge@npm:4.6.2, lodash.merge@npm:^4.6.2":
+"lodash.merge@npm:^4.6.2":
   version: 4.6.2
   resolution: "lodash.merge@npm:4.6.2"
   checksum: ad580b4bdbb7ca1f7abf7e1bce63a9a0b98e370cf40194b03380a46b4ed799c9573029599caebc1b14e3f24b111aef72b96674a56cfa105e0f5ac70546cdc005
@@ -33196,7 +33373,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"msw@npm:^1.0.0, msw@npm:^1.0.1, msw@npm:^1.2.1, msw@npm:^1.2.3, msw@npm:^1.3.1":
+"msw@npm:^1.0.0, msw@npm:^1.0.1, msw@npm:^1.2.1, msw@npm:^1.2.3, msw@npm:^1.3.0, msw@npm:^1.3.1":
   version: 1.3.2
   resolution: "msw@npm:1.3.2"
   dependencies:
@@ -34243,15 +34420,15 @@ __metadata:
   languageName: node
   linkType: hard
 
-"openid-client@npm:^5.2.1, openid-client@npm:^5.3.0":
-  version: 5.6.0
-  resolution: "openid-client@npm:5.6.0"
+"openid-client@npm:^5.2.1, openid-client@npm:^5.3.0, openid-client@npm:^5.4.3":
+  version: 5.6.1
+  resolution: "openid-client@npm:5.6.1"
   dependencies:
     jose: ^4.15.1
     lru-cache: ^6.0.0
     object-hash: ^2.2.0
     oidc-token-hash: ^5.0.3
-  checksum: 414fe43c5aac07d8b8f5ea52ef1812374ff28140910977a1360781284b09d4a03c916d910017bf15003d602d859b3dcf9857d1dfe6f61508c8f5c52de334e6ea
+  checksum: 9d939cec57540e6dd3f67e9a248ec5ecec3b439b7ab5bd2e9fb4481bd03e8d030deedd87a447348194be7f3e93e84085841b0414033caf86479870f526cdbc2f
   languageName: node
   linkType: hard
 
@@ -34906,10 +35083,10 @@ __metadata:
   languageName: node
   linkType: hard
 
-"path-equal@npm:^1.1.2":
-  version: 1.2.2
-  resolution: "path-equal@npm:1.2.2"
-  checksum: 948930eb6bbb5ddcc724f7a4339e2a98fe35269b5f46d88f85c588ed4713e7ec1c71da1629608606c6687216ba3afae710a77cfb5146b735a84d6199f06f247d
+"path-equal@npm:^1.2.5":
+  version: 1.2.5
+  resolution: "path-equal@npm:1.2.5"
+  checksum: 2bef7bcb98c7ae371c52c1562b2fc515bfd03bc1a5571df9a8591038db8d742ba2d1ff39aa5130853e6afb69e773ccba5095f54d2e6d17422ca03ef9047992d7
   languageName: node
   linkType: hard
 
@@ -40385,8 +40562,8 @@ __metadata:
     "@backstage/theme": "workspace:^"
     "@material-ui/core": ^4.12.2
     "@material-ui/icons": ^4.9.1
-    "@testing-library/dom": ^8.0.0
-    "@testing-library/jest-dom": ^5.10.1
+    "@testing-library/dom": ^9.0.0
+    "@testing-library/jest-dom": ^6.0.0
     "@testing-library/react": ^12.1.3
     "@testing-library/user-event": ^14.0.0
     "@types/react": "*"
@@ -40632,15 +40809,6 @@ __metadata:
   languageName: node
   linkType: hard
 
-"tmp-promise@npm:^3.0.2":
-  version: 3.0.2
-  resolution: "tmp-promise@npm:3.0.2"
-  dependencies:
-    tmp: ^0.2.0
-  checksum: 2d8457c9512e896633f64fab33e5e3fd273c4d8fca33cfc74a04a104a0b921d15ed3e832c4f2a50108635ac88264afef85abddbe5ad8480e15f55fc7f8e76969
-  languageName: node
-  linkType: hard
-
 "tmp@npm:^0.0.33":
   version: 0.0.33
   resolution: "tmp@npm:0.0.33"
@@ -40650,7 +40818,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"tmp@npm:^0.2.0, tmp@npm:^0.2.1":
+"tmp@npm:^0.2.1":
   version: 0.2.1
   resolution: "tmp@npm:0.2.1"
   dependencies:
@@ -41224,31 +41392,21 @@ __metadata:
   languageName: node
   linkType: hard
 
-"typescript-json-schema@npm:^0.55.0":
-  version: 0.55.0
-  resolution: "typescript-json-schema@npm:0.55.0"
+"typescript-json-schema@npm:^0.61.0":
+  version: 0.61.0
+  resolution: "typescript-json-schema@npm:0.61.0"
   dependencies:
     "@types/json-schema": ^7.0.9
     "@types/node": ^16.9.2
     glob: ^7.1.7
-    path-equal: ^1.1.2
+    path-equal: ^1.2.5
     safe-stable-stringify: ^2.2.0
     ts-node: ^10.9.1
-    typescript: ~4.8.2
+    typescript: ~5.1.0
     yargs: ^17.1.1
   bin:
     typescript-json-schema: bin/typescript-json-schema
-  checksum: 4188e9d4cc1f1fc3201e2aa06b8d87d35695b0eaf049ff9d2cd3027d87406efc6978c4f90c2bf06f4fcd8d6dd40ceb65e744dc3cf9b412e1f74b8eb5bae96a05
-  languageName: node
-  linkType: hard
-
-"typescript@npm:~4.8.2":
-  version: 4.8.4
-  resolution: "typescript@npm:4.8.4"
-  bin:
-    tsc: bin/tsc
-    tsserver: bin/tsserver
-  checksum: 3e4f061658e0c8f36c820802fa809e0fd812b85687a9a2f5430bc3d0368e37d1c9605c3ce9b39df9a05af2ece67b1d844f9f6ea8ff42819f13bcb80f85629af0
+  checksum: 8359d5ca8ebcb96dca9cd968b46ea21da40a92ee872a44a7b5c6c8f8f4cd1ffbd0ea457752f3be7d44379ea286ccfaee1d40ab1810321ee45d0ecece80ed45ed
   languageName: node
   linkType: hard
 
@@ -41262,13 +41420,13 @@ __metadata:
   languageName: node
   linkType: hard
 
-"typescript@patch:typescript@~4.8.2#~builtin<compat/typescript>":
-  version: 4.8.4
-  resolution: "typescript@patch:typescript@npm%3A4.8.4#~builtin<compat/typescript>::version=4.8.4&hash=a1c5e5"
+"typescript@npm:~5.1.0":
+  version: 5.1.6
+  resolution: "typescript@npm:5.1.6"
   bin:
     tsc: bin/tsc
     tsserver: bin/tsserver
-  checksum: 563a0ef47abae6df27a9a3ab38f75fc681f633ccf1a3502b1108e252e187787893de689220f4544aaf95a371a4eb3141e4a337deb9895de5ac3c1ca76430e5f0
+  checksum: b2f2c35096035fe1f5facd1e38922ccb8558996331405eb00a5111cc948b2e733163cc22fab5db46992aba7dd520fff637f2c1df4996ff0e134e77d3249a7350
   languageName: node
   linkType: hard
 
@@ -41279,6 +41437,16 @@ __metadata:
     tsc: bin/tsc
     tsserver: bin/tsserver
   checksum: 6a1fe9a77bb9c5176ead919cc4a1499ee63e46b4e05bf667079f11bf3a8f7887f135aa72460a4c3b016e6e6bb65a822cb8689a6d86cbfe92d22cc9f501f09213
+  languageName: node
+  linkType: hard
+
+"typescript@patch:typescript@~5.1.0#~builtin<compat/typescript>":
+  version: 5.1.6
+  resolution: "typescript@patch:typescript@npm%3A5.1.6#~builtin<compat/typescript>::version=5.1.6&hash=a1c5e5"
+  bin:
+    tsc: bin/tsc
+    tsserver: bin/tsserver
+  checksum: 21e88b0a0c0226f9cb9fd25b9626fb05b4c0f3fddac521844a13e1f30beb8f14e90bd409a9ac43c812c5946d714d6e0dee12d5d02dfc1c562c5aacfa1f49b606
   languageName: node
   linkType: hard
 
@@ -41370,7 +41538,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"underscore@npm:^1.12.1, underscore@npm:^1.13.6, underscore@npm:~1.13.2":
+"underscore@npm:^1.12.1, underscore@npm:~1.13.2":
   version: 1.13.6
   resolution: "underscore@npm:1.13.6"
   checksum: d5cedd14a9d0d91dd38c1ce6169e4455bb931f0aaf354108e47bd46d3f2da7464d49b2171a5cf786d61963204a42d01ea1332a903b7342ad428deaafaf70ec36
@@ -42894,30 +43062,12 @@ __metadata:
   languageName: node
   linkType: hard
 
-"xterm-addon-attach@npm:^0.8.0":
-  version: 0.8.0
-  resolution: "xterm-addon-attach@npm:0.8.0"
-  peerDependencies:
-    xterm: ^5.0.0
-  checksum: 2ac70bdd1c97eb05b83b4573132ed9d3686c07ed14212e273800a5693bb0f3ea41c570b49ac90cb95a1e593d5a2764a28c13b649c596054bf5aa87c8489069eb
-  languageName: node
-  linkType: hard
-
 "xterm-addon-attach@npm:^0.9.0":
   version: 0.9.0
   resolution: "xterm-addon-attach@npm:0.9.0"
   peerDependencies:
     xterm: ^5.0.0
   checksum: 70e5d3ecf139c04fae13c644b79c33858ef1a6e28dfe78f91dad3e34f5a155579029b87e91d1d016575acaf17f74e6c59402bde4bcff03461595bea0870f1ec1
-  languageName: node
-  linkType: hard
-
-"xterm-addon-fit@npm:^0.7.0":
-  version: 0.7.0
-  resolution: "xterm-addon-fit@npm:0.7.0"
-  peerDependencies:
-    xterm: ^5.0.0
-  checksum: 512d41f80d6f9427ba02dab4e6fd642e94775a9cf7ef72ae4b55eab2a36856b5c67069bfc66b4af412fdce29a0842f9c6382af3672f0b514c4352dfd47defe8f
   languageName: node
   linkType: hard
 

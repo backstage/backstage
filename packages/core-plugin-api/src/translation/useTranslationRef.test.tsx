@@ -303,7 +303,12 @@ describe('useTranslationRef', () => {
     const translationApi = I18nextTranslationApi.create({ languageApi });
 
     const { result, rerender } = renderHook(
-      ({ translationRef }) => useTranslationRef(translationRef),
+      ({
+        translationRef,
+      }: {
+        translationRef: TranslationRef;
+        children?: ReactNode;
+      }) => useTranslationRef(translationRef),
       {
         wrapper: ({ children }) => (
           <TestApiProvider

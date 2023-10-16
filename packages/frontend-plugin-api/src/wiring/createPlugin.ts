@@ -14,26 +14,44 @@
  * limitations under the License.
  */
 
+import { AnyExternalRoutes, AnyRoutes } from '@backstage/core-plugin-api';
 import { Extension } from './createExtension';
 
 /** @public */
-export interface PluginOptions {
+export interface PluginOptions<
+  Routes extends AnyRoutes,
+  ExternalRoutes extends AnyExternalRoutes,
+> {
   id: string;
+  routes?: Routes;
+  externalRoutes?: ExternalRoutes;
   extensions?: Extension<unknown>[];
 }
 
 /** @public */
-export interface BackstagePlugin {
+export interface BackstagePlugin<
+  Routes extends AnyRoutes = AnyRoutes,
+  ExternalRoutes extends AnyExternalRoutes = AnyExternalRoutes,
+> {
   $$type: '@backstage/BackstagePlugin';
   id: string;
   extensions: Extension<unknown>[];
+  routes: Routes;
+  externalRoutes: ExternalRoutes;
 }
 
 /** @public */
-export function createPlugin(options: PluginOptions): BackstagePlugin {
+export function createPlugin<
+  Routes extends AnyRoutes = AnyRoutes,
+  ExternalRoutes extends AnyExternalRoutes = AnyExternalRoutes,
+>(
+  options: PluginOptions<Routes, ExternalRoutes>,
+): BackstagePlugin<Routes, ExternalRoutes> {
   return {
     ...options,
-    $$type: '@backstage/BackstagePlugin',
+    routes: options.routes ?? ({} as Routes),
+    externalRoutes: options.externalRoutes ?? ({} as ExternalRoutes),
     extensions: options.extensions ?? [],
+    $$type: '@backstage/BackstagePlugin',
   };
 }

@@ -59,7 +59,7 @@ const handleSearch = (input: string) => {
 export const SampleSidebar = () => (
   <SidebarPage>
     <Sidebar>
-      <SidebarGroup label="Menu" icon={MenuIcon}>
+      <SidebarGroup label="Menu" icon={<MenuIcon />}>
         <SidebarSearchField onSearch={handleSearch} to="/search" />
         <SidebarDivider />
         <SidebarItem icon={HomeOutlinedIcon} to="#" text="Plugins" />
