@@ -23,7 +23,7 @@ import { DatabaseKeyStore } from './DatabaseKeyStore';
 import { FirestoreKeyStore } from './FirestoreKeyStore';
 import { MemoryKeyStore } from './MemoryKeyStore';
 import { KeyStore } from './types';
-import { StaticKeyStore, StaticKeyStoreConfig } from './StaticKeyStore';
+import { StaticKeyStore } from './StaticKeyStore';
 
 type Options = {
   logger: LoggerService;
@@ -76,12 +76,12 @@ export class KeyStores {
     }
 
     if (provider === 'static') {
-      const settings = ks?.getOptional<StaticKeyStoreConfig>('static');
+      const settings = ks?.getConfig(provider);
       if (settings === undefined) {
-        throw new Error(`Missing configuration for static keyStore provider`);
+        throw new Error(`Missing configuration for static key store provider`);
       }
 
-      await StaticKeyStore.create(settings);
+      await StaticKeyStore.fromConfig(settings);
     }
 
     throw new Error(`Unknown KeyStore provider: ${provider}`);
