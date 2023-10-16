@@ -10,7 +10,7 @@ import { AnalyzeLocationExistingEntity as AnalyzeLocationExistingEntity_2 } from
 import { AnalyzeLocationGenerateEntity as AnalyzeLocationGenerateEntity_2 } from '@backstage/plugin-catalog-common';
 import { AnalyzeLocationRequest as AnalyzeLocationRequest_2 } from '@backstage/plugin-catalog-common';
 import { AnalyzeLocationResponse as AnalyzeLocationResponse_2 } from '@backstage/plugin-catalog-common';
-import { AnalyzeOptions } from '@backstage/plugin-catalog-node';
+import { AnalyzeOptions as AnalyzeOptions_2 } from '@backstage/plugin-catalog-node';
 import { CatalogApi } from '@backstage/catalog-client';
 import type { CatalogCollatorEntityTransformer as CatalogCollatorEntityTransformer_2 } from '@backstage/plugin-search-backend-module-catalog';
 import { CatalogEntityDocument } from '@backstage/plugin-catalog-common';
@@ -51,7 +51,7 @@ import { PluginEndpointDiscovery } from '@backstage/backend-common';
 import { PluginTaskScheduler } from '@backstage/backend-tasks';
 import { Router } from 'express';
 import { ScmIntegrationRegistry } from '@backstage/integration';
-import { ScmLocationAnalyzer } from '@backstage/plugin-catalog-node';
+import { ScmLocationAnalyzer as ScmLocationAnalyzer_2 } from '@backstage/plugin-catalog-node';
 import { TokenManager } from '@backstage/backend-common';
 import { UrlReader } from '@backstage/backend-common';
 import { Validators } from '@backstage/catalog-model';
@@ -71,7 +71,8 @@ export type AnalyzeLocationRequest = AnalyzeLocationRequest_2;
 // @public @deprecated (undocumented)
 export type AnalyzeLocationResponse = AnalyzeLocationResponse_2;
 
-export { AnalyzeOptions };
+// @public @deprecated (undocumented)
+export type AnalyzeOptions = AnalyzeOptions_2;
 
 // @public (undocumented)
 export class AnnotateLocationEntityProcessor implements CatalogProcessor_2 {
@@ -132,7 +133,7 @@ export class CatalogBuilder {
     ...providers: Array<EntityProvider_2 | Array<EntityProvider_2>>
   ): CatalogBuilder;
   addLocationAnalyzers(
-    ...analyzers: Array<ScmLocationAnalyzer | Array<ScmLocationAnalyzer>>
+    ...analyzers: Array<ScmLocationAnalyzer_2 | Array<ScmLocationAnalyzer_2>>
   ): CatalogBuilder;
   addPermissionRules(
     ...permissionRules: Array<
@@ -466,7 +467,8 @@ export const processingResult: Readonly<{
   readonly refresh: (key: string) => CatalogProcessorResult_2;
 }>;
 
-export { ScmLocationAnalyzer };
+// @public @deprecated (undocumented)
+export type ScmLocationAnalyzer = ScmLocationAnalyzer_2;
 
 // @public (undocumented)
 export class UrlReaderProcessor implements CatalogProcessor_2 {
