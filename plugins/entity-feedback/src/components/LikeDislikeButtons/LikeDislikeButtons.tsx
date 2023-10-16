@@ -24,6 +24,7 @@ import {
 } from '@backstage/core-plugin-api';
 import { useAsyncEntity } from '@backstage/plugin-catalog-react';
 import { IconButton } from '@material-ui/core';
+import Tooltip from '@material-ui/core/Tooltip';
 import ThumbDownIcon from '@material-ui/icons/ThumbDown';
 import ThumbUpIcon from '@material-ui/icons/ThumbUp';
 import ThumbDownOutlinedIcon from '@material-ui/icons/ThumbDownOutlined';
@@ -122,26 +123,30 @@ export const LikeDislikeButtons = (props: LikeDislikeButtonsProps) => {
 
   return (
     <>
-      <IconButton
-        data-testid="entity-feedback-like-button"
-        onClick={() => applyRating(FeedbackRatings.like)}
-      >
-        {rating === FeedbackRatings.like ? (
-          <ThumbUpIcon fontSize="small" />
-        ) : (
-          <ThumbUpOutlinedIcon fontSize="small" />
-        )}
-      </IconButton>
-      <IconButton
-        data-testid="entity-feedback-dislike-button"
-        onClick={() => applyRating(FeedbackRatings.dislike)}
-      >
-        {rating === FeedbackRatings.dislike ? (
-          <ThumbDownIcon fontSize="small" />
-        ) : (
-          <ThumbDownOutlinedIcon fontSize="small" />
-        )}
-      </IconButton>
+      <Tooltip title="Like">
+        <IconButton
+          data-testid="entity-feedback-like-button"
+          onClick={() => applyRating(FeedbackRatings.like)}
+        >
+          {rating === FeedbackRatings.like ? (
+            <ThumbUpIcon fontSize="small" />
+          ) : (
+            <ThumbUpOutlinedIcon fontSize="small" />
+          )}
+        </IconButton>
+      </Tooltip>
+      <Tooltip title="Dislike">
+        <IconButton
+          data-testid="entity-feedback-dislike-button"
+          onClick={() => applyRating(FeedbackRatings.dislike)}
+        >
+          {rating === FeedbackRatings.dislike ? (
+            <ThumbDownIcon fontSize="small" />
+          ) : (
+            <ThumbDownOutlinedIcon fontSize="small" />
+          )}
+        </IconButton>
+      </Tooltip>
       <FeedbackResponseDialog
         entity={entity!}
         open={openFeedbackDialog}
