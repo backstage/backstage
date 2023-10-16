@@ -7,7 +7,7 @@ import { CatalogApi } from '@backstage/catalog-client';
 import { CatalogClient } from '@backstage/catalog-client';
 import { Config } from '@backstage/config';
 import { DefaultTechDocsCollatorFactory as DefaultTechDocsCollatorFactory_2 } from '@backstage/plugin-search-backend-module-techdocs';
-import { DocsBuildStrategy } from '@backstage/plugin-techdocs-node';
+import { DocsBuildStrategy as DocsBuildStrategy_2 } from '@backstage/plugin-techdocs-node';
 import express from 'express';
 import { GeneratorBuilder } from '@backstage/plugin-techdocs-node';
 import { Knex } from 'knex';
@@ -17,9 +17,9 @@ import { PluginCacheManager } from '@backstage/backend-common';
 import { PluginEndpointDiscovery } from '@backstage/backend-common';
 import { PreparerBuilder } from '@backstage/plugin-techdocs-node';
 import { PublisherBase } from '@backstage/plugin-techdocs-node';
-import { ShouldBuildParameters } from '@backstage/plugin-techdocs-node';
+import { ShouldBuildParameters as ShouldBuildParameters_2 } from '@backstage/plugin-techdocs-node';
 import type { TechDocsCollatorFactoryOptions as TechDocsCollatorFactoryOptions_2 } from '@backstage/plugin-search-backend-module-techdocs';
-import { TechDocsDocument } from '@backstage/plugin-techdocs-node';
+import { TechDocsDocument as TechDocsDocument_2 } from '@backstage/plugin-techdocs-node';
 import { TokenManager } from '@backstage/backend-common';
 import * as winston from 'winston';
 
@@ -34,7 +34,7 @@ export class DefaultTechDocsCollator {
     args: Record<string, string>,
   ): string;
   // (undocumented)
-  execute(): Promise<TechDocsDocument[]>;
+  execute(): Promise<TechDocsDocument_2[]>;
   // (undocumented)
   static fromConfig(
     config: Config,
@@ -49,7 +49,8 @@ export class DefaultTechDocsCollator {
 // @public @deprecated (undocumented)
 export const DefaultTechDocsCollatorFactory: typeof DefaultTechDocsCollatorFactory_2;
 
-export { DocsBuildStrategy };
+// @public @deprecated (undocumented)
+export type DocsBuildStrategy = DocsBuildStrategy_2;
 
 // @public
 export type OutOfTheBoxDeploymentOptions = {
@@ -61,7 +62,7 @@ export type OutOfTheBoxDeploymentOptions = {
   database?: Knex;
   config: Config;
   cache: PluginCacheManager;
-  docsBuildStrategy?: DocsBuildStrategy;
+  docsBuildStrategy?: DocsBuildStrategy_2;
   buildLogTransport?: winston.transport;
   catalogClient?: CatalogClient;
 };
@@ -73,7 +74,7 @@ export type RecommendedDeploymentOptions = {
   discovery: PluginEndpointDiscovery;
   config: Config;
   cache: PluginCacheManager;
-  docsBuildStrategy?: DocsBuildStrategy;
+  docsBuildStrategy?: DocsBuildStrategy_2;
   buildLogTransport?: winston.transport;
   catalogClient?: CatalogClient;
 };
@@ -83,7 +84,8 @@ export type RouterOptions =
   | RecommendedDeploymentOptions
   | OutOfTheBoxDeploymentOptions;
 
-export { ShouldBuildParameters };
+// @public @deprecated (undocumented)
+export type ShouldBuildParameters = ShouldBuildParameters_2;
 
 // @public @deprecated (undocumented)
 export type TechDocsCollatorFactoryOptions = TechDocsCollatorFactoryOptions_2;
@@ -99,7 +101,8 @@ export type TechDocsCollatorOptions = {
   legacyPathCasing?: boolean;
 };
 
-export { TechDocsDocument };
+// @public @deprecated (undocumented)
+export type TechDocsDocument = TechDocsDocument_2;
 
 export * from '@backstage/plugin-techdocs-node';
 ```

@@ -29,7 +29,7 @@ import {
   Preparers,
   Generators,
   Publisher,
-  techdocsBuildStrategyExtensionPoint,
+  techdocsBuildsExtensionPoint,
 } from '@backstage/plugin-techdocs-node';
 import Docker from 'dockerode';
 import { createRouter } from '@backstage/plugin-techdocs-backend';
@@ -42,7 +42,7 @@ export const techdocsPlugin = createBackendPlugin({
   pluginId: 'techdocs',
   register(env) {
     let docsBuildStrategy: DocsBuildStrategy | undefined;
-    env.registerExtensionPoint(techdocsBuildStrategyExtensionPoint, {
+    env.registerExtensionPoint(techdocsBuildsExtensionPoint, {
       setBuildStrategy(buildStrategy: DocsBuildStrategy) {
         if (docsBuildStrategy) {
           throw new Error('DocsBuildStrategy may only be set once');
