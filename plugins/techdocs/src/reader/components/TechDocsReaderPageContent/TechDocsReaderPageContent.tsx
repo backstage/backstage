@@ -86,10 +86,8 @@ export const TechDocsReaderPageContent = withTechDocsReaderProvider(
     const [hashElement] = useShadowRootElements([`[id="${hash.slice(1)}"]`]);
 
     useEffect(() => {
-      if (hashElement) {
-        if (!isStyleLoading) {
-          hashElement.scrollIntoView();
-        }
+      if (hashElement && !isStyleLoading) {
+        hashElement.scrollIntoView();
       } else {
         document?.querySelector('header')?.scrollIntoView();
       }
