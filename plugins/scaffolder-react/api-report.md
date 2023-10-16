@@ -19,6 +19,7 @@ import { PropsWithChildren } from 'react';
 import { default as React_2 } from 'react';
 import { TaskSpec } from '@backstage/plugin-scaffolder-common';
 import { TaskStep } from '@backstage/plugin-scaffolder-common';
+import { TemplateConfigurationsV1beta3 } from '@backstage/plugin-scaffolder-common';
 
 // @public
 export type Action = {
@@ -317,6 +318,7 @@ export type TaskStream = {
 export type TemplateParameterSchema = {
   title: string;
   description?: string;
+  configurations?: TemplateConfigurationsV1beta3;
   steps: Array<{
     title: string;
     description?: string;

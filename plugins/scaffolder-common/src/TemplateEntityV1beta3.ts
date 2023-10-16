@@ -46,6 +46,9 @@ export interface TemplateEntityV1beta3 extends Entity {
      */
     type: string;
 
+    /**
+     * Template specific configurations.
+     */
     configurations?: TemplateConfigurationsV1beta3;
 
     /**
@@ -70,10 +73,27 @@ export interface TemplateEntityV1beta3 extends Entity {
   };
 }
 
-export interface TemplateConfigurationsV1beta3 {
+/**
+ * The configuration of the template.
+ *
+ * @public
+ */
+export interface TemplateConfigurationsV1beta3 extends JsonObject {
+  /**
+   * Overrides default buttons' text
+   */
   buttonLabels?: {
+    /**
+     * The text for the button which leads to the previous template page
+     */
     backButtonText?: string;
+    /**
+     * The text for the button which starts the execution of the template
+     */
     createButtonText?: string;
+    /**
+     * The text for the button which opens template's review/summary
+     */
     reviewButtonText?: string;
   };
 }
