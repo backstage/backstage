@@ -130,6 +130,9 @@ export class OidcAuthProvider implements OAuthHandlers {
     if (!tokenset.access_token) {
       throw new Error('Refresh failed');
     }
+    if (!tokenset.scope) {
+      tokenset.scope = req.scope;
+    }
     const userinfo = await client.userinfo(tokenset.access_token);
 
     return {
