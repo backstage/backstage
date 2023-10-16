@@ -30,10 +30,12 @@
   "dependencies": {
     "@backstage/config": "workspace:^",
     "@backstage/errors": "workspace:^",
-    "@backstage/plugin-scaffolder-node": "workspace:^"
+    "@backstage/plugin-scaffolder-node": "workspace:^",
+    "yaml": "^2.3.3"
   },
   "devDependencies": {
-    "@backstage/cli": "workspace:^"
+    "@backstage/cli": "workspace:^",
+    "@backstage/types": "workspace:^"
   },
   "files": [
     "dist"
