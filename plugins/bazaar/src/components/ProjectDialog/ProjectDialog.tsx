@@ -128,7 +128,7 @@ export const ProjectDialog = ({
             control={control}
             rules={{
               required: true,
-              validate: titleIsUnique,
+              customValidation: titleIsUnique,
             }}
             inputType="title"
             helperText={helperText}

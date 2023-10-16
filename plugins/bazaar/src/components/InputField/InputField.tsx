@@ -36,6 +36,7 @@ type Props = {
   helperText?: string;
   placeholder?: string;
   rules?: Rules | undefined;
+  customValidation?: (value: string) => true | string;
 };
 
 export const InputField = ({
@@ -45,6 +46,7 @@ export const InputField = ({
   helperText,
   placeholder,
   rules,
+  customValidation,
 }: Props) => {
   const label =
     inputType.charAt(0).toLocaleUpperCase('en-US') + inputType.slice(1);
@@ -53,7 +55,10 @@ export const InputField = ({
     <Controller
       name={inputType}
       control={control}
-      rules={rules}
+      rules={{
+        ...rules,
+        validate: customValidation,
+      }}
       render={({ field }) => (
         <TextField
           {...field}
