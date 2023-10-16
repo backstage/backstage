@@ -123,30 +123,34 @@ export const LikeDislikeButtons = (props: LikeDislikeButtonsProps) => {
 
   return (
     <>
-      <Tooltip title="Like">
-        <IconButton
-          data-testid="entity-feedback-like-button"
-          onClick={() => applyRating(FeedbackRatings.like)}
-        >
-          {rating === FeedbackRatings.like ? (
+      <IconButton
+        data-testid="entity-feedback-like-button"
+        onClick={() => applyRating(FeedbackRatings.like)}
+      >
+        {rating === FeedbackRatings.like ? (
+          <Tooltip title="Liked">
             <ThumbUpIcon fontSize="small" />
-          ) : (
+          </Tooltip>
+        ) : (
+          <Tooltip title="Like">
             <ThumbUpOutlinedIcon fontSize="small" />
-          )}
-        </IconButton>
-      </Tooltip>
-      <Tooltip title="Dislike">
-        <IconButton
-          data-testid="entity-feedback-dislike-button"
-          onClick={() => applyRating(FeedbackRatings.dislike)}
-        >
-          {rating === FeedbackRatings.dislike ? (
+          </Tooltip>
+        )}
+      </IconButton>
+      <IconButton
+        data-testid="entity-feedback-dislike-button"
+        onClick={() => applyRating(FeedbackRatings.dislike)}
+      >
+        {rating === FeedbackRatings.dislike ? (
+          <Tooltip title="Disliked">
             <ThumbDownIcon fontSize="small" />
-          ) : (
+          </Tooltip>
+        ) : (
+          <Tooltip title="Dislike">
             <ThumbDownOutlinedIcon fontSize="small" />
-          )}
-        </IconButton>
-      </Tooltip>
+          </Tooltip>
+        )}
+      </IconButton>
       <FeedbackResponseDialog
         entity={entity!}
         open={openFeedbackDialog}
