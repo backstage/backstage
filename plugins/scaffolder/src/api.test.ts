@@ -21,11 +21,6 @@ import { rest } from 'msw';
 import { setupServer } from 'msw/node';
 import { ScaffolderClient } from './api';
 import { EventSourcePolyfill } from 'event-source-polyfill';
-import {
-  SerializedTask,
-  SerializedTaskEvent,
-} from '@backstage/plugin-scaffolder-node';
-import { ScaffolderStep } from '@backstage/plugin-scaffolder-react';
 
 const MockedEventSource = EventSourcePolyfill as jest.MockedClass<
   typeof EventSourcePolyfill
