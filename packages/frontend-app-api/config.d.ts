@@ -16,6 +16,14 @@
 
 export interface Config {
   app?: {
+    experimental?: {
+      /**
+       * @visibility frontend
+       * @deepVisibility frontend
+       */
+      packages?: 'all' | { include?: string[]; exclude?: string[] };
+    };
+
     /**
      * @deepVisibility frontend
      */
