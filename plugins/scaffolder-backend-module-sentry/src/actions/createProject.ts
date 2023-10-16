@@ -17,9 +17,10 @@
 import { createTemplateAction } from '@backstage/plugin-scaffolder-node';
 import { InputError } from '@backstage/errors';
 import { Config } from '@backstage/config';
+import { examples } from './createProject.examples';
 
 /**
- * Creates the `sentry:craete-project` Scaffolder action.
+ * Creates the `sentry:create-project` Scaffolder action.
  *
  * @remarks
  *
@@ -39,6 +40,7 @@ export function createSentryCreateProjectAction(options: { config: Config }) {
     authToken?: string;
   }>({
     id: 'sentry:project:create',
+    examples,
     schema: {
       input: {
         required: ['organizationSlug', 'teamSlug', 'name'],
@@ -112,7 +114,7 @@ export function createSentryCreateProjectAction(options: { config: Config }) {
       const result = await response.json();
 
       if (code !== 201) {
-        throw new InputError(`Sentry Response was: ${await result.detail}`);
+        throw new InputError(`Sentry Response was: ${result.detail}`);
       }
 
       ctx.output('id', result.id);
