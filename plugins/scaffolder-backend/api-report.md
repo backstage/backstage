@@ -742,8 +742,8 @@ export function createRouter(options: RouterOptions): Promise<express.Router>;
 export const createTemplateAction: <
   TInputParams extends JsonObject = JsonObject,
   TOutputParams extends JsonObject = JsonObject,
-  TInputSchema extends Schema | ZodType<any, ZodTypeDef, any> = {},
-  TOutputSchema extends Schema | ZodType<any, ZodTypeDef, any> = {},
+  TInputSchema extends ZodType<any, ZodTypeDef, any> | Schema = {},
+  TOutputSchema extends ZodType<any, ZodTypeDef, any> | Schema = {},
   TActionInput extends JsonObject = TInputSchema extends ZodType<
     any,
     any,
