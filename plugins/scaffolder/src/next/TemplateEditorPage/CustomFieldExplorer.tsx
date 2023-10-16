@@ -102,7 +102,7 @@ export const CustomFieldExplorer = ({
   }, [customFieldExtensions]);
 
   const handleSelectionChange = useCallback(
-    selection => {
+    (selection: NextFieldExtensionOptions) => {
       setSelectedField(selection);
       setFieldFormState({});
     },
@@ -110,7 +110,7 @@ export const CustomFieldExplorer = ({
   );
 
   const handleFieldConfigChange = useCallback(
-    state => {
+    (state: {}) => {
       setFieldFormState(state);
       // Force TemplateEditorForm to re-render since some fields
       // may not be responsive to ui:option changes
@@ -130,7 +130,9 @@ export const CustomFieldExplorer = ({
             value={selectedField}
             label="Choose Custom Field Extension"
             labelId="select-field-label"
-            onChange={e => handleSelectionChange(e.target.value)}
+            onChange={e =>
+              handleSelectionChange(e.target.value as NextFieldExtensionOptions)
+            }
           >
             {fieldOptions.map((option, idx) => (
               <MenuItem key={idx} value={option as any}>

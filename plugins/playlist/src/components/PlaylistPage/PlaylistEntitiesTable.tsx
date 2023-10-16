@@ -72,7 +72,7 @@ export const PlaylistEntitiesTable = ({
   );
 
   const removeEntity = useCallback(
-    async (_, entity: Entity | Entity[]) => {
+    async (_: unknown, entity: Entity | Entity[]) => {
       try {
         const entityArray = [entity].flat();
         const entityNames = entityArray.map(

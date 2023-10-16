@@ -15,39 +15,38 @@
  */
 
 import fs from 'fs-extra';
-import mockFs from 'mock-fs';
-import { sep, resolve as resolvePath } from 'path';
-import { paths } from '../../paths';
+import { sep } from 'path';
 import { Task } from '../../tasks';
 import { FactoryRegistry } from '../FactoryRegistry';
-import { createMockOutputStream, mockPaths } from './common/testUtils';
+import {
+  createMockOutputStream,
+  expectLogsToMatch,
+  mockPaths,
+} from './common/testUtils';
 import { backendModule } from './backendModule';
+import { createMockDirectory } from '@backstage/backend-test-utils';
 
 describe('backendModule factory', () => {
+  const mockDir = createMockDirectory();
+
   beforeEach(() => {
     mockPaths({
-      targetRoot: '/root',
+      targetRoot: mockDir.path,
     });
   });
 
   afterEach(() => {
-    mockFs.restore();
     jest.resetAllMocks();
   });
 
   it('should create a backend plugin', async () => {
-    mockFs({
-      '/root': {
-        packages: {
-          backend: {
-            'package.json': JSON.stringify({}),
-          },
+    mockDir.setContent({
+      packages: {
+        backend: {
+          'package.json': JSON.stringify({}),
         },
-        plugins: mockFs.directory(),
       },
-      [paths.resolveOwn('templates')]: mockFs.load(
-        paths.resolveOwn('templates'),
-      ),
+      plugins: {},
     });
 
     const options = await FactoryRegistry.populateOptions(backendModule, {
@@ -73,8 +72,7 @@ describe('backendModule factory', () => {
 
     expect(modified).toBe(true);
 
-    expect(output).toEqual([
-      '',
+    expectLogsToMatch(output, [
       'Creating backend module backstage-plugin-test-backend-module-tester-two',
       'Checking Prerequisites:',
       `availability  plugins${sep}test-backend-module-tester-two`,
@@ -91,14 +89,14 @@ describe('backendModule factory', () => {
     ]);
 
     await expect(
-      fs.readJson('/root/packages/backend/package.json'),
+      fs.readJson(mockDir.resolve('packages/backend/package.json')),
     ).resolves.toEqual({
       dependencies: {
         'backstage-plugin-test-backend-module-tester-two': '^1.0.0',
       },
     });
     const moduleFile = await fs.readFile(
-      '/root/plugins/test-backend-module-tester-two/src/module.ts',
+      mockDir.resolve('plugins/test-backend-module-tester-two/src/module.ts'),
       'utf-8',
     );
 
@@ -110,11 +108,11 @@ describe('backendModule factory', () => {
 
     expect(Task.forCommand).toHaveBeenCalledTimes(2);
     expect(Task.forCommand).toHaveBeenCalledWith('yarn install', {
-      cwd: resolvePath('/root/plugins/test-backend-module-tester-two'),
+      cwd: mockDir.resolve('plugins/test-backend-module-tester-two'),
       optional: true,
     });
     expect(Task.forCommand).toHaveBeenCalledWith('yarn lint --fix', {
-      cwd: resolvePath('/root/plugins/test-backend-module-tester-two'),
+      cwd: mockDir.resolve('plugins/test-backend-module-tester-two'),
       optional: true,
     });
   });

@@ -3784,7 +3784,6 @@ __metadata:
     "@types/inquirer": ^8.1.3
     "@types/jest": ^29.0.0
     "@types/minimatch": ^5.0.0
-    "@types/mock-fs": ^4.13.0
     "@types/node": ^18.17.8
     "@types/npm-packlist": ^3.0.0
     "@types/recursive-readdir": ^2.2.0
@@ -3839,7 +3838,6 @@ __metadata:
     lodash: ^4.17.21
     mini-css-extract-plugin: ^2.4.2
     minimatch: ^5.1.1
-    mock-fs: ^5.2.0
     msw: ^1.0.0
     node-fetch: ^2.6.7
     node-libs-browser: ^2.2.1
@@ -4267,8 +4265,8 @@ __metadata:
     react-use: ^17.2.4
     zen-observable: ^0.10.0
   peerDependencies:
-    react: ^16.13.1 || ^17.0.0
-    react-dom: ^16.13.1 || ^17.0.0
+    react: ^16.13.1 || ^17.0.0 || ^18.0.0
+    react-dom: ^16.13.1 || ^17.0.0 || ^18.0.0
     react-router-dom: 6.0.0-beta.0 || ^6.3.0
   languageName: unknown
   linkType: soft
@@ -4968,6 +4966,30 @@ __metadata:
     express: ^4.18.2
     passport: ^0.6.0
     passport-oauth2: ^1.6.1
+    supertest: ^6.3.3
+  languageName: unknown
+  linkType: soft
+
+"@backstage/plugin-auth-backend-module-pinniped-provider@workspace:plugins/auth-backend-module-pinniped-provider":
+  version: 0.0.0-use.local
+  resolution: "@backstage/plugin-auth-backend-module-pinniped-provider@workspace:plugins/auth-backend-module-pinniped-provider"
+  dependencies:
+    "@backstage/backend-common": "workspace:^"
+    "@backstage/backend-defaults": "workspace:^"
+    "@backstage/backend-plugin-api": "workspace:^"
+    "@backstage/backend-test-utils": "workspace:^"
+    "@backstage/cli": "workspace:^"
+    "@backstage/config": "workspace:^"
+    "@backstage/plugin-auth-backend": "workspace:^"
+    "@backstage/plugin-auth-node": "workspace:^"
+    cookie-parser: ^1.4.6
+    express: ^4.18.2
+    express-promise-router: ^4.1.1
+    express-session: ^1.17.3
+    jose: ^4.14.6
+    msw: ^1.3.0
+    openid-client: ^5.4.3
+    passport: ^0.6.0
     supertest: ^6.3.3
   languageName: unknown
   linkType: soft
@@ -8516,6 +8538,7 @@ __metadata:
     "@backstage/plugin-permission-common": "workspace:^"
     "@backstage/plugin-permission-react": "workspace:^"
     "@backstage/plugin-playlist-common": "workspace:^"
+    "@backstage/plugin-search-common": "workspace:^"
     "@backstage/plugin-search-react": "workspace:^"
     "@backstage/test-utils": "workspace:^"
     "@backstage/theme": "workspace:^"
@@ -9876,8 +9899,8 @@ __metadata:
     react-helmet: 6.1.0
     react-use: ^17.2.4
   peerDependencies:
-    react: ^16.13.1 || ^17.0.0
-    react-dom: ^16.13.1 || ^17.0.0
+    react: ^16.13.1 || ^17.0.0 || ^18.0.0
+    react-dom: ^16.13.1 || ^17.0.0 || ^18.0.0
     react-router-dom: 6.0.0-beta.0 || ^6.3.0
   languageName: unknown
   linkType: soft
@@ -17609,9 +17632,9 @@ __metadata:
   linkType: hard
 
 "@types/diff@npm:^5.0.0":
-  version: 5.0.5
-  resolution: "@types/diff@npm:5.0.5"
-  checksum: 5f093341d5488cd33079400d4b2ff463dfd4f589bf0a54fbb25f7c87a7bdc16bd1e6125f252c081fa9a3ad44fc78b156c0a5f38bd8128edceb40ba084e051885
+  version: 5.0.6
+  resolution: "@types/diff@npm:5.0.6"
+  checksum: 8ce79492a89d568b54792a8491d01b1ff69526e19560670ef2de078c467738cdc0aae81fc4f895e49f915a2b9bbf694f6f95a2e5544e7c0989448956eba9ff66
   languageName: node
   linkType: hard
 
@@ -26018,7 +26041,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"express-session@npm:^1.17.1":
+"express-session@npm:^1.17.1, express-session@npm:^1.17.3":
   version: 1.17.3
   resolution: "express-session@npm:1.17.3"
   dependencies:
@@ -30222,7 +30245,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"jose@npm:^4.15.1, jose@npm:^4.6.0":
+"jose@npm:^4.14.6, jose@npm:^4.15.1, jose@npm:^4.6.0":
   version: 4.15.3
   resolution: "jose@npm:4.15.3"
   checksum: b76eeccc1d40d0eaf26dfaadc0f88fc15802c9105ab66a24ee223bd84369f7cb217f4a2cb852f5080ff6996170b3a73db2b2d26878b8905d99c36ca432628134
@@ -33349,7 +33372,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"msw@npm:^1.0.0, msw@npm:^1.0.1, msw@npm:^1.2.1, msw@npm:^1.2.3, msw@npm:^1.3.1":
+"msw@npm:^1.0.0, msw@npm:^1.0.1, msw@npm:^1.2.1, msw@npm:^1.2.3, msw@npm:^1.3.0, msw@npm:^1.3.1":
   version: 1.3.2
   resolution: "msw@npm:1.3.2"
   dependencies:
@@ -34396,7 +34419,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"openid-client@npm:^5.2.1, openid-client@npm:^5.3.0":
+"openid-client@npm:^5.2.1, openid-client@npm:^5.3.0, openid-client@npm:^5.4.3":
   version: 5.6.1
   resolution: "openid-client@npm:5.6.1"
   dependencies:
