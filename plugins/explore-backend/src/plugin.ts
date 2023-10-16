@@ -18,18 +18,41 @@ import { loggerToWinstonLogger } from '@backstage/backend-common';
 import {
   coreServices,
   createBackendPlugin,
+  createExtensionPoint,
 } from '@backstage/backend-plugin-api';
 import { createRouter } from './service/router';
 import { exampleTools } from './example/exampleTools';
-import { StaticExploreToolProvider } from './tools';
+import {
+  ExporeProvidersExtensionPoint,
+  StaticExploreToolProvider,
+} from './tools';
+
+/** @public */
+export const exploreProvidersExtensionPoint =
+  createExtensionPoint<ExporeProvidersExtensionPoint>({
+    id: 'explore.providers',
+  });
+
 /**
  * Explore backend plugin
  *
  * @public
  */
+
 export const explorePlugin = createBackendPlugin({
   pluginId: 'explore',
   register(env) {
+    const providers = new Map<string, StaticExploreToolProvider>();
+    env.registerExtensionPoint(exploreProvidersExtensionPoint, {
+      registerProvider({ providerId, factory }) {
+        if (providers.has(providerId)) {
+          throw new Error(
+            `Explore provider '${providerId}' was already registered`,
+          );
+        }
+        providers.set(providerId, factory);
+      },
+    });
     env.registerInit({
       deps: {
         logger: coreServices.logger,
@@ -40,6 +63,7 @@ export const explorePlugin = createBackendPlugin({
           await createRouter({
             logger: loggerToWinstonLogger(logger),
             toolProvider: StaticExploreToolProvider.fromData(exampleTools),
+            providerFactories: Object.fromEntries(providers),
           }),
         );
       },

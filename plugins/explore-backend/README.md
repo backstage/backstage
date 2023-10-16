@@ -154,6 +154,14 @@ In your `packages/backend/src/index.ts` make the following changes:
   backend.start();
 ```
 
+Alternatively, you can actually remove the import line above, and do this instead.
+
+```diff
+  backend.add(explorePlugin());
++ backend.add(import('@backstage/plugin-explore-backend'));
+
+```
+
 ### Wire up the Frontend
 
 See [the explore plugin README](../explore/README.md) for more information.

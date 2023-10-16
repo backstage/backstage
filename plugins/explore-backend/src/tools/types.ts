@@ -18,6 +18,7 @@ import {
   GetExploreToolsRequest,
   GetExploreToolsResponse,
 } from '@backstage/plugin-explore-common';
+import { StaticExploreToolProvider } from './providers/StaticExploreToolProvider';
 
 /**
  * @public
@@ -31,3 +32,17 @@ export interface ExploreToolProvider {
    */
   getTools(request: GetExploreToolsRequest): Promise<GetExploreToolsResponse>;
 }
+
+/** @public */
+export interface ExploreProviderRegistrationOptions {
+  providerId: string;
+  factory: StaticExploreToolProvider;
+}
+
+/** @public */
+export interface ExporeProvidersExtensionPoint {
+  registerProvider(options: ExploreProviderRegistrationOptions): void;
+}
+
+/** @public */
+export type ProviderFactories = { [s: string]: StaticExploreToolProvider };
