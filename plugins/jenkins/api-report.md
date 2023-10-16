@@ -23,6 +23,9 @@ export const EntityJenkinsContent: (props: {
 }) => JSX_2.Element;
 
 // @public (undocumented)
+export const EntityJobRunsTable: () => JSX_2.Element;
+
+// @public (undocumented)
 export const EntityLatestJenkinsRunCard: (props: {
   branch: string;
   variant?: InfoCardVariants | undefined;
@@ -48,6 +51,13 @@ export interface JenkinsApi {
     jobFullName: string;
     buildNumber: string;
   }): Promise<Build>;
+  // Warning: (ae-forgotten-export) The symbol "Job" needs to be exported by the entry point index.d.ts
+  //
+  // (undocumented)
+  getJobBuilds(options: {
+    entity: CompoundEntityRef;
+    jobFullName: string;
+  }): Promise<Job>;
   getProjects(options: {
     entity: CompoundEntityRef;
     filter: {
@@ -81,6 +91,11 @@ export class JenkinsClient implements JenkinsApi {
     jobFullName: string;
     buildNumber: string;
   }): Promise<Build>;
+  // (undocumented)
+  getJobBuilds(options: {
+    entity: CompoundEntityRef;
+    jobFullName: string;
+  }): Promise<Job>;
   // (undocumented)
   getProjects(options: {
     entity: CompoundEntityRef;
