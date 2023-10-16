@@ -71,8 +71,11 @@ export interface TemplateEntityV1beta3 extends Entity {
 }
 
 export interface TemplateConfigurationsV1beta3 {
-  kickOffButtonText?: string;
-  reviewButtonText?: string;
+  buttonLabels?: {
+    backButtonText?: string;
+    createButtonText?: string;
+    reviewButtonText?: string;
+  };
 }
 
 /**
