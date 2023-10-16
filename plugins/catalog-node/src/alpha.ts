@@ -17,3 +17,5 @@
 export { catalogServiceRef } from './catalogService';
 export type { CatalogProcessingExtensionPoint } from './extensions';
 export { catalogProcessingExtensionPoint } from './extensions';
+export type { CatalogAnalysisExtensionPoint } from './extensions';
+export { catalogAnalysisExtensionPoint } from './extensions';

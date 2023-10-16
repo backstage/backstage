@@ -32,9 +32,6 @@ export interface CatalogProcessingExtensionPoint {
     ...providers: Array<EntityProvider | Array<EntityProvider>>
   ): void;
   addPlaceholderResolver(key: string, resolver: PlaceholderResolver): void;
-  addLocationAnalyzers(
-    ...analyzers: Array<ScmLocationAnalyzer | Array<ScmLocationAnalyzer>>
-  ): void;
 }
 
 /**
@@ -43,4 +40,21 @@ export interface CatalogProcessingExtensionPoint {
 export const catalogProcessingExtensionPoint =
   createExtensionPoint<CatalogProcessingExtensionPoint>({
     id: 'catalog.processing',
+  });
+
+/**
+ * @alpha
+ */
+export interface CatalogAnalysisExtensionPoint {
+  addLocationAnalyzers(
+    ...analyzers: Array<ScmLocationAnalyzer | Array<ScmLocationAnalyzer>>
+  ): void;
+}
+
+/**
+ * @alpha
+ */
+export const catalogAnalysisExtensionPoint =
+  createExtensionPoint<CatalogAnalysisExtensionPoint>({
+    id: 'catalog.analysis',
   });

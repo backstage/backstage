@@ -19,6 +19,8 @@ import {
 } from '@backstage/backend-plugin-api';
 import { CatalogBuilder } from './CatalogBuilder';
 import {
+  CatalogAnalysisExtensionPoint,
+  catalogAnalysisExtensionPoint,
   CatalogProcessingExtensionPoint,
   catalogProcessingExtensionPoint,
 } from '@backstage/plugin-catalog-node/alpha';
@@ -30,11 +32,12 @@ import {
 import { loggerToWinstonLogger } from '@backstage/backend-common';
 import { PlaceholderResolver } from '../modules';
 
-class CatalogExtensionPointImpl implements CatalogProcessingExtensionPoint {
+class CatalogProcessingExtensionPointImpl
+  implements CatalogProcessingExtensionPoint
+{
   #processors = new Array<CatalogProcessor>();
   #entityProviders = new Array<EntityProvider>();
   #placeholderResolvers: Record<string, PlaceholderResolver> = {};
-  #locationAnalyzers = new Array<ScmLocationAnalyzer>();
 
   addProcessor(
     ...processors: Array<CatalogProcessor | Array<CatalogProcessor>>
@@ -56,12 +59,6 @@ class CatalogExtensionPointImpl implements CatalogProcessingExtensionPoint {
     this.#placeholderResolvers[key] = resolver;
   }
 
-  addLocationAnalyzers(
-    ...analyzers: Array<ScmLocationAnalyzer | Array<ScmLocationAnalyzer>>
-  ): void {
-    this.#locationAnalyzers.push(...analyzers.flat());
-  }
-
   get processors() {
     return this.#processors;
   }
@@ -72,6 +69,18 @@ class CatalogExtensionPointImpl implements CatalogProcessingExtensionPoint {
 
   get placeholderResolvers() {
     return this.#placeholderResolvers;
+  }
+}
+
+class CatalogAnalysisExtensionPointImpl
+  implements CatalogAnalysisExtensionPoint
+{
+  #locationAnalyzers = new Array<ScmLocationAnalyzer>();
+
+  addLocationAnalyzers(
+    ...analyzers: Array<ScmLocationAnalyzer | Array<ScmLocationAnalyzer>>
+  ): void {
+    this.#locationAnalyzers.push(...analyzers.flat());
   }
 
   get locationAnalyzers() {
@@ -86,11 +95,17 @@ class CatalogExtensionPointImpl implements CatalogProcessingExtensionPoint {
 export const catalogPlugin = createBackendPlugin({
   pluginId: 'catalog',
   register(env) {
-    const processingExtensions = new CatalogExtensionPointImpl();
+    const processingExtensions = new CatalogProcessingExtensionPointImpl();
     // plugins depending on this API will be initialized before this plugins init method is executed.
     env.registerExtensionPoint(
       catalogProcessingExtensionPoint,
       processingExtensions,
+    );
+
+    const analysisExtensions = new CatalogAnalysisExtensionPointImpl();
+    env.registerExtensionPoint(
+      catalogAnalysisExtensionPoint,
+      analysisExtensions,
     );
 
     env.registerInit({
@@ -128,7 +143,7 @@ export const catalogPlugin = createBackendPlugin({
         Object.entries(processingExtensions.placeholderResolvers).forEach(
           ([key, resolver]) => builder.setPlaceholderResolver(key, resolver),
         );
-        builder.addLocationAnalyzers(...processingExtensions.locationAnalyzers);
+        builder.addLocationAnalyzers(...analysisExtensions.locationAnalyzers);
 
         const { processingEngine, router } = await builder.build();
 
