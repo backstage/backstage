@@ -18,7 +18,15 @@ import type { ToolDocumentCollatorFactoryOptions as ToolDocumentCollatorFactoryO
 export function createRouter(options: RouterOptions): Promise<express.Router>;
 
 // @public
-export const explorePlugin: () => BackendFeature;
+export const defafult: () => BackendFeature;
+
+// @public (undocumented)
+export interface ExploreProviderRegistrationOptions {
+  // (undocumented)
+  factory: StaticExploreToolProvider;
+  // (undocumented)
+  providerId: string;
+}
 
 // @public (undocumented)
 export interface ExploreToolProvider {
@@ -26,9 +34,22 @@ export interface ExploreToolProvider {
 }
 
 // @public (undocumented)
+export interface ExporeProvidersExtensionPoint {
+  // (undocumented)
+  registerProvider(options: ExploreProviderRegistrationOptions): void;
+}
+
+// @public (undocumented)
+export type ProviderFactories = {
+  [s: string]: StaticExploreToolProvider;
+};
+
+// @public (undocumented)
 export interface RouterOptions {
   // (undocumented)
   logger: Logger;
+  // (undocumented)
+  providerFactories?: ProviderFactories;
   // (undocumented)
   toolProvider: ExploreToolProvider;
 }
