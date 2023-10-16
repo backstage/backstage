@@ -14,9 +14,12 @@
  * limitations under the License.
  */
 
-import React from 'react';
+import React, { useEffect } from 'react';
 import { Button, Dialog } from '@material-ui/core';
+import { useApi } from '@backstage/core-plugin-api';
+import useAsyncFn from 'react-use/lib/useAsyncFn';
 import { useForm, UseFormReset, UseFormGetValues } from 'react-hook-form';
+import { bazaarApiRef } from '../../api';
 import { InputField } from '../InputField/InputField';
 import { InputSelector } from '../InputSelector/InputSelector';
 import { FormValues } from '../../types';
@@ -63,6 +66,22 @@ export const ProjectDialog = ({
     defaultValues,
   });
 
+  const bazaarApi = useApi(bazaarApiRef);
+  const [bazaarProject, fetchBazaarProject] = useAsyncFn(async () => {
+    const response = await bazaarApi.getProjects();
+    return response;
+  });
+
+  const titleIsUnique = (name: string) => {
+    if (
+      name !== defaultValues.title &&
+      bazaarProject.value.data.some(bazaarTitle => bazaarTitle.title === name)
+    ) {
+      return 'A Bazaar project with this title already exists';
+    }
+    return true;
+  };
+
   const handleSaveForm = () => {
     handleSave(getValues, reset);
   };
@@ -71,6 +90,19 @@ export const ProjectDialog = ({
     handleClose();
     reset(defaultValues);
   };
+
+  useEffect(() => {
+    fetchBazaarProject();
+  }, [fetchBazaarProject]);
+
+  let helperText = 'Please enter a title for your project';
+  if (errors.title) {
+    if (errors.title.type === 'required') {
+      helperText = 'Please enter a title for your project';
+    } else {
+      helperText = errors.title.message;
+    }
+  }
 
   return (
     <div>
@@ -93,9 +125,10 @@ export const ProjectDialog = ({
             control={control}
             rules={{
               required: true,
+              validate: titleIsUnique,
             }}
             inputType="title"
-            helperText="Please enter a title for your project"
+            helperText={helperText}
           />
           <InputField
             error={errors.description}
