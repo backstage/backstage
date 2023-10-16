@@ -15,7 +15,7 @@
  */
 
 import { BackstagePackageJson } from '@backstage/cli-node';
-import { Config } from '@backstage/config';
+import { Config, ConfigReader } from '@backstage/config';
 import chokidar from 'chokidar';
 import fs from 'fs-extra';
 import { join as joinPath, resolve as resolvePath } from 'path';
@@ -45,9 +45,19 @@ function readPackageDetectionConfig(
     return {};
   }
 
+  if (typeof packages !== 'object' || Array.isArray(packages)) {
+    throw new Error(
+      "Invalid config at 'app.experimental.packages', expected object",
+    );
+  }
+  const packagesConfig = new ConfigReader(
+    packages,
+    'app.experimental.packages',
+  );
+
   return {
-    include: config.getOptionalStringArray('app.experimental.packages.include'),
-    exclude: config.getOptionalStringArray('app.experimental.packages.exclude'),
+    include: packagesConfig.getOptionalStringArray('include'),
+    exclude: packagesConfig.getOptionalStringArray('exclude'),
   };
 }
 
@@ -59,40 +69,47 @@ async function detectPackages(
     resolvePath(targetPath, 'package.json'),
   );
 
-  return Object.keys(pkg.dependencies ?? {})
-    .flatMap(depName => {
-      const depPackageJson: BackstagePackageJson = require(require.resolve(
-        `${depName}/package.json`,
-        { paths: [targetPath] },
-      ));
-      if (
-        ['frontend-plugin', 'frontend-plugin-module'].includes(
-          depPackageJson.backstage?.role ?? '',
-        )
-      ) {
-        // Include alpha entry point if available. If there's no default export it will be ignored
-        const exp = depPackageJson.exports;
-        if (exp && typeof exp === 'object' && './alpha' in exp) {
-          return [depName, `${depName}/alpha`];
-        }
-        return [depName];
-      }
+  return Object.keys(pkg.dependencies ?? {}).flatMap(depName => {
+    if (exclude?.includes(depName)) {
       return [];
-    })
-    .filter(name => {
-      if (exclude?.includes(name)) {
-        return false;
+    }
+    if (include && !include.includes(depName)) {
+      return [];
+    }
+
+    const depPackageJson: BackstagePackageJson = require(require.resolve(
+      `${depName}/package.json`,
+      { paths: [targetPath] },
+    ));
+    if (
+      ['frontend-plugin', 'frontend-plugin-module'].includes(
+        depPackageJson.backstage?.role ?? '',
+      )
+    ) {
+      // Include alpha entry point if available. If there's no default export it will be ignored
+      const exp = depPackageJson.exports;
+      if (exp && typeof exp === 'object' && './alpha' in exp) {
+        return [
+          { name: depName, import: depName },
+          { name: depName, export: './alpha', import: `${depName}/alpha` },
+        ];
       }
-      if (include && !include.includes(name)) {
-        return false;
-      }
-      return true;
-    });
+      return [{ name: depName, import: depName }];
+    }
+    return [];
+  });
 }
 
-async function writeDetectedPackagesModule(packageNames: string[]) {
-  const requirePackageScript = packageNames
-    ?.map(pkg => `{ name: '${pkg}', default: require('${pkg}').default }`)
+async function writeDetectedPackagesModule(
+  pkgs: { name: string; export?: string; import: string }[],
+) {
+  const requirePackageScript = pkgs
+    ?.map(
+      pkg =>
+        `{ name: ${JSON.stringify(pkg.name)}, export: ${JSON.stringify(
+          pkg.export,
+        )}, default: require('${pkg.import}').default }`,
+    )
     .join(',');
 
   await fs.writeFile(
