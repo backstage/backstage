@@ -22,11 +22,3 @@ export type {
   AnalyzeLocationResponse,
   LocationAnalyzer,
 } from './types';
-
-/**
- * @deprecated use the same type from `@backstage/plugin-catalog-node` instead
- */
-export type {
-  AnalyzeOptions,
-  ScmLocationAnalyzer,
-} from '@backstage/plugin-catalog-node';
