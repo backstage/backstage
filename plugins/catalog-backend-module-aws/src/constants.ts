@@ -1,5 +1,5 @@
 /*
- * Copyright 2020 The Backstage Authors
+ * Copyright 2023 The Backstage Authors
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -15,12 +15,14 @@
  */
 
 /**
- * A Backstage catalog backend module that helps integrate towards AWS
+ * Annotation for specifying AWS account id
  *
- * @packageDocumentation
+ * @public
  */
-
-export * from './processors';
-export * from './providers';
-export * from './types';
-export * from './constants';
+export const ANNOTATION_AWS_ACCOUNT_ID: string = 'amazonaws.com/account-id';
+/**
+ * Annotation for specifying AWS arn
+ *
+ * @public
+ */
+export const ANNOTATION_AWS_ARN: string = 'amazonaws.com/arn';
