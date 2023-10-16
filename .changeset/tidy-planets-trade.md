@@ -1,4 +1,5 @@
 ---
+'@backstage/plugin-scaffolder-backend': patch
 '@backstage/plugin-scaffolder-common': patch
 '@backstage/plugin-scaffolder-react': patch
 ---
