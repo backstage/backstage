@@ -48,8 +48,8 @@ export type ActionContext<
 export const createTemplateAction: <
   TInputParams extends JsonObject = JsonObject,
   TOutputParams extends JsonObject = JsonObject,
-  TInputSchema extends z.ZodType<any, z.ZodTypeDef, any> | Schema = {},
-  TOutputSchema extends z.ZodType<any, z.ZodTypeDef, any> | Schema = {},
+  TInputSchema extends Schema | z.ZodType<any, z.ZodTypeDef, any> = {},
+  TOutputSchema extends Schema | z.ZodType<any, z.ZodTypeDef, any> = {},
   TActionInput extends JsonObject = TInputSchema extends z.ZodType<
     any,
     any,
