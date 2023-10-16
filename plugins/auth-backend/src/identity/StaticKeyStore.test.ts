@@ -14,11 +14,12 @@
  * limitations under the License.
  */
 import { promises as fs } from 'fs';
-import { StaticKeyStore, StaticKeyStoreConfig } from './StaticKeyStore';
+import { StaticKeyStore } from './StaticKeyStore';
 import { AnyJWK } from './types';
+import { ConfigReader } from '@backstage/core-app-api';
 
 const publicKeyPath = '/mnt/public.pem';
-const privateKeyPath = 'mnt/private.pem';
+const privateKeyPath = '/mnt/private.pem';
 const privateKey = `
 -----BEGIN PRIVATE KEY-----
 MIGHAgEAMBMGByqGSM49AgEGCCqGSM49AwEHBG0wawIBAQQgR8Ja2ppMEgOm1KeY
@@ -34,14 +35,28 @@ ZoUEY72HTvjIP9xSbLOhWhMREk84T0q91/m3v3sWq5EzHIWw1zRHQisKZw==
 -----END PUBLIC KEY-----
 `.trim();
 
+const config = new ConfigReader({
+  keys: [
+    {
+      publicKeyFile: publicKeyPath,
+      privateKeyFile: privateKeyPath,
+      keyId: '1',
+      algorithm: 'ES256',
+    },
+    {
+      publicKeyFile: publicKeyPath,
+      privateKeyFile: privateKeyPath,
+      keyId: '2',
+      algorithm: 'ES256',
+    },
+  ],
+});
+
 jest.mock('fs/promises');
 
 describe('StaticKeyStore', () => {
   beforeEach(() => {
     jest.resetAllMocks();
-  });
-
-  it('should provide keys from disk', async () => {
     fs.readFile = jest.fn().mockImplementation(async (path: string, _: any) => {
       if (path === publicKeyPath) {
         return Promise.resolve(publicKey);
@@ -52,25 +67,10 @@ describe('StaticKeyStore', () => {
 
       throw new Error('Unexpected path');
     });
+  });
 
-    const staticKeyStoreConfig: StaticKeyStoreConfig = {
-      keys: [
-        {
-          publicKeyFile: publicKeyPath,
-          privateKeyFile: privateKeyPath,
-          keyId: '1',
-          algorithm: 'ES256',
-        },
-        {
-          publicKeyFile: publicKeyPath,
-          privateKeyFile: privateKeyPath,
-          keyId: '2',
-          algorithm: 'ES256',
-        },
-      ],
-    };
-    const staticKeyStore = await StaticKeyStore.create(staticKeyStoreConfig);
-
+  it('should provide keys from disk', async () => {
+    const staticKeyStore = await StaticKeyStore.fromConfig(config);
     const keys = await staticKeyStore.listKeys();
     expect(keys.items.length).toEqual(2);
     expect(keys.items[0].key).toMatchObject({
@@ -91,8 +91,7 @@ describe('StaticKeyStore', () => {
   });
 
   it('should not allow users to add keys', async () => {
-    const staticKeyStoreConfig: StaticKeyStoreConfig = { keys: [] };
-    const staticKeyStore = await StaticKeyStore.create(staticKeyStoreConfig);
+    const staticKeyStore = await StaticKeyStore.fromConfig(config);
 
     const key: AnyJWK = {
       use: 'sig',
@@ -106,8 +105,7 @@ describe('StaticKeyStore', () => {
   });
 
   it('should not allow users to remove keys', async () => {
-    const staticKeyStoreConfig: StaticKeyStoreConfig = { keys: [] };
-    const staticKeyStore = await StaticKeyStore.create(staticKeyStoreConfig);
+    const staticKeyStore = await StaticKeyStore.fromConfig(config);
     expect(() => staticKeyStore.removeKeys(['1'])).toThrow(
       'Cannot remove keys from the static key store',
     );

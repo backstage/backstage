@@ -17,6 +17,7 @@ import { AnyJWK, KeyStore, StoredKey } from './types';
 import { exportJWK, importPKCS8, importSPKI, JWK } from 'jose';
 import { KeyLike } from 'jose/dist/types/types';
 import { promises as fs } from 'fs';
+import { Config } from '@backstage/config';
 
 export type KeyPair = {
   publicKey: JWK;
@@ -27,11 +28,7 @@ export type StaticKeyConfig = {
   publicKeyFile: string;
   privateKeyFile: string;
   keyId: string;
-  algorithm?: string;
-};
-
-export type StaticKeyStoreConfig = {
-  keys: StaticKeyConfig[];
+  algorithm: string;
 };
 
 const DEFAULT_ALGORITHM = 'ES256';
@@ -68,15 +65,28 @@ export class StaticKeyStore implements KeyStore {
   private readonly createdAt: Date;
 
   private constructor(keyPairs: KeyPair[]) {
+    if (keyPairs.length === 0) {
+      throw new Error('Should provide at least one key pair');
+    }
+
     this.keyPairs = keyPairs;
     this.createdAt = new Date();
   }
 
-  public static async create(
-    config: StaticKeyStoreConfig,
-  ): Promise<StaticKeyStore> {
+  public static async fromConfig(config: Config): Promise<StaticKeyStore> {
+    const keyConfigs = config.getConfigArray('keys').map(c => {
+      const staticKeyConfig: StaticKeyConfig = {
+        publicKeyFile: c.getString('publicKeyFile'),
+        privateKeyFile: c.getString('privateKeyFile'),
+        keyId: c.getString('keyId'),
+        algorithm: c.getOptionalString('algorithm') ?? DEFAULT_ALGORITHM,
+      };
+
+      return staticKeyConfig;
+    });
+
     const keyPairs = await Promise.all(
-      config.keys.map(async k => await this.loadKeyPair(k)),
+      keyConfigs.map(async k => await this.loadKeyPair(k)),
     );
 
     return new StaticKeyStore(keyPairs);
@@ -117,7 +127,7 @@ export class StaticKeyStore implements KeyStore {
   }
 
   private static async loadKeyPair(options: StaticKeyConfig): Promise<KeyPair> {
-    const algorithm = options.algorithm ?? DEFAULT_ALGORITHM;
+    const algorithm = options.algorithm;
     const keyId = options.keyId;
     const publicKey = await this.loadPublicKeyFromFile(
       options.publicKeyFile,
