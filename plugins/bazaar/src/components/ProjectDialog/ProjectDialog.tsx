@@ -75,7 +75,9 @@ export const ProjectDialog = ({
   const titleIsUnique = (name: string) => {
     if (
       name !== defaultValues.title &&
-      bazaarProject.value.data.some(bazaarTitle => bazaarTitle.title === name)
+      bazaarProject.value.data.some(
+        (bazaarTitle: { title: string }) => bazaarTitle.title === name,
+      )
     ) {
       return 'A Bazaar project with this title already exists';
     }
@@ -100,7 +102,8 @@ export const ProjectDialog = ({
     if (errors.title.type === 'required') {
       helperText = 'Please enter a title for your project';
     } else {
-      helperText = errors.title.message;
+      helperText =
+        errors.title.message ?? 'Please enter a title for your project';
     }
   }
 
