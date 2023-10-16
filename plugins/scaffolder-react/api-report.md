@@ -38,11 +38,7 @@ import { RJSFValidationError } from '@rjsf/utils';
 import { StrictRJSFSchema } from '@rjsf/utils';
 import { TaskSpec } from '@backstage/plugin-scaffolder-common';
 import { TaskStep } from '@backstage/plugin-scaffolder-common';
-import { TemplateEntityV1beta3 } from '@backstage/plugin-scaffolder-common';
-import { TemplatesType } from '@rjsf/utils';
-import { UIOptionsType } from '@rjsf/utils';
-import { UiSchema } from '@rjsf/utils';
-import { ValidatorType } from '@rjsf/utils';
+import { TemplateConfigurationsV1beta3 } from '@backstage/plugin-scaffolder-common';
 
 // @public
 export type Action = {
@@ -482,6 +478,7 @@ export type TemplateGroupFilter = {
 export type TemplateParameterSchema = {
   title: string;
   description?: string;
+  configurations?: TemplateConfigurationsV1beta3;
   steps: Array<{
     title: string;
     description?: string;
