@@ -18,7 +18,6 @@ import React from 'react';
 import { createApp } from '@backstage/frontend-app-api';
 import { pagesPlugin } from './examples/pagesPlugin';
 import graphiqlPlugin from '@backstage/plugin-graphiql/alpha';
-import techRadarPlugin from '@backstage/plugin-tech-radar/alpha';
 import userSettingsPlugin from '@backstage/plugin-user-settings/alpha';
 import homePlugin, {
   titleExtensionDataRef,
@@ -29,6 +28,7 @@ import {
   createExtension,
   createApiExtension,
   createExtensionOverrides,
+  BackstagePlugin,
 } from '@backstage/frontend-plugin-api';
 import techdocsPlugin from '@backstage/plugin-techdocs/alpha';
 import { homePage } from './HomePage';
@@ -42,8 +42,8 @@ import {
   ScmIntegrationsApi,
   scmIntegrationsApiRef,
 } from '@backstage/integration-react';
-import { ScalprumProvider } from '@scalprum/react-core';
 import { AppsConfig } from '@scalprum/core';
+import { initialize, AppsConfig, processManifest } from '@scalprum/core';
 import { PluginLoaderOptions } from '@openshift/dynamic-plugin-sdk';
 
 /*
@@ -99,36 +99,10 @@ const scmIntegrationApi = createApiExtension({
   }),
 });
 
-const collectedLegacyPlugins = collectLegacyRoutes(
-  <FlatRoutes>
-    <Route path="/catalog-import" element={<CatalogImportPage />} />
-  </FlatRoutes>,
-);
-
-const app = createApp({
-  features: [
-    graphiqlPlugin,
-    pagesPlugin,
-    techRadarPlugin,
-    techdocsPlugin,
-    userSettingsPlugin,
-    homePlugin,
-    ...collectedLegacyPlugins,
-    createExtensionOverrides({
-      extensions: [homePageExtension, scmAuthExtension, scmIntegrationApi],
-    }),
-  ],
-  /* Handled through config instead */
-  // bindRoutes({ bind }) {
-  //   bind(pagesPlugin.externalRoutes, { pageX: pagesPlugin.routes.pageX });
-  // },
-});
-
-// const legacyApp = createLegacyApp({ plugins: [legacyGraphiqlPlugin] });
-
-const root = app.createRoot();
-
-type ExtendedScalprumConfig = AppsConfig<{ assetsHost: string }>;
+type ExtendedScalprumConfig = AppsConfig<{
+  assetsHost: string;
+  importModule: string;
+}>;
 const scalprumConfig: ExtendedScalprumConfig = {
   'backstage.dynamic-frontend-plugin-sample': {
     name: 'backstage.dynamic-frontend-plugin-sample',
@@ -140,6 +114,7 @@ const scalprumConfig: ExtendedScalprumConfig = {
      *  */
     assetsHost: 'http://localhost:8004',
     manifestLocation: 'http://localhost:8004/plugin-manifest.json',
+    importModule: 'TechRadar',
   },
 };
 
@@ -155,24 +130,55 @@ const pluginLoaderOptions: PluginLoaderOptions = {
   },
 };
 
-const ScalprumRoot = () => {
-  /**
-   * Scalprum provider needs metadata about the dynamic plugins.
-   * Its API is accessed during runtime to load the remote containers into the browser.
-   */
-  return (
-    <ScalprumProvider
-      pluginSDKOptions={{
-        pluginLoaderOptions,
-      }}
-      config={scalprumConfig}
-    >
-      {root}
-    </ScalprumProvider>
-  );
-};
+const scalprum = initialize({
+  appsConfig: scalprumConfig,
+  pluginLoaderOptions,
+});
 
-export default <ScalprumRoot />;
+const collectedLegacyPlugins = collectLegacyRoutes(
+  <FlatRoutes>
+    <Route path="/catalog-import" element={<CatalogImportPage />} />
+  </FlatRoutes>,
+);
+
+const app = createApp({
+  featureLoader: async () => {
+    const initManifest = Object.values(scalprumConfig).map(
+      ({ manifestLocation, name, importModule }) =>
+        processManifest(manifestLocation!, name, importModule),
+    );
+    await Promise.all(initManifest);
+    const plugins = await Promise.all(
+      Object.values(scalprumConfig).map(({ name, importModule }) =>
+        scalprum.pluginStore.getExposedModule<{ default: BackstagePlugin }>(
+          name,
+          importModule,
+        ),
+      ),
+    );
+    return plugins.map(({ default: plugin }) => plugin);
+  },
+  features: [
+    graphiqlPlugin,
+    pagesPlugin,
+    techdocsPlugin,
+    userSettingsPlugin,
+    homePlugin,
+    ...collectedLegacyPlugins,
+    createExtensionOverrides({
+      extensions: [homePageExtension, scmAuthExtension, scmIntegrationApi],
+    }),
+  ],
+  bindRoutes({ bind }) {
+    bind(pagesPlugin.externalRoutes, { pageX: pagesPlugin.routes.pageX });
+  },
+});
+
+// const legacyApp = createLegacyApp({ plugins: [legacyGraphiqlPlugin] });
+
+const root = app.createRoot();
+
+export default root;
 
 // const routes = (
 //   <FlatRoutes>

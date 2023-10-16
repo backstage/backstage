@@ -68,7 +68,12 @@ const IndexPage = createPageExtension({
           </div>
           <div>
             <Link to="/settings">Settings</Link>
+          </div>
+          <div>
             <Link to={dynamicLink()}>Scalprum component</Link>
+          </div>
+          <div>
+            <Link to="/tech-radar">Tech radar</Link>
           </div>
         </div>
       );
@@ -170,7 +175,8 @@ const PageWithDynamicPlugin = createPageExtension({
     return (
       <ScalprumComponent fallback={<CircularProgress />} {...componentProps} />
     );
-    }})
+  },
+});
 export const pagesPlugin = createPlugin({
   id: 'pages',
   // routes: {
