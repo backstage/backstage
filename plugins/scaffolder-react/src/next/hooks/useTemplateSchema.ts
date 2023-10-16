@@ -42,7 +42,7 @@ export const useTemplateSchema = (
   manifest: TemplateParameterSchema,
 ): {
   steps: ParsedTemplateSchema[];
-  configurations: TemplateConfigurationsV1beta3;
+  configurations?: TemplateConfigurationsV1beta3;
 } => {
   const featureFlags = useApi(featureFlagsApiRef);
   const steps = manifest.steps.map(({ title, description, schema }) => ({
