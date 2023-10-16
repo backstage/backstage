@@ -38,10 +38,13 @@ import {
   ScaffolderDryRunOptions,
   ScaffolderDryRunResponse,
   TemplateParameterSchema,
+  ScaffolderStep,
 } from '@backstage/plugin-scaffolder-react';
+import { TaskStep } from '@backstage/plugin-scaffolder-common';
 
 import queryString from 'qs';
 import { EventSourcePolyfill } from 'event-source-polyfill';
+import { SerializedTaskEvent } from '@backstage/plugin-scaffolder-node';
 
 /**
  * An API to interact with the scaffolder backend.
@@ -170,14 +173,62 @@ export class ScaffolderClient implements ScaffolderApi {
 
   async getTask(taskId: string): Promise<ScaffolderTask> {
     const baseUrl = await this.discoveryApi.getBaseUrl('scaffolder');
-    const url = `${baseUrl}/v2/tasks/${encodeURIComponent(taskId)}`;
+    const taskUrl = `${baseUrl}/v2/tasks/${encodeURIComponent(taskId)}`;
 
-    const response = await this.fetchApi.fetch(url);
-    if (!response.ok) {
-      throw await ResponseError.fromResponse(response);
+    const taskEventsUrl = `${baseUrl}/v2/tasks/${encodeURIComponent(
+      taskId,
+    )}/events`;
+
+    const taskResponse = await this.fetchApi.fetch(taskUrl);
+    if (!taskResponse.ok) {
+      throw await ResponseError.fromResponse(taskResponse);
     }
 
-    return await response.json();
+    const taskEventsResponse = await this.fetchApi.fetch(taskEventsUrl);
+    if (!taskEventsResponse.ok) {
+      throw await ResponseError.fromResponse(taskEventsResponse);
+    }
+
+    const task = (await taskResponse.json()) as ScaffolderTask;
+    const taskEvents =
+      (await taskEventsResponse.json()) as SerializedTaskEvent[];
+
+    const stepIdToTimestamps = taskEvents
+      .filter(event => event.type === 'log')
+      .reduce((acc, event) => {
+        const stepId = event.body.stepId as string;
+        if (stepId) {
+          acc.set(stepId, [...(acc.get(stepId) ?? []), event.createdAt]);
+        }
+        return acc;
+      }, new Map<string, string[]>());
+
+    const toStartedAt = (stepId: string) => {
+      const timestamps = stepIdToTimestamps.get(stepId);
+      return timestamps ? timestamps[0] : undefined;
+    };
+
+    const toEndedAt = (stepId: string) => {
+      const timestamps = stepIdToTimestamps.get(stepId);
+      return timestamps ? timestamps[timestamps.length - 1] : undefined;
+    };
+
+    const enrichedTask = {
+      ...task,
+      spec: {
+        ...task.spec,
+        steps: task.spec.steps.map(
+          step =>
+            ({
+              ...step,
+              startedAt: toStartedAt(step.id),
+              endedAt: toEndedAt(step.id),
+            } as TaskStep & ScaffolderStep),
+        ),
+      },
+    };
+
+    return enrichedTask as ScaffolderTask;
   }
 
   streamLogs(options: ScaffolderStreamLogsOptions): Observable<LogEvent> {
