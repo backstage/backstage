@@ -178,7 +178,7 @@ module.exports = {
             position: 'left',
           },
           {
-            to: 'docs/releases/v1.18.0',
+            to: 'docs/releases/v1.19.0',
             label: 'Releases',
             position: 'left',
           },
