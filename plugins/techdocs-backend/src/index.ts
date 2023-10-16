@@ -20,6 +20,12 @@
  * @packageDocumentation
  */
 
+import {
+  DocsBuildStrategy as _DocsBuildStrategy,
+  ShouldBuildParameters as _ShouldBuildParameters,
+  TechDocsDocument as _TechDocsDocument,
+} from '@backstage/plugin-techdocs-node';
+
 export { createRouter } from './service';
 export type {
   RouterOptions,
@@ -37,12 +43,19 @@ export type {
 } from './search';
 
 /**
- * @deprecated Use directly from @backstage/plugin-techdocs-node
+ * @public
+ * @deprecated import from `@backstage/plugin-techdocs-node` instead
  */
-export type {
-  DocsBuildStrategy,
-  ShouldBuildParameters,
-  TechDocsDocument,
-} from '@backstage/plugin-techdocs-node';
+export type DocsBuildStrategy = _DocsBuildStrategy;
+/**
+ * @public
+ * @deprecated import from `@backstage/plugin-techdocs-node` instead
+ */
+export type ShouldBuildParameters = _ShouldBuildParameters;
+/**
+ * @public
+ * @deprecated import from `@backstage/plugin-techdocs-node` instead
+ */
+export type TechDocsDocument = _TechDocsDocument;
 
 export * from '@backstage/plugin-techdocs-node';

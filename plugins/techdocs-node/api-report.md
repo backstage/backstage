@@ -242,13 +242,13 @@ export type ShouldBuildParameters = {
 export type SupportedGeneratorKey = 'techdocs' | string;
 
 // @public
-export interface TechdocsBuildStrategyExtensionPoint {
+export interface TechdocsBuildsExtensionPoint {
   // (undocumented)
   setBuildStrategy(buildStrategy: DocsBuildStrategy): void;
 }
 
 // @public
-export const techdocsBuildStrategyExtensionPoint: ExtensionPoint<TechdocsBuildStrategyExtensionPoint>;
+export const techdocsBuildsExtensionPoint: ExtensionPoint<TechdocsBuildsExtensionPoint>;
 
 // @public
 export interface TechDocsDocument extends IndexableDocument {

@@ -17,20 +17,20 @@ import { createExtensionPoint } from '@backstage/backend-plugin-api';
 import { DocsBuildStrategy } from './techdocsTypes';
 
 /**
- * Extension point type for setting a custom build strategy.
+ * Extension point type for configuring Techdocs builds.
  *
  * @public
  */
-export interface TechdocsBuildStrategyExtensionPoint {
+export interface TechdocsBuildsExtensionPoint {
   setBuildStrategy(buildStrategy: DocsBuildStrategy): void;
 }
 
 /**
- * Extension point for setting a custom build strategy.
+ * Extension point for configuring Techdocs builds.
  *
  * @public
  */
-export const techdocsBuildStrategyExtensionPoint =
-  createExtensionPoint<TechdocsBuildStrategyExtensionPoint>({
-    id: 'techdocs.buildStrategy',
+export const techdocsBuildsExtensionPoint =
+  createExtensionPoint<TechdocsBuildsExtensionPoint>({
+    id: 'techdocs.builds',
   });
