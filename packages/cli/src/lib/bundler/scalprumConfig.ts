@@ -48,10 +48,6 @@ export const sharedModules = {
     singleton: true,
     requiredVersion: '*',
   },
-  '@backstage/core-plugin-api': {
-    singleton: true,
-    requiredVersion: '*',
-  },
   '@scalprum/react-core': {
     singleton: true,
     requiredVersion: '*',
