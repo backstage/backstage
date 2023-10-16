@@ -23,9 +23,10 @@ import { useEntity } from '@backstage/plugin-catalog-react';
 import React from 'react';
 import { Route, Routes } from 'react-router-dom';
 import { JENKINS_ANNOTATION, LEGACY_JENKINS_ANNOTATION } from '../constants';
-import { buildRouteRef } from '../plugin';
+import { buildRouteRef, jobRunsRouteRef } from '../plugin';
 import { CITable } from './BuildsPage/lib/CITable';
 import { DetailedViewPage } from './BuildWithStepsPage/';
+import { JobRunsTable } from './JobRunsTable';
 import { Project } from '../api';
 
 /** @public */
@@ -46,6 +47,7 @@ export const Router = (props: { columns?: TableColumn<Project>[] }) => {
     <Routes>
       <Route path="/" element={<CITable columns={columns} />} />
       <Route path={`/${buildRouteRef.path}`} element={<DetailedViewPage />} />
+      <Route path={`/${jobRunsRouteRef.path}`} element={<JobRunsTable />} />
     </Routes>
   );
 };

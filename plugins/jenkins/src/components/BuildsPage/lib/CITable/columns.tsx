@@ -19,9 +19,10 @@ import { useEntityPermission } from '@backstage/plugin-catalog-react/alpha';
 import { Box, IconButton, Tooltip, Typography } from '@material-ui/core';
 import RetryIcon from '@material-ui/icons/Replay';
 import VisibilityIcon from '@material-ui/icons/Visibility';
+import HistoryIcon from '@material-ui/icons/History';
 import { default as React, useState } from 'react';
 import { Project } from '../../../../api/JenkinsApi';
-import { buildRouteRef } from '../../../../plugin';
+import { buildRouteRef, jobRunsRouteRef } from '../../../../plugin';
 import { JenkinsRunStatus } from '../Status';
 import { jenkinsExecutePermission } from '@backstage/plugin-jenkins-common';
 
@@ -186,6 +187,25 @@ export const columnFactories = Object.freeze({
     };
   },
 
+  createLastRunDuration(): TableColumn<Project> {
+    return {
+      title: 'Last Run Duration',
+      align: 'left',
+      render: (row: Partial<Project>) => (
+        <>
+          <Typography>
+            {row?.lastBuild?.duration
+              ? (row?.lastBuild?.duration / 1000)
+                  .toFixed(1)
+                  .toString()
+                  .concat(' s')
+              : ''}{' '}
+          </Typography>
+        </>
+      ),
+    };
+  },
+
   createActionsColumn(): TableColumn<Project> {
     return {
       title: 'Actions',
@@ -198,6 +218,7 @@ export const columnFactories = Object.freeze({
           );
 
           const alertApi = useApi(alertApiRef);
+          const jobRunsLink = useRouteRef(jobRunsRouteRef);
 
           const onRebuild = async () => {
             if (row.onRestartClick) {
@@ -221,7 +242,7 @@ export const columnFactories = Object.freeze({
           };
 
           return (
-            <div style={{ width: '98px' }}>
+            <div style={{ width: '148px' }}>
               {row.lastBuild?.url && (
                 <Tooltip title="View build">
                   <IconButton href={row.lastBuild.url} target="_blank">
@@ -240,6 +261,17 @@ export const columnFactories = Object.freeze({
                   </IconButton>
                 </Tooltip>
               )}
+              <Link
+                to={jobRunsLink({
+                  jobFullName: encodeURIComponent(row.fullName || ''),
+                })}
+              >
+                <Tooltip title="View Runs">
+                  <IconButton>
+                    <HistoryIcon />
+                  </IconButton>
+                </Tooltip>
+              </Link>
             </div>
           );
         };
