@@ -124,9 +124,8 @@ export async function startBackendExperimental(options: BackendServeOptions) {
 
   restart();
 
-  watcher = watch([paths.targetDir], {
+  watcher = watch([], {
     cwd: process.cwd(),
-    ignored: ['**/.*/**', '**/node_modules/**'],
     ignoreInitial: true,
     ignorePermissionErrors: true,
   }).on('all', restart);
