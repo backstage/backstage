@@ -104,6 +104,5 @@ export function collectLegacyRoutes(
     },
   );
 
-  // TODO: For every legacy plugin that we find, make sure any matching plugin is disabled in the new system
   return results;
 }
