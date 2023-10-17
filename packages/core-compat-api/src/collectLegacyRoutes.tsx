@@ -15,13 +15,18 @@
  */
 
 import React, { ReactNode } from 'react';
-import { Extension, createPageExtension } from '@backstage/frontend-plugin-api';
+import {
+  Extension,
+  createApiExtension,
+  createPageExtension,
+} from '@backstage/frontend-plugin-api';
 import { Route, Routes } from 'react-router-dom';
 import {
   BackstagePlugin,
   RouteRef,
   getComponentData,
 } from '@backstage/core-plugin-api';
+import { convertLegacyRouteRef } from '@backstage/core-plugin-api/alpha';
 
 export function collectLegacyRoutes(
   flatRoutesElement: JSX.Element,
@@ -77,7 +82,7 @@ export function collectLegacyRoutes(
       const detectedExtension = createPageExtension({
         id: `plugin.${pluginId}.page`,
         defaultPath: path[0] === '/' ? path.slice(1) : path,
-        routeRef,
+        routeRef: routeRef ? convertLegacyRouteRef(routeRef) : undefined,
 
         loader: async () =>
           route.props.children ? (
@@ -91,7 +96,13 @@ export function collectLegacyRoutes(
           ),
       });
 
-      plugin.getApis(); // Create DI API extensions from these
+      results.push(
+        ...Array.from(plugin.getApis()).map(factory =>
+          createApiExtension({
+            factory,
+          }),
+        ),
+      );
 
       // TODO: Create converted plugin instance instead. We need to move over APIs etc.
       results.push(detectedExtension);

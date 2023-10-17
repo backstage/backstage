@@ -27,6 +27,7 @@ import homePlugin, {
 import {
   coreExtensionData,
   createExtension,
+  createApiExtension,
   createExtensionOverrides,
   createPageExtension,
 } from '@backstage/frontend-plugin-api';
@@ -34,6 +35,16 @@ import { entityRouteRef } from '@backstage/plugin-catalog-react';
 import techdocsPlugin from '@backstage/plugin-techdocs/alpha';
 import { convertLegacyRouteRef } from '@backstage/core-plugin-api/alpha';
 import { homePage } from './HomePage';
+import { collectLegacyRoutes } from '@backstage/core-compat-api';
+import { FlatRoutes } from '@backstage/core-app-api';
+import { Route } from 'react-router';
+import { CatalogImportPage } from '@backstage/plugin-catalog-import';
+import { createApiFactory, configApiRef } from '@backstage/core-plugin-api';
+import {
+  ScmAuth,
+  ScmIntegrationsApi,
+  scmIntegrationsApiRef,
+} from '@backstage/integration-react';
 
 /*
 
@@ -83,6 +94,24 @@ const homePageExtension = createExtension({
   },
 });
 
+const scmAuthExtension = createApiExtension({
+  factory: ScmAuth.createDefaultApiFactory(),
+});
+
+const scmIntegrationApi = createApiExtension({
+  factory: createApiFactory({
+    api: scmIntegrationsApiRef,
+    deps: { configApi: configApiRef },
+    factory: ({ configApi }) => ScmIntegrationsApi.fromConfig(configApi),
+  }),
+});
+
+const collectedLegacyRoutes = collectLegacyRoutes(
+  <FlatRoutes>
+    <Route path="/catalog-import" element={<CatalogImportPage />} />
+  </FlatRoutes>,
+);
+
 const app = createApp({
   features: [
     graphiqlPlugin,
@@ -92,7 +121,13 @@ const app = createApp({
     userSettingsPlugin,
     homePlugin,
     createExtensionOverrides({
-      extensions: [entityPageExtension, homePageExtension],
+      extensions: [
+        entityPageExtension,
+        homePageExtension,
+        scmAuthExtension,
+        scmIntegrationApi,
+        ...collectedLegacyRoutes,
+      ],
     }),
   ],
   /* Handled through config instead */
