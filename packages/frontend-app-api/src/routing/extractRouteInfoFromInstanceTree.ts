@@ -15,7 +15,7 @@
  */
 
 import { RouteRef, coreExtensionData } from '@backstage/frontend-plugin-api';
-import { ExtensionInstance } from '../wiring/createExtensionInstance';
+import { ExtensionInstance } from '../wiring/graph/createExtensionInstance';
 // eslint-disable-next-line @backstage/no-relative-monorepo-imports
 import { toLegacyPlugin } from '../wiring/createApp';
 import { BackstageRouteObject } from './types';
