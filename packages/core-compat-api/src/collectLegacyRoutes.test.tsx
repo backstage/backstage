@@ -14,21 +14,14 @@
  * limitations under the License.
  */
 
-import React from 'react';
 import { FlatRoutes } from '@backstage/core-app-api';
-import { createPageExtension } from '@backstage/frontend-plugin-api';
 import { PuppetDbPage } from '@backstage/plugin-puppetdb';
 import { StackstormPage } from '@backstage/plugin-stackstorm';
 import { ScoreBoardPage } from '@oriflame/backstage-plugin-score-card';
+import React from 'react';
 import { Route } from 'react-router-dom';
 
-import { getComponentData } from '@backstage/core-plugin-api';
 import { collectLegacyRoutes } from './collectLegacyRoutes';
-
-jest.mock('@backstage/frontend-plugin-api', () => ({
-  ...jest.requireActual('@backstage/frontend-plugin-api'),
-  createPageExtension: opts => opts,
-}));
 
 describe('collectLegacyRoutes', () => {
   it('should collect legacy routes', () => {
@@ -40,26 +33,65 @@ describe('collectLegacyRoutes', () => {
       </FlatRoutes>,
     );
 
-    expect(collected).toEqual([
-      createPageExtension({
-        id: 'plugin.score-card.page',
-        defaultPath: 'score-board',
-        routeRef: getComponentData(<ScoreBoardPage />, 'core.mountPoint'),
-        loader: expect.any(Function),
-      }),
-      createPageExtension({
-        id: 'plugin.stackstorm.page',
-        defaultPath: 'stackstorm',
-        routeRef: getComponentData(<StackstormPage />, 'core.mountPoint'),
-        loader: expect.any(Function),
-      }),
-      createPageExtension({
-        id: 'plugin.puppetDb.page',
-        defaultPath: 'puppetdb',
-        routeRef: getComponentData(<PuppetDbPage />, 'core.mountPoint'),
-        loader: expect.any(Function),
-      }),
-      // ??????????????
+    expect(
+      collected.map(p => ({
+        id: p.id,
+        extensions: p.extensions.map(e => ({
+          id: e.id,
+          attachTo: e.attachTo,
+          disabled: e.disabled,
+          defaultConfig: e.configSchema?.parse({}),
+        })),
+      })),
+    ).toEqual([
+      {
+        id: 'score-card',
+        extensions: [
+          {
+            id: 'plugin.score-card.page',
+            attachTo: { id: 'core.routes', input: 'routes' },
+            disabled: false,
+            defaultConfig: { path: 'score-board' },
+          },
+          {
+            id: 'apis.plugin.scoringdata.service',
+            attachTo: { id: 'core', input: 'apis' },
+            disabled: false,
+          },
+        ],
+      },
+      {
+        id: 'stackstorm',
+        extensions: [
+          {
+            id: 'plugin.stackstorm.page',
+            attachTo: { id: 'core.routes', input: 'routes' },
+            disabled: false,
+            defaultConfig: { path: 'stackstorm' },
+          },
+          {
+            id: 'apis.plugin.stackstorm.service',
+            attachTo: { id: 'core', input: 'apis' },
+            disabled: false,
+          },
+        ],
+      },
+      {
+        id: 'puppetDb',
+        extensions: [
+          {
+            id: 'plugin.puppetDb.page',
+            attachTo: { id: 'core.routes', input: 'routes' },
+            disabled: false,
+            defaultConfig: { path: 'puppetdb' },
+          },
+          {
+            id: 'apis.plugin.puppetdb.service',
+            attachTo: { id: 'core', input: 'apis' },
+            disabled: false,
+          },
+        ],
+      },
     ]);
   });
 });

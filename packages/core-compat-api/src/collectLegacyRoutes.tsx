@@ -19,10 +19,12 @@ import {
   Extension,
   createApiExtension,
   createPageExtension,
+  createPlugin,
+  BackstagePlugin,
 } from '@backstage/frontend-plugin-api';
 import { Route, Routes } from 'react-router-dom';
 import {
-  BackstagePlugin,
+  BackstagePlugin as LegacyBackstagePlugin,
   RouteRef,
   getComponentData,
 } from '@backstage/core-plugin-api';
@@ -30,23 +32,8 @@ import { convertLegacyRouteRef } from '@backstage/core-plugin-api/alpha';
 
 export function collectLegacyRoutes(
   flatRoutesElement: JSX.Element,
-): Extension<unknown>[] {
-  // const results = traverseElementTree({
-  //   root,
-  //   discoverers: [childDiscoverer, routeElementDiscoverer],
-  //   collectors: {
-  //     foo: createCollector(
-  //       () => new Set<Extension>(),
-  //       (acc, node) => {
-  //         const plugin = getComponentData<BackstagePlugin>(node, 'core.plugin');
-  //         if (plugin) {
-  //           acc.add(plugin);
-  //         }
-  //       },
-  //     )
-  //   },
-  // })
-  const results = new Array<Extension<unknown>>();
+): BackstagePlugin[] {
+  const results = new Array<BackstagePlugin>();
 
   React.Children.forEach(
     flatRoutesElement.props.children,
@@ -63,7 +50,7 @@ export function collectLegacyRoutes(
       const routeElement = route.props.element;
 
       // TODO: to support deeper extension component, e.g. hidden within <RequirePermission>, use https://github.com/backstage/backstage/blob/518a34646b79ec2028cc0ed6bc67d4366c51c4d6/packages/core-app-api/src/routing/collectors.tsx#L69
-      const plugin = getComponentData<BackstagePlugin>(
+      const plugin = getComponentData<LegacyBackstagePlugin>(
         routeElement,
         'core.plugin',
       );
@@ -79,24 +66,28 @@ export function collectLegacyRoutes(
       const pluginId = plugin.getId();
       const path: string = route.props.path;
 
-      const detectedExtension = createPageExtension({
-        id: `plugin.${pluginId}.page`,
-        defaultPath: path[0] === '/' ? path.slice(1) : path,
-        routeRef: routeRef ? convertLegacyRouteRef(routeRef) : undefined,
+      const detectedExtensions = new Array<Extension<unknown>>();
 
-        loader: async () =>
-          route.props.children ? (
-            <Routes>
-              <Route path="*" element={routeElement}>
-                <Route path="*" element={route.props.children} />
-              </Route>
-            </Routes>
-          ) : (
-            routeElement
-          ),
-      });
+      detectedExtensions.push(
+        createPageExtension({
+          id: `plugin.${pluginId}.page`,
+          defaultPath: path[0] === '/' ? path.slice(1) : path,
+          routeRef: routeRef ? convertLegacyRouteRef(routeRef) : undefined,
 
-      results.push(
+          loader: async () =>
+            route.props.children ? (
+              <Routes>
+                <Route path="*" element={routeElement}>
+                  <Route path="*" element={route.props.children} />
+                </Route>
+              </Routes>
+            ) : (
+              routeElement
+            ),
+        }),
+      );
+
+      detectedExtensions.push(
         ...Array.from(plugin.getApis()).map(factory =>
           createApiExtension({
             factory,
@@ -104,8 +95,12 @@ export function collectLegacyRoutes(
         ),
       );
 
-      // TODO: Create converted plugin instance instead. We need to move over APIs etc.
-      results.push(detectedExtension);
+      results.push(
+        createPlugin({
+          id: plugin.getId(),
+          extensions: detectedExtensions,
+        }),
+      );
     },
   );
 
