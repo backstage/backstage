@@ -25,9 +25,21 @@
   },
   "devDependencies": {
     "@backstage/cli": "workspace:^",
+    "@backstage/core-app-api": "workspace:^",
+    "@backstage/plugin-puppetdb": "workspace:^",
+    "@backstage/plugin-stackstorm": "workspace:^",
+    "@oriflame/backstage-plugin-score-card": "^0.7.0",
     "@testing-library/jest-dom": "^5.10.1"
   },
   "files": [
     "dist"
-  ]
+  ],
+  "peerDependencies": {
+    "react": "*",
+    "react-router-dom": "*"
+  },
+  "dependencies": {
+    "@backstage/core-plugin-api": "workspace:^",
+    "@backstage/frontend-plugin-api": "workspace:^"
+  }
 }
