@@ -91,7 +91,7 @@ export const TechDocsReaderPageContent = withTechDocsReaderProvider(
       } else {
         document?.querySelector('header')?.scrollIntoView();
       }
-    }, [hashElement, isStyleLoading, dom]);
+    }, [hash, hashElement, isStyleLoading]);
 
     const handleAppend = useCallback(
       (newShadowRoot: ShadowRoot) => {
