@@ -44,7 +44,6 @@ import { TaskStep } from '@backstage/plugin-scaffolder-common';
 
 import queryString from 'qs';
 import { EventSourcePolyfill } from 'event-source-polyfill';
-import { SerializedTaskEvent } from '@backstage/plugin-scaffolder-node';
 
 /**
  * An API to interact with the scaffolder backend.
@@ -190,27 +189,36 @@ export class ScaffolderClient implements ScaffolderApi {
     }
 
     const task = (await taskResponse.json()) as ScaffolderTask;
-    const taskEvents =
-      (await taskEventsResponse.json()) as SerializedTaskEvent[];
+
+    const taskEvents = (await taskEventsResponse.json()) as {
+      body: { stepId?: string };
+      createdAt: string;
+      type: 'completion' | 'log' | 'cancelled';
+    }[];
 
     const stepIdToTimestamps = taskEvents
       .filter(event => event.type === 'log')
       .reduce((acc, event) => {
         const stepId = event.body.stepId as string;
         if (stepId) {
-          acc.set(stepId, [...(acc.get(stepId) ?? []), event.createdAt]);
+          const value = acc.get(stepId);
+          if (!value || !value.min) {
+            acc.set(stepId, { min: event.createdAt, max: undefined });
+          } else {
+            acc.set(stepId, { min: value.min, max: event.createdAt });
+          }
         }
         return acc;
-      }, new Map<string, string[]>());
+      }, new Map<string, { min: string | undefined; max: string | undefined }>());
 
     const toStartedAt = (stepId: string) => {
-      const timestamps = stepIdToTimestamps.get(stepId);
-      return timestamps ? timestamps[0] : undefined;
+      const value = stepIdToTimestamps.get(stepId);
+      return value ? value.min : undefined;
     };
 
     const toEndedAt = (stepId: string) => {
-      const timestamps = stepIdToTimestamps.get(stepId);
-      return timestamps ? timestamps[timestamps.length - 1] : undefined;
+      const value = stepIdToTimestamps.get(stepId);
+      return value ? value.max : undefined;
     };
 
     const enrichedTask = {

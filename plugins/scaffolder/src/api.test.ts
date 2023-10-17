@@ -21,10 +21,6 @@ import { rest } from 'msw';
 import { setupServer } from 'msw/node';
 import { ScaffolderClient } from './api';
 import { EventSourcePolyfill } from 'event-source-polyfill';
-import {
-  SerializedTask,
-  SerializedTaskEvent,
-} from '@backstage/plugin-scaffolder-node';
 import { ScaffolderStep } from '@backstage/plugin-scaffolder-react';
 
 const MockedEventSource = EventSourcePolyfill as jest.MockedClass<
@@ -362,7 +358,7 @@ describe('api', () => {
                   entityRef: 'template:default/docs-long-running-template',
                 },
               },
-            } as SerializedTask),
+            }),
           );
         }),
         rest.get(`${mockBaseUrl}/v2/tasks/:taskId/events`, (_req, res, ctx) => {
@@ -403,7 +399,7 @@ describe('api', () => {
                 taskId,
                 type: 'log',
               },
-            ] as SerializedTaskEvent[]),
+            ]),
           );
         }),
       );
