@@ -116,7 +116,7 @@ export interface ExtensionTree {
 export function createExtensionTree(options: {
   config: Config;
 }): ExtensionTree {
-  const features = getAvailableFeatures();
+  const features = getAvailableFeatures(options.config);
   const { instances } = createInstances({
     features,
     config: options.config,
@@ -286,7 +286,7 @@ export function createApp(options: {
         overrideBaseUrlConfigs(defaultConfigLoaderSync()),
       );
 
-    const discoveredFeatures = getAvailableFeatures();
+    const discoveredFeatures = getAvailableFeatures(config);
     const loadedFeatures = (await options.featureLoader?.({ config })) ?? [];
     const allFeatures = Array.from(
       new Set([
