@@ -58,6 +58,7 @@ Existing tasks:
 
 */
 
+/** @public */
 export function collectLegacyRoutes(
   flatRoutesElement: JSX.Element,
 ): BackstagePlugin[] {
