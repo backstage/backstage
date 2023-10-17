@@ -13,13 +13,11 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import { promises as fs } from 'fs';
 import { StaticKeyStore } from './StaticKeyStore';
 import { AnyJWK } from './types';
-import { ConfigReader } from '@backstage/core-app-api';
+import { ConfigReader } from '@backstage/config';
+import { createMockDirectory } from '@backstage/backend-test-utils';
 
-const publicKeyPath = '/mnt/public.pem';
-const privateKeyPath = '/mnt/private.pem';
 const privateKey = `
 -----BEGIN PRIVATE KEY-----
 MIGHAgEAMBMGByqGSM49AgEGCCqGSM49AwEHBG0wawIBAQQgR8Ja2ppMEgOm1KeY
@@ -35,37 +33,39 @@ ZoUEY72HTvjIP9xSbLOhWhMREk84T0q91/m3v3sWq5EzHIWw1zRHQisKZw==
 -----END PUBLIC KEY-----
 `.trim();
 
-const config = new ConfigReader({
-  keys: [
-    {
-      publicKeyFile: publicKeyPath,
-      privateKeyFile: privateKeyPath,
-      keyId: '1',
-      algorithm: 'ES256',
-    },
-    {
-      publicKeyFile: publicKeyPath,
-      privateKeyFile: privateKeyPath,
-      keyId: '2',
-      algorithm: 'ES256',
-    },
-  ],
-});
-
-jest.mock('fs/promises');
-
 describe('StaticKeyStore', () => {
-  beforeEach(() => {
-    jest.resetAllMocks();
-    fs.readFile = jest.fn().mockImplementation(async (path: string, _: any) => {
-      if (path === publicKeyPath) {
-        return Promise.resolve(publicKey);
-      }
-      if (path === privateKeyPath) {
-        return Promise.resolve(privateKey);
-      }
+  let config: ConfigReader;
+  const sourceDir = createMockDirectory();
 
-      throw new Error('Unexpected path');
+  beforeAll(() => {
+    sourceDir.setContent({
+      'public.pem': publicKey,
+      'private.pem': privateKey,
+    });
+
+    const publicKeyPath = sourceDir.resolve('public.pem');
+    const privateKeyPath = sourceDir.resolve('private.pem');
+    config = new ConfigReader({
+      auth: {
+        keyStore: {
+          static: {
+            keys: [
+              {
+                publicKeyFile: publicKeyPath,
+                privateKeyFile: privateKeyPath,
+                keyId: '1',
+                algorithm: 'ES256',
+              },
+              {
+                publicKeyFile: publicKeyPath,
+                privateKeyFile: privateKeyPath,
+                keyId: '2',
+                algorithm: 'ES256',
+              },
+            ],
+          },
+        },
+      },
     });
   });
 

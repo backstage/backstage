@@ -74,16 +74,18 @@ export class StaticKeyStore implements KeyStore {
   }
 
   public static async fromConfig(config: Config): Promise<StaticKeyStore> {
-    const keyConfigs = config.getConfigArray('keys').map(c => {
-      const staticKeyConfig: StaticKeyConfig = {
-        publicKeyFile: c.getString('publicKeyFile'),
-        privateKeyFile: c.getString('privateKeyFile'),
-        keyId: c.getString('keyId'),
-        algorithm: c.getOptionalString('algorithm') ?? DEFAULT_ALGORITHM,
-      };
+    const keyConfigs = config
+      .getConfigArray('auth.keyStore.static.keys')
+      .map(c => {
+        const staticKeyConfig: StaticKeyConfig = {
+          publicKeyFile: c.getString('publicKeyFile'),
+          privateKeyFile: c.getString('privateKeyFile'),
+          keyId: c.getString('keyId'),
+          algorithm: c.getOptionalString('algorithm') ?? DEFAULT_ALGORITHM,
+        };
 
-      return staticKeyConfig;
-    });
+        return staticKeyConfig;
+      });
 
     const keyPairs = await Promise.all(
       keyConfigs.map(async k => await this.loadKeyPair(k)),

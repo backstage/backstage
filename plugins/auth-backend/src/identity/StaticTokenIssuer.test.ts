@@ -26,7 +26,6 @@ const entityRef = stringifyEntityRef({
   name: 'name',
 });
 
-jest.mock('fs/promises');
 describe('StaticTokenIssuer', () => {
   it('should issue valid tokens signed by the first listed key', async () => {
     const staticKeyStore = {

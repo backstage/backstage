@@ -76,12 +76,7 @@ export class KeyStores {
     }
 
     if (provider === 'static') {
-      const settings = ks?.getConfig(provider);
-      if (settings === undefined) {
-        throw new Error(`Missing configuration for static key store provider`);
-      }
-
-      await StaticKeyStore.fromConfig(settings);
+      await StaticKeyStore.fromConfig(config);
     }
 
     throw new Error(`Unknown KeyStore provider: ${provider}`);
