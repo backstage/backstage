@@ -14,14 +14,71 @@
  * limitations under the License.
  */
 
-import { AppNode, AppNodeEdges, AppNodeSpec, Mutable } from './types';
+import {
+  AppGraph,
+  AppNode,
+  AppNodeEdges,
+  AppNodeInstance,
+  AppNodeSpec,
+  Mutable,
+} from './types';
+
+function indent(str: string) {
+  return str.replace(/^/gm, '  ');
+}
+
+/** @internal */
+class SerializableAppNode implements AppNode {
+  public readonly spec: AppNodeSpec;
+  public readonly edges: AppNodeEdges = { attachments: new Map() };
+  public readonly instance?: AppNodeInstance;
+
+  constructor(spec: AppNodeSpec) {
+    this.spec = spec;
+  }
+
+  toJSON() {
+    const dataRefs = this.instance && [...this.instance.getDataRefs()];
+    return {
+      id: this.spec.id,
+      output:
+        dataRefs && dataRefs.length > 0
+          ? dataRefs.map(ref => ref.id)
+          : undefined,
+      attachments:
+        this.edges.attachments.size > 0
+          ? Object.fromEntries(this.edges.attachments)
+          : undefined,
+    };
+  }
+
+  toString() {
+    const dataRefs = this.instance && [...this.instance.getDataRefs()];
+    const out =
+      dataRefs && dataRefs.length > 0
+        ? ` out=[${[...dataRefs.keys()].join(', ')}]`
+        : '';
+
+    if (this.edges.attachments.size === 0) {
+      return `<${this.spec.id}${out} />`;
+    }
+
+    return [
+      `<${this.spec.id}${out}>`,
+      ...[...this.edges.attachments.entries()].map(([k, v]) =>
+        indent([`${k} [`, ...v.map(e => indent(e.toString())), `]`].join('\n')),
+      ),
+      `</${this.spec.id}>`,
+    ].join('\n');
+  }
+}
 
 /**
  * Build the app graph by iterating through all node specs and constructing the app
  * tree with all attachments in the same order as they appear in the input specs array.
  * @internal
  */
-export function buildAppGraph(specs: AppNodeSpec[]) {
+export function buildAppGraph(specs: AppNodeSpec[]): AppGraph {
   const nodes = new Map<string, AppNode>();
   const rootNodes = new Map<string, AppNode>();
   // While iterating through the inputs specs we keep track of all nodes that were created
@@ -39,12 +96,7 @@ export function buildAppGraph(specs: AppNodeSpec[]) {
       throw new Error(`Unexpected duplicate extension id '${spec.id}'`);
     }
 
-    const node: AppNode = {
-      spec,
-      edges: {
-        attachments: new Map(),
-      },
-    };
+    const node = new SerializableAppNode(spec);
     nodes.set(spec.id, node);
 
     if (spec.attachTo) {

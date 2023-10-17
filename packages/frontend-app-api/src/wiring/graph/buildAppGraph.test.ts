@@ -47,6 +47,49 @@ describe('buildAppGraph', () => {
     ]);
     expect([...graph.rootNodes.keys()]).toEqual(['a', 'b', 'c']);
     expect([...graph.orphanNodes.keys()]).toEqual(['dx1']);
+
+    expect(JSON.parse(JSON.stringify([...graph.rootNodes.values()])))
+      .toMatchInlineSnapshot(`
+      [
+        {
+          "id": "a",
+        },
+        {
+          "attachments": {
+            "x": [
+              {
+                "id": "bx1",
+              },
+              {
+                "id": "bx2",
+              },
+            ],
+            "y": [
+              {
+                "id": "by1",
+              },
+            ],
+          },
+          "id": "b",
+        },
+        {
+          "id": "c",
+        },
+      ]
+    `);
+    expect(String(graph.rootNodes.get('a'))).toMatchInlineSnapshot(`"<a />"`);
+    expect(String(graph.rootNodes.get('b'))).toMatchInlineSnapshot(`
+      "<b>
+        x [
+          <bx1 />
+          <bx2 />
+        ]
+        y [
+          <by1 />
+        ]
+      </b>"
+    `);
+    expect(String(graph.rootNodes.get('c'))).toMatchInlineSnapshot(`"<c />"`);
   });
 
   it('should create a graph out of order', () => {
@@ -61,6 +104,20 @@ describe('buildAppGraph', () => {
     ]);
     expect([...graph.rootNodes.keys()]).toEqual(['a', 'b', 'c']);
     expect([...graph.orphanNodes.keys()]).toEqual(['dx1']);
+
+    expect(String(graph.rootNodes.get('a'))).toMatchInlineSnapshot(`"<a />"`);
+    expect(String(graph.rootNodes.get('b'))).toMatchInlineSnapshot(`
+      "<b>
+        x [
+          <bx2 />
+          <bx1 />
+        ]
+        y [
+          <by1 />
+        ]
+      </b>"
+    `);
+    expect(String(graph.rootNodes.get('c'))).toMatchInlineSnapshot(`"<c />"`);
   });
 
   it('throws an error when duplicated extensions are detected', () => {

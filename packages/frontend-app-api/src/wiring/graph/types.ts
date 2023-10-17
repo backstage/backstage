@@ -52,7 +52,7 @@ export interface AppNodeEdges {
  * @public
  */
 export interface AppNodeInstance {
-  getDataRefs(): ExtensionDataRef<unknown>[];
+  getDataRefs(): Iterable<ExtensionDataRef<unknown>>;
   getData<T>(ref: ExtensionDataRef<T>): T | unknown;
 }
 
@@ -71,4 +71,5 @@ export interface AppNode {
 
 export interface AppGraph {
   rootNodes: Map<string, AppNode>;
+  orphanNodes: Map<string, AppNode>;
 }
