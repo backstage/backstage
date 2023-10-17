@@ -29,7 +29,7 @@ import {
   useRouteRefParams,
   useApi,
 } from '@backstage/core-plugin-api';
-import { FormProps, IChangeEvent, ISubmitEvent, withTheme } from '@rjsf/core';
+import { FormProps, IChangeEvent, withTheme } from '@rjsf/core';
 import { Theme as MuiTheme } from '@rjsf/material-ui';
 import React, { ComponentType, useState } from 'react';
 import { transformSchemaToProps } from './schema';
@@ -189,7 +189,7 @@ export const MultistepJsonForm = (props: MultistepJsonFormProps) => {
                   formData={formData}
                   formContext={{ formData }}
                   onChange={onChange}
-                  onSubmit={(e: ISubmitEvent<any>) => {
+                  onSubmit={(e: IChangeEvent<any>) => {
                     if (e.errors.length === 0) handleNext();
                   }}
                   {...formProps}
