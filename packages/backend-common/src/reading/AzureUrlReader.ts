@@ -50,14 +50,16 @@ export class AzureUrlReader implements UrlReader {
     const integrations = ScmIntegrations.fromConfig(config);
     const credentialProvider =
       DefaultAzureDevOpsCredentialsProvider.fromIntegrations(integrations);
-    return integrations.azure.list().map(integration => {
-      const reader = new AzureUrlReader(integration, {
-        treeResponseFactory,
-        credentialsProvider: credentialProvider,
+    return integrations.azure
+      .list()
+      .map((integration: { config: { host: string } }) => {
+        const reader = new AzureUrlReader(integration, {
+          treeResponseFactory,
+          credentialsProvider: credentialProvider,
+        });
+        const predicate = (url: URL) => url.host === integration.config.host;
+        return { reader, predicate };
       });
-      const predicate = (url: URL) => url.host === integration.config.host;
-      return { reader, predicate };
-    });
   };
 
   constructor(
@@ -201,14 +203,16 @@ export class AzureUrlReader implements UrlReader {
 
     return {
       etag: tree.etag,
-      files: files.map(file => ({
-        url: this.integration.resolveUrl({
-          url: `/${file.path}`,
-          base: url,
+      files: files.map(
+        (file: { path: any; content: any; lastModifiedAt: any }) => ({
+          url: this.integration.resolveUrl({
+            url: `/${file.path}`,
+            base: url,
+          }),
+          content: file.content,
+          lastModifiedAt: file.lastModifiedAt,
         }),
-        content: file.content,
-        lastModifiedAt: file.lastModifiedAt,
-      })),
+      ),
     };
   }
 

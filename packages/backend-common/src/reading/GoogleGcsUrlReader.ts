@@ -126,7 +126,7 @@ export class GoogleGcsUrlReader implements UrlReader {
     });
 
     return {
-      files: files.map(file => {
+      files: files.map((file: { name: any }) => {
         const fullUrl = ['https:/', GOOGLE_GCS_HOST, bucket, file.name].join(
           '/',
         );

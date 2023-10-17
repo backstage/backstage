@@ -99,8 +99,9 @@ export class KubernetesContainerRunner implements ContainerRunner {
     podTemplate?: V1PodTemplateSpec,
   ): KubernetesContainerRunnerMountBase {
     if (
-      !podTemplate?.spec?.volumes?.filter(v => v.name === mountBase.volumeName)
-        .length
+      !podTemplate?.spec?.volumes?.filter(
+        (v: { name: string }) => v.name === mountBase.volumeName,
+      ).length
     ) {
       throw new Error(
         `A Pod template containing the volume ${mountBase.volumeName} is required`,
@@ -324,7 +325,7 @@ export class KubernetesContainerRunner implements ContainerRunner {
   private async createJob(jobSpec: V1Job): Promise<any> {
     return this.batchV1Api
       .createNamespacedJob(this.namespace, jobSpec)
-      .catch(err => {
+      .catch((err: Error) => {
         throw handleKubernetesError(
           'Kubernetes Job creation failed with the following error message:',
           err,

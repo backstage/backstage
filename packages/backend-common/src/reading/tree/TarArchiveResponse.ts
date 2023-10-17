@@ -162,7 +162,7 @@ export class TarArchiveResponse implements ReadTreeResponse {
       tar.extract({
         strip,
         cwd: dir,
-        filter: (path, stat) => {
+        filter: (path: string, stat: { size: any }) => {
           // Filter errors will short-circuit the rest of the filtering and then throw
           if (filterError) {
             return false;

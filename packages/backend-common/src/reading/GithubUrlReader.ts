@@ -273,7 +273,7 @@ export class GithubUrlReader implements UrlReader {
     // The simple case is that we got the entire tree in a single operation.
     if (!recursiveTree.truncated) {
       const matching = recursiveTree.tree.filter(
-        item =>
+        (item: { type: string; path: any; url: any }) =>
           item.type === 'blob' &&
           item.path &&
           item.url &&
@@ -291,15 +291,17 @@ export class GithubUrlReader implements UrlReader {
 
     // For larger repos, we leverage readTree and filter through that instead
     const tree = await this.doReadTree(archiveUrl, sha, '', init, {
-      filter: path => matcher.match(path),
+      filter: (path: any) => matcher.match(path),
     });
     const files = await tree.files();
 
-    return files.map(file => ({
-      url: pathToUrl(file.path),
-      content: file.content,
-      lastModifiedAt: file.lastModifiedAt,
-    }));
+    return files.map(
+      (file: { path: string; content: any; lastModifiedAt: any }) => ({
+        url: pathToUrl(file.path),
+        content: file.content,
+        lastModifiedAt: file.lastModifiedAt,
+      }),
+    );
   }
 
   private async getRepoDetails(url: string): Promise<{

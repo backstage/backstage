@@ -56,7 +56,7 @@ export class BitbucketUrlReader implements UrlReader {
     return integrations.bitbucket
       .list()
       .filter(
-        item =>
+        (item: { config: { host: any } }) =>
           !integrations.bitbucketCloud.byHost(item.config.host) &&
           !integrations.bitbucketServer.byHost(item.config.host),
       )
@@ -190,7 +190,7 @@ export class BitbucketUrlReader implements UrlReader {
 
     const tree = await this.readTree(treeUrl, {
       etag: options?.etag,
-      filter: path => matcher.match(path),
+      filter: (path: any) => matcher.match(path),
     });
     const files = await tree.files();
 

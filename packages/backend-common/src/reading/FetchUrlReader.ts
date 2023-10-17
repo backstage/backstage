@@ -85,29 +85,36 @@ export class FetchUrlReader implements UrlReader {
     const predicates =
       config
         .getOptionalConfigArray('backend.reading.allow')
-        ?.map(allowConfig => {
-          const paths = allowConfig.getOptionalStringArray('paths');
-          const checkPath = paths
-            ? (url: URL) => {
-                const targetPath = path.posix.normalize(url.pathname);
-                return paths.some(allowedPath =>
-                  targetPath.startsWith(allowedPath),
-                );
-              }
-            : (_url: URL) => true;
-          const host = allowConfig.getString('host');
-          const [hostname, port] = host.split(':');
+        ?.map(
+          (allowConfig: {
+            getOptionalStringArray: (arg0: string) => any;
+            getString: (arg0: string) => any;
+          }) => {
+            const paths = allowConfig.getOptionalStringArray('paths');
+            const checkPath = paths
+              ? (url: URL) => {
+                  const targetPath = path.posix.normalize(url.pathname);
+                  return paths.some((allowedPath: any) =>
+                    targetPath.startsWith(allowedPath),
+                  );
+                }
+              : (_url: URL) => true;
+            const host = allowConfig.getString('host');
+            const [hostname, port] = host.split(':');
 
-          const checkPort = parsePortPredicate(port);
+            const checkPort = parsePortPredicate(port);
 
-          if (hostname.startsWith('*.')) {
-            const suffix = hostname.slice(1);
+            if (hostname.startsWith('*.')) {
+              const suffix = hostname.slice(1);
+              return (url: URL) =>
+                url.hostname.endsWith(suffix) &&
+                checkPath(url) &&
+                checkPort(url);
+            }
             return (url: URL) =>
-              url.hostname.endsWith(suffix) && checkPath(url) && checkPort(url);
-          }
-          return (url: URL) =>
-            url.hostname === hostname && checkPath(url) && checkPort(url);
-        }) ?? [];
+              url.hostname === hostname && checkPath(url) && checkPort(url);
+          },
+        ) ?? [];
 
     const reader = new FetchUrlReader();
     const predicate = (url: URL) => predicates.some(p => p(url));

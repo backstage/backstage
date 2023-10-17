@@ -109,35 +109,56 @@ export class ZipArchiveResponse implements ReadTreeResponse {
     callback: (entry: Entry, content: Readable) => Promise<void>,
   ): Promise<void> {
     return new Promise((resolve, reject) => {
-      yauzl.open(zip, { lazyEntries: true }, (err, zipfile) => {
-        if (err || !zipfile) {
-          reject(err || new Error(`Failed to open zip file ${zip}`));
-          return;
-        }
-
-        zipfile.on('entry', async (entry: Entry) => {
-          // Check that the file is not a directory, and that is matches the filter.
-          if (!entry.fileName.endsWith('/') && this.shouldBeIncluded(entry)) {
-            zipfile.openReadStream(entry, async (openErr, readStream) => {
-              if (openErr || !readStream) {
-                reject(
-                  openErr ||
-                    new Error(`Failed to open zip entry ${entry.fileName}`),
-                );
-                return;
-              }
-
-              await callback(entry, readStream);
-              zipfile.readEntry();
-            });
-          } else {
-            zipfile.readEntry();
+      yauzl.open(
+        zip,
+        { lazyEntries: true },
+        (
+          err: any,
+          zipfile: {
+            on: (
+              arg0: string,
+              arg1: { (entry: Entry): Promise<void>; (e: any): void },
+            ) => void;
+            openReadStream: (
+              arg0: Entry,
+              arg1: (openErr: any, readStream: any) => Promise<void>,
+            ) => void;
+            readEntry: () => void;
+            once: (arg0: string, arg1: () => void) => void;
+          },
+        ) => {
+          if (err || !zipfile) {
+            reject(err || new Error(`Failed to open zip file ${zip}`));
+            return;
           }
-        });
-        zipfile.once('end', () => resolve());
-        zipfile.on('error', e => reject(e));
-        zipfile.readEntry();
-      });
+
+          zipfile.on('entry', async (entry: Entry) => {
+            // Check that the file is not a directory, and that is matches the filter.
+            if (!entry.fileName.endsWith('/') && this.shouldBeIncluded(entry)) {
+              zipfile.openReadStream(
+                entry,
+                async (openErr: any, readStream: any) => {
+                  if (openErr || !readStream) {
+                    reject(
+                      openErr ||
+                        new Error(`Failed to open zip entry ${entry.fileName}`),
+                    );
+                    return;
+                  }
+
+                  await callback(entry, readStream);
+                  zipfile.readEntry();
+                },
+              );
+            } else {
+              zipfile.readEntry();
+            }
+          });
+          zipfile.once('end', () => resolve());
+          zipfile.on('error', (e: any) => reject(e));
+          zipfile.readEntry();
+        },
+      );
     });
   }
 

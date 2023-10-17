@@ -136,14 +136,16 @@ export class AwsS3UrlReader implements UrlReader {
     const integrations = ScmIntegrations.fromConfig(config);
     const credsManager = DefaultAwsCredentialsManager.fromConfig(config);
 
-    return integrations.awsS3.list().map(integration => {
-      const reader = new AwsS3UrlReader(credsManager, integration, {
-        treeResponseFactory,
+    return integrations.awsS3
+      .list()
+      .map((integration: { config: { host: string } }) => {
+        const reader = new AwsS3UrlReader(credsManager, integration, {
+          treeResponseFactory,
+        });
+        const predicate = (url: URL) =>
+          url.host.endsWith(integration.config.host);
+        return { reader, predicate };
       });
-      const predicate = (url: URL) =>
-        url.host.endsWith(integration.config.host);
-      return { reader, predicate };
-    });
   };
 
   constructor(
@@ -234,7 +236,7 @@ export class AwsS3UrlReader implements UrlReader {
     return new Promise((resolve, reject) => {
       try {
         const chunks: any[] = [];
-        stream.on('data', chunk => chunks.push(chunk));
+        stream.on('data', (chunk: any) => chunks.push(chunk));
         stream.on('error', (e: Error) =>
           reject(new ForwardedError('Unable to read stream', e)),
         );
@@ -326,7 +328,7 @@ export class AwsS3UrlReader implements UrlReader {
           abortSignal: abortController.signal,
         });
         if (output.Contents) {
-          output.Contents.forEach(contents => {
+          output.Contents.forEach((contents: { Key: String }) => {
             allObjects.push(contents.Key!);
           });
         }
