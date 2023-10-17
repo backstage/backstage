@@ -24,6 +24,13 @@ export interface Config {
       packages?: 'all' | { include?: string[]; exclude?: string[] };
     };
 
+    routes?: {
+      /**
+       * @deepVisibility frontend
+       */
+      bindings?: { [externalRouteRefId: string]: string };
+    };
+
     /**
      * @deepVisibility frontend
      */

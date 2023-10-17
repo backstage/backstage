@@ -19,13 +19,13 @@ import {
   createExtensionOverrides,
   createPageExtension,
   createPlugin,
+  createRouteRef,
   createThemeExtension,
 } from '@backstage/frontend-plugin-api';
 import { createApp, createInstances } from './createApp';
 import { screen } from '@testing-library/react';
 import { MockConfigApi, renderWithEffects } from '@backstage/test-utils';
 import React from 'react';
-import { createRouteRef } from '@backstage/core-plugin-api';
 
 const extBaseConfig = {
   id: 'test',
@@ -83,14 +83,14 @@ describe('createInstances', () => {
     const ExtensionA = createPageExtension({
       id: 'A',
       defaultPath: '/',
-      routeRef: createRouteRef({ id: 'A.route' }),
+      routeRef: createRouteRef(),
       loader: async () => <div>Extension A</div>,
     });
 
     const ExtensionB = createPageExtension({
       id: 'B',
       defaultPath: '/',
-      routeRef: createRouteRef({ id: 'B.route' }),
+      routeRef: createRouteRef(),
       loader: async () => <div>Extension B</div>,
     });
 

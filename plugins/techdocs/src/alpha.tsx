@@ -35,6 +35,7 @@ import {
   techdocsStorageApiRef,
 } from '@backstage/plugin-techdocs-react';
 import { TechDocsClient, TechDocsStorageClient } from './client';
+import { convertLegacyRouteRef } from '@backstage/core-plugin-api/alpha';
 
 const rootRouteRef = createRouteRef({
   id: 'plugin.techdocs.indexPage',
@@ -76,7 +77,7 @@ export const TechDocsSearchResultListItemExtension =
 const TechDocsIndexPage = createPageExtension({
   id: 'plugin.techdocs.indexPage',
   defaultPath: '/docs',
-  routeRef: rootRouteRef,
+  routeRef: convertLegacyRouteRef(rootRouteRef),
   loader: () =>
     import('./home/components/TechDocsIndexPage').then(m => (
       <m.TechDocsIndexPage />
@@ -94,7 +95,7 @@ const TechDocsReaderPage = createPageExtension({
     import('./reader/components/TechDocsReaderPage').then(m => (
       <m.TechDocsReaderPage />
     )),
-  routeRef: rootDocsRouteRef,
+  routeRef: convertLegacyRouteRef(rootDocsRouteRef),
   defaultPath: '/docs/:namespace/:kind/:name/*',
 });
 
@@ -153,4 +154,8 @@ export default createPlugin({
     techDocsStorage,
     TechDocsSearchResultListItemExtension,
   ],
+  routes: {
+    root: convertLegacyRouteRef(rootRouteRef),
+    docRoot: convertLegacyRouteRef(rootDocsRouteRef),
+  },
 });

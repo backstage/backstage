@@ -19,15 +19,15 @@ import {
   AnyApiFactory,
   AppTheme,
   IconComponent,
-  RouteRef,
 } from '@backstage/core-plugin-api';
 import { createExtensionDataRef } from './createExtensionDataRef';
+import { RouteRef } from '../routing';
 
 /** @public */
 export type NavTarget = {
   title: string;
   icon: IconComponent;
-  routeRef: RouteRef<{}>;
+  routeRef: RouteRef<undefined>;
 };
 
 /** @public */

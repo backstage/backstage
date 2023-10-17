@@ -21,6 +21,8 @@ import {
   coreExtensionData,
   ExtensionDataRef,
   ExtensionOverrides,
+  RouteRef,
+  useRouteRef,
 } from '@backstage/frontend-plugin-api';
 import { Core } from '../extensions/Core';
 import { CoreRoutes } from '../extensions/CoreRoutes';
@@ -44,11 +46,9 @@ import {
   ConfigApi,
   configApiRef,
   IconComponent,
-  RouteRef,
   BackstagePlugin as LegacyBackstagePlugin,
   featureFlagsApiRef,
   attachComponentData,
-  useRouteRef,
   identityApiRef,
   AppTheme,
 } from '@backstage/core-plugin-api';
@@ -57,7 +57,6 @@ import {
   ApiFactoryRegistry,
   ApiProvider,
   ApiResolver,
-  AppRouteBinder,
   AppThemeSelector,
 } from '@backstage/core-app-api';
 
@@ -74,10 +73,6 @@ import { LocalStorageFeatureFlags } from '../../../core-app-api/src/apis/impleme
 import { defaultConfigLoaderSync } from '../../../core-app-api/src/app/defaultConfigLoader';
 // eslint-disable-next-line @backstage/no-relative-monorepo-imports
 import { overrideBaseUrlConfigs } from '../../../core-app-api/src/app/overrideBaseUrlConfigs';
-// eslint-disable-next-line @backstage/no-relative-monorepo-imports
-import { RoutingProvider } from '../../../core-app-api/src/routing/RoutingProvider';
-// eslint-disable-next-line @backstage/no-relative-monorepo-imports
-import { resolveRouteBindings } from '../../../core-app-api/src/app/resolveRouteBindings';
 // eslint-disable-next-line @backstage/no-relative-monorepo-imports
 import { AppLanguageSelector } from '../../../core-app-api/src/apis/implementations/AppLanguageApi/AppLanguageSelector';
 // eslint-disable-next-line @backstage/no-relative-monorepo-imports
@@ -97,6 +92,10 @@ import {
   appLanguageApiRef,
   translationApiRef,
 } from '@backstage/core-plugin-api/alpha';
+import { AppRouteBinder } from '../routing';
+import { RoutingProvider } from '../routing/RoutingProvider';
+import { resolveRouteBindings } from '../routing/resolveRouteBindings';
+import { collectRouteIds } from '../routing/collectRouteIds';
 
 /** @public */
 export interface ExtensionTreeNode {
@@ -307,13 +306,19 @@ export function createApp(options: {
       ),
     );
 
+    const routeIds = collectRouteIds(allFeatures);
+
     const App = () => (
       <ApiProvider apis={createApiHolder(coreInstance, config)}>
         <AppContextProvider appContext={appContext}>
           <AppThemeProvider>
             <RoutingProvider
               {...extractRouteInfoFromInstanceTree(coreInstance)}
-              routeBindings={resolveRouteBindings(options.bindRoutes)}
+              routeBindings={resolveRouteBindings(
+                options.bindRoutes,
+                config,
+                routeIds,
+              )}
             >
               {/* TODO: set base path using the logic from AppRouter */}
               <BrowserRouter>
