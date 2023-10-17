@@ -56,7 +56,6 @@
 '@backstage/test-utils': patch
 '@backstage/plugin-azure-sites': patch
 '@backstage/plugin-firehydrant': patch
-'@backstage/dev-utils': patch
 '@backstage/plugin-cloudbuild': patch
 '@backstage/plugin-home-react': patch
 '@backstage/plugin-kubernetes': patch
