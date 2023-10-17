@@ -44,107 +44,86 @@ return await createRouter({
 After that you can use the action in your template:
 
 ```yaml
-apiVersion: scaffolder.backstage.io/v1beta3
-kind: Template
-metadata:
-  name: nasti-demo
-  title: Nasti Test
-  description: Nasti example
-spec:
-  owner: backstage/techdocs-core
-  type: service
+parameters:
+  - title: Fill in some steps
+    required:
+      - name
+      - owner
+      - owner_email
+    properties:
+      name:
+        title: App Name
+        type: string
+        description: Name of the new application
+        ui:autofocus: true
+      owner:
+        title: Contact Name
+        type: string
+        description: Your name
+      owner_email:
+        title: Contact Email
+        type: string
+        description: Your email
 
-  parameters:
-    - title: Fill in some steps
-      required:
-        - name
-        - owner
-      properties:
-        name:
-          title: Name
-          type: string
-          description: Unique name of the component
-          ui:autofocus: true
-          ui:options:
-            rows: 5
-        owner:
-          title: Owner
-          type: string
-          description: Owner of the component
-          ui:field: OwnerPicker
-          ui:options:
-            catalogFilter:
-              kind: Group
-        system:
-          title: System
-          type: string
-          description: System of the component
-          ui:field: EntityPicker
-          ui:options:
-            catalogFilter:
-              kind: System
-            defaultKind: System
+  - title: Choose a location
+    required:
+      - repoUrl
+      - dryRun
+    properties:
+      repoUrl:
+        title: Repository Location
+        type: string
+        ui:field: RepoUrlPicker
+        ui:options:
+          allowedHosts:
+            - github.com
+      dryRun:
+        title: Only perform a dry run, don't publish anything
+        type: boolean
+        default: false
 
-    - title: Choose a location
-      required:
-        - repoUrl
-        - dryRun
-      properties:
-        repoUrl:
-          title: Repository Location
-          type: string
-          ui:field: RepoUrlPicker
-          ui:options:
-            allowedHosts:
-              - github.com
-        dryRun:
-          title: Only perform a dry run, don't publish anything
-          type: boolean
-          default: false
+steps:
+  - id: fetch-base
+    name: Fetch Base
+    action: fetch:nasti
+    input:
+      url: ./template
+      values:
+        app_name: ${{ parameters.name }}
+        contact_name: ${{ parameters.owner }}
+        email: ${{ parameters.owner_email }}
 
-  steps:
-    - id: fetch-base
-      name: Fetch Base
-      action: fetch:nasti
-      input:
-        url: ./template
-        values:
-          name: ${{ parameters.name }}
-          owner: ${{ parameters.owner }}
-          system: ${{ parameters.system }}
-          destination: ${{ parameters.repoUrl | parseRepoUrl }}
+  - id: publish
+    if: ${{ parameters.dryRun !== true }}
+    name: Publish
+    action: publish:github
+    input:
+      allowedHosts:
+        - github.com
+      description: This is ${{ parameters.name }}
+      repoUrl: ${{ parameters.repoUrl }}
 
-    - id: publish
-      if: ${{ parameters.dryRun !== true }}
-      name: Publish
-      action: publish:github
-      input:
-        allowedHosts:
-          - github.com
-        description: This is ${{ parameters.name }}
-        repoUrl: ${{ parameters.repoUrl }}
+  - id: register
+    if: ${{ parameters.dryRun !== true }}
+    name: Register
+    action: catalog:register
+    input:
+      repoContentsUrl: ${{ steps['publish'].output.repoContentsUrl }}
+      catalogInfoPath: '/catalog-info.yaml'
 
-    - id: register
-      if: ${{ parameters.dryRun !== true }}
-      name: Register
-      action: catalog:register
-      input:
-        repoContentsUrl: ${{ steps['publish'].output.repoContentsUrl }}
-        catalogInfoPath: '/catalog-info.yaml'
+  - name: Results
+    if: ${{ parameters.dryRun }}
+    action: debug:log
+    input:
+      listWorkspace: true
 
-    - name: Results
-      if: ${{ parameters.dryRun }}
-      action: debug:log
-      input:
-        listWorkspace: true
-
-  output:
-    links:
-      - title: Repository
-        url: ${{ steps['publish'].output.remoteUrl }}
-      - title: Open in catalog
-        icon: catalog
-        entityRef: ${{ steps['register'].output.entityRef }}
+output:
+  links:
+    - title: Repository
+      url: ${{ steps['publish'].output.remoteUrl }}
+    - title: Open in catalog
+      icon: catalog
+      entityRef: ${{ steps['register'].output.entityRef }}
 ```
 
 You can also visit the `/create/actions` route in your Backstage application to find out more about the parameters this action accepts when it's installed to configure how you like.

@@ -65,7 +65,6 @@ describe('fetch:nasti', () => {
     targetPath?: string;
     values: JsonObject;
     copyWithoutRender?: string[];
-    extensions?: string[];
     imageName?: string;
   }>;
 
@@ -141,14 +140,6 @@ describe('fetch:nasti', () => {
 
     await expect(action.handler(mockContext)).rejects.toThrow(
       /Fetch action input copyWithoutRender must be an Array/,
-    );
-  });
-
-  it('should throw an error when extensions is not an array', async () => {
-    (mockContext.input as any).extensions = 'not an array';
-
-    await expect(action.handler(mockContext)).rejects.toThrow(
-      /Fetch action input extensions must be an Array/,
     );
   });
 

@@ -150,7 +150,6 @@ export function createFetchNastiAction(options: {
     targetPath?: string;
     values: JsonObject;
     copyWithoutRender?: string[];
-    extensions?: string[];
     imageName?: string;
   }>({
     id: 'fetch:nasti',
@@ -187,15 +186,6 @@ export function createFetchNastiAction(options: {
               type: 'string',
             },
           },
-          extensions: {
-            title: 'Template Extensions',
-            description:
-              "Jinja2 extensions to add filters, tests, globals or extend the parser. Extensions must be installed in the container or on the host where nasti executes. See the contrib directory in Backstage's repo for more information",
-            type: 'array',
-            items: {
-              type: 'string',
-            },
-          },
           imageName: {
             title: 'Nasti Docker image',
             description:
@@ -223,9 +213,6 @@ export function createFetchNastiAction(options: {
           'Fetch action input copyWithoutRender must be an Array',
         );
       }
-      if (ctx.input.extensions && !Array.isArray(ctx.input.extensions)) {
-        throw new InputError('Fetch action input extensions must be an Array');
-      }
 
       await fetchContents({
         reader,
@@ -239,7 +226,6 @@ export function createFetchNastiAction(options: {
       const values = {
         ...ctx.input.values,
         _copy_without_render: ctx.input.copyWithoutRender,
-        _extensions: ctx.input.extensions,
       };
 
       // Will execute the template in ./template and put the result in ./result
