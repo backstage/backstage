@@ -1,5 +1,23 @@
 # @backstage/plugin-user-settings
 
+## 0.7.11
+
+### Patch Changes
+
+- 18c8dee6f5: Added experimental support for declarative integration via the `/alpha` subpath.
+- d1b637d005: Fixed a bug where the theme icons would not be colored according to their active state.
+- 9a1fce352e: Updated dependency `@testing-library/jest-dom` to `^6.0.0`.
+- f95af4e540: Updated dependency `@testing-library/dom` to `^9.0.0`.
+- Updated dependencies
+  - @backstage/plugin-catalog-react@1.8.5
+  - @backstage/frontend-plugin-api@0.2.0
+  - @backstage/core-app-api@1.11.0
+  - @backstage/core-plugin-api@1.7.0
+  - @backstage/core-components@0.13.6
+  - @backstage/errors@1.2.3
+  - @backstage/theme@0.4.3
+  - @backstage/types@1.1.1
+
 ## 0.7.11-next.2
 
 ### Patch Changes

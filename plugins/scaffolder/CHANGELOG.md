@@ -1,5 +1,32 @@
 # @backstage/plugin-scaffolder
 
+## 1.15.1
+
+### Patch Changes
+
+- b337d78c3b: fixed issue related template editor fails with multiple templates per file.
+- ff2ab02690: Make entity picker more reliable with only one available entity
+- 83e4a42ccd: Display log visibility button on the template panel
+- 9a1fce352e: Updated dependency `@testing-library/jest-dom` to `^6.0.0`.
+- f95af4e540: Updated dependency `@testing-library/dom` to `^9.0.0`.
+- 4c70fe497d: `RepoUrlPickerRepoName` now correctly handles value changes in allowed repos.
+- Updated dependencies
+  - @backstage/integration@1.7.1
+  - @backstage/plugin-catalog-react@1.8.5
+  - @backstage/core-plugin-api@1.7.0
+  - @backstage/core-components@0.13.6
+  - @backstage/integration-react@1.1.20
+  - @backstage/catalog-model@1.4.3
+  - @backstage/errors@1.2.3
+  - @backstage/plugin-permission-react@0.4.16
+  - @backstage/plugin-scaffolder-react@1.5.6
+  - @backstage/theme@0.4.3
+  - @backstage/catalog-client@1.4.5
+  - @backstage/config@1.1.1
+  - @backstage/types@1.1.1
+  - @backstage/plugin-catalog-common@1.0.17
+  - @backstage/plugin-scaffolder-common@1.4.2
+
 ## 1.15.1-next.2
 
 ### Patch Changes

@@ -1,5 +1,17 @@
 # @backstage/plugin-newrelic
 
+## 0.3.41
+
+### Patch Changes
+
+- ce50a15506: Fixed sorting and searching in the NewRelic table.
+- 9a1fce352e: Updated dependency `@testing-library/jest-dom` to `^6.0.0`.
+- f95af4e540: Updated dependency `@testing-library/dom` to `^9.0.0`.
+- Updated dependencies
+  - @backstage/core-plugin-api@1.7.0
+  - @backstage/core-components@0.13.6
+  - @backstage/theme@0.4.3
+
 ## 0.3.41-next.2
 
 ### Patch Changes

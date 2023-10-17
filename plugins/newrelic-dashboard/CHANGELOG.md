@@ -1,5 +1,29 @@
 # @backstage/plugin-newrelic-dashboard
 
+## 0.3.0
+
+### Minor Changes
+
+- d7eba6cab4: Changes in `newrelic-dashboard` plugin:
+
+  - Make DashboardSnapshotList component public
+  - Settle discrepancies in the exported API
+  - Deprecate DashboardSnapshotComponent
+
+- e605ea4906: Add storybook for newrelic-dashboard plugin.
+
+### Patch Changes
+
+- 9a1fce352e: Updated dependency `@testing-library/jest-dom` to `^6.0.0`.
+- 61d55942ae: Fix the styles for NewRelicDashboard, add more responsiveness
+- 5194a51a1c: Fixed React Warning: "Each child in a list should have a unique 'key' prop" during the rendering of `EntityNewRelicDashboardCard`
+- Updated dependencies
+  - @backstage/plugin-catalog-react@1.8.5
+  - @backstage/core-plugin-api@1.7.0
+  - @backstage/core-components@0.13.6
+  - @backstage/catalog-model@1.4.3
+  - @backstage/errors@1.2.3
+
 ## 0.3.0-next.2
 
 ### Minor Changes
