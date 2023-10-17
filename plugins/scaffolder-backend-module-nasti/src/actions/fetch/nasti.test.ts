@@ -25,7 +25,7 @@ import { ScmIntegrations } from '@backstage/integration';
 import mockFs from 'mock-fs';
 import os from 'os';
 import { PassThrough } from 'stream';
-import { createFetchCookiecutterAction } from './cookiecutter';
+import { createFetchNastiAction } from './nasti';
 import { join } from 'path';
 import type { ActionContext } from '@backstage/plugin-scaffolder-node';
 
@@ -46,7 +46,7 @@ jest.mock(
       commandExists(...args),
 );
 
-describe('fetch:cookiecutter', () => {
+describe('fetch:nasti', () => {
   const integrations = ScmIntegrations.fromConfig(
     new ConfigReader({
       integrations: {
@@ -79,7 +79,7 @@ describe('fetch:cookiecutter', () => {
     search: jest.fn(),
   };
 
-  const action = createFetchCookiecutterAction({
+  const action = createFetchNastiAction({
     integrations,
     containerRunner,
     reader: mockReader,
@@ -90,14 +90,14 @@ describe('fetch:cookiecutter', () => {
 
     mockContext = {
       input: {
-        url: 'https://google.com/cookie/cutter',
+        url: 'https://google.com/nasti',
         targetPath: 'something',
         values: {
           help: 'me',
         },
       },
       templateInfo: {
-        entityRef: 'template:default/cookiecutter',
+        entityRef: 'template:default/nasti',
         baseUrl: 'somebase',
       },
       workspacePath: mockTmpDir,
@@ -161,45 +161,45 @@ describe('fetch:cookiecutter', () => {
         integrations,
         baseUrl: mockContext.templateInfo?.baseUrl,
         fetchUrl: mockContext.input.url,
-        outputPath: join(
-          mockTmpDir,
-          'template',
-          "{{cookiecutter and 'contents'}}",
-        ),
+        outputPath: join(mockTmpDir, 'template', "{{nasti and 'contents'}}"),
       }),
     );
   });
 
-  it('should call out to cookiecutter using executeShellCommand when cookiecutter is installed', async () => {
+  it('should call out to nasti using executeShellCommand when nasti is installed', async () => {
     commandExists.mockResolvedValue(true);
 
     await action.handler(mockContext);
 
     expect(executeShellCommand).toHaveBeenCalledWith(
       expect.objectContaining({
-        command: 'cookiecutter',
+        command: 'nasti',
         args: [
-          '--no-input',
-          '-o',
+          'process',
+          '-f',
+          join(mockTmpDir, 'template/nasti.json'),
           join(mockTmpDir, 'intermediate'),
-          join(mockTmpDir, 'template'),
-          '--verbose',
         ],
         logStream: mockContext.logStream,
       }),
     );
   });
 
-  it('should call out to the containerRunner when there is no cookiecutter installed', async () => {
+  it('should call out to the containerRunner when there is no nasti installed', async () => {
     commandExists.mockResolvedValue(false);
 
     await action.handler(mockContext);
 
     expect(containerRunner.runContainer).toHaveBeenCalledWith(
       expect.objectContaining({
-        imageName: 'spotify/backstage-cookiecutter',
-        command: 'cookiecutter',
-        args: ['--no-input', '-o', '/output', '/input', '--verbose'],
+        imageName: 'quay.io/rh_ee_addrew/nasti:master',
+        command: 'nasti',
+        args: [
+          'process',
+          '-f',
+          join(mockTmpDir, 'template/nasti.json'),
+          join(mockTmpDir, 'intermediate'),
+        ],
         mountDirs: {
           [join(mockTmpDir, 'intermediate')]: '/output',
           [join(mockTmpDir, 'template')]: '/input',
@@ -224,15 +224,15 @@ describe('fetch:cookiecutter', () => {
     );
   });
 
-  it('should throw error if cookiecutter is not installed and containerRunner is undefined', async () => {
+  it('should throw error if nasti is not installed and containerRunner is undefined', async () => {
     commandExists.mockResolvedValue(false);
-    const ccAction = createFetchCookiecutterAction({
+    const ccAction = createFetchNastiAction({
       integrations,
       reader: mockReader,
     });
 
     await expect(ccAction.handler(mockContext)).rejects.toThrow(
-      /Invalid state: containerRunner cannot be undefined when cookiecutter is not installed/,
+      /Invalid state: containerRunner cannot be undefined when nasti is not installed/,
     );
   });
 });

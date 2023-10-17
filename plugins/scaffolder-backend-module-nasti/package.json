@@ -1,6 +1,6 @@
 {
-  "name": "@backstage/plugin-scaffolder-backend-module-cookiecutter",
-  "description": "A module for the scaffolder backend that lets you template projects using cookiecutter",
+  "name": "@backstage/plugin-scaffolder-backend-module-nasti",
+  "description": "A module for the scaffolder backend that lets you template projects using nasti",
   "version": "0.2.30-next.2",
   "main": "src/index.ts",
   "types": "src/index.ts",
@@ -17,7 +17,7 @@
   "repository": {
     "type": "git",
     "url": "https://github.com/backstage/backstage",
-    "directory": "plugins/scaffolder-backend-module-cookiecutter"
+    "directory": "plugins/scaffolder-backend-module-nasti"
   },
   "scripts": {
     "start": "backstage-cli package start",

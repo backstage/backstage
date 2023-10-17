@@ -1,4 +1,4 @@
-# @backstage/plugin-scaffolder-backend-module-cookiecutter
+# @backstage/plugin-scaffolder-backend-module-nasti
 
 ## 0.2.30-next.2
 

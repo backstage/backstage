@@ -15,7 +15,7 @@
  */
 
 /**
- * A module for the scaffolder backend that lets you template projects using {@link https://cookiecutter.readthedocs.io/ | cookiecutter}.
+ * A module for the scaffolder backend that lets you template projects using {@link https://github.com/adamrdrew/nasti | nasti}.
  *
  * @packageDocumentation
  */

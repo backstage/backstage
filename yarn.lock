@@ -8744,6 +8744,29 @@ __metadata:
   languageName: unknown
   linkType: soft
 
+"@backstage/plugin-scaffolder-backend-module-nasti@workspace:plugins/scaffolder-backend-module-nasti":
+  version: 0.0.0-use.local
+  resolution: "@backstage/plugin-scaffolder-backend-module-nasti@workspace:plugins/scaffolder-backend-module-nasti"
+  dependencies:
+    "@backstage/backend-common": "workspace:^"
+    "@backstage/cli": "workspace:^"
+    "@backstage/config": "workspace:^"
+    "@backstage/errors": "workspace:^"
+    "@backstage/integration": "workspace:^"
+    "@backstage/plugin-scaffolder-node": "workspace:^"
+    "@backstage/types": "workspace:^"
+    "@types/command-exists": ^1.2.0
+    "@types/fs-extra": ^9.0.1
+    "@types/mock-fs": ^4.13.0
+    command-exists: ^1.2.9
+    fs-extra: 10.1.0
+    mock-fs: ^5.2.0
+    msw: ^1.0.0
+    winston: ^3.2.1
+    yn: ^4.0.0
+  languageName: unknown
+  linkType: soft
+
 "@backstage/plugin-scaffolder-backend-module-rails@workspace:^, @backstage/plugin-scaffolder-backend-module-rails@workspace:plugins/scaffolder-backend-module-rails":
   version: 0.0.0-use.local
   resolution: "@backstage/plugin-scaffolder-backend-module-rails@workspace:plugins/scaffolder-backend-module-rails"

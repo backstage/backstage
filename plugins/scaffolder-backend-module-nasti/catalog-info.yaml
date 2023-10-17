@@ -1,11 +1,11 @@
 apiVersion: backstage.io/v1alpha1
 kind: Component
 metadata:
-  name: backstage-plugin-scaffolder-backend-module-cookiecutter
-  title: '@backstage/plugin-scaffolder-backend-module-cookiecutter'
+  name: backstage-plugin-scaffolder-backend-module-nasti
+  title: '@backstage/plugin-scaffolder-backend-module-nasti'
   description: >-
     A module for the scaffolder backend that lets you template projects using
-    cookiecutter
+    nasti
 spec:
   lifecycle: experimental
   type: backstage-backend-plugin-module
