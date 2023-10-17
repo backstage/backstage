@@ -35,6 +35,15 @@ export const sortByTitle = (a: BazaarProject, b: BazaarProject) => {
   return 0;
 };
 
+export const sortByDecendingTitle = (a: BazaarProject, b: BazaarProject) => {
+  if (a.title < b.title) {
+    return 1;
+  } else if (a.title > b.title) {
+    return -1;
+  }
+  return 0;
+};
+
 export const sortByMembers = (a: BazaarProject, b: BazaarProject) => {
   return b.membersCount - a.membersCount;
 };
