@@ -225,8 +225,6 @@
 '@backstage/plugin-kafka': patch
 '@backstage/plugin-nomad': patch
 '@backstage/plugin-vault': patch
-'example-app': patch
-'@backstage/cli': patch
 '@backstage/plugin-gocd': patch
 '@backstage/plugin-home': patch
 '@backstage/plugin-todo': patch
