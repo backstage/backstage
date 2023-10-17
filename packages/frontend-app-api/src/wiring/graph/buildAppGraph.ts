@@ -14,11 +14,7 @@
  * limitations under the License.
  */
 
-import { AppNode, AppNodeEdges, AppNodeSpec } from './types';
-
-type Mutable<T> = {
-  -readonly [P in keyof T]: T[P];
-};
+import { AppNode, AppNodeEdges, AppNodeSpec, Mutable } from './types';
 
 /**
  * Build the app graph by iterating through all node specs and constructing the app

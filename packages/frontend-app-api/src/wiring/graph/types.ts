@@ -20,6 +20,11 @@ import {
   ExtensionDataRef,
 } from '@backstage/frontend-plugin-api';
 
+/** @internal */
+export type Mutable<T> = {
+  -readonly [P in keyof T]: T[P];
+};
+
 /**
  * The specification for this node in the app graph.
  * @public
