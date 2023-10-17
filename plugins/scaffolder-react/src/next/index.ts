@@ -14,7 +14,5 @@
  * limitations under the License.
  */
 export * from './components';
-export * from './extensions';
-export * from './types';
 export * from './lib';
 export * from './hooks';

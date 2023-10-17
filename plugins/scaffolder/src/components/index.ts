@@ -15,7 +15,12 @@
  */
 export * from './fields';
 export type { RepoUrlPickerUiOptions } from './fields';
+
 export { TemplateTypePicker } from './TemplateTypePicker';
-export { TaskPage, type TaskPageProps } from './TaskPage';
+
 export type { RouterProps } from './Router';
-export type { ReviewStepProps } from './types';
+export { OngoingTask as TaskPage } from './OngoingTask';
+
+export type { ReviewStepProps } from '@backstage/plugin-scaffolder-react';
+
+export type { TaskPageProps } from '../legacy/TaskPage';
