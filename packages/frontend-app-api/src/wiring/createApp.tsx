@@ -31,7 +31,7 @@ import { CoreNav } from '../extensions/CoreNav';
 import {
   createExtensionInstance,
   ExtensionInstance,
-} from './createExtensionInstance';
+} from './graph/createExtensionInstance';
 import { resolveAppNodeSpecs } from './graph/resolveAppNodeSpecs';
 import {
   AnyApiFactory,
