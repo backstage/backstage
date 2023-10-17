@@ -423,7 +423,7 @@ auth:
     provider: 'static'
     static:
       keys:
-        # Must be declared at least once and the first one will be used for signing */
+        # Must be declared at least once and the first one will be used for signing
         - keyId: 'primary'
           publicKeyFile: /path/to/public.key
           privateKeyFile: /path/to/private.key

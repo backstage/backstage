@@ -35,7 +35,6 @@ export type Options = {
   issuer: string;
   /** Expiration time of the JWT in seconds */
   sessionExpirationSeconds: number;
-  /** id to uniquely identify this key within the JWK set, defaults to '1' */
 };
 
 /**
