@@ -1,5 +1,43 @@
 # @backstage/plugin-scaffolder-backend
 
+## 1.18.0
+
+### Minor Changes
+
+- dea0aafda7: Updated `publish:gitlab` action properties to support additional Gitlab project settings:
+
+  - general project settings provided by gitlab project create API (new `settings` property)
+  - branch level settings to create additional branches and make them protected (new `branches` property)
+  - project level environment variables settings (new `projectVariables` property)
+
+  Marked existed properties `repoVisibility` and `topics` as deprecated, as they are covered by `settings` property.
+
+- f41099bb31: Display meaningful error to the output if Gitlab namespace not found inside `publish:gitlab`.
+
+### Patch Changes
+
+- 7dd82cc07e: Add examples for `github:issues:label` scaffolder action & improve related tests
+- 733ddf7130: Add examples for `publish:Azure` scaffolder action.
+- Updated dependencies
+  - @backstage/backend-tasks@0.5.11
+  - @backstage/backend-common@0.19.8
+  - @backstage/integration@1.7.1
+  - @backstage/plugin-catalog-backend@1.14.0
+  - @backstage/plugin-catalog-node@1.4.7
+  - @backstage/plugin-auth-node@0.4.0
+  - @backstage/catalog-model@1.4.3
+  - @backstage/errors@1.2.3
+  - @backstage/backend-plugin-api@0.6.6
+  - @backstage/plugin-catalog-backend-module-scaffolder-entity-model@0.1.3
+  - @backstage/plugin-permission-node@0.7.17
+  - @backstage/plugin-scaffolder-node@0.2.6
+  - @backstage/catalog-client@1.4.5
+  - @backstage/config@1.1.1
+  - @backstage/types@1.1.1
+  - @backstage/plugin-catalog-common@1.0.17
+  - @backstage/plugin-permission-common@0.7.9
+  - @backstage/plugin-scaffolder-common@1.4.2
+
 ## 1.18.0-next.2
 
 ### Minor Changes

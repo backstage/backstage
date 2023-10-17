@@ -1,5 +1,22 @@
 # @techdocs/cli
 
+## 1.6.0
+
+### Minor Changes
+
+- d06b30b050: Add possibility to use a mkdocs config file with a different name than `mkdocs.<yaml|yml> with the serve command using the `--mkdocs-config-file-name` argument
+
+### Patch Changes
+
+- de42eebaaf: Bumped dev dependencies `@types/node` and `mock-fs`.
+- 2b6e572051: Restructured tests.
+- Updated dependencies
+  - @backstage/backend-common@0.19.8
+  - @backstage/plugin-techdocs-node@1.9.0
+  - @backstage/catalog-model@1.4.3
+  - @backstage/cli-common@0.1.13
+  - @backstage/config@1.1.1
+
 ## 1.6.0-next.2
 
 ### Minor Changes

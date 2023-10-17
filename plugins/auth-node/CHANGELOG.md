@@ -1,5 +1,25 @@
 # @backstage/plugin-auth-node
 
+## 0.4.0
+
+### Minor Changes
+
+- 6f142d5356: **BREAKING**: The recently introduced `ProxyAuthenticator.initialize()` method is no longer `async` to match the way the OAuth equivalent is implemented.
+
+### Patch Changes
+
+- 6c2b0793bf: Fix for persisted scopes not being properly restored on sign-in.
+- 8b8b1d23ae: Fixed cookie persisted scope not returned in OAuth refresh handler response.
+- ae34255836: Adding optional audience parameter to OAuthState type declaration
+- Updated dependencies
+  - @backstage/backend-common@0.19.8
+  - @backstage/catalog-model@1.4.3
+  - @backstage/errors@1.2.3
+  - @backstage/backend-plugin-api@0.6.6
+  - @backstage/catalog-client@1.4.5
+  - @backstage/config@1.1.1
+  - @backstage/types@1.1.1
+
 ## 0.4.0-next.2
 
 ### Minor Changes

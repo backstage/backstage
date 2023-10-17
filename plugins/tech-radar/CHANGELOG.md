@@ -1,5 +1,19 @@
 # @backstage/plugin-tech-radar
 
+## 0.6.9
+
+### Patch Changes
+
+- 0b55f773a7: Removed some unused dependencies
+- c09d2fa1d6: Added experimental support for the declarative integration.
+- 9a1fce352e: Updated dependency `@testing-library/jest-dom` to `^6.0.0`.
+- f95af4e540: Updated dependency `@testing-library/dom` to `^9.0.0`.
+- Updated dependencies
+  - @backstage/frontend-plugin-api@0.2.0
+  - @backstage/core-plugin-api@1.7.0
+  - @backstage/core-components@0.13.6
+  - @backstage/theme@0.4.3
+
 ## 0.6.9-next.2
 
 ### Patch Changes

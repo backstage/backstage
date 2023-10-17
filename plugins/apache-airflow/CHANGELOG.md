@@ -1,5 +1,15 @@
 # @backstage/plugin-apache-airflow
 
+## 0.2.16
+
+### Patch Changes
+
+- 9a1fce352e: Updated dependency `@testing-library/jest-dom` to `^6.0.0`.
+- f95af4e540: Updated dependency `@testing-library/dom` to `^9.0.0`.
+- Updated dependencies
+  - @backstage/core-plugin-api@1.7.0
+  - @backstage/core-components@0.13.6
+
 ## 0.2.16-next.2
 
 ### Patch Changes

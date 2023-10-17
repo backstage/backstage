@@ -1,5 +1,28 @@
 # @backstage/plugin-auth-backend
 
+## 0.19.3
+
+### Patch Changes
+
+- 9ff7935152: Fixed bug in oidc refresh handler, if token endpoints response on refresh request does not contain a scope, the requested scope is used.
+- 2d8f7e82c1: Migrated the Microsoft auth provider to new `@backstage/plugin-auth-backend-module-microsoft-provider` module package.
+- Updated dependencies
+  - @backstage/backend-common@0.19.8
+  - @backstage/plugin-catalog-node@1.4.7
+  - @backstage/plugin-auth-node@0.4.0
+  - @backstage/catalog-model@1.4.3
+  - @backstage/errors@1.2.3
+  - @backstage/plugin-auth-backend-module-github-provider@0.1.3
+  - @backstage/plugin-auth-backend-module-gcp-iap-provider@0.2.0
+  - @backstage/plugin-auth-backend-module-microsoft-provider@0.1.0
+  - @backstage/backend-plugin-api@0.6.6
+  - @backstage/plugin-auth-backend-module-gitlab-provider@0.1.3
+  - @backstage/plugin-auth-backend-module-oauth2-provider@0.1.3
+  - @backstage/catalog-client@1.4.5
+  - @backstage/config@1.1.1
+  - @backstage/types@1.1.1
+  - @backstage/plugin-auth-backend-module-google-provider@0.1.3
+
 ## 0.19.3-next.2
 
 ### Patch Changes
