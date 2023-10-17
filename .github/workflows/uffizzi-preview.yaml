@@ -17,9 +17,14 @@ jobs:
       git-ref: ${{ env.GIT_REF }}
       pr-number: ${{ env.PR_NUMBER }}
     steps:
+      - name: Harden Runner
+        uses: step-security/harden-runner@8ca2b8b2ece13480cda6dacd3511b49857a23c09 # v2.5.1
+        with:
+          egress-policy: audit
+
       - name: 'Download artifacts'
         # Fetch output (zip archive) from the workflow run that triggered this workflow.
-        uses: actions/github-script@v6
+        uses: actions/github-script@v6.4.1
         with:
           script: |
             let allArtifacts = await github.rest.actions.listWorkflowRunArtifacts({
@@ -59,7 +64,7 @@ jobs:
 
       - name: Cache Rendered Compose File
         if: ${{ fromJSON(env.EVENT_JSON).action != 'closed' }}
-        uses: actions/cache@v3
+        uses: actions/cache@v3.3.2
         with:
           path: docker-compose.rendered.yml
           key: ${{ env.COMPOSE_FILE_HASH }}
