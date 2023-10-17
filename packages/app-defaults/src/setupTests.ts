@@ -15,5 +15,3 @@
  */
 
 import '@testing-library/jest-dom';
-
-Element.prototype.scroll = jest.fn();
