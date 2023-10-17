@@ -42,7 +42,6 @@ import {
   ScmIntegrationsApi,
   scmIntegrationsApiRef,
 } from '@backstage/integration-react';
-import { AppsConfig } from '@scalprum/core';
 import { initialize, AppsConfig, processManifest } from '@scalprum/core';
 import { PluginLoaderOptions } from '@openshift/dynamic-plugin-sdk';
 
@@ -101,11 +100,10 @@ const scmIntegrationApi = createApiExtension({
 
 type ExtendedScalprumConfig = AppsConfig<{
   assetsHost: string;
-  importModule: string;
 }>;
 const scalprumConfig: ExtendedScalprumConfig = {
-  'backstage.dynamic-frontend-plugin-sample': {
-    name: 'backstage.dynamic-frontend-plugin-sample',
+  'dynamic.plugin-dynamic-frontend-plugin-sample': {
+    name: 'dynamic.plugin-dynamic-frontend-plugin-sample',
     /**
      * The assetsHost is not core scalprum requirement.
      * Most likely the remote assets will come from the same origin in production environments or proxy will be used.
@@ -114,7 +112,6 @@ const scalprumConfig: ExtendedScalprumConfig = {
      *  */
     assetsHost: 'http://localhost:8004',
     manifestLocation: 'http://localhost:8004/plugin-manifest.json',
-    importModule: 'TechRadar',
   },
 };
 
@@ -144,15 +141,15 @@ const collectedLegacyPlugins = collectLegacyRoutes(
 const app = createApp({
   featureLoader: async () => {
     const initManifest = Object.values(scalprumConfig).map(
-      ({ manifestLocation, name, importModule }) =>
-        processManifest(manifestLocation!, name, importModule),
+      ({ manifestLocation, name }) =>
+        processManifest(manifestLocation!, name, 'RemoteEntry'),
     );
     await Promise.all(initManifest);
     const plugins = await Promise.all(
-      Object.values(scalprumConfig).map(({ name, importModule }) =>
+      Object.values(scalprumConfig).map(({ name }) =>
         scalprum.pluginStore.getExposedModule<{ default: BackstagePlugin }>(
           name,
-          importModule,
+          'RemoteEntry',
         ),
       ),
     );

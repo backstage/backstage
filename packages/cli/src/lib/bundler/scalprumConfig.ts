@@ -108,9 +108,16 @@ export async function createScalprumConfig(
   const dynamicPluginPlugin = new DynamicRemotePlugin({
     extensions: [],
     sharedModules,
-    entryScriptFilename: `${options.pluginMetadata.name}.[fullhash].js`,
+    entryScriptFilename: `${options.pluginName}.[fullhash].js`,
+    moduleFederationSettings: {
+      libraryType: 'global',
+    },
     pluginMetadata: {
-      ...options.pluginMetadata,
+      version: '0.0.0',
+      name: options.pluginName,
+      exposedModules: {
+        RemoteEntry: './src',
+      },
     },
   });
   plugins.push(dynamicPluginPlugin);

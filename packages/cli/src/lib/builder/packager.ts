@@ -21,7 +21,6 @@ import { relative as relativePath, resolve as resolvePath } from 'path';
 import { paths } from '../paths';
 import { makeRollupConfigs } from './config';
 import { BuildOptions, Output } from './types';
-import { buildTypeDefinitions } from './buildTypeDefinitions';
 import { buildScalprumPlugin } from './buildScalprumPlugin';
 import { PackageRoles } from '@backstage/cli-node';
 import { runParallelWorkers } from '../parallel';
@@ -116,10 +115,8 @@ export const buildPackage = async (options: BuildOptions) => {
   /**
    * Check package.json for a `Scalprum config` and call extra build job for dynamic plugin
    */
-  const { name, version, scalprum } = await fs.readJson(
-    paths.resolveTarget('package.json'),
-  );
-  if (scalprum) {
+  const { name } = await fs.readJson(paths.resolveTarget('package.json'));
+  if (process.env.BUILD_SCALPRUM_PLUGIN === 'true') {
     await fs.remove(paths.resolveTarget('dist-scalprum'));
 
     buildTasks.push(
@@ -127,10 +124,6 @@ export const buildPackage = async (options: BuildOptions) => {
         writeStats: false,
         configPaths: [],
         targetDir: paths.targetDir,
-        pluginMetadata: {
-          ...scalprum,
-          version,
-        },
         fromPackage: name,
       }),
     );

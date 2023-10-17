@@ -69,5 +69,5 @@ export type DynamicPluginOptions = {
   frontendAppConfigs: AppConfig[];
   baseUrl?: URL;
   parallelism?: number;
-  pluginMetadata: PluginBuildMetadata;
+  pluginName: string;
 };
