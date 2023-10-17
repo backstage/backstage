@@ -44,7 +44,6 @@
 '@backstage/plugin-events-backend-module-gitlab': patch
 '@backstage/plugin-catalog-backend-module-ldap': patch
 '@backstage/plugin-events-backend-module-azure': patch
-'techdocs-cli-embedded-app': patch
 '@backstage/plugin-catalog-backend-module-aws': patch
 '@backstage/plugin-catalog-backend-module-gcp': patch
 '@backstage/plugin-github-pull-requests-board': patch
@@ -186,7 +185,6 @@
 '@backstage/plugin-tech-radar': patch
 'example-app-next': patch
 '@backstage/cli-node': patch
-'e2e-test': patch
 '@backstage/plugin-auth-node': patch
 '@backstage/plugin-codescene': patch
 '@backstage/plugin-dynatrace': patch
@@ -196,7 +194,6 @@
 '@backstage/plugin-shortcuts': patch
 '@backstage/plugin-sonarqube': patch
 '@backstage/plugin-xcmetrics': patch
-'example-backend': patch
 '@backstage/plugin-airbrake': patch
 '@backstage/plugin-api-docs': patch
 '@backstage/plugin-app-node': patch
