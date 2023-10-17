@@ -16,13 +16,21 @@
 
 import React from 'react';
 
-import { rootRouteRef } from './routes';
 import {
   coreExtensionData,
+  createExtensionDataRef,
   createExtensionInput,
   createPageExtension,
   createPlugin,
+  createRouteRef,
 } from '@backstage/frontend-plugin-api';
+
+const rootRouteRef = createRouteRef();
+
+/**
+ * @alpha
+ */
+export const titleExtensionDataRef = createExtensionDataRef<string>('title');
 
 const HomepageCompositionRootExtension = createPageExtension({
   id: 'home',
@@ -30,8 +38,11 @@ const HomepageCompositionRootExtension = createPageExtension({
   routeRef: rootRouteRef,
   inputs: {
     props: createExtensionInput(
-      { children: coreExtensionData.reactElement.optional() },
-      // TODO(vinzscam): title
+      {
+        children: coreExtensionData.reactElement.optional(),
+        title: titleExtensionDataRef.optional(),
+      },
+
       {
         singleton: true,
         optional: true,
@@ -40,7 +51,10 @@ const HomepageCompositionRootExtension = createPageExtension({
   },
   loader: ({ inputs }) =>
     import('./components/').then(m => (
-      <m.HomepageCompositionRoot children={inputs.props?.children} />
+      <m.HomepageCompositionRoot
+        children={inputs.props?.children}
+        title={inputs.props?.title}
+      />
     )),
 });
 

@@ -20,7 +20,9 @@ import { pagesPlugin } from './examples/pagesPlugin';
 import graphiqlPlugin from '@backstage/plugin-graphiql/alpha';
 import techRadarPlugin from '@backstage/plugin-tech-radar/alpha';
 import userSettingsPlugin from '@backstage/plugin-user-settings/alpha';
-import homePlugin from '@backstage/plugin-home/alpha';
+import homePlugin, {
+  titleExtensionDataRef,
+} from '@backstage/plugin-home/alpha';
 
 import {
   coreExtensionData,
@@ -74,9 +76,10 @@ const homePageExtension = createExtension({
   attachTo: { id: 'home', input: 'props' },
   output: {
     children: coreExtensionData.reactElement,
+    title: titleExtensionDataRef,
   },
   factory({ bind }) {
-    bind({ children: homePage });
+    bind({ children: homePage, title: 'just a title' });
   },
 });
 
