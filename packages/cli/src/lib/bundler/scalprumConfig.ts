@@ -67,6 +67,9 @@ export const sharedModules = {
     singleton: true,
     requiredVersion: '*',
   },
+  '@material-ui/core/Typography': {
+    requiredVersion: '*',
+  },
 };
 
 export async function createScalprumConfig(
@@ -99,12 +102,6 @@ export async function createScalprumConfig(
     new ProvidePlugin({
       process: 'process/browser',
       Buffer: ['buffer', 'Buffer'],
-    }),
-  );
-
-  plugins.push(
-    new webpack.EnvironmentPlugin({
-      APP_CONFIG: options.frontendAppConfigs,
     }),
   );
 
