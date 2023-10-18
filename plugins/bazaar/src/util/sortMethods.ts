@@ -30,7 +30,7 @@ export const sortByTitle = (a: BazaarProject, b: BazaarProject) => {
   return a.title.localeCompare(b.title);
 };
 
-export const sortByDecendingTitle = (a: BazaarProject, b: BazaarProject) => {
+export const sortByTitleDescending = (a: BazaarProject, b: BazaarProject) => {
   return b.title.localeCompare(a.title);
 };
 

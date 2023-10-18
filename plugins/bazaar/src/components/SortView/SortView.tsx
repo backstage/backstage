@@ -31,7 +31,7 @@ import {
   sortByDate,
   sortByMembers,
   sortByTitle,
-  sortByDecendingTitle,
+  sortByTitleDescending,
 } from '../../util/sortMethods';
 import { SortMethodSelector } from '../SortMethodSelector';
 import { fetchCatalogItems } from '../../util/fetchMethods';
@@ -86,7 +86,7 @@ export const SortView = (props: SortViewProps) => {
   const sortMethods = [
     sortByDate,
     sortByTitle,
-    sortByDecendingTitle,
+    sortByTitleDescending,
     sortByMembers,
   ];
   const [sortMethodNbr, setSortMethodNbr] = useState(0);
