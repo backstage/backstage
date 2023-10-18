@@ -23,9 +23,10 @@ import openBrowser from 'react-dev-utils/openBrowser';
 import webpack from 'webpack';
 import WebpackDevServer from 'webpack-dev-server';
 import vite from 'vite';
-import react from '@vitejs/plugin-react';
+import viteReact from '@vitejs/plugin-react';
+import viteCommonJs from 'vite-plugin-commonjs';
 import { nodePolyfills as viteNodePolyfills } from 'vite-plugin-node-polyfills';
-import { createHtmlPlugin } from 'vite-plugin-html';
+import { createHtmlPlugin as viteHtml } from 'vite-plugin-html';
 
 import {
   forbiddenDuplicatesFilter,
@@ -167,9 +168,13 @@ export async function serveBundle(options: ServeOptions) {
         'process.env.APP_CONFIG': JSON.stringify(cliConfig.frontendAppConfigs),
       },
       plugins: [
-        react(),
+        viteReact(),
         viteNodePolyfills(),
-        createHtmlPlugin({
+        viteCommonJs({
+          // todo(blam): this is ugly to work around for just running in the backstage/backstage repo.
+          filter: id => id.endsWith('renderReactElement.ts'),
+        }),
+        viteHtml({
           entry: paths.targetEntry,
           // todo(blam): we should look at contributing to thPe plugin here
           // to support absolute paths, but works in the interim at least.
@@ -236,7 +241,7 @@ export async function serveBundle(options: ServeOptions) {
   await new Promise<void>(async (resolve, reject) => {
     if (process.env.EXPERIMENTAL_VITE) {
       await (server as vite.ViteDevServer).listen();
-      (server as vite.ViteDevServer).openBrowser();
+      openBrowser(url.href);
       resolve();
     } else {
       (server as WebpackDevServer).startCallback((err?: Error) => {
