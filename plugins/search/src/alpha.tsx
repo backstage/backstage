@@ -243,7 +243,7 @@ export const SearchNavItem = createNavItemExtension({
 
 /** @alpha */
 export default createPlugin({
-  id: 'plugin.search',
+  id: 'search',
   extensions: [SearchApi, SearchPage, SearchNavItem],
   routes: {
     root: convertLegacyRouteRef(rootRouteRef),
