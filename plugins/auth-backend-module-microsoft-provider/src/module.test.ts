@@ -65,7 +65,6 @@ describe('authModuleMicrosoftProvider', () => {
     expect(startUrl.origin).toBe('https://login.microsoftonline.com');
     expect(startUrl.pathname).toBe('/my-tenant-id/oauth2/v2.0/authorize');
     expect(Object.fromEntries(startUrl.searchParams)).toEqual({
-      prompt: 'consent',
       response_type: 'code',
       scope: 'user.read',
       client_id: 'my-client-id',

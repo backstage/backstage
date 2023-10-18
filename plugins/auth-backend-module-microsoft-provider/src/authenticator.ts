@@ -60,7 +60,6 @@ export const microsoftAuthenticator = createOAuthAuthenticator({
   async start(input, helper) {
     return helper.start(input, {
       accessType: 'offline',
-      prompt: 'consent',
     });
   },
 
