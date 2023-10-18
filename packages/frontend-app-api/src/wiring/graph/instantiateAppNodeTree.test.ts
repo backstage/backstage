@@ -26,7 +26,7 @@ import {
   instantiateAppNodeTree,
 } from './instantiateAppNodeTree';
 import { AppNodeInstance, AppNodeSpec } from './types';
-import { buildAppGraph } from './buildAppGraph';
+import { resolveAppGraph } from './resolveAppGraph';
 
 const testDataRef = createExtensionDataRef<string>('test');
 const otherDataRef = createExtensionDataRef<number>('other');
@@ -79,7 +79,7 @@ function makeInstanceWithId<TConfig>(
 
 describe('instantiateAppNodeTree', () => {
   it('should instantiate a single node', () => {
-    const graph = buildAppGraph(
+    const graph = resolveAppGraph(
       [{ ...makeSpec(simpleExtension), id: 'root-node' }],
       'root-node',
     );
@@ -94,7 +94,7 @@ describe('instantiateAppNodeTree', () => {
   });
 
   it('should not instantiate disabled nodes', () => {
-    const graph = buildAppGraph(
+    const graph = resolveAppGraph(
       [{ ...makeSpec(simpleExtension), id: 'root-node', disabled: true }],
       'root-node',
     );
@@ -104,7 +104,7 @@ describe('instantiateAppNodeTree', () => {
   });
 
   it('should instantiate a node with attachments', () => {
-    const graph = buildAppGraph(
+    const graph = resolveAppGraph(
       [
         {
           ...makeSpec(
@@ -151,7 +151,7 @@ describe('instantiateAppNodeTree', () => {
   });
 
   it('should not instantiate disabled attachments', () => {
-    const graph = buildAppGraph(
+    const graph = resolveAppGraph(
       [
         {
           ...makeSpec(
