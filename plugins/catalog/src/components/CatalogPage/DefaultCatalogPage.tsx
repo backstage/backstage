@@ -44,33 +44,15 @@ import { CatalogTable, CatalogTableRow } from '../CatalogTable';
 import { catalogTranslationRef } from '../../translation';
 import { useTranslationRef } from '@backstage/core-plugin-api/alpha';
 
-/**
- * Props for root catalog pages.
- *
- * @public
- */
-export interface DefaultCatalogPageProps {
-  initiallySelectedFilter?: UserListFilterKind;
-  columns?: TableColumn<CatalogTableRow>[];
-  actions?: TableProps<CatalogTableRow>['actions'];
-  initialKind?: string;
-  tableOptions?: TableProps<CatalogTableRow>['options'];
-  emptyContent?: ReactNode;
-  ownerPickerMode?: EntityOwnerPickerProps['mode'];
-  filters?: ReactNode;
+/** @internal */
+export interface BaseCatalogPageProps {
+  filters: ReactNode;
+  content?: ReactNode;
 }
 
-export function DefaultCatalogPage(props: DefaultCatalogPageProps) {
-  const {
-    columns,
-    actions,
-    initiallySelectedFilter = 'owned',
-    initialKind = 'component',
-    tableOptions = {},
-    emptyContent,
-    ownerPickerMode,
-    filters,
-  } = props;
+/** @internal */
+export function BaseCatalogPage(props: BaseCatalogPageProps) {
+  const { filters, content = <CatalogTable /> } = props;
   const orgName =
     useApi(configApiRef).getOptionalString('organization.name') ?? 'Backstage';
   const createComponentLink = useRouteRef(createComponentRouteRef);
@@ -88,31 +70,63 @@ export function DefaultCatalogPage(props: DefaultCatalogPageProps) {
         </ContentHeader>
         <EntityListProvider>
           <CatalogFilterLayout>
-            <CatalogFilterLayout.Filters>
-              {filters ?? (
-                <>
-                  <EntityKindPicker initialFilter={initialKind} />
-                  <EntityTypePicker />
-                  <UserListPicker initialFilter={initiallySelectedFilter} />
-                  <EntityOwnerPicker mode={ownerPickerMode} />
-                  <EntityLifecyclePicker />
-                  <EntityTagPicker />
-                  <EntityProcessingStatusPicker />
-                  <EntityNamespacePicker />
-                </>
-              )}
-            </CatalogFilterLayout.Filters>
-            <CatalogFilterLayout.Content>
-              <CatalogTable
-                columns={columns}
-                actions={actions}
-                tableOptions={tableOptions}
-                emptyContent={emptyContent}
-              />
-            </CatalogFilterLayout.Content>
+            <CatalogFilterLayout.Filters>{filters}</CatalogFilterLayout.Filters>
+            <CatalogFilterLayout.Content>{content}</CatalogFilterLayout.Content>
           </CatalogFilterLayout>
         </EntityListProvider>
       </Content>
     </PageWithHeader>
+  );
+}
+
+/**
+ * Props for root catalog pages.
+ *
+ * @public
+ */
+export interface DefaultCatalogPageProps {
+  initiallySelectedFilter?: UserListFilterKind;
+  columns?: TableColumn<CatalogTableRow>[];
+  actions?: TableProps<CatalogTableRow>['actions'];
+  initialKind?: string;
+  tableOptions?: TableProps<CatalogTableRow>['options'];
+  emptyContent?: ReactNode;
+  ownerPickerMode?: EntityOwnerPickerProps['mode'];
+}
+
+export function DefaultCatalogPage(props: DefaultCatalogPageProps) {
+  const {
+    columns,
+    actions,
+    initiallySelectedFilter = 'owned',
+    initialKind = 'component',
+    tableOptions = {},
+    emptyContent,
+    ownerPickerMode,
+  } = props;
+
+  return (
+    <BaseCatalogPage
+      filters={
+        <>
+          <EntityKindPicker initialFilter={initialKind} />
+          <EntityTypePicker />
+          <UserListPicker initialFilter={initiallySelectedFilter} />
+          <EntityOwnerPicker mode={ownerPickerMode} />
+          <EntityLifecyclePicker />
+          <EntityTagPicker />
+          <EntityProcessingStatusPicker />
+          <EntityNamespacePicker />
+        </>
+      }
+      content={
+        <CatalogTable
+          columns={columns}
+          actions={actions}
+          tableOptions={tableOptions}
+          emptyContent={emptyContent}
+        />
+      }
+    />
   );
 }

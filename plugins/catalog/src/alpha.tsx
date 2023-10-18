@@ -231,9 +231,9 @@ export const CatalogIndexPage = createPageExtension({
     }),
   },
   loader: async ({ inputs }) => {
-    const { DefaultCatalogPage } = await import('./components/CatalogPage');
+    const { BaseCatalogPage } = await import('./components/CatalogPage');
     const filters = inputs.filters.map(filter => filter.element);
-    return <DefaultCatalogPage filters={filters} />;
+    return <BaseCatalogPage filters={<>{filters}</>} />;
   },
 });
 
