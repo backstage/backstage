@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { renderHook, act } from '@testing-library/react';
+import { renderHook, act } from '@testing-library/react-hooks';
 
 import { useResponseSteps } from './useResponseSteps';
 

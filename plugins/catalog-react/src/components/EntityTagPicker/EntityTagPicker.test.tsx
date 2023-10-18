@@ -14,13 +14,7 @@
  * limitations under the License.
  */
 
-import {
-  fireEvent,
-  render,
-  waitFor,
-  screen,
-  act,
-} from '@testing-library/react';
+import { fireEvent, render, waitFor, screen } from '@testing-library/react';
 import React from 'react';
 import { MockEntityListContextProvider } from '../../testUtils/providers';
 import { EntityTagFilter } from '../../filters';
@@ -133,7 +127,9 @@ describe('<EntityTagPicker/>', () => {
       </TestApiProvider>,
     );
     await waitFor(() =>
-      expect(screen.getByTestId('tags-picker-expand')).toBeInTheDocument(),
+      expect(updateFilters).toHaveBeenLastCalledWith({
+        tags: undefined,
+      }),
     );
 
     fireEvent.click(screen.getByTestId('tags-picker-expand'));
@@ -222,16 +218,13 @@ describe('<EntityTagPicker/>', () => {
       </TestApiProvider>,
     );
     await waitFor(() =>
-      expect(screen.getByTestId('tags-picker-expand')).toBeInTheDocument(),
+      expect(updateFilters).toHaveBeenLastCalledWith({
+        tags: new EntityTagFilter(['tag1']),
+      }),
     );
-
-    await act(async () => {
-      fireEvent.click(screen.getByTestId('tags-picker-expand'));
-    });
-    await act(async () => {
-      fireEvent.click(screen.getByLabelText('tag2'));
-    });
-
+    fireEvent.click(screen.getByTestId('tags-picker-expand'));
+    fireEvent.click(screen.getByLabelText('tag2'));
+    expect(screen.getByLabelText('tag2')).toBeChecked();
     expect(updateFilters).toHaveBeenLastCalledWith({
       tags: new EntityTagFilter(['tag1', 'tag2']),
     });

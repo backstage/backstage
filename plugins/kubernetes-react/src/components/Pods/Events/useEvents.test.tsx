@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 import { useApi } from '@backstage/core-plugin-api';
-import { renderHook, waitFor } from '@testing-library/react';
+import { renderHook } from '@testing-library/react-hooks';
 import { useEvents } from './useEvents';
 import { DateTime } from 'luxon';
 
@@ -49,7 +49,7 @@ describe('Events', () => {
         mockGetEventsByInvolvedObjectName.mockResolvedValue(response),
     });
 
-    const { result } = renderHook(() =>
+    const { result, waitForNextUpdate } = renderHook(() =>
       useEvents({
         involvedObjectName: 'some-objecgt',
         namespace: 'some-namespace',
@@ -59,9 +59,7 @@ describe('Events', () => {
 
     expect(result.current.loading).toEqual(true);
 
-    await waitFor(() => {
-      expect(result.current.loading).toEqual(false);
-    });
+    await waitForNextUpdate();
 
     expect(result.current.error).toBeUndefined();
     expect(result.current.loading).toEqual(false);

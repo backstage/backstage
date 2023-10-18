@@ -25,7 +25,7 @@ import {
   storageApiRef,
 } from '@backstage/core-plugin-api';
 import { MockStorageApi, TestApiProvider } from '@backstage/test-utils';
-import { act, renderHook, waitFor } from '@testing-library/react';
+import { act, renderHook } from '@testing-library/react-hooks';
 import qs from 'qs';
 import React, { PropsWithChildren } from 'react';
 import { MemoryRouter } from 'react-router-dom';
@@ -119,14 +119,10 @@ describe('<EntityListProvider />', () => {
   });
 
   it('resolves backend filters', async () => {
-    const { result } = renderHook(() => useEntityList(), {
+    const { result, waitForValueToChange } = renderHook(() => useEntityList(), {
       wrapper,
     });
-
-    await waitFor(() => {
-      expect(result.current.backendEntities.length).toBeGreaterThan(0);
-    });
-
+    await waitForValueToChange(() => result.current.backendEntities);
     expect(result.current.backendEntities.length).toBe(2);
     expect(mockCatalogApi.getEntities).toHaveBeenCalledWith({
       filter: { kind: 'component' },
@@ -134,16 +130,13 @@ describe('<EntityListProvider />', () => {
   });
 
   it('resolves frontend filters', async () => {
-    const { result } = renderHook(() => useEntityList(), {
+    const { result, waitFor } = renderHook(() => useEntityList(), {
       wrapper,
       initialProps: {
         userFilter: 'all',
       },
     });
-
-    await waitFor(() => {
-      expect(result.current.backendEntities.length).toBeGreaterThan(0);
-    });
+    await waitFor(() => !!result.current.entities.length);
     expect(result.current.backendEntities.length).toBe(2);
 
     act(() =>
@@ -167,14 +160,13 @@ describe('<EntityListProvider />', () => {
     const query = qs.stringify({
       filters: { kind: 'component', type: 'service' },
     });
-    const { result } = renderHook(() => useEntityList(), {
-      wrapper: ({ children }) =>
-        wrapper({ location: `/catalog?${query}`, children }),
+    const { result, waitFor } = renderHook(() => useEntityList(), {
+      wrapper,
+      initialProps: {
+        location: `/catalog?${query}`,
+      },
     });
-
-    await waitFor(() => {
-      expect(result.current.queryParameters).toBeTruthy();
-    });
+    await act(() => waitFor(() => !!result.current.queryParameters));
     expect(result.current.queryParameters).toEqual({
       kind: 'component',
       type: 'service',
@@ -182,7 +174,7 @@ describe('<EntityListProvider />', () => {
   });
 
   it('does not fetch when only frontend filters change', async () => {
-    const { result } = renderHook(() => useEntityList(), {
+    const { result, waitFor } = renderHook(() => useEntityList(), {
       wrapper,
     });
 
@@ -208,34 +200,32 @@ describe('<EntityListProvider />', () => {
   });
 
   it('debounces multiple filter changes', async () => {
-    const { result } = renderHook(() => useEntityList(), {
-      wrapper,
-    });
-
-    await waitFor(() => {
-      expect(result.current.backendEntities.length).toBeGreaterThan(0);
-    });
+    const { result, waitForNextUpdate, waitForValueToChange } = renderHook(
+      () => useEntityList(),
+      {
+        wrapper,
+      },
+    );
+    await waitForValueToChange(() => result.current.backendEntities);
     expect(result.current.backendEntities.length).toBe(2);
     expect(mockCatalogApi.getEntities).toHaveBeenCalledTimes(1);
 
-    await act(async () => {
+    act(() => {
       result.current.updateFilters({ kind: new EntityKindFilter('component') });
       result.current.updateFilters({ type: new EntityTypeFilter('service') });
     });
-
-    await waitFor(() => {
-      expect(mockCatalogApi.getEntities).toHaveBeenCalledTimes(2);
-    });
+    await waitForNextUpdate();
+    expect(mockCatalogApi.getEntities).toHaveBeenCalledTimes(2);
   });
 
   it('returns an error on catalogApi failure', async () => {
-    const { result } = renderHook(() => useEntityList(), {
-      wrapper,
-    });
-
-    await waitFor(() => {
-      expect(result.current.backendEntities.length).toBeGreaterThan(0);
-    });
+    const { result, waitForValueToChange, waitFor } = renderHook(
+      () => useEntityList(),
+      {
+        wrapper,
+      },
+    );
+    await waitForValueToChange(() => result.current.backendEntities);
     expect(result.current.backendEntities.length).toBe(2);
 
     mockCatalogApi.getEntities = jest.fn().mockRejectedValue('error');

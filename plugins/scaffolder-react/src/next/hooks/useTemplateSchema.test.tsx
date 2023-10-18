@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 import { useTemplateSchema } from './useTemplateSchema';
-import { renderHook } from '@testing-library/react';
+import { renderHook } from '@testing-library/react-hooks';
 import { TestApiProvider } from '@backstage/test-utils';
 import React from 'react';
 import { featureFlagsApiRef } from '@backstage/core-plugin-api';

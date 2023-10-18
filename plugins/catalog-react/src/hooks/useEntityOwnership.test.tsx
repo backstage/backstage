@@ -18,7 +18,7 @@ import { CatalogApi } from '@backstage/catalog-client';
 import { ComponentEntity, RELATION_OWNED_BY } from '@backstage/catalog-model';
 import { IdentityApi, identityApiRef } from '@backstage/core-plugin-api';
 import { TestApiProvider } from '@backstage/test-utils';
-import { renderHook, waitFor } from '@testing-library/react';
+import { renderHook } from '@testing-library/react-hooks';
 import React from 'react';
 import { catalogApiRef } from '../api';
 import { useEntityOwnership } from './useEntityOwnership';
@@ -83,15 +83,19 @@ describe('useEntityOwnership', () => {
       });
       mockCatalogApi.getEntityByRef.mockResolvedValue(undefined);
 
-      const { result } = renderHook(() => useEntityOwnership(), {
-        wrapper: Wrapper,
-      });
+      const { result, waitForValueToChange } = renderHook(
+        () => useEntityOwnership(),
+        {
+          wrapper: Wrapper,
+        },
+      );
 
       expect(result.current.loading).toBe(true);
       expect(result.current.isOwnedEntity(ownedEntity)).toBe(false);
 
-      await waitFor(() => expect(result.current.loading).toBe(false));
+      await waitForValueToChange(() => result.current.loading);
 
+      expect(result.current.loading).toBe(false);
       expect(result.current.isOwnedEntity(ownedEntity)).toBe(true);
     });
   });

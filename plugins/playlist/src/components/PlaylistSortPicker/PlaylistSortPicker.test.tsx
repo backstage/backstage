@@ -14,13 +14,8 @@
  * limitations under the License.
  */
 
-import {
-  fireEvent,
-  getByRole,
-  render,
-  waitFor,
-  act,
-} from '@testing-library/react';
+import { fireEvent, getByRole, render, waitFor } from '@testing-library/react';
+import { act } from '@testing-library/react-hooks';
 import React from 'react';
 
 import { MockPlaylistListProvider } from '../../testUtils';

@@ -15,13 +15,8 @@
  */
 
 import { configApiRef } from '@backstage/core-plugin-api';
-import {
-  render,
-  screen,
-  waitFor,
-  act,
-  renderHook,
-} from '@testing-library/react';
+import { render, screen, waitFor } from '@testing-library/react';
+import { act, renderHook } from '@testing-library/react-hooks';
 import { MockConfigApi, TestApiProvider } from '@backstage/test-utils';
 import React from 'react';
 import {
@@ -75,8 +70,10 @@ describe('SearchContext', () => {
   });
 
   it('Throws error when no context is set', () => {
-    expect(() => renderHook(() => useSearch())).toThrow(
-      'useSearch must be used within a SearchContextProvider',
+    const { result } = renderHook(() => useSearch());
+
+    expect(result.error).toEqual(
+      Error('useSearch must be used within a SearchContextProvider'),
     );
   });
 
@@ -85,167 +82,179 @@ describe('SearchContext', () => {
 
     expect(hook.result.current).toEqual(false);
 
-    const { result } = renderHook(() => useSearchContextCheck(), {
-      wrapper: ({ children }) => wrapper({ children, initialState }),
-    });
+    const { result, waitForNextUpdate } = renderHook(
+      () => useSearchContextCheck(),
+      {
+        wrapper,
+        initialProps: {
+          initialState,
+        },
+      },
+    );
 
-    await waitFor(() => {
-      expect(result.current).toEqual(true);
-    });
+    await waitForNextUpdate();
+
+    expect(result.current).toEqual(true);
   });
 
   describe('Uses initial state values', () => {
     it('Uses default initial state values', async () => {
-      const { result } = renderHook(() => useSearch(), {
+      const { result, waitForNextUpdate } = renderHook(() => useSearch(), {
         wrapper,
       });
 
-      await waitFor(() => {
-        expect(result.current).toEqual(
-          expect.objectContaining({
-            term: '',
-            types: [],
-            filters: {},
-            pageLimit: undefined,
-            pageCursor: undefined,
-          }),
-        );
-      });
+      await waitForNextUpdate();
+
+      expect(result.current).toEqual(
+        expect.objectContaining({
+          term: '',
+          types: [],
+          filters: {},
+          pageLimit: undefined,
+          pageCursor: undefined,
+        }),
+      );
     });
 
     it('Uses provided initial state values', async () => {
-      const { result } = renderHook(() => useSearch(), {
-        wrapper: ({ children }) => wrapper({ children, initialState }),
+      const { result, waitForNextUpdate } = renderHook(() => useSearch(), {
+        wrapper,
+        initialProps: {
+          initialState,
+        },
       });
 
-      await waitFor(() => {
-        expect(result.current).toEqual(expect.objectContaining(initialState));
-      });
+      await waitForNextUpdate();
+
+      expect(result.current).toEqual(expect.objectContaining(initialState));
     });
 
     it('Uses page limit provided via config api', async () => {
-      const { result } = renderHook(() => useSearch(), {
-        wrapper: ({ children }) =>
-          wrapper({
-            children,
-            initialState,
-            config: {
-              search: {
-                query: {
-                  pageLimit: 100,
-                },
+      const { result, waitForNextUpdate } = renderHook(() => useSearch(), {
+        wrapper,
+        initialProps: {
+          initialState,
+          config: {
+            search: {
+              query: {
+                pageLimit: 100,
               },
             },
-          }),
+          },
+        },
       });
 
-      await waitFor(() => {
-        expect(result.current).toEqual(
-          expect.objectContaining({ ...initialState, pageLimit: 100 }),
-        );
-      });
+      await waitForNextUpdate();
+
+      expect(result.current).toEqual(
+        expect.objectContaining({ ...initialState, pageLimit: 100 }),
+      );
     });
   });
 
   describe('Resets cursor', () => {
     it('When term is cleared', async () => {
-      const { result } = renderHook(() => useSearch(), {
-        wrapper: ({ children }) =>
-          wrapper({
-            children,
-            initialState: {
-              ...initialState,
-              term: 'first term',
-              pageCursor: 'SOMEPAGE',
-            },
-          }),
+      const { result, waitForNextUpdate } = renderHook(() => useSearch(), {
+        wrapper,
+        initialProps: {
+          initialState: {
+            ...initialState,
+            term: 'first term',
+            pageCursor: 'SOMEPAGE',
+          },
+        },
       });
 
-      await waitFor(() => {
-        expect(result.current.term).toEqual('first term');
-        expect(result.current.pageCursor).toEqual('SOMEPAGE');
-      });
+      await waitForNextUpdate();
 
-      await act(async () => {
+      expect(result.current.term).toEqual('first term');
+      expect(result.current.pageCursor).toEqual('SOMEPAGE');
+
+      act(() => {
         result.current.setTerm('');
       });
+
+      await waitForNextUpdate();
 
       expect(result.current.pageCursor).toBeUndefined();
     });
 
     it('When term is set (and different from previous)', async () => {
-      const { result } = renderHook(() => useSearch(), {
-        wrapper: ({ children }) =>
-          wrapper({
-            children,
-            initialState: {
-              ...initialState,
-              term: 'first term',
-              pageCursor: 'SOMEPAGE',
-            },
-          }),
+      const { result, waitForNextUpdate } = renderHook(() => useSearch(), {
+        wrapper,
+        initialProps: {
+          initialState: {
+            ...initialState,
+            term: 'first term',
+            pageCursor: 'SOMEPAGE',
+          },
+        },
       });
 
-      await waitFor(() => {
-        expect(result.current.term).toEqual('first term');
-        expect(result.current.pageCursor).toEqual('SOMEPAGE');
-      });
+      await waitForNextUpdate();
 
-      await act(async () => {
+      expect(result.current.term).toEqual('first term');
+      expect(result.current.pageCursor).toEqual('SOMEPAGE');
+
+      act(() => {
         result.current.setTerm('second term');
       });
+
+      await waitForNextUpdate();
 
       expect(result.current.pageCursor).toBeUndefined();
     });
 
     it('When filters are cleared', async () => {
-      const { result } = renderHook(() => useSearch(), {
-        wrapper: ({ children }) =>
-          wrapper({
-            children,
-            initialState: {
-              ...initialState,
-              term: 'first term',
-              filters: { foo: 'bar' },
-              pageCursor: 'SOMEPAGE',
-            },
-          }),
+      const { result, waitForNextUpdate } = renderHook(() => useSearch(), {
+        wrapper,
+        initialProps: {
+          initialState: {
+            ...initialState,
+            term: 'first term',
+            filters: { foo: 'bar' },
+            pageCursor: 'SOMEPAGE',
+          },
+        },
       });
 
-      await waitFor(() => {
-        expect(result.current.filters).toEqual({ foo: 'bar' });
-        expect(result.current.pageCursor).toEqual('SOMEPAGE');
-      });
+      await waitForNextUpdate();
 
-      await act(async () => {
+      expect(result.current.filters).toEqual({ foo: 'bar' });
+      expect(result.current.pageCursor).toEqual('SOMEPAGE');
+
+      act(() => {
         result.current.setFilters({});
       });
+
+      await waitForNextUpdate();
 
       expect(result.current.pageCursor).toBeUndefined();
     });
 
     it('When filters are set (and different from previous)', async () => {
-      const { result } = renderHook(() => useSearch(), {
-        wrapper: ({ children }) =>
-          wrapper({
-            children,
-            initialState: {
-              ...initialState,
-              term: 'first term',
-              filters: { foo: 'bar' },
-              pageCursor: 'SOMEPAGE',
-            },
-          }),
+      const { result, waitForNextUpdate } = renderHook(() => useSearch(), {
+        wrapper,
+        initialProps: {
+          initialState: {
+            ...initialState,
+            term: 'first term',
+            filters: { foo: 'bar' },
+            pageCursor: 'SOMEPAGE',
+          },
+        },
       });
 
-      await waitFor(() => {
-        expect(result.current.filters).toEqual({ foo: 'bar' });
-        expect(result.current.pageCursor).toEqual('SOMEPAGE');
-      });
+      await waitForNextUpdate();
 
-      await act(async () => {
+      expect(result.current.filters).toEqual({ foo: 'bar' });
+      expect(result.current.pageCursor).toEqual('SOMEPAGE');
+
+      act(() => {
         result.current.setFilters({ foo: 'test' });
       });
+
+      await waitForNextUpdate();
 
       expect(result.current.pageCursor).toBeUndefined();
     });
@@ -253,19 +262,22 @@ describe('SearchContext', () => {
 
   describe('Performs search (and sets results)', () => {
     it('When term is set', async () => {
-      const { result } = renderHook(() => useSearch(), {
-        wrapper: ({ children }) => wrapper({ children, initialState }),
+      const { result, waitForNextUpdate } = renderHook(() => useSearch(), {
+        wrapper,
+        initialProps: {
+          initialState,
+        },
       });
 
-      await waitFor(() => {
-        expect(result.current).toEqual(expect.objectContaining(initialState));
-      });
+      await waitForNextUpdate();
 
       const term = 'term';
 
-      await act(async () => {
+      act(() => {
         result.current.setTerm(term);
       });
+
+      await waitForNextUpdate();
 
       expect(searchApiMock.query).toHaveBeenLastCalledWith({
         term,
@@ -275,19 +287,22 @@ describe('SearchContext', () => {
     });
 
     it('When types is set', async () => {
-      const { result } = renderHook(() => useSearch(), {
-        wrapper: ({ children }) => wrapper({ children, initialState }),
+      const { result, waitForNextUpdate } = renderHook(() => useSearch(), {
+        wrapper,
+        initialProps: {
+          initialState,
+        },
       });
 
-      await waitFor(() => {
-        expect(result.current).toEqual(expect.objectContaining(initialState));
-      });
+      await waitForNextUpdate();
 
       const types = ['type'];
 
-      await act(async () => {
+      act(() => {
         result.current.setTypes(types);
       });
+
+      await waitForNextUpdate();
 
       expect(searchApiMock.query).toHaveBeenLastCalledWith({
         types,
@@ -297,19 +312,22 @@ describe('SearchContext', () => {
     });
 
     it('When filters are set', async () => {
-      const { result } = renderHook(() => useSearch(), {
-        wrapper: ({ children }) => wrapper({ children, initialState }),
+      const { result, waitForNextUpdate } = renderHook(() => useSearch(), {
+        wrapper,
+        initialProps: {
+          initialState,
+        },
       });
 
-      await waitFor(() => {
-        expect(result.current).toEqual(expect.objectContaining(initialState));
-      });
+      await waitForNextUpdate();
 
       const filters = { filter: 'filter' };
 
-      await act(async () => {
+      act(() => {
         result.current.setFilters(filters);
       });
+
+      await waitForNextUpdate();
 
       expect(searchApiMock.query).toHaveBeenLastCalledWith({
         filters,
@@ -319,19 +337,22 @@ describe('SearchContext', () => {
     });
 
     it('When page limit is set', async () => {
-      const { result } = renderHook(() => useSearch(), {
-        wrapper: ({ children }) => wrapper({ children, initialState }),
+      const { result, waitForNextUpdate } = renderHook(() => useSearch(), {
+        wrapper,
+        initialProps: {
+          initialState,
+        },
       });
 
-      await waitFor(() => {
-        expect(result.current).toEqual(expect.objectContaining(initialState));
-      });
+      await waitForNextUpdate();
 
       const pageLimit = 30;
 
-      await act(async () => {
+      act(() => {
         result.current.setPageLimit(pageLimit);
       });
+
+      await waitForNextUpdate();
 
       expect(searchApiMock.query).toHaveBeenLastCalledWith({
         pageLimit,
@@ -342,19 +363,22 @@ describe('SearchContext', () => {
     });
 
     it('When page cursor is set', async () => {
-      const { result } = renderHook(() => useSearch(), {
-        wrapper: ({ children }) => wrapper({ children, initialState }),
+      const { result, waitForNextUpdate } = renderHook(() => useSearch(), {
+        wrapper,
+        initialProps: {
+          initialState,
+        },
       });
 
-      await waitFor(() => {
-        expect(result.current).toEqual(expect.objectContaining(initialState));
-      });
+      await waitForNextUpdate();
 
       const pageCursor = 'SOMEPAGE';
 
-      await act(async () => {
+      act(() => {
         result.current.setPageCursor(pageCursor);
       });
+
+      await waitForNextUpdate();
 
       expect(searchApiMock.query).toHaveBeenLastCalledWith({
         pageCursor,
@@ -370,20 +394,23 @@ describe('SearchContext', () => {
         nextPageCursor: 'NEXT',
       });
 
-      const { result } = renderHook(() => useSearch(), {
-        wrapper: ({ children }) => wrapper({ children, initialState }),
+      const { result, waitForNextUpdate } = renderHook(() => useSearch(), {
+        wrapper,
+        initialProps: {
+          initialState,
+        },
       });
 
-      await waitFor(() => {
-        expect(result.current).toEqual(expect.objectContaining(initialState));
-      });
+      await waitForNextUpdate();
 
       expect(result.current.fetchNextPage).toBeDefined();
       expect(result.current.fetchPreviousPage).toBeUndefined();
 
-      await act(async () => {
+      act(() => {
         result.current.fetchNextPage!();
       });
+
+      await waitForNextUpdate();
 
       expect(searchApiMock.query).toHaveBeenLastCalledWith({
         term: '',
@@ -399,20 +426,23 @@ describe('SearchContext', () => {
         previousPageCursor: 'PREVIOUS',
       });
 
-      const { result } = renderHook(() => useSearch(), {
-        wrapper: ({ children }) => wrapper({ children, initialState }),
+      const { result, waitForNextUpdate } = renderHook(() => useSearch(), {
+        wrapper,
+        initialProps: {
+          initialState,
+        },
       });
 
-      await waitFor(() => {
-        expect(result.current).toEqual(expect.objectContaining(initialState));
-      });
+      await waitForNextUpdate();
 
       expect(result.current.fetchNextPage).toBeUndefined();
       expect(result.current.fetchPreviousPage).toBeDefined();
 
-      await act(async () => {
+      act(() => {
         result.current.fetchPreviousPage!();
       });
+
+      await waitForNextUpdate();
 
       expect(searchApiMock.query).toHaveBeenLastCalledWith({
         term: '',

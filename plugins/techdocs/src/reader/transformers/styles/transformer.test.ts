@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { renderHook } from '@testing-library/react';
+import { renderHook } from '@testing-library/react-hooks';
 import { useStylesTransformer } from './transformer';
 
 describe('Transformers > Styles', () => {

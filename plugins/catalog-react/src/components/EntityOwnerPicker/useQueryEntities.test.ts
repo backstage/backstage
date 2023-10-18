@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import { renderHook, waitFor } from '@testing-library/react';
+import { renderHook } from '@testing-library/react-hooks';
 import { CatalogApi } from '@backstage/catalog-client';
 import { useQueryEntities } from './useQueryEntities';
 
@@ -62,7 +62,7 @@ describe('useQueryEntities', () => {
         totalItems: 2,
       });
 
-    const { result } = renderHook(() => useQueryEntities());
+    const { result, waitFor } = renderHook(() => useQueryEntities());
     const [, fetch] = result.current!;
     fetch({ text: 'text' });
 

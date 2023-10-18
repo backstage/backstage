@@ -122,10 +122,6 @@ describe('ApiProvider', () => {
         detail: new Error('API context is not available'),
         type: 'unhandled exception',
       }),
-      expect.objectContaining({
-        detail: new Error('API context is not available'),
-        type: 'unhandled exception',
-      }),
       expect.stringMatching(
         /^The above error occurred in the <MyHookConsumer> component/,
       ),
@@ -138,10 +134,6 @@ describe('ApiProvider', () => {
         }).toThrow(/^API context is not available/);
       }).error,
     ).toEqual([
-      expect.objectContaining({
-        detail: new Error('API context is not available'),
-        type: 'unhandled exception',
-      }),
       expect.objectContaining({
         detail: new Error('API context is not available'),
         type: 'unhandled exception',
@@ -168,10 +160,6 @@ describe('ApiProvider', () => {
         detail: new Error('No implementation available for apiRef{x}'),
         type: 'unhandled exception',
       }),
-      expect.objectContaining({
-        detail: new Error('No implementation available for apiRef{x}'),
-        type: 'unhandled exception',
-      }),
       expect.stringMatching(
         /^The above error occurred in the <MyHookConsumer> component/,
       ),
@@ -188,10 +176,6 @@ describe('ApiProvider', () => {
         }).toThrow('No implementation available for apiRef{x}');
       }).error,
     ).toEqual([
-      expect.objectContaining({
-        detail: new Error('No implementation available for apiRef{x}'),
-        type: 'unhandled exception',
-      }),
       expect.objectContaining({
         detail: new Error('No implementation available for apiRef{x}'),
         type: 'unhandled exception',

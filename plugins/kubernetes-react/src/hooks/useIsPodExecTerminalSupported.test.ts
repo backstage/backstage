@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 import { useApi } from '@backstage/core-plugin-api';
-import { renderHook, waitFor } from '@testing-library/react';
+import { renderHook } from '@testing-library/react-hooks';
 
 import { useIsPodExecTerminalSupported } from './useIsPodExecTerminalSupported';
 
@@ -68,14 +68,15 @@ describe('useIsClusterShellEnabled', () => {
     async ({ testClusters, returnValue }) => {
       clusters = testClusters;
 
-      const { result } = renderHook(() => useIsPodExecTerminalSupported());
+      const { result, waitForNextUpdate } = renderHook(() =>
+        useIsPodExecTerminalSupported(),
+      );
 
       expect(result.current.loading).toEqual(true);
 
-      await waitFor(() => {
-        expect(result.current.loading).toEqual(false);
-      });
+      await waitForNextUpdate();
 
+      expect(result.current.loading).toEqual(false);
       expect(result.current.value).toBe(returnValue);
     },
   );

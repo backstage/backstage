@@ -97,11 +97,6 @@ describe('wrapInTestApp', () => {
           'MockErrorApi received unexpected error, Error: NOPE',
         ),
       }),
-      expect.objectContaining({
-        detail: new Error(
-          'MockErrorApi received unexpected error, Error: NOPE',
-        ),
-      }),
       expect.stringMatching(/^The above error occurred in the <A> component:/),
     ]);
   });

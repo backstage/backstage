@@ -18,7 +18,7 @@ import { configApiRef, errorApiRef } from '@backstage/core-plugin-api';
 import { catalogApiRef } from '@backstage/plugin-catalog-react';
 import { TestApiProvider, MockConfigApi } from '@backstage/test-utils';
 import { TextField } from '@material-ui/core';
-import { render, screen, waitFor } from '@testing-library/react';
+import { act, render, screen } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import React from 'react';
 import { AnalyzeResult, catalogImportApiRef } from '../../api';
@@ -101,34 +101,36 @@ describe('<StepPrepareCreatePullRequest />', () => {
   it('renders without exploding', async () => {
     catalogApi.getEntities.mockReturnValue(Promise.resolve({ items: [] }));
 
-    render(
-      <StepPrepareCreatePullRequest
-        analyzeResult={analyzeResult}
-        onPrepare={onPrepareFn}
-        renderFormFields={({ register }) => {
-          return (
-            <>
-              <TextField {...asInputRef(register('title'))} />
-              <TextField {...asInputRef(register('body'))} />
-              <TextField {...asInputRef(register('componentName'))} />
-              <TextField {...asInputRef(register('owner'))} />
-            </>
-          );
-        }}
-      />,
-      {
-        wrapper: Wrapper,
-      },
-    );
+    await act(async () => {
+      render(
+        <StepPrepareCreatePullRequest
+          analyzeResult={analyzeResult}
+          onPrepare={onPrepareFn}
+          renderFormFields={({ register }) => {
+            return (
+              <>
+                <TextField {...asInputRef(register('title'))} />
+                <TextField {...asInputRef(register('body'))} />
+                <TextField {...asInputRef(register('componentName'))} />
+                <TextField {...asInputRef(register('owner'))} />
+              </>
+            );
+          }}
+        />,
+        {
+          wrapper: Wrapper,
+        },
+      );
 
-    const title = await screen.findByText('My title');
-    const description = await screen.findByText('body', {
-      selector: 'strong',
+      const title = await screen.findByText('My title');
+      const description = await screen.findByText('body', {
+        selector: 'strong',
+      });
+      expect(title).toBeInTheDocument();
+      expect(title).toBeVisible();
+      expect(description).toBeInTheDocument();
+      expect(description).toBeVisible();
     });
-    expect(title).toBeInTheDocument();
-    expect(title).toBeVisible();
-    expect(description).toBeInTheDocument();
-    expect(description).toBeVisible();
   });
 
   it('should submit created PR', async () => {
@@ -140,37 +142,39 @@ describe('<StepPrepareCreatePullRequest />', () => {
       }),
     );
 
-    render(
-      <StepPrepareCreatePullRequest
-        analyzeResult={analyzeResult}
-        onPrepare={onPrepareFn}
-        renderFormFields={({ register }) => {
-          return (
-            <>
-              <TextField {...asInputRef(register('title'))} />
-              <TextField {...asInputRef(register('body'))} />
-              <TextField
-                {...asInputRef(register('componentName'))}
-                id="name"
-                label="name"
-              />
-              <TextField
-                {...asInputRef(register('owner'))}
-                id="owner"
-                label="owner"
-              />
-            </>
-          );
-        }}
-      />,
-      {
-        wrapper: Wrapper,
-      },
-    );
+    await act(async () => {
+      render(
+        <StepPrepareCreatePullRequest
+          analyzeResult={analyzeResult}
+          onPrepare={onPrepareFn}
+          renderFormFields={({ register }) => {
+            return (
+              <>
+                <TextField {...asInputRef(register('title'))} />
+                <TextField {...asInputRef(register('body'))} />
+                <TextField
+                  {...asInputRef(register('componentName'))}
+                  id="name"
+                  label="name"
+                />
+                <TextField
+                  {...asInputRef(register('owner'))}
+                  id="owner"
+                  label="owner"
+                />
+              </>
+            );
+          }}
+        />,
+        {
+          wrapper: Wrapper,
+        },
+      );
 
-    await userEvent.type(await screen.findByLabelText('name'), '-changed');
-    await userEvent.type(await screen.findByLabelText('owner'), '-changed');
-    await userEvent.click(screen.getByRole('button', { name: /Create PR/i }));
+      await userEvent.type(await screen.findByLabelText('name'), '-changed');
+      await userEvent.type(await screen.findByLabelText('owner'), '-changed');
+      await userEvent.click(screen.getByRole('button', { name: /Create PR/i }));
+    });
 
     expect(catalogImportApi.submitPullRequest).toHaveBeenCalledTimes(1);
     expect(catalogImportApi.submitPullRequest.mock.calls[0]).toMatchObject([
@@ -222,29 +226,31 @@ spec:
       new Error('some error'),
     );
 
-    render(
-      <StepPrepareCreatePullRequest
-        analyzeResult={analyzeResult}
-        onPrepare={onPrepareFn}
-        renderFormFields={({ register }) => {
-          return (
-            <>
-              <TextField {...asInputRef(register('title'))} />
-              <TextField {...asInputRef(register('body'))} />
-              <TextField {...asInputRef(register('componentName'))} />
-              <TextField {...asInputRef(register('owner'))} />
-            </>
-          );
-        }}
-      />,
-      {
-        wrapper: Wrapper,
-      },
-    );
+    await act(async () => {
+      render(
+        <StepPrepareCreatePullRequest
+          analyzeResult={analyzeResult}
+          onPrepare={onPrepareFn}
+          renderFormFields={({ register }) => {
+            return (
+              <>
+                <TextField {...asInputRef(register('title'))} />
+                <TextField {...asInputRef(register('body'))} />
+                <TextField {...asInputRef(register('componentName'))} />
+                <TextField {...asInputRef(register('owner'))} />
+              </>
+            );
+          }}
+        />,
+        {
+          wrapper: Wrapper,
+        },
+      );
 
-    await userEvent.click(
-      await screen.findByRole('button', { name: /Create PR/i }),
-    );
+      await userEvent.click(
+        await screen.findByRole('button', { name: /Create PR/i }),
+      );
+    });
 
     expect(screen.getByText('some error')).toBeInTheDocument();
     expect(catalogImportApi.submitPullRequest).toHaveBeenCalledTimes(1);
@@ -267,26 +273,30 @@ spec:
       }),
     );
 
-    render(
-      <StepPrepareCreatePullRequest
-        analyzeResult={analyzeResult}
-        onPrepare={onPrepareFn}
-        renderFormFields={renderFormFieldsFn}
-      />,
-      {
-        wrapper: Wrapper,
-      },
-    );
-
-    await waitFor(() => {
-      expect(catalogApi.getEntities).toHaveBeenCalledTimes(1);
+    await act(async () => {
+      render(
+        <StepPrepareCreatePullRequest
+          analyzeResult={analyzeResult}
+          onPrepare={onPrepareFn}
+          renderFormFields={renderFormFieldsFn}
+        />,
+        {
+          wrapper: Wrapper,
+        },
+      );
     });
 
+    expect(catalogApi.getEntities).toHaveBeenCalledTimes(1);
     expect(renderFormFieldsFn).toHaveBeenCalled();
     expect(renderFormFieldsFn.mock.calls[0][0]).toMatchObject({
-      groups: ['my-group'],
-      groupsLoading: false,
+      groups: [],
+      groupsLoading: true,
     });
+    expect(
+      renderFormFieldsFn.mock.calls[
+        renderFormFieldsFn.mock.calls.length - 1
+      ][0],
+    ).toMatchObject({ groups: ['my-group'], groupsLoading: false });
   });
 
   describe('generateEntities', () => {

@@ -21,7 +21,8 @@ import {
 } from '@backstage/plugin-catalog-react';
 import { SearchApi, searchApiRef } from '@backstage/plugin-search-react';
 import { renderInTestApp, TestApiProvider } from '@backstage/test-utils';
-import { fireEvent, getByText, act } from '@testing-library/react';
+import { fireEvent, getByText } from '@testing-library/react';
+import { act } from '@testing-library/react-hooks';
 import React from 'react';
 
 import { AddEntitiesDrawer } from './AddEntitiesDrawer';

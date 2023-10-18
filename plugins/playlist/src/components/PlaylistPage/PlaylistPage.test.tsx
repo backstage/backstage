@@ -21,7 +21,8 @@ import {
   permissionApiRef,
 } from '@backstage/plugin-permission-react';
 import { renderInTestApp, TestApiProvider } from '@backstage/test-utils';
-import { fireEvent, getByText, waitFor, act } from '@testing-library/react';
+import { fireEvent, getByText, waitFor } from '@testing-library/react';
+import { act } from '@testing-library/react-hooks';
 import React from 'react';
 import { SWRConfig } from 'swr';
 
@@ -109,8 +110,8 @@ describe('PlaylistPage', () => {
 
     act(() => {
       fireEvent.click(rendered.getByTestId('playlist-page-follow-button'));
+      testPlaylist.isFollowing = true;
     });
-    testPlaylist.isFollowing = true;
 
     await waitFor(() => {
       expect(playlistApi.followPlaylist).toHaveBeenCalledWith('id1');
@@ -124,8 +125,8 @@ describe('PlaylistPage', () => {
 
     act(() => {
       fireEvent.click(rendered.getByTestId('playlist-page-follow-button'));
+      testPlaylist.isFollowing = false;
     });
-    testPlaylist.isFollowing = false;
 
     await waitFor(() => {
       expect(playlistApi.unfollowPlaylist).toHaveBeenCalledWith('id1');

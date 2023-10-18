@@ -179,7 +179,9 @@ describe('<EntityAutocompletePicker/>', () => {
       </TestApiProvider>,
     );
     await waitFor(() =>
-      expect(screen.getByTestId('options-picker-expand')).toBeInTheDocument(),
+      expect(updateFilters).toHaveBeenLastCalledWith({
+        options: undefined,
+      }),
     );
 
     fireEvent.click(screen.getByTestId('options-picker-expand'));

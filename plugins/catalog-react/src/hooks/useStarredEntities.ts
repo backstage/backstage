@@ -20,7 +20,7 @@ import {
   stringifyEntityRef,
 } from '@backstage/catalog-model';
 import { useApi } from '@backstage/core-plugin-api';
-import { useCallback, useMemo } from 'react';
+import { useCallback } from 'react';
 import useObservable from 'react-use/lib/useObservable';
 import { starredEntitiesApiRef } from '../apis';
 
@@ -45,7 +45,7 @@ export function useStarredEntities(): {
   const starredEntitiesApi = useApi(starredEntitiesApiRef);
 
   const starredEntities = useObservable(
-    useMemo(() => starredEntitiesApi.starredEntitie$(), [starredEntitiesApi]),
+    starredEntitiesApi.starredEntitie$(),
     new Set<string>(),
   );
 

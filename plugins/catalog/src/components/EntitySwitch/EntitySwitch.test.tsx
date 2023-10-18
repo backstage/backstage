@@ -19,7 +19,7 @@ import {
   AsyncEntityProvider,
   EntityProvider,
 } from '@backstage/plugin-catalog-react';
-import { render, screen } from '@testing-library/react';
+import { render, screen, waitFor } from '@testing-library/react';
 import React, { useEffect } from 'react';
 import { isKind } from './conditions';
 import { EntitySwitch } from './EntitySwitch';
@@ -517,7 +517,9 @@ describe('EntitySwitch', () => {
       </Wrapper>,
     );
 
-    await expect(screen.findByText('C')).resolves.toBeInTheDocument();
+    await waitFor(() => expect(shouldRender).toHaveBeenCalled());
+
+    expect(screen.getByText('C')).toBeInTheDocument();
     expect(screen.queryByText('A')).not.toBeInTheDocument();
     expect(screen.queryByText('B')).not.toBeInTheDocument();
   });

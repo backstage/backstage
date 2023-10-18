@@ -162,8 +162,7 @@ export const TemplateFormPreviewer = ({
   );
 
   const handleSelectChange = useCallback(
-    // TODO(Rugvip): Afaik this should be Entity, but didn't want to make runtime changes while fixing types
-    (selected: any) => {
+    selected => {
       setSelectedTemplate(selected);
       setTemplateYaml(yaml.stringify(selected.spec));
     },

@@ -16,7 +16,8 @@
 
 import { IdentityApi, identityApiRef } from '@backstage/core-plugin-api';
 import { renderInTestApp, TestApiProvider } from '@backstage/test-utils';
-import { fireEvent, getByRole, waitFor, act } from '@testing-library/react';
+import { fireEvent, getByRole, waitFor } from '@testing-library/react';
+import { act } from '@testing-library/react-hooks';
 import { PlaylistApi, playlistApiRef } from '../../api';
 import React from 'react';
 
@@ -78,9 +79,7 @@ describe('<PlaylistEditDialog/>', () => {
           },
         },
       );
-    });
 
-    act(() => {
       fireEvent.input(
         getByRole(
           rendered.getByTestId('edit-dialog-description-input'),
@@ -92,25 +91,17 @@ describe('<PlaylistEditDialog/>', () => {
           },
         },
       );
-    });
 
-    act(() => {
       fireEvent.mouseDown(
         getByRole(rendered.getByTestId('edit-dialog-owner-select'), 'button'),
       );
-    });
 
-    act(() => {
       fireEvent.click(rendered.getByText('test-owner'));
-    });
 
-    act(() => {
       fireEvent.click(
         getByRole(rendered.getByTestId('edit-dialog-public-option'), 'radio'),
       );
-    });
 
-    act(() => {
       fireEvent.click(rendered.getByTestId('edit-dialog-save-button'));
     });
 

@@ -34,12 +34,8 @@ const apis = TestApiRegistry.from(
 );
 
 describe('Incidents', () => {
-  beforeEach(() => {
-    jest.useFakeTimers();
-  });
   afterEach(() => {
     jest.resetAllMocks();
-    jest.useRealTimers();
   });
 
   it('Renders an empty state when there are no incidents', async () => {
@@ -51,10 +47,13 @@ describe('Incidents', () => {
         <Incidents readOnly={false} refreshIncidents={false} team="test" />
       </ApiProvider>,
     );
-    jest.advanceTimersByTime(2000);
-    await waitFor(() => expect(screen.queryByTestId('progress')).toBe(null));
-    await waitFor(() =>
-      expect(screen.getByText('Nice! No incidents found!')).toBeInTheDocument(),
+    await waitFor(() => !screen.queryByTestId('progress'));
+    await waitFor(
+      () =>
+        expect(
+          screen.getByText('Nice! No incidents found!'),
+        ).toBeInTheDocument(),
+      { timeout: 2000 },
     );
   });
 
@@ -67,14 +66,15 @@ describe('Incidents', () => {
         <Incidents readOnly={false} team="test" refreshIncidents={false} />
       </ApiProvider>,
     );
-    jest.advanceTimersByTime(2000);
-    await waitFor(() => expect(screen.queryByTestId('progress')).toBe(null));
-    await waitFor(() =>
-      expect(
-        screen.getByText('user', {
-          exact: false,
-        }),
-      ).toBeInTheDocument(),
+    await waitFor(() => !screen.queryByTestId('progress'));
+    await waitFor(
+      () =>
+        expect(
+          screen.getByText('user', {
+            exact: false,
+          }),
+        ).toBeInTheDocument(),
+      { timeout: 2000 },
     );
     expect(screen.getByText('test-incident')).toBeInTheDocument();
     expect(screen.getByTitle('Acknowledged')).toBeInTheDocument();
@@ -93,14 +93,15 @@ describe('Incidents', () => {
         <Incidents readOnly team="test" refreshIncidents={false} />
       </ApiProvider>,
     );
-    jest.advanceTimersByTime(2000);
-    await waitFor(() => expect(screen.queryByTestId('progress')).toBe(null));
-    await waitFor(() =>
-      expect(
-        screen.getByText('user', {
-          exact: false,
-        }),
-      ).toBeInTheDocument(),
+    await waitFor(() => !screen.queryByTestId('progress'));
+    await waitFor(
+      () =>
+        expect(
+          screen.getByText('user', {
+            exact: false,
+          }),
+        ).toBeInTheDocument(),
+      { timeout: 2000 },
     );
     expect(screen.getByText('test-incident')).toBeInTheDocument();
     expect(screen.getByLabelText('Status warning')).toBeInTheDocument();
@@ -126,14 +127,15 @@ describe('Incidents', () => {
         <Incidents readOnly={false} team="test" refreshIncidents={false} />
       </ApiProvider>,
     );
-    jest.advanceTimersByTime(2000);
-    await waitFor(() => expect(screen.queryByTestId('progress')).toBe(null));
-    await waitFor(() =>
-      expect(
-        screen.getByText(
-          'Error encountered while fetching information. Error occurred',
-        ),
-      ).toBeInTheDocument(),
+    await waitFor(() => !screen.queryByTestId('progress'));
+    await waitFor(
+      () =>
+        expect(
+          screen.getByText(
+            'Error encountered while fetching information. Error occurred',
+          ),
+        ).toBeInTheDocument(),
+      { timeout: 2000 },
     );
   });
 });

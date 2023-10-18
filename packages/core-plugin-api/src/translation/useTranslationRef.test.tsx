@@ -20,7 +20,7 @@ import {
   TestApiProvider,
   withLogCollector,
 } from '@backstage/test-utils';
-import { act, renderHook, waitFor } from '@testing-library/react';
+import { renderHook } from '@testing-library/react-hooks';
 import { createTranslationRef, TranslationRef } from './TranslationRef';
 import { useTranslationRef } from './useTranslationRef';
 // eslint-disable-next-line @backstage/no-relative-monorepo-imports
@@ -91,15 +91,19 @@ describe('useTranslationRef', () => {
       ],
     });
 
-    const { result } = renderHook(() => useTranslationRef(plainRef), {
-      wrapper: makeWrapper(translationApi),
-    });
+    const { result, waitForNextUpdate } = renderHook(
+      () => useTranslationRef(plainRef),
+      {
+        wrapper: makeWrapper(translationApi),
+      },
+    );
 
-    await waitFor(() => {
-      const { t } = result.current;
-      expect(t('key1')).toBe('en1');
-      expect(t('key2')).toBe('en2');
-    });
+    await waitForNextUpdate();
+
+    const { t } = result.current;
+
+    expect(t('key1')).toBe('en1');
+    expect(t('key2')).toBe('en2');
   });
 
   it('should switch between languages', async () => {
@@ -119,25 +123,26 @@ describe('useTranslationRef', () => {
       ],
     });
 
-    const { result } = renderHook(() => useTranslationRef(plainRef), {
-      wrapper: makeWrapper(translationApi),
-    });
+    const { result, waitForNextUpdate } = renderHook(
+      () => useTranslationRef(plainRef),
+      {
+        wrapper: makeWrapper(translationApi),
+      },
+    );
 
-    await waitFor(() => {
-      const { t } = result.current;
+    const { t } = result.current;
 
-      expect(t('key1')).toBe('default1');
-      expect(t('key2')).toBe('default2');
-    });
+    expect(t('key1')).toBe('default1');
+    expect(t('key2')).toBe('default2');
 
     languageApi.setLanguage('de');
 
-    await waitFor(() => {
-      const { t: t2 } = result.current;
+    await waitForNextUpdate();
 
-      expect(t2('key1')).toBe('de1');
-      expect(t2('key2')).toBe('de2');
-    });
+    const { t: t2 } = result.current;
+
+    expect(t2('key1')).toBe('de1');
+    expect(t2('key2')).toBe('de2');
   });
 
   it('should load default resource', async () => {
@@ -160,16 +165,19 @@ describe('useTranslationRef', () => {
       languageApi,
     });
 
-    const { result } = renderHook(() => useTranslationRef(resourceRef), {
-      wrapper: makeWrapper(translationApi),
-    });
+    const { result, waitForNextUpdate } = renderHook(
+      () => useTranslationRef(resourceRef),
+      {
+        wrapper: makeWrapper(translationApi),
+      },
+    );
 
-    await waitFor(() => {
-      const { t } = result.current;
+    await waitForNextUpdate();
 
-      expect(t('key1')).toBe('de1');
-      expect(t('key2')).toBe('de2');
-    });
+    const { t } = result.current;
+
+    expect(t('key1')).toBe('de1');
+    expect(t('key2')).toBe('de2');
   });
 
   it('should log once and then ignore loading errors', async () => {
@@ -204,7 +212,7 @@ describe('useTranslationRef', () => {
     });
 
     const { error } = await withLogCollector(['error'], async () => {
-      await act(rendered2.rerender);
+      await rendered2.waitForNextUpdate();
     });
 
     const msg =

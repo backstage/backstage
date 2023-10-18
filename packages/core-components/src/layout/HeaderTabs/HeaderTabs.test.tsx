@@ -19,7 +19,6 @@ import Badge from '@material-ui/core/Badge';
 import { makeStyles } from '@material-ui/core/styles';
 import React from 'react';
 import { HeaderTabs } from './HeaderTabs';
-import userEvent from '@testing-library/user-event';
 
 const mockTabs = [
   { id: 'overview', label: 'Overview' },
@@ -42,7 +41,7 @@ describe('<HeaderTabs />', () => {
       'false',
     );
 
-    await userEvent.click(rendered.getByText('Docs'));
+    rendered.getByText('Docs').click();
 
     expect(rendered.getByText('Docs').parentElement).toHaveAttribute(
       'aria-selected',

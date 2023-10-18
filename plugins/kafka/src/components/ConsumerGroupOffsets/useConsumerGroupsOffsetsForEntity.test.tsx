@@ -15,7 +15,7 @@
  */
 import { Entity } from '@backstage/catalog-model';
 import { EntityProvider } from '@backstage/plugin-catalog-react';
-import { renderHook, waitFor } from '@testing-library/react';
+import { renderHook } from '@testing-library/react-hooks';
 import { when } from 'jest-when';
 import React, { PropsWithChildren } from 'react';
 import {
@@ -96,28 +96,27 @@ describe('useConsumerGroupOffsets', () => {
       .mockResolvedValue(consumerGroupOffsets);
     when(mockKafkaDashboardApi.getDashboardUrl).mockReturnValue({});
 
-    const { result } = subject();
+    const { result, waitForNextUpdate } = subject();
+    await waitForNextUpdate();
+    const [tableProps] = result.current;
 
-    await waitFor(() => {
-      expect(result.current[0].consumerGroupsTopics).toStrictEqual([
-        {
-          clusterId: 'prod',
-          consumerGroup: consumerGroupOffsets.consumerId,
-          dashboardUrl: undefined,
-          topics: consumerGroupOffsets.offsets,
-        },
-      ]);
-    });
+    expect(tableProps.consumerGroupsTopics).toStrictEqual([
+      {
+        clusterId: 'prod',
+        consumerGroup: consumerGroupOffsets.consumerId,
+        dashboardUrl: undefined,
+        topics: consumerGroupOffsets.offsets,
+      },
+    ]);
   });
 
   it('posts an error to the error api', async () => {
     const error = new Error('error!');
     mockKafkaApi.getConsumerGroupOffsets.mockRejectedValueOnce(error);
 
-    subject();
+    const { waitForNextUpdate } = subject();
+    await waitForNextUpdate();
 
-    await waitFor(() => {
-      expect(mockErrorApi.post).toHaveBeenCalledWith(error);
-    });
+    expect(mockErrorApi.post).toHaveBeenCalledWith(error);
   });
 });

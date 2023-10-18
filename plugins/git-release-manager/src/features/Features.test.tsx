@@ -15,7 +15,7 @@
  */
 
 import React from 'react';
-import { render, waitFor } from '@testing-library/react';
+import { render, act, waitFor } from '@testing-library/react';
 
 import { Features } from './Features';
 import { mockCalverProject } from '../test-helpers/test-helpers';
@@ -49,7 +49,9 @@ describe('Features', () => {
       />,
     );
 
-    await waitFor(() => getByTestId(TEST_IDS.info.info));
+    await act(async () => {
+      await waitFor(() => getByTestId(TEST_IDS.info.info));
+    });
 
     expect(getByTestId(TEST_IDS.info.info)).toMatchInlineSnapshot(`
       <div
