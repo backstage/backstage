@@ -71,5 +71,6 @@ export interface AppNode {
 
 export interface AppGraph {
   root: AppNode;
+  nodes: Map<string /* id */, AppNode>;
   orphans: Iterable<AppNode>;
 }

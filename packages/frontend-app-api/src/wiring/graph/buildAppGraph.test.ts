@@ -46,6 +46,7 @@ describe('buildAppGraph', () => {
       edges: { attachments: new Map() },
     });
     expect(Array.from(graph.orphans)).toEqual([]);
+    expect(Array.from(graph.nodes.keys())).toEqual(['core']);
   });
 
   it('should create a graph', () => {
@@ -61,6 +62,16 @@ describe('buildAppGraph', () => {
       ],
       'b',
     );
+
+    expect(Array.from(graph.nodes.keys())).toEqual([
+      'a',
+      'b',
+      'c',
+      'bx1',
+      'bx2',
+      'by1',
+      'dx1',
+    ]);
 
     expect(JSON.parse(JSON.stringify(graph.root))).toMatchInlineSnapshot(`
       {
@@ -117,6 +128,16 @@ describe('buildAppGraph', () => {
       ],
       'b',
     );
+
+    expect(Array.from(graph.nodes.keys())).toEqual([
+      'bx2',
+      'a',
+      'by1',
+      'b',
+      'bx1',
+      'c',
+      'dx1',
+    ]);
 
     expect(String(graph.root)).toMatchInlineSnapshot(`
       "<b>
