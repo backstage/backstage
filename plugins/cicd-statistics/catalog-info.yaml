@@ -7,4 +7,4 @@ metadata:
 spec:
   lifecycle: experimental
   type: backstage-frontend-plugin
-  owner: maintainers
+  owner: sharks
