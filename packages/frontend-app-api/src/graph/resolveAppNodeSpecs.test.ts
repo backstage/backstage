@@ -54,8 +54,18 @@ describe('resolveAppNodeSpecs', () => {
         parameters: [],
       }),
     ).toEqual([
-      { extension: a, attachTo: { id: 'root', input: 'default' } },
-      { extension: b, attachTo: { id: 'root', input: 'default' } },
+      {
+        id: 'a',
+        extension: a,
+        attachTo: { id: 'root', input: 'default' },
+        disabled: false,
+      },
+      {
+        id: 'b',
+        extension: b,
+        attachTo: { id: 'root', input: 'default' },
+        disabled: false,
+      },
     ]);
   });
 
@@ -76,11 +86,18 @@ describe('resolveAppNodeSpecs', () => {
       }),
     ).toEqual([
       {
+        id: 'a',
         extension: a,
         attachTo: { id: 'root', input: 'default' },
         source: pluginA,
+        disabled: false,
       },
-      { extension: b, attachTo: { id: 'derp', input: 'default' } },
+      {
+        id: 'b',
+        extension: b,
+        attachTo: { id: 'derp', input: 'default' },
+        disabled: false,
+      },
     ]);
   });
 
@@ -109,16 +126,20 @@ describe('resolveAppNodeSpecs', () => {
       }),
     ).toEqual([
       {
+        id: 'a',
         extension: a,
         attachTo: { id: 'root', input: 'default' },
         source: plugin,
         config: { foo: { bar: 1 } },
+        disabled: false,
       },
       {
+        id: 'b',
         extension: b,
         attachTo: { id: 'root', input: 'default' },
         source: plugin,
         config: { foo: { qux: 3 } },
+        disabled: false,
       },
     ]);
   });
@@ -142,8 +163,18 @@ describe('resolveAppNodeSpecs', () => {
         ],
       }),
     ).toEqual([
-      { extension: b, attachTo: { id: 'root', input: 'default' } },
-      { extension: a, attachTo: { id: 'root', input: 'default' } },
+      {
+        id: 'b',
+        extension: b,
+        attachTo: { id: 'root', input: 'default' },
+        disabled: false,
+      },
+      {
+        id: 'a',
+        extension: a,
+        attachTo: { id: 'root', input: 'default' },
+        disabled: false,
+      },
     ]);
   });
 
@@ -173,10 +204,12 @@ describe('resolveAppNodeSpecs', () => {
     expect(result[0].source).toBe(plugin);
 
     expect(result[1]).toEqual({
+      id: 'c',
       extension: cOverride,
       attachTo: { id: 'root', input: 'default' },
       config: undefined,
       source: undefined,
+      disabled: false,
     });
   });
 
