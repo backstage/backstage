@@ -21,8 +21,12 @@ import {
   createExtensionInput,
   createSchemaFromZod,
 } from '@backstage/frontend-plugin-api';
-import { createAppNodeInstance } from './instantiateAppNodeTree';
+import {
+  createAppNodeInstance,
+  instantiateAppNodeTree,
+} from './instantiateAppNodeTree';
 import { AppNodeInstance, AppNodeSpec } from './types';
+import { buildAppGraph } from './buildAppGraph';
 
 const testDataRef = createExtensionDataRef<string>('test');
 const otherDataRef = createExtensionDataRef<number>('other');
@@ -72,6 +76,123 @@ function makeInstanceWithId<TConfig>(
     }),
   };
 }
+
+describe('instantiateAppNodeTree', () => {
+  it('should instantiate a single node', () => {
+    const graph = buildAppGraph(
+      [{ ...makeSpec(simpleExtension), id: 'root-node' }],
+      'root-node',
+    );
+    expect(graph.root.instance).not.toBeDefined();
+    instantiateAppNodeTree(graph.root);
+    expect(graph.root.instance).toBeDefined();
+    expect(graph.root.instance?.getData(testDataRef)).toBe('test');
+
+    // Multiple calls should have no effect
+    instantiateAppNodeTree(graph.root);
+    expect(graph.root.instance).toBeDefined();
+  });
+
+  it('should not instantiate disabled nodes', () => {
+    const graph = buildAppGraph(
+      [{ ...makeSpec(simpleExtension), id: 'root-node', disabled: true }],
+      'root-node',
+    );
+    expect(graph.root.instance).not.toBeDefined();
+    instantiateAppNodeTree(graph.root);
+    expect(graph.root.instance).not.toBeDefined();
+  });
+
+  it('should instantiate a node with attachments', () => {
+    const graph = buildAppGraph(
+      [
+        {
+          ...makeSpec(
+            createExtension({
+              id: 'root-node',
+              attachTo: { id: 'ignored', input: 'ignored' },
+              inputs: {
+                test: createExtensionInput({ test: testDataRef }),
+              },
+              output: {
+                inputMirror: inputMirrorDataRef,
+              },
+              factory({ bind, inputs }) {
+                bind({ inputMirror: inputs });
+              },
+            }),
+          ),
+        },
+        {
+          ...makeSpec(simpleExtension),
+          id: 'child-node',
+          attachTo: { id: 'root-node', input: 'test' },
+        },
+      ],
+      'root-node',
+    );
+
+    const childNode = graph.nodes.get('child-node');
+    expect(childNode).toBeDefined();
+
+    expect(graph.root.instance).not.toBeDefined();
+    expect(childNode?.instance).not.toBeDefined();
+    instantiateAppNodeTree(graph.root);
+    expect(graph.root.instance).toBeDefined();
+    expect(childNode?.instance).toBeDefined();
+    expect(graph.root.instance?.getData(inputMirrorDataRef)).toEqual({
+      test: [{ test: 'test' }],
+    });
+
+    // Multiple calls should have no effect
+    instantiateAppNodeTree(graph.root);
+    expect(graph.root.instance).toBeDefined();
+    expect(childNode?.instance).toBeDefined();
+  });
+
+  it('should not instantiate disabled attachments', () => {
+    const graph = buildAppGraph(
+      [
+        {
+          ...makeSpec(
+            createExtension({
+              id: 'root-node',
+              attachTo: { id: 'ignored', input: 'ignored' },
+              inputs: {
+                test: createExtensionInput({ test: testDataRef }),
+              },
+              output: {
+                inputMirror: inputMirrorDataRef,
+              },
+              factory({ bind, inputs }) {
+                bind({ inputMirror: inputs });
+              },
+            }),
+          ),
+        },
+        {
+          ...makeSpec(simpleExtension),
+          id: 'child-node',
+          attachTo: { id: 'root-node', input: 'test' },
+          disabled: true,
+        },
+      ],
+      'root-node',
+    );
+
+    const childNode = graph.nodes.get('child-node');
+    expect(childNode).toBeDefined();
+
+    expect(graph.root.instance).not.toBeDefined();
+    expect(childNode?.instance).not.toBeDefined();
+    instantiateAppNodeTree(graph.root);
+    expect(graph.root.instance).toBeDefined();
+    expect(childNode?.instance).not.toBeDefined();
+    expect(graph.root.instance?.getData(inputMirrorDataRef)).toEqual({
+      test: [],
+    });
+  });
+});
 
 describe('createAppNodeInstance', () => {
   it('should create a simple extension instance', () => {
