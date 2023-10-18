@@ -34,14 +34,14 @@ import {
 } from '@backstage/backend-common';
 import { ConfigReader } from '@backstage/config';
 import { ScmIntegrations } from '@backstage/integration';
-import mockFs from 'mock-fs';
-import os from 'os';
 import { resolve as resolvePath } from 'path';
 import { PassThrough } from 'stream';
 import { createFetchRailsAction } from './index';
 import { fetchContents } from '@backstage/plugin-scaffolder-node';
+import { createMockDirectory } from '@backstage/backend-test-utils';
 
 describe('fetch:rails', () => {
+  const mockDir = createMockDirectory();
   const integrations = ScmIntegrations.fromConfig(
     new ConfigReader({
       integrations: {
@@ -53,7 +53,7 @@ describe('fetch:rails', () => {
     }),
   );
 
-  const mockTmpDir = os.tmpdir();
+  const mockTmpDir = mockDir.path;
   const mockContext = {
     input: {
       url: 'https://rubyonrails.org/generator',
@@ -73,6 +73,9 @@ describe('fetch:rails', () => {
     createTemporaryDirectory: jest.fn().mockResolvedValue(mockTmpDir),
   };
 
+  mockDir.clear();
+  mockDir.addContent({ template: {} });
+
   const mockReader: UrlReader = {
     readUrl: jest.fn(),
     readTree: jest.fn(),
@@ -90,12 +93,10 @@ describe('fetch:rails', () => {
   });
 
   beforeEach(() => {
-    mockFs({ [`${mockContext.workspacePath}/result`]: {} });
+    mockDir.addContent({
+      result: '{}',
+    });
     jest.clearAllMocks();
-  });
-
-  afterEach(() => {
-    mockFs.restore();
   });
 
   it('should call fetchContents with the correct values', async () => {
