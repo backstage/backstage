@@ -16,7 +16,7 @@
 
 import React from 'react';
 import { BackstagePlugin } from '@backstage/core-plugin-api';
-import { extractRouteInfoFromInstanceTree } from './extractRouteInfoFromInstanceTree';
+import { extractRouteInfoFromAppNode } from './extractRouteInfoFromAppNode';
 import {
   AnyRouteRefParams,
   Extension,
@@ -83,7 +83,7 @@ function routeInfoFromExtensions(extensions: Extension<unknown>[]) {
     features: [plugin],
   });
 
-  return extractRouteInfoFromInstanceTree(graph.root);
+  return extractRouteInfoFromAppNode(graph.root);
 }
 
 function sortedEntries<T>(map: Map<RouteRef, T>): [RouteRef, T][] {

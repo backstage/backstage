@@ -41,7 +41,7 @@ export function joinPaths(...paths: string[]): string {
   return normalized;
 }
 
-export function extractRouteInfoFromInstanceTree(core: AppNode): {
+export function extractRouteInfoFromAppNode(node: AppNode): {
   routePaths: Map<RouteRef, string>;
   routeParents: Map<RouteRef, RouteRef | undefined>;
   routeObjects: BackstageRouteObject[];
@@ -143,7 +143,7 @@ export function extractRouteInfoFromInstanceTree(core: AppNode): {
     }
   }
 
-  visit(core);
+  visit(node);
 
   return { routePaths, routeParents, routeObjects };
 }
