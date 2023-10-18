@@ -48,7 +48,7 @@ export interface AppNodeEdges {
  */
 export interface AppNodeInstance {
   getDataRefs(): Iterable<ExtensionDataRef<unknown>>;
-  getData<T>(ref: ExtensionDataRef<T>): T | unknown;
+  getData<T>(ref: ExtensionDataRef<T>): T | undefined;
 }
 
 /**
