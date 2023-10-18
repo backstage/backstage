@@ -99,7 +99,7 @@ export function createCatalogFilterExtension<
 }) {
   return createExtension({
     id: `catalog.filter.${options.id}`,
-    attachTo: { id: 'catalog', input: 'filters' },
+    attachTo: { id: 'plugin.catalog.page.index', input: 'filters' },
     inputs: options.inputs ?? {},
     configSchema: options.configSchema,
     output: {
@@ -217,7 +217,7 @@ const CatalogUserListFilter = createCatalogFilterExtension({
 });
 
 const CatalogIndexPage = createPageExtension({
-  id: 'catalog',
+  id: 'plugin.catalog.page.index',
   defaultPath: '/catalog',
   routeRef: convertLegacyRouteRef(rootRouteRef),
   inputs: {
@@ -233,7 +233,7 @@ const CatalogIndexPage = createPageExtension({
 });
 
 const CatalogEntityPage = createPageExtension({
-  id: 'catalog:entity',
+  id: 'plugin.catalog.page.entity',
   defaultPath: '/catalog/:namespace/:kind/:name',
   routeRef: convertLegacyRouteRef(entityRouteRef),
   loader: async () => {
