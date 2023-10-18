@@ -14,14 +14,7 @@
  * limitations under the License.
  */
 
-import {
-  AppGraph,
-  AppNode,
-  AppNodeEdges,
-  AppNodeInstance,
-  AppNodeSpec,
-  Mutable,
-} from './types';
+import { AppGraph, AppNode, AppNodeInstance, AppNodeSpec } from './types';
 
 function indent(str: string) {
   return str.replace(/^/gm, '  ');
@@ -30,11 +23,27 @@ function indent(str: string) {
 /** @internal */
 class SerializableAppNode implements AppNode {
   public readonly spec: AppNodeSpec;
-  public readonly edges: AppNodeEdges = { attachments: new Map() };
+  public readonly edges = {
+    attachedTo: undefined as { node: AppNode; input: string } | undefined,
+    attachments: new Map<string, SerializableAppNode[]>(),
+  };
   public readonly instance?: AppNodeInstance;
 
   constructor(spec: AppNodeSpec) {
     this.spec = spec;
+  }
+
+  setParent(parent: SerializableAppNode) {
+    const input = this.spec.attachTo.input;
+
+    this.edges.attachedTo = { node: parent, input };
+
+    const parentInputEdges = parent.edges.attachments.get(input);
+    if (parentInputEdges) {
+      parentInputEdges.push(this);
+    } else {
+      parent.edges.attachments.set(input, [this]);
+    }
   }
 
   toJSON() {
@@ -52,7 +61,7 @@ class SerializableAppNode implements AppNode {
     };
   }
 
-  toString() {
+  toString(): string {
     const dataRefs = this.instance && [...this.instance.getDataRefs()];
     const out =
       dataRefs && dataRefs.length > 0
@@ -82,7 +91,7 @@ export function buildAppGraph(
   specs: AppNodeSpec[],
   rootNodeId = 'core',
 ): AppGraph {
-  const nodes = new Map<string, AppNode>();
+  const nodes = new Map<string, SerializableAppNode>();
 
   // A node with the provided rootNodeId must be found in the graph, and it must not be attached to anything
   let rootNode: AppNode | undefined = undefined;
@@ -93,7 +102,7 @@ export function buildAppGraph(
   // that after iterating through all input specs, this will be a map for each root node.
   const orphansByParent = new Map<
     string /* parentId */,
-    { orphan: AppNode; input: string }[]
+    SerializableAppNode[]
   >();
 
   for (const spec of specs) {
@@ -111,25 +120,13 @@ export function buildAppGraph(
     } else {
       const parent = nodes.get(spec.attachTo.id);
       if (parent) {
-        (node.edges as Mutable<AppNodeEdges>).attachedTo = {
-          node: parent,
-          input: spec.attachTo.input,
-        };
-        const parentInputEdges = parent.edges.attachments.get(
-          spec.attachTo.input,
-        );
-        if (parentInputEdges) {
-          parentInputEdges.push(node);
-        } else {
-          parent.edges.attachments.set(spec.attachTo.input, [node]);
-        }
+        node.setParent(parent);
       } else {
         const orphanNodesForParent = orphansByParent.get(spec.attachTo.id);
-        const orphan = { orphan: node, input: spec.attachTo.input };
         if (orphanNodesForParent) {
-          orphanNodesForParent.push(orphan);
+          orphanNodesForParent.push(node);
         } else {
-          orphansByParent.set(spec.attachTo.id, [orphan]);
+          orphansByParent.set(spec.attachTo.id, [node]);
         }
       }
     }
@@ -137,25 +134,19 @@ export function buildAppGraph(
     const orphanedChildren = orphansByParent.get(spec.id);
     if (orphanedChildren) {
       orphansByParent.delete(spec.id);
-      for (const { orphan, input } of orphanedChildren) {
-        (orphan.edges as Mutable<AppNodeEdges>).attachedTo = { node, input };
-        const attachments = node.edges.attachments.get(input);
-        if (attachments) {
-          attachments.push(orphan);
-        } else {
-          node.edges.attachments.set(input, [orphan]);
-        }
+      for (const orphan of orphanedChildren) {
+        orphan.setParent(node);
       }
     }
   }
-
-  const orphanNodes = Array.from(orphansByParent).flatMap(([, orphans]) =>
-    orphans.map(({ orphan }) => orphan),
-  );
 
   if (!rootNode) {
     throw new Error(`No root node with id '${rootNodeId}' found in app graph`);
   }
 
-  return { root: rootNode, nodes, orphans: orphanNodes };
+  return {
+    root: rootNode,
+    nodes,
+    orphans: Array.from(orphansByParent.values()).flat(),
+  };
 }
