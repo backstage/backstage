@@ -106,7 +106,7 @@ const scmIntegrationApi = createApiExtension({
   }),
 });
 
-const collectedLegacyPlugin = collectLegacyRoutes(
+const collectedLegacyPlugins = collectLegacyRoutes(
   <FlatRoutes>
     <Route path="/catalog-import" element={<CatalogImportPage />} />
   </FlatRoutes>,
@@ -120,7 +120,7 @@ const app = createApp({
     techdocsPlugin,
     userSettingsPlugin,
     homePlugin,
-    ...collectedLegacyPlugin,
+    ...collectedLegacyPlugins,
     createExtensionOverrides({
       extensions: [
         entityPageExtension,
