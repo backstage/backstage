@@ -40,7 +40,9 @@ export function createAppGraph(options: CreateAppGraphOptions): AppGraph {
       features: options.features,
       builtinExtensions: options.builtinExtensions,
       parameters: readAppExtensionsConfig(options.config),
+      forbidden: new Set(['core']),
     }),
+    'core',
   );
   instantiateAppNodeTree(appGraph.root);
   return appGraph;
