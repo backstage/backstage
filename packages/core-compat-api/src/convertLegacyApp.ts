@@ -58,6 +58,7 @@ function selectChildren(
   });
 }
 
+/** @public */
 export function convertLegacyApp(
   rootElement: React.JSX.Element,
 ): (ExtensionOverrides | BackstagePlugin)[] {
