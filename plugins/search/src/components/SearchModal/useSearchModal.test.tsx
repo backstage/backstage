@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 import React from 'react';
-import { act, renderHook } from '@testing-library/react-hooks';
+import { act, renderHook } from '@testing-library/react';
 import { useSearchModal } from './useSearchModal';
 import { BrowserRouter, Router } from 'react-router-dom';
 import { createMemoryHistory } from 'history';
