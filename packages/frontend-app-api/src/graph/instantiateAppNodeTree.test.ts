@@ -79,10 +79,9 @@ function makeInstanceWithId<TConfig>(
 
 describe('instantiateAppNodeTree', () => {
   it('should instantiate a single node', () => {
-    const graph = resolveAppGraph(
-      [{ ...makeSpec(simpleExtension), id: 'root-node' }],
-      'root-node',
-    );
+    const graph = resolveAppGraph('root-node', [
+      { ...makeSpec(simpleExtension), id: 'root-node' },
+    ]);
     expect(graph.root.instance).not.toBeDefined();
     instantiateAppNodeTree(graph.root);
     expect(graph.root.instance).toBeDefined();
@@ -94,43 +93,39 @@ describe('instantiateAppNodeTree', () => {
   });
 
   it('should not instantiate disabled nodes', () => {
-    const graph = resolveAppGraph(
-      [{ ...makeSpec(simpleExtension), id: 'root-node', disabled: true }],
-      'root-node',
-    );
+    const graph = resolveAppGraph('root-node', [
+      { ...makeSpec(simpleExtension), id: 'root-node', disabled: true },
+    ]);
     expect(graph.root.instance).not.toBeDefined();
     instantiateAppNodeTree(graph.root);
     expect(graph.root.instance).not.toBeDefined();
   });
 
   it('should instantiate a node with attachments', () => {
-    const graph = resolveAppGraph(
-      [
-        {
-          ...makeSpec(
-            createExtension({
-              id: 'root-node',
-              attachTo: { id: 'ignored', input: 'ignored' },
-              inputs: {
-                test: createExtensionInput({ test: testDataRef }),
-              },
-              output: {
-                inputMirror: inputMirrorDataRef,
-              },
-              factory({ bind, inputs }) {
-                bind({ inputMirror: inputs });
-              },
-            }),
-          ),
-        },
-        {
-          ...makeSpec(simpleExtension),
-          id: 'child-node',
-          attachTo: { id: 'root-node', input: 'test' },
-        },
-      ],
-      'root-node',
-    );
+    const graph = resolveAppGraph('root-node', [
+      {
+        ...makeSpec(
+          createExtension({
+            id: 'root-node',
+            attachTo: { id: 'ignored', input: 'ignored' },
+            inputs: {
+              test: createExtensionInput({ test: testDataRef }),
+            },
+            output: {
+              inputMirror: inputMirrorDataRef,
+            },
+            factory({ bind, inputs }) {
+              bind({ inputMirror: inputs });
+            },
+          }),
+        ),
+      },
+      {
+        ...makeSpec(simpleExtension),
+        id: 'child-node',
+        attachTo: { id: 'root-node', input: 'test' },
+      },
+    ]);
 
     const childNode = graph.nodes.get('child-node');
     expect(childNode).toBeDefined();
@@ -151,34 +146,31 @@ describe('instantiateAppNodeTree', () => {
   });
 
   it('should not instantiate disabled attachments', () => {
-    const graph = resolveAppGraph(
-      [
-        {
-          ...makeSpec(
-            createExtension({
-              id: 'root-node',
-              attachTo: { id: 'ignored', input: 'ignored' },
-              inputs: {
-                test: createExtensionInput({ test: testDataRef }),
-              },
-              output: {
-                inputMirror: inputMirrorDataRef,
-              },
-              factory({ bind, inputs }) {
-                bind({ inputMirror: inputs });
-              },
-            }),
-          ),
-        },
-        {
-          ...makeSpec(simpleExtension),
-          id: 'child-node',
-          attachTo: { id: 'root-node', input: 'test' },
-          disabled: true,
-        },
-      ],
-      'root-node',
-    );
+    const graph = resolveAppGraph('root-node', [
+      {
+        ...makeSpec(
+          createExtension({
+            id: 'root-node',
+            attachTo: { id: 'ignored', input: 'ignored' },
+            inputs: {
+              test: createExtensionInput({ test: testDataRef }),
+            },
+            output: {
+              inputMirror: inputMirrorDataRef,
+            },
+            factory({ bind, inputs }) {
+              bind({ inputMirror: inputs });
+            },
+          }),
+        ),
+      },
+      {
+        ...makeSpec(simpleExtension),
+        id: 'child-node',
+        attachTo: { id: 'root-node', input: 'test' },
+        disabled: true,
+      },
+    ]);
 
     const childNode = graph.nodes.get('child-node');
     expect(childNode).toBeDefined();

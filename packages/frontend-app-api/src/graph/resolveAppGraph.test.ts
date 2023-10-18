@@ -34,13 +34,13 @@ const baseSpec = {
 
 describe('buildAppGraph', () => {
   it('should fail to create an empty graph', () => {
-    expect(() => resolveAppGraph([])).toThrow(
+    expect(() => resolveAppGraph('core', [])).toThrow(
       "No root node with id 'core' found in app graph",
     );
   });
 
   it('should create a graph with only one node', () => {
-    const graph = resolveAppGraph([{ ...baseSpec, id: 'core' }]);
+    const graph = resolveAppGraph('core', [{ ...baseSpec, id: 'core' }]);
     expect(graph.root).toEqual({
       spec: { ...baseSpec, id: 'core' },
       edges: { attachments: new Map() },
@@ -50,18 +50,15 @@ describe('buildAppGraph', () => {
   });
 
   it('should create a graph', () => {
-    const graph = resolveAppGraph(
-      [
-        { ...baseSpec, id: 'a' },
-        { ...baseSpec, id: 'b' },
-        { ...baseSpec, id: 'c' },
-        { ...baseSpec, attachTo: { id: 'b', input: 'x' }, id: 'bx1' },
-        { ...baseSpec, attachTo: { id: 'b', input: 'x' }, id: 'bx2' },
-        { ...baseSpec, attachTo: { id: 'b', input: 'y' }, id: 'by1' },
-        { ...baseSpec, attachTo: { id: 'd', input: 'x' }, id: 'dx1' },
-      ],
-      'b',
-    );
+    const graph = resolveAppGraph('b', [
+      { ...baseSpec, id: 'a' },
+      { ...baseSpec, id: 'b' },
+      { ...baseSpec, id: 'c' },
+      { ...baseSpec, attachTo: { id: 'b', input: 'x' }, id: 'bx1' },
+      { ...baseSpec, attachTo: { id: 'b', input: 'x' }, id: 'bx2' },
+      { ...baseSpec, attachTo: { id: 'b', input: 'y' }, id: 'by1' },
+      { ...baseSpec, attachTo: { id: 'd', input: 'x' }, id: 'dx1' },
+    ]);
 
     expect(Array.from(graph.nodes.keys())).toEqual([
       'a',
@@ -116,18 +113,15 @@ describe('buildAppGraph', () => {
   });
 
   it('should create a graph out of order', () => {
-    const graph = resolveAppGraph(
-      [
-        { ...baseSpec, attachTo: { id: 'b', input: 'x' }, id: 'bx2' },
-        { ...baseSpec, id: 'a' },
-        { ...baseSpec, attachTo: { id: 'b', input: 'y' }, id: 'by1' },
-        { ...baseSpec, id: 'b' },
-        { ...baseSpec, attachTo: { id: 'b', input: 'x' }, id: 'bx1' },
-        { ...baseSpec, id: 'c' },
-        { ...baseSpec, attachTo: { id: 'd', input: 'x' }, id: 'dx1' },
-      ],
-      'b',
-    );
+    const graph = resolveAppGraph('b', [
+      { ...baseSpec, attachTo: { id: 'b', input: 'x' }, id: 'bx2' },
+      { ...baseSpec, id: 'a' },
+      { ...baseSpec, attachTo: { id: 'b', input: 'y' }, id: 'by1' },
+      { ...baseSpec, id: 'b' },
+      { ...baseSpec, attachTo: { id: 'b', input: 'x' }, id: 'bx1' },
+      { ...baseSpec, id: 'c' },
+      { ...baseSpec, attachTo: { id: 'd', input: 'x' }, id: 'dx1' },
+    ]);
 
     expect(Array.from(graph.nodes.keys())).toEqual([
       'bx2',
@@ -163,7 +157,7 @@ describe('buildAppGraph', () => {
 
   it('throws an error when duplicated extensions are detected', () => {
     expect(() =>
-      resolveAppGraph([
+      resolveAppGraph('core', [
         { ...baseSpec, id: 'a' },
         { ...baseSpec, id: 'a' },
       ]),
