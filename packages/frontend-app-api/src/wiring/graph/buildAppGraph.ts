@@ -157,5 +157,5 @@ export function buildAppGraph(
     throw new Error(`No root node with id '${rootNodeId}' found in app graph`);
   }
 
-  return { root: rootNode, orphans: orphanNodes };
+  return { root: rootNode, nodes, orphans: orphanNodes };
 }
