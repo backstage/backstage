@@ -19,66 +19,70 @@ import { buildAppGraph } from './buildAppGraph';
 
 const extBaseConfig = {
   id: 'test',
-  attachTo: { id: 'root', input: 'default' },
+  attachTo: { id: 'nonexistent', input: 'nonexistent' },
   output: {},
   factory() {},
 };
 
 const extension = createExtension(extBaseConfig);
 
-const baseSpec = { extension, disabled: false };
+const baseSpec = {
+  extension,
+  attachTo: { id: 'nonexistent', input: 'nonexistent' },
+  disabled: false,
+};
 
 describe('buildAppGraph', () => {
-  it('creates an empty graph', () => {
-    const graph = buildAppGraph([]);
-    expect([...graph.rootNodes.keys()]).toEqual([]);
-    expect([...graph.orphanNodes.keys()]).toEqual([]);
+  it('should fail to create an empty graph', () => {
+    expect(() => buildAppGraph([])).toThrow(
+      "No root node with id 'core' found in app graph",
+    );
+  });
+
+  it('should create a graph with only one node', () => {
+    const graph = buildAppGraph([{ ...baseSpec, id: 'core' }]);
+    expect(graph.root).toEqual({
+      spec: { ...baseSpec, id: 'core' },
+      edges: { attachments: new Map() },
+    });
+    expect(Array.from(graph.orphans)).toEqual([]);
   });
 
   it('should create a graph', () => {
-    const graph = buildAppGraph([
-      { ...baseSpec, id: 'a' },
-      { ...baseSpec, id: 'b' },
-      { ...baseSpec, id: 'c' },
-      { ...baseSpec, attachTo: { id: 'b', input: 'x' }, id: 'bx1' },
-      { ...baseSpec, attachTo: { id: 'b', input: 'x' }, id: 'bx2' },
-      { ...baseSpec, attachTo: { id: 'b', input: 'y' }, id: 'by1' },
-      { ...baseSpec, attachTo: { id: 'd', input: 'x' }, id: 'dx1' },
-    ]);
-    expect([...graph.rootNodes.keys()]).toEqual(['a', 'b', 'c']);
-    expect([...graph.orphanNodes.keys()]).toEqual(['dx1']);
-
-    expect(JSON.parse(JSON.stringify([...graph.rootNodes.values()])))
-      .toMatchInlineSnapshot(`
+    const graph = buildAppGraph(
       [
-        {
-          "id": "a",
+        { ...baseSpec, id: 'a' },
+        { ...baseSpec, id: 'b' },
+        { ...baseSpec, id: 'c' },
+        { ...baseSpec, attachTo: { id: 'b', input: 'x' }, id: 'bx1' },
+        { ...baseSpec, attachTo: { id: 'b', input: 'x' }, id: 'bx2' },
+        { ...baseSpec, attachTo: { id: 'b', input: 'y' }, id: 'by1' },
+        { ...baseSpec, attachTo: { id: 'd', input: 'x' }, id: 'dx1' },
+      ],
+      'b',
+    );
+
+    expect(JSON.parse(JSON.stringify(graph.root))).toMatchInlineSnapshot(`
+      {
+        "attachments": {
+          "x": [
+            {
+              "id": "bx1",
+            },
+            {
+              "id": "bx2",
+            },
+          ],
+          "y": [
+            {
+              "id": "by1",
+            },
+          ],
         },
-        {
-          "attachments": {
-            "x": [
-              {
-                "id": "bx1",
-              },
-              {
-                "id": "bx2",
-              },
-            ],
-            "y": [
-              {
-                "id": "by1",
-              },
-            ],
-          },
-          "id": "b",
-        },
-        {
-          "id": "c",
-        },
-      ]
+        "id": "b",
+      }
     `);
-    expect(String(graph.rootNodes.get('a'))).toMatchInlineSnapshot(`"<a />"`);
-    expect(String(graph.rootNodes.get('b'))).toMatchInlineSnapshot(`
+    expect(String(graph.root)).toMatchInlineSnapshot(`
       "<b>
         x [
           <bx1 />
@@ -89,24 +93,32 @@ describe('buildAppGraph', () => {
         ]
       </b>"
     `);
-    expect(String(graph.rootNodes.get('c'))).toMatchInlineSnapshot(`"<c />"`);
+
+    const orphans = Array.from(graph.orphans).map(String);
+    expect(orphans).toMatchInlineSnapshot(`
+      [
+        "<a />",
+        "<c />",
+        "<dx1 />",
+      ]
+    `);
   });
 
   it('should create a graph out of order', () => {
-    const graph = buildAppGraph([
-      { ...baseSpec, attachTo: { id: 'b', input: 'x' }, id: 'bx2' },
-      { ...baseSpec, id: 'a' },
-      { ...baseSpec, attachTo: { id: 'b', input: 'y' }, id: 'by1' },
-      { ...baseSpec, id: 'b' },
-      { ...baseSpec, attachTo: { id: 'b', input: 'x' }, id: 'bx1' },
-      { ...baseSpec, id: 'c' },
-      { ...baseSpec, attachTo: { id: 'd', input: 'x' }, id: 'dx1' },
-    ]);
-    expect([...graph.rootNodes.keys()]).toEqual(['a', 'b', 'c']);
-    expect([...graph.orphanNodes.keys()]).toEqual(['dx1']);
+    const graph = buildAppGraph(
+      [
+        { ...baseSpec, attachTo: { id: 'b', input: 'x' }, id: 'bx2' },
+        { ...baseSpec, id: 'a' },
+        { ...baseSpec, attachTo: { id: 'b', input: 'y' }, id: 'by1' },
+        { ...baseSpec, id: 'b' },
+        { ...baseSpec, attachTo: { id: 'b', input: 'x' }, id: 'bx1' },
+        { ...baseSpec, id: 'c' },
+        { ...baseSpec, attachTo: { id: 'd', input: 'x' }, id: 'dx1' },
+      ],
+      'b',
+    );
 
-    expect(String(graph.rootNodes.get('a'))).toMatchInlineSnapshot(`"<a />"`);
-    expect(String(graph.rootNodes.get('b'))).toMatchInlineSnapshot(`
+    expect(String(graph.root)).toMatchInlineSnapshot(`
       "<b>
         x [
           <bx2 />
@@ -117,7 +129,15 @@ describe('buildAppGraph', () => {
         ]
       </b>"
     `);
-    expect(String(graph.rootNodes.get('c'))).toMatchInlineSnapshot(`"<c />"`);
+
+    const orphans = Array.from(graph.orphans).map(String);
+    expect(orphans).toMatchInlineSnapshot(`
+      [
+        "<a />",
+        "<c />",
+        "<dx1 />",
+      ]
+    `);
   });
 
   it('throws an error when duplicated extensions are detected', () => {

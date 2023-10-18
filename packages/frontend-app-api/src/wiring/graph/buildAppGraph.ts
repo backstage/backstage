@@ -78,9 +78,15 @@ class SerializableAppNode implements AppNode {
  * tree with all attachments in the same order as they appear in the input specs array.
  * @internal
  */
-export function buildAppGraph(specs: AppNodeSpec[]): AppGraph {
+export function buildAppGraph(
+  specs: AppNodeSpec[],
+  rootNodeId = 'core',
+): AppGraph {
   const nodes = new Map<string, AppNode>();
-  const rootNodes = new Map<string, AppNode>();
+
+  // A node with the provided rootNodeId must be found in the graph, and it must not be attached to anything
+  let rootNode: AppNode | undefined = undefined;
+
   // While iterating through the inputs specs we keep track of all nodes that were created
   // before their parent, and attach them later when the parent is created.
   // As we find the parents and attach the children, we remove them from this map. This means
@@ -99,7 +105,10 @@ export function buildAppGraph(specs: AppNodeSpec[]): AppGraph {
     const node = new SerializableAppNode(spec);
     nodes.set(spec.id, node);
 
-    if (spec.attachTo) {
+    // TODO: For now we simply ignore the attachTo spec of the root node, but it'd be cleaner if we could avoid defining it
+    if (spec.id === rootNodeId) {
+      rootNode = node;
+    } else {
       const parent = nodes.get(spec.attachTo.id);
       if (parent) {
         (node.edges as Mutable<AppNodeEdges>).attachedTo = {
@@ -123,8 +132,6 @@ export function buildAppGraph(specs: AppNodeSpec[]): AppGraph {
           orphansByParent.set(spec.attachTo.id, [orphan]);
         }
       }
-    } else {
-      rootNodes.set(spec.id, node);
     }
 
     const orphanedChildren = orphansByParent.get(spec.id);
@@ -142,11 +149,13 @@ export function buildAppGraph(specs: AppNodeSpec[]): AppGraph {
     }
   }
 
-  const orphanNodes = new Map(
-    Array.from(orphansByParent).flatMap(([, orphans]) =>
-      orphans.map(({ orphan }) => [orphan.spec.id, orphan]),
-    ),
+  const orphanNodes = Array.from(orphansByParent).flatMap(([, orphans]) =>
+    orphans.map(({ orphan }) => orphan),
   );
 
-  return { rootNodes, orphanNodes };
+  if (!rootNode) {
+    throw new Error(`No root node with id '${rootNodeId}' found in app graph`);
+  }
+
+  return { root: rootNode, orphans: orphanNodes };
 }
