@@ -27,8 +27,12 @@ import {
   createPlugin,
   createRouteRef,
 } from '@backstage/frontend-plugin-api';
-import { createInstances } from '../wiring/createApp';
 import { MockConfigApi } from '@backstage/test-utils';
+import { createAppGraph } from '../wiring/graph';
+import { Core } from '../extensions/Core';
+import { CoreRoutes } from '../extensions/CoreRoutes';
+import { CoreNav } from '../extensions/CoreNav';
+import { CoreLayout } from '../extensions/CoreLayout';
 
 const ref1 = createRouteRef();
 const ref2 = createRouteRef();
@@ -73,12 +77,13 @@ function routeInfoFromExtensions(extensions: Extension<unknown>[]) {
     id: 'test',
     extensions,
   });
-  const { coreInstance } = createInstances({
+  const graph = createAppGraph({
     config: new MockConfigApi({}),
+    builtinExtensions: [Core, CoreRoutes, CoreNav, CoreLayout],
     features: [plugin],
   });
 
-  return extractRouteInfoFromInstanceTree(coreInstance);
+  return extractRouteInfoFromInstanceTree(graph.root);
 }
 
 function sortedEntries<T>(map: Map<RouteRef, T>): [RouteRef, T][] {

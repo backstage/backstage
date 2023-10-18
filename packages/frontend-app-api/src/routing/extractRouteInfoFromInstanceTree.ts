@@ -15,10 +15,10 @@
  */
 
 import { RouteRef, coreExtensionData } from '@backstage/frontend-plugin-api';
-import { ExtensionInstance } from '../wiring/graph/createExtensionInstance';
 // eslint-disable-next-line @backstage/no-relative-monorepo-imports
 import { toLegacyPlugin } from '../wiring/createApp';
 import { BackstageRouteObject } from './types';
+import { AppNode } from '../wiring/graph';
 
 // We always add a child that matches all subroutes but without any route refs. This makes
 // sure that we're always able to match each route no matter how deep the navigation goes.
@@ -41,7 +41,7 @@ export function joinPaths(...paths: string[]): string {
   return normalized;
 }
 
-export function extractRouteInfoFromInstanceTree(core: ExtensionInstance): {
+export function extractRouteInfoFromInstanceTree(core: AppNode): {
   routePaths: Map<RouteRef, string>;
   routeParents: Map<RouteRef, RouteRef | undefined>;
   routeObjects: BackstageRouteObject[];
@@ -56,17 +56,17 @@ export function extractRouteInfoFromInstanceTree(core: ExtensionInstance): {
   const routeObjects = new Array<BackstageRouteObject>();
 
   function visit(
-    current: ExtensionInstance,
+    current: AppNode,
     collectedPath?: string,
     foundRefForCollectedPath: boolean = false,
     parentRef?: RouteRef,
     candidateParentRef?: RouteRef,
     parentObj?: BackstageRouteObject,
   ) {
-    const routePath = current
-      .getData(coreExtensionData.routePath)
+    const routePath = current.instance
+      ?.getData(coreExtensionData.routePath)
       ?.replace(/^\//, '');
-    const routeRef = current.getData(coreExtensionData.routeRef);
+    const routeRef = current.instance?.getData(coreExtensionData.routeRef);
     const parentChildren = parentObj?.children ?? routeObjects;
     let currentObj = parentObj;
 
@@ -124,12 +124,12 @@ export function extractRouteInfoFromInstanceTree(core: ExtensionInstance): {
 
       routeParents.set(routeRef, newParentRef);
       currentObj?.routeRefs.add(routeRef);
-      if (current.source) {
-        currentObj?.plugins.add(toLegacyPlugin(current.source));
+      if (current.spec.source) {
+        currentObj?.plugins.add(toLegacyPlugin(current.spec.source));
       }
     }
 
-    for (const children of current.attachments.values()) {
+    for (const children of current.edges.attachments.values()) {
       for (const child of children) {
         visit(
           child,
