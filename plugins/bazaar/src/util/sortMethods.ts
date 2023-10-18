@@ -27,21 +27,11 @@ export const sortByDate = (a: BazaarProject, b: BazaarProject): number => {
 };
 
 export const sortByTitle = (a: BazaarProject, b: BazaarProject) => {
-  if (a.title < b.title) {
-    return -1;
-  } else if (a.title > b.title) {
-    return 1;
-  }
-  return 0;
+  return a.title.localeCompare(b.title);
 };
 
 export const sortByDecendingTitle = (a: BazaarProject, b: BazaarProject) => {
-  if (a.title < b.title) {
-    return 1;
-  } else if (a.title > b.title) {
-    return -1;
-  }
-  return 0;
+  return b.title.localeCompare(a.title);
 };
 
 export const sortByMembers = (a: BazaarProject, b: BazaarProject) => {
