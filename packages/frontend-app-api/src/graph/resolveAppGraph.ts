@@ -88,8 +88,8 @@ class SerializableAppNode implements AppNode {
  * @internal
  */
 export function resolveAppGraph(
+  rootNodeId: string,
   specs: AppNodeSpec[],
-  rootNodeId = 'core',
 ): AppGraph {
   const nodes = new Map<string, SerializableAppNode>();
 
