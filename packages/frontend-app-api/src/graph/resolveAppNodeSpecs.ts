@@ -29,8 +29,9 @@ export function resolveAppNodeSpecs(options: {
   features: (BackstagePlugin | ExtensionOverrides)[];
   builtinExtensions: Extension<unknown>[];
   parameters: Array<ExtensionParameters>;
+  forbidden?: Set<string>;
 }): AppNodeSpec[] {
-  const { builtinExtensions, parameters } = options;
+  const { builtinExtensions, parameters, forbidden = new Set() } = options;
 
   const plugins = options.features.filter(
     (f): f is BackstagePlugin => f.$$type === '@backstage/BackstagePlugin',
@@ -48,20 +49,21 @@ export function resolveAppNodeSpecs(options: {
   );
 
   // Prevent core override
-  if (pluginExtensions.some(({ id }) => id === 'core')) {
-    const pluginIds = pluginExtensions
-      .filter(({ id }) => id === 'core')
-      .map(({ source }) => source.id);
+  if (pluginExtensions.some(({ id }) => forbidden.has(id))) {
+    const pluginsStr = pluginExtensions
+      .filter(({ id }) => forbidden.has(id))
+      .map(({ source }) => `'${source.id}'`)
+      .join(', ');
+    const forbiddenStr = [...forbidden].map(id => `'${id}'`).join(', ');
     throw new Error(
-      `The following plugin(s) are overriding the 'core' extension which is forbidden: ${pluginIds.join(
-        ',',
-      )}`,
+      `It is forbidden to override the following extension(s): ${forbiddenStr}, which is done by the following plugin(s): ${pluginsStr}`,
     );
   }
 
-  if (overrideExtensions.some(({ id }) => id === 'root')) {
+  if (overrideExtensions.some(({ id }) => forbidden.has(id))) {
+    const forbiddenStr = [...forbidden].map(id => `'${id}'`).join(', ');
     throw new Error(
-      `An extension override is overriding the 'root' extension which is forbidden`,
+      `It is forbidden to override the following extension(s): ${forbiddenStr}, which is done by one or more extension overrides`,
     );
   }
   const overrideExtensionIds = overrideExtensions.map(({ id }) => id);
@@ -163,6 +165,12 @@ export function resolveAppNodeSpecs(options: {
 
   for (const overrideParam of parameters) {
     const extensionId = overrideParam.id;
+
+    if (forbidden.has(extensionId)) {
+      throw new Error(
+        `Configuration of the '${extensionId}' extension is forbidden`,
+      );
+    }
 
     const existingIndex = configuredExtensions.findIndex(
       e => e.extension.id === extensionId,

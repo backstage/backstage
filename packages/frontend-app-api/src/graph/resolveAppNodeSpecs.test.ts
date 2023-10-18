@@ -234,4 +234,45 @@ describe('resolveAppNodeSpecs', () => {
 
     expect(result.map(r => r.extension.id)).toEqual(['b', 'c', 'a']);
   });
+
+  it('throws an error when a forbidden extension is overridden by a plugin', () => {
+    expect(() =>
+      resolveAppNodeSpecs({
+        features: [
+          createPlugin({ id: 'test', extensions: [makeExt('forbidden')] }),
+        ],
+        builtinExtensions: [],
+        parameters: [],
+        forbidden: new Set(['forbidden']),
+      }),
+    ).toThrow(
+      "It is forbidden to override the following extension(s): 'forbidden', which is done by the following plugin(s): 'test'",
+    );
+  });
+
+  it('throws an error when a forbidden extension is overridden by overrides', () => {
+    expect(() =>
+      resolveAppNodeSpecs({
+        features: [
+          createExtensionOverrides({ extensions: [makeExt('forbidden')] }),
+        ],
+        builtinExtensions: [],
+        parameters: [],
+        forbidden: new Set(['forbidden']),
+      }),
+    ).toThrow(
+      "It is forbidden to override the following extension(s): 'forbidden', which is done by one or more extension overrides",
+    );
+  });
+
+  it('throws an error when a forbidden extension is parametrized', () => {
+    expect(() =>
+      resolveAppNodeSpecs({
+        features: [],
+        builtinExtensions: [],
+        parameters: [{ id: 'forbidden', disabled: false }],
+        forbidden: new Set(['forbidden']),
+      }),
+    ).toThrow("Configuration of the 'forbidden' extension is forbidden");
+  });
 });
