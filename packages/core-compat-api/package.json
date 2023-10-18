@@ -29,14 +29,14 @@
     "@backstage/plugin-puppetdb": "workspace:^",
     "@backstage/plugin-stackstorm": "workspace:^",
     "@oriflame/backstage-plugin-score-card": "^0.7.0",
-    "@testing-library/jest-dom": "^5.10.1"
+    "@testing-library/jest-dom": "^6.0.0"
   },
   "files": [
     "dist"
   ],
   "peerDependencies": {
-    "react": "*",
-    "react-router-dom": "*"
+    "react": "^16.13.1 || ^17.0.0 || ^18.0.0",
+    "react-router-dom": "6.0.0-beta.0 || ^6.3.0"
   },
   "dependencies": {
     "@backstage/core-plugin-api": "workspace:^",
