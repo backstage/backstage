@@ -1,5 +1,6 @@
 {
   "name": "@backstage/plugin-stack-overflow-backend",
+  "description": "Deprecated, consider using @backstage/plugin-search-backend-module-stack-overflow-collator instead",
   "version": "0.2.10",
   "main": "src/index.ts",
   "types": "src/index.ts",

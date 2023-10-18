@@ -15,9 +15,10 @@
  */
 
 /**
- * Stack Overflow backend plugin
- *
  * @packageDocumentation
+ * Stack Overflow backend plugin
+ * @deprecated
+ * Deprecated, consider using `@backstage/plugin-search-backend-module-stack-overflow-collator` instead.
  */
 
 import {

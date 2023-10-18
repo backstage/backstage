@@ -94,4 +94,4 @@ backend.add(
 backend.start();
 ```
 
-You may also want to add configuration parameters to your app-config, for example for controlling the scheduled indexing interval. These parameters should be placed under the `stackoverflow` key. See [the config definition file](https://github.com/backstage/backstage/blob/master/plugins/search-backend-module-stack-overflow/config.d.ts) for more details.
+You may also want to add configuration parameters to your app-config, for example for controlling the scheduled indexing interval. These parameters should be placed under the `stackoverflow` key. See [the config definition file](https://github.com/backstage/backstage/blob/master/plugins/search-backend-module-stack-overflow-collator/config.d.ts) for more details.
