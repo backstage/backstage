@@ -27,12 +27,7 @@ import { BazaarProject } from '../../types';
 import { bazaarApiRef } from '../../api';
 import { Alert } from '@material-ui/lab';
 import SearchBar from 'material-ui-search-bar';
-import {
-  sortByDate,
-  sortByMembers,
-  sortByTitle,
-  sortByDecendingTitle,
-} from '../../util/sortMethods';
+import { sortByDate, sortByMembers, sortByTitle } from '../../util/sortMethods';
 import { SortMethodSelector } from '../SortMethodSelector';
 import { fetchCatalogItems } from '../../util/fetchMethods';
 import { parseBazaarProject } from '../../util/parseMethods';
@@ -83,12 +78,7 @@ export const SortView = (props: SortViewProps) => {
   const bazaarApi = useApi(bazaarApiRef);
   const catalogApi = useApi(catalogApiRef);
   const classes = useStyles();
-  const sortMethods = [
-    sortByDate,
-    sortByTitle,
-    sortByDecendingTitle,
-    sortByMembers,
-  ];
+  const sortMethods = [sortByDate, sortByTitle, sortByMembers];
   const [sortMethodNbr, setSortMethodNbr] = useState(0);
   const [openAdd, setOpenAdd] = useState(false);
   const [searchValue, setSearchValue] = useState('');
