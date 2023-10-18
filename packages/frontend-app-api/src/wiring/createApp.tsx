@@ -87,7 +87,7 @@ import { AppRouteBinder } from '../routing';
 import { RoutingProvider } from '../routing/RoutingProvider';
 import { resolveRouteBindings } from '../routing/resolveRouteBindings';
 import { collectRouteIds } from '../routing/collectRouteIds';
-import { AppNode, createAppGraph } from './graph';
+import { AppNode, createAppGraph } from '../graph';
 
 const builtinExtensions = [
   Core,

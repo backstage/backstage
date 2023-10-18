@@ -28,7 +28,7 @@ import {
   createRouteRef,
 } from '@backstage/frontend-plugin-api';
 import { MockConfigApi } from '@backstage/test-utils';
-import { createAppGraph } from '../wiring/graph';
+import { createAppGraph } from '../graph';
 import { Core } from '../extensions/Core';
 import { CoreRoutes } from '../extensions/CoreRoutes';
 import { CoreNav } from '../extensions/CoreNav';

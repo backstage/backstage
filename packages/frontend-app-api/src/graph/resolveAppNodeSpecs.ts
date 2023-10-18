@@ -20,7 +20,7 @@ import {
   ExtensionOverrides,
 } from '@backstage/frontend-plugin-api';
 // eslint-disable-next-line @backstage/no-relative-monorepo-imports
-import { toInternalExtensionOverrides } from '../../../../frontend-plugin-api/src/wiring/createExtensionOverrides';
+import { toInternalExtensionOverrides } from '../../../frontend-plugin-api/src/wiring/createExtensionOverrides';
 import { ExtensionParameters } from './readAppExtensionsConfig';
 import { AppNodeSpec } from './types';
 
