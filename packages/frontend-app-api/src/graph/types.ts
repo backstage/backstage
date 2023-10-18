@@ -20,9 +20,18 @@ import {
   ExtensionDataRef,
 } from '@backstage/frontend-plugin-api';
 
+/*
+NOTE: These types are marked as @internal for now, but the intention is for this to be a public API in the future.
+*/
+
 /**
  * The specification for this node in the app graph.
- * @public
+ *
+ * @internal
+ * @remarks
+ *
+ * The specifications for a collection of app nodes is all the information needed
+ * to build the graph and instantiate the nodes.
  */
 export interface AppNodeSpec {
   readonly id: string;
@@ -35,7 +44,12 @@ export interface AppNodeSpec {
 
 /**
  * The connections from this node to other nodes.
- * @public
+ *
+ * @internal
+ * @remarks
+ *
+ * The app node edges are resolved based on the app node specs, regardless of whether
+ * adjacent nodes are disabled or not. If no parent attachment is present or
  */
 export interface AppNodeEdges {
   readonly attachedTo?: { node: AppNode; input: string };
@@ -44,16 +58,24 @@ export interface AppNodeEdges {
 
 /**
  * The instance of this node in the app graph.
- * @public
+ *
+ * @internal
+ * @remarks
+ *
+ * The app node instance is created when the `factory` function of an extension is called.
+ * Instances will only be present for nodes in the app that are connected to the root
+ * node and not disabled
  */
 export interface AppNodeInstance {
+  /** Returns a sequence of all extension data refs that were output by this instance */
   getDataRefs(): Iterable<ExtensionDataRef<unknown>>;
+  /** Get the output data for a single extension data ref */
   getData<T>(ref: ExtensionDataRef<T>): T | undefined;
 }
 
 /**
  *
- * @public
+ * @internal
  */
 export interface AppNode {
   /** The specification for how this node should be instantiated */
@@ -64,8 +86,16 @@ export interface AppNode {
   readonly instance?: AppNodeInstance;
 }
 
+/**
+ * The app graph containing all nodes of the app.
+ *
+ * @internal
+ */
 export interface AppGraph {
+  /** The root node of the app */
   root: AppNode;
+  /** A map of all nodes in the app by ID, including orphaned or disabled nodes */
   nodes: ReadonlyMap<string /* id */, AppNode>;
+  /** A sequence of all nodes with a parent that is not reachable from the app root node */
   orphans: Iterable<AppNode>;
 }
