@@ -164,13 +164,6 @@ export function resolveAppNodeSpecs(options: {
   for (const overrideParam of parameters) {
     const extensionId = overrideParam.id;
 
-    // Prevent core parametrization
-    if (extensionId === 'core') {
-      throw new Error(
-        "A 'core' extension configuration was detected, but the core extension is not configurable",
-      );
-    }
-
     const existingIndex = configuredExtensions.findIndex(
       e => e.extension.id === extensionId,
     );
