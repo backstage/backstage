@@ -31,7 +31,7 @@ export type Mutable<T> = {
  */
 export interface AppNodeSpec {
   readonly id: string;
-  readonly attachTo?: { id: string; input: string };
+  readonly attachTo: { id: string; input: string };
   readonly extension: Extension<unknown>;
   readonly disabled: boolean;
   readonly config?: unknown;
@@ -70,6 +70,6 @@ export interface AppNode {
 }
 
 export interface AppGraph {
-  rootNodes: Map<string, AppNode>;
-  orphanNodes: Map<string, AppNode>;
+  root: AppNode;
+  orphans: Iterable<AppNode>;
 }
