@@ -44,7 +44,7 @@ export interface AppNodeSpec {
  */
 export interface AppNodeEdges {
   readonly attachedTo?: { node: AppNode; input: string };
-  readonly attachments: Map<string, AppNode[]>;
+  readonly attachments: ReadonlyMap<string, AppNode[]>;
 }
 
 /**
@@ -71,6 +71,6 @@ export interface AppNode {
 
 export interface AppGraph {
   root: AppNode;
-  nodes: Map<string /* id */, AppNode>;
+  nodes: ReadonlyMap<string /* id */, AppNode>;
   orphans: Iterable<AppNode>;
 }
