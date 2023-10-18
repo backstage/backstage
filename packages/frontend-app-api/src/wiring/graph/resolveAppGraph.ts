@@ -87,7 +87,7 @@ class SerializableAppNode implements AppNode {
  * tree with all attachments in the same order as they appear in the input specs array.
  * @internal
  */
-export function buildAppGraph(
+export function resolveAppGraph(
   specs: AppNodeSpec[],
   rootNodeId = 'core',
 ): AppGraph {

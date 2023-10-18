@@ -15,7 +15,7 @@
  */
 
 import { createExtension } from '@backstage/frontend-plugin-api';
-import { buildAppGraph } from './buildAppGraph';
+import { resolveAppGraph } from './resolveAppGraph';
 
 const extBaseConfig = {
   id: 'test',
@@ -34,13 +34,13 @@ const baseSpec = {
 
 describe('buildAppGraph', () => {
   it('should fail to create an empty graph', () => {
-    expect(() => buildAppGraph([])).toThrow(
+    expect(() => resolveAppGraph([])).toThrow(
       "No root node with id 'core' found in app graph",
     );
   });
 
   it('should create a graph with only one node', () => {
-    const graph = buildAppGraph([{ ...baseSpec, id: 'core' }]);
+    const graph = resolveAppGraph([{ ...baseSpec, id: 'core' }]);
     expect(graph.root).toEqual({
       spec: { ...baseSpec, id: 'core' },
       edges: { attachments: new Map() },
@@ -50,7 +50,7 @@ describe('buildAppGraph', () => {
   });
 
   it('should create a graph', () => {
-    const graph = buildAppGraph(
+    const graph = resolveAppGraph(
       [
         { ...baseSpec, id: 'a' },
         { ...baseSpec, id: 'b' },
@@ -116,7 +116,7 @@ describe('buildAppGraph', () => {
   });
 
   it('should create a graph out of order', () => {
-    const graph = buildAppGraph(
+    const graph = resolveAppGraph(
       [
         { ...baseSpec, attachTo: { id: 'b', input: 'x' }, id: 'bx2' },
         { ...baseSpec, id: 'a' },
@@ -163,7 +163,7 @@ describe('buildAppGraph', () => {
 
   it('throws an error when duplicated extensions are detected', () => {
     expect(() =>
-      buildAppGraph([
+      resolveAppGraph([
         { ...baseSpec, id: 'a' },
         { ...baseSpec, id: 'a' },
       ]),
