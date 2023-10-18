@@ -68,12 +68,6 @@ export class NastiRunner {
     templateDir: string;
     templateContentsDir: string;
   }): Promise<void> {
-    console.log('Running nasti');
-    console.log('workspacePath', workspacePath);
-    console.log('values', values);
-    console.log('templateDir', templateDir);
-    console.log('templateContentsDir', templateContentsDir);
-
     const intermediateDir = path.join(workspacePath, 'intermediate');
     const resultDir = path.join(workspacePath, 'result');
 
@@ -93,12 +87,6 @@ export class NastiRunner {
     // the command-exists package returns `true` or throws an error
     const nastiInstalled = await commandExists('nasti').catch(() => false);
     if (nastiInstalled) {
-      console.log(
-        'nasti process -f ',
-        nastiJsonPath,
-        templateContentsDir,
-        intermediateDir,
-      );
       await executeShellCommand({
         command: 'nasti',
         args: [
