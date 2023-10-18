@@ -1,5 +1,4 @@
 ---
-'@backstage/plugin-bazaar': patch
 'example-app': patch
 ---
 
