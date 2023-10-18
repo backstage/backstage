@@ -11,9 +11,11 @@ import { CardConfig as CardConfig_2 } from '@backstage/plugin-home-react';
 import { CardExtensionProps as CardExtensionProps_2 } from '@backstage/plugin-home-react';
 import { CardLayout as CardLayout_2 } from '@backstage/plugin-home-react';
 import { CardSettings as CardSettings_2 } from '@backstage/plugin-home-react';
+import { ClassNameMap } from '@material-ui/styles';
 import { ComponentParts as ComponentParts_2 } from '@backstage/plugin-home-react';
 import { ComponentRenderer as ComponentRenderer_2 } from '@backstage/plugin-home-react';
 import { createCardExtension as createCardExtension_2 } from '@backstage/plugin-home-react';
+import { EntityFilterQuery } from '@backstage/catalog-client';
 import { ErrorApi } from '@backstage/core-plugin-api';
 import { IdentityApi } from '@backstage/core-plugin-api';
 import { JSX as JSX_2 } from 'react';
@@ -99,6 +101,21 @@ export type CustomHomepageGridProps = {
   compactType?: 'vertical' | 'horizontal' | null;
   allowOverlap?: boolean;
   preventCollision?: boolean;
+};
+
+// @public
+export const FeaturedDocs: (props: FeaturedDocsProps) => JSX_2.Element;
+
+// @public
+export type FeaturedDocsProps = {
+  filter: EntityFilterQuery;
+  color?: 'inherit' | 'primary' | 'secondary' | undefined;
+  customStyles?: ClassNameMap<string> | undefined;
+  emptyState?: React_2.ReactNode | undefined;
+  path?: string | undefined;
+  responseLimit?: number | undefined;
+  subLinkText?: string | undefined;
+  title?: React_2.ReactNode | string | undefined;
 };
 
 // @public

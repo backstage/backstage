@@ -15,3 +15,4 @@
  */
 
 export { FeaturedDocs } from './FeaturedDocs';
+export type { FeaturedDocsProps } from './FeaturedDocs';

@@ -20,10 +20,9 @@ import {
   LinkButton,
   EmptyState,
   Link,
-  CodeSnippet,
   InfoCard,
   Progress,
-  WarningPanel,
+  ErrorPanel,
 } from '@backstage/core-components';
 import { catalogApiRef, CatalogApi } from '@backstage/plugin-catalog-react';
 import { useApi } from '@backstage/core-plugin-api';
@@ -32,21 +31,36 @@ import { ClassNameMap } from '@material-ui/styles';
 
 import { makeStyles, Theme, Typography } from '@material-ui/core';
 
-type DocsCardProps = {
+/**
+ * Props customizing the <FeaturedDocs/> component.
+ *
+ * @public
+ */
+export type FeaturedDocsProps = {
+  /** The entity filter used to display only the intended item/s */
   filter: EntityFilterQuery;
+  /** An optional color which can be customized through themes */
   color?: 'inherit' | 'primary' | 'secondary' | undefined;
+  /** An optional ClassNameMap created with makeStyles */
   customStyles?: ClassNameMap<string> | undefined;
+  /** An optional ReactNode for empty states */
   emptyState?: React.ReactNode | undefined;
+  /** An optional path to set for entity entry  */
+  path?: string | undefined;
+  /** An optional limit to set for link destination  */
+  responseLimit?: number | undefined;
+  /** An optional string to customize sublink text */
   subLinkText?: string | undefined;
+  /** An optional string or ReactNode to customize the card title */
   title?: React.ReactNode | string | undefined;
 };
 
-const useStyles = makeStyles<Theme>(() => ({
+const useStyles = makeStyles<Theme>(theme => ({
   docDescription: {
     fontSize: 16,
     fontWeight: 400,
-    marginBottom: '16px',
-    marginTop: '12px',
+    marginBottom: theme.spacing(2),
+    marginTop: theme.spacing(2),
   },
   docSubLink: {
     fontSize: 12,
@@ -62,17 +76,20 @@ const useStyles = makeStyles<Theme>(() => ({
 
 /**
  * A component to display specific Featured Docs.
- * @param {EntityFilterQuery} filter - The entity filter used to display only the intended item/s
- * @param {'inherit' | 'primary' | 'secondary' | undefined} [color] - An optional color which can be customized through themes
- * @param {ClassNameMap<string> | undefined} [customStyles] - An optional ClassNameMap created with makeStyles
- * @param {React.ReactNode | undefined} [emptyState] - An optional ReactNode for empty states
- * @param {string | undefined} [subLinkText] - An optional string to customize sublink text
- * @param {React.ReactNode | string | undefined} [title] - An optional string or ReactNode to customize the card title
  *
  * @public
  */
-export const FeaturedDocs = (props: DocsCardProps) => {
-  const { color, customStyles, emptyState, filter, subLinkText, title } = props;
+export const FeaturedDocs = (props: FeaturedDocsProps) => {
+  const {
+    color,
+    customStyles,
+    emptyState,
+    filter,
+    path,
+    responseLimit,
+    subLinkText,
+    title,
+  } = props;
   const linkText = subLinkText || 'LEARN MORE';
   const defaultStyles = useStyles();
   const styles = customStyles || defaultStyles;
@@ -84,27 +101,15 @@ export const FeaturedDocs = (props: DocsCardProps) => {
   } = useAsync(async () => {
     const response = await catalogApi.getEntities({
       filter: filter,
+      limit: responseLimit || 10,
     });
     return response.items;
   });
 
-  if (loading) {
-    return <Progress />;
-  }
-
-  if (error) {
-    return (
-      <WarningPanel
-        severity="error"
-        title="Could not load available documentation."
-      >
-        <CodeSnippet language="text" text={error.toString()} />
-      </WarningPanel>
-    );
-  }
-
   return (
     <InfoCard variant="gridItem" title={title || 'Featured Docs'}>
+      {loading && <Progress />}
+      {error && <ErrorPanel error={error} />}
       {entities?.length
         ? entities.map(d => (
             <div key={d.metadata.name} data-testid="docs-card-content">
@@ -112,9 +117,12 @@ export const FeaturedDocs = (props: DocsCardProps) => {
                 className={styles.docsTitleLink}
                 data-testid="docs-card-title"
                 color={color || 'primary'}
-                to={`/docs/${d.metadata.namespace || 'default'}/${d.kind}/${
-                  d.metadata.name
-                }/`}
+                to={
+                  path ||
+                  `/docs/${d.metadata.namespace || 'default'}/${d.kind}/${
+                    d.metadata.name
+                  }/`
+                }
               >
                 {d.metadata.title}
               </Link>
@@ -125,9 +133,12 @@ export const FeaturedDocs = (props: DocsCardProps) => {
                 className={styles.docSubLink}
                 data-testid="docs-card-sub-link"
                 color={color || 'primary'}
-                to={`/docs/${d.metadata.namespace || 'default'}/${d.kind}/${
-                  d.metadata.name
-                }/`}
+                to={
+                  path ||
+                  `/docs/${d.metadata.namespace || 'default'}/${d.kind}/${
+                    d.metadata.name
+                  }/`
+                }
               >
                 {linkText}
               </Link>
