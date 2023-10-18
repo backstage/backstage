@@ -16,7 +16,7 @@
 
 import { entityRouteRef } from '@backstage/plugin-catalog-react';
 import { renderInTestApp, TestApiProvider } from '@backstage/test-utils';
-import { screen } from '@testing-library/react';
+import { screen, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import React, { ReactNode, useEffect } from 'react';
 import { scaffolderApiRef } from '@backstage/plugin-scaffolder-react';
@@ -91,9 +91,13 @@ describe('DryRunResultsView', () => {
     expect(screen.queryByText('Foo Link')).not.toBeInTheDocument();
 
     await userEvent.click(screen.getByText('Log'));
-    expect(screen.getByText('Foo Message')).toBeInTheDocument();
+    await waitFor(() => {
+      expect(screen.getByText('Foo Message')).toBeInTheDocument();
+    });
 
     await userEvent.click(screen.getByText('Output'));
-    expect(screen.getByText('Foo Link')).toBeInTheDocument();
+    await waitFor(() => {
+      expect(screen.getByText('Foo Link')).toBeInTheDocument();
+    });
   });
 });

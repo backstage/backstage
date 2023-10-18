@@ -19,7 +19,6 @@ import React, { ReactElement } from 'react';
 // Shadow DOM support for the simple and complete DOM testing utilities
 // https://github.com/testing-library/dom-testing-library/issues/742#issuecomment-674987855
 import { screen } from 'testing-library__dom';
-import { renderToStaticMarkup } from 'react-dom/server';
 import { Route } from 'react-router-dom';
 import { act, render } from '@testing-library/react';
 
@@ -38,6 +37,13 @@ import { TechDocsReaderPage, techdocsPlugin } from '@backstage/plugin-techdocs';
 import { catalogPlugin } from '@backstage/plugin-catalog';
 import { searchApiRef } from '@backstage/plugin-search-react';
 import { scmIntegrationsApiRef } from '@backstage/integration-react';
+
+// Since React 18 react-dom/server eagerly uses TextEncoder, so lazy load and make it available globally first
+if (!global.TextEncoder) {
+  global.TextEncoder = require('util').TextEncoder;
+}
+const { renderToStaticMarkup } =
+  require('react-dom/server') as typeof import('react-dom/server');
 
 const techdocsApi = {
   getTechDocsMetadata: jest.fn(),
