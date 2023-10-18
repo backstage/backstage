@@ -17,30 +17,12 @@
 import {
   AnyExtensionDataMap,
   AnyExtensionInputMap,
-  BackstagePlugin,
   ExtensionDataRef,
 } from '@backstage/frontend-plugin-api';
 import mapValues from 'lodash/mapValues';
 import { AppNode, AppNodeInstance, AppNodeSpec } from './types';
 
 type AppNodeWithInstance = AppNode & { instance: AppNodeInstance };
-
-/** @internal */
-export interface ExtensionInstance {
-  readonly $$type: '@backstage/ExtensionInstance';
-
-  readonly id: string;
-  /**
-   * Get concrete value for the given extension data reference. Returns undefined if no value is available.
-   */
-  getData<T>(ref: ExtensionDataRef<T>): T | undefined;
-  /**
-   * Maps input names to the actual instances given to them.
-   */
-  readonly attachments: Map<string, ExtensionInstance[]>;
-
-  readonly source?: BackstagePlugin;
-}
 
 function resolveInputData(
   dataMap: AnyExtensionDataMap,
@@ -60,7 +42,7 @@ function resolveInputData(
 
 function resolveInputs(
   inputMap: AnyExtensionInputMap,
-  attachments: Map<string, AppNode[]>,
+  attachments: ReadonlyMap<string, AppNode[]>,
 ) {
   const undeclaredAttachments = Array.from(attachments.entries()).filter(
     ([inputName]) => inputMap[inputName] === undefined,
@@ -117,7 +99,7 @@ function resolveInputs(
 /** @internal */
 export function createAppNodeInstance(options: {
   spec: AppNodeSpec;
-  attachments: Map<string, AppNode[]>;
+  attachments: ReadonlyMap<string, AppNode[]>;
 }): AppNodeInstance {
   const { spec, attachments } = options;
   const { id, extension, config, source } = spec;
