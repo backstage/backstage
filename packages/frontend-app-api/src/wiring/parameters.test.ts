@@ -15,7 +15,11 @@
  */
 
 import { ConfigReader } from '@backstage/config';
-import { createPlugin, Extension } from '@backstage/frontend-plugin-api';
+import {
+  createExtensionOverrides,
+  createPlugin,
+  Extension,
+} from '@backstage/frontend-plugin-api';
 import { JsonValue } from '@backstage/types';
 import {
   expandShorthandExtensionParameters,
@@ -23,10 +27,14 @@ import {
   readAppExtensionParameters,
 } from './parameters';
 
-function makeExt(id: string, status: 'disabled' | 'enabled' = 'enabled') {
+function makeExt(
+  id: string,
+  status: 'disabled' | 'enabled' = 'enabled',
+  attachId: string = 'root',
+) {
   return {
     id,
-    at: 'root',
+    attachTo: { id: attachId, input: 'default' },
     disabled: status === 'disabled',
   } as Extension<unknown>;
 }
@@ -35,7 +43,7 @@ describe('mergeExtensionParameters', () => {
   it('should filter out disabled extension instances', () => {
     expect(
       mergeExtensionParameters({
-        sources: [],
+        features: [],
         builtinExtensions: [makeExt('a', 'disabled')],
         parameters: [],
       }),
@@ -47,13 +55,13 @@ describe('mergeExtensionParameters', () => {
     const b = makeExt('b');
     expect(
       mergeExtensionParameters({
-        sources: [],
+        features: [],
         builtinExtensions: [a, b],
         parameters: [],
       }),
     ).toEqual([
-      { extension: a, at: 'root' },
-      { extension: b, at: 'root' },
+      { extension: a, attachTo: { id: 'root', input: 'default' } },
+      { extension: b, attachTo: { id: 'root', input: 'default' } },
     ]);
   });
 
@@ -63,18 +71,22 @@ describe('mergeExtensionParameters', () => {
     const pluginA = createPlugin({ id: 'test', extensions: [a] });
     expect(
       mergeExtensionParameters({
-        sources: [pluginA],
+        features: [pluginA],
         builtinExtensions: [b],
         parameters: [
           {
             id: 'b',
-            at: 'derp',
+            attachTo: { id: 'derp', input: 'default' },
           },
         ],
       }),
     ).toEqual([
-      { extension: a, at: 'root', source: pluginA },
-      { extension: b, at: 'derp' },
+      {
+        extension: a,
+        attachTo: { id: 'root', input: 'default' },
+        source: pluginA,
+      },
+      { extension: b, attachTo: { id: 'derp', input: 'default' } },
     ]);
   });
 
@@ -84,7 +96,7 @@ describe('mergeExtensionParameters', () => {
     const plugin = createPlugin({ id: 'test', extensions: [a, b] });
     expect(
       mergeExtensionParameters({
-        sources: [plugin],
+        features: [plugin],
         builtinExtensions: [],
         parameters: [
           {
@@ -102,8 +114,18 @@ describe('mergeExtensionParameters', () => {
         ],
       }),
     ).toEqual([
-      { extension: a, at: 'root', source: plugin, config: { foo: { bar: 1 } } },
-      { extension: b, at: 'root', source: plugin, config: { foo: { qux: 3 } } },
+      {
+        extension: a,
+        attachTo: { id: 'root', input: 'default' },
+        source: plugin,
+        config: { foo: { bar: 1 } },
+      },
+      {
+        extension: b,
+        attachTo: { id: 'root', input: 'default' },
+        source: plugin,
+        config: { foo: { qux: 3 } },
+      },
     ]);
   });
 
@@ -112,7 +134,7 @@ describe('mergeExtensionParameters', () => {
     const b = makeExt('b', 'disabled');
     expect(
       mergeExtensionParameters({
-        sources: [createPlugin({ id: 'empty', extensions: [] })],
+        features: [createPlugin({ id: 'empty', extensions: [] })],
         builtinExtensions: [a, b],
         parameters: [
           {
@@ -126,9 +148,64 @@ describe('mergeExtensionParameters', () => {
         ],
       }),
     ).toEqual([
-      { extension: b, at: 'root' },
-      { extension: a, at: 'root' },
+      { extension: b, attachTo: { id: 'root', input: 'default' } },
+      { extension: a, attachTo: { id: 'root', input: 'default' } },
     ]);
+  });
+
+  it('should apply extension overrides', () => {
+    const a = makeExt('a');
+    const b = makeExt('b');
+    const plugin = createPlugin({ id: 'test', extensions: [a, b] });
+    const aOverride = makeExt('a', 'enabled', 'other');
+    const bOverride = makeExt('b', 'disabled', 'other');
+    const cOverride = makeExt('c');
+
+    const result = mergeExtensionParameters({
+      features: [
+        plugin,
+        createExtensionOverrides({
+          extensions: [aOverride, bOverride, cOverride],
+        }),
+      ],
+      builtinExtensions: [],
+      parameters: [],
+    });
+
+    expect(result.length).toBe(2);
+    expect(result[0].extension).toBe(aOverride);
+    expect(result[0].attachTo).toEqual({ id: 'other', input: 'default' });
+    expect(result[0].config).toEqual(undefined);
+    expect(result[0].source).toBe(plugin);
+
+    expect(result[1]).toEqual({
+      extension: cOverride,
+      attachTo: { id: 'root', input: 'default' },
+      config: undefined,
+      source: undefined,
+    });
+  });
+
+  it('should use order from configuration when rather than overrides', () => {
+    const a = makeExt('a', 'disabled');
+    const b = makeExt('b', 'disabled');
+    const c = makeExt('c', 'disabled');
+    const aOverride = makeExt('c', 'disabled');
+    const bOverride = makeExt('b', 'disabled');
+    const cOverride = makeExt('a', 'disabled');
+
+    const result = mergeExtensionParameters({
+      features: [
+        createPlugin({ id: 'test', extensions: [a, b, c] }),
+        createExtensionOverrides({
+          extensions: [cOverride, bOverride, aOverride],
+        }),
+      ],
+      builtinExtensions: [],
+      parameters: ['b', 'c', 'a'].map(id => ({ id, disabled: false })),
+    });
+
+    expect(result.map(r => r.extension.id)).toEqual(['b', 'c', 'a']);
   });
 });
 
@@ -315,14 +392,18 @@ describe('expandShorthandExtensionParameters', () => {
     expect(() =>
       run({ 'core.router': { id: 'some.id' } }),
     ).toThrowErrorMatchingInlineSnapshot(
-      `"Invalid extension configuration at app.extensions[1][core.router].id, unknown parameter; expected one of 'at', 'disabled', 'config'"`,
+      `"Invalid extension configuration at app.extensions[1][core.router].id, unknown parameter; expected one of 'attachTo', 'disabled', 'config'"`,
     );
   });
 
-  it('supports object at', () => {
-    expect(run({ 'core.router': { at: 'other.root/inputs' } })).toEqual({
+  it('supports object attachTo', () => {
+    expect(
+      run({
+        'core.router': { attachTo: { id: 'other.root', input: 'inputs' } },
+      }),
+    ).toEqual({
       id: 'core.router',
-      at: 'other.root/inputs',
+      attachTo: { id: 'other.root', input: 'inputs' },
     });
     expect(() =>
       run({
@@ -331,7 +412,7 @@ describe('expandShorthandExtensionParameters', () => {
         },
       }),
     ).toThrowErrorMatchingInlineSnapshot(
-      `"Invalid extension configuration at app.extensions[1][core.router].id, unknown parameter; expected one of 'at', 'disabled', 'config'"`,
+      `"Invalid extension configuration at app.extensions[1][core.router].id, unknown parameter; expected one of 'attachTo', 'disabled', 'config'"`,
     );
   });
 
@@ -369,7 +450,7 @@ describe('expandShorthandExtensionParameters', () => {
     expect(() =>
       run({ 'core.router': { foo: { settings: true } } }),
     ).toThrowErrorMatchingInlineSnapshot(
-      `"Invalid extension configuration at app.extensions[1][core.router].foo, unknown parameter; expected one of 'at', 'disabled', 'config'"`,
+      `"Invalid extension configuration at app.extensions[1][core.router].foo, unknown parameter; expected one of 'attachTo', 'disabled', 'config'"`,
     );
   });
 });

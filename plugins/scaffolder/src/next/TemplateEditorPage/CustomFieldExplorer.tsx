@@ -31,12 +31,10 @@ import CloseIcon from '@material-ui/icons/Close';
 import CodeMirror from '@uiw/react-codemirror';
 import React, { useCallback, useMemo, useState } from 'react';
 import yaml from 'yaml';
-import {
-  NextFieldExtensionOptions,
-  Form,
-} from '@backstage/plugin-scaffolder-react/alpha';
+import { Form } from '@backstage/plugin-scaffolder-react/alpha';
 import { TemplateEditorForm } from './TemplateEditorForm';
 import validator from '@rjsf/validator-ajv8';
+import { FieldExtensionOptions } from '@backstage/plugin-scaffolder-react';
 
 const useStyles = makeStyles(theme => ({
   root: {
@@ -68,7 +66,7 @@ export const CustomFieldExplorer = ({
   customFieldExtensions = [],
   onClose,
 }: {
-  customFieldExtensions?: NextFieldExtensionOptions<any, any>[];
+  customFieldExtensions?: FieldExtensionOptions<any, any>[];
   onClose?: () => void;
 }) => {
   const classes = useStyles();
@@ -102,7 +100,7 @@ export const CustomFieldExplorer = ({
   }, [customFieldExtensions]);
 
   const handleSelectionChange = useCallback(
-    selection => {
+    (selection: FieldExtensionOptions) => {
       setSelectedField(selection);
       setFieldFormState({});
     },
@@ -110,7 +108,7 @@ export const CustomFieldExplorer = ({
   );
 
   const handleFieldConfigChange = useCallback(
-    state => {
+    (state: {}) => {
       setFieldFormState(state);
       // Force TemplateEditorForm to re-render since some fields
       // may not be responsive to ui:option changes
@@ -130,7 +128,9 @@ export const CustomFieldExplorer = ({
             value={selectedField}
             label="Choose Custom Field Extension"
             labelId="select-field-label"
-            onChange={e => handleSelectionChange(e.target.value)}
+            onChange={e =>
+              handleSelectionChange(e.target.value as FieldExtensionOptions)
+            }
           >
             {fieldOptions.map((option, idx) => (
               <MenuItem key={idx} value={option as any}>

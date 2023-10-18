@@ -13,6 +13,7 @@ yarn.lock                                         @backstage/maintainers @backst
 /docs/features/techdocs                           @backstage/techdocs-maintainers
 /docs/plugins/integrating-search-into-plugins.md  @backstage/discoverability-maintainers
 /packages/cli/src/commands/onboard                @backstage/sharks
+/packages/backend-openapi-utils                   @backstage/maintainers @backstage/reviewers @backstage/openapi-tooling-maintainers
 /packages/techdocs-cli                            @backstage/techdocs-maintainers
 /packages/techdocs-cli-embedded-app               @backstage/techdocs-maintainers
 /plugins/adr                                      @backstage/maintainers @backstage/reviewers @kuangp
@@ -69,6 +70,8 @@ yarn.lock                                         @backstage/maintainers @backst
 /plugins/playlist-*                               @backstage/maintainers @backstage/reviewers @kuangp
 /plugins/rollbar                                  @backstage/maintainers @backstage/reviewers @andrewthauer
 /plugins/rollbar-backend                          @backstage/maintainers @backstage/reviewers @andrewthauer
+/plugins/scaffolder                               @backstage/maintainers @backstage/reviewers @backstage/scaffolder-maintainers
+/plugins/scaffolder-*                             @backstage/maintainers @backstage/reviewers @backstage/scaffolder-maintainers
 /plugins/search                                   @backstage/discoverability-maintainers
 /plugins/search-*                                 @backstage/discoverability-maintainers
 /plugins/sonarqube                                @backstage/maintainers @backstage/reviewers @backstage/sda-se-reviewers

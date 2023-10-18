@@ -15,42 +15,39 @@
  */
 
 import { getVoidLogger } from '@backstage/backend-common';
-import mockFs from 'mock-fs';
-import os from 'os';
 import { Writable } from 'stream';
 import { createDebugLogAction } from './log';
 import { join } from 'path';
 import yaml from 'yaml';
 import { examples } from './log.examples';
+import { createMockDirectory } from '@backstage/backend-test-utils';
 
 describe('debug:log examples', () => {
   const logStream = {
     write: jest.fn(),
   } as jest.Mocked<Partial<Writable>> as jest.Mocked<Writable>;
 
-  const mockTmpDir = os.tmpdir();
+  const mockDir = createMockDirectory();
+  const workspacePath = mockDir.resolve('workspace');
+
   const mockContext = {
     input: {},
     baseUrl: 'somebase',
-    workspacePath: mockTmpDir,
+    workspacePath,
     logger: getVoidLogger(),
     logStream,
     output: jest.fn(),
-    createTemporaryDirectory: jest.fn().mockResolvedValue(mockTmpDir),
+    createTemporaryDirectory: jest.fn(),
   };
 
   const action = createDebugLogAction();
 
   beforeEach(() => {
-    mockFs({
-      [`${mockContext.workspacePath}/README.md`]: '',
-      [`${mockContext.workspacePath}/a-directory/index.md`]: '',
+    mockDir.setContent({
+      [`${workspacePath}/README.md`]: '',
+      [`${workspacePath}/a-directory/index.md`]: '',
     });
     jest.resetAllMocks();
-  });
-
-  afterEach(() => {
-    mockFs.restore();
   });
 
   it('should log message', async () => {

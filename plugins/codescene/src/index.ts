@@ -18,11 +18,4 @@ export {
   CodeScenePage,
   CodeSceneProjectDetailsPage,
 } from './plugin';
-import CodeSceneIconComponent from './assets/codescene.icon.svg';
-import { IconComponent } from '@backstage/core-plugin-api';
-
-/**
- * @public
- */
-export const CodeSceneIcon: IconComponent =
-  CodeSceneIconComponent as IconComponent;
+export { CodeSceneIcon } from './CodeSceneIcon';

@@ -154,6 +154,10 @@ playlist:
 
 ![Create New Playlist example](./docs/playlist-create-new.png)
 
+### Duplicate Playlist Error
+
+![Duplicate Playlist Error example](./docs/playlist-duplicate-error.png)
+
 ### Edit Existing Playlist
 
 ![Edit Existing Playlist example](./docs/playlist-edit-existing.png)
@@ -165,6 +169,10 @@ playlist:
 ### Add to Playlist from Entity
 
 ![Add to Playlist from Entity example](./docs/playlist-add-from-entity.png)
+
+### Delete Playlist
+
+![Delete Playlist example](./docs/playlist-delete.png)
 
 ## Links
 

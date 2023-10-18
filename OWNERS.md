@@ -22,12 +22,14 @@ Team: @backstage/catalog-maintainers
 
 Scope: The catalog plugin and catalog model
 
-| Name           | Organization | Team      | GitHub                                   | Discord          |
-| -------------- | ------------ | --------- | ---------------------------------------- | ---------------- |
-| Rickard Dybeck | Spotify      | Chipmunks | [alde](http://github.com/alde)           | rdybeck#8083     |
-| Mike Blockley  | Spotify      | Chipmunks | [mikeyhc](http://github.com/mikeyhc)     | mikey-spot#5363  |
-| Elon Jefferson | Spotify      | Chipmunks | [Edje-C](http://github.com/Edje-C)       | elon-spotty#6086 |
-| Nurit Izrailov | Spotify      | Chipmunks | [nuritizra](http://github.com/nuritizra) | -                |
+| Name            | Organization | Team      | GitHub                                    | Discord             |
+| --------------- | ------------ | --------- | ----------------------------------------- | ------------------- |
+| Rickard Dybeck  | Spotify      | Chipmunks | [alde](https://github.com/alde)           | `rdybeck#8083`      |
+| Mike Blockley   | Spotify      | Chipmunks | [mikeyhc](https://github.com/mikeyhc)     | `mikey-spot#5363`   |
+| Elon Jefferson  | Spotify      | Chipmunks | [Edje-C](https://github.com/Edje-C)       | `elon-spotty#6086 ` |
+| Nurit Izrailov  | Spotify      | Chipmunks | [nuritizra](https://github.com/nuritizra) | -                   |
+| Hunter Dougless | Spotify      | Chipmunks | [hntrdglss](https://github.com/hntrdglss) | `hntrdglss#1849`    |
+| Seve Kim        | Spotify      | Chipmunks | [sevedkim](https://github.com/sevedkim)   | `seve#9951`         |
 
 ### Discoverability
 
@@ -73,16 +75,18 @@ Team: @backstage/permission-maintainers
 
 Scope: The Permission Framework and plugins integrating with the permission framework
 
-| Name                 | Organization | Team            | GitHub                                         | Discord          |
-| -------------------- | ------------ | --------------- | ---------------------------------------------- | ---------------- |
-| Ainhoa Larumbe       | Spotify      | Imaginary Goats | [ainhoaL](http://github.com/ainhoaL)           | ainhoa#8085      |
-| Claire Casey         | Spotify      | Imaginary Goats | [clairelcasey](http://github.com/clairelcasey) | clairecasey#2710 |
-| Eric Peterson        | Spotify      | Imaginary Goats | [iamEAP](http://github.com/iamEAP)             | iamEAP#3058      |
-| Harry Hogg           | Spotify      | Imaginary Goats | [HHogg](http://github.com/HHogg)               | simplex#3451     |
-| Joon Park            | Spotify      | Imaginary Goats | [Joonpark13](http://github.com/Joonpark13)     | Sixpool#5060     |
-| Mike Lewis           | Spotify      | Imaginary Goats | [mtlewis](http://github.com/mtlewis)           | mtlewis#3658     |
-| Tim Hansen           | Spotify      | Imaginary Goats | [timbonicus](http://github.com/timbonicus)     | timbonicus#6871  |
-| Vincenzo Scamporlino | Spotify      | Imaginary Goats | [vinzscam](http://github.com/vinzscam)         | vinzscam#6944    |
+| Name                 | Organization | Team            | GitHub                                          | Discord          |
+| -------------------- | ------------ | --------------- | ----------------------------------------------- | ---------------- |
+| Ainhoa Larumbe       | Spotify      | Imaginary Goats | [ainhoaL](http://github.com/ainhoaL)            | ainhoa#8085      |
+| Aramis Sennyey       | Spotify      | Imaginary Goats | [sennyeya](https://github.com/sennyeya)         | Aramis#7984      |
+| Claire Casey         | Spotify      | Imaginary Goats | [clairelcasey](http://github.com/clairelcasey)  | clairecasey#2710 |
+| Eric Peterson        | Spotify      | Imaginary Goats | [iamEAP](http://github.com/iamEAP)              | iamEAP#3058      |
+| Harry Hogg           | Spotify      | Imaginary Goats | [HHogg](http://github.com/HHogg)                | simplex#3451     |
+| Joon Park            | Spotify      | Imaginary Goats | [Joonpark13](http://github.com/Joonpark13)      | Sixpool#5060     |
+| Lynette Lopez        | Spotify      | Imaginary Goats | [lynettelopez](https://github.com/lynettelopez) | lynettelopez     |
+| Mike Lewis           | Spotify      | Imaginary Goats | [mtlewis](http://github.com/mtlewis)            | mtlewis#3658     |
+| Tim Hansen           | Spotify      | Imaginary Goats | [timbonicus](http://github.com/timbonicus)      | timbonicus#6871  |
+| Vincenzo Scamporlino | Spotify      | Imaginary Goats | [vinzscam](http://github.com/vinzscam)          | vinzscam#6944    |
 
 ### TechDocs
 
@@ -115,6 +119,17 @@ Scope: Tooling for frontend and backend schema-first OpenAPI development.
 | Name           | Organization | GitHub                                  | Discord       |
 | -------------- | ------------ | --------------------------------------- | ------------- |
 | Aramis Sennyey | Spotify      | [sennyeya](https://github.com/sennyeya) | `Aramis#7984` |
+
+### Scaffolder
+
+Team: @backstage/scaffolder-maintainers
+
+Scope: The Scaffolder frontend and backend plugins, and related tooling.
+
+| Name                | Organization   | GitHub                                | Discord          |
+| ------------------- | -------------- | ------------------------------------- | ---------------- |
+| Bogdan Nechyporenko | Bol.com        | [acierto](https://github.com/acierto) | `bogdan_haarlem` |
+| Paul Cowan          | frontendrescue | [dagda1](https://github.com/dadga1)   | `dagda1`         |
 
 ## Sponsors
 

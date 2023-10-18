@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 import { JsonObject } from '@backstage/types';
-import { NextCustomFieldValidator } from '../../extensions';
+import { CustomFieldValidator } from '../../../extensions';
 import { createAsyncValidators } from './createAsyncValidators';
 
 describe('createAsyncValidators', () => {
@@ -158,16 +158,13 @@ describe('createAsyncValidators', () => {
       },
     };
 
-    const NameField: NextCustomFieldValidator<string> = (
-      value,
-      { addError },
-    ) => {
+    const NameField: CustomFieldValidator<string> = (value, { addError }) => {
       if (!value) {
         addError('something is broken here!');
       }
     };
 
-    const AddressField: NextCustomFieldValidator<{
+    const AddressField: CustomFieldValidator<{
       street?: string;
       postcode?: string;
     }> = (value, { addError }) => {
@@ -183,8 +180,8 @@ describe('createAsyncValidators', () => {
     const validate = createAsyncValidators(
       schema,
       {
-        NameField: NameField as NextCustomFieldValidator<unknown>,
-        AddressField: AddressField as NextCustomFieldValidator<unknown>,
+        NameField: NameField as CustomFieldValidator<unknown>,
+        AddressField: AddressField as CustomFieldValidator<unknown>,
       },
       {
         apiHolder: { get: jest.fn() },
@@ -298,7 +295,7 @@ describe('createAsyncValidators', () => {
       },
     };
 
-    const AddressField: NextCustomFieldValidator<{
+    const AddressField: CustomFieldValidator<{
       street?: string;
       postcode?: string;
     }> = (value, { addError }) => {
@@ -311,18 +308,15 @@ describe('createAsyncValidators', () => {
       }
     };
 
-    const NameField: NextCustomFieldValidator<string> = (
-      value,
-      { addError },
-    ) => {
+    const NameField: CustomFieldValidator<string> = (value, { addError }) => {
       if (!value) {
         addError('something is broken here!');
       }
     };
 
     const validators = {
-      AddressField: AddressField as NextCustomFieldValidator<unknown>,
-      NameField: NameField as NextCustomFieldValidator<unknown>,
+      AddressField: AddressField as CustomFieldValidator<unknown>,
+      NameField: NameField as CustomFieldValidator<unknown>,
     };
 
     const validate = createAsyncValidators(schema, validators, {

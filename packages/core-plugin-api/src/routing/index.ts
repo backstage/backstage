@@ -16,6 +16,7 @@
 
 export type {
   AnyParams,
+  AnyRouteRefParams,
   RouteRef,
   SubRouteRef,
   ExternalRouteRef,

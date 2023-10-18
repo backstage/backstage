@@ -484,30 +484,29 @@ of the build system, including the bundling, tests, builds, and type checking.
 Loaders are always selected based on the file extension. The following is a list
 of all supported file extensions:
 
-| Extension   | Exports         | Purpose                                                                                |
-| ----------- | --------------- | -------------------------------------------------------------------------------------- |
-| `.ts`       | Script Module   | TypeScript                                                                             |
-| `.tsx`      | Script Module   | TypeScript and XML                                                                     |
-| `.js`       | Script Module   | JavaScript                                                                             |
-| `.jsx`      | Script Module   | JavaScript and XML                                                                     |
-| `.mjs`      | Script Module   | ECMAScript Module                                                                      |
-| `.cjs`      | Script Module   | CommonJS Module                                                                        |
-| `.json`     | JSON Data       | JSON Data                                                                              |
-| `.yml`      | JSON Data       | YAML Data                                                                              |
-| `.yaml`     | JSON Data       | YAML Data                                                                              |
-| `.css`      | classes         | Style sheet                                                                            |
-| `.eot`      | URL Path        | Font                                                                                   |
-| `.ttf`      | URL Path        | Font                                                                                   |
-| `.woff2`    | URL Path        | Font                                                                                   |
-| `.woff`     | URL Path        | Font                                                                                   |
-| `.bmp`      | URL Path        | Image                                                                                  |
-| `.gif`      | URL Path        | Image                                                                                  |
-| `.jpeg`     | URL Path        | Image                                                                                  |
-| `.jpg`      | URL Path        | Image                                                                                  |
-| `.png`      | URL Path        | Image                                                                                  |
-| `.svg`      | URL Path        | Image                                                                                  |
-| `.md`       | URL Path        | Markdown File                                                                          |
-| `.icon.svg` | React Component | SVG converted into a [Material UI SvgIcon](https://mui.com/material-ui/icons/#svgicon) |
+| Extension | Exports       | Purpose            |
+| --------- | ------------- | ------------------ |
+| `.ts`     | Script Module | TypeScript         |
+| `.tsx`    | Script Module | TypeScript and XML |
+| `.js`     | Script Module | JavaScript         |
+| `.jsx`    | Script Module | JavaScript and XML |
+| `.mjs`    | Script Module | ECMAScript Module  |
+| `.cjs`    | Script Module | CommonJS Module    |
+| `.json`   | JSON Data     | JSON Data          |
+| `.yml`    | JSON Data     | YAML Data          |
+| `.yaml`   | JSON Data     | YAML Data          |
+| `.css`    | classes       | Style sheet        |
+| `.eot`    | URL Path      | Font               |
+| `.ttf`    | URL Path      | Font               |
+| `.woff2`  | URL Path      | Font               |
+| `.woff`   | URL Path      | Font               |
+| `.bmp`    | URL Path      | Image              |
+| `.gif`    | URL Path      | Image              |
+| `.jpeg`   | URL Path      | Image              |
+| `.jpg`    | URL Path      | Image              |
+| `.png`    | URL Path      | Image              |
+| `.svg`    | URL Path      | Image              |
+| `.md`     | URL Path      | Markdown File      |
 
 ## Jest Configuration
 

@@ -75,9 +75,11 @@ export class KubernetesBackendClient implements KubernetesApi {
     return this.handleResponse(response);
   }
 
-  private async getCluster(
-    clusterName: string,
-  ): Promise<{ name: string; authProvider: string }> {
+  public async getCluster(clusterName: string): Promise<{
+    name: string;
+    authProvider: string;
+    oidcTokenProvider?: string;
+  }> {
     const cluster = await this.getClusters().then(clusters =>
       clusters.find(c => c.name === clusterName),
     );
@@ -140,23 +142,62 @@ export class KubernetesBackendClient implements KubernetesApi {
     path: string;
     init?: RequestInit;
   }): Promise<Response> {
-    const { authProvider } = await this.getCluster(options.clusterName);
-    const { token: k8sToken } = await this.getCredentials(authProvider);
+    const { authProvider, oidcTokenProvider } = await this.getCluster(
+      options.clusterName,
+    );
+    const kubernetesCredentials = await this.getCredentials(authProvider);
     const url = `${await this.discoveryApi.getBaseUrl('kubernetes')}/proxy${
       options.path
     }`;
     const identityResponse = await this.identityApi.getCredentials();
-    const headers = {
+    const headers = KubernetesBackendClient.getKubernetesHeaders(
+      options,
+      kubernetesCredentials?.token,
+      identityResponse,
+      authProvider,
+      oidcTokenProvider,
+    );
+    return await fetch(url, { ...options.init, headers });
+  }
+
+  private static getKubernetesHeaders(
+    options: {
+      clusterName: string;
+      path: string;
+      init?: RequestInit;
+    },
+    k8sToken: string | undefined,
+    identityResponse: { token?: string },
+    authProvider: string,
+    oidcTokenProvider: string | undefined,
+  ) {
+    const kubernetesAuthHeader =
+      KubernetesBackendClient.getKubernetesAuthHeaderByAuthProvider(
+        authProvider,
+        oidcTokenProvider,
+      );
+    return {
       ...options.init?.headers,
       [`Backstage-Kubernetes-Cluster`]: options.clusterName,
       ...(k8sToken && {
-        [`Backstage-Kubernetes-Authorization`]: `Bearer ${k8sToken}`,
+        [kubernetesAuthHeader]: k8sToken,
       }),
       ...(identityResponse.token && {
         Authorization: `Bearer ${identityResponse.token}`,
       }),
     };
+  }
 
-    return await fetch(url, { ...options.init, headers });
+  private static getKubernetesAuthHeaderByAuthProvider(
+    authProvider: string,
+    oidcTokenProvider: string | undefined,
+  ): string {
+    let header: string = 'Backstage-Kubernetes-Authorization';
+
+    header = header.concat('-', authProvider);
+
+    if (oidcTokenProvider) header = header.concat('-', oidcTokenProvider);
+
+    return header;
   }
 }

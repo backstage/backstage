@@ -19,8 +19,8 @@ import {
   createExtension,
   coreExtensionData,
   createExtensionInput,
-  useRouteRef,
   NavTarget,
+  useRouteRef,
 } from '@backstage/frontend-plugin-api';
 import { makeStyles } from '@material-ui/core';
 import {
@@ -73,7 +73,7 @@ const SidebarNavItem = (props: NavTarget) => {
 
 export const CoreNav = createExtension({
   id: 'core.nav',
-  at: 'core.layout/nav',
+  attachTo: { id: 'core.layout', input: 'nav' },
   inputs: {
     items: createExtensionInput({
       target: coreExtensionData.navTarget,

@@ -13,7 +13,6 @@ import { JsonObject } from '@backstage/types';
 import { JSX as JSX_2 } from 'react';
 import { default as React_2 } from 'react';
 import { ReactNode } from 'react';
-import { RouteRef } from '@backstage/core-plugin-api';
 import { z } from 'zod';
 import { ZodSchema } from 'zod';
 import { ZodTypeDef } from 'zod';
@@ -40,13 +39,37 @@ export type AnyExtensionInputMap = {
 };
 
 // @public (undocumented)
-export interface BackstagePlugin {
+export type AnyExternalRoutes = {
+  [name in string]: ExternalRouteRef;
+};
+
+// @public
+export type AnyRouteRefParams =
+  | {
+      [param in string]: string;
+    }
+  | undefined;
+
+// @public (undocumented)
+export type AnyRoutes = {
+  [name in string]: RouteRef;
+};
+
+// @public (undocumented)
+export interface BackstagePlugin<
+  Routes extends AnyRoutes = AnyRoutes,
+  ExternalRoutes extends AnyExternalRoutes = AnyExternalRoutes,
+> {
   // (undocumented)
   $$type: '@backstage/BackstagePlugin';
   // (undocumented)
   extensions: Extension<unknown>[];
   // (undocumented)
+  externalRoutes: ExternalRoutes;
+  // (undocumented)
   id: string;
+  // (undocumented)
+  routes: Routes;
 }
 
 // @public (undocumented)
@@ -70,7 +93,7 @@ export const coreExtensionData: {
   reactElement: ConfigurableExtensionDataRef<JSX_2.Element, {}>;
   routePath: ConfigurableExtensionDataRef<string, {}>;
   apiFactory: ConfigurableExtensionDataRef<AnyApiFactory, {}>;
-  routeRef: ConfigurableExtensionDataRef<RouteRef, {}>;
+  routeRef: ConfigurableExtensionDataRef<RouteRef<AnyRouteRefParams>, {}>;
   navTarget: ConfigurableExtensionDataRef<NavTarget, {}>;
   theme: ConfigurableExtensionDataRef<AppTheme, {}>;
 };
@@ -136,7 +159,10 @@ export interface CreateExtensionOptions<
   TConfig,
 > {
   // (undocumented)
-  at: string;
+  attachTo: {
+    id: string;
+    input: string;
+  };
   // (undocumented)
   configSchema?: PortableSchema<TConfig>;
   // (undocumented)
@@ -156,10 +182,40 @@ export interface CreateExtensionOptions<
   output: TOutput;
 }
 
+// @public (undocumented)
+export function createExtensionOverrides(
+  options: ExtensionOverridesOptions,
+): ExtensionOverrides;
+
+// @public
+export function createExternalRouteRef<
+  TParams extends
+    | {
+        [param in TParamKeys]: string;
+      }
+    | undefined = undefined,
+  TOptional extends boolean = false,
+  TParamKeys extends string = string,
+>(options?: {
+  readonly params?: string extends TParamKeys
+    ? (keyof TParams)[]
+    : TParamKeys[];
+  optional?: TOptional;
+}): ExternalRouteRef<
+  keyof TParams extends never
+    ? undefined
+    : string extends TParamKeys
+    ? TParams
+    : {
+        [param in TParamKeys]: string;
+      },
+  TOptional
+>;
+
 // @public
 export function createNavItemExtension(options: {
   id: string;
-  routeRef: RouteRef;
+  routeRef: RouteRef<undefined>;
   title: string;
   icon: IconComponent;
 }): Extension<{
@@ -182,7 +238,10 @@ export function createPageExtension<
       }
   ) & {
     id: string;
-    at?: string;
+    attachTo?: {
+      id: string;
+      input: string;
+    };
     disabled?: boolean;
     inputs?: TInputs;
     routeRef?: RouteRef;
@@ -194,12 +253,46 @@ export function createPageExtension<
 ): Extension<TConfig>;
 
 // @public (undocumented)
-export function createPlugin(options: PluginOptions): BackstagePlugin;
+export function createPlugin<
+  Routes extends AnyRoutes = {},
+  ExternalRoutes extends AnyExternalRoutes = {},
+>(
+  options: PluginOptions<Routes, ExternalRoutes>,
+): BackstagePlugin<Routes, ExternalRoutes>;
+
+// @public
+export function createRouteRef<
+  TParams extends
+    | {
+        [param in TParamKeys]: string;
+      }
+    | undefined = undefined,
+  TParamKeys extends string = string,
+>(config?: {
+  readonly params: string extends TParamKeys ? (keyof TParams)[] : TParamKeys[];
+}): RouteRef<
+  keyof TParams extends never
+    ? undefined
+    : string extends TParamKeys
+    ? TParams
+    : {
+        [param in TParamKeys]: string;
+      }
+>;
 
 // @public (undocumented)
 export function createSchemaFromZod<TOutput, TInput>(
   schemaCreator: (zImpl: typeof z) => ZodSchema<TOutput, ZodTypeDef, TInput>,
 ): PortableSchema<TOutput>;
+
+// @public
+export function createSubRouteRef<
+  Path extends string,
+  ParentParams extends AnyRouteRefParams = never,
+>(config: {
+  path: Path;
+  parent: RouteRef<ParentParams>;
+}): MakeSubRouteRef<PathParams<Path>, ParentParams>;
 
 // @public (undocumented)
 export function createThemeExtension(theme: AppTheme): Extension<never>;
@@ -209,7 +302,10 @@ export interface Extension<TConfig> {
   // (undocumented)
   $$type: '@backstage/Extension';
   // (undocumented)
-  at: string;
+  attachTo: {
+    id: string;
+    input: string;
+  };
   // (undocumented)
   configSchema?: PortableSchema<TConfig>;
   // (undocumented)
@@ -305,18 +401,50 @@ export type ExtensionInputValues<
 };
 
 // @public (undocumented)
+export interface ExtensionOverrides {
+  // (undocumented)
+  $$type: '@backstage/ExtensionOverrides';
+}
+
+// @public (undocumented)
+export interface ExtensionOverridesOptions {
+  // (undocumented)
+  extensions: Extension<unknown>[];
+}
+
+// @public
+export interface ExternalRouteRef<
+  TParams extends AnyRouteRefParams = AnyRouteRefParams,
+  TOptional extends boolean = boolean,
+> {
+  // (undocumented)
+  readonly $$type: '@backstage/ExternalRouteRef';
+  // (undocumented)
+  readonly optional: TOptional;
+  // (undocumented)
+  readonly T: TParams;
+}
+
+// @public (undocumented)
 export type NavTarget = {
   title: string;
   icon: IconComponent;
-  routeRef: RouteRef<{}>;
+  routeRef: RouteRef<undefined>;
 };
 
 // @public (undocumented)
-export interface PluginOptions {
+export interface PluginOptions<
+  Routes extends AnyRoutes,
+  ExternalRoutes extends AnyExternalRoutes,
+> {
   // (undocumented)
   extensions?: Extension<unknown>[];
   // (undocumented)
+  externalRoutes?: ExternalRoutes;
+  // (undocumented)
   id: string;
+  // (undocumented)
+  routes?: Routes;
 }
 
 // @public (undocumented)
@@ -325,6 +453,50 @@ export type PortableSchema<TOutput> = {
   schema: JsonObject;
 };
 
-// @public (undocumented)
-export function useRouteRef(routeRef: RouteRef<any>): () => string;
+// @public
+export type RouteFunc<TParams extends AnyRouteRefParams> = (
+  ...[params]: TParams extends undefined
+    ? readonly []
+    : readonly [params: TParams]
+) => string;
+
+// @public
+export interface RouteRef<
+  TParams extends AnyRouteRefParams = AnyRouteRefParams,
+> {
+  // (undocumented)
+  readonly $$type: '@backstage/RouteRef';
+  // (undocumented)
+  readonly T: TParams;
+}
+
+// @public
+export interface SubRouteRef<
+  TParams extends AnyRouteRefParams = AnyRouteRefParams,
+> {
+  // (undocumented)
+  readonly $$type: '@backstage/SubRouteRef';
+  // (undocumented)
+  readonly path: string;
+  // (undocumented)
+  readonly T: TParams;
+}
+
+// @public
+export function useRouteRef<
+  TOptional extends boolean,
+  TParams extends AnyRouteRefParams,
+>(
+  routeRef: ExternalRouteRef<TParams, TOptional>,
+): TParams extends true ? RouteFunc<TParams> | undefined : RouteFunc<TParams>;
+
+// @public
+export function useRouteRef<TParams extends AnyRouteRefParams>(
+  routeRef: RouteRef<TParams> | SubRouteRef<TParams>,
+): RouteFunc<TParams>;
+
+// @public
+export function useRouteRefParams<Params extends AnyRouteRefParams>(
+  _routeRef: RouteRef<Params> | SubRouteRef<Params>,
+): Params;
 ```

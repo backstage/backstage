@@ -1,7 +1,7 @@
 {
   "name": "@backstage/test-utils",
   "description": "Utilities to test Backstage plugins and apps.",
-  "version": "1.4.4-next.1",
+  "version": "1.4.4",
   "publishConfig": {
     "access": "public"
   },
@@ -68,7 +68,7 @@
   },
   "devDependencies": {
     "@backstage/cli": "workspace:^",
-    "@testing-library/jest-dom": "^5.10.1",
+    "@testing-library/jest-dom": "^6.0.0",
     "msw": "^1.0.0"
   },
   "files": [

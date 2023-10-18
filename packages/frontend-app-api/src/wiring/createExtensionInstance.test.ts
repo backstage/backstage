@@ -28,7 +28,7 @@ const inputMirrorDataRef = createExtensionDataRef<unknown>('mirror');
 
 const simpleExtension = createExtension({
   id: 'core.test',
-  at: 'ignored',
+  attachTo: { id: 'ignored', input: 'ignored' },
   output: {
     test: testDataRef,
     other: otherDataRef.optional(),
@@ -101,7 +101,7 @@ describe('createExtensionInstance', () => {
       config: undefined,
       extension: createExtension({
         id: 'core.test',
-        at: 'ignored',
+        attachTo: { id: 'ignored', input: 'ignored' },
         inputs: {
           optionalSingletonPresent: createExtensionInput(
             {
@@ -166,7 +166,7 @@ describe('createExtensionInstance', () => {
         config: { other: 'not-a-number' },
         extension: createExtension({
           id: 'core.test',
-          at: 'ignored',
+          attachTo: { id: 'ignored', input: 'ignored' },
           output: {},
           factory() {
             const error = new Error('NOPE');
@@ -188,7 +188,7 @@ describe('createExtensionInstance', () => {
         config: undefined,
         extension: createExtension({
           id: 'core.test',
-          at: 'ignored',
+          attachTo: { id: 'ignored', input: 'ignored' },
           output: {
             test1: testDataRef,
             test2: testDataRef,
@@ -211,7 +211,7 @@ describe('createExtensionInstance', () => {
         config: undefined,
         extension: createExtension({
           id: 'core.test',
-          at: 'ignored',
+          attachTo: { id: 'ignored', input: 'ignored' },
           output: {
             test: testDataRef,
           },
@@ -232,7 +232,7 @@ describe('createExtensionInstance', () => {
         config: undefined,
         extension: createExtension({
           id: 'core.test',
-          at: 'ignored',
+          attachTo: { id: 'ignored', input: 'ignored' },
           inputs: {
             singleton: createExtensionInput(
               {
@@ -247,6 +247,92 @@ describe('createExtensionInstance', () => {
       }),
     ).toThrow(
       "Failed to instantiate extension 'core.test', input 'singleton' is required but was not received",
+    );
+  });
+
+  it('should refuse to create an instance with undeclared inputs', () => {
+    expect(() =>
+      createExtensionInstance({
+        attachments: new Map([
+          [
+            'declared',
+            [
+              createExtensionInstance({
+                attachments: new Map(),
+                config: { output: 'many1' },
+                extension: simpleExtension,
+              }),
+            ],
+          ],
+          [
+            'undeclared',
+            [
+              createExtensionInstance({
+                attachments: new Map(),
+                config: { output: 'many1' },
+                extension: simpleExtension,
+              }),
+            ],
+          ],
+        ]),
+        config: undefined,
+        extension: createExtension({
+          id: 'core.test',
+          attachTo: { id: 'ignored', input: 'ignored' },
+          inputs: {
+            declared: createExtensionInput({
+              test: testDataRef,
+            }),
+          },
+          output: {},
+          factory() {},
+        }),
+      }),
+    ).toThrow(
+      "Failed to instantiate extension 'core.test', received undeclared input 'undeclared' from extension 'core.test'",
+    );
+  });
+
+  it('should refuse to create an instance with multiple undeclared inputs', () => {
+    expect(() =>
+      createExtensionInstance({
+        attachments: new Map([
+          [
+            'undeclared1',
+            [
+              createExtensionInstance({
+                attachments: new Map(),
+                config: { output: 'many1' },
+                extension: simpleExtension,
+              }),
+            ],
+          ],
+          [
+            'undeclared2',
+            [
+              createExtensionInstance({
+                attachments: new Map(),
+                config: { output: 'many1' },
+                extension: simpleExtension,
+              }),
+              createExtensionInstance({
+                attachments: new Map(),
+                config: { output: 'many1' },
+                extension: simpleExtension,
+              }),
+            ],
+          ],
+        ]),
+        config: undefined,
+        extension: createExtension({
+          id: 'core.test',
+          attachTo: { id: 'ignored', input: 'ignored' },
+          output: {},
+          factory() {},
+        }),
+      }),
+    ).toThrow(
+      "Failed to instantiate extension 'core.test', received undeclared inputs 'undeclared1' from extension 'core.test' and 'undeclared2' from extensions 'core.test', 'core.test'",
     );
   });
 
@@ -273,7 +359,7 @@ describe('createExtensionInstance', () => {
         config: undefined,
         extension: createExtension({
           id: 'core.test',
-          at: 'ignored',
+          attachTo: { id: 'ignored', input: 'ignored' },
           inputs: {
             singleton: createExtensionInput(
               {
@@ -314,7 +400,7 @@ describe('createExtensionInstance', () => {
         config: undefined,
         extension: createExtension({
           id: 'core.test',
-          at: 'ignored',
+          attachTo: { id: 'ignored', input: 'ignored' },
           inputs: {
             singleton: createExtensionInput(
               {
@@ -350,7 +436,7 @@ describe('createExtensionInstance', () => {
         config: undefined,
         extension: createExtension({
           id: 'core.test',
-          at: 'ignored',
+          attachTo: { id: 'ignored', input: 'ignored' },
           inputs: {
             singleton: createExtensionInput(
               {

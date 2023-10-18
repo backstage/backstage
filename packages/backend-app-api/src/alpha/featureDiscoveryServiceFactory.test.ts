@@ -14,28 +14,31 @@
  * limitations under the License.
  */
 
-import mockFs from 'mock-fs';
-import { resolve as resolvePath, dirname } from 'path';
-import { startTestBackend, mockServices } from '@backstage/backend-test-utils';
+import {
+  startTestBackend,
+  mockServices,
+  createMockDirectory,
+} from '@backstage/backend-test-utils';
 import { featureDiscoveryServiceFactory } from './featureDiscoveryServiceFactory';
 
-const rootDir = dirname(process.argv[1]);
+const mockDir = createMockDirectory();
+process.argv[1] = mockDir.path;
+
+const pluginApiPath = require.resolve('@backstage/backend-plugin-api');
 
 describe('featureDiscoveryServiceFactory', () => {
   beforeEach(() => {
-    mockFs({
-      [rootDir]: {
-        'package.json': JSON.stringify({
-          name: 'example-app',
-          dependencies: {
-            'detected-plugin': '0.0.0',
-            'detected-module': '0.0.0',
-            'detected-plugin-with-alpha': '0.0.0',
-            'detected-library': '0.0.0',
-          },
-        }),
-      },
-      [resolvePath(rootDir, 'node_modules/detected-plugin')]: {
+    mockDir.setContent({
+      'package.json': JSON.stringify({
+        name: 'example-app',
+        dependencies: {
+          'detected-plugin': '0.0.0',
+          'detected-module': '0.0.0',
+          'detected-plugin-with-alpha': '0.0.0',
+          'detected-library': '0.0.0',
+        },
+      }),
+      'node_modules/detected-plugin': {
         'package.json': JSON.stringify({
           name: 'detected-plugin',
           main: 'index.js',
@@ -44,7 +47,7 @@ describe('featureDiscoveryServiceFactory', () => {
           },
         }),
         'index.js': `
-        const { createBackendPlugin, coreServices } = require('@backstage/backend-plugin-api');
+        const { createBackendPlugin, coreServices } = require('${pluginApiPath}');
         exports.default = createBackendPlugin({
             pluginId: 'detected',
             register(env) {
@@ -58,7 +61,7 @@ describe('featureDiscoveryServiceFactory', () => {
         });
         `,
       },
-      [resolvePath(rootDir, 'node_modules/detected-module')]: {
+      'node_modules/detected-module': {
         'package.json': JSON.stringify({
           name: 'detected-module',
           main: 'index.js',
@@ -67,7 +70,7 @@ describe('featureDiscoveryServiceFactory', () => {
           },
         }),
         'index.js': `
-        const { createBackendModule, coreServices } = require('@backstage/backend-plugin-api');
+        const { createBackendModule, coreServices } = require('${pluginApiPath}');
         exports.default = createBackendModule({
             pluginId: 'detected',
             moduleId: 'derp',
@@ -82,7 +85,7 @@ describe('featureDiscoveryServiceFactory', () => {
         });
         `,
       },
-      [resolvePath(rootDir, 'node_modules/detected-plugin-with-alpha')]: {
+      'node_modules/detected-plugin-with-alpha': {
         'package.json': JSON.stringify({
           name: 'detected-plugin-with-alpha',
           main: 'index.js',
@@ -101,7 +104,7 @@ describe('featureDiscoveryServiceFactory', () => {
         }),
         'index.js': `exports.default = undefined;`,
         'alpha.js': `
-        const { createBackendPlugin, coreServices } = require('@backstage/backend-plugin-api');
+        const { createBackendPlugin, coreServices } = require('${pluginApiPath}');
         exports.default = createBackendPlugin({
             pluginId: 'detected-alpha',
             register(env) {
@@ -115,7 +118,7 @@ describe('featureDiscoveryServiceFactory', () => {
         });
         `,
       },
-      [resolvePath(rootDir, 'node_modules/detected-library')]: {
+      'node_modules/detected-library': {
         'package.json': JSON.stringify({
           name: 'detected-library',
           main: 'index.js',
@@ -124,7 +127,7 @@ describe('featureDiscoveryServiceFactory', () => {
           },
         }),
         'index.js': `
-        const { createServiceFactory, createServiceRef, coreServices } = require('@backstage/backend-plugin-api');
+        const { createServiceFactory, createServiceRef, coreServices } = require('${pluginApiPath}');
         exports.default = createServiceFactory({
           service: createServiceRef({ id: 'test', scope: 'root' }),
           deps: { logger: coreServices.rootLogger },
@@ -136,10 +139,6 @@ describe('featureDiscoveryServiceFactory', () => {
         `,
       },
     });
-  });
-
-  afterEach(() => {
-    mockFs.restore();
   });
 
   it('should detect plugin and module packages when "all" is specified', async () => {

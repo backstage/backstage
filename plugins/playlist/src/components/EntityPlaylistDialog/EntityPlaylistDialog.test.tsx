@@ -24,8 +24,7 @@ import {
   permissionApiRef,
 } from '@backstage/plugin-permission-react';
 import { Button } from '@material-ui/core';
-import { fireEvent, getByRole, waitFor } from '@testing-library/react';
-import { act } from '@testing-library/react-hooks';
+import { fireEvent, getByRole, waitFor, act } from '@testing-library/react';
 import React from 'react';
 import { SWRConfig } from 'swr';
 import { PlaylistApi, playlistApiRef } from '../../api';

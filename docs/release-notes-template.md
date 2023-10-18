@@ -12,7 +12,7 @@ A huge thanks to the whole team of maintainers and contributors as well as the a
 
 ### <title>
 
-<short description>. Contributed by [@<user>](https://github.com/<user>) [#<pr>](https://github.com/backstage/backstage/pull/<pr>)
+<short description>. Contributed by [@<user>](https://github.com/<user>) in [#<pr>](https://github.com/backstage/backstage/pull/<pr>)
 
 ## Security Fixes
 

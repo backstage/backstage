@@ -45,9 +45,16 @@ import {
 import { Box } from '@material-ui/core';
 import BookmarkIcon from '@material-ui/icons/Bookmark';
 import React, { ComponentType, ReactNode, PropsWithChildren } from 'react';
-import ReactDOM from 'react-dom';
 import { createRoutesFromChildren, Route } from 'react-router-dom';
 import { SidebarThemeSwitcher } from './SidebarThemeSwitcher';
+import 'react-dom';
+
+let ReactDOM: typeof import('react-dom') | typeof import('react-dom/client');
+if (process.env.HAS_REACT_DOM_CLIENT) {
+  ReactDOM = require('react-dom/client');
+} else {
+  ReactDOM = require('react-dom');
+}
 
 export function isReactRouterBeta(): boolean {
   const [obj] = createRoutesFromChildren(<Route index element={<div />} />);
@@ -235,7 +242,11 @@ export class DevAppBuilder {
       window.location.pathname = this.defaultPage;
     }
 
-    ReactDOM.render(<DevApp />, document.getElementById('root'));
+    if ('createRoot' in ReactDOM) {
+      ReactDOM.createRoot(document.getElementById('root')!).render(<DevApp />);
+    } else {
+      ReactDOM.render(<DevApp />, document.getElementById('root'));
+    }
   }
 }
 

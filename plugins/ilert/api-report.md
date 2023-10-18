@@ -810,6 +810,4 @@ export type UserRole =
   | 'STAKEHOLDER'
   | 'ACCOUNT_OWNER'
   | 'RESPONDER';
-
-// (No @packageDocumentation comment for this package)
 ```

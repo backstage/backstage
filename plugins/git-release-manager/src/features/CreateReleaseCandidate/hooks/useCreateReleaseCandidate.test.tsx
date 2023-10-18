@@ -13,8 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import { renderHook, act } from '@testing-library/react-hooks';
-import { waitFor } from '@testing-library/react';
+import { renderHook, act } from '@testing-library/react';
 
 import {
   mockCalverProject,
@@ -48,10 +47,9 @@ describe('useCreateReleaseCandidate', () => {
     );
 
     await act(async () => {
-      await waitFor(() => result.current.run());
+      await result.current.run();
     });
 
-    expect(result.error).toEqual(undefined);
     expect(result.current.responseSteps).toHaveLength(6);
   });
 
@@ -67,7 +65,7 @@ describe('useCreateReleaseCandidate', () => {
     );
 
     await act(async () => {
-      await waitFor(() => result.current.run());
+      await result.current.run();
     });
 
     expect(result.current.responseSteps).toHaveLength(7);
