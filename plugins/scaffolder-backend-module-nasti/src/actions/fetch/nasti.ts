@@ -39,20 +39,6 @@ export class NastiRunner {
     this.containerRunner = containerRunner;
   }
 
-  private async fetchTemplateNasti(
-    directory: string,
-  ): Promise<Record<string, JsonValue>> {
-    try {
-      return await fs.readJSON(path.join(directory, 'nasti.json'));
-    } catch (ex) {
-      if (ex.code !== 'ENOENT') {
-        throw ex;
-      }
-
-      return {};
-    }
-  }
-
   public async run({
     workspacePath,
     values,

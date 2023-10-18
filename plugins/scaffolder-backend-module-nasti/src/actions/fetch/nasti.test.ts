@@ -152,7 +152,7 @@ describe('fetch:nasti', () => {
         integrations,
         baseUrl: mockContext.templateInfo?.baseUrl,
         fetchUrl: mockContext.input.url,
-        outputPath: join(mockTmpDir, 'template', "{{nasti and 'contents'}}"),
+        outputPath: join(mockTmpDir, 'template', 'template_contents'),
       }),
     );
   });
@@ -169,6 +169,7 @@ describe('fetch:nasti', () => {
           'process',
           '-f',
           join(mockTmpDir, 'template/nasti.json'),
+          join(mockTmpDir, 'template/template_contents'),
           join(mockTmpDir, 'intermediate'),
         ],
         logStream: mockContext.logStream,
@@ -189,6 +190,7 @@ describe('fetch:nasti', () => {
           'process',
           '-f',
           join(mockTmpDir, 'template/nasti.json'),
+          join(mockTmpDir, 'template/template_contents'),
           join(mockTmpDir, 'intermediate'),
         ],
         mountDirs: {
