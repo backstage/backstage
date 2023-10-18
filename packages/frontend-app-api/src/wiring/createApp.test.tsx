@@ -23,7 +23,7 @@ import {
   createThemeExtension,
 } from '@backstage/frontend-plugin-api';
 import { createApp, createInstances } from './createApp';
-import { screen } from '@testing-library/react';
+import { screen, waitFor } from '@testing-library/react';
 import { MockConfigApi, renderWithEffects } from '@backstage/test-utils';
 import React from 'react';
 
@@ -243,5 +243,43 @@ describe('createApp', () => {
         ],
       }
     `);
+  });
+
+  it('should deduplicate features keeping the last received one', async () => {
+    const duplicatedFeatureId = 'test';
+    const app = createApp({
+      configLoader: async () => new MockConfigApi({}),
+      features: [
+        createPlugin({
+          id: duplicatedFeatureId,
+          extensions: [
+            createPageExtension({
+              id: 'test.page.first',
+              defaultPath: '/',
+              loader: async () => <div>First Page</div>,
+            }),
+          ],
+        }),
+        createPlugin({
+          id: duplicatedFeatureId,
+          extensions: [
+            createPageExtension({
+              id: 'test.page.last',
+              defaultPath: '/',
+              loader: async () => <div>Last Page</div>,
+            }),
+          ],
+        }),
+      ],
+    });
+
+    await renderWithEffects(app.createRoot());
+
+    await waitFor(() =>
+      expect(screen.queryByText('First Page')).not.toBeInTheDocument(),
+    );
+    await waitFor(() =>
+      expect(screen.getByText('Last Page')).toBeInTheDocument(),
+    );
   });
 });

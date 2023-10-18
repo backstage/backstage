@@ -267,6 +267,29 @@ export function createInstances(options: {
   return { coreInstance, instances };
 }
 
+function deduplicateFeatures(
+  allFeatures: (BackstagePlugin | ExtensionOverrides)[],
+): (BackstagePlugin | ExtensionOverrides)[] {
+  // Start by removing duplicates by reference
+  const features = Array.from(new Set(allFeatures));
+
+  // Plugins are deduplicated by ID, last one wins
+  const seenIds = new Set<string>();
+  return features
+    .reverse()
+    .filter(feature => {
+      if (feature.$$type !== '@backstage/BackstagePlugin') {
+        return true;
+      }
+      if (seenIds.has(feature.id)) {
+        return false;
+      }
+      seenIds.add(feature.id);
+      return true;
+    })
+    .reverse();
+}
+
 /** @public */
 export function createApp(options: {
   features?: (BackstagePlugin | ExtensionOverrides)[];
@@ -287,13 +310,11 @@ export function createApp(options: {
 
     const discoveredFeatures = getAvailableFeatures(config);
     const loadedFeatures = (await options.featureLoader?.({ config })) ?? [];
-    const allFeatures = Array.from(
-      new Set([
-        ...discoveredFeatures,
-        ...(options.features ?? []),
-        ...loadedFeatures,
-      ]),
-    );
+    const allFeatures = deduplicateFeatures([
+      ...discoveredFeatures,
+      ...loadedFeatures,
+      ...(options.features ?? []),
+    ]);
 
     const { coreInstance } = createInstances({
       features: allFeatures,
