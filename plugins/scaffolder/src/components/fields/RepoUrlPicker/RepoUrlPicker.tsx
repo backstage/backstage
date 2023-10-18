@@ -161,7 +161,7 @@ export const RepoUrlPicker = (props: RepoUrlPickerProps) => {
   return (
     <>
       {schema.title && (
-        <Box my="8px">
+        <Box my={1}>
           <Typography variant="h5">{schema.title}</Typography>
           <Divider />
         </Box>
