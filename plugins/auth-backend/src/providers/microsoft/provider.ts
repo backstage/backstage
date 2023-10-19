@@ -32,7 +32,7 @@ import {
 } from '@backstage/plugin-auth-backend-module-microsoft-provider';
 
 /**
- * Auth provider integration for GitLab auth
+ * Auth provider integration for Microsoft auth
  *
  * @public
  */
