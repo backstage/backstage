@@ -24,7 +24,6 @@ import webpack from 'webpack';
 import WebpackDevServer from 'webpack-dev-server';
 import vite from 'vite';
 import viteReact from '@vitejs/plugin-react';
-import viteCommonJs from 'vite-plugin-commonjs';
 import { nodePolyfills as viteNodePolyfills } from 'vite-plugin-node-polyfills';
 import { createHtmlPlugin as viteHtml } from 'vite-plugin-html';
 
@@ -39,6 +38,7 @@ import { createConfig, resolveBaseUrl } from './config';
 import { createDetectedModulesEntryPoint } from './packageDetection';
 import { resolveBundlingPaths } from './paths';
 import { ServeOptions } from './types';
+import { hasReactDomClient } from './hasReactDomClient';
 
 export async function serveBundle(options: ServeOptions) {
   const paths = resolveBundlingPaths(options);
@@ -166,14 +166,13 @@ export async function serveBundle(options: ServeOptions) {
         global: 'window',
         'process.argv': JSON.stringify(process.argv),
         'process.env.APP_CONFIG': JSON.stringify(cliConfig.frontendAppConfigs),
+        // This allows for conditional imports of react-dom/client, since there's no way
+        // to check for presence of it in source code without module resolution errors.
+        'process.env.HAS_REACT_DOM_CLIENT': JSON.stringify(hasReactDomClient()),
       },
       plugins: [
         viteReact(),
         viteNodePolyfills(),
-        viteCommonJs({
-          // todo(blam): this is ugly to work around for just running in the backstage/backstage repo.
-          filter: id => id.endsWith('renderReactElement.ts'),
-        }),
         viteHtml({
           entry: paths.targetEntry,
           // todo(blam): we should look at contributing to thPe plugin here
@@ -233,26 +232,24 @@ export async function serveBundle(options: ServeOptions) {
         client: {
           webSocketURL: 'auto://0.0.0.0:0/ws',
         },
-      } as any,
-      compiler as any,
+      },
+      compiler,
     );
   }
 
   await new Promise<void>(async (resolve, reject) => {
     if (process.env.EXPERIMENTAL_VITE) {
       await (server as vite.ViteDevServer).listen();
-      openBrowser(url.href);
-      resolve();
     } else {
       (server as WebpackDevServer).startCallback((err?: Error) => {
         if (err) {
           reject(err);
           return;
         }
-        openBrowser(url.href);
-        resolve();
       });
     }
+    openBrowser(url.href);
+    resolve();
   });
 
   const waitForExit = async () => {

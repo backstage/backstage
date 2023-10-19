@@ -3864,7 +3864,6 @@ __metadata:
     type-fest: ^2.19.0
     util: ^0.12.3
     vite: ^4.4.9
-    vite-plugin-commonjs: ^0.10.0
     vite-plugin-html: ^3.2.0
     vite-plugin-node-polyfills: ^0.14.1
     webpack: ^5.70.0
@@ -12751,7 +12750,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@jridgewell/sourcemap-codec@npm:^1.4.10, @jridgewell/sourcemap-codec@npm:^1.4.13, @jridgewell/sourcemap-codec@npm:^1.4.15":
+"@jridgewell/sourcemap-codec@npm:^1.4.10, @jridgewell/sourcemap-codec@npm:^1.4.13":
   version: 1.4.15
   resolution: "@jridgewell/sourcemap-codec@npm:1.4.15"
   checksum: b881c7e503db3fc7f3c1f35a1dd2655a188cc51a3612d76efc8a6eb74728bef5606e6758ee77423e564092b4a518aba569bbb21c9bac5ab7a35b0c6ae7e344c8
@@ -19549,7 +19548,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"acorn@npm:^8.2.4, acorn@npm:^8.4.1, acorn@npm:^8.5.0, acorn@npm:^8.7.1, acorn@npm:^8.8.2, acorn@npm:^8.9.0":
+"acorn@npm:^8.2.4, acorn@npm:^8.4.1, acorn@npm:^8.5.0, acorn@npm:^8.7.1, acorn@npm:^8.9.0":
   version: 8.10.0
   resolution: "acorn@npm:8.10.0"
   bin:
@@ -31829,15 +31828,6 @@ __metadata:
   languageName: node
   linkType: hard
 
-"magic-string@npm:^0.30.1":
-  version: 0.30.5
-  resolution: "magic-string@npm:0.30.5"
-  dependencies:
-    "@jridgewell/sourcemap-codec": ^1.4.15
-  checksum: da10fecff0c0a7d3faf756913ce62bd6d5e7b0402be48c3b27bfd651b90e29677e279069a63b764bcdc1b8ecdcdb898f29a5c5ec510f2323e8d62ee057a6eb18
-  languageName: node
-  linkType: hard
-
 "make-dir@npm:^2.0.0, make-dir@npm:^2.1.0":
   version: 2.1.0
   resolution: "make-dir@npm:2.1.0"
@@ -42163,30 +42153,6 @@ __metadata:
     remove-trailing-separator: ^1.0.1
     replace-ext: ^1.0.0
   checksum: 1f663973f1362f2d074b554f79ff7673187667082373b3d3e628beb1fc2a7ff33024f10b492fbd8db421a09ea3b7b22c3d3de4a0f0e73ead7b4685af570b906f
-  languageName: node
-  linkType: hard
-
-"vite-plugin-commonjs@npm:^0.10.0":
-  version: 0.10.0
-  resolution: "vite-plugin-commonjs@npm:0.10.0"
-  dependencies:
-    acorn: ^8.8.2
-    fast-glob: ^3.2.12
-    magic-string: ^0.30.1
-    vite-plugin-dynamic-import: ^1.5.0
-  checksum: 3cb9a78d477a3bf7b15bd39c73058c7a5277a9be68528276fa885b4abe9ace801073dc587648248bb749cf070eb817f0ec34d8d32c0c4aac4000b23048776c2b
-  languageName: node
-  linkType: hard
-
-"vite-plugin-dynamic-import@npm:^1.5.0":
-  version: 1.5.0
-  resolution: "vite-plugin-dynamic-import@npm:1.5.0"
-  dependencies:
-    acorn: ^8.8.2
-    es-module-lexer: ^1.2.1
-    fast-glob: ^3.2.12
-    magic-string: ^0.30.1
-  checksum: 68efd897daa0c72a9f9d3481095dd3f7ec9a822be5a15eef60413734a4c894c5bbd1c1762f02daeef5df59cef212c9f1e7e056315e2a7780816ccafe5c74da6e
   languageName: node
   linkType: hard
 
