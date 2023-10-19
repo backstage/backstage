@@ -98,11 +98,10 @@ export function createCatalogFilterExtension<
   loader: (options: { config: TConfig }) => Promise<JSX.Element>;
 }) {
   const id = `catalog.filter.${options.id}`;
-  const attachTo = { id: 'plugin.catalog.page.index', input: 'filters' };
 
   return createExtension({
     id,
-    attachTo,
+    attachTo: { id: 'plugin.catalog.page.index', input: 'filters' },
     inputs: options.inputs ?? {},
     configSchema: options.configSchema,
     output: {
