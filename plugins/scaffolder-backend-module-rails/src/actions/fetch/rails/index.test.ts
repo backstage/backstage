@@ -73,9 +73,6 @@ describe('fetch:rails', () => {
     createTemporaryDirectory: jest.fn().mockResolvedValue(mockTmpDir),
   };
 
-  mockDir.clear();
-  mockDir.addContent({ template: {} });
-
   const mockReader: UrlReader = {
     readUrl: jest.fn(),
     readTree: jest.fn(),
@@ -93,7 +90,7 @@ describe('fetch:rails', () => {
   });
 
   beforeEach(() => {
-    mockDir.addContent({
+    mockDir.setContent({
       result: '{}',
     });
     jest.clearAllMocks();
