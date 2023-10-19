@@ -19,6 +19,7 @@ import { createRouter } from '@backstage/plugin-permission-backend';
 import {
   AuthorizeResult,
   PolicyDecision,
+  isPermission,
 } from '@backstage/plugin-permission-common';
 import {
   PermissionPolicy,
@@ -30,6 +31,11 @@ import {
 } from '@backstage/plugin-playlist-backend';
 import { Router } from 'express';
 import { PluginEnvironment } from '../types';
+import { azureSitesActionPermission } from '@backstage/plugin-azure-sites-common';
+import {
+  catalogConditions,
+  createCatalogConditionalDecision,
+} from '@backstage/plugin-catalog-backend/alpha';
 
 class ExamplePermissionPolicy implements PermissionPolicy {
   private playlistPermissionPolicy = new DefaultPlaylistPermissionPolicy();
@@ -40,6 +46,15 @@ class ExamplePermissionPolicy implements PermissionPolicy {
   ): Promise<PolicyDecision> {
     if (isPlaylistPermission(request.permission)) {
       return this.playlistPermissionPolicy.handle(request, user);
+    }
+
+    if (isPermission(request.permission, azureSitesActionPermission)) {
+      return createCatalogConditionalDecision(
+        request.permission,
+        catalogConditions.isEntityOwner({
+          claims: user?.identity.ownershipEntityRefs ?? [],
+        }),
+      );
     }
 
     return {

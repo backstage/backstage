@@ -38,6 +38,7 @@
     "@backstage/plugin-auth-node": "workspace:^",
     "@backstage/plugin-azure-devops-backend": "workspace:^",
     "@backstage/plugin-azure-sites-backend": "workspace:^",
+    "@backstage/plugin-azure-sites-common": "workspace:^",
     "@backstage/plugin-badges-backend": "workspace:^",
     "@backstage/plugin-catalog-backend": "workspace:^",
     "@backstage/plugin-catalog-backend-module-scaffolder-entity-model": "workspace:^",

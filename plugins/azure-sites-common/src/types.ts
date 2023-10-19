@@ -14,6 +14,8 @@
  * limitations under the License.
  */
 
+import { Entity } from '@backstage/catalog-model';
+
 /** @public */
 export type AzureSite = {
   href: string;
@@ -45,4 +47,5 @@ export type AzureSiteStartStopRequest = {
   subscription: string;
   resourceGroup: string;
   name: string;
+  entity?: Entity;
 };
