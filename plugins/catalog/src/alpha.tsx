@@ -36,6 +36,7 @@ import {
   PortableSchema,
   ExtensionBoundary,
   createExtensionInput,
+  ExtensionSuspense,
 } from '@backstage/frontend-plugin-api';
 import {
   AsyncEntityProvider,
@@ -51,7 +52,6 @@ import {
   rootRouteRef,
   viewTechDocRouteRef,
 } from './routes';
-import { Progress } from '@backstage/core-components';
 import { useEntityFromUrl } from './components/CatalogEntityPage/useEntityFromUrl';
 
 /** @alpha */
@@ -97,16 +97,19 @@ export function createCatalogFilterExtension<
   configSchema?: PortableSchema<TConfig>;
   loader: (options: { config: TConfig }) => Promise<JSX.Element>;
 }) {
+  const id = `catalog.filter.${options.id}`;
+  const attachTo = { id: 'plugin.catalog.page.index', input: 'filters' };
+
   return createExtension({
-    id: `catalog.filter.${options.id}`,
-    attachTo: { id: 'plugin.catalog.page.index', input: 'filters' },
+    id,
+    attachTo,
     inputs: options.inputs ?? {},
     configSchema: options.configSchema,
     output: {
       element: coreExtensionData.reactElement,
     },
     factory({ bind, config, source }) {
-      const LazyComponent = React.lazy(() =>
+      const ExtensionComponent = React.lazy(() =>
         options
           .loader({ config })
           .then(element => ({ default: () => element })),
@@ -114,10 +117,10 @@ export function createCatalogFilterExtension<
 
       bind({
         element: (
-          <ExtensionBoundary source={source}>
-            <React.Suspense fallback={<Progress />}>
-              <LazyComponent />
-            </React.Suspense>
+          <ExtensionBoundary id={id} source={source}>
+            <ExtensionSuspense>
+              <ExtensionComponent />
+            </ExtensionSuspense>
           </ExtensionBoundary>
         ),
       });
