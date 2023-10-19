@@ -16,6 +16,7 @@ const _default: BackstagePlugin<
       kind: string;
       namespace: string;
     }>;
+    entityContent: RouteRef<undefined>;
   },
   {}
 >;
