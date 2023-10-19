@@ -1,5 +1,11 @@
 # @backstage/cli
 
+## 0.22.14
+
+### Patch Changes
+
+- 48c94f8309ec: In frontend builds and tests `process.env.HAS_REACT_DOM_CLIENT` will now be defined if `react-dom/client` is present, i.e. if using React 18. This allows for conditional imports of `react-dom/client`.
+
 ## 0.22.13
 
 ### Patch Changes
