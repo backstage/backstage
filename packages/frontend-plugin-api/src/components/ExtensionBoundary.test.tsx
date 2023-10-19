@@ -33,7 +33,6 @@ import { analyticsApiRef, useAnalytics } from '@backstage/core-plugin-api';
 import { createApp } from '@backstage/frontend-app-api';
 import { JsonObject } from '@backstage/types';
 import { createRouteRef } from '../routing';
-import { toInternalRouteRef } from '../routing/RouteRef';
 
 function renderExtensionInTestApp(
   extension: Extension<unknown>,
@@ -59,7 +58,6 @@ function renderExtensionInTestApp(
 const wrapInBoundaryExtension = (element: JSX.Element) => {
   const id = 'plugin.extension';
   const routeRef = createRouteRef();
-  toInternalRouteRef(routeRef).setId(id);
   return createExtension({
     id,
     attachTo: { id: 'core.routes', input: 'routes' },
@@ -73,7 +71,7 @@ const wrapInBoundaryExtension = (element: JSX.Element) => {
         routeRef,
         path: '/',
         element: (
-          <ExtensionBoundary id={id} source={source} routeRef={routeRef}>
+          <ExtensionBoundary id={id} source={source}>
             {element}
           </ExtensionBoundary>
         ),
@@ -128,7 +126,7 @@ describe('ExtensionBoundary', () => {
         subject,
         context: {
           extension: 'plugin.extension',
-          routeRef: 'plugin.extension',
+          routeRef: 'unknown',
         },
       }),
     );

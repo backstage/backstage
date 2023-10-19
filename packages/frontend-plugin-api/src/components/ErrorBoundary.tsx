@@ -15,9 +15,10 @@
  */
 
 import React, { Component, PropsWithChildren } from 'react';
+// TODO: Dependency on MUI should be removed from core packages
 import { Button } from '@material-ui/core';
-import { BackstagePlugin } from '../wiring';
 import { ErrorPanel } from '@backstage/core-components';
+import { BackstagePlugin } from '../wiring';
 
 type DefaultErrorBoundaryFallbackProps = PropsWithChildren<{
   plugin?: BackstagePlugin;

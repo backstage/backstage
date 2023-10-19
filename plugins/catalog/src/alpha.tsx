@@ -36,7 +36,6 @@ import {
   PortableSchema,
   ExtensionBoundary,
   createExtensionInput,
-  ExtensionSuspense,
 } from '@backstage/frontend-plugin-api';
 import {
   AsyncEntityProvider,
@@ -117,9 +116,7 @@ export function createCatalogFilterExtension<
       bind({
         element: (
           <ExtensionBoundary id={id} source={source}>
-            <ExtensionSuspense>
-              <ExtensionComponent />
-            </ExtensionSuspense>
+            <ExtensionComponent />
           </ExtensionBoundary>
         ),
       });

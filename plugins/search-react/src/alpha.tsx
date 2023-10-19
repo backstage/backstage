@@ -20,7 +20,6 @@ import { ListItemProps } from '@material-ui/core';
 
 import {
   ExtensionBoundary,
-  ExtensionSuspense,
   PortableSchema,
   createExtension,
   createExtensionDataRef,
@@ -120,15 +119,13 @@ export function createSearchResultListItemExtension<
           predicate: options.predicate,
           component: props => (
             <ExtensionBoundary id={id} source={source}>
-              <ExtensionSuspense>
-                <SearchResultListItemExtension
-                  rank={props.rank}
-                  result={props.result}
-                  noTrack={config.noTrack}
-                >
-                  <ExtensionComponent {...props} />
-                </SearchResultListItemExtension>
-              </ExtensionSuspense>
+              <SearchResultListItemExtension
+                rank={props.rank}
+                result={props.result}
+                noTrack={config.noTrack}
+              >
+                <ExtensionComponent {...props} />
+              </SearchResultListItemExtension>
             </ExtensionBoundary>
           ),
         },

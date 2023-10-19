@@ -14,11 +14,8 @@
  * limitations under the License.
  */
 
-import React, { lazy, useEffect } from 'react';
-import { useAnalytics } from '@backstage/core-plugin-api';
-// eslint-disable-next-line @backstage/no-relative-monorepo-imports
-import { routableExtensionRenderedEvent } from '../../../core-plugin-api/src/analytics/Tracker';
-import { ExtensionBoundary, ExtensionSuspense } from '../components';
+import React, { lazy } from 'react';
+import { ExtensionBoundary } from '../components';
 import { createSchemaFromZod, PortableSchema } from '../schema';
 import {
   coreExtensionData,
@@ -58,9 +55,7 @@ export function createPageExtension<
     }) => Promise<JSX.Element>;
   },
 ): Extension<TConfig> {
-  const { id, routeRef } = options;
-
-  const attachTo = options.attachTo ?? { id: 'core.routes', input: 'routes' };
+  const { id } = options;
 
   const configSchema =
     'configSchema' in options
@@ -71,7 +66,7 @@ export function createPageExtension<
 
   return createExtension({
     id,
-    attachTo,
+    attachTo: options.attachTo ?? { id: 'core.routes', input: 'routes' },
     configSchema,
     inputs: options.inputs,
     disabled: options.disabled,
@@ -81,36 +76,18 @@ export function createPageExtension<
       routeRef: coreExtensionData.routeRef.optional(),
     },
     factory({ bind, config, inputs, source }) {
-      const { path } = config;
-
-      const PageComponent = lazy(() =>
+      const ExtensionComponent = lazy(() =>
         options
           .loader({ config, inputs })
           .then(element => ({ default: () => element })),
       );
 
-      const ExtensionComponent = () => {
-        const analytics = useAnalytics();
-
-        // This event, never exposed to end-users of the analytics API,
-        // helps inform which extension metadata gets associated with a
-        // navigation event when the route navigated to is a gathered
-        // mountpoint.
-        useEffect(() => {
-          analytics.captureEvent(routableExtensionRenderedEvent, '');
-        }, [analytics]);
-
-        return <PageComponent />;
-      };
-
       bind({
-        path,
-        routeRef,
+        path: config.path,
+        routeRef: options.routeRef,
         element: (
-          <ExtensionBoundary id={id} source={source} routeRef={routeRef}>
-            <ExtensionSuspense>
-              <ExtensionComponent />
-            </ExtensionSuspense>
+          <ExtensionBoundary id={id} source={source} routable>
+            <ExtensionComponent />
           </ExtensionBoundary>
         ),
       });

@@ -18,8 +18,3 @@ export {
   ExtensionBoundary,
   type ExtensionBoundaryProps,
 } from './ExtensionBoundary';
-
-export {
-  ExtensionSuspense,
-  type ExtensionSuspenseProps,
-} from './ExtensionSuspense';
