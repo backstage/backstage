@@ -22,6 +22,8 @@ import {
   PassportProfile,
 } from '@backstage/plugin-auth-node';
 
+let domainHint: string | undefined = undefined;
+
 /** @public */
 export const microsoftAuthenticator = createOAuthAuthenticator({
   defaultProfileTransform:
@@ -30,6 +32,7 @@ export const microsoftAuthenticator = createOAuthAuthenticator({
     const clientId = config.getString('clientId');
     const clientSecret = config.getString('clientSecret');
     const tenantId = config.getString('tenantId');
+    domainHint = config.getOptionalString('domainHint');
 
     return PassportOAuthAuthenticatorHelper.from(
       new MicrosoftStrategy(
@@ -58,9 +61,15 @@ export const microsoftAuthenticator = createOAuthAuthenticator({
   },
 
   async start(input, helper) {
-    return helper.start(input, {
+    const options: Record<string, string> = {
       accessType: 'offline',
-    });
+    };
+
+    if (domainHint !== undefined) {
+      options.domain_hint = domainHint;
+    }
+
+    return helper.start(input, options);
   },
 
   async authenticate(input, helper) {

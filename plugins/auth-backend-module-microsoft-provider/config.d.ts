@@ -26,6 +26,7 @@ export interface Config {
            */
           tenantId: string;
           clientSecret: string;
+          domainHint?: string;
           callbackUrl?: string;
         };
       };
