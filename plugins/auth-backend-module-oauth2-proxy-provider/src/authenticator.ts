@@ -37,6 +37,7 @@ export const oauth2ProxyAuthenticator = createProxyAuthenticator({
       },
     };
   },
+  async initialize() {},
   async authenticate({ req }) {
     try {
       const authHeader = req.header(OAUTH2_PROXY_JWT_HEADER);
