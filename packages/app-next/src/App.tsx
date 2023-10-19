@@ -17,6 +17,7 @@
 import React from 'react';
 import { createApp } from '@backstage/frontend-app-api';
 import { pagesPlugin } from './examples/pagesPlugin';
+import { entityPagePlugins } from './examples/entityPages';
 import graphiqlPlugin from '@backstage/plugin-graphiql/alpha';
 import techRadarPlugin from '@backstage/plugin-tech-radar/alpha';
 import userSettingsPlugin from '@backstage/plugin-user-settings/alpha';
@@ -120,6 +121,7 @@ const app = createApp({
     techdocsPlugin,
     userSettingsPlugin,
     homePlugin,
+    ...entityPagePlugins,
     ...collectedLegacyPlugins,
     createExtensionOverrides({
       extensions: [

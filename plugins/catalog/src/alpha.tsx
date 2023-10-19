@@ -231,22 +231,6 @@ const CatalogIndexPage = createPageExtension({
   },
 });
 
-const CatalogEntityPage = createPageExtension({
-  id: 'plugin.catalog.page.entity',
-  defaultPath: '/catalog/:namespace/:kind/:name',
-  routeRef: convertLegacyRouteRef(entityRouteRef),
-  loader: async () => {
-    const Component = () => {
-      return (
-        <AsyncEntityProvider {...useEntityFromUrl()}>
-          <div>🚧 Work In Progress</div>
-        </AsyncEntityProvider>
-      );
-    };
-    return <Component />;
-  },
-});
-
 const CatalogNavItem = createNavItemExtension({
   id: 'catalog.nav.index',
   routeRef: convertLegacyRouteRef(rootRouteRef),
@@ -279,55 +263,7 @@ export default createPlugin({
     CatalogEntityProcessingStatusFilter,
     CatalogEntityNamespaceFilter,
     CatalogIndexPage,
-    CatalogEntityPage,
+    // CatalogEntityPage,
     CatalogNavItem,
-  ],
-});
-
-///  IMAGINE THIS IS IN A DIFFERENT PLUGIN
-
-// inside the @backstage/plugin-github-pull-requests plugin
-import {
-  createEntityCardExtension,
-  createEntityContentExtension,
-} from '@backstage/plugin-catalog-react';
-
-const githubPullRequestsPlugin = createPlugin({
-  id: 'github-pull-requests',
-  extensions: [
-    createEntityCardExtension({
-      id: 'github-pull-requests',
-      loader: () => import('./PullRequestsCard').then(m => m.PullRequestsCard),
-      entityFilter: isPullRequestsAvailable,
-    }),
-    createEntityContentExtension({
-      id: 'github-pull-requests',
-      defaultPath: 'github-pull-requests',
-      defaultTitle: 'GitHub Pull Requests',
-      loader: () =>
-        import('./PullRequestsContent').then(m => m.PullRequestsContent),
-      entityFilter: isPullRequestsAvailable,
-    }),
-  ],
-});
-
-// /deployments
-const deploymentsPlugin = createPlugin({
-  id: 'github-pull-requests',
-  extensions: [
-    createEntityCardExtension({
-      id: 'github-pull-requests',
-      attachTo: { id: 'plugin.deployments.content', input: 'cards' },
-      loader: () => import('./PullRequestsCard').then(m => m.PullRequestsCard),
-      entityFilter: isPullRequestsAvailable,
-    }),
-    createEntityContentExtension({
-      id: 'github-pull-requests',
-      defaultPath: 'github-pull-requests',
-      defaultTitle: 'GitHub Pull Requests',
-      loader: () =>
-        import('./PullRequestsContent').then(m => m.PullRequestsContent),
-      entityFilter: isPullRequestsAvailable,
-    }),
   ],
 });
