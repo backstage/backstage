@@ -46,7 +46,7 @@ jest.mock(
 );
 
 describe('fetch:cookiecutter', () => {
-  const mockDir = createMockDirectory();
+  const mockDir = createMockDirectory({ mockOsTmpDir: true });
   const integrations = ScmIntegrations.fromConfig(
     new ConfigReader({
       integrations: {
@@ -106,21 +106,20 @@ describe('fetch:cookiecutter', () => {
       output: jest.fn(),
       createTemporaryDirectory: jest.fn().mockResolvedValue(mockTmpDir),
     };
-    mockDir.clear();
-    mockDir.addContent({ template: {} });
+    mockDir.setContent({ template: {} });
 
     commandExists.mockResolvedValue(null);
 
     // Mock when run container is called it creates some new files in the mock filesystem
     containerRunner.runContainer.mockImplementation(async () => {
-      mockDir.addContent({
+      mockDir.setContent({
         'intermediate/testfile.json': '{}',
       });
     });
 
     // Mock when executeShellCommand is called it creates some new files in the mock filesystem
     executeShellCommand.mockImplementation(async () => {
-      mockDir.addContent({
+      mockDir.setContent({
         'intermediate/testfile.json': '{}',
       });
     });
