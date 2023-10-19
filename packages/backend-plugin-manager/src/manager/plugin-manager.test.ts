@@ -452,15 +452,12 @@ describe('backend-plugin-manager', () => {
           findPaths(__dirname).resolveTargetRoot('package.json'),
         ),
         'dynamic-plugins-root': {},
+        'dynamic-plugins-root/a-dynamic-plugin': ctx =>
+          ctx.symlink(otherMockDir.resolve('a-dynamic-plugin')),
       });
       otherMockDir.setContent({
         'a-dynamic-plugin': {},
       });
-
-      fs.symlinkSync(
-        otherMockDir.resolve('a-dynamic-plugin'),
-        mockDir.resolve('dynamic-plugins-root/a-dynamic-plugin'),
-      );
 
       const fromConfigSpier = jest.spyOn(PluginManager, 'fromConfig');
       const applyConfigSpier = jest

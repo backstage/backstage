@@ -20,4 +20,6 @@ export {
   type MockDirectoryOptions,
   type MockDirectoryContent,
   type MockDirectoryContentOptions,
+  type MockDirectoryContentCallback,
+  type MockDirectoryContentCallbackContext,
 } from './MockDirectory';

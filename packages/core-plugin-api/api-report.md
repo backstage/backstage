@@ -95,8 +95,11 @@ export type AnyExternalRoutes = {
   [name: string]: ExternalRouteRef;
 };
 
+// @public @deprecated (undocumented)
+export type AnyParams = AnyRouteRefParams;
+
 // @public
-export type AnyParams =
+export type AnyRouteRefParams =
   | {
       [param in string]: string;
     }
@@ -523,7 +526,7 @@ export type IdentityApi = {
 // @public
 export const identityApiRef: ApiRef<IdentityApi>;
 
-// @public
+// @public @deprecated
 export type MakeSubRouteRef<
   Params extends {
     [param in string]: string;
@@ -533,7 +536,7 @@ export type MakeSubRouteRef<
   ? SubRouteRef<OptionalParams<MergeParams<Params, ParentParams>>>
   : never;
 
-// @public
+// @public @deprecated
 export type MergeParams<
   P1 extends {
     [param in string]: string;
@@ -606,30 +609,30 @@ export type OpenIdConnectApi = {
   getIdToken(options?: AuthRequestOptions): Promise<string>;
 };
 
-// @public
+// @public @deprecated
 export type OptionalParams<
   Params extends {
     [param in string]: string;
   },
 > = Params[keyof Params] extends never ? undefined : Params;
 
-// @public
+// @public @deprecated
 export type ParamKeys<Params extends AnyParams> = keyof Params extends never
   ? []
   : (keyof Params)[];
 
-// @public
+// @public @deprecated
 export type ParamNames<S extends string> =
   S extends `${infer Part}/${infer Rest}`
     ? ParamPart<Part> | ParamNames<Rest>
     : ParamPart<S>;
 
-// @public
+// @public @deprecated
 export type ParamPart<S extends string> = S extends `:${infer Param}`
   ? Param
   : never;
 
-// @public
+// @public @deprecated
 export type PathParams<S extends string> = {
   [name in ParamNames<S>]: string;
 };

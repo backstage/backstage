@@ -20,6 +20,9 @@ import {
   BackstagePlugin,
   coreExtensionData,
   ExtensionDataRef,
+  ExtensionOverrides,
+  RouteRef,
+  useRouteRef,
 } from '@backstage/frontend-plugin-api';
 import { Core } from '../extensions/Core';
 import { CoreRoutes } from '../extensions/CoreRoutes';
@@ -34,7 +37,6 @@ import {
   mergeExtensionParameters,
   readAppExtensionParameters,
 } from './parameters';
-import { RoutingProvider } from '../routing/RoutingContext';
 import {
   AnyApiFactory,
   ApiHolder,
@@ -44,15 +46,13 @@ import {
   ConfigApi,
   configApiRef,
   IconComponent,
-  RouteRef,
   BackstagePlugin as LegacyBackstagePlugin,
   featureFlagsApiRef,
   attachComponentData,
-  useRouteRef,
   identityApiRef,
   AppTheme,
 } from '@backstage/core-plugin-api';
-import { getAvailablePlugins } from './discovery';
+import { getAvailableFeatures } from './discovery';
 import {
   ApiFactoryRegistry,
   ApiProvider,
@@ -74,7 +74,9 @@ import { defaultConfigLoaderSync } from '../../../core-app-api/src/app/defaultCo
 // eslint-disable-next-line @backstage/no-relative-monorepo-imports
 import { overrideBaseUrlConfigs } from '../../../core-app-api/src/app/overrideBaseUrlConfigs';
 // eslint-disable-next-line @backstage/no-relative-monorepo-imports
-import { RoutingProvider as LegacyRoutingProvider } from '../../../core-app-api/src/routing/RoutingProvider';
+import { AppLanguageSelector } from '../../../core-app-api/src/apis/implementations/AppLanguageApi/AppLanguageSelector';
+// eslint-disable-next-line @backstage/no-relative-monorepo-imports
+import { I18nextTranslationApi } from '../../../core-app-api/src/apis/implementations/TranslationApi/I18nextTranslationApi';
 // eslint-disable-next-line @backstage/no-relative-monorepo-imports
 import {
   apis as defaultApis,
@@ -86,6 +88,14 @@ import { SidebarItem } from '@backstage/core-components';
 import { DarkTheme, LightTheme } from '../extensions/themes';
 import { extractRouteInfoFromInstanceTree } from '../routing/extractRouteInfoFromInstanceTree';
 import { getOrCreateGlobalSingleton } from '@backstage/version-bridge';
+import {
+  appLanguageApiRef,
+  translationApiRef,
+} from '@backstage/core-plugin-api/alpha';
+import { AppRouteBinder } from '../routing';
+import { RoutingProvider } from '../routing/RoutingProvider';
+import { resolveRouteBindings } from '../routing/resolveRouteBindings';
+import { collectRouteIds } from '../routing/collectRouteIds';
 
 /** @public */
 export interface ExtensionTreeNode {
@@ -105,9 +115,9 @@ export interface ExtensionTree {
 export function createExtensionTree(options: {
   config: Config;
 }): ExtensionTree {
-  const plugins = getAvailablePlugins();
+  const features = getAvailableFeatures(options.config);
   const { instances } = createInstances({
-    plugins,
+    features,
     config: options.config,
   });
 
@@ -173,7 +183,7 @@ export function createExtensionTree(options: {
  * @internal
  */
 export function createInstances(options: {
-  plugins: BackstagePlugin[];
+  features: (BackstagePlugin | ExtensionOverrides)[];
   config: Config;
 }) {
   const builtinExtensions = [
@@ -188,7 +198,7 @@ export function createInstances(options: {
   // pull in default extension instance from discovered packages
   // apply config to adjust default extension instances and add more
   const extensionParams = mergeExtensionParameters({
-    sources: options.plugins,
+    features: options.features,
     builtinExtensions,
     parameters: readAppExtensionParameters(options.config),
   });
@@ -202,8 +212,8 @@ export function createInstances(options: {
     Map<string, ExtensionInstanceParameters[]>
   >();
   for (const instanceParams of extensionParams) {
-    const [extensionId, pointId = 'default'] = instanceParams.at.split('/');
-
+    const extensionId = instanceParams.attachTo.id;
+    const pointId = instanceParams.attachTo.input;
     let pointMap = attachmentMap.get(extensionId);
     if (!pointMap) {
       pointMap = new Map();
@@ -250,20 +260,44 @@ export function createInstances(options: {
     return newInstance;
   }
 
-  const rootConfigs = attachmentMap.get('root')?.get('default') ?? [];
-
-  const rootInstances = rootConfigs.map(instanceParams =>
-    createInstance(instanceParams),
+  const coreInstance = createInstance(
+    extensionParams.find(p => p.extension.id === 'core')!,
   );
 
-  return { instances, rootInstances };
+  return { coreInstance, instances };
+}
+
+function deduplicateFeatures(
+  allFeatures: (BackstagePlugin | ExtensionOverrides)[],
+): (BackstagePlugin | ExtensionOverrides)[] {
+  // Start by removing duplicates by reference
+  const features = Array.from(new Set(allFeatures));
+
+  // Plugins are deduplicated by ID, last one wins
+  const seenIds = new Set<string>();
+  return features
+    .reverse()
+    .filter(feature => {
+      if (feature.$$type !== '@backstage/BackstagePlugin') {
+        return true;
+      }
+      if (seenIds.has(feature.id)) {
+        return false;
+      }
+      seenIds.add(feature.id);
+      return true;
+    })
+    .reverse();
 }
 
 /** @public */
 export function createApp(options: {
-  plugins: BackstagePlugin[];
+  features?: (BackstagePlugin | ExtensionOverrides)[];
   configLoader?: () => Promise<ConfigApi>;
-  pluginLoader?: (ctx: { config: ConfigApi }) => Promise<BackstagePlugin[]>;
+  bindRoutes?(context: { bind: AppRouteBinder }): void;
+  featureLoader?: (ctx: {
+    config: ConfigApi;
+  }) => Promise<(BackstagePlugin | ExtensionOverrides)[]>;
 }): {
   createRoot(): JSX.Element;
 } {
@@ -274,49 +308,44 @@ export function createApp(options: {
         overrideBaseUrlConfigs(defaultConfigLoaderSync()),
       );
 
-    const discoveredPlugins = getAvailablePlugins();
-    const loadedPlugins = (await options.pluginLoader?.({ config })) ?? [];
-    const allPlugins = Array.from(
-      new Set([...discoveredPlugins, ...options.plugins, ...loadedPlugins]),
-    );
+    const discoveredFeatures = getAvailableFeatures(config);
+    const loadedFeatures = (await options.featureLoader?.({ config })) ?? [];
+    const allFeatures = deduplicateFeatures([
+      ...discoveredFeatures,
+      ...loadedFeatures,
+      ...(options.features ?? []),
+    ]);
 
-    const { rootInstances } = createInstances({
-      plugins: allPlugins,
+    const { coreInstance } = createInstances({
+      features: allFeatures,
       config,
     });
 
-    const routeInfo = extractRouteInfoFromInstanceTree(rootInstances);
+    const appContext = createLegacyAppContext(
+      allFeatures.filter(
+        (f): f is BackstagePlugin => f.$$type === '@backstage/BackstagePlugin',
+      ),
+    );
 
-    const coreInstance = rootInstances.find(({ id }) => id === 'core');
-    if (!coreInstance) {
-      throw Error('Unable to find core extension instance');
-    }
-
-    const apiHolder = createApiHolder(coreInstance, config);
-
-    const appContext = createLegacyAppContext(allPlugins);
-
-    const rootElements = rootInstances
-      .map(e => (
-        <React.Fragment key={e.id}>
-          {e.getData(coreExtensionData.reactElement)}
-        </React.Fragment>
-      ))
-      .filter((x): x is JSX.Element => !!x);
+    const routeIds = collectRouteIds(allFeatures);
 
     const App = () => (
-      <ApiProvider apis={apiHolder}>
+      <ApiProvider apis={createApiHolder(coreInstance, config)}>
         <AppContextProvider appContext={appContext}>
           <AppThemeProvider>
-            <LegacyRoutingProvider
-              {...routeInfo}
-              routeBindings={new Map(/* TODO */)}
+            <RoutingProvider
+              {...extractRouteInfoFromInstanceTree(coreInstance)}
+              routeBindings={resolveRouteBindings(
+                options.bindRoutes,
+                config,
+                routeIds,
+              )}
             >
-              <RoutingProvider routePaths={routeInfo.routePaths}>
-                {/* TODO: set base path using the logic from AppRouter */}
-                <BrowserRouter>{rootElements}</BrowserRouter>
-              </RoutingProvider>
-            </LegacyRoutingProvider>
+              {/* TODO: set base path using the logic from AppRouter */}
+              <BrowserRouter>
+                {coreInstance.getData(coreExtensionData.reactElement)}
+              </BrowserRouter>
+            </RoutingProvider>
           </AppThemeProvider>
         </AppContextProvider>
       </ApiProvider>
@@ -464,9 +493,39 @@ function createApiHolder(
   });
 
   factoryRegistry.register('static', {
+    api: appLanguageApiRef,
+    deps: {},
+    factory: () => AppLanguageSelector.createWithStorage(),
+  });
+
+  factoryRegistry.register('default', {
+    api: translationApiRef,
+    deps: { languageApi: appLanguageApiRef },
+    factory: ({ languageApi }) =>
+      I18nextTranslationApi.create({
+        languageApi,
+      }),
+  });
+
+  factoryRegistry.register('static', {
     api: configApiRef,
     deps: {},
     factory: () => configApi,
+  });
+
+  factoryRegistry.register('static', {
+    api: appLanguageApiRef,
+    deps: {},
+    factory: () => AppLanguageSelector.createWithStorage(),
+  });
+
+  factoryRegistry.register('default', {
+    api: translationApiRef,
+    deps: { languageApi: appLanguageApiRef },
+    factory: ({ languageApi }) =>
+      I18nextTranslationApi.create({
+        languageApi,
+      }),
   });
 
   // TODO: ship these as default extensions instead

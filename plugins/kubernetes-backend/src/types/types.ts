@@ -21,9 +21,7 @@ import type {
   CustomResourceMatcher,
   FetchResponse,
   KubernetesFetchError,
-  KubernetesRequestAuth,
   KubernetesRequestBody,
-  ObjectsByEntityResponse,
 } from '@backstage/plugin-kubernetes-common';
 import { Config } from '@backstage/config';
 import { KubernetesCredential } from '../auth/types';
@@ -37,7 +35,7 @@ export interface ObjectFetchParams {
   clusterDetails: ClusterDetails;
   credential: KubernetesCredential;
   objectTypesToFetch: Set<ObjectToFetch>;
-  labelSelector: string;
+  labelSelector?: string;
   customResources: CustomResource[];
   namespace?: string;
 }
@@ -229,33 +227,3 @@ export interface KubernetesObjectsProviderOptions {
  * @public
  */
 export type ObjectsByEntityRequest = KubernetesRequestBody;
-
-/**
- *
- * @public
- */
-export interface KubernetesObjectsByEntity {
-  entity: Entity;
-  auth: KubernetesRequestAuth;
-}
-
-/**
- *
- * @public
- */
-export interface CustomResourcesByEntity extends KubernetesObjectsByEntity {
-  customResources: CustomResourceMatcher[];
-}
-
-/**
- *
- * @public
- */
-export interface KubernetesObjectsProvider {
-  getKubernetesObjectsByEntity(
-    kubernetesObjectsByEntity: KubernetesObjectsByEntity,
-  ): Promise<ObjectsByEntityResponse>;
-  getCustomResourcesByEntity(
-    customResourcesByEntity: CustomResourcesByEntity,
-  ): Promise<ObjectsByEntityResponse>;
-}

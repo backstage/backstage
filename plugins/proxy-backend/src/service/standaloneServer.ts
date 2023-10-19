@@ -17,7 +17,7 @@
 import {
   createServiceBuilder,
   loadBackendConfig,
-  SingleHostDiscovery,
+  HostDiscovery,
 } from '@backstage/backend-common';
 import { Server } from 'http';
 import { Logger } from 'winston';
@@ -37,7 +37,7 @@ export async function startStandaloneServer(
   logger.debug('Creating application...');
 
   const config = await loadBackendConfig({ logger, argv: process.argv });
-  const discovery = SingleHostDiscovery.fromConfig(config);
+  const discovery = HostDiscovery.fromConfig(config);
   const router = await createRouter({
     config,
     logger,

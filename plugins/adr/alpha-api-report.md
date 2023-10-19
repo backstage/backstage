@@ -24,7 +24,7 @@ export const adrTranslationRef: TranslationRef<
 >;
 
 // @alpha (undocumented)
-const _default: BackstagePlugin;
+const _default: BackstagePlugin<{}, {}>;
 export default _default;
 
 // (No @packageDocumentation comment for this package)

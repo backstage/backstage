@@ -11,10 +11,18 @@ on:
       - 'mkdocs.yml'
       - 'docs/**'
 
+permissions:
+  contents: read
+
 jobs:
   noop:
     runs-on: ubuntu-latest
 
     name: Microsite
     steps:
+      - name: Harden Runner
+        uses: step-security/harden-runner@8ca2b8b2ece13480cda6dacd3511b49857a23c09 # v2.5.1
+        with:
+          egress-policy: audit
+
       - run: echo NOOP

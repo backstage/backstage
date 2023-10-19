@@ -113,7 +113,7 @@ export class GithubDiscoveryProvider implements Provider {
     const query = `query repositories($org: String!, $cursor: String) {
       repositoryOwner(login: $org) {
         login
-        repositories(first: 100, after: $cursor) {
+        repositories(first: 50, after: $cursor) {
           nodes {
             name
             url

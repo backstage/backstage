@@ -1,5 +1,35 @@
 # @backstage/plugin-entity-validation
 
+## 0.1.10
+
+### Patch Changes
+
+- 9a1fce352e: Updated dependency `@testing-library/jest-dom` to `^6.0.0`.
+- f95af4e540: Updated dependency `@testing-library/dom` to `^9.0.0`.
+- Updated dependencies
+  - @backstage/plugin-catalog-react@1.8.5
+  - @backstage/core-plugin-api@1.7.0
+  - @backstage/core-components@0.13.6
+  - @backstage/catalog-model@1.4.3
+  - @backstage/errors@1.2.3
+  - @backstage/theme@0.4.3
+  - @backstage/catalog-client@1.4.5
+  - @backstage/plugin-catalog-common@1.0.17
+
+## 0.1.10-next.2
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/core-components@0.13.6-next.2
+  - @backstage/core-plugin-api@1.7.0-next.1
+  - @backstage/catalog-model@1.4.3-next.0
+  - @backstage/plugin-catalog-react@1.8.5-next.2
+  - @backstage/errors@1.2.3-next.0
+  - @backstage/theme@0.4.3-next.0
+  - @backstage/catalog-client@1.4.5-next.0
+  - @backstage/plugin-catalog-common@1.0.17-next.0
+
 ## 0.1.10-next.1
 
 ### Patch Changes

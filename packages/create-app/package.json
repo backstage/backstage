@@ -1,7 +1,7 @@
 {
   "name": "@backstage/create-app",
   "description": "A CLI that helps you create your own Backstage app",
-  "version": "0.5.6-next.1",
+  "version": "0.5.6",
   "publishConfig": {
     "access": "public"
   },
@@ -42,6 +42,7 @@
     "recursive-readdir": "^2.2.2"
   },
   "devDependencies": {
+    "@backstage/backend-test-utils": "workspace:^",
     "@backstage/cli": "workspace:^",
     "@types/command-exists": "^1.2.0",
     "@types/fs-extra": "^9.0.1",

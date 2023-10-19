@@ -540,7 +540,7 @@ describe('helpers', () => {
   });
 
   describe('getMkdocsYml', () => {
-    const siteOptions = {
+    const defaultOptions = {
       name: mockEntity.metadata.title,
     };
 
@@ -550,7 +550,7 @@ describe('helpers', () => {
         path: mkdocsPath,
         content,
         configIsTemporary,
-      } = await getMkdocsYml(mockDir.path, siteOptions);
+      } = await getMkdocsYml(mockDir.path, defaultOptions);
 
       expect(mkdocsPath).toBe(mockDir.resolve('mkdocs.yml'));
       expect(content).toBe(mkdocsYml.toString());
@@ -563,14 +563,14 @@ describe('helpers', () => {
         path: mkdocsPath,
         content,
         configIsTemporary,
-      } = await getMkdocsYml(mockDir.path, siteOptions);
+      } = await getMkdocsYml(mockDir.path, defaultOptions);
       expect(mkdocsPath).toBe(mockDir.resolve('mkdocs.yaml'));
       expect(content).toBe(mkdocsYml.toString());
       expect(configIsTemporary).toBe(false);
     });
 
     it('returns expected contents when default file is present', async () => {
-      const defaultSiteOptions = {
+      const options = {
         name: 'Default Test site name',
       };
       const mockPathExists = jest.spyOn(fs, 'pathExists');
@@ -580,19 +580,47 @@ describe('helpers', () => {
         path: mkdocsPath,
         content,
         configIsTemporary,
-      } = await getMkdocsYml(mockDir.path, defaultSiteOptions);
+      } = await getMkdocsYml(mockDir.path, options);
 
       expect(mkdocsPath).toBe(mockDir.resolve('mkdocs.yml'));
       expect(content.split(/[\r\n]+/g)).toEqual(
         mkdocsDefaultYml.toString().split(/[\r\n]+/g),
       );
       expect(configIsTemporary).toBe(true);
+      mockPathExists.mockRestore();
     });
 
     it('throws when neither .yml nor .yaml nor default file is present', async () => {
       const invalidInputDir = resolvePath(__filename);
-      await expect(getMkdocsYml(invalidInputDir, siteOptions)).rejects.toThrow(
+      await expect(
+        getMkdocsYml(invalidInputDir, defaultOptions),
+      ).rejects.toThrow(
         /Could not read MkDocs YAML config file mkdocs.yml or mkdocs.yaml or default for validation/,
+      );
+    });
+
+    it('returns expected content when custom file is specified', async () => {
+      const options = { mkdocsConfigFileName: 'another-name.yaml' };
+      mockDir.setContent({ 'another-name.yaml': mkdocsYml });
+
+      const {
+        path: mkdocsPath,
+        content,
+        configIsTemporary,
+      } = await getMkdocsYml(mockDir.path, options);
+
+      expect(mkdocsPath).toBe(mockDir.resolve('another-name.yaml'));
+
+      expect(content).toBe(mkdocsYml.toString());
+      expect(configIsTemporary).toBe(false);
+    });
+
+    it('throws when specifying a specific mkdocs config file that does not exist', async () => {
+      const options = { mkdocsConfigFileName: 'another-name.yaml' };
+      mockDir.setContent({ 'mkdocs.yml': mkdocsDefaultYml });
+
+      await expect(getMkdocsYml(mockDir.path, options)).rejects.toThrow(
+        /The specified file .* does not exist/,
       );
     });
   });

@@ -14,7 +14,6 @@
  * limitations under the License.
  */
 
-import { RouteRef } from '@backstage/core-plugin-api';
 import React from 'react';
 import { ExtensionBoundary } from '../components';
 import { createSchemaFromZod, PortableSchema } from '../schema';
@@ -24,7 +23,9 @@ import {
   Extension,
   ExtensionInputValues,
 } from '../wiring';
-import { AnyExtensionInputMap, Expand } from '../wiring/createExtension';
+import { AnyExtensionInputMap } from '../wiring/createExtension';
+import { Expand } from '../types';
+import { RouteRef } from '../routing';
 
 /**
  * Helper for creating extensions for a routable React page component.
@@ -44,7 +45,7 @@ export function createPageExtension<
       }
   ) & {
     id: string;
-    at?: string;
+    attachTo?: { id: string; input: string };
     disabled?: boolean;
     inputs?: TInputs;
     routeRef?: RouteRef;
@@ -63,7 +64,7 @@ export function createPageExtension<
 
   return createExtension({
     id: options.id,
-    at: options.at ?? 'core.routes/routes',
+    attachTo: options.attachTo ?? { id: 'core.routes', input: 'routes' },
     disabled: options.disabled,
     output: {
       element: coreExtensionData.reactElement,

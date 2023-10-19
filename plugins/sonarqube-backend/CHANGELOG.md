@@ -1,5 +1,26 @@
 # @backstage/plugin-sonarqube-backend
 
+## 0.2.8
+
+### Patch Changes
+
+- a5d592d0ad: Added support for the [new backend system](https://backstage.io/docs/backend-system/)
+- Updated dependencies
+  - @backstage/backend-common@0.19.8
+  - @backstage/errors@1.2.3
+  - @backstage/backend-plugin-api@0.6.6
+  - @backstage/config@1.1.1
+
+## 0.2.8-next.2
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-common@0.19.8-next.2
+  - @backstage/errors@1.2.3-next.0
+  - @backstage/backend-plugin-api@0.6.6-next.2
+  - @backstage/config@1.1.1-next.0
+
 ## 0.2.7-next.1
 
 ### Patch Changes

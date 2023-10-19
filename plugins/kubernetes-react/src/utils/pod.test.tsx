@@ -24,18 +24,18 @@ import { SubvalueCell } from '@backstage/core-components';
 
 describe('pod', () => {
   describe('currentToDeclaredResourceToPerc', () => {
-    it('10%', () => {
-      const tests: (number | string)[][] = [
-        [10, 100],
-        [10, '100'],
-        ['10', 100],
-        ['10', '100'],
-      ];
-      tests.forEach(([a, b]) => {
-        const result = currentToDeclaredResourceToPerc(a, b);
-        expect(result).toBe('10%');
-      });
-    });
+    it.each([
+      [10, 100],
+      [10, '100'],
+      ['10', 100],
+      ['10', '100'],
+      ['10', 100.0],
+      [10.0, '100'],
+      [10.1, '100'],
+      ['10', 100.1],
+    ])('%p out of %p gives 10%%', (current, resource) =>
+      expect(currentToDeclaredResourceToPerc(current, resource)).toBe('10%'),
+    );
   });
   describe('podStatusToCpuUtil', () => {
     it('does use correct units', () => {

@@ -29,6 +29,7 @@ export type OAuthState = {
   scope?: string;
   redirectUrl?: string;
   flow?: string;
+  audience?: string;
 };
 
 /** @public */

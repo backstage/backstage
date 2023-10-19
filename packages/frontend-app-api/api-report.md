@@ -7,13 +7,33 @@ import { BackstagePlugin } from '@backstage/frontend-plugin-api';
 import { Config } from '@backstage/config';
 import { ConfigApi } from '@backstage/core-plugin-api';
 import { ExtensionDataRef } from '@backstage/frontend-plugin-api';
+import { ExtensionOverrides } from '@backstage/frontend-plugin-api';
+import { ExternalRouteRef } from '@backstage/frontend-plugin-api';
 import { JSX as JSX_2 } from 'react';
+import { RouteRef } from '@backstage/frontend-plugin-api';
+import { SubRouteRef } from '@backstage/frontend-plugin-api';
+
+// @public
+export type AppRouteBinder = <
+  TExternalRoutes extends {
+    [name: string]: ExternalRouteRef;
+  },
+>(
+  externalRoutes: TExternalRoutes,
+  targetRoutes: PartialKeys<
+    TargetRouteMap<TExternalRoutes>,
+    KeysWithType<TExternalRoutes, ExternalRouteRef<any, true>>
+  >,
+) => void;
 
 // @public (undocumented)
 export function createApp(options: {
-  plugins: BackstagePlugin[];
+  features?: (BackstagePlugin | ExtensionOverrides)[];
   configLoader?: () => Promise<ConfigApi>;
-  pluginLoader?: (ctx: { config: ConfigApi }) => Promise<BackstagePlugin[]>;
+  bindRoutes?(context: { bind: AppRouteBinder }): void;
+  featureLoader?: (ctx: {
+    config: ConfigApi;
+  }) => Promise<(BackstagePlugin | ExtensionOverrides)[]>;
 }): {
   createRoot(): JSX_2.Element;
 };

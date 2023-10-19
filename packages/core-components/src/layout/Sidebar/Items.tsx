@@ -312,7 +312,11 @@ const sidebarSubmenuType = React.createElement(SidebarSubmenu).type;
 //               properly yet, matching for example /foobar with /foo.
 export const WorkaroundNavLink = React.forwardRef<
   HTMLAnchorElement,
-  NavLinkProps & { activeStyle?: CSSProperties; activeClassName?: string }
+  NavLinkProps & {
+    children?: ReactNode;
+    activeStyle?: CSSProperties;
+    activeClassName?: string;
+  }
 >(function WorkaroundNavLinkWithRef(
   {
     to,
@@ -361,7 +365,10 @@ export const WorkaroundNavLink = React.forwardRef<
 /**
  * Common component used by SidebarItem & SidebarItemWithSubmenu
  */
-const SidebarItemBase = forwardRef<any, SidebarItemProps>((props, ref) => {
+const SidebarItemBase = forwardRef<
+  any,
+  SidebarItemProps & { children: ReactNode }
+>((props, ref) => {
   const {
     icon: Icon,
     text,
@@ -553,7 +560,10 @@ const SidebarItemWithSubmenu = ({
  * @remarks
  * If children contain a `SidebarSubmenu` component the `SidebarItem` will have a expandable submenu
  */
-export const SidebarItem = forwardRef<any, SidebarItemProps>((props, ref) => {
+export const SidebarItem = forwardRef<
+  any,
+  SidebarItemProps & { children: ReactNode }
+>((props, ref) => {
   // Filter children for SidebarSubmenu components
   const [submenu] = useElementFilter(props.children, elements =>
     // Directly comparing child.type with SidebarSubmenu will not work with in

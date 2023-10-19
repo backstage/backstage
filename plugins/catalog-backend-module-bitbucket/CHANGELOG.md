@@ -1,5 +1,33 @@
 # @backstage/plugin-catalog-backend-module-bitbucket
 
+## 0.2.21
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-common@0.19.8
+  - @backstage/integration@1.7.1
+  - @backstage/plugin-catalog-node@1.4.7
+  - @backstage/catalog-model@1.4.3
+  - @backstage/errors@1.2.3
+  - @backstage/plugin-bitbucket-cloud-common@0.2.13
+  - @backstage/config@1.1.1
+  - @backstage/types@1.1.1
+
+## 0.2.21-next.2
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-common@0.19.8-next.2
+  - @backstage/catalog-model@1.4.3-next.0
+  - @backstage/integration@1.7.1-next.1
+  - @backstage/errors@1.2.3-next.0
+  - @backstage/plugin-catalog-node@1.4.7-next.2
+  - @backstage/config@1.1.1-next.0
+  - @backstage/types@1.1.1
+  - @backstage/plugin-bitbucket-cloud-common@0.2.13-next.1
+
 ## 0.2.20-next.1
 
 ### Patch Changes

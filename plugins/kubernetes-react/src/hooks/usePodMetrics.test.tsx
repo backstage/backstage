@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 import React from 'react';
-import { renderHook } from '@testing-library/react-hooks';
+import { renderHook } from '@testing-library/react';
 import { PodMetricsContext, usePodMetrics } from './usePodMetrics';
 import { ClientPodStatus } from '@backstage/plugin-kubernetes-common';
 

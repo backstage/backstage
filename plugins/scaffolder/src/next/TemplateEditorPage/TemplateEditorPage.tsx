@@ -22,9 +22,11 @@ import {
 import { CustomFieldExplorer } from './CustomFieldExplorer';
 import { TemplateEditor } from './TemplateEditor';
 import { TemplateFormPreviewer } from './TemplateFormPreviewer';
-import { type LayoutOptions } from '@backstage/plugin-scaffolder-react';
-import { NextFieldExtensionOptions } from '@backstage/plugin-scaffolder-react/alpha';
-import { TemplateEditorIntro } from '../../components/TemplateEditorPage/TemplateEditorIntro';
+import {
+  FieldExtensionOptions,
+  type LayoutOptions,
+} from '@backstage/plugin-scaffolder-react';
+import { TemplateEditorIntro } from './TemplateEditorIntro';
 
 type Selection =
   | {
@@ -40,7 +42,7 @@ type Selection =
 
 interface TemplateEditorPageProps {
   defaultPreviewTemplate?: string;
-  customFieldExtensions?: NextFieldExtensionOptions<any, any>[];
+  customFieldExtensions?: FieldExtensionOptions<any, any>[];
   layouts?: LayoutOptions[];
 }
 

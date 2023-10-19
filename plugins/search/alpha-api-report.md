@@ -5,9 +5,15 @@
 ```ts
 import { BackstagePlugin } from '@backstage/frontend-plugin-api';
 import { Extension } from '@backstage/frontend-plugin-api';
+import { RouteRef } from '@backstage/frontend-plugin-api';
 
 // @alpha (undocumented)
-const _default: BackstagePlugin;
+const _default: BackstagePlugin<
+  {
+    root: RouteRef<undefined>;
+  },
+  {}
+>;
 export default _default;
 
 // @alpha (undocumented)
