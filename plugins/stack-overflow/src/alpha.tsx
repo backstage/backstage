@@ -44,5 +44,6 @@ const StackOverflowSearchResultListItem = createSearchResultListItemExtension({
 /** @alpha */
 export default createPlugin({
   id: 'stack-overflow',
+  // TODO: Migrate homepage cards when the declarative homepage plugin supports them
   extensions: [StackOverflowApi, StackOverflowSearchResultListItem],
 });
