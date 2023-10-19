@@ -14,36 +14,23 @@
  * limitations under the License.
  */
 
-import { BackstageIdentityResponse } from '@backstage/plugin-auth-node';
 import { createRouter } from '@backstage/plugin-permission-backend';
 import {
   AuthorizeResult,
   PolicyDecision,
 } from '@backstage/plugin-permission-common';
-import {
-  PermissionPolicy,
-  PolicyQuery,
-} from '@backstage/plugin-permission-node';
-import {
-  DefaultPlaylistPermissionPolicy,
-  isPlaylistPermission,
-} from '@backstage/plugin-playlist-backend';
+import { DelegatedPermissionPolicy } from '@backstage/plugin-permission-node/alpha';
 import { Router } from 'express';
 import { PluginEnvironment } from '../types';
 
-class ExamplePermissionPolicy implements PermissionPolicy {
-  private playlistPermissionPolicy = new DefaultPlaylistPermissionPolicy();
+class ExamplePermissionPolicy extends DelegatedPermissionPolicy {
+  constructor() {
+    super([]);
+  }
 
-  async handle(
-    request: PolicyQuery,
-    user?: BackstageIdentityResponse,
-  ): Promise<PolicyDecision> {
-    if (isPlaylistPermission(request.permission)) {
-      return this.playlistPermissionPolicy.handle(request, user);
-    }
-
+  async handleUndelegated(): Promise<PolicyDecision> {
     return {
-      result: AuthorizeResult.ALLOW,
+      result: AuthorizeResult.DENY,
     };
   }
 }
@@ -55,7 +42,7 @@ export default async function createPlugin(
     config: env.config,
     logger: env.logger,
     discovery: env.discovery,
-    policy: new ExamplePermissionPolicy(),
     identity: env.identity,
+    policy: new ExamplePermissionPolicy(),
   });
 }

@@ -15,3 +15,5 @@
  */
 
 export { type PolicyExtensionPoint, policyExtensionPoint } from './plugin';
+export { type DecisionDelegate, createDecisionDelegate } from './policy/types';
+export { DelegatedPermissionPolicy } from './policy/DelegatedPermissionPolicy';

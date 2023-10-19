@@ -15,6 +15,7 @@
  */
 
 import {
+  isPermission,
   Permission,
   PolicyDecision,
 } from '@backstage/plugin-permission-common';
@@ -33,6 +34,63 @@ import { BackstageIdentityResponse } from '@backstage/plugin-auth-node';
 export type PolicyQuery = {
   permission: Permission;
 };
+
+/**
+ * Export permission decisions that a {@link DelegatedPermissionPolicy} can use evaluate authorization request.
+ *
+ * @remarks
+ *
+ * Using this, plugin authors can export out-of-the-box permission decisions for their plugins that integrators can
+ * use to compose their policies with. The `match` function determines whether this delegate is a match for a given
+ * PolicyQuery, and the `build` function returns the {@link @backstage/plugin-permission-common#PolicyDecision} for it.
+ *
+ * @public
+ */
+export type DecisionDelegate<TPermissionType extends Permission = Permission> =
+  {
+    name: string;
+    description: string;
+    match: (request: { permission: TPermissionType }) => boolean;
+    build: (
+      request: { permission: TPermissionType },
+      user?: BackstageIdentityResponse,
+    ) => PolicyDecision;
+  };
+
+/**
+ * Utility function for creating {@link DecisionDelegate}
+ * @public
+ */
+export function createDecisionDelegate<TPermissionType extends Permission>({
+  name,
+  description,
+  build,
+  match,
+}: {
+  name: string;
+  description: string;
+  match:
+    | TPermissionType[]
+    | ((request: { permission: TPermissionType }) => boolean);
+  build: (
+    request: {
+      permission: TPermissionType;
+    },
+    user?: BackstageIdentityResponse,
+  ) => PolicyDecision;
+}): DecisionDelegate<TPermissionType> {
+  const matchFnc = Array.isArray(match)
+    ? (request: { permission: TPermissionType }) =>
+        match.some(permission => isPermission(request.permission, permission))
+    : match;
+
+  return {
+    name,
+    description,
+    build,
+    match: matchFnc,
+  };
+}
 
 /**
  * A policy to evaluate authorization requests for any permissioned action performed in Backstage.
