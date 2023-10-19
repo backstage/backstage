@@ -43,6 +43,7 @@ import {
   PackageGraphNode,
 } from '@backstage/cli-node';
 import { runParallelWorkers } from '../parallel';
+import packageManager from './packageManager';
 
 // These packages aren't safe to pack in parallel since the CLI depends on them
 const UNSAFE_PACKAGES = [
@@ -217,7 +218,7 @@ export async function createDistWorkspace(
       await runParallelWorkers({
         items: customBuild,
         worker: async ({ name, dir, args }) => {
-          await run('yarn', ['run', 'build', ...(args || [])], {
+          await run(packageManager.command, ['run', 'build', ...(args || [])], {
             cwd: dir,
             stdoutLogFunc: prefixLogFunc(`${name}: `, 'stdout'),
             stderrLogFunc: prefixLogFunc(`${name}: `, 'stderr'),
@@ -233,7 +234,10 @@ export async function createDistWorkspace(
     Boolean(options.alwaysYarnPack),
   );
 
-  const files: FileEntry[] = options.files ?? ['yarn.lock', 'package.json'];
+  const files: FileEntry[] = options.files ?? [
+    packageManager.lockfile,
+    'package.json',
+  ];
 
   for (const file of files) {
     const src = typeof file === 'string' ? file : file.src;
@@ -302,12 +306,12 @@ async function moveToDistWorkspace(
     console.log(`Repacking ${target.name} into dist workspace`);
     const archivePath = resolvePath(workspaceDir, archive);
 
-    await run('yarn', ['pack', '--filename', archivePath], {
+    await run(packageManager.command, ['pack', '--filename', archivePath], {
       cwd: target.dir,
     });
     // TODO(Rugvip): yarn pack doesn't call postpack, once the bug is fixed this can be removed
     if (target.packageJson?.scripts?.postpack) {
-      await run('yarn', ['postpack'], { cwd: target.dir });
+      await run(packageManager.command, ['postpack'], { cwd: target.dir });
     }
 
     const outputDir = relativePath(paths.targetRoot, target.dir);
