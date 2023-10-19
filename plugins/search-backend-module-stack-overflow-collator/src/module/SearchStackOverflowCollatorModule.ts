@@ -21,20 +21,14 @@ import {
   createBackendModule,
 } from '@backstage/backend-plugin-api';
 import { searchIndexRegistryExtensionPoint } from '@backstage/plugin-search-backend-node/alpha';
-import { StackOverflowQuestionsCollatorFactory } from './collators';
+import { StackOverflowQuestionsCollatorFactory } from '../collators';
 
 /**
- * @packageDocumentation
- * A module for the search backend that exports Stack Overflow modules.
- */
-
-/**
+ * @public
  * Search backend module for the Stack Overflow index.
- *
- * @alpha
  */
-export default createBackendModule({
-  moduleId: 'stackoverflowCollator',
+export const searchStackOverflowCollatorModule = createBackendModule({
+  moduleId: 'stackOverflowCollator',
   pluginId: 'search',
   register(env) {
     env.registerInit({

@@ -16,9 +16,9 @@
 
 import { mockServices, startTestBackend } from '@backstage/backend-test-utils';
 import { searchIndexRegistryExtensionPoint } from '@backstage/plugin-search-backend-node/alpha';
-import searchModuleStackOverflowCollator from './alpha';
+import { searchStackOverflowCollatorModule } from './SearchStackOverflowCollatorModule';
 
-describe('searchModuleStackOverflowCollator', () => {
+describe('searchStackOverflowCollatorModule', () => {
   const schedule = {
     frequency: { minutes: 10 },
     timeout: { minutes: 15 },
@@ -35,7 +35,7 @@ describe('searchModuleStackOverflowCollator', () => {
         [searchIndexRegistryExtensionPoint, extensionPointMock],
       ],
       features: [
-        searchModuleStackOverflowCollator(),
+        searchStackOverflowCollatorModule(),
         mockServices.rootConfig.factory({
           data: {
             stackoverflow: {

@@ -14,10 +14,4 @@
  * limitations under the License.
  */
 
-/**
- * @packageDocumentation
- * A module for the search backend that exports Stack Overflow modules.
- */
-
-export * from './collators';
-export { searchStackOverflowCollatorModule as default } from './module';
+export { searchStackOverflowCollatorModule } from './SearchStackOverflowCollatorModule';
