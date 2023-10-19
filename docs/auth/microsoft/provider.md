@@ -17,7 +17,7 @@ If you have an existing App Registration for Backstage, use that rather than cre
 
 On your app registration's overview page, add a new `Web` platform configuration, with the configuration:
 
-- **Redirect URI**: `http://your-backstage.com/api/auth/microsoft/handler/frame` (for local dev, typically `http://localhost:7007/api/auth/microsoft/handler/frame`)
+- **Redirect URI**: `https://your-backstage.com/api/auth/microsoft/handler/frame` (for local dev, typically `http://localhost:7007/api/auth/microsoft/handler/frame`)
 - **Front-channel logout Url**: blank
 - **Implicit grant and hybrid flows**: All unchecked
 
