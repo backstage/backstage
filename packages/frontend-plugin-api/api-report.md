@@ -338,6 +338,10 @@ export interface ExtensionBoundaryProps {
   // (undocumented)
   children: ReactNode;
   // (undocumented)
+  id: string;
+  // (undocumented)
+  routable?: boolean;
+  // (undocumented)
   source?: BackstagePlugin;
 }
 

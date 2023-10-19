@@ -51,7 +51,6 @@ import {
   rootRouteRef,
   viewTechDocRouteRef,
 } from './routes';
-import { Progress } from '@backstage/core-components';
 import { useEntityFromUrl } from './components/CatalogEntityPage/useEntityFromUrl';
 
 /** @alpha */
@@ -97,8 +96,10 @@ export function createCatalogFilterExtension<
   configSchema?: PortableSchema<TConfig>;
   loader: (options: { config: TConfig }) => Promise<JSX.Element>;
 }) {
+  const id = `catalog.filter.${options.id}`;
+
   return createExtension({
-    id: `catalog.filter.${options.id}`,
+    id,
     attachTo: { id: 'plugin.catalog.page.index', input: 'filters' },
     inputs: options.inputs ?? {},
     configSchema: options.configSchema,
@@ -106,7 +107,7 @@ export function createCatalogFilterExtension<
       element: coreExtensionData.reactElement,
     },
     factory({ bind, config, source }) {
-      const LazyComponent = React.lazy(() =>
+      const ExtensionComponent = React.lazy(() =>
         options
           .loader({ config })
           .then(element => ({ default: () => element })),
@@ -114,10 +115,8 @@ export function createCatalogFilterExtension<
 
       bind({
         element: (
-          <ExtensionBoundary source={source}>
-            <React.Suspense fallback={<Progress />}>
-              <LazyComponent />
-            </React.Suspense>
+          <ExtensionBoundary id={id} source={source}>
+            <ExtensionComponent />
           </ExtensionBoundary>
         ),
       });

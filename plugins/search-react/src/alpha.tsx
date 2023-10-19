@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import React, { lazy, Suspense } from 'react';
+import React, { lazy } from 'react';
 
 import { ListItemProps } from '@material-ui/core';
 
@@ -25,7 +25,6 @@ import {
   createExtensionDataRef,
   createSchemaFromZod,
 } from '@backstage/frontend-plugin-api';
-import { Progress } from '@backstage/core-components';
 import { SearchDocument, SearchResult } from '@backstage/plugin-search-common';
 
 import { SearchResultListItemExtension } from './extensions';
@@ -87,6 +86,8 @@ export type SearchResultItemExtensionOptions<
 export function createSearchResultListItemExtension<
   TConfig extends { noTrack?: boolean },
 >(options: SearchResultItemExtensionOptions<TConfig>) {
+  const id = `plugin.search.result.item.${options.id}`;
+
   const configSchema =
     'configSchema' in options
       ? options.configSchema
@@ -95,15 +96,19 @@ export function createSearchResultListItemExtension<
             noTrack: z.boolean().default(false),
           }),
         ) as PortableSchema<TConfig>);
+
   return createExtension({
-    id: `plugin.search.result.item.${options.id}`,
-    attachTo: options.attachTo ?? { id: 'plugin.search.page', input: 'items' },
+    id,
+    attachTo: options.attachTo ?? {
+      id: 'plugin.search.page',
+      input: 'items',
+    },
     configSchema,
     output: {
       item: searchResultItemExtensionData,
     },
     factory({ bind, config, source }) {
-      const LazyComponent = lazy(() =>
+      const ExtensionComponent = lazy(() =>
         options
           .component({ config })
           .then(component => ({ default: component })),
@@ -113,16 +118,14 @@ export function createSearchResultListItemExtension<
         item: {
           predicate: options.predicate,
           component: props => (
-            <ExtensionBoundary source={source}>
-              <Suspense fallback={<Progress />}>
-                <SearchResultListItemExtension
-                  rank={props.rank}
-                  result={props.result}
-                  noTrack={config.noTrack}
-                >
-                  <LazyComponent {...props} />
-                </SearchResultListItemExtension>
-              </Suspense>
+            <ExtensionBoundary id={id} source={source}>
+              <SearchResultListItemExtension
+                rank={props.rank}
+                result={props.result}
+                noTrack={config.noTrack}
+              >
+                <ExtensionComponent {...props} />
+              </SearchResultListItemExtension>
             </ExtensionBoundary>
           ),
         },
