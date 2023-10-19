@@ -89,11 +89,6 @@ export function createSearchResultListItemExtension<
 >(options: SearchResultItemExtensionOptions<TConfig>) {
   const id = `plugin.search.result.item.${options.id}`;
 
-  const attachTo = options.attachTo ?? {
-    id: 'plugin.search.page',
-    input: 'items',
-  };
-
   const configSchema =
     'configSchema' in options
       ? options.configSchema
@@ -105,7 +100,10 @@ export function createSearchResultListItemExtension<
 
   return createExtension({
     id,
-    attachTo,
+    attachTo: options.attachTo ?? {
+      id: 'plugin.search.page',
+      input: 'items',
+    },
     configSchema,
     output: {
       item: searchResultItemExtensionData,
