@@ -14,30 +14,40 @@
  * limitations under the License.
  */
 
-import { FlatRoutes } from '@backstage/core-app-api';
+import { AppRouter, FlatRoutes } from '@backstage/core-app-api';
 import { PuppetDbPage } from '@backstage/plugin-puppetdb';
 import { StackstormPage } from '@backstage/plugin-stackstorm';
 import { ScoreBoardPage } from '@oriflame/backstage-plugin-score-card';
-import React from 'react';
+import React, { ReactNode } from 'react';
 import { Route } from 'react-router-dom';
+import { convertLegacyApp } from './convertLegacyApp';
 
-import { collectLegacyRoutes } from './collectLegacyRoutes';
+const Root = ({ children }: { children: ReactNode }) => <>{children}</>;
 
-describe('collectLegacyRoutes', () => {
-  it('should collect legacy routes', () => {
-    const collected = collectLegacyRoutes(
-      <FlatRoutes>
-        <Route path="/score-board" element={<ScoreBoardPage />} />
-        <Route path="/stackstorm" element={<StackstormPage />} />
-        <Route path="/puppetdb" element={<PuppetDbPage />} />
-        <Route path="/puppetdb" element={<PuppetDbPage />} />
-      </FlatRoutes>,
+describe('convertLegacyApp', () => {
+  it('should find and extract root and routes', () => {
+    const collected = convertLegacyApp(
+      <>
+        <div />
+        <span />
+        <AppRouter>
+          <div />
+          <Root>
+            <FlatRoutes>
+              <Route path="/score-board" element={<ScoreBoardPage />} />
+              <Route path="/stackstorm" element={<StackstormPage />} />
+              <Route path="/puppetdb" element={<PuppetDbPage />} />
+              <Route path="/puppetdb" element={<PuppetDbPage />} />
+            </FlatRoutes>
+          </Root>
+        </AppRouter>
+      </>,
     );
 
     expect(
-      collected.map(p => ({
+      collected.map((p: any /* TODO */) => ({
         id: p.id,
-        extensions: p.extensions.map(e => ({
+        extensions: p.extensions.map((e: any) => ({
           id: e.id,
           attachTo: e.attachTo,
           disabled: e.disabled,
@@ -96,6 +106,21 @@ describe('collectLegacyRoutes', () => {
             id: 'apis.plugin.puppetdb.service',
             attachTo: { id: 'core', input: 'apis' },
             disabled: false,
+          },
+        ],
+      },
+      {
+        id: undefined,
+        extensions: [
+          {
+            id: 'core.layout',
+            attachTo: { id: 'core', input: 'root' },
+            disabled: false,
+          },
+          {
+            id: 'core.nav',
+            attachTo: { id: 'core.layout', input: 'nav' },
+            disabled: true,
           },
         ],
       },

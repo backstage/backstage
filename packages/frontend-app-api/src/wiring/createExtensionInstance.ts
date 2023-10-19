@@ -63,6 +63,7 @@ function resolveInputs(
   const undeclaredAttachments = Array.from(attachments.entries()).filter(
     ([inputName]) => inputMap[inputName] === undefined,
   );
+  // TODO: Make this a warning rather than an error
   if (undeclaredAttachments.length > 0) {
     throw new Error(
       `received undeclared input${

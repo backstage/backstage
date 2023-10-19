@@ -62,7 +62,10 @@ Existing tasks:
 export function collectLegacyRoutes(
   flatRoutesElement: JSX.Element,
 ): BackstagePlugin[] {
-  const results = new Array<BackstagePlugin>();
+  const createdPluginIds = new Map<
+    LegacyBackstagePlugin,
+    Extension<unknown>[]
+  >();
 
   React.Children.forEach(
     flatRoutesElement.props.children,
@@ -93,13 +96,18 @@ export function collectLegacyRoutes(
       );
 
       const pluginId = plugin.getId();
-      const path: string = route.props.path;
 
-      const detectedExtensions = new Array<Extension<unknown>>();
+      const detectedExtensions =
+        createdPluginIds.get(plugin) ?? new Array<Extension<unknown>>();
+      createdPluginIds.set(plugin, detectedExtensions);
+
+      const path: string = route.props.path;
 
       detectedExtensions.push(
         createPageExtension({
-          id: `plugin.${pluginId}.page`,
+          id: `plugin.${pluginId}.page${
+            detectedExtensions.length ? detectedExtensions.length + 1 : ''
+          }`,
           defaultPath: path[0] === '/' ? path.slice(1) : path,
           routeRef: routeRef ? convertLegacyRouteRef(routeRef) : undefined,
 
@@ -115,23 +123,20 @@ export function collectLegacyRoutes(
             ),
         }),
       );
+    },
+  );
 
-      detectedExtensions.push(
+  return Array.from(createdPluginIds).map(([plugin, extensions]) =>
+    createPlugin({
+      id: plugin.getId(),
+      extensions: [
+        ...extensions,
         ...Array.from(plugin.getApis()).map(factory =>
           createApiExtension({
             factory,
           }),
         ),
-      );
-
-      results.push(
-        createPlugin({
-          id: plugin.getId(),
-          extensions: detectedExtensions,
-        }),
-      );
-    },
+      ],
+    }),
   );
-
-  return results;
 }
