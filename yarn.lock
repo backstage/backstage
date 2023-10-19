@@ -8846,6 +8846,25 @@ __metadata:
   languageName: unknown
   linkType: soft
 
+"@backstage/plugin-search-backend-module-stack-overflow-collator@workspace:^, @backstage/plugin-search-backend-module-stack-overflow-collator@workspace:plugins/search-backend-module-stack-overflow-collator":
+  version: 0.0.0-use.local
+  resolution: "@backstage/plugin-search-backend-module-stack-overflow-collator@workspace:plugins/search-backend-module-stack-overflow-collator"
+  dependencies:
+    "@backstage/backend-common": "workspace:^"
+    "@backstage/backend-plugin-api": "workspace:^"
+    "@backstage/backend-tasks": "workspace:^"
+    "@backstage/backend-test-utils": "workspace:^"
+    "@backstage/cli": "workspace:^"
+    "@backstage/config": "workspace:^"
+    "@backstage/plugin-search-backend-node": "workspace:^"
+    "@backstage/plugin-search-common": "workspace:^"
+    msw: ^1.2.1
+    node-fetch: ^2.6.7
+    qs: ^6.9.4
+    winston: ^3.2.1
+  languageName: unknown
+  linkType: soft
+
 "@backstage/plugin-search-backend-module-techdocs@workspace:^, @backstage/plugin-search-backend-module-techdocs@workspace:plugins/search-backend-module-techdocs":
   version: 0.0.0-use.local
   resolution: "@backstage/plugin-search-backend-module-techdocs@workspace:plugins/search-backend-module-techdocs"
@@ -9189,6 +9208,7 @@ __metadata:
     "@backstage/backend-test-utils": "workspace:^"
     "@backstage/cli": "workspace:^"
     "@backstage/config": "workspace:^"
+    "@backstage/plugin-search-backend-module-stack-overflow-collator": "workspace:^"
     "@backstage/plugin-search-backend-node": "workspace:^"
     "@backstage/plugin-search-common": "workspace:^"
     msw: ^1.0.0
@@ -9208,6 +9228,7 @@ __metadata:
     "@backstage/core-components": "workspace:^"
     "@backstage/core-plugin-api": "workspace:^"
     "@backstage/dev-utils": "workspace:^"
+    "@backstage/frontend-plugin-api": "workspace:^"
     "@backstage/plugin-home-react": "workspace:^"
     "@backstage/plugin-search-common": "workspace:^"
     "@backstage/plugin-search-react": "workspace:^"
@@ -25313,7 +25334,6 @@ __metadata:
     "@backstage/plugin-search-react": "workspace:^"
     "@backstage/plugin-sentry": "workspace:^"
     "@backstage/plugin-shortcuts": "workspace:^"
-    "@backstage/plugin-stack-overflow": "workspace:^"
     "@backstage/plugin-stackstorm": "workspace:^"
     "@backstage/plugin-tech-insights": "workspace:^"
     "@backstage/plugin-tech-radar": "workspace:^"
