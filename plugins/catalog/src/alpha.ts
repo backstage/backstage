@@ -14,5 +14,5 @@
  * limitations under the License.
  */
 
-export { isOwnerOf } from './utils';
-export { useEntityPermission } from './hooks/useEntityPermission';
+export * from './alpha/index';
+export { default } from './alpha/index';

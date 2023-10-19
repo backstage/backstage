@@ -38,6 +38,11 @@ import {
   entityRouteRef,
   starredEntitiesApiRef,
 } from '@backstage/plugin-catalog-react';
+import {
+  createEntityContentExtension,
+  createEntityCardExtension,
+  entityContentTitleExtensionDataRef,
+} from '@backstage/plugin-catalog-react/alpha';
 import { createSearchResultListItemExtension } from '@backstage/plugin-search-react/alpha';
 import { DefaultStarredEntitiesApi } from '../apis';
 import {
@@ -48,6 +53,7 @@ import {
 } from '../routes';
 import { builtInFilterExtensions } from './builtInFilterExtensions';
 import { useEntityFromUrl } from '../components/CatalogEntityPage/useEntityFromUrl';
+import Grid from '@material-ui/core/Grid';
 
 /** @alpha */
 export const CatalogApi = createApiExtension({
@@ -102,16 +108,64 @@ const CatalogEntityPage = createPageExtension({
   id: 'plugin.catalog.page.entity',
   defaultPath: '/catalog/:namespace/:kind/:name',
   routeRef: convertLegacyRouteRef(entityRouteRef),
-  loader: async () => {
+  inputs: {
+    contents: createExtensionInput({
+      element: coreExtensionData.reactElement,
+      path: coreExtensionData.routePath,
+      routeRef: coreExtensionData.routeRef.optional(),
+      title: entityContentTitleExtensionDataRef,
+    }),
+  },
+  loader: async ({ inputs }) => {
+    const { EntityLayout } = await import('../components/EntityLayout');
     const Component = () => {
       return (
         <AsyncEntityProvider {...useEntityFromUrl()}>
-          <div>🚧 Work In Progress</div>
+          <EntityLayout>
+            {inputs.contents.map(content => (
+              <EntityLayout.Route
+                key={content.path}
+                path={content.path}
+                title={content.title}
+              >
+                {content.element}
+              </EntityLayout.Route>
+            ))}
+          </EntityLayout>
         </AsyncEntityProvider>
       );
     };
     return <Component />;
   },
+});
+
+const EntityAboutCard = createEntityCardExtension({
+  id: 'about',
+  loader: async () =>
+    import('../components/AboutCard').then(m => (
+      <m.AboutCard variant="gridItem" />
+    )),
+});
+
+const OverviewEntityContent = createEntityContentExtension({
+  id: 'overview',
+  defaultPath: '/',
+  defaultTitle: 'Overview',
+  disabled: false,
+  inputs: {
+    cards: createExtensionInput({
+      element: coreExtensionData.reactElement,
+    }),
+  },
+  loader: async ({ inputs }) => (
+    <Grid container spacing={3} alignItems="stretch">
+      {inputs.cards.map(card => (
+        <Grid item md={6} xs={12}>
+          {card.element}
+        </Grid>
+      ))}
+    </Grid>
+  ),
 });
 
 const CatalogNavItem = createNavItemExtension({
@@ -140,6 +194,8 @@ export default createPlugin({
     CatalogIndexPage,
     CatalogEntityPage,
     CatalogNavItem,
+    OverviewEntityContent,
+    EntityAboutCard,
     ...builtInFilterExtensions,
   ],
 });
