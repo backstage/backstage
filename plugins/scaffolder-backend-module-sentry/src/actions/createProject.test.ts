@@ -18,6 +18,7 @@ import { JsonObject } from '@backstage/types';
 import { createSentryCreateProjectAction } from './createProject';
 import { ActionContext } from '@backstage/plugin-scaffolder-node';
 import { InputError } from '@backstage/errors';
+import { randomBytes } from 'crypto';
 
 describe('sentry:project:create action', () => {
   const createScaffolderConfig = (configData: JsonObject = {}) => ({
@@ -63,7 +64,7 @@ describe('sentry:project:create action', () => {
       organizationSlug: 'org',
       teamSlug: 'team',
       name: 'test project',
-      authToken: '008hsd7f7123hhdsfhfds7123123881239889fdsaf1g',
+      authToken: randomBytes(5).toString('hex'),
     },
     output: jest.fn(),
   });
@@ -120,8 +121,7 @@ describe('sentry:project:create action', () => {
   });
 
   test('should take Sentry auth token from scaffolder config when input authToken is missing.', async () => {
-    const sentryScaffolderConfigToken =
-      'scaffolder app-config.yaml scaffolder token';
+    const sentryScaffolderConfigToken = randomBytes(5).toString('hex');
     const action = createSentryCreateProjectAction(
       createScaffolderConfig({
         sentry: {
