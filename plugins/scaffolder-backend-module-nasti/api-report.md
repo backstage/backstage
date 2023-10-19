@@ -22,7 +22,6 @@ export function createFetchNastiAction(options: {
     targetPath?: string | undefined;
     values: JsonObject;
     copyWithoutRender?: string[] | undefined;
-    extensions?: string[] | undefined;
     imageName?: string | undefined;
   },
   JsonObject
