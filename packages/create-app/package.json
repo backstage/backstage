@@ -38,7 +38,6 @@
     "fs-extra": "10.1.0",
     "handlebars": "^4.7.3",
     "inquirer": "^8.2.0",
-    "node-gyp": "^9.4.0",
     "ora": "^5.3.0",
     "recursive-readdir": "^2.2.2"
   },
