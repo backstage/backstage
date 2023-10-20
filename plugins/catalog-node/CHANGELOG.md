@@ -1,5 +1,18 @@
 # @backstage/plugin-catalog-node
 
+## 1.4.7
+
+### Patch Changes
+
+- 7a2e2924c7: Added docs to `processingResult`
+- Updated dependencies
+  - @backstage/catalog-model@1.4.3
+  - @backstage/errors@1.2.3
+  - @backstage/backend-plugin-api@0.6.6
+  - @backstage/catalog-client@1.4.5
+  - @backstage/types@1.1.1
+  - @backstage/plugin-catalog-common@1.0.17
+
 ## 1.4.7-next.2
 
 ### Patch Changes

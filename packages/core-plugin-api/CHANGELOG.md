@@ -1,5 +1,21 @@
 # @backstage/core-plugin-api
 
+## 1.7.0
+
+### Minor Changes
+
+- 322bbcae24: Removed the exprimental plugin configuration API. The `__experimentalReconfigure()` from the plugin options as well as the `__experimentalConfigure()` method on plugin instances have both been removed.
+
+### Patch Changes
+
+- 0b55f773a7: Removed some unused dependencies
+- 9a1fce352e: Updated dependency `@testing-library/jest-dom` to `^6.0.0`.
+- f95af4e540: Updated dependency `@testing-library/dom` to `^9.0.0`.
+- Updated dependencies
+  - @backstage/version-bridge@1.0.6
+  - @backstage/config@1.1.1
+  - @backstage/types@1.1.1
+
 ## 1.7.0-next.1
 
 ### Patch Changes

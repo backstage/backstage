@@ -1,5 +1,25 @@
 # @backstage/plugin-adr
 
+## 0.6.8
+
+### Patch Changes
+
+- 499e34656e: Fix icon alignment in `AdrSearchResultListItem`
+- 9a1fce352e: Updated dependency `@testing-library/jest-dom` to `^6.0.0`.
+- f95af4e540: Updated dependency `@testing-library/dom` to `^9.0.0`.
+- 1204e7628e: Create an experimental `AdrSearchResultItemExtension` for declarative integration with Backstage; it can be accessed via the `/alpha` import.
+- Updated dependencies
+  - @backstage/plugin-catalog-react@1.8.5
+  - @backstage/frontend-plugin-api@0.2.0
+  - @backstage/core-plugin-api@1.7.0
+  - @backstage/core-components@0.13.6
+  - @backstage/integration-react@1.1.20
+  - @backstage/catalog-model@1.4.3
+  - @backstage/plugin-search-react@1.7.1
+  - @backstage/theme@0.4.3
+  - @backstage/plugin-adr-common@0.2.16
+  - @backstage/plugin-search-common@1.2.7
+
 ## 0.6.8-next.2
 
 ### Patch Changes

@@ -1,5 +1,19 @@
 # @backstage/config-loader
 
+## 1.5.1
+
+### Patch Changes
+
+- 0b55f773a7: Removed some unused dependencies
+- 30c553c1d2: Updated dependency `typescript-json-schema` to `^0.61.0`.
+- 773ea341d2: The `FileConfigSource` will now retry file reading after a short delay if it reads an empty file. This is to avoid flakiness during watch mode where change events can trigger before the file content has been written.
+- a4617c422a: Added `watch` option to configuration loaders that can be used to disable file watching by setting it to `false`.
+- Updated dependencies
+  - @backstage/errors@1.2.3
+  - @backstage/cli-common@0.1.13
+  - @backstage/config@1.1.1
+  - @backstage/types@1.1.1
+
 ## 1.5.1-next.1
 
 ### Patch Changes

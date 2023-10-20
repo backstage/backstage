@@ -1,5 +1,21 @@
 # @backstage/plugin-ilert
 
+## 0.2.14
+
+### Patch Changes
+
+- 0b55f773a7: Removed some unused dependencies
+- 9c9a9100b0: Internal refactor to avoid using the deprecated `.icon.svg` extension.
+- 9a1fce352e: Updated dependency `@testing-library/jest-dom` to `^6.0.0`.
+- f95af4e540: Updated dependency `@testing-library/dom` to `^9.0.0`.
+- Updated dependencies
+  - @backstage/plugin-catalog-react@1.8.5
+  - @backstage/core-plugin-api@1.7.0
+  - @backstage/core-components@0.13.6
+  - @backstage/catalog-model@1.4.3
+  - @backstage/errors@1.2.3
+  - @backstage/theme@0.4.3
+
 ## 0.2.14-next.2
 
 ### Patch Changes

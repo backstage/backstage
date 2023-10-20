@@ -1,5 +1,18 @@
 # @backstage/plugin-nomad
 
+## 0.1.6
+
+### Patch Changes
+
+- 9a1fce352e: Updated dependency `@testing-library/jest-dom` to `^6.0.0`.
+- Updated dependencies
+  - @backstage/plugin-catalog-react@1.8.5
+  - @backstage/core-plugin-api@1.7.0
+  - @backstage/core-components@0.13.6
+  - @backstage/catalog-model@1.4.3
+  - @backstage/theme@0.4.3
+  - @backstage/config@1.1.1
+
 ## 0.1.6-next.2
 
 ### Patch Changes

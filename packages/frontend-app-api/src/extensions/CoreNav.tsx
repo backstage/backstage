@@ -20,8 +20,8 @@ import {
   coreExtensionData,
   createExtensionInput,
   NavTarget,
+  useRouteRef,
 } from '@backstage/frontend-plugin-api';
-import { useRouteRef } from '@backstage/core-plugin-api';
 import { makeStyles } from '@material-ui/core';
 import {
   Sidebar,
@@ -66,7 +66,7 @@ const SidebarLogo = () => {
 
 const SidebarNavItem = (props: NavTarget) => {
   const { icon: Icon, title, routeRef } = props;
-  const to = useRouteRef(routeRef)({});
+  const to = useRouteRef(routeRef)();
   // TODO: Support opening modal, for example, the search one
   return <SidebarItem to={to} icon={Icon} text={title} />;
 };

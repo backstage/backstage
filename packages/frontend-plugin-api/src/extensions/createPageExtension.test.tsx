@@ -15,9 +15,22 @@
  */
 
 import React from 'react';
+import { renderWithEffects, wrapInTestApp } from '@backstage/test-utils';
+import { useAnalytics } from '@backstage/core-plugin-api';
+import { waitFor } from '@testing-library/react';
 import { PortableSchema } from '../schema';
-import { coreExtensionData, createExtensionInput } from '../wiring';
+import {
+  ExtensionInputValues,
+  coreExtensionData,
+  createExtensionInput,
+  createPlugin,
+} from '../wiring';
 import { createPageExtension } from './createPageExtension';
+
+jest.mock('@backstage/core-plugin-api', () => ({
+  ...jest.requireActual('@backstage/core-plugin-api'),
+  useAnalytics: jest.fn(),
+}));
 
 describe('createPageExtension', () => {
   it('creates the extension properly', () => {
@@ -99,5 +112,36 @@ describe('createPageExtension', () => {
       },
       factory: expect.any(Function),
     });
+  });
+
+  it('capture page view event in analytics', async () => {
+    const captureEvent = jest.fn();
+
+    (useAnalytics as jest.Mock).mockReturnValue({
+      captureEvent,
+    });
+
+    const extension = createPageExtension({
+      id: 'plugin.page',
+      defaultPath: '/',
+      loader: async () => <div>Component</div>,
+    });
+
+    extension.factory({
+      bind: (values: ExtensionInputValues<any>) =>
+        renderWithEffects(
+          wrapInTestApp(values.element as unknown as JSX.Element),
+        ),
+      source: createPlugin({ id: 'plugin ' }),
+      config: { path: '/' },
+      inputs: {},
+    });
+
+    await waitFor(() =>
+      expect(captureEvent).toHaveBeenCalledWith(
+        '_ROUTABLE-EXTENSION-RENDERED',
+        '',
+      ),
+    );
   });
 });

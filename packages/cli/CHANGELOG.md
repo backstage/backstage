@@ -1,5 +1,60 @@
 # @backstage/cli
 
+## 0.23.0
+
+### Minor Changes
+
+- 8defbd5434: Update typescript-eslint to 6.7.x, adding compatibility with TypeScript 5.2.
+
+  This includes a major update on typescript-eslint, you can see the details in the [release notes](https://typescript-eslint.io/blog/announcing-typescript-eslint-v6/).
+
+- 7077dbf131: **BREAKING** The new backend start command that used to be enabled by setting `EXPERIMENTAL_BACKEND_START` is now the default. To revert to the old behavior set `LEGACY_BACKEND_START`, which is recommended if you haven't migrated to the new backend system.
+
+  This new command is no longer based on Webpack, but instead uses Node.js loaders to transpile on the fly. Rather than hot reloading modules the entire backend is now restarted on change, but the SQLite database state is still maintained across restarts via a parent process.
+
+### Patch Changes
+
+- 9468a67b92: In frontend builds and tests `process.env.HAS_REACT_DOM_CLIENT` will now be defined if `react-dom/client` is present, i.e. if using React 18. This allows for conditional imports of `react-dom/client`.
+- 68158034e8: Fix for the new backend `start` command to make it work on Windows.
+- 4f16e60e6d: Request slightly smaller pages of data from GitHub
+- 21cd3b1b24: Added a template for creating `node-library` packages with `yarn new`.
+- d0f26cfa4f: Fixed an issue where the new backend start command would not gracefully shut down the backend process on Windows.
+- 1ea20b0be5: Updated dependency `@typescript-eslint/eslint-plugin` to `6.7.5`.
+- 2ef6522552: Support for the `.icon.svg` extension has been deprecated and will be removed in the future. The implementation of this extension is too tied to a particular version of MUI and the SVGO, and it makes it harder to evolve the build system. We may introduce the ability to reintroduce this kind of functionality in the future through configuration for use in internal plugins, but for now we're forced to remove it.
+
+  To migrate existing code, rename the `.icon.svg` file to `.tsx` and replace the `<svg>` element with `<SvgIcon>` from MUI and add necessary imports. For example:
+
+  ```tsx
+  import React from 'react';
+  import SvgIcon from '@material-ui/core/SvgIcon';
+  import { IconComponent } from '@backstage/core-plugin-api';
+
+  export const CodeSceneIcon = (props: SvgIconProps) => (
+    <SvgIcon {...props}>
+      <g>
+        <path d="..." />
+      </g>
+    </SvgIcon>
+  );
+  ```
+
+- b9ec93430e: The scaffolder-module template now recommends usage of `createMockDirectory` instead of `mock-fs`.
+- de42eebaaf: Bumped dev dependencies `@types/node` and `mock-fs`.
+- 425203f898: Fixed recursive reloading issues of the backend, caused by unwanted watched files.
+- 3ef18f8c06: Explicitly set `exports: 'named'` for CJS builds, ensuring that they have e.g. `exports["default"] = catalogPlugin;`
+- 7187f2953e: The experimental package discovery will now always use the package name for include and exclude filtering, rather than the full module id. Entries pointing to a subpath export will now instead have an `export` field specifying the subpath that the import is from.
+- Updated dependencies
+  - @backstage/integration@1.7.1
+  - @backstage/catalog-model@1.4.3
+  - @backstage/config-loader@1.5.1
+  - @backstage/errors@1.2.3
+  - @backstage/cli-common@0.1.13
+  - @backstage/cli-node@0.1.5
+  - @backstage/config@1.1.1
+  - @backstage/eslint-plugin@0.1.3
+  - @backstage/release-manifests@0.0.10
+  - @backstage/types@1.1.1
+
 ## 0.23.0-next.2
 
 ### Minor Changes

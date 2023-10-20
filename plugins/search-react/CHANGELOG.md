@@ -1,5 +1,24 @@
 # @backstage/plugin-search-react
 
+## 1.7.1
+
+### Patch Changes
+
+- 06432f900c: Updated `/alpha` exports to use new `attachTo` option.
+- 9a1fce352e: Updated dependency `@testing-library/jest-dom` to `^6.0.0`.
+- f95af4e540: Updated dependency `@testing-library/dom` to `^9.0.0`.
+- 0296f272b4: The filter options passed to `SearchResultGroupLayout` are now always explicitly rendered as strings by default.
+- 703a4ffc5b: Create `createSearchResultListItem` alpha version that only supports declarative integration.
+- Updated dependencies
+  - @backstage/frontend-app-api@0.2.0
+  - @backstage/frontend-plugin-api@0.2.0
+  - @backstage/core-plugin-api@1.7.0
+  - @backstage/core-components@0.13.6
+  - @backstage/version-bridge@1.0.6
+  - @backstage/theme@0.4.3
+  - @backstage/types@1.1.1
+  - @backstage/plugin-search-common@1.2.7
+
 ## 1.7.1-next.2
 
 ### Patch Changes

@@ -1,5 +1,82 @@
 # example-app-next
 
+## 0.0.2
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/frontend-app-api@0.2.0
+  - @backstage/plugin-pagerduty@0.6.6
+  - @backstage/plugin-org@0.6.15
+  - @backstage/plugin-code-coverage@0.2.18
+  - @backstage/plugin-catalog-react@1.8.5
+  - @backstage/plugin-catalog@1.14.0
+  - @backstage/cli@0.23.0
+  - @backstage/frontend-plugin-api@0.2.0
+  - @backstage/core-app-api@1.11.0
+  - @backstage/plugin-techdocs@1.8.0
+  - @backstage/core-plugin-api@1.7.0
+  - @backstage/plugin-home@0.5.9
+  - @backstage/plugin-newrelic@0.3.41
+  - @backstage/plugin-user-settings@0.7.11
+  - @backstage/plugin-scaffolder@1.15.1
+  - @backstage/core-components@0.13.6
+  - @backstage/plugin-entity-feedback@0.2.8
+  - @backstage/integration-react@1.1.20
+  - @backstage/catalog-model@1.4.3
+  - @backstage/plugin-tech-radar@0.6.9
+  - @backstage/plugin-adr@0.6.8
+  - @backstage/app-defaults@1.4.4
+  - @backstage/plugin-graphiql@0.2.55
+  - @backstage/plugin-search@1.4.1
+  - @backstage/plugin-jenkins@0.9.0
+  - @backstage/plugin-search-react@1.7.1
+  - @backstage/plugin-api-docs@0.9.12
+  - @backstage/plugin-kubernetes@0.11.0
+  - @backstage/plugin-airbrake@0.3.25
+  - @backstage/plugin-apache-airflow@0.2.16
+  - @backstage/plugin-azure-devops@0.3.7
+  - @backstage/plugin-azure-sites@0.1.14
+  - @backstage/plugin-badges@0.2.49
+  - @backstage/plugin-catalog-graph@0.2.37
+  - @backstage/plugin-catalog-import@0.10.1
+  - @backstage/plugin-catalog-unprocessed-entities@0.1.4
+  - @backstage/plugin-circleci@0.3.25
+  - @backstage/plugin-cloudbuild@0.3.25
+  - @backstage/plugin-cost-insights@0.12.14
+  - @backstage/plugin-devtools@0.1.5
+  - @backstage/plugin-dynatrace@7.0.5
+  - @backstage/plugin-explore@0.4.11
+  - @backstage/plugin-gcalendar@0.3.19
+  - @backstage/plugin-gcp-projects@0.3.42
+  - @backstage/plugin-github-actions@0.6.6
+  - @backstage/plugin-gocd@0.1.31
+  - @backstage/plugin-kafka@0.3.25
+  - @backstage/plugin-lighthouse@0.4.10
+  - @backstage/plugin-linguist@0.1.10
+  - @backstage/plugin-microsoft-calendar@0.1.8
+  - @backstage/plugin-newrelic-dashboard@0.3.0
+  - @backstage/plugin-octopus-deploy@0.2.7
+  - @backstage/plugin-permission-react@0.4.16
+  - @backstage/plugin-playlist@0.1.17
+  - @backstage/plugin-puppetdb@0.1.8
+  - @backstage/plugin-rollbar@0.4.25
+  - @backstage/plugin-scaffolder-react@1.5.6
+  - @backstage/plugin-sentry@0.5.10
+  - @backstage/plugin-shortcuts@0.3.15
+  - @backstage/plugin-stack-overflow@0.1.21
+  - @backstage/plugin-stackstorm@0.1.7
+  - @backstage/plugin-tech-insights@0.3.17
+  - @backstage/plugin-techdocs-module-addons-contrib@1.1.1
+  - @backstage/plugin-techdocs-react@1.1.12
+  - @backstage/plugin-todo@0.2.28
+  - @backstage/theme@0.4.3
+  - app-next-example-plugin@0.0.2
+  - @backstage/config@1.1.1
+  - @backstage/plugin-catalog-common@1.0.17
+  - @backstage/plugin-linguist-common@0.1.2
+  - @backstage/plugin-search-common@1.2.7
+
 ## 0.0.2-next.2
 
 ### Patch Changes

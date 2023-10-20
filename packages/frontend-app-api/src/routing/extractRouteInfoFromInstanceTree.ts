@@ -14,12 +14,11 @@
  * limitations under the License.
  */
 
-import { RouteRef } from '@backstage/core-plugin-api';
-import { coreExtensionData } from '@backstage/frontend-plugin-api';
+import { RouteRef, coreExtensionData } from '@backstage/frontend-plugin-api';
 import { ExtensionInstance } from '../wiring/createExtensionInstance';
 // eslint-disable-next-line @backstage/no-relative-monorepo-imports
-import { BackstageRouteObject } from '../../../core-app-api/src/routing/types';
 import { toLegacyPlugin } from '../wiring/createApp';
+import { BackstageRouteObject } from './types';
 
 // We always add a child that matches all subroutes but without any route refs. This makes
 // sure that we're always able to match each route no matter how deep the navigation goes.
@@ -109,13 +108,6 @@ export function extractRouteInfoFromInstanceTree(core: ExtensionInstance): {
 
     // Whenever a route ref is encountered, we need to give it a route path and position in the ref tree.
     if (routeRef) {
-      const routeRefId = (routeRef as any).id; // TODO: properly
-      if (routeRefId !== current.id) {
-        throw new Error(
-          `Route ref '${routeRefId}' must have the same ID as extension '${current.id}'`,
-        );
-      }
-
       // The first route ref we find after encountering a route path is selected to be used as the
       // parent ref further down the tree. We don't start using this candidate ref until we encounter
       // another route path though, at which point we repeat the process and select another candidate.

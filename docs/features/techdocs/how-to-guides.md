@@ -548,7 +548,7 @@ title Login Sequence
 
 #### Referenced PlantUML Diagram Example
 
-Here, the markdown file refers to another file (_.puml or _.pu) which contains the diagram description.
+Here, the markdown file refers to another file (`*.puml` or `*.pu`) which contains the diagram description.
 
 ````md
 ```plantuml

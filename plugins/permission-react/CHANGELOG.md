@@ -1,5 +1,15 @@
 # @backstage/plugin-permission-react
 
+## 0.4.16
+
+### Patch Changes
+
+- 9a1fce352e: Updated dependency `@testing-library/jest-dom` to `^6.0.0`.
+- Updated dependencies
+  - @backstage/core-plugin-api@1.7.0
+  - @backstage/config@1.1.1
+  - @backstage/plugin-permission-common@0.7.9
+
 ## 0.4.16-next.1
 
 ### Patch Changes

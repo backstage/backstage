@@ -1,5 +1,21 @@
 # @backstage/plugin-tech-insights-backend
 
+## 0.5.20
+
+### Patch Changes
+
+- cc7dddfa7f: Increase the maximum allowed length of an entity filter for tech insights fact schemas.
+- Updated dependencies
+  - @backstage/backend-tasks@0.5.11
+  - @backstage/backend-common@0.19.8
+  - @backstage/catalog-model@1.4.3
+  - @backstage/errors@1.2.3
+  - @backstage/plugin-tech-insights-node@0.4.12
+  - @backstage/catalog-client@1.4.5
+  - @backstage/config@1.1.1
+  - @backstage/types@1.1.1
+  - @backstage/plugin-tech-insights-common@0.2.12
+
 ## 0.5.20-next.2
 
 ### Patch Changes

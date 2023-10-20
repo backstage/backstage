@@ -1,5 +1,27 @@
 # @backstage/plugin-search
 
+## 1.4.1
+
+### Patch Changes
+
+- e5a2956dd2: Create an experimental search plugin that is compatible with the declarative integration system, it is exported from `/alpha` subpath.
+- 9a1fce352e: Updated dependency `@testing-library/jest-dom` to `^6.0.0`.
+- f95af4e540: Updated dependency `@testing-library/dom` to `^9.0.0`.
+- 0296f272b4: Minor internal code cleanup.
+- Updated dependencies
+  - @backstage/plugin-catalog-react@1.8.5
+  - @backstage/frontend-plugin-api@0.2.0
+  - @backstage/core-plugin-api@1.7.0
+  - @backstage/core-components@0.13.6
+  - @backstage/catalog-model@1.4.3
+  - @backstage/errors@1.2.3
+  - @backstage/plugin-search-react@1.7.1
+  - @backstage/version-bridge@1.0.6
+  - @backstage/theme@0.4.3
+  - @backstage/config@1.1.1
+  - @backstage/types@1.1.1
+  - @backstage/plugin-search-common@1.2.7
+
 ## 1.4.1-next.2
 
 ### Patch Changes

@@ -1,5 +1,23 @@
 # @backstage/backend-tasks
 
+## 0.5.11
+
+### Patch Changes
+
+- 5db102bfdf: Instrument `backend-tasks` with some counters and histograms for duration.
+
+  `backend_tasks.task.runs.count`: Counter with the total number of times a task has been run.
+  `backend_tasks.task.runs.duration`: Histogram with the run durations for each task.
+
+  Both these metrics have come with `result` `taskId` and `scope` labels for finer grained grouping.
+
+- ddd76ac98d: Fix bug where backend tasks that are defined with HumanDuration are immediately triggered on application startup
+- Updated dependencies
+  - @backstage/backend-common@0.19.8
+  - @backstage/errors@1.2.3
+  - @backstage/config@1.1.1
+  - @backstage/types@1.1.1
+
 ## 0.5.11-next.2
 
 ### Patch Changes

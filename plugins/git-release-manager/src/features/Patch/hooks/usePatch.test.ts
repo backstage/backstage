@@ -14,8 +14,7 @@
  * limitations under the License.
  */
 
-import { renderHook, act } from '@testing-library/react-hooks';
-import { waitFor } from '@testing-library/react';
+import { renderHook, act } from '@testing-library/react';
 
 import {
   mockBumpedTag,
@@ -50,10 +49,9 @@ describe('patch', () => {
     );
 
     await act(async () => {
-      await waitFor(() => result.current.run(mockSelectedPatchCommit));
+      await result.current.run(mockSelectedPatchCommit);
     });
 
-    expect(result.error).toEqual(undefined);
     expect(result.current.responseSteps).toHaveLength(18);
   });
 
@@ -69,10 +67,9 @@ describe('patch', () => {
     );
 
     await act(async () => {
-      await waitFor(() => result.current.run(mockSelectedPatchCommit));
+      await result.current.run(mockSelectedPatchCommit);
     });
 
-    expect(result.error).toEqual(undefined);
     expect(result.current.responseSteps).toHaveLength(19);
     expect(result.current).toMatchInlineSnapshot(`
       {

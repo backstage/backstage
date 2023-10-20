@@ -1,5 +1,30 @@
 # @backstage/plugin-jenkins-backend
 
+## 0.3.0
+
+### Minor Changes
+
+- 411896faf9: Added JobRunTable Component.
+  Added new Route and extended Api to get buildJobs.
+  Actions column has a new icon button, clicking on which takes us to page where we
+  can see all the job runs.
+
+### Patch Changes
+
+- 930ac236d8: Added support for the [new backend system](https://backstage.io/docs/backend-system/)
+- Updated dependencies
+  - @backstage/backend-common@0.19.8
+  - @backstage/plugin-catalog-node@1.4.7
+  - @backstage/plugin-auth-node@0.4.0
+  - @backstage/catalog-model@1.4.3
+  - @backstage/errors@1.2.3
+  - @backstage/backend-plugin-api@0.6.6
+  - @backstage/plugin-permission-node@0.7.17
+  - @backstage/catalog-client@1.4.5
+  - @backstage/config@1.1.1
+  - @backstage/plugin-jenkins-common@0.1.20
+  - @backstage/plugin-permission-common@0.7.9
+
 ## 0.2.9-next.2
 
 ### Patch Changes

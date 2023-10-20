@@ -364,7 +364,7 @@ describe('SearchFilter.Autocomplete', () => {
       });
 
       // Blur the field and only one tag should be shown with a +1.
-      input.blur();
+      await userEvent.tab();
       expect(
         screen.queryByRole('button', { name: values[0] }),
       ).not.toBeInTheDocument();

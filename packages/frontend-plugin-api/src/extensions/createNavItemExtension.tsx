@@ -14,9 +14,10 @@
  * limitations under the License.
  */
 
-import { IconComponent, RouteRef } from '@backstage/core-plugin-api';
+import { IconComponent } from '@backstage/core-plugin-api';
 import { createSchemaFromZod } from '../schema/createSchemaFromZod';
 import { coreExtensionData, createExtension } from '../wiring';
+import { RouteRef } from '../routing';
 
 /**
  * Helper for creating extensions for a nav item.
@@ -24,7 +25,7 @@ import { coreExtensionData, createExtension } from '../wiring';
  */
 export function createNavItemExtension(options: {
   id: string;
-  routeRef: RouteRef;
+  routeRef: RouteRef<undefined>;
   title: string;
   icon: IconComponent;
 }) {
