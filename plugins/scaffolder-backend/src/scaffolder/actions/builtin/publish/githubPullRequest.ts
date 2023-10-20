@@ -31,6 +31,7 @@ import {
   serializeDirectoryContents,
 } from '../../../../lib/files';
 import { Logger } from 'winston';
+import { examples } from './githubPullRequest.examples';
 
 export type Encoding = 'utf-8' | 'base64';
 
@@ -143,6 +144,7 @@ export const createPublishGithubPullRequestAction = (
     commitMessage?: string;
   }>({
     id: 'publish:github:pull-request',
+    examples,
     schema: {
       input: {
         required: ['repoUrl', 'title', 'description', 'branchName'],
