@@ -23,7 +23,7 @@ import {
   EntityKindFilter,
   EntityNamespaceFilter,
   EntityTagFilter,
-  EntityUserListFilter,
+  EntityUserFilter,
 } from '../../filters';
 import {
   CatalogApi,
@@ -263,7 +263,7 @@ describe('<UserListPicker />', () => {
 
     await waitFor(() =>
       expect(updateFilters).toHaveBeenLastCalledWith({
-        user: EntityUserListFilter.owned(ownershipEntityRefs),
+        user: EntityUserFilter.owned(ownershipEntityRefs),
       }),
     );
 
@@ -298,7 +298,7 @@ describe('<UserListPicker />', () => {
 
     await waitFor(() =>
       expect(updateFilters).toHaveBeenLastCalledWith({
-        user: EntityUserListFilter.starred([
+        user: EntityUserFilter.starred([
           'component:default/e-1',
           'component:default/e-2',
         ]),
@@ -331,7 +331,7 @@ describe('<UserListPicker />', () => {
 
     await waitFor(() =>
       expect(updateFilters).toHaveBeenLastCalledWith({
-        user: EntityUserListFilter.all(),
+        user: EntityUserFilter.all(),
       }),
     );
 
@@ -352,7 +352,7 @@ describe('<UserListPicker />', () => {
       </ApiProvider>,
     );
     expect(updateFilters).toHaveBeenLastCalledWith({
-      user: EntityUserListFilter.owned(ownershipEntityRefs),
+      user: EntityUserFilter.owned(ownershipEntityRefs),
     });
   });
 
@@ -437,7 +437,7 @@ describe('<UserListPicker />', () => {
 
         await waitFor(() =>
           expect(updateFilters).toHaveBeenLastCalledWith({
-            user: EntityUserListFilter.all(),
+            user: EntityUserFilter.all(),
           }),
         );
       });
@@ -501,7 +501,7 @@ describe('<UserListPicker />', () => {
 
         await waitFor(() =>
           expect(updateFilters).toHaveBeenLastCalledWith({
-            user: EntityUserListFilter.all(),
+            user: EntityUserFilter.all(),
           }),
         );
       });
@@ -529,7 +529,7 @@ describe('<UserListPicker />', () => {
           expect(mockCatalogApi.queryEntities).toHaveBeenCalledTimes(3),
         );
         expect(updateFilters).not.toHaveBeenCalledWith({
-          user: EntityUserListFilter.all(),
+          user: EntityUserFilter.all(),
         });
       });
 
@@ -542,7 +542,7 @@ describe('<UserListPicker />', () => {
 
         await waitFor(() =>
           expect(updateFilters).toHaveBeenLastCalledWith({
-            user: EntityUserListFilter.owned(expect.any(Array)),
+            user: EntityUserFilter.owned(expect.any(Array)),
           }),
         );
       });
@@ -570,7 +570,7 @@ describe('<UserListPicker />', () => {
           expect(mockCatalogApi.queryEntities).toHaveBeenCalledTimes(3),
         );
         expect(updateFilters).not.toHaveBeenCalledWith({
-          user: EntityUserListFilter.all(),
+          user: EntityUserFilter.all(),
         });
       });
 
@@ -583,7 +583,7 @@ describe('<UserListPicker />', () => {
 
         await waitFor(() =>
           expect(updateFilters).toHaveBeenLastCalledWith({
-            user: EntityUserListFilter.starred([
+            user: EntityUserFilter.starred([
               'component:default/e-1',
               'component:default/e-2',
             ]),

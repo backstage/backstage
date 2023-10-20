@@ -23,7 +23,7 @@ import {
   EntityOwnerFilter,
   EntityTagFilter,
   EntityTextFilter,
-  EntityUserListFilter,
+  EntityUserFilter,
   UserListFilter,
 } from '../filters';
 
@@ -57,7 +57,7 @@ export function reduceBackendCatalogFilters(filters: EntityFilter[]) {
       filter instanceof EntityOwnerFilter ||
       filter instanceof EntityLifecycleFilter ||
       filter instanceof EntityNamespaceFilter ||
-      filter instanceof EntityUserListFilter ||
+      filter instanceof EntityUserFilter ||
       filter instanceof EntityOrphanFilter ||
       filter instanceof EntityTextFilter ||
       filter instanceof UserListFilter

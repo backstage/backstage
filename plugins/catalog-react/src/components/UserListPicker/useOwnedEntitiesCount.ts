@@ -20,7 +20,7 @@ import { compact, intersection, isEqual } from 'lodash';
 import { useMemo, useRef } from 'react';
 import useAsync from 'react-use/lib/useAsync';
 import { catalogApiRef } from '../../api';
-import { EntityOwnerFilter, EntityUserListFilter } from '../../filters';
+import { EntityOwnerFilter, EntityUserFilter } from '../../filters';
 import { useEntityList } from '../../hooks';
 import { reduceCatalogFilters } from '../../utils';
 
@@ -82,7 +82,7 @@ export function useOwnedEntitiesCount() {
 
   const loading = loadingEntityRefs || loadingEntityOwnership;
   const filter = useMemo(
-    () => EntityUserListFilter.owned(ownershipEntityRefs ?? []),
+    () => EntityUserFilter.owned(ownershipEntityRefs ?? []),
     [ownershipEntityRefs],
   );
 

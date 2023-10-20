@@ -21,7 +21,7 @@ import { compact, isEqual } from 'lodash';
 import { useMemo, useRef } from 'react';
 import useAsync from 'react-use/lib/useAsync';
 import { catalogApiRef } from '../../api';
-import { EntityUserListFilter } from '../../filters';
+import { EntityUserFilter } from '../../filters';
 import { useEntityList, useStarredEntities } from '../../hooks';
 import { reduceCatalogFilters } from '../../utils';
 
@@ -72,7 +72,7 @@ export function useStarredEntitiesCount() {
   }, [request, starredEntities]);
 
   const filter = useMemo(
-    () => EntityUserListFilter.starred(Array.from(starredEntities)),
+    () => EntityUserFilter.starred(Array.from(starredEntities)),
     [starredEntities],
   );
 
