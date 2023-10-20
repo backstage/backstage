@@ -115,6 +115,24 @@ const useStyles = makeStyles(
         display: 'flex',
         flexDirection: 'column',
       },
+      deleteButton: {
+        width: 13,
+        height: 13,
+        position: 'relative',
+        transform: 'rotate(45deg)',
+        cursor: 'pointer',
+        '&::before, &::after': {
+          content: '""',
+          position: 'absolute',
+          top: '45%',
+          width: '100%',
+          height: '2px',
+          backgroundColor: 'grey',
+        },
+        '&::after': {
+          transform: 'rotate(90deg)',
+        },
+      },
     }),
   { name: 'BackstageSelect' },
 );
@@ -195,7 +213,6 @@ export function SelectComponent(props: SelectProps) {
     event: React.MouseEvent,
     selectedValue: string | number,
   ) => {
-    // Prevent the event from propagating to the parent component
     event.preventDefault();
 
     const newValue = (value as any[]).filter(chip => chip !== selectedValue);
@@ -224,14 +241,15 @@ export function SelectComponent(props: SelectProps) {
           label={label}
           renderValue={s =>
             multiple && (value as any[]).length !== 0 ? (
-              <div className={classes.chips}>
+              <Box className={classes.chips}>
                 {(s as string[]).map(selectedValue => (
                   <Chip
                     key={items.find(el => el.value === selectedValue)?.value}
                     label={items.find(el => el.value === selectedValue)?.label}
                     clickable
                     deleteIcon={
-                      <CancelIcon
+                      <Typography
+                        className={classes.deleteButton}
                         onMouseDown={event => event.stopPropagation()}
                       />
                     }
@@ -239,7 +257,7 @@ export function SelectComponent(props: SelectProps) {
                     onDelete={e => handleDelete(e, selectedValue)}
                   />
                 ))}
-              </div>
+              </Box>
             ) : (
               <Typography>
                 {(value as any[]).length === 0
