@@ -41,8 +41,17 @@ export function useStarredEntitiesCount() {
     const newRequest: QueryEntitiesInitialRequest = {
       filter: {
         ...filter,
+        /**
+         * here we are filtering entities by `name`. Given this filter,
+         * the response might contain more entities than expected, in case multiple entities
+         * of different kind or namespace share the same name. Those extra entities are filtered out
+         * client side by `EntityUserFilter`, so they won't be visible to the user.
+         */
         [facet]: Array.from(starredEntities).map(e => parseEntityRef(e).name),
       },
+      /**
+       * limit is set to a high value as we are not expecting many starred entities
+       */
       limit: 1000,
     };
     if (isEqual(newRequest, prevRequest.current)) {
@@ -58,6 +67,12 @@ export function useStarredEntitiesCount() {
       return 0;
     }
 
+    /**
+     * given a list of starred entity refs and some filters coming from CatalogPage,
+     * it reduces the list of starred entities, to a list of entities that matches the
+     * provided filters. It won't be possible to getEntitiesByRefs
+     * as the method doesn't accept any filter.
+     */
     const response = await catalogApi.queryEntities(request);
 
     return response.items
