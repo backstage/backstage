@@ -172,20 +172,18 @@ describe('<TechDocsReaderPageContent />', () => {
 
     window.location.hash = '#emojis';
 
-    await act(async () => {
-      const rendered = await renderInTestApp(
-        <Wrapper>
-          <TechDocsReaderPageContent withSearch={false} />
-        </Wrapper>,
-      );
+    const rendered = await renderInTestApp(
+      <Wrapper>
+        <TechDocsReaderPageContent withSearch={false} />
+      </Wrapper>,
+    );
 
-      await waitFor(() => {
-        expect(
-          rendered.getByTestId('techdocs-native-shadowroot'),
-        ).toBeInTheDocument();
-        expect(mockScrollIntoView).toHaveBeenCalled();
-        expect(document.querySelector).not.toHaveBeenCalledWith('header');
-      });
+    await waitFor(() => {
+      expect(
+        rendered.getByTestId('techdocs-native-shadowroot'),
+      ).toBeInTheDocument();
+      expect(mockScrollIntoView).toHaveBeenCalled();
+      expect(document.querySelector).not.toHaveBeenCalledWith('header');
     });
 
     window.location.hash = '';
@@ -199,19 +197,17 @@ describe('<TechDocsReaderPageContent />', () => {
     useTechDocsReaderDom.mockReturnValue(document.createElement('html'));
     useReaderState.mockReturnValue({ state: 'cached' });
 
-    await act(async () => {
-      const rendered = await renderInTestApp(
-        <Wrapper>
-          <TechDocsReaderPageContent withSearch={false} />
-        </Wrapper>,
-      );
+    const rendered = await renderInTestApp(
+      <Wrapper>
+        <TechDocsReaderPageContent withSearch={false} />
+      </Wrapper>,
+    );
 
-      await waitFor(() => {
-        expect(
-          rendered.getByTestId('techdocs-native-shadowroot'),
-        ).toBeInTheDocument();
-        expect(document.querySelector).toHaveBeenCalledWith('header');
-      });
+    await waitFor(() => {
+      expect(
+        rendered.getByTestId('techdocs-native-shadowroot'),
+      ).toBeInTheDocument();
+      expect(document.querySelector).toHaveBeenCalledWith('header');
     });
   });
 });
