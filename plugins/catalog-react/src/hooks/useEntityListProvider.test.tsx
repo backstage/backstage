@@ -35,7 +35,7 @@ import { EntityKindPicker, UserListPicker } from '../components';
 import {
   EntityKindFilter,
   EntityTypeFilter,
-  EntityUserListFilter,
+  EntityUserFilter,
 } from '../filters';
 import { UserListFilterKind } from '../types';
 import { EntityListProvider, useEntityList } from './useEntityListProvider';
@@ -155,7 +155,7 @@ describe('<EntityListProvider />', () => {
 
     act(() =>
       result.current.updateFilters({
-        user: EntityUserListFilter.owned(ownershipEntityRefs),
+        user: EntityUserFilter.owned(ownershipEntityRefs),
       }),
     );
 
@@ -196,7 +196,7 @@ describe('<EntityListProvider />', () => {
 
     act(() =>
       result.current.updateFilters({
-        user: EntityUserListFilter.owned(ownershipEntityRefs),
+        user: EntityUserFilter.owned(ownershipEntityRefs),
       }),
     );
 

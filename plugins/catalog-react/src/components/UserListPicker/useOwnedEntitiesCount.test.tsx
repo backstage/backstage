@@ -32,7 +32,7 @@ import { useOwnedEntitiesCount } from './useOwnedEntitiesCount';
 import {
   EntityNamespaceFilter,
   EntityOwnerFilter,
-  EntityUserListFilter,
+  EntityUserFilter,
 } from '../../filters';
 import { useMountEffect } from '@react-hookz/web';
 
@@ -95,7 +95,7 @@ describe('useOwnedEntitiesCount', () => {
     expect(result.current).toEqual({
       count: 0,
       loading: false,
-      filter: EntityUserListFilter.owned([
+      filter: EntityUserFilter.owned([
         'user:default/spiderman',
         'user:group/a-group',
       ]),
@@ -131,7 +131,7 @@ describe('useOwnedEntitiesCount', () => {
     expect(result.current).toEqual({
       count: 10,
       loading: false,
-      filter: EntityUserListFilter.owned([
+      filter: EntityUserFilter.owned([
         'user:default/spiderman',
         'user:group/a-group',
       ]),
@@ -162,7 +162,7 @@ describe('useOwnedEntitiesCount', () => {
     expect(result.current).toEqual({
       count: 0,
       loading: false,
-      filter: EntityUserListFilter.owned([
+      filter: EntityUserFilter.owned([
         'user:default/spiderman',
         'user:group/a-group',
       ]),
@@ -202,7 +202,7 @@ describe('useOwnedEntitiesCount', () => {
     expect(result.current).toEqual({
       count: 10,
       loading: false,
-      filter: EntityUserListFilter.owned([
+      filter: EntityUserFilter.owned([
         'user:default/spiderman',
         'user:group/a-group',
       ]),

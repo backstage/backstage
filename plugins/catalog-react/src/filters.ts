@@ -203,22 +203,22 @@ export class EntityNamespaceFilter implements EntityFilter {
 /**
  * @public
  */
-export class EntityUserListFilter implements EntityFilter {
+export class EntityUserFilter implements EntityFilter {
   private constructor(
     readonly value: UserListFilterKind,
     readonly refs?: string[],
   ) {}
 
   static owned(ownershipEntityRefs: string[]) {
-    return new EntityUserListFilter('owned', ownershipEntityRefs);
+    return new EntityUserFilter('owned', ownershipEntityRefs);
   }
 
   static all() {
-    return new EntityUserListFilter('all');
+    return new EntityUserFilter('all');
   }
 
   static starred(starredEntityRefs: string[]) {
-    return new EntityUserListFilter('starred', starredEntityRefs);
+    return new EntityUserFilter('starred', starredEntityRefs);
   }
 
   getCatalogFilters(): Record<string, string[]> {
@@ -259,7 +259,7 @@ export class EntityUserListFilter implements EntityFilter {
 
 /**
  * Filters entities based on whatever the user has starred or owns them.
- * @deprecated use EntityUserListFilter
+ * @deprecated use EntityUserFilter
  * @public
  */
 export class UserListFilter implements EntityFilter {

@@ -41,7 +41,7 @@ import {
   EntityTypeFilter,
   UserListFilter,
   EntityNamespaceFilter,
-  EntityUserListFilter,
+  EntityUserFilter,
 } from '../filters';
 import { EntityFilter } from '../types';
 import { reduceBackendCatalogFilters, reduceEntityFilters } from '../utils';
@@ -51,7 +51,7 @@ import { useApi } from '@backstage/core-plugin-api';
 export type DefaultEntityFilters = {
   kind?: EntityKindFilter;
   type?: EntityTypeFilter;
-  user?: UserListFilter | EntityUserListFilter;
+  user?: UserListFilter | EntityUserFilter;
   owners?: EntityOwnerFilter;
   lifecycles?: EntityLifecycleFilter;
   tags?: EntityTagFilter;
