@@ -3793,7 +3793,6 @@ __metadata:
     "@types/yarnpkg__lockfile": ^1.1.4
     "@typescript-eslint/eslint-plugin": 6.7.5
     "@typescript-eslint/parser": ^6.7.2
-    "@vitejs/plugin-react": ^4.0.4
     "@yarnpkg/lockfile": ^1.1.0
     "@yarnpkg/parsers": ^3.0.0-rc.4
     bfj: ^7.0.2
@@ -3863,9 +3862,6 @@ __metadata:
     ts-node: ^10.0.0
     type-fest: ^2.19.0
     util: ^0.12.3
-    vite: ^4.4.9
-    vite-plugin-html: ^3.2.0
-    vite-plugin-node-polyfills: ^0.14.1
     webpack: ^5.70.0
     webpack-dev-server: ^4.7.3
     webpack-node-externals: ^3.0.0
@@ -3875,8 +3871,20 @@ __metadata:
     zod: ^3.21.4
   peerDependencies:
     "@microsoft/api-extractor": ^7.21.2
+    "@vitejs/plugin-react": ^4.0.4
+    vite: ^4.4.9
+    vite-plugin-html: ^3.2.0
+    vite-plugin-node-polyfills: ^0.14.1
   peerDependenciesMeta:
     "@microsoft/api-extractor":
+      optional: true
+    "@vitejs/plugin-react":
+      optional: true
+    vite:
+      optional: true
+    vite-plugin-html:
+      optional: true
+    vite-plugin-node-polyfills:
       optional: true
   bin:
     backstage-cli: bin/backstage-cli
@@ -25590,6 +25598,7 @@ __metadata:
     "@types/react": "*"
     "@types/react-dom": "*"
     "@types/zen-observable": ^0.8.0
+    "@vitejs/plugin-react": ^4.0.4
     cross-env: ^7.0.0
     history: ^5.0.0
     react: ^18.0.2
@@ -25597,6 +25606,9 @@ __metadata:
     react-router: ^6.3.0
     react-router-dom: ^6.3.0
     react-use: ^17.2.4
+    vite: ^4.4.9
+    vite-plugin-html: ^3.2.0
+    vite-plugin-node-polyfills: ^0.14.1
     zen-observable: ^0.10.0
   languageName: unknown
   linkType: soft

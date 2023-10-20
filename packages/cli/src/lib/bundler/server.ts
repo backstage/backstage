@@ -22,10 +22,6 @@ import uniq from 'lodash/uniq';
 import openBrowser from 'react-dev-utils/openBrowser';
 import webpack from 'webpack';
 import WebpackDevServer from 'webpack-dev-server';
-import vite from 'vite';
-import viteReact from '@vitejs/plugin-react';
-import { nodePolyfills as viteNodePolyfills } from 'vite-plugin-node-polyfills';
-import { createHtmlPlugin as viteHtml } from 'vite-plugin-html';
 
 import {
   forbiddenDuplicatesFilter,
@@ -82,7 +78,9 @@ export async function serveBundle(options: ServeOptions) {
 
   const { name } = await fs.readJson(libPaths.resolveTarget('package.json'));
 
-  let server: WebpackDevServer | vite.ViteDevServer | undefined = undefined;
+  let webpackServer: WebpackDevServer | undefined = undefined;
+  // let viteServer: import('vite').ViteDevServer | undefined = undefined;
+
   let latestFrontendAppConfigs: AppConfig[] = [];
 
   const cliConfig = await loadCliConfig({
@@ -91,15 +89,9 @@ export async function serveBundle(options: ServeOptions) {
     withFilteredKeys: true,
     watch(appConfigs) {
       latestFrontendAppConfigs = appConfigs;
-      if (server) {
-        if ('invalidate' in server) {
-          server.invalidate();
-        }
 
-        if ('restart' in server) {
-          server.restart();
-        }
-      }
+      webpackServer?.invalidate();
+      viteServer?.restart();
     },
   });
   latestFrontendAppConfigs = cliConfig.frontendAppConfigs;
@@ -136,15 +128,8 @@ export async function serveBundle(options: ServeOptions) {
     config: fullConfig,
     targetPath: paths.targetPath,
     watch() {
-      if (server) {
-        if ('invalidate' in server) {
-          server.invalidate();
-        }
-
-        if ('restart' in server) {
-          server.restart();
-        }
-      }
+      webpackServer?.invalidate();
+      viteServer?.restart();
     },
   });
 
@@ -161,7 +146,14 @@ export async function serveBundle(options: ServeOptions) {
   });
 
   if (process.env.EXPERIMENTAL_VITE) {
-    server = await vite.createServer({
+    // const { default: vite } = await import('vite');
+    // // Annoyting that this doesn't work. `package.json` is not declared in `exports`.
+    // // const { default: viteReact } = require('@vitejs/plugin-react');
+    // const { nodePolyfills: viteNodePolyfills } = await import(
+    //   'vite-plugin-node-polyfills'
+    // );
+    // const { createHtmlPlugin: viteHtml } = await import('vite-plugin-html');
+    viteServer = await vite.createServer({
       define: {
         global: 'window',
         'process.argv': JSON.stringify(process.argv),
@@ -196,7 +188,7 @@ export async function serveBundle(options: ServeOptions) {
   } else {
     const compiler = webpack(config);
 
-    server = new WebpackDevServer(
+    webpackServer = new WebpackDevServer(
       {
         hot: !process.env.CI,
         devMiddleware: {
@@ -237,25 +229,28 @@ export async function serveBundle(options: ServeOptions) {
     );
   }
 
+  await viteServer?.listen();
   await new Promise<void>(async (resolve, reject) => {
-    if (process.env.EXPERIMENTAL_VITE) {
-      await (server as vite.ViteDevServer).listen();
-    } else {
-      (server as WebpackDevServer).startCallback((err?: Error) => {
+    if (webpackServer) {
+      webpackServer.startCallback((err?: Error) => {
         if (err) {
           reject(err);
           return;
         }
+        resolve();
       });
+    } else {
+      resolve();
     }
-    openBrowser(url.href);
-    resolve();
   });
+
+  openBrowser(url.href);
 
   const waitForExit = async () => {
     for (const signal of ['SIGINT', 'SIGTERM'] as const) {
       process.on(signal, () => {
-        server?.close();
+        webpackServer?.close();
+        viteServer?.close();
         // exit instead of resolve. The process is shutting down and resolving a promise here logs an error
         process.exit();
       });
