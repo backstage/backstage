@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import React from 'react';
+import React, { lazy } from 'react';
 import {
   AnyExtensionInputMap,
   Extension,
@@ -67,7 +67,7 @@ export function createEntityCardExtension<
     inputs: options.inputs,
     configSchema: options.configSchema,
     factory({ bind, config, inputs, source }) {
-      const ExtensionComponent = React.lazy(() =>
+      const ExtensionComponent = lazy(() =>
         options
           .loader({ config, inputs })
           .then(element => ({ default: () => element })),
@@ -137,7 +137,7 @@ export function createEntityContentExtension<
     inputs: options.inputs,
     configSchema,
     factory({ bind, config, inputs, source }) {
-      const LazyComponent = React.lazy(() =>
+      const ExtensionComponent = lazy(() =>
         options
           .loader({ config, inputs })
           .then(element => ({ default: () => element })),
@@ -145,13 +145,13 @@ export function createEntityContentExtension<
 
       bind({
         path: config.path,
+        title: config.title,
+        routeRef: options.routeRef,
         element: (
-          <ExtensionBoundary id={id} source={source}>
-            <LazyComponent />
+          <ExtensionBoundary id={id} source={source} routable>
+            <ExtensionComponent />
           </ExtensionBoundary>
         ),
-        routeRef: options.routeRef,
-        title: config.title,
       });
     },
   });
