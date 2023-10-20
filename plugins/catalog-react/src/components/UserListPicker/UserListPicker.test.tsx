@@ -142,6 +142,7 @@ describe('<UserListPicker />', () => {
   afterEach(() => {
     jest.resetAllMocks();
   });
+
   it('renders filter groups', async () => {
     render(
       <ApiProvider apis={apis}>
@@ -357,7 +358,7 @@ describe('<UserListPicker />', () => {
   });
 
   describe('filter resetting', () => {
-    let updateFilters: jest.Mock;
+    const updateFilters = jest.fn();
 
     const Picker = ({ ...props }: UserListPickerProps) => (
       <ApiProvider apis={apis}>
@@ -372,15 +373,9 @@ describe('<UserListPicker />', () => {
       </ApiProvider>
     );
 
-    beforeEach(() => {
-      updateFilters = jest.fn();
-    });
-
     describe(`when there are no owned entities matching the filter`, () => {
       it('does not reset the filter while entities are loading', async () => {
-        mockCatalogApi.queryEntities?.mockImplementation(
-          () => new Promise(() => {}),
-        );
+        mockCatalogApi.queryEntities?.mockReturnValue(new Promise(() => {}));
 
         render(<Picker initialFilter="owned" />);
 
@@ -388,7 +383,7 @@ describe('<UserListPicker />', () => {
           expect(mockCatalogApi.queryEntities).toHaveBeenCalled(),
         );
 
-        await expect(
+        await expect(() =>
           waitFor(() => expect(updateFilters).toHaveBeenCalled()),
         ).rejects.toThrow();
       });

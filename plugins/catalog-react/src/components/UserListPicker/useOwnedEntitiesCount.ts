@@ -17,12 +17,13 @@
 import { QueryEntitiesInitialRequest } from '@backstage/catalog-client';
 import { identityApiRef, useApi } from '@backstage/core-plugin-api';
 import { compact, intersection, isEqual } from 'lodash';
-import { useMemo, useRef } from 'react';
+import { useEffect, useMemo, useRef } from 'react';
 import useAsync from 'react-use/lib/useAsync';
 import { catalogApiRef } from '../../api';
 import { EntityOwnerFilter, EntityUserFilter } from '../../filters';
 import { useEntityList } from '../../hooks';
 import { reduceCatalogFilters } from '../../utils';
+import useAsyncFn from 'react-use/lib/useAsyncFn';
 
 export function useOwnedEntitiesCount() {
   const identityApi = useApi(identityApiRef);
@@ -71,14 +72,33 @@ export function useOwnedEntitiesCount() {
     return newRequest;
   }, [filters, ownershipEntityRefs]);
 
-  const { value: count, loading: loadingEntityOwnership } =
-    useAsync(async () => {
-      if (!request) {
-        return 0;
+  const [{ value: count, loading: loadingEntityOwnership }, fetchEntities] =
+    useAsyncFn(
+      async (
+        req: QueryEntitiesInitialRequest | undefined,
+        ownershipEntityRefsParam: string[],
+      ) => {
+        if (ownershipEntityRefsParam && !req) {
+          // this implicitly means that there aren't claims in common with
+          // the logged in users, so avoid invoking the queryEntities endpoint
+          // which will implicitly returns 0
+          return 0;
+        }
+        const { totalItems } = await catalogApi.queryEntities(req);
+        return totalItems;
+      },
+      [],
+      { loading: true },
+    );
+
+  useEffect(() => {
+    if (ownershipEntityRefs) {
+      if (request && Object.keys(request).length === 0) {
+        return;
       }
-      const { totalItems } = await catalogApi.queryEntities(request);
-      return totalItems;
-    }, [request]);
+      fetchEntities(request, ownershipEntityRefs);
+    }
+  }, [fetchEntities, request, ownershipEntityRefs]);
 
   const loading = loadingEntityRefs || loadingEntityOwnership;
   const filter = useMemo(

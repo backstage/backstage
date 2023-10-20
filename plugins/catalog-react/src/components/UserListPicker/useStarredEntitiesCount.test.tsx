@@ -20,7 +20,7 @@ import { catalogApiRef } from '../../api';
 import { ApiRef } from '@backstage/core-plugin-api';
 import { MemoryRouter } from 'react-router-dom';
 import { useStarredEntitiesCount } from './useStarredEntitiesCount';
-import { renderHook } from '@testing-library/react-hooks';
+import { renderHook, waitFor } from '@testing-library/react';
 
 const mockQueryEntities: jest.MockedFn<CatalogApi['queryEntities']> = jest.fn();
 const mockCatalogApi: jest.Mocked<Partial<CatalogApi>> = {
@@ -75,7 +75,7 @@ describe('useStarredEntitiesCount', () => {
       pageInfo: {},
     });
 
-    const { result, waitFor } = renderHook(() => useStarredEntitiesCount(), {
+    const { result } = renderHook(() => useStarredEntitiesCount(), {
       wrapper: ({ children }) => (
         <MemoryRouter>
           <EntityListProvider>{children}</EntityListProvider>
@@ -83,28 +83,31 @@ describe('useStarredEntitiesCount', () => {
       ),
     });
 
-    await waitFor(() =>
+    await waitFor(() => {
       expect(mockQueryEntities).toHaveBeenCalledWith({
         filter: {
           'metadata.name': ['favourite1', 'favourite2'],
         },
         limit: 1000,
-      }),
-    );
-    expect(result.current).toEqual({
-      count: 2,
-      loading: false,
-      filter: {
-        refs: ['component:default/favourite1', 'component:default/favourite2'],
-        value: 'starred',
-      },
+      });
+      expect(result.current).toEqual({
+        count: 2,
+        loading: false,
+        filter: {
+          refs: [
+            'component:default/favourite1',
+            'component:default/favourite2',
+          ],
+          value: 'starred',
+        },
+      });
     });
   });
 
   it(`shouldn't invoke the endpoint if there are no starred entities`, async () => {
     mockStarredEntities.mockReturnValue(new Set());
 
-    const { result, waitFor } = renderHook(() => useStarredEntitiesCount(), {
+    const { result } = renderHook(() => useStarredEntitiesCount(), {
       wrapper: ({ children }) => (
         <MemoryRouter>
           <EntityListProvider>{children}</EntityListProvider>
