@@ -27,6 +27,7 @@ import {
   Theme,
   withStyles,
 } from '@material-ui/core/styles';
+import CancelIcon from '@material-ui/icons/Cancel';
 import Typography from '@material-ui/core/Typography';
 import React, { useEffect, useState } from 'react';
 
@@ -190,7 +191,13 @@ export function SelectComponent(props: SelectProps) {
     setOpen(false);
   };
 
-  const handleDelete = (selectedValue: string | number) => () => {
+  const handleDelete = (
+    event: React.MouseEvent,
+    selectedValue: string | number,
+  ) => {
+    // Prevent the event from propagating to the parent component
+    event.preventDefault();
+
     const newValue = (value as any[]).filter(chip => chip !== selectedValue);
     setValue(newValue);
     onChange(newValue);
@@ -217,17 +224,22 @@ export function SelectComponent(props: SelectProps) {
           label={label}
           renderValue={s =>
             multiple && (value as any[]).length !== 0 ? (
-              <Box className={classes.chips}>
+              <div className={classes.chips}>
                 {(s as string[]).map(selectedValue => (
                   <Chip
                     key={items.find(el => el.value === selectedValue)?.value}
                     label={items.find(el => el.value === selectedValue)?.label}
                     clickable
-                    onDelete={handleDelete(selectedValue)}
+                    deleteIcon={
+                      <CancelIcon
+                        onMouseDown={event => event.stopPropagation()}
+                      />
+                    }
                     className={classes.chip}
+                    onDelete={e => handleDelete(e, selectedValue)}
                   />
                 ))}
-              </Box>
+              </div>
             ) : (
               <Typography>
                 {(value as any[]).length === 0
