@@ -4246,11 +4246,13 @@ __metadata:
   resolution: "@backstage/frontend-plugin-api@workspace:packages/frontend-plugin-api"
   dependencies:
     "@backstage/cli": "workspace:^"
+    "@backstage/core-components": "workspace:^"
     "@backstage/core-plugin-api": "workspace:^"
     "@backstage/frontend-app-api": "workspace:^"
     "@backstage/test-utils": "workspace:^"
     "@backstage/types": "workspace:^"
     "@backstage/version-bridge": "workspace:^"
+    "@material-ui/core": ^4.12.4
     "@testing-library/jest-dom": ^6.0.0
     "@testing-library/react": ^14.0.0
     "@types/react": ^16.13.1 || ^17.0.0
@@ -5835,6 +5837,7 @@ __metadata:
     "@backstage/core-components": "workspace:^"
     "@backstage/core-plugin-api": "workspace:^"
     "@backstage/errors": "workspace:^"
+    "@backstage/frontend-plugin-api": "workspace:^"
     "@backstage/integration": "workspace:^"
     "@backstage/plugin-catalog-common": "workspace:^"
     "@backstage/plugin-permission-common": "workspace:^"
@@ -8457,6 +8460,7 @@ __metadata:
   resolution: "@backstage/plugin-scaffolder-backend-module-cookiecutter@workspace:plugins/scaffolder-backend-module-cookiecutter"
   dependencies:
     "@backstage/backend-common": "workspace:^"
+    "@backstage/backend-test-utils": "workspace:^"
     "@backstage/cli": "workspace:^"
     "@backstage/config": "workspace:^"
     "@backstage/errors": "workspace:^"
@@ -8465,10 +8469,8 @@ __metadata:
     "@backstage/types": "workspace:^"
     "@types/command-exists": ^1.2.0
     "@types/fs-extra": ^9.0.1
-    "@types/mock-fs": ^4.13.0
     command-exists: ^1.2.9
     fs-extra: 10.1.0
-    mock-fs: ^5.2.0
     msw: ^1.0.0
     winston: ^3.2.1
     yn: ^4.0.0
@@ -8496,6 +8498,7 @@ __metadata:
   resolution: "@backstage/plugin-scaffolder-backend-module-rails@workspace:plugins/scaffolder-backend-module-rails"
   dependencies:
     "@backstage/backend-common": "workspace:^"
+    "@backstage/backend-test-utils": "workspace:^"
     "@backstage/cli": "workspace:^"
     "@backstage/config": "workspace:^"
     "@backstage/errors": "workspace:^"
@@ -8504,12 +8507,10 @@ __metadata:
     "@backstage/types": "workspace:^"
     "@types/command-exists": ^1.2.0
     "@types/fs-extra": ^9.0.1
-    "@types/mock-fs": ^4.13.0
     "@types/node": ^18.17.8
     command-exists: ^1.2.9
     fs-extra: ^10.0.1
     jest-when: ^3.1.0
-    mock-fs: ^5.2.0
   languageName: unknown
   linkType: soft
 
@@ -8844,6 +8845,25 @@ __metadata:
     knex: ^2.0.0
     lodash: ^4.17.21
     uuid: ^8.3.2
+    winston: ^3.2.1
+  languageName: unknown
+  linkType: soft
+
+"@backstage/plugin-search-backend-module-stack-overflow-collator@workspace:^, @backstage/plugin-search-backend-module-stack-overflow-collator@workspace:plugins/search-backend-module-stack-overflow-collator":
+  version: 0.0.0-use.local
+  resolution: "@backstage/plugin-search-backend-module-stack-overflow-collator@workspace:plugins/search-backend-module-stack-overflow-collator"
+  dependencies:
+    "@backstage/backend-common": "workspace:^"
+    "@backstage/backend-plugin-api": "workspace:^"
+    "@backstage/backend-tasks": "workspace:^"
+    "@backstage/backend-test-utils": "workspace:^"
+    "@backstage/cli": "workspace:^"
+    "@backstage/config": "workspace:^"
+    "@backstage/plugin-search-backend-node": "workspace:^"
+    "@backstage/plugin-search-common": "workspace:^"
+    msw: ^1.2.1
+    node-fetch: ^2.6.7
+    qs: ^6.9.4
     winston: ^3.2.1
   languageName: unknown
   linkType: soft
@@ -9191,6 +9211,7 @@ __metadata:
     "@backstage/backend-test-utils": "workspace:^"
     "@backstage/cli": "workspace:^"
     "@backstage/config": "workspace:^"
+    "@backstage/plugin-search-backend-module-stack-overflow-collator": "workspace:^"
     "@backstage/plugin-search-backend-node": "workspace:^"
     "@backstage/plugin-search-common": "workspace:^"
     msw: ^1.0.0
@@ -9210,6 +9231,7 @@ __metadata:
     "@backstage/core-components": "workspace:^"
     "@backstage/core-plugin-api": "workspace:^"
     "@backstage/dev-utils": "workspace:^"
+    "@backstage/frontend-plugin-api": "workspace:^"
     "@backstage/plugin-home-react": "workspace:^"
     "@backstage/plugin-search-common": "workspace:^"
     "@backstage/plugin-search-react": "workspace:^"
@@ -25315,7 +25337,6 @@ __metadata:
     "@backstage/plugin-search-react": "workspace:^"
     "@backstage/plugin-sentry": "workspace:^"
     "@backstage/plugin-shortcuts": "workspace:^"
-    "@backstage/plugin-stack-overflow": "workspace:^"
     "@backstage/plugin-stackstorm": "workspace:^"
     "@backstage/plugin-tech-insights": "workspace:^"
     "@backstage/plugin-tech-radar": "workspace:^"

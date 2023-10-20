@@ -13,14 +13,6 @@ import { PortableSchema } from '@backstage/frontend-plugin-api';
 import { RouteRef } from '@backstage/frontend-plugin-api';
 
 // @alpha (undocumented)
-export const CatalogApi: Extension<{}>;
-
-// @alpha (undocumented)
-export const CatalogSearchResultListItemExtension: Extension<{
-  noTrack?: boolean | undefined;
-}>;
-
-// @alpha (undocumented)
 export function createCatalogFilterExtension<
   TInputs extends AnyExtensionInputMap,
   TConfig = never,
@@ -61,9 +53,6 @@ const _default: BackstagePlugin<
   }
 >;
 export default _default;
-
-// @alpha (undocumented)
-export const StarredEntitiesApi: Extension<{}>;
 
 // (No @packageDocumentation comment for this package)
 ```

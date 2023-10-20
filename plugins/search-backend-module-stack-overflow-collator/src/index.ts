@@ -14,5 +14,10 @@
  * limitations under the License.
  */
 
-export { isOwnerOf } from './utils';
-export { useEntityPermission } from './hooks/useEntityPermission';
+/**
+ * @packageDocumentation
+ * A module for the search backend that exports Stack Overflow modules.
+ */
+
+export * from './collators';
+export { searchStackOverflowCollatorModule as default } from './module';
