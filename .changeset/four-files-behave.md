@@ -1,5 +1,5 @@
 ---
-'@backstage/plugin-graphiql': patch
+'@backstage/plugin-graphiql': minor
 ---
 
-Upgrade to GraphiQL 3.0.6
+Upgrade to GraphiQL to 3.0.6
