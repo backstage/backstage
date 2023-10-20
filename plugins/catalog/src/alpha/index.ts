@@ -14,5 +14,5 @@
  * limitations under the License.
  */
 
-export { isOwnerOf } from './utils';
-export { useEntityPermission } from './hooks/useEntityPermission';
+export { default } from './plugin';
+export { createCatalogFilterExtension } from './createCatalogFilterExtension';

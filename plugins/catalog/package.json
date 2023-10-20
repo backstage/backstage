@@ -10,13 +10,13 @@
   },
   "exports": {
     ".": "./src/index.ts",
-    "./alpha": "./src/alpha.tsx",
+    "./alpha": "./src/alpha.ts",
     "./package.json": "./package.json"
   },
   "typesVersions": {
     "*": {
       "alpha": [
-        "src/alpha.tsx"
+        "src/alpha.ts"
       ],
       "package.json": [
         "package.json"
