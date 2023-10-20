@@ -4770,7 +4770,7 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@backstage/plugin-auth-backend-module-oauth2-proxy-provider@^0.0.0, @backstage/plugin-auth-backend-module-oauth2-proxy-provider@workspace:plugins/auth-backend-module-oauth2-proxy-provider":
+"@backstage/plugin-auth-backend-module-oauth2-proxy-provider@workspace:^, @backstage/plugin-auth-backend-module-oauth2-proxy-provider@workspace:plugins/auth-backend-module-oauth2-proxy-provider":
   version: 0.0.0-use.local
   resolution: "@backstage/plugin-auth-backend-module-oauth2-proxy-provider@workspace:plugins/auth-backend-module-oauth2-proxy-provider"
   dependencies:
@@ -26624,7 +26624,7 @@ __metadata:
     "@backstage/plugin-adr-backend": "workspace:^"
     "@backstage/plugin-app-backend": "workspace:^"
     "@backstage/plugin-auth-backend": "workspace:^"
-    "@backstage/plugin-auth-backend-module-oauth2-proxy-provider": ^0.0.0
+    "@backstage/plugin-auth-backend-module-oauth2-proxy-provider": "workspace:^"
     "@backstage/plugin-auth-node": "workspace:^"
     "@backstage/plugin-azure-devops-backend": "workspace:^"
     "@backstage/plugin-azure-sites-backend": "workspace:^"
