@@ -33,6 +33,10 @@ jest.mock('../useReaderState', () => ({
   ...jest.requireActual('../useReaderState'),
   useReaderState: (...args: any[]) => useReaderState(...args),
 }));
+jest.mock('@backstage/plugin-techdocs-react', () => ({
+  ...jest.requireActual('@backstage/plugin-techdocs-react'),
+  useShadowDomStylesLoading: jest.fn().mockReturnValue(false),
+}));
 
 import { TechDocsReaderPageContent } from './TechDocsReaderPageContent';
 
@@ -84,6 +88,10 @@ const Wrapper = ({
 );
 
 describe('<TechDocsReaderPageContent />', () => {
+  afterEach(() => {
+    jest.clearAllMocks();
+  });
+
   it('should render techdocs page content', async () => {
     getEntityMetadata.mockResolvedValue(mockEntityMetadata);
     getTechDocsMetadata.mockResolvedValue(mockTechDocsMetadata);
@@ -143,6 +151,67 @@ describe('<TechDocsReaderPageContent />', () => {
       expect(
         rendered.getByText('ERROR 404: Documentation not found'),
       ).toBeInTheDocument();
+    });
+  });
+
+  it('should scroll to hash if hash is present in url', async () => {
+    jest.spyOn(document, 'querySelector');
+
+    const mockScrollIntoView = jest.fn();
+    const h2 = document.createElement('h2');
+    h2.innerText = 'emojis';
+    h2.id = 'emojis';
+    h2.scrollIntoView = mockScrollIntoView;
+    const mockTechDocsPage = document.createElement('html');
+    mockTechDocsPage.appendChild(h2);
+
+    getEntityMetadata.mockResolvedValue(mockEntityMetadata);
+    getTechDocsMetadata.mockResolvedValue(mockTechDocsMetadata);
+    useTechDocsReaderDom.mockReturnValue(mockTechDocsPage);
+    useReaderState.mockReturnValue({ state: 'cached' });
+
+    window.location.hash = '#emojis';
+
+    await act(async () => {
+      const rendered = await renderInTestApp(
+        <Wrapper>
+          <TechDocsReaderPageContent withSearch={false} />
+        </Wrapper>,
+      );
+
+      await waitFor(() => {
+        expect(
+          rendered.getByTestId('techdocs-native-shadowroot'),
+        ).toBeInTheDocument();
+        expect(mockScrollIntoView).toHaveBeenCalled();
+        expect(document.querySelector).not.toHaveBeenCalledWith('header');
+      });
+    });
+
+    window.location.hash = '';
+  });
+
+  it('should scroll to header if hash is not present in url', async () => {
+    jest.spyOn(document, 'querySelector');
+
+    getEntityMetadata.mockResolvedValue(mockEntityMetadata);
+    getTechDocsMetadata.mockResolvedValue(mockTechDocsMetadata);
+    useTechDocsReaderDom.mockReturnValue(document.createElement('html'));
+    useReaderState.mockReturnValue({ state: 'cached' });
+
+    await act(async () => {
+      const rendered = await renderInTestApp(
+        <Wrapper>
+          <TechDocsReaderPageContent withSearch={false} />
+        </Wrapper>,
+      );
+
+      await waitFor(() => {
+        expect(
+          rendered.getByTestId('techdocs-native-shadowroot'),
+        ).toBeInTheDocument();
+        expect(document.querySelector).toHaveBeenCalledWith('header');
+      });
     });
   });
 });
