@@ -142,7 +142,7 @@ export const columnFactories: Readonly<{
 export type DefaultEntityFilters = {
   kind?: EntityKindFilter;
   type?: EntityTypeFilter;
-  user?: UserListFilter | EntityUserListFilter;
+  user?: UserListFilter | EntityUserFilter;
   owners?: EntityOwnerFilter;
   lifecycles?: EntityLifecycleFilter;
   tags?: EntityTagFilter;
@@ -508,19 +508,19 @@ export interface EntityTypePickerProps {
 }
 
 // @public (undocumented)
-export class EntityUserListFilter implements EntityFilter {
+export class EntityUserFilter implements EntityFilter {
   // (undocumented)
-  static all(): EntityUserListFilter;
+  static all(): EntityUserFilter;
   // (undocumented)
   filterEntity(entity: Entity): boolean;
   // (undocumented)
   getCatalogFilters(): Record<string, string[]>;
   // (undocumented)
-  static owned(ownershipEntityRefs: string[]): EntityUserListFilter;
+  static owned(ownershipEntityRefs: string[]): EntityUserFilter;
   // (undocumented)
   readonly refs?: string[] | undefined;
   // (undocumented)
-  static starred(starredEntityRefs: string[]): EntityUserListFilter;
+  static starred(starredEntityRefs: string[]): EntityUserFilter;
   // (undocumented)
   toQueryValue(): string;
   // (undocumented)
