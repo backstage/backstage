@@ -22,7 +22,7 @@ import {
 
 export const Core = createExtension({
   id: 'core',
-  attachTo: { id: 'root', input: 'default' },
+  attachTo: { id: 'root', input: 'default' }, // ignored
   inputs: {
     apis: createExtensionInput({
       api: coreExtensionData.apiFactory,
