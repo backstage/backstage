@@ -15,7 +15,7 @@
  */
 import React, { PropsWithChildren } from 'react';
 import { CatalogApi } from '@backstage/catalog-client';
-import { renderHook } from '@testing-library/react-hooks';
+import { renderHook, waitFor } from '@testing-library/react';
 import {
   DefaultEntityFilters,
   EntityListProvider,
@@ -82,7 +82,7 @@ describe('useOwnedEntitiesCount', () => {
       pageInfo: {},
     });
 
-    const { result, waitFor } = renderHook(() => useOwnedEntitiesCount(), {
+    const { result } = renderHook(() => useOwnedEntitiesCount(), {
       wrapper: createWrapperWithInitialFilters({}),
     });
 
@@ -110,7 +110,7 @@ describe('useOwnedEntitiesCount', () => {
       pageInfo: {},
     });
 
-    const { result, waitFor } = renderHook(() => useOwnedEntitiesCount(), {
+    const { result } = renderHook(() => useOwnedEntitiesCount(), {
       wrapper: createWrapperWithInitialFilters({
         namespace: new EntityNamespaceFilter(['a-namespace']),
       }),
@@ -139,14 +139,14 @@ describe('useOwnedEntitiesCount', () => {
     });
   });
 
-  it(`should return count 0 without invoking queryEntities if owners filter doesn't have claims on common with logged in user`, async () => {
+  it(`should return count 0 without invoking queryEntities if owners filter doesn't have claims in common with logged in user`, async () => {
     mockQueryEntities.mockResolvedValue({
       items: [],
       totalItems: 10,
       pageInfo: {},
     });
 
-    const { result, waitFor } = renderHook(() => useOwnedEntitiesCount(), {
+    const { result } = renderHook(() => useOwnedEntitiesCount(), {
       wrapper: createWrapperWithInitialFilters({
         namespace: new EntityNamespaceFilter(['a-namespace']),
         owners: new EntityOwnerFilter(['group:default/monsters']),
@@ -177,7 +177,7 @@ describe('useOwnedEntitiesCount', () => {
       pageInfo: {},
     });
 
-    const { result, waitFor } = renderHook(() => useOwnedEntitiesCount(), {
+    const { result } = renderHook(() => useOwnedEntitiesCount(), {
       wrapper: createWrapperWithInitialFilters({
         namespace: new EntityNamespaceFilter(['a-namespace']),
         owners: new EntityOwnerFilter([
