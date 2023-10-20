@@ -179,6 +179,8 @@ export type AppIcons = {
   'kind:location': IconComponent;
   'kind:system': IconComponent;
   'kind:user': IconComponent;
+  'kind:resource': IconComponent;
+  'kind:template': IconComponent;
   brokenImage: IconComponent;
   catalog: IconComponent;
   chat: IconComponent;

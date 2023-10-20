@@ -24,10 +24,10 @@ import { parseEntityFilterParams } from './parseEntityFilterParams';
 import { parseEntityOrderFieldParams } from './parseEntityOrderFieldParams';
 import { parseEntityTransformParams } from './parseEntityTransformParams';
 import { spec } from '../../schema/openapi.generated';
-import { internal } from '@backstage/backend-openapi-utils';
+import { QueryParameters } from '@backstage/backend-openapi-utils';
 
 export function parseQueryEntitiesParams(
-  params: internal.QuerySchema<typeof spec, '/entities/by-query', 'get'>,
+  params: QueryParameters<typeof spec, '/entities/by-query', 'get'>,
 ): Omit<QueryEntitiesRequest, 'authorizationToken' | 'limit'> {
   const fields = parseEntityTransformParams(params);
 

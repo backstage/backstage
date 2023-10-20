@@ -18,15 +18,15 @@ import * as plugin from './plugin';
 
 describe('git-release-manager', () => {
   it('should export plugin & friends', () => {
-    expect(Object.keys(plugin)).toMatchInlineSnapshot(`
+    expect(Object.keys(plugin).sort()).toMatchInlineSnapshot(`
       [
-        "gitReleaseManagerApiRef",
-        "constants",
-        "helpers",
-        "components",
-        "testHelpers",
-        "gitReleaseManagerPlugin",
         "GitReleaseManagerPage",
+        "components",
+        "constants",
+        "gitReleaseManagerApiRef",
+        "gitReleaseManagerPlugin",
+        "helpers",
+        "testHelpers",
       ]
     `);
   });

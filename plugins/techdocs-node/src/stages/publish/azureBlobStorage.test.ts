@@ -19,7 +19,6 @@ import { Entity, DEFAULT_NAMESPACE } from '@backstage/catalog-model';
 import { ConfigReader } from '@backstage/config';
 import express from 'express';
 import request from 'supertest';
-import mockFs from 'mock-fs';
 import path from 'path';
 import fs from 'fs-extra';
 import { AzureBlobStoragePublish } from './azureBlobStorage';
@@ -28,10 +27,9 @@ import {
   BlobUploadCommonResponse,
   ContainerGetPropertiesResponse,
 } from '@azure/storage-blob';
-import {
-  storageRootDir,
-  StorageFilesMock,
-} from '../../testUtils/StorageFilesMock';
+import { createMockDirectory } from '@backstage/backend-test-utils';
+
+const mockDir = createMockDirectory();
 
 jest.mock('@azure/identity', () => ({
   __esModule: true,
@@ -40,13 +38,12 @@ jest.mock('@azure/identity', () => ({
 
 jest.mock('@azure/storage-blob', () => {
   class BlockBlobClient {
-    constructor(
-      private readonly blobName: string,
-      private readonly storage: StorageFilesMock,
-    ) {}
+    constructor(private readonly blobName: string) {}
 
     uploadFile(source: string): Promise<BlobUploadCommonResponse> {
-      this.storage.writeFile(this.blobName, source);
+      mockDir.addContent({
+        [this.blobName]: fs.readFileSync(source, 'utf8'),
+      });
       return Promise.resolve({
         _response: {
           request: {
@@ -59,14 +56,14 @@ jest.mock('@azure/storage-blob', () => {
     }
 
     exists() {
-      return this.storage.fileExists(this.blobName);
+      return fs.pathExistsSync(mockDir.resolve(this.blobName));
     }
 
     download() {
       const emitter = new EventEmitter();
       setTimeout(() => {
-        if (this.storage.fileExists(this.blobName)) {
-          emitter.emit('data', this.storage.readFile(this.blobName));
+        if (fs.pathExistsSync(mockDir.resolve(this.blobName))) {
+          emitter.emit('data', fs.readFileSync(mockDir.resolve(this.blobName)));
           emitter.emit('end');
         } else {
           emitter.emit(
@@ -126,10 +123,7 @@ jest.mock('@azure/storage-blob', () => {
   }
 
   class ContainerClient {
-    constructor(
-      private readonly containerName: string,
-      protected readonly storage: StorageFilesMock,
-    ) {}
+    constructor(private readonly containerName: string) {}
 
     getProperties(): Promise<ContainerGetPropertiesResponse> {
       return Promise.resolve({
@@ -145,7 +139,7 @@ jest.mock('@azure/storage-blob', () => {
     }
 
     getBlockBlobClient(blobName: string) {
-      return new BlockBlobClient(blobName, this.storage);
+      return new BlockBlobClient(blobName);
     }
 
     listBlobsFlat() {
@@ -180,31 +174,24 @@ jest.mock('@azure/storage-blob', () => {
 
   class ContainerClientFailUpload extends ContainerClient {
     getBlockBlobClient(blobName: string) {
-      return new BlockBlobClientFailUpload(blobName, this.storage);
+      return new BlockBlobClientFailUpload(blobName);
     }
   }
 
   class BlobServiceClient {
-    storage = new StorageFilesMock();
-
     constructor(
       public readonly url: string,
       private readonly credential?: StorageSharedKeyCredential,
-    ) {
-      this.storage.emptyFiles();
-    }
+    ) {}
 
     getContainerClient(containerName: string) {
       if (containerName === 'bad_container') {
-        return new ContainerClientFailGetProperties(
-          containerName,
-          this.storage,
-        );
+        return new ContainerClientFailGetProperties(containerName);
       }
       if (this.credential?.accountName === 'bad_account_credentials') {
-        return new ContainerClientFailUpload(containerName, this.storage);
+        return new ContainerClientFailUpload(containerName);
       }
-      return new ContainerClient(containerName, this.storage);
+      return new ContainerClient(containerName);
     }
   }
 
@@ -231,7 +218,7 @@ const getEntityRootDir = (entity: Entity) => {
     metadata: { namespace, name },
   } = entity;
 
-  return path.join(storageRootDir, namespace || DEFAULT_NAMESPACE, kind, name);
+  return mockDir.resolve(namespace || DEFAULT_NAMESPACE, kind, name);
 };
 
 const logger = getVoidLogger();
@@ -314,13 +301,9 @@ describe('AzureBlobStoragePublish', () => {
   };
 
   beforeEach(async () => {
-    mockFs({
+    mockDir.setContent({
       [directory]: files,
     });
-  });
-
-  afterEach(() => {
-    mockFs.restore();
   });
 
   describe('getReadiness', () => {
@@ -374,8 +357,7 @@ describe('AzureBlobStoragePublish', () => {
     });
 
     it('should fail to publish a directory', async () => {
-      const wrongPathToGeneratedDirectory = path.join(
-        storageRootDir,
+      const wrongPathToGeneratedDirectory = mockDir.resolve(
         'wrong',
         'path',
         'to',
@@ -391,11 +373,9 @@ describe('AzureBlobStoragePublish', () => {
         directory: wrongPathToGeneratedDirectory,
       });
 
-      await expect(fails).rejects.toMatchObject({
-        message: expect.stringContaining(
-          'Unable to upload file(s) to Azure. Error: Failed to read template directory: ENOENT, no such file or directory',
-        ),
-      });
+      await expect(fails).rejects.toThrow(
+        `Unable to upload file(s) to Azure. Error: Failed to read template directory: ENOENT: no such file or directory, scandir '${wrongPathToGeneratedDirectory}'`,
+      );
 
       await expect(fails).rejects.toMatchObject({
         message: expect.stringContaining(wrongPathToGeneratedDirectory),

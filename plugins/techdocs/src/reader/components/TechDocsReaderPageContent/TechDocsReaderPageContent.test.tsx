@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 import React from 'react';
-import { act, waitFor } from '@testing-library/react';
+import { waitFor } from '@testing-library/react';
 
 import { CompoundEntityRef } from '@backstage/catalog-model';
 import {
@@ -98,18 +98,16 @@ describe('<TechDocsReaderPageContent />', () => {
     useTechDocsReaderDom.mockReturnValue(document.createElement('html'));
     useReaderState.mockReturnValue({ state: 'cached' });
 
-    await act(async () => {
-      const rendered = await renderInTestApp(
-        <Wrapper>
-          <TechDocsReaderPageContent withSearch={false} />
-        </Wrapper>,
-      );
+    const rendered = await renderInTestApp(
+      <Wrapper>
+        <TechDocsReaderPageContent withSearch={false} />
+      </Wrapper>,
+    );
 
-      await waitFor(() => {
-        expect(
-          rendered.getByTestId('techdocs-native-shadowroot'),
-        ).toBeInTheDocument();
-      });
+    await waitFor(() => {
+      expect(
+        rendered.getByTestId('techdocs-native-shadowroot'),
+      ).toBeInTheDocument();
     });
   });
 
@@ -118,21 +116,19 @@ describe('<TechDocsReaderPageContent />', () => {
     useTechDocsReaderDom.mockReturnValue(document.createElement('html'));
     useReaderState.mockReturnValue({ state: 'cached' });
 
-    await act(async () => {
-      const rendered = await renderInTestApp(
-        <Wrapper>
-          <TechDocsReaderPageContent withSearch={false} />
-        </Wrapper>,
-      );
+    const rendered = await renderInTestApp(
+      <Wrapper>
+        <TechDocsReaderPageContent withSearch={false} />
+      </Wrapper>,
+    );
 
-      await waitFor(() => {
-        expect(
-          rendered.queryByTestId('techdocs-native-shadowroot'),
-        ).not.toBeInTheDocument();
-        expect(
-          rendered.getByText('ERROR 404: PAGE NOT FOUND'),
-        ).toBeInTheDocument();
-      });
+    await waitFor(() => {
+      expect(
+        rendered.queryByTestId('techdocs-native-shadowroot'),
+      ).not.toBeInTheDocument();
+      expect(
+        rendered.getByText('ERROR 404: PAGE NOT FOUND'),
+      ).toBeInTheDocument();
     });
   });
 
@@ -142,21 +138,19 @@ describe('<TechDocsReaderPageContent />', () => {
     useTechDocsReaderDom.mockReturnValue(undefined);
     useReaderState.mockReturnValue({ state: 'CONTENT_NOT_FOUND' });
 
-    await act(async () => {
-      const rendered = await renderInTestApp(
-        <Wrapper>
-          <TechDocsReaderPageContent withSearch={false} />
-        </Wrapper>,
-      );
+    const rendered = await renderInTestApp(
+      <Wrapper>
+        <TechDocsReaderPageContent withSearch={false} />
+      </Wrapper>,
+    );
 
-      await waitFor(() => {
-        expect(
-          rendered.queryByTestId('techdocs-native-shadowroot'),
-        ).not.toBeInTheDocument();
-        expect(
-          rendered.getByText('ERROR 404: Documentation not found'),
-        ).toBeInTheDocument();
-      });
+    await waitFor(() => {
+      expect(
+        rendered.queryByTestId('techdocs-native-shadowroot'),
+      ).not.toBeInTheDocument();
+      expect(
+        rendered.getByText('ERROR 404: Documentation not found'),
+      ).toBeInTheDocument();
     });
   });
 

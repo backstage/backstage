@@ -13,6 +13,7 @@ yarn.lock                                         @backstage/maintainers @backst
 /docs/features/techdocs                           @backstage/techdocs-maintainers
 /docs/plugins/integrating-search-into-plugins.md  @backstage/discoverability-maintainers
 /packages/cli/src/commands/onboard                @backstage/sharks
+/packages/backend-openapi-utils                   @backstage/maintainers @backstage/reviewers @backstage/openapi-tooling-maintainers
 /packages/techdocs-cli                            @backstage/techdocs-maintainers
 /packages/techdocs-cli-embedded-app               @backstage/techdocs-maintainers
 /plugins/adr                                      @backstage/maintainers @backstage/reviewers @kuangp
@@ -31,6 +32,7 @@ yarn.lock                                         @backstage/maintainers @backst
 /plugins/catalog-backend-module-msgraph           @backstage/maintainers @backstage/reviewers @backstage/catalog-maintainers @pjungermann
 /plugins/catalog-backend-module-puppetdb          @backstage/maintainers @backstage/reviewers @backstage/catalog-maintainers
 /plugins/catalog-graph                            @backstage/maintainers @backstage/reviewers @backstage/catalog-maintainers @backstage/sda-se-reviewers
+/plugins/cicd-statistics                          @backstage/sharks
 /plugins/circleci                                 @backstage/maintainers @backstage/reviewers @adamdmharvey
 /plugins/code-coverage                            @backstage/maintainers @backstage/reviewers @alde
 /plugins/code-coverage-backend                    @backstage/maintainers @backstage/reviewers @alde
@@ -69,6 +71,8 @@ yarn.lock                                         @backstage/maintainers @backst
 /plugins/playlist-*                               @backstage/maintainers @backstage/reviewers @kuangp
 /plugins/rollbar                                  @backstage/maintainers @backstage/reviewers @andrewthauer
 /plugins/rollbar-backend                          @backstage/maintainers @backstage/reviewers @andrewthauer
+/plugins/scaffolder                               @backstage/maintainers @backstage/reviewers @backstage/scaffolder-maintainers
+/plugins/scaffolder-*                             @backstage/maintainers @backstage/reviewers @backstage/scaffolder-maintainers
 /plugins/search                                   @backstage/discoverability-maintainers
 /plugins/search-*                                 @backstage/discoverability-maintainers
 /plugins/sonarqube                                @backstage/maintainers @backstage/reviewers @backstage/sda-se-reviewers

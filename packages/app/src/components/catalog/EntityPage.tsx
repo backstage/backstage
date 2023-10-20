@@ -104,6 +104,10 @@ import {
 import { EntityKafkaContent } from '@backstage/plugin-kafka';
 import { EntityKubernetesContent } from '@backstage/plugin-kubernetes';
 import {
+  isKubernetesClusterAvailable,
+  EntityKubernetesClusterContent,
+} from '@backstage/plugin-kubernetes-cluster';
+import {
   EntityLastLighthouseAuditCard,
   EntityLighthouseContent,
   isLighthouseAvailable,
@@ -897,6 +901,13 @@ const resourcePage = (
           <EntityHasSystemsCard variant="gridItem" />
         </Grid>
       </Grid>
+    </EntityLayout.Route>
+    <EntityLayout.Route
+      path="/kubernetes-cluster"
+      title="Kubernetes Cluster"
+      if={isKubernetesClusterAvailable}
+    >
+      <EntityKubernetesClusterContent />
     </EntityLayout.Route>
     <EntityLayout.Route
       path="/puppetdb"

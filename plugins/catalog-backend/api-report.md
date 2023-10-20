@@ -365,7 +365,7 @@ export type LocationAnalyzer = {
   ): Promise<AnalyzeLocationResponse>;
 };
 
-// @public (undocumented)
+// @public @deprecated
 export class LocationEntityProcessor implements CatalogProcessor_2 {
   constructor(options: LocationEntityProcessorOptions);
   // (undocumented)
@@ -378,7 +378,7 @@ export class LocationEntityProcessor implements CatalogProcessor_2 {
   ): Promise<Entity>;
 }
 
-// @public (undocumented)
+// @public @deprecated (undocumented)
 export type LocationEntityProcessorOptions = {
   integrations: ScmIntegrationRegistry;
 };

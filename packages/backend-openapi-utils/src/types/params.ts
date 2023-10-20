@@ -32,7 +32,6 @@ import {
   Filter,
   FullMap,
   MapDiscriminatedUnion,
-  PathTemplate,
   RequiredDoc,
   SchemaRef,
   ValueOf,
@@ -44,9 +43,9 @@ import { FromSchema, JSONSchema7 } from 'json-schema-to-ts';
  */
 export type DocParameter<
   Doc extends RequiredDoc,
-  Path extends Extract<keyof Doc['paths'], string>,
-  Method extends keyof Doc['paths'][Path],
-  Parameter extends keyof Doc['paths'][Path][Method]['parameters'],
+  Path extends DocPath<Doc>,
+  Method extends DocPathMethod<Doc, Path>,
+  Parameter extends keyof DocOperation<Doc, Path, Method>['parameters'],
 > = DocOperation<
   Doc,
   Path,
@@ -138,33 +137,33 @@ export type ParametersSchema<
  */
 export type HeaderSchema<
   Doc extends RequiredDoc,
-  Path extends PathTemplate<Extract<keyof Doc['paths'], string>>,
+  Path extends DocPath<Doc>,
   Method extends DocPathMethod<Doc, Path>,
-> = ParametersSchema<Doc, DocPath<Doc, Path>, Method, ImmutableHeaderObject>;
+> = ParametersSchema<Doc, Path, Method, ImmutableHeaderObject>;
 
 /**
  * @public
  */
 export type CookieSchema<
   Doc extends RequiredDoc,
-  Path extends PathTemplate<Extract<keyof Doc['paths'], string>>,
+  Path extends DocPath<Doc>,
   Method extends DocPathMethod<Doc, Path>,
-> = ParametersSchema<Doc, DocPath<Doc, Path>, Method, ImmutableCookieObject>;
+> = ParametersSchema<Doc, Path, Method, ImmutableCookieObject>;
 
 /**
  * @public
  */
 export type PathSchema<
   Doc extends RequiredDoc,
-  Path extends PathTemplate<Extract<keyof Doc['paths'], string>>,
+  Path extends DocPath<Doc>,
   Method extends DocPathMethod<Doc, Path>,
-> = ParametersSchema<Doc, DocPath<Doc, Path>, Method, ImmutablePathObject>;
+> = ParametersSchema<Doc, Path, Method, ImmutablePathObject>;
 
 /**
  * @public
  */
 export type QuerySchema<
   Doc extends RequiredDoc,
-  Path extends PathTemplate<Extract<keyof Doc['paths'], string>>,
+  Path extends DocPath<Doc>,
   Method extends DocPathMethod<Doc, Path>,
-> = ParametersSchema<Doc, DocPath<Doc, Path>, Method, ImmutableQueryObject>;
+> = ParametersSchema<Doc, Path, Method, ImmutableQueryObject>;

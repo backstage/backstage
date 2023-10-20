@@ -22,14 +22,43 @@ import {
 import { catalogServiceRef } from '@backstage/plugin-catalog-node/alpha';
 
 import { KubernetesBuilder } from '@backstage/plugin-kubernetes-backend';
+import {
+  KubernetesObjectsProviderExtensionPoint,
+  kubernetesObjectsProviderExtensionPoint,
+  KubernetesObjectsProvider,
+} from '@backstage/plugin-kubernetes-node';
+
+class ObjectsProvider implements KubernetesObjectsProviderExtensionPoint {
+  private objectsProvider: KubernetesObjectsProvider | undefined;
+
+  getObjectsProvider() {
+    return this.objectsProvider;
+  }
+
+  addObjectsProvider(provider: KubernetesObjectsProvider) {
+    if (this.objectsProvider) {
+      throw new Error(
+        'Multiple Kubernetes objects provider is not supported at this time',
+      );
+    }
+    this.objectsProvider = provider;
+  }
+}
 
 /**
  * This is the backend plugin that provides the Kubernetes integration.
  * @alpha
  */
+
 export const kubernetesPlugin = createBackendPlugin({
   pluginId: 'kubernetes',
   register(env) {
+    const extensionPoint = new ObjectsProvider();
+    env.registerExtensionPoint(
+      kubernetesObjectsProviderExtensionPoint,
+      extensionPoint,
+    );
+
     env.registerInit({
       deps: {
         http: coreServices.httpRouter,
@@ -46,7 +75,9 @@ export const kubernetesPlugin = createBackendPlugin({
           config,
           catalogApi,
           permissions,
-        }).build();
+        })
+          .setObjectsProvider(extensionPoint.getObjectsProvider())
+          .build();
         http.use(router);
       },
     });

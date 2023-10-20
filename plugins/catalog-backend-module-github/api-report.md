@@ -24,12 +24,16 @@ import { ScmIntegrationRegistry } from '@backstage/integration';
 import { ScmLocationAnalyzer } from '@backstage/plugin-catalog-backend';
 import { TaskRunner } from '@backstage/backend-tasks';
 import { TokenManager } from '@backstage/backend-common';
+import { UserEntity } from '@backstage/catalog-model';
 
 // @public
 export const defaultOrganizationTeamTransformer: TeamTransformer;
 
 // @public
-export const defaultUserTransformer: UserTransformer;
+export const defaultUserTransformer: (
+  item: GithubUser,
+  _ctx: TransformerContext,
+) => Promise<UserEntity | undefined>;
 
 // @public
 export class GithubDiscoveryProcessor implements CatalogProcessor {

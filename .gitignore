@@ -160,3 +160,6 @@ e2e-test-report/
 # VS Code backing up svg files
 *svg.bkp
 *svg.dtmp
+
+# Scripts
+plugins-report.csv

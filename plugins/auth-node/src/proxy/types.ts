@@ -21,7 +21,7 @@ import { ProfileTransform } from '../types';
 /** @public */
 export interface ProxyAuthenticator<TContext, TResult> {
   defaultProfileTransform: ProfileTransform<TResult>;
-  initialize(ctx: { config: Config }): Promise<TContext>;
+  initialize(ctx: { config: Config }): TContext;
   authenticate(
     options: { req: Request },
     ctx: TContext,

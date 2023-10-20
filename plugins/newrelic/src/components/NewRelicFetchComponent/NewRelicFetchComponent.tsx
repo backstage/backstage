@@ -22,16 +22,56 @@ import { newRelicApiRef, NewRelicApplications } from '../../api';
 import { Progress, Table, TableColumn } from '@backstage/core-components';
 import { useApi } from '@backstage/core-plugin-api';
 
+const sortNumeric =
+  <F extends string>(field: F) =>
+  (a: { [key in F]: number }, b: { [key in F]: number }) => {
+    return a[field] - b[field];
+  };
+
+type NewRelicTableData = {
+  name: string;
+  responseTime: number;
+  throughput: number;
+  errorRate: number;
+  instanceCount: number;
+  apdexScore: number;
+};
+
 export const NewRelicAPMTable = ({ applications }: NewRelicApplications) => {
-  const columns: TableColumn[] = [
-    { title: 'Application', field: 'name' },
-    { title: 'Response Time (ms)', field: 'responseTime' },
-    { title: 'Throughput (rpm)', field: 'throughput' },
-    { title: 'Error Rate (%)', field: 'errorRate' },
-    { title: 'Instance Count', field: 'instanceCount' },
-    { title: 'Apdex', field: 'apdexScore' },
+  const columns: TableColumn<NewRelicTableData>[] = [
+    { title: 'Application', field: 'name', searchable: true },
+    {
+      title: 'Response Time (ms)',
+      field: 'responseTime',
+      customSort: sortNumeric('responseTime'),
+      searchable: false,
+    },
+    {
+      title: 'Throughput (rpm)',
+      field: 'throughput',
+      customSort: sortNumeric('throughput'),
+      searchable: false,
+    },
+    {
+      title: 'Error Rate (%)',
+      field: 'errorRate',
+      customSort: sortNumeric('errorRate'),
+      searchable: false,
+    },
+    {
+      title: 'Instance Count',
+      field: 'instanceCount',
+      customSort: sortNumeric('instanceCount'),
+      searchable: false,
+    },
+    {
+      title: 'Apdex',
+      field: 'apdexScore',
+      customSort: sortNumeric('apdexScore'),
+      searchable: false,
+    },
   ];
-  const data = applications.map(app => {
+  const data: Array<NewRelicTableData> = applications.map(app => {
     const { name, application_summary: applicationSummary } = app;
     const {
       response_time: responseTime,

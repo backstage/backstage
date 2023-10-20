@@ -25,7 +25,7 @@ import Typography from '@material-ui/core/Typography';
 import CloseIcon from '@material-ui/icons/Close';
 import MenuIcon from '@material-ui/icons/Menu';
 import { orderBy } from 'lodash';
-import React, { useEffect, useState, useContext } from 'react';
+import React, { useEffect, useState, useContext, ReactNode } from 'react';
 import { useLocation } from 'react-router-dom';
 import { SidebarOpenStateProvider } from './SidebarOpenStateContext';
 import { SidebarGroup } from './SidebarGroup';
@@ -206,8 +206,7 @@ export const MobileSidebar = (props: MobileSidebarProps) => {
           onClose={() => setSelectedMenuItemIndex(-1)}
         >
           {sidebarGroups[selectedMenuItemIndex] &&
-            (sidebarGroups[selectedMenuItemIndex].props
-              .children as React.ReactChildren)}
+            (sidebarGroups[selectedMenuItemIndex].props.children as ReactNode)}
         </OverlayMenu>
         <BottomNavigation
           className={classes.root}

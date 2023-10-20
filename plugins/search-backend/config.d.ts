@@ -23,6 +23,11 @@ export interface Config {
     maxPageLimit?: number;
 
     /**
+     * Sets the maximum term length for the search string. Defaults to 100.
+     */
+    maxTermLength?: number;
+
+    /**
      * Options related to the search integration with the Backstage permissions system
      */
     permissions?: {

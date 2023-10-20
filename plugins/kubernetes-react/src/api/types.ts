@@ -42,8 +42,17 @@ export interface KubernetesApi {
     {
       name: string;
       authProvider: string;
-      oidcTokenProvider?: string | undefined;
+      oidcTokenProvider?: string;
     }[]
+  >;
+  getCluster(clusterName: string): Promise<
+    | {
+        name: string;
+        authProvider: string;
+        oidcTokenProvider?: string;
+        dashboardUrl?: string;
+      }
+    | undefined
   >;
   getWorkloadsByEntity(
     request: WorkloadsByEntityRequest,

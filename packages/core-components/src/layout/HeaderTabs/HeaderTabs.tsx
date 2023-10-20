@@ -85,7 +85,7 @@ export function HeaderTabs(props: HeaderTabsProps) {
       if (selectedIndex === undefined) {
         setSelectedTab(index);
       }
-      if (onChange && selectedIndex !== index) onChange(index);
+      if (onChange) onChange(index);
     },
     [selectedIndex, onChange],
   );

@@ -33,8 +33,9 @@ const items = [
   },
 ];
 
-const tooltipItems = () =>
-  items.map(item => <BarChartTooltipItem key={item.label} item={item} />);
+const tooltipItems = items.map(item => (
+  <BarChartTooltipItem key={item.label} item={item} />
+));
 
 describe('<BarChartTooltip/>', () => {
   it('formats label and tooltip item text correctly', async () => {

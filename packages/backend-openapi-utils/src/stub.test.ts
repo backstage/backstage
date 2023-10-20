@@ -18,15 +18,23 @@ import { createValidatedOpenApiRouter } from './stub';
 import express from 'express';
 import request from 'supertest';
 import singlePathSpec from './___fixtures__/single-path';
+import { Response } from './utility';
 
 describe('createRouter', () => {
+  const pet: Response<typeof singlePathSpec, '/pet/:petId', 'get'> = {
+    id: 1,
+    name: 'rover',
+    status: 'available',
+    photoUrls: [],
+  };
+
   it('does NOT override originalUrl and basePath after execution', async () => {
     expect.assertions(2);
     const router = createValidatedOpenApiRouter(singlePathSpec);
     router.get('/pet/:petId', (req, res) => {
       expect(req.baseUrl).toBe('/pet-store');
       expect(req.originalUrl).toBe(`/pet-store/pet/${req.params.petId}`);
-      res.send('');
+      res.status(400).send();
     });
 
     const appRouter = express();
@@ -41,7 +49,7 @@ describe('createRouter', () => {
     const routerGetFn = jest.fn();
     router.get('/pet/:petId', (_, res) => {
       routerGetFn();
-      res.send('');
+      res.json(pet);
     });
 
     const apiRouter = express.Router();
@@ -58,7 +66,7 @@ describe('createRouter', () => {
     const router = createValidatedOpenApiRouter(singlePathSpec);
     router.get('/pet/:petId', (req, res) => {
       expect(typeof req.params.petId).toBe('integer');
-      res.send('');
+      res.json(pet);
     });
 
     const apiRouter = express.Router();

@@ -21,9 +21,22 @@ jest.mock('octokit', () => ({
 
 import { ConfigApi, ErrorApi } from '@backstage/core-plugin-api';
 import { ForwardedError } from '@backstage/errors';
-import { createFilterByClause, githubIssuesApi } from './githubIssuesApi';
-import type { GithubIssuesFilters } from './githubIssuesApi';
+import {
+  createFilterByClause,
+  githubIssuesApi,
+  Repository,
+  GithubIssuesFilters,
+} from './githubIssuesApi';
 
+function entityRepository(
+  name: string,
+  locationHostname: string = 'github.com',
+): Repository {
+  return {
+    locationHostname,
+    name,
+  };
+}
 function getFragment(
   filterBy = '',
   orderBy = 'field: UPDATED_AT, direction: DESC',
@@ -110,7 +123,26 @@ describe('githubIssuesApi', () => {
 
     it('should call GitHub API with correct query with fragment for each repo', async () => {
       await api.fetchIssuesByRepoFromGithub(
-        ['mrwolny/yo-yo', 'mrwolny/yoyo', 'mrwolny/yo.yo'],
+        [
+          entityRepository('mrwolny/yo-yo'),
+          entityRepository('mrwolny/yoyo'),
+          entityRepository('mrwolny/yo.yo'),
+        ],
+        10,
+      );
+
+      expect(mockGraphQLQuery).toHaveBeenCalledTimes(1);
+      expect(mockGraphQLQuery).toHaveBeenCalledWith(getFragment());
+    });
+
+    it("should only fetch data for entities hosted in the same GitHub instance as the plugin's config", async () => {
+      await api.fetchIssuesByRepoFromGithub(
+        [
+          entityRepository('mrwolny/yo-yo'),
+          entityRepository('mrwolny/yoyo'),
+          entityRepository('mrwolny/yo.yo'),
+          entityRepository('mrwolny/another-repo', 'enterprise.github.com'), // This one should be filtered out
+        ],
         10,
       );
 
@@ -120,7 +152,11 @@ describe('githubIssuesApi', () => {
 
     it('should call Github API with the correct filterBy and orderBy clauses', async () => {
       await api.fetchIssuesByRepoFromGithub(
-        ['mrwolny/yo-yo', 'mrwolny/yoyo', 'mrwolny/yo.yo'],
+        [
+          entityRepository('mrwolny/yo-yo'),
+          entityRepository('mrwolny/yoyo'),
+          entityRepository('mrwolny/yo.yo'),
+        ],
         10,
         {
           filterBy: {
@@ -231,7 +267,7 @@ describe('githubIssuesApi', () => {
     );
 
     const data = await api.fetchIssuesByRepoFromGithub(
-      ['mrwolny/yo-yo', 'mrwolny/notfound'],
+      [entityRepository('mrwolny/yo-yo'), entityRepository('mrwolny/notfound')],
       10,
     );
 
@@ -301,7 +337,7 @@ describe('githubIssuesApi', () => {
     );
 
     const data = await api.fetchIssuesByRepoFromGithub(
-      ['mrwolny/notfound'],
+      [entityRepository('mrwolny/notfound')],
       10,
     );
 
@@ -341,7 +377,10 @@ describe('githubIssuesApi', () => {
       mockErrorApi as unknown as ErrorApi,
     );
 
-    await api.fetchIssuesByRepoFromGithub(['mrwolny/notfound'], 10);
+    await api.fetchIssuesByRepoFromGithub(
+      [entityRepository('mrwolny/notfound')],
+      10,
+    );
 
     expect(mockErrorApi.post).toHaveBeenCalledTimes(1);
     expect(mockErrorApi.post).toHaveBeenCalledWith(

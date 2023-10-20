@@ -95,14 +95,17 @@ export const DocsTable = (props: DocsTableProps) => {
     actionFactories.createCopyDocsUrlAction(copyToClipboard),
   ];
 
+  const pageSize = 20;
+  const paging = documents && documents.length > pageSize;
+
   return (
     <>
       {loading || (documents && documents.length > 0) ? (
         <Table<DocsTableRow>
           isLoading={loading}
           options={{
-            paging: true,
-            pageSize: 20,
+            paging,
+            pageSize,
             search: true,
             actionsColumnIndex: -1,
             ...options,

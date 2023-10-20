@@ -242,6 +242,89 @@ const defaultConfig = [
 <CustomHomepageGrid config={defaultConfig}>
 ```
 
+## Page visit homepage component (HomePageTopVisited / HomePageRecentlyVisited)
+
+This component shows the homepage user a view for "Recently visited" or "Top visited".
+Being provided by the `<HomePageTopVisited/>` and `<HomePageRecentlyVisited/>` component, see it in use on a homepage example below:
+
+```tsx
+// packages/app/src/components/home/HomePage.tsx
+import React from 'react';
+import Grid from '@material-ui/core/Grid';
+import {
+  HomePageTopVisited,
+  HomePageRecentlyVisited,
+} from '@backstage/plugin-home';
+
+export const homePage = (
+  <Grid container spacing={3}>
+    <Grid item xs={12} md={4}>
+      <HomePageTopVisited />
+    </Grid>
+    <Grid item xs={12} md={4}>
+      <HomePageRecentlyVisited />
+    </Grid>
+  </Grid>
+);
+```
+
+There are some requirements to provide its functionality, so please ensure the following:
+
+These components need an API to handle visit data, please refer to the [utility-apis](../../docs/api/utility-apis.md)
+documentation for more information. Bellow you can see an example for two options:
+
+```ts
+// packages/app/src/apis.ts
+// ...
+import {
+  VisitsStorageApi,
+  VisitsWebStorageApi,
+  visitsApiRef,
+} from '@backstage/plugin-home';
+// ...
+export const apis: AnyApiFactory[] = [
+  // Implementation that relies on a provided storageApi
+  createApiFactory({
+    api: visitsApiRef,
+    deps: {
+      storageApi: storageApiRef,
+      identityApi: identityApiRef,
+    },
+    factory: ({ storageApi, identityApi }) =>
+      VisitsStorageApi.create({ storageApi, identityApi }),
+  }),
+
+  // Or a localStorage data implementation, relies on WebStorage implementation of storageApi
+  createApiFactory({
+    api: visitsApiRef,
+    deps: {
+      identityApi: identityApiRef,
+      errorApi: errorApiRef
+    },
+    factory: ({ identityApi, errorApi }) => VisitsWebStorageApi.create({ identityApi, errorApi }),
+  }),
+  // ...
+```
+
+To monitor page visit activity and save it on behalf of the user a component is provided, please add it to your app.
+See the example usage:
+
+```ts
+// packages/app/src/App.tsx
+import { VisitListener } from '@backstage/plugin-home';
+// ...
+export default app.createRoot(
+  <>
+    <AlertDisplay />
+    <OAuthRequestDialog />
+    <AppRouter>
+      <VisitListener />
+      <Root>{routes}</Root>
+    </AppRouter>
+  </>,
+);
+```
+
 ## Contributing
 
 ### Homepage Components

@@ -16,3 +16,4 @@
 
 export * from './translation';
 export * from './apis/alpha';
+export { convertLegacyRouteRef } from './routing/convertLegacyRouteRef';

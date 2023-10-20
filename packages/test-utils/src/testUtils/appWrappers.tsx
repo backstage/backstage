@@ -16,24 +16,23 @@
 
 import React, {
   ComponentType,
-  ReactNode,
-  ReactElement,
   PropsWithChildren,
+  ReactElement,
+  ReactNode,
 } from 'react';
-import { MemoryRouter } from 'react-router-dom';
-import { Route } from 'react-router-dom';
-import { UnifiedThemeProvider, themes } from '@backstage/theme';
+import { MemoryRouter, Route } from 'react-router-dom';
+import { themes, UnifiedThemeProvider } from '@backstage/theme';
 import MockIcon from '@material-ui/icons/AcUnit';
 import { createSpecializedApp } from '@backstage/core-app-api';
 import {
-  BootErrorPageProps,
-  RouteRef,
-  ExternalRouteRef,
   attachComponentData,
+  BootErrorPageProps,
   createRouteRef,
+  ExternalRouteRef,
+  RouteRef,
 } from '@backstage/core-plugin-api';
 import { MatcherFunction, RenderResult } from '@testing-library/react';
-import { renderWithEffects, LegacyRootOption } from './testingLibrary';
+import { LegacyRootOption, renderWithEffects } from './testingLibrary';
 import { defaultApis } from './defaultApis';
 import { mockApis } from './mockApis';
 
@@ -45,6 +44,8 @@ const mockIcons = {
   'kind:location': MockIcon,
   'kind:system': MockIcon,
   'kind:user': MockIcon,
+  'kind:resource': MockIcon,
+  'kind:template': MockIcon,
 
   brokenImage: MockIcon,
   catalog: MockIcon,

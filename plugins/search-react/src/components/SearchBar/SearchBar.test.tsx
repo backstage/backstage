@@ -318,7 +318,7 @@ describe('SearchBar', () => {
       </TestApiProvider>,
     );
 
-    const textbox = screen.getByLabelText('Search');
+    const textbox = screen.getByLabelText<HTMLInputElement>('Search');
 
     let value = 'value';
     await user.type(textbox, value);
@@ -339,6 +339,7 @@ describe('SearchBar', () => {
 
     value = 'new value';
     await user.clear(textbox);
+
     // make sure new term is captured
     await user.type(textbox, value);
     await waitFor(() => {

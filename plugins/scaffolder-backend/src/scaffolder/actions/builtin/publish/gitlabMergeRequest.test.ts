@@ -17,17 +17,12 @@ import { createRootLogger, getRootLogger } from '@backstage/backend-common';
 import { ConfigReader } from '@backstage/config';
 import { ScmIntegrations } from '@backstage/integration';
 import { TemplateAction } from '@backstage/plugin-scaffolder-node';
-import mockFs from 'mock-fs';
-import os from 'os';
-import { resolve as resolvePath } from 'path';
 import { Writable } from 'stream';
 import { createPublishGitlabMergeRequestAction } from './gitlabMergeRequest';
+import { createMockDirectory } from '@backstage/backend-test-utils';
 
 // Make sure root logger is initialized ahead of FS mock
 createRootLogger();
-
-const root = os.platform() === 'win32' ? 'C:\\root' : '/root';
-const workspacePath = resolvePath(root, 'my-workspace');
 
 const mockGitlabClient = {
   Namespaces: {
@@ -79,7 +74,12 @@ jest.mock('@gitbeaker/node', () => ({
 describe('createGitLabMergeRequest', () => {
   let instance: TemplateAction<any>;
 
+  const mockDir = createMockDirectory();
+  const workspacePath = mockDir.resolve('workspace');
+
   beforeEach(() => {
+    mockDir.clear();
+
     const config = new ConfigReader({
       integrations: {
         gitlab: [
@@ -100,10 +100,6 @@ describe('createGitLabMergeRequest', () => {
     instance = createPublishGitlabMergeRequestAction({ integrations });
   });
 
-  afterEach(() => {
-    mockFs.restore();
-  });
-
   describe('createGitLabMergeRequestWithSpecifiedTargetBranch', () => {
     it('removeSourceBranch is false by default when not passed in options', async () => {
       const input = {
@@ -114,7 +110,7 @@ describe('createGitLabMergeRequest', () => {
         description: 'This MR is really good',
         targetPath: 'Subdirectory',
       };
-      mockFs({
+      mockDir.setContent({
         [workspacePath]: {
           source: { 'foo.txt': 'Hello there!' },
           irrelevant: { 'bar.txt': 'Nothing to see here' },
@@ -156,7 +152,7 @@ describe('createGitLabMergeRequest', () => {
         description: 'This MR is really good',
         targetPath: 'Subdirectory',
       };
-      mockFs({
+      mockDir.setContent({
         [workspacePath]: {
           source: { 'foo.txt': 'Hello there!' },
           irrelevant: { 'bar.txt': 'Nothing to see here' },
@@ -200,7 +196,7 @@ describe('createGitLabMergeRequest', () => {
         removeSourceBranch: true,
         targetPath: 'Subdirectory',
       };
-      mockFs({
+      mockDir.setContent({
         [workspacePath]: {
           source: { 'foo.txt': 'Hello there!' },
           irrelevant: { 'bar.txt': 'Nothing to see here' },
@@ -235,7 +231,7 @@ describe('createGitLabMergeRequest', () => {
         removeSourceBranch: false,
         targetPath: 'Subdirectory',
       };
-      mockFs({
+      mockDir.setContent({
         [workspacePath]: {
           source: { 'foo.txt': 'Hello there!' },
           irrelevant: { 'bar.txt': 'Nothing to see here' },
@@ -276,7 +272,7 @@ describe('createGitLabMergeRequest', () => {
         targetPath: 'Subdirectory',
         assignee: 'John Smith',
       };
-      mockFs({
+      mockDir.setContent({
         [workspacePath]: {
           source: { 'foo.txt': 'Hello there!' },
           irrelevant: { 'bar.txt': 'Nothing to see here' },
@@ -316,7 +312,7 @@ describe('createGitLabMergeRequest', () => {
         targetPath: 'Subdirectory',
         assingnee: 'John Doe',
       };
-      mockFs({
+      mockDir.setContent({
         [workspacePath]: {
           source: { 'foo.txt': 'Hello there!' },
           irrelevant: { 'bar.txt': 'Nothing to see here' },
@@ -356,7 +352,7 @@ describe('createGitLabMergeRequest', () => {
         removeSourceBranch: false,
         targetPath: 'Subdirectory',
       };
-      mockFs({
+      mockDir.setContent({
         [workspacePath]: {
           source: { 'foo.txt': 'Hello there!' },
           irrelevant: { 'bar.txt': 'Nothing to see here' },
@@ -395,7 +391,7 @@ describe('createGitLabMergeRequest', () => {
         targetPath: 'Subdirectory',
         assignee: 'Unknown',
       };
-      mockFs({
+      mockDir.setContent({
         [workspacePath]: {
           source: { 'foo.txt': 'Hello there!' },
           irrelevant: { 'bar.txt': 'Nothing to see here' },
@@ -431,7 +427,7 @@ describe('createGitLabMergeRequest', () => {
         branchName: 'new-mr',
         description: 'This MR is really good',
       };
-      mockFs({
+      mockDir.setContent({
         [workspacePath]: {
           source: { 'foo.txt': 'Hello there!' },
           irrelevant: { 'bar.txt': 'Nothing to see here' },
@@ -480,7 +476,7 @@ describe('createGitLabMergeRequest', () => {
         description: 'This MR is really good',
         targetPath: 'source',
       };
-      mockFs({
+      mockDir.setContent({
         [workspacePath]: {
           source: { 'foo.txt': 'Hello there!' },
           irrelevant: { 'bar.txt': 'Nothing to see here' },
@@ -523,7 +519,7 @@ describe('createGitLabMergeRequest', () => {
         commitAction: 'create',
         targetPath: 'source',
       };
-      mockFs({
+      mockDir.setContent({
         [workspacePath]: {
           source: { 'foo.txt': 'Hello there!' },
           irrelevant: { 'bar.txt': 'Nothing to see here' },
@@ -565,7 +561,7 @@ describe('createGitLabMergeRequest', () => {
         commitAction: 'update',
         targetPath: 'source',
       };
-      mockFs({
+      mockDir.setContent({
         [workspacePath]: {
           source: { 'foo.txt': 'Hello there!' },
           irrelevant: { 'bar.txt': 'Nothing to see here' },
@@ -607,7 +603,7 @@ describe('createGitLabMergeRequest', () => {
         commitAction: 'delete',
         targetPath: 'source',
       };
-      mockFs({
+      mockDir.setContent({
         [workspacePath]: {
           source: { 'foo.txt': 'Hello there!' },
           irrelevant: { 'bar.txt': 'Nothing to see here' },
@@ -652,7 +648,7 @@ describe('createGitLabMergeRequest', () => {
         commitAction: 'create',
       };
 
-      mockFs({
+      mockDir.setContent({
         [workspacePath]: {
           source: { 'foo.txt': 'Hello there!' },
           irrelevant: { 'bar.txt': 'Nothing to see here' },
@@ -697,7 +693,7 @@ describe('createGitLabMergeRequest', () => {
         commitAction: 'create',
       };
 
-      mockFs({
+      mockDir.setContent({
         [workspacePath]: {
           source: { 'foo.txt': 'Hello there!' },
           irrelevant: { 'bar.txt': 'Nothing to see here' },

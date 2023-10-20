@@ -113,9 +113,7 @@ describe('<EntityNamespacePicker/>', () => {
       </TestApiProvider>,
     );
     await waitFor(() =>
-      expect(updateFilters).toHaveBeenLastCalledWith({
-        namespace: undefined,
-      }),
+      expect(screen.getByTestId('namespace-picker-expand')).toBeInTheDocument(),
     );
 
     fireEvent.click(screen.getByTestId('namespace-picker-expand'));

@@ -60,7 +60,7 @@ describe('createRouter', () => {
       },
       config: new ConfigReader({
         permissions: { enabled: false },
-        search: { maxPageLimit: 200 },
+        search: { maxPageLimit: 200, maxTermLength: 20 },
       }),
       permissions: mockPermissionEvaluator,
       logger,
@@ -158,6 +158,19 @@ describe('createRouter', () => {
       expect(response.body).toMatchObject({
         error: {
           message: /The page limit "twohundred" is not a number"/i,
+        },
+      });
+    });
+
+    it('should reject term length over configured max', async () => {
+      const response = await request(app).get(
+        `/query?term=HelloWorld1234567890!`,
+      );
+
+      expect(response.status).toEqual(400);
+      expect(response.body).toMatchObject({
+        error: {
+          message: /The term length "21" is greater than "20"/i,
         },
       });
     });
