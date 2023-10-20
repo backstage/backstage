@@ -1,5 +1,30 @@
 # @backstage/backend-common
 
+## 0.19.8
+
+### Patch Changes
+
+- 74491c9602: The `HostDiscovery` export has been deprecated, import it from `@backstage/backend-app-api` instead.
+- b95d66d4ea: Properly close write stream when writing temporary archive for processing zip-based `.readTree()` responses.
+- b94f32271e: Added the ability to fetch git tags through the `Git` class. This is useful for scaffolder actions that want to take action based on tag versions in a cloned repository
+- 0b55f773a7: Removed some unused dependencies
+- 4c39e38f1e: Added `/testUtils` entry point, with a utility for mocking resolve package paths as returned by `resolvePackagePath`.
+- 9101c0d1b6: Updated dependency `@kubernetes/client-node` to `0.19.0`.
+- a250ad775f: Removed `mock-fs` dev dependency.
+- 2a40cd46a8: Adds the optional flag for useRedisSets for the Redis cache to the config.
+- 1c3d6fa2b2: The `useHotCleanup` and `useHotMemoize` helpers are now deprecated, since hot module reloads for backend are being phased out.
+- Updated dependencies
+  - @backstage/integration@1.7.1
+  - @backstage/backend-dev-utils@0.1.2
+  - @backstage/config-loader@1.5.1
+  - @backstage/errors@1.2.3
+  - @backstage/cli-common@0.1.13
+  - @backstage/backend-app-api@0.5.6
+  - @backstage/backend-plugin-api@0.6.6
+  - @backstage/config@1.1.1
+  - @backstage/integration-aws-node@0.1.7
+  - @backstage/types@1.1.1
+
 ## 0.19.8-next.2
 
 ### Patch Changes

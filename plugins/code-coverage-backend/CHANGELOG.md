@@ -1,5 +1,19 @@
 # @backstage/plugin-code-coverage-backend
 
+## 0.2.20
+
+### Patch Changes
+
+- 4aa27aa200: Added option to set body size limit
+- Updated dependencies
+  - @backstage/backend-common@0.19.8
+  - @backstage/integration@1.7.1
+  - @backstage/plugin-auth-node@0.4.0
+  - @backstage/catalog-model@1.4.3
+  - @backstage/errors@1.2.3
+  - @backstage/catalog-client@1.4.5
+  - @backstage/config@1.1.1
+
 ## 0.2.20-next.2
 
 ### Patch Changes

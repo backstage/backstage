@@ -1,5 +1,17 @@
 # @backstage/plugin-catalog-unprocessed-entities
 
+## 0.1.4
+
+### Patch Changes
+
+- 9a1fce352e: Updated dependency `@testing-library/jest-dom` to `^6.0.0`.
+- Updated dependencies
+  - @backstage/core-plugin-api@1.7.0
+  - @backstage/core-components@0.13.6
+  - @backstage/catalog-model@1.4.3
+  - @backstage/errors@1.2.3
+  - @backstage/theme@0.4.3
+
 ## 0.1.4-next.2
 
 ### Patch Changes

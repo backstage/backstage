@@ -1,5 +1,13 @@
 # @backstage/codemods
 
+## 0.1.46
+
+### Patch Changes
+
+- de42eebaaf: Bumped dev dependencies `@types/node` and `mock-fs`.
+- Updated dependencies
+  - @backstage/cli-common@0.1.13
+
 ## 0.1.46-next.0
 
 ### Patch Changes

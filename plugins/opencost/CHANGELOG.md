@@ -1,5 +1,16 @@
 # @backstage/plugin-opencost
 
+## 0.2.1
+
+### Patch Changes
+
+- 9a1fce352e: Updated dependency `@testing-library/jest-dom` to `^6.0.0`.
+- 777b9a16a4: Fix for broken image reference.
+- Updated dependencies
+  - @backstage/core-plugin-api@1.7.0
+  - @backstage/core-components@0.13.6
+  - @backstage/theme@0.4.3
+
 ## 0.2.1-next.2
 
 ### Patch Changes

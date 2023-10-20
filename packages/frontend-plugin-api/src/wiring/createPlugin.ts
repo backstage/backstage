@@ -14,8 +14,14 @@
  * limitations under the License.
  */
 
-import { AnyExternalRoutes, AnyRoutes } from '@backstage/core-plugin-api';
 import { Extension } from './createExtension';
+import { ExternalRouteRef, RouteRef } from '../routing';
+
+/** @public */
+export type AnyRoutes = { [name in string]: RouteRef };
+
+/** @public */
+export type AnyExternalRoutes = { [name in string]: ExternalRouteRef };
 
 /** @public */
 export interface PluginOptions<
@@ -42,8 +48,8 @@ export interface BackstagePlugin<
 
 /** @public */
 export function createPlugin<
-  Routes extends AnyRoutes = AnyRoutes,
-  ExternalRoutes extends AnyExternalRoutes = AnyExternalRoutes,
+  Routes extends AnyRoutes = {},
+  ExternalRoutes extends AnyExternalRoutes = {},
 >(
   options: PluginOptions<Routes, ExternalRoutes>,
 ): BackstagePlugin<Routes, ExternalRoutes> {

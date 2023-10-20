@@ -1,5 +1,15 @@
 # @backstage/plugin-analytics-module-newrelic-browser
 
+## 0.0.3
+
+### Patch Changes
+
+- 9a1fce352e: Updated dependency `@testing-library/jest-dom` to `^6.0.0`.
+- Updated dependencies
+  - @backstage/core-plugin-api@1.7.0
+  - @backstage/core-components@0.13.6
+  - @backstage/config@1.1.1
+
 ## 0.0.3-next.2
 
 ### Patch Changes

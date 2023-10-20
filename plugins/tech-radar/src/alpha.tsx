@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { createApiFactory, createRouteRef } from '@backstage/core-plugin-api';
+import { createApiFactory } from '@backstage/core-plugin-api';
 import {
   createApiExtension,
   createPageExtension,
@@ -24,14 +24,14 @@ import {
 import React from 'react';
 import { techRadarApiRef } from './api';
 import { SampleTechRadarApi } from './sample';
-
-const techRadarRouteRef = createRouteRef({ id: 'plugin.techradar.page' });
+import { convertLegacyRouteRef } from '@backstage/core-plugin-api/alpha';
+import { rootRouteRef } from './plugin';
 
 /** @alpha */
 export const TechRadarPage = createPageExtension({
   id: 'plugin.techradar.page',
   defaultPath: '/tech-radar',
-  routeRef: techRadarRouteRef,
+  routeRef: convertLegacyRouteRef(rootRouteRef),
   configSchema: createSchemaFromZod(z =>
     z.object({
       title: z.string().default('Tech Radar'),
@@ -59,4 +59,7 @@ const sampleTechRadarApi = createApiExtension({
 export default createPlugin({
   id: 'tech-radar',
   extensions: [TechRadarPage, sampleTechRadarApi],
+  routes: {
+    root: convertLegacyRouteRef(rootRouteRef),
+  },
 });

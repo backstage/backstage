@@ -23,7 +23,7 @@ import {
   createApiFactory,
 } from '@backstage/core-plugin-api';
 
-const rootRouteRef = createRouteRef({
+export const rootRouteRef = createRouteRef({
   id: 'tech-radar',
 });
 

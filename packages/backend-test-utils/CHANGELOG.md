@@ -1,5 +1,21 @@
 # @backstage/backend-test-utils
 
+## 0.2.7
+
+### Patch Changes
+
+- a250ad775f: Added `createMockDirectory()` to help out with file system mocking in tests.
+- 5ddc03813e: Remove third type parameter used for `MockInstance`, in order to be compatible with older versions of `@types/jest`.
+- 74491c9602: Updated to import `HostDiscovery` from `@backstage/backend-app-api`.
+- Updated dependencies
+  - @backstage/backend-common@0.19.8
+  - @backstage/plugin-auth-node@0.4.0
+  - @backstage/errors@1.2.3
+  - @backstage/backend-app-api@0.5.6
+  - @backstage/backend-plugin-api@0.6.6
+  - @backstage/config@1.1.1
+  - @backstage/types@1.1.1
+
 ## 0.2.7-next.2
 
 ### Patch Changes

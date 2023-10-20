@@ -19,12 +19,12 @@ import {
   loadBackendConfig,
   ServerTokenManager,
   HostDiscovery,
-  useHotMemoize,
+  DatabaseManager,
 } from '@backstage/backend-common';
 import { Server } from 'http';
-import Knex from 'knex';
 import { LoggerService } from '@backstage/backend-plugin-api';
 import { createRouter } from './router';
+import { ConfigReader } from '@backstage/config';
 
 export interface ServerOptions {
   logger: LoggerService;
@@ -37,27 +37,20 @@ export async function startStandaloneServer(
   const config = await loadBackendConfig({ logger, argv: process.argv });
   const discovery = HostDiscovery.fromConfig(config);
 
-  const database = useHotMemoize(module, () => {
-    const knex = Knex({
-      client: 'better-sqlite3',
-      connection: ':memory:',
-      useNullAsDefault: true,
-    });
-    knex.client.pool.on('createSuccess', (_eventId: any, resource: any) => {
-      resource.run('PRAGMA foreign_keys = ON', () => {});
-    });
-    return knex;
-  });
+  const manager = DatabaseManager.fromConfig(
+    new ConfigReader({
+      backend: {
+        database: { client: 'better-sqlite3', connection: ':memory:' },
+      },
+    }),
+  );
+  const database = manager.forPlugin('auth');
 
   logger.debug('Starting application server...');
   const router = await createRouter({
     logger,
     config,
-    database: {
-      async getClient() {
-        return database;
-      },
-    },
+    database,
     discovery,
     tokenManager: ServerTokenManager.noop(),
   });

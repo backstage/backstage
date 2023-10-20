@@ -1,5 +1,13 @@
 # @backstage/plugin-auth-backend-module-google-provider
 
+## 0.1.3
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/plugin-auth-node@0.4.0
+  - @backstage/backend-plugin-api@0.6.6
+
 ## 0.1.3-next.2
 
 ### Patch Changes

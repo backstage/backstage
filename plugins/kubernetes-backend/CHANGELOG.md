@@ -1,5 +1,36 @@
 # @backstage/plugin-kubernetes-backend
 
+## 0.13.0
+
+### Minor Changes
+
+- ae943c3bb1: **BREAKING** Allow passing undefined `labelSelector` to `KubernetesFetcher`
+
+  `KubernetesFetch` no longer auto-adds `labelSelector` when empty string was passed.
+  This is only applicable if you have custom ObjectProvider implementation, as build-in `KubernetesFanOutHandler` already does this
+
+### Patch Changes
+
+- cbb0e3c3f4: A new plugin has been introduced to house the extension points for Kubernetes backend plugin; at the moment only the `KubernetesObjectsProviderExtensionPoint` is present. The `kubernetes-backend` plugin was modified to use this new extension point.
+- 9101c0d1b6: Updated dependency `@kubernetes/client-node` to `0.19.0`.
+- 95518765ee: Add Kubernetes cluster plugin. Viewing Kubernetes clusters as an Admin from Backstage
+- 5dac12e435: The kubernetes APIs invokes Authentication Strategies when Backstage-Kubernetes-Authorization-X-X headers are provided, this enable the possibility to invoke strategies that executes additional steps to get a kubernetes token like on pinniped or custom strategies
+- Updated dependencies
+  - @backstage/backend-common@0.19.8
+  - @backstage/plugin-catalog-node@1.4.7
+  - @backstage/plugin-auth-node@0.4.0
+  - @backstage/catalog-model@1.4.3
+  - @backstage/errors@1.2.3
+  - @backstage/plugin-kubernetes-node@0.1.0
+  - @backstage/plugin-kubernetes-common@0.7.0
+  - @backstage/backend-plugin-api@0.6.6
+  - @backstage/plugin-permission-node@0.7.17
+  - @backstage/catalog-client@1.4.5
+  - @backstage/config@1.1.1
+  - @backstage/integration-aws-node@0.1.7
+  - @backstage/types@1.1.1
+  - @backstage/plugin-permission-common@0.7.9
+
 ## 0.12.3-next.2
 
 ### Patch Changes

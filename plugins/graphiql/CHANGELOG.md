@@ -1,5 +1,19 @@
 # @backstage/plugin-graphiql
 
+## 0.2.55
+
+### Patch Changes
+
+- 9c9a9100b0: Internal refactor to avoid using the deprecated `.icon.svg` extension.
+- 06432f900c: Updated `/alpha` exports to use new `attachTo` option.
+- 9a1fce352e: Updated dependency `@testing-library/jest-dom` to `^6.0.0`.
+- f95af4e540: Updated dependency `@testing-library/dom` to `^9.0.0`.
+- Updated dependencies
+  - @backstage/frontend-plugin-api@0.2.0
+  - @backstage/core-plugin-api@1.7.0
+  - @backstage/core-components@0.13.6
+  - @backstage/theme@0.4.3
+
 ## 0.2.55-next.2
 
 ### Patch Changes

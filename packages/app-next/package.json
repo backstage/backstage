@@ -1,6 +1,6 @@
 {
   "name": "example-app-next",
-  "version": "0.0.2-next.2",
+  "version": "0.0.2",
   "private": true,
   "backstage": {
     "role": "frontend"
@@ -12,6 +12,7 @@
     "@backstage/cli": "workspace:^",
     "@backstage/config": "workspace:^",
     "@backstage/core-app-api": "workspace:^",
+    "@backstage/core-compat-api": "workspace:^",
     "@backstage/core-components": "workspace:^",
     "@backstage/core-plugin-api": "workspace:^",
     "@backstage/frontend-app-api": "workspace:^",
@@ -67,7 +68,6 @@
     "@backstage/plugin-search-react": "workspace:^",
     "@backstage/plugin-sentry": "workspace:^",
     "@backstage/plugin-shortcuts": "workspace:^",
-    "@backstage/plugin-stack-overflow": "workspace:^",
     "@backstage/plugin-stackstorm": "workspace:^",
     "@backstage/plugin-tech-insights": "workspace:^",
     "@backstage/plugin-tech-radar": "workspace:^",
@@ -89,8 +89,8 @@
     "app-next-example-plugin": "workspace:^",
     "history": "^5.0.0",
     "lodash": "^4.17.21",
-    "react": "^17.0.2",
-    "react-dom": "^17.0.2",
+    "react": "^18.0.2",
+    "react-dom": "^18.0.2",
     "react-router": "^6.3.0",
     "react-router-dom": "^6.3.0",
     "react-use": "^17.2.4",
@@ -100,7 +100,7 @@
     "@backstage/test-utils": "workspace:^",
     "@testing-library/dom": "^9.0.0",
     "@testing-library/jest-dom": "^6.0.0",
-    "@testing-library/react": "^12.1.3",
+    "@testing-library/react": "^14.0.0",
     "@testing-library/user-event": "^14.0.0",
     "@types/jquery": "^3.3.34",
     "@types/react": "*",

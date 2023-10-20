@@ -1,5 +1,18 @@
 # @backstage/app-defaults
 
+## 1.4.4
+
+### Patch Changes
+
+- 1a0616fa10: Add missing resource and template app icons
+- 9a1fce352e: Updated dependency `@testing-library/jest-dom` to `^6.0.0`.
+- Updated dependencies
+  - @backstage/core-app-api@1.11.0
+  - @backstage/core-plugin-api@1.7.0
+  - @backstage/core-components@0.13.6
+  - @backstage/plugin-permission-react@0.4.16
+  - @backstage/theme@0.4.3
+
 ## 1.4.4-next.2
 
 ### Patch Changes

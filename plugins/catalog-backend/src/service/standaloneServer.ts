@@ -21,7 +21,6 @@ import {
   ServerTokenManager,
   HostDiscovery,
   UrlReaders,
-  useHotMemoize,
 } from '@backstage/backend-common';
 import { ConfigReader } from '@backstage/config';
 import { ServerPermissionClient } from '@backstage/plugin-permission-node';
@@ -43,16 +42,14 @@ export async function startStandaloneServer(
   const logger = options.logger.child({ service: 'catalog-backend' });
   const config = await loadBackendConfig({ logger, argv: process.argv });
   const reader = UrlReaders.default({ logger, config });
-  const database = useHotMemoize(module, () => {
-    const manager = DatabaseManager.fromConfig(
-      new ConfigReader({
-        backend: {
-          database: { client: 'better-sqlite3', connection: ':memory:' },
-        },
-      }),
-    );
-    return manager.forPlugin('catalog');
-  });
+  const manager = DatabaseManager.fromConfig(
+    new ConfigReader({
+      backend: {
+        database: { client: 'better-sqlite3', connection: ':memory:' },
+      },
+    }),
+  );
+  const database = manager.forPlugin('catalog');
   const discovery = HostDiscovery.fromConfig(config);
   const tokenManager = ServerTokenManager.fromConfig(config, {
     logger,
