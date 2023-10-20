@@ -9,6 +9,7 @@ import { AzureSiteStartStopRequest } from '@backstage/plugin-azure-sites-common'
 import { Config } from '@backstage/config';
 import express from 'express';
 import { Logger } from 'winston';
+import { PermissionEvaluator } from '@backstage/plugin-permission-common';
 
 // @public (undocumented)
 export class AzureSitesApi {
@@ -21,6 +22,8 @@ export class AzureSitesApi {
   start(request: AzureSiteStartStopRequest): Promise<void>;
   // (undocumented)
   stop(request: AzureSiteStartStopRequest): Promise<void>;
+  // (undocumented)
+  validateSite(annotationName: string, siteName: string): Promise<boolean>;
 }
 
 // @public (undocumented)
@@ -55,6 +58,8 @@ export interface RouterOptions {
   azureSitesApi: AzureSitesApi;
   // (undocumented)
   logger: Logger;
+  // (undocumented)
+  permissions: PermissionEvaluator;
 }
 
 // (No @packageDocumentation comment for this package)
