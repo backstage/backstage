@@ -320,10 +320,9 @@ describe('DefaultCatalogPage', () => {
 
     // Now that we've starred an entity, the "Starred" menu option should be
     // enabled.
-    expect(screen.getByTestId('user-picker-starred')).not.toHaveAttribute(
-      'aria-disabled',
-      'true',
-    );
+    expect(
+      await screen.findByTestId('user-picker-starred'),
+    ).not.toHaveAttribute('aria-disabled', 'true');
     fireEvent.click(screen.getByTestId('user-picker-starred'));
     await expect(
       screen.findByText(/Starred components \(1\)/),
