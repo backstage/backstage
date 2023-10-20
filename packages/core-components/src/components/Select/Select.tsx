@@ -27,7 +27,6 @@ import {
   Theme,
   withStyles,
 } from '@material-ui/core/styles';
-import CancelIcon from '@material-ui/icons/Cancel';
 import Typography from '@material-ui/core/Typography';
 import React, { useEffect, useState } from 'react';
 
