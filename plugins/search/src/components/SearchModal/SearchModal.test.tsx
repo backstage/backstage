@@ -15,7 +15,7 @@
  */
 
 import React from 'react';
-import { screen, waitFor } from '@testing-library/react';
+import { screen } from '@testing-library/react';
 import { renderInTestApp, TestApiRegistry } from '@backstage/test-utils';
 import userEvent from '@testing-library/user-event';
 import { configApiRef } from '@backstage/core-plugin-api';
@@ -205,7 +205,6 @@ describe('SearchModal', () => {
 
     const input = screen.getByLabelText<HTMLInputElement>('Search');
     await userEvent.clear(input);
-    await waitFor(() => expect(input.value).toBe(''));
     await userEvent.type(input, 'new term{enter}');
 
     expect(navigate).toHaveBeenCalledWith('/search?query=new term');

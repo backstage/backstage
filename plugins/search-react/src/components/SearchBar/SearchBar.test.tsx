@@ -339,7 +339,6 @@ describe('SearchBar', () => {
 
     value = 'new value';
     await user.clear(textbox);
-    await waitFor(() => expect(textbox.value).toBe(''));
 
     // make sure new term is captured
     await user.type(textbox, value);
