@@ -79,7 +79,7 @@ export async function serveBundle(options: ServeOptions) {
   const { name } = await fs.readJson(libPaths.resolveTarget('package.json'));
 
   let webpackServer: WebpackDevServer | undefined = undefined;
-  // let viteServer: import('vite').ViteDevServer | undefined = undefined;
+  let viteServer: import('vite').ViteDevServer | undefined = undefined;
 
   let latestFrontendAppConfigs: AppConfig[] = [];
 
@@ -146,13 +146,12 @@ export async function serveBundle(options: ServeOptions) {
   });
 
   if (process.env.EXPERIMENTAL_VITE) {
-    // const { default: vite } = await import('vite');
-    // // Annoyting that this doesn't work. `package.json` is not declared in `exports`.
-    // // const { default: viteReact } = require('@vitejs/plugin-react');
-    // const { nodePolyfills: viteNodePolyfills } = await import(
-    //   'vite-plugin-node-polyfills'
-    // );
-    // const { createHtmlPlugin: viteHtml } = await import('vite-plugin-html');
+    const { default: vite } = await import('vite');
+    const { default: viteReact } = await import('@vitejs/plugin-react');
+    const { nodePolyfills: viteNodePolyfills } = await import(
+      'vite-plugin-node-polyfills'
+    );
+    const { createHtmlPlugin: viteHtml } = await import('vite-plugin-html');
     viteServer = await vite.createServer({
       define: {
         global: 'window',
