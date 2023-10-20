@@ -81,19 +81,22 @@ export const TechDocsReaderPageContent = withTechDocsReaderProvider(
       setShadowRoot,
     } = useTechDocsReaderPage();
     const dom = useTechDocsReaderDom(entityRef);
+    const path = window.location.pathname;
     const hash = window.location.hash;
     const isStyleLoading = useShadowDomStylesLoading(dom);
     const [hashElement] = useShadowRootElements([`[id="${hash.slice(1)}"]`]);
 
     useEffect(() => {
+      if (isStyleLoading) return;
+
       if (hash) {
-        if (hashElement && !isStyleLoading) {
+        if (hashElement) {
           hashElement.scrollIntoView();
         }
       } else {
         document?.querySelector('header')?.scrollIntoView();
       }
-    }, [hash, hashElement, isStyleLoading]);
+    }, [path, hash, hashElement, isStyleLoading]);
 
     const handleAppend = useCallback(
       (newShadowRoot: ShadowRoot) => {
