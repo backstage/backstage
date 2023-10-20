@@ -129,7 +129,7 @@ export default async (opts: OptionValues): Promise<void> => {
     );
     Task.log();
     Task.section('All set! Now you might want to');
-    if (!opts.skipInstall) {
+    if (opts.skipInstall) {
       Task.log(
         `  Install the dependencies: ${chalk.cyan(
           `cd ${opts.path ?? answers.name} && yarn install`,
