@@ -69,27 +69,16 @@ function getProjectRepo(annotations?: Record<string, string>): {
     return { project: undefined, repo: undefined };
   }
 
-  if (!annotation.includes('/')) {
-    throw new Error(
-      `Value for annotation ${AZURE_DEVOPS_REPO_ANNOTATION} was not in the correct format: <project-name>/<repo-name>`,
-    );
+  if (annotation.includes('/')) {
+    const [project, repo] = annotation.split('/');
+    if (project && repo) {
+      return { project, repo };
+    }
   }
 
-  const [project, repo] = annotation.split('/');
-
-  if (!project) {
-    throw new Error(
-      `Project Name for annotation ${AZURE_DEVOPS_REPO_ANNOTATION} was not found; expected format is: <project-name>/<repo-name>`,
-    );
-  }
-
-  if (!repo) {
-    throw new Error(
-      `Repo Name for annotation ${AZURE_DEVOPS_REPO_ANNOTATION} was not found; expected format is: <project-name>/<repo-name>`,
-    );
-  }
-
-  return { project, repo };
+  throw new Error(
+    `Invalid value for annotation "${AZURE_DEVOPS_REPO_ANNOTATION}"; expected format is: <project-name>/<repo-name>, found: "${annotation}"`,
+  );
 }
 
 function getHostOrg(annotations?: Record<string, string>): {
@@ -101,25 +90,14 @@ function getHostOrg(annotations?: Record<string, string>): {
     return { host: undefined, org: undefined };
   }
 
-  if (!annotation.includes('/')) {
-    throw new Error(
-      `Value for annotation ${AZURE_DEVOPS_HOST_ORG_ANNOTATION} was not in the correct format: <host-name>/<organization-name>`,
-    );
+  if (annotation.includes('/')) {
+    const [host, org] = annotation.split('/');
+    if (host && org) {
+      return { host, org };
+    }
   }
 
-  const [host, org] = annotation.split('/');
-
-  if (!host) {
-    throw new Error(
-      `Host for annotation ${AZURE_DEVOPS_HOST_ORG_ANNOTATION} was not found; expected format is: <host-name>/<organization-name>`,
-    );
-  }
-
-  if (!org) {
-    throw new Error(
-      `Organization for annotation ${AZURE_DEVOPS_HOST_ORG_ANNOTATION} was not found; expected format is: <host-name>/<organization-name>`,
-    );
-  }
-
-  return { host, org };
+  throw new Error(
+    `Invalid value for annotation "${AZURE_DEVOPS_HOST_ORG_ANNOTATION}"; expected format is: <host-name>/<organization-name>, found: "${annotation}"`,
+  );
 }
