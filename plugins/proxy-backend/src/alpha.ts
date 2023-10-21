@@ -14,6 +14,7 @@
  * limitations under the License.
  */
 
+import { loggerToWinstonLogger } from '@backstage/backend-common';
 import {
   createBackendPlugin,
   coreServices,
@@ -21,21 +22,28 @@ import {
 import { createRouter } from './service/router';
 
 /**
- * The user settings backend plugin.
+ * The proxy backend plugin.
  *
  * @alpha
  */
-export const userSettingsPlugin = createBackendPlugin({
-  pluginId: 'userSettings',
+export default createBackendPlugin({
+  pluginId: 'proxy',
   register(env) {
     env.registerInit({
       deps: {
-        database: coreServices.database,
-        identity: coreServices.identity,
+        config: coreServices.rootConfig,
+        discovery: coreServices.discovery,
+        logger: coreServices.logger,
         httpRouter: coreServices.httpRouter,
       },
-      async init({ database, identity, httpRouter }) {
-        httpRouter.use(await createRouter({ database, identity }));
+      async init({ config, discovery, logger, httpRouter }) {
+        httpRouter.use(
+          await createRouter({
+            config,
+            discovery,
+            logger: loggerToWinstonLogger(logger),
+          }),
+        );
       },
     });
   },

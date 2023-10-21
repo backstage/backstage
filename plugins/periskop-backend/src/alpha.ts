@@ -22,29 +22,22 @@ import {
 import { createRouter } from './service/router';
 
 /**
- * The Bazaar backend plugin.
+ * The Periskop backend plugin.
  *
  * @alpha
  */
-export const bazaarPlugin = createBackendPlugin({
-  pluginId: 'bazaar',
+export default createBackendPlugin({
+  pluginId: 'periskop',
   register(env) {
     env.registerInit({
       deps: {
         config: coreServices.rootConfig,
-        database: coreServices.database,
-        identity: coreServices.identity,
         logger: coreServices.logger,
         httpRouter: coreServices.httpRouter,
       },
-      async init({ database, config, identity, logger, httpRouter }) {
+      async init({ config, logger, httpRouter }) {
         httpRouter.use(
-          await createRouter({
-            database,
-            config,
-            identity,
-            logger: loggerToWinstonLogger(logger),
-          }),
+          await createRouter({ config, logger: loggerToWinstonLogger(logger) }),
         );
       },
     });
