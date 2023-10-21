@@ -18,15 +18,8 @@ import React from 'react';
 import Grid from '@material-ui/core/Grid';
 import HomeIcon from '@material-ui/icons/Home';
 
-import {
-  createApiFactory,
-  discoveryApiRef,
-  fetchApiRef,
-  storageApiRef,
-} from '@backstage/core-plugin-api';
 import { convertLegacyRouteRef } from '@backstage/core-plugin-api/alpha';
 import {
-  createApiExtension,
   createPageExtension,
   createPlugin,
   createNavItemExtension,
@@ -34,12 +27,9 @@ import {
   createExtensionInput,
 } from '@backstage/frontend-plugin-api';
 
-import { CatalogClient } from '@backstage/catalog-client';
 import {
   AsyncEntityProvider,
-  catalogApiRef,
   entityRouteRef,
-  starredEntitiesApiRef,
 } from '@backstage/plugin-catalog-react';
 import {
   createEntityContentExtension,
@@ -48,7 +38,6 @@ import {
 } from '@backstage/plugin-catalog-react/alpha';
 import { createSearchResultListItemExtension } from '@backstage/plugin-search-react/alpha';
 
-import { DefaultStarredEntitiesApi } from '../apis';
 import {
   createComponentRouteRef,
   createFromTemplateRouteRef,
@@ -57,29 +46,8 @@ import {
 } from '../routes';
 import { useEntityFromUrl } from '../components/CatalogEntityPage/useEntityFromUrl';
 
+import apis from './apis';
 import filters from './filters';
-
-/** @alpha */
-export const CatalogApi = createApiExtension({
-  factory: createApiFactory({
-    api: catalogApiRef,
-    deps: {
-      discoveryApi: discoveryApiRef,
-      fetchApi: fetchApiRef,
-    },
-    factory: ({ discoveryApi, fetchApi }) =>
-      new CatalogClient({ discoveryApi, fetchApi }),
-  }),
-});
-
-/** @alpha */
-export const StarredEntitiesApi = createApiExtension({
-  factory: createApiFactory({
-    api: starredEntitiesApiRef,
-    deps: { storageApi: storageApiRef },
-    factory: ({ storageApi }) => new DefaultStarredEntitiesApi({ storageApi }),
-  }),
-});
 
 /** @alpha */
 export const CatalogSearchResultListItemExtension =
@@ -195,9 +163,8 @@ export default createPlugin({
     createFromTemplate: convertLegacyRouteRef(createFromTemplateRouteRef),
   },
   extensions: [
+    ...apis,
     ...filters,
-    CatalogApi,
-    StarredEntitiesApi,
     CatalogSearchResultListItemExtension,
     CatalogIndexPage,
     CatalogEntityPage,
