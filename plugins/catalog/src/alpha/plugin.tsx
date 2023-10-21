@@ -14,18 +14,10 @@
  * limitations under the License.
  */
 
-import React from 'react';
-import Grid from '@material-ui/core/Grid';
-
 import { convertLegacyRouteRef } from '@backstage/core-plugin-api/alpha';
-import {
-  createPlugin,
-  coreExtensionData,
-  createExtensionInput,
-} from '@backstage/frontend-plugin-api';
+import { createPlugin } from '@backstage/frontend-plugin-api';
 
 import { entityRouteRef } from '@backstage/plugin-catalog-react';
-import { createEntityContentExtension } from '@backstage/plugin-catalog-react/alpha';
 
 import {
   createComponentRouteRef,
@@ -39,28 +31,8 @@ import pages from './pages';
 import filters from './filters';
 import navItems from './navItems';
 import entityCards from './entityCards';
+import entityContents from './entityContents';
 import searchResultItems from './searchResultItems';
-
-const OverviewEntityContent = createEntityContentExtension({
-  id: 'overview',
-  defaultPath: '/',
-  defaultTitle: 'Overview',
-  disabled: false,
-  inputs: {
-    cards: createExtensionInput({
-      element: coreExtensionData.reactElement,
-    }),
-  },
-  loader: async ({ inputs }) => (
-    <Grid container spacing={3} alignItems="stretch">
-      {inputs.cards.map(card => (
-        <Grid item md={6} xs={12}>
-          {card.element}
-        </Grid>
-      ))}
-    </Grid>
-  ),
-});
 
 /** @alpha */
 export default createPlugin({
@@ -80,7 +52,7 @@ export default createPlugin({
     ...filters,
     ...navItems,
     ...entityCards,
+    ...entityContents,
     ...searchResultItems,
-    OverviewEntityContent,
   ],
 });
