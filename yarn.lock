@@ -3870,14 +3870,11 @@ __metadata:
     yn: ^4.0.0
     zod: ^3.21.4
   peerDependencies:
-    "@microsoft/api-extractor": ^7.21.2
     "@vitejs/plugin-react": ^4.0.4
     vite: ^4.4.9
     vite-plugin-html: ^3.2.0
     vite-plugin-node-polyfills: ^0.14.1
   peerDependenciesMeta:
-    "@microsoft/api-extractor":
-      optional: true
     "@vitejs/plugin-react":
       optional: true
     vite:

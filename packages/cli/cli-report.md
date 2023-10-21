@@ -224,7 +224,6 @@ Usage: backstage-cli package build [options]
 Options:
   --role <name>
   --minify
-  --experimental-type-build
   --skip-build-dependencies
   --stats
   --config <path>
