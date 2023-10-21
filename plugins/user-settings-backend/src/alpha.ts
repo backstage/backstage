@@ -14,31 +14,28 @@
  * limitations under the License.
  */
 
-import { loggerToWinstonLogger } from '@backstage/backend-common';
 import {
-  coreServices,
   createBackendPlugin,
+  coreServices,
 } from '@backstage/backend-plugin-api';
 import { createRouter } from './service/router';
 
 /**
- * The Periskop backend plugin.
+ * The user settings backend plugin.
  *
  * @alpha
  */
-export const periskopPlugin = createBackendPlugin({
-  pluginId: 'periskop',
+export default createBackendPlugin({
+  pluginId: 'userSettings',
   register(env) {
     env.registerInit({
       deps: {
-        config: coreServices.rootConfig,
-        logger: coreServices.logger,
+        database: coreServices.database,
+        identity: coreServices.identity,
         httpRouter: coreServices.httpRouter,
       },
-      async init({ config, logger, httpRouter }) {
-        httpRouter.use(
-          await createRouter({ config, logger: loggerToWinstonLogger(logger) }),
-        );
+      async init({ database, identity, httpRouter }) {
+        httpRouter.use(await createRouter({ database, identity }));
       },
     });
   },
