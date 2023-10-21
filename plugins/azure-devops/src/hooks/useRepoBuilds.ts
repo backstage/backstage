@@ -43,10 +43,7 @@ export function useRepoBuilds(
   const { project, repo } = getAnnotationValuesFromEntity(entity);
 
   const { value, loading, error } = useAsync(async () => {
-    if (repo) {
-      return await api.getRepoBuilds(project, repo, options);
-    }
-    return undefined;
+    return await api.getRepoBuilds(project, repo as string, options);
   }, [api, project, repo, entity]);
 
   return {

@@ -31,10 +31,7 @@ export function useGitTags(entity: Entity): {
   const { project, repo } = getAnnotationValuesFromEntity(entity);
 
   const { value, loading, error } = useAsync(async () => {
-    if (repo) {
-      return await api.getGitTags(project, repo);
-    }
-    return undefined;
+    return await api.getGitTags(project, repo as string);
   }, [api, project, repo]);
 
   return {
