@@ -19,9 +19,9 @@ import {
   EmptyState,
   ErrorPanel,
   InfoCard,
-  MissingAnnotationEmptyState,
   Progress,
 } from '@backstage/core-components';
+import { MissingAnnotationEmptyState, } from '@backstage/plugin-catalog-react';
 import { useApi } from '@backstage/core-plugin-api';
 import { BackstageTheme } from '@backstage/theme';
 import { Grid, Typography } from '@material-ui/core';

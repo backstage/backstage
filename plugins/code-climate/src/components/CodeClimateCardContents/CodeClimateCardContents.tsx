@@ -19,11 +19,10 @@ import useAsync from 'react-use/lib/useAsync';
 import { codeClimateApiRef } from '../../api';
 import { CodeClimateTable } from '../CodeClimateTable';
 import { CODECLIMATE_REPO_ID_ANNOTATION } from '../../plugin';
-import { useEntity } from '@backstage/plugin-catalog-react';
+import { useEntity,MissingAnnotationEmptyState } from '@backstage/plugin-catalog-react';
 import {
   EmptyState,
   ErrorPanel,
-  MissingAnnotationEmptyState,
   Progress,
 } from '@backstage/core-components';
 import { useApi } from '@backstage/core-plugin-api';

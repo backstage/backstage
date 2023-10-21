@@ -23,10 +23,9 @@ import {
 } from '../../hooks/useServiceEntityAnnotations';
 import {
   ErrorBoundary,
-  MissingAnnotationEmptyState,
   ResponseErrorPanel,
 } from '@backstage/core-components';
-import { useEntity } from '@backstage/plugin-catalog-react';
+import { useEntity,MissingAnnotationEmptyState } from '@backstage/plugin-catalog-react';
 import { AzureSitesOverviewTable } from '../AzureSitesOverviewTableComponent/AzureSitesOverviewTable';
 
 /** @public */

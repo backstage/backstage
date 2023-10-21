@@ -21,9 +21,7 @@ import { BuildWithStepsPage } from './BuildWithStepsPage/';
 import { BuildsPage } from './BuildsPage';
 import { CIRCLECI_ANNOTATION } from '../constants';
 import { Entity } from '@backstage/catalog-model';
-import { useEntity } from '@backstage/plugin-catalog-react';
-import { MissingAnnotationEmptyState } from '@backstage/core-components';
-
+import { useEntity,MissingAnnotationEmptyState } from '@backstage/plugin-catalog-react';
 /** @public */
 export const isCircleCIAvailable = (entity: Entity) =>
   Boolean(entity.metadata.annotations?.[CIRCLECI_ANNOTATION]);

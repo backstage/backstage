@@ -18,9 +18,8 @@ import { Grid } from '@material-ui/core';
 import {
   Page,
   Content,
-  MissingAnnotationEmptyState,
 } from '@backstage/core-components';
-import { useEntity } from '@backstage/plugin-catalog-react';
+import { useEntity,MissingAnnotationEmptyState } from '@backstage/plugin-catalog-react';
 import { ProblemsList } from '../Problems/ProblemsList';
 import { SyntheticsCard } from '../Synthetics/SyntheticsCard';
 import { isDynatraceAvailable } from '../../plugin';

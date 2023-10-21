@@ -21,6 +21,7 @@ const addImports = require('jscodeshift-add-imports');
 // away from @backstage/core.
 const symbolTable = {
   '@backstage/app-defaults': ['createApp'],
+  '@backstage/plugin-catalog-react': ['MissingAnnotationEmptyState'],
   '@backstage/core-app-api': [
     'ConfigReader',
     'AlertApiForwarder',
@@ -112,7 +113,6 @@ const symbolTable = {
     'Link',
     'LinkProps',
     'MarkdownContent',
-    'MissingAnnotationEmptyState',
     'OAuthRequestDialog',
     'OverflowTooltip',
     'Page',
