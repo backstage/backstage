@@ -20,3 +20,4 @@ export * from './usePullRequests';
 export * from './useRepoBuilds';
 export * from './useUserEmail';
 export * from './useUserTeamIds';
+export * from './useReadme';
