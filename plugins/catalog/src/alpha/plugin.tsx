@@ -15,7 +15,9 @@
  */
 
 import React from 'react';
+import Grid from '@material-ui/core/Grid';
 import HomeIcon from '@material-ui/icons/Home';
+
 import {
   createApiFactory,
   discoveryApiRef,
@@ -23,7 +25,6 @@ import {
   storageApiRef,
 } from '@backstage/core-plugin-api';
 import { convertLegacyRouteRef } from '@backstage/core-plugin-api/alpha';
-import { CatalogClient } from '@backstage/catalog-client';
 import {
   createApiExtension,
   createPageExtension,
@@ -32,6 +33,8 @@ import {
   coreExtensionData,
   createExtensionInput,
 } from '@backstage/frontend-plugin-api';
+
+import { CatalogClient } from '@backstage/catalog-client';
 import {
   AsyncEntityProvider,
   catalogApiRef,
@@ -44,6 +47,7 @@ import {
   entityContentTitleExtensionDataRef,
 } from '@backstage/plugin-catalog-react/alpha';
 import { createSearchResultListItemExtension } from '@backstage/plugin-search-react/alpha';
+
 import { DefaultStarredEntitiesApi } from '../apis';
 import {
   createComponentRouteRef,
@@ -51,9 +55,9 @@ import {
   rootRouteRef,
   viewTechDocRouteRef,
 } from '../routes';
-import { builtInFilterExtensions } from './builtInFilterExtensions';
 import { useEntityFromUrl } from '../components/CatalogEntityPage/useEntityFromUrl';
-import Grid from '@material-ui/core/Grid';
+
+import filters from './filters';
 
 /** @alpha */
 export const CatalogApi = createApiExtension({
@@ -99,8 +103,11 @@ const CatalogIndexPage = createPageExtension({
   },
   loader: async ({ inputs }) => {
     const { BaseCatalogPage } = await import('../components/CatalogPage');
-    const filters = inputs.filters.map(filter => filter.element);
-    return <BaseCatalogPage filters={<>{filters}</>} />;
+    return (
+      <BaseCatalogPage
+        filters={<>{inputs.filters.map(filter => filter.element)}</>}
+      />
+    );
   },
 });
 
@@ -188,6 +195,7 @@ export default createPlugin({
     createFromTemplate: convertLegacyRouteRef(createFromTemplateRouteRef),
   },
   extensions: [
+    ...filters,
     CatalogApi,
     StarredEntitiesApi,
     CatalogSearchResultListItemExtension,
@@ -196,6 +204,5 @@ export default createPlugin({
     CatalogNavItem,
     OverviewEntityContent,
     EntityAboutCard,
-    ...builtInFilterExtensions,
   ],
 });
