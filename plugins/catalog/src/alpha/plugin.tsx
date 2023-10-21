@@ -16,12 +16,10 @@
 
 import React from 'react';
 import Grid from '@material-ui/core/Grid';
-import HomeIcon from '@material-ui/icons/Home';
 
 import { convertLegacyRouteRef } from '@backstage/core-plugin-api/alpha';
 import {
   createPlugin,
-  createNavItemExtension,
   coreExtensionData,
   createExtensionInput,
 } from '@backstage/frontend-plugin-api';
@@ -40,6 +38,7 @@ import {
 import apis from './apis';
 import pages from './pages';
 import filters from './filters';
+import navItems from './navItems';
 import entityCards from './entityCards';
 
 /** @alpha */
@@ -74,13 +73,6 @@ const OverviewEntityContent = createEntityContentExtension({
   ),
 });
 
-const CatalogNavItem = createNavItemExtension({
-  id: 'catalog.nav.index',
-  routeRef: convertLegacyRouteRef(rootRouteRef),
-  title: 'Catalog',
-  icon: HomeIcon,
-});
-
 /** @alpha */
 export default createPlugin({
   id: 'catalog',
@@ -97,9 +89,9 @@ export default createPlugin({
     ...apis,
     ...pages,
     ...filters,
+    ...navItems,
     ...entityCards,
     CatalogSearchResultListItemExtension,
-    CatalogNavItem,
     OverviewEntityContent,
   ],
 });
