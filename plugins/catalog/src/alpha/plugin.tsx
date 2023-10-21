@@ -26,7 +26,6 @@ import {
 
 import { entityRouteRef } from '@backstage/plugin-catalog-react';
 import { createEntityContentExtension } from '@backstage/plugin-catalog-react/alpha';
-import { createSearchResultListItemExtension } from '@backstage/plugin-search-react/alpha';
 
 import {
   createComponentRouteRef,
@@ -40,17 +39,7 @@ import pages from './pages';
 import filters from './filters';
 import navItems from './navItems';
 import entityCards from './entityCards';
-
-/** @alpha */
-export const CatalogSearchResultListItemExtension =
-  createSearchResultListItemExtension({
-    id: 'catalog',
-    predicate: result => result.type === 'software-catalog',
-    component: () =>
-      import('../components/CatalogSearchResultListItem').then(
-        m => m.CatalogSearchResultListItem,
-      ),
-  });
+import searchResultItems from './searchResultItems';
 
 const OverviewEntityContent = createEntityContentExtension({
   id: 'overview',
@@ -91,7 +80,7 @@ export default createPlugin({
     ...filters,
     ...navItems,
     ...entityCards,
-    CatalogSearchResultListItemExtension,
+    ...searchResultItems,
     OverviewEntityContent,
   ],
 });
