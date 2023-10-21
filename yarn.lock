@@ -8487,6 +8487,7 @@ __metadata:
     "@backstage/integration": "workspace:^"
     "@backstage/plugin-scaffolder-node": "workspace:^"
     "@gitbeaker/node": ^35.8.0
+    yaml: ^2.0.0
     zod: ^3.21.4
   languageName: unknown
   linkType: soft
