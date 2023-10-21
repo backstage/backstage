@@ -157,7 +157,7 @@ describe('getAnnotationValuesFromEntity', () => {
       };
 
       expect(test).toThrow(
-        'Value for annotation dev.azure.com/build-definition was not found',
+        'Value for annotation "dev.azure.com/build-definition" was not found',
       );
     });
   });
@@ -180,7 +180,7 @@ describe('getAnnotationValuesFromEntity', () => {
       };
 
       expect(test).toThrow(
-        'Value for annotation dev.azure.com/project was not found',
+        'Value for annotation "dev.azure.com/project" was not found',
       );
     });
   });

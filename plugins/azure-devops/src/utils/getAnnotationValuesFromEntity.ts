@@ -46,7 +46,7 @@ export function getAnnotationValuesFromEntity(entity: Entity): {
     entity.metadata.annotations?.[AZURE_DEVOPS_PROJECT_ANNOTATION];
   if (!project) {
     throw new Error(
-      `Value for annotation ${AZURE_DEVOPS_PROJECT_ANNOTATION} was not found`,
+      `Value for annotation "${AZURE_DEVOPS_PROJECT_ANNOTATION}" was not found`,
     );
   }
 
@@ -54,7 +54,7 @@ export function getAnnotationValuesFromEntity(entity: Entity): {
     entity.metadata.annotations?.[AZURE_DEVOPS_BUILD_DEFINITION_ANNOTATION];
   if (!definition) {
     throw new Error(
-      `Value for annotation ${AZURE_DEVOPS_BUILD_DEFINITION_ANNOTATION} was not found`,
+      `Value for annotation "${AZURE_DEVOPS_BUILD_DEFINITION_ANNOTATION}" was not found`,
     );
   }
   return { project, definition, host, org };

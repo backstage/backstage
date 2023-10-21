@@ -47,10 +47,7 @@ export function usePullRequests(
   const { project, repo } = getAnnotationValuesFromEntity(entity);
 
   const { value, loading, error } = useAsync(async () => {
-    if (repo) {
-      return await api.getPullRequests(project, repo, options);
-    }
-    return undefined;
+    return await api.getPullRequests(project, repo as string, options);
   }, [api, project, repo, top, status]);
 
   return {
