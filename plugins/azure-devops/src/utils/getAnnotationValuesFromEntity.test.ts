@@ -61,7 +61,7 @@ describe('getAnnotationValuesFromEntity', () => {
       };
 
       expect(test).toThrow(
-        'Value for annotation dev.azure.com/project-repo was not in the correct format: <project-name>/<repo-name>',
+        'Invalid value for annotation "dev.azure.com/project-repo"; expected format is: <project-name>/<repo-name>, found: "project"',
       );
     });
   });
@@ -85,7 +85,7 @@ describe('getAnnotationValuesFromEntity', () => {
       };
 
       expect(test).toThrow(
-        'Project Name for annotation dev.azure.com/project-repo was not found; expected format is: <project-name>/<repo-name>',
+        'Invalid value for annotation "dev.azure.com/project-repo"; expected format is: <project-name>/<repo-name>, found: "/repo"',
       );
     });
   });
@@ -109,7 +109,7 @@ describe('getAnnotationValuesFromEntity', () => {
       };
 
       expect(test).toThrow(
-        'Repo Name for annotation dev.azure.com/project-repo was not found; expected format is: <project-name>/<repo-name>',
+        'Invalid value for annotation "dev.azure.com/project-repo"; expected format is: <project-name>/<repo-name>, found: "project/"',
       );
     });
   });
@@ -255,7 +255,7 @@ describe('getAnnotationValuesFromEntity', () => {
       };
 
       expect(test).toThrow(
-        'Value for annotation dev.azure.com/host-org was not in the correct format: <host-name>/<organization-name>',
+        'Invalid value for annotation "dev.azure.com/host-org"; expected format is: <host-name>/<organization-name>, found: "host"',
       );
     });
   });
@@ -279,7 +279,7 @@ describe('getAnnotationValuesFromEntity', () => {
       };
 
       expect(test).toThrow(
-        'Host for annotation dev.azure.com/host-org was not found; expected format is: <host-name>/<organization-name>',
+        'Invalid value for annotation "dev.azure.com/host-org"; expected format is: <host-name>/<organization-name>, found: "/org"',
       );
     });
   });
@@ -303,7 +303,7 @@ describe('getAnnotationValuesFromEntity', () => {
       };
 
       expect(test).toThrow(
-        'Organization for annotation dev.azure.com/host-org was not found; expected format is: <host-name>/<organization-name>',
+        'Invalid value for annotation "dev.azure.com/host-org"; expected format is: <host-name>/<organization-name>, found: "host/"',
       );
     });
   });
