@@ -20,21 +20,16 @@ import HomeIcon from '@material-ui/icons/Home';
 
 import { convertLegacyRouteRef } from '@backstage/core-plugin-api/alpha';
 import {
-  createPageExtension,
   createPlugin,
   createNavItemExtension,
   coreExtensionData,
   createExtensionInput,
 } from '@backstage/frontend-plugin-api';
 
-import {
-  AsyncEntityProvider,
-  entityRouteRef,
-} from '@backstage/plugin-catalog-react';
+import { entityRouteRef } from '@backstage/plugin-catalog-react';
 import {
   createEntityContentExtension,
   createEntityCardExtension,
-  entityContentTitleExtensionDataRef,
 } from '@backstage/plugin-catalog-react/alpha';
 import { createSearchResultListItemExtension } from '@backstage/plugin-search-react/alpha';
 
@@ -44,9 +39,9 @@ import {
   rootRouteRef,
   viewTechDocRouteRef,
 } from '../routes';
-import { useEntityFromUrl } from '../components/CatalogEntityPage/useEntityFromUrl';
 
 import apis from './apis';
+import pages from './pages';
 import filters from './filters';
 
 /** @alpha */
@@ -59,60 +54,6 @@ export const CatalogSearchResultListItemExtension =
         m => m.CatalogSearchResultListItem,
       ),
   });
-
-const CatalogIndexPage = createPageExtension({
-  id: 'plugin.catalog.page.index',
-  defaultPath: '/catalog',
-  routeRef: convertLegacyRouteRef(rootRouteRef),
-  inputs: {
-    filters: createExtensionInput({
-      element: coreExtensionData.reactElement,
-    }),
-  },
-  loader: async ({ inputs }) => {
-    const { BaseCatalogPage } = await import('../components/CatalogPage');
-    return (
-      <BaseCatalogPage
-        filters={<>{inputs.filters.map(filter => filter.element)}</>}
-      />
-    );
-  },
-});
-
-const CatalogEntityPage = createPageExtension({
-  id: 'plugin.catalog.page.entity',
-  defaultPath: '/catalog/:namespace/:kind/:name',
-  routeRef: convertLegacyRouteRef(entityRouteRef),
-  inputs: {
-    contents: createExtensionInput({
-      element: coreExtensionData.reactElement,
-      path: coreExtensionData.routePath,
-      routeRef: coreExtensionData.routeRef.optional(),
-      title: entityContentTitleExtensionDataRef,
-    }),
-  },
-  loader: async ({ inputs }) => {
-    const { EntityLayout } = await import('../components/EntityLayout');
-    const Component = () => {
-      return (
-        <AsyncEntityProvider {...useEntityFromUrl()}>
-          <EntityLayout>
-            {inputs.contents.map(content => (
-              <EntityLayout.Route
-                key={content.path}
-                path={content.path}
-                title={content.title}
-              >
-                {content.element}
-              </EntityLayout.Route>
-            ))}
-          </EntityLayout>
-        </AsyncEntityProvider>
-      );
-    };
-    return <Component />;
-  },
-});
 
 const EntityAboutCard = createEntityCardExtension({
   id: 'about',
@@ -164,10 +105,9 @@ export default createPlugin({
   },
   extensions: [
     ...apis,
+    ...pages,
     ...filters,
     CatalogSearchResultListItemExtension,
-    CatalogIndexPage,
-    CatalogEntityPage,
     CatalogNavItem,
     OverviewEntityContent,
     EntityAboutCard,
