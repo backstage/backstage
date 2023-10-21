@@ -304,7 +304,6 @@ async function findPackageEntryPoints(packageDirs: string[]): Promise<
   Array<{
     packageDir: string;
     name: string;
-    usesExperimentalTypeBuild?: boolean;
   }>
 > {
   return Promise.all(
@@ -317,9 +316,6 @@ async function findPackageEntryPoints(packageDirs: string[]): Promise<
         getPackageExportNames(pkg)?.map(name => ({ packageDir, name })) ?? {
           packageDir,
           name: 'index',
-          usesExperimentalTypeBuild: pkg.scripts?.build?.includes(
-            '--experimental-type-build',
-          ),
         }
       );
     }),
@@ -367,11 +363,7 @@ export async function runApiExtraction({
   }
   const warnings = new Array<string>();
 
-  for (const {
-    packageDir,
-    name,
-    usesExperimentalTypeBuild,
-  } of packageEntryPoints) {
+  for (const { packageDir, name } of packageEntryPoints) {
     console.log(`## Processing ${packageDir}`);
     const noBail = Array.isArray(allowWarnings)
       ? allowWarnings.some(aw => aw === packageDir || minimatch(packageDir, aw))
@@ -511,7 +503,6 @@ export async function runApiExtraction({
     // The root index entrypoint is only allowed @public exports, while /alpha and /beta only allow @alpha and @beta.
     if (
       validateReleaseTags &&
-      !usesExperimentalTypeBuild &&
       fs.pathExistsSync(extractorConfig.reportFilePath)
     ) {
       if (['index', 'alpha', 'beta'].includes(name)) {
