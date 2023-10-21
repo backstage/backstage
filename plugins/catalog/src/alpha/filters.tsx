@@ -109,7 +109,7 @@ const CatalogUserListFilter = createCatalogFilterExtension({
   },
 });
 
-export const builtInFilterExtensions = [
+export default [
   CatalogEntityTagFilter,
   CatalogEntityKindFilter,
   CatalogEntityTypeFilter,
