@@ -1,5 +1,11 @@
 # @backstage/plugin-sonarqube
 
+## 0.7.7
+
+### Patch Changes
+
+- f6c651fe3c6c: Switched to using `"exports"` field for `/alpha` subpath export.
+
 ## 0.7.6
 
 ### Patch Changes
