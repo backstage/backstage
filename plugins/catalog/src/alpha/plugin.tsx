@@ -27,10 +27,7 @@ import {
 } from '@backstage/frontend-plugin-api';
 
 import { entityRouteRef } from '@backstage/plugin-catalog-react';
-import {
-  createEntityContentExtension,
-  createEntityCardExtension,
-} from '@backstage/plugin-catalog-react/alpha';
+import { createEntityContentExtension } from '@backstage/plugin-catalog-react/alpha';
 import { createSearchResultListItemExtension } from '@backstage/plugin-search-react/alpha';
 
 import {
@@ -43,6 +40,7 @@ import {
 import apis from './apis';
 import pages from './pages';
 import filters from './filters';
+import entityCards from './entityCards';
 
 /** @alpha */
 export const CatalogSearchResultListItemExtension =
@@ -54,14 +52,6 @@ export const CatalogSearchResultListItemExtension =
         m => m.CatalogSearchResultListItem,
       ),
   });
-
-const EntityAboutCard = createEntityCardExtension({
-  id: 'about',
-  loader: async () =>
-    import('../components/AboutCard').then(m => (
-      <m.AboutCard variant="gridItem" />
-    )),
-});
 
 const OverviewEntityContent = createEntityContentExtension({
   id: 'overview',
@@ -107,9 +97,9 @@ export default createPlugin({
     ...apis,
     ...pages,
     ...filters,
+    ...entityCards,
     CatalogSearchResultListItemExtension,
     CatalogNavItem,
     OverviewEntityContent,
-    EntityAboutCard,
   ],
 });
