@@ -202,11 +202,10 @@ export class ScaffolderClient implements ScaffolderApi {
         const stepId = event.body.stepId as string;
         if (stepId) {
           const value = acc.get(stepId);
-          if (!value || !value.min) {
-            acc.set(stepId, { min: event.createdAt, max: undefined });
-          } else {
-            acc.set(stepId, { min: value.min, max: event.createdAt });
-          }
+          acc.set(stepId, {
+            min: !value || !value.min ? event.createdAt : value.min,
+            max: event.createdAt,
+          });
         }
         return acc;
       }, new Map<string, { min: string | undefined; max: string | undefined }>());
