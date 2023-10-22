@@ -36,9 +36,12 @@ async function test(
     return;
   }
 
+  const opticLocation = (
+    await exec(`yarn bin optic`, [], { cwd: cliPaths.ownDir })
+  ).stdout as string;
   try {
     await exec(
-      `yarn run -T optic capture`,
+      `${opticLocation.trim()} capture`,
       [
         YAML_SCHEMA_PATH,
         '--server-override',
