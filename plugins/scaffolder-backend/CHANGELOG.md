@@ -1,5 +1,21 @@
 # @backstage/plugin-scaffolder-backend
 
+## 1.18.1
+
+### Patch Changes
+
+- f6c651fe3c6c: Switched to using `"exports"` field for `/alpha` subpath export.
+- Updated dependencies
+  - @backstage/plugin-scaffolder-node@0.2.7
+  - @backstage/backend-common@0.19.9
+  - @backstage/backend-tasks@0.5.12
+  - @backstage/plugin-auth-node@0.4.1
+  - @backstage/plugin-catalog-backend@1.14.1
+  - @backstage/plugin-catalog-backend-module-scaffolder-entity-model@0.1.4
+  - @backstage/plugin-catalog-node@1.4.8
+  - @backstage/plugin-permission-node@0.7.18
+  - @backstage/backend-plugin-api@0.6.7
+
 ## 1.18.0
 
 ### Minor Changes

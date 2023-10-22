@@ -1,5 +1,14 @@
 # @backstage/plugin-proxy-backend
 
+## 0.4.4
+
+### Patch Changes
+
+- f6c651fe3c6c: Switched to using `"exports"` field for `/alpha` subpath export.
+- Updated dependencies
+  - @backstage/backend-common@0.19.9
+  - @backstage/backend-plugin-api@0.6.7
+
 ## 0.4.3
 
 ### Patch Changes

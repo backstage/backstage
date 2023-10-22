@@ -22,22 +22,29 @@ import {
 import { createRouter } from './service/router';
 
 /**
- * The Kafka backend plugin.
+ * The Bazaar backend plugin.
  *
  * @alpha
  */
-export const kafkaPlugin = createBackendPlugin({
-  pluginId: 'kafka',
+export default createBackendPlugin({
+  pluginId: 'bazaar',
   register(env) {
     env.registerInit({
       deps: {
         config: coreServices.rootConfig,
+        database: coreServices.database,
+        identity: coreServices.identity,
         logger: coreServices.logger,
         httpRouter: coreServices.httpRouter,
       },
-      async init({ config, logger, httpRouter }) {
+      async init({ database, config, identity, logger, httpRouter }) {
         httpRouter.use(
-          await createRouter({ config, logger: loggerToWinstonLogger(logger) }),
+          await createRouter({
+            database,
+            config,
+            identity,
+            logger: loggerToWinstonLogger(logger),
+          }),
         );
       },
     });

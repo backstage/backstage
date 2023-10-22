@@ -1,5 +1,11 @@
 # @backstage/plugin-todo
 
+## 0.2.29
+
+### Patch Changes
+
+- f6c651fe3c6c: Switched to using `"exports"` field for `/alpha` subpath export.
+
 ## 0.2.28
 
 ### Patch Changes
