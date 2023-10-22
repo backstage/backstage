@@ -20,12 +20,11 @@ import { UrlReader } from '@backstage/backend-common';
 import { ConfigReader } from '@backstage/config';
 import { ScmIntegrations } from '@backstage/integration';
 import { setupRequestMockHandlers } from '@backstage/backend-test-utils';
-import mockFs from 'mock-fs';
-import os from 'os';
 import type { ActionContext } from '@backstage/plugin-scaffolder-node';
 import { readFile, writeFile, createWriteStream } from 'fs-extra';
 import { rest } from 'msw';
 import { setupServer } from 'msw/node';
+import { createMockDirectory } from '@backstage/backend-test-utils';
 
 jest.mock('fs-extra', () => ({
   mkdirSync: jest.fn(),
@@ -70,7 +69,8 @@ describe('confluence:transform:markdown', () => {
   const logger = getVoidLogger();
   jest.spyOn(logger, 'info');
 
-  const mockTmpDir = os.tmpdir();
+  const mockDir = createMockDirectory();
+  const workspacePath = mockDir.resolve('workspace');
 
   beforeEach(() => {
     reader = {
@@ -87,17 +87,16 @@ describe('confluence:transform:markdown', () => {
         ],
         repoUrl: 'https://notreal.github.com/space/backstage/mkdocs.yml',
       },
-      workspacePath: '/tmp',
+      workspacePath: mockDir.path,
       logger,
       logStream: new PassThrough(),
       output: jest.fn(),
-      createTemporaryDirectory: jest.fn().mockResolvedValue(mockTmpDir),
+      createTemporaryDirectory: jest.fn(),
     };
-    mockFs({ [`${mockTmpDir}/src/docs`]: {} });
+    mockDir.setContent({ [`${workspacePath}/src/docs`]: {} });
   });
   afterEach(() => {
     jest.clearAllMocks();
-    mockFs.restore();
   });
 
   it('should call confluence to markdown action successfully with results array', async () => {
