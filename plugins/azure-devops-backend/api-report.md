@@ -23,7 +23,14 @@ import { UrlReader } from '@backstage/backend-common';
 
 // @public (undocumented)
 export class AzureDevOpsApi {
-  constructor(logger: Logger, urlReader: UrlReader, config: Config);
+  // (undocumented)
+  static fromConfig(
+    config: Config,
+    options: {
+      logger: Logger;
+      urlReader: UrlReader;
+    },
+  ): AzureDevOpsApi;
   // (undocumented)
   getAllTeams(): Promise<Team[]>;
   // (undocumented)
