@@ -5,7 +5,7 @@ authorUrl: https://github.com/radoslaw-sz
 category: Discovery
 description: View changelogs for your components in Backstage.
 documentation: https://github.com/RSC-Labs/backstage-changelog-plugin/blob/main/README.md
-iconUrl: https://avatars.githubusercontent.com/u/146464373
+iconUrl: https://raw.githubusercontent.com/RSC-Labs/backstage-changelog-plugin/main/docs/plugin_icon.png
 npmPackageName: '@rsc-labs/changelog-plugin'
 tags:
   - changelog
