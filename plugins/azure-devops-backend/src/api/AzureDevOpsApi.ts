@@ -49,7 +49,11 @@ import {
 import { TeamMember as AdoTeamMember } from 'azure-devops-node-api/interfaces/common/VSSInterfaces';
 import { Logger } from 'winston';
 import { PolicyEvaluationRecord } from 'azure-devops-node-api/interfaces/PolicyInterfaces';
-import { WebApi, getPersonalAccessTokenHandler } from 'azure-devops-node-api';
+import {
+  WebApi,
+  getBearerHandler,
+  getPersonalAccessTokenHandler,
+} from 'azure-devops-node-api';
 import {
   TeamProjectReference,
   WebApiTeam,
@@ -72,22 +76,22 @@ export class AzureDevOpsApi {
   private async getWebApi(host?: string, org?: string): Promise<WebApi> {
     const validHost = host ?? this.config.getString('azureDevOps.host');
     const validOrg = org ?? this.config.getString('azureDevOps.organization');
+    const url = `https://${validHost}/${validOrg}`;
+
     const scmIntegrations = ScmIntegrations.fromConfig(this.config);
     const credentialsProvider =
       DefaultAzureDevOpsCredentialsProvider.fromIntegrations(scmIntegrations);
     const credentials = await credentialsProvider.getCredentials({
-      url: `https://${validHost}/${validOrg}`,
+      url,
     });
 
-    let validToken: string;
-    if (credentials && credentials.token) {
-      validToken = credentials.token;
-    } else {
-      validToken = this.config.getString('azureDevOps.token');
-    }
-
-    const authHandler = getPersonalAccessTokenHandler(validToken);
-    const webApi = new WebApi(`https://${validHost}/${validOrg}`, authHandler);
+    const authHandler =
+      this.config.getString('azureDevOps.token') || credentials?.type === 'pat'
+        ? getPersonalAccessTokenHandler(
+            credentials!.token ?? this.config.getString('azureDevOps.token'),
+          )
+        : getBearerHandler(credentials!.token);
+    const webApi = new WebApi(url, authHandler);
     return webApi;
   }
 
