@@ -1,7 +1,7 @@
 ---
 title: Changelog viewer
 author: RSC Labs
-authorUrl: https://github.com/radoslaw-sz
+authorUrl: https://rsoftcon.com/
 category: Discovery
 description: View changelogs for your components in Backstage.
 documentation: https://github.com/RSC-Labs/backstage-changelog-plugin/blob/main/README.md
