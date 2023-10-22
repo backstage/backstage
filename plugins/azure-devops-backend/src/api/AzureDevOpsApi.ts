@@ -67,11 +67,22 @@ import {
 
 /** @public */
 export class AzureDevOpsApi {
-  public constructor(
-    private readonly logger: Logger,
-    private readonly urlReader: UrlReader,
-    private readonly config: Config,
-  ) {}
+  private readonly logger: Logger;
+  private readonly urlReader: UrlReader;
+  private readonly config: Config;
+
+  private constructor(logger: Logger, urlReader: UrlReader, config: Config) {
+    this.logger = logger;
+    this.urlReader = urlReader;
+    this.config = config;
+  }
+
+  static fromConfig(
+    config: Config,
+    options: { logger: Logger; urlReader: UrlReader },
+  ) {
+    return new AzureDevOpsApi(options.logger, options.urlReader, config);
+  }
 
   private async getWebApi(host?: string, org?: string): Promise<WebApi> {
     const validHost = host ?? this.config.getString('azureDevOps.host');

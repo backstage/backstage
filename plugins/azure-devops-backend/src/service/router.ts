@@ -45,7 +45,8 @@ export async function createRouter(
   const { logger, reader, config } = options;
 
   const azureDevOpsApi =
-    options.azureDevOpsApi || new AzureDevOpsApi(logger, reader, config);
+    options.azureDevOpsApi ||
+    AzureDevOpsApi.fromConfig(config, { logger, urlReader: reader });
 
   const pullRequestsDashboardProvider =
     await PullRequestsDashboardProvider.create(logger, azureDevOpsApi);
