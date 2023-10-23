@@ -279,73 +279,73 @@ export class NunjucksWorkflowRunner implements WorkflowRunner {
         }
       }
 
-      // Secrets are only passed when templating the input to actions for security reasons
-      const input =
-        (step.input &&
-          this.render(
-            step.input,
-            { ...context, secrets: task.secrets ?? {} },
-            renderTemplate,
-          )) ??
-        {};
-
-      if (action.schema?.input) {
-        const validateResult = validateJsonSchema(input, action.schema.input);
-        if (!validateResult.valid) {
-          const errors = validateResult.errors.join(', ');
-          throw new InputError(
-            `Invalid input passed to action ${action.id}, ${errors}`,
-          );
-        }
-      }
-
-      if (!isActionAuthorized(decision, { action: action.id, input })) {
-        throw new NotAllowedError(
-          `Unauthorized action: ${
-            action.id
-          }. The action is not allowed. Input: ${JSON.stringify(
-            input,
-            null,
-            2,
-          )}`,
-        );
-      }
-
-      const tmpDirs = new Array<string>();
-      const stepOutput: { [outputName: string]: JsonValue } = {};
-
-      const iterations = new Array<JsonValue>();
+      const iterations = new Array<JsonObject>();
       if (step.each) {
         const each = await this.render(step.each, context, renderTemplate);
         iterations.push(
           ...Object.keys(each).map((key: any) => {
-            return { key: key, value: each[key] };
+            return { each: { key, value: each[key] } };
           }),
         );
       } else {
         iterations.push({});
       }
-
-      let actionInput = input;
       for (const iteration of iterations) {
-        if (step.each) {
-          taskLogger.info(`Running step each: ${iteration}`);
-          const iterationContext = {
-            ...context,
-            each: iteration,
-          };
-          // re-render input with the modified context that includes each
-          actionInput =
-            (step.input &&
-              this.render(
-                step.input,
-                { ...iterationContext, secrets: task.secrets ?? {} },
-                renderTemplate,
-              )) ??
-            {};
+        // Secrets are only passed when templating the input to actions for security reasons
+        iteration.input =
+          (step.input &&
+            this.render(
+              step.input,
+              { ...context, ...iteration, secrets: task.secrets ?? {} },
+              renderTemplate,
+            )) ??
+          {};
+        let actionId = action.id;
+        if (Object.hasOwn(iteration, 'each')) {
+          actionId += `[${(iteration.each as JsonObject).key}]`;
+        }
+        if (action.schema?.input) {
+          const validateResult = validateJsonSchema(
+            iteration.input,
+            action.schema.input,
+          );
+          if (!validateResult.valid) {
+            const errors = validateResult.errors.join(', ');
+            throw new InputError(
+              `Invalid input passed to action ${actionId}, ${errors}`,
+            );
+          }
+        }
+        if (
+          !isActionAuthorized(decision, {
+            action: action.id,
+            input: iteration.input,
+          })
+        ) {
+          throw new NotAllowedError(
+            `Unauthorized action: ${actionId}. The action is not allowed. Input: ${JSON.stringify(
+              iteration.input,
+              null,
+              2,
+            )}`,
+          );
+        }
+      }
+      const tmpDirs = new Array<string>();
+      const stepOutput: { [outputName: string]: JsonValue } = {};
+
+      for (const iteration of iterations) {
+        if (iteration.each) {
+          taskLogger.info(
+            `Running step each: ${JSON.stringify(
+              iteration.each,
+              (k, v) => (k ? v.toString() : v),
+              0,
+            )}`,
+          );
         }
         await action.handler({
-          input: actionInput,
+          input: iteration.input as JsonObject,
           secrets: task.secrets ?? {},
           logger: taskLogger,
           logStream: streamLogger,
