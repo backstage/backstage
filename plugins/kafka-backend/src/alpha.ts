@@ -16,33 +16,28 @@
 
 import { loggerToWinstonLogger } from '@backstage/backend-common';
 import {
-  createBackendPlugin,
   coreServices,
+  createBackendPlugin,
 } from '@backstage/backend-plugin-api';
 import { createRouter } from './service/router';
 
 /**
- * The proxy backend plugin.
+ * The Kafka backend plugin.
  *
  * @alpha
  */
-export const proxyPlugin = createBackendPlugin({
-  pluginId: 'proxy',
+export default createBackendPlugin({
+  pluginId: 'kafka',
   register(env) {
     env.registerInit({
       deps: {
         config: coreServices.rootConfig,
-        discovery: coreServices.discovery,
         logger: coreServices.logger,
         httpRouter: coreServices.httpRouter,
       },
-      async init({ config, discovery, logger, httpRouter }) {
+      async init({ config, logger, httpRouter }) {
         httpRouter.use(
-          await createRouter({
-            config,
-            discovery,
-            logger: loggerToWinstonLogger(logger),
-          }),
+          await createRouter({ config, logger: loggerToWinstonLogger(logger) }),
         );
       },
     });
