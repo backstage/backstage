@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { GitTag } from '@backstage/plugin-azure-devops-common';
+import { Readme } from '@backstage/plugin-azure-devops-common';
 
 import { Entity } from '@backstage/catalog-model';
 import { azureDevOpsApiRef } from '../api';
@@ -22,8 +22,8 @@ import { useApi } from '@backstage/core-plugin-api';
 import useAsync from 'react-use/lib/useAsync';
 import { getAnnotationValuesFromEntity } from '../utils';
 
-export function useGitTags(entity: Entity): {
-  items?: GitTag[];
+export function useReadme(entity: Entity): {
+  item?: Readme;
   loading: boolean;
   error?: Error;
 } {
@@ -31,11 +31,11 @@ export function useGitTags(entity: Entity): {
   const { project, repo } = getAnnotationValuesFromEntity(entity);
 
   const { value, loading, error } = useAsync(async () => {
-    return await api.getGitTags(project, repo as string);
+    return await api.getReadme({ project, repo: repo as string });
   }, [api, project, repo]);
 
   return {
-    items: value?.items,
+    item: value,
     loading,
     error,
   };
