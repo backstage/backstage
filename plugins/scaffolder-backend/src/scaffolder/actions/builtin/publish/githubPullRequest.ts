@@ -142,6 +142,7 @@ export const createPublishGithubPullRequestAction = (
     reviewers?: string[];
     teamReviewers?: string[];
     commitMessage?: string;
+    update?: boolean;
   }>({
     id: 'publish:github:pull-request',
     examples,
@@ -219,6 +220,11 @@ export const createPublishGithubPullRequestAction = (
             title: 'Commit Message',
             description: 'The commit message for the pull request commit',
           },
+          update: {
+            type: 'boolean',
+            title: 'Update',
+            description: 'Update pull request if already exists',
+          },
         },
       },
       output: {
@@ -256,6 +262,7 @@ export const createPublishGithubPullRequestAction = (
         reviewers,
         teamReviewers,
         commitMessage,
+        update,
       } = ctx.input;
 
       const { owner, repo, host } = parseRepoUrl(repoUrl, integrations);
@@ -327,6 +334,7 @@ export const createPublishGithubPullRequestAction = (
           body: description,
           head: branchName,
           draft,
+          update,
         };
         if (targetBranchName) {
           createOptions.base = targetBranchName;
