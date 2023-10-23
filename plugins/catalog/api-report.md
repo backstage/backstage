@@ -251,6 +251,7 @@ export interface DefaultEntityPresentationApiOptions {
   batchDelay?: HumanDuration;
   cacheTtl?: HumanDuration;
   catalogApi?: CatalogApi;
+  kindIcons?: Record<string, IconComponent>;
   renderer?: DefaultEntityPresentationApiRenderer;
 }
 
@@ -266,7 +267,7 @@ export interface DefaultEntityPresentationApiRenderer {
       defaultNamespace?: string;
     };
   }) => {
-    snapshot: Omit<EntityRefPresentationSnapshot, 'entityRef' | 'entity'>;
+    snapshot: Omit<EntityRefPresentationSnapshot, 'entityRef'>;
   };
 }
 

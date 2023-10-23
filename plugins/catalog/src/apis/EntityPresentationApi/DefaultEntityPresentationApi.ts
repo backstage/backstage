@@ -14,23 +14,28 @@
  * limitations under the License.
  */
 
-import { Entity, stringifyEntityRef } from '@backstage/catalog-model';
+import {
+  Entity,
+  parseEntityRef,
+  stringifyEntityRef,
+} from '@backstage/catalog-model';
+import { IconComponent } from '@backstage/core-plugin-api';
 import {
   CatalogApi,
   EntityPresentationApi,
   EntityRefPresentation,
   EntityRefPresentationSnapshot,
 } from '@backstage/plugin-catalog-react';
-import { HumanDuration } from '@backstage/types';
+import { HumanDuration, durationToMilliseconds } from '@backstage/types';
 import DataLoader from 'dataloader';
 import ExpiryMap from 'expiry-map';
 import ObservableImpl from 'zen-observable';
 import {
   DEFAULT_BATCH_DELAY,
   DEFAULT_CACHE_TTL,
+  DEFAULT_ICONS,
   createDefaultRenderer,
 } from './defaults';
-import { durationToMs } from './util';
 
 /**
  * A custom renderer for the {@link DefaultEntityPresentationApi}.
@@ -82,7 +87,7 @@ export interface DefaultEntityPresentationApiRenderer {
       defaultNamespace?: string;
     };
   }) => {
-    snapshot: Omit<EntityRefPresentationSnapshot, 'entityRef' | 'entity'>;
+    snapshot: Omit<EntityRefPresentationSnapshot, 'entityRef'>;
   };
 }
 
@@ -122,6 +127,19 @@ export interface DefaultEntityPresentationApiOptions {
    * information.
    */
   batchDelay?: HumanDuration;
+
+  /**
+   * A mapping from kinds to icons.
+   *
+   * @remarks
+   *
+   * The keys are kinds (case insensitive) that map to icon values to represent
+   * kinds by.
+   *
+   * If you do not supply a set of icons here, a set of fallback icons will be
+   * used. If you supply the empty object, no fallback icons will be used.
+   */
+  kindIcons?: Record<string, IconComponent>;
 
   /**
    * A custom renderer, if any.
@@ -167,12 +185,20 @@ export class DefaultEntityPresentationApi implements EntityPresentationApi {
   readonly #cache: Map<string, CacheEntry>;
   readonly #cacheTtlMs: number;
   readonly #loader: DataLoader<string, Entity | undefined> | undefined;
+  readonly #kindIcons: Record<string, IconComponent>; // lowercased kinds
   readonly #renderer: DefaultEntityPresentationApiRenderer;
 
   private constructor(options: DefaultEntityPresentationApiOptions) {
     const cacheTtl = options.cacheTtl ?? DEFAULT_CACHE_TTL;
     const batchDelay = options.batchDelay ?? DEFAULT_BATCH_DELAY;
     const renderer = options.renderer ?? createDefaultRenderer({ async: true });
+
+    const kindIcons: Record<string, IconComponent> = {};
+    Object.entries(options.kindIcons ?? DEFAULT_ICONS).forEach(
+      ([kind, icon]) => {
+        kindIcons[kind.toLocaleLowerCase('en-US')] = icon;
+      },
+    );
 
     if (renderer.async) {
       if (!options.catalogApi) {
@@ -186,8 +212,9 @@ export class DefaultEntityPresentationApi implements EntityPresentationApi {
       });
     }
 
-    this.#cacheTtlMs = durationToMs(cacheTtl);
+    this.#cacheTtlMs = durationToMilliseconds(cacheTtl);
     this.#cache = new Map();
+    this.#kindIcons = kindIcons;
     this.#renderer = renderer;
   }
 
@@ -199,25 +226,43 @@ export class DefaultEntityPresentationApi implements EntityPresentationApi {
       defaultNamespace?: string;
     },
   ): EntityRefPresentation {
-    const { entityRef, entity, needsLoad } =
+    const { entityRef, kind, entity, needsLoad } =
       this.#getEntityForInitialRender(entityOrRef);
 
-    let rendered: Omit<EntityRefPresentationSnapshot, 'entityRef' | 'entity'>;
-    try {
-      const output = this.#renderer.render({
+    // Make a wrapping helper for rendering
+    const render = (options: {
+      loading: boolean;
+      entity?: Entity;
+    }): EntityRefPresentationSnapshot => {
+      const { snapshot } = this.#renderer.render({
         entityRef: entityRef,
-        loading: needsLoad,
-        entity: entity,
+        loading: options.loading,
+        entity: options.entity,
         context: context || {},
       });
-      rendered = output.snapshot;
+      return {
+        ...snapshot,
+        entityRef: entityRef,
+        Icon: this.#maybeFallbackIcon(snapshot.Icon, kind),
+      };
+    };
+
+    // First the initial render
+    let initialSnapshot: EntityRefPresentationSnapshot;
+    try {
+      initialSnapshot = render({
+        loading: needsLoad,
+        entity: entity,
+      });
     } catch {
       // This is what gets presented if the renderer throws an error
-      rendered = {
+      initialSnapshot = {
         primaryTitle: entityRef,
+        entityRef: entityRef,
       };
     }
 
+    // And then the following snapshot
     const observable = !needsLoad
       ? undefined
       : new ObservableImpl<EntityRefPresentationSnapshot>(subscriber => {
@@ -231,16 +276,11 @@ export class DefaultEntityPresentationApi implements EntityPresentationApi {
                 newEntity &&
                 newEntity.metadata.etag !== entity?.metadata.etag
               ) {
-                const output = this.#renderer.render({
-                  entityRef: entityRef,
+                const updatedSnapshot = render({
                   loading: false,
                   entity: newEntity,
-                  context: context || {},
                 });
-                subscriber.next({
-                  ...output.snapshot,
-                  entityRef: entityRef,
-                });
+                subscriber.next(updatedSnapshot);
               }
             })
             .catch(() => {
@@ -261,16 +301,14 @@ export class DefaultEntityPresentationApi implements EntityPresentationApi {
         });
 
     return {
-      snapshot: {
-        ...rendered,
-        entityRef: entityRef,
-      },
+      snapshot: initialSnapshot,
       update$: observable,
     };
   }
 
   #getEntityForInitialRender(entityOrRef: Entity | string): {
     entity: Entity | undefined;
+    kind: string;
     entityRef: string;
     needsLoad: boolean;
   } {
@@ -281,6 +319,7 @@ export class DefaultEntityPresentationApi implements EntityPresentationApi {
     if (typeof entityOrRef !== 'string') {
       return {
         entity: entityOrRef,
+        kind: entityOrRef.kind,
         entityRef: stringifyEntityRef(entityOrRef),
         needsLoad: false,
       };
@@ -297,6 +336,7 @@ export class DefaultEntityPresentationApi implements EntityPresentationApi {
 
     return {
       entity: cachedEntity,
+      kind: parseEntityRef(entityOrRef).kind,
       entityRef: entityOrRef,
       needsLoad,
     };
@@ -308,8 +348,8 @@ export class DefaultEntityPresentationApi implements EntityPresentationApi {
     batchDelay: HumanDuration;
     renderer: DefaultEntityPresentationApiRenderer;
   }): DataLoader<string, Entity | undefined> {
-    const cacheTtlMs = durationToMs(options.cacheTtl);
-    const batchDelayMs = durationToMs(options.batchDelay);
+    const cacheTtlMs = durationToMilliseconds(options.cacheTtl);
+    const batchDelayMs = durationToMilliseconds(options.batchDelay);
 
     return new DataLoader(
       async (entityRefs: readonly string[]) => {
@@ -328,7 +368,7 @@ export class DefaultEntityPresentationApi implements EntityPresentationApi {
         return items;
       },
       {
-        name: DefaultEntityPresentationApi.name,
+        name: 'DefaultEntityPresentationApi',
         // This cache is the one that the data loader uses internally for
         // memoizing requests; essentially what it achieves is that multiple
         // requests for the same entity ref will be batched up into a single
@@ -344,5 +384,18 @@ export class DefaultEntityPresentationApi implements EntityPresentationApi {
           : undefined,
       },
     );
+  }
+
+  #maybeFallbackIcon(
+    renderedIcon: IconComponent | false | undefined,
+    kind: string,
+  ): IconComponent | false | undefined {
+    if (renderedIcon) {
+      return renderedIcon;
+    } else if (renderedIcon === false) {
+      return false;
+    }
+
+    return this.#kindIcons[kind.toLocaleLowerCase('en-US')];
   }
 }
