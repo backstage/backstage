@@ -33,19 +33,13 @@ const Contents = () => {
       <Grid item xs={12}>
         <Typography variant="subtitle1" gutterBottom>
           User Entity:{' '}
-          <EntityRefLinks
-            entityRefs={[backstageIdentity.userEntityRef]}
-            getTitle={ref => ref}
-          />
+          <EntityRefLinks entityRefs={[backstageIdentity.userEntityRef]} />
         </Typography>
       </Grid>
       <Grid item xs={12}>
         <Typography variant="subtitle1">
           Ownership Entities:{' '}
-          <EntityRefLinks
-            entityRefs={backstageIdentity.ownershipEntityRefs}
-            getTitle={ref => ref}
-          />
+          <EntityRefLinks entityRefs={backstageIdentity.ownershipEntityRefs} />
         </Typography>
       </Grid>
     </Grid>
