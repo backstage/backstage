@@ -84,8 +84,13 @@ export interface EntityRefPresentationSnapshot {
    * both in larger formats such as in a header, or in smaller formats such as
    * inline with regular text, so bear in mind that the legibility should be
    * high in both cases.
+   *
+   * A value of `false` here indicates the desire to not have an icon present
+   * for the given implementation. A value of `undefined` leaves it at the
+   * discretion of the display layer to choose what to do (such as for example
+   * showing a fallback icon).
    */
-  Icon?: IconComponent | undefined;
+  Icon?: IconComponent | undefined | false;
 }
 
 /**
