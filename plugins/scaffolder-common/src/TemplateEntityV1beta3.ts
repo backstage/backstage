@@ -47,9 +47,9 @@ export interface TemplateEntityV1beta3 extends Entity {
     type: string;
 
     /**
-     * Template specific configurations.
+     * Template specific configuration of the presentation layer.
      */
-    configurations?: TemplateConfigurationsV1beta3;
+    presentation?: TemplatePresentationV1beta3;
 
     /**
      * This is a JSONSchema or an array of JSONSchema's which is used to render a form in the frontend
@@ -74,11 +74,11 @@ export interface TemplateEntityV1beta3 extends Entity {
 }
 
 /**
- * The configuration of the template.
+ * The presentation of the template.
  *
  * @public
  */
-export interface TemplateConfigurationsV1beta3 extends JsonObject {
+export interface TemplatePresentationV1beta3 extends JsonObject {
   /**
    * Overrides default buttons' text
    */

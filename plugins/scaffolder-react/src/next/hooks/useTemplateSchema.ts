@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 import { featureFlagsApiRef, useApi } from '@backstage/core-plugin-api';
-import { TemplateConfigurationsV1beta3 } from '@backstage/plugin-scaffolder-common';
+import { TemplatePresentationV1beta3 } from '@backstage/plugin-scaffolder-common';
 import { JsonObject } from '@backstage/types';
 import { UiSchema } from '@rjsf/utils';
 import { TemplateParameterSchema } from '@backstage/plugin-scaffolder-react';
@@ -42,7 +42,7 @@ export const useTemplateSchema = (
   manifest: TemplateParameterSchema,
 ): {
   steps: ParsedTemplateSchema[];
-  configurations?: TemplateConfigurationsV1beta3;
+  presentation?: TemplatePresentationV1beta3;
 } => {
   const featureFlags = useApi(featureFlagsApiRef);
   const steps = manifest.steps.map(({ title, description, schema }) => ({
@@ -80,7 +80,7 @@ export const useTemplateSchema = (
     }));
 
   return {
-    configurations: manifest.configurations,
+    presentation: manifest.presentation,
     steps: returningSteps,
   };
 };

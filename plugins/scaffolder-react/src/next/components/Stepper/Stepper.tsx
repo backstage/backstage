@@ -82,6 +82,7 @@ export type StepperProps = {
     ReviewStepComponent?: ComponentType<ReviewStepProps>;
     ReviewStateComponent?: (props: ReviewStateProps) => JSX.Element;
     backButtonText?: ReactNode;
+    backButtonText?: ReactNode;
     createButtonText?: ReactNode;
     reviewButtonText?: ReactNode;
   };
@@ -96,12 +97,13 @@ export const Stepper = (stepperProps: StepperProps) => {
   const { layouts = [], components = {}, ...props } = stepperProps;
   const {
     ReviewStateComponent = ReviewState,
+    ReviewStepComponent,
     backButtonText = 'Back',
     createButtonText = 'Create',
     reviewButtonText = 'Review',
   } = components;
   const analytics = useAnalytics();
-  const { configurations, steps } = useTemplateSchema(props.manifest);
+  const { presentation, steps } = useTemplateSchema(props.manifest);
   const apiHolder = useApiHolder();
   const [activeStep, setActiveStep] = useState(0);
   const [isValidating, setIsValidating] = useState(false);
@@ -180,11 +182,11 @@ export const Stepper = (stepperProps: StepperProps) => {
   };
 
   const backLabel =
-    configurations?.buttonLabels?.backButtonText ?? backButtonText;
+    presentation?.buttonLabels?.backButtonText ?? backButtonText;
   const createLabel =
-    configurations?.buttonLabels?.createButtonText ?? createButtonText;
+    presentation?.buttonLabels?.createButtonText ?? createButtonText;
   const reviewLabel =
-    configurations?.buttonLabels?.reviewButtonText ?? reviewButtonText;
+    presentation?.buttonLabels?.reviewButtonText ?? reviewButtonText;
 
   return (
     <>
