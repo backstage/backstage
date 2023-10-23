@@ -28,7 +28,7 @@ import PeopleIcon from '@material-ui/icons/People';
 import PersonIcon from '@material-ui/icons/Person';
 import { DefaultEntityPresentationApiRenderer } from './DefaultEntityPresentationApi';
 
-export const DEFAULT_CACHE_TTL: HumanDuration = { seconds: 30 };
+export const DEFAULT_CACHE_TTL: HumanDuration = { seconds: 10 };
 
 export const DEFAULT_BATCH_DELAY: HumanDuration = { milliseconds: 50 };
 

@@ -121,7 +121,7 @@ export interface DefaultEntityPresentationApiOptions {
    * When to expire entities that have been loaded from the catalog API and
    * cached for a while.
    *
-   * @defaultValue 30 seconds
+   * @defaultValue 10 seconds
    * @remarks
    *
    * The higher this value, the lower the load on the catalog API, but also the
