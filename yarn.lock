@@ -4773,7 +4773,7 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@backstage/plugin-auth-backend-module-microsoft-provider@workspace:^, @backstage/plugin-auth-backend-module-microsoft-provider@workspace:plugins/auth-backend-module-microsoft-provider":
+"@backstage/plugin-auth-backend-module-microsoft-provider@workspace:plugins/auth-backend-module-microsoft-provider":
   version: 0.0.0-use.local
   resolution: "@backstage/plugin-auth-backend-module-microsoft-provider@workspace:plugins/auth-backend-module-microsoft-provider"
   dependencies:
@@ -4850,7 +4850,6 @@ __metadata:
     "@backstage/plugin-auth-backend-module-github-provider": "workspace:^"
     "@backstage/plugin-auth-backend-module-gitlab-provider": "workspace:^"
     "@backstage/plugin-auth-backend-module-google-provider": "workspace:^"
-    "@backstage/plugin-auth-backend-module-microsoft-provider": "workspace:^"
     "@backstage/plugin-auth-backend-module-oauth2-provider": "workspace:^"
     "@backstage/plugin-auth-node": "workspace:^"
     "@backstage/plugin-catalog-node": "workspace:^"

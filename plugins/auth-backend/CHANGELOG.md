@@ -1,5 +1,16 @@
 # @backstage/plugin-auth-backend
 
+## 0.19.4
+
+### Patch Changes
+
+- bbbacb66f8e4: Reverted the Microsoft auth provider to the previous implementation.
+- Updated dependencies
+  - @backstage/plugin-auth-backend-module-github-provider@0.1.3
+  - @backstage/plugin-auth-backend-module-gitlab-provider@0.1.3
+  - @backstage/plugin-auth-backend-module-google-provider@0.1.3
+  - @backstage/plugin-auth-backend-module-oauth2-provider@0.1.3
+
 ## 0.19.3
 
 ### Patch Changes
