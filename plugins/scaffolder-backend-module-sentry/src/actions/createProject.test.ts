@@ -29,6 +29,8 @@ describe('sentry:project:create action', () => {
     }),
   });
 
+  let fetch: jest.Func;
+
   const mockFetch = (response = {}) => {
     const mockedResponse = {
       status: 201,
@@ -42,10 +44,8 @@ describe('sentry:project:create action', () => {
       text: async () => Promise.resolve('Unexpected error.'),
       ...response,
     };
-    global.fetch = jest
-      .fn()
-      .mockImplementation(() => Promise.resolve(mockedResponse));
 
+    fetch = jest.fn().mockImplementation(() => Promise.resolve(mockedResponse));
     return mockedResponse;
   };
 
@@ -74,7 +74,10 @@ describe('sentry:project:create action', () => {
   });
 
   test('should request sentry project create with specified parameters.', async () => {
-    const action = createSentryCreateProjectAction(createScaffolderConfig());
+    const action = createSentryCreateProjectAction(createScaffolderConfig(), {
+      fetch,
+    });
+
     const actionContext = getActionContext();
 
     await action.handler(actionContext);
@@ -96,14 +99,17 @@ describe('sentry:project:create action', () => {
   });
 
   test('should request sentry project create with added optional specified project slug', async () => {
-    const action = createSentryCreateProjectAction(createScaffolderConfig());
+    const action = createSentryCreateProjectAction(createScaffolderConfig(), {
+      fetch,
+    });
+
     const actionContext = getActionContext();
 
     actionContext.input = { ...actionContext.input, slug: 'project-slug' };
 
     await action.handler(actionContext);
 
-    expect(global.fetch).toHaveBeenNthCalledWith(
+    expect(fetch).toHaveBeenNthCalledWith(
       1,
       `https://sentry.io/api/0/teams/${actionContext.input.organizationSlug}/${actionContext.input.teamSlug}/projects/`,
       {
@@ -128,6 +134,7 @@ describe('sentry:project:create action', () => {
           token: sentryScaffolderConfigToken,
         },
       }),
+      { fetch },
     );
 
     const actionContext = getActionContext();
@@ -153,7 +160,9 @@ describe('sentry:project:create action', () => {
   });
 
   test('should throw InputError when auth token is missing from input parameters and scaffolder config.', async () => {
-    const action = createSentryCreateProjectAction(createScaffolderConfig());
+    const action = createSentryCreateProjectAction(createScaffolderConfig(), {
+      fetch,
+    });
     const actionContext = getActionContext();
 
     actionContext.input.authToken = undefined;
@@ -166,13 +175,16 @@ describe('sentry:project:create action', () => {
   });
 
   test('should throw InputError when sentry API returns unexpected content-type.', async () => {
-    const action = createSentryCreateProjectAction(createScaffolderConfig());
     const actionContext = getActionContext();
 
     const mockedFetchResponse = mockFetch({
       headers: {
         get: () => 'text/html',
       },
+    });
+
+    const action = createSentryCreateProjectAction(createScaffolderConfig(), {
+      fetch,
     });
 
     expect.assertions(1);
@@ -187,11 +199,14 @@ describe('sentry:project:create action', () => {
   });
 
   test('should throw InputError when sentry API returns unexpected status code.', async () => {
-    const action = createSentryCreateProjectAction(createScaffolderConfig());
     const actionContext = getActionContext();
 
     const mockedFetchResponse = mockFetch({
       status: 400,
+    });
+
+    const action = createSentryCreateProjectAction(createScaffolderConfig(), {
+      fetch,
     });
 
     expect.assertions(1);
