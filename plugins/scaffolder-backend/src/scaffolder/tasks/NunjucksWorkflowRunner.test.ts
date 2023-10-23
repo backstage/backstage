@@ -645,6 +645,35 @@ describe('DefaultWorkflowRunner', () => {
         }),
       );
     });
+
+    it('should run a step repeatedly with validation of single-expression value', async () => {
+      const numbers = [5, 7, 9];
+      const task = createMockTaskWithSpec({
+        apiVersion: 'scaffolder.backstage.io/v1beta3',
+        steps: [
+          {
+            id: 'test',
+            name: 'name',
+            each: '${{parameters.numbers}}',
+            action: 'jest-validated-action',
+            input: { foo: '${{each.value}}' },
+          },
+        ],
+        output: {},
+        parameters: {
+          numbers,
+        },
+      });
+      await runner.execute(task);
+
+      for (const foo of numbers) {
+        expect(fakeActionHandler).toHaveBeenCalledWith(
+          expect.objectContaining({
+            input: { foo },
+          }),
+        );
+      }
+    });
   });
 
   describe('secrets', () => {
