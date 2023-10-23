@@ -31,7 +31,7 @@ describe('<ErrorPanel />', () => {
     await renderInTestApp(
       <WarningPanel
         {...propsErrorMessage}
-        formatTitle="markdown"
+        titleFormat="markdown"
         title="Step has failed. [Help](https://commonmark.org/help)"
       />,
     );
