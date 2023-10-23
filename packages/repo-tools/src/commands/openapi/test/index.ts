@@ -35,10 +35,16 @@ async function test(
   if (!(await fs.pathExists(opticConfigFilePath))) {
     return;
   }
-
-  const opticLocation = (
-    await exec(`yarn bin optic`, [], { cwd: cliPaths.ownDir })
-  ).stdout as string;
+  let opticLocation = '';
+  try {
+    opticLocation = (
+      await exec(`yarn bin optic`, [], { cwd: cliPaths.ownRoot })
+    ).stdout as string;
+  } catch (err) {
+    throw new Error(
+      `Failed to find an Optic CLI installation, ensure that you have @useoptic/optic installed in the root of your repo. If not, run yarn add @useoptic/optic from the root of your repo.`,
+    );
+  }
   try {
     await exec(
       `${opticLocation.trim()} capture`,
