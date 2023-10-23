@@ -47,13 +47,13 @@ import {
   CustomResource,
   KubernetesClustersSupplier,
   KubernetesFetcher,
-  KubernetesObjectsProvider,
   KubernetesObjectsProviderOptions,
   KubernetesObjectTypes,
   KubernetesServiceLocator,
   ObjectsByEntityRequest,
   ServiceLocatorMethod,
 } from '../types/types';
+import { KubernetesObjectsProvider } from '@backstage/plugin-kubernetes-node';
 import {
   DEFAULT_OBJECTS,
   KubernetesFanOutHandler,
@@ -205,6 +205,9 @@ export class KubernetesBuilder {
   }
 
   public addAuthStrategy(key: string, strategy: AuthenticationStrategy) {
+    if (key.includes('-')) {
+      throw new Error('Strategy name can not include dashes');
+    }
     this.getAuthStrategyMap()[key] = strategy;
     return this;
   }

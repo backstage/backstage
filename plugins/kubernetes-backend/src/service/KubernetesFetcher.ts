@@ -101,8 +101,7 @@ export class KubernetesClientBasedFetcher implements KubernetesFetcher {
           apiVersion,
           plural,
           params.namespace,
-          params.labelSelector ||
-            `backstage.io/kubernetes-id=${params.serviceId}`,
+          params.labelSelector,
         ).then(
           (r: Response): Promise<FetchResult> =>
             r.ok

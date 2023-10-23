@@ -21,7 +21,8 @@ import {
   createExtension,
   coreExtensionData,
 } from '../wiring';
-import { AnyExtensionInputMap, Expand } from '../wiring/createExtension';
+import { AnyExtensionInputMap } from '../wiring/createExtension';
+import { Expand } from '../types';
 
 /** @public */
 export function createApiExtension<
@@ -51,7 +52,7 @@ export function createApiExtension<
 
   return createExtension({
     id: `apis.${apiRef.id}`,
-    at: 'core/apis',
+    attachTo: { id: 'core', input: 'apis' },
     inputs: extensionInputs,
     configSchema,
     output: {

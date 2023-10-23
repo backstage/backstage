@@ -22,8 +22,7 @@ import {
 import { ConfigReader } from '@backstage/config';
 import { JsonObject } from '@backstage/types';
 import { ScmIntegrations } from '@backstage/integration';
-import mockFs from 'mock-fs';
-import os from 'os';
+import { createMockDirectory } from '@backstage/backend-test-utils';
 import { PassThrough } from 'stream';
 import { createFetchCookiecutterAction } from './cookiecutter';
 import { join } from 'path';
@@ -47,6 +46,7 @@ jest.mock(
 );
 
 describe('fetch:cookiecutter', () => {
+  const mockDir = createMockDirectory({ mockOsTmpDir: true });
   const integrations = ScmIntegrations.fromConfig(
     new ConfigReader({
       integrations: {
@@ -58,7 +58,7 @@ describe('fetch:cookiecutter', () => {
     }),
   );
 
-  const mockTmpDir = os.tmpdir();
+  const mockTmpDir = mockDir.path;
 
   let mockContext: ActionContext<{
     url: string;
@@ -106,34 +106,23 @@ describe('fetch:cookiecutter', () => {
       output: jest.fn(),
       createTemporaryDirectory: jest.fn().mockResolvedValue(mockTmpDir),
     };
-
-    // mock the temp directory
-    mockFs({ [mockTmpDir]: {} });
-    mockFs({ [`${join(mockTmpDir, 'template')}`]: {} });
+    mockDir.setContent({ template: {} });
 
     commandExists.mockResolvedValue(null);
 
     // Mock when run container is called it creates some new files in the mock filesystem
     containerRunner.runContainer.mockImplementation(async () => {
-      mockFs({
-        [`${join(mockTmpDir, 'intermediate')}`]: {
-          'testfile.json': '{}',
-        },
+      mockDir.setContent({
+        'intermediate/testfile.json': '{}',
       });
     });
 
     // Mock when executeShellCommand is called it creates some new files in the mock filesystem
     executeShellCommand.mockImplementation(async () => {
-      mockFs({
-        [`${join(mockTmpDir, 'intermediate')}`]: {
-          'testfile.json': '{}',
-        },
+      mockDir.setContent({
+        'intermediate/testfile.json': '{}',
       });
     });
-  });
-
-  afterEach(() => {
-    mockFs.restore();
   });
 
   it('should throw an error when copyWithoutRender is not an array', async () => {

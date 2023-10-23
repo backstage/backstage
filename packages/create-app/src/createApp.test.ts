@@ -15,13 +15,13 @@
  */
 
 import inquirer from 'inquirer';
-import mockFs from 'mock-fs';
 import path from 'path';
 import { Command } from 'commander';
 import * as tasks from './lib/tasks';
 import createApp from './createApp';
 import { findPaths } from '@backstage/cli-common';
 import { tmpdir } from 'os';
+import { createMockDirectory } from '@backstage/backend-test-utils';
 
 jest.mock('./lib/tasks');
 
@@ -40,16 +40,7 @@ const moveAppMock = jest.spyOn(tasks, 'moveAppTask');
 const buildAppMock = jest.spyOn(tasks, 'buildAppTask');
 
 describe('command entrypoint', () => {
-  beforeEach(() => {
-    mockFs({
-      [`${__dirname}/package.json`]: '', // required by `findPaths(__dirname)`
-      'templates/': mockFs.load(path.resolve(__dirname, '../templates/')),
-    });
-  });
-
-  afterEach(() => {
-    mockFs.restore();
-  });
+  const mockDir = createMockDirectory({ mockOsTmpDir: true });
 
   beforeEach(() => {
     promptMock.mockResolvedValueOnce({
@@ -62,6 +53,7 @@ describe('command entrypoint', () => {
   });
 
   afterEach(() => {
+    mockDir.clear();
     jest.resetAllMocks();
   });
 
@@ -75,7 +67,6 @@ describe('command entrypoint', () => {
       findPaths(__dirname).resolveTarget(
         'packages',
         'create-app',
-        'src',
         'templates',
         'default-app',
       ),
@@ -97,7 +88,6 @@ describe('command entrypoint', () => {
       findPaths(__dirname).resolveTarget(
         'packages',
         'create-app',
-        'src',
         'templates',
         'default-app',
       ),

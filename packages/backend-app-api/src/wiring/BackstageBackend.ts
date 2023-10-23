@@ -57,7 +57,26 @@ function isPromise<T>(value: unknown | Promise<T>): value is Promise<T> {
 }
 
 function unwrapFeature(
-  feature: BackendFeature | (() => BackendFeature),
+  feature:
+    | BackendFeature
+    | (() => BackendFeature)
+    | { default: BackendFeature | (() => BackendFeature) },
 ): BackendFeature {
-  return typeof feature === 'function' ? feature() : feature;
+  if (typeof feature === 'function') {
+    return feature();
+  }
+  if ('$$type' in feature) {
+    return feature;
+  }
+  // This is a workaround where default exports get transpiled to `exports['default'] = ...`
+  // in CommonJS modules, which in turn results in a double `{ default: { default: ... } }` nesting
+  // when importing using a dynamic import.
+  // TODO: This is a broader issue than just this piece of code, and should move away from CommonJS.
+  if ('default' in feature) {
+    const defaultFeature = feature.default;
+    return typeof defaultFeature === 'function'
+      ? defaultFeature()
+      : defaultFeature;
+  }
+  return feature;
 }

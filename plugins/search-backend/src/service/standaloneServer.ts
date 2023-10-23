@@ -18,7 +18,7 @@ import {
   createServiceBuilder,
   loadBackendConfig,
   ServerTokenManager,
-  SingleHostDiscovery,
+  HostDiscovery,
 } from '@backstage/backend-common';
 import { Server } from 'http';
 import { Logger } from 'winston';
@@ -42,7 +42,7 @@ export async function startStandaloneServer(
   const config = await loadBackendConfig({ logger, argv: process.argv });
   const searchEngine = new LunrSearchEngine({ logger });
   const indexBuilder = new IndexBuilder({ logger, searchEngine });
-  const discovery = SingleHostDiscovery.fromConfig(config);
+  const discovery = HostDiscovery.fromConfig(config);
   const tokenManager = ServerTokenManager.fromConfig(config, {
     logger,
   });

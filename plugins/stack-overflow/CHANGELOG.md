@@ -1,5 +1,33 @@
 # @backstage/plugin-stack-overflow
 
+## 0.1.21
+
+### Patch Changes
+
+- 9a1fce352e: Updated dependency `@testing-library/jest-dom` to `^6.0.0`.
+- f95af4e540: Updated dependency `@testing-library/dom` to `^9.0.0`.
+- Updated dependencies
+  - @backstage/core-plugin-api@1.7.0
+  - @backstage/core-components@0.13.6
+  - @backstage/plugin-search-react@1.7.1
+  - @backstage/plugin-home-react@0.1.4
+  - @backstage/theme@0.4.3
+  - @backstage/config@1.1.1
+  - @backstage/plugin-search-common@1.2.7
+
+## 0.1.21-next.2
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/core-components@0.13.6-next.2
+  - @backstage/core-plugin-api@1.7.0-next.1
+  - @backstage/plugin-search-react@1.7.1-next.2
+  - @backstage/theme@0.4.3-next.0
+  - @backstage/config@1.1.1-next.0
+  - @backstage/plugin-home-react@0.1.4-next.2
+  - @backstage/plugin-search-common@1.2.7-next.0
+
 ## 0.1.21-next.1
 
 ### Patch Changes

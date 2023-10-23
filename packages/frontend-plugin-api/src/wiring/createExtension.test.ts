@@ -26,7 +26,7 @@ describe('createExtension', () => {
   it('should create an extension with a simple output', () => {
     const extension = createExtension({
       id: 'test',
-      at: 'root',
+      attachTo: { id: 'root', input: 'default' },
       output: {
         foo: stringData,
       },
@@ -56,7 +56,7 @@ describe('createExtension', () => {
   it('should create an extension with a some optional output', () => {
     const extension = createExtension({
       id: 'test',
-      at: 'root',
+      attachTo: { id: 'root', input: 'default' },
       output: {
         foo: stringData,
         bar: stringData.optional(),
@@ -94,7 +94,7 @@ describe('createExtension', () => {
   it('should create an extension with input', () => {
     const extension = createExtension({
       id: 'test',
-      at: 'root',
+      attachTo: { id: 'root', input: 'default' },
       inputs: {
         mixed: createExtensionInput({
           required: stringData,

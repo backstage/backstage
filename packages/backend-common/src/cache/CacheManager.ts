@@ -55,6 +55,7 @@ export class CacheManager {
   private readonly logger: LoggerService;
   private readonly store: keyof CacheManager['storeFactories'];
   private readonly connection: string;
+  private readonly useRedisSets: boolean;
   private readonly errorHandler: CacheManagerOptions['onError'];
 
   /**
@@ -72,15 +73,24 @@ export class CacheManager {
     const store = config.getOptionalString('backend.cache.store') || 'memory';
     const connectionString =
       config.getOptionalString('backend.cache.connection') || '';
+    const useRedisSets =
+      config.getOptionalBoolean('backend.cache.useRedisSets') ?? true;
     const logger = (options.logger || getRootLogger()).child({
       type: 'cacheManager',
     });
-    return new CacheManager(store, connectionString, logger, options.onError);
+    return new CacheManager(
+      store,
+      connectionString,
+      useRedisSets,
+      logger,
+      options.onError,
+    );
   }
 
   private constructor(
     store: string,
     connectionString: string,
+    useRedisSets: boolean,
     logger: LoggerService,
     errorHandler: CacheManagerOptions['onError'],
   ) {
@@ -90,6 +100,7 @@ export class CacheManager {
     this.logger = logger;
     this.store = store as keyof CacheManager['storeFactories'];
     this.connection = connectionString;
+    this.useRedisSets = useRedisSets;
     this.errorHandler = errorHandler;
   }
 
@@ -143,6 +154,7 @@ export class CacheManager {
       namespace: pluginId,
       ttl: defaultTtl,
       store: new KeyvRedis(this.connection),
+      useRedisSets: this.useRedisSets,
     });
   }
 

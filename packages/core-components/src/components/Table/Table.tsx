@@ -455,7 +455,7 @@ export function Table<T extends object = {}>(props: TableProps<T>) {
 
   const hasFilters = !!filters?.length;
   const Toolbar = useCallback(
-    toolbarProps => {
+    (toolbarProps: any /* no type for this in material-table */) => {
       return (
         <TableToolbar
           setSearch={setSearch}
@@ -472,7 +472,7 @@ export function Table<T extends object = {}>(props: TableProps<T>) {
   const hasNoRows = typeof data !== 'function' && data.length === 0;
   const columnCount = columns.length;
   const Body = useCallback(
-    bodyProps => {
+    (bodyProps: any /* no type for this in material-table */) => {
       if (isLoading) {
         return (
           <tbody data-testid="loading-indicator">

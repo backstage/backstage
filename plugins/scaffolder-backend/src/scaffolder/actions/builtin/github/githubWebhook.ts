@@ -24,6 +24,7 @@ import { assertError, InputError } from '@backstage/errors';
 import { Octokit } from 'octokit';
 import { getOctokitOptions } from './helpers';
 import { parseRepoUrl } from '../publish/util';
+import { examples } from './githubWebhook.examples';
 
 /**
  * Creates new action that creates a webhook for a repository on GitHub.
@@ -51,6 +52,7 @@ export function createGithubWebhookAction(options: {
   }>({
     id: 'github:webhook',
     description: 'Creates webhook for a repository on GitHub.',
+    examples,
     schema: {
       input: {
         type: 'object',

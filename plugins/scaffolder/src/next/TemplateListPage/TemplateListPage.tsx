@@ -38,7 +38,6 @@ import {
 import {
   ScaffolderPageContextMenu,
   TemplateCategoryPicker,
-  TemplateGroupFilter,
   TemplateGroups,
 } from '@backstage/plugin-scaffolder-react/alpha';
 
@@ -52,6 +51,7 @@ import {
   viewTechDocRouteRef,
 } from '../../routes';
 import { parseEntityRef, stringifyEntityRef } from '@backstage/catalog-model';
+import { TemplateGroupFilter } from '@backstage/plugin-scaffolder-react';
 
 /**
  * @alpha

@@ -1,5 +1,31 @@
 # @backstage/plugin-github-pull-requests-board
 
+## 0.1.19
+
+### Patch Changes
+
+- 9a1fce352e: Updated dependency `@testing-library/jest-dom` to `^6.0.0`.
+- f95af4e540: Updated dependency `@testing-library/dom` to `^9.0.0`.
+- Updated dependencies
+  - @backstage/integration@1.7.1
+  - @backstage/plugin-catalog-react@1.8.5
+  - @backstage/core-plugin-api@1.7.0
+  - @backstage/core-components@0.13.6
+  - @backstage/catalog-model@1.4.3
+  - @backstage/theme@0.4.3
+
+## 0.1.19-next.2
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/core-components@0.13.6-next.2
+  - @backstage/core-plugin-api@1.7.0-next.1
+  - @backstage/catalog-model@1.4.3-next.0
+  - @backstage/plugin-catalog-react@1.8.5-next.2
+  - @backstage/integration@1.7.1-next.1
+  - @backstage/theme@0.4.3-next.0
+
 ## 0.1.19-next.1
 
 ### Patch Changes

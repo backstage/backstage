@@ -14,12 +14,11 @@
  * limitations under the License.
  */
 
-import mockFs from 'mock-fs';
-import path from 'path';
 import * as runObj from '../run';
 import * as yarn from '../yarn';
 import { fetchPackageInfo, mapDependencies } from './packages';
 import { NotFoundError } from '../errors';
+import { createMockDirectory } from '@backstage/backend-test-utils';
 
 jest.mock('../run', () => {
   return {
@@ -96,34 +95,41 @@ describe('fetchPackageInfo', () => {
 });
 
 describe('mapDependencies', () => {
+  const mockDir = createMockDirectory();
+
   afterEach(() => {
-    mockFs.restore();
     jest.resetAllMocks();
   });
 
   it('should read dependencies', async () => {
-    mockFs({
-      '/root/package.json': JSON.stringify({
+    mockDir.setContent({
+      'package.json': JSON.stringify({
         workspaces: {
           packages: ['pkgs/*'],
         },
       }),
-      '/root/pkgs/a/package.json': JSON.stringify({
-        name: 'a',
-        dependencies: {
-          '@backstage/core': '1 || 2',
+      pkgs: {
+        a: {
+          'package.json': JSON.stringify({
+            name: 'a',
+            dependencies: {
+              '@backstage/core': '1 || 2',
+            },
+          }),
         },
-      }),
-      '/root/pkgs/b/package.json': JSON.stringify({
-        name: 'b',
-        dependencies: {
-          '@backstage/core': '3',
-          '@backstage/cli': '^0',
+        b: {
+          'package.json': JSON.stringify({
+            name: 'b',
+            dependencies: {
+              '@backstage/core': '3',
+              '@backstage/cli': '^0',
+            },
+          }),
         },
-      }),
+      },
     });
 
-    const dependencyMap = await mapDependencies('/root', '@backstage/*');
+    const dependencyMap = await mapDependencies(mockDir.path, '@backstage/*');
     expect(Array.from(dependencyMap)).toEqual([
       [
         '@backstage/core',
@@ -131,12 +137,12 @@ describe('mapDependencies', () => {
           {
             name: 'a',
             range: '1 || 2',
-            location: path.resolve('/root/pkgs/a'),
+            location: mockDir.resolve('pkgs/a'),
           },
           {
             name: 'b',
             range: '3',
-            location: path.resolve('/root/pkgs/b'),
+            location: mockDir.resolve('pkgs/b'),
           },
         ],
       ],
@@ -146,7 +152,7 @@ describe('mapDependencies', () => {
           {
             name: 'b',
             range: '^0',
-            location: path.resolve('/root/pkgs/b'),
+            location: mockDir.resolve('pkgs/b'),
           },
         ],
       ],

@@ -30,21 +30,17 @@ import {
   graphQlBrowseApiRef,
   GraphQLEndpoints,
   GraphQLEndpoint,
+  GraphiQLIcon,
 } from '@backstage/plugin-graphiql';
-import GraphiQLIcon from './assets/graphiql.icon.svg';
-import {
-  createApiFactory,
-  createRouteRef,
-  IconComponent,
-} from '@backstage/core-plugin-api';
-
-const graphiqlRouteRef = createRouteRef({ id: 'plugin.graphiql.page' });
+import { createApiFactory, IconComponent } from '@backstage/core-plugin-api';
+import { graphiQLRouteRef } from './route-refs';
+import { convertLegacyRouteRef } from '@backstage/core-plugin-api/alpha';
 
 /** @alpha */
 export const GraphiqlPage = createPageExtension({
   id: 'plugin.graphiql.page',
   defaultPath: '/graphiql',
-  routeRef: graphiqlRouteRef,
+  routeRef: convertLegacyRouteRef(graphiQLRouteRef),
   loader: () => import('./components').then(m => <m.GraphiQLPage />),
 });
 
@@ -53,7 +49,7 @@ export const graphiqlPageSidebarItem = createNavItemExtension({
   id: 'plugin.graphiql.nav.index',
   title: 'GraphiQL',
   icon: GraphiQLIcon as IconComponent,
-  routeRef: graphiqlRouteRef,
+  routeRef: convertLegacyRouteRef(graphiQLRouteRef),
 });
 
 /** @internal */
@@ -86,7 +82,7 @@ export function createEndpointExtension<TConfig extends {}>(options: {
 }) {
   return createExtension({
     id: `apis.plugin.graphiql.browse.${options.id}`,
-    at: 'apis.plugin.graphiql.browse/endpoints',
+    attachTo: { id: 'apis.plugin.graphiql.browse', input: 'endpoints' },
     configSchema: options.configSchema,
     disabled: options.disabled ?? false,
     output: {
@@ -125,4 +121,7 @@ export default createPlugin({
     gitlabGraphiQLBrowseExtension,
     graphiqlPageSidebarItem,
   ],
+  routes: {
+    root: convertLegacyRouteRef(graphiQLRouteRef),
+  },
 });

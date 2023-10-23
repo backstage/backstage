@@ -7,7 +7,7 @@ import { BackstagePlugin } from '@backstage/frontend-plugin-api';
 import { default as React_2 } from 'react';
 
 // @public (undocumented)
-const examplePlugin: BackstagePlugin;
+const examplePlugin: BackstagePlugin<{}, {}>;
 export default examplePlugin;
 
 // @public (undocumented)

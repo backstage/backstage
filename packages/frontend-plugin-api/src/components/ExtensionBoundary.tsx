@@ -14,16 +14,59 @@
  * limitations under the License.
  */
 
-import React, { ReactNode } from 'react';
+import React, { PropsWithChildren, ReactNode, useEffect } from 'react';
+import { AnalyticsContext, useAnalytics } from '@backstage/core-plugin-api';
 import { BackstagePlugin } from '../wiring';
+import { ErrorBoundary } from './ErrorBoundary';
+import { ExtensionSuspense } from './ExtensionSuspense';
+// eslint-disable-next-line @backstage/no-relative-monorepo-imports
+import { routableExtensionRenderedEvent } from '../../../core-plugin-api/src/analytics/Tracker';
+
+type RouteTrackerProps = PropsWithChildren<{
+  disableTracking?: boolean;
+}>;
+
+const RouteTracker = (props: RouteTrackerProps) => {
+  const { disableTracking, children } = props;
+  const analytics = useAnalytics();
+
+  // This event, never exposed to end-users of the analytics API,
+  // helps inform which extension metadata gets associated with a
+  // navigation event when the route navigated to is a gathered
+  // mountpoint.
+  useEffect(() => {
+    if (disableTracking) return;
+    analytics.captureEvent(routableExtensionRenderedEvent, '');
+  }, [analytics, disableTracking]);
+
+  return <>{children}</>;
+};
 
 /** @public */
 export interface ExtensionBoundaryProps {
-  children: ReactNode;
+  id: string;
   source?: BackstagePlugin;
+  routable?: boolean;
+  children: ReactNode;
 }
 
 /** @public */
 export function ExtensionBoundary(props: ExtensionBoundaryProps) {
-  return <>{props.children}</>;
+  const { id, source, routable, children } = props;
+
+  // Skipping "routeRef" attribute in the new system, the extension "id" should provide more insight
+  const attributes = {
+    extension: id,
+    pluginId: source?.id,
+  };
+
+  return (
+    <ExtensionSuspense>
+      <ErrorBoundary plugin={source}>
+        <AnalyticsContext attributes={attributes}>
+          <RouteTracker disableTracking={!routable}>{children}</RouteTracker>
+        </AnalyticsContext>
+      </ErrorBoundary>
+    </ExtensionSuspense>
+  );
 }

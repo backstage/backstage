@@ -427,6 +427,8 @@ async function dropClientDatabases(client: string) {
 async function testBackendStart(appDir: string, ...args: string[]) {
   const child = spawnPiped(['yarn', 'workspace', 'backend', 'start', ...args], {
     cwd: appDir,
+    // Windows does not like piping stdin here, the child process will hang when requiring the 'process' module
+    stdio: ['ignore', 'pipe', 'pipe'],
     env: {
       ...process.env,
       GITHUB_TOKEN: 'abc',

@@ -22,7 +22,7 @@ Imagine you have a plugin that is responsible for storing FAQ snippets in a data
 
 The search platform provides an interface (`DocumentCollatorFactory` from package `@backstage/plugin-search-common`) that allows you to do exactly that. It works by registering each of your entries as a "document" that later represents one search result each.
 
-> You can always look at a working example, e.g. [StackOverflowQuestionsCollatorFactory](https://github.com/backstage/backstage/blob/master/plugins/stack-overflow-backend/src/search/StackOverflowQuestionsCollatorFactory.ts), if you are unsure or want to follow best practices.
+> You can always look at a working example, e.g. [StackOverflowQuestionsCollatorFactory](https://github.com/backstage/backstage/blob/master/plugins/search-backend-module-stack-overflow-collator/src/collators/StackOverflowQuestionsCollatorFactory.ts), if you are unsure or want to follow best practices.
 
 #### 1. Install collator interface dependencies
 

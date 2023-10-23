@@ -23,7 +23,6 @@ import Typography from '@material-ui/core/Typography';
 import ErrorOutline from '@material-ui/icons/ErrorOutline';
 import ExpandMoreIcon from '@material-ui/icons/ExpandMore';
 import React from 'react';
-import { MarkdownContent } from '../MarkdownContent';
 
 const getWarningTextColor = (
   severity: NonNullable<WarningProps['severity']>,
@@ -70,6 +69,9 @@ export type WarningPanelClassKey =
 
 const useStyles = makeStyles<BackstageTheme>(
   theme => ({
+    content: {
+      lineBreak: 'anywhere',
+    },
     panel: {
       backgroundColor: ({ severity }: WarningProps) =>
         getWarningBackgroundColor(
@@ -94,11 +96,6 @@ const useStyles = makeStyles<BackstageTheme>(
           theme,
         ),
       fontWeight: theme.typography.fontWeightBold,
-    },
-    markdownContent: {
-      '& p': {
-        display: 'inline',
-      },
     },
     message: {
       width: '100%',
@@ -130,7 +127,6 @@ const useStyles = makeStyles<BackstageTheme>(
 export type WarningProps = {
   title?: string;
   severity?: 'warning' | 'error' | 'info';
-  formatTitle?: string;
   message?: React.ReactNode;
   defaultExpanded?: boolean;
   children?: React.ReactNode;
@@ -158,7 +154,6 @@ export function WarningPanel(props: WarningProps) {
   const {
     severity = 'warning',
     title,
-    formatTitle,
     message,
     children,
     defaultExpanded,
@@ -176,18 +171,12 @@ export function WarningPanel(props: WarningProps) {
     >
       <AccordionSummary
         expandIcon={<ExpandMoreIconStyled severity={severity} />}
+        classes={{ content: classes.content }}
         className={classes.summary}
       >
         <ErrorOutlineStyled severity={severity} />
         <Typography className={classes.summaryText} variant="subtitle1">
-          {formatTitle === 'markdown' ? (
-            <MarkdownContent
-              content={subTitle}
-              className={classes.markdownContent}
-            />
-          ) : (
-            subTitle
-          )}
+          {subTitle}
         </Typography>
       </AccordionSummary>
       {(message || children) && (

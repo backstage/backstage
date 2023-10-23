@@ -659,6 +659,7 @@ export const createPublishGithubPullRequestAction: (
     reviewers?: string[] | undefined;
     teamReviewers?: string[] | undefined;
     commitMessage?: string | undefined;
+    update?: boolean | undefined;
   },
   JsonObject
 >;
@@ -679,6 +680,36 @@ export function createPublishGitlabAction(options: {
     gitAuthorEmail?: string | undefined;
     setUserAsOwner?: boolean | undefined;
     topics?: string[] | undefined;
+    settings?:
+      | {
+          path?: string | undefined;
+          auto_devops_enabled?: boolean | undefined;
+          ci_config_path?: string | undefined;
+          description?: string | undefined;
+          topics?: string[] | undefined;
+          visibility?: 'internal' | 'private' | 'public' | undefined;
+        }
+      | undefined;
+    branches?:
+      | {
+          name: string;
+          protect?: boolean | undefined;
+          create?: boolean | undefined;
+          ref?: string | undefined;
+        }[]
+      | undefined;
+    projectVariables?:
+      | {
+          key: string;
+          value: string;
+          description?: string | undefined;
+          variable_type?: string | undefined;
+          protected?: boolean | undefined;
+          masked?: boolean | undefined;
+          raw?: boolean | undefined;
+          environment_scope?: string | undefined;
+        }[]
+      | undefined;
   },
   JsonObject
 >;

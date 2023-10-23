@@ -17,8 +17,13 @@ jobs:
     # Avoid running on issue comments
     if: github.repository == 'backstage/backstage' && ( github.event.pull_request || github.event.issue.pull_request )
     steps:
+      - name: Harden Runner
+        uses: step-security/harden-runner@8ca2b8b2ece13480cda6dacd3511b49857a23c09 # v2.5.1
+        with:
+          egress-policy: audit
+
       - name: PR sync
-        uses: backstage/actions/pr-sync@v0.6.4
+        uses: backstage/actions/pr-sync@v0.6.5
         with:
           github-token: ${{ secrets.GH_SERVICE_ACCOUNT_TOKEN  }}
           app-id: ${{ secrets.BACKSTAGE_GOALIE_APPLICATION_ID }}

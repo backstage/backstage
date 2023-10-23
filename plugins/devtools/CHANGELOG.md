@@ -1,5 +1,32 @@
 # @backstage/plugin-devtools
 
+## 0.1.5
+
+### Patch Changes
+
+- 9a1fce352e: Updated dependency `@testing-library/jest-dom` to `^6.0.0`.
+- Updated dependencies
+  - @backstage/core-plugin-api@1.7.0
+  - @backstage/core-components@0.13.6
+  - @backstage/errors@1.2.3
+  - @backstage/plugin-permission-react@0.4.16
+  - @backstage/theme@0.4.3
+  - @backstage/types@1.1.1
+  - @backstage/plugin-devtools-common@0.1.5
+
+## 0.1.5-next.2
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/core-components@0.13.6-next.2
+  - @backstage/core-plugin-api@1.7.0-next.1
+  - @backstage/errors@1.2.3-next.0
+  - @backstage/theme@0.4.3-next.0
+  - @backstage/types@1.1.1
+  - @backstage/plugin-devtools-common@0.1.5-next.0
+  - @backstage/plugin-permission-react@0.4.16-next.1
+
 ## 0.1.5-next.1
 
 ### Patch Changes

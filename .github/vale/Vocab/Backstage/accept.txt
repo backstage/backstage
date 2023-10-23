@@ -25,6 +25,7 @@ backend's
 backported
 backporting
 BEPs
+bigint
 Bigtable
 Billett
 bitbucket
@@ -429,6 +430,7 @@ Valentina
 validator
 validators
 varchar
+vite
 VMware
 Vodafone
 VPCs
@@ -454,3 +456,4 @@ Pulumi
 Lightsail
 PR
 rebasing
+lookbehind

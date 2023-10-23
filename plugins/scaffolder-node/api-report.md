@@ -5,7 +5,6 @@
 ```ts
 /// <reference types="node" />
 
-import { ExtensionPoint } from '@backstage/backend-plugin-api';
 import { JsonObject } from '@backstage/types';
 import { JsonValue } from '@backstage/types';
 import { Logger } from 'winston';
@@ -13,11 +12,7 @@ import { Observable } from '@backstage/types';
 import { Schema } from 'jsonschema';
 import { ScmIntegrations } from '@backstage/integration';
 import { SpawnOptionsWithoutStdio } from 'child_process';
-import { TaskBroker as TaskBroker_2 } from '@backstage/plugin-scaffolder-node';
 import { TaskSpec } from '@backstage/plugin-scaffolder-common';
-import { TemplateAction as TemplateAction_2 } from '@backstage/plugin-scaffolder-node';
-import { TemplateFilter as TemplateFilter_2 } from '@backstage/plugin-scaffolder-node';
-import { TemplateGlobal as TemplateGlobal_2 } from '@backstage/plugin-scaffolder-node';
 import { TemplateInfo } from '@backstage/plugin-scaffolder-common';
 import { UrlReader } from '@backstage/backend-common';
 import { UserEntity } from '@backstage/catalog-model';
@@ -108,35 +103,6 @@ export function fetchFile(options: {
   fetchUrl?: string;
   outputPath: string;
 }): Promise<void>;
-
-// @alpha
-export interface ScaffolderActionsExtensionPoint {
-  // (undocumented)
-  addActions(...actions: TemplateAction_2<any, any>[]): void;
-}
-
-// @alpha
-export const scaffolderActionsExtensionPoint: ExtensionPoint<ScaffolderActionsExtensionPoint>;
-
-// @alpha
-export interface ScaffolderTaskBrokerExtensionPoint {
-  // (undocumented)
-  setTaskBroker(taskBroker: TaskBroker_2): void;
-}
-
-// @alpha
-export const scaffolderTaskBrokerExtensionPoint: ExtensionPoint<ScaffolderTaskBrokerExtensionPoint>;
-
-// @alpha
-export interface ScaffolderTemplatingExtensionPoint {
-  // (undocumented)
-  addTemplateFilters(filters: Record<string, TemplateFilter_2>): void;
-  // (undocumented)
-  addTemplateGlobals(filters: Record<string, TemplateGlobal_2>): void;
-}
-
-// @alpha
-export const scaffolderTemplatingExtensionPoint: ExtensionPoint<ScaffolderTemplatingExtensionPoint>;
 
 // @public
 export type SerializedTask = {
