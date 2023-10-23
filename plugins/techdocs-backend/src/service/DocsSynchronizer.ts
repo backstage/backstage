@@ -15,7 +15,11 @@
  */
 
 import { PluginEndpointDiscovery } from '@backstage/backend-common';
-import { Entity, DEFAULT_NAMESPACE } from '@backstage/catalog-model';
+import {
+  DEFAULT_NAMESPACE,
+  Entity,
+  stringifyEntityRef,
+} from '@backstage/catalog-model';
 import { Config } from '@backstage/config';
 import { assertError, NotFoundError } from '@backstage/errors';
 import { ScmIntegrationRegistry } from '@backstage/integration';
@@ -142,7 +146,9 @@ export class DocsSynchronizer {
       }
     } catch (e) {
       assertError(e);
-      const msg = `Failed to build the docs page: ${e.message}`;
+      const msg = `Failed to build the docs page for entity ${stringifyEntityRef(
+        entity,
+      )}: ${e.message}`;
       taskLogger.error(msg);
       this.logger.error(msg, e);
       error(e);

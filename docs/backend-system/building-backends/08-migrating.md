@@ -177,11 +177,10 @@ custom API, so we use a helper function to transform that particular one.
 To make additions as mentioned above to the environment, you will start to get
 into the weeds of how the backend system wiring works. You'll need to have a
 service reference and a service factory that performs the actual creation of
-your service. Please see [the services
-article](../architecture/03-services.md#defining-a-service) to learn how to
-create a service ref and its default factory. You can place that code directly
-in the index file for now if you want, or near the actual implementation class
-in question.
+your service. Please see [the services article](../architecture/03-services.md)
+to learn how to create a service ref and its default factory. You can place that
+code directly in the index file for now if you want, or near the actual implementation
+class in question.
 
 In this example, we'll assume that your added environment field is named
 `example`, and the created ref is named `exampleServiceRef`.
@@ -233,7 +232,7 @@ be used in its new form.
 ```ts title="packages/backend/src/index.ts"
 const backend = createBackend();
 /* highlight-add-next-line */
-backend.add(import('@backstage/plugin-app-backend'));
+backend.add(import('@backstage/plugin-app-backend/alpha'));
 ```
 
 If you need to override the app package name, which otherwise defaults to `"app"`,
@@ -248,7 +247,7 @@ A basic installation of the catalog plugin looks as follows.
 ```ts title="packages/backend/src/index.ts"
 const backend = createBackend();
 /* highlight-add-start */
-backend.add(import('@backstage/plugin-catalog-backend'));
+backend.add(import('@backstage/plugin-catalog-backend/alpha'));
 backend.add(
   import('@backstage/plugin-catalog-backend-module-scaffolder-entity-model'),
 );
@@ -296,7 +295,7 @@ const catalogModuleCustomExtensions = createBackendModule({
 /* highlight-add-end */
 
 const backend = createBackend();
-backend.add(import('@backstage/plugin-catalog-backend'));
+backend.add(import('@backstage/plugin-catalog-backend/alpha'));
 backend.add(
   import('@backstage/plugin-catalog-backend-module-scaffolder-entity-model'),
 );
@@ -390,7 +389,7 @@ A basic installation of the scaffolder plugin looks as follows.
 ```ts title="packages/backend/src/index.ts"
 const backend = createBackend();
 /* highlight-add-next-line */
-backend.add(import('@backstage/plugin-scaffolder-backend'));
+backend.add(import('@backstage/plugin-scaffolder-backend/alpha'));
 ```
 
 If you have other customizations made to `plugins/scaffolder.ts`, such as adding
@@ -429,7 +428,7 @@ const scaffolderModuleCustomExtensions = createBackendModule({
 /* highlight-add-end */
 
 const backend = createBackend();
-backend.add(import('@backstage/plugin-scaffolder-backend'));
+backend.add(import('@backstage/plugin-scaffolder-backend/alpha'));
 /* highlight-add-next-line */
 backend.add(scaffolderModuleCustomExtensions());
 ```

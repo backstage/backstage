@@ -27,8 +27,8 @@ import { SubRoute } from './types';
 
 export function useSelectedSubRoute(subRoutes: SubRoute[]): {
   index: number;
-  route: SubRoute;
-  element: JSX.Element;
+  route?: SubRoute;
+  element?: JSX.Element;
 } {
   const params = useParams();
 
@@ -44,7 +44,7 @@ export function useSelectedSubRoute(subRoutes: SubRoute[]): {
     b.path.replace(/\/\*$/, '').localeCompare(a.path.replace(/\/\*$/, '')),
   );
 
-  const element = useRoutes(sortedRoutes) ?? subRoutes[0].children;
+  const element = useRoutes(sortedRoutes) ?? subRoutes[0]?.children;
 
   // TODO(Rugvip): Once we only support v6 stable we can always prefix
   // This avoids having a double / prefix for react-router v6 beta, which in turn breaks
@@ -98,7 +98,7 @@ export function RoutedTabs(props: { routes: SubRoute[] }) {
         onChange={onTabChange}
       />
       <Content>
-        <Helmet title={route.title} />
+        <Helmet title={route?.title} />
         {element}
       </Content>
     </>
