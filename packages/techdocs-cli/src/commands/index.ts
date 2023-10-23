@@ -78,7 +78,7 @@ export function registerCommands(program: Command) {
     .option(
       '--runAsDefaultUser',
       'Bypass setting the container user as the same user and group id as host for Linux and MacOS',
-      false
+      false,
     )
     .alias('build')
     .action(lazy(() => import('./generate/generate').then(m => m.default)));
