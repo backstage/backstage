@@ -14,10 +14,10 @@
  * limitations under the License.
  */
 
-export { DefaultTechDocsCollatorFactory } from './DefaultTechDocsCollatorFactory';
+import { Entity } from '@backstage/catalog-model';
+import { TechDocsDocument } from '@backstage/plugin-techdocs-node';
 
-export type { TechDocsCollatorFactoryOptions } from './DefaultTechDocsCollatorFactory';
-
-export { defaultTechDocsCollatorEntityTransformer } from './defaultTechDocsCollatorEntityTransformer';
-
-export type { TechDocsCollatorEntityTransformer } from './TechDocsCollatorEntityTransformer';
+/** @public */
+export type TechDocsCollatorEntityTransformer = (
+  entity: Entity,
+) => Omit<TechDocsDocument, 'location' | 'authorization'>;
