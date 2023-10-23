@@ -19,14 +19,14 @@ import {
   loadBackendConfig,
   HostDiscovery,
   UrlReaders,
-  useHotMemoize,
   ServerTokenManager,
+  DatabaseManager,
 } from '@backstage/backend-common';
 import { Server } from 'http';
 import { Logger } from 'winston';
 import { createRouter } from './router';
-import knexFactory from 'knex';
 import { TaskScheduleDefinition } from '@backstage/backend-tasks';
+import { ConfigReader } from '@backstage/config';
 
 export interface ServerOptions {
   port: number;
@@ -39,19 +39,14 @@ export async function startStandaloneServer(
 ): Promise<Server> {
   const logger = options.logger.child({ service: 'linguist-backend' });
   const config = await loadBackendConfig({ logger, argv: process.argv });
-  const db = useHotMemoize(module, () => {
-    const knex = knexFactory({
-      client: 'sqlite3',
-      connection: ':memory:',
-      useNullAsDefault: true,
-    });
-
-    knex.client.pool.on('createSuccess', (_eventId: any, resource: any) => {
-      resource.run('PRAGMA foreign_keys = ON', () => {});
-    });
-
-    return knex;
-  });
+  const manager = DatabaseManager.fromConfig(
+    new ConfigReader({
+      backend: {
+        database: { client: 'better-sqlite3', connection: ':memory:' },
+      },
+    }),
+  );
+  const database = manager.forPlugin('linguist');
 
   const schedule: TaskScheduleDefinition = {
     frequency: { minutes: 2 },
@@ -63,7 +58,7 @@ export async function startStandaloneServer(
   const router = await createRouter(
     { schedule: schedule, age: { days: 30 }, useSourceLocation: false },
     {
-      database: { getClient: async () => db },
+      database,
       discovery: HostDiscovery.fromConfig(config),
       reader: UrlReaders.default({ logger, config }),
       logger,

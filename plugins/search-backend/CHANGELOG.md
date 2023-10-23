@@ -1,5 +1,23 @@
 # @backstage/plugin-search-backend
 
+## 1.4.6
+
+### Patch Changes
+
+- 16be6f9473: Set the default length limit to search query to 100. To override it, define `search.maxTermLength` in the config file.
+- Updated dependencies
+  - @backstage/backend-common@0.19.8
+  - @backstage/plugin-auth-node@0.4.0
+  - @backstage/errors@1.2.3
+  - @backstage/backend-openapi-utils@0.0.5
+  - @backstage/backend-plugin-api@0.6.6
+  - @backstage/plugin-search-backend-node@1.2.10
+  - @backstage/plugin-permission-node@0.7.17
+  - @backstage/config@1.1.1
+  - @backstage/types@1.1.1
+  - @backstage/plugin-permission-common@0.7.9
+  - @backstage/plugin-search-common@1.2.7
+
 ## 1.4.6-next.2
 
 ### Patch Changes

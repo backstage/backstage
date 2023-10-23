@@ -1,5 +1,40 @@
 # @backstage/create-app
 
+## 0.5.6
+
+### Patch Changes
+
+- ba6a3b59c1: Removed duplicate `apple-touch-icon` link from `packages/app/public/index.html` that linked to nonexistent icon.
+- c8ec0dea4a: Create unique temp directory for each `create-app` execution.
+- e43d3eb1b7: Bumped create-app version.
+- b665f2ce65: Change base node image from node:18-bullseye-slim to node:18-bookworm-slim due to Docker build error on bullseye.
+
+  You can apply these change to your own `Dockerfile` by replacing `node:18-bullseye-slim` with `node:18-bookworm-slim`
+
+- deed089a3d: Bump `cypress` to fix the end-to-end tests
+- de42eebaaf: Bumped dev dependencies `@types/node` and `mock-fs`.
+- 04a3f65e15: Bump Docker base images to `node:18-bookworm-slim` to fix node compatibility issues raised during image build.
+
+  You can apply these change to your own `Dockerfile` by replacing `node:16-bullseye-slim` with `node:18-bookworm-slim`
+
+- 9864f263ba: Bump dev dependencies `lerna@7.3.0` on the template
+- 5eacd5d213: The E2E test setup based on Cypress has been replaced with one based on [Playwright](https://playwright.dev/). Migrating existing apps is not required as this is a standalone setup, only do so if you also want to switch from Cypress to Playwright.
+
+  The scripts to run the E2E tests have been removed from `packages/app/package.json`, as they are now instead run from the root. Instead, a new script has been added to the root `package.json`, `yarn test:e2e`, which runs the E2E tests in development mode, unless `CI` is set in the environment.
+
+  The Playwright setup uses utilities from the new `@backstage/e2e-test-utils` package to find and include all packages in the monorepo that have an `e2e-tests` folder.
+
+- 8d2e640af4: Added missing `.eslintignore` file
+
+  To apply this change to an existing app, create a new `.eslintignore` file at the root of your project with the following content:
+
+  ```diff
+  + playwright.config.ts
+  ```
+
+- Updated dependencies
+  - @backstage/cli-common@0.1.13
+
 ## 0.5.6-next.2
 
 ### Patch Changes

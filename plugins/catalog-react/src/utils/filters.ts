@@ -16,6 +16,16 @@
 
 import { Entity } from '@backstage/catalog-model';
 import { EntityFilter } from '../types';
+import {
+  EntityLifecycleFilter,
+  EntityNamespaceFilter,
+  EntityOrphanFilter,
+  EntityOwnerFilter,
+  EntityTagFilter,
+  EntityTextFilter,
+  EntityUserFilter,
+  UserListFilter,
+} from '../filters';
 
 export function reduceCatalogFilters(
   filters: EntityFilter[],
@@ -26,6 +36,38 @@ export function reduceCatalogFilters(
       ...(filter.getCatalogFilters ? filter.getCatalogFilters() : {}),
     };
   }, {} as Record<string, string | symbol | (string | symbol)[]>);
+}
+
+/**
+ * This function computes and returns an object containing the filters to be sent
+ * to the backend. Any filter coming from `EntityKindFilter` and `EntityTypeFilter`, together
+ * with custom filter set by the adopters is allowed. This function is used by `EntityListProvider`
+ * and it won't be needed anymore in the future once pagination is implemented, as all the filters
+ * will be applied backend-side.
+ */
+export function reduceBackendCatalogFilters(filters: EntityFilter[]) {
+  const backendCatalogFilters: Record<
+    string,
+    string | symbol | (string | symbol)[]
+  > = {};
+
+  filters.forEach(filter => {
+    if (
+      filter instanceof EntityTagFilter ||
+      filter instanceof EntityOwnerFilter ||
+      filter instanceof EntityLifecycleFilter ||
+      filter instanceof EntityNamespaceFilter ||
+      filter instanceof EntityUserFilter ||
+      filter instanceof EntityOrphanFilter ||
+      filter instanceof EntityTextFilter ||
+      filter instanceof UserListFilter
+    ) {
+      return;
+    }
+    Object.assign(backendCatalogFilters, filter.getCatalogFilters?.() || {});
+  });
+
+  return backendCatalogFilters;
 }
 
 export function reduceEntityFilters(

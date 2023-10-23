@@ -24,7 +24,7 @@ import {
 } from '@backstage/plugin-catalog-react';
 import React from 'react';
 import { scaffolderApiRef, ScaffolderClient } from '../src';
-import { NextScaffolderPage, ScaffolderPage } from '../src/plugin';
+import { ScaffolderPage, LegacyScaffolderPage } from '../src/plugin';
 import {
   discoveryApiRef,
   fetchApiRef,
@@ -69,9 +69,9 @@ createDevApp()
     element: <ScaffolderPage />,
   })
   .addPage({
-    path: '/next-create',
+    path: '/legacy-create',
     title: 'Create (next)',
-    element: <NextScaffolderPage />,
+    element: <LegacyScaffolderPage />,
   })
   .addPage({
     path: '/create-groups',
@@ -92,10 +92,10 @@ createDevApp()
     ),
   })
   .addPage({
-    path: '/next-create-groups',
+    path: '/legacy-create-groups',
     title: 'Groups (next)',
     element: (
-      <NextScaffolderPage
+      <LegacyScaffolderPage
         groups={[
           {
             filter: e => e.metadata.tags?.includes('techdocs') || false,

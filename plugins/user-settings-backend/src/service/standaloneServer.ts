@@ -14,10 +14,13 @@
  * limitations under the License.
  */
 
-import { createServiceBuilder, useHotMemoize } from '@backstage/backend-common';
+import {
+  createServiceBuilder,
+  DatabaseManager,
+} from '@backstage/backend-common';
+import { ConfigReader } from '@backstage/config';
 import { IdentityApi } from '@backstage/plugin-auth-node';
 import { Server } from 'http';
-import Knex from 'knex';
 import { Logger } from 'winston';
 import { DatabaseUserSettingsStore } from '../database/DatabaseUserSettingsStore';
 import { createRouterInternal } from './router';
@@ -33,13 +36,14 @@ export async function startStandaloneServer(
 ): Promise<Server> {
   const logger = options.logger.child({ service: 'storage-backend' });
 
-  const database = useHotMemoize(module, () => {
-    return Knex({
-      client: 'better-sqlite3',
-      connection: ':memory:',
-      useNullAsDefault: true,
-    });
-  });
+  const manager = DatabaseManager.fromConfig(
+    new ConfigReader({
+      backend: {
+        database: { client: 'better-sqlite3', connection: ':memory:' },
+      },
+    }),
+  );
+  const database = manager.forPlugin('user-settings');
 
   logger.debug('Starting application server...');
 
@@ -58,9 +62,7 @@ export async function startStandaloneServer(
   };
 
   const router = await createRouterInternal({
-    userSettingsStore: await DatabaseUserSettingsStore.create({
-      database: { getClient: async () => database },
-    }),
+    userSettingsStore: await DatabaseUserSettingsStore.create({ database }),
     identity: identityMock,
   });
 

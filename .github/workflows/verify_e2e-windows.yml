@@ -30,6 +30,11 @@ jobs:
 
     name: E2E Windows ${{ matrix.node-version }}
     steps:
+      - name: Harden Runner
+        uses: step-security/harden-runner@8ca2b8b2ece13480cda6dacd3511b49857a23c09 # v2.5.1
+        with:
+          egress-policy: audit
+
       # In order to have the create-app template function as if it was downloaded from NPM
       # we need to make sure we checkout files with LF line endings only
       - name: Set git to use LF
@@ -37,7 +42,7 @@ jobs:
           git config --global core.autocrlf false
           git config --global core.eol lf
 
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v3.6.0
 
       - name: Configure Git
         run: |
@@ -45,13 +50,13 @@ jobs:
           git config --global user.name 'GitHub e2e user'
 
       - name: use node.js ${{ matrix.node-version }}
-        uses: actions/setup-node@v3
+        uses: actions/setup-node@v3.8.1
         with:
           node-version: ${{ matrix.node-version }}
           registry-url: https://registry.npmjs.org/ # Needed for auth
 
       - name: setup python
-        uses: actions/setup-python@v4
+        uses: actions/setup-python@v4.7.0
         with:
           python-version: '3.10'
 
@@ -70,10 +75,10 @@ jobs:
           npm prefix -g | % {npm config set node_gyp "$_\node_modules\node-gyp\bin\node-gyp.js"}
 
       - name: setup chrome
-        uses: browser-actions/setup-chrome@latest
+        uses: browser-actions/setup-chrome@803ef6dfb4fdf22089c9563225d95e4a515820a0 # latest
 
       - name: yarn install
-        uses: backstage/actions/yarn-install@v0.6.4
+        uses: backstage/actions/yarn-install@v0.6.5
         with:
           cache-prefix: ${{ runner.os }}-v${{ matrix.node-version }}
 

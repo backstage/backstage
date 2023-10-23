@@ -1,5 +1,22 @@
 # @backstage/plugin-playlist-backend
 
+## 0.3.10
+
+### Patch Changes
+
+- 9e46f5ff49: Added support to the playlist plugin for the new backend
+- Updated dependencies
+  - @backstage/backend-common@0.19.8
+  - @backstage/plugin-auth-node@0.4.0
+  - @backstage/catalog-model@1.4.3
+  - @backstage/errors@1.2.3
+  - @backstage/backend-plugin-api@0.6.6
+  - @backstage/plugin-permission-node@0.7.17
+  - @backstage/catalog-client@1.4.5
+  - @backstage/config@1.1.1
+  - @backstage/plugin-permission-common@0.7.9
+  - @backstage/plugin-playlist-common@0.1.11
+
 ## 0.3.10-next.2
 
 ### Patch Changes

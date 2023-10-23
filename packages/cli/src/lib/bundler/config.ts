@@ -39,6 +39,7 @@ import { runPlain } from '../run';
 import { transforms } from './transforms';
 import { version } from '../../lib/version';
 import yn from 'yn';
+import { hasReactDomClient } from './hasReactDomClient';
 
 const BUILD_CACHE_ENV_VAR = 'BACKSTAGE_CLI_EXPERIMENTAL_BUILD_CACHE';
 
@@ -79,15 +80,6 @@ async function readBuildInfo() {
     timestamp,
     commit,
   };
-}
-
-function hasReactDomClient() {
-  try {
-    require.resolve('react-dom/client');
-    return true;
-  } catch {
-    return false;
-  }
 }
 
 export async function createConfig(

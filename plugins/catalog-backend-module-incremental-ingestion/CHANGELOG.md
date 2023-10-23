@@ -1,5 +1,22 @@
 # @backstage/plugin-catalog-backend-module-incremental-ingestion
 
+## 0.4.10
+
+### Patch Changes
+
+- 0b55f773a7: Removed some unused dependencies
+- Updated dependencies
+  - @backstage/backend-tasks@0.5.11
+  - @backstage/backend-common@0.19.8
+  - @backstage/plugin-catalog-backend@1.14.0
+  - @backstage/plugin-catalog-node@1.4.7
+  - @backstage/catalog-model@1.4.3
+  - @backstage/errors@1.2.3
+  - @backstage/backend-plugin-api@0.6.6
+  - @backstage/config@1.1.1
+  - @backstage/plugin-events-node@0.2.15
+  - @backstage/plugin-permission-common@0.7.9
+
 ## 0.4.10-next.2
 
 ### Patch Changes

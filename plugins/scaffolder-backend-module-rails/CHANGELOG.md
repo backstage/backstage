@@ -1,5 +1,18 @@
 # @backstage/plugin-scaffolder-backend-module-rails
 
+## 0.4.23
+
+### Patch Changes
+
+- de42eebaaf: Bumped dev dependencies `@types/node` and `mock-fs`.
+- Updated dependencies
+  - @backstage/backend-common@0.19.8
+  - @backstage/integration@1.7.1
+  - @backstage/errors@1.2.3
+  - @backstage/plugin-scaffolder-node@0.2.6
+  - @backstage/config@1.1.1
+  - @backstage/types@1.1.1
+
 ## 0.4.23-next.2
 
 ### Patch Changes

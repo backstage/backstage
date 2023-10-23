@@ -95,6 +95,14 @@ describe('ConfigSources', () => {
       ),
     ).toEqual([{ name: 'FileConfigSource', path: '/config.yaml' }]);
 
+    expect(
+      mergeSources(
+        ConfigSources.defaultForTargets({
+          targets: [{ type: 'path', target: 'config.yaml' }],
+        }),
+      ),
+    ).toEqual([{ name: 'FileConfigSource', path: resolvePath('config.yaml') }]);
+
     const subFunc = async () => undefined;
     expect(
       mergeSources(
@@ -172,8 +180,8 @@ describe('ConfigSources', () => {
         }),
       ),
     ).toEqual([
-      { name: 'FileConfigSource', path: 'a.yaml' },
-      { name: 'FileConfigSource', path: 'b.yaml' },
+      { name: 'FileConfigSource', path: resolvePath('a.yaml') },
+      { name: 'FileConfigSource', path: resolvePath('b.yaml') },
       { name: 'EnvConfigSource', env: { HOME: '/' } },
     ]);
   });

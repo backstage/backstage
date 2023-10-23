@@ -1,7 +1,7 @@
 {
   "name": "@backstage/plugin-scaffolder-backend-module-rails",
   "description": "A module for the scaffolder backend that lets you template projects using Rails",
-  "version": "0.4.23-next.2",
+  "version": "0.4.23",
   "main": "src/index.ts",
   "types": "src/index.ts",
   "license": "Apache-2.0",
@@ -39,13 +39,12 @@
     "fs-extra": "^10.0.1"
   },
   "devDependencies": {
+    "@backstage/backend-test-utils": "workspace:^",
     "@backstage/cli": "workspace:^",
     "@types/command-exists": "^1.2.0",
     "@types/fs-extra": "^9.0.1",
-    "@types/mock-fs": "^4.13.0",
     "@types/node": "^18.17.8",
-    "jest-when": "^3.1.0",
-    "mock-fs": "^5.2.0"
+    "jest-when": "^3.1.0"
   },
   "files": [
     "dist"

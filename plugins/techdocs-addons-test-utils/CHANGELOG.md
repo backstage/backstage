@@ -1,5 +1,23 @@
 # @backstage/plugin-techdocs-addons-test-utils
 
+## 1.0.22
+
+### Patch Changes
+
+- 9a1fce352e: Updated dependency `@testing-library/jest-dom` to `^6.0.0`.
+- f95af4e540: Updated dependency `@testing-library/dom` to `^9.0.0`.
+- Updated dependencies
+  - @backstage/plugin-catalog@1.14.0
+  - @backstage/test-utils@1.4.4
+  - @backstage/core-app-api@1.11.0
+  - @backstage/plugin-techdocs@1.8.0
+  - @backstage/core-plugin-api@1.7.0
+  - @backstage/core-components@0.13.6
+  - @backstage/integration-react@1.1.20
+  - @backstage/plugin-search-react@1.7.1
+  - @backstage/plugin-techdocs-react@1.1.12
+  - @backstage/theme@0.4.3
+
 ## 1.0.22-next.2
 
 ### Patch Changes

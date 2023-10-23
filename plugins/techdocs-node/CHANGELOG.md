@@ -1,5 +1,29 @@
 # @backstage/plugin-techdocs-node
 
+## 1.9.0
+
+### Minor Changes
+
+- 344cfbcfbc: Allow prepared directory clean up for custom preparers
+
+  When using custom preparer for TechDocs, the `preparedDir` might
+  end up taking disk space. This requires all custom preparers to
+  implement a new method `shouldCleanPreparedDirectory` which indicates
+  whether the prepared directory should be cleaned after generation.
+
+- d06b30b050: Add possibility to use a mkdocs config file with a different name than `mkdocs.<yaml|yml> with the serve command using the `--mkdocs-config-file-name` argument
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-common@0.19.8
+  - @backstage/integration@1.7.1
+  - @backstage/catalog-model@1.4.3
+  - @backstage/errors@1.2.3
+  - @backstage/config@1.1.1
+  - @backstage/integration-aws-node@0.1.7
+  - @backstage/plugin-search-common@1.2.7
+
 ## 1.9.0-next.2
 
 ### Minor Changes

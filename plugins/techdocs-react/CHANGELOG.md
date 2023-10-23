@@ -1,5 +1,17 @@
 # @backstage/plugin-techdocs-react
 
+## 1.1.12
+
+### Patch Changes
+
+- 9a1fce352e: Updated dependency `@testing-library/jest-dom` to `^6.0.0`.
+- Updated dependencies
+  - @backstage/core-plugin-api@1.7.0
+  - @backstage/core-components@0.13.6
+  - @backstage/catalog-model@1.4.3
+  - @backstage/version-bridge@1.0.6
+  - @backstage/config@1.1.1
+
 ## 1.1.12-next.2
 
 ### Patch Changes

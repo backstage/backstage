@@ -1,9 +1,19 @@
 app:
   experimental:
     packages: 'all' # ✨
+  routes:
+    bindings:
+      plugin.pages.externalRoutes.pageX: plugin.pages.routes.pageX
+      plugin.catalog.externalRoutes.viewTechDoc: plugin.techdocs.routes.docRoot
 
   extensions:
     - apis.plugin.graphiql.browse.gitlab: true
+
+    # Entity page cards
+    - 'entity.cards.about'
+
+    # Entity page content
+    - 'entity.content.techdocs'
 
   # scmAuthExtension: >-
   #   createScmAuthExtension({

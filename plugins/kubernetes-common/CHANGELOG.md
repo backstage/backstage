@@ -1,5 +1,22 @@
 # @backstage/plugin-kubernetes-common
 
+## 0.7.0
+
+### Minor Changes
+
+- 2d8151061c: Refactor Kubernetes plugins in line with ADR 11, no breaking changes yet
+
+### Patch Changes
+
+- 9101c0d1b6: Updated dependency `@kubernetes/client-node` to `0.19.0`.
+- 5dac12e435: The kubernetes APIs invokes Authentication Strategies when Backstage-Kubernetes-Authorization-X-X headers are provided, this enable the possibility to invoke strategies that executes additional steps to get a kubernetes token like on pinniped or custom strategies
+- Updated dependencies
+  - @backstage/core-plugin-api@1.7.0
+  - @backstage/catalog-model@1.4.3
+  - @backstage/errors@1.2.3
+  - @backstage/types@1.1.1
+  - @backstage/plugin-permission-common@0.7.9
+
 ## 0.7.0-next.1
 
 ### Patch Changes

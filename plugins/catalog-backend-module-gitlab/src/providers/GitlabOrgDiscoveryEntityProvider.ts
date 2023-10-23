@@ -13,31 +13,31 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
 import { PluginTaskScheduler, TaskRunner } from '@backstage/backend-tasks';
+import {
+  ANNOTATION_LOCATION,
+  ANNOTATION_ORIGIN_LOCATION,
+  Entity,
+  GroupEntity,
+  UserEntity,
+} from '@backstage/catalog-model';
 import { Config } from '@backstage/config';
 import { GitLabIntegration, ScmIntegrations } from '@backstage/integration';
 import {
   EntityProvider,
   EntityProviderConnection,
 } from '@backstage/plugin-catalog-node';
+import { merge } from 'lodash';
 import * as uuid from 'uuid';
 import { Logger } from 'winston';
+
 import {
   GitLabClient,
   GitlabProviderConfig,
   paginated,
   readGitlabConfigs,
 } from '../lib';
-import { GitLabGroup, GitLabUser } from '../lib/types';
-import {
-  ANNOTATION_LOCATION,
-  ANNOTATION_ORIGIN_LOCATION,
-  Entity,
-  UserEntity,
-  GroupEntity,
-} from '@backstage/catalog-model';
-import { merge } from 'lodash';
+import { GitLabGroup, GitLabUser, PagedResponse } from '../lib/types';
 
 type Result = {
   scanned: number;
@@ -245,9 +245,14 @@ export class GitlabOrgDiscoveryEntityProvider implements EntityProvider {
       groupRes.scanned++;
       groupRes.matches.push(group);
 
-      const groupUsers = await client.getGroupMembers(group.full_path, [
-        'DIRECT',
-      ]);
+      let groupUsers: PagedResponse<GitLabUser> = { items: [] };
+      try {
+        groupUsers = await client.getGroupMembers(group.full_path, ['DIRECT']);
+      } catch (e) {
+        logger.error(
+          `Failed fetching users for group '${group.full_path}': ${e}`,
+        );
+      }
 
       for (const groupUser of groupUsers.items) {
         const user = idMappedUser[groupUser.id];

@@ -1,5 +1,32 @@
 # @backstage/plugin-techdocs-backend
 
+## 1.8.0
+
+### Minor Changes
+
+- 344cfbcfbc: Allow prepared directory clean up for custom preparers
+
+  When using custom preparer for TechDocs, the `preparedDir` might
+  end up taking disk space. This requires all custom preparers to
+  implement a new method `shouldCleanPreparedDirectory` which indicates
+  whether the prepared directory should be cleaned after generation.
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-common@0.19.8
+  - @backstage/integration@1.7.1
+  - @backstage/plugin-techdocs-node@1.9.0
+  - @backstage/catalog-model@1.4.3
+  - @backstage/errors@1.2.3
+  - @backstage/backend-plugin-api@0.6.6
+  - @backstage/plugin-search-backend-module-techdocs@0.1.10
+  - @backstage/catalog-client@1.4.5
+  - @backstage/config@1.1.1
+  - @backstage/plugin-catalog-common@1.0.17
+  - @backstage/plugin-permission-common@0.7.9
+  - @backstage/plugin-search-common@1.2.7
+
 ## 1.8.0-next.2
 
 ### Minor Changes

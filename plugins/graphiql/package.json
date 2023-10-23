@@ -1,7 +1,7 @@
 {
   "name": "@backstage/plugin-graphiql",
   "description": "Backstage plugin for browsing GraphQL APIs",
-  "version": "0.2.55-next.2",
+  "version": "0.2.55",
   "publishConfig": {
     "access": "public"
   },
@@ -54,14 +54,14 @@
     "@material-ui/icons": "^4.9.1",
     "@material-ui/lab": "4.0.0-alpha.61",
     "@types/react": "^16.13.1 || ^17.0.0",
-    "graphiql": "^1.5.12",
+    "graphiql": "^3.0.6",
     "graphql": "^16.0.0",
     "graphql-ws": "^5.4.1",
     "react-use": "^17.2.4"
   },
   "peerDependencies": {
-    "react": "^16.13.1 || ^17.0.0",
-    "react-dom": "^16.13.1 || ^17.0.0",
+    "react": "^16.13.1 || ^17.0.0 || ^18.0.0",
+    "react-dom": "^16.13.1 || ^17.0.0 || ^18.0.0",
     "react-router-dom": "6.0.0-beta.0 || ^6.3.0"
   },
   "devDependencies": {
@@ -71,7 +71,7 @@
     "@backstage/test-utils": "workspace:^",
     "@testing-library/dom": "^9.0.0",
     "@testing-library/jest-dom": "^6.0.0",
-    "@testing-library/react": "^12.1.3",
+    "@testing-library/react": "^14.0.0",
     "@testing-library/user-event": "^14.0.0",
     "@types/codemirror": "^5.0.0",
     "cross-fetch": "^3.1.5",

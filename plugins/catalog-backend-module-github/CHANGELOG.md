@@ -1,5 +1,27 @@
 # @backstage/plugin-catalog-backend-module-github
 
+## 0.4.4
+
+### Patch Changes
+
+- 890e3b5ad4: Make sure to include the error message when ingestion fails
+- 0b55f773a7: Removed some unused dependencies
+- 4f16e60e6d: Request slightly smaller pages of data from GitHub
+- b4b1cbf9fa: Make `defaultUserTransformer` resolve to `UserEntity` instead of `Entity`
+- c101e683d5: Removed `catalogModuleGithubOrgEntityProvider`. Import from `@backstage/plugin-catalog-backend-module-github-org` instead.
+- Updated dependencies
+  - @backstage/backend-tasks@0.5.11
+  - @backstage/backend-common@0.19.8
+  - @backstage/integration@1.7.1
+  - @backstage/plugin-catalog-backend@1.14.0
+  - @backstage/plugin-catalog-node@1.4.7
+  - @backstage/catalog-model@1.4.3
+  - @backstage/backend-plugin-api@0.6.6
+  - @backstage/catalog-client@1.4.5
+  - @backstage/config@1.1.1
+  - @backstage/plugin-catalog-common@1.0.17
+  - @backstage/plugin-events-node@0.2.15
+
 ## 0.4.4-next.2
 
 ### Patch Changes
