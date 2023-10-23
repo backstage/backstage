@@ -29,6 +29,7 @@
   },
   "dependencies": {
     "@backstage/config": "workspace:^",
+    "@backstage/core-plugin-api": "workspace:^",
     "@backstage/errors": "workspace:^",
     "@backstage/plugin-scaffolder-node": "workspace:^",
     "yaml": "^2.3.3"

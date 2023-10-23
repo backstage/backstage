@@ -18,6 +18,7 @@ import { createTemplateAction } from '@backstage/plugin-scaffolder-node';
 import { InputError } from '@backstage/errors';
 import { Config } from '@backstage/config';
 import { examples } from './createProject.examples';
+import { FetchApi } from '@backstage/core-plugin-api';
 
 /**
  * Creates the `sentry:create-project` Scaffolder action.
@@ -27,9 +28,13 @@ import { examples } from './createProject.examples';
  * See {@link https://backstage.io/docs/features/software-templates/writing-custom-actions}.
  *
  * @param options - Configuration of the Sentry API.
+ * @param fetchApi - fetch implementation to use for calling Sentry service.
  * @public
  */
-export function createSentryCreateProjectAction(options: { config: Config }) {
+export function createSentryCreateProjectAction(
+  options: { config: Config },
+  fetchApi?: FetchApi,
+) {
   const { config } = options;
 
   return createTemplateAction<{
@@ -90,7 +95,7 @@ export function createSentryCreateProjectAction(options: { config: Config }) {
         throw new InputError(`No valid sentry token given`);
       }
 
-      const response = await fetch(
+      const response = await (fetchApi?.fetch ?? fetch)(
         `https://sentry.io/api/0/teams/${organizationSlug}/${teamSlug}/projects/`,
         {
           method: 'POST',
