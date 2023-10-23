@@ -32,19 +32,6 @@ export const DEFAULT_CACHE_TTL: HumanDuration = { seconds: 10 };
 
 export const DEFAULT_BATCH_DELAY: HumanDuration = { milliseconds: 50 };
 
-export const DEFAULT_ENTITY_FIELDS: string[] = [
-  'apiVersion',
-  'kind',
-  'metadata.uid',
-  'metadata.etag',
-  'metadata.name',
-  'metadata.namespace',
-  'metadata.title',
-  'metadata.description',
-  'spec.type',
-  'spec.profile',
-];
-
 export const UNKNOWN_KIND_ICON: IconComponent = HelpIcon;
 
 export const DEFAULT_ICONS: Record<string, IconComponent> = {

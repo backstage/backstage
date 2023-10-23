@@ -24,12 +24,10 @@ import {
 import { HumanDuration } from '@backstage/types';
 import DataLoader from 'dataloader';
 import ExpiryMap from 'expiry-map';
-import uniq from 'lodash/uniq';
 import ObservableImpl from 'zen-observable';
 import {
   DEFAULT_BATCH_DELAY,
   DEFAULT_CACHE_TTL,
-  DEFAULT_ENTITY_FIELDS,
   createDefaultRenderer,
 } from './defaults';
 import { durationToMs } from './util';
@@ -40,23 +38,6 @@ import { durationToMs } from './util';
  * @public
  */
 export interface DefaultEntityPresentationApiRenderer {
-  /**
-   * An extra set of fields to request for entities from the catalog API.
-   *
-   * @remarks
-   *
-   * You may want to specify this to get additional entity fields. The smaller
-   * the set of fields, the more efficient requests will be to the catalog
-   * backend.
-   *
-   * The default set of fields is: apiVersion, kind, the scalar metadata fields
-   * (uid, etag, name, namespace, title, description), spec.type, and
-   * spec.profile.
-   *
-   * This field is ignored if async is set to false.
-   */
-  extraFields?: string[];
-
   /**
    * Whether to request the entity from the catalog API asynchronously.
    *
@@ -332,15 +313,10 @@ export class DefaultEntityPresentationApi implements EntityPresentationApi {
     const cacheTtlMs = durationToMs(options.cacheTtl);
     const batchDelayMs = durationToMs(options.batchDelay);
 
-    const entityFields = uniq(
-      [DEFAULT_ENTITY_FIELDS, options.renderer?.extraFields ?? []].flat(),
-    );
-
     return new DataLoader(
       async (entityRefs: readonly string[]) => {
         const { items } = await options.catalogApi!.getEntitiesByRefs({
           entityRefs: entityRefs as string[],
-          fields: [...entityFields],
         });
 
         const now = Date.now();
