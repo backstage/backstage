@@ -257,7 +257,6 @@ export interface DefaultEntityPresentationApiOptions {
 // @public
 export interface DefaultEntityPresentationApiRenderer {
   async?: boolean;
-  extraFields?: string[];
   render: (options: {
     entityRef: string;
     loading: boolean;
