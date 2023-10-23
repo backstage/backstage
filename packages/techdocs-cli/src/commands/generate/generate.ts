@@ -114,7 +114,7 @@ export default async function generate(opts: OptionValues) {
     etag: opts.etag,
     logStream: getLogStream(logger),
     siteOptions: { name: opts.siteName },
-    runAsDefaultUser: opts.runAsDefaultUser
+    runAsDefaultUser: opts.runAsDefaultUser,
   });
 
   if (configIsTemporary) {

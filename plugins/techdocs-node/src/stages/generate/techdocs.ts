@@ -97,7 +97,7 @@ export class TechdocsGenerator implements GeneratorBase {
       logger: childLogger,
       logStream,
       siteOptions,
-      runAsDefaultUser
+      runAsDefaultUser,
     } = options;
 
     // Do some updates to mkdocs.yml before generating docs e.g. adding repo_url
@@ -172,7 +172,7 @@ export class TechdocsGenerator implements GeneratorBase {
             // write to, otherwise they will just fail trying to write to /
             envVars: { HOME: '/tmp' },
             pullImage: this.options.pullImage,
-            defaultUser: runAsDefaultUser
+            defaultUser: runAsDefaultUser,
           });
           childLogger.info(
             `Successfully generated docs from ${inputDir} into ${outputDir} using techdocs-container`,
