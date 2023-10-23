@@ -142,7 +142,7 @@ export const columnFactories: Readonly<{
 export type DefaultEntityFilters = {
   kind?: EntityKindFilter;
   type?: EntityTypeFilter;
-  user?: UserListFilter;
+  user?: UserListFilter | EntityUserFilter;
   owners?: EntityOwnerFilter;
   lifecycles?: EntityLifecycleFilter;
   tags?: EntityTagFilter;
@@ -224,6 +224,8 @@ export class EntityLifecycleFilter implements EntityFilter {
   // (undocumented)
   filterEntity(entity: Entity): boolean;
   // (undocumented)
+  getCatalogFilters(): Record<string, string | string[]>;
+  // (undocumented)
   toQueryValue(): string[];
   // (undocumented)
   readonly values: string[];
@@ -275,6 +277,8 @@ export class EntityNamespaceFilter implements EntityFilter {
   // (undocumented)
   filterEntity(entity: Entity): boolean;
   // (undocumented)
+  getCatalogFilters(): Record<string, string | string[]>;
+  // (undocumented)
   toQueryValue(): string[];
   // (undocumented)
   readonly values: string[];
@@ -289,6 +293,8 @@ export class EntityOrphanFilter implements EntityFilter {
   // (undocumented)
   filterEntity(entity: Entity): boolean;
   // (undocumented)
+  getCatalogFilters(): Record<string, string | string[]>;
+  // (undocumented)
   readonly value: boolean;
 }
 
@@ -297,6 +303,8 @@ export class EntityOwnerFilter implements EntityFilter {
   constructor(values: string[]);
   // (undocumented)
   filterEntity(entity: Entity): boolean;
+  // (undocumented)
+  getCatalogFilters(): Record<string, string | string[]>;
   toQueryValue(): string[];
   // (undocumented)
   readonly values: string[];
@@ -447,6 +455,8 @@ export class EntityTagFilter implements EntityFilter {
   // (undocumented)
   filterEntity(entity: Entity): boolean;
   // (undocumented)
+  getCatalogFilters(): Record<string, string | string[]>;
+  // (undocumented)
   toQueryValue(): string[];
   // (undocumented)
   readonly values: string[];
@@ -495,6 +505,26 @@ export interface EntityTypePickerProps {
   hidden?: boolean;
   // (undocumented)
   initialFilter?: string;
+}
+
+// @public (undocumented)
+export class EntityUserFilter implements EntityFilter {
+  // (undocumented)
+  static all(): EntityUserFilter;
+  // (undocumented)
+  filterEntity(entity: Entity): boolean;
+  // (undocumented)
+  getCatalogFilters(): Record<string, string[]>;
+  // (undocumented)
+  static owned(ownershipEntityRefs: string[]): EntityUserFilter;
+  // (undocumented)
+  readonly refs?: string[] | undefined;
+  // (undocumented)
+  static starred(starredEntityRefs: string[]): EntityUserFilter;
+  // (undocumented)
+  toQueryValue(): string;
+  // (undocumented)
+  readonly value: UserListFilterKind;
 }
 
 // @public
@@ -620,7 +650,7 @@ export function useRelatedEntities(
   error: Error | undefined;
 };
 
-// @public
+// @public @deprecated
 export class UserListFilter implements EntityFilter {
   constructor(
     value: UserListFilterKind,

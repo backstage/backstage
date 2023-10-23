@@ -538,9 +538,9 @@ export const providers: Readonly<{
         | undefined,
     ) => AuthProviderFactory_2;
     resolvers: Readonly<{
-      emailMatchingUserEntityProfileEmail: () => SignInResolver_2<OAuthResult>;
-      emailLocalPartMatchingUserEntityName: () => SignInResolver_2<OAuthResult>;
-      emailMatchingUserEntityAnnotation: () => SignInResolver_2<OAuthResult>;
+      emailLocalPartMatchingUserEntityName: () => SignInResolver<unknown>;
+      emailMatchingUserEntityProfileEmail: () => SignInResolver<unknown>;
+      emailMatchingUserEntityAnnotation(): SignInResolver<OAuthResult>;
     }>;
   }>;
   oauth2: Readonly<{

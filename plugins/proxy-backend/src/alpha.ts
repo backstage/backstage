@@ -26,7 +26,7 @@ import { createRouter } from './service/router';
  *
  * @alpha
  */
-export const proxyPlugin = createBackendPlugin({
+export default createBackendPlugin({
   pluginId: 'proxy',
   register(env) {
     env.registerInit({

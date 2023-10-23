@@ -13,7 +13,6 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
 import { loggerToWinstonLogger } from '@backstage/backend-common';
 import {
   coreServices,
@@ -22,22 +21,38 @@ import {
 import { createRouter } from './service/router';
 
 /**
- * The Kafka backend plugin.
+ * Code coverage backend plugin
  *
- * @alpha
+ * @public
  */
-export const kafkaPlugin = createBackendPlugin({
-  pluginId: 'kafka',
+export const codeCoveragePlugin = createBackendPlugin({
+  pluginId: 'codeCoverage',
   register(env) {
     env.registerInit({
       deps: {
         config: coreServices.rootConfig,
         logger: coreServices.logger,
+        urlReader: coreServices.urlReader,
         httpRouter: coreServices.httpRouter,
+        discovery: coreServices.discovery,
+        database: coreServices.database,
       },
-      async init({ config, logger, httpRouter }) {
+      async init({
+        config,
+        logger,
+        urlReader,
+        httpRouter,
+        discovery,
+        database,
+      }) {
         httpRouter.use(
-          await createRouter({ config, logger: loggerToWinstonLogger(logger) }),
+          await createRouter({
+            config,
+            logger: loggerToWinstonLogger(logger),
+            urlReader,
+            discovery,
+            database,
+          }),
         );
       },
     });
