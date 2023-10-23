@@ -16,7 +16,7 @@
 
 import { JsonObject } from '@backstage/types';
 
-import { TemplateConfigurationsV1beta3 } from '@backstage/plugin-scaffolder-common';
+import { TemplatePresentationV1beta3 } from '@backstage/plugin-scaffolder-common';
 
 /**
  * The shape of each entry of parameters which gets rendered
@@ -27,7 +27,7 @@ import { TemplateConfigurationsV1beta3 } from '@backstage/plugin-scaffolder-comm
 export type TemplateParameterSchema = {
   title: string;
   description?: string;
-  configurations?: TemplateConfigurationsV1beta3;
+  presentation?: TemplatePresentationV1beta3;
   steps: Array<{
     title: string;
     description?: string;

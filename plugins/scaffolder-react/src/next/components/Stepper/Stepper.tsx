@@ -81,6 +81,7 @@ export type StepperProps = {
   components?: {
     ReviewStepComponent?: ComponentType<ReviewStepProps>;
     ReviewStateComponent?: (props: ReviewStateProps) => JSX.Element;
+    backButtonText?: ReactNode;
     createButtonText?: ReactNode;
     reviewButtonText?: ReactNode;
   };
@@ -96,11 +97,12 @@ export const Stepper = (stepperProps: StepperProps) => {
   const {
     ReviewStateComponent = ReviewState,
     ReviewStepComponent,
+    backButtonText = 'Back',
     createButtonText = 'Create',
     reviewButtonText = 'Review',
   } = components;
   const analytics = useAnalytics();
-  const { steps } = useTemplateSchema(props.manifest);
+  const { presentation, steps } = useTemplateSchema(props.manifest);
   const apiHolder = useApiHolder();
   const [activeStep, setActiveStep] = useState(0);
   const [isValidating, setIsValidating] = useState(false);
@@ -173,6 +175,13 @@ export const Stepper = (stepperProps: StepperProps) => {
     setFormState(current => ({ ...current, ...formData }));
   };
 
+  const backLabel =
+    presentation?.buttonLabels?.backButtonText ?? backButtonText;
+  const createLabel =
+    presentation?.buttonLabels?.createButtonText ?? createButtonText;
+  const reviewLabel =
+    presentation?.buttonLabels?.reviewButtonText ?? reviewButtonText;
+
   return (
     <>
       {isValidating && <LinearProgress variant="indeterminate" />}
@@ -208,7 +217,7 @@ export const Stepper = (stepperProps: StepperProps) => {
                 className={styles.backButton}
                 disabled={activeStep < 1 || isValidating}
               >
-                Back
+                {backLabel}
               </Button>
               <Button
                 variant="contained"
@@ -216,7 +225,7 @@ export const Stepper = (stepperProps: StepperProps) => {
                 type="submit"
                 disabled={isValidating}
               >
-                {activeStep === steps.length - 1 ? reviewButtonText : 'Next'}
+                {activeStep === steps.length - 1 ? reviewLabel : 'Next'}
               </Button>
             </div>
           </Form>
@@ -246,7 +255,7 @@ export const Stepper = (stepperProps: StepperProps) => {
                 color="primary"
                 onClick={handleCreate}
               >
-                {createButtonText}
+                {createLabel}
               </Button>
             </div>
           </>
