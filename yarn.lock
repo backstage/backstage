@@ -7294,7 +7294,7 @@ __metadata:
     lodash: ^4.17.21
     luxon: ^3.4.3
     msw: ^1.0.0
-    react-grid-layout: ^1.3.4
+    react-grid-layout: 1.3.4
     react-resizable: ^3.0.4
     react-use: ^17.2.4
     zod: ^3.21.4
@@ -32297,7 +32297,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"lodash.isequal@npm:^4.5.0":
+"lodash.isequal@npm:^4.0.0, lodash.isequal@npm:^4.5.0":
   version: 4.5.0
   resolution: "lodash.isequal@npm:4.5.0"
   checksum: da27515dc5230eb1140ba65ff8de3613649620e8656b19a6270afe4866b7bd461d9ba2ac8a48dcc57f7adac4ee80e1de9f965d89d4d81a0ad52bb3eec2609644
@@ -37574,7 +37574,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"react-draggable@npm:^4.0.3, react-draggable@npm:^4.4.5":
+"react-draggable@npm:^4.0.0, react-draggable@npm:^4.0.3":
   version: 4.4.6
   resolution: "react-draggable@npm:4.4.6"
   dependencies:
@@ -37642,20 +37642,19 @@ __metadata:
   languageName: node
   linkType: hard
 
-"react-grid-layout@npm:^1.3.4":
-  version: 1.4.2
-  resolution: "react-grid-layout@npm:1.4.2"
+"react-grid-layout@npm:1.3.4":
+  version: 1.3.4
+  resolution: "react-grid-layout@npm:1.3.4"
   dependencies:
-    clsx: ^2.0.0
-    fast-equals: ^4.0.3
+    clsx: ^1.1.1
+    lodash.isequal: ^4.0.0
     prop-types: ^15.8.1
-    react-draggable: ^4.4.5
-    react-resizable: ^3.0.5
-    resize-observer-polyfill: ^1.5.1
+    react-draggable: ^4.0.0
+    react-resizable: ^3.0.4
   peerDependencies:
     react: ">= 16.3.0"
     react-dom: ">= 16.3.0"
-  checksum: a052d38c290b18e1c513a3b939757c239887009b7f175814b472d007708962870960d3b20d4a15dbdeb955ac55434ce6c5e5e5f8c850cfbdcc90f75c318f1d58
+  checksum: f56c8c452acd9588edf1dc6996a4ea14d9f669d77f6b2ebd50146eaeeb9325c83f5ca44b66bac2b8c24f9cb2ec7ed49396350435991255c3b31e21b8a2e3d243
   languageName: node
   linkType: hard
 
@@ -37887,7 +37886,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"react-resizable@npm:^3.0.4, react-resizable@npm:^3.0.5":
+"react-resizable@npm:^3.0.4":
   version: 3.0.5
   resolution: "react-resizable@npm:3.0.5"
   dependencies:
