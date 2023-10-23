@@ -16,147 +16,76 @@
 
 import React from 'react';
 import { createEntityCardExtension } from '@backstage/plugin-catalog-react/alpha';
-import { createSchemaFromZod } from '@backstage/frontend-plugin-api';
 
 export const EntityAboutCard = createEntityCardExtension({
   id: 'about',
-  configSchema: createSchemaFromZod(z =>
-    z.object({
-      variant: z.enum(['gridItem', 'flex', 'fullHeight']).default('gridItem'),
-    }),
-  ),
-  loader: async ({ config }) =>
+  loader: async () =>
     import('../components/AboutCard').then(m => (
-      <m.AboutCard variant={config.variant} />
+      <m.AboutCard variant="gridItem" />
     )),
 });
 
 export const EntityLinksCard = createEntityCardExtension({
   id: 'links',
-  configSchema: createSchemaFromZod(z =>
-    z.object({
-      variant: z.enum(['gridItem', 'flex', 'fullHeight']).optional(),
-      cols: z
-        .union([
-          z.number(),
-          z.object({
-            xs: z.number(),
-            sm: z.number(),
-            md: z.number(),
-            lg: z.number(),
-            xl: z.number(),
-          }),
-        ])
-        .optional(),
-    }),
-  ),
-  loader: async ({ config }) =>
+  loader: async () =>
     import('../components/EntityLinksCard').then(m => {
-      return <m.EntityLinksCard variant={config.variant} cols={config.cols} />;
+      return <m.EntityLinksCard variant="gridItem" />;
     }),
 });
 
 export const EntityLabelsCard = createEntityCardExtension({
   id: 'labels',
-  configSchema: createSchemaFromZod(z =>
-    z.object({
-      variant: z.enum(['gridItem', 'flex', 'fullHeight']).optional(),
-      title: z.string().optional(),
-    }),
-  ),
-  loader: async ({ config }) =>
+  loader: async () =>
     import('../components/EntityLabelsCard').then(m => (
-      <m.EntityLabelsCard variant={config.variant} title={config.title} />
+      <m.EntityLabelsCard variant="gridItem" />
     )),
 });
 
 export const EntityDependsOnComponentsCard = createEntityCardExtension({
   id: 'dependsOn.components',
-  configSchema: createSchemaFromZod(z =>
-    z.object({
-      variant: z.enum(['gridItem', 'flex', 'fullHeight']).default('gridItem'),
-      title: z.string().optional(),
-      // TODO: columns, tableOptions
-    }),
-  ),
-  loader: async ({ config }) =>
+  loader: async () =>
     import('../components/DependsOnComponentsCard').then(m => (
-      <m.DependsOnComponentsCard
-        variant={config.variant}
-        title={config.title}
-      />
+      <m.DependsOnComponentsCard variant="gridItem" />
     )),
 });
 
 export const EntityDependsOnResourcesCard = createEntityCardExtension({
   id: 'dependsOn.resources',
-  configSchema: createSchemaFromZod(z =>
-    z.object({
-      variant: z.enum(['gridItem', 'flex', 'fullHeight']).default('gridItem'),
-      title: z.string().optional(),
-      // TODO: columns, tableOptions
-    }),
-  ),
-  loader: async ({ config }) =>
+  loader: async () =>
     import('../components/DependsOnResourcesCard').then(m => (
-      <m.DependsOnResourcesCard variant={config.variant} title={config.title} />
+      <m.DependsOnResourcesCard variant="gridItem" />
     )),
 });
 
 export const EntityHasComponentsCard = createEntityCardExtension({
   id: 'has.components',
-  configSchema: createSchemaFromZod(z =>
-    z.object({
-      variant: z.enum(['gridItem', 'flex', 'fullHeight']).default('gridItem'),
-      title: z.string().optional(),
-    }),
-  ),
-  loader: async ({ config }) =>
+  loader: async () =>
     import('../components/HasComponentsCard').then(m => (
-      <m.HasComponentsCard variant={config.variant} title={config.title} />
+      <m.HasComponentsCard variant="gridItem" />
     )),
 });
 
 export const EntityHasResourcesCard = createEntityCardExtension({
   id: 'has.resources',
-  configSchema: createSchemaFromZod(z =>
-    z.object({
-      variant: z.enum(['gridItem', 'flex', 'fullHeight']).default('gridItem'),
-      title: z.string().optional(),
-    }),
-  ),
-  loader: async ({ config }) =>
+  loader: async () =>
     import('../components/HasResourcesCard').then(m => (
-      <m.HasResourcesCard variant={config.variant} title={config.title} />
+      <m.HasResourcesCard variant="gridItem" />
     )),
 });
 
 export const EntityHasSubcomponentsCard = createEntityCardExtension({
   id: 'has.subcomponents',
-  configSchema: createSchemaFromZod(z =>
-    z.object({
-      variant: z.enum(['gridItem', 'flex', 'fullHeight']).default('gridItem'),
-      title: z.string().optional(),
-      // TODO: tableOptions
-    }),
-  ),
-  loader: async ({ config }) =>
+  loader: async () =>
     import('../components/HasSubcomponentsCard').then(m => (
-      <m.HasSubcomponentsCard variant={config.variant} title={config.title} />
+      <m.HasSubcomponentsCard variant="gridItem" />
     )),
 });
 
 export const EntityHasSystemsCard = createEntityCardExtension({
   id: 'has.systems',
-  configSchema: createSchemaFromZod(z =>
-    z.object({
-      variant: z.enum(['gridItem', 'flex', 'fullHeight']).default('gridItem'),
-      title: z.string().optional(),
-    }),
-  ),
-  loader: async ({ config }) =>
+  loader: async () =>
     import('../components/HasSystemsCard').then(m => (
-      <m.HasSystemsCard variant={config.variant} title={config.title} />
+      <m.HasSystemsCard variant="gridItem" />
     )),
 });
 
