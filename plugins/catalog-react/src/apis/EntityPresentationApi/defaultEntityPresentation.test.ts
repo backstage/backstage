@@ -34,7 +34,6 @@ describe('defaultEntityPresentation', () => {
           },
         }),
       ).toEqual({
-        entity: expect.anything(),
         entityRef: 'component:default/test',
         primaryTitle: 'test',
         secondaryTitle: 'component:default/test | type | desc',
@@ -56,7 +55,6 @@ describe('defaultEntityPresentation', () => {
           },
         }),
       ).toEqual({
-        entity: expect.anything(),
         entityRef: 'component:default/test',
         primaryTitle: 'title',
         secondaryTitle: 'component:default/test | type | desc',
@@ -81,7 +79,6 @@ describe('defaultEntityPresentation', () => {
           },
         }),
       ).toEqual({
-        entity: expect.anything(),
         entityRef: 'component:default/test',
         primaryTitle: 'displayName',
         secondaryTitle: 'component:default/test | type | desc',
@@ -96,7 +93,6 @@ describe('defaultEntityPresentation', () => {
           metadata: { name: 'test' },
         } as Entity),
       ).toEqual({
-        entity: expect.anything(),
         entityRef: 'component:default/test',
         primaryTitle: 'test',
         secondaryTitle: 'component:default/test',
@@ -108,7 +104,6 @@ describe('defaultEntityPresentation', () => {
       expect(
         defaultEntityPresentation({ metadata: 7 } as unknown as Entity),
       ).toEqual({
-        entity: expect.anything(),
         entityRef: 'unknown:default/unknown',
         primaryTitle: 'unknown',
         secondaryTitle: 'unknown:default/unknown',
@@ -120,7 +115,6 @@ describe('defaultEntityPresentation', () => {
   describe('string ref given', () => {
     it('happy path', () => {
       expect(defaultEntityPresentation('component:default/test')).toEqual({
-        entity: undefined,
         entityRef: 'component:default/test',
         primaryTitle: 'test',
         secondaryTitle: 'component:default/test',
@@ -132,7 +126,6 @@ describe('defaultEntityPresentation', () => {
           defaultKind: 'X',
         }),
       ).toEqual({
-        entity: undefined,
         entityRef: 'component:default/test',
         primaryTitle: 'component:test',
         secondaryTitle: 'component:default/test',
@@ -144,7 +137,6 @@ describe('defaultEntityPresentation', () => {
           defaultNamespace: 'X',
         }),
       ).toEqual({
-        entity: undefined,
         entityRef: 'component:default/test',
         primaryTitle: 'default/test',
         secondaryTitle: 'component:default/test',
@@ -154,7 +146,6 @@ describe('defaultEntityPresentation', () => {
 
     it('works without throwing on malformed and shortened refs', () => {
       expect(defaultEntityPresentation('')).toEqual({
-        entity: undefined,
         entityRef: 'unknown:default/unknown',
         primaryTitle: 'unknown',
         secondaryTitle: 'unknown:default/unknown',
@@ -162,7 +153,6 @@ describe('defaultEntityPresentation', () => {
       });
 
       expect(defaultEntityPresentation('name')).toEqual({
-        entity: undefined,
         entityRef: 'unknown:default/name',
         primaryTitle: 'name',
         secondaryTitle: 'unknown:default/name',
@@ -180,7 +170,6 @@ describe('defaultEntityPresentation', () => {
           name: 'test',
         }),
       ).toEqual({
-        entity: undefined,
         entityRef: 'component:default/test',
         primaryTitle: 'test',
         secondaryTitle: 'component:default/test',
@@ -195,7 +184,6 @@ describe('defaultEntityPresentation', () => {
           },
         ),
       ).toEqual({
-        entity: undefined,
         entityRef: 'component:default/test',
         primaryTitle: 'component:test',
         secondaryTitle: 'component:default/test',
@@ -210,7 +198,6 @@ describe('defaultEntityPresentation', () => {
           },
         ),
       ).toEqual({
-        entity: undefined,
         entityRef: 'component:default/test',
         primaryTitle: 'default/test',
         secondaryTitle: 'component:default/test',
@@ -227,7 +214,6 @@ describe('defaultEntityPresentation', () => {
           },
         ),
       ).toEqual({
-        entity: undefined,
         entityRef: 'component:default/test',
         primaryTitle: 'default/test',
         secondaryTitle: 'component:default/test',
@@ -235,7 +221,6 @@ describe('defaultEntityPresentation', () => {
       });
 
       expect(defaultEntityPresentation('')).toEqual({
-        entity: undefined,
         entityRef: 'unknown:default/unknown',
         primaryTitle: 'unknown',
         secondaryTitle: 'unknown:default/unknown',
@@ -247,7 +232,6 @@ describe('defaultEntityPresentation', () => {
   describe('entirely invalid input type given', () => {
     it('sad path', () => {
       expect(defaultEntityPresentation(null as unknown as Entity)).toEqual({
-        entity: undefined,
         entityRef: 'unknown:default/unknown',
         primaryTitle: 'unknown',
         secondaryTitle: 'unknown:default/unknown',
@@ -256,7 +240,6 @@ describe('defaultEntityPresentation', () => {
 
       expect(defaultEntityPresentation(undefined as unknown as Entity)).toEqual(
         {
-          entity: undefined,
           entityRef: 'unknown:default/unknown',
           primaryTitle: 'unknown',
           secondaryTitle: 'unknown:default/unknown',
@@ -267,7 +250,6 @@ describe('defaultEntityPresentation', () => {
       expect(
         defaultEntityPresentation(Symbol.for('Prince') as unknown as Entity),
       ).toEqual({
-        entity: undefined,
         entityRef: 'unknown:default/unknown',
         primaryTitle: 'unknown',
         secondaryTitle: 'unknown:default/unknown',

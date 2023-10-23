@@ -70,13 +70,6 @@ export function defaultEntityPresentation(
     (kind && DEFAULT_ICONS[kind.toLocaleLowerCase('en-US')]) ||
     UNKNOWN_KIND_ICON;
 
-  const entity: Entity | undefined =
-    typeof entityOrRef === 'object' &&
-    entityOrRef !== null &&
-    'metadata' in entityOrRef
-      ? entityOrRef
-      : undefined;
-
   const entityRef: string = stringifyEntityRef({
     kind: kind || 'unknown',
     namespace: namespace || DEFAULT_NAMESPACE,
@@ -98,7 +91,6 @@ export function defaultEntityPresentation(
     .join(' | ');
 
   return {
-    entity,
     entityRef,
     primaryTitle: primary,
     secondaryTitle: secondary || undefined,

@@ -416,7 +416,6 @@ export interface EntityRefPresentation {
 
 // @public
 export interface EntityRefPresentationSnapshot {
-  entity?: Entity | undefined;
   entityRef: string;
   Icon?: IconComponent | undefined;
   primaryTitle: string;

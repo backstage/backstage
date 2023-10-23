@@ -50,17 +50,6 @@ export interface EntityRefPresentationSnapshot {
    */
   entityRef: string;
   /**
-   * The entity that this snapshot represents.
-   *
-   * @remarks
-   *
-   * Note that this may be a partial entity, i.e. it may not contain all of the
-   * fields that the kind at hand normally contains, since the input to the
-   * representation renderer might have been a partial entity. So be careful
-   * when accessing fields on this.
-   */
-  entity?: Entity | undefined;
-  /**
    * A string that can be used as a plain representation of the entity, for
    * example in a header or a link.
    *

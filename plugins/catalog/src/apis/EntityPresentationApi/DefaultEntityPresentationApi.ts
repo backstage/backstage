@@ -240,7 +240,6 @@ export class DefaultEntityPresentationApi implements EntityPresentationApi {
                 subscriber.next({
                   ...output.snapshot,
                   entityRef: entityRef,
-                  entity: newEntity,
                 });
               }
             })
@@ -265,7 +264,6 @@ export class DefaultEntityPresentationApi implements EntityPresentationApi {
       snapshot: {
         ...rendered,
         entityRef: entityRef,
-        entity: entity,
       },
       update$: observable,
     };

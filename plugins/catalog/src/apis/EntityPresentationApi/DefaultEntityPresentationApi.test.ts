@@ -80,7 +80,6 @@ describe('DefaultEntityPresentationApi', () => {
     expect(api.forEntity(entity)).toEqual({
       snapshot: {
         entityRef: 'component:default/test',
-        entity: entity,
         primaryTitle: 'test',
         secondaryTitle: 'component:default/test | service',
         Icon: expect.anything(),
@@ -120,25 +119,12 @@ describe('DefaultEntityPresentationApi', () => {
     ).resolves.toEqual([
       {
         entityRef: 'component:default/test',
-        entity: undefined,
         primaryTitle: 'test',
         secondaryTitle: 'component:default/test',
         Icon: expect.anything(),
       },
       {
         entityRef: 'component:default/test',
-        entity: {
-          apiVersion: 'backstage.io/v1alpha1',
-          kind: 'Component',
-          metadata: {
-            etag: 'something',
-            name: 'test',
-            namespace: 'default',
-          },
-          spec: {
-            type: 'service',
-          },
-        },
         primaryTitle: 'test',
         secondaryTitle: 'component:default/test | service',
         Icon: expect.anything(),
@@ -151,18 +137,6 @@ describe('DefaultEntityPresentationApi', () => {
     ).resolves.toEqual([
       {
         entityRef: 'component:default/test',
-        entity: {
-          apiVersion: 'backstage.io/v1alpha1',
-          kind: 'Component',
-          metadata: {
-            etag: 'something',
-            name: 'test',
-            namespace: 'default',
-          },
-          spec: {
-            type: 'service',
-          },
-        },
         primaryTitle: 'test',
         secondaryTitle: 'component:default/test | service',
         Icon: expect.anything(),
