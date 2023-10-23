@@ -235,6 +235,12 @@ catalog:
         - System
         - Domain
         - Location
+  providers:
+    openapi:
+      plugins:
+        - catalog
+        - search
+        - todo
 
   processors:
     ldapOrg:
@@ -464,9 +470,3 @@ stackstorm:
 
 permission:
   enabled: true
-
-openapi:
-  plugins:
-    - catalog
-    - search
-    - todo

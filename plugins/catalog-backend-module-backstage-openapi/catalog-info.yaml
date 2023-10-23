@@ -1,8 +1,8 @@
 apiVersion: backstage.io/v1alpha1
 kind: Component
 metadata:
-  name: backstage-plugin-catalog-backend-module-openapi-spec
-  title: '@backstage/plugin-catalog-backend-module-openapi-spec'
+  name: backstage-plugin-catalog-backend-module-backstage-openapi
+  title: '@backstage/plugin-catalog-backend-module-backstage-openapi'
 spec:
   lifecycle: experimental
   type: backstage-backend-plugin-module
