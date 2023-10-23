@@ -691,6 +691,7 @@ export type RunContainerOptions = {
   workingDir?: string;
   envVars?: Record<string, string>;
   pullImage?: boolean;
+  defaultUser?: boolean;
 };
 
 export { SearchOptions };

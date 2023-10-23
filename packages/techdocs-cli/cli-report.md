@@ -38,6 +38,7 @@ Options:
   --omitTechdocsCoreMkdocsPlugin
   --legacyCopyReadmeMdToIndexMd
   --defaultPlugin [defaultPlugins...]
+  --runAsDefaultUser
   -h, --help
 ```
 
