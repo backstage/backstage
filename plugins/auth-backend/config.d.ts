@@ -179,6 +179,18 @@ export interface Config {
         };
       };
       /** @visibility frontend */
+      microsoft?: {
+        [authEnv: string]: {
+          clientId: string;
+          /**
+           * @visibility secret
+           */
+          clientSecret: string;
+          tenantId: string;
+          callbackUrl?: string;
+        };
+      };
+      /** @visibility frontend */
       onelogin?: {
         [authEnv: string]: {
           clientId: string;

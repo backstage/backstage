@@ -34,6 +34,7 @@ import { createConfig, resolveBaseUrl } from './config';
 import { createDetectedModulesEntryPoint } from './packageDetection';
 import { resolveBundlingPaths } from './paths';
 import { ServeOptions } from './types';
+import { hasReactDomClient } from './hasReactDomClient';
 
 export async function serveBundle(options: ServeOptions) {
   const paths = resolveBundlingPaths(options);
@@ -77,7 +78,9 @@ export async function serveBundle(options: ServeOptions) {
 
   const { name } = await fs.readJson(libPaths.resolveTarget('package.json'));
 
-  let server: WebpackDevServer | undefined = undefined;
+  let webpackServer: WebpackDevServer | undefined = undefined;
+  let viteServer: import('vite').ViteDevServer | undefined = undefined;
+
   let latestFrontendAppConfigs: AppConfig[] = [];
 
   const cliConfig = await loadCliConfig({
@@ -86,7 +89,9 @@ export async function serveBundle(options: ServeOptions) {
     withFilteredKeys: true,
     watch(appConfigs) {
       latestFrontendAppConfigs = appConfigs;
-      server?.invalidate();
+
+      webpackServer?.invalidate();
+      viteServer?.restart();
     },
   });
   latestFrontendAppConfigs = cliConfig.frontendAppConfigs;
@@ -123,7 +128,8 @@ export async function serveBundle(options: ServeOptions) {
     config: fullConfig,
     targetPath: paths.targetPath,
     watch() {
-      server?.invalidate();
+      webpackServer?.invalidate();
+      viteServer?.restart();
     },
   });
 
@@ -139,64 +145,111 @@ export async function serveBundle(options: ServeOptions) {
     additionalEntryPoints: detectedModulesEntryPoint,
   });
 
-  const compiler = webpack(config);
-
-  server = new WebpackDevServer(
-    {
-      hot: !process.env.CI,
-      devMiddleware: {
-        publicPath: config.output?.publicPath as string,
-        stats: 'errors-warnings',
+  if (process.env.EXPERIMENTAL_VITE) {
+    const { default: vite } = await import('vite');
+    const { default: viteReact } = await import('@vitejs/plugin-react');
+    const { nodePolyfills: viteNodePolyfills } = await import(
+      'vite-plugin-node-polyfills'
+    );
+    const { createHtmlPlugin: viteHtml } = await import('vite-plugin-html');
+    viteServer = await vite.createServer({
+      define: {
+        global: 'window',
+        'process.argv': JSON.stringify(process.argv),
+        'process.env.APP_CONFIG': JSON.stringify(cliConfig.frontendAppConfigs),
+        // This allows for conditional imports of react-dom/client, since there's no way
+        // to check for presence of it in source code without module resolution errors.
+        'process.env.HAS_REACT_DOM_CLIENT': JSON.stringify(hasReactDomClient()),
       },
-      static: paths.targetPublic
-        ? {
-            publicPath: config.output?.publicPath as string,
-            directory: paths.targetPublic,
-          }
-        : undefined,
-      historyApiFallback: {
-        // Paths with dots should still use the history fallback.
-        // See https://github.com/facebookincubator/create-react-app/issues/387.
-        disableDotRule: true,
-
-        // The index needs to be rewritten relative to the new public path, including subroutes.
-        index: `${config.output?.publicPath}index.html`,
+      plugins: [
+        viteReact(),
+        viteNodePolyfills(),
+        viteHtml({
+          entry: paths.targetEntry,
+          // todo(blam): we should look at contributing to thPe plugin here
+          // to support absolute paths, but works in the interim at least.
+          template: 'public/index.html',
+          inject: {
+            data: {
+              config: frontendConfig,
+              publicPath: config.output?.publicPath,
+            },
+          },
+        }),
+      ],
+      server: {
+        host,
+        port,
       },
-      https:
-        url.protocol === 'https:'
-          ? {
-              cert: fullConfig.getString('app.https.certificate.cert'),
-              key: fullConfig.getString('app.https.certificate.key'),
-            }
-          : false,
-      host,
-      port,
-      proxy: targetPkg.proxy,
-      // When the dev server is behind a proxy, the host and public hostname differ
-      allowedHosts: [url.hostname],
-      client: {
-        webSocketURL: 'auto://0.0.0.0:0/ws',
-      },
-    } as any,
-    compiler as any,
-  );
-
-  await new Promise<void>((resolve, reject) => {
-    server?.startCallback((err?: Error) => {
-      if (err) {
-        reject(err);
-        return;
-      }
-
-      openBrowser(url.href);
-      resolve();
+      publicDir: paths.targetPublic,
+      root: paths.targetPath,
     });
+  } else {
+    const compiler = webpack(config);
+
+    webpackServer = new WebpackDevServer(
+      {
+        hot: !process.env.CI,
+        devMiddleware: {
+          publicPath: config.output?.publicPath as string,
+          stats: 'errors-warnings',
+        },
+        static: paths.targetPublic
+          ? {
+              publicPath: config.output?.publicPath as string,
+              directory: paths.targetPublic,
+            }
+          : undefined,
+        historyApiFallback: {
+          // Paths with dots should still use the history fallback.
+          // See https://github.com/facebookincubator/create-react-app/issues/387.
+          disableDotRule: true,
+
+          // The index needs to be rewritten relative to the new public path, including subroutes.
+          index: `${config.output?.publicPath}index.html`,
+        },
+        https:
+          url.protocol === 'https:'
+            ? {
+                cert: fullConfig.getString('app.https.certificate.cert'),
+                key: fullConfig.getString('app.https.certificate.key'),
+              }
+            : false,
+        host,
+        port,
+        proxy: targetPkg.proxy,
+        // When the dev server is behind a proxy, the host and public hostname differ
+        allowedHosts: [url.hostname],
+        client: {
+          webSocketURL: 'auto://0.0.0.0:0/ws',
+        },
+      },
+      compiler,
+    );
+  }
+
+  await viteServer?.listen();
+  await new Promise<void>(async (resolve, reject) => {
+    if (webpackServer) {
+      webpackServer.startCallback((err?: Error) => {
+        if (err) {
+          reject(err);
+          return;
+        }
+        resolve();
+      });
+    } else {
+      resolve();
+    }
   });
+
+  openBrowser(url.href);
 
   const waitForExit = async () => {
     for (const signal of ['SIGINT', 'SIGTERM'] as const) {
       process.on(signal, () => {
-        server?.close();
+        webpackServer?.close();
+        viteServer?.close();
         // exit instead of resolve. The process is shutting down and resolving a promise here logs an error
         process.exit();
       });

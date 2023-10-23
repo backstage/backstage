@@ -30,6 +30,7 @@ describe('collectLegacyRoutes', () => {
         <Route path="/score-board" element={<ScoreBoardPage />} />
         <Route path="/stackstorm" element={<StackstormPage />} />
         <Route path="/puppetdb" element={<PuppetDbPage />} />
+        <Route path="/puppetdb" element={<PuppetDbPage />} />
       </FlatRoutes>,
     );
 
@@ -81,6 +82,12 @@ describe('collectLegacyRoutes', () => {
         extensions: [
           {
             id: 'plugin.puppetDb.page',
+            attachTo: { id: 'core.routes', input: 'routes' },
+            disabled: false,
+            defaultConfig: { path: 'puppetdb' },
+          },
+          {
+            id: 'plugin.puppetDb.page2',
             attachTo: { id: 'core.routes', input: 'routes' },
             disabled: false,
             defaultConfig: { path: 'puppetdb' },

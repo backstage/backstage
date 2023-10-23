@@ -15,4 +15,4 @@ jobs:
           egress-policy: audit
 
       - name: Issue sync
-        uses: backstage/actions/issue-sync@v0.6.4
+        uses: backstage/actions/issue-sync@v0.6.5
