@@ -22,6 +22,7 @@ import { IContainerStatus } from 'kubernetes-models/v1';
 import { IdentityApi } from '@backstage/core-plugin-api';
 import { IIoK8sApimachineryPkgApisMetaV1ObjectMeta } from '@kubernetes-models/apimachinery/apis/meta/v1/ObjectMeta';
 import { IObjectMeta } from '@kubernetes-models/apimachinery/apis/meta/v1/ObjectMeta';
+import type { JsonObject } from '@backstage/types';
 import { KubernetesRequestBody } from '@backstage/plugin-kubernetes-common';
 import { OAuthApi } from '@backstage/core-plugin-api';
 import { ObjectsByEntityResponse } from '@backstage/plugin-kubernetes-common';
@@ -58,6 +59,26 @@ export const Cluster: ({
 
 // @public (undocumented)
 export const ClusterContext: React_2.Context<ClusterAttributes>;
+
+// @public (undocumented)
+export type ClusterLinksFormatter = (
+  options: ClusterLinksFormatterOptions,
+) => URL;
+
+// @public (undocumented)
+export interface ClusterLinksFormatterOptions {
+  // (undocumented)
+  dashboardParameters?: JsonObject;
+  // (undocumented)
+  dashboardUrl?: URL;
+  // (undocumented)
+  kind: string;
+  // (undocumented)
+  object: any;
+}
+
+// @public (undocumented)
+export const clusterLinksFormatters: Record<string, ClusterLinksFormatter>;
 
 // @public
 export type ClusterProps = {
@@ -206,6 +227,20 @@ export interface FixDialogProps {
   // (undocumented)
   pod: Pod_2;
 }
+
+// @public (undocumented)
+export function formatClusterLink(
+  options: FormatClusterLinkOptions,
+): string | undefined;
+
+// @public (undocumented)
+export type FormatClusterLinkOptions = {
+  dashboardUrl?: string;
+  dashboardApp?: string;
+  dashboardParameters?: JsonObject;
+  object: any;
+  kind: string;
+};
 
 // @public (undocumented)
 export class GoogleKubernetesAuthProvider implements KubernetesAuthProvider {
