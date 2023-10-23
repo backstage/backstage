@@ -21,7 +21,7 @@ import {
   RELATION_PART_OF,
   stringifyEntityRef,
 } from '@backstage/catalog-model';
-import { renderHook } from '@testing-library/react-hooks';
+import { renderHook, waitFor } from '@testing-library/react';
 import { filter, keyBy } from 'lodash';
 import { useEntityRelationGraph as useEntityRelationGraphMocked } from './useEntityRelationGraph';
 import { useEntityRelationNodesAndEdges } from './useEntityRelationNodesAndEdges';
@@ -163,7 +163,7 @@ describe('useEntityRelationNodesAndEdges', () => {
   });
 
   test('should generate unidirectional graph with merged relations', async () => {
-    const { result, waitForValueToChange } = renderHook(() =>
+    const { result } = renderHook(() =>
       useEntityRelationNodesAndEdges({
         rootEntityRefs: ['b:d/c'],
         unidirectional: true,
@@ -171,9 +171,9 @@ describe('useEntityRelationNodesAndEdges', () => {
       }),
     );
 
-    await waitForValueToChange(
-      () => result.current.nodes && result.current.edges,
-    );
+    await waitFor(() => {
+      expect(result.current.nodes && result.current.edges).toBeDefined();
+    });
 
     const { nodes, edges, loading, error } = result.current;
 
@@ -236,7 +236,7 @@ describe('useEntityRelationNodesAndEdges', () => {
   });
 
   test('should generate unidirectional graph', async () => {
-    const { result, waitForValueToChange } = renderHook(() =>
+    const { result } = renderHook(() =>
       useEntityRelationNodesAndEdges({
         rootEntityRefs: ['b:d/c'],
         unidirectional: true,
@@ -244,9 +244,9 @@ describe('useEntityRelationNodesAndEdges', () => {
       }),
     );
 
-    await waitForValueToChange(
-      () => result.current.nodes && result.current.edges,
-    );
+    await waitFor(() => {
+      expect(result.current.nodes && result.current.edges).toBeDefined();
+    });
 
     const { nodes, edges, loading, error } = result.current;
 
@@ -309,7 +309,7 @@ describe('useEntityRelationNodesAndEdges', () => {
   });
 
   test('should generate bidirectional graph with merged relations', async () => {
-    const { result, waitForValueToChange } = renderHook(() =>
+    const { result } = renderHook(() =>
       useEntityRelationNodesAndEdges({
         rootEntityRefs: ['b:d/c'],
         unidirectional: false,
@@ -317,9 +317,9 @@ describe('useEntityRelationNodesAndEdges', () => {
       }),
     );
 
-    await waitForValueToChange(
-      () => result.current.nodes && result.current.edges,
-    );
+    await waitFor(() => {
+      expect(result.current.nodes && result.current.edges).toBeDefined();
+    });
 
     const { nodes, edges, loading, error } = result.current;
 
@@ -412,7 +412,7 @@ describe('useEntityRelationNodesAndEdges', () => {
   });
 
   test('should generate bidirectional graph with all relations', async () => {
-    const { result, waitForValueToChange } = renderHook(() =>
+    const { result } = renderHook(() =>
       useEntityRelationNodesAndEdges({
         rootEntityRefs: ['b:d/c'],
         unidirectional: false,
@@ -420,9 +420,9 @@ describe('useEntityRelationNodesAndEdges', () => {
       }),
     );
 
-    await waitForValueToChange(
-      () => result.current.nodes && result.current.edges,
-    );
+    await waitFor(() => {
+      expect(result.current.nodes && result.current.edges).toBeDefined();
+    });
 
     const { nodes, edges, loading, error } = result.current;
 
@@ -515,15 +515,15 @@ describe('useEntityRelationNodesAndEdges', () => {
   });
 
   test('should generate graph with multiple root nodes', async () => {
-    const { result, waitForValueToChange } = renderHook(() =>
+    const { result } = renderHook(() =>
       useEntityRelationNodesAndEdges({
         rootEntityRefs: ['b:d/c', 'b:d/c2'],
       }),
     );
 
-    await waitForValueToChange(
-      () => result.current.nodes && result.current.edges,
-    );
+    await waitFor(() => {
+      expect(result.current.nodes && result.current.edges).toBeDefined();
+    });
 
     const { nodes, edges, loading, error } = result.current;
 
@@ -586,16 +586,16 @@ describe('useEntityRelationNodesAndEdges', () => {
   });
 
   test('should filter by relation', async () => {
-    const { result, waitForValueToChange } = renderHook(() =>
+    const { result } = renderHook(() =>
       useEntityRelationNodesAndEdges({
         rootEntityRefs: ['b:d/c'],
         relations: [RELATION_OWNER_OF],
       }),
     );
 
-    await waitForValueToChange(
-      () => result.current.nodes && result.current.edges,
-    );
+    await waitFor(() => {
+      expect(result.current.nodes && result.current.edges).toBeDefined();
+    });
 
     const { nodes, edges, loading, error } = result.current;
 
@@ -646,16 +646,16 @@ describe('useEntityRelationNodesAndEdges', () => {
   });
 
   test('should filter by kind', async () => {
-    const { result, waitForValueToChange } = renderHook(() =>
+    const { result } = renderHook(() =>
       useEntityRelationNodesAndEdges({
         rootEntityRefs: ['b:d/c'],
         kinds: ['b'],
       }),
     );
 
-    await waitForValueToChange(
-      () => result.current.nodes && result.current.edges,
-    );
+    await waitFor(() => {
+      expect(result.current.nodes && result.current.edges).toBeDefined();
+    });
 
     const { nodes, edges, loading, error } = result.current;
 

@@ -21,7 +21,8 @@ import {
   createExtension,
   coreExtensionData,
 } from '../wiring';
-import { AnyExtensionInputMap, Expand } from '../wiring/createExtension';
+import { AnyExtensionInputMap } from '../wiring/createExtension';
+import { Expand } from '../types';
 
 /** @public */
 export function createApiExtension<

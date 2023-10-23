@@ -14,10 +14,10 @@
  * limitations under the License.
  */
 
-export { NextScaffolderPage } from './plugin';
 export {
-  type NextRouterProps,
   type FormProps,
   type TemplateListPageProps,
   type TemplateWizardPageProps,
 } from './next';
+
+export * from './legacy';

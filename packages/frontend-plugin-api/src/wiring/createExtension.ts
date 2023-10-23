@@ -15,6 +15,7 @@
  */
 
 import { PortableSchema } from '../schema';
+import { Expand } from '../types';
 import { ExtensionDataRef } from './createExtensionDataRef';
 import { ExtensionInput } from './createExtensionInput';
 import { BackstagePlugin } from './createPlugin';
@@ -31,13 +32,6 @@ export type AnyExtensionInputMap = {
     { optional: boolean; singleton: boolean }
   >;
 };
-
-// TODO(Rugvip): This might be a quite useful utility type, maybe add to @backstage/types?
-/**
- * Utility type to expand type aliases into their equivalent type.
- * @ignore
- */
-export type Expand<T> = T extends infer O ? { [K in keyof O]: O[K] } : never;
 
 /**
  * Converts an extension data map into the matching concrete data values type.

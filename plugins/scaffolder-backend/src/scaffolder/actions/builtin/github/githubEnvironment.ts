@@ -21,6 +21,7 @@ import { parseRepoUrl } from '../publish/util';
 import { getOctokitOptions } from './helpers';
 import { Octokit } from 'octokit';
 import Sodium from 'libsodium-wrappers';
+import { examples } from './gitHubEnvironment.examples';
 
 /**
  * Creates an `github:environment:create` Scaffolder action that creates a Github Environment.
@@ -47,6 +48,7 @@ export function createGithubEnvironmentAction(options: {
   }>({
     id: 'github:environment:create',
     description: 'Creates Deployment Environments',
+    examples,
     schema: {
       input: {
         type: 'object',

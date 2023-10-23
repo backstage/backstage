@@ -23,18 +23,23 @@ import {
   makeStyles,
   LinearProgress,
 } from '@material-ui/core';
-import { type IChangeEvent } from '@rjsf/core-v5';
+import { type IChangeEvent } from '@rjsf/core';
 import { ErrorSchema } from '@rjsf/utils';
-import React, { useCallback, useMemo, useState, type ReactNode } from 'react';
-import { NextFieldExtensionOptions } from '../../extensions';
+import React, {
+  useCallback,
+  useMemo,
+  useState,
+  type ReactNode,
+  ComponentType,
+} from 'react';
 import {
   createAsyncValidators,
   type FormValidation,
 } from './createAsyncValidators';
 import { ReviewState, type ReviewStateProps } from '../ReviewState';
-import { useTemplateSchema, useFormDataFromQuery } from '../../hooks';
+import { useTemplateSchema } from '../../hooks/useTemplateSchema';
 import validator from '@rjsf/validator-ajv8';
-import { FormProps } from '../../types';
+import { useFormDataFromQuery } from '../../hooks';
 import { useTransformSchemaToProps } from '../../hooks/useTransformSchemaToProps';
 import { hasErrors } from './utils';
 import * as FieldOverrides from './FieldOverrides';
@@ -42,7 +47,10 @@ import { Form } from '../Form';
 import {
   TemplateParameterSchema,
   LayoutOptions,
+  FieldExtensionOptions,
+  FormProps,
 } from '@backstage/plugin-scaffolder-react';
+import { ReviewStepProps } from '@backstage/plugin-scaffolder-react';
 
 const useStyles = makeStyles(theme => ({
   backButton: {
@@ -65,14 +73,14 @@ const useStyles = makeStyles(theme => ({
  */
 export type StepperProps = {
   manifest: TemplateParameterSchema;
-  extensions: NextFieldExtensionOptions<any, any>[];
+  extensions: FieldExtensionOptions<any, any>[];
   templateName?: string;
-  FormProps?: FormProps;
+  formProps?: FormProps;
   initialState?: Record<string, JsonValue>;
   onCreate: (values: Record<string, JsonValue>) => Promise<void>;
   components?: {
+    ReviewStepComponent?: ComponentType<ReviewStepProps>;
     ReviewStateComponent?: (props: ReviewStateProps) => JSX.Element;
-    backButtonText?: ReactNode;
     createButtonText?: ReactNode;
     reviewButtonText?: ReactNode;
   };
@@ -87,12 +95,12 @@ export const Stepper = (stepperProps: StepperProps) => {
   const { layouts = [], components = {}, ...props } = stepperProps;
   const {
     ReviewStateComponent = ReviewState,
-    backButtonText = 'Back',
+    ReviewStepComponent,
     createButtonText = 'Create',
     reviewButtonText = 'Review',
   } = components;
   const analytics = useAnalytics();
-  const { configurations, steps } = useTemplateSchema(props.manifest);
+  const { steps } = useTemplateSchema(props.manifest);
   const apiHolder = useApiHolder();
   const [activeStep, setActiveStep] = useState(0);
   const [isValidating, setIsValidating] = useState(false);
@@ -129,6 +137,13 @@ export const Stepper = (stepperProps: StepperProps) => {
     [setFormState],
   );
 
+  const handleCreate = useCallback(() => {
+    props.onCreate(formState);
+    const name =
+      typeof formState.name === 'string' ? formState.name : undefined;
+    analytics.captureEvent('create', name ?? props.templateName ?? 'unknown');
+  }, [props, formState, analytics]);
+
   const currentStep = useTransformSchemaToProps(steps[activeStep], { layouts });
 
   const handleNext = async ({
@@ -158,13 +173,6 @@ export const Stepper = (stepperProps: StepperProps) => {
     setFormState(current => ({ ...current, ...formData }));
   };
 
-  const backLabel =
-    configurations?.buttonLabels?.backButtonText ?? backButtonText;
-  const createLabel =
-    configurations?.buttonLabels?.createButtonText ?? createButtonText;
-  const reviewLabel =
-    configurations?.buttonLabels?.reviewButtonText ?? reviewButtonText;
-
   return (
     <>
       {isValidating && <LinearProgress variant="indeterminate" />}
@@ -175,10 +183,11 @@ export const Stepper = (stepperProps: StepperProps) => {
           </MuiStep>
         ))}
         <MuiStep>
-          <MuiStepLabel>${reviewLabel}</MuiStepLabel>
+          <MuiStepLabel>Review</MuiStepLabel>
         </MuiStep>
       </MuiStepper>
       <div className={styles.formWrapper}>
+        {/* eslint-disable-next-line no-nested-ternary */}
         {activeStep < steps.length ? (
           <Form
             validator={validator}
@@ -191,7 +200,7 @@ export const Stepper = (stepperProps: StepperProps) => {
             fields={{ ...FieldOverrides, ...extensions }}
             showErrorList={false}
             onChange={handleChange}
-            {...(props.FormProps ?? {})}
+            {...(props.formProps ?? {})}
           >
             <div className={styles.footer}>
               <Button
@@ -199,7 +208,7 @@ export const Stepper = (stepperProps: StepperProps) => {
                 className={styles.backButton}
                 disabled={activeStep < 1 || isValidating}
               >
-                {backLabel}
+                Back
               </Button>
               <Button
                 variant="contained"
@@ -207,10 +216,20 @@ export const Stepper = (stepperProps: StepperProps) => {
                 type="submit"
                 disabled={isValidating}
               >
-                {activeStep === steps.length - 1 ? reviewLabel : 'Next'}
+                {activeStep === steps.length - 1 ? reviewButtonText : 'Next'}
               </Button>
             </div>
           </Form>
+        ) : // TODO: potentially move away from this pattern, deprecate?
+        ReviewStepComponent ? (
+          <ReviewStepComponent
+            disableButtons={isValidating}
+            formData={formState}
+            handleBack={handleBack}
+            handleReset={() => {}}
+            steps={steps}
+            handleCreate={handleCreate}
+          />
         ) : (
           <>
             <ReviewStateComponent formState={formState} schemas={steps} />
@@ -220,24 +239,14 @@ export const Stepper = (stepperProps: StepperProps) => {
                 className={styles.backButton}
                 disabled={activeStep < 1}
               >
-                {configurations?.buttonLabels?.backButtonText ?? backButtonText}
+                Back
               </Button>
               <Button
                 variant="contained"
                 color="primary"
-                onClick={() => {
-                  props.onCreate(formState);
-                  const name =
-                    typeof formState.name === 'string'
-                      ? formState.name
-                      : undefined;
-                  analytics.captureEvent(
-                    'create',
-                    name ?? props.templateName ?? 'unknown',
-                  );
-                }}
+                onClick={handleCreate}
               >
-                {createLabel}
+                {createButtonText}
               </Button>
             </div>
           </>

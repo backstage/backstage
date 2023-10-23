@@ -1,5 +1,14 @@
 # @backstage/integration
 
+## 1.7.1
+
+### Patch Changes
+
+- 3963d0b885: Ensure that all relevant config fields are properly marked as secret
+- 0b55f773a7: Removed some unused dependencies
+- Updated dependencies
+  - @backstage/config@1.1.1
+
 ## 1.7.1-next.1
 
 ### Patch Changes

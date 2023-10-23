@@ -37,6 +37,8 @@ export {
   createPlugin,
   type BackstagePlugin,
   type PluginOptions,
+  type AnyRoutes,
+  type AnyExternalRoutes,
 } from './createPlugin';
 export {
   createExtensionOverrides,

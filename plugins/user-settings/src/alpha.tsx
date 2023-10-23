@@ -13,29 +13,23 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import { createRouteRef } from '@backstage/core-plugin-api';
 import {
   coreExtensionData,
   createExtensionInput,
   createPageExtension,
   createPlugin,
 } from '@backstage/frontend-plugin-api';
+import { convertLegacyRouteRef } from '@backstage/core-plugin-api/alpha';
+import { settingsRouteRef } from './plugin';
 
 import React from 'react';
 
 export * from './translation';
 
-/**
- * @alpha
- */
-export const userSettingsRouteRef = createRouteRef({
-  id: 'plugin.user-settings.page',
-});
-
 const UserSettingsPage = createPageExtension({
   id: 'plugin.user-settings.page',
   defaultPath: '/settings',
-  routeRef: userSettingsRouteRef,
+  routeRef: convertLegacyRouteRef(settingsRouteRef),
   inputs: {
     providerSettings: createExtensionInput(
       {
@@ -56,4 +50,7 @@ const UserSettingsPage = createPageExtension({
 export default createPlugin({
   id: 'user-settings',
   extensions: [UserSettingsPage],
+  routes: {
+    root: convertLegacyRouteRef(settingsRouteRef),
+  },
 });

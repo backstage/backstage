@@ -1,5 +1,52 @@
 # @backstage/plugin-catalog
 
+## 1.14.0
+
+### Minor Changes
+
+- 28f1ab2e1a: The catalog plugin no longer implements the experimental reconfiguration API. The create button title can now instead be configured using the new experimental internationalization API, via the `catalogTranslationRef` exported at `/alpha`. For example:
+
+  ```ts
+  import { catalogTranslationRef } from '@backstage/plugin-catalog/alpha';
+
+  const app = createApp({
+    __experimentalTranslations: {
+      resources: [
+        createTranslationMessages({
+          ref: catalogTranslationRef,
+          catalog_page_create_button_title: 'Create Software',
+        }),
+      ],
+    },
+  });
+  ```
+
+- f3561a2935: include owner chip in catalog search result item
+
+### Patch Changes
+
+- 7c4a8e4d5f: Create an experimental `CatalogSearchResultItemExtension` for declarative integration with Backstage; it can be accessed via the `/alpha` import.
+- 0296f272b4: The `spec.lifecycle' field in entities will now always be rendered as a string.
+- 0b55f773a7: Removed some unused dependencies
+- 9a1fce352e: Updated dependency `@testing-library/jest-dom` to `^6.0.0`.
+- f95af4e540: Updated dependency `@testing-library/dom` to `^9.0.0`.
+- e5a2956dd2: Migrate catalog api to declarative integration system, it is exported from `/alpha` subpath.
+- Updated dependencies
+  - @backstage/plugin-catalog-react@1.8.5
+  - @backstage/frontend-plugin-api@0.2.0
+  - @backstage/core-plugin-api@1.7.0
+  - @backstage/core-components@0.13.6
+  - @backstage/integration-react@1.1.20
+  - @backstage/catalog-model@1.4.3
+  - @backstage/errors@1.2.3
+  - @backstage/plugin-search-react@1.7.1
+  - @backstage/theme@0.4.3
+  - @backstage/catalog-client@1.4.5
+  - @backstage/types@1.1.1
+  - @backstage/plugin-catalog-common@1.0.17
+  - @backstage/plugin-scaffolder-common@1.4.2
+  - @backstage/plugin-search-common@1.2.7
+
 ## 1.14.0-next.2
 
 ### Patch Changes

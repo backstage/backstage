@@ -1,5 +1,16 @@
 # @backstage/repo-tools
 
+## 0.3.5
+
+### Patch Changes
+
+- de42eebaaf: Bumped dev dependencies `@types/node` and `mock-fs`.
+- Updated dependencies
+  - @backstage/catalog-model@1.4.3
+  - @backstage/errors@1.2.3
+  - @backstage/cli-common@0.1.13
+  - @backstage/cli-node@0.1.5
+
 ## 0.3.5-next.1
 
 ### Patch Changes

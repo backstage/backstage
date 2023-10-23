@@ -32,6 +32,7 @@ yarn.lock                                         @backstage/maintainers @backst
 /plugins/catalog-backend-module-msgraph           @backstage/maintainers @backstage/reviewers @backstage/catalog-maintainers @pjungermann
 /plugins/catalog-backend-module-puppetdb          @backstage/maintainers @backstage/reviewers @backstage/catalog-maintainers
 /plugins/catalog-graph                            @backstage/maintainers @backstage/reviewers @backstage/catalog-maintainers @backstage/sda-se-reviewers
+/plugins/cicd-statistics                          @backstage/sharks
 /plugins/circleci                                 @backstage/maintainers @backstage/reviewers @adamdmharvey
 /plugins/code-coverage                            @backstage/maintainers @backstage/reviewers @alde
 /plugins/code-coverage-backend                    @backstage/maintainers @backstage/reviewers @alde

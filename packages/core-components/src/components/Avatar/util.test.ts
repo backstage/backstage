@@ -17,25 +17,29 @@
 import { extractInitials, stringToColor } from './utils';
 
 describe('stringToColor', () => {
-  it('extract color', async () => {
+  it('extract color', () => {
     expect(stringToColor('Jenny Doe')).toEqual('#7809fa');
   });
 });
 
 describe('extractInitials', () => {
-  it('extract initials', async () => {
+  it('extract initials', () => {
     expect(extractInitials('Jenny Doe')).toEqual('JD');
   });
 
-  it('extract unicode initials', async () => {
+  it('extract unicode initials', () => {
     expect(extractInitials('Petr Čech')).toEqual('PČ');
   });
 
-  it('extract single letter for short name', async () => {
+  it('extract single letter for short name', () => {
     expect(extractInitials('Doe')).toEqual('D');
   });
 
-  it('limit the initials to two letters', async () => {
-    expect(extractInitials('John Jonathan Doe')).toEqual('JJ');
+  it('limit the initials to two letters', () => {
+    expect(extractInitials('John Jonathan Doe')).toEqual('JD');
+  });
+
+  it('removes spaces from beginning or the end', () => {
+    expect(extractInitials(' John Jonathan Doe ')).toEqual('JD');
   });
 });

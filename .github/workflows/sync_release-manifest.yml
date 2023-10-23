@@ -7,8 +7,13 @@ jobs:
   create-new-version:
     runs-on: ubuntu-latest
     steps:
+      - name: Harden Runner
+        uses: step-security/harden-runner@8ca2b8b2ece13480cda6dacd3511b49857a23c09 # v2.5.1
+        with:
+          egress-policy: audit
+
       # Setup node & install deps before checkout, keeping install quick
-      - uses: actions/setup-node@v3
+      - uses: actions/setup-node@v3.8.1
         with:
           node-version: 18.x
       - name: Install dependencies
@@ -16,7 +21,7 @@ jobs:
         run: npm install semver@7.3.5 fs-extra@10.0.0 @manypkg/get-packages@1.1.1
 
       - name: Checkout
-        uses: actions/checkout@v3
+        uses: actions/checkout@v3.6.0
         with:
           path: backstage
           # 'v' prefix is added here for the tag, we keep it out of the manifest logic
@@ -24,7 +29,7 @@ jobs:
 
       # Checkout backstage/versions into /backstage/versions, which is where store the output
       - name: Checkout versions
-        uses: actions/checkout@v3
+        uses: actions/checkout@v3.6.0
         with:
           repository: backstage/versions
           path: backstage/versions
@@ -48,7 +53,7 @@ jobs:
           git push
 
       - name: Dispatch update-helper update
-        uses: actions/github-script@v6
+        uses: actions/github-script@v6.4.1
         with:
           github-token: ${{ secrets.GH_SERVICE_ACCOUNT_TOKEN }}
           # TODO(Rugvip): Remove the create-app dispatch once we've been on the release version for a while

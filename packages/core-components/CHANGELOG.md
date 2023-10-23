@@ -1,5 +1,27 @@
 # @backstage/core-components
 
+## 0.13.6
+
+### Patch Changes
+
+- 4eab5cf901: The `TabbedLayout` component will now also navigate when clicking the active tab, which allows for navigation back from any sub routes.
+- 0b55f773a7: Removed some unused dependencies
+- 8a15360bb4: Fixed overflowing messages in `WarningPanel`.
+- 997a71850c: Changed SupportButton menuitems to support text wrap
+- 0296f272b4: Fixed the type declaration of `DependencyGraphProps`, the `defs` prop now expects `JSX.Element`s.
+- 9a1fce352e: Updated dependency `@testing-library/jest-dom` to `^6.0.0`.
+- f95af4e540: Updated dependency `@testing-library/dom` to `^9.0.0`.
+- 16126dbe6a: Change overlay header colors in the mobile menu to use navigation color from the theme
+- d19a827ef1: MissingAnnotationEmptyState component can now dynamically generate a YAML example based off the current entity being used.
+- Updated dependencies
+  - @backstage/plugin-catalog-react@1.8.5
+  - @backstage/core-plugin-api@1.7.0
+  - @backstage/catalog-model@1.4.3
+  - @backstage/errors@1.2.3
+  - @backstage/version-bridge@1.0.6
+  - @backstage/theme@0.4.3
+  - @backstage/config@1.1.1
+
 ## 0.13.6-next.2
 
 ### Patch Changes

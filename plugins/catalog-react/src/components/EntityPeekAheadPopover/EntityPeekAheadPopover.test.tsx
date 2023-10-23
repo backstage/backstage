@@ -49,7 +49,7 @@ const apis = TestApiRegistry.from([catalogApiRef, catalogApi]);
 
 describe('<EntityPeekAheadPopover/>', () => {
   it('renders all owners', async () => {
-    renderInTestApp(
+    await renderInTestApp(
       <ApiProvider apis={apis}>
         <EntityPeekAheadPopover entityRef="component:default/service1">
           <Button data-testid="popover1">s1</Button>

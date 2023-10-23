@@ -430,6 +430,7 @@ Valentina
 validator
 validators
 varchar
+vite
 VMware
 Vodafone
 VPCs
@@ -455,3 +456,4 @@ Pulumi
 Lightsail
 PR
 rebasing
+lookbehind

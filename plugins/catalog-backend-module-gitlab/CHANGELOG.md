@@ -1,5 +1,37 @@
 # @backstage/plugin-catalog-backend-module-gitlab
 
+## 0.3.3
+
+### Patch Changes
+
+- 4f70fdfc93: fix: use REST API to get root group memberships for GitLab SaaS users listing
+
+  This API is the only one that shows `email` field for enterprise users and
+  allows to filter out bot users not using a license using the `is_using_seat`
+  field.
+
+  We also added the annotation `gitlab.com/saml-external-uid` taking the value
+  of `group_saml_identity.extern_uid` of the `groups/:group-id/members` endpoint
+  response. This is useful in case you want to create a `SignInResolver` that
+  references the user with the id of your identity provider (e.g. OneLogin).
+
+  ref:
+
+  https://docs.gitlab.com/ee/user/enterprise_user/#get-users-email-addresses-through-the-api
+  https://docs.gitlab.com/ee/api/members.html#limitations
+
+- 890e3b5ad4: Make sure to include the error message when ingestion fails
+- 0b55f773a7: Removed some unused dependencies
+- 6ae7f12abb: Make sure the archived projects are skipped with the Gitlab API
+- Updated dependencies
+  - @backstage/backend-tasks@0.5.11
+  - @backstage/backend-common@0.19.8
+  - @backstage/integration@1.7.1
+  - @backstage/plugin-catalog-node@1.4.7
+  - @backstage/catalog-model@1.4.3
+  - @backstage/backend-plugin-api@0.6.6
+  - @backstage/config@1.1.1
+
 ## 0.3.3-next.2
 
 ### Patch Changes

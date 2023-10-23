@@ -1,5 +1,44 @@
 # example-backend-next
 
+## 0.0.16
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/plugin-nomad-backend@0.1.8
+  - @backstage/backend-tasks@0.5.11
+  - @backstage/plugin-sonarqube-backend@0.2.8
+  - @backstage/plugin-scaffolder-backend@1.18.0
+  - @backstage/plugin-playlist-backend@0.3.10
+  - @backstage/plugin-techdocs-backend@1.8.0
+  - @backstage/plugin-catalog-backend@1.14.0
+  - @backstage/plugin-auth-node@0.4.0
+  - @backstage/plugin-badges-backend@0.3.3
+  - @backstage/plugin-kubernetes-backend@0.13.0
+  - @backstage/plugin-jenkins-backend@0.3.0
+  - @backstage/plugin-search-backend@1.4.6
+  - @backstage/backend-plugin-api@0.6.6
+  - @backstage/plugin-lighthouse-backend@0.3.3
+  - @backstage/plugin-linguist-backend@0.5.3
+  - @backstage/plugin-search-backend-module-catalog@0.1.10
+  - @backstage/plugin-search-backend-module-explore@0.1.10
+  - @backstage/plugin-search-backend-module-techdocs@0.1.10
+  - @backstage/plugin-search-backend-node@1.2.10
+  - @backstage/backend-defaults@0.2.6
+  - @backstage/plugin-adr-backend@0.4.3
+  - @backstage/plugin-app-backend@0.3.54
+  - @backstage/plugin-azure-devops-backend@0.4.3
+  - @backstage/plugin-catalog-backend-module-scaffolder-entity-model@0.1.3
+  - @backstage/plugin-devtools-backend@0.2.3
+  - @backstage/plugin-entity-feedback-backend@0.2.3
+  - @backstage/plugin-permission-backend@0.5.29
+  - @backstage/plugin-permission-backend-module-allow-all-policy@0.1.3
+  - @backstage/plugin-permission-node@0.7.17
+  - @backstage/plugin-proxy-backend@0.4.3
+  - @backstage/plugin-todo-backend@0.3.4
+  - @backstage/plugin-catalog-backend-module-unprocessed@0.3.3
+  - @backstage/plugin-permission-common@0.7.9
+
 ## 0.0.16-next.2
 
 ### Patch Changes

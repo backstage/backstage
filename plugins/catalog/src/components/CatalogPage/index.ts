@@ -15,5 +15,8 @@
  */
 
 export { CatalogPage } from './CatalogPage';
-export { DefaultCatalogPage } from './DefaultCatalogPage';
-export type { DefaultCatalogPageProps } from './DefaultCatalogPage';
+export { BaseCatalogPage, DefaultCatalogPage } from './DefaultCatalogPage';
+export type {
+  BaseCatalogPageProps,
+  DefaultCatalogPageProps,
+} from './DefaultCatalogPage';
