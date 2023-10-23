@@ -115,6 +115,11 @@ export const Stepper = (stepperProps: StepperProps) => {
     );
   }, [props.extensions]);
 
+  const fields = useMemo(
+    () => ({ ...FieldOverrides, ...extensions }),
+    [extensions],
+  );
+
   const validators = useMemo(() => {
     return Object.fromEntries(
       props.extensions.map(({ name, validation }) => [name, validation]),
@@ -197,7 +202,7 @@ export const Stepper = (stepperProps: StepperProps) => {
             schema={currentStep.schema}
             uiSchema={currentStep.uiSchema}
             onSubmit={handleNext}
-            fields={{ ...FieldOverrides, ...extensions }}
+            fields={fields}
             showErrorList={false}
             onChange={handleChange}
             {...(props.formProps ?? {})}
