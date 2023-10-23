@@ -447,9 +447,6 @@ type ObjectWithContentSchema<
   ? SchemaRef<Doc, Object['content']['application/json']['schema']>
   : never;
 
-// @public
-export const OPENAPI_SPEC_ROUTE = '/openapi.json';
-
 // @public (undocumented)
 type OptionalMap<
   T extends {

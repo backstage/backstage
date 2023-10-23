@@ -13,7 +13,11 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import type { ApiEntity } from '@backstage/catalog-model';
+import {
+  ANNOTATION_LOCATION,
+  ANNOTATION_ORIGIN_LOCATION,
+  type ApiEntity,
+} from '@backstage/catalog-model';
 import { Config } from '@backstage/config';
 import { ForwardedError } from '@backstage/errors';
 import {
@@ -202,7 +206,9 @@ export class InternalOpenApiDocumentationProvider implements EntityProvider {
   }
 
   async refresh(logger: LoggerService) {
-    const pluginsToMerge = this.config.getStringArray('openapi.plugins');
+    const pluginsToMerge = this.config.getStringArray(
+      'catalog.providers.openapi.plugins',
+    );
     logger.info(`Loading specs from from ${pluginsToMerge}.`);
     const documentationEntity: ApiEntity = {
       apiVersion: 'backstage.io/v1beta1',
@@ -211,10 +217,10 @@ export class InternalOpenApiDocumentationProvider implements EntityProvider {
         name: 'INTERNAL_instance_openapi_doc',
         title: 'Your Backstage Instance documentation',
         annotations: {
-          'backstage.io/managed-by-location':
-            'internal-package:@backstage/plugin-catalog-backend-module-openapi-spec',
-          'backstage.io/managed-by-origin-location':
-            'internal-package:@backstage/plugin-catalog-backend-module-openapi-spec',
+          [ANNOTATION_LOCATION]:
+            'internal-package:@backstage/plugin-catalog-backend-module-backstage-openapi',
+          [ANNOTATION_ORIGIN_LOCATION]:
+            'internal-package:@backstage/plugin-catalog-backend-module-backstage-openapi',
         },
       },
       spec: {

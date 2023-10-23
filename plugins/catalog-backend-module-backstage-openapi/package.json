@@ -1,10 +1,9 @@
 {
-  "name": "@backstage/plugin-catalog-backend-module-openapi-spec",
+  "name": "@backstage/plugin-catalog-backend-module-backstage-openapi",
   "version": "0.0.0",
   "main": "src/index.ts",
   "types": "src/index.ts",
   "license": "Apache-2.0",
-  "private": true,
   "publishConfig": {
     "access": "public",
     "main": "dist/index.cjs.js",
@@ -27,6 +26,7 @@
     "@backstage/backend-openapi-utils": "workspace:^",
     "@backstage/backend-plugin-api": "workspace:^",
     "@backstage/backend-tasks": "workspace:^",
+    "@backstage/catalog-model": "workspace:^",
     "@backstage/config": "workspace:^",
     "@backstage/errors": "workspace:^",
     "@backstage/plugin-catalog-node": "workspace:^",
@@ -40,7 +40,6 @@
     "yn": "^4.0.0"
   },
   "devDependencies": {
-    "@backstage/catalog-model": "workspace:^",
     "@backstage/cli": "workspace:^",
     "@backstage/test-utils": "workspace:^",
     "@types/supertest": "^2.0.8",
