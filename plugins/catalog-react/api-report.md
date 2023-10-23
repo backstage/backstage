@@ -196,7 +196,8 @@ export const EntityDisplayName: (props: EntityDisplayNameProps) => JSX.Element;
 // @public
 export type EntityDisplayNameProps = {
   entityRef: Entity | CompoundEntityRef | string;
-  variant?: 'simple' | string;
+  noIcon?: boolean;
+  noTooltip?: boolean;
   defaultKind?: string;
   defaultNamespace?: string;
 };

@@ -79,11 +79,7 @@ function EntityLayoutTitle(props: {
         whiteSpace="nowrap"
         overflow="hidden"
       >
-        {entity ? (
-          <EntityDisplayName entityRef={entity} variant="simple" />
-        ) : (
-          title
-        )}
+        {entity ? <EntityDisplayName entityRef={entity} noIcon /> : title}
       </Box>
       {entity && <FavoriteEntity entity={entity} />}
     </Box>
