@@ -66,6 +66,7 @@ export const googleAuthenticator = createOAuthAuthenticator({
     return helper.start(input, {
       accessType: 'offline',
       prompt: 'consent',
+      includeGrantedScopes: 'true',
     });
   },
 
@@ -74,7 +75,7 @@ export const googleAuthenticator = createOAuthAuthenticator({
   },
 
   async refresh(input, helper) {
-    return helper.refresh(input);
+    return helper.refresh({ ...input, scope: '' });
   },
 
   async logout(input) {
