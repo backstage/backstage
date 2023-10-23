@@ -75,6 +75,11 @@ export function registerCommands(program: Command) {
       'Plugins which should be added automatically to the mkdocs.yaml file',
       [],
     )
+    .option(
+      '--runAsDefaultUser',
+      'Bypass setting the container user as the same user and group id as host for Linux and MacOS',
+      false
+    )
     .alias('build')
     .action(lazy(() => import('./generate/generate').then(m => m.default)));
 
