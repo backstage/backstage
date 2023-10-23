@@ -167,7 +167,9 @@ exports.down = async function down(knex) {
   await knex.schema
     .createTable('entities', table => {
       table.comment('All entities currently stored in the catalog');
-      table.uuid('id').primary().comment('Auto-generated ID of the entity');
+      table
+        .increments('id', { primaryKey: true })
+        .comment('Primary key to distinguish unique lines from each other');
       table
         .uuid('location_id')
         .references('id')

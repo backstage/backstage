@@ -21,40 +21,31 @@
  */
 exports.up = async function up(knex) {
   await knex.schema.hasColumn('refresh_keys', 'id').then(async hasCol => {
-    if (hasCol) {
-      return;
+    if (!hasCol) {
+      await knex.schema.alterTable('refresh_keys', table => {
+        table
+          .increments('id', { primaryKey: true })
+          .comment('Auto-generated ID of the location');
+      });
     }
-    await knex.schema.alterTable('refresh_keys', table => {
-      table
-        .uuid('id')
-        .primary()
-        .notNullable()
-        .comment('Auto-generated ID of the location');
-    });
   });
   await knex.schema.hasColumn('relations', 'id').then(async hasCol => {
-    if (hasCol) {
-      return;
+    if (!hasCol) {
+      await knex.schema.alterTable('relations', table => {
+        table
+          .increments('id', { primaryKey: true })
+          .comment('Auto-generated ID of the location');
+      });
     }
-    await knex.schema.alterTable('relations', table => {
-      table
-        .uuid('id')
-        .primary()
-        .notNullable()
-        .comment('Auto-generated ID of the location');
-    });
   });
   await knex.schema.hasColumn('search', 'id').then(async hasCol => {
-    if (hasCol) {
-      return;
+    if (!hasCol) {
+      await knex.schema.alterTable('search', table => {
+        table
+          .increments('id', { primaryKey: true })
+          .comment('Auto-generated ID of the location');
+      });
     }
-    await knex.schema.alterTable('search', table => {
-      table
-        .uuid('id')
-        .primary()
-        .notNullable()
-        .comment('Auto-generated ID of the location');
-    });
   });
 };
 
@@ -63,12 +54,12 @@ exports.up = async function up(knex) {
  */
 exports.down = async function down(knex) {
   await knex.schema.alterTable('refresh_keys', table => {
-    table.dropPrimary();
+    table.dropColumn('refresh_keys');
   });
   await knex.schema.alterTable('relations', table => {
-    table.dropPrimary();
+    table.dropColumn('relations');
   });
   await knex.schema.alterTable('search', table => {
-    table.dropPrimary();
+    table.dropColumn('search');
   });
 };
