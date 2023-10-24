@@ -34,7 +34,7 @@ describe('<EntityRefLinks />', () => {
         '/catalog/:namespace/:kind/:name/*': entityRouteRef,
       },
     });
-    expect(screen.getByText('component:software')).toHaveAttribute(
+    expect(screen.getByText('software').closest('a')).toHaveAttribute(
       'href',
       '/catalog/default/component/software',
     );
@@ -59,11 +59,11 @@ describe('<EntityRefLinks />', () => {
       },
     });
     expect(screen.getByText(',')).toBeInTheDocument();
-    expect(screen.getByText('component:software')).toHaveAttribute(
+    expect(screen.getByText('software').closest('a')).toHaveAttribute(
       'href',
       '/catalog/default/component/software',
     );
-    expect(screen.getByText('api:interface')).toHaveAttribute(
+    expect(screen.getByText('interface').closest('a')).toHaveAttribute(
       'href',
       '/catalog/default/api/interface',
     );
