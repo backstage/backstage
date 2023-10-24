@@ -674,6 +674,34 @@ describe('DefaultWorkflowRunner', () => {
         );
       }
     });
+
+    it('should validate each action iteration', async () => {
+      const task = createMockTaskWithSpec({
+        apiVersion: 'scaffolder.backstage.io/v1beta3',
+        steps: [
+          {
+            id: 'test',
+            name: 'name',
+            each: '${{parameters.data}}',
+            action: 'jest-validated-action',
+            input: { foo: '${{each.value.foo}}' },
+          },
+        ],
+        output: {},
+        parameters: {
+          data: [
+            {
+              foo: 0,
+            },
+            {},
+          ],
+        },
+      });
+      await expect(runner.execute(task)).rejects.toThrow(
+        'Invalid input passed to action jest-validated-action[1], instance requires property "foo"',
+      );
+      expect(fakeActionHandler).not.toHaveBeenCalled();
+    });
   });
 
   describe('secrets', () => {
