@@ -162,6 +162,8 @@ export interface TaskStore {
     options: TaskStoreCreateTaskOptions,
   ): Promise<TaskStoreCreateTaskResult>;
 
+  recoverTasks(): Promise<void>;
+
   getTask(taskId: string): Promise<SerializedTask>;
 
   claimTask(): Promise<SerializedTask | undefined>;

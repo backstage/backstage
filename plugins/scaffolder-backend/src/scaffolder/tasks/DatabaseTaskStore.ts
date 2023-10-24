@@ -35,6 +35,7 @@ import {
   TaskStoreShutDownTaskOptions,
 } from './types';
 import { DateTime } from 'luxon';
+import { TaskSpec } from '@backstage/plugin-scaffolder-common';
 
 const migrationsDir = resolvePackagePath(
   '@backstage/plugin-scaffolder-backend',
@@ -206,6 +207,18 @@ export class DatabaseTaskStore implements TaskStore {
       status: 'open',
     });
     return { taskId };
+  }
+
+  async getEnrichedTaskSpec(task: {
+    id: string;
+    spec: string;
+  }): Promise<TaskSpec> {
+    const spec = JSON.parse(task.spec) as TaskSpec;
+    const events = await this.listEvents({ taskId: task.id });
+
+    // spec.steps = ; TODO:
+
+    return spec;
   }
 
   async claimTask(): Promise<SerializedTask | undefined> {
@@ -449,15 +462,35 @@ export class DatabaseTaskStore implements TaskStore {
     });
   }
 
+  async reopenTask(options: { taskId: string }): Promise<void> {
+    const { taskId } = options;
+
+    await this.db.transaction(async tx => {
+      await tx<RawDbTaskRow>('tasks').where({ id: taskId }).update({
+        status: 'open',
+        last_heartbeat_at: this.db.fn.now(),
+      });
+    });
+  }
+
   async cancelTask(
     options: TaskStoreEmitOptions<{ message: string } & JsonObject>,
   ): Promise<void> {
     const { taskId, body } = options;
     const serializedBody = JSON.stringify(body);
+
     await this.db<RawDbTaskEventRow>('task_events').insert({
       task_id: taskId,
       event_type: 'cancelled',
       body: serializedBody,
     });
+  }
+
+  async recoverTasks(options: { timeoutS: number }): Promise<void> {
+    const { tasks } = await this.listStaleTasks({ timeoutS: options.timeoutS });
+
+    for (const task of tasks) {
+      await this.reopenTask({ taskId: task.taskId });
+    }
   }
 }
