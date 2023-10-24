@@ -95,7 +95,7 @@ export async function startBackendExperimental(options: BackendServeOptions) {
       process.execPath,
       [...loaderArgs, ...optionArgs, options.entry, ...userArgs],
       {
-        stdio: ['inherit', 'inherit', 'inherit', 'ipc'],
+        stdio: ['ignore', 'inherit', 'inherit', 'ipc'],
         env: {
           ...process.env,
           BACKSTAGE_CLI_CHANNEL: '1',
