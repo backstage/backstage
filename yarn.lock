@@ -10151,6 +10151,7 @@ __metadata:
     "@types/is-glob": ^4.0.2
     "@types/mock-fs": ^4.13.0
     "@types/node": ^18.17.8
+    "@types/prettier": ^2.0.0
     chalk: ^4.0.0
     codeowners-utils: ^1.0.2
     commander: ^9.1.0
@@ -19338,6 +19339,13 @@ __metadata:
   version: 0.0.31
   resolution: "@types/pluralize@npm:0.0.31"
   checksum: 950d52d8f6709cdb7001336942fba0a63bf54b45695391fc2244d03db69b0eb6f187f80519d74941f5ce1dfa900d3975f2ed52e98b1f63a79045f5c085832beb
+  languageName: node
+  linkType: hard
+
+"@types/prettier@npm:^2.0.0":
+  version: 2.7.3
+  resolution: "@types/prettier@npm:2.7.3"
+  checksum: 705384209cea6d1433ff6c187c80dcc0b95d99d5c5ce21a46a9a58060c527973506822e428789d842761e0280d25e3359300f017fbe77b9755bc772ab3dc2f83
   languageName: node
   linkType: hard
 
