@@ -77,6 +77,10 @@ async function verifyUrl(basePath, absUrl, docPages) {
     return undefined;
   }
 
+  if (basePath.startsWith('.changeset/')) {
+    return { url, basePath, problem: 'out-of-changeset' };
+  }
+
   let path = '';
 
   if (url.startsWith('/')) {
@@ -195,6 +199,10 @@ async function main() {
             '',
           )}`,
         );
+      } else if (problem === 'out-of-changeset') {
+        console.error('Links in changesets must use absolute URLs');
+        console.error(`  From: ${basePath}`);
+        console.error(`  To: ${url}`);
       } else if (problem === 'doc-missing') {
         const suggestion =
           docPages.get(url) ||
