@@ -1,5 +1,11 @@
 # @backstage/version-bridge
 
+## 1.0.6
+
+### Patch Changes
+
+- 9a1fce352e: Updated dependency `@testing-library/jest-dom` to `^6.0.0`.
+
 ## 1.0.5
 
 ### Patch Changes

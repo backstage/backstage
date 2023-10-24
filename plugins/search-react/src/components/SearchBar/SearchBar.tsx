@@ -30,6 +30,7 @@ import React, {
   KeyboardEvent,
   useCallback,
   useEffect,
+  useRef,
   useState,
 } from 'react';
 import useDebounce from 'react-use/lib/useDebounce';
@@ -88,14 +89,28 @@ export const SearchBarBase: ForwardRefExoticComponent<SearchBarBaseProps> =
 
       const configApi = useApi(configApiRef);
       const [value, setValue] = useState<string>('');
+      const forwardedValueRef = useRef<string>('');
 
       useEffect(() => {
-        setValue(prevValue =>
-          prevValue !== defaultValue ? String(defaultValue) : prevValue,
-        );
-      }, [defaultValue]);
+        setValue(prevValue => {
+          // We only update the value if our current value is the same as it was
+          // for the most recent onChange call. Otherwise it means that the users
+          // has continued typing and we should not replace their input.
+          if (prevValue === forwardedValueRef.current) {
+            return String(defaultValue);
+          }
+          return prevValue;
+        });
+      }, [defaultValue, forwardedValueRef]);
 
-      useDebounce(() => onChange(value), debounceTime, [value]);
+      useDebounce(
+        () => {
+          forwardedValueRef.current = value;
+          onChange(value);
+        },
+        debounceTime,
+        [value],
+      );
 
       const handleChange = useCallback(
         (e: ChangeEvent<HTMLInputElement>) => {
@@ -115,7 +130,9 @@ export const SearchBarBase: ForwardRefExoticComponent<SearchBarBaseProps> =
       );
 
       const handleClear = useCallback(() => {
+        forwardedValueRef.current = '';
         onChange('');
+        setValue('');
         if (onClear) {
           onClear();
         }

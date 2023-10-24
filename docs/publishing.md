@@ -40,7 +40,7 @@ Congratulations on the release! There should be now a post in the [`#announcemen
 Additional steps for the main line release
 
 - [Switch Release Mode](#switching-release-modes) to exit pre-release mode. This can be done at any time after the last Next Line Release.
-  - Check [`.changeset/pre.json`](https://github.com/backstage/backstage/blob/master/.changeset/pre.json) if the `mode` is set to `exit`. If you encounter `mode: "pre"` it indicates a next line release.
+  - Check `.changeset/pre.json` <!-- do not link to pre.json, it breaks the build when it doesn't exist --> if the `mode` is set to `exit`. If you encounter `mode: "pre"` it indicates a next line release.
 - Check [`Version Packages` Pull Request](https://github.com/backstage/backstage/pulls?q=is%3Aopen+is%3Apr+in%3Atitle+%22Version+Packages)
   - Check for mentions of "major" & "breaking" and if they are expected in the current release
   - Verify the version we are shipping is correct

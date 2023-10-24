@@ -15,36 +15,35 @@
  */
 
 import fs from 'fs-extra';
-import mockFs from 'mock-fs';
-import { resolve as resolvePath, join as joinPath } from 'path';
-import { paths } from '../../paths';
+import { join as joinPath } from 'path';
 import { Task } from '../../tasks';
 import { FactoryRegistry } from '../FactoryRegistry';
-import { createMockOutputStream, mockPaths } from './common/testUtils';
+import {
+  createMockOutputStream,
+  expectLogsToMatch,
+  mockPaths,
+} from './common/testUtils';
 import { nodeLibraryPackage } from './nodeLibraryPackage';
+import { createMockDirectory } from '@backstage/backend-test-utils';
 
 describe('nodeLibraryPackage factory', () => {
+  const mockDir = createMockDirectory();
+
   beforeEach(() => {
     mockPaths({
-      targetRoot: '/root',
+      targetRoot: mockDir.path,
     });
   });
 
   afterEach(() => {
-    mockFs.restore();
     jest.resetAllMocks();
   });
 
   it('should create a node library package', async () => {
     const expectedNodeLibraryPackageName = 'test';
 
-    mockFs({
-      '/root': {
-        packages: mockFs.directory(),
-      },
-      [paths.resolveOwn('templates')]: mockFs.load(
-        paths.resolveOwn('templates'),
-      ),
+    mockDir.setContent({
+      packages: {},
     });
 
     const options = await FactoryRegistry.populateOptions(nodeLibraryPackage, {
@@ -69,8 +68,7 @@ describe('nodeLibraryPackage factory', () => {
 
     expect(modified).toBe(true);
 
-    expect(output).toEqual([
-      '',
+    expectLogsToMatch(output, [
       `Creating node-library package ${expectedNodeLibraryPackageName}`,
       'Checking Prerequisites:',
       `availability  ${joinPath('packages', expectedNodeLibraryPackageName)}`,
@@ -87,7 +85,11 @@ describe('nodeLibraryPackage factory', () => {
 
     await expect(
       fs.readJson(
-        `/root/packages/${expectedNodeLibraryPackageName}/package.json`,
+        mockDir.resolve(
+          'packages',
+          expectedNodeLibraryPackageName,
+          'package.json',
+        ),
       ),
     ).resolves.toEqual(
       expect.objectContaining({
@@ -99,11 +101,11 @@ describe('nodeLibraryPackage factory', () => {
 
     expect(Task.forCommand).toHaveBeenCalledTimes(2);
     expect(Task.forCommand).toHaveBeenCalledWith('yarn install', {
-      cwd: resolvePath(`/root/packages/${expectedNodeLibraryPackageName}`),
+      cwd: mockDir.resolve('packages', expectedNodeLibraryPackageName),
       optional: true,
     });
     expect(Task.forCommand).toHaveBeenCalledWith('yarn lint --fix', {
-      cwd: resolvePath(`/root/packages/${expectedNodeLibraryPackageName}`),
+      cwd: mockDir.resolve('packages', expectedNodeLibraryPackageName),
       optional: true,
     });
   });
@@ -111,14 +113,9 @@ describe('nodeLibraryPackage factory', () => {
   it('should create a node library plugin with options and codeowners', async () => {
     const expectedNodeLibraryPackageName = 'test';
 
-    mockFs({
-      '/root': {
-        CODEOWNERS: '',
-        packages: mockFs.directory(),
-      },
-      [paths.resolveOwn('templates')]: mockFs.load(
-        paths.resolveOwn('templates'),
-      ),
+    mockDir.setContent({
+      CODEOWNERS: '',
+      packages: {},
     });
 
     const options = await FactoryRegistry.populateOptions(nodeLibraryPackage, {
@@ -141,11 +138,11 @@ describe('nodeLibraryPackage factory', () => {
 
     expect(Task.forCommand).toHaveBeenCalledTimes(2);
     expect(Task.forCommand).toHaveBeenCalledWith('yarn install', {
-      cwd: resolvePath(`/root/${expectedNodeLibraryPackageName}`),
+      cwd: mockDir.resolve(expectedNodeLibraryPackageName),
       optional: true,
     });
     expect(Task.forCommand).toHaveBeenCalledWith('yarn lint --fix', {
-      cwd: resolvePath(`/root/${expectedNodeLibraryPackageName}`),
+      cwd: mockDir.resolve(expectedNodeLibraryPackageName),
       optional: true,
     });
   });

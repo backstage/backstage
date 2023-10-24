@@ -47,13 +47,13 @@ import {
   CustomResource,
   KubernetesClustersSupplier,
   KubernetesFetcher,
-  KubernetesObjectsProvider,
   KubernetesObjectsProviderOptions,
   KubernetesObjectTypes,
   KubernetesServiceLocator,
   ObjectsByEntityRequest,
   ServiceLocatorMethod,
 } from '../types/types';
+import { KubernetesObjectsProvider } from '@backstage/plugin-kubernetes-node';
 import {
   DEFAULT_OBJECTS,
   KubernetesFanOutHandler,

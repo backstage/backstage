@@ -203,9 +203,8 @@ describe('SearchModal', () => {
       expect.objectContaining({ term: 'term' }),
     );
 
-    const input = screen.getByLabelText('Search');
+    const input = screen.getByLabelText<HTMLInputElement>('Search');
     await userEvent.clear(input);
-    await 'a tick';
     await userEvent.type(input, 'new term{enter}');
 
     expect(navigate).toHaveBeenCalledWith('/search?query=new term');

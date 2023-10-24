@@ -29,7 +29,7 @@ const SearchContextFilterSpy = ({ name }: { name: string }) => {
   const value = filters[name];
   return (
     <span data-testid={`${name}-filter-spy`}>
-      {Array.isArray(value) ? value.join(',') : value}
+      {Array.isArray(value) ? value.join(',') : value?.toString()}
     </span>
   );
 };
@@ -364,7 +364,7 @@ describe('SearchFilter.Autocomplete', () => {
       });
 
       // Blur the field and only one tag should be shown with a +1.
-      input.blur();
+      await userEvent.tab();
       expect(
         screen.queryByRole('button', { name: values[0] }),
       ).not.toBeInTheDocument();

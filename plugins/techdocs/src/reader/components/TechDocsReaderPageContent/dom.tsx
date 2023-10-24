@@ -39,7 +39,6 @@ import {
   removeMkdocsHeader,
   rewriteDocLinks,
   simplifyMkdocsFooter,
-  scrollIntoAnchor,
   scrollIntoNavigation,
   transform as transformer,
   copyToClipboard,
@@ -167,7 +166,6 @@ export const useTechDocsReaderDom = (
   const postRender = useCallback(
     async (transformedElement: Element) =>
       transformer(transformedElement, [
-        scrollIntoAnchor(),
         scrollIntoNavigation(),
         copyToClipboard(theme),
         addLinkClickListener({

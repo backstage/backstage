@@ -14,28 +14,86 @@
  * limitations under the License.
  */
 
-import { BackstagePlugin } from '@backstage/frontend-plugin-api';
+import { Config, ConfigReader } from '@backstage/config';
+import {
+  BackstagePlugin,
+  ExtensionOverrides,
+} from '@backstage/frontend-plugin-api';
 
 interface DiscoveryGlobal {
-  modules: Array<{ name: string; default: unknown }>;
+  modules: Array<{ name: string; export?: string; default: unknown }>;
+}
+
+function readPackageDetectionConfig(config: Config) {
+  const packages = config.getOptional('app.experimental.packages');
+  if (packages === undefined || packages === null) {
+    return undefined;
+  }
+
+  if (typeof packages === 'string') {
+    if (packages !== 'all') {
+      throw new Error(
+        `Invalid app.experimental.packages mode, got '${packages}', expected 'all'`,
+      );
+    }
+    return {};
+  }
+
+  if (typeof packages !== 'object' || Array.isArray(packages)) {
+    throw new Error(
+      "Invalid config at 'app.experimental.packages', expected object",
+    );
+  }
+  const packagesConfig = new ConfigReader(
+    packages,
+    'app.experimental.packages',
+  );
+
+  return {
+    include: packagesConfig.getOptionalStringArray('include'),
+    exclude: packagesConfig.getOptionalStringArray('exclude'),
+  };
 }
 
 /**
  * @public
  */
-export function getAvailablePlugins(): BackstagePlugin[] {
+export function getAvailableFeatures(
+  config: Config,
+): (BackstagePlugin | ExtensionOverrides)[] {
   const discovered = (
     window as { '__@backstage/discovered__'?: DiscoveryGlobal }
   )['__@backstage/discovered__'];
 
+  const detection = readPackageDetectionConfig(config);
+  if (!detection) {
+    return [];
+  }
+
   return (
-    discovered?.modules.map(m => m.default).filter(isBackstagePlugin) ?? []
+    discovered?.modules
+      .filter(({ name }) => {
+        if (detection.exclude?.includes(name)) {
+          return false;
+        }
+        if (detection.include && !detection.include.includes(name)) {
+          return false;
+        }
+        return true;
+      })
+      .map(m => m.default)
+      .filter(isBackstageFeature) ?? []
   );
 }
 
-function isBackstagePlugin(obj: unknown): obj is BackstagePlugin {
+function isBackstageFeature(
+  obj: unknown,
+): obj is BackstagePlugin | ExtensionOverrides {
   if (obj !== null && typeof obj === 'object' && '$$type' in obj) {
-    return obj.$$type === '@backstage/BackstagePlugin';
+    return (
+      obj.$$type === '@backstage/BackstagePlugin' ||
+      obj.$$type === '@backstage/ExtensionOverrides'
+    );
   }
   return false;
 }

@@ -22,7 +22,7 @@ describe('acme:example', () => {
       logStream: new PassThrough(),
       output: jest.fn(),
       createTemporaryDirectory() {
-        // Usage of mock-fs is recommended for testing of filesystem operations
+        // Usage of createMockDirectory is recommended for testing of filesystem operations
         throw new Error('Not implemented');
       },
     });

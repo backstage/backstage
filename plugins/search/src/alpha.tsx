@@ -28,7 +28,6 @@ import {
   useSidebarPinState,
 } from '@backstage/core-components';
 import {
-  createRouteRef,
   useApi,
   DiscoveryApi,
   IdentityApi,
@@ -64,9 +63,11 @@ import { SearchResult } from '@backstage/plugin-search-common';
 import { searchApiRef } from '@backstage/plugin-search-react';
 import { searchResultItemExtensionData } from '@backstage/plugin-search-react/alpha';
 
+import { rootRouteRef } from './plugin';
 import { SearchClient } from './apis';
 import { SearchType } from './components/SearchType';
 import { UrlUpdater } from './components/SearchPage/SearchPage';
+import { convertLegacyRouteRef } from '@backstage/core-plugin-api/alpha';
 
 /** @alpha */
 export const SearchApi = createApiExtension({
@@ -95,12 +96,10 @@ const useSearchPageStyles = makeStyles((theme: Theme) => ({
   },
 }));
 
-const searchRouteRef = createRouteRef({ id: 'plugin.search.page' });
-
 /** @alpha */
 export const SearchPage = createPageExtension({
   id: 'plugin.search.page',
-  routeRef: searchRouteRef,
+  routeRef: convertLegacyRouteRef(rootRouteRef),
   configSchema: createSchemaFromZod(z =>
     z.object({
       path: z.string().default('/search'),
@@ -198,22 +197,24 @@ export const SearchPage = createPageExtension({
               <Grid item xs>
                 <SearchPagination />
                 <SearchResults>
-                  {({ results }) =>
-                    results.map((result, index) => {
-                      const { noTrack } = config;
-                      const { document, ...rest } = result;
-                      const SearchResultListItem =
-                        getResultItemComponent(result);
-                      return (
-                        <SearchResultListItem
-                          {...rest}
-                          key={index}
-                          result={document}
-                          noTrack={noTrack}
-                        />
-                      );
-                    })
-                  }
+                  {({ results }) => (
+                    <>
+                      {results.map((result, index) => {
+                        const { noTrack } = config;
+                        const { document, ...rest } = result;
+                        const SearchResultListItem =
+                          getResultItemComponent(result);
+                        return (
+                          <SearchResultListItem
+                            {...rest}
+                            key={index}
+                            result={document}
+                            noTrack={noTrack}
+                          />
+                        );
+                      })}
+                    </>
+                  )}
                 </SearchResults>
                 <SearchResultPager />
               </Grid>
@@ -235,13 +236,16 @@ export const SearchPage = createPageExtension({
 /** @alpha */
 export const SearchNavItem = createNavItemExtension({
   id: 'plugin.search.nav.index',
-  routeRef: searchRouteRef,
+  routeRef: convertLegacyRouteRef(rootRouteRef),
   title: 'Search',
   icon: SearchIcon,
 });
 
 /** @alpha */
 export default createPlugin({
-  id: 'plugin.search',
+  id: 'search',
   extensions: [SearchApi, SearchPage, SearchNavItem],
+  routes: {
+    root: convertLegacyRouteRef(rootRouteRef),
+  },
 });

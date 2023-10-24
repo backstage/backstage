@@ -25,6 +25,7 @@ backend's
 backported
 backporting
 BEPs
+bigint
 Bigtable
 Billett
 bitbucket
@@ -290,6 +291,7 @@ Preprarer
 productional
 Protobuf
 proxying
+proxied
 Proxying
 pseudonymized
 pubsub
@@ -429,6 +431,7 @@ Valentina
 validator
 validators
 varchar
+vite
 VMware
 Vodafone
 VPCs
@@ -454,3 +457,4 @@ Pulumi
 Lightsail
 PR
 rebasing
+lookbehind

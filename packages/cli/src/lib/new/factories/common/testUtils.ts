@@ -73,3 +73,11 @@ export function createMockOutputStream() {
     } as unknown as WriteStream & { fd: any },
   ] as const;
 }
+
+// Avoid flakes by comparing sorted log lines. File system access is async, which leads to the log line order being indeterministic
+export function expectLogsToMatch(
+  recievedLogs: String[],
+  expected: String[],
+): void {
+  expect(recievedLogs.filter(Boolean).sort()).toEqual(expected.sort());
+}

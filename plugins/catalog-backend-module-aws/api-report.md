@@ -8,7 +8,9 @@ import { AwsCredentialsManager } from '@backstage/integration-aws-node';
 import { CatalogProcessor } from '@backstage/plugin-catalog-node';
 import { CatalogProcessorEmit } from '@backstage/plugin-catalog-node';
 import { CatalogProcessorParser } from '@backstage/plugin-catalog-node';
+import type { Cluster } from '@aws-sdk/client-eks';
 import { Config } from '@backstage/config';
+import type { Entity } from '@backstage/catalog-model';
 import { EntityProvider } from '@backstage/plugin-catalog-node';
 import { EntityProviderConnection } from '@backstage/plugin-catalog-node';
 import { LocationSpec } from '@backstage/plugin-catalog-common';
@@ -16,6 +18,12 @@ import { Logger } from 'winston';
 import { PluginTaskScheduler } from '@backstage/backend-tasks';
 import { TaskRunner } from '@backstage/backend-tasks';
 import { UrlReader } from '@backstage/backend-common';
+
+// @public
+export const ANNOTATION_AWS_ACCOUNT_ID: string;
+
+// @public
+export const ANNOTATION_AWS_ARN: string;
 
 // @public
 export type AWSCredentialFactory = (
@@ -27,13 +35,17 @@ export class AwsEKSClusterProcessor implements CatalogProcessor {
   constructor(options: {
     credentialsFactory?: AWSCredentialFactory;
     credentialsManager?: AwsCredentialsManager;
+    clusterEntityTransformer?: EksClusterEntityTransformer;
   });
   // (undocumented)
-  static fromConfig(configRoot: Config): AwsEKSClusterProcessor;
+  static fromConfig(
+    configRoot: Config,
+    options?: {
+      clusterEntityTransformer?: EksClusterEntityTransformer;
+    },
+  ): AwsEKSClusterProcessor;
   // (undocumented)
   getProcessorName(): string;
-  // (undocumented)
-  normalizeName(name: string): string;
   // (undocumented)
   readLocation(
     location: LocationSpec,
@@ -93,4 +105,10 @@ export class AwsS3EntityProvider implements EntityProvider {
   // (undocumented)
   refresh(logger: Logger): Promise<void>;
 }
+
+// @public
+export type EksClusterEntityTransformer = (
+  cluster: Cluster,
+  accountId: string,
+) => Promise<Entity>;
 ```

@@ -17,6 +17,7 @@ import React from 'react';
 import { Grid } from '@material-ui/core';
 import { Header, Page, Content } from '@backstage/core-components';
 import { OpenCostReport } from '../OpenCostReport';
+import logo from '../../images/pig.png';
 
 export const OpenCostPage = () => (
   <Page themeId="tool">
@@ -25,12 +26,7 @@ export const OpenCostPage = () => (
       subtitle="Open source Kubernetes cloud cost monitoring"
     >
       <a href="https://opencost.io">
-        <img
-          width={68}
-          height={64}
-          src={require('../../images/pig.png')}
-          alt="OpenCost"
-        />
+        <img width={68} height={64} src={logo} alt="OpenCost" />
       </a>
     </Header>
     <Content>

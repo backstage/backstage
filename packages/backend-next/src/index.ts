@@ -29,6 +29,7 @@ backend.add(
 backend.add(import('@backstage/plugin-catalog-backend/alpha'));
 backend.add(import('@backstage/plugin-devtools-backend'));
 backend.add(import('@backstage/plugin-entity-feedback-backend'));
+backend.add(import('@backstage/plugin-jenkins-backend'));
 backend.add(import('@backstage/plugin-kubernetes-backend/alpha'));
 backend.add(import('@backstage/plugin-lighthouse-backend'));
 backend.add(import('@backstage/plugin-linguist-backend'));
@@ -38,7 +39,7 @@ backend.add(
   import('@backstage/plugin-permission-backend-module-allow-all-policy'),
 );
 backend.add(import('@backstage/plugin-permission-backend/alpha'));
-backend.add(import('@backstage/plugin-proxy-backend'));
+backend.add(import('@backstage/plugin-proxy-backend/alpha'));
 backend.add(import('@backstage/plugin-scaffolder-backend/alpha'));
 backend.add(import('@backstage/plugin-search-backend-module-catalog/alpha'));
 backend.add(import('@backstage/plugin-search-backend-module-explore/alpha'));

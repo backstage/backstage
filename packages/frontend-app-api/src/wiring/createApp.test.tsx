@@ -15,95 +15,14 @@
  */
 
 import {
-  createExtension,
   createPageExtension,
   createPlugin,
   createThemeExtension,
 } from '@backstage/frontend-plugin-api';
-import { createApp, createInstances } from './createApp';
-import { screen } from '@testing-library/react';
+import { screen, waitFor } from '@testing-library/react';
+import { createApp } from './createApp';
 import { MockConfigApi, renderWithEffects } from '@backstage/test-utils';
 import React from 'react';
-import { createRouteRef } from '@backstage/core-plugin-api';
-import { createExtensionInstance } from './createExtensionInstance';
-
-describe('createInstances', () => {
-  it('throws an error when a root extension is parametrized', () => {
-    const config = new MockConfigApi({
-      app: {
-        extensions: [
-          {
-            root: {},
-          },
-        ],
-      },
-    });
-    const plugins = [
-      createPlugin({
-        id: 'plugin',
-        extensions: [],
-      }),
-    ];
-    expect(() => createInstances({ config, plugins })).toThrow(
-      "A 'root' extension configuration was detected, but the root extension is not configurable",
-    );
-  });
-
-  it('throws an error when a root extension is overridden', () => {
-    const config = new MockConfigApi({});
-    const plugins = [
-      createPlugin({
-        id: 'plugin',
-        extensions: [
-          createExtension({
-            id: 'root',
-            attachTo: { id: 'core.routes', input: 'route' },
-            inputs: {},
-            output: {},
-            factory() {},
-          }),
-        ],
-      }),
-    ];
-    expect(() => createInstances({ config, plugins })).toThrow(
-      "The following plugin(s) are overriding the 'root' extension which is forbidden: plugin",
-    );
-  });
-
-  it('throws an error when duplicated extensions are detected', () => {
-    const config = new MockConfigApi({});
-
-    const ExtensionA = createPageExtension({
-      id: 'A',
-      defaultPath: '/',
-      routeRef: createRouteRef({ id: 'A.route' }),
-      loader: async () => <div>Extension A</div>,
-    });
-
-    const ExtensionB = createPageExtension({
-      id: 'B',
-      defaultPath: '/',
-      routeRef: createRouteRef({ id: 'B.route' }),
-      loader: async () => <div>Extension B</div>,
-    });
-
-    const PluginA = createPlugin({
-      id: 'A',
-      extensions: [ExtensionA, ExtensionA],
-    });
-
-    const PluginB = createPlugin({
-      id: 'B',
-      extensions: [ExtensionA, ExtensionB, ExtensionB],
-    });
-
-    const plugins = [PluginA, PluginB];
-
-    expect(() => createInstances({ config, plugins })).toThrow(
-      "The following extensions are duplicated: The extension 'A' was provided 2 time(s) by the plugin 'A' and 1 time(s) by the plugin 'B', The extension 'B' was provided 2 time(s) by the plugin 'B'",
-    );
-  });
-});
 
 describe('createApp', () => {
   it('should allow themes to be installed', async () => {
@@ -114,7 +33,7 @@ describe('createApp', () => {
             extensions: [{ 'themes.light': false }, { 'themes.dark': false }],
           },
         }),
-      plugins: [
+      features: [
         createPlugin({
           id: 'test',
           extensions: [
@@ -134,111 +53,41 @@ describe('createApp', () => {
     await expect(screen.findByText('Derp')).resolves.toBeInTheDocument();
   });
 
-  it('should log an app', () => {
-    const { rootInstances } = createInstances({
-      config: new MockConfigApi({}),
-      plugins: [],
-    });
-    const root = createExtensionInstance({
-      extension: createExtension({
-        id: 'root',
-        attachTo: { id: '', input: '' },
-        output: {},
-        factory() {},
-      }),
-      config: undefined,
-      attachments: new Map([['children', rootInstances]]),
-    });
-
-    expect(String(root)).toMatchInlineSnapshot(`
-      "<root>
-        children [
-          <core>
-            themes [
-              <themes.light out=[core.theme] />
-              <themes.dark out=[core.theme] />
-            ]
-          </core>
-          <core.layout out=[core.reactElement]>
-            content [
-              <core.routes out=[core.reactElement] />
-            ]
-            nav [
-              <core.nav out=[core.reactElement] />
-            ]
-          </core.layout>
-        ]
-      </root>"
-    `);
-  });
-
-  it('should serialize an app as JSON', () => {
-    const { rootInstances } = createInstances({
-      config: new MockConfigApi({}),
-      plugins: [],
-    });
-    const root = createExtensionInstance({
-      extension: createExtension({
-        id: 'root',
-        attachTo: { id: '', input: '' },
-        output: {},
-        factory() {},
-      }),
-      config: undefined,
-      attachments: new Map([['children', rootInstances]]),
-    });
-
-    expect(JSON.parse(JSON.stringify(root))).toMatchInlineSnapshot(`
-      {
-        "attachments": {
-          "children": [
-            {
-              "attachments": {
-                "themes": [
-                  {
-                    "id": "themes.light",
-                    "output": [
-                      "core.theme",
-                    ],
-                  },
-                  {
-                    "id": "themes.dark",
-                    "output": [
-                      "core.theme",
-                    ],
-                  },
-                ],
-              },
-              "id": "core",
-            },
-            {
-              "attachments": {
-                "content": [
-                  {
-                    "id": "core.routes",
-                    "output": [
-                      "core.reactElement",
-                    ],
-                  },
-                ],
-                "nav": [
-                  {
-                    "id": "core.nav",
-                    "output": [
-                      "core.reactElement",
-                    ],
-                  },
-                ],
-              },
-              "id": "core.layout",
-              "output": [
-                "core.reactElement",
-              ],
-            },
+  it('should deduplicate features keeping the last received one', async () => {
+    const duplicatedFeatureId = 'test';
+    const app = createApp({
+      configLoader: async () => new MockConfigApi({}),
+      features: [
+        createPlugin({
+          id: duplicatedFeatureId,
+          extensions: [
+            createPageExtension({
+              id: 'test.page.first',
+              defaultPath: '/',
+              loader: async () => <div>First Page</div>,
+            }),
           ],
-        },
-        "id": "root",
-      }
-    `);
+        }),
+        createPlugin({
+          id: duplicatedFeatureId,
+          extensions: [
+            createPageExtension({
+              id: 'test.page.last',
+              defaultPath: '/',
+              loader: async () => <div>Last Page</div>,
+            }),
+          ],
+        }),
+      ],
+    });
+
+    await renderWithEffects(app.createRoot());
+
+    await waitFor(() =>
+      expect(screen.queryByText('First Page')).not.toBeInTheDocument(),
+    );
+    await waitFor(() =>
+      expect(screen.getByText('Last Page')).toBeInTheDocument(),
+    );
   });
 });

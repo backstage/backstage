@@ -6,13 +6,15 @@
 /// <reference types="react" />
 
 import { ApiHolder } from '@backstage/core-plugin-api';
+import { ComponentType } from 'react';
 import { CustomFieldExtensionSchema } from '@backstage/plugin-scaffolder-react';
+import { CustomFieldValidator } from '@backstage/plugin-scaffolder-react';
 import { Dispatch } from 'react';
 import { Extension } from '@backstage/core-plugin-api';
 import { FieldExtensionComponent } from '@backstage/plugin-scaffolder-react';
-import { FieldProps } from '@rjsf/utils';
+import { FieldExtensionOptions } from '@backstage/plugin-scaffolder-react';
 import { FieldValidation } from '@rjsf/utils';
-import { FormProps as FormProps_2 } from '@rjsf/core-v5';
+import { FormProps } from '@backstage/plugin-scaffolder-react';
 import { IconComponent } from '@backstage/core-plugin-api';
 import { JsonObject } from '@backstage/types';
 import { JsonValue } from '@backstage/types';
@@ -21,24 +23,39 @@ import { PropsWithChildren } from 'react';
 import { default as React_2 } from 'react';
 import { ReactElement } from 'react';
 import { ReactNode } from 'react';
+import { ReviewStepProps } from '@backstage/plugin-scaffolder-react';
+import { ScaffolderRJSFFieldProps } from '@backstage/plugin-scaffolder-react';
+import { ScaffolderRJSFFormProps } from '@backstage/plugin-scaffolder-react';
 import { ScaffolderStep } from '@backstage/plugin-scaffolder-react';
 import { ScaffolderTaskOutput } from '@backstage/plugin-scaffolder-react';
 import { SetStateAction } from 'react';
 import { TaskStep } from '@backstage/plugin-scaffolder-common';
 import { TemplateEntityV1beta3 } from '@backstage/plugin-scaffolder-common';
+import { TemplateGroupFilter } from '@backstage/plugin-scaffolder-react';
 import { TemplateParameterSchema } from '@backstage/plugin-scaffolder-react';
-import { UIOptionsType } from '@rjsf/utils';
 import { UiSchema } from '@rjsf/utils';
+
+// @alpha (undocumented)
+export const createAsyncValidators: (
+  rootSchema: JsonObject,
+  validators: Record<
+    string,
+    undefined | CustomFieldValidator<unknown, unknown>
+  >,
+  context: {
+    apiHolder: ApiHolder;
+  },
+) => (formData: JsonObject) => Promise<FormValidation>;
 
 // @alpha
 export const createFieldValidation: () => FieldValidation;
 
 // @alpha
-export function createNextScaffolderFieldExtension<
+export function createLegacyScaffolderFieldExtension<
   TReturnValue = unknown,
-  TInputProps extends UIOptionsType = {},
+  TInputProps = unknown,
 >(
-  options: NextFieldExtensionOptions<TReturnValue, TInputProps>,
+  options: LegacyFieldExtensionOptions<TReturnValue, TInputProps>,
 ): Extension<FieldExtensionComponent<TReturnValue, TInputProps>>;
 
 // @alpha
@@ -57,58 +74,46 @@ export const extractSchemaFromStep: (inputStep: JsonObject) => {
 
 // @alpha
 export const Form: (
-  props: PropsWithChildren<FormProps_2>,
+  props: PropsWithChildren<ScaffolderRJSFFormProps>,
 ) => React_2.JSX.Element;
 
-// @alpha
-export type FormProps = Pick<
-  FormProps_2,
-  'transformErrors' | 'noHtml5Validate'
->;
+// @alpha (undocumented)
+export type FormValidation = {
+  [name: string]: FieldValidation | FormValidation;
+};
 
 // @alpha
-export type NextCustomFieldValidator<
-  TFieldReturnValue,
-  TUiOptions = unknown,
-> = (
+export type LegacyCustomFieldValidator<TFieldReturnValue> = (
   data: TFieldReturnValue,
   field: FieldValidation,
   context: {
     apiHolder: ApiHolder;
-    formData: JsonObject;
-    schema: JsonObject;
-    uiSchema?: NextFieldExtensionUiSchema<TFieldReturnValue, TUiOptions>;
   },
 ) => void | Promise<void>;
 
 // @alpha
-export interface NextFieldExtensionComponentProps<
+export interface LegacyFieldExtensionComponentProps<
   TFieldReturnValue,
-  TUiOptions = {},
-> extends PropsWithChildren<FieldProps<TFieldReturnValue>> {
+  TUiOptions = unknown,
+> extends ScaffolderRJSFFieldProps<TFieldReturnValue> {
   // (undocumented)
-  uiSchema?: NextFieldExtensionUiSchema<TFieldReturnValue, TUiOptions>;
+  uiSchema: ScaffolderRJSFFieldProps['uiSchema'] & {
+    'ui:options'?: TUiOptions;
+  };
 }
 
 // @alpha
-export type NextFieldExtensionOptions<
+export type LegacyFieldExtensionOptions<
   TFieldReturnValue = unknown,
-  TUiOptions = unknown,
+  TInputProps = unknown,
 > = {
   name: string;
   component: (
-    props: NextFieldExtensionComponentProps<TFieldReturnValue, TUiOptions>,
+    props: LegacyFieldExtensionComponentProps<TFieldReturnValue, TInputProps>,
   ) => JSX.Element | null;
-  validation?: NextCustomFieldValidator<TFieldReturnValue, TUiOptions>;
+  validation?: LegacyCustomFieldValidator<TFieldReturnValue>;
   schema?: CustomFieldExtensionSchema;
 };
-
-// @alpha
-export interface NextFieldExtensionUiSchema<TFieldReturnValue, TUiOptions>
-  extends UiSchema<TFieldReturnValue> {
-  // (undocumented)
-  'ui:options'?: TUiOptions & UIOptionsType;
-}
 
 // @alpha
 export interface ParsedTemplateSchema {
@@ -176,12 +181,13 @@ export const Stepper: (stepperProps: StepperProps) => React_2.JSX.Element;
 // @alpha
 export type StepperProps = {
   manifest: TemplateParameterSchema;
-  extensions: NextFieldExtensionOptions<any, any>[];
+  extensions: FieldExtensionOptions<any, any>[];
   templateName?: string;
-  FormProps?: FormProps;
+  formProps?: FormProps;
   initialState?: Record<string, JsonValue>;
   onCreate: (values: Record<string, JsonValue>) => Promise<void>;
   components?: {
+    ReviewStepComponent?: ComponentType<ReviewStepProps>;
     ReviewStateComponent?: (props: ReviewStateProps) => JSX.Element;
     createButtonText?: ReactNode;
     reviewButtonText?: ReactNode;
@@ -235,12 +241,6 @@ export const TemplateCategoryPicker: () => React_2.JSX.Element | null;
 export const TemplateGroup: (
   props: TemplateGroupProps,
 ) => React_2.JSX.Element | null;
-
-// @alpha (undocumented)
-export type TemplateGroupFilter = {
-  title?: React_2.ReactNode;
-  filter: (entity: TemplateEntityV1beta3) => boolean;
-};
 
 // @alpha
 export interface TemplateGroupProps {
@@ -314,11 +314,14 @@ export type WorkflowProps = {
   description?: string;
   namespace: string;
   templateName: string;
+  components?: {
+    ReviewStepComponent?: React_2.ComponentType<ReviewStepProps>;
+  };
   onError(error: Error | undefined): JSX.Element | null;
 } & Pick<
   StepperProps,
   | 'extensions'
-  | 'FormProps'
+  | 'formProps'
   | 'components'
   | 'onCreate'
   | 'initialState'

@@ -165,7 +165,7 @@ describe('KubernetesFetcher', () => {
               {
                 metadata: {
                   name: 'pod-name',
-                  labels: { 'backstage.io/kubernetes-id': 'some-service' },
+                  labels: {},
                 },
               },
             ],
@@ -226,7 +226,7 @@ describe('KubernetesFetcher', () => {
               {
                 metadata: {
                   name: 'pod-name',
-                  labels: { 'backstage.io/kubernetes-id': 'some-service' },
+                  labels: {},
                 },
               },
             ],
@@ -237,7 +237,7 @@ describe('KubernetesFetcher', () => {
               {
                 metadata: {
                   name: 'service-name',
-                  labels: { 'backstage.io/kubernetes-id': 'some-service' },
+                  labels: {},
                 },
               },
             ],
@@ -289,7 +289,7 @@ describe('KubernetesFetcher', () => {
               {
                 metadata: {
                   name: 'service-name',
-                  labels: { 'backstage.io/kubernetes-id': 'some-service' },
+                  labels: {},
                 },
               },
             ],
@@ -339,7 +339,7 @@ describe('KubernetesFetcher', () => {
               {
                 metadata: {
                   name: 'pod-name',
-                  labels: { 'backstage.io/kubernetes-id': 'some-service' },
+                  labels: {},
                 },
               },
             ],
@@ -350,7 +350,7 @@ describe('KubernetesFetcher', () => {
               {
                 metadata: {
                   name: 'service-name',
-                  labels: { 'backstage.io/kubernetes-id': 'some-service' },
+                  labels: {},
                 },
               },
             ],
@@ -420,7 +420,7 @@ describe('KubernetesFetcher', () => {
               {
                 metadata: {
                   name: 'pod-name',
-                  labels: { 'backstage.io/kubernetes-id': 'some-service' },
+                  labels: {},
                 },
               },
             ],
@@ -431,7 +431,7 @@ describe('KubernetesFetcher', () => {
               {
                 metadata: {
                   name: 'service-name',
-                  labels: { 'backstage.io/kubernetes-id': 'some-service' },
+                  labels: {},
                 },
               },
             ],
@@ -443,7 +443,7 @@ describe('KubernetesFetcher', () => {
                 kind: 'Thing',
                 metadata: {
                   name: 'something-else',
-                  labels: { 'backstage.io/kubernetes-id': 'some-service' },
+                  labels: {},
                 },
               },
             ],
@@ -511,7 +511,7 @@ describe('KubernetesFetcher', () => {
               {
                 metadata: {
                   name: 'pod-name',
-                  labels: { 'backstage.io/kubernetes-id': 'some-service' },
+                  labels: {},
                 },
               },
             ],
@@ -861,7 +861,7 @@ describe('KubernetesFetcher', () => {
               {
                 metadata: {
                   name: 'pod-name',
-                  labels: { 'backstage.io/kubernetes-id': 'some-service' },
+                  labels: {},
                 },
               },
             ],
@@ -872,7 +872,7 @@ describe('KubernetesFetcher', () => {
               {
                 metadata: {
                   name: 'service-name',
-                  labels: { 'backstage.io/kubernetes-id': 'some-service' },
+                  labels: {},
                 },
               },
             ],
@@ -956,7 +956,7 @@ describe('KubernetesFetcher', () => {
                 {
                   metadata: {
                     name: 'pod-name',
-                    labels: { 'backstage.io/kubernetes-id': 'some-service' },
+                    labels: {},
                   },
                 },
               ],
