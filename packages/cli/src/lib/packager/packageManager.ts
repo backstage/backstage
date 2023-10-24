@@ -32,8 +32,7 @@ function detect(): PackageManager {
 
   for (const [lockfile, command] of Object.entries(lockfiles)) {
     if (existsSync(joinPath(rootDir, lockfile))) {
-      if (command !== 'yarn')
-        console.log(`Using ${command} because of ${lockfile} in ${rootDir}`);
+      console.log(`Using ${command} because of ${lockfile} in ${rootDir}`);
       return {
         command,
         lockfile,
