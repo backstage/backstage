@@ -1,5 +1,11 @@
 # @backstage/cli
 
+## 0.23.1
+
+### Patch Changes
+
+- 3649914e78cd: Ignore `stdin` when spawning backend child process for the `start` command. Fixing an issue where backend startup would hang.
+
 ## 0.23.0
 
 ### Minor Changes
