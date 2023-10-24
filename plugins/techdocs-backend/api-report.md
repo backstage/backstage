@@ -8,6 +8,7 @@ import { CatalogClient } from '@backstage/catalog-client';
 import { Config } from '@backstage/config';
 import { DefaultTechDocsCollatorFactory as DefaultTechDocsCollatorFactory_2 } from '@backstage/plugin-search-backend-module-techdocs';
 import { DocsBuildStrategy as DocsBuildStrategy_2 } from '@backstage/plugin-techdocs-node';
+import { Entity } from '@backstage/catalog-model';
 import express from 'express';
 import { GeneratorBuilder } from '@backstage/plugin-techdocs-node';
 import { Knex } from 'knex';
@@ -17,7 +18,6 @@ import { PluginCacheManager } from '@backstage/backend-common';
 import { PluginEndpointDiscovery } from '@backstage/backend-common';
 import { PreparerBuilder } from '@backstage/plugin-techdocs-node';
 import { PublisherBase } from '@backstage/plugin-techdocs-node';
-import { ShouldBuildParameters as ShouldBuildParameters_2 } from '@backstage/plugin-techdocs-node';
 import type { TechDocsCollatorFactoryOptions as TechDocsCollatorFactoryOptions_2 } from '@backstage/plugin-search-backend-module-techdocs';
 import { TechDocsDocument as TechDocsDocument_2 } from '@backstage/plugin-techdocs-node';
 import { TokenManager } from '@backstage/backend-common';
@@ -85,7 +85,9 @@ export type RouterOptions =
   | OutOfTheBoxDeploymentOptions;
 
 // @public @deprecated (undocumented)
-export type ShouldBuildParameters = ShouldBuildParameters_2;
+export type ShouldBuildParameters = {
+  entity: Entity;
+};
 
 // @public @deprecated (undocumented)
 export type TechDocsCollatorFactoryOptions = TechDocsCollatorFactoryOptions_2;
