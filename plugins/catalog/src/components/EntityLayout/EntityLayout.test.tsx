@@ -257,11 +257,11 @@ describe('EntityLayout', () => {
       },
     );
 
-    const ownerLink = screen.getByText(mockTargetRef);
+    const ownerLink = screen.getByText(mockTargetRef).closest('a');
     expect(ownerLink).toBeInTheDocument();
-    expect(ownerLink.nodeName).toBe('A');
-    const linkParent = ownerLink.parentElement;
+    expect(ownerLink?.tagName).toBe('A');
+    const linkParent = ownerLink?.parentElement;
     expect(linkParent).toBeInTheDocument();
-    expect(linkParent?.nodeName).toBe('P');
+    expect(linkParent?.tagName).toBe('P');
   });
 });
