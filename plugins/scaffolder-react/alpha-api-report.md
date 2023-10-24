@@ -30,10 +30,10 @@ import { ScaffolderStep } from '@backstage/plugin-scaffolder-react';
 import { ScaffolderTaskOutput } from '@backstage/plugin-scaffolder-react';
 import { SetStateAction } from 'react';
 import { TaskStep } from '@backstage/plugin-scaffolder-common';
-import { TemplateConfigurationsV1beta3 } from '@backstage/plugin-scaffolder-common';
 import { TemplateEntityV1beta3 } from '@backstage/plugin-scaffolder-common';
 import { TemplateGroupFilter } from '@backstage/plugin-scaffolder-react';
 import { TemplateParameterSchema } from '@backstage/plugin-scaffolder-react';
+import { TemplatePresentationV1beta3 } from '@backstage/plugin-scaffolder-common';
 import { UiSchema } from '@rjsf/utils';
 
 // @alpha (undocumented)
@@ -305,7 +305,7 @@ export const useTemplateParameterSchema: (templateRef: string) => {
 // @alpha
 export const useTemplateSchema: (manifest: TemplateParameterSchema) => {
   steps: ParsedTemplateSchema[];
-  configurations?: TemplateConfigurationsV1beta3 | undefined;
+  presentation?: TemplatePresentationV1beta3 | undefined;
 };
 
 // @alpha (undocumented)
