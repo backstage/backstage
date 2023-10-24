@@ -132,6 +132,35 @@ describe('RepoUrlPicker', () => {
         getByRole('option', { name: 'dev.azure.com' }),
       ).toBeInTheDocument();
     });
+
+    it('should render properly with title and description', async () => {
+      const { getByText } = await renderInTestApp(
+        <TestApiProvider
+          apis={[
+            [scmIntegrationsApiRef, mockIntegrationsApi],
+            [scmAuthApiRef, {}],
+            [scaffolderApiRef, mockScaffolderApi],
+          ]}
+        >
+          <SecretsContextProvider>
+            <Form
+              schema={{
+                type: 'string',
+                title: 'test title',
+                description: 'test description',
+              }}
+              uiSchema={{
+                'ui:field': 'RepoUrlPicker',
+              }}
+              fields={{ RepoUrlPicker: RepoUrlPicker }}
+            />
+          </SecretsContextProvider>
+        </TestApiProvider>,
+      );
+
+      expect(getByText('test title')).toBeInTheDocument();
+      expect(getByText('test description')).toBeInTheDocument();
+    });
   });
 
   describe('requestUserCredentials', () => {
