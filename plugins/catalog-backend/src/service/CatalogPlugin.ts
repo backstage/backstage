@@ -77,10 +77,8 @@ class CatalogAnalysisExtensionPointImpl
 {
   #locationAnalyzers = new Array<ScmLocationAnalyzer>();
 
-  addLocationAnalyzers(
-    ...analyzers: Array<ScmLocationAnalyzer | Array<ScmLocationAnalyzer>>
-  ): void {
-    this.#locationAnalyzers.push(...analyzers.flat());
+  addLocationAnalyzer(analyzer: ScmLocationAnalyzer): void {
+    this.#locationAnalyzers.push(analyzer);
   }
 
   get locationAnalyzers() {

@@ -14,9 +14,7 @@ import { ServiceRef } from '@backstage/backend-plugin-api';
 // @alpha (undocumented)
 export interface CatalogAnalysisExtensionPoint {
   // (undocumented)
-  addLocationAnalyzers(
-    ...analyzers: Array<ScmLocationAnalyzer | Array<ScmLocationAnalyzer>>
-  ): void;
+  addLocationAnalyzer(analyzer: ScmLocationAnalyzer): void;
 }
 
 // @alpha (undocumented)
