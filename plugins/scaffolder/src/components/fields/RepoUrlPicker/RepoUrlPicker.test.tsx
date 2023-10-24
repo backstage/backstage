@@ -144,6 +144,7 @@ describe('RepoUrlPicker', () => {
         >
           <SecretsContextProvider>
             <Form
+              validator={validator}
               schema={{
                 type: 'string',
                 title: 'test title',
@@ -151,9 +152,10 @@ describe('RepoUrlPicker', () => {
               }}
               uiSchema={{
                 'ui:field': 'RepoUrlPicker',
-                'ui:options': { allowedHosts: ['dev.azure.com'] },
               }}
-              fields={{ RepoUrlPicker: RepoUrlPicker }}
+              fields={{
+                RepoUrlPicker: RepoUrlPicker as ScaffolderRJSFField<string>,
+              }}
             />
           </SecretsContextProvider>
         </TestApiProvider>,
