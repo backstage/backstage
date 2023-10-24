@@ -49,19 +49,10 @@ export interface TechDocsDocument extends IndexableDocument {
 }
 
 /**
- * Parameters passed to the shouldBuild method on the DocsBuildStrategy interface
- *
- * @public
- */
-export type ShouldBuildParameters = {
-  entity: Entity;
-};
-
-/**
  * A strategy for when to build TechDocs locally, and when to skip building TechDocs (allowing for an external build)
  *
  * @public
  */
 export interface DocsBuildStrategy {
-  shouldBuild(params: ShouldBuildParameters): Promise<boolean>;
+  shouldBuild(params: { entity: Entity }): Promise<boolean>;
 }

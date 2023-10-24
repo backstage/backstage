@@ -13,11 +13,9 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+import { Entity } from '@backstage/catalog-model';
 import { Config } from '@backstage/config';
-import {
-  DocsBuildStrategy,
-  ShouldBuildParameters,
-} from '@backstage/plugin-techdocs-node';
+import { DocsBuildStrategy } from '@backstage/plugin-techdocs-node';
 
 export class DefaultDocsBuildStrategy implements DocsBuildStrategy {
   private readonly config: Config;
@@ -30,7 +28,7 @@ export class DefaultDocsBuildStrategy implements DocsBuildStrategy {
     return new DefaultDocsBuildStrategy(config);
   }
 
-  async shouldBuild(_: ShouldBuildParameters): Promise<boolean> {
+  async shouldBuild(_: { entity: Entity }): Promise<boolean> {
     return this.config.getString('techdocs.builder') === 'local';
   }
 }

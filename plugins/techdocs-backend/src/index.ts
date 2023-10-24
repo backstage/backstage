@@ -20,9 +20,9 @@
  * @packageDocumentation
  */
 
+import { Entity } from '@backstage/catalog-model';
 import {
   DocsBuildStrategy as _DocsBuildStrategy,
-  ShouldBuildParameters as _ShouldBuildParameters,
   TechDocsDocument as _TechDocsDocument,
 } from '@backstage/plugin-techdocs-node';
 
@@ -49,9 +49,11 @@ export type {
 export type DocsBuildStrategy = _DocsBuildStrategy;
 /**
  * @public
- * @deprecated import from `@backstage/plugin-techdocs-node` instead
+ * @deprecated use direct type definition instead
  */
-export type ShouldBuildParameters = _ShouldBuildParameters;
+export type ShouldBuildParameters = {
+  entity: Entity;
+};
 /**
  * @public
  * @deprecated import from `@backstage/plugin-techdocs-node` instead

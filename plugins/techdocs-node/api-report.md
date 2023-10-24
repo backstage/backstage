@@ -28,7 +28,7 @@ export class DirectoryPreparer implements PreparerBase {
 // @public
 export interface DocsBuildStrategy {
   // (undocumented)
-  shouldBuild(params: ShouldBuildParameters): Promise<boolean>;
+  shouldBuild(params: { entity: Entity }): Promise<boolean>;
 }
 
 // @public
@@ -232,11 +232,6 @@ export type ReadinessResponse = {
 
 // @public
 export type RemoteProtocol = 'url' | 'dir';
-
-// @public
-export type ShouldBuildParameters = {
-  entity: Entity;
-};
 
 // @public
 export type SupportedGeneratorKey = 'techdocs' | string;
