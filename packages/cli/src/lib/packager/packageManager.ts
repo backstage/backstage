@@ -44,5 +44,15 @@ function detect(): PackageManager {
   throw new Error(`No package manager lockfile found in ${rootDir}`);
 }
 
-const detectedPackageManager = detect();
-export default detectedPackageManager;
+let detectedPackageManager: undefined | PackageManager;
+
+export default {
+  get command() {
+    if (!detectedPackageManager) detectedPackageManager = detect();
+    return detectedPackageManager.command;
+  },
+  get lockfile() {
+    if (!detectedPackageManager) detectedPackageManager = detect();
+    return detectedPackageManager.lockfile;
+  },
+};
