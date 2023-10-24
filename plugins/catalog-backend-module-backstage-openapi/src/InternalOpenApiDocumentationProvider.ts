@@ -207,7 +207,7 @@ export class InternalOpenApiDocumentationProvider implements EntityProvider {
 
   async refresh(logger: LoggerService) {
     const pluginsToMerge = this.config.getStringArray(
-      'catalog.providers.openapi.plugins',
+      'catalog.providers.backstageOpenapi.plugins',
     );
     logger.info(`Loading specs from from ${pluginsToMerge}.`);
     const documentationEntity: ApiEntity = {

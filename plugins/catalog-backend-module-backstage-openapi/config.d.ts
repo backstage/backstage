@@ -13,11 +13,19 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
 export interface Config {
-  openapi?: {
-    /**
-     * A list of plugins, whose OpenAPI specs you want to collate in `InternalOpenApiDocumentationProvider`.
-     */
-    plugins: string[];
+  catalog?: {
+    providers?: {
+      /**
+       * BackstageOpenApiEntityProvider configuration
+       */
+      backstageOpenapi?: {
+        /**
+         * A list of plugins, whose OpenAPI specs you want to collate in `InternalOpenApiDocumentationProvider`.
+         */
+        plugins: string[];
+      };
+    };
   };
 }
