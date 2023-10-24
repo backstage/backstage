@@ -11,7 +11,6 @@ import {
   createServiceBuilder,
   loadBackendConfig,
   getRootLogger,
-  useHotMemoize,
   notFoundHandler,
   CacheManager,
   DatabaseManager,
@@ -78,13 +77,13 @@ async function main() {
   });
   const createEnv = makeCreateEnv(config);
 
-  const catalogEnv = useHotMemoize(module, () => createEnv('catalog'));
-  const scaffolderEnv = useHotMemoize(module, () => createEnv('scaffolder'));
-  const authEnv = useHotMemoize(module, () => createEnv('auth'));
-  const proxyEnv = useHotMemoize(module, () => createEnv('proxy'));
-  const techdocsEnv = useHotMemoize(module, () => createEnv('techdocs'));
-  const searchEnv = useHotMemoize(module, () => createEnv('search'));
-  const appEnv = useHotMemoize(module, () => createEnv('app'));
+  const catalogEnv = createEnv('catalog');
+  const scaffolderEnv = createEnv('scaffolder');
+  const authEnv = createEnv('auth');
+  const proxyEnv = createEnv('proxy');
+  const techdocsEnv = createEnv('techdocs');
+  const searchEnv = createEnv('search');
+  const appEnv = createEnv('app');
 
   const apiRouter = Router();
   apiRouter.use('/catalog', await catalog(catalogEnv));
