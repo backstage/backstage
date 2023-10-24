@@ -37,7 +37,7 @@ jobs:
           fetch-depth: 0 # Required to retrieve git history
 
       - name: use node.js ${{ matrix.node-version }}
-        uses: actions/setup-node@v3.8.1
+        uses: actions/setup-node@v3.8.2
         with:
           node-version: ${{ matrix.node-version }}
           registry-url: https://registry.npmjs.org/ # Needed for auth
