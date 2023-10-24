@@ -109,13 +109,13 @@ export const FeaturedDocs: (props: FeaturedDocsProps) => JSX_2.Element;
 // @public
 export type FeaturedDocsProps = {
   filter: EntityFilterQuery;
-  color?: 'inherit' | 'primary' | 'secondary' | undefined;
-  customStyles?: ClassNameMap<string> | undefined;
-  emptyState?: React_2.ReactNode | undefined;
-  path?: string | undefined;
-  responseLimit?: number | undefined;
-  subLinkText?: string | undefined;
-  title?: React_2.ReactNode | string | undefined;
+  color?: 'inherit' | 'primary' | 'secondary';
+  customStyles?: ClassNameMap<string>;
+  emptyState?: React_2.ReactNode;
+  path?: string;
+  responseLimit?: number;
+  subLinkText?: string;
+  title?: React_2.ReactNode | string;
 };
 
 // @public

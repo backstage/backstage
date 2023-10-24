@@ -17,6 +17,8 @@ import { FeaturedDocs } from '@backstage/plugin-home';
   subLinkText="More Details"
   color="secondary"
   emptyState={emptyStateReactNode}
+  path={'/customPath'}
+  responseLimit={5}
 />
 ```
 
