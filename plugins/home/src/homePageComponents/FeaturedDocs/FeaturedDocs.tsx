@@ -40,37 +40,37 @@ export type FeaturedDocsProps = {
   /** The entity filter used to display only the intended item/s */
   filter: EntityFilterQuery;
   /** An optional color which can be customized through themes */
-  color?: 'inherit' | 'primary' | 'secondary' | undefined;
+  color?: 'inherit' | 'primary' | 'secondary';
   /** An optional ClassNameMap created with makeStyles */
-  customStyles?: ClassNameMap<string> | undefined;
+  customStyles?: ClassNameMap<string>;
   /** An optional ReactNode for empty states */
-  emptyState?: React.ReactNode | undefined;
+  emptyState?: React.ReactNode;
   /** An optional path to set for entity entry  */
-  path?: string | undefined;
+  path?: string;
   /** An optional limit to set for link destination  */
-  responseLimit?: number | undefined;
+  responseLimit?: number;
   /** An optional string to customize sublink text */
-  subLinkText?: string | undefined;
+  subLinkText?: string;
   /** An optional string or ReactNode to customize the card title */
-  title?: React.ReactNode | string | undefined;
+  title?: React.ReactNode | string;
 };
 
 const useStyles = makeStyles<Theme>(theme => ({
   docDescription: {
-    fontSize: 16,
-    fontWeight: 400,
+    fontSize: theme.typography.body1.fontSize,
+    fontWeight: theme.typography.body1.fontWeight,
     marginBottom: theme.spacing(2),
     marginTop: theme.spacing(2),
   },
   docSubLink: {
-    fontSize: 12,
-    fontWeight: 700,
-    lineHeight: 2,
+    fontSize: theme.typography.subtitle1.fontSize,
+    fontWeight: theme.typography.subtitle1.fontWeight,
+    lineHeight: theme.typography.subtitle1.lineHeight,
   },
   docsTitleLink: {
-    fontSize: 16,
-    fontWeight: 600,
-    lineHeight: 2,
+    fontSize: theme.typography.h6.fontSize,
+    fontWeight: theme.typography.h6.fontWeight,
+    lineHeight: theme.typography.h6.lineHeight,
   },
 }));
 
@@ -116,7 +116,7 @@ export const FeaturedDocs = (props: FeaturedDocsProps) => {
               <Link
                 className={styles.docsTitleLink}
                 data-testid="docs-card-title"
-                color={color || 'primary'}
+                color={color}
                 to={
                   path ||
                   `/docs/${d.metadata.namespace || 'default'}/${d.kind}/${
@@ -132,7 +132,7 @@ export const FeaturedDocs = (props: FeaturedDocsProps) => {
               <Link
                 className={styles.docSubLink}
                 data-testid="docs-card-sub-link"
-                color={color || 'primary'}
+                color={color}
                 to={
                   path ||
                   `/docs/${d.metadata.namespace || 'default'}/${d.kind}/${

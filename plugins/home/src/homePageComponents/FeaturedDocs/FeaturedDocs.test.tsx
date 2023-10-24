@@ -39,7 +39,7 @@ describe('<FeaturedDocs />', () => {
       .fn()
       .mockImplementation(async () => ({ items: docsEntities })),
   };
-  let Wrapper: React.ComponentType;
+  let Wrapper: React.ComponentType<React.PropsWithChildren<{}>>;
 
   beforeAll(() => {
     Wrapper = ({ children }: { children?: React.ReactNode }) => (
