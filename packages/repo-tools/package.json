@@ -43,7 +43,7 @@
     "@stoplight/spectral-formatters": "^1.1.0",
     "@stoplight/spectral-functions": "^1.7.2",
     "@stoplight/spectral-parsers": "^1.0.2",
-    "@stoplight/spectral-rulesets": "^1.16.0",
+    "@stoplight/spectral-rulesets": "^1.18.0",
     "@stoplight/spectral-runtime": "^1.1.2",
     "@stoplight/types": "^13.14.0",
     "chalk": "^4.0.0",
@@ -56,6 +56,7 @@
     "lodash": "^4.17.21",
     "minimatch": "^5.1.1",
     "p-limit": "^3.0.2",
+    "portfinder": "^1.0.32",
     "ts-node": "^10.0.0",
     "yaml-diff-patch": "^2.0.0"
   },
@@ -71,6 +72,7 @@
     "@microsoft/api-extractor-model": "*",
     "@microsoft/tsdoc": "*",
     "@microsoft/tsdoc-config": "*",
+    "@useoptic/optic": "^0.50.7",
     "prettier": "^2.8.1",
     "typescript": "> 3.0.0"
   },
