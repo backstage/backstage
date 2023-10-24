@@ -250,6 +250,9 @@ type FullMap<
   },
 > = RequiredMap<T> & OptionalMap<T>;
 
+// @public
+export function getOpenApiSpecRoute(baseUrl: string): string;
+
 // @public (undocumented)
 interface HeaderObject extends ParameterObject {
   // (undocumented)
