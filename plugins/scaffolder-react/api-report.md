@@ -39,6 +39,7 @@ import { StrictRJSFSchema } from '@rjsf/utils';
 import { TaskSpec } from '@backstage/plugin-scaffolder-common';
 import { TaskStep } from '@backstage/plugin-scaffolder-common';
 import { TemplateEntityV1beta3 } from '@backstage/plugin-scaffolder-common';
+import { TemplatePresentationV1beta3 } from '@backstage/plugin-scaffolder-common';
 import { TemplatesType } from '@rjsf/utils';
 import { UIOptionsType } from '@rjsf/utils';
 import { UiSchema } from '@rjsf/utils';
@@ -482,6 +483,7 @@ export type TemplateGroupFilter = {
 export type TemplateParameterSchema = {
   title: string;
   description?: string;
+  presentation?: TemplatePresentationV1beta3;
   steps: Array<{
     title: string;
     description?: string;
