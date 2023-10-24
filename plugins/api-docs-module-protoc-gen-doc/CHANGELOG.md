@@ -1,5 +1,11 @@
 # @backstage/plugin-api-docs-module-protoc-gen-doc
 
+## 0.1.5-next.0
+
+### Patch Changes
+
+- 6c2b872153: Add official support for React 18.
+
 ## 0.1.4
 
 ### Patch Changes

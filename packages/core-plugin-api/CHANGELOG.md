@@ -1,5 +1,22 @@
 # @backstage/core-plugin-api
 
+## 1.8.0-next.0
+
+### Minor Changes
+
+- 1e5b7d993a: `IconComponent` can now have a `fontSize` of `inherit`, which is useful for in-line icons.
+- cb6db75bc2: Introduced `AnyRouteRefParams` as a replacement for `AnyParams`, which is now deprecated.
+
+### Patch Changes
+
+- 6c2b872153: Add official support for React 18.
+- cb6db75bc2: Deprecated several types related to the routing system that are scheduled to be removed, as well as several fields on the route ref types themselves.
+- 68fc9dc60e: Added a new `/alpha` export `convertLegacyRouteRef`, which is a temporary utility to allow existing route refs to be used with the new experimental packages.
+- Updated dependencies
+  - @backstage/version-bridge@1.0.7-next.0
+  - @backstage/config@1.1.1
+  - @backstage/types@1.1.1
+
 ## 1.7.0
 
 ### Minor Changes
