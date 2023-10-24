@@ -46,9 +46,7 @@ export const catalogProcessingExtensionPoint =
  * @alpha
  */
 export interface CatalogAnalysisExtensionPoint {
-  addLocationAnalyzers(
-    ...analyzers: Array<ScmLocationAnalyzer | Array<ScmLocationAnalyzer>>
-  ): void;
+  addLocationAnalyzer(analyzer: ScmLocationAnalyzer): void;
 }
 
 /**
