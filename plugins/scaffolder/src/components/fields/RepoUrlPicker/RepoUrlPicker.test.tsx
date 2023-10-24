@@ -151,6 +151,7 @@ describe('RepoUrlPicker', () => {
               }}
               uiSchema={{
                 'ui:field': 'RepoUrlPicker',
+                'ui:options': { allowedHosts: ['dev.azure.com'] },
               }}
               fields={{ RepoUrlPicker: RepoUrlPicker }}
             />
