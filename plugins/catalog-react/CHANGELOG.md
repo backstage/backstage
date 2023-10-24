@@ -1,5 +1,49 @@
 # @backstage/plugin-catalog-react
 
+## 1.9.0-next.0
+
+### Minor Changes
+
+- 1e5b7d993a: Added an `EntityPresentationApi` and associated `entityPresentationApiRef`. This
+  API lets you control how references to entities (e.g. in links, headings,
+  iconography etc) are represented in the user interface.
+
+  Usage of this API is initially added to the `EntityRefLink` and `EntityRefLinks`
+  components, so that they can render richer, more correct representation of
+  entity refs. There's also a new `EntityDisplayName` component, which works just like
+  the `EntityRefLink` but without the link.
+
+  Along with that change, the `fetchEntities` and `getTitle` props of
+  `EntityRefLinksProps` are deprecated and no longer used, since the same need
+  instead is fulfilled (and by default always enabled) by the
+  `entityPresentationApiRef`.
+
+- 1fd53fa0c6: The `UserListPicker` component has undergone improvements to enhance its performance.
+
+  The previous implementation inferred the number of owned and starred entities based on the entities available in the `EntityListContext`. The updated version no longer relies on the `EntityListContext` for inference, allowing for better decoupling.
+
+  The component now loads the entities' count asynchronously, resulting in improved performance and responsiveness. For this purpose, some of the exported filters such as `EntityTagFilter`, `EntityOwnerFilter`, `EntityLifecycleFilter` and `EntityNamespaceFilter` have now the `getCatalogFilters` method implemented.
+
+### Patch Changes
+
+- 6c2b872153: Add official support for React 18.
+- 0bf6ebda88: Added new APIs at the `/alpha` subpath for creating entity page cards and content for the new frontend system.
+- 71c97e7d73: The `spec.type` field in entities will now always be rendered as a string.
+- Updated dependencies
+  - @backstage/core-components@0.13.7-next.0
+  - @backstage/frontend-plugin-api@0.3.0-next.0
+  - @backstage/core-plugin-api@1.8.0-next.0
+  - @backstage/plugin-permission-react@0.4.17-next.0
+  - @backstage/version-bridge@1.0.7-next.0
+  - @backstage/theme@0.4.4-next.0
+  - @backstage/integration@1.7.1
+  - @backstage/catalog-client@1.4.5
+  - @backstage/catalog-model@1.4.3
+  - @backstage/errors@1.2.3
+  - @backstage/types@1.1.1
+  - @backstage/plugin-catalog-common@1.0.17
+  - @backstage/plugin-permission-common@0.7.9
+
 ## 1.8.5
 
 ### Patch Changes

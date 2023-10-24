@@ -1,5 +1,16 @@
 # @backstage/plugin-git-release-manager
 
+## 0.3.39-next.0
+
+### Patch Changes
+
+- 6c2b872153: Add official support for React 18.
+- Updated dependencies
+  - @backstage/core-components@0.13.7-next.0
+  - @backstage/core-plugin-api@1.8.0-next.0
+  - @backstage/theme@0.4.4-next.0
+  - @backstage/integration@1.7.1
+
 ## 0.3.38
 
 ### Patch Changes

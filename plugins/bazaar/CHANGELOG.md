@@ -1,5 +1,21 @@
 # @backstage/plugin-bazaar
 
+## 0.2.18-next.0
+
+### Patch Changes
+
+- 6c2b872153: Add official support for React 18.
+- Updated dependencies
+  - @backstage/cli@0.24.0-next.0
+  - @backstage/core-components@0.13.7-next.0
+  - @backstage/plugin-catalog@1.15.0-next.0
+  - @backstage/plugin-catalog-react@1.9.0-next.0
+  - @backstage/core-plugin-api@1.8.0-next.0
+  - @backstage/theme@0.4.4-next.0
+  - @backstage/catalog-client@1.4.5
+  - @backstage/catalog-model@1.4.3
+  - @backstage/errors@1.2.3
+
 ## 0.2.17
 
 ### Patch Changes

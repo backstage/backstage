@@ -1,5 +1,20 @@
 # @backstage/plugin-user-settings-backend
 
+## 0.2.6-next.0
+
+### Patch Changes
+
+- dd0350379b: Added dependency on `@backstage/config`
+- 8613ba3928: Switched to using `"exports"` field for `/alpha` subpath export.
+- Updated dependencies
+  - @backstage/backend-common@0.19.9-next.0
+  - @backstage/backend-plugin-api@0.6.7-next.0
+  - @backstage/catalog-model@1.4.3
+  - @backstage/config@1.1.1
+  - @backstage/errors@1.2.3
+  - @backstage/types@1.1.1
+  - @backstage/plugin-auth-node@0.4.1-next.0
+
 ## 0.2.4
 
 ### Patch Changes
