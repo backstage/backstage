@@ -1,5 +1,5 @@
 /*
- * Copyright 2020 The Backstage Authors
+ * Copyright 2023 The Backstage Authors
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,7 +14,23 @@
  * limitations under the License.
  */
 
-export * from './service/router';
-export * from './service/VaultBuilder';
-export * from './service/vaultApi';
-export { vaultPlugin as default } from './service/plugin';
+import { createExtensionPoint } from '@backstage/backend-plugin-api';
+import { VaultApi } from './api';
+
+/**
+ * Extension point for vault.
+ *
+ * @public
+ */
+export interface VaultExtensionPoint {
+  setClient(vaultClient: VaultApi): void;
+}
+
+/**
+ * Extension point for vault.
+ *
+ * @public
+ */
+export const vaultExtensionPoint = createExtensionPoint<VaultExtensionPoint>({
+  id: 'vault.configuration',
+});

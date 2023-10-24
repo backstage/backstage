@@ -9822,11 +9822,13 @@ __metadata:
   resolution: "@backstage/plugin-vault-backend@workspace:plugins/vault-backend"
   dependencies:
     "@backstage/backend-common": "workspace:^"
+    "@backstage/backend-plugin-api": "workspace:^"
     "@backstage/backend-tasks": "workspace:^"
     "@backstage/backend-test-utils": "workspace:^"
     "@backstage/cli": "workspace:^"
     "@backstage/config": "workspace:^"
     "@backstage/errors": "workspace:^"
+    "@backstage/plugin-vault-node": "workspace:^"
     "@types/compression": ^1.7.2
     "@types/express": "*"
     "@types/supertest": ^2.0.8
@@ -9841,6 +9843,15 @@ __metadata:
     supertest: ^6.1.6
     winston: ^3.2.1
     yn: ^5.0.0
+  languageName: unknown
+  linkType: soft
+
+"@backstage/plugin-vault-node@workspace:^, @backstage/plugin-vault-node@workspace:plugins/vault-node":
+  version: 0.0.0-use.local
+  resolution: "@backstage/plugin-vault-node@workspace:plugins/vault-node"
+  dependencies:
+    "@backstage/backend-plugin-api": "workspace:^"
+    "@backstage/cli": "workspace:^"
   languageName: unknown
   linkType: soft
 
