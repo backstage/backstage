@@ -59,7 +59,7 @@ export interface EntityRefPresentationSnapshot {
    * entity holds. When rendering the primary title, you may also want to
    * make sure to add more contextual information nearby such as the icon or
    * secondary title, since the primary could for example just be the
-   * `metadata.name` of tne entity which might be ambiguous to the reader.
+   * `metadata.name` of the entity which might be ambiguous to the reader.
    */
   primaryTitle: string;
   /**
