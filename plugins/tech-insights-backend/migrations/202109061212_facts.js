@@ -27,6 +27,7 @@ exports.up = async function up(knex) {
     table
       .uuid('uid')
       .primary()
+      .defaultTo(knex.fn.uuid())
       .comment('Primary key to distinguish unique lines from each other');
     table
       .string('id')

@@ -26,6 +26,7 @@ exports.up = async function up(knex) {
     await knex.schema.alterTable('facts', table => {
       table
         .uuid('uid')
+        .defaultTo(knex.fn.uuid())
         .primary()
         .comment('Primary key to distinguish unique lines from each other');
     });

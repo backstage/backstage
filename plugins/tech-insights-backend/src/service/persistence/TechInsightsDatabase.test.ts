@@ -416,7 +416,7 @@ describe('Tech Insights database', () => {
 
     await testDbClient.batchInsert(
       'facts',
-      preInsertionFacts.map(it => ({ ...it, entity: 'b:b/b' })),
+      preInsertionFacts.map(it => ({ ...it, entity: 'b:b/b', uid: null })),
     );
 
     const timestamp = DateTime.now().plus(Duration.fromMillis(1111));
@@ -547,7 +547,7 @@ describe('Tech Insights database', () => {
 
     await testDbClient.batchInsert(
       'facts',
-      preInsertionFacts.map(it => ({ ...it, entity: 'b:b/b' })),
+      preInsertionFacts.map(it => ({ ...it, entity: 'b:b/b', uid: null })),
     );
 
     const timestamp = DateTime.now().plus(Duration.fromMillis(1111));
