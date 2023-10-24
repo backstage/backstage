@@ -16,7 +16,7 @@
 
 import { join as joinPath } from 'path';
 import { existsSync } from 'fs';
-import { findRootSync } from '@manypkg/find-root';
+import { paths } from '../paths';
 
 interface PackageManager {
   command: string;
@@ -24,7 +24,7 @@ interface PackageManager {
 }
 
 function detect(): PackageManager {
-  const rootDir = findRootSync(process.cwd());
+  const rootDir = paths.targetRoot;
   const lockfiles = {
     'yarn.lock': 'yarn',
     'package-lock.json': 'npm',
