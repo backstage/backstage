@@ -1,5 +1,44 @@
 # @backstage/plugin-catalog-backend
 
+## 1.15.0-next.0
+
+### Minor Changes
+
+- 8d756968f9: Introduce a new optional config parameter `catalog.stitchingStrategy.mode`,
+  which can have the values `'immediate'` (default) and `'deferred'`. The default
+  is for stitching to work as it did before this change, which means that it
+  happens "in-band" (blocking) immediately when each processing task finishes.
+  When set to `'deferred'`, stitching is instead deferred to happen on a separate
+  asynchronous worker queue just like processing.
+
+  Deferred stitching should make performance smoother when ingesting large amounts
+  of entities, and reduce p99 processing times and repeated over-stitching of
+  hot spot entities when fan-out/fan-in in terms of relations is very large. It
+  does however also come with some performance cost due to the queuing with how
+  much wall-clock time some types of task take.
+
+### Patch Changes
+
+- 6694b369a3: Update the OpenAPI spec with more complete error responses and request bodies using Optic. Also, updates the test cases to use the new `supertest` pass through from `@backstage/backend-openapi-utils`.
+- Updated dependencies
+  - @backstage/backend-openapi-utils@0.1.0-next.0
+  - @backstage/backend-common@0.19.9-next.0
+  - @backstage/integration@1.7.1
+  - @backstage/backend-plugin-api@0.6.7-next.0
+  - @backstage/backend-tasks@0.5.12-next.0
+  - @backstage/catalog-client@1.4.5
+  - @backstage/catalog-model@1.4.3
+  - @backstage/config@1.1.1
+  - @backstage/errors@1.2.3
+  - @backstage/types@1.1.1
+  - @backstage/plugin-auth-node@0.4.1-next.0
+  - @backstage/plugin-catalog-common@1.0.17
+  - @backstage/plugin-catalog-node@1.4.8-next.0
+  - @backstage/plugin-events-node@0.2.16-next.0
+  - @backstage/plugin-permission-common@0.7.9
+  - @backstage/plugin-permission-node@0.7.18-next.0
+  - @backstage/plugin-search-backend-module-catalog@0.1.11-next.0
+
 ## 1.14.0
 
 ### Minor Changes

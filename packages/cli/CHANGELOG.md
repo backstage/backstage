@@ -1,5 +1,30 @@
 # @backstage/cli
 
+## 0.24.0-next.0
+
+### Minor Changes
+
+- 8db5c3cd7a: Removed support for the `publishConfig.alphaTypes` and `.betaTypes` fields that were used together with `--experimental-type-build` to generate `/alpha` and `/beta` entry points. Use the `exports` field to achieve this instead.
+- 4e36abef14: Remove support for the deprecated `--experimental-type-build` option for `package build`.
+
+### Patch Changes
+
+- 4ba4ac351f: Switch from using deprecated `@esbuild-kit/*` packages to using `tsx`. This also switches to using the new module loader `register` API when available, avoiding the experimental warning when starting backends.
+- 6bf7561d3c: The experimental package detection will now ignore packages that don't make `package.json` available.
+- e14cbf563d: Added `EXPERIMENTAL_VITE` flag for using [vite](https://vitejs.dev) as dev server instead of Webpack
+- 7cd34392f5: Ignore `stdin` when spawning backend child process for the `start` command. Fixing an issue where backend startup would hang.
+- Updated dependencies
+  - @backstage/config-loader@1.5.2-next.0
+  - @backstage/cli-node@0.2.0-next.0
+  - @backstage/integration@1.7.1
+  - @backstage/catalog-model@1.4.3
+  - @backstage/cli-common@0.1.13
+  - @backstage/config@1.1.1
+  - @backstage/errors@1.2.3
+  - @backstage/eslint-plugin@0.1.3
+  - @backstage/release-manifests@0.0.10
+  - @backstage/types@1.1.1
+
 ## 0.23.0
 
 ### Minor Changes

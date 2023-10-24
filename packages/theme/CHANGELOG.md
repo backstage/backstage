@@ -1,5 +1,11 @@
 # @backstage/theme
 
+## 0.4.4-next.0
+
+### Patch Changes
+
+- 6c2b872153: Add official support for React 18.
+
 ## 0.4.3
 
 ### Patch Changes

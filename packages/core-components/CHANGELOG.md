@@ -1,5 +1,25 @@
 # @backstage/core-components
 
+## 0.13.7-next.0
+
+### Patch Changes
+
+- 81c8db2088: Fix `RoutedTabs` so that it does not explode without tabs.
+- 6c2b872153: Add official support for React 18.
+- 7bdc1b0a12: Fixed compatibility with Safari <16.3 by eliminating RegEx lookbehind in `extractInitials`.
+
+  This PR also changed how initials are generated resulting in _John Jonathan Doe_ => _JD_ instead of _JJ_.
+
+- 71c97e7d73: Fixed the type declaration of `DependencyGraphProps`, the `defs` prop now expects `JSX.Element`s.
+- Updated dependencies
+  - @backstage/plugin-catalog-react@1.9.0-next.0
+  - @backstage/core-plugin-api@1.8.0-next.0
+  - @backstage/version-bridge@1.0.7-next.0
+  - @backstage/theme@0.4.4-next.0
+  - @backstage/catalog-model@1.4.3
+  - @backstage/config@1.1.1
+  - @backstage/errors@1.2.3
+
 ## 0.13.6
 
 ### Patch Changes

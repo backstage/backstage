@@ -1,5 +1,22 @@
 # @backstage/repo-tools
 
+## 0.4.0-next.0
+
+### Minor Changes
+
+- 4e36abef14: Remove support for the deprecated `--experimental-type-build` option for `package build`.
+- 6694b369a3: Adds a new command `schema openapi test` that performs runtime validation of your OpenAPI specs using your test data. Under the hood, we're using Optic to perform this check, really cool work by them!
+
+  To use this new command, you will have to run `yarn add @useoptic/optic` in the root of your repo.
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/cli-node@0.2.0-next.0
+  - @backstage/catalog-model@1.4.3
+  - @backstage/cli-common@0.1.13
+  - @backstage/errors@1.2.3
+
 ## 0.3.5
 
 ### Patch Changes

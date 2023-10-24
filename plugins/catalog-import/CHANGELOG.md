@@ -1,5 +1,25 @@
 # @backstage/plugin-catalog-import
 
+## 0.10.2-next.0
+
+### Patch Changes
+
+- 6db75b900a: Create an experimental plugin that is compatible with the declarative integration system, it is exported from the `/alpha` subpath.
+- 6c2b872153: Add official support for React 18.
+- 71c97e7d73: The `app.title` configuration is now properly required to be a string.
+- Updated dependencies
+  - @backstage/core-components@0.13.7-next.0
+  - @backstage/frontend-plugin-api@0.3.0-next.0
+  - @backstage/plugin-catalog-react@1.9.0-next.0
+  - @backstage/integration-react@1.1.21-next.0
+  - @backstage/core-plugin-api@1.8.0-next.0
+  - @backstage/integration@1.7.1
+  - @backstage/catalog-client@1.4.5
+  - @backstage/catalog-model@1.4.3
+  - @backstage/config@1.1.1
+  - @backstage/errors@1.2.3
+  - @backstage/plugin-catalog-common@1.0.17
+
 ## 0.10.1
 
 ### Patch Changes
