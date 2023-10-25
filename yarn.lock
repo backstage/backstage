@@ -18320,11 +18320,11 @@ __metadata:
   linkType: hard
 
 "@types/concat-stream@npm:^2.0.0":
-  version: 2.0.0
-  resolution: "@types/concat-stream@npm:2.0.0"
+  version: 2.0.1
+  resolution: "@types/concat-stream@npm:2.0.1"
   dependencies:
     "@types/node": "*"
-  checksum: d82ace5cb92f9fc91660ae1a101fa0a6b6159da59b0351c28627b24c317670267bc527f24ef4fa2c08d00404b49882ca66bf5c75d47d2b5f48d2fd85f9c2ea4d
+  checksum: 5cbcaf6b0499a58674b0ada4c6c55a31a6907e515b141d75e2e96790cbda0bb32416d4f513fefc17dc08bd400bbb4687081d9046896a64569335ca39a9ad9fff
   languageName: node
   linkType: hard
 
