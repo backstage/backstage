@@ -18688,9 +18688,9 @@ __metadata:
   linkType: hard
 
 "@types/git-url-parse@npm:^9.0.0":
-  version: 9.0.1
-  resolution: "@types/git-url-parse@npm:9.0.1"
-  checksum: 9d1678a0aff50b6e77a172965070de34d2e89bc6ccc96c94ea3b2ecf250c602c0daff4b9f4e0eb830e53e81ee273b08f15f728d42ec087f1a95e4f51d57b594a
+  version: 9.0.2
+  resolution: "@types/git-url-parse@npm:9.0.2"
+  checksum: af0a935b80d76f2441686f55b43755f5ccc3e5ddb21ae9663df0f55a4954aa9f1f4ddbcad729e3f2365cd09a2a38abb14baec95b9f26aa67e490fc90797d5e0b
   languageName: node
   linkType: hard
 
