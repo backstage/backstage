@@ -22,7 +22,6 @@ import {
   ResponseErrorPanel,
 } from '@backstage/core-components';
 import { useRouteRef } from '@backstage/core-plugin-api';
-import { BackstageTheme } from '@backstage/theme';
 import {
   Box,
   createStyles,
@@ -36,7 +35,7 @@ import { catalogIndexRouteRef } from '../../../routes';
 import { useGetEntities } from './useGetEntities';
 import { EntityRelationAggregation } from './types';
 
-const useStyles = makeStyles((theme: BackstageTheme) =>
+const useStyles = makeStyles(theme =>
   createStyles({
     card: {
       border: `1px solid ${theme.palette.divider}`,
