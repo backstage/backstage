@@ -289,12 +289,12 @@ the component will become available.\n\nFor more information, read an \
       azureIntegrationConfig,
     } = options;
 
-    // const { token } = await this.scmAuthApi.getCredentials({
-    //   url: repositoryUrl,
-    //   additionalScope: {
-    //     repoWrite: true,
-    //   },
-    // });
+    const { token } = await this.scmAuthApi.getCredentials({
+      url: repositoryUrl,
+      additionalScope: {
+        repoWrite: true,
+      },
+    });
 
     // const octo = new Octokit({
     //   auth: token,
