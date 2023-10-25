@@ -174,7 +174,7 @@ export class PluginManager implements BackendPluginProvider {
     config: Config,
     logger: LoggerService,
     preferAlpha?: boolean,
-    mooduleLoader?: ModuleLoader,
+    moduleLoader?: ModuleLoader,
   ): Promise<PluginManager>;
   // (undocumented)
   readonly plugins: DynamicPlugin[];

@@ -1,5 +1,27 @@
 # @backstage/plugin-search
 
+## 1.4.2-next.0
+
+### Patch Changes
+
+- 68fc9dc60e: Updated alpha exports according to routing changes in `@backstage/frontend-plugin-api`.
+- 6c2b872153: Add official support for React 18.
+- fa11120050: Fixed incorrect plugin ID in `/alpha` export.
+- 71c97e7d73: Minor internal code cleanup.
+- Updated dependencies
+  - @backstage/core-components@0.13.7-next.0
+  - @backstage/frontend-plugin-api@0.3.0-next.0
+  - @backstage/plugin-catalog-react@1.9.0-next.0
+  - @backstage/core-plugin-api@1.8.0-next.0
+  - @backstage/version-bridge@1.0.7-next.0
+  - @backstage/plugin-search-react@1.7.2-next.0
+  - @backstage/theme@0.4.4-next.0
+  - @backstage/catalog-model@1.4.3
+  - @backstage/config@1.1.1
+  - @backstage/errors@1.2.3
+  - @backstage/types@1.1.1
+  - @backstage/plugin-search-common@1.2.7
+
 ## 1.4.1
 
 ### Patch Changes
