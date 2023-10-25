@@ -21,10 +21,10 @@ export interface Config {
       microsoft?: {
         [authEnv: string]: {
           clientId: string;
+          tenantId: string;
           /**
            * @visibility secret
            */
-          tenantId: string;
           clientSecret: string;
           callbackUrl?: string;
         };
