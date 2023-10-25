@@ -271,15 +271,19 @@ export async function createRouter(
     if (scheduler && databaseTaskStore.listStaleTasks) {
       await scheduler.scheduleTask({
         id: 'close_stale_tasks',
-        frequency: readDuration(config, 'scaffolder.processingInterval', {
-          minutes: 5,
-        }),
+        frequency: readDuration(
+          config,
+          'scaffolder.taskTimeoutReaperFrequency',
+          {
+            minutes: 5,
+          },
+        ),
         timeout: { minutes: 15 },
         fn: async () => {
           const { tasks } = await databaseTaskStore.listStaleTasks({
             timeoutS: Duration.fromObject(
               readDuration(config, 'scaffolder.taskTimeout', {
-                seconds: 86400,
+                hours: 24,
               }),
             ).as('seconds'),
           });

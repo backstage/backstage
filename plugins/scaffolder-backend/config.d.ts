@@ -45,9 +45,9 @@ export interface Config {
      *
      * Staled tasks are marked as failed, once task's timeout has exceeded.
      *
-     * By default, processing interval is every 5 minutes.
+     * By default, the frequency is every 5 minutes.
      */
-    processingInterval: HumanDuration;
+    taskTimeoutReaperFrequency: HumanDuration;
 
     /**
      * Sets the task's heartbeat timeout, when to consider a task to be staled.
