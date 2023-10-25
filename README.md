@@ -51,16 +51,19 @@ The documentation of Backstage includes:
 
 To engage with our community, you can use the following resources:
 
-- [Discord chatroom](https://discord.gg/backstage-687207715902193673) - Get support or discuss the project
-- [Contributing to Backstage](https://github.com/backstage/backstage/blob/master/CONTRIBUTING.md) - Start here if you want to contribute
-- [RFCs](https://github.com/backstage/backstage/labels/rfc) - Help shape the technical direction
-- [FAQ](https://backstage.io/docs/FAQ) - Frequently Asked Questions
-- [Code of Conduct](CODE_OF_CONDUCT.md) - This is how we roll
-- [Adopters](ADOPTERS.md) - Companies already using Backstage
-- [Blog](https://backstage.io/blog/) - Announcements and updates
-- [Newsletter](https://spoti.fi/backstagenewsletter) - Subscribe to our email newsletter
-- [Backstage Community Sessions](https://github.com/backstage/community) - Join monthly meetups and explore Backstage community
-- Give us a star ⭐️ - If you are using Backstage or think it is an interesting project, we would love a star ❤️
+| Page Title                              | Description                                           |
+|----------------------------------------|-------------------------------------------------------|
+| Discord chatroom                        | [Get support or discuss the project](https://discord.gg/backstage-687207715902193673) |
+| Contributing to Backstage               | [Start here if you want to contribute](https://github.com/backstage/backstage/blob/master/CONTRIBUTING.md) |
+| RFCs                                   | [Help shape the technical direction](https://github.com/backstage/backstage/labels/rfc) |
+| FAQ                                    | [Frequently Asked Questions](https://backstage.io/docs/FAQ) |
+| Code of Conduct                        | [This is how we roll](CODE_OF_CONDUCT.md) |
+| Adopters                               | [Companies already using Backstage](ADOPTERS.md) |
+| Blog                                   | [Announcements and updates](https://backstage.io/blog/) |
+| Newsletter                             | [Subscribe to our email newsletter](https://spoti.fi/backstagenewsletter) |
+| Backstage Community Sessions           | [Join monthly meetups and explore Backstage community](https://github.com/backstage/community) |
+
+Give us a star ⭐️ - If you are using Backstage or think it is an interesting project, we would love a star ❤️
 
 ## License
 
