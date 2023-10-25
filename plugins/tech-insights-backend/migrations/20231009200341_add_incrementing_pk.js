@@ -19,17 +19,81 @@
  * @returns { Promise<void> }
  */
 exports.up = async function up(knex) {
-  await knex.schema.hasColumn('facts', 'uid').then(async res => {
-    if (res) {
-      return;
+  await knex.schema.hasColumn('facts', 'uid').then(async hasCol => {
+    if (!hasCol) {
+      if (knex.client.config.client.includes('sqlite3')) {
+        await knex.schema.renameTable('facts', 'tmp_facts');
+
+        await knex.schema.alterTable('tmp_facts', table => {
+          table.dropIndex(['id', 'entity'], 'fact_id_entity_idx');
+          table.dropIndex('id', 'fact_id_idx');
+          table.dropIndex(
+            ['id', 'entity', 'timestamp'],
+            'fact_id_entity_timestamp_idx',
+          );
+        });
+        await knex.schema.createTable('facts', table => {
+          table.comment(
+            'The table for tech insight fact collections. Contains facts for individual fact retriever namespace/ref.',
+          );
+          table
+            .uuid('uid')
+            .primary()
+            .defaultTo(knex.fn.uuid())
+            .comment('Primary key to distinguish unique lines from each other');
+          table
+            .string('id')
+            .notNullable()
+            .comment('Unique identifier of the fact retriever plugin/package');
+          table
+            .string('version')
+            .notNullable()
+            .comment(
+              'SemVer string defining the version of schema this fact is based on.',
+            );
+          table
+            .dateTime('timestamp', { precision: 0 })
+            .defaultTo(knex.fn.now())
+            .notNullable()
+            .comment('The timestamp when this entry was created');
+          table
+            .string('entity')
+            .notNullable()
+            .comment('Identifier of the entity these facts relate to');
+          table
+            .text('facts')
+            .notNullable()
+            .comment(
+              'Values of the fact collection stored as key-value pairs in JSON format.',
+            );
+
+          table
+            .foreign(['id', 'version'])
+            .references(['id', 'version'])
+            .inTable('fact_schemas');
+
+          table.index(['id', 'entity'], 'fact_id_entity_idx');
+          table.index('id', 'fact_id_idx');
+          table.index(
+            ['id', 'entity', 'timestamp'],
+            'fact_id_entity_timestamp_idx',
+          );
+        });
+
+        await knex.schema.raw(
+          `INSERT INTO facts (id, version, timestamp, entity, facts) SELECT id, version, timestamp, entity, facts FROM tmp_facts`,
+        );
+        knex.schema.dropTable('tmp_facts');
+      } else {
+        await knex.schema.alterTable('facts', table => {
+          table
+            .uuid('uid')
+            .defaultTo(knex.fn.uuid())
+            .primary()
+            .comment('Primary key to distinguish unique lines from each other');
+        });
+      }
     }
-    await knex.schema.alterTable('facts', table => {
-      table
-        .uuid('uid')
-        .defaultTo(knex.fn.uuid())
-        .primary()
-        .comment('Primary key to distinguish unique lines from each other');
-    });
   });
 };
 
