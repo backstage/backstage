@@ -15,7 +15,10 @@ export const authModuleMicrosoftProvider: () => BackendFeature;
 
 // @public (undocumented)
 export const microsoftAuthenticator: OAuthAuthenticator<
-  PassportOAuthAuthenticatorHelper,
+  {
+    helper: PassportOAuthAuthenticatorHelper;
+    domainHint: string | undefined;
+  },
   PassportProfile
 >;
 
