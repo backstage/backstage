@@ -13,6 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
 import { createStyles, Divider, Grid, makeStyles } from '@material-ui/core';
 import React from 'react';
 import { BuildResponse, xcmetricsApiRef } from '../../api';
@@ -22,12 +23,11 @@ import useAsync from 'react-use/lib/useAsync';
 import { useApi } from '@backstage/core-plugin-api';
 import { formatDuration, formatStatus, formatTime } from '../../utils';
 import { StatusIcon } from '../StatusIcon';
-import { BackstageTheme } from '@backstage/theme';
 import { Accordion } from '../Accordion';
 import { BuildTimeline } from '../BuildTimeline';
 import { PreformattedText } from '../PreformattedText';
 
-const useStyles = makeStyles((theme: BackstageTheme) =>
+const useStyles = makeStyles(theme =>
   createStyles({
     divider: {
       marginTop: theme.spacing(2),

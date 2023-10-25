@@ -16,10 +16,9 @@
 
 import React, { useEffect } from 'react';
 import { useSearch } from '@backstage/plugin-search-react';
-import { BackstageTheme } from '@backstage/theme';
 import { makeStyles, Tab, Tabs } from '@material-ui/core';
 
-const useStyles = makeStyles((theme: BackstageTheme) => ({
+const useStyles = makeStyles(theme => ({
   tabs: {
     borderBottom: `1px solid ${theme.palette.textVerySubtle}`,
   },

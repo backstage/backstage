@@ -13,17 +13,14 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
 import React from 'react';
-
-import { BackstageTheme } from '@backstage/theme';
-
 import { Badge, Chip, makeStyles } from '@material-ui/core';
 import CancelIcon from '@material-ui/icons/Cancel';
 import CheckIcon from '@material-ui/icons/CheckCircle';
-
 import { EventAttendee, ResponseStatus } from '../../api';
 
-const useStyles = makeStyles((theme: BackstageTheme) => {
+const useStyles = makeStyles(theme => {
   const getIconColor = (responseStatus?: string) => {
     if (!responseStatus) return theme.palette.primary.light;
 

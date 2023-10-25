@@ -343,13 +343,11 @@ Options:
   --notifyMode
   -o, --onlyChanged
   -f, --onlyFailures
-  --openHandlesTimeout
   --outputFile
   --passWithNoTests
   --preset
   --prettierPath
   --projects
-  --randomize
   --reporters
   --resetMocks
   --resetModules
@@ -393,7 +391,6 @@ Options:
   --watchAll
   --watchPathIgnorePatterns
   --watchman
-  --workerThreads
 ```
 
 ### `backstage-cli repo`
@@ -538,13 +535,11 @@ Options:
   --notifyMode
   -o, --onlyChanged
   -f, --onlyFailures
-  --openHandlesTimeout
   --outputFile
   --passWithNoTests
   --preset
   --prettierPath
   --projects
-  --randomize
   --reporters
   --resetMocks
   --resetModules
@@ -588,7 +583,6 @@ Options:
   --watchAll
   --watchPathIgnorePatterns
   --watchman
-  --workerThreads
 ```
 
 ### `backstage-cli versions:bump`
