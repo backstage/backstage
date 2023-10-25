@@ -2,4 +2,4 @@
 '@backstage/create-app': patch
 ---
 
-Cleaned up all the cases where deprecated code was being used
+Cleaned up cases where deprecated code was being used but had a new location they should be imported from
