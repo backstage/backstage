@@ -26,13 +26,13 @@ The diagram below provides an overview of the different building blocks, and the
 
 This is the app instance itself that you create and use as the root of your Backstage frontend application. It does not have any direct functionality in and of itself, but is simply responsible for wiring things together.
 
-### Plugins
-
-Plugins provide the actual features inside an app. The size of a plugin can range from a tiny component to an entire new system in which other plugins can be composed and integrated. Plugins can be completely standalone, or build on top of each other to extend existing plugins and augment their features. Plugins can communicate with each other by composing their extensions, or by sharing APIs and routes.
-
 ### Extensions
 
 Extensions are the building blocks that build out both the visual and non-visual structure of the application. There are both built-in extensions provided by the app itself, as well as extensions provided by plugins. Each extension is attached to a parent with which it shares data, and can have any number of children of its own. It is up to the app to wire together all extensions into a single tree known as the app extension tree. It is from this structure that the entire app can then be instantiated and rendered.
+
+### Plugins
+
+Plugins provide the actual features inside an app. The size of a plugin can range from a tiny component to an entire new system in which other plugins can be composed and integrated. Plugins can be completely standalone, or build on top of each other to extend existing plugins and augment their features. Plugins can communicate with each other by composing their extensions, or by sharing Utility APIs and routes.
 
 ### Extension Overrides
 
