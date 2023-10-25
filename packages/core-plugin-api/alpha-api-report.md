@@ -5,6 +5,7 @@
 ```ts
 import { ApiRef } from '@backstage/core-plugin-api';
 import { Observable } from '@backstage/types';
+import { default as React_2 } from 'react';
 import { TranslationMessages as TranslationMessages_2 } from '@backstage/core-plugin-api/alpha';
 import { TranslationRef as TranslationRef_2 } from '@backstage/core-plugin-api/alpha';
 
@@ -71,6 +72,26 @@ export function createTranslationResource<
 >(
   options: TranslationResourceOptions<TId, TMessages, TTranslations>,
 ): TranslationResource<TId>;
+
+// @alpha (undocumented)
+export function Translation<
+  TMessages extends {
+    [key in string]: string;
+  },
+  TKey extends keyof CollapsedMessages<TMessages>,
+>({
+  translationRef,
+  tKey,
+  tFunctionOptions,
+}: {
+  translationRef: TranslationRef<string, TMessages>;
+  tKey: TKey;
+  tFunctionOptions?: TranslationFunctionOptions<
+    NestedMessageKeys<TKey, CollapsedMessages<TMessages>>,
+    PluralKeys<TMessages>,
+    CollapsedMessages<TMessages>
+  >[0];
+}): React_2.JSX.Element;
 
 // @alpha (undocumented)
 export type TranslationApi = {

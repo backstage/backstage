@@ -76,7 +76,7 @@ type I18nextFormatMap = {
  *
  * @ignore
  */
-type PluralKeys<TMessages extends { [key in string]: string }> = {
+export type PluralKeys<TMessages extends { [key in string]: string }> = {
   [Key in keyof TMessages]: Key extends `${infer K}_${TranslationPlural}`
     ? K
     : never;
@@ -92,7 +92,7 @@ type PluralKeys<TMessages extends { [key in string]: string }> = {
  *
  * @ignore
  */
-type CollapsedMessages<TMessages extends { [key in string]: string }> = {
+export type CollapsedMessages<TMessages extends { [key in string]: string }> = {
   [key in keyof TMessages as key extends `${infer K}_${TranslationPlural}`
     ? K
     : key]: TMessages[key];
@@ -232,7 +232,7 @@ type NestingKeysFromMessage<TMessage extends string> =
  *
  * @ignore
  */
-type NestedMessageKeys<
+export type NestedMessageKeys<
   TKey extends keyof TMessages,
   TMessages extends { [key in string]: string },
 > =
@@ -300,7 +300,7 @@ type OptionArgs<TOptions extends {}> = keyof TOptions extends never
 /**
  * @ignore
  */
-type TranslationFunctionOptions<
+export type TranslationFunctionOptions<
   TKeys extends keyof TMessages, // All normalized message keys to be considered, i.e. included nested ones
   TPluralKeys extends keyof TMessages, // All keys in the message map that are pluralized
   TMessages extends { [key in string]: string }, // Collapsed message map with normalized keys and union values
