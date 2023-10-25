@@ -18558,9 +18558,9 @@ __metadata:
   linkType: hard
 
 "@types/diff@npm:^5.0.0":
-  version: 5.0.6
-  resolution: "@types/diff@npm:5.0.6"
-  checksum: 8ce79492a89d568b54792a8491d01b1ff69526e19560670ef2de078c467738cdc0aae81fc4f895e49f915a2b9bbf694f6f95a2e5544e7c0989448956eba9ff66
+  version: 5.0.7
+  resolution: "@types/diff@npm:5.0.7"
+  checksum: 38cad7b1e19789a11bfab2428409476ea204705e92c39dd13a9ba26b604930efcffb553352512296cb179adfb028e2d95e51f9df2b7443bb0a6ba306c8bc84d0
   languageName: node
   linkType: hard
 
