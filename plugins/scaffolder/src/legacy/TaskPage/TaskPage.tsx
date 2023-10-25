@@ -28,7 +28,6 @@ import {
   useRouteRef,
   useRouteRefParams,
 } from '@backstage/core-plugin-api';
-import { BackstageTheme } from '@backstage/theme';
 import {
   Button,
   CircularProgress,
@@ -125,7 +124,7 @@ const StepTimeTicker = ({ step }: { step: TaskStep }) => {
   return <Typography variant="caption">{time}</Typography>;
 };
 
-const useStepIconStyles = makeStyles((theme: BackstageTheme) =>
+const useStepIconStyles = makeStyles(theme =>
   createStyles({
     root: {
       color: theme.palette.text.disabled,

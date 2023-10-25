@@ -17,9 +17,9 @@
 import React, { PropsWithChildren } from 'react';
 import {
   createTheme as createMuiTheme,
+  Theme,
   ThemeProvider,
 } from '@material-ui/core';
-import { BackstageTheme } from '@backstage/theme';
 import {
   costInsightsDarkTheme,
   costInsightsLightTheme,
@@ -31,7 +31,7 @@ export const CostInsightsThemeProvider = ({
 }: PropsWithChildren<{}>) => {
   return (
     <ThemeProvider
-      theme={(theme: BackstageTheme) =>
+      theme={(theme: Theme) =>
         createMuiTheme({
           ...theme,
           palette: {

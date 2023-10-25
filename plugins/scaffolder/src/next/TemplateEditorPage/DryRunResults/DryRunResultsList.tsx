@@ -14,7 +14,6 @@
  * limitations under the License.
  */
 
-import { BackstageTheme } from '@backstage/theme';
 import IconButton from '@material-ui/core/IconButton';
 import List from '@material-ui/core/List';
 import ListItem from '@material-ui/core/ListItem';
@@ -30,7 +29,7 @@ import React from 'react';
 import { useDryRun } from '../DryRunContext';
 import { downloadBlob } from '../../../lib/download';
 
-const useStyles = makeStyles((theme: BackstageTheme) => ({
+const useStyles = makeStyles(theme => ({
   root: {
     overflowY: 'auto',
     background: theme.palette.background.default,
