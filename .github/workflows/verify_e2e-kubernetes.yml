@@ -26,7 +26,7 @@ jobs:
         with:
           egress-policy: audit
 
-      - uses: actions/checkout@v3.6.0
+      - uses: actions/checkout@v4.1.1
 
       - name: use node.js ${{ matrix.node-version }}
         uses: actions/setup-node@v3.8.1

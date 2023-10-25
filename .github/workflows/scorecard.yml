@@ -34,7 +34,7 @@ jobs:
           egress-policy: audit
 
       - name: 'Checkout code'
-        uses: actions/checkout@v3.6.0
+        uses: actions/checkout@v4.1.1
         with:
           persist-credentials: false
 

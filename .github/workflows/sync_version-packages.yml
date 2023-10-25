@@ -18,7 +18,7 @@ jobs:
         with:
           egress-policy: audit
 
-      - uses: actions/checkout@v3.6.0
+      - uses: actions/checkout@v4.1.1
         with:
           fetch-depth: 20000
           fetch-tags: true

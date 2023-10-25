@@ -29,7 +29,7 @@ jobs:
         with:
           egress-policy: audit
 
-      - uses: actions/checkout@v3.6.0
+      - uses: actions/checkout@v4.1.1
       - name: Monitor and Synchronize Snyk Policies
         uses: snyk/actions/node@39091e69b560da335383b404e50d65b408f4f812 # master
         with:
