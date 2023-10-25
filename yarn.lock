@@ -18575,9 +18575,9 @@ __metadata:
   linkType: hard
 
 "@types/ejs@npm:^3.1.3":
-  version: 3.1.3
-  resolution: "@types/ejs@npm:3.1.3"
-  checksum: b1b1c6c9d331d237523ebc410789f42edcdbb1d4cdd4a7a37ac61d2ce9c3fbcfbfe7d7f1a7f61c9334812347a0036afd52258ad2198f85545ebfb26d63475a75
+  version: 3.1.4
+  resolution: "@types/ejs@npm:3.1.4"
+  checksum: 7e61b59a4a1a5232e081f0f2408b99ee5664446406004da088b29ac849b1490fbd6fbdf2c2a1aeb5049e690edb80f6c0cbe8387930a114e2c1c7dc0e67d0bc04
   languageName: node
   linkType: hard
 
