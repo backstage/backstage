@@ -22,6 +22,7 @@ import {
 } from '@backstage/core-plugin-api';
 import {
   GithubIntegrationConfig,
+  AzureIntegrationConfig,
   ScmIntegrationRegistry,
 } from '@backstage/integration';
 import { ScmAuthApi } from '@backstage/integration-react';
@@ -29,6 +30,7 @@ import { Octokit } from '@octokit/rest';
 import { Base64 } from 'js-base64';
 import { AnalyzeResult, CatalogImportApi } from './CatalogImportApi';
 import { getGithubIntegrationConfig } from './GitHub';
+import { getAzureIntegrationConfig } from './Azure';
 import { getBranchName, getCatalogFilename } from '../components/helpers';
 import { AnalyzeLocationResponse } from '@backstage/plugin-catalog-common';
 import { CompoundEntityRef } from '@backstage/catalog-model';
@@ -89,19 +91,40 @@ export class CatalogImportClient implements CatalogImportApi {
       };
     }
 
-    const ghConfig = getGithubIntegrationConfig(this.scmIntegrationsApi, url);
-    if (!ghConfig) {
-      const other = this.scmIntegrationsApi.byUrl(url);
-      const catalogFilename = getCatalogFilename(this.configApi);
+    const repoIntegration = this.scmIntegrationsApi.byUrl(url);
+    const catalogFilename = getCatalogFilename(this.configApi);
 
-      if (other) {
+    switch (repoIntegration?.type) {
+      case 'github':
+        {
+          const ghConfig = getGithubIntegrationConfig(
+            this.scmIntegrationsApi,
+            url,
+          );
+          if (!ghConfig) {
+            throw new Error(
+              `This URL was not recognized as a valid GitHub URL because there was no configured integration that matched the given host name. You could try to paste the full URL to a ${catalogFilename} file instead.`,
+            );
+          }
+        }
+        break;
+      case 'azure':
+        {
+          const azConfig = getAzureIntegrationConfig(
+            this.scmIntegrationsApi,
+            url,
+          );
+          if (!azConfig) {
+            throw new Error(
+              `This URL was not recognized as a valid Azure Devops URL because there was no configured integration that matched the given host name. You could try to paste the full URL to a ${catalogFilename} file instead.`,
+            );
+          }
+        }
+        break;
+      default:
         throw new Error(
-          `The ${other.title} integration only supports full URLs to ${catalogFilename} files. Did you try to pass in the URL of a directory instead?`,
+          `The ${repoIntegration?.type} integration only supports full URLs to ${catalogFilename} files. Did you try to pass in the URL of a directory instead?`,
         );
-      }
-      throw new Error(
-        `This URL was not recognized as a valid GitHub URL because there was no configured integration that matched the given host name. You could try to paste the full URL to a ${catalogFilename} file instead.`,
-      );
     }
 
     const analyzation = await this.analyzeLocation({
@@ -143,7 +166,7 @@ export class CatalogImportClient implements CatalogImportApi {
 
     return {
       type: 'repository',
-      integrationType: 'github',
+      integrationType: repoIntegration?.type,
       url: url,
       generatedEntities: analyzation.generateEntities.map(x => x.entity),
     };
@@ -191,6 +214,21 @@ the component will become available.\n\nFor more information, read an \
       });
     }
 
+    const azConfig = getAzureIntegrationConfig(
+      this.scmIntegrationsApi,
+      repositoryUrl,
+    );
+
+    if (azConfig) {
+      return await this.submitAzurePrToRepo({
+        ...azConfig,
+        repositoryUrl,
+        fileContent,
+        title,
+        body,
+      });
+    }
+
     throw new Error('unimplemented!');
   }
 
@@ -231,6 +269,119 @@ the component will become available.\n\nFor more information, read an \
     return payload;
   }
 
+  // TODO: extract this function and implement for non-github
+  private async submitAzurePrToRepo(options: {
+    owner: string;
+    repo: string;
+    title: string;
+    body: string;
+    fileContent: string;
+    repositoryUrl: string;
+    azureIntegrationConfig: AzureIntegrationConfig;
+  }): Promise<{ link: string; location: string }> {
+    const {
+      owner,
+      repo,
+      title,
+      body,
+      fileContent,
+      repositoryUrl,
+      azureIntegrationConfig,
+    } = options;
+
+    // const { token } = await this.scmAuthApi.getCredentials({
+    //   url: repositoryUrl,
+    //   additionalScope: {
+    //     repoWrite: true,
+    //   },
+    // });
+
+    // const octo = new Octokit({
+    //   auth: token,
+    //   baseUrl: githubIntegrationConfig.apiBaseUrl,
+    // });
+
+    const branchName = getBranchName(this.configApi);
+    const fileName = getCatalogFilename(this.configApi);
+
+    // const repoData = await octo.repos
+    //   .get({
+    //     owner,
+    //     repo,
+    //   })
+    //   .catch(e => {
+    //     throw new Error(formatHttpErrorMessage("Couldn't fetch repo data", e));
+    //   });
+
+    // const parentRef = await octo.git
+    //   .getRef({
+    //     owner,
+    //     repo,
+    //     ref: `heads/${repoData.data.default_branch}`,
+    //   })
+    //   .catch(e => {
+    //     throw new Error(
+    //       formatHttpErrorMessage("Couldn't fetch default branch data", e),
+    //     );
+    //   });
+
+    // await octo.git
+    //   .createRef({
+    //     owner,
+    //     repo,
+    //     ref: `refs/heads/${branchName}`,
+    //     sha: parentRef.data.object.sha,
+    //   })
+    //   .catch(e => {
+    //     throw new Error(
+    //       formatHttpErrorMessage(
+    //         `Couldn't create a new branch with name '${branchName}'`,
+    //         e,
+    //       ),
+    //     );
+    //   });
+
+    // await octo.repos
+    //   .createOrUpdateFileContents({
+    //     owner,
+    //     repo,
+    //     path: fileName,
+    //     message: title,
+    //     content: Base64.encode(fileContent),
+    //     branch: branchName,
+    //   })
+    //   .catch(e => {
+    //     throw new Error(
+    //       formatHttpErrorMessage(
+    //         `Couldn't create a commit with ${fileName} file added`,
+    //         e,
+    //       ),
+    //     );
+    //   });
+
+    // const pullRequestResponse = await octo.pulls
+    //   .create({
+    //     owner,
+    //     repo,
+    //     title,
+    //     head: branchName,
+    //     body,
+    //     base: repoData.data.default_branch,
+    //   })
+    //   .catch(e => {
+    //     throw new Error(
+    //       formatHttpErrorMessage(
+    //         `Couldn't create a pull request for ${branchName} branch`,
+    //         e,
+    //       ),
+    //     );
+    //   });
+
+    return {
+      link: 'hello',
+      location: `https://${azureIntegrationConfig.host}/`,
+    };
+  }
   // TODO: extract this function and implement for non-github
   private async submitGitHubPrToRepo(options: {
     owner: string;
