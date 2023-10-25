@@ -50,7 +50,32 @@ The extension factory is the implementation of the extension itself. It is a fun
 
 ## Creating an Extensions
 
-TODO
+Extensions are created using the `createExtension` function from `@backstage/frontend-plugin-api`. At minimum you need to provide an ID, attachment point, output definition, and a factory function. The following example shows the creation of a minimal extension:
+
+```tsx
+const extension = createExtension({
+  id: 'my-extension',
+  // This is the attachment point, `id` is the ID of the parent extension,
+  // while `input` is the name of the input to attach to.
+  attachTo: { id: 'my-parent', input: 'content' },
+  // The output map defines the outputs of the extension. The object keys
+  // are only used internally to map the outputs of the factory and do
+  // not need to match the keys of the input.
+  output: {
+    element: coreExtensionData.reactElement,
+  },
+  // This factory is called to instantiate the extensions and produce its output.
+  factory({ bind }) {
+    bind({
+      element: <div>Hello World</div>,
+    });
+  },
+});
+```
+
+Note that while the `createExtension` is public API and used in many places, it is not typically what you use when building plugins and features. Instead there are many extension creator functions exported by both the core APIs and plugins that make it easier to create extensions for more specific usages.
+
+... TODO ...
 
 ## Extension Data
 
@@ -60,10 +85,18 @@ TODO
 
 TODO
 
+## Configuration
+
+TODO
+
 ## Configuration Schema
 
 TODO
 
 ## Extension Creators
+
+TODO
+
+## Extension Boundary
 
 TODO
