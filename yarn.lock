@@ -18481,20 +18481,20 @@ __metadata:
   linkType: hard
 
 "@types/d3-shape@npm:^1":
-  version: 1.3.9
-  resolution: "@types/d3-shape@npm:1.3.9"
+  version: 1.3.10
+  resolution: "@types/d3-shape@npm:1.3.10"
   dependencies:
     "@types/d3-path": ^1
-  checksum: a4df0c09df4f97a017fbb229a096af6e25fe84e331dfb8c9b1f248a7f3df6f07c871879fabb31050cbec78f34127397a8134a16f2a2359ff681ec846cf886754
+  checksum: c5fcb5da6388ffe5b0594d001940bf88589e174ca1b6cb6ffe3367fb8157b7bd70f15a555642abfa1acdf679860e0c1247bbc1f59395fcded29255638f661b55
   languageName: node
   linkType: hard
 
 "@types/d3-shape@npm:^3.0.1, @types/d3-shape@npm:^3.1.0":
-  version: 3.1.3
-  resolution: "@types/d3-shape@npm:3.1.3"
+  version: 3.1.4
+  resolution: "@types/d3-shape@npm:3.1.4"
   dependencies:
     "@types/d3-path": "*"
-  checksum: ad17781ab4ce4b796954b86de7e14566c731726d39a1db7d73eaf50668a71e996d715450a0ff9f2720755e1b8643c3e88d47d45101a75c9d4ddbef51a636f6a0
+  checksum: 3d529cc96127d8d58da05bc602e51bb7946171bdae96dcce9dae81c1549d3fd3f226a4e651c3302951a1ebf7803e86388c4afcdd654b0d40d203219ce68eb383
   languageName: node
   linkType: hard
 
