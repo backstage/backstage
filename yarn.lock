@@ -18523,9 +18523,9 @@ __metadata:
   linkType: hard
 
 "@types/dagre@npm:^0.7.44":
-  version: 0.7.50
-  resolution: "@types/dagre@npm:0.7.50"
-  checksum: a128048b5202c501a4595bbc17288aafbef90f3535e79385ddaf0842237e69aa5998dbc12bc2867244eefe3fb6c5026d9785bfdedea46d813f006066e06e8f44
+  version: 0.7.51
+  resolution: "@types/dagre@npm:0.7.51"
+  checksum: 6a23cc406082fe867dc0be0a117ae0c493bcfb6e08b83ea55a09b4f43e6eb5efc34a102d1a039fa82d2df700d55ee5481c0c3febdf710b972bb345c8a7f6c316
   languageName: node
   linkType: hard
 
