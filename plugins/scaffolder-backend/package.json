@@ -92,7 +92,7 @@
     "octokit": "^2.0.0",
     "octokit-plugin-create-pull-request": "^3.10.0",
     "p-limit": "^3.1.0",
-    "p-queue": "^6.6.2",
+    "p-queue": "^7.4.1",
     "prom-client": "^14.0.1",
     "uuid": "^8.2.0",
     "winston": "^3.2.1",

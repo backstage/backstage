@@ -301,7 +301,7 @@ export async function createRouter(
 
   const actionRegistry = new TemplateActionRegistry();
 
-  const workers = [];
+  const workers: TaskWorker[] = [];
   if (concurrentTasksLimit !== 0) {
     for (let i = 0; i < (taskWorkers || 1); i++) {
       const worker = await TaskWorker.create({
@@ -515,6 +515,10 @@ export async function createRouter(
       // Do not disclose secrets
       delete task.secrets;
       res.status(200).json(task);
+    })
+    .post('/v2/tasks/cancel', async (req, res) => {
+      workers.forEach(worker => worker.cancelAllRunningTasks());
+      res.status(200).json({ status: 'cancelled' });
     })
     .post('/v2/tasks/:taskId/cancel', async (req, res) => {
       const { taskId } = req.params;

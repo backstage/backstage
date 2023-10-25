@@ -14,6 +14,7 @@
  * limitations under the License.
  */
 
+import fetch from 'node-fetch';
 import {
   createBackendPlugin,
   coreServices,
@@ -79,6 +80,7 @@ export const scaffolderPlugin = createBackendPlugin({
         reader: coreServices.urlReader,
         permissions: coreServices.permissions,
         database: coreServices.database,
+        discovery: coreServices.discovery,
         httpRouter: coreServices.httpRouter,
         catalogClient: catalogServiceRef,
       },
@@ -88,6 +90,7 @@ export const scaffolderPlugin = createBackendPlugin({
         lifecycle,
         reader,
         database,
+        discovery,
         httpRouter,
         catalogClient,
         permissions,
@@ -107,23 +110,11 @@ export const scaffolderPlugin = createBackendPlugin({
         ];
 
         lifecycle.addShutdownHook(async () => {
-          const databaseTaskStore = await DatabaseTaskStore.create({
-            database,
+          const baseUrl = await discovery.getBaseUrl('scaffolder');
+          const url = `${baseUrl}/v2/tasks/cancel`;
+          await fetch(url, {
+            method: 'POST',
           });
-          const { tasks: processingTasks } = await databaseTaskStore.list({
-            status: 'processing',
-          });
-
-          if (processingTasks.length > 0) {
-            await Promise.all(
-              processingTasks.map(task =>
-                databaseTaskStore.shutdownTask({ taskId: task.id }),
-              ),
-            );
-            logger.info(
-              `Successfully shut ${processingTasks.length} processing tasks down.`,
-            );
-          }
         });
 
         const actionIds = actions.map(action => action.id).join(', ');
