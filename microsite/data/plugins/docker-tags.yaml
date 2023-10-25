@@ -1,7 +1,7 @@
 ---
 title: Docker tags
 author: Workm8
-authorUrl: 'https://github.com/work-m8/.github'
+authorUrl: 'https://github.com/work-m8'
 category: Services
 description: 'Creates a list of docker tags based on hub.docker.com'
 documentation: 'https://github.com/Work-m8/backstage-docker-plugin/blob/main/README.md'
