@@ -1,5 +1,4 @@
 openapi: 3.0.3
-
 info:
   title: '@backstage/plugin-catalog-backend'
   version: '1'
@@ -8,10 +7,8 @@ info:
     name: Apache-2.0
     url: http://www.apache.org/licenses/LICENSE-2.0.html
   contact: {}
-
 servers:
   - url: /
-
 components:
   examples: {}
   headers: {}
@@ -73,10 +70,15 @@ components:
         items:
           type: string
       examples:
-        'Get name and the entire relations collection':
-          value: ['metadata.name', 'relations']
-        'Get kind, name and namespace':
-          value: ['kind', 'metadata.name', 'metadata.namespace']
+        Get name and the entire relations collection:
+          value:
+            - metadata.name
+            - relations
+        Get kind, name and namespace:
+          value:
+            - kind
+            - metadata.name
+            - metadata.namespace
     filter:
       name: filter
       in: query
@@ -88,11 +90,12 @@ components:
         items:
           type: string
       examples:
-        'Get groups':
-          value: ['kind=group']
-        'Get orphaned components':
+        Get groups:
           value:
-            ['kind=component,metadata.annotations.backstage.io/orphan=true']
+            - kind=group
+        Get orphaned components:
+          value:
+            - kind=component,metadata.annotations.backstage.io/orphan=true
     offset:
       name: offset
       in: query
@@ -125,17 +128,63 @@ components:
       explode: true
       style: form
       examples:
-        'Order ascending by name':
-          value: ['metadata.name,asc']
-        'Order descending by owner':
-          value: ['spec.owner,desc']
+        Order ascending by name:
+          value:
+            - metadata.name,asc
+        Order descending by owner:
+          value:
+            - spec.owner,desc
   requestBodies: {}
-  responses: {}
+  responses:
+    ErrorResponse:
+      description: An error response from the backend.
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Error'
   schemas:
+    Error:
+      type: object
+      properties:
+        error:
+          type: object
+          properties:
+            name:
+              type: string
+            message:
+              type: string
+            stack:
+              type: string
+            code:
+              type: string
+          required:
+            - name
+            - message
+        request:
+          type: object
+          properties:
+            method:
+              type: string
+            url:
+              type: string
+          required:
+            - method
+            - url
+        response:
+          type: object
+          properties:
+            statusCode:
+              type: number
+          required:
+            - statusCode
+      required:
+        - error
+        - response
     JsonObject:
       type: object
       properties: {}
       description: A type representing all allowed JSON object values.
+      additionalProperties: true
     MapStringString:
       type: object
       properties: {}
@@ -350,7 +399,6 @@ components:
         count:
           type: number
       additionalProperties: false
-
     EntityFacetsResponse:
       type: object
       properties:
@@ -593,28 +641,6 @@ components:
         - type
         - target
       additionalProperties: false
-    SerializedError:
-      allOf:
-        - $ref: '#/components/schemas/JsonObject'
-        - type: object
-          properties:
-            code:
-              type: string
-              description: A custom code (not necessarily the same as an HTTP response code); may not be present
-            stack:
-              type: string
-              description: A stringified stack trace; may not be present
-            message:
-              type: string
-              description: The message of the exception that was thrown
-            name:
-              type: string
-              description: The name of the exception that was thrown
-          required:
-            - message
-            - name
-      description: The serialized form of an Error.
-      additionalProperties: false
     EntitiesQueryResponse:
       type: object
       properties:
@@ -622,8 +648,7 @@ components:
           type: array
           items:
             $ref: '#/components/schemas/Entity'
-          description: |-
-            The list of entities paginated by a specific filter.
+          description: The list of entities paginated by a specific filter.
         totalItems:
           type: number
         pageInfo:
@@ -631,12 +656,10 @@ components:
           properties:
             nextCursor:
               type: string
-              description: |-
-                The cursor for the next batch of entities.
+              description: The cursor for the next batch of entities.
             prevCursor:
               type: string
-              description: |-
-                The cursor for the previous batch of entities.
+              description: The cursor for the previous batch of entities.
       additionalProperties: false
   securitySchemes:
     JWT:
@@ -651,6 +674,10 @@ paths:
       responses:
         '200':
           description: Refreshed
+        '400':
+          $ref: '#/components/responses/ErrorResponse'
+        default:
+          $ref: '#/components/responses/ErrorResponse'
       security:
         - {}
         - JWT: []
@@ -684,6 +711,10 @@ paths:
                 type: array
                 items:
                   $ref: '#/components/schemas/Entity'
+        '400':
+          $ref: '#/components/responses/ErrorResponse'
+        default:
+          $ref: '#/components/responses/ErrorResponse'
       security:
         - {}
         - JWT: []
@@ -712,6 +743,10 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/Entity'
+        '400':
+          $ref: '#/components/responses/ErrorResponse'
+        default:
+          $ref: '#/components/responses/ErrorResponse'
       security:
         - {}
         - JWT: []
@@ -723,6 +758,10 @@ paths:
       responses:
         '204':
           description: Deleted successfully.
+        '400':
+          $ref: '#/components/responses/ErrorResponse'
+        default:
+          $ref: '#/components/responses/ErrorResponse'
       security:
         - {}
         - JWT: []
@@ -739,6 +778,10 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/Entity'
+        '400':
+          $ref: '#/components/responses/ErrorResponse'
+        default:
+          $ref: '#/components/responses/ErrorResponse'
       security:
         - {}
         - JWT: []
@@ -757,6 +800,10 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/EntityAncestryResponse'
+        '400':
+          $ref: '#/components/responses/ErrorResponse'
+        default:
+          $ref: '#/components/responses/ErrorResponse'
       security:
         - {}
         - JWT: []
@@ -775,13 +822,17 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/EntitiesBatchResponse'
+        '400':
+          $ref: '#/components/responses/ErrorResponse'
+        default:
+          $ref: '#/components/responses/ErrorResponse'
       security:
         - {}
         - JWT: []
       parameters:
         - $ref: '#/components/parameters/fields'
       requestBody:
-        required: true
+        required: false
         content:
           application/json:
             schema:
@@ -798,14 +849,17 @@ paths:
                   items:
                     type: string
             examples:
-              'Fetch Backstage entities':
+              Fetch Backstage entities:
                 value:
                   entityRefs:
-                    ['component:default/backstage', 'api:default/backstage']
-              'Fetch annotations for backstage entity':
+                    - component:default/backstage
+                    - api:default/backstage
+              Fetch annotations for backstage entity:
                 value:
-                  entityRefs: ['component:default/backstage']
-                  fields: ['metadata.annotations']
+                  entityRefs:
+                    - component:default/backstage
+                  fields:
+                    - metadata.annotations
   /entities/by-query:
     get:
       operationId: GetEntitiesByQuery
@@ -817,6 +871,10 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/EntitiesQueryResponse'
+        '400':
+          $ref: '#/components/responses/ErrorResponse'
+        default:
+          $ref: '#/components/responses/ErrorResponse'
       security:
         - {}
         - JWT: []
@@ -855,6 +913,10 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/EntityFacetsResponse'
+        '400':
+          $ref: '#/components/responses/ErrorResponse'
+        default:
+          $ref: '#/components/responses/ErrorResponse'
       security:
         - {}
         - JWT: []
@@ -868,10 +930,12 @@ paths:
             items:
               type: string
           examples:
-            'Entities by kind':
-              value: ['kind']
-            'Entities by spec type':
-              value: ['spec.type']
+            Entities by kind:
+              value:
+                - kind
+            Entities by spec type:
+              value:
+                - spec.type
         - $ref: '#/components/parameters/filter'
   /locations:
     post:
@@ -896,6 +960,36 @@ paths:
                 required:
                   - entities
                   - location
+        '201':
+          description: 201 response
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  location:
+                    type: object
+                    properties:
+                      id:
+                        type: string
+                      type:
+                        type: string
+                      target:
+                        type: string
+                    required:
+                      - id
+                      - type
+                      - target
+                  entities:
+                    type: array
+                    items: {}
+                required:
+                  - location
+                  - entities
+        '400':
+          $ref: '#/components/responses/ErrorResponse'
+        default:
+          $ref: '#/components/responses/ErrorResponse'
       security:
         - {}
         - JWT: []
@@ -937,6 +1031,8 @@ paths:
                       $ref: '#/components/schemas/Location'
                   required:
                     - data
+        default:
+          $ref: '#/components/responses/ErrorResponse'
       security:
         - {}
         - JWT: []
@@ -952,6 +1048,8 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/Location'
+        default:
+          $ref: '#/components/responses/ErrorResponse'
       security:
         - {}
         - JWT: []
@@ -968,6 +1066,10 @@ paths:
       responses:
         '204':
           description: No content
+        '400':
+          $ref: '#/components/responses/ErrorResponse'
+        default:
+          $ref: '#/components/responses/ErrorResponse'
       security:
         - {}
         - JWT: []
@@ -989,6 +1091,10 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/AnalyzeLocationResponse'
+        '400':
+          $ref: '#/components/responses/ErrorResponse'
+        default:
+          $ref: '#/components/responses/ErrorResponse'
       security:
         - {}
         - JWT: []
@@ -1013,24 +1119,27 @@ paths:
       responses:
         '200':
           description: Ok
+        '400':
+          description: 400 response
           content:
-            application/json:
+            application/json; charset=utf-8:
               schema:
-                anyOf:
-                  - type: object
-                    properties:
-                      errors:
-                        $ref: '#/components/schemas/SerializedError'
-                    required:
-                      - errors
-                  - type: object
-                    properties:
-                      errors:
-                        type: array
-                        items:
-                          $ref: '#/components/schemas/SerializedError'
-                    required:
-                      - errors
+                type: object
+                properties:
+                  errors:
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        name:
+                          type: string
+                        message:
+                          type: string
+                      required:
+                        - name
+                        - message
+                required:
+                  - errors
       security:
         - {}
         - JWT: []

@@ -15,12 +15,14 @@
  */
 
 import React from 'react';
-import { Grid } from '@material-ui/core';
 import {
   coreExtensionData,
   createExtensionInput,
 } from '@backstage/frontend-plugin-api';
-import { createEntityContentExtension } from '@backstage/plugin-catalog-react/alpha';
+import {
+  createEntityContentExtension,
+  entityFilterExtensionDataRef,
+} from '@backstage/plugin-catalog-react/alpha';
 
 export const OverviewEntityContent = createEntityContentExtension({
   id: 'overview',
@@ -30,17 +32,13 @@ export const OverviewEntityContent = createEntityContentExtension({
   inputs: {
     cards: createExtensionInput({
       element: coreExtensionData.reactElement,
+      filter: entityFilterExtensionDataRef,
     }),
   },
-  loader: async ({ inputs }) => (
-    <Grid container spacing={3} alignItems="stretch">
-      {inputs.cards.map(card => (
-        <Grid item md={6} xs={12}>
-          {card.element}
-        </Grid>
-      ))}
-    </Grid>
-  ),
+  loader: async ({ inputs }) =>
+    import('./EntityOverviewPage').then(m => (
+      <m.EntityOverviewPage cards={inputs.cards} />
+    )),
 });
 
 export default [OverviewEntityContent];

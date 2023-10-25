@@ -28,7 +28,7 @@ jobs:
         with:
           egress-policy: audit
 
-      - uses: actions/checkout@v3.6.0
+      - uses: actions/checkout@v4.1.1
         with:
           ref: '${{ github.event.pull_request.merge_commit_sha }}'
 

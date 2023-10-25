@@ -16,11 +16,17 @@
 
 import { Config } from '@backstage/config';
 import { InputError } from '@backstage/errors';
-import { Logger } from 'winston';
+import { LoggerService } from '@backstage/backend-plugin-api';
 import express from 'express';
 import Router from 'express-promise-router';
 import { VaultApi, VaultClient } from './vaultApi';
-import { TaskRunner, PluginTaskScheduler } from '@backstage/backend-tasks';
+import {
+  PluginTaskScheduler,
+  TaskRunner,
+  TaskScheduleDefinition,
+  TaskScheduleDefinitionConfig,
+  readTaskScheduleDefinitionFromConfig,
+} from '@backstage/backend-tasks';
 import { errorHandler } from '@backstage/backend-common';
 
 /**
@@ -28,7 +34,7 @@ import { errorHandler } from '@backstage/backend-common';
  * @public
  */
 export interface VaultEnvironment {
-  logger: Logger;
+  logger: LoggerService;
   config: Config;
   scheduler: PluginTaskScheduler;
 }
@@ -101,18 +107,16 @@ export class VaultBuilder {
   }
 
   /**
-   * Enables the token renewal for Vault.
+   * Enables the token renewal for Vault. The schedule if configured in the app-config.yaml file.
+   * If not set, the renewal is executed hourly
    *
-   * @param schedule - The TaskRunner used to schedule the renewal, if not set, renewing hourly
    * @returns
    */
   public async enableTokenRenew(schedule?: TaskRunner) {
     const taskRunner = schedule
       ? schedule
-      : this.env.scheduler.createScheduledTaskRunner({
-          frequency: { hours: 1 },
-          timeout: { hours: 1 },
-        });
+      : this.env.scheduler.createScheduledTaskRunner(this.getConfigSchedule());
+
     await taskRunner.run({
       id: 'refresh-vault-token',
       fn: async () => {
@@ -122,6 +126,24 @@ export class VaultBuilder {
       },
     });
     return this;
+  }
+
+  private getConfigSchedule(): TaskScheduleDefinition {
+    const schedule = this.env.config.getOptional<
+      TaskScheduleDefinitionConfig | boolean
+    >('vault.schedule');
+
+    const scheduleCfg =
+      schedule !== undefined && schedule !== false
+        ? {
+            frequency: { hours: 1 },
+            timeout: { hours: 1 },
+          }
+        : readTaskScheduleDefinitionFromConfig(
+            this.env.config.getConfig('vault.schedule'),
+          );
+
+    return scheduleCfg;
   }
 
   /**

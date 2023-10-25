@@ -1,5 +1,11 @@
 # @backstage/version-bridge
 
+## 1.0.7-next.0
+
+### Patch Changes
+
+- 6c2b872153: Add official support for React 18.
+
 ## 1.0.6
 
 ### Patch Changes

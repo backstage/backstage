@@ -1,5 +1,14 @@
 # @backstage/plugin-airbrake-backend
 
+## 0.3.4-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-common@0.19.9-next.0
+  - @backstage/backend-plugin-api@0.6.7-next.0
+  - @backstage/config@1.1.1
+
 ## 0.3.3
 
 ### Patch Changes

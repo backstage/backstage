@@ -13,11 +13,14 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import { Entity, CompoundEntityRef } from '@backstage/catalog-model';
+import {
+  Entity,
+  CompoundEntityRef,
+  stringifyEntityRef,
+} from '@backstage/catalog-model';
 import React from 'react';
 import { EntityRefLink } from './EntityRefLink';
 import { LinkProps } from '@backstage/core-components';
-import { FetchedEntityRefLinks } from './FetchedEntityRefLinks';
 
 /**
  * Props for {@link EntityRefLink}.
@@ -26,21 +29,14 @@ import { FetchedEntityRefLinks } from './FetchedEntityRefLinks';
  */
 export type EntityRefLinksProps<
   TRef extends string | CompoundEntityRef | Entity,
-> = (
-  | {
-      defaultKind?: string;
-      entityRefs: TRef[];
-      fetchEntities?: false;
-      getTitle?(entity: TRef): string | undefined;
-    }
-  | {
-      defaultKind?: string;
-      entityRefs: TRef[];
-      fetchEntities: true;
-      getTitle(entity: Entity): string | undefined;
-    }
-) &
-  Omit<LinkProps, 'to'>;
+> = {
+  defaultKind?: string;
+  entityRefs: TRef[];
+  /** @deprecated This option is no longer used; presentation is handled by entityPresentationApiRef instead */
+  fetchEntities?: boolean;
+  /** @deprecated This option is no longer used; presentation is handled by entityPresentationApiRef instead */
+  getTitle?(entity: TRef): string | undefined;
+} & Omit<LinkProps, 'to'>;
 
 /**
  * Shows a list of clickable links to entities.
@@ -50,32 +46,17 @@ export type EntityRefLinksProps<
 export function EntityRefLinks<
   TRef extends string | CompoundEntityRef | Entity,
 >(props: EntityRefLinksProps<TRef>) {
-  const { entityRefs, defaultKind, fetchEntities, getTitle, ...linkProps } =
-    props;
-
-  if (fetchEntities) {
-    return (
-      <FetchedEntityRefLinks
-        {...linkProps}
-        defaultKind={defaultKind}
-        entityRefs={entityRefs}
-        getTitle={getTitle}
-      />
-    );
-  }
+  const { entityRefs, ...linkProps } = props;
 
   return (
     <>
       {entityRefs.map((r: TRef, i: number) => {
+        const entityRefString =
+          typeof r === 'string' ? r : stringifyEntityRef(r);
         return (
-          <React.Fragment key={i}>
+          <React.Fragment key={`${i}.${entityRefString}`}>
             {i > 0 && ', '}
-            <EntityRefLink
-              {...linkProps}
-              defaultKind={defaultKind}
-              entityRef={r}
-              title={getTitle ? getTitle(r) : undefined}
-            />
+            <EntityRefLink {...linkProps} entityRef={r} />
           </React.Fragment>
         );
       })}

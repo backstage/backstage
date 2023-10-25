@@ -17,10 +17,8 @@
 import React, { lazy } from 'react';
 import {
   AnyExtensionInputMap,
-  Extension,
   ExtensionBoundary,
   ExtensionInputValues,
-  PortableSchema,
   RouteRef,
   coreExtensionData,
   createExtension,
@@ -29,6 +27,7 @@ import {
 } from '@backstage/frontend-plugin-api';
 // eslint-disable-next-line @backstage/no-relative-monorepo-imports
 import { Expand } from '../../../packages/frontend-plugin-api/src/types';
+import { Entity } from '@backstage/catalog-model';
 
 export { isOwnerOf } from './utils';
 export { useEntityPermission } from './hooks/useEntityPermission';
@@ -38,20 +37,56 @@ export const entityContentTitleExtensionDataRef =
   createExtensionDataRef<string>('plugin.catalog.entity.content.title');
 
 /** @alpha */
+export const entityFilterExtensionDataRef = createExtensionDataRef<
+  (ctx: { entity: Entity }) => boolean
+>('plugin.catalog.entity.filter');
+
+function applyFilter(a?: string, b?: string): boolean {
+  if (!a) {
+    return true;
+  }
+  return a.toLocaleLowerCase('en-US') === b?.toLocaleLowerCase('en-US');
+}
+
+// TODO: Only two hardcoded isKind and isType filters are available for now
+//       This is just an initial config filter implementation and needs to be revisited
+function buildFilter(
+  config: { filter?: { isKind?: string; isType?: string }[] },
+  filterFunc?: (ctx: { entity: Entity }) => boolean,
+) {
+  return (ctx: { entity: Entity }) => {
+    const configuredFilterMatch = config.filter?.some(filter => {
+      const kindMatch = applyFilter(filter.isKind, ctx.entity.kind);
+      const typeMatch = applyFilter(
+        filter.isType,
+        ctx.entity.spec?.type?.toString(),
+      );
+      return kindMatch && typeMatch;
+    });
+    if (configuredFilterMatch) {
+      return true;
+    }
+    if (filterFunc) {
+      return filterFunc(ctx);
+    }
+    return true;
+  };
+}
+
+// TODO: Figure out how to merge with provided config schema
+/** @alpha */
 export function createEntityCardExtension<
-  TConfig,
   TInputs extends AnyExtensionInputMap,
 >(options: {
   id: string;
   attachTo?: { id: string; input: string };
   disabled?: boolean;
   inputs?: TInputs;
-  configSchema?: PortableSchema<TConfig>;
+  filter?: (ctx: { entity: Entity }) => boolean;
   loader: (options: {
-    config: TConfig;
     inputs: Expand<ExtensionInputValues<TInputs>>;
   }) => Promise<JSX.Element>;
-}): Extension<TConfig> {
+}) {
   const id = `entity.cards.${options.id}`;
 
   return createExtension({
@@ -63,13 +98,25 @@ export function createEntityCardExtension<
     disabled: options.disabled ?? true,
     output: {
       element: coreExtensionData.reactElement,
+      filter: entityFilterExtensionDataRef,
     },
     inputs: options.inputs,
-    configSchema: options.configSchema,
+    configSchema: createSchemaFromZod(z =>
+      z.object({
+        filter: z
+          .array(
+            z.object({
+              isKind: z.string().optional(),
+              isType: z.string().optional(),
+            }),
+          )
+          .optional(),
+      }),
+    ),
     factory({ bind, config, inputs, source }) {
       const ExtensionComponent = lazy(() =>
         options
-          .loader({ config, inputs })
+          .loader({ inputs })
           .then(element => ({ default: () => element })),
       );
 
@@ -79,6 +126,7 @@ export function createEntityCardExtension<
             <ExtensionComponent />
           </ExtensionBoundary>
         ),
+        filter: buildFilter(config, options.filter),
       });
     },
   });
@@ -86,40 +134,21 @@ export function createEntityCardExtension<
 
 /** @alpha */
 export function createEntityContentExtension<
-  TConfig extends { path: string; title: string },
   TInputs extends AnyExtensionInputMap,
->(
-  options: (
-    | {
-        defaultPath: string;
-        defaultTitle: string;
-      }
-    | {
-        configSchema: PortableSchema<TConfig>;
-      }
-  ) & {
-    id: string;
-    attachTo?: { id: string; input: string };
-    disabled?: boolean;
-    inputs?: TInputs;
-    routeRef?: RouteRef;
-    loader: (options: {
-      config: TConfig;
-      inputs: Expand<ExtensionInputValues<TInputs>>;
-    }) => Promise<JSX.Element>;
-  },
-): Extension<TConfig> {
+>(options: {
+  id: string;
+  attachTo?: { id: string; input: string };
+  disabled?: boolean;
+  inputs?: TInputs;
+  routeRef?: RouteRef;
+  defaultPath: string;
+  defaultTitle: string;
+  filter?: (ctx: { entity: Entity }) => boolean;
+  loader: (options: {
+    inputs: Expand<ExtensionInputValues<TInputs>>;
+  }) => Promise<JSX.Element>;
+}) {
   const id = `entity.content.${options.id}`;
-
-  const configSchema =
-    'configSchema' in options
-      ? options.configSchema
-      : (createSchemaFromZod(z =>
-          z.object({
-            path: z.string().default(options.defaultPath),
-            title: z.string().default(options.defaultTitle),
-          }),
-        ) as PortableSchema<TConfig>);
 
   return createExtension({
     id,
@@ -133,13 +162,27 @@ export function createEntityContentExtension<
       path: coreExtensionData.routePath,
       routeRef: coreExtensionData.routeRef.optional(),
       title: entityContentTitleExtensionDataRef,
+      filter: entityFilterExtensionDataRef,
     },
     inputs: options.inputs,
-    configSchema,
+    configSchema: createSchemaFromZod(z =>
+      z.object({
+        path: z.string().default(options.defaultPath),
+        title: z.string().default(options.defaultTitle),
+        filter: z
+          .array(
+            z.object({
+              isKind: z.string().optional(),
+              isType: z.string().optional(),
+            }),
+          )
+          .optional(),
+      }),
+    ),
     factory({ bind, config, inputs, source }) {
       const ExtensionComponent = lazy(() =>
         options
-          .loader({ config, inputs })
+          .loader({ inputs })
           .then(element => ({ default: () => element })),
       );
 
@@ -152,6 +195,7 @@ export function createEntityContentExtension<
             <ExtensionComponent />
           </ExtensionBoundary>
         ),
+        filter: buildFilter(config, options.filter),
       });
     },
   });

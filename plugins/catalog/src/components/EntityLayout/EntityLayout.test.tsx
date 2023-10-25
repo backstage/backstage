@@ -79,6 +79,7 @@ describe('EntityLayout', () => {
       kind: 'MyKind',
       metadata: {
         name: 'my-entity',
+        namespace: 'default',
         title: 'My Entity',
       },
     } as Entity;

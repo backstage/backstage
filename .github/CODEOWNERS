@@ -29,6 +29,7 @@ yarn.lock                                         @backstage/maintainers @backst
 /plugins/catalog-*                                @backstage/maintainers @backstage/reviewers @backstage/catalog-maintainers
 /plugins/catalog-backend-module-aws               @backstage/maintainers @backstage/reviewers @backstage/catalog-maintainers @pjungermann
 /plugins/catalog-backend-module-bitbucket-cloud   @backstage/maintainers @backstage/reviewers @backstage/catalog-maintainers @pjungermann
+/plugins/catalog-backend-module-backstage-openapi      @backstage/maintainers @backstage/reviewers @backstage/openapi-tooling-maintainers
 /plugins/catalog-backend-module-msgraph           @backstage/maintainers @backstage/reviewers @backstage/catalog-maintainers @pjungermann
 /plugins/catalog-backend-module-puppetdb          @backstage/maintainers @backstage/reviewers @backstage/catalog-maintainers
 /plugins/catalog-graph                            @backstage/maintainers @backstage/reviewers @backstage/catalog-maintainers @backstage/sda-se-reviewers

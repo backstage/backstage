@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { DefaultDocsBuildStrategy } from './DocsBuildStrategy';
+import { DefaultDocsBuildStrategy } from './DefaultDocsBuildStrategy';
 import { ConfigReader } from '@backstage/config';
 
 const MockedConfigReader = ConfigReader as jest.MockedClass<
