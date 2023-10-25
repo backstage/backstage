@@ -18132,11 +18132,11 @@ __metadata:
   linkType: hard
 
 "@types/aws4@npm:^1.5.1":
-  version: 1.11.4
-  resolution: "@types/aws4@npm:1.11.4"
+  version: 1.11.5
+  resolution: "@types/aws4@npm:1.11.5"
   dependencies:
     "@types/node": "*"
-  checksum: 8b2576843488b31fdb080369eaff6af539ded60feab4eeeb429481ec0c209c0a7a8d7011747eb71e1b2bc86a455b105dd91fe86add5c2aa1584b6f4821fbf0e7
+  checksum: ffc1e7d4fb36c8da6e074ad946c78358baa9744fca729cccfa91349f7565b5ba3d6f30e14ea37d4926217b0b0991e57e2b328dc080465cf12b15f047c3a2b6bb
   languageName: node
   linkType: hard
 
