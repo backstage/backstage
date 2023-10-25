@@ -1,16 +1,5 @@
 ---
-'@backstage/plugin-auth-backend-module-microsoft-provider': minor
+'@backstage/plugin-auth-backend-module-microsoft-provider': patch
 ---
 
-Added support for specifying a `domain_hint` on Microsoft authentication provider configuration.
-This should typically be set to the same value as your `tenantId`.
-If you allow users from multiple tenants to authenticate, then leave this blank.
-
-```yaml
-auth:
-  providers:
-    microsoft:
-      development:
-        #...
-        domainHint: ${AZURE_TENANT_ID}
-```
+Added support for specifying a domain hint on the Microsoft authentication provider configuration.
