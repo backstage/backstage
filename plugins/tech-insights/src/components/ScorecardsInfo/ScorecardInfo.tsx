@@ -18,11 +18,10 @@ import React from 'react';
 import { makeStyles, Grid, Typography } from '@material-ui/core';
 import { InfoCard } from '@backstage/core-components';
 import { CheckResult } from '@backstage/plugin-tech-insights-common';
-import { BackstageTheme } from '@backstage/theme';
 import { Alert } from '@material-ui/lab';
 import { ScorecardsList } from '../ScorecardsList';
 
-const useStyles = makeStyles((theme: BackstageTheme) => ({
+const useStyles = makeStyles(theme => ({
   subheader: {
     fontWeight: 'bold',
     paddingLeft: theme.spacing(0.5),
