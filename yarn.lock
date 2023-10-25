@@ -18097,11 +18097,11 @@ __metadata:
   linkType: hard
 
 "@types/archiver@npm:^5.1.0, @types/archiver@npm:^5.3.1":
-  version: 5.3.3
-  resolution: "@types/archiver@npm:5.3.3"
+  version: 5.3.4
+  resolution: "@types/archiver@npm:5.3.4"
   dependencies:
     "@types/readdir-glob": "*"
-  checksum: e660465ac9a622570ddbad86a306c7234c3272cb28eafe9c3ad7229f06e499dfadae9f0cb0caf41443318eea559b75ef662ea276ae64f19695e72018dae37ee7
+  checksum: 4ef27b99091ada9b8f13017d5b9e6d42a439e35a7858b30e040c408e081d98d8db6307b0762500288b5da38cab9823c4756b6abae1fdd2658d42bfb09eb7c5fb
   languageName: node
   linkType: hard
 
