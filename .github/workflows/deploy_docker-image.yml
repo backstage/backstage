@@ -19,7 +19,7 @@ jobs:
           egress-policy: audit
 
       - name: checkout
-        uses: actions/checkout@v3.6.0
+        uses: actions/checkout@v4.1.1
         with:
           path: backstage
           ref: v${{ github.event.client_payload.version }}

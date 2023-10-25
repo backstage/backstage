@@ -24,7 +24,7 @@ jobs:
         with:
           egress-policy: audit
 
-      - uses: actions/checkout@v3.6.0
+      - uses: actions/checkout@v4.1.1
       - name: Use Node.js 18.x
         uses: actions/setup-node@v3.8.1
         with:
