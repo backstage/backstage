@@ -262,6 +262,7 @@ export const coreExtensionData: {
   routeRef: ConfigurableExtensionDataRef<RouteRef<AnyRouteRefParams>, {}>;
   navTarget: ConfigurableExtensionDataRef<NavTarget, {}>;
   theme: ConfigurableExtensionDataRef<AppTheme, {}>;
+  logoElements: ConfigurableExtensionDataRef<LogoElements, {}>;
 };
 
 // @public (undocumented)
@@ -640,6 +641,12 @@ export type IconComponent = ComponentType<
 export { IdentityApi };
 
 export { identityApiRef };
+
+// @public (undocumented)
+export type LogoElements = {
+  logoIcon?: JSX_2.Element;
+  logoFull?: JSX_2.Element;
+};
 
 export { microsoftAuthApiRef };
 
