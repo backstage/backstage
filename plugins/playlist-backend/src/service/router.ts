@@ -111,13 +111,16 @@ export async function createRouter(
     return { decision, user: user.identity };
   };
 
-  const permissionIntegrationRouter = createPermissionIntegrationRouter({
-    permissions: Object.values(permissions),
-    getResources: resourceRefs =>
-      Promise.all(resourceRefs.map(ref => dbHandler.getPlaylist(ref))),
-    resourceType: PLAYLIST_LIST_RESOURCE_TYPE,
-    rules: Object.values(rules),
-  });
+  const permissionIntegrationRouter = createPermissionIntegrationRouter(
+    {
+      permissions: Object.values(permissions),
+      getResources: resourceRefs =>
+        Promise.all(resourceRefs.map(ref => dbHandler.getPlaylist(ref))),
+      resourceType: PLAYLIST_LIST_RESOURCE_TYPE,
+      rules: Object.values(rules),
+    },
+    identity,
+  );
 
   const router = Router();
   router.use(express.json());
@@ -132,7 +135,7 @@ export async function createRouter(
 
     let filter = parseListPlaylistsFilterParams(req.query);
     if (decision.result === AuthorizeResult.CONDITIONAL) {
-      const conditionsFilter = transformConditions(decision.conditions);
+      const conditionsFilter = transformConditions(decision.conditions, user);
       filter = filter
         ? { allOf: [filter, conditionsFilter] }
         : conditionsFilter;
@@ -149,6 +152,7 @@ export async function createRouter(
       if (updatePermissionDecision.result === AuthorizeResult.CONDITIONAL) {
         const updateConditionsFilter = transformConditions(
           updatePermissionDecision.conditions,
+          user,
         );
         filter = filter
           ? { allOf: [filter, updateConditionsFilter] }

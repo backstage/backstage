@@ -27,22 +27,24 @@ import {
   isNotCriteria,
   isOrCriteria,
 } from './util';
+import { BackstageUserIdentity } from '@backstage/plugin-auth-node';
 
 const mapConditions = <TQuery>(
   criteria: PermissionCriteria<PermissionCondition>,
   getRule: (name: string) => PermissionRule<unknown, TQuery, string>,
+  user?: BackstageUserIdentity,
 ): PermissionCriteria<TQuery> => {
   if (isAndCriteria(criteria)) {
     return {
-      allOf: criteria.allOf.map(child => mapConditions(child, getRule)),
+      allOf: criteria.allOf.map(child => mapConditions(child, getRule, user)),
     } as AllOfCriteria<TQuery>;
   } else if (isOrCriteria(criteria)) {
     return {
-      anyOf: criteria.anyOf.map(child => mapConditions(child, getRule)),
+      anyOf: criteria.anyOf.map(child => mapConditions(child, getRule, user)),
     } as AnyOfCriteria<TQuery>;
   } else if (isNotCriteria(criteria)) {
     return {
-      not: mapConditions(criteria.not, getRule),
+      not: mapConditions(criteria.not, getRule, user),
     };
   }
 
@@ -53,7 +55,7 @@ const mapConditions = <TQuery>(
     throw new InputError(`Parameters to rule are invalid`, result.error);
   }
 
-  return rule.toQuery(criteria.params ?? {});
+  return rule.toQuery(criteria.params ?? {}, user);
 };
 
 /**
@@ -66,6 +68,7 @@ const mapConditions = <TQuery>(
  */
 export type ConditionTransformer<TQuery> = (
   conditions: PermissionCriteria<PermissionCondition>,
+  user?: BackstageUserIdentity,
 ) => PermissionCriteria<TQuery>;
 
 /**
@@ -84,5 +87,5 @@ export const createConditionTransformer = <
 ): ConditionTransformer<TQuery> => {
   const getRule = createGetRule(permissionRules);
 
-  return conditions => mapConditions(conditions, getRule);
+  return (conditions, user) => mapConditions(conditions, getRule, user);
 };

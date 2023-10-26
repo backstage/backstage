@@ -78,18 +78,18 @@ import { DefaultCatalogRulesEnforcer } from '../ingestion/CatalogRules';
 import { Config, readDurationFromConfig } from '@backstage/config';
 import { Logger } from 'winston';
 import { connectEntityProviders } from '../processing/connectEntityProviders';
-import { PermissionRuleParams } from '@backstage/plugin-permission-common';
-import { EntitiesSearchFilter } from '../catalog/types';
-import { permissionRules as catalogPermissionRules } from '../permissions/rules';
-import { PermissionRule } from '@backstage/plugin-permission-node';
 import {
   PermissionAuthorizer,
   PermissionEvaluator,
+  PermissionRuleParams,
   toPermissionEvaluator,
 } from '@backstage/plugin-permission-common';
+import { EntitiesSearchFilter } from '../catalog/types';
+import { permissionRules as catalogPermissionRules } from '../permissions/rules';
 import {
   createConditionTransformer,
   createPermissionIntegrationRouter,
+  PermissionRule,
 } from '@backstage/plugin-permission-node';
 import { AuthorizedEntitiesCatalog } from './AuthorizedEntitiesCatalog';
 import { basicEntityFilter } from './request/basicEntityFilter';
@@ -102,6 +102,7 @@ import { DefaultProviderDatabase } from '../database/DefaultProviderDatabase';
 import { DefaultCatalogDatabase } from '../database/DefaultCatalogDatabase';
 import { EventBroker } from '@backstage/plugin-events-node';
 import { durationToMilliseconds } from '@backstage/types';
+import { IdentityApi } from '@backstage/plugin-auth-node';
 
 /**
  * This is a duplicate of the alpha `CatalogPermissionRule` type, for use in the stable API.
@@ -120,6 +121,7 @@ export type CatalogEnvironment = {
   reader: UrlReader;
   permissions: PermissionEvaluator | PermissionAuthorizer;
   scheduler?: PluginTaskScheduler;
+  identity: IdentityApi;
 };
 
 /**

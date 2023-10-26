@@ -15,6 +15,7 @@
  */
 
 import { Entity } from '@backstage/catalog-model';
+import { BackstageIdentityResponse } from '@backstage/plugin-auth-node';
 
 /**
  * A filter expression for entities.
@@ -81,7 +82,7 @@ export type EntitiesRequest = {
   fields?: (entity: Entity) => Entity;
   order?: EntityOrder[];
   pagination?: EntityPagination;
-  authorizationToken?: string;
+  authorizationToken?: BackstageIdentityResponse;
 };
 
 export type EntitiesResponse = {
@@ -110,7 +111,7 @@ export interface EntitiesBatchRequest {
   /**
    * The optional token that authorizes the action.
    */
-  authorizationToken?: string;
+  authorizationToken?: BackstageIdentityResponse;
 }
 
 export interface EntitiesBatchResponse {
@@ -150,7 +151,7 @@ export interface EntityFacetsRequest {
   /**
    * The optional token that authorizes the action.
    */
-  authorizationToken?: string;
+  authorizationToken?: BackstageIdentityResponse;
 }
 
 /**
@@ -190,7 +191,7 @@ export interface EntitiesCatalog {
    */
   removeEntityByUid(
     uid: string,
-    options?: { authorizationToken?: string },
+    options?: { authorizationToken?: BackstageIdentityResponse },
   ): Promise<void>;
 
   /**
@@ -200,7 +201,7 @@ export interface EntitiesCatalog {
    */
   entityAncestry(
     entityRef: string,
-    options?: { authorizationToken?: string },
+    options?: { authorizationToken?: BackstageIdentityResponse },
   ): Promise<EntityAncestryResponse>;
 
   /**
@@ -225,7 +226,7 @@ export type QueryEntitiesRequest =
  * for the current and the next pagination requests.
  */
 export interface QueryEntitiesInitialRequest {
-  authorizationToken?: string;
+  authorizationToken?: BackstageIdentityResponse;
   fields?: (entity: Entity) => Entity;
   limit?: number;
   filter?: EntityFilter;
@@ -241,7 +242,7 @@ export interface QueryEntitiesInitialRequest {
  * move forward or backward on the data.
  */
 export interface QueryEntitiesCursorRequest {
-  authorizationToken?: string;
+  authorizationToken?: BackstageIdentityResponse;
   fields?: (entity: Entity) => Entity;
   limit?: number;
   cursor: Cursor;

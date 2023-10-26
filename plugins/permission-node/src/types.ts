@@ -20,6 +20,7 @@ import type {
 } from '@backstage/plugin-permission-common';
 import { z } from 'zod';
 import { NoInfer } from './integration/util';
+import { BackstageUserIdentity } from '@backstage/plugin-auth-node';
 
 /**
  * A conditional rule that can be provided in an
@@ -57,12 +58,19 @@ export type PermissionRule<
    * arguments supplied for the rule; for example, a rule could be `isOwner` with entityRefs as the
    * params.
    */
-  apply(resource: TResource, params: NoInfer<TParams>): boolean;
+  apply(
+    resource: TResource,
+    params: NoInfer<TParams>,
+    identity?: BackstageUserIdentity,
+  ): boolean;
 
   /**
    * Translate this rule to criteria suitable for use in querying a backing data store. The criteria
    * can be used for loading a collection of resources efficiently with conditional criteria already
    * applied.
    */
-  toQuery(params: NoInfer<TParams>): PermissionCriteria<TQuery>;
+  toQuery(
+    params: NoInfer<TParams>,
+    identity?: BackstageUserIdentity,
+  ): PermissionCriteria<TQuery>;
 };

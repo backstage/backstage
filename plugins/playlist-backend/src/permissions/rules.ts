@@ -43,6 +43,19 @@ const isOwner = createPlaylistPermissionRule({
   }),
 });
 
+const isCurrentUserAnOwner = createPlaylistPermissionRule({
+  name: 'IS_CURRENT_USER_OWNER',
+  description: 'Allow playlists owned by the given entity refs',
+  resourceType: PLAYLIST_LIST_RESOURCE_TYPE,
+  apply: (list: PlaylistMetadata, _, identity) => {
+    return !!identity?.ownershipEntityRefs?.includes(list.owner);
+  },
+  toQuery: (_, identity) => ({
+    key: 'owner',
+    values: identity?.ownershipEntityRefs ?? [],
+  }),
+});
+
 const isPublic = createPlaylistPermissionRule({
   name: 'IS_PUBLIC',
   description: 'Allow playlists that are set as public',
@@ -54,4 +67,4 @@ const isPublic = createPlaylistPermissionRule({
 /**
  * @public
  */
-export const rules = { isOwner, isPublic };
+export const rules = { isOwner, isCurrentUserAnOwner, isPublic };
