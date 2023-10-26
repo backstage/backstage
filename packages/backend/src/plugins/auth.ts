@@ -92,8 +92,13 @@ export default async function createPlugin(
       }),
       okta: providers.okta.create({
         signIn: {
-          resolver:
-            providers.okta.resolvers.emailMatchingUserEntityAnnotation(),
+          async resolver({ result: { fullProfile } }, ctx) {
+            return ctx.signInWithCatalogUser({
+              entityRef: {
+                name: fullProfile.id,
+              },
+            });
+          },
         },
       }),
       bitbucket: providers.bitbucket.create({
