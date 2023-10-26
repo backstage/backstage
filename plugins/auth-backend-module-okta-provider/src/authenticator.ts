@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { Strategy as OktaStrategy } from 'passport-okta2';
+import { Strategy as OktaStrategy } from '@davidzemon/passport-okta-oauth';
 import {
   createOAuthAuthenticator,
   PassportOAuthAuthenticatorHelper,
@@ -29,7 +29,9 @@ export const oktaAuthenticator = createOAuthAuthenticator({
   initialize({ callbackUrl, config }) {
     const clientId = config.getString('clientId');
     const clientSecret = config.getString('clientSecret');
-    const baseUrl = config.getOptionalString('audience') || 'https://okta.com';
+    const audience = config.getOptionalString('audience') || 'https://okta.com';
+    const authServerId = config.getOptionalString('authServerId');
+    const idp = config.getOptionalString('idp');
 
     return PassportOAuthAuthenticatorHelper.from(
       new OktaStrategy(
@@ -37,10 +39,11 @@ export const oktaAuthenticator = createOAuthAuthenticator({
           clientID: clientId,
           clientSecret: clientSecret,
           callbackURL: callbackUrl,
-          baseURL: baseUrl,
-          authorizationURL: `${baseUrl}/oauth/authorize`,
-          tokenURL: `${baseUrl}/oauth/token`,
-          profileURL: `${baseUrl}/api/v4/user`,
+          audience: audience,
+          authServerID: authServerId,
+          idp: idp,
+          passReqToCallback: false,
+          response_type: 'code',
         },
         (
           accessToken: string,

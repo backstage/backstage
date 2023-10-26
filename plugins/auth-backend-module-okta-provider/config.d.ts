@@ -26,6 +26,8 @@ export interface Config {
            */
           clientSecret: string;
           audience?: string;
+          authServerId?: string;
+          idp?: string;
           callbackUrl?: string;
         };
       };
