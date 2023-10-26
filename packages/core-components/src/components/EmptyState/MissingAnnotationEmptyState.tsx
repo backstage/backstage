@@ -47,7 +47,13 @@ type Props = {
   annotation: string | string[];
   readMoreUrl?: string;
 };
+
+/**
+ * @public
+ * @deprecated This component is deprecated, please use {@link @backstage/plugin-catalog-react#MissingAnnotationEmptyStateClassKey} instead
+ */
 export type MissingAnnotationEmptyStateClassKey = 'code';
+
 const useStyles = makeStyles<BackstageTheme>(
   theme => ({
     code: {
@@ -92,7 +98,7 @@ function generateDescription(annotations: string[]) {
 
 /**
  * @public
- * @deprecated This component is deprecated, please use {@link @backstage/plugin-catalog-react#MissingAnnotationEmptyuseState} instead
+ * @deprecated This component is deprecated, please use {@link @backstage/plugin-catalog-react#MissingAnnotationEmptyState} instead
  */
 export function MissingAnnotationEmptyState(props: Props) {
   const { annotation, readMoreUrl } = props;
