@@ -24,11 +24,6 @@ import { CodeSnippet, Link, EmptyState } from '@backstage/core-components';
 import { Entity } from '@backstage/catalog-model';
 import { useEntity } from '../../hooks';
 
-type Props = {
-  annotation: string | string[];
-  readMoreUrl?: string;
-};
-
 /** @public */
 export type MissingAnnotationEmptyStateClassKey = 'code';
 
@@ -98,7 +93,10 @@ function generateDescription(annotations: string[], entityKind = 'Component') {
  * @public
  * Renders an empty state when an annotation is missing from an entity.
  */
-export function MissingAnnotationEmptyState(props: Props) {
+export function MissingAnnotationEmptyState(props: {
+  annotation: string | string[];
+  readMoreUrl?: string;
+}) {
   let entity: Entity | undefined;
   try {
     const entityContext = useEntity();
