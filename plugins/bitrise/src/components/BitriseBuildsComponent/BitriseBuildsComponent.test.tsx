@@ -31,6 +31,7 @@ jest.mock('../../hooks/useBitriseBuildWorkflows', () => ({
 }));
 
 jest.mock('@backstage/plugin-catalog-react', () => ({
+  ...jest.requireActual('@backstage/plugin-catalog-react'),
   useEntity: () => {
     return entityValue;
   },
