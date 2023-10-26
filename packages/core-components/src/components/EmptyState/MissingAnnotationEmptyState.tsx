@@ -43,7 +43,7 @@ const ANNOTATION_LINE = COMPONENT_YAML_TEMPLATE.split('\n').findIndex(line =>
   ANNOTATION_REGEXP.test(line),
 );
 
-type Props = {
+export type Props = {
   annotation: string | string[];
   readMoreUrl?: string;
 };
