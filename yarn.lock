@@ -18835,9 +18835,9 @@ __metadata:
   linkType: hard
 
 "@types/is-glob@npm:^4.0.2":
-  version: 4.0.2
-  resolution: "@types/is-glob@npm:4.0.2"
-  checksum: 50b0a52b6d179781b36bfce35155e1e0dc66b62e2943153d7d7c7079c40ba6236528a254de8be6c52ff9a7a351996887802efd7fd763da3e2121315e4ffe2edf
+  version: 4.0.3
+  resolution: "@types/is-glob@npm:4.0.3"
+  checksum: 65686e645f1e8125b5a01df5b2d2b247c8e5a23790363538005454d68ba7bd9662cd3bcfbdda9f8eb0a85fb5fccd164645555c8e0c34db63c8c65998fd5909dd
   languageName: node
   linkType: hard
 
