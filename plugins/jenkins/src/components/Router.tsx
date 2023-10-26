@@ -15,11 +15,11 @@
  */
 
 import { Entity } from '@backstage/catalog-model';
+import { TableColumn } from '@backstage/core-components';
 import {
+  useEntity,
   MissingAnnotationEmptyState,
-  TableColumn,
-} from '@backstage/core-components';
-import { useEntity } from '@backstage/plugin-catalog-react';
+} from '@backstage/plugin-catalog-react';
 import React from 'react';
 import { Route, Routes } from 'react-router-dom';
 import { JENKINS_ANNOTATION, LEGACY_JENKINS_ANNOTATION } from '../constants';
