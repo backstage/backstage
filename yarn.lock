@@ -18857,11 +18857,11 @@ __metadata:
   linkType: hard
 
 "@types/jest-when@npm:^3.5.0":
-  version: 3.5.3
-  resolution: "@types/jest-when@npm:3.5.3"
+  version: 3.5.4
+  resolution: "@types/jest-when@npm:3.5.4"
   dependencies:
     "@types/jest": "*"
-  checksum: 5dc2661ad570b80b8f97d7dabc50a0229f21818eefc73024b88a70216c2666f56bd97769fef565263d7242878f8187531bb14427dcb06709e9b98a1671668e9d
+  checksum: 58a9a7b2dd81cb2c87c3d3539d03dc82c72a66282b3930237ad30641d0c27d7c2b9de2cb9da05b0d287bb6d890f82601935ca4e616a1828e5e05ebb4fc444270
   languageName: node
   linkType: hard
 
