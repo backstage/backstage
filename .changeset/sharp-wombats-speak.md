@@ -21,8 +21,8 @@ auth:
         additionalScopes: groups # Optional
 ```
 
-- Accept a new additionalScope option during okta creation with `createAuthProviderIntegration`
+- Accept a new ` additionalScopes`` option during okta creation with  `createAuthProviderIntegration`
 - Passes the the user-defined `additionalScopes` as an option to `OktaAuthProvider`
 - Add `additionalScopes` as an option for `OktaAuthProvider`
 - Set `scope` in `OktaAuthProvider` to the combined value of current scopes combined with the user-defined `additionalScopes` passed as an `option`
-- Update the `start` and `refresh` methods to use the new combiend `scope` from `OktaAuthProvider` rather than `scope` from the request
+- Update the `start` and `refresh` methods to use the new combined `scope` from `OktaAuthProvider` rather than `scope` from the request
