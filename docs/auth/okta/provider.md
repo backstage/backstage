@@ -44,7 +44,7 @@ auth:
         authServerId: ${AUTH_OKTA_AUTH_SERVER_ID} # Optional
         idp: ${AUTH_OKTA_IDP} # Optional
         # https://developer.okta.com/docs/reference/api/oidc/#scope-dependent-claims-not-always-returned
-        scope: ${AUTH_OKTA_SCOPE} # Optional
+        additionalScopes: ${AUTH_OKTA_ADDITIONAL_SCOPES} # Optional
 ```
 
 The values referenced are found on the Application page on your Okta site.
@@ -57,7 +57,7 @@ The values referenced are found on the Application page on your Okta site.
 - `authServerId`: The authorization server ID for the Application
 - `idp`: The identity provider for the application, e.g. `0oaulob4BFVa4zQvt0g3`
 
-`scope` is an optional value to change the `scope` value sent to Okta during OAuth. The default value is `openid profile email offline_access`. Changing the `scope` will have an impact on [the dependent claims returned](https://developer.okta.com/docs/reference/api/oidc/#scope-dependent-claims-not-always-returned). For example, adding `groups` to the `scope` by setting the value to `openid profile email offline_access groups` will result in the claim returning a list of the groups that the user is a member of that also match the ID token group filter of the client app.
+`additionalScopes` is an optional value, a string of space separated scopes, that will be combined with the default `scope` value of `openid profile email offline_access` to adjust the `scope` sent to Okta during OAuth. This will have an impact on [the dependent claims returned](https://developer.okta.com/docs/reference/api/oidc/#scope-dependent-claims-not-always-returned). For example, setting the `additionalScopes` value to `groups` will result in the claim returning a list of the groups that the user is a member of that also match the ID token group filter of the client app.
 
 ## Adding the provider to the Backstage frontend
 
