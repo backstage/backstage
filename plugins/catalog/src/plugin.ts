@@ -25,6 +25,7 @@ import {
 import {
   createComponentRouteRef,
   createFromTemplateRouteRef,
+  unregisterRedirectRouteRef,
   viewTechDocRouteRef,
 } from './routes';
 import {
@@ -89,6 +90,7 @@ export const catalogPlugin = createPlugin({
     createComponent: createComponentRouteRef,
     viewTechDoc: viewTechDocRouteRef,
     createFromTemplate: createFromTemplateRouteRef,
+    unregisterRedirect: unregisterRedirectRouteRef,
   },
 });
 
