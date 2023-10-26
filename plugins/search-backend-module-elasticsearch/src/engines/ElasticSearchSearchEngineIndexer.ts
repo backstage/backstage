@@ -33,7 +33,7 @@ export type ElasticSearchSearchEngineIndexerOptions = {
   logger: Logger | LoggerService;
   elasticSearchClientWrapper: ElasticSearchClientWrapper;
   batchSize: number;
-  skipRefresh: boolean;
+  skipRefresh?: boolean;
 };
 
 function duration(startTimestamp: [number, number]): string {
