@@ -51,6 +51,12 @@ export type RootHttpRouterFactoryOptions = {
    */
   indexPath?: string | false;
 
+  /**
+   * Allows you to customize the creation of the express app, by attaching a set
+   * of middleware and the given routes in the desired order. If no configure
+   * callback is given, a default set of middleware for error handling, logging
+   * etc are added around the routes.
+   */
   configure?(context: RootHttpRouterConfigureContext): void;
 };
 
@@ -61,7 +67,6 @@ function defaultConfigure(context: RootHttpRouterConfigureContext) {
   app.use(middleware.compression());
   app.use(middleware.logging());
   app.use(routes);
-  app.use(middleware.notFound());
   app.use(middleware.error());
 }
 

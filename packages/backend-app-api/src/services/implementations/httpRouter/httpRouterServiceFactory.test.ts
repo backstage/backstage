@@ -18,55 +18,124 @@ import {
   ServiceFactoryTester,
   mockServices,
 } from '@backstage/backend-test-utils';
-import { httpRouterServiceFactory } from './httpRouterServiceFactory';
+import express from 'express';
+import PromiseRouter from 'express-promise-router';
+import request from 'supertest';
+import {
+  HttpRouterFactoryOptions,
+  httpRouterServiceFactory,
+} from './httpRouterServiceFactory';
+
+function setupApp(options?: HttpRouterFactoryOptions) {
+  const app = express();
+  const rootHttpRouter = mockServices.rootHttpRouter.mock({
+    use: app.use.bind(app),
+  });
+  const lifecycle = mockServices.lifecycle.mock({ addStartupHook: c => c() });
+
+  const tester = ServiceFactoryTester.from(httpRouterServiceFactory(options), {
+    dependencies: [rootHttpRouter.factory, lifecycle.factory],
+  });
+
+  return { app, tester };
+}
 
 describe('httpRouterFactory', () => {
   it('should register plugin paths', async () => {
-    const rootHttpRouter = mockServices.rootHttpRouter.mock();
-    const tester = ServiceFactoryTester.from(httpRouterServiceFactory, {
-      dependencies: [rootHttpRouter.factory],
+    const { app, tester } = setupApp();
+
+    await tester.get('test1').then(router => {
+      const plugin = PromiseRouter();
+      router.use(plugin);
+      plugin.get('/r1', (_, res) => res.end('ok1'));
     });
 
-    const router1 = await tester.get('test1');
-    router1.use(() => {});
-    expect(rootHttpRouter.use).toHaveBeenCalledTimes(1);
-    expect(rootHttpRouter.use).toHaveBeenCalledWith(
-      '/api/test1',
-      expect.any(Function),
-    );
+    await tester.get('test2').then(router => {
+      const plugin = PromiseRouter();
+      router.use(plugin);
+      plugin.get('/r2', (_, res) => res.end('ok2'));
+    });
 
-    const router2 = await tester.get('test2');
-    router2.use(() => {});
-    expect(rootHttpRouter.use).toHaveBeenCalledTimes(2);
-    expect(rootHttpRouter.use).toHaveBeenCalledWith(
-      '/api/test2',
-      expect.any(Function),
-    );
+    let response = await request(app).get('/api/test1/r1');
+    expect(response.text).toBe('ok1');
+
+    response = await request(app).get('/api/test2/r2');
+    expect(response.text).toBe('ok2');
   });
 
   it('should use custom path generator', async () => {
-    const rootHttpRouter = mockServices.rootHttpRouter.mock();
-    const tester = ServiceFactoryTester.from(
-      httpRouterServiceFactory({
-        getPath: id => `/some/${id}/path`,
-      }),
-      { dependencies: [rootHttpRouter.factory] },
-    );
+    const { app, tester } = setupApp({
+      getPath: id => `/some/${id}/path`,
+    });
 
-    const router1 = await tester.get('test1');
-    router1.use(() => {});
-    expect(rootHttpRouter.use).toHaveBeenCalledTimes(1);
-    expect(rootHttpRouter.use).toHaveBeenCalledWith(
-      '/some/test1/path',
-      expect.any(Function),
-    );
+    await tester.get('test1').then(router => {
+      const plugin = PromiseRouter();
+      router.use(plugin);
+      plugin.get('/r1', (_, res) => res.end('ok1'));
+    });
 
-    const router2 = await tester.get('test2');
-    router2.use(() => {});
-    expect(rootHttpRouter.use).toHaveBeenCalledTimes(2);
-    expect(rootHttpRouter.use).toHaveBeenCalledWith(
-      '/some/test2/path',
-      expect.any(Function),
-    );
+    const response = await request(app).get('/some/test1/path/r1');
+    expect(response.text).toBe('ok1');
   });
+
+  it('should use custom base path', async () => {
+    const { app, tester } = setupApp({
+      basePath: '/custom',
+    });
+
+    await tester.get('test1').then(router => {
+      const plugin = PromiseRouter();
+      router.use(plugin);
+      plugin.get('/r1', (_, res) => res.end('ok1'));
+    });
+
+    app.use((_, res) => res.end('html'));
+
+    let response = await request(app).get('/custom/test1/r1');
+    expect(response.text).toBe('ok1');
+
+    response = await request(app).get('/custom/not-a-valid-plugin');
+    expect(response.status).toBe(404);
+
+    response = await request(app).get('/custom');
+    expect(response.status).toBe(404);
+
+    response = await request(app).get('/custo');
+    expect(response.text).toBe('html');
+  });
+
+  it.each<HttpRouterFactoryOptions>([{}, { basePath: '/api' }])(
+    'should add the notFound middleware, %p',
+    async options => {
+      const { app, tester } = setupApp(options);
+
+      await tester.get('my-plugin').then(router => {
+        const plugin = PromiseRouter();
+        router.use(plugin);
+        plugin.get('/existing-route', (_, res) => {
+          res.end('plugin');
+        });
+      });
+
+      app.use((_, res) => res.end('html'));
+
+      let response = await request(app).get('/api/my-plugin/existing-route');
+      expect(response.status).toBe(200);
+      expect(response.text).toBe('plugin');
+
+      response = await request(app).get('/api/my-plugin/not-a-valid-route');
+      expect(response.status).toBe(404);
+
+      response = await request(app).get('/api/');
+      expect(response.status).toBe(404);
+
+      response = await request(app).get('/api');
+      expect(response.status).toBe(404);
+
+      response = await request(app).get('/ap');
+      expect(response.text).toBe('html');
+
+      expect(true).toBeTruthy();
+    },
+  );
 });

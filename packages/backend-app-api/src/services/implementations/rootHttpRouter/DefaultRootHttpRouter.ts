@@ -72,16 +72,17 @@ export class DefaultRootHttpRouter implements RootHttpRouterService {
   }
 
   use(path: string, handler: Handler) {
-    if (path.match(/^[/\s]*$/)) {
-      throw new Error(`Root router path may not be empty`);
+    // It's still permitted to register empty paths, as route wrappers
+    if (path !== '') {
+      const conflictingPath = this.#findConflictingPath(path);
+      if (conflictingPath) {
+        throw new Error(
+          `Path ${path} conflicts with the existing path ${conflictingPath}`,
+        );
+      }
+      this.#existingPaths.push(path);
     }
-    const conflictingPath = this.#findConflictingPath(path);
-    if (conflictingPath) {
-      throw new Error(
-        `Path ${path} conflicts with the existing path ${conflictingPath}`,
-      );
-    }
-    this.#existingPaths.push(path);
+
     this.#namedRoutes.use(path, handler);
 
     if (this.#indexPath === path) {

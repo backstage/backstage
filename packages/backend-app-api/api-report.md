@@ -33,6 +33,7 @@ import { RootConfigService } from '@backstage/backend-plugin-api';
 import { RootHttpRouterService } from '@backstage/backend-plugin-api';
 import { RootLifecycleService } from '@backstage/backend-plugin-api';
 import { RootLoggerService } from '@backstage/backend-plugin-api';
+import { Router } from 'express';
 import { SchedulerService } from '@backstage/backend-plugin-api';
 import { ServiceFactory } from '@backstage/backend-plugin-api';
 import { ServiceFactoryOrFunction } from '@backstage/backend-plugin-api';
@@ -143,7 +144,25 @@ export class HostDiscovery implements DiscoveryService {
 }
 
 // @public (undocumented)
+export interface HttpRouterConfigureContext {
+  // (undocumented)
+  lifecycle: LifecycleService;
+  // (undocumented)
+  logger: LoggerService;
+  // (undocumented)
+  middleware: MiddlewareFactory;
+  // (undocumented)
+  pluginRouter: Router;
+  // (undocumented)
+  rootConfig: RootConfigService;
+  // (undocumented)
+  routes: RequestHandler;
+}
+
+// @public (undocumented)
 export interface HttpRouterFactoryOptions {
+  basePath?: string;
+  configure?(context: HttpRouterConfigureContext): void;
   getPath?(pluginId: string): string;
 }
 
