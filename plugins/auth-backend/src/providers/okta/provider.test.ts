@@ -106,8 +106,8 @@ describe('createOktaProvider', () => {
 
   it('should pass a custom scope to start and refresh requests', async () => {
     const additionalScopes = 'groups';
-    const mockScope = 'openid profile email offline_access groups';
     const reqScope = 'openid profile email offline_access';
+    const combinedScope = `${reqScope} ${additionalScopes}`;
     const provider = new OktaAuthProvider({
       resolverContext: {} as AuthResolverContext,
       authHandler: async ({ fullProfile }) => ({
@@ -138,6 +138,6 @@ describe('createOktaProvider', () => {
     await provider.start(req);
     const mockCallScope = (mockRedirectStrategy.mock.calls[0] as any)?.[2]
       ?.scope;
-    expect(mockCallScope).toBe(mockScope);
+    expect(mockCallScope).toBe(combinedScope);
   });
 });
