@@ -76,7 +76,6 @@ class PinnipedStrategyFactory {
     this.strategyPromise = this.buildStrategy();
   }
 
-  // need some sort of unit test to capture that a cached strategy will retry if expiration date is expired
   public async getStrategy(): Promise<{
     providerStrategy: OidcStrategy<{ tokenset: TokenSet }, BaseClient>;
     client: BaseClient;
@@ -88,18 +87,20 @@ class PinnipedStrategyFactory {
       ) {
         return this.cachedPromise;
       }
-      // cachedPromise has expired, generate new strategy
+      // cachedPromise has expired, remove promise from cache and regenerate strategy
+      this.strategyPromise = this.buildStrategy();
       delete this.cachedPromise;
     }
 
-    this.cachedPromise = this.strategyPromise;
-    this.cachedPromiseExpiry = DateTime.utc()
-      .plus({ seconds: 3600 })
-      .toJSDate();
     try {
-      // if we fail to generate a strategy, retry and overwrite strategy
+      // if strategy is generated successfully, save it to cache
       await this.strategyPromise;
+      this.cachedPromise = this.strategyPromise;
+      this.cachedPromiseExpiry = DateTime.utc()
+        .plus({ seconds: 3600 })
+        .toJSDate();
     } catch (error) {
+      // if we fail to generate a strategy, retry and overwrite strategy
       this.strategyPromise = this.buildStrategy();
       delete this.cachedPromise;
       delete this.cachedPromiseExpiry;

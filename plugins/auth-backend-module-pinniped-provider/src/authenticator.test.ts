@@ -21,13 +21,14 @@ import {
   decodeOAuthState,
   encodeOAuthState,
 } from '@backstage/plugin-auth-node';
-import { pinnipedAuthenticator, getIssuer } from './authenticator';
+import { pinnipedAuthenticator } from './authenticator';
 import { setupServer } from 'msw/node';
 import { setupRequestMockHandlers } from '@backstage/backend-test-utils';
 import { ConfigReader } from '@backstage/config';
 import { JWK, SignJWT, exportJWK, generateKeyPair } from 'jose';
 import { rest } from 'msw';
 import express from 'express';
+import { DateTime } from 'luxon';
 
 describe('pinnipedAuthenticator', () => {
   let authCtx: any;
@@ -85,6 +86,7 @@ describe('pinnipedAuthenticator', () => {
 
   beforeEach(() => {
     jest.clearAllMocks();
+    jest.restoreAllMocks();
 
     mswServer.use(
       rest.get(
@@ -340,7 +342,7 @@ describe('pinnipedAuthenticator', () => {
       expect(response.url).toMatch('https://pinniped.test/oauth2/authorize');
     });
 
-    it('only refreshes metadata after a failure', async () => {
+    it('caches oidc metadata after a success', async () => {
       mswServer.use(
         rest.get(
           'https://federationDomain.test/.well-known/openid-configuration',
@@ -384,6 +386,45 @@ describe('pinnipedAuthenticator', () => {
       );
 
       expect(supervisorCalls).toEqual(1);
+    });
+
+    it('refreshes oidc metadata when current one in cache expires', async () => {
+      let supervisorCalls: number = 0;
+      const fixedTime = DateTime.local();
+      jest.spyOn(DateTime, 'local').mockImplementation(() => fixedTime);
+
+      mswServer.use(
+        rest.get(
+          'https://federationDomain.test/.well-known/openid-configuration',
+          (_req, res, ctx) => {
+            supervisorCalls += 1;
+            return res(
+              ctx.status(200),
+              ctx.set('Content-Type', 'application/json'),
+              ctx.json(issuerMetadata),
+            );
+          },
+        ),
+      );
+
+      authCtx = pinnipedAuthenticator.initialize({
+        callbackUrl: 'https://backstage.test/callback',
+        config: new ConfigReader({
+          federationDomain: 'https://federationDomain.test',
+          clientId: 'clientId',
+          clientSecret: 'clientSecret',
+        }),
+      });
+
+      await pinnipedAuthenticator.start(startRequest, authCtx);
+
+      jest
+        .spyOn(DateTime, 'local')
+        .mockImplementation(() => fixedTime.plus({ seconds: 60000 }));
+
+      await pinnipedAuthenticator.start(startRequest, authCtx);
+
+      expect(supervisorCalls).toEqual(2);
     });
   });
 
@@ -603,7 +644,7 @@ describe('pinnipedAuthenticator', () => {
       expect(response.session.accessToken).toEqual('accessToken');
     });
 
-    it('only refreshes metadata after a failure', async () => {
+    it('refreshes metadata after a failure', async () => {
       mswServer.use(
         rest.get(
           'https://federationDomain.test/.well-known/openid-configuration',
@@ -621,13 +662,13 @@ describe('pinnipedAuthenticator', () => {
           }),
         });
 
-      let supervisorCalls: number = 0;
+      let metadataCalls: number = 0;
 
       mswServer.use(
         rest.get(
           'https://federationDomain.test/.well-known/openid-configuration',
           (_req, res, ctx) => {
-            supervisorCalls += 1;
+            metadataCalls += 1;
             return res(
               ctx.status(200),
               ctx.set('Content-Type', 'application/json'),
@@ -641,6 +682,7 @@ describe('pinnipedAuthenticator', () => {
         handlerRequest,
         authCtxCreatedWhileSupervisorUnavailable,
       );
+
       await pinnipedAuthenticator.authenticate(
         {
           req: {
@@ -658,7 +700,61 @@ describe('pinnipedAuthenticator', () => {
         authCtxCreatedWhileSupervisorUnavailable,
       );
 
-      expect(supervisorCalls).toEqual(1);
+      expect(metadataCalls).toEqual(1);
+    });
+
+    it('refreshes oidc metadata when current one in cache expires', async () => {
+      let supervisorCalls: number = 0;
+      const fixedTime = DateTime.local();
+      jest.spyOn(DateTime, 'local').mockImplementation(() => fixedTime);
+
+      mswServer.use(
+        rest.get(
+          'https://federationDomain.test/.well-known/openid-configuration',
+          (_req, res, ctx) => {
+            supervisorCalls += 1;
+            return res(
+              ctx.status(200),
+              ctx.set('Content-Type', 'application/json'),
+              ctx.json(issuerMetadata),
+            );
+          },
+        ),
+      );
+
+      authCtx = pinnipedAuthenticator.initialize({
+        callbackUrl: 'https://backstage.test/callback',
+        config: new ConfigReader({
+          federationDomain: 'https://federationDomain.test',
+          clientId: 'clientId',
+          clientSecret: 'clientSecret',
+        }),
+      });
+
+      await pinnipedAuthenticator.authenticate(handlerRequest, authCtx);
+
+      jest
+        .spyOn(DateTime, 'local')
+        .mockImplementation(() => fixedTime.plus({ seconds: 60000 }));
+
+      await pinnipedAuthenticator.authenticate(
+        {
+          req: {
+            method: 'GET',
+            url: `https://test?code=authorization_code&state=${encodeOAuthState(
+              oauthState,
+            )}`,
+            session: {
+              'oidc:pinniped.test': {
+                state: encodeOAuthState(oauthState),
+              },
+            },
+          } as unknown as express.Request,
+        },
+        authCtx,
+      );
+
+      expect(supervisorCalls).toEqual(2);
     });
   });
 
@@ -737,7 +833,7 @@ describe('pinnipedAuthenticator', () => {
       expect(response.session.accessToken).toEqual('accessToken');
     });
 
-    it('only refreshes metadata after a failure', async () => {
+    it('caches oidc metadata after a success', async () => {
       mswServer.use(
         rest.get(
           'https://federationDomain.test/.well-known/openid-configuration',
@@ -781,6 +877,45 @@ describe('pinnipedAuthenticator', () => {
       );
 
       expect(supervisorCalls).toEqual(1);
+    });
+
+    it('refreshes oidc metadata when current one in cache expires', async () => {
+      let supervisorCalls: number = 0;
+      const fixedTime = DateTime.local();
+      jest.spyOn(DateTime, 'local').mockImplementation(() => fixedTime);
+
+      mswServer.use(
+        rest.get(
+          'https://federationDomain.test/.well-known/openid-configuration',
+          (_req, res, ctx) => {
+            supervisorCalls += 1;
+            return res(
+              ctx.status(200),
+              ctx.set('Content-Type', 'application/json'),
+              ctx.json(issuerMetadata),
+            );
+          },
+        ),
+      );
+
+      authCtx = pinnipedAuthenticator.initialize({
+        callbackUrl: 'https://backstage.test/callback',
+        config: new ConfigReader({
+          federationDomain: 'https://federationDomain.test',
+          clientId: 'clientId',
+          clientSecret: 'clientSecret',
+        }),
+      });
+
+      await pinnipedAuthenticator.refresh(refreshRequest, authCtx);
+
+      jest
+        .spyOn(DateTime, 'local')
+        .mockImplementation(() => fixedTime.plus({ seconds: 60000 }));
+
+      await pinnipedAuthenticator.refresh(refreshRequest, authCtx);
+
+      expect(supervisorCalls).toEqual(2);
     });
   });
 });
