@@ -14,7 +14,6 @@
  * limitations under the License.
  */
 
-import fetch from 'node-fetch';
 import {
   createBackendPlugin,
   coreServices,
@@ -33,7 +32,7 @@ import {
   scaffolderTaskBrokerExtensionPoint,
   scaffolderTemplatingExtensionPoint,
 } from '@backstage/plugin-scaffolder-node/alpha';
-import { createBuiltinActions, DatabaseTaskStore } from './scaffolder';
+import { createBuiltinActions } from './scaffolder';
 import { createRouter } from './service/router';
 
 /**
@@ -76,21 +75,17 @@ export const scaffolderPlugin = createBackendPlugin({
       deps: {
         logger: coreServices.logger,
         config: coreServices.rootConfig,
-        lifecycle: coreServices.lifecycle,
         reader: coreServices.urlReader,
         permissions: coreServices.permissions,
         database: coreServices.database,
-        discovery: coreServices.discovery,
         httpRouter: coreServices.httpRouter,
         catalogClient: catalogServiceRef,
       },
       async init({
         logger,
         config,
-        lifecycle,
         reader,
         database,
-        discovery,
         httpRouter,
         catalogClient,
         permissions,
@@ -108,14 +103,6 @@ export const scaffolderPlugin = createBackendPlugin({
             additionalTemplateGlobals,
           }),
         ];
-
-        lifecycle.addShutdownHook(async () => {
-          const baseUrl = await discovery.getBaseUrl('scaffolder');
-          const url = `${baseUrl}/v2/tasks/cancel`;
-          await fetch(url, {
-            method: 'POST',
-          });
-        });
 
         const actionIds = actions.map(action => action.id).join(', ');
         log.info(
