@@ -1,5 +1,41 @@
 # @backstage/plugin-airbrake-backend
 
+## 0.3.4-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-common@0.19.9-next.0
+  - @backstage/backend-plugin-api@0.6.7-next.0
+  - @backstage/config@1.1.1
+
+## 0.3.3
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-common@0.19.8
+  - @backstage/backend-plugin-api@0.6.6
+  - @backstage/config@1.1.1
+
+## 0.3.3-next.2
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-common@0.19.8-next.2
+  - @backstage/backend-plugin-api@0.6.6-next.2
+  - @backstage/config@1.1.1-next.0
+
+## 0.3.2-next.1
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-common@0.19.7-next.1
+  - @backstage/backend-plugin-api@0.6.5-next.1
+  - @backstage/config@1.1.0
+
 ## 0.3.2-next.0
 
 ### Patch Changes

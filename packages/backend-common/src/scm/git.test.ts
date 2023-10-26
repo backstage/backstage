@@ -264,13 +264,14 @@ describe('Git', () => {
       };
       const git = Git.fromAuth(auth);
 
-      await git.fetch({ remote, dir });
+      await git.fetch({ remote, dir, tags: true });
 
       expect(isomorphic.fetch).toHaveBeenCalledWith({
         fs,
         http,
         remote,
         dir,
+        tags: true,
         onProgress: expect.any(Function),
         headers: {
           'user-agent': 'git/@isomorphic-git',
@@ -294,6 +295,7 @@ describe('Git', () => {
         http,
         remote,
         dir,
+        tags: false,
         onProgress: expect.any(Function),
         headers: {
           Authorization: 'Bearer test',

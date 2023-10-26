@@ -252,11 +252,21 @@ export type JobsAccordionsProps = {
 // @public (undocumented)
 export interface KubernetesApi {
   // (undocumented)
+  getCluster(clusterName: string): Promise<
+    | {
+        name: string;
+        authProvider: string;
+        oidcTokenProvider?: string;
+        dashboardUrl?: string;
+      }
+    | undefined
+  >;
+  // (undocumented)
   getClusters(): Promise<
     {
       name: string;
       authProvider: string;
-      oidcTokenProvider?: string | undefined;
+      oidcTokenProvider?: string;
     }[]
   >;
   // (undocumented)
@@ -337,6 +347,12 @@ export class KubernetesBackendClient implements KubernetesApi {
     identityApi: IdentityApi;
     kubernetesAuthProvidersApi: KubernetesAuthProvidersApi;
   });
+  // (undocumented)
+  getCluster(clusterName: string): Promise<{
+    name: string;
+    authProvider: string;
+    oidcTokenProvider?: string;
+  }>;
   // (undocumented)
   getClusters(): Promise<
     {

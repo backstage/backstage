@@ -249,7 +249,7 @@ export interface DependencyGraphProps<NodeData, EdgeData>
   acyclicer?: 'greedy';
   align?: DependencyGraphTypes.Alignment;
   curve?: 'curveStepBefore' | 'curveMonotoneX';
-  defs?: SVGDefsElement | SVGDefsElement[];
+  defs?: JSX.Element | JSX.Element[];
   direction?: DependencyGraphTypes.Direction;
   edgeMargin?: number;
   edgeRanks?: number;

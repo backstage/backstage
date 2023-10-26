@@ -58,9 +58,10 @@ export type TeamTransformer = (
  *
  * @public
  */
-export const defaultUserTransformer: UserTransformer = async (
+export const defaultUserTransformer = async (
   item: GithubUser,
-) => {
+  _ctx: TransformerContext,
+): Promise<UserEntity | undefined> => {
   const entity: UserEntity = {
     apiVersion: 'backstage.io/v1alpha1',
     kind: 'User',

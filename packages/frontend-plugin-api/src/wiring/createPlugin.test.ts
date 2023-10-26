@@ -30,7 +30,7 @@ const nameExtensionDataRef = createExtensionDataRef<string>('name');
 
 const TechRadarPage = createExtension({
   id: 'plugin.techradar.page',
-  at: 'test.output/names',
+  attachTo: { id: 'test.output', input: 'names' },
   output: {
     name: nameExtensionDataRef,
   },
@@ -41,7 +41,7 @@ const TechRadarPage = createExtension({
 
 const CatalogPage = createExtension({
   id: 'plugin.catalog.page',
-  at: 'test.output/names',
+  attachTo: { id: 'test.output', input: 'names' },
   output: {
     name: nameExtensionDataRef,
   },
@@ -55,7 +55,7 @@ const CatalogPage = createExtension({
 
 const TechDocsAddon = createExtension({
   id: 'plugin.techdocs.addon.example',
-  at: 'plugin.techdocs.page/addons',
+  attachTo: { id: 'plugin.techdocs.page', input: 'addons' },
   output: {
     name: nameExtensionDataRef,
   },
@@ -69,7 +69,7 @@ const TechDocsAddon = createExtension({
 
 const TechDocsPage = createExtension({
   id: 'plugin.techdocs.page',
-  at: 'test.output/names',
+  attachTo: { id: 'test.output', input: 'names' },
   inputs: {
     addons: createExtensionInput({
       name: nameExtensionDataRef,
@@ -85,7 +85,7 @@ const TechDocsPage = createExtension({
 
 const outputExtension = createExtension({
   id: 'test.output',
-  at: 'root',
+  attachTo: { id: 'core', input: 'root' },
   inputs: {
     names: createExtensionInput({
       name: nameExtensionDataRef,
@@ -104,14 +104,14 @@ const outputExtension = createExtension({
 });
 
 function createTestAppRoot({
-  plugins,
+  features,
   config = {},
 }: {
-  plugins: BackstagePlugin[];
+  features: BackstagePlugin[];
   config: JsonObject;
 }) {
   return createApp({
-    plugins: plugins,
+    features,
     configLoader: async () => new MockConfigApi(config),
   }).createRoot();
 }
@@ -132,7 +132,7 @@ describe('createPlugin', () => {
 
     await renderWithEffects(
       createTestAppRoot({
-        plugins: [plugin],
+        features: [plugin],
         config: { app: { extensions: [{ 'core.layout': false }] } },
       }),
     );
@@ -157,7 +157,7 @@ describe('createPlugin', () => {
 
     await renderWithEffects(
       createTestAppRoot({
-        plugins: [plugin],
+        features: [plugin],
         config: {
           app: {
             extensions: [

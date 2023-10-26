@@ -22,3 +22,4 @@
 
 export { createRouter } from './service/router';
 export type { RouterOptions } from './service/router';
+export { codeCoveragePlugin as default } from './plugin';

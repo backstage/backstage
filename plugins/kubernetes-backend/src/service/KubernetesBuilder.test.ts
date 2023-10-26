@@ -520,6 +520,26 @@ metadata:
 
       expect(response.body).toStrictEqual({ items: [] });
     });
+
+    it('should not permit custom auth strategies with dashes', async () => {
+      const throwError = () =>
+        KubernetesBuilder.createBuilder({
+          logger: getVoidLogger(),
+          config,
+          catalogApi,
+          permissions,
+        }).addAuthStrategy('custom-strategy', {
+          getCredential: jest
+            .fn<
+              Promise<KubernetesCredential>,
+              [ClusterDetails, KubernetesRequestAuth]
+            >()
+            .mockResolvedValue({ type: 'anonymous' }),
+          validateCluster: jest.fn().mockReturnValue([]),
+        });
+
+      expect(throwError).toThrow('Strategy name can not include dashes');
+    });
   });
   describe('get /.well-known/backstage/permissions/metadata', () => {
     it('lists permissions supported by the kubernetes plugin', async () => {

@@ -1,5 +1,57 @@
 # @backstage/plugin-entity-feedback-backend
 
+## 0.2.4-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-common@0.19.9-next.0
+  - @backstage/backend-plugin-api@0.6.7-next.0
+  - @backstage/catalog-client@1.4.5
+  - @backstage/catalog-model@1.4.3
+  - @backstage/config@1.1.1
+  - @backstage/plugin-auth-node@0.4.1-next.0
+  - @backstage/plugin-entity-feedback-common@0.1.3
+
+## 0.2.3
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-common@0.19.8
+  - @backstage/plugin-auth-node@0.4.0
+  - @backstage/catalog-model@1.4.3
+  - @backstage/backend-plugin-api@0.6.6
+  - @backstage/catalog-client@1.4.5
+  - @backstage/config@1.1.1
+  - @backstage/plugin-entity-feedback-common@0.1.3
+
+## 0.2.3-next.2
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-common@0.19.8-next.2
+  - @backstage/plugin-auth-node@0.4.0-next.2
+  - @backstage/catalog-model@1.4.3-next.0
+  - @backstage/backend-plugin-api@0.6.6-next.2
+  - @backstage/catalog-client@1.4.5-next.0
+  - @backstage/config@1.1.1-next.0
+  - @backstage/plugin-entity-feedback-common@0.1.3
+
+## 0.2.2-next.1
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-common@0.19.7-next.1
+  - @backstage/backend-plugin-api@0.6.5-next.1
+  - @backstage/plugin-auth-node@0.3.2-next.1
+  - @backstage/config@1.1.0
+  - @backstage/catalog-client@1.4.4
+  - @backstage/catalog-model@1.4.2
+  - @backstage/plugin-entity-feedback-common@0.1.3
+
 ## 0.2.2-next.0
 
 ### Patch Changes

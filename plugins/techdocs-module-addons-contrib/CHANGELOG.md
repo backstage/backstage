@@ -1,5 +1,57 @@
 # @backstage/plugin-techdocs-module-addons-contrib
 
+## 1.1.2-next.0
+
+### Patch Changes
+
+- 4728b3960d: Fixed navigation bug that caused users to not be scrolled to the top of a new page. Fixed navigation bug where using backwards and forwards browser navigation did not scroll users to the correct place on the TechDoc page.
+- 6c2b872153: Add official support for React 18.
+- Updated dependencies
+  - @backstage/core-components@0.13.7-next.0
+  - @backstage/integration-react@1.1.21-next.0
+  - @backstage/core-plugin-api@1.8.0-next.0
+  - @backstage/plugin-techdocs-react@1.1.13-next.0
+  - @backstage/theme@0.4.4-next.0
+  - @backstage/integration@1.7.1
+
+## 1.1.1
+
+### Patch Changes
+
+- 9a1fce352e: Updated dependency `@testing-library/jest-dom` to `^6.0.0`.
+- f95af4e540: Updated dependency `@testing-library/dom` to `^9.0.0`.
+- Updated dependencies
+  - @backstage/integration@1.7.1
+  - @backstage/core-plugin-api@1.7.0
+  - @backstage/core-components@0.13.6
+  - @backstage/integration-react@1.1.20
+  - @backstage/plugin-techdocs-react@1.1.12
+  - @backstage/theme@0.4.3
+
+## 1.1.1-next.2
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/integration-react@1.1.20-next.2
+  - @backstage/core-components@0.13.6-next.2
+  - @backstage/core-plugin-api@1.7.0-next.1
+  - @backstage/integration@1.7.1-next.1
+  - @backstage/theme@0.4.3-next.0
+  - @backstage/plugin-techdocs-react@1.1.12-next.2
+
+## 1.1.1-next.1
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/core-components@0.13.6-next.1
+  - @backstage/integration-react@1.1.20-next.1
+  - @backstage/plugin-techdocs-react@1.1.12-next.1
+  - @backstage/core-plugin-api@1.7.0-next.0
+  - @backstage/integration@1.7.1-next.0
+  - @backstage/theme@0.4.2
+
 ## 1.1.1-next.0
 
 ### Patch Changes

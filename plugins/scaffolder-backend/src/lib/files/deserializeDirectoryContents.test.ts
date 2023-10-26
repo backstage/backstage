@@ -14,29 +14,25 @@
  * limitations under the License.
  */
 
-import mockFs from 'mock-fs';
+import { createMockDirectory } from '@backstage/backend-test-utils';
 import { deserializeDirectoryContents } from './deserializeDirectoryContents';
 import { serializeDirectoryContents } from './serializeDirectoryContents';
 
 describe('deserializeDirectoryContents', () => {
-  beforeEach(() => {
-    mockFs({
-      root: {},
-    });
-  });
+  const mockDir = createMockDirectory();
 
-  afterEach(() => {
-    mockFs.restore();
+  beforeEach(() => {
+    mockDir.clear();
   });
 
   it('deserializes contents into a directory', async () => {
-    await deserializeDirectoryContents('root', [
+    await deserializeDirectoryContents(mockDir.path, [
       {
         path: 'a.txt',
         content: Buffer.from('a', 'utf8'),
       },
     ]);
-    await expect(serializeDirectoryContents('root')).resolves.toEqual([
+    await expect(serializeDirectoryContents(mockDir.path)).resolves.toEqual([
       {
         path: 'a.txt',
         content: Buffer.from('a', 'utf8'),
@@ -47,7 +43,7 @@ describe('deserializeDirectoryContents', () => {
   });
 
   it('deserializes contents into a deep directory structure', async () => {
-    await deserializeDirectoryContents('root', [
+    await deserializeDirectoryContents(mockDir.path, [
       {
         path: 'a.txt',
         content: Buffer.from('a', 'utf8'),
@@ -61,7 +57,7 @@ describe('deserializeDirectoryContents', () => {
         content: Buffer.from('c', 'utf8'),
       },
     ]);
-    await expect(serializeDirectoryContents('root')).resolves.toEqual([
+    await expect(serializeDirectoryContents(mockDir.path)).resolves.toEqual([
       {
         path: 'a.txt',
         content: Buffer.from('a', 'utf8'),

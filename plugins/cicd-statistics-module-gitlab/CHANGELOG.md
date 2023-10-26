@@ -1,5 +1,42 @@
 # @backstage/plugin-cicd-statistics-module-gitlab
 
+## 0.1.22-next.0
+
+### Patch Changes
+
+- 6c2b872153: Add official support for React 18.
+- Updated dependencies
+  - @backstage/core-plugin-api@1.8.0-next.0
+  - @backstage/plugin-cicd-statistics@0.1.28-next.0
+  - @backstage/catalog-model@1.4.3
+
+## 0.1.21
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/core-plugin-api@1.7.0
+  - @backstage/plugin-cicd-statistics@0.1.27
+  - @backstage/catalog-model@1.4.3
+
+## 0.1.21-next.2
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/core-plugin-api@1.7.0-next.1
+  - @backstage/plugin-cicd-statistics@0.1.27-next.2
+  - @backstage/catalog-model@1.4.3-next.0
+
+## 0.1.21-next.1
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/core-plugin-api@1.7.0-next.0
+  - @backstage/catalog-model@1.4.2
+  - @backstage/plugin-cicd-statistics@0.1.27-next.1
+
 ## 0.1.21-next.0
 
 ### Patch Changes

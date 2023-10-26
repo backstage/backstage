@@ -1,5 +1,67 @@
 # @backstage/plugin-tech-insights-backend
 
+## 0.5.21-next.0
+
+### Patch Changes
+
+- 193ad022bb: Add `factRetrieverId` to the fact retriever's logger metadata.
+- Updated dependencies
+  - @backstage/backend-common@0.19.9-next.0
+  - @backstage/backend-tasks@0.5.12-next.0
+  - @backstage/catalog-client@1.4.5
+  - @backstage/catalog-model@1.4.3
+  - @backstage/config@1.1.1
+  - @backstage/errors@1.2.3
+  - @backstage/types@1.1.1
+  - @backstage/plugin-tech-insights-common@0.2.12
+  - @backstage/plugin-tech-insights-node@0.4.13-next.0
+
+## 0.5.20
+
+### Patch Changes
+
+- cc7dddfa7f: Increase the maximum allowed length of an entity filter for tech insights fact schemas.
+- Updated dependencies
+  - @backstage/backend-tasks@0.5.11
+  - @backstage/backend-common@0.19.8
+  - @backstage/catalog-model@1.4.3
+  - @backstage/errors@1.2.3
+  - @backstage/plugin-tech-insights-node@0.4.12
+  - @backstage/catalog-client@1.4.5
+  - @backstage/config@1.1.1
+  - @backstage/types@1.1.1
+  - @backstage/plugin-tech-insights-common@0.2.12
+
+## 0.5.20-next.2
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-common@0.19.8-next.2
+  - @backstage/catalog-model@1.4.3-next.0
+  - @backstage/errors@1.2.3-next.0
+  - @backstage/backend-tasks@0.5.11-next.2
+  - @backstage/plugin-tech-insights-node@0.4.12-next.2
+  - @backstage/catalog-client@1.4.5-next.0
+  - @backstage/config@1.1.1-next.0
+  - @backstage/types@1.1.1
+  - @backstage/plugin-tech-insights-common@0.2.12
+
+## 0.5.19-next.1
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-tasks@0.5.10-next.1
+  - @backstage/backend-common@0.19.7-next.1
+  - @backstage/plugin-tech-insights-node@0.4.11-next.1
+  - @backstage/config@1.1.0
+  - @backstage/catalog-client@1.4.4
+  - @backstage/catalog-model@1.4.2
+  - @backstage/errors@1.2.2
+  - @backstage/types@1.1.1
+  - @backstage/plugin-tech-insights-common@0.2.12
+
 ## 0.5.19-next.0
 
 ### Patch Changes

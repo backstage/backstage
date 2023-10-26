@@ -235,6 +235,12 @@ catalog:
         - System
         - Domain
         - Location
+  providers:
+    openapi:
+      plugins:
+        - catalog
+        - search
+        - todo
 
   processors:
     ldapOrg:

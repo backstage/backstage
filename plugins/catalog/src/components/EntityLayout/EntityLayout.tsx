@@ -36,6 +36,7 @@ import {
   useRouteRefParams,
 } from '@backstage/core-plugin-api';
 import {
+  EntityDisplayName,
   EntityRefLinks,
   entityRouteRef,
   FavoriteEntity,
@@ -78,7 +79,7 @@ function EntityLayoutTitle(props: {
         whiteSpace="nowrap"
         overflow="hidden"
       >
-        {title}
+        {entity ? <EntityDisplayName entityRef={entity} noIcon /> : title}
       </Box>
       {entity && <FavoriteEntity entity={entity} />}
     </Box>
@@ -128,7 +129,10 @@ function EntityLabels(props: { entity: Entity }) {
         />
       )}
       {entity.spec?.lifecycle && (
-        <HeaderLabel label="Lifecycle" value={entity.spec.lifecycle} />
+        <HeaderLabel
+          label="Lifecycle"
+          value={entity.spec.lifecycle?.toString()}
+        />
       )}
     </>
   );

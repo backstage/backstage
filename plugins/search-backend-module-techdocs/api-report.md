@@ -8,11 +8,16 @@
 import { CatalogApi } from '@backstage/catalog-client';
 import { Config } from '@backstage/config';
 import { DocumentCollatorFactory } from '@backstage/plugin-search-common';
+import { Entity } from '@backstage/catalog-model';
 import { Logger } from 'winston';
 import { Permission } from '@backstage/plugin-permission-common';
 import { PluginEndpointDiscovery } from '@backstage/backend-common';
 import { Readable } from 'stream';
+import { TechDocsDocument } from '@backstage/plugin-techdocs-node';
 import { TokenManager } from '@backstage/backend-common';
+
+// @public (undocumented)
+export const defaultTechDocsCollatorEntityTransformer: TechDocsCollatorEntityTransformer;
 
 // @public
 export class DefaultTechDocsCollatorFactory implements DocumentCollatorFactory {
@@ -29,6 +34,11 @@ export class DefaultTechDocsCollatorFactory implements DocumentCollatorFactory {
   readonly visibilityPermission: Permission;
 }
 
+// @public (undocumented)
+export type TechDocsCollatorEntityTransformer = (
+  entity: Entity,
+) => Omit<TechDocsDocument, 'location' | 'authorization'>;
+
 // @public
 export type TechDocsCollatorFactoryOptions = {
   discovery: PluginEndpointDiscovery;
@@ -38,5 +48,6 @@ export type TechDocsCollatorFactoryOptions = {
   catalogClient?: CatalogApi;
   parallelismLimit?: number;
   legacyPathCasing?: boolean;
+  entityTransformer?: TechDocsCollatorEntityTransformer;
 };
 ```

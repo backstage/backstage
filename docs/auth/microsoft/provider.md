@@ -51,15 +51,20 @@ auth:
     microsoft:
       development:
         clientId: ${AZURE_CLIENT_ID}
-        clientSecret: ${AZURE_CLIENT_ID}
+        clientSecret: ${AZURE_CLIENT_SECRET}
         tenantId: ${AZURE_TENANT_ID}
+        domainHint: ${AZURE_TENANT_ID}
 ```
 
-The Microsoft provider is a structure with three configuration keys:
+The Microsoft provider is a structure with three mandatory configuration keys:
 
 - `clientId`: Application (client) ID, found on App Registration > Overview
 - `clientSecret`: Secret, found on App Registration > Certificates & secrets
 - `tenantId`: Directory (tenant) ID, found on App Registration > Overview
+- `domainHint` (optional): Typically the same as `tenantId`.
+  Leave blank if your app registration is multi tenant.
+  When specified, this reduces login friction for users with accounts in multiple tenants by automatically filtering away accounts from other tenants.
+  For more details, see [Home Realm Discovery](https://learn.microsoft.com/en-us/azure/active-directory/manage-apps/home-realm-discovery-policy)
 
 ## Adding the provider to the Backstage frontend
 

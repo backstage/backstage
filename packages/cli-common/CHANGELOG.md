@@ -1,5 +1,11 @@
 # @backstage/cli-common
 
+## 0.1.13
+
+### Patch Changes
+
+- de42eebaaf: Bumped dev dependencies `@types/node` and `mock-fs`.
+
 ## 0.1.13-next.0
 
 ### Patch Changes

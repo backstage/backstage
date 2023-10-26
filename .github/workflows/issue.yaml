@@ -9,5 +9,10 @@ jobs:
 
     if: github.repository == 'backstage/backstage'
     steps:
+      - name: Harden Runner
+        uses: step-security/harden-runner@8ca2b8b2ece13480cda6dacd3511b49857a23c09 # v2.5.1
+        with:
+          egress-policy: audit
+
       - name: Issue sync
-        uses: backstage/actions/issue-sync@v0.6.4
+        uses: backstage/actions/issue-sync@v0.6.5

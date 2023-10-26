@@ -22,7 +22,7 @@ import {
 } from '@backstage/core-plugin-api';
 import { Playlist } from '@backstage/plugin-playlist-common';
 import { TestApiProvider } from '@backstage/test-utils';
-import { act, renderHook } from '@testing-library/react-hooks';
+import { act, renderHook, waitFor } from '@testing-library/react';
 import qs from 'qs';
 import React, { PropsWithChildren } from 'react';
 import { MemoryRouter } from 'react-router-dom';
@@ -114,23 +114,22 @@ describe('<PlaylistListProvider />', () => {
   });
 
   it('resolves backend filters', async () => {
-    const { result, waitForValueToChange } = renderHook(
-      () => usePlaylistList(),
-      {
-        wrapper,
-      },
-    );
-    await waitForValueToChange(() => result.current.backendPlaylists);
-    expect(result.current.backendPlaylists.length).toBe(2);
-    expect(mockPlaylistApi.getAllPlaylists).toHaveBeenCalled();
+    const { result } = renderHook(() => usePlaylistList(), {
+      wrapper,
+    });
+    await waitFor(() => {
+      expect(result.current.backendPlaylists.length).toBe(2);
+      expect(mockPlaylistApi.getAllPlaylists).toHaveBeenCalled();
+    });
   });
 
   it('resolves frontend filters', async () => {
-    const { result, waitFor } = renderHook(() => usePlaylistList(), {
+    const { result } = renderHook(() => usePlaylistList(), {
       wrapper,
     });
-    await waitFor(() => !!result.current.playlists.length);
-    expect(result.current.backendPlaylists.length).toBe(2);
+    await waitFor(() => {
+      expect(result.current.backendPlaylists.length).toBe(2);
+    });
 
     act(() =>
       result.current.updateFilters({
@@ -152,21 +151,21 @@ describe('<PlaylistListProvider />', () => {
     const query = qs.stringify({
       filters: { personal: 'all', owners: ['user:default/guest'] },
     });
-    const { result, waitFor } = renderHook(() => usePlaylistList(), {
-      wrapper,
-      initialProps: {
-        location: `/playlist?${query}`,
-      },
+    const { result } = renderHook(() => usePlaylistList(), {
+      wrapper: ({ children }) =>
+        wrapper({ location: `/playlist?${query}`, children }),
     });
-    await waitFor(() => !!result.current.queryParameters);
-    expect(result.current.queryParameters).toEqual({
-      personal: 'all',
-      owners: ['user:default/guest'],
+
+    await waitFor(() => {
+      expect(result.current.queryParameters).toEqual({
+        personal: 'all',
+        owners: ['user:default/guest'],
+      });
     });
   });
 
   it('does not fetch when only frontend filters change', async () => {
-    const { result, waitFor } = renderHook(() => usePlaylistList(), {
+    const { result } = renderHook(() => usePlaylistList(), {
       wrapper,
     });
 
@@ -191,7 +190,7 @@ describe('<PlaylistListProvider />', () => {
   });
 
   it('applies custom sorting', async () => {
-    const { result, waitFor } = renderHook(() => usePlaylistList(), {
+    const { result } = renderHook(() => usePlaylistList(), {
       wrapper,
     });
 
@@ -216,7 +215,7 @@ describe('<PlaylistListProvider />', () => {
 
   it('returns an error on playlistApi failure', async () => {
     mockPlaylistApi.getAllPlaylists = jest.fn().mockRejectedValue('error');
-    const { result, waitFor } = renderHook(() => usePlaylistList(), {
+    const { result } = renderHook(() => usePlaylistList(), {
       wrapper,
     });
     await waitFor(() => {

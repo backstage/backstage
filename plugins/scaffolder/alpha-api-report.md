@@ -5,50 +5,58 @@
 ```ts
 /// <reference types="react" />
 
-import { FormProps as FormProps_2 } from '@backstage/plugin-scaffolder-react/alpha';
-import type { FormProps as FormProps_3 } from '@rjsf/core-v5';
+import { ComponentType } from 'react';
+import { Entity } from '@backstage/catalog-model';
+import { FieldExtensionOptions } from '@backstage/plugin-scaffolder-react';
+import type { FormProps as FormProps_2 } from '@rjsf/core';
+import { FormProps as FormProps_3 } from '@backstage/plugin-scaffolder-react';
 import { JSX as JSX_2 } from 'react';
 import { LayoutOptions } from '@backstage/plugin-scaffolder-react';
-import { NextFieldExtensionOptions } from '@backstage/plugin-scaffolder-react/alpha';
 import { PropsWithChildren } from 'react';
 import { default as React_2 } from 'react';
-import { ScaffolderTaskOutput } from '@backstage/plugin-scaffolder-react';
+import { ReviewStepProps } from '@backstage/plugin-scaffolder-react';
 import { TemplateEntityV1beta3 } from '@backstage/plugin-scaffolder-common';
-import { TemplateGroupFilter } from '@backstage/plugin-scaffolder-react/alpha';
+import { TemplateGroupFilter } from '@backstage/plugin-scaffolder-react';
 
 // @alpha @deprecated
 export type FormProps = Pick<
-  FormProps_3,
+  FormProps_2,
   'transformErrors' | 'noHtml5Validate'
 >;
 
 // @alpha
-export type NextRouterProps = {
+export const LegacyRouter: (props: LegacyRouterProps) => React_2.JSX.Element;
+
+// @alpha
+export type LegacyRouterProps = {
   components?: {
-    TemplateCardComponent?: React_2.ComponentType<{
-      template: TemplateEntityV1beta3;
-    }>;
-    TaskPageComponent?: React_2.ComponentType<PropsWithChildren<{}>>;
-    TemplateOutputsComponent?: React_2.ComponentType<{
-      output?: ScaffolderTaskOutput;
-    }>;
-    TemplateListPageComponent?: React_2.ComponentType<TemplateListPageProps>;
-    TemplateWizardPageComponent?: React_2.ComponentType<TemplateWizardPageProps>;
+    ReviewStepComponent?: ComponentType<ReviewStepProps>;
+    TemplateCardComponent?:
+      | ComponentType<{
+          template: TemplateEntityV1beta3;
+        }>
+      | undefined;
+    TaskPageComponent?: ComponentType<PropsWithChildren<{}>>;
   };
-  groups?: TemplateGroupFilter[];
+  groups?: Array<{
+    title?: React_2.ReactNode;
+    filter: (entity: Entity) => boolean;
+  }>;
   templateFilter?: (entity: TemplateEntityV1beta3) => boolean;
-  FormProps?: FormProps_2;
+  defaultPreviewTemplate?: string;
+  headerOptions?: {
+    pageTitleOverride?: string;
+    title?: string;
+    subtitle?: string;
+  };
   contextMenu?: {
     editor?: boolean;
     actions?: boolean;
-    tasks?: boolean;
   };
 };
 
 // @alpha
-export const NextScaffolderPage: (
-  props: PropsWithChildren<NextRouterProps>,
-) => JSX_2.Element;
+export const LegacyScaffolderPage: (props: LegacyRouterProps) => JSX_2.Element;
 
 // @alpha (undocumented)
 export type TemplateListPageProps = {
@@ -66,9 +74,12 @@ export type TemplateListPageProps = {
 
 // @alpha (undocumented)
 export type TemplateWizardPageProps = {
-  customFieldExtensions: NextFieldExtensionOptions<any, any>[];
+  customFieldExtensions: FieldExtensionOptions<any, any>[];
+  components?: {
+    ReviewStepComponent?: React_2.ComponentType<ReviewStepProps>;
+  };
   layouts?: LayoutOptions[];
-  FormProps?: FormProps_2;
+  formProps?: FormProps_3;
 };
 
 // (No @packageDocumentation comment for this package)

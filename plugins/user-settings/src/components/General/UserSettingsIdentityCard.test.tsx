@@ -45,7 +45,7 @@ describe('<UserSettingsIdentityCard />', () => {
       },
     );
 
-    expect(screen.getByText('user:default/test-ownership')).toBeInTheDocument();
-    expect(screen.getByText('foo:bar/foobar')).toBeInTheDocument();
+    expect(screen.getByText('test-ownership')).toBeInTheDocument();
+    expect(screen.getByText('bar/foobar')).toBeInTheDocument();
   });
 });

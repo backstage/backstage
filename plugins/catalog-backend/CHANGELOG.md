@@ -1,5 +1,125 @@
 # @backstage/plugin-catalog-backend
 
+## 1.15.0-next.0
+
+### Minor Changes
+
+- 8d756968f9: Introduce a new optional config parameter `catalog.stitchingStrategy.mode`,
+  which can have the values `'immediate'` (default) and `'deferred'`. The default
+  is for stitching to work as it did before this change, which means that it
+  happens "in-band" (blocking) immediately when each processing task finishes.
+  When set to `'deferred'`, stitching is instead deferred to happen on a separate
+  asynchronous worker queue just like processing.
+
+  Deferred stitching should make performance smoother when ingesting large amounts
+  of entities, and reduce p99 processing times and repeated over-stitching of
+  hot spot entities when fan-out/fan-in in terms of relations is very large. It
+  does however also come with some performance cost due to the queuing with how
+  much wall-clock time some types of task take.
+
+### Patch Changes
+
+- 6694b369a3: Update the OpenAPI spec with more complete error responses and request bodies using Optic. Also, updates the test cases to use the new `supertest` pass through from `@backstage/backend-openapi-utils`.
+- Updated dependencies
+  - @backstage/backend-openapi-utils@0.1.0-next.0
+  - @backstage/backend-common@0.19.9-next.0
+  - @backstage/integration@1.7.1
+  - @backstage/backend-plugin-api@0.6.7-next.0
+  - @backstage/backend-tasks@0.5.12-next.0
+  - @backstage/catalog-client@1.4.5
+  - @backstage/catalog-model@1.4.3
+  - @backstage/config@1.1.1
+  - @backstage/errors@1.2.3
+  - @backstage/types@1.1.1
+  - @backstage/plugin-auth-node@0.4.1-next.0
+  - @backstage/plugin-catalog-common@1.0.17
+  - @backstage/plugin-catalog-node@1.4.8-next.0
+  - @backstage/plugin-events-node@0.2.16-next.0
+  - @backstage/plugin-permission-common@0.7.9
+  - @backstage/plugin-permission-node@0.7.18-next.0
+  - @backstage/plugin-search-backend-module-catalog@0.1.11-next.0
+
+## 1.14.0
+
+### Minor Changes
+
+- 78af9433c8: Instrumenting some missing metrics with `OpenTelemetry`
+
+### Patch Changes
+
+- 7a2e2924c7: Marked the `LocationEntityProcessor` as deprecated, as it is no longer used internally since way back and can even be harmful at this point.
+- 0b55f773a7: Removed some unused dependencies
+- 348e8c1cdb: Fixes a bug where eagerly deleted entities did not properly trigger re-stitching of entities that they had relations to.
+- b97e9790f0: Internal refactors, laying the foundation for later introducing deferred stitching (see #18062).
+- Updated dependencies
+  - @backstage/backend-tasks@0.5.11
+  - @backstage/backend-common@0.19.8
+  - @backstage/integration@1.7.1
+  - @backstage/plugin-catalog-node@1.4.7
+  - @backstage/plugin-auth-node@0.4.0
+  - @backstage/catalog-model@1.4.3
+  - @backstage/errors@1.2.3
+  - @backstage/backend-openapi-utils@0.0.5
+  - @backstage/backend-plugin-api@0.6.6
+  - @backstage/plugin-search-backend-module-catalog@0.1.10
+  - @backstage/plugin-permission-node@0.7.17
+  - @backstage/catalog-client@1.4.5
+  - @backstage/config@1.1.1
+  - @backstage/types@1.1.1
+  - @backstage/plugin-catalog-common@1.0.17
+  - @backstage/plugin-events-node@0.2.15
+  - @backstage/plugin-permission-common@0.7.9
+
+## 1.14.0-next.2
+
+### Patch Changes
+
+- 0b55f773a7: Removed some unused dependencies
+- Updated dependencies
+  - @backstage/backend-common@0.19.8-next.2
+  - @backstage/plugin-auth-node@0.4.0-next.2
+  - @backstage/catalog-model@1.4.3-next.0
+  - @backstage/integration@1.7.1-next.1
+  - @backstage/errors@1.2.3-next.0
+  - @backstage/backend-openapi-utils@0.0.5-next.0
+  - @backstage/backend-tasks@0.5.11-next.2
+  - @backstage/plugin-catalog-node@1.4.7-next.2
+  - @backstage/plugin-permission-node@0.7.17-next.2
+  - @backstage/plugin-search-backend-module-catalog@0.1.10-next.2
+  - @backstage/backend-plugin-api@0.6.6-next.2
+  - @backstage/catalog-client@1.4.5-next.0
+  - @backstage/config@1.1.1-next.0
+  - @backstage/types@1.1.1
+  - @backstage/plugin-catalog-common@1.0.17-next.0
+  - @backstage/plugin-events-node@0.2.15-next.2
+  - @backstage/plugin-permission-common@0.7.9-next.0
+
+## 1.14.0-next.1
+
+### Patch Changes
+
+- 7a2e2924c7: Marked the `LocationEntityProcessor` as deprecated, as it is no longer used internally since way back and can even be harmful at this point.
+- Updated dependencies
+  - @backstage/backend-tasks@0.5.10-next.1
+  - @backstage/plugin-catalog-node@1.4.6-next.1
+  - @backstage/backend-common@0.19.7-next.1
+  - @backstage/backend-plugin-api@0.6.5-next.1
+  - @backstage/plugin-search-backend-module-catalog@0.1.9-next.1
+  - @backstage/plugin-auth-node@0.3.2-next.1
+  - @backstage/plugin-permission-node@0.7.16-next.1
+  - @backstage/config@1.1.0
+  - @backstage/backend-openapi-utils@0.0.4
+  - @backstage/catalog-client@1.4.4
+  - @backstage/catalog-model@1.4.2
+  - @backstage/errors@1.2.2
+  - @backstage/integration@1.7.1-next.0
+  - @backstage/types@1.1.1
+  - @backstage/plugin-catalog-common@1.0.16
+  - @backstage/plugin-events-node@0.2.14-next.1
+  - @backstage/plugin-permission-common@0.7.8
+  - @backstage/plugin-scaffolder-common@1.4.1
+  - @backstage/plugin-search-common@1.2.6
+
 ## 1.14.0-next.0
 
 ### Minor Changes

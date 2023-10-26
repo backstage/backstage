@@ -28,6 +28,8 @@ import {
   TaskSettingsV2,
 } from './types';
 import { validateId } from './util';
+import { TaskFunction } from './types';
+import { metrics, Counter, Histogram } from '@opentelemetry/api';
 
 /**
  * Implements the actual task management.
@@ -36,10 +38,22 @@ export class PluginTaskSchedulerImpl implements PluginTaskScheduler {
   private readonly localTasksById = new Map<string, LocalTaskWorker>();
   private readonly allScheduledTasks: TaskDescriptor[] = [];
 
+  private readonly counter: Counter;
+  private readonly duration: Histogram;
+
   constructor(
     private readonly databaseFactory: () => Promise<Knex>,
     private readonly logger: Logger,
-  ) {}
+  ) {
+    const meter = metrics.getMeter('default');
+    this.counter = meter.createCounter('backend_tasks.task.runs.count', {
+      description: 'Total number of times a task has been run',
+    });
+    this.duration = meter.createHistogram('backend_tasks.task.runs.duration', {
+      description: 'Histogram of task run durations',
+      unit: 'seconds',
+    });
+  }
 
   async triggerTask(id: string): Promise<void> {
     const localTask = this.localTasksById.get(id);
@@ -70,7 +84,7 @@ export class PluginTaskSchedulerImpl implements PluginTaskScheduler {
       const knex = await this.databaseFactory();
       const worker = new TaskWorker(
         task.id,
-        task.fn,
+        this.wrapInMetrics(task.fn, { labels: { taskId: task.id, scope } }),
         knex,
         this.logger.child({ task: task.id }),
       );
@@ -78,7 +92,7 @@ export class PluginTaskSchedulerImpl implements PluginTaskScheduler {
     } else {
       const worker = new LocalTaskWorker(
         task.id,
-        task.fn,
+        this.wrapInMetrics(task.fn, { labels: { taskId: task.id, scope } }),
         this.logger.child({ task: task.id }),
       );
       worker.start(settings, { signal: task.signal });
@@ -102,6 +116,33 @@ export class PluginTaskSchedulerImpl implements PluginTaskScheduler {
 
   async getScheduledTasks(): Promise<TaskDescriptor[]> {
     return this.allScheduledTasks;
+  }
+
+  private wrapInMetrics(
+    fn: TaskFunction,
+    opts: { labels: Record<string, string> },
+  ): TaskFunction {
+    return async abort => {
+      const labels = {
+        ...opts.labels,
+      };
+      this.counter.add(1, { ...labels, result: 'started' });
+
+      const startTime = process.hrtime();
+
+      try {
+        await fn(abort);
+        labels.result = 'completed';
+      } catch (ex) {
+        labels.result = 'failed';
+        throw ex;
+      } finally {
+        const delta = process.hrtime(startTime);
+        const endTime = delta[0] + delta[1] / 1e9;
+        this.counter.add(1, labels);
+        this.duration.record(endTime, labels);
+      }
+    };
   }
 }
 

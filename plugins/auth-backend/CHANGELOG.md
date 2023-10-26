@@ -1,5 +1,95 @@
 # @backstage/plugin-auth-backend
 
+## 0.20.0-next.0
+
+### Minor Changes
+
+- bdf08ad04a: Adds the StaticTokenIssuer and StaticKeyStore, an alternative token issuer that can be used to sign the Authorization header using a predefined public/private key pair.
+
+### Patch Changes
+
+- 96c4f54bf6: Reverted the Microsoft auth provider to the previous implementation.
+- Updated dependencies
+  - @backstage/backend-common@0.19.9-next.0
+  - @backstage/backend-plugin-api@0.6.7-next.0
+  - @backstage/catalog-client@1.4.5
+  - @backstage/catalog-model@1.4.3
+  - @backstage/config@1.1.1
+  - @backstage/errors@1.2.3
+  - @backstage/types@1.1.1
+  - @backstage/plugin-auth-backend-module-gcp-iap-provider@0.2.1-next.0
+  - @backstage/plugin-auth-backend-module-github-provider@0.1.4-next.0
+  - @backstage/plugin-auth-backend-module-gitlab-provider@0.1.4-next.0
+  - @backstage/plugin-auth-backend-module-google-provider@0.1.4-next.0
+  - @backstage/plugin-auth-backend-module-oauth2-provider@0.1.4-next.0
+  - @backstage/plugin-auth-node@0.4.1-next.0
+  - @backstage/plugin-catalog-node@1.4.8-next.0
+
+## 0.19.3
+
+### Patch Changes
+
+- 9ff7935152: Fixed bug in oidc refresh handler, if token endpoints response on refresh request does not contain a scope, the requested scope is used.
+- 2d8f7e82c1: Migrated the Microsoft auth provider to new `@backstage/plugin-auth-backend-module-microsoft-provider` module package.
+- Updated dependencies
+  - @backstage/backend-common@0.19.8
+  - @backstage/plugin-catalog-node@1.4.7
+  - @backstage/plugin-auth-node@0.4.0
+  - @backstage/catalog-model@1.4.3
+  - @backstage/errors@1.2.3
+  - @backstage/plugin-auth-backend-module-github-provider@0.1.3
+  - @backstage/plugin-auth-backend-module-gcp-iap-provider@0.2.0
+  - @backstage/plugin-auth-backend-module-microsoft-provider@0.1.0
+  - @backstage/backend-plugin-api@0.6.6
+  - @backstage/plugin-auth-backend-module-gitlab-provider@0.1.3
+  - @backstage/plugin-auth-backend-module-oauth2-provider@0.1.3
+  - @backstage/catalog-client@1.4.5
+  - @backstage/config@1.1.1
+  - @backstage/types@1.1.1
+  - @backstage/plugin-auth-backend-module-google-provider@0.1.3
+
+## 0.19.3-next.2
+
+### Patch Changes
+
+- 2d8f7e82c1: Migrated the Microsoft auth provider to new `@backstage/plugin-auth-backend-module-microsoft-provider` module package.
+- Updated dependencies
+  - @backstage/backend-common@0.19.8-next.2
+  - @backstage/plugin-auth-node@0.4.0-next.2
+  - @backstage/catalog-model@1.4.3-next.0
+  - @backstage/errors@1.2.3-next.0
+  - @backstage/plugin-auth-backend-module-gcp-iap-provider@0.2.0-next.2
+  - @backstage/plugin-auth-backend-module-microsoft-provider@0.1.0-next.0
+  - @backstage/plugin-auth-backend-module-github-provider@0.1.3-next.2
+  - @backstage/plugin-auth-backend-module-gitlab-provider@0.1.3-next.2
+  - @backstage/plugin-auth-backend-module-oauth2-provider@0.1.3-next.2
+  - @backstage/plugin-catalog-node@1.4.7-next.2
+  - @backstage/backend-plugin-api@0.6.6-next.2
+  - @backstage/catalog-client@1.4.5-next.0
+  - @backstage/config@1.1.1-next.0
+  - @backstage/types@1.1.1
+  - @backstage/plugin-auth-backend-module-google-provider@0.1.3-next.2
+
+## 0.19.2-next.1
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/plugin-catalog-node@1.4.6-next.1
+  - @backstage/backend-common@0.19.7-next.1
+  - @backstage/backend-plugin-api@0.6.5-next.1
+  - @backstage/plugin-auth-backend-module-github-provider@0.1.2-next.1
+  - @backstage/plugin-auth-backend-module-gitlab-provider@0.1.2-next.1
+  - @backstage/plugin-auth-backend-module-oauth2-provider@0.1.2-next.1
+  - @backstage/plugin-auth-node@0.3.2-next.1
+  - @backstage/config@1.1.0
+  - @backstage/catalog-client@1.4.4
+  - @backstage/catalog-model@1.4.2
+  - @backstage/errors@1.2.2
+  - @backstage/types@1.1.1
+  - @backstage/plugin-auth-backend-module-gcp-iap-provider@0.1.2-next.1
+  - @backstage/plugin-auth-backend-module-google-provider@0.1.2-next.1
+
 ## 0.19.2-next.0
 
 ### Patch Changes
