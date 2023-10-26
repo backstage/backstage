@@ -774,14 +774,14 @@ export function createWaitAction(options?: {
 
 // @public
 export type CreateWorkerOptions = {
-  taskBroker: TaskBroker_2;
+  taskBroker: TaskBroker;
   actionRegistry: TemplateActionRegistry;
   integrations: ScmIntegrations;
   workingDirectory: string;
   logger: Logger;
-  additionalTemplateFilters?: Record<string, TemplateFilter_2>;
+  additionalTemplateFilters?: Record<string, TemplateFilter>;
   concurrentTasksLimit?: number;
-  additionalTemplateGlobals?: Record<string, TemplateGlobal_2>;
+  additionalTemplateGlobals?: Record<string, TemplateGlobal>;
   permissions?: PermissionEvaluator;
 };
 
@@ -830,7 +830,7 @@ export class DatabaseTaskStore implements TaskStore {
   // (undocumented)
   heartbeatTask(taskId: string): Promise<void>;
   // (undocumented)
-  list(options: { createdBy?: string; status?: TaskStatus_2 }): Promise<{
+  list(options: { createdBy?: string }): Promise<{
     tasks: SerializedTask_2[];
   }>;
   // (undocumented)
@@ -1045,7 +1045,7 @@ export class TaskWorker {
   // (undocumented)
   protected onReadyToClaimTask(): Promise<void>;
   // (undocumented)
-  runOneTask(task: TaskContext_2): Promise<void>;
+  runOneTask(task: TaskContext): Promise<void>;
   // (undocumented)
   start(): void;
 }
