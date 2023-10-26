@@ -14,8 +14,8 @@
  * limitations under the License.
  */
 import {
-  createBackendPlugin,
   coreServices,
+  createBackendPlugin,
 } from '@backstage/backend-plugin-api';
 import { CatalogBuilder } from './CatalogBuilder';
 import {
@@ -116,6 +116,7 @@ export const catalogPlugin = createBackendPlugin({
         httpRouter: coreServices.httpRouter,
         lifecycle: coreServices.lifecycle,
         scheduler: coreServices.scheduler,
+        identity: coreServices.identity,
       },
       async init({
         logger,
@@ -126,6 +127,7 @@ export const catalogPlugin = createBackendPlugin({
         httpRouter,
         lifecycle,
         scheduler,
+        identity,
       }) {
         const winstonLogger = loggerToWinstonLogger(logger);
         const builder = await CatalogBuilder.create({
@@ -134,6 +136,7 @@ export const catalogPlugin = createBackendPlugin({
           permissions,
           database,
           scheduler,
+          identity,
           logger: winstonLogger,
         });
         builder.addProcessor(...processingExtensions.processors);

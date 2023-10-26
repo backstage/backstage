@@ -41,19 +41,37 @@ import {
 } from '../catalog/types';
 import { basicEntityFilter } from './request/basicEntityFilter';
 import { isQueryEntitiesCursorRequest } from './util';
+import {
+  BackstageIdentityResponse,
+  IdentityApi,
+} from '@backstage/plugin-auth-node';
+import { Request } from 'express';
 
 export class AuthorizedEntitiesCatalog implements EntitiesCatalog {
   constructor(
     private readonly entitiesCatalog: EntitiesCatalog,
     private readonly permissionApi: PermissionEvaluator,
     private readonly transformConditions: ConditionTransformer<EntityFilter>,
+    private readonly identity: IdentityApi,
   ) {}
 
+  private async getUserFromRequest(
+    request?: Request<any>,
+  ): Promise<BackstageIdentityResponse | undefined> {
+    if (!!request) {
+      return await this.identity.getIdentity({
+        request: request,
+      });
+    }
+    return undefined;
+  }
+
   async entities(request?: EntitiesRequest): Promise<EntitiesResponse> {
+    const user = await this.getUserFromRequest(request?.authorizationRequest);
     const authorizeDecision = (
       await this.permissionApi.authorizeConditional(
         [{ permission: catalogEntityReadPermission }],
-        { token: request?.authorizationToken },
+        { token: user?.token },
       )
     )[0];
 
@@ -67,6 +85,7 @@ export class AuthorizedEntitiesCatalog implements EntitiesCatalog {
     if (authorizeDecision.result === AuthorizeResult.CONDITIONAL) {
       const permissionFilter: EntityFilter = this.transformConditions(
         authorizeDecision.conditions,
+        user?.identity,
       );
       return this.entitiesCatalog.entities({
         ...request,
@@ -82,10 +101,12 @@ export class AuthorizedEntitiesCatalog implements EntitiesCatalog {
   async entitiesBatch(
     request: EntitiesBatchRequest,
   ): Promise<EntitiesBatchResponse> {
+    // This isn't the right auth token
+    const user = await this.getUserFromRequest(request?.authorizationRequest);
     const authorizeDecision = (
       await this.permissionApi.authorizeConditional(
         [{ permission: catalogEntityReadPermission }],
-        { token: request?.authorizationToken },
+        { token: user?.token },
       )
     )[0];
 
@@ -98,6 +119,7 @@ export class AuthorizedEntitiesCatalog implements EntitiesCatalog {
     if (authorizeDecision.result === AuthorizeResult.CONDITIONAL) {
       const permissionFilter: EntityFilter = this.transformConditions(
         authorizeDecision.conditions,
+        user?.identity,
       );
       return this.entitiesCatalog.entitiesBatch({
         ...request,
@@ -113,10 +135,11 @@ export class AuthorizedEntitiesCatalog implements EntitiesCatalog {
   async queryEntities(
     request: QueryEntitiesRequest,
   ): Promise<QueryEntitiesResponse> {
+    const user = await this.getUserFromRequest(request?.authorizationRequest);
     const authorizeDecision = (
       await this.permissionApi.authorizeConditional(
         [{ permission: catalogEntityReadPermission }],
-        { token: request.authorizationToken },
+        { token: user?.token },
       )
     )[0];
 
@@ -131,6 +154,7 @@ export class AuthorizedEntitiesCatalog implements EntitiesCatalog {
     if (authorizeDecision.result === AuthorizeResult.CONDITIONAL) {
       const permissionFilter: EntityFilter = this.transformConditions(
         authorizeDecision.conditions,
+        user?.identity,
       );
 
       let permissionedRequest: QueryEntitiesRequest;
@@ -186,12 +210,13 @@ export class AuthorizedEntitiesCatalog implements EntitiesCatalog {
 
   async removeEntityByUid(
     uid: string,
-    options?: { authorizationToken?: string },
+    options?: { authorizationRequest?: Request<any, any, any, any> },
   ): Promise<void> {
+    const user = await this.getUserFromRequest(options?.authorizationRequest);
     const authorizeResponse = (
       await this.permissionApi.authorizeConditional(
         [{ permission: catalogEntityDeletePermission }],
-        { token: options?.authorizationToken },
+        { token: user?.token },
       )
     )[0];
     if (authorizeResponse.result === AuthorizeResult.DENY) {
@@ -200,6 +225,7 @@ export class AuthorizedEntitiesCatalog implements EntitiesCatalog {
     if (authorizeResponse.result === AuthorizeResult.CONDITIONAL) {
       const permissionFilter: EntityFilter = this.transformConditions(
         authorizeResponse.conditions,
+        user?.identity,
       );
       const { entities } = await this.entitiesCatalog.entities({
         filter: {
@@ -215,12 +241,13 @@ export class AuthorizedEntitiesCatalog implements EntitiesCatalog {
 
   async entityAncestry(
     entityRef: string,
-    options?: { authorizationToken?: string },
+    options?: { authorizationRequest?: Request<any, any, any, any> },
   ): Promise<EntityAncestryResponse> {
+    const user = await this.getUserFromRequest(options?.authorizationRequest);
     const rootEntityAuthorizeResponse = (
       await this.permissionApi.authorize(
         [{ permission: catalogEntityReadPermission, resourceRef: entityRef }],
-        { token: options?.authorizationToken },
+        { token: user?.token },
       )
     )[0];
     if (rootEntityAuthorizeResponse.result === AuthorizeResult.DENY) {
@@ -233,7 +260,7 @@ export class AuthorizedEntitiesCatalog implements EntitiesCatalog {
         permission: catalogEntityReadPermission,
         resourceRef: stringifyEntityRef(item.entity),
       })),
-      { token: options?.authorizationToken },
+      { token: user?.token },
     );
     const unauthorizedAncestryItems = ancestryResult.items.filter(
       (_, index) => authorizeResponse[index].result === AuthorizeResult.DENY,
@@ -265,10 +292,11 @@ export class AuthorizedEntitiesCatalog implements EntitiesCatalog {
   }
 
   async facets(request: EntityFacetsRequest): Promise<EntityFacetsResponse> {
+    const user = await this.getUserFromRequest(request?.authorizationRequest);
     const authorizeDecision = (
       await this.permissionApi.authorizeConditional(
         [{ permission: catalogEntityReadPermission }],
-        { token: request?.authorizationToken },
+        { token: user?.token },
       )
     )[0];
 
@@ -281,6 +309,7 @@ export class AuthorizedEntitiesCatalog implements EntitiesCatalog {
     if (authorizeDecision.result === AuthorizeResult.CONDITIONAL) {
       const permissionFilter: EntityFilter = this.transformConditions(
         authorizeDecision.conditions,
+        user?.identity,
       );
       return this.entitiesCatalog.facets({
         ...request,

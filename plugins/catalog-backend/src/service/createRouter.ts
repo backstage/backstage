@@ -126,9 +126,7 @@ export async function createRouter(
           fields: parseEntityTransformParams(req.query),
           order: parseEntityOrderParams(req.query),
           pagination: parseEntityPaginationParams(req.query),
-          authorizationToken: getBearerTokenFromAuthorizationHeader(
-            req.header('authorization'),
-          ),
+          authorizationRequest: req,
         });
 
         // Add a Link header to the next page
@@ -147,9 +145,7 @@ export async function createRouter(
           await entitiesCatalog.queryEntities({
             limit: req.query.limit,
             ...parseQueryEntitiesParams(req.query),
-            authorizationToken: getBearerTokenFromAuthorizationHeader(
-              req.header('authorization'),
-            ),
+            authorizationRequest: req,
           });
 
         res.json({
@@ -169,9 +165,7 @@ export async function createRouter(
         const { uid } = req.params;
         const { entities } = await entitiesCatalog.entities({
           filter: basicEntityFilter({ 'metadata.uid': uid }),
-          authorizationToken: getBearerTokenFromAuthorizationHeader(
-            req.header('authorization'),
-          ),
+          authorizationRequest: req,
         });
         if (!entities.length) {
           throw new NotFoundError(`No entity with uid ${uid}`);
@@ -181,9 +175,7 @@ export async function createRouter(
       .delete('/entities/by-uid/:uid', async (req, res) => {
         const { uid } = req.params;
         await entitiesCatalog.removeEntityByUid(uid, {
-          authorizationToken: getBearerTokenFromAuthorizationHeader(
-            req.header('authorization'),
-          ),
+          authorizationRequest: req,
         });
         res.status(204).end();
       })
@@ -195,9 +187,7 @@ export async function createRouter(
             'metadata.namespace': namespace,
             'metadata.name': name,
           }),
-          authorizationToken: getBearerTokenFromAuthorizationHeader(
-            req.header('authorization'),
-          ),
+          authorizationRequest: req,
         });
         if (!entities.length) {
           throw new NotFoundError(
@@ -212,22 +202,17 @@ export async function createRouter(
           const { kind, namespace, name } = req.params;
           const entityRef = stringifyEntityRef({ kind, namespace, name });
           const response = await entitiesCatalog.entityAncestry(entityRef, {
-            authorizationToken: getBearerTokenFromAuthorizationHeader(
-              req.header('authorization'),
-            ),
+            authorizationRequest: req,
           });
           res.status(200).json(response);
         },
       )
       .post('/entities/by-refs', async (req, res) => {
         const request = entitiesBatchRequest(req);
-        const token = getBearerTokenFromAuthorizationHeader(
-          req.header('authorization'),
-        );
         const response = await entitiesCatalog.entitiesBatch({
           entityRefs: request.entityRefs,
           fields: parseEntityTransformParams(req.query, request.fields),
-          authorizationToken: token,
+          authorizationRequest: req,
         });
         res.status(200).json(response);
       })
@@ -235,9 +220,7 @@ export async function createRouter(
         const response = await entitiesCatalog.facets({
           filter: parseEntityFilterParams(req.query),
           facets: parseEntityFacetParams(req.query),
-          authorizationToken: getBearerTokenFromAuthorizationHeader(
-            req.header('authorization'),
-          ),
+          authorizationRequest: req,
         });
         res.status(200).json(response);
       });

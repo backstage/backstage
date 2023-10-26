@@ -14,7 +14,6 @@
  * limitations under the License.
  */
 
-import { BackstageIdentityResponse } from '@backstage/plugin-auth-node';
 import {
   AuthorizeResult,
   createPermission,
@@ -29,14 +28,6 @@ import { DefaultPlaylistPermissionPolicy } from './DefaultPlaylistPermissionPoli
 
 describe('DefaultPlaylistPermissionPolicy', () => {
   const policy = new DefaultPlaylistPermissionPolicy();
-  const mockUser: BackstageIdentityResponse = {
-    token: 'token',
-    identity: {
-      type: 'user',
-      ownershipEntityRefs: ['user:default/me', 'group:default/owner'],
-      userEntityRef: 'user:default/me',
-    },
-  };
 
   it('should deny non-playlist permissions', async () => {
     const mockPermission = createPermission({
@@ -57,10 +48,7 @@ describe('DefaultPlaylistPermissionPolicy', () => {
 
   it('should return a conditional decision for read permissions', async () => {
     expect(
-      await policy.handle(
-        { permission: permissions.playlistListRead },
-        mockUser,
-      ),
+      await policy.handle({ permission: permissions.playlistListRead }),
     ).toEqual({
       result: AuthorizeResult.CONDITIONAL,
       pluginId: 'playlist',
@@ -78,10 +66,7 @@ describe('DefaultPlaylistPermissionPolicy', () => {
 
   it('should return a conditional decision for followers update permissions', async () => {
     expect(
-      await policy.handle(
-        { permission: permissions.playlistFollowersUpdate },
-        mockUser,
-      ),
+      await policy.handle({ permission: permissions.playlistFollowersUpdate }),
     ).toEqual({
       result: AuthorizeResult.CONDITIONAL,
       pluginId: 'playlist',
@@ -99,10 +84,7 @@ describe('DefaultPlaylistPermissionPolicy', () => {
 
   it('should return a conditional decision for update permissions', async () => {
     expect(
-      await policy.handle(
-        { permission: permissions.playlistListUpdate },
-        mockUser,
-      ),
+      await policy.handle({ permission: permissions.playlistListUpdate }),
     ).toEqual({
       result: AuthorizeResult.CONDITIONAL,
       pluginId: 'playlist',
@@ -115,10 +97,7 @@ describe('DefaultPlaylistPermissionPolicy', () => {
 
   it('should return a conditional decision for delete permissions', async () => {
     expect(
-      await policy.handle(
-        { permission: permissions.playlistListDelete },
-        mockUser,
-      ),
+      await policy.handle({ permission: permissions.playlistListDelete }),
     ).toEqual({
       result: AuthorizeResult.CONDITIONAL,
       pluginId: 'playlist',

@@ -17,9 +17,9 @@
 import {
   createServiceBuilder,
   DatabaseManager,
+  HostDiscovery,
   loadBackendConfig,
   ServerTokenManager,
-  HostDiscovery,
   UrlReaders,
 } from '@backstage/backend-common';
 import { ConfigReader } from '@backstage/config';
@@ -28,6 +28,7 @@ import { Server } from 'http';
 import { Logger } from 'winston';
 import { applyDatabaseMigrations } from '../database/migrations';
 import { CatalogBuilder } from './CatalogBuilder';
+import { DefaultIdentityClient } from '@backstage/plugin-auth-node';
 
 export interface ServerOptions {
   port: number;
@@ -58,6 +59,10 @@ export async function startStandaloneServer(
     discovery,
     tokenManager,
   });
+  const identity = DefaultIdentityClient.create({
+    discovery,
+    issuer: await discovery.getExternalBaseUrl('auth'),
+  });
 
   logger.debug('Creating application...');
   await applyDatabaseMigrations(await database.getClient());
@@ -67,6 +72,7 @@ export async function startStandaloneServer(
     config,
     reader,
     permissions,
+    identity,
   });
   const catalog = await builder.build();
 

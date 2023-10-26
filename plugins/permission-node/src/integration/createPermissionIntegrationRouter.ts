@@ -38,6 +38,10 @@ import {
   isOrCriteria,
 } from './util';
 import { NotImplementedError } from '@backstage/errors';
+import {
+  BackstageUserIdentity,
+  IdentityApi,
+} from '@backstage/plugin-auth-node';
 
 const permissionCriteriaSchema: z.ZodSchema<
   PermissionCriteria<PermissionCondition>
@@ -131,6 +135,7 @@ const applyConditions = <TResourceType extends string, TResource>(
   criteria: PermissionCriteria<PermissionCondition<TResourceType>>,
   resource: TResource | undefined,
   getRule: (name: string) => PermissionRule<TResource, unknown, TResourceType>,
+  user?: BackstageUserIdentity,
 ): boolean => {
   // If resource was not found, deny. This avoids leaking information from the
   // apply-conditions API which would allow a user to differentiate between
@@ -141,14 +146,14 @@ const applyConditions = <TResourceType extends string, TResource>(
 
   if (isAndCriteria(criteria)) {
     return criteria.allOf.every(child =>
-      applyConditions(child, resource, getRule),
+      applyConditions(child, resource, getRule, user),
     );
   } else if (isOrCriteria(criteria)) {
     return criteria.anyOf.some(child =>
-      applyConditions(child, resource, getRule),
+      applyConditions(child, resource, getRule, user),
     );
   } else if (isNotCriteria(criteria)) {
-    return !applyConditions(criteria.not, resource, getRule);
+    return !applyConditions(criteria.not, resource, getRule, user);
   }
 
   const rule = getRule(criteria.rule);
@@ -158,7 +163,7 @@ const applyConditions = <TResourceType extends string, TResource>(
     throw new InputError(`Parameters to rule are invalid`, result.error);
   }
 
-  return rule.apply(resource, criteria.params ?? {});
+  return rule.apply(resource, criteria.params ?? {}, user);
 };
 
 /**
@@ -176,9 +181,10 @@ export const createConditionAuthorizer = <TResource, TQuery>(
   return (
     decision: PolicyDecision,
     resource: TResource | undefined,
+    user?: BackstageUserIdentity,
   ): boolean => {
     if (decision.result === AuthorizeResult.CONDITIONAL) {
-      return applyConditions(decision.conditions, resource, getRule);
+      return applyConditions(decision.conditions, resource, getRule, user);
     }
 
     return decision.result === AuthorizeResult.ALLOW;
@@ -318,6 +324,7 @@ export function createPermissionIntegrationRouter<
         TResourceType3,
         TResource3
       >,
+  identity?: IdentityApi,
 ): express.Router {
   const optionsWithResources = options as PermissionIntegrationRouterOptions;
   const allOptions = [
@@ -385,6 +392,7 @@ export function createPermissionIntegrationRouter<
   router.post(
     '/.well-known/backstage/permissions/apply-conditions',
     async (req, res: Response<ApplyConditionsResponse | string>) => {
+      const identityResponse = await identity?.getIdentity({ request: req });
       const ruleMapByResourceType: Record<
         string,
         ReturnType<typeof createGetRule>
@@ -474,6 +482,7 @@ export function createPermissionIntegrationRouter<
             request.conditions,
             resourcesByResourceType[request.resourceType][request.resourceRef],
             ruleMapByResourceType[request.resourceType],
+            identityResponse?.identity,
           )
             ? AuthorizeResult.ALLOW
             : AuthorizeResult.DENY,
