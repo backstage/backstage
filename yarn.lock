@@ -18935,12 +18935,12 @@ __metadata:
   linkType: hard
 
 "@types/jscodeshift@npm:^0.11.0":
-  version: 0.11.7
-  resolution: "@types/jscodeshift@npm:0.11.7"
+  version: 0.11.9
+  resolution: "@types/jscodeshift@npm:0.11.9"
   dependencies:
     ast-types: ^0.14.1
     recast: ^0.20.3
-  checksum: c6b81d537dca08c24db76e5e75d6056ef7c5b7651aebc319277321e2f2421984cc237ac71593dec374e49f9eae28c22150a37de3a572f141d55382c193091899
+  checksum: a5b0bc6250dad3dfbaa9af71f56e65979cbfb632ee3d8da43bd79e729eaf231bc15356cc5de45c7e1f634881ab541f712cdbf554f89032273819c49bc397882e
   languageName: node
   linkType: hard
 
