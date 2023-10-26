@@ -16,14 +16,16 @@
 
 import React from 'react';
 import { Route, Routes } from 'react-router-dom';
-import { useEntity } from '@backstage/plugin-catalog-react';
+import {
+  useEntity,
+  MissingAnnotationEmptyState,
+} from '@backstage/plugin-catalog-react';
 import AuditList from './components/AuditList';
 import AuditView, { AuditViewContent } from './components/AuditView';
 import CreateAudit, { CreateAuditContent } from './components/CreateAudit';
 import { Entity } from '@backstage/catalog-model';
 import { LIGHTHOUSE_WEBSITE_URL_ANNOTATION } from '../constants';
 import { AuditListForEntity } from './components/AuditList/AuditListForEntity';
-import { MissingAnnotationEmptyState } from '@backstage/core-components';
 
 /** @public */
 export const isLighthouseAvailable = (entity: Entity) =>

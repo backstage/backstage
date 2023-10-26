@@ -19,10 +19,12 @@ import { Route, Routes, useRoutes } from 'react-router-dom';
 
 import { Entity } from '@backstage/catalog-model';
 import { EntityPageDocs } from './EntityPageDocs';
-import { MissingAnnotationEmptyState } from '@backstage/core-components';
 import { TechDocsIndexPage } from './home/components/TechDocsIndexPage';
 import { TechDocsReaderPage } from './reader/components/TechDocsReaderPage';
-import { useEntity } from '@backstage/plugin-catalog-react';
+import {
+  useEntity,
+  MissingAnnotationEmptyState,
+} from '@backstage/plugin-catalog-react';
 
 const TECHDOCS_ANNOTATION = 'backstage.io/techdocs-ref';
 
