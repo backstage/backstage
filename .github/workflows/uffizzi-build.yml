@@ -25,10 +25,10 @@ jobs:
           egress-policy: audit
 
       - name: checkout
-        uses: actions/checkout@v3.6.0
+        uses: actions/checkout@v4.1.1
 
       - name: setup-node
-        uses: actions/setup-node@v3.8.1
+        uses: actions/setup-node@v3.8.2
         with:
           node-version: 18.x
           registry-url: https://registry.npmjs.org/
@@ -87,7 +87,7 @@ jobs:
           egress-policy: audit
 
       - name: Checkout git repo
-        uses: actions/checkout@v3.6.0
+        uses: actions/checkout@v4.1.1
       - name: Render Compose File
         run: |
           BACKSTAGE_IMAGE=$(echo ${{ needs.build-backstage.outputs.tags }})

@@ -26,6 +26,7 @@ export interface Config {
            * @visibility secret
            */
           clientSecret: string;
+          domainHint?: string;
           callbackUrl?: string;
         };
       };
