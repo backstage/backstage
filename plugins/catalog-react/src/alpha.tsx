@@ -113,21 +113,21 @@ export function createEntityCardExtension<
           .optional(),
       }),
     ),
-    factory({ bind, config, inputs, source }) {
+    factory({ config, inputs, source }) {
       const ExtensionComponent = lazy(() =>
         options
           .loader({ inputs })
           .then(element => ({ default: () => element })),
       );
 
-      bind({
+      return {
         element: (
           <ExtensionBoundary id={id} source={source}>
             <ExtensionComponent />
           </ExtensionBoundary>
         ),
         filter: buildFilter(config, options.filter),
-      });
+      };
     },
   });
 }
@@ -179,14 +179,14 @@ export function createEntityContentExtension<
           .optional(),
       }),
     ),
-    factory({ bind, config, inputs, source }) {
+    factory({ config, inputs, source }) {
       const ExtensionComponent = lazy(() =>
         options
           .loader({ inputs })
           .then(element => ({ default: () => element })),
       );
 
-      bind({
+      return {
         path: config.path,
         title: config.title,
         routeRef: options.routeRef,
@@ -196,7 +196,7 @@ export function createEntityContentExtension<
           </ExtensionBoundary>
         ),
         filter: buildFilter(config, options.filter),
-      });
+      };
     },
   });
 }

@@ -26,7 +26,7 @@ const extBase = {
   id: 'test',
   attachTo: { id: 'core', input: 'root' },
   output: {},
-  factory() {},
+  factory: () => ({}),
 };
 
 describe('createAppGraph', () => {
@@ -62,7 +62,7 @@ describe('createAppGraph', () => {
             attachTo: { id: 'core.routes', input: 'route' },
             inputs: {},
             output: {},
-            factory() {},
+            factory: () => ({}),
           }),
         ],
       }),

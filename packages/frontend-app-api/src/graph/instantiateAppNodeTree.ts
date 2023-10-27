@@ -113,26 +113,25 @@ export function createAppNodeInstance(options: {
   }
 
   try {
-    extension.factory({
+    const namedOutputs = extension.factory({
       source,
       config: parsedConfig,
-      bind: namedOutputs => {
-        for (const [name, output] of Object.entries(namedOutputs)) {
-          const ref = extension.output[name];
-          if (!ref) {
-            throw new Error(`unknown output provided via '${name}'`);
-          }
-          if (extensionData.has(ref.id)) {
-            throw new Error(
-              `duplicate extension data '${ref.id}' received via output '${name}'`,
-            );
-          }
-          extensionData.set(ref.id, output);
-          extensionDataRefs.add(ref);
-        }
-      },
       inputs: resolveInputs(extension.inputs, attachments),
     });
+
+    for (const [name, output] of Object.entries(namedOutputs)) {
+      const ref = extension.output[name];
+      if (!ref) {
+        throw new Error(`unknown output provided via '${name}'`);
+      }
+      if (extensionData.has(ref.id)) {
+        throw new Error(
+          `duplicate extension data '${ref.id}' received via output '${name}'`,
+        );
+      }
+      extensionData.set(ref.id, output);
+      extensionDataRefs.add(ref);
+    }
   } catch (e) {
     throw new Error(
       `Failed to instantiate extension '${id}'${
