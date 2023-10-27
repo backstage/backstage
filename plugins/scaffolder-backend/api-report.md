@@ -8,6 +8,7 @@ import { CatalogApi } from '@backstage/catalog-client';
 import { Config } from '@backstage/config';
 import { createPullRequest } from 'octokit-plugin-create-pull-request';
 import { Duration } from 'luxon';
+import { EventBroker } from '@backstage/plugin-events-node';
 import { executeShellCommand as executeShellCommand_2 } from '@backstage/plugin-scaffolder-node';
 import { ExecuteShellCommandOptions } from '@backstage/plugin-scaffolder-node';
 import express from 'express';
@@ -826,6 +827,8 @@ export class DatabaseTaskStore implements TaskStore {
     >,
   ): Promise<void>;
   // (undocumented)
+  getEnrichedTaskSpec(task: { id: string; spec: string }): Promise<TaskSpec>;
+  // (undocumented)
   getTask(taskId: string): Promise<SerializedTask>;
   // (undocumented)
   heartbeatTask(taskId: string): Promise<void>;
@@ -843,6 +846,12 @@ export class DatabaseTaskStore implements TaskStore {
       taskId: string;
     }[];
   }>;
+  // Warning: (ae-forgotten-export) The symbol "TaskStoreRecoverTaskOptions" needs to be exported by the entry point index.d.ts
+  //
+  // (undocumented)
+  recoverTasks(options: TaskStoreRecoverTaskOptions): Promise<void>;
+  // (undocumented)
+  reopenTask(options: { taskId: string }): Promise<void>;
   // (undocumented)
   shutdownTask(options: TaskStoreShutDownTaskOptions): Promise<void>;
 }
@@ -886,6 +895,8 @@ export interface RouterOptions {
   config: Config;
   // (undocumented)
   database: PluginDatabaseManager;
+  // (undocumented)
+  eventBroker?: EventBroker;
   // (undocumented)
   identity?: IdentityApi;
   // (undocumented)
@@ -1005,6 +1016,8 @@ export interface TaskStore {
       taskId: string;
     }[];
   }>;
+  // (undocumented)
+  recoverTasks(options: TaskStoreRecoverTaskOptions): Promise<void>;
   // (undocumented)
   shutdownTask?(options: TaskStoreShutDownTaskOptions): Promise<void>;
 }

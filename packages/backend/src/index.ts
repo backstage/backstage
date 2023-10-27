@@ -212,7 +212,6 @@ async function main() {
   await service
     .start()
     .then(() => {
-      console.log('services are booted');
       scaffolderEnv.eventBroker.publish({
         topic: 'experimental.scaffolder.readiness',
         eventPayload: { status: 'ready' },

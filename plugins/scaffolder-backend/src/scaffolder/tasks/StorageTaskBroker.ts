@@ -30,6 +30,7 @@ import {
   TaskStore,
 } from './types';
 import { Duration } from 'luxon';
+import { readDuration } from './helper';
 
 /**
  * TaskManager
@@ -212,8 +213,8 @@ export class StorageTaskBroker implements TaskBroker {
     if (this.config.getOptionalBoolean('scaffolder.recoverTasks')) {
       await this.storage.recoverTasks({
         timeoutS: Duration.fromObject(
-          readDurationFromConfig(this.config, {
-            key: 'scaffolder.recoverTasksTimeout',
+          readDuration(this.config, 'scaffolder.recoverTasksTimeout', {
+            seconds: 5,
           }),
         ).as('seconds'),
       });
