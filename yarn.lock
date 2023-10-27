@@ -19276,9 +19276,9 @@ __metadata:
   linkType: hard
 
 "@types/parse-link-header@npm:^2.0.1":
-  version: 2.0.1
-  resolution: "@types/parse-link-header@npm:2.0.1"
-  checksum: f76678612511365aefc23704f00f3262fcb1d6bd9c4dd83f783a38e50e3ccf26615f9a62c757952cab5af6f2bd8b3b1763ce391376458afce5fe47c6fe2b80e1
+  version: 2.0.2
+  resolution: "@types/parse-link-header@npm:2.0.2"
+  checksum: 5b586d44dc2a4671222358da90cd8f6143606efc06c319043404d9a323e574ae7297ecae304f60fbf0358bf659038f7c95b570252af7f869028a7e74cd8c8d55
   languageName: node
   linkType: hard
 
