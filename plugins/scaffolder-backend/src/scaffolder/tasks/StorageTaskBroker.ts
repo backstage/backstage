@@ -206,6 +206,11 @@ export class StorageTaskBroker implements TaskBroker {
    * {@inheritdoc TaskBroker.claim}
    */
   async claim(): Promise<TaskContext> {
+    /* TODO:
+     * * Turn it off by default and add a flag to turn it on
+     */
+    await this.storage.recoverTasks();
+
     for (;;) {
       const pendingTask = await this.storage.claimTask();
       if (pendingTask) {
