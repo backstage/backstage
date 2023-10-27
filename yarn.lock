@@ -19293,13 +19293,13 @@ __metadata:
   linkType: hard
 
 "@types/passport-github2@npm:^1.2.4":
-  version: 1.2.6
-  resolution: "@types/passport-github2@npm:1.2.6"
+  version: 1.2.8
+  resolution: "@types/passport-github2@npm:1.2.8"
   dependencies:
     "@types/express": "*"
     "@types/passport": "*"
     "@types/passport-oauth2": "*"
-  checksum: 72d1c8bc335d0d7f329372ac8bc7edb22c8bea151d4438d876036b6b768f4d12c8de305abbc25b650f373b902bae250008cb185074d2d78da49d15e981208d81
+  checksum: 31ad5dfec1031e55c4faadf302e6467114e57bb093501c3f6d6fe5fc0c399a87a16a463725fa0bf4a0ac2944cf66cb458a9289aed727d21a67d97d833002994c
   languageName: node
   linkType: hard
 
