@@ -19141,11 +19141,11 @@ __metadata:
   linkType: hard
 
 "@types/morgan@npm:^1.9.0":
-  version: 1.9.6
-  resolution: "@types/morgan@npm:1.9.6"
+  version: 1.9.7
+  resolution: "@types/morgan@npm:1.9.7"
   dependencies:
     "@types/node": "*"
-  checksum: 6525248325a74342f929c958be69c0840c8f3a288e003a8904319cae92e531f17a8aa2700701e66775adcca7f9506dd630fec2f95dc04a3e73add04fde42aab8
+  checksum: 3e66ad27bd0ec599981c13bc0425957be861dcb7a31ec464ce01ef98daae828092dbb8250758aeed65c5b28a4ebd449b0baa51064c0611b0e2c8358e2c27cae2
   languageName: node
   linkType: hard
 
