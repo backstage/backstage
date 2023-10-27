@@ -41,7 +41,7 @@ import { act, fireEvent, screen, waitFor } from '@testing-library/react';
 import React from 'react';
 import { EntityLayout } from './EntityLayout';
 import { rootRouteRef, unregisterRedirectRouteRef } from '../../routes';
-import * as router from 'react-router';
+import { Route, Routes } from 'react-router-dom';
 
 describe('EntityLayout', () => {
   const mockEntity = {
@@ -326,15 +326,6 @@ describe('EntityLayout - CleanUpAfterRemoval', () => {
     },
   };
 
-  const navigate = jest.fn();
-  beforeEach(() => {
-    jest.spyOn(router, 'useNavigate').mockImplementation(() => navigate);
-  });
-
-  afterEach(() => {
-    jest.clearAllMocks();
-  });
-
   it('redirects to externalRouteRef when unregisterRedirectRouteRef is bound', async () => {
     await renderInTestApp(
       <TestApiProvider
@@ -360,12 +351,16 @@ describe('EntityLayout - CleanUpAfterRemoval', () => {
             </EntityLayout.Route>
           </EntityLayout>
         </EntityProvider>
+        <Routes>
+          <Route path="/catalog" element={<p>catalog-page</p>} />
+          <Route path="/testRoute" element={<p>external-page</p>} />
+        </Routes>
       </TestApiProvider>,
       {
         mountedRoutes: {
           '/catalog/:namespace/:kind/:name': entityRouteRef,
           '/catalog': rootRouteRef,
-          '/testExternalRouteRef': unregisterRedirectRouteRef,
+          '/testRoute': unregisterRedirectRouteRef,
         },
       },
     );
@@ -386,7 +381,7 @@ describe('EntityLayout - CleanUpAfterRemoval', () => {
     });
 
     await waitFor(() => {
-      expect(navigate).toHaveBeenCalledWith('/testExternalRouteRef');
+      expect(screen.getByText('external-page')).toBeInTheDocument();
     });
   });
 
@@ -415,6 +410,10 @@ describe('EntityLayout - CleanUpAfterRemoval', () => {
             </EntityLayout.Route>
           </EntityLayout>
         </EntityProvider>
+        <Routes>
+          <Route path="/catalog" element={<p>catalog-page</p>} />
+          <Route path="/testRoute" element={<p>external-page</p>} />
+        </Routes>
       </TestApiProvider>,
       {
         mountedRoutes: {
@@ -440,7 +439,7 @@ describe('EntityLayout - CleanUpAfterRemoval', () => {
     });
 
     await waitFor(() => {
-      expect(navigate).toHaveBeenCalledWith('/catalog');
+      expect(screen.getByText('catalog-page')).toBeInTheDocument();
     });
   });
 });
