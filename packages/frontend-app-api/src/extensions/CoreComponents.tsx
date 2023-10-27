@@ -58,6 +58,7 @@ export const CoreComponents = createExtension({
         component: coreExtensionData.components.progress,
       },
       {
+        optional: true,
         singleton: true,
       },
     ),
@@ -66,6 +67,7 @@ export const CoreComponents = createExtension({
         component: coreExtensionData.components.bootErrorPage,
       },
       {
+        optional: true,
         singleton: true,
       },
     ),
@@ -74,6 +76,7 @@ export const CoreComponents = createExtension({
         component: coreExtensionData.components.notFoundErrorPage,
       },
       {
+        optional: true,
         singleton: true,
       },
     ),
@@ -82,6 +85,7 @@ export const CoreComponents = createExtension({
         component: coreExtensionData.components.errorBoundaryFallback,
       },
       {
+        optional: true,
         singleton: true,
       },
     ),
@@ -93,26 +97,44 @@ export const CoreComponents = createExtension({
     bind({
       provider: function Provider(props: PropsWithChildren<{}>) {
         const { children } = props;
-        const parentContext = useApp();
+        const app = useApp();
 
-        const appContext = useMemo(
+        const context = useMemo(
           () => ({
-            ...parentContext,
+            ...app,
             // Only override components
-            getComponents: () => ({
-              // Skipping Router and SignInPage
-              ...parentContext.getComponents(),
-              Progress: inputs.progress.component,
-              BootErrorPage: inputs.bootErrorPage.component,
-              NotFoundErrorPage: inputs.notFoundErrorPage.component,
-              ErrorBoundaryFallback: inputs.errorBoundaryFallback.component,
-            }),
+            getComponents: () => {
+              const {
+                progress,
+                bootErrorPage,
+                notFoundErrorPage,
+                errorBoundaryFallback,
+              } = inputs;
+
+              const {
+                Progress,
+                BootErrorPage,
+                NotFoundErrorPage,
+                ErrorBoundaryFallback,
+                ...components
+              } = app.getComponents();
+
+              return {
+                ...components,
+                Progress: progress?.component ?? Progress,
+                BootErrorPage: bootErrorPage?.component ?? BootErrorPage,
+                NotFoundErrorPage:
+                  notFoundErrorPage?.component ?? NotFoundErrorPage,
+                ErrorBoundaryFallback:
+                  errorBoundaryFallback?.component ?? ErrorBoundaryFallback,
+              };
+            },
           }),
-          [parentContext],
+          [app],
         );
 
         return (
-          <AppContextProvider appContext={appContext}>
+          <AppContextProvider appContext={context}>
             {children}
           </AppContextProvider>
         );
