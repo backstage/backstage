@@ -20,8 +20,10 @@ import {
   AppTheme,
   IconComponent,
 } from '@backstage/core-plugin-api';
-import { createExtensionDataRef } from './createExtensionDataRef';
+// eslint-disable-next-line @backstage/no-relative-monorepo-imports
+import { AppComponents } from '../../../core-app-api/src/app/types';
 import { RouteRef } from '../routing';
+import { createExtensionDataRef } from './createExtensionDataRef';
 
 /** @public */
 export type NavTarget = {
@@ -38,6 +40,9 @@ export type LogoElements = {
 
 /** @public */
 export const coreExtensionData = {
+  reactComponent: createExtensionDataRef<
+    <T extends {}>(props: T) => JSX.Element
+  >('core.reactComponent'),
   reactElement: createExtensionDataRef<JSX.Element>('core.reactElement'),
   routePath: createExtensionDataRef<string>('core.routing.path'),
   apiFactory: createExtensionDataRef<AnyApiFactory>('core.api.factory'),
@@ -45,4 +50,18 @@ export const coreExtensionData = {
   navTarget: createExtensionDataRef<NavTarget>('core.nav.target'),
   theme: createExtensionDataRef<AppTheme>('core.theme'),
   logoElements: createExtensionDataRef<LogoElements>('core.logos'),
+  components: {
+    progress: createExtensionDataRef<AppComponents['Progress']>(
+      'core.components.progress',
+    ),
+    bootErrorPage: createExtensionDataRef<AppComponents['BootErrorPage']>(
+      'core.components.bootErrorPage',
+    ),
+    notFoundErrorPage: createExtensionDataRef<
+      AppComponents['NotFoundErrorPage']
+    >('core.components.notFoundErrorPage'),
+    errorBoundaryFallback: createExtensionDataRef<
+      AppComponents['ErrorBoundaryFallback']
+    >('core.components.errorBoundary'),
+  },
 };
