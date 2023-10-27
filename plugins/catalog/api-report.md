@@ -122,6 +122,7 @@ export const catalogPlugin: BackstagePlugin<
       },
       true
     >;
+    unregisterRedirect: ExternalRouteRef<undefined, true>;
   }
 >;
 
