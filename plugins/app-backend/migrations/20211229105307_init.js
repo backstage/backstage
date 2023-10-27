@@ -25,16 +25,12 @@ exports.up = async function up(knex) {
     table.comment(
       'A cache of static assets that where previously deployed and may still be lazy-loaded by clients',
     );
+    table
+      .increments('id', { primaryKey: true })
+      .comment('Primary key to distinguish unique lines from each other');
     if (!isMySQL) {
-      table
-        .text('path')
-        .primary()
-        .notNullable()
-        .comment('The path of the file');
+      table.text('path').unique().notNullable().comment('The path of the file');
     } else {
-      table
-        .increments('id', { primaryKey: true })
-        .comment('Primary key to distinguish unique lines from each other');
       table.text('path').notNullable().comment('The path of the file');
     }
     table
