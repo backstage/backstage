@@ -14,6 +14,8 @@
  * limitations under the License.
  */
 
+export { ExtensionError } from './ExtensionError';
+
 export {
   ExtensionBoundary,
   type ExtensionBoundaryProps,

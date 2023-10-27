@@ -32,21 +32,21 @@ import { AppContextProvider } from '../../../core-app-api/src/app/AppContext';
 import { useApp } from '../../../core-plugin-api/src/app/useApp';
 
 export const DefaultProgressComponent = createProgressExtension({
-  component: defaultComponents.Progress,
+  component: async () => defaultComponents.Progress,
 });
 
 export const DefaultBootErrorPageComponent = createBootErrorPageExtension({
-  component: defaultComponents.BootErrorPage,
+  component: async () => defaultComponents.BootErrorPage,
 });
 
 export const DefaultNotFoundErrorPageComponent =
   createNotFoundErrorPageExtension({
-    component: defaultComponents.NotFoundErrorPage,
+    component: async () => defaultComponents.NotFoundErrorPage,
   });
 
 export const DefaultErrorBoundaryComponent =
   createErrorBoundaryFallbackExtension({
-    component: defaultComponents.ErrorBoundaryFallback,
+    component: async () => defaultComponents.ErrorBoundaryFallback,
   });
 
 export const CoreComponents = createExtension({

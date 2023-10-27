@@ -14,25 +14,14 @@
  * limitations under the License.
  */
 
-/**
- * Core API used by Backstage frontend plugins.
- *
- * @packageDocumentation
- */
+import React from 'react';
+// eslint-disable-next-line @backstage/no-relative-monorepo-imports
+import { useApp } from '../../../core-plugin-api/src/app/useApp';
 
-export * from './analytics';
-export * from './apis';
-export * from './components';
-export * from './extensions';
-export * from './icons';
-export * from './routing';
-export * from './schema';
-export * from './apis/system';
-export * from './wiring';
-
-export type {
-  CoreProgressComponent,
-  CoreBootErrorPageComponent,
-  CoreNotFoundErrorPageComponent,
-  CoreErrorBoundaryFallbackComponent,
-} from './types';
+/** @public */
+export function ExtensionError(props: { error: Error }) {
+  const { error } = props;
+  const app = useApp();
+  const { BootErrorPage } = app.getComponents();
+  return <BootErrorPage step="load-chunk" error={error} />;
+}
