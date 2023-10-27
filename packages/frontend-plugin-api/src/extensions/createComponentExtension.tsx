@@ -50,7 +50,7 @@ export function createComponentExtension<
     output: {
       component: coreExtensionData.component,
     },
-    factory({ config, inputs, source }) {
+    factory({ config, inputs, node }) {
       const ExtensionComponent = lazy(() =>
         options
           .component({ config, inputs })
@@ -64,7 +64,7 @@ export function createComponentExtension<
         component: {
           ref: options.ref,
           impl: props => (
-            <ExtensionBoundary id={id} source={source}>
+            <ExtensionBoundary node={node}>
               <ExtensionComponent {...props} />
             </ExtensionBoundary>
           ),

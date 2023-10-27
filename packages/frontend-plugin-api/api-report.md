@@ -22,9 +22,11 @@ import { AuthProviderInfo } from '@backstage/core-plugin-api';
 import { AuthRequestOptions } from '@backstage/core-plugin-api';
 import { BackstageIdentityApi } from '@backstage/core-plugin-api';
 import { BackstageIdentityResponse } from '@backstage/core-plugin-api';
+import { BackstagePlugin as BackstagePlugin_2 } from '@backstage/core-plugin-api';
 import { BackstageUserIdentity } from '@backstage/core-plugin-api';
 import { bitbucketAuthApiRef } from '@backstage/core-plugin-api';
 import { bitbucketServerAuthApiRef } from '@backstage/core-plugin-api';
+import { ComponentRef as ComponentRef_2 } from '@backstage/frontend-plugin-api';
 import { ComponentType } from 'react';
 import { ConfigApi } from '@backstage/core-plugin-api';
 import { configApiRef } from '@backstage/core-plugin-api';
@@ -64,6 +66,7 @@ import { OpenIdConnectApi } from '@backstage/core-plugin-api';
 import { PendingOAuthRequest } from '@backstage/core-plugin-api';
 import { ProfileInfo } from '@backstage/core-plugin-api';
 import { ProfileInfoApi } from '@backstage/core-plugin-api';
+import { PropsWithChildren } from 'react';
 import { default as React_2 } from 'react';
 import { ReactNode } from 'react';
 import { SessionApi } from '@backstage/core-plugin-api';
@@ -284,6 +287,22 @@ export type CommonAnalyticsContext = {
   extensionId: string;
 };
 
+// @public (undocumented)
+export type ComponentRef<T> = {
+  id: string;
+  T: T;
+};
+
+// @public (undocumented)
+export type ComponentsContextValue = Record<string, ComponentType<any>>;
+
+// @public (undocumented)
+export function ComponentsProvider(
+  props: PropsWithChildren<{
+    value: ComponentsContextValue;
+  }>,
+): React_2.JSX.Element;
+
 export { ConfigApi };
 
 export { configApiRef };
@@ -305,6 +324,29 @@ export interface ConfigurableExtensionDataRef<
 }
 
 // @public (undocumented)
+export type CoreBootErrorPageComponent = ComponentType<
+  PropsWithChildren<{
+    step: 'load-config' | 'load-chunk';
+    error: Error;
+  }>
+>;
+
+// @public (undocumented)
+export const coreBootErrorPageComponentRef: ComponentRef<CoreBootErrorPageComponent>;
+
+// @public (undocumented)
+export type CoreErrorBoundaryFallbackComponent = ComponentType<
+  PropsWithChildren<{
+    plugin?: BackstagePlugin_2;
+    error: Error;
+    resetError: () => void;
+  }>
+>;
+
+// @public (undocumented)
+export const coreErrorBoundaryFallbackComponentRef: ComponentRef<CoreErrorBoundaryFallbackComponent>;
+
+// @public (undocumented)
 export const coreExtensionData: {
   reactElement: ConfigurableExtensionDataRef<JSX_2.Element, {}>;
   routePath: ConfigurableExtensionDataRef<string, {}>;
@@ -313,7 +355,28 @@ export const coreExtensionData: {
   navTarget: ConfigurableExtensionDataRef<NavTarget, {}>;
   theme: ConfigurableExtensionDataRef<AppTheme, {}>;
   logoElements: ConfigurableExtensionDataRef<LogoElements, {}>;
+  component: ConfigurableExtensionDataRef<
+    {
+      ref: ComponentRef<ComponentType<any>>;
+      impl: ComponentType<any>;
+    },
+    {}
+  >;
 };
+
+// @public (undocumented)
+export type CoreNotFoundErrorPageComponent = ComponentType<
+  PropsWithChildren<{}>
+>;
+
+// @public (undocumented)
+export const coreNotFoundErrorPageComponentRef: ComponentRef<CoreNotFoundErrorPageComponent>;
+
+// @public (undocumented)
+export type CoreProgressComponent = ComponentType<PropsWithChildren<{}>>;
+
+// @public (undocumented)
+export const coreProgressComponentRef: ComponentRef<CoreProgressComponent>;
 
 // @public (undocumented)
 export function createApiExtension<
@@ -340,6 +403,22 @@ export function createApiExtension<
 export { createApiFactory };
 
 export { createApiRef };
+
+// @public (undocumented)
+export function createComponentExtension<
+  TRef extends ComponentRef<any>,
+  TConfig extends {},
+  TInputs extends AnyExtensionInputMap,
+>(options: {
+  ref: TRef;
+  disabled?: boolean;
+  inputs?: TInputs;
+  configSchema?: PortableSchema<TConfig>;
+  component: (values: {
+    config: TConfig;
+    inputs: Expand<ExtensionInputValues<TInputs>>;
+  }) => Promise<TRef['T']>;
+}): Extension<TConfig>;
 
 // @public (undocumented)
 export function createExtension<
@@ -622,6 +701,9 @@ export type ExtensionDataValues<TExtensionData extends AnyExtensionDataMap> = {
 };
 
 // @public (undocumented)
+export function ExtensionError(props: { error: Error }): React_2.JSX.Element;
+
+// @public (undocumented)
 export interface ExtensionInput<
   TExtensionData extends AnyExtensionDataMap,
   TConfig extends {
@@ -827,6 +909,12 @@ export function useAnalytics(): AnalyticsTracker;
 export { useApi };
 
 export { useApiHolder };
+
+// @public (undocumented)
+export function useComponent<
+  P extends {},
+  T extends ComponentRef_2<ComponentType<P>>,
+>(ref: T): T['T'];
 
 // @public
 export function useRouteRef<
