@@ -15,7 +15,6 @@
  */
 import { DependencyGraphTypes } from '@backstage/core-components';
 import { humanizeEntityRef } from '@backstage/plugin-catalog-react';
-import { BackstageTheme } from '@backstage/theme';
 import { makeStyles } from '@material-ui/core/styles';
 import classNames from 'classnames';
 import React, { useLayoutEffect, useRef, useState } from 'react';
@@ -23,7 +22,7 @@ import { EntityKindIcon } from './EntityKindIcon';
 import { EntityNodeData } from './types';
 
 const useStyles = makeStyles(
-  (theme: BackstageTheme) => ({
+  theme => ({
     node: {
       fill: theme.palette.grey[300],
       stroke: theme.palette.grey[300],

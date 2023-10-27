@@ -13,6 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
 import {
   Accordion as MuiAccordion,
   AccordionSummary as MuiAccordionSummary,
@@ -23,9 +24,8 @@ import {
 } from '@material-ui/core';
 import React, { PropsWithChildren } from 'react';
 import ExpandMoreIcon from '@material-ui/icons/ExpandMore';
-import { BackstageTheme } from '@backstage/theme';
 
-const useStyles = makeStyles((theme: BackstageTheme) =>
+const useStyles = makeStyles(theme =>
   createStyles({
     heading: {
       flexBasis: '33.33%',
