@@ -82,8 +82,8 @@ export const CoreNav = createExtension({
   output: {
     element: coreExtensionData.reactElement,
   },
-  factory({ bind, inputs }) {
-    bind({
+  factory({ inputs }) {
+    return {
       element: (
         <Sidebar>
           <SidebarLogo />
@@ -93,6 +93,6 @@ export const CoreNav = createExtension({
           ))}
         </Sidebar>
       ),
-    });
+    };
   },
 });

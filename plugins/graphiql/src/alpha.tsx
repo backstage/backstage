@@ -88,10 +88,10 @@ export function createEndpointExtension<TConfig extends {}>(options: {
     output: {
       endpoint: endpointDataRef,
     },
-    factory({ bind, config }) {
-      bind({
+    factory({ config }) {
+      return {
         endpoint: options.factory({ config }).endpoint,
-      });
+      };
     },
   });
 }

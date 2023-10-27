@@ -43,20 +43,20 @@ export function createCatalogFilterExtension<
     output: {
       element: coreExtensionData.reactElement,
     },
-    factory({ bind, config, source }) {
+    factory({ config, source }) {
       const ExtensionComponent = lazy(() =>
         options
           .loader({ config })
           .then(element => ({ default: () => element })),
       );
 
-      bind({
+      return {
         element: (
           <ExtensionBoundary id={id} source={source}>
             <ExtensionComponent />
           </ExtensionBoundary>
         ),
-      });
+      };
     },
   });
 }

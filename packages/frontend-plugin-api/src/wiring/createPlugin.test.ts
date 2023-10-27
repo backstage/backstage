@@ -34,8 +34,8 @@ const TechRadarPage = createExtension({
   output: {
     name: nameExtensionDataRef,
   },
-  factory({ bind }) {
-    bind({ name: 'TechRadar' });
+  factory() {
+    return { name: 'TechRadar' };
   },
 });
 
@@ -48,8 +48,8 @@ const CatalogPage = createExtension({
   configSchema: createSchemaFromZod(z =>
     z.object({ name: z.string().default('Catalog') }),
   ),
-  factory({ bind, config }) {
-    bind({ name: config.name });
+  factory({ config }) {
+    return { name: config.name };
   },
 });
 
@@ -62,8 +62,8 @@ const TechDocsAddon = createExtension({
   configSchema: createSchemaFromZod(z =>
     z.object({ name: z.string().default('TechDocsAddon') }),
   ),
-  factory({ bind, config }) {
-    bind({ name: config.name });
+  factory({ config }) {
+    return { name: config.name };
   },
 });
 
@@ -78,8 +78,8 @@ const TechDocsPage = createExtension({
   output: {
     name: nameExtensionDataRef,
   },
-  factory({ bind, inputs }) {
-    bind({ name: `TechDocs-${inputs.addons.map(n => n.name).join('-')}` });
+  factory({ inputs }) {
+    return { name: `TechDocs-${inputs.addons.map(n => n.name).join('-')}` };
   },
 });
 
@@ -94,12 +94,12 @@ const outputExtension = createExtension({
   output: {
     element: coreExtensionData.reactElement,
   },
-  factory({ bind, inputs }) {
-    bind({
+  factory({ inputs }) {
+    return {
       element: React.createElement('span', {}, [
         `Names: ${inputs.names.map(n => n.name).join(', ')}`,
       ]),
-    });
+    };
   },
 });
 
