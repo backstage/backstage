@@ -310,9 +310,11 @@ export async function createRouter(
   actionsToRegister.forEach(action => actionRegistry.register(action));
 
   options.eventBroker?.subscribe({
-    supportsEventTopics: () => ['experimental.scaffolder.readiness'],
-    onEvent: async (_params: EventParams) => {
-      workers.forEach(worker => worker.start());
+    supportsEventTopics: () => ['scaffolder.readiness'],
+    onEvent: async (params: EventParams) => {
+      if (params.eventPayload.status === 'ready') {
+        workers.forEach(worker => worker.start());
+      }
     },
   });
 

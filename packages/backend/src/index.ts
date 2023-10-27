@@ -213,7 +213,7 @@ async function main() {
     .start()
     .then(() => {
       scaffolderEnv.eventBroker.publish({
-        topic: 'experimental.scaffolder.readiness',
+        topic: 'scaffolder.readiness',
         eventPayload: { status: 'ready' },
       });
     })
