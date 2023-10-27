@@ -19463,11 +19463,11 @@ __metadata:
   linkType: hard
 
 "@types/react-grid-layout@npm:^1.3.2":
-  version: 1.3.3
-  resolution: "@types/react-grid-layout@npm:1.3.3"
+  version: 1.3.4
+  resolution: "@types/react-grid-layout@npm:1.3.4"
   dependencies:
     "@types/react": "*"
-  checksum: 918173791c2b121f2780ccfcd36b6fe79c8b43d014ab8bbc37d6e70ee1849bfe81281450d121a2361ad15b4ddfbdfc95c9790ac600f732a20897844d735c455b
+  checksum: e960b250f22b799a52c740a68a73bf1c97ba97148abfe4c270c4d227a821c98b93487510a6270a57e394ff467eaaa7a3c1378e71ef4d78659fd65eb87873c923
   languageName: node
   linkType: hard
 
