@@ -10,10 +10,15 @@ app:
     - apis.plugin.graphiql.browse.gitlab: true
 
     # Entity page cards
-    - 'entity.cards.about'
+    - entity.cards.about
+    - entity.cards.labels
+    - entity.cards.links:
+        config:
+          filter:
+            - isKind: component
 
     # Entity page content
-    - 'entity.content.techdocs'
+    - entity.content.techdocs
 
   # scmAuthExtension: >-
   #   createScmAuthExtension({

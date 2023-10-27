@@ -107,7 +107,9 @@ $ export AWS_SECRET_ACCESS_KEY=.... (second secret value)
 
 ## Configuring the Pulumi CLI
 
-Second, install the [Pulumi CLI](https://www.pulumi.com/docs/get-started/install/).
+Second, install the [Pulumi CLI](https://www.pulumi.com/docs/get-started/install/) - `backstage-deploy` uses it to
+simplify the management of cloud resources (Pulumi allows us to simply specify the desired "target cloud state", and
+Pulumi will intelligently create/modify/delete resources to reach that state. Nice!).
 
 Then we need to execute the following commands, to set Pulumi up:
 
@@ -126,9 +128,9 @@ By using `pulumi login --local` we are making sure that Pulumi stores our state 
 
 ## Deploying your instance on Lightsail
 
-:::warning
+:::tip
 
-Make sure that [Docker](https://docs.docker.com/) is running before you start this section.
+Make sure that [Docker](https://docs.docker.com/) is running on your machine before you start this section.
 
 :::
 

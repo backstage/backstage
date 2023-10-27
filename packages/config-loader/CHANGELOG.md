@@ -1,5 +1,16 @@
 # @backstage/config-loader
 
+## 1.5.2-next.0
+
+### Patch Changes
+
+- 22ca64f117: Correctly resolve config targets into absolute paths
+- Updated dependencies
+  - @backstage/cli-common@0.1.13
+  - @backstage/config@1.1.1
+  - @backstage/errors@1.2.3
+  - @backstage/types@1.1.1
+
 ## 1.5.1
 
 ### Patch Changes

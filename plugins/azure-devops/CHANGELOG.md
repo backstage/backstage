@@ -1,5 +1,20 @@
 # @backstage/plugin-azure-devops
 
+## 0.3.8-next.0
+
+### Patch Changes
+
+- 6c2b872153: Add official support for React 18.
+- 361bb34d8e: Consolidated getting the annotation values into a single function to help with future changes
+- Updated dependencies
+  - @backstage/core-components@0.13.7-next.0
+  - @backstage/plugin-catalog-react@1.9.0-next.0
+  - @backstage/core-plugin-api@1.8.0-next.0
+  - @backstage/theme@0.4.4-next.0
+  - @backstage/catalog-model@1.4.3
+  - @backstage/errors@1.2.3
+  - @backstage/plugin-azure-devops-common@0.3.1
+
 ## 0.3.7
 
 ### Patch Changes

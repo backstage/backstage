@@ -19,23 +19,22 @@ import { useAnalytics } from '@backstage/core-plugin-api';
 import { useSearch } from '../../context';
 import usePrevious from 'react-use/lib/usePrevious';
 
+function useFallingEdge(next: boolean) {
+  const prev = usePrevious(next);
+  return prev && !next;
+}
+
 /**
  * Capture search event on term change.
  */
 export const TrackSearch = ({ children }: { children: React.ReactChild }) => {
-  const useHasChanged = (value: any) => {
-    const previousVal = usePrevious(value);
-    return previousVal !== value;
-  };
-
   const analytics = useAnalytics();
   const { term, result } = useSearch();
 
   const numberOfResults = result.value?.numberOfResults ?? undefined;
 
   // Stops the analtyics event from firing before the new search engine response is returned
-  const hasStartedLoading = useHasChanged(result.loading);
-  const hasFinishedLoading = hasStartedLoading && !result.loading;
+  const hasFinishedLoading = useFallingEdge(result.loading);
 
   useEffect(() => {
     if (term && hasFinishedLoading) {

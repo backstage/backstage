@@ -49,7 +49,7 @@ export class PluginManager implements BackendPluginProvider {
     config: Config,
     logger: LoggerService,
     preferAlpha: boolean = false,
-    mooduleLoader: ModuleLoader = new CommonJSModuleLoader(logger),
+    moduleLoader: ModuleLoader = new CommonJSModuleLoader(logger),
   ): Promise<PluginManager> {
     /* eslint-disable-next-line no-restricted-syntax */
     const backstageRoot = findPaths(__dirname).targetRoot;
@@ -61,7 +61,7 @@ export class PluginManager implements BackendPluginProvider {
     );
     const scannedPlugins = await scanner.scanRoot();
     scanner.trackChanges();
-    const manager = new PluginManager(logger, scannedPlugins, mooduleLoader);
+    const manager = new PluginManager(logger, scannedPlugins, moduleLoader);
 
     const dynamicPluginsPaths = scannedPlugins.map(p =>
       fs.realpathSync(
@@ -73,7 +73,7 @@ export class PluginManager implements BackendPluginProvider {
       ),
     );
 
-    mooduleLoader.bootstrap(backstageRoot, dynamicPluginsPaths);
+    moduleLoader.bootstrap(backstageRoot, dynamicPluginsPaths);
 
     scanner.subscribeToRootDirectoryChange(async () => {
       manager._availablePackages = await scanner.scanRoot();

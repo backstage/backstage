@@ -1,5 +1,23 @@
 # @backstage/backend-app-api
 
+## 0.5.8-next.0
+
+### Patch Changes
+
+- bc9a18d5ec: Added a workaround for double `default` wrapping when dynamically importing CommonJS modules with default exports.
+- Updated dependencies
+  - @backstage/config-loader@1.5.2-next.0
+  - @backstage/cli-node@0.2.0-next.0
+  - @backstage/backend-common@0.19.9-next.0
+  - @backstage/backend-plugin-api@0.6.7-next.0
+  - @backstage/backend-tasks@0.5.12-next.0
+  - @backstage/cli-common@0.1.13
+  - @backstage/config@1.1.1
+  - @backstage/errors@1.2.3
+  - @backstage/types@1.1.1
+  - @backstage/plugin-auth-node@0.4.1-next.0
+  - @backstage/plugin-permission-node@0.7.18-next.0
+
 ## 0.5.6
 
 ### Patch Changes

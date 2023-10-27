@@ -14,11 +14,12 @@
  * limitations under the License.
  */
 
-import { createValidatedOpenApiRouter } from './stub';
+import { createValidatedOpenApiRouter, getOpenApiSpecRoute } from './stub';
 import express from 'express';
 import request from 'supertest';
 import singlePathSpec from './___fixtures__/single-path';
 import { Response } from './utility';
+import { OPENAPI_SPEC_ROUTE } from './constants';
 
 describe('createRouter', () => {
   const pet: Response<typeof singlePathSpec, '/pet/:petId', 'get'> = {
@@ -27,6 +28,33 @@ describe('createRouter', () => {
     status: 'available',
     photoUrls: [],
   };
+
+  const specs = [singlePathSpec];
+  const ONCE_NESTED_ROUTER_PREFIX = '/pet-store';
+  const TWICE_NESTED_ROUTER_PREFIX = `/api`;
+
+  const routers = specs.flatMap(spec => {
+    const router = createValidatedOpenApiRouter(spec);
+    const unnestedApp = express();
+    unnestedApp.use('/', router);
+
+    const onceNestedRouter = express.Router();
+    onceNestedRouter.use(`${ONCE_NESTED_ROUTER_PREFIX}`, router);
+    const onceNestedApp = express();
+    onceNestedApp.use(`/`, onceNestedRouter);
+
+    const twiceNestedApp = express();
+    twiceNestedApp.use(`${TWICE_NESTED_ROUTER_PREFIX}`, onceNestedRouter);
+    return [
+      ['', unnestedApp, router],
+      [ONCE_NESTED_ROUTER_PREFIX, onceNestedApp, router],
+      [
+        `${TWICE_NESTED_ROUTER_PREFIX}${ONCE_NESTED_ROUTER_PREFIX}`,
+        twiceNestedApp,
+        router,
+      ],
+    ] as const;
+  });
 
   it('does NOT override originalUrl and basePath after execution', async () => {
     expect.assertions(2);
@@ -61,19 +89,40 @@ describe('createRouter', () => {
     expect(routerGetFn).toHaveBeenCalledTimes(1);
   });
 
-  it('handles coercing parameters correctly', async () => {
-    expect.assertions(1);
-    const router = createValidatedOpenApiRouter(singlePathSpec);
-    router.get('/pet/:petId', (req, res) => {
-      expect(typeof req.params.petId).toBe('integer');
-      res.json(pet);
-    });
+  it.each(routers)(
+    '%s handles coercing parameters correctly',
+    async (prefix, app, router) => {
+      expect.assertions(1);
+      router.get('/pet/:petId', (req, res) => {
+        expect(typeof req.params.petId).toBe('integer');
+        res.send(pet);
+      });
 
-    const apiRouter = express.Router();
-    apiRouter.use('/pet-store', router);
-    const appRouter = express();
-    appRouter.use('/api', apiRouter);
+      await request(app).get(`${prefix}/pet/1`);
+    },
+  );
 
-    await request(appRouter).get('/api/pet-store/pet/1');
+  it.each(routers)(
+    '%s adds the openapi spec to the router',
+    async (prefix, app) => {
+      const response = await request(app)
+        .get(`${prefix}${OPENAPI_SPEC_ROUTE}`)
+        .expect(200);
+      expect(response.body).toHaveProperty('paths');
+      Object.keys(response.body.paths).forEach(key => {
+        const specKey = key.replace(prefix, '');
+        expect(singlePathSpec.paths).toHaveProperty(specKey);
+        expect(response.body.paths[key]).toEqual(
+          (singlePathSpec.paths as any)[specKey],
+        );
+      });
+    },
+  );
+});
+
+describe('getOpenApiSpecRoute', () => {
+  it('handles expected values', () => {
+    expect(getOpenApiSpecRoute('/api/test')).toEqual('/api/test/openapi.json');
+    expect(getOpenApiSpecRoute('api/test')).toEqual('api/test/openapi.json');
   });
 });

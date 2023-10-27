@@ -10,13 +10,11 @@ import { ConfigurableExtensionDataRef } from '@backstage/frontend-plugin-api';
 import { Entity } from '@backstage/catalog-model';
 import { Extension } from '@backstage/frontend-plugin-api';
 import { ExtensionInputValues } from '@backstage/frontend-plugin-api';
-import { PortableSchema } from '@backstage/frontend-plugin-api';
 import { ResourcePermission } from '@backstage/plugin-permission-common';
 import { RouteRef } from '@backstage/frontend-plugin-api';
 
 // @alpha (undocumented)
 export function createEntityCardExtension<
-  TConfig,
   TInputs extends AnyExtensionInputMap,
 >(options: {
   id: string;
@@ -26,48 +24,57 @@ export function createEntityCardExtension<
   };
   disabled?: boolean;
   inputs?: TInputs;
-  configSchema?: PortableSchema<TConfig>;
+  filter?: (ctx: { entity: Entity }) => boolean;
   loader: (options: {
-    config: TConfig;
     inputs: Expand<ExtensionInputValues<TInputs>>;
   }) => Promise<JSX.Element>;
-}): Extension<TConfig>;
+}): Extension<{
+  filter?:
+    | {
+        isKind?: string | undefined;
+        isType?: string | undefined;
+      }[]
+    | undefined;
+}>;
 
 // @alpha (undocumented)
 export function createEntityContentExtension<
-  TConfig extends {
-    path: string;
-    title: string;
-  },
   TInputs extends AnyExtensionInputMap,
->(
-  options: (
-    | {
-        defaultPath: string;
-        defaultTitle: string;
-      }
-    | {
-        configSchema: PortableSchema<TConfig>;
-      }
-  ) & {
+>(options: {
+  id: string;
+  attachTo?: {
     id: string;
-    attachTo?: {
-      id: string;
-      input: string;
-    };
-    disabled?: boolean;
-    inputs?: TInputs;
-    routeRef?: RouteRef;
-    loader: (options: {
-      config: TConfig;
-      inputs: Expand<ExtensionInputValues<TInputs>>;
-    }) => Promise<JSX.Element>;
-  },
-): Extension<TConfig>;
+    input: string;
+  };
+  disabled?: boolean;
+  inputs?: TInputs;
+  routeRef?: RouteRef;
+  defaultPath: string;
+  defaultTitle: string;
+  filter?: (ctx: { entity: Entity }) => boolean;
+  loader: (options: {
+    inputs: Expand<ExtensionInputValues<TInputs>>;
+  }) => Promise<JSX.Element>;
+}): Extension<{
+  title: string;
+  path: string;
+  filter?:
+    | {
+        isKind?: string | undefined;
+        isType?: string | undefined;
+      }[]
+    | undefined;
+}>;
 
 // @alpha (undocumented)
 export const entityContentTitleExtensionDataRef: ConfigurableExtensionDataRef<
   string,
+  {}
+>;
+
+// @alpha (undocumented)
+export const entityFilterExtensionDataRef: ConfigurableExtensionDataRef<
+  (ctx: { entity: Entity }) => boolean,
   {}
 >;
 

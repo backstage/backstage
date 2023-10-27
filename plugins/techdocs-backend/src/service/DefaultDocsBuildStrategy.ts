@@ -15,26 +15,9 @@
  */
 import { Entity } from '@backstage/catalog-model';
 import { Config } from '@backstage/config';
+import { DocsBuildStrategy } from '@backstage/plugin-techdocs-node';
 
-/**
- * Parameters passed to the shouldBuild method on the DocsBuildStrategy interface
- *
- * @public
- */
-export type ShouldBuildParameters = {
-  entity: Entity;
-};
-
-/**
- * A strategy for when to build TechDocs locally, and when to skip building TechDocs (allowing for an external build)
- *
- * @public
- */
-export interface DocsBuildStrategy {
-  shouldBuild(params: ShouldBuildParameters): Promise<boolean>;
-}
-
-export class DefaultDocsBuildStrategy {
+export class DefaultDocsBuildStrategy implements DocsBuildStrategy {
   private readonly config: Config;
 
   private constructor(config: Config) {
@@ -45,7 +28,7 @@ export class DefaultDocsBuildStrategy {
     return new DefaultDocsBuildStrategy(config);
   }
 
-  async shouldBuild(_: ShouldBuildParameters): Promise<boolean> {
+  async shouldBuild(_: { entity: Entity }): Promise<boolean> {
     return this.config.getString('techdocs.builder') === 'local';
   }
 }

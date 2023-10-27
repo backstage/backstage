@@ -22,6 +22,7 @@ import {
   ANNOTATION_LOCATION,
   ANNOTATION_ORIGIN_LOCATION,
   Entity,
+  stringifyEntityRef,
 } from '@backstage/catalog-model';
 import express from 'express';
 import request from 'supertest';
@@ -38,12 +39,14 @@ import { RESOURCE_TYPE_CATALOG_ENTITY } from '@backstage/plugin-catalog-common/a
 import { CatalogProcessingOrchestrator } from '../processing/types';
 import { z } from 'zod';
 import { encodeCursor } from './util';
+import { wrapInOpenApiTestServer } from '@backstage/backend-openapi-utils';
+import { Server } from 'http';
 
 describe('createRouter readonly disabled', () => {
   let entitiesCatalog: jest.Mocked<EntitiesCatalog>;
   let locationService: jest.Mocked<LocationService>;
   let orchestrator: jest.Mocked<CatalogProcessingOrchestrator>;
-  let app: express.Express;
+  let app: express.Express | Server;
   let refreshService: RefreshService;
 
   beforeAll(async () => {
@@ -72,7 +75,7 @@ describe('createRouter readonly disabled', () => {
       config: new ConfigReader(undefined),
       permissionIntegrationRouter: express.Router(),
     });
-    app = express().use(router);
+    app = wrapInOpenApiTestServer(express().use(router));
   });
 
   beforeEach(() => {
@@ -412,15 +415,27 @@ describe('createRouter readonly disabled', () => {
     });
 
     it('can fetch entities by refs', async () => {
-      const entity: Entity = {} as any;
+      const entity: Entity = {
+        apiVersion: 'a',
+        kind: 'component',
+        metadata: {
+          name: 'a',
+        },
+      };
+      const entityRef = stringifyEntityRef(entity);
       entitiesCatalog.entitiesBatch.mockResolvedValue({ items: [entity] });
       const response = await request(app)
         .post('/entities/by-refs')
         .set('Content-Type', 'application/json')
-        .send('{"entityRefs":["a"],"fields":["b"]}');
+        .send(
+          JSON.stringify({
+            entityRefs: [entityRef],
+            fields: ['metadata.name'],
+          }),
+        );
       expect(entitiesCatalog.entitiesBatch).toHaveBeenCalledTimes(1);
       expect(entitiesCatalog.entitiesBatch).toHaveBeenCalledWith({
-        entityRefs: ['a'],
+        entityRefs: [entityRef],
         fields: expect.any(Function),
       });
       expect(response.status).toEqual(200);
