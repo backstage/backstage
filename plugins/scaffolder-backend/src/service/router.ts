@@ -309,14 +309,18 @@ export async function createRouter(
 
   actionsToRegister.forEach(action => actionRegistry.register(action));
 
-  options.eventBroker?.subscribe({
-    supportsEventTopics: () => ['scaffolder.readiness'],
-    onEvent: async (params: EventParams) => {
-      if (params.eventPayload.status === 'ready') {
-        workers.forEach(worker => worker.start());
-      }
-    },
-  });
+  if (options.eventBroker) {
+    options.eventBroker?.subscribe({
+      supportsEventTopics: () => ['scaffolder.readiness'],
+      onEvent: async (params: EventParams) => {
+        if (params.eventPayload.status === 'ready') {
+          workers.forEach(worker => worker.start());
+        }
+      },
+    });
+  } else {
+    workers.forEach(worker => worker.start());
+  }
 
   const dryRunner = createDryRunner({
     actionRegistry,
