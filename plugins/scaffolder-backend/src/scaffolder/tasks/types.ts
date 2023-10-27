@@ -142,6 +142,10 @@ export type TaskStoreCreateTaskOptions = {
   secrets?: TaskSecrets;
 };
 
+export type TaskStoreRecoverTaskOptions = {
+  timeoutS: number;
+};
+
 /**
  * The response from {@link TaskStore.createTask}
  * @public
@@ -162,7 +166,7 @@ export interface TaskStore {
     options: TaskStoreCreateTaskOptions,
   ): Promise<TaskStoreCreateTaskResult>;
 
-  recoverTasks(): Promise<void>;
+  recoverTasks(options: TaskStoreRecoverTaskOptions): Promise<void>;
 
   getTask(taskId: string): Promise<SerializedTask>;
 

@@ -14,6 +14,7 @@
  * limitations under the License.
  */
 
+import { Config, readDurationFromConfig } from '@backstage/config';
 import { TaskSpec } from '@backstage/plugin-scaffolder-common';
 import { TaskSecrets } from '@backstage/plugin-scaffolder-node';
 import { JsonObject, Observable } from '@backstage/types';
@@ -28,6 +29,7 @@ import {
   TaskContext,
   TaskStore,
 } from './types';
+import { Duration } from 'luxon';
 
 /**
  * TaskManager
@@ -160,6 +162,7 @@ export class StorageTaskBroker implements TaskBroker {
   constructor(
     private readonly storage: TaskStore,
     private readonly logger: Logger,
+    private readonly config: Config,
   ) {}
 
   async list(options?: {
@@ -206,10 +209,15 @@ export class StorageTaskBroker implements TaskBroker {
    * {@inheritdoc TaskBroker.claim}
    */
   async claim(): Promise<TaskContext> {
-    /* TODO:
-     * * Turn it off by default and add a flag to turn it on
-     */
-    await this.storage.recoverTasks();
+    if (this.config.getOptionalBoolean('scaffolder.recoverTasks')) {
+      await this.storage.recoverTasks({
+        timeoutS: Duration.fromObject(
+          readDurationFromConfig(this.config, {
+            key: 'scaffolder.recoverTasksTimeout',
+          }),
+        ).as('seconds'),
+      });
+    }
 
     for (;;) {
       const pendingTask = await this.storage.claimTask();

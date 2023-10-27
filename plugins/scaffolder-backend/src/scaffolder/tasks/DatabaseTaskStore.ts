@@ -33,6 +33,7 @@ import {
   TaskStoreCreateTaskOptions,
   TaskStoreCreateTaskResult,
   TaskStoreShutDownTaskOptions,
+  TaskStoreRecoverTaskOptions,
 } from './types';
 import { DateTime } from 'luxon';
 import { TaskSpec, TaskStep } from '@backstage/plugin-scaffolder-common';
@@ -526,9 +527,10 @@ export class DatabaseTaskStore implements TaskStore {
     });
   }
 
-  async recoverTasks(): Promise<void> {
-    // TODO: this has to be configurable
-    const { tasks } = await this.listStaleTasks({ timeoutS: 0 });
+  async recoverTasks(options: TaskStoreRecoverTaskOptions): Promise<void> {
+    const { tasks } = await this.listStaleTasks({
+      timeoutS: options.timeoutS,
+    });
 
     for (const task of tasks) {
       await this.reopenTask({ taskId: task.taskId });

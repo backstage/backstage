@@ -42,6 +42,7 @@ async function createStore(): Promise<DatabaseTaskStore> {
 describe('StorageTaskBroker', () => {
   let storage: DatabaseTaskStore;
   const fakeSecrets = { backstageToken: 'secret' } as TaskSecrets;
+  const config = new ConfigReader({});
 
   beforeAll(async () => {
     storage = await createStore();
@@ -49,7 +50,7 @@ describe('StorageTaskBroker', () => {
 
   const logger = getVoidLogger();
   it('should claim a dispatched work item', async () => {
-    const broker = new StorageTaskBroker(storage, logger);
+    const broker = new StorageTaskBroker(storage, logger, config);
     await broker.dispatch({ spec: {} as TaskSpec });
     await expect(broker.claim()).resolves.toEqual(
       expect.any(TaskManager as any),
@@ -57,7 +58,7 @@ describe('StorageTaskBroker', () => {
   });
 
   it('should wait for a dispatched work item', async () => {
-    const broker = new StorageTaskBroker(storage, logger);
+    const broker = new StorageTaskBroker(storage, logger, config);
     const promise = broker.claim();
 
     await expect(Promise.race([promise, 'waiting'])).resolves.toBe('waiting');
@@ -67,7 +68,7 @@ describe('StorageTaskBroker', () => {
   });
 
   it('should dispatch multiple items and claim them in order', async () => {
-    const broker = new StorageTaskBroker(storage, logger);
+    const broker = new StorageTaskBroker(storage, logger, config);
     await broker.dispatch({ spec: { steps: [{ id: 'a' }] } as TaskSpec });
     await broker.dispatch({ spec: { steps: [{ id: 'b' }] } as TaskSpec });
     await broker.dispatch({ spec: { steps: [{ id: 'c' }] } as TaskSpec });
@@ -84,14 +85,14 @@ describe('StorageTaskBroker', () => {
   });
 
   it('should store secrets', async () => {
-    const broker = new StorageTaskBroker(storage, logger);
+    const broker = new StorageTaskBroker(storage, logger, config);
     await broker.dispatch({ spec: {} as TaskSpec, secrets: fakeSecrets });
     const task = await broker.claim();
     expect(task.secrets).toEqual(fakeSecrets);
   }, 10000);
 
   it('should complete a task', async () => {
-    const broker = new StorageTaskBroker(storage, logger);
+    const broker = new StorageTaskBroker(storage, logger, config);
     const dispatchResult = await broker.dispatch({ spec: {} as TaskSpec });
     const task = await broker.claim();
     await task.complete('completed');
@@ -100,7 +101,7 @@ describe('StorageTaskBroker', () => {
   }, 10000);
 
   it('should remove secrets after picking up a task', async () => {
-    const broker = new StorageTaskBroker(storage, logger);
+    const broker = new StorageTaskBroker(storage, logger, config);
     const dispatchResult = await broker.dispatch({
       spec: {} as TaskSpec,
       secrets: fakeSecrets,
@@ -112,7 +113,7 @@ describe('StorageTaskBroker', () => {
   }, 10000);
 
   it('should fail a task', async () => {
-    const broker = new StorageTaskBroker(storage, logger);
+    const broker = new StorageTaskBroker(storage, logger, config);
     const dispatchResult = await broker.dispatch({ spec: {} as TaskSpec });
     const task = await broker.claim();
     await task.complete('failed');
@@ -121,8 +122,8 @@ describe('StorageTaskBroker', () => {
   });
 
   it('multiple brokers should be able to observe a single task', async () => {
-    const broker1 = new StorageTaskBroker(storage, logger);
-    const broker2 = new StorageTaskBroker(storage, logger);
+    const broker1 = new StorageTaskBroker(storage, logger, config);
+    const broker2 = new StorageTaskBroker(storage, logger, config);
 
     const { taskId } = await broker1.dispatch({ spec: {} as TaskSpec });
 
@@ -168,7 +169,7 @@ describe('StorageTaskBroker', () => {
   });
 
   it('should heartbeat', async () => {
-    const broker = new StorageTaskBroker(storage, logger);
+    const broker = new StorageTaskBroker(storage, logger, config);
     const { taskId } = await broker.dispatch({ spec: {} as TaskSpec });
     const task = await broker.claim();
 
@@ -186,7 +187,7 @@ describe('StorageTaskBroker', () => {
   });
 
   it('should be update the status to failed if heartbeat fails', async () => {
-    const broker = new StorageTaskBroker(storage, logger);
+    const broker = new StorageTaskBroker(storage, logger, config);
     const { taskId } = await broker.dispatch({ spec: {} as TaskSpec });
     const task = await broker.claim();
 
@@ -212,7 +213,7 @@ describe('StorageTaskBroker', () => {
   });
 
   it('should list all tasks', async () => {
-    const broker = new StorageTaskBroker(storage, logger);
+    const broker = new StorageTaskBroker(storage, logger, config);
     const { taskId } = await broker.dispatch({ spec: {} as TaskSpec });
 
     const promise = broker.list();
@@ -226,7 +227,7 @@ describe('StorageTaskBroker', () => {
   });
 
   it('should list only tasks createdBy a specific user', async () => {
-    const broker = new StorageTaskBroker(storage, logger);
+    const broker = new StorageTaskBroker(storage, logger, config);
     const { taskId } = await broker.dispatch({
       spec: {} as TaskSpec,
       createdBy: 'user:default/foo',
