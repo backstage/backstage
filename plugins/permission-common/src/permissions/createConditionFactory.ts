@@ -15,10 +15,10 @@
  */
 
 import {
+  PermissionRuleDefinition,
   PermissionCondition,
   PermissionRuleParams,
-} from '@backstage/plugin-permission-common';
-import { PermissionRule } from '../types';
+} from '../types';
 
 /**
  * Creates a condition factory function for a given authorization rule and parameter types.
@@ -40,7 +40,7 @@ export const createConditionFactory = <
   TResourceType extends string,
   TParams extends PermissionRuleParams = PermissionRuleParams,
 >(
-  rule: PermissionRule<unknown, unknown, TResourceType, TParams>,
+  rule: PermissionRuleDefinition<TResourceType, TParams>,
 ) => {
   return (params: TParams): PermissionCondition<TResourceType, TParams> => {
     return {

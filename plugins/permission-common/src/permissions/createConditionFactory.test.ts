@@ -16,19 +16,16 @@
 
 import { z } from 'zod';
 import { createConditionFactory } from './createConditionFactory';
-import { createPermissionRule } from './createPermissionRule';
 
 describe('createConditionFactory', () => {
-  const testRule = createPermissionRule({
+  const testRule = {
     name: 'test-rule',
     description: 'test-description',
     resourceType: 'test-resource',
     paramsSchema: z.object({
       foo: z.string(),
     }),
-    apply: (_resource, _params) => true,
-    toQuery: _params => ({}),
-  });
+  };
 
   it('returns a function', () => {
     expect(createConditionFactory(testRule)).toEqual(expect.any(Function));

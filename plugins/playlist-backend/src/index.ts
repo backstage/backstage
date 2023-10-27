@@ -21,9 +21,7 @@
  */
 export * from './service';
 export {
-  createPlaylistConditionalDecision,
   DefaultPlaylistPermissionPolicy,
   isPlaylistPermission,
-  playlistConditions,
 } from './permissions';
 export { playlistPlugin as default } from './plugin';

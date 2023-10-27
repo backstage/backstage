@@ -14,20 +14,16 @@
  * limitations under the License.
  */
 
-import {
-  AuthorizeResult,
-  createPermission,
-} from '@backstage/plugin-permission-common';
 import { z } from 'zod';
+import { AuthorizeResult } from '../types';
 import { createConditionExports } from './createConditionExports';
-import { createPermissionRule } from './createPermissionRule';
 
 const testIntegration = () =>
   createConditionExports({
     pluginId: 'test-plugin',
     resourceType: 'test-resource',
     rules: {
-      testRule1: createPermissionRule({
+      testRule1: {
         name: 'testRule1',
         description: 'Test rule 1',
         resourceType: 'test-resource',
@@ -35,25 +31,15 @@ const testIntegration = () =>
           foo: z.string(),
           bar: z.number(),
         }),
-        apply: (_resource: any, _params) => true,
-        toQuery: params => ({
-          query: 'testRule1',
-          params,
-        }),
-      }),
-      testRule2: createPermissionRule({
+      },
+      testRule2: {
         name: 'testRule2',
         description: 'Test rule 2',
         resourceType: 'test-resource',
         paramsSchema: z.object({
           foo: z.string().optional(),
         }),
-        apply: (_resource: any) => false,
-        toQuery: params => ({
-          query: 'testRule2',
-          params,
-        }),
-      }),
+      },
     },
   });
 
@@ -87,14 +73,8 @@ describe('createConditionExports', () => {
   describe('createPolicyDecisions', () => {
     it('wraps conditions in an object with resourceType and pluginId', () => {
       const { createConditionalDecision } = testIntegration();
-      const testPermission = createPermission({
-        name: 'test.permission',
-        attributes: {},
-        resourceType: 'test-resource',
-      });
-
       expect(
-        createConditionalDecision(testPermission, {
+        createConditionalDecision({
           allOf: [
             {
               rule: 'testRule1',

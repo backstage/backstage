@@ -14,40 +14,59 @@
  * limitations under the License.
  */
 
-import { createPermission } from '@backstage/plugin-permission-common';
-
-/**
- * @public
- */
-export const PLAYLIST_LIST_RESOURCE_TYPE = 'playlist-list';
+import {
+  AuthorizeResult,
+  createPermission,
+} from '@backstage/plugin-permission-common';
+import {
+  PLAYLIST_LIST_RESOURCE_TYPE,
+  createPlaylistConditionalDecision,
+  playlistConditions,
+} from './conditions';
 
 const playlistListCreate = createPermission({
   name: 'playlist.list.create',
   attributes: { action: 'create' },
+  defaultDecision: { result: AuthorizeResult.ALLOW },
 });
 
 const playlistListRead = createPermission({
   name: 'playlist.list.read',
   attributes: { action: 'read' },
   resourceType: PLAYLIST_LIST_RESOURCE_TYPE,
+  defaultDecision: createPlaylistConditionalDecision({
+    anyOf: [
+      playlistConditions.isCurrentUserAnOwner(),
+      playlistConditions.isPublic(),
+    ],
+  }),
 });
 
 const playlistListUpdate = createPermission({
   name: 'playlist.list.update',
   attributes: { action: 'update' },
   resourceType: PLAYLIST_LIST_RESOURCE_TYPE,
+  defaultDecision: createPlaylistConditionalDecision(
+    playlistConditions.isCurrentUserAnOwner(),
+  ),
 });
 
 const playlistListDelete = createPermission({
   name: 'playlist.list.delete',
   attributes: { action: 'delete' },
   resourceType: PLAYLIST_LIST_RESOURCE_TYPE,
+  defaultDecision: createPlaylistConditionalDecision(
+    playlistConditions.isCurrentUserAnOwner(),
+  ),
 });
 
 const playlistFollowersUpdate = createPermission({
   name: 'playlist.followers.update',
   attributes: { action: 'update' },
   resourceType: PLAYLIST_LIST_RESOURCE_TYPE,
+  defaultDecision: createPlaylistConditionalDecision(
+    playlistConditions.isCurrentUserAnOwner(),
+  ),
 });
 
 /**

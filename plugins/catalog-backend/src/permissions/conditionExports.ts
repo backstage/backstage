@@ -15,7 +15,7 @@
  */
 
 import { RESOURCE_TYPE_CATALOG_ENTITY } from '@backstage/plugin-catalog-common/alpha';
-import { createConditionExports } from '@backstage/plugin-permission-node';
+import { createConditionExports } from '@backstage/plugin-permission-common';
 import { permissionRules } from './rules';
 
 const { conditions, createConditionalDecision } = createConditionExports({

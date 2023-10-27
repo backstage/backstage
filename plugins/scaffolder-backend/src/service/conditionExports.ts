@@ -18,7 +18,7 @@ import {
   RESOURCE_TYPE_SCAFFOLDER_TEMPLATE,
   RESOURCE_TYPE_SCAFFOLDER_ACTION,
 } from '@backstage/plugin-scaffolder-common/alpha';
-import { createConditionExports } from '@backstage/plugin-permission-node';
+import { createConditionExports } from '@backstage/plugin-permission-common';
 import { scaffolderTemplateRules, scaffolderActionRules } from './rules';
 
 const templateConditionExports = createConditionExports({

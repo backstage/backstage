@@ -48,4 +48,7 @@ export type {
   PermissionBase,
   ResourcePermission,
   AuthorizeRequestOptions,
+  PermissionRuleDefinition,
+  Condition,
+  Conditions,
 } from './permission';

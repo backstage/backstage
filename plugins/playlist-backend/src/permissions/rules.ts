@@ -16,10 +16,12 @@
 
 import { makeCreatePermissionRule } from '@backstage/plugin-permission-node';
 import {
+  isCurrentUserAnOwnerDefinition,
+  isOwnerDefinition,
+  isPublicDefinition,
   PLAYLIST_LIST_RESOURCE_TYPE,
   PlaylistMetadata,
 } from '@backstage/plugin-playlist-common';
-import { z } from 'zod';
 
 import { ListPlaylistsFilter } from '../service';
 
@@ -29,13 +31,15 @@ const createPlaylistPermissionRule = makeCreatePermissionRule<
   typeof PLAYLIST_LIST_RESOURCE_TYPE
 >();
 
+// TODO: Update createPlaylistPermissionRule to take two params instead of needing the spread
+// This is the rule implementation
+// The imported part is the rule definition of sorts
+// Doing this this way means that we don't break the APIs I think
+// TODO: Can we add some type checking to the Permission to that only ones
+//  with split definitions can have default decisions, or is that not
+//  needed since you can have a none conditional checks?
 const isOwner = createPlaylistPermissionRule({
-  name: 'IS_OWNER',
-  description: 'Allow playlists owned by the given entity refs',
-  resourceType: PLAYLIST_LIST_RESOURCE_TYPE,
-  paramsSchema: z.object({
-    owners: z.array(z.string()).describe('List of entity refs to match on'),
-  }),
+  ...isOwnerDefinition,
   apply: (list: PlaylistMetadata, { owners }) => owners.includes(list.owner),
   toQuery: ({ owners }) => ({
     key: 'owner',
@@ -44,9 +48,7 @@ const isOwner = createPlaylistPermissionRule({
 });
 
 const isCurrentUserAnOwner = createPlaylistPermissionRule({
-  name: 'IS_CURRENT_USER_OWNER',
-  description: 'Allow playlists owned by the given entity refs',
-  resourceType: PLAYLIST_LIST_RESOURCE_TYPE,
+  ...isCurrentUserAnOwnerDefinition,
   apply: (list: PlaylistMetadata, _, identity) => {
     return !!identity?.ownershipEntityRefs?.includes(list.owner);
   },
@@ -57,9 +59,7 @@ const isCurrentUserAnOwner = createPlaylistPermissionRule({
 });
 
 const isPublic = createPlaylistPermissionRule({
-  name: 'IS_PUBLIC',
-  description: 'Allow playlists that are set as public',
-  resourceType: PLAYLIST_LIST_RESOURCE_TYPE,
+  ...isPublicDefinition,
   apply: (list: PlaylistMetadata) => list.public,
   toQuery: () => ({ key: 'public', values: [true] }),
 });

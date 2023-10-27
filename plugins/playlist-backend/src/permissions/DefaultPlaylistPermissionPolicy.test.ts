@@ -23,7 +23,7 @@ import {
   PLAYLIST_LIST_RESOURCE_TYPE,
 } from '@backstage/plugin-playlist-common';
 
-import { playlistConditions } from './conditions';
+import { playlistConditions } from '@backstage/plugin-playlist-common';
 import { DefaultPlaylistPermissionPolicy } from './DefaultPlaylistPermissionPolicy';
 
 describe('DefaultPlaylistPermissionPolicy', () => {

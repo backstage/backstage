@@ -29,13 +29,15 @@ import {
 } from '@backstage/plugin-auth-node';
 import {
   AuthorizeResult,
-  EvaluatePermissionResponse,
   EvaluatePermissionRequest,
-  IdentifiedPermissionMessage,
   EvaluatePermissionRequestBatch,
+  EvaluatePermissionResponse,
   EvaluatePermissionResponseBatch,
+  IdentifiedPermissionMessage,
   isResourcePermission,
   PermissionAttributes,
+  PermissionCondition,
+  PermissionCriteria,
 } from '@backstage/plugin-permission-common';
 import {
   ApplyConditionsRequestEntry,
@@ -58,17 +60,73 @@ const attributesSchema: z.ZodSchema<PermissionAttributes> = z.object({
     .optional(),
 });
 
+const PermissionConditionParser: z.ZodSchema<PermissionCondition> = z.object({
+  resourceType: z.string(),
+  rule: z.string(),
+  params: z.record(z.any()).optional(),
+});
+
+const PermissionCriteriaParser: z.ZodSchema<
+  PermissionCriteria<PermissionCondition>
+> = z.lazy(() =>
+  z.union([
+    z
+      .object({
+        allOf: z.array(PermissionCriteriaParser).nonempty(),
+      })
+      .strict(),
+    z
+      .object({
+        anyOf: z.array(PermissionCriteriaParser).nonempty(),
+      })
+      .strict(),
+    z
+      .object({
+        not: PermissionCriteriaParser,
+      })
+      .strict(),
+    PermissionConditionParser,
+  ]),
+);
+
+const ConditionalDecisionParser = z.object({
+  result: z.literal(AuthorizeResult.CONDITIONAL),
+  pluginId: z
+    .string()
+    .min(1)
+    .describe('Plugin ID that defines the permission and rules used.'),
+  resourceType: z
+    .string()
+    .min(1)
+    .describe('Resource type associated with the conditions used.'),
+  conditions: PermissionCriteriaParser,
+});
+
+const LiteralDecisionParser = z.object({
+  result: z.union([
+    z.literal(AuthorizeResult.ALLOW),
+    z.literal(AuthorizeResult.DENY),
+  ]),
+});
+
+const PolicyDecisionParser = z.union([
+  LiteralDecisionParser,
+  ConditionalDecisionParser,
+]);
+
 const permissionSchema = z.union([
   z.object({
     type: z.literal('basic'),
     name: z.string(),
     attributes: attributesSchema,
+    defaultDecision: PolicyDecisionParser.optional(),
   }),
   z.object({
     type: z.literal('resource'),
     name: z.string(),
     attributes: attributesSchema,
     resourceType: z.string(),
+    defaultDecision: PolicyDecisionParser.optional(),
   }),
 ]);
 
