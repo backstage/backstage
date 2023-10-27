@@ -34,7 +34,8 @@ import {
   useEntityList,
   useStarredEntities,
 } from '@backstage/plugin-catalog-react';
-import { makeStyles, withStyles } from '@material-ui/core/styles';
+import { withStyles } from '@material-ui/core/styles';
+import { visuallyHidden } from '@mui/utils';
 import Edit from '@material-ui/icons/Edit';
 import OpenInNew from '@material-ui/icons/OpenInNew';
 import Star from '@material-ui/icons/Star';
@@ -64,26 +65,6 @@ const YellowStar = withStyles({
   },
 })(Star);
 
-/**
- * MUI v5 removes `srOnly` variant from `Typography` component
- *
- * Utility copied from https://github.com/mui/material-ui/blob/master/packages/mui-utils/src/visuallyHidden.ts
- * as `srOnly` variant was only used in this file.
- */
-const useStyles = makeStyles({
-  visuallyHidden: {
-    border: 0,
-    clip: 'rect(0 0 0 0)',
-    height: '1px',
-    margin: -1,
-    overflow: 'hidden',
-    padding: 0,
-    position: 'absolute',
-    whiteSpace: 'nowrap',
-    width: '1px',
-  },
-});
-
 const refCompare = (a: Entity, b: Entity) => {
   const toRef = (entity: Entity) =>
     entity.metadata.title ||
@@ -99,8 +80,6 @@ export const CatalogTable = (props: CatalogTableProps) => {
   const { columns, actions, tableOptions, subtitle, emptyContent } = props;
   const { isStarredEntity, toggleStarredEntity } = useStarredEntities();
   const { loading, error, entities, filters } = useEntityList();
-
-  const classes = useStyles();
 
   const defaultColumns: TableColumn<CatalogTableRow>[] = useMemo(() => {
     return [
@@ -168,7 +147,7 @@ export const CatalogTable = (props: CatalogTableProps) => {
         icon: () => (
           <>
             {/* eslint-disable-next-line react/forbid-elements */}
-            <span className={classes.visuallyHidden}>{title}</span>
+            <span style={visuallyHidden}>{title}</span>
             <OpenInNew fontSize="small" />
           </>
         ),
@@ -188,7 +167,7 @@ export const CatalogTable = (props: CatalogTableProps) => {
         icon: () => (
           <>
             {/* eslint-disable-next-line react/forbid-elements */}
-            <span className={classes.visuallyHidden}>{title}</span>
+            <span style={visuallyHidden}>{title}</span>
             <Edit fontSize="small" />
           </>
         ),
@@ -209,7 +188,7 @@ export const CatalogTable = (props: CatalogTableProps) => {
         icon: () => (
           <>
             {/* eslint-disable-next-line react/forbid-elements */}
-            <span className={classes.visuallyHidden}>{title}</span>
+            <span style={visuallyHidden}>{title}</span>
             {isStarred ? <YellowStar /> : <StarBorder />}
           </>
         ),
