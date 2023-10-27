@@ -19375,9 +19375,9 @@ __metadata:
   linkType: hard
 
 "@types/ping@npm:^0.4.1":
-  version: 0.4.2
-  resolution: "@types/ping@npm:0.4.2"
-  checksum: 4ea20f8c04d6d52ac9d4a551af03b940c273616fc647d9905197400f920f744c5224ee6913ef26b845633e8e44ebab4195e4fd71daf271090336f303069b7fef
+  version: 0.4.3
+  resolution: "@types/ping@npm:0.4.3"
+  checksum: 8b0855eeeea0f894c90415dab8eb467cb7142b883cf30473663a93e82f58ad08f5fd9d07460d5f8e7fa3c5987c15c9a638e236a118a0cee9c566f95e53095406
   languageName: node
   linkType: hard
 
