@@ -14,6 +14,8 @@
  * limitations under the License.
  */
 
+import React from 'react';
+
 import {
   coreExtensionData,
   createExtension,
@@ -30,6 +32,12 @@ export const Core = createExtension({
     themes: createExtensionInput({
       theme: coreExtensionData.theme,
     }),
+    components: createExtensionInput(
+      {
+        provider: coreExtensionData.reactComponent,
+      },
+      { singleton: true },
+    ),
     root: createExtensionInput(
       {
         element: coreExtensionData.reactElement,
@@ -42,7 +50,11 @@ export const Core = createExtension({
   },
   factory({ inputs }) {
     return {
-      root: inputs.root.element,
+      root: (
+        <inputs.components.provider>
+          {inputs.root.element}
+        </inputs.components.provider>
+      ),
     };
   },
 });
