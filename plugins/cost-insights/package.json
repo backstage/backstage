@@ -70,7 +70,7 @@
     "@testing-library/jest-dom": "^6.0.0",
     "@testing-library/react": "^14.0.0",
     "@testing-library/user-event": "^14.0.0",
-    "@types/pluralize": "^0.0.31",
+    "@types/pluralize": "^0.0.32",
     "@types/recharts": "^1.8.14",
     "@types/regression": "^2.0.0",
     "@types/yup": "^0.29.13",
