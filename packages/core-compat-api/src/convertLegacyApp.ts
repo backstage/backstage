@@ -113,18 +113,18 @@ export function convertLegacyApp(
     output: {
       element: coreExtensionData.reactElement,
     },
-    factory({ bind, inputs }) {
+    factory({ inputs }) {
       // Clone the root element, this replaces the FlatRoutes declared in the app with out content input
-      bind({
+      return {
         element: React.cloneElement(rootEl, undefined, inputs.content.element),
-      });
+      };
     },
   });
   const CoreNavOverride = createExtension({
     id: 'core.nav',
     attachTo: { id: 'core.layout', input: 'nav' },
     output: {},
-    factory() {},
+    factory: () => ({}),
     disabled: true,
   });
 

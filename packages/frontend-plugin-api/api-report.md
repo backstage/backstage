@@ -170,10 +170,9 @@ export interface CreateExtensionOptions<
   // (undocumented)
   factory(options: {
     source?: BackstagePlugin;
-    bind(values: Expand<ExtensionDataValues<TOutput>>): void;
     config: TConfig;
     inputs: Expand<ExtensionInputValues<TInputs>>;
-  }): void;
+  }): Expand<ExtensionDataValues<TOutput>>;
   // (undocumented)
   id: string;
   // (undocumented)
@@ -313,13 +312,12 @@ export interface Extension<TConfig> {
   // (undocumented)
   factory(options: {
     source?: BackstagePlugin;
-    bind(values: ExtensionInputValues<any>): void;
     config: TConfig;
     inputs: Record<
       string,
       undefined | Record<string, unknown> | Array<Record<string, unknown>>
     >;
-  }): void;
+  }): ExtensionDataValues<any>;
   // (undocumented)
   id: string;
   // (undocumented)

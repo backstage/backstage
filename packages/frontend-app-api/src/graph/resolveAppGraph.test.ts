@@ -21,7 +21,7 @@ const extBaseConfig = {
   id: 'test',
   attachTo: { id: 'nonexistent', input: 'nonexistent' },
   output: {},
-  factory() {},
+  factory: () => ({}),
 };
 
 const extension = createExtension(extBaseConfig);

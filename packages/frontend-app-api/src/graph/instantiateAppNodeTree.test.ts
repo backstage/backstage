@@ -45,8 +45,8 @@ const simpleExtension = createExtension({
       other: z.number().optional(),
     }),
   ),
-  factory({ bind, config }) {
-    bind({ test: config.output, other: config.other });
+  factory({ config }) {
+    return { test: config.output, other: config.other };
   },
 });
 
@@ -114,8 +114,8 @@ describe('instantiateAppNodeTree', () => {
             output: {
               inputMirror: inputMirrorDataRef,
             },
-            factory({ bind, inputs }) {
-              bind({ inputMirror: inputs });
+            factory({ inputs }) {
+              return { inputMirror: inputs };
             },
           }),
         ),
@@ -158,8 +158,8 @@ describe('instantiateAppNodeTree', () => {
             output: {
               inputMirror: inputMirrorDataRef,
             },
-            factory({ bind, inputs }) {
-              bind({ inputMirror: inputs });
+            factory({ inputs }) {
+              return { inputMirror: inputs };
             },
           }),
         ),
@@ -264,8 +264,8 @@ describe('createAppNodeInstance', () => {
           output: {
             inputMirror: inputMirrorDataRef,
           },
-          factory({ bind, inputs }) {
-            bind({ inputMirror: inputs });
+          factory({ inputs }) {
+            return { inputMirror: inputs };
           },
         }),
       ),
@@ -326,8 +326,8 @@ describe('createAppNodeInstance', () => {
               test1: testDataRef,
               test2: testDataRef,
             },
-            factory({ bind }) {
-              bind({ test1: 'test', test2: 'test2' });
+            factory({}) {
+              return { test1: 'test', test2: 'test2' };
             },
           }),
         ),
@@ -348,8 +348,8 @@ describe('createAppNodeInstance', () => {
             output: {
               test: testDataRef,
             },
-            factory({ bind }) {
-              bind({ nonexistent: 'test' } as any);
+            factory({}) {
+              return { nonexistent: 'test' } as any;
             },
           }),
         ),
@@ -376,7 +376,7 @@ describe('createAppNodeInstance', () => {
               ),
             },
             output: {},
-            factory() {},
+            factory: () => ({}),
           }),
         ),
         attachments: new Map(),
@@ -417,7 +417,7 @@ describe('createAppNodeInstance', () => {
               }),
             },
             output: {},
-            factory() {},
+            factory: () => ({}),
           }),
         ),
       }),
@@ -447,7 +447,7 @@ describe('createAppNodeInstance', () => {
             id: 'core.test',
             attachTo: { id: 'ignored', input: 'ignored' },
             output: {},
-            factory() {},
+            factory: () => ({}),
           }),
         ),
       }),
@@ -481,7 +481,7 @@ describe('createAppNodeInstance', () => {
               ),
             },
             output: {},
-            factory() {},
+            factory: () => ({}),
           }),
         ),
       }),
@@ -515,7 +515,7 @@ describe('createAppNodeInstance', () => {
               ),
             },
             output: {},
-            factory() {},
+            factory: () => ({}),
           }),
         ),
       }),
@@ -543,7 +543,7 @@ describe('createAppNodeInstance', () => {
               ),
             },
             output: {},
-            factory() {},
+            factory: () => ({}),
           }),
         ),
       }),

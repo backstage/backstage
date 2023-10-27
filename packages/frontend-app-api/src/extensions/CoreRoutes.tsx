@@ -35,7 +35,7 @@ export const CoreRoutes = createExtension({
   output: {
     element: coreExtensionData.reactElement,
   },
-  factory({ bind, inputs }) {
+  factory({ inputs }) {
     const Routes = () => {
       const element = useRoutes(
         inputs.routes.map(route => ({
@@ -46,8 +46,8 @@ export const CoreRoutes = createExtension({
 
       return element;
     };
-    bind({
+    return {
       element: <Routes />,
-    });
+    };
   },
 });

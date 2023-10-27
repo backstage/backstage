@@ -24,71 +24,211 @@ function unused(..._any: any[]) {}
 
 describe('createExtension', () => {
   it('should create an extension with a simple output', () => {
-    const extension = createExtension({
+    const baseConfig = {
       id: 'test',
       attachTo: { id: 'root', input: 'default' },
       output: {
         foo: stringData,
       },
-      factory({ bind }) {
-        bind({
+    };
+    const extension = createExtension({
+      ...baseConfig,
+      factory() {
+        return {
           foo: 'bar',
-        });
-        bind({
-          // @ts-expect-error
-          foo: 3,
-        });
-        bind({
-          // @ts-expect-error
-          bar: 'bar',
-        });
-        // @ts-expect-error
-        bind({});
-        // @ts-expect-error
-        bind();
-        // @ts-expect-error
-        bind('bar');
+        };
       },
     });
     expect(extension.id).toBe('test');
+
+    // When declared as an error function without a block the TypeScript errors
+    // are a more specific and will point at the property that is problematic.
+    createExtension({
+      ...baseConfig,
+      factory: () => ({
+        // @ts-expect-error
+        foo: 3,
+      }),
+    });
+    createExtension({
+      ...baseConfig,
+      factory: () =>
+        // @ts-expect-error
+        ({
+          bar: 'bar',
+        }),
+    });
+    createExtension({
+      ...baseConfig,
+      factory: () =>
+        // @ts-expect-error
+        ({}),
+    });
+    createExtension({
+      ...baseConfig,
+      factory: () =>
+        // @ts-expect-error
+        undefined,
+    });
+    createExtension({
+      ...baseConfig,
+      factory: () =>
+        // @ts-expect-error
+        'bar',
+    });
+
+    // When declared as a function with a block the TypeScript error will instead
+    // be tied to the factory function declaration itself, but the error messages
+    // is still helpful and points to part of the return type that is problematic.
+    createExtension({
+      ...baseConfig,
+      // @ts-expect-error
+      factory() {
+        return {
+          foo: 3,
+        };
+      },
+    });
+    createExtension({
+      ...baseConfig,
+      // @ts-expect-error
+      factory() {
+        return {
+          bar: 'bar',
+        };
+      },
+    });
+    createExtension({
+      ...baseConfig,
+      // @ts-expect-error
+      factory() {
+        return {};
+      },
+    });
+    createExtension({
+      ...baseConfig,
+      // @ts-expect-error
+      factory() {
+        return {};
+      },
+    });
+    createExtension({
+      ...baseConfig,
+      // @ts-expect-error
+      factory() {
+        return 'bar';
+      },
+    });
+
+    createExtension({
+      ...baseConfig,
+      // @ts-expect-error
+      factory: () => {
+        return {
+          foo: 3,
+        };
+      },
+    });
+    createExtension({
+      ...baseConfig,
+      // @ts-expect-error
+      factory: () => {
+        return {
+          bar: 'bar',
+        };
+      },
+    });
+    createExtension({
+      ...baseConfig,
+      // @ts-expect-error
+      factory: () => {
+        return {};
+      },
+    });
+    createExtension({
+      ...baseConfig,
+      // @ts-expect-error
+      factory: () => {
+        return {};
+      },
+    });
+    createExtension({
+      ...baseConfig,
+      // @ts-expect-error
+      factory: () => {
+        return 'bar';
+      },
+    });
   });
 
   it('should create an extension with a some optional output', () => {
-    const extension = createExtension({
+    const baseConfig = {
       id: 'test',
       attachTo: { id: 'root', input: 'default' },
       output: {
         foo: stringData,
         bar: stringData.optional(),
       },
-      factory({ bind }) {
-        bind({
-          foo: 'bar',
-        });
-        bind({
-          foo: 'bar',
-          bar: 'baz',
-        });
-        bind({
-          // @ts-expect-error
-          foo: 3,
-        });
-        bind({
-          foo: 'bar',
-          // @ts-expect-error
-          bar: 3,
-        });
-        // @ts-expect-error
-        bind({ bar: 'bar' });
-        // @ts-expect-error
-        bind({});
-        // @ts-expect-error
-        bind();
-        // @ts-expect-error
-        bind('bar');
-      },
+    };
+    const extension = createExtension({
+      ...baseConfig,
+      factory: () => ({
+        foo: 'bar',
+      }),
     });
     expect(extension.id).toBe('test');
+
+    createExtension({
+      ...baseConfig,
+      factory: () => ({
+        foo: 'bar',
+        bar: 'baz',
+      }),
+    });
+    createExtension({
+      ...baseConfig,
+      factory: () => ({
+        // @ts-expect-error
+        foo: 3,
+      }),
+    });
+    createExtension({
+      ...baseConfig,
+      factory: () => ({
+        foo: 'bar',
+        // @ts-expect-error
+        bar: 3,
+      }),
+    });
+    createExtension({
+      ...baseConfig,
+      factory: () =>
+        // @ts-expect-error
+        ({ bar: 'bar' }),
+    });
+    createExtension({
+      ...baseConfig,
+      factory: () =>
+        // @ts-expect-error
+        ({}),
+    });
+    createExtension({
+      ...baseConfig,
+      factory: () =>
+        // @ts-expect-error
+        undefined,
+    });
+    createExtension({
+      ...baseConfig,
+      // @ts-expect-error
+      factory: () => {},
+    });
+    createExtension({
+      ...baseConfig,
+      factory: () =>
+        // @ts-expect-error
+        'bar',
+    });
   });
 
   it('should create an extension with input', () => {
@@ -110,7 +250,7 @@ describe('createExtension', () => {
       output: {
         foo: stringData,
       },
-      factory({ bind, inputs }) {
+      factory({ inputs }) {
         const a1: string = inputs.mixed?.[0].required;
         // @ts-expect-error
         const a2: number = inputs.mixed?.[0].required;
@@ -141,9 +281,9 @@ describe('createExtension', () => {
         const d4: number | undefined = inputs.onlyOptional?.[0].optional;
         unused(d1, d2, d3, d4);
 
-        bind({
+        return {
           foo: 'bar',
-        });
+        };
       },
     });
     expect(extension.id).toBe('test');
