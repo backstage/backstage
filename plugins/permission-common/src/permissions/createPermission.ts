@@ -18,6 +18,7 @@ import {
   BasicPermission,
   Permission,
   PermissionAttributes,
+  PolicyDecision,
   ResourcePermission,
 } from '../types';
 
@@ -31,6 +32,7 @@ export function createPermission<TResourceType extends string>(input: {
   name: string;
   attributes: PermissionAttributes;
   resourceType: TResourceType;
+  defaultDecision?: PolicyDecision;
 }): ResourcePermission<TResourceType>;
 /**
  * Utility function for creating a valid {@link BasicPermission}.
@@ -40,28 +42,38 @@ export function createPermission<TResourceType extends string>(input: {
 export function createPermission(input: {
   name: string;
   attributes: PermissionAttributes;
+  defaultDecision?: PolicyDecision;
 }): BasicPermission;
+
 export function createPermission({
   name,
   attributes,
   resourceType,
+  defaultDecision,
 }: {
   name: string;
   attributes: PermissionAttributes;
   resourceType?: string;
+  defaultDecision?: PolicyDecision;
 }): Permission {
+  let permission: Permission;
+
   if (resourceType) {
-    return {
+    permission = {
       type: 'resource',
       name,
       attributes,
       resourceType,
+      defaultDecision,
+    };
+  } else {
+    permission = {
+      type: 'basic',
+      name,
+      attributes,
+      defaultDecision,
     };
   }
 
-  return {
-    type: 'basic',
-    name,
-    attributes,
-  };
+  return permission;
 }

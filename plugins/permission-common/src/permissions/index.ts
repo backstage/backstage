@@ -16,3 +16,5 @@
 
 export * from './util';
 export { createPermission } from './createPermission';
+export { createConditionFactory } from './createConditionFactory';
+export { createConditionExports } from './createConditionExports';

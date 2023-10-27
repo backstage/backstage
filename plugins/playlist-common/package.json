@@ -30,7 +30,8 @@
     "postpack": "backstage-cli package postpack"
   },
   "dependencies": {
-    "@backstage/plugin-permission-common": "workspace:^"
+    "@backstage/plugin-permission-common": "workspace:^",
+    "zod": "^3.22.4"
   },
   "devDependencies": {
     "@backstage/cli": "workspace:^"

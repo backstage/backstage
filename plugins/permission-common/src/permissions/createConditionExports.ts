@@ -17,41 +17,12 @@
 import {
   AuthorizeResult,
   ConditionalPolicyDecision,
+  Conditions,
   PermissionCondition,
   PermissionCriteria,
-  ResourcePermission,
 } from '@backstage/plugin-permission-common';
-import { PermissionRule } from '../types';
+import { PermissionRuleDefinition } from '../types';
 import { createConditionFactory } from './createConditionFactory';
-
-/**
- * A utility type for mapping a single {@link PermissionRule} to its
- * corresponding {@link @backstage/plugin-permission-common#PermissionCondition}.
- *
- * @public
- */
-export type Condition<TRule> = TRule extends PermissionRule<
-  any,
-  any,
-  infer TResourceType,
-  infer TParams
->
-  ? undefined extends TParams
-    ? () => PermissionCondition<TResourceType, TParams>
-    : (params: TParams) => PermissionCondition<TResourceType, TParams>
-  : never;
-
-/**
- * A utility type for mapping {@link PermissionRule}s to their corresponding
- * {@link @backstage/plugin-permission-common#PermissionCondition}s.
- *
- * @public
- */
-export type Conditions<
-  TRules extends Record<string, PermissionRule<any, any, any>>,
-> = {
-  [Name in keyof TRules]: Condition<TRules[Name]>;
-};
 
 /**
  * Creates the recommended condition-related exports for a given plugin based on
@@ -75,8 +46,7 @@ export type Conditions<
  */
 export const createConditionExports = <
   TResourceType extends string,
-  TResource,
-  TRules extends Record<string, PermissionRule<TResource, any, TResourceType>>,
+  TRules extends Record<string, PermissionRuleDefinition<TResourceType, any>>,
 >(options: {
   pluginId: string;
   resourceType: TResourceType;
@@ -84,7 +54,6 @@ export const createConditionExports = <
 }): {
   conditions: Conditions<TRules>;
   createConditionalDecision: (
-    permission: ResourcePermission<TResourceType>,
     conditions: PermissionCriteria<PermissionCondition<TResourceType>>,
   ) => ConditionalPolicyDecision;
 } => {
@@ -99,7 +68,6 @@ export const createConditionExports = <
       {} as Conditions<TRules>,
     ),
     createConditionalDecision: (
-      _permission: ResourcePermission<TResourceType>,
       conditions: PermissionCriteria<PermissionCondition>,
     ) => ({
       result: AuthorizeResult.CONDITIONAL,

@@ -14,31 +14,13 @@
  * limitations under the License.
  */
 
-import { PLAYLIST_LIST_RESOURCE_TYPE } from '@backstage/plugin-playlist-common';
 import {
   ConditionTransformer,
-  createConditionExports,
   createConditionTransformer,
 } from '@backstage/plugin-permission-node';
 
 import { ListPlaylistsFilter } from '../service';
 import { rules } from './rules';
-
-const { conditions, createConditionalDecision } = createConditionExports({
-  pluginId: 'playlist',
-  resourceType: PLAYLIST_LIST_RESOURCE_TYPE,
-  rules,
-});
-
-/**
- * @public
- */
-export const playlistConditions = conditions;
-
-/**
- * @public
- */
-export const createPlaylistConditionalDecision = createConditionalDecision;
 
 export const transformConditions: ConditionTransformer<ListPlaylistsFilter> =
   createConditionTransformer(Object.values(rules));

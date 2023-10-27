@@ -14,7 +14,14 @@
  * limitations under the License.
  */
 
-import { EvaluatePermissionRequest, EvaluatePermissionResponse } from './api';
+import {
+  EvaluatePermissionRequest,
+  EvaluatePermissionResponse,
+  PermissionCondition,
+  PermissionRuleParams,
+  PolicyDecision,
+} from './api';
+import { z } from 'zod';
 
 /**
  * The attributes related to a given permission; these should be generic and widely applicable to
@@ -40,6 +47,8 @@ export type PermissionBase<TType extends string, TFields extends object> = {
    * all by name.
    */
   attributes: PermissionAttributes;
+
+  defaultDecision?: PolicyDecision;
 } & {
   /**
    * String value indicating the type of the permission (e.g. 'basic',
@@ -106,4 +115,49 @@ export interface PermissionAuthorizer {
  */
 export type AuthorizeRequestOptions = {
   token?: string;
+};
+
+// //////////////////////
+// I ADDED THESE
+// //////////////////////
+
+export type PermissionRuleDefinition<
+  TResourceType extends string,
+  TParams extends PermissionRuleParams = PermissionRuleParams,
+> = {
+  name: string;
+  description: string;
+  resourceType: TResourceType;
+
+  /**
+   * A ZodSchema that reflects the structure of the parameters that are passed to
+   */
+  paramsSchema?: z.ZodSchema<TParams>;
+};
+
+/**
+ * A utility type for mapping a single {@link PermissionRule} to its
+ * corresponding {@link @backstage/plugin-permission-common#PermissionCondition}.
+ *
+ * @public
+ */
+export type Condition<TRule> = TRule extends PermissionRuleDefinition<
+  infer TResourceType,
+  infer TParams
+>
+  ? undefined extends TParams
+    ? () => PermissionCondition<TResourceType, TParams>
+    : (params: TParams) => PermissionCondition<TResourceType, TParams>
+  : never;
+
+/**
+ * A utility type for mapping {@link PermissionRule}s to their corresponding
+ * {@link @backstage/plugin-permission-common#PermissionCondition}s.
+ *
+ * @public
+ */
+export type Conditions<
+  TRules extends Record<string, PermissionRuleDefinition<any, any>>,
+> = {
+  [Name in keyof TRules]: Condition<TRules[Name]>;
 };

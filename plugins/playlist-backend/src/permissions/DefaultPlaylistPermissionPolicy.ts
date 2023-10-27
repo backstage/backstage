@@ -24,12 +24,11 @@ import {
   PermissionPolicy,
   PolicyQuery,
 } from '@backstage/plugin-permission-node';
-import { permissions } from '@backstage/plugin-playlist-common';
-
 import {
   createPlaylistConditionalDecision,
+  permissions,
   playlistConditions,
-} from './conditions';
+} from '@backstage/plugin-playlist-common';
 
 /**
  * @public
@@ -62,7 +61,7 @@ export class DefaultPlaylistPermissionPolicy implements PermissionPolicy {
       isPermission(request.permission, permissions.playlistListRead) ||
       isPermission(request.permission, permissions.playlistFollowersUpdate)
     ) {
-      return createPlaylistConditionalDecision(request.permission, {
+      return createPlaylistConditionalDecision({
         anyOf: [
           playlistConditions.isCurrentUserAnOwner(),
           playlistConditions.isPublic(),
@@ -75,10 +74,7 @@ export class DefaultPlaylistPermissionPolicy implements PermissionPolicy {
       isPermission(request.permission, permissions.playlistListUpdate) ||
       isPermission(request.permission, permissions.playlistListDelete)
     ) {
-      return createPlaylistConditionalDecision(
-        request.permission,
-        playlistConditions.isCurrentUserAnOwner(),
-      );
+      return createPlaylistConditionalDecision(playlistConditions.isPublic());
     }
 
     return { result: AuthorizeResult.ALLOW };
