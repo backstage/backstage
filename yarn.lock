@@ -18557,12 +18557,12 @@ __metadata:
   linkType: hard
 
 "@types/dockerode@npm:^3.3.0, @types/dockerode@npm:^3.3.8":
-  version: 3.3.20
-  resolution: "@types/dockerode@npm:3.3.20"
+  version: 3.3.21
+  resolution: "@types/dockerode@npm:3.3.21"
   dependencies:
     "@types/docker-modem": "*"
     "@types/node": "*"
-  checksum: cb2d7a923cfec9d92b69694e613f0becbea627d4d9d919ab349f28ea81d8f5fa71aa437d89b4bc5291a5edb7a07c643ccff2139e2d7ab92a58235d0b05d2a48d
+  checksum: 025c97cd2549f1b3f0dc6e117e24e3b7e56dcf3e482e2abe5f2d6961e56e637b0e1f1b4f032e065cd7245302064ac3ccdb9c7dfdb0fe43a5bfb2b5f4ccbf4a8d
   languageName: node
   linkType: hard
 
@@ -18640,14 +18640,14 @@ __metadata:
   linkType: hard
 
 "@types/express-serve-static-core@npm:*, @types/express-serve-static-core@npm:^4.17.30, @types/express-serve-static-core@npm:^4.17.33, @types/express-serve-static-core@npm:^4.17.5":
-  version: 4.17.37
-  resolution: "@types/express-serve-static-core@npm:4.17.37"
+  version: 4.17.39
+  resolution: "@types/express-serve-static-core@npm:4.17.39"
   dependencies:
     "@types/node": "*"
     "@types/qs": "*"
     "@types/range-parser": "*"
     "@types/send": "*"
-  checksum: 2dab1380e45eb44e56ecc1be1c42c4b897364d2f2a08e03ca28fbcb1e6866e390217385435813711c046f9acd684424d088855dc32825d5cbecf72c60ecd037f
+  checksum: 4227b96a53f0cf19d01fdb77a74252660f8e70650b79167e591b04c66ec9c7330d0a00038939415f96664a67312b21798bbac150fe81bf613380849b96546c37
   languageName: node
   linkType: hard
 
@@ -18910,9 +18910,9 @@ __metadata:
   linkType: hard
 
 "@types/js-yaml@npm:^4.0.0, @types/js-yaml@npm:^4.0.1":
-  version: 4.0.7
-  resolution: "@types/js-yaml@npm:4.0.7"
-  checksum: e02eca876f3f19dbba62a26a18e59ec5df4e29300b99808fb0b4ca980cbfbb60e4a2c7d75d521728f5b2a3b92a0da5b9343497b2acf621b8ea019d48b40bbd78
+  version: 4.0.8
+  resolution: "@types/js-yaml@npm:4.0.8"
+  checksum: a5a77a5a1eac7e7fb667156c251c2b947ca4ddfdda570726369dd50bd5b2b1d0da2d0fb4273d1b10aa1782406d7b3da8923d957df4fb89dbfa1db06f43297de2
   languageName: node
   linkType: hard
 
@@ -18938,11 +18938,11 @@ __metadata:
   linkType: hard
 
 "@types/json-schema-merge-allof@npm:^0.6.0":
-  version: 0.6.2
-  resolution: "@types/json-schema-merge-allof@npm:0.6.2"
+  version: 0.6.3
+  resolution: "@types/json-schema-merge-allof@npm:0.6.3"
   dependencies:
     "@types/json-schema": "*"
-  checksum: 2be8f35eb47cb6f2344c15625010edd0983d258b0eba76e4193a1e80a3b3334bcb7efe1060594a8420cdcb092201e5ad3d78442f7af2edc548661c19c9a65440
+  checksum: c59ddbe5ffb97bbd90dd1654f3745e60ff8854db3b99ba2059c54b71f8d303936577a8262cd875e738200c0e4d59657d8195b415f88bf9fc93dc61aeecde68d1
   languageName: node
   linkType: hard
 
@@ -19098,9 +19098,9 @@ __metadata:
   linkType: hard
 
 "@types/mime-types@npm:^2.1.0":
-  version: 2.1.2
-  resolution: "@types/mime-types@npm:2.1.2"
-  checksum: 9e3c78f1c63211e0450901212566a046da68d4438a5e543333ec9b0be3259bd5d01532734dc51ead40104889b98d12c7663b65212a318aafad3e34c98204e9e1
+  version: 2.1.3
+  resolution: "@types/mime-types@npm:2.1.3"
+  checksum: 2b39ed5de6ee607b3738a30c54879b439a8344e6f86e50af3b275cfb7165ed4d13e7f9a54971f1de4f759dd68929351741cf31c1c42e380503e53be6970bbf82
   languageName: node
   linkType: hard
 
@@ -19126,27 +19126,27 @@ __metadata:
   linkType: hard
 
 "@types/minimist@npm:^1.2.0":
-  version: 1.2.3
-  resolution: "@types/minimist@npm:1.2.3"
-  checksum: 666ea4f8c39dcbdfbc3171fe6b3902157c845cc9cb8cee33c10deb706cda5e0cc80f98ace2d6d29f6774b0dc21180c96cd73c592a1cbefe04777247c7ba0e84b
+  version: 1.2.4
+  resolution: "@types/minimist@npm:1.2.4"
+  checksum: d7912f9a466312cbc1333800272b9208178140ef4da2ccec3fa82231c8e67f57f84275b3c19109c4f68f1b7b057baeacc6b80af1de14b58b46e6b54233e44c6a
   languageName: node
   linkType: hard
 
 "@types/mock-fs@npm:^4.10.0, @types/mock-fs@npm:^4.13.0":
-  version: 4.13.2
-  resolution: "@types/mock-fs@npm:4.13.2"
+  version: 4.13.3
+  resolution: "@types/mock-fs@npm:4.13.3"
   dependencies:
     "@types/node": "*"
-  checksum: 726975ae51f7b4068bb059c633ae28a1d85595d3036c235d3f9c9dc3a9c519dc6b811713af1b686807e80a484a6ec47a742a11b4ada32a6e74eee6538a9f4658
+  checksum: 17b34bcec0348d2643b1945871d539f4bf42278a835baf46afbf9e19bcf40a91fec89047c1038b61bec952cb8e614406e79ea3ed22d943caf538a088a8b1b16c
   languageName: node
   linkType: hard
 
 "@types/morgan@npm:^1.9.0":
-  version: 1.9.6
-  resolution: "@types/morgan@npm:1.9.6"
+  version: 1.9.7
+  resolution: "@types/morgan@npm:1.9.7"
   dependencies:
     "@types/node": "*"
-  checksum: 6525248325a74342f929c958be69c0840c8f3a288e003a8904319cae92e531f17a8aa2700701e66775adcca7f9506dd630fec2f95dc04a3e73add04fde42aab8
+  checksum: 3e66ad27bd0ec599981c13bc0425957be861dcb7a31ec464ce01ef98daae828092dbb8250758aeed65c5b28a4ebd449b0baa51064c0611b0e2c8358e2c27cae2
   languageName: node
   linkType: hard
 
