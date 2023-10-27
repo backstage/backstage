@@ -22,6 +22,7 @@ import { stringifyEntityRef } from '@backstage/catalog-model';
 import { Config } from '@backstage/config';
 import { NotFoundError } from '@backstage/errors';
 import {
+  DocsBuildStrategy,
   GeneratorBuilder,
   getLocationForEntity,
   PreparerBuilder,
@@ -34,10 +35,7 @@ import { ScmIntegrations } from '@backstage/integration';
 import { DocsSynchronizer, DocsSynchronizerSyncOpts } from './DocsSynchronizer';
 import { createCacheMiddleware, TechDocsCache } from '../cache';
 import { CachedEntityLoader } from './CachedEntityLoader';
-import {
-  DefaultDocsBuildStrategy,
-  DocsBuildStrategy,
-} from './DocsBuildStrategy';
+import { DefaultDocsBuildStrategy } from './DefaultDocsBuildStrategy';
 import * as winston from 'winston';
 import { PassThrough } from 'stream';
 

@@ -19,17 +19,22 @@ import {
 } from '@backstage/backend-plugin-api';
 import { CatalogBuilder } from './CatalogBuilder';
 import {
+  CatalogAnalysisExtensionPoint,
+  catalogAnalysisExtensionPoint,
   CatalogProcessingExtensionPoint,
   catalogProcessingExtensionPoint,
 } from '@backstage/plugin-catalog-node/alpha';
 import {
   CatalogProcessor,
   EntityProvider,
+  ScmLocationAnalyzer,
 } from '@backstage/plugin-catalog-node';
 import { loggerToWinstonLogger } from '@backstage/backend-common';
 import { PlaceholderResolver } from '../modules';
 
-class CatalogExtensionPointImpl implements CatalogProcessingExtensionPoint {
+class CatalogProcessingExtensionPointImpl
+  implements CatalogProcessingExtensionPoint
+{
   #processors = new Array<CatalogProcessor>();
   #entityProviders = new Array<EntityProvider>();
   #placeholderResolvers: Record<string, PlaceholderResolver> = {};
@@ -67,6 +72,20 @@ class CatalogExtensionPointImpl implements CatalogProcessingExtensionPoint {
   }
 }
 
+class CatalogAnalysisExtensionPointImpl
+  implements CatalogAnalysisExtensionPoint
+{
+  #locationAnalyzers = new Array<ScmLocationAnalyzer>();
+
+  addLocationAnalyzer(analyzer: ScmLocationAnalyzer): void {
+    this.#locationAnalyzers.push(analyzer);
+  }
+
+  get locationAnalyzers() {
+    return this.#locationAnalyzers;
+  }
+}
+
 /**
  * Catalog plugin
  * @alpha
@@ -74,11 +93,17 @@ class CatalogExtensionPointImpl implements CatalogProcessingExtensionPoint {
 export const catalogPlugin = createBackendPlugin({
   pluginId: 'catalog',
   register(env) {
-    const processingExtensions = new CatalogExtensionPointImpl();
+    const processingExtensions = new CatalogProcessingExtensionPointImpl();
     // plugins depending on this API will be initialized before this plugins init method is executed.
     env.registerExtensionPoint(
       catalogProcessingExtensionPoint,
       processingExtensions,
+    );
+
+    const analysisExtensions = new CatalogAnalysisExtensionPointImpl();
+    env.registerExtensionPoint(
+      catalogAnalysisExtensionPoint,
+      analysisExtensions,
     );
 
     env.registerInit({
@@ -116,6 +141,7 @@ export const catalogPlugin = createBackendPlugin({
         Object.entries(processingExtensions.placeholderResolvers).forEach(
           ([key, resolver]) => builder.setPlaceholderResolver(key, resolver),
         );
+        builder.addLocationAnalyzers(...analysisExtensions.locationAnalyzers);
 
         const { processingEngine, router } = await builder.build();
 

@@ -33,6 +33,8 @@ import {
   type EntityProvider as _EntityProvider,
   type EntityProviderConnection as _EntityProviderConnection,
   type EntityProviderMutation as _EntityProviderMutation,
+  type AnalyzeOptions as _AnalyzeOptions,
+  type ScmLocationAnalyzer as _ScmLocationAnalyzer,
 } from '@backstage/plugin-catalog-node';
 import { type LocationSpec as _LocationSpec } from '@backstage/plugin-catalog-common';
 
@@ -141,3 +143,13 @@ export type EntityProviderMutation = _EntityProviderMutation;
  * @deprecated use the same type from `@backstage/plugin-catalog-common` instead
  */
 export type LocationSpec = _LocationSpec;
+/**
+ * @public
+ * @deprecated import from `@backstage/plugin-catalog-node` instead
+ */
+export type AnalyzeOptions = _AnalyzeOptions;
+/**
+ * @public
+ * @deprecated import from `@backstage/plugin-catalog-node` instead
+ */
+export type ScmLocationAnalyzer = _ScmLocationAnalyzer;

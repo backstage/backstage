@@ -46,6 +46,7 @@
     "@azure/identity": "^3.2.1",
     "@azure/storage-blob": "^12.5.0",
     "@backstage/backend-common": "workspace:^",
+    "@backstage/backend-plugin-api": "workspace:^",
     "@backstage/catalog-model": "workspace:^",
     "@backstage/config": "workspace:^",
     "@backstage/errors": "workspace:^",
