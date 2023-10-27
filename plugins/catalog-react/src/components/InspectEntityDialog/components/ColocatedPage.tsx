@@ -36,6 +36,8 @@ import { catalogApiRef } from '../../../api';
 import { EntityRefLink } from '../../EntityRefLink';
 import { KeyValueListItem, ListItemText } from './common';
 import { EntityKindIcon } from './EntityKindIcon';
+import { catalogReactTranslationRef } from '../../../translation';
+import { useTranslationRef } from '@backstage/core-plugin-api/alpha';
 
 const useStyles = makeStyles({
   root: {
@@ -105,6 +107,8 @@ function Contents(props: { entity: Entity }) {
 
   const { loading, error, location, originLocation, colocatedEntities } =
     useColocated(entity);
+  const { t } = useTranslationRef(catalogReactTranslationRef);
+
   if (loading) {
     return <Progress />;
   } else if (error) {
@@ -113,14 +117,12 @@ function Contents(props: { entity: Entity }) {
 
   if (!location && !originLocation) {
     return (
-      <Alert severity="warning">Entity had no location information.</Alert>
-    );
-  } else if (!colocatedEntities?.length) {
-    return (
-      <Alert severity="info">
-        There were no other entities on this location.
+      <Alert severity="warning">
+        {t('entity_had_no_location_information')}
       </Alert>
     );
+  } else if (!colocatedEntities?.length) {
+    return <Alert severity="info">{t('no_other_entities_on_location')}</Alert>;
   }
 
   if (location === originLocation) {
@@ -140,13 +142,13 @@ function Contents(props: { entity: Entity }) {
       {atLocation.length > 0 && (
         <EntityList
           entities={atLocation}
-          header={['At the same location', location!]}
+          header={[t('at_the_same_location'), location!]}
         />
       )}
       {atOrigin.length > 0 && (
         <EntityList
           entities={atOrigin}
-          header={['At the same origin', originLocation!]}
+          header={[t('at_the_same_origin'), originLocation!]}
         />
       )}
     </>
@@ -155,14 +157,11 @@ function Contents(props: { entity: Entity }) {
 
 export function ColocatedPage(props: { entity: Entity }) {
   const classes = useStyles();
+  const { t } = useTranslationRef(catalogReactTranslationRef);
   return (
     <>
-      <DialogContentText variant="h2">Colocated</DialogContentText>
-      <DialogContentText>
-        These are the entities that are colocated with this entity - as in, they
-        originated from the same data source (e.g. came from the same YAML
-        file), or from the same origin (e.g. the originally registered URL).
-      </DialogContentText>
+      <DialogContentText variant="h2">{t('colocated')}</DialogContentText>
+      <DialogContentText>{t('colocated_description')}</DialogContentText>
       <div className={classes.root}>
         <Contents entity={props.entity} />
       </div>

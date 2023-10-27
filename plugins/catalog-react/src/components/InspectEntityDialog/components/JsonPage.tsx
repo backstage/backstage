@@ -19,14 +19,15 @@ import { CodeSnippet } from '@backstage/core-components';
 import { DialogContentText } from '@material-ui/core';
 import React from 'react';
 import { sortKeys } from './util';
+import { catalogReactTranslationRef } from '../../../translation';
+import { useTranslationRef } from '@backstage/core-plugin-api/alpha';
 
 export function JsonPage(props: { entity: Entity }) {
+  const { t } = useTranslationRef(catalogReactTranslationRef);
   return (
     <>
-      <DialogContentText variant="h2">Entity as JSON</DialogContentText>
-      <DialogContentText>
-        This is the raw entity data as received from the catalog, on JSON form.
-      </DialogContentText>
+      <DialogContentText variant="h2">{t('entity_as_json')}</DialogContentText>
+      <DialogContentText>{t('entity_as_json_description')}</DialogContentText>
       <DialogContentText>
         <div style={{ fontSize: '75%' }} data-testid="code-snippet">
           <CodeSnippet

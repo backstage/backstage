@@ -20,12 +20,14 @@ import {
   Button,
   Drawer,
   Grid,
+  Theme,
   Typography,
   useMediaQuery,
   useTheme,
 } from '@material-ui/core';
 import FilterListIcon from '@material-ui/icons/FilterList';
-import { BackstageTheme } from '@backstage/theme';
+import { catalogReactTranslationRef } from '../../translation';
+import { useTranslationRef } from '@backstage/core-plugin-api/alpha';
 
 /** @public */
 export const Filters = (props: {
@@ -35,11 +37,12 @@ export const Filters = (props: {
     drawerAnchor?: 'left' | 'right' | 'top' | 'bottom';
   };
 }) => {
-  const isScreenSmallerThanBreakpoint = useMediaQuery<BackstageTheme>(theme =>
+  const isScreenSmallerThanBreakpoint = useMediaQuery<Theme>(theme =>
     theme.breakpoints.down(props.options?.drawerBreakpoint ?? 'md'),
   );
-  const theme = useTheme<BackstageTheme>();
+  const theme = useTheme<Theme>();
   const [filterDrawerOpen, setFilterDrawerOpen] = useState<boolean>(false);
+  const { t } = useTranslationRef(catalogReactTranslationRef);
 
   return isScreenSmallerThanBreakpoint ? (
     <>
@@ -48,7 +51,7 @@ export const Filters = (props: {
         onClick={() => setFilterDrawerOpen(true)}
         startIcon={<FilterListIcon />}
       >
-        Filters
+        {t('filters')}
       </Button>
       <Drawer
         open={filterDrawerOpen}
@@ -64,7 +67,7 @@ export const Filters = (props: {
             component="h2"
             style={{ marginBottom: theme.spacing(1) }}
           >
-            Filters
+            {t('filters')}
           </Typography>
           {props.children}
         </Box>

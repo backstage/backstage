@@ -27,6 +27,8 @@ import {
   RelatedEntitiesCard,
   resourceEntityColumns,
 } from '../RelatedEntitiesCard';
+import { catalogTranslationRef } from '../../translation';
+import { useTranslationRef } from '@backstage/core-plugin-api/alpha';
 
 /** @public */
 export interface DependsOnResourcesCardProps {
@@ -37,9 +39,11 @@ export interface DependsOnResourcesCardProps {
 }
 
 export function DependsOnResourcesCard(props: DependsOnResourcesCardProps) {
+  const { t } = useTranslationRef(catalogTranslationRef);
+
   const {
     variant = 'gridItem',
-    title = 'Depends on resources',
+    title = t('depends_on_resources'),
     columns = resourceEntityColumns,
     tableOptions = {},
   } = props;
@@ -50,7 +54,7 @@ export function DependsOnResourcesCard(props: DependsOnResourcesCardProps) {
       entityKind="Resource"
       relationType={RELATION_DEPENDS_ON}
       columns={columns}
-      emptyMessage="No resource is a dependency of this component"
+      emptyMessage={t('no_resource_dependency_of_component')}
       emptyHelpLink={componentEntityHelpLink}
       asRenderableEntities={asResourceEntities}
       tableOptions={tableOptions}

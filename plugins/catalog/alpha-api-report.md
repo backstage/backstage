@@ -11,6 +11,90 @@ import { Extension } from '@backstage/frontend-plugin-api';
 import { ExternalRouteRef } from '@backstage/frontend-plugin-api';
 import { PortableSchema } from '@backstage/frontend-plugin-api';
 import { RouteRef } from '@backstage/frontend-plugin-api';
+import { TranslationRef } from '@backstage/core-plugin-api/alpha';
+
+// @alpha (undocumented)
+export const catalogTranslationRef: TranslationRef<
+  'catalog',
+  {
+    readonly catalog_page_title: '{{orgName}} Catalog';
+    readonly catalog_page_create_button_title: 'Create';
+    readonly all_your_software_catalog: 'All your software catalog entities';
+    readonly about: 'About';
+    readonly schedule_entity_refresh: 'Schedule entity refresh';
+    readonly edit_metadata: 'Edit Metadata';
+    readonly refresh_scheduled: 'Refresh scheduled';
+    readonly view_source: 'View Source';
+    readonly view_techdocs: 'View TechDocs';
+    readonly launch_template: 'Launch Template';
+    readonly no_description: 'No description';
+    readonly no_owner: 'No Owner';
+    readonly no_domain: 'No Domain';
+    readonly no_system: 'No System';
+    readonly no_parent_component: 'No Parent Component';
+    readonly no_tags: 'No Tags';
+    readonly description: 'Description';
+    readonly owner: 'Owner';
+    readonly domain: 'Domain';
+    readonly system: 'System';
+    readonly parent_component: 'Parent Component';
+    readonly type: 'Type';
+    readonly lifecycle: 'Lifecycle';
+    readonly tags: 'Tags';
+    readonly targets: 'Targets';
+    readonly unknown: 'unknown';
+    readonly name: 'Name';
+    readonly title: 'Title';
+    readonly label: 'Label';
+    readonly labels: 'Labels';
+    readonly namespace: 'Namespace';
+    readonly could_not_fetch_catalog: 'Could not fetch catalog entities.';
+    readonly view: 'View';
+    readonly edit: 'Edit';
+    readonly remove_from_favorites: 'Remove from favorites';
+    readonly add_to_favorites: 'Add to favorites';
+    readonly dependency_of_components: 'Dependency of components';
+    readonly no_depends_on_component: 'No component depends on this component';
+    readonly depends_on_components: 'Depends on components';
+    readonly no_dependency_of_component: 'No component is a dependency of this component';
+    readonly depends_on_resources: 'Depends on resources';
+    readonly no_resource_dependency_of_component: 'No resource is a dependency of this component';
+    readonly copied: 'Copied!';
+    readonly more: 'More';
+    readonly copy_entity_url: 'Copy entity URL';
+    readonly inspect_entity: 'Inspect entity';
+    readonly unregister_entity: 'Unregister entity';
+    readonly read_more: 'Read more';
+    readonly no_attribute_defind_for_entity_description: 'No {{attribute}} defined for this entity. You can add {{attribute}} to your entity YAML as shown in the highlighted example below:';
+    readonly entity_not_found: 'Entity not found';
+    readonly entity_not_found_description: 'There is no {{kind}} with the requested';
+    readonly entity_not_found_description_suffix: 'kind, namespace, and name';
+    readonly links: 'links';
+    readonly docs: 'DOCS';
+    readonly want_to_help_start_with_doc: 'Want to help us build this? Check out our Getting Started documentation.';
+    readonly confirm_delete_entity_title: 'Are you sure you want to delete this entity?';
+    readonly delete: 'Delete';
+    readonly cancel: 'Cancel';
+    readonly entity_orphan_warning_description: 'This entity is not referenced by any location and is therefore not receiving updates. Click here to delete.';
+    readonly entity_processing_error_description: 'The error below originates from';
+    readonly entity_relation_warnning_description: "This entity has relations to other entities, which can't be found in the catalog. \n Entities not found are: {{value}}";
+    readonly no_component_is_part_of_system: 'No component is part of this system';
+    readonly has_components: 'Has components';
+    readonly has_resources: 'Has resources';
+    readonly no_resource_is_part_of_system: 'No resource is part of this system';
+    readonly has_subcomponents: 'Has subcomponents';
+    readonly no_subcomponent_is_part_of_component: 'No subcomponent is part of this component';
+    readonly has_systems: 'Has systems';
+    readonly no_system_is_part_of_domain: 'No system is part of this domain';
+    readonly learn_how_to_change_this: 'Learn how to change this.';
+    readonly part_of: 'part of';
+    readonly provides: 'provides';
+    readonly depends_on: 'depends on';
+    readonly system_diagram: 'System Diagram';
+    readonly use_pinch_zoo_to_move_around_diagram: 'Use pinch & zoo to move around the diagram.';
+    readonly all: 'all';
+  }
+>;
 
 // @alpha (undocumented)
 export function createCatalogFilterExtension<

@@ -34,6 +34,8 @@ import { useUnregisterEntityDialogState } from './useUnregisterEntityDialogState
 import { alertApiRef, configApiRef, useApi } from '@backstage/core-plugin-api';
 import { Progress, ResponseErrorPanel } from '@backstage/core-components';
 import { assertError } from '@backstage/errors';
+import { catalogReactTranslationRef } from '../../translation';
+import { useTranslationRef } from '@backstage/core-plugin-api/alpha';
 
 const useStyles = makeStyles({
   advancedButton: {
@@ -60,6 +62,7 @@ const Contents = ({
   const [showDelete, setShowDelete] = useState(false);
   const [busy, setBusy] = useState(false);
   const appTitle = configApi.getOptionalString('app.title') ?? 'Backstage';
+  const { t } = useTranslationRef(catalogReactTranslationRef);
 
   const onUnregister = useCallback(
     async function onUnregisterFn() {
@@ -88,7 +91,7 @@ const Contents = ({
           const entityName = entity.metadata.title ?? entity.metadata.name;
           onConfirm();
           alertApi.post({
-            message: `Removed entity ${entityName}`,
+            message: t('remove_entity_by_name', { entityName }),
             severity: 'success',
             display: 'transient',
           });
@@ -100,13 +103,13 @@ const Contents = ({
         }
       }
     },
-    [alertApi, onConfirm, state, entity],
+    [alertApi, onConfirm, state, entity, t],
   );
 
   const DialogActionsPanel = () => (
     <DialogActions className={classes.dialogActions}>
       <Button onClick={onClose} color="primary">
-        Cancel
+        {t('cancel')}
       </Button>
     </DialogActions>
   );
@@ -123,10 +126,10 @@ const Contents = ({
     return (
       <>
         <Alert severity="info">
-          You cannot unregister this entity, since it originates from a
-          protected Backstage configuration (location "{state.location}"). If
-          you believe this is in error, please contact the {appTitle}{' '}
-          integrator.
+          {t('cannot_unregister_entity_due_to_protected', {
+            location: state.location,
+            appTitle,
+          })}
         </Alert>
 
         <Box marginTop={2}>
@@ -139,7 +142,7 @@ const Contents = ({
                 className={classes.advancedButton}
                 onClick={() => setShowDelete(true)}
               >
-                Advanced Options
+                {t('advanced_options')}
               </Button>
               <DialogActionsPanel />
             </>
@@ -148,11 +151,7 @@ const Contents = ({
           {showDelete && (
             <>
               <DialogContentText>
-                You have the option to delete the entity itself from the
-                catalog. Note that this should only be done if you know that the
-                catalog file has been deleted at, or moved from, its origin
-                location. If that is not the case, the entity will reappear
-                shortly as the next refresh round is performed by the catalog.
+                {t('delete_entity_description')}
               </DialogContentText>
               <Button
                 variant="contained"
@@ -160,7 +159,7 @@ const Contents = ({
                 disabled={busy}
                 onClick={onDelete}
               >
-                Delete Entity
+                {t('delete_entity')}
               </Button>
               <DialogActionsPanel />
             </>
@@ -174,8 +173,7 @@ const Contents = ({
     return (
       <>
         <DialogContentText>
-          This entity does not seem to originate from a registered location. You
-          therefore only have the option to delete it outright from the catalog.
+          {t('delete_entity_only_delete_description')}
         </DialogContentText>
         <Button
           variant="contained"
@@ -183,7 +181,7 @@ const Contents = ({
           disabled={busy}
           onClick={onDelete}
         >
-          Delete Entity
+          {t('delete_entity')}
         </Button>
         <DialogActionsPanel />
       </>
@@ -194,7 +192,7 @@ const Contents = ({
     return (
       <>
         <DialogContentText>
-          This action will unregister the following entities:
+          {t('action_will_unregister_entities')}
         </DialogContentText>
         <DialogContentText component="ul">
           {state.colocatedEntities.map(e => (
@@ -204,13 +202,13 @@ const Contents = ({
           ))}
         </DialogContentText>
         <DialogContentText>
-          Located at the following location:
+          {t('located_at_following_location')}
         </DialogContentText>
         <DialogContentText component="ul">
           <li>{state.location}</li>
         </DialogContentText>
         <DialogContentText>
-          To undo, just re-register the entity in {appTitle}.
+          {t('to_undo_re_register_entity', { appTitle })}
         </DialogContentText>
         <Box marginTop={2}>
           <Button
@@ -219,7 +217,7 @@ const Contents = ({
             disabled={busy}
             onClick={onUnregister}
           >
-            Unregister Location
+            {t('unregister_location')}
           </Button>
           {!showDelete && (
             <Box component="span" marginLeft={2}>
@@ -230,7 +228,7 @@ const Contents = ({
                 className={classes.advancedButton}
                 onClick={() => setShowDelete(true)}
               >
-                Advanced Options
+                {t('advanced_options')}
               </Button>
             </Box>
           )}
@@ -242,11 +240,7 @@ const Contents = ({
               <Divider />
             </Box>
             <DialogContentText>
-              You also have the option to delete the entity itself from the
-              catalog. Note that this should only be done if you know that the
-              catalog file has been deleted at, or moved from, its origin
-              location. If that is not the case, the entity will reappear
-              shortly as the next refresh round is performed by the catalog.
+              {t('delete_entity_advance_option_description')}
             </DialogContentText>
             <Button
               variant="contained"
@@ -254,7 +248,7 @@ const Contents = ({
               disabled={busy}
               onClick={onDelete}
             >
-              Delete Entity
+              {t('delete_entity')}
             </Button>
           </>
         )}
@@ -262,7 +256,7 @@ const Contents = ({
     );
   }
 
-  return <Alert severity="error">Internal error: Unknown state</Alert>;
+  return <Alert severity="error">{t('internal_unknown_error')}</Alert>;
 };
 
 /** @public */
@@ -276,10 +270,11 @@ export type UnregisterEntityDialogProps = {
 /** @public */
 export const UnregisterEntityDialog = (props: UnregisterEntityDialogProps) => {
   const { open, onConfirm, onClose, entity } = props;
+  const { t } = useTranslationRef(catalogReactTranslationRef);
   return (
     <Dialog open={open} onClose={onClose}>
       <DialogTitle id="responsive-dialog-title">
-        Are you sure you want to unregister this entity?
+        {t('confirm_unregister_entity')}
       </DialogTitle>
       <DialogContent>
         <Contents entity={entity} onConfirm={onConfirm} onClose={onClose} />

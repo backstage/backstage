@@ -49,6 +49,8 @@ import { Alert } from '@material-ui/lab';
 import React, { useEffect, useState } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
 import { EntityContextMenu } from '../EntityContextMenu/EntityContextMenu';
+import { catalogTranslationRef } from '../../translation';
+import { useTranslationRef } from '@backstage/core-plugin-api/alpha';
 
 /** @public */
 export type EntityLayoutRouteProps = {
@@ -113,11 +115,12 @@ function headerProps(
 function EntityLabels(props: { entity: Entity }) {
   const { entity } = props;
   const ownedByRelations = getEntityRelations(entity, RELATION_OWNED_BY);
+  const { t } = useTranslationRef(catalogTranslationRef);
   return (
     <>
       {ownedByRelations.length > 0 && (
         <HeaderLabel
-          label="Owner"
+          label={t('owner')}
           value={
             <EntityRefLinks
               entityRefs={ownedByRelations}
@@ -129,7 +132,7 @@ function EntityLabels(props: { entity: Entity }) {
       )}
       {entity.spec?.lifecycle && (
         <HeaderLabel
-          label="Lifecycle"
+          label={t('lifecycle')}
           value={entity.spec.lifecycle?.toString()}
         />
       )}
@@ -188,6 +191,7 @@ export const EntityLayout = (props: EntityLayoutProps) => {
   const { kind, namespace, name } = useRouteRefParams(entityRouteRef);
   const { entity, loading, error } = useAsyncEntity();
   const location = useLocation();
+  const { t } = useTranslationRef(catalogTranslationRef);
   const routes = useElementFilter(
     children,
     elements =>
@@ -276,10 +280,10 @@ export const EntityLayout = (props: EntityLayoutProps) => {
           {NotFoundComponent ? (
             NotFoundComponent
           ) : (
-            <WarningPanel title="Entity not found">
-              There is no {kind} with the requested{' '}
+            <WarningPanel title={t('entity_not_found')}>
+              {t('entity_not_found_description', { kind })}{' '}
               <Link to="https://backstage.io/docs/features/software-catalog/references">
-                kind, namespace, and name
+                {t('entity_not_found_description_suffix')}
               </Link>
               .
             </WarningPanel>

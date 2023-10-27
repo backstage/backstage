@@ -31,6 +31,8 @@ import {
   TableColumn,
   TableOptions,
 } from '@backstage/core-components';
+import { catalogTranslationRef } from '../../translation';
+import { useTranslationRef } from '@backstage/core-plugin-api/alpha';
 
 /** @public */
 export type RelatedEntitiesCardProps<T extends Entity> = {
@@ -77,6 +79,7 @@ export function RelatedEntitiesCard<T extends Entity>(
     type: relationType,
     kind: entityKind,
   });
+  const { t } = useTranslationRef(catalogTranslationRef);
 
   if (loading) {
     return (
@@ -102,7 +105,7 @@ export function RelatedEntitiesCard<T extends Entity>(
         <div style={{ textAlign: 'center' }}>
           <Typography variant="body1">{emptyMessage}</Typography>
           <Typography variant="body2">
-            <Link to={emptyHelpLink}>Learn how to change this.</Link>
+            <Link to={emptyHelpLink}>{t('learn_how_to_change_this')}</Link>
           </Typography>
         </div>
       }

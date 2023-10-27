@@ -29,6 +29,8 @@ import ExpandMoreIcon from '@material-ui/icons/ExpandMore';
 import React, { useState } from 'react';
 import { useEntityList } from '../../hooks';
 import { Autocomplete } from '@material-ui/lab';
+import { catalogReactTranslationRef } from '../../translation';
+import { useTranslationRef } from '@backstage/core-plugin-api/alpha';
 
 /** @public */
 export type CatalogReactEntityProcessingStatusPickerClassKey = 'input';
@@ -49,6 +51,7 @@ const checkedIcon = <CheckBoxIcon fontSize="small" />;
 export const EntityProcessingStatusPicker = () => {
   const classes = useStyles();
   const { updateFilters } = useEntityList();
+  const { t } = useTranslationRef(catalogReactTranslationRef);
 
   const [selectedAdvancedItems, setSelectedAdvancedItems] = useState<string[]>(
     [],
@@ -71,7 +74,7 @@ export const EntityProcessingStatusPicker = () => {
   return (
     <Box pb={1} pt={1}>
       <Typography variant="button" component="label">
-        Processing Status
+        {t('processing_status')}
         <Autocomplete
           multiple
           disableCloseOnSelect

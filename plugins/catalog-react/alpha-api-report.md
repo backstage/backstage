@@ -13,6 +13,69 @@ import { ExtensionInputValues } from '@backstage/frontend-plugin-api';
 import { PortableSchema } from '@backstage/frontend-plugin-api';
 import { ResourcePermission } from '@backstage/plugin-permission-common';
 import { RouteRef } from '@backstage/frontend-plugin-api';
+import { TranslationRef } from '@backstage/core-plugin-api/alpha';
+
+// @alpha (undocumented)
+export const catalogReactTranslationRef: TranslationRef<
+  'catalog-react',
+  {
+    readonly filters: 'Filters';
+    readonly failed_to_load_entity_kinds: 'Failed to load entity kinds';
+    readonly kind: 'Kind';
+    readonly lifecycle: 'Lifecycle';
+    readonly namespace: 'Namespace';
+    readonly owner: 'Owner';
+    readonly special_email: 'Email {{email}}';
+    readonly mailto: 'mailto:{{email}}';
+    readonly show_details: 'Show details';
+    readonly drill_into_entity_to_see_tags: 'Drill into the entity to see all of the tags.';
+    readonly processing_status: 'Processing Status';
+    readonly search: 'Search';
+    readonly tags: 'Tags';
+    readonly failed_to_load_entity_types: 'Failed to load entity types';
+    readonly type: 'Type';
+    readonly all: 'All';
+    readonly remove_from_favorites: 'Remove from favorites';
+    readonly add_to_favorites: 'Add to favorites';
+    readonly ancestry: 'Ancestry';
+    readonly entity_had_no_location_information: 'Entity had no location information.';
+    readonly no_other_entities_on_location: 'There were no other entities on this location.';
+    readonly colocated: 'Colocated';
+    readonly colocated_description: 'These are the entities that are colocated with this entity - as in, they originated from the same data source (e.g. came from the same YAML file), or from the same origin (e.g. the originally registered URL).';
+    readonly at_the_same_location: 'At the same location';
+    readonly at_the_same_origin: 'At the same origin';
+    readonly entity_as_json: 'Entity as JSON';
+    readonly entity_as_json_description: 'This is the raw entity data as received from the catalog, on JSON form.';
+    readonly overview: 'Overview';
+    readonly annotations: 'Annotations';
+    readonly labels: 'Labels';
+    readonly entity_as_yaml: 'Entity as YAML';
+    readonly entity_as_yaml_description: 'This is the raw entity data as received from the catalog, on YAML form.';
+    readonly entity_inspector: 'Entity Inspector';
+    readonly close: 'Close';
+    readonly cancel: 'Cancel';
+    readonly remove_entity_by_name: 'Removed entity {{entityName}}';
+    readonly cannot_unregister_entity_due_to_protected: 'You cannot unregister this entity, since it originates from a protected Backstage configuration (location "{{location}}"). If you believe this is in error, please contact the {{appTitle}} integrator.';
+    readonly advanced_options: 'Advanced Options';
+    readonly delete_entity_description: 'You have the option to delete the entity itself from the catalog. Note that this should only be done if you know that the catalog file has been deleted at, or moved from, its origin location. If that is not the case, the entity will reappear shortly as the next refresh round is performed by the catalog.';
+    readonly delete_entity: 'Delete Entity';
+    readonly delete_entity_only_delete_description: 'This entity does not seem to originate from a registered location. You therefore only have the option to delete it outright from the catalog.';
+    readonly action_will_unregister_entities: 'This action will unregister the following entities:';
+    readonly located_at_following_location: 'Located at the following location:';
+    readonly to_undo_re_register_entity: 'To undo, just re-register the entity in {{appTitle}}.';
+    readonly unregister_location: 'Unregister Location';
+    readonly delete_entity_advance_option_description: 'You also have the option to delete the entity itself from the catalog. Note that this should only be done if you know that the catalog file has been deleted at, or moved from, its origin location. If that is not the case, the entity will reappear shortly as the next refresh round is performed by the catalog.';
+    readonly internal_unknown_error: 'Internal error: Unknown state';
+    readonly confirm_unregister_entity: 'Are you sure you want to unregister this entity?';
+    readonly personal: 'Personal';
+    readonly company: 'Company';
+    readonly starred: 'Starred';
+    readonly owned: 'Owned';
+    readonly ancestry_link_prefix: 'This is the ancestry of entities above the current one - as in, the chain(s) of entities down to the current one, where ';
+    readonly ancestry_link: 'processors emitted';
+    readonly ancestry_link_suffix: ' child entities that ultimately led to the current one existing. Note that this is a completely different mechanism from relations.';
+  }
+>;
 
 // @alpha (undocumented)
 export function createEntityCardExtension<

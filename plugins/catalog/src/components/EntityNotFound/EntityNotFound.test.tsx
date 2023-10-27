@@ -22,7 +22,7 @@ import { EntityNotFound } from './EntityNotFound';
 describe('<EntityNotFound />', () => {
   it('renders without exploding', async () => {
     await renderInTestApp(<EntityNotFound />);
-    expect(screen.getByText(/entity was not found/i)).toBeInTheDocument();
+    expect(screen.getByText(/entity not found/i)).toBeInTheDocument();
     expect(
       screen.getByText(/getting started documentation/i),
     ).toBeInTheDocument();

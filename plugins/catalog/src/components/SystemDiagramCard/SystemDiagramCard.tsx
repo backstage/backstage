@@ -33,7 +33,6 @@ import { Box, makeStyles, Typography, useTheme } from '@material-ui/core';
 import ZoomOutMap from '@material-ui/icons/ZoomOutMap';
 import React from 'react';
 import useAsync from 'react-use/lib/useAsync';
-import { BackstageTheme } from '@backstage/theme';
 
 import {
   DependencyGraph,
@@ -45,6 +44,8 @@ import {
 } from '@backstage/core-components';
 
 import { useApi, useRouteRef } from '@backstage/core-plugin-api';
+import { catalogTranslationRef } from '../../translation';
+import { useTranslationRef } from '@backstage/core-plugin-api/alpha';
 
 /** @public */
 export type SystemDiagramCardClassKey =
@@ -55,7 +56,7 @@ export type SystemDiagramCardClassKey =
   | 'resourceNode';
 
 const useStyles = makeStyles(
-  (theme: BackstageTheme) => ({
+  theme => ({
     domainNode: {
       fill: theme.palette.primary.main,
       stroke: theme.palette.border,
@@ -167,6 +168,7 @@ export function SystemDiagramCard() {
   const currentSystemNode = stringifyEntityRef(entity);
   const systemNodes = new Array<{ id: string; kind: string; name: string }>();
   const systemEdges = new Array<{ from: string; to: string; label: string }>();
+  const { t } = useTranslationRef(catalogTranslationRef);
 
   const catalogApi = useApi(catalogApiRef);
   const {
@@ -210,7 +212,7 @@ export function SystemDiagramCard() {
     systemEdges.push({
       from: currentSystemNode,
       to: stringifyEntityRef(foundDomain),
-      label: 'part of',
+      label: t('part_of'),
     }),
   );
 
@@ -234,7 +236,7 @@ export function SystemDiagramCard() {
         systemEdges.push({
           from: stringifyEntityRef(catalogItem),
           to: stringifyEntityRef(foundRelation),
-          label: 'part of',
+          label: t('part_of'),
         }),
       );
 
@@ -246,7 +248,7 @@ export function SystemDiagramCard() {
         systemEdges.push({
           from: stringifyEntityRef(catalogItem),
           to: stringifyEntityRef(foundRelation),
-          label: 'provides',
+          label: t('provides'),
         }),
       );
 
@@ -258,7 +260,7 @@ export function SystemDiagramCard() {
         systemEdges.push({
           from: stringifyEntityRef(catalogItem),
           to: stringifyEntityRef(foundRelation),
-          label: 'depends on',
+          label: t('depends_on'),
         }),
       );
     }
@@ -271,7 +273,7 @@ export function SystemDiagramCard() {
   }
 
   return (
-    <InfoCard title="System Diagram">
+    <InfoCard title={t('system_diagram')}>
       <DependencyGraph
         nodes={systemNodes}
         edges={systemEdges}
@@ -286,8 +288,8 @@ export function SystemDiagramCard() {
         variant="caption"
         style={{ display: 'block', textAlign: 'right' }}
       >
-        <ZoomOutMap style={{ verticalAlign: 'bottom' }} /> Use pinch &amp; zoom
-        to move around the diagram.
+        <ZoomOutMap style={{ verticalAlign: 'bottom' }} />{' '}
+        {t('use_pinch_zoo_to_move_around_diagram')}
       </Typography>
     </InfoCard>
   );

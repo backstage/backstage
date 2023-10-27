@@ -60,6 +60,8 @@ import DocsIcon from '@material-ui/icons/Description';
 import EditIcon from '@material-ui/icons/Edit';
 import { isTemplateEntityV1beta3 } from '@backstage/plugin-scaffolder-common';
 import { parseEntityRef } from '@backstage/catalog-model';
+import { catalogTranslationRef } from '../../translation';
+import { useTranslationRef } from '@backstage/core-plugin-api/alpha';
 
 const TECHDOCS_ANNOTATION = 'backstage.io/techdocs-ref';
 
@@ -108,6 +110,7 @@ export function AboutCard(props: AboutCardProps) {
   const errorApi = useApi(errorApiRef);
   const viewTechdocLink = useRouteRef(viewTechDocRouteRef);
   const templateRoute = useRouteRef(createFromTemplateRouteRef);
+  const { t } = useTranslationRef(catalogTranslationRef);
 
   const entitySourceLocation = getEntitySourceLocation(
     entity,
@@ -130,13 +133,13 @@ export function AboutCard(props: AboutCardProps) {
   }
 
   const viewInSource: IconLinkVerticalProps = {
-    label: 'View Source',
+    label: t('view_source'),
     disabled: !entitySourceLocation,
     icon: <ScmIntegrationIcon type={entitySourceLocation?.integrationType} />,
     href: entitySourceLocation?.locationTargetUrl,
   };
   const viewInTechDocs: IconLinkVerticalProps = {
-    label: 'View TechDocs',
+    label: t('view_techdocs'),
     disabled:
       !(
         entity.metadata.annotations?.[TECHDOCS_ANNOTATION] ||
@@ -164,7 +167,7 @@ export function AboutCard(props: AboutCardProps) {
     const Icon = app.getSystemIcon('scaffolder') ?? CreateComponentIcon;
 
     const launchTemplate: IconLinkVerticalProps = {
-      label: 'Launch Template',
+      label: t('launch_template'),
       icon: <Icon />,
       disabled: !templateRoute,
       href:
@@ -200,25 +203,25 @@ export function AboutCard(props: AboutCardProps) {
     try {
       await catalogApi.refreshEntity(stringifyEntityRef(entity));
       alertApi.post({
-        message: 'Refresh scheduled',
+        message: t('refresh_scheduled'),
         severity: 'info',
         display: 'transient',
       });
     } catch (e) {
       errorApi.post(e);
     }
-  }, [catalogApi, alertApi, errorApi, entity]);
+  }, [catalogApi, entity, alertApi, t, errorApi]);
 
   return (
     <Card className={cardClass}>
       <CardHeader
-        title="About"
+        title={t('about')}
         action={
           <>
             {allowRefresh && (
               <IconButton
                 aria-label="Refresh"
-                title="Schedule entity refresh"
+                title={t('schedule_entity_refresh')}
                 onClick={refreshEntity}
               >
                 <CachedIcon />
@@ -228,7 +231,7 @@ export function AboutCard(props: AboutCardProps) {
               component={Link}
               aria-label="Edit"
               disabled={!entityMetadataEditUrl}
-              title="Edit Metadata"
+              title={t('edit_metadata')}
               to={entityMetadataEditUrl ?? '#'}
             >
               <EditIcon />

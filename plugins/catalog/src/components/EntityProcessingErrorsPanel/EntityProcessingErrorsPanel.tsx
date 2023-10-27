@@ -31,6 +31,8 @@ import {
 import { useApi, ApiHolder } from '@backstage/core-plugin-api';
 import useAsync from 'react-use/lib/useAsync';
 import { SerializedError } from '@backstage/errors';
+import { catalogTranslationRef } from '../../translation';
+import { useTranslationRef } from '@backstage/core-plugin-api/alpha';
 
 const errorFilter = (i: EntityStatusItem) =>
   i.error &&
@@ -96,6 +98,8 @@ export function EntityProcessingErrorsPanel() {
     return getOwnAndAncestorsErrors(entityRef, catalogApi);
   }, [entityRef, catalogApi]);
 
+  const { t } = useTranslationRef(catalogTranslationRef);
+
   if (error) {
     return (
       <Box mb={1}>
@@ -115,7 +119,7 @@ export function EntityProcessingErrorsPanel() {
           {stringifyEntityRef(entity) !==
             stringifyEntityRef(ancestorError.entity) && (
             <Box p={1}>
-              The error below originates from{' '}
+              {t('entity_processing_error_description')}{' '}
               <EntityRefLink entityRef={ancestorError.entity} />
             </Box>
           )}

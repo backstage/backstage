@@ -66,7 +66,7 @@ export function BaseCatalogPage(props: BaseCatalogPageProps) {
             title={t('catalog_page_create_button_title')}
             to={createComponentLink && createComponentLink()}
           />
-          <SupportButton>All your software catalog entities</SupportButton>
+          <SupportButton>{t('all_your_software_catalog')}</SupportButton>
         </ContentHeader>
         <EntityListProvider>
           <CatalogFilterLayout>

@@ -36,6 +36,8 @@ import { catalogApiRef } from '../../../api';
 import { humanizeEntityRef } from '../../EntityRefLink';
 import { entityRouteRef } from '../../../routes';
 import { EntityKindIcon } from './EntityKindIcon';
+import { catalogReactTranslationRef } from '../../../translation';
+import { useTranslationRef } from '@backstage/core-plugin-api/alpha';
 
 const useStyles = makeStyles(theme => ({
   node: {
@@ -190,6 +192,8 @@ function CustomNode({ node }: DependencyGraphTypes.RenderNodeProps<NodeType>) {
 
 export function AncestryPage(props: { entity: Entity }) {
   const { loading, error, nodes, edges } = useAncestry(props.entity);
+  const { t } = useTranslationRef(catalogReactTranslationRef);
+
   if (loading) {
     return <Progress />;
   } else if (error) {
@@ -198,15 +202,13 @@ export function AncestryPage(props: { entity: Entity }) {
 
   return (
     <>
-      <DialogContentText variant="h2">Ancestry</DialogContentText>
+      <DialogContentText variant="h2">{t('ancestry')}</DialogContentText>
       <DialogContentText gutterBottom>
-        This is the ancestry of entities above the current one - as in, the
-        chain(s) of entities down to the current one, where{' '}
+        {t('ancestry_link_prefix')}
         <Link to="https://backstage.io/docs/features/software-catalog/life-of-an-entity">
-          processors emitted
-        </Link>{' '}
-        child entities that ultimately led to the current one existing. Note
-        that this is a completely different mechanism from relations.
+          {t('ancestry_link')}
+        </Link>
+        {t('ancestry_link_suffix')}
       </DialogContentText>
       <Box mt={4}>
         <DependencyGraph

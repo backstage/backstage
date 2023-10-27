@@ -15,7 +15,7 @@
  */
 
 import React from 'react';
-import { fireEvent, render, waitFor, screen } from '@testing-library/react';
+import { fireEvent, waitFor, screen } from '@testing-library/react';
 import { UserEntity } from '@backstage/catalog-model';
 import { UserListPicker, UserListPickerProps } from './UserListPicker';
 import { MockEntityListContextProvider } from '../../testUtils/providers';
@@ -30,7 +30,11 @@ import {
   QueryEntitiesInitialRequest,
 } from '@backstage/catalog-client';
 import { catalogApiRef } from '../../api';
-import { MockStorageApi, TestApiRegistry } from '@backstage/test-utils';
+import {
+  MockStorageApi,
+  TestApiRegistry,
+  renderInTestApp,
+} from '@backstage/test-utils';
 import { ApiProvider } from '@backstage/core-app-api';
 import {
   ConfigApi,
@@ -144,7 +148,7 @@ describe('<UserListPicker />', () => {
   });
 
   it('renders filter groups', async () => {
-    render(
+    await renderInTestApp(
       <ApiProvider apis={apis}>
         <MockEntityListContextProvider value={{}}>
           <UserListPicker />
@@ -163,7 +167,7 @@ describe('<UserListPicker />', () => {
   });
 
   it('renders filters', async () => {
-    render(
+    await renderInTestApp(
       <ApiProvider apis={apis}>
         <MockEntityListContextProvider
           value={{
@@ -207,7 +211,7 @@ describe('<UserListPicker />', () => {
   });
 
   it('respects other frontend filters in counts', async () => {
-    render(
+    await renderInTestApp(
       <ApiProvider apis={apis}>
         <MockEntityListContextProvider
           value={{
@@ -245,7 +249,7 @@ describe('<UserListPicker />', () => {
   it('respects the query parameter filter value', async () => {
     const updateFilters = jest.fn();
     const queryParameters = { user: 'owned', kind: 'component' };
-    render(
+    await renderInTestApp(
       <ApiProvider apis={apis}>
         <MockEntityListContextProvider
           value={{
@@ -287,7 +291,7 @@ describe('<UserListPicker />', () => {
 
   it('updates user filter when a menuitem is selected', async () => {
     const updateFilters = jest.fn();
-    render(
+    await renderInTestApp(
       <ApiProvider apis={apis}>
         <MockEntityListContextProvider value={{ updateFilters }}>
           <UserListPicker />
@@ -309,7 +313,7 @@ describe('<UserListPicker />', () => {
 
   it('responds to external queryParameters changes', async () => {
     const updateFilters = jest.fn();
-    const rendered = render(
+    const rendered = await renderInTestApp(
       <ApiProvider apis={apis}>
         <MockEntityListContextProvider
           value={{
@@ -377,7 +381,7 @@ describe('<UserListPicker />', () => {
       it('does not reset the filter while entities are loading', async () => {
         mockCatalogApi.queryEntities?.mockReturnValue(new Promise(() => {}));
 
-        render(<Picker initialFilter="owned" />);
+        await renderInTestApp(<Picker initialFilter="owned" />);
 
         await waitFor(() =>
           expect(mockCatalogApi.queryEntities).toHaveBeenCalled(),
@@ -403,7 +407,7 @@ describe('<UserListPicker />', () => {
           return mockQueryEntitiesImplementation(request);
         });
 
-        render(<Picker initialFilter="owned" />);
+        await renderInTestApp(<Picker initialFilter="owned" />);
 
         await waitFor(() =>
           expect(mockCatalogApi.queryEntities).toHaveBeenCalledTimes(3),
@@ -428,7 +432,7 @@ describe('<UserListPicker />', () => {
           return mockQueryEntitiesImplementation(request);
         });
 
-        render(<Picker initialFilter="owned" />);
+        await renderInTestApp(<Picker initialFilter="owned" />);
 
         await waitFor(() =>
           expect(updateFilters).toHaveBeenLastCalledWith({
@@ -444,7 +448,7 @@ describe('<UserListPicker />', () => {
           () => new Promise(() => {}),
         );
 
-        render(<Picker initialFilter="starred" />);
+        await renderInTestApp(<Picker initialFilter="starred" />);
 
         await waitFor(() =>
           expect(mockCatalogApi.queryEntities).toHaveBeenCalled(),
@@ -467,7 +471,7 @@ describe('<UserListPicker />', () => {
           return mockQueryEntitiesImplementation(request);
         });
 
-        render(<Picker initialFilter="starred" />);
+        await renderInTestApp(<Picker initialFilter="starred" />);
 
         await waitFor(() =>
           expect(mockCatalogApi.queryEntities).toHaveBeenCalledTimes(3),
@@ -492,7 +496,7 @@ describe('<UserListPicker />', () => {
           return mockQueryEntitiesImplementation(request);
         });
 
-        render(<Picker initialFilter="starred" />);
+        await renderInTestApp(<Picker initialFilter="starred" />);
 
         await waitFor(() =>
           expect(updateFilters).toHaveBeenLastCalledWith({
@@ -518,7 +522,7 @@ describe('<UserListPicker />', () => {
           return mockQueryEntitiesImplementation(request);
         });
 
-        render(<Picker initialFilter="owned" />);
+        await renderInTestApp(<Picker initialFilter="owned" />);
 
         await waitFor(() =>
           expect(mockCatalogApi.queryEntities).toHaveBeenCalledTimes(3),
@@ -529,7 +533,7 @@ describe('<UserListPicker />', () => {
       });
 
       it('does not reset the filter when entities are loaded', async () => {
-        render(<Picker initialFilter="owned" />);
+        await renderInTestApp(<Picker initialFilter="owned" />);
 
         await waitFor(() =>
           expect(mockCatalogApi.queryEntities).toHaveBeenCalledTimes(3),
@@ -559,7 +563,7 @@ describe('<UserListPicker />', () => {
           return mockQueryEntitiesImplementation(request);
         });
 
-        render(<Picker initialFilter="starred" />);
+        await renderInTestApp(<Picker initialFilter="starred" />);
 
         await waitFor(() =>
           expect(mockCatalogApi.queryEntities).toHaveBeenCalledTimes(3),
@@ -570,7 +574,7 @@ describe('<UserListPicker />', () => {
       });
 
       it('does not reset the filter when entities are loaded', async () => {
-        render(<Picker initialFilter="starred" />);
+        await renderInTestApp(<Picker initialFilter="starred" />);
 
         await waitFor(() =>
           expect(mockCatalogApi.queryEntities).toHaveBeenCalledTimes(3),

@@ -20,6 +20,7 @@ import {
   alertApiRef,
   ConfigApi,
   configApiRef,
+  errorApiRef,
   IdentityApi,
   identityApiRef,
   storageApiRef,
@@ -39,6 +40,8 @@ import {
 } from '../filters';
 import { UserListFilterKind } from '../types';
 import { EntityListProvider, useEntityList } from './useEntityListProvider';
+import { translationApiRef } from '@backstage/core-plugin-api/alpha';
+import { MockTranslationApi } from '@backstage/test-utils/alpha';
 
 const entities: Entity[] = [
   {
@@ -100,6 +103,8 @@ const wrapper = ({
           [storageApiRef, MockStorageApi.create()],
           [starredEntitiesApiRef, new MockStarredEntitiesApi()],
           [alertApiRef, { post: jest.fn() }],
+          [translationApiRef, MockTranslationApi.create()],
+          [errorApiRef, { error$: jest.fn(), post: jest.fn() }],
         ]}
       >
         <EntityListProvider>

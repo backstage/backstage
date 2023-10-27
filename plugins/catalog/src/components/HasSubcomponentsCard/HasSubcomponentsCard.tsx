@@ -22,6 +22,8 @@ import {
   componentEntityColumns,
   RelatedEntitiesCard,
 } from '../RelatedEntitiesCard';
+import { catalogTranslationRef } from '../../translation';
+import { useTranslationRef } from '@backstage/core-plugin-api/alpha';
 
 /** @public */
 export interface HasSubcomponentsCardProps {
@@ -31,10 +33,12 @@ export interface HasSubcomponentsCardProps {
 }
 
 export function HasSubcomponentsCard(props: HasSubcomponentsCardProps) {
+  const { t } = useTranslationRef(catalogTranslationRef);
+
   const {
     variant = 'gridItem',
     tableOptions = {},
-    title = 'Has subcomponents',
+    title = t('has_subcomponents'),
   } = props;
   return (
     <RelatedEntitiesCard
@@ -44,7 +48,7 @@ export function HasSubcomponentsCard(props: HasSubcomponentsCardProps) {
       relationType={RELATION_HAS_PART}
       columns={componentEntityColumns}
       asRenderableEntities={asComponentEntities}
-      emptyMessage="No subcomponent is part of this component"
+      emptyMessage={t('no_subcomponent_is_part_of_component')}
       emptyHelpLink="https://backstage.io/docs/features/software-catalog/descriptor-format#specsubcomponentof-optional"
       tableOptions={tableOptions}
     />

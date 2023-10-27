@@ -44,6 +44,8 @@ import React, { ReactNode, useMemo } from 'react';
 import { columnFactories } from './columns';
 import { CatalogTableRow } from './types';
 import pluralize from 'pluralize';
+import { catalogTranslationRef } from '../../translation';
+import { useTranslationRef } from '@backstage/core-plugin-api/alpha';
 
 /**
  * Props for {@link CatalogTable}.
@@ -79,6 +81,7 @@ export const CatalogTable = (props: CatalogTableProps) => {
   const { columns, actions, tableOptions, subtitle, emptyContent } = props;
   const { isStarredEntity, toggleStarredEntity } = useStarredEntities();
   const { loading, error, entities, filters } = useEntityList();
+  const { t } = useTranslationRef(catalogTranslationRef);
 
   const defaultColumns: TableColumn<CatalogTableRow>[] = useMemo(() => {
     return [
@@ -122,15 +125,12 @@ export const CatalogTable = (props: CatalogTableProps) => {
 
   const showTypeColumn = filters.type === undefined;
   // TODO(timbonicus): remove the title from the CatalogTable once using EntitySearchBar
-  const titlePreamble = capitalize(filters.user?.value ?? 'all');
+  const titlePreamble = capitalize(filters.user?.value ?? t('all'));
 
   if (error) {
     return (
       <div>
-        <WarningPanel
-          severity="error"
-          title="Could not fetch catalog entities."
-        >
+        <WarningPanel severity="error" title={t('could_not_fetch_catalog')}>
           <CodeSnippet language="text" text={error.toString()} />
         </WarningPanel>
       </div>
@@ -140,7 +140,7 @@ export const CatalogTable = (props: CatalogTableProps) => {
   const defaultActions: TableProps<CatalogTableRow>['actions'] = [
     ({ entity }) => {
       const url = entity.metadata.annotations?.[ANNOTATION_VIEW_URL];
-      const title = 'View';
+      const title = t('view');
 
       return {
         icon: () => (
@@ -159,7 +159,7 @@ export const CatalogTable = (props: CatalogTableProps) => {
     },
     ({ entity }) => {
       const url = entity.metadata.annotations?.[ANNOTATION_EDIT_URL];
-      const title = 'Edit';
+      const title = t('edit');
 
       return {
         icon: () => (
@@ -178,7 +178,9 @@ export const CatalogTable = (props: CatalogTableProps) => {
     },
     ({ entity }) => {
       const isStarred = isStarredEntity(entity);
-      const title = isStarred ? 'Remove from favorites' : 'Add to favorites';
+      const title = isStarred
+        ? t('remove_from_favorites')
+        : t('add_to_favorites');
 
       return {
         cellStyle: { paddingLeft: '1em' },

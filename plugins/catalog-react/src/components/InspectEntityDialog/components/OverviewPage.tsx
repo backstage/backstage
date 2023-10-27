@@ -36,6 +36,8 @@ import {
   ListSubheader,
 } from './common';
 import { EntityKindIcon } from './EntityKindIcon';
+import { catalogReactTranslationRef } from '../../../translation';
+import { useTranslationRef } from '@backstage/core-plugin-api/alpha';
 
 const useStyles = makeStyles({
   root: {
@@ -54,6 +56,7 @@ export function OverviewPage(props: { entity: AlphaEntity }) {
     relations = [],
     status = {},
   } = props.entity;
+  const { t } = useTranslationRef(catalogReactTranslationRef);
 
   const groupedRelations = groupBy(
     sortBy(relations, r => r.targetRef),
@@ -62,7 +65,7 @@ export function OverviewPage(props: { entity: AlphaEntity }) {
 
   return (
     <>
-      <DialogContentText variant="h2">Overview</DialogContentText>
+      <DialogContentText variant="h2">{t('overview')}</DialogContentText>
       <div className={classes.root}>
         <Container title="Identity">
           <List dense>
@@ -99,7 +102,7 @@ export function OverviewPage(props: { entity: AlphaEntity }) {
               dense
               subheader={
                 <ListSubheader>
-                  Annotations
+                  {t('annotations')}
                   <HelpIcon to="https://backstage.io/docs/features/software-catalog/well-known-annotations" />
                 </ListSubheader>
               }
@@ -110,14 +113,17 @@ export function OverviewPage(props: { entity: AlphaEntity }) {
             </List>
           )}
           {!!Object.keys(metadata.labels || {}).length && (
-            <List dense subheader={<ListSubheader>Labels</ListSubheader>}>
+            <List
+              dense
+              subheader={<ListSubheader>{t('labels')}</ListSubheader>}
+            >
               {Object.entries(metadata.labels!).map(entry => (
                 <KeyValueListItem key={entry[0]} indent entry={entry} />
               ))}
             </List>
           )}
           {!!metadata.tags?.length && (
-            <List dense subheader={<ListSubheader>Tags</ListSubheader>}>
+            <List dense subheader={<ListSubheader>{t('tags')}</ListSubheader>}>
               {metadata.tags.map((tag, index) => (
                 <ListItem key={`${tag}-${index}`}>
                   <ListItemIcon />

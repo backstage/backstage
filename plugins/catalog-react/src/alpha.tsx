@@ -156,3 +156,5 @@ export function createEntityContentExtension<
     },
   });
 }
+
+export * from './translation';

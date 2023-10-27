@@ -24,7 +24,7 @@ import {
   Popover,
   Tooltip,
 } from '@material-ui/core';
-import { makeStyles } from '@material-ui/core/styles';
+import { Theme, makeStyles } from '@material-ui/core/styles';
 import BugReportIcon from '@material-ui/icons/BugReport';
 import MoreVert from '@material-ui/icons/MoreVert';
 import FileCopyTwoToneIcon from '@material-ui/icons/FileCopyTwoTone';
@@ -32,15 +32,16 @@ import React, { useCallback, useState } from 'react';
 import { IconComponent } from '@backstage/core-plugin-api';
 import { useEntityPermission } from '@backstage/plugin-catalog-react/alpha';
 import { catalogEntityDeletePermission } from '@backstage/plugin-catalog-common/alpha';
-import { BackstageTheme } from '@backstage/theme';
 import { UnregisterEntity, UnregisterEntityOptions } from './UnregisterEntity';
 import { useApi, alertApiRef } from '@backstage/core-plugin-api';
+import { catalogTranslationRef } from '../../translation';
+import { useTranslationRef } from '@backstage/core-plugin-api/alpha';
 
 /** @public */
 export type EntityContextMenuClassKey = 'button';
 
 const useStyles = makeStyles(
-  (theme: BackstageTheme) => {
+  (theme: Theme) => {
     return {
       button: {
         color: theme.page.fontColor,
@@ -72,6 +73,7 @@ export function EntityContextMenu(props: EntityContextMenuProps) {
     onUnregisterEntity,
     onInspectEntity,
   } = props;
+  const { t } = useTranslationRef(catalogTranslationRef);
   const [anchorEl, setAnchorEl] = useState<HTMLButtonElement>();
   const classes = useStyles();
   const unregisterPermission = useEntityPermission(
@@ -92,12 +94,12 @@ export function EntityContextMenu(props: EntityContextMenuProps) {
   const copyToClipboard = useCallback(() => {
     window.navigator.clipboard.writeText(window.location.toString()).then(() =>
       alertApi.post({
-        message: 'Copied!',
+        message: t('copied'),
         severity: 'info',
         display: 'transient',
       }),
     );
-  }, [alertApi]);
+  }, [alertApi, t]);
 
   const extraItems = UNSTABLE_extraContextMenuItems && [
     ...UNSTABLE_extraContextMenuItems.map(item => (
@@ -119,7 +121,7 @@ export function EntityContextMenu(props: EntityContextMenuProps) {
 
   return (
     <>
-      <Tooltip title="More" arrow>
+      <Tooltip title={t('more')} arrow>
         <IconButton
           aria-label="more"
           aria-controls="long-menu"
@@ -159,7 +161,7 @@ export function EntityContextMenu(props: EntityContextMenuProps) {
             <ListItemIcon>
               <BugReportIcon fontSize="small" />
             </ListItemIcon>
-            <ListItemText primary="Inspect entity" />
+            <ListItemText primary={t('inspect_entity')} />
           </MenuItem>
           <MenuItem
             onClick={() => {
@@ -170,7 +172,7 @@ export function EntityContextMenu(props: EntityContextMenuProps) {
             <ListItemIcon>
               <FileCopyTwoToneIcon fontSize="small" />
             </ListItemIcon>
-            <ListItemText primary="Copy entity URL" />
+            <ListItemText primary={t('copy_entity_url')} />
           </MenuItem>
         </MenuList>
       </Popover>

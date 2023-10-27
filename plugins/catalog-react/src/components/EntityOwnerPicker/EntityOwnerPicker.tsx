@@ -39,6 +39,8 @@ import PersonIcon from '@material-ui/icons/Person';
 import GroupIcon from '@material-ui/icons/Group';
 import { humanizeEntity, humanizeEntityRef } from '../EntityRefLink/humanize';
 import { useFetchEntities } from './useFetchEntities';
+import { catalogReactTranslationRef } from '../../translation';
+import { useTranslationRef } from '@backstage/core-plugin-api/alpha';
 
 /** @public */
 export type CatalogReactEntityOwnerPickerClassKey = 'input';
@@ -71,6 +73,7 @@ export const EntityOwnerPicker = (props?: EntityOwnerPickerProps) => {
     filters,
     queryParameters: { owners: ownersParameter },
   } = useEntityList();
+  const { t } = useTranslationRef(catalogReactTranslationRef);
 
   const [text, setText] = useState('');
 
@@ -119,7 +122,7 @@ export const EntityOwnerPicker = (props?: EntityOwnerPickerProps) => {
   return (
     <Box pb={1} pt={1}>
       <Typography variant="button" component="label">
-        Owner
+        {t('owner')}
         <Autocomplete
           multiple
           disableCloseOnSelect

@@ -16,11 +16,12 @@
 
 import React from 'react';
 import { Grid, Button, Typography } from '@material-ui/core';
-import { makeStyles } from '@material-ui/core/styles';
-import { BackstageTheme } from '@backstage/theme';
+import { Theme, makeStyles } from '@material-ui/core/styles';
 import { Illo } from './Illo';
+import { catalogTranslationRef } from '../../translation';
+import { useTranslationRef } from '@backstage/core-plugin-api/alpha';
 
-const useStyles = makeStyles<BackstageTheme>(theme => ({
+const useStyles = makeStyles<Theme>(theme => ({
   container: {
     paddingTop: theme.spacing(24),
     paddingLeft: theme.spacing(8),
@@ -44,24 +45,24 @@ const useStyles = makeStyles<BackstageTheme>(theme => ({
 
 export function EntityNotFound() {
   const classes = useStyles();
+  const { t } = useTranslationRef(catalogTranslationRef);
 
   return (
     <Grid container spacing={0} className={classes.container}>
       <Illo />
       <Grid item xs={12} sm={6}>
         <Typography variant="h2" className={classes.title}>
-          Entity was not found
+          {t('entity_not_found')}
         </Typography>
         <Typography variant="body1" className={classes.body}>
-          Want to help us build this? Check out our Getting Started
-          documentation.
+          {t('want_to_help_start_with_doc')}
         </Typography>
         <Button
           variant="contained"
           color="primary"
           href="https://backstage.io/docs"
         >
-          DOCS
+          {t('docs')}
         </Button>
       </Grid>
     </Grid>

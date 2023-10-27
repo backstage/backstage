@@ -17,6 +17,8 @@
 import React from 'react';
 import { ListItemIcon, ListItemText, MenuItem } from '@material-ui/core';
 import CancelIcon from '@material-ui/icons/Cancel';
+import { catalogTranslationRef } from '../../translation';
+import { useTranslationRef } from '@backstage/core-plugin-api/alpha';
 
 type VisibleType = 'visible' | 'hidden' | 'disable';
 
@@ -38,6 +40,8 @@ export function UnregisterEntity(props: UnregisterEntityProps) {
     onUnregisterEntity,
     onClose,
   } = props;
+
+  const { t } = useTranslationRef(catalogTranslationRef);
 
   const isBoolean =
     typeof unregisterEntityOptions?.disableUnregister === 'boolean';
@@ -63,7 +67,7 @@ export function UnregisterEntity(props: UnregisterEntityProps) {
         <ListItemIcon>
           <CancelIcon fontSize="small" />
         </ListItemIcon>
-        <ListItemText primary="Unregister entity" />
+        <ListItemText primary={t('unregister_entity')} />
       </MenuItem>
     );
   }

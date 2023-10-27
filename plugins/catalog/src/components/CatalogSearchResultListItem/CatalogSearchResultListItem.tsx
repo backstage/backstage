@@ -28,6 +28,8 @@ import {
   ResultHighlight,
 } from '@backstage/plugin-search-common';
 import { HighlightedSearchResultText } from '@backstage/plugin-search-react';
+import { catalogTranslationRef } from '../../translation';
+import { useTranslationRef } from '@backstage/core-plugin-api/alpha';
 
 const useStyles = makeStyles(
   {
@@ -66,6 +68,7 @@ export function CatalogSearchResultListItem(
   const highlight = props.highlight as ResultHighlight;
 
   const classes = useStyles();
+  const { t } = useTranslationRef(catalogTranslationRef);
 
   if (!result) return null;
 
@@ -108,10 +111,13 @@ export function CatalogSearchResultListItem(
         <Box>
           {result.kind && <Chip label={`Kind: ${result.kind}`} size="small" />}
           {result.lifecycle && (
-            <Chip label={`Lifecycle: ${result.lifecycle}`} size="small" />
+            <Chip
+              label={`${t('lifecycle')}: ${result.lifecycle}`}
+              size="small"
+            />
           )}
           {result.owner && (
-            <Chip label={`Owner: ${result.owner}`} size="small" />
+            <Chip label={`${t('owner')}: ${result.owner}`} size="small" />
           )}
         </Box>
       </div>

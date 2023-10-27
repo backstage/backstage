@@ -32,6 +32,8 @@ import { ColocatedPage } from './components/ColocatedPage';
 import { JsonPage } from './components/JsonPage';
 import { OverviewPage } from './components/OverviewPage';
 import { YamlPage } from './components/YamlPage';
+import { catalogReactTranslationRef } from '../../translation';
+import { useTranslationRef } from '@backstage/core-plugin-api/alpha';
 
 const useStyles = makeStyles(theme => ({
   fullHeightDialog: {
@@ -97,6 +99,7 @@ export function InspectEntityDialog(props: {
 }) {
   const classes = useStyles();
   const [activeTab, setActiveTab] = React.useState(0);
+  const { t } = useTranslationRef(catalogReactTranslationRef);
 
   useEffect(() => {
     setActiveTab(0);
@@ -116,7 +119,7 @@ export function InspectEntityDialog(props: {
       PaperProps={{ className: classes.fullHeightDialog }}
     >
       <DialogTitle id="entity-inspector-dialog-title">
-        Entity Inspector
+        {t('entity_inspector')}
       </DialogTitle>
       <DialogContent dividers>
         <div className={classes.root}>
@@ -154,7 +157,7 @@ export function InspectEntityDialog(props: {
       </DialogContent>
       <DialogActions>
         <Button onClick={props.onClose} color="primary">
-          Close
+          {t('close')}
         </Button>
       </DialogActions>
     </Dialog>

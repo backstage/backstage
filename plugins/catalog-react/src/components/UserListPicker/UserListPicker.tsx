@@ -39,6 +39,11 @@ import { UserListFilterKind } from '../../types';
 import { useOwnedEntitiesCount } from './useOwnedEntitiesCount';
 import { useAllEntitiesCount } from './useAllEntitiesCount';
 import { useStarredEntitiesCount } from './useStarredEntitiesCount';
+import {
+  TranslationFunction,
+  useTranslationRef,
+} from '@backstage/core-plugin-api/alpha';
+import { catalogReactTranslationRef } from '../../translation';
 
 /** @public */
 export type CatalogReactUserListPickerClassKey =
@@ -86,29 +91,32 @@ export type ButtonGroup = {
   }[];
 };
 
-function getFilterGroups(orgName: string | undefined): ButtonGroup[] {
+function getFilterGroups(
+  orgName: string | undefined,
+  t: TranslationFunction<typeof catalogReactTranslationRef.T>,
+): ButtonGroup[] {
   return [
     {
-      name: 'Personal',
+      name: t('personal'),
       items: [
         {
           id: 'owned',
-          label: 'Owned',
+          label: t('owned'),
           icon: SettingsIcon,
         },
         {
           id: 'starred',
-          label: 'Starred',
+          label: t('starred'),
           icon: StarIcon,
         },
       ],
     },
     {
-      name: orgName ?? 'Company',
+      name: orgName ?? t('company'),
       items: [
         {
           id: 'all',
-          label: 'All',
+          label: t('all'),
         },
       ],
     },
@@ -132,11 +140,12 @@ export const UserListPicker = (props: UserListPickerProps) => {
     updateFilters,
     queryParameters: { kind: kindParameter, user: userParameter },
   } = useEntityList();
+  const { t } = useTranslationRef(catalogReactTranslationRef);
 
   // Remove group items that aren't in availableFilters and exclude
   // any now-empty groups.
   const userAndGroupFilterIds = ['starred', 'all'];
-  const filterGroups = getFilterGroups(orgName)
+  const filterGroups = getFilterGroups(orgName, t)
     .map(filterGroup => ({
       ...filterGroup,
       items: filterGroup.items.filter(({ id }) =>

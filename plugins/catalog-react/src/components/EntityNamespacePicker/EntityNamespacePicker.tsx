@@ -19,6 +19,8 @@ import { makeStyles } from '@material-ui/core';
 import React from 'react';
 import { EntityNamespaceFilter } from '../../filters';
 import { EntityAutocompletePicker } from '../EntityAutocompletePicker';
+import { catalogReactTranslationRef } from '../../translation';
+import { useTranslationRef } from '@backstage/core-plugin-api/alpha';
 
 /** @public */
 export type CatalogReactEntityNamespacePickerClassKey = 'input';
@@ -35,9 +37,11 @@ const useStyles = makeStyles(
 /** @public */
 export const EntityNamespacePicker = () => {
   const classes = useStyles();
+  const { t } = useTranslationRef(catalogReactTranslationRef);
+
   return (
     <EntityAutocompletePicker
-      label="Namespace"
+      label={t('namespace')}
       name="namespace"
       path="metadata.namespace"
       Filter={EntityNamespaceFilter}

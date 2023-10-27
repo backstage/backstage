@@ -20,6 +20,8 @@ import { Button, Dialog, DialogActions, DialogTitle } from '@material-ui/core';
 import React, { useState } from 'react';
 import { alertApiRef, useApi } from '@backstage/core-plugin-api';
 import { assertError } from '@backstage/errors';
+import { catalogTranslationRef } from '../../translation';
+import { useTranslationRef } from '@backstage/core-plugin-api/alpha';
 
 interface DeleteEntityDialogProps {
   open: boolean;
@@ -33,6 +35,7 @@ export function DeleteEntityDialog(props: DeleteEntityDialogProps) {
   const [busy, setBusy] = useState(false);
   const catalogApi = useApi(catalogApiRef);
   const alertApi = useApi(alertApiRef);
+  const { t } = useTranslationRef(catalogTranslationRef);
 
   const onDelete = async () => {
     setBusy(true);
@@ -51,7 +54,7 @@ export function DeleteEntityDialog(props: DeleteEntityDialogProps) {
   return (
     <Dialog open={open} onClose={onClose}>
       <DialogTitle id="responsive-dialog-title">
-        Are you sure you want to delete this entity?
+        {t('confirm_delete_entity_title')}
       </DialogTitle>
       <DialogActions>
         <Button
@@ -60,10 +63,10 @@ export function DeleteEntityDialog(props: DeleteEntityDialogProps) {
           disabled={busy}
           onClick={onDelete}
         >
-          Delete
+          {t('delete')}
         </Button>
         <Button onClick={onClose} color="primary">
-          Cancel
+          {t('cancel')}
         </Button>
       </DialogActions>
     </Dialog>

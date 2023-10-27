@@ -42,6 +42,8 @@ import {
   GroupCardActions,
 } from './CardActionComponents';
 import { debounce } from 'lodash';
+import { catalogReactTranslationRef } from '../../translation';
+import { useTranslationRef } from '@backstage/core-plugin-api/alpha';
 
 /**
  * Properties for an entity popover on hover of a component.
@@ -85,6 +87,7 @@ export const EntityPeekAheadPopover = (props: EntityPeekAheadPopoverProps) => {
     popupId: 'entity-peek-ahead',
   });
   const [isHovered, setIsHovered] = useState(false);
+  const { t } = useTranslationRef(catalogReactTranslationRef);
 
   const debouncedHandleMouseEnter = useMemo(
     () => debounce(() => setIsHovered(true), delayTime),
@@ -173,7 +176,7 @@ export const EntityPeekAheadPopover = (props: EntityPeekAheadPopoverProps) => {
                       })}
                     {entity.metadata.tags?.length &&
                       entity.metadata.tags?.length > maxTagChips && (
-                        <Tooltip title="Drill into the entity to see all of the tags.">
+                        <Tooltip title={t('drill_into_entity_to_see_tags')}>
                           <Chip key="other-tags" size="small" label="..." />
                         </Tooltip>
                       )}

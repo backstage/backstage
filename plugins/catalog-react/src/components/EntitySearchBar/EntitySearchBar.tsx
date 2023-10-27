@@ -28,6 +28,8 @@ import React, { useState } from 'react';
 import useDebounce from 'react-use/lib/useDebounce';
 import { useEntityList } from '../../hooks/useEntityListProvider';
 import { EntityTextFilter } from '../../filters';
+import { catalogReactTranslationRef } from '../../translation';
+import { useTranslationRef } from '@backstage/core-plugin-api/alpha';
 
 /** @public */
 export type CatalogReactEntitySearchBarClassKey = 'searchToolbar' | 'input';
@@ -54,6 +56,7 @@ export const EntitySearchBar = () => {
 
   const { filters, updateFilters } = useEntityList();
   const [search, setSearch] = useState(filters.text?.value ?? '');
+  const { t } = useTranslationRef(catalogReactTranslationRef);
 
   useDebounce(
     () => {
@@ -72,7 +75,7 @@ export const EntitySearchBar = () => {
           aria-label="search"
           id="input-with-icon-adornment"
           className={classes.input}
-          placeholder="Search"
+          placeholder={t('search')}
           autoComplete="off"
           onChange={event => setSearch(event.target.value)}
           value={search}

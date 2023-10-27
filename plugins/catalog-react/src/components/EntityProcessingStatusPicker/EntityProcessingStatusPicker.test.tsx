@@ -14,15 +14,16 @@
  * limitations under the License.
  */
 
-import { fireEvent, render, screen } from '@testing-library/react';
+import { fireEvent, screen } from '@testing-library/react';
 import React from 'react';
 import { EntityErrorFilter, EntityOrphanFilter } from '../../filters';
 import { MockEntityListContextProvider } from '../../testUtils/providers';
 import { EntityProcessingStatusPicker } from './EntityProcessingStatusPicker';
+import { renderInTestApp } from '@backstage/test-utils';
 
 describe('<EntityProcessingStatusPicker/>', () => {
-  it('renders all processing status options', () => {
-    render(
+  it('renders all processing status options', async () => {
+    await renderInTestApp(
       <MockEntityListContextProvider value={{}}>
         <EntityProcessingStatusPicker />
       </MockEntityListContextProvider>,
@@ -34,9 +35,9 @@ describe('<EntityProcessingStatusPicker/>', () => {
     expect(screen.getByText('Has Error')).toBeInTheDocument();
   });
 
-  it('adds orphan to orphan filter', () => {
+  it('adds orphan to orphan filter', async () => {
     const updateFilters = jest.fn();
-    render(
+    await renderInTestApp(
       <MockEntityListContextProvider
         value={{
           updateFilters,
@@ -53,9 +54,9 @@ describe('<EntityProcessingStatusPicker/>', () => {
     });
   });
 
-  it('adds error to error filter', () => {
+  it('adds error to error filter', async () => {
     const updateFilters = jest.fn();
-    render(
+    await renderInTestApp(
       <MockEntityListContextProvider
         value={{
           updateFilters,
@@ -72,9 +73,9 @@ describe('<EntityProcessingStatusPicker/>', () => {
     });
   });
 
-  it('remove orphan from orphan filter', () => {
+  it('remove orphan from orphan filter', async () => {
     const updateFilters = jest.fn();
-    render(
+    await renderInTestApp(
       <MockEntityListContextProvider
         value={{
           updateFilters,
@@ -91,9 +92,9 @@ describe('<EntityProcessingStatusPicker/>', () => {
     });
   });
 
-  it('remove error from error filter', () => {
+  it('remove error from error filter', async () => {
     const updateFilters = jest.fn();
-    render(
+    await renderInTestApp(
       <MockEntityListContextProvider
         value={{
           updateFilters,
