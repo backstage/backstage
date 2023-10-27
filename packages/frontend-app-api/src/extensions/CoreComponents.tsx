@@ -19,11 +19,35 @@ import {
   createExtension,
   coreExtensionData,
   createExtensionInput,
+  createProgressExtension,
+  createBootErrorPageExtension,
+  createNotFoundErrorPageExtension,
+  createErrorBoundaryFallbackExtension,
 } from '@backstage/frontend-plugin-api';
+// eslint-disable-next-line @backstage/no-relative-monorepo-imports
+import { components as defaultComponents } from '../../../app-defaults/src/defaults';
 // eslint-disable-next-line @backstage/no-relative-monorepo-imports
 import { AppContextProvider } from '../../../core-app-api/src/app/AppContext';
 // eslint-disable-next-line @backstage/no-relative-monorepo-imports
 import { useApp } from '../../../core-plugin-api/src/app/useApp';
+
+export const DefaultProgressComponent = createProgressExtension({
+  component: defaultComponents.Progress,
+});
+
+export const DefaultBootErrorPageComponent = createBootErrorPageExtension({
+  component: defaultComponents.BootErrorPage,
+});
+
+export const DefaultNotFoundErrorPageComponent =
+  createNotFoundErrorPageExtension({
+    component: defaultComponents.NotFoundErrorPage,
+  });
+
+export const DefaultErrorBoundaryComponent =
+  createErrorBoundaryFallbackExtension({
+    component: defaultComponents.ErrorBoundaryFallback,
+  });
 
 export const CoreComponents = createExtension({
   id: 'core.components',

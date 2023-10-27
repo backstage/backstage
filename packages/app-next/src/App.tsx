@@ -29,6 +29,7 @@ import {
   createExtension,
   createApiExtension,
   createExtensionOverrides,
+  createNotFoundErrorPageExtension,
 } from '@backstage/frontend-plugin-api';
 import techdocsPlugin from '@backstage/plugin-techdocs/alpha';
 import { homePage } from './HomePage';
@@ -48,6 +49,8 @@ import {
 } from '@backstage/integration-react';
 import { createSignInPageExtension } from '@backstage/frontend-plugin-api';
 import { SignInPage } from '@backstage/core-components';
+import { Box, Typography } from '@material-ui/core';
+import { Button } from '@backstage/core-components';
 
 /*
 
@@ -108,6 +111,40 @@ const scmIntegrationApi = createApiExtension({
   }),
 });
 
+const customNotFoundErrorPage = createNotFoundErrorPageExtension({
+  component: () => (
+    <Box
+      component="article"
+      width="100%"
+      height="100vh"
+      display="grid"
+      textAlign="center"
+      alignContent="center"
+      justifyContent="center"
+      justifyItems="center"
+    >
+      <Typography variant="h1">404</Typography>
+      <Typography color="textSecondary" paragraph style={{ width: 300 }}>
+        Bowie was unable to locate this page. Please contact your support team
+        if this page used to exist.
+      </Typography>
+      <img
+        alt="Backstage bowie"
+        src="https://info.backstage.spotify.com/hs-fs/hubfs/Call%20Bowie%202.png"
+        width="200"
+        style={{ filter: 'grayscale(50%)' }}
+      />
+      <Button
+        variant="contained"
+        to="/"
+        style={{ marginTop: '1rem', width: 200 }}
+      >
+        Go home
+      </Button>
+    </Box>
+  ),
+});
+
 const collectedLegacyPlugins = collectLegacyRoutes(
   <FlatRoutes>
     <Route path="/catalog-import" element={<CatalogImportPage />} />
@@ -129,6 +166,7 @@ const app = createApp({
         scmAuthExtension,
         scmIntegrationApi,
         signInPage,
+        customNotFoundErrorPage,
       ],
     }),
   ],
