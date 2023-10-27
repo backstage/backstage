@@ -19166,12 +19166,12 @@ __metadata:
   linkType: hard
 
 "@types/ndjson@npm:^2.0.1":
-  version: 2.0.2
-  resolution: "@types/ndjson@npm:2.0.2"
+  version: 2.0.3
+  resolution: "@types/ndjson@npm:2.0.3"
   dependencies:
     "@types/node": "*"
     "@types/through": "*"
-  checksum: 2f4d60229a01dadd4ed1d7df923223788cc4517a15d0fc07b56b3dbdefb567646334e173d7f976a8a7ce7b85df74bf78fd8805f41bdd9ebd8d135310f472a2cb
+  checksum: 837e295a192a054dcb7f0b2c109b87c42e3317dbe1f91a38f4194c6c46aac2284cef5a28c35d1e0063cecc411f0e89a7de6d9753406e3861c8434780b32090ea
   languageName: node
   linkType: hard
 
