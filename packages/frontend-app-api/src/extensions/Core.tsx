@@ -40,9 +40,9 @@ export const Core = createExtension({
   output: {
     root: coreExtensionData.reactElement,
   },
-  factory({ bind, inputs }) {
-    bind({
+  factory({ inputs }) {
+    return {
       root: inputs.root.element,
-    });
+    };
   },
 });

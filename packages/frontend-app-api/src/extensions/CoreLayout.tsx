@@ -42,14 +42,14 @@ export const CoreLayout = createExtension({
   output: {
     element: coreExtensionData.reactElement,
   },
-  factory({ bind, inputs }) {
-    bind({
+  factory({ inputs }) {
+    return {
       element: (
         <SidebarPage>
           {inputs.nav.element}
           {inputs.content.element}
         </SidebarPage>
       ),
-    });
+    };
   },
 });

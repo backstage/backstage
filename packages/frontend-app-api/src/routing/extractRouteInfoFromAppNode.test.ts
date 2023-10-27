@@ -62,12 +62,12 @@ function createTestExtension(options: {
         element: coreExtensionData.reactElement,
       }),
     },
-    factory({ bind }) {
-      bind({
+    factory() {
+      return {
         path: options.path,
         routeRef: options.routeRef,
         element: React.createElement('div'),
-      });
+      };
     },
   });
 }
