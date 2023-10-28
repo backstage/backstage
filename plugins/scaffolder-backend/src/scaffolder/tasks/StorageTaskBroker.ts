@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { Config, readDurationFromConfig } from '@backstage/config';
+import { Config } from '@backstage/config';
 import { TaskSpec } from '@backstage/plugin-scaffolder-common';
 import { TaskSecrets } from '@backstage/plugin-scaffolder-node';
 import { JsonObject, Observable } from '@backstage/types';

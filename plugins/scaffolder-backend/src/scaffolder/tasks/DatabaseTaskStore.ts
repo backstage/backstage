@@ -23,10 +23,6 @@ import { ConflictError, NotFoundError } from '@backstage/errors';
 import { Knex } from 'knex';
 import { v4 as uuid } from 'uuid';
 import {
-  SerializedTaskEvent,
-  SerializedTask,
-  TaskStatus,
-  TaskEventType,
   TaskStore,
   TaskStoreEmitOptions,
   TaskStoreListEventsOptions,
@@ -36,7 +32,17 @@ import {
   TaskStoreRecoverTaskOptions,
 } from './types';
 import { DateTime } from 'luxon';
-import { TaskSpec, TaskStep } from '@backstage/plugin-scaffolder-common';
+import { getEnrichedTaskSpec } from './taskSpecHelper';
+import {
+  TaskRecoverStrategy,
+  TaskSpec,
+} from '@backstage/plugin-scaffolder-common';
+import {
+  SerializedTaskEvent,
+  SerializedTask,
+  TaskStatus,
+  TaskEventType,
+} from '@backstage/plugin-scaffolder-node';
 
 const migrationsDir = resolvePackagePath(
   '@backstage/plugin-scaffolder-backend',
@@ -210,58 +216,6 @@ export class DatabaseTaskStore implements TaskStore {
     return { taskId };
   }
 
-  async getEnrichedTaskSpec(task: {
-    id: string;
-    spec: string;
-  }): Promise<TaskSpec> {
-    const spec = JSON.parse(task.spec) as TaskSpec;
-    const taskEvents = await this.listEvents({ taskId: task.id });
-
-    const stepsMap = taskEvents.events
-      .filter(event => event.type === 'log')
-      .reduce((acc, event) => {
-        const stepId = event.body.stepId as string;
-        if (stepId) {
-          const value = acc.get(stepId);
-          acc.set(stepId, {
-            min: value && value.min ? value.min : event.createdAt,
-            max: event.createdAt,
-            ...(event.body.status && { status: event.body.status as string }),
-          });
-        }
-        return acc;
-      }, new Map<string, { min?: string; max?: string; status?: string }>());
-
-    const toStartedAt = (stepId: string) => {
-      const value = stepsMap.get(stepId);
-      return value ? value.min : undefined;
-    };
-
-    const toEndedAt = (stepId: string) => {
-      const value = stepsMap.get(stepId);
-      return value ? value.max : undefined;
-    };
-
-    const toStatus = (stepId: string) => {
-      const value = stepsMap.get(stepId);
-      return value ? value.status : undefined;
-    };
-
-    const res = {
-      ...spec,
-      steps: spec.steps.map(
-        step =>
-          ({
-            ...step,
-            status: toStatus(step.id),
-            startedAt: toStartedAt(step.id),
-            endedAt: toEndedAt(step.id),
-          } as TaskStep),
-      ),
-    };
-    return res;
-  }
-
   async claimTask(): Promise<SerializedTask | undefined> {
     return this.db.transaction(async tx => {
       const [task] = await tx<RawDbTaskRow>('tasks')
@@ -274,7 +228,7 @@ export class DatabaseTaskStore implements TaskStore {
       if (!task) {
         return undefined;
       }
-
+      const { events } = await this.listEvents({ taskId: task.id });
       const updateCount = await tx<RawDbTaskRow>('tasks')
         .where({ id: task.id, status: 'open' })
         .update({
@@ -289,7 +243,7 @@ export class DatabaseTaskStore implements TaskStore {
       }
 
       try {
-        const spec = await this.getEnrichedTaskSpec(task);
+        const spec = await getEnrichedTaskSpec(task, events);
         const secrets = task.secrets ? JSON.parse(task.secrets) : undefined;
         return {
           id: task.id,
@@ -299,7 +253,7 @@ export class DatabaseTaskStore implements TaskStore {
           createdAt: task.created_at,
           createdBy: task.created_by ?? undefined,
           secrets,
-        };
+        } as SerializedTask;
       } catch (error) {
         throw new Error(`Failed to parse spec of task '${task.id}', ${error}`);
       }
@@ -318,7 +272,7 @@ export class DatabaseTaskStore implements TaskStore {
   }
 
   async listStaleTasks(options: { timeoutS: number }): Promise<{
-    tasks: { taskId: string }[];
+    tasks: { taskId: string; taskRecovery?: TaskRecoverStrategy }[];
   }> {
     const { timeoutS } = options;
     let heartbeatInterval = this.db.raw(`? - interval '${timeoutS} seconds'`, [
@@ -337,6 +291,7 @@ export class DatabaseTaskStore implements TaskStore {
       .where('status', 'processing')
       .andWhere('last_heartbeat_at', '<=', heartbeatInterval);
     const tasks = rawRows.map(row => ({
+      recovery: (JSON.parse(row.spec) as TaskSpec).recovery,
       taskId: row.id,
     }));
     return { tasks };
@@ -349,7 +304,7 @@ export class DatabaseTaskStore implements TaskStore {
   }): Promise<void> {
     const { taskId, status, eventBody } = options;
 
-    let oldStatus: string;
+    let oldStatus: TaskStatus;
     if (['failed', 'completed', 'cancelled'].includes(status)) {
       oldStatus = 'processing';
     } else {
@@ -533,7 +488,9 @@ export class DatabaseTaskStore implements TaskStore {
     });
 
     for (const task of tasks) {
-      await this.reopenTask({ taskId: task.taskId });
+      if (['idempotent', 'restart'].includes(task.taskRecovery ?? 'none')) {
+        await this.reopenTask({ taskId: task.taskId });
+      }
     }
   }
 }

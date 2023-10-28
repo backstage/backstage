@@ -45,6 +45,50 @@ export type TemplateInfo = {
 };
 
 /**
+ *
+ * none - not recover, let the task be marked as failed
+ * idempotent - do recover, treat a task as idempotent and rerun the task from the step which has failed.
+ * restart - do recover, start the execution of the task from the first step.
+ *
+ * @public
+ */
+export type TaskRecoverStrategy = 'none' | 'idempotent' | 'restart';
+
+/**
+ * When task didn't have a chance to complete due to system restart you can define the strategy what to do with such tasks,
+ * by defining a strategy.
+ *
+ * By default, it is none, what means to not recover but updating the status from 'processing' to 'failed'.
+ *
+ * @public
+ */
+export interface TaskRecovery {
+  /**
+   * Depends on how you designed your task you might tailor the behaviour for each of them.
+   */
+  strategy?: TaskRecoverStrategy;
+}
+
+/**
+ * You can define the recover strategy on the step level.
+ * It takes effect only if you specified task recover strategy as idempotent.
+ * In some cases you can't or don't want to make your step idempotent, but rather instruct the task engine, that
+ * in case of this step failure start the execution from the another step, as it depends on its outcome.
+ *
+ * One of the examples, when first step is "action: fetch:template" and the second step is "publish:github".
+ * If task crashed and execution stopped on the second step, you can't just re-run the second step as you have to
+ * fetch the content again to a working directory to push it to a remote repository.
+ *
+ * @public
+ */
+export interface TaskStepRecovery {
+  /**
+   * The name of the step from which the task has to be re-run.
+   */
+  dependsOn?: string;
+}
+
+/**
  * An individual step of a scaffolder task, as stored in the database.
  *
  * @public
@@ -74,6 +118,10 @@ export interface TaskStep {
    * Run step repeatedly
    */
   each?: string | JsonArray;
+  /**
+   *
+   */
+  strategy?: TaskStepRecovery;
 }
 
 /**
@@ -119,6 +167,10 @@ export interface TaskSpecV1beta3 {
      */
     ref?: string;
   };
+  /**
+   * How to recover the task after system restart or system crash.
+   */
+  recovery?: TaskRecovery;
 }
 
 /**
