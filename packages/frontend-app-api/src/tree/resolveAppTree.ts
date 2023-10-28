@@ -65,7 +65,7 @@ class SerializableAppNode implements AppNode {
     const dataRefs = this.instance && [...this.instance.getDataRefs()];
     const out =
       dataRefs && dataRefs.length > 0
-        ? ` out=[${[...dataRefs.keys()].join(', ')}]`
+        ? ` out=[${[...dataRefs].map(r => r.id).join(', ')}]`
         : '';
 
     if (this.edges.attachments.size === 0) {
