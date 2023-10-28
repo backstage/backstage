@@ -121,7 +121,7 @@ export interface TaskStep {
   /**
    *
    */
-  strategy?: TaskStepRecovery;
+  recovery?: TaskStepRecovery;
 }
 
 /**
