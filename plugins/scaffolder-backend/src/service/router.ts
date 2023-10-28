@@ -451,6 +451,7 @@ export async function createRouter(
           id: step.id ?? `step-${index + 1}`,
           name: step.name ?? step.action,
         })),
+        recovery: template.spec.recovery,
         output: template.spec.output ?? {},
         parameters: values,
         user: {

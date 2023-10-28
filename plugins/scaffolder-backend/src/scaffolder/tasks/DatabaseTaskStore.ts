@@ -33,10 +33,7 @@ import {
 } from './types';
 import { DateTime } from 'luxon';
 import { getEnrichedTaskSpec } from './taskSpecHelper';
-import {
-  TaskRecoverStrategy,
-  TaskSpec,
-} from '@backstage/plugin-scaffolder-common';
+import { TaskRecovery, TaskSpec } from '@backstage/plugin-scaffolder-common';
 import {
   SerializedTaskEvent,
   SerializedTask,
@@ -272,7 +269,7 @@ export class DatabaseTaskStore implements TaskStore {
   }
 
   async listStaleTasks(options: { timeoutS: number }): Promise<{
-    tasks: { taskId: string; taskRecovery?: TaskRecoverStrategy }[];
+    tasks: { taskId: string; recovery?: TaskRecovery }[];
   }> {
     const { timeoutS } = options;
     let heartbeatInterval = this.db.raw(`? - interval '${timeoutS} seconds'`, [
@@ -488,7 +485,9 @@ export class DatabaseTaskStore implements TaskStore {
     });
 
     for (const task of tasks) {
-      if (['idempotent', 'restart'].includes(task.taskRecovery ?? 'none')) {
+      if (
+        ['idempotent', 'restart'].includes(task.recovery?.strategy ?? 'none')
+      ) {
         await this.reopenTask({ taskId: task.taskId });
       }
     }

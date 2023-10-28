@@ -36,21 +36,29 @@ const createStepsMap = (events: SerializedTaskEvent[]) => {
     }, new Map<string, { min?: string; max?: string; status?: string }>());
 };
 
-const stepIdToRunTheTask = (spec: TaskSpec, stepsMap: StepsMap) => {
-  const steps = spec.steps.map(step => step).reverse();
+export const stepIdToRunTheTask = (spec: TaskSpec, stepsMap: StepsMap) => {
+  const steps = spec.steps.slice().reverse();
   const stepIds = steps.map(step => step.id);
 
   const compare = (stepId1: string, stepId2: string) =>
     stepIds.findIndex(id => id === stepId1) -
     stepIds.findIndex(id => id === stepId2);
 
+  const lastExecutedStep =
+    Array.from(stepsMap.keys()).sort(compare)[0] ?? spec.steps[0].id;
+
   return steps.reduce((acc: string, step: TaskStep) => {
     const enrichedStep = stepsMap.get(step.id);
-    if (enrichedStep && step.strategy?.dependsOn) {
-      return step.strategy?.dependsOn;
+    if (!enrichedStep) {
+      return acc;
     }
-    return compare(step.id, acc) ? step.id : acc;
-  }, spec.steps[0].id);
+    if (step.recovery?.dependsOn) {
+      return compare(step.recovery?.dependsOn as string, acc) > 0
+        ? step.recovery?.dependsOn
+        : acc;
+    }
+    return compare(step.id, acc) > 0 ? acc : step.id;
+  }, lastExecutedStep);
 };
 
 const stepEnrichment = (spec: TaskSpec, events: SerializedTaskEvent[]) => {
@@ -109,7 +117,7 @@ export const getEnrichedTaskSpec = async (
 
   const { toStartedAt, toEndedAt, toStatus } = stepEnrichment(spec, events);
 
-  return {
+  const res = {
     ...spec,
     steps: spec.steps.map(
       step =>
@@ -121,4 +129,5 @@ export const getEnrichedTaskSpec = async (
         } as TaskStep),
     ),
   };
+  return res;
 };

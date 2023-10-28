@@ -15,12 +15,7 @@
  */
 
 import { ScmIntegrations } from '@backstage/integration';
-import {
-  TaskContext,
-  TaskTrackType,
-  WorkflowResponse,
-  WorkflowRunner,
-} from './types';
+import { TaskTrackType, WorkflowResponse, WorkflowRunner } from './types';
 import * as winston from 'winston';
 import fs from 'fs-extra';
 import path from 'path';
@@ -32,10 +27,8 @@ import { generateExampleOutput, isTruthy } from './helper';
 import { validate as validateJsonSchema } from 'jsonschema';
 import { TemplateActionRegistry } from '../actions';
 import {
-  TemplateFilter,
   SecureTemplater,
   SecureTemplateRenderer,
-  TemplateGlobal,
 } from '../../lib/templating/SecureTemplater';
 import {
   TaskSpec,
@@ -43,7 +36,12 @@ import {
   TaskStep,
 } from '@backstage/plugin-scaffolder-common';
 
-import { TemplateAction } from '@backstage/plugin-scaffolder-node';
+import {
+  TemplateAction,
+  TaskContext,
+  TemplateFilter,
+  TemplateGlobal,
+} from '@backstage/plugin-scaffolder-node';
 import { createConditionAuthorizer } from '@backstage/plugin-permission-node';
 import { UserEntity } from '@backstage/catalog-model';
 import { createCounterMetric, createHistogramMetric } from '../../util/metrics';
@@ -55,6 +53,7 @@ import {
 } from '@backstage/plugin-permission-common';
 import { scaffolderActionRules } from '../../service/rules';
 import { actionExecutePermission } from '@backstage/plugin-scaffolder-common/alpha';
+import { TaskRecovery } from '@backstage/plugin-scaffolder-common';
 
 type NunjucksWorkflowRunnerOptions = {
   workingDirectory: string;
@@ -68,6 +67,7 @@ type NunjucksWorkflowRunnerOptions = {
 
 type TemplateContext = {
   parameters: JsonObject;
+  recovery?: TaskRecovery;
   steps: {
     [stepName: string]: { output: { [outputName: string]: JsonValue } };
   };
@@ -119,6 +119,7 @@ const isActionAuthorized = createConditionAuthorizer(
 
 export class NunjucksWorkflowRunner implements WorkflowRunner {
   private readonly defaultTemplateFilters: Record<string, TemplateFilter>;
+
   constructor(private readonly options: NunjucksWorkflowRunnerOptions) {
     this.defaultTemplateFilters = createDefaultFilters({
       integrations: this.options.integrations,
@@ -417,6 +418,7 @@ export class NunjucksWorkflowRunner implements WorkflowRunner {
 
       const context: TemplateContext = {
         parameters: task.spec.parameters,
+        recovery: task.spec.recovery,
         steps: {},
         user: task.spec.user,
       };
