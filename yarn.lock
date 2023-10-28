@@ -19528,11 +19528,11 @@ __metadata:
   linkType: hard
 
 "@types/react-window@npm:^1.8.5":
-  version: 1.8.6
-  resolution: "@types/react-window@npm:1.8.6"
+  version: 1.8.7
+  resolution: "@types/react-window@npm:1.8.7"
   dependencies:
     "@types/react": "*"
-  checksum: 3084190ab50a84d8499a6df574ad67474566cd7aeeb8fc6ce82a7a13421fd39e21a059c51f9d12f38e5ac52eb9d65f6184e3fb6cb62841e93b197b7401b36e35
+  checksum: e135299b5d55b63eb3f400570b77ff64afaeeb305587f71f7e20734a879aaddec6f6d24180e54c6c2f3200a71712ac7e6f1474733fe71e879a65f9e4ab113977
   languageName: node
   linkType: hard
 
