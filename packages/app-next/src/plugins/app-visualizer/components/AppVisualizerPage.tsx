@@ -14,8 +14,32 @@
  * limitations under the License.
  */
 
+import {
+  Header,
+  Page,
+  TabbedLayout,
+  CodeSnippet,
+} from '@backstage/core-components';
+import { useApi } from '@backstage/core-plugin-api';
+import { appTreeApiRef } from '@backstage/frontend-plugin-api';
 import React from 'react';
 
 export function AppVisualizerPage() {
-  return <h1>Hello world</h1>;
+  const appTreeApi = useApi(appTreeApiRef);
+  const { tree } = appTreeApi.getTree();
+
+  return (
+    <Page themeId="tool">
+      <Header title="App Visualizer" />
+      <TabbedLayout>
+        <TabbedLayout.Route path="/text" title="Text">
+          <CodeSnippet
+            text={String(tree.root)}
+            language="sql"
+            customStyle={{ margin: 0, padding: 0 }}
+          />
+        </TabbedLayout.Route>
+      </TabbedLayout>
+    </Page>
+  );
 }
