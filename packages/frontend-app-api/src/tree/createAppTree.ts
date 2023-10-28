@@ -20,22 +20,22 @@ import {
   ExtensionOverrides,
 } from '@backstage/frontend-plugin-api';
 import { readAppExtensionsConfig } from './readAppExtensionsConfig';
-import { resolveAppGraph } from './resolveAppGraph';
+import { resolveAppTree } from './resolveAppTree';
 import { resolveAppNodeSpecs } from './resolveAppNodeSpecs';
-import { AppGraph } from './types';
+import { AppTree } from './types';
 import { Config } from '@backstage/config';
 import { instantiateAppNodeTree } from './instantiateAppNodeTree';
 
 /** @internal */
-export interface CreateAppGraphOptions {
+export interface CreateAppTreeOptions {
   features: (BackstagePlugin | ExtensionOverrides)[];
   builtinExtensions: Extension<unknown>[];
   config: Config;
 }
 
 /** @internal */
-export function createAppGraph(options: CreateAppGraphOptions): AppGraph {
-  const appGraph = resolveAppGraph(
+export function createAppTree(options: CreateAppTreeOptions): AppTree {
+  const tree = resolveAppTree(
     'core',
     resolveAppNodeSpecs({
       features: options.features,
@@ -44,6 +44,6 @@ export function createAppGraph(options: CreateAppGraphOptions): AppGraph {
       forbidden: new Set(['core']),
     }),
   );
-  instantiateAppNodeTree(appGraph.root);
-  return appGraph;
+  instantiateAppNodeTree(tree.root);
+  return tree;
 }

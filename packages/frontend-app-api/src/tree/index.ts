@@ -20,4 +20,4 @@ export type {
   AppNodeInstance,
   AppNodeSpec,
 } from './types';
-export { createAppGraph } from './createAppGraph';
+export { createAppTree } from './createAppTree';
