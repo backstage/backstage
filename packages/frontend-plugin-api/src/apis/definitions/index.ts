@@ -14,15 +14,12 @@
  * limitations under the License.
  */
 
-/**
- * Core API used by Backstage frontend plugins.
- *
- * @packageDocumentation
- */
-
-export * from './apis';
-export * from './components';
-export * from './extensions';
-export * from './routing';
-export * from './schema';
-export * from './wiring';
+export {
+  appTreeApiRef,
+  type AppNode,
+  type AppNodeEdges,
+  type AppNodeInstance,
+  type AppNodeSpec,
+  type AppTree,
+  type AppTreeApi,
+} from './AppTreeApi';
