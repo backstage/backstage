@@ -20,7 +20,11 @@ import {
   ExtensionDataRef,
 } from '@backstage/frontend-plugin-api';
 import mapValues from 'lodash/mapValues';
-import { AppNode, AppNodeInstance, AppNodeSpec } from './types';
+import {
+  AppNode,
+  AppNodeInstance,
+  AppNodeSpec,
+} from '@backstage/frontend-plugin-api';
 
 type Mutable<T> = {
   -readonly [P in keyof T]: T[P];
