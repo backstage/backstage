@@ -2,9 +2,10 @@
 
 # [Backstage](https://backstage.io)
 
+> 🏖️ From October 30th - November 5th, employees at Spotify will have a week to recharge, which means all core maintainers & some project area maintainers are out of office. Right after that, we will go into the week of BackstageCon + KubeCon in Chicago, hoping to see some of you there! Expect slower responses & reviews during the 2 weeks, but we're on it for urgent issues. We will be up to speed again on November 13th! 🏖️
+
 [![License](https://img.shields.io/badge/License-Apache%202.0-blue.svg)](https://opensource.org/licenses/Apache-2.0)
 [![CNCF Status](https://img.shields.io/badge/cncf%20status-incubation-blue.svg)](https://www.cncf.io/projects)
-[![Main CI Build](https://github.com/backstage/backstage/workflows/Main%20Master%20Build/badge.svg)](https://github.com/backstage/backstage/actions?query=workflow%3A%22Main+Master+Build%22)
 [![Discord](https://img.shields.io/discord/687207715902193673)](https://discord.gg/backstage-687207715902193673)
 ![Code style](https://img.shields.io/badge/code_style-prettier-ff69b4.svg)
 [![Codecov](https://img.shields.io/codecov/c/github/backstage/backstage)](https://codecov.io/gh/backstage/backstage)

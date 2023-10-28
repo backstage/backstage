@@ -506,10 +506,10 @@ export const googleAuthApiRef: ApiRef<
 // @public
 export type IconComponent = ComponentType<
   | {
-      fontSize?: 'large' | 'small' | 'default';
+      fontSize?: 'large' | 'small' | 'default' | 'inherit';
     }
   | {
-      fontSize?: 'medium' | 'large' | 'small';
+      fontSize?: 'medium' | 'large' | 'small' | 'inherit';
     }
 >;
 

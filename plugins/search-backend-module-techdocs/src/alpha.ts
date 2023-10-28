@@ -23,11 +23,28 @@ import { loggerToWinstonLogger } from '@backstage/backend-common';
 import {
   coreServices,
   createBackendModule,
+  createExtensionPoint,
 } from '@backstage/backend-plugin-api';
 import { readTaskScheduleDefinitionFromConfig } from '@backstage/backend-tasks';
 import { catalogServiceRef } from '@backstage/plugin-catalog-node/alpha';
 import { DefaultTechDocsCollatorFactory } from '@backstage/plugin-search-backend-module-techdocs';
 import { searchIndexRegistryExtensionPoint } from '@backstage/plugin-search-backend-node/alpha';
+import { TechDocsCollatorEntityTransformer } from '@backstage/plugin-search-backend-module-techdocs';
+
+/** @alpha */
+export interface TechDocsCollatorEntityTransformerExtensionPoint {
+  setTransformer(transformer: TechDocsCollatorEntityTransformer): void;
+}
+
+/**
+ * Extension point used to customize the TechDocs collator entity transformer.
+ *
+ * @alpha
+ */
+export const techdocsCollatorEntityTransformerExtensionPoint =
+  createExtensionPoint<TechDocsCollatorEntityTransformerExtensionPoint>({
+    id: 'search.techdocsCollator.transformer',
+  });
 
 /**
  * @alpha
@@ -37,6 +54,22 @@ export default createBackendModule({
   moduleId: 'techDocsCollator',
   pluginId: 'search',
   register(env) {
+    let transformer: TechDocsCollatorEntityTransformer | undefined;
+
+    env.registerExtensionPoint(
+      techdocsCollatorEntityTransformerExtensionPoint,
+      {
+        setTransformer(newTransformer) {
+          if (transformer) {
+            throw new Error(
+              'TechDocs collator entity transformer may only be set once',
+            );
+          }
+          transformer = newTransformer;
+        },
+      },
+    );
+
     env.registerInit({
       deps: {
         config: coreServices.rootConfig,
@@ -75,6 +108,7 @@ export default createBackendModule({
             tokenManager,
             logger: loggerToWinstonLogger(logger),
             catalogClient: catalog,
+            entityTransformer: transformer,
           }),
         });
       },

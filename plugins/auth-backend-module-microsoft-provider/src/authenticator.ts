@@ -30,8 +30,9 @@ export const microsoftAuthenticator = createOAuthAuthenticator({
     const clientId = config.getString('clientId');
     const clientSecret = config.getString('clientSecret');
     const tenantId = config.getString('tenantId');
+    const domainHint = config.getOptionalString('domainHint');
 
-    return PassportOAuthAuthenticatorHelper.from(
+    const helper = PassportOAuthAuthenticatorHelper.from(
       new MicrosoftStrategy(
         {
           clientID: clientId,
@@ -55,19 +56,30 @@ export const microsoftAuthenticator = createOAuthAuthenticator({
         },
       ),
     );
+
+    return {
+      helper,
+      domainHint,
+    };
   },
 
-  async start(input, helper) {
-    return helper.start(input, {
+  async start(input, ctx) {
+    const options: Record<string, string> = {
       accessType: 'offline',
-    });
+    };
+
+    if (ctx.domainHint !== undefined) {
+      options.domain_hint = ctx.domainHint;
+    }
+
+    return ctx.helper.start(input, options);
   },
 
-  async authenticate(input, helper) {
-    return helper.authenticate(input);
+  async authenticate(input, ctx) {
+    return ctx.helper.authenticate(input);
   },
 
-  async refresh(input, helper) {
-    return helper.refresh(input);
+  async refresh(input, ctx) {
+    return ctx.helper.refresh(input);
   },
 });

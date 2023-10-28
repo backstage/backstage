@@ -16,7 +16,8 @@
 
 import { Entity, CompoundEntityRef } from '@backstage/catalog-model';
 import { TestApiProvider } from '@backstage/test-utils';
-import { renderHook, waitFor } from '@testing-library/react';
+import { waitFor } from '@testing-library/react';
+import { renderHook } from '@testing-library/react';
 import React, { PropsWithChildren } from 'react';
 import Observable from 'zen-observable';
 import { StarredEntitiesApi, starredEntitiesApiRef } from '../apis';

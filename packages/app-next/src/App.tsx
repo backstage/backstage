@@ -29,11 +29,8 @@ import {
   createExtension,
   createApiExtension,
   createExtensionOverrides,
-  createPageExtension,
 } from '@backstage/frontend-plugin-api';
-import { entityRouteRef } from '@backstage/plugin-catalog-react';
 import techdocsPlugin from '@backstage/plugin-techdocs/alpha';
-import { convertLegacyRouteRef } from '@backstage/core-plugin-api/alpha';
 import { homePage } from './HomePage';
 import { collectLegacyRoutes } from '@backstage/core-compat-api';
 import { FlatRoutes } from '@backstage/core-app-api';
@@ -75,13 +72,6 @@ TODO:
 
 /* app.tsx */
 
-const entityPageExtension = createPageExtension({
-  id: 'catalog:entity',
-  defaultPath: '/catalog/:namespace/:kind/:name',
-  routeRef: convertLegacyRouteRef(entityRouteRef),
-  loader: async () => <div>Just a temporary mocked entity page</div>,
-});
-
 const homePageExtension = createExtension({
   id: 'myhomepage',
   attachTo: { id: 'home', input: 'props' },
@@ -89,8 +79,8 @@ const homePageExtension = createExtension({
     children: coreExtensionData.reactElement,
     title: titleExtensionDataRef,
   },
-  factory({ bind }) {
-    bind({ children: homePage, title: 'just a title' });
+  factory() {
+    return { children: homePage, title: 'just a title' };
   },
 });
 
@@ -122,12 +112,7 @@ const app = createApp({
     homePlugin,
     ...collectedLegacyPlugins,
     createExtensionOverrides({
-      extensions: [
-        entityPageExtension,
-        homePageExtension,
-        scmAuthExtension,
-        scmIntegrationApi,
-      ],
+      extensions: [homePageExtension, scmAuthExtension, scmIntegrationApi],
     }),
   ],
   /* Handled through config instead */

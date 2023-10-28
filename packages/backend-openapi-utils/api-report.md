@@ -5,6 +5,7 @@
 ```ts
 import type { ContentObject } from 'openapi3-ts';
 import type core from 'express-serve-static-core';
+import { Express as Express_2 } from 'express';
 import { FromSchema } from 'json-schema-to-ts';
 import { JSONSchema7 } from 'json-schema-to-ts';
 import { middleware } from 'express-openapi-validator';
@@ -16,6 +17,7 @@ import { RequestHandler } from 'express';
 import type { ResponseObject } from 'openapi3-ts';
 import { Router } from 'express';
 import type { SchemaObject } from 'openapi3-ts';
+import { Server } from 'http';
 
 // @public
 export interface ApiRouter<Doc extends RequiredDoc> extends Router {
@@ -247,6 +249,9 @@ type FullMap<
     [key: string]: any;
   },
 > = RequiredMap<T> & OptionalMap<T>;
+
+// @public
+export function getOpenApiSpecRoute(baseUrl: string): string;
 
 // @public (undocumented)
 interface HeaderObject extends ParameterObject {
@@ -708,4 +713,7 @@ type UnknownIfNever<P> = [P] extends [never] ? unknown : P;
 
 // @public
 type ValueOf<T> = T[keyof T];
+
+// @public
+export const wrapInOpenApiTestServer: (app: Express_2) => Server | Express_2;
 ```

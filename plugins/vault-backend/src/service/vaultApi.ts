@@ -33,6 +33,7 @@ export type VaultSecretList = {
 /**
  * Object containing the secret name and some links
  * @public
+ * @deprecated Use the interface from `@backstage/plugin-vault-node`
  */
 export type VaultSecret = {
   name: string;
@@ -53,6 +54,7 @@ type RenewTokenResponse = {
 /**
  * Interface for the Vault API
  * @public
+ * @deprecated Use the interface from `@backstage/plugin-vault-node`
  */
 export interface VaultApi {
   /**

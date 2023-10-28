@@ -1,5 +1,21 @@
 # @backstage/frontend-plugin-api
 
+## 0.3.0-next.0
+
+### Minor Changes
+
+- 68fc9dc60e: Added `RouteRef`, `SubRouteRef`, `ExternalRouteRef`, and related types. All exports from this package that previously relied on the types with the same name from `@backstage/core-plugin-api` now use the new types instead. To convert and existing legacy route ref to be compatible with the APIs from this package, use the `convertLegacyRouteRef` utility from `@backstage/core-plugin-api/alpha`.
+
+### Patch Changes
+
+- 6c2b872153: Add official support for React 18.
+- 6af88a05ff: Improve the extension boundary component and create a default extension suspense component.
+- Updated dependencies
+  - @backstage/core-components@0.13.7-next.0
+  - @backstage/core-plugin-api@1.8.0-next.0
+  - @backstage/version-bridge@1.0.7-next.0
+  - @backstage/types@1.1.1
+
 ## 0.2.0
 
 ### Minor Changes

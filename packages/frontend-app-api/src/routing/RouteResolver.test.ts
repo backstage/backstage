@@ -24,7 +24,7 @@ import {
 } from '@backstage/frontend-plugin-api';
 import { BackstagePlugin } from '@backstage/core-plugin-api';
 import { RouteResolver } from './RouteResolver';
-import { MATCH_ALL_ROUTE } from './extractRouteInfoFromInstanceTree';
+import { MATCH_ALL_ROUTE } from './extractRouteInfoFromAppNode';
 
 const rest = {
   element: null,

@@ -21,6 +21,7 @@ import { parseRepoUrl } from '../publish/util';
 import { getOctokitOptions } from './helpers';
 import { Octokit } from 'octokit';
 import Sodium from 'libsodium-wrappers';
+import { examples } from './githubDeployKey.examples';
 
 /**
  * Creates an `github:deployKey:create` Scaffolder action that creates a Deploy Key
@@ -43,6 +44,7 @@ export function createGithubDeployKeyAction(options: {
   }>({
     id: 'github:deployKey:create',
     description: 'Creates and stores Deploy Keys',
+    examples,
     schema: {
       input: {
         type: 'object',

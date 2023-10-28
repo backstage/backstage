@@ -19,7 +19,7 @@ jobs:
           egress-policy: audit
 
       - name: Checkout
-        uses: actions/checkout@v3.6.0
+        uses: actions/checkout@v4.1.1
 
       - name: Install Fossa
         run: "curl -H 'Cache-Control: no-cache' https://raw.githubusercontent.com/fossas/fossa-cli/master/install.sh | bash"

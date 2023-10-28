@@ -114,18 +114,18 @@ of the `SearchType` component.
 
 > Check out the documentation around [integrating search into plugins](../../plugins/integrating-search-into-plugins.md#create-a-collator) for how to create your own collator.
 
-## How to customize fields in the Software Catalog index
+## How to customize fields in the Software Catalog or TechDocs index
 
-Sometimes you will might want to have ability to control
-which data passes to search index in catalog collator, or to customize data for specific kind.
-You can easily do that by passing `entityTransformer` callback to `DefaultCatalogCollatorFactory`.
-You can either just simply amend default behaviour, or even to write completely new document
-(which should follow some required basic structure though).
+Sometimes, you might want to have the ability to control which data passes into the search index
+in the catalog collator or customize data for a specific kind. You can easily achieve this
+by passing an `entityTransformer` callback to the `DefaultCatalogCollatorFactory`. This behavior
+is also possible for the `DefaultTechDocsCollatorFactory`. You can either simply amend the default behavior
+or even write an entirely new document (which should still follow some required basic structure).
 
 > `authorization` and `location` cannot be modified via a `entityTransformer`, `location` can be modified only through `locationTemplate`.
 
 ```ts title="packages/backend/src/plugins/search.ts"
-const entityTransformer: CatalogCollatorEntityTransformer = (
+const catalogEntityTransformer: CatalogCollatorEntityTransformer = (
   entity: Entity,
 ) => {
   if (entity.kind === 'SomeKind') {
@@ -146,7 +146,26 @@ indexBuilder.addCollator({
     discovery: env.discovery,
     tokenManager: env.tokenManager,
     /* highlight-add-next-line */
-    entityTransformer,
+    entityTransformer: catalogEntityTransformer,
+  }),
+});
+
+const techDocsEntityTransformer: TechDocsCollatorEntityTransformer = (
+  entity: Entity,
+) => {
+  return {
+    // add more fields to the index
+    ...defaultTechDocsCollatorEntityTransformer(entity),
+    tags: entity.metadata.tags,
+  };
+};
+
+indexBuilder.addCollator({
+  collator: DefaultTechDocsCollatorFactory.fromConfig(env.config, {
+    discovery: env.discovery,
+    tokenManager: env.tokenManager,
+    /* highlight-add-next-line */
+    entityTransformer: techDocsEntityTransformer,
   }),
 });
 ```
