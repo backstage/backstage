@@ -151,7 +151,7 @@ export function createAppNodeInstance(options: {
 }
 
 /**
- * Starting at the provided node, instantiate all reachable nodes in the graph that have not been disabled.
+ * Starting at the provided node, instantiate all reachable nodes in the tree that have not been disabled.
  * @internal
  */
 export function instantiateAppNodeTree(rootNode: AppNode): void {
