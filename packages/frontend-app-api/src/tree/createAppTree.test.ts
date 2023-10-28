@@ -20,7 +20,7 @@ import {
   createPlugin,
 } from '@backstage/frontend-plugin-api';
 import { MockConfigApi } from '@backstage/test-utils';
-import { createAppGraph } from './createAppGraph';
+import { createAppTree } from './createAppTree';
 
 const extBase = {
   id: 'test',
@@ -29,7 +29,7 @@ const extBase = {
   factory: () => ({}),
 };
 
-describe('createAppGraph', () => {
+describe('createAppTree', () => {
   it('throws an error when a core extension is parametrized', () => {
     const config = new MockConfigApi({
       app: {
@@ -47,7 +47,7 @@ describe('createAppGraph', () => {
       }),
     ];
     expect(() =>
-      createAppGraph({ features, config, builtinExtensions: [] }),
+      createAppTree({ features, config, builtinExtensions: [] }),
     ).toThrow("Configuration of the 'core' extension is forbidden");
   });
 
@@ -68,7 +68,7 @@ describe('createAppGraph', () => {
       }),
     ];
     expect(() =>
-      createAppGraph({ features, config, builtinExtensions: [] }),
+      createAppTree({ features, config, builtinExtensions: [] }),
     ).toThrow(
       "It is forbidden to override the following extension(s): 'core', which is done by the following plugin(s): 'plugin'",
     );
@@ -94,7 +94,7 @@ describe('createAppGraph', () => {
     const features = [PluginA, PluginB];
 
     expect(() =>
-      createAppGraph({ features, config, builtinExtensions: [] }),
+      createAppTree({ features, config, builtinExtensions: [] }),
     ).toThrow(
       "The following extensions are duplicated: The extension 'A' was provided 2 time(s) by the plugin 'A' and 1 time(s) by the plugin 'B', The extension 'B' was provided 2 time(s) by the plugin 'B'",
     );
@@ -102,7 +102,7 @@ describe('createAppGraph', () => {
 
   it('throws an error when duplicated extension overrides are detected', () => {
     expect(() =>
-      createAppGraph({
+      createAppTree({
         features: [
           createExtensionOverrides({
             extensions: [
