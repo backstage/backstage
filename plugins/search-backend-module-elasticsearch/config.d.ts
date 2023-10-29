@@ -115,6 +115,12 @@ export interface Config {
              * Eg. https://my-es-cluster.eu-west-1.es.amazonaws.com
              */
             node: string;
+
+            /**
+             * The AWS region.
+             * Only needed if using a custom DNS record
+             */
+            region?: string;
           }
 
         /**
