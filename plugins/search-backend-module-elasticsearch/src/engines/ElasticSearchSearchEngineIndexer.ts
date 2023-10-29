@@ -96,7 +96,7 @@ export class ElasticSearchSearchEngineIndexer extends BatchSearchEngineIndexer {
           index: { _index: that.indexName },
         };
       },
-      refreshOnCompletion: !options.skipRefresh && that.indexName,
+      refreshOnCompletion: options.skipRefresh !== true && that.indexName,
     });
 
     // Safely catch errors thrown by the bulk helper client, e.g. HTTP timeouts
