@@ -118,9 +118,16 @@ export interface Config {
 
             /**
              * The AWS region.
-             * Only needed if using a custom DNS record
+             * Only needed if using a custom DNS record.
              */
             region?: string;
+
+            /**
+             * The AWS service used for request signature.
+             * Either 'es' for "Managed Clusters" or 'aoss' for "Serverless".
+             * Only needed if using a custom DNS record.
+             */
+            service?: 'es' | 'aoss';
           }
 
         /**
