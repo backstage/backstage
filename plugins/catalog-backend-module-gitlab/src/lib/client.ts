@@ -92,7 +92,7 @@ export class GitLabClient {
     options?: CommonListOptions,
   ): Promise<PagedResponse<GitLabUser>> {
     return this.pagedRequest(
-      `/groups/${encodeURIComponent(groupPath)}/members`,
+      `/groups/${encodeURIComponent(groupPath)}/members/all`,
       {
         ...options,
         show_seat_info: true,
