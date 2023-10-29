@@ -1,0 +1,50 @@
+---
+'@backstage/plugin-catalog-backend-module-incremental-ingestion': patch
+'@backstage/plugin-catalog-backend-module-backstage-openapi': patch
+'@backstage/plugin-entity-feedback-backend': patch
+'@backstage/backend-openapi-utils': patch
+'@backstage/plugin-code-coverage-backend': patch
+'@backstage/plugin-tech-insights-backend': patch
+'@backstage/plugin-user-settings-backend': patch
+'@backstage/plugin-azure-devops-backend': patch
+'@backstage/backend-plugin-api': patch
+'@backstage/backend-test-utils': patch
+'@backstage/plugin-azure-sites-backend': patch
+'@backstage/plugin-kubernetes-backend': patch
+'@backstage/plugin-permission-backend': patch
+'@backstage/plugin-scaffolder-backend': patch
+'@backstage/plugin-sonarqube-backend': patch
+'@backstage/backend-app-api': patch
+'@backstage/plugin-airbrake-backend': patch
+'@backstage/plugin-devtools-backend': patch
+'@backstage/plugin-linguist-backend': patch
+'@backstage/plugin-periskop-backend': patch
+'@backstage/plugin-playlist-backend': patch
+'@backstage/plugin-techdocs-backend': patch
+'@backstage/backend-common': patch
+'@backstage/plugin-catalog-backend': patch
+'@backstage/plugin-explore-backend': patch
+'@backstage/plugin-graphql-backend': patch
+'@backstage/plugin-jenkins-backend': patch
+'@backstage/plugin-permission-node': patch
+'@backstage/plugin-rollbar-backend': patch
+'@backstage/plugin-badges-backend': patch
+'@backstage/plugin-bazaar-backend': patch
+'@backstage/plugin-events-backend': patch
+'@backstage/plugin-search-backend': patch
+'@backstage/plugin-kafka-backend': patch
+'@backstage/plugin-nomad-backend': patch
+'@backstage/plugin-proxy-backend': patch
+'@backstage/plugin-techdocs-node': patch
+'@backstage/plugin-vault-backend': patch
+'@backstage/plugin-auth-backend': patch
+'@backstage/plugin-todo-backend': patch
+'@backstage/plugin-adr-backend': patch
+'@backstage/plugin-app-backend': patch
+'@backstage/plugin-auth-node': patch
+'@backstage/plugin-dynatrace': patch
+'@backstage/plugin-app-node': patch
+'@backstage/cli': patch
+---
+
+Update version of Express.js and some express related dependencies
