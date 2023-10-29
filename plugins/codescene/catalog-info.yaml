@@ -3,6 +3,8 @@ kind: Component
 metadata:
   name: backstage-plugin-codescene
   title: '@backstage/plugin-codescene'
+  annotations:
+    codescene.io/project-id: "1844"
 spec:
   lifecycle: experimental
   type: backstage-frontend-plugin

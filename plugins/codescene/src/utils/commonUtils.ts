@@ -13,14 +13,23 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-export {
-  codescenePlugin,
-  CodeScenePage,
-  CodeSceneProjectDetailsPage,
-  CodeSceneEntityPage,
-} from './plugin';
-export { CodeSceneIcon } from './CodeSceneIcon';
-export {
-  isCodeSceneAvailable,
-  CODESCENE_PROJECT_ANNOTATION,
-} from './utils/commonUtils';
+import { Entity } from '@backstage/catalog-model';
+
+export const CODESCENE_PROJECT_ANNOTATION = 'codescene.io/project-id';
+
+export const isCodeSceneAvailable = (entity: Entity) =>
+  Boolean(entity.metadata.annotations?.[CODESCENE_PROJECT_ANNOTATION]);
+
+export const getProjectAnnotation = (
+  entity: Entity,
+): {
+  projectId: number;
+} => {
+  let projectId = 1844;
+  const annotation: any =
+    entity?.metadata.annotations?.[CODESCENE_PROJECT_ANNOTATION];
+  if (annotation) {
+    [projectId] = annotation.split('/');
+  }
+  return { projectId };
+};

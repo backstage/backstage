@@ -67,3 +67,17 @@ export const CodeSceneProjectDetailsPage = codescenePlugin.provide(
     mountPoint: projectDetailsRouteRef,
   }),
 );
+
+/**
+ * @public
+ */
+export const CodeSceneEntityPage = codescenePlugin.provide(
+  createRoutableExtension({
+    name: 'CodeSceneEntityPage',
+    component: () =>
+      import('./components/CodeSceneEntityPage').then(
+        m => m.CodeSceneEntityPage,
+      ),
+    mountPoint: rootRouteRef,
+  }),
+);
