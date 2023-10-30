@@ -413,7 +413,8 @@ export class DatabaseTaskStore implements TaskStore {
     });
 
     if (!raw) {
-      return compactEvents(events);
+      const taskSpec = await this.fetchTaskSpec({ taskId });
+      return compactEvents(taskSpec, events);
     }
 
     return { events };
@@ -456,6 +457,19 @@ export class DatabaseTaskStore implements TaskStore {
         message,
       },
     });
+  }
+
+  private async fetchTaskSpec(options: {
+    taskId: string;
+  }): Promise<TaskSpec | undefined> {
+    const res = (await this.db<RawDbTaskRow>('tasks')
+      .where({ id: options.taskId })
+      .select('spec')) as { spec: string }[];
+    if (res.length) {
+      const [{ spec }] = res;
+      return spec ? (JSON.parse(spec as string) as TaskSpec) : undefined;
+    }
+    return undefined;
   }
 
   async reopenTask(options: { taskId: string }): Promise<void> {

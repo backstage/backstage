@@ -15,9 +15,87 @@
  */
 
 import { SerializedTaskEvent } from '@backstage/plugin-scaffolder-node';
-import { TaskRecoverStrategy } from '@backstage/plugin-scaffolder-common';
+import {
+  TaskRecoverStrategy,
+  TaskSpec,
+  TaskStep,
+} from '@backstage/plugin-scaffolder-common';
+
+const findIndForRecoveredEvents = (events: SerializedTaskEvent[]) => {
+  const lastRunReversedInd = events
+    .slice()
+    .reverse()
+    .findIndex(event => event.type === 'recovered');
+
+  const lastRunInd =
+    lastRunReversedInd < 0 ? 0 : events.length - lastRunReversedInd - 1;
+
+  if (lastRunInd === 0) {
+    return [];
+  }
+
+  const beforeLastRunReversedInd = events
+    .slice(0, lastRunInd - 1)
+    .reverse()
+    .findIndex(event => event.type === 'recovered');
+
+  const beforeLastRunInd = events.length - beforeLastRunReversedInd - 1;
+
+  return {
+    beforeLastRunInd: beforeLastRunReversedInd < 0 ? 0 : beforeLastRunInd,
+    lastRunInd,
+  };
+};
+
+type StepsMap = Map<string, { min?: string; max?: string; status?: string }>;
+
+const createStepsMap = (events: SerializedTaskEvent[]) => {
+  return events
+    .filter(event => event.type === 'log')
+    .reduce((acc, event) => {
+      const stepId = event.body.stepId as string;
+      const status = event.body.status as string;
+      if (stepId) {
+        const step = acc.get(stepId);
+        acc.set(stepId, {
+          min:
+            step && step.min && status !== 'processing'
+              ? step.min
+              : event.createdAt,
+          max: event.createdAt,
+          ...(status && { status }),
+        });
+      }
+      return acc;
+    }, new Map<string, { min?: string; max?: string; status?: string }>());
+};
+
+export const stepIdToRunTheTask = (spec: TaskSpec, stepsMap: StepsMap) => {
+  const steps = spec.steps.slice().reverse();
+  const stepIds = steps.map(step => step.id);
+
+  const compare = (stepId1: string, stepId2: string) =>
+    stepIds.findIndex(id => id === stepId1) -
+    stepIds.findIndex(id => id === stepId2);
+
+  const lastExecutedStep =
+    Array.from(stepsMap.keys()).sort(compare)[0] ?? spec.steps[0].id;
+
+  return steps.reduce((acc: string, step: TaskStep) => {
+    const enrichedStep = stepsMap.get(step.id);
+    if (!enrichedStep) {
+      return acc;
+    }
+    const dependsOn = step.recovery?.dependsOn;
+    if (dependsOn) {
+      return compare(dependsOn as string, acc) > 0 ? dependsOn : acc;
+    }
+    return compare(step.id, acc) > 0 ? acc : step.id;
+  }, lastExecutedStep);
+};
 
 export const compactEvents = (
+  taskSpec: TaskSpec | undefined,
   events: SerializedTaskEvent[],
 ): { events: SerializedTaskEvent[] } => {
   const recoveredEventInd = events
@@ -34,6 +112,36 @@ export const compactEvents = (
       return {
         events: recoveredEventInd === 0 ? [] : events.slice(ind),
       };
+    } else if (recoverStrategy === 'idempotent') {
+      if (!taskSpec) {
+        return { events };
+      }
+
+      const { beforeLastRunInd, lastRunInd } =
+        findIndForRecoveredEvents(events);
+
+      const slicedEvents = events.slice(beforeLastRunInd, lastRunInd);
+
+      const stepsMap = createStepsMap(
+        events.slice(beforeLastRunInd, lastRunInd),
+      );
+      const stepIdToStart = stepIdToRunTheTask(taskSpec, stepsMap);
+
+      const preservedIdSteps = [];
+      const stepIds = taskSpec.steps.map(step => step.id);
+      for (const stepId of stepIds) {
+        if (stepId === stepIdToStart) {
+          break;
+        } else {
+          preservedIdSteps.push(stepId);
+        }
+      }
+
+      const recoveredEvents = slicedEvents.filter(event =>
+        preservedIdSteps.includes((event.body as { stepId?: string }).stepId),
+      );
+
+      return { events: [...recoveredEvents, ...events.slice(lastRunInd)] };
     }
   }
 
