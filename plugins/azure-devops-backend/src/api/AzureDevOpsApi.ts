@@ -70,11 +70,16 @@ export class AzureDevOpsApi {
   private readonly logger: Logger;
   private readonly urlReader: UrlReader;
   private readonly config: Config;
+  private readonly credentialsProvider: DefaultAzureDevOpsCredentialsProvider;
 
   private constructor(logger: Logger, urlReader: UrlReader, config: Config) {
     this.logger = logger;
     this.urlReader = urlReader;
     this.config = config;
+
+    const scmIntegrations = ScmIntegrations.fromConfig(this.config);
+    this.credentialsProvider =
+      DefaultAzureDevOpsCredentialsProvider.fromIntegrations(scmIntegrations);
   }
 
   static fromConfig(
@@ -89,15 +94,14 @@ export class AzureDevOpsApi {
     const validOrg = org ?? this.config.getString('azureDevOps.organization');
     const url = `https://${validHost}/${validOrg}`;
 
-    const scmIntegrations = ScmIntegrations.fromConfig(this.config);
-    const credentialsProvider =
-      DefaultAzureDevOpsCredentialsProvider.fromIntegrations(scmIntegrations);
-    const credentials = await credentialsProvider.getCredentials({
+    const credentials = await this.credentialsProvider.getCredentials({
       url,
     });
 
+    // TODO:(awanlin) use `getHandlerFromToken` once we no longer
+    // need to support the 'azureDevOps.token' fallback config value
     const authHandler =
-      this.config.getString('azureDevOps.token') || credentials?.type === 'pat'
+      credentials?.type === 'pat'
         ? getPersonalAccessTokenHandler(
             credentials!.token ?? this.config.getString('azureDevOps.token'),
           )
