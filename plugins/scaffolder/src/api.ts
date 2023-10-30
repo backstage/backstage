@@ -39,10 +39,6 @@ import {
   ScaffolderDryRunResponse,
   TemplateParameterSchema,
 } from '@backstage/plugin-scaffolder-react';
-import {
-  getEnrichedTaskSpec,
-  SerializedTaskEvent,
-} from '@backstage/plugin-scaffolder-common';
 
 import queryString from 'qs';
 import { EventSourcePolyfill } from 'event-source-polyfill';
@@ -174,41 +170,14 @@ export class ScaffolderClient implements ScaffolderApi {
 
   async getTask(taskId: string): Promise<ScaffolderTask> {
     const baseUrl = await this.discoveryApi.getBaseUrl('scaffolder');
-    const taskUrl = `${baseUrl}/v2/tasks/${encodeURIComponent(taskId)}`;
+    const url = `${baseUrl}/v2/tasks/${encodeURIComponent(taskId)}`;
 
-    const taskEventsUrl = `${baseUrl}/v2/tasks/${encodeURIComponent(
-      taskId,
-    )}/events`;
-
-    const taskResponse = await this.fetchApi.fetch(taskUrl);
-    if (!taskResponse.ok) {
-      throw await ResponseError.fromResponse(taskResponse);
+    const response = await this.fetchApi.fetch(url);
+    if (!response.ok) {
+      throw await ResponseError.fromResponse(response);
     }
 
-    const taskEventsResponse = await this.fetchApi.fetch(taskEventsUrl);
-    if (!taskEventsResponse.ok) {
-      throw await ResponseError.fromResponse(taskEventsResponse);
-    }
-
-    const task = (await taskResponse.json()) as ScaffolderTask;
-
-    const taskEvents = (await taskEventsResponse.json()) as {
-      body: { stepId?: string };
-      createdAt: string;
-      type: 'completion' | 'log' | 'cancelled';
-    }[];
-
-    const spec = await getEnrichedTaskSpec(
-      task,
-      taskEvents as SerializedTaskEvent[],
-    );
-
-    const enrichedTask = {
-      ...task,
-      spec,
-    };
-
-    return enrichedTask as ScaffolderTask;
+    return await response.json();
   }
 
   streamLogs(options: ScaffolderStreamLogsOptions): Observable<LogEvent> {
