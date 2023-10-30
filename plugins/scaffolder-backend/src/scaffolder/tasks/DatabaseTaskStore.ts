@@ -466,6 +466,10 @@ export class DatabaseTaskStore implements TaskStore {
         status: 'open',
         last_heartbeat_at: this.db.fn.now(),
       });
+      await this.db<RawDbTaskEventRow>('task_events').insert({
+        task_id: taskId,
+        event_type: 'recovered',
+      });
     });
   }
 

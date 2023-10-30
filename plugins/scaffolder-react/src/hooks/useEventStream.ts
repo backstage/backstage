@@ -68,6 +68,7 @@ type ReducerLogEntry = {
 type ReducerAction =
   | { type: 'INIT'; data: ScaffolderTask }
   | { type: 'CANCELLED' }
+  | { type: 'RECOVERED' }
   | { type: 'LOGS'; data: ReducerLogEntry[] }
   | { type: 'COMPLETED'; data: ReducerLogEntry }
   | { type: 'ERROR'; data: Error };
@@ -211,6 +212,9 @@ export const useTaskEventStream = (taskId: string): TaskStream => {
                 case 'completion':
                   emitLogs();
                   dispatch({ type: 'COMPLETED', data: event });
+                  return undefined;
+                case 'recovered':
+                  dispatch({ type: 'RECOVERED' });
                   return undefined;
                 default:
                   throw new Error(
