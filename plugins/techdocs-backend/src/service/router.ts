@@ -22,6 +22,7 @@ import { stringifyEntityRef } from '@backstage/catalog-model';
 import { Config } from '@backstage/config';
 import { NotFoundError } from '@backstage/errors';
 import {
+  DocsBuildStrategy,
   GeneratorBuilder,
   getLocationForEntity,
   PreparerBuilder,
@@ -34,12 +35,8 @@ import { ScmIntegrations } from '@backstage/integration';
 import { DocsSynchronizer, DocsSynchronizerSyncOpts } from './DocsSynchronizer';
 import { createCacheMiddleware, TechDocsCache } from '../cache';
 import { CachedEntityLoader } from './CachedEntityLoader';
-import {
-  DefaultDocsBuildStrategy,
-  DocsBuildStrategy,
-} from './DocsBuildStrategy';
+import { DefaultDocsBuildStrategy } from './DefaultDocsBuildStrategy';
 import * as winston from 'winston';
-import { PassThrough } from 'stream';
 
 /**
  * Required dependencies for running TechDocs in the "out-of-the-box"
@@ -113,9 +110,7 @@ export async function createRouter(
     options.catalogClient ?? new CatalogClient({ discoveryApi: discovery });
   const docsBuildStrategy =
     options.docsBuildStrategy ?? DefaultDocsBuildStrategy.fromConfig(config);
-  const buildLogTransport =
-    options.buildLogTransport ??
-    new winston.transports.Stream({ stream: new PassThrough() });
+  const buildLogTransport = options.buildLogTransport;
 
   // Entities are cached to optimize the /static/docs request path, which can be called many times
   // when loading a single techdocs page.

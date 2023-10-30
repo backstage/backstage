@@ -32,27 +32,34 @@ const WrappedForm = withTheme(MuiTheme);
 export const Form = (props: PropsWithChildren<ScaffolderRJSFFormProps>) => {
   // This is where we unbreak the changes from RJSF, and make it work with our custom fields so we don't pass on this
   // breaking change to our users. We will look more into a better API for this in scaffolderv2.
-  const wrappedFields = Object.fromEntries(
-    Object.entries(props.fields ?? {}).map(([key, Component]) => [
-      key,
-      (wrapperProps: FieldProps) => {
-        return (
-          <Component
-            {...wrapperProps}
-            uiSchema={wrapperProps.uiSchema ?? {}}
-            formData={wrapperProps.formData}
-            rawErrors={wrapperProps.rawErrors ?? []}
-          />
-        );
-      },
-    ]),
+  const wrappedFields = React.useMemo(
+    () =>
+      Object.fromEntries(
+        Object.entries(props.fields ?? {}).map(([key, Component]) => [
+          key,
+          (wrapperProps: FieldProps) => {
+            return (
+              <Component
+                {...wrapperProps}
+                uiSchema={wrapperProps.uiSchema ?? {}}
+                formData={wrapperProps.formData}
+                rawErrors={wrapperProps.rawErrors ?? []}
+              />
+            );
+          },
+        ]),
+      ),
+    [props.fields],
   );
 
-  const templates = {
-    FieldTemplate,
-    DescriptionFieldTemplate,
-    ...props.templates,
-  };
+  const templates = React.useMemo(
+    () => ({
+      FieldTemplate,
+      DescriptionFieldTemplate,
+      ...props.templates,
+    }),
+    [props.templates],
+  );
 
   return (
     <WrappedForm {...props} templates={templates} fields={wrappedFields} />

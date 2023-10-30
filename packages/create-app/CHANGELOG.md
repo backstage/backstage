@@ -1,5 +1,14 @@
 # @backstage/create-app
 
+## 0.5.7-next.0
+
+### Patch Changes
+
+- 6c2b872153: Add official support for React 18.
+- ae1602e54d: If create app installs dependencies, don't suggest to user that they also need to do it.
+- Updated dependencies
+  - @backstage/cli-common@0.1.13
+
 ## 0.5.6
 
 ### Patch Changes

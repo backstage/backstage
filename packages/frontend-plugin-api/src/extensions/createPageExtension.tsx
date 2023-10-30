@@ -75,14 +75,14 @@ export function createPageExtension<
       path: coreExtensionData.routePath,
       routeRef: coreExtensionData.routeRef.optional(),
     },
-    factory({ bind, config, inputs, source }) {
+    factory({ config, inputs, source }) {
       const ExtensionComponent = lazy(() =>
         options
           .loader({ config, inputs })
           .then(element => ({ default: () => element })),
       );
 
-      bind({
+      return {
         path: config.path,
         routeRef: options.routeRef,
         element: (
@@ -90,7 +90,7 @@ export function createPageExtension<
             <ExtensionComponent />
           </ExtensionBoundary>
         ),
-      });
+      };
     },
   });
 }

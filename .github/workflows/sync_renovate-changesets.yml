@@ -16,7 +16,7 @@ jobs:
           egress-policy: audit
 
       - name: Checkout
-        uses: actions/checkout@v3.6.0
+        uses: actions/checkout@v4.1.1
         with:
           fetch-depth: 2
           ref: ${{ github.head_ref }}

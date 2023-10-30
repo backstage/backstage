@@ -41,6 +41,7 @@ import {
   EntityAzurePullRequestsContent,
   isAzureDevOpsAvailable,
   isAzurePipelinesAvailable,
+  EntityAzureReadmeCard,
 } from '@backstage/plugin-azure-devops';
 import {
   isOctopusDeployAvailable,
@@ -411,6 +412,14 @@ const overviewContent = (
       <EntitySwitch.Case if={hasLabels}>
         <Grid item md={4} xs={12}>
           <EntityLabelsCard />
+        </Grid>
+      </EntitySwitch.Case>
+    </EntitySwitch>
+
+    <EntitySwitch>
+      <EntitySwitch.Case if={isAzureDevOpsAvailable}>
+        <Grid item md={6}>
+          <EntityAzureReadmeCard />
         </Grid>
       </EntitySwitch.Case>
     </EntitySwitch>

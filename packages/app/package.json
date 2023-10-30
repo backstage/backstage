@@ -1,6 +1,6 @@
 {
   "name": "example-app",
-  "version": "0.2.88",
+  "version": "0.2.89-next.0",
   "private": true,
   "backstage": {
     "role": "frontend"
@@ -93,12 +93,16 @@
     "@roadiehq/backstage-plugin-github-insights": "^2.0.5",
     "@roadiehq/backstage-plugin-github-pull-requests": "^2.2.7",
     "@roadiehq/backstage-plugin-travis-ci": "^2.0.5",
+    "@vitejs/plugin-react": "^4.0.4",
     "history": "^5.0.0",
     "react": "^18.0.2",
     "react-dom": "^18.0.2",
     "react-router": "^6.3.0",
     "react-router-dom": "^6.3.0",
     "react-use": "^17.2.4",
+    "vite": "^4.4.9",
+    "vite-plugin-html": "^3.2.0",
+    "vite-plugin-node-polyfills": "^0.14.1",
     "zen-observable": "^0.10.0"
   },
   "devDependencies": {

@@ -1,5 +1,19 @@
 # @backstage/plugin-catalog-backend-module-gitlab
 
+## 0.3.4-next.0
+
+### Patch Changes
+
+- d732f17610: Added try catch around fetching gitlab group users to prevent refresh from failing completely while only a select number of groups might not be able to load correctly.
+- Updated dependencies
+  - @backstage/backend-common@0.19.9-next.0
+  - @backstage/integration@1.7.1
+  - @backstage/backend-plugin-api@0.6.7-next.0
+  - @backstage/backend-tasks@0.5.12-next.0
+  - @backstage/catalog-model@1.4.3
+  - @backstage/config@1.1.1
+  - @backstage/plugin-catalog-node@1.4.8-next.0
+
 ## 0.3.3
 
 ### Patch Changes

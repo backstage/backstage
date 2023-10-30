@@ -29,15 +29,6 @@ import { CoreRoutes } from '../extensions/CoreRoutes';
 import { CoreLayout } from '../extensions/CoreLayout';
 import { CoreNav } from '../extensions/CoreNav';
 import {
-  createExtensionInstance,
-  ExtensionInstance,
-} from './createExtensionInstance';
-import {
-  ExtensionInstanceParameters,
-  mergeExtensionParameters,
-  readAppExtensionParameters,
-} from './parameters';
-import {
   AnyApiFactory,
   ApiHolder,
   AppComponents,
@@ -86,7 +77,7 @@ import {
 import { BrowserRouter, Route } from 'react-router-dom';
 import { SidebarItem } from '@backstage/core-components';
 import { DarkTheme, LightTheme } from '../extensions/themes';
-import { extractRouteInfoFromInstanceTree } from '../routing/extractRouteInfoFromInstanceTree';
+import { extractRouteInfoFromAppNode } from '../routing/extractRouteInfoFromAppNode';
 import { getOrCreateGlobalSingleton } from '@backstage/version-bridge';
 import {
   appLanguageApiRef,
@@ -96,6 +87,16 @@ import { AppRouteBinder } from '../routing';
 import { RoutingProvider } from '../routing/RoutingProvider';
 import { resolveRouteBindings } from '../routing/resolveRouteBindings';
 import { collectRouteIds } from '../routing/collectRouteIds';
+import { AppNode, createAppTree } from '../tree';
+
+const builtinExtensions = [
+  Core,
+  CoreRoutes,
+  CoreNav,
+  CoreLayout,
+  LightTheme,
+  DarkTheme,
+];
 
 /** @public */
 export interface ExtensionTreeNode {
@@ -116,20 +117,38 @@ export function createExtensionTree(options: {
   config: Config;
 }): ExtensionTree {
   const features = getAvailableFeatures(options.config);
-  const { instances } = createInstances({
+  const tree = createAppTree({
     features,
+    builtinExtensions,
     config: options.config,
   });
 
+  function convertNode(node?: AppNode): ExtensionTreeNode | undefined {
+    return (
+      node && {
+        id: node.spec.id,
+        getData<T>(ref: ExtensionDataRef<T>): T | undefined {
+          return node.instance?.getData(ref);
+        },
+      }
+    );
+  }
+
   return {
     getExtension(id: string): ExtensionTreeNode | undefined {
-      return instances.get(id);
+      return convertNode(tree.nodes.get(id));
     },
     getExtensionAttachments(
       id: string,
       inputName: string,
     ): ExtensionTreeNode[] {
-      return instances.get(id)?.attachments.get(inputName) ?? [];
+      return (
+        tree.nodes
+          .get(id)
+          ?.edges.attachments.get(inputName)
+          ?.map(convertNode)
+          .filter((node): node is ExtensionTreeNode => Boolean(node)) ?? []
+      );
     },
     getRootRoutes(): JSX.Element[] {
       return this.getExtensionAttachments('core.routes', 'routes').map(node => {
@@ -177,94 +196,6 @@ export function createExtensionTree(options: {
         .filter((x): x is JSX.Element => !!x);
     },
   };
-}
-
-/**
- * @internal
- */
-export function createInstances(options: {
-  features: (BackstagePlugin | ExtensionOverrides)[];
-  config: Config;
-}) {
-  const builtinExtensions = [
-    Core,
-    CoreRoutes,
-    CoreNav,
-    CoreLayout,
-    LightTheme,
-    DarkTheme,
-  ];
-
-  // pull in default extension instance from discovered packages
-  // apply config to adjust default extension instances and add more
-  const extensionParams = mergeExtensionParameters({
-    features: options.features,
-    builtinExtensions,
-    parameters: readAppExtensionParameters(options.config),
-  });
-
-  // TODO: validate the config of all extension instances
-  // We do it at this point to ensure that merging (if any) of config has already happened
-
-  // Create attachment map so that we can look attachments up during instance creation
-  const attachmentMap = new Map<
-    string,
-    Map<string, ExtensionInstanceParameters[]>
-  >();
-  for (const instanceParams of extensionParams) {
-    const extensionId = instanceParams.attachTo.id;
-    const pointId = instanceParams.attachTo.input;
-    let pointMap = attachmentMap.get(extensionId);
-    if (!pointMap) {
-      pointMap = new Map();
-      attachmentMap.set(extensionId, pointMap);
-    }
-
-    let instances = pointMap.get(pointId);
-    if (!instances) {
-      instances = [];
-      pointMap.set(pointId, instances);
-    }
-
-    instances.push(instanceParams);
-  }
-
-  const instances = new Map<string, ExtensionInstance>();
-
-  function createInstance(
-    instanceParams: ExtensionInstanceParameters,
-  ): ExtensionInstance {
-    const extensionId = instanceParams.extension.id;
-    const existingInstance = instances.get(extensionId);
-    if (existingInstance) {
-      return existingInstance;
-    }
-
-    const attachments = new Map(
-      Array.from(attachmentMap.get(extensionId)?.entries() ?? []).map(
-        ([inputName, attachmentConfigs]) => {
-          return [inputName, attachmentConfigs.map(createInstance)];
-        },
-      ),
-    );
-
-    const newInstance = createExtensionInstance({
-      extension: instanceParams.extension,
-      source: instanceParams.source,
-      config: instanceParams.config,
-      attachments,
-    });
-
-    instances.set(extensionId, newInstance);
-
-    return newInstance;
-  }
-
-  const coreInstance = createInstance(
-    extensionParams.find(p => p.extension.id === 'core')!,
-  );
-
-  return { coreInstance, instances };
 }
 
 function deduplicateFeatures(
@@ -316,8 +247,9 @@ export function createApp(options: {
       ...(options.features ?? []),
     ]);
 
-    const { coreInstance } = createInstances({
+    const tree = createAppTree({
       features: allFeatures,
+      builtinExtensions,
       config,
     });
 
@@ -330,11 +262,11 @@ export function createApp(options: {
     const routeIds = collectRouteIds(allFeatures);
 
     const App = () => (
-      <ApiProvider apis={createApiHolder(coreInstance, config)}>
+      <ApiProvider apis={createApiHolder(tree.root, config)}>
         <AppContextProvider appContext={appContext}>
           <AppThemeProvider>
             <RoutingProvider
-              {...extractRouteInfoFromInstanceTree(coreInstance)}
+              {...extractRouteInfoFromAppNode(tree.root)}
               routeBindings={resolveRouteBindings(
                 options.bindRoutes,
                 config,
@@ -343,7 +275,7 @@ export function createApp(options: {
             >
               {/* TODO: set base path using the logic from AppRouter */}
               <BrowserRouter>
-                {coreInstance.getData(coreExtensionData.reactElement)}
+                {tree.root.instance!.getData(coreExtensionData.reactElement)}
               </BrowserRouter>
             </RoutingProvider>
           </AppThemeProvider>
@@ -424,22 +356,19 @@ function createLegacyAppContext(plugins: BackstagePlugin[]): AppContext {
   };
 }
 
-function createApiHolder(
-  coreExtension: ExtensionInstance,
-  configApi: ConfigApi,
-): ApiHolder {
+function createApiHolder(core: AppNode, configApi: ConfigApi): ApiHolder {
   const factoryRegistry = new ApiFactoryRegistry();
 
   const pluginApis =
-    coreExtension.attachments
+    core.edges.attachments
       .get('apis')
-      ?.map(e => e.getData(coreExtensionData.apiFactory))
+      ?.map(e => e.instance?.getData(coreExtensionData.apiFactory))
       .filter((x): x is AnyApiFactory => !!x) ?? [];
 
   const themeExtensions =
-    coreExtension.attachments
+    core.edges.attachments
       .get('themes')
-      ?.map(e => e.getData(coreExtensionData.theme))
+      ?.map(e => e.instance?.getData(coreExtensionData.theme))
       .filter((x): x is AppTheme => !!x) ?? [];
 
   for (const factory of [...defaultApis, ...pluginApis]) {

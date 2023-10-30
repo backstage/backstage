@@ -42,6 +42,7 @@ import {
   rootDocsRouteRef,
   rootRouteRef,
 } from './routes';
+import { createEntityContentExtension } from '@backstage/plugin-catalog-react/alpha';
 
 /** @alpha */
 const techDocsStorage = createApiExtension({
@@ -141,6 +142,18 @@ const TechDocsReaderPage = createPageExtension({
     )),
 });
 
+/**
+ * Component responsible for rendering techdocs on entity pages
+ *
+ * @alpha
+ */
+const TechDocsEntityContent = createEntityContentExtension({
+  id: 'techdocs',
+  defaultPath: 'docs',
+  defaultTitle: 'TechDocs',
+  loader: () => import('./Router').then(m => <m.EmbeddedDocsRouter />),
+});
+
 /** @alpha */
 const TechDocsNavItem = createNavItemExtension({
   id: 'plugin.techdocs.nav.index',
@@ -158,6 +171,7 @@ export default createPlugin({
     TechDocsNavItem,
     TechDocsIndexPage,
     TechDocsReaderPage,
+    TechDocsEntityContent,
     TechDocsSearchResultListItemExtension,
   ],
   routes: {

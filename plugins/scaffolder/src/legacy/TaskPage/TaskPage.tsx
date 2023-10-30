@@ -28,7 +28,6 @@ import {
   useRouteRef,
   useRouteRefParams,
 } from '@backstage/core-plugin-api';
-import { BackstageTheme } from '@backstage/theme';
 import {
   Button,
   CircularProgress,
@@ -64,9 +63,7 @@ import {
   selectedTemplateRouteRef,
 } from '../../routes';
 import { scaffolderApiRef } from '@backstage/plugin-scaffolder-react';
-
-// typings are wrong for this library, so fallback to not parsing types.
-const humanizeDuration = require('humanize-duration');
+import humanizeDuration from 'humanize-duration';
 
 const useStyles = makeStyles((theme: Theme) =>
   createStyles({
@@ -127,7 +124,7 @@ const StepTimeTicker = ({ step }: { step: TaskStep }) => {
   return <Typography variant="caption">{time}</Typography>;
 };
 
-const useStepIconStyles = makeStyles((theme: BackstageTheme) =>
+const useStepIconStyles = makeStyles(theme =>
   createStyles({
     root: {
       color: theme.palette.text.disabled,

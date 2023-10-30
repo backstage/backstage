@@ -19,7 +19,7 @@ jobs:
         with:
           egress-policy: audit
 
-      - uses: actions/stale@v7.0.0
+      - uses: actions/stale@v8.0.0
         id: stale
         with:
           stale-issue-message: >

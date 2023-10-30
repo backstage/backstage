@@ -13,7 +13,7 @@ jobs:
           egress-policy: audit
 
       # Setup node & install deps before checkout, keeping install quick
-      - uses: actions/setup-node@v3.8.1
+      - uses: actions/setup-node@v3.8.2
         with:
           node-version: 18.x
       - name: Install dependencies
@@ -21,7 +21,7 @@ jobs:
         run: npm install semver@7.3.5 fs-extra@10.0.0 @manypkg/get-packages@1.1.1
 
       - name: Checkout
-        uses: actions/checkout@v3.6.0
+        uses: actions/checkout@v4.1.1
         with:
           path: backstage
           # 'v' prefix is added here for the tag, we keep it out of the manifest logic
@@ -29,7 +29,7 @@ jobs:
 
       # Checkout backstage/versions into /backstage/versions, which is where store the output
       - name: Checkout versions
-        uses: actions/checkout@v3.6.0
+        uses: actions/checkout@v4.1.1
         with:
           repository: backstage/versions
           path: backstage/versions

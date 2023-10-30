@@ -405,10 +405,9 @@ describe('SearchContext', () => {
 
       await waitFor(() => {
         expect(result.current).toEqual(expect.objectContaining(initialState));
+        expect(result.current.fetchNextPage).toBeUndefined();
+        expect(result.current.fetchPreviousPage).toBeDefined();
       });
-
-      expect(result.current.fetchNextPage).toBeUndefined();
-      expect(result.current.fetchPreviousPage).toBeDefined();
 
       await act(async () => {
         result.current.fetchPreviousPage!();

@@ -16,4 +16,3 @@
 
 export * from './service';
 export * from './database';
-export { userSettingsPlugin as default } from './plugin';

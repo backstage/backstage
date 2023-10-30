@@ -4,11 +4,21 @@ app:
   routes:
     bindings:
       plugin.pages.externalRoutes.pageX: plugin.pages.routes.pageX
-      # waiting for https://github.com/backstage/backstage/pull/20605
-      # catalog.externalRoutes.viewTechDoc: techdocs.routes.docRoot
+      plugin.catalog.externalRoutes.viewTechDoc: plugin.techdocs.routes.docRoot
 
   extensions:
     - apis.plugin.graphiql.browse.gitlab: true
+
+    # Entity page cards
+    - entity.cards.about
+    - entity.cards.labels
+    - entity.cards.links:
+        config:
+          filter:
+            - isKind: component
+
+    # Entity page content
+    - entity.content.techdocs
 
   # scmAuthExtension: >-
   #   createScmAuthExtension({

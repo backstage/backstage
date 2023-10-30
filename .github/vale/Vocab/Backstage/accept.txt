@@ -258,6 +258,7 @@ onboarding
 Onboarding
 OpenSearch
 OpenShift
+openssl
 orgs
 padding
 paddings
@@ -291,6 +292,7 @@ Preprarer
 productional
 Protobuf
 proxying
+proxied
 Proxying
 pseudonymized
 pubsub
@@ -430,6 +432,7 @@ Valentina
 validator
 validators
 varchar
+vite
 VMware
 Vodafone
 VPCs

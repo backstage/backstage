@@ -15,4 +15,3 @@
  */
 
 export * from './service/router';
-export { periskopPlugin as default } from './plugin';
