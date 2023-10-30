@@ -34,14 +34,22 @@ function makeExt(
 }
 
 describe('resolveAppNodeSpecs', () => {
-  it('should filter out disabled extension instances', () => {
+  it('should not filter out disabled extension instances', () => {
+    const a = makeExt('a', 'disabled');
     expect(
       resolveAppNodeSpecs({
         features: [],
-        builtinExtensions: [makeExt('a', 'disabled')],
+        builtinExtensions: [a],
         parameters: [],
       }),
-    ).toEqual([]);
+    ).toEqual([
+      {
+        id: 'a',
+        extension: a,
+        attachTo: { id: 'root', input: 'default' },
+        disabled: true,
+      },
+    ]);
   });
 
   it('should pass through extension instances', () => {
@@ -186,31 +194,40 @@ describe('resolveAppNodeSpecs', () => {
     const bOverride = makeExt('b', 'disabled', 'other');
     const cOverride = makeExt('c');
 
-    const result = resolveAppNodeSpecs({
-      features: [
-        plugin,
-        createExtensionOverrides({
-          extensions: [aOverride, bOverride, cOverride],
-        }),
-      ],
-      builtinExtensions: [],
-      parameters: [],
-    });
-
-    expect(result.length).toBe(2);
-    expect(result[0].extension).toBe(aOverride);
-    expect(result[0].attachTo).toEqual({ id: 'other', input: 'default' });
-    expect(result[0].config).toEqual(undefined);
-    expect(result[0].source).toBe(plugin);
-
-    expect(result[1]).toEqual({
-      id: 'c',
-      extension: cOverride,
-      attachTo: { id: 'root', input: 'default' },
-      config: undefined,
-      source: undefined,
-      disabled: false,
-    });
+    expect(
+      resolveAppNodeSpecs({
+        features: [
+          plugin,
+          createExtensionOverrides({
+            extensions: [aOverride, bOverride, cOverride],
+          }),
+        ],
+        builtinExtensions: [],
+        parameters: [],
+      }),
+    ).toEqual([
+      {
+        id: 'a',
+        extension: aOverride,
+        attachTo: { id: 'other', input: 'default' },
+        source: plugin,
+        disabled: false,
+      },
+      {
+        id: 'b',
+        extension: bOverride,
+        attachTo: { id: 'other', input: 'default' },
+        source: plugin,
+        disabled: true,
+      },
+      {
+        id: 'c',
+        extension: cOverride,
+        attachTo: { id: 'root', input: 'default' },
+        source: undefined,
+        disabled: false,
+      },
+    ]);
   });
 
   it('should use order from configuration when rather than overrides', () => {
