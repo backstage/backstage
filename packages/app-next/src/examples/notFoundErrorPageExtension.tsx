@@ -15,7 +15,10 @@
  */
 
 import React from 'react';
-import { createNotFoundErrorPageExtension } from '@backstage/frontend-plugin-api';
+import {
+  createComponentExtension,
+  coreNotFoundErrorPageComponentRef,
+} from '@backstage/frontend-plugin-api';
 import { Box, Typography } from '@material-ui/core';
 import { Button } from '@backstage/core-components';
 
@@ -53,6 +56,7 @@ function CustomNotFoundErrorPage() {
   );
 }
 
-export default createNotFoundErrorPageExtension({
+export default createComponentExtension({
+  ref: coreNotFoundErrorPageComponentRef,
   component: async () => CustomNotFoundErrorPage,
 });
