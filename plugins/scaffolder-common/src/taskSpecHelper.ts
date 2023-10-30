@@ -14,8 +14,12 @@
  * limitations under the License.
  */
 
-import { TaskSpec, TaskStep } from '@backstage/plugin-scaffolder-common';
-import { SerializedTaskEvent } from '@backstage/plugin-scaffolder-node';
+import {
+  SerializedTaskEvent,
+  TaskSpec,
+  TaskStatus,
+  TaskStep,
+} from './TaskSpec';
 
 type StepsMap = Map<string, { min?: string; max?: string; status?: string }>;
 
@@ -61,25 +65,30 @@ export const stepIdToRunTheTask = (spec: TaskSpec, stepsMap: StepsMap) => {
   }, lastExecutedStep);
 };
 
-const stepEnrichment = (spec: TaskSpec, events: SerializedTaskEvent[]) => {
+const stepEnrichment = (
+  spec: TaskSpec,
+  status: TaskStatus,
+  events: SerializedTaskEvent[],
+) => {
   const stepsMap = createStepsMap(events);
 
-  const steps = spec.steps.map(step => step).reverse();
-  const stepIds = steps.map(step => step.id);
+  if (status === 'processing') {
+    const stepIds = spec.steps.map(step => step.id);
+    const stepIdToStart = stepIdToRunTheTask(spec, stepsMap);
 
-  const stepIdToStart = stepIdToRunTheTask(spec, stepsMap);
-
-  const preservedIdSteps = [];
-  for (const stepId of stepIds) {
-    preservedIdSteps.push(stepId);
-    if (stepId === stepIdToStart) {
-      break;
+    const preservedIdSteps = [];
+    for (const stepId of stepIds) {
+      if (stepId === stepIdToStart) {
+        break;
+      } else {
+        preservedIdSteps.push(stepId);
+      }
     }
-  }
 
-  for (const stepMapKey of stepsMap.keys()) {
-    if (!preservedIdSteps.includes(stepMapKey)) {
-      stepsMap.delete(stepMapKey);
+    for (const stepMapKey of stepsMap.keys()) {
+      if (!preservedIdSteps.includes(stepMapKey)) {
+        stepsMap.delete(stepMapKey);
+      }
     }
   }
 
@@ -103,19 +112,26 @@ const stepEnrichment = (spec: TaskSpec, events: SerializedTaskEvent[]) => {
 
 export const getEnrichedTaskSpec = async (
   task: {
-    id: string;
-    spec: string;
+    spec: string | TaskSpec;
+    status: TaskStatus;
   },
   events: SerializedTaskEvent[],
 ): Promise<TaskSpec> => {
-  const spec = JSON.parse(task.spec) as TaskSpec;
+  const spec =
+    typeof task.spec === 'string'
+      ? (JSON.parse(task.spec) as TaskSpec)
+      : task.spec;
   const taskStrategy = spec.recovery?.strategy ?? 'none';
 
-  if (taskStrategy === 'restart') {
+  if (task.status === 'open' && taskStrategy === 'restart') {
     return spec;
   }
 
-  const { toStartedAt, toEndedAt, toStatus } = stepEnrichment(spec, events);
+  const { toStartedAt, toEndedAt, toStatus } = stepEnrichment(
+    spec,
+    task.status,
+    events,
+  );
 
   const res = {
     ...spec,

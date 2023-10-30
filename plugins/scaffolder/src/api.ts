@@ -38,9 +38,11 @@ import {
   ScaffolderDryRunOptions,
   ScaffolderDryRunResponse,
   TemplateParameterSchema,
-  ScaffolderStep,
 } from '@backstage/plugin-scaffolder-react';
-import { TaskStep } from '@backstage/plugin-scaffolder-common';
+import {
+  getEnrichedTaskSpec,
+  SerializedTaskEvent,
+} from '@backstage/plugin-scaffolder-common';
 
 import queryString from 'qs';
 import { EventSourcePolyfill } from 'event-source-polyfill';
@@ -196,43 +198,14 @@ export class ScaffolderClient implements ScaffolderApi {
       type: 'completion' | 'log' | 'cancelled';
     }[];
 
-    const stepIdToTimestamps = taskEvents
-      .filter(event => event.type === 'log')
-      .reduce((acc, event) => {
-        const stepId = event.body.stepId as string;
-        if (stepId) {
-          const value = acc.get(stepId);
-          acc.set(stepId, {
-            min: value && value.min ? value.min : event.createdAt,
-            max: event.createdAt,
-          });
-        }
-        return acc;
-      }, new Map<string, { min: string | undefined; max: string | undefined }>());
-
-    const toStartedAt = (stepId: string) => {
-      const value = stepIdToTimestamps.get(stepId);
-      return value ? value.min : undefined;
-    };
-
-    const toEndedAt = (stepId: string) => {
-      const value = stepIdToTimestamps.get(stepId);
-      return value ? value.max : undefined;
-    };
+    const spec = await getEnrichedTaskSpec(
+      task,
+      taskEvents as SerializedTaskEvent[],
+    );
 
     const enrichedTask = {
       ...task,
-      spec: {
-        ...task.spec,
-        steps: task.spec.steps.map(
-          step =>
-            ({
-              ...step,
-              startedAt: toStartedAt(step.id),
-              endedAt: toEndedAt(step.id),
-            } as TaskStep & ScaffolderStep),
-        ),
-      },
+      spec,
     };
 
     return enrichedTask as ScaffolderTask;

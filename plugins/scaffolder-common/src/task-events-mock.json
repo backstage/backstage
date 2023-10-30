@@ -1,0 +1,192 @@
+[
+  {
+    "id": 1,
+    "taskId": "8fc40c22-e046-4978-a4c9-b63896ccf3c9",
+    "body": {
+      "message": "Starting up task with 8 steps"
+    },
+    "type": "log",
+    "createdAt": "2023-10-30T08:40:22.383Z"
+  },
+  {
+    "id": 2,
+    "taskId": "8fc40c22-e046-4978-a4c9-b63896ccf3c9",
+    "body": {
+      "message": "Beginning step Template Docs Skeleton",
+      "stepId": "fetch",
+      "status": "processing"
+    },
+    "type": "log",
+    "createdAt": "2023-10-30T08:40:22.390Z"
+  },
+  {
+    "id": 3,
+    "taskId": "8fc40c22-e046-4978-a4c9-b63896ccf3c9",
+    "body": {
+      "message": "\\u001b[32minfo\\u001b[39m: Fetching template content from remote URL",
+      "stepId": "fetch"
+    },
+    "type": "log",
+    "createdAt": "2023-10-30T08:40:22.400Z"
+  },
+  {
+    "id": 4,
+    "taskId": "8fc40c22-e046-4978-a4c9-b63896ccf3c9",
+    "body": {
+      "message": "\\u001b[32minfo\\u001b[39m: Listing files and directories in template",
+      "stepId": "fetch"
+    },
+    "type": "log",
+    "createdAt": "2023-10-30T08:40:23.276Z"
+  },
+  {
+    "id": 5,
+    "taskId": "8fc40c22-e046-4978-a4c9-b63896ccf3c9",
+    "body": {
+      "message": "\\u001b[32minfo\\u001b[39m: Processing 4 template files/directories with input values {'description':'asfsdafa','destination':{'host':'github.com','owner':'asfsdafa','repo':'asfsdafa'},'name':'asfsdafa','owner':'group:default/asfsdafa'}",
+      "stepId": "fetch"
+    },
+    "type": "log",
+    "createdAt": "2023-10-30T08:40:23.283Z"
+  },
+  {
+    "id": 6,
+    "taskId": "8fc40c22-e046-4978-a4c9-b63896ccf3c9",
+    "body": {
+      "message": "\\u001b[32minfo\\u001b[39m: Writing file catalog-info.yaml to template output path with mode 33188.",
+      "stepId": "fetch"
+    },
+    "type": "log",
+    "createdAt": "2023-10-30T08:40:23.297Z"
+  },
+  {
+    "id": 7,
+    "taskId": "8fc40c22-e046-4978-a4c9-b63896ccf3c9",
+    "body": {
+      "message": "\\u001b[32minfo\\u001b[39m: Writing directory docs/ to template output path.",
+      "stepId": "fetch"
+    },
+    "type": "log",
+    "createdAt": "2023-10-30T08:40:23.301Z"
+  },
+  {
+    "id": 8,
+    "taskId": "8fc40c22-e046-4978-a4c9-b63896ccf3c9",
+    "body": {
+      "message": "\\u001b[32minfo\\u001b[39m: Writing file mkdocs.yml to template output path with mode 33188.",
+      "stepId": "fetch"
+    },
+    "type": "log",
+    "createdAt": "2023-10-30T08:40:23.303Z"
+  },
+  {
+    "id": 9,
+    "taskId": "8fc40c22-e046-4978-a4c9-b63896ccf3c9",
+    "body": {
+      "message": "\\u001b[32minfo\\u001b[39m: Writing file docs/index.md to template output path with mode 33188.",
+      "stepId": "fetch"
+    },
+    "type": "log",
+    "createdAt": "2023-10-30T08:40:23.305Z"
+  },
+  {
+    "id": 10,
+    "taskId": "8fc40c22-e046-4978-a4c9-b63896ccf3c9",
+    "body": {
+      "message": "\\u001b[32minfo\\u001b[39m: Template result written to /var/folders/yy/f6gzqtqn6zj03998rbl499100000gn/T/8fc40c22-e046-4978-a4c9-b63896ccf3c9",
+      "stepId": "fetch"
+    },
+    "type": "log",
+    "createdAt": "2023-10-30T08:40:23.307Z"
+  },
+  {
+    "id": 11,
+    "taskId": "8fc40c22-e046-4978-a4c9-b63896ccf3c9",
+    "body": {
+      "message": "Finished step Template Docs Skeleton",
+      "stepId": "fetch",
+      "status": "completed"
+    },
+    "type": "log",
+    "createdAt": "2023-10-30T08:40:23.308Z"
+  },
+  {
+    "id": 12,
+    "taskId": "8fc40c22-e046-4978-a4c9-b63896ccf3c9",
+    "body": {
+      "message": "Beginning step Mock Step 1",
+      "stepId": "mock-step-1",
+      "status": "processing"
+    },
+    "type": "log",
+    "createdAt": "2023-10-30T08:40:23.310Z"
+  },
+  {
+    "id": 13,
+    "taskId": "8fc40c22-e046-4978-a4c9-b63896ccf3c9",
+    "body": {
+      "message": "Finished step Mock Step 1",
+      "stepId": "mock-step-1",
+      "status": "completed"
+    },
+    "type": "log",
+    "createdAt": "2023-10-30T08:40:38.313Z"
+  },
+  {
+    "id": 14,
+    "taskId": "8fc40c22-e046-4978-a4c9-b63896ccf3c9",
+    "body": {
+      "message": "Beginning step Mock Step 2",
+      "stepId": "mock-step-2",
+      "status": "processing"
+    },
+    "type": "log",
+    "createdAt": "2023-10-30T08:40:38.317Z"
+  },
+  {
+    "id": 15,
+    "taskId": "8fc40c22-e046-4978-a4c9-b63896ccf3c9",
+    "body": {
+      "message": "Finished step Mock Step 2",
+      "stepId": "mock-step-2",
+      "status": "completed"
+    },
+    "type": "log",
+    "createdAt": "2023-10-30T08:41:08.322Z"
+  },
+  {
+    "id": 16,
+    "taskId": "8fc40c22-e046-4978-a4c9-b63896ccf3c9",
+    "body": {
+      "message": "Beginning step Mock Step 3",
+      "stepId": "mock-step-3",
+      "status": "processing"
+    },
+    "type": "log",
+    "createdAt": "2023-10-30T08:41:08.327Z"
+  },
+  {
+    "id": 17,
+    "taskId": "8fc40c22-e046-4978-a4c9-b63896ccf3c9",
+    "body": {
+      "message": "Error: Waiting duration is longer than the maximum threshold of 0 hours, 0 minutes, 30 seconds\\n    at Object.handler (/Users/bogdannechyporenko/proj/backstage/plugins/scaffolder-backend/src/scaffolder/actions/builtin/debug/wait.ts:79:15)\\n    at NunjucksWorkflowRunner.executeStep (/Users/bogdannechyporenko/proj/backstage/plugins/scaffolder-backend/src/scaffolder/tasks/NunjucksWorkflowRunner.ts:346:22)\\n    at process.processTicksAndRejections (node:internal/process/task_queues:95:5)\\n    at NunjucksWorkflowRunner.execute (/Users/bogdannechyporenko/proj/backstage/plugins/scaffolder-backend/src/scaffolder/tasks/NunjucksWorkflowRunner.ts:435:9)\\n    at TaskWorker.runOneTask (/Users/bogdannechyporenko/proj/backstage/plugins/scaffolder-backend/src/scaffolder/tasks/TaskWorker.ts:145:26)\\n    at run (/Users/bogdannechyporenko/proj/backstage/node_modules/p-queue/dist/index.js:163:29)",
+      "stepId": "mock-step-3",
+      "status": "failed"
+    },
+    "type": "log",
+    "createdAt": "2023-10-30T08:41:08.350Z"
+  },
+  {
+    "id": 18,
+    "taskId": "8fc40c22-e046-4978-a4c9-b63896ccf3c9",
+    "body": {
+      "message": "Run completed with status: failed",
+      "error": {
+        "name": "Error",
+        "message": "Waiting duration is longer than the maximum threshold of 0 hours, 0 minutes, 30 seconds"
+      }
+    },
+    "type": "completion",
+    "createdAt": "2023-10-30T08:41:08.358Z"
+  }
+]

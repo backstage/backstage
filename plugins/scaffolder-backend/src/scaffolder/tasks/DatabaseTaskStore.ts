@@ -32,8 +32,11 @@ import {
   TaskStoreRecoverTaskOptions,
 } from './types';
 import { DateTime } from 'luxon';
-import { getEnrichedTaskSpec } from './taskSpecHelper';
-import { TaskRecovery, TaskSpec } from '@backstage/plugin-scaffolder-common';
+import {
+  getEnrichedTaskSpec,
+  TaskRecovery,
+  TaskSpec,
+} from '@backstage/plugin-scaffolder-common';
 import {
   SerializedTaskEvent,
   SerializedTask,
