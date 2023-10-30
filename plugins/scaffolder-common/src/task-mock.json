@@ -1,5 +1,5 @@
 {
-  "id": "8fc40c22-e046-4978-a4c9-b63896ccf3c9",
+  "id": "4bbd3f79-d137-4bfe-ba43-793b064617d2",
   "spec": {
     "apiVersion": "scaffolder.backstage.io/v1beta3",
     "steps": [
@@ -47,7 +47,7 @@
           "dependsOn": "fetch"
         },
         "input": {
-          "seconds": 120
+          "seconds": 30
         }
       },
       {
@@ -58,7 +58,51 @@
           "dependsOn": "fetch"
         },
         "input": {
-          "seconds": 120
+          "seconds": 30
+        }
+      },
+      {
+        "id": "mock-step-4",
+        "name": "Mock Step 4",
+        "action": "debug:wait",
+        "recovery": {
+          "dependsOn": "fetch"
+        },
+        "input": {
+          "seconds": 30
+        }
+      },
+      {
+        "id": "mock-step-5",
+        "name": "Mock Step 5",
+        "action": "debug:wait",
+        "recovery": {
+          "dependsOn": "fetch"
+        },
+        "input": {
+          "seconds": 30
+        }
+      },
+      {
+        "id": "mock-step-6",
+        "name": "Mock Step 6",
+        "action": "debug:wait",
+        "recovery": {
+          "dependsOn": "fetch"
+        },
+        "input": {
+          "seconds": 30
+        }
+      },
+      {
+        "id": "mock-step-7",
+        "name": "Mock Step 7",
+        "action": "debug:wait",
+        "recovery": {
+          "dependsOn": "fetch"
+        },
+        "input": {
+          "seconds": 30
         }
       },
       {
@@ -109,10 +153,10 @@
       ]
     },
     "parameters": {
-      "name": "asfsdafa",
-      "description": "asfsdafa",
-      "owner": "group:default/asfsdafa",
-      "repoUrl": "github.com?owner=asfsdafa&repo=asfsdafa"
+      "name": "asdfasdfa",
+      "description": "asdfasdfa",
+      "owner": "group:default/asdfasdfa",
+      "repoUrl": "github.com?owner=asdfasdfa&repo=asdfasdfa"
     },
     "user": {},
     "templateInfo": {
@@ -132,13 +176,13 @@
           "title": "Documentation Mock running Template",
           "description": "Create a new standalone documentation project",
           "tags": ["recommended", "techdocs", "mkdocs"],
-          "uid": "cafdca62-1796-40c3-a59d-6481c89d4617",
-          "etag": "0ca89765b292167a817a8d1bc472f00ed8ae0de2"
+          "uid": "78ccbd40-4fcf-4604-89b6-55af8551274a",
+          "etag": "4cbede6dbd11cb6a5f493a0b69609b6116077fbc"
         }
       }
     }
   },
   "status": "failed",
-  "lastHeartbeatAt": "2023-10-30T08:41:07.748Z",
-  "createdAt": "2023-10-30T08:40:22.324Z"
+  "lastHeartbeatAt": "2023-10-30T11:53:19.630Z",
+  "createdAt": "2023-10-30T11:00:46.211Z"
 }

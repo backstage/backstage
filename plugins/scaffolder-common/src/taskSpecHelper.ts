@@ -28,12 +28,16 @@ const createStepsMap = (events: SerializedTaskEvent[]) => {
     .filter(event => event.type === 'log')
     .reduce((acc, event) => {
       const stepId = event.body.stepId as string;
+      const status = event.body.status as string;
       if (stepId) {
-        const value = acc.get(stepId);
+        const step = acc.get(stepId);
         acc.set(stepId, {
-          min: value && value.min ? value.min : event.createdAt,
+          min:
+            step && step.min && status !== 'processing'
+              ? step.min
+              : event.createdAt,
           max: event.createdAt,
-          ...(event.body.status && { status: event.body.status as string }),
+          ...(status && { status }),
         });
       }
       return acc;
@@ -56,10 +60,9 @@ export const stepIdToRunTheTask = (spec: TaskSpec, stepsMap: StepsMap) => {
     if (!enrichedStep) {
       return acc;
     }
-    if (step.recovery?.dependsOn) {
-      return compare(step.recovery?.dependsOn as string, acc) > 0
-        ? step.recovery?.dependsOn
-        : acc;
+    const dependsOn = step.recovery?.dependsOn;
+    if (dependsOn) {
+      return compare(dependsOn as string, acc) > 0 ? dependsOn : acc;
     }
     return compare(step.id, acc) > 0 ? acc : step.id;
   }, lastExecutedStep);
@@ -123,7 +126,10 @@ export const getEnrichedTaskSpec = async (
       : task.spec;
   const taskStrategy = spec.recovery?.strategy ?? 'none';
 
-  if (task.status === 'open' && taskStrategy === 'restart') {
+  if (
+    ['open', 'processing'].includes(task.status) &&
+    taskStrategy === 'restart'
+  ) {
     return spec;
   }
 
