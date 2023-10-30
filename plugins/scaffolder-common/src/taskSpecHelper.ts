@@ -126,10 +126,7 @@ export const getEnrichedTaskSpec = async (
       : task.spec;
   const taskStrategy = spec.recovery?.strategy ?? 'none';
 
-  if (
-    ['open', 'processing'].includes(task.status) &&
-    taskStrategy === 'restart'
-  ) {
+  if (task.status === 'processing' && taskStrategy === 'restart') {
     return spec;
   }
 
