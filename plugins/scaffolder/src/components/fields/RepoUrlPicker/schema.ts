@@ -51,6 +51,10 @@ export const RepoUrlPickerFieldSchema = makeFieldSchemaFromZod(
           ),
         additionalScopes: z
           .object({
+            gitea: z
+              .array(z.string())
+              .optional()
+              .describe('Additional Gitea scopes to request'),
             gerrit: z
               .array(z.string())
               .optional()
