@@ -22,7 +22,7 @@ import {
 import { Box, Typography } from '@material-ui/core';
 import { Button } from '@backstage/core-components';
 
-function CustomNotFoundErrorPage() {
+export function CustomNotFoundErrorPage() {
   return (
     <Box
       component="article"
