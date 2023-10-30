@@ -64,6 +64,7 @@ export const TaskSteps = (props: TaskStepsProps) => {
             const isFailed = step.status === 'failed';
             const isActive = step.status === 'processing';
             const isSkipped = step.status === 'skipped';
+
             const stepIconProps: Partial<StepIconProps & { skipped: boolean }> =
               {
                 completed: isCompleted,
