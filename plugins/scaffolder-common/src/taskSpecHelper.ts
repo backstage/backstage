@@ -21,8 +21,6 @@ import {
   TaskStep,
 } from './TaskSpec';
 
-type StepsMap = Map<string, { min?: string; max?: string; status?: string }>;
-
 const createStepsMap = (events: SerializedTaskEvent[]) => {
   return events
     .filter(event => event.type === 'log')
@@ -44,7 +42,14 @@ const createStepsMap = (events: SerializedTaskEvent[]) => {
     }, new Map<string, { min?: string; max?: string; status?: string }>());
 };
 
-export const stepIdToRunTheTask = (spec: TaskSpec, stepsMap: StepsMap) => {
+export const stepIdToRunTheTask = (
+  spec: TaskSpec,
+  events: SerializedTaskEvent[],
+): string | undefined => {
+  if (!events.length) {
+    return undefined;
+  }
+  const stepsMap = createStepsMap(events);
   const steps = spec.steps.slice().reverse();
   const stepIds = steps.map(step => step.id);
 
@@ -77,7 +82,7 @@ const stepEnrichment = (
 
   if (status === 'processing') {
     const stepIds = spec.steps.map(step => step.id);
-    const stepIdToStart = stepIdToRunTheTask(spec, stepsMap);
+    const stepIdToStart = stepIdToRunTheTask(spec, events);
 
     const preservedIdSteps = [];
     for (const stepId of stepIds) {

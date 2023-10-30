@@ -21,7 +21,12 @@ import {
   TaskStep,
 } from '@backstage/plugin-scaffolder-common';
 
-const findIndForRecoveredEvents = (events: SerializedTaskEvent[]) => {
+const findIndForRecoveredEvents = (
+  events: SerializedTaskEvent[],
+): {
+  beforeLastRunInd: number;
+  lastRunInd: number;
+} => {
   const lastRunReversedInd = events
     .slice()
     .reverse()
@@ -31,7 +36,7 @@ const findIndForRecoveredEvents = (events: SerializedTaskEvent[]) => {
     lastRunReversedInd < 0 ? 0 : events.length - lastRunReversedInd - 1;
 
   if (lastRunInd === 0) {
-    return [];
+    return { beforeLastRunInd: 0, lastRunInd: 0 };
   }
 
   const beforeLastRunReversedInd = events
@@ -127,7 +132,7 @@ export const compactEvents = (
       );
       const stepIdToStart = stepIdToRunTheTask(taskSpec, stepsMap);
 
-      const preservedIdSteps = [];
+      const preservedIdSteps: string[] = [];
       const stepIds = taskSpec.steps.map(step => step.id);
       for (const stepId of stepIds) {
         if (stepId === stepIdToStart) {
@@ -137,9 +142,10 @@ export const compactEvents = (
         }
       }
 
-      const recoveredEvents = slicedEvents.filter(event =>
-        preservedIdSteps.includes((event.body as { stepId?: string }).stepId),
-      );
+      const recoveredEvents = slicedEvents.filter(event => {
+        const { stepId } = event.body as { stepId?: string };
+        return stepId ? preservedIdSteps.includes(stepId) : false;
+      });
 
       return { events: [...recoveredEvents, ...events.slice(lastRunInd)] };
     }

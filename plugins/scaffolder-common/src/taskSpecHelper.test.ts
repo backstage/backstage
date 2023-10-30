@@ -26,6 +26,8 @@ import taskMock from './task-mock.json';
 import taskMockEvents from './task-events-mock.json';
 
 describe('stepIdToRunTheTask', () => {
+  const events = taskMockEvents as SerializedTaskEvent[];
+
   it('Should find the step id which has to be restarted. Scenario 1', () => {
     const taskSpec = {
       steps: [
@@ -48,7 +50,7 @@ describe('stepIdToRunTheTask', () => {
     stepsMap.set('step-4', { min: '4', max: '5', status: 'completed' });
     stepsMap.set('step-5', { min: '5', max: '6', status: 'processing' });
 
-    expect(stepIdToRunTheTask(taskSpec, stepsMap)).toEqual('step-3');
+    expect(stepIdToRunTheTask(taskSpec, events)).toEqual('step-3');
   });
 
   it('should find the step id which has to be restarted. Scenario 2', () => {
@@ -63,7 +65,7 @@ describe('stepIdToRunTheTask', () => {
     stepsMap.set('step-1', { min: '1', max: '2', status: 'completed' });
     stepsMap.set('step-2', { min: '2', max: '3', status: 'processing' });
 
-    expect(stepIdToRunTheTask(taskSpec, stepsMap)).toEqual('step-2');
+    expect(stepIdToRunTheTask(taskSpec, events)).toEqual('step-2');
   });
 
   it('should find the step id which has to be restarted. Scenario 3', () => {
@@ -71,12 +73,7 @@ describe('stepIdToRunTheTask', () => {
       steps: [{ id: 'step-1' }, { id: 'step-2' }, { id: 'step-3' }],
     } as TaskSpec;
 
-    const stepsMap = new Map<
-      string,
-      { min?: string; max?: string; status?: string }
-    >();
-
-    expect(stepIdToRunTheTask(taskSpec, stepsMap)).toEqual('step-1');
+    expect(stepIdToRunTheTask(taskSpec, events)).toEqual('step-1');
   });
 });
 

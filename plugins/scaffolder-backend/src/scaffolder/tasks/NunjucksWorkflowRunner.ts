@@ -431,16 +431,33 @@ export class NunjucksWorkflowRunner implements WorkflowRunner {
             )
           : [{ result: AuthorizeResult.ALLOW }];
 
+      const initialStepId = await task.getInitialStepId?.();
+      const restoredStepIds = initialStepId
+        ? task.spec.steps.reduce(
+            (acc: { stepIds: string[]; continue: boolean }, step) => {
+              return acc.continue
+                ? {
+                    stepIds: [...acc.stepIds, step.id],
+                    continue: step.id !== initialStepId,
+                  }
+                : acc;
+            },
+            { stepIds: [], continue: true },
+          ).stepIds
+        : [];
+
       for (const step of task.spec.steps) {
-        await this.executeStep(
-          task,
-          step,
-          context,
-          renderTemplate,
-          taskTrack,
-          workspacePath,
-          decision,
-        );
+        if (!restoredStepIds.includes(step.id)) {
+          await this.executeStep(
+            task,
+            step,
+            context,
+            renderTemplate,
+            taskTrack,
+            workspacePath,
+            decision,
+          );
+        }
       }
 
       const output = this.render(task.spec.output, context, renderTemplate);

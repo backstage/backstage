@@ -15,7 +15,10 @@
  */
 
 import { Config } from '@backstage/config';
-import { TaskSpec } from '@backstage/plugin-scaffolder-common';
+import {
+  TaskSpec,
+  stepIdToRunTheTask,
+} from '@backstage/plugin-scaffolder-common';
 import { TaskSecrets } from '@backstage/plugin-scaffolder-node';
 import { JsonObject, Observable } from '@backstage/types';
 import { Logger } from 'winston';
@@ -39,7 +42,6 @@ import { readDuration } from './helper';
  */
 export class TaskManager implements TaskContext {
   private isDone = false;
-
   private heartbeatTimeoutId?: ReturnType<typeof setInterval>;
 
   static create(
@@ -47,8 +49,15 @@ export class TaskManager implements TaskContext {
     storage: TaskStore,
     abortSignal: AbortSignal,
     logger: Logger,
+    initialStepId?: string,
   ) {
-    const agent = new TaskManager(task, storage, abortSignal, logger);
+    const agent = new TaskManager(
+      task,
+      storage,
+      abortSignal,
+      logger,
+      initialStepId,
+    );
     agent.startTimeout();
     return agent;
   }
@@ -59,6 +68,7 @@ export class TaskManager implements TaskContext {
     private readonly storage: TaskStore,
     private readonly signal: AbortSignal,
     private readonly logger: Logger,
+    private readonly initialStepId: string | undefined,
   ) {}
 
   get spec() {
@@ -83,6 +93,10 @@ export class TaskManager implements TaskContext {
 
   get done() {
     return this.isDone;
+  }
+
+  getInitialStepId(): Promise<string | undefined> {
+    return Promise.resolve(this.initialStepId);
   }
 
   async emitLog(message: string, logMetadata?: JsonObject): Promise<void> {
@@ -224,6 +238,10 @@ export class StorageTaskBroker implements TaskBroker {
       const pendingTask = await this.storage.claimTask();
       if (pendingTask) {
         const abortController = new AbortController();
+        const { events } = await this.storage.listEvents({
+          taskId: pendingTask.id,
+        });
+        const initialStepId = stepIdToRunTheTask(pendingTask.spec, events);
         await this.registerCancellable(pendingTask.id, abortController);
         return TaskManager.create(
           {
@@ -235,6 +253,7 @@ export class StorageTaskBroker implements TaskBroker {
           this.storage,
           abortController.signal,
           this.logger,
+          initialStepId,
         );
       }
 

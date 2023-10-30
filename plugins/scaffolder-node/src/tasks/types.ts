@@ -119,6 +119,8 @@ export interface TaskContext {
   emitLog(message: string, logMetadata?: JsonObject): Promise<void>;
 
   getWorkspaceName(): Promise<string>;
+
+  getInitialStepId?(): Promise<string | undefined>;
 }
 
 /**
