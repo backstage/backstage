@@ -19,9 +19,4 @@ export { createPageExtension } from './createPageExtension';
 export { createNavItemExtension } from './createNavItemExtension';
 export { createSignInPageExtension } from './createSignInPageExtension';
 export { createThemeExtension } from './createThemeExtension';
-export {
-  createProgressExtension,
-  createBootErrorPageExtension,
-  createNotFoundErrorPageExtension,
-  createErrorBoundaryFallbackExtension,
-} from './createComponentExtension';
+export { createComponentExtension } from './createComponentExtension';

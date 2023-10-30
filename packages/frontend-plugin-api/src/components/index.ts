@@ -14,6 +14,14 @@
  * limitations under the License.
  */
 
+export {
+  coreProgressComponentRef,
+  coreBootErrorPageComponentRef,
+  coreErrorBoundaryFallbackComponentRef,
+  coreNotFoundErrorPageComponentRef,
+  type ComponentRef,
+} from './ComponentRef';
+
 export { ExtensionError } from './ExtensionError';
 
 export {
