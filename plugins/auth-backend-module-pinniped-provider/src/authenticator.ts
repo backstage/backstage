@@ -56,7 +56,10 @@ const rfc8693TokenExchange = async ({
     });
 };
 
-class PinnipedStrategyFactory {
+const OIDC_METADATA_TTL_SECONDS = 3600;
+
+/** @public */
+export class PinnipedStrategyCache {
   private readonly callbackUrl: string;
   private readonly config: Config;
   private strategyPromise: Promise<{
@@ -97,7 +100,7 @@ class PinnipedStrategyFactory {
       await this.strategyPromise;
       this.cachedPromise = this.strategyPromise;
       this.cachedPromiseExpiry = DateTime.utc()
-        .plus({ seconds: 3600 })
+        .plus({ seconds: OIDC_METADATA_TTL_SECONDS })
         .toJSDate();
     } catch (error) {
       // if we fail to generate a strategy, retry and overwrite strategy
@@ -152,7 +155,7 @@ class PinnipedStrategyFactory {
 export const pinnipedAuthenticator = createOAuthAuthenticator({
   defaultProfileTransform: async (_r, _c) => ({ profile: {} }),
   initialize({ callbackUrl, config }) {
-    return new PinnipedStrategyFactory(callbackUrl, config);
+    return new PinnipedStrategyCache(callbackUrl, config);
   },
   async start(input, ctx): Promise<{ url: string; status?: number }> {
     const { providerStrategy } = await ctx.getStrategy();

@@ -146,18 +146,8 @@ describe('pinnipedAuthenticator', () => {
   });
 
   describe('#initialize', () => {
-    it('always returns a PinnipedStrategyFactory', async () => {
-      const pinnipedStrategyFactory = pinnipedAuthenticator.initialize({
-        callbackUrl: 'https://backstage.test/callback',
-        config: new ConfigReader({
-          federationDomain: 'https://federationDomain.test',
-          clientId: 'clientId',
-          clientSecret: 'clientSecret',
-        }),
-      });
-
-      const { providerStrategy, client } =
-        await pinnipedStrategyFactory.getStrategy();
+    it('always returns a PinnipedStrategyCache', async () => {
+      const { providerStrategy, client } = await authCtx.getStrategy();
 
       expect(providerStrategy).toBeDefined();
       expect(client.issuer.authorization_endpoint).toMatch(
@@ -343,24 +333,8 @@ describe('pinnipedAuthenticator', () => {
     });
 
     it('caches oidc metadata after a success', async () => {
-      mswServer.use(
-        rest.get(
-          'https://federationDomain.test/.well-known/openid-configuration',
-          (_req, res, _ctx) => res.networkError('Timeout'),
-        ),
-      );
-
-      const authCtxCreatedWhileSupervisorUnavailable =
-        pinnipedAuthenticator.initialize({
-          callbackUrl: 'https://backstage.test/callback',
-          config: new ConfigReader({
-            federationDomain: 'https://federationDomain.test',
-            clientId: 'clientId',
-            clientSecret: 'clientSecret',
-          }),
-        });
-
-      let supervisorCalls: number = 0;
+      // we start with 1 because the supervisor was called once already when we initialize.
+      let supervisorCalls: number = 1;
 
       mswServer.use(
         rest.get(
@@ -376,20 +350,15 @@ describe('pinnipedAuthenticator', () => {
         ),
       );
 
-      await pinnipedAuthenticator.start(
-        startRequest,
-        authCtxCreatedWhileSupervisorUnavailable,
-      );
-      await pinnipedAuthenticator.start(
-        startRequest,
-        authCtxCreatedWhileSupervisorUnavailable,
-      );
+      await pinnipedAuthenticator.start(startRequest, authCtx);
+      await pinnipedAuthenticator.start(startRequest, authCtx);
 
       expect(supervisorCalls).toEqual(1);
     });
 
     it('refreshes oidc metadata when current one in cache expires', async () => {
-      let supervisorCalls: number = 0;
+      // we start with 1 because the supervisor was called once already when we initialize.
+      let supervisorCalls: number = 1;
       const fixedTime = DateTime.local();
       jest.spyOn(DateTime, 'local').mockImplementation(() => fixedTime);
 
@@ -406,15 +375,6 @@ describe('pinnipedAuthenticator', () => {
           },
         ),
       );
-
-      authCtx = pinnipedAuthenticator.initialize({
-        callbackUrl: 'https://backstage.test/callback',
-        config: new ConfigReader({
-          federationDomain: 'https://federationDomain.test',
-          clientId: 'clientId',
-          clientSecret: 'clientSecret',
-        }),
-      });
 
       await pinnipedAuthenticator.start(startRequest, authCtx);
 
@@ -644,31 +604,14 @@ describe('pinnipedAuthenticator', () => {
       expect(response.session.accessToken).toEqual('accessToken');
     });
 
-    it('refreshes metadata after a failure', async () => {
-      mswServer.use(
-        rest.get(
-          'https://federationDomain.test/.well-known/openid-configuration',
-          (_req, res, _ctx) => res.networkError('Timeout'),
-        ),
-      );
-
-      const authCtxCreatedWhileSupervisorUnavailable =
-        pinnipedAuthenticator.initialize({
-          callbackUrl: 'https://backstage.test/callback',
-          config: new ConfigReader({
-            federationDomain: 'https://federationDomain.test',
-            clientId: 'clientId',
-            clientSecret: 'clientSecret',
-          }),
-        });
-
-      let metadataCalls: number = 0;
+    it('caches oidc metadata after a success', async () => {
+      let supervisorCalls: number = 1;
 
       mswServer.use(
         rest.get(
           'https://federationDomain.test/.well-known/openid-configuration',
           (_req, res, ctx) => {
-            metadataCalls += 1;
+            supervisorCalls += 1;
             return res(
               ctx.status(200),
               ctx.set('Content-Type', 'application/json'),
@@ -678,10 +621,7 @@ describe('pinnipedAuthenticator', () => {
         ),
       );
 
-      await pinnipedAuthenticator.authenticate(
-        handlerRequest,
-        authCtxCreatedWhileSupervisorUnavailable,
-      );
+      await pinnipedAuthenticator.authenticate(handlerRequest, authCtx);
 
       await pinnipedAuthenticator.authenticate(
         {
@@ -697,10 +637,10 @@ describe('pinnipedAuthenticator', () => {
             },
           } as unknown as express.Request,
         },
-        authCtxCreatedWhileSupervisorUnavailable,
+        authCtx,
       );
 
-      expect(metadataCalls).toEqual(1);
+      expect(supervisorCalls).toEqual(1);
     });
 
     it('refreshes oidc metadata when current one in cache expires', async () => {
@@ -834,24 +774,7 @@ describe('pinnipedAuthenticator', () => {
     });
 
     it('caches oidc metadata after a success', async () => {
-      mswServer.use(
-        rest.get(
-          'https://federationDomain.test/.well-known/openid-configuration',
-          (_req, res, _ctx) => res.networkError('Timeout'),
-        ),
-      );
-
-      const authCtxCreatedWhileSupervisorUnavailable =
-        pinnipedAuthenticator.initialize({
-          callbackUrl: 'https://backstage.test/callback',
-          config: new ConfigReader({
-            federationDomain: 'https://federationDomain.test',
-            clientId: 'clientId',
-            clientSecret: 'clientSecret',
-          }),
-        });
-
-      let supervisorCalls: number = 0;
+      let supervisorCalls: number = 1;
 
       mswServer.use(
         rest.get(
@@ -867,20 +790,14 @@ describe('pinnipedAuthenticator', () => {
         ),
       );
 
-      await pinnipedAuthenticator.refresh(
-        refreshRequest,
-        authCtxCreatedWhileSupervisorUnavailable,
-      );
-      await pinnipedAuthenticator.refresh(
-        refreshRequest,
-        authCtxCreatedWhileSupervisorUnavailable,
-      );
+      await pinnipedAuthenticator.refresh(refreshRequest, authCtx);
+      await pinnipedAuthenticator.refresh(refreshRequest, authCtx);
 
       expect(supervisorCalls).toEqual(1);
     });
 
     it('refreshes oidc metadata when current one in cache expires', async () => {
-      let supervisorCalls: number = 0;
+      let supervisorCalls: number = 1;
       const fixedTime = DateTime.local();
       jest.spyOn(DateTime, 'local').mockImplementation(() => fixedTime);
 
@@ -897,15 +814,6 @@ describe('pinnipedAuthenticator', () => {
           },
         ),
       );
-
-      authCtx = pinnipedAuthenticator.initialize({
-        callbackUrl: 'https://backstage.test/callback',
-        config: new ConfigReader({
-          federationDomain: 'https://federationDomain.test',
-          clientId: 'clientId',
-          clientSecret: 'clientSecret',
-        }),
-      });
 
       await pinnipedAuthenticator.refresh(refreshRequest, authCtx);
 
