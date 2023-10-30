@@ -17,9 +17,11 @@
 import { AppNode, AppTree } from '@backstage/frontend-plugin-api';
 import Box from '@material-ui/core/Box';
 import Tooltip from '@material-ui/core/Tooltip';
+import Typography from '@material-ui/core/Typography';
 import * as colors from '@material-ui/core/colors';
 import { Theme, makeStyles } from '@material-ui/core/styles';
 import InputIcon from '@material-ui/icons/InputSharp';
+import DisabledIcon from '@material-ui/icons/NotInterestedSharp';
 import React from 'react';
 
 function createOutputColorGenerator(availableColors: string[]) {
@@ -62,30 +64,25 @@ interface StyleProps {
   enabled: boolean;
 }
 
-function mainColor(theme: Theme) {
+function borderColor(theme: Theme) {
   return ({ enabled }: StyleProps) =>
-    enabled ? theme.palette.primary.main : colors.grey[600];
+    enabled ? theme.palette.primary.main : theme.palette.divider;
 }
 
-function hoverColor(theme: Theme) {
-  return ({ enabled }: StyleProps) =>
-    enabled ? theme.palette.primary.dark : colors.grey[500];
-}
+const config = {
+  borderWidth: 0.75,
+};
 
 const useStyles = makeStyles(theme => ({
   extension: {
-    borderLeftWidth: theme.spacing(1),
+    borderLeftWidth: theme.spacing(config.borderWidth),
     borderLeftStyle: 'solid',
-    borderLeftColor: mainColor(theme),
-    marginBottom: theme.spacing(0.5),
+    borderLeftColor: borderColor(theme),
     cursor: 'pointer',
-    fontSize: theme.typography.h6.fontSize,
 
-    '&:hover': {
-      borderLeftColor: hoverColor(theme),
-    },
     '&:hover $extensionHeader': {
-      background: hoverColor(theme),
+      color: ({ enabled }: StyleProps) =>
+        enabled ? theme.palette.primary.main : theme.palette.text.secondary,
     },
   },
   extensionHeader: {
@@ -93,77 +90,62 @@ const useStyles = makeStyles(theme => ({
     flexFlow: 'row nowrap',
     alignItems: 'center',
     width: 'fit-content',
+
     padding: theme.spacing(0.5, 1),
-    background: mainColor(theme),
-  },
-  extensionHeaderId: {
-    flex: '0 0 auto',
-    color: theme.palette.primary.contrastText,
+    color: ({ enabled }: StyleProps) =>
+      enabled ? theme.palette.text.primary : theme.palette.text.disabled,
+    background: theme.palette.background.paper,
+
+    borderTopRightRadius: theme.shape.borderRadius,
+    borderBottomRightRadius: theme.shape.borderRadius,
   },
   extensionHeaderOutputs: {
-    margin: theme.spacing(0, 0.5),
-    marginTop: 1,
     display: 'flex',
     flexFlow: 'row nowrap',
     alignItems: 'center',
-  },
-  extensionTooltip: {
-    fontSize: theme.typography.h6.fontSize,
-    maxWidth: 'unset',
-  },
-  output: {
     marginLeft: theme.spacing(1),
-    width: theme.spacing(2.3),
-    height: theme.spacing(2.3),
-    borderRadius: '50%',
-  },
-  outputId: {
-    maxWidth: 'unset',
-    padding: theme.spacing(1),
-    fontSize: theme.typography.h6.fontSize,
-  },
-  extensionDisabledIcon: {
-    marginLeft: theme.spacing(1),
+    gap: theme.spacing(1),
   },
   attachments: {},
-  attachmentsInput: () => ({
-    marginBottom: theme.spacing(1),
-
-    '&:not(:first-child) $attachmentsInputTitle': {
-      borderTopWidth: theme.spacing(1),
-      borderTopStyle: 'solid',
-      borderTopColor: mainColor(theme),
+  attachmentsInput: {
+    '&:first-child $attachmentsInputTitle': {
+      borderTop: 0,
     },
-    '&:not(:first-child):hover $attachmentsInputTitle': {
-      borderTopColor: hoverColor(theme),
-    },
-  }),
-  attachmentsInputTitle: () => ({
+  },
+  attachmentsInputTitle: {
     display: 'flex',
     flexFlow: 'row nowrap',
     alignItems: 'center',
     width: 'fit-content',
-    padding: theme.spacing(1, 2),
-  }),
-  attachmentsInputIcon: {},
+    padding: theme.spacing(1),
+
+    borderTopWidth: theme.spacing(config.borderWidth),
+    borderTopStyle: 'solid',
+    borderTopColor: borderColor(theme),
+  },
   attachmentsInputName: {
     marginLeft: theme.spacing(1),
-    color: theme.palette.text.primary,
   },
   attachmentsInputChildren: {
+    display: 'flex',
+    flexFlow: 'column nowrap',
+    alignItems: 'flex-start',
+    gap: theme.spacing(0.5),
     marginLeft: theme.spacing(1),
+    marginBottom: theme.spacing(1),
   },
 }));
 
-function Output(props: { id: string; enabled: boolean }) {
-  const { id, enabled } = props;
-  const classes = useStyles({ enabled });
+function Output(props: { id: string }) {
+  const { id } = props;
 
   return (
-    <Tooltip title={id} classes={{ tooltip: classes.outputId }}>
-      <div
-        className={classes.output}
-        style={{ background: getOutputColor(id) }}
+    <Tooltip title={<Typography>{id}</Typography>}>
+      <Box
+        width={18}
+        height={18}
+        borderRadius="50%"
+        bgcolor={getOutputColor(id)}
       />
     </Tooltip>
   );
@@ -182,27 +164,29 @@ function Attachments(props: {
   }
 
   return (
-    <div className={classes.attachments}>
+    <Box className={classes.attachments}>
       {[...attachments.entries()]
         .sort(([a], [b]) => a.localeCompare(b))
         .map(([key, v]) => {
           const children = v.sort((a, b) => a.spec.id.localeCompare(b.spec.id));
 
           return (
-            <div key={key} className={classes.attachmentsInput}>
-              <div className={classes.attachmentsInputTitle}>
-                <InputIcon className={classes.attachmentsInputIcon} />
-                <div className={classes.attachmentsInputName}>{key}</div>
-              </div>
-              <div className={classes.attachmentsInputChildren}>
+            <Box key={key} className={classes.attachmentsInput}>
+              <Box className={classes.attachmentsInputTitle}>
+                <InputIcon />
+                <Typography className={classes.attachmentsInputName}>
+                  {key}
+                </Typography>
+              </Box>
+              <Box className={classes.attachmentsInputChildren}>
                 {children.map(node => (
                   <Extension key={node.spec.id} node={node} />
                 ))}
-              </div>
-            </div>
+              </Box>
+            </Box>
           );
         })}
-    </div>
+    </Box>
   );
 }
 
@@ -220,7 +204,7 @@ function ExtensionTooltip(props: { node: AppNode }) {
   return (
     <>
       {parts.map(part => (
-        <div key={part}>{part}</div>
+        <Typography key={part}>{part}</Typography>
       ))}
     </>
   );
@@ -236,24 +220,20 @@ function Extension(props: { node: AppNode }) {
     node.instance && [...node.instance.getDataRefs()].map(r => r.id);
 
   return (
-    <div key={node.spec.id} className={classes.extension}>
-      <div className={classes.extensionHeader}>
-        <Tooltip
-          title={<ExtensionTooltip node={node} />}
-          classes={{ tooltip: classes.extensionTooltip }}
-        >
-          <div className={classes.extensionHeaderId}>{node.spec.id}</div>
+    <Box key={node.spec.id} className={classes.extension}>
+      <Box className={classes.extensionHeader}>
+        <Tooltip title={<ExtensionTooltip node={node} />}>
+          <Typography>{node.spec.id}</Typography>
         </Tooltip>
-        <div className={classes.extensionHeaderOutputs}>
+        <Box className={classes.extensionHeaderOutputs}>
           {dataRefIds &&
             dataRefIds.length > 0 &&
-            [...dataRefIds]
-              .sort()
-              .map(id => <Output key={id} id={id} enabled={enabled} />)}
-        </div>
-      </div>
+            [...dataRefIds].sort().map(id => <Output key={id} id={id} />)}
+          {!enabled && <DisabledIcon fontSize="small" />}
+        </Box>
+      </Box>
       <Attachments attachments={node.edges.attachments} enabled={enabled} />
-    </div>
+    </Box>
   );
 }
 
