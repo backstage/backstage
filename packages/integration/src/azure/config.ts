@@ -90,7 +90,7 @@ export type AzureCredentialBase = {
 export type AzureClientSecretCredential = AzureCredentialBase & {
   kind: 'ClientSecret';
   /**
-   * The Azure Active Directory tenant
+   * The Entra ID tenant
    */
   tenantId: string;
   /**
