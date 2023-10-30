@@ -19708,11 +19708,11 @@ __metadata:
   linkType: hard
 
 "@types/serve-handler@npm:^6.1.0":
-  version: 6.1.2
-  resolution: "@types/serve-handler@npm:6.1.2"
+  version: 6.1.3
+  resolution: "@types/serve-handler@npm:6.1.3"
   dependencies:
     "@types/node": "*"
-  checksum: 6b206cba18bf77b938e340e1015c631d92b492918ba78dfdff57590a25da8c4bc63fba90f43d763f854c5aa523b243c283ba84d14cfeb1841795337c8b978bd6
+  checksum: 9202122f38a5d317abd03bee56921398cd1a6bd01274271eb1f4b2810ff2825037aece51acb9d88ced043a3b9530c3836165d4fbef961523cc941fd0860937de
   languageName: node
   linkType: hard
 
