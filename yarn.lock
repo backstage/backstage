@@ -19541,12 +19541,12 @@ __metadata:
   linkType: hard
 
 "@types/recharts@npm:^1.8.14, @types/recharts@npm:^1.8.15":
-  version: 1.8.25
-  resolution: "@types/recharts@npm:1.8.25"
+  version: 1.8.26
+  resolution: "@types/recharts@npm:1.8.26"
   dependencies:
     "@types/d3-shape": ^1
     "@types/react": "*"
-  checksum: b2ab1596f391b70e349ae5f6fc6b29c16f6298f1151747aff84b3380f4644c4e087a489ca55325dc627794317f8e677c9906ab75d2e270c79e45da976a347af5
+  checksum: fb644ca93b12691ab45ac2bab863051945f9f33ddf52ad07857c982995262b14135c6d18ec3caed71f4fe7c4a6933b69e62bee3aba8e0bf3463f04e0d6ae7952
   languageName: node
   linkType: hard
 
