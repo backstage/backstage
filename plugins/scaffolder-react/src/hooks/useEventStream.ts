@@ -62,13 +62,14 @@ type ReducerLogEntry = {
     message: string;
     output?: ScaffolderTaskOutput;
     error?: Error;
+    recoverStrategy?: 'none' | 'idempotent' | 'restart';
   };
 };
 
 type ReducerAction =
   | { type: 'INIT'; data: ScaffolderTask }
   | { type: 'CANCELLED' }
-  | { type: 'RECOVERED' }
+  | { type: 'RECOVERED'; data: ReducerLogEntry }
   | { type: 'LOGS'; data: ReducerLogEntry[] }
   | { type: 'COMPLETED'; data: ReducerLogEntry }
   | { type: 'ERROR'; data: Error };
@@ -106,17 +107,19 @@ function reducer(draft: TaskStream, action: ReducerAction) {
         const currentStepLog = draft.stepLogs?.[entry.body.stepId];
         const currentStep = draft.steps?.[entry.body.stepId];
 
-        if (entry.body.status && entry.body.status !== currentStep.status) {
-          currentStep.status = entry.body.status;
+        if (currentStep) {
+          if (entry.body.status && entry.body.status !== currentStep.status) {
+            currentStep.status = entry.body.status;
 
-          if (currentStep.status === 'processing') {
-            currentStep.startedAt = entry.createdAt;
-          }
+            if (currentStep.status === 'processing') {
+              currentStep.startedAt = entry.createdAt;
+            }
 
-          if (
-            ['cancelled', 'completed', 'failed'].includes(currentStep.status)
-          ) {
-            currentStep.endedAt = entry.createdAt;
+            if (
+              ['cancelled', 'completed', 'failed'].includes(currentStep.status)
+            ) {
+              currentStep.endedAt = entry.createdAt;
+            }
           }
         }
 
@@ -214,7 +217,7 @@ export const useTaskEventStream = (taskId: string): TaskStream => {
                   dispatch({ type: 'COMPLETED', data: event });
                   return undefined;
                 case 'recovered':
-                  dispatch({ type: 'RECOVERED' });
+                  dispatch({ type: 'RECOVERED', data: event });
                   return undefined;
                 default:
                   throw new Error(

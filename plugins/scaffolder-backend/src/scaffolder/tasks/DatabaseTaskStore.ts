@@ -23,6 +23,10 @@ import { ConflictError, NotFoundError } from '@backstage/errors';
 import { Knex } from 'knex';
 import { v4 as uuid } from 'uuid';
 import {
+  SerializedTaskEvent,
+  SerializedTask,
+  TaskStatus,
+  TaskEventType,
   TaskStore,
   TaskStoreEmitOptions,
   TaskStoreListEventsOptions,
@@ -32,17 +36,8 @@ import {
   TaskStoreRecoverTaskOptions,
 } from './types';
 import { DateTime } from 'luxon';
-import {
-  getEnrichedTaskSpec,
-  TaskRecovery,
-  TaskSpec,
-} from '@backstage/plugin-scaffolder-common';
-import {
-  SerializedTaskEvent,
-  SerializedTask,
-  TaskStatus,
-  TaskEventType,
-} from '@backstage/plugin-scaffolder-node';
+import { TaskRecovery, TaskSpec } from '@backstage/plugin-scaffolder-common';
+import { compactEvents } from './compactEvents';
 
 const migrationsDir = resolvePackagePath(
   '@backstage/plugin-scaffolder-backend',
@@ -228,7 +223,7 @@ export class DatabaseTaskStore implements TaskStore {
       if (!task) {
         return undefined;
       }
-      const { events } = await this.listEvents({ taskId: task.id });
+
       const updateCount = await tx<RawDbTaskRow>('tasks')
         .where({ id: task.id, status: 'open' })
         .update({
@@ -243,7 +238,7 @@ export class DatabaseTaskStore implements TaskStore {
       }
 
       try {
-        const spec = await getEnrichedTaskSpec(task, events);
+        const spec = JSON.parse(task.spec);
         const secrets = task.secrets ? JSON.parse(task.secrets) : undefined;
         return {
           id: task.id,
@@ -304,7 +299,7 @@ export class DatabaseTaskStore implements TaskStore {
   }): Promise<void> {
     const { taskId, status, eventBody } = options;
 
-    let oldStatus: TaskStatus;
+    let oldStatus: string;
     if (['failed', 'completed', 'cancelled'].includes(status)) {
       oldStatus = 'processing';
     } else {
@@ -387,7 +382,7 @@ export class DatabaseTaskStore implements TaskStore {
   async listEvents(
     options: TaskStoreListEventsOptions,
   ): Promise<{ events: SerializedTaskEvent[] }> {
-    const { taskId, after } = options;
+    const { taskId, after, raw } = options;
     const rawEvents = await this.db<RawDbTaskEventRow>('task_events')
       .where({
         task_id: taskId,
@@ -416,6 +411,11 @@ export class DatabaseTaskStore implements TaskStore {
         );
       }
     });
+
+    if (!raw) {
+      return compactEvents(events);
+    }
+
     return { events };
   }
 
@@ -462,13 +462,24 @@ export class DatabaseTaskStore implements TaskStore {
     const { taskId } = options;
 
     await this.db.transaction(async tx => {
-      await tx<RawDbTaskRow>('tasks').where({ id: taskId }).update({
-        status: 'open',
-        last_heartbeat_at: this.db.fn.now(),
-      });
+      const [{ spec }] = await tx<RawDbTaskRow>('tasks')
+        .where({ id: taskId })
+        .update(
+          {
+            status: 'open',
+            last_heartbeat_at: this.db.fn.now(),
+          },
+          ['spec'],
+        );
+
       await this.db<RawDbTaskEventRow>('task_events').insert({
         task_id: taskId,
         event_type: 'recovered',
+        body: JSON.stringify({
+          recoverStrategy:
+            (JSON.parse(spec as string) as TaskSpec).recovery?.strategy ??
+            'none',
+        }),
       });
     });
   }
@@ -478,7 +489,6 @@ export class DatabaseTaskStore implements TaskStore {
   ): Promise<void> {
     const { taskId, body } = options;
     const serializedBody = JSON.stringify(body);
-
     await this.db<RawDbTaskEventRow>('task_events').insert({
       task_id: taskId,
       event_type: 'cancelled',

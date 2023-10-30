@@ -121,6 +121,7 @@ export type TaskStoreEmitOptions<TBody = JsonObject> = {
 export type TaskStoreListEventsOptions = {
   taskId: string;
   after?: number | undefined;
+  raw?: boolean;
 };
 
 /**
