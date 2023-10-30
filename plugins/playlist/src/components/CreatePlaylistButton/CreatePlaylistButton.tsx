@@ -36,6 +36,9 @@ import { playlistRouteRef } from '../../routes';
 import { PlaylistEditDialog } from '../PlaylistEditDialog';
 import { useTitle } from '../../hooks';
 
+/**
+ * @public
+ */
 export const CreatePlaylistButton = () => {
   const navigate = useNavigate();
   const errorApi = useApi(errorApiRef);

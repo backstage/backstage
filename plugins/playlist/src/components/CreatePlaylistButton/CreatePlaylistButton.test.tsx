@@ -26,7 +26,7 @@ import { fireEvent, waitFor, act } from '@testing-library/react';
 import React from 'react';
 import { SWRConfig } from 'swr';
 import { PlaylistApi, playlistApiRef } from '../../api';
-import { rootRouteRef } from '../../routes';
+import { playlistRouteRef, rootRouteRef } from '../../routes';
 import { CreatePlaylistButton } from './CreatePlaylistButton';
 
 jest.mock('../PlaylistEditDialog', () => ({
@@ -73,7 +73,12 @@ describe('<CreatePlaylistButton/>', () => {
           <CreatePlaylistButton />
         </TestApiProvider>
       </SWRConfig>,
-      { mountedRoutes: { '/playlists': rootRouteRef } },
+      {
+        mountedRoutes: {
+          '/playlists': rootRouteRef,
+          '/playlists/:playlistId': playlistRouteRef,
+        },
+      },
     );
   };
 
