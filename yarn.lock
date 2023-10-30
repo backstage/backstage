@@ -19784,11 +19784,11 @@ __metadata:
   linkType: hard
 
 "@types/stoppable@npm:^1.1.0":
-  version: 1.1.1
-  resolution: "@types/stoppable@npm:1.1.1"
+  version: 1.1.2
+  resolution: "@types/stoppable@npm:1.1.2"
   dependencies:
     "@types/node": "*"
-  checksum: 65617648686469e7130a9c00a018c03ddcfed8527a162e50352780e9a1acb7187d646389a596c2aef3a5566e3d649f68f0de7822be7349cafde5c1ec863c37c6
+  checksum: 729137560d508786dd381b96206074b6a622387a5c8a1f082fa23620a0734b84e909a972dee4dbc1891272b8fcdbd30f372043c43bdf917f2a5bfb7ac6640cf0
   languageName: node
   linkType: hard
 
