@@ -16,12 +16,9 @@
 
 import React, { useEffect, useState } from 'react';
 import { makeStyles } from '@material-ui/styles';
-import {
-  MuiPickersUtilsProvider,
-  KeyboardDatePicker,
-} from '@material-ui/pickers';
+import { DatePicker, LocalizationProvider } from '@mui/x-date-pickers';
+import { AdapterDateFns } from '@mui/x-date-pickers/AdapterDateFns';
 import Button from '@material-ui/core/Button';
-import LuxonUtils from '@date-io/luxon';
 import FormControl from '@material-ui/core/FormControl';
 import Link from '@material-ui/core/Link';
 import Popover from '@material-ui/core/Popover';
@@ -51,6 +48,7 @@ const useStyles = makeStyles({
 
 const SelectWindow = ({ windowOptions, window, setWindow }) => {
   const classes = useStyles();
+  const adapter = new AdapterDateFns();
   const [anchorEl, setAnchorEl] = useState(null);
 
   const [startDate, setStartDate] = useState(null);
@@ -66,14 +64,14 @@ const SelectWindow = ({ windowOptions, window, setWindow }) => {
   };
 
   const handleStartDateChange = date => {
-    if (isValid(date.toJSDate())) {
-      setStartDate(date.startOf('day').toJSDate());
+    if (isValid(date)) {
+      setStartDate(adapter.startOfDay(date));
     }
   };
 
   const handleEndDateChange = date => {
-    if (isValid(date.toJSDate())) {
-      setEndDate(date.endOf('day').toJSDate());
+    if (isValid(date)) {
+      setEndDate(adapter.endOfDay(date));
     }
   };
 
@@ -140,8 +138,8 @@ const SelectWindow = ({ windowOptions, window, setWindow }) => {
       >
         <div className={classes.dateContainer}>
           <div className={classes.dateContainerColumn}>
-            <MuiPickersUtilsProvider utils={LuxonUtils}>
-              <KeyboardDatePicker
+            <LocalizationProvider dateAdapter={AdapterDateFns}>
+              <DatePicker
                 style={{ width: '144px' }}
                 autoOk
                 disableToolbar
@@ -158,7 +156,7 @@ const SelectWindow = ({ windowOptions, window, setWindow }) => {
                   'aria-label': 'change date',
                 }}
               />
-              <KeyboardDatePicker
+              <DatePicker
                 style={{ width: '144px' }}
                 autoOk
                 disableToolbar
@@ -175,7 +173,7 @@ const SelectWindow = ({ windowOptions, window, setWindow }) => {
                   'aria-label': 'change date',
                 }}
               />
-            </MuiPickersUtilsProvider>
+            </LocalizationProvider>
             <div>
               <Button
                 style={{ marginTop: 16 }}
