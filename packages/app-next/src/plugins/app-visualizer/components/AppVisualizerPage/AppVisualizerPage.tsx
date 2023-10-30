@@ -14,32 +14,33 @@
  * limitations under the License.
  */
 
-import {
-  Header,
-  Page,
-  TabbedLayout,
-  CodeSnippet,
-} from '@backstage/core-components';
+import { Content, Header, HeaderTabs, Page } from '@backstage/core-components';
 import { useApi } from '@backstage/core-plugin-api';
 import { appTreeApiRef } from '@backstage/frontend-plugin-api';
-import React from 'react';
+import Box from '@material-ui/core/Box';
+import React, { useState } from 'react';
+import { GraphVisualizer } from './GraphVisualizer';
+import { TextVisualizer } from './TextVisualizer';
 
 export function AppVisualizerPage() {
   const appTreeApi = useApi(appTreeApiRef);
   const { tree } = appTreeApi.getTree();
+  const [tab, setTab] = useState(0);
+
+  const tabs = [
+    { id: 'graph', label: 'Graph', element: <GraphVisualizer tree={tree} /> },
+    { id: 'text', label: 'Text', element: <TextVisualizer tree={tree} /> },
+  ];
 
   return (
     <Page themeId="tool">
       <Header title="App Visualizer" />
-      <TabbedLayout>
-        <TabbedLayout.Route path="/text" title="Text">
-          <CodeSnippet
-            text={String(tree.root)}
-            language="sql"
-            customStyle={{ margin: 0, padding: 0 }}
-          />
-        </TabbedLayout.Route>
-      </TabbedLayout>
+      <Content noPadding stretch>
+        <Box display="flex" flexDirection="column" height="100%">
+          <HeaderTabs tabs={tabs} selectedIndex={tab} onChange={setTab} />
+          {tabs[tab].element}
+        </Box>
+      </Content>
     </Page>
   );
 }
