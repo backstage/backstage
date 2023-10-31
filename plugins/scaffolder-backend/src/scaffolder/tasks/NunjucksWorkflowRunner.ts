@@ -54,6 +54,7 @@ import {
 import { scaffolderActionRules } from '../../service/rules';
 import { actionExecutePermission } from '@backstage/plugin-scaffolder-common/alpha';
 import { TaskRecovery } from '@backstage/plugin-scaffolder-common';
+import { getRestoredStepIds } from './taskRecoveryHelper';
 
 type NunjucksWorkflowRunnerOptions = {
   workingDirectory: string;
@@ -431,20 +432,11 @@ export class NunjucksWorkflowRunner implements WorkflowRunner {
             )
           : [{ result: AuthorizeResult.ALLOW }];
 
-      const initialStepId = await task.getInitialStepId?.();
-      const restoredStepIds = initialStepId
-        ? task.spec.steps.reduce(
-            (acc: { stepIds: string[]; continue: boolean }, step) => {
-              return acc.continue
-                ? {
-                    stepIds: [...acc.stepIds, step.id],
-                    continue: step.id !== initialStepId,
-                  }
-                : acc;
-            },
-            { stepIds: [], continue: true },
-          ).stepIds
-        : [];
+      const stepIdToRecoverFrom = await task.getStepIdToRecoverFrom?.();
+      const restoredStepIds = getRestoredStepIds(
+        task.spec,
+        stepIdToRecoverFrom,
+      );
 
       for (const step of task.spec.steps) {
         if (!restoredStepIds.includes(step.id)) {

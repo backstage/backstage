@@ -33,4 +33,3 @@ export type {
   TemplateParametersV1beta3,
   TemplatePermissionsV1beta3,
 } from './TemplateEntityV1beta3';
-export { stepIdToRunTheTask } from './taskSpecHelper';

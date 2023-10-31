@@ -120,7 +120,7 @@ export interface TaskContext {
 
   getWorkspaceName(): Promise<string>;
 
-  getInitialStepId?(): Promise<string | undefined>;
+  getStepIdToRecoverFrom?(): Promise<string | undefined>;
 }
 
 /**

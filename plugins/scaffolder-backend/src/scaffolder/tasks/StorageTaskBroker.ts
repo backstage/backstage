@@ -15,10 +15,7 @@
  */
 
 import { Config } from '@backstage/config';
-import {
-  TaskSpec,
-  stepIdToRunTheTask,
-} from '@backstage/plugin-scaffolder-common';
+import { TaskSpec } from '@backstage/plugin-scaffolder-common';
 import { TaskSecrets } from '@backstage/plugin-scaffolder-node';
 import { JsonObject, Observable } from '@backstage/types';
 import { Logger } from 'winston';
@@ -34,6 +31,7 @@ import {
 } from './types';
 import { Duration } from 'luxon';
 import { readDuration } from './helper';
+import { stepIdToRunTheTask } from './taskRecoveryHelper';
 
 /**
  * TaskManager
@@ -68,7 +66,7 @@ export class TaskManager implements TaskContext {
     private readonly storage: TaskStore,
     private readonly signal: AbortSignal,
     private readonly logger: Logger,
-    private readonly initialStepId: string | undefined,
+    private readonly stepIdToRecoverFrom: string | undefined,
   ) {}
 
   get spec() {
@@ -95,8 +93,8 @@ export class TaskManager implements TaskContext {
     return this.isDone;
   }
 
-  getInitialStepId(): Promise<string | undefined> {
-    return Promise.resolve(this.initialStepId);
+  getStepIdToRecoverFrom(): Promise<string | undefined> {
+    return Promise.resolve(this.stepIdToRecoverFrom);
   }
 
   async emitLog(message: string, logMetadata?: JsonObject): Promise<void> {

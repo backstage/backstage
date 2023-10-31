@@ -472,7 +472,7 @@ export class DatabaseTaskStore implements TaskStore {
     return undefined;
   }
 
-  async reopenTask(options: { taskId: string }): Promise<void> {
+  private async reopenTask(options: { taskId: string }): Promise<void> {
     const { taskId } = options;
 
     await this.db.transaction(async tx => {

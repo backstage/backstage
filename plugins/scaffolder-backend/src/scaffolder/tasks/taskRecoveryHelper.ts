@@ -14,12 +14,8 @@
  * limitations under the License.
  */
 
-import {
-  SerializedTaskEvent,
-  TaskSpec,
-  TaskStatus,
-  TaskStep,
-} from './TaskSpec';
+import { SerializedTaskEvent } from './types';
+import { TaskSpec, TaskStep } from '@backstage/plugin-scaffolder-common';
 
 const createStepsMap = (events: SerializedTaskEvent[]) => {
   return events
@@ -73,85 +69,21 @@ export const stepIdToRunTheTask = (
   }, lastExecutedStep);
 };
 
-const stepEnrichment = (
+export const getRestoredStepIds = (
   spec: TaskSpec,
-  status: TaskStatus,
-  events: SerializedTaskEvent[],
+  stepIdToRecoverFrom: string | undefined,
 ) => {
-  const stepsMap = createStepsMap(events);
-
-  if (status === 'processing') {
-    const stepIds = spec.steps.map(step => step.id);
-    const stepIdToStart = stepIdToRunTheTask(spec, events);
-
-    const preservedIdSteps = [];
-    for (const stepId of stepIds) {
-      if (stepId === stepIdToStart) {
-        break;
-      } else {
-        preservedIdSteps.push(stepId);
-      }
-    }
-
-    for (const stepMapKey of stepsMap.keys()) {
-      if (!preservedIdSteps.includes(stepMapKey)) {
-        stepsMap.delete(stepMapKey);
-      }
-    }
-  }
-
-  const toStartedAt = (stepId: string) => {
-    const value = stepsMap.get(stepId);
-    return value ? value.min : undefined;
-  };
-
-  const toEndedAt = (stepId: string) => {
-    const value = stepsMap.get(stepId);
-    return value ? value.max : undefined;
-  };
-
-  const toStatus = (stepId: string) => {
-    const value = stepsMap.get(stepId);
-    return value ? value.status : undefined;
-  };
-
-  return { toStartedAt, toEndedAt, toStatus };
-};
-
-export const getEnrichedTaskSpec = async (
-  task: {
-    spec: string | TaskSpec;
-    status: TaskStatus;
-  },
-  events: SerializedTaskEvent[],
-): Promise<TaskSpec> => {
-  const spec =
-    typeof task.spec === 'string'
-      ? (JSON.parse(task.spec) as TaskSpec)
-      : task.spec;
-  const taskStrategy = spec.recovery?.strategy ?? 'none';
-
-  if (task.status === 'processing' && taskStrategy === 'restart') {
-    return spec;
-  }
-
-  const { toStartedAt, toEndedAt, toStatus } = stepEnrichment(
-    spec,
-    task.status,
-    events,
-  );
-
-  const res = {
-    ...spec,
-    steps: spec.steps.map(
-      step =>
-        ({
-          ...step,
-          status: toStatus(step.id),
-          startedAt: toStartedAt(step.id),
-          endedAt: toEndedAt(step.id),
-        } as TaskStep),
-    ),
-  };
-  return res;
+  return stepIdToRecoverFrom
+    ? spec.steps.reduce(
+        (acc: { stepIds: string[]; continue: boolean }, step) => {
+          return acc.continue
+            ? {
+                stepIds: [...acc.stepIds, step.id],
+                continue: step.id !== stepIdToRecoverFrom,
+              }
+            : acc;
+        },
+        { stepIds: [], continue: true },
+      ).stepIds
+    : [];
 };
