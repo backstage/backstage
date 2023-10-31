@@ -17,35 +17,23 @@
 import { SerializedTaskEvent } from './types';
 import { TaskSpec, TaskStep } from '@backstage/plugin-scaffolder-common';
 
-const createStepsMap = (events: SerializedTaskEvent[]) => {
+const fetchStepIdsFromEvents = (events: SerializedTaskEvent[]) => {
   return events
     .filter(event => event.type === 'log')
     .reduce((acc, event) => {
-      const stepId = event.body.stepId as string;
-      const status = event.body.status as string;
+      const { stepId } = event.body;
       if (stepId) {
-        const step = acc.get(stepId);
-        acc.set(stepId, {
-          min:
-            step && step.min && status !== 'processing'
-              ? step.min
-              : event.createdAt,
-          max: event.createdAt,
-          ...(status && { status }),
-        });
+        acc.add(stepId as string);
       }
       return acc;
-    }, new Map<string, { min?: string; max?: string; status?: string }>());
+    }, new Set<string>());
 };
 
 export const stepIdToRunTheTask = (
   spec: TaskSpec,
   events: SerializedTaskEvent[],
 ): string | undefined => {
-  if (!events.length) {
-    return undefined;
-  }
-  const stepsMap = createStepsMap(events);
+  const eventStepIds = fetchStepIdsFromEvents(events);
   const steps = spec.steps.slice().reverse();
   const stepIds = steps.map(step => step.id);
 
@@ -53,12 +41,11 @@ export const stepIdToRunTheTask = (
     stepIds.findIndex(id => id === stepId1) -
     stepIds.findIndex(id => id === stepId2);
 
-  const lastExecutedStep =
-    Array.from(stepsMap.keys()).sort(compare)[0] ?? spec.steps[0].id;
+  const lastStep =
+    Array.from(eventStepIds).sort(compare)[0] ?? spec.steps[0].id;
 
   return steps.reduce((acc: string, step: TaskStep) => {
-    const enrichedStep = stepsMap.get(step.id);
-    if (!enrichedStep) {
+    if (!eventStepIds.has(step.id)) {
       return acc;
     }
     const dependsOn = step.recovery?.dependsOn;
@@ -66,7 +53,7 @@ export const stepIdToRunTheTask = (
       return compare(dependsOn as string, acc) > 0 ? dependsOn : acc;
     }
     return compare(step.id, acc) > 0 ? acc : step.id;
-  }, lastExecutedStep);
+  }, lastStep);
 };
 
 export const getRestoredStepIds = (
