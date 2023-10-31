@@ -122,11 +122,8 @@ export const compactEvents = (
       }
 
       const lastRunInd = findLastRunInd(events);
-
       const historyEvents = events.slice(0, lastRunInd);
-
-      const stepsMap = createStepsMap(historyEvents);
-      const stepIdToStart = stepIdToRunTheTask(taskSpec, stepsMap);
+      const stepIdToStart = stepIdToRunTheTask(taskSpec, historyEvents);
 
       const preservedIdSteps: string[] = [];
       const stepIds = taskSpec.steps.map(step => step.id);
@@ -143,7 +140,11 @@ export const compactEvents = (
         return stepId ? preservedIdSteps.includes(stepId) : false;
       });
 
-      return { events: [...recoveredEvents, ...events.slice(lastRunInd)] };
+      return {
+        events: [...recoveredEvents, ...events.slice(lastRunInd)].filter(
+          event => event.type === 'log',
+        ),
+      };
     }
   }
 

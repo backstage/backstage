@@ -14,18 +14,28 @@
  * limitations under the License.
  */
 
-import { getRestoredStepIds, stepIdToRunTheTask } from './taskRecoveryHelper';
+import {
+  compactEvents,
+  getRestoredStepIds,
+  stepIdToRunTheTask,
+} from './taskRecoveryHelper';
 import { SerializedTaskEvent } from './types';
 import { TaskSpec } from '@backstage/plugin-scaffolder-common';
 
+const toLogEvent = (stepId: string) =>
+  ({
+    type: 'log',
+    body: { stepId },
+  } as unknown as SerializedTaskEvent);
+
+const toRecoveredEvent = (recoverStrategy: string) =>
+  ({
+    type: 'recovered',
+    body: { recoverStrategy },
+  } as unknown as SerializedTaskEvent);
+
 describe('taskRecoveryHelper', () => {
   describe('stepIdToRunTheTask', () => {
-    const toEvent = (stepId: string) =>
-      ({
-        type: 'log',
-        body: { stepId },
-      } as unknown as SerializedTaskEvent);
-
     it('Should find the step id which has to be restarted. Scenario 1', () => {
       const taskSpec = {
         steps: [
@@ -38,7 +48,7 @@ describe('taskRecoveryHelper', () => {
       } as TaskSpec;
 
       const events = ['fetch', 'mock-step-1', 'mock-step-2', 'mock-step-3'].map(
-        toEvent,
+        toLogEvent,
       );
 
       expect(stepIdToRunTheTask(taskSpec, events)).toEqual('mock-step-2');
@@ -49,7 +59,7 @@ describe('taskRecoveryHelper', () => {
         steps: [{ id: 'fetch' }, { id: 'mock-step-1' }, { id: 'mock-step-2' }],
       } as TaskSpec;
 
-      const events = ['fetch', 'mock-step-1'].map(toEvent);
+      const events = ['fetch', 'mock-step-1'].map(toLogEvent);
 
       expect(stepIdToRunTheTask(taskSpec, events)).toEqual('mock-step-1');
     });
@@ -59,7 +69,7 @@ describe('taskRecoveryHelper', () => {
         steps: [{ id: 'fetch' }, { id: 'mock-step-1' }],
       } as TaskSpec;
 
-      const events = [].map(toEvent);
+      const events = [].map(toLogEvent);
 
       expect(stepIdToRunTheTask(taskSpec, events)).toEqual('fetch');
     });
@@ -88,6 +98,81 @@ describe('taskRecoveryHelper', () => {
 
       expect(getRestoredStepIds(taskSpec, 'non-existing')).toBeUndefined();
       expect(getRestoredStepIds(taskSpec, undefined)).toBeUndefined();
+    });
+  });
+
+  describe('compactEvents', () => {
+    it('should return only events related to a restarted task. Recover strategy: "restart"', () => {
+      const taskSpec = {
+        steps: [
+          { id: 'fetch' },
+          { id: 'mock-step-1' },
+          { id: 'mock-step-2' },
+          { id: 'mock-step-3' },
+          { id: 'mock-step-4' },
+        ],
+      } as TaskSpec;
+
+      const logEvents = [
+        'fetch',
+        'mock-step-1',
+        'mock-step-2',
+        'mock-step-3',
+      ].map(toLogEvent);
+
+      const events = [...logEvents, toRecoveredEvent('restart')];
+
+      expect(compactEvents(taskSpec, events)).toEqual({ events: [] });
+    });
+
+    it('should return only events related to a restarted task. Recover strategy: "idempotent"', () => {
+      const taskSpec = {
+        steps: [
+          { id: 'fetch' },
+          { id: 'mock-step-1' },
+          { id: 'mock-step-2' },
+          { id: 'mock-step-3', recovery: { dependsOn: 'mock-step-2' } },
+          { id: 'mock-step-4' },
+        ],
+      } as TaskSpec;
+
+      const logEvents = [
+        'fetch',
+        'mock-step-1',
+        'mock-step-2',
+        'mock-step-3',
+      ].map(toLogEvent);
+
+      const events = [...logEvents, toRecoveredEvent('idempotent')];
+
+      expect(compactEvents(taskSpec, events)).toEqual({
+        events: ['fetch', 'mock-step-1'].map(toLogEvent),
+      });
+    });
+
+    it('should return only events related to a restarted task. Recover strategy: "idempotent". Scenario without dependent steps', () => {
+      const taskSpec = {
+        steps: [
+          { id: 'fetch' },
+          { id: 'mock-step-1' },
+          { id: 'mock-step-2' },
+          { id: 'mock-step-3' },
+          { id: 'mock-step-4' },
+        ],
+      } as TaskSpec;
+
+      const logEvents = [
+        'fetch',
+        'mock-step-1',
+        'mock-step-2',
+        'mock-step-3',
+      ].map(toLogEvent);
+
+      const events = [...logEvents, toRecoveredEvent('idempotent')];
+
+      expect(compactEvents(taskSpec, events)).toEqual({
+        events: ['fetch', 'mock-step-1', 'mock-step-2'].map(toLogEvent),
+      });
     });
   });
 });
