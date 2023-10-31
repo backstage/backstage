@@ -1,7 +1,7 @@
 {
   "name": "@backstage/plugin-api-docs",
   "description": "A Backstage plugin that helps represent API entities in the frontend",
-  "version": "0.9.13-next.0",
+  "version": "0.9.13-next.1",
   "main": "src/index.ts",
   "types": "src/index.ts",
   "license": "Apache-2.0",

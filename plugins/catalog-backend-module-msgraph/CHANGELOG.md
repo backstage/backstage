@@ -1,5 +1,19 @@
 # @backstage/plugin-catalog-backend-module-msgraph
 
+## 0.5.14-next.1
+
+### Patch Changes
+
+- 243c655a68: JSDoc and Error message updates to handle `Azure Active Directory` re-brand to `Entra ID`
+- Updated dependencies
+  - @backstage/plugin-catalog-node@1.5.0-next.1
+  - @backstage/backend-common@0.19.9-next.1
+  - @backstage/backend-tasks@0.5.12-next.1
+  - @backstage/backend-plugin-api@0.6.7-next.1
+  - @backstage/catalog-model@1.4.3
+  - @backstage/config@1.1.1
+  - @backstage/plugin-catalog-common@1.0.17
+
 ## 0.5.14-next.0
 
 ### Patch Changes
