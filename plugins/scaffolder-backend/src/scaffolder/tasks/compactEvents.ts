@@ -21,35 +21,13 @@ import {
   TaskStep,
 } from '@backstage/plugin-scaffolder-common';
 
-const findIndForRecoveredEvents = (
-  events: SerializedTaskEvent[],
-): {
-  beforeLastRunInd: number;
-  lastRunInd: number;
-} => {
+const findLastRunInd = (events: SerializedTaskEvent[]): number => {
   const lastRunReversedInd = events
     .slice()
     .reverse()
     .findIndex(event => event.type === 'recovered');
 
-  const lastRunInd =
-    lastRunReversedInd < 0 ? 0 : events.length - lastRunReversedInd - 1;
-
-  if (lastRunInd === 0) {
-    return { beforeLastRunInd: 0, lastRunInd: 0 };
-  }
-
-  const beforeLastRunReversedInd = events
-    .slice(0, lastRunInd - 1)
-    .reverse()
-    .findIndex(event => event.type === 'recovered');
-
-  const beforeLastRunInd = events.length - beforeLastRunReversedInd - 1;
-
-  return {
-    beforeLastRunInd: beforeLastRunReversedInd < 0 ? 0 : beforeLastRunInd,
-    lastRunInd,
-  };
+  return lastRunReversedInd < 0 ? 0 : events.length - lastRunReversedInd - 1;
 };
 
 type StepsMap = Map<string, { min?: string; max?: string; status?: string }>;
@@ -122,14 +100,11 @@ export const compactEvents = (
         return { events };
       }
 
-      const { beforeLastRunInd, lastRunInd } =
-        findIndForRecoveredEvents(events);
+      const lastRunInd = findLastRunInd(events);
 
-      const slicedEvents = events.slice(beforeLastRunInd, lastRunInd);
+      const historyEvents = events.slice(0, lastRunInd);
 
-      const stepsMap = createStepsMap(
-        events.slice(beforeLastRunInd, lastRunInd),
-      );
+      const stepsMap = createStepsMap(historyEvents);
       const stepIdToStart = stepIdToRunTheTask(taskSpec, stepsMap);
 
       const preservedIdSteps: string[] = [];
@@ -142,7 +117,7 @@ export const compactEvents = (
         }
       }
 
-      const recoveredEvents = slicedEvents.filter(event => {
+      const recoveredEvents = historyEvents.filter(event => {
         const { stepId } = event.body as { stepId?: string };
         return stepId ? preservedIdSteps.includes(stepId) : false;
       });
