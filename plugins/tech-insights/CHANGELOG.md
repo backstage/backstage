@@ -1,5 +1,20 @@
 # @backstage/plugin-tech-insights
 
+## 0.3.18-next.1
+
+### Patch Changes
+
+- 62b5922916: Internal theme type updates
+- Updated dependencies
+  - @backstage/plugin-catalog-react@1.9.0-next.1
+  - @backstage/core-components@0.13.8-next.1
+  - @backstage/catalog-model@1.4.3
+  - @backstage/core-plugin-api@1.8.0-next.0
+  - @backstage/errors@1.2.3
+  - @backstage/theme@0.4.4-next.0
+  - @backstage/types@1.1.1
+  - @backstage/plugin-tech-insights-common@0.2.12
+
 ## 0.3.18-next.0
 
 ### Patch Changes
