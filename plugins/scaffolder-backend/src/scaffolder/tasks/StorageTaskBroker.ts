@@ -47,14 +47,14 @@ export class TaskManager implements TaskContext {
     storage: TaskStore,
     abortSignal: AbortSignal,
     logger: Logger,
-    initialStepId?: string,
+    stepIdToRecoverFrom?: string,
   ) {
     const agent = new TaskManager(
       task,
       storage,
       abortSignal,
       logger,
-      initialStepId,
+      stepIdToRecoverFrom,
     );
     agent.startTimeout();
     return agent;
@@ -175,7 +175,7 @@ export class StorageTaskBroker implements TaskBroker {
   constructor(
     private readonly storage: TaskStore,
     private readonly logger: Logger,
-    private readonly config: Config,
+    private readonly config?: Config,
   ) {}
 
   async list(options?: {
@@ -222,7 +222,10 @@ export class StorageTaskBroker implements TaskBroker {
    * {@inheritdoc TaskBroker.claim}
    */
   async claim(): Promise<TaskContext> {
-    if (this.config.getOptionalBoolean('scaffolder.recoverTasks')) {
+    if (
+      this.config &&
+      this.config.getOptionalBoolean('scaffolder.recoverTasks')
+    ) {
       await this.storage.recoverTasks({
         timeoutS: Duration.fromObject(
           readDuration(this.config, 'scaffolder.recoverTasksTimeout', {
@@ -239,7 +242,10 @@ export class StorageTaskBroker implements TaskBroker {
         const { events } = await this.storage.listEvents({
           taskId: pendingTask.id,
         });
-        const initialStepId = stepIdToRunTheTask(pendingTask.spec, events);
+        const stepIdToRecoverFrom = stepIdToRunTheTask(
+          pendingTask.spec,
+          events,
+        );
         await this.registerCancellable(pendingTask.id, abortController);
         return TaskManager.create(
           {
@@ -251,7 +257,7 @@ export class StorageTaskBroker implements TaskBroker {
           this.storage,
           abortController.signal,
           this.logger,
-          initialStepId,
+          stepIdToRecoverFrom,
         );
       }
 
