@@ -240,6 +240,21 @@ export class ConfigReader implements Config {
     return configs.map((obj, index) => this.copy(obj, `${key}[${index}]`));
   }
 
+  /** {@inheritdoc Config.getOptionalObjectArray} */
+  getOptionalObjectArray<T extends JsonValue>(key: string): T[] | undefined {
+    return this.readConfigValue(key, values => {
+      if (!Array.isArray(values)) {
+        return { expected: 'object-array' };
+      }
+      for (const [index, value] of values.entries()) {
+        if (!isObject(value)) {
+          return { expected: 'object-array', value, key: `${key}[${index}]` };
+        }
+      }
+      return true;
+    });
+  }
+
   /** {@inheritdoc Config.getNumber} */
   getNumber(key: string): number {
     const value = this.getOptionalNumber(key);

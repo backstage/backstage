@@ -20,6 +20,7 @@ import { ParsedLocationAnnotation } from '../../helpers';
 import { getRepoUrlFromLocationAnnotation, MKDOCS_SCHEMA } from './helpers';
 import { assertError } from '@backstage/errors';
 import { ScmIntegrationRegistry } from '@backstage/integration';
+import { JsonValue } from '@backstage/types';
 
 type MkDocsObject = {
   plugins?: string[];
@@ -150,24 +151,41 @@ export const patchMkdocsYmlPreBuild = async (
 export const patchMkdocsYmlWithPlugins = async (
   mkdocsYmlPath: string,
   logger: Logger,
-  defaultPlugins: string[] = ['techdocs-core'],
+  defaultPlugins: (string | { [key: string]: JsonValue })[] = ['techdocs-core'],
 ) => {
-  await patchMkdocsFile(mkdocsYmlPath, logger, mkdocsYml => {
+  await patchMkdocsFile(mkdocsYmlPath, logger, (mkdocsYml: any) => {
     // Modify mkdocs.yaml to contain the required default plugins
     if (!('plugins' in mkdocsYml)) {
       mkdocsYml.plugins = defaultPlugins;
       return true;
     }
 
-    if (
-      mkdocsYml.plugins &&
-      !defaultPlugins.every(plugin => mkdocsYml.plugins!.includes(plugin))
-    ) {
-      mkdocsYml.plugins = [
-        ...new Set([...mkdocsYml.plugins, ...defaultPlugins]),
-      ];
+    if (mkdocsYml.plugins) {
+      if (Array.isArray(mkdocsYml.plugins)) {
+        // Convert the existing array of strings to an array of objects with the name field
+        mkdocsYml.plugins = mkdocsYml.plugins.map((plugin: string) => {
+          return { name: plugin };
+        });
+      }
+
+      // Add any default plugins that aren't already included
+      for (const defaultPlugin of defaultPlugins) {
+        const pluginName =
+          typeof defaultPlugin === 'string'
+            ? defaultPlugin
+            : Object.keys(defaultPlugin)[0];
+        const isPluginIncluded = mkdocsYml.plugins.some(
+          (plugin: { name: string }) => plugin.name === pluginName,
+        );
+
+        if (!isPluginIncluded) {
+          mkdocsYml.plugins.push(defaultPlugin);
+        }
+      }
+
       return true;
     }
+
     return false;
   });
 };

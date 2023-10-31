@@ -147,4 +147,9 @@ export type Config = {
    * Reads a configuration value at the given key, expecting it to be an array of strings.
    */
   getOptionalStringArray(key: string): string[] | undefined;
+
+  /**
+   * Same as `getOptionalObjectArray` for objects, but will throw an error if there's no value for the given key.
+   */
+  getOptionalObjectArray<T extends JsonValue>(key: string): T[] | undefined;
 };

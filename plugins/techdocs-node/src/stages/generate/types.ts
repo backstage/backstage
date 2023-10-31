@@ -14,6 +14,7 @@
  * limitations under the License.
  */
 
+import { JsonValue } from '@backstage/types';
 import { ContainerRunner } from '@backstage/backend-common';
 import { Entity } from '@backstage/catalog-model';
 import { Writable } from 'stream';
@@ -41,7 +42,7 @@ export type GeneratorConfig = {
   pullImage?: boolean;
   omitTechdocsCoreMkdocsPlugin?: boolean;
   legacyCopyReadmeMdToIndexMd?: boolean;
-  defaultPlugins?: string[];
+  defaultPlugins?: (string | { [key: string]: JsonValue })[]; // Updated type
 };
 
 /**

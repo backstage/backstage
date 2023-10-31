@@ -125,4 +125,7 @@ export class ObservableConfigProxy implements Config {
   getOptionalStringArray(key: string): string[] | undefined {
     return this.select(false)?.getOptionalStringArray(key);
   }
+  getOptionalObjectArray<T extends JsonValue>(key: string): T[] | undefined {
+    return this.select(false)?.getOptionalObjectArray(key);
+  }
 }
