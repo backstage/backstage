@@ -45,43 +45,6 @@ export type TemplateInfo = {
 };
 
 /**
- * The status of each task in a Scaffolder Job
- *
- * @public
- */
-export type ScaffolderTaskStatus =
-  | 'cancelled'
-  | 'completed'
-  | 'failed'
-  | 'open'
-  | 'processing'
-  | 'skipped';
-
-/**
- * The status of the step being processed
- *
- * @public
- */
-export type ScaffolderStep = {
-  id: string;
-  status: ScaffolderTaskStatus;
-  endedAt?: string;
-  startedAt?: string;
-};
-
-/**
- * The status of each step of the Task
- *
- * @public
- */
-export type TaskStatus =
-  | 'cancelled'
-  | 'completed'
-  | 'failed'
-  | 'open'
-  | 'processing';
-
-/**
  *
  * none - not recover, let the task be marked as failed
  * idempotent - do recover, treat a task as idempotent and rerun the task from the step which has failed.
@@ -160,26 +123,6 @@ export interface TaskStep {
    */
   recovery?: TaskStepRecovery;
 }
-
-/**
- * TaskEventType
- *
- * @public
- */
-export type TaskEventType = 'completion' | 'log' | 'cancelled' | 'recovered';
-
-/**
- * SerializedTaskEvent
- *
- * @public
- */
-export type SerializedTaskEvent = {
-  id: number;
-  taskId: string;
-  body: JsonObject;
-  type: TaskEventType;
-  createdAt: string;
-};
 
 /**
  * A scaffolder task as stored in the database, generated from a v1beta3

@@ -39,6 +39,7 @@ import { TaskBrokerDispatchResult as TaskBrokerDispatchResult_2 } from '@backsta
 import { TaskCompletionState as TaskCompletionState_2 } from '@backstage/plugin-scaffolder-node';
 import { TaskContext as TaskContext_2 } from '@backstage/plugin-scaffolder-node';
 import { TaskEventType as TaskEventType_2 } from '@backstage/plugin-scaffolder-node';
+import { TaskRecovery } from '@backstage/plugin-scaffolder-common';
 import { TaskSecrets as TaskSecrets_2 } from '@backstage/plugin-scaffolder-node';
 import { TaskSpec } from '@backstage/plugin-scaffolder-common';
 import { TaskSpecV1beta3 } from '@backstage/plugin-scaffolder-common';
@@ -827,8 +828,6 @@ export class DatabaseTaskStore implements TaskStore {
     >,
   ): Promise<void>;
   // (undocumented)
-  getEnrichedTaskSpec(task: { id: string; spec: string }): Promise<TaskSpec>;
-  // (undocumented)
   getTask(taskId: string): Promise<SerializedTask>;
   // (undocumented)
   heartbeatTask(taskId: string): Promise<void>;
@@ -844,14 +843,11 @@ export class DatabaseTaskStore implements TaskStore {
   listStaleTasks(options: { timeoutS: number }): Promise<{
     tasks: {
       taskId: string;
+      recovery?: TaskRecovery;
     }[];
   }>;
-  // Warning: (ae-forgotten-export) The symbol "TaskStoreRecoverTaskOptions" needs to be exported by the entry point index.d.ts
-  //
   // (undocumented)
   recoverTasks(options: TaskStoreRecoverTaskOptions): Promise<void>;
-  // (undocumented)
-  reopenTask(options: { taskId: string }): Promise<void>;
   // (undocumented)
   shutdownTask(options: TaskStoreShutDownTaskOptions): Promise<void>;
 }
@@ -959,6 +955,7 @@ export class TaskManager implements TaskContext {
     storage: TaskStore,
     abortSignal: AbortSignal,
     logger: Logger,
+    stepIdToRecoverFrom?: string,
   ): TaskManager;
   // (undocumented)
   get createdBy(): string | undefined;
@@ -966,6 +963,8 @@ export class TaskManager implements TaskContext {
   get done(): boolean;
   // (undocumented)
   emitLog(message: string, logMetadata?: JsonObject): Promise<void>;
+  // (undocumented)
+  getStepIdToRecoverFrom(): Promise<string | undefined>;
   // (undocumented)
   getWorkspaceName(): Promise<string>;
   // (undocumented)
@@ -1044,6 +1043,12 @@ export type TaskStoreEmitOptions<TBody = JsonObject> = {
 export type TaskStoreListEventsOptions = {
   taskId: string;
   after?: number | undefined;
+  raw?: boolean;
+};
+
+// @public
+export type TaskStoreRecoverTaskOptions = {
+  timeoutS: number;
 };
 
 // @public

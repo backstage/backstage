@@ -143,6 +143,10 @@ export type TaskStoreCreateTaskOptions = {
   secrets?: TaskSecrets;
 };
 
+/**
+ * The options passed to {@link TaskStore.recoverTasks}
+ * @public
+ */
 export type TaskStoreRecoverTaskOptions = {
   timeoutS: number;
 };
