@@ -55,24 +55,27 @@ export type FeaturedDocsProps = {
   title?: React.ReactNode | string;
 };
 
-const useStyles = makeStyles<Theme>(theme => ({
-  docDescription: {
-    fontSize: theme.typography.body1.fontSize,
-    fontWeight: theme.typography.body1.fontWeight,
-    marginBottom: theme.spacing(2),
-    marginTop: theme.spacing(2),
-  },
-  docSubLink: {
-    fontSize: theme.typography.subtitle1.fontSize,
-    fontWeight: theme.typography.subtitle1.fontWeight,
-    lineHeight: theme.typography.subtitle1.lineHeight,
-  },
-  docsTitleLink: {
-    fontSize: theme.typography.h6.fontSize,
-    fontWeight: theme.typography.h6.fontWeight,
-    lineHeight: theme.typography.h6.lineHeight,
-  },
-}));
+const useStyles = makeStyles<Theme>(
+  theme => ({
+    docDescription: {
+      fontSize: theme.typography.body1.fontSize,
+      fontWeight: theme.typography.body1.fontWeight,
+      marginBottom: theme.spacing(2),
+      marginTop: theme.spacing(2),
+    },
+    docSubLink: {
+      fontSize: theme.typography.subtitle1.fontSize,
+      fontWeight: theme.typography.subtitle1.fontWeight,
+      lineHeight: theme.typography.subtitle1.lineHeight,
+    },
+    docsTitleLink: {
+      fontSize: theme.typography.h6.fontSize,
+      fontWeight: theme.typography.h6.fontWeight,
+      lineHeight: theme.typography.h6.lineHeight,
+    },
+  }),
+  { name: 'BackstageFeaturedDocs' },
+);
 
 /**
  * A component to display specific Featured Docs.
