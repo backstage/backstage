@@ -37,7 +37,7 @@ import {
 } from './types';
 import { DateTime } from 'luxon';
 import { TaskRecovery, TaskSpec } from '@backstage/plugin-scaffolder-common';
-import { compactEvents } from './compactEvents';
+import { compactEvents } from './taskRecoveryHelper';
 
 const migrationsDir = resolvePackagePath(
   '@backstage/plugin-scaffolder-backend',

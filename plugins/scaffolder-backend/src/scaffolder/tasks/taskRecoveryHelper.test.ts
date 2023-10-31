@@ -14,52 +14,80 @@
  * limitations under the License.
  */
 
-import { stepIdToRunTheTask } from './taskRecoveryHelper';
+import { getRestoredStepIds, stepIdToRunTheTask } from './taskRecoveryHelper';
 import { SerializedTaskEvent } from './types';
 import { TaskSpec } from '@backstage/plugin-scaffolder-common';
 
-describe('stepIdToRunTheTask', () => {
-  const toEvent = (stepId: string) =>
-    ({
-      type: 'log',
-      body: { stepId },
-    } as unknown as SerializedTaskEvent);
+describe('taskRecoveryHelper', () => {
+  describe('stepIdToRunTheTask', () => {
+    const toEvent = (stepId: string) =>
+      ({
+        type: 'log',
+        body: { stepId },
+      } as unknown as SerializedTaskEvent);
 
-  it('Should find the step id which has to be restarted. Scenario 1', () => {
-    const taskSpec = {
-      steps: [
-        { id: 'fetch' },
-        { id: 'mock-step-1' },
-        { id: 'mock-step-2' },
-        { id: 'mock-step-3', recovery: { dependsOn: 'mock-step-2' } },
-        { id: 'publish' },
-      ],
-    } as TaskSpec;
+    it('Should find the step id which has to be restarted. Scenario 1', () => {
+      const taskSpec = {
+        steps: [
+          { id: 'fetch' },
+          { id: 'mock-step-1' },
+          { id: 'mock-step-2' },
+          { id: 'mock-step-3', recovery: { dependsOn: 'mock-step-2' } },
+          { id: 'publish' },
+        ],
+      } as TaskSpec;
 
-    const events = ['fetch', 'mock-step-1', 'mock-step-2', 'mock-step-3'].map(
-      toEvent,
-    );
+      const events = ['fetch', 'mock-step-1', 'mock-step-2', 'mock-step-3'].map(
+        toEvent,
+      );
 
-    expect(stepIdToRunTheTask(taskSpec, events)).toEqual('mock-step-2');
+      expect(stepIdToRunTheTask(taskSpec, events)).toEqual('mock-step-2');
+    });
+
+    it('should find the step id which has to be restarted. Scenario 2', () => {
+      const taskSpec = {
+        steps: [{ id: 'fetch' }, { id: 'mock-step-1' }, { id: 'mock-step-2' }],
+      } as TaskSpec;
+
+      const events = ['fetch', 'mock-step-1'].map(toEvent);
+
+      expect(stepIdToRunTheTask(taskSpec, events)).toEqual('mock-step-1');
+    });
+
+    it('should find the step id which has to be restarted. Scenario 3', () => {
+      const taskSpec = {
+        steps: [{ id: 'fetch' }, { id: 'mock-step-1' }],
+      } as TaskSpec;
+
+      const events = [].map(toEvent);
+
+      expect(stepIdToRunTheTask(taskSpec, events)).toEqual('fetch');
+    });
   });
 
-  it('should find the step id which has to be restarted. Scenario 2', () => {
-    const taskSpec = {
-      steps: [{ id: 'fetch' }, { id: 'mock-step-1' }, { id: 'mock-step-2' }],
-    } as TaskSpec;
+  describe('getRestoredStepIds', () => {
+    it('should return the sequence of step IDs which are restored', () => {
+      const taskSpec = {
+        steps: [
+          { id: 'fetch' },
+          { id: 'mock-step-1' },
+          { id: 'mock-step-2' },
+          { id: 'mock-step-3' },
+          { id: 'mock-step-4' },
+        ],
+      } as TaskSpec;
 
-    const events = ['fetch', 'mock-step-1'].map(toEvent);
+      expect(getRestoredStepIds(taskSpec, 'mock-step-3')).toEqual([
+        'fetch',
+        'mock-step-1',
+        'mock-step-2',
+        'mock-step-3',
+      ]);
 
-    expect(stepIdToRunTheTask(taskSpec, events)).toEqual('mock-step-1');
-  });
+      expect(getRestoredStepIds(taskSpec, 'fetch')).toEqual(['fetch']);
 
-  it('should find the step id which has to be restarted. Scenario 3', () => {
-    const taskSpec = {
-      steps: [{ id: 'fetch' }, { id: 'mock-step-1' }],
-    } as TaskSpec;
-
-    const events = [].map(toEvent);
-
-    expect(stepIdToRunTheTask(taskSpec, events)).toEqual('fetch');
+      expect(getRestoredStepIds(taskSpec, 'non-existing')).toBeUndefined();
+      expect(getRestoredStepIds(taskSpec, undefined)).toBeUndefined();
+    });
   });
 });

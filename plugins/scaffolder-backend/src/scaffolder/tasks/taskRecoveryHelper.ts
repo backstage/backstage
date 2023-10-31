@@ -15,7 +15,11 @@
  */
 
 import { SerializedTaskEvent } from './types';
-import { TaskSpec, TaskStep } from '@backstage/plugin-scaffolder-common';
+import {
+  TaskRecoverStrategy,
+  TaskSpec,
+  TaskStep,
+} from '@backstage/plugin-scaffolder-common';
 
 const fetchStepIdsFromEvents = (events: SerializedTaskEvent[]) => {
   return events
@@ -63,6 +67,13 @@ export const getRestoredStepIds = (
   spec: TaskSpec,
   stepIdToRecoverFrom: string | undefined,
 ) => {
+  if (
+    !stepIdToRecoverFrom ||
+    !spec.steps.map(step => step.id).includes(stepIdToRecoverFrom)
+  ) {
+    return undefined;
+  }
+
   return stepIdToRecoverFrom
     ? spec.steps.reduce(
         (acc: { stepIds: string[]; continue: boolean }, step) => {
@@ -76,4 +87,65 @@ export const getRestoredStepIds = (
         { stepIds: [], continue: true },
       ).stepIds
     : [];
+};
+
+const findLastRunInd = (events: SerializedTaskEvent[]): number => {
+  const lastRunReversedInd = events
+    .slice()
+    .reverse()
+    .findIndex(event => event.type === 'recovered');
+
+  return lastRunReversedInd < 0 ? 0 : events.length - lastRunReversedInd - 1;
+};
+
+export const compactEvents = (
+  taskSpec: TaskSpec | undefined,
+  events: SerializedTaskEvent[],
+): { events: SerializedTaskEvent[] } => {
+  const recoveredEventInd = events
+    .slice()
+    .reverse()
+    .findIndex(event => event.type === 'recovered');
+
+  if (recoveredEventInd >= 0) {
+    const ind = events.length - recoveredEventInd - 1;
+    const { recoverStrategy } = events[ind].body as {
+      recoverStrategy: TaskRecoverStrategy;
+    };
+    if (recoverStrategy === 'restart') {
+      return {
+        events: recoveredEventInd === 0 ? [] : events.slice(ind),
+      };
+    } else if (recoverStrategy === 'idempotent') {
+      if (!taskSpec) {
+        return { events };
+      }
+
+      const lastRunInd = findLastRunInd(events);
+
+      const historyEvents = events.slice(0, lastRunInd);
+
+      const stepsMap = createStepsMap(historyEvents);
+      const stepIdToStart = stepIdToRunTheTask(taskSpec, stepsMap);
+
+      const preservedIdSteps: string[] = [];
+      const stepIds = taskSpec.steps.map(step => step.id);
+      for (const stepId of stepIds) {
+        if (stepId === stepIdToStart) {
+          break;
+        } else {
+          preservedIdSteps.push(stepId);
+        }
+      }
+
+      const recoveredEvents = historyEvents.filter(event => {
+        const { stepId } = event.body as { stepId?: string };
+        return stepId ? preservedIdSteps.includes(stepId) : false;
+      });
+
+      return { events: [...recoveredEvents, ...events.slice(lastRunInd)] };
+    }
+  }
+
+  return { events };
 };
