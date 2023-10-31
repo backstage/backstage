@@ -1,5 +1,18 @@
 # @backstage/plugin-sonarqube
 
+## 0.7.8-next.1
+
+### Patch Changes
+
+- 62b5922916: Internal theme type updates
+- Updated dependencies
+  - @backstage/plugin-catalog-react@1.9.0-next.1
+  - @backstage/core-components@0.13.8-next.1
+  - @backstage/catalog-model@1.4.3
+  - @backstage/core-plugin-api@1.8.0-next.0
+  - @backstage/theme@0.4.4-next.0
+  - @backstage/plugin-sonarqube-react@0.1.10-next.0
+
 ## 0.7.8-next.0
 
 ### Patch Changes

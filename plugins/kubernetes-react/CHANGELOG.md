@@ -1,5 +1,23 @@
 # @backstage/plugin-kubernetes-react
 
+## 0.1.1-next.1
+
+### Patch Changes
+
+- 0f4cad6da0: Internal refactor to avoid a null pointer problem
+- b52f576f48: Make sure types exported by other `kubernetes` plugins in the past are exported again after the creation
+  of the react package.
+
+  Some types have been moved to this new package but the export was missing, so they were not available anymore for developers.
+
+- Updated dependencies
+  - @backstage/core-components@0.13.8-next.1
+  - @backstage/catalog-model@1.4.3
+  - @backstage/core-plugin-api@1.8.0-next.0
+  - @backstage/errors@1.2.3
+  - @backstage/types@1.1.1
+  - @backstage/plugin-kubernetes-common@0.7.1-next.0
+
 ## 0.1.1-next.0
 
 ### Patch Changes

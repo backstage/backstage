@@ -1,5 +1,19 @@
 # @backstage/frontend-plugin-api
 
+## 0.3.0-next.1
+
+### Minor Changes
+
+- 77f009b35d: Extensions now return their output from the factory function rather than calling `bind(...)`.
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/core-components@0.13.8-next.1
+  - @backstage/core-plugin-api@1.8.0-next.0
+  - @backstage/types@1.1.1
+  - @backstage/version-bridge@1.0.7-next.0
+
 ## 0.3.0-next.0
 
 ### Minor Changes
