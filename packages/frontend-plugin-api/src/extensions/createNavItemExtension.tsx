@@ -41,14 +41,12 @@ export function createNavItemExtension(options: {
     output: {
       navTarget: coreExtensionData.navTarget,
     },
-    factory: ({ bind, config }) => {
-      bind({
-        navTarget: {
-          title: config.title,
-          icon,
-          routeRef,
-        },
-      });
-    },
+    factory: ({ config }) => ({
+      navTarget: {
+        title: config.title,
+        icon,
+        routeRef,
+      },
+    }),
   });
 }

@@ -79,8 +79,8 @@ const homePageExtension = createExtension({
     children: coreExtensionData.reactElement,
     title: titleExtensionDataRef,
   },
-  factory({ bind }) {
-    bind({ children: homePage, title: 'just a title' });
+  factory() {
+    return { children: homePage, title: 'just a title' };
   },
 });
 

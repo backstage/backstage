@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { AppGraph, AppNode, AppNodeInstance, AppNodeSpec } from './types';
+import { AppTree, AppNode, AppNodeInstance, AppNodeSpec } from './types';
 
 function indent(str: string) {
   return str.replace(/^/gm, '  ');
@@ -65,7 +65,7 @@ class SerializableAppNode implements AppNode {
     const dataRefs = this.instance && [...this.instance.getDataRefs()];
     const out =
       dataRefs && dataRefs.length > 0
-        ? ` out=[${[...dataRefs.keys()].join(', ')}]`
+        ? ` out=[${[...dataRefs].map(r => r.id).join(', ')}]`
         : '';
 
     if (this.edges.attachments.size === 0) {
@@ -83,17 +83,17 @@ class SerializableAppNode implements AppNode {
 }
 
 /**
- * Build the app graph by iterating through all node specs and constructing the app
+ * Build the app tree by iterating through all node specs and constructing the app
  * tree with all attachments in the same order as they appear in the input specs array.
  * @internal
  */
-export function resolveAppGraph(
+export function resolveAppTree(
   rootNodeId: string,
   specs: AppNodeSpec[],
-): AppGraph {
+): AppTree {
   const nodes = new Map<string, SerializableAppNode>();
 
-  // A node with the provided rootNodeId must be found in the graph, and it must not be attached to anything
+  // A node with the provided rootNodeId must be found in the tree, and it must not be attached to anything
   let rootNode: AppNode | undefined = undefined;
 
   // While iterating through the inputs specs we keep track of all nodes that were created
@@ -141,7 +141,7 @@ export function resolveAppGraph(
   }
 
   if (!rootNode) {
-    throw new Error(`No root node with id '${rootNodeId}' found in app graph`);
+    throw new Error(`No root node with id '${rootNodeId}' found in app tree`);
   }
 
   return {
