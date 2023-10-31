@@ -1,5 +1,26 @@
 # @backstage/plugin-auth-backend
 
+## 0.20.0-next.1
+
+### Patch Changes
+
+- 243c655a68: JSDoc and Error message updates to handle `Azure Active Directory` re-brand to `Entra ID`
+- Updated dependencies
+  - @backstage/plugin-catalog-node@1.5.0-next.1
+  - @backstage/backend-common@0.19.9-next.1
+  - @backstage/plugin-auth-backend-module-github-provider@0.1.4-next.1
+  - @backstage/plugin-auth-backend-module-gitlab-provider@0.1.4-next.1
+  - @backstage/plugin-auth-backend-module-google-provider@0.1.4-next.1
+  - @backstage/plugin-auth-backend-module-oauth2-provider@0.1.4-next.1
+  - @backstage/plugin-auth-backend-module-gcp-iap-provider@0.2.1-next.1
+  - @backstage/plugin-auth-node@0.4.1-next.1
+  - @backstage/backend-plugin-api@0.6.7-next.1
+  - @backstage/catalog-client@1.4.5
+  - @backstage/catalog-model@1.4.3
+  - @backstage/config@1.1.1
+  - @backstage/errors@1.2.3
+  - @backstage/types@1.1.1
+
 ## 0.20.0-next.0
 
 ### Minor Changes

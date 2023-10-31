@@ -1,5 +1,18 @@
 # @backstage/plugin-badges-backend
 
+## 0.3.4-next.1
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-common@0.19.9-next.1
+  - @backstage/plugin-auth-node@0.4.1-next.1
+  - @backstage/backend-plugin-api@0.6.7-next.1
+  - @backstage/catalog-client@1.4.5
+  - @backstage/catalog-model@1.4.3
+  - @backstage/config@1.1.1
+  - @backstage/errors@1.2.3
+
 ## 0.3.4-next.0
 
 ### Patch Changes
