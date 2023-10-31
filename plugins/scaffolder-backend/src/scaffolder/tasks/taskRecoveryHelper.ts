@@ -33,6 +33,9 @@ export const stepIdToRunTheTask = (
   spec: TaskSpec,
   events: SerializedTaskEvent[],
 ): string | undefined => {
+  if (!spec.steps.length) {
+    return undefined;
+  }
   const eventStepIds = fetchStepIdsFromEvents(events);
   const steps = spec.steps.slice().reverse();
   const stepIds = steps.map(step => step.id);

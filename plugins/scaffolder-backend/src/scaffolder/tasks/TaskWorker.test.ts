@@ -53,8 +53,6 @@ async function createStore(): Promise<DatabaseTaskStore> {
   });
 }
 
-const config = new ConfigReader({});
-
 describe('TaskWorker', () => {
   let storage: DatabaseTaskStore;
 
@@ -79,7 +77,7 @@ describe('TaskWorker', () => {
   const logger = getVoidLogger();
 
   it('should call the default workflow runner when the apiVersion is beta3', async () => {
-    const broker = new StorageTaskBroker(storage, logger, config);
+    const broker = new StorageTaskBroker(storage, logger);
     const taskWorker = await TaskWorker.create({
       logger,
       workingDirectory,
@@ -172,7 +170,7 @@ describe('Concurrent TaskWorker', () => {
   const logger = getVoidLogger();
 
   it('should be able to run multiple tasks at once', async () => {
-    const broker = new StorageTaskBroker(storage, logger, config);
+    const broker = new StorageTaskBroker(storage, logger);
 
     const dispatchANewTask = () =>
       broker.dispatch({
