@@ -218,10 +218,7 @@ export class StorageTaskBroker implements TaskBroker {
     });
   }
 
-  /**
-   * {@inheritdoc TaskBroker.claim}
-   */
-  async claim(): Promise<TaskContext> {
+  private async recoverTasks() {
     if (
       this.config &&
       this.config.getOptionalBoolean('scaffolder.recoverTasks')
@@ -234,17 +231,34 @@ export class StorageTaskBroker implements TaskBroker {
         ).as('seconds'),
       });
     }
+  }
+
+  private async getStepIdToRecoverFrom(
+    task: SerializedTask,
+  ): Promise<string | undefined> {
+    if (
+      ['idempotent', 'restart'].includes(task.spec.recovery?.strategy ?? 'none')
+    ) {
+      const { events } = await this.storage.listEvents({
+        taskId: task.id,
+      });
+      return stepIdToRunTheTask(task.spec, events);
+    }
+    return undefined;
+  }
+
+  /**
+   * {@inheritdoc TaskBroker.claim}
+   */
+  async claim(): Promise<TaskContext> {
+    await this.recoverTasks();
 
     for (;;) {
       const pendingTask = await this.storage.claimTask();
       if (pendingTask) {
         const abortController = new AbortController();
-        const { events } = await this.storage.listEvents({
-          taskId: pendingTask.id,
-        });
-        const stepIdToRecoverFrom = stepIdToRunTheTask(
-          pendingTask.spec,
-          events,
+        const stepIdToRecoverFrom = await this.getStepIdToRecoverFrom(
+          pendingTask,
         );
         await this.registerCancellable(pendingTask.id, abortController);
         return TaskManager.create(

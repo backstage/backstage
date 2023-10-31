@@ -108,7 +108,7 @@ describe('TaskWorker', () => {
       output: { testOutput: 'testmockoutput' },
     });
 
-    const broker = new StorageTaskBroker(storage, logger, config);
+    const broker = new StorageTaskBroker(storage, logger);
     const taskWorker = await TaskWorker.create({
       logger,
       workingDirectory,
@@ -231,7 +231,7 @@ describe('Cancellable TaskWorker', () => {
   const logger = getVoidLogger();
 
   it('should be able to cancel the running task', async () => {
-    const taskBroker = new StorageTaskBroker(storage, logger, config);
+    const taskBroker = new StorageTaskBroker(storage, logger);
     const taskWorker = await TaskWorker.create({
       logger,
       workingDirectory,
