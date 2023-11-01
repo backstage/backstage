@@ -34,6 +34,15 @@ const mockClaims = {
   exp: 1632833763,
   iss: 'ISSUER_URL',
 };
+const mockServiceTokenJwt =
+  'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCIsImtpZCI6IktFWV9JRCIsImlzcyI6IklTU1VFUl9VUkwifQ.eyJzdWIiOiIiLCJuYW1lIjoiQm90IiwiY29tbW9uX25hbWUiOiJ0ZXN0X3Rva2VuX2lkLmFjY2VzcyIsImlhdCI6MTUxNjIzOTAyMn0.KEe-qBHuN8HKh1LobtDQnCJ3rxZOhW-lMSDad8uV_l0';
+const mockServiceTokenClaims = {
+  sub: '',
+  common_name: 'test_token_id.access',
+  iat: 1632833760,
+  exp: 1632833763,
+  iss: 'ISSUER_URL',
+};
 const mockCfIdentity = {
   name: 'foo',
   id: '123',
@@ -74,6 +83,32 @@ const identityOkResponse = {
       name: 'foo',
     },
     claims: mockClaims,
+    expiresInSeconds: 3,
+  },
+};
+
+const identityOkServiceTokenResponse = {
+  backstageIdentity: {
+    expiresInSeconds: undefined,
+    identity: {
+      ownershipEntityRefs: ['user:default/jimmymarkum'],
+      type: 'user',
+      userEntityRef: 'user:default/jimmymarkum',
+    },
+    token:
+      'eyblob.eyJzdWIiOiJ1c2VyOmRlZmF1bHQvamltbXltYXJrdW0iLCJlbnQiOlsidXNlcjpkZWZhdWx0L2ppbW15bWFya3VtIl19.eyblob',
+  },
+  profile: {
+    email: undefined,
+  },
+  providerInfo: {
+    cfAccessIdentityProfile: {
+      email: 'test_token_id.access@foobar.com',
+      groups: [],
+      id: 'test_token_id.access',
+      name: 'Bot',
+    },
+    claims: mockServiceTokenClaims,
     expiresInSeconds: 3,
   },
 };
@@ -119,6 +154,12 @@ describe('CloudflareAccessAuthProvider', () => {
     cookies: {
       CF_Authorization: `${mockJwt}`,
     },
+  } as unknown as express.Request;
+
+  const mockRequestWithSericeTokenJwtHeader = {
+    header: jest.fn(() => {
+      return mockServiceTokenJwt;
+    }),
   } as unknown as express.Request;
 
   const mockRequestWithoutJwt = {
@@ -169,7 +210,63 @@ describe('CloudflareAccessAuthProvider', () => {
     cache: mockCacheClient,
   });
 
+  const providerServiceToken = new CloudflareAccessAuthProvider({
+    teamName: 'foobar',
+    resolverContext: {} as AuthResolverContext,
+    authHandler: async result => {
+      expect(result).toEqual(
+        expect.objectContaining({
+          claims: mockServiceTokenClaims,
+          cfIdentity: {
+            email: 'test_token_id.access@foobar.com',
+            groups: [],
+            id: 'test_token_id.access',
+            name: 'Bot',
+          },
+          token: mockServiceTokenJwt,
+        }),
+      );
+      return {
+        profile: {
+          email: result.claims.email,
+        },
+      };
+    },
+    signInResolver: async ({ result }) => {
+      expect(result).toEqual(
+        expect.objectContaining({
+          claims: mockServiceTokenClaims,
+          cfIdentity: {
+            email: 'test_token_id.access@foobar.com',
+            groups: [],
+            id: 'test_token_id.access',
+            name: 'Bot',
+          },
+          token: mockServiceTokenJwt,
+        }),
+      );
+      return {
+        token:
+          'eyblob.eyJzdWIiOiJ1c2VyOmRlZmF1bHQvamltbXltYXJrdW0iLCJlbnQiOlsidXNlcjpkZWZhdWx0L2ppbW15bWFya3VtIl19.eyblob',
+      };
+    },
+    cache: mockCacheClient,
+  });
+
   describe('when JWT is valid', () => {
+    it('validates a service token JWT without calling get-identity', async () => {
+      jwtMock.mockReturnValue(
+        Promise.resolve({ payload: mockServiceTokenClaims }),
+      );
+      await providerServiceToken.refresh(
+        mockRequestWithSericeTokenJwtHeader,
+        mockResponse,
+      );
+      expect(mockResponse.json).toHaveBeenCalledWith(
+        identityOkServiceTokenResponse,
+      );
+    });
+
     it('returns cfidentity also when get-identity succeeds', async () => {
       jwtMock.mockReturnValue(Promise.resolve({ payload: mockClaims }));
       mockFetch.mockReturnValueOnce(

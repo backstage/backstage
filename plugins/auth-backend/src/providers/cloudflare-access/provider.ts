@@ -17,7 +17,6 @@
 import { AuthHandler } from '../types';
 import fetch, { Headers } from 'node-fetch';
 import express from 'express';
-import * as _ from 'lodash';
 import { jwtVerify, createRemoteJWKSet } from 'jose';
 import {
   AuthenticationError,
@@ -260,8 +259,20 @@ export class CloudflareAccessAuthProvider implements AuthProviderRouteHandlers {
     const verifyResult = await jwtVerify(jwt, this.jwtKeySet, {
       issuer: `https://${this.teamName}.cloudflareaccess.com`,
     });
-    const sub = verifyResult.payload.sub;
-    const cfAccessResultStr = await this.cache?.get(`${CACHE_PREFIX}/${sub}`);
+
+    const isServiceToken = verifyResult.payload.sub === '';
+
+    const subject = isServiceToken
+      ? (verifyResult.payload.common_name as string)
+      : verifyResult.payload.sub;
+    if (!subject) {
+      throw new AuthenticationError(
+        `Missing both sub and common_name from Cloudflare Access JWT`,
+      );
+    }
+
+    const cacheKey = `${CACHE_PREFIX}/${subject}`;
+    const cfAccessResultStr = await this.cache?.get(cacheKey);
     if (typeof cfAccessResultStr === 'string') {
       const result = JSON.parse(cfAccessResultStr) as CloudflareAccessResult;
       return {
@@ -270,12 +281,23 @@ export class CloudflareAccessAuthProvider implements AuthProviderRouteHandlers {
       };
     }
     const claims = verifyResult.payload as CloudflareAccessClaims;
+
     // Builds a passport profile from JWT claims first
     try {
-      // If we successfully fetch the get-identity endpoint,
-      // We supplement the passport profile with richer user identity
-      // information here.
-      const cfIdentity = await this.getIdentityProfile(jwt);
+      let cfIdentity: CloudflareAccessIdentityProfile;
+      if (isServiceToken) {
+        cfIdentity = {
+          id: subject,
+          name: 'Bot',
+          email: `${subject}@${this.teamName}.com`,
+          groups: [],
+        };
+      } else {
+        // If we successfully fetch the get-identity endpoint,
+        // We supplement the passport profile with richer user identity
+        // information here.
+        cfIdentity = await this.getIdentityProfile(jwt);
+      }
       // Stores a stringified JSON object in cfaccess provider cache only when
       // we complete all steps
       const cfAccessResult = {
@@ -283,7 +305,7 @@ export class CloudflareAccessAuthProvider implements AuthProviderRouteHandlers {
         cfIdentity,
         expiresInSeconds: claims.exp - claims.iat,
       };
-      this.cache?.set(`${CACHE_PREFIX}/${sub}`, JSON.stringify(cfAccessResult));
+      this.cache?.set(cacheKey, JSON.stringify(cfAccessResult));
       return {
         ...cfAccessResult,
         token: jwt,
