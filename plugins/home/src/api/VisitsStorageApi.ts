@@ -117,23 +117,39 @@ export class VisitsStorageApi implements VisitsApi {
   }
 
   private async persistAll(visits: Array<Visit>) {
-    const { userEntityRef } = await this.identityApi.getBackstageIdentity();
-    const storageKey = `${this.storageKeyPrefix}:${userEntityRef}`;
-
+    const storageKey = await this.getStorageKey();
     return this.storageApi.set<Array<Visit>>(storageKey, visits);
   }
 
   private async retrieveAll(): Promise<Array<Visit>> {
+    const storageKey = await this.getStorageKey();
+    // Handles for case when snapshot is and is not referenced per storaged type used
+    const snapshot = this.storageApi.snapshot<Array<Visit>>(storageKey);
+    if (snapshot?.presence !== 'unknown') {
+      return snapshot?.value ?? [];
+    }
+
+    return new Promise((resolve, reject) => {
+      const subsription = this.storageApi
+        .observe$<Visit[]>(storageKey)
+        .subscribe({
+          next: next => {
+            const visits = next.value ?? [];
+            subsription.unsubscribe();
+            resolve(visits);
+          },
+          error: err => {
+            subsription.unsubscribe();
+            reject(err);
+          },
+        });
+    });
+  }
+
+  private async getStorageKey(): Promise<string> {
     const { userEntityRef } = await this.identityApi.getBackstageIdentity();
     const storageKey = `${this.storageKeyPrefix}:${userEntityRef}`;
-    let visits: Array<Visit>;
-
-    try {
-      visits = this.storageApi.snapshot<Array<Visit>>(storageKey).value ?? [];
-    } catch {
-      visits = [];
-    }
-    return visits;
+    return storageKey;
   }
 
   // This assumes Visit fields are either numbers or strings

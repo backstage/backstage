@@ -25,8 +25,6 @@ export function createThemeExtension(theme: AppTheme) {
     output: {
       theme: coreExtensionData.theme,
     },
-    factory({ bind }) {
-      bind({ theme });
-    },
+    factory: () => ({ theme }),
   });
 }

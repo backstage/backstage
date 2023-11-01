@@ -199,14 +199,12 @@ export function resolveAppNodeSpecs(options: {
     }
   }
 
-  return configuredExtensions
-    .filter(override => !override.params.disabled)
-    .map(param => ({
-      id: param.extension.id,
-      attachTo: param.params.attachTo,
-      extension: param.extension,
-      disabled: param.params.disabled,
-      source: param.params.source,
-      config: param.params.config,
-    }));
+  return configuredExtensions.map(param => ({
+    id: param.extension.id,
+    attachTo: param.params.attachTo,
+    extension: param.extension,
+    disabled: param.params.disabled,
+    source: param.params.source,
+    config: param.params.config,
+  }));
 }

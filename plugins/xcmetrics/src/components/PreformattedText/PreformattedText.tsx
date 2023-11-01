@@ -26,10 +26,9 @@ import {
 } from '@material-ui/core';
 import CloseIcon from '@material-ui/icons/Close';
 import React, { useState } from 'react';
-import { BackstageTheme } from '@backstage/theme';
 import { cn } from '../../utils';
 
-const useStyles = makeStyles((theme: BackstageTheme) =>
+const useStyles = makeStyles(theme =>
   createStyles({
     pre: {
       whiteSpace: 'pre-line',

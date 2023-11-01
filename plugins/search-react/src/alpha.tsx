@@ -107,14 +107,14 @@ export function createSearchResultListItemExtension<
     output: {
       item: searchResultItemExtensionData,
     },
-    factory({ bind, config, source }) {
+    factory({ config, source }) {
       const ExtensionComponent = lazy(() =>
         options
           .component({ config })
           .then(component => ({ default: component })),
       ) as unknown as SearchResultItemExtensionComponent;
 
-      bind({
+      return {
         item: {
           predicate: options.predicate,
           component: props => (
@@ -129,7 +129,7 @@ export function createSearchResultListItemExtension<
             </ExtensionBoundary>
           ),
         },
-      });
+      };
     },
   });
 }

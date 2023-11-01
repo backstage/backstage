@@ -15,13 +15,13 @@
  */
 
 import { createExtension } from '@backstage/frontend-plugin-api';
-import { resolveAppGraph } from './resolveAppGraph';
+import { resolveAppTree } from './resolveAppTree';
 
 const extBaseConfig = {
   id: 'test',
   attachTo: { id: 'nonexistent', input: 'nonexistent' },
   output: {},
-  factory() {},
+  factory: () => ({}),
 };
 
 const extension = createExtension(extBaseConfig);
@@ -32,25 +32,25 @@ const baseSpec = {
   disabled: false,
 };
 
-describe('buildAppGraph', () => {
-  it('should fail to create an empty graph', () => {
-    expect(() => resolveAppGraph('core', [])).toThrow(
-      "No root node with id 'core' found in app graph",
+describe('buildAppTree', () => {
+  it('should fail to create an empty tree', () => {
+    expect(() => resolveAppTree('core', [])).toThrow(
+      "No root node with id 'core' found in app tree",
     );
   });
 
-  it('should create a graph with only one node', () => {
-    const graph = resolveAppGraph('core', [{ ...baseSpec, id: 'core' }]);
-    expect(graph.root).toEqual({
+  it('should create a tree with only one node', () => {
+    const tree = resolveAppTree('core', [{ ...baseSpec, id: 'core' }]);
+    expect(tree.root).toEqual({
       spec: { ...baseSpec, id: 'core' },
       edges: { attachments: new Map() },
     });
-    expect(Array.from(graph.orphans)).toEqual([]);
-    expect(Array.from(graph.nodes.keys())).toEqual(['core']);
+    expect(Array.from(tree.orphans)).toEqual([]);
+    expect(Array.from(tree.nodes.keys())).toEqual(['core']);
   });
 
-  it('should create a graph', () => {
-    const graph = resolveAppGraph('b', [
+  it('should create a tree', () => {
+    const tree = resolveAppTree('b', [
       { ...baseSpec, id: 'a' },
       { ...baseSpec, id: 'b' },
       { ...baseSpec, id: 'c' },
@@ -60,7 +60,7 @@ describe('buildAppGraph', () => {
       { ...baseSpec, attachTo: { id: 'd', input: 'x' }, id: 'dx1' },
     ]);
 
-    expect(Array.from(graph.nodes.keys())).toEqual([
+    expect(Array.from(tree.nodes.keys())).toEqual([
       'a',
       'b',
       'c',
@@ -70,7 +70,7 @@ describe('buildAppGraph', () => {
       'dx1',
     ]);
 
-    expect(JSON.parse(JSON.stringify(graph.root))).toMatchInlineSnapshot(`
+    expect(JSON.parse(JSON.stringify(tree.root))).toMatchInlineSnapshot(`
       {
         "attachments": {
           "x": [
@@ -90,7 +90,7 @@ describe('buildAppGraph', () => {
         "id": "b",
       }
     `);
-    expect(String(graph.root)).toMatchInlineSnapshot(`
+    expect(String(tree.root)).toMatchInlineSnapshot(`
       "<b>
         x [
           <bx1 />
@@ -102,7 +102,7 @@ describe('buildAppGraph', () => {
       </b>"
     `);
 
-    const orphans = Array.from(graph.orphans).map(String);
+    const orphans = Array.from(tree.orphans).map(String);
     expect(orphans).toMatchInlineSnapshot(`
       [
         "<a />",
@@ -112,8 +112,8 @@ describe('buildAppGraph', () => {
     `);
   });
 
-  it('should create a graph out of order', () => {
-    const graph = resolveAppGraph('b', [
+  it('should create a tree out of order', () => {
+    const tree = resolveAppTree('b', [
       { ...baseSpec, attachTo: { id: 'b', input: 'x' }, id: 'bx2' },
       { ...baseSpec, id: 'a' },
       { ...baseSpec, attachTo: { id: 'b', input: 'y' }, id: 'by1' },
@@ -123,7 +123,7 @@ describe('buildAppGraph', () => {
       { ...baseSpec, attachTo: { id: 'd', input: 'x' }, id: 'dx1' },
     ]);
 
-    expect(Array.from(graph.nodes.keys())).toEqual([
+    expect(Array.from(tree.nodes.keys())).toEqual([
       'bx2',
       'a',
       'by1',
@@ -133,7 +133,7 @@ describe('buildAppGraph', () => {
       'dx1',
     ]);
 
-    expect(String(graph.root)).toMatchInlineSnapshot(`
+    expect(String(tree.root)).toMatchInlineSnapshot(`
       "<b>
         x [
           <bx2 />
@@ -145,7 +145,7 @@ describe('buildAppGraph', () => {
       </b>"
     `);
 
-    const orphans = Array.from(graph.orphans).map(String);
+    const orphans = Array.from(tree.orphans).map(String);
     expect(orphans).toMatchInlineSnapshot(`
       [
         "<a />",
@@ -157,7 +157,7 @@ describe('buildAppGraph', () => {
 
   it('throws an error when duplicated extensions are detected', () => {
     expect(() =>
-      resolveAppGraph('core', [
+      resolveAppTree('core', [
         { ...baseSpec, id: 'a' },
         { ...baseSpec, id: 'a' },
       ]),

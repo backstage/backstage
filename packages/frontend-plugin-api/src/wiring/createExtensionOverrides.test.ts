@@ -39,7 +39,7 @@ describe('createExtensionOverrides', () => {
             id: 'a',
             attachTo: { id: 'core', input: 'apis' },
             output: {},
-            factory() {},
+            factory: () => ({}),
           }),
         ],
       }),
@@ -72,7 +72,7 @@ describe('createExtensionOverrides', () => {
           id: 'a',
           attachTo: { id: 'core', input: 'apis' },
           output: {},
-          factory() {},
+          factory: () => ({}),
         }),
       ],
     });

@@ -14,14 +14,13 @@
  * limitations under the License.
  */
 import { DependencyGraphTypes } from '@backstage/core-components';
-import { BackstageTheme } from '@backstage/theme';
 import makeStyles from '@material-ui/core/styles/makeStyles';
 import React from 'react';
 import { EntityEdgeData } from './types';
 import classNames from 'classnames';
 
 const useStyles = makeStyles(
-  (theme: BackstageTheme) => ({
+  theme => ({
     text: {
       fill: theme.palette.textContrast,
     },

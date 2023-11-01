@@ -207,6 +207,7 @@ mailto
 maintainer's
 maintainership
 makefile
+Matomo
 md
 memcache
 memoize
@@ -459,3 +460,4 @@ Lightsail
 PR
 rebasing
 lookbehind
+Entra

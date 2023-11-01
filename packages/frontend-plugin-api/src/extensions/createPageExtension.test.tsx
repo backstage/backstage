@@ -20,7 +20,6 @@ import { useAnalytics } from '@backstage/core-plugin-api';
 import { waitFor } from '@testing-library/react';
 import { PortableSchema } from '../schema';
 import {
-  ExtensionInputValues,
   coreExtensionData,
   createExtensionInput,
   createPlugin,
@@ -127,15 +126,13 @@ describe('createPageExtension', () => {
       loader: async () => <div>Component</div>,
     });
 
-    extension.factory({
-      bind: (values: ExtensionInputValues<any>) =>
-        renderWithEffects(
-          wrapInTestApp(values.element as unknown as JSX.Element),
-        ),
+    const output = extension.factory({
       source: createPlugin({ id: 'plugin ' }),
       config: { path: '/' },
       inputs: {},
     });
+
+    renderWithEffects(wrapInTestApp(output.element as unknown as JSX.Element));
 
     await waitFor(() =>
       expect(captureEvent).toHaveBeenCalledWith(
