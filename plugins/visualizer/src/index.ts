@@ -14,4 +14,4 @@
  * limitations under the License.
  */
 
-export { appVisualizerPlugin } from './plugin';
+export { appVisualizerPlugin as default } from './plugin';
