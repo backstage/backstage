@@ -1,0 +1,69 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`GkeEntityProvider should return clusters as Resources 1`] = `
+[MockFunction] {
+  "calls": [
+    [
+      {
+        "entities": [
+          {
+            "entity": {
+              "apiVersion": "backstage.io/v1alpha1",
+              "kind": "Resource",
+              "metadata": {
+                "annotations": {
+                  "backstage.io/managed-by-location": "gcp-gke:some-location",
+                  "backstage.io/managed-by-origin-location": "gcp-gke:some-location",
+                  "kubernetes.io/api-server": "https://127.0.0.1",
+                  "kubernetes.io/api-server-certificate-authority": "abcdefg",
+                  "kubernetes.io/auth-provider": "google",
+                  "kubernetes.io/dashboard-app": "gke",
+                  "kubernetes.io/dashboard-parameters": "{"projectId":"parent1","region":"some-location","clusterName":"some-cluster"}",
+                },
+                "name": "some-cluster",
+                "namespace": "default",
+              },
+              "spec": {
+                "owner": "unknown",
+                "type": "kubernetes-cluster",
+              },
+            },
+            "locationKey": "gcp-gke:some-location",
+          },
+          {
+            "entity": {
+              "apiVersion": "backstage.io/v1alpha1",
+              "kind": "Resource",
+              "metadata": {
+                "annotations": {
+                  "backstage.io/managed-by-location": "gcp-gke:some-other-location",
+                  "backstage.io/managed-by-origin-location": "gcp-gke:some-other-location",
+                  "kubernetes.io/api-server": "https://127.0.0.1",
+                  "kubernetes.io/api-server-certificate-authority": "",
+                  "kubernetes.io/auth-provider": "google",
+                  "kubernetes.io/dashboard-app": "gke",
+                  "kubernetes.io/dashboard-parameters": "{"projectId":"parent2","region":"some-other-location","clusterName":"some-other-cluster"}",
+                },
+                "name": "some-other-cluster",
+                "namespace": "default",
+              },
+              "spec": {
+                "owner": "unknown",
+                "type": "kubernetes-cluster",
+              },
+            },
+            "locationKey": "gcp-gke:some-other-location",
+          },
+        ],
+        "type": "full",
+      },
+    ],
+  ],
+  "results": [
+    {
+      "type": "return",
+      "value": undefined,
+    },
+  ],
+}
+`;
