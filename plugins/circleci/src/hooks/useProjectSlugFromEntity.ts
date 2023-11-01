@@ -13,24 +13,12 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+import { useEntity } from '@backstage/plugin-catalog-react';
+import { CIRCLECI_ANNOTATION } from '../constants';
 
-/**
- * A Backstage plugin that integrates towards CircleCI.
- *
- * @packageDocumentation
- */
-
-export {
-  circleCIPlugin,
-  circleCIPlugin as plugin,
-  EntityCircleCIContent,
-} from './plugin';
-export * from './api';
-export * from './route-refs';
-export {
-  Router,
-  isCircleCIAvailable,
-  isCircleCIAvailable as isPluginApplicableToEntity,
-} from './components/Router';
-export { CIRCLECI_ANNOTATION } from './constants';
-export * from './types';
+export const useProjectSlugFromEntity = () => {
+  const { entity } = useEntity();
+  const projectSlug = entity.metadata.annotations?.[CIRCLECI_ANNOTATION] ?? '';
+  const [vcs, owner, repo] = projectSlug.split('/');
+  return { vcs, owner, repo, projectSlug };
+};

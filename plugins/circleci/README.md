@@ -5,8 +5,8 @@ Website: [https://circleci.com/](https://circleci.com/)
 ## Screenshots
 
 <img src="./src/assets/screenshot-pipeline-list.png" />
-<img src="./src/assets/screenshot-build-details.png" />
-<img src="./src/assets/screenshot-build-failure.png" />
+<img src="./src/assets/screenshot-step-details.png" />
+<img src="./src/assets/screenshot-job-failure.png" />
 
 ## Setup
 
@@ -40,7 +40,7 @@ const cicdContent = (
 # In app-config.yaml
 proxy:
   '/circleci/api':
-    target: https://circleci.com/api/v1.1
+    target: https://circleci.com/api
     headers:
       Circle-Token: ${CIRCLECI_AUTH_TOKEN}
 ```
@@ -64,12 +64,11 @@ spec:
 
 ## Features
 
-- List top 50 builds for a project
-- Dive into one build to see logs
-- Polling (logs only)
-- Retry builds
+- List top 20 pipelines for a project
+- Dive into one workflow to see jobs and steps
+- Retry workflows
 - Works for both project and personal tokens
-- Pagination for builds
+- Infinite pagination for pipelines
 
 ## Limitations
 

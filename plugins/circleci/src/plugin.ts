@@ -14,13 +14,14 @@
  * limitations under the License.
  */
 
-import { circleCIApiRef, CircleCIApi } from './api';
+import { circleCIApiRef, CircleCIClient } from './api';
 import { circleCIRouteRef } from './route-refs';
 import {
   createPlugin,
   createApiFactory,
   discoveryApiRef,
   createRoutableExtension,
+  fetchApiRef,
 } from '@backstage/core-plugin-api';
 
 /** @public */
@@ -29,8 +30,9 @@ export const circleCIPlugin = createPlugin({
   apis: [
     createApiFactory({
       api: circleCIApiRef,
-      deps: { discoveryApi: discoveryApiRef },
-      factory: ({ discoveryApi }) => new CircleCIApi({ discoveryApi }),
+      deps: { discoveryApi: discoveryApiRef, fetchApi: fetchApiRef },
+      factory: ({ discoveryApi, fetchApi }) =>
+        new CircleCIClient({ discoveryApi, fetchApi }),
     }),
   ],
 });

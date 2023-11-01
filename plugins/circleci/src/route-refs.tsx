@@ -22,8 +22,8 @@ export const circleCIRouteRef = createRouteRef({
 });
 
 /** @public */
-export const circleCIBuildRouteRef = createSubRouteRef({
-  id: 'circle-ci/build',
+export const circleCIWorkflowRouteRef = createSubRouteRef({
+  id: 'circle-ci/workflow',
   parent: circleCIRouteRef,
-  path: '/:buildId',
+  path: '/workflows/:workflowId',
 });

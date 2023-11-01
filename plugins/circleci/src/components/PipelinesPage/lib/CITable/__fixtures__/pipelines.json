@@ -1,0 +1,128 @@
+{
+  "singleWorkflow": {
+    "id": "f85e59b3-7412-4922-b1ca-0500aaa520a1",
+    "errors": [],
+    "project_slug": "gh/CircleCI-Public/circleci-cli",
+    "updated_at": "2023-10-17T12:52:01.652Z",
+    "number": 4177,
+    "state": "created",
+    "created_at": "2023-10-17T12:52:01.652Z",
+    "trigger": {
+      "received_at": "2023-10-17T12:52:01.205Z",
+      "type": "webhook",
+      "actor": {
+        "login": "JulesFaucherre",
+        "avatar_url": "https://avatars.githubusercontent.com/u/26357621?v=4"
+      }
+    },
+    "vcs": {
+      "origin_repository_url": "https://github.com/CircleCI-Public/circleci-cli",
+      "target_repository_url": "https://github.com/CircleCI-Public/circleci-cli",
+      "revision": "19ce1e9cc2152e526191b1fde155966c64b8492b",
+      "provider_name": "GitHub",
+      "commit": {
+        "body": "",
+        "subject": "test: Fix test for new API client"
+      },
+      "branch": "pipeline-trigger"
+    },
+    "workflows": [
+      {
+        "pipeline_id": "f85e59b3-7412-4922-b1ca-0500aaa520a1",
+        "id": "4d97ce7e-5f0b-4b09-bc6f-732ec3d079d0",
+        "name": "ci",
+        "project_slug": "gh/CircleCI-Public/circleci-cli",
+        "status": "success",
+        "started_by": "6fc619d4-f4b0-4180-b369-277728797021",
+        "pipeline_number": 4177,
+        "created_at": "2023-10-17T12:52:01Z",
+        "stopped_at": "2023-10-17T13:01:18Z"
+      }
+    ]
+  },
+  "twoWorkflows": {
+    "id": "e0dcd14b-8e16-478a-96f9-b8dfc10d068e",
+    "errors": [],
+    "project_slug": "gh/CircleCI-Public/circleci-cli",
+    "updated_at": "2023-10-11T22:58:21.339Z",
+    "number": 4170,
+    "state": "created",
+    "created_at": "2023-10-11T22:58:21.339Z",
+    "trigger": {
+      "received_at": "2023-10-11T22:58:20.946Z",
+      "type": "webhook",
+      "actor": {
+        "login": "dependabot[bot]",
+        "avatar_url": null
+      }
+    },
+    "vcs": {
+      "origin_repository_url": "https://github.com/CircleCI-Public/circleci-cli",
+      "target_repository_url": "https://github.com/CircleCI-Public/circleci-cli",
+      "revision": "379a0499dcee19829b4c66efbbf64e4e72d96a26",
+      "provider_name": "GitHub",
+      "commit": {
+        "body": "Bumps [golang.org/x/net](https://github.com/golang/net) from 0.12.0 to 0.17.0.\n- [Commits](https://github.com/golang/net/compare/v0.12.0...v0.17.0)\n\n---\nupdated-dependencies:\n- dependency-name: golang.org/x/net\n  dependency-type: indirect\n...\n\nSigned-off-by: dependabot[bot] <support@github.com>",
+        "subject": "chore(deps): bump golang.org/x/net from 0.12.0 to 0.17.0"
+      },
+      "branch": "dependabot/go_modules/golang.org/x/net-0.17.0"
+    },
+    "workflows": [
+      {
+        "pipeline_id": "e0dcd14b-8e16-478a-96f9-b8dfc10d068e",
+        "id": "43f5d7db-34da-4029-a7da-2407caed8630",
+        "name": "ci",
+        "project_slug": "gh/CircleCI-Public/circleci-cli",
+        "status": "success",
+        "started_by": "6fc619d4-f4b0-4180-b369-277728797021",
+        "pipeline_number": 4170,
+        "created_at": "2023-10-16T07:57:20Z",
+        "stopped_at": "2023-10-16T07:57:47Z"
+      },
+      {
+        "pipeline_id": "e0dcd14b-8e16-478a-96f9-b8dfc10d068e",
+        "id": "e00b02c9-8ab4-4236-948e-d91b75539371",
+        "name": "ci",
+        "project_slug": "gh/CircleCI-Public/circleci-cli",
+        "status": "unauthorized",
+        "started_by": "0989fcb2-c8d2-43ed-bfdd-3ff63487e121",
+        "pipeline_number": 4170,
+        "created_at": "2023-10-11T22:58:21Z",
+        "stopped_at": "2023-10-11T23:10:17Z"
+      }
+    ]
+  },
+  "noWorkflows": {
+    "id": "d3524ffb-ddc6-4c45-b3c6-f7c19e736d80",
+    "errors": [
+      {
+        "type": "config-fetch",
+        "message": "Failed to fetch config.yml file."
+      }
+    ],
+    "project_slug": "gh/CircleCI-Public/circleci-cli",
+    "updated_at": "2023-09-13T14:23:48.275Z",
+    "number": 4158,
+    "trigger_parameters": {
+      "git": {
+        "checkout_sha": "c2c53fc896a8ee333f5d09cc77bcfe9cfb2a603f"
+      },
+      "circleci": {
+        "org_name": "CircleCI-Public",
+        "project_name": "circleci-cli",
+        "provider_name": "github"
+      }
+    },
+    "state": "errored",
+    "created_at": "2023-09-13T14:23:48.275Z",
+    "trigger": {
+      "received_at": "2023-09-13T14:23:48.275Z",
+      "type": "",
+      "actor": {
+        "login": "",
+        "avatar_url": null
+      }
+    },
+    "workflows": []
+  }
+}

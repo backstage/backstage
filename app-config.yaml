@@ -56,7 +56,7 @@ backend:
 proxy:
   endpoints:
     '/circleci/api':
-      target: https://circleci.com/api/v1.1
+      target: https://circleci.com/api
       headers:
         Circle-Token: ${CIRCLECI_AUTH_TOKEN}
 

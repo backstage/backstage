@@ -14,85 +14,41 @@
  * limitations under the License.
  */
 
+import { createApiRef } from '@backstage/core-plugin-api';
 import {
-  CircleCIOptions,
-  getMe,
-  getBuildSummaries,
-  getFullBuild,
-  postBuildActions,
-  BuildAction,
-  BuildWithSteps,
-  BuildStepAction,
-  BuildSummary,
-  GitType,
-} from 'circleci-api';
-import { createApiRef, DiscoveryApi } from '@backstage/core-plugin-api';
+  Build,
+  PipelineListResponse,
+  RerunWorkflowResponse,
+  Workflow,
+  WorkflowJobListResponse,
+  WorkflowListResponse,
+} from '../types';
 
-/** @public */
-export { GitType };
-
-/** @public */
-export type { BuildWithSteps, BuildStepAction, BuildSummary };
+export interface CircleCIApi {
+  getPipelinesForProject(
+    projectSlug: string,
+    pageToken?: string,
+  ): Promise<PipelineListResponse>;
+  getWorkflowsForPipeline(
+    pipelineId: string,
+    pageToken?: string,
+  ): Promise<WorkflowListResponse>;
+  getWorkflow(workflowId: string): Promise<Workflow>;
+  getWorkflowJobs(
+    workflowId: string,
+    pageToken?: string,
+  ): Promise<WorkflowJobListResponse>;
+  getBuild(projectSlug: string, buildNumber: number): Promise<Build>;
+  getStepOutput(
+    projectSlug: string,
+    buildNumber: number,
+    index: number,
+    step: number,
+  ): Promise<string>;
+  rerunWorkflow(workflowId: string): Promise<RerunWorkflowResponse>;
+}
 
 /** @public */
 export const circleCIApiRef = createApiRef<CircleCIApi>({
   id: 'plugin.circleci.service',
 });
-
-const DEFAULT_PROXY_PATH = '/circleci/api';
-
-/** @public */
-export class CircleCIApi {
-  private readonly discoveryApi: DiscoveryApi;
-  private readonly proxyPath: string;
-
-  constructor(options: {
-    discoveryApi: DiscoveryApi;
-    /**
-     * Path to use for requests via the proxy, defaults to /circleci/api
-     */
-    proxyPath?: string;
-  }) {
-    this.discoveryApi = options.discoveryApi;
-    this.proxyPath = options.proxyPath ?? DEFAULT_PROXY_PATH;
-  }
-
-  async retry(buildNumber: number, options: Partial<CircleCIOptions>) {
-    return postBuildActions('', buildNumber, BuildAction.RETRY, {
-      circleHost: await this.getApiUrl(),
-      ...options.vcs,
-    });
-  }
-
-  async getBuilds(
-    pagination: { limit: number; offset: number },
-    options: Partial<CircleCIOptions>,
-  ) {
-    const { limit = 10, offset = 0 } = pagination;
-    return getBuildSummaries('', {
-      options: {
-        limit,
-        offset,
-      },
-      vcs: {},
-      circleHost: await this.getApiUrl(),
-      ...options,
-    });
-  }
-
-  async getUser(options: Partial<CircleCIOptions>) {
-    return getMe('', { circleHost: await this.getApiUrl(), ...options });
-  }
-
-  async getBuild(buildNumber: number, options: Partial<CircleCIOptions>) {
-    return getFullBuild('', buildNumber, {
-      circleHost: await this.getApiUrl(),
-      ...options.vcs,
-    });
-  }
-
-  private async getApiUrl() {
-    const proxyUrl = await this.discoveryApi.getBaseUrl('proxy');
-    return proxyUrl + this.proxyPath;
-  }
-}

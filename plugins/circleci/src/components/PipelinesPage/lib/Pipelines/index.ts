@@ -13,24 +13,4 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
-/**
- * A Backstage plugin that integrates towards CircleCI.
- *
- * @packageDocumentation
- */
-
-export {
-  circleCIPlugin,
-  circleCIPlugin as plugin,
-  EntityCircleCIContent,
-} from './plugin';
-export * from './api';
-export * from './route-refs';
-export {
-  Router,
-  isCircleCIAvailable,
-  isCircleCIAvailable as isPluginApplicableToEntity,
-} from './components/Router';
-export { CIRCLECI_ANNOTATION } from './constants';
-export * from './types';
+export { Pipelines } from './Pipelines';

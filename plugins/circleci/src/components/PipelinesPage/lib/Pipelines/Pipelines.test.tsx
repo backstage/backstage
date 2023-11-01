@@ -14,23 +14,22 @@
  * limitations under the License.
  */
 
-/**
- * A Backstage plugin that integrates towards CircleCI.
- *
- * @packageDocumentation
- */
+import React from 'react';
+import { Pipelines } from './Pipelines';
+import { renderInTestApp } from '@backstage/test-utils';
 
-export {
-  circleCIPlugin,
-  circleCIPlugin as plugin,
-  EntityCircleCIContent,
-} from './plugin';
-export * from './api';
-export * from './route-refs';
-export {
-  Router,
-  isCircleCIAvailable,
-  isCircleCIAvailable as isPluginApplicableToEntity,
-} from './components/Router';
-export { CIRCLECI_ANNOTATION } from './constants';
-export * from './types';
+jest.mock('../CITable', () => ({
+  CITable: () => '<CITable />',
+}));
+
+jest.mock('../../../../hooks/usePipelines', () => ({
+  usePipelines: jest.fn().mockReturnValue([{ loading: false, value: [] }, {}]),
+}));
+
+describe('Pipelines', () => {
+  it('should display pipelines', async () => {
+    const rendered = await renderInTestApp(<Pipelines />);
+
+    expect(rendered.getByText('<CITable />')).toBeInTheDocument();
+  });
+});

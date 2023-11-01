@@ -16,15 +16,15 @@
 
 import React from 'react';
 import { Routes, Route } from 'react-router-dom';
-import { circleCIBuildRouteRef } from '../route-refs';
-import { BuildWithStepsPage } from './BuildWithStepsPage/';
-import { BuildsPage } from './BuildsPage';
+import { circleCIWorkflowRouteRef } from '../route-refs';
+import { PipelinesPage } from './PipelinesPage';
 import { CIRCLECI_ANNOTATION } from '../constants';
 import { Entity } from '@backstage/catalog-model';
 import {
   useEntity,
   MissingAnnotationEmptyState,
 } from '@backstage/plugin-catalog-react';
+import { WorkflowWithJobsPage } from './WorkflowWithJobsPage';
 
 /** @public */
 export const isCircleCIAvailable = (entity: Entity) =>
@@ -40,10 +40,10 @@ export const Router = () => {
 
   return (
     <Routes>
-      <Route path="/" element={<BuildsPage />} />
+      <Route path="/" element={<PipelinesPage />} />
       <Route
-        path={`${circleCIBuildRouteRef.path}`}
-        element={<BuildWithStepsPage />}
+        path={`${circleCIWorkflowRouteRef.path}`}
+        element={<WorkflowWithJobsPage />}
       />
     </Routes>
   );

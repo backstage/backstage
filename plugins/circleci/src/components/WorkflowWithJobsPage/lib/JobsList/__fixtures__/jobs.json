@@ -1,0 +1,27 @@
+{
+  "next_page_token": "",
+  "items": [
+    {
+      "dependencies": [],
+      "job_number": 29123,
+      "id": "8f3f2a9a-cba2-4219-8c12-b5d7646ac978",
+      "started_at": "2023-10-05T14:13:16Z",
+      "name": "vulnerability-scan",
+      "project_slug": "gh/CircleCI-Public/circleci-cli",
+      "status": "success",
+      "type": "build",
+      "stopped_at": "2023-10-05T14:13:38Z"
+    },
+    {
+      "dependencies": [],
+      "job_number": 29124,
+      "id": "376f2117-2670-4299-b05c-c3f460d57977",
+      "started_at": "2023-10-05T14:13:16Z",
+      "name": "test_windows",
+      "project_slug": "gh/CircleCI-Public/circleci-cli",
+      "status": "success",
+      "type": "build",
+      "stopped_at": "2023-10-05T14:17:00Z"
+    }
+  ]
+}

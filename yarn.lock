@@ -6121,6 +6121,7 @@ __metadata:
     "@backstage/core-components": "workspace:^"
     "@backstage/core-plugin-api": "workspace:^"
     "@backstage/dev-utils": "workspace:^"
+    "@backstage/errors": "workspace:^"
     "@backstage/plugin-catalog-react": "workspace:^"
     "@backstage/test-utils": "workspace:^"
     "@backstage/theme": "workspace:^"
@@ -6130,10 +6131,12 @@ __metadata:
     "@testing-library/dom": ^9.0.0
     "@testing-library/jest-dom": ^6.0.0
     "@testing-library/react": ^14.0.0
+    "@testing-library/react-hooks": ^8.0.1
     "@testing-library/user-event": ^14.0.0
     "@types/humanize-duration": ^3.25.1
     "@types/react": ^16.13.1 || ^17.0.0
     circleci-api: ^4.0.0
+    classnames: ^2.3.2
     cross-fetch: ^4.0.0
     humanize-duration: ^3.27.0
     lodash: ^4.17.21
@@ -17810,7 +17813,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@testing-library/react-hooks@npm:^8.0.0":
+"@testing-library/react-hooks@npm:^8.0.0, @testing-library/react-hooks@npm:^8.0.1":
   version: 8.0.1
   resolution: "@testing-library/react-hooks@npm:8.0.1"
   dependencies:
@@ -23099,7 +23102,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"classnames@npm:*, classnames@npm:^2.2.5, classnames@npm:^2.2.6, classnames@npm:^2.3.1":
+"classnames@npm:*, classnames@npm:^2.2.5, classnames@npm:^2.2.6, classnames@npm:^2.3.1, classnames@npm:^2.3.2":
   version: 2.3.2
   resolution: "classnames@npm:2.3.2"
   checksum: 2c62199789618d95545c872787137262e741f9db13328e216b093eea91c85ef2bfb152c1f9e63027204e2559a006a92eb74147d46c800a9f96297ae1d9f96f4e
