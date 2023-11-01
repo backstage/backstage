@@ -109,10 +109,15 @@ export const FeaturedDocs = (props: FeaturedDocsProps) => {
     return response.items;
   });
 
+  if (loading) {
+    return <Progress />;
+  }
+  if (error) {
+    return <ErrorPanel error={error} />;
+  }
+
   return (
     <InfoCard variant="gridItem" title={title || 'Featured Docs'}>
-      {loading && <Progress />}
-      {error && <ErrorPanel error={error} />}
       {entities?.length
         ? entities.map(d => (
             <div key={d.metadata.name} data-testid="docs-card-content">
