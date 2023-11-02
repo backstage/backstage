@@ -2,7 +2,7 @@
 
 Simple plugin that proxies requests to the Azure Portal API through Azure SDK JavaScript libraries.
 
-_Inspired by [roadie.io AWS Lamda plugin](https://roadie.io/backstage/plugins/aws-lambda/)_
+_Inspired by [roadie.io AWS Lambda plugin](https://roadie.io/backstage/plugins/aws-lambda/)_
 
 ## Setup
 
