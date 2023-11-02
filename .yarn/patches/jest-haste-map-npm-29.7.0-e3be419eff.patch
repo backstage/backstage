@@ -1,5 +1,5 @@
 diff --git a/build/watchers/FSEventsWatcher.js b/build/watchers/FSEventsWatcher.js
-index 2273a6cbd2110ddbbd1525820289c3d93ab46cac..d637a644239ae4a7db407ce779f43b4dec9a44ed 100644
+index a8b59d7f382b290ed9e09593c439c17137d8fb3e..07549f187257fd568add4fcff3a6d7646c2915c1 100644
 --- a/build/watchers/FSEventsWatcher.js
 +++ b/build/watchers/FSEventsWatcher.js
 @@ -103,7 +103,7 @@ function _interopRequireWildcard(obj, nodeInterop) {

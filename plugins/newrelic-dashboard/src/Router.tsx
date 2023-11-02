@@ -15,10 +15,12 @@
  */
 import { Entity } from '@backstage/catalog-model';
 import React from 'react';
-import { MissingAnnotationEmptyState } from '@backstage/core-components';
 import { Button } from '@material-ui/core';
 import { NewRelicDashboard } from './components/NewRelicDashboard';
-import { useEntity } from '@backstage/plugin-catalog-react';
+import {
+  useEntity,
+  MissingAnnotationEmptyState,
+} from '@backstage/plugin-catalog-react';
 import { NEWRELIC_GUID_ANNOTATION } from './constants';
 
 /** @public */

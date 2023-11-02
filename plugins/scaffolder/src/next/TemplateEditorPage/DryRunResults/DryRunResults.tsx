@@ -14,7 +14,6 @@
  * limitations under the License.
  */
 
-import { BackstageTheme } from '@backstage/theme';
 import Accordion from '@material-ui/core/Accordion';
 import AccordionDetails from '@material-ui/core/AccordionDetails';
 import AccordionSummary from '@material-ui/core/AccordionSummary';
@@ -28,7 +27,7 @@ import { useDryRun } from '../DryRunContext';
 import { DryRunResultsList } from './DryRunResultsList';
 import { DryRunResultsView } from './DryRunResultsView';
 
-const useStyles = makeStyles((theme: BackstageTheme) => ({
+const useStyles = makeStyles(theme => ({
   header: {
     height: 48,
     minHeight: 0,

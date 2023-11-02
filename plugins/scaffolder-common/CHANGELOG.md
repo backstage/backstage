@@ -1,5 +1,15 @@
 # @backstage/plugin-scaffolder-common
 
+## 1.4.3-next.1
+
+### Patch Changes
+
+- 76d07da66a: Make it possible to define control buttons text (Back, Create, Review) per template
+- Updated dependencies
+  - @backstage/catalog-model@1.4.3
+  - @backstage/types@1.1.1
+  - @backstage/plugin-permission-common@0.7.9
+
 ## 1.4.3-next.0
 
 ### Patch Changes

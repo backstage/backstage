@@ -26,7 +26,7 @@ import {
   instantiateAppNodeTree,
 } from './instantiateAppNodeTree';
 import { AppNodeInstance, AppNodeSpec } from './types';
-import { resolveAppGraph } from './resolveAppGraph';
+import { resolveAppTree } from './resolveAppTree';
 
 const testDataRef = createExtensionDataRef<string>('test');
 const otherDataRef = createExtensionDataRef<number>('other');
@@ -45,8 +45,8 @@ const simpleExtension = createExtension({
       other: z.number().optional(),
     }),
   ),
-  factory({ bind, config }) {
-    bind({ test: config.output, other: config.other });
+  factory({ config }) {
+    return { test: config.output, other: config.other };
   },
 });
 
@@ -79,30 +79,30 @@ function makeInstanceWithId<TConfig>(
 
 describe('instantiateAppNodeTree', () => {
   it('should instantiate a single node', () => {
-    const graph = resolveAppGraph('root-node', [
+    const tree = resolveAppTree('root-node', [
       { ...makeSpec(simpleExtension), id: 'root-node' },
     ]);
-    expect(graph.root.instance).not.toBeDefined();
-    instantiateAppNodeTree(graph.root);
-    expect(graph.root.instance).toBeDefined();
-    expect(graph.root.instance?.getData(testDataRef)).toBe('test');
+    expect(tree.root.instance).not.toBeDefined();
+    instantiateAppNodeTree(tree.root);
+    expect(tree.root.instance).toBeDefined();
+    expect(tree.root.instance?.getData(testDataRef)).toBe('test');
 
     // Multiple calls should have no effect
-    instantiateAppNodeTree(graph.root);
-    expect(graph.root.instance).toBeDefined();
+    instantiateAppNodeTree(tree.root);
+    expect(tree.root.instance).toBeDefined();
   });
 
   it('should not instantiate disabled nodes', () => {
-    const graph = resolveAppGraph('root-node', [
+    const tree = resolveAppTree('root-node', [
       { ...makeSpec(simpleExtension), id: 'root-node', disabled: true },
     ]);
-    expect(graph.root.instance).not.toBeDefined();
-    instantiateAppNodeTree(graph.root);
-    expect(graph.root.instance).not.toBeDefined();
+    expect(tree.root.instance).not.toBeDefined();
+    instantiateAppNodeTree(tree.root);
+    expect(tree.root.instance).not.toBeDefined();
   });
 
   it('should instantiate a node with attachments', () => {
-    const graph = resolveAppGraph('root-node', [
+    const tree = resolveAppTree('root-node', [
       {
         ...makeSpec(
           createExtension({
@@ -114,8 +114,8 @@ describe('instantiateAppNodeTree', () => {
             output: {
               inputMirror: inputMirrorDataRef,
             },
-            factory({ bind, inputs }) {
-              bind({ inputMirror: inputs });
+            factory({ inputs }) {
+              return { inputMirror: inputs };
             },
           }),
         ),
@@ -127,26 +127,26 @@ describe('instantiateAppNodeTree', () => {
       },
     ]);
 
-    const childNode = graph.nodes.get('child-node');
+    const childNode = tree.nodes.get('child-node');
     expect(childNode).toBeDefined();
 
-    expect(graph.root.instance).not.toBeDefined();
+    expect(tree.root.instance).not.toBeDefined();
     expect(childNode?.instance).not.toBeDefined();
-    instantiateAppNodeTree(graph.root);
-    expect(graph.root.instance).toBeDefined();
+    instantiateAppNodeTree(tree.root);
+    expect(tree.root.instance).toBeDefined();
     expect(childNode?.instance).toBeDefined();
-    expect(graph.root.instance?.getData(inputMirrorDataRef)).toEqual({
+    expect(tree.root.instance?.getData(inputMirrorDataRef)).toEqual({
       test: [{ test: 'test' }],
     });
 
     // Multiple calls should have no effect
-    instantiateAppNodeTree(graph.root);
-    expect(graph.root.instance).toBeDefined();
+    instantiateAppNodeTree(tree.root);
+    expect(tree.root.instance).toBeDefined();
     expect(childNode?.instance).toBeDefined();
   });
 
   it('should not instantiate disabled attachments', () => {
-    const graph = resolveAppGraph('root-node', [
+    const tree = resolveAppTree('root-node', [
       {
         ...makeSpec(
           createExtension({
@@ -158,8 +158,8 @@ describe('instantiateAppNodeTree', () => {
             output: {
               inputMirror: inputMirrorDataRef,
             },
-            factory({ bind, inputs }) {
-              bind({ inputMirror: inputs });
+            factory({ inputs }) {
+              return { inputMirror: inputs };
             },
           }),
         ),
@@ -172,15 +172,15 @@ describe('instantiateAppNodeTree', () => {
       },
     ]);
 
-    const childNode = graph.nodes.get('child-node');
+    const childNode = tree.nodes.get('child-node');
     expect(childNode).toBeDefined();
 
-    expect(graph.root.instance).not.toBeDefined();
+    expect(tree.root.instance).not.toBeDefined();
     expect(childNode?.instance).not.toBeDefined();
-    instantiateAppNodeTree(graph.root);
-    expect(graph.root.instance).toBeDefined();
+    instantiateAppNodeTree(tree.root);
+    expect(tree.root.instance).toBeDefined();
     expect(childNode?.instance).not.toBeDefined();
-    expect(graph.root.instance?.getData(inputMirrorDataRef)).toEqual({
+    expect(tree.root.instance?.getData(inputMirrorDataRef)).toEqual({
       test: [],
     });
   });
@@ -264,8 +264,8 @@ describe('createAppNodeInstance', () => {
           output: {
             inputMirror: inputMirrorDataRef,
           },
-          factory({ bind, inputs }) {
-            bind({ inputMirror: inputs });
+          factory({ inputs }) {
+            return { inputMirror: inputs };
           },
         }),
       ),
@@ -326,8 +326,8 @@ describe('createAppNodeInstance', () => {
               test1: testDataRef,
               test2: testDataRef,
             },
-            factory({ bind }) {
-              bind({ test1: 'test', test2: 'test2' });
+            factory({}) {
+              return { test1: 'test', test2: 'test2' };
             },
           }),
         ),
@@ -348,8 +348,8 @@ describe('createAppNodeInstance', () => {
             output: {
               test: testDataRef,
             },
-            factory({ bind }) {
-              bind({ nonexistent: 'test' } as any);
+            factory({}) {
+              return { nonexistent: 'test' } as any;
             },
           }),
         ),
@@ -376,7 +376,7 @@ describe('createAppNodeInstance', () => {
               ),
             },
             output: {},
-            factory() {},
+            factory: () => ({}),
           }),
         ),
         attachments: new Map(),
@@ -417,7 +417,7 @@ describe('createAppNodeInstance', () => {
               }),
             },
             output: {},
-            factory() {},
+            factory: () => ({}),
           }),
         ),
       }),
@@ -447,7 +447,7 @@ describe('createAppNodeInstance', () => {
             id: 'core.test',
             attachTo: { id: 'ignored', input: 'ignored' },
             output: {},
-            factory() {},
+            factory: () => ({}),
           }),
         ),
       }),
@@ -481,7 +481,7 @@ describe('createAppNodeInstance', () => {
               ),
             },
             output: {},
-            factory() {},
+            factory: () => ({}),
           }),
         ),
       }),
@@ -515,7 +515,7 @@ describe('createAppNodeInstance', () => {
               ),
             },
             output: {},
-            factory() {},
+            factory: () => ({}),
           }),
         ),
       }),
@@ -543,7 +543,7 @@ describe('createAppNodeInstance', () => {
               ),
             },
             output: {},
-            factory() {},
+            factory: () => ({}),
           }),
         ),
       }),

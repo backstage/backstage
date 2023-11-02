@@ -78,6 +78,13 @@ export const ANNOTATION_KUBERNETES_DASHBOARD_APP =
   'kubernetes.io/dashboard-app';
 
 /**
+ * Annotation for specifying the dashboard app parameters for a Kubernetes cluster.
+ *
+ * @public
+ */
+export const ANNOTATION_KUBERNETES_DASHBOARD_PARAMETERS =
+  'kubernetes.io/dashboard-parameters';
+/**
  * Annotation for specifying the assume role use to authenticate with AWS.
  *
  * @public
