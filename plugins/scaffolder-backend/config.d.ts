@@ -14,6 +14,8 @@
  * limitations under the License.
  */
 
+import { HumanDuration } from '@backstage/types';
+
 export interface Config {
   /** Configuration options for the scaffolder plugin */
   scaffolder?: {
@@ -37,5 +39,21 @@ export interface Config {
      * Set to 0 to disable task workers altogether.
      */
     concurrentTasksLimit?: number;
+
+    /**
+     * Sets the tasks recoverability on system start up.
+     *
+     * If not specified, the default value is false.
+     */
+    recoverTasks?: boolean;
+
+    /**
+     * Every task which is in progress state and having a last heartbeat longer than a specified timeout is going to
+     * be attempted to recover.
+     *
+     * If not specified, the default value is 5 seconds.
+     *
+     */
+    recoverTasksTimeout?: HumanDuration;
   };
 }
