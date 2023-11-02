@@ -41,13 +41,11 @@ export interface Config {
     concurrentTasksLimit?: number;
 
     /**
-     * Sets the processing interval for staled tasks.
-     *
-     * Staled tasks are marked as failed, once task's timeout has exceeded.
+     * Makes sure to auto-expire and clean up things that time out or for other reasons should not be left lingering.
      *
      * By default, the frequency is every 5 minutes.
      */
-    taskTimeoutReaperFrequency: HumanDuration;
+    taskTimeoutJanitorFrequency: HumanDuration;
 
     /**
      * Sets the task's heartbeat timeout, when to consider a task to be staled.

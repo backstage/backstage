@@ -273,7 +273,7 @@ export async function createRouter(
         id: 'close_stale_tasks',
         frequency: readDuration(
           config,
-          'scaffolder.taskTimeoutReaperFrequency',
+          'scaffolder.taskTimeoutJanitorFrequency',
           {
             minutes: 5,
           },
