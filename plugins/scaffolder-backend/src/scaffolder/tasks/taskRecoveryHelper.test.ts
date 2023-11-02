@@ -96,8 +96,8 @@ describe('taskRecoveryHelper', () => {
 
       expect(getRestoredStepIds(taskSpec, 'fetch')).toEqual(['fetch']);
 
-      expect(getRestoredStepIds(taskSpec, 'non-existing')).toBeUndefined();
-      expect(getRestoredStepIds(taskSpec, undefined)).toBeUndefined();
+      expect(getRestoredStepIds(taskSpec, 'non-existing')).toEqual([]);
+      expect(getRestoredStepIds(taskSpec, undefined)).toEqual([]);
     });
   });
 
