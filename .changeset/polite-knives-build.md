@@ -2,9 +2,9 @@
 '@backstage/plugin-kubernetes-backend': minor
 ---
 
-**BREAKING** You can now filter `single` or `multiple kubernetes cluster` that the entity is part-of from all your defined kubernets clusters, by passing `backstage.io/kubernetes-clusters` annotation with the defined cluster name.
+**BREAKING** You can now filter `single` or `multiple kubernetes cluster` that the entity is part-of from all your defined kubernetes clusters, by passing `backstage.io/kubernetes-clusters` annotation with the defined cluster name.
 
-If you dont specify the annotation by `default it fetches all` the defined kubernetes cluster.
+If you do not specify the annotation by `default it fetches all` defined kubernetes cluster.
 
 To apply `single cluster filter`. Specify the cluster name
 
@@ -16,7 +16,7 @@ annotations:
   'backstage.io/kubernetes-label-selector': 'app=my-app,component=front-end'
 ```
 
-To apply `multiple cluster filter`. Specify `comma(,)` seprated clusters name.
+To apply `multi-cluster filter`. Specify `comma(,)` seprated clusters name.
 
 ```diff
 annotations:

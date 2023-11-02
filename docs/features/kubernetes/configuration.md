@@ -575,6 +575,24 @@ for more info.
 'backstage.io/kubernetes-label-selector': 'app=my-app,component=front-end'
 ```
 
+### Cluster Filter annotation
+
+You can now filter `single` or `multiple` kubernetes cluster that the entity is part-of from all your defined kubernetes clusters. To apply the filter by the following annotation.
+
+Single Cluster filter:
+
+```yaml
+'backstage.io/kubernetes-clusters': dice-cluster
+```
+
+Multi-Cluster filter:
+
+```yaml
+'backstage.io/kubernetes-clusters': 'dice-cluster,roller-cluster'
+```
+
+If you do not specify the annotation by `default Backstage fetches all` defined Kubernetes cluster.
+
 [1]: https://cloud.google.com/kubernetes-engine
 [2]: https://cloud.google.com/docs/authentication/production#linux-or-macos
 [3]: https://kubernetes.io/docs/concepts/extend-kubernetes/api-extension/custom-resources/
