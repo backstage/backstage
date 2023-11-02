@@ -17,7 +17,7 @@
 import {
   compactEvents,
   getRestoredStepIds,
-  stepIdToRunTheTask,
+  lastRecoveredStepId,
 } from './taskRecoveryHelper';
 import { SerializedTaskEvent } from './types';
 import { TaskSpec } from '@backstage/plugin-scaffolder-common';
@@ -35,8 +35,8 @@ const toRecoveredEvent = (recoverStrategy: string) =>
   } as unknown as SerializedTaskEvent);
 
 describe('taskRecoveryHelper', () => {
-  describe('stepIdToRunTheTask', () => {
-    it('Should find the step id which has to be restarted. Scenario 1', () => {
+  describe('lastRecoveredStepId', () => {
+    it('should find the last recovered step id. Scenario 1', () => {
       const taskSpec = {
         steps: [
           { id: 'fetch' },
@@ -51,27 +51,27 @@ describe('taskRecoveryHelper', () => {
         toLogEvent,
       );
 
-      expect(stepIdToRunTheTask(taskSpec, events)).toEqual('mock-step-2');
+      expect(lastRecoveredStepId(taskSpec, events)).toEqual('mock-step-2');
     });
 
-    it('should find the step id which has to be restarted. Scenario 2', () => {
+    it('should find the last recovered step id. Scenario 2', () => {
       const taskSpec = {
         steps: [{ id: 'fetch' }, { id: 'mock-step-1' }, { id: 'mock-step-2' }],
       } as TaskSpec;
 
       const events = ['fetch', 'mock-step-1'].map(toLogEvent);
 
-      expect(stepIdToRunTheTask(taskSpec, events)).toEqual('mock-step-1');
+      expect(lastRecoveredStepId(taskSpec, events)).toEqual('mock-step-1');
     });
 
-    it('should find the step id which has to be restarted. Scenario 3', () => {
+    it('should find the last recovered step id. Scenario 3', () => {
       const taskSpec = {
         steps: [{ id: 'fetch' }, { id: 'mock-step-1' }],
       } as TaskSpec;
 
       const events = [].map(toLogEvent);
 
-      expect(stepIdToRunTheTask(taskSpec, events)).toEqual('fetch');
+      expect(lastRecoveredStepId(taskSpec, events)).toBeUndefined();
     });
   });
 

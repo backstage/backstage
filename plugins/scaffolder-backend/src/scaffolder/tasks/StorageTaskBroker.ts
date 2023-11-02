@@ -31,7 +31,7 @@ import {
 } from './types';
 import { Duration } from 'luxon';
 import { readDuration } from './helper';
-import { stepIdToRunTheTask } from './taskRecoveryHelper';
+import { lastRecoveredStepId } from './taskRecoveryHelper';
 
 /**
  * TaskManager
@@ -233,7 +233,7 @@ export class StorageTaskBroker implements TaskBroker {
     }
   }
 
-  private async getStepIdToRecoverFrom(
+  private async getTheLastRecoveredStepId(
     task: SerializedTask,
   ): Promise<string | undefined> {
     if (
@@ -242,7 +242,7 @@ export class StorageTaskBroker implements TaskBroker {
       const { events } = await this.storage.listEvents({
         taskId: task.id,
       });
-      return stepIdToRunTheTask(task.spec, events);
+      return lastRecoveredStepId(task.spec, events);
     }
     return undefined;
   }
@@ -257,7 +257,7 @@ export class StorageTaskBroker implements TaskBroker {
       const pendingTask = await this.storage.claimTask();
       if (pendingTask) {
         const abortController = new AbortController();
-        const stepIdToRecoverFrom = await this.getStepIdToRecoverFrom(
+        const stepIdToRecoverFrom = await this.getTheLastRecoveredStepId(
           pendingTask,
         );
         await this.registerCancellable(pendingTask.id, abortController);

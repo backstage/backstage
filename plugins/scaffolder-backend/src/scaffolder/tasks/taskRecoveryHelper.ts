@@ -33,11 +33,11 @@ const fetchStepIdsFromEvents = (events: SerializedTaskEvent[]) => {
     }, new Set<string>());
 };
 
-export const stepIdToRunTheTask = (
+export const lastRecoveredStepId = (
   spec: TaskSpec,
   events: SerializedTaskEvent[],
 ): string | undefined => {
-  if (!spec.steps.length) {
+  if (!spec.steps.length || !events.length) {
     return undefined;
   }
   const eventStepIds = fetchStepIdsFromEvents(events);
@@ -71,7 +71,7 @@ export const getRestoredStepIds = (
     !stepIdToRecoverFrom ||
     !spec.steps.map(step => step.id).includes(stepIdToRecoverFrom)
   ) {
-    return undefined;
+    return [];
   }
 
   return stepIdToRecoverFrom
@@ -123,7 +123,7 @@ export const compactEvents = (
 
       const lastRunInd = findLastRunInd(events);
       const historyEvents = events.slice(0, lastRunInd);
-      const stepIdToStart = stepIdToRunTheTask(taskSpec, historyEvents);
+      const stepIdToStart = lastRecoveredStepId(taskSpec, historyEvents);
 
       const preservedIdSteps: string[] = [];
       const stepIds = taskSpec.steps.map(step => step.id);
