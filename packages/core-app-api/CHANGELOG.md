@@ -4,6 +4,7 @@
 
 ### Patch Changes
 
+- 1ff062c169: Add optional scope argument to OAuth2.signIn method
 - 6c2b872153: Add official support for React 18.
 - 89d13e5618: Add current and default scopes when refreshing session
 - 9ab0572217: Add component data `core.type` marker for `AppRouter` and `FlatRoutes`.
