@@ -15,8 +15,10 @@
  */
 
 import React from 'react';
-import { useEntity } from '@backstage/plugin-catalog-react';
-import { MissingAnnotationEmptyState } from '@backstage/core-components';
+import {
+  useEntity,
+  MissingAnnotationEmptyState,
+} from '@backstage/plugin-catalog-react';
 import { Route, Routes } from 'react-router-dom';
 import { EntityNomadAllocationListTable } from './components/EntityNomadAllocationListTable/EntityNomadAllocationListTable';
 import {

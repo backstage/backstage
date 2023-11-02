@@ -24,7 +24,6 @@ import {
   Content,
   ContentHeader,
   InfoCard,
-  MissingAnnotationEmptyState,
   Progress,
   SupportButton,
   WarningPanel,
@@ -38,7 +37,10 @@ import {
   isAdrAvailable,
   madrFilePathFilter,
 } from '@backstage/plugin-adr-common';
-import { useEntity } from '@backstage/plugin-catalog-react';
+import {
+  useEntity,
+  MissingAnnotationEmptyState,
+} from '@backstage/plugin-catalog-react';
 import {
   Box,
   Chip,
