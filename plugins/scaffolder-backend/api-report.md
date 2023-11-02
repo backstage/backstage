@@ -1016,7 +1016,7 @@ export interface TaskStore {
     }[];
   }>;
   // (undocumented)
-  recoverTasks(options: TaskStoreRecoverTaskOptions): Promise<void>;
+  recoverTasks?(options: TaskStoreRecoverTaskOptions): Promise<void>;
   // (undocumented)
   shutdownTask?(options: TaskStoreShutDownTaskOptions): Promise<void>;
 }
