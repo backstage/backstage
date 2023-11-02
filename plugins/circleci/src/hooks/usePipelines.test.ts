@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { renderHook } from '@testing-library/react-hooks';
+import { act, renderHook, waitFor } from '@testing-library/react';
 import { useApi } from '@backstage/core-plugin-api';
 import { usePipelines } from './usePipelines';
 
@@ -96,9 +96,9 @@ describe('usePipelines', () => {
     circleCIApi.getWorkflowsForPipeline
       .mockResolvedValueOnce(mockWorkflowResponse[0])
       .mockResolvedValue(mockWorkflowResponse[1]);
-    const { result, waitForValueToChange } = renderHook(() => usePipelines());
+    const { result } = renderHook(() => usePipelines());
+    await waitFor(() => !result.current[0].loading);
 
-    await waitForValueToChange(() => result.current[0].loading);
     expect(result.current[0].pipelines).toEqual([
       {
         id: 'pipeline 1',
@@ -127,14 +127,11 @@ describe('usePipelines', () => {
     it('should send next page token', async () => {
       circleCIApi.getPipelinesForProject.mockReturnValue(mockPipelineResponse);
       circleCIApi.getWorkflowsForPipeline.mockReturnValue({ items: [] });
-      const { result, waitForNextUpdate, waitFor } = renderHook(() =>
-        usePipelines(),
-      );
+      const { result } = renderHook(() => usePipelines());
       const { fetchMore } = result.current[1];
-
       await waitFor(() => !result.current[0].loading);
-      fetchMore();
-      await waitForNextUpdate();
+      act(() => fetchMore());
+      await waitFor(() => !result.current[0].hasMore);
 
       expect(circleCIApi.getPipelinesForProject).toHaveBeenCalledWith(
         'github/my-org/dummy',
@@ -145,10 +142,9 @@ describe('usePipelines', () => {
 
   describe('when re-running a workflow', () => {
     it('should invoke api', async () => {
-      const { result, waitForValueToChange } = renderHook(() => usePipelines());
+      const { result } = renderHook(() => usePipelines());
       const { rerunWorkflow } = result.current[1];
-
-      await waitForValueToChange(() => result.current[0].loading);
+      await waitFor(() => !result.current[0].loading);
       await rerunWorkflow('workflow-id');
 
       expect(circleCIApi.rerunWorkflow).toHaveBeenCalledWith('workflow-id');
@@ -161,16 +157,17 @@ describe('usePipelines', () => {
         mockPipelineResponse,
       );
       circleCIApi.getWorkflowsForPipeline.mockReturnValue({ items: [] });
-      const { result, waitForNextUpdate } = renderHook(() => usePipelines());
-      await waitForNextUpdate();
-      result.current[1].reload();
-      await waitForNextUpdate();
+      const { result } = renderHook(() => usePipelines());
+      await waitFor(() => !result.current[0].loading);
+      act(() => result.current[1].reload());
 
-      expect(circleCIApi.getPipelinesForProject).toHaveBeenCalledTimes(2);
-      expect(circleCIApi.getPipelinesForProject).toHaveBeenLastCalledWith(
-        'github/my-org/dummy',
-        undefined,
-      );
+      await waitFor(() => {
+        expect(circleCIApi.getPipelinesForProject).toHaveBeenCalledTimes(2);
+        expect(circleCIApi.getPipelinesForProject).toHaveBeenLastCalledWith(
+          'github/my-org/dummy',
+          undefined,
+        );
+      });
     });
   });
 });

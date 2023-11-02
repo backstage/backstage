@@ -6135,7 +6135,6 @@ __metadata:
     "@testing-library/user-event": ^14.0.0
     "@types/humanize-duration": ^3.25.1
     "@types/react": ^16.13.1 || ^17.0.0
-    circleci-api: ^4.0.0
     classnames: ^2.3.2
     cross-fetch: ^4.0.0
     humanize-duration: ^3.27.0
@@ -23083,15 +23082,6 @@ __metadata:
     inherits: ^2.0.1
     safe-buffer: ^5.0.1
   checksum: 47d3568dbc17431a339bad1fe7dff83ac0891be8206911ace3d3b818fc695f376df809bea406e759cdea07fff4b454fa25f1013e648851bec790c1d75763032e
-  languageName: node
-  linkType: hard
-
-"circleci-api@npm:^4.0.0":
-  version: 4.1.4
-  resolution: "circleci-api@npm:4.1.4"
-  dependencies:
-    axios: ^0.21.1
-  checksum: b01df7a3361df93f447957abcefbf9d99041076de7c8a27da8c9ae27514ae3a9527c4d3677a6a13131cecb882efe18077e0665b6b34619a3c0678664ed94b4ed
   languageName: node
   linkType: hard
 

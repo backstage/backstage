@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { renderHook } from '@testing-library/react-hooks';
+import { renderHook, waitFor } from '@testing-library/react';
 import { useApi } from '@backstage/core-plugin-api';
 import { useStepOutput } from './useStepOutput';
 
@@ -53,11 +53,9 @@ describe('useStepOutput', () => {
 
   it('should return step output', async () => {
     circleCIApi.getStepOutput.mockReturnValue('This is the output!');
-    const { result, waitForValueToChange } = renderHook(() =>
-      useStepOutput(1234, 1, 99),
-    );
+    const { result } = renderHook(() => useStepOutput(1234, 1, 99));
 
-    await waitForValueToChange(() => result.current.loading);
+    await waitFor(() => !result.current.loading);
     expect(result.current.output).toEqual('This is the output!');
   });
 });

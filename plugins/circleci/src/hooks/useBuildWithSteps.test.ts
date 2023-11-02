@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { renderHook } from '@testing-library/react-hooks';
+import { renderHook, waitFor } from '@testing-library/react';
 import { useApi } from '@backstage/core-plugin-api';
 import { useBuildWithSteps } from './useBuildWithSteps';
 
@@ -56,11 +56,9 @@ describe('useBuildWithSteps', () => {
 
   it('should return a build object', async () => {
     circleCIApi.getBuild.mockResolvedValue(mockResponse);
-    const { result, waitForValueToChange } = renderHook(() =>
-      useBuildWithSteps(1234),
-    );
+    const { result } = renderHook(() => useBuildWithSteps(1234));
 
-    await waitForValueToChange(() => result.current.loading);
+    await waitFor(() => !result.current.loading);
     expect(result.current.build).toEqual(mockResponse);
   });
 });

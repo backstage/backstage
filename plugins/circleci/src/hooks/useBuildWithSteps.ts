@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 import { useCallback } from 'react';
-import { useAsyncRetry } from 'react-use';
+import useAsyncRetry from 'react-use/lib/useAsyncRetry';
 import { circleCIApiRef } from '../api';
 import { useProjectSlugFromEntity } from '.';
 import { errorApiRef, useApi } from '@backstage/core-plugin-api';

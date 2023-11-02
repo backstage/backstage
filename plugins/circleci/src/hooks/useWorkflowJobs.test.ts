@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { renderHook } from '@testing-library/react-hooks';
+import { renderHook, waitFor } from '@testing-library/react';
 import { useApi } from '@backstage/core-plugin-api';
 import { useWorkflowJobs } from './useWorkflowJobs';
 
@@ -57,11 +57,9 @@ describe('useWorkflowJobs', () => {
 
   it('should return objects', async () => {
     circleCIApi.getWorkflowJobs.mockResolvedValue(mockResponse);
-    const { result, waitForValueToChange } = renderHook(() =>
-      useWorkflowJobs('workflow-id'),
-    );
+    const { result } = renderHook(() => useWorkflowJobs('workflow-id'));
 
-    await waitForValueToChange(() => result.current.loading);
+    await waitFor(() => !result.current.loading);
     expect(result.current.jobs).toEqual(mockResponse.items);
   });
 });
