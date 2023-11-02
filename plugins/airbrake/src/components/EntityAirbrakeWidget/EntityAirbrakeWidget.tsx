@@ -19,7 +19,6 @@ import {
   EmptyState,
   ErrorPanel,
   InfoCard,
-  MissingAnnotationEmptyState,
   Progress,
 } from '@backstage/core-components';
 import { useApi } from '@backstage/core-plugin-api';
@@ -29,6 +28,7 @@ import { makeStyles } from '@material-ui/core/styles';
 import React from 'react';
 import useAsync from 'react-use/lib/useAsync';
 import { airbrakeApiRef } from '../../api';
+import { MissingAnnotationEmptyState } from '@backstage/plugin-catalog-react';
 import { AIRBRAKE_PROJECT_ID_ANNOTATION, useProjectId } from '../useProjectId';
 
 const useStyles = makeStyles<BackstageTheme>(() => ({
