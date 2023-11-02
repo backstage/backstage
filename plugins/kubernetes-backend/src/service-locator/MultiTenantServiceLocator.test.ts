@@ -100,4 +100,105 @@ describe('MultiTenantConfigClusterLocator', () => {
       ],
     });
   });
+  it('filter one cluster from two clusters', async () => {
+    const sut = new MultiTenantServiceLocator({
+      getClusters: async () => {
+        return [
+          {
+            name: 'cluster1',
+            url: 'http://localhost:8080',
+            authMetadata: {},
+          },
+          {
+            name: 'cluster2',
+            url: 'http://localhost:8081',
+            authMetadata: {},
+          },
+        ];
+      },
+    });
+
+    const testEntity = {
+      apiVersion: 'backstage.io/v1alpha1',
+      kind: 'Component',
+      metadata: {
+        namespace: 'default',
+        name: 'testEntity',
+        annotations: {
+          'backstage.io/kubernetes-clusters': 'cluster1',
+        },
+      },
+    };
+
+    const result = await sut.getClustersByEntity(
+      testEntity as Entity,
+      {} as ServiceLocatorRequestContext,
+    );
+
+    expect(result).toStrictEqual({
+      clusters: [
+        {
+          name: 'cluster1',
+          url: 'http://localhost:8080',
+          authMetadata: {},
+        },
+      ],
+    });
+  });
+
+  it('filter two cluster from three clusters', async () => {
+    const sut = new MultiTenantServiceLocator({
+      getClusters: async () => {
+        return [
+          {
+            name: 'cluster1',
+            url: 'http://localhost:8080',
+            authMetadata: {},
+          },
+          {
+            name: 'cluster2',
+            url: 'http://localhost:8081',
+            authMetadata: {},
+          },
+          {
+            name: 'cluster3',
+            url: 'http://localhost:8082',
+            authMetadata: {},
+          },
+        ];
+      },
+    });
+
+    const testEntity = {
+      apiVersion: 'backstage.io/v1alpha1',
+      kind: 'Component',
+      metadata: {
+        namespace: 'default',
+        name: 'testEntity',
+        annotations: {
+          'backstage.io/kubernetes-clusters': 'cluster1,cluster2',
+        },
+      },
+    };
+
+    const result = await sut.getClustersByEntity(
+      testEntity as Entity,
+      {} as ServiceLocatorRequestContext,
+    );
+
+    expect(result).toStrictEqual({
+      clusters: [
+        {
+          name: 'cluster1',
+          url: 'http://localhost:8080',
+          authMetadata: {},
+        },
+        {
+          name: 'cluster2',
+          url: 'http://localhost:8081',
+          authMetadata: {},
+        },
+      ],
+    });
+  });
 });

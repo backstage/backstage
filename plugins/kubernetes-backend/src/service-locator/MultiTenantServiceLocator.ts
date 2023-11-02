@@ -36,6 +36,17 @@ export class MultiTenantServiceLocator implements KubernetesServiceLocator {
     _entity: Entity,
     _requestContext: ServiceLocatorRequestContext,
   ): Promise<{ clusters: ClusterDetails[] }> {
-    return this.clusterSupplier.getClusters().then(clusters => ({ clusters }));
+    return this.clusterSupplier.getClusters().then(clusters => {
+      if (_entity.metadata?.annotations?.['backstage.io/kubernetes-clusters']) {
+        const entityClusters =
+          _entity.metadata?.annotations?.[
+            'backstage.io/kubernetes-clusters'
+          ].split(',');
+        return {
+          clusters: clusters.filter(c => entityClusters.includes(c.name)),
+        };
+      }
+      return { clusters };
+    });
   }
 }
