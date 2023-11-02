@@ -99,6 +99,9 @@ const useStyles = makeStyles(theme => ({
     borderTopRightRadius: theme.shape.borderRadius,
     borderBottomRightRadius: theme.shape.borderRadius,
   },
+  extensionHeaderId: {
+    userSelect: 'all',
+  },
   extensionHeaderOutputs: {
     display: 'flex',
     flexFlow: 'row nowrap',
@@ -223,7 +226,9 @@ function Extension(props: { node: AppNode }) {
     <Box key={node.spec.id} className={classes.extension}>
       <Box className={classes.extensionHeader}>
         <Tooltip title={<ExtensionTooltip node={node} />}>
-          <Typography>{node.spec.id}</Typography>
+          <Typography className={classes.extensionHeaderId}>
+            {node.spec.id}
+          </Typography>
         </Tooltip>
         <Box className={classes.extensionHeaderOutputs}>
           {dataRefIds &&
