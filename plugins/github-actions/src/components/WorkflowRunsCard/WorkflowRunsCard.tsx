@@ -165,9 +165,9 @@ export const WorkflowRunsCardView = ({
                     </Alert>
                   </Tooltip>
                   <Tooltip title={run.message ?? 'No run message'}>
-                    <span>
+                    <Typography variant="body2" component="span">
                       <MarkdownContent content={run.source.commit.hash!} />
-                    </span>
+                    </Typography>
                   </Tooltip>
 
                   {run.source.branchName && (
@@ -349,14 +349,16 @@ export const WorkflowRunsCard = ({ entity }: WorkflowRunsCardProps) => {
                 {branches.map(branchItem => (
                   <MenuItem key={branchItem.name} value={branchItem.name}>
                     {branchItem.name === defaultBranch ? (
-                      <span>
+                      <Typography variant="body2" component="span">
                         {branchItem.name}{' '}
-                        <span
+                        <Typography
+                          variant="body2"
+                          component="span"
                           style={{ color: 'lightgray', fontSize: 'x-small' }}
                         >
                           (default)
-                        </span>
-                      </span>
+                        </Typography>
+                      </Typography>
                     ) : (
                       branchItem.name
                     )}

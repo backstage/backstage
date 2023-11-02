@@ -88,6 +88,7 @@ export type GithubActionsApi = {
     hostname?: string;
     owner: string;
     repo: string;
+    page: number;
   }) => Promise<
     RestEndpointMethodTypes['repos']['listBranches']['response']['data']
   >;

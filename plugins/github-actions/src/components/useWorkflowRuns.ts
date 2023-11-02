@@ -76,13 +76,31 @@ export function useWorkflowRuns({
       // eslint-disable-next-line no-param-reassign
       branch = fetchedDefaultBranch;
     }
-    // fetching branches list
-    const branchesData = await api.listBranches({
-      hostname,
-      owner,
-      repo,
-    });
-    setBranches(branchesData);
+
+    const fetchBranches = async () => {
+      let next = true;
+      let iteratePage = 0;
+      const branchSet: Branch[] = [];
+
+      while (next) {
+        const branchesData = await api.listBranches({
+          hostname,
+          owner,
+          repo,
+          page: iteratePage,
+        });
+        if (branchesData.length === 0) {
+          next = false;
+        }
+        iteratePage++;
+        branchSet.push(...branchesData);
+      }
+
+      return branchSet;
+    };
+
+    const branchSet = await fetchBranches();
+    setBranches(branchSet);
 
     // GitHub API pagination count starts from 1
     const workflowRunsData = await api.listWorkflowRuns({

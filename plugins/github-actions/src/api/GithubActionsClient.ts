@@ -179,12 +179,15 @@ export class GithubActionsClient implements GithubActionsApi {
     hostname?: string;
     owner: string;
     repo: string;
+    page?: number;
   }) {
-    const { hostname, owner, repo } = options;
+    const { hostname, owner, repo, page = 0 } = options;
     const octokit = await this.getOctokit(hostname);
     const response = await octokit.rest.repos.listBranches({
       owner,
       repo,
+      per_page: 100,
+      page,
     });
 
     return response.data;
