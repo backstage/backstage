@@ -1,5 +1,18 @@
 # @backstage/plugin-lighthouse
 
+## 0.4.11-next.1
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/plugin-catalog-react@1.9.0-next.1
+  - @backstage/core-components@0.13.8-next.1
+  - @backstage/catalog-model@1.4.3
+  - @backstage/config@1.1.1
+  - @backstage/core-plugin-api@1.8.0-next.0
+  - @backstage/theme@0.4.4-next.0
+  - @backstage/plugin-lighthouse-common@0.1.4
+
 ## 0.4.11-next.0
 
 ### Patch Changes

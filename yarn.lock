@@ -4159,13 +4159,11 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "@backstage/core-components@workspace:packages/core-components"
   dependencies:
-    "@backstage/catalog-model": "workspace:^"
     "@backstage/cli": "workspace:^"
     "@backstage/config": "workspace:^"
     "@backstage/core-app-api": "workspace:^"
     "@backstage/core-plugin-api": "workspace:^"
     "@backstage/errors": "workspace:^"
-    "@backstage/plugin-catalog-react": "workspace:^"
     "@backstage/test-utils": "workspace:^"
     "@backstage/theme": "workspace:^"
     "@backstage/version-bridge": "workspace:^"
@@ -4480,7 +4478,23 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@backstage/integration@^1.7.1, @backstage/integration@workspace:^, @backstage/integration@workspace:packages/integration":
+"@backstage/integration@npm:^1.7.1":
+  version: 1.7.1
+  resolution: "@backstage/integration@npm:1.7.1"
+  dependencies:
+    "@azure/identity": ^3.2.1
+    "@backstage/config": ^1.1.1
+    "@octokit/auth-app": ^4.0.0
+    "@octokit/rest": ^19.0.3
+    cross-fetch: ^3.1.5
+    git-url-parse: ^13.0.0
+    lodash: ^4.17.21
+    luxon: ^3.0.0
+  checksum: e36e91ee9d3f09a3f6e1dbbc2e41af2ecce49e83a06943f151a668422ec7afb07af4f1ee136f21618cc4ce8b59586473ec8fbb66aaf43c26a390f8e2eb26d597
+  languageName: node
+  linkType: hard
+
+"@backstage/integration@workspace:^, @backstage/integration@workspace:packages/integration":
   version: 0.0.0-use.local
   resolution: "@backstage/integration@workspace:packages/integration"
   dependencies:
@@ -4801,6 +4815,7 @@ __metadata:
     "@backstage/plugin-catalog-react": "workspace:^"
     "@backstage/test-utils": "workspace:^"
     "@backstage/theme": "workspace:^"
+    "@graphiql/react": ^0.19.4
     "@material-ui/core": ^4.12.2
     "@material-ui/icons": ^4.9.1
     "@material-ui/lab": 4.0.0-alpha.61
@@ -4811,7 +4826,7 @@ __metadata:
     "@types/react": ^16.13.1 || ^17.0.0
     "@types/swagger-ui-react": ^4.18.0
     cross-fetch: ^3.1.5
-    graphiql: ^1.8.8
+    graphiql: 3.0.6
     graphql: ^16.0.0
     graphql-ws: ^5.4.1
     isomorphic-form-data: ^2.0.0
@@ -5579,6 +5594,7 @@ __metadata:
     "@backstage/backend-plugin-api": "workspace:^"
     "@backstage/backend-tasks": "workspace:^"
     "@backstage/backend-test-utils": "workspace:^"
+    "@backstage/catalog-model": "workspace:^"
     "@backstage/cli": "workspace:^"
     "@backstage/config": "workspace:^"
     "@backstage/plugin-catalog-node": "workspace:^"
@@ -6494,7 +6510,7 @@ __metadata:
     "@testing-library/jest-dom": ^6.0.0
     "@testing-library/react": ^14.0.0
     "@testing-library/user-event": ^14.0.0
-    "@types/pluralize": ^0.0.31
+    "@types/pluralize": ^0.0.32
     "@types/react": ^16.13.1 || ^17.0.0
     "@types/recharts": ^1.8.14
     "@types/regression": ^2.0.0
@@ -11720,26 +11736,6 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@graphiql/react@npm:^0.10.0":
-  version: 0.10.0
-  resolution: "@graphiql/react@npm:0.10.0"
-  dependencies:
-    "@graphiql/toolkit": ^0.6.1
-    codemirror: ^5.65.3
-    codemirror-graphql: ^1.3.2
-    copy-to-clipboard: ^3.2.0
-    escape-html: ^1.0.3
-    graphql-language-service: ^5.0.6
-    markdown-it: ^12.2.0
-    set-value: ^4.1.0
-  peerDependencies:
-    graphql: ^15.5.0 || ^16.0.0
-    react: ^16.8.0 || ^17.0.0 || ^18.0.0
-    react-dom: ^16.8.0 || ^17.0.0 || ^18.0.0
-  checksum: 1c473f6dbacba617ea6f9c272abbe22aa61643a0ce059835b40bfd368c211bccec806bca24600ba42cf356f02649f062622802cd8afba3bfdd5aae2783935e37
-  languageName: node
-  linkType: hard
-
 "@graphiql/react@npm:^0.19.4":
   version: 0.19.4
   resolution: "@graphiql/react@npm:0.19.4"
@@ -11764,19 +11760,6 @@ __metadata:
     react: ^16.8.0 || ^17 || ^18
     react-dom: ^16.8.0 || ^17 || ^18
   checksum: 08eb53fc0449d5814ba92faff8e03ba77e97ecd4d3d473d115d1219e52b59d9a1cc1b0f34c41315b3a0185fb862646c1affd2094e1f5f524328a95c8e4e8b591
-  languageName: node
-  linkType: hard
-
-"@graphiql/toolkit@npm:^0.6.1":
-  version: 0.6.1
-  resolution: "@graphiql/toolkit@npm:0.6.1"
-  dependencies:
-    "@n1ru4l/push-pull-async-iterable-iterator": ^3.1.0
-    meros: ^1.1.4
-  peerDependencies:
-    graphql: ^15.5.0 || ^16.0.0
-    graphql-ws: ">= 4.5.0"
-  checksum: c3701687f70a643441cc18253beeb2cf79c993f5be0d0d16210da456f0c6abde229b0ff79cc1cc63eccd98f306f918cb8d88f3ad54f0329c52879c9dec0d596c
   languageName: node
   linkType: hard
 
@@ -18575,9 +18558,9 @@ __metadata:
   linkType: hard
 
 "@types/ejs@npm:^3.1.3":
-  version: 3.1.3
-  resolution: "@types/ejs@npm:3.1.3"
-  checksum: b1b1c6c9d331d237523ebc410789f42edcdbb1d4cdd4a7a37ac61d2ce9c3fbcfbfe7d7f1a7f61c9334812347a0036afd52258ad2198f85545ebfb26d63475a75
+  version: 3.1.4
+  resolution: "@types/ejs@npm:3.1.4"
+  checksum: 7e61b59a4a1a5232e081f0f2408b99ee5664446406004da088b29ac849b1490fbd6fbdf2c2a1aeb5049e690edb80f6c0cbe8387930a114e2c1c7dc0e67d0bc04
   languageName: node
   linkType: hard
 
@@ -18705,9 +18688,9 @@ __metadata:
   linkType: hard
 
 "@types/google-protobuf@npm:^3.7.2":
-  version: 3.15.7
-  resolution: "@types/google-protobuf@npm:3.15.7"
-  checksum: d369f1442ec943150dfc1e8af6fbc5ae2402cf3ef44953e3f4d447c203affe64d6c5d614de59561df0e03f23151df85c456d58a7e5b26a7f3ccec5899b1c22be
+  version: 3.15.9
+  resolution: "@types/google-protobuf@npm:3.15.9"
+  checksum: e154014f29bfbe1a9b0a3fcdfc6a754f01a7250c47d34d445656abe6fb1e6d7fcab85aa38eb0ffe5f43abbe20290401640f612293abbfcf4286143402f2ba82a
   languageName: node
   linkType: hard
 
@@ -19022,9 +19005,9 @@ __metadata:
   linkType: hard
 
 "@types/libsodium-wrappers@npm:^0.7.10":
-  version: 0.7.11
-  resolution: "@types/libsodium-wrappers@npm:0.7.11"
-  checksum: e3c3acdfc178a466a04d81c030ba1b748abc9335b1d66421125eb55b32cbaf6a9076e32a98744fcb84ba2fa2af342203ff29054262dcc465c12c4feddddb64ac
+  version: 0.7.12
+  resolution: "@types/libsodium-wrappers@npm:0.7.12"
+  checksum: 8f25b4ffe6b60c36f3c59b3dea2e952b8790c9b8375ee5235e6d294c1519a578b7882d773f168005eb0f3fdb4f11e06ba27b30b89d2c3b8be3f985c7eedd0491
   languageName: node
   linkType: hard
 
@@ -19036,9 +19019,9 @@ __metadata:
   linkType: hard
 
 "@types/lodash@npm:^4.14.151, @types/lodash@npm:^4.14.173, @types/lodash@npm:^4.14.175":
-  version: 4.14.199
-  resolution: "@types/lodash@npm:4.14.199"
-  checksum: e68d1fcbbfce953ed87b296a628573f62939227bcda0c934954e862b421e8a34c5e71cad6fea27b9980567909e6a4698f09025692958e36d64ea9ed99ec6fb2e
+  version: 4.14.200
+  resolution: "@types/lodash@npm:4.14.200"
+  checksum: 6471f8bb5da692a6ecf03a8da4935bfbc341e67ee9bcb4f5730bfacff0c367232548f0a01e8ac5ea18c6fe78fb085d502494e33ccb47a7ee87cbdee03b47d00d
   languageName: node
   linkType: hard
 
@@ -19186,11 +19169,11 @@ __metadata:
   linkType: hard
 
 "@types/node-forge@npm:^1.3.0":
-  version: 1.3.7
-  resolution: "@types/node-forge@npm:1.3.7"
+  version: 1.3.8
+  resolution: "@types/node-forge@npm:1.3.8"
   dependencies:
     "@types/node": "*"
-  checksum: e604e0e09e0ffdcf7babdf2415f7d2de14a7718ddc9c5916a693f81597dc80865d525dfb7fc876a787c25bf1164518cd8ecf1667598bee00c9ba1349f93ba4eb
+  checksum: fa75d22ef65671732f31965ea28618c52a1b4ef0fa44fa35110ba0fa375e35563e056c21545cf1b23a4b0b6546333e8885db003957b0cd8a45fecef16000ff63
   languageName: node
   linkType: hard
 
@@ -19304,13 +19287,13 @@ __metadata:
   linkType: hard
 
 "@types/passport-google-oauth20@npm:^2.0.3":
-  version: 2.0.12
-  resolution: "@types/passport-google-oauth20@npm:2.0.12"
+  version: 2.0.13
+  resolution: "@types/passport-google-oauth20@npm:2.0.13"
   dependencies:
     "@types/express": "*"
     "@types/passport": "*"
     "@types/passport-oauth2": "*"
-  checksum: e73fff5b7e3191ab1a3633b05b4463d656ef658fe0612bc33517a1df81c8a1f019c91dcbd244233320f9eb133892b589dcb6a6348082e85e45aa5c6ed034d191
+  checksum: 0068a92f202bfb1a4935ddf7c6f11975bd6fbc30db3d4f2a7cf5d74aa3455b57b4083884ec069c87eda7746b35b6777018dcf983533bd50677e4cf684c091632
   languageName: node
   linkType: hard
 
@@ -19381,10 +19364,10 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@types/pluralize@npm:^0.0.31":
-  version: 0.0.31
-  resolution: "@types/pluralize@npm:0.0.31"
-  checksum: 950d52d8f6709cdb7001336942fba0a63bf54b45695391fc2244d03db69b0eb6f187f80519d74941f5ce1dfa900d3975f2ed52e98b1f63a79045f5c085832beb
+"@types/pluralize@npm:^0.0.32":
+  version: 0.0.32
+  resolution: "@types/pluralize@npm:0.0.32"
+  checksum: 788aa2ad144a0e7b318d03bddfeefecd65e97793e0faad748c458538abd8d680bcc096fe1219567a7c19d41d23b74e45868d7d43a06a44135798eb8da09a1655
   languageName: node
   linkType: hard
 
@@ -19528,11 +19511,11 @@ __metadata:
   linkType: hard
 
 "@types/react-window@npm:^1.8.5":
-  version: 1.8.6
-  resolution: "@types/react-window@npm:1.8.6"
+  version: 1.8.7
+  resolution: "@types/react-window@npm:1.8.7"
   dependencies:
     "@types/react": "*"
-  checksum: 3084190ab50a84d8499a6df574ad67474566cd7aeeb8fc6ce82a7a13421fd39e21a059c51f9d12f38e5ac52eb9d65f6184e3fb6cb62841e93b197b7401b36e35
+  checksum: e135299b5d55b63eb3f400570b77ff64afaeeb305587f71f7e20734a879aaddec6f6d24180e54c6c2f3200a71712ac7e6f1474733fe71e879a65f9e4ab113977
   languageName: node
   linkType: hard
 
@@ -19649,11 +19632,11 @@ __metadata:
   linkType: hard
 
 "@types/sanitize-html@npm:^2.6.2":
-  version: 2.9.2
-  resolution: "@types/sanitize-html@npm:2.9.2"
+  version: 2.9.3
+  resolution: "@types/sanitize-html@npm:2.9.3"
   dependencies:
     htmlparser2: ^8.0.0
-  checksum: bdd0db4a39125b8836573ede5ec5cc2f7b0dff5ecfbeae68aefb40163c916429cfb500d581ad3a18613e8d6a53f707abb279350e0811122e84e21b0223b8d560
+  checksum: 882a39ec767e0c5fd4402108db4b8e4f85ff555cf490ad8c7340d9c58c57c3ffefa33c0d248d5e67047df6f744ca60e125da5485efc18ac450783f3900178373
   languageName: node
   linkType: hard
 
@@ -19672,9 +19655,9 @@ __metadata:
   linkType: hard
 
 "@types/semver@npm:^7.3.12, @types/semver@npm:^7.3.8, @types/semver@npm:^7.5.0":
-  version: 7.5.3
-  resolution: "@types/semver@npm:7.5.3"
-  checksum: 349fdd1ab6c213bac5c991bac766bd07b8b12e63762462bb058740dcd2eb09c8193d068bb226f134661275f2022976214c0e727a4e5eb83ec1b131127c980d3e
+  version: 7.5.4
+  resolution: "@types/semver@npm:7.5.4"
+  checksum: 120c0189f6fec5f2d12d0d71ac8a4cfa952dc17fa3d842e8afddb82bba8828a4052f8799c1653e2b47ae1977435f38e8985658fde971905ce5afb8e23ee97ecf
   languageName: node
   linkType: hard
 
@@ -19689,11 +19672,11 @@ __metadata:
   linkType: hard
 
 "@types/serve-handler@npm:^6.1.0":
-  version: 6.1.2
-  resolution: "@types/serve-handler@npm:6.1.2"
+  version: 6.1.3
+  resolution: "@types/serve-handler@npm:6.1.3"
   dependencies:
     "@types/node": "*"
-  checksum: 6b206cba18bf77b938e340e1015c631d92b492918ba78dfdff57590a25da8c4bc63fba90f43d763f854c5aa523b243c283ba84d14cfeb1841795337c8b978bd6
+  checksum: 9202122f38a5d317abd03bee56921398cd1a6bd01274271eb1f4b2810ff2825037aece51acb9d88ced043a3b9530c3836165d4fbef961523cc941fd0860937de
   languageName: node
   linkType: hard
 
@@ -23496,19 +23479,6 @@ __metadata:
   version: 0.0.230
   resolution: "code-error-fragment@npm:0.0.230"
   checksum: 6c5e800d6d70b30938cc85a2fc2c6069f028eadb58bceb65716b995ce6228c99906302f2c438ba50115fd81a1ee15dd95dc7d317b16a6c590e311ac7e50613f3
-  languageName: node
-  linkType: hard
-
-"codemirror-graphql@npm:^1.3.2":
-  version: 1.3.2
-  resolution: "codemirror-graphql@npm:1.3.2"
-  dependencies:
-    graphql-language-service: ^5.0.6
-  peerDependencies:
-    "@codemirror/language": ^0.20.0
-    codemirror: ^5.65.3
-    graphql: ^15.5.0 || ^16.0.0
-  checksum: d134953dc402c44d1a4572ef6f3f6654cac4611dd9f7fefddbc6f17805d3866e8c86d956b69efcec94fcbcaa1a4d0683561ee46ec4938ea311b1843a001fe5f1
   languageName: node
   linkType: hard
 
@@ -29322,24 +29292,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"graphiql@npm:^1.8.8":
-  version: 1.11.5
-  resolution: "graphiql@npm:1.11.5"
-  dependencies:
-    "@graphiql/react": ^0.10.0
-    "@graphiql/toolkit": ^0.6.1
-    entities: ^2.0.0
-    graphql-language-service: ^5.0.6
-    markdown-it: ^12.2.0
-  peerDependencies:
-    graphql: ^15.5.0 || ^16.0.0
-    react: ^16.8.0 || ^17.0.0 || ^18.0.0
-    react-dom: ^16.8.0 || ^17.0.0 || ^18.0.0
-  checksum: 0bad3d056ba1185aae1020277bb08a5ee75c352f8c659ca092f0cb4f2126a1c176015e7f58ff8fd5f8de8709a8bc3ff9d1b765ca9d2fcc412d67e23d45c862f6
-  languageName: node
-  linkType: hard
-
-"graphiql@npm:^3.0.6":
+"graphiql@npm:3.0.6, graphiql@npm:^3.0.6":
   version: 3.0.6
   resolution: "graphiql@npm:3.0.6"
   dependencies:
@@ -29398,7 +29351,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"graphql-language-service@npm:5.2.0, graphql-language-service@npm:^5.0.6, graphql-language-service@npm:^5.2.0":
+"graphql-language-service@npm:5.2.0, graphql-language-service@npm:^5.2.0":
   version: 5.2.0
   resolution: "graphql-language-service@npm:5.2.0"
   dependencies:

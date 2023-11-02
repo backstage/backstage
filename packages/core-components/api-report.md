@@ -746,16 +746,13 @@ export type MetadataTableTitleCellClassKey = 'root';
 export type MicDropClassKey = 'micDrop';
 
 // Warning: (ae-forgotten-export) The symbol "Props_3" needs to be exported by the entry point index.d.ts
-// Warning: (ae-missing-release-tag) "MissingAnnotationEmptyState" is part of the package's API, but it is missing a release tag (@alpha, @beta, @public, or @internal)
 //
-// @public (undocumented)
+// @public @deprecated (undocumented)
 export function MissingAnnotationEmptyState(
   props: Props_3,
 ): React_2.JSX.Element;
 
-// Warning: (ae-missing-release-tag) "MissingAnnotationEmptyStateClassKey" is part of the package's API, but it is missing a release tag (@alpha, @beta, @public, or @internal)
-//
-// @public (undocumented)
+// @public @deprecated (undocumented)
 export type MissingAnnotationEmptyStateClassKey = 'code';
 
 // @public
