@@ -209,10 +209,18 @@ async function main() {
     .addRouter('/api', apiRouter)
     .addRouter('', await app(appEnv));
 
-  await service.start().catch(err => {
-    logger.error(err);
-    process.exit(1);
-  });
+  await service
+    .start()
+    .then(() => {
+      scaffolderEnv.eventBroker.publish({
+        topic: 'scaffolder.readiness',
+        eventPayload: { status: 'ready' },
+      });
+    })
+    .catch(err => {
+      logger.error(err);
+      process.exit(1);
+    });
 }
 
 module.hot?.accept();

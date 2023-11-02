@@ -65,7 +65,7 @@ export type SerializedTask = {
  *
  * @public
  */
-export type TaskEventType = 'completion' | 'log' | 'cancelled';
+export type TaskEventType = 'completion' | 'log' | 'cancelled' | 'recovered';
 
 /**
  * SerializedTaskEvent
@@ -119,6 +119,8 @@ export interface TaskContext {
   emitLog(message: string, logMetadata?: JsonObject): Promise<void>;
 
   getWorkspaceName(): Promise<string>;
+
+  getStepIdToRecoverFrom?(): Promise<string | undefined>;
 }
 
 /**

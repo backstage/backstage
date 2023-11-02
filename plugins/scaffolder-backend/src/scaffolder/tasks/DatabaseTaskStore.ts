@@ -33,8 +33,11 @@ import {
   TaskStoreCreateTaskOptions,
   TaskStoreCreateTaskResult,
   TaskStoreShutDownTaskOptions,
+  TaskStoreRecoverTaskOptions,
 } from './types';
 import { DateTime } from 'luxon';
+import { TaskRecovery, TaskSpec } from '@backstage/plugin-scaffolder-common';
+import { compactEvents } from './taskRecoveryHelper';
 
 const migrationsDir = resolvePackagePath(
   '@backstage/plugin-scaffolder-backend',
@@ -245,7 +248,7 @@ export class DatabaseTaskStore implements TaskStore {
           createdAt: task.created_at,
           createdBy: task.created_by ?? undefined,
           secrets,
-        };
+        } as SerializedTask;
       } catch (error) {
         throw new Error(`Failed to parse spec of task '${task.id}', ${error}`);
       }
@@ -264,7 +267,7 @@ export class DatabaseTaskStore implements TaskStore {
   }
 
   async listStaleTasks(options: { timeoutS: number }): Promise<{
-    tasks: { taskId: string }[];
+    tasks: { taskId: string; recovery?: TaskRecovery }[];
   }> {
     const { timeoutS } = options;
     let heartbeatInterval = this.db.raw(`? - interval '${timeoutS} seconds'`, [
@@ -283,6 +286,7 @@ export class DatabaseTaskStore implements TaskStore {
       .where('status', 'processing')
       .andWhere('last_heartbeat_at', '<=', heartbeatInterval);
     const tasks = rawRows.map(row => ({
+      recovery: (JSON.parse(row.spec) as TaskSpec).recovery,
       taskId: row.id,
     }));
     return { tasks };
@@ -295,7 +299,7 @@ export class DatabaseTaskStore implements TaskStore {
   }): Promise<void> {
     const { taskId, status, eventBody } = options;
 
-    let oldStatus: string;
+    let oldStatus: TaskStatus;
     if (['failed', 'completed', 'cancelled'].includes(status)) {
       oldStatus = 'processing';
     } else {
@@ -378,7 +382,7 @@ export class DatabaseTaskStore implements TaskStore {
   async listEvents(
     options: TaskStoreListEventsOptions,
   ): Promise<{ events: SerializedTaskEvent[] }> {
-    const { taskId, after } = options;
+    const { taskId, after, raw } = options;
     const rawEvents = await this.db<RawDbTaskEventRow>('task_events')
       .where({
         task_id: taskId,
@@ -407,6 +411,12 @@ export class DatabaseTaskStore implements TaskStore {
         );
       }
     });
+
+    if (!raw) {
+      const taskSpec = await this.fetchTaskSpec({ taskId });
+      return compactEvents(taskSpec, events);
+    }
+
     return { events };
   }
 
@@ -449,6 +459,45 @@ export class DatabaseTaskStore implements TaskStore {
     });
   }
 
+  private async fetchTaskSpec(options: {
+    taskId: string;
+  }): Promise<TaskSpec | undefined> {
+    const res = (await this.db<RawDbTaskRow>('tasks')
+      .where({ id: options.taskId })
+      .select('spec')) as { spec: string }[];
+    if (res.length) {
+      const [{ spec }] = res;
+      return spec ? (JSON.parse(spec as string) as TaskSpec) : undefined;
+    }
+    return undefined;
+  }
+
+  private async reopenTask(options: { taskId: string }): Promise<void> {
+    const { taskId } = options;
+
+    await this.db.transaction(async tx => {
+      const [{ spec }] = await tx<RawDbTaskRow>('tasks')
+        .where({ id: taskId })
+        .update(
+          {
+            status: 'open',
+            last_heartbeat_at: this.db.fn.now(),
+          },
+          ['spec'],
+        );
+
+      await this.db<RawDbTaskEventRow>('task_events').insert({
+        task_id: taskId,
+        event_type: 'recovered',
+        body: JSON.stringify({
+          recoverStrategy:
+            (JSON.parse(spec as string) as TaskSpec).recovery?.strategy ??
+            'none',
+        }),
+      });
+    });
+  }
+
   async cancelTask(
     options: TaskStoreEmitOptions<{ message: string } & JsonObject>,
   ): Promise<void> {
@@ -459,5 +508,19 @@ export class DatabaseTaskStore implements TaskStore {
       event_type: 'cancelled',
       body: serializedBody,
     });
+  }
+
+  async recoverTasks(options: TaskStoreRecoverTaskOptions): Promise<void> {
+    const { tasks } = await this.listStaleTasks({
+      timeoutS: options.timeoutS,
+    });
+
+    for (const task of tasks) {
+      if (
+        ['idempotent', 'restart'].includes(task.recovery?.strategy ?? 'none')
+      ) {
+        await this.reopenTask({ taskId: task.taskId });
+      }
+    }
   }
 }

@@ -74,6 +74,7 @@ import {
   PermissionRule,
 } from '@backstage/plugin-permission-node';
 import { scaffolderActionRules, scaffolderTemplateRules } from './rules';
+import { EventBroker, EventParams } from '@backstage/plugin-events-node';
 
 /**
  *
@@ -123,6 +124,7 @@ export interface RouterOptions {
   database: PluginDatabaseManager;
   catalogClient: CatalogApi;
   scheduler?: PluginTaskScheduler;
+  eventBroker?: EventBroker;
   actions?: TemplateAction<any, any>[];
   /**
    * @deprecated taskWorkers is deprecated in favor of concurrentTasksLimit option with a single TaskWorker
@@ -251,7 +253,7 @@ export async function createRouter(
   let taskBroker: TaskBroker;
   if (!options.taskBroker) {
     const databaseTaskStore = await DatabaseTaskStore.create({ database });
-    taskBroker = new StorageTaskBroker(databaseTaskStore, logger);
+    taskBroker = new StorageTaskBroker(databaseTaskStore, logger, config);
 
     if (scheduler && databaseTaskStore.listStaleTasks) {
       await scheduler.scheduleTask({
@@ -276,7 +278,7 @@ export async function createRouter(
 
   const actionRegistry = new TemplateActionRegistry();
 
-  const workers = [];
+  const workers: TaskWorker[] = [];
   if (concurrentTasksLimit !== 0) {
     for (let i = 0; i < (taskWorkers || 1); i++) {
       const worker = await TaskWorker.create({
@@ -306,7 +308,19 @@ export async function createRouter(
       });
 
   actionsToRegister.forEach(action => actionRegistry.register(action));
-  workers.forEach(worker => worker.start());
+
+  if (options.eventBroker) {
+    options.eventBroker?.subscribe({
+      supportsEventTopics: () => ['scaffolder.readiness'],
+      onEvent: async (params: EventParams<{ status: string }>) => {
+        if (params.eventPayload.status === 'ready') {
+          workers.forEach(worker => worker.start());
+        }
+      },
+    });
+  } else {
+    workers.forEach(worker => worker.start());
+  }
 
   const dryRunner = createDryRunner({
     actionRegistry,
@@ -437,6 +451,7 @@ export async function createRouter(
           id: step.id ?? `step-${index + 1}`,
           name: step.name ?? step.action,
         })),
+        recovery: template.spec.recovery,
         output: template.spec.output ?? {},
         parameters: values,
         user: {
