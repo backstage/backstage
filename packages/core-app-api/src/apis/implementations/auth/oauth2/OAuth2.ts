@@ -171,8 +171,8 @@ export default class OAuth2
     this.scopeTransform = options.scopeTransform;
   }
 
-  async signIn() {
-    await this.getAccessToken();
+  async signIn(scope?: string | string[]) {
+    await this.getAccessToken(scope);
   }
 
   async signOut() {
