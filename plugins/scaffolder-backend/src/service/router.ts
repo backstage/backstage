@@ -311,7 +311,7 @@ export async function createRouter(
 
   if (options.eventBroker) {
     options.eventBroker?.subscribe({
-      supportsEventTopics: () => ['scaffolder.readiness'],
+      supportsEventTopics: () => ['backend.startup.status'],
       onEvent: async (params: EventParams<{ status: string }>) => {
         if (params.eventPayload.status === 'ready') {
           workers.forEach(worker => worker.start());
