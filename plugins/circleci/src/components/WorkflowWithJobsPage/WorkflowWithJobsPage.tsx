@@ -27,7 +27,7 @@ import {
   Link,
 } from '@backstage/core-components';
 import { useWorkflow } from '../../hooks/useWorkflow';
-import { Job, Workflow } from '../..';
+import { Job, Workflow } from '../../types';
 import { useWorkflowJobs } from '../../hooks/useWorkflowJobs';
 import { BuildWithSteps } from './lib/BuildWithSteps';
 import { JobsList } from './lib/JobsList';

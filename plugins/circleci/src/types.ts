@@ -16,13 +16,11 @@
 
 // API v2
 
-/** @public */
 export interface PipelineListResponse {
   items: Array<Pipeline>;
   next_page_token: string;
 }
 
-/** @public */
 export interface Pipeline {
   id: string;
   errors: Array<PipelineErrors>;
@@ -36,9 +34,7 @@ export interface Pipeline {
   vcs?: PipelineVcs;
 }
 
-/** @public */
 export namespace Pipeline {
-  /** @public */
   export enum StateEnum {
     Created = 'created',
     Errored = 'errored',
@@ -48,15 +44,12 @@ export namespace Pipeline {
   }
 }
 
-/** @public */
 export interface PipelineErrors {
   type: PipelineErrors.TypeEnum;
   message: string;
 }
 
-/** @public */
 export namespace PipelineErrors {
-  /** @public */
   export enum TypeEnum {
     Config = 'config',
     ConfigFetch = 'config-fetch',
@@ -67,16 +60,13 @@ export namespace PipelineErrors {
   }
 }
 
-/** @public */
 export interface PipelineTrigger {
   type: PipelineTrigger.TypeEnum;
   receivedAt: Date;
   actor: PipelineTriggerActor;
 }
 
-/** @public */
 export namespace PipelineTrigger {
-  /** @public */
   export enum TypeEnum {
     ScheduledPipeline = 'scheduled_pipeline',
     Explicit = 'explicit',
@@ -85,13 +75,11 @@ export namespace PipelineTrigger {
   }
 }
 
-/** @public */
 export interface PipelineTriggerActor {
   login: string;
   avatar_url: string;
 }
 
-/** @public */
 export interface PipelineVcs {
   provider_name: string;
   target_repository_url: string;
@@ -104,19 +92,16 @@ export interface PipelineVcs {
   origin_repository_url: string;
 }
 
-/** @public */
 export interface PipelineVcsCommit {
   subject: string;
   body: string;
 }
 
-/** @public */
 export interface PipelineTriggerActor {
   login: string;
   avatarUrl: string;
 }
 
-/** @public */
 export interface PipelineVcs {
   providerName: string;
   targetRepositoryUrl: string;
@@ -129,13 +114,11 @@ export interface PipelineVcs {
   originRepositoryUrl: string;
 }
 
-/** @public */
 export interface PipelineVcsCommit {
   subject: string;
   body: string;
 }
 
-/** @public */
 export interface Workflow {
   pipeline_id: string;
   canceled_by?: string;
@@ -151,14 +134,11 @@ export interface Workflow {
   stopped_at: string;
 }
 
-/** @public */
 export namespace Workflow {
-  /** @public */
   export enum TagEnum {
     Setup = 'setup',
   }
 
-  /** @public */
   export enum StatusEnum {
     Success = 'success',
     Running = 'running',
@@ -172,19 +152,16 @@ export namespace Workflow {
   }
 }
 
-/** @public */
 export interface WorkflowListResponse {
   items: Array<Workflow>;
   next_page_token: string;
 }
 
-/** @public */
 export interface WorkflowJobListResponse {
   items: Array<Job>;
   next_page_token: string;
 }
 
-/** @public */
 export interface RerunWorkflowResponse {
   workflow_id: string;
 }
@@ -205,7 +182,6 @@ export interface Job {
 }
 
 export namespace Job {
-  /** @public */
   export enum StatusEnum {
     Success = 'success',
     Running = 'running',
@@ -223,7 +199,6 @@ export namespace Job {
     Unauthorized = 'unauthorized',
   }
 
-  /** @public */
   export enum TypeEnum {
     Build = 'build',
     Approval = 'approval',

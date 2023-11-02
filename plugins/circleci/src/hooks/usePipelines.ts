@@ -14,11 +14,12 @@
  * limitations under the License.
  */
 import { useCallback, useEffect, useRef, useState } from 'react';
-import { Pipeline, PipelineInfo, Workflow, circleCIApiRef } from '../..';
+import { Pipeline, PipelineInfo, Workflow } from '../types';
 import { errorApiRef, useApi } from '@backstage/core-plugin-api';
 import { AuthenticationError } from '@backstage/errors';
 import useAsyncRetry from 'react-use/lib/useAsyncRetry';
 import { useProjectSlugFromEntity } from './useProjectSlugFromEntity';
+import { circleCIApiRef } from '../api';
 
 type PipelinesPage = {
   items?: PipelineInfo[];

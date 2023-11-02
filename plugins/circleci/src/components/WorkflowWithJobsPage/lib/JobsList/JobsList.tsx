@@ -19,7 +19,7 @@ import { Grid, Paper, Typography, makeStyles } from '@material-ui/core';
 import { InfoCard, LinkButton } from '@backstage/core-components';
 import classNames from 'classnames';
 import LaunchIcon from '@material-ui/icons/Launch';
-import { Job, Workflow } from '../../../..';
+import { Job, Workflow } from '../../../../types';
 import { useApp } from '@backstage/core-plugin-api';
 
 const useStyles = makeStyles(theme => {

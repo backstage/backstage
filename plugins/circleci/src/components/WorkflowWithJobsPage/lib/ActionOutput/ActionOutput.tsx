@@ -27,7 +27,7 @@ import ExpandMoreIcon from '@material-ui/icons/ExpandMore';
 import { useApp } from '@backstage/core-plugin-api';
 import { durationHumanized } from '../../../../util';
 import { useStepOutput } from '../../../../hooks';
-import { BuildStepAction } from '../../../..';
+import { BuildStepAction } from '../../../../types';
 
 const useStyles = makeStyles({
   accordionDetails: {

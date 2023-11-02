@@ -44,7 +44,7 @@ import {
   PipelineTriggerActor,
   PipelineVcs,
   Workflow,
-} from '../../../..';
+} from '../../../../types';
 
 export type CITablePipelineInfo = PipelineInfo & {
   rerun: (workflowId: string) => void;
