@@ -14,7 +14,14 @@
  * limitations under the License.
  */
 
-import { AppNode, AppTree } from '@backstage/frontend-plugin-api';
+import {
+  AppNode,
+  AppTree,
+  ExtensionDataRef,
+  RouteRef,
+  coreExtensionData,
+  useRouteRef,
+} from '@backstage/frontend-plugin-api';
 import Box from '@material-ui/core/Box';
 import Tooltip from '@material-ui/core/Tooltip';
 import Typography from '@material-ui/core/Typography';
@@ -23,6 +30,7 @@ import { Theme, makeStyles } from '@material-ui/core/styles';
 import InputIcon from '@material-ui/icons/InputSharp';
 import DisabledIcon from '@material-ui/icons/NotInterestedSharp';
 import React from 'react';
+import { Link } from 'react-router-dom';
 
 function createOutputColorGenerator(availableColors: string[]) {
   const map = new Map<string, string>();
@@ -139,17 +147,75 @@ const useStyles = makeStyles(theme => ({
   },
 }));
 
-function Output(props: { id: string }) {
-  const { id } = props;
+const useOutputStyles = makeStyles(theme => ({
+  output: ({ color }: { color: string }) => ({
+    padding: `0 10px`,
+    height: 20,
+    borderRadius: 10,
+    color: theme.palette.getContrastText(color),
+    backgroundColor: color,
+  }),
+}));
+
+function getFullPath(node?: AppNode): string {
+  if (!node) {
+    return '';
+  }
+  const parent = node.edges.attachedTo?.node;
+  const part = node.instance?.getData(coreExtensionData.routePath);
+  if (!part) {
+    return getFullPath(parent);
+  }
+  return getFullPath(parent) + part;
+}
+
+function OutputLink(props: {
+  dataRef: ExtensionDataRef<unknown>;
+  node: AppNode;
+  className: string;
+}) {
+  const routeRef = props.node.instance?.getData(coreExtensionData.routeRef);
+
+  let link: string | undefined = undefined;
+  try {
+    link = useRouteRef(routeRef as RouteRef<undefined>)();
+  } catch {
+    /* ignore */
+  }
+
+  return (
+    <Tooltip title={<Typography>{props.dataRef.id}</Typography>}>
+      <Box className={props.className}>
+        {link ? <Link to={link}>link</Link> : null}
+      </Box>
+    </Tooltip>
+  );
+}
+
+function Output(props: { dataRef: ExtensionDataRef<unknown>; node: AppNode }) {
+  const { dataRef, node } = props;
+  const { id } = dataRef;
+  const instance = node.instance!;
+
+  const classes = useOutputStyles({ color: getOutputColor(id) });
+
+  if (id === coreExtensionData.routePath.id) {
+    return (
+      <Tooltip title={<Typography>{getFullPath(node)}</Typography>}>
+        <Box className={classes.output}>
+          {String(instance.getData(dataRef))}
+        </Box>
+      </Tooltip>
+    );
+  }
+
+  if (id === coreExtensionData.routeRef.id) {
+    return <OutputLink {...props} className={classes.output} />;
+  }
 
   return (
     <Tooltip title={<Typography>{id}</Typography>}>
-      <Box
-        width={18}
-        height={18}
-        borderRadius="50%"
-        bgcolor={getOutputColor(id)}
-      />
+      <Box className={classes.output} />
     </Tooltip>
   );
 }
@@ -217,8 +283,7 @@ function Extension(props: { node: AppNode }) {
   const enabled = Boolean(node.instance);
   const classes = useStyles({ enabled });
 
-  const dataRefIds =
-    node.instance && [...node.instance.getDataRefs()].map(r => r.id);
+  const dataRefs = node.instance && [...node.instance.getDataRefs()];
 
   return (
     <Box key={node.spec.id} className={classes.extension}>
@@ -229,9 +294,11 @@ function Extension(props: { node: AppNode }) {
           </Typography>
         </Tooltip>
         <Box className={classes.extensionHeaderOutputs}>
-          {dataRefIds &&
-            dataRefIds.length > 0 &&
-            [...dataRefIds].sort().map(id => <Output key={id} id={id} />)}
+          {dataRefs &&
+            dataRefs.length > 0 &&
+            dataRefs
+              .sort((a, b) => a.id.localeCompare(b.id))
+              .map(ref => <Output key={ref.id} dataRef={ref} node={node} />)}
           {!enabled && <DisabledIcon fontSize="small" />}
         </Box>
       </Box>
