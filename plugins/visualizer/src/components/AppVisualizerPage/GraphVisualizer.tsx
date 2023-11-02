@@ -170,9 +170,7 @@ function Attachments(props: {
     <Box className={classes.attachments}>
       {[...attachments.entries()]
         .sort(([a], [b]) => a.localeCompare(b))
-        .map(([key, v]) => {
-          const children = v.sort((a, b) => a.spec.id.localeCompare(b.spec.id));
-
+        .map(([key, children]) => {
           return (
             <Box key={key} className={classes.attachmentsInput}>
               <Box className={classes.attachmentsInputTitle}>
