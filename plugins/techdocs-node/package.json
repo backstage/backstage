@@ -1,7 +1,7 @@
 {
   "name": "@backstage/plugin-techdocs-node",
   "description": "Common node.js functionalities for TechDocs, to be shared between techdocs-backend plugin and techdocs-cli",
-  "version": "1.9.1-next.0",
+  "version": "1.10.0-next.1",
   "main": "src/index.ts",
   "types": "src/index.ts",
   "publishConfig": {

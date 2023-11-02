@@ -1,5 +1,64 @@
 # example-backend
 
+## 0.2.89-next.1
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/plugin-catalog-backend@1.15.0-next.1
+  - @backstage/plugin-catalog-node@1.5.0-next.1
+  - @backstage/integration@1.7.2-next.0
+  - @backstage/plugin-auth-backend@0.20.0-next.1
+  - @backstage/plugin-techdocs-backend@1.9.0-next.1
+  - @backstage/plugin-scaffolder-backend@1.19.0-next.1
+  - @backstage/plugin-catalog-backend-module-scaffolder-entity-model@0.1.4-next.1
+  - @backstage/plugin-jenkins-backend@0.3.1-next.1
+  - @backstage/plugin-kubernetes-backend@0.13.1-next.1
+  - @backstage/plugin-lighthouse-backend@0.3.4-next.1
+  - @backstage/plugin-linguist-backend@0.5.4-next.1
+  - @backstage/plugin-search-backend-module-catalog@0.1.11-next.1
+  - @backstage/plugin-search-backend-module-techdocs@0.1.11-next.1
+  - @backstage/plugin-todo-backend@0.3.5-next.1
+  - example-app@0.2.89-next.1
+  - @backstage/backend-common@0.19.9-next.1
+  - @backstage/plugin-adr-backend@0.4.4-next.1
+  - @backstage/plugin-code-coverage-backend@0.2.21-next.1
+  - @backstage/plugin-scaffolder-backend-module-confluence-to-markdown@0.2.8-next.1
+  - @backstage/plugin-scaffolder-backend-module-rails@0.4.24-next.1
+  - @backstage/backend-tasks@0.5.12-next.1
+  - @backstage/plugin-app-backend@0.3.55-next.1
+  - @backstage/plugin-auth-node@0.4.1-next.1
+  - @backstage/plugin-badges-backend@0.3.4-next.1
+  - @backstage/plugin-entity-feedback-backend@0.2.4-next.1
+  - @backstage/plugin-events-backend@0.2.16-next.1
+  - @backstage/plugin-permission-node@0.7.18-next.1
+  - @backstage/plugin-playlist-backend@0.3.11-next.1
+  - @backstage/plugin-proxy-backend@0.4.5-next.1
+  - @backstage/plugin-rollbar-backend@0.1.52-next.1
+  - @backstage/plugin-search-backend@1.4.7-next.1
+  - @backstage/plugin-search-backend-module-explore@0.1.11-next.1
+  - @backstage/plugin-search-backend-module-pg@0.5.16-next.1
+  - @backstage/plugin-tech-insights-backend@0.5.21-next.1
+  - @backstage/plugin-azure-devops-backend@0.4.4-next.1
+  - @backstage/plugin-azure-sites-backend@0.1.17-next.1
+  - @backstage/plugin-devtools-backend@0.2.4-next.1
+  - @backstage/plugin-explore-backend@0.0.17-next.1
+  - @backstage/plugin-graphql-backend@0.2.1-next.1
+  - @backstage/plugin-kafka-backend@0.3.5-next.1
+  - @backstage/plugin-nomad-backend@0.1.9-next.1
+  - @backstage/plugin-permission-backend@0.5.30-next.1
+  - @backstage/plugin-search-backend-module-elasticsearch@1.3.10-next.1
+  - @backstage/plugin-search-backend-node@1.2.11-next.1
+  - @backstage/plugin-tech-insights-backend-module-jsonfc@0.1.39-next.1
+  - @backstage/plugin-tech-insights-node@0.4.13-next.1
+  - @backstage/catalog-client@1.4.5
+  - @backstage/catalog-model@1.4.3
+  - @backstage/config@1.1.1
+  - @backstage/plugin-catalog-backend-module-unprocessed@0.3.4-next.1
+  - @backstage/plugin-events-node@0.2.16-next.1
+  - @backstage/plugin-permission-common@0.7.9
+  - @backstage/plugin-search-common@1.2.7
+
 ## 0.2.89-next.0
 
 ### Patch Changes

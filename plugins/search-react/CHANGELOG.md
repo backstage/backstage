@@ -1,5 +1,21 @@
 # @backstage/plugin-search-react
 
+## 1.7.2-next.1
+
+### Patch Changes
+
+- 77f009b35d: Internal updates to match changes in the experimental `@backstage/frontend-plugin-api`.
+- a539643cba: Minor refactor of search bar analytics capture
+- Updated dependencies
+  - @backstage/frontend-app-api@0.3.0-next.1
+  - @backstage/frontend-plugin-api@0.3.0-next.1
+  - @backstage/core-components@0.13.8-next.1
+  - @backstage/core-plugin-api@1.8.0-next.0
+  - @backstage/theme@0.4.4-next.0
+  - @backstage/types@1.1.1
+  - @backstage/version-bridge@1.0.7-next.0
+  - @backstage/plugin-search-common@1.2.7
+
 ## 1.7.2-next.0
 
 ### Patch Changes

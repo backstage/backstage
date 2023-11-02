@@ -1,5 +1,23 @@
 # @backstage/plugin-playlist
 
+## 0.1.18-next.1
+
+### Patch Changes
+
+- 62b5922916: Internal theme type updates
+- Updated dependencies
+  - @backstage/plugin-catalog-react@1.9.0-next.1
+  - @backstage/plugin-search-react@1.7.2-next.1
+  - @backstage/core-components@0.13.8-next.1
+  - @backstage/catalog-model@1.4.3
+  - @backstage/core-plugin-api@1.8.0-next.0
+  - @backstage/errors@1.2.3
+  - @backstage/theme@0.4.4-next.0
+  - @backstage/plugin-catalog-common@1.0.17
+  - @backstage/plugin-permission-common@0.7.9
+  - @backstage/plugin-permission-react@0.4.17-next.0
+  - @backstage/plugin-playlist-common@0.1.11
+
 ## 0.1.18-next.0
 
 ### Patch Changes

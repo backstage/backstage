@@ -207,6 +207,7 @@ mailto
 maintainer's
 maintainership
 makefile
+Matomo
 md
 memcache
 memoize
