@@ -16,7 +16,7 @@
 
 import { DependencyGraphTypes } from '@backstage/core-components';
 import { MouseEventHandler } from 'react';
-import { Entity } from '@backstage/catalog-model/';
+import { Entity } from '@backstage/catalog-model';
 
 /**
  * Additional Data for entities.
@@ -31,7 +31,7 @@ export type EntityEdgeData = {
   /**
    * Whether the entity is visible or not.
    */
-  // Not used, but has to be non empty to draw a label at all!
+  // Not used, but has to be non-empty to draw a label at all!
   label: 'visible';
 };
 
