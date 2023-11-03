@@ -8,7 +8,7 @@
 import { BackstagePlugin } from '@backstage/core-plugin-api';
 import { CompoundEntityRef } from '@backstage/catalog-model';
 import { DependencyGraphTypes } from '@backstage/core-components';
-import { Entity } from '@backstage/catalog-model/';
+import { Entity } from '@backstage/catalog-model';
 import { ExternalRouteRef } from '@backstage/core-plugin-api';
 import { InfoCardVariants } from '@backstage/core-components';
 import { JSX as JSX_2 } from 'react';
