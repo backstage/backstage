@@ -24,6 +24,7 @@ import { rootRouteRef } from './routes';
 import { ShouldIDeployCIClient, ShouldIDeployCIApiRef } from './api';
 import { timeZones } from './helpers/timezones';
 
+/** @public */
 export const shouldIDeployPlugin = createPlugin({
   id: '@backstage/plugin-should-i-deploy',
   routes: {
@@ -43,6 +44,7 @@ export const shouldIDeployPlugin = createPlugin({
   ],
 });
 
+/** @public */
 export const ShouldIDeployPage = shouldIDeployPlugin.provide(
   createRoutableExtension({
     name: 'ShouldIDeployPage',
@@ -52,6 +54,7 @@ export const ShouldIDeployPage = shouldIDeployPlugin.provide(
   }),
 );
 
+/** @public */
 export const ShouldIDeployCard = shouldIDeployPlugin.provide(
   createCardExtension<{ timeZone?: string; title?: string }>({
     name: 'ShouldIDeployCard',
