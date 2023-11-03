@@ -180,7 +180,9 @@ export class GithubActionsClient implements GithubActionsApi {
     owner: string;
     repo: string;
     page?: number;
-  }) {
+  }): Promise<
+    RestEndpointMethodTypes['repos']['listBranches']['response']['data']
+  > {
     const { hostname, owner, repo, page = 0 } = options;
     const octokit = await this.getOctokit(hostname);
     const response = await octokit.rest.repos.listBranches({
@@ -197,7 +199,9 @@ export class GithubActionsClient implements GithubActionsApi {
     hostname?: string;
     owner: string;
     repo: string;
-  }) {
+  }): Promise<
+    RestEndpointMethodTypes['repos']['get']['response']['data']['default_branch']
+  > {
     const { hostname, owner, repo } = options;
     const octokit = await this.getOctokit(hostname);
     const response = await octokit.rest.repos.get({

@@ -40,7 +40,11 @@ export enum BuildStatus {
 }
 
 // @public (undocumented)
-export const EntityGithubActionsContent: () => JSX_2.Element;
+export const EntityGithubActionsContent: ({
+  cardView,
+}: {
+  cardView?: boolean | undefined;
+}) => JSX_2.Element;
 
 // @public (undocumented)
 export const EntityLatestGithubActionRunCard: (props: {
@@ -154,7 +158,9 @@ export class GithubActionsClient implements GithubActionsApi {
     hostname?: string;
     owner: string;
     repo: string;
-  }): Promise<string>;
+  }): Promise<
+    RestEndpointMethodTypes['repos']['get']['response']['data']['default_branch']
+  >;
   // (undocumented)
   getWorkflow(options: {
     hostname?: string;
@@ -180,7 +186,7 @@ export class GithubActionsClient implements GithubActionsApi {
     repo: string;
     page?: number;
   }): Promise<
-      RestEndpointMethodTypes['repos']['listBranches']['response']['data']
+    RestEndpointMethodTypes['repos']['listBranches']['response']['data']
   >;
   // (undocumented)
   listJobsForWorkflowRun(options: {
@@ -267,7 +273,11 @@ export const RecentWorkflowRunsCard: (props: {
 }) => React_2.JSX.Element;
 
 // @public (undocumented)
-export const Router: () => React_2.JSX.Element;
+export const Router: ({
+  cardView,
+}: {
+  cardView?: boolean | undefined;
+}) => React_2.JSX.Element;
 
 // @public (undocumented)
 export type Step = {
