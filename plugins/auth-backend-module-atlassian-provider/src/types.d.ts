@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-declare module 'passport-atlassian2' {
+declare module 'passport-atlassian-oauth2' {
   import { Request } from 'express';
   import { StrategyCreated } from 'passport';
 
