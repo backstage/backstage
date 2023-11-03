@@ -19,7 +19,7 @@ import {
   Entity,
   parseLocationRef,
 } from '@backstage/catalog-model';
-import { ScmIntegrationRegistry } from '@backstage/integration';
+import { scmIntegrationsApiRef } from '@backstage/integration-react';
 
 /** @public */
 export type EntitySourceLocation = {
@@ -30,7 +30,7 @@ export type EntitySourceLocation = {
 /** @public */
 export function getEntitySourceLocation(
   entity: Entity,
-  scmIntegrationsApi: ScmIntegrationRegistry,
+  scmIntegrationsApi: typeof scmIntegrationsApiRef.T,
 ): EntitySourceLocation | undefined {
   const sourceLocation =
     entity.metadata.annotations?.[ANNOTATION_SOURCE_LOCATION];
