@@ -20004,9 +20004,9 @@ __metadata:
   linkType: hard
 
 "@types/yarnpkg__lockfile@npm:^1.1.4":
-  version: 1.1.7
-  resolution: "@types/yarnpkg__lockfile@npm:1.1.7"
-  checksum: f7d898bfa7a75440ecc57a72d5297c9ce1566d10996004a61765bc79fa82f0c6c82df892442343e983602956f04f0943249902b9e4c09af472873382d0029b21
+  version: 1.1.8
+  resolution: "@types/yarnpkg__lockfile@npm:1.1.8"
+  checksum: 96f1c673c0eca3cf55cf48158819625b6a8d203e9762ef0de77d21990def371bf0291fb8374d10fd125fd1571a71bcbed5bc1ca8f188e73032f997a5abee0665
   languageName: node
   linkType: hard
 
