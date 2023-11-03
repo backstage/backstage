@@ -26,10 +26,10 @@ jobs:
         with:
           egress-policy: audit
 
-      - uses: actions/checkout@v3.6.0
+      - uses: actions/checkout@v4.1.1
 
       - name: use node.js ${{ matrix.node-version }}
-        uses: actions/setup-node@v3.8.1
+        uses: actions/setup-node@v3.8.2
         with:
           node-version: ${{ matrix.node-version }}
           registry-url: https://registry.npmjs.org/ # Needed for auth

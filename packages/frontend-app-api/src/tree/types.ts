@@ -25,13 +25,13 @@ NOTE: These types are marked as @internal for now, but the intention is for this
 */
 
 /**
- * The specification for this node in the app graph.
+ * The specification for this node in the app tree.
  *
  * @internal
  * @remarks
  *
  * The specifications for a collection of app nodes is all the information needed
- * to build the graph and instantiate the nodes.
+ * to build the tree and instantiate the nodes.
  */
 export interface AppNodeSpec {
   readonly id: string;
@@ -57,7 +57,7 @@ export interface AppNodeEdges {
 }
 
 /**
- * The instance of this node in the app graph.
+ * The instance of this node in the app tree.
  *
  * @internal
  * @remarks
@@ -80,18 +80,18 @@ export interface AppNodeInstance {
 export interface AppNode {
   /** The specification for how this node should be instantiated */
   readonly spec: AppNodeSpec;
-  /** The edges from this node to other nodes in the app graph */
+  /** The edges from this node to other nodes in the app tree */
   readonly edges: AppNodeEdges;
   /** The instance of this node, if it was instantiated */
   readonly instance?: AppNodeInstance;
 }
 
 /**
- * The app graph containing all nodes of the app.
+ * The app tree containing all nodes of the app.
  *
  * @internal
  */
-export interface AppGraph {
+export interface AppTree {
   /** The root node of the app */
   root: AppNode;
   /** A map of all nodes in the app by ID, including orphaned or disabled nodes */

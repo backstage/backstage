@@ -616,6 +616,15 @@ export function InspectEntityDialog(props: {
   onClose: () => void;
 }): React_2.JSX.Element | null;
 
+// @public
+export function MissingAnnotationEmptyState(props: {
+  annotation: string | string[];
+  readMoreUrl?: string;
+}): React_2.JSX.Element;
+
+// @public (undocumented)
+export type MissingAnnotationEmptyStateClassKey = 'code';
+
 // @public (undocumented)
 export function MockEntityListContextProvider<
   T extends DefaultEntityFilters = DefaultEntityFilters,

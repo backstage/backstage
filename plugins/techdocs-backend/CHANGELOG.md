@@ -1,5 +1,28 @@
 # @backstage/plugin-techdocs-backend
 
+## 1.9.0-next.1
+
+### Minor Changes
+
+- 67cff7b06f: Expose an extension point to set a custom build strategy. Also move `DocsBuildStrategy` type to `@backstage/plugin-techdocs-node` and deprecate `ShouldBuildParameters` type.
+
+### Patch Changes
+
+- 48a61bfdca: Fix potential memory leak by not creating a build log transport if not given via `RouterOptions`.
+- Updated dependencies
+  - @backstage/plugin-techdocs-node@1.10.0-next.1
+  - @backstage/integration@1.7.2-next.0
+  - @backstage/plugin-search-backend-module-techdocs@0.1.11-next.1
+  - @backstage/backend-common@0.19.9-next.1
+  - @backstage/backend-plugin-api@0.6.7-next.1
+  - @backstage/catalog-client@1.4.5
+  - @backstage/catalog-model@1.4.3
+  - @backstage/config@1.1.1
+  - @backstage/errors@1.2.3
+  - @backstage/plugin-catalog-common@1.0.17
+  - @backstage/plugin-permission-common@0.7.9
+  - @backstage/plugin-search-common@1.2.7
+
 ## 1.8.1-next.0
 
 ### Patch Changes

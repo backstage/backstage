@@ -12,7 +12,7 @@ jobs:
   build-backstage:
     env:
       NODE_OPTIONS: --max-old-space-size=4096
-      UFFIZZI_URL: https://uffizzi.com
+      UFFIZZI_URL: https://app.uffizzi.com
     name: Build PR image
     runs-on: ubuntu-latest
     if: ${{ github.event_name != 'pull_request' || github.event.action != 'closed' }}
@@ -25,10 +25,10 @@ jobs:
           egress-policy: audit
 
       - name: checkout
-        uses: actions/checkout@v3.6.0
+        uses: actions/checkout@v4.1.1
 
       - name: setup-node
-        uses: actions/setup-node@v3.8.1
+        uses: actions/setup-node@v3.8.2
         with:
           node-version: 18.x
           registry-url: https://registry.npmjs.org/
@@ -72,14 +72,14 @@ jobs:
           tags: ${{ steps.meta.outputs.tags }}
           labels: ${{ steps.meta.outputs.labels }}
           push: true
+          cache-from: type=gha
+          cache-to: type=gha,mode=max
 
-  render-compose-file:
-    name: Render Docker Compose File
+  render-kustomize:
+    name: Render Kustomize Manifests
     runs-on: ubuntu-latest
     needs:
       - build-backstage
-    outputs:
-      compose-file-cache-key: ${{ steps.hash.outputs.hash }}
     steps:
       - name: Harden Runner
         uses: step-security/harden-runner@8ca2b8b2ece13480cda6dacd3511b49857a23c09 # v2.5.1
@@ -87,19 +87,19 @@ jobs:
           egress-policy: audit
 
       - name: Checkout git repo
-        uses: actions/checkout@v3.6.0
+        uses: actions/checkout@v4.1.1
       - name: Render Compose File
         run: |
-          BACKSTAGE_IMAGE=$(echo ${{ needs.build-backstage.outputs.tags }})
-          export BACKSTAGE_IMAGE
-          # Render simple template from environment variables.
-          envsubst '$BACKSTAGE_IMAGE $GITHUB_SHA' < .github/uffizzi/docker-compose.uffizzi.yml > docker-compose.rendered.yml
-          cat docker-compose.rendered.yml
-      - name: Upload Rendered Compose File as Artifact
-        uses: actions/upload-artifact@v3.1.3
+          # update image after the build above
+          cd ./.github/uffizzi/k8s/manifests
+          kustomize edit set image backstage=${{ needs.build-backstage.outputs.tags }}
+          kustomize build . > manifests.rendered.yml
+          cat manifests.rendered.yml
+      - name: Upload Rendered Manifests File as Artifact
+        uses: actions/upload-artifact@v3
         with:
           name: preview-spec
-          path: docker-compose.rendered.yml
+          path: ./.github/uffizzi/k8s/manifests/manifests.rendered.yml
           retention-days: 2
       - name: Upload PR Event as Artifact
         uses: actions/upload-artifact@v3.1.3

@@ -25,14 +25,33 @@ import { CodeSnippet } from '../CodeSnippet';
 import { Link } from '../Link';
 import { EmptyState } from './EmptyState';
 
-import { useEntity } from '@backstage/plugin-catalog-react';
-import { Entity } from '@backstage/catalog-model';
+const COMPONENT_YAML_TEMPLATE = `apiVersion: backstage.io/v1alpha1
+kind: Component
+metadata:
+  name: example
+  description: example.com
+  annotations:
+    ANNOTATION: value
+spec:
+  type: website
+  lifecycle: production
+  owner: user:guest`;
+
+const ANNOTATION_REGEXP = /^.*ANNOTATION.*$/m;
+const ANNOTATION_YAML = COMPONENT_YAML_TEMPLATE.match(ANNOTATION_REGEXP)![0];
+const ANNOTATION_LINE = COMPONENT_YAML_TEMPLATE.split('\n').findIndex(line =>
+  ANNOTATION_REGEXP.test(line),
+);
 
 type Props = {
   annotation: string | string[];
   readMoreUrl?: string;
 };
 
+/**
+ * @public
+ * @deprecated This component is deprecated, please use {@link @backstage/plugin-catalog-react#MissingAnnotationEmptyStateClassKey} instead
+ */
 export type MissingAnnotationEmptyStateClassKey = 'code';
 
 const useStyles = makeStyles<BackstageTheme>(
@@ -47,38 +66,18 @@ const useStyles = makeStyles<BackstageTheme>(
   { name: 'BackstageMissingAnnotationEmptyState' },
 );
 
-function generateYamlExample(
-  annotations: string[],
-  entity?: Entity,
-): { yamlText: string; lineNumbers: number[] } {
-  const kind = entity?.kind || 'Component';
-  const name = entity?.metadata.name || 'example';
-  const type = entity?.spec?.type || 'website';
-  const owner = entity?.spec?.owner || 'user:default/guest';
-
-  const yamlText = `apiVersion: backstage.io/v1alpha1
-kind: ${kind}
-metadata:
-  name: ${name}
-  annotations:${annotations.map(ann => `\n    ${ann}: value`).join('')}
-spec:
-  type: ${type}
-  owner: ${owner}`;
-
-  let line = 6; // Line 6 is the line number that annotations are added to.
-  const lineNumbers: number[] = [];
-  annotations.forEach(() => {
-    lineNumbers.push(line);
-    line++;
-  });
-
-  return {
-    yamlText,
-    lineNumbers,
-  };
+function generateLineNumbers(lineCount: number) {
+  return Array.from(Array(lineCount + 1).keys(), i => i + ANNOTATION_LINE);
 }
 
-function generateDescription(annotations: string[], entityKind = 'Component') {
+function generateComponentYaml(annotations: string[]) {
+  const annotationYaml = annotations
+    .map(ann => ANNOTATION_YAML.replace('ANNOTATION', ann))
+    .join('\n');
+  return COMPONENT_YAML_TEMPLATE.replace(ANNOTATION_YAML, annotationYaml);
+}
+
+function generateDescription(annotations: string[]) {
   const isSingular = annotations.length <= 1;
   return (
     <>
@@ -91,21 +90,17 @@ function generateDescription(annotations: string[], entityKind = 'Component') {
           </>
         ))}{' '}
       {isSingular ? 'is' : 'are'} missing. You need to add the{' '}
-      {isSingular ? 'annotation' : 'annotations'} to your {entityKind} if you
-      want to enable this tool.
+      {isSingular ? 'annotation' : 'annotations'} to your component if you want
+      to enable this tool.
     </>
   );
 }
 
+/**
+ * @public
+ * @deprecated This component is deprecated, please use {@link @backstage/plugin-catalog-react#MissingAnnotationEmptyState} instead
+ */
 export function MissingAnnotationEmptyState(props: Props) {
-  let entity: Entity | undefined;
-  try {
-    const entityContext = useEntity();
-    entity = entityContext.entity;
-  } catch (err) {
-    // ignore when entity context doesnt exist
-  }
-
   const { annotation, readMoreUrl } = props;
   const annotations = Array.isArray(annotation) ? annotation : [annotation];
   const url =
@@ -113,25 +108,23 @@ export function MissingAnnotationEmptyState(props: Props) {
     'https://backstage.io/docs/features/software-catalog/well-known-annotations';
   const classes = useStyles();
 
-  const entityKind = entity?.kind || 'Component';
-  const { yamlText, lineNumbers } = generateYamlExample(annotations, entity);
   return (
     <EmptyState
       missing="field"
       title="Missing Annotation"
-      description={generateDescription(annotations, entityKind)}
+      description={generateDescription(annotations)}
       action={
         <>
           <Typography variant="body1">
-            Add the annotation to your {entityKind} YAML as shown in the
+            Add the annotation to your component YAML as shown in the
             highlighted example below:
           </Typography>
           <Box className={classes.code}>
             <CodeSnippet
-              text={yamlText}
+              text={generateComponentYaml(annotations)}
               language="yaml"
               showLineNumbers
-              highlightedNumbers={lineNumbers}
+              highlightedNumbers={generateLineNumbers(annotations.length)}
               customStyle={{ background: 'inherit', fontSize: '115%' }}
             />
           </Box>

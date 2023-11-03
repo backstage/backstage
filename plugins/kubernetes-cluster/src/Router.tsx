@@ -16,9 +16,11 @@
 
 import React from 'react';
 import { Entity } from '@backstage/catalog-model';
-import { useEntity } from '@backstage/plugin-catalog-react';
+import {
+  useEntity,
+  MissingAnnotationEmptyState,
+} from '@backstage/plugin-catalog-react';
 import { Route, Routes } from 'react-router-dom';
-import { MissingAnnotationEmptyState } from '@backstage/core-components';
 import { ANNOTATION_KUBERNETES_API_SERVER } from '@backstage/plugin-kubernetes-common';
 import { KubernetesClusterContent } from './components/KubernetesClusterContent';
 

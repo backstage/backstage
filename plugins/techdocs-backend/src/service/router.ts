@@ -37,7 +37,6 @@ import { createCacheMiddleware, TechDocsCache } from '../cache';
 import { CachedEntityLoader } from './CachedEntityLoader';
 import { DefaultDocsBuildStrategy } from './DefaultDocsBuildStrategy';
 import * as winston from 'winston';
-import { PassThrough } from 'stream';
 
 /**
  * Required dependencies for running TechDocs in the "out-of-the-box"
@@ -111,9 +110,7 @@ export async function createRouter(
     options.catalogClient ?? new CatalogClient({ discoveryApi: discovery });
   const docsBuildStrategy =
     options.docsBuildStrategy ?? DefaultDocsBuildStrategy.fromConfig(config);
-  const buildLogTransport =
-    options.buildLogTransport ??
-    new winston.transports.Stream({ stream: new PassThrough() });
+  const buildLogTransport = options.buildLogTransport;
 
   // Entities are cached to optimize the /static/docs request path, which can be called many times
   // when loading a single techdocs page.

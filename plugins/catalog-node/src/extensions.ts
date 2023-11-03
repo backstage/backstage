@@ -18,6 +18,7 @@ import {
   EntityProvider,
   CatalogProcessor,
   PlaceholderResolver,
+  ScmLocationAnalyzer,
 } from '@backstage/plugin-catalog-node';
 
 /**
@@ -39,4 +40,19 @@ export interface CatalogProcessingExtensionPoint {
 export const catalogProcessingExtensionPoint =
   createExtensionPoint<CatalogProcessingExtensionPoint>({
     id: 'catalog.processing',
+  });
+
+/**
+ * @alpha
+ */
+export interface CatalogAnalysisExtensionPoint {
+  addLocationAnalyzer(analyzer: ScmLocationAnalyzer): void;
+}
+
+/**
+ * @alpha
+ */
+export const catalogAnalysisExtensionPoint =
+  createExtensionPoint<CatalogAnalysisExtensionPoint>({
+    id: 'catalog.analysis',
   });

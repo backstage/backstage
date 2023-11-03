@@ -47,6 +47,10 @@ export const ANNOTATION_KUBERNETES_DASHBOARD_APP =
   'kubernetes.io/dashboard-app';
 
 // @public
+export const ANNOTATION_KUBERNETES_DASHBOARD_PARAMETERS =
+  'kubernetes.io/dashboard-parameters';
+
+// @public
 export const ANNOTATION_KUBERNETES_DASHBOARD_URL =
   'kubernetes.io/dashboard-url';
 

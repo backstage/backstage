@@ -87,7 +87,7 @@ import { AppRouteBinder } from '../routing';
 import { RoutingProvider } from '../routing/RoutingProvider';
 import { resolveRouteBindings } from '../routing/resolveRouteBindings';
 import { collectRouteIds } from '../routing/collectRouteIds';
-import { AppNode, createAppGraph } from '../graph';
+import { AppNode, createAppTree } from '../tree';
 
 const builtinExtensions = [
   Core,
@@ -117,7 +117,7 @@ export function createExtensionTree(options: {
   config: Config;
 }): ExtensionTree {
   const features = getAvailableFeatures(options.config);
-  const graph = createAppGraph({
+  const tree = createAppTree({
     features,
     builtinExtensions,
     config: options.config,
@@ -136,14 +136,14 @@ export function createExtensionTree(options: {
 
   return {
     getExtension(id: string): ExtensionTreeNode | undefined {
-      return convertNode(graph.nodes.get(id));
+      return convertNode(tree.nodes.get(id));
     },
     getExtensionAttachments(
       id: string,
       inputName: string,
     ): ExtensionTreeNode[] {
       return (
-        graph.nodes
+        tree.nodes
           .get(id)
           ?.edges.attachments.get(inputName)
           ?.map(convertNode)
@@ -247,7 +247,7 @@ export function createApp(options: {
       ...(options.features ?? []),
     ]);
 
-    const appGraph = createAppGraph({
+    const tree = createAppTree({
       features: allFeatures,
       builtinExtensions,
       config,
@@ -262,11 +262,11 @@ export function createApp(options: {
     const routeIds = collectRouteIds(allFeatures);
 
     const App = () => (
-      <ApiProvider apis={createApiHolder(appGraph.root, config)}>
+      <ApiProvider apis={createApiHolder(tree.root, config)}>
         <AppContextProvider appContext={appContext}>
           <AppThemeProvider>
             <RoutingProvider
-              {...extractRouteInfoFromAppNode(appGraph.root)}
+              {...extractRouteInfoFromAppNode(tree.root)}
               routeBindings={resolveRouteBindings(
                 options.bindRoutes,
                 config,
@@ -275,9 +275,7 @@ export function createApp(options: {
             >
               {/* TODO: set base path using the logic from AppRouter */}
               <BrowserRouter>
-                {appGraph.root.instance!.getData(
-                  coreExtensionData.reactElement,
-                )}
+                {tree.root.instance!.getData(coreExtensionData.reactElement)}
               </BrowserRouter>
             </RoutingProvider>
           </AppThemeProvider>

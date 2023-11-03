@@ -21,6 +21,9 @@ import { aksFormatter } from './aks';
 import { eksFormatter } from './eks';
 import { gkeFormatter } from './gke';
 
+/**
+ * @public
+ */
 export const clusterLinksFormatters: Record<string, ClusterLinksFormatter> = {
   standard: standardFormatter,
   rancher: rancherFormatter,

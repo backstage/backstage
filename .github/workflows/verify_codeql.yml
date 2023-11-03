@@ -47,7 +47,7 @@ jobs:
           egress-policy: audit
 
       - name: Checkout repository
-        uses: actions/checkout@v3.6.0
+        uses: actions/checkout@v4.1.1
         with:
           # We must fetch at least the immediate parents so that if this is
           # a pull request then we can checkout the head.
