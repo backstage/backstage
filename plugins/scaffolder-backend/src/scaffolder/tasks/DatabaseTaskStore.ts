@@ -115,6 +115,20 @@ export class DatabaseTaskStore implements TaskStore {
     return new DatabaseTaskStore(client);
   }
 
+  private isRecoverableTask(spec: TaskSpec): boolean {
+    return ['idempotent', 'restart'].includes(
+      spec.recovery?.strategy ?? 'none',
+    );
+  }
+
+  private parseSpec(spec: string): TaskSpec {
+    try {
+      return JSON.parse(spec);
+    } catch (error) {
+      throw new Error(`Failed to parse spec of task '${task.id}', ${error}`);
+    }
+  }
+
   private static async getClient(
     database: PluginDatabaseManager | Knex,
   ): Promise<Knex> {
@@ -224,34 +238,38 @@ export class DatabaseTaskStore implements TaskStore {
         return undefined;
       }
 
+      const spec = this.parseSpec(task.spec);
+
+      const newState = this.isRecoverableTask(spec)
+        ? {
+            status: 'processing',
+            last_heartbeat_at: this.db.fn.now(),
+          }
+        : {
+            status: 'processing',
+            last_heartbeat_at: this.db.fn.now(),
+            // remove the secrets when moving to processing state.
+            secrets: null,
+          };
+
       const updateCount = await tx<RawDbTaskRow>('tasks')
         .where({ id: task.id, status: 'open' })
-        .update({
-          status: 'processing',
-          last_heartbeat_at: this.db.fn.now(),
-          // remove the secrets when moving to processing state.
-          secrets: null,
-        });
+        .update(newState);
 
       if (updateCount < 1) {
         return undefined;
       }
 
-      try {
-        const spec = JSON.parse(task.spec);
-        const secrets = task.secrets ? JSON.parse(task.secrets) : undefined;
-        return {
-          id: task.id,
-          spec,
-          status: 'processing',
-          lastHeartbeatAt: task.last_heartbeat_at,
-          createdAt: task.created_at,
-          createdBy: task.created_by ?? undefined,
-          secrets,
-        } as SerializedTask;
-      } catch (error) {
-        throw new Error(`Failed to parse spec of task '${task.id}', ${error}`);
-      }
+      const secrets = task.secrets ? JSON.parse(task.secrets) : undefined;
+      return {
+        id: task.id,
+        spec,
+        status: 'processing',
+        lastHeartbeatAt: task.last_heartbeat_at,
+        createdAt: task.created_at,
+        createdBy: task.created_by ?? undefined,
+        secrets,
+      } as SerializedTask;
     });
   }
 
@@ -324,6 +342,7 @@ export class DatabaseTaskStore implements TaskStore {
           .where(criteria)
           .update({
             status,
+            secrets: null,
           });
 
         if (updateCount !== 1) {
