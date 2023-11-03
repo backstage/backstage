@@ -93,7 +93,11 @@ integrations:
 - The OAuth application must be at the GitHub organization level in order to display the workflows. If you do
   not see any workflows, confirm the OAuth application was created in the organization and not a specific user account.
 
-### Optional Workflow Runs Card View
+## Optional Workflow Runs Card View
+
+Github WorkflowRuns optional UI to show in Card view instead of table, with branch selection option
+
+![Sonar Card](./docs/card-view.png)
 
 1. Install the plugin dependency in your Backstage app package:
 
