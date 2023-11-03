@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { Strategy as AtlassianStrategy } from 'passport-atlassian2';
+import { Strategy as AtlassianStrategy } from 'passport-atlassian-oauth2';
 import {
   createOAuthAuthenticator,
   PassportOAuthAuthenticatorHelper,

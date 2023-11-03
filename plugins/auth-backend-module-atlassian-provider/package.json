@@ -28,7 +28,7 @@
     "@backstage/plugin-auth-node": "workspace:^",
     "express": "^4.18.2",
     "passport": "^0.6.0",
-    "passport-atlassian2": "^5.0.0"
+    "passport-atlassian-oauth2": "^2.1.0"
   },
   "devDependencies": {
     "@backstage/backend-defaults": "workspace:^",
