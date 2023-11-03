@@ -1,7 +1,7 @@
 ---
 title: Form Data Backend Plugin
-author: Mauricio Martinez
-authorUrl: https://github.com/nthings
+author: Premise Data
+authorUrl: https://github.com/premisedata
 category: Services
 description: This plugin enables creation of custom providers for data manipulation and display on dynamic-field-extension plugin, including handling authenticated APIs and parsing non-standard JSON data.
 documentation: https://github.com/premisedata/dynamic-data-form-extension/blob/main/packages/form-data-backend/README.md
