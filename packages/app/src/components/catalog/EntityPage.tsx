@@ -273,7 +273,7 @@ export const cicdContent = (
     </EntitySwitch.Case>
 
     <EntitySwitch.Case if={isGithubActionsAvailable}>
-      <EntityGithubActionsContent cardView />
+      <EntityGithubActionsContent />
     </EntitySwitch.Case>
 
     <EntitySwitch.Case if={isAzurePipelinesAvailable}>
