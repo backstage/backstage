@@ -121,11 +121,11 @@ export class DatabaseTaskStore implements TaskStore {
     );
   }
 
-  private parseSpec(spec: string): TaskSpec {
+  private parseSpec({ spec, id }: { spec: string; id: string }): TaskSpec {
     try {
       return JSON.parse(spec);
     } catch (error) {
-      throw new Error(`Failed to parse spec of task '${task.id}', ${error}`);
+      throw new Error(`Failed to parse spec of task '${id}', ${error}`);
     }
   }
 
@@ -238,23 +238,16 @@ export class DatabaseTaskStore implements TaskStore {
         return undefined;
       }
 
-      const spec = this.parseSpec(task.spec);
-
-      const newState = this.isRecoverableTask(spec)
-        ? {
-            status: 'processing',
-            last_heartbeat_at: this.db.fn.now(),
-          }
-        : {
-            status: 'processing',
-            last_heartbeat_at: this.db.fn.now(),
-            // remove the secrets when moving to processing state.
-            secrets: null,
-          };
+      const spec = this.parseSpec(task);
 
       const updateCount = await tx<RawDbTaskRow>('tasks')
         .where({ id: task.id, status: 'open' })
-        .update(newState);
+        .update({
+          status: 'processing',
+          last_heartbeat_at: this.db.fn.now(),
+          // remove the secrets for non-recoverable tasks when moving to processing state.
+          secrets: this.isRecoverableTask(spec) ? task.secrets : null,
+        });
 
       if (updateCount < 1) {
         return undefined;
