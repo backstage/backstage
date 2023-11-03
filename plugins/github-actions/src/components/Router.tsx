@@ -32,6 +32,7 @@ export const isGithubActionsAvailable = (entity: Entity) =>
   Boolean(entity.metadata.annotations?.[GITHUB_ACTIONS_ANNOTATION]);
 
 /** @public */
+// Optional cardview prop
 export const Router = ({ cardView = false }: { cardView?: boolean }) => {
   const { entity } = useEntity();
 
