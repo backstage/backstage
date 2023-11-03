@@ -104,7 +104,6 @@ const useStyles = makeStyles(theme => ({
   },
   extensionHeader: {
     display: 'flex',
-    flexFlow: 'row nowrap',
     alignItems: 'center',
     width: 'fit-content',
 
@@ -121,7 +120,6 @@ const useStyles = makeStyles(theme => ({
   },
   extensionHeaderOutputs: {
     display: 'flex',
-    flexFlow: 'row nowrap',
     alignItems: 'center',
     marginLeft: theme.spacing(1),
     gap: theme.spacing(1),
@@ -134,7 +132,6 @@ const useStyles = makeStyles(theme => ({
   },
   attachmentsInputTitle: {
     display: 'flex',
-    flexFlow: 'row nowrap',
     alignItems: 'center',
     width: 'fit-content',
     padding: theme.spacing(1),
@@ -148,7 +145,7 @@ const useStyles = makeStyles(theme => ({
   },
   attachmentsInputChildren: {
     display: 'flex',
-    flexFlow: 'column nowrap',
+    flexDirection: 'column',
     alignItems: 'flex-start',
     gap: theme.spacing(0.5),
     marginLeft: theme.spacing(1),
