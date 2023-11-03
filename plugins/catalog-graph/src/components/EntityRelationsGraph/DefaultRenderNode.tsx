@@ -20,6 +20,7 @@ import classNames from 'classnames';
 import React, { useLayoutEffect, useRef, useState } from 'react';
 import { EntityKindIcon } from './EntityKindIcon';
 import { EntityNodeData } from './types';
+import { DEFAULT_NAMESPACE } from '@backstage/catalog-model';
 
 const useStyles = makeStyles(
   theme => ({
@@ -56,17 +57,8 @@ const useStyles = makeStyles(
   { name: 'PluginCatalogGraphCustomNode' },
 );
 
-export function CustomNode({
-  node: {
-    id,
-    kind,
-    namespace,
-    name,
-    color = 'default',
-    focused,
-    title,
-    onClick,
-  },
+export function DefaultRenderNode({
+  node: { id, entity, color = 'default', focused, onClick },
 }: DependencyGraphTypes.RenderNodeProps<EntityNodeData>) {
   const classes = useStyles();
   const [width, setWidth] = useState(0);
@@ -87,6 +79,11 @@ export function CustomNode({
       }
     }
   }, [width, height]);
+
+  const {
+    kind,
+    metadata: { name, namespace = DEFAULT_NAMESPACE, title },
+  } = entity;
 
   const padding = 10;
   const iconSize = height;

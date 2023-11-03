@@ -17,20 +17,25 @@
 import { renderInTestApp } from '@backstage/test-utils';
 import { screen } from '@testing-library/react';
 import React from 'react';
-import { CustomNode } from './CustomNode';
+import { DefaultRenderNode } from './DefaultRenderNode';
 import userEvent from '@testing-library/user-event';
 
 describe('<CustomNode />', () => {
   test('renders node', async () => {
     await renderInTestApp(
       <svg xmlns="http://www.w3.org/2000/svg">
-        <CustomNode
+        <DefaultRenderNode
           node={{
-            focused: false,
-            kind: 'kind',
-            name: 'name',
-            namespace: 'namespace',
             id: 'kind:namespace/name',
+            entity: {
+              kind: 'kind',
+              apiVersion: 'v1',
+              metadata: {
+                name: 'name',
+                namespace: 'namespace',
+              },
+            },
+            focused: false,
             color: 'primary',
           }}
         />
@@ -43,13 +48,18 @@ describe('<CustomNode />', () => {
   test('renders node, skips default namespace', async () => {
     await renderInTestApp(
       <svg xmlns="http://www.w3.org/2000/svg">
-        <CustomNode
+        <DefaultRenderNode
           node={{
-            focused: false,
-            kind: 'kind',
-            name: 'name',
-            namespace: 'default',
             id: 'kind:default/name',
+            entity: {
+              kind: 'kind',
+              apiVersion: 'v1',
+              metadata: {
+                name: 'name',
+                namespace: 'default',
+              },
+            },
+            focused: false,
           }}
         />
       </svg>,
@@ -62,14 +72,19 @@ describe('<CustomNode />', () => {
     const onClick = jest.fn();
     await renderInTestApp(
       <svg xmlns="http://www.w3.org/2000/svg">
-        <CustomNode
+        <DefaultRenderNode
           node={{
-            focused: false,
-            kind: 'kind',
-            name: 'name',
-            namespace: 'namespace',
-            onClick,
             id: 'kind:namespace/name',
+            entity: {
+              kind: 'kind',
+              apiVersion: 'v1',
+              metadata: {
+                name: 'name',
+                namespace: 'namespace',
+              },
+            },
+            focused: false,
+            onClick,
           }}
         />
       </svg>,
@@ -83,14 +98,19 @@ describe('<CustomNode />', () => {
   test('renders title if entity has one', async () => {
     await renderInTestApp(
       <svg xmlns="http://www.w3.org/2000/svg">
-        <CustomNode
+        <DefaultRenderNode
           node={{
-            focused: false,
-            kind: 'kind',
-            name: 'name',
-            namespace: 'namespace',
-            title: 'Custom Title',
             id: 'kind:namespace/name',
+            entity: {
+              kind: 'kind',
+              apiVersion: 'v1',
+              metadata: {
+                name: 'name',
+                namespace: 'namespace',
+                title: 'Custom Title',
+              },
+            },
+            focused: false,
           }}
         />
       </svg>,

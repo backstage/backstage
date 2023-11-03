@@ -15,8 +15,8 @@
  */
 
 import { DependencyGraphTypes } from '@backstage/core-components';
-import { JsonObject } from '@backstage/types';
 import { MouseEventHandler } from 'react';
+import { Entity } from '@backstage/catalog-model/';
 
 /**
  * Additional Data for entities.
@@ -49,25 +49,9 @@ export type EntityEdge = DependencyGraphTypes.DependencyEdge<EntityEdgeData>;
  */
 export type EntityNodeData = {
   /**
-   * Name of the entity.
+   * The Entity
    */
-  name: string;
-  /**
-   * Optional kind of the entity.
-   */
-  kind?: string;
-  /**
-   * Optional title of the entity.
-   */
-  title?: string;
-  /**
-   * Namespace of the entity.
-   */
-  namespace: string;
-  /**
-   * Optional spec of the entity.
-   */
-  spec?: JsonObject;
+  entity: Entity;
   /**
    * Whether the entity is focused, optional, defaults to false. Focused
    * entities are highlighted in the graph.

@@ -26,8 +26,8 @@ import { errorApiRef, useApi } from '@backstage/core-plugin-api';
 import { CircularProgress, makeStyles, useTheme } from '@material-ui/core';
 import classNames from 'classnames';
 import React, { MouseEvent, useEffect, useMemo } from 'react';
-import { CustomLabel } from './CustomLabel';
-import { CustomNode } from './CustomNode';
+import { DefaultRenderLabel } from './DefaultRenderLabel';
+import { DefaultRenderNode } from './DefaultRenderNode';
 import { ALL_RELATION_PAIRS, RelationPairs } from './relations';
 import { Direction, EntityEdge, EntityNode } from './types';
 import { useEntityRelationNodesAndEdges } from './useEntityRelationNodesAndEdges';
@@ -51,7 +51,7 @@ const useStyles = makeStyles(
       width: '100%',
       flex: 1,
       // Right now there is no good way to style edges between nodes, we have to
-      // fallback to these hacks:
+      // fall back to these hacks:
       '& path[marker-end]': {
         transition: 'filter 0.1s ease-in-out',
       },
@@ -144,8 +144,8 @@ export const EntityRelationsGraph = (props: EntityRelationsGraphProps) => {
         <DependencyGraph
           nodes={nodes}
           edges={edges}
-          renderNode={renderNode || CustomNode}
-          renderLabel={renderLabel || CustomLabel}
+          renderNode={renderNode || DefaultRenderNode}
+          renderLabel={renderLabel || DefaultRenderLabel}
           direction={direction}
           className={classes.graph}
           paddingX={theme.spacing(4)}
