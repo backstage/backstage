@@ -23,6 +23,7 @@ import {
   useRouteRef,
 } from '@backstage/frontend-plugin-api';
 import Box from '@material-ui/core/Box';
+import Paper from '@material-ui/core/Paper';
 import Tooltip from '@material-ui/core/Tooltip';
 import Typography from '@material-ui/core/Typography';
 import * as colors from '@material-ui/core/colors';
@@ -177,10 +178,10 @@ function getFullPath(node?: AppNode): string {
 
 function OutputLink(props: {
   dataRef: ExtensionDataRef<unknown>;
-  node: AppNode;
+  node?: AppNode;
   className: string;
 }) {
-  const routeRef = props.node.instance?.getData(coreExtensionData.routeRef);
+  const routeRef = props.node?.instance?.getData(coreExtensionData.routeRef);
 
   let link: string | undefined = undefined;
   try {
@@ -198,10 +199,10 @@ function OutputLink(props: {
   );
 }
 
-function Output(props: { dataRef: ExtensionDataRef<unknown>; node: AppNode }) {
+function Output(props: { dataRef: ExtensionDataRef<unknown>; node?: AppNode }) {
   const { dataRef, node } = props;
   const { id } = dataRef;
-  const instance = node.instance!;
+  const instance = node?.instance;
 
   const classes = useOutputStyles({ color: getOutputColor(id) });
 
@@ -209,7 +210,7 @@ function Output(props: { dataRef: ExtensionDataRef<unknown>; node: AppNode }) {
     return (
       <Tooltip title={<Typography>{getFullPath(node)}</Typography>}>
         <Box className={classes.output}>
-          {String(instance.getData(dataRef))}
+          {String(instance?.getData(dataRef) ?? '')}
         </Box>
       </Tooltip>
     );
@@ -313,10 +314,51 @@ function Extension(props: { node: AppNode }) {
   );
 }
 
+const legendMap = {
+  'React Element': coreExtensionData.reactElement,
+  'Utility API': coreExtensionData.apiFactory,
+  'Route Path': coreExtensionData.routePath,
+  'Route Ref': coreExtensionData.routeRef,
+  'Nav Target': coreExtensionData.navTarget,
+  Theme: coreExtensionData.theme,
+};
+
+function Legend() {
+  return (
+    <Box
+      display="grid"
+      maxWidth={600}
+      p={1}
+      style={{
+        grid: 'auto-flow / repeat(3, 1fr)',
+        gap: 16,
+      }}
+    >
+      {Object.entries(legendMap).map(([label, dataRef]) => (
+        <Box
+          key={dataRef.id}
+          display="flex"
+          style={{ gap: 8 }}
+          alignItems="center"
+        >
+          <Output dataRef={dataRef} />
+          <Typography>{label}</Typography>
+        </Box>
+      ))}
+    </Box>
+  );
+}
+
 export function GraphVisualizer({ tree }: { tree: AppTree }) {
   return (
-    <Box margin={3}>
-      <Extension node={tree.root} />
+    <Box display="flex" height="100%" flex="1 1 100%" flexDirection="column">
+      <Box flex="1 1 0" overflow="auto" ml={2} mt={2}>
+        <Extension node={tree.root} />
+      </Box>
+
+      <Box component={Paper} flex="0 0 auto" m={1}>
+        <Legend />
+      </Box>
     </Box>
   );
 }
