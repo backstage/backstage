@@ -38,6 +38,7 @@
     "@backstage/catalog-model": "workspace:^",
     "@backstage/config": "workspace:^",
     "@backstage/errors": "workspace:^",
+    "@backstage/plugin-auth-backend-module-atlassian-provider": "workspace:^",
     "@backstage/plugin-auth-backend-module-gcp-iap-provider": "workspace:^",
     "@backstage/plugin-auth-backend-module-github-provider": "workspace:^",
     "@backstage/plugin-auth-backend-module-gitlab-provider": "workspace:^",
