@@ -32,11 +32,17 @@ import DisabledIcon from '@material-ui/icons/NotInterestedSharp';
 import React from 'react';
 import { Link } from 'react-router-dom';
 
-function createOutputColorGenerator(availableColors: string[]) {
+function createOutputColorGenerator(
+  colorMap: { [extDataId: string]: string },
+  availableColors: string[],
+) {
   const map = new Map<string, string>();
   let i = 0;
 
   return function getOutputColor(id: string) {
+    if (id in colorMap) {
+      return colorMap[id];
+    }
     let color = map.get(id);
     if (color) {
       return color;
@@ -51,22 +57,25 @@ function createOutputColorGenerator(availableColors: string[]) {
   };
 }
 
-const getOutputColor = createOutputColorGenerator([
-  colors.green[500],
-  colors.blue[500],
-  colors.yellow[500],
-  colors.purple[500],
-  colors.orange[500],
-  colors.red[500],
-  colors.lime[500],
-  colors.green[200],
-  colors.blue[200],
-  colors.yellow[200],
-  colors.purple[200],
-  colors.orange[200],
-  colors.red[200],
-  colors.lime[200],
-]);
+const getOutputColor = createOutputColorGenerator(
+  {
+    [coreExtensionData.reactElement.id]: colors.green[500],
+    [coreExtensionData.routePath.id]: colors.yellow[500],
+    [coreExtensionData.routeRef.id]: colors.purple[500],
+    [coreExtensionData.apiFactory.id]: colors.blue[500],
+    [coreExtensionData.theme.id]: colors.lime[500],
+    [coreExtensionData.navTarget.id]: colors.orange[500],
+  },
+  [
+    colors.blue[200],
+    colors.orange[200],
+    colors.green[200],
+    colors.red[200],
+    colors.yellow[200],
+    colors.purple[200],
+    colors.lime[200],
+  ],
+);
 
 interface StyleProps {
   enabled: boolean;
