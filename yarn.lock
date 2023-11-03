@@ -20030,11 +20030,11 @@ __metadata:
   linkType: hard
 
 "@types/yauzl@npm:^2.10.0":
-  version: 2.10.1
-  resolution: "@types/yauzl@npm:2.10.1"
+  version: 2.10.2
+  resolution: "@types/yauzl@npm:2.10.2"
   dependencies:
     "@types/node": "*"
-  checksum: 3377916a2d493cb2422b167fb7dfff8cb3ea045a9489dab4955858719bf7fe6808e5f6a51ee819904fb7f623f7ac092b87f9d6a857ea1214a45070d19c8b3d7e
+  checksum: 4ee53b704074064179ed50881b2dfa6f07f8a7032af487f513aa04f0ed333be4ff4231ac8531e6a2024cc45ac69a22e78a2ff4e39a6ed2fe8cc0bfabc353da45
   languageName: node
   linkType: hard
 
