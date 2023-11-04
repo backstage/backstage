@@ -133,7 +133,7 @@ export interface TaskBroker {
 
   claim(): Promise<TaskContext>;
 
-  recoverTasks?(): Promise<void>;
+  recoverTasks?(): Promise<boolean>;
 
   dispatch(
     options: TaskBrokerDispatchOptions,

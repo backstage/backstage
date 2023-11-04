@@ -522,7 +522,8 @@ export class DatabaseTaskStore implements TaskStore {
     });
   }
 
-  async recoverTasks(options: TaskStoreRecoverTaskOptions): Promise<void> {
+  async recoverTasks(options: TaskStoreRecoverTaskOptions): Promise<string[]> {
+    const recoveredTaskIds = [];
     const { tasks } = await this.listStaleTasks({
       timeoutS: options.timeoutS,
     });
@@ -532,7 +533,9 @@ export class DatabaseTaskStore implements TaskStore {
         ['idempotent', 'restart'].includes(task.recovery?.strategy ?? 'none')
       ) {
         await this.reopenTask({ taskId: task.taskId });
+        recoveredTaskIds.push(task.taskId);
       }
     }
+    return recoveredTaskIds;
   }
 }

@@ -219,18 +219,23 @@ export class StorageTaskBroker implements TaskBroker {
   }
 
   public async recoverTasks() {
-    if (
-      this.config &&
-      this.config.getOptionalBoolean('scaffolder.recoverTasks')
-    ) {
-      await this.storage.recoverTasks?.({
-        timeoutS: Duration.fromObject(
-          readDuration(this.config, 'scaffolder.recoverTasksTimeout', {
-            seconds: 5,
-          }),
-        ).as('seconds'),
+    const enabled =
+      this.config && this.config.getOptionalBoolean('scaffolder.recoverTasks');
+
+    if (enabled) {
+      const recoveredTaskIds =
+        (await this.storage.recoverTasks?.({
+          timeoutS: Duration.fromObject(
+            readDuration(this.config, 'scaffolder.recoverTasksTimeout', {
+              seconds: 5,
+            }),
+          ).as('seconds'),
+        })) ?? [];
+      recoveredTaskIds.forEach(() => {
+        this.signalDispatch();
       });
     }
+    return enabled;
   }
 
   private async getTheLastRecoveredStepId(
