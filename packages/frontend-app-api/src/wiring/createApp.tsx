@@ -225,7 +225,7 @@ function deduplicateFeatures(
 }
 
 /** @public */
-export function createApp(options: {
+export function createApp(options?: {
   features?: (BackstagePlugin | ExtensionOverrides)[];
   configLoader?: () => Promise<ConfigApi>;
   bindRoutes?(context: { bind: AppRouteBinder }): void;
@@ -243,11 +243,11 @@ export function createApp(options: {
       );
 
     const discoveredFeatures = getAvailableFeatures(config);
-    const loadedFeatures = (await options.featureLoader?.({ config })) ?? [];
+    const loadedFeatures = (await options?.featureLoader?.({ config })) ?? [];
     const allFeatures = deduplicateFeatures([
       ...discoveredFeatures,
       ...loadedFeatures,
-      ...(options.features ?? []),
+      ...(options?.features ?? []),
     ]);
 
     const tree = createAppTree({
@@ -271,7 +271,7 @@ export function createApp(options: {
             <RoutingProvider
               {...extractRouteInfoFromAppNode(tree.root)}
               routeBindings={resolveRouteBindings(
-                options.bindRoutes,
+                options?.bindRoutes,
                 config,
                 routeIds,
               )}
