@@ -21,6 +21,7 @@ import Box from '@material-ui/core/Box';
 import React, { useState } from 'react';
 import { GraphVisualizer } from './GraphVisualizer';
 import { TextVisualizer } from './TextVisualizer';
+import { TreeVisualizer } from './TreeVisualizer';
 
 export function AppVisualizerPage() {
   const appTreeApi = useApi(appTreeApiRef);
@@ -29,6 +30,7 @@ export function AppVisualizerPage() {
 
   const tabs = [
     { id: 'graph', label: 'Graph', element: <GraphVisualizer tree={tree} /> },
+    { id: 'tree', label: 'Tree', element: <TreeVisualizer tree={tree} /> },
     { id: 'text', label: 'Text', element: <TextVisualizer tree={tree} /> },
   ];
 
