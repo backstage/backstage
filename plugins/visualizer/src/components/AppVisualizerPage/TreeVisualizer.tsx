@@ -31,6 +31,23 @@ function inputId({ node, input }: { node: AppNode; input: string }) {
   return `${node.spec.id}$$${input}`;
 }
 
+function trimNodeId(id: string) {
+  let newId = id;
+  if (newId.startsWith('apis.')) {
+    newId = newId.slice('apis.'.length);
+  }
+  if (newId.startsWith('plugin.')) {
+    newId = newId.slice('plugin.'.length);
+  }
+  if (newId.startsWith('catalog.filter.entity.')) {
+    newId = newId.slice('catalog.filter.entity.'.length);
+  }
+  if (newId.endsWith('.nav.index')) {
+    newId = newId.slice(0, -'.nav.index'.length);
+  }
+  return newId;
+}
+
 function resolveGraphData(tree: AppTree): {
   nodes: NodeType[];
   edges: { from: string; to: string }[];
@@ -73,7 +90,10 @@ const useStyles = makeStyles(theme => ({
       node.type === 'node'
         ? theme.palette.primary.light
         : theme.palette.grey[500],
-    stroke: theme.palette.primary.light,
+    stroke: (node: NodeType) =>
+      node.type === 'node'
+        ? theme.palette.primary.main
+        : theme.palette.grey[600],
   },
   text: {
     fill: theme.palette.primary.contrastText,
@@ -123,7 +143,7 @@ export function Node(props: { node: NodeType }) {
         textAnchor="middle"
         alignmentBaseline="middle"
       >
-        {node.type === 'node' ? node.id : node.name}
+        {node.type === 'node' ? trimNodeId(node.id) : node.name}
       </text>
     </g>
   );
@@ -139,9 +159,11 @@ export function TreeVisualizer({ tree }: { tree: AppTree }) {
         style={{ height: '100%', width: '100%' }}
         {...graphData}
         nodeMargin={10}
-        edgeMargin={30}
-        rankMargin={100}
+        rankMargin={50}
+        paddingX={50}
         renderNode={Node}
+        align={DependencyGraphTypes.Alignment.DOWN_RIGHT}
+        ranker={DependencyGraphTypes.Ranker.TIGHT_TREE}
         direction={DependencyGraphTypes.Direction.TOP_BOTTOM}
       />
     </Box>
