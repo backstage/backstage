@@ -210,6 +210,10 @@ export class KubernetesBuilder {
     clusterSupplier: KubernetesClustersSupplier,
   ): KubernetesServiceLocator;
   // (undocumented)
+  protected buildSingleTenantServiceLocator(
+    clusterSupplier: KubernetesClustersSupplier,
+  ): KubernetesServiceLocator;
+  // (undocumented)
   static createBuilder(env: KubernetesEnvironment): KubernetesBuilder;
   // (undocumented)
   protected readonly env: KubernetesEnvironment;
@@ -451,7 +455,7 @@ export class ServiceAccountStrategy implements AuthenticationStrategy {
 }
 
 // @public (undocumented)
-export type ServiceLocatorMethod = 'multiTenant' | 'http';
+export type ServiceLocatorMethod = 'multiTenant' | 'singleTenant' | 'http';
 
 // @public (undocumented)
 export interface ServiceLocatorRequestContext {
