@@ -218,7 +218,7 @@ export class StorageTaskBroker implements TaskBroker {
     });
   }
 
-  private async recoverTasks() {
+  public async recoverTasks() {
     if (
       this.config &&
       this.config.getOptionalBoolean('scaffolder.recoverTasks')
@@ -251,8 +251,6 @@ export class StorageTaskBroker implements TaskBroker {
    * {@inheritdoc TaskBroker.claim}
    */
   async claim(): Promise<TaskContext> {
-    await this.recoverTasks();
-
     for (;;) {
       const pendingTask = await this.storage.claimTask();
       if (pendingTask) {
