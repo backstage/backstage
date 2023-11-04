@@ -37,16 +37,16 @@ export function AppVisualizerPage() {
   const tabs = useMemo(
     () => [
       {
-        id: 'graph',
-        path: 'graph',
-        label: 'Graph',
-        element: <GraphVisualizer tree={tree} />,
-      },
-      {
         id: 'tree',
         path: 'tree',
         label: 'Tree',
         element: <TreeVisualizer tree={tree} />,
+      },
+      {
+        id: 'graph',
+        path: 'graph',
+        label: 'Graph',
+        element: <GraphVisualizer tree={tree} />,
       },
       {
         id: 'text',
