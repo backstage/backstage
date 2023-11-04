@@ -19,7 +19,7 @@ import { useApi } from '@backstage/core-plugin-api';
 import { appTreeApiRef } from '@backstage/frontend-plugin-api';
 import Box from '@material-ui/core/Box';
 import React, { useCallback, useEffect, useMemo } from 'react';
-import { GraphVisualizer } from './GraphVisualizer';
+import { DetailedVisualizer } from './DetailedVisualizer';
 import { TextVisualizer } from './TextVisualizer';
 import { TreeVisualizer } from './TreeVisualizer';
 import {
@@ -43,10 +43,10 @@ export function AppVisualizerPage() {
         element: <TreeVisualizer tree={tree} />,
       },
       {
-        id: 'graph',
-        path: 'graph',
-        label: 'Graph',
-        element: <GraphVisualizer tree={tree} />,
+        id: 'detailed',
+        path: 'detailed',
+        label: 'Detailed',
+        element: <DetailedVisualizer tree={tree} />,
       },
       {
         id: 'text',
