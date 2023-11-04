@@ -167,7 +167,8 @@ describe('instantiateAppNodeTree', () => {
       {
         ...makeSpec(simpleExtension),
         id: 'child-node',
-        attachTo: { id: 'root-node', input: 'test' },
+        // Using an invalid input should not be an error when disabled
+        attachTo: { id: 'root-node', input: 'invalid' },
         disabled: true,
       },
     ]);
