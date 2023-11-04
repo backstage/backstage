@@ -27,7 +27,7 @@ import Paper from '@material-ui/core/Paper';
 import Tooltip from '@material-ui/core/Tooltip';
 import Typography from '@material-ui/core/Typography';
 import * as colors from '@material-ui/core/colors';
-import { Theme, makeStyles } from '@material-ui/core/styles';
+import { makeStyles } from '@material-ui/core/styles';
 import InputIcon from '@material-ui/icons/InputSharp';
 import DisabledIcon from '@material-ui/icons/NotInterestedSharp';
 import React from 'react';
@@ -80,11 +80,7 @@ const getOutputColor = createOutputColorGenerator(
 
 interface StyleProps {
   enabled: boolean;
-}
-
-function borderColor(theme: Theme) {
-  return ({ enabled }: StyleProps) =>
-    enabled ? theme.palette.primary.main : theme.palette.divider;
+  depth: number;
 }
 
 const config = {
@@ -95,7 +91,8 @@ const useStyles = makeStyles(theme => ({
   extension: {
     borderLeftWidth: theme.spacing(config.borderWidth),
     borderLeftStyle: 'solid',
-    borderLeftColor: borderColor(theme),
+    borderLeftColor: ({ depth }: StyleProps) =>
+      colors.grey[(700 - (depth % 6) * 100) as keyof typeof colors.grey],
     cursor: 'pointer',
 
     '&:hover $extensionHeader': {
@@ -139,7 +136,8 @@ const useStyles = makeStyles(theme => ({
 
     borderTopWidth: theme.spacing(config.borderWidth),
     borderTopStyle: 'solid',
-    borderTopColor: borderColor(theme),
+    borderTopColor: ({ depth }: StyleProps) =>
+      colors.grey[(700 - (depth % 6) * 100) as keyof typeof colors.grey],
   },
   attachmentsInputName: {
     marginLeft: theme.spacing(1),
@@ -230,10 +228,11 @@ function Output(props: { dataRef: ExtensionDataRef<unknown>; node?: AppNode }) {
 function Attachments(props: {
   attachments: ReadonlyMap<string, AppNode[]>;
   enabled: boolean;
+  depth: number;
 }) {
-  const { attachments, enabled } = props;
+  const { attachments, enabled, depth } = props;
 
-  const classes = useStyles({ enabled });
+  const classes = useStyles({ enabled, depth });
 
   if (attachments.size === 0) {
     return null;
@@ -254,7 +253,7 @@ function Attachments(props: {
               </Box>
               <Box className={classes.attachmentsInputChildren}>
                 {children.map(node => (
-                  <Extension key={node.spec.id} node={node} />
+                  <Extension key={node.spec.id} node={node} depth={depth + 1} />
                 ))}
               </Box>
             </Box>
@@ -284,11 +283,11 @@ function ExtensionTooltip(props: { node: AppNode }) {
   );
 }
 
-function Extension(props: { node: AppNode }) {
-  const { node } = props;
+function Extension(props: { node: AppNode; depth: number }) {
+  const { node, depth } = props;
 
   const enabled = Boolean(node.instance);
-  const classes = useStyles({ enabled });
+  const classes = useStyles({ enabled, depth });
 
   const dataRefs = node.instance && [...node.instance.getDataRefs()];
 
@@ -309,7 +308,11 @@ function Extension(props: { node: AppNode }) {
           {!enabled && <DisabledIcon fontSize="small" />}
         </Box>
       </Box>
-      <Attachments attachments={node.edges.attachments} enabled={enabled} />
+      <Attachments
+        attachments={node.edges.attachments}
+        enabled={enabled}
+        depth={depth}
+      />
     </Box>
   );
 }
@@ -353,7 +356,7 @@ export function GraphVisualizer({ tree }: { tree: AppTree }) {
   return (
     <Box display="flex" height="100%" flex="1 1 100%" flexDirection="column">
       <Box flex="1 1 0" overflow="auto" ml={2} mt={2}>
-        <Extension node={tree.root} />
+        <Extension node={tree.root} depth={0} />
       </Box>
 
       <Box component={Paper} flex="0 0 auto" m={1}>
