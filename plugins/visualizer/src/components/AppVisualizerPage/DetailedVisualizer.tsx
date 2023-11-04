@@ -353,7 +353,7 @@ function Legend() {
   );
 }
 
-export function GraphVisualizer({ tree }: { tree: AppTree }) {
+export function DetailedVisualizer({ tree }: { tree: AppTree }) {
   return (
     <Box display="flex" height="100%" flex="1 1 100%" flexDirection="column">
       <Box flex="1 1 0" overflow="auto" ml={2} mt={2}>
