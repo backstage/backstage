@@ -17,11 +17,11 @@
 import '@backstage/backend-common';
 import { Entity } from '@backstage/catalog-model';
 import { ServiceLocatorRequestContext } from '../types/types';
-import { MultiTenantServiceLocator } from './MultiTenantServiceLocator';
+import { SingleTenantServiceLocator } from './SingleTenantServiceLocator';
 
-describe('MultiTenantConfigClusterLocator', () => {
+describe('SingleTenantConfigClusterLocator', () => {
   it('empty clusters returns empty cluster details', async () => {
-    const sut = new MultiTenantServiceLocator({
+    const sut = new SingleTenantServiceLocator({
       getClusters: async () => [],
     });
 
@@ -33,8 +33,8 @@ describe('MultiTenantConfigClusterLocator', () => {
     expect(result).toStrictEqual({ clusters: [] });
   });
 
-  it('one clusters returns one cluster details', async () => {
-    const sut = new MultiTenantServiceLocator({
+  it('one cluster return from two clusters', async () => {
+    const sut = new SingleTenantServiceLocator({
       getClusters: async () => {
         return [
           {
@@ -42,12 +42,29 @@ describe('MultiTenantConfigClusterLocator', () => {
             url: 'http://localhost:8080',
             authMetadata: {},
           },
+          {
+            name: 'cluster2',
+            url: 'http://localhost:8081',
+            authMetadata: {},
+          },
         ];
       },
     });
 
+    const testEntity = {
+      apiVersion: 'backstage.io/v1alpha1',
+      kind: 'Component',
+      metadata: {
+        namespace: 'default',
+        name: 'testEntity',
+        annotations: {
+          'backstage.io/kubernetes-cluster': 'cluster1',
+        },
+      },
+    };
+
     const result = await sut.getClustersByEntity(
-      {} as Entity,
+      testEntity as Entity,
       {} as ServiceLocatorRequestContext,
     );
 
@@ -62,8 +79,8 @@ describe('MultiTenantConfigClusterLocator', () => {
     });
   });
 
-  it('two clusters returns two cluster details', async () => {
-    const sut = new MultiTenantServiceLocator({
+  it('no annotation return all cluster', async () => {
+    const sut = new SingleTenantServiceLocator({
       getClusters: async () => {
         return [
           {
@@ -98,6 +115,46 @@ describe('MultiTenantConfigClusterLocator', () => {
           authMetadata: {},
         },
       ],
+    });
+  });
+
+  it('wrong annotation returns empty cluster', async () => {
+    const sut = new SingleTenantServiceLocator({
+      getClusters: async () => {
+        return [
+          {
+            name: 'cluster1',
+            url: 'http://localhost:8080',
+            authMetadata: {},
+          },
+          {
+            name: 'cluster2',
+            url: 'http://localhost:8081',
+            authMetadata: {},
+          },
+        ];
+      },
+    });
+
+    const testEntity = {
+      apiVersion: 'backstage.io/v1alpha1',
+      kind: 'Component',
+      metadata: {
+        namespace: 'default',
+        name: 'testEntity',
+        annotations: {
+          'backstage.io/kubernetes-cluster': 'cluster3',
+        },
+      },
+    };
+
+    const result = await sut.getClustersByEntity(
+      testEntity as Entity,
+      {} as ServiceLocatorRequestContext,
+    );
+
+    expect(result).toStrictEqual({
+      clusters: [],
     });
   });
 });

@@ -51,10 +51,12 @@ kubernetes:
 
 This configures how to determine which clusters a component is running in.
 
-Currently, the only valid value is:
+Valid value are:
 
 - `multiTenant` - This configuration assumes that all components run on all the
   provided clusters.
+
+- `singleTenant` - This configuration assumes that current component run on one cluster in provided clusters.
 
 ### `clusterLocatorMethods`
 
@@ -575,20 +577,16 @@ for more info.
 'backstage.io/kubernetes-label-selector': 'app=my-app,component=front-end'
 ```
 
-### Cluster Filter annotation
+### Cluster Selection annotation
 
-You can now filter `single` or `multiple` kubernetes cluster that the entity is part-of from all your defined kubernetes clusters. To apply the filter by the following annotation.
+This is applicable only for `singleTenant` serviceLocatorMethod.
 
-Single Cluster filter:
+You can now select `single` kubernetes cluster that the entity is part-of from all your defined kubernetes clusters. To apply this use the following annotation.
 
-```yaml
-'backstage.io/kubernetes-clusters': dice-cluster
-```
-
-Multi-Cluster filter:
+SingleTenant Cluster:
 
 ```yaml
-'backstage.io/kubernetes-clusters': 'dice-cluster,roller-cluster'
+'backstage.io/kubernetes-cluster': dice-cluster
 ```
 
 If you do not specify the annotation by `default Backstage fetches all` defined Kubernetes cluster.
