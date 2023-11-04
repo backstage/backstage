@@ -65,9 +65,11 @@ const StyledNestedList = withStyles(nestedListStyle, {
   <MetadataList classes={classes}>{children}</MetadataList>
 ));
 
-function renderList(list: Array<any>, nested?: boolean) {
+function renderList(list: Array<any>, options: Options, nested: boolean) {
   const values = list.map((item: any, index: number) => (
-    <MetadataListItem key={index}>{toValue(item)}</MetadataListItem>
+    <MetadataListItem key={index}>
+      {toValue(item, options, nested)}
+    </MetadataListItem>
   ));
   return nested ? (
     <StyledNestedList>{values}</StyledNestedList>
@@ -78,15 +80,12 @@ function renderList(list: Array<any>, nested?: boolean) {
 
 function renderMap(
   map: { [key: string]: any },
-  nested?: boolean,
-  options?: any,
+  options: Options,
+  nested: boolean,
 ) {
   const values = Object.keys(map).map(key => {
-    const value = toValue(map[key], true);
-    const fmtKey =
-      options && options.titleFormat
-        ? options.titleFormat(key)
-        : startCase(key);
+    const value = toValue(map[key], options, true);
+    const fmtKey = options.titleFormat?.(key) ?? startCase(key);
     return (
       <MetadataListItem key={key}>
         <Typography variant="body2" component="span">
@@ -106,8 +105,8 @@ function renderMap(
 
 function toValue(
   value: ReactElement | object | Array<any> | boolean,
-  options?: any,
-  nested?: boolean,
+  options: Options,
+  nested: boolean,
 ) {
   if (React.isValidElement(value)) {
     return <Fragment>{value}</Fragment>;
@@ -118,7 +117,7 @@ function toValue(
   }
 
   if (Array.isArray(value)) {
-    return renderList(value, nested);
+    return renderList(value, options, nested);
   }
 
   if (typeof value === 'boolean') {
@@ -131,8 +130,8 @@ function toValue(
     </Typography>
   );
 }
-const ItemValue = ({ value, options }: { value: any; options: any }) => (
-  <Fragment>{toValue(value, options)}</Fragment>
+const ItemValue = ({ value, options }: { value: any; options: Options }) => (
+  <Fragment>{toValue(value, options, false)}</Fragment>
 );
 
 const TableItem = ({
@@ -142,31 +141,29 @@ const TableItem = ({
 }: {
   title: string;
   value: any;
-  options: any;
+  options: Options;
 }) => {
   return (
-    <MetadataTableItem
-      title={
-        options && options.titleFormat
-          ? options.titleFormat(title)
-          : startCase(title)
-      }
-    >
+    <MetadataTableItem title={options.titleFormat?.(title) ?? startCase(title)}>
       <ItemValue value={value} options={options} />
     </MetadataTableItem>
   );
 };
 
-function mapToItems(info: { [key: string]: string }, options: any) {
+function mapToItems(info: { [key: string]: string }, options: Options) {
   return Object.keys(info).map(key => (
     <TableItem key={key} title={key} value={info[key]} options={options} />
   ));
 }
 
+interface Options {
+  titleFormat?: (key: string) => string;
+}
+
 type Props = {
   metadata: { [key: string]: any };
   dense?: boolean;
-  options?: any;
+  options?: Options;
 };
 
 export function StructuredMetadataTable(props: Props) {
