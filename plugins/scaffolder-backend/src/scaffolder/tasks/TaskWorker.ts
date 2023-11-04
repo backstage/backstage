@@ -115,6 +115,7 @@ export class TaskWorker {
     (async () => {
       for (;;) {
         await this.onReadyToClaimTask();
+        await this.options.taskBroker.recoverTasks?.();
         const task = await this.options.taskBroker.claim();
         this.taskQueue.add(() => this.runOneTask(task));
       }
