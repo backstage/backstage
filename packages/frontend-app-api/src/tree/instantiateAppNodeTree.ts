@@ -176,7 +176,9 @@ export function instantiateAppNodeTree(rootNode: AppNode): void {
         }
         return [{ id: child.spec.id, instance: childInstance }];
       });
-      instantiatedAttachments.set(input, instantiatedChildren);
+      if (instantiatedChildren.length > 0) {
+        instantiatedAttachments.set(input, instantiatedChildren);
+      }
     }
 
     (node as Mutable<AppNode>).instance = createAppNodeInstance({
