@@ -230,11 +230,12 @@ function Output(props: { dataRef: ExtensionDataRef<unknown>; node?: AppNode }) {
 }
 
 function Attachments(props: {
-  attachments: ReadonlyMap<string, AppNode[]>;
+  node: AppNode;
   enabled: boolean;
   depth: number;
 }) {
-  const { attachments, enabled, depth } = props;
+  const { node, enabled, depth } = props;
+  const { attachments } = node.edges;
 
   const classes = useStyles({ enabled, depth });
 
@@ -312,11 +313,7 @@ function Extension(props: { node: AppNode; depth: number }) {
           {!enabled && <DisabledIcon fontSize="small" />}
         </Box>
       </Box>
-      <Attachments
-        attachments={node.edges.attachments}
-        enabled={enabled}
-        depth={depth}
-      />
+      <Attachments node={node} enabled={enabled} depth={depth} />
     </Box>
   );
 }
