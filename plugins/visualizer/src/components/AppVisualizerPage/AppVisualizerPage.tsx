@@ -18,29 +18,81 @@ import { Content, Header, HeaderTabs, Page } from '@backstage/core-components';
 import { useApi } from '@backstage/core-plugin-api';
 import { appTreeApiRef } from '@backstage/frontend-plugin-api';
 import Box from '@material-ui/core/Box';
-import React, { useState } from 'react';
+import React, { useCallback, useEffect, useMemo } from 'react';
 import { GraphVisualizer } from './GraphVisualizer';
 import { TextVisualizer } from './TextVisualizer';
 import { TreeVisualizer } from './TreeVisualizer';
+import {
+  matchRoutes,
+  useLocation,
+  useNavigate,
+  useParams,
+  useRoutes,
+} from 'react-router-dom';
 
 export function AppVisualizerPage() {
   const appTreeApi = useApi(appTreeApiRef);
   const { tree } = appTreeApi.getTree();
-  const [tab, setTab] = useState(0);
 
-  const tabs = [
-    { id: 'graph', label: 'Graph', element: <GraphVisualizer tree={tree} /> },
-    { id: 'tree', label: 'Tree', element: <TreeVisualizer tree={tree} /> },
-    { id: 'text', label: 'Text', element: <TextVisualizer tree={tree} /> },
-  ];
+  const tabs = useMemo(
+    () => [
+      {
+        id: 'graph',
+        path: 'graph',
+        label: 'Graph',
+        element: <GraphVisualizer tree={tree} />,
+      },
+      {
+        id: 'tree',
+        path: 'tree',
+        label: 'Tree',
+        element: <TreeVisualizer tree={tree} />,
+      },
+      {
+        id: 'text',
+        path: 'text',
+        label: 'Text',
+        element: <TextVisualizer tree={tree} />,
+      },
+    ],
+    [tree],
+  );
+
+  const location = useLocation();
+  const element = useRoutes(tabs, location);
+
+  const currentPath = `/${useParams()['*']}`;
+  const [matchedRoute] = matchRoutes(tabs, currentPath) ?? [];
+
+  const currentTabIndex = matchedRoute
+    ? tabs.findIndex(t => t.path === matchedRoute.route.path)
+    : 0;
+
+  const navigate = useNavigate();
+  const handleTabChange = useCallback(
+    (index: number) => {
+      navigate(tabs[index].id);
+    },
+    [navigate, tabs],
+  );
+
+  useEffect(() => {
+    if (!element) {
+      navigate(tabs[0].path);
+    }
+  }, [element, navigate, tabs]);
 
   return (
     <Page themeId="tool">
       <Header title="App Visualizer" />
       <Content noPadding stretch>
         <Box display="flex" flexDirection="column" height="100%">
-          <HeaderTabs tabs={tabs} selectedIndex={tab} onChange={setTab} />
-          {tabs[tab].element}
+          <HeaderTabs
+            tabs={tabs}
+            selectedIndex={currentTabIndex}
+            onChange={handleTabChange}
+          />
+          {element}
         </Box>
       </Content>
     </Page>
