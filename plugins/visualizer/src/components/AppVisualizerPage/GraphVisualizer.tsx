@@ -122,7 +122,11 @@ const useStyles = makeStyles(theme => ({
     marginLeft: theme.spacing(1),
     gap: theme.spacing(1),
   },
-  attachments: {},
+  attachments: {
+    gap: theme.spacing(2),
+    display: 'flex',
+    flexDirection: 'column',
+  },
   attachmentsInput: {
     '&:first-child $attachmentsInputTitle': {
       borderTop: 0,
