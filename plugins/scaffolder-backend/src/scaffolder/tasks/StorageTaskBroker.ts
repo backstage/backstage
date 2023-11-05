@@ -218,15 +218,17 @@ export class StorageTaskBroker implements TaskBroker {
     });
   }
 
-  public async recoverTasks() {
+  public async recoverTasks(): Promise<boolean> {
     const enabled =
-      this.config && this.config.getOptionalBoolean('scaffolder.recoverTasks');
+      (this.config &&
+        this.config.getOptionalBoolean('scaffolder.recoverTasks')) ??
+      false;
 
     if (enabled) {
       const recoveredTaskIds =
         (await this.storage.recoverTasks?.({
           timeoutS: Duration.fromObject(
-            readDuration(this.config, 'scaffolder.recoverTasksTimeout', {
+            readDuration(this.config!!, 'scaffolder.recoverTasksTimeout', {
               seconds: 5,
             }),
           ).as('seconds'),
