@@ -133,7 +133,7 @@ export function Node(props: { node: NodeType }) {
         className={classes.node}
         width={paddedWidth}
         height={paddedHeight}
-        rx={10}
+        rx={node.type === 'node' ? 0 : 20}
       />
       <text
         ref={idRef}
