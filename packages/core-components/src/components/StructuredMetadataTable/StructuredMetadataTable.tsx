@@ -85,11 +85,10 @@ function renderMap(
 ) {
   const values = Object.keys(map).map(key => {
     const value = toValue(map[key], options, true);
-    const fmtKey = options.titleFormat?.(key) ?? startCase(key);
     return (
       <MetadataListItem key={key}>
         <Typography variant="body2" component="span">
-          {`${fmtKey}: `}
+          {`${options.titleFormat(key)}: `}
         </Typography>
         {value}
       </MetadataListItem>
@@ -144,7 +143,7 @@ const TableItem = ({
   options: Options;
 }) => {
   return (
-    <MetadataTableItem title={options.titleFormat?.(title) ?? startCase(title)}>
+    <MetadataTableItem title={options.titleFormat(title)}>
       <ItemValue value={value} options={options} />
     </MetadataTableItem>
   );
@@ -156,25 +155,29 @@ function mapToItems(info: { [key: string]: string }, options: Options) {
   ));
 }
 
-interface Options {
-  /**
-   * Function to format the keys from the `metadata` object. Defaults to
-   * startCase from the lodash library.
-   * @param key A key within the `metadata`
-   * @returns Formatted key
-   * @see {@link startCase}
-   */
-  titleFormat?: (key: string) => string;
-}
-
-type Props = {
+/** @public */
+export interface StructuredMetadataTableProps {
   metadata: { [key: string]: any };
   dense?: boolean;
-  options?: Options;
-};
+  options?: {
+    /**
+     * Function to format the keys from the `metadata` object. Defaults to
+     * startCase from the lodash library.
+     * @param key - A key within the `metadata`
+     * @returns Formatted key
+     */
+    titleFormat?: (key: string) => string;
+  };
+}
 
-export function StructuredMetadataTable(props: Props) {
-  const { metadata, dense = true, options } = props;
-  const metadataItems = mapToItems(metadata, options || {});
+type Options = Required<NonNullable<StructuredMetadataTableProps['options']>>;
+
+/** @public */
+export function StructuredMetadataTable(props: StructuredMetadataTableProps) {
+  const { metadata, dense = true, options = {} } = props;
+  const metadataItems = mapToItems(metadata, {
+    titleFormat: startCase,
+    ...options,
+  });
   return <MetadataTable dense={dense}>{metadataItems}</MetadataTable>;
 }
