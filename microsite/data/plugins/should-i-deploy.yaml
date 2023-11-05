@@ -4,7 +4,7 @@ author: NandoRFS
 authorUrl: https://github.com/NandoRFS
 category: Humor
 description: Can I deploy this plugin if it's Friday? Oh, hell no!!!
-documentation: https://github.com/backstage/backstage/blob/master/plugins/should-i-deploy/README.md
+documentation: https://github.com/NandoRFS/backstage-plugin-should-i-deploy/
 iconUrl: /img/should-i-deploy-logo.png
-npmPackageName: '@backstage/plugin-should-i-deploy'
-addedDate: '2023-11-03'
+npmPackageName: 'backstage-plugin-should-i-deploy'
+addedDate: '2023-11-05'
