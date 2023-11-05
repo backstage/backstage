@@ -157,6 +157,13 @@ function mapToItems(info: { [key: string]: string }, options: Options) {
 }
 
 interface Options {
+  /**
+   * Function to format the keys from the `metadata` object. Defaults to
+   * startCase from the lodash library.
+   * @param key A key within the `metadata`
+   * @returns Formatted key
+   * @see {@link startCase}
+   */
   titleFormat?: (key: string) => string;
 }
 
