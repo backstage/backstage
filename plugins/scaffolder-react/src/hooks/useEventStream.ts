@@ -240,7 +240,7 @@ export const useTaskEventStream = (taskId: string): TaskStream => {
               if (retryCount <= 3) {
                 setTimeout(() => {
                   retryCount += 1;
-                  startStreamLogProcess();
+                  void startStreamLogProcess();
                 }, 15000);
               }
 
@@ -254,7 +254,7 @@ export const useTaskEventStream = (taskId: string): TaskStream => {
           }
         },
       );
-    startStreamLogProcess();
+    void startStreamLogProcess();
     return () => {
       didCancel = true;
       if (subscription) {

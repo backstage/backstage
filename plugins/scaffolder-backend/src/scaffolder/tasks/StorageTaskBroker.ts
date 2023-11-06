@@ -248,6 +248,7 @@ export class StorageTaskBroker implements TaskBroker {
     ) {
       const { events } = await this.storage.listEvents({
         taskId: task.id,
+        raw: true,
       });
       return lastRecoveredStepId(task.spec, events);
     }
