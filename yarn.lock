@@ -18654,14 +18654,14 @@ __metadata:
   linkType: hard
 
 "@types/express-serve-static-core@npm:*, @types/express-serve-static-core@npm:^4.17.30, @types/express-serve-static-core@npm:^4.17.33, @types/express-serve-static-core@npm:^4.17.5":
-  version: 4.17.39
-  resolution: "@types/express-serve-static-core@npm:4.17.39"
+  version: 4.17.40
+  resolution: "@types/express-serve-static-core@npm:4.17.40"
   dependencies:
     "@types/node": "*"
     "@types/qs": "*"
     "@types/range-parser": "*"
     "@types/send": "*"
-  checksum: 4227b96a53f0cf19d01fdb77a74252660f8e70650b79167e591b04c66ec9c7330d0a00038939415f96664a67312b21798bbac150fe81bf613380849b96546c37
+  checksum: cf64bc1eb5625c2940175f3e9d62bb0b9e3ec08f9ecd8cc913c4e3f52191ab07d3b2b290cb420f435a1464e54ecf5ea6fd8486e02b22baa749bd0a942b31432b
   languageName: node
   linkType: hard
 
