@@ -129,7 +129,7 @@ Scope: The Scaffolder frontend and backend plugins, and related tooling.
 | Name                | Organization   | GitHub                                | Discord          |
 | ------------------- | -------------- | ------------------------------------- | ---------------- |
 | Bogdan Nechyporenko | Bol.com        | [acierto](https://github.com/acierto) | `bogdan_haarlem` |
-| Paul Cowan          | frontendrescue | [dagda1](https://github.com/dadga1)   | `dagda1`         |
+| Paul Cowan          | frontendrescue | [dagda1](https://github.com/dagda1)   | `dagda1`         |
 
 ## Sponsors
 
