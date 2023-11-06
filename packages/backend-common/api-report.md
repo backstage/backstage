@@ -32,6 +32,7 @@ import { HostDiscovery as HostDiscovery_2 } from '@backstage/backend-app-api';
 import { IdentityService } from '@backstage/backend-plugin-api';
 import { isChildPath } from '@backstage/cli-common';
 import { Knex } from 'knex';
+import knexFactory from 'knex';
 import { KubeConfig } from '@kubernetes/client-node';
 import { LifecycleService } from '@backstage/backend-plugin-api';
 import { LoadConfigOptionsRemote } from '@backstage/config-loader';
@@ -222,7 +223,7 @@ export function createDatabaseClient(
     lifecycle: LifecycleService;
     pluginMetadata: PluginMetadataService;
   },
-): Knex<any, any[]>;
+): knexFactory.Knex<any, any[]>;
 
 // @public
 export function createRootLogger(
