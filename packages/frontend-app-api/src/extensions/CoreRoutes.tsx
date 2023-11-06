@@ -19,10 +19,10 @@ import {
   createExtension,
   coreExtensionData,
   createExtensionInput,
+  coreNotFoundErrorPageComponentRef,
+  useComponent,
 } from '@backstage/frontend-plugin-api';
 import { useRoutes } from 'react-router-dom';
-// eslint-disable-next-line @backstage/no-relative-monorepo-imports
-import { useApp } from '../../../core-plugin-api/src/app/useApp';
 
 export const CoreRoutes = createExtension({
   id: 'core.routes',
@@ -39,8 +39,8 @@ export const CoreRoutes = createExtension({
   },
   factory({ inputs }) {
     const Routes = () => {
-      const app = useApp();
-      const { NotFoundErrorPage } = app.getComponents();
+      const NotFoundErrorPage = useComponent(coreNotFoundErrorPageComponentRef);
+
       const element = useRoutes([
         ...inputs.routes.map(route => ({
           path: `${route.path}/*`,

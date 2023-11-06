@@ -18,7 +18,9 @@ import {
   coreExtensionData,
   createExtension,
   createExtensionInput,
+  ComponentsProvider,
 } from '@backstage/frontend-plugin-api';
+import React from 'react';
 
 export const Core = createExtension({
   id: 'core',
@@ -44,8 +46,20 @@ export const Core = createExtension({
     root: coreExtensionData.reactElement,
   },
   factory({ inputs }) {
+    const components = inputs.components.reduce(
+      (rest, { component }) => ({
+        ...rest,
+        [component.ref.id]: component.impl,
+      }),
+      {},
+    );
+
     return {
-      root: inputs.root.element,
+      root: (
+        <ComponentsProvider value={components}>
+          {inputs.root.element}
+        </ComponentsProvider>
+      ),
     };
   },
 });
