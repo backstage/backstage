@@ -36,7 +36,7 @@ Plugins provide the actual features inside an app. The size of a plugin can rang
 
 ### Extension Overrides
 
-In addition to the built-in extensions and extensions provided by plugins, it is also possible to install extension overrides. This is a collection of extensions with high priority that can replace existing extensions. They can for example be used to override an individual extension provided by a plugin, or install a completely new extensions, such as a new app theme.
+In addition to the built-in extensions and extensions provided by plugins, it is also possible to install extension overrides. This is a collection of extensions with high priority that can replace existing extensions. They can for example be used to override an individual extension provided by a plugin, or install a completely new extension, such as a new app theme.
 
 ### Utility APIs
 
