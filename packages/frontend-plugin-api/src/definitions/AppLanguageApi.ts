@@ -14,18 +14,23 @@
  * limitations under the License.
  */
 
-/**
- * Core API used by Backstage frontend plugins.
- *
- * @packageDocumentation
- */
+import { ApiRef, createApiRef } from '@backstage/core-plugin-api';
+import { Observable } from '@backstage/types';
 
-export * from './apis';
-export * from './components';
-export * from './definitions';
-export * from './extensions';
-export * from './icons';
-export * from './routing';
-export * from './schema';
-export * from './system';
-export * from './wiring';
+/** @alpha */
+export type AppLanguageApi = {
+  getAvailableLanguages(): { languages: string[] };
+
+  setLanguage(language?: string): void;
+
+  getLanguage(): { language: string };
+
+  language$(): Observable<{ language: string }>;
+};
+
+/**
+ * @alpha
+ */
+export const appLanguageApiRef: ApiRef<AppLanguageApi> = createApiRef({
+  id: 'core.applanguage',
+});

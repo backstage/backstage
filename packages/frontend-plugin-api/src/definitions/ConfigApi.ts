@@ -1,5 +1,5 @@
 /*
- * Copyright 2023 The Backstage Authors
+ * Copyright 2020 The Backstage Authors
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -13,19 +13,22 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+import { ApiRef, createApiRef } from '../system';
+import { Config } from '@backstage/config';
 
 /**
- * Core API used by Backstage frontend plugins.
+ * The Config API is used to provide a mechanism to access the
+ * runtime configuration of the system.
  *
- * @packageDocumentation
+ * @public
  */
+export type ConfigApi = Config;
 
-export * from './apis';
-export * from './components';
-export * from './definitions';
-export * from './extensions';
-export * from './icons';
-export * from './routing';
-export * from './schema';
-export * from './system';
-export * from './wiring';
+/**
+ * The {@link ApiRef} of {@link ConfigApi}.
+ *
+ * @public
+ */
+export const configApiRef: ApiRef<ConfigApi> = createApiRef({
+  id: 'core.config',
+});
