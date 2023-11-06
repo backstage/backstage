@@ -21,7 +21,7 @@ import { ProjectPreview } from '../ProjectPreview/ProjectPreview';
 import { Button, makeStyles } from '@material-ui/core';
 import useAsyncFn from 'react-use/lib/useAsyncFn';
 import { Entity, stringifyEntityRef } from '@backstage/catalog-model';
-import { useApi } from '@backstage/core-plugin-api';
+import { configApiRef, useApi } from '@backstage/core-plugin-api';
 import { catalogApiRef } from '@backstage/plugin-catalog-react';
 import { BazaarProject } from '../../types';
 import { bazaarApiRef } from '../../api';
@@ -36,6 +36,8 @@ import {
 import { SortMethodSelector } from '../SortMethodSelector';
 import { fetchCatalogItems } from '../../util/fetchMethods';
 import { parseBazaarProject } from '../../util/parseMethods';
+import { usePermission } from '@backstage/plugin-permission-react';
+import { bazaarAddPermission } from '@backstage/plugin-bazaar-common';
 
 const useStyles = makeStyles({
   button: { minWidth: '11rem' },
@@ -82,6 +84,7 @@ export const SortView = (props: SortViewProps) => {
   const { fullWidth = true, fullHeight = true } = props;
   const bazaarApi = useApi(bazaarApiRef);
   const catalogApi = useApi(catalogApiRef);
+  const config = useApi(configApiRef);
   const classes = useStyles();
   const sortMethods = [
     sortByDate,
@@ -116,8 +119,33 @@ export const SortView = (props: SortViewProps) => {
 
   const getSearchResults = () => {
     return bazaarProjects.value
-      ?.filter(project => project.title.includes(searchValue))
+      ?.filter(project =>
+        project.title
+          .toLocaleLowerCase('en-US')
+          .includes(searchValue.toLocaleLowerCase('en-US')),
+      )
       .sort(sortMethods[sortMethodNbr]);
+  };
+
+  const { allowed: allowAddProject } = usePermission({
+    permission: bazaarAddPermission,
+  });
+
+  const getSupportItems = () => {
+    const bazaarConfig = config?.getOptionalConfig('bazaar');
+    if (bazaarConfig) {
+      return bazaarConfig.getConfigArray('support').flatMap(itemConf => ({
+        title: itemConf.getString('title'),
+        icon: itemConf.getOptionalString('icon'),
+        links: (itemConf.getOptionalConfigArray('links') ?? []).flatMap(
+          linkConf => ({
+            url: linkConf.getString('url'),
+            title: linkConf.getString('title'),
+          }),
+        ),
+      }));
+    }
+    return undefined;
   };
 
   useEffect(() => {
@@ -198,6 +226,7 @@ export const SortView = (props: SortViewProps) => {
           onClick={() => {
             setOpenAdd(true);
           }}
+          disabled={!allowAddProject}
         >
           Add project
         </Button>
@@ -210,7 +239,7 @@ export const SortView = (props: SortViewProps) => {
           fetchBazaarProjects={fetchBazaarProjects}
           fetchCatalogEntities={fetchCatalogEntities}
         />
-        <SupportButton />
+        <SupportButton title="" items={getSupportItems()} />
       </div>
       <ProjectPreview
         bazaarProjects={getSearchResults() || []}

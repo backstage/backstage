@@ -62,6 +62,8 @@ import {
   fetchProjectMembers,
 } from '../../util/fetchMethods';
 import { parseBazaarResponse } from '../../util/parseMethods';
+import { usePermission } from '@backstage/plugin-permission-react';
+import { bazaarUpdatePermission } from '@backstage/plugin-bazaar-common';
 
 const useStyles = makeStyles({
   wordBreak: {
@@ -118,6 +120,10 @@ export const HomePageBazaarInfoCard = ({
     return await (
       await identity.getProfileInfo()
     ).displayName;
+  });
+
+  const { allowed: allowUpdateProject } = usePermission({
+    permission: bazaarUpdatePermission,
   });
 
   useEffect(() => {
@@ -271,7 +277,10 @@ export const HomePageBazaarInfoCard = ({
           }
           action={
             <div>
-              <IconButton onClick={() => setOpenEdit(true)}>
+              <IconButton
+                onClick={() => setOpenEdit(true)}
+                disabled={!allowUpdateProject}
+              >
                 <EditIcon />
               </IconButton>
               <IconButton onClick={handleClose}>

@@ -34,8 +34,10 @@
     "@backstage/core-components": "workspace:^",
     "@backstage/core-plugin-api": "workspace:^",
     "@backstage/errors": "workspace:^",
+    "@backstage/plugin-bazaar-common": "workspace:^",
     "@backstage/plugin-catalog": "workspace:^",
     "@backstage/plugin-catalog-react": "workspace:^",
+    "@backstage/plugin-permission-react": "workspace:^",
     "@backstage/theme": "workspace:^",
     "@date-io/luxon": "1.x",
     "@material-ui/core": "^4.12.2",
@@ -60,6 +62,8 @@
     "@testing-library/jest-dom": "^6.0.0"
   },
   "files": [
-    "dist"
-  ]
+    "dist",
+    "config.d.ts"
+  ],
+  "configSchema": "config.d.ts"
 }

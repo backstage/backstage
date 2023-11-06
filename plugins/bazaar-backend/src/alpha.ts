@@ -36,14 +36,23 @@ export default createBackendPlugin({
         identity: coreServices.identity,
         logger: coreServices.logger,
         httpRouter: coreServices.httpRouter,
+        permissions: coreServices.permissions,
       },
-      async init({ database, config, identity, logger, httpRouter }) {
+      async init({
+        database,
+        config,
+        identity,
+        logger,
+        httpRouter,
+        permissions,
+      }) {
         httpRouter.use(
           await createRouter({
             database,
             config,
             identity,
             logger: loggerToWinstonLogger(logger),
+            permissions,
           }),
         );
       },

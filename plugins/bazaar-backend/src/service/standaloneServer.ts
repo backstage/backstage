@@ -16,6 +16,8 @@
 
 import {
   DatabaseManager,
+  HostDiscovery,
+  ServerTokenManager,
   createServiceBuilder,
   loadBackendConfig,
 } from '@backstage/backend-common';
@@ -24,6 +26,7 @@ import { Server } from 'http';
 import { Logger } from 'winston';
 import { createRouter } from './router';
 import { ConfigReader } from '@backstage/config';
+import { ServerPermissionClient } from '@backstage/plugin-permission-node';
 
 export interface ServerOptions {
   port: number;
@@ -36,6 +39,14 @@ export async function startStandaloneServer(
 ): Promise<Server> {
   const logger = options.logger.child({ service: 'bazaar-backend' });
   const config = await loadBackendConfig({ logger, argv: process.argv });
+  const discovery = HostDiscovery.fromConfig(config);
+  const tokenManager = ServerTokenManager.fromConfig(config, {
+    logger,
+  });
+  const permissions = ServerPermissionClient.fromConfig(config, {
+    discovery,
+    tokenManager,
+  });
 
   const manager = DatabaseManager.fromConfig(
     new ConfigReader({
@@ -51,6 +62,7 @@ export async function startStandaloneServer(
     database,
     config: config,
     identity: {} as IdentityApi,
+    permissions,
   });
 
   let service = createServiceBuilder(module)

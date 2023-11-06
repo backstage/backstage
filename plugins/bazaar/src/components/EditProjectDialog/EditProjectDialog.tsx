@@ -22,6 +22,8 @@ import { bazaarApiRef } from '../../api';
 import { UseFormGetValues } from 'react-hook-form';
 import { ConfirmationDialog } from '../ConfirmationDialog';
 import { Button, makeStyles } from '@material-ui/core';
+import { usePermission } from '@backstage/plugin-permission-react';
+import { bazaarDeletePermission } from '@backstage/plugin-bazaar-common';
 
 type Props = {
   bazaarProject: BazaarProject;
@@ -78,6 +80,10 @@ export const EditProjectDialog = ({
       display: 'transient',
     });
   };
+
+  const { allowed: allowDeleteProject } = usePermission({
+    permission: bazaarDeletePermission,
+  });
 
   useEffect(() => {
     setDefaultValues({
@@ -141,6 +147,7 @@ export const EditProjectDialog = ({
             onClick={() => {
               setOpenDelete(true);
             }}
+            disabled={!allowDeleteProject}
           >
             Delete project
           </Button>

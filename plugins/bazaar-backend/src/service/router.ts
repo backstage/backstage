@@ -19,8 +19,25 @@ import express from 'express';
 import Router from 'express-promise-router';
 import { Logger } from 'winston';
 import { Config } from '@backstage/config';
-import { IdentityApi } from '@backstage/plugin-auth-node';
+import {
+  getBearerTokenFromAuthorizationHeader,
+  IdentityApi,
+} from '@backstage/plugin-auth-node';
 import { DatabaseHandler } from './DatabaseHandler';
+import { NotAllowedError } from '@backstage/errors';
+import {
+  PermissionEvaluator,
+  AuthorizeResult,
+  BasicPermission,
+} from '@backstage/plugin-permission-common';
+import { createPermissionIntegrationRouter } from '@backstage/plugin-permission-node';
+// eslint-disable-next-line @backstage/no-relative-monorepo-imports
+import {
+  bazaarAddPermission,
+  bazaarDeletePermission,
+  bazaarUpdatePermission,
+  bazaarPermissions,
+} from '@backstage/plugin-bazaar-common';
 
 /** @public */
 export interface RouterOptions {
@@ -28,20 +45,46 @@ export interface RouterOptions {
   database: PluginDatabaseManager;
   config: Config;
   identity: IdentityApi;
+  permissions: PermissionEvaluator;
 }
 
 /** @public */
 export async function createRouter(
   options: RouterOptions,
 ): Promise<express.Router> {
-  const { logger, database, identity } = options;
+  const { logger, database, identity, permissions } = options;
 
   const dbHandler = await DatabaseHandler.create({ database });
+
+  const evaluateRequestPermission = async (
+    request: express.Request,
+    permission: BasicPermission,
+  ) => {
+    const token = getBearerTokenFromAuthorizationHeader(
+      request.header('authorization'),
+    );
+
+    const decision = (
+      await permissions.authorize([{ permission: permission }], {
+        token,
+      })
+    )[0];
+
+    if (decision.result === AuthorizeResult.DENY) {
+      throw new NotAllowedError('Unauthorized');
+    }
+  };
+
+  const permissionIntegrationRouter = createPermissionIntegrationRouter({
+    permissions: bazaarPermissions,
+  });
 
   logger.info('Initializing Bazaar backend');
 
   const router = Router();
   router.use(express.json());
+
+  router.use(permissionIntegrationRouter);
 
   router.get('/projects/:id/members', async (request, response) => {
     const members = await dbHandler.getMembers(request.params.id);
@@ -106,7 +149,7 @@ export async function createRouter(
 
   router.put('/projects', async (request, response) => {
     const bazaarProject = request.body;
-
+    await evaluateRequestPermission(request, bazaarUpdatePermission);
     const count = await dbHandler.updateMetadata(bazaarProject);
 
     if (count) {
@@ -116,14 +159,14 @@ export async function createRouter(
 
   router.post('/projects', async (request, response) => {
     const bazaarProject = request.body;
-
+    await evaluateRequestPermission(request, bazaarAddPermission);
     await dbHandler.insertMetadata(bazaarProject);
     response.json({ status: 'ok' });
   });
 
   router.delete('/projects/:id', async (request, response) => {
     const id = decodeURIComponent(request.params.id);
-
+    await evaluateRequestPermission(request, bazaarDeletePermission);
     const count = await dbHandler.deleteMetadata(parseInt(id, 10));
 
     if (count) {

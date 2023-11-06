@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import React from 'react';
+import React, { ReactElement } from 'react';
 import { Header, RoutedTabs } from '@backstage/core-components';
 import { SortView } from '../SortView';
 import { About } from '../About';
@@ -25,10 +25,11 @@ export type HomePageProps = {
   subtitle?: string;
   fullWidth?: boolean;
   fullHeight?: boolean;
+  aboutPage?: ReactElement;
 };
 
 export const HomePage = (props: HomePageProps) => {
-  const { title, subtitle, fullWidth, fullHeight } = props;
+  const { title, subtitle, fullWidth, fullHeight, aboutPage } = props;
 
   const tabContent = [
     {
@@ -39,7 +40,7 @@ export const HomePage = (props: HomePageProps) => {
     {
       path: '/about',
       title: 'About',
-      children: <About />,
+      children: aboutPage ? aboutPage : <About />,
     },
   ];
 
