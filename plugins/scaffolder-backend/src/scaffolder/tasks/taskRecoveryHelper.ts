@@ -18,20 +18,7 @@ import { SerializedTaskEvent } from './types';
 import {
   TaskRecoverStrategy,
   TaskSpec,
-  TaskStep,
 } from '@backstage/plugin-scaffolder-common';
-
-const fetchStepIdsFromEvents = (events: SerializedTaskEvent[]) => {
-  return events
-    .filter(event => event.type === 'log')
-    .reduce((acc, event) => {
-      const { stepId } = event.body;
-      if (stepId) {
-        acc.add(stepId as string);
-      }
-      return acc;
-    }, new Set<string>());
-};
 
 export const lastRecoveredStepId = (
   spec: TaskSpec,
@@ -40,27 +27,20 @@ export const lastRecoveredStepId = (
   if (!spec.steps.length || !events.length) {
     return undefined;
   }
-  const eventStepIds = fetchStepIdsFromEvents(events);
-  const steps = spec.steps.slice().reverse();
-  const stepIds = steps.map(step => step.id);
+  const lastStepId = events
+    .slice()
+    .reverse()
+    .find(e => e.type === 'log' && e.body.stepId)?.body.stepId;
 
-  const compare = (stepId1: string, stepId2: string) =>
-    stepIds.findIndex(id => id === stepId1) -
-    stepIds.findIndex(id => id === stepId2);
+  const lastStep = spec.steps.find(step => step.id === lastStepId);
 
-  const lastStep =
-    Array.from(eventStepIds).sort(compare)[0] ?? spec.steps[0].id;
+  if (!lastStep) {
+    return undefined;
+  }
 
-  return steps.reduce((acc: string, step: TaskStep) => {
-    if (!eventStepIds.has(step.id)) {
-      return acc;
-    }
-    const dependsOn = step.recovery?.dependsOn;
-    if (dependsOn) {
-      return compare(dependsOn as string, acc) > 0 ? dependsOn : acc;
-    }
-    return compare(step.id, acc) > 0 ? acc : step.id;
-  }, lastStep);
+  return lastStep.recovery?.dependsOn
+    ? lastStep.recovery?.dependsOn
+    : lastStep.id;
 };
 
 export const getRestoredStepIds = (
@@ -89,7 +69,7 @@ export const getRestoredStepIds = (
     : [];
 };
 
-const findLastRunInd = (events: SerializedTaskEvent[]): number => {
+const findRecoverPoint = (events: SerializedTaskEvent[]): number => {
   const lastRunReversedInd = events
     .slice()
     .reverse()
@@ -121,9 +101,11 @@ export const compactEvents = (
         return { events };
       }
 
-      const lastRunInd = findLastRunInd(events);
-      const historyEvents = events.slice(0, lastRunInd);
-      const stepIdToStart = lastRecoveredStepId(taskSpec, historyEvents);
+      const recoverPoint = findRecoverPoint(events);
+      const stepIdToStart = lastRecoveredStepId(
+        taskSpec,
+        events.slice(0, recoverPoint),
+      );
 
       const preservedIdSteps: string[] = [];
       const stepIds = taskSpec.steps.map(step => step.id);
@@ -135,13 +117,13 @@ export const compactEvents = (
         }
       }
 
-      const recoveredEvents = historyEvents.filter(event => {
+      const recoveredEvents = events.filter(event => {
         const { stepId } = event.body as { stepId?: string };
         return stepId ? preservedIdSteps.includes(stepId) : false;
       });
 
       return {
-        events: [...recoveredEvents, ...events.slice(lastRunInd)].filter(
+        events: [...recoveredEvents, ...events.slice(recoverPoint)].filter(
           event => event.type === 'log',
         ),
       };
