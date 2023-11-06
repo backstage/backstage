@@ -72,3 +72,12 @@ export type AnyApiFactory = ApiFactory<
   unknown,
   { [key in string]: unknown }
 >;
+
+/**
+ * @public
+ */
+export type ApiFactoryHolder = {
+  get<T>(
+    api: ApiRef<T>,
+  ): ApiFactory<T, T, { [key in string]: unknown }> | undefined;
+};

@@ -16,4 +16,7 @@
 
 export { createApiRef } from './ApiRef';
 export type { ApiRefConfig } from './ApiRef';
+export { ApiFactoryRegistry } from './ApiFactoryRegistry';
+export { ApiProvider } from './ApiProvider';
+export { ApiResolver } from './ApiResolver';
 export * from './types';
