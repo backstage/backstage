@@ -45,7 +45,7 @@ export interface Config {
      *
      * By default, the frequency is every 5 minutes.
      */
-    taskTimeoutJanitorFrequency: HumanDuration;
+    taskTimeoutJanitorFrequency?: HumanDuration;
 
     /**
      * Sets the task's heartbeat timeout, when to consider a task to be staled.
