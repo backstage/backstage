@@ -107,6 +107,7 @@ dynatrace
 Dynatrace
 ecco
 elasticsearch
+Entra
 env
 Env
 esbuild
@@ -196,10 +197,12 @@ Leasot
 lerna
 Lerna
 lightbox
+Lightsail
 limitranges
 LocalStack
 lockdown
 lockfile
+lookbehind
 lunr
 Luxon
 magiclink
@@ -285,6 +288,7 @@ Podman
 posix
 postgres
 postpack
+PR
 pre
 prebaked
 preconfigured
@@ -292,11 +296,12 @@ prepack
 Preprarer
 productional
 Protobuf
-proxying
 proxied
+proxying
 Proxying
 pseudonymized
 pubsub
+Pulumi
 pygments
 pymdownx
 rankdir
@@ -304,6 +309,7 @@ readme
 Readme
 readonly
 rebase
+rebasing
 Recharts
 Redash
 replicasets
@@ -312,6 +318,7 @@ Repo
 repos
 rerender
 rerenders
+resourcequotas
 reusability
 Reusability
 roadmaps
@@ -425,8 +432,8 @@ unregistration
 untracked
 upsert
 upvote
-url
 URIs
+url
 URLs
 utils
 Valentina
@@ -455,9 +462,3 @@ zod
 Zolotusky
 zoomable
 zsh
-Pulumi
-Lightsail
-PR
-rebasing
-lookbehind
-Entra
