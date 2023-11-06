@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import React from 'react';
+import React, { useState } from 'react';
 
 import {
   ErrorPanel,
@@ -46,6 +46,7 @@ export const PendingEntities = () => {
     error,
     value: data,
   } = useAsync(async () => await unprocessedApi.pending());
+  const [, setSelectedSearchTerm] = useState<string>('');
 
   if (loading) {
     return <Progress />;
@@ -57,22 +58,33 @@ export const PendingEntities = () => {
   const columns: TableColumn[] = [
     {
       title: <Typography>entityRef</Typography>,
+      sorting: true,
+      field: 'entity_ref',
+      customFilterAndSearch: (query, row: any) =>
+        row.entity_ref
+          .toLocaleUpperCase('en-US')
+          .includes(query.toLocaleUpperCase('en-US')),
       render: (rowData: UnprocessedEntity | {}) =>
         (rowData as UnprocessedEntity).entity_ref,
     },
     {
       title: <Typography>Kind</Typography>,
+      sorting: true,
+      field: 'kind',
       render: (rowData: UnprocessedEntity | {}) =>
         (rowData as UnprocessedEntity).unprocessed_entity.kind,
     },
     {
       title: <Typography>Owner</Typography>,
+      sorting: true,
+      field: 'unprocessed_entity.spec.owner',
       render: (rowData: UnprocessedEntity | {}) =>
         (rowData as UnprocessedEntity).unprocessed_entity.spec?.owner ||
         'unknown',
     },
     {
       title: <Typography>Raw</Typography>,
+      sorting: false,
       render: (rowData: UnprocessedEntity | {}) => (
         <EntityDialog entity={rowData as UnprocessedEntity} />
       ),
@@ -84,6 +96,9 @@ export const PendingEntities = () => {
         options={{ pageSize: 20 }}
         columns={columns}
         data={data?.entities || []}
+        onSearchChange={(searchTerm: string) =>
+          setSelectedSearchTerm(searchTerm)
+        }
         emptyContent={
           <Typography className={classes.successMessage}>
             No pending entities found
