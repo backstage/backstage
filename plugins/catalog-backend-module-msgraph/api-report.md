@@ -262,6 +262,17 @@ export function readMicrosoftGraphOrg(
 }>;
 
 // @public
+export function readProviderConfig(
+  id: string,
+  config: Config,
+): MicrosoftGraphProviderConfig;
+
+// @public
+export function readProviderConfigs(
+  config: Config,
+): MicrosoftGraphProviderConfig[];
+
+// @public
 export type UserTransformer = (
   user: MicrosoftGraph.User,
   userPhoto?: string,
