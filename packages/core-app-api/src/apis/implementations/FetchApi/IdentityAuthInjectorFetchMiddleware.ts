@@ -55,8 +55,12 @@ export class IdentityAuthInjectorFetchMiddleware implements FetchMiddleware {
   apply(next: typeof fetch): typeof fetch {
     return async (input, init) => {
       // Skip this middleware if the header already exists, or if the URL
-      // doesn't match any of the allowlist items, or if there was no token
-      const request = new Request(input, init);
+      // doesn't match any of the allowlist items, or if there was no token.
+      // NOTE(freben): The "as any" casts here and below are because of subtle
+      // undici type differences that happened in a node types bump. Those are
+      // immaterial to the code at hand at runtime, as the global fetch and
+      // Request are always taken from the same place.
+      const request = new Request(input as any, init);
       const { token } = await this.identityApi.getCredentials();
       if (
         request.headers.get(this.headerName) ||
@@ -64,7 +68,7 @@ export class IdentityAuthInjectorFetchMiddleware implements FetchMiddleware {
         !token ||
         !this.allowUrl(request.url)
       ) {
-        return next(input, init);
+        return next(input as any, init);
       }
 
       request.headers.set(this.headerName, this.headerValue(token));
