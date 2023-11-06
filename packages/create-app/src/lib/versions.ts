@@ -55,6 +55,7 @@ import { version as pluginCatalog } from '../../../../plugins/catalog/package.js
 import { version as pluginCatalogCommon } from '../../../../plugins/catalog-common/package.json';
 import { version as pluginCatalogReact } from '../../../../plugins/catalog-react/package.json';
 import { version as pluginCatalogBackend } from '../../../../plugins/catalog-backend/package.json';
+import { version as pluginCatalogBackendModuleScaffolderEntityModel } from '../../../../plugins/catalog-backend-module-scaffolder-entity-model/package.json';
 import { version as pluginCatalogGraph } from '../../../../plugins/catalog-graph/package.json';
 import { version as pluginCatalogImport } from '../../../../plugins/catalog-import/package.json';
 import { version as pluginCircleci } from '../../../../plugins/circleci/package.json';
@@ -72,7 +73,9 @@ import { version as pluginScaffolderBackend } from '../../../../plugins/scaffold
 import { version as pluginSearch } from '../../../../plugins/search/package.json';
 import { version as pluginSearchReact } from '../../../../plugins/search-react/package.json';
 import { version as pluginSearchBackend } from '../../../../plugins/search-backend/package.json';
+import { version as pluginSearchBackendModuleCatalog } from '../../../../plugins/search-backend-module-catalog/package.json';
 import { version as pluginSearchBackendModulePg } from '../../../../plugins/search-backend-module-pg/package.json';
+import { version as pluginSearchBackendModuleTechdocs } from '../../../../plugins/search-backend-module-techdocs/package.json';
 import { version as pluginSearchBackendNode } from '../../../../plugins/search-backend-node/package.json';
 import { version as pluginTechRadar } from '../../../../plugins/tech-radar/package.json';
 import { version as pluginTechdocs } from '../../../../plugins/techdocs/package.json';
@@ -104,6 +107,8 @@ export const packageVersions = {
   '@backstage/plugin-catalog-common': pluginCatalogCommon,
   '@backstage/plugin-catalog-react': pluginCatalogReact,
   '@backstage/plugin-catalog-backend': pluginCatalogBackend,
+  '@backstage/plugin-catalog-backend-module-scaffolder-entity-model':
+    pluginCatalogBackendModuleScaffolderEntityModel,
   '@backstage/plugin-catalog-graph': pluginCatalogGraph,
   '@backstage/plugin-catalog-import': pluginCatalogImport,
   '@backstage/plugin-circleci': pluginCircleci,
@@ -121,7 +126,11 @@ export const packageVersions = {
   '@backstage/plugin-search': pluginSearch,
   '@backstage/plugin-search-react': pluginSearchReact,
   '@backstage/plugin-search-backend': pluginSearchBackend,
+  '@backstage/plugin-search-backend-module-catalog':
+    pluginSearchBackendModuleCatalog,
   '@backstage/plugin-search-backend-module-pg': pluginSearchBackendModulePg,
+  '@backstage/plugin-search-backend-module-techdocs':
+    pluginSearchBackendModuleTechdocs,
   '@backstage/plugin-search-backend-node': pluginSearchBackendNode,
   '@backstage/plugin-tech-radar': pluginTechRadar,
   '@backstage/plugin-techdocs': pluginTechdocs,
