@@ -47,13 +47,6 @@ export const getRestoredStepIds = (
   spec: TaskSpec,
   stepIdToRecoverFrom: string | undefined,
 ) => {
-  if (
-    !stepIdToRecoverFrom ||
-    !spec.steps.map(step => step.id).includes(stepIdToRecoverFrom)
-  ) {
-    return [];
-  }
-
   const ind = spec.steps.findIndex(step => step.id === stepIdToRecoverFrom);
   return ind > 0 ? spec.steps.map(step => step.id).slice(0, ind) : [];
 };
