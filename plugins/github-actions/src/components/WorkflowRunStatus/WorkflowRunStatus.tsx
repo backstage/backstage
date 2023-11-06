@@ -24,59 +24,74 @@ import {
   StatusError,
 } from '@backstage/core-components';
 
-export const WorkflowRunStatus = ({
+export const WorkflowRunStatus = (props: {
+  status?: string;
+  conclusion?: string;
+}) => {
+  return (
+    <>
+      <WorkflowIcon {...props} />
+      {getStatusDescription(props)}
+    </>
+  );
+};
+
+export function WorkflowIcon({
   status,
   conclusion,
 }: {
   status?: string;
   conclusion?: string;
-}) => {
+}) {
   if (status === undefined) return null;
   switch (status.toLocaleLowerCase('en-US')) {
     case 'queued':
-      return (
-        <>
-          <StatusPending /> Queued
-        </>
-      );
+      return <StatusPending />;
+
     case 'in_progress':
-      return (
-        <>
-          <StatusRunning /> In progress
-        </>
-      );
+      return <StatusRunning />;
     case 'completed':
       switch (conclusion?.toLocaleLowerCase('en-US')) {
         case 'skipped' || 'canceled':
-          return (
-            <>
-              <StatusAborted /> Aborted
-            </>
-          );
+          return <StatusAborted />;
+
         case 'timed_out':
-          return (
-            <>
-              <StatusWarning /> Timed out
-            </>
-          );
+          return <StatusWarning />;
         case 'failure':
-          return (
-            <>
-              <StatusError /> Error
-            </>
-          );
+          return <StatusError />;
         default:
-          return (
-            <>
-              <StatusOK /> Completed
-            </>
-          );
+          return <StatusOK />;
       }
     default:
-      return (
-        <>
-          <StatusPending /> Pending
-        </>
-      );
+      return <StatusPending />;
   }
-};
+}
+
+export function getStatusDescription({
+  status,
+  conclusion,
+}: {
+  status?: string;
+  conclusion?: string;
+}) {
+  if (status === undefined) return '';
+  switch (status.toLocaleLowerCase('en-US')) {
+    case 'queued':
+      return 'Queued';
+    case 'in_progress':
+      return 'In progress';
+    case 'completed':
+      switch (conclusion?.toLocaleLowerCase('en-US')) {
+        case 'skipped' || 'canceled':
+          return 'Aborted';
+        case 'timed_out':
+          return 'Timed out';
+        case 'failure':
+          return 'Error';
+        default:
+          return 'Completed';
+      }
+    default:
+      return 'Pending';
+  }
+}
