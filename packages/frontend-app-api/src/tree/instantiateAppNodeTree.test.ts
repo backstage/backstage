@@ -25,7 +25,7 @@ import {
   createAppNodeInstance,
   instantiateAppNodeTree,
 } from './instantiateAppNodeTree';
-import { AppNodeInstance, AppNodeSpec } from './types';
+import { AppNodeInstance, AppNodeSpec } from '@backstage/frontend-plugin-api';
 import { resolveAppTree } from './resolveAppTree';
 
 const testDataRef = createExtensionDataRef<string>('test');

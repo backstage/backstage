@@ -14,10 +14,4 @@
  * limitations under the License.
  */
 
-export type {
-  AppNode,
-  AppNodeEdges,
-  AppNodeInstance,
-  AppNodeSpec,
-} from './types';
 export { createAppTree } from './createAppTree';
