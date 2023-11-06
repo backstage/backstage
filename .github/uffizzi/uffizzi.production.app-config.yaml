@@ -160,7 +160,10 @@ kubernetes:
     type: 'multiTenant'
   clusterLocatorMethods:
     - type: 'config'
-      clusters: []
+      clusters:
+        - url: ${UFFIZZI_CLUSTER_APISERVER}
+          name: uffizzi
+          authProvider: 'serviceAccount'
 
 kafka:
   clientId: backstage

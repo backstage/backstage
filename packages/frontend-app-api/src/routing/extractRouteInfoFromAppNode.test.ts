@@ -28,7 +28,7 @@ import {
   createRouteRef,
 } from '@backstage/frontend-plugin-api';
 import { MockConfigApi } from '@backstage/test-utils';
-import { createAppGraph } from '../graph';
+import { createAppTree } from '../tree';
 import { Core } from '../extensions/Core';
 import { CoreRoutes } from '../extensions/CoreRoutes';
 import { CoreNav } from '../extensions/CoreNav';
@@ -62,12 +62,12 @@ function createTestExtension(options: {
         element: coreExtensionData.reactElement,
       }),
     },
-    factory({ bind }) {
-      bind({
+    factory() {
+      return {
         path: options.path,
         routeRef: options.routeRef,
         element: React.createElement('div'),
-      });
+      };
     },
   });
 }
@@ -77,13 +77,13 @@ function routeInfoFromExtensions(extensions: Extension<unknown>[]) {
     id: 'test',
     extensions,
   });
-  const graph = createAppGraph({
+  const tree = createAppTree({
     config: new MockConfigApi({}),
     builtinExtensions: [Core, CoreRoutes, CoreNav, CoreLayout],
     features: [plugin],
   });
 
-  return extractRouteInfoFromAppNode(graph.root);
+  return extractRouteInfoFromAppNode(tree.root);
 }
 
 function sortedEntries<T>(map: Map<RouteRef, T>): [RouteRef, T][] {

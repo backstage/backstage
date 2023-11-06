@@ -1,5 +1,31 @@
 # @backstage/plugin-scaffolder-backend
 
+## 1.19.0-next.1
+
+### Patch Changes
+
+- 2be3922eb8: Add examples for `github:deployKey:create` scaffolder action & improve related tests
+- 76d07da66a: Make it possible to define control buttons text (Back, Create, Review) per template
+- Updated dependencies
+  - @backstage/plugin-catalog-backend@1.15.0-next.1
+  - @backstage/plugin-catalog-node@1.5.0-next.1
+  - @backstage/integration@1.7.2-next.0
+  - @backstage/plugin-scaffolder-common@1.4.3-next.1
+  - @backstage/plugin-catalog-backend-module-scaffolder-entity-model@0.1.4-next.1
+  - @backstage/backend-common@0.19.9-next.1
+  - @backstage/plugin-scaffolder-node@0.2.8-next.1
+  - @backstage/backend-tasks@0.5.12-next.1
+  - @backstage/plugin-auth-node@0.4.1-next.1
+  - @backstage/plugin-permission-node@0.7.18-next.1
+  - @backstage/backend-plugin-api@0.6.7-next.1
+  - @backstage/catalog-client@1.4.5
+  - @backstage/catalog-model@1.4.3
+  - @backstage/config@1.1.1
+  - @backstage/errors@1.2.3
+  - @backstage/types@1.1.1
+  - @backstage/plugin-catalog-common@1.0.17
+  - @backstage/plugin-permission-common@0.7.9
+
 ## 1.19.0-next.0
 
 ### Minor Changes

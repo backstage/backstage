@@ -23,7 +23,6 @@ import {
 } from '@backstage/plugin-kubernetes-common';
 import { CatalogClusterLocator } from './CatalogClusterLocator';
 import { CatalogApi } from '@backstage/catalog-client';
-import { ClusterDetails } from '../types/types';
 
 const mockCatalogApi = {
   getEntityByRef: jest.fn(),
@@ -93,25 +92,7 @@ describe('CatalogClusterLocator', () => {
     const result = await clusterSupplier.getClusters();
 
     expect(result).toHaveLength(2);
-    expect(result[0]).toStrictEqual<ClusterDetails>({
-      name: 'owned',
-      url: 'https://apiserver.com',
-      caData: 'caData',
-      authMetadata: {
-        'kubernetes.io/api-server': 'https://apiserver.com',
-        'kubernetes.io/api-server-certificate-authority': 'caData',
-        [ANNOTATION_KUBERNETES_AUTH_PROVIDER]: 'oidc',
-        [ANNOTATION_KUBERNETES_OIDC_TOKEN_PROVIDER]: 'google',
-        'kubernetes.io/skip-metrics-lookup': 'true',
-        'kubernetes.io/skip-tls-verify': 'true',
-        'kubernetes.io/dashboard-url': 'my-url',
-        'kubernetes.io/dashboard-app': 'my-app',
-      },
-      skipMetricsLookup: true,
-      skipTLSVerify: true,
-      dashboardUrl: 'my-url',
-      dashboardApp: 'my-app',
-    });
+    expect(result[0]).toMatchSnapshot();
   });
 
   it('returns the aws cluster details provided by annotations', async () => {
@@ -120,24 +101,6 @@ describe('CatalogClusterLocator', () => {
     const result = await clusterSupplier.getClusters();
 
     expect(result).toHaveLength(2);
-    expect(result[1]).toStrictEqual<ClusterDetails>({
-      name: 'owned',
-      url: 'https://apiserver.com',
-      caData: 'caData',
-      authMetadata: {
-        'kubernetes.io/api-server': 'https://apiserver.com',
-        'kubernetes.io/api-server-certificate-authority': 'caData',
-        [ANNOTATION_KUBERNETES_AUTH_PROVIDER]: 'aws',
-        [ANNOTATION_KUBERNETES_AWS_ASSUME_ROLE]: 'my-role',
-        [ANNOTATION_KUBERNETES_AWS_EXTERNAL_ID]: 'my-id',
-        [ANNOTATION_KUBERNETES_OIDC_TOKEN_PROVIDER]: 'google',
-        'kubernetes.io/dashboard-url': 'my-url',
-        'kubernetes.io/dashboard-app': 'my-app',
-      },
-      skipMetricsLookup: false,
-      skipTLSVerify: false,
-      dashboardUrl: 'my-url',
-      dashboardApp: 'my-app',
-    });
+    expect(result[1]).toMatchSnapshot();
   });
 });

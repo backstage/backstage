@@ -21,12 +21,11 @@ import {
   AZURE_WEB_SITE_NAME_ANNOTATION,
   useServiceEntityAnnotations,
 } from '../../hooks/useServiceEntityAnnotations';
+import { ErrorBoundary, ResponseErrorPanel } from '@backstage/core-components';
 import {
-  ErrorBoundary,
+  useEntity,
   MissingAnnotationEmptyState,
-  ResponseErrorPanel,
-} from '@backstage/core-components';
-import { useEntity } from '@backstage/plugin-catalog-react';
+} from '@backstage/plugin-catalog-react';
 import { AzureSitesOverviewTable } from '../AzureSitesOverviewTableComponent/AzureSitesOverviewTable';
 
 /** @public */

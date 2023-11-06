@@ -1,5 +1,13 @@
 # @backstage/integration
 
+## 1.7.2-next.0
+
+### Patch Changes
+
+- 243c655a68: JSDoc and Error message updates to handle `Azure Active Directory` re-brand to `Entra ID`
+- Updated dependencies
+  - @backstage/config@1.1.1
+
 ## 1.7.1
 
 ### Patch Changes
