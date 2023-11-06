@@ -1735,8 +1735,8 @@ __metadata:
   linkType: hard
 
 "@azure/identity@npm:^3.2.1":
-  version: 3.3.1
-  resolution: "@azure/identity@npm:3.3.1"
+  version: 3.3.2
+  resolution: "@azure/identity@npm:3.3.2"
   dependencies:
     "@azure/abort-controller": ^1.0.0
     "@azure/core-auth": ^1.5.0
@@ -1754,7 +1754,7 @@ __metadata:
     stoppable: ^1.1.0
     tslib: ^2.2.0
     uuid: ^8.3.0
-  checksum: ba58ce8d6178566757c0554b9b5d6ca3d4e934eb6831c9a7d57ada185ec57bd9a9de1ce9500a547e35f4d11cfb362c312afaad019d1ed6bf7b6ebf908bfea362
+  checksum: 53a650dc6f73fb35137fd4e35f6db8b04bb77b3b8598f4fa5cc145e79ba1c28258bea535fb0af7f09d7fec4b44bbda0a1a3a2b593c6d8e576e23022617c8611e
   languageName: node
   linkType: hard
 
