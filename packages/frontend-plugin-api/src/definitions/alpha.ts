@@ -14,18 +14,4 @@
  * limitations under the License.
  */
 
-/**
- * Core API used by Backstage frontend plugins.
- *
- * @packageDocumentation
- */
-
-export * from './apis';
-export * from './components';
-export * from './definitions';
-export * from './extensions';
-export * from './icons';
-export * from './routing';
-export * from './schema';
-export * from './system';
-export * from './wiring';
+export { appLanguageApiRef, type AppLanguageApi } from './AppLanguageApi';

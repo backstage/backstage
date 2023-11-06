@@ -35,16 +35,18 @@ import {
   ApiHolder,
   AppComponents,
   AppContext,
+  attachComponentData,
+} from '@backstage/core-plugin-api';
+import {
   appThemeApiRef,
   ConfigApi,
   configApiRef,
   IconComponent,
   BackstagePlugin as LegacyBackstagePlugin,
   featureFlagsApiRef,
-  attachComponentData,
   identityApiRef,
   AppTheme,
-} from '@backstage/core-plugin-api';
+} from '@backstage/frontend-plugin-api';
 import { getAvailableFeatures } from './discovery';
 import {
   ApiFactoryRegistry,
