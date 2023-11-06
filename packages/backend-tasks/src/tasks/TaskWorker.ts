@@ -51,6 +51,10 @@ export class TaskWorker {
       `Task worker starting: ${this.taskId}, ${JSON.stringify(settings)}`,
     );
 
+    const cadence = Duration.fromISO(settings.cadence);
+    const workCheckFrequency =
+      cadence < this.workCheckFrequency ? cadence : this.workCheckFrequency;
+
     let attemptNum = 1;
     (async () => {
       for (;;) {
@@ -69,7 +73,7 @@ export class TaskWorker {
               break;
             }
 
-            await sleep(this.workCheckFrequency, options?.signal);
+            await sleep(workCheckFrequency, options?.signal);
           }
 
           this.logger.info(`Task worker finished: ${this.taskId}`);
