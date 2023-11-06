@@ -22,7 +22,7 @@ import { PropsWithChildren } from 'react';
 import { default as React_2 } from 'react';
 import { ReactNode } from 'react';
 import { RouteRef } from '@backstage/core-plugin-api';
-import { ScmIntegrationRegistry } from '@backstage/integration';
+import { scmIntegrationsApiRef } from '@backstage/integration-react';
 import { StyleRules } from '@material-ui/core/styles/withStyles';
 import { SystemEntity } from '@backstage/catalog-model';
 import { TableColumn } from '@backstage/core-components';
@@ -597,7 +597,7 @@ export function getEntityRelations(
 // @public (undocumented)
 export function getEntitySourceLocation(
   entity: Entity,
-  scmIntegrationsApi: ScmIntegrationRegistry,
+  scmIntegrationsApi: typeof scmIntegrationsApiRef.T,
 ): EntitySourceLocation | undefined;
 
 // @public (undocumented)
