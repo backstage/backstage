@@ -237,17 +237,6 @@ export function readMicrosoftGraphConfig(
 ): MicrosoftGraphProviderConfig[];
 
 // @public
-export function readProviderConfigs(
-  config: Config,
-): MicrosoftGraphProviderConfig[];
-
-// @public
-export function readProviderConfig(
-  id: string,
-  config: Config,
-): MicrosoftGraphProviderConfig;
-
-// @public
 export function readMicrosoftGraphOrg(
   client: MicrosoftGraphClient,
   tenantId: string,
@@ -271,6 +260,17 @@ export function readMicrosoftGraphOrg(
   users: UserEntity[];
   groups: GroupEntity[];
 }>;
+
+// @public
+export function readProviderConfig(
+  id: string,
+  config: Config,
+): MicrosoftGraphProviderConfig;
+
+// @public
+export function readProviderConfigs(
+  config: Config,
+): MicrosoftGraphProviderConfig[];
 
 // @public
 export type UserTransformer = (
