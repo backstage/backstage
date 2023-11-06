@@ -226,6 +226,13 @@ export function readMicrosoftGraphConfig(
   return providers;
 }
 
+/**
+ * Parses all configured providers.
+ *
+ * @param config - The root of the msgraph config hierarchy
+ *
+ * @public
+ */
 export function readProviderConfigs(
   config: Config,
 ): MicrosoftGraphProviderConfig[] {
@@ -248,6 +255,14 @@ export function readProviderConfigs(
   });
 }
 
+/**
+ * Parses a single configured provider by id.
+ *
+ * @param id - the id of the provider to parse
+ * @param config - The root of the msgraph config hierarchy
+ *
+ * @public
+ */
 export function readProviderConfig(
   id: string,
   config: Config,
