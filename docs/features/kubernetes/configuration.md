@@ -452,6 +452,7 @@ Overrides for the Kubernetes object types fetched from the cluster. The default 
 - services
 - configmaps
 - limitranges
+- resourcequotas
 - deployments
 - replicasets
 - horizontalpodautoscalers
@@ -504,6 +505,7 @@ rules:
       - ingresses
       - statefulsets
       - limitranges
+      - resourcequotas
       - daemonsets
     verbs:
       - get

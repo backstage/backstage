@@ -79,6 +79,12 @@ export const DEFAULT_OBJECTS: ObjectToFetch[] = [
     objectType: 'limitranges',
   },
   {
+    group: '',
+    apiVersion: 'v1',
+    plural: 'resourcequotas',
+    objectType: 'resourcequotas',
+  },
+  {
     group: 'apps',
     apiVersion: 'v1',
     plural: 'deployments',
