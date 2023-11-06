@@ -22,7 +22,7 @@ import { PropsWithChildren } from 'react';
 import { default as React_2 } from 'react';
 import { ReactNode } from 'react';
 import { RouteRef } from '@backstage/core-plugin-api';
-import { ScmIntegrationRegistry } from '@backstage/integration';
+import { scmIntegrationsApiRef } from '@backstage/integration-react';
 import { StyleRules } from '@material-ui/core/styles/withStyles';
 import { SystemEntity } from '@backstage/catalog-model';
 import { TableColumn } from '@backstage/core-components';
@@ -597,7 +597,7 @@ export function getEntityRelations(
 // @public (undocumented)
 export function getEntitySourceLocation(
   entity: Entity,
-  scmIntegrationsApi: ScmIntegrationRegistry,
+  scmIntegrationsApi: typeof scmIntegrationsApiRef.T,
 ): EntitySourceLocation | undefined;
 
 // @public (undocumented)
@@ -615,6 +615,15 @@ export function InspectEntityDialog(props: {
   entity: Entity;
   onClose: () => void;
 }): React_2.JSX.Element | null;
+
+// @public
+export function MissingAnnotationEmptyState(props: {
+  annotation: string | string[];
+  readMoreUrl?: string;
+}): React_2.JSX.Element;
+
+// @public (undocumented)
+export type MissingAnnotationEmptyStateClassKey = 'code';
 
 // @public (undocumented)
 export function MockEntityListContextProvider<

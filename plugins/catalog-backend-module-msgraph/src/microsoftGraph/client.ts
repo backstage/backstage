@@ -69,7 +69,7 @@ export type GroupMember =
 
 /**
  * A HTTP Client that communicates with Microsoft Graph API.
- * Simplify Authentication and API calls to get `User` and `Group` from Azure Active Directory
+ * Simplify Authentication and API calls to get `User` and `Group` from Microsoft Graph
  *
  * Uses `msal-node` for authentication
  *

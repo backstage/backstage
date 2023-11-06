@@ -58,12 +58,11 @@ export function createApiExtension<
     output: {
       api: coreExtensionData.apiFactory,
     },
-    factory({ bind, config, inputs }) {
+    factory({ config, inputs }) {
       if (typeof factory === 'function') {
-        bind({ api: factory({ config, inputs }) });
-      } else {
-        bind({ api: factory });
+        return { api: factory({ config, inputs }) };
       }
+      return { api: factory };
     },
   });
 }

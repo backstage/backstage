@@ -17,12 +17,14 @@
 import { DateTime } from 'luxon';
 import {
   InfoCard,
-  MissingAnnotationEmptyState,
   ResponseErrorPanel,
   Table,
   TableColumn,
 } from '@backstage/core-components';
-import { useEntity } from '@backstage/plugin-catalog-react';
+import {
+  useEntity,
+  MissingAnnotationEmptyState,
+} from '@backstage/plugin-catalog-react';
 import React, { useEffect, useState } from 'react';
 import { Version, nomadApiRef } from '../../api';
 import { configApiRef, useApi } from '@backstage/core-plugin-api';

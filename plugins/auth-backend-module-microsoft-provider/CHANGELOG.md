@@ -1,5 +1,16 @@
 # @backstage/plugin-auth-backend-module-microsoft-provider
 
+## 0.1.2-next.1
+
+### Patch Changes
+
+- 3979524c74: Added support for specifying a domain hint on the Microsoft authentication provider configuration.
+- 5aeb14f035: Correctly mark the client secret in configuration as secret
+- Updated dependencies
+  - @backstage/backend-common@0.19.9-next.1
+  - @backstage/plugin-auth-node@0.4.1-next.1
+  - @backstage/backend-plugin-api@0.6.7-next.1
+
 ## 0.1.2-next.0
 
 ### Patch Changes
