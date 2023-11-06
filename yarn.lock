@@ -18510,12 +18510,12 @@ __metadata:
   linkType: hard
 
 "@types/d3-zoom@npm:^3.0.1":
-  version: 3.0.6
-  resolution: "@types/d3-zoom@npm:3.0.6"
+  version: 3.0.7
+  resolution: "@types/d3-zoom@npm:3.0.7"
   dependencies:
     "@types/d3-interpolate": "*"
     "@types/d3-selection": "*"
-  checksum: 6b0ad10b6a7bab3acfdc92b0cd34c74698305a71e2fefb20eae1e3bac95cbf70c6434be5ea2c1c71bbe9fcb134c66da44fdd75673437199e9a90aea8aea0f7e7
+  checksum: 770bad9e1878a4461708c2507305d2ae45534293a73ebce7bcd48ede0a889588ceb66057dc68dc570cabd8eba338853d304a458452109dffc425fd087e7d36c2
   languageName: node
   linkType: hard
 
