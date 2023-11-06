@@ -19138,11 +19138,11 @@ __metadata:
   linkType: hard
 
 "@types/morgan@npm:^1.9.0":
-  version: 1.9.7
-  resolution: "@types/morgan@npm:1.9.7"
+  version: 1.9.8
+  resolution: "@types/morgan@npm:1.9.8"
   dependencies:
     "@types/node": "*"
-  checksum: 3e66ad27bd0ec599981c13bc0425957be861dcb7a31ec464ce01ef98daae828092dbb8250758aeed65c5b28a4ebd449b0baa51064c0611b0e2c8358e2c27cae2
+  checksum: ce088ea27be590db6620ebc55864a72f577ff7a1bf01b7557ba070680c44be536e3fe7704493781e6d8b3af9363acfc9e3c0f917ae437631133ee4b49cd4ac0a
   languageName: node
   linkType: hard
 
