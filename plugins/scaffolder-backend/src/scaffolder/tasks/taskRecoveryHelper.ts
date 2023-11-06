@@ -54,19 +54,8 @@ export const getRestoredStepIds = (
     return [];
   }
 
-  return stepIdToRecoverFrom
-    ? spec.steps.reduce(
-        (acc: { stepIds: string[]; continue: boolean }, step) => {
-          return acc.continue
-            ? {
-                stepIds: [...acc.stepIds, step.id],
-                continue: step.id !== stepIdToRecoverFrom,
-              }
-            : acc;
-        },
-        { stepIds: [], continue: true },
-      ).stepIds
-    : [];
+  const ind = spec.steps.findIndex(step => step.id === stepIdToRecoverFrom);
+  return ind > 0 ? spec.steps.map(step => step.id).slice(0, ind) : [];
 };
 
 const findRecoverPoint = (events: SerializedTaskEvent[]): number => {
