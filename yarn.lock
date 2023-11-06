@@ -5076,7 +5076,7 @@ __metadata:
     "@types/passport-strategy": ^0.2.35
     "@types/xml2js": ^0.4.7
     compression: ^1.7.4
-    connect-session-knex: ^3.0.1
+    connect-session-knex: ^4.0.0
     cookie-parser: ^1.4.5
     cors: ^2.8.5
     express: ^4.17.1
@@ -24026,13 +24026,13 @@ __metadata:
   languageName: node
   linkType: hard
 
-"connect-session-knex@npm:^3.0.1":
-  version: 3.0.1
-  resolution: "connect-session-knex@npm:3.0.1"
+"connect-session-knex@npm:^4.0.0":
+  version: 4.0.0
+  resolution: "connect-session-knex@npm:4.0.0"
   dependencies:
     bluebird: ^3.7.2
-    knex: ^2.3.0
-  checksum: f5a80c3c34d30e7cd4e79a6aae09d112825986d51ddc3a4563ef95ade425178239d4e3e05420fb3b6204b2353b0dfd754d318b288989b539583f6c0e52758b7a
+    knex: 3
+  checksum: 88454b9b0b78e89cf27fe95a443f8051e43603b68c1c671acfa5a91e1a0abac1e8afd6888e1f3ea53b4b862305e47f6be46c8c4cd238f2f469cba676a25c776e
   languageName: node
   linkType: hard
 
@@ -33209,46 +33209,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"knex@npm:^2.3.0":
-  version: 2.5.1
-  resolution: "knex@npm:2.5.1"
-  dependencies:
-    colorette: 2.0.19
-    commander: ^10.0.0
-    debug: 4.3.4
-    escalade: ^3.1.1
-    esm: ^3.2.25
-    get-package-type: ^0.1.0
-    getopts: 2.3.0
-    interpret: ^2.2.0
-    lodash: ^4.17.21
-    pg-connection-string: 2.6.1
-    rechoir: ^0.8.0
-    resolve-from: ^5.0.0
-    tarn: ^3.0.2
-    tildify: 2.0.0
-  peerDependenciesMeta:
-    better-sqlite3:
-      optional: true
-    mysql:
-      optional: true
-    mysql2:
-      optional: true
-    pg:
-      optional: true
-    pg-native:
-      optional: true
-    sqlite3:
-      optional: true
-    tedious:
-      optional: true
-  bin:
-    knex: bin/cli.js
-  checksum: 4f2da7fda51a450de25274eb76034c869de0427c17831dc8472b8116e879d23aae0592c2ce4e9b2a473417867063ac6e7b29021b39b4a4d502335017a5a09278
-  languageName: node
-  linkType: hard
-
-"knex@npm:^3.0.0":
+"knex@npm:3, knex@npm:^3.0.0":
   version: 3.0.1
   resolution: "knex@npm:3.0.1"
   dependencies:
