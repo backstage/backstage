@@ -131,7 +131,16 @@ proxy:
 
     '/puppetdb':
       target: https://your.puppetdb.instance.com
-
+    
+    '/hcp': 
+      target: 'https://api.cloud.hashicorp.com'
+      allowedMethods: ['GET', 'POST']
+      allowedHeaders: ['Authorization']
+    
+    '/hcpAuth': 
+      target: 'https://auth.hashicorp.com'
+      allowedMethods: ['GET', 'POST']
+      allowedHeaders: ['Content-Type']
 organization:
   name: My Company
 
@@ -470,3 +479,10 @@ stackstorm:
 
 permission:
   enabled: true
+
+consul:
+  clientID: 
+  clientSecret: 
+  organizationID: 
+  projectID: 
+  addr: http://localhost:7007
