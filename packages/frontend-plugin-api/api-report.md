@@ -5,41 +5,80 @@
 ```ts
 /// <reference types="react" />
 
+import { AlertApi } from '../../../../core-plugin-api';
+import { alertApiRef } from '../../../../core-plugin-api';
+import { AlertMessage } from '../../../../core-plugin-api';
 import { AnyApiFactory as AnyApiFactory_2 } from '@backstage/core-plugin-api';
 import { AnyApiRef as AnyApiRef_2 } from '@backstage/core-plugin-api';
 import { ApiFactory as ApiFactory_2 } from '@backstage/core-plugin-api';
 import { ApiHolder as ApiHolder_2 } from '@backstage/core-plugin-api';
 import { ApiRef as ApiRef_2 } from '@backstage/core-plugin-api';
+import { AppTheme } from '../../../../core-plugin-api';
 import { AppTheme as AppTheme_2 } from '@backstage/core-plugin-api';
+import { AppThemeApi } from '../../../../core-plugin-api';
+import { appThemeApiRef } from '../../../../core-plugin-api';
+import { atlassianAuthApiRef } from '../../../../core-plugin-api';
+import { AuthProviderInfo } from '../../../../core-plugin-api';
+import { AuthRequestOptions } from '../../../../core-plugin-api';
+import { BackstageIdentityApi } from '../../../../core-plugin-api';
+import { BackstageIdentityResponse } from '../../../../core-plugin-api';
+import { BackstageUserIdentity } from '../../../../core-plugin-api';
+import { bitbucketAuthApiRef } from '../../../../core-plugin-api';
+import { bitbucketServerAuthApiRef } from '../../../../core-plugin-api';
 import { ComponentType } from 'react';
-import { Config } from '@backstage/config';
+import { ConfigApi } from '../../../../core-plugin-api';
+import { configApiRef } from '../../../../core-plugin-api';
+import { DiscoveryApi } from '../../../../core-plugin-api';
+import { discoveryApiRef } from '../../../../core-plugin-api';
+import { ErrorApi } from '../../../../core-plugin-api';
+import { ErrorApiError } from '../../../../core-plugin-api';
+import { ErrorApiErrorContext } from '../../../../core-plugin-api';
+import { errorApiRef } from '../../../../core-plugin-api';
+import { FeatureFlag } from '../../../../core-plugin-api';
+import { FeatureFlagsApi } from '../../../../core-plugin-api';
+import { featureFlagsApiRef } from '../../../../core-plugin-api';
+import { FeatureFlagsSaveOptions } from '../../../../core-plugin-api';
+import { FeatureFlagState } from '../../../../core-plugin-api';
+import { FetchApi } from '../../../../core-plugin-api';
+import { fetchApiRef } from '../../../../core-plugin-api';
+import { githubAuthApiRef } from '../../../../core-plugin-api';
+import { gitlabAuthApiRef } from '../../../../core-plugin-api';
+import { googleAuthApiRef } from '../../../../core-plugin-api';
 import { IconComponent as IconComponent_2 } from '@backstage/core-plugin-api';
+import { IdentityApi } from '../../../../core-plugin-api';
+import { identityApiRef } from '../../../../core-plugin-api';
 import { JsonObject } from '@backstage/types';
-import { JsonValue } from '@backstage/types';
 import { JSX as JSX_2 } from 'react';
-import { Observable } from '@backstage/types';
+import { microsoftAuthApiRef } from '../../../../core-plugin-api';
+import { OAuthApi } from '../../../../core-plugin-api';
+import { OAuthRequestApi } from '../../../../core-plugin-api';
+import { oauthRequestApiRef } from '../../../../core-plugin-api';
+import { OAuthRequester } from '../../../../core-plugin-api';
+import { OAuthRequesterOptions } from '../../../../core-plugin-api';
+import { OAuthScope } from '../../../../core-plugin-api';
+import { oktaAuthApiRef } from '../../../../core-plugin-api';
+import { oneloginAuthApiRef } from '../../../../core-plugin-api';
+import { OpenIdConnectApi } from '../../../../core-plugin-api';
+import { PendingOAuthRequest } from '../../../../core-plugin-api';
+import { ProfileInfo } from '../../../../core-plugin-api';
+import { ProfileInfoApi } from '../../../../core-plugin-api';
 import { PropsWithChildren } from 'react';
 import { default as React_2 } from 'react';
 import { ReactNode } from 'react';
+import { SessionApi } from '../../../../core-plugin-api';
+import { SessionState } from '../../../../core-plugin-api';
+import { StorageApi } from '../../../../core-plugin-api';
+import { storageApiRef } from '../../../../core-plugin-api';
+import { StorageValueSnapshot } from '../../../../core-plugin-api';
 import { z } from 'zod';
 import { ZodSchema } from 'zod';
 import { ZodTypeDef } from 'zod';
 
-// @public
-export type AlertApi = {
-  post(alert: AlertMessage): void;
-  alert$(): Observable<AlertMessage>;
-};
+export { AlertApi };
 
-// @public
-export const alertApiRef: ApiRef<AlertApi>;
+export { alertApiRef };
 
-// @public
-export type AlertMessage = {
-  message: string;
-  severity?: 'success' | 'info' | 'warning' | 'error';
-  display?: 'permanent' | 'transient';
-};
+export { AlertMessage };
 
 // @public
 export type AnyApiFactory = ApiFactory<
@@ -224,25 +263,11 @@ export interface AppNodeSpec {
   readonly source?: BackstagePlugin;
 }
 
-// @public
-export type AppTheme = {
-  id: string;
-  title: string;
-  variant: 'light' | 'dark';
-  icon?: React.ReactElement;
-  Provider(props: { children: ReactNode }): JSX.Element | null;
-};
+export { AppTheme };
 
-// @public
-export type AppThemeApi = {
-  getInstalledThemes(): AppTheme[];
-  activeThemeId$(): Observable<string | undefined>;
-  getActiveThemeId(): string | undefined;
-  setActiveThemeId(themeId?: string): void;
-};
+export { AppThemeApi };
 
-// @public
-export const appThemeApiRef: ApiRef<AppThemeApi>;
+export { appThemeApiRef };
 
 // @public
 export interface AppTree {
@@ -261,37 +286,15 @@ export interface AppTreeApi {
 // @public
 export const appTreeApiRef: ApiRef_2<AppTreeApi>;
 
-// @public
-export const atlassianAuthApiRef: ApiRef<
-  OAuthApi & ProfileInfoApi & BackstageIdentityApi & SessionApi
->;
+export { atlassianAuthApiRef };
 
-// @public
-export type AuthProviderInfo = {
-  id: string;
-  title: string;
-  icon: IconComponent;
-};
+export { AuthProviderInfo };
 
-// @public
-export type AuthRequestOptions = {
-  optional?: boolean;
-  instantPopup?: boolean;
-};
+export { AuthRequestOptions };
 
-// @public
-export type BackstageIdentityApi = {
-  getBackstageIdentity(
-    options?: AuthRequestOptions,
-  ): Promise<BackstageIdentityResponse | undefined>;
-};
+export { BackstageIdentityApi };
 
-// @public
-export type BackstageIdentityResponse = {
-  token: string;
-  expiresAt?: Date;
-  identity: BackstageUserIdentity;
-};
+export { BackstageIdentityResponse };
 
 // @public (undocumented)
 export interface BackstagePlugin<
@@ -310,28 +313,15 @@ export interface BackstagePlugin<
   routes: Routes;
 }
 
-// @public
-export type BackstageUserIdentity = {
-  type: 'user';
-  userEntityRef: string;
-  ownershipEntityRefs: string[];
-};
+export { BackstageUserIdentity };
 
-// @public
-export const bitbucketAuthApiRef: ApiRef<
-  OAuthApi & ProfileInfoApi & BackstageIdentityApi & SessionApi
->;
+export { bitbucketAuthApiRef };
 
-// @public
-export const bitbucketServerAuthApiRef: ApiRef<
-  OAuthApi & ProfileInfoApi & BackstageIdentityApi & SessionApi
->;
+export { bitbucketServerAuthApiRef };
 
-// @public
-export type ConfigApi = Config;
+export { ConfigApi };
 
-// @public
-export const configApiRef: ApiRef<ConfigApi>;
+export { configApiRef };
 
 // @public (undocumented)
 export interface ConfigurableExtensionDataRef<
@@ -560,37 +550,17 @@ export function createSubRouteRef<
 // @public (undocumented)
 export function createThemeExtension(theme: AppTheme_2): Extension<never>;
 
-// @public
-export type DiscoveryApi = {
-  getBaseUrl(pluginId: string): Promise<string>;
-};
+export { DiscoveryApi };
 
-// @public
-export const discoveryApiRef: ApiRef<DiscoveryApi>;
+export { discoveryApiRef };
 
-// @public
-export type ErrorApi = {
-  post(error: ErrorApiError, context?: ErrorApiErrorContext): void;
-  error$(): Observable<{
-    error: ErrorApiError;
-    context?: ErrorApiErrorContext;
-  }>;
-};
+export { ErrorApi };
 
-// @public
-export type ErrorApiError = {
-  name: string;
-  message: string;
-  stack?: string;
-};
+export { ErrorApiError };
 
-// @public
-export type ErrorApiErrorContext = {
-  hidden?: boolean;
-};
+export { ErrorApiErrorContext };
 
-// @public
-export const errorApiRef: ApiRef<ErrorApi>;
+export { errorApiRef };
 
 // @public (undocumented)
 export interface Extension<TConfig> {
@@ -723,66 +693,25 @@ export interface ExternalRouteRef<
   readonly T: TParams;
 }
 
-// @public
-export type FeatureFlag = {
-  name: string;
-  pluginId: string;
-  description?: string;
-};
+export { FeatureFlag };
 
-// @public
-export interface FeatureFlagsApi {
-  getRegisteredFlags(): FeatureFlag[];
-  isActive(name: string): boolean;
-  registerFlag(flag: FeatureFlag): void;
-  save(options: FeatureFlagsSaveOptions): void;
-}
+export { FeatureFlagsApi };
 
-// @public
-export const featureFlagsApiRef: ApiRef<FeatureFlagsApi>;
+export { featureFlagsApiRef };
 
-// @public
-export type FeatureFlagsSaveOptions = {
-  states: Record<string, FeatureFlagState>;
-  merge?: boolean;
-};
+export { FeatureFlagsSaveOptions };
 
-// @public
-export enum FeatureFlagState {
-  Active = 1,
-  None = 0,
-}
+export { FeatureFlagState };
 
-// @public
-export type FetchApi = {
-  fetch: typeof fetch;
-};
+export { FetchApi };
 
-// @public
-export const fetchApiRef: ApiRef<FetchApi>;
+export { fetchApiRef };
 
-// @public
-export const githubAuthApiRef: ApiRef<
-  OAuthApi & ProfileInfoApi & BackstageIdentityApi & SessionApi
->;
+export { githubAuthApiRef };
 
-// @public
-export const gitlabAuthApiRef: ApiRef<
-  OAuthApi &
-    OpenIdConnectApi &
-    ProfileInfoApi &
-    BackstageIdentityApi &
-    SessionApi
->;
+export { gitlabAuthApiRef };
 
-// @public
-export const googleAuthApiRef: ApiRef<
-  OAuthApi &
-    OpenIdConnectApi &
-    ProfileInfoApi &
-    BackstageIdentityApi &
-    SessionApi
->;
+export { googleAuthApiRef };
 
 // @public
 export type IconComponent = ComponentType<
@@ -794,27 +723,11 @@ export type IconComponent = ComponentType<
     }
 >;
 
-// @public
-export type IdentityApi = {
-  getProfileInfo(): Promise<ProfileInfo>;
-  getBackstageIdentity(): Promise<BackstageUserIdentity>;
-  getCredentials(): Promise<{
-    token?: string;
-  }>;
-  signOut(): Promise<void>;
-};
+export { IdentityApi };
 
-// @public
-export const identityApiRef: ApiRef<IdentityApi>;
+export { identityApiRef };
 
-// @public
-export const microsoftAuthApiRef: ApiRef<
-  OAuthApi &
-    OpenIdConnectApi &
-    ProfileInfoApi &
-    BackstageIdentityApi &
-    SessionApi
->;
+export { microsoftAuthApiRef };
 
 // @public (undocumented)
 export type NavTarget = {
@@ -823,68 +736,25 @@ export type NavTarget = {
   routeRef: RouteRef<undefined>;
 };
 
-// @public
-export type OAuthApi = {
-  getAccessToken(
-    scope?: OAuthScope,
-    options?: AuthRequestOptions,
-  ): Promise<string>;
-};
+export { OAuthApi };
 
-// @public
-export type OAuthRequestApi = {
-  createAuthRequester<OAuthResponse>(
-    options: OAuthRequesterOptions<OAuthResponse>,
-  ): OAuthRequester<OAuthResponse>;
-  authRequest$(): Observable<PendingOAuthRequest[]>;
-};
+export { OAuthRequestApi };
 
-// @public
-export const oauthRequestApiRef: ApiRef<OAuthRequestApi>;
+export { oauthRequestApiRef };
 
-// @public
-export type OAuthRequester<TAuthResponse> = (
-  scopes: Set<string>,
-) => Promise<TAuthResponse>;
+export { OAuthRequester };
 
-// @public
-export type OAuthRequesterOptions<TOAuthResponse> = {
-  provider: AuthProviderInfo;
-  onAuthRequest(scopes: Set<string>): Promise<TOAuthResponse>;
-};
+export { OAuthRequesterOptions };
 
-// @public
-export type OAuthScope = string | string[];
+export { OAuthScope };
 
-// @public
-export const oktaAuthApiRef: ApiRef<
-  OAuthApi &
-    OpenIdConnectApi &
-    ProfileInfoApi &
-    BackstageIdentityApi &
-    SessionApi
->;
+export { oktaAuthApiRef };
 
-// @public
-export const oneloginAuthApiRef: ApiRef<
-  OAuthApi &
-    OpenIdConnectApi &
-    ProfileInfoApi &
-    BackstageIdentityApi &
-    SessionApi
->;
+export { oneloginAuthApiRef };
 
-// @public
-export type OpenIdConnectApi = {
-  getIdToken(options?: AuthRequestOptions): Promise<string>;
-};
+export { OpenIdConnectApi };
 
-// @public
-export type PendingOAuthRequest = {
-  provider: AuthProviderInfo;
-  reject(): void;
-  trigger(): Promise<void>;
-};
+export { PendingOAuthRequest };
 
 // @public (undocumented)
 export interface PluginOptions<
@@ -907,17 +777,9 @@ export type PortableSchema<TOutput> = {
   schema: JsonObject;
 };
 
-// @public
-export type ProfileInfo = {
-  email?: string;
-  displayName?: string;
-  picture?: string;
-};
+export { ProfileInfo };
 
-// @public
-export type ProfileInfoApi = {
-  getProfile(options?: AuthRequestOptions): Promise<ProfileInfo | undefined>;
-};
+export { ProfileInfoApi };
 
 // @public
 export type RouteFunc<TParams extends AnyRouteRefParams> = (
@@ -936,45 +798,15 @@ export interface RouteRef<
   readonly T: TParams;
 }
 
-// @public
-export type SessionApi = {
-  signIn(): Promise<void>;
-  signOut(): Promise<void>;
-  sessionState$(): Observable<SessionState>;
-};
+export { SessionApi };
 
-// @public
-export enum SessionState {
-  SignedIn = 'SignedIn',
-  SignedOut = 'SignedOut',
-}
+export { SessionState };
 
-// @public
-export interface StorageApi {
-  forBucket(name: string): StorageApi;
-  observe$<T extends JsonValue>(
-    key: string,
-  ): Observable<StorageValueSnapshot<T>>;
-  remove(key: string): Promise<void>;
-  set<T extends JsonValue>(key: string, data: T): Promise<void>;
-  snapshot<T extends JsonValue>(key: string): StorageValueSnapshot<T>;
-}
+export { StorageApi };
 
-// @public
-export const storageApiRef: ApiRef<StorageApi>;
+export { storageApiRef };
 
-// @public
-export type StorageValueSnapshot<TValue extends JsonValue> =
-  | {
-      key: string;
-      presence: 'unknown' | 'absent';
-      value?: undefined;
-    }
-  | {
-      key: string;
-      presence: 'present';
-      value: TValue;
-    };
+export { StorageValueSnapshot };
 
 // @public
 export interface SubRouteRef<
