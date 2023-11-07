@@ -18,6 +18,7 @@ import useDebounce from 'react-use/lib/useDebounce';
 import { RelationPairs, ALL_RELATION_PAIRS } from './relations';
 import { EntityEdge, EntityNode } from './types';
 import { useEntityRelationGraph } from './useEntityRelationGraph';
+import { DEFAULT_NAMESPACE } from '@backstage/catalog-model';
 
 /**
  * Generate nodes and edges to render the entity graph.
@@ -73,6 +74,12 @@ export function useEntityRelationNodesAndEdges({
           entity,
           focused,
           color: focused ? 'secondary' : 'primary',
+          // @deprecated
+          kind: entity.kind,
+          name: entity.metadata.name,
+          namespace: entity.metadata.namespace || DEFAULT_NAMESPACE,
+          title: entity.metadata.title,
+          spec: entity.spec,
         };
 
         if (onNodeClick) {

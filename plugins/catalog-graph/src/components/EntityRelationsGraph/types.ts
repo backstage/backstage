@@ -17,6 +17,7 @@
 import { DependencyGraphTypes } from '@backstage/core-components';
 import { MouseEventHandler } from 'react';
 import { Entity } from '@backstage/catalog-model';
+import { JsonObject } from '@backstage/types';
 
 /**
  * Additional Data for entities.
@@ -65,6 +66,33 @@ export type EntityNodeData = {
    * Optional click handler.
    */
   onClick?: MouseEventHandler<unknown>;
+
+  /**
+   * Name of the entity.
+   * @deprecated use {@link EntityNodeData#entity} instead
+   */
+  name: string;
+  /**
+   * Optional kind of the entity.
+   * @deprecated use {@link EntityNodeData#entity} instead
+   */
+  kind?: string;
+  /**
+   * Optional title of the entity.
+   * @deprecated use {@link EntityNodeData#entity} instead
+   */
+  title?: string;
+  /**
+   * Namespace of the entity.
+   * @deprecated use {@link EntityNodeData#entity} instead
+   * The Entity
+   */
+  namespace: string;
+  /**
+   * Optional spec of the entity.
+   * @deprecated use {@link EntityNodeData#entity} instead
+   */
+  spec?: JsonObject;
 };
 
 /**

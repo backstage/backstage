@@ -37,6 +37,10 @@ describe('<CustomNode />', () => {
             },
             focused: false,
             color: 'primary',
+            // @deprecated
+            kind: 'kind',
+            name: 'name',
+            namespace: 'namespace',
           }}
         />
       </svg>,
@@ -60,6 +64,10 @@ describe('<CustomNode />', () => {
               },
             },
             focused: false,
+            // @deprecated
+            kind: 'kind',
+            name: 'name',
+            namespace: 'default',
           }}
         />
       </svg>,
@@ -85,6 +93,10 @@ describe('<CustomNode />', () => {
             },
             focused: false,
             onClick,
+            // @deprecated
+            kind: 'kind',
+            name: 'name',
+            namespace: 'namespace',
           }}
         />
       </svg>,
@@ -111,6 +123,11 @@ describe('<CustomNode />', () => {
               },
             },
             focused: false,
+            // @deprecated
+            kind: 'kind',
+            name: 'name',
+            namespace: 'namespace',
+            title: 'Custom Title',
           }}
         />
       </svg>,
