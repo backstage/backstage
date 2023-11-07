@@ -91,10 +91,9 @@ describe('taskRecoveryHelper', () => {
         'fetch',
         'mock-step-1',
         'mock-step-2',
-        'mock-step-3',
       ]);
 
-      expect(getRestoredStepIds(taskSpec, 'fetch')).toEqual(['fetch']);
+      expect(getRestoredStepIds(taskSpec, 'mock-step-1')).toEqual(['fetch']);
 
       expect(getRestoredStepIds(taskSpec, 'non-existing')).toEqual([]);
       expect(getRestoredStepIds(taskSpec, undefined)).toEqual([]);
