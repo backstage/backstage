@@ -14,13 +14,13 @@
  * limitations under the License.
  */
 
-import { Strategy as MicrosoftStrategy } from 'passport-microsoft';
 import {
   createOAuthAuthenticator,
   PassportOAuthAuthenticatorHelper,
   PassportOAuthDoneCallback,
   PassportProfile,
 } from '@backstage/plugin-auth-node';
+import { ExtendedMicrosoftStrategy } from './strategy';
 
 /** @public */
 export const microsoftAuthenticator = createOAuthAuthenticator({
@@ -33,7 +33,7 @@ export const microsoftAuthenticator = createOAuthAuthenticator({
     const domainHint = config.getOptionalString('domainHint');
 
     const helper = PassportOAuthAuthenticatorHelper.from(
-      new MicrosoftStrategy(
+      new ExtendedMicrosoftStrategy(
         {
           clientID: clientId,
           clientSecret: clientSecret,
