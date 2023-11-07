@@ -5,6 +5,6 @@ authorUrl: https://opencost.io
 category: Monitoring
 description: OpenCost provides cloud cost monitoring for your cloud native environments.
 documentation: https://github.com/backstage/backstage/blob/master/plugins/opencost/README.md
-iconUrl: https://avatars.githubusercontent.com/u/105945214?s=200&v=4
+iconUrl: /img/opencost.png
 npmPackageName: '@backstage/plugin-opencost'
 addedDate: '2023-10-26'
