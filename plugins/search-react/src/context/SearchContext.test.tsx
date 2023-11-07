@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { configApiRef } from '@backstage/core-plugin-api';
+import { analyticsApiRef, configApiRef } from '@backstage/core-plugin-api';
 import {
   render,
   screen,
@@ -32,7 +32,12 @@ import {
 import { searchApiRef } from '../api';
 
 describe('SearchContext', () => {
-  const searchApiMock = { query: jest.fn() };
+  const searchApiMock = {
+    query: jest.fn().mockResolvedValue({}),
+  } satisfies typeof searchApiRef.T;
+  const analyticsApiMock = {
+    captureEvent: jest.fn(),
+  } satisfies typeof analyticsApiRef.T;
 
   const wrapper = ({ children, initialState, config = {} }: any) => {
     const configApiMock = new MockConfigApi(config);
@@ -41,6 +46,7 @@ describe('SearchContext', () => {
         apis={[
           [configApiRef, configApiMock],
           [searchApiRef, searchApiMock],
+          [analyticsApiRef, analyticsApiMock],
         ]}
       >
         <SearchContextProvider initialState={initialState}>
@@ -57,10 +63,6 @@ describe('SearchContext', () => {
   };
 
   beforeEach(() => {
-    searchApiMock.query.mockResolvedValue({});
-  });
-
-  afterAll(() => {
     jest.resetAllMocks();
   });
 
@@ -376,9 +378,9 @@ describe('SearchContext', () => {
 
       await waitFor(() => {
         expect(result.current).toEqual(expect.objectContaining(initialState));
+        expect(result.current.fetchNextPage).toBeDefined();
       });
 
-      expect(result.current.fetchNextPage).toBeDefined();
       expect(result.current.fetchPreviousPage).toBeUndefined();
 
       await act(async () => {
@@ -418,6 +420,42 @@ describe('SearchContext', () => {
         types: ['*'],
         filters: {},
         pageCursor: 'PREVIOUS',
+      });
+    });
+  });
+
+  describe('analytics', () => {
+    it('Captures analytics events if enabled in app', async () => {
+      searchApiMock.query.mockResolvedValue({
+        results: [],
+        numberOfResults: 3,
+      });
+
+      const { result } = renderHook(() => useSearch(), {
+        wrapper: ({ children }) => wrapper({ children, initialState }),
+      });
+
+      await waitFor(() => {
+        expect(result.current).toEqual(expect.objectContaining(initialState));
+      });
+
+      const term = 'term';
+
+      await act(async () => {
+        result.current.setTerm(term);
+      });
+
+      await waitFor(() => {
+        expect(analyticsApiMock.captureEvent).toHaveBeenCalledWith({
+          action: 'search',
+          subject: 'term',
+          value: 3,
+          context: {
+            extension: 'App',
+            pluginId: 'root',
+            routeRef: 'unknown',
+          },
+        });
       });
     });
   });
