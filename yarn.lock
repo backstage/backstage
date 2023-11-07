@@ -18200,11 +18200,11 @@ __metadata:
   linkType: hard
 
 "@types/base64-stream@npm:^1.0.2":
-  version: 1.0.4
-  resolution: "@types/base64-stream@npm:1.0.4"
+  version: 1.0.5
+  resolution: "@types/base64-stream@npm:1.0.5"
   dependencies:
     "@types/node": "*"
-  checksum: 498dc3a71f9e6a598761616749697621c1b70f5ae79d24bb7f1b88a924c9865d82ac910eff5a41912194c4834e93e0b7da075418ebb61356c0d3dc4806e8007e
+  checksum: 936ef9056ef6937970bd42426ee02d1a3a396723626c5119f7ca1ba0539a5f987a17b02dc4ced2ef03b0c9bba478b7d126f4b086eaf38e84dc355aa6244e0082
   languageName: node
   linkType: hard
 
