@@ -20,9 +20,10 @@
  * @param {import('knex').Knex} knex
  */
 exports.up = async function up(knex) {
+  const isSqlite = knex.client.config.client.includes('sqlite3');
   await knex.schema.hasColumn('refresh_keys', 'id').then(async hasCol => {
     if (hasCol) return;
-    if (knex.client.config.client.includes('sqlite3')) {
+    if (isSqlite) {
       await knex.schema.renameTable('refresh_keys', 'tmp_refresh_keys');
 
       await knex.schema.table('tmp_refresh_keys', table => {
@@ -68,7 +69,7 @@ exports.up = async function up(knex) {
   });
   await knex.schema.hasColumn('relations', 'id').then(async hasCol => {
     if (hasCol) return;
-    if (knex.client.config.client.includes('sqlite3')) {
+    if (isSqlite) {
       await knex.schema.renameTable('relations', 'tmp_relations');
 
       await knex.schema.table('tmp_relations', table => {
@@ -121,7 +122,7 @@ exports.up = async function up(knex) {
 
   await knex.schema.hasColumn('search', 'id').then(async hasCol => {
     if (hasCol) return;
-    if (knex.client.config.client.includes('sqlite3')) {
+    if (isSqlite) {
       await knex.schema.renameTable('search', 'tmp_search');
 
       await knex.schema.alterTable('tmp_search', table => {
