@@ -8,11 +8,15 @@
 import { AlertApi } from '../../../../core-plugin-api';
 import { alertApiRef } from '../../../../core-plugin-api';
 import { AlertMessage } from '../../../../core-plugin-api';
+import { AnyApiFactory } from '../../../../core-plugin-api';
 import { AnyApiFactory as AnyApiFactory_2 } from '@backstage/core-plugin-api';
+import { AnyApiRef } from '../../../../core-plugin-api';
 import { AnyApiRef as AnyApiRef_2 } from '@backstage/core-plugin-api';
-import { ApiFactory as ApiFactory_2 } from '@backstage/core-plugin-api';
-import { ApiHolder as ApiHolder_2 } from '@backstage/core-plugin-api';
+import { ApiFactory } from '../../../../core-plugin-api';
+import { ApiHolder } from '../../../../core-plugin-api';
+import { ApiRef } from '../../../../core-plugin-api';
 import { ApiRef as ApiRef_2 } from '@backstage/core-plugin-api';
+import { ApiRefConfig } from '../../../../core-plugin-api';
 import { AppTheme } from '../../../../core-plugin-api';
 import { AppTheme as AppTheme_2 } from '@backstage/core-plugin-api';
 import { AppThemeApi } from '../../../../core-plugin-api';
@@ -28,6 +32,8 @@ import { bitbucketServerAuthApiRef } from '../../../../core-plugin-api';
 import { ComponentType } from 'react';
 import { ConfigApi } from '../../../../core-plugin-api';
 import { configApiRef } from '../../../../core-plugin-api';
+import { createApiFactory } from '../../../../core-plugin-api';
+import { createApiRef } from '../../../../core-plugin-api';
 import { DiscoveryApi } from '../../../../core-plugin-api';
 import { discoveryApiRef } from '../../../../core-plugin-api';
 import { ErrorApi } from '../../../../core-plugin-api';
@@ -62,7 +68,6 @@ import { OpenIdConnectApi } from '../../../../core-plugin-api';
 import { PendingOAuthRequest } from '../../../../core-plugin-api';
 import { ProfileInfo } from '../../../../core-plugin-api';
 import { ProfileInfoApi } from '../../../../core-plugin-api';
-import { PropsWithChildren } from 'react';
 import { default as React_2 } from 'react';
 import { ReactNode } from 'react';
 import { SessionApi } from '../../../../core-plugin-api';
@@ -70,6 +75,10 @@ import { SessionState } from '../../../../core-plugin-api';
 import { StorageApi } from '../../../../core-plugin-api';
 import { storageApiRef } from '../../../../core-plugin-api';
 import { StorageValueSnapshot } from '../../../../core-plugin-api';
+import { TypesToApiRefs } from '../../../../core-plugin-api';
+import { useApi } from '../../../../core-plugin-api';
+import { useApiHolder } from '../../../../core-plugin-api';
+import { withApis } from '../../../../core-plugin-api';
 import { z } from 'zod';
 import { ZodSchema } from 'zod';
 import { ZodTypeDef } from 'zod';
@@ -80,17 +89,9 @@ export { alertApiRef };
 
 export { AlertMessage };
 
-// @public
-export type AnyApiFactory = ApiFactory<
-  unknown,
-  unknown,
-  {
-    [key in string]: unknown;
-  }
->;
+export { AnyApiFactory };
 
-// @public
-export type AnyApiRef = ApiRef<unknown>;
+export { AnyApiRef };
 
 // @public (undocumented)
 export type AnyExtensionDataMap = {
@@ -130,95 +131,13 @@ export type AnyRoutes = {
   [name in string]: RouteRef;
 };
 
-// @public
-export type ApiFactory<
-  Api,
-  Impl extends Api,
-  Deps extends {
-    [name in string]: unknown;
-  },
-> = {
-  api: ApiRef<Api>;
-  deps: TypesToApiRefs<Deps>;
-  factory(deps: Deps): Impl;
-};
+export { ApiFactory };
 
-// @public (undocumented)
-export type ApiFactoryHolder = {
-  get<T>(api: ApiRef<T>):
-    | ApiFactory<
-        T,
-        T,
-        {
-          [key in string]: unknown;
-        }
-      >
-    | undefined;
-};
+export { ApiHolder };
 
-// @public
-export class ApiFactoryRegistry implements ApiFactoryHolder {
-  // (undocumented)
-  get<T>(api: ApiRef_2<T>):
-    | ApiFactory_2<
-        T,
-        T,
-        {
-          [x: string]: unknown;
-        }
-      >
-    | undefined;
-  // (undocumented)
-  getAllApis(): Set<AnyApiRef_2>;
-  register<
-    Api,
-    Impl extends Api,
-    Deps extends {
-      [name in string]: unknown;
-    },
-  >(scope: ApiFactoryScope, factory: ApiFactory_2<Api, Impl, Deps>): boolean;
-}
+export { ApiRef };
 
-// @public
-export type ApiFactoryScope = 'default' | 'app' | 'static';
-
-// @public
-export type ApiHolder = {
-  get<T>(api: ApiRef<T>): T | undefined;
-};
-
-// @public
-export const ApiProvider: (
-  props: PropsWithChildren<ApiProviderProps>,
-) => React_2.JSX.Element;
-
-// @public
-export type ApiProviderProps = {
-  apis: ApiHolder_2;
-  children: ReactNode;
-};
-
-// @public
-export type ApiRef<T> = {
-  id: string;
-  T: T;
-};
-
-// @public
-export type ApiRefConfig = {
-  id: string;
-};
-
-// @public
-export class ApiResolver implements ApiHolder_2 {
-  constructor(factories: ApiFactoryHolder);
-  // (undocumented)
-  get<T>(ref: ApiRef_2<T>): T | undefined;
-  static validateFactories(
-    factories: ApiFactoryHolder,
-    apis: Iterable<AnyApiRef_2>,
-  ): void;
-}
+export { ApiRefConfig };
 
 // @public
 export interface AppNode {
@@ -371,8 +290,9 @@ export function createApiExtension<
   },
 ): Extension<TConfig>;
 
-// @public
-export function createApiRef<T>(config: ApiRefConfig): ApiRef<T>;
+export { createApiFactory };
+
+export { createApiRef };
 
 // @public (undocumented)
 export function createExtension<
@@ -820,10 +740,11 @@ export interface SubRouteRef<
   readonly T: TParams;
 }
 
-// @public
-export type TypesToApiRefs<T> = {
-  [key in keyof T]: ApiRef<T[key]>;
-};
+export { TypesToApiRefs };
+
+export { useApi };
+
+export { useApiHolder };
 
 // @public
 export function useRouteRef<
@@ -842,4 +763,6 @@ export function useRouteRef<TParams extends AnyRouteRefParams>(
 export function useRouteRefParams<Params extends AnyRouteRefParams>(
   _routeRef: RouteRef<Params> | SubRouteRef<Params>,
 ): Params;
+
+export { withApis };
 ```
