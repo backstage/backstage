@@ -99,9 +99,9 @@ The property `title` is optional and can be used to customize the title in the c
 
 The properties `fullHeight` and `fullWidth` are also optional and can be used to adjust the cards styling.
 
-Optionally, add custom `Support` configuration in the appconfig.
+Optionally, add custom `Support` configuration in the app config.
 
-```
+```yaml
 bazaar:
   support:
     - title: Email
