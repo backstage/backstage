@@ -22,7 +22,7 @@ import {
 import { readAppExtensionsConfig } from './readAppExtensionsConfig';
 import { resolveAppTree } from './resolveAppTree';
 import { resolveAppNodeSpecs } from './resolveAppNodeSpecs';
-import { AppTree } from './types';
+import { AppTree } from '@backstage/frontend-plugin-api';
 import { Config } from '@backstage/config';
 import { instantiateAppNodeTree } from './instantiateAppNodeTree';
 

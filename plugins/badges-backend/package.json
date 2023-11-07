@@ -45,7 +45,7 @@
     "cors": "^2.8.5",
     "express": "^4.17.1",
     "express-promise-router": "^4.1.0",
-    "knex": "^2.4.2",
+    "knex": "^3.0.0",
     "lodash": "^4.17.21",
     "supertest": "^6.3.3",
     "uuid": "^9.0.0",
