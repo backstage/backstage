@@ -20,6 +20,7 @@ import { V1Job } from '@kubernetes/client-node';
 import { V1LimitRange } from '@kubernetes/client-node';
 import { V1Pod } from '@kubernetes/client-node';
 import { V1ReplicaSet } from '@kubernetes/client-node';
+import { V1ResourceQuota } from '@kubernetes/client-node';
 import { V1Service } from '@kubernetes/client-node';
 import { V1StatefulSet } from '@kubernetes/client-node';
 
@@ -249,6 +250,7 @@ export type FetchResponse =
   | ConfigMapFetchResponse
   | DeploymentFetchResponse
   | LimitRangeFetchResponse
+  | ResourceQuotaFetchResponse
   | ReplicaSetsFetchResponse
   | HorizontalPodAutoscalersFetchResponse
   | JobsFetchResponse
@@ -401,6 +403,14 @@ export interface ReplicaSetsFetchResponse {
   resources: Array<V1ReplicaSet>;
   // (undocumented)
   type: 'replicasets';
+}
+
+// @public (undocumented)
+export interface ResourceQuotaFetchResponse {
+  // (undocumented)
+  resources: Array<V1ResourceQuota>;
+  // (undocumented)
+  type: 'resourcequotas';
 }
 
 // @public

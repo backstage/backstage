@@ -7,6 +7,7 @@
 
 import { AnyApiFactory } from '@backstage/core-plugin-api';
 import { AnyApiRef } from '@backstage/core-plugin-api';
+import { ApiRef } from '@backstage/core-plugin-api';
 import { AppTheme } from '@backstage/core-plugin-api';
 import { IconComponent } from '@backstage/core-plugin-api';
 import { JsonObject } from '@backstage/types';
@@ -54,6 +55,66 @@ export type AnyRouteRefParams =
 export type AnyRoutes = {
   [name in string]: RouteRef;
 };
+
+// @public
+export interface AppNode {
+  readonly edges: AppNodeEdges;
+  readonly instance?: AppNodeInstance;
+  readonly spec: AppNodeSpec;
+}
+
+// @public
+export interface AppNodeEdges {
+  // (undocumented)
+  readonly attachedTo?: {
+    node: AppNode;
+    input: string;
+  };
+  // (undocumented)
+  readonly attachments: ReadonlyMap<string, AppNode[]>;
+}
+
+// @public
+export interface AppNodeInstance {
+  getData<T>(ref: ExtensionDataRef<T>): T | undefined;
+  getDataRefs(): Iterable<ExtensionDataRef<unknown>>;
+}
+
+// @public
+export interface AppNodeSpec {
+  // (undocumented)
+  readonly attachTo: {
+    id: string;
+    input: string;
+  };
+  // (undocumented)
+  readonly config?: unknown;
+  // (undocumented)
+  readonly disabled: boolean;
+  // (undocumented)
+  readonly extension: Extension<unknown>;
+  // (undocumented)
+  readonly id: string;
+  // (undocumented)
+  readonly source?: BackstagePlugin;
+}
+
+// @public
+export interface AppTree {
+  readonly nodes: ReadonlyMap<string, AppNode>;
+  readonly orphans: Iterable<AppNode>;
+  readonly root: AppNode;
+}
+
+// @public
+export interface AppTreeApi {
+  getTree(): {
+    tree: AppTree;
+  };
+}
+
+// @public
+export const appTreeApiRef: ApiRef<AppTreeApi>;
 
 // @public (undocumented)
 export interface BackstagePlugin<

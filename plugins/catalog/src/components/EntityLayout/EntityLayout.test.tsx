@@ -233,4 +233,35 @@ describe('EntityLayout', () => {
     expect(screen.queryByText('tabbed-test-title-2')).not.toBeInTheDocument();
     expect(screen.getByText('tabbed-test-title-3')).toBeInTheDocument();
   });
+
+  it('renders the owner links inside `p` tags', async () => {
+    const mockTargetRef = 'my:target/ref';
+    const ownerEntity = {
+      ...mockEntity,
+      relations: [{ type: 'ownedBy', targetRef: mockTargetRef }],
+    };
+    await renderInTestApp(
+      <ApiProvider apis={mockApis}>
+        <EntityProvider entity={ownerEntity}>
+          <EntityLayout>
+            <EntityLayout.Route path="/" title="tabbed-test-title">
+              <div>tabbed-test-content</div>
+            </EntityLayout.Route>
+          </EntityLayout>
+        </EntityProvider>
+      </ApiProvider>,
+      {
+        mountedRoutes: {
+          '/catalog/:namespace/:kind/:name': entityRouteRef,
+        },
+      },
+    );
+
+    const ownerLink = screen.getByText(mockTargetRef).closest('a');
+    expect(ownerLink).toBeInTheDocument();
+    expect(ownerLink?.tagName).toBe('A');
+    const linkParent = ownerLink?.parentElement;
+    expect(linkParent).toBeInTheDocument();
+    expect(linkParent?.tagName).toBe('P');
+  });
 });

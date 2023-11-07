@@ -1,5 +1,18 @@
 # @backstage/plugin-github-actions
 
+## 0.6.7-next.2
+
+### Patch Changes
+
+- [#20842](https://github.com/backstage/backstage/pull/20842) [`fdb5e23602`](https://github.com/backstage/backstage/commit/fdb5e2360299c5faa30f4d4236fc548b94d37446) Thanks [@benjdlambert](https://github.com/benjdlambert)! - Import `MissingAnnotationEmptyState` from `@backstage/plugin-catalog-react` to remove the cyclical dependency
+
+- [#21010](https://github.com/backstage/backstage/pull/21010) [`ee0c44ce62`](https://github.com/backstage/backstage/commit/ee0c44ce62f757294433c70812e589b3397103e6) Thanks [@vinzscam](https://github.com/vinzscam)! - Fixed an issue that was preventing the sorting of workflow runs by their status.
+
+- Updated dependencies
+  - @backstage/core-components@0.13.8-next.2
+  - @backstage/plugin-catalog-react@1.9.0-next.2
+  - @backstage/integration-react@1.1.21-next.1
+
 ## 0.6.7-next.1
 
 ### Patch Changes

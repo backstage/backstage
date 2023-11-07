@@ -14,20 +14,13 @@
  * limitations under the License.
  */
 
-import {
-  BackstagePlugin,
-  Extension,
-  ExtensionDataRef,
-} from '@backstage/frontend-plugin-api';
-
-/*
-NOTE: These types are marked as @internal for now, but the intention is for this to be a public API in the future.
-*/
+import { createApiRef } from '@backstage/core-plugin-api';
+import { BackstagePlugin, Extension, ExtensionDataRef } from '../../wiring';
 
 /**
- * The specification for this node in the app tree.
+ * The specification for this {@link AppNode} in the {@link AppTree}.
  *
- * @internal
+ * @public
  * @remarks
  *
  * The specifications for a collection of app nodes is all the information needed
@@ -43,9 +36,9 @@ export interface AppNodeSpec {
 }
 
 /**
- * The connections from this node to other nodes.
+ * The connections from this {@link AppNode} to other nodes.
  *
- * @internal
+ * @public
  * @remarks
  *
  * The app node edges are resolved based on the app node specs, regardless of whether
@@ -57,9 +50,9 @@ export interface AppNodeEdges {
 }
 
 /**
- * The instance of this node in the app tree.
+ * The instance of this {@link AppNode} in the {@link AppTree}.
  *
- * @internal
+ * @public
  * @remarks
  *
  * The app node instance is created when the `factory` function of an extension is called.
@@ -74,8 +67,9 @@ export interface AppNodeInstance {
 }
 
 /**
+ * A node in the {@link AppTree}.
  *
- * @internal
+ * @public
  */
 export interface AppNode {
   /** The specification for how this node should be instantiated */
@@ -87,15 +81,34 @@ export interface AppNode {
 }
 
 /**
- * The app tree containing all nodes of the app.
+ * The app tree containing all {@link AppNode}s of the app.
  *
- * @internal
+ * @public
  */
 export interface AppTree {
   /** The root node of the app */
-  root: AppNode;
+  readonly root: AppNode;
   /** A map of all nodes in the app by ID, including orphaned or disabled nodes */
-  nodes: ReadonlyMap<string /* id */, AppNode>;
+  readonly nodes: ReadonlyMap<string /* id */, AppNode>;
   /** A sequence of all nodes with a parent that is not reachable from the app root node */
-  orphans: Iterable<AppNode>;
+  readonly orphans: Iterable<AppNode>;
 }
+
+/**
+ * The API for interacting with the {@link AppTree}.
+ *
+ * @public
+ */
+export interface AppTreeApi {
+  /**
+   * Get the {@link AppTree} for the app.
+   */
+  getTree(): { tree: AppTree };
+}
+
+/**
+ * The `ApiRef` of {@link AppTreeApi}.
+ *
+ * @public
+ */
+export const appTreeApiRef = createApiRef<AppTreeApi>({ id: 'core.app-tree' });

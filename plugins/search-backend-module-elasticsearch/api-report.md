@@ -370,6 +370,7 @@ export type ElasticSearchSearchEngineIndexerOptions = {
   logger: Logger | LoggerService;
   elasticSearchClientWrapper: ElasticSearchClientWrapper;
   batchSize: number;
+  skipRefresh?: boolean;
 };
 
 // @public (undocumented)

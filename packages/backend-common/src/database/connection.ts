@@ -18,6 +18,7 @@ import { Config } from '@backstage/config';
 import { JsonObject } from '@backstage/types';
 import { InputError } from '@backstage/errors';
 import knexFactory, { Knex } from 'knex';
+import limiterFactory from 'p-limit';
 import { mergeDatabaseConfig } from './config';
 import { DatabaseConnector } from './types';
 
@@ -34,6 +35,12 @@ type DatabaseClient =
   | 'mysql'
   | 'mysql2'
   | string;
+
+// This limits the number of concurrent CREATE DATABASE and CREATE SCHEMA
+// commands, globally, to just one. This is overly defensive, and was added as
+// an attempt to counteract the pool issues on recent node versions. See
+// https://github.com/backstage/backstage/pull/19988
+const ddlLimiter = limiterFactory(1);
 
 /**
  * Mapping of client type to supported database connectors
@@ -83,9 +90,8 @@ export async function ensureDatabaseExists(
 ): Promise<void> {
   const client: DatabaseClient = dbConfig.getString('client');
 
-  return ConnectorMapping[client]?.ensureDatabaseExists?.(
-    dbConfig,
-    ...databases,
+  return await ddlLimiter(() =>
+    ConnectorMapping[client]?.ensureDatabaseExists?.(dbConfig, ...databases),
   );
 }
 
@@ -100,9 +106,8 @@ export async function ensureSchemaExists(
 ): Promise<void> {
   const client: DatabaseClient = dbConfig.getString('client');
 
-  return await ConnectorMapping[client]?.ensureSchemaExists?.(
-    dbConfig,
-    ...schemas,
+  return await ddlLimiter(() =>
+    ConnectorMapping[client]?.ensureSchemaExists?.(dbConfig, ...schemas),
   );
 }
 

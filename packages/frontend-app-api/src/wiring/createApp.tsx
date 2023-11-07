@@ -17,6 +17,8 @@
 import React, { JSX } from 'react';
 import { ConfigReader, Config } from '@backstage/config';
 import {
+  AppTree,
+  appTreeApiRef,
   BackstagePlugin,
   coreExtensionData,
   ExtensionDataRef,
@@ -87,7 +89,8 @@ import { AppRouteBinder } from '../routing';
 import { RoutingProvider } from '../routing/RoutingProvider';
 import { resolveRouteBindings } from '../routing/resolveRouteBindings';
 import { collectRouteIds } from '../routing/collectRouteIds';
-import { AppNode, createAppTree } from '../tree';
+import { createAppTree } from '../tree';
+import { AppNode } from '@backstage/frontend-plugin-api';
 
 const builtinExtensions = [
   Core,
@@ -222,7 +225,7 @@ function deduplicateFeatures(
 }
 
 /** @public */
-export function createApp(options: {
+export function createApp(options?: {
   features?: (BackstagePlugin | ExtensionOverrides)[];
   configLoader?: () => Promise<ConfigApi>;
   bindRoutes?(context: { bind: AppRouteBinder }): void;
@@ -240,11 +243,11 @@ export function createApp(options: {
       );
 
     const discoveredFeatures = getAvailableFeatures(config);
-    const loadedFeatures = (await options.featureLoader?.({ config })) ?? [];
+    const loadedFeatures = (await options?.featureLoader?.({ config })) ?? [];
     const allFeatures = deduplicateFeatures([
       ...discoveredFeatures,
       ...loadedFeatures,
-      ...(options.features ?? []),
+      ...(options?.features ?? []),
     ]);
 
     const tree = createAppTree({
@@ -262,13 +265,13 @@ export function createApp(options: {
     const routeIds = collectRouteIds(allFeatures);
 
     const App = () => (
-      <ApiProvider apis={createApiHolder(tree.root, config)}>
+      <ApiProvider apis={createApiHolder(tree, config)}>
         <AppContextProvider appContext={appContext}>
           <AppThemeProvider>
             <RoutingProvider
               {...extractRouteInfoFromAppNode(tree.root)}
               routeBindings={resolveRouteBindings(
-                options.bindRoutes,
+                options?.bindRoutes,
                 config,
                 routeIds,
               )}
@@ -356,17 +359,17 @@ function createLegacyAppContext(plugins: BackstagePlugin[]): AppContext {
   };
 }
 
-function createApiHolder(core: AppNode, configApi: ConfigApi): ApiHolder {
+function createApiHolder(tree: AppTree, configApi: ConfigApi): ApiHolder {
   const factoryRegistry = new ApiFactoryRegistry();
 
   const pluginApis =
-    core.edges.attachments
+    tree.root.edges.attachments
       .get('apis')
       ?.map(e => e.instance?.getData(coreExtensionData.apiFactory))
       .filter((x): x is AnyApiFactory => !!x) ?? [];
 
   const themeExtensions =
-    core.edges.attachments
+    tree.root.edges.attachments
       .get('themes')
       ?.map(e => e.instance?.getData(coreExtensionData.theme))
       .filter((x): x is AppTheme => !!x) ?? [];
@@ -412,6 +415,14 @@ function createApiHolder(core: AppNode, configApi: ConfigApi): ApiHolder {
       );
       return appIdentityProxy;
     },
+  });
+
+  factoryRegistry.register('static', {
+    api: appTreeApiRef,
+    deps: {},
+    factory: () => ({
+      getTree: () => ({ tree }),
+    }),
   });
 
   factoryRegistry.register('static', {

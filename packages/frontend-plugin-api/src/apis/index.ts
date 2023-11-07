@@ -1,5 +1,5 @@
 /*
- * Copyright 2020 The Backstage Authors
+ * Copyright 2023 The Backstage Authors
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,12 +14,4 @@
  * limitations under the License.
  */
 
-declare module 'passport-microsoft' {
-  import { Request } from 'express';
-  import { StrategyCreated } from 'passport';
-
-  export class Strategy {
-    constructor(options: any, verify: any);
-    authenticate(this: StrategyCreated<this>, req: Request, options?: any): any;
-  }
-}
+export * from './definitions';

@@ -633,5 +633,70 @@ describe('DatabaseDocumentStore', () => {
         ]);
       },
     );
+
+    it.each(databases.eachSupportedId())(
+      'should remove deleted documents and add new ones, %p',
+      async databaseId => {
+        const { store, knex } = await createStore(databaseId);
+
+        await store.transaction(async tx => {
+          await store.prepareInsert(tx);
+          await store.insertDocuments(tx, 'my-type', [
+            {
+              title: 'TITLE 1',
+              text: 'TEXT 1',
+              location: 'LOCATION-1',
+            },
+            {
+              title: 'TITLE 2',
+              text: 'TEXT 2',
+              location: 'LOCATION-2',
+            },
+          ]);
+          await store.completeInsert(tx, 'my-type');
+        });
+
+        await expect(
+          knex.count('*').where('type', 'my-type').from('documents'),
+        ).resolves.toEqual([{ count: '2' }]);
+        const results_pre = await knex
+          .select('*')
+          .where('type', 'my-type')
+          .from('documents');
+        expect(results_pre).toHaveLength(2);
+        expect(results_pre[0].document.title).toBe('TITLE 1');
+        expect(results_pre[0].document.text).toBe('TEXT 1');
+        expect(results_pre[1].document.title).toBe('TITLE 2');
+
+        await store.transaction(async tx => {
+          await store.prepareInsert(tx);
+          await store.insertDocuments(tx, 'my-type', [
+            {
+              title: 'TITLE 1',
+              text: 'TEXT 1 updated',
+              location: 'LOCATION-1',
+            },
+            {
+              title: 'TITLE 3',
+              text: 'TEXT 3',
+              location: 'LOCATION-3',
+            },
+          ]);
+          await store.completeInsert(tx, 'my-type');
+        });
+
+        await expect(
+          knex.count('*').where('type', 'my-type').from('documents'),
+        ).resolves.toEqual([{ count: '2' }]);
+        const results_post = await knex
+          .select('*')
+          .where('type', 'my-type')
+          .from('documents');
+        expect(results_post).toHaveLength(2);
+        expect(results_post[0].document.title).toBe('TITLE 1');
+        expect(results_post[0].document.text).toBe('TEXT 1 updated');
+        expect(results_post[1].document.title).toBe('TITLE 3');
+      },
+    );
   });
 });

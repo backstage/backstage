@@ -15,6 +15,8 @@
  */
 
 import {
+  AppTreeApi,
+  appTreeApiRef,
   createPageExtension,
   createPlugin,
   createThemeExtension,
@@ -23,6 +25,7 @@ import { screen, waitFor } from '@testing-library/react';
 import { createApp } from './createApp';
 import { MockConfigApi, renderWithEffects } from '@backstage/test-utils';
 import React from 'react';
+import { useApi } from '@backstage/core-plugin-api';
 
 describe('createApp', () => {
   it('should allow themes to be installed', async () => {
@@ -89,5 +92,59 @@ describe('createApp', () => {
     await waitFor(() =>
       expect(screen.getByText('Last Page')).toBeInTheDocument(),
     );
+  });
+
+  it('should make the app structure available through the AppTreeApi', async () => {
+    let appTreeApi: AppTreeApi | undefined = undefined;
+
+    const app = createApp({
+      configLoader: async () => new MockConfigApi({}),
+      features: [
+        createPlugin({
+          id: 'my-plugin',
+          extensions: [
+            createPageExtension({
+              id: 'plugin.my-plugin.page',
+              defaultPath: '/',
+              loader: async () => {
+                const Component = () => {
+                  appTreeApi = useApi(appTreeApiRef);
+                  return <div>My Plugin Page</div>;
+                };
+                return <Component />;
+              },
+            }),
+          ],
+        }),
+      ],
+    });
+
+    await renderWithEffects(app.createRoot());
+
+    expect(appTreeApi).toBeDefined();
+    const { tree } = appTreeApi!.getTree();
+
+    expect(String(tree.root)).toMatchInlineSnapshot(`
+      "<core out=[core.reactElement]>
+        root [
+          <core.layout out=[core.reactElement]>
+            content [
+              <core.routes out=[core.reactElement]>
+                routes [
+                  <plugin.my-plugin.page out=[core.routing.path, core.routing.ref, core.reactElement] />
+                ]
+              </core.routes>
+            ]
+            nav [
+              <core.nav out=[core.reactElement] />
+            ]
+          </core.layout>
+        ]
+        themes [
+          <themes.light out=[core.theme] />
+          <themes.dark out=[core.theme] />
+        ]
+      </core>"
+    `);
   });
 });

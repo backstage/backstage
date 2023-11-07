@@ -96,6 +96,7 @@ const ErrorList = ({
 export type ErrorPanelProps = {
   error: Error;
   defaultExpanded?: boolean;
+  titleFormat?: string;
   title?: string;
 };
 
@@ -105,12 +106,13 @@ export type ErrorPanelProps = {
  * @public
  */
 export function ErrorPanel(props: PropsWithChildren<ErrorPanelProps>) {
-  const { title, error, defaultExpanded, children } = props;
+  const { title, error, defaultExpanded, titleFormat, children } = props;
   return (
     <WarningPanel
       severity="error"
       title={title ?? error.message}
       defaultExpanded={defaultExpanded}
+      titleFormat={titleFormat}
     >
       <ErrorList
         error={error.name}
