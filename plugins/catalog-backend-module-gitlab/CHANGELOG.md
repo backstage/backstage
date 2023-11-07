@@ -1,5 +1,17 @@
 # @backstage/plugin-catalog-backend-module-gitlab
 
+## 0.3.4-next.2
+
+### Patch Changes
+
+- [#20893](https://github.com/backstage/backstage/pull/20893) [`0873a43ac1`](https://github.com/backstage/backstage/commit/0873a43ac1557901b21dfa6f8534bbbfc73dc444) Thanks [@pushit-tech](https://github.com/pushit-tech)! - Resolved a bug affecting the retrieval of users from group members. By appending '/all' to the API call, we now include members from all inherited groups, as per Gitlab's API specifications. This change is reflected in the listSaaSUsers function.
+
+- Updated dependencies
+  - @backstage/backend-plugin-api@0.6.7-next.2
+  - @backstage/backend-common@0.19.9-next.2
+  - @backstage/backend-tasks@0.5.12-next.2
+  - @backstage/plugin-catalog-node@1.5.0-next.2
+
 ## 0.3.4-next.1
 
 ### Patch Changes
