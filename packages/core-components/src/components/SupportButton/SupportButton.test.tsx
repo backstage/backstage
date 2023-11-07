@@ -23,6 +23,7 @@ import {
 import { act, fireEvent, screen } from '@testing-library/react';
 import React from 'react';
 import { SupportButton } from './SupportButton';
+import SvgIcon, { SvgIconProps } from '@material-ui/core/SvgIcon';
 
 const configApi = new MockConfigApi({
   app: {
@@ -56,6 +57,31 @@ describe('<SupportButton />', () => {
     expect(screen.getByText('Custom title')).toBeInTheDocument();
   });
 
+  it('supports passing an icon object', async () => {
+    const CustomIcon = (props: SvgIconProps) =>
+      React.createElement(
+        SvgIcon,
+        props,
+        <path d="M9 7H4a2 2 0 1 0 0 4h5a2 2 0 1 0 0-4zm2-3v2H9a2 2 0 1 1 2-2zM7 14v5a2 2 0 1 0 4 0v-5a2 2 0 1 0-4 0zm-3-2h2v2a2 2 0 1 1-2-2zm10 4h5a2 2 0 1 0 0-4h-5a2 2 0 1 0 0 4zm-2 3v-2h2a2 2 0 1 1-2 2zm4-10V4a2 2 0 1 0-4 0v5a2 2 0 1 0 4 0zm3 2h-2V9a2 2 0 1 1 2 2z" />,
+      );
+
+    await renderInTestApp(
+      <SupportButton
+        items={[
+          {
+            title: 'Documentation',
+            icon: <CustomIcon data-testid="custom-icon" />,
+            links: [{ title: 'Show docs', url: '/docs' }],
+          },
+        ]}
+      />,
+    );
+    fireEvent.click(screen.getByTestId(SUPPORT_BUTTON_ID));
+
+    const customIcon = screen.getByTestId('custom-icon');
+    expect(customIcon).toBeInTheDocument();
+  });
+
   it('supports passing link items through props', async () => {
     await renderInTestApp(
       <SupportButton
@@ -76,6 +102,9 @@ describe('<SupportButton />', () => {
 
     const documentationItem = screen.getByText('Documentation');
     expect(documentationItem).toBeInTheDocument();
+
+    const descriptionIcon = screen.getByTestId('description');
+    expect(descriptionIcon).toBeInTheDocument();
   });
 
   it('shows items from support config', async () => {

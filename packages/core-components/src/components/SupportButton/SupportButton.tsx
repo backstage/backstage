@@ -53,10 +53,16 @@ const useStyles = makeStyles(
   { name: 'BackstageSupportButton' },
 );
 
-const SupportIcon = ({ icon }: { icon: string | undefined }) => {
+const SupportIcon = ({ icon }: { icon: string | JSX.Element | undefined }) => {
   const app = useApp();
-  const Icon = icon ? app.getSystemIcon(icon) ?? HelpIcon : HelpIcon;
-  return <Icon />;
+  if (!icon) {
+    return <HelpIcon />;
+  }
+  if (typeof icon === 'string') {
+    const Icon = app.getSystemIcon(icon) || HelpIcon;
+    return <Icon data-testid={icon} />;
+  }
+  return <>{icon}</>;
 };
 
 const SupportLink = ({ link }: { link: SupportItemLink }) => (

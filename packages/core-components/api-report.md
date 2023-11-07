@@ -1280,7 +1280,7 @@ export type SupportConfig = {
 // @public (undocumented)
 export type SupportItem = {
   title: string;
-  icon?: string;
+  icon?: string | JSX.Element;
   links: SupportItemLink[];
 };
 

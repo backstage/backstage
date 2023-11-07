@@ -23,7 +23,7 @@ export type SupportItemLink = {
 
 export type SupportItem = {
   title: string;
-  icon?: string;
+  icon?: string | JSX.Element;
   links: SupportItemLink[];
 };
 
