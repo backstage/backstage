@@ -1,5 +1,16 @@
 # @backstage/plugin-bazaar
 
+## 0.2.18-next.2
+
+### Patch Changes
+
+- [#20830](https://github.com/backstage/backstage/pull/20830) [`c6e7940ccf`](https://github.com/backstage/backstage/commit/c6e7940ccfc986bce1077ba8e8abdae6ebb06296) Thanks [@AmbrishRamachandiran](https://github.com/AmbrishRamachandiran)! - Updated Readme document in bazaar plugin
+
+- Updated dependencies
+  - @backstage/core-components@0.13.8-next.2
+  - @backstage/plugin-catalog@1.15.0-next.2
+  - @backstage/plugin-catalog-react@1.9.0-next.2
+
 ## 0.2.18-next.1
 
 ### Patch Changes

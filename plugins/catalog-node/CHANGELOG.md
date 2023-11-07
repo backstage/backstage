@@ -1,5 +1,12 @@
 # @backstage/plugin-catalog-node
 
+## 1.5.0-next.2
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-plugin-api@0.6.7-next.2
+
 ## 1.5.0-next.1
 
 ### Minor Changes
