@@ -145,6 +145,8 @@ export interface TaskBroker {
     tasks: SerializedTask[];
   }>;
   // (undocumented)
+  recoverTasks?(): Promise<boolean>;
+  // (undocumented)
   vacuumTasks(options: { timeoutS: number }): Promise<void>;
 }
 

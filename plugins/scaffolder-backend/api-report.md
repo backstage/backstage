@@ -847,7 +847,7 @@ export class DatabaseTaskStore implements TaskStore {
     }[];
   }>;
   // (undocumented)
-  recoverTasks(options: TaskStoreRecoverTaskOptions): Promise<void>;
+  recoverTasks(options: TaskStoreRecoverTaskOptions): Promise<string[]>;
   // (undocumented)
   shutdownTask(options: TaskStoreShutDownTaskOptions): Promise<void>;
 }
@@ -1016,7 +1016,7 @@ export interface TaskStore {
     }[];
   }>;
   // (undocumented)
-  recoverTasks?(options: TaskStoreRecoverTaskOptions): Promise<void>;
+  recoverTasks?(options: TaskStoreRecoverTaskOptions): Promise<string[]>;
   // (undocumented)
   shutdownTask?(options: TaskStoreShutDownTaskOptions): Promise<void>;
 }
