@@ -1,5 +1,14 @@
 # @backstage/plugin-catalog-unprocessed-entities
 
+## 0.1.5-next.2
+
+### Patch Changes
+
+- [#20998](https://github.com/backstage/backstage/pull/20998) [`a11cdb9200`](https://github.com/backstage/backstage/commit/a11cdb9200077312ca92ed85b159527226574c08) Thanks [@alde](https://github.com/alde)! - Added filtering and sorting to unprocessed entities tables.
+
+- Updated dependencies
+  - @backstage/core-components@0.13.8-next.2
+
 ## 0.1.5-next.1
 
 ### Patch Changes

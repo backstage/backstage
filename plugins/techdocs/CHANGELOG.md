@@ -1,5 +1,23 @@
 # @backstage/plugin-techdocs
 
+## 1.9.0-next.2
+
+### Minor Changes
+
+- [#20851](https://github.com/backstage/backstage/pull/20851) [`17f93d5589`](https://github.com/backstage/backstage/commit/17f93d5589812df3dea53d956212e184b080fbac) Thanks [@agentbellnorm](https://github.com/agentbellnorm)! - A new analytics event `not-found` will be published when a user visits a documentation site that does not exist
+
+### Patch Changes
+
+- [#20842](https://github.com/backstage/backstage/pull/20842) [`fdb5e23602`](https://github.com/backstage/backstage/commit/fdb5e2360299c5faa30f4d4236fc548b94d37446) Thanks [@benjdlambert](https://github.com/benjdlambert)! - Import `MissingAnnotationEmptyState` from `@backstage/plugin-catalog-react` to remove the cyclical dependency
+
+- Updated dependencies
+  - @backstage/core-components@0.13.8-next.2
+  - @backstage/frontend-plugin-api@0.3.0-next.2
+  - @backstage/plugin-catalog-react@1.9.0-next.2
+  - @backstage/integration-react@1.1.21-next.1
+  - @backstage/plugin-search-react@1.7.2-next.2
+  - @backstage/plugin-techdocs-react@1.1.13-next.2
+
 ## 1.8.1-next.1
 
 ### Patch Changes

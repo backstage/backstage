@@ -1,5 +1,20 @@
 # @backstage/plugin-auth-backend-module-microsoft-provider
 
+## 0.1.2-next.2
+
+### Patch Changes
+
+- [#20706](https://github.com/backstage/backstage/pull/20706) [`fde212dd10`](https://github.com/backstage/backstage/commit/fde212dd106e507c4a808e5ed8213e29d7338420) Thanks [@pjungermann](https://github.com/pjungermann)! - Re-add the missing profile photo
+  as well as access token retrieval for foreign scopes.
+
+  Additionally, we switch from previously 48x48 to 96x96
+  which is the size used at the profile card.
+
+- Updated dependencies
+  - @backstage/backend-plugin-api@0.6.7-next.2
+  - @backstage/backend-common@0.19.9-next.2
+  - @backstage/plugin-auth-node@0.4.1-next.2
+
 ## 0.1.2-next.1
 
 ### Patch Changes
