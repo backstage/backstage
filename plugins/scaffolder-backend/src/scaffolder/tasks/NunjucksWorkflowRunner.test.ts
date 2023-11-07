@@ -36,7 +36,7 @@ import { RESOURCE_TYPE_SCAFFOLDER_ACTION } from '@backstage/plugin-scaffolder-co
 import { createMockDirectory } from '@backstage/backend-test-utils';
 import stripAnsi from 'strip-ansi';
 
-describe('DefaultWorkflowRunner', () => {
+describe('NunjucksWorkflowRunner', () => {
   const logger = getVoidLogger();
   let actionRegistry = new TemplateActionRegistry();
   let runner: NunjucksWorkflowRunner;
