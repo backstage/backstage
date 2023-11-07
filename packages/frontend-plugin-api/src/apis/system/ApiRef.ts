@@ -14,51 +14,9 @@
  * limitations under the License.
  */
 
-import type { ApiRef } from './types';
-
-/**
- * API reference configuration - holds an ID of the referenced API.
- *
- * @public
- */
-export type ApiRefConfig = {
-  id: string;
-};
-
-class ApiRefImpl<T> implements ApiRef<T> {
-  constructor(private readonly config: ApiRefConfig) {
-    const valid = config.id
-      .split('.')
-      .flatMap(part => part.split('-'))
-      .every(part => part.match(/^[a-z][a-z0-9]*$/));
-    if (!valid) {
-      throw new Error(
-        `API id must only contain period separated lowercase alphanum tokens with dashes, got '${config.id}'`,
-      );
-    }
-  }
-
-  get id(): string {
-    return this.config.id;
-  }
-
-  // Utility for getting type of an api, using `typeof apiRef.T`
-  get T(): T {
-    throw new Error(`tried to read ApiRef.T of ${this}`);
-  }
-
-  toString() {
-    return `apiRef{${this.config.id}}`;
-  }
-}
-
-/**
- * Creates a reference to an API.
- *
- * @param config - The descriptor of the API to reference.
- * @returns An API reference.
- * @public
- */
-export function createApiRef<T>(config: ApiRefConfig): ApiRef<T> {
-  return new ApiRefImpl<T>(config);
-}
+// eslint-disable-next-line @backstage/no-relative-monorepo-imports
+export {
+  type ApiRef,
+  type ApiRefConfig,
+  createApiRef,
+} from '../../../../core-plugin-api';
