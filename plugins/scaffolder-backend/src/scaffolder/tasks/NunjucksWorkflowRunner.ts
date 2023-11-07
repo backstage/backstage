@@ -296,10 +296,9 @@ export class NunjucksWorkflowRunner implements WorkflowRunner {
           : {},
       }));
       for (const iteration of iterations) {
-        let actionId = action.id;
-        if (iteration.each) {
-          actionId += `[${iteration.each.key}]`;
-        }
+        const actionId =
+          action.id + (iteration.each ? `[${iteration.each.key}]` : '');
+
         if (action.schema?.input) {
           const validateResult = validateJsonSchema(
             iteration.input,
