@@ -10,6 +10,7 @@ import { BackstagePlugin } from '@backstage/core-plugin-api';
 import { Entity } from '@backstage/catalog-model';
 import { JSX as JSX_2 } from 'react';
 import { default as React_2 } from 'react';
+import { ReactElement } from 'react';
 import { RouteRef } from '@backstage/core-plugin-api';
 
 // @public (undocumented)
@@ -34,6 +35,7 @@ export type BazaarPageProps = {
   subtitle?: string;
   fullWidth?: boolean;
   fullHeight?: boolean;
+  aboutPage?: ReactElement;
 };
 
 // @public (undocumented)

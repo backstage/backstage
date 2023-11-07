@@ -39,7 +39,7 @@ const routes = (
 
 ```
 
-`BazaarPage` can be given the optional properties `fullHeight` and `fullWidth` which are used to adjust the cards styling to fit more or less on the page as required (both default to `true`).
+`BazaarPage` can be given the optional properties `fullHeight` and `fullWidth` which are used to adjust the cards styling to fit more or less on the page as required (both default to `true`). It can also be given an optional property `aboutPage` which is used to add custom content on the `About` tab by passing a react element to be rendered.
 
 Add a **Bazaar icon** to the Sidebar to easily access the Bazaar. In `packages/app/src/components/Root.tsx` add:
 
@@ -98,6 +98,18 @@ export const homePage = (
 The property `title` is optional and can be used to customize the title in the card header. If no title is submitted the default titles `Bazaar Random Projects` or `Bazaar Latest Projects` are displayed.
 
 The properties `fullHeight` and `fullWidth` are also optional and can be used to adjust the cards styling.
+
+Optionally, add custom `Support` configuration in the appconfig.
+
+```
+bazaar:
+  support:
+    - title: Email
+      icon: email
+      links:
+        - title: bazaar-dev@abc.com
+          url: mailto:bazaar-dev@abc.com
+```
 
 # How does the Bazaar work?
 

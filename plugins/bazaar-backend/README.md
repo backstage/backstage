@@ -28,6 +28,7 @@ export default async function createPlugin(
     config: env.config,
     database: env.database,
     identity: env.identity,
+    permissions: env.permissions,
   });
 }
 ```

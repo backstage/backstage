@@ -7,6 +7,7 @@ import { Config } from '@backstage/config';
 import express from 'express';
 import { IdentityApi } from '@backstage/plugin-auth-node';
 import { Logger } from 'winston';
+import { PermissionEvaluator } from '@backstage/plugin-permission-common';
 import { PluginDatabaseManager } from '@backstage/backend-common';
 
 // @public (undocumented)
@@ -22,6 +23,8 @@ export interface RouterOptions {
   identity: IdentityApi;
   // (undocumented)
   logger: Logger;
+  // (undocumented)
+  permissions: PermissionEvaluator;
 }
 
 // (No @packageDocumentation comment for this package)
