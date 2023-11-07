@@ -278,31 +278,29 @@ export class NunjucksWorkflowRunner implements WorkflowRunner {
           return;
         }
       }
-
-      const iterations = new Array<JsonObject>();
-      if (step.each) {
-        const each = await this.render(step.each, context, renderTemplate);
-        iterations.push(
-          ...Object.keys(each).map((key: any) => {
-            return { each: { key, value: each[key] } };
-          }),
-        );
-      } else {
-        iterations.push({});
-      }
-      for (const iteration of iterations) {
+      const iterations = (
+        step.each
+          ? Object.entries(this.render(step.each, context, renderTemplate)).map(
+              ([key, value]) => ({
+                each: { key, value },
+              }),
+            )
+          : [{}]
+      ).map(i => ({
+        ...i,
         // Secrets are only passed when templating the input to actions for security reasons
-        iteration.input =
-          (step.input &&
-            this.render(
+        input: step.input
+          ? this.render(
               step.input,
-              { ...context, ...iteration, secrets: task.secrets ?? {} },
+              { ...context, ...i, ...task },
               renderTemplate,
-            )) ??
-          {};
+            )
+          : {},
+      }));
+      for (const iteration of iterations) {
         let actionId = action.id;
-        if (Object.hasOwn(iteration, 'each')) {
-          actionId += `[${(iteration.each as JsonObject).key}]`;
+        if (iteration.each) {
+          actionId += `[${iteration.each.key}]`;
         }
         if (action.schema?.input) {
           const validateResult = validateJsonSchema(
@@ -345,7 +343,7 @@ export class NunjucksWorkflowRunner implements WorkflowRunner {
           );
         }
         await action.handler({
-          input: iteration.input as JsonObject,
+          input: iteration.input,
           secrets: task.secrets ?? {},
           logger: taskLogger,
           logStream: streamLogger,
