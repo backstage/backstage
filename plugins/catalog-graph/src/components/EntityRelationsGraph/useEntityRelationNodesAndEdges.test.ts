@@ -14,6 +14,7 @@
  * limitations under the License.
  */
 import {
+  DEFAULT_NAMESPACE,
   Entity,
   RELATION_HAS_PART,
   RELATION_OWNED_BY,
@@ -25,6 +26,7 @@ import { renderHook, waitFor } from '@testing-library/react';
 import { filter, keyBy } from 'lodash';
 import { useEntityRelationGraph as useEntityRelationGraphMocked } from './useEntityRelationGraph';
 import { useEntityRelationNodesAndEdges } from './useEntityRelationNodesAndEdges';
+import { EntityNode } from './types';
 
 jest.mock('./useEntityRelationGraph');
 
@@ -107,6 +109,15 @@ const entities: { [ref: string]: Entity } = {
   },
 };
 
+function deprecatedProperties(entity: Entity): Partial<EntityNode> {
+  return {
+    kind: entity.kind,
+    name: entity.metadata.name,
+    namespace: entity.metadata.namespace || DEFAULT_NAMESPACE,
+    title: entity.metadata.title,
+  };
+}
+
 describe('useEntityRelationNodesAndEdges', () => {
   beforeEach(() => {
     useEntityRelationGraph.mockImplementation(({ filter: { kinds } }) => ({
@@ -185,24 +196,28 @@ describe('useEntityRelationNodesAndEdges', () => {
         focused: true,
         id: 'b:d/c',
         entity: entities['b:d/c'],
+        ...deprecatedProperties(entities['b:d/c']),
       },
       {
         color: 'primary',
         focused: false,
         id: 'k:d/a1',
         entity: entities['k:d/a1'],
+        ...deprecatedProperties(entities['k:d/a1']),
       },
       {
         color: 'primary',
         focused: false,
         id: 'b:d/c1',
         entity: entities['b:d/c1'],
+        ...deprecatedProperties(entities['b:d/c1']),
       },
       {
         color: 'primary',
         focused: false,
         id: 'b:d/c2',
         entity: entities['b:d/c2'],
+        ...deprecatedProperties(entities['b:d/c2']),
       },
     ]);
     expect(edges).toEqual([
@@ -250,24 +265,28 @@ describe('useEntityRelationNodesAndEdges', () => {
         focused: true,
         id: 'b:d/c',
         entity: entities['b:d/c'],
+        ...deprecatedProperties(entities['b:d/c']),
       },
       {
         color: 'primary',
         focused: false,
         id: 'k:d/a1',
         entity: entities['k:d/a1'],
+        ...deprecatedProperties(entities['k:d/a1']),
       },
       {
         color: 'primary',
         focused: false,
         id: 'b:d/c1',
         entity: entities['b:d/c1'],
+        ...deprecatedProperties(entities['b:d/c1']),
       },
       {
         color: 'primary',
         focused: false,
         id: 'b:d/c2',
         entity: entities['b:d/c2'],
+        ...deprecatedProperties(entities['b:d/c2']),
       },
     ]);
     expect(edges).toEqual([
@@ -315,24 +334,28 @@ describe('useEntityRelationNodesAndEdges', () => {
         focused: true,
         id: 'b:d/c',
         entity: entities['b:d/c'],
+        ...deprecatedProperties(entities['b:d/c']),
       },
       {
         color: 'primary',
         focused: false,
         id: 'k:d/a1',
         entity: entities['k:d/a1'],
+        ...deprecatedProperties(entities['k:d/a1']),
       },
       {
         color: 'primary',
         focused: false,
         id: 'b:d/c1',
         entity: entities['b:d/c1'],
+        ...deprecatedProperties(entities['b:d/c1']),
       },
       {
         color: 'primary',
         focused: false,
         id: 'b:d/c2',
         entity: entities['b:d/c2'],
+        ...deprecatedProperties(entities['b:d/c2']),
       },
     ]);
     expect(edges).toEqual([
@@ -410,24 +433,28 @@ describe('useEntityRelationNodesAndEdges', () => {
         focused: true,
         id: 'b:d/c',
         entity: entities['b:d/c'],
+        ...deprecatedProperties(entities['b:d/c']),
       },
       {
         color: 'primary',
         focused: false,
         id: 'k:d/a1',
         entity: entities['k:d/a1'],
+        ...deprecatedProperties(entities['k:d/a1']),
       },
       {
         color: 'primary',
         focused: false,
         id: 'b:d/c1',
         entity: entities['b:d/c1'],
+        ...deprecatedProperties(entities['b:d/c1']),
       },
       {
         color: 'primary',
         focused: false,
         id: 'b:d/c2',
         entity: entities['b:d/c2'],
+        ...deprecatedProperties(entities['b:d/c2']),
       },
     ]);
     expect(edges).toEqual([
@@ -503,24 +530,28 @@ describe('useEntityRelationNodesAndEdges', () => {
         focused: true,
         id: 'b:d/c',
         entity: entities['b:d/c'],
+        ...deprecatedProperties(entities['b:d/c']),
       },
       {
         color: 'primary',
         focused: false,
         id: 'k:d/a1',
         entity: entities['k:d/a1'],
+        ...deprecatedProperties(entities['k:d/a1']),
       },
       {
         color: 'primary',
         focused: false,
         id: 'b:d/c1',
         entity: entities['b:d/c1'],
+        ...deprecatedProperties(entities['b:d/c1']),
       },
       {
         color: 'secondary',
         focused: true,
         id: 'b:d/c2',
         entity: entities['b:d/c2'],
+        ...deprecatedProperties(entities['b:d/c2']),
       },
     ]);
     expect(edges).toEqual([
@@ -567,24 +598,28 @@ describe('useEntityRelationNodesAndEdges', () => {
         focused: true,
         id: 'b:d/c',
         entity: entities['b:d/c'],
+        ...deprecatedProperties(entities['b:d/c']),
       },
       {
         color: 'primary',
         focused: false,
         id: 'k:d/a1',
         entity: entities['k:d/a1'],
+        ...deprecatedProperties(entities['k:d/a1']),
       },
       {
         color: 'primary',
         focused: false,
         id: 'b:d/c1',
         entity: entities['b:d/c1'],
+        ...deprecatedProperties(entities['b:d/c1']),
       },
       {
         color: 'primary',
         focused: false,
         id: 'b:d/c2',
         entity: entities['b:d/c2'],
+        ...deprecatedProperties(entities['b:d/c2']),
       },
     ]);
     expect(edges).toEqual([
@@ -620,18 +655,21 @@ describe('useEntityRelationNodesAndEdges', () => {
         focused: true,
         id: 'b:d/c',
         entity: entities['b:d/c'],
+        ...deprecatedProperties(entities['b:d/c']),
       },
       {
         color: 'primary',
         focused: false,
         id: 'b:d/c1',
         entity: entities['b:d/c1'],
+        ...deprecatedProperties(entities['b:d/c1']),
       },
       {
         color: 'primary',
         focused: false,
         id: 'b:d/c2',
         entity: entities['b:d/c2'],
+        ...deprecatedProperties(entities['b:d/c2']),
       },
     ]);
     expect(edges).toEqual([

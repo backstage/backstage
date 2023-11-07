@@ -11,6 +11,7 @@ import { DependencyGraphTypes } from '@backstage/core-components';
 import { Entity } from '@backstage/catalog-model';
 import { ExternalRouteRef } from '@backstage/core-plugin-api';
 import { InfoCardVariants } from '@backstage/core-components';
+import { JsonObject } from '@backstage/types';
 import { JSX as JSX_2 } from 'react';
 import { MouseEvent as MouseEvent_2 } from 'react';
 import { MouseEventHandler } from 'react';
@@ -94,6 +95,11 @@ export type EntityNodeData = {
   focused?: boolean;
   color?: 'primary' | 'secondary' | 'default';
   onClick?: MouseEventHandler<unknown>;
+  name: string;
+  kind?: string;
+  title?: string;
+  namespace: string;
+  spec?: JsonObject;
 };
 
 // @public
