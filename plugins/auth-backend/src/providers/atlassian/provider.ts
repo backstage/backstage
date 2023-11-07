@@ -25,7 +25,7 @@ import {
 import { atlassianAuthenticator } from '@backstage/plugin-auth-backend-module-atlassian-provider';
 
 /**
- * Auth provider integration for GitLab auth
+ * Auth provider integration for Atlassian auth
  *
  * @public
  */
