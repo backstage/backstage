@@ -27,6 +27,7 @@ import {
   V1LimitRange,
   V1Pod,
   V1ReplicaSet,
+  V1ResourceQuota,
   V1Service,
   V1StatefulSet,
 } from '@kubernetes/client-node';
@@ -125,6 +126,7 @@ export type FetchResponse =
   | ConfigMapFetchResponse
   | DeploymentFetchResponse
   | LimitRangeFetchResponse
+  | ResourceQuotaFetchResponse
   | ReplicaSetsFetchResponse
   | HorizontalPodAutoscalersFetchResponse
   | JobsFetchResponse
@@ -169,6 +171,12 @@ export interface ReplicaSetsFetchResponse {
 export interface LimitRangeFetchResponse {
   type: 'limitranges';
   resources: Array<V1LimitRange>;
+}
+
+/** @public */
+export interface ResourceQuotaFetchResponse {
+  type: 'resourcequotas';
+  resources: Array<V1ResourceQuota>;
 }
 
 /** @public */

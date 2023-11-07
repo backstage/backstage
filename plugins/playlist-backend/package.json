@@ -41,7 +41,7 @@
     "@types/express": "*",
     "express": "^4.17.1",
     "express-promise-router": "^4.1.0",
-    "knex": "^2.0.0",
+    "knex": "^3.0.0",
     "node-fetch": "^2.6.7",
     "uuid": "^8.2.0",
     "winston": "^3.2.1",
