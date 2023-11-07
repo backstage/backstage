@@ -18353,11 +18353,11 @@ __metadata:
   linkType: hard
 
 "@types/compression@npm:^1.7.0, @types/compression@npm:^1.7.2":
-  version: 1.7.4
-  resolution: "@types/compression@npm:1.7.4"
+  version: 1.7.5
+  resolution: "@types/compression@npm:1.7.5"
   dependencies:
     "@types/express": "*"
-  checksum: 0994e68158ae991d1839f950c553141cf95606a2660bcedf11d68eeb7609caf21b03f256aed1ea4243e89cf8adf358d0a2920513316ea2ec6a2d3e2eacfa02c7
+  checksum: 2fc6e4376027d44a4dde304d3b7763ba3d6e229b9417f4a92738e07ae9e5f06708268db5226f5fc7de46c3b9c0c4e3576701c550432b04148778f0de0dcc15f9
   languageName: node
   linkType: hard
 
