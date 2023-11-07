@@ -30,7 +30,7 @@ import { ReportIssue } from '@backstage/plugin-techdocs-module-addons-contrib';
 +import { EntityCloudbuildContent, isCloudbuildAvailable } from '@backstage/plugin-cloudbuild';
 ```
 
-#### In your `cicdContent` const, add the following switch case
+#### In your `cicdContent` constant, add the following switch case
 
 ```diff
 // packages/app/src/components/catalog/EntityPage.tsx
