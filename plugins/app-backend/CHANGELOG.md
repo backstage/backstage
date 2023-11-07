@@ -1,5 +1,17 @@
 # @backstage/plugin-app-backend
 
+## 0.3.55-next.2
+
+### Patch Changes
+
+- [#20570](https://github.com/backstage/backstage/pull/20570) [`013611b42e`](https://github.com/backstage/backstage/commit/013611b42ed457fefa9bb85fddf416cf5e0c1f76) Thanks [@freben](https://github.com/freben)! - `knex` has been bumped to major version 3 and `better-sqlite3` to major version 9, which deprecate node 16 support.
+
+- Updated dependencies
+  - @backstage/backend-plugin-api@0.6.7-next.2
+  - @backstage/backend-common@0.19.9-next.2
+  - @backstage/plugin-app-node@0.1.7-next.2
+  - @backstage/config-loader@1.5.3-next.0
+
 ## 0.3.55-next.1
 
 ### Patch Changes

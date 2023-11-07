@@ -1,5 +1,17 @@
 # @backstage/plugin-kubernetes-cluster
 
+## 0.0.2-next.2
+
+### Patch Changes
+
+- [#20842](https://github.com/backstage/backstage/pull/20842) [`fdb5e23602`](https://github.com/backstage/backstage/commit/fdb5e2360299c5faa30f4d4236fc548b94d37446) Thanks [@benjdlambert](https://github.com/benjdlambert)! - Import `MissingAnnotationEmptyState` from `@backstage/plugin-catalog-react` to remove the cyclical dependency
+
+- Updated dependencies
+  - @backstage/plugin-kubernetes-common@0.7.1-next.1
+  - @backstage/core-components@0.13.8-next.2
+  - @backstage/plugin-catalog-react@1.9.0-next.2
+  - @backstage/plugin-kubernetes-react@0.1.1-next.2
+
 ## 0.0.2-next.1
 
 ### Patch Changes
