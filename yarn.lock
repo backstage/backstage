@@ -18318,9 +18318,9 @@ __metadata:
   linkType: hard
 
 "@types/command-exists@npm:^1.2.0":
-  version: 1.2.2
-  resolution: "@types/command-exists@npm:1.2.2"
-  checksum: 75ce30dc03c5a9b26a8c0fcbe903d5189d7470aef713c5bf73d6d284be0f5cd4d8b388f30aedf81eb5b9f9b788ccc9ed775a13e21c25837017bb2d086b1bb06e
+  version: 1.2.3
+  resolution: "@types/command-exists@npm:1.2.3"
+  checksum: c90ed5f3c36d2ed5cb390d1a2e7263daabdeb18a2e20eb71bef83b0823980ee81ca773417b4d8a50fc61ede274b96d30f9b3ab836e1ecebfba5df27677cfc5fc
   languageName: node
   linkType: hard
 
