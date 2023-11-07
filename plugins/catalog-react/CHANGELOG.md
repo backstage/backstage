@@ -1,5 +1,18 @@
 # @backstage/plugin-catalog-react
 
+## 1.9.0-next.2
+
+### Patch Changes
+
+- [#20962](https://github.com/backstage/backstage/pull/20962) [`000dcd01af`](https://github.com/backstage/backstage/commit/000dcd01afaa4a06b67da20c3590a7753af4f532) Thanks [@Rugvip](https://github.com/Rugvip)! - Removed unnecessary `@backstage/integration` dependency, replaced by `@backstage/integration-react`.
+
+- [#20842](https://github.com/backstage/backstage/pull/20842) [`6c357184e2`](https://github.com/backstage/backstage/commit/6c357184e27d86796fac6005ec6a597f994aa19d) Thanks [@benjdlambert](https://github.com/benjdlambert)! - Export `MissingAnnotationEmptyState` from `@backstage/plugin-catalog-react`
+
+- Updated dependencies
+  - @backstage/core-components@0.13.8-next.2
+  - @backstage/frontend-plugin-api@0.3.0-next.2
+  - @backstage/integration-react@1.1.21-next.1
+
 ## 1.9.0-next.1
 
 ### Patch Changes
