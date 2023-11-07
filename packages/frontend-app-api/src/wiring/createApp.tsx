@@ -14,66 +14,46 @@
  * limitations under the License.
  */
 
-import { Config, ConfigReader } from '@backstage/config';
-import { SidebarItem } from '@backstage/core-components';
+import React, { JSX } from 'react';
+import { ConfigReader, Config } from '@backstage/config';
+import {
+  AppTree,
+  appTreeApiRef,
+  BackstagePlugin,
+  coreExtensionData,
+  ExtensionDataRef,
+  ExtensionOverrides,
+  RouteRef,
+  useRouteRef,
+} from '@backstage/frontend-plugin-api';
+import { Core } from '../extensions/Core';
+import { CoreRoutes } from '../extensions/CoreRoutes';
+import { CoreLayout } from '../extensions/CoreLayout';
+import { CoreNav } from '../extensions/CoreNav';
 import {
   AnyApiFactory,
   ApiHolder,
   AppComponents,
   AppContext,
+  appThemeApiRef,
+  ConfigApi,
+  configApiRef,
+  IconComponent,
   BackstagePlugin as LegacyBackstagePlugin,
+  featureFlagsApiRef,
   attachComponentData,
+  identityApiRef,
+  AppTheme,
 } from '@backstage/core-plugin-api';
-import {
-  appLanguageApiRef,
-  translationApiRef,
-} from '@backstage/core-plugin-api/alpha';
+import { getAvailableFeatures } from './discovery';
 import {
   ApiFactoryRegistry,
   ApiProvider,
   ApiResolver,
-  AppNode,
-  AppTheme,
-  AppTree,
-  BackstagePlugin,
-  ConfigApi,
-  ExtensionDataRef,
-  ExtensionOverrides,
-  IconComponent,
-  RouteRef,
-  appThemeApiRef,
-  appTreeApiRef,
-  configApiRef,
-  coreExtensionData,
-  featureFlagsApiRef,
-  identityApiRef,
-  useRouteRef,
-} from '@backstage/frontend-plugin-api';
-import { getOrCreateGlobalSingleton } from '@backstage/version-bridge';
-import { JSX, default as React } from 'react';
-import { BrowserRouter, Route } from 'react-router-dom';
-import { Core } from '../extensions/Core';
-import { CoreLayout } from '../extensions/CoreLayout';
-import { CoreNav } from '../extensions/CoreNav';
-import { CoreRoutes } from '../extensions/CoreRoutes';
-import { DarkTheme, LightTheme } from '../extensions/themes';
-import { AppRouteBinder } from '../routing';
-import { RoutingProvider } from '../routing/RoutingProvider';
-import { collectRouteIds } from '../routing/collectRouteIds';
-import { extractRouteInfoFromAppNode } from '../routing/extractRouteInfoFromAppNode';
-import { resolveRouteBindings } from '../routing/resolveRouteBindings';
-import { createAppTree } from '../tree';
-import { getAvailableFeatures } from './discovery';
+  AppThemeSelector,
+} from '@backstage/core-app-api';
 
-// eslint-disable-next-line @backstage/no-relative-monorepo-imports
-import {
-  apis as defaultApis,
-  components as defaultComponents,
-  icons as defaultIcons,
-} from '../../../app-defaults/src/defaults';
 // TODO: Get rid of all of these
-// eslint-disable-next-line @backstage/no-relative-monorepo-imports
-import { AppThemeSelector } from '../../../core-app-api/src/apis/implementations/AppThemeApi';
 // eslint-disable-next-line @backstage/no-relative-monorepo-imports
 import { AppThemeProvider } from '../../../core-app-api/src/app/AppThemeProvider';
 // eslint-disable-next-line @backstage/no-relative-monorepo-imports
@@ -91,6 +71,26 @@ import { AppLanguageSelector } from '../../../core-app-api/src/apis/implementati
 // eslint-disable-next-line @backstage/no-relative-monorepo-imports
 import { I18nextTranslationApi } from '../../../core-app-api/src/apis/implementations/TranslationApi/I18nextTranslationApi';
 // eslint-disable-next-line @backstage/no-relative-monorepo-imports
+import {
+  apis as defaultApis,
+  components as defaultComponents,
+  icons as defaultIcons,
+} from '../../../app-defaults/src/defaults';
+import { BrowserRouter, Route } from 'react-router-dom';
+import { SidebarItem } from '@backstage/core-components';
+import { DarkTheme, LightTheme } from '../extensions/themes';
+import { extractRouteInfoFromAppNode } from '../routing/extractRouteInfoFromAppNode';
+import { getOrCreateGlobalSingleton } from '@backstage/version-bridge';
+import {
+  appLanguageApiRef,
+  translationApiRef,
+} from '@backstage/core-plugin-api/alpha';
+import { AppRouteBinder } from '../routing';
+import { RoutingProvider } from '../routing/RoutingProvider';
+import { resolveRouteBindings } from '../routing/resolveRouteBindings';
+import { collectRouteIds } from '../routing/collectRouteIds';
+import { createAppTree } from '../tree';
+import { AppNode } from '@backstage/frontend-plugin-api';
 
 const builtinExtensions = [
   Core,
