@@ -18986,11 +18986,11 @@ __metadata:
   linkType: hard
 
 "@types/cross-spawn@npm:^6.0.2":
-  version: 6.0.4
-  resolution: "@types/cross-spawn@npm:6.0.4"
+  version: 6.0.5
+  resolution: "@types/cross-spawn@npm:6.0.5"
   dependencies:
     "@types/node": "*"
-  checksum: 45624a955c064dda167f8aae5560918307110e3a1221989b5957c52842208c2ee29e099c9120615b1dde66afe7a7c3db627c754e328f574a0ae313644e43ceef
+  checksum: 9b9cf332e49319903df3abeeb91882730f26ef80eed2e5d5ab1feb432f3f0804f72a07296c305daf5a310e771d5e3bbfc5395f993ba17e35d399bf6996860771
   languageName: node
   linkType: hard
 
