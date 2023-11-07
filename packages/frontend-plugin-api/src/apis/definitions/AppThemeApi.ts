@@ -14,21 +14,9 @@
  * limitations under the License.
  */
 
-// This folder contains definitions for all core APIs.
-//
-// Plugins should rely on these APIs for functionality as much as possible.
-//
-// If you think some API definition is missing, please open an Issue or send a PR!
-
-export * from './auth';
-
-export * from './AlertApi';
-export * from './AppThemeApi';
-export * from './ConfigApi';
-export * from './DiscoveryApi';
-export * from './ErrorApi';
-export * from './FeatureFlagsApi';
-export * from './FetchApi';
-export * from './IdentityApi';
-export * from './OAuthRequestApi';
-export * from './StorageApi';
+// eslint-disable-next-line @backstage/no-relative-monorepo-imports
+export {
+  type AppTheme,
+  type AppThemeApi,
+  appThemeApiRef,
+} from '../../../../core-plugin-api';

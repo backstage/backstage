@@ -13,22 +13,28 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import { ApiRef, createApiRef } from '../system';
-import { Config } from '@backstage/config';
 
-/**
- * The Config API is used to provide a mechanism to access the
- * runtime configuration of the system.
- *
- * @public
- */
-export type ConfigApi = Config;
-
-/**
- * The {@link ApiRef} of {@link ConfigApi}.
- *
- * @public
- */
-export const configApiRef: ApiRef<ConfigApi> = createApiRef({
-  id: 'core.config',
-});
+// eslint-disable-next-line @backstage/no-relative-monorepo-imports
+export {
+  type BackstageIdentityApi,
+  type BackstageIdentityResponse,
+  type BackstageUserIdentity,
+  type AuthProviderInfo,
+  type AuthRequestOptions,
+  type OAuthScope,
+  type OAuthApi,
+  type OpenIdConnectApi,
+  type ProfileInfoApi,
+  type ProfileInfo,
+  type SessionApi,
+  SessionState,
+  atlassianAuthApiRef,
+  bitbucketAuthApiRef,
+  bitbucketServerAuthApiRef,
+  githubAuthApiRef,
+  gitlabAuthApiRef,
+  googleAuthApiRef,
+  oktaAuthApiRef,
+  microsoftAuthApiRef,
+  oneloginAuthApiRef,
+} from '../../../../core-plugin-api';

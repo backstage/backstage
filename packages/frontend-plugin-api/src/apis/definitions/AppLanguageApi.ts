@@ -14,23 +14,8 @@
  * limitations under the License.
  */
 
-import { ApiRef, createApiRef } from '@backstage/core-plugin-api';
-import { Observable } from '@backstage/types';
-
-/** @alpha */
-export type AppLanguageApi = {
-  getAvailableLanguages(): { languages: string[] };
-
-  setLanguage(language?: string): void;
-
-  getLanguage(): { language: string };
-
-  language$(): Observable<{ language: string }>;
-};
-
-/**
- * @alpha
- */
-export const appLanguageApiRef: ApiRef<AppLanguageApi> = createApiRef({
-  id: 'core.applanguage',
-});
+// eslint-disable-next-line @backstage/no-relative-monorepo-imports
+export {
+  type AppLanguageApi,
+  appLanguageApiRef,
+} from '../../../../core-plugin-api/src/alpha';
