@@ -210,6 +210,38 @@ export function makeFieldSchemaFromZod<
     : never
 >;
 
+// @public (undocumented)
+export const MultiEntityPickerFieldSchema: FieldSchema<
+  string[],
+  {
+    defaultKind?: string | undefined;
+    allowArbitraryValues?: boolean | undefined;
+    defaultNamespace?: string | false | undefined;
+    catalogFilter?:
+      | Record<
+          string,
+          | string
+          | string[]
+          | {
+              exists?: boolean | undefined;
+            }
+        >
+      | Record<
+          string,
+          | string
+          | string[]
+          | {
+              exists?: boolean | undefined;
+            }
+        >[]
+      | undefined;
+  }
+>;
+
+// @public
+export type MultiEntityPickerUiOptions =
+  typeof MultiEntityPickerFieldSchema.uiOptionsType;
+
 // @public
 export const MyGroupsPickerFieldExtension: FieldExtensionComponent_2<
   string,
