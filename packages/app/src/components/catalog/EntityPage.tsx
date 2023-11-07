@@ -186,6 +186,11 @@ import {
   EntityLinguistCard,
 } from '@backstage/plugin-linguist';
 
+import {
+  HcpConsulPluginPage,
+  EntityServiceInstancesTable,
+} from '@backstage/plugin-hcp-consul';
+
 const customEntityFilterKind = ['Component', 'API', 'System'];
 
 const EntityLayoutWrapper = (props: { children?: ReactNode }) => {
@@ -520,6 +525,10 @@ const serviceEntityPage = (
 
     <EntityLayout.Route path="/docs" title="Docs">
       {techdocsContent}
+    </EntityLayout.Route>
+
+    <EntityLayout.Route path="/hcp-consul-instaces" title="Instances">
+      <EntityServiceInstancesTable />
     </EntityLayout.Route>
 
     <EntityLayout.Route if={isAdrAvailable} path="/adrs" title="ADRS">
@@ -861,6 +870,9 @@ const systemPage = (
         ]}
         unidirectional={false}
       />
+    </EntityLayout.Route>
+    <EntityLayout.Route path="/your-custom-route" title="CustomTitle">
+      <HcpConsulPluginPage />
     </EntityLayout.Route>
     <EntityLayout.Route path="/feedback" title="Feedback">
       <EntityFeedbackResponseContent />

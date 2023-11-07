@@ -43,6 +43,7 @@ import auth from './plugins/auth';
 import azureDevOps from './plugins/azure-devops';
 import catalog from './plugins/catalog';
 import codeCoverage from './plugins/codecoverage';
+import consul from './plugins/hcp-consul-backend';
 import entityFeedback from './plugins/entityFeedback';
 import events from './plugins/events';
 import explore from './plugins/explore';
@@ -172,6 +173,7 @@ async function main() {
   const linguistEnv = useHotMemoize(module, () => createEnv('linguist'));
   const devToolsEnv = useHotMemoize(module, () => createEnv('devtools'));
   const nomadEnv = useHotMemoize(module, () => createEnv('nomad'));
+  const consulBackendEnv = useHotMemoize(module, () => createEnv('consul'));
 
   const apiRouter = Router();
   apiRouter.use('/catalog', await catalog(catalogEnv));
@@ -198,6 +200,7 @@ async function main() {
   apiRouter.use('/linguist', await linguist(linguistEnv));
   apiRouter.use('/devtools', await devTools(devToolsEnv));
   apiRouter.use('/nomad', await nomad(nomadEnv));
+  apiRouter.use('/hcp-consul-backend', await consul(consulBackendEnv));
   apiRouter.use(notFoundHandler());
 
   await lighthouse(lighthouseEnv);
