@@ -18875,11 +18875,11 @@ __metadata:
   linkType: hard
 
 "@types/color@npm:^3.0.1":
-  version: 3.0.5
-  resolution: "@types/color@npm:3.0.5"
+  version: 3.0.6
+  resolution: "@types/color@npm:3.0.6"
   dependencies:
     "@types/color-convert": "*"
-  checksum: 82cce7cb132b5c0898dd69b92a4663e34ad8f19db6a009bef7ef79d4840ddb4d5f7e793e2e64e3b4a60da92dc2ae33d1aa498981d0fcf0562917c9550603a99d
+  checksum: 0f16dcf4e202896d5425019c44a1f99713fca998052ab2fd836cdd38048398a0caf5b79a2efe560e41fca4b9401e8d8f6f02ed541cfea30cca3a8cb1b50b80f7
   languageName: node
   linkType: hard
 
