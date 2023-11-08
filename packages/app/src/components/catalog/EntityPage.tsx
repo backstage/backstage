@@ -186,10 +186,7 @@ import {
   EntityLinguistCard,
 } from '@backstage/plugin-linguist';
 
-import {
-  HcpConsulPluginPage,
-  EntityServiceInstancesTable,
-} from '@backstage/plugin-hcp-consul';
+import { EntityServiceInstancesTable } from '@backstage/plugin-hcp-consul';
 
 const customEntityFilterKind = ['Component', 'API', 'System'];
 
@@ -870,9 +867,6 @@ const systemPage = (
         ]}
         unidirectional={false}
       />
-    </EntityLayout.Route>
-    <EntityLayout.Route path="/your-custom-route" title="CustomTitle">
-      <HcpConsulPluginPage />
     </EntityLayout.Route>
     <EntityLayout.Route path="/feedback" title="Feedback">
       <EntityFeedbackResponseContent />
