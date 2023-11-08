@@ -186,7 +186,10 @@ import {
   EntityLinguistCard,
 } from '@backstage/plugin-linguist';
 
-import { EntityServiceInstancesTable } from '@backstage/plugin-hcp-consul';
+import {
+  EntityServiceInstancesTable,
+  isHcpConsulServiceAvailable,
+} from '@backstage/plugin-hcp-consul';
 
 const customEntityFilterKind = ['Component', 'API', 'System'];
 
@@ -524,7 +527,11 @@ const serviceEntityPage = (
       {techdocsContent}
     </EntityLayout.Route>
 
-    <EntityLayout.Route path="/hcp-consul-instaces" title="Instances">
+    <EntityLayout.Route
+      if={isHcpConsulServiceAvailable}
+      path="/hcp-consul-instaces"
+      title="Instances"
+    >
       <EntityServiceInstancesTable />
     </EntityLayout.Route>
 

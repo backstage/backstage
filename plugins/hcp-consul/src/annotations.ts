@@ -31,8 +31,6 @@ export const CONSUL_CLUSTER_RESOUCR_NAME_ANNOTATION =
 
 /** @public */
 export const isHcpConsulServiceAvailable = (entity: Entity) =>
-  Boolean(entity.metadata.annotations?.[CONSUL_NAMESPACE_ANNOTATION]) &&
-  Boolean(entity.metadata.annotations?.[CONSUL_PARTITION_ANNOTATION]) &&
   Boolean(entity.metadata.annotations?.[CONSUL_NAME_ANNOTATION]) &&
   Boolean(
     entity.metadata.annotations?.[CONSUL_CLUSTER_RESOUCR_NAME_ANNOTATION],
