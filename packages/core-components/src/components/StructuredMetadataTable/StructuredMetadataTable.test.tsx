@@ -115,4 +115,60 @@ describe('<StructuredMetadataTable />', () => {
       }
     });
   });
+
+  describe('Title formatting', () => {
+    const metadata = {
+      testA: 'stuff',
+      testB: { testC: 'stuff' },
+      testD: [{ testE: 'stuff' }],
+    };
+
+    it('should make keys human readable', async () => {
+      const rendered = render(<StructuredMetadataTable metadata={metadata} />);
+      expect(rendered.queryByText(/^Test A/)).toBeInTheDocument();
+      expect(rendered.queryByText(/^Test B/)).toBeInTheDocument();
+      expect(rendered.queryByText(/^Test C/)).toBeInTheDocument();
+      expect(rendered.queryByText(/^Test D/)).toBeInTheDocument();
+      expect(rendered.queryByText(/^Test E/)).toBeInTheDocument();
+    });
+
+    it('should be possible to disable it', async () => {
+      const rendered = render(
+        <StructuredMetadataTable
+          metadata={metadata}
+          options={{ titleFormat: key => key }}
+        />,
+      );
+      expect(rendered.queryByText(/^testA/)).toBeInTheDocument();
+      expect(rendered.queryByText(/^testB/)).toBeInTheDocument();
+      expect(rendered.queryByText(/^testC/)).toBeInTheDocument();
+      expect(rendered.queryByText(/^testD/)).toBeInTheDocument();
+      expect(rendered.queryByText(/^testE/)).toBeInTheDocument();
+    });
+
+    it('should be customizable', async () => {
+      const spongeBobCase = (key: string) =>
+        key
+          .split('')
+          .map((letter, index) => {
+            if (index % 2 === 0) {
+              return letter.toLocaleLowerCase('en-US');
+            }
+            return letter.toLocaleUpperCase('en-US');
+          })
+          .join('');
+
+      const rendered = render(
+        <StructuredMetadataTable
+          metadata={metadata}
+          options={{ titleFormat: spongeBobCase }}
+        />,
+      );
+      expect(rendered.queryByText(/^tEsTa/)).toBeInTheDocument();
+      expect(rendered.queryByText(/^tEsTb/)).toBeInTheDocument();
+      expect(rendered.queryByText(/^tEsTc/)).toBeInTheDocument();
+      expect(rendered.queryByText(/^tEsTd/)).toBeInTheDocument();
+      expect(rendered.queryByText(/^tEsTe/)).toBeInTheDocument();
+    });
+  });
 });

@@ -71,3 +71,19 @@ export const NotDenseTable = () => (
     </InfoCard>
   </Wrapper>
 );
+
+export const WithoutKeyFormatting = () => (
+  <Wrapper>
+    <InfoCard
+      title="Structured Metadata Table without key formatting"
+      subheader="Wrapped in InfoCard"
+    >
+      <div style={cardContentStyle}>
+        <StructuredMetadataTable
+          metadata={metadata}
+          options={{ titleFormat: key => key }}
+        />
+      </div>
+    </InfoCard>
+  </Wrapper>
+);
