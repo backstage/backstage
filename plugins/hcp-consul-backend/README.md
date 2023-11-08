@@ -1,14 +1,50 @@
-# hcp-consul-backend
+# @backstage/plugin-hcp-consul-backend
 
-Welcome to the hcp-consul-backend backend plugin!
+A backend for HCP Consul, this plugin exposes a services with routes that are used by the `@backstage/plugin-hcp-consul` plugin to query HCP Consul overview and service instances using using HCP Consul Central public APIs.
 
-_This plugin was created through the Backstage CLI_
+## Set Up
 
-## Getting started
+1. Install the plugin using:
 
-Your plugin has been added to the example app in this repository, meaning you'll be able to access it by running `yarn
-start` in the root directory, and then navigating to [/hcp-consul-backend](http://localhost:3000/hcp-consul-backend).
+```bash
+# From your Backstage root directory
+yarn add --cwd packages/backend @backstage/plugin-hcp-consul-backend
+```
 
-You can also serve the plugin in isolation by running `yarn start` in the plugin directory.
-This method of serving the plugin provides quicker iteration speed and a faster startup and hot reloads.
-It is only meant for local development, and the setup for it can be found inside the [/dev](/dev) directory.
+2. Create a `hcp-consul-backend.ts` file inside `packages/backend/src/plugins/`:
+
+```typescript
+import { createRouter } from '@backstage/plugin-hcp-consul-backend';
+import { Router } from 'express';
+import { PluginEnvironment } from '../types';
+
+export default async function createPlugin(
+  env: PluginEnvironment,
+): Promise<Router> {
+  return await createRouter(env);
+}
+```
+
+3. Modify your `packages/backend/src/index.ts` to include:
+
+```diff
+ ...
+
+ import { Config } from '@backstage/config';
+ import app from './plugins/app';
++import consul from './plugins/hcp-consul-backend';
+ ...
+
+ async function main() {
+   ...
+
+   const authEnv = useHotMemoize(module, () => createEnv('auth'));
++  const consulBackendEnv = useHotMemoize(module, () => createEnv('consul'));
+   ...
+
+   const apiRouter = Router();
+   apiRouter.use('/catalog', await catalog(catalogEnv));
++  apiRouter.use('/hcp-consul-backend', await consul(consulBackendEnv));
+```
+
+Note: for this backend to work, the `consul` configuration described in the README of `@backstage/plugin-hcp-consul` must be implemented.
