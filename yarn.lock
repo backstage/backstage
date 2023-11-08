@@ -19046,9 +19046,9 @@ __metadata:
   linkType: hard
 
 "@types/libsodium-wrappers@npm:^0.7.10":
-  version: 0.7.12
-  resolution: "@types/libsodium-wrappers@npm:0.7.12"
-  checksum: 8f25b4ffe6b60c36f3c59b3dea2e952b8790c9b8375ee5235e6d294c1519a578b7882d773f168005eb0f3fdb4f11e06ba27b30b89d2c3b8be3f985c7eedd0491
+  version: 0.7.13
+  resolution: "@types/libsodium-wrappers@npm:0.7.13"
+  checksum: 94d608bed8ccd364754c3a7bf5d4c770b229efa33f0c475061b1b82bb8d5da8d57a72df0b8876b887077edbb6ff9594b7a1183029de4d1ad679821d1013f3db9
   languageName: node
   linkType: hard
 
