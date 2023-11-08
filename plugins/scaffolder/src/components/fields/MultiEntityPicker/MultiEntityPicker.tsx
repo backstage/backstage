@@ -133,7 +133,7 @@ export const MultiEntityPicker = (props: MultiEntityPickerProps) => {
 
   useEffect(() => {
     if (entities?.length === 1) {
-      onChange(stringifyEntityRef(entities[0]));
+      onChange([stringifyEntityRef(entities[0])]);
     }
   }, [entities, onChange]);
 
