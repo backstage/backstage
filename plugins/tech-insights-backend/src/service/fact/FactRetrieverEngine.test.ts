@@ -171,7 +171,7 @@ describe('FactRetrieverEngine', () => {
 
       engine = await createEngine(
         databaseId,
-        () => {},
+        () => { },
         schemaAssertionCallback,
       );
       expect(schemaAssertionCallback).toHaveBeenCalled();
@@ -209,7 +209,7 @@ describe('FactRetrieverEngine', () => {
         engine = await createEngine(
           databaseId,
           insertCallback,
-          () => {},
+          () => { },
           undefined,
           { ...testFactRetriever, handler },
         );
@@ -232,6 +232,95 @@ describe('FactRetrieverEngine', () => {
       } finally {
         jest.useRealTimers();
       }
+    },
+  );
+
+  it.each(databases.eachSupportedId())(
+    'Should recalculate facts for components for all available FactRetrievers when factRetrieverIds not specified',
+    async databaseId => {
+
+      const insert = jest.fn()
+      const handler = jest.fn();
+      engine = await createEngine(
+        databaseId,
+        insert,
+        () => { },
+        undefined,
+        { ...testFactRetriever, handler },
+      );
+
+      await engine.recalculateFactsForComponent({
+        kind: "component",
+        name: "a",
+        namespace: "a",
+        factRetrieverIds: undefined
+      })
+
+      expect(insert).toHaveBeenCalledWith(
+        {
+          "facts": undefined,
+          "id": "test_factretriever",
+          "lifecycle": undefined
+        }
+      )
+    },
+  );
+
+  it.each(databases.eachSupportedId())(
+    'Should recalculate facts for components for specific FactRetrievers when factRetrieverIds is specified',
+    async databaseId => {
+
+      const insert = jest.fn()
+      const handler = jest.fn();
+      engine = await createEngine(
+        databaseId,
+        insert,
+        () => { },
+        undefined,
+        { ...testFactRetriever, handler },
+      );
+
+      await engine.recalculateFactsForComponent({
+        kind: "component",
+        name: "a",
+        namespace: "a",
+        factRetrieverIds: [
+          "test_factretriever"
+        ]
+      })
+
+      expect(insert).toHaveBeenCalledWith(
+        {
+          "facts": undefined,
+          "id": "test_factretriever",
+          "lifecycle": undefined
+        }
+      )
+    },
+  );
+
+  it.each(databases.eachSupportedId())(
+    'Should not recalculate facts for components if factRetrieverId does not exist',
+    async databaseId => {
+
+      const insert = jest.fn()
+      const handler = jest.fn();
+      engine = await createEngine(
+        databaseId,
+        insert,
+        () => { },
+        undefined,
+        { ...testFactRetriever, handler },
+      );
+
+      await engine.recalculateFactsForComponent({
+        kind: "component",
+        name: "a",
+        namespace: "a",
+        factRetrieverIds: [""] // this factRetriever does not exist so no factRetrievers should be called
+      })
+
+      expect(insert).not.toHaveBeenCalled()
     },
   );
 });

@@ -29,6 +29,7 @@ import { TechInsightsStore } from '@backstage/plugin-tech-insights-node';
 import { DateTime } from 'luxon';
 import { Knex } from 'knex';
 import { TaskScheduler } from '@backstage/backend-tasks';
+import { FactRetrieverEngine } from './fact/FactRetrieverEngine';
 
 describe('Tech Insights router tests', () => {
   let app: express.Express;
@@ -45,6 +46,11 @@ describe('Tech Insights router tests', () => {
     } as unknown as TechInsightsStore,
   };
 
+  const mockFactRetrieverEngine = {
+    recalculateFactsForComponent: jest.fn()
+  } as unknown as FactRetrieverEngine
+
+
   afterEach(() => {
     jest.resetAllMocks();
   });
@@ -54,7 +60,7 @@ describe('Tech Insights router tests', () => {
       getClient: () => {
         return Promise.resolve({
           migrate: {
-            latest: () => {},
+            latest: () => { },
           },
         }) as unknown as Promise<Knex>;
       },
@@ -82,6 +88,7 @@ describe('Tech Insights router tests', () => {
       logger: getVoidLogger(),
       config: ConfigReader.fromConfigs([]),
       ...techInsightsContext,
+      factRetrieverEngine: mockFactRetrieverEngine,
       persistenceContext: mockPersistenceContext,
     });
 
@@ -177,4 +184,30 @@ describe('Tech Insights router tests', () => {
       );
     });
   });
+
+  describe('/facts/:namespace/:kind/:name', () => {
+    it('should be able to parse factRetrieverIds from request body', async () => {
+      await request(app)
+        .post('/facts/namespace/kind/name')
+        .send({ factRetrieverIds: ['a'] });
+
+      expect(mockFactRetrieverEngine.recalculateFactsForComponent).toHaveBeenCalledWith({
+        kind: 'kind',
+        name: 'name',
+        namespace: 'namespace',
+        factRetrieverIds: ['a']
+      })
+    })
+    it('should be able to trigger fact retrieval for all factretrievers', async () => {
+      await request(app)
+        .post('/facts/namespace/kind/name')
+
+      expect(mockFactRetrieverEngine.recalculateFactsForComponent).toHaveBeenCalledWith({
+        kind: 'kind',
+        name: 'name',
+        namespace: 'namespace',
+        factRetrieverIds: undefined
+      })
+    })
+  })
 });
