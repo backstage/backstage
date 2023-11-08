@@ -40,11 +40,21 @@ import Edit from '@material-ui/icons/Edit';
 import OpenInNew from '@material-ui/icons/OpenInNew';
 import Star from '@material-ui/icons/Star';
 import StarBorder from '@material-ui/icons/StarBorder';
-import { capitalize } from 'lodash';
+import { capitalize, isFunction } from 'lodash';
 import React, { ReactNode, useMemo } from 'react';
 import { columnFactories } from './columns';
 import { CatalogTableRow } from './types';
 import pluralize from 'pluralize';
+
+/**
+ * Typed columns function to dynamically render columns based on entities and chosen kind.
+ *
+ * @public
+ */
+export type ColumnsFunc = (
+  kind: string | undefined,
+  entities: Entity[],
+) => TableColumn<CatalogTableRow>[];
 
 /**
  * Props for {@link CatalogTable}.
@@ -52,7 +62,7 @@ import pluralize from 'pluralize';
  * @public
  */
 export interface CatalogTableProps {
-  columns?: TableColumn<CatalogTableRow>[];
+  columns?: TableColumn<CatalogTableRow>[] | ColumnsFunc;
   actions?: TableProps<CatalogTableRow>['actions'];
   tableOptions?: TableProps<CatalogTableRow>['options'];
   emptyContent?: ReactNode;
@@ -120,6 +130,12 @@ export const CatalogTable = (props: CatalogTableProps) => {
       }
     }
   }, [filters.kind?.value, entities]);
+
+  const overrideColumns = useMemo(() => {
+    return isFunction(columns)
+      ? columns(filters.kind?.value, entities)
+      : columns;
+  }, [columns, filters.kind?.value, entities]);
 
   const showTypeColumn = filters.type === undefined;
   // TODO(timbonicus): remove the title from the CatalogTable once using EntitySearchBar
@@ -227,7 +243,9 @@ export const CatalogTable = (props: CatalogTableProps) => {
     };
   });
 
-  const typeColumn = (columns || defaultColumns).find(c => c.title === 'Type');
+  const typeColumn = (overrideColumns || defaultColumns).find(
+    c => c.title === 'Type',
+  );
   if (typeColumn) {
     typeColumn.hidden = !showTypeColumn;
   }
@@ -241,7 +259,7 @@ export const CatalogTable = (props: CatalogTableProps) => {
   return (
     <Table<CatalogTableRow>
       isLoading={loading}
-      columns={columns || defaultColumns}
+      columns={overrideColumns || defaultColumns}
       options={{
         paging: showPagination,
         pageSize: 20,
