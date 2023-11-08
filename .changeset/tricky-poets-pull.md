@@ -3,4 +3,4 @@
 '@backstage/plugin-hcp-consul': minor
 ---
 
-Initialize HCP Consul plugin with frontend and backend. It lists clusters, services, intances etc
+Initialize HCP Consul plugin with frontend and backend. It lists clusters, services, instances etc

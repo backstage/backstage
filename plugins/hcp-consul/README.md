@@ -1,6 +1,6 @@
 # hcp-consul
 
-This is a frontend plugin for viewing hcp consul overview and service instances of a services.
+This is a frontend plugin for viewing Hashicorp Cloud Platform(HCP) consul overview and service instances of a services.
 This plugin has a corresponding backend plugin required to call the HCP consul's API: @backstage/plugin-hcp-consul-backend.
 
 ## Introduction
