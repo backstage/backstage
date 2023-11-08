@@ -47,9 +47,8 @@ describe('Tech Insights router tests', () => {
   };
 
   const mockFactRetrieverEngine = {
-    recalculateFactsForComponent: jest.fn()
-  } as unknown as FactRetrieverEngine
-
+    recalculateFactsForComponent: jest.fn(),
+  } as unknown as FactRetrieverEngine;
 
   afterEach(() => {
     jest.resetAllMocks();
@@ -60,7 +59,7 @@ describe('Tech Insights router tests', () => {
       getClient: () => {
         return Promise.resolve({
           migrate: {
-            latest: () => { },
+            latest: () => {},
           },
         }) as unknown as Promise<Knex>;
       },
@@ -191,23 +190,26 @@ describe('Tech Insights router tests', () => {
         .post('/facts/namespace/kind/name')
         .send({ factRetrieverIds: ['a'] });
 
-      expect(mockFactRetrieverEngine.recalculateFactsForComponent).toHaveBeenCalledWith({
+      expect(
+        mockFactRetrieverEngine.recalculateFactsForComponent,
+      ).toHaveBeenCalledWith({
         kind: 'kind',
         name: 'name',
         namespace: 'namespace',
-        factRetrieverIds: ['a']
-      })
-    })
+        factRetrieverIds: ['a'],
+      });
+    });
     it('should be able to trigger fact retrieval for all factretrievers', async () => {
-      await request(app)
-        .post('/facts/namespace/kind/name')
+      await request(app).post('/facts/namespace/kind/name');
 
-      expect(mockFactRetrieverEngine.recalculateFactsForComponent).toHaveBeenCalledWith({
+      expect(
+        mockFactRetrieverEngine.recalculateFactsForComponent,
+      ).toHaveBeenCalledWith({
         kind: 'kind',
         name: 'name',
         namespace: 'namespace',
-        factRetrieverIds: undefined
-      })
-    })
-  })
+        factRetrieverIds: undefined,
+      });
+    });
+  });
 });
