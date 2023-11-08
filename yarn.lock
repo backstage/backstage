@@ -19155,11 +19155,11 @@ __metadata:
   linkType: hard
 
 "@types/mock-fs@npm:^4.10.0, @types/mock-fs@npm:^4.13.0":
-  version: 4.13.3
-  resolution: "@types/mock-fs@npm:4.13.3"
+  version: 4.13.4
+  resolution: "@types/mock-fs@npm:4.13.4"
   dependencies:
     "@types/node": "*"
-  checksum: 17b34bcec0348d2643b1945871d539f4bf42278a835baf46afbf9e19bcf40a91fec89047c1038b61bec952cb8e614406e79ea3ed22d943caf538a088a8b1b16c
+  checksum: 9f886d67186da2e5cdabc32835c49ede9749146768e22c7f0f2548587e5201235d3726adef917fa6efbb9b73ad51278858a5d34e7cdc0a4b413c8396b37c350d
   languageName: node
   linkType: hard
 
