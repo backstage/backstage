@@ -135,7 +135,7 @@ exports.up = async function up(knex) {
       await knex.schema.createTable('search', table => {
         table.comment('Flattened key-values from the entities, for filtering');
         table
-          .increments('id', { primaryKey: true })
+          .bigIncrements('id', { primaryKey: true })
           .comment('Primary key to distinguish unique lines from each other');
         table
           .string('entity_id')
@@ -166,7 +166,7 @@ exports.up = async function up(knex) {
     } else {
       await knex.schema.alterTable('search', table => {
         table
-          .increments('id', { primaryKey: true })
+          .bigIncrements('id', { primaryKey: true })
           .comment('Auto-generated ID of the location');
       });
     }

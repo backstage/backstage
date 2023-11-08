@@ -42,7 +42,7 @@ exports.up = async function up(knex) {
         'A cache of static assets that where previously deployed and may still be lazy-loaded by clients',
       );
       table
-        .increments('id', { primaryKey: true })
+        .bigIncrements('id', { primaryKey: true })
         .comment('Primary key to distinguish unique lines from each other');
       table.text('path').unique().notNullable().comment('The path of the file');
       table
@@ -72,7 +72,7 @@ exports.up = async function up(knex) {
             return;
           }
           table
-            .increments('id', { primaryKey: true })
+            .bigIncrements('id', { primaryKey: true })
             .comment('Primary key to distinguish unique lines from each other');
         });
       await knex.schema

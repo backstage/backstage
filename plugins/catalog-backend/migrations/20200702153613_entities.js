@@ -168,7 +168,7 @@ exports.down = async function down(knex) {
     .createTable('entities', table => {
       table.comment('All entities currently stored in the catalog');
       table
-        .increments('id', { primaryKey: true })
+        .bigIncrements('id', { primaryKey: true })
         .comment('Primary key to distinguish unique lines from each other');
       table
         .uuid('location_id')
