@@ -484,5 +484,4 @@ consul:
   clientID: 
   clientSecret: 
   organizationID: 
-  projectID: 
-  addr: http://localhost:7007
+  projectID:

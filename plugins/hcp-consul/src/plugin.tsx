@@ -41,7 +41,7 @@ export const hcpConsulPlugin = createPlugin({
 });
 
 type HcpConsulPluginPageProps = {
-  projectID: string;
+  projectID?: string;
 };
 
 export const HcpConsulPluginPage: (

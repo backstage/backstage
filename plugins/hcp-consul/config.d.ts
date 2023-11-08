@@ -24,5 +24,11 @@ export interface Config {
      * @visibility frontend
      */
     organizationID: string;
+
+    /**
+     * The default projectID to be used
+     * @visibility frontend
+     */
+    projectID: string;
   };
 }

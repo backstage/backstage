@@ -41,6 +41,7 @@ import {
 } from '@backstage/core-components';
 import { apiDocsPlugin, ApiExplorerPage } from '@backstage/plugin-api-docs';
 import { AzurePullRequestsPage } from '@backstage/plugin-azure-devops';
+import { HcpConsulPluginPage } from '@backstage/plugin-hcp-consul';
 
 import {
   CatalogEntityPage,
@@ -322,6 +323,7 @@ const routes = (
     <Route path="/devtools" element={<DevToolsPage />}>
       {customDevToolsPage}
     </Route>
+    <Route path="/hcp-consul" element={<HcpConsulPluginPage />} />
   </FlatRoutes>
 );
 
