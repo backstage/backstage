@@ -19478,11 +19478,11 @@ __metadata:
   linkType: hard
 
 "@types/react-helmet@npm:^6.1.0":
-  version: 6.1.8
-  resolution: "@types/react-helmet@npm:6.1.8"
+  version: 6.1.9
+  resolution: "@types/react-helmet@npm:6.1.9"
   dependencies:
     "@types/react": "*"
-  checksum: 380d6aa2760a43dab59d46f291caf9498abfda813e343aeaea8b814fe21a69b27e9ad97962b5541ad75179eb9b7875027e4fcc7009187b2f68251ac9f0923a2c
+  checksum: 4f96b338b6500042a1dde6e7af0e109df91f5ec52a1200dd9511748f85cd659b22e84b51677f86fb1c319dd9e0da56c6947b7130cb1f8989a8ff8e5c2cc26007
   languageName: node
   linkType: hard
 
